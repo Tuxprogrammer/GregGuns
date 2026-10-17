@@ -1,4 +1,4 @@
-package com.myname.mymodid;
+package com.gregguns;
 
 import java.io.File;
 
