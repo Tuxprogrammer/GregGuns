@@ -11,6 +11,7 @@ import com.gregguns.core.selfcheck.SelfCheckRunner;
 import com.gregguns.core.testing.HarnessScenarios;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.gun.GunsModule;
+import com.gregguns.machine.MachinesModule;
 import com.gregguns.network.GregGunsNetwork;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -65,6 +66,7 @@ public class CommonProxy {
      */
     protected void registerModules(ModuleManager manager) {
         manager.register(new GunsModule());
+        manager.register(new MachinesModule());
     }
 
     /**

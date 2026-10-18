@@ -159,6 +159,22 @@ These are proposals for M4. Exact fluids, amounts, `eut` and durations are chose
 | 46 | Unit test: the single-block MTEs at EV and IV share the recipe map and the reaction state machine with the multiblock; the IV single block starts the Anti Gravity Core recipe and the EV one does not |
 | 47 | See the Retort tests in [multiblocks.md](multiblocks.md#tests) |
 
+## Implementation notes (M4, single block)
+
+Built in `com.gregguns.machine.reaction`. Deviations and decisions:
+
+- **Base class.** The single block extends `MTEBasicMachineWithRecipe` (two item inputs, four item outputs, one fluid input, GT's MUI2 basic-machine panel), not `MTETieredMachineBlock` directly. GT's loop finds and consumes the recipe, so the Heat Ray Focus is an ordinary stack-size-0 input in the second input slot.
+- **Intensity gate.** `checkRecipe` looks the recipe up first and returns "found but not met" if the intensity setting differs from the preferred one, so a wrong setting costs nothing. Changing the setting calls `markInventoryBeenModified()` so an idle machine re-checks at once instead of waiting up to 30 s.
+- **No overclock.** `calculateCustomOverclock` is overridden: the duration is always reaction ticks times 60 and the draw is the recipe `eut`, whatever the hull tier. An IV chamber therefore runs the Laser Focus at 1,920 EU/t.
+- **Run state.** `onPostTick` steps the pure `ReactionState` once per running tick, before GT's base class draws power, when the stored EU covers the draw. On success it sets `mProgresstime = mMaxProgresstime - 1` so GT's increment delivers the outputs. On failure it clears `mOutputItems`, ends the run and calls `ReactionEffects.applyFailure`. The state (10 ints) and the intensity are saved under `gregguns.rc.state` and `gregguns.rc.intensity`.
+- **Risks.** `ReactionEffects` maps the risks as the sheet says. The Retort also shatters glass in a cube around the controller (radius 3 for `EXPLOSION_LOW`, 4 for `EXPLOSION_MEDIUM`) before `doExplosion`. The single block has no glass and no pollution.
+- **Radiation recipe.** No kept recipe uses a `RAD_*` risk yet (the uranium recipe waits for M5); the radiation path is exercised by the `machines.reaction.radiation` scenario through `ReactionEffects` directly.
+- **Fluids.** Laser Focus uses 1,152 mB molten Redstone, the Anti Gravity Core 1,152 mB molten Enderium, as the recipes sheet decided.
+- **NEI.** The map has a special-info formatter that shows intensity, drift, required completion and the risk. The Heat Ray Focus shows as a non-consumed input.
+- **GUI.** The intensity control is a minus button, a text readout ("Intensity n (target m)  Good a/b") and a plus button, shared with the Retort (`ReactionGuiWidgets`). Its placement inside the basic-machine panel has not been checked in a client yet.
+- **Config.** `machines.*` keys in `docs/config.md` (GGS-08-25).
+- **Items.** `part_heat_ray_focus`, `part_laser_focus` (EV) and `part_anti_gravity_core` (IV) are registered by the machines module (`ReactionParts`) so the machines work with only `modules.machines` and `modules.guns` on.
+
 ## Open questions
 
 - **Gameplay shift from dropping the bath level.** Techguns made the player set and hold an exact fluid level. GT consumes the fluid at start. If the level mini-game matters, a second control could be added later; that needs a design record.
