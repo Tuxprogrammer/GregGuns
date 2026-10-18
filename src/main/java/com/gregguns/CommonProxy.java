@@ -7,11 +7,13 @@ import com.gregguns.core.command.TestSubCommand;
 import com.gregguns.core.config.GregGunsConfig;
 import com.gregguns.core.config.ModuleFlags;
 import com.gregguns.core.module.ModuleManager;
+import com.gregguns.core.selfcheck.SelfCheckRunner;
 import com.gregguns.core.testing.HarnessScenarios;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.network.GregGunsNetwork;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -61,4 +63,19 @@ public class CommonProxy {
      * @param manager the manager to register with
      */
     protected void registerModules(ModuleManager manager) {}
+
+    /**
+     * Runs the dev self-check once every mod has registered its recipes.
+     *
+     * <p>
+     * Deviation: CONTRIBUTING.md (Testing) says the self-check runs in postInit. It runs here, in load-complete,
+     * because GT buffers its crafting-table recipes and registers the second pass in its own load-complete handler, and
+     * other mods add recipes in their postInit; postInit would check an incomplete recipe set. See
+     * {@link SelfCheckRunner}.
+     */
+    public void loadComplete(FMLLoadCompleteEvent event) {
+        if (DevEnvironment.isActive()) {
+            SelfCheckRunner.run();
+        }
+    }
 }

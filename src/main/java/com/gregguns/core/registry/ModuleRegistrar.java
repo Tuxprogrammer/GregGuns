@@ -8,6 +8,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 
 import com.gregguns.GregGuns;
+import com.gregguns.api.HiddenFromCreativeTab;
 import com.gregguns.core.module.ModuleId;
 
 import cpw.mods.fml.common.registry.EntityRegistry;
@@ -60,7 +61,11 @@ public final class ModuleRegistrar {
     }
 
     /**
-     * Registers an item and puts it in the GregGuns creative tab unless it already has a tab.
+     * Registers an item and puts it in the GregGuns creative tab, unless it implements {@link HiddenFromCreativeTab}.
+     *
+     * <p>
+     * The tab is decided by the marker, not by asking the item for its current tab: {@code Item.getCreativeTab()} is
+     * client-only and is stripped from the dedicated server, so calling it here would crash {@code runServer}.
      *
      * @param name the bare name, lower snake case (see {@link Naming#requireContentName})
      * @param item the item
@@ -68,14 +73,15 @@ public final class ModuleRegistrar {
      * @return {@code item}
      */
     public <T extends Item> T registerItem(String name, T item) {
-        if (item.getCreativeTab() == null) {
+        if (!(item instanceof HiddenFromCreativeTab)) {
             item.setCreativeTab(tab);
         }
         return registerItemWithoutTab(name, item);
     }
 
     /**
-     * Registers an item and leaves its creative tab alone, for items that are hidden from creative on purpose.
+     * Registers an item and leaves its creative tab alone. Items hidden on purpose should implement
+     * {@link HiddenFromCreativeTab} instead, so the dev self-check knows the omission is deliberate.
      *
      * @param name the bare name
      * @param item the item
@@ -103,7 +109,9 @@ public final class ModuleRegistrar {
     }
 
     /**
-     * Registers a block with a custom item block class. The class needs a constructor taking the {@link Block}.
+     * Registers a block with a custom item block class. The class needs a constructor taking the {@link Block}. The
+     * block goes in the GregGuns creative tab unless it implements {@link HiddenFromCreativeTab}
+     * ({@code Block.getCreativeTabToDisplayOn()} is client-only, so it is not consulted).
      *
      * @param name      the bare name
      * @param block     the block
@@ -113,7 +121,7 @@ public final class ModuleRegistrar {
      */
     public <T extends Block> T registerBlock(String name, T block, Class<? extends ItemBlock> itemBlock) {
         ledger.claimName(RegistrationLedger.Kind.BLOCK, name);
-        if (block.getCreativeTabToDisplayOn() == null) {
+        if (!(block instanceof HiddenFromCreativeTab)) {
             block.setCreativeTab(tab);
         }
         block.setBlockName(Naming.unlocalizedName(name));
