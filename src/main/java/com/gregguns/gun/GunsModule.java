@@ -3,6 +3,7 @@ package com.gregguns.gun;
 import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
+import com.gregguns.item.ammo.AmmoItems;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -26,6 +27,7 @@ public final class GunsModule implements GregGunsModule {
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
         // Items, entities and other content: one call per area, e.g. AmmoItems.register(registrar).
+        AmmoItems.register(registrar);
     }
 
     @Override

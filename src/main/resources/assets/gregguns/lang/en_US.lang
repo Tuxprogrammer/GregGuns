@@ -14,3 +14,12 @@ gregguns.test.summary=[GregGuns] Scenarios: %s passed, %s failed
 
 # Creative tab (placeholder icon: vanilla arrow until the first GregGuns item exists)
 itemGroup.gregguns=GregGuns
+
+# Ammo and magazines
+item.gregguns.ammo_9mm_bullet.name=9mm Bullets
+item.gregguns.mag_9mm_pistol.name=9mm Pistol Magazine
+item.gregguns.mag_9mm_pistol_empty.name=9mm Pistol Magazine (Empty)
+gregguns.tooltip.ammo.round=Loose ammunition
+gregguns.tooltip.magazine.loaded=Holds %s rounds
+gregguns.tooltip.magazine.empty=Fill with %s rounds
+gregguns.tooltip.magazine.sneak=Sneak + Right click to empty
