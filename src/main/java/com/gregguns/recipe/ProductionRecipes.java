@@ -58,7 +58,8 @@ public final class ProductionRecipes {
         addRecyclingData();
     }
 
-    private static void addMachineRecipe(ProductionTable.Row row) {
+    /** Registers one table row as a GT machine recipe; shared with {@link GunRecipes}. */
+    static void addMachineRecipe(ProductionTable.Row row) {
         ItemStack output = modStack(row.output(), row.outputCount());
         List<ItemStack> inputs = new ArrayList<>();
         for (ProductionTable.Input input : row.inputs()) {
@@ -94,7 +95,7 @@ public final class ProductionRecipes {
      */
     // Source:
     // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/TierEU.java#L25-L39
-    private static long eutFor(Tier tier) {
+    static long eutFor(Tier tier) {
         switch (tier) {
             case STEAM:
                 return TierEU.RECIPE_ULV;
@@ -181,7 +182,7 @@ public final class ProductionRecipes {
         GTOreDictUnificator.addItemData(stack, data);
     }
 
-    private static ItemStack modStack(String registryName, int count) {
+    static ItemStack modStack(String registryName, int count) {
         Item item = GameRegistry.findItem(GregGuns.MODID, registryName);
         return item == null ? null : new ItemStack(item, count);
     }

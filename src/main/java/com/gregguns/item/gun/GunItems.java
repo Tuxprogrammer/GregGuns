@@ -13,8 +13,9 @@ import com.gregguns.item.ammo.MagazineType;
  * Registers the gun items and holds them for other code (recipes, the renderer, the HUD).
  *
  * <p>
- * Registered for M1: the 9mm Pistol, {@code gregguns:pistol_9mm}. It has no recipe yet; wave 3 adds the GT assembler
- * recipe. Registry names are what the pack config lists for Backhand (see {@code docs/gregguns-spec/PACK-CHANGES.md}).
+ * Registered for M1: the 9mm Pistol, {@code gregguns:pistol_9mm}. Its recipe is the Assembler row in
+ * {@code GunTable}, registered by {@code GunRecipes}. Registry names are what the pack config lists for Backhand (see
+ * {@code docs/gregguns-spec/PACK-CHANGES.md}).
  *
  * <p>
  * Usage: {@code ItemStack pistol = new ItemStack(GunItems.pistol());} (a tag-less stack reads as a full gun).
