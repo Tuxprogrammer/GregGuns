@@ -1,6 +1,8 @@
 package com.gregguns.client.render;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.item.Item;
@@ -10,6 +12,8 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import com.gregguns.GregGuns;
 import com.gregguns.client.render.profile.GunTransforms;
 import com.gregguns.client.render.profile.Pistol9mmProfile;
+import com.gregguns.client.render.profile.RevolverProfile;
+import com.gregguns.client.render.profile.ScopeSpec;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -36,6 +40,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public final class GunRenderers {
 
     private static final Map<Item, Entry> REGISTRY = new HashMap<>();
+    private static ScopeSpec debugScope;
 
     private GunRenderers() {}
 
@@ -64,6 +69,9 @@ public final class GunRenderers {
             GregGuns.LOG.warn("Gun renderer for {} registered twice; the later one wins", item.getUnlocalizedName());
         }
         MinecraftForgeClient.registerItemRenderer(item, new GunItemRenderer(model, transforms));
+        if (transforms.scope() != null) {
+            ScopeTextures.install();
+        }
     }
 
     /**
@@ -82,6 +90,61 @@ public final class GunRenderers {
                 new String[] { Pistol9mmProfile.TEXTURE },
                 Pistol9mmProfile.MUZZLE),
             Pistol9mmProfile.TRANSFORMS);
+    }
+
+    /**
+     * Registers the Revolver: the original X-family box model built against {@code revolver.png}, and its sheet
+     * transforms.
+     */
+    public static void registerRevolver(Item revolver) {
+        register(
+            revolver,
+            new BoxGunModel(
+                RevolverProfile.BOXES,
+                1,
+                RevolverProfile.TEXTURE_WIDTH,
+                RevolverProfile.TEXTURE_HEIGHT,
+                RevolverProfile.MODEL_SCALE,
+                new String[] { RevolverProfile.TEXTURE },
+                RevolverProfile.MUZZLE,
+                true),
+            RevolverProfile.TRANSFORMS);
+    }
+
+    /**
+     * Dev autotest only: draws a scope overlay on the HUD whatever is held, so a screenshot can show how an overlay
+     * texture loads and looks before a scoped gun exists. Pass {@code null} to stop.
+     *
+     * @param texturePath resource path of the overlay, for example {@code gregguns:textures/fx/testscope.png}
+     */
+    public static void setDebugScope(String texturePath) {
+        debugScope = texturePath == null ? null : new ScopeSpec(texturePath, 0.0, 0.0);
+        if (debugScope != null) {
+            ScopeTextures.install();
+        }
+    }
+
+    /** @return the forced overlay of {@link #setDebugScope}, or null */
+    static ScopeSpec debugScope() {
+        return debugScope;
+    }
+
+    /** @return true if this item is a registered gun whose render profile has a scope overlay */
+    public static boolean hasScopeOverlay(Item item) {
+        GunTransforms t = transformsOf(item);
+        return t != null && t.scope() != null;
+    }
+
+    /** @return the overlay texture paths of every registered gun that has a scope, for the loader to preload */
+    static List<String> scopeTexturePaths() {
+        List<String> paths = new ArrayList<>();
+        for (Entry e : REGISTRY.values()) {
+            ScopeSpec scope = e.transforms.scope();
+            if (scope != null && !paths.contains(scope.texture())) {
+                paths.add(scope.texture());
+            }
+        }
+        return paths;
     }
 
     /** @return true if this stack is a gun with a registered renderer */

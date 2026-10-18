@@ -87,8 +87,9 @@ final class GlFx {
      * @param spec     the flash data
      * @param progress progress through the flash window
      * @param muzzle   muzzle position in the gun frame, blocks
+     * @param alongX   true if the barrel points along +X (X-family) instead of -Z
      */
-    static void drawThirdPersonFlash(MuzzleFlashSpec spec, double progress, float[] muzzle) {
+    static void drawThirdPersonFlash(MuzzleFlashSpec spec, double progress, float[] muzzle, boolean alongX) {
         int frame = spec.sheet()
             .frameAt(progress);
         if (frame < 0) {
@@ -96,6 +97,43 @@ final class GlFx {
         }
         double len = spec.thirdPersonLength();
         double half = len / 2.0;
+        if (alongX) {
+            // X-family guns: the barrel axis is +X; one plane in X-Z, one in X-Y.
+            double ax = muzzle[0] + half * 0.6;
+            double ay = muzzle[1];
+            double az = muzzle[2];
+            drawSprite(
+                spec,
+                frame,
+                ax - half,
+                ay,
+                az - half,
+                ax - half,
+                ay,
+                az + half,
+                ax + half,
+                ay,
+                az + half,
+                ax + half,
+                ay,
+                az - half);
+            drawSprite(
+                spec,
+                frame,
+                ax - half,
+                ay - half,
+                az,
+                ax - half,
+                ay + half,
+                az,
+                ax + half,
+                ay + half,
+                az,
+                ax + half,
+                ay - half,
+                az);
+            return;
+        }
         double cx = muzzle[0];
         double cy = muzzle[1];
         double cz = muzzle[2] - half * 0.6;

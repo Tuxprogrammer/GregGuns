@@ -95,6 +95,12 @@ class StoreAmmoInventoryTest {
     }
 
     @Test
+    void roundsPerLooseItemForTheRevolverIsSixToo() {
+        // One bullet fills the revolver, so a refunded bullet is worth six rounds (not one).
+        assertEquals(6, GunItems.roundsPerLooseItem(com.gregguns.gun.logic.GunCatalog.REVOLVER));
+    }
+
+    @Test
     void roundsPerLooseItemForThePistolIsSix() {
         assertEquals(6, GunItems.roundsPerLooseItem(PISTOL));
     }

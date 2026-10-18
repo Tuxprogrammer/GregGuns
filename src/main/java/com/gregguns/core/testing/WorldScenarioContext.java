@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 
@@ -28,6 +29,7 @@ public final class WorldScenarioContext implements ScenarioContext {
     private final List<Entity> spawned = new ArrayList<>();
     private final List<int[]> changedPositions = new ArrayList<>();
     private final List<Block> changedBlocks = new ArrayList<>();
+    private ScenarioChunks.Hold chunks;
 
     private WorldScenarioContext(World world, EntityPlayer player, int x, int y, int z, long seed) {
         this.world = world;
@@ -39,28 +41,87 @@ public final class WorldScenarioContext implements ScenarioContext {
     }
 
     /**
-     * Makes a context for a scenario.
+     * Makes a context for a scenario: picks its origin from its grid slot, force-loads the area with Forge chunk
+     * tickets (released by {@link #cleanup()}), and resets the area (see {@link #prepareArea}).
      *
-     * @param scenario  the scenario, whose name seeds the randomness
-     * @param overworld the overworld, used for the origin when there is no player
-     * @param player    the invoking player, or {@code null} from the console
-     * @return the context; the origin is the player's block, or the overworld spawn column's surface
+     * <p>
+     * The base is the overworld spawn column, or the invoking player's column; the origin is the base plus the slot's
+     * grid offset ({@link ScenarioArea}) at the fixed height {@link ScenarioArea#ORIGIN_Y}.
+     *
+     * @param scenario    the scenario, whose name seeds the randomness and picks the slot
+     * @param overworld   the overworld, used for the base when there is no player
+     * @param player      the invoking player, or {@code null} from the console
+     * @param sortedNames the names of every registered scenario, sorted (the slot is the index of this one)
+     * @return the context, ready to run in
      */
-    public static WorldScenarioContext create(Scenario scenario, World overworld, EntityPlayer player) {
+    public static WorldScenarioContext create(Scenario scenario, World overworld, EntityPlayer player,
+        List<String> sortedNames) {
         long seed = SEED_BASE ^ scenario.name()
             .hashCode();
+        World world;
+        int baseX;
+        int baseZ;
         if (player != null) {
-            return new WorldScenarioContext(
-                player.worldObj,
-                player,
-                (int) Math.floor(player.posX),
-                (int) Math.floor(player.posY),
-                (int) Math.floor(player.posZ),
-                seed);
+            world = player.worldObj;
+            baseX = (int) Math.floor(player.posX);
+            baseZ = (int) Math.floor(player.posZ);
+        } else {
+            world = overworld;
+            ChunkCoordinates spawn = overworld.getSpawnPoint();
+            baseX = spawn.posX;
+            baseZ = spawn.posZ;
         }
-        ChunkCoordinates spawn = overworld.getSpawnPoint();
-        int surface = overworld.getTopSolidOrLiquidBlock(spawn.posX, spawn.posZ);
-        return new WorldScenarioContext(overworld, null, spawn.posX, surface, spawn.posZ, seed);
+        int[] offset = ScenarioArea.offsetOf(ScenarioArea.slotOf(sortedNames, scenario.name()));
+        WorldScenarioContext ctx = new WorldScenarioContext(
+            world,
+            player,
+            baseX + offset[0],
+            ScenarioArea.ORIGIN_Y,
+            baseZ + offset[1],
+            seed);
+        int radius = ScenarioArea.clampRadius(scenario.areaRadius());
+        ctx.chunks = ScenarioChunks.hold(world, ctx.x, ctx.z, radius);
+        try {
+            ctx.prepareArea(radius);
+        } catch (RuntimeException e) {
+            ctx.chunks.release();
+            throw e;
+        }
+        return ctx;
+    }
+
+    /**
+     * Resets the scenario's area before it runs, whatever an earlier run (or StructureLib, or GT) left there: kills
+     * every non-player entity in it, sets {@link ScenarioArea#CLEAR_HEIGHT} layers above the origin to air (which also
+     * removes tile entities), and lays a stone floor on the layer below. Written straight to the world, not through
+     * {@link #setBlock}, so {@link #cleanup()} does not "restore" the residue afterwards. The area is a dev-only arena
+     * at a fixed height, so nothing worth keeping is overwritten.
+     */
+    private void prepareArea(int radius) {
+        AxisAlignedBB box = AxisAlignedBB.getBoundingBox(
+            x - radius,
+            y - 2,
+            z - radius,
+            x + radius + 1,
+            y + ScenarioArea.CLEAR_HEIGHT,
+            z + radius + 1);
+        for (Object o : world.getEntitiesWithinAABB(Entity.class, box)) {
+            if (!(o instanceof EntityPlayer)) {
+                ((Entity) o).setDead();
+            }
+        }
+        for (int bx = x - radius; bx <= x + radius; bx++) {
+            for (int bz = z - radius; bz <= z + radius; bz++) {
+                if (world.getBlock(bx, y - 1, bz) != Blocks.stone || world.getBlockMetadata(bx, y - 1, bz) != 0) {
+                    world.setBlock(bx, y - 1, bz, Blocks.stone, 0, 2);
+                }
+                for (int by = y; by < y + ScenarioArea.CLEAR_HEIGHT; by++) {
+                    if (world.getBlock(bx, by, bz) != Blocks.air || world.getTileEntity(bx, by, bz) != null) {
+                        world.setBlock(bx, by, bz, Blocks.air, 0, 2);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -149,5 +210,9 @@ public final class WorldScenarioContext implements ScenarioContext {
         }
         changedPositions.clear();
         changedBlocks.clear();
+        if (chunks != null) {
+            chunks.release();
+            chunks = null;
+        }
     }
 }

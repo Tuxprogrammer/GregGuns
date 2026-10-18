@@ -71,7 +71,9 @@ Tier ([0001](../../design/0001-tier-map.md)): Steam / ULV. Gate material: Bronze
 | Bandit Pants | `ccc` / `cBc` / `c_c` |
 | Bandit Boots | `cBc` / `c_c` |
 
-### T1 Miner (4 recipes, gate: `plate.WroughtIron`)
+### T1 Miner (4 recipes, gate: `plate.WroughtIron`, built as `plate.CastIron`)
+
+Implementation note: in GT 5.09.54.205 wrought iron is an alias of Cast Iron, so the ore names are `plateCastIron` and `nuggetCastIron` ([implementation-notes.md](implementation-notes.md), ARM-DEV-10).
 
 | Output | Grid |
 |---|---|

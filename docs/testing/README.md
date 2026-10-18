@@ -8,7 +8,7 @@ Scenarios are reproducible in-world situations with a checked outcome ([CONTRIBU
 
 ```
 /gregguns test list          # every scenario and its description
-/gregguns test <scenario>    # one scenario, origin at your feet
+/gregguns test <scenario>    # one scenario, in its own arena offset from your column
 /gregguns test all           # every scenario
 ```
 
@@ -22,7 +22,7 @@ Type the same commands without the slash into the `runServer` console:
 gregguns test all
 ```
 
-There is no player, so the origin is the surface at the overworld spawn. The output ends with a line you can grep:
+There is no player, so the base origin is the overworld spawn column; each scenario then gets its own slot (see Scenario isolation). The output ends with a line you can grep:
 
 ```
 [GregGuns] PASS harness.area
@@ -60,7 +60,7 @@ public final class PistolDamageScenario implements Scenario {
 Rules:
 
 - **Name:** lower case `[a-z0-9_.-]+`, dot-separated by feature. `all` and `list` are reserved. Duplicates throw at registration.
-- **Clean up:** everything made through `ctx.spawn`, `ctx.setBlock` and `ctx.clearArea` is undone by the runner, even if the scenario throws. Do not change the world any other way. `clearArea` does not preserve tile entities, so scenarios run where there are none (the spawn area).
+- **Clean up:** everything made through `ctx.spawn`, `ctx.setBlock` and `ctx.clearArea` is undone by the runner, even if the scenario throws. Do not change the world any other way. `clearArea` does not preserve tile entities; the harness gives every scenario a private, pre-cleared area (see Scenario isolation).
 - **Determinism:** use `ctx.random()` (seeded from the scenario name), never `new Random()` or the clock.
 - **Report with the builder:** `check`, `checkEquals`, `note`. A failed check does not stop the scenario, so one run shows every problem.
 - **Server thread:** `run` is called on the server thread. A scenario that needs ticks to pass returns a pending result instead of a final one (next section).
@@ -88,11 +88,24 @@ public ScenarioResult run(ScenarioContext ctx) {
 - The poller is called once per server tick (at the end of the tick) with `1`, `2`, `3` and so on. It returns the final result, or `null` to wait on.
 - If it has not answered after `timeoutTicks` polls, the scenario fails with `timed out after N ticks`. Keep the timeout well above the expected time, and finish early by returning a result as soon as you can.
 - The scenario's context, with everything it spawned or changed, stays alive until the poller answers or times out, and is cleaned up then. A poller that throws fails only its scenario.
-- Scenarios run strictly one after another, because they share the origin area. The next one starts in the same tick the previous one finishes. Synchronous scenarios behave exactly as before.
+- Scenarios run strictly one after another. The next one starts in the same tick the previous one finishes. Synchronous scenarios behave exactly as before.
 - The console summary line and the chat report are printed once, after the last scenario of the run has finished. While a run is waiting, a second `gregguns test` is refused (`gregguns.test.busy`).
 - In plain Java: `ScenarioRunner.begin(list)` returns a `ScenarioRun` that you call `tick()` on; `ScenarioRunner.run(list)` is the old synchronous form and fails any scenario that asks to wait. `ScenarioTicker` (server side) drives `ScenarioRun`s from the FML server tick for the command.
 
 The framework logic (registry, argument parsing, runner, report) is plain Java and has unit tests in `src/test/java/com/gregguns/core/testing/`.
+
+## Scenario isolation
+
+Blocks and entities that a scenario leaves behind (a StructureLib multiblock, GT machines, a projectile corridor) used to break later scenarios, because everything shared one origin. Each scenario now runs in its own arena. The code is `ScenarioArea` (pure, unit-tested in `ScenarioAreaTest`), `ScenarioChunks` (Forge tickets) and `WorldScenarioContext.create`.
+
+- **Own origin.** Scenario names are sorted; the index in the full registry (not just the selected scenarios) is the slot. Slots fill a grid 6 wide, row by row, 80 blocks apart on X and Z, from a base: the overworld spawn column on the console, or the invoking player's column. The slot depends only on the registered names, so a failing scenario reproduces at the same place on every run of the same build (adding a scenario shifts the slots after it). `ctx.originX()`, `originY()` and `originZ()` return the slot's origin, so scenarios need no change.
+- **Fixed Y = 100.** Clear of the terrain in a normal dev world, below the nether ceiling, inside a superflat world's build limit. Ground is made, not found: `Y - 1` is stone, so a scenario that expects ground has it.
+- **Cleared before it runs.** For the scenario's `areaRadius()` (default 32, clamped to 48) the harness kills every non-player entity, sets 16 layers from the origin Y up to air (which removes tile entities) and lays the stone floor. This writes straight to the world, not through `ctx.setBlock`, so cleanup does not "restore" the residue of an earlier run.
+- **Loaded across ticks.** The same area is held with Forge chunk tickets (`ForgeChunkManager.requestTicket` / `forceChunk`, several tickets when the area is over a ticket's 25 chunk limit), so a projectile never meets an unloaded chunk (WGEN-27) and a multi-tick scenario's area stays loaded. The tickets are released in `ctx.cleanup()`, which the runner calls on finish, failure and timeout. The `LoadingCallback` registered for the mod releases any ticket saved in a world file by a killed server. Dev environment only: the callback is registered under `DevEnvironment.isActive()` and nothing in gameplay code requests tickets.
+- **Overriding.** A scenario that needs a bigger area overrides `Scenario.areaRadius()`. The maximum, 48, touches a default-sized neighbour but does not overlap it.
+- **Proof.** `gregguns test all` run twice in a row in one world passes 33 of 33 both times (`build/run_scenarios_twice.py`, a local variant of the orchestrator's runner that sends the command twice).
+
+Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` (Gradle cache, `minecraft/net/minecraftforge/forge/1.7.10-10.13.4.1614-1.7.10/unpacked/src/main/java/`).
 
 ## Scenarios
 
@@ -130,7 +143,22 @@ The framework logic (registry, argument parsing, runner, report) is plain Java a
 | `gun.dryfire` | pistol slice (M1) | An empty pistol with no magazines or bullets, trigger pulled twice: no bullet, no reload, ammo stays 0, nothing throws. Waits for ticks. |
 | `gun.player` | pistol slice (M1) | A shot from one fake player hits a second fake player 6 blocks away and costs them the `DamageModel` figure (the victim sits in its chunk only, because a fake player has no network handler for the entity tracker). Waits for ticks. |
 | `gun.zoom` | pistol slice (M1) | A zoom intent on the unscoped pistol through `ServerGunHandler.onZoomToggle`: accepted, zoom state stays off, FOV factor stays 1, rounds untouched. |
+| `gun.kind` | gun framework (M2) | Guns with `ProjectileKind.BULLET` and `GRAVITY_BULLET` fired through the launcher spawn a plain bullet and a `SimpleProjectile`; a kind with no registered factory spawns nothing and logs one error (expected in the log). |
+| `gun.pellets` | gun framework (M2) | A gun with 7 extra pellets fires 8 projectiles from one shot, and their yaws fan out. |
+| `gun.knockback` | gun framework (M2) | Three bullets with knockback 0, 1 and 3 hit fresh AI-less zombies: the push is none, vanilla's, and three times vanilla's (GUN-38). |
+| `gun.revolver.fire` | revolver (M2) | A real `revolver` fired through `ServerGunHandler`: one bullet, a zombie 6 blocks away loses the `DamageModel` figure for 8, rounds 6 to 5, an early click is dropped and a click one tick before the 6 tick cooldown ends fires at tick 6. |
+| `gun.revolver.reload` | revolver (M2) | An empty revolver with one `ammo_9mm_bullet`: the dry trigger starts a reload, 0 rounds until the 45th tick, then 6; the bullet is consumed and nothing comes back. |
+| `gun.revolver.reload.forced` | revolver (M2) | The reload key at 5 rounds with one bullet: 6 rounds after 45 ticks, the bullet consumed and none refunded (a bullet is worth 6 rounds, so no round is multiplied into several). |
+| `gun.revolver.damage` | revolver (M2) | A zombie 16 blocks away takes the drop-off figure (8 falling to 6 between 12 and 20 blocks), below the full 8. |
+| `gun.revolver.recipe` | revolver (M2) | `RecipeMaps.assemblerRecipes` holds the revolver at `RECIPE_LV` and 15 s; an LV query with the sheet inputs and circuit 2 finds it; a voltage below LV does not. |
+| `gun.revolver.parts` | revolver (M2) | The Wooden Stock and Mechanical Parts have crafting-table recipes; the Iron Barrel is on the assembler map at LV. |
 | `gun.recipe` | pistol slice (M1) | `RecipeMaps.assemblerRecipes` (the map GT's NEI handler lists) holds the pistol at `RECIPE_LV` and 15 s; an LV query with the sheet inputs and circuit 1 finds it; a voltage below LV does not. |
+| `armor.equip` | armor (M3) | A fake player wears the Scout set: speed attribute x1.5, full set detected, jump +0.16, vanilla bar 13; boots off gives x1.375 and no full set; naked clears the modifier; sprinting doubles the bonus on top of vanilla's sprint modifier; full Combat gives 0.40 knockback resistance. |
+| `armor.damage` | armor (M3) | Full Combat set through the real damage handler and Forge `ApplyArmor`: 8 projectile loses 3.2, energy 4.4, poison 8, 15% penetration 3.92, unresistable and fall 8, a plain vanilla source uses the physical value; each piece wears once; broken pieces give nothing and never lose the last point. |
+| `armor.lifecycle` | armor (M3) | Scout bonuses are stripped by the logout, death, respawn and dimension-change handlers and come back on the next tick; a broken boot drops its bonus and the full set. |
+| `armor.compat` | armor (M3) | CORE-14: a step height of 1.25 survives equip and unequip. CORE-15: a 6000-tick Night Vision on a mob survives armor upkeep, and armor grants and removes only its own. Jump, fall (relative to the pack's baseline) and break-speed bonuses fire through the Forge event bus. |
+| `armor.hazmat` | armor (M3) | No catalog set is GT hazmat against any hazard; a test set with partial HEAT and RADIOLOGICAL flags is full hazmat through `GregTechHazmat` and `HazardProtection`, a helmet with a full GAS flag covers GAS alone, nothing claims SPACE or ELECTRICAL. |
+| `armor.recipes` | armor (M3) | The 8 steam-age hand recipes and Heavy Cloth are in the crafting manager; the 4 LV Combat recipes are on `assemblerRecipes` at `RECIPE_LV` with the sheet's durations. |
 | `melee.knife` | melee (M2) | A fake player hits a zombie with the Combat Knife through `attackTargetEntityWithCurrentItem`: it loses the damage model's figure for 7.5 PHYSICAL damage, the hurt source is a GregGuns PHYSICAL source naming the player, the knife loses 1 durability and has 1000 uses. |
 | `melee.crowbar` | melee (M2) | The same with the Crowbar: 5.5 PHYSICAL damage, durability loss 1 to 2, harvest level 2 for `pickaxe`, the `pickaxe` tool class, and it harvests iron ore. |
 | `grenade.fuse` | grenades (M2) | A Stielgranate at rest (thrown by a zombie standing 2 blocks away) is live and harmless until 20 ticks before its 200 tick fuse, then explodes at tick 200; zombies at 1.5, 5 and 8 blocks lose `BlastFalloff` damage (full, ramp, none) through the damage model, the thrower inside the radius is hurt too (PFX-25), the floor is intact with `explosions.blockDamage` off. Waits about 10 s. |
@@ -177,7 +205,7 @@ Maps each M1 exit-gate item and each relevant `BUGS.md` row to the tests that co
 | PFX-23, PFX-27 wall and plant hits | S: `projectile.blocks` | |
 | PFX-34 gravity not sent to client | U: `BulletSpawnDataTest.doesNotReproducePFX34_*` | |
 | GUN-36 converted sources absolute | Not applicable: GregGuns builds its own sources and has no Techguns-source conversion; only UNRESISTABLE is absolute (`DamageSourceTest.onlyUnresistableIsUnblockable`) | |
-| GUN-38 knockback ignores strength | Not in M1: knockback is not implemented yet | Add the test when knockback lands |
+| GUN-38 knockback ignores strength | U: `KnockbackTest.doesNotReproduceGUN38_theMultiplierChangesTheStrength`; S: `gun.knockback` | Fixed in M2: the per-gun `GunStats.knockback()` multiplier scales the velocity change vanilla gave the target |
 
 
 | `mp.sync` | multiplayer (M1) | Needs two connected clients. Players A and B (by username) face each other four blocks apart. A's client fires twice through the real input path and trigger packet, the server reloads A's pistol through `ServerGunHandler.onReloadKey`, and the scenario checks that a bullet was launched, B took damage, and A's rounds and magazines changed. Client B logs and screenshots what it sees. Waits for ticks. |
