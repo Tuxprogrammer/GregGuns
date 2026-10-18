@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -27,6 +29,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -152,8 +155,18 @@ public final class ClientAutotest {
         }
         connectStarted = true;
         log("connecting to " + target);
-        FMLClientHandler.instance()
-            .connectToServer(mc.currentScreen, new ServerData("autotest", target));
+        // Source: FML 1.7.10 cpw.mods.fml.client.FMLClientHandler.connectToServer: it shows GuiConnecting first and
+        // only
+        // then creates playClientBlock, so a fast server's handshake reaches waitForPlayClient (on the netty thread)
+        // while the field is still null and throws a NullPointerException. It also needs serverDataTag, which only the
+        // server-list screen fills. So prime the latch ourselves, then show GuiConnecting directly.
+        try {
+            ReflectionHelper.findField(FMLClientHandler.class, "playClientBlock")
+                .set(FMLClientHandler.instance(), new CountDownLatch(1));
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            GregGuns.LOG.error("[gregguns] AUTOTEST could not prime playClientBlock", e);
+        }
+        mc.displayGuiScreen(new GuiConnecting(mc.currentScreen, mc, new ServerData("autotest", target)));
     }
 
     /** Presses the fire button for two ticks every six ticks, {@code fireRemaining} times. */
