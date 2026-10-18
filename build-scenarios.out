@@ -1,0 +1,9 @@
+enabled modules: ['guns']
+--- console output after 'gregguns test all' ---
+[12:48:13] [Server thread/INFO] [gregguns]: [GregGuns] PASS harness.area
+[12:48:13] [Server thread/INFO] [gregguns]: [GregGuns] PASS harness.entity
+[12:48:13] [Server thread/INFO] [gregguns]: [GregGuns] Scenarios: 2 passed, 0 failed
+[12:48:13] [Server thread/INFO]: [GregGuns] Scenarios: 2 passed, 0 failed
+[Incubating] Problems report is available at: file:///C:/Users/scallicott/Documents/work/GregGuns-wt/verify-m1-gun-logic/build/reports/problems/problems-report.html
+---
+counts=(2, 0) crash=False elapsed=32s log=C:\Users\scallicott\Documents\work\GregGuns-wt\verify-m1-gun-logic\build\scenarios-server.log

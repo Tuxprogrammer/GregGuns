@@ -6,17 +6,20 @@ package com.gregguns.gun.logic;
 public final class GunCatalogue {
 
     /**
-     * Ammo type ids used by the catalogue. The ammo module's {@code AmmoType} ids must equal these strings. Ids are
-     * lower-case, start with the calibre and use underscores.
+     * Ammo type ids used by the catalogue: the GregGuns registry names of the ammo items, as declared by
+     * {@code com.gregguns.item.ammo.AmmoTypes}.
      */
     public static final class AmmoIds {
 
+        // The ids are the items' GregGuns registry names, so the item glue maps an id to its item directly and the
+        // ammo package (com.gregguns.item.ammo.AmmoTypes) has one source of truth. AmmoIdsMatchItemsTest pins this.
+
         /** Loose 9mm bullets (refund item for forced reloads). */
-        public static final String NINE_MM = "9mm";
+        public static final String NINE_MM = "ammo_9mm_bullet";
         /** Loaded 9mm pistol magazine (18 rounds). */
-        public static final String NINE_MM_PISTOL_MAGAZINE = "9mm_pistol_magazine";
+        public static final String NINE_MM_PISTOL_MAGAZINE = "mag_9mm_pistol";
         /** Empty 9mm pistol magazine. */
-        public static final String NINE_MM_PISTOL_MAGAZINE_EMPTY = "9mm_pistol_magazine_empty";
+        public static final String NINE_MM_PISTOL_MAGAZINE_EMPTY = "mag_9mm_pistol_empty";
 
         private AmmoIds() {}
     }

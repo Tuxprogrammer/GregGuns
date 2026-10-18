@@ -30,9 +30,9 @@ class GunStatsTest {
         assertEquals(30, p.aiAttackTime());
         assertEquals(3, p.aiBurstCount());
         assertEquals(10, p.aiBurstDelay());
-        assertEquals("9mm_pistol_magazine", p.ammoType());
-        assertEquals("9mm", p.looseAmmoType());
-        assertEquals("9mm_pistol_magazine_empty", p.emptyContainerType());
+        assertEquals("mag_9mm_pistol", p.ammoType());
+        assertEquals("ammo_9mm_bullet", p.looseAmmoType());
+        assertEquals("mag_9mm_pistol_empty", p.emptyContainerType());
     }
 
     @Test
