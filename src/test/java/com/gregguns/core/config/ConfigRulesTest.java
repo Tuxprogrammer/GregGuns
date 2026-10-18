@@ -34,7 +34,9 @@ class ConfigRulesTest {
             "DamageFactorsConfig.damageTurretToPlayer",
             "DamageFactorsConfig.damageFactorNPC",
             "DamageFactorsConfig.armorPenetrationMultiplierNPCtoPlayer",
-            "DamageFactorsConfig.armorPenetrationMultiplierPvP"));
+            "DamageFactorsConfig.armorPenetrationMultiplierPvP",
+            "ExplosionsConfig.blockDamage",
+            "ExplosionsConfig.selfDamage"));
 
     private static Set<String> tokens(String key) {
         Set<String> result = new HashSet<>();

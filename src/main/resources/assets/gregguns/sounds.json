@@ -16,5 +16,15 @@
       "effects/bullet_impact_d",
       "effects/bullet_impact_e"
     ]
+  },
+  "effects.explosion1": {
+    "category": "player",
+    "sounds": [
+      "effects/explosion1_a",
+      "effects/explosion1_b",
+      "effects/explosion1_c",
+      "effects/explosion1_d",
+      "effects/explosion1_e"
+    ]
   }
 }

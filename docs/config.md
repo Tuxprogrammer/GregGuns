@@ -44,6 +44,15 @@ Techguns' "Damage Factors" category. All keys are synced from server to client (
 | `damagefactors.armorPenetrationMultiplierNPCtoPlayer` | float | `1.0` | 0 to 1 | yes | Scales the armor penetration of non-player attackers against players. |
 | `damagefactors.armorPenetrationMultiplierPvP` | float | `1.0` | 0 to 1 | yes | Scales the armor penetration of a player's shots against other players. |
 
+## Explosions (`explosions`)
+
+Both keys are synced from server to client (GGS-01-03). Block removal always passes through the protection hooks: the explosion events (ServerUtilities filters the affected-block list) and, for a player's blast, a `BlockEvent.BreakEvent` per block. See [explosions-pack.md](gregguns-spec/04-projectiles-fx/explosions-pack.md).
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `explosions.blockDamage` | boolean | `false` | n/a | yes | Whether GregGuns explosions remove blocks. Off: they still hurt entities. An NPC-caused blast also needs the `mobGriefing` gamerule. |
+| `explosions.selfDamage` | boolean | `true` | n/a | yes | Whether the player who set off an explosion can be hurt by it (fixes PFX-25). |
+
 ## Client (`client`)
 
 Display options for the local player only. Not synced.
