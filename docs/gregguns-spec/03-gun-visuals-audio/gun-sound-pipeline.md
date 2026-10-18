@@ -50,6 +50,13 @@ Techguns has 13 stereo gun files out of 185, and its spec reasons that they play
 - **GGS-03-10.** For each weapon, `ceil(longest fire variant length × maximum shots per second)` is at most 8 channels. An automatic that would exceed it needs a start, loop, stop scheme.
 - **GGS-03-11.** No gun sound path contains an entry of `downmixExclusions`.
 
+## Implementation (M1)
+
+- **Events:** `guns.<weapon>.<action>` and `effects.<name>`, built by `com.gregguns.gun.sound.GunSoundEvents`, which also documents how M2 adds a gun: drop the mono files, add one `sounds.json` row, add a constant. `GunSoundsJsonTest` checks every row against GGS-03-07, 08, 09 and 11 (file exists, mono, name and path rules).
+- **M1 rows:** `guns.pistol_9mm.fire` (`pistol_shot_a`-`c`), `guns.pistol_9mm.reload` (`pistol_reload`), `effects.bullet_impact` (`bullet_impact_a`-`e`). The 9mm Pistol takes the `pistol_*` files (Techguns' Pistol), not `handgun_*` (the Hand Cannon). No ricochet, flyby or dry-fire files exist yet; dry fire plays vanilla `random.click` (deviation from Techguns' `mob.villager.idle`).
+- **Server:** `GunSoundPlayer` sends the vanilla sound packet to players within `16 * max(1, volume)` blocks and excludes the shooter, whose client predicted the sound (`ClientGunSounds`). Fire is volume 4 (64 blocks), reload 1 (16 blocks).
+- **Deviations:** other players hear a reload where it started (the vanilla packet cannot move a sound); the shooter's own reload sound follows them and is cut off when the reload is cancelled or the gun is switched away; the muzzle offset is in front of the shooter (CORE-21 not reproduced).
+
 ## Tests
 
 - GGS-03-07: unit test that reads each `.ogg` header under `assets/gregguns/sounds/` and fails on stereo outside the UI and ambience folders.

@@ -1,1 +1,20 @@
-{}
+{
+  "guns.pistol_9mm.fire": {
+    "category": "player",
+    "sounds": ["guns/pistol_shot_a", "guns/pistol_shot_b", "guns/pistol_shot_c"]
+  },
+  "guns.pistol_9mm.reload": {
+    "category": "player",
+    "sounds": ["guns/pistol_reload"]
+  },
+  "effects.bullet_impact": {
+    "category": "player",
+    "sounds": [
+      "effects/bullet_impact_a",
+      "effects/bullet_impact_b",
+      "effects/bullet_impact_c",
+      "effects/bullet_impact_d",
+      "effects/bullet_impact_e"
+    ]
+  }
+}
