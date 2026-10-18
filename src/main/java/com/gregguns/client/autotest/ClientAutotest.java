@@ -8,6 +8,8 @@ import java.util.Map;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent17;
@@ -21,6 +23,7 @@ import com.gregguns.gun.GunClientEvents;
 import com.gregguns.gun.GunClientHooks;
 import com.gregguns.gun.logic.GunStats;
 
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -51,6 +54,16 @@ public final class ClientAutotest {
     /** The JVM property that switches the hooks on; its value is only a label for the log. */
     public static final String PROPERTY = "gregguns.autotest";
 
+    /**
+     * Optional JVM property {@code -Dgregguns.autotest.connect=host:port}: once the main menu has been up for
+     * {@link #MENU_SETTLE_TICKS} ticks, join that server. The vanilla {@code --server} launch argument connects while
+     * the client is still finishing its start-up and loses an FML handshake race (NullPointerException in
+     * {@code FMLClientHandler.waitForPlayClient}), so this waits for the menu instead.
+     */
+    public static final String CONNECT_PROPERTY = "gregguns.autotest.connect";
+
+    private static final int MENU_SETTLE_TICKS = 100;
+
     private static final String LOG_PREFIX = "AUTOTEST ";
 
     private final GunInputHandler input;
@@ -60,6 +73,8 @@ public final class ClientAutotest {
     private boolean joinLogged;
     private int fireClock = -1;
     private int fireRemaining;
+    private int menuTicks;
+    private boolean connectStarted;
 
     private ClientAutotest(GunInputHandler input) {
         this.input = input;
@@ -109,6 +124,7 @@ public final class ClientAutotest {
             return;
         }
         Minecraft mc = Minecraft.getMinecraft();
+        tickConnect(mc);
         if (mc.thePlayer == null || mc.theWorld == null) {
             return;
         }
@@ -124,6 +140,20 @@ public final class ClientAutotest {
             }
         }
         tickFire();
+    }
+
+    private void tickConnect(Minecraft mc) {
+        String target = System.getProperty(CONNECT_PROPERTY);
+        if (target == null || connectStarted || !(mc.currentScreen instanceof GuiMainMenu)) {
+            return;
+        }
+        if (++menuTicks < MENU_SETTLE_TICKS) {
+            return;
+        }
+        connectStarted = true;
+        log("connecting to " + target);
+        FMLClientHandler.instance()
+            .connectToServer(mc.currentScreen, new ServerData("autotest", target));
     }
 
     /** Presses the fire button for two ticks every six ticks, {@code fireRemaining} times. */
