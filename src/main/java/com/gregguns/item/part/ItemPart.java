@@ -2,6 +2,7 @@ package com.gregguns.item.part;
 
 import net.minecraft.item.Item;
 
+import com.gregguns.api.GregGunsComponent;
 import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 
@@ -12,7 +13,7 @@ import com.gregguns.api.Tiered;
  * <p>
  * Spec: docs/gregguns-spec/06-items/recipes.md (component index). Both sides.
  */
-public final class ItemPart extends Item implements Tiered {
+public final class ItemPart extends Item implements Tiered, GregGunsComponent {
 
     private final Tier tier;
 

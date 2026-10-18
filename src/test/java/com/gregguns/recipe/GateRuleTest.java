@@ -25,7 +25,8 @@ class GateRuleTest {
         assertEquals("StainlessSteel", GateRule.gateMaterial(Tier.HV));
         assertEquals("Titanium", GateRule.gateMaterial(Tier.EV));
         assertEquals("TungstenSteel", GateRule.gateMaterial(Tier.IV));
-        assertThrows(IllegalArgumentException.class, () -> GateRule.gateMaterial(Tier.ZPM));
+        assertEquals("HSSG", GateRule.gateMaterial(Tier.LUV));
+        assertEquals("NaquadahAlloy", GateRule.gateMaterial(Tier.ZPM));
     }
 
     @Test
