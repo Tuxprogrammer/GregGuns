@@ -21,6 +21,13 @@ class AutotestSignalTest {
     }
 
     @Test
+    void findsASignalAfterASpeakerTag() {
+        assertArrayEquals(
+            new String[] { "quit" },
+            AutotestSignal.parse("[Server] " + AutotestSignal.format("quit")));
+    }
+
+    @Test
     void ordinaryChatIsNotASignal() {
         assertNull(AutotestSignal.parse("<Alice> hello"));
         assertNull(AutotestSignal.parse(null));

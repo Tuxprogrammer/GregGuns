@@ -186,6 +186,11 @@ public final class ClientAutotest {
                 log("fire x" + args[0] + " (client " + localName() + ")");
             }
             case "gui" -> AutotestCommands.openGui(args);
+            case "quit" -> {
+                log("quit (client " + localName() + ")");
+                Minecraft.getMinecraft()
+                    .shutdown();
+            }
             case "close" -> {
                 Minecraft mc = Minecraft.getMinecraft();
                 if (mc.currentScreen != null) {

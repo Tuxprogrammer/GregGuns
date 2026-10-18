@@ -37,7 +37,7 @@ public final class AutotestSignal {
     /**
      * Parses a chat line.
      *
-     * @param text a chat line, possibly with formatting codes in front
+     * @param text a chat line, possibly with formatting codes or a speaker tag in front
      * @return the command word followed by its arguments, or {@code null} if the line is not a signal
      */
     public static String[] parse(String text) {
@@ -46,10 +46,12 @@ public final class AutotestSignal {
         }
         String plain = text.replaceAll("\u00a7.", "")
             .trim();
-        if (!plain.startsWith(PREFIX)) {
+        // Anywhere in the line, so a console "say" (which prepends "[Server]") works as a signal too.
+        int at = plain.indexOf(PREFIX);
+        if (at < 0) {
             return null;
         }
-        String rest = plain.substring(PREFIX.length())
+        String rest = plain.substring(at + PREFIX.length())
             .trim();
         if (rest.isEmpty()) {
             return null;
