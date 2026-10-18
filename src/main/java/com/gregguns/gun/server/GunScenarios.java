@@ -12,11 +12,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.FakePlayer;
 
+import com.gregguns.combat.DamageFactors;
 import com.gregguns.combat.DamageModel;
+import com.gregguns.combat.DamageSources;
 import com.gregguns.combat.DamageType;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
@@ -438,7 +441,14 @@ public final class GunScenarios {
                 chunk.removeEntity(victim);
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 float lost = before - victim.getHealth();
-                float expected = expectedLoss(victim, GunCatalogue.PISTOL.damage());
+                // Player-on-player hits carry the configured PvP damage factor (DamageFactorsConfig, synced).
+                double pvpFactor = DamageFactors.damageFactor(
+                    DamageSources.settingsFromConfig(),
+                    DamageFactors.Attacker.PLAYER,
+                    true,
+                    MinecraftServer.getServer()
+                        .isPVPEnabled());
+                float expected = expectedLoss(victim, (float) (GunCatalogue.PISTOL.damage() * pvpFactor));
                 out.check(near(expected, lost), "the player should lose " + expected + " but lost " + lost);
                 out.checkEquals("bullets launched", 1, rig.bullets());
                 return out.build();

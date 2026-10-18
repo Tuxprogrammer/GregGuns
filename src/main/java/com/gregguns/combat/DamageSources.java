@@ -91,7 +91,11 @@ public final class DamageSources {
         return shooter instanceof TurretAttacker ? DamageFactors.Attacker.TURRET : DamageFactors.Attacker.NPC;
     }
 
-    private static DamageFactors.Settings settingsFromConfig() {
+    /**
+     * @return the five damage factors as currently configured (server values while connected); shared with the
+     *         scenarios so they expect exactly what the damage path applies
+     */
+    public static DamageFactors.Settings settingsFromConfig() {
         return new DamageFactors.Settings(
             DamageFactorsConfig.damagePvP,
             DamageFactorsConfig.damageTurretToPlayer,
