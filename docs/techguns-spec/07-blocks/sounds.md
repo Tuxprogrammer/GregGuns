@@ -45,3 +45,15 @@ Volume 1.0, pitch 1.0. It is issued with `World.playSound(x, y, z, …, distance
 - `techguns:effects.biodeath`: Bioblob burst, [04-projectiles-fx](../04-projectiles-fx/index.md).
 - The explosive-charge "plant" sound: played from [`ItemBlockMetaDataMachine`](special-blocks.md#16-itemblockmetadatamachine), owned by [08](../08-machines-production/index.md)/09.
 - Vanilla `random.chestopen` and `random.chestclosed`: TG chests.
+
+<!-- audio-profiles:start -->
+## How each sound sounds
+
+Generated from [AUDIO-PROFILES.md](../AUDIO-PROFILES.md), which has full profiles with elements, envelope and recreation notes. Claude described these from spectrograms and measurements, so treat the prose as an informed reading.
+
+| Sound | Sounds like | Character | Loudness (LUFS / peak dBFS) | Confidence |
+|---|---|---|---|---|
+| [`sounds/blocks/metaldoor_open_a.ogg`](../AUDIO-PROFILES.md#soundsblocksmetaldoor_open_aogg) | A short, clunky metal door opening: a latch click followed by a rattling, creaking metallic scrape with heavy low-end thumps that fades out in under a second. | metallic, mechanical, noisy, creak | -17.9 / -0.1 | medium |
+| [`sounds/blocks/metaldoor_open_b.ogg`](../AUDIO-PROFILES.md#soundsblocksmetaldoor_open_bogg) | A short, clanky metal door opening: a few quick latch and hinge rattles followed by a heavier low-mid thud-scrape around 0.25 s and a fading creak-like tail. | metallic, clanky, transient, mechanical | -20.3 / -0.3 | medium |
+| [`sounds/blocks/metaldoor_open_c.ogg`](../AUDIO-PROFILES.md#soundsblocksmetaldoor_open_cogg) | A short, creaky metal door-opening sound: a heavy latch-like thunk, a rattling metallic scrape, then a second clunk and a fading rattly tail. | metallic, mechanical, impact, creak | -22.2 / -2.1 | medium |
+<!-- audio-profiles:end -->

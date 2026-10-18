@@ -263,9 +263,11 @@ One gun, working end to end inside the GTNH dev pack.
 - Translation readiness: every string is a lang key.
 - Multiplayer and performance soak tests.
 - Handing quest-line content to the GTNH modpack maintainers, since quests live in the pack, not in this repo.
+- One PR to the GTNH modpack repository with every row of [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md), using the final registry names; and the GT5-Unofficial MTE ID and texture-page reservations.
 - Release tagging.
 
 **Exit gate:**
 - [ ] A full playthrough of every tier gate in a GTNH dev pack.
 - [ ] No unresolved crash-severity bugs.
+- [ ] The PACK-CHANGES modpack PR is open, with no placeholder names left.
 - [ ] Release notes, a tagged version and published jars (CI `release-tags` workflow).

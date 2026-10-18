@@ -20,7 +20,9 @@ A from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 1.7.10, Forg
 | How a Techguns feature behaves | [docs/techguns-spec/README.md](docs/techguns-spec/README.md), then the area's `index.md` |
 | How spec sheets are laid out | [docs/techguns-spec/CONVENTIONS.md](docs/techguns-spec/CONVENTIONS.md) |
 | Techguns bugs not to reproduce | [docs/techguns-spec/BUGS.md](docs/techguns-spec/BUGS.md) |
-| Asset footprints (sizes, frames, colours, sound lengths) | [docs/techguns-spec/ASSET-FACTS.md](docs/techguns-spec/ASSET-FACTS.md) |
+| Asset footprints (sizes, frames, colours, sound lengths) | [docs/techguns-spec/ASSET-FACTS.md](docs/techguns-spec/ASSET-FACTS.md); how each sound sounds: [AUDIO-PROFILES.md](docs/techguns-spec/AUDIO-PROFILES.md) |
+| How GregGuns differs from Techguns and plugs into GTNH, per area | [docs/gregguns-spec/README.md](docs/gregguns-spec/README.md), then the area's `index.md` |
+| Config and data changes the GTNH modpack must make for us | [docs/gregguns-spec/PACK-CHANGES.md](docs/gregguns-spec/PACK-CHANGES.md) |
 | How a GT, IC2, NEI or other pack mod's API behaves (integration work) | [docs/gregguns-spec/INTEGRATION.md](docs/gregguns-spec/INTEGRATION.md), then the extracted pack in `reference/gtnh/` |
 | Build settings, mod ID, package | [gradle.properties](gradle.properties) |
 | Dependencies and repositories | [dependencies.gradle](dependencies.gradle), [repositories.gradle](repositories.gradle) |
@@ -41,6 +43,8 @@ A from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 1.7.10, Forg
 | Repair and camo benches, turret, ore drill, charges | [09-machines-utility](docs/techguns-spec/09-machines-utility/index.md) |
 | Mobs, AI, factions, spawning | [10-entities-npcs](docs/techguns-spec/10-entities-npcs/index.md) |
 | Structures, ore clusters, worldgen loot | [11-worldgen](docs/techguns-spec/11-worldgen/index.md) |
+
+Every area also has a GregGuns counterpart, `docs/gregguns-spec/<area>/index.md`, which says what changes and how it integrates with the pack. Read both.
 
 ## The GTNH reference pack
 

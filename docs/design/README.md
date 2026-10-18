@@ -36,3 +36,6 @@ The other options, and why each was not chosen.
 | [0004](0004-damage-model.md) | Damage model | D4 | Accepted (by default) |
 | [0005](0005-world-presence.md) | World presence | D5 | Accepted (by default) |
 | [0006](0006-art-direction.md) | Art direction | D6 | Accepted (by default) |
+| [0007](0007-pack-loot-and-infernal-mobs.md) | Pack loot and Infernal Mobs | — | Accepted (by default) |
+| [0008](0008-exact-tier-charging.md) | Exact-tier charging (amends 0003) | D3 | Accepted (by default) |
+| [0009](0009-gtnh-integration-defaults.md) | GTNH integration defaults (amends 0001, 0004, 0005) | — | Accepted (by default) |

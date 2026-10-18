@@ -5,7 +5,7 @@
 - Date: 2026-10-17
 
 ## Context
-Every GregGuns asset must be original (Techguns is All Rights Reserved), yet still fit next to GT's items. The footprints come from [ASSET-FACTS.md](../techguns-spec/ASSET-FACTS.md) and each area's `textures.md` and `sounds.md`. Once generated, AUDIO-PROFILES.md will describe the audio.
+Every GregGuns asset must be original (Techguns is All Rights Reserved), yet still fit next to GT's items. The footprints come from [ASSET-FACTS.md](../techguns-spec/ASSET-FACTS.md) and each area's `textures.md` and `sounds.md`. [AUDIO-PROFILES.md](../techguns-spec/AUDIO-PROFILES.md) describes every sound and gives the loudness to match.
 
 ## Decision
 - **Item icons:** 16×16, in GT-style shading (soft top-left light, darker outlines, a restrained palette). Materials take their colour from the GT material colour wherever an item is "made of" one.

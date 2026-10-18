@@ -1,6 +1,6 @@
 # 0005 · World presence
 
-- Status: Accepted (by default during the MVP push; revisit after MVP)
+- Status: Accepted (by default during the MVP push; revisit after MVP). Loot ceiling refined by [0007](0007-pack-loot-and-infernal-mobs.md); spawn mechanism by [0009](0009-gtnh-integration-defaults.md)
 - Gate: D5
 - Date: 2026-10-17
 

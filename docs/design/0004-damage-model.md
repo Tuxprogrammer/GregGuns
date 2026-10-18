@@ -1,6 +1,6 @@
 # 0004 · Damage model
 
-- Status: Accepted (by default during the MVP push; revisit after MVP)
+- Status: Accepted (by default during the MVP push; revisit after MVP). Damage pipeline and source classes refined by [0009](0009-gtnh-integration-defaults.md)
 - Gate: D4
 - Date: 2026-10-17
 

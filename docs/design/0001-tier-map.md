@@ -1,6 +1,6 @@
 # 0001 · Tier map
 
-- Status: Accepted (by default during the MVP push; revisit after MVP)
+- Status: Accepted (by default during the MVP push; revisit after MVP). EV jetpack dropped by [0009](0009-gtnh-integration-defaults.md)
 - Gate: D1
 - Date: 2026-10-17
 
@@ -20,7 +20,7 @@ The gate materials below are starting points. Confirm each against the current G
 | LV | Steel | 9mm Pistol, Revolver, Sawed Off, Bolt Action Rifle; Combat Knife, Crowbar | T1 Combat set | 9mm rounds and pistol magazines, shotgun shells, rifle bullets |
 | MV | Aluminium | Thompson SMG, Mac10, Combat Shotgun, M4, AK47, akimbo pistols and revolvers; frag grenade, **Flashbang** | T2 Combat, Commando and Riot sets; gas mask, night-vision goggles, **Medkit** | SMG and assault-rifle magazines, 40 mm grenades |
 | HV | Stainless steel | AUG, SCAR, Vector, Infiltrator, AS50, LMG, Grenade Launcher, Rocket Launcher, Flamethrower, Chainsaw, Power Hammer; akimbo Mac10 | Jump pack, glider, oxygen mask and tanks | LMG and AS50 magazines, rockets, fuel tanks (GT fuels), compressed-air tanks |
-| EV | Titanium | Laser Rifle, PDW, Pulse Rifle, Minigun, Tesla Rifle, Sonic Rifle, Bio Gun, Power Hammer (Advanced) | T3 Combat set, steam armour, jetpack | Energy cells, advanced magazines, minigun drums, bio tanks; UV emitter as a component |
+| EV | Titanium | Laser Rifle, PDW, Pulse Rifle, Minigun, Tesla Rifle, Sonic Rifle, Bio Gun, Power Hammer (Advanced) | T3 Combat set, steam armour (jetpack dropped: [0009](0009-gtnh-integration-defaults.md)) | Energy cells, advanced magazines, minigun drums, bio tanks; UV emitter as a component |
 | IV | Tungstensteel | Blaster Rifle, De-Atomizer Pistol and its akimbo, **Scatter Laser Rifle**, Golden Revolver and its akimbo | Power armour, exo suit, anti-grav device | — |
 | LuV | HSS-G or LuV-tier alloys | Nether Blaster, Alien Blaster, Grim Reaper | — | Nether charges |
 | ZPM | Naquadah alloy | Nuclear Death Ray, Nuke Launcher | — | Nuclear power cells, tactical nuke rockets |
