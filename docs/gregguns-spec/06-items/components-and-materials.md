@@ -35,7 +35,7 @@ Legend: **GT** means GregGuns registers nothing and recipes use the GT part. **K
 |---|---|---|
 | Tin, Copper, Iron, Bronze, Steel, Lead, Titanium plate (41-45, 96, 104) | **GT** | `OrePrefixes.plate` with `Materials.Tin`, `Copper`, `Iron`, `Bronze`, `Steel`, `Titanium`, `Lead` |
 | Titanium ingot, Titanium ore (95, 94) | **GT** | `OrePrefixes.ingot` `Materials.Titanium`; ore comes from the GTNH ore system ([0005](../../design/0005-world-presence.md): no ore generation) |
-| Obsidian Steel ingot and plate (40, 65) | **Drop as a material** | GT has no such material. See [Open questions](#open-questions) for the tier remap |
+| Obsidian Steel ingot and plate (40, 65) | **Drop as a material** | GT has no such material. The tier material of the consuming item replaces it ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 1) |
 | Copper Wire (57, `wireCopper`) | **GT** | `OrePrefixes.wireFine` with `Materials.Copper` |
 | Gold Wire (86, `wireGold`) | **GT** | `OrePrefixes.wireFine` with `Materials.Gold` (or `Electrum`) |
 | Circuit Board (68, `circuitBasic`) | **GT** | `OrePrefixes.circuit` with `Materials.LV`, or `ItemList.Circuit_Board_Basic` for the bare board |
@@ -54,7 +54,7 @@ Legend: **GT** means GregGuns registers nothing and recipes use the GT part. **K
 | Pump Mechanism (32) | **Keep** | Built from GT `springSmall`, `ItemList.Electric_Piston_LV`-class parts if needed |
 | Laser Focus (36), UV Emitter (92), Sonic Emitter (97), Rad Emitter (108) | **Keep** | The emitters wrap `ItemList.Emitter_<tier>`, chosen by the consumer's tier. D1 keeps the UV Emitter as an EV component |
 | Reaction Chamber Heat Ray Focus (98) | **Keep** | Component of the kept multiblock ([0002](../../design/0002-machine-deconfliction.md)) |
-| Carbon Fibers, Carbon Plate (61, 62; `fiberCarbon`, `plateCarbon`) | **Open** | GT core has no carbon-fibre item. The pack may supply one through NewHorizonsCoreMod; check at M4 ([Open questions](#open-questions)) |
+| Carbon Fibers, Carbon Plate (61, 62; `fiberCarbon`, `plateCarbon`) | **Drop as a material** | GT core has no carbon-fibre item. Carbon is `plate.EpoxidFiberReinforced` plus the tier material ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 2) |
 | Gas Mask Filter (74) | **Keep** | Built from `ItemList.ActivatedCarbonFilterMesh` |
 | Heavy Cloth (39), Treated Leather (109), Bio Mass (38) | **Keep** | Vanilla wool/leather and GT `Materials.Leather`, `Materials.Biomass`; the Chem Lab path is dropped, so recipes use the GT Chemical Reactor, Mixer or the crafting grid |
 | Cybernetic Parts (91), Power Plating (89), Anti Gravity Core (100) | **Keep** | GregGuns components, built from GT circuits, plates and `NetherStar` dust (`Materials.NetherStar`) |
@@ -90,6 +90,6 @@ Machine recipes use the GT recipe builder, `GTValues.RA.stdBuilder()`, with the 
 
 ## Open questions
 
-- **Obsidian Steel and Carbon tiers.** Techguns' three material tiers (iron or steel, obsidian steel, carbon) do not match GT. GT has neither Obsidian Steel nor carbon fibre in core. Which GT material stands in for each Techguns tier (for example Steel, StainlessSteel, TungstenSteel) should be a new record, "0007 material remap", settled before M4. D1 gate materials are the starting point.
-- **Carbon fibre.** Does GTNH 2.9.0-RC-2 carry a carbon-fibre item (GTNH-specific, not in GT core)? Search `reference/gtnh/2.9.0-RC-2/.minecraft/mods/` (NewHorizonsCoreMod) at M4.
+- **Obsidian Steel and Carbon tiers (closed).** Settled by [0010](../../design/0010-material-remap-and-tier-additions.md): the material follows the tier of the consuming item, and carbon is `plate.EpoxidFiberReinforced` plus the tier material.
+- **Carbon fibre (closed).** Not needed: [0010](../../design/0010-material-remap-and-tier-additions.md) decision 2 uses `plate.EpoxidFiberReinforced`.
 - **Quartz Rod and the Reaction Chamber's intermediates.** Depends on the Reaction Chamber's recipe design in area 08.

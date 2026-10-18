@@ -13,7 +13,9 @@ Of the utility machines, only the Turret, the explosive charges and the Repair B
 | [turret.md](turret.md) | Turret vs OpenModularTurrets, ownership and friends through ServerUtilities, Infernal Mobs exclusion |
 | [explosive-charges.md](explosive-charges.md) | Claim protection through the break event, GT ore drops, overlap with GT mining explosives |
 | [repair-bench.md](repair-bench.md) | GT materials and unification as repair inputs |
-| [recipes.md](recipes.md) | Recipes for the Turret, its armour plates, the Repair Bench, the Camo Bench and both explosive charges |
+| [recipes.md](recipes.md) | Recipes for every tier of the Turret and Repair Bench, the Camo Bench, the turret armour plates, the Armoury Gantry and Rampart controllers and casings (incl. Bastion Plating), the Gun Mount Hatch and both explosive charges |
+
+Machine kinds, tier ranges and IDs for the Turret, Repair Bench and Camo Bench are in the [machine roster](../08-machines-production/machine-roster.md). The Turret and the Repair Bench also have multiblock forms, the Rampart and the Armoury Gantry, specified in [multiblocks.md](../08-machines-production/multiblocks.md). The single blocks stay as described in the sheets above.
 
 No integration point; see the Techguns spec and the design records:
 
@@ -33,7 +35,7 @@ No integration point; see the Techguns spec and the design records:
 | Charge break event | Real player in the event | ServerUtilities 2.4.14 | [explosive-charges.md](explosive-charges.md) |
 | Charges vs mining explosives | Directional bore, kept | GT5-Unofficial (Powder Barrel, GT++ Mining Explosives) | [explosive-charges.md](explosive-charges.md) |
 | Repair Bench inputs | GT prefix and material, unified matching | GT5-Unofficial | [repair-bench.md](repair-bench.md) |
-| Machine and charge recipes (B04 to B09, R58 to R61) | Hull-and-parts shaped recipes for the MTEs; Assembler for plates and charges | GT5-Unofficial (`MTERecipeLoader`, `assemblerRecipes`) | [recipes.md](recipes.md) |
+| Machine and charge recipes (B04 to B09, R58 to R61) | Hull-and-parts shaped recipes for the MTEs at every tier; Assembler for plates, casings, hatches and charges | GT5-Unofficial (`MTERecipeLoader`, `assemblerRecipes`) | [recipes.md](recipes.md) |
 
 ## Pack-side changes
 
@@ -48,6 +50,7 @@ None.
 ## Open questions
 
 - Turret friend semantics (ALLY or MEMBER). Needs a turret-security record.
-- Does the Repair Bench use EU? Needs input from area 08.
+- Does the Repair Bench use EU? Proposed in [machine-roster.md](../08-machines-production/machine-roster.md#open-questions): yes, 2 s plus 8 s times the damage fraction at half the recipe voltage. Needs a record.
 - Are charges balanced against GT and IC2 explosives? Needs a balance pass after the tier map is live.
+- Turret and Repair Bench multiblocks (closed): the four turret armour plates are the crafting inputs of the Bastion Plating casing, and the tiered single blocks, controllers, casings and hatches are all in [recipes.md](recipes.md). Their costs are proposals for a balance pass.
 - Machine tiers (Turret MV, Repair Bench LV, Camo Bench LV) and charge tiers (MV, HV) are proposals in [recipes.md](recipes.md), because [0001](../../design/0001-tier-map.md) lists no machines. Needs a line in 0001 or a short record.

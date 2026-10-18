@@ -39,3 +39,5 @@ The other options, and why each was not chosen.
 | [0007](0007-pack-loot-and-infernal-mobs.md) | Pack loot and Infernal Mobs | — | Accepted (by default) |
 | [0008](0008-exact-tier-charging.md) | Exact-tier charging (amends 0003) | D3 | Accepted (by default) |
 | [0009](0009-gtnh-integration-defaults.md) | GTNH integration defaults (amends 0001, 0004, 0005) | — | Accepted (by default) |
+| [0010](0010-material-remap-and-tier-additions.md) | Material remap and tier additions (extends 0001) | D1 | Accepted (by default) |
+| [0011](0011-machine-policy.md) | Machine policy: single blocks, multiblocks, Ammo Press (amends 0002) | D2 | Accepted (by default) |

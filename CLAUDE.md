@@ -23,6 +23,8 @@ A from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 1.7.10, Forg
 | Asset footprints (sizes, frames, colours, sound lengths) | [docs/techguns-spec/ASSET-FACTS.md](docs/techguns-spec/ASSET-FACTS.md); how each sound sounds: [AUDIO-PROFILES.md](docs/techguns-spec/AUDIO-PROFILES.md) |
 | How GregGuns differs from Techguns and plugs into GTNH, per area | [docs/gregguns-spec/README.md](docs/gregguns-spec/README.md), then the area's `index.md` |
 | Config and data changes the GTNH modpack must make for us | [docs/gregguns-spec/PACK-CHANGES.md](docs/gregguns-spec/PACK-CHANGES.md) |
+| Which machines we build (single blocks, multiblocks, MTE IDs) | [machine-roster.md](docs/gregguns-spec/08-machines-production/machine-roster.md) |
+| The GregGuns questbook tab (quests live in the pack) | [docs/gregguns-spec/12-questbook/](docs/gregguns-spec/12-questbook/index.md) |
 | How a GT, IC2, NEI or other pack mod's API behaves (integration work) | [docs/gregguns-spec/INTEGRATION.md](docs/gregguns-spec/INTEGRATION.md), then the extracted pack in `reference/gtnh/` |
 | Build settings, mod ID, package | [gradle.properties](gradle.properties) |
 | Dependencies and repositories | [dependencies.gradle](dependencies.gradle), [repositories.gradle](repositories.gradle) |

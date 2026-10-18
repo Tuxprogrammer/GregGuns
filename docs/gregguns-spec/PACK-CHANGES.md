@@ -39,9 +39,21 @@ Every change GregGuns needs outside this repo, collected from the area indexes. 
 | `config/backhand.cfg` | Add each gun with right-click zoom, charge or reload to `general.mainhandUseStopsOffhandFallback` | Stops one right-click from also using the offhand item | [offhand-backhand.md](02-guns/offhand-backhand.md) |
 | `config/backhand.cfg` | Add each gun to `general.offhandBlacklist` | A gun can't fire from the offhand | [offhand-backhand.md](02-guns/offhand-backhand.md) |
 | `config/NEI/collapsibleitems.cfg` | GregGuns groups (magazines, tanks, ammo by calibre, armour sets), and the spawn egg added to the egg group | Collapsible groups can only be set in this file | [nei-visibility.md](06-items/nei-visibility.md#nei-collapsible-groups-file-only) |
-| `config/NEI/handlerordering.csv` | Optional: `gregguns.recipe.reactionchamber,-5` | Puts the tab beside GT's chemical tabs | [nei-handlers.md](08-machines-production/nei-handlers.md#gt5-unofficial-one-nei-handler-per-recipe-category) |
+| `config/NEI/handlerordering.csv` | Optional: `gregguns.recipe.reactionchamber,-5` and a row for `gregguns.ammoPress` | Puts the tabs beside GT's related tabs | [nei-handlers.md](08-machines-production/nei-handlers.md#gt5-unofficial-one-nei-handler-per-recipe-category) |
 | `config/GTNewHorizons/CustomToolTips.xml` | Optional: a `customtooltip.recharge_tier_machine` row for each powered item | Matches how the pack shows charger tiers | [powered-flight.md](05-armor/powered-flight.md) |
-| `config/betterquesting/DefaultQuests/Quests/` | A GregGuns quest line beside the pack's tiered lines | Quests live in the pack | [01-core index](01-core/index.md) |
+
+### Questbook ([12-questbook](12-questbook/index.md))
+
+All paths are under `config/betterquesting/DefaultQuests/`. The full design is 118 quests in 14 chapters, gated on existing GTNH tier quests.
+
+| File | Change | Why | Sheet |
+|---|---|---|---|
+| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/QuestLine.json` (new) | Tab properties: name `GregGuns`, icon, visibility `UNLOCKED` | Defines the tab | [authoring.md](12-questbook/authoring.md#line-files) |
+| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (118 new) | One position file per quest | Places each quest on the canvas | [quest-line.md](12-questbook/quest-line.md) |
+| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (118 new) | One file per quest: properties, prerequisites, tasks, rewards | The quest content | [authoring.md](12-questbook/authoring.md#quest-files) |
+| `QuestLinesOrder.txt` | Append `D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns` | Adds the tab after Kill All the Things | [index.md](12-questbook/index.md#tab-placement) |
+| `QuestSettings.json` | Raise `pack_version` in the release that adds the tab | Flags the questbook update to existing worlds | [index.md](12-questbook/index.md) |
+| `QuestLines/KillAlltheThings-AAAAAAAAAAAAAAAAAAAAJQ==/` | Optional: a position file for `gg.npc.intro` | A transition entry from the pack's combat line | [quest-line.md](12-questbook/quest-line.md) |
 
 `config/Baubles.cfg` needs no change, because [0009](../design/0009-gtnh-integration-defaults.md) reuses the existing `head`, `wings` and `quiver` slot types.
 

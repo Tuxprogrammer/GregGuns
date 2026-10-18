@@ -37,11 +37,11 @@ Techguns topics with no integration point have no sheet here. Their behaviour is
 | Metals, plates, wires, circuits, plastic, rubber | Not registered; GT parts through the unificator | GT5-Unofficial 5.09.54.205 | [components-and-materials.md](components-and-materials.md#gregtech-parts-through-the-unificator) |
 | Oil, fuel, redstone, ender, biofuel, milk, acid | GT materials' fluids; acid dropped | GT5-Unofficial | [fluids.md](fluids.md#fluid-mapping) |
 | Fuel, bio, air and oxygen tanks | `IFluidContainerItem` items GT machines can fill | GT fluid containers | [fluids.md](fluids.md#gregtech-fluid-containers) |
-| Ammo Press | One Assembler recipe per ammo type, picked by programmed circuit; slugs, cases and powder are GT `round`, `foil`, `itemCasing` and gunpowder | GT recipe maps | [recipes.md](recipes.md#ammunition) |
+| Ammo Press | Reinstated ([0011](../../design/0011-machine-policy.md)): one `gregguns.ammoPress` recipe per ammo type, picked by programmed circuit; slugs, cases and powder are GT `round`, `foil`, `itemCasing` and gunpowder | GregGuns Ammo Press and Ammunition Works ([ammo-press.md](../08-machines-production/ammo-press.md)) | [recipes.md](recipes.md#ammunition) |
 | Metal Press, Chem Lab, Fabricator recipes for parts | Assembler, Chemical Bath and Assembly Line recipes at the part's tier | GT recipe maps | [recipes.md](recipes.md#gun-parts) |
 | Per-item crafting grids (R01 to R87) | Crafting table only for Steam/ULV items and magazine refills; everything else on a GT map | GT recipe maps, `TierEU` | [recipes.md](recipes.md) |
 | Chem Lab tank fill | GT Fluid Canner fills `IFluidContainerItem` tanks | GT `cannerRecipes` | [recipes.md](recipes.md#filling-tanks) |
-| Energy Cell | Rechargeable EV electric item, crafted uncharged | IC2 `IElectricItem`, GT chargers | [recipes.md](recipes.md#energy-cell-note) |
+| Energy Cell | Dropped: energy weapons are their own IC2 batteries ([0010](../../design/0010-material-remap-and-tier-additions.md)) | IC2 `IElectricItem`, GT chargers | [recipes.md](recipes.md#energy-cell-note) |
 | Bullets from nuggets | Built from GT `round` parts; `bulletGt*` prefixes unused by GT | GT `OrePrefixes` | [ammo.md](ammo.md#gregtech-bullet-prefixes-and-round) |
 | Nuclear Power Cell and warhead | Radioactive through GT `ItemData` | GT radiation, hazard protection | [hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items) |
 | Item hazards, tooltips, fuels | No entries needed | dreamcraft modules | [hazards-and-tooltips.md](hazards-and-tooltips.md) |
@@ -76,9 +76,9 @@ These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHori
 
 Each needs a decision before the sheet's requirement is final.
 
-- **Material remap (new record).** Techguns' iron, obsidian-steel and carbon tiers have no direct GT match. A record, "0007 material remap", should name the GT material for each tier before M4. See [components-and-materials.md](components-and-materials.md#open-questions).
+- **Material remap (closed).** Settled by [0010](../../design/0010-material-remap-and-tier-additions.md). See [components-and-materials.md](components-and-materials.md#open-questions).
 - **Infernal HV drops.** D5 caps surface-structure loot at LV to MV, but Infernal's lists are global. An amendment to [0005](../../design/0005-world-presence.md) should say whether infernal drops may include rare HV items. See [pack-loot.md](pack-loot.md#open-questions).
 - **Route A or B for NPC loot.** Do vanilla infernal mobs drop GregGuns items (global lists), or only our NPCs? See [pack-loot.md](pack-loot.md#open-questions).
 - **Nuclear item recycling.** Radioactivity via `ItemData` also makes the item recyclable into uranium. Decide between that and the enchantment route. See [hazards-and-tooltips.md](hazards-and-tooltips.md#open-questions).
-- **Recipe-sheet decisions.** Several choices in [recipes.md](recipes.md#open-questions) need a ruling: the material remap against 05 and 09, tiers for Bandages, Cybernetic Parts and the two unnamed bullets, the Steel gate for loose LV ammo, the Energy Cell's role beside battery-guns, and the nuclear refuel route.
+- **Recipe-sheet decisions.** Several choices in [recipes.md](recipes.md#open-questions) need a ruling: the Steel gate for loose LV ammo and the nuclear refuel route. The material remap, the tiers for Bandages, Cybernetic Parts and the two unnamed bullets, and the Energy Cell are closed by [0010](../../design/0010-material-remap-and-tier-additions.md).
 - **`bulletGt*` ore names.** Whether to claim GT's unused bullet prefixes. See [ammo.md](ammo.md#open-questions).

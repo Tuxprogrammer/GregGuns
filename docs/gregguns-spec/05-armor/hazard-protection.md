@@ -53,7 +53,8 @@ The two systems are separate and both apply. A Techguns-style `RADIATION` damage
 | Set or item | Tier ([0001](../../design/0001-tier-map.md)) | `protectsAgainstFully` | `protectsAgainst` (partial) |
 |---|---|---|---|
 | T1 Combat, Scout, Miner | LV or ULV | none | none |
-| Gas Mask, Tactical Mask (helmet) | MV | `GAS` | `BIOLOGICAL` |
+| Gas Mask (helmet) | MV | `GAS` | `BIOLOGICAL` |
+| Tactical Mask (helmet) | HV ([0010](../../design/0010-material-remap-and-tier-additions.md)) | `GAS` | `BIOLOGICAL` |
 | T2 Combat, Beret | MV | none | none |
 | T2 Commando | MV | none | `ELECTRICAL` (rubber) |
 | T2 Riot (lead plate) | MV | none | `RADIOLOGICAL` |

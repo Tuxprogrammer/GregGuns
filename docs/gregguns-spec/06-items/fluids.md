@@ -37,7 +37,7 @@ Techguns fluids become GT materials' fluids, and Techguns' tanks become fluid co
 | `FUEL` | `Materials.Diesel`, `GasolineRegular`, `GasolinePremium`, `NitroFuel`, `BioDiesel`, `Ethanol` | Fuel Tank contents. Default accepted set: `Diesel`, `GasolineRegular`, `BioDiesel`, `Ethanol`; `NitroFuel` and `GasolinePremium` give a damage bonus, a balance choice for M2 |
 | `BIOFUEL` | `Materials.BioDiesel` | Bio Tank: accepted fluid for the bio gun |
 | `LIQUID_REDSTONE` | `Materials.Redstone.getMolten(...)` | Reaction Chamber laser-focus recipe (area 08) |
-| `LIQUID_ENDER` | `Materials.Ender.getFluid(...)`, checked for `null` | Reaction Chamber anti-gravity-core recipe (area 08). The fluid kind GT gives `Ender` is not confirmed here; check at M5 |
+| `LIQUID_ENDER` | `Materials.Enderium.getMolten(1_152)`. `Materials.Ender` has no fluid in the pinned GT ([MaterialsInit.java#L2502-L2507](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L2502-L2507)) | Reaction Chamber anti-gravity-core recipe (area 08), [which uses the same fluid](../08-machines-production/recipes.md#anti-gravity-core-iv) |
 | `LIQUID_COAL` | Dropped | Unused in Techguns outside `TGFluids` |
 | `MILK` | `Materials.Milk` | Only if a GregGuns recipe needs it; GregGuns creates nothing |
 | `ACID` (`creeper_acid`) | Dropped. Acid steps use `Materials.SulfuricAcid` or `NitricAcid` | Only the yellowcake and treated-leather recipes used it, and both move to GT recipe maps ([components-and-materials.md](components-and-materials.md)) |
@@ -60,7 +60,7 @@ Techguns fluids become GT materials' fluids, and Techguns' tanks become fluid co
 
 ### Energy cells
 
-Per [0003](../../design/0003-energy-model.md), the Energy Cell and Nuclear Power Cell are no longer consumable fluid-style ammo. The Energy Cell becomes a rechargeable IC2 electric item. The Nuclear Power Cell is a GregGuns item whose recharge route is a decision for M2. GT's lithium battery family (`ItemList.Battery_RE_LV_Lithium`, [L526](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java#L526)) is the capacity baseline.
+Per [0003](../../design/0003-energy-model.md), the Energy Cell and Nuclear Power Cell are no longer consumable fluid-style ammo. The Energy Cell is dropped ([0010](../../design/0010-material-remap-and-tier-additions.md): energy weapons are their own batteries). The Nuclear Power Cell is a GregGuns item whose recharge route is a decision for M2. GT's lithium battery family (`ItemList.Battery_RE_LV_Lithium`, [L526](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java#L526)) is the capacity baseline.
 
 ## Requirements
 
@@ -80,6 +80,6 @@ Per [0003](../../design/0003-energy-model.md), the Energy Cell and Nuclear Power
 
 ## Open questions
 
-- **`Materials.Ender`.** Whether GT 5.09.54.205 gives `Ender` a fluid, and of which kind, is not confirmed. It decides the Reaction Chamber's anti-gravity-core recipe (area 08).
+- **`Materials.Ender` (closed).** It has no fluid in GT 5.09.54.205; the Anti Gravity Core uses molten Enderium, as [08 recipes](../08-machines-production/recipes.md#anti-gravity-core-iv) already does. Fluid amounts are tuned in M4 balance.
 - **Fuel set and bonuses.** Which fuels the Fuel Tank accepts, and whether better fuel increases flamethrower damage, is an M2 balance decision.
 - **Acid.** Dropping creeper acid removes a Techguns hazard fluid. If a hazard fluid is wanted in the world, use a GT fluid and record the choice in a design record.

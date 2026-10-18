@@ -12,7 +12,7 @@ Every GregGuns recipe for the items in area 06, plus the **component index** tha
 | Techguns | GregGuns | Why |
 |---|---|---|
 | About 70 shaped crafting grids, plus Ammo Press, Metal Press, Chem Lab and Fabricator plans | Crafting table only for Steam/ULV items and for magazine refills. Everything else is a GT machine recipe at the item's tier voltage | [0001](../../design/0001-tier-map.md), [0002](../../design/0002-machine-deconfliction.md) |
-| Ammo Press: one plan per bullet, 4 to 16 per cycle | One Assembler recipe per ammo type, selected by a **programmed circuit**, 8 to 16 rounds per run | The Ammo Press is replaced by GT maps ([recipe-map-replacements](../08-machines-production/recipe-map-replacements.md#ammo-press)) |
+| Ammo Press: one plan per bullet, 4 to 16 per cycle | One **GregGuns Ammo Press** (`AP`) recipe per ammo type, selected by a programmed circuit, 8 to 16 rounds per run. The Ammo Press is reinstated by [0011](../../design/0011-machine-policy.md) as the one exception to GT maps; it was previously to be replaced by GT maps ([recipe-map-replacements](../08-machines-production/recipe-map-replacements.md#ammo-press)) |
 | Bullets from copper, lead and iron nuggets by OreDict lookup ([ITEM-02](../../techguns-spec/06-items/index.md#suspected-bugs)) | Bullets are built from GT `round`, `foil` and `itemCasing` parts and vanilla gunpowder (GT `dust.Gunpowder`) | GT first. No casing item of our own |
 | Iron / steel / obsidian steel / carbon material tiers | Steel / aluminium / stainless steel / titanium hardware, with GT's fibre-reinforced epoxy standing in for carbon | [Material remap](#material-remap), fixed by [0010](../../design/0010-material-remap-and-tier-additions.md) |
 | Energy Cell and Nuclear Power Cell are consumables filled in the Charging Station | No Energy Cell: energy weapons are their own IC2 batteries ([0003](../../design/0003-energy-model.md), [0008](../../design/0008-exact-tier-charging.md), [0010](../../design/0010-material-remap-and-tier-additions.md)). Nuclear Power Cell is a consumable refuelled in a ZPM machine | [0010](../../design/0010-material-remap-and-tier-additions.md) |
@@ -24,7 +24,7 @@ Every GregGuns recipe for the items in area 06, plus the **component index** tha
 
 - **Part notation** follows [CONVENTIONS](../CONVENTIONS.md#recipe-sheets): `plate.Steel` is `OrePrefixes.plate` with `Materials.Steel`, fetched through `GTOreDictUnificator.get`. `circuit.EV` is `OrePrefixes.circuit` with `Materials.EV`. `ItemList.Emitter_EV` is a GT component. A bare `part_*`, `ammo_*`, `mag_*`, `tank_*` or `cell_*` name is a GregGuns item from the [component index](#component-index). Item counts follow `×`.
 - **Tiers and EU/t.** `TierEU.RECIPE_*` constants ([TierEU.java#L25-L39](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/TierEU.java#L25-L39)): LV 30, MV 120, HV 480, EV 1,920, IV 7,680, LuV 30,720, ZPM 122,880. Durations are in seconds (20 ticks), written with `SECONDS`.
-- **Maps.** `Asm` is `RecipeMaps.assemblerRecipes` ([L1266](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L1266): up to 9 item inputs, 1 fluid input, 1 output). `c=N` is `.circuit(N)`, the programmed circuit. `Bath` is `chemicalBathRecipes` ([L611](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L611)). `AL` is the Assembly Line ([`GTRecipeConstants.AssemblyLine` L562](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipeConstants.java#L559-L567)).
+- **Maps.** `AP` is `gregguns.ammoPress`, the GregGuns Ammo Press map ([ammo-press.md](../08-machines-production/ammo-press.md), [0011](../../design/0011-machine-policy.md)), run by the Ammo Press single blocks and the Ammunition Works multiblock. All loose ammo and magazine recipes use it; circuits are kept as selectors. `Asm` is `RecipeMaps.assemblerRecipes` ([L1266](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L1266): up to 9 item inputs, 1 fluid input, 1 output). `c=N` is `.circuit(N)`, the programmed circuit. `Bath` is `chemicalBathRecipes` ([L611](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L611)). `AL` is the Assembly Line ([`GTRecipeConstants.AssemblyLine` L562](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipeConstants.java#L559-L567)).
 - **Crafting grids** use GT's tool letters ([`GTModHandler.addCraftingRecipe`, L619-L624](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTModHandler.java#L619-L624)): `h` hammer, `f` file, `s` saw. A tool in the grid loses one durability.
 - **Gate** is the input material that the tier's machine voltage pairs with ([0001](../../design/0001-tier-map.md)). The voltage is enforced by `eut`: a `RECIPE_MV` recipe cannot start in an LV machine ([ParallelHelper#L399-L401](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/ParallelHelper.java#L399-L401)).
 - **Programmed circuits.** Loose ammo uses `c=1` to `c=7`, empty magazines `c=8` to `c=14`, filled-magazine packs `c=15` to `c=21`. Parts and other items use `c=1` unless a row says otherwise; their inputs differ, so no two recipes share (map, inputs, circuit). Circuit numbers stay within GT's 1 to 24 range.
@@ -121,19 +121,19 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 | `tank_bio` | Bio Tank | Bio Tank (10, 11) | EV | Titanium | [RC-53](#tank-bio), [RC-57](#tank-fill-bio) | Bio Gun |
 | `tank_air` | Compressed Air Tank | Compressed Air Tank (28, 29) | HV | Stainless steel | [RC-54](#tank-air), [RC-58](#tank-fill-air) | Power Hammers, Jump Pack, Oxygen Tanks (05) |
 | `cell_energy` | Energy Cell | Energy Cell (15, 16) | withdrawn | none | [RC-55](#cell-energy), withdrawn | Not built. Energy weapons are their own batteries ([note](#energy-cell-note)) |
-| `cell_nuclear` | Nuclear Power Cell | Nuclear Power Cell (106) | ZPM | Naquadah alloy | [RC-59](#cell-nuclear), [RC-60](#cell-nuclear-refuel) | Nuclear Death Ray, Anti Gravity Device (05) |
+| `cell_nuclear` | Nuclear Power Cell | Nuclear Power Cell (106) | ZPM | Naquadah alloy | [RC-59](#nuclear-power-cell), [RC-60](#nuclear-power-cell) | Nuclear Death Ray, Anti Gravity Device (05) |
 | `cell_nuclear_depleted` | Nuclear Power Cell (Depleted) | (107) | ZPM | Naquadah alloy | not craftable; made by use | Returned on reload; input of RC-60 |
 
 ### Consumables and tools
 
 | Registry name | Display name | Techguns | Tier | Gate | Recipe |
 |---|---|---|---|---|---|
-| `bandages` | Bandages | Medkit meta 0 | LV | Steel | [RC-61](#bandages) |
-| `medkit` | Medkit | Medkit meta 1 | MV | Aluminium | [RC-62](#medkit) |
+| `bandages` | Bandages | Medkit meta 0 | LV | Steel | [RC-61](#consumables) |
+| `medkit` | Medkit | Medkit meta 1 | MV | Aluminium | [RC-62](#consumables) |
 | `combat_knife` | Combat Knife | Combat Knife | LV | Steel | Owned by [02 recipes](../02-guns/recipes.md#lv-steel) |
 | `crowbar` | Crowbar | Crowbar | LV | Steel | Owned by [02 recipes](../02-guns/recipes.md#lv-steel) |
 | `bunker_door` | Bunker Door | Bunker Door (`doorItem01`) | LV | Iron plates | Owned by [07 recipes](../07-blocks/recipes.md#chests-and-the-door) |
-| `camo_net_placer` (metas 0 to 2) | Camo Net Placer (Woodland, Snow, Desert) | Camo Net Placer | ULV | none | [RC-63](#camo-net-placer) |
+| `camo_net_placer` (metas 0 to 2) | Camo Net Placer (Woodland, Snow, Desert) | Camo Net Placer | ULV | none | [RC-63](#tools-and-placeables) |
 
 Guns, grenades, armour, blocks and machines are in their own areas. The Frag Grenade, Stielgranate and Flashbang are guns ([02](../02-guns/recipes.md)); the Glider, wings and backpack, Oxygen Mask and Tactical Mask are armour ([05](../05-armor/armour-recipes.md)); turret armour is [09](../09-machines-utility/index.md); the Camo Net block is [07](../07-blocks/decorative-blocks.md).
 
@@ -250,13 +250,14 @@ A GT recipe consumes its inputs once, so ammo is made in batches, the way GT tur
 | ID | Output | Tier | Method | Inputs | EU/t, time | Gate, notes |
 |---|---|---|---|---|---|---|
 | RC-27<a id="ammo-stone-bullet"></a> | `ammo_stone_bullet` ×16 | ULV | Shapeless crafting | Ore name `cobblestone` ×3, `dust.Gunpowder` ×1, `nugget.Bronze` ×1 | none | `Bronze` (the band). Replaces R32. No machine exists at this tier |
-| RC-28<a id="ammo-9mm-bullet"></a> | `ammo_9mm_bullet` ×16 | LV | Asm, `c=1` | `foil.Brass` ×16, `round.Lead` ×16, `dust.Gunpowder` ×2 | `RECIPE_LV`, 5 s | Replaces R33 and Ammo Press plan 0 (×12). See the cost note below |
-| RC-29<a id="ammo-shotgun-shell"></a> | `ammo_shotgun_shell` ×8 | LV | Asm, `c=2` | `foil.Brass` ×8, `round.Lead` ×24, `dust.Gunpowder` ×4 | `RECIPE_LV`, 6 s | Replaces R34 and plan 1 (×16). Three pellets per shell |
-| RC-30<a id="ammo-rifle-bullet"></a> | `ammo_rifle_bullet` ×16 | LV | Asm, `c=3` | `foil.Brass` ×16, `round.Steel` ×16, `dust.Gunpowder` ×4 | `RECIPE_LV`, 6 s | `Steel`. Replaces plan 2 (×8). Techguns' crafting recipe was commented out |
-| RC-31<a id="ammo-high-caliber-round"></a> | `ammo_high_caliber_round` ×8 | HV | Asm, `c=4` | `itemCasing.Brass` ×8, `round.StainlessSteel` ×16, `dust.Gunpowder` ×4 | `RECIPE_HV`, 8 s | `StainlessSteel`. Replaces plan 3 (×4). Two slugs per round |
-| RC-32<a id="ammo-advanced-bullet"></a> | `ammo_advanced_bullet` ×16 | EV | Asm, `c=5` | `foil.Titanium` ×16, `round.Titanium` ×16, `dust.TNT` ×2 | `RECIPE_EV`, 4 s | `Titanium`. Replaces Metal Press recipe 13 (obsidian steel plate + TGX, ×16) |
-| RC-33<a id="ammo-40mm-grenade"></a> | `ammo_40mm_grenade` ×8 | MV | Asm, `c=6` | `plate.Aluminium` ×2, `dust.TNT` ×2, `dust.Gunpowder` ×1 | `RECIPE_MV`, 8 s | `Aluminium`. Replaces Metal Press recipe 17 (iron plate + TNT, ×16) |
-| RC-34<a id="ammo-rocket"></a> | `ammo_rocket` ×4 | HV | Asm, `c=7` | `plate.StainlessSteel` ×4, `dust.TNT` ×2, `dust.Gunpowder` ×4, `circuit.HV` ×1 | `RECIPE_HV`, 10 s | `StainlessSteel`. Replaces R42 (5 nuggets, TNT, gunpowder, ×4). The circuit is the fuze and guidance |
+| RC-27b<a id="ammo-stone-bullet-press"></a> | `ammo_stone_bullet` ×24 | Steam | AP (Steam Ammo Press) | Ore name `cobblestone` ×3, `dust.Gunpowder` ×1, `nugget.Bronze` ×1 | `RECIPE_ULV`, 5 s | Bronze. The Steam Ammo Press yields more than the hand recipe, which rewards building it ([ammo-press.md](../08-machines-production/ammo-press.md#tiers-and-what-each-runs)) |
+| RC-28<a id="ammo-9mm-bullet"></a> | `ammo_9mm_bullet` ×16 | LV | AP, `c=1` | `foil.Brass` ×16, `round.Lead` ×16, `dust.Gunpowder` ×2 | `RECIPE_LV`, 5 s | Replaces R33 and Ammo Press plan 0 (×12). See the cost note below |
+| RC-29<a id="ammo-shotgun-shell"></a> | `ammo_shotgun_shell` ×8 | LV | AP, `c=2` | `foil.Brass` ×8, `round.Lead` ×24, `dust.Gunpowder` ×4 | `RECIPE_LV`, 6 s | Replaces R34 and plan 1 (×16). Three pellets per shell |
+| RC-30<a id="ammo-rifle-bullet"></a> | `ammo_rifle_bullet` ×16 | LV | AP, `c=3` | `foil.Brass` ×16, `round.Steel` ×16, `dust.Gunpowder` ×4 | `RECIPE_LV`, 6 s | `Steel`. Replaces plan 2 (×8). Techguns' crafting recipe was commented out |
+| RC-31<a id="ammo-high-caliber-round"></a> | `ammo_high_caliber_round` ×8 | HV | AP, `c=4` | `itemCasing.Brass` ×8, `round.StainlessSteel` ×16, `dust.Gunpowder` ×4 | `RECIPE_HV`, 8 s | `StainlessSteel`. Replaces plan 3 (×4). Two slugs per round |
+| RC-32<a id="ammo-advanced-bullet"></a> | `ammo_advanced_bullet` ×16 | EV | AP, `c=5` | `foil.Titanium` ×16, `round.Titanium` ×16, `dust.TNT` ×2 | `RECIPE_EV`, 4 s | `Titanium`. Replaces Metal Press recipe 13 (obsidian steel plate + TGX, ×16) |
+| RC-33<a id="ammo-40mm-grenade"></a> | `ammo_40mm_grenade` ×8 | MV | AP, `c=6` | `plate.Aluminium` ×2, `dust.TNT` ×2, `dust.Gunpowder` ×1 | `RECIPE_MV`, 8 s | `Aluminium`. Replaces Metal Press recipe 17 (iron plate + TNT, ×16) |
+| RC-34<a id="ammo-rocket"></a> | `ammo_rocket` ×4 | HV | AP, `c=7` | `plate.StainlessSteel` ×4, `dust.TNT` ×2, `dust.Gunpowder` ×4, `circuit.HV` ×1 | `RECIPE_HV`, 10 s | `StainlessSteel`. Replaces R42 (5 nuggets, TNT, gunpowder, ×4). The circuit is the fuze and guidance |
 
 **Cost note.** A `foil` is a quarter ingot and a `round` a ninth, so a 9mm bullet costs about 0.36 ingot (a quarter of brass, a ninth of lead). Techguns' 8 bullets for one lead ingot, 8 copper nuggets and gunpowder cost about 0.24 ingot each, so GregGuns ammo is about 1.5 times dearer per bullet. That buys the GT-native parts and is a balance question for M2 ([Open questions](#open-questions)).
 
@@ -287,13 +288,13 @@ Replaces [R35 to R49, R51 to R54](../../techguns-spec/06-items/recipes.md#2-ammu
 
 | ID | Output | Tier | Method | Inputs | EU/t, time | Gate, notes |
 |---|---|---|---|---|---|---|
-| RC-37<a id="mag-9mm-pistol-empty"></a> | `mag_9mm_pistol_empty` ×8 | LV | Asm, `c=8` | `plate.Steel` ×2, `springSmall.Steel` ×8, `part_mechanical_2` ×1 | `RECIPE_LV`, 4 s | `Steel`. Replaces R35 (×4) |
-| RC-38<a id="mag-smg-empty"></a> | `mag_smg_empty` ×8 | MV | Asm, `c=9` | `plate.Aluminium` ×2, `springSmall.Aluminium` ×8, `part_mechanical_2` ×1 | `RECIPE_MV`, 4 s | `Aluminium`. Replaces R37 |
-| RC-39<a id="mag-assault-rifle-empty"></a> | `mag_assault_rifle_empty` ×8 | MV | Asm, `c=10` | `plate.Aluminium` ×3, `springSmall.Aluminium` ×8, `part_mechanical_2` ×1 | `RECIPE_MV`, 5 s | `Aluminium`. Replaces R39 |
-| RC-40<a id="mag-as50-empty"></a> | `mag_as50_empty` ×8 | HV | Asm, `c=11` | `plate.StainlessSteel` ×3, `springSmall.StainlessSteel` ×8, `part_mechanical_2` ×1 | `RECIPE_HV`, 5 s | `StainlessSteel`. Replaces R46 |
-| RC-41<a id="mag-lmg-empty"></a> | `mag_lmg_empty` ×4 | HV | Asm, `c=12` | `plate.StainlessSteel` ×4, `springSmall.StainlessSteel` ×4, `part_mechanical_2` ×1 | `RECIPE_HV`, 6 s | `StainlessSteel`. Replaces R43 (seven steel ingots) |
-| RC-42<a id="mag-advanced-empty"></a> | `mag_advanced_empty` ×8 | EV | Asm, `c=13` | `plate.Titanium` ×3, `springSmall.Titanium` ×8, `part_mechanical_3` ×1 | `RECIPE_EV`, 5 s | `Titanium`. Replaces R48 |
-| RC-43<a id="mag-minigun-drum-empty"></a> | `mag_minigun_drum_empty` ×4 | EV | Asm, `c=14` | `plate.Titanium` ×4, `plate.Polyethylene` ×2, `part_mechanical_3` ×1 | `RECIPE_EV`, 6 s | `Titanium`. Replaces R53 |
+| RC-37<a id="mag-9mm-pistol-empty"></a> | `mag_9mm_pistol_empty` ×8 | LV | AP, `c=8` | `plate.Steel` ×2, `springSmall.Steel` ×8, `part_mechanical_2` ×1 | `RECIPE_LV`, 4 s | `Steel`. Replaces R35 (×4) |
+| RC-38<a id="mag-smg-empty"></a> | `mag_smg_empty` ×8 | MV | AP, `c=9` | `plate.Aluminium` ×2, `springSmall.Aluminium` ×8, `part_mechanical_2` ×1 | `RECIPE_MV`, 4 s | `Aluminium`. Replaces R37 |
+| RC-39<a id="mag-assault-rifle-empty"></a> | `mag_assault_rifle_empty` ×8 | MV | AP, `c=10` | `plate.Aluminium` ×3, `springSmall.Aluminium` ×8, `part_mechanical_2` ×1 | `RECIPE_MV`, 5 s | `Aluminium`. Replaces R39 |
+| RC-40<a id="mag-as50-empty"></a> | `mag_as50_empty` ×8 | HV | AP, `c=11` | `plate.StainlessSteel` ×3, `springSmall.StainlessSteel` ×8, `part_mechanical_2` ×1 | `RECIPE_HV`, 5 s | `StainlessSteel`. Replaces R46 |
+| RC-41<a id="mag-lmg-empty"></a> | `mag_lmg_empty` ×4 | HV | AP, `c=12` | `plate.StainlessSteel` ×4, `springSmall.StainlessSteel` ×4, `part_mechanical_2` ×1 | `RECIPE_HV`, 6 s | `StainlessSteel`. Replaces R43 (seven steel ingots) |
+| RC-42<a id="mag-advanced-empty"></a> | `mag_advanced_empty` ×8 | EV | AP, `c=13` | `plate.Titanium` ×3, `springSmall.Titanium` ×8, `part_mechanical_3` ×1 | `RECIPE_EV`, 5 s | `Titanium`. Replaces R48 |
+| RC-43<a id="mag-minigun-drum-empty"></a> | `mag_minigun_drum_empty` ×4 | EV | AP, `c=14` | `plate.Titanium` ×4, `plate.Polyethylene` ×2, `part_mechanical_3` ×1 | `RECIPE_EV`, 6 s | `Titanium`. Replaces R53 |
 
 ### Filled magazines in bulk (Assembler)
 
@@ -301,13 +302,13 @@ Four magazines per run, one stack of bullets in. Same voltage as the empty. The 
 
 | ID | Output | Tier | Method | Inputs | EU/t, time |
 |---|---|---|---|---|---|
-| RC-44<a id="mag-9mm-pistol"></a> | `mag_9mm_pistol` ×4 | LV | Asm, `c=15` | `mag_9mm_pistol_empty` ×4, `ammo_9mm_bullet` ×12 | `RECIPE_LV`, 2 s |
-| RC-45<a id="mag-smg"></a> | `mag_smg` ×4 | MV | Asm, `c=16` | `mag_smg_empty` ×4, `ammo_9mm_bullet` ×8 | `RECIPE_MV`, 2 s |
-| RC-46<a id="mag-assault-rifle"></a> | `mag_assault_rifle` ×4 | MV | Asm, `c=17` | `mag_assault_rifle_empty` ×4, `ammo_rifle_bullet` ×12 | `RECIPE_MV`, 2 s |
-| RC-47<a id="mag-as50"></a> | `mag_as50` ×4 | HV | Asm, `c=18` | `mag_as50_empty` ×4, `ammo_high_caliber_round` ×8 | `RECIPE_HV`, 2 s |
-| RC-48<a id="mag-lmg"></a> | `mag_lmg` ×4 | HV | Asm, `c=19` | `mag_lmg_empty` ×4, `ammo_rifle_bullet` ×32 | `RECIPE_HV`, 3 s |
-| RC-49<a id="mag-advanced"></a> | `mag_advanced` ×4 | EV | Asm, `c=20` | `mag_advanced_empty` ×4, `ammo_advanced_bullet` ×12 | `RECIPE_EV`, 2 s |
-| RC-50<a id="mag-minigun-drum"></a> | `mag_minigun_drum` ×4 | EV | Asm, `c=21` | `mag_minigun_drum_empty` ×4, `ammo_rifle_bullet` ×64 | `RECIPE_EV`, 3 s |
+| RC-44<a id="mag-9mm-pistol"></a> | `mag_9mm_pistol` ×4 | LV | AP, `c=15` | `mag_9mm_pistol_empty` ×4, `ammo_9mm_bullet` ×12 | `RECIPE_LV`, 2 s |
+| RC-45<a id="mag-smg"></a> | `mag_smg` ×4 | MV | AP, `c=16` | `mag_smg_empty` ×4, `ammo_9mm_bullet` ×8 | `RECIPE_MV`, 2 s |
+| RC-46<a id="mag-assault-rifle"></a> | `mag_assault_rifle` ×4 | MV | AP, `c=17` | `mag_assault_rifle_empty` ×4, `ammo_rifle_bullet` ×12 | `RECIPE_MV`, 2 s |
+| RC-47<a id="mag-as50"></a> | `mag_as50` ×4 | HV | AP, `c=18` | `mag_as50_empty` ×4, `ammo_high_caliber_round` ×8 | `RECIPE_HV`, 2 s |
+| RC-48<a id="mag-lmg"></a> | `mag_lmg` ×4 | HV | AP, `c=19` | `mag_lmg_empty` ×4, `ammo_rifle_bullet` ×32 | `RECIPE_HV`, 3 s |
+| RC-49<a id="mag-advanced"></a> | `mag_advanced` ×4 | EV | AP, `c=20` | `mag_advanced_empty` ×4, `ammo_advanced_bullet` ×12 | `RECIPE_EV`, 2 s |
+| RC-50<a id="mag-minigun-drum"></a> | `mag_minigun_drum` ×4 | EV | AP, `c=21` | `mag_minigun_drum_empty` ×4, `ammo_rifle_bullet` ×64 | `RECIPE_EV`, 3 s |
 
 The Techguns shaped LMG recipe (R44, a ring of eight bullets) and the Rifle Bullets Stack recipes (R51, R52, R54) are dropped; R45 and R54 become the refill below.
 
@@ -371,7 +372,7 @@ RC-55 is withdrawn (see below). RC-56 to RC-58 are the three dynamic fills, whic
 <a id="bandages"></a>
 **RC-61 · `bandages` ×2** · LV · Asm, `c=2`, `RECIPE_LV`, 5 s · gate `ring.Steel`
 
-Inputs: string ×3, ore name `slimeball` ×1, `ring.Steel` ×1 (the clasp, and the gate). Not listed in [0001](../../design/0001-tier-map.md); LV per [0010](../../design/0010-material-remap-and-tier-additions.md) decision 5, so it is a machine recipe like the rest of LV. Heals 2 HP and gives Regeneration I (use time 60 ticks), per the [Techguns behaviour](../../techguns-spec/06-items/special-items.md#medkit-unregistered).
+Inputs: string ×3, ore name `slimeball` ×1, `ring.Steel` ×1 (the clasp, and the gate). Not listed in [0001](../../design/0001-tier-map.md); LV per [0010](../../design/0010-material-remap-and-tier-additions.md) decision 5, so it is a machine recipe like the rest of LV. Heals 2 HP and gives Regeneration I (use time 60 ticks), per the [Techguns behaviour](../../techguns-spec/06-items/special-items.md#medkit-itemmedkit-present-in-code-not-registered).
 
 | ID | Output | Tier | Method | Inputs | EU/t, time | Gate, notes |
 |---|---|---|---|---|---|---|
@@ -426,7 +427,7 @@ Numbering continues from the highest existing ID in this area (GGS-06-33).
 - **GGS-06-35.** Every machine recipe's `eut` is the `TierEU.RECIPE_*` constant of the output's [0001](../../design/0001-tier-map.md) tier. No recipe is craftable below its tier.
 - **GGS-06-36.** Every machine recipe (RC-61 included) has at least one input of the tier's gate material, except the loose LV ammo `ammo_9mm_bullet` and `ammo_shotgun_shell`, whose gate is the LV machine voltage and the Brass case. The exemption list is fixed in code and in this requirement.
 - **GGS-06-37.** Loose ammo, magazine and tank recipes use the output counts, circuit numbers and durations in this sheet. Circuit numbers are unique per (map, inputs).
-- **GGS-06-38.** Bullet recipes take slugs and cases from GT `round`, `foil` and `itemCasing`, and powder from `dust.Gunpowder`. GregGuns registers no casing item and no Ammo Press, Forming Press or Extruder recipe for ammo.
+- **GGS-06-38.** Bullet recipes take slugs and cases from GT `round`, `foil` and `itemCasing`, and powder from `dust.Gunpowder`. GregGuns registers no casing item. Every loose-ammo and magazine recipe is registered to `gregguns.ammoPress` only, not to GT's Assembler, Forming Press or Extruder ([0011](../../design/0011-machine-policy.md)). The Stone Bullet also keeps its shapeless hand recipe.
 - **GGS-06-39.** Crafting-table recipes exist only for the ULV rows (RC-01 to RC-03, RC-21, RC-27, RC-63) and the magazine refill (RC-51). Every other output is made on a GT recipe map.
 - **GGS-06-40.** `tank_fuel`, `tank_bio` and `tank_air` implement `IFluidContainerItem`, capacity 1,000 mB. A GT Fluid Canner fills an empty tank only from at least 1,000 mB of an accepted fluid.
 - **GGS-06-41.** (withdrawn by [0010](../../design/0010-material-remap-and-tier-additions.md)) There is no `cell_energy` item and no recipe produces one.
@@ -446,7 +447,7 @@ Numbering continues from the highest existing ID in this area (GGS-06-33).
 | GGS-06-35 | D1 dev self-check: for each recipe, read back `mEUt` from the map and compare with the tier table |
 | GGS-06-36 | The same self-check, with the fixed exemption list |
 | GGS-06-37 | Unit test: output counts and durations equal the table; (map, inputs, circuit) is unique |
-| GGS-06-38 | Unit test: ammo recipe inputs are `round`, `foil`, `itemCasing` or `dust.Gunpowder` only; the item registry has no `casing` entry |
+| GGS-06-38 | Unit test: ammo recipe inputs are `round`, `foil`, `itemCasing` or `dust.Gunpowder` only; the item registry has no `casing` entry; every ammo and magazine output appears in `gregguns.ammoPress` and in no GT map |
 | GGS-06-39 | Unit test: the crafting registry's GregGuns outputs equal the listed set |
 | GGS-06-40 | Unit test on `fill`; `/gregguns test` scenario that fills each tank through a Fluid Canner |
 | GGS-06-41 | (withdrawn) Unit test: the registry has no `cell_energy` entry |

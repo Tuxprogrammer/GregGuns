@@ -26,9 +26,24 @@ The one Techguns production machine that [0002](../../design/0002-machine-deconf
 | `RAD_*`, `EXPLOSION_HIGH` and `UNFORSEEN_CONSEQUENCES` risks unimplemented | Implemented with GT hazards, see below | Techguns left them as TODOs |
 | Final reaction tick skipped ([MPRD-18](../../techguns-spec/08-machines-production/index.md#suspected-bugs)), wrong recipe after reload ([MPRD-03](../../techguns-spec/08-machines-production/index.md#suspected-bugs), [MPRD-04](../../techguns-spec/08-machines-production/index.md#suspected-bugs)) | Not reproduced. GT recipes are looked up by content and saved by GT | |
 
+## Single block and multiblock forms
+
+**Update from the owner's machine policy.** [0002](../../design/0002-machine-deconfliction.md) made the Reaction Chamber multiblock only. GregGuns' own machines are now Techguns-style single blocks **and**, for machines used regularly, also a multiblock. The Reaction Chamber is a bottleneck machine (the sole source of the Laser Focus and the Anti Gravity Core), so it has both. The roster is [machine-roster.md](machine-roster.md).
+
+| Form | What it is | IDs | Sheet |
+|---|---|---|---|
+| **Reaction Chamber (single block)** | A tiered `MTETieredMachineBlock` (EV and IV) that runs `gregguns.recipe.reactionchamber` one recipe at a time. It has the same focus input, intensity buttons, completion count, risks and pollution-free operation as below, with no structure to build. Its front texture is a glass window with an animated bubbling overlay while active. It needs no Muffler. The risk and radiation rules are identical | 20106 EV, 20107 IV | this file |
+| **Retort (multiblock)** | The flask-shaped structure in [multiblocks.md](multiblocks.md#retort), with parallels and a glass-tier pressure rating. It carries the "Structure" section below forward in spirit; its shape replaces the 3 x 4 x 3 chamber | 20108 | [multiblocks.md](multiblocks.md#retort) |
+
+How the sections below apply:
+
+- "Recipe map", "Integration points" (processing, risks, pollution) and the recipe table apply to **both** forms. The single block's pollution is zero (no structure, no muffler); this is a deliberate asymmetry: the structure is what makes the multiblock a polluting industrial machine. A design record can revisit it.
+- "Structure" below describes the original 3 x 4 x 3 chamber and is **superseded** by the Retort. It is kept so the requirement IDs below still read.
+- [GGS-08-16](#requirements) and [GGS-08-17](#requirements) now apply to the Retort with the shape and casing minimum in [multiblocks.md](multiblocks.md#retort), not to the 3 x 4 x 3 shape. Nothing is renumbered.
+
 ## Structure
 
-Keeps the 3 x 4 x 3 footprint. Proposed layers (bottom to top), `~` = controller:
+*Superseded by the Retort ([multiblocks.md](multiblocks.md#retort)); kept for reference.* Keeps the 3 x 4 x 3 footprint. Proposed layers (bottom to top), `~` = controller:
 
 | Layer | Content |
 |---|---|
@@ -126,6 +141,8 @@ These are proposals for M4. Exact fluids, amounts, `eut` and durations are chose
 - **GGS-08-23** The Reaction Chamber consumes EU only, and stops with GT's power-loss reason when it cannot draw `eut`.
 - **GGS-08-24** No risk calls `explodeMultiblock()`. Radiation risks use `GTUtility.applyRadioactivity` and so respect GT hazmat.
 - **GGS-08-25** Pollution rate and risk strengths are config options with documented defaults.
+- **GGS-08-46** The Reaction Chamber also exists as a single block at EV (ID 20106) and IV (ID 20107). It runs `gregguns.recipe.reactionchamber` with the same intensity, focus and risk rules as the multiblock, needs no structure and no Muffler Hatch, and starts a recipe only if its tier voltage is at least the recipe's.
+- **GGS-08-47** GGS-08-16 and GGS-08-17 apply to the Retort ([multiblocks.md](multiblocks.md#retort)). The 3 x 4 x 3 shape in "Structure" is superseded.
 
 ## Tests
 
@@ -139,6 +156,8 @@ These are proposals for M4. Exact fluids, amounts, `eut` and durations are chose
 | 23 | Manual: pull the energy hatch mid-run; machine stops with the power-loss reason |
 | 24 | Code search for `explodeMultiblock`; manual: a radiation failure with and without hazmat |
 | 25 | Config unit test |
+| 46 | Unit test: the single-block MTEs at EV and IV share the recipe map and the reaction state machine with the multiblock; the IV single block starts the Anti Gravity Core recipe and the EV one does not |
+| 47 | See the Retort tests in [multiblocks.md](multiblocks.md#tests) |
 
 ## Open questions
 

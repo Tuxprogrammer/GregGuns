@@ -11,7 +11,7 @@ How GregGuns ammo plugs into GT recipe maps and GT's own ammo-like parts.
 
 | Techguns behaviour | GregGuns behaviour | Why |
 |---|---|---|
-| Ammo Press makes bullets and shells ([ammo.md](../../techguns-spec/06-items/ammo.md#loose-ammunition-sources)) | GT Assembler, Forming Press and Extruder recipes, per ammo type | [0002](../../design/0002-machine-deconfliction.md) |
+| Ammo Press makes bullets and shells ([ammo.md](../../techguns-spec/06-items/ammo.md#loose-ammunition-sources)) | The GregGuns Ammo Press (animated single block) and Ammunition Works multiblock, on the `gregguns.ammoPress` map ([ammo-press.md](../08-machines-production/ammo-press.md)) | [0011](../../design/0011-machine-policy.md), which reverses 0002 here |
 | Bullets from iron, copper and lead nuggets by OreDict lookup | Bullets built from GT `round` parts and GT dusts, through the unificator | GT first; avoids the OreDict lookups behind [ITEM-02](../../techguns-spec/06-items/index.md#suspected-bugs) |
 | Magazine refill by crafting grid; sneak-click to empty ([magazine items](../../techguns-spec/06-items/ammo.md#magazine-items)) | Same behaviour, kept. Empty-magazine recipes use GT plates and springs | Behaviour is gameplay, not a GT overlap |
 | Energy Cell and Nuclear Power Cell are consumables filled in the Charging Station | Rechargeable electric items ([0003](../../design/0003-energy-model.md)); fluid ammo uses GT fluids ([fluids.md](fluids.md)) | Charging Station dropped |
@@ -51,7 +51,7 @@ Rockets, 40 mm grenades and tactical nuke rockets are fired by dispensers in Tec
 ## Requirements
 
 - **GGS-06-18.** Every machine-made ammo or magazine recipe is registered through `GTValues.RA.stdBuilder()` into `assemblerRecipes`, `formingPressRecipes` or `extruderRecipes`, with `eut` equal to the `TierEU` constant for its D1 tier.
-- **GGS-06-19.** GregGuns registers no Ammo Press machine and no `RecipeMap` of its own for ammo.
+- **GGS-06-19.** (withdrawn by [0011](../../design/0011-machine-policy.md): GregGuns now has an Ammo Press and the `gregguns.ammoPress` map; see GGS-06-38 and GGS-08-54.)
 - **GGS-06-20.** Bullet recipes take metal as GT `round` or `nugget` through the unificator, never as Techguns OreDict `ingot*` lookups.
 - **GGS-06-21.** Every ammo item has `ItemData` so GT recycling returns its metal.
 - **GGS-06-22.** If an extruder recipe is used for a casing, its shape is an existing GT shape or a GregGuns item with its own recipe. No recipe depends on a missing shape.
@@ -61,7 +61,7 @@ Rockets, 40 mm grenades and tactical nuke rockets are fired by dispensers in Tec
 | ID | Verified by |
 |---|---|
 | GGS-06-18 | D1 dev self-check over the registered recipes |
-| GGS-06-19 | Unit test: no registered `RecipeMap` name starts with `gregguns` for ammo; no ammo-press block exists |
+| GGS-06-19 | (withdrawn; see GGS-06-38) |
 | GGS-06-20 | Code review and a unit test of the recipe loader |
 | GGS-06-21 | Unit test over the ammo items |
 | GGS-06-22 | Unit test: every extruder recipe's shape input resolves to a non-null stack |

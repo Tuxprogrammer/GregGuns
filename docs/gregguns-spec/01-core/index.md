@@ -50,7 +50,7 @@ No integration point (see the Techguns sheet and the [design records](../../desi
 
 | File | Change | Why | Sheet |
 |---|---|---|---|
-| `config/betterquesting/DefaultQuests/Quests/` (GT-New-Horizons-Modpack repository) | Add a GregGuns quest line, with tasks and rewards per tier from [0001](../../design/0001-tier-map.md). The pack's lines are already tiered (for example `Tier1LV-…`, `Tier2MV-…`), so entries can sit beside them | Players find tiered gear through quests. GregGuns has no code to write here; the quest data lives in the pack | [index.md](index.md) |
+| `config/betterquesting/DefaultQuests/` | The GregGuns quest tab: see [12-questbook](../12-questbook/index.md) | Quests live in the pack | [12-questbook](../12-questbook/index.md) |
 
 No other pack-side change is needed for this area.
 

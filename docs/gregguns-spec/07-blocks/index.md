@@ -51,4 +51,4 @@ None.
 - Join Chisel groups or not for metal panels (decorative-blocks.md).
 - Weapon Chest filter or drop (storage-chests.md).
 - Wrench availability at early tiers (block-platform.md).
-- Do blocks get a tier in [0001](../../design/0001-tier-map.md)? [recipes.md](recipes.md) treats the chests as LV (Steel) and everything else as ungated.
+- Do blocks get a tier in [0001](../../design/0001-tier-map.md)? Closed by [0010](../../design/0010-material-remap-and-tier-additions.md): decorative blocks are LV; the chests are LV (Steel).

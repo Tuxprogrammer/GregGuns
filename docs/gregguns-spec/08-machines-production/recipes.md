@@ -1,9 +1,9 @@
 # Reaction Chamber recipes
 
-How the Reaction Chamber is built, and the recipes it runs. This is the only kept production machine ([0002](../../design/0002-machine-deconfliction.md)); the rest of area 08 is recipes in GT's own maps, listed in [recipe-map-replacements.md](recipe-map-replacements.md).
+How every GregGuns production machine is built (Ammo Press, Ammunition Works, Reaction Chamber, Retort), and the recipes the Reaction Chamber runs. Under the owner's machine policy ([0011](../../design/0011-machine-policy.md), amending [0002](../../design/0002-machine-deconfliction.md)) these are the kept production machines; the rest of area 08 is recipes in GT's own maps, listed in [recipe-map-replacements.md](recipe-map-replacements.md).
 
 - **Techguns baseline:** [reaction-chamber.md](../../techguns-spec/08-machines-production/reaction-chamber.md) ([§ 5 recipe list](../../techguns-spec/08-machines-production/reaction-chamber.md#5-full-recipe-list-tgmachinerecipes)), build recipes B25 to B27 and R30 in [06-items/recipes.md](../../techguns-spec/06-items/recipes.md)
-- **Design records:** [0001 tier map](../../design/0001-tier-map.md) (UV Emitter and Laser Focus at EV, Anti Gravity Core at IV via the device), [0002 machine deconfliction](../../design/0002-machine-deconfliction.md), [0003 energy model](../../design/0003-energy-model.md)
+- **Design records:** [0001 tier map](../../design/0001-tier-map.md) (UV Emitter and Laser Focus at EV, Anti Gravity Core at IV via the device), [0002 machine deconfliction](../../design/0002-machine-deconfliction.md), [0003 energy model](../../design/0003-energy-model.md), [0010 material remap](../../design/0010-material-remap-and-tier-additions.md), [0011 machine policy](../../design/0011-machine-policy.md); tiers and IDs in the [machine roster](machine-roster.md)
 - **Sibling sheets:** [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md) (structure, rules, risks), [metatileentity-framework.md](metatileentity-framework.md)
 - **Format:** [CONVENTIONS § Recipe sheets](../CONVENTIONS.md#recipe-sheets)
 - **Pack mods:** GregTech (`gregtech`, 5.09.54.205), StructureLib (`structurelib`)
@@ -51,15 +51,17 @@ How the Reaction Chamber is built, and the recipes it runs. This is the only kep
 | Gate | `plate.Titanium` and `frameGt.Titanium`. The casing itself costs little; the controller below and the EV Energy Hatch are the real gate |
 | Notes | The two lead plates stand for the radiation shielding the chamber's `RAD_*` risks need. Techguns replaced: Housing (B25) |
 
-### Reaction Chamber controller (1 recipe)
+### Retort controller (1 recipe)
+
+This is the controller of the multiblock form, now the Retort (MTE 20108, [multiblocks.md](multiblocks.md#retort)). It was written for the original 3 x 4 x 3 chamber ([GGS-08-16](reaction-chamber-multiblock.md#requirements)); the Retort keeps the same casing, so the recipe stands. The **single-block** Reaction Chamber has its own recipes in [Machine build recipes](#machine-build-recipes). The Retort needs no other GregGuns casing: its walls are the Reaction Casing above, its vessel is GT borosilicate glass and its feet are GT `frameGt.Steel` ([multiblocks.md](multiblocks.md#casings-used-by-the-four-multiblocks)).
 
 | Field | Value |
 |---|---|
-| Output | Reaction Chamber controller (the MTE of [GGS-08-16](reaction-chamber-multiblock.md#requirements)) x1 |
+| Output | Retort controller (MTE 20108) x1 |
 | Tier | EV |
 | Method | Hand, shaped, no tool letter. Same flags as GT's controllers (`BITS`, `DO_NOT_CHECK_FOR_COLLISIONS`) |
 | Gate | `ItemList.Emitter_EV`, `ItemList.Sensor_EV`, `ItemList.Electric_Pump_EV` and `circuit.EV` |
-| Notes | Techguns replaced: Controller (B26), which was a housing, two glass and three elite circuits |
+| Notes | Techguns replaced: Controller (B26), which was a housing, two glass and three elite circuits. EV matches the Retort's controller tier in the roster |
 
 ```
  E  P  E
@@ -104,6 +106,131 @@ Every hatch is a GT hatch with GT's own recipe. The chamber needs these ([GGS-08
 | Muffler Hatch | `Hatch_Muffler_LV` and up | Any |
 
 The structure's glass ring is BartWorks borosilicate glass of any tier (`BorosilicateGlass.ofBoroGlassAnyTier()`); GT makes it.
+
+## Machine build recipes
+
+Every machine below is crafted in the crafting table around `ItemList.Hull_<tier>` and tier parts, with no tool letter and the same flags as GT's own machines (`BITS`, `DO_NOT_CHECK_FOR_COLLISIONS`). Casings and segment blocks are Assembler recipes in the style of GT's casings. The `W` cable per tier follows GT's own tier table, and the hull carries the tier material: GT builds `Casing_LV` to `Casing_IV` from 8 plates of Steel, Aluminium, Stainless Steel, Titanium and Tungstensteel ([AssemblerRecipes.java#L2589-L2640](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L2589-L2640)), which are exactly the [0001](../../design/0001-tier-map.md) gate materials. So no machine is craftable below its tier ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 1).
+
+| Tier | Hull | Circuit `C` | `W` cable | Motor | Piston | Conveyor |
+|---|---|---|---|---|---|---|
+| LV | `Hull_LV` | `circuit.LV` | `cableGt01.Tin` | `Electric_Motor_LV` | `Electric_Piston_LV` | `Conveyor_Module_LV` |
+| MV | `Hull_MV` | `circuit.MV` | `cableGt01.AnyCopper` | `Electric_Motor_MV` | `Electric_Piston_MV` | `Conveyor_Module_MV` |
+| HV | `Hull_HV` | `circuit.HV` | `cableGt01.Gold` | `Electric_Motor_HV` | `Electric_Piston_HV` | `Conveyor_Module_HV` |
+| EV | `Hull_EV` | `circuit.EV` | `cableGt01.Aluminium` | `Electric_Motor_EV` | `Electric_Piston_EV` | `Conveyor_Module_EV` |
+| IV | `Hull_IV` | `circuit.IV` | `cableGt01.Tungsten` | `Electric_Motor_IV` | `Electric_Piston_IV` | `Conveyor_Module_IV` |
+
+Precedents (all in the clone at `reference/src/GT5-Unofficial@5.09.54.205/`):
+
+- **Press, Assembler and other tiered single blocks.** GT's Forming Press is `"WPW" / "CMC" / "WPW"` with hull, piston, circuit and wire at LV to IV ([MTERecipeLoader.java#L1057-L1083](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L1057-L1083)). Its Assembler adds conveyors and robot arms ([#L175-L204](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L175-L204)). The cable-per-tier table is in the Brewery recipes ([#L3351-L3380](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L3351-L3380)).
+- **Steam machine.** The Bronze Compressor is `"XXX" / "PMP" / "XXX"` with `Hull_Bronze`, small bronze pipes and a vanilla-ore-dict piston ([#L2849-L2853](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L2849-L2853)).
+- **Multiblock controller with a hull.** The Assembly Line controller is `Hull_IV` with four casings, two circuits and a robot arm ([#L3767-L3771](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L3767-L3771)). The Large Chemical Reactor adds a rotor and pipes ([#L3827-L3834](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L3827-L3834)).
+- **Casings.** 6 plates and a frame of the same metal, programmed circuit 1, `RECIPE_LV / 2` ([AssemblerRecipes.java#L2671-L2700](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L2671-L2700)).
+
+### Ammo Press, Steam (1 recipe)
+
+| Field | Value |
+|---|---|
+| Output | Ammo Press, Steam (MTE 20100) x1 |
+| Tier | Steam / ULV (Bronze) |
+| Method | Hand, shaped, GT machine style |
+| Gate | `Hull_Bronze`, `pipeSmall.Bronze`, a piston. Bronze is the Steam gate material ([0001](../../design/0001-tier-map.md)) |
+| Notes | The Stone Bullet is the only ULV ammo ([ammo-press.md](ammo-press.md#tiers-and-what-each-runs)) |
+
+```
+ X  X  X
+ P  M  P
+ B  B  B
+```
+
+| Key | Item |
+|---|---|
+| `X` | `OrePrefixes.pipeSmall.get(Materials.Bronze)` |
+| `P` | `OreDictNames.craftingPiston` (as the Bronze Compressor) |
+| `M` | `ItemList.Hull_Bronze` |
+| `B` | `OrePrefixes.plate.get(Materials.Bronze)` (the feed ramp) |
+
+### Ammo Press, LV to EV (4 recipes)
+
+One grid, four tiers from the table above. IDs 20101 (LV), 20102 (MV), 20103 (HV), 20104 (EV).
+
+| Field | Value |
+|---|---|
+| Output | Ammo Press of the tier x1 |
+| Tier | LV, MV, HV, EV |
+| Method | Hand, shaped, GT machine style |
+| Gate | The tier's `Hull`, `Electric_Piston` and `circuit`. Hull metal is Steel, Aluminium, Stainless Steel, Titanium |
+| Notes | Adds the conveyor (feed belt) and motor (ram drive) to the Forming Press layout, because the press feeds rounds along a belt ([ammo-press.md](ammo-press.md#animation)) |
+
+```
+ V  P  V
+ C  M  C
+ W  E  W
+```
+
+| Key | Item |
+|---|---|
+| `V` | `ItemList.Conveyor_Module_<tier>` |
+| `P` | `ItemList.Electric_Piston_<tier>` |
+| `C` | `OrePrefixes.circuit.get(Materials.<tier>)` |
+| `M` | `ItemList.Hull_<tier>` |
+| `W` | `cableGt01` of the tier (Tin, AnyCopper, Gold, Aluminium) |
+| `E` | `ItemList.Electric_Motor_<tier>` |
+
+### Ammunition Works (3 recipes)
+
+Controller tier HV (Stainless Steel), hatches LV to IV ([multiblocks.md](multiblocks.md#ammunition-works)). The item pipe casing belt and the hatches are GT's. Works Casing covers the feeder `F`, plain `A` and packing `O` positions: they differ only by which hatches the structure allows, not by block.
+
+| Output | Tier | Method | Inputs | Circuit | EU/t, time | Notes |
+|---|---|---|---|---|---|---|
+| Works Casing x2 | HV | `assemblerRecipes` | `plate.StainlessSteel` x6, `frameGt.StainlessSteel` x1 | 1 | `TierEU.RECIPE_LV / 2`, 2 s 10 ticks | The default hall needs 313 or more casings; one per craft would cost about 1,900 plates, so this yields two. A proposal |
+| Ram Housing x1 | HV | `assemblerRecipes` | Works Casing x1, `Electric_Piston_HV` x1, `gearGt.StainlessSteel` x1 | 2 | `TierEU.RECIPE_HV`, 10 s | Active texture is animated |
+
+Ammunition Works controller (MTE 20105), hand-crafted at HV, shaped as GT's Assembly Line controller. Gate: `Hull_HV` and the Stainless Steel casings.
+
+```
+ W  P  W
+ E  M  E
+ W  V  W
+```
+
+| Key | Item |
+|---|---|
+| `W` | Works Casing |
+| `P` | `ItemList.Electric_Piston_HV` |
+| `E` | `OrePrefixes.circuit.get(Materials.HV)` |
+| `M` | `ItemList.Hull_HV` |
+| `V` | `ItemList.Conveyor_Module_HV` |
+
+### Reaction Chamber, single block (2 recipes)
+
+EV (MTE 20106) and IV (MTE 20107), [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#single-block-and-multiblock-forms).
+
+| Field | Value |
+|---|---|
+| Output | Reaction Chamber of the tier x1 |
+| Tier | EV, IV |
+| Method | Hand, shaped, GT machine style |
+| Gate | `Hull_EV` or `Hull_IV`, `Emitter_<tier>`, `Electric_Pump_<tier>`, `Sensor_<tier>` and `circuit.<tier>`. Only the IV chamber can start the Anti Gravity Core ([GGS-08-46](reaction-chamber-multiblock.md#requirements)) |
+| Notes | Same three tier parts as the Retort controller. Cable `W` is Aluminium (EV) and Tungsten (IV) |
+
+```
+ E  P  E
+ C  M  C
+ W  S  W
+```
+
+| Key | Item |
+|---|---|
+| `E` | `ItemList.Emitter_<tier>` |
+| `P` | `ItemList.Electric_Pump_<tier>` |
+| `C` | `OrePrefixes.circuit.get(Materials.<tier>)` |
+| `M` | `ItemList.Hull_<tier>` |
+| `W` | `cableGt01` Aluminium (EV) or Tungsten (IV) |
+| `S` | `ItemList.Sensor_<tier>` |
+
+### Retort
+
+Covered by the [Retort controller](#retort-controller-1-recipe) and [Reaction Chamber Casing](#reaction-chamber-casing-1-recipe) recipes above. No further casing is GregGuns-made.
 
 ## Processing recipes (`gregguns.recipe.reactionchamber`)
 
@@ -162,6 +289,11 @@ Numbering continues from [recipe-scripting.md](recipe-scripting.md).
 - **GGS-08-43.** The fluid for each recipe is looked up through `Materials.<m>.getMolten`. A `null` result skips the recipe with one logged warning; it never falls back to lava, as Techguns did.
 - **GGS-08-44.** No GregGuns hatch exists. The structure accepts only GT hatches.
 - **GGS-08-45.** Every output of a Reaction Chamber recipe has a 0001 tier of EV or above, and no recipe is craftable below it.
+- **GGS-08-85.** An Ammo Press recipe exists for each of the five tiers (Steam, LV, MV, HV, EV, MTE IDs 20100 to 20104). The Steam one uses `Hull_Bronze`, `pipeSmall.Bronze` and a piston. The LV to EV ones use the same grid, with that tier's hull, circuit, motor, piston and conveyor.
+- **GGS-08-86.** The Ammunition Works has three recipes: Works Casing, Ram Housing and the controller (MTE 20105). The controller needs one `Hull_HV` and four Works Casings.
+- **GGS-08-87.** The single-block Reaction Chamber has an EV and an IV recipe, each with `Emitter`, `Electric_Pump` and `Sensor` of its own tier, and the hull of that tier.
+- **GGS-08-88.** Every machine recipe in this sheet includes the `Hull_<tier>` (`Hull_Bronze` for Steam) of the machine's `mTier`, and the other tier parts of the same tier. The dev self-check rejects a lower-tier part.
+- **GGS-08-89.** The Works Casing recipe yields two blocks and every other casing recipe in this sheet yields what its table says. The Retort has no casing recipe beyond the Reaction Casing.
 
 ## Tests
 
@@ -172,6 +304,9 @@ Numbering continues from [recipe-scripting.md](recipe-scripting.md).
 | 41 | Unit test: the map holds two recipes, each with four metadata keys and one input of stack size 0 |
 | 42 | `/gregguns test` scenario: run the Laser Focus recipe with an EV hatch, then try the Anti Gravity Core recipe with the same hatch and check it does not start |
 | 44 | Unit test that no GregGuns hatch class is registered |
+| 85, 86, 87 | Unit test over the recipe registry: one recipe per MTE ID, and each has the inputs named here |
+| 88 | Dev self-check: parse each machine recipe, compare each part's tier with the MTE's `mTier` |
+| 89 | Unit test of the Works Casing output count; doc test that the Retort recipe list is the Reaction Casing and the controller |
 | 45 | Dev self-check over the recipe table |
 | All | Manual: NEI shows the casing, controller and Heat Ray Focus recipes, and the two processing recipes under the Reaction Chamber tab ([nei-handlers.md](nei-handlers.md)) |
 
@@ -179,12 +314,14 @@ Numbering continues from [recipe-scripting.md](recipe-scripting.md).
 
 | Component | Used in | Source |
 |---|---|---|
-| (none consumed from area 06) | n/a | Every input is a GT part or a vanilla item |
+| (none consumed from area 06) | n/a | Every input is a GT part or a vanilla item. The Works Casing and Ram Housing are produced and consumed within this sheet |
 
 The recipes in this sheet **produce** components that other areas consume: Laser Focus (a gun component, area 06 and the laser weapons), Anti Gravity Core (area 05, [armour recipes](../05-armor/recipes.md#anti-gravity-device-1-recipe)) and Heat Ray Focus (this sheet).
 
 ## Open questions
 
+- **Works Casing yield.** Two per craft is a proposal; 1:1 would match GT but costs about 1,900 Stainless Steel plates for a default hall. Balance pass.
+- **Ammo Press and Reaction Chamber single-block grids.** These are the recipes' shapes, not tuned costs. The press adds a conveyor and motor to GT's Forming Press, which can be dropped if the cost proves too high.
 - **Controller tier.** EV is chosen because the cheapest processing recipe is EV. If a later recipe needs a larger machine, a second controller tier needs a record.
 - **Fluid amounts.** 1 152 L of molten redstone or Enderium is a proposal. Tune in M4 balance.
 - **Yellowcake.** Deferred to M5 with the nuclear items.
