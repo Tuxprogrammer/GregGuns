@@ -65,3 +65,22 @@ death.attack.gregguns.lightning.player=%1$s was electrocuted while trying to esc
 death.attack.gregguns.radiation=%1$s was irradiated by %2$s
 death.attack.gregguns.radiation.item=%1$s was irradiated by %2$s with %3$s
 death.attack.gregguns.radiation.player=%1$s was irradiated while trying to escape %2$s
+
+# Guns: items, tooltips, keys and HUD
+item.gregguns.pistol_9mm.name=9mm Pistol
+gregguns.gun.tooltip.ammo=Ammo: %s
+gregguns.gun.tooltip.loaded=Loaded: %s / %s
+gregguns.gun.tooltip.damage=Damage: %s
+gregguns.gun.tooltip.shift=Press [SHIFT] for detailed tooltip
+gregguns.gun.tooltip.damage_type=Damage type: %s
+gregguns.gun.tooltip.range=Range: %s blocks (reach %s)
+gregguns.gun.tooltip.spread=Spread: %s
+gregguns.gun.tooltip.clipsize=Magazine: %s
+gregguns.gun.tooltip.reload_time=Reload time: %ss
+gregguns.gun.tooltip.armor_pen=Armour penetration: %s%%
+gregguns.gun.tooltip.zoom=Zoom: x%s field of view
+key.categories.gregguns=GregGuns
+key.gregguns.reload=Reload gun
+gregguns.hud.rounds=Rounds: %s / %s
+gregguns.hud.magazines=Magazines: %s
+gregguns.hud.reloading=Reloading %s%%

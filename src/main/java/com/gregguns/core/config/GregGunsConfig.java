@@ -19,7 +19,7 @@ public final class GregGunsConfig {
 
     /** Every config class, in registration order. */
     public static final List<Class<?>> CLASSES = Collections
-        .unmodifiableList(Arrays.<Class<?>>asList(ModulesConfig.class, DebugConfig.class));
+        .unmodifiableList(Arrays.<Class<?>>asList(ModulesConfig.class, DebugConfig.class, ClientConfig.class));
 
     private GregGunsConfig() {}
 

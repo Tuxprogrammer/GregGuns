@@ -4,7 +4,10 @@ import com.gregguns.combat.CombatModule;
 import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
+import com.gregguns.gun.server.GunEvents;
+import com.gregguns.gun.server.GunKeybinds;
 import com.gregguns.item.ammo.AmmoItems;
+import com.gregguns.item.gun.GunItems;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -29,11 +32,14 @@ public final class GunsModule implements GregGunsModule {
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
         // Items, entities and other content: one call per area, e.g. AmmoItems.register(registrar).
         AmmoItems.register(registrar);
+        GunItems.register(registrar);
+        GunKeybinds.register();
     }
 
     @Override
     public void init(FMLInitializationEvent event) {
         // Recipes and event handlers: one call per area.
         CombatModule.init();
+        GunEvents.register();
     }
 }
