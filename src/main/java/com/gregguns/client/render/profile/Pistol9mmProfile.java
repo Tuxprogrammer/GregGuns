@@ -41,6 +41,11 @@ public final class Pistol9mmProfile {
     /** The muzzle in the gun frame (after the model's own orientation), blocks: x, y down, z. */
     public static final float[] MUZZLE = { 0.0f, 0.1f, -0.2f };
 
+    private static final double FP_SCALE = 1.0;
+    private static final double FP_X = -1.2;
+    private static final double FP_Y = -1.0;
+    private static final double FP_Z = -1.7;
+
     private static final float[] NO_PIVOT = { 0, 0, 0 };
     // The grip tilts back about its top edge, and the magazine tilts with it.
     private static final float[] GRIP_PIVOT = { -29.5f, 9.0f, 0.0f };
@@ -64,27 +69,31 @@ public final class Pistol9mmProfile {
     private Pistol9mmProfile() {}
 
     private static GunTransforms buildTransforms() {
-        // First person (Z-family): rotX180, rotY225, S(2.0), then the state row.
+        // First person (Z-family): rotX180, rotY225, S(FP_SCALE), then the state row.
+        // Deviation: the sheet says S(2.0) and T(-0.55, -0.45, -0.8). With the GregGuns model (a 15/16 block long
+        // pistol) that drew a rifle-sized gun running off the screen (M1 visual autotest). Halving the scale and
+        // moving the offset to (-1.2, -1.0, -1.7) gives a compact pistol in the lower right, muzzle forward; the
+        // fixed-frame muzzle flash (section 6.2) still lands on the muzzle.
         TransformProgram fpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(2.0)
+            .scale(FP_SCALE)
             .build();
         TransformProgram fpIdle = TransformProgram.builder()
-            .translate(-0.55, -0.45, -0.8)
+            .translate(FP_X, FP_Y, FP_Z)
             .build();
         // Firing: muzzle climbs 10 degrees at the dip, the whole gun pushes back, the slide (part 1) further.
         TransformProgram fpFire = TransformProgram.builder()
             .rotX((p, part) -> 10.0 * yF(p))
             .translate(
-                TransformProgram.c(-0.55),
-                TransformProgram.c(-0.45),
-                (p, part) -> -0.8 - yF(p) * (0.3 + 0.2 * part))
+                TransformProgram.c(FP_X),
+                TransformProgram.c(FP_Y),
+                (p, part) -> FP_Z - yF(p) * (0.3 + 0.2 * part))
             .build();
         // Reload: tilt the muzzle up to 50 degrees and back.
         TransformProgram fpReload = TransformProgram.builder()
             .rotX((p, part) -> -50.0 * yR(p))
-            .translate(-0.55, -0.45, -0.8)
+            .translate(FP_X, FP_Y, FP_Z)
             .build();
         // Third person: rotX180, rotY135, S(1.5), T(0.05, -0.55, 0.2). Aimed extra translate (0, 0, 0.2).
         TransformProgram tpBase = TransformProgram.builder()
