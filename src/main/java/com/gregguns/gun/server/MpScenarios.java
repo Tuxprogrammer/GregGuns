@@ -3,9 +3,12 @@ package com.gregguns.gun.server;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S09PacketHeldItemChange;
 import net.minecraft.server.MinecraftServer;
@@ -43,6 +46,9 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
  * it sees.</li>
  * <li>{@code mp.visual}: walks player A through the visual checks (first and third person, dropped item, inventory,
  * creative tab, Ammo Press GUI, NEI recipes) by signalling screenshots.</li>
+ * <li>{@code mp.give}: gives every connected player every registered GregGuns item (and the LV Ammo Press) one at a
+ * time with the real {@code /give} command, selects it, and has the client hold it for a few ticks and build its
+ * tooltip; then repeats through the client-side creative slot packet. Exceptions show up in the logs.</li>
  * </ul>
  *
  * <p>
@@ -64,6 +70,7 @@ public final class MpScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Sync());
         registry.register(new Visual());
+        registry.register(new Give());
     }
 
     @SuppressWarnings("unchecked")
@@ -325,6 +332,90 @@ public final class MpScenarios {
                 return ScenarioResult.builder(name())
                     .note("signals sent to " + a.getCommandSenderName() + "; check the client log and screenshots")
                     .build();
+            });
+        }
+    }
+
+    // ----- mp.give ------------------------------------------------------------------------------------------
+
+    private static final String PRESS = "gregtech:gt.blockmachines:" + GregGunsMTEIDs.AMMO_PRESS_LV;
+    private static final int GIVE_STEP = 12;
+
+    /** Every item name to hand out: the registered {@code gregguns:} items plus the Ammo Press machine. */
+    private static List<String> giveList() {
+        Set<String> names = new TreeSet<>();
+        for (Object key : Item.itemRegistry.getKeys()) {
+            String name = (String) key;
+            if (name.startsWith("gregguns:")) {
+                names.add(name);
+            }
+        }
+        List<String> list = new ArrayList<>(names);
+        list.add(PRESS);
+        return list;
+    }
+
+    private static final class Give implements Scenario {
+
+        @Override
+        public String name() {
+            return "mp.give";
+        }
+
+        @Override
+        public String description() {
+            return "Gives every connected player every GregGuns item via /give, then via the creative slot packet.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            List<EntityPlayerMP> players = players();
+            if (players.isEmpty()) {
+                return ScenarioResult.fail(name(), "needs a connected player");
+            }
+            List<String> items = giveList();
+            int total = items.size();
+            for (EntityPlayerMP p : players) {
+                p.setGameType(WorldSettings.GameType.SURVIVAL);
+            }
+            return ScenarioResult.pending(name(), (2 * total + 4) * GIVE_STEP + 40, t -> {
+                int step = (t - 1) / GIVE_STEP;
+                int phase = (t - 1) % GIVE_STEP;
+                if (step >= 2 * total) {
+                    return phase == 0 ? ScenarioResult.builder(name())
+                        .note("gave " + total + " items twice to " + players.size() + " player(s)")
+                        .build() : null;
+                }
+                String item = items.get(step % total);
+                boolean creative = step >= total;
+                for (EntityPlayerMP p : players) {
+                    switch (phase) {
+                        case 0 -> {
+                            p.inventory.clearInventory(null, -1);
+                            p.setGameType(creative ? WorldSettings.GameType.CREATIVE : WorldSettings.GameType.SURVIVAL);
+                            p.inventory.currentItem = 0;
+                            p.playerNetServerHandler.sendPacket(new S09PacketHeldItemChange(0));
+                            if (!creative) {
+                                String arg = item.equals(PRESS)
+                                    ? "gregtech:gt.blockmachines 1 " + GregGunsMTEIDs.AMMO_PRESS_LV
+                                    : item;
+                                MinecraftServer.getServer()
+                                    .getCommandManager()
+                                    .executeCommand(
+                                        MinecraftServer.getServer(),
+                                        "give " + p.getCommandSenderName() + " " + arg);
+                            }
+                        }
+                        case 3 -> {
+                            if (creative) {
+                                signal(p, "creativegive", item);
+                            }
+                        }
+                        case 7 -> signal(p, "hold", item);
+                        default -> {}
+                    }
+                }
+                return null;
             });
         }
     }

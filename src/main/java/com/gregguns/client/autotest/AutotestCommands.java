@@ -72,6 +72,50 @@ final class AutotestCommands {
         }
     }
 
+    /**
+     * {@code hold <name>}: logs what the local player holds and builds its tooltip (plain and advanced), which runs
+     * the item's tooltip code; the held item is also drawn by the renderer every frame.
+     */
+    @SuppressWarnings("unchecked")
+    static void hold(String expected) {
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        ItemStack held = player.getHeldItem();
+        if (held == null) {
+            ClientAutotest.logLine("hold " + expected + " -> NOTHING HELD");
+            return;
+        }
+        String name = Item.itemRegistry.getNameForObject(held.getItem());
+        java.util.List<String> tip = held.getTooltip(player, true);
+        ClientAutotest.logLine(
+            "hold " + expected
+                + " -> "
+                + name
+                + " x"
+                + held.stackSize
+                + " tooltip "
+                + tip.size()
+                + " lines, name '"
+                + held.getDisplayName()
+                + "'");
+    }
+
+    /**
+     * {@code creativegive <name>}: the client-side creative path, putting the stack into hotbar slot 0 with the
+     * creative slot packet. {@code modid:name:meta} gives a metadata item.
+     */
+    static void creativeGive(String spec) {
+        Minecraft mc = Minecraft.getMinecraft();
+        String[] parts = spec.split(":");
+        Item item = GameRegistry.findItem(parts[0], parts[1]);
+        if (item == null) {
+            ClientAutotest.logLine("creativegive: no item " + spec);
+            return;
+        }
+        ItemStack stack = new ItemStack(item, 1, parts.length > 2 ? Integer.parseInt(parts[2]) : 0);
+        mc.thePlayer.inventory.setInventorySlotContents(0, stack);
+        mc.playerController.sendSlotPacket(stack, 36);
+    }
+
     private static void openCreative(Minecraft mc, EntityClientPlayerMP player, String label) {
         CreativeTabs tab = null;
         for (CreativeTabs candidate : CreativeTabs.creativeTabArray) {
