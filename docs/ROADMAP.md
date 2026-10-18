@@ -5,9 +5,9 @@ How GregGuns gets from an empty mod to a GTNH-ready release. The work follows th
 ## How to read this roadmap
 
 - **Milestones (M0–M9)** are delivered in order. Each one has an **entry gate**, which must be true before work starts, and an **exit gate**, which is its definition of done. A milestone isn't finished until every exit-gate box is ticked.
-- **Decision gates (D1–D6)** are design questions the project owner must sign off before the milestones that depend on them start.
+- **Decision gates (D1–D6)** are design questions settled before the milestones that depend on them start. All six are **accepted by default** for the MVP: see [docs/design/](design/README.md). They're revisited after MVP.
   - Each decision is recorded in [`docs/design/`](design/README.md), and the gate is closed by marking that record `Status: Accepted`.
-  - The tables below are **proposals**, starting points for those records, not decisions.
+  - The tables below summarise the accepted records; the records are authoritative.
 - Every milestone also meets the universal **definition of done** in [CONTRIBUTING.md](../CONTRIBUTING.md#definition-of-done): tests, comments, lang keys, original assets, no reproduced Techguns bugs, and spec deviations recorded.
 - **Feature flags:** each milestone's content ships behind a config toggle such as `modules.armor`, defaulting to on once its exit gate is met. That way, unfinished or unwanted modules can be switched off in the pack without a rebuild.
 
@@ -57,6 +57,8 @@ Each gate produces a design record in [`docs/design/`](design/README.md). Nothin
 
 ### D1 · Tier map. *Blocks M1–M8.*
 
+**Accepted:** [0001-tier-map.md](design/0001-tier-map.md)
+
 Every weapon, ammo type, armour set, component and machine is assigned a GT voltage tier and a **gating mechanism**: the machine voltage needed to craft it, or a material that can't be obtained before that tier.
 
 The table below lists example gate materials. **Verify each one against the current GTNH progression before accepting D1.**
@@ -76,6 +78,8 @@ The D1 record must also cover:
 - **Unfinished Techguns content:** whether to build the Scrapper, Flashbang, Medkit, UV Emitter and Scatter Laser Rifle [WIP], or drop them.
 
 ### D2 · Machine deconfliction. *Blocks M4 and M6.*
+
+**Accepted:** [0002-machine-deconfliction.md](design/0002-machine-deconfliction.md)
 
 The rule: GT already has machines for most Techguns processes, so GregGuns uses **GT recipe maps** instead of re-adding them. Only machines that are distinctive *and* have no GT equivalent stay, rebuilt as GT MetaTileEntities.
 
@@ -99,6 +103,8 @@ The rule: GT already has machines for most Techguns processes, so GregGuns uses 
 
 ### D3 · Energy model. *Blocks M3, M4 and M5.*
 
+**Accepted:** [0003-energy-model.md](design/0003-energy-model.md)
+
 - All power is **GT EU**; there is no RF anywhere.
 - Energy weapons, powered armour and tools are IC2 electric items, charged by GT chargers and battery buffers.
 - Fuel-based items (flamethrower, chainsaw, power hammer) take GT fluids.
@@ -106,17 +112,23 @@ The rule: GT already has machines for most Techguns processes, so GregGuns uses 
 
 ### D4 · Damage model. *Blocks M1.*
 
+**Accepted:** [0004-damage-model.md](design/0004-damage-model.md)
+
 - Decide whether to keep the Techguns damage types, armour penetration and per-type resistances, or simplify them.
 - Decide how GregGuns damage scales against GTNH mobs and other mods' armour.
 - The record lists which damage-system bugs in [BUGS.md](techguns-spec/BUGS.md) (GUN-33 to GUN-45) the new design avoids.
 
 ### D5 · World presence. *Blocks M7 and M8.*
 
+**Accepted:** [0005-world-presence.md](design/0005-world-presence.md)
+
 - Which NPC factions and structures ship, and in which dimensions and biomes.
 - Spawn caps relative to GTNH's difficulty curve.
 - **No ore generation:** the GTNH ore system owns ores.
 
 ### D6 · Art direction. *Blocks every milestone that adds assets.*
+
+**Accepted:** [0006-art-direction.md](design/0006-art-direction.md)
 
 - Style rules so new textures sit naturally next to GT: resolution, palette and shading.
 - Sound loudness targets.

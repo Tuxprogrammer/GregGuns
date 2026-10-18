@@ -222,7 +222,7 @@ Each layer catches different bugs, and features need all the layers that apply t
   - Fill in the [PR template](.github/pull_request_template.md) and link the roadmap item and spec sheets.
   - List deviations and the inherited bugs avoided.
   - Attach test output and, for visual work, screenshots.
-- **Review.** At least one review. Decision-gate records need the project owner's approval.
+- **Review.** At least one review. During the MVP push, design records are accepted by default and revisited later.
 
 ## Definition of done
 

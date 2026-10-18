@@ -1,6 +1,6 @@
 # Design records
 
-Decisions that shape GregGuns, especially the [roadmap's decision gates](../ROADMAP.md#decision-gates) D1–D6. A gate is closed when its record reaches `Status: Accepted`, which needs the project owner's approval. Milestones it blocks can't start until then.
+Decisions that shape GregGuns, especially the [roadmap's decision gates](../ROADMAP.md#decision-gates) D1–D6. A gate is closed when its record reaches `Status: Accepted`. During the MVP push, records are **accepted by default** and revisited after MVP; the owner edits them later rather than approving each one in advance. Milestones it blocks can't start until then.
 
 Name each record `NNNN-short-title.md` (for example `0001-tier-map.md`). Once a record is accepted, don't rewrite it. To change course, add a new record that supersedes the old one.
 
@@ -30,4 +30,9 @@ The other options, and why each was not chosen.
 
 | # | Title | Gate | Status |
 |---|---|---|---|
-| | *none yet* | | |
+| [0001](0001-tier-map.md) | Tier map | D1 | Accepted (by default) |
+| [0002](0002-machine-deconfliction.md) | Machine deconfliction | D2 | Accepted (by default) |
+| [0003](0003-energy-model.md) | Energy model | D3 | Accepted (by default) |
+| [0004](0004-damage-model.md) | Damage model | D4 | Accepted (by default) |
+| [0005](0005-world-presence.md) | World presence | D5 | Accepted (by default) |
+| [0006](0006-art-direction.md) | Art direction | D6 | Accepted (by default) |
