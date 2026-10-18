@@ -1,0 +1,486 @@
+package com.gregguns.gun.logic;
+
+/**
+ * Immutable definition of one gun. Every value the Techguns lifecycle sheet uses is carried here.
+ *
+ * <p>
+ * This class is pure data. Damage and drop-off values are carried for the combat module, which owns the formula.
+ * Durations are in game ticks (20 per second), distances in blocks.
+ *
+ * <p>
+ * Spec: docs/techguns-spec/02-guns/gun-catalogue.md (constructor and setters), gun-lifecycle.md sections 1 to 8.
+ */
+public final class GunStats {
+
+    private final String id;
+    private final double damage;
+    private final double damageMin;
+    private final double dropStart;
+    private final double dropEnd;
+    private final double spread;
+    private final double zoomFactor;
+    private final double zoomSpreadMultiplier;
+    private final FireMode fireMode;
+    private final int fireRateTicks;
+    private final int burstShots;
+    private final int burstDelayTicks;
+    private final int ammoPerShot;
+    private final int magazineSize;
+    private final String ammoType;
+    private final String looseAmmoType;
+    private final String emptyContainerType;
+    private final ReloadMode reloadMode;
+    private final int ammoItemsPerReload;
+    private final int reloadTicks;
+    private final double projectileSpeed;
+    private final int lifetimeTicks;
+    private final int bulletsPerShot;
+    private final double pelletSpread;
+    private final boolean pelletsInLine;
+    private final double penetration;
+    private final boolean akimbo;
+    private final boolean doubleShot;
+    private final int recoilTicks;
+    private final int muzzleFlashTicks;
+    private final double aiRange;
+    private final int aiAttackTime;
+    private final int aiBurstCount;
+    private final int aiBurstDelay;
+
+    private GunStats(Builder b) {
+        id = b.id;
+        damage = b.damage;
+        damageMin = b.damageMin < 0 ? b.damage : b.damageMin;
+        dropStart = b.dropSet ? b.dropStart : b.projectileSpeed * b.lifetimeTicks;
+        dropEnd = b.dropSet ? b.dropEnd : dropStart;
+        spread = b.spread;
+        zoomFactor = b.zoomFactor;
+        zoomSpreadMultiplier = b.zoomSpreadMultiplier;
+        fireMode = b.fireMode;
+        fireRateTicks = b.fireRateTicks;
+        burstShots = b.burstShots;
+        burstDelayTicks = b.burstDelayTicks;
+        ammoPerShot = b.ammoPerShot;
+        magazineSize = b.magazineSize;
+        ammoType = b.ammoType;
+        looseAmmoType = b.looseAmmoType;
+        emptyContainerType = b.emptyContainerType;
+        reloadMode = b.reloadMode;
+        ammoItemsPerReload = b.ammoItemsPerReload;
+        reloadTicks = b.reloadTicks;
+        projectileSpeed = b.projectileSpeed;
+        lifetimeTicks = b.lifetimeTicks;
+        bulletsPerShot = b.bulletsPerShot;
+        pelletSpread = b.pelletSpread;
+        pelletsInLine = b.pelletsInLine;
+        penetration = b.penetration;
+        akimbo = b.akimbo;
+        doubleShot = b.doubleShot;
+        recoilTicks = b.recoilTicks;
+        muzzleFlashTicks = b.muzzleFlashTicks;
+        aiRange = b.aiRange;
+        aiAttackTime = b.aiAttackTime;
+        aiBurstCount = b.aiBurstCount;
+        aiBurstDelay = b.aiBurstDelay;
+        validate();
+    }
+
+    private void validate() {
+        require(id != null && !id.isEmpty(), "id");
+        require(damage >= 0, "damage");
+        require(damageMin >= 0 && damageMin <= damage, "damageMin must be in [0, damage]");
+        require(dropStart >= 0 && dropEnd >= dropStart, "drop-off distances");
+        require(spread >= 0 && pelletSpread >= 0, "spread");
+        require(zoomFactor > 0 && zoomFactor <= 1, "zoomFactor must be in (0, 1]");
+        require(zoomSpreadMultiplier >= 0, "zoomSpreadMultiplier");
+        require(fireRateTicks >= 1, "fireRateTicks");
+        require(fireMode != FireMode.BURST || burstShots >= 2, "BURST needs burstShots >= 2");
+        require(burstDelayTicks >= 1, "burstDelayTicks");
+        require(ammoPerShot >= 1, "ammoPerShot");
+        require(magazineSize >= ammoPerShot, "magazineSize");
+        require(ammoType != null && !ammoType.isEmpty(), "ammoType");
+        require(ammoItemsPerReload >= 1, "ammoItemsPerReload");
+        require(
+            reloadMode != ReloadMode.INCREMENTAL || magazineSize % ammoItemsPerReload == 0,
+            "INCREMENTAL magazineSize must divide evenly by ammoItemsPerReload");
+        require(reloadTicks >= 1, "reloadTicks");
+        require(projectileSpeed > 0 && lifetimeTicks >= 1, "projectile speed / lifetime");
+        require(bulletsPerShot >= 1, "bulletsPerShot");
+        require(penetration >= 0 && penetration <= 1, "penetration");
+    }
+
+    private static void require(boolean ok, String what) {
+        if (!ok) {
+            throw new IllegalArgumentException("Invalid GunStats: " + what);
+        }
+    }
+
+    /** Starts a builder. The id is the registry-style name, for example {@code "pistol"}. */
+    public static Builder builder(String id) {
+        return new Builder(id);
+    }
+
+    /** The gun's name, also the registry name without the mod id. */
+    public String id() {
+        return id;
+    }
+
+    /** Maximum damage per projectile (half hearts). Applied by the combat module. */
+    public double damage() {
+        return damage;
+    }
+
+    /** Minimum damage beyond {@link #dropEnd()}. Equal to {@link #damage()} when the gun has no drop-off. */
+    public double damageMin() {
+        return damageMin;
+    }
+
+    /** Distance in blocks up to which damage is full. The combat module owns the formula. */
+    public double dropStart() {
+        return dropStart;
+    }
+
+    /** Distance in blocks at which damage reaches {@link #damageMin()}. */
+    public double dropEnd() {
+        return dropEnd;
+    }
+
+    /** Spread value ("accuracy"); a shot's yaw and pitch each get a uniform offset of +-spread*40 degrees. */
+    public double spread() {
+        return spread;
+    }
+
+    /** FOV multiplier while zoomed; 1.0 means the gun has no scope. */
+    public double zoomFactor() {
+        return zoomFactor;
+    }
+
+    /** Multiplier on spread while zoomed (Techguns "zoombonus"). */
+    public double zoomSpreadMultiplier() {
+        return zoomSpreadMultiplier;
+    }
+
+    /** True if right-click zoom does anything for this gun (GUN-47: an unscoped gun is never "zooming"). */
+    public boolean hasScope() {
+        return zoomFactor < 1.0;
+    }
+
+    /** Semi, auto or burst. */
+    public FireMode fireMode() {
+        return fireMode;
+    }
+
+    /** Ticks between shots (Techguns {@code minFiretime}). */
+    public int fireRateTicks() {
+        return fireRateTicks;
+    }
+
+    /** Shots per trigger pull in {@link FireMode#BURST}; 1 otherwise. */
+    public int burstShots() {
+        return burstShots;
+    }
+
+    /** Ticks between the shots inside a burst. */
+    public int burstDelayTicks() {
+        return burstDelayTicks;
+    }
+
+    /** Rounds used per trigger pull (2 for double-shot akimbo). */
+    public int ammoPerShot() {
+        return ammoPerShot;
+    }
+
+    /** Rounds in a full gun. */
+    public int magazineSize() {
+        return magazineSize;
+    }
+
+    /** Ammo type id consumed by a reload. Must equal the ammo module's id. */
+    public String ammoType() {
+        return ammoType;
+    }
+
+    /** Ammo type id for loose rounds handed back on a forced reload; defaults to {@link #ammoType()}. */
+    public String looseAmmoType() {
+        return looseAmmoType == null ? ammoType : looseAmmoType;
+    }
+
+    /** Ammo type id of the empty container returned by a reload, or null if the gun returns none. */
+    public String emptyContainerType() {
+        return emptyContainerType;
+    }
+
+    /** How a reload moves ammo. */
+    public ReloadMode reloadMode() {
+        return reloadMode;
+    }
+
+    /** Items taken per reload (stack size for a magazine, shell count for incremental guns). */
+    public int ammoItemsPerReload() {
+        return ammoItemsPerReload;
+    }
+
+    /** Rounds worth of one reload item: the whole magazine for {@link ReloadMode#MAGAZINE}, else clip / count. */
+    public int roundsPerItem() {
+        return reloadMode == ReloadMode.MAGAZINE ? magazineSize : magazineSize / ammoItemsPerReload;
+    }
+
+    /** Reload duration in ticks, from start to the rounds being loaded. */
+    public int reloadTicks() {
+        return reloadTicks;
+    }
+
+    /** Projectile speed in blocks per tick. */
+    public double projectileSpeed() {
+        return projectileSpeed;
+    }
+
+    /** Projectile lifetime in ticks (Techguns {@code TTL}); not a distance (GUN-18). */
+    public int lifetimeTicks() {
+        return lifetimeTicks;
+    }
+
+    /** Nominal reach in blocks: speed times lifetime. */
+    public double reachBlocks() {
+        return projectileSpeed * lifetimeTicks;
+    }
+
+    /** Projectiles per round fired (1 plus the pellet count). */
+    public int bulletsPerShot() {
+        return bulletsPerShot;
+    }
+
+    /** Spread for the extra pellets. */
+    public double pelletSpread() {
+        return pelletSpread;
+    }
+
+    /** True if extra pellets are spaced along the flight path (burst-style) instead of spawned together. */
+    public boolean pelletsInLine() {
+        return pelletsInLine;
+    }
+
+    /** Armour penetration, 0 to 1. */
+    public double penetration() {
+        return penetration;
+    }
+
+    /** True if the gun is an akimbo pair (one item, two guns). */
+    public boolean akimbo() {
+        return akimbo;
+    }
+
+    /** True if an akimbo gun fires both guns per trigger (otherwise the hands alternate). */
+    public boolean doubleShot() {
+        return doubleShot;
+    }
+
+    /** Client recoil animation length in ticks. */
+    public int recoilTicks() {
+        return recoilTicks;
+    }
+
+    /** Client muzzle flash length in ticks. */
+    public int muzzleFlashTicks() {
+        return muzzleFlashTicks;
+    }
+
+    /** NPC ranged-AI range in blocks. */
+    public double aiRange() {
+        return aiRange;
+    }
+
+    /** NPC ranged-AI attack time in ticks (variance is a third of this). */
+    public int aiAttackTime() {
+        return aiAttackTime;
+    }
+
+    /** NPC shots per burst; 0 means single shots. */
+    public int aiBurstCount() {
+        return aiBurstCount;
+    }
+
+    /** Ticks between NPC burst shots. */
+    public int aiBurstDelay() {
+        return aiBurstDelay;
+    }
+
+    /** Builder for {@link GunStats}. Defaults follow the catalogue's "defaults when no setter is called". */
+    public static final class Builder {
+
+        private final String id;
+        private double damage = 1;
+        private double damageMin = -1;
+        private double dropStart;
+        private double dropEnd;
+        private boolean dropSet;
+        private double spread;
+        private double zoomFactor = 1.0;
+        private double zoomSpreadMultiplier = 1.0;
+        private FireMode fireMode = FireMode.SEMI;
+        private int fireRateTicks = 4;
+        private int burstShots = 1;
+        private int burstDelayTicks = 1;
+        private int ammoPerShot = 1;
+        private int magazineSize = 1;
+        private String ammoType;
+        private String looseAmmoType;
+        private String emptyContainerType;
+        private ReloadMode reloadMode = ReloadMode.MAGAZINE;
+        private int ammoItemsPerReload = 1;
+        private int reloadTicks = 20;
+        private double projectileSpeed = 1.5;
+        private int lifetimeTicks = 30;
+        private int bulletsPerShot = 1;
+        private double pelletSpread;
+        private boolean pelletsInLine;
+        private double penetration;
+        private boolean akimbo;
+        private boolean doubleShot;
+        private int recoilTicks = 5;
+        private int muzzleFlashTicks = 5;
+        private double aiRange = 15;
+        private int aiAttackTime = 60;
+        private int aiBurstCount;
+        private int aiBurstDelay;
+
+        private Builder(String id) {
+            this.id = id;
+        }
+
+        /** Maximum damage; minimum damage defaults to the same value. */
+        public Builder damage(double damage) {
+            this.damage = damage;
+            return this;
+        }
+
+        /** Damage drop-off: full to {@code start} blocks, down to {@code min} at {@code end} blocks. */
+        public Builder damageDrop(double start, double end, double min) {
+            dropStart = start;
+            dropEnd = end;
+            damageMin = min;
+            dropSet = true;
+            return this;
+        }
+
+        /** Spread value of the main projectile. */
+        public Builder spread(double spread) {
+            this.spread = spread;
+            return this;
+        }
+
+        /** Scope: FOV multiplier (below 1) and spread multiplier while zoomed. */
+        public Builder zoom(double factor, double spreadMultiplier) {
+            zoomFactor = factor;
+            zoomSpreadMultiplier = spreadMultiplier;
+            return this;
+        }
+
+        /** Fire mode and ticks between shots. */
+        public Builder fire(FireMode mode, int rateTicks) {
+            fireMode = mode;
+            fireRateTicks = rateTicks;
+            return this;
+        }
+
+        /** Makes the gun a burst gun: shots per trigger and ticks between them. */
+        public Builder burst(int shots, int delayTicks) {
+            fireMode = FireMode.BURST;
+            burstShots = shots;
+            burstDelayTicks = delayTicks;
+            return this;
+        }
+
+        /** Rounds used per trigger pull. */
+        public Builder ammoPerShot(int rounds) {
+            ammoPerShot = rounds;
+            return this;
+        }
+
+        /** Rounds in a full gun. */
+        public Builder magazine(int capacity) {
+            magazineSize = capacity;
+            return this;
+        }
+
+        /** Ammo type id consumed by a reload. */
+        public Builder ammoType(String type) {
+            ammoType = type;
+            return this;
+        }
+
+        /** Ammo type id for loose rounds returned on a forced reload (default: the ammo type). */
+        public Builder looseAmmoType(String type) {
+            looseAmmoType = type;
+            return this;
+        }
+
+        /** Ammo type id of the empty container returned by a reload. */
+        public Builder emptyContainerType(String type) {
+            emptyContainerType = type;
+            return this;
+        }
+
+        /** Magazine swap, or the shell-by-shell top-up with {@code itemsPerReload} items at most. */
+        public Builder reloadMode(ReloadMode mode, int itemsPerReload) {
+            reloadMode = mode;
+            ammoItemsPerReload = itemsPerReload;
+            return this;
+        }
+
+        /** Reload duration in ticks. */
+        public Builder reloadTicks(int ticks) {
+            reloadTicks = ticks;
+            return this;
+        }
+
+        /** Projectile speed (blocks per tick) and lifetime (ticks). */
+        public Builder projectile(double speed, int lifetime) {
+            projectileSpeed = speed;
+            lifetimeTicks = lifetime;
+            return this;
+        }
+
+        /** Extra pellets per round and their spread; {@code inLine} spaces them along the flight path. */
+        public Builder pellets(int extraPellets, double pelletSpread, boolean inLine) {
+            bulletsPerShot = 1 + extraPellets;
+            this.pelletSpread = pelletSpread;
+            pelletsInLine = inLine;
+            return this;
+        }
+
+        /** Armour penetration, 0 to 1. */
+        public Builder penetration(double penetration) {
+            this.penetration = penetration;
+            return this;
+        }
+
+        /** Akimbo pair; {@code doubleShot} fires both guns per trigger. */
+        public Builder akimbo(boolean doubleShot) {
+            akimbo = true;
+            this.doubleShot = doubleShot;
+            return this;
+        }
+
+        /** Client animation lengths in ticks. */
+        public Builder animation(int recoilTicks, int muzzleFlashTicks) {
+            this.recoilTicks = recoilTicks;
+            this.muzzleFlashTicks = muzzleFlashTicks;
+            return this;
+        }
+
+        /** NPC ranged-AI parameters (Techguns {@code setAIStats}). */
+        public Builder ai(double range, int attackTime, int burstCount, int burstDelay) {
+            aiRange = range;
+            aiAttackTime = attackTime;
+            aiBurstCount = burstCount;
+            aiBurstDelay = burstDelay;
+            return this;
+        }
+
+        /** Validates and builds. Throws {@link IllegalArgumentException} on inconsistent values. */
+        public GunStats build() {
+            return new GunStats(this);
+        }
+    }
+}
