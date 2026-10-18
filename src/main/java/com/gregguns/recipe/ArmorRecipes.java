@@ -4,18 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import com.gregguns.GregGuns;
+import com.gregguns.armor.logic.ArmorCatalog;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
+import gregtech.api.enums.GTValues;
+import gregtech.api.enums.Materials;
+import gregtech.api.enums.TierEU;
+import gregtech.api.recipe.RecipeMaps;
+import gregtech.api.util.GTRecipeBuilder;
 
 /**
- * Registers the T1 armor recipes from {@link ArmorTable}: the steam-age sets as shaped crafting (GT's own bronze armor
- * is a hand recipe too, which is the precedent), and the LV Combat set on GT's Assembler. A row with an unresolved
+ * Registers the armor recipes from {@link ArmorTable}: the steam-age sets as shaped crafting (GT's own bronze armor
+ * is a hand recipe too, which is the precedent), and every other set on GT's Assembler, plus Treated Leather in the
+ * Chemical Bath. A row with an unresolved
  * input is skipped with an error in the log; the dev self-check fails the boot on it. Common side.
  *
  * <p>
@@ -38,9 +46,31 @@ public final class ArmorRecipes {
     }
 
     private static void addMachineRecipes() {
-        for (ProductionTable.Row row : ArmorTable.COMBAT) {
+        for (ProductionTable.Row row : ArmorTable.MACHINE) {
             ProductionRecipes.addMachineRecipe(row);
         }
+        addTreatedLeather();
+    }
+
+    /**
+     * RC-22: two leather and 500 mB of sulfuric acid in the Chemical Bath make two Treated Leather, LV, 10 s.
+     */
+    private static void addTreatedLeather() {
+        ItemStack out = ProductionRecipes.modStack(ArmorCatalog.TREATED_LEATHER, 2);
+        if (out == null) {
+            GregGuns.LOG.error("Skipping recipe RC-22: {} is not registered", ArmorCatalog.TREATED_LEATHER);
+            return;
+        }
+        // Source:
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipeBuilder.java#L485-L506
+        // (builder usage), RecipeMaps.chemicalBathRecipes takes one item and one fluid input.
+        GTValues.RA.stdBuilder()
+            .itemInputs(new ItemStack(Items.leather, 2))
+            .fluidInputs(Materials.SulfuricAcid.getFluid(500))
+            .itemOutputs(out)
+            .duration(10 * GTRecipeBuilder.SECONDS)
+            .eut(TierEU.RECIPE_LV)
+            .addTo(RecipeMaps.chemicalBathRecipes);
     }
 
     private static void addHand(ArmorTable.HandRow row) {

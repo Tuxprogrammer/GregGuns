@@ -63,3 +63,9 @@ All paths are under `config/betterquesting/DefaultQuests/`. The full design is 1
 |---|---|---|---|
 | `src/main/java/gregtech/api/enums/MetaTileEntityIDs.java` | Add named entries `GregGuns<Machine>(20100)` … in sorted order, as CropsNH did for 28001-28055 (block 20100-20163 proposed) | GT has no automatic ID allocation for addons. Named entries in this enum are how external mods reserve IDs | [metatileentity-framework.md](08-machines-production/metatileentity-framework.md#gt5-unofficial-mte-id-reservation) |
 | `src/main/java/gregtech/api/enums/Textures.java` (page-owner comment) | `page 50: GregGuns casings` (proposed) | Same, for casing texture pages | [metatileentity-framework.md](08-machines-production/metatileentity-framework.md#gt5-unofficial-casing-texture-pages) |
+
+## Server settings
+
+| File | Change | Why | Sheet |
+|---|---|---|---|
+| `server.properties` | `allow-flight=true` on any server where players use flight gear | Vanilla 1.7.10 kicks a survival player who hovers or flies for about 80 ticks ("Flying is not enabled on this server"). The Anti Gravity Device and the Glider are motion-based by design, like GT's Jetpack, and need this setting like any other pack flight | [implementation-notes.md](05-armor/implementation-notes.md) (FLT-DEV-01) |

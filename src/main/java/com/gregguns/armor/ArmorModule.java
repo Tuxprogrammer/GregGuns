@@ -3,6 +3,8 @@ package com.gregguns.armor;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.gregguns.GregGuns;
+import com.gregguns.armor.flight.FlightEvents;
+import com.gregguns.armor.flight.FlightItems;
 import com.gregguns.armor.slots.AmmoPouch;
 import com.gregguns.armor.slots.EquipmentGuiHandler;
 import com.gregguns.armor.slots.EquipmentItems;
@@ -15,6 +17,7 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.item.gun.AmmoSources;
 import com.gregguns.recipe.ArmorRecipes;
 import com.gregguns.recipe.EquipmentRecipes;
+import com.gregguns.recipe.FlightRecipes;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -50,12 +53,14 @@ public final class ArmorModule implements GregGunsModule {
         ArmorParts.register(registrar);
         ArmorItems.register(registrar);
         EquipmentItems.register(registrar);
+        FlightItems.register(registrar);
         EquipmentKeybinds.register();
     }
 
     @Override
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(EVENTS);
+        MinecraftForge.EVENT_BUS.register(new FlightEvents());
         FMLCommonHandler.instance()
             .bus()
             .register(EVENTS);
@@ -64,9 +69,12 @@ public final class ArmorModule implements GregGunsModule {
         NetworkRegistry.INSTANCE.registerGuiHandler(GregGuns.instance, new EquipmentGuiHandler());
         EquipmentRecipes.register();
         ArmorRecipes.register();
+        FlightRecipes.register();
         if (DevEnvironment.isActive()) {
             ArmorScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            ArmorTierScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             SlotScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            FlightScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }
 }

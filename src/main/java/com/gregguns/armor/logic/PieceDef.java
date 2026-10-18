@@ -15,6 +15,9 @@ public final class PieceDef {
     private final String englishName;
     private final BonusMap bonuses;
     private final RepairSpec repair;
+    private final BonusMap poweredBonuses;
+    private final String registryName;
+    private final Set<HazardFlag> poweredPartialHazards;
     private final Set<HazardFlag> partialHazards;
     private final Set<HazardFlag> fullHazards;
 
@@ -23,6 +26,9 @@ public final class PieceDef {
         this.englishName = b.englishName;
         this.bonuses = b.bonuses;
         this.repair = b.repair;
+        this.poweredBonuses = b.poweredBonuses;
+        this.registryName = b.registryName;
+        this.poweredPartialHazards = Collections.unmodifiableSet(EnumSet.copyOf(b.poweredPartial));
         this.partialHazards = Collections.unmodifiableSet(EnumSet.copyOf(b.partial));
         this.fullHazards = Collections.unmodifiableSet(EnumSet.copyOf(b.full));
     }
@@ -43,6 +49,9 @@ public final class PieceDef {
         private final String englishName;
         private BonusMap bonuses = BonusMap.EMPTY;
         private RepairSpec repair;
+        private BonusMap poweredBonuses = BonusMap.EMPTY;
+        private String registryName;
+        private final EnumSet<HazardFlag> poweredPartial = EnumSet.noneOf(HazardFlag.class);
         private final EnumSet<HazardFlag> partial = EnumSet.noneOf(HazardFlag.class);
         private final EnumSet<HazardFlag> full = EnumSet.noneOf(HazardFlag.class);
 
@@ -66,6 +75,34 @@ public final class PieceDef {
          */
         public Builder repair(RepairSpec r) {
             this.repair = r;
+            return this;
+        }
+
+        /**
+         * @param b bonuses that only count while the set's chestplate is powered ({@link SetDef#power()})
+         * @return this
+         */
+        public Builder poweredBonuses(BonusMap b) {
+            this.poweredBonuses = b;
+            return this;
+        }
+
+        /**
+         * @param name the registry name, for a single-piece set whose item is not called {@code <set>_<slot>} (the
+         *             beret); null for the default
+         * @return this
+         */
+        public Builder registryName(String name) {
+            this.registryName = name;
+            return this;
+        }
+
+        /**
+         * @param flags partial hazards that only count while the set's chestplate is powered
+         * @return this
+         */
+        public Builder poweredPartialHazards(HazardFlag... flags) {
+            Collections.addAll(poweredPartial, flags);
             return this;
         }
 
@@ -106,6 +143,21 @@ public final class PieceDef {
     /** @return the piece's own bonuses */
     public BonusMap bonuses() {
         return bonuses;
+    }
+
+    /** @return the bonuses that need a powered chestplate; empty for an unpowered set */
+    public BonusMap poweredBonuses() {
+        return poweredBonuses;
+    }
+
+    /** @return the explicit registry name, or null when it is {@code <set>_<slot>} */
+    public String registryName() {
+        return registryName;
+    }
+
+    /** @return partial hazards that count only while the chestplate is powered */
+    public Set<HazardFlag> poweredPartialHazards() {
+        return poweredPartialHazards;
     }
 
     /** @return the repair recipe, or null */

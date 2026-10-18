@@ -62,7 +62,8 @@ class RepairSpecTest {
 
     @Test
     void everyT1PieceCanBeRepairedWithHeavyCloth() {
-        for (SetDef set : ArmorCatalog.ALL) {
+        for (SetDef set : java.util.Arrays
+            .asList(ArmorCatalog.T1_SCOUT, ArmorCatalog.T1_MINER, ArmorCatalog.T1_COMBAT)) {
             for (PieceDef p : set.pieces()
                 .values()) {
                 assertNotNull(p.repair(), set.id() + " " + p.slot());
@@ -96,6 +97,11 @@ class RepairSpecTest {
         for (SetDef set : ArmorCatalog.ALL) {
             for (PieceDef p : set.pieces()
                 .values()) {
+                if (p.repair() == null) {
+                    // The Commando set has no repair mats (armor-catalog 5.6).
+                    assertEquals("t2_commando", set.id());
+                    continue;
+                }
                 String prefix = p.repair()
                     .metalPrefix();
                 assertEquals(

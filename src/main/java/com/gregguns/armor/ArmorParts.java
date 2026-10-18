@@ -25,9 +25,18 @@ public final class ArmorParts {
     /** Registry name of the Compressed Air Tank. */
     public static final String TANK_AIR = "tank_air";
 
+    /** Registry name of the Glider Backpack (flight recipes). */
+    public static final String GLIDER_BACKPACK = "part_glider_backpack";
+    /** Registry name of the Glider Wing (flight recipes). */
+    public static final String GLIDER_WING = "part_glider_wing";
+
     private static ItemPart heavyCloth;
+    private static ItemPart gliderBackpack;
+    private static ItemPart gliderWing;
     private static ItemPart gasMaskFilter;
     private static ItemPart tankAir;
+    private static ItemPart treatedLeather;
+    private static ItemPart steamArmorPlating;
 
     private ArmorParts() {}
 
@@ -45,6 +54,24 @@ public final class ArmorParts {
         // the registry names.
         gasMaskFilter = registrar.registerItem(GAS_MASK_FILTER, new ItemPart(Tier.MV));
         tankAir = registrar.registerItem(TANK_AIR, new ItemPart(Tier.HV));
+        // Glider parts are defined by the armor recipes sheet (recipes.md, HV), which area 06 links to.
+        gliderBackpack = registrar.registerItem(GLIDER_BACKPACK, new ItemPart(Tier.HV));
+        gliderWing = registrar.registerItem(GLIDER_WING, new ItemPart(Tier.HV));
+        // Deviation: area 06 owns these two as well (RC-22, RC-23). The Ranger Veteran set and the steam armor need
+        // them
+        // now; delete these lines and keep the registry names when area 06 adds them.
+        treatedLeather = registrar.registerItem(ArmorCatalog.TREATED_LEATHER, new ItemPart(Tier.LV));
+        steamArmorPlating = registrar.registerItem(ArmorCatalog.STEAM_ARMOR_PLATING, new ItemPart(Tier.EV));
+    }
+
+    /** @return Treated Leather; null before registration or with the armor module off */
+    public static ItemPart treatedLeather() {
+        return treatedLeather;
+    }
+
+    /** @return Steam Armor Plating; null before registration or with the armor module off */
+    public static ItemPart steamArmorPlating() {
+        return steamArmorPlating;
     }
 
     /** @return Heavy Cloth; null before registration or with the armor module off */
@@ -55,6 +82,16 @@ public final class ArmorParts {
     /** @return the Gas Mask Filter; null before registration or with the armor module off */
     public static ItemPart gasMaskFilter() {
         return gasMaskFilter;
+    }
+
+    /** @return the Glider Backpack; null before registration or with the armor module off */
+    public static ItemPart gliderBackpack() {
+        return gliderBackpack;
+    }
+
+    /** @return the Glider Wing; null before registration or with the armor module off */
+    public static ItemPart gliderWing() {
+        return gliderWing;
     }
 
     /** @return the Compressed Air Tank; null before registration or with the armor module off */

@@ -27,6 +27,7 @@ public final class SetEvaluator {
         private final SetDef set;
         private final PieceDef piece;
         private final boolean broken;
+        private final boolean powered;
 
         /**
          * @param set    the piece's set
@@ -34,9 +35,21 @@ public final class SetEvaluator {
          * @param broken whether the stack is broken
          */
         public Worn(SetDef set, PieceDef piece, boolean broken) {
+            this(set, piece, broken, false);
+        }
+
+        /**
+         * @param set     the piece's set
+         * @param piece   the piece
+         * @param broken  whether the stack is broken
+         * @param powered whether the set's chestplate is worn, intact and charged; switches on the piece's
+         *                {@link PieceDef#poweredBonuses()}
+         */
+        public Worn(SetDef set, PieceDef piece, boolean broken, boolean powered) {
             this.set = set;
             this.piece = piece;
             this.broken = broken;
+            this.powered = powered;
         }
     }
 
@@ -88,6 +101,9 @@ public final class SetEvaluator {
                 continue;
             }
             total = total.plus(w.piece.bonuses());
+            if (w.powered) {
+                total = total.plus(w.piece.poweredBonuses());
+            }
             counts.merge(w.set.id(), 1, Integer::sum);
             sets.put(w.set.id(), w.set);
         }

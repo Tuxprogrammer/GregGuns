@@ -62,5 +62,14 @@
       "effects/explosion1_d",
       "effects/explosion1_e"
     ]
+  },
+  "effects.steamarmor_jump": {
+    "category": "player",
+    "sounds": [
+      "effects/steamarmor_jump_a",
+      "effects/steamarmor_jump_b",
+      "effects/steamarmor_jump_c",
+      "effects/steamarmor_jump_d"
+    ]
   }
 }

@@ -96,7 +96,11 @@ final class ArmorScenarios {
         }
 
         void wearAll(SetDef set) {
-            wear(set, ArmorSlot.values());
+            wear(
+                set,
+                set.pieces()
+                    .keySet()
+                    .toArray(new ArmorSlot[0]));
         }
 
         void undress() {
@@ -426,7 +430,7 @@ final class ArmorScenarios {
 
         @Override
         public String description() {
-            return "T1 sets give no GT hazmat; a test set with flags on every piece is full hazmat for those hazards only, and a single gas-mask piece covers GAS alone; no set claims SPACE.";
+            return "Every catalog set is GT hazmat against exactly the hazards its pieces list (T1 none, T2 Commando ELECTRICAL, Riot RADIOLOGICAL, steam HEAT, HEV BIOLOGICAL, GAS and RADIOLOGICAL while uncharged); a test set with flags on every piece is full hazmat for those hazards only, and a single gas-mask piece covers GAS alone; no set claims SPACE.";
         }
 
         private SetDef synthetic() {
@@ -451,6 +455,27 @@ final class ArmorScenarios {
             return syntheticSet;
         }
 
+        private static boolean coversAll(SetDef set, Hazard hazard) {
+            for (PieceDef piece : set.pieces()
+                .values()) {
+                boolean covered = false;
+                for (HazardFlag f : HazardFlag.values()) {
+                    if (f.name()
+                        .equals(hazard.name())
+                        && (piece.partialHazards()
+                            .contains(f)
+                            || piece.fullHazards()
+                                .contains(f))) {
+                        covered = true;
+                    }
+                }
+                if (!covered) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
@@ -460,9 +485,12 @@ final class ArmorScenarios {
                     p.undress();
                     p.wearAll(set);
                     for (Hazard h : Hazard.values()) {
+                        // Expected: GT needs all four slots to carry the flag. Powered flags are off (nothing is
+                        // charged here); armor.t3.hev and armor.steam.power check the charged state.
+                        boolean want = set.pieceCount() == 4 && coversAll(set, h);
                         out.check(
-                            !HazardProtection.isWearingFullHazmatAgainst(p, h),
-                            set.id() + " must not be hazmat against " + h);
+                            HazardProtection.isWearingFullHazmatAgainst(p, h) == want,
+                            set.id() + (want ? " must be hazmat against " : " must not be hazmat against ") + h);
                     }
                 }
                 SetDef test = synthetic();
