@@ -38,3 +38,49 @@ T1 Combat (A = 15), Scout and Miner (A = 13); other types 75% of A, poison and r
 - **Camo switching.** `ItemGregGunsArmor.getCamo` and `setCamo` exist for the Camo Bench (M4); there is no in-hand switch.
 - **Gun accuracy.** `ArmorBonus.GUN_ACCURACY` is readable through `Armor.bonus`; the gun spread code does not read it yet (gun framework is M2's).
 - **Pack fall handlers.** The server has another fall handler that shortens a 5-block fall to 4 before ours, so scenario fall figures are measured against that baseline.
+
+
+---
+
+# M3 wave A: special slots and equipment (implementation notes and deviations)
+
+Branch `m3/slots-equipment`. Code: `com.gregguns.armor.slots` (items, Baubles access, GUI, per-player tick), `com.gregguns.armor.slots.logic` (pure rules), `com.gregguns.armor.oxygen` (fallback items) and `.oxygen.gc` (Galacticraft subclasses), `com.gregguns.recipe.EquipmentTable` and `EquipmentRecipes`.
+
+## Shape
+
+- `BaublesCompat` is the only class that links Baubles Expanded (nested `Impl`, loaded after `Loader.isModLoaded`). Equipment is found by slot type through `BaubleExpandedSlots.getIndexesOfAssignedSlotsOfType`, never by a fixed index.
+- `ItemBauble` is the base of the goggles, the Ammo Pouch, back devices and the fallback Oxygen Mask. `@Optional.Interface` strips `IBaubleExpanded` and `@Optional.Method` strips every method that names a Baubles type when the mod is absent.
+- `SlotEquipment` (one instance, owned by `ArmorEvents`) runs once per server player tick, from the same `ArmorEvents.update` that applies armor bonuses: goggles and Tactical Mask night vision (the result is fed into the existing `NightVisionPolicy`, so potions are safe), Gas Mask and Tactical Mask cure, and the `wings` back device.
+- Back-device hook: `BackDevice` (`onBackTick`, `onBackRemoved`, `onBackKey`) and the base class `ItemBackDevice`. A flight item extends `ItemBackDevice` and registers itself; its keybind calls `SlotEquipment.backKey(player, down)`.
+- Ammo hook: `com.gregguns.item.gun.AmmoSources` (a provider list). `PlayerAmmoStore` searches the providers' inventories before the main inventory in `count` and `remove`. The armor module registers `AmmoPouch.SOURCE` (the worn `quiver` pouch). This is purely additive to the gun framework: two small loops in `PlayerAmmoStore`; `add` (refunds) still goes to the main inventory only.
+- Masks are helmet-slot `ItemArmor` subclasses (`ItemHelmetMask`) so GT's hazard check sees them; they have no armor value and take no wear from hits.
+- Electric items: `ElectricGear` wraps IC2's `ElectricItem.manager`; the charge is IC2's standard NBT, `getTier` is the GT voltage index, `getTransferLimit` is `GTValues.V[tier]` (GGS-05-14).
+
+## Deviations
+
+| Id | Spec | GregGuns | Why |
+|---|---|---|---|
+| SLOT-DEV-01 | `onWornTick` runs the effects server-side | Effects run from `SlotEquipment.tick`, called by `ArmorEvents.update`; `onWornTick` is empty | One tick path that scenarios can drive on a fake player (Baubles never ticks a fake player) |
+| SLOT-DEV-02 | Goggles toggle by "keybind or right-click" | Key (default N, `key.gregguns.night_vision`) toggles the worn goggles or Tactical Mask; right-click equips (Baubles helper). A stack with no stored switch is on | Matches the Techguns default-on `enableNightVision` and the Baubles right-click convention |
+| SLOT-DEV-03 | Goggles power unspecified (recipes.md open question) | MV electric item, 100,000 EU, 2 EU/t (GT Mech Armor rate), all config | 0003: capacities are config options |
+| SLOT-DEV-04 | Tactical Mask at MV (hazard-protection.md) | HV | recipes.md and 0010 decision 5: it consumes the HV Oxygen Mask. The hazard-protection.md table still says MV |
+| SLOT-DEV-05 | Tactical Mask cures Poison and Wither for 1 damage each | Costs the night-vision EU drain per cure, only with charge. GAS and BIOLOGICAL protection stays when empty | Passive flags do not depend on charge (GGS-05-11) |
+| SLOT-DEV-06 | Gas Mask works while "not empty" | "Spent" is one point earlier: `FilterWear.spent` is `damage >= max - 1`, as for all GregGuns armor that never breaks | Consistency with `ArmorProtection.isBroken`. A spent filter also gives no GAS protection |
+| SLOT-DEV-07 | Ammo Pouch recipe assumed from area 06 | New MV Assembler recipe EQ-03: Heavy Cloth x3, leather x2, `plate.Aluminium`, circuit 1, 10 s | Neither sheet defines one; the quest line lists the pouch at MV |
+| SLOT-DEV-08 | Ammo Pouch has food slots in Techguns | Six ammunition slots only; accepts loose rounds, loaded and empty magazines and grenades | Open question in baubles-slots.md answered: dropped |
+| SLOT-DEV-09 | Gas Mask Filter (RC-25) and Compressed Air Tank (RC-54) belong to area 06 | Both registered by `ArmorParts` as plain parts with their recipes; the tank has no `IFluidContainerItem` behavior yet | Needed by the Gas Mask and Oxygen Tanks recipes. When area 06 adds them, delete the two registrations and keep the names |
+| SLOT-DEV-10 | Oxygen Tanks refill from compressed air | Shapeless recipe: Oxygen Tanks (any damage) plus a Compressed Air Tank gives full tanks; Galacticraft's own compressor is an additional route | The Techguns automatic reload from the inventory is not kept |
+| SLOT-DEV-11 | One GUI handler per mod (FML) | `EquipmentGuiHandler` is registered for GregGuns; ids 1 and 2 are the pouch (held, worn) | A later module that needs a vanilla-style GUI adds ids there |
+| SLOT-DEV-12 | Space protection | `Hazard.SPACE` is never claimed; tooltips say a full spacesuit may be needed | oxygen-gear.md, GGS-05-28 |
+
+## Not verified here
+
+- Galacticraft is on the compile classpath but not on the dev runtime classpath, so `OxygenMaskGC` and `OxygenTanksGC` compile but have never run. The scenarios exercise the fallback items. The pack run (orchestrator) must check: both items register, the mask fits the GC mask slot, the tanks fit a tank slot and drain one point per 9 ticks, and `ItemTacticalMask` answers `IBreathableArmor`.
+- The Gas Mask and Tactical Mask `getArmorTexture` returns the Techguns-style model sheet (`textures/models/armor/gas_mask.png`, 128 x 64). Like ARM-DEV-12 it will not map correctly on the vanilla biped model; a model class is future client work. Goggles, the back devices and the pouch have no worn model.
+- `GuiAmmoPouch` (vanilla chest sheet with three slot cells painted over) has not been looked at.
+
+## Open questions
+
+- A dedicated `gregguns_back` slot type is not requested (0009 #2). The `wings` slot is shared with GT's MagLev Harness; a player wearing it cannot wear a GregGuns back device.
+- Whether the Oxygen Mask needs a "gear" component of its own (oxygen-gear.md open question) is unchanged; only helmets that implement `IBreathableArmor` supply `GEAR`.
+- Jump Pack and Anti Gravity Device recipes stay with the flight branch (they need the Glider Backpack part).

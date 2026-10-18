@@ -53,6 +53,18 @@ Both keys are synced from server to client (GGS-01-03). Block removal always pas
 | `explosions.blockDamage` | boolean | `false` | n/a | yes | Whether GregGuns explosions remove blocks. Off: they still hurt entities. An NPC-caused blast also needs the `mobGriefing` gamerule. |
 | `explosions.selfDamage` | boolean | `true` | n/a | yes | Whether the player who set off an explosion can be hurt by it (fixes PFX-25). |
 
+## Equipment (`equipment`)
+
+All keys are synced. Used by the special-slot equipment of the armor module ([baubles-slots.md](gregguns-spec/05-armor/baubles-slots.md), [oxygen-gear.md](gregguns-spec/05-armor/oxygen-gear.md)).
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `equipment.nightVisionCapacityEu` | int | `100000` | 1000 to 100000000 | yes | EU the Night Vision Goggles hold (MV electric item). |
+| `equipment.nightVisionDrainEuPerTick` | int | `2` | 0 to 1000 | yes | EU per tick the goggles and the Tactical Mask draw while night vision is on (GT's Mech Armor draws 2). |
+| `equipment.tacticalMaskCapacityEu` | int | `200000` | 1000 to 100000000 | yes | EU the Tactical Mask holds (HV electric item). |
+| `equipment.gasMaskFilterTicks` | int | `300` | 2 to 100000 | yes | Poison or wither cure ticks one Gas Mask filter holds. |
+| `equipment.oxygenTankCapacity` | int | `2000` | 100 to 100000 | yes | Air units the Oxygen Tanks hold (their durability). Galacticraft's tier 2 tank is 2000. |
+
 ## Client (`client`)
 
 Display options for the local player only. Not synced.

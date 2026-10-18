@@ -20,7 +20,14 @@ import cpw.mods.fml.common.registry.GameRegistry;
  */
 public final class ArmorParts {
 
+    /** Registry name of the Gas Mask Filter (RC-25). */
+    public static final String GAS_MASK_FILTER = "part_gas_mask_filter";
+    /** Registry name of the Compressed Air Tank. */
+    public static final String TANK_AIR = "tank_air";
+
     private static ItemPart heavyCloth;
+    private static ItemPart gasMaskFilter;
+    private static ItemPart tankAir;
 
     private ArmorParts() {}
 
@@ -31,11 +38,28 @@ public final class ArmorParts {
      */
     public static void register(ModuleRegistrar registrar) {
         heavyCloth = registrar.registerItem(ArmorCatalog.HEAVY_CLOTH, new ItemPart(Tier.STEAM));
+        // Deviation: area 06 owns both items. The filter is a plain part here (RC-25); the Compressed Air Tank is a
+        // plain
+        // part too, without the 1,000 mB IFluidContainerItem behavior of GGS-06-40, because the Oxygen Tanks recipe
+        // and the refill need an item named tank_air today. When area 06 adds them, delete these two lines and keep
+        // the registry names.
+        gasMaskFilter = registrar.registerItem(GAS_MASK_FILTER, new ItemPart(Tier.MV));
+        tankAir = registrar.registerItem(TANK_AIR, new ItemPart(Tier.HV));
     }
 
     /** @return Heavy Cloth; null before registration or with the armor module off */
     public static ItemPart heavyCloth() {
         return heavyCloth;
+    }
+
+    /** @return the Gas Mask Filter; null before registration or with the armor module off */
+    public static ItemPart gasMaskFilter() {
+        return gasMaskFilter;
+    }
+
+    /** @return the Compressed Air Tank; null before registration or with the armor module off */
+    public static ItemPart tankAir() {
+        return tankAir;
     }
 
     /** Adds RC-21: four wool blocks around a leather make three Heavy Cloth. Call from {@code ArmorModule.init}. */

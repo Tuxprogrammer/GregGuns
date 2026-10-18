@@ -21,6 +21,7 @@ import com.gregguns.armor.logic.BonusLifecycle;
 import com.gregguns.armor.logic.BonusMap;
 import com.gregguns.armor.logic.FallMath;
 import com.gregguns.armor.logic.NightVisionPolicy;
+import com.gregguns.armor.slots.SlotEquipment;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
@@ -59,6 +60,7 @@ public final class ArmorEvents {
 
     private final BonusLifecycle<UUID> lifecycle = new BonusLifecycle<>();
     private final Set<UUID> nightVisionOwned = new HashSet<>();
+    private final SlotEquipment slots = new SlotEquipment();
 
     // --- tick
     // ---------------------------------------------------------------------------------------------------------
@@ -95,7 +97,9 @@ public final class ArmorEvents {
         if (change.changed()) {
             writeAttributes(player, change.now());
         }
-        updateNightVision(player, worn.get(ArmorBonus.NIGHT_VISION) > 0.0);
+        // Special-slot gear (goggles, Tactical Mask, masks, back device) ticks here too and may want night vision.
+        boolean gear = slots.tick(player);
+        updateNightVision(player, worn.get(ArmorBonus.NIGHT_VISION) > 0.0 || gear);
     }
 
     private void writeAttributes(EntityPlayer player, BonusMap now) {
@@ -177,6 +181,7 @@ public final class ArmorEvents {
             return;
         }
         lifecycle.forget(player.getUniqueID());
+        slots.forget(player);
         writeAttributes(player, BonusMap.EMPTY);
         updateNightVision(player, false);
     }
