@@ -21,7 +21,8 @@ public interface ProjectileLauncher {
      * @param shooter     the player, NPC or turret that fired; becomes the damage source's attacker
      * @param stats       the firing gun's stats: damage, drop-off, speed, lifetime, penetration, projectile kind
      * @param offset      the spread offset for this projectile, from {@code SpreadModel}
-     * @param damageScale multiplier on the gun's damage, for NPC and turret damage factors; 1 for players
+     * @param damageScale multiplier on the gun's damage; 1 for everyone, because the PvP, NPC and turret damage factors
+     *                    are applied at the hit by DamageSources.hit
      */
     void launch(World world, EntityLivingBase shooter, GunStats stats, ShotOffset offset, float damageScale);
 }

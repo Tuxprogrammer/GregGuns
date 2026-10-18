@@ -11,7 +11,9 @@ import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,6 +48,7 @@ final class CombatScenarios {
         registry.register(new Penetration());
         registry.register(new PlayerArmour());
         registry.register(new Frames());
+        registry.register(new Rejected());
         registry.register(new Listeners());
         registry.register(new Hazmat());
     }
@@ -300,6 +303,72 @@ final class CombatScenarios {
                 near(4.0F, 10.0F - z.getHealth()),
                 "ignoring hit inside frames: expected full 4, got " + (10.0F - z.getHealth()));
             out.checkEquals("frames restored", 15, z.hurtResistantTime);
+            return out.build();
+        }
+    }
+
+    /**
+     * Hits vanilla rejects after the attack event must not leave the target's frames cleared: dead, invulnerable, and
+     * fire against Fire Resistance, by raw {@code attackEntityFrom} and by {@link DamageSources#hit}.
+     */
+    private static final class Rejected implements Scenario {
+
+        @Override
+        public String name() {
+            return "combat.rejected";
+        }
+
+        @Override
+        public String description() {
+            return "Ignoring-frames hits that vanilla rejects (dead, invulnerable, fire vs Fire Resistance) leave the frames at 15 and the health alone.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+
+            EntityPig dead = spawn(ctx, new EntityPig(ctx.world()), 0);
+            dead.setHealth(0.0F);
+            dead.hurtResistantTime = 15;
+            dead.attackEntityFrom(DamageSources.direct(DamageType.PROJECTILE, null, 0.0), 4.0F);
+            out.checkEquals("dead target: frames", 15, dead.hurtResistantTime);
+            ctx.despawn(dead);
+
+            EntityPig inv = spawn(ctx, new EntityPig(ctx.world()), 0);
+            NBTTagCompound tag = new NBTTagCompound();
+            inv.writeToNBT(tag);
+            tag.setBoolean("Invulnerable", true);
+            inv.readFromNBT(tag);
+            inv.setHealth(10.0F);
+            inv.hurtResistantTime = 15;
+            inv.attackEntityFrom(DamageSources.direct(DamageType.PROJECTILE, null, 0.0), 4.0F);
+            out.check(inv.isEntityInvulnerable(), "test setup: the pig should be invulnerable");
+            out.checkEquals("invulnerable target: frames", 15, inv.hurtResistantTime);
+            out.check(near(10.0F, inv.getHealth()), "invulnerable target lost health: " + inv.getHealth());
+            ctx.despawn(inv);
+
+            EntityPig resistant = spawn(ctx, new EntityPig(ctx.world()), 0);
+            resistant.addPotionEffect(new PotionEffect(Potion.fireResistance.id, 200, 0));
+            resistant.setHealth(10.0F);
+            resistant.hurtResistantTime = 15;
+            resistant.attackEntityFrom(DamageSources.direct(DamageType.FIRE, null, 0.0), 4.0F);
+            out.checkEquals("fire vs Fire Resistance: frames", 15, resistant.hurtResistantTime);
+            out.check(near(10.0F, resistant.getHealth()), "Fire Resistance lost health: " + resistant.getHealth());
+            resistant.hurtResistantTime = 15;
+            boolean taken = DamageSources.hit(resistant, DamageType.FIRE, null, null, 4.0F, 0.0);
+            out.check(!taken, "DamageSources.hit should report the rejection");
+            out.checkEquals("fire vs Fire Resistance via hit(): frames", 15, resistant.hurtResistantTime);
+
+            // Control: the same hit on a healthy, unprotected pig still lands in full inside the frames.
+            resistant.removePotionEffect(Potion.fireResistance.id);
+            resistant.hurtResistantTime = 15;
+            resistant.setHealth(10.0F);
+            resistant.attackEntityFrom(DamageSources.direct(DamageType.PROJECTILE, null, 0.0), 4.0F);
+            out.check(
+                near(4.0F, 10.0F - resistant.getHealth()),
+                "control hit: expected 4 lost, got " + (10.0F - resistant.getHealth()));
+            out.checkEquals("control: frames restored", 15, resistant.hurtResistantTime);
+            ctx.despawn(resistant);
             return out.build();
         }
     }

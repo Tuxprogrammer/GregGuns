@@ -28,7 +28,13 @@ class ConfigRulesTest {
         .asList("oregen", "datawatcher", "tabid", "guitab", "versionchecker", "versioncheck", "oilhole", "orecluster");
 
     /** Fields expected to carry Config.Sync, as "Class.field". Update this with every synced field you add. */
-    private static final Set<String> EXPECTED_SYNCED = new TreeSet<>();
+    private static final Set<String> EXPECTED_SYNCED = new TreeSet<>(
+        Arrays.asList(
+            "DamageFactorsConfig.damagePvP",
+            "DamageFactorsConfig.damageTurretToPlayer",
+            "DamageFactorsConfig.damageFactorNPC",
+            "DamageFactorsConfig.armorPenetrationMultiplierNPCtoPlayer",
+            "DamageFactorsConfig.armorPenetrationMultiplierPvP"));
 
     private static Set<String> tokens(String key) {
         Set<String> result = new HashSet<>();

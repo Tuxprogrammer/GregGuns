@@ -45,7 +45,8 @@ final class HitResolver {
         // Reset first: a source reused for a second hit must let our own ApplyArmor call see a blockable source.
         hit.setArmourSettled(false);
 
-        double pen = DamageModel.effectivePenetration(hit.penetration(), 1.0, penetrationResistance(target, type));
+        double pen = DamageModel
+            .effectivePenetration(hit.penetration(), hit.penetrationScale(), penetrationResistance(target, type));
         DoubleUnaryOperator armour = armourFor(target, type, vanilla);
         float result = (float) DamageModel.resolve(type, amount, pen, armour);
         hit.setArmourSettled(true);
