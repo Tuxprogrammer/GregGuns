@@ -271,6 +271,8 @@ public final class ClientAutotest {
             }
             case "gui" -> AutotestCommands.openGui(args);
             case "hold" -> AutotestCommands.hold(args[0]);
+            case "scope" -> com.gregguns.client.render.GunRenderers
+                .setDebugScope("off".equals(args[0]) ? null : args[0]);
             case "creativegive" -> AutotestCommands.creativeGive(args[0]);
             case "quit" -> {
                 log("quit (client " + localName() + ")");

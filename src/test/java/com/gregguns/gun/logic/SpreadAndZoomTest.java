@@ -103,6 +103,50 @@ class SpreadAndZoomTest {
     }
 
     @Test
+    void pelletOffsetsReplayTheSeededRandomInOrder() {
+        // One shot = the main projectile (spread 0.05, +-2 degrees) then four pellets (spread 0.2, +-8 degrees), each
+        // taking a yaw then a pitch from the random source. Replaying the same seed by hand must give the same list.
+        Random replay = new Random(2024);
+        double[] spreads = { 0.05, 0.2, 0.2, 0.2, 0.2 };
+        ShotOffset[] shot = SpreadModel.roll(new Random(2024), SHOTGUN, ShotContext.DEFAULT, 0);
+        assertEquals(5, shot.length);
+        for (int i = 0; i < shot.length; i++) {
+            double max = spreads[i] * 40.0;
+            double yaw = (replay.nextDouble() * 2.0 - 1.0) * max;
+            double pitch = (replay.nextDouble() * 2.0 - 1.0) * max;
+            assertEquals(yaw, shot[i].yawDegrees(), 1e-12, "yaw " + i);
+            assertEquals(pitch, shot[i].pitchDegrees(), 1e-12, "pitch " + i);
+            assertEquals(0.0, shot[i].forwardTickFraction(), "a spread shotgun does not stagger its pellets");
+        }
+    }
+
+    @Test
+    void pelletsDifferFromEachOtherAndFillTheirCone() {
+        Random rnd = new Random(77);
+        double maxYaw = 0;
+        for (int i = 0; i < 4000; i++) {
+            ShotOffset[] s = SpreadModel.roll(rnd, SHOTGUN, ShotContext.DEFAULT, 0);
+            assertTrue(s[1].yawDegrees() != s[2].yawDegrees(), "two pellets of a shot must not share a direction");
+            for (int p = 1; p < s.length; p++) {
+                maxYaw = Math.max(maxYaw, Math.abs(s[p].yawDegrees()));
+            }
+        }
+        assertTrue(maxYaw > 7.8 && maxYaw <= 8.0, "pellets should reach the edge of their +-8 degree cone: " + maxYaw);
+    }
+
+    @Test
+    void zoomTightensPelletsToo() {
+        GunStats scopedShotgun = GunStats.builder("s")
+            .ammoType("a")
+            .magazine(8)
+            .spread(0.05)
+            .zoom(0.5, 0.5)
+            .pellets(4, 0.2, false)
+            .build();
+        assertEquals(0.1, SpreadModel.pelletSpread(scopedShotgun, ShotContext.player(true, 0)), 1e-12);
+    }
+
+    @Test
     void inLinePelletsAreSpacedAlongTheFlightPath() {
         ShotOffset[] s = SpreadModel.roll(new Random(0), LINE, ShotContext.DEFAULT, 0);
         assertEquals(3, s.length);

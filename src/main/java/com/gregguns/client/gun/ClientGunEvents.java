@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 
 import com.gregguns.client.GunsClientModule;
 import com.gregguns.client.render.GunAnimations;
+import com.gregguns.client.render.GunRenderers;
 import com.gregguns.gun.GunClientEvents;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.item.gun.ItemGun;
@@ -86,8 +87,10 @@ public final class ClientGunEvents implements GunClientEvents {
             return;
         }
         if (zoomed && fovMultiplier < 1.0) {
-            // A gun with a zoom factor below 1 is scoped; the scope texture per gun arrives with the M2 rifles.
-            animations.setZoom((float) fovMultiplier, true);
+            // The FOV factor is the gun's GunStats zoom; the overlay is drawn only if its render profile has a
+            // ScopeSpec (texture and kick), so both are per-gun data.
+            ItemGun gun = heldGun(entity);
+            animations.setZoom((float) fovMultiplier, gun != null && GunRenderers.hasScopeOverlay(gun));
         } else {
             animations.clearZoom();
         }

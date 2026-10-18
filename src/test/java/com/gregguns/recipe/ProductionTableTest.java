@@ -29,6 +29,8 @@ class ProductionTableTest {
     @Test
     void rowsMatchTheSheetCountsAndDurations() {
         // docs/gregguns-spec/06-items/recipes.md, RC-05, RC-11, RC-28, RC-37, RC-44.
+        assertEquals(1, row("RC-04").outputCount());
+        assertEquals(5, row("RC-04").seconds());
         assertEquals(1, row("RC-05").outputCount());
         assertEquals(6, row("RC-05").seconds());
         assertEquals(2, row("RC-11").outputCount());

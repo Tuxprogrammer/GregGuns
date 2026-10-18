@@ -102,7 +102,8 @@ Code: `com.gregguns.combat`. Decision: [0009 #3](../../design/0009-gtnh-integrat
   - GUN-06 (NPC accuracy applied twice) is an accuracy/spread bug in the gun and NPC code, not in the damage path. It belongs to M2/M7.
   - (Built in the hardening pass, see "Damage factors" below.) The Techguns damage-factor table and the `ArmorPenetrationMultiplier*` configs now exist.
   - Mobs do not lose armor durability (vanilla 1.7.10 does not wear mob armor).
-  - GUN-36, GUN-37, GUN-38, GUN-41, GUN-42, GUN-35 do not apply: vanilla sources are never converted, knockback is vanilla's, and absorption is subtracted once by vanilla.
+  - GUN-36, GUN-37, GUN-41, GUN-42, GUN-35 do not apply: vanilla sources are never converted and absorption is subtracted once by vanilla.
+  - **GUN-38 (knockback strength) is fixed in M2.** Vanilla 1.7.10 `knockBack` ignores its strength, so Techguns' x1.5 to x10 multipliers all pushed like x1. `GunStats.knockback()` (default 1) is applied by `GenericProjectile.onEntityHit`: after `DamageSources.hit` lets vanilla push the target, the change in the target's velocity is scaled by the multiplier (`Knockback.scale`: 0 cancels the push, 2 doubles it) and the entity is flagged so a player's client receives it. Tests: `KnockbackTest.doesNotReproduceGUN38_*`, scenario `gun.knockback`. Explosions keep their own knockback (M2 grenades and launchers).
 - **Drop-off** is `DamageFalloff.damageAt(base, min, start, end, distance)`, pure logic for the projectiles to call.
 
 ## Damage factors (hardening pass)
