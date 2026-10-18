@@ -73,3 +73,22 @@ item.gregguns.part_mechanical_2.name=Mechanical Parts T2
 gregguns.ammoPress=Ammo Press
 gregguns.machine.ammo_press.tooltip=Presses bullets and magazines
 gregguns.machine.ammo_press.type=Machine Type: Ammo Press
+
+# Guns: items, tooltips, keys and HUD
+item.gregguns.pistol_9mm.name=9mm Pistol
+gregguns.gun.tooltip.ammo=Ammo: %s
+gregguns.gun.tooltip.loaded=Loaded: %s / %s
+gregguns.gun.tooltip.damage=Damage: %s
+gregguns.gun.tooltip.shift=Press [SHIFT] for detailed tooltip
+gregguns.gun.tooltip.damage_type=Damage type: %s
+gregguns.gun.tooltip.range=Range: %s blocks (reach %s)
+gregguns.gun.tooltip.spread=Spread: %s
+gregguns.gun.tooltip.clipsize=Magazine: %s
+gregguns.gun.tooltip.reload_time=Reload time: %ss
+gregguns.gun.tooltip.armor_pen=Armour penetration: %s%%
+gregguns.gun.tooltip.zoom=Zoom: x%s field of view
+key.categories.gregguns=GregGuns
+key.gregguns.reload=Reload gun
+gregguns.hud.rounds=Rounds: %s / %s
+gregguns.hud.magazines=Magazines: %s
+gregguns.hud.reloading=Reloading %s%%

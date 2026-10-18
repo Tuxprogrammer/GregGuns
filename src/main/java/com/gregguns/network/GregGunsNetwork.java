@@ -1,10 +1,14 @@
 package com.gregguns.network;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.gregguns.GregGuns;
+import com.gregguns.gun.net.PacketGunEvent;
+import com.gregguns.gun.net.PacketGunTrigger;
+import com.gregguns.gun.net.PacketGunZoom;
 import com.gregguns.network.validation.LimitedRejectionSink;
 import com.gregguns.network.validation.RateLimiter;
 import com.gregguns.network.validation.RejectionSink;
@@ -99,13 +103,14 @@ public final class GregGunsNetwork {
         return REJECTIONS;
     }
 
-    /** Returns one instance of each server-to-client packet, in wire order. None yet; M1 adds fire and reload. */
+    /** Returns one instance of each server-to-client packet, in wire order. Append only. */
     public static List<IPacket> clientboundPackets() {
-        return Collections.<IPacket>emptyList();
+        return Collections.<IPacket>unmodifiableList(Arrays.<IPacket>asList(new PacketGunEvent()));
     }
 
-    /** Returns one instance of each client-to-server packet, in wire order. None yet; M1 adds fire and reload. */
+    /** Returns one instance of each client-to-server packet, in wire order. Append only. */
     public static List<IPacket> serverboundPackets() {
-        return Collections.<IPacket>emptyList();
+        return Collections
+            .<IPacket>unmodifiableList(Arrays.<IPacket>asList(new PacketGunTrigger(), new PacketGunZoom()));
     }
 }

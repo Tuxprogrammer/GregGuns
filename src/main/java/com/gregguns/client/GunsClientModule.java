@@ -1,5 +1,6 @@
 package com.gregguns.client;
 
+import com.gregguns.client.gun.GunClientSetup;
 import com.gregguns.client.projectile.ProjectileRenderers;
 import com.gregguns.client.render.GunAnimations;
 import com.gregguns.client.render.GunRenderClient;
@@ -40,5 +41,6 @@ public final class GunsClientModule implements ClientModule {
         // Renderers, HUD overlays and keybinds: one call per area.
         ProjectileRenderers.register();
         GunRenderClient.init(ANIMATIONS);
+        GunClientSetup.init();
     }
 }
