@@ -1,2 +1,5 @@
 # GregGuns English strings. This file is the source of truth for every player-visible string (CONTRIBUTING.md).
 # Keys: item.gregguns.<name>, tile.gregguns.<name>, gregguns.<area>.<key>. Keep sections grouped by area.
+
+# Creative tab (placeholder icon: vanilla arrow until the first GregGuns item exists)
+itemGroup.gregguns=GregGuns

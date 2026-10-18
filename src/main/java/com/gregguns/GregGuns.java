@@ -23,6 +23,10 @@ public class GregGuns {
     public static final String DEPENDENCIES = "required-after:gregtech;required-after:gtnhlib";
     public static final Logger LOG = LogManager.getLogger(MODID);
 
+    /** The mod instance, needed by Forge's entity registry. */
+    @Mod.Instance(MODID)
+    public static GregGuns instance;
+
     @SidedProxy(clientSide = "com.gregguns.ClientProxy", serverSide = "com.gregguns.CommonProxy")
     public static CommonProxy proxy;
 

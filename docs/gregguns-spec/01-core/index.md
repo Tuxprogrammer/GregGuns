@@ -13,6 +13,7 @@ Two Techguns integrations do not exist in the pack. FTB Utilities is not install
 | File | Topic |
 |---|---|
 | [config-gtnhlib.md](config-gtnhlib.md) | `@Config` classes, `@Config.Sync`, which Techguns keys disappear |
+| [../../config.md](../../config.md) | Reference for every config option and module flag: default, range, synced or not |
 | [networking-gtnhlib.md](networking-gtnhlib.md) | `IPacket` and `NetworkChannel`, thread safety, DataWatcher limit, potion array |
 | [keybinds.md](keybinds.md) | `SyncedKeybind`, server-side key state, pack key facts |
 | [team-relations.md](team-relations.md) | GTNHLib teams and ServerUtilities allies instead of FTBU friends |
