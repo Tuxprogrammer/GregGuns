@@ -34,4 +34,14 @@ public interface Scenario {
     default boolean includedInAll() {
         return true;
     }
+
+    /**
+     * The half-size in blocks of the area around this scenario's origin that is kept loaded (Forge chunk tickets) and
+     * cleared to air over a stone floor before {@link #run}. Clamped to {@link ScenarioArea#MAX_RADIUS}.
+     *
+     * @return the radius; the default covers origin +- {@value ScenarioArea#RADIUS}
+     */
+    default int areaRadius() {
+        return ScenarioArea.RADIUS;
+    }
 }
