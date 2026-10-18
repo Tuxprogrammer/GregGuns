@@ -78,6 +78,18 @@ All keys are synced. Used by the special-slot equipment of the armor module ([ba
 | `equipment.gasMaskFilterTicks` | int | `300` | 2 to 100000 | yes | Poison or wither cure ticks one Gas Mask filter holds. |
 | `equipment.oxygenTankCapacity` | int | `2000` | 100 to 100000 | yes | Air units the Oxygen Tanks hold (their durability). Galacticraft's tier 2 tank is 2000. |
 
+## Flight (`flight`)
+
+All keys are synced. Used by the back devices of the armor module ([powered-flight.md](gregguns-spec/05-armor/powered-flight.md)). The Glider uses no energy and has no keys.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `flight.jumpPackCapacityEu` | int | `1000000` | 1000 to 100000000 | yes | EU the Jump Pack holds (HV electric item). |
+| `flight.jumpPackJumpCostEu` | int | `2000` | 0 to 1000000 | yes | EU one boost jump costs. |
+| `flight.jumpPackFallCostEu` | int | `1000` | 0 to 1000000 | yes | EU the pack spends to absorb one fall longer than 3 blocks. |
+| `flight.antiGravityCapacityEu` | int | `2000000` | 1000 to 1000000000 | yes | EU the Anti Gravity Device holds (IV electric item). |
+| `flight.antiGravityDriveEuPerTick` | int | `100` | 0 to 100000 | yes | EU per tick the device draws while it is flying; about 17 minutes of flight on a full charge. |
+
 ## Client (`client`)
 
 Display options for the local player only. Not synced.

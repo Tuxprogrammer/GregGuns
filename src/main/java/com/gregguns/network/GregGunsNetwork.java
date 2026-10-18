@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.gregguns.GregGuns;
+import com.gregguns.armor.flight.PacketFlightStatus;
 import com.gregguns.gun.net.PacketGunEvent;
 import com.gregguns.gun.net.PacketGunTrigger;
 import com.gregguns.gun.net.PacketGunZoom;
@@ -106,7 +107,8 @@ public final class GregGunsNetwork {
 
     /** Returns one instance of each server-to-client packet, in wire order. Append only. */
     public static List<IPacket> clientboundPackets() {
-        return Collections.<IPacket>unmodifiableList(Arrays.<IPacket>asList(new PacketGunEvent()));
+        return Collections
+            .<IPacket>unmodifiableList(Arrays.<IPacket>asList(new PacketGunEvent(), new PacketFlightStatus()));
     }
 
     /** Returns one instance of each client-to-server packet, in wire order. Append only. */
