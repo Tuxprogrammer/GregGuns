@@ -64,7 +64,8 @@ class ArmorProtectionTest {
                     .pieceDurability(),
                 "base " + row[0]);
         }
-        for (SetDef set : ArmorCatalog.ALL) {
+        for (SetDef set : java.util.Arrays
+            .asList(ArmorCatalog.T1_SCOUT, ArmorCatalog.T1_MINER, ArmorCatalog.T1_COMBAT)) {
             assertEquals(
                 825,
                 set.material()
@@ -184,7 +185,8 @@ class ArmorProtectionTest {
 
     @Test
     void t1SetsHaveNoPenetrationResistance() {
-        for (SetDef set : ArmorCatalog.ALL) {
+        for (SetDef set : java.util.Arrays
+            .asList(ArmorCatalog.T1_SCOUT, ArmorCatalog.T1_MINER, ArmorCatalog.T1_COMBAT)) {
             assertEquals(
                 0.0,
                 set.material()

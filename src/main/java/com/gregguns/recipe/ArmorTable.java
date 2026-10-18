@@ -9,6 +9,8 @@ import java.util.Map;
 import com.gregguns.api.Tier;
 import com.gregguns.armor.logic.ArmorCatalog;
 import com.gregguns.armor.logic.ArmorSlot;
+import com.gregguns.armor.logic.SetDef;
+import com.gregguns.recipe.ProductionTable.Input;
 
 /**
  * The T1 armor recipes as plain data: the four hand-crafted pieces of each steam-age set, and the four Assembler
@@ -87,7 +89,7 @@ public final class ArmorTable {
         return m;
     }
 
-    private static String name(com.gregguns.armor.logic.SetDef set, ArmorSlot slot) {
+    private static String name(SetDef set, ArmorSlot slot) {
         return set.pieceName(slot);
     }
 
@@ -174,6 +176,174 @@ public final class ArmorTable {
                 ProductionTable.Input.mod(ArmorCatalog.HEAVY_CLOTH, COMBAT_CLOTH[i]));
         }
         return Arrays.asList(rows);
+    }
+
+    // ---- M3 wave B: MV, EV and steam armor on the Assembler ------------------------------------------------------
+
+    private static final int[] SECONDS_STANDARD = { 10, 16, 14, 10 };
+
+    private static String heavyCloth() {
+        return ArmorCatalog.HEAVY_CLOTH;
+    }
+
+    /** Four rows for one set: row ids {@code AR-<first>} to {@code AR-<first+3>}, circuit 1 to 4 helmet to boots. */
+    private static List<ProductionTable.Row> fourPiece(int first, SetDef set, int[] seconds, Input[]... perSlot) {
+        ArmorSlot[] slots = ArmorSlot.values();
+        ProductionTable.Row[] rows = new ProductionTable.Row[slots.length];
+        for (int i = 0; i < slots.length; i++) {
+            rows[i] = new ProductionTable.Row(
+                "AR-" + String.format("%02d", first + i),
+                name(set, slots[i]),
+                1,
+                set.tier(),
+                ProductionTable.Target.ASSEMBLER,
+                seconds[i],
+                i + 1,
+                perSlot[i]);
+        }
+        return Collections.unmodifiableList(Arrays.asList(rows));
+    }
+
+    private static Input al(int n) {
+        return Input.gt("plate", "Aluminium", n);
+    }
+
+    private static Input cloth(int n) {
+        return Input.mod(heavyCloth(), n);
+    }
+
+    private static Input[] in(Input... inputs) {
+        return inputs;
+    }
+
+    /** T2 Combat: MV, Aluminum plates and Heavy Cloth. */
+    public static final List<ProductionTable.Row> T2_COMBAT = fourPiece(
+        13,
+        ArmorCatalog.T2_COMBAT,
+        SECONDS_STANDARD,
+        in(al(3), cloth(2)),
+        in(al(6), cloth(2)),
+        in(al(4), cloth(3)),
+        in(al(2), cloth(2)));
+
+    /** T2 Commando: MV, Aluminum and rubber plates; the helmet has a glass pane. */
+    public static final List<ProductionTable.Row> T2_COMMANDO = fourPiece(
+        17,
+        ArmorCatalog.T2_COMMANDO,
+        new int[] { 12, 16, 14, 10 },
+        in(al(2), Input.gt("plate", "Rubber", 3), Input.vanilla("glass_pane", 1)),
+        in(al(4), Input.gt("plate", "Rubber", 4)),
+        in(al(3), Input.gt("plate", "Rubber", 4)),
+        in(al(2), Input.gt("plate", "Rubber", 2)));
+
+    /** T2 Riot (Ranger Veteran): MV, an upgrade of the matching Combat piece at any damage and camo (GGS-05-35). */
+    public static final List<ProductionTable.Row> T2_RIOT = fourPiece(
+        21,
+        ArmorCatalog.T2_RIOT,
+        SECONDS_STANDARD,
+        in(
+            Input.modAnyDamage(name(ArmorCatalog.T2_COMBAT, ArmorSlot.HELMET), 1),
+            Input.gt("plate", "Lead", 2),
+            Input.mod(ArmorCatalog.TREATED_LEATHER, 2)),
+        in(
+            Input.modAnyDamage(name(ArmorCatalog.T2_COMBAT, ArmorSlot.CHESTPLATE), 1),
+            Input.gt("plate", "Lead", 3),
+            Input.mod(ArmorCatalog.TREATED_LEATHER, 4)),
+        in(
+            Input.modAnyDamage(name(ArmorCatalog.T2_COMBAT, ArmorSlot.LEGGINGS), 1),
+            Input.gt("plate", "Lead", 2),
+            Input.mod(ArmorCatalog.TREATED_LEATHER, 4)),
+        in(
+            Input.modAnyDamage(name(ArmorCatalog.T2_COMBAT, ArmorSlot.BOOTS), 1),
+            Input.gt("plate", "Lead", 2),
+            Input.mod(ArmorCatalog.TREATED_LEATHER, 2)));
+
+    /** The Beret: MV, Heavy Cloth, leather and an Aluminum ring as the badge. */
+    public static final ProductionTable.Row BERET = new ProductionTable.Row(
+        "AR-25",
+        ArmorCatalog.T2_BERET.pieceName(ArmorSlot.HELMET),
+        1,
+        Tier.MV,
+        ProductionTable.Target.ASSEMBLER,
+        10,
+        1,
+        cloth(2),
+        Input.vanilla("leather", 2),
+        Input.gt("ring", "Aluminium", 1));
+
+    private static Input epoxy(int n) {
+        return Input.gt("plate", "EpoxidFiberReinforced", n);
+    }
+
+    private static Input ti(int n) {
+        return Input.gt("plate", "Titanium", n);
+    }
+
+    private static Input evCircuit(int n) {
+        return Input.gt("circuit", "Data", n);
+    }
+
+    /** T3 Combat (Advanced Combat): EV, reinforced epoxy plates and Titanium plates. */
+    public static final List<ProductionTable.Row> T3_COMBAT = fourPiece(
+        26,
+        ArmorCatalog.T3_COMBAT,
+        SECONDS_STANDARD,
+        in(epoxy(3), ti(2)),
+        in(epoxy(6), ti(2)),
+        in(epoxy(4), ti(3)),
+        in(epoxy(2), ti(2)));
+
+    /** T3 Hazardous Environment: EV, an electric chestplate that comes out empty. */
+    public static final List<ProductionTable.Row> T3_HEV = fourPiece(
+        30,
+        ArmorCatalog.T3_HEV,
+        new int[] { 12, 16, 14, 10 },
+        in(epoxy(2), ti(2), evCircuit(1), Input.vanilla("glass_pane", 1)),
+        in(epoxy(3), ti(4), evCircuit(1)),
+        in(epoxy(3), ti(2), evCircuit(2)),
+        in(epoxy(2), ti(2)));
+
+    /** Steam Armor Plating (RC-23): EV, the gate part of the steam armor. */
+    public static final ProductionTable.Row STEAM_PLATING = new ProductionTable.Row(
+        "RC-23",
+        ArmorCatalog.STEAM_ARMOR_PLATING,
+        1,
+        Tier.EV,
+        ProductionTable.Target.ASSEMBLER,
+        6,
+        1,
+        ti(2),
+        Input.gt("plate", "Bronze", 1),
+        Input.gt("plate", "Steel", 1));
+
+    private static Input sap(int n) {
+        return Input.mod(ArmorCatalog.STEAM_ARMOR_PLATING, n);
+    }
+
+    /** Steam armor: EV, built from Steam Armor Plating alone. */
+    public static final List<ProductionTable.Row> STEAM = fourPiece(
+        34,
+        ArmorCatalog.STEAM,
+        SECONDS_STANDARD,
+        in(sap(5)),
+        in(sap(8)),
+        in(sap(7)),
+        in(sap(4)));
+
+    /** Every Assembler row of the armor sets, in registration order (the T1 Combat rows first). */
+    public static final List<ProductionTable.Row> MACHINE = Collections.unmodifiableList(machineRows());
+
+    private static List<ProductionTable.Row> machineRows() {
+        List<ProductionTable.Row> all = new java.util.ArrayList<>(COMBAT);
+        all.addAll(T2_COMBAT);
+        all.addAll(T2_COMMANDO);
+        all.addAll(T2_RIOT);
+        all.add(BERET);
+        all.addAll(T3_COMBAT);
+        all.addAll(T3_HEV);
+        all.add(STEAM_PLATING);
+        all.addAll(STEAM);
+        return all;
     }
 
     private static List<HandRow> concat(List<HandRow> a, List<HandRow> b) {

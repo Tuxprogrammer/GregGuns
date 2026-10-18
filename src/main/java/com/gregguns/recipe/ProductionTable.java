@@ -42,6 +42,7 @@ public final class ProductionTable {
         private final String itemName;
         private final String special;
         private final int count;
+        private boolean anyDamage;
 
         private Input(String prefix, String material, String itemName, String special, int count) {
             if (count < 1) {
@@ -71,6 +72,22 @@ public final class ProductionTable {
          */
         public static Input mod(String registryName, int count) {
             return new Input(null, null, registryName, null, count);
+        }
+
+        /**
+         * @param registryName a GregGuns item's bare registry name
+         * @param count        stack size
+         * @return a GregGuns item input that matches the item at any damage (a worn armor piece that is upgraded)
+         */
+        public static Input modAnyDamage(String registryName, int count) {
+            Input in = new Input(null, null, registryName, null, count);
+            in.anyDamage = true;
+            return in;
+        }
+
+        /** @return whether a GregGuns input matches at any damage value */
+        public boolean anyDamage() {
+            return anyDamage;
         }
 
         /**

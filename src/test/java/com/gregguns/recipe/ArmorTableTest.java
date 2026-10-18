@@ -180,16 +180,20 @@ class ArmorTableTest {
         for (ArmorTable.HandRow row : ArmorTable.HAND) {
             assertTrue(made.add(row.output()), row.id());
         }
-        for (ProductionTable.Row row : ArmorTable.COMBAT) {
+        for (ProductionTable.Row row : ArmorTable.MACHINE) {
             assertTrue(made.add(row.output()), row.id());
         }
-        assertEquals(12, made.size());
+        int pieces = 0;
         for (com.gregguns.armor.logic.SetDef set : ArmorCatalog.ALL) {
             for (ArmorSlot slot : set.pieces()
                 .keySet()) {
                 assertTrue(made.contains(set.pieceName(slot)), set.pieceName(slot));
+                pieces++;
             }
         }
+        // 12 T1 pieces + 4 + 4 + 4 + 1 + 4 + 4 + 4 = 37 pieces, and the one extra output is Steam Armor Plating.
+        assertEquals(37, pieces);
+        assertEquals(pieces + 1, made.size());
     }
 
     @Test
@@ -198,8 +202,8 @@ class ArmorTableTest {
         for (ArmorTable.HandRow row : ArmorTable.HAND) {
             assertTrue(ids.add(row.id()));
         }
-        for (ProductionTable.Row row : ArmorTable.COMBAT) {
-            assertTrue(ids.add(row.id()));
+        for (ProductionTable.Row row : ArmorTable.MACHINE) {
+            assertTrue(ids.add(row.id()), row.id());
         }
     }
 }

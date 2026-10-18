@@ -20,7 +20,7 @@ The main findings:
 | [powered-flight.md](powered-flight.md) | IC2 electric armor, GT Mech Armor overlap, flight stacking with other pack mods |
 | [oxygen-gear.md](oxygen-gear.md) | Oxygen mask and tanks in Galacticraft dimensions |
 | [recipes.md](recipes.md) | Every armor and equipment recipe on GT recipe maps (absorbs the old [armor-recipes.md](armor-recipes.md), now a pointer) |
-| [implementation-notes.md](implementation-notes.md) | M3 wave A: armor framework, T1 sets, bonus lifecycle, deviations and open questions |
+| [implementation-notes.md](implementation-notes.md) | M3 waves A and B: armor framework, T1, T2, T3 and steam sets, powered armor, bonus lifecycle, deviations and open questions |
 
 **No integration point, so no sheet.** See the Techguns spec and the [design records](../../design/README.md):
 
