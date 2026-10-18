@@ -46,4 +46,6 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.14.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    // GT's pure voltage tables (GTValues, TierEU, VoltageIndex) so tier tests compare against GT itself, not a copy.
+    testImplementation("com.github.GTNewHorizons:GT5-Unofficial:5.09.54.205:dev") { transitive = false }
 }
