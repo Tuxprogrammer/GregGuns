@@ -17,7 +17,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
-import com.gregguns.block.BlockWorksCasing;
+import com.gregguns.block.GregGunsCasings;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -196,24 +196,24 @@ public final class AmmoWorksScenarios {
                 ((MTEAmmoWorks) prototype).getRecipeMap() == GregGunsRecipeMaps.AMMO_PRESS,
                 "should run the ammo map");
 
-            BlockWorksCasing block = BlockWorksCasing.INSTANCE;
+            GregGunsCasings block = GregGunsCasings.INSTANCE;
             out.check(block != null, "the casing block should be created");
             if (block != null) {
                 out.check(
                     Block.getBlockFromName("gregguns:casings") == block,
                     "the block should be registered as gregguns:casings");
                 for (int meta = 0; meta < 2; meta++) {
-                    int index = BlockWorksCasing.textureIndex(meta);
+                    int index = GregGunsCasings.textureIndex(meta);
                     out.check(
                         Textures.BlockIcons.getCasingTextureForId(index) != null,
                         "casing texture page 50 index " + index + " should be filled");
                     out.checkEquals("texture index of meta " + meta, (50 << 7) | meta, block.getTextureIndex(meta));
                 }
                 out.check(
-                    hasAssemblerRecipeFor(new ItemStack(block, 2, BlockWorksCasing.WORKS_CASING)),
+                    hasAssemblerRecipeFor(new ItemStack(block, 2, GregGunsCasings.WORKS_CASING)),
                     "the Works Casing should have an Assembler recipe yielding 2");
                 out.check(
-                    hasAssemblerRecipeFor(new ItemStack(block, 1, BlockWorksCasing.RAM_HOUSING)),
+                    hasAssemblerRecipeFor(new ItemStack(block, 1, GregGunsCasings.RAM_HOUSING)),
                     "the Ram Housing should have an Assembler recipe");
             }
             out.check(hasControllerRecipe(), "the controller should have a hand recipe");
@@ -363,10 +363,10 @@ public final class AmmoWorksScenarios {
             out.checkEquals("press bays of the control hall", AmmoWorksShape.MIN_BAYS, hall.mte.pressBays());
 
             // A wall casing removed (the left wall of the second aisle at the controller's height).
-            Block casing = BlockWorksCasing.INSTANCE;
+            Block casing = GregGunsCasings.INSTANCE;
             ctx.setBlock(-2, Hall.CY, 1, Blocks.air, 0);
             out.check(!hall.form(), "a missing wall casing should break the hall");
-            ctx.setBlock(-2, Hall.CY, 1, casing, BlockWorksCasing.WORKS_CASING);
+            ctx.setBlock(-2, Hall.CY, 1, casing, GregGunsCasings.WORKS_CASING);
             out.check(hall.form(), "putting the casing back should form the hall again");
 
             // A second belt tier on the floor line.
@@ -380,20 +380,20 @@ public final class AmmoWorksScenarios {
 
             // The ram housing replaced by a plain casing: the bay no longer matches, so the hall has one bay fewer
             // than needed and cannot form.
-            ctx.setBlock(0, 5, AmmoWorksShape.FEEDER_LENGTH + 1, casing, BlockWorksCasing.WORKS_CASING);
+            ctx.setBlock(0, 5, AmmoWorksShape.FEEDER_LENGTH + 1, casing, GregGunsCasings.WORKS_CASING);
             out.check(!hall.form(), "a bay without its ram housing should break the hall");
-            ctx.setBlock(0, 5, AmmoWorksShape.FEEDER_LENGTH + 1, casing, BlockWorksCasing.RAM_HOUSING);
+            ctx.setBlock(0, 5, AmmoWorksShape.FEEDER_LENGTH + 1, casing, GregGunsCasings.RAM_HOUSING);
             out.check(hall.form(), "restoring the ram housing should form the hall again");
 
             // The muffler removed.
-            ctx.setBlock(-1, Hall.CY, 0, casing, BlockWorksCasing.WORKS_CASING);
+            ctx.setBlock(-1, Hall.CY, 0, casing, GregGunsCasings.WORKS_CASING);
             out.check(!hall.form(), "a hall without a muffler hatch should not form");
             hall.muffler = hall.hatch(-1, Hall.CY, 0, ItemList.Hatch_Muffler_HV, ForgeDirection.NORTH);
             out.check(hall.form(), "adding the muffler should form the hall again");
 
             // The output bus removed.
             int last = AmmoWorksShape.totalLength(hall.bays) - 1;
-            ctx.setBlock(0, Hall.CY, last, casing, BlockWorksCasing.WORKS_CASING);
+            ctx.setBlock(0, Hall.CY, last, casing, GregGunsCasings.WORKS_CASING);
             out.check(!hall.form(), "a hall without an output bus should not form");
             hall.empty();
             return out.build();

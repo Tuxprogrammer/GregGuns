@@ -17,12 +17,13 @@ import gregtech.common.blocks.ItemCasings;
 import gregtech.common.blocks.MaterialCasings;
 
 /**
- * The Ammunition Works casings: one block with two metas, the Works Casing and the Ram Housing. It extends GT's casing
+ * The Ammunition Works casings: one block with three metas: the Works Casing, the Ram Housing and the Reaction Chamber
+ * Casing. It extends GT's casing
  * base so a broken casing re-checks the multiblock around it, and it claims casing texture page {@value #PAGE} so GT
  * hatches placed in a casing position can copy the casing's look.
  *
  * <p>
- * Usage: {@code BlockWorksCasing.create(tab)} once in the guns module's pre-init; {@code BlockWorksCasing.INSTANCE}
+ * Usage: {@code GregGunsCasings.create(tab)} once in the guns module's pre-init; {@code GregGunsCasings.INSTANCE}
  * after that. Hatch casing index: {@link #textureIndex(int)}. Common side; icons are client only.
  */
 // Spec: docs/gregguns-spec/08-machines-production/multiblocks.md (Casings), metatileentity-framework.md (GGS-08-04)
@@ -31,7 +32,7 @@ import gregtech.common.blocks.MaterialCasings;
 // sheet's frame strip needs the controller's renderer to draw it; that is client work left to the animation pass.
 // Deviation: rendered as a plain cube (render type 0) with no tint. GT's casing renderer and color multiplier tint a
 // gray casing with the machine-metal color, which would stain GregGuns' colored textures.
-public final class BlockWorksCasing extends BlockCasingsAbstract implements Tiered {
+public final class GregGunsCasings extends BlockCasingsAbstract implements Tiered {
 
     /** GregGuns' texture page for casings. */
     public static final int PAGE = 50;
@@ -39,20 +40,25 @@ public final class BlockWorksCasing extends BlockCasingsAbstract implements Tier
     public static final int WORKS_CASING = 0;
     /** Meta of the Ram Housing. */
     public static final int RAM_HOUSING = 1;
+    /** Meta of the Reaction Chamber Casing (the Retort's wall). */
+    public static final int REACTION_CASING = 2;
+    /** Number of metas; every meta has one page-50 texture index equal to the meta. */
+    public static final int META_COUNT = 3;
     /** The bare content name; the registry id is {@code gregguns:casings}. */
     public static final String NAME = "casings";
 
-    private static final String[] TEXTURES = { "gregguns:casings/works_casing", "gregguns:casings/ram_housing" };
+    private static final String[] TEXTURES = { "gregguns:casings/works_casing", "gregguns:casings/ram_housing",
+        "gregguns:casings/reaction_casing" };
 
     /** The block, set by {@link #create}; {@code null} while the guns module is off. */
-    public static BlockWorksCasing INSTANCE;
+    public static GregGunsCasings INSTANCE;
 
-    private final IIcon[] icons = new IIcon[2];
+    private final IIcon[] icons = new IIcon[META_COUNT];
     /** False while GT's base constructor registers the block, so it is registered as {@code casings}. */
     private boolean constructed;
 
-    private BlockWorksCasing() {
-        super(ItemCasings.class, claimPage(NAME), MaterialCasings.INSTANCE, 2);
+    private GregGunsCasings() {
+        super(ItemCasings.class, claimPage(NAME), MaterialCasings.INSTANCE, META_COUNT);
         constructed = true;
     }
 
@@ -67,11 +73,11 @@ public final class BlockWorksCasing extends BlockCasingsAbstract implements Tier
      * @param tab the GregGuns creative tab
      * @return the block
      */
-    public static BlockWorksCasing create(CreativeTabs tab) {
+    public static GregGunsCasings create(CreativeTabs tab) {
         if (INSTANCE != null) {
             throw new IllegalStateException("The Works casing block is already created");
         }
-        BlockWorksCasing block = new BlockWorksCasing();
+        GregGunsCasings block = new GregGunsCasings();
         block.setCreativeTab(tab);
         block.setBlockTextureName(TEXTURES[WORKS_CASING]);
         INSTANCE = block;

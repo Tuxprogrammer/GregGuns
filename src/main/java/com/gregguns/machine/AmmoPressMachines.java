@@ -2,7 +2,7 @@ package com.gregguns.machine;
 
 import net.minecraft.item.ItemStack;
 
-import com.gregguns.block.BlockWorksCasing;
+import com.gregguns.block.GregGunsCasings;
 import com.gregguns.core.registry.ModuleRegistrar;
 
 import gregtech.api.GregTechAPI;
@@ -51,7 +51,7 @@ public final class AmmoPressMachines {
      * @param registrar the guns module's registrar (for the creative tab)
      */
     public static void registerBlocks(ModuleRegistrar registrar) {
-        BlockWorksCasing.create(registrar.tab());
+        GregGunsCasings.create(registrar.tab());
     }
 
     /**
@@ -124,12 +124,12 @@ public final class AmmoPressMachines {
             .get(OrePrefixes.plate, Materials.StainlessSteel, AmmoWorksRecipeSpec.CASING_PLATES);
         ItemStack stainlessFrame = GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.StainlessSteel, 1);
         ItemStack stainlessGear = GTOreDictUnificator.get(OrePrefixes.gearGt, Materials.StainlessSteel, 1);
-        ItemStack casing = new ItemStack(BlockWorksCasing.INSTANCE, 1, BlockWorksCasing.WORKS_CASING);
+        ItemStack casing = new ItemStack(GregGunsCasings.INSTANCE, 1, GregGunsCasings.WORKS_CASING);
         ItemStack casingOut = new ItemStack(
-            BlockWorksCasing.INSTANCE,
+            GregGunsCasings.INSTANCE,
             AmmoWorksRecipeSpec.CASINGS_PER_CRAFT,
-            BlockWorksCasing.WORKS_CASING);
-        ItemStack housing = new ItemStack(BlockWorksCasing.INSTANCE, 1, BlockWorksCasing.RAM_HOUSING);
+            GregGunsCasings.WORKS_CASING);
+        ItemStack housing = new ItemStack(GregGunsCasings.INSTANCE, 1, GregGunsCasings.RAM_HOUSING);
 
         GTValues.RA.stdBuilder()
             .itemInputs(stainlessPlates, stainlessFrame)

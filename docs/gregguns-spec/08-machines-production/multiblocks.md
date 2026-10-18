@@ -228,6 +228,17 @@ Focus (non-consumed input), intensity with drift, 3-second reaction ticks, compl
 - **GGS-08-67** A failed batch applies its risk once.
 - **GGS-08-68** The Retort accepts only GT hatches. It requires an Energy, a Maintenance, a Muffler, an Input Bus, an Output Bus and an Input Hatch.
 
+### Retort implementation notes (M4)
+
+- **Pieces and offsets.** `base` (low ring, floor, feet; controller offset x 2, y 1), `bulb` (one layer, probed upward from y offset 2) and `top` (shoulder, two neck layers, cap; y offset `n + 5`). The shape strings are in `RetortShape`, with `B` (floor and low ring casing, takes the five non-muffler hatches), `S` (shoulder casing, no hatches) and `C` (cap casing, takes the Muffler Hatch); all three are the Reaction Casing. The spec's `.` is written as StructureLib's blank (space) at build time. The block counts in the sheet (61 casings, 16 + 12 n glass, 4 frames) are unit-tested.
+- **Counting bulbs.** Like the Neutron Activator: `checkMachine` probes `bulb` upward (at most 6) with the error list, clears the errors, then checks the top. Fewer than 2 bulbs gives GT's `TOO_SHORT_HEIGHT`.
+- **Glass tier.** The sheet says "lowest tier found", which GT's `ofBlocksTiered` does not allow (it demands one tier). `chainAllGlasses` is given a getter that always answers "not set" and a setter that keeps the minimum, so mixed tiers pass and the minimum is the pressure rating. The tier numbers are GT voltage indices (GT `GlassTier`), so a recipe `eut` maps to the smallest index whose voltage covers it (Laser Focus 4, Anti Gravity Core 5). A recipe above the rating fails with GT `insufficientMachineTier`.
+- **Energy hatch tier.** The sheet says EV to ZPM. Anything below EV is a structure error (`gregguns.retort.error.energy_tier`); the upper bound is not enforced, as GT's hatch element would not either.
+- **Run rules.** `ProcessingLogic` is anonymous: `validateRecipe` gates on intensity and glass tier, `createOverclockCalculator` sets no-overclock, `onRecipeStart` starts the shared `ReactionState`. `onRunningTick` steps the state after GT draws power; success sets `mProgresstime = mMaxProgresstime - 1`; failure calls `stopMachine` with the shutdown reason `gregguns_rc_failed` (outputs dropped), then `ReactionEffects.applyFailure` once. Parallels are `2 x n`, power-limited by `ParallelHelper`.
+- **Pollution.** `machines.retortPollutionPerSecond` (default 100) through `getPollutionPerSecond`, plus a one-off `machines.reactionFailurePollution` (default 500) burst on failure.
+- **Casing block.** The Reaction Chamber Casing is meta 2 of the shared `gregguns:casings` block (`GregGunsCasings`, formerly `BlockWorksCasing`), page-50 index 2; the Works Casing and Ram Housing are metas 0 and 1. The meta table is in [metatileentity-framework.md](metatileentity-framework.md#gt5-unofficial-casing-texture-pages).
+- **Not covered by a scenario.** A full Retort production run (it needs hatch inventories filled by a test) and the hologram look; `machines.reaction.retort` builds the structure with `construct`, adds hatches and checks it forms and un-forms.
+
 ## Armory Gantry
 
 **Concept.** A repair **gantry**: a row of portal frames on rails, each frame a repair bay with a cradle on its floor and a hoist on its beam. Armor and guns go in on an Input Bus, repair materials alongside, and repaired items come out on an Output Bus, damage zero and NBT intact.
@@ -433,7 +444,7 @@ Pieces `gate`, `bay` and `cap`. The check places `gate`, loops `bay` while it ma
 
 ## Ammunition Works built notes
 
-Built as `MTEAmmoWorks` (ID 20105) with pure data in `AmmoWorksShape` and `AmmoWorksRecipeSpec`, the casing block `BlockWorksCasing` (`gregguns:casings`, metas Works Casing and Ram Housing, texture page 50). Deviations from the sheet, all marked `// Deviation:` in code:
+Built as `MTEAmmoWorks` (ID 20105) with pure data in `AmmoWorksShape` and `AmmoWorksRecipeSpec`, the casing block `GregGunsCasings` (`gregguns:casings`, metas Works Casing and Ram Housing, texture page 50). Deviations from the sheet, all marked `// Deviation:` in code:
 
 - **Shape characters.** StructureLib 1.4.45 reserves space (skip), `-` (air) and `~`; `.` is not a wildcard, so the sheet's `.` is a space. Feeder and bay layers get an empty top row to share the station's seven rows.
 - **Bay loop.** A failed bay probe is checked into a scratch error list and its casing count is rolled back; the station check then reports a real mismatch. Fewer than 2 bays gives the named error `gregguns.machine.ammo_works.error.too_few_bays`; a ninth bay fails the station check.

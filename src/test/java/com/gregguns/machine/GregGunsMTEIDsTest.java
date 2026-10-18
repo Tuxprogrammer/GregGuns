@@ -43,4 +43,19 @@ class GregGunsMTEIDsTest {
     void theReservedBlockIs64Ids() {
         assertEquals(64, GregGunsMTEIDs.BLOCK_LAST - GregGunsMTEIDs.BLOCK_FIRST + 1);
     }
+
+    @Test
+    void theReactionMachinesUseTheRostersIds() {
+        // machine-roster.md: 20106 EV chamber, 20107 IV chamber, 20108 Retort.
+        assertEquals(20106, GregGunsMTEIDs.REACTION_CHAMBER_EV);
+        assertEquals(20107, GregGunsMTEIDs.REACTION_CHAMBER_IV);
+        assertEquals(20108, GregGunsMTEIDs.RETORT);
+        java.util.List<Integer> all = new java.util.ArrayList<>();
+        for (int id : GregGunsMTEIDs.all()) {
+            all.add(id);
+        }
+        assertTrue(all.contains(GregGunsMTEIDs.REACTION_CHAMBER_EV));
+        assertTrue(all.contains(GregGunsMTEIDs.REACTION_CHAMBER_IV));
+        assertTrue(all.contains(GregGunsMTEIDs.RETORT));
+    }
 }

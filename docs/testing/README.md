@@ -128,6 +128,11 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `production.ammopress.run.mv` | Ammo Press tiers (M4) | The same at MV (overclocked). |
 | `production.ammopress.run.hv` | Ammo Press tiers (M4) | The same at HV. |
 | `production.ammopress.run.ev` | Ammo Press tiers (M4) | The same at EV. |
+| `machines.reaction.place` | machines (M4) | The EV (20106) and IV (20107) chambers and the Retort (20108) are registered; tiers 4 and 5; both chambers run `gregguns.recipe.reactionchamber`; intensity clamps to 0 to 10; the Anti Gravity Core recipe matches at IV voltage and not at EV (GGS-08-46). |
+| `machines.reaction.run` | machines (M4) | A powered EV chamber, kept on the drifting preferred intensity, makes one Laser Focus in 300 to 599 ticks (early finish) and goes idle. Multi-tick. |
+| `machines.reaction.failure` | machines (M4) | A chamber started on target and then left on intensity 10 runs the full 600 ticks, consumes the diamond, makes nothing and goes idle (GGS-08-21). Multi-tick. |
+| `machines.reaction.radiation` | machines (M4) | `ReactionEffects.applyFailure` with `RAD_MEDIUM` slows an unprotected pig through GT `applyRadioactivity` and does not explode the machine (GGS-08-24). |
+| `machines.reaction.retort` | machines (M4) | The Retort is built with `construct` (2 bulb layers) plus hatches, forms, reports 4 parallels and a glass tier, and stops forming when its Muffler Hatch is removed. |
 | `production.ammoworks.registered` | Ammunition Works (M4) | MTE 20105 is an `MTEAmmoWorks`, `RecipeMapWorkable` on the ammo map (NEI catalyst); `gregguns:casings` exists with page-50 texture ids filled; the Works Casing (x2) and Ram Housing Assembler recipes and the controller hand recipe exist. |
 | `production.ammoworks.run` | Ammunition Works (M4) | A three-bay hall built by the controller's `construct` forms with real GT hatches, reports 36 parallels at HV, runs three RC-28 recipes in one batch (48 bullets) within the belt-sped duration. |
 | `production.ammoworks.broken` | Ammunition Works (M4) | A two-bay hall forms; a missing wall casing, a second belt tier, a bay without its Ram Housing, no muffler or no output bus stops it forming, and restoring each part forms it again. |
