@@ -132,9 +132,20 @@ class ScenarioFrameworkTest {
         ScenarioRegistry reg = new ScenarioRegistry();
         reg.register(passing("a.one"));
         reg.register(externalOnly("mp.two"));
-        assertEquals(2, reg.all().size(), "both stay listed and runnable by name");
-        assertEquals(1, reg.forAll().size());
-        assertEquals("a.one", reg.forAll().get(0).name());
+        assertEquals(
+            2,
+            reg.all()
+                .size(),
+            "both stay listed and runnable by name");
+        assertEquals(
+            1,
+            reg.forAll()
+                .size());
+        assertEquals(
+            "a.one",
+            reg.forAll()
+                .get(0)
+                .name());
     }
 
     @Test
