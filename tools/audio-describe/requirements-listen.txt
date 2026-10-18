@@ -1,0 +1,6 @@
+# GPU host only (listen_qwen.py)
+torch
+transformers>=4.45
+accelerate
+librosa
+bitsandbytes  # only for --load-4bit
