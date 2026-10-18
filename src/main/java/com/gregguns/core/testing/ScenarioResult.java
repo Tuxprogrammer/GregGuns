@@ -13,11 +13,42 @@ public final class ScenarioResult {
     private final String scenario;
     private final boolean passed;
     private final List<String> messages;
+    private final ScenarioPoller poller;
+    private final int timeoutTicks;
 
     private ScenarioResult(String scenario, boolean passed, List<String> messages) {
+        this(scenario, passed, messages, null, 0);
+    }
+
+    private ScenarioResult(String scenario, boolean passed, List<String> messages, ScenarioPoller poller,
+        int timeoutTicks) {
         this.scenario = scenario;
         this.passed = passed;
         this.messages = Collections.unmodifiableList(new ArrayList<>(messages));
+        this.poller = poller;
+        this.timeoutTicks = timeoutTicks;
+    }
+
+    /**
+     * Not a result yet: the scenario needs server ticks to pass before it can be judged. The runner polls
+     * {@code poller} once per tick until it returns a result, and fails the scenario if that has not happened after
+     * {@code timeoutTicks} polls. The scenario's context stays alive (entities and blocks stay) until then.
+     *
+     * @param scenario     the scenario name
+     * @param timeoutTicks the most ticks to wait, at least 1
+     * @param poller       called each tick; returns the final result or {@code null} to wait on
+     * @return a pending result
+     */
+    public static ScenarioResult pending(String scenario, int timeoutTicks, ScenarioPoller poller) {
+        if (timeoutTicks < 1) {
+            throw new IllegalArgumentException("timeoutTicks must be at least 1");
+        }
+        return new ScenarioResult(
+            scenario,
+            false,
+            Collections.<String>emptyList(),
+            Objects.requireNonNull(poller, "poller"),
+            timeoutTicks);
     }
 
     /**
@@ -43,6 +74,21 @@ public final class ScenarioResult {
      */
     public static ScenarioResult pass(String scenario) {
         return new ScenarioResult(scenario, true, Collections.<String>emptyList());
+    }
+
+    /** @return {@code true} if this is not a final result: poll {@link #poller()} each tick */
+    public boolean isPending() {
+        return poller != null;
+    }
+
+    /** @return the poller of a pending result, otherwise {@code null} */
+    public ScenarioPoller poller() {
+        return poller;
+    }
+
+    /** @return the tick budget of a pending result, otherwise 0 */
+    public int timeoutTicks() {
+        return timeoutTicks;
     }
 
     /** @return the scenario name */
