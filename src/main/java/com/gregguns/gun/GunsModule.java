@@ -1,0 +1,35 @@
+package com.gregguns.gun;
+
+import com.gregguns.core.module.GregGunsModule;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.registry.ModuleRegistrar;
+
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+
+/**
+ * The {@code modules.guns} module: the combat core and ballistic arsenal (M1, M2). The damage system, guns,
+ * projectiles, ammo and their recipes all register from here, so turning the flag off removes them together.
+ *
+ * <p>
+ * Each feature area keeps its own registration class and adds one delegating call below, so parallel work on
+ * different areas touches different lines. Both sides; the client half is {@code com.gregguns.client.GunsClientModule}.
+ */
+// Spec: docs/ROADMAP.md (M1, M2)
+public final class GunsModule implements GregGunsModule {
+
+    @Override
+    public ModuleId id() {
+        return ModuleId.GUNS;
+    }
+
+    @Override
+    public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
+        // Items, entities and other content: one call per area, e.g. AmmoItems.register(registrar).
+    }
+
+    @Override
+    public void init(FMLInitializationEvent event) {
+        // Recipes and event handlers: one call per area.
+    }
+}
