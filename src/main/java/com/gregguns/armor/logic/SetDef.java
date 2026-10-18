@@ -27,6 +27,16 @@ public final class SetDef {
     private final Map<ArmorSlot, PieceDef> pieces;
     private final List<String> camos;
     private final BonusMap fullSetBonus;
+    private final PowerSpec power;
+    private final TextureLayout layout;
+
+    /** How a set's worn-armor texture files are laid out. */
+    public enum TextureLayout {
+        /** Vanilla style: {@code <base>_1.png} for helmet, chestplate and boots, {@code <base>_2.png} for leggings. */
+        DOUBLE,
+        /** One sheet for every slot: {@code <base>.png} (steam armor, beret). */
+        SINGLE
+    }
 
     /**
      * @param id           set id, lower snake case, for example {@code "t1_scout"}
@@ -38,6 +48,21 @@ public final class SetDef {
      */
     public SetDef(String id, Tier tier, ArmorMaterialDef material, List<String> camoTextures, BonusMap fullSetBonus,
         PieceDef... pieces) {
+        this(id, tier, material, camoTextures, TextureLayout.DOUBLE, PowerSpec.NONE, fullSetBonus, pieces);
+    }
+
+    /**
+     * @param id           set id, lower snake case, for example {@code "steam"}
+     * @param tier         the D1 tier
+     * @param material     the material
+     * @param camoTextures texture bases, camo 0 first; at least one
+     * @param layout       how the texture files are laid out
+     * @param power        how the set is powered; {@link PowerSpec#NONE} for always-on bonuses
+     * @param fullSetBonus extra bonuses when every piece is worn and intact
+     * @param pieces       the pieces; one per slot at most
+     */
+    public SetDef(String id, Tier tier, ArmorMaterialDef material, List<String> camoTextures, TextureLayout layout,
+        PowerSpec power, BonusMap fullSetBonus, PieceDef... pieces) {
         if (camoTextures.isEmpty()) {
             throw new IllegalArgumentException("a set needs at least one texture base");
         }
@@ -46,6 +71,8 @@ public final class SetDef {
         this.material = material;
         this.camos = Collections.unmodifiableList(new ArrayList<>(camoTextures));
         this.fullSetBonus = fullSetBonus;
+        this.layout = layout;
+        this.power = power;
         EnumMap<ArmorSlot, PieceDef> m = new EnumMap<>(ArmorSlot.class);
         for (PieceDef p : pieces) {
             if (m.put(p.slot(), p) != null) {
@@ -95,11 +122,25 @@ public final class SetDef {
         return fullSetBonus;
     }
 
+    /** @return how the set is powered; {@link PowerSpec#NONE} for most sets */
+    public PowerSpec power() {
+        return power;
+    }
+
+    /** @return how the texture files are laid out */
+    public TextureLayout layout() {
+        return layout;
+    }
+
     /**
      * @param slot a slot the set has
-     * @return the registry name of the piece, for example {@code t1_combat_helmet}
+     * @return the registry name of the piece, for example {@code t1_combat_helmet}, or the piece's explicit name
      */
     public String pieceName(ArmorSlot slot) {
+        PieceDef p = pieces.get(slot);
+        if (p != null && p.registryName() != null) {
+            return p.registryName();
+        }
         return id + "_" + slot.id();
     }
 
@@ -113,6 +154,9 @@ public final class SetDef {
      */
     public String layerTexture(ArmorSlot slot, int camo) {
         String base = camos.get(clampCamo(camo));
+        if (layout == TextureLayout.SINGLE) {
+            return "gregguns:textures/models/armor/" + base + ".png";
+        }
         return "gregguns:textures/models/armor/" + base + (slot == ArmorSlot.LEGGINGS ? "_2" : "_1") + ".png";
     }
 

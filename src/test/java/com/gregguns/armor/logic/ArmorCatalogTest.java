@@ -36,9 +36,9 @@ class ArmorCatalogTest {
 
     @Test
     void theThreeT1SetsHaveFourPiecesAndTheRightTiers() {
-        assertEquals(3, ArmorCatalog.ALL.size());
+        assertEquals(10, ArmorCatalog.ALL.size());
         for (SetDef set : ArmorCatalog.ALL) {
-            assertEquals(4, set.pieceCount(), set.id());
+            assertEquals(set == ArmorCatalog.T2_BERET ? 1 : 4, set.pieceCount(), set.id());
         }
         assertEquals(Tier.STEAM, ArmorCatalog.T1_SCOUT.tier());
         assertEquals(Tier.STEAM, ArmorCatalog.T1_MINER.tier());
@@ -121,7 +121,7 @@ class ArmorCatalogTest {
     @Test
     void t1SetsGiveNoGtHazmatAndNoSetClaimsSpace() {
         // hazard-protection.md flag table: T1 sets have no flags. GGS-05-10 and GGS-05-12.
-        for (SetDef set : ArmorCatalog.ALL) {
+        for (SetDef set : new SetDef[] { ArmorCatalog.T1_SCOUT, ArmorCatalog.T1_MINER, ArmorCatalog.T1_COMBAT }) {
             for (PieceDef p : set.pieces()
                 .values()) {
                 assertTrue(

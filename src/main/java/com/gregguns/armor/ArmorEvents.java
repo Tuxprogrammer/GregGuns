@@ -1,6 +1,8 @@
 package com.gregguns.armor;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,18 +13,23 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.DamageSource;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 
 import com.gregguns.armor.logic.ArmorBonus;
+import com.gregguns.armor.logic.ArmorSlot;
 import com.gregguns.armor.logic.BonusLifecycle;
 import com.gregguns.armor.logic.BonusMap;
 import com.gregguns.armor.logic.FallMath;
 import com.gregguns.armor.logic.NightVisionPolicy;
+import com.gregguns.armor.logic.PowerRules;
 import com.gregguns.armor.slots.SlotEquipment;
 
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
@@ -58,9 +65,14 @@ public final class ArmorEvents {
     private static final UUID HEALTH_ID = UUID.fromString("7f4c2a10-3b6e-4d51-9a28-5c0e1d9b6a02");
     private static final UUID KNOCKBACK_ID = UUID.fromString("7f4c2a10-3b6e-4d51-9a28-5c0e1d9b6a03");
 
+    /** Sound event of the steam armor's jump assist (sounds.json). */
+    static final String STEAM_JUMP_SOUND = "gregguns:effects.steamarmor_jump";
+
     private final BonusLifecycle<UUID> lifecycle = new BonusLifecycle<>();
     private final Set<UUID> nightVisionOwned = new HashSet<>();
     private final SlotEquipment slots = new SlotEquipment();
+    /** Last horizontal position per player (x, z), to tell walking from standing for the power drain. */
+    private final Map<UUID, double[]> lastPos = new HashMap<>();
 
     // --- tick
     // ---------------------------------------------------------------------------------------------------------
@@ -87,8 +99,19 @@ public final class ArmorEvents {
         if (player.worldObj.isRemote) {
             return;
         }
+        // Powered sets first: drain, refuel and the powered flags, so the bonuses below see this tick's charge.
+        double[] last = lastPos.put(player.getUniqueID(), new double[] { player.posX, player.posZ });
+        boolean moving = last != null && PowerRules.isMoving(player.posX - last[0], player.posZ - last[1]);
+        ArmorPower.tick(player, moving, player.worldObj.getTotalWorldTime());
         BonusMap worn = Armor.bonuses(player);
         double speed = worn.get(ArmorBonus.SPEED);
+        if (worn.get(ArmorBonus.SPEED_WATER) > 0.0 && inWaterOrLava(player)) {
+            speed += worn.get(ArmorBonus.SPEED_WATER);
+        }
+        if (worn.get(ArmorBonus.COOLING_SYSTEM) >= 1.0 && player.isBurning()) {
+            // Cooling system: puts the wearer out without a charge cost (Techguns rule).
+            player.extinguish();
+        }
         if (speed > 0.0 && player.isSprinting()) {
             // Techguns rule: the speed bonus doubles while sprinting.
             speed *= 2.0;
@@ -181,6 +204,7 @@ public final class ArmorEvents {
             return;
         }
         lifecycle.forget(player.getUniqueID());
+        lastPos.remove(player.getUniqueID());
         slots.forget(player);
         writeAttributes(player, BonusMap.EMPTY);
         updateNightVision(player, false);
@@ -221,11 +245,26 @@ public final class ArmorEvents {
     // --- stateless event bonuses
     // --------------------------------------------------------------------------------------
 
-    /** @param event a jump; adds the jump bonus to vertical motion */
+    /**
+     * @param event a jump; adds the jump bonus to vertical motion. Powered leggings that give the bonus pay
+     *              {@link PowerRules#JUMP_COST} units, and steam leggings play the steam-jump sound
+     */
     @SubscribeEvent
     public void onJump(LivingJumpEvent event) {
         if (event.entityLiving instanceof EntityPlayer) {
             event.entityLiving.motionY += Armor.bonus(event.entityLiving, ArmorBonus.JUMP);
+            ItemGregGunsArmor legs = ArmorPower.poweredPiece(event.entityLiving, ArmorSlot.LEGGINGS);
+            if (legs != null && legs.piece()
+                .poweredBonuses()
+                .get(ArmorBonus.JUMP) > 0.0 && !event.entityLiving.worldObj.isRemote) {
+                ArmorPower.spend(event.entityLiving, legs.set(), PowerRules.JUMP_COST);
+                if (legs.set()
+                    .power()
+                    .kind() == com.gregguns.armor.logic.PowerSpec.PowerKind.STEAM) {
+                    // Spec: set-bonuses.md 3.2 (steam jump sound, volume 0.66, pitch 1).
+                    event.entityLiving.worldObj.playSoundAtEntity(event.entityLiving, STEAM_JUMP_SOUND, 0.66F, 1.0F);
+                }
+            }
         }
     }
 
@@ -235,10 +274,45 @@ public final class ArmorEvents {
         if (event.entityLiving instanceof EntityPlayer) {
             BonusMap b = Armor.bonuses(event.entityLiving);
             if (b.get(ArmorBonus.FALL_REDUCTION) != 0.0 || b.get(ArmorBonus.FREE_FALL_HEIGHT) != 0.0) {
+                ItemGregGunsArmor boots = ArmorPower.poweredPiece(event.entityLiving, ArmorSlot.BOOTS);
+                if (boots != null && PowerRules.fallCosts(event.distance) && !event.entityLiving.worldObj.isRemote) {
+                    // The boots only pay for a fall long enough to matter (Techguns: more than 3 blocks).
+                    ArmorPower.spend(event.entityLiving, boots.set(), PowerRules.FALL_COST);
+                }
                 event.distance = (float) FallMath
                     .adjust(event.distance, b.get(ArmorBonus.FALL_REDUCTION), b.get(ArmorBonus.FREE_FALL_HEIGHT));
             }
         }
+    }
+
+    /**
+     * Cooling system (HEV chestplate): fire and lava hits on a wearer with a charged chestplate are canceled and cost
+     * {@link PowerRules#COOLING_COST} unit each. Runs early so other mods see no damage.
+     *
+     * @param event an attack on a living entity
+     */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onAttack(LivingAttackEvent event) {
+        if (!(event.entityLiving instanceof EntityPlayer)) {
+            return;
+        }
+        DamageSource src = event.source;
+        if (src != DamageSource.lava && src != DamageSource.inFire && src != DamageSource.onFire) {
+            return;
+        }
+        if (Armor.bonus(event.entityLiving, ArmorBonus.COOLING_SYSTEM) >= 1.0) {
+            event.setCanceled(true);
+            if (!event.entityLiving.worldObj.isRemote) {
+                ItemGregGunsArmor chest = ArmorPower.poweredPiece(event.entityLiving, ArmorSlot.CHESTPLATE);
+                if (chest != null) {
+                    ArmorPower.spend(event.entityLiving, chest.set(), PowerRules.COOLING_COST);
+                }
+            }
+        }
+    }
+
+    private static boolean inWaterOrLava(EntityPlayer player) {
+        return player.isInWater() || player.isInsideOfMaterial(net.minecraft.block.material.Material.lava);
     }
 
     /** @param event a block-break speed query; multiplies the speed by the break bonuses */

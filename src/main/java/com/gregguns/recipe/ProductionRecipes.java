@@ -66,7 +66,7 @@ public final class ProductionRecipes {
         ItemStack output = modStack(row.output(), row.outputCount());
         List<ItemStack> inputs = new ArrayList<>();
         for (ProductionTable.Input input : row.inputs()) {
-            ItemStack stack = input.isGregGuns() ? modStack(input.itemName(), input.count())
+            ItemStack stack = input.isGregGuns() ? modInput(input)
                 : input.special() != null ? specialStack(input)
                     : input.oreName() != null ? oreStack(input.oreName(), input.count()) : gtStack(input);
             if (stack == null) {
@@ -189,6 +189,15 @@ public final class ProductionRecipes {
             return;
         }
         GTOreDictUnificator.addItemData(stack, data);
+    }
+
+    private static ItemStack modInput(ProductionTable.Input input) {
+        ItemStack stack = modStack(input.itemName(), input.count());
+        if (stack != null && input.anyDamage()) {
+            // Source: Forge 1.7.10 OreDictionary.WILDCARD_VALUE; GT's recipe matcher treats damage 32767 as any damage.
+            stack.setItemDamage(net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE);
+        }
+        return stack;
     }
 
     static ItemStack modStack(String registryName, int count) {

@@ -2,9 +2,11 @@ package com.gregguns.armor;
 
 import java.util.List;
 
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,6 +27,7 @@ import com.gregguns.armor.logic.ArmorProtection;
 import com.gregguns.armor.logic.ArmorSlot;
 import com.gregguns.armor.logic.HazardFlag;
 import com.gregguns.armor.logic.PieceDef;
+import com.gregguns.armor.logic.PowerSpec;
 import com.gregguns.armor.logic.RepairSpec;
 import com.gregguns.armor.logic.SetDef;
 import com.gregguns.combat.DamageType;
@@ -47,6 +50,11 @@ import gregtech.api.hazards.IHazardProtector;
  * protection and no bonuses.
  * <li>Hazards: implements GT's {@link IHazardProtector} from the piece's flags. Never {@code SPACE}.
  * <li>Camo: the camo index lives in the stack NBT ({@link #getCamo}); the layer texture follows it.
+ * <li>Power: in a powered set ({@link SetDef#power()}) the chestplate holds the energy and switches the whole set's
+ * {@link PieceDef#poweredBonuses()} on. A steam chestplate keeps its units in the stack tag (this class); an electric
+ * one
+ * is {@link ItemElectricArmor}. Every other piece carries a {@code powered} flag, written each tick by
+ * {@link ArmorPower#tick}, which only the hazard answers read.
  * </ul>
  *
  * <p>
@@ -54,7 +62,7 @@ import gregtech.api.hazards.IHazardProtector;
  * electrical protection by accident, GGS-05-10) and with enchantability 0 (Techguns rule).
  */
 // Spec: docs/techguns-spec/05-armor/armor-catalog.md sections 1 to 3; docs/gregguns-spec/05-armor/hazard-protection.md
-public final class ItemGregGunsArmor extends ItemArmor
+public class ItemGregGunsArmor extends ItemArmor
     implements ISpecialArmor, TypedArmor, IHazardProtector, Tiered, CamoChangeable, BenchRepairable {
 
     private static final String CAMO_TAG = "camo";
@@ -111,6 +119,99 @@ public final class ItemGregGunsArmor extends ItemArmor
         return set.tier();
     }
 
+    // --- power --------------------------------------------------------------------------------------------------
+
+    private static final String POWER_TAG = "power";
+    private static final String POWERED_TAG = "powered";
+
+    /**
+     * @param stack a stack of this item
+     * @return the energy units a chestplate of a powered set holds; 0 for any other piece or an unpowered set
+     */
+    public int powerUnits(ItemStack stack) {
+        if (set.power()
+            .kind() != PowerSpec.PowerKind.STEAM || piece.slot() != ArmorSlot.CHESTPLATE) {
+            return 0;
+        }
+        NBTTagCompound tag = stack.getTagCompound();
+        return tag == null ? 0 : tag.getInteger(POWER_TAG);
+    }
+
+    /**
+     * Sets a steam chestplate's units (clamped to its capacity). Server or scenario use.
+     *
+     * @param stack a stack of this item
+     * @param units the new units
+     */
+    public void setPowerUnits(ItemStack stack, int units) {
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag == null) {
+            tag = new NBTTagCompound();
+            stack.setTagCompound(tag);
+        }
+        tag.setInteger(
+            POWER_TAG,
+            Math.max(
+                0,
+                Math.min(
+                    units,
+                    set.power()
+                        .capacityUnits())));
+    }
+
+    /**
+     * Takes units from the chestplate. A cost beyond the rest empties it.
+     *
+     * @param stack a chestplate stack of this item
+     * @param units the cost
+     * @param user  the wearer
+     * @return the units actually taken
+     */
+    public int spendPower(ItemStack stack, int units, EntityLivingBase user) {
+        int before = powerUnits(stack);
+        int after = com.gregguns.armor.logic.PowerRules.after(before, units);
+        setPowerUnits(stack, after);
+        return before - after;
+    }
+
+    /**
+     * @param stack a stack of this item
+     * @return whether this piece counts as powered: a chestplate when it holds units, any other piece when the last
+     *         tick found its set's chestplate worn and charged
+     */
+    public boolean isPowered(ItemStack stack) {
+        if (!set.power()
+            .powered()) {
+            return false;
+        }
+        if (piece.slot() == ArmorSlot.CHESTPLATE) {
+            return powerUnits(stack) > 0;
+        }
+        NBTTagCompound tag = stack.getTagCompound();
+        return tag != null && tag.getBoolean(POWERED_TAG);
+    }
+
+    /**
+     * Records whether the wearer's chestplate is charged, for the hazard answers of a non-chestplate piece. The tag is
+     * only written when the value changes.
+     *
+     * @param stack a non-chestplate stack of this item
+     * @param on    whether the set is powered
+     */
+    public void setPoweredFlag(ItemStack stack, boolean on) {
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag == null) {
+            if (!on) {
+                return;
+            }
+            tag = new NBTTagCompound();
+            stack.setTagCompound(tag);
+        }
+        if (tag.getBoolean(POWERED_TAG) != on) {
+            tag.setBoolean(POWERED_TAG, on);
+        }
+    }
+
     // --- camo ---------------------------------------------------------------------------------------------------
 
     /**
@@ -156,8 +257,22 @@ public final class ItemGregGunsArmor extends ItemArmor
 
     // --- protection -----------------------------------------------------------------------------------------------
 
+    /**
+     * @param stack a stack of this item
+     * @return the wear in durability points; an electric chestplate overrides it to 0 because IC2 uses the item damage
+     *         to show the charge
+     */
+    protected int wearOf(ItemStack stack) {
+        return stack.getItemDamage();
+    }
+
+    /** @return the durability the protection math uses; the electric chestplate has the set's value but no wear */
+    protected int durability() {
+        return getMaxDamage();
+    }
+
     private boolean broken(ItemStack stack) {
-        return ArmorProtection.isBroken(stack.getItemDamage(), getMaxDamage());
+        return ArmorProtection.isBroken(wearOf(stack), durability());
     }
 
     /** @return true when the stack is broken: no protection, no bonuses */
@@ -167,13 +282,12 @@ public final class ItemGregGunsArmor extends ItemArmor
 
     @Override
     public double armorValue(ItemStack stack, DamageType type) {
-        return ArmorProtection.pieceArmor(set.material(), piece.slot(), type, stack.getItemDamage(), getMaxDamage());
+        return ArmorProtection.pieceArmor(set.material(), piece.slot(), type, wearOf(stack), durability());
     }
 
     @Override
     public double penetrationResistance(ItemStack stack, DamageType type) {
-        return ArmorProtection
-            .piecePenetrationResistance(set.material(), piece.slot(), stack.getItemDamage(), getMaxDamage());
+        return ArmorProtection.piecePenetrationResistance(set.material(), piece.slot(), wearOf(stack), durability());
     }
 
     @Override
@@ -183,13 +297,13 @@ public final class ItemGregGunsArmor extends ItemArmor
             return new ArmorProperties(0, 0.0, 0);
         }
         double ratio = ArmorProtection
-            .absorbRatio(set.material(), piece.slot(), DamageTypes.of(source), armor.getItemDamage(), getMaxDamage());
-        return new ArmorProperties(0, ratio, ArmorProtection.maxAbsorb(armor.getItemDamage(), getMaxDamage()));
+            .absorbRatio(set.material(), piece.slot(), DamageTypes.of(source), wearOf(armor), durability());
+        return new ArmorProperties(0, ratio, ArmorProtection.maxAbsorb(wearOf(armor), durability()));
     }
 
     @Override
     public int getArmorDisplay(EntityPlayer player, ItemStack armor, int slot) {
-        return ArmorProtection.displayPoints(set.material(), piece.slot(), armor.getItemDamage(), getMaxDamage());
+        return ArmorProtection.displayPoints(set.material(), piece.slot(), wearOf(armor), durability());
     }
 
     @Override
@@ -197,7 +311,7 @@ public final class ItemGregGunsArmor extends ItemArmor
         if (entity instanceof EntityPlayer && ((EntityPlayer) entity).capabilities.isCreativeMode) {
             return;
         }
-        stack.setItemDamage(ArmorProtection.wear(stack.getItemDamage(), getMaxDamage(), damage));
+        stack.setItemDamage(ArmorProtection.wear(wearOf(stack), durability(), damage));
     }
 
     // --- repair ---------------------------------------------------------------------------------------------------
@@ -247,7 +361,9 @@ public final class ItemGregGunsArmor extends ItemArmor
         // Source:
         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/hazards/IHazardProtector.java#L8-L21
         // A broken piece protects against nothing. SPACE is never claimed (GGS-05-12): no HazardFlag maps to it.
-        return !broken(itemStack) && (covers(piece.partialHazards(), hazard) || covers(piece.fullHazards(), hazard));
+        // GGS-05-11: the power-dependent flags answer false while the chestplate has no charge.
+        return !broken(itemStack) && (covers(piece.partialHazards(), hazard) || covers(piece.fullHazards(), hazard)
+            || (isPowered(itemStack) && covers(piece.poweredPartialHazards(), hazard)));
     }
 
     @Override
@@ -276,19 +392,61 @@ public final class ItemGregGunsArmor extends ItemArmor
         for (java.util.Map.Entry<ArmorBonus, Double> e : piece.bonuses()
             .asMap()
             .entrySet()) {
-            tooltip.add(
-                StatCollector.translateToLocalFormatted(
-                    "gregguns.armor.tooltip.bonus",
-                    StatCollector.translateToLocal(
-                        e.getKey()
-                            .langKey()),
-                    trim(e.getValue())));
+            tooltip.add(bonusLine(e.getKey(), e.getValue()));
+        }
+        if (set.power()
+            .powered()) {
+            addPowerTooltip(stack, tooltip);
+            for (java.util.Map.Entry<ArmorBonus, Double> e : piece.poweredBonuses()
+                .asMap()
+                .entrySet()) {
+                tooltip.add(bonusLine(e.getKey(), e.getValue()));
+            }
         }
         if (set.camoCount() > 1) {
             tooltip.add(
                 StatCollector.translateToLocalFormatted(
                     "gregguns.armor.tooltip.camo",
                     StatCollector.translateToLocal("item.gregguns." + set.id() + ".camoname." + getCamo(stack))));
+        }
+    }
+
+    private static String bonusLine(ArmorBonus bonus, double value) {
+        return StatCollector.translateToLocalFormatted(
+            "gregguns.armor.tooltip.bonus",
+            StatCollector.translateToLocal(bonus.langKey()),
+            trim(value));
+    }
+
+    /** Adds the power line: the chestplate's charge, or the reminder on other pieces. Client only. */
+    @SideOnly(Side.CLIENT)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected void addPowerTooltip(ItemStack stack, List tooltip) {
+        if (piece.slot() != ArmorSlot.CHESTPLATE) {
+            tooltip.add(StatCollector.translateToLocal("gregguns.armor.tooltip.needs_power"));
+            return;
+        }
+        tooltip.add(
+            StatCollector.translateToLocalFormatted(
+                "gregguns.armor.tooltip.power_air",
+                powerUnits(stack),
+                set.power()
+                    .capacityUnits()));
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void getSubItems(Item item, CreativeTabs tab, List list) {
+        list.add(new ItemStack(item));
+        if (set.power()
+            .kind() == PowerSpec.PowerKind.STEAM && piece.slot() == ArmorSlot.CHESTPLATE) {
+            ItemStack full = new ItemStack(item);
+            setPowerUnits(
+                full,
+                set.power()
+                    .capacityUnits());
+            list.add(full);
         }
     }
 

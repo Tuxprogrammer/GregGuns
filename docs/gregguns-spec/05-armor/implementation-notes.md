@@ -126,3 +126,52 @@ Branch `m3/flight-gear`. Code: `com.gregguns.armor.flight` (items, server tracke
 - Sounds: no `sounds.json` events were added (the glider loop, jump boost and anti gravity start sounds of Techguns 4.2 to 4.5 are not played). The asset agent owns the audio set.
 - No particles or worn model (Techguns draws wings and flames); out of scope here.
 - Charging a worn device in the slot: still "take it off and use a charger" (powered-flight.md open question), unchanged.
+
+# M3 wave B: T2 and T3 sets and steam armor (implementation notes and deviations)
+
+Branch `m3/armor-t2-t3`. Sets (all data in `ArmorCatalog`): T2 Combat, T2 Commando, T2 Riot ("Ranger Veteran"), the Beret, T3 Combat, steam armor and the T3 HEV suit. Power armor and the Exo Suit stay with a later branch; they reuse `PowerSpec.electric`, `ItemElectricArmor` and the powered-bonus machinery below.
+
+## Shape
+
+- `PieceDef.poweredBonuses` and `poweredPartialHazards` hold what only a powered set gives; `SetDef.power()` (`PowerSpec`: NONE, STEAM, ELECTRIC; capacity in units) says how the set is fueled. `SetEvaluator.Worn` carries a `powered` flag that adds the piece's powered bonuses.
+- `ArmorPower` (runtime) finds the chestplate, answers `setPowered`, spends costs, refuels, and each server tick writes a `powered` tag to the other worn pieces so GT's per-stack hazard answers can follow the charge (GGS-05-11). `PowerRules` (pure, unit-tested) has the numbers: 1 unit per worn piece per second of walking, jump 5, fall over 3 blocks 5, canceled fire hit 1.
+- Steam chestplates keep their units in the stack tag (`power`, 3,600 at most). `ItemElectricArmor` (HEV chestplate only) is an IC2 electric item at EV: 10,000 units at 40 EU each (400,000 EU), so one walking piece costs GT Mech Armor's 2 EU/t.
+- New bonus `SPEED_WATER` (HEV, added to the speed attribute while in water or lava). `COOLING_SYSTEM` is implemented (`ArmorEvents.onAttack` at HIGH priority cancels `DamageSource.lava`, `inFire` and `onFire` hits and puts a burning wearer out). `OXYGEN_GEAR`, `GUN_ACCURACY` and `STEP_ASSIST` are read by their existing consumers (`SlotEquipment`, the gun code, `StepHeightClient`); nothing here writes step height or potions, so CORE-14 and CORE-15 are untouched.
+- `SetDef.TextureLayout.SINGLE` (steam armor, the Beret) maps a camo to `<base>.png` instead of `<base>_1/_2.png`. `PieceDef.registryName` names the Beret `t2_beret` (not `t2_beret_helmet`).
+- Recipes: `ArmorTable.MACHINE` lists every Assembler row; `ProductionTable.Input.modAnyDamage` is the wildcard-damage input the Riot recipes use for the Combat piece. Treated Leather (RC-22) is a Chemical Bath recipe in `ArmorRecipes`.
+
+## Deviations
+
+| Id | Techguns or spec | GregGuns | Why |
+|---|---|---|---|
+| ARM-DEV-13 | Every powered piece holds up to 10 power, is topped up from the chest and loses 1 a second while moving | Only the chestplate holds energy. It loses 1 unit per worn intact piece per second of walking (4 for a full set, the same total). A piece is powered while its set's chestplate is worn, intact and charged | One store, one rule; the hazard answers follow through the `powered` tag |
+| ARM-DEV-14 | Steam: "compressed air tank" refuels, an empty tank comes back | The chestplate burns one `tank_air` from the main inventory (the Techguns ammo slots do not exist) and the player gets an empty GT cell (the tank is made from a cell, RC-54) | There is no empty-tank item; the tank is a plain part ([ARM-DEV-11](#deviations), SLOT-DEV-09) |
+| ARM-DEV-15 | Steam jump plays `techguns:effects.steamarmorJump` for every powered leggings type | Steam leggings only, `gregguns:effects.steamarmor_jump` (volume 0.66), added to `sounds.json` with the four existing files | HEV leggings are electric and silent |
+| ARM-DEV-16 | HEV "Hazardous Environment" is registered as `t3_miner_*`, camo `hevsuit` | Set id `t3_hev`, camos `t3_hev`, `t3_hev_silver`, `t3_hev_black` | The item and armor textures in the repo are named `t3_hev` |
+| ARM-DEV-17 | Steam helmet registry name `steam,_helmet` (typo) | `steam_helmet` | Techguns typo |
+| ARM-DEV-18 | HEV chestplate wears out like every piece | It has no durability and never breaks; protection does not depend on charge | IC2 shows an electric item's charge in the item damage when it has durability, which would turn "empty" into "broken" (found by `armor.t3.hev`). GT Mech Armor does the same (`setMaxDamage(0)`). The bench has nothing to repair on it |
+| ARM-DEV-19 | Repair uses carbon fibers, a carbon plate, an elite circuit board and a steam armor plate with metal ratio 1.0 | T3 Combat and HEV: `plate.EpoxidFiberReinforced` plus Heavy Cloth. Riot: `plate.Aluminium` plus Treated Leather. T2 Combat: `plate.Aluminium` plus Heavy Cloth. Steam: `part_steam_armor_plating` only. Beret: Heavy Cloth. Commando: none | There is no carbon fiber or elite board; the repair spec has one GT metal and one GregGuns part. Heavy Cloth is the soft part of the tier |
+| ARM-DEV-20 | Riot and Exo upgrade by shapeless crafting with NBT discarded | Assembler inputs: the Combat piece at wildcard damage (`ProductionTable.Input.modAnyDamage`); the output is a fresh stack, so no camo or damage carries over (GGS-05-35) | Spec recipes.md |
+| ARM-DEV-21 | Techguns adds 5.0 to the speed bonus while aiming a gun | Not carried | It is an item-use slowdown fix owned by the gun branch ([ARM-06](../../techguns-spec/05-armor/index.md#suspected-bugs)) |
+| ARM-DEV-22 | Treated Leather and Steam Armor Plating belong to area 06 | `ArmorParts` registers `part_treated_leather` (RC-22, Chemical Bath, LV, 500 mB sulfuric acid, 2 leather to 2 Treated Leather) and `part_steam_armor_plating` (RC-23, Assembler, EV). When area 06 adds them, delete the two registrations and keep the names | The Riot set and the steam armor need them now |
+| ARM-DEV-23 | Armor values never depend on power (kept) | Same; the powered gate covers bonuses and powered hazard flags only | Spec armor-catalog 9 |
+
+## Decisions where the spec was ambiguous
+
+- Steam armor tier: EV per [0001](../../design/0001-tier-map.md) and recipes.md, even though the armor burns air instead of EU. The HEV suit is EV per [0010](../../design/0010-material-remap-and-tier-additions.md) decision 5.
+- Capacities: steam 3,600 units (Techguns `maxpower`), HEV 10,000 units (Techguns). They are constants in `ArmorCatalog`, not config yet (0003 asks for config; open).
+- The HEV chestplate comes out of the Assembler empty (GGS-05-34); a steam chestplate comes out with 0 units.
+- Kept as bonuses of the powered set, not of the single piece: a lone powered piece gives nothing (it has no chestplate to read).
+
+## Visual gaps and checks for the orchestrator
+
+- Steam armor layer sheets (`textures/models/armor/steam*.png`) are single 256 x 128 sheets drawn for Techguns' custom `ModelSteamArmor`; the Beret sheets are 64 x 64 for `ModelBeret`; the Riot sheets are for `ModelArmorCoat`. None of those models exist here. On the vanilla biped model the steam, Beret and Riot layers will not line up (same cause as ARM-DEV-12). Needs a client look and then either small `ModelBiped` subclasses or redrawn sheets.
+- Check the tooltips of a steam chestplate ("Compressed air: n / 3600") and the HEV chestplate (IC2 energy line), and that both appear in creative as empty and full.
+- Check step assist and the HEV water speed with a client run (the step height path is client-only, `StepHeightClient`).
+- Check that the steam jump sound plays once per jump.
+- Galacticraft is not on the dev runtime classpath, so the HEV and Commando helmets' `OXYGEN_GEAR` is checked only as a bonus value, not against Oxygen Tanks in a GC dimension.
+
+## Not done
+
+- Power armor and the Exo Suit (EU-powered, later branch): reuse `PowerSpec.electric`, `ItemElectricArmor` and `PieceDef.poweredBonuses`.
+- Recycling data for the new pieces (same open item as wave A).

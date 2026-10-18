@@ -34,8 +34,13 @@ public enum ArmorBonus {
     GUN_ACCURACY,
     /** Above 0 marks oxygen gear; read by the oxygen tanks (slots branch). */
     OXYGEN_GEAR,
-    /** Above 0 means fire immunity (powered armor, later). */
-    COOLING_SYSTEM;
+    /** Above 0 means fire immunity: cancels fire and lava hits and puts the wearer out (powered armor). */
+    COOLING_SYSTEM,
+    /**
+     * Extra speed fraction while in water or lava, added to {@link #SPEED} (HEV suit). Applied as part of the speed
+     * attribute.
+     */
+    SPEED_WATER;
 
     /** @return the lower-case id, for example {@code "fall_reduction"} */
     public String id() {

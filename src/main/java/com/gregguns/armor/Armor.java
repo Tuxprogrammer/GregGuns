@@ -43,7 +43,10 @@ public final class Armor {
             ItemStack stack = entity.getEquipmentInSlot(slot);
             ItemGregGunsArmor item = stack == null ? null : ArmorItems.of(stack.getItem());
             if (item != null) {
-                out.add(new SetEvaluator.Worn(item.set(), item.piece(), item.isBroken(stack)));
+                boolean powered = item.set()
+                    .power()
+                    .powered() && ArmorPower.setPowered(entity, item.set());
+                out.add(new SetEvaluator.Worn(item.set(), item.piece(), item.isBroken(stack), powered));
             }
         }
         return out;

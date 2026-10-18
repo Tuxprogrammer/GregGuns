@@ -40,9 +40,11 @@ public final class ArmorItems {
             EnumMap<ArmorSlot, ItemGregGunsArmor> pieces = new EnumMap<>(ArmorSlot.class);
             for (PieceDef piece : set.pieces()
                 .values()) {
-                pieces.put(
-                    piece.slot(),
-                    registrar.registerItem(set.pieceName(piece.slot()), new ItemGregGunsArmor(set, piece)));
+                ItemGregGunsArmor item = set.power()
+                    .kind() == com.gregguns.armor.logic.PowerSpec.PowerKind.ELECTRIC
+                    && piece.slot() == ArmorSlot.CHESTPLATE ? new ItemElectricArmor(set, piece)
+                        : new ItemGregGunsArmor(set, piece);
+                pieces.put(piece.slot(), registrar.registerItem(set.pieceName(piece.slot()), item));
             }
             BY_SET.put(set.id(), pieces);
         }
