@@ -9,6 +9,7 @@ import com.gregguns.GregGuns;
 import com.gregguns.gun.net.PacketGunEvent;
 import com.gregguns.gun.net.PacketGunTrigger;
 import com.gregguns.gun.net.PacketGunZoom;
+import com.gregguns.machine.repair.PacketCamoCycle;
 import com.gregguns.network.validation.LimitedRejectionSink;
 import com.gregguns.network.validation.RateLimiter;
 import com.gregguns.network.validation.RejectionSink;
@@ -110,7 +111,7 @@ public final class GregGunsNetwork {
 
     /** Returns one instance of each client-to-server packet, in wire order. Append only. */
     public static List<IPacket> serverboundPackets() {
-        return Collections
-            .<IPacket>unmodifiableList(Arrays.<IPacket>asList(new PacketGunTrigger(), new PacketGunZoom()));
+        return Collections.<IPacket>unmodifiableList(
+            Arrays.<IPacket>asList(new PacketGunTrigger(), new PacketGunZoom(), new PacketCamoCycle()));
     }
 }

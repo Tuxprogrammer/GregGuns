@@ -323,6 +323,16 @@ There is no NEI recipe tab. NEI shows the controller's tooltip and the multibloc
 - **GGS-08-72** An item above the lowest Energy Hatch tier is skipped and reported, never repaired.
 - **GGS-08-73** GT tools are never repaired.
 
+### Armory Gantry built notes (M4 wave A)
+
+Built as `MTEArmoryGantry` (ID 20114) with pure data in `GantryShape`, the repair logic in `RepairPlanner` and the casings as metas 3 to 6 of the shared `gregguns:casings` block (Gantry Casing, Beam, Hoist, Repair Cradle). Decisions, each marked `// Deviation:` in code:
+
+- **Shape characters.** As for the Ammunition Works, the sheet's `.` is a space.
+- **Items per cycle** is the bay count capped by the power the hatches supply: each item draws half the recipe voltage of the lowest Energy Hatch tier, and GT shuts a machine down that over-draws. One HV hatch therefore repairs two items per cycle; more hatches (or multi-amp hatches) raise it. The sheet says "up to n" without a cap.
+- **Tier gate.** The weakest Energy Hatch. When every damaged item in the buses is above it, the controller shows GT's insufficient-machine-tier message with the tier needed.
+- **No NEI tab and no NEI code** ([GGS-08-31](nei-handlers.md#requirements)). The controller tooltip states the rules. The open "Gantry NEI" question stays open.
+- **Not built:** the cradle's active texture, the hoist animation, a screwdriver mode.
+
 ## Rampart
 
 **Concept.** A **crenellated wall** of turret mounts. A gatehouse tower on the left holds the controller, the ammo feed and the power feed. A run of bays, each a stone-style merlon and an open crenel with a **Gun Mount Hatch** on its sill, extends to the right. A turret stands in each crenel. Plating tier is armor tier.

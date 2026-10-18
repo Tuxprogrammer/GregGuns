@@ -42,18 +42,29 @@ public final class GregGunsCasings extends BlockCasingsAbstract implements Tiere
     public static final int RAM_HOUSING = 1;
     /** Meta of the Reaction Chamber Casing (the Retort's wall). */
     public static final int REACTION_CASING = 2;
+    /** Meta of the Gantry Casing (the Armory Gantry's walls and floors; hatches go here). */
+    public static final int GANTRY_CASING = 3;
+    /** Meta of the Gantry Beam (the rail across the top). */
+    public static final int GANTRY_BEAM = 4;
+    /** Meta of the Gantry Hoist (the crane head on the beam). */
+    public static final int GANTRY_HOIST = 5;
+    /** Meta of the Repair Cradle (the pad under each bay; its top differs from its sides). */
+    public static final int REPAIR_CRADLE = 6;
     /** Number of metas; every meta has one page-50 texture index equal to the meta. */
-    public static final int META_COUNT = 3;
+    public static final int META_COUNT = 7;
     /** The bare content name; the registry id is {@code gregguns:casings}. */
     public static final String NAME = "casings";
 
     private static final String[] TEXTURES = { "gregguns:casings/works_casing", "gregguns:casings/ram_housing",
-        "gregguns:casings/reaction_casing" };
+        "gregguns:casings/reaction_casing", "gregguns:casings/gantry_casing", "gregguns:casings/gantry_beam",
+        "gregguns:casings/gantry_hoist", "gregguns:casings/repair_cradle_side" };
+    private static final String CRADLE_TOP = "gregguns:casings/repair_cradle_top";
 
     /** The block, set by {@link #create}; {@code null} while the guns module is off. */
     public static GregGunsCasings INSTANCE;
 
     private final IIcon[] icons = new IIcon[META_COUNT];
+    private IIcon cradleTop;
     /** False while GT's base constructor registers the block, so it is registered as {@code casings}. */
     private boolean constructed;
 
@@ -124,11 +135,15 @@ public final class GregGunsCasings extends BlockCasingsAbstract implements Tiere
         for (int i = 0; i < icons.length; i++) {
             icons[i] = register.registerIcon(TEXTURES[i]);
         }
+        cradleTop = register.registerIcon(CRADLE_TOP);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta) {
+        if (meta == REPAIR_CRADLE && side <= 1) {
+            return cradleTop;
+        }
         return icons[Math.max(0, Math.min(icons.length - 1, meta))];
     }
 }

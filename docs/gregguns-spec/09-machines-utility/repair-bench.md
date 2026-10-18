@@ -48,7 +48,18 @@ GT's own tools are not repaired here. They keep their damage in the `GT.ToolStat
 | 24 | Unit test on `transferStackInSlot` |
 | 25 | Unit test that a GT tool in the slot is rejected |
 
+## Built notes (M4 wave A)
+
+Built as `MTERepairBench` (`com.gregguns.machine.repair`), IDs 20109 to 20113, one class for LV to IV. The math is plain Java (`RepairMath`, `RepairPlanner`, `RepairMaterials`) with unit tests. Decisions, each marked `// Deviation:` in code:
+
+- **EU, settled: yes.** The bench is a powered GT single block. A repair costs `2 s + 8 s x damage fraction` at half the recipe voltage of the bench tier (the roster's proposal), but the bench has no recipe to run, so the whole job's energy is taken from its buffer at the button press. With less stored than the job costs, nothing happens and the player is told. The buffer holds two worst-case jobs.
+- **Targets.** The four worn pieces (helmet first) and the held item. Guns are not repairable yet: `ItemGun` damage is "rounds missing", not wear, and the gun is `setNoRepair`. A gun with real wear implements `BenchRepairable` and nothing else changes. GT tools never implement it, so GGS-09-25 holds by construction.
+- **Tier gate.** The bench repairs items of its own tier and below ([GGS-08-50](../08-machines-production/machine-roster.md#requirements)); the check is `RepairMath.tierAllows`. Only STEAM and LV armor exists today, so it is covered by unit tests, not a scenario.
+- **Slots.** Nine slots, insert from any side, no extraction by automation (the Techguns rule). GGS-09-24 (shift-click) needs no GregGuns code: MUI2 and GT own the player-inventory slots, so the Techguns off-by-one (MUTL-05) cannot occur.
+- **GUI.** GT's single-block frame (MUI2) with the nine slots and five text buttons ("Head", "Chest", "Legs", "Feet", "Held"). A press is an `InteractionSyncHandler` that runs on the server; no GregGuns packet. Not built: the Techguns art, the wrench icons and the per-button tooltip listing missing parts.
+- **Access.** The server repeats the 8-block reach check (GGS-09-23) and GT's `isUseableByPlayer` (owner, private use) before it does anything.
+
 ## Open questions
 
-- Does the bench consume EU per repair? This needs a record with the area 08 owner. It would decide the MTE class and tier.
+- The per-button "missing parts" tooltip of the Techguns GUI is not built.
 - Do guns share the armor formula, or do they need their own? [02-guns](../../techguns-spec/02-guns/index.md) owns durability. A design record on repair costs would settle it.
