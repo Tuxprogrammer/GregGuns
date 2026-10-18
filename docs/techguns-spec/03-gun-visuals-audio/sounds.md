@@ -2,7 +2,9 @@
 
 All 185 `.ogg` files in `assets/techguns/sounds/guns/`, the `sounds.json` events that reference them, and exactly when each event plays. Playback mechanics (TGSound, packets, gun position, volume categories) are in [rendering-framework.md §14](rendering-framework.md#14-sound-playback-mechanics-summary). Event names are used with the `techguns:` prefix in code, e.g. `techguns:guns.ak47Fire`.
 
-When an event lists several files, Minecraft picks one at random each time it plays (vanilla `sounds.json` behaviour). Every gun event uses `"category": "player"` except `guns.chainsawLoopStart`, which uses `"master"`. The sound-system category is distinct from Techguns' own volume-multiplier category (GUN_FIRE / RELOAD / …, framework §14).
+When an event lists several files, Minecraft picks one at random each time it plays (vanilla `sounds.json` behaviour). Every gun event uses `"category": "player"` except `guns.chainsawLoopStart`, which uses `"master"`. The sound-system category is distinct from Techguns' own volume-multiplier category (GUN_FIRE / RELOAD / …, framework §14). That multiplier is an identity function in v0.1.2 (correction made in the consistency pass).
+
+Measured durations, sample rates and channels for every file, plus the exact volume and pitch each event is played with, are in [§ Volume, pitch and exact trigger per event](#volume-pitch-and-exact-trigger-per-event) and [§ Measured file facts](#measured-file-facts-all-185-files) below. All measured numbers are quoted from [ASSET-FACTS.md](../ASSET-FACTS.md). **What each sound *sounds like* is inferred from its file name, size and use. The audio was not listened to.**
 
 ## Common trigger rules (from GenericGun, area 02)
 
@@ -315,3 +317,312 @@ The Stielhandgranate uses vanilla `random.bow`. No Techguns sound is involved.
 | sounds/guns/vector_shot_c.ogg | 12640B | `guns.vectorFire` |
 
 Total: 185 files (181 referenced by sounds.json, 4 unreferenced).
+
+
+---
+
+## Volume, pitch and exact trigger per event
+
+*Added in the consistency pass.* Each row gives:
+* the event and its `sounds.json` category;
+* the measured length of each variant, with the sample rate and channels;
+* how the sound is played;
+* the **volume and pitch the code passes**;
+* the code condition that triggers it.
+
+Transport legend:
+* **TGSound at gun position**: [`SoundUtil.playSoundOnEntityGunPosition`](../01-core/utilities.md#soundutil). The shooter's client plays it locally, and the server sends [`PacketPlaySound`](../01-core/networking.md#9--packetplaysound) to every other client within 100 blocks (`playOnOwnPlayer` false). The sound sits 1 block in front of the shooter's head yaw, at half its height. It does not move.
+* **TGSound following the shooter**: `SoundUtil.playReloadSoundOnEntity`. Same path, but the sound tracks the entity each tick.
+* **vanilla**: `World.playSoundAtEntity` / `playSoundEffect`. The server broadcasts it to nearby players, at a fixed position.
+
+No call randomises pitch. Every Techguns gun sound plays at pitch 1.0. The only randomised pitch belongs to the Stielhandgranate's vanilla `random.bow`, see the next section.
+
+| Event | Category | Durations (s) / rate / channels | Transport | Volume | Pitch | Exact trigger (code condition) | Used by |
+|---|---|---|---|---|---|---|---|
+| `guns.assaultRifleFire` | player | 1.23, 1.40 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | M4 (also the GenericGun default) |
+| `guns.handgunFire` | player | 1.71, 2.01, 2.29 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Hand Cannon |
+| `guns.pistolFire` | player | 1.14, 1.14, 1.14 / 44100 Hz / stereo | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Pistol, Akimbo Pistols |
+| `guns.sawedoffFire` | player | 1.30, 1.30, 1.30 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Sawed-off |
+| `guns.boltactionFire` | player | 1.98, 1.98, 1.98 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Bolt-action |
+| `guns.combatshotgunFire` | player | 2.10, 2.32, 3.14 / 48000 Hz / stereo | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Combat Shotgun |
+| `guns.lasergunFire` | player | 1.79, 1.74, 1.56 / 44100 Hz / stereo | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Laser Gun, Scatter Beam Gun |
+| `guns.rocketFire` | player | 2.06, 2.06, 2.06 / 48000 Hz / stereo | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Rocket, Nuke, Grim Reaper |
+| `guns.thompsonFire` | player | 1.01, 1.01, 1.01 / 192000 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Thompson |
+| `guns.revolverFire` | player | 1.78, 1.78, 1.78 / 48000 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Revolver, Akimbo Revolvers |
+| `guns.goldenrevolverFire` | player | 3.49, 3.02, 3.02 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Golden Revolver (+akimbo) |
+| `guns.ak47Fire` | player | 1.50, 1.50, 1.50 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | AK-47 |
+| `guns.as50Fire` | player | 4.93, 4.93 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | AS50 |
+| `guns.teslaFire` | player | 3.44, 3.44, 3.44, 3.44 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Tesla Gun |
+| `guns.pdwFire` | player | 1.26, 1.26, 1.26 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | PDW |
+| `guns.lmgFire` | player | 1.98, 1.98, 1.98 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | LMG |
+| `guns.silencedM4Fire` | player | 1.07, 1.07 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | M4 Infiltrator |
+| `guns.pulserifleFire` | player | 2.75, 2.75, 2.75, 2.75 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Pulse Rifle |
+| `guns.cyberdemonblasterFire` | player | 2.00, 2.00, 2.00, 2.00 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Cyberdemon Blaster |
+| `guns.minigunFire` | player | 1.00, 1.00, 1.00, 1.00 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Minigun |
+| `guns.alienblasterFire` | player | 2.65, 2.76, 2.80 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Alien Blaster |
+| `guns.blasterrifleFire` | player | 0.83, 0.77, 0.77 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Blaster Rifle |
+| `guns.grenadeLauncherFire` | player | 1.71, 1.68, 1.71 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Grenade Launcher |
+| `guns.augFire` | player | 2.44, 2.44, 2.44 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | AUG |
+| `guns.sonicshotgunFire` | player | 1.76, 1.76, 1.59 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Sonic Shotgun |
+| `guns.mac10Fire` | player | 1.42, 1.42, 1.42 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Mac-10 (+akimbo) |
+| `guns.scarFire` | player | 1.60, 1.60, 1.60 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | SCAR |
+| `guns.vectorFire` | player | 0.60, 0.60, 0.60 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | Vector |
+| `guns.MIBblasterFire` | player | 2.44, 2.44, 2.34 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot fired by a player (`shootGunLeftClick`, ammo > 0, fire delay elapsed) or by an NPC/turret (`fireWeaponFromNPC`) | MIB gun (+akimbo) |
+| `guns.assaultRifleReload` | player | 2.09 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | M4, M4 Infiltrator |
+| `guns.handgunReload` | player | 1.32 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Hand Cannon |
+| `guns.pistolReload` | player | 1.81 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Pistol |
+| `guns.pistolReloadAkimbo` | player | 2.60 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Akimbo Pistols |
+| `guns.sawedoffReload` | player | 1.54 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Sawed-off |
+| `guns.boltactionReload` | player | 1.94 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Bolt-action |
+| `guns.flamethrowerReload` | player | 2.21 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Flamethrower |
+| `guns.combatshotgunReload` | player | 2.95 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Combat Shotgun |
+| `guns.lasergunReload` | player | 3.05 / 32000 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Laser Gun, Scatter Beam, Blaster Rifle, NDR |
+| `guns.rocketReload` | player | 3.53 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Rocket, Nuke, Grim Reaper |
+| `guns.thompsonReload` | player | 1.76 / 48000 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Thompson |
+| `guns.revolverReload` | player | 2.72 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Revolver, Golden Revolver |
+| `guns.revolverReloadAkimbo` | player | 3.51 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Akimbo Revolvers (both) |
+| `guns.ak47Reload` | player | 2.78 / 48000 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | AK-47 |
+| `guns.as50Reload` | player | 5.00 / 48000 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | AS50 |
+| `guns.teslaReload` | player | 2.35 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Tesla Gun, Cyberdemon Blaster |
+| `guns.pdwReload` | player | 2.57 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | PDW |
+| `guns.lmgReload` | player | 5.72 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | LMG |
+| `guns.pulserifleReload` | player | 2.22 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Pulse Rifle |
+| `guns.minigunReload` | player | 6.24 / 32000 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Minigun |
+| `guns.alienblasterReload` | player | 2.97 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Alien Blaster |
+| `guns.grenadeLauncherReload` | player | 4.32 / 48000 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Grenade Launcher |
+| `guns.augReload` | player | 4.03 / 48000 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | AUG |
+| `guns.sonicshotgunReload` | player | 3.95 / 48000 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Sonic Shotgun |
+| `guns.mac10Reload` | player | 2.64 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Mac-10 |
+| `guns.mac10ReloadAkimbo` | player | 3.41 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Akimbo Mac-10 |
+| `guns.scarReload` | player | 3.53 / 48000 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | SCAR |
+| `guns.vectorReload` | player | 1.54 / 48000 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Vector |
+| `guns.MIBblasterReload` | player | 2.29 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | MIB gun |
+| `guns.MIBblasterReloadAkimbo` | player | 2.99 / 44100 Hz / mono | TGSound following the shooter (moving), RELOAD; repeat within 500 ms suppressed locally | 1.0 | 1.0 | reload starts: firing with an empty magazine while reserve ammo exists, or the reload key (`tryForcedReload`) with a non-full magazine and reserve ammo | Akimbo MIB |
+| `guns.boltactionRechamber` | player | 1.03 / 44100 Hz / mono | TGSound at gun position, not moving, RELOAD | 1.0 | 1.0 | immediately with every shot (same tick as the fire sound) | Bolt-action |
+| `guns.combatshotgunPump` | player | 0.89 / 44100 Hz / mono | TGSound at gun position, not moving, RELOAD | 1.0 | 1.0 | immediately with every shot (same tick as the fire sound) | Combat Shotgun |
+| `guns.flamethrowerStart` | player | 1.00 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | first shot of a run: player loop timer (`loopSoundDelay`) ≤ 0 when firing | Flamethrower |
+| `guns.flamethrowerFire` | player | 1.30, 1.30, 1.10, 1.10, 1.10 / 44100 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot after the first of a run, while the player loop timer (10 ticks, refreshed each shot) is still running; NPC shots always use this event | Flamethrower |
+| `guns.chainsawLoopStart` | master | 0.86 / 32000 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | first shot of a run: player loop timer (`loopSoundDelay`) ≤ 0 when firing (right-click held) | Chainsaw |
+| `guns.chainsawLoop` | player | 1.89, 1.89, 1.89 / 32000 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot after the first of a run, while the player loop timer (10 ticks, refreshed each shot) is still running; NPC shots always use this event | Chainsaw |
+| `guns.beamgunStart` | player | 1.31, 1.31, 1.83 / 48000 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | first shot of a run: player loop timer (`loopSoundDelay`) ≤ 0 when firing | NDR |
+| `guns.beamgunFire` | player | 1.01, 1.01, 1.01, 1.01, 1.01, 1.01 / 48000 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot after the first of a run, while the player loop timer (10 ticks, refreshed each shot) is still running; NPC shots always use this event | NDR |
+| `guns.biogunFire` | player | 1.58, 1.58, 1.58 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` on the player (server broadcast) | 1.0 | 1.0 | right-click released after charging (`onPlayerStoppedUsing`), server side only | Bio Gun |
+| `guns.biogunReload` | player | 3.42 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` (right-click path, [`GenericGunCharge`](../02-guns/per-gun-behaviour.md#genericguncharge-genericgunchargejava)); the reload key uses the TGSound reload path instead | 1.0 | 1.0 | right-click on an empty Bio Gun with reserve ammo | Bio Gun |
+| `guns.powerhammerFire` | player | 3.19, 2.20, 2.58 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` on the player (server broadcast) | 1.0 | 1.0 | right-click released after charging, server side only | Power Hammers |
+| `guns.powerhammerReload` | player | 3.43 / 44100 Hz / mono | Power Hammers: vanilla `World.playSoundAtEntity` (right-click path) or TGSound reload (reload key). Chainsaw: TGSound reload path | 1.0 | 1.0 | reload start (see Common trigger rules) | Power Hammers, Chainsaw |
+| `guns.powerhammerCharge` | player | 2.53, 2.53, 2.53 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` on the player (server broadcast) | 1.0 | 1.0 | right-click with ammo and fire delay elapsed: charging begins (`startCharge`) | Power Hammers |
+| `guns.powerhammerSwing` | player | 1.67, 1.39, 1.49 / 48000 Hz / mono | `PacketPlaySound` to all clients within 50 blocks including the swinger; TGSound at gun position, not moving, GUN_FIRE | 1.0 | 1.0 | left-click swing (`onEntitySwing`) with ammo > 0, server side, at most once per 5 ticks (`swingSoundDelay`), not while a non-player container is open | Power Hammers |
+| `guns.powerhammerImpact` | player | 1.65, 1.14, 1.65, 1.14 / 32000 Hz / mono | vanilla `World.playSoundAtEntity` on the hammer projectile | 1.0 | 1.0 | PowerHammerProjectile impact on an entity | Power Hammers |
+| `guns.powerhammerImpactGround` | player | 1.72, 1.55, 1.80, 1.72 / 32000 Hz / mono | vanilla: `playSoundAtEntity` on the projectile, or `playSoundEffect` at the block centre | 1.0 | 1.0 | PowerHammerProjectile impact without an entity hit; also `onBlockDestroyed` with ammo > 0 (block mined) | Power Hammers |
+| `guns.chainsawSwing` | player | 1.28, 1.62, 1.10 / 44100 Hz / mono | `PacketPlaySound` to all clients within 50 blocks including the swinger; TGSound at gun position, not moving, GUN_FIRE | 2.0 | 1.0 | left-click swing with fuel, server side, at most once per 5 ticks, not while a non-player container is open | Chainsaw |
+| `guns.chainsawHit` | player | 1.34, 1.34, 1.34, 1.34, 1.34, 1.34 / 44100 Hz / mono | vanilla `World.playSoundEffect` at the block centre | 0.65 | 1.0 | `onBlockDestroyed` with fuel > 0 (each block cut) | Chainsaw |
+| `guns.chainsawLoopEnd` | player | 0.86 / 32000 Hz / mono | – | – | – | never played (no code reference) | – |
+| `guns.minigunStart` | player | 0.30 / 44100 Hz / mono | – | – | – | never played (setter commented out in TGuns) | – |
+| `guns.pulserifleFireStereo` | player | 2.75 / 44100 Hz / stereo | – | – | – | never played (no code reference) | – |
+| `effects.biogunImpact` | player | 1.58, 1.58, 1.58 / 48000 Hz / mono | – | – | – | never played (the BiogunProjectile call is commented out) | – |
+| `guns.grenade_pin` | player | 0.77, 0.77 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` on the player (server broadcast) | 1.0 | 1.0 | right-click on a frag grenade (item use starts) | Frag Grenade |
+| `guns.grenade_throw` | player | 0.79, 0.77, 0.88 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` on the player (server broadcast) | 1.0 | 1.0 | frag grenade released (`spawnGrenade`, server side) | Frag Grenade |
+
+
+
+## Other (vanilla) sounds played by weapons in this area
+
+| Sound | Trigger | Volume | Pitch | Side |
+|---|---|---|---|---|
+| `random.bow` (vanilla) | Stielhandgranate released ([`GenericGrenade.spawnGrenade`](../02-guns/per-gun-behaviour.md#grenades-genericgrenade-fraggrenade-flashbang)) | 1.0 | 1 / (rand × 0.4 + 1.2) + charge × 0.5, where charge = (t² + 2t)/3 with t = ticks held ÷ 20, capped at 1 | server |
+| `random.bow` (vanilla) | Flashbang throw: unregistered item, so unreachable | 1.0 | same formula | server |
+| `mob.villager.idle` (vanilla) | firing or forced reload with an empty magazine and no reserve ammo | 1.0 | 1.0 | server |
+
+## Measured file facts (all 185 files)
+
+*Added in the consistency pass.* Duration, sample rate and channels are quoted from [ASSET-FACTS.md](../ASSET-FACTS.md). The volume and pitch come from the event table above. Totals: 185 files, 172 mono and 13 stereo (all 13 stereo files are referenced). 111 files are 44.1 kHz mono, 42 are 48 kHz mono, 16 are 32 kHz mono, 7 are 44.1 kHz stereo, 6 are 48 kHz stereo, and 3 are 192 kHz mono.
+
+| File | Event [category] | Duration | Sample rate | Channels | Volume / pitch passed | Notes |
+|---|---|---|---|---|---|---|
+| `sounds/guns/MIB_blaster_reload.ogg` | guns.MIBblasterReload [player] | 2.29 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/MIB_blaster_reload_akimbo.ogg` | guns.MIBblasterReloadAkimbo [player] | 2.99 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/MIB_blaster_shot_a.ogg` | guns.MIBblasterFire [player] | 2.44 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/MIB_blaster_shot_b.ogg` | guns.MIBblasterFire [player] | 2.44 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/MIB_blaster_shot_c.ogg` | guns.MIBblasterFire [player] | 2.34 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/SCAR_reload.ogg` | guns.scarReload [player] | 3.53 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/SCAR_shot_a.ogg` | guns.scarFire [player] | 1.60 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/SCAR_shot_b.ogg` | guns.scarFire [player] | 1.60 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/SCAR_shot_c.ogg` | guns.scarFire [player] | 1.60 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/ak47_reload.ogg` | guns.ak47Reload [player] | 2.78 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/ak47_shot_a.ogg` | guns.ak47Fire [player] | 1.50 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/ak47_shot_b.ogg` | guns.ak47Fire [player] | 1.50 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/ak47_shot_c.ogg` | guns.ak47Fire [player] | 1.50 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/alienblaster_reload.ogg` | guns.alienblasterReload [player] | 2.97 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/alienblaster_shot_a.ogg` | guns.alienblasterFire [player] | 2.65 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/alienblaster_shot_b.ogg` | guns.alienblasterFire [player] | 2.76 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/alienblaster_shot_c.ogg` | guns.alienblasterFire [player] | 2.80 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/ar1_reload.ogg` | guns.assaultRifleReload [player] | 2.09 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/ar1_shot_a.ogg` | guns.assaultRifleFire [player] | 1.23 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/ar1_shot_b.ogg` | guns.assaultRifleFire [player] | 1.40 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/as50_reload.ogg` | guns.as50Reload [player] | 5.00 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/as50_shot_a.ogg` | guns.as50Fire [player] | 4.93 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/as50_shot_b.ogg` | guns.as50Fire [player] | 4.93 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/aug_reload.ogg` | guns.augReload [player] | 4.03 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/aug_shot_a.ogg` | guns.augFire [player] | 2.44 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/aug_shot_b.ogg` | guns.augFire [player] | 2.44 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/aug_shot_c.ogg` | guns.augFire [player] | 2.44 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/beamgun_loop_a.ogg` | guns.beamgunFire [player] | 1.01 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/beamgun_loop_b.ogg` | guns.beamgunFire [player] | 1.01 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/beamgun_loop_c.ogg` | guns.beamgunFire [player] | 1.01 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/beamgun_loop_d.ogg` | guns.beamgunFire [player] | 1.01 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/beamgun_loop_e.ogg` | guns.beamgunFire [player] | 1.01 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/beamgun_loop_f.ogg` | guns.beamgunFire [player] | 1.01 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/beamgun_reload.ogg` | (no sounds.json event) | 2.99 s | 48000 Hz | mono | never played | not in sounds.json (unreachable) |
+| `sounds/guns/beamgun_start_a.ogg` | guns.beamgunStart [player] | 1.31 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/beamgun_start_b.ogg` | guns.beamgunStart [player] | 1.31 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/beamgun_start_c.ogg` | guns.beamgunStart [player] | 1.83 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/biogun_impact_a.ogg` | effects.biogunImpact [player] | 1.58 s | 48000 Hz | mono | never played | event unused |
+| `sounds/guns/biogun_impact_b.ogg` | effects.biogunImpact [player] | 1.58 s | 48000 Hz | mono | never played | event unused |
+| `sounds/guns/biogun_impact_c.ogg` | effects.biogunImpact [player] | 1.58 s | 48000 Hz | mono | never played | event unused |
+| `sounds/guns/biogun_reload.ogg` | guns.biogunReload [player] | 3.42 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/biogun_shot_a.ogg` | guns.biogunFire [player] | 1.58 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/biogun_shot_b.ogg` | guns.biogunFire [player] | 1.58 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/biogun_shot_c.ogg` | guns.biogunFire [player] | 1.58 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/blasterrifle_shot_a.ogg` | guns.blasterrifleFire [player] | 0.83 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/blasterrifle_shot_b.ogg` | guns.blasterrifleFire [player] | 0.77 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/blasterrifle_shot_c.ogg` | guns.blasterrifleFire [player] | 0.77 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/boltaction_rechamber.ogg` | guns.boltactionRechamber [player] | 1.03 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/boltaction_reload.ogg` | guns.boltactionReload [player] | 1.94 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/boltaction_shot_a.ogg` | guns.boltactionFire [player] | 1.98 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/boltaction_shot_b.ogg` | guns.boltactionFire [player] | 1.98 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/boltaction_shot_c.ogg` | guns.boltactionFire [player] | 1.98 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/cdb_shot_a.ogg` | guns.cyberdemonblasterFire [player] | 2.00 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/cdb_shot_b.ogg` | guns.cyberdemonblasterFire [player] | 2.00 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/cdb_shot_c.ogg` | guns.cyberdemonblasterFire [player] | 2.00 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/cdb_shot_d.ogg` | guns.cyberdemonblasterFire [player] | 2.00 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/chainsaw_hit_a.ogg` | guns.chainsawHit [player] | 1.34 s | 44100 Hz | mono | 0.65 / 1.0 | byte-identical to the other chainsaw_hit files |
+| `sounds/guns/chainsaw_hit_b.ogg` | guns.chainsawHit [player] | 1.34 s | 44100 Hz | mono | 0.65 / 1.0 | byte-identical to the other chainsaw_hit files |
+| `sounds/guns/chainsaw_hit_c.ogg` | guns.chainsawHit [player] | 1.34 s | 44100 Hz | mono | 0.65 / 1.0 | byte-identical to the other chainsaw_hit files |
+| `sounds/guns/chainsaw_hit_d.ogg` | guns.chainsawHit [player] | 1.34 s | 44100 Hz | mono | 0.65 / 1.0 | byte-identical to the other chainsaw_hit files |
+| `sounds/guns/chainsaw_hit_e.ogg` | guns.chainsawHit [player] | 1.34 s | 44100 Hz | mono | 0.65 / 1.0 | byte-identical to the other chainsaw_hit files |
+| `sounds/guns/chainsaw_hit_f.ogg` | guns.chainsawHit [player] | 1.34 s | 44100 Hz | mono | 0.65 / 1.0 | byte-identical to the other chainsaw_hit files |
+| `sounds/guns/chainsaw_loop_a.ogg` | guns.chainsawLoop [player] | 1.89 s | 32000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/chainsaw_loop_b.ogg` | guns.chainsawLoop [player] | 1.89 s | 32000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/chainsaw_loop_c.ogg` | guns.chainsawLoop [player] | 1.89 s | 32000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/chainsaw_loop_d.ogg` | (no sounds.json event) | 0.86 s | 32000 Hz | mono | never played | not in sounds.json (unreachable); byte-identical to chainsaw_loopstart/loopend/loop_d |
+| `sounds/guns/chainsaw_loopend.ogg` | guns.chainsawLoopEnd [player] | 0.86 s | 32000 Hz | mono | never played | event unused; byte-identical to chainsaw_loopstart/loopend/loop_d |
+| `sounds/guns/chainsaw_loopstart.ogg` | guns.chainsawLoopStart [master] | 0.86 s | 32000 Hz | mono | 4.0 / 1.0 | byte-identical to chainsaw_loopstart/loopend/loop_d |
+| `sounds/guns/chainsaw_swing_a.ogg` | guns.chainsawSwing [player] | 1.28 s | 44100 Hz | mono | 2.0 / 1.0 | – |
+| `sounds/guns/chainsaw_swing_b.ogg` | guns.chainsawSwing [player] | 1.62 s | 44100 Hz | mono | 2.0 / 1.0 | – |
+| `sounds/guns/chainsaw_swing_c.ogg` | guns.chainsawSwing [player] | 1.10 s | 44100 Hz | mono | 2.0 / 1.0 | – |
+| `sounds/guns/combatshotgun_pump.ogg` | guns.combatshotgunPump [player] | 0.89 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/combatshotgun_reload.ogg` | guns.combatshotgunReload [player] | 2.95 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/combatshotgun_shot_a.ogg` | guns.combatshotgunFire [player] | 2.10 s | 48000 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/combatshotgun_shot_b.ogg` | guns.combatshotgunFire [player] | 2.32 s | 48000 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/combatshotgun_shot_c.ogg` | guns.combatshotgunFire [player] | 3.14 s | 48000 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/flamethrower_reload.ogg` | guns.flamethrowerReload [player] | 2.21 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/flamethrower_shot_a.ogg` | guns.flamethrowerFire [player] | 1.30 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/flamethrower_shot_b.ogg` | guns.flamethrowerFire [player] | 1.30 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/flamethrower_shot_c.ogg` | guns.flamethrowerFire [player] | 1.10 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/flamethrower_shot_d.ogg` | guns.flamethrowerFire [player] | 1.10 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/flamethrower_shot_e.ogg` | guns.flamethrowerFire [player] | 1.10 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/flamethrower_start_a.ogg` | guns.flamethrowerStart [player] | 1.00 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/goldenrevolver_shot_a.ogg` | guns.goldenrevolverFire [player] | 3.49 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/goldenrevolver_shot_b.ogg` | guns.goldenrevolverFire [player] | 3.02 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/goldenrevolver_shot_c.ogg` | guns.goldenrevolverFire [player] | 3.02 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/grenade_pin_a.ogg` | guns.grenade_pin [player] | 0.77 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/grenade_pin_b.ogg` | guns.grenade_pin [player] | 0.77 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/grenade_throw_a.ogg` | guns.grenade_throw [player] | 0.79 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/grenade_throw_b.ogg` | guns.grenade_throw [player] | 0.77 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/grenade_throw_c.ogg` | guns.grenade_throw [player] | 0.88 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/grenadelauncher_reload.ogg` | guns.grenadeLauncherReload [player] | 4.32 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/grenadelauncher_shot_a.ogg` | guns.grenadeLauncherFire [player] | 1.71 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/grenadelauncher_shot_b.ogg` | guns.grenadeLauncherFire [player] | 1.68 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/grenadelauncher_shot_c.ogg` | guns.grenadeLauncherFire [player] | 1.71 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/handgun_reload.ogg` | guns.handgunReload [player] | 1.32 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/handgun_shot_a.ogg` | guns.handgunFire [player] | 1.71 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/handgun_shot_b.ogg` | guns.handgunFire [player] | 2.01 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/handgun_shot_c.ogg` | guns.handgunFire [player] | 2.29 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/lasergun_reload.ogg` | guns.lasergunReload [player] | 3.05 s | 32000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/lasergun_shot_a.ogg` | guns.lasergunFire [player] | 1.79 s | 44100 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/lasergun_shot_b.ogg` | guns.lasergunFire [player] | 1.74 s | 44100 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/lasergun_shot_c.ogg` | guns.lasergunFire [player] | 1.56 s | 44100 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/lmg_reload.ogg` | guns.lmgReload [player] | 5.72 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/lmg_shot_a.ogg` | guns.lmgFire [player] | 1.98 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/lmg_shot_b.ogg` | guns.lmgFire [player] | 1.98 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/lmg_shot_c.ogg` | guns.lmgFire [player] | 1.98 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/mac10_reload.ogg` | guns.mac10Reload [player] | 2.64 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/mac10_reload_akimbo.ogg` | guns.mac10ReloadAkimbo [player] | 3.41 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/mac10_shot_a.ogg` | guns.mac10Fire [player] | 1.42 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/mac10_shot_b.ogg` | guns.mac10Fire [player] | 1.42 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/mac10_shot_c.ogg` | guns.mac10Fire [player] | 1.42 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/minigun_reload.ogg` | guns.minigunReload [player] | 6.24 s | 32000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/minigun_shot_a.ogg` | guns.minigunFire [player] | 1.00 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/minigun_shot_b.ogg` | guns.minigunFire [player] | 1.00 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/minigun_shot_c.ogg` | guns.minigunFire [player] | 1.00 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/minigun_shot_d.ogg` | guns.minigunFire [player] | 1.00 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/minigun_start_a.ogg` | guns.minigunStart [player] | 0.30 s | 44100 Hz | mono | never played | event unused |
+| `sounds/guns/minigun_start_b.ogg` | (no sounds.json event) | 0.30 s | 44100 Hz | mono | never played | not in sounds.json (unreachable) |
+| `sounds/guns/minigun_start_c.ogg` | (no sounds.json event) | 0.30 s | 44100 Hz | mono | never played | not in sounds.json (unreachable) |
+| `sounds/guns/pdw_reload.ogg` | guns.pdwReload [player] | 2.57 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/pdw_shot_a.ogg` | guns.pdwFire [player] | 1.26 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/pdw_shot_b.ogg` | guns.pdwFire [player] | 1.26 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/pdw_shot_c.ogg` | guns.pdwFire [player] | 1.26 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/pistol_reload.ogg` | guns.pistolReload [player] | 1.81 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/pistol_reload_akimbo.ogg` | guns.pistolReloadAkimbo [player] | 2.60 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/pistol_shot_a.ogg` | guns.pistolFire [player] | 1.14 s | 44100 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/pistol_shot_b.ogg` | guns.pistolFire [player] | 1.14 s | 44100 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/pistol_shot_c.ogg` | guns.pistolFire [player] | 1.14 s | 44100 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/powerhammer_charge_a.ogg` | guns.powerhammerCharge [player] | 2.53 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_charge_b.ogg` | guns.powerhammerCharge [player] | 2.53 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_charge_c.ogg` | guns.powerhammerCharge [player] | 2.53 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_impactGround_a.ogg` | guns.powerhammerImpactGround [player] | 1.72 s | 32000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_impactGround_b.ogg` | guns.powerhammerImpactGround [player] | 1.55 s | 32000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_impactGround_c.ogg` | guns.powerhammerImpactGround [player] | 1.80 s | 32000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_impactGround_d.ogg` | guns.powerhammerImpactGround [player] | 1.72 s | 32000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_impact_a.ogg` | guns.powerhammerImpact [player] | 1.65 s | 32000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_impact_b.ogg` | guns.powerhammerImpact [player] | 1.14 s | 32000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_impact_c.ogg` | guns.powerhammerImpact [player] | 1.65 s | 32000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_impact_d.ogg` | guns.powerhammerImpact [player] | 1.14 s | 32000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_reload.ogg` | guns.powerhammerReload [player] | 3.43 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_shot_a.ogg` | guns.powerhammerFire [player] | 3.19 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_shot_b.ogg` | guns.powerhammerFire [player] | 2.20 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_shot_c.ogg` | guns.powerhammerFire [player] | 2.58 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_swing_a.ogg` | guns.powerhammerSwing [player] | 1.67 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_swing_b.ogg` | guns.powerhammerSwing [player] | 1.39 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/powerhammer_swing_c.ogg` | guns.powerhammerSwing [player] | 1.49 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/pulserifle_reload.ogg` | guns.pulserifleReload [player] | 2.22 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/pulserifle_shot_a.ogg` | guns.pulserifleFire [player] | 2.75 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/pulserifle_shot_b.ogg` | guns.pulserifleFire [player] | 2.75 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/pulserifle_shot_c.ogg` | guns.pulserifleFire [player] | 2.75 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/pulserifle_shot_d.ogg` | guns.pulserifleFire [player] | 2.75 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/pulserifle_shot_stereo.ogg` | guns.pulserifleFireStereo [player] | 2.75 s | 44100 Hz | stereo | never played | event unused; stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/revolver_reload.ogg` | guns.revolverReload [player] | 2.72 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/revolver_reload_akimbo.ogg` | guns.revolverReloadAkimbo [player] | 3.51 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/revolver_shot_a.ogg` | guns.revolverFire [player] | 1.78 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/revolver_shot_b.ogg` | guns.revolverFire [player] | 1.78 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/revolver_shot_c.ogg` | guns.revolverFire [player] | 1.78 s | 48000 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/rocket_reload.ogg` | guns.rocketReload [player] | 3.53 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/rocket_shot_a.ogg` | guns.rocketFire [player] | 2.06 s | 48000 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/rocket_shot_b.ogg` | guns.rocketFire [player] | 2.06 s | 48000 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/rocket_shot_c.ogg` | guns.rocketFire [player] | 2.06 s | 48000 Hz | stereo | 4.0 / 1.0 | stereo: plays without 3D attenuation (`GVA-23`) |
+| `sounds/guns/sawedoff_reload.ogg` | guns.sawedoffReload [player] | 1.54 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/sawedoff_shot_a.ogg` | guns.sawedoffFire [player] | 1.30 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/sawedoff_shot_b.ogg` | guns.sawedoffFire [player] | 1.30 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/sawedoff_shot_c.ogg` | guns.sawedoffFire [player] | 1.30 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/silencedm4_shot_a.ogg` | guns.silencedM4Fire [player] | 1.07 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/silencedm4_shot_b.ogg` | guns.silencedM4Fire [player] | 1.07 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/sonicshotgun_reload.ogg` | guns.sonicshotgunReload [player] | 3.95 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/sonicshotgun_shot_a.ogg` | guns.sonicshotgunFire [player] | 1.76 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/sonicshotgun_shot_b.ogg` | guns.sonicshotgunFire [player] | 1.76 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/sonicshotgun_shot_c.ogg` | guns.sonicshotgunFire [player] | 1.59 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/teslagun_reload.ogg` | guns.teslaReload [player] | 2.35 s | 44100 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/teslagun_shot_a.ogg` | guns.teslaFire [player] | 3.44 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/teslagun_shot_b.ogg` | guns.teslaFire [player] | 3.44 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/teslagun_shot_c.ogg` | guns.teslaFire [player] | 3.44 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/teslagun_shot_d.ogg` | guns.teslaFire [player] | 3.44 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/thompson_reload.ogg` | guns.thompsonReload [player] | 1.76 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/thompson_shot_a.ogg` | guns.thompsonFire [player] | 1.01 s | 192000 Hz | mono | 4.0 / 1.0 | unusual 192 kHz rate (`GVA-24`) |
+| `sounds/guns/thompson_shot_b.ogg` | guns.thompsonFire [player] | 1.01 s | 192000 Hz | mono | 4.0 / 1.0 | unusual 192 kHz rate (`GVA-24`) |
+| `sounds/guns/thompson_shot_c.ogg` | guns.thompsonFire [player] | 1.01 s | 192000 Hz | mono | 4.0 / 1.0 | unusual 192 kHz rate (`GVA-24`) |
+| `sounds/guns/vector_reload.ogg` | guns.vectorReload [player] | 1.54 s | 48000 Hz | mono | 1.0 / 1.0 | – |
+| `sounds/guns/vector_shot_a.ogg` | guns.vectorFire [player] | 0.60 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/vector_shot_b.ogg` | guns.vectorFire [player] | 0.60 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+| `sounds/guns/vector_shot_c.ogg` | guns.vectorFire [player] | 0.60 s | 44100 Hz | mono | 4.0 / 1.0 | – |
+
+Rows: 185

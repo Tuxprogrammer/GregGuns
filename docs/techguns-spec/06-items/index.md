@@ -1,5 +1,8 @@
 # 06-items: non-gun, non-armour items
 
+## Overview
+
+
 This is a behavioural specification of Techguns 1.7.10 (v0.1.2 alpha, `VERSION = "0.1.2_alphatest4.1"`) for every item that is neither a gun ([02](../02-guns/index.md)) nor armour ([05](../05-armor/index.md)). It covers crafting components, metals, ammunition and magazines, tanks and cells, gun parts, machine upgrades, drill heads, turret armour, foci, the glider and oxygen mask, the camo net placer, the bunker door item, the acid bucket and fluids, the ore cluster scanner, tools (combat knife, crowbar), spawn eggs and the developer/debug items. It also lists every recipe and loot table that [`TGItems`](item-catalogue.md) registers, all 177 textures in `textures/items/`, and the 15 sounds in `sounds/items/`.
 
 ## Contents
@@ -17,7 +20,7 @@ This is a behavioural specification of Techguns 1.7.10 (v0.1.2 alpha, `VERSION =
 | [sounds.md](sounds.md) | All 15 `sounds/items/*.ogg`: event names and triggers |
 | [lang.md](lang.md) | Tooltip, chat and other lang strings; generated text; lang-file anomalies |
 
-## Key architecture facts
+## Key facts
 
 - **Almost every item is one meta item.** [`GenericItemShared`](special-items.md#shared-item-genericitemshared-behaviour), registered as `Techguns:TechgunsAmmo`, holds 110 sub-items (metas 0–109). The meta is the position in `GenericItemShared.names[]`, which mirrors the registration order in `TGItems.init()`. Each meta has its own max stack size (`short[]`) and [`TGSlotType`](../05-armor/extra-inventory.md#2-tgslottype-enum) (`TGSlotType[]`). `TGItems` keeps template `ItemStack`s (one per meta) as public static fields. Code compares items by `getItemDamage()` against those templates. `TGItems.newStack(template, n)` copies a template with a new count.
 - Thirteen stand-alone items are registered in `TGItems`. Seven of them are special-slot gear owned by 05. Metals and nuggets are registered in [`Techguns.java`](../01-core/lifecycle-and-registration.md#lifecycle-overview), only behind config flags. Four debug tools are registered unconditionally. Spawn eggs are registered by [`TGEntities`](../10-entities-npcs/mob-catalogue.md#registration-javatechgunstgentitiesjava).
@@ -28,15 +31,6 @@ This is a behavioural specification of Techguns 1.7.10 (v0.1.2 alpha, `VERSION =
 - The shared item has a dispenser behaviour: rockets, nuke rockets and 40 mm grenades are fired as projectiles.
 - There are no fuel (burn-time) registrations. The container items are: the acid bucket → bucket; Fuel Tank ↔ Fuel Tank (Empty) as a Forge fluid container.
 
-## Coverage
-
-| Scope | Read / covered |
-|---|---|
-| Java files in scope | 19 / 19 read in full: `TGItems`, `TGFluids`, `items/GenericItem`, [`GenericItemBucket`](fluids.md#creeper-acid-bucket-item), `GenericItemShared`, [`ItemMedkit`](textures.md#12-unused--unregistered), [`ItemCamoNetPlacer`](special-items.md#camo-net-placer-itemcamonetplacer-techgunscamonetplacer), [`ItemTGDoor`](special-items.md#bunker-door-item-itemtgdoor-techgunsdooritem01), [`BlockReader`](special-items.md#block-reader-tool-blockreader), [`TGMonsterPlacer`](special-items.md#spawn-eggs-tgmonsterplacer), [`BuildingScanTool`](special-items.md#building-scan-tool-buildingscantool), [`StructureTestTool`](special-items.md#structure-test-tool-structuretesttool), [`OreClusterScanner`](special-items.md#ore-cluster-scanner-oreclusterscanner-techgunsoreclusterscanner), [`oreClusterDebugger`](special-items.md#ore-cluster-debugger-oreclusterdebugger), `tools/GenericTool`, [`TGCrowbar`](special-items.md#crowbar-tgcrowbar--tgpickaxe-techgunscrowbar), [`TGPickaxe`](special-items.md#crowbar-tgcrowbar--tgpickaxe-techgunscrowbar), [`TGSword`](special-items.md#combat-knife-tgsword-techgunscombatknife), `client/renderer/item/RenderGenericItem`. `items/TGSlotType` was also read in full and documented. `items/RecipeAkimboGun`, [`RecipeAkimboSplit`](../02-guns/recipes.md#shapeless--custom-recipes) and [`ShapelessOreRecipeCopyNBT`](../02-guns/recipes.md#shapeless--custom-recipes) sit in the same folder but were not named in this scope. They are gun-recipe helpers used only by [`TGuns`](../02-guns/gun-catalogue.md) ([02](../02-guns/index.md)) and are left to 02. |
-| Supporting files read (not documented as owned) | `Techguns.java` (item/metal registration, inventory helpers), `TGMachineRecipes`, `TGEntities` (eggs), `TGuns` (ammo data), [`GenericGun`](../02-guns/gun-lifecycle.md) (reload/empty mags), `RenderM4Mag` / `RenderAS50Mag` / `RenderLMGMag` / `RenderRocketAmmo`, [`BehaviorProjectileDispenseDamagevalue`](../01-core/lifecycle-and-registration.md#preinit-in-exact-order), [`BlockFluidAcid`](../07-blocks/special-blocks.md#14-creeper-acid-acid-blockfluidacid), [`OreCluster`](../07-blocks/block-catalogue.md#registered-blocks), [`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine), [`TGConfig`](../01-core/config.md), [`TechgunsTickHandler`](../01-core/events.md#techgunstickhandler-fml-bus), `ClientProxy`, the lang file, `sounds.json` |
-| Textures in `textures/items/` | 177 / 177 viewed and described (plus the 4 fluid textures in `textures/blocks/`) |
-| Sounds in `sounds/items/` | 15 / 15 |
-
 ## Related areas
 
 - [02-guns](../02-guns/index.md): which guns consume which ammo, and gun recipes.
@@ -46,6 +40,24 @@ This is a behavioural specification of Techguns 1.7.10 (v0.1.2 alpha, `VERSION =
 - [10-entities-npcs](../10-entities-npcs/index.md): spawn eggs and NPC drops.
 - [11-worldgen](../11-worldgen/index.md): loot tables, ore clusters and the scanner tools' world side.
 - [01-core](../01-core/index.md): metals and ores registered in `Techguns.java`, and oredict.
+
+## Coverage
+
+| Scope | Read / covered |
+|---|---|
+| Java files in scope | 19 / 19 read in full: `TGItems`, `TGFluids`, `items/GenericItem`, [`GenericItemBucket`](fluids.md#creeper-acid-bucket-item), `GenericItemShared`, [`ItemMedkit`](textures.md#12-unused--unregistered), [`ItemCamoNetPlacer`](special-items.md#camo-net-placer-itemcamonetplacer-techgunscamonetplacer), [`ItemTGDoor`](special-items.md#bunker-door-item-itemtgdoor-techgunsdooritem01), [`BlockReader`](special-items.md#block-reader-tool-blockreader), [`TGMonsterPlacer`](special-items.md#spawn-eggs-tgmonsterplacer), [`BuildingScanTool`](special-items.md#building-scan-tool-buildingscantool), [`StructureTestTool`](special-items.md#structure-test-tool-structuretesttool), [`OreClusterScanner`](special-items.md#ore-cluster-scanner-oreclusterscanner-techgunsoreclusterscanner), [`oreClusterDebugger`](special-items.md#ore-cluster-debugger-oreclusterdebugger), `tools/GenericTool`, [`TGCrowbar`](special-items.md#crowbar-tgcrowbar--tgpickaxe-techgunscrowbar), [`TGPickaxe`](special-items.md#crowbar-tgcrowbar--tgpickaxe-techgunscrowbar), [`TGSword`](special-items.md#combat-knife-tgsword-techgunscombatknife), `client/renderer/item/RenderGenericItem`. `items/TGSlotType` was also read in full and documented. `items/RecipeAkimboGun`, [`RecipeAkimboSplit`](../02-guns/recipes.md#shapeless--custom-recipes) and [`ShapelessOreRecipeCopyNBT`](../02-guns/recipes.md#shapeless--custom-recipes) sit in the same folder but were not named in this scope. They are gun-recipe helpers used only by [`TGuns`](../02-guns/gun-catalogue.md) ([02](../02-guns/index.md)) and are left to 02. |
+| Supporting files read (not documented as owned) | `Techguns.java` (item/metal registration, inventory helpers), `TGMachineRecipes`, `TGEntities` (eggs), `TGuns` (ammo data), [`GenericGun`](../02-guns/gun-lifecycle.md) (reload/empty mags), `RenderM4Mag` / `RenderAS50Mag` / `RenderLMGMag` / `RenderRocketAmmo`, [`BehaviorProjectileDispenseDamagevalue`](../01-core/lifecycle-and-registration.md#preinit-in-exact-order), [`BlockFluidAcid`](../07-blocks/special-blocks.md#14-creeper-acid-acid-blockfluidacid), [`OreCluster`](../07-blocks/block-catalogue.md#registered-blocks), [`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine), [`TGConfig`](../01-core/config.md), [`TechgunsTickHandler`](../01-core/events.md#techgunstickhandler-fml-bus), `ClientProxy`, the lang file, `sounds.json` |
+| Textures in `textures/items/` | 177 / 177 viewed and described (plus the 4 fluid textures in `textures/blocks/`) |
+| Sounds in `sounds/items/` | 15 / 15 |
+
+## Known limits
+
+- Audio cannot be listened to here. Sound durations, sample rates and channels are measured ([ASSET-FACTS.md](../ASSET-FACTS.md)); any statement about how a sound *sounds* is inferred from its name and use.
+- Colour figures for textures are measured averages and 8-level bucketed dominant colours; they describe the PNGs and were not compared to in-game renders.
+- NPC drop lists, machine recipes and structure loot tables are owned by other areas. The "Obtained from" columns in [item-catalogue.md](item-catalogue.md#1b-lang-key-and-obtained-from-for-every-shared-meta-consistency-pass) cite them by recipe number and were checked against the [08](../08-machines-production/index.md) tables, not re-derived from `TGMachineRecipes`.
+- Forge and vanilla behaviour that the tool classes inherit (sword blocking, pickaxe mining speeds, anvil rules, tool-class lookup) is described from the 1.7.10 vanilla and Forge rules, not from Techguns source.
+- Gun-recipe helpers in `items/` ([`RecipeAkimboGun`](../02-guns/recipes.md#shapeless--custom-recipes), `RecipeAkimboSplit`, `ShapelessOreRecipeCopyNBT`) are left to [02-guns](../02-guns/index.md).
+- Third-party mods that supply OreDict metals (steel, copper, tin, lead) were not examined.
 
 ## Suspected bugs
 

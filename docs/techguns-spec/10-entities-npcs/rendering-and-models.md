@@ -1,6 +1,6 @@
 # Rendering and models (living entities)
 
-Source files: `client/ClientProxy.registerRenderers` (bindings), `client/renderer/entity/RenderGenericNPC.java`, `RenderSuperMutant.java`, `RenderAlienBug.java`, `RenderHelicopter.java`, `RenderSimpleTurret.java`, `entities/renderer/RenderTurret.java`, and the models `client/models/ModelGenericNPC.java`, `ModelSkeletonSoldier.java`, `ModelCyberDemon.java`, `ModelSuperMutant.java`, `ModelAlienBug.java`, `ModelNull.java`, `ModelGrimReaper.java` and `client/models/blocks/ModelTurret.java`. The OBJ models are `models/entity/*.obj`.
+Source files: `client/ClientProxy.registerRenderers` (bindings), `client/renderer/entity/RenderGenericNPC.java`, `RenderSuperMutant.java`, `RenderAlienBug.java`, `RenderHelicopter.java`, `RenderSimpleTurret.java`, [`entities/renderer/RenderTurret.java`](index.md#coverage), and the models `client/models/ModelGenericNPC.java`, `ModelSkeletonSoldier.java`, `ModelCyberDemon.java`, `ModelSuperMutant.java`, `ModelAlienBug.java`, `ModelNull.java`, `ModelGrimReaper.java` and `client/models/blocks/ModelTurret.java`. The OBJ models are `models/entity/*.obj`.
 
 Projectile renderers (including [`RenderDummy`](../04-projectiles-fx/projectiles.md#1-registration), which is also bound to the invisible particle-system entity) and the gib/death effects belong to [04-projectiles-fx](../04-projectiles-fx/index.md). Texture details for every file named here are in [textures.md](textures.md).
 
@@ -222,7 +222,7 @@ Texture 64 × 64 logical (the `TurretBase*.png` files are 128 × 128).
 An empty `ModelBase`. It is the placeholder model for the OBJ-rendered helicopter.
 
 ### 7.8 `ModelGrimReaper` and `ModelCyberdemonBlaster` (gun models, listed for completeness)
-`ModelGrimReaper` is **not** an NPC model. It is the item model for the Grim Reaper quad rocket launcher ([`TGuns.grimreaper`](../02-guns/gun-catalogue.md)), which Outcasts may carry: a [`ModelMultipart`](../03-gun-visuals-audio/rendering-framework.md#1-registration-client-proxy) with 59 boxes and a 128 × 64 texture (`textures/guns/grimreaper.png`), rendered by `RenderGrimReaper` with an extra 180° Y flip. Its geometry and texture are specified by **[03-gun-visuals-audio](../03-gun-visuals-audio/index.md)**, as is [`ModelCyberdemonBlaster`](../03-gun-visuals-audio/gun-models.md#modelcyberdemonblaster-6464-family-z-24-boxes-1-part) (the Cyberdemon's gun).
+`ModelGrimReaper` is **not** an NPC model. It is the item model for the Grim Reaper quad rocket launcher ([`TGuns.grimreaper`](../02-guns/gun-catalogue.md)), which Outcasts may carry: a [`ModelMultipart`](../03-gun-visuals-audio/rendering-framework.md#1-registration-client-proxy) with 59 boxes and a 128 × 64 texture ([`textures/guns/grimreaper.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures)), rendered by `RenderGrimReaper` with an extra 180° Y flip. Its geometry and texture are specified by **[03-gun-visuals-audio](../03-gun-visuals-audio/index.md)**, as is [`ModelCyberdemonBlaster`](../03-gun-visuals-audio/gun-models.md#modelcyberdemonblaster-6464-family-z-24-boxes-1-part) (the Cyberdemon's gun).
 
 ## 8. Death and gore hookup (cross-reference)
 

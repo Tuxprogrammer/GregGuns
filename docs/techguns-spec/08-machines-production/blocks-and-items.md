@@ -19,9 +19,9 @@
 | 0 | Ammo Press | [`AmmoPressTileEnt`](framework.md#1-class-hierarchy) | 0 | 08 |
 | 1 | Metal Press | [`MetalPressTileEnt`](framework.md#1-class-hierarchy) | 1 | 08 |
 | 2 | Turret (base) | [`TurretBaseEnt`](../09-machines-utility/turret.md#tile-entity-turretbaseent) | 2 | [09](../09-machines-utility/index.md) |
-| 3 | Camo Bench | `CamoBenchTileEnt` | 3 | [09](../09-machines-utility/index.md) |
+| 3 | Camo Bench | [`CamoBenchTileEnt`](../09-machines-utility/index.md#key-facts) | 3 | [09](../09-machines-utility/index.md) |
 | 4 | Chemical Laboratory | [`ChemLabTileEnt`](framework.md#1-class-hierarchy) | 4 | 08 |
-| 5 | Repair Bench | `RepairBenchTileEnt` | 5 | [09](../09-machines-utility/index.md) |
+| 5 | Repair Bench | [`RepairBenchTileEnt`](../09-machines-utility/index.md#key-facts) | 5 | [09](../09-machines-utility/index.md) |
 | 6 | Explosive Charge | [`ExplosiveChargeTileEnt`](../09-machines-utility/explosive-charges.md#nbt-explosivechargetileent) | 6 | [09](../09-machines-utility/index.md) |
 | 7 | Flag (camp flag; worldgen only) | [`CampFlagTileEnt`](../09-machines-utility/shared-rendering.md#1-basicmachine-metas-owned-by-area-09) | none | [09](../09-machines-utility/index.md) / 11 |
 | 8 | Advanced Explosive Charge | [`ExplosiveChargeAdvTileEnt`](../09-machines-utility/explosive-charges.md) | 6 (shared) | [09](../09-machines-utility/index.md) |
@@ -121,3 +121,35 @@ Shaped ore recipes in [`TGItems`](../06-items/item-catalogue.md); [`06-items`](.
 ## 3. Multiblock error message
 
 When structure validation fails, the server sends the client-bound packet `PacketTGMessage(type 0, x, y, z)` (fields: byte `messageType`, int `paramCoordx`, `paramCoordy`, `paramCoordz`). The client shows the chat line "`techguns.tgmessage.0` x, y, z", i.e. "Invalid Block for Reaction Chamber at x, y, z". The Fabricator uses the same message ([MPRD-27](index.md#suspected-bugs)).
+
+## 4. Entity sheet summary (consistency pass)
+
+### 4.1 `basicMachine` (all metas used by 08)
+
+| # | Field | Contents |
+|---|---|---|
+| 1 | Identity | Class `BasicMachine`; registry [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks); unlocalized `tile.BasicMachine`; item `ItemBlockMetaDataMachine`; metas 0, 1, 4, 9 belong to 08 (lang keys in [lang.md](lang.md#1-blocks)); creative tab Techguns; oredict none |
+| 2 | Obtaining | Section 1 recipe table; each machine file repeats it in its sheet |
+| 3 | Numbers | Hardness 4.0, resistance 20.0, iron material, metal step sound, pickaxe level 1, never spawns mobs |
+| 4 | Behaviour | Interaction, placement, breaking sections above |
+| 5 | Persistence and sync | Item NBT `TileEntityData` (the whole tile compound) on wrench-dismantled machines; tile keys in [framework.md](framework.md) |
+| 6 | UI | Item tooltip: `techguns.block.hasTileEntityData`, "Has TileEntity Data", added by `ItemBlockMetaDataMachine.addInformation` whenever the stack's NBT has `TileEntityData`; no other item tooltip lines. Chat: "[DENIED] You have no permission to use" |
+| 7 | Visuals | Render type −1; no face textures. Break-particle icon [`textures/blocks/screen_top.png`](../07-blocks/textures.md#6-radar-screen-and-control-panel) (32×32, average #534540, dominant #503030 49 %, #505030 20 %, #707070 12 %). Per-machine models in [rendering.md](rendering.md) |
+| 8 | Audio | Step and break sound is the vanilla metal type; machine sounds in [sounds.md](sounds.md). Explosive charges (meta 6, 8) play a plant sound at volume 4.0, pitch 1.0 on placement ([09](../09-machines-utility/index.md)) |
+| 9 | Relationships | Metas 2, 3, 5, 6, 7, 8 and 10 belong to [`09-machines-utility`](../09-machines-utility/index.md) |
+| 10 | Bugs | MPRD-09, [MPRD-24](index.md#suspected-bugs), [MPRD-34](index.md#suspected-bugs) |
+
+### 4.2 `machineMultiBlock`
+
+| # | Field | Contents |
+|---|---|---|
+| 1 | Identity | Class `MultiBlockMachineBlock`; registry [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-blocks); metas 0 to 5 plus the render-only 15; names in [lang.md](lang.md#1-blocks); creative tab Techguns |
+| 2 | Obtaining | Section 2 recipe table |
+| 3 | Numbers | Hardness 8.0, resistance 50.0, pickaxe level 1, Chisel CTM, chiseling forbidden |
+| 4 | Behaviour | Section 2 and the machine files |
+| 5 | Persistence and sync | Slave `type` byte and master link in [framework.md](framework.md#9-multiblock-framework) |
+| 6 | UI | Same tooltip rules as `basicMachine` (same item class) |
+| 7 | Visuals | Textures per meta in the section 2 table. Measured: `rc_block` 32×32 #C5C5C5; `rc_controller` 32×32 #C8D3DC; `rc_glass` 32×32 #D7D7D7 (52 % opaque); `fabricatorHousing` 32×32 #949494; `fabricatorController` 32×32 #787D7E; `fabricatorGlass` 32×32 #1A1919 (23 % opaque); `invisible` 16×16, fully transparent. Per-face CTM variations were not examined |
+| 8 | Audio | vanilla metal block sound; machine sounds in [sounds.md](sounds.md) |
+| 9 | Relationships | [fabricator.md](fabricator.md), [reaction-chamber.md](reaction-chamber.md) |
+| 10 | Bugs | [MPRD-01](index.md#suspected-bugs), [MPRD-07](index.md#suspected-bugs), [MPRD-08](index.md#suspected-bugs), MPRD-27, [MPRD-35](index.md#suspected-bugs) |

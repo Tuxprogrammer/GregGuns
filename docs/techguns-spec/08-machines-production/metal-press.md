@@ -103,3 +103,18 @@ TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation-
 - **Animation.**
   - Working: the `MetalPiece` blank shows on the table, and the press head (parts `p1..p6`) moves vertically by 0.25·y blocks, where y = 0.5 + sin((√(2q)+0.75)·2π)/2 and q = p mod 0.5. That's **two strokes per operation**; y starts and ends each stroke at 0.
   - Idle: the head is at rest and there's no blank.
+
+## 7. Entity sheet summary (consistency pass)
+
+| # | Field | Contents |
+|---|---|---|
+| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 1; tile `MetalPressTileEnt`; name key `techguns.tile.BasicMachine_1.name`, English **Metal Press**; container `MetalPressContainer`, GUI ID 1; creative tab Techguns; oredict names none |
+| 2 | Obtaining | Shaped ore recipe `ibi / iei / iri` (i `ingotIron`, b `blockIron`, e Electric Engine, r redstone), with an alternative using `plateIron` as b; table in [blocks-and-items.md](blocks-and-items.md#crafting-recipes-for-the-machines-in-this-area) |
+| 3 | Numbers | Buffer 20 000 RF; 20 RF/t times the multiplier; 100 ticks per operation; multiplier 1 to 8; 18 recipes (section 2); hardness 4.0, resistance 20.0 |
+| 4 | Behaviour | Sections 2 and 3 (recipe model, auto-split). Runs on both sides like the Ammo Press |
+| 5 | Persistence and sync | NBT `autoSplitMode` (byte), plus the base keys (see [ammo-press.md](ammo-press.md#8-entity-sheet-summary-consistency-pass) and [framework.md](framework.md)). GUI progress-bar fields: 0 progress, 1 totalTime, 2 power (raw RF), 3 auto-split mode. Button ID 3 toggles auto-split |
+| 6 | UI | Section 4. Item tooltip: "Has TileEntity Data" only when carrying `TileEntityData`. GUI strings: "Metal Press", "Stack split:" with "On"/"Off", button "Switch" |
+| 7 | Visuals | No per-face block texture (TESR only; break icon `screen_top`). TESR `RenderAmmoPress` + `ModelMetalPress`; atlas `textures/blocks/MetalPress.png`, 256×128, average #383532, dominant #101010 58 %, #909090 7 %, #505050 5 %, 100 % opaque. Item renderer delegate 1 ([`RenderBlockModelItem`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand)) |
+| 8 | Audio | `machines.metalpressWork` volume 1, pitch 1, ticks 8 and 58; three clips of 2.25 s, 44100 Hz mono. `machines.metalpressLargeWork` is unused (2.98 s, one 8000 Hz and two 44100 Hz clips) |
+| 9 | Relationships | `MetalPressRecipes` filled by [`TGMachineRecipes`](index.md#tgmachinerecipesaddrecipes-what-it-registers) and MineTweaker ([minetweaker.md](minetweaker.md)); NEI handler ([nei.md](nei.md)); plates, wires and parts feed [`06-items`](../06-items/index.md) crafting |
+| 10 | Bugs | [MPRD-20](index.md#suspected-bugs) (shift-click), [MPRD-21](index.md#suspected-bugs) (automation can insert into the output slot) |

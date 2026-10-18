@@ -33,7 +33,7 @@ All projectile entities are registered in [`java/techguns/Techguns.java`](../01-
 | 19 | `GrenadeLauncherProjectile` | `GrenadeLauncherProjectile` | 120 | 1 | yes | `RenderGrenadeLauncherProjectile(ModelModel models/entity/launchergrenade.obj, techguns:textures/entity/launchergrenade.png)` | active |
 | 20 | `SonicShotgunProjectile` | `SonicShotgunProjectile` | 80 | 1 | yes | `RenderSonicShotgunProjectile` | active |
 | 21 | `InvisibleProjectile` | `InvisibleProjectile` | 80 | 3 | yes | `RenderDummy` | active (chainsaw) |
-| 22 | [`MovingBeam`](fx-catalogue.md#triggers-which-game-event-spawns-which-fx) | `MovingBeam` | 80 | 3 | yes | [`RenderMovingBeam`](renderers.md#nuclear-death-ray-rendermovingbeam) | active (nuclearDeathRay, a `Beamgun`) |
+| 22 | [`MovingBeam`](fx-catalogue.md#triggers-which-game-event-spawns-which-fx) | `MovingBeam` | 80 | 3 | yes | [`RenderMovingBeam`](renderers.md#nuclear-death-ray-rendermovingbeam) | active (nuclearDeathRay, a [`Beamgun`](../02-guns/sheets-energy-special.md#nuclear-death-ray-nucleardeathray)) |
 | 23 | `BeamProjectile` | `BeamProjectile` | 80 | 3 | yes | `RenderDummy` | registered, never spawned |
 | 24 | `FragGrenadeProjectile` | `FragGrenadeProjectile` | 120 | 1 | yes | `RenderStielgranateProjectile(ModelFragGrenade(false), techguns:textures/guns/fragGrenade_texture.png)` | active |
 | 25 | `NeutrinoBeam` | `NeutrinoBeam` | 80 | 3 | yes | `RenderMovingBeam` | registered; `neutrinoGun` is commented out |
@@ -46,7 +46,7 @@ Not registered, so they are never tracked to clients or saved:
 | `AlienBlasterProjectile` | **Actively spawned by the [`alienBlaster`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) gun but has no entity registration.** Its renderer (`RenderDummy`) is bound in ClientProxy, but the entity is never sent to clients. It works server-side, and its visuals come from FX packets. See bug [PFX-01](index.md#suspected-bugs). |
 | `BlasterProjectile` | `@Deprecated`. Registration and renderer (`RenderBlasterProjectile`) are commented out. Gun spawn lines are commented. |
 | `PiercingProjectile` | `@Deprecated`. No registration. [`RenderPiercingProjectile`](textures.md#single-images) exists but is unbound. |
-| [`FlashBangProjectile`](index.md#quick-facts) | Spawned by the [`Flashbang`](../02-guns/per-gun-behaviour.md#grenades-genericgrenade-fraggrenade-flashbang) item. The item is constructed in [`TGuns`](../02-guns/gun-catalogue.md), but its `GameRegistry.registerItem` is missing, so it is unreachable in practice. |
+| [`FlashBangProjectile`](index.md#key-facts) | Spawned by the [`Flashbang`](../02-guns/per-gun-behaviour.md#grenades-genericgrenade-fraggrenade-flashbang) item. The item is constructed in [`TGuns`](../02-guns/gun-catalogue.md), but its `GameRegistry.registerItem` is missing, so it is unreachable in practice. |
 | `RailgunProjectile` | Registered renderer `RenderRailgunProjectile`, but no entity registration, and the `railgun` gun is commented out. |
 
 IDs 1–26 above are the complete list in `Techguns.java`. `RailgunProjectile` and `AlienBlasterProjectile` are missing from it, although ClientProxy still binds renderers for both. An unregistered entity is not matched by FML's tracker or by any vanilla tracker class, so the server simulates it but no client ever sees it.
@@ -246,7 +246,7 @@ The following sections cover what the table does not.
 - Dead code: `updateBlockLevel`/`setBlockForLevel` (an older level-merge scheme that exploded at level > 3 with `ProjectileExplosion(1.5, 30, 1.0, 2.0)` and set fire).
 
 ### 3.6 `TeslaProjectile` (chain lightning)
-- Invisible. The speed field is `Teslagun.SPEED` (5.0), the lifetime `Teslagun.LIFETIME` (**10 ticks**), and spread is forced to 0. Motion uses `Teslagun.SPEED`, so the range is 50 blocks.
+- Invisible. The speed field is [`Teslagun.SPEED`](../02-guns/index.md#coverage) (5.0), the lifetime `Teslagun.LIFETIME` (**10 ticks**), and spread is forced to 0. Motion uses `Teslagun.SPEED`, so the range is 50 blocks.
 - Extra parameters: `chain` (number of extra targets), `chainDmgDrop` (damage removed per chain step).
 - **Entity hit (server):**
   1. Damage the primary target with `getDamage() × factor` (factor 1 for non-living targets), then revenge.
@@ -339,7 +339,7 @@ The client copy also calls `explode` (with radius 0 and damage 0), which is harm
 - The constructor always passes `blockdamage = true`.
 - Entity hit:
   - Source `tg_bullet` (GORE).
-  - For `EntityLiving` targets with health > 0: compute the armour-reduced amount via `DamageSystem.getDamage(src, getDamage(), target)` and **subtract it directly from health**.
+  - For `EntityLiving` targets with health > 0: compute the armour-reduced amount via [`DamageSystem.getDamage(src, getDamage(), target)`](../02-guns/index.md#coverage) and **subtract it directly from health**.
   - If not silenced, also `attackEntityFrom(src, 0.1)` for the hurt animation and aggro.
   - If health ≤ 0: with probability `goreChance`, set the death type to DEFAULT (**inverted** compared with the damage system, bug [PFX-13](index.md#suspected-bugs)), then call `onDeath(src)`.
   - Other entities (including players, which are not `EntityLiving`): `attackEntityFrom(src, getDamage())`.
@@ -441,3 +441,109 @@ A body-part entity spawned **client-side** by the gore death effect (see death-e
      - Colour fades from the blood RGB at alpha 255 to the blood RGB at alpha 0, linearly starting at 50 % of life.
      - Random rotation, randomness 0.8, motion damping 0.92.
 - No NBT. Water uses vanilla material acceleration.
+
+---
+
+## 4. Entity sheets (consistency pass)
+
+The sections above hold the behaviour in depth. This section restates, in the CONVENTIONS field order, the four thinnest classes as full sheets, and then gives every class a one-row summary with the same fields (registration, size, speed, gravity, TTL, collision, damage, explosion, effects, sync, renderer, sounds, FX names, users). Nothing here contradicts the sections above.
+
+### 4.1 `GenericProjectile` (the base)
+
+| Field | Content |
+|---|---|
+| **Identity** | Class `techguns.entities.projectiles.GenericProjectile`, extends `Entity`, implements `IProjectile`. Registered as ID 1, name `GenericProjectile` (global string `Techguns.GenericProjectile`), tracking range 80, update frequency 3, velocity updates on. No lang entry (a projectile is never named in the UI). Not an item, so no metadata, creative tab or oredict. |
+| **Obtaining** | Not an item. Spawned by every bullet-type gun that does not override `spawnProjectile` (pistol, shotguns, rifles, SMGs, minigun and so on; full list in [`02-guns`](../02-guns/gun-catalogue.md)), by NPC guns through the same gun code, and by the [`AttackHelicopter`](../10-entities-npcs/per-mob.md#16-attack-helicopter-attackhelicopter-boss) machine gun. It is also the superclass of nearly every other projectile. |
+| **Numbers** | All come from the firing gun: `damage`, `speed` (gun default 1.5 blocks/tick, scaled by `setSpeed`), `TTL`, `spread` (offset is uniform in plus or minus `spread` times 40 degrees), `dmgDropStart`, `dmgDropEnd`, `dmgMin`, `penetration`, `blockdamage` (true only for a player with safe mode off). Size 0.25 x 0.25 on the gun and position constructors; the world (client) constructor does not set it. Gravity 0. Air drag 0.99 per tick, water 0.8 with bubbles. `isImmuneToFire` true. Defaults for the client copy: TTL 100, speed 1, damage 0. Helicopter constants: damage 12.0, speed 1.0, TTL 100, spread 0.05, drop 30 to 40, min damage 8.0, penetration 0.25, no block damage. The unused [`TurretEntityUNUSED`](../10-entities-npcs/per-mob.md#19-turretentityunused-dead-code) passes damage 10.0, speed 1.0, TTL 50, spread 0.05, drop 25 to 40, min 5.0. |
+| **Behaviour** | Tick order in section 2.3, impact in 2.5. Collision: block ray-trace on both sides, entity sweep (box expanded by 0.3, nearest wins) on the server only; non-solid blocks such as grass are passed through; solid blocks end it with the material sound table. Damage source `tg_bullet`, damage type PROJECTILE, death type GORE, gore chance 0.5 (damage-system default), `ignoreHurtresistTime` true, knockback multiplier 0 plus a 0.01 dummy `tg_knockback` hit. Explosion: none. Effects: none beyond impact particles. |
+| **Persistence and sync** | NBT keys in 2.6. No DataWatcher, no `IEntityAdditionalSpawnData` on the base. Clients see the standard FML spawn packet and velocity updates. |
+| **UI** | none (no tooltip, GUI or chat). Kill message `death.attack.tg_bullet` (see [lang.md](lang.md)). |
+| **Visuals** | Renderer `RenderGenericBullet`, texture [`textures/entity/bullet.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) (32x32; only the top-left 16x5 pixel rectangle is sampled; palette in [textures.md](textures.md)). Crossed quads 0.2 x 0.05 blocks, drawn from tick 2. FX names from the projectile itself: none. |
+| **Audio** | `techguns:effects.bulletimpact` (volume 1.0, pitch 1.0) on a block of an unlisted material; `dig.stone` and `dig.wood` (2.0, 1.0); `dig.glass` and `mob.irongolem.hit` (1.0, 1.0). Durations and sample rates in [sounds.md](sounds.md). |
+| **Relationships** | Fired by [`02-guns`](../02-guns/index.md) bullet guns and by NPCs ([`10-entities-npcs`](../10-entities-npcs/index.md)). Uses `DamageSystem` and `TGDamageSource` ([`01-core`](../01-core/index.md)). Subclassed by every projectile below except the plain `Entity` classes `TeslaBeam`, `LaserBeam`, `LaserBeam2` and `FlyingGibs`. |
+| **Bugs** | [PFX-04](index.md#suspected-bugs), [PFX-15](index.md#suspected-bugs), [PFX-23](index.md#suspected-bugs), [PFX-27](index.md#suspected-bugs) (subclasses), [PFX-30](index.md#suspected-bugs). |
+
+### 4.2 `SimpleProjectile`
+
+| Field | Content |
+|---|---|
+| **Identity** | Class `SimpleProjectile extends GenericProjectile`. ID 2, registration name `SimpleProjectile`, tracking 80, frequency 3, velocity updates on. No lang entry. |
+| **Obtaining** | Not an item. Spawned only by the [`Handgun`](../02-guns/sheets-handguns-smgs.md#hand-cannon-handcannon) gun class, registered once as [`handcannon`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) (English name "Hand Cannon", lang key `techguns.item.handcannon.name`; recipe in [`06-items`](../06-items/recipes.md)). The constructor with texture, scale and gravity is the one used. |
+| **Numbers** | Handcannon call: damage 8.0 times the damage bonus; speed fixed at 1.0 (ignores the gun's 1.5 default); TTL 25; spread from the gun accuracy (0.035); fall-off 10 to 25 blocks down to min damage 5.0; penetration from the gun; blockdamage true when safe mode is off. Arguments: texture `techguns:textures/entity/handgunBullet.png`, scale 1.0, gravity 0.015. World constructor: gravity 0.015, scale 0, texture field default `techguns:textures/items/testItem.png` (an existing item texture, never drawn). Size 0.25 x 0.25. |
+| **Behaviour** | As the base, except `getGravityVelocity` returns the stored `gravity`, so the ball drops 0.015 blocks/tick per tick (after drag). Collision, damage source (`tg_bullet`, GORE) and impact sounds are the base ones. Only `gravity` has any effect; texture and scale are never used (PFX-34). |
+| **Persistence and sync** | NBT adds `projectileTexture` (string; the resource path, re-read under the `techguns` domain), `scale` (float) and `gravity` (float), with a debug print on every read and write (PFX-30). Gravity is not synced, so the client copy always uses its 0.015 default, which equals the only value any gun passes. |
+| **UI** | none. |
+| **Visuals** | Renderer `RenderSimpleProjectile(1.0, techguns:textures/entity/handgunBullet.png)`, a camera-facing quad 0.1 blocks across using the full 16x16 texture. Measured palette (ASSET-FACTS): average #616161, dominant #B0B0B0, #707070, #303030, i.e. neutral greys of a shaded ball. No FX names. |
+| **Audio** | Base impact sounds only (volumes and pitches as 4.1). Gun fire and reload sounds (`guns.handgunFire`, `guns.handgunReload`) belong to [`03-gun-visuals-audio`](../03-gun-visuals-audio/index.md). |
+| **Relationships** | Fired by `handcannon` only. |
+| **Bugs** | [PFX-34](index.md#suspected-bugs), [PFX-30](index.md#suspected-bugs). |
+
+### 4.3 `InvisibleProjectile`
+
+| Field | Content |
+|---|---|
+| **Identity** | Class `InvisibleProjectile extends GenericProjectile`. ID 21, registration name `InvisibleProjectile`, tracking 80, frequency 3, velocity updates on. No lang entry. |
+| **Obtaining** | Not an item. Spawned by the [`Chainsaw`](../02-guns/sheets-launchers-tools-grenades.md#chainsaw-chainsaw) gun class (`chainsaw`, a melee-range pseudo-gun that uses flamethrower fuel tanks as ammo). |
+| **Numbers** | Chainsaw call: damage 10.0 times the damage bonus; speed from the gun (default 1.5); TTL 2 ticks; spread 0.0 (accuracy argument); fall-off values are the gun defaults; penetration 0.25; blockdamage true when safe mode is off. With speed 1.5 and a 2-tick life the reach is about 3 blocks. Size 0.25 x 0.25 on the gun constructor. There are also a position-plus-yaw/pitch constructor and a position-only one, which no gun uses. Gravity 0. |
+| **Behaviour** | Base flight and collision. Its only override is the damage source: name `chainsaw`, damage type PHYSICAL, death type GORE, gore chance 1.0, knockback multiplier 0 (so the dummy 0.01 knockback hit runs as for bullets), armour penetration equal to the projectile's `penetration`, `ignoreHurtresistTime` true. Block hits use the default `hitBlock`, so the bullet-impact sound and particle fire on the struck block. No explosion, no on-hit effect. |
+| **Persistence and sync** | Base NBT keys only. No extra spawn data. |
+| **UI** | none. The kill message is `death.attack.chainsaw` ("%s was dismembered by %s with a chainsaw"); there is no `.item` variant (see [lang.md](lang.md)). |
+| **Visuals** | `RenderDummy` (draws nothing). No texture, no FX. The chainsaw's visuals are all on the gun model ([`03-gun-visuals-audio`](../03-gun-visuals-audio/index.md)). |
+| **Audio** | Base block-impact sounds (volume 1.0 to 2.0, pitch 1.0). Chainsaw loop and start sounds are gun sounds. |
+| **Relationships** | Fired by `chainsaw` only. Its death type is GORE with chance 1.0, so killed mobs on the gore list produce gibs ([death-effects.md](death-effects.md)). |
+| **Bugs** | none specific; shares the base bugs. |
+
+### 4.4 `BlasterProjectile` (deprecated, unregistered)
+
+| Field | Content |
+|---|---|
+| **Identity** | Class `BlasterProjectile extends GenericProjectile`, marked deprecated. **Not registered** (registration and renderer are commented out), so it has no ID and clients never see it. No lang entry. |
+| **Obtaining** | Unobtainable: every `spawnEntityInWorld(new BlasterProjectile ...)` line in `Beamgun`, `Lasergun`, [`NeutrinoGun`](../02-guns/index.md#coverage), [`ScatterBeamGun`](../02-guns/index.md#coverage) and `Teslagun` is commented out. Dead code. |
+| **Numbers** | Both constructors (world and gun) overwrite the `speed` field with `Lasergun.SPEED` (5.0) and both TTL fields with `Lasergun.LIFETIME` (5). As with `LaserProjectile`, the gun constructor has already built the motion from the gun's speed argument, so only the stored fields change (see PFX-35); range would be gun speed times 5. Gravity 0, size 0.25 x 0.25. |
+| **Behaviour** | `onImpact` replaces the base logic. An entity hit calls `attackEntityFrom` with a `BulletDamageSource` (name `bullet`, not the `TGDamageSource` pipeline) for the distance-scaled `getDamage()`: no damage factor, no armour model, no dummy knockback. A block hit spawns a vanilla `reddust` particle at the projectile (a once-planned `LaserImpact` particle is commented out). It then always dies. |
+| **Persistence and sync** | Base NBT only. Not tracked. |
+| **UI** | The kill message would be `death.attack.bullet`, which has no lang entry (PFX-31). |
+| **Visuals** | The renderer class `RenderBlasterProjectile` exists but is unbound; it samples the top-left 16x5 px of [`textures/entity/Laser.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) (32x32, average #F85D26, dominant #F01010, #F07010, #D01010: a red-to-yellow gradient band). |
+| **Audio** | none. |
+| **Relationships** | None live. Superseded by `LaserProjectile` (plus `LaserBeam2`) and `BlasterRifleProjectile`. |
+| **Bugs** | [PFX-35](index.md#suspected-bugs), [PFX-31](index.md#suspected-bugs). |
+
+### 4.5 One-row sheet for every class
+
+Columns: ID and registration name; speed; gravity per tick; TTL; collision; damage; explosion; effects and FX names; sync (extra spawn data); renderer and texture; sounds; fired by. "gun" means the value comes from the gun's stat block ([`02-guns`](../02-guns/index.md)). Size is 0.25 x 0.25 unless stated in the sections above.
+
+| Class | ID / name | Speed | Gravity | TTL | Collision | Damage | Explosion | Effects and FX | Sync | Renderer / texture | Sounds | Fired by |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `GenericProjectile` | 1 / `GenericProjectile` | gun (1.5) | 0 | gun | ray + entity | gun, fall-off | none | none | none | `RenderGenericBullet` / `bullet.png` | bulletimpact, dig.* | bullet guns, NPCs, helicopter |
+| `SimpleProjectile` | 2 / `SimpleProjectile` | 1.0 | 0.015 | 25 | as base | 8.0 | none | none | none | `RenderSimpleProjectile` / `handgunBullet.png` | base | `handcannon` |
+| `FlamethrowerProjectile` | 3 / `FlamethrowerProjectile` | gun | gun | gun | dies in water | `tg_fire` | none | fire 3 s; legacy [`Flamethrower`](../02-guns/sheets-energy-special.md#flamethrower-flamethrower) particles; `lava` | none | `RenderDummy` | none | [`flamethrower`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) |
+| `LaserProjectile` | 4 / `LaserProjectile` | gun (field 5.0) | 0 | 5 | movement-blocking blocks | `tg_energy` | none | spawns `LaserBeam2`; `LaserFlareStart`/`End` | none | `RenderDummy` | none | [`lasergun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition), [`scatterBeamGun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) |
+| `LaserBeam` | 5 / `LaserBeam` | n/a | n/a | 5 | none (visual) | none | none | `LaserFlareStart`/`End` | target x, y, z | `RenderGenericLaser` / `laser3.png` | none | nothing (deprecated) |
+| `RocketProjectile` | 6 / `RocketProjectile` | gun | 0.01 default | gun | solid block, entity | raw `damage`, knockback x3 | r 0.5 and 1.5 x radius | `RocketExplosion`, legacy `Fireblast` | none | `RenderRocketProjectile` / `guns/rocketlauncher.png` | `random.explode` | [`rocketlauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition), [`grimreaper`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition), dispenser, helicopter (damage 20, speed 2.0) |
+| `NukeRocketProjectile` | 7 / `NukeRocketProjectile` | gun | 0.01 default | gun | as rocket | raw, knockback x10 | as rocket | `NukeExplosion` (150 blocks) | none | `RenderRocketProjectile` / `guns/nukerocketlauncher.png` | nukeexplosion (8.0, 1.0) | [`nukelauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition), dispenser |
+| `BiogunProjectile` | 8 / `BiogunProjectile` | 1.0 | 0.01 | gun | dies in water | `tg_poison`, Poison IV 100 t | none | bio blobs; `slime` | `level` (byte) | `RenderBiogunProjectile` / `bioblob.png` | none | [`biogun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) |
+| `TeslaProjectile` | 9 / `TeslaProjectile` | 5.0 | 0 | 10 | any block | `tg_lightning`, chain | none | `TeslaBeam` bolts, `TeslaFlare` | none | `RenderDummy` | none | [`teslagun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) |
+| `TeslaBeam` | 10 / `TeslaBeam` | n/a | n/a | 10 | none (visual) | none | none | `TeslaFlare` | `beamlength`, `seed` | [`RenderTeslaBeam`](renderers.md#tesla-bolt-renderteslabeam) / `laser_blue.png` | none | `TeslaProjectile`, `teslagun` |
+| `GrenadeProjectile` | 11 / `GrenadeProjectile` (range 120, freq 1) | hand 0.5 to 1.0, dispenser 1.0 | 0.015 / charge | 200 | bounces, dies in water | explosion | r 0.5 and 1.5 x radius | `RocketExplosion` | none | `RenderStielgranateProjectile` / `guns/stielgranate.png` | explosion1, irongolem.hit | stick grenade, dispenser |
+| `MiningDummyProjectile` | 12 / `DummyMiningProjectile` | gun | 0 | gun | any block | direct health | none | breaks and drops blocks | none | `RenderGenericBullet` (inherited) | bulletimpact, dig.* | [`GenericGunTool`](../02-guns/index.md#coverage) (spawner unreachable) |
+| `CyberdemonBlasterProjectile` | 13 / same | gun | gun | gun | dies in water | `tg_fire` | none | `NetherBlasterImpactFlare`, `MediumExplosionSmoke`, `CyberDemonBlasterTrail` | none | `RenderDummy` | none | [`cyberdemonBlaster`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) |
+| `BlasterRifleProjectile` | 14 / same | gun | 0 | gun | as base | `tg_energy` | none | `smoke` only | none | `RenderBlasterRifleProjectile` / `laser3.png` | none | [`blasterRifle`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) |
+| `PowerHammerProjectile` | 15 / same | gun | 0 | gun | any impact | `powerhammer` | none | legacy `impact` | none | `RenderPowerHammerProjectile` / `shockwave.png` | powerhammerImpact(Ground) | [`PowerHammer`](../02-guns/sheets-launchers-tools-grenades.md#power-hammer-powerhammer) item |
+| `FlyingGibs` | 16 / same | from death motion | 0.03 | 150 to 250 | `moveEntity` | none | none | blood trail `blood4x4.png` | none | `RenderFlyingGibs` / `entity/gore.png` | `random.fizz` in lava | client death FX only |
+| `EntityParticleSystem` | 17 / `ParticleSystem` (range 150) | n/a | n/a | per system | none | none | none | the FX lists | see particle-system.md | `RenderDummy` | none | client FX |
+| `LaserBeam2` | 18 / same | n/a | n/a | 5 | none (visual) | none | none | `LaserFlareStart`/`End` | `beamlength` | `RenderLaserBeam2` / `laser3.png` | none | `LaserProjectile` |
+| `GrenadeLauncherProjectile` | 19 / same (range 120, freq 1) | gun | param | gun | bounces (TTL -20 per bounce) | explosion | r 0.5 and 1.5 x radius | `GrenadeLauncherTrail`, `RocketExplosion` | none | `RenderGrenadeLauncherProjectile` / `launchergrenade.png` | explosion1 | [`grenadelauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition), dispenser |
+| `SonicShotgunProjectile` | 20 / same (freq 1) | gun | 0 | gun | pierces entities | `tg_sonic` | none | `SonicShotgunImpact`, `SonicShotgunTrail` | `mainProjectile` (boolean) | `RenderSonicShotgunProjectile` / `shockwave.png` | none | [`sonicShotgun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) |
+| `InvisibleProjectile` | 21 / same | gun | 0 | 2 | as base | 10.0, `chainsaw` | none | none | none | `RenderDummy` | base | `chainsaw` |
+| `MovingBeam` | 22 / same | n/a (hitscan) | n/a | gun TTL | 48-block trace each tick | `tg_rad` every tick | none | `BeamGunMuzzleFX`, `BeamGunImpactFX` | shooter entity id (int) | `RenderMovingBeam` / `nukebeam.png` | none | [`nuclearDeathRay`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) |
+| `BeamProjectile` | 23 / same | field 5 | 0 | 5 | any block | `tg_energy` | none | none | none | `RenderDummy` | none | nothing |
+| `FragGrenadeProjectile` | 24 / same (range 120, freq 1) | as grenade | as grenade | 120 (dispenser) | bounces | explosion | r 0.5 and 1.5 x radius | `FragGrenadeExplosion` | none | `RenderStielgranateProjectile` / `guns/fragGrenade_texture.png` | explosion1 | [`FragGrenade`](../02-guns/per-gun-behaviour.md#grenades-genericgrenade-fraggrenade-flashbang) item, dispenser |
+| `NeutrinoBeam` | 25 / same | n/a | n/a | gun TTL | as MovingBeam | `tg_rad` | none | as MovingBeam | shooter id | `RenderMovingBeam` | none | `neutrinoGun` (commented out) |
+| `EnergyBlastProjectile` | 26 / same | gun | 0 | gun | as base | `tg_energy`, GORE | none (commented out) | `BlueBlasterExplosion`, `BlueBlasterTrail` | none | `RenderDummy` | none | [`mibGun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition), [`mibGunAkimbo`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) |
+| `AlienBlasterProjectile` | not registered | gun | 0 | gun | as base | `tg_fire` | r 0.5, 0.25 and 0.75, no blocks | `AlienExplosion`, `AlienBlasterTrail` | not tracked | `RenderDummy` (bound, unused) | `random.explode` | `alienBlaster` |
+| `RailgunProjectile` | not registered | field 5.0 | 0 | 50 | pierces while damage > 2 | `bullet` | none | 7 `AlienBlasterFlare` per tick | not tracked | `RenderRailgunProjectile` / `BlueBeam.png` (bound, unused) | none | nothing |
+| `BlasterProjectile` | not registered | field 5.0 | 0 | 5 | dies on any hit | `bullet` | none | `reddust` | not tracked | none | none | nothing |
+| `PiercingProjectile` | not registered | gun | 0 | base default | passes through blocks | as base | none | none | min/max size, sizeEnd, ttl | `RenderPiercingProjectile` (unbound) | none | nothing |
+| `FlashBangProjectile` | not registered | 5.0 | grenade default | gun | as grenade | none | none | blindness and nausea area | none | none | none | `Flashbang` item (never registered) |
+
+Sound durations for every event named in the Sounds column are in [sounds.md](sounds.md); texture palettes and pixel rectangles are in [textures.md](textures.md).

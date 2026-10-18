@@ -72,3 +72,18 @@ Translates to the block corner, rotates `90° × rotation` about the block's ver
 | Inventory | translate (0, −1, 0) |
 
 - The [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-blocks) items use normal block-icon rendering (their CTM textures).
+
+## 6. Entity sheet summary for the shared renderers (consistency pass)
+
+| # | Field | Contents |
+|---|---|---|
+| 1 | Identity | `RenderAmmoPress`, `RenderChargingStation`, `RenderFabricator`, `RenderReactionChamber` (TESRs bound in [`ClientProxy`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy)); `RenderMachineBlockItem` and `RenderMachineBlockItemBase`/`RenderBlockModelItem` (item renderers); model base `ModelMachine` |
+| 2 | Obtaining | not applicable (client code) |
+| 3 | Numbers | Model scale 1/16 for the `ModelMachine` classes; OBJ scale 1/32 for the Reaction Chamber; item transforms in section 5 |
+| 4 | Behaviour | Sections 2 to 5; every TESR is client-only and runs each frame; the model animation depends on `getProgress()` |
+| 5 | Persistence and sync | none of its own; reads tile fields synced by the description packet (`progress`, `totalTime`, `rotation`, `dir`, `complete`) |
+| 6 | UI | none |
+| 7 | Visuals | Table in section 1 (model and texture per tile) and section 5 (item delegates). Measured sizes and colours for the machine textures are in each machine file's sheet summary |
+| 8 | Audio | none (sounds belong to the tile entities, see [sounds.md](sounds.md)) |
+| 9 | Relationships | Models are catalogued in [`07-blocks`](../07-blocks/index.md) ([block-rendering-and-models.md](../07-blocks/block-rendering-and-models.md)); `RenderBlockTileEntModel` and `RenderTileEntityBlock` serve [`09-machines-utility`](../09-machines-utility/index.md) |
+| 10 | Bugs | [MPRD-24](index.md#suspected-bugs) (unknown meta crashes the item renderer) |

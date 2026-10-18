@@ -2,7 +2,7 @@
 
 Source: `java/techguns/TGConfig.java`. The file is loaded once in preInit through Forge's `Configuration` class and saved straight away. `general` is Forge's default category. Ranges are inclusive, and Forge clamps out-of-range values to them. The config is not synced: every value is read locally on whichever side uses it, so server-side settings must be set on the server.
 
-A second file, `config/Techguns_WeaponStats.cfg` (category `Weapon Stats`, one double-list key `WeaponStats_<gun unlocalized name>` per gun), is written by `TGWeaponStats` and documented in [02-guns](../02-guns/index.md).
+A second file, `config/Techguns_WeaponStats.cfg` (category `Weapon Stats`, one double-list key `WeaponStats_<gun unlocalized name>` per gun), is written by [`TGWeaponStats`](../02-guns/gun-lifecycle.md#13-details-confirmed-in-the-consistency-pass) and documented in [02-guns](../02-guns/index.md).
 
 ## Category `general`
 
@@ -113,3 +113,74 @@ The comments say "at 0 spawn will not be registered". Whether that holds depends
 
 - `TGConfig.allowUnsafemode(player)`: true if the player is an op on the running server, or if `ForceSafeModeForNonOps` is false.
 - `TGConfig.getVolumeMultiplier(volume, category)`: a stub that returns the volume unchanged. [`TGSoundCategory`](client-effects-audio.md#tgsoundcategory) therefore has no effect on loudness.
+
+## "Used by" index for every key (consistency pass)
+
+Each row names the `TGConfig` static field the key is loaded into and every class outside `TGConfig.java` that reads that field, found by searching the whole source tree. [`Techguns.java`](lifecycle-and-registration.md#lifecycle-overview) line numbers are given where the key gates registration. "Side" says where the value must be set for it to matter: *server* (dedicated or integrated), *client*, or *both* (the check runs on whichever side performs the action).
+
+| Key | `TGConfig` field | Read by | Side |
+|---|---|---|---|
+| `doOreGenLead` | `doOreGenLead` | `Techguns.java` (lines 319, 436, 449, 564, 644-645): lead ore block, oredict, furnace recipe, and the `OreGenerator` flag | both (registration at load) |
+| `doOreGenCopperTin` | `doOreGenTinCopper` | `Techguns.java` (lines 323, 439, 452, 560, 644-645, and the shared-group test at 677) | both |
+| `doOreGenTitanium` | `doOreGenTitanium` | `Techguns.java` (644-645) → `OreGenerator` | server |
+| `doOreGenUranium` | `doOreGenUranium` | `Techguns.java` (644-645) → `OreGenerator` | server |
+| `addSteelCrafting` | `addSteelCrafting` | `Techguns.java` (527) | both |
+| `addBronzeCrafting` | `addBronzeCrafting` | `Techguns.java` (523, 677) | both |
+| `addCopperTinBronzeNuggets` | `addCopperTinBronzeNuggets` | `Techguns.java` (369, 475, 542, 677) | both |
+| `addLeadIngot` | `addLead` | `Techguns.java` (352, 466) | both |
+| `addLeadNuggets` | `addLeadNuggets` | `Techguns.java` (362, 478, 546) | both |
+| `addSteelIngot` | `addSteel` | `Techguns.java` (342, 457, 551, 706) | both |
+| `addSteelNuggets` | `addSteelNuggets` | `Techguns.java` (365, 481, 550, 706) | both |
+| `addIronNuggets` | `addIronNuggets` | `Techguns.java` (359, 373, 472, 536); lines 360 and 374 are the double registration ([CORE-01](index.md#suspected-bugs)) | both |
+| `disableAutofeeder` | `disableAutofeeder` | [`TechgunsTickHandler`](events.md#techgunstickhandler-fml-bus) (line 383) | both (the client runs the feeder too, [CORE-16](index.md#suspected-bugs)) |
+| `addCustomOreCluster` | `addOreClusterCustom` | [`TGBlocks`](../07-blocks/block-catalogue.md#registered-blocks) (block registration), [`ClientProxy`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) (renderer registration) | both |
+| `addCustomOreCluster2` | `addOreClusterCustom2` | `TGBlocks`, `ClientProxy` | both |
+| `DataWatcherID_FaceSlot` | `dataWatcherID_FaceSlot` | [`TechgunsExtendedPlayerProperties`](player-state.md#techgunsextendedplayerproperties) (constructor, read and write of the watcher) | both (must match) |
+| `DataWatcherID_BackSlot` | `dataWatcherID_BackSlot` | `TechgunsExtendedPlayerProperties` | both (must match) |
+| `TechgunsGUI_TabID` | `GUI_ID_tgplayerInventory` | [`TechgunsEventhandler`](events.md#techgunseventhandler-forge-bus) (line 351, tab button), [`GuiTGPlayerInventory`](../05-armor/extra-inventory.md#5-gui-guitgplayerinventory) (line 200, tab button). [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table) references it only inside commented-out blocks (lines 85, 135), which is why the setting has no effect on opening ([CORE-07](index.md#suspected-bugs)) | client |
+| `SpawnStructures` | `doWorldspawn` | `Techguns.java` (747) → registers `WorldGenTGStructureSpawn` | server |
+| `StructureSpawnWeightBig` | `spawnWeightTGStructureBig` | `WorldGenTGStructureSpawn` | server |
+| `StructureSpawnWeightSmall` | `spawnWeightTGStructureSmall` | `WorldGenTGStructureSpawn` | server |
+| `StructureSpawnWeightMedium` | `spawnWeightTGStructureMedium` | `WorldGenTGStructureSpawn` | server |
+| `Techguns Spawnweight Overworld` | `spawnWeightTGOverworld` | [`TGEntities`](../10-entities-npcs/mob-catalogue.md#registration-javatechgunstgentitiesjava) (line 134, `TGDummySpawn` overworld registration) | server |
+| `Techguns Spawnweight NEther` | `spawnWeightTGNether` | `TGEntities` (line 135, nether registration) | server |
+| `SpawnWeightZombieSoldier` | `spawnWeightZombieSoldier` | `TGEntities` (line 141, [`TGNpcSpawn`](../10-entities-npcs/spawning.md#12-replacement) level 1) | server |
+| `SpawnWeightZombieFarmer` | `spawnWeightZombieFarmer` | `TGEntities` (142, level 0) | server |
+| `SpawnWeightZombieMiner` | `spawnWeightZombieMiner` | `TGEntities` (143, level 0) | server |
+| `SpawnWeightSkeletonSoldier` | `spawnWeightSkeletonSoldier` | `TGEntities` (144, level 1) | server |
+| `SpawnWeightPsychoSteve` | `spawnWeightPsychoSteve` | `TGEntities` (146, level 1) | server |
+| `SpawnWeightBandit` | `spawnWeightBandit` | `TGEntities` (148, level 2) | server |
+| `SpawnWeightZombiePigmanSoldier` | `spawnWeightZombiePigmanSoldier` | `TGEntities` (151, nether, level 0) | server |
+| `SpawnWeightCyberDemon` | `spawnWeightCyberDemon` | `TGEntities` (152, nether, level 0) | server |
+| `DistanceSpawnLevel0` / `1` / `2` | `distanceSpawnLevel0` / `1` / `2` | [`TGSpawnManager`](../10-entities-npcs/spawning.md#11-vanilla-hook) | server |
+| `oreDrillMultiplierOre` | `oreDrillMultiplierOres` | [`OreDrillTileEntMaster`](../09-machines-utility/ore-drill.md#5-operation-oredrilltileentmaster) | server |
+| `oreDrillMultiplierPower` | `oreDrillMultiplierPower` | `OreDrillTileEntMaster` | server |
+| `oreDrillFuelMultiplier` | `oreDrillFuelMultiplier` | `OreDrillTileEntMaster`, [`GuiOreDrill`](../09-machines-utility/ore-drill.md#7-gui-guioredrill-id-16) (fuel display) | both |
+| `oreDrillFuelValueFuel` | `oreDrillFuelValueFuel` | `OreDrillTileEntMaster` | server |
+| `oreDrillFuelValueBioFuel` | `oreDrillFuelValueBioFuel` | `OreDrillTileEntMaster` | server |
+| `oreClusterMultipliersAmount` / `Power` / `Amount2` / `Power2` | `oreClusterMultipliers1`, `oreClusterMultipliersPower1`, `oreClusterMultipliers2`, `oreClusterMultipliersPower2` | `TGBlocks` (read when the cluster blocks are built; the arrays are indexed by block metadata) | server |
+| `spawnOilHoles` | `spawnOilHoles` | `Techguns.java` (751) → registers `WorldGenOilHoles` when an oil fluid exists | server |
+| `oilHoleFrequency` | `oilHoleFrequency` | `WorldGenOilHoles` | server |
+| `ForceSafeModeForNonOps` | `forceSafemodeNonOp` | No class reads the field directly. It is read only inside `TGConfig.allowUnsafemode`, called from `TechgunsExtendedPlayerProperties.loadNBTData` (line 178) and [`PacketTGKeybindPress`](networking.md#7--packettgkeybindpress) (line 67) | server |
+| `MachinesNeedNoPower` | `machinesNeedNoPower` | `BasicPoweredTileEnt`, `OreDrillTileEntMaster` | server |
+| `RestrictedLoottables` | `reducedLoottables` | NPC classes [`Bandit`](../10-entities-npcs/per-mob.md#7-bandit-bandit), [`CyberDemon`](../10-entities-npcs/per-mob.md#11-cyberdemon-cyberdemon), [`SkeletonSoldier`](../10-entities-npcs/per-mob.md#5-skeleton-soldier-skeletonsoldier), [`SuperMutantBasic`](../10-entities-npcs/per-mob.md#14-super-mutants-supermutantbasic-supermutantheavy-supermutantelite), [`ZombieFarmer`](../10-entities-npcs/per-mob.md#2-zombie-farmer-zombiefarmer), [`ZombieMiner`](../10-entities-npcs/per-mob.md#3-zombie-miner-zombieminer), [`ZombiePigmanSoldier`](../10-entities-npcs/per-mob.md#4-zombie-pigman-soldier-zombiepigmansoldier), [`ZombieSoldier`](../10-entities-npcs/per-mob.md#1-zombie-soldier-zombiesoldier) (drop selection) | server |
+| `ExplosiveChargeMaxHardness` | `explosiveChargeMaxBlockHardness` | [`ExplosiveChargeTileEnt`](../09-machines-utility/explosive-charges.md#nbt-explosivechargetileent) | server |
+| `ExplosiveChargeAdvancedMaxHardness` | `explosiveChargeAdvancedMaxBlockHardness` | [`ExplosiveChargeAdvTileEnt`](../09-machines-utility/index.md#key-facts) | server |
+| `DamagePvP` | `damagePvP` | [`DamageSystem`](../02-guns/index.md#coverage) | server |
+| `DamageTurretToPlayer` | `damageTurretToPlayer` | `DamageSystem` | server |
+| `DamageFactorNPC` | `damageFactorNPC` | `DamageSystem` | server |
+| `ArmorPenetrationMultiplierNPCtoPlayer` | `armorPenNPCtoPlayer` | `DamageSystem` | server |
+| `ArmorPenetrationMultiplierPvP` | `armorPenPvP` | `DamageSystem` | server |
+| `enableDebugKeybinds` | `enableDebugKeybinds` | `ClientProxy` (line 1292) | client |
+| `EnableDeathEffects` | `cl_enableDeathFX` | `PacketEntityDeathType` handler | client |
+| `EnableGoreDeathEffect` | `cl_enableDeathFX_Gore` | `PacketEntityDeathType` handler | client |
+| `LockSpeedDependantFov` | `cl_lockSpeedFov` | `TechgunsEventhandler.handleFovEvent` | client |
+| `FixedSprintFovMultiplier` | `cl_fixedSprintFov` | **nothing** ([CORE-12](index.md#suspected-bugs)) | n/a |
+| `EnableVersionChecker` | `cl_enableUpdateChecker` | `ClientProxy` (line 1417) | client |
+| `EnableVersionCheckerBeta` | `cl_enableUpdateCheckerBeta` | [`TGVersionChecker`](client-effects-audio.md#version-checker) (lines 37, 45) | client |
+
+**Observations.**
+- 63 keys appear in the file: 24 in `general`, 3 in `ID Conflicts`, 13 in `NPC Spawn`, 9 in `Ore Drills` (5 scalars, 4 arrays), 2 in `Spawn Controll`, 5 in `Damage Factors`, 1 in `Debug`, 6 in `Clientside`. One has no reader at all (`FixedSprintFovMultiplier`) and one is only half effective (`TechgunsGUI_TabID` changes what the tab buttons send, but the GUI handler ignores the value).
+- The old pre-`TGNpcSpawn` spawn code that read the NPC weights through `EntityRegistry.addSpawn` is a commented-out block in `TGEntities` (lines 95-114); only the dummy-spawn weights (`Techguns Spawnweight ...`) still go through the vanilla spawn list.
+- The config is never synced, so the keys marked "both" (registration gates and the two DataWatcher IDs) must be identical on client and server, or item and block registrations diverge.
+- There is no version stamp or schema in the file, so an old `Techguns.cfg` is read key by key and any missing key takes the default listed above.

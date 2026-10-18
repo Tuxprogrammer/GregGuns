@@ -23,8 +23,8 @@ Character of the sounds, judged from file names and sizes (for replacement work)
 
 | Sound | Character and length |
 |---|---|
-| bullet impacts | Five short (~0.5 s) ricochet/thud variants. |
-| explosion1 | Five medium explosion variants (~1–2 s). |
+| bullet impacts | Five short ricochet/thud variants (measured 0.98 s each at 22050 Hz; the earlier ~0.5 s figure was a guess). |
+| explosion1 | Five explosion variants (measured 1.21 s to 2.85 s). |
 | nukeexplosion | One long, deep blast with rumble (the largest file, ~86 kB). |
 | gore | Three wet splatter variants. |
 | biodeath | One acidic squelch/sizzle. |
@@ -41,3 +41,73 @@ Character of the sounds, judged from file names and sizes (for replacement work)
 | `random.explode` | Default `ProjectileExplosion` sound (rockets, nuke, alien blaster mini-explosion). |
 | `random.fizz` (vol 0.4, pitch 2.0–2.4) | A flying gib touches lava. |
 | `techguns:guns.powerhammerImpact` / `techguns:guns.powerhammerImpactGround` | Power-hammer shockwave hits an entity / a block (see [`03-gun-visuals-audio`](../03-gun-visuals-audio/index.md)). |
+
+## Measured audio facts and call parameters (consistency pass)
+
+Duration, sample rate, channels and category are quoted unchanged from [ASSET-FACTS.md](../ASSET-FACTS.md) (read from the Ogg Vorbis headers; category is the `sounds.json` category). Every file is mono. Volume and pitch are the literal arguments in the calling code. Descriptions of what a sound *sounds like* remain inferred from file name and use, because the audio cannot be played here.
+
+### All 26 files
+
+| File | Duration | Sample rate | Channels | `sounds.json` event [category] |
+|---|---|---|---|---|
+| `sounds/effects/bullet_impact_a.ogg` | 0.98 s | 22050 Hz | mono | `effects.bulletimpact` [player] |
+| `sounds/effects/bullet_impact_b.ogg` | 0.98 s | 22050 Hz | mono | `effects.bulletimpact` [player] |
+| `sounds/effects/bullet_impact_c.ogg` | 0.98 s | 22050 Hz | mono | `effects.bulletimpact` [player] |
+| `sounds/effects/bullet_impact_d.ogg` | 0.98 s | 22050 Hz | mono | `effects.bulletimpact` [player] |
+| `sounds/effects/bullet_impact_e.ogg` | 0.98 s | 22050 Hz | mono | `effects.bulletimpact` [player] |
+| `sounds/effects/explosion1_a.ogg` | 2.47 s | 44100 Hz | mono | `effects.explosion1` [master] |
+| `sounds/effects/explosion1_b.ogg` | 1.75 s | 44100 Hz | mono | `effects.explosion1` [master] |
+| `sounds/effects/explosion1_c.ogg` | 1.68 s | 44100 Hz | mono | `effects.explosion1` [master] |
+| `sounds/effects/explosion1_d.ogg` | 1.21 s | 44100 Hz | mono | `effects.explosion1` [master] |
+| `sounds/effects/explosion1_e.ogg` | 2.85 s | 44100 Hz | mono | `effects.explosion1` [master] |
+| `sounds/effects/nukeexplosion.ogg` | 13.77 s | 44100 Hz | mono | `effects.nukeexplosion` [master] |
+| `sounds/effects/gore_a.ogg` | 2.99 s | 44100 Hz | mono | `effects.gore` [hostile] |
+| `sounds/effects/gore_b.ogg` | 2.99 s | 44100 Hz | mono | `effects.gore` [hostile] |
+| `sounds/effects/gore_c.ogg` | 2.99 s | 44100 Hz | mono | `effects.gore` [hostile] |
+| `sounds/effects/biodeath.ogg` | 3.99 s | 32000 Hz | mono | `effects.biodeath` [hostile] |
+| `sounds/effects/disintegrate.ogg` | 5.29 s | 32000 Hz | mono | `effects.disintegrate` [hostile] |
+| `sounds/effects/steamarmor_jump_a.ogg` | 1.21 s | 44100 Hz | mono | `effects.steamarmorJump` [player] |
+| `sounds/effects/steamarmor_jump_b.ogg` | 1.21 s | 44100 Hz | mono | `effects.steamarmorJump` [player] |
+| `sounds/effects/steamarmor_jump_c.ogg` | 1.21 s | 44100 Hz | mono | `effects.steamarmorJump` [player] |
+| `sounds/effects/steamarmor_jump_d.ogg` | 1.21 s | 44100 Hz | mono | `effects.steamarmorJump2` [player] |
+| `sounds/effects/DemoCharge_Plant.ogg` | 0.76 s | 44100 Hz | mono | `tntcharge.plant` [block] |
+| `sounds/effects/DemoCharge_Init.ogg` | 1.91 s | 44100 Hz | mono | `tntcharge.init` [block] |
+| `sounds/effects/DemoCharge_Tick.ogg` | 1.00 s | 44100 Hz | mono | `tntcharge.tick` [block] |
+| `sounds/effects/C4Charge_Plant.ogg` | 1.50 s | 44100 Hz | mono | `c4charge.plant` [block] |
+| `sounds/effects/C4Charge_Init.ogg` | 0.88 s | 44100 Hz | mono | `c4charge.init` [block] |
+| `sounds/effects/C4Charge_Tick.ogg` | 0.70 s | 44100 Hz | mono | `c4charge.tick` [block] |
+
+Observations: the five bullet-impact files share one length (0.98 s) and the lowest rate in the folder (22050 Hz), consistent with the "identical copies" note above. `biodeath` and `disintegrate` are 32000 Hz; everything else is 44100 Hz. All four steam-armour files are the same length.
+
+### Every event: trigger, volume, pitch
+
+| Event | Call site | Volume | Pitch | Notes |
+|---|---|---|---|---|
+| `effects.bulletimpact` | `playSoundAtEntity(this, ...)` in the default `hitBlock` of `GenericProjectile`, and in `MiningDummyProjectile` | 1.0 | 1.0 | Played when the struck material is not rock, wood, glass, iron or anvil. The same event string appears in a commented-out headshot branch and a commented-out [`BlasterRifleProjectile`](projectiles.md#1-registration) line (dead code). |
+| `effects.explosion1` | End of `ProjectileExplosion.doExplosion`, after [`GrenadeProjectile`](projectiles.md#37-grenadeprojectile-family) (stick, frag, 40 mm launcher) calls `setExplosionSound` | 4.0 | `(1 + (rand - rand) * 0.2) * 0.7`, so 0.56 to 0.84, mean 0.7 | `playSoundEffect` at the explosion centre. Callers run on both sides ([PFX-15](index.md#suspected-bugs)). |
+| `effects.nukeexplosion` | `NukeRocketProjectile.explodeRocket`, server only | 8.0 | 1.0 | `playSoundEffect` at the rocket. An identical call in a commented-out older method is dead code. Plays together with the vanilla `random.explode` from the `ProjectileExplosion` (volume 4.0, pitch as above). |
+| `effects.gore` | `PacketEntityDeathType` client handler, GORE branch, through `proxy.playSoundOnEntity` | 1.0 | 1.0 | Client; not repeating; attached to the dying entity; category `DEATHEFFECT`. The older server-side `playSoundEffect` calls (volume 1.0, pitch 1.0) in [`TechgunsEventhandler`](../01-core/events.md#techgunseventhandler-forge-bus) and [`DeathEffect`](../01-core/client-effects-audio.md#deatheffectcreatedeatheffectentity-type-mx-my-mz) are commented out. |
+| `effects.biodeath` (death) | `PacketEntityDeathType` client handler, BIO branch | 1.0 | 1.0 | As gore. |
+| `effects.biodeath` (bio blob burst) | `BioblobTileEnt` passes it to `ProjectileExplosion.setExplosionSound` | 4.0 | `(1 + (rand - rand) * 0.2) * 0.7` | `playSoundEffect` at the block centre; here it is an explosion sound, not a death sound. |
+| `effects.disintegrate` | `PacketEntityDeathType` client handler, LASER branch | 1.0 | 1.0 | As gore. |
+| `effects.steamarmorJump` | `PoweredArmor.applyPowerConsumptionOnAction`, JUMP bonus | 0.66 | 1.0 | Server `playSoundAtEntity` on the player. |
+| `effects.steamarmorJump2` | `ItemJumppack.doJumpEffect` through `PacketPlaySound` | 1.0 | 1.0 | Packet flags: repeat false, moving true, gunPosition false, playOnOwnPlayer true; category `PLAYER_EFFECT`; sent to players near the wearer (50 blocks). |
+| `tntcharge.plant`, `c4charge.plant` | `ItemBlockMetaDataMachine` when the charge block is placed | 4.0 | 1.0 | `playSoundEffect` at the block centre. |
+| `tntcharge.init`, `c4charge.init` | `ExplosiveChargeTileEnt` arming button handler | 4.0 | 1.0 | `playSoundEffect`. |
+| `tntcharge.tick`, `c4charge.tick` | `ExplosiveChargeTileEnt` update, once per 20 ticks while armed | 4.0 | 1.0 | `playSoundEffect`. A randomised pitch is present only as a comment. |
+
+The charge detonation itself plays vanilla `random.explode` at volume 4.0 with the same randomised 0.7-scaled pitch; that belongs to [`09-machines-utility`](../09-machines-utility/index.md).
+
+### Vanilla sounds used by code in this area, with parameters
+
+| Vanilla name | Volume | Pitch | Trigger |
+|---|---|---|---|
+| `dig.stone` | 2.0 | 1.0 | Projectile hits a rock-material block. |
+| `dig.wood` | 2.0 | 1.0 | Wood-material block. |
+| `dig.glass` | 1.0 | 1.0 | Glass-material block. |
+| `mob.irongolem.hit` | 1.0 | 1.0 | Iron or anvil block hit. |
+| `mob.irongolem.hit` | 2.0 | 1.0 | Grenade bounce. |
+| `random.explode` | 4.0 | `(1 + (rand - rand) * 0.2) * 0.7` | Default `ProjectileExplosion` sound (rockets, alien blaster mini-explosion, nuke). |
+| `random.fizz` | 0.4 | 2.0 to 2.4 | Flying gib in lava. |
+
+Events with no parameters of their own in this area (`guns.powerhammerImpact`, `guns.powerhammerImpactGround`) are documented in [`03-gun-visuals-audio`](../03-gun-visuals-audio/index.md).

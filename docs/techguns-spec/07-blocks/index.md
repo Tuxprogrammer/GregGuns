@@ -1,23 +1,23 @@
 # 07-blocks: overview
 
+## Overview
+
+
 Behavioural spec of Techguns 0.1.2's **non-machine blocks**, their renderers and models, the connected-texture setup, the (inactive) ForgeMultipart code, and the full `textures/blocks/` and `sounds/blocks/` asset folders.
 
-## Source scope
+## Contents
 
-- [`java/techguns/TGBlocks.java`](block-catalogue.md#registered-blocks)
-- [`java/techguns/TGMultiPartRegister.java`](multipart.md#status-inactive)
-- `java/techguns/blocks/*.java`: 32 classes, excluding `blocks/machines/`
-- `java/techguns/blocks/ctm/*`
-- `java/techguns/blocks/multipart/*`
-- `java/techguns/client/renderer/block/*`
-- `java/techguns/client/models/blocks/*`
-- [`java/techguns/client/renderer/item/RenderBlockModelItem.java`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand), [`RenderBlockModelItemChest.java`](block-rendering-and-models.md#4-block-item-renderers), [`RenderBlockModelItemTNTCharge.java`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand)
-- `resources/assets/techguns/textures/blocks/`: 163 PNGs and 9 `.mcmeta` files
-- `resources/assets/techguns/sounds/blocks/`: 3 OGGs
+- [block-catalogue.md](block-catalogue.md): every block registered in `TGBlocks`, variation tables, drops, ore dictionary, recipe cross-references.
+- [block-sheets.md](block-sheets.md): one ten-field sheet per block family (obtaining, drops, tile entity and NBT, tooltips, step and break sounds, relationships, bugs).
+- [special-blocks.md](special-blocks.md): per-family behaviour and logic, ore-cluster type tables, chest, door and placement rules.
+- [connected-textures.md](connected-textures.md): the Chisel connected-texture layouts and algorithm.
+- [multipart.md](multipart.md): the inactive ForgeMultipart code.
+- [block-rendering-and-models.md](block-rendering-and-models.md): ISBRH renderers, cube helpers, model geometry, block item renderers.
+- [textures.md](textures.md): all 163 block textures with measured colours, plus region maps and the unused files in full.
+- [sounds.md](sounds.md): the 3 door sounds with measured facts, the event table and step and break sound types.
+- [lang-and-tooltips.md](lang-and-tooltips.md): block lang keys, generated tooltips and chat lines.
 
-Machine blocks ([`basicMachine`](block-catalogue.md#registered-blocks), [`oreDrill`](block-catalogue.md#registered-blocks), [`machineMultiBlock`](block-catalogue.md#registered-blocks)) are owned by **[08-machines-production](../08-machines-production/index.md)** and **[09-machines-utility](../09-machines-utility/index.md)**. This area only documents their item-block classes that live in `blocks/`, the variations registered in `TGBlocks`, their model geometry, and their textures. World placement of blocks is in **[11-worldgen](../11-worldgen/index.md)**. Projectile interactions (Bio Blob, camo nets burning) are in **[04-projectiles-fx](../04-projectiles-fx/index.md)**. Block recipes are in **[06-items/recipes.md](../06-items/recipes.md)** (B11–B34).
-
-## What a re-implementation needs, in short
+## Key facts
 
 - **Decorative blocks** (one block id per family, metadata = variant):
   - shipping containers (6)
@@ -48,6 +48,7 @@ Machine blocks ([`basicMachine`](block-catalogue.md#registered-blocks), [`oreDri
 | File | Contents |
 |---|---|
 | [block-catalogue.md](block-catalogue.md) | Every block registered in `TGBlocks`: registry and unlocalized names, class, material, hardness/resistance, light, harvest, sound, item block, metadata, drops, oredict. Variation tables for the Chisel blocks. Unregistered blocks. Recipe cross-references. |
+| [block-sheets.md](block-sheets.md) | Ten-field sheet per block family: identity, obtaining, numbers, behaviour, NBT, tooltips, visuals, step/break/event sounds, relationships, bugs. |
 | [special-blocks.md](special-blocks.md) | Per-family behaviour: placement, connection rules, bounds, rotation, redstone, contact damage, spawners, ore-cluster type tables, chest mechanics, item-block placement hooks, [`TGChiselBlocks`](special-blocks.md#19-tgchiselblocks-block-constants-for-structures) constants, unused classes. |
 | [connected-textures.md](connected-textures.md) | How CTM is wired (Chisel API, not Techguns code). The CTM, CTMV and V9 texture layouts and the per-quadrant algorithm. The dead stand-in [`CarvingRegistry`](connected-textures.md#what-is-and-is-not-in-the-techguns-source). |
 | [multipart.md](multipart.md) | ForgeMultipart status (inactive: no microblocks) and the dormant part classes. |
@@ -56,13 +57,11 @@ Machine blocks ([`basicMachine`](block-catalogue.md#registered-blocks), [`oreDri
 | [sounds.md](sounds.md) | The 3 door sounds and when they play. |
 | [lang-and-tooltips.md](lang-and-tooltips.md) | Every block lang key with its English text, plus code-generated tooltip and chat lines. |
 
-## Coverage
+## Dead or unused code (not bugs, for awareness)
 
-| Item | Covered / in scope |
-|---|---|
-| Source files | 69 / 69: TGBlocks, TGMultiPartRegister, 32 `blocks/`, 3 `ctm/`, 2 `multipart/`, 12 `renderer/block/`, 15 `models/blocks/`, 3 item renderers. The large model constructors were read through a box-extraction script; their render methods were read in full. |
-| Textures | 163 / 163 (every one viewed). 9 `.mcmeta` animations recorded. |
-| Sounds | 3 / 3 |
+- **Never registered:** [`BlockTGLampFMP`](multipart.md#status-inactive), `smallCube`, `steelframe_glass`, all multipart classes, `TGMultiPartRegister`.
+- **Never used or instantiated:** [`TurretBase`](block-catalogue.md#blocks-constructed-but-not-registered-not-in-game), [`BlockBugNest`](block-catalogue.md#blocks-constructed-but-not-registered-not-in-game), [`ItemBlockOreCluster`](block-catalogue.md#blocks-constructed-but-not-registered-not-in-game), `CarvingRegistry` (assigned to `TGBlocks.chiselRegistry`, never read), [`ModelSimpleTurret`](block-rendering-and-models.md#modelturret-and-modelsimpleturret-uv-6464--6432), [`ModelLadder01`](block-rendering-and-models.md#modelladder01-uv-3232) (passed but never drawn), [`ReactionChamberFluidBox`](block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items).
+- **Unused textures** (listed in [textures.md](textures.md)): `tent`, `flagBlock`, `Bioblock`, [`ladder01`](block-catalogue.md#registered-blocks), `ladder01_inv`, the legacy `oreCluster*` set (11 files), `reactionChamber*` (5), `paintmachine_top/front/side/bottom`, `drillFrameCorner`, `drillRodSide`, `drillRodTop`, `steelframe_glass`.
 
 ## Related areas
 
@@ -72,6 +71,41 @@ Machine blocks ([`basicMachine`](block-catalogue.md#registered-blocks), [`oreDri
 - [11-worldgen](../11-worldgen/index.md): structures built from these blocks, ore clusters and Chisel variants.
 - [10-entities-npcs](../10-entities-npcs/index.md): the monster spawner block and the mobs it spawns.
 - [04-projectiles-fx](../04-projectiles-fx/index.md): Bio Blob effects.
+
+## Coverage
+
+| Item | Covered / in scope |
+|---|---|
+| Source files | 69 / 69: TGBlocks, TGMultiPartRegister, 32 `blocks/`, 3 `ctm/`, 2 `multipart/`, 12 `renderer/block/`, 15 `models/blocks/`, 3 item renderers. The large model constructors were read through a box-extraction script; their render methods were read in full. |
+| Textures | 163 / 163 (every one viewed). 9 `.mcmeta` animations recorded. |
+| Sounds | 3 / 3 files, with duration, sample rate, channels and category from `ASSET-FACTS.md`. The 3 custom-sound triggers plus the vanilla chest sounds are in the event table. |
+| Block families with a ten-field sheet | 21 / 21 families in [block-sheets.md](block-sheets.md) (the three machine blocks point to [08](../08-machines-production/index.md) and [09](../09-machines-utility/index.md)). |
+| Lang keys | Every block key in `en_US.lang` for this scope is in [lang-and-tooltips.md](lang-and-tooltips.md). |
+
+### Source scope
+
+- [`java/techguns/TGBlocks.java`](block-catalogue.md#registered-blocks)
+- [`java/techguns/TGMultiPartRegister.java`](multipart.md#status-inactive)
+- `java/techguns/blocks/*.java`: 32 classes, excluding `blocks/machines/`
+- `java/techguns/blocks/ctm/*`
+- `java/techguns/blocks/multipart/*`
+- `java/techguns/client/renderer/block/*`
+- `java/techguns/client/models/blocks/*`
+- [`java/techguns/client/renderer/item/RenderBlockModelItem.java`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand), [`RenderBlockModelItemChest.java`](block-rendering-and-models.md#4-block-item-renderers), [`RenderBlockModelItemTNTCharge.java`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand)
+- `resources/assets/techguns/textures/blocks/`: 163 PNGs and 9 `.mcmeta` files
+- `resources/assets/techguns/sounds/blocks/`: 3 OGGs
+
+Machine blocks ([`basicMachine`](block-catalogue.md#registered-blocks), [`oreDrill`](block-catalogue.md#registered-blocks), [`machineMultiBlock`](block-catalogue.md#registered-blocks)) are owned by **[08-machines-production](../08-machines-production/index.md)** and **[09-machines-utility](../09-machines-utility/index.md)**. This area only documents their item-block classes that live in `blocks/`, the variations registered in `TGBlocks`, their model geometry, and their textures. World placement of blocks is in **[11-worldgen](../11-worldgen/index.md)**. Projectile interactions (Bio Blob, camo nets burning) are in **[04-projectiles-fx](../04-projectiles-fx/index.md)**. Block recipes are in **[06-items/recipes.md](../06-items/recipes.md)** (B11–B34).
+
+## Known limits
+
+- **Sound character.** No audio can be played here, so the door sound is described only from its name and use. Durations, rates and channels are measured.
+- **Vanilla sound types.** The step, break and place event names and pitches for `soundTypeMetal`, `soundTypePiston` and the others are vanilla 1.7.10 knowledge, not in the Techguns source. They were not verified against vanilla files.
+- **Chisel.** CTM behaviour, `ItemCarvable` tooltips and the carving groups belong to the external Chisel mod, which is not in the source tree. They are described from how Techguns calls it.
+- **Palette descriptions.** The measured average and dominant colours and opacity are exact. The named accent colours and "what it depicts" text were read from enlarged views and are estimates. Rectangles marked *approx* in [textures.md](textures.md) section 12 were read by eye, the rest were measured by flood fill.
+- **Large model constructors.** The model box lists were read through a box-extraction script, and the UV layout was cross-checked only where textures could be viewed.
+- **Spawner, chest and bio-blob NBT.** Written from the source's read and write methods. Vanilla spawner tags beyond those the code sets (for example `SpawnPotentials`) are not listed.
+- **Hard-coded owners.** Machine blocks (`basicMachine`, `oreDrill`, `machineMultiBlock`) are only covered here for their item blocks, textures and registration.
 
 ## Suspected bugs
 
@@ -109,9 +143,3 @@ Machine blocks ([`basicMachine`](block-catalogue.md#registered-blocks), [`oreDri
 | BLK-30 | Oil-hole cluster item shows stone, not bedrock | [`java/techguns/client/renderer/block/RenderOrecluster.java:47`](block-rendering-and-models.md#1-isbrh-renderers-and-render-ids) | The inventory render always uses the stone base icon. | cosmetic |
 | BLK-31 | Flag item renders as a repair bench | [`java/techguns/client/ClientProxy.java:607`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) (wiring for `RenderBlockModelItem`) | `basicMachine:7` (Flag) is mapped to the repair-bench cube instead of [`ModelFlagPost`](block-rendering-and-models.md#modelflagpost-uv-6464-texture-flagpostpng). | visual |
 | BLK-32 | Dead "thin door sides" conditions | `java/techguns/blocks/BlockTGDoor.java:130-133` | They compare a 0–3 value against 5 and 6, so they can never match. | cosmetic |
-
-## Dead or unused code (not bugs, for awareness)
-
-- **Never registered:** [`BlockTGLampFMP`](multipart.md#status-inactive), `smallCube`, `steelframe_glass`, all multipart classes, `TGMultiPartRegister`.
-- **Never used or instantiated:** [`TurretBase`](block-catalogue.md#blocks-constructed-but-not-registered-not-in-game), [`BlockBugNest`](block-catalogue.md#blocks-constructed-but-not-registered-not-in-game), [`ItemBlockOreCluster`](block-catalogue.md#blocks-constructed-but-not-registered-not-in-game), `CarvingRegistry` (assigned to `TGBlocks.chiselRegistry`, never read), [`ModelSimpleTurret`](block-rendering-and-models.md#modelturret-and-modelsimpleturret-uv-6464--6432), [`ModelLadder01`](block-rendering-and-models.md#modelladder01-uv-3232) (passed but never drawn), [`ReactionChamberFluidBox`](block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items).
-- **Unused textures** (listed in [textures.md](textures.md)): `tent`, `flagBlock`, `Bioblock`, [`ladder01`](block-catalogue.md#registered-blocks), `ladder01_inv`, the legacy `oreCluster*` set (11 files), `reactionChamber*` (5), `paintmachine_top/front/side/bottom`, `drillFrameCorner`, `drillRodSide`, `drillRodTop`, `steelframe_glass`.

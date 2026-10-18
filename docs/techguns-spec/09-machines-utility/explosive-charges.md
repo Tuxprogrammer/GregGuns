@@ -4,7 +4,7 @@
 |---|---|---|
 | [`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) meta | 6 | 8 |
 | Name (`techguns.tile.BasicMachine_N.name`) | "Explosive Charge" | "Advanced Explosive Charge" |
-| Tile entity (registry id) | `ExplosiveChargeTileEnt` | `ExplosiveChargeAdvTileEnt` (subclass) |
+| Tile entity (registry id) | `ExplosiveChargeTileEnt` | [`ExplosiveChargeAdvTileEnt`](index.md#key-facts) (subclass) |
 | GUI id | 6 | 6 (same GUI class) |
 | TESR | `RenderExplosiveCharge` + [`ModelTNTCharge`](../07-blocks/block-rendering-and-models.md#modeltntcharge-uv-3232-textures-tntchargepng--tntcharge_2png) | `RenderExplosiveCharge` + [`ModelExpCharge`](../07-blocks/block-rendering-and-models.md#modelexpcharge-uv-3232-textures-expchargepng--expcharge_2png) |
 | Recipe | ×8: `rtr`/`tct`/`rtr`; r = `itemRubber`, t = TNT, c = `circuitBasic` | ×4: same grid; r = `sheetPlastic`, t = TGX ([06](../06-items/index.md)), c = `circuitBasic` |

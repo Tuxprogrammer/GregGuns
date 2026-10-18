@@ -21,21 +21,21 @@ Names are looked up case-insensitively. "Packet" means [`PacketSpawnParticle`](.
 | `NukeExplosion` (list) | [`NukeRocketProjectile.explodeRocket`](projectiles.md#34-rocketprojectile-and-nukerocketprojectile) | Packet, **150** blocks | explosion centre |
 | `bioblobExplosion` (list) | [`BioblobTileEnt`](../09-machines-utility/misc-tile-entities.md#tile-entity-bioblobtileent) blob burst ([`07-blocks`](../07-blocks/index.md)) | Packet | blob |
 | `AlienExplosion` (list) | [`AlienBlasterProjectile`](projectiles.md#1-registration) impact | Packet, 50 blocks | impact |
-| `AlienBlasterTrail` (list) | `AlienBlaster` gun on fire | Packet on entity, but the entity is untracked, so it never shows ([PFX-01](index.md#suspected-bugs)) | follows projectile |
-| `BlueBlasterTrail` (list) | `MibGun` on fire | Packet on entity | follows projectile |
+| `AlienBlasterTrail` (list) | [`AlienBlaster`](../02-guns/sheets-energy-special.md#alien-blaster-alienblaster) gun on fire | Packet on entity, but the entity is untracked, so it never shows ([PFX-01](index.md#suspected-bugs)) | follows projectile |
+| `BlueBlasterTrail` (list) | [`MibGun`](../02-guns/sheets-energy-special.md#de-atomizer-pistol-mibgun) on fire | Packet on entity | follows projectile |
 | `BlueBlasterExplosion` (list) | [`EnergyBlastProjectile`](projectiles.md#310-energyblastprojectile-mib-gun) impact (block or entity) | Packet, 50 blocks | impact |
-| `CyberDemonBlasterTrail` (list) | `CyberdemonBlaster` gun on fire | Packet on entity | follows projectile |
+| `CyberDemonBlasterTrail` (list) | [`CyberdemonBlaster`](../02-guns/sheets-energy-special.md#nether-blaster-cyberdemonblaster) gun on fire | Packet on entity | follows projectile |
 | `CyberDemonBlasterTrailLarge` (list) | nothing (unused) | n/a | n/a |
 | `NetherBlasterImpactFlare`, `MediumExplosionSmoke` | [`CyberdemonBlasterProjectile`](projectiles.md#38-cyberdemonblasterprojectile) block hit (client call); entity hit (server call, SP only) | `proxy.createFX` | impact |
 | `NetherBlasterImpactFlare2` | nothing (unused) | n/a | n/a |
-| `BioGunTrail` (list) | `Biogun` on fire | Packet on entity, 200 blocks | follows projectile |
+| `BioGunTrail` (list) | [`Biogun`](../02-guns/sheets-energy-special.md#bio-gun-biogun) on fire | Packet on entity, 200 blocks | follows projectile |
 | `BioTrailGlow` | nothing (commented out of `BioGunTrail`) | n/a | n/a |
-| `GrenadeLauncherTrail` | `GrenadeLauncher` gun on fire; each grenade-launcher bounce; dispenser launch ([`BehaviorProjectileDispenseDamagevalue`](../01-core/lifecycle-and-registration.md#preinit-in-exact-order)) | Packet on entity, 200 blocks | follows grenade |
-| `SonicShotgunTrail` (list) | `SonicShotgun` on fire (main projectile) | Packet on entity, 200 blocks | follows projectile |
+| `GrenadeLauncherTrail` | [`GrenadeLauncher`](../02-guns/index.md#coverage) gun on fire; each grenade-launcher bounce; dispenser launch ([`BehaviorProjectileDispenseDamagevalue`](../01-core/lifecycle-and-registration.md#preinit-in-exact-order)) | Packet on entity, 200 blocks | follows grenade |
+| `SonicShotgunTrail` (list) | [`SonicShotgun`](../02-guns/index.md#coverage) on fire (main projectile) | Packet on entity, 200 blocks | follows projectile |
 | `SonicShotgunImpact` (list) | [`SonicShotgunProjectile`](projectiles.md#313-sonicshotgunprojectile) (main) solid-block hit | Packet, 50 blocks | impact |
 | `LaserFlareStart` / `LaserFlareEnd` | [`LaserBeam2`](projectiles.md#1-registration) creation (lasergun, scatter beam gun) | Packet, 50 blocks | muzzle / beam end |
 | `TeslaFlare` | [`TeslaBeam`](projectiles.md#1-registration) creation by the gun (not chain beams) | Packet, 50 blocks | beam end |
-| `BeamGunMuzzleFX` (list) | `MovingBeam`/[`NeutrinoBeam`](projectiles.md#1-registration) client constructor | `createFXOnEntity` | follows beam (the shooter's muzzle) |
+| `BeamGunMuzzleFX` (list) | [`MovingBeam`](projectiles.md#1-registration)/[`NeutrinoBeam`](projectiles.md#1-registration) client constructor | `createFXOnEntity` | follows beam (the shooter's muzzle) |
 | `BeamGunImpactFX` (list) | `MovingBeam` every tick | `proxy.createFX` | beam end |
 | `biodeath` | BIO death effect | `createFX` (client, from the death packet) | entity centre |
 | `laserdeathFire`, `laserdeathAsh` | LASER death effect | `createFX` | entity centre |
@@ -302,7 +302,7 @@ These are hard-coded in `java/techguns/client/ClientProxy.java`. Each call creat
 | `MuzzleFlashBlue` | Animated | `muzzleflash_blue.png` | 4×4 / 8 | ADDITIVE | 1.5 | 4 | 0 | n/a | white | n/a | muzzle index 3 |
 | `MuzzleFlashLaser` | Animated | `laserflare02.png` | 4×4 / 7 | ADDITIVE | 1.5 | 4 | 0 | n/a | white | n/a | muzzle index 4 |
 | `MuzzleFlashAlienBlue` | Animated | `alienflare.png` | 4×4 / 14 | ADDITIVE | 1.5 | 4 | 0 | n/a | constant (40, 255, 140, 255), FAST curve | n/a | muzzle index 5 |
-| `LaserFlareEnd` | Animated | `laserflare02.png` | 4×4 / 7 | ADDITIVE | 5.0 | 18 | 0 | 5 → 7.5 | white | n/a | `LaserBeam` (deprecated). Packets with this name resolve to the **data-file** system instead. |
+| `LaserFlareEnd` | Animated | `laserflare02.png` | 4×4 / 7 | ADDITIVE | 5.0 | 18 | 0 | 5 → 7.5 | white | n/a | [`LaserBeam`](projectiles.md#1-registration) (deprecated). Packets with this name resolve to the **data-file** system instead. |
 | `LaserFlareStart` | Animated | `laserflare02.png` | 4×4 / 7 | ADDITIVE | 2.5 | 12 | 0 | n/a | white | n/a | `LaserBeam` (deprecated) |
 | `TeslaFlare` | Animated | `teslaflare01.png` | 4×4 / 14 | ADDITIVE | 5.0 | 15 | 0 | 5 → 10 | white, alpha 255 → 0 from 75 % of life | n/a | none (packets use the data-file version) |
 | `Fireball` | Animated | `fireball_4x4_add.png` | 4×4 / 16 | ADDITIVE | 1.5 | 10..14 | 0.025 | n/a | white | random rotation | none |

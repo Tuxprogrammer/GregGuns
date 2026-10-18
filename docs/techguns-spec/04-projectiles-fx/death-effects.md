@@ -2,9 +2,9 @@
 
 Special death animations are chosen by the damage type that kills an entity.
 
-Sources: `java/techguns/util/EntityDeathUtils.java`, `java/techguns/client/renderer/death/RendererDeadLivingEntity.java`, `java/techguns/client/models/ModelGibs*.java`, [`java/techguns/entities/projectiles/FlyingGibs.java`](projectiles.md#319-flyinggibs), `java/techguns/client/renderer/entity/RenderFlyingGibs.java`, `java/techguns/client/particle/EntityBloodEffect.java`.
+Sources: [`java/techguns/util/EntityDeathUtils.java`](index.md#coverage), `java/techguns/client/renderer/death/RendererDeadLivingEntity.java`, `java/techguns/client/models/ModelGibs*.java`, [`java/techguns/entities/projectiles/FlyingGibs.java`](projectiles.md#319-flyinggibs), [`java/techguns/client/renderer/entity/RenderFlyingGibs.java`](projectiles.md#1-registration), `java/techguns/client/particle/EntityBloodEffect.java`.
 
-Supporting code outside this area, described here only as far as the trigger chain needs: [`client/DeathEffect.java`](../01-core/client-effects-audio.md#deatheffectcreatedeatheffectentity-type-mx-my-mz), `client/GoreData.java`, [`packets/PacketEntityDeathType.java`](../01-core/networking.md#6--packetentitydeathtype-sc), [`events/TechgunsEventhandler.java`](../01-core/events.md#techgunseventhandler-forge-bus) (death and render events), and the gore roll in `damagesystem/DamageSystem.java` ([`01-core`](../01-core/index.md)).
+Supporting code outside this area, described here only as far as the trigger chain needs: [`client/DeathEffect.java`](../01-core/client-effects-audio.md#deatheffectcreatedeatheffectentity-type-mx-my-mz), `client/GoreData.java`, [`packets/PacketEntityDeathType.java`](../01-core/networking.md#6--packetentitydeathtype-sc), [`events/TechgunsEventhandler.java`](../01-core/events.md#techgunseventhandler-forge-bus) (death and render events), and the gore roll in [`damagesystem/DamageSystem.java`](../02-guns/index.md#coverage) ([`01-core`](../01-core/index.md)).
 
 ## 1. Death types
 

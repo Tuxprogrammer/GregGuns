@@ -1,6 +1,6 @@
 # 02-guns: per-class and per-gun behaviour
 
-Numbers are listed in [gun-catalogue.md](gun-catalogue.md). This file describes what each class does **differently** from the shared lifecycle in [gun-lifecycle.md](gun-lifecycle.md). Projectile internals (flight, impact, explosion, chaining, beams) belong to [04-projectiles-fx](../04-projectiles-fx/index.md); only the parameters a gun hands to them are documented here.
+Every gun and grenade also has a full ten-field entity sheet (identity, obtaining, numbers, tooltips, sounds, NPC use, bugs): start at [sheets-index.md](sheets-index.md). Numbers are listed in [gun-catalogue.md](gun-catalogue.md). This file describes what each class does **differently** from the shared lifecycle in [gun-lifecycle.md](gun-lifecycle.md). Projectile internals (flight, impact, explosion, chaining, beams) belong to [04-projectiles-fx](../04-projectiles-fx/index.md); only the parameters a gun hands to them are documented here.
 
 ## Class hierarchy (`java/techguns/items/guns/`)
 
@@ -130,7 +130,7 @@ It spawns a [`FlamethrowerProjectile`](../04-projectiles-fx/projectiles.md#32-fl
 Class constants: `BEAM_LIFETIME = 5`, `LIFETIME = 5`, `SPEED = 5.0`. Both guns pass `LIFETIME` as TTL and `setSpeed(SPEED)` (giving 7.5 b/t). They spawn [`LaserProjectile`](../04-projectiles-fx/projectiles.md#33-laserprojectile). Neither gun has damage drop-off.
 
 * Laser Rifle: one beam, scope ×0.75 (zoomed spread ×0.75).
-* Scatter Laser Rifle: `setShotgunSpread(4, 0.15)`, so 5 beams per shot, with 0.1 main accuracy. It also has the scope. It has no crafting recipe and is marked "[WIP]" in its name. A separate `ScatterBeamGun` class exists with identical behaviour but is never instantiated.
+* Scatter Laser Rifle: `setShotgunSpread(4, 0.15)`, so 5 beams per shot, with 0.1 main accuracy. It also has the scope. It has no crafting recipe and is marked "[WIP]" in its name. A separate [`ScatterBeamGun`](index.md#coverage) class exists with identical behaviour but is never instantiated.
 
 ### Nuclear Death Ray (`nuclearDeathRay`, registry `beamtestgun`, Beamgun)
 
@@ -262,7 +262,7 @@ They extend vanilla `Item` directly, not `GenericGun`, and are modelled on the b
   |---|---|---|---|---|---|---|
   | Stielgranate | [`GrenadeProjectile`](../04-projectiles-fx/projectiles.md#37-grenadeprojectile-family) | 200 | 20 | 5 | 3 | `random.bow`, pitch `1/(rand·0.4+1.2) + 0.5·f` |
   | Frag Grenade | [`FragGrenadeProjectile`](../04-projectiles-fx/projectiles.md#1-registration) | 120 | 25 | 6 | 2 | `guns.grenade_throw` |
-  | Flashbang | [`FlashBangProjectile`](../04-projectiles-fx/index.md#quick-facts) | 200 | 20 | 5 | 0 | `random.bow` (same pitch formula) |
+  | Flashbang | [`FlashBangProjectile`](../04-projectiles-fx/index.md#key-facts) | 200 | 20 | 5 | 0 | `random.bow` (same pitch formula) |
 
 * Tooltip: see lifecycle §10. The damage type is always Explosion.
 * The Flashbang is created in [`TGuns.init`](gun-catalogue.md) but never registered with `GameRegistry`, so it doesn't exist in game ([GUN-24](index.md#suspected-bugs)).
@@ -273,8 +273,8 @@ They extend vanilla `Item` directly, not `GenericGun`, and are modelled on the b
 
 | Class | What it would do |
 |---|---|
-| `Railgun` | Spawns a [`RailgunProjectile`](../04-projectiles-fx/projectiles.md#316-railgunprojectile-never-spawned) with full stats. Its TGuns line (25 dmg, 15 clip, pen 1.0) is commented out. |
-| `NeutrinoGun` | Like Beamgun but spawns a [`NeutrinoBeam`](../04-projectiles-fx/projectiles.md#1-registration) (energy type). Its TGuns line (8 dmg, drop 24→48) and lang entry "Neutrino Gun [WIP]" exist, but registration is commented out. |
+| [`Railgun`](index.md#coverage) | Spawns a [`RailgunProjectile`](../04-projectiles-fx/projectiles.md#316-railgunprojectile-never-spawned) with full stats. Its TGuns line (25 dmg, 15 clip, pen 1.0) is commented out. |
+| [`NeutrinoGun`](index.md#coverage) | Like Beamgun but spawns a [`NeutrinoBeam`](../04-projectiles-fx/projectiles.md#1-registration) (energy type). Its TGuns line (8 dmg, drop 24→48) and lang entry "Neutrino Gun [WIP]" exist, but registration is commented out. |
 | `ScatterBeamGun` | Identical to the Lasergun spawn logic. Never instantiated. |
 | [`GenericGunTool`](index.md#suspected-bugs) | Spawns a [`MiningDummyProjectile`](../04-projectiles-fx/projectiles.md#314-miningdummyprojectile) and prints "FIRE MINING PROJ" to stdout. The "driller" gun is commented out. |
 | `GenericGun.setProjectileClass` | Deprecated and never read. |

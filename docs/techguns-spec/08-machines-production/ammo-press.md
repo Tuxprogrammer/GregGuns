@@ -101,3 +101,20 @@ TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation-
 
   When idle, all punches sit at rest and no blank or cartridges are shown.
 - **Item form.** [`RenderBlockModelItem`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand) with the same model and texture (`rendering.md`).
+
+## 8. Entity sheet summary (consistency pass)
+
+The numbered fields follow `CONVENTIONS.md`. Detail lives in the sections above; this table collects what the sections don't state in one place.
+
+| # | Field | Contents |
+|---|---|---|
+| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 0; item class [`ItemBlockMetaDataMachine`](../07-blocks/special-blocks.md#16-itemblockmetadatamachine); tile `AmmoPressTileEnt` (registered under that name); item name key `techguns.tile.BasicMachine_0.name`, English **Ammo Press**; container `AmmoPressContainer`, GUI ID 0; creative tab Techguns; oredict names none |
+| 2 | Obtaining | Shaped ore recipe, `ili / cec / iri` (i `ingotIron`, l `ingotLead`, c `ingotCopper`, e Electric Engine, r redstone); full table in [blocks-and-items.md](blocks-and-items.md#crafting-recipes-for-the-machines-in-this-area). Not found in loot or worldgen |
+| 3 | Numbers | Buffer 20 000 RF; 5 RF/t times the stack multiplier; 100 ticks per operation; multiplier 1 to 8 (upgrades + 1); build plans 0 to 3; block hardness 4.0, resistance 20.0, pickaxe level 1 |
+| 4 | Behaviour | Sections 3 and 4. Runs on both sides (client prediction), output created on the server only |
+| 5 | Persistence and sync | NBT `BuildPlan` (byte), plus the base keys `Items`, `rotation`, `owner`, `security`, `Energy`, `hasSignal`, `redstoneBehaviour`, `CurrentOperation`, `Progress`, `TotalTime`, `StackMultiplier` (see [framework.md](framework.md)). Full tile NBT goes to the client on every `needUpdate()`. GUI progress-bar fields: 0 progress, 1 totalTime, 2 buildPlan, 3 power (raw RF). Wrench-dismantle stores the tile NBT in the item under `TileEntityData` |
+| 6 | UI | Layout in section 5. Item tooltip: one line, `techguns.block.hasTileEntityData` ("Has TileEntity Data"), only when the stack carries `TileEntityData`; otherwise none. In-GUI tooltips: power ("Power: n/max RF"), redstone and security, exact strings in [lang.md](lang.md#3-shared-machine-gui). Chat: `techguns.container.security.denied` on a denied right-click |
+| 7 | Visuals | Block render type −1 (TESR only), so no per-face block texture; the break-particle icon is `techguns:screen_top` ([`textures/blocks/screen_top.png`](../07-blocks/textures.md#6-radar-screen-and-control-panel), 32×32, average #534540). TESR `RenderAmmoPress` + `ModelAmmoPress`; atlas `textures/blocks/AmmoPress.png`, 256×128, average #292724, dominant #101010 66 %, #505050 5 %, #909090 3 %, 100 % opaque. Item renderer [`RenderMachineBlockItem`](rendering.md#5-machine-item-rendering) delegate 0 (`RenderBlockModelItem`, same model and texture). Particles: none |
+| 8 | Audio | `machines.ammopressWork1` (volume 1, pitch 1; ticks 5 and 55; clips 2.57 / 2.77 / 2.06 s, 44100 Hz mono) and `machines.ammopressWork2` (volume 1, pitch 1; ticks 30 and 80; 1.06 / 1.35 / 1.14 s, 44100 Hz mono). Details in [sounds.md](sounds.md#5-per-event-call-parameters-volume-pitch-side-exact-condition) |
+| 9 | Relationships | Reads `AmmoPressBuildPlans` lists built by [`TGMachineRecipes`](index.md#tgmachinerecipesaddrecipes-what-it-registers); ammo and casings come from [`06-items`](../06-items/index.md); NEI handler in [nei.md](nei.md); MineTweaker has no Ammo Press hook ([minetweaker.md](minetweaker.md)) |
+| 10 | Bugs | [MPRD-20](index.md#suspected-bugs) shift-click ranges; [MPRD-30](index.md#suspected-bugs) NEI duplicates; [MPRD-31](index.md#suspected-bugs) hard-coded "Building:"; [MPRD-33](index.md#suspected-bugs) legacy `AmmoPressRecipe`; wrench and power bugs shared with all machines ([MPRD-09](index.md#suspected-bugs)) |

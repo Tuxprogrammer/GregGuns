@@ -1,5 +1,8 @@
 # 05 – Armour, special-slot equipment and the Techguns inventory tab
 
+## Overview
+
+
 Behavioural specification of Techguns 1.7.10 v0.1.2 alpha. This area covers:
 
 - **45 armour items:**
@@ -35,7 +38,7 @@ Behavioural specification of Techguns 1.7.10 v0.1.2 alpha. This area covers:
   - Bonuses need power; protection does not.
 - **Special items:** durability is used as fuel or charge. Each item auto-reloads from its ammo item (Energy Cell, Compressed Air Tank, Fuel Tank or Nuclear Power Cell); the Gas Mask instead uses a crafting refill with a Gas Mask Filter.
 
-## Cross-references
+## Related areas
 
 - **[01-core](../01-core/index.md):** extended player properties and their NBT, packets, keybind registration, GUI handler, damage system ([`TGDamageSource`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource), `getReduction`, penetration config), tick and event handler skeletons, HUD overlay, Tinkers' Construct tab integration.
 - **[02-guns](../02-guns/index.md):** gun accuracy use of `GUN_ACCURACY`; akimbo gun items; safe mode.
@@ -56,9 +59,20 @@ Behavioural specification of Techguns 1.7.10 v0.1.2 alpha. This area covers:
   - 11 classes in `additionalslots/`
   - 7 classes in `gui/playerinventory/`
   - `TGSlotType`, [`SlotArmor`](extra-inventory.md#4-container-tgplayercontainer)
-- **Supporting files read for behaviour:** [`TGArmorMaterial`](../02-guns/damage-system.md#6-tgarmormaterial), `DamageSystem` (parts), [`TechgunsTickHandler`](../01-core/events.md#techgunstickhandler-fml-bus), [`TechgunsEventhandler`](../01-core/events.md#techgunseventhandler-forge-bus) (parts), [`PacketTGKeybindPress`](../01-core/networking.md#7--packettgkeybindpress-cs), [`PacketOpenPlayerGUI`](../01-core/networking.md#4--packetopenplayergui-cs), [`TGKeybinds`](../01-core/input-and-hud.md#keybinds-tgkeybinds-client-only)/[`TGKeybindsID`](../01-core/networking.md#7--packettgkeybindpress-cs), [`TechgunsExtendedPlayerProperties`](../01-core/player-state.md#techgunsextendedplayerproperties) (+Client), [`GenericItemShared`](../06-items/special-items.md#shared-item-genericitemshared-behaviour) (parts), [`TGItems`](../06-items/item-catalogue.md) (parts), [`TGConfig`](../01-core/config.md) (parts), [`ClientProxy`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) (parts), [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table) (parts), `sounds.json`, `en_US.lang`.
+- **Supporting files read for behaviour:** [`TGArmorMaterial`](../02-guns/damage-system.md#6-tgarmormaterial), [`DamageSystem`](../02-guns/index.md#coverage) (parts), [`TechgunsTickHandler`](../01-core/events.md#techgunstickhandler-fml-bus), [`TechgunsEventhandler`](../01-core/events.md#techgunseventhandler-forge-bus) (parts), [`PacketTGKeybindPress`](../01-core/networking.md#7--packettgkeybindpress-cs), [`PacketOpenPlayerGUI`](../01-core/networking.md#4--packetopenplayergui-cs), [`TGKeybinds`](../01-core/input-and-hud.md#keybinds-tgkeybinds-client-only)/[`TGKeybindsID`](../01-core/networking.md#7--packettgkeybindpress-cs), [`TechgunsExtendedPlayerProperties`](../01-core/player-state.md#techgunsextendedplayerproperties) (+Client), [`GenericItemShared`](../06-items/special-items.md#shared-item-genericitemshared-behaviour) (parts), [`TGItems`](../06-items/item-catalogue.md) (parts), [`TGConfig`](../01-core/config.md) (parts), [`ClientProxy`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) (parts), [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table) (parts), `sounds.json`, `en_US.lang`.
 - **Textures:** 82/82 in `textures/armor/` viewed and described, plus [`textures/gui/TGPlayerInventory.png`](../08-machines-production/gui-textures.md#14-texturesguitgplayerinventorypng-owned-by-the-player-inventory-area-0105).
 - **Sounds:** 9 sounds.json events (19 files) referenced by armour and equipment code are listed with their triggers (special-equipment.md §6). One unreferenced file is noted.
+- **Consistency pass additions:** all 82 armour textures now carry the measured average, dominant colours and opaque share ([textures.md](textures.md)); all 45 armour pieces have an obtaining route, lang key and English name ([armor-catalogue.md](armor-catalogue.md) §5.13); all 9 special-slot items have a full ten-field sheet ([special-equipment.md](special-equipment.md) §9); every sound mentioned has its duration, sample rate and channels (special-equipment.md §6 and the sheets). Lang keys: 45 piece names, 9 special-item names, the camo, tooltip and GUI keys listed in [lang-and-strings.md](lang-and-strings.md) were all covered; the three missing camo keys are recorded as [ARM-13](#suspected-bugs).
+
+## Known limits
+
+- **Sounds were not listened to.** Durations, sample rates and channels come from the Ogg headers ([ASSET-FACTS](../ASSET-FACTS.md)); any wording about what a sound is like is inferred from file names and use.
+- **Textures were viewed, not measured by hand.** Average and dominant colours are the machine-measured values in ASSET-FACTS; the palette words and part layouts in textures.md come from viewing the images.
+- **Model geometry** was read from the model classes' box definitions; no model was rendered in-game, so posing, z-fighting and the overrun in [ARM-23](#suspected-bugs) are derived from the code.
+- **Nothing was run.** Behaviour is derived from source reading. Client/server interplay for the jetpack key, the glider loop and powered-armour drain is described from code paths, not observed.
+- **NPC equipment drops** use the vanilla default chances; that default comes from vanilla 1.7.10 knowledge, not from the Techguns source (no NPC class overrides it).
+- **Only `en_US` lang** exists in scope; other locales were not checked.
+- **Out of scope here:** item-icon textures in `textures/items/` ([06-items](../06-items/index.md)), gun and akimbo textures ([03-gun-visuals-audio](../03-gun-visuals-audio/index.md)), and the Camo Bench and Repair Bench internals ([09-machines-utility](../09-machines-utility/index.md)).
 
 ## Suspected bugs
 
@@ -97,3 +111,4 @@ Behavioural specification of Techguns 1.7.10 v0.1.2 alpha. This area covers:
 | ARM-31 | Client may open any GUI id | `java/techguns/packets/PacketOpenPlayerGUI.java:36-37` ([01-core](../01-core/index.md) owns it; used by the tab) | The server opens whatever positive id the client sends, at the player's position, with no validation. | gameplay |
 | ARM-32 | Dead or unused code and assets | [`ModelT3PowerArmorOld.java`](rendering-and-models.md), [`ModelGasMask2.java`](rendering-and-models.md), [`ModelBipedTGBackSlot.java`](rendering-and-models.md), [`RenderGasMask.java`](rendering-and-models.md#3-special-slot-rendering-on-the-player-rendereradditionalslots), [`RenderAntiGravPack.java`](rendering-and-models.md#3-special-slot-rendering-on-the-player-rendereradditionalslots), `RenderArmor.java` (fully commented); [`textures/armor/steam_armor_1.png`](textures.md#6-steam-armour-layout-c-256128-modelsteamarmor), [`textures/armor/t2_riotArmor.png`](textures.md#4-riot--ranger-veteran-layout-b-128128-modelarmorcoat), [`sounds/items/glider_loop.ogg`](../06-items/sounds.md); `TGArmorBonus.WATER_ELECTROLYZER`; `TGSlotType.FOODSLOT`; jetpack hover/forward code | Never referenced or never reachable. | cosmetic |
 | ARM-33 | Repair totals are inconsistent | `java/techguns/TGArmors.java:129,186` | T1 Miner leggings need 2 repair mats where every other leggings needs 3. The Exo chest uses copper wire instead of carbon fibres. Possibly typos. | cosmetic |
+| ARM-34 | Special-slot items tick and mutate stacks on the client too | `java/techguns/events/TechgunsTickHandler.java:451-466`, [`java/techguns/items/armors/ItemTGSpecialSlotAmmo.java`](special-equipment.md#1-interfaces-and-base-classes) (`tryReloadAndRepair`), [`java/techguns/Techguns.java:821`](../01-core/lifecycle-and-registration.md#lifecycle-overview) (`consumeAmmoPlayer`) | `onPlayerTick` for the face and back items runs on both sides; the charge changes (night vision, gas mask, tanks, jetpack, anti-grav) and the ammo-consuming reload (which has no remote-world guard, only the drop of the empty item has one) also run on the client's copy of the inventory. The client can therefore reload and spend charge locally until the server's copy overwrites it, like [ARM-09](#suspected-bugs) for powered armour. | gameplay |

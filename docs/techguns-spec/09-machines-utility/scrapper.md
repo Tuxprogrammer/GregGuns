@@ -2,7 +2,7 @@
 
 | Part | Class / value |
 |---|---|
-| Tile entity | `ScrapperTileEnt`, registered as `ScrapperTileEnt` |
+| Tile entity | [`ScrapperTileEnt`](index.md#key-facts), registered as `ScrapperTileEnt` |
 | Container | `ScrapperContainer` |
 | GUI | `GuiScrapper` |
 | GUI id | 10 (wired in [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table)) |

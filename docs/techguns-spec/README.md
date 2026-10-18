@@ -18,7 +18,13 @@ Each area folder starts with an `index.md`: overview, table of contents, cross-r
 | [10-entities-npcs](10-entities-npcs/index.md) | All mobs (stats, equipment, AI, factions), the spawn system, spawn eggs, turret and helicopter entities, NPC models, textures and sounds |
 | [11-worldgen](11-worldgen/index.md) | Ore generation and ore clusters, the structure system and file format, every structure, loot, village integration, the structure authoring tools |
 
-**[BUGS.md](BUGS.md):** all suspected bugs, merged across areas and grouped by severity.
+Reference files at the spec root:
+
+| File | What it holds |
+|---|---|
+| [CONVENTIONS.md](CONVENTIONS.md) | The standard every area meets: entity-sheet fields, asset entries, lang and index layout |
+| [BUGS.md](BUGS.md) | Every suspected Techguns bug, merged across areas and grouped by severity |
+| [ASSET-FACTS.md](ASSET-FACTS.md) | Measured size, frames and colours of every texture; duration, rate and channels of every sound |
 
 ## Facts about Techguns worth knowing up front
 

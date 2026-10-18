@@ -1,5 +1,8 @@
 # 04: Projectiles and FX
 
+## Overview
+
+
 Techguns 1.7.10 (v0.1.2 alpha). This area covers everything a gun puts into the world after the trigger is pulled:
 
 - projectile and beam entities
@@ -10,7 +13,7 @@ Techguns 1.7.10 (v0.1.2 alpha). This area covers everything a gun puts into the 
 - special death animations (gore, bio-dissolve, laser-disintegrate)
 - the `textures/fx/` art and `sounds/effects/` audio
 
-Gun stats and firing logic are in [`02-guns`](../02-guns/index.md). Gun models and first-person rendering are in [`03-gun-visuals-audio`](../03-gun-visuals-audio/index.md). The damage pipeline (`DamageSystem`, [`TGDamageSource`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource), armour penetration, friendly fire) is in [`01-core`](../01-core/index.md).
+Gun stats and firing logic are in [`02-guns`](../02-guns/index.md). Gun models and first-person rendering are in [`03-gun-visuals-audio`](../03-gun-visuals-audio/index.md). The damage pipeline ([`DamageSystem`](../02-guns/index.md#coverage), [`TGDamageSource`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource), armour penetration, friendly fire) is in [`01-core`](../01-core/index.md).
 
 ## Contents
 
@@ -24,16 +27,11 @@ Gun stats and firing logic are in [`02-guns`](../02-guns/index.md). Gun models a
 | [death-effects.md](death-effects.md) | Death types, the trigger chain (damage roll → death event → packet → client), [`GoreData`](../01-core/client-effects-audio.md#deatheffectcreatedeatheffectentity-type-mx-my-mz) per mob, gib models, blood, the BIO/LASER/DISMEMBER corpse renderers, config, death-message lang keys. |
 | [textures.md](textures.md) | All 49 `textures/fx/*.png` (size, layout/frames, content, palette, blend, users) plus the projectile textures in `textures/entity/`. |
 | [sounds.md](sounds.md) | All 26 `sounds/effects/*.ogg` with sounds.json events and exact triggers. |
+| [lang.md](lang.md) | Every `death.attack.*` message with its damage-source name, projectile entity names, damage-type keys, missing keys ([PFX-31](#suspected-bugs)) and generated strings. |
 
-## Scope notes
+## Key facts
 
-- Projectile entity registrations live in [`java/techguns/Techguns.java`](../01-core/lifecycle-and-registration.md#lifecycle-overview) (lines 487–514), not in [`TGEntities.java`](../10-entities-npcs/mob-catalogue.md#registration-javatechgunstgentitiesjava). `TGEntities.java` was read in full and contains only NPC registrations and spawn setup ([`10-entities-npcs`](../10-entities-npcs/index.md)).
-- The death-type trigger chain spans files outside the listed scope ([`client/DeathEffect.java`](../01-core/client-effects-audio.md#deatheffectcreatedeatheffectentity-type-mx-my-mz), `client/GoreData.java`, [`packets/PacketEntityDeathType.java`](../01-core/networking.md#6--packetentitydeathtype-sc), `packets/PacketSpawnParticle*.java`, [`events/TechgunsEventhandler.java`](../01-core/events.md#techgunseventhandler-forge-bus), the legacy particle switch in [`client/ClientProxy.java`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy)). They were read and their behaviour is documented here because it is the only way to specify the effects. Ownership of those files remains with [`01-core`](../01-core/index.md).
-- NPC/mob renderers in `client/renderer/entity/` ([`RenderAlienBug`](../10-entities-npcs/rendering-and-models.md#4-renderalienbug-extends-renderliving), [`RenderGenericNPC`](../10-entities-npcs/rendering-and-models.md#2-rendergenericnpc-extends-vanilla-renderbiped), [`RenderHelicopter`](../10-entities-npcs/rendering-and-models.md#5-renderhelicopter-extends-rendererlivingentity), [`RenderSimpleTurret`](../10-entities-npcs/rendering-and-models.md#6-rendersimpleturret-extends-plain-render-for-npcturret), [`RenderSuperMutant`](../10-entities-npcs/rendering-and-models.md#3-rendersupermutant-extends-rendergenericnpc)) are left to [`10-entities-npcs`](../10-entities-npcs/index.md).
-
-## Quick facts
-
-- 26 projectile/FX entities are registered (mod-local IDs 1–26). [`AlienBlasterProjectile`](projectiles.md#1-registration) is fired by a live gun but is **not** registered. [`RailgunProjectile`](projectiles.md#316-railgunprojectile-never-spawned), [`BlasterProjectile`](projectiles.md#318-blasterprojectile-deprecated), [`PiercingProjectile`](projectiles.md#317-piercingprojectile-deprecated-unregistered) and `FlashBangProjectile` are also unregistered, but nothing reachable spawns them.
+- 26 projectile/FX entities are registered (mod-local IDs 1–26). [`AlienBlasterProjectile`](projectiles.md#1-registration) is fired by a live gun but is **not** registered. [`RailgunProjectile`](projectiles.md#316-railgunprojectile-never-spawned), [`BlasterProjectile`](projectiles.md#318-blasterprojectile-deprecated), [`PiercingProjectile`](projectiles.md#317-piercingprojectile-deprecated-unregistered) and [`FlashBangProjectile`](projectiles.md#1-registration) are also unregistered, but nothing reachable spawns them.
 - Projectiles fly in straight lines at `speed` blocks/tick with 0.99 drag (0.8 in water) and optional constant gravity. They ray-trace blocks on both sides and entities on the server only, and pass through non-solid blocks such as grass.
 - Bullets ignore hurt-resistance. Knockback comes from a separate 0.01-damage "dummy" hit.
 - Damage falls off linearly with *distance travelled* between `dmgDropStart` and `dmgDropEnd`.
@@ -50,11 +48,34 @@ Gun stats and firing logic are in [`02-guns`](../02-guns/index.md). Gun models a
 - [09-machines-utility](../09-machines-utility/index.md): the Bio Blob tile entity and explosive charges.
 - [05-armor](../05-armor/index.md): anti-grav and jetpack effects.
 
+## Coverage
+
+- **Source files read:** all 30 classes in `java/techguns/entities/projectiles/` (every one has behaviour in projectiles.md sections 2 and 3 and a row in the section 4.5 summary; the four thinnest, `GenericProjectile`, `SimpleProjectile`, [`InvisibleProjectile`](projectiles.md#43-invisibleprojectile) and `BlasterProjectile`, have full sheets in sections 4.1 to 4.4); the projectile and beam renderers and `ScreenEffect` in `client/renderer/`; `util/ProjectileExplosion.java` and `TGExplosionDamageSource`; the whole `client/particle/` package and its two data files; the death-effect classes (`DeathEffect`, `GoreData`, `EntityDeathUtils`, the corpse renderers under `client/renderer/death/`); and the out-of-scope callers listed in Scope notes (packets, event handler, proxy switch). The NPC renderers are deliberately left to [`10-entities-npcs`](../10-entities-npcs/index.md).
+- **Textures:** 49 of 49 `textures/fx/*.png` and 7 of 7 projectile textures in `textures/entity/` (`bullet`, `handgunBullet`, `bioblob`, `BlueBeam`, `Laser`, `launchergrenade`, `gore`) have size, measured average and dominant colours, a palette in words and the frame grid as pixel rectangles (textures.md, "Measured palette and frame rectangles"). Textures referenced in code but absent are listed under "Missing textures".
+- **Sounds:** 26 of 26 `sounds/effects/*.ogg` have duration, sample rate, channels and category (sounds.md, "Measured audio facts"); all 11 distinct events plus the vanilla sounds used by this area's code have trigger, volume and pitch.
+- **Lang:** all 17 `death.attack.*` keys, the one projectile entity name and the 9 `techguns.TGDamageType.*` keys are listed in [lang.md](lang.md), with the missing keys (PFX-31).
+- **Corrections made in this pass:** the sounds.md "character" table guessed ~0.5 s for the bullet impacts and ~1 to 2 s for the explosions; the measured values are 0.98 s and 1.21 to 2.85 s, and the cells now say so. The previous wording of the death-message fallback for missing `.item` keys is corrected in lang.md.
+
+### Scope notes
+
+- Projectile entity registrations live in [`java/techguns/Techguns.java`](../01-core/lifecycle-and-registration.md#lifecycle-overview) (lines 487–514), not in [`TGEntities.java`](../10-entities-npcs/mob-catalogue.md#registration-javatechgunstgentitiesjava). `TGEntities.java` was read in full and contains only NPC registrations and spawn setup ([`10-entities-npcs`](../10-entities-npcs/index.md)).
+- The death-type trigger chain spans files outside the listed scope ([`client/DeathEffect.java`](../01-core/client-effects-audio.md#deatheffectcreatedeatheffectentity-type-mx-my-mz), `client/GoreData.java`, [`packets/PacketEntityDeathType.java`](../01-core/networking.md#6--packetentitydeathtype-sc), `packets/PacketSpawnParticle*.java`, [`events/TechgunsEventhandler.java`](../01-core/events.md#techgunseventhandler-forge-bus), the legacy particle switch in [`client/ClientProxy.java`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy)). They were read and their behaviour is documented here because it is the only way to specify the effects. Ownership of those files remains with [`01-core`](../01-core/index.md).
+- NPC/mob renderers in `client/renderer/entity/` ([`RenderAlienBug`](../10-entities-npcs/rendering-and-models.md#4-renderalienbug-extends-renderliving), [`RenderGenericNPC`](../10-entities-npcs/rendering-and-models.md#2-rendergenericnpc-extends-vanilla-renderbiped), [`RenderHelicopter`](../10-entities-npcs/rendering-and-models.md#5-renderhelicopter-extends-rendererlivingentity), [`RenderSimpleTurret`](../10-entities-npcs/rendering-and-models.md#6-rendersimpleturret-extends-plain-render-for-npcturret), [`RenderSuperMutant`](../10-entities-npcs/rendering-and-models.md#3-rendersupermutant-extends-rendergenericnpc)) are left to [`10-entities-npcs`](../10-entities-npcs/index.md).
+
+## Known limits
+
+- Audio and images were not opened by a person; all sound descriptions are inferred from names and use. Colours, sizes, durations and rates are machine-measured (ASSET-FACTS.md).
+- The `techscope.png` window bounds (about 1260 x 910 px, centred) were estimated from a scaled view with an error of roughly 10 px.
+- Frame cells of `fireblast.png` (102.4 px) and `dustclouds02.png` (85.33 px) are not integers; the grid positions given are the ones the sampling code produces.
+- Behaviour that runs inside the integrated server in single player ([PFX-04](#suspected-bugs)) was reasoned from the code, not run.
+- Projectile "fired by" lists name the gun classes and registry names; full per-gun stat blocks are in [`02-guns`](../02-guns/index.md) and were not restated.
+- Visual descriptions of FX sprite sheets were made from the images by eye in the first pass; where they differ from the measured numbers the numbers win.
+
 ## Suspected bugs
 
 | ID | Title | Location | What looks wrong | Severity |
 |---|---|---|---|---|
-| PFX-01 | Alien blaster projectile not registered | `java/techguns/Techguns.java:487-514` (missing entry); spawned at `java/techguns/items/guns/AlienBlaster.java:47` | `AlienBlasterProjectile` (and `RailgunProjectile`) have bound renderers but no `registerModEntity`. The server simulates the shot, but clients never receive the entity, so `PacketSpawnParticleOnEntity("AlienBlasterTrail")` finds no entity and the trail never shows. It is also not saved. | gameplay |
+| PFX-01 | Alien blaster projectile not registered | `java/techguns/Techguns.java:487-514` (missing entry); spawned at [`java/techguns/items/guns/AlienBlaster.java:47`](../02-guns/sheets-energy-special.md#alien-blaster-alienblaster) | `AlienBlasterProjectile` (and `RailgunProjectile`) have bound renderers but no `registerModEntity`. The server simulates the shot, but clients never receive the entity, so `PacketSpawnParticleOnEntity("AlienBlasterTrail")` finds no entity and the trail never shows. It is also not saved. | gameplay |
 | PFX-02 | Unknown FX name crashes the client; `AntiGravRingGreen` undefined | `java/techguns/client/particle/FXList.java:46-48`, `java/techguns/client/ClientProxy.java:887-903`, caller [`java/techguns/items/armors/ItemAntiGravPack.java:62`](../05-armor/special-equipment.md#45-anti-gravity-device-itemantigravpack) | `createFX`/`createFXOnEntity` return null for unknown names and the proxy iterates the null list (NullPointerException). `AntiGravRingGreen` is not in any data file. | crash |
 | PFX-03 | Beam trace miss uses the direction as an absolute point | [`java/techguns/entities/projectiles/TeslaBeam.java:104-113`](projectiles.md#1-registration), [`MovingBeam.java:232-243`](fx-catalogue.md#triggers-which-game-event-spawns-which-fx), [`LaserBeam.java:88-100`](fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle) | When nothing is hit, the target is set to the direction/offset vector rather than origin + direction. The beam length becomes the distance to near world origin (huge or tiny), and the TeslaBeam/LaserBeam2 end-flare packet is sent to players near (0, 0, 0). | visual |
 | PFX-04 | Proxy FX called from server code / off-thread | [`java/techguns/packets/PacketSpawnParticle.java:83`](../01-core/networking.md#13--packetspawnparticle-sc), [`java/techguns/packets/PacketSpawnParticleOnEntity.java:55`](../01-core/networking.md#14--packetspawnparticleonentity-sc), [`CyberdemonBlasterProjectile.java:58,126`](projectiles.md#38-cyberdemonblasterprojectile), [`FlamethrowerProjectile.java:54`](projectiles.md#32-flamethrowerprojectile), `MovingBeam.java:246`, [`PowerHammerProjectile.java:103`](projectiles.md#311-powerhammerprojectile), `RailgunProjectile.java:72` | In single-player the integrated server uses `ClientProxy`, so server-side FX calls spawn particle-system entities into the server world or push `EntityFX` from the server thread. Packet handlers spawn client entities from the Netty thread. Risk of ConcurrentModificationException and duplicated FX. | crash |

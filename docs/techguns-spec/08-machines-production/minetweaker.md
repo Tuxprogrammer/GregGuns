@@ -3,7 +3,7 @@
 ## 1. Loading
 
 - [`Techguns`](../01-core/lifecycle-and-registration.md#lifecycle-overview) init: if mod `MineTweaker3` is loaded, it calls `new TechgunsMineTweakerIntegration().init()`. `ITechgunsMineTweakerIntegration` is the interface, with `@Optional.Interface` on `MineTweaker3`.
-- `init()` registers seven Zen classes: `AmmoPressTweaker`, `CharginStationTweaker` (sic), `MetalPressTweaker`, `ChemLabTweaker`, `FabricatorTweaker`, `ReactionChamberTweaker`, `OreClusterTweaker`.
+- `init()` registers seven Zen classes: `AmmoPressTweaker`, `CharginStationTweaker` (sic), `MetalPressTweaker`, [`ChemLabTweaker`](chem-lab.md#8-entity-sheet-summary-consistency-pass), [`FabricatorTweaker`](fabricator.md#8-entity-sheet-summary-consistency-pass), `ReactionChamberTweaker`, `OreClusterTweaker`.
 
 **`TGMineTweakerHelper`:**
 - `getItemNames(IIngredient)` produces `[name,name,…]` for log text.

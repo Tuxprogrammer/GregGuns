@@ -136,6 +136,124 @@ Magazine tooltips (two extra lines, see [lang.md](lang.md#tooltip-lines)) are at
 
 All the OreDict registrations in the table happen in `TGItems.init()`.
 
+
+## 1b. Lang key and "Obtained from" for every shared meta (consistency pass)
+
+The lang key is `techguns.item.<internalName>.name`; all 110 keys exist in `en_US.lang` and the English names are in the table above. "Obtained from" gives the shortest route: `R..` and `B..` numbers are rows in [recipes.md](recipes.md); "Metal Press / Chem Lab / Fabricator / Reaction Chamber / Charging Station recipe N" are the numbered rows in [08-machines-production](../08-machines-production/index.md); loot is in [loot.md](loot.md); "NPC drop" refers to the drop list in [10-entities-npcs](../10-entities-npcs/index.md). "Returned on reload" means the empty version comes back to the player when a gun reloads (see [ammo.md](ammo.md)). Only meta 92 (UV Emitter) is unobtainable in survival.
+
+| Meta | Lang key | Obtained from |
+|---|---|---|
+| 0 | `techguns.item.stonebullets.name` | Crafting R32 (3 cobblestone + gunpowder, x16); weapon-chest T1 and bonus-chest loot |
+| 1 | `techguns.item.bullets9mm.name` | Crafting R33 (x8); Ammo Press plan 0 (x12, 08); dungeon and weapon-chest loot; NPC drop |
+| 2 | `techguns.item.pistolMag9mm.name` | Crafting R36 (empty mag + 3 9mm bullets); dungeon and weapon-chest loot; NPC drop |
+| 3 | `techguns.item.pistolMag9mmEmpty.name` | Crafting R35 (x4); returned when a 9mm gun reloads or a full mag is emptied |
+| 4 | `techguns.item.shotgunShell.name` | Crafting R34 (x5); Ammo Press plan 1 (x16, 08); dungeon and weapon-chest loot; NPC drop |
+| 5 | `techguns.item.smgMag.name` | Crafting R38 (empty mag + 2 9mm bullets); dungeon and weapon-chest loot |
+| 6 | `techguns.item.smgMagEmpty.name` | Crafting R37 (x4); returned on reload or emptying |
+| 7 | `techguns.item.rifleBullets.name` | Ammo Press plan 2 (x8, 08); loot; NPC drop; Rifle Bullets Stack split R52 (x4) |
+| 8 | `techguns.item.flamethrowerTank.name` | Chem Lab fill (Fuel Tank (Empty) + 250 mB fuel, or 500 mB lava if no fuel fluid; [08](../08-machines-production/index.md)); weapon-chest T3 loot; NPC drop; Forge fluid container |
+| 9 | `techguns.item.flamethrowerTankEmpty.name` | Crafting R50 (x4); returned when a flamethrower or chainsaw reloads; Chem Lab drain ([08](../08-machines-production/index.md)) |
+| 10 | `techguns.item.bioTank.name` | Chem Lab (Bio Mass + Empty Bio Tank + 500 mB water; [08](../08-machines-production/index.md)) |
+| 11 | `techguns.item.bioTankEmpty.name` | Crafting R41; returned when the bio gun reloads |
+| 12 | `techguns.item.m4Mag.name` | Crafting R40 (empty mag + 3 rifle bullets); dungeon and weapon-chest loot |
+| 13 | `techguns.item.m4MagEmpty.name` | Crafting R39 (x4); returned on reload or emptying |
+| 14 | `techguns.item.rocketAmmo.name` | Crafting R42 (x4); weapon-chest T3 loot; NPC drop; dispenser projectile |
+| 15 | `techguns.item.energyCell.name` | Charging Station (Empty Energy Cell, 08); NPC drop |
+| 16 | `techguns.item.energyCellEmpty.name` | Fabricator recipe 1 (gold ingot + copper wire + 3 redstone + plastic sheet; [08](../08-machines-production/index.md)); returned when an energy-cell gun reloads |
+| 17 | `techguns.item.as50Mag.name` | Crafting R47 (empty mag + 2 High Caliber Rounds) |
+| 18 | `techguns.item.as50MagEmpty.name` | Crafting R46 (x4); returned on reload or emptying |
+| 19 | `techguns.item.highCalibreBullets.name` | Ammo Press plan 3 (x4, 08); dungeon-chest loot |
+| 20 | `techguns.item.lmgMag.name` | Crafting R44 or R45 (empty mag + bullets or stacks) |
+| 21 | `techguns.item.lmgMagEmpty.name` | Crafting R43 (x4); returned on reload or emptying |
+| 22 | `techguns.item.advBullets.name` | Metal Press recipe 13 (obsidian steel plate + TGX, x16; [08](../08-machines-production/index.md)) |
+| 23 | `techguns.item.pdwMag.name` | Crafting R49 (empty mag + 3 advanced bullets) |
+| 24 | `techguns.item.pdwMagEmpty.name` | Crafting R48 (x4); returned on reload or emptying |
+| 25 | `techguns.item.stoneBarrel.name` | Crafting R01 |
+| 26 | `techguns.item.woodStock.name` | Crafting R02 |
+| 27 | `techguns.item.ironBarrel.name` | Crafting R03 |
+| 28 | `techguns.item.compressedAirTank.name` | Chem Lab (Coal + Empty Compressed Air Tank + 250 mB water; [08](../08-machines-production/index.md)); barracks loot |
+| 29 | `techguns.item.compressedAirTankEmpty.name` | Crafting R55 or R56 (x7); returned when a power hammer reloads |
+| 30 | `techguns.item.mechanicalParts.name` | Crafting R04; Metal Press recipe 8 (iron plate + flint) |
+| 31 | `techguns.item.plasticGunstock.name` | Crafting R05 |
+| 32 | `techguns.item.pumpMechanism.name` | Crafting R07 |
+| 33 | `techguns.item.obsidianSteelBarrel.name` | Crafting R06 |
+| 34 | `techguns.item.mechanicalPartsT2.name` | Metal Press recipe 9 (obsidian steel plate + quartz) |
+| 35 | `techguns.item.laserBarrel.name` | Crafting R08 |
+| 36 | `techguns.item.laserFocus.name` | Reaction Chamber recipe 2 (diamond, heat ray, liquid redstone; [08](../08-machines-production/index.md)) |
+| 37 | `techguns.item.mechanicalPartsT3.name` | Metal Press recipe 10 (carbon plate + blaze rod, x2) |
+| 38 | `techguns.item.bioMass.name` | Crafting R26 (x4) |
+| 39 | `techguns.item.heavyCloth.name` | Crafting R09 (x3); NPC drop |
+| 40 | `techguns.item.ingotObsidianSteel.name` | Metal Press recipe 1 (steel ingot + obsidian); smelting Obsidian Steel Plate (06 recipes section 6); NPC drop |
+| 41 | `techguns.item.plateTin.name` | Metal Press recipe 2 (2 tin ingots, x2) |
+| 42 | `techguns.item.plateCopper.name` | Metal Press recipe 3 (2 copper ingots, x2) |
+| 43 | `techguns.item.plateIron.name` | Metal Press recipe 5 (2 iron ingots, x2) |
+| 44 | `techguns.item.plateBronze.name` | Metal Press recipe 4 (2 bronze ingots, x2) |
+| 45 | `techguns.item.plateSteel.name` | Metal Press recipe 6 (2 steel ingots, x2); NPC drop |
+| 46 | `techguns.item.minigunDrum.name` | Crafting R54 (empty drum + 4 rifle bullet stacks) |
+| 47 | `techguns.item.minigunDrum_empty.name` | Crafting R53 (x4) |
+| 48 | `techguns.item.turretArmorIron.name` | Crafting R58 |
+| 49 | `techguns.item.turretArmorSteel.name` | Crafting R59 |
+| 50 | `techguns.item.turretArmorObsidianSteel.name` | Crafting R60 |
+| 51 | `techguns.item.glider.name` | Crafting R17 (backpack + 2 wings); barracks loot |
+| 52 | `techguns.item.machineStackUpgrade.name` | Crafting R22 |
+| 53 | `techguns.item.ironReceiver.name` | Crafting R10 |
+| 54 | `techguns.item.steelReceiver.name` | Crafting R11 |
+| 55 | `techguns.item.obsidianSteelReceiver.name` | Crafting R12 |
+| 56 | `techguns.item.carbonReceiver.name` | Crafting R13 |
+| 57 | `techguns.item.wireCopper.name` | Crafting R14; Metal Press recipe 11 (2 copper plates, x8) |
+| 58 | `techguns.item.gliderWing.name` | Crafting R16 |
+| 59 | `techguns.item.gliderBackback.name` | Crafting R15 |
+| 60 | `techguns.item.tgx.name` | Chem Lab recipe 6 (gunpowder + lapis + fuel or lava; [08](../08-machines-production/index.md)) |
+| 61 | `techguns.item.carbonFibers.name` | Chem Lab recipe 7 (diamond + blaze powder + 1000 mB lava, x2; [08](../08-machines-production/index.md)) |
+| 62 | `techguns.item.carbonPlate.name` | Metal Press recipe 12 (2 carbon fibers, x2) |
+| 63 | `techguns.item.nethercharge.name` | Chem Lab recipe 11 (netherrack + soul sand + 1000 mB lava, x4; [08](../08-machines-production/index.md)) |
+| 64 | `techguns.item.electricEngine.name` | Crafting R18 |
+| 65 | `techguns.item.plateObsidianSteel.name` | Metal Press recipe 14 (2 obsidian steel ingots, x2) |
+| 66 | `techguns.item.turretArmorCarbon.name` | Crafting R61 |
+| 67 | `techguns.item.steamArmorPlate.name` | Metal Press recipe 15 (steel plate + bronze plate) |
+| 68 | `techguns.item.circuitBoard.name` | Crafting R19 (x4); NPC drop |
+| 69 | `techguns.item.coil.name` | Crafting R21 |
+| 70 | `techguns.item.rawRubber.name` | Chem Lab recipe 8 (log + 1000 mB water; [08](../08-machines-production/index.md)) |
+| 71 | `techguns.item.rawPlastic.name` | Chem Lab recipe 3b or 3c (raw rubber + oil, or raw rubber + coal + water; [08](../08-machines-production/index.md)) |
+| 72 | `techguns.item.plasticSheet.name` | Smelting Raw Plastic (06 recipes section 6); NPC drop; reinforced-chest T3 loot |
+| 73 | `techguns.item.rubberBar.name` | Smelting Raw Rubber (06 recipes section 6); NPC drop; reinforced-chest T2/T3 loot |
+| 74 | `techguns.item.gasMaskFilter.name` | Crafting R25; barracks loot |
+| 75 | `techguns.item.oreDrillSmallSteel.name` | Crafting R62 |
+| 76 | `techguns.item.oreDrillSmallObsidianSteel.name` | Crafting R63 |
+| 77 | `techguns.item.oreDrillSmallCarbon.name` | Crafting R64 |
+| 78 | `techguns.item.oreDrillMediumSteel.name` | Crafting R65 (2 small heads) |
+| 79 | `techguns.item.oreDrillMediumObsidianSteel.name` | Crafting R66 |
+| 80 | `techguns.item.oreDrillMediumCarbon.name` | Crafting R67 |
+| 81 | `techguns.item.oreDrillLargeSteel.name` | Crafting R68 (medium heads) |
+| 82 | `techguns.item.oreDrillLargeObsidianSteel.name` | Crafting R69 |
+| 83 | `techguns.item.oreDrillLargeCarbon.name` | Crafting R70 |
+| 84 | `techguns.item.carbonGunstock.name` | Crafting R24 |
+| 85 | `techguns.item.carbonBarrel.name` | Crafting R23 |
+| 86 | `techguns.item.goldWire.name` | Metal Press recipe 16 (2 gold ingots, x2) |
+| 87 | `techguns.item.circuitBoardElite.name` | Crafting R20 (circuit board + gold wire + lapis) |
+| 88 | `techguns.item.rifleBulletsStack.name` | Crafting R51 (4 rifle bullets) |
+| 89 | `techguns.item.powerPlating.name` | Fabricator recipe 3 ([08](../08-machines-production/index.md)); no crafting recipe (commented out) |
+| 90 | `techguns.item.oxygenMask.name` | Crafting R31; barracks loot |
+| 91 | `techguns.item.cyberneticParts.name` | Fabricator recipe 2 (soul sand + gold wire + redstone + plastic; [08](../08-machines-production/index.md)); NPC drop |
+| 92 | `techguns.item.uvemitter.name` | Unobtainable in survival (no recipe, no loot; [ITEM-18](index.md#suspected-bugs)); creative tab only |
+| 93 | `techguns.item.40mmGrenade.name` | Metal Press recipe 17 (iron plate + TNT, x16; [08](../08-machines-production/index.md)) |
+| 94 | `techguns.item.oreTitanium.name` | Reaction Chamber recipe 3 (titanium iron ore; [08](../08-machines-production/index.md)) |
+| 95 | `techguns.item.ingotTitanium.name` | Smelting Titanium Ore or Titanium Plate (06 recipes section 6) |
+| 96 | `techguns.item.plateTitanium.name` | Metal Press recipe 18 (2 titanium ingots, x2) |
+| 97 | `techguns.item.sonicEmitter.name` | Fabricator recipe 4 ([08](../08-machines-production/index.md)) |
+| 98 | `techguns.item.rcHeatRay.name` | Crafting R30 |
+| 99 | `techguns.item.quartz_rod.name` | Crafting R27 or R28 (3 quartz diagonal) |
+| 100 | `techguns.item.antiGravityCore.name` | Reaction Chamber recipe 6 (nether star; [08](../08-machines-production/index.md)) |
+| 101 | `techguns.item.yellowcake.name` | Chem Lab recipe 12 (uranium ore + 250 mB creeper acid; [08](../08-machines-production/index.md)) |
+| 102 | `techguns.item.enrichedUranium.name` | Reaction Chamber recipe 7 (yellowcake; [08](../08-machines-production/index.md)) |
+| 103 | `techguns.item.tacticalNuclearWarhead.name` | Crafting R29 (x2) |
+| 104 | `techguns.item.plateLead.name` | Metal Press recipe 7 (2 lead ingots, x2) |
+| 105 | `techguns.item.rocketAmmoNuclear.name` | Crafting R57 (rocket + small nuclear warhead) |
+| 106 | `techguns.item.nuclearPowerCell.name` | Chem Lab recipe 13 (depleted cell + enriched uranium + water; [08](../08-machines-production/index.md)) |
+| 107 | `techguns.item.nuclearPowerCellDepleted.name` | Fabricator recipe 6 ([08](../08-machines-production/index.md)); returned when the nuclear death ray reloads |
+| 108 | `techguns.item.radEmitter.name` | Fabricator recipe 5 ([08](../08-machines-production/index.md)) |
+| 109 | `techguns.item.treatedLeather.name` | Chem Lab recipe 15 (2 leather + slimeball + creeper acid, x2; [08](../08-machines-production/index.md)) |
+
 ## 2. Stand-alone items registered by `TGItems`
 
 | Registry id | Field | Class | English name (lang key) | Stack | Max damage | Texture | Area owning behaviour |
@@ -235,3 +353,49 @@ The NPCs themselves are in [10-entities-npcs](../10-entities-npcs/index.md). The
 | Machines ([08](../08-machines-production/index.md)/[09](../09-machines-utility/index.md)) | machineStackUpgrade (Ammo Press, Metal Press, Chem Lab, Fabricator, Charging Station upgrade slot); turretArmor* (turret base armour slot); oreDrill* heads (Ore Drill); uvemitter / rcHeatRay (Reaction Chamber focus) |
 | NPC drops ([10](../10-entities-npcs/index.md)) | bullets9mm, rifleBullets, shotgunShell, heavyCloth, circuitBoard, cyberneticParts, energyCell, ingotObsidianSteel, plasticSheet, plateSteel, rubberBar, flamethrowerTank, rocketAmmo |
 | Crowbar | ore cluster blocks ([07](../07-blocks/index.md)/[11](../11-worldgen/index.md)) |
+
+## 7. Lang keys and "Obtained from" for the non-shared items (consistency pass)
+
+### 7.1 Stand-alone items (section 2)
+
+| Registry id | Lang key | Obtained from |
+|---|---|---|
+| `doorItem01` | `techguns.item.bunkerDoor.name` | Crafting R71 (6 iron plates, yields 2) |
+| `gasMask` | `techguns.item.gasMask.name` | Crafting R72; refill R73; dungeon-chest loot |
+| `nightVisionGoggles` | `techguns.item.nightVisionGoggles.name` | Crafting R74 (charged) or R75 (empty); dungeon-chest and barracks loot |
+| `jetpack` | `techguns.item.jetpack.name` (camo names `techguns.item.jetpack.camoname.1` to `.3`) | Crafting R76 or R77 |
+| `scubaTanks` | `techguns.item.scubaTanks.name` | Crafting R79; barracks loot |
+| `tacticalMask` | `techguns.item.tacticalMask.name` (camo names `techguns.item.tacticalMask.camoname.0` to `.2`) | Crafting R81 |
+| `oreClusterScanner` | `techguns.item.oreClusterScanner.name` | Crafting R83 |
+| `combatKnife` | `techguns.item.combatKnife.name` | Crafting R82 |
+| `jumppack` | `techguns.item.jumppack.name` (camo names `techguns.item.jumppack.camoname.1` to `.3`) | Crafting R80 |
+| `antiGravPack` | `techguns.item.antiGravPack.name` (camo names `techguns.item.antiGravPack.camoname.1` to `.4`) | Crafting R78 |
+| `camoNetPlacer` | `techguns.item.camoNetPlacer.name` (messages `techguns.item.camoNetPlacer.info.*`) | Crafting R84 to R86 |
+| `crowbar` | `techguns.item.crowbar.name` | Crafting R87 |
+| `bucket_acid` | `techguns.item.bucket_acid.name` | No crafting recipe. Creative tab, or filling a vanilla bucket with 1000 mB of creeper acid through the Forge fluid-container mapping registered in `TGItems.postInit` (acid itself comes from the Chem Lab, 08). See [fluids.md](fluids.md) |
+
+### 7.2 Config-dependent metals (section 3)
+
+| Registry id | Lang key | Obtained from |
+|---|---|---|
+| `ingotSteel` | `techguns.item.ingotSteel.name` | Smelting an iron ingot ([`addSteelCrafting`](../01-core/config.md#category-general)); nugget compression; otherwise from other mods |
+| `ingotCopper` | `techguns.item.ingotCopper.name` | Smelting Techguns copper ore (`doOreGenCopperTin`); nugget compression |
+| `ingotTin` | `techguns.item.ingotTin.name` | Smelting Techguns tin ore (`doOreGenCopperTin`) |
+| `ingotBronze` | `techguns.item.ingotBronze.name` | Shapeless 3 copper + 1 tin (`addBronzeCrafting`) |
+| `ingotLead` | `techguns.item.ingotLead.name` | Smelting Techguns lead ore ([`doOreGenLead`](../01-core/config.md#category-general)); nugget compression |
+| `nuggetIron` | `techguns.item.nuggetIron.name` | Iron ingot split (`addIronNuggets`) |
+| `nuggetCopper` | `techguns.item.nuggetCopper.name` | Copper ingot split (`addCopperTinBronzeNuggets`) |
+| `nuggetLead` | `techguns.item.nuggetLead.name` | Lead ingot split (`addLeadNuggets`) |
+| `nuggetSteel` | `techguns.item.nuggetSteel.name` | Steel ingot split (`addSteelNuggets`) |
+
+Every default for these flags is false, so with default config these items are *unobtainable from Techguns* (not even registered, in most cases) unless another mod supplies the OreDict item.
+
+### 7.3 Debug items (section 4) and spawn eggs (section 5)
+
+| Item | Lang key | Obtained from |
+|---|---|---|
+| Structure Test Tool | `techguns.item.structureTestTool.name` (tooltip `techguns.structureTestTool.Tooltip`) | Creative tab only; no recipe |
+| Block Reader Tool | `techguns.item.blockReaderTool.name` | Creative tab only |
+| Building Scan Tool | `techguns.item.buildingScanTool.name` | Creative tab only |
+| Ore Cluster Debugger | `techguns.item.oreClusterDebugger.name` (tooltip `techguns.oreClusterDebugger.Tooltip`) | Creative tab only |
+| Spawn eggs (18) | none: the name is the literal "Spawn " plus the entity name ([ITEM-12](index.md#suspected-bugs)) | Creative tab only (meta 0); no recipe |

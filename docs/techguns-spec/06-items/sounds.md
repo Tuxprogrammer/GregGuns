@@ -26,3 +26,32 @@ Other sounds that items in this area use, all vanilla:
 - Dispensed rockets and grenades: the vanilla dispenser click (the custom launch sounds are commented out).
 
 The Reaction Chamber foci name the sounds `techguns:machines.chemlabWork` (UV Emitter) and `techguns:machines.rc_heatrayWork` (Heat Ray). These are machine sounds documented in 08.
+
+## Measured audio facts and event parameters (consistency pass)
+
+Durations, sample rates and channels come from [ASSET-FACTS.md](../ASSET-FACTS.md). Every event is in the `sounds.json` category `player` (the vanilla mixer slider "Players"). The code-side `TGSoundCategory` is a separate, Techguns-specific volume class, shown in the last column. Descriptions of how a sound *sounds* are not given: the audio cannot be listened to here, so only names and use are available.
+
+| File | Duration | Sample rate | Channels | `sounds.json` event | `sounds.json` category | Volume / pitch passed by code | Code category |
+|---|---|---|---|---|---|---|---|
+| `sounds/items/antigrav_start_a.ogg` | 1.81 s | 48000 Hz | mono | `items.antiGravStart` | `player` | 1.0 / 1.0 (`PacketPlaySound`, sent to all players within 50 blocks) | `PLAYER_EFFECT` |
+| `sounds/items/antigrav_start_b.ogg` | 1.81 s | 48000 Hz | mono | `items.antiGravStart` | `player` | as above | `PLAYER_EFFECT` |
+| `sounds/items/glider_loop.ogg` | 3.02 s | 48000 Hz | mono | none (unused) | n/a | not played | n/a |
+| `sounds/items/glider_loop_stereo.ogg` | 9.41 s | 48000 Hz | stereo | `glider.loop` | `player` | 1.0 / 1.0, looping, attached to the player (a [`TGSound`](../01-core/client-effects-audio.md#tgsound) created in the client proxy) | `PLAYER_EFFECT` |
+| `sounds/items/jetpack_loop_a.ogg` | 1.10 s | 48000 Hz | mono | `jetpack.loop` | `player` | 1.0 / 1.0, looping, attached to the player | `PLAYER_EFFECT` (client-side properties class) |
+| `sounds/items/jetpack_loop_b.ogg` | 1.10 s | 48000 Hz | mono | `jetpack.loop` | `player` | as above | as above |
+| `sounds/items/jetpack_loop_c.ogg` | 1.10 s | 48000 Hz | mono | `jetpack.loop` | `player` | as above | as above |
+| `sounds/items/jetpack_start_a.ogg` | 1.29 s | 48000 Hz | mono | `jetpack.start` | `player` | 1.0 / 1.0, one-shot at the player | `PLAYER_EFFECT` |
+| `sounds/items/jetpack_start_b.ogg` | 1.29 s | 48000 Hz | mono | `jetpack.start` | `player` | as above | as above |
+| `sounds/items/jetpack_start_c.ogg` | 1.29 s | 48000 Hz | mono | `jetpack.start` | `player` | as above | as above |
+| `sounds/items/jetpack_stop_a.ogg` | 1.40 s | 48000 Hz | mono | `jetpack.stop` | `player` | 1.0 / 1.0, one-shot at the player | `PLAYER_EFFECT` |
+| `sounds/items/jetpack_stop_b.ogg` | 1.40 s | 48000 Hz | mono | `jetpack.stop` | `player` | as above | as above |
+| `sounds/items/jetpack_stop_c.ogg` | 1.40 s | 48000 Hz | mono | `jetpack.stop` | `player` | as above | as above |
+| `sounds/items/nightvision_off.ogg` | 0.44 s | 44100 Hz | mono | `nightvision.off` | `player` | 1.0 / 1.0 via vanilla `playSoundAtEntity` (server) | vanilla default |
+| `sounds/items/nightvision_on.ogg` | 1.60 s | 44100 Hz | mono | `nightvision.on` | `player` | 1.0 / 1.0 via vanilla `playSoundAtEntity` (server) | vanilla default |
+
+Notes:
+- Events with several files (`jetpack.*`, `items.antiGravStart`) pick one file at random per play, so the three jetpack variants have identical durations by design.
+- The jetpack loop is 1.10 s long and is flagged as repeating, so it restarts continuously while thrust is held.
+- A second, older code path in the common (server-capable) player-properties class plays the same start and stop events without a `TGSoundCategory` argument (volume 1.0, pitch 1.0). The client properties class passes `PLAYER_EFFECT`. Both use the same files.
+- Totals: 15 files; 14 are referenced by one of 7 events (`jetpack.start`, `jetpack.loop`, `jetpack.stop`, `items.antiGravStart`, `glider.loop`, `nightvision.on`, `nightvision.off`); 1 is unused (`glider_loop.ogg`).
+- Vanilla sounds used by this area (medkit eating, spawn eggs, dispenser) have no files in the mod.

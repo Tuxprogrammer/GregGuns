@@ -82,3 +82,31 @@ The Bio Tank, Compressed Air Tank and Nuclear Power Cell are **not** Forge fluid
 | [`textures/blocks/milk_flow.png`](../07-blocks/textures.md#9-fluids) | 32×1024 (32 frames) | default frametime | Light grey flowing streaks |
 
 The acid textures are also used by the acid fluid block ([07-blocks](../07-blocks/index.md)).
+
+### Measured facts for the fluid textures (from ASSET-FACTS.md)
+
+| Path | Size | Animation | Average colour | Dominant colours | Opaque |
+|---|---|---|---|---|---|
+| `textures/blocks/acid_still.png` | 16×512 | 32 frames, frametime 2 | #918100 | #909010 90%, #907010 9%, #B07010 0% | 100% |
+| `textures/blocks/acid_flow.png` | 32×1024 | 32 frames, frametime 1 (default) | #928100 | #909010 82%, #907010 17%, #B07010 0% | 100% |
+| `textures/blocks/milk_still.png` | 16×512 | 32 frames, frametime 2 | #CDCDCD | #D0D0D0 100% | 100% |
+| `textures/blocks/milk_flow.png` | 32×1024 | 32 frames, frametime 1 (default) | #CDCDCD | #D0D0D0 100% | 100% |
+
+"Opaque 100%" uses the ASSET-FACTS threshold (alpha > 16). My own measurement shows that every pixel is partly translucent, with alpha 165–226 (mean 175–178). Fluids therefore render see-through, the same as vanilla water. The milk strips have the same alpha and luminance pattern as the acid strips, desaturated to neutral grey, so milk is effectively a recolour of the acid animation.
+
+## Fluid sheets (CONVENTIONS fields)
+
+| Field | `creeper_acid` | `milk` (only when Techguns creates it) |
+|---|---|---|
+| 1 Identity | `Fluid("creeper_acid")`, unlocalized `creeperAcid` → `fluid.creeperAcid` "Creeper Acid"; block `BlockFluidAcid` registered as `acid` ([07-blocks](../07-blocks/index.md)); bucket `Techguns:bucket_acid` | `Fluid("milk")`, unlocalized `milk` → `fluid.milk` "Milk"; no block, no Techguns bucket (uses the vanilla milk bucket) |
+| 2 Obtaining | Chem Lab outputs (bio mass + gunpowder + water; `itemBioFuel` + gunpowder + water), see [08-machines-production](../08-machines-production/index.md). The bucket form has **no** survival source (ITEM-04). | Vanilla milk bucket through the container mapping; any mod that pipes milk |
+| 3 Numbers | density 100, viscosity 1000 (default), temperature 295 K (default), luminosity 0, gaseous false; bucket = 1000 mB | density 1050, viscosity 1050, temperature 295 K, luminosity 0, gaseous false |
+| 4 Behaviour | Placed as a `BlockFluidClassic` (Material.water). Contact damage and displacement rules are in [07-blocks](../07-blocks/index.md). | No world block from Techguns |
+| 5 Persistence and sync | none (Forge fluid registry id only) | none |
+| 6 UI | Shown in machine tanks using its still icon and the name "Creeper Acid" | Same, "Milk" |
+| 7 Visuals | `textures/blocks/acid_still.png` / `textures/blocks/acid_flow.png` (above) | `textures/blocks/milk_still.png` / `textures/blocks/milk_flow.png`, registered in the `TextureStitchEvent.Pre` handler only if `addedMilk` |
+| 8 Audio | none (vanilla bucket sounds only) | none |
+| 9 Relationships | Chem Lab and Reaction Chamber recipes ([08](../08-machines-production/index.md)); acid block ([07](../07-blocks/index.md)) | Chem Lab slimeball recipe ([08](../08-machines-production/index.md)) |
+| 10 Bugs | ITEM-04 | none |
+
+The referenced fluids (`oil`, `fuel`, `redstone`, `coal`, `ender`, `biofuel`) are owned by other mods. Techguns only stores references and fallbacks to them, so they have no sheets here. For their fallbacks see the fluid table above, and ITEM-03 / [ITEM-19](index.md#suspected-bugs).

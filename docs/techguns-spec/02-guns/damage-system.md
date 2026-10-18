@@ -1,6 +1,6 @@
 # 02-guns: damage system (`java/techguns/damagesystem/`)
 
-Files: `DamageType.java`, `TGDamageSource.java`, `DamageSystem.java`, `TGArmorMaterial.java`, `INpcTGDamageSystem.java`, `IToolTGDamageSystem.java`.
+Files: `DamageType.java`, `TGDamageSource.java`, [`DamageSystem.java`](index.md#coverage), `TGArmorMaterial.java`, `INpcTGDamageSystem.java`, `IToolTGDamageSystem.java`.
 
 Related code owned elsewhere:
 
@@ -241,3 +241,9 @@ Fields: `name`, `baseDur`, `enchantability`, per-type totals `armorPhys`, `armor
 * Fluent setters exist for every type (`setArmorPhys`, `setArmorProjectile`, `setArmorExplosion`, `setArmorEnergy`, `setArmorFire`, `setArmorLightning`, `setArmorIce`, `setArmorPoison`, `setArmorRadiation`) and for `setPenetrationResistance`.
 * `getArmorValueTotal(type)` returns the type total (UNRESISTABLE → 0). `getArmorValueSlot(slot, type)` returns factor × total (slot 0 = helmet, 1 = chest, 2 = legs, 3 = boots). `getArmor(ItemArmor, type)` is shorthand for the item's slot.
 * `createVanillaMaterial()` registers a vanilla `ArmorMaterial` (via Forge EnumHelper) with the same name, baseDur and enchantability. Its per-slot reduction amounts are the rounded PHYSICAL slot values, so vanilla armour bars and `getTotalArmorValue` reflect physical armour.
+
+## 7. Details confirmed in the consistency pass
+
+* **Tooltip colours.** `DamageType.toString()` builds its colour prefix from the Mojang Realms class `com.mojang.realmsclient.gui.ChatFormatting` (the same section-sign codes as vanilla `EnumChatFormatting`), then appends the translated type name.
+* **Which source a grenade uses.** [`GrenadeProjectile.explode`](../04-projectiles-fx/projectiles.md#37-grenadeprojectile-family) (also used by the Frag Grenade and Grenade Launcher projectiles) damages a directly hit entity with a **vanilla** explosion source (`DamageSource.setExplosionSource`) scaled by [`getDamageFactor`](damage-system.md#55-damage-factors-getdamagefactorattacker-target), and applies the area damage through `ProjectileExplosion`, which uses `tg_explosion` with the shooter as the direct entity and no separate attacker. A vanilla source takes the Techguns pipeline only when the victim implements `INpcTGDamageSystem` (it is then converted, type EXPLOSION); against players and vanilla mobs a direct grenade hit goes through the vanilla path. Rockets ([`RocketProjectile`](../04-projectiles-fx/projectiles.md#34-rocketprojectile-and-nukerocketprojectile), [`NukeRocketProjectile`](../04-projectiles-fx/projectiles.md#34-rocketprojectile-and-nukerocketprojectile)) apply `tg_explosion` to the entity they hit.
+* **Per-gun use of the pipeline.** Which gun produces which source name and damage type is listed per gun in the [entity sheets](sheets-index.md#all-items-at-a-glance) (field 7) and in catalogue Table B.

@@ -166,3 +166,18 @@ TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation-
   - **Three test glasses** (`L1`, `L2`, `L3`) start filling at p = 0.2, 0.4 and 0.6. Each fills to 16 layers (1/32 block per layer) following √ of its local progress (scaled ×5 over 20%). All three drain linearly to empty during p 0.8–1.0.
   - **Two flasks:** `L7` drains from 16 layers to 0 during the first third (p 0–0.333). `L8` fills from 0 to 16 layers during the last third (p 0.666–1).
 - The model's first three loop blocks compute fills but render nothing (leftover code).
+
+## 8. Entity sheet summary (consistency pass)
+
+| # | Field | Contents |
+|---|---|---|
+| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 4; tile `ChemLabTileEnt`; name key `techguns.tile.BasicMachine_4.name`, English **Chemical Laboratory**; container `ChemLabContainer`, GUI ID 4; creative tab Techguns; oredict names none |
+| 2 | Obtaining | Shaped ore recipe `igi / geg / iri` (i `ingotIron`, g glass bottle, e Electric Engine, r redstone); also used as an ingredient of the Reaction Chamber Housing recipe. See [blocks-and-items.md](blocks-and-items.md#crafting-recipes-for-the-machines-in-this-area) |
+| 3 | Numbers | Buffer 20 000 RF; recipe-defined RF/t (not multiplied, MPRD-12); 100 ticks per operation; input tank 8 000 mB, output tank 16 000 mB; multiplier 1 to 8; 17 base recipes plus 5 furnace recipes |
+| 4 | Behaviour | Sections 2 and 3; right-click with fluid containers (section 2); server-only start and finish |
+| 5 | Persistence and sync | NBT `inputTank`, `outputTank` (Forge tank compounds), `drainInput` (boolean), `currentChemOperation` (compound with optional `output`, optional `liquidOutput`, int `powerPerTick`), plus the base keys. GUI progress-bar fields: 0 progress, 1 totalTime, 2 power, 3 input fluid ID (−1 none), 4 output fluid ID, 5 input amount, 6 output amount. Buttons: 3 dump input, 4 dump output, 5 toggle drain |
+| 6 | UI | Section 5. Tooltips (exact): "Dump Input Tank" / "Content will be lost"; "Dump Output Tank" / "Content will be lost"; "Toggle drained Tank" with "Fluids are drained from Output Tank" or "Fluids are drained from Input Tank"; tank tooltips show the fluid name or "Empty" and "amount/capacitymB". Item tooltip "Has TileEntity Data" when carrying `TileEntityData` |
+| 7 | Visuals | No per-face block texture (TESR only). TESR `RenderAmmoPress` + `ModelChemLab`; atlas `textures/blocks/ChemLab.png`, 256×128, average #363435, dominant #101010 63 %, #D0D0D0 9 %, #707070 4 %, 96 % opaque. Item renderer delegate 4. Particle: vanilla `spell` every 10 progress ticks |
+| 8 | Audio | `machines.chemlabWork` volume 1, pitch 1, ticks 1 and 51; four clips of 3.50 s, 44100 Hz mono. A splash on container fill is commented out ([sounds.md](sounds.md#6-sounds-in-this-area-that-are-commented-out-or-vanilla)). The Reaction Chamber reuses this event for its UV Emitter focus |
+| 9 | Relationships | `ChemLabRecipes` from [`TGMachineRecipes`](index.md#tgmachinerecipesaddrecipes-what-it-registers) and `ChemLabTweaker`; NEI handler; fluids from [`04-projectiles-fx`](../04-projectiles-fx/index.md)/[`06-items`](../06-items/index.md) (Oil, Fuel, Creeper Acid) and vanilla containers |
+| 10 | Bugs | [MPRD-06](index.md#suspected-bugs), [MPRD-11](index.md#suspected-bugs), [MPRD-12](index.md#suspected-bugs), [MPRD-14](index.md#suspected-bugs), [MPRD-23](index.md#suspected-bugs), [MPRD-32](index.md#suspected-bugs) |

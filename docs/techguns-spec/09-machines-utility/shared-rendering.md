@@ -12,7 +12,7 @@ Registry name [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks
 | 3 | [`CamoBenchTileEnt`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) (`CamoBenchTileEnt`) | Camo Bench | 3 | yes | [camo-bench.md](camo-bench.md) |
 | 5 | [`RepairBenchTileEnt`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) (`RepairBenchTileEnt`) | Repair Bench | 5 | yes | [repair-bench.md](repair-bench.md) |
 | 6 | [`ExplosiveChargeTileEnt`](explosive-charges.md#nbt-explosivechargetileent) (`ExplosiveChargeTileEnt`) | Explosive Charge | 6 | yes | [explosive-charges.md](explosive-charges.md) |
-| 7 | `CampFlagTileEnt` (`CampFlagTileEnt`) | Flag | none | **no** (excluded) | [misc-tile-entities.md](misc-tile-entities.md) |
+| 7 | [`CampFlagTileEnt`](index.md#key-facts) (`CampFlagTileEnt`) | Flag | none | **no** (excluded) | [misc-tile-entities.md](misc-tile-entities.md) |
 | 8 | [`ExplosiveChargeAdvTileEnt`](explosive-charges.md) (`ExplosiveChargeAdvTileEnt`) | Advanced Explosive Charge | 6 (shared) | yes | [explosive-charges.md](explosive-charges.md) |
 | (10) | [`ScrapperTileEnt`](scrapper.md) (`ScrapperTileEnt`) | none | 10 | no, never created | [scrapper.md](scrapper.md) |
 

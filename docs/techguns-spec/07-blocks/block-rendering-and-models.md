@@ -68,7 +68,7 @@ These draw a unit cube (0–1) bound to their own `ResourceLocation` texture. Ea
 
 | Subclass | Texture | UV quadrants of the 64×64 atlas | Used by |
 |---|---|---|---|
-| `PaintMachineTesselatorCube` | [`textures/blocks/paintmachine_textures.png`](textures.md#camo-bench-and-repair-bench-09) | top = bottom-left quadrant (u 0–0.5, v 0.5–1); front = top-right (u 0.5–1, v 0–0.5); back, left, right, bottom = top-left (0–0.5, 0–0.5) | Camo Bench TESR and item ([09](../09-machines-utility/index.md)) |
+| [`PaintMachineTesselatorCube`](textures.md#camo-bench-and-repair-bench-09) | [`textures/blocks/paintmachine_textures.png`](textures.md#camo-bench-and-repair-bench-09) | top = bottom-left quadrant (u 0–0.5, v 0.5–1); front = top-right (u 0.5–1, v 0–0.5); back, left, right, bottom = top-left (0–0.5, 0–0.5) | Camo Bench TESR and item ([09](../09-machines-utility/index.md)) |
 | `RepairBenchTesselatorCube(path)` (default [`textures/blocks/repairbench_textures.png`](textures.md#camo-bench-and-repair-bench-09)) | same layout | same quadrants | Repair Bench TESR and item ([09](../09-machines-utility/index.md)); also the Flag item (see §4) |
 | `OreDrillCube(texture)` | the given texture | full 0–1 on every face | Draws a box centred on the origin with half-sizes (sx, sy, sz). Used by `RenderOreDrill` ([08](../08-machines-production/index.md)) for the spinning drill head with `drillhead`, `drillheadObsidian` and `drillheadCarbon`. |
 
@@ -266,7 +266,7 @@ A free-standing ladder model: two 2×16×2 rails and four 12×2×2 rungs. It is 
 | Class | Translate (all types) | First person | Third person | Ground | Inventory |
 |---|---|---|---|---|---|
 | [`RenderBlockModelItem`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand) | rotate 180° about X | translate (0.3, −1.7, −0.5), scale 0.9 | translate (0.5, −1.6, −0.5) | translate (0, −1, 0) | translate (0, −1, 0) |
-| `RenderBlockModelItemChest` | rotate 180° about X | translate (−0.1, −1.0, −0.9), scale 0.9 | translate (0.5, −1.6, −0.5), **plus the debug offset (Keybinds.X, Y, Z)** ([BLK-16](index.md#suspected-bugs)) | translate (0, −1, 0) | translate (−0.5, 0.3, 0.5), scale 1.1, rotate −90° about Y |
+| [`RenderBlockModelItemChest`](../09-machines-utility/entity-sheets.md#7-reinforced-chest-and-weapon-chest) | rotate 180° about X | translate (−0.1, −1.0, −0.9), scale 0.9 | translate (0.5, −1.6, −0.5), **plus the debug offset (Keybinds.X, Y, Z)** ([BLK-16](index.md#suspected-bugs)) | translate (0, −1, 0) | translate (−0.5, 0.3, 0.5), scale 1.1, rotate −90° about Y |
 | [`RenderBlockModelItemTNTCharge`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand) | rotate 180° about X | translate (0.3, −1.7, −0.5), scale 1.2, rotate −122.5° about Y, translate (−0.2, −0.2, 0) | translate (0.4, −1.9, −0.4), rotate −45° about Y, scale 1.5 | scale 1.5, translate (0, −1, 0.3) | translate (0, −1.2, 0), rotate 135° about Y, scale 1.5 |
 
 **Item-renderer wiring** (set up in `ClientProxy`):

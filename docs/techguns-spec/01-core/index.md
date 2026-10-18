@@ -1,5 +1,8 @@
 # 01 · Core: Techguns 1.7.10 (v0.1.2_alphatest4.1)
 
+## Overview
+
+
 This area covers the mod skeleton:
 - mod entry point and lifecycle, plus registrations that don't belong to any one content area (metal items and ores, projectile entity IDs, tile entity names, oredict, dispenser behaviours, creative tab, GUI ID table);
 - the main config file;
@@ -29,11 +32,11 @@ This area covers the mod skeleton:
 | [player-state.md](player-state.md) | [`TechgunsExtendedPlayerProperties`](player-state.md#techgunsextendedplayerproperties) fields, NBT keys, slot layout, DataWatcher mirrors, death/clone, per-tick player logic, auto-feeder |
 | [events.md](events.md) | Catalogue of every event subscription and what it does |
 | [client-effects-audio.md](client-effects-audio.md) | [`TGSound`](client-effects-audio.md#tgsound), sound categories, [`SoundUtil`](utilities.md#soundutil) routing, core sound list, recoil/reload timing, muzzle-flash placement, legacy named particles, death effects and gore table, version checker |
-| [utilities.md](utilities.md) | Inventory helpers, [`ProjectileExplosion`](../04-projectiles-fx/explosions.md#projectileexplosion), damage sources, `EntityDeathUtils`, [`MathUtil`](utilities.md#mathutil), [`BlockCoords`](utilities.md#blockcoords--blockposind), [`MBlock`](../11-worldgen/structure-system.md#mblock) rotation tables, [`BlockUtils`](utilities.md#blockutils) (structure placement, terrain shaping, height queries), [`PacketUtil`](utilities.md#packetutil-itemstack-wire-format) wire format, [`ItemUtil`](utilities.md#itemutil), [`NPCUtil`](../10-entities-npcs/spawning.md#4-camp-flags-and-npcutil), dispenser behaviour |
+| [utilities.md](utilities.md) | Inventory helpers, [`ProjectileExplosion`](../04-projectiles-fx/explosions.md#projectileexplosion), damage sources, [`EntityDeathUtils`](../04-projectiles-fx/index.md#coverage), [`MathUtil`](utilities.md#mathutil), [`BlockCoords`](utilities.md#blockcoords--blockposind), [`MBlock`](../11-worldgen/structure-system.md#mblock) rotation tables, [`BlockUtils`](utilities.md#blockutils) (structure placement, terrain shaping, height queries), [`PacketUtil`](utilities.md#packetutil-itemstack-wire-format) wire format, [`ItemUtil`](utilities.md#itemutil), [`NPCUtil`](../10-entities-npcs/spawning.md#4-camp-flags-and-npcutil), dispenser behaviour |
 | [integrations.md](integrations.md) | FTBU friends, TConstruct materials and inventory tab, Thermal Expansion stub |
 | [textures-sounds-lang.md](textures-sounds-lang.md) | Every core-owned texture (with layout and palette), sound file and lang key |
 
-## Key facts at a glance
+## Key facts
 
 - **Mod id** `Techguns`, asset domain `techguns`, network channel `Techguns` with 16 registered messages.
 - **Config files:**
@@ -54,12 +57,6 @@ This area covers the mod skeleton:
   - FTBU: friends decide player-vs-player hostility. Without FTBU, every player is everyone's friend;
   - Thermal Expansion: a no-op.
 
-## Coverage notes
-
-- Every Java file in scope was read in full. `TGPlayerInventory`, [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table), [`TGGuiTabButton`](../05-armor/extra-inventory.md), `TGWeaponStats` and a few call sites were read only to explain behaviour; they are documented here only where they touch core features.
-- Core-owned textures were each viewed and described (19).
-- The particle sheets referenced by the legacy particle table (`textures/fx/*`) belong to [04](../04-projectiles-fx/index.md) and are only named here.
-
 ## Related areas
 
 - [02-guns](../02-guns/index.md): the fire/reload packets, the client tick handler that drives guns, and the weapon-stats and damage-factor config.
@@ -70,6 +67,38 @@ This area covers the mod skeleton:
 - [08-machines-production](../08-machines-production/index.md), [09-machines-utility](../09-machines-utility/index.md): the GUI handler ID table and the tile-entity sync and button packets.
 - [10-entities-npcs](../10-entities-npcs/index.md): spawn and faction config and FTB Utilities friend checks.
 - [11-worldgen](../11-worldgen/index.md): worldgen config gates and the structure helpers in `util/` (`BlockUtils`, `MBlock`).
+
+## Coverage
+
+Out of the files in scope for this area:
+- **Java source:** every file listed in the overview was read in the first pass. In the consistency pass these were re-read against the documentation: all 18 classes in `packets/` plus [`TGPackets`](networking.md) (wire fields, senders, validation), `keybinds/` (2) and `debug/` (3), `extendedproperties/` (3), `events/` (3, all annotations and the bodies of the cancelling handlers), `TGConfig` (all 63 keys and every consumer in the tree), `TechgunsGuiHandler`, `TGGuiTabButton`, [`TGGuiToggleButton`](../05-armor/extra-inventory.md), `TGInventoryTab`, and the sound-playing parts of `ClientProxy` and [`TechgunsExtendedPlayerPropertiesClient`](player-state.md#client-subclass-techgunsextendedplayerpropertiesclient).
+- **Textures:** 19 of 19 core-owned textures have size, animation, measured average and dominant colours, opaque share and opaque bounding box ([textures-sounds-lang.md](textures-sounds-lang.md#measured-texture-facts-consistency-pass)). `TGPlayerInventory.png` has a pixel rectangle and role for every slot, gauge, tab sprite, icon cell and armour tile ([input-and-hud.md](input-and-hud.md#tgplayerinventorypng-pixel-regions-measured-consistency-pass)).
+- **Sounds:** 21 of 21 core-played or core-referenced files have duration, sample rate, channels, event and category, and every event has its code trigger, volume, pitch, repeat and moving flags ([textures-sounds-lang.md](textures-sounds-lang.md#measured-sound-facts-and-play-parameters-consistency-pass)).
+- **Lang keys:** all keys the core code or the core-owned GUI draws are indexed with their `en_US.lang` line numbers; missing keys and hard-coded English are listed ([textures-sounds-lang.md](textures-sounds-lang.md#lang-file-index-consistency-pass)).
+- **Entity sheets added:** 16 packet sheets plus 2 unregistered ([networking.md](networking.md#packet-entity-sheets-consistency-pass)); 5 keybind sheets plus 9 debug keybinds ([input-and-hud.md](input-and-hud.md#keybind-entity-sheets-consistency-pass)); 31 event subscriptions with priority and `receiveCanceled` ([events.md](events.md#event-handler-sheets-consistency-pass)); 19 extended-property rows ([player-state.md](player-state.md#extended-property-field-sheets-consistency-pass)); 63 config keys each with a consumer ([config.md](config.md#used-by-index-for-every-key-consistency-pass)).
+- **Not re-read in the consistency pass** (covered by the first pass): `utilities.md` sources (`util/`), `integrations.md` sources (`plugins/`), the lifecycle and registration walk-through in `Techguns.java` beyond the config-gated lines.
+
+**Corrections recorded in this pass.**
+- `radlevel` and `enableHovermode` in [player-state.md](player-state.md#extended-property-field-sheets-consistency-pass): the earlier field table implied live consumers. `radlevel` is only displayed by the inventory GUI and never changed by gameplay code; `enableHovermode` is only referenced from commented-out code.
+- Five ingot average colours and the nugget size in [textures-sounds-lang.md](textures-sounds-lang.md#measured-texture-facts-consistency-pass), replaced with measured values.
+- Armour-point tile interiors in [input-and-hud.md](input-and-hud.md#tgplayerinventorypng-layout): "white" is transparent.
+
+### Coverage notes
+
+- Every Java file in scope was read in full. `TGPlayerInventory`, [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table), [`TGGuiTabButton`](../05-armor/extra-inventory.md), [`TGWeaponStats`](../02-guns/gun-lifecycle.md#13-details-confirmed-in-the-consistency-pass) and a few call sites were read only to explain behaviour; they are documented here only where they touch core features.
+- Core-owned textures were each viewed and described (19).
+- The particle sheets referenced by the legacy particle table (`textures/fx/*`) belong to [04](../04-projectiles-fx/index.md) and are only named here.
+
+## Known limits
+
+- **No audio was listened to.** Every statement about what a sound is for is inferred from file names, durations and call sites, and is marked as inferred.
+- **Forge and FML behaviour is not in the Techguns source.** Claims about vanilla radii (16 blocks for a volume-1 world sound), `PositionedSoundRecord` volume, and whether `KeyInputEvent` fires while a GUI is open come from knowledge of the 1.7.10 libraries, not from files in the reference tree.
+- **Line numbers** refer to the reference source build and are accurate for it only.
+- **Packet thread behaviour** is described from the 1.7.10 `SimpleNetworkWrapper` contract (handlers on the network thread); no running client or server was used to confirm races.
+- **Particle packet radii** are given as 50, 150 or 200 blocks by call site; the per-class mapping of 50 versus 150 was not worked out.
+- **Dominant colours** are bucketed to 8 levels per channel, so they are approximate and can differ from the exact palette entries by up to 0x1F per channel.
+- **`radlevel` and the radiation gauge:** the gauge text is drawn by the player-inventory GUI ([05-armor](../05-armor/index.md)); this area only records that no core code writes the value.
+- **Lang:** only `en_US.lang` exists, so translations cannot be compared.
 
 ## Suspected bugs
 
@@ -114,3 +143,6 @@ This area covers the mod skeleton:
 | CORE-37 | Logout cleanup is dead | `java/techguns/events/TechgunsTickHandler.java:619-625` | Client-only handler on an event FML fires on the server. Stale attack-time entries accumulate | cosmetic |
 | CORE-38 | Inventory merge ignores NBT | `java/techguns/Techguns.java:789` | `addItemToInventory` merges stacks whose NBT differs (item + damage only), losing the incoming stack's NBT | gameplay |
 | CORE-39 | Sound categories have no effect | [`java/techguns/TGConfig.java:336-338`](config.md) | `getVolumeMultiplier` is a stub. [`TGSoundCategory`](client-effects-audio.md#tgsoundcategory) is transmitted but never applied | cosmetic |
+| CORE-40 | Unchecked casts and enum indices in client packet handlers | [`java/techguns/packets/GunFiredMessage.java:61`](networking.md#1--gunfiredmessage), [`ReloadStartedMessage.java:51`](networking.md#3--reloadstartedmessage), [`PacketEntityDeathType.java:74`](networking.md#6--packetentitydeathtype) (entity cast) and `:75` (death-type index); `PacketPlaySound.java:90` (category index) | The entity found by id is cast to `EntityLivingBase` with no `instanceof` test, and the category and death-type bytes index their enum arrays with no range check. An id that resolves to a non-living entity, or a corrupt byte, throws on the client | crash (edge case) |
+| CORE-41 | Jetpack boost packets are unvalidated and broadcast | [`java/techguns/packets/PacketTGKeybindPress.java`](networking.md#7--packettgkeybindpress-cs) (ids 2 and 3) | The server sets the jump flag and broadcasts it to the whole dimension without checking that the sender wears a jetpack, has `enableJetpack` on, or has fuel. A modified client can spam jetpack start and stop sounds on every client in the dimension. The same handler also dereferences the extended properties without a null check | gameplay (exploit) |
+| CORE-42 | `radlevel` is never changed | `java/techguns/extendedproperties/TechgunsExtendedPlayerProperties.java:36`; [`java/techguns/gui/playerinventory/GuiTGPlayerInventory.java:124`](../05-armor/extra-inventory.md#5-gui-guitgplayerinventory) | The radiation level is saved, synced and drawn as a gauge, but nothing in the source ever sets it, so the "Current Radioactive Contamination" bar always reads 0/1000. The hover-mode flag has the same fate (only commented-out readers) | cosmetic (dead feature) |

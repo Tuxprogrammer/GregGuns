@@ -14,7 +14,7 @@ Everything in this file is shared by the production machines in this area **and*
 | `MultiBlockSlaveTileEntBase` | `TileEntity` | Link to master position (no inventory or energy of its own) |
 | `ITGTileEntSecurity` | interface | `setOwner(player)`, `isOwnedByPlayer(player)`, `getOwner()`, `getSecurity()` |
 
-Concrete machines in this area: `AmmoPressTileEnt`, `MetalPressTileEnt`, `ChemLabTileEnt`, `ChargingStationTileEnt` (all `BasicMachineTileEntity`), `FabricatorTileEntMaster` and `ReactionChamberTileEntMaster` (`MultiBlockMasterTileEntBase`), [`FabricatorTileEntSlave`](blocks-and-items.md#2-multiblockmachineblock-registry-name-machinemultiblock) and [`ReactionChamberTileEntSlave`](blocks-and-items.md#2-multiblockmachineblock-registry-name-machinemultiblock) (`MultiBlockSlaveTileEntBase`).
+Concrete machines in this area: [`AmmoPressTileEnt`](ammo-press.md), `MetalPressTileEnt`, [`ChemLabTileEnt`](chem-lab.md), [`ChargingStationTileEnt`](charging-station.md) (all `BasicMachineTileEntity`), [`FabricatorTileEntMaster`](fabricator.md) and `ReactionChamberTileEntMaster` (`MultiBlockMasterTileEntBase`), [`FabricatorTileEntSlave`](blocks-and-items.md#2-multiblockmachineblock-registry-name-machinemultiblock) and [`ReactionChamberTileEntSlave`](blocks-and-items.md#2-multiblockmachineblock-registry-name-machinemultiblock) (`MultiBlockSlaveTileEntBase`).
 
 Tile-entity registry names (set in [`Techguns.java`](../01-core/lifecycle-and-registration.md#lifecycle-overview)): `AmmoPressTileEnt`, `MetalPressTileEnt`, `ChemLabTileEnt`, `ChargingStationTileEnt`, `FabricatorTileEntMaster`, `FabricatorTileEntSlave`, `ReactionChamberTileEntMaster`, `ReactionChamberTileEntSlave` (plus the utility ones listed in [09](../09-machines-utility/index.md)).
 

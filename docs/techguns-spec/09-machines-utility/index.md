@@ -1,5 +1,8 @@
 # 09 – Machines (utility / non-recipe tile entities)
 
+## Overview
+
+
 This area covers the Techguns 0.1.2 tile entities that do **not** process recipes:
 
 - **Repair Bench:** repairs worn armour from stocked materials.
@@ -11,19 +14,6 @@ This area covers the Techguns 0.1.2 tile entities that do **not** process recipe
 - **Reinforced and Weapon chests**
 - **Camp Flag:** the NPC spawner for generated structures.
 - **Bio Blob:** a slime block left by the Biogun.
-
-## Ownership boundaries
-
-| Topic | Owner |
-|---|---|
-| Base tile classes ([`BasicInventoryTileEnt`](../08-machines-production/framework.md#2-basicinventorytileent), [`BasicOwnedTileEnt`](../08-machines-production/framework.md#3-ownership-and-security-basicownedtileent-itgtileentsecurity), [`BasicPoweredTileEnt`](../08-machines-production/framework.md#4-energy-basicpoweredtileent), [`BasicMachineTileEntity`](../08-machines-production/framework.md#7-recipe-machine-state-basicmachinetileentity), `MultiBlock*TileEntBase`), base GUIs (power bar, redstone and security buttons), [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table), the shared [`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) block, GUI texture files | **[08-machines-production](../08-machines-production/index.md)** |
-| Ore cluster blocks and the drill block textures | **[07-blocks](../07-blocks/index.md)** / **[11-worldgen](../11-worldgen/index.md)** |
-| Drill heads, turret armour plates, fuel and engine items | **[06-items](../06-items/index.md)** |
-| Gun ammo mechanics | **[02-guns](../02-guns/index.md)** |
-| Armour repair materials | **[05-armor](../05-armor/index.md)** |
-| `NPCTurret` AI, the attack helicopter, NPC spawning | **[10-entities-npcs](../10-entities-npcs/index.md)** |
-| Particles, [`ProjectileExplosion`](../04-projectiles-fx/explosions.md#projectileexplosion), the Biogun projectile | **[04-projectiles-fx](../04-projectiles-fx/index.md)** |
-| [`GUIButtonClick`](../01-core/networking.md#0--guibuttonclick-cs) and the sync packets | **[01-core](../01-core/index.md)** |
 
 ## Contents
 
@@ -37,8 +27,12 @@ This area covers the Techguns 0.1.2 tile entities that do **not** process recipe
 | [turret.md](turret.md) | Turret platform (meta 2) and its link to `NPCTurret`; targeting rules; ammo; armour |
 | [explosive-charges.md](explosive-charges.md) | TNT charge (meta 6) and advanced charge (meta 8): timer, blast shape, GUI, models, sounds |
 | [misc-tile-entities.md](misc-tile-entities.md) | Reinforced and Weapon chests, Camp Flag (meta 7), Bio Blob |
+| [entity-sheets.md](entity-sheets.md) | One ten-field entity sheet per machine, tile entity and block family (identity, obtaining, numbers, behaviour, sync, UI, visuals, audio, relationships, bugs) |
+| [textures.md](textures.md) | Measured size and colours for every texture and GUI file, palette in words, derived pixel rectangles for the model textures |
+| [lang.md](lang.md) | Every lang key with English, generated strings, hard-coded English, missing and stale keys |
+| [sounds.md](sounds.md) | Every sound event and file: trigger, volume, pitch, duration, rate, channels |
 
-## Quick reference
+## Key facts
 
 | Thing | Block / meta | Tile (registry id) | GUI id | Power |
 |---|---|---|---|---|
@@ -49,7 +43,7 @@ This area covers the Techguns 0.1.2 tile entities that do **not** process recipe
 | Camp Flag | `basicMachine:7` | [`CampFlagTileEnt`](shared-rendering.md#1-basicmachine-metas-owned-by-area-09) | — | none |
 | Adv. Explosive Charge | `basicMachine:8` | [`ExplosiveChargeAdvTileEnt`](explosive-charges.md) | 6 | none |
 | Scrapper | (meta 10, never created) | [`ScrapperTileEnt`](scrapper.md) | 10 | 10 000 RF (unused) |
-| Ore Drill | `oreDrill:0–4` | [`OreDrillTileEntMaster`](ore-drill.md#5-operation-oredrilltileentmaster) (meta 4), `OreDrillTileEntSlave` (0–3) | 16 | 500 000 RF, plus furnace fuel or liquid fuel |
+| Ore Drill | `oreDrill:0–4` | [`OreDrillTileEntMaster`](ore-drill.md#5-operation-oredrilltileentmaster) (meta 4), [`OreDrillTileEntSlave`](entity-sheets.md#4-ore-drill-block-family-oredrill-metas-04) (0–3) | 16 | 500 000 RF, plus furnace fuel or liquid fuel |
 | Reinforced / Weapon Chest | [`tgchest`](../07-blocks/block-catalogue.md#registered-blocks), [`tgchest_weapon`](../07-blocks/block-catalogue.md#registered-blocks) | [`TGChestTileEnt`](misc-tile-entities.md#tile-entity-tgchesttileent) | 20 | — |
 | Bio Blob | [`BioBlobSmall`](../07-blocks/block-catalogue.md#registered-blocks) | [`BioblobTileEnt`](misc-tile-entities.md#tile-entity-bioblobtileent) | — | — |
 | (legacy) | none | [`OreDrillTileEnt`](ore-drill.md#11-legacy-prototype-dead-code) | — | — |
@@ -175,6 +169,46 @@ None of these is animated (no `.mcmeta`).
 - [11-worldgen](../11-worldgen/index.md): ore clusters the drill mines, and structures that place camp flags and chests.
 - [04-projectiles-fx](../04-projectiles-fx/index.md): explosion behaviour behind the explosive charges, and Bio Blob effects.
 
+## Coverage
+
+Source files read for this area (all under `java/techguns/`):
+
+- Blocks: `blocks/machines/BasicMachine`, `OreDrillBlock`, `blocks/BlockTGChest`, `blocks/Bioblob`, `blocks/ItemBlockMetaDataMachine`, `ItemBlockOreDrill`, [`ItemBlockTGChest`](../07-blocks/block-catalogue.md#conventions-and-defaults).
+- Tiles: `RepairBenchTileEnt`, `CamoBenchTileEnt`, `ScrapperTileEnt`, `OreDrillTileEntMaster`, `OreDrillTileEntSlave`, `OreDrillTileEnt`, `TurretBaseEnt`, `ExplosiveChargeTileEnt`, `ExplosiveChargeAdvTileEnt`, `TGChestTileEnt`, `CampFlagTileEnt`, `BioblobTileEnt`.
+- GUIs and containers: the matching `Gui*` and `*Container` classes, plus the TESRs and item renderers named in the per-machine files.
+- Re-checked in the consistency pass against the reference source: the lang file, GUI string calls, registration lines in `TGBlocks` and `Techguns`, creative-tab and drop logic in `BasicMachine`, and the item-block tooltips.
+
+Assets covered:
+
+- Textures: the 20 model and TESR textures owned here, the 18 ore drill block textures (3 of them unreferenced), the 5 unused bench and flag files, and the 8 GUI files used. See [textures.md](textures.md).
+- Sounds: 29 files across 12 `sounds.json` events, plus the vanilla chest and explosion sounds. See [sounds.md](sounds.md).
+- Lang: every key in [lang.md](lang.md).
+- Entity sheets: 10, covering every machine, tile and block family. See [entity-sheets.md](entity-sheets.md).
+
+Corrections to existing facts in the consistency pass: none. (An earlier correction about the ore drill clip length is recorded in [ore-drill.md](ore-drill.md#8-sounds).)
+
+### Ownership boundaries
+
+| Topic | Owner |
+|---|---|
+| Base tile classes ([`BasicInventoryTileEnt`](../08-machines-production/framework.md#2-basicinventorytileent), [`BasicOwnedTileEnt`](../08-machines-production/framework.md#3-ownership-and-security-basicownedtileent-itgtileentsecurity), [`BasicPoweredTileEnt`](../08-machines-production/framework.md#4-energy-basicpoweredtileent), [`BasicMachineTileEntity`](../08-machines-production/framework.md#7-recipe-machine-state-basicmachinetileentity), `MultiBlock*TileEntBase`), base GUIs (power bar, redstone and security buttons), [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table), the shared [`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) block, GUI texture files | **[08-machines-production](../08-machines-production/index.md)** |
+| Ore cluster blocks and the drill block textures | **[07-blocks](../07-blocks/index.md)** / **[11-worldgen](../11-worldgen/index.md)** |
+| Drill heads, turret armour plates, fuel and engine items | **[06-items](../06-items/index.md)** |
+| Gun ammo mechanics | **[02-guns](../02-guns/index.md)** |
+| Armour repair materials | **[05-armor](../05-armor/index.md)** |
+| `NPCTurret` AI, the attack helicopter, NPC spawning | **[10-entities-npcs](../10-entities-npcs/index.md)** |
+| Particles, [`ProjectileExplosion`](../04-projectiles-fx/explosions.md#projectileexplosion), the Biogun projectile | **[04-projectiles-fx](../04-projectiles-fx/index.md)** |
+| [`GUIButtonClick`](../01-core/networking.md#0--guibuttonclick-cs) and the sync packets | **[01-core](../01-core/index.md)** |
+
+## Known limits
+
+- Audio and images were not heard or viewed. Sound-character notes, texture palette words and "depicts" notes are inferred from names, measurements and earlier descriptions.
+- Pixel rectangles for model textures in [textures.md](textures.md) are computed from the standard box unwrap and the model parameters, not measured from the images.
+- Recipes for drill heads and turret armour belong to [06](../06-items/index.md) and are linked, not restated.
+- GUI region maps rely on the existing descriptions in [08](../08-machines-production/index.md)'s [gui-textures.md](../08-machines-production/gui-textures.md).
+- [MUTL-48](#suspected-bugs) and the effect of the 8 kHz and 176.4 kHz sound rates are inferred from code and file headers; neither was run.
+- The turret's FTBUtilities friendship rules are summarised from the code path and not tested with that mod present.
+
 ## Suspected bugs
 
 | ID | Title | Location | What looks wrong | Severity |
@@ -201,7 +235,7 @@ None of these is animated (no `.mcmeta`).
 | MUTL-20 | Controller message key unprefixed | [`java/techguns/blocks/ItemBlockOreDrill.java:137`](../07-blocks/special-blocks.md#17-itemblockoredrill-placement-rules) | `I18n` looks up `msg.error.oredrill.controllernext`, but the lang key is `techguns.msg.…`, so the raw key is shown. | cosmetic |
 | MUTL-21 | Ore drill blocks claim to be normal cubes | `java/techguns/blocks/machines/OreDrillBlock.java:884` | `isNormalCube` is true for the see-through scaffold and invisible formed rods, which affects lighting and suffocation. | visual |
 | MUTL-22 | Drill tooltip divides by zero | [`java/techguns/gui/GuiOreDrill.java:58`](ore-drill.md#7-gui-guioredrill-id-16) | The "%" and "Ores/h" lines divide by `totalTime`, which can be 0 (NaN/Infinity). | cosmetic |
-| MUTL-23 | Legacy ore drill still registered | `java/techguns/tileentities/OreDrillTileEnt.java:21`, [`java/techguns/Techguns.java:576`](../01-core/lifecycle-and-registration.md#lifecycle-overview) | A dead prototype tile (hard-coded iron ore, 1000 ÷ size timer) is registered; `OreDrill` block is unused. | cosmetic |
+| MUTL-23 | Legacy ore drill still registered | `java/techguns/tileentities/OreDrillTileEnt.java:21`, [`java/techguns/Techguns.java:576`](../01-core/lifecycle-and-registration.md#lifecycle-overview) | A dead prototype tile (hard-coded iron ore, 1000 ÷ size timer) is registered; [`OreDrill`](entity-sheets.md#10-legacy-oredrill--oredrilltileent-dead-code) block is unused. | cosmetic |
 | MUTL-24 | Turret reload drops empty stacks | `java/techguns/tileentities/TurretBaseEnt.java:196` | An item entity with the overflow count is spawned even when the overflow is 0. | cosmetic |
 | MUTL-25 | Turret links an arbitrary entity by stale id | `java/techguns/tileentities/TurretBaseEnt.java:89` | `mountedTurret` stores an entity id. On read (for example placing a wrenched turret item) whatever entity has that id is cast to `NPCTurret`, which throws ClassCastException if it is a different type. | crash |
 | MUTL-26 | Turret power synced every tick | [`java/techguns/inventory/TurretBaseContainer.java:106`](turret.md#container-turretbasecontainer) | A window property is sent each tick unconditionally. | cosmetic |
@@ -224,3 +258,6 @@ None of these is animated (no `.mcmeta`).
 | MUTL-43 | Bio Blob name key mismatch | [`java/techguns/TGBlocks.java:220`](../07-blocks/block-catalogue.md#registered-blocks) | Registered with a plain `ItemBlock` (key `tile.Bioblob.name`), but the lang defines `techguns.tile.Bioblob.name`. | cosmetic |
 | MUTL-44 | Bio Blob decays client-side too | `java/techguns/tileentities/BioblobTileEnt.java:125` | The decay timer and removal run on both sides, so the client can delete or shrink the blob independently. | visual |
 | MUTL-45 | Bio Blob `side` field dead | `java/techguns/tileentities/BioblobTileEnt.java:25` | It is saved and synced, but never set. The side lives in block metadata instead. | cosmetic |
+| MUTL-46 | Ore drill work sound overlaps itself | `java/techguns/tileentities/OreDrillTileEntMaster.java` (client sound delay of 61 ticks) | The loop is re-triggered every 62 powered ticks (about 3.1 s), but every clip is 4.01 to 9.71 s long, so plays overlap and stack. | cosmetic |
+| MUTL-47 | Ore drill sound files have odd sample rates | `assets/techguns/sounds/machines/oredrill_s_work_a.ogg` to `_d`, `oredrill_l_work_b.ogg` to `_d` | Small-drill files declare 176 400 Hz and three large-drill files 8 000 Hz, while their siblings are 44 100 or 48 000 Hz. The 8 kHz files will be low-fidelity. | cosmetic |
+| MUTL-48 | Flag drops an iron ingot with damage 7 | `java/techguns/blocks/machines/BasicMachine.java:95` and `:237` | `getItemDropped` swaps meta 7 for `iron_ingot`, but `damageDropped` still returns the metadata (7). The dropped ingot probably has damage 7 and may not stack with, or match recipes for, a normal ingot. Inferred from the code; not tested. | gameplay |

@@ -43,8 +43,8 @@ Extent z −3…12, y −0.5…10, x −2…1 (15 long): a modern semi-automatic
 * The slide is the moving part. While firing, the renderer pushes it back further than the frame (§ Pistol in the gun sheets).
 
 ### Unused pistol variants
-* **ModelPistol** (64×32, ModelBase, 9 boxes): early boxy pistol. Top 2×3×12, stepped grip 2×(3,5,4)×1, barrel 1×1×2, sights. Pairs with `textures/guns/pistol.png`. Not registered.
-* **ModelPistol2** (64×32, 8 boxes): ModelPistol3's frame with a solid 3×3×14 top instead of separate frame and slide. Pairs with `textures/guns/pistol2Texture.png`. Not registered.
+* **ModelPistol** (64×32, ModelBase, 9 boxes): early boxy pistol. Top 2×3×12, stepped grip 2×(3,5,4)×1, barrel 1×1×2, sights. Pairs with [`textures/guns/pistol.png`](textures.md#measured-colours-all-62-textures). Not registered.
+* **ModelPistol2** (64×32, 8 boxes): ModelPistol3's frame with a solid 3×3×14 top instead of separate frame and slide. Pairs with [`textures/guns/pistol2Texture.png`](textures.md#measured-colours-all-62-textures). Not registered.
 * **ModelPistol3Akimbo**: a [`ModelBipedMultipart`](../05-armor/rendering-and-models.md#27-back-models-modelbipedmultipart-subclasses) (area [05](../05-armor/index.md) base) that attaches the Pistol3 boxes as children of `bipedLeftArm` and renders only that arm. Its only reference is an import in [`RenderAkimboGun`](../05-armor/rendering-and-models.md#3-special-slot-rendering-on-the-player-rendereradditionalslots), which actually uses plain ModelPistol3. Dead.
 
 ### ModelRevolver: 64×32, family X, 20 boxes, 1 part
@@ -378,13 +378,13 @@ Extent x −24…38, y −11…10.5, z −13.5…9.
 ### ModelDriller (unused): 128×64, family Z, 18 boxes, 2 parts
 * Part 0: 7×7×28 drill motor body (z −16…12) on the shared grip and trigger skeleton.
 * Part 1: drill bit made of stacked 2-thick plates shrinking from 11×11 to 1×1 (z −18…−36), alternately rotated 45° about Z.
-* Paired with the unused `RenderDriller` (spins part 1 about Z) and `textures/guns/drillTexture.png`. The Driller item is commented out.
+* Paired with the unused `RenderDriller` (spins part 1 about Z) and [`textures/guns/drillTexture.png`](textures.md#measured-colours-all-62-textures). The Driller item is commented out.
 
 ### ModelMp5 (unused): 64×32, family Z, 18 boxes, 1 part
 * 2×2×20 receiver, 1×1×19 top rail, 2×1×11 / 2×1×8 lower body, 1×1×2 barrel, 1×4×1 front sight, 1×1×2 rear sight.
 * Magazine 2×2×2 + 2×3×2 + 2×2×2 (curved). Stepped grip 2×(3, 5, 4)×1, trigger 1×2×1 + 1×1×2.
 * Stock 2×1×8 + 2×3×1 + 2×6×1.
-* Paired with `textures/guns/mp5Texture.png`. The MP5 item is commented out.
+* Paired with [`textures/guns/mp5Texture.png`](textures.md#measured-colours-all-62-textures). The MP5 item is commented out.
 
 ---
 
@@ -416,9 +416,62 @@ Exported with "Max2Obj Version 4.0", all triangles, 252 vertices, 594 texture ve
 | `0` | 324 tris (240 verts) | x −26…18, y −12…9, z ±6.93 | Launcher body: long barrel, frame, stock and grip. The X axis is the long axis. The muzzle-flash placement suggests the barrel points to +X. | Whole sheet |
 | `1` | 12 tris (12 verts) | x −4…4, y −11…3, z ±6.06 | **Revolving drum**: a hexagonal prism around the X axis. The renderer rotates it about X during firing. | u 0.797…0.953, v 0.469…0.867: the strip of red 40 mm rounds on the right of the texture |
 
-Used only by `RenderGrenadeLauncher` with `textures/guns/grenadelauncher.png`. A second OBJ, [`models/entity/launchergrenade.obj`](../10-entities-npcs/rendering-and-models.md#other-obj-files-in-modelsentity-in-this-folder-used-elsewhere), renders the grenade projectile (area [04](../04-projectiles-fx/index.md)).
+Used only by `RenderGrenadeLauncher` with [`textures/guns/grenadelauncher.png`](textures.md#measured-colours-all-62-textures). A second OBJ, [`models/entity/launchergrenade.obj`](../10-entities-npcs/rendering-and-models.md#other-obj-files-in-modelsentity-in-this-folder-used-elsewhere), renders the grenade projectile (area [04](../04-projectiles-fx/index.md)).
 
 ---
 
 ## ModelSniperScope (unused)
 A ModelBase holding a texture reference and one 1080×1080×0 plane. Texture size is not set (vanilla default 64×32). A commented-out tessellator quad remains in the source. It is never instantiated. The scope overlay is drawn by [`ScreenEffect.sniperScope`](../04-projectiles-fx/renderers.md#screeneffect-muzzle-flashes-and-scope-overlays) instead ([rendering-framework.md §9](rendering-framework.md#9-zoom-and-scopes)).
+
+---
+
+## Model to texture and size table (all model classes)
+
+*Added in the consistency pass.* Each model with the texture it is drawn with and both sizes: the UV size the model class declares (which normalises every box UV) and the measured size of the PNG ([ASSET-FACTS.md](../ASSET-FACTS.md)). A ratio of x2 means the PNG is a higher-resolution version of the same layout and all UVs scale by two. Texture names are `textures/guns/<name>.png`. Colours and layouts are in [textures.md](textures.md).
+
+| Model class | Declared UV size | Texture | PNG size | Ratio | Used by |
+|---|---|---|---|---|---|
+| ModelHandgun | 64x32 | `handgun` | 64×32 | x1 | Hand Cannon |
+| ModelPistol3 | 64x32 | `pistol3` | 128×64 | x2 | Pistol, Akimbo Pistols |
+| ModelPistol / ModelPistol2 (unused) | 64x32 | [`pistol`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) / `pistol2Texture` | 64×32 | x1 | none |
+| ModelPistol3Akimbo (unused) | not used | `pistol3` | 128×64 | x2 | none |
+| ModelRevolver | 64x32 | [`revolver`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 64×32 | x1 | Revolver, Akimbo Revolvers |
+| ModelGoldenRevolver | 64x32 | [`goldenrevolver`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 64×32 | x1 | Golden Revolver, Akimbo Golden Revolvers |
+| ModelMac10 | 64x32 | `mac10texture` | 128×64 | x2 | Mac-10, Akimbo Mac-10 |
+| ModelMibGun | 64x64 | `mibgun` | 128×128 | x2 | MIB Gun, Akimbo MIB |
+| ModelSawedoff | 64x32 | `sawedOff` | 64×32 | x1 | Sawed-off |
+| ModelCombatShotgun | 64x32 | `combatShotgun` | 64×32 | x1 | Combat Shotgun |
+| ModelSonicShotgun | 128x64 | `sonicshotgun` | 128×64 | x1 | Sonic Shotgun |
+| ModelAK | 128x64 | `ak47Texture`, `_1` | 128×64 | x1 | AK-47 |
+| ModelM4 / ModelM4Mag / ModelM4MagE | 128x64 | `m4Texture`, `_1` to `_4` | 128×64 | x1 | M4 and its magazine items |
+| ModelM4_UQ | 128x64 | `m4_uq_Texture` | 128×64 | x1 | M4 Infiltrator |
+| ModelAUG | 128x64 | `AugTexture`, `_1` to `_4` | 128×64 | x1 | AUG |
+| ModelScar | 128x64 | `scar_texture`, `_1` | 256×128 | x2 | SCAR |
+| ModelVector | 128x64 | `vector_texture`, `_1` | 256×128 | x2 | Vector |
+| ModelLMG / ModelLmgMag / ModelLmgMagE | 128x128 | `mg2_texture` | 128×128 | x1 | LMG and its magazine items |
+| ModelAS50 / ModelAS50Mag | 256x128 | `as50Texture` | 256×128 | x1 | AS50 and its magazine items |
+| ModelThompson | 64x64 | [`thompson`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 64×64 | x1 | Thompson |
+| ModelPDW | 64x64 | `PDW`, `_1`, `_2` | 64×64 | x1 | PDW |
+| ModelPulseRifle | 128x64 | [`pulseRifle`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition), `_1`, `_2` | 128×64 | x1 | Pulse Rifle |
+| ModelBoltaction | 128x32 | `boltactionrifle`, `_1`, `_2` | 128×32 | x1 | Bolt-action |
+| ModelBlasterRifle | 128x64 | [`blasterRifle`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 256×128 | x2 | Blaster Rifle |
+| ModelLaserGunNew | 128x128 | `laserGunNew` | 128×128 | x1 | Scatter Beam Gun |
+| ModelLasergun | 64x64 | [`Lasergun`](../02-guns/sheets-energy-special.md#laser-rifle-lasergun) | 64×64 | x1 | Laser Gun |
+| ModelTeslaGun | 64x64 | `TeslaGun` | 64×64 | x1 | Tesla Gun |
+| ModelBiogun | 64x64 | `BioGun` | 64×64 | x1 | Bio Gun |
+| ModelCyberdemonBlaster | 64x64 | `cyberdemonblaster` | 64×64 | x1 | Cyberdemon Blaster |
+| ModelAlienBlaster | 128x64 | `alien_blaster` | 128×64 | x1 | Alien Blaster |
+| ModelNDR | 64x64 | `NDR` | 64×64 | x1 | Nuclear Death Ray |
+| ModelNeutrinoGun (unused) | 128x128 | `neutrinogun` | 256×256 | x2 | none |
+| ModelGrimReaper | 128x64 | [`grimreaper`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 128×64 | x1 | Grim Reaper |
+| ModelRocketLauncher / ModelRocket | 128x64 | [`rocketlauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) / `nukerocketlauncher` | 128×64 | x1 | Rocket and Nuke Launcher, rocket ammo items |
+| ModelFlamethrower | 64x64 | [`Flamethrower`](../02-guns/sheets-energy-special.md#flamethrower-flamethrower) | 64×64 | x1 | Flamethrower |
+| ModelPowerHammer | 64x64 | [`powerHammer`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) / [`powerHammerAdv`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 64×64 | x1 | Power Hammer, Advanced Power Hammer |
+| ModelChainsaw | 128x64 | [`chainsaw`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 128×64 | x1 | Chainsaw |
+| ModelMinigun | 128x128 | [`minigun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 128×128 | x1 | Minigun |
+| ModelDriller (unused) | 128x64 | `drillTexture` | 128×64 | x1 | none |
+| ModelMp5 (unused) | 64x32 | `mp5Texture` | 64×32 | x1 | none |
+| ModelStielgranate | 32x32 | `stielgranate` | 32×32 | x1 | Stielhandgranate |
+| ModelFragGrenade | 32x32 | `fragGrenade_texture` | 64×64 | x2 | Frag Grenade |
+| `models/guns/grenadelauncher.obj` | none (normalised OBJ UVs) | [`grenadelauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 128×128 | n/a | Grenade Launcher |
+| ModelSniperScope (unused) | 64x32 (vanilla default) | none set | n/a | n/a | none |

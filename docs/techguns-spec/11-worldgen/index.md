@@ -1,5 +1,8 @@
 # 11: World generation (Techguns 1.7.10, v0.1.2 alpha)
 
+## Overview
+
+
 This area covers everything Techguns adds to world generation:
 * overworld ore veins
 * the ore-cluster deposit system (generation, oil holes, scanner and debugger tools)
@@ -7,6 +10,25 @@ This area covers everything Techguns adds to world generation:
 * structure loot
 * the dormant village piece
 * the tools used to author structures
+
+
+| System | Active? | Where |
+|---|---|---|
+| Copper / tin / lead veins | only when their config flags are on (default **off**) | `OreGenerator` |
+| Titanium and uranium veins | on by default | `OreGenerator` |
+| Natural ore-cluster deposits | **off**: generator registration is commented out | [`OreClusterWorldspawn`](ore-generation.md#23-natural-cluster-generation-oreclusterworldspawn-disabled) |
+| Oil holes (oil ore-cluster columns in bedrock) | on by default, 5 % of chunks | [`WorldGenOilHoles`](ore-generation.md#3-oil-holes-worldgenoilholes) |
+| Structures | on by default | `WorldGenTGStructureSpawn` |
+| Village bunker | **off**: registration commented out | `village/*` |
+| City generator | **off**: spawn entry commented out; reachable from the test tool | [`GenericCity`](structure-catalogue.md#c1-city-generator-genericcity-genericcitysegment-citystructure-citybuilding-citybuildingtype-buildingstyle-cityroad-iroad-partsstaircase) and related classes |
+
+Natural structures (all Overworld only):
+
+| Size class (grid) | Land | Water (ocean biomes) |
+|---|---|---|
+| SMALL (every 16 chunks) | Small Factory Building, Small Train Station | – |
+| MEDIUM (every 32 chunks) | Medium House, Big Bunker, Alien Bug Nest (sandy/wasteland only) | – |
+| BIG (every 64 chunks) | Military Base (random 32–79 × 32–79, NPC flag) | Aircraft Carrier (NPC flag), Submarine |
 
 ## Contents
 
@@ -18,26 +40,6 @@ This area covers everything Techguns adds to world generation:
 | [loot.md](loot.md) | Which chest uses which table, chest counts per structure, and the full contents of all TG loot tables plus additions to vanilla pools |
 | [village.md](village.md) | The (unregistered) village bunker piece. There are no professions or trades. |
 | [assets.md](assets.md) | Structure data files, the 25 related textures, sounds (none), and lang keys and hard-coded strings |
-
-## Overview
-
-| System | Active? | Where |
-|---|---|---|
-| Copper / tin / lead veins | only when their config flags are on (default **off**) | `OreGenerator` |
-| Titanium and uranium veins | on by default | `OreGenerator` |
-| Natural ore-cluster deposits | **off**: generator registration is commented out | [`OreClusterWorldspawn`](ore-generation.md#23-natural-cluster-generation-oreclusterworldspawn-disabled) |
-| Oil holes (oil ore-cluster columns in bedrock) | on by default, 5 % of chunks | [`WorldGenOilHoles`](ore-generation.md#3-oil-holes-worldgenoilholes) |
-| Structures | on by default | `WorldGenTGStructureSpawn` |
-| Village bunker | **off**: registration commented out | `village/*` |
-| City generator | **off**: spawn entry commented out; reachable from the test tool | `GenericCity` and related classes |
-
-Natural structures (all Overworld only):
-
-| Size class (grid) | Land | Water (ocean biomes) |
-|---|---|---|
-| SMALL (every 16 chunks) | Small Factory Building, Small Train Station | – |
-| MEDIUM (every 32 chunks) | Medium House, Big Bunker, Alien Bug Nest (sandy/wasteland only) | – |
-| BIG (every 64 chunks) | Military Base (random 32–79 × 32–79, NPC flag) | Aircraft Carrier (NPC flag), Submarine |
 
 ## Config keys that gate worldgen
 
@@ -60,7 +62,7 @@ The keys are defined in [`TGConfig`](../01-core/config.md); see **[01-core](../0
 
 Registration order and weights: `OreGenerator` in preInit (weight 1). `WorldGenTGStructureSpawn` (weight 4) and `WorldGenOilHoles` (weight 3) in postInit.
 
-## Cross-references
+## Related areas
 * Blocks used by structures (concrete, sandbags, camo nets, lamps, TG doors and ladders, TG chests, monster spawner, bug-nest blocks, air marker, container, metal panels, ore clusters): **[07-blocks](../07-blocks/index.md)**
 * Camp flag ([`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 7, [`CampFlagTileEnt`](../09-machines-utility/shared-rendering.md#1-basicmachine-metas-owned-by-area-09)) NPC-spawn logic: **[09-machines-utility](../09-machines-utility/index.md)**
 * Ore Drill (cluster mining, config multipliers): **[08-machines-production](../08-machines-production/index.md)**
@@ -82,6 +84,16 @@ Registration order and weights: `OreGenerator` in preInit (weight 1). `WorldGenT
   * `CampFlagTileEnt`, [`BlockTGMonsterSpawner`](../07-blocks/special-blocks.md#monster-spawner-holes-blocktgmonsterspawner), [`TGSpawnerTileEnt`](../10-entities-npcs/spawning.md#3-monster-spawner-blocks-tgspawnertileent)
   * [`NPCUtil`](../10-entities-npcs/spawning.md#4-camp-flags-and-npcutil), [`MathUtil`](../01-core/utilities.md#mathutil), [`TGChiselBlocks`](../07-blocks/special-blocks.md#19-tgchiselblocks-block-constants-for-structures), [`GenericBlock`](../07-blocks/block-catalogue.md#conventions-and-defaults)
 * **Textures:** 25 described (see assets.md). **Sounds:** none in scope.
+* **Consistency pass additions:** every structure and camp part in [structure-catalogue.md](structure-catalogue.md) now ends with a **Sheet** table (class and register entry, spawn conditions, size declared and as built, build steps, palette, loot, spawners and NPCs, camp flag and caps, NBT, bugs); [ore-generation.md](ore-generation.md) section 4 has per-ore, oil-hole and per-cluster sheets with default yields; [assets.md](assets.md) quotes the measured size and colours of all 25 textures and carries the full lang section (key table with line numbers, generated strings, hard-coded English, missing keys). Lang keys covered: all keys in `en_US.lang` whose subject worldgen places, mines or uses.
+
+## Known limits
+* **Sounds cannot be heard.** None are in scope (no class here plays one), so this limit is moot for the area.
+* **Texture colours are measured, not seen.** The visual descriptions in [assets.md](assets.md) were written in the earlier pass; the measured averages and dominant colours were added from `ASSET-FACTS.md` and cross-check them.
+* **Legacy carrier data.** The embedded `int[][]` literals of `AircraftCarrier` and `AircraftCarrier2` were analysed by count and extent only, not cell by cell. They are dead code.
+* **No runtime verification.** Nothing was run in a game. Spawn chances (1/2, 1/3), per-chunk ore counts and the cluster yield figures are derived by arithmetic from the source and config defaults. The ore "upper bound per chunk" is attempts times mean vein size and ignores clipping by caves and non-stone blocks.
+* **Chisel and other mods.** Chisel block names and metas are taken from the source's references; the mod itself was not inspected, so what a given Chisel meta looks like is not described.
+* **Camp randomness.** The binary-space subdivision and leaf matching depend on the camp's `Random`; outcomes are described as rules, not enumerated.
+* **Sound-free, GUI-free area.** The area has no sounds, no GUI and no tile entities of its own, so those sheet fields read *none*. The camp flag and monster spawner tile entities are documented in [09-machines-utility](../09-machines-utility/index.md) and [10-entities-npcs](../10-entities-npcs/spawning.md).
 
 ## Suspected bugs
 
@@ -121,3 +133,4 @@ Registration order and weights: `OreGenerator` in preInit (weight 1). `WorldGenT
 | WGEN-32 | Camp colour ignores modded biomes | `java/techguns/worldgen/MilitaryCamp.java:171` | Uses `BlockUtils.getBiomeType` (vanilla biome identity list) instead of the BiomeDictionary rule, so modded deserts and snow biomes always get woodland camo. | cosmetic |
 | WGEN-33 | Tree trunks count as ground | `java/techguns/util/BlockUtils.java:515` | The wood check in `getHeightValueNoTreesIgnoreLiquid` is commented out, so trunks raise the sampled height. Spawns in forests mostly fail or sit on trunk height. | gameplay |
 | WGEN-34 | Scan tool emits unusable palette code | [`java/techguns/items/BuildingScanTool.java:83`](../06-items/special-items.md#building-scan-tool-buildingscantool) | Generates `Block.getBlockFromName(<unlocalized name>)`, which does not resolve. Palettes had to be rewritten by hand. | cosmetic |
+| WGEN-35 | Container length parameter ignored | [`java/techguns/worldgen/structures/Containers.java:15,22`](structure-catalogue.md#b2-containers-containers) | `containerMinLength` is stored by the constructor but never read, so the minimum row length has no effect (rows always run the full long side, and a leftover strip narrower than width + 1 stays empty). | cosmetic |

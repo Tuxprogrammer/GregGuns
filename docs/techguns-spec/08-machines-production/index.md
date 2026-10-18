@@ -1,5 +1,8 @@
 # 08 · Machines: production and shared framework
 
+## Overview
+
+
 This area covers the Techguns 1.7.10 (v0.1.2 alpha) **machine framework**, which every machine block shares, and the six **recipe-processing machines**:
 
 | Machine | Block | Type | Power | Purpose |
@@ -45,7 +48,7 @@ It's called once during init. In order, it registers:
 6. **6 Fabricator recipes** (`fabricator.md` §4).
 7. **1 Charging Station recipe** (`charging-station.md`).
 
-## Cross-references
+## Related areas
 
 | Topic | Area |
 |---|---|
@@ -56,11 +59,27 @@ It's called once during init. In order, it registers:
 | Friends / factions ([`TGNpcFactions`](../10-entities-npcs/ai.md#1-factions-tgnpcfaction-tgnpcfactions), FTBUtilities) | [`10-entities-npcs`](../10-entities-npcs/index.md) |
 | Ore clusters fed by `mods.techguns.OreCluster` | [`09-machines-utility`](../09-machines-utility/index.md) / [`11-worldgen`](../11-worldgen/index.md) |
 
-## Coverage notes
+## Coverage
+
+- **Source read:** the tile entities [`AmmoPressTileEnt`](ammo-press.md), `MetalPressTileEnt`, `ChemLabTileEnt`, `ChargingStationTileEnt`, `FabricatorTileEntMaster`/`Slave`, `ReactionChamberTileEntMaster`/`Slave`, `ReactionChamberOperation` and the framework bases; the blocks `BasicMachine`, `MultiBlockMachineBlock` and [`ItemBlockMetaDataMachine`](../07-blocks/special-blocks.md#16-itemblockmetadatamachine); the containers and the GUI classes (`GuiAmmoPress`, [`GuiMetalPress`](metal-press.md#4-gui-guimetalpress-texturesguimetalpress_guipng), `GuiChemLab`, [`GuiFabricator`](fabricator.md#5-gui-guifabricator-texturesguifabricator_guipng), `GuiChargingStation`, `GuiReactionChamber`, the base [`GuiTechgunsPoweredTileEnt`](gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine) and the three icon buttons); the recipe classes, `TGMachineRecipes`, the NEI handlers and the MineTweaker classes; the machine TESRs and item renderers.
+- **Textures:** all 14 files in `textures/gui/` (all 14 have size, measured colours, a look description and region maps; the draw-call rectangle table is `gui-textures.md` section 15); the machine block textures (`AmmoPress`, `MetalPress`, `ChemLab`, `ChargingStation`, `Fabricator`, `rc_*`, `fabricator*`, `invisible`, `screen_top`) with measured sizes and colours in each machine's sheet summary; the two Reaction Chamber entity textures and the glass-group UV rectangles (`reaction-chamber.md` section 9).
+- **Sounds:** all 35 files in `sounds/machines/` (per-file duration, sample rate, channels and category in `sounds.md` section 4; per-event volume, pitch and trigger in section 5).
+- **Lang:** every key in `lang.md` (blocks, GUI titles, shared GUI, machine-specific, hard-coded strings).
+- **Consistency pass:** each machine file now ends with a numbered entity-sheet summary (CONVENTIONS fields 1 to 10). Corrections made: none of the existing statements were wrong. The pass brief questioned the 176.4 kHz ore-drill rate in `sounds.md`, but `ASSET-FACTS.md` confirms 176400 Hz for the four `oredrill_s_work_*` files, so it was kept. The other ore-drill rates already matched the measured values (44100 / 8000 Hz for the large drill, 48000 Hz for the medium).
+
+### Coverage notes
 
 - [`textures/entity/reactionchamber.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) and [`textures/entity/reactionchamberglass.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) are used only by the Reaction Chamber renderer, so they're described in `reaction-chamber.md` §7.
 - The [`ModelAmmoPress`](../07-blocks/block-rendering-and-models.md#modelammopress-uv-12864-texture-ammopresspng), [`ModelMetalPress`](../07-blocks/block-rendering-and-models.md#modelmetalpress-uv-12864-texture-metalpresspng), [`ModelChemLab`](../07-blocks/block-rendering-and-models.md#modelchemlab-uv-12864-texture-chemlabpng), [`ModelChargingStation`](../07-blocks/block-rendering-and-models.md#modelchargingstation-uv-6464-texture-chargingstationpng) and [`ModelFabricator`](../07-blocks/block-rendering-and-models.md#modelfabricator-uv-128128-texture-fabricatorpng) classes were read for their animation logic and parts. Individual box coordinates aren't transcribed.
 - [`RenderBlockTileEntModel`](rendering.md#3-renderblocktileentmodel-used-by-09s-turret-base-and-flag) and [`RenderTileEntityBlock`](rendering.md#4-rendertileentityblock-used-by-09s-camo-and-repair-benches) (used by [09](../09-machines-utility/index.md)'s machines) are summarised in `rendering.md`.
+
+## Known limits
+
+- **Audio can't be heard.** Every description of how a clip sounds is inferred from names, durations, sample rates and call timing.
+- **Per-face CTM textures** of the multiblock housing, controller and glass blocks were not examined individually; only each texture's file-level measurements are recorded.
+- **Model box coordinates** of `ModelAmmoPress`, `ModelMetalPress`, `ModelChemLab`, `ModelChargingStation` and `ModelFabricator` aren't transcribed here (they belong to [`07-blocks`](../07-blocks/index.md)).
+- **Glass-group alpha state:** the Reaction Chamber glass geometry and UVs are documented from the OBJ, but whether blending is enabled while it is drawn depends on GL state set elsewhere and was not traced exhaustively.
+- **Runtime behaviour** (pipe/hopper interaction, MineTweaker scripts, NEI) was derived from reading the code, not from running the mod.
 
 ## Suspected bugs
 

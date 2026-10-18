@@ -9,7 +9,7 @@ It runs on RF, on furnace fuel, or on liquid fuel (lava, fuel, biofuel). It need
 | `blocks/machines/OreDrillBlock` | The block, registry name [`oreDrill`](../07-blocks/block-catalogue.md#registered-blocks), metas 0–4. Chisel `ICarvable` with CTM rendering. |
 | `blocks/ItemBlockOreDrill` | Item block. Placement restrictions and the cluster helper functions. |
 | `tileentities/OreDrillTileEntMaster` | Controller tile (meta 4), registered as `OreDrillTileEntMaster`. Does all the logic. |
-| `tileentities/OreDrillTileEntSlave` | Tile for metas 0–3, registered as [`OreDrillTileEntSlave`](index.md#quick-reference). Stores its link to the master. |
+| `tileentities/OreDrillTileEntSlave` | Tile for metas 0–3, registered as [`OreDrillTileEntSlave`](index.md#key-facts). Stores its link to the master. |
 | `inventory/OreDrillContainer`, `gui/GuiOreDrill` | GUI id 16 |
 | `client/renderer/tileentity/RenderOreDrill`, `client/renderer/block/OreDrillCube` | TESR for the rotating drill head / rod |
 | `blocks/machines/OreDrill`, `tileentities/OreDrillTileEnt` | Legacy prototype, unused (§11) |
@@ -20,7 +20,7 @@ Shared base classes ([`MultiBlockMasterTileEntBase`](../08-machines-production/f
 
 ## 1. Blocks
 
-`OreDrillBlock`:
+[`OreDrillBlock`](entity-sheets.md#4-ore-drill-block-family-oredrill-metas-04):
 
 - Material iron, **hardness 8**, **resistance 20**, metal sound, pickaxe level 1, Techguns creative tab.
 - Drops itself with the same meta.
@@ -446,7 +446,7 @@ The tank fluids are drawn first, using the fluid's still icon from the block atl
 
 ## 8. Sounds
 
-The work loop plays only on the **client**, during each tick in which progress advances while `haspower` is set. It uses `World.playSound` at the controller with pitch 1.0 and distance delay. After it plays, it is not repeated for 61 ticks (≈ 3.1 s, the length of the clips).
+The work loop plays only on the **client**, during each tick in which progress advances while `haspower` is set. It uses `World.playSound` at the controller with pitch 1.0 and distance delay. After it plays, it is not repeated for 61 ticks, so the work sound retriggers every 62 powered progress ticks (≈ 3.1 s). *Correction (consistency pass):* this text used to say 3.1 s was "the length of the clips". The measured clips (ASSET-FACTS) are 4.01–9.71 s long, so successive plays **overlap** ([MUTL-46](index.md#suspected-bugs)). See [sounds.md](sounds.md) for per-file durations.
 
 | Radius | sounds.json event | Volume | Files (one picked at random) |
 |---|---|---|---|
@@ -521,7 +521,7 @@ The renderer is bound to the master. It draws nothing unless the drill is comple
 
 ## 11. Legacy prototype (dead code)
 
-`blocks/machines/OreDrill` is a `BasicMachine` subclass named "OreDrill". It creates `OreDrillTileEnt` and refuses activation. Its registration is commented out.
+`blocks/machines/OreDrill` is a `BasicMachine` subclass named "OreDrill". It creates [`OreDrillTileEnt`](entity-sheets.md#10-legacy-oredrill--oredrilltileent-dead-code) and refuses activation. Its registration is commented out.
 
 `OreDrillTileEnt` is still registered as a tile entity id (`OreDrillTileEnt`). It is an `ISidedInventory` with zero slots. Each tick, when the block **below** it is `TGBlocks.oreCluster`:
 

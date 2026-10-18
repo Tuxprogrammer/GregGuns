@@ -121,8 +121,8 @@ Source: `resources/assets/techguns/lang/en_US.lang` (only `en_US` is listed here
 | Source | Text |
 |---|---|
 | [`PoweredArmor`](armor-catalogue.md#9-power-system-poweredarmor) | `Power: <p>/<max>` and `PowerType: Steam\|RF[ (<battery name>)]`, both aqua |
-| `ItemTGSpecialSlot` | `Slot: <Face\|Back>`, grey (the slot name comes from [`TGSlotType.toString`](extra-inventory.md#2-tgslottype-enum)) |
-| `ItemTGSpecialSlotAmmo` | `Reloads with: <ammo name>`, aqua |
+| [`ItemTGSpecialSlot`](special-equipment.md#1-interfaces-and-base-classes) | `Slot: <Face\|Back>`, grey (the slot name comes from [`TGSlotType.toString`](extra-inventory.md#2-tgslottype-enum)) |
+| [`ItemTGSpecialSlotAmmo`](special-equipment.md#1-interfaces-and-base-classes) | `Reloads with: <ammo name>`, aqua |
 | Armour resistance lines | Prefixes ` AR: `, ` PR: `, ` EX: `, ` E: `, ` F: `, ` I: `, ` L: `, ` P: `, ` RAD: ` |
 | GUI radiation tooltip | `Effects: NONE` |
 

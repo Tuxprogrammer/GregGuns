@@ -84,6 +84,8 @@ For spawn behaviour see [spawning.md § Spawn eggs](spawning.md#2-spawn-eggs-tgm
 
 These entities generate no tooltips in code.
 
+The full key list with file line numbers, the hard-coded egg names and the missing keys are in [lang.md](lang.md).
+
 ## Headline stats
 
 Base attributes come from `applyEntityAttributes`. "Armour" is the vanilla armour value from worn items or the `getTotalArmorValue` override. The per-damage-type Techguns armour is in [per-mob.md](per-mob.md). Speed is the vanilla `movementSpeed` attribute (a player walks at 0.1; a zombie is 0.23). XP is the base `experienceValue`; for `EntityLiving` the game adds 1 to 3 per equipped item.

@@ -153,3 +153,18 @@ Each tick consumes 80 RF × m (8 000 RF per unit at m = 1). At 100 ticks the ser
 | 0.6–0.9 | static | static | shown |
 
   The glass (part 6) is always drawn last.
+
+## 8. Entity sheet summary (consistency pass)
+
+| # | Field | Contents |
+|---|---|---|
+| 1 | Identity | Block `machineMultiBlock` metas 3 (Housing), 4 (Controller), 5 (Glass); tiles `FabricatorTileEntSlave` (3, 5) and `FabricatorTileEntMaster` (4); names `techguns.tile.machineMultiBlock_3/4/5.name` = **Fabricator Housing**, **Fabricator Controller**, **Fabricator Glass**; container `FabricatorContainer`; creative tab Techguns; oredict none |
+| 2 | Obtaining | Shaped ore recipes for Housing ×4, Controller ×1 and Glass ×4; full grids in [blocks-and-items.md](blocks-and-items.md#crafting-recipes) |
+| 3 | Numbers | Buffer 100 000 RF; 80 RF/t times the multiplier; 100 ticks per operation; multiplier clamped to 8; structure 2×2×2; hardness 8.0, resistance 50.0; 6 recipes |
+| 4 | Behaviour | Sections 1 to 4 |
+| 5 | Persistence and sync | Master NBT: `complete`, `hasPower`, `dir` (the last two only when complete), `plateUsed` (item), plus base keys. Slave NBT: `hasMaster`, `masterX/Y/Z`, `type`. GUI progress-bar fields: 0 progress, 1 totalTime, 2 power/100 |
+| 6 | UI | Section 5. Tooltips: standard power, redstone and security. Chat on a failed form: `techguns.tgmessage.0` "Invalid Block for Reaction Chamber at x, y, z" (MPRD-27) |
+| 7 | Visuals | Unformed blocks use CTM textures `fabricatorHousing` (32×32, average #949494, dominant #F0F0F0 36 %, #101010 24 %, #D0D0D0 13 %), `fabricatorController` (32×32, average #787D7E, #101010 24 %, #D0D0D0 21 %, #B0B0B0 12 %) and `fabricatorGlass` (32×32, average #1A1919, #101010 99 %, 23 % opaque) (CTM variations; per-face differences were not examined); formed blocks show the transparent `invisible.png` (16×16, 0 % opaque). TESR `RenderFabricator` + `ModelFabricator`; atlas `textures/blocks/Fabricator.png`, 256×256, average #535151, dominant #303030 56 %, #909090 10 %, #707070 8 %, 36 % opaque. Item renderer: ordinary block icons (no custom item renderer) |
+| 8 | Audio | `machines.fabricatorWork` volume 1, pitch 1, once at progress tick 1 per operation (client); three clips of 5.58 s, 44100 Hz mono |
+| 9 | Relationships | `FabricatorRecipe` registry fed by [`TGMachineRecipes`](index.md#tgmachinerecipesaddrecipes-what-it-registers) and `FabricatorTweaker`; NEI handler; wires, powders and plates from [`06-items`](../06-items/index.md) |
+| 10 | Bugs | [MPRD-05](index.md#suspected-bugs), [MPRD-07](index.md#suspected-bugs), [MPRD-08](index.md#suspected-bugs), [MPRD-16](index.md#suspected-bugs), [MPRD-25](index.md#suspected-bugs), [MPRD-27](index.md#suspected-bugs), [MPRD-35](index.md#suspected-bugs) |

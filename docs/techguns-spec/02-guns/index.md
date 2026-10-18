@@ -1,5 +1,8 @@
 # 02-guns: gun mechanics (Techguns 1.7.10, v0.1.2 alpha)
 
+## Overview
+
+
 This area covers every weapon item Techguns registers and the rules behind them: stats, firing, ammo and reload, charge, spread, zoom, akimbo, tool-guns, grenades, NPC use, the Techguns damage/armour pipeline, the weapon-stats config, and every gun recipe.
 
 Out of scope (cross-references):
@@ -12,16 +15,6 @@ Out of scope (cross-references):
 * NPCs, turrets and the ranged-AI task: **[10-entities-npcs](../10-entities-npcs/index.md)**
 * packets, extended player properties, keybinds, config file and tick/event plumbing: **[01-core](../01-core/index.md)**
 
-## Source files covered
-
-| File | Role |
-|---|---|
-| [`java/techguns/TGuns.java`](gun-catalogue.md) | Constructs and registers all 43 guns and 2 grenades (plus an unregistered flashbang). Registers all gun and grenade recipes. |
-| `java/techguns/TGWeaponStats.java` | Per-gun stat overrides in `Techguns_WeaponStats.cfg`. |
-| `java/techguns/items/guns/*.java` (27 classes) | Gun and grenade behaviour. |
-| `java/techguns/damagesystem/*.java` (6 files) | Damage types, damage source, damage pipeline, armour material data class, two hook interfaces. |
-| [`java/techguns/items/RecipeAkimboGun.java`](recipes.md#shapeless--custom-recipes), [`RecipeAkimboSplit.java`](recipes.md#shapeless--custom-recipes), [`ShapelessOreRecipeCopyNBT.java`](recipes.md#shapeless--custom-recipes) | NBT-aware crafting recipes. |
-
 ## Contents
 
 1. [gun-catalogue.md](gun-catalogue.md): how to decode the builder; master tables A–F (identity/ammo, damage/ballistics, handling/sounds, AI/visual hooks/textures, tool guns, grenades); weapon-stats config layout.
@@ -29,8 +22,14 @@ Out of scope (cross-references):
 3. [per-gun-behaviour.md](per-gun-behaviour.md): class hierarchy and a section per class or gun (charge base, launchers, beams, tesla, sonic rifle, bio gun, power hammer, chainsaw, akimbo deltas, grenades, dead classes).
 4. [damage-system.md](damage-system.md): [`DamageType`](damage-system.md#1-damage-types-damagetype-enum), [`TGDamageSource`](damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource), the `LivingAttackEvent` entry point, the player and non-player damage pipelines, armour and penetration formulas, damage-factor config, [`TGArmorMaterial`](damage-system.md#6-tgarmormaterial), death-message keys.
 5. [recipes.md](recipes.md): every gun and grenade recipe grid, loaded vs empty variants, akimbo combine/split, NBT-copy recipe.
+6. [sheets-index.md](sheets-index.md): index of the 46 per-item entity sheets, the shared rules the sheets follow, and the table of bugs that apply to many guns.
+7. [sheets-handguns-smgs.md](sheets-handguns-smgs.md): entity sheets (fields 1 to 10) for the Hand Cannon, 9mm Pistol, Submachine Gun, Revolver, Golden Revolver, Mac10, Vector and the four non-energy akimbo guns.
+8. [sheets-rifles-shotguns.md](sheets-rifles-shotguns.md): entity sheets for the Sawed Off, Combat Shotgun, Bolt Action Rifle, M4, The Infiltrator, Kalaschnikow, AUG, SCAR, AS50, PDW, Pulse Rifle, LMG and Minigun.
+9. [sheets-energy-special.md](sheets-energy-special.md): entity sheets for the Flamethrower, Laser Rifle, Scatter Laser Rifle, Blaster Rifle, Tesla Rifle, Nuclear Death Ray, Alien Blaster, Nether Blaster, De-Atomizer Pistol (single and akimbo), Sonic Rifle and Bio Gun.
+10. [sheets-launchers-tools-grenades.md](sheets-launchers-tools-grenades.md): entity sheets for the Rocket Launcher, Grim Reaper, Nuke Launcher, Grenade Launcher, both Power Hammers, the Chainsaw, the Stielgranate, the Frag Grenade and the unregistered Flashbang.
+11. [lang.md](lang.md): every lang key of the area with exact English text, the strings the gun code builds, death messages, and the missing, stray and hard-coded strings.
 
-## Key facts at a glance
+## Key facts
 
 * Every gun stores rounds in NBT `ammo` (short) and its camo in `camo` (byte). Item damage is only used to carry "rounds missing" out of a crafting recipe.
 * Fire control is a single per-player `fireDelay` tick counter, shared across all guns. A shot sets it to `minFiretime`; a reload sets it to `reloadtime − minFiretime`. Reloads refill the gun **instantly**; the delay is only a lockout.
@@ -49,6 +48,46 @@ Out of scope (cross-references):
 - [05-armor](../05-armor/index.md): the armour side of the damage system (penetration resistance, accuracy and speed bonuses).
 - [10-entities-npcs](../10-entities-npcs/index.md): how NPCs and turrets use guns (AI range, burst, attack time).
 - [09-machines-utility](../09-machines-utility/index.md): turret bases that hold guns, and the repair and camo benches.
+
+## Coverage
+
+**Source read.** All of `java/techguns/TGuns.java` and [`TGWeaponStats.java`](gun-lifecycle.md#13-details-confirmed-in-the-consistency-pass); all 27 classes in `java/techguns/items/guns/` ([`AlienBlaster`](sheets-energy-special.md#alien-blaster-alienblaster), [`Beamgun`](sheets-energy-special.md#nuclear-death-ray-nucleardeathray), [`Biogun`](sheets-energy-special.md#bio-gun-biogun), [`BlasterRifle`](sheets-energy-special.md#blaster-rifle-blasterrifle), [`Chainsaw`](sheets-launchers-tools-grenades.md#chainsaw-chainsaw), [`CyberdemonBlaster`](sheets-energy-special.md#nether-blaster-cyberdemonblaster), `Flamethrower`, `Flashbang`, `FragGrenade`, `GenericGrenade`, `GenericGun`, `GenericGunCharge`, [`GenericGunRadius`](per-gun-behaviour.md#genericgunradius--genericgunradiusgrav), `GenericGunRadiusGrav`, `GenericGunTool`, `GrenadeLauncher`, [`Handgun`](sheets-handguns-smgs.md#hand-cannon-handcannon), `Lasergun`, [`MibGun`](sheets-energy-special.md#de-atomizer-pistol-mibgun), `NeutrinoGun`, `NukeLauncher`, [`PowerHammer`](sheets-launchers-tools-grenades.md#power-hammer-powerhammer), `Railgun`, [`RocketLauncher`](sheets-index.md#all-items-at-a-glance), `ScatterBeamGun`, `SonicShotgun`, `Teslagun`); the 6 files in `java/techguns/damagesystem/`; `RecipeAkimboGun`, `RecipeAkimboSplit` and `ShapelessOreRecipeCopyNBT`. Read only for cross-checks: [`GenericItem`](../06-items/special-items.md#base-classes), `TechgunsTickHandler` (fire and crafting handlers), [`TechgunsEventhandler`](../01-core/events.md#techgunseventhandler-forge-bus) (mouse and break-speed handlers), `PacketShootGun`, [`SlotTechgun`](../09-machines-utility/turret.md), [`SoundUtil`](../01-core/utilities.md#soundutil), `ItemUtil.addToolClassesTooltip`, the renderer registrations and `setGunTextures` in [`ClientProxy`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy), the dispenser code in [`Techguns.java`](../01-core/lifecycle-and-registration.md#lifecycle-overview) and [`BehaviorProjectileDispenseDamagevalue`](../01-core/lifecycle-and-registration.md#preinit-in-exact-order), the loot hooks in [`TGItems`](../06-items/item-catalogue.md), the equipment code of the NPC classes that carry guns, `GenericProjectile`, [`GrenadeProjectile`](../04-projectiles-fx/projectiles.md#37-grenadeprojectile-family), [`ProjectileExplosion`](../04-projectiles-fx/explosions.md#projectileexplosion), and the damage-factor and safe-mode keys of [`TGConfig`](../01-core/config.md).
+
+**Entity sheets.** 46 sheets (43 guns, 2 registered grenades, the unregistered Flashbang), each with fields 1 to 10 of the conventions. Before: `per-gun-behaviour.md` described the guns in grouped sections with a median of 4 lines per gun and no tooltips, loot, NPC use, sound events or per-gun bug lists. After: every item has its own sheet of 48 to 91 non-blank lines (median 81) in [sheets-handguns-smgs.md](sheets-handguns-smgs.md), [sheets-rifles-shotguns.md](sheets-rifles-shotguns.md), [sheets-energy-special.md](sheets-energy-special.md) and [sheets-launchers-tools-grenades.md](sheets-launchers-tools-grenades.md). The catalogue tables A to F and `per-gun-behaviour.md` are unchanged apart from the correction listed below.
+
+**Assets.** 57 `textures/guns/` files are cited with their measured size, average colour and dominant colours; 78 distinct `guns.*` sound events are cited with file count, duration range, sample rate, channels and `sounds.json` category. Both sets come from [ASSET-FACTS.md](../ASSET-FACTS.md). The textures themselves are described in [`03-gun-visuals-audio`](../03-gun-visuals-audio/index.md).
+
+**Lang.** [lang.md](lang.md) lists the gun and grenade name keys (43 guns and 2 grenades), 6 stray name keys, the tooltip, GUN-tooltip and creative-tab keys, the damage-type keys, the 17 gun camo-name keys and the 17 death-message keys, plus a table of the strings built in code and a table of missing, misspelt and hard-coded strings.
+
+**Self-audit of `damage-system.md` and `gun-lifecycle.md`.** Every statement was re-read against `GenericGun`, `GenericGunCharge`, `TechgunsTickHandler`, `TechgunsEventhandler`, `PacketShootGun`, `SoundUtil`, `DamageSystem`, `TGDamageSource`, `DamageType`, `TGArmorMaterial` and the two interfaces. All numbers in the catalogue tables A to D were also compared against the `TGuns` builder chain by script (damage, minimum, drop-off, time to live, speed, accuracy, penetration, fire interval, reload, clip, zoom, recoil and flash times, rechamber and sound names, AI stats, muzzle data, textures, ammo and refund ratios) with no mismatch. The two files received additions only: `gun-lifecycle.md` section 13 and `damage-system.md` section 7 record confirmed detail that was missing.
+
+**Corrections made.**
+
+| Where | Was | Now |
+|---|---|---|
+| `gun-catalogue.md`, Table B, [`grenadelauncher`](gun-catalogue.md#table-a-identity-and-ammunition) row, "Hit source" cell | `tg_explosion` | `tg_explosion` for the area damage, and the vanilla explosion source for a direct hit, because `GrenadeProjectile.explode` applies `DamageSource.setExplosionSource` to the entity it hit |
+
+### Source files covered
+
+| File | Role |
+|---|---|
+| [`java/techguns/TGuns.java`](gun-catalogue.md) | Constructs and registers all 43 guns and 2 grenades (plus an unregistered flashbang). Registers all gun and grenade recipes. |
+| `java/techguns/TGWeaponStats.java` | Per-gun stat overrides in `Techguns_WeaponStats.cfg`. |
+| `java/techguns/items/guns/*.java` (27 classes) | Gun and grenade behaviour. |
+| `java/techguns/damagesystem/*.java` (6 files) | Damage types, damage source, damage pipeline, armour material data class, two hook interfaces. |
+| [`java/techguns/items/RecipeAkimboGun.java`](recipes.md#shapeless--custom-recipes), [`RecipeAkimboSplit.java`](recipes.md#shapeless--custom-recipes), [`ShapelessOreRecipeCopyNBT.java`](recipes.md#shapeless--custom-recipes) | NBT-aware crafting recipes. |
+
+## Known limits
+
+- **Sounds were not listened to.** Sound durations, sample rates, channels and categories are measured; what a clip sounds like is not described anywhere in this area, and no description should be inferred from names.
+- **Float formatting in tooltips.** The tooltip lines in the sheets come from running the code's arithmetic in 32-bit floats. Java 6 to 8 `Float.toString` can print an extra digit in rare cases, so the last digit of a value such as `15.000001` or `2.6000001` is from the same arithmetic, not from a game capture.
+- **`HashMap` order.** The tool-class lines in the Power Hammer and Chainsaw tooltips come from a Java `HashMap`; their order depends on the Java version and was not determined.
+- **Vanilla-generated lines.** The "+6 Attack Damage" style attribute line of the tool guns is generated by Minecraft 1.7.10, not by Techguns code; it is described from vanilla behaviour and was not read from source here.
+- **Rare-drop and equipment-drop odds.** The 2.5% plus 0.5% per Looting level rare-drop chance and the 8.5% equipment-drop chance are quoted from [10-entities-npcs/per-mob.md](../10-entities-npcs/per-mob.md#drops); they come from vanilla `EntityLiving`, not from Techguns code.
+- **Difficulty parameter of NPC equipment.** The [`ZombiePigmanSoldier`](../10-entities-npcs/per-mob.md#4-zombie-pigman-soldier-zombiepigmansoldier) weapon bounds depend on a `difficulty` argument whose source (spawn distance or world difficulty) is owned by [`10-entities-npcs`](../10-entities-npcs/index.md).
+- **Turret behaviour** (ammo handling on the turret base, target selection) is owned by [`09-machines-utility`](../09-machines-utility/index.md) and [`10-entities-npcs`](../10-entities-npcs/index.md); the sheets only state what the gun class contributes.
+- **Projectile effects** (impact FX, explosion shape, poison and chain details) are owned by [`04-projectiles-fx`](../04-projectiles-fx/index.md); the sheets state only the arguments a gun passes.
+- **Shared-item metadata.** Ammo metas come from [`06-items/ammo.md`](../06-items/ammo.md); the metas of High Caliber Rounds and Advanced Bullets are not listed there, so the sheets name those items without a number.
 
 ## Suspected bugs
 
@@ -99,3 +138,6 @@ Out of scope (cross-references):
 | GUN-43 | Missing lang key for UNRESISTABLE | `java/techguns/damagesystem/DamageType.java:34` | `techguns.TGDamageType.UNRESISTABLE` isn't in `en_US.lang`, so the raw key would show. | cosmetic |
 | GUN-44 | Fire-resistance check unreachable for TG fire | `java/techguns/damagesystem/DamageSystem.java:378`; `TGDamageSource.java:142-145` | TG FIRE sources are flagged magic, not fire, so the Fire Resistance early-out never triggers for flamethrower or blaster hits. Fire-immune mobs (Blazes, Ghasts) only get double armour. This is intended per the comment but surprising. | gameplay |
 | GUN-45 | Vanilla armour on players blocks all TG types fully | `java/techguns/damagesystem/DamageSystem.java:182` vs `:327` | Players run through Forge `ApplyArmor`, where vanilla armour reduces energy, poison and radiation at full value. Mobs with the same armour get ½ or 0 for those types. The two paths are inconsistent. | gameplay |
+| GUN-46 | Stray space in the Akimbo Golden Revolvers name | `resources/assets/techguns/lang/en_US.lang:625` | `techguns.item.goldenrevolverAkimbo.name` starts with a space, so the item shows as " Akimbo Golden Revolvers" and may sort or align differently from the other guns. | cosmetic |
+| GUN-47 | Zoom flag sent as true by unscoped guns | `java/techguns/items/guns/GenericGun.java:443-445` | `isZooming()` compares the idle client zoom (1.0) with `zoomMult`, whose default is also 1.0, so every gun without a scope reports "zooming" and sends `PacketShootGun(true)`. It is harmless because those guns have `zoombonus` 1.0, but the flag is meaningless for them. | cosmetic |
+| GUN-48 | Unreachable weapon branches in NPC equipment | `java/techguns/entities/npc/GenericNPC.java:70-90`; [`entities/npc/SkeletonSoldier.java:65-85`](../10-entities-npcs/per-mob.md#5-skeleton-soldier-skeletonsoldier) | `pickRandomGun` rolls `nextInt(4)` (0 to 3) but its fifth branch (the Hand Cannon) needs 4, so it never happens. `SkeletonSoldier` rolls `nextInt(3)` and its stone-shovel branch needs 3. Both look like leftovers of a larger roll. | cosmetic |

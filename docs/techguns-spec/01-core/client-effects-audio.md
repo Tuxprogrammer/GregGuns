@@ -1,6 +1,6 @@
 # Client effects, audio plumbing, death effects, version checker
 
-Source: [`client/ClientProxy.java`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy), `client/AttackTime.java`, `client/DeathEffect.java`, `client/GoreData.java`, `client/TGVersionChecker.java`, `client/audio/*`, `util/SoundUtil.java`.
+Source: [`client/ClientProxy.java`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy), [`client/AttackTime.java`](networking.md#1--gunfiredmessage), `client/DeathEffect.java`, `client/GoreData.java`, `client/TGVersionChecker.java`, `client/audio/*`, `util/SoundUtil.java`.
 
 ## TGSound
 
@@ -223,7 +223,7 @@ Models: "biped" = `ModelGibsBiped(1.0)`; the player uses a biped built for a 64�
 | AlienBug | [`ModelGibsAlienBug`](../04-projectiles-fx/death-effects.md#gib-models-clientmodelsmodelgibsjava) | 8 | [`textures/entity/alienbug.png`](../10-entities-npcs/textures.md#texturesentityalienbugpng-6464-about-34-opaque) | 0.8 | 235, 255, 70 |
 | *anything else (generic)* | biped | 6 | [`textures/entity/gore.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) | 0.66 | 160, 21, 31; gib scale random 0.5–0.8 |
 
-Which entities get gore at all is decided server-side by `EntityDeathUtils` ([utilities.md](utilities.md#entitydeathutils)). Some entities in that list, such as horses, wolves, squid, ghasts, PsychoSteve and DictatorDave, have no gore entry and therefore use the generic `gore.png` gibs.
+Which entities get gore at all is decided server-side by [`EntityDeathUtils`](../04-projectiles-fx/index.md#coverage) ([utilities.md](utilities.md#entitydeathutils)). Some entities in that list, such as horses, wolves, squid, ghasts, PsychoSteve and DictatorDave, have no gore entry and therefore use the generic `gore.png` gibs.
 
 ## Version checker
 
@@ -245,3 +245,23 @@ The **chat message** is posted on the first client player tick after `warn` beco
 - Line 2: `§7>` + `techguns.updateCheck.click` ("Click to download"). Clicking it opens `https://minecraft.curseforge.com/projects/techguns/files`, and its hover text is `techguns.updateCheck.download` ("Click to open the download page").
 
 When the checker is disabled the field is null, and the tick handler dereferences it unconditionally, which crashes the client ([CORE-02](index.md#suspected-bugs)).
+
+## Measured audio parameters (consistency pass)
+
+The sound list above ("Sounds played by core code") gives events and triggers. For each file's duration, sample rate and channels, and for the exact volume, pitch, repeat and moving flags every call passes, see [textures-sounds-lang.md](textures-sounds-lang.md#measured-sound-facts-and-play-parameters-consistency-pass). Summary of the parameters in code:
+
+| Call path | Volume | Pitch | Repeat | Moving | Category label |
+|---|---|---|---|---|---|
+| Death sounds (`PacketEntityDeathType` handler) | 1.0 | 1.0 | no | no | DEATHEFFECT |
+| Jetpack start and stop ([`TechgunsExtendedPlayerPropertiesClient`](player-state.md#client-subclass-techgunsextendedplayerpropertiesclient)) | 1.0 | 1.0 | no | no | PLAYER_EFFECT |
+| Jetpack loop and glider loop (`TGSound`) | 1.0 | 1.0 | yes | yes | PLAYER_EFFECT |
+| Anti-grav start (`PacketPlaySound` from the tick handler, radius 50) | 1.0 | 1.0 | no | yes | PLAYER_EFFECT, `playOnOwnPlayer` true |
+| Night vision on and off (`world.playSoundAtEntity`) | 1.0 | 1.0 | no | no | none (vanilla world sound) |
+
+All timing figures in this table are code constants; nothing here was timed at run time.
+
+### Death-effect and gore parameters not stated above
+
+- The origin of the blood and gib effect is the entity centre. The gib velocity formula uses 0.35 for horizontal and 0.15 for vertical motion inheritance, with random spread of plus or minus 0.175; this is unchanged from the section above.
+- `GoreData` default values: `showBlood` true, gib scale random range 1 to 1. The generic entry overrides the range to 0.5 to 0.8, as in the gore table.
+- The death sound is played after the effect is created, in the same handler call, so sound and gibs start on the same client tick.

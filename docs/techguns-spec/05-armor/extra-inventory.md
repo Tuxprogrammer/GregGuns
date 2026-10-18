@@ -106,7 +106,7 @@ On top of the background, the player is drawn 3-D at (51, 75) relative to the GU
 | Area | Tooltip lines |
 |---|---|
 | Toggle button i at (173, 7 + 11·i), 11×11 | (1) toggle name; (2) `Current state: ` + red `Disabled` or green `Enabled`; (3)–(4) the two description lines (table below) |
-| (99,7) 14×14 shield | underlined `Total Armor Values`, then nine lines `<DamageType name>: <formatAV(total)>` coloured as in the armour tooltip (PHYSICAL dark grey, PROJECTILE grey, EXPLOSION dark red, ENERGY dark aqua, FIRE red, ICE aqua, LIGHTNING yellow, POISON dark green, RADIATION green). Totals come from `DamageSystem.getTotalArmorAgainstType`: the sum over worn armour, where vanilla armour counts only toward PHYSICAL. |
+| (99,7) 14×14 shield | underlined `Total Armor Values`, then nine lines `<DamageType name>: <formatAV(total)>` coloured as in the armour tooltip (PHYSICAL dark grey, PROJECTILE grey, EXPLOSION dark red, ENERGY dark aqua, FIRE red, ICE aqua, LIGHTNING yellow, POISON dark green, RADIATION green). Totals come from [`DamageSystem.getTotalArmorAgainstType`](../02-guns/index.md#coverage): the sum over worn armour, where vanilla armour counts only toward PHYSICAL. |
 | (115,7) 54×6 radiation bar | green underlined `Current Radioactive Contamination`; `<radlevel×0.001>/1000`; `Effects: ` + green `NONE` (hard-coded). The radiation system belongs to [01-core](../01-core/index.md). |
 
 | Toggle index | Player flag | Name key / text | Description keys / text |

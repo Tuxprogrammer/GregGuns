@@ -41,7 +41,7 @@ A rewrite of vanilla `Explosion` with separate control over entity damage. It wr
 5. For each entity, measure `distance` from its feet position to the centre. If `distance ≤ dmgRadius2`:
    - **Push direction:** the unit vector from the centre to the entity's eye.
    - **Damage:** `entityDamage × min(1, 1 − (distance − dmgRadius1) / (dmgRadius2 − dmgRadius1))`. This is flat inside r1 and falls linearly to 0 at r2. There is no occlusion, and block density is *not* used for damage.
-   - If an attacker is given and both parties are living, multiply by `DamageSystem.getDamageFactor(attacker, entity)`. This is the friendly-fire and team factor, see [`01-core`](../01-core/index.md).
+   - If an attacker is given and both parties are living, multiply by [`DamageSystem.getDamageFactor(attacker, entity)`](../02-guns/index.md#coverage). This is the friendly-fire and team factor, see [`01-core`](../01-core/index.md).
    - **Damage source:**
      - If no override: [`TGDamageSource.causeExplosionDamage(exploder, null, GORE)`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource). That is name `tg_explosion`, type EXPLOSION, `goreChance = 0.35`, damaging entity = exploder, attacker = null.
      - Otherwise the override.

@@ -118,7 +118,7 @@ Used by [`GenericNPC.attackEntityWithRangedAttack`](../10-entities-npcs/per-mob.
 
 * Server only: calls `shootGun(world, shooter, null stack, accuracyBonus = zoombonus × accScale × acc, damageBonus = dmgScale × dmg, attackType 0)`.
 * `GenericNPC` passes `dmgScale = 0.5` and `accScale` set to the same difficulty acc factor (1.3/1.15/1.0, 1.0 on Peaceful). Turrets pass 1.0/1.0. Effective NPC damage is therefore 0.25 / 0.30 / 0.375 of the listed damage on Easy/Normal/Hard. Effective NPC spread is `accuracy × zoombonus × acc²` ([GUN-06](index.md#suspected-bugs), [GUN-07](index.md#suspected-bugs)).
-* NPCs never use ammo, never reload and never apply zoom or armour accuracy bonuses (other than the zoombonus above). Later, when the projectile hits, `DamageSystem.getDamageFactor` applies a further factor (see damage-system.md).
+* NPCs never use ammo, never reload and never apply zoom or armour accuracy bonuses (other than the zoombonus above). Later, when the projectile hits, [`DamageSystem.getDamageFactor`](index.md#coverage) applies a further factor (see damage-system.md).
 * Guns that ignore `damageBonus`: Biogun ([GUN-03](index.md#suspected-bugs)), Grenade Launcher ([GUN-04](index.md#suspected-bugs)), Power Hammer (fires a plain bullet for NPCs, [GUN-08](index.md#suspected-bugs)).
 
 ### AI stats → `EntityAIRangedAttack` (implemented in 10; parameters defined here)
@@ -283,3 +283,15 @@ Event names (all `techguns:` events exist in `sounds.json`; files are documented
 | Sounds | both call the SoundUtil helpers ([01](../01-core/index.md)/[03](../03-gun-visuals-audio/index.md) decide audibility) | |
 
 The client and server fire-delay counters run independently. If the server's counter is still 1 when the packet arrives, the server drops a shot that the client already predicted ([GUN-32](index.md#suspected-bugs)).
+
+## 13. Details confirmed in the consistency pass
+
+These facts were added after re-reading `GenericGun`, `SoundUtil` and the tick handler; none of them contradicts the sections above.
+
+* **Sound call parameters.** `SoundUtil.playSoundOnEntityGunPosition` takes (world, entity, event, volume, pitch, repeat, moving, category). The fire sound passes volume 4.0, pitch 1.0, repeat false, moving false and category `GUN_FIRE`; the rechamber sound passes 1.0, 1.0, false, false, `RELOAD`. On the server the call broadcasts [`PacketPlaySound`](../01-core/networking.md#9--packetplaysound-sc) to players within 100 blocks with the gun-position flag set and the play-on-own-player flag off, so the shooter hears only the locally played copy. `playReloadSoundOnEntity` passes 1.0, 1.0, repeat false, moving true, `RELOAD`, and the client plays it only if the previous reload sound started more than 500 ms earlier.
+* **`isZooming()`** is "client zoom equals this gun's `zoomMult`". Guns without a scope keep `zoomMult` at its default of 1.0, which equals the idle client zoom, so they report `true` and send `PacketShootGun(true)`. It has no effect because their `zoombonus` is 1.0 ([GUN-47](index.md#suspected-bugs)).
+* **`PacketShootGun` handler.** It checks only that the held item is a `GenericGun`, then calls `shootGunLeftClick`. It does not check `isShootWithLeftClick()`, so a modified client can also trigger the left-click path of the Chainsaw or Power Hammer. Like every handler it runs on the network thread ([CORE-05](../01-core/index.md#suspected-bugs)).
+* **Construction order versus registration order.** `GenericGun.getGuns()` lists guns in construction order, which `TGWeaponStats` iterates when it writes the config; this differs slightly from the registration order used by catalogue Table A (for example the Mac10 is constructed after the pistol, revolver and golden-revolver akimbo guns but registered before them). Config keys are looked up by name, so the order does not matter.
+* **Ammo-count helpers.** `getAmmoLeftCount(mags)` uses integer division `clipsize / ammoCount` before multiplying by the number of magazines, and multiplies by (pellets + 1) for burst guns only; for a shotgun (`burst` false) the HUD shows plain rounds.
+* **Tool-gun tooltip.** The tool-class lines come from a Java `HashMap`, so their order is not defined. Vanilla 1.7.10 adds its own attribute line for the attack-damage modifier of the Power Hammer and Chainsaw (6 or 2, and 12 or 2); that line is not produced by Techguns code.
+* **Loot and NPC stacks.** Stacks from chest hooks and from `new ItemStack(gun)` in NPC code carry no NBT; `getCurrentAmmo` initialises them as full guns on first read, and vanilla equipment-drop wear (a random item damage) becomes a partial clip through the same path.

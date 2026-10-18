@@ -257,3 +257,36 @@ Render bounding box: ±2 blocks in X and Z, 4 tall.
    - The heat-ray texture is used **for any focus**, including the UV emitter ([MPRD-26](index.md#suspected-bugs)).
 4. **Liquid.** If the tank holds fluid: an alpha-blended cube 1.875 wide, from local y 0.5 up to 0.5 + 2.9375·(amount/10000), using the fluid's still icon (flowing icon while working).
 5. **Glass group** with the glass texture.
+
+## 8. Entity sheet summary (consistency pass)
+
+| # | Field | Contents |
+|---|---|---|
+| 1 | Identity | Block `machineMultiBlock` metas 0 (Housing), 1 (Controller), 2 (Glass); tiles `ReactionChamberTileEntSlave` (0, 2) and `ReactionChamberTileEntMaster` (1); names `techguns.tile.machineMultiBlock_0/1/2.name` = **Reaction Chamber Housing**, **Reaction Chamber Controller**, **Reaction Chamber Glass**; container `ReactionChamberContainer`; creative tab Techguns; oredict none |
+| 2 | Obtaining | Shaped ore recipes: Housing ×9, Controller ×1, Glass ×6 ([blocks-and-items.md](blocks-and-items.md#crafting-recipes)). The Housing recipe consumes a Chemical Laboratory block |
+| 3 | Numbers | Buffer 1 000 000 RF; tank 10 000 mB; structure 3×4×3; intensity and level settings 0 to 10; reaction tick every 60 game ticks; hardness 8.0, resistance 50.0; 2 foci, 7 recipes |
+| 4 | Behaviour | Sections 3 and 4 |
+| 5 | Persistence and sync | Master NBT: `complete`, `hasPower`, `dir`, `inputTank`, `intensity`, `liquidLevel`, `operationData`, plus base keys. Slave NBT: `hasMaster`, `masterX/Y/Z`, `type`. GUI fields: 0 progress, 1 totalTime (unused), 2 power/100, 3 fluid ID, 4 fluid amount, 5 liquid level, 6 intensity. Buttons are in section 3 |
+| 6 | UI | Section 6. Exact strings: title "Reaction Chamber", tank tooltip fluid name or the literal "Empty", level text "n0%" (level times 10), intensity number; NEI shows "Unstable" / "Risk" with the risk names None, Destroy Input Item, Small Explosion, Medium Explosion |
+| 7 | Visuals | Unformed blocks use CTM textures `rc_block` (32×32, average #C5C5C5, dominant #F0F0F0 56 %, #B0B0B0 28 %, #505050 7 %), `rc_controller` (32×32, average #C8D3DC, #F0F0F0 50 %, #B0B0B0 34 %, #B0D0F0 2 %) and `rc_glass` (32×32, average #D7D7D7, #F0F0F0 55 %, #B0B0B0 42 %, 52 % opaque). Formed: TESR `RenderReactionChamber`, OBJ chamber and glass groups (section 7 and the glass-geometry subsection), textures `textures/entity/reactionchamber.png` (256×256, average #3B3B3B, dominant #101010 64 %, #F0F0F0 9 %, #303030 7 %) and `textures/entity/reactionchamberglass.png` (128×128, average #C7C7C7, 4 % opaque), beam `textures/fx/heatray.png` (128×128). Particle: vanilla `spell` ×4 per reaction tick. Item renderer: ordinary block icons |
+| 8 | Audio | Focus sound (`machines.rc_heatrayWork`, 4.00 s, 44100 Hz mono, or `machines.chemlabWork`, 3.50 s), `machines.rc_beep` (0.11 s, 44100 Hz), `machines.rc_warning` (1.35 s, 22050 Hz); all volume 1, pitch 1; plus `random.explode` volume 4.0, pitch 0.7·(1 ± 0.2·random) on a low-risk explosion. Triggers in [sounds.md](sounds.md#5-per-event-call-parameters-volume-pitch-side-exact-condition) |
+| 9 | Relationships | `ReactionChamberRecipe`/`ReactionBeamFocus` from [`TGMachineRecipes`](index.md#tgmachinerecipesaddrecipes-what-it-registers) and [`ReactionChamberTweaker`](minetweaker.md#1-loading); NEI handler; foci, fluids and outputs in [`06-items`](../06-items/index.md)/[`04-projectiles-fx`](../04-projectiles-fx/index.md) |
+| 10 | Bugs | [MPRD-01](index.md#suspected-bugs), [MPRD-03](index.md#suspected-bugs), [MPRD-04](index.md#suspected-bugs), [MPRD-07](index.md#suspected-bugs), [MPRD-15](index.md#suspected-bugs), [MPRD-17](index.md#suspected-bugs), [MPRD-18](index.md#suspected-bugs), [MPRD-19](index.md#suspected-bugs), [MPRD-22](index.md#suspected-bugs), [MPRD-26](index.md#suspected-bugs), [MPRD-31](index.md#suspected-bugs), [MPRD-35](index.md#suspected-bugs) |
+
+### 9. Glass group geometry (`models/entity/reactionchamber.obj`, group `GLASS`)
+
+Earlier passes recorded only that the glass is a shell. Reading the OBJ directly gives the exact geometry.
+
+- **File layout.** 284 vertices, 620 texture coordinates, 284 normals and 334 triangular faces in total. The `CHAMBER` group (324 triangles) starts at file line 1171; `GLASS` starts at line 1535 and has **10 triangles**, which is 5 quads. The header comment says "10 faces".
+- **Vertices.** The glass uses the last eight vertices (numbers 277 to 284), forming an axis-aligned box:
+  - X from −32 to +32 and Z from −32 to +32 (one of the Z values is −31.999998, a rounding artefact);
+  - Y from 34 to 112.
+- **In blocks.** The renderer scales by 1/32, so the box is **2.0 × 2.4375 × 2.0 blocks**, from 1.0625 to 3.5 blocks above the model origin. It sits inside the 3×4×3 hull (the `CHAMBER` group spans ±48 units in X and Z, i.e. 3 blocks): a smaller glass core, not a full-size shell.
+- **Faces.** Four side quads plus one **top** quad (at Y = 112). There is **no bottom face**, so from below the box is open.
+- **Texture mapping.** The glass texture is 128×128 and the UV map is 1:1 with the box size in model units, which makes the mapping exact once the loader's V flip (V = 1 − v) is applied:
+  - each of the four sides uses the rectangle **(0,0)–(63,77)**, i.e. 64 × 78 px (source V values 0.390625 to 1.0 before the flip);
+  - the top uses **(64,0)–(127,63)**, i.e. 64 × 64 px (source U 0.5 to 1.0, V 0.5 to 1.0 before the flip).
+  The right-hand 64 columns below row 64 and the bottom 50 rows of the left column are unused.
+- **What the texture holds in those rectangles** (measured, 683 non-transparent pixels out of 16 384): the side-pane rectangle contains 377 of them and the top-pane rectangle 306; nothing outside the two rectangles is opaque. Both panes are outline-and-glare patterns on a transparent field: a one-pixel frame in light grey (about #C5C5C5 to #CACACA; the commonest colour is #C9C9C9) plus a few diagonal streaks. That matches the 4 % opaque figure.
+- **Normals.** The `vn` entries are rotation-style triples (values of 1.570796, i.e. π/2) rather than unit vectors, so the file carries no usable lighting normals; the renderer doesn't light the glass.
+- **Rendering state.** Per section 7, the glass group is drawn last with the glass texture. Whether alpha blending is enabled for that draw is not set in the OBJ itself.

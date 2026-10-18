@@ -205,11 +205,11 @@ So head-mounted gear follows head yaw and pitch, and back gear follows the body 
 
 | Gun ([`TGuns`](../02-guns/gun-catalogue.md) field) | Renderer | Model, texture | Parts | Scale | Translation | Double-shot recoil |
 |---|---|---|---|---|---|---|
-| `akimbo_pistol` | `RenderAkimboGun` | [`ModelPistol3`](../03-gun-visuals-audio/gun-models.md#modelpistol3-pistol-declared-6432-used-with-a-12864-png-family-z-9-boxes-2-parts), `textures/guns/pistol3.png` | 2 | 0.55 | (0.2, −0.5, −2.0) | no |
-| `akimbo_revoler` | `RenderAkimboRevolver` | [`ModelRevolver`](../03-gun-visuals-audio/gun-models.md#modelrevolver-6432-family-x-20-boxes-1-part), `textures/guns/revolver.png` | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
-| `akimbo_goldenrevolver` | `RenderAkimboRevolver` | [`ModelGoldenRevolver`](../03-gun-visuals-audio/gun-models.md#modelgoldenrevolver-6432-family-x-24-boxes-1-part), `textures/guns/goldenrevolver.png` | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
-| `akimbo_mac10` | `RenderAkimboMac10` | [`ModelMac10`](../03-gun-visuals-audio/gun-models.md#modelmac10-declared-6432-used-with-a-12864-png-family-z-23-boxes-tabula-1-part), `textures/guns/mac10texture.png` | 1 | 0.5 | (0.2, −0.45, −2.15) | yes |
-| `akimbo_mibGun` | `RenderAkimboMibGun` | [`ModelMibGun`](../03-gun-visuals-audio/gun-models.md#modelmibgun-mib-gun-declared-6464-used-with-a-128128-png-family-z-50-boxes-tabula-1-part), `textures/guns/mibgun.png` | 1 | 0.55 | (0.1, −0.7, −1.7) plus the debug offsets (bug [ARM-25](index.md#suspected-bugs)) | no |
+| `akimbo_pistol` | `RenderAkimboGun` | [`ModelPistol3`](../03-gun-visuals-audio/gun-models.md#modelpistol3-pistol-declared-6432-used-with-a-12864-png-family-z-9-boxes-2-parts), [`textures/guns/pistol3.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | 2 | 0.55 | (0.2, −0.5, −2.0) | no |
+| `akimbo_revoler` | `RenderAkimboRevolver` | [`ModelRevolver`](../03-gun-visuals-audio/gun-models.md#modelrevolver-6432-family-x-20-boxes-1-part), [`textures/guns/revolver.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
+| `akimbo_goldenrevolver` | `RenderAkimboRevolver` | [`ModelGoldenRevolver`](../03-gun-visuals-audio/gun-models.md#modelgoldenrevolver-6432-family-x-24-boxes-1-part), [`textures/guns/goldenrevolver.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
+| `akimbo_mac10` | `RenderAkimboMac10` | [`ModelMac10`](../03-gun-visuals-audio/gun-models.md#modelmac10-declared-6432-used-with-a-12864-png-family-z-23-boxes-tabula-1-part), [`textures/guns/mac10texture.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | 1 | 0.5 | (0.2, −0.45, −2.15) | yes |
+| `akimbo_mibGun` | `RenderAkimboMibGun` | [`ModelMibGun`](../03-gun-visuals-audio/gun-models.md#modelmibgun-mib-gun-declared-6464-used-with-a-128128-png-family-z-50-boxes-tabula-1-part), [`textures/guns/mibgun.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | 1 | 0.55 | (0.1, −0.7, −1.7) plus the debug offsets (bug [ARM-25](index.md#suspected-bugs)) | no |
 
 **Animation inputs:** per-entity reload and recoil timers held by `ClientProxy` ([03](../03-gun-visuals-audio/index.md)).
 - Reload progress p = 1 − remaining/total.

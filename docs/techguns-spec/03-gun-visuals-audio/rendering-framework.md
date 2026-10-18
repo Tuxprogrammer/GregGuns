@@ -258,7 +258,7 @@ Camo state lives in item NBT: byte tag **`camo`** (absent = 0). `switchCamo(stac
 | Vector | textures/guns/vector_texture | 2 | techguns.item.vector.camoname.1 = Black |
 | every other gun | its single texture | 1 | – |
 
-Other related lang strings: `techguns.item.defaultcamo` = Default Camo. `techguns.item.invalidcamo` = No Camo. `techguns.tooltip.currentcamo` = Current Camo. `techguns.message.camoswitch` = Switched Camo to. The tooltip line itself is built in area 02.
+Other related lang strings: `techguns.item.defaultcamo` = Default Camo. `techguns.item.invalidcamo` = No Camo. `techguns.tooltip.currentcamo` = Current Camo. `techguns.message.camoswitch` = Switched Camo to. The tooltip line itself is built in area 02. *Correction (consistency pass):* no gun tooltip or chat message shows the camo; `techguns.tooltip.currentcamo` and `techguns.message.camoswitch` are used by armour only, and a gun's camo is changed only in the Camo Bench GUI. See [lang-and-strings.md](lang-and-strings.md).
 
 **Texture resolution vs model.** Box UVs are normalised by the model's declared `textureWidth/Height`, so a PNG may be an exact integer multiple of the declared size and render as a higher-resolution version of the same layout. Mismatches (all ×2) are: Blaster Rifle (model 128×64, PNG 256×128), Frag Grenade (32×32 / 64×64), Mac-10 (64×32 / 128×64), MIB gun (64×64 / 128×128), Neutrino gun (128×128 / 256×256), Pistol3 (64×32 / 128×64), SCAR (128×64 / 256×128), Vector (128×64 / 256×128). See [textures.md](textures.md).
 
@@ -340,7 +340,7 @@ In the rotated muzzle frame, X is screen up/down. The overlay therefore kicks up
 
 ## 12. Grenade renderers (`RenderGrenade`)
 
-The texture argument *is* used here: `textures/guns/stielgranate.png` and `textures/guns/fragGrenade_texture.png`. There are no timers. In first person, prog = item-in-use ticks ÷ 20, clamped to [0,1] (the throw wind-up). Every view calls the model's extended render with part 0, ammo 0, reloadProgress 0 and fireProgress = prog (0 outside first person).
+The texture argument *is* used here: [`textures/guns/stielgranate.png`](textures.md#measured-colours-all-62-textures) and [`textures/guns/fragGrenade_texture.png`](textures.md#measured-colours-all-62-textures). There are no timers. In first person, prog = item-in-use ticks ÷ 20, clamped to [0,1] (the throw wind-up). Every view calls the model's extended render with part 0, ammo 0, reloadProgress 0 and fireProgress = prog (0 outside first person).
 
 | | Stielhandgranate | Frag grenade |
 |---|---|---|
@@ -388,6 +388,7 @@ Full catalogue in [sounds.md](sounds.md). Gun sounds are [`TGSound`](../01-core/
 
 * **Fire / loop-start / rechamber:** [`SoundUtil.playSoundOnEntityGunPosition`](../01-core/utilities.md#soundutil). Server side, it sends [`PacketPlaySound`](../01-core/networking.md#9--packetplaysound-sc) to every client within 100 blocks. Clients other than the shooter (`playOnOwnPlayer` is false for these) play it. On the shooting client the same call runs locally, so the shooter hears it without waiting for the server. Volume: `SOUND_DISTANCE` = 4.0 for fire sounds (with vanilla attenuation that is audible to about 64 blocks), 1.0 for rechamber. Pitch 1. "Gun position" = 1 block in front of the entity along its head yaw, at half its height. The sound follows the entity only if *moving* is set (fire sounds are not moving, so they stay where they were emitted).
 * **Reload:** `SoundUtil.playReloadSoundOnEntity`: same packet path, moving = true. Locally it is suppressed if the previous local reload sound started less than 500 ms ago (prevents double play).
-* Volume is multiplied by the per-category client config multiplier [`TGConfig.getVolumeMultiplier(volume, category)`](../01-core/config.md) (area [01](../01-core/index.md)). Categories: GUN_FIRE (fire, loop, swing), RELOAD (reload, rechamber), PLAYER_EFFECT, EXPLOSION, MACHINE, DEATHEFFECT.
+* Volume is passed through [`TGConfig.getVolumeMultiplier(volume, category)`](../01-core/config.md) (area [01](../01-core/index.md)). *Correction (consistency pass):* in v0.1.2 that method returns the volume unchanged, so there is no per-category volume config. The category is plumbing for an unfinished feature. Categories: GUN_FIRE (fire, loop, swing), RELOAD (reload, rechamber), PLAYER_EFFECT, EXPLOSION, MACHINE, DEATHEFFECT.
 * Charge guns (Power Hammer, Bio Gun) use plain `world.playSoundAtEntity(player, …, 1.0, 1.0)` for fire and reload. These are vanilla positional sounds, not TGSounds.
 * Out of ammo with no reserve: vanilla `mob.villager.idle` at volume 1 (server).
+* **Audible range (added in the consistency pass):** Minecraft 1.7.10 attenuates linearly to max(1, volume) × 16 blocks. A fire sound at 4.0 therefore carries 64 blocks, but the packet only reaches clients within 100 blocks (swing packets: 50). Reload and rechamber sounds at 1.0 carry 16 blocks. Stereo files are the exception: the sound engine plays them without positional attenuation (see `GVA-23`).

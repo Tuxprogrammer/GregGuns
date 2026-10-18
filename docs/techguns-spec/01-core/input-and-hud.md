@@ -143,6 +143,123 @@ The Techguns inventory GUI itself adds the mirror pair: the vanilla tab enabled 
 | (242, 28) / (249, 28) | Yellow "!" panel (low durability) / red "!" panel (broken) | durability warning |
 | (249, 35) | Grey battery (242, 35 is empty) | powered-armor row |
 | (242, 42) / (249, 42) | Jetpack with red crosses (disabled) / with yellow flames (enabled) | jetpack row |
-| (0, 168, 8, 8) / (8, 168) / (16, 168) | Armor point: full (grey gradient plate with 4 dark rivets in a black frame) / half (left half grey, right half white) / empty (white plate with rivets) | armor bar replacement |
+| (0, 168, 8, 8) / (8, 168) / (16, 168) | Armor point: full (grey gradient plate with 4 dark rivets in a black frame) / half (left half grey, right half transparent) / empty (transparent interior, frame and rivets only) | armor bar replacement |
 
 Palette: the vanilla GUI greys (#C6C6C6 panel, #8B8B8B slots, #373737 and #FFFFFF bevels), black (#000000) outlines, signal red #FF0000, greens #00C60E / #00FF12 / #1EFF00 / #006607, yellow #FFFF00, dark grey #353535 and mid grey #727272.
+
+## Keybind entity sheets (consistency pass)
+
+### Behaviour shared by all five Techguns keys
+
+| Aspect | Detail |
+|---|---|
+| Registration | `TGKeybinds.init` builds five `KeyBinding` objects (name = lang key, default LWJGL key, category `techguns.key.categories.techguns`) and registers them with `ClientRegistry`. `ClientProxy` (line 1297) registers the `TGKeybinds` instance on the FML bus |
+| Held versus pressed | Every key uses `KeyBinding.isPressed()`: it is edge-triggered and consumes one queued press. Holding the key does nothing more; one physical press produces one packet. There is no hold, repeat or release handling for any Techguns key |
+| Chain | One `else if` chain in the order night vision, safe mode, jetpack, step assist, force reload. A press that is not reached in one event stays queued and is handled on the next key event |
+| Prediction | None for the four toggles: the server flips the flag and replies with a full sync, so the HUD and GUI change one round trip later. Force reload predicts locally |
+| Feedback | No chat message. State shows in the HUD icon column and in the Techguns inventory toggle buttons. Night vision plays a sound (below) |
+| Works in GUIs | The Techguns handler has no screen check. Whether FML posts `KeyInputEvent` while a GUI is open is Forge behaviour that cannot be verified from the Techguns source |
+
+### Entity sheets
+
+| Field | Night vision | Safe mode | Jetpack | Step assist | Force reload |
+|---|---|---|---|---|---|
+| Static field | `KEY_TOGGLE_NIGHTVISION` | `KEY_TOGGLE_SAFEMODE` | `KEY_TOGGLE_JETPACK` | `KEY_TOGGLE_STEPASSIST` | `KEY_FORCE_RELOAD` |
+| Lang key | `techguns.key.toggleNightvision` | `techguns.key.toggleSafemode` | `techguns.key.toggleJetpack` | `techguns.key.toggleStepassist` | `techguns.key.forceReload` |
+| English text (en_US.lang line) | Toggle Nightvision (407) | Toggle Safe Mode (408) | Toggle Jetpack (410) | Toggle Step Assist (409) | Force Reload (411) |
+| Default key (LWJGL constant) | N (`KEY_N`) | B (`KEY_B`) | J (`KEY_J`) | V (`KEY_V`) | R (`KEY_R`) |
+| Category / English | `techguns.key.categories.techguns` = Techguns (line 406) | same | same | same | same |
+| Packet sent | [`PacketTGKeybindPress`](networking.md#7--packettgkeybindpress) id 0 | id 1 | id 7 | id 8 | id 6 |
+| Client-side condition | none | none | none | none | main-hand item is a `GenericGun`, extended properties exist, `fireDelay <= 0`, gun not fully loaded; then also calls `tryForcedReload` locally |
+| Server effect | Flip `enableNightVision`, remove any Night Vision potion when turning off, play `nightvision.off` (when removing) or `nightvision.on` (turning on with NV armor), full sync | Flip `enableSafemode`; revert to on if [`ForceSafeModeForNonOps`](config.md#category-general) forbids it; full sync | Flip `enableJetpack` only while the jump flag is false; send field-sync 1 | Flip `enableStepAssist`; full sync | `tryForcedReload` on the held gun, no `fireDelay` or full-clip check on the server side of the packet |
+| Also reachable from | Toggle button index 1 in the Techguns inventory GUI | Toggle button index 2 | Toggle button index 4 | Toggle button index 3 | none |
+| Sound | `techguns:nightvision.on` / `.off`, vol 1.0, pitch 1.0 (see [textures-sounds-lang.md](textures-sounds-lang.md#sounds)) | none | none | none | whatever the reload plays ([02](../02-guns/index.md)) |
+| Bugs | [CORE-15](index.md#suspected-bugs) | none | none | [CORE-14](index.md#suspected-bugs) (related) | none |
+
+Toggle button index 0 (HUD icons, id 9) has no key. The HUD toggle can only be changed in the Techguns inventory GUI.
+
+### Other input paths that act like keybinds
+
+| Input | Mechanism | Held or pressed | Packet or effect |
+|---|---|---|---|
+| Left mouse button with a left-click gun | `MouseEvent` (HIGH) stores the button state; `PlayerTickEvent` START reads it | Held. Auto guns repeat every tick that `fireDelay <= 0`; semi-auto guns clear the flag after one attempt | [`PacketShootGun`](networking.md#8--packetshootgun) (id 8 in the packet list) every firing tick |
+| Jump key with a jetpack or jump pack | [`ItemJetpack`](../05-armor/special-equipment.md#43-jetpack-itemjetpack) slot tick compares the live jump-key state with the stored flag | Edge-detected: rising edge sends `JETPACK_BOOST_START` (2), falling edge sends `JETPACK_BOOST_STOP` (3). Only evaluated while `enableJetpack` is on. Stop is also sent when the pack is empty (item damage at maximum) and the flag is still set | `PacketTGKeybindPress` |
+| Forward key | Commented out in `ItemJetpack` | not active | ids 4 and 5 unused |
+| Inventory tab and toggle buttons | `TGGuiTabButton`, [`TGGuiToggleButton`](../05-armor/extra-inventory.md) mouse presses | Click | [`PacketOpenPlayerGUI`](networking.md#4--packetopenplayergui), `PacketTGKeybindPress` |
+
+### Debug keybinds (sheet)
+
+Registered by `debug.Keybinds.init` only when [`enableDebugKeybinds`](config.md#category-debug) is true (`ClientProxy` line 1292). Handler: `debug.KeyInputHandler.onKeyInput` on the FML bus, with independent `if` blocks (not an `else if` chain), so several can fire in one event. All use `isPressed()` (edge-triggered). Step is 0.1. None of the names or the category have lang entries ([CORE-29](index.md#suspected-bugs)), so Forge's controls screen shows the raw key strings.
+
+| Field | Lang key (untranslated) | Default key | Action | Chat output (hard-coded English) |
+|---|---|---|---|---|
+| `plusX` | `key.+x` | Numpad 7 | X += 0.1 | `X:<value>` |
+| `minusX` | `key.-x` | Numpad 8 | X -= 0.1 | `X:<value>` |
+| `plusY` | `key.+y` | Numpad 4 | Y += 0.1 | `Y:<value>` |
+| `minusY` | `key.-y` | Numpad 5 | Y -= 0.1 | `Y:<value>` |
+| `plusZ` | `key.+z` | Numpad 1 | Z += 0.1 | `Z:<value>` |
+| `minusZ` | `key.-z` | Numpad 2 | Z -= 0.1 | `Z:<value>` |
+| `showXYZ` | `key.show` | Numpad 0 | print all three | `XYZ: x, y, z` |
+| `reloadFX` | `key.reloadFX` | Numpad Enter | reload the FX definition file | `Reloading FXList...` then `Done!` |
+| `killAllEntityFX` | `key.killAllEntityFX` | Numpad , (comma) | remove every live FX particle | `Removing all Particles...` then `Done!` |
+
+Category for all nine: `key.categories.techguns` (no English text). Packets sent: none; everything is client-local.
+
+## `TGPlayerInventory.png` pixel regions (measured, consistency pass)
+
+Measured from the file itself. The texture is 256x256; opaque content is confined to (0, 0)-(216, 52) plus the icon strip at x 242-255 (y 0-49) and the armour-point tiles at (0, 168, 24, 8). The earlier table above remains valid; this section gives the full rectangle list, including each slot, with the container coordinates that [`TGPlayerContainer`](../05-armor/extra-inventory.md#4-container-tgplayercontainer) and the vanilla-style frames use. A slot's 16x16 well sits inside an 18x18 bevelled frame, so the frame starts one pixel up and left of the listed well. Slot role and item filtering belong to [05-armor](../05-armor/extra-inventory.md).
+
+### Main panel (0, 0, 176, 166)
+
+| Rectangle (x, y, w, h) | Role | Notes |
+|---|---|---|
+| (0, 0, 176, 166) | Panel background | Light grey #C6C6C6 face with white and dark bevel edges |
+| (26, 8, 52, 70) | Player-preview viewport | Pure black #000000, fully enclosed; the live 3-D player is drawn over it |
+| (8, 8, 16, 16) | Armour slot 0 (helmet) | Slot well colour #8B8B8B |
+| (8, 26, 16, 16) | Armour slot 1 (chestplate) | |
+| (8, 44, 16, 16) | Armour slot 2 (leggings) | |
+| (8, 62, 16, 16) | Armour slot 3 (boots) | |
+| (80, 8, 16, 16) | Face slot (Techguns slot 0) | |
+| (80, 26, 16, 16) | Back slot (Techguns slot 1) | |
+| (96, 62, 16, 16) | Heal slot (Techguns slot 5) | The only slot not in the 3x3 grid |
+| (116, 24, 16, 16), (134, 24, 16, 16), (152, 24, 16, 16) | Food slots (Techguns slots 2-4) | Top row of the 3x3 grid |
+| (116, 44, 16, 16), (134, 44, 16, 16), (152, 44, 16, 16) | Ammo slots 6-8 | Middle row |
+| (116, 62, 16, 16), (134, 62, 16, 16), (152, 62, 16, 16) | Ammo slots 9-11 | Bottom row |
+| (99, 7, 14, 14) | Total-armour-values icon (hover area) | Small bevelled shield well; hover tooltip lists the nine damage types ([05-armor](../05-armor/extra-inventory.md#5-gui-guitgplayerinventory)) |
+| (115, 7, 54, 6) | Radiation gauge trough | Measured fill of the strip (116, 8, 52, 4) in slot-well grey with a darker top-left and white bottom-right bevel; the bar shows `radlevel / 1000` ([CORE-42](index.md#suspected-bugs)) |
+| (8, 84) to (152, 120), 9 columns by 3 rows, pitch 18, each 16x16 | Main inventory (27 slots) | Standard vanilla layout |
+| (8, 142) to (152, 142), 9 slots, pitch 18, each 16x16 | Hotbar | |
+
+### Tab sprites
+
+| Rectangle | Role | Colours (measured) |
+|---|---|---|
+| (177, 0, 26, 26) | Tab, current (disabled) variant | face #C6C6C6 (460 px), white bevel (90 px), black outline (76 px) |
+| (177, 26, 26, 26) | Tab, other (enabled) variant | face #8B8B8B (460 px), same bevel and outline counts |
+| (213, 0, 3, 26) | Connector strip that joins the current tab to the panel | #C6C6C6 with white pixels; drawn only for the disabled tab |
+
+### HUD and toggle icon sheet (7x7 cells at u = 242 off / 249 on)
+
+| v | Cell | Role | Measured content |
+|---|---|---|---|
+| 0 | (242, 0) / (249, 0) | HUD toggle: off / on | off: red X, 9 px of #FF0000 inside (243, 1, 5, 5); on: green check mark (#00C60E) with a black and white edge, bounding box (250, 0, 6, 7) |
+| 7 | (242, 7) / (249, 7) | Night vision: off / on | off: dark-grey #353535 goggles, bounding box (243, 9, 5, 2); on: green goggles (#00C60E and #006607), bounding box (249, 8, 7, 4) |
+| 14 | (242, 14) / (249, 14) | Safe mode: unsafe / safe | full 7x7 cell. Unsafe: #353535 frame, red #FF0000 glyph, black detail. Safe: #353535 frame, green #00FF12 glyph |
+| 21 | (242, 21) / (249, 21) | Step assist: off / on | 7x6 cell. Off: #353535 with red #FF0000 steps; on: #353535 with green #1EFF00 and #00C60E steps |
+| 28 | (242, 28) / (249, 28) | Durability warning: yellow / red | full 7x7 cell, #FFFF00 (41 px) or #FF0000 (41 px) with #727272 and black corner pixels |
+| 35 | (242, 35) empty / (249, 35) | Powered-armour battery | (249, 35) glyph occupies (250, 35, 5, 7): black outline (19 px) and #727272 body (12 px). The cell at (242, 35) is fully transparent |
+| 42 | (242, 42) / (249, 42) | Jetpack: disabled / enabled | full 7x7 cell. Disabled: black and #727272 pack with red #FF0000 crosses; enabled: same pack with red flame pixels |
+| 49 | (242, 49), (249, 49) | unused | fully transparent |
+
+The toggle buttons in the inventory GUI read rows v = 0, 7, 14, 21 and 42 (index 4 skips to 42); the HUD overlay additionally reads v = 28 and 35. Sizes for the goggles (7x5) and step-assist (7x6) in the older table are approximate: the opaque bounding boxes are 7x4 (on goggles) and 5x2 (off goggles).
+
+### Armour-point tiles
+
+| Rectangle | Role | Measured content |
+|---|---|---|
+| (0, 168, 8, 8) | Full armour point | 64 opaque px; 32 black outline px plus grey gradient plate, average #424242 |
+| (8, 168, 8, 8) | Half armour point | 48 opaque px, average #262626. Interior columns 1-3 (x 9-11) are filled grey; interior columns 4-6 (x 12-14) are transparent |
+| (16, 168, 8, 8) | Empty armour point | 32 opaque px, all black (#000000): only the frame and the four rivets |
+| Rivets at tile offsets (2, 2), (5, 2), (2, 5), (5, 5) | Rivet pixels | Four black pixels in every tile. They show up as isolated 1x1 components only where the neighbouring interior is transparent: (13, 170), (13, 173) in the half tile and (18, 170), (21, 170), (18, 173), (21, 173) in the empty tile |
+
+Correction: an earlier version of this document called the interior of the half and empty tiles "white". The pixels there are fully transparent (alpha 0); the white came from viewing the PNG on a white backdrop. In game, blending is on while the bar is drawn, so the HUD background shows through.

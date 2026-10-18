@@ -154,3 +154,43 @@ else:
 ## TechgunsShooterValuesProperties (deprecated, unused)
 
 An `IExtendedEntityProperties` named `ExtendedEntityShooter`, intended for any living shooter. It holds reload start (long), reload total (int), recoil start (long) and recoil total (int), saved as NBT keys `reloadtime`, `recoiltime`, `totalreloadtime`, `totalrecoiltime`, and only when they are above 0. It is never registered. The same data now lives in client-side [`AttackTime`](client-effects-audio.md#attack-timing-recoil--reload) maps.
+
+## Extended-property field sheets (consistency pass)
+
+One row per field of `TechgunsExtendedPlayerProperties`: NBT key, NBT type, in-code default, how it reaches clients, and every class outside `extendedproperties/` that reads it. Reader lists come from a search of the whole source tree.
+
+| Field | NBT key and type | Default (new player) | Default (old save, key missing) | Sync | Written by | Read by |
+|---|---|---|---|---|---|---|
+| `TG_inventory` (12 slots) | `TechgunsPlayerInventory`, tag list of compounds (byte `Slot` + stack tags) | all empty | all empty | full sync (12), partial sync (slots 0-1), DataWatcher for slots 0-1 | slot changes; [`PacketTGExtendedPlayerSync`](networking.md#5--packettgextendedplayersync) handler; clone | GUI, container, guns (ammo), auto-feeder, special-slot items ([05](../05-armor/index.md), [06](../06-items/index.md)) |
+| `radlevel` | `radlevel`, int | 0 | 0 | both sync modes | nothing outside load, sync and clone | [`GuiTGPlayerInventory`](../05-armor/extra-inventory.md#5-gui-guitgplayerinventory) only (gauge text `radlevel x 0.001`). **No gameplay code ever changes it** ([CORE-42](index.md#suspected-bugs)) |
+| `foodleft` | `foodLeft`, **short** on write, read back as int | 0 | 0 | full sync (short) | auto-feeder; reset on death | `TechgunsTickHandler`, `TechgunsEventhandler` (death reset), [`GuiOverlayAmmoCount`](events.md#guioverlayammocount-forge-bus-client) |
+| `lastSaturation` | `lastSaturation`, float | **1.0** | 0.0 | full sync | auto-feeder; reset to 0 on death | same three classes as `foodleft` |
+| `enableNightVision` | `enableNightvision`, bool | false | false | full sync | key and button toggle (server) | `TechgunsTickHandler`, `GuiOverlayAmmoCount`, `GuiTGPlayerInventory`, [`TGGuiToggleButton`](../05-armor/extra-inventory.md), [`ItemNightVisionGoggles`](../05-armor/special-equipment.md#32-night-vision-goggles-itemnightvisiongoggles), [`ItemTacticalMask`](../05-armor/special-equipment.md#33-tactical-mask-itemtacticalmask), [`PacketTGKeybindPress`](networking.md#7--packettgkeybindpress) |
+| `enableSafemode` | `enableSafemode`, bool | **true** | false, then forced true if `allowUnsafemode` fails | full sync | key and button toggle | `GenericGun`, [`AlienBlaster`](../02-guns/sheets-energy-special.md#alien-blaster-alienblaster), [`CyberdemonBlaster`](../02-guns/sheets-energy-special.md#nether-blaster-cyberdemonblaster), [`Flamethrower`](../02-guns/sheets-energy-special.md#flamethrower-flamethrower), [`GrenadeLauncher`](../02-guns/index.md#coverage), [`NukeLauncher`](../02-guns/index.md#coverage), [`RocketLauncher`](../02-guns/sheets-index.md#all-items-at-a-glance) (decide whether to damage blocks), HUD and GUI |
+| `enableHovermode` | `enableHovermode`, bool | false | false | full sync | nothing | Only in commented-out code in [`ItemJetpack`](../05-armor/special-equipment.md#43-jetpack-itemjetpack); the sync packet and NBT carry it. **Effectively dead** (hover mode was removed) |
+| `enableJetpack` | `enableJetpack`, bool | **true** | false | full sync plus field sync id 1 | toggle (server); `PacketTGPlayerFieldSync` handler (client) | `TechgunsTickHandler` (fly speed), `ItemJetpack`, [`ItemJumppack`](../05-armor/special-equipment.md#44-jump-pack-itemjumppack), HUD, GUI, toggle button |
+| `showTGHudElements` | `showHud`, bool | **true** | false | full sync | HUD toggle button (id 9) | `GuiOverlayAmmoCount`, `GuiTGPlayerInventory`, toggle button |
+| `enableStepAssist` | `stepAssist`, bool | **true** | false | full sync | key and button toggle (server) | `TechgunsTickHandler`, `GuiOverlayAmmoCount`, GUI, toggle button, [`TGKeybinds`](input-and-hud.md#keybinds-tgkeybinds-client-only) (only in a commented block) |
+| `gotCreativeFlightLastTick` | none | false | n/a | none | tick handler | tick handler only |
+| `wasFlying` | none | false | n/a | none | tick handler | tick handler only |
+| `isJumpkeyPressed` (protected, accessor `isJumpkeyPressed()` / `setJumpkeyPressed`) | none | false | n/a | field sync id 0 to other clients | `PacketTGKeybindPress` (server); `ItemJetpack` (local client); field-sync handler | `ItemJetpack` boost, [`RenderJetpack`](../05-armor/rendering-and-models.md#3-special-slot-rendering-on-the-player-rendereradditionalslots), `TechgunsEventhandler` (cleanup branch, dead) |
+| `isForwardKeyPressed` | none | false | n/a | none | `PacketTGKeybindPress` ids 4 and 5 (never sent) | `ItemJetpack` only inside commented code |
+| `fireDelay` (int ticks) | none | 0 | n/a | none | guns when they fire | `TechgunsTickHandler` (decrement and fire check), `GenericGun`, [`GenericGunCharge`](../02-guns/per-gun-behaviour.md#genericguncharge-genericgunchargejava), `TGKeybinds` (force reload) |
+| `loopSoundDelay` (int ticks) | none | 0 | n/a | none | guns with looping sounds | `TechgunsTickHandler`, `GenericGun` |
+| `isGliding` | none | false | n/a | none | [`GenericItemShared.onPlayerTickGlider`](../06-items/special-items.md#shared-item-genericitemshared-behaviour) each tick, reset before the back slot runs | [`ClientProxy.handlePlayerGliding`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy), `TechgunsEventhandler`, `TechgunsTickHandler`, `GenericItemShared` |
+| `swingSoundDelay` (byte) | none | 0 | n/a | none | [`Chainsaw`](../02-guns/sheets-launchers-tools-grenades.md#chainsaw-chainsaw), [`PowerHammer`](../02-guns/sheets-launchers-tools-grenades.md#power-hammer-powerhammer) | `TechgunsTickHandler` (decrement) |
+| `gliderLoop`, `jetPackLoop` (client subclass only) | none | null | n/a | none | `ClientProxy.handlePlayerGliding`, `setJumpkeyPressed` | same two methods |
+
+**Notes on the table.**
+- The field comments in the source say `enableStepAssist` and `showTGHudElements` are "used by client only", yet both are saved to NBT, synced and flipped on the server. The comments are stale.
+- `EXT_PROP_NAME` is `TechgunsExtendedPlayer`; it is the registration name, not an NBT key, because the save methods write straight into the root tag.
+- Correction (consistency pass): the field table at the top of this file described `radlevel` as "used by armor and radiation features" and `enableHovermode` as a "jetpack hover mode ([05](../05-armor/index.md))". Neither has a live consumer. See the notes in [index.md](index.md#coverage).
+
+### Per-player data that is not an extended property
+
+| Data | Where it lives | Notes |
+|---|---|---|
+| Attribute modifiers (speed, max health, knockback resistance) | vanilla entity attribute map, three fixed UUIDs (table above) | Rebuilt every tick; never saved because the modifiers are removed and re-added |
+| Night Vision potion effect | vanilla potion map | Refreshed to 220 ticks every tick while active |
+| Recoil, reload times | client-only `ClientProxy.attackTimes` | Not saved or synced beyond the two packets |
+| Death type of a dying entity | client-only `ClientProxy.entityDeathTypes` | Cleared when `deathTime` is 0 |

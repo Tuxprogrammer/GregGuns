@@ -44,7 +44,7 @@ A custom explosion used by grenades, rockets and energy blasts ([04](../04-proje
 2. On the server, `ForgeEventFactory.onExplosionDetonate` is called with the dummy explosion and this entity list. The dummy's block list stays empty, so protection mods can't remove blocks from it ([CORE-19](index.md#suspected-bugs)).
 3. For each entity within distance d ≤ dmgRadius2 (and d > 0):
    - `damage = entityDamage × min(1, 1 − (d − dmgRadius1) / (dmgRadius2 − dmgRadius1))`. That is full damage inside r1, falling linearly to 0 at r2. If r1 == r2 the expression divides by zero ([CORE-20](index.md#suspected-bugs)).
-   - If an attacker is given and the target is living, multiply by `DamageSystem.getDamageFactor(attacker, target)` (the PvP, turret and NPC config factors).
+   - If an attacker is given and the target is living, multiply by [`DamageSystem.getDamageFactor(attacker, target)`](../02-guns/index.md#coverage) (the PvP, turret and NPC config factors).
    - Damage source: the override if one was set, otherwise `TGDamageSource.causeExplosionDamage(exploder, null, GORE)` with gore chance 0.35.
    - Knockback: `(1 − d/(2·size)) × blockDensity`, adjusted by Blast Protection (`EnchantmentProtection`), and added along the centre-to-eye direction.
    - Players are put in a knockback map, but that map is never sent to clients, so players don't feel the knockback (CORE-19).

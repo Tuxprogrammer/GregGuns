@@ -1,5 +1,8 @@
 # 10 – Entities & NPCs (Techguns 1.7.10, v0.1.2 alpha)
 
+## Overview
+
+
 This area covers every **living** entity Techguns adds: the hostile gun-wielding NPCs, the Alien Bug, the Attack Helicopter boss and the turret head entity. It also covers the faction and targeting system, the gun-driven NPC AI, the natural-spawn system (the "dummy replacement" spawn manager with distance and biome danger levels), spawn eggs, the monster-spawner tile entity, [`NPCUtil`](spawning.md#4-camp-flags-and-npcutil), and the renderers, models, textures and sounds of these mobs.
 
 Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectiles-fx/index.md)**. Gun stats and NPC firing internals are in **[02-guns](../02-guns/index.md)**, and gun models in **[03-gun-visuals-audio](../03-gun-visuals-audio/index.md)**. Armour worn by NPCs is in **[05-armor](../05-armor/index.md)**, and loot items in **[06-items](../06-items/index.md)**. The spawner block and camp-flag block are in **[07-blocks](../07-blocks/index.md)** and **[09-machines-utility](../09-machines-utility/index.md)**. The turret base block, its power, ammo, repair and security, is in **[09-machines-utility](../09-machines-utility/index.md)**. Structures that place camp flags and spawners are in **[11-worldgen](../11-worldgen/index.md)**.
@@ -15,23 +18,9 @@ Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectile
 | [rendering-and-models.md](rendering-and-models.md) | Renderer bindings, held-gun transforms, mutant scaling, helicopter OBJ rendering and crash animation, turret rendering, and the part breakdown and animation of every NPC model; gore hookup |
 | [textures.md](textures.md) | All 19 `textures/entity/` files plus the spawn-egg item textures: size, content, palette, UV layout and users |
 | [sounds.md](sounds.md) | All 54 `sounds/npcs/` files and their 18 events, with exactly when each plays and at what volume; the vanilla sounds used by each mob |
+| [lang.md](lang.md) | Every `entity.Techguns.*` key with its line and English text, the spawner-block keys, strings built in code, the 18 hard-coded egg names ([NPC-19](#suspected-bugs)), the duplicate key ([NPC-29](#suspected-bugs)) and missing keys |
 
-## Scope coverage
-
-| Source | Notes |
-|---|---|
-| [`java/techguns/TGEntities.java`](mob-catalogue.md#registration-javatechgunstgentitiesjava) | Registration, eggs, natural-spawn hook and spawn tables |
-| [`java/techguns/entities/TurretEntityUNUSED.java`](per-mob.md#19-turretentityunused-dead-code) | Dead prototype |
-| `java/techguns/entities/npc/*` (27 files) | Every NPC, including `NPCSpawnData` (fully commented out: an old `NPCType` enum ZOMBIESOLDIER/ARMYSOLDIER/CYBERDEMON and an empty `spawnNPC` switch), [`INPCTechgunsShooter`](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava), [`ITGNpcTeam`](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava), `TGNpcFaction(s)` and [`TGDummySpawn`](per-mob.md#18-tgdummyspawn-tgdummyspawn) |
-| `java/techguns/entities/ai/*` (5 files) | See ai.md |
-| `java/techguns/entities/spawn/*` (2 files) | See spawning.md |
-| `java/techguns/entities/renderer/RenderTurret.java` | Unused renderer |
-| `java/techguns/tileentities/TGSpawnerTileEnt.java`, [`java/techguns/items/TGMonsterPlacer.java`](../06-items/special-items.md#spawn-eggs-tgmonsterplacer), `java/techguns/util/NPCUtil.java` | See spawning.md |
-| `client/renderer/entity/` living-entity renderers | RenderGenericNPC, RenderSuperMutant, RenderAlienBug, RenderHelicopter, RenderSimpleTurret. RenderDummy is noted but owned by 04. |
-| `client/models/` | ModelGenericNPC, ModelSkeletonSoldier, ModelCyberDemon, ModelSuperMutant, ModelAlienBug, ModelNull and `blocks/ModelTurret`. ModelGrimReaper and ModelCyberdemonBlaster are gun models, cross-referenced to 03. |
-| `models/entity/*.obj` | `apache.obj` (helicopter) in full; `launchergrenade.obj` and `reactionchamber.obj` summarised, with their owners |
-
-## Key design facts at a glance
+## Key facts
 
 - **Natural spawning.** One placeholder mob (`TGDummySpawn`) is added to vanilla monster spawning with weight 600 in the overworld and 300 in the Nether. When it joins the world it is swapped for a mob chosen by weight from a danger-tiered table. Danger is distance from world spawn (0 to 3) plus biome danger (0 to 2), and the danger value also feeds equipment rolls.
 - **Gun-wielding NPCs.** These are biped `EntityMob`s whose combat task is built from the held gun's AI stats: range, attack interval and burst size. They fire the real Techguns gun at reduced, difficulty-scaled damage and accuracy.
@@ -50,6 +39,41 @@ Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectile
 - [11-worldgen](../11-worldgen/index.md): structures that spawn mobs.
 - [01-core](../01-core/index.md): spawn and faction config.
 - [06-items](../06-items/index.md): drops and spawn eggs.
+
+## Coverage
+
+| Category | In scope | Covered |
+|---|---|---|
+| Java source | `TGEntities`, `TurretEntityUNUSED`, 27 files in `entities/npc`, 5 in `entities/ai`, 2 in `entities/spawn`, `RenderTurret`, `TGSpawnerTileEnt`, `TGMonsterPlacer`, `NPCUtil`, 5 living-entity renderers and 7 models | All of them, as listed under Scope coverage. The consistency pass re-checked registration, IDs and egg colours in `TGEntities`, every sound call site, the NBT and DataWatcher use of each mob class, and the unregistered classes against the source. |
+| Textures | 19 files in `textures/entity/` plus `spawn_egg.png` and `spawn_egg_overlay.png` | 21 of 21, each with size, opaque share, measured average and dominant colours, a palette in words and pixel rectangles ([textures.md](textures.md)) |
+| Sounds | 54 files in `sounds/npcs/` and 18 `sounds.json` events | 54 of 54 files with duration, sample rate, channels and category; 18 of 18 events with trigger, volume and pitch ([sounds.md](sounds.md)) |
+| Lang | 20 `entity.Techguns.*` mob lines (19 distinct keys), 2 spawner-block keys | All, plus the hard-coded strings and gaps ([lang.md](lang.md)) |
+| Mobs | 20 registered entities, 2 unregistered mob classes (`AlienBugDomesticated`, `TurretEntityUNUSED`) and the `GenericNPC` base | Each has an entity sheet at the top of its section in [per-mob.md](per-mob.md) |
+| Bugs | [NPC-01](#suspected-bugs) to [NPC-35](#suspected-bugs) | No new bugs were added in this pass |
+
+### Scope coverage
+
+| Source | Notes |
+|---|---|
+| [`java/techguns/TGEntities.java`](mob-catalogue.md#registration-javatechgunstgentitiesjava) | Registration, eggs, natural-spawn hook and spawn tables |
+| [`java/techguns/entities/TurretEntityUNUSED.java`](per-mob.md#19-turretentityunused-dead-code) | Dead prototype |
+| `java/techguns/entities/npc/*` (27 files) | Every NPC, including `NPCSpawnData` (fully commented out: an old `NPCType` enum ZOMBIESOLDIER/ARMYSOLDIER/CYBERDEMON and an empty `spawnNPC` switch), [`INPCTechgunsShooter`](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava), [`ITGNpcTeam`](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava), `TGNpcFaction(s)` and [`TGDummySpawn`](per-mob.md#18-tgdummyspawn-tgdummyspawn) |
+| `java/techguns/entities/ai/*` (5 files) | See ai.md |
+| `java/techguns/entities/spawn/*` (2 files) | See spawning.md |
+| `java/techguns/entities/renderer/RenderTurret.java` | Unused renderer |
+| `java/techguns/tileentities/TGSpawnerTileEnt.java`, [`java/techguns/items/TGMonsterPlacer.java`](../06-items/special-items.md#spawn-eggs-tgmonsterplacer), `java/techguns/util/NPCUtil.java` | See spawning.md |
+| `client/renderer/entity/` living-entity renderers | RenderGenericNPC, RenderSuperMutant, RenderAlienBug, RenderHelicopter, RenderSimpleTurret. RenderDummy is noted but owned by 04. |
+| `client/models/` | ModelGenericNPC, ModelSkeletonSoldier, ModelCyberDemon, ModelSuperMutant, ModelAlienBug, ModelNull and `blocks/ModelTurret`. ModelGrimReaper and ModelCyberdemonBlaster are gun models, cross-referenced to 03. |
+| `models/entity/*.obj` | `apache.obj` (helicopter) in full; `launchergrenade.obj` and `reactionchamber.obj` summarised, with their owners |
+
+## Known limits
+
+- **Sound content.** The audio cannot be heard here, so every description of what a sound is like is inferred from its file name and use, and is marked as inferred in [sounds.md](sounds.md). Durations, sample rates and channels are measured.
+- **Colours.** The average and dominant colours are the measured values from [ASSET-FACTS.md](../ASSET-FACTS.md). The prose palettes and "depicts" descriptions in [textures.md](textures.md) were written by looking at the images and are approximate.
+- **Pixel rectangles.** The biped, Cyberdemon, Super Mutant and Alien Bug rectangles are computed from the model box sizes (width 2D+2W, height D+H) and checked against the measured opaque bounding boxes, not read from the images region by region. The helicopter rectangles are the bounding boxes of the OBJ texture coordinates, so they describe scattered islands, not exact cells.
+- **Vanilla behaviour.** Sound volume and pitch jitter, talk interval, the vanilla NBT keys and DataWatcher indices are stated from the Minecraft 1.7.10 behaviour the classes inherit, not from Techguns source. They were not re-verified against a vanilla decompile here.
+- **Runtime behaviour.** Nothing was run in game; flight, targeting and spawn behaviour are read from the source.
+- **Other areas.** Gun AI stats, turret base mechanics, spawner and camp-flag blocks and structures are only summarised here and are owned by the areas named in Related areas.
 
 ## Suspected bugs
 

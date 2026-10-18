@@ -95,3 +95,18 @@ The effects routine:
 - **Item inside.** `currentOperation` (recipe mode), or the slot-0 item while `charging` (item mode), rendered as an `EntityItem` hovering in the middle of the cage. It's turned by −90° − 90°·rotation about Y and placed at local y −1.225 (block centre after the base translate).
 - **Model orientation.** Rotated 180° + 90°·rotation about Y, i.e. 180° offset from the other machines' convention. The flare positions in §4 suggest the closed side sits at the back.
 - No moving parts. The progress argument is passed in but ignored.
+
+## 6. Entity sheet summary (consistency pass)
+
+| # | Field | Contents |
+|---|---|---|
+| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 9; tile `ChargingStationTileEnt`; name key `techguns.tile.BasicMachine_9.name`, English **Charging Station**; container `ChargingStationContainer`, GUI ID 9; creative tab Techguns; oredict names none |
+| 2 | Obtaining | Shaped ore recipe `sgs / cbc / sgs` (s [`plateSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), g `wireGold`, b `circuitBasic`, c Coil); see [blocks-and-items.md](blocks-and-items.md#crafting-recipes-for-the-machines-in-this-area) |
+| 3 | Numbers | Buffer 100 000 RF; recipe mode 20 RF/t times the multiplier; item mode up to 100 RF/t into the item; multiplier clamped to 8; hardness 4.0, resistance 20.0; one recipe (section 2) |
+| 4 | Behaviour | Section 2 (recipe mode versus item mode); effects in section 4 |
+| 5 | Persistence and sync | NBT `charging` (boolean), plus the base keys. GUI progress-bar fields: 0 progress, 1 totalTime, 2 power/100 (the RF value is divided by 100 to fit a short) |
+| 6 | UI | Section 3. Item tooltip "Has TileEntity Data" when carrying `TileEntityData`. GUI title "Charging Station" |
+| 7 | Visuals | No per-face block texture (TESR only). TESR `RenderChargingStation` + `ModelChargingStation`; atlas `textures/blocks/ChargingStation.png`, 128×128, average #7A7B74, dominant #707070 20 %, #505050 12 %, #B0B0B0 11 %, 43 % opaque. Item renderer delegate 9. Particles: `ChargeFlare` (see section 4) |
+| 8 | Audio | `machines.chargingstationwork` volume 1, pitch 1, every 20th tick of activity, 2.08 s clip, 44100 Hz mono |
+| 9 | Relationships | Charges any CoFH `IEnergyContainerItem`; the empty-to-full recipe uses Energy Cell items from [`06-items`](../06-items/index.md); NEI handler |
+| 10 | Bugs | [MPRD-10](index.md#suspected-bugs), [MPRD-13](index.md#suspected-bugs), [MPRD-15](index.md#suspected-bugs), [MPRD-22](index.md#suspected-bugs), [MPRD-28](index.md#suspected-bugs) |

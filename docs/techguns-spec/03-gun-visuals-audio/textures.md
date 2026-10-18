@@ -255,3 +255,74 @@ Palette notes use approximate hex colours from a quantised histogram (top colour
 | all other gun textures | = declared | | ×1 |
 
 Out-of-sheet UV origins (sampling wraps to the opposite edge): Lasergun `Glow1` (−6, 47), LaserGunNew `TopRails` (−1, 90), PDW `Shape28` (−1, 48). The M4 Infiltrator laser planes at (0, −60) are deliberate (row-0 trick).
+
+---
+
+## Measured colours, all 62 textures
+
+*Added in the consistency pass.* Every `textures/guns/` PNG with its measured size, opacity, average colour and three dominant colours ([ASSET-FACTS.md](../ASSET-FACTS.md): average of opaque pixels with alpha > 16; dominant colours after bucketing each channel to 8 levels), plus a short palette description in words. None has a `.mcmeta`, so none is animated. The detailed layouts above are unchanged.
+
+| Texture | Size | Opaque | Average colour | Dominant colours | Palette in words |
+|---|---|---|---|---|---|
+| `textures/guns/AugTexture.png` | 128×64 | 37% | #1F372C | #305030 57%, #101010 24%, #307050 4% | flat olive-green polymer, black fittings |
+| `textures/guns/AugTexture_1.png` | 128×64 | 37% | #212121 | #303030 64%, #101010 25%, #505050 5% | charcoal grey |
+| `textures/guns/AugTexture_2.png` | 128×64 | 37% | #18371F | #105030 43%, #101010 24%, #103010 17% | woodland green blotches |
+| `textures/guns/AugTexture_3.png` | 128×64 | 37% | #8B8D60 | #D0D090 38%, #101010 24%, #B0B070 9% | pale sand |
+| `textures/guns/AugTexture_4.png` | 128×64 | 37% | #520606 | #701010 34%, #101010 24%, #501010 17% | blood red |
+| `textures/guns/BioGun.png` | 64×64 | 97% | #2E452C | #101010 46%, #505050 7%, #B0B090 5% | black with khaki metal and lime-green glow panels |
+| `textures/guns/Flamethrower.png` | 64×64 | 100% | #463C3B | #101010 58%, #F0F0F0 8%, #505050 5% | black fill, white tank with red stripes, grey pipes |
+| `textures/guns/Lasergun.png` | 64×64 | 94% | #423D3A | #101010 38%, #303030 16%, #909090 14% | warm grey with black fill and red emitter glow |
+| `textures/guns/NDR.png` | 64×64 | 44% | #967E6E | #505050 29%, #909090 19%, #B03030 10% | steel grey with red heat-sink panels and a yellow glow block |
+| `textures/guns/PDW.png` | 64×64 | 100% | #262A2C | #101010 55%, #303030 23%, #303050 7% | pale ice-blue upper, dark slate lower on black |
+| `textures/guns/PDW_1.png` | 64×64 | 100% | #212120 | #101010 73%, #303030 14%, #D0D0D0 5% | white/grey upper with yellow detail on black |
+| `textures/guns/PDW_2.png` | 64×64 | 100% | #090B06 | #101010 81%, #103010 15%, #303010 1% | near-black with dark green |
+| `textures/guns/TeslaGun.png` | 64×64 | 100% | #383839 | #101010 48%, #909090 16%, #505050 14% | grey and black with blue glow dots |
+| `textures/guns/ak47Texture.png` | 128×64 | 43% | #382C22 | #303030 64%, #503010 14%, #703010 7% | dark steel with walnut brown furniture |
+| `textures/guns/ak47Texture_1.png` | 128×64 | 42% | #192B42 | #303030 64%, #103070 12%, #103090 4% | dark steel with blue polymer furniture |
+| `textures/guns/alien_blaster.png` | 128×64 | 99% | #C6C9CE | #D0D0D0 71%, #B0B0B0 7%, #D0D0F0 5% | pale silver-white brushed metal with a blue ring block |
+| `textures/guns/as50Texture.png` | 256×128 | 16% | #33322C | #101010 54%, #303030 26%, #505050 13% | black and gunmetal with brass cartridge |
+| `textures/guns/blasterRifle.png` | 256×128 | 31% | #1E1E1E | #101010 50%, #303030 49%, #505050 0% | near-black and charcoal |
+| `textures/guns/boltactionrifle.png` | 128×32 | 100% | #13100D | #101010 71%, #303010 14%, #303030 7% | walnut stock, black bolt and scope, grey barrel |
+| `textures/guns/boltactionrifle_1.png` | 128×32 | 33% | #323A27 | #303010 43%, #303030 22%, #101010 13% | olive-drab stock |
+| `textures/guns/boltactionrifle_2.png` | 128×32 | 33% | #202020 | #303030 58%, #101010 40%, #909090 0% | charcoal stock |
+| `textures/guns/chainsaw.png` | 128×64 | 97% | #5C492C | #101010 52%, #B0B0B0 15%, #F0B010 14% | safety orange housing, light-grey bar, black fill |
+| `textures/guns/combatShotgun.png` | 64×32 | 100% | #373737 | #101010 33%, #303030 26%, #505050 18% | greys: light barrel, charcoal receiver |
+| `textures/guns/cyberdemonblaster.png` | 64×64 | 93% | #4E3F39 | #101010 44%, #707070 22%, #909090 18% | worn mid-grey with lava-orange glow block |
+| `textures/guns/drillTexture.png` | 128×64 | 88% | #1A1B21 | #101010 59%, #303030 38%, #707070 1% | near-black and dark slate (unused) |
+| `textures/guns/fragGrenade_texture.png` | 64×64 | 31% | #434F43 | #303030 29%, #305030 29%, #707070 24% | olive-green body, grey fuze and ring |
+| `textures/guns/goldenrevolver.png` | 64×32 | 100% | #636136 | #101010 49%, #F0F090 17%, #D0D070 11% | pale gold with black fill |
+| `textures/guns/grenadelauncher.png` | 128×128 | 100% | #3F3E3D | #303030 31%, #101010 26%, #505050 18% | dark gunmetal OBJ atlas with red grenades |
+| `textures/guns/grimreaper.png` | 128×64 | 96% | #727461 | #909070 32%, #505050 11%, #707050 10% | khaki/olive-grey weathered metal |
+| `textures/guns/handgun.png` | 64×32 | 100% | #615E55 | #B0B0B0 26%, #101010 20%, #707070 14% | cobblestone grey and oak brown |
+| `textures/guns/laserGunNew.png` | 128×128 | 65% | #515150 | #505050 77%, #303030 15%, #909090 3% | flat mid-grey with orange vents and a yellow holo patch |
+| `textures/guns/m4Texture.png` | 128×64 | 40% | #25262A | #303030 44%, #101010 31%, #101030 9% | black and gunmetal |
+| `textures/guns/m4Texture_1.png` | 128×64 | 40% | #375320 | #305010 21%, #103010 16%, #507030 11% | swamp olive-green mottle |
+| `textures/guns/m4Texture_2.png` | 128×64 | 40% | #727A44 | #909050 22%, #505030 17%, #90B070 12% | desert tan and khaki |
+| `textures/guns/m4Texture_3.png` | 128×64 | 40% | #7F7E7C | #909090 44%, #707070 32%, #B0B0B0 10% | ice grey and white |
+| `textures/guns/m4Texture_4.png` | 128×64 | 40% | #B67D10 | #F0B010 24%, #B07010 15%, #F0D010 11% | hazard yellow-orange |
+| `textures/guns/m4_uq_Texture.png` | 128×64 | 49% | #2B2325 | #303030 47%, #101010 38%, #505050 4% | black and gunmetal with a red laser row |
+| `textures/guns/mac10texture.png` | 128×64 | 33% | #555958 | #505050 58%, #303030 15%, #707070 9% | mid-grey stamped steel |
+| `textures/guns/mg2_texture.png` | 128×128 | 26% | #22272A | #303030 71%, #101010 22%, #505050 3% | dark gunmetal with a brass cartridge |
+| `textures/guns/mibgun.png` | 128×128 | 100% | #F0F1F1 | #F0F0F0 82%, #B0B0B0 9%, #D0D0D0 7% | white background with chrome and a blue lamp |
+| `textures/guns/minigun.png` | 128×128 | 100% | #2A2929 | #101010 70%, #707070 5%, #909090 3% | black fill with silver barrels and a white ammo box |
+| `textures/guns/mp5Texture.png` | 64×32 | 30% | #2A3A38 | #303030 46%, #305050 23%, #305030 15% | dark teal-grey (unused) |
+| `textures/guns/neutrinogun.png` | 256×256 | 17% | #302E2D | #301010 43%, #101010 25%, #303030 19% | dark maroon-black with white decals and green/red glyphs (unused) |
+| `textures/guns/nukerocketlauncher.png` | 128×64 | 96% | #241D0E | #101010 65%, #505030 5%, #303010 3% | olive-brown worn camouflage, yellow warhead |
+| `textures/guns/pistol.png` | 64×32 | 12% | #464646 | #505050 76%, #303030 23% | plain grey placeholder (unused) |
+| `textures/guns/pistol2Texture.png` | 64×32 | 15% | #494949 | #505050 96%, #303030 3% | plain grey placeholder (unused) |
+| `textures/guns/pistol3.png` | 128×64 | 20% | #252323 | #303030 42%, #101010 40%, #301010 6% | black polymer, dark-red accents |
+| `textures/guns/powerHammer.png` | 64×64 | 100% | #2B2522 | #101010 51%, #503030 16%, #505050 6% | black with reddish-brown leather and grey steel |
+| `textures/guns/powerHammerAdv.png` | 64×64 | 100% | #2A2421 | #101010 51%, #503030 16%, #303030 6% | as powerHammer with a navy-steel head |
+| `textures/guns/pulseRifle.png` | 128×64 | 99% | #333A3C | #101010 57%, #303030 12%, #D0F0F0 9% | pale ice-blue panels on black |
+| `textures/guns/pulseRifle_1.png` | 128×64 | 99% | #2E2E2E | #101010 71%, #D0D0D0 9%, #303030 6% | white/grey panels, yellow stripes on black |
+| `textures/guns/pulseRifle_2.png` | 128×64 | 99% | #080A06 | #101010 87%, #103010 10%, #303010 2% | near-black with dark green |
+| `textures/guns/revolver.png` | 64×32 | 100% | #433D37 | #101010 54%, #909090 14%, #B0B0B0 12% | brushed light-grey steel with an orange-brown wood grip |
+| `textures/guns/rocketlauncher.png` | 128×64 | 96% | #272728 | #101010 59%, #303030 11%, #507070 5% | dark grey, slate tube, white rocket with red bands |
+| `textures/guns/sawedOff.png` | 64×32 | 100% | #524C3E | #101010 24%, #505030 21%, #B0B0B0 15% | light-grey barrels over dark oak |
+| `textures/guns/scar_texture.png` | 256×128 | 45% | #757559 | #B0B070 48%, #303030 19%, #101010 8% | two-tone tan and black |
+| `textures/guns/scar_texture_1.png` | 256×128 | 45% | #292929 | #303030 83%, #101010 11%, #505050 2% | all charcoal |
+| `textures/guns/sonicshotgun.png` | 128×64 | 55% | #3C4447 | #303030 35%, #505050 18%, #101010 8% | dark slate and teal-grey with cyan glow |
+| `textures/guns/stielgranate.png` | 32×32 | 24% | #4F603E | #909050 40%, #305030 29%, #105030 17% | tan wooden handle, dark-green head |
+| `textures/guns/thompson.png` | 64×64 | 100% | #271E15 | #101010 60%, #505050 13%, #705010 12% | grey steel and warm brown wood on black |
+| `textures/guns/vector_texture.png` | 256×128 | 29% | #585842 | #303030 54%, #B0B070 34%, #101010 5% | tan lower, charcoal upper |
+| `textures/guns/vector_texture_1.png` | 256×128 | 29% | #2A2929 | #303030 92%, #101010 6%, #505050 0% | all charcoal |

@@ -126,3 +126,166 @@ Coverage: 4 item textures, 1 air-marker texture, 5 ore textures, 4 active and 11
 | CityRoad (stdout) | `Set Road Blocks...`, `Set Road Blocks... DONE!` | every city road |
 | MilitaryCamp (stdout) | `WTF!` | a camp segment of size ≤ 0 |
 | BuildingScanTool output file | `structure_scan.txt` | written on every scan |
+
+
+---
+
+## Measured texture values (consistency pass)
+
+Numbers are quoted from [ASSET-FACTS.md](../ASSET-FACTS.md). **Average** is the mean of opaque pixels (alpha > 16). **Dominant** is the three most common colours after bucketing each channel into 8 levels, with their share of opaque pixels. **Opaque** is the share of all pixels that are opaque. The descriptions in the tables above are the visual reading; this section adds the measurements and the frame or pixel-rectangle layout.
+
+### Item textures (32x32, no animation)
+
+| Path | Size | Average | Dominant (share of opaque) | Opaque | Layout (pixel rectangle) |
+|---|---|---|---|---|---|
+| `textures/items/structureScanTool.png` | 32x32 | #5A4C4C | #101010 36 %, #909090 11 %, #F0F0F0 7 % | 50 % | one icon, (0,0)-(31,31). Magnifier upper left, brick wall lower left |
+| `textures/items/structureTestTool.png` | 32x32 | #534444 | #101010 29 %, #303030 12 %, #909090 9 % | 62 % | one icon, (0,0)-(31,31). Brick block centre, wrench left, hammer right |
+| `textures/items/oreClusterScanner.png` | 32x32 | #3E553C | #505050 41 %, #303030 15 %, #707070 12 % | 48 % | one icon, (0,0)-(31,31). Screen on the left half, indicator and dial on the right half |
+| `textures/items/testItem.png` | 32x32 | #000000 | #101010 100 % | 28 % | one icon, (0,0)-(31,31). The word "LEL" only; the remaining 72 % is transparent |
+
+In words: the two authoring tools are dark, nearly black icons with a reddish-brown cast from the brick art (average #5A4C4C and #534444). The scanner is the greenest of the four (average #3E553C, from the screen) over a dark-grey body. The placeholder has a pure black average because its only opaque pixels are black.
+
+### Block textures: air marker and ores
+
+| Path | Size | Frames | Average | Dominant | Opaque | Layout |
+|---|---|---|---|---|---|---|
+| `textures/blocks/airMarker.png` | 32x32 | 1 | #4E4E4E | #505050 38 %, #303030 35 %, #707070 21 % | 38 % | frame (0,0)-(31,31); the face inside the 2-px border is transparent, so only the border and the "AIR" letters are opaque |
+| `textures/blocks/oreCopperBlock.png` | 16x16 | 1 | #897D75 | #707070 48 %, #909090 26 %, #907070 8 % | 100 % | (0,0)-(15,15) |
+| `textures/blocks/oreTinBlock.png` | 16x16 | 1 | #838789 | #707070 49 %, #909090 30 %, #B0D0D0 5 % | 100 % | (0,0)-(15,15) |
+| `textures/blocks/oreLeadBlock.png` | 16x16 | 1 | #7E8087 | #707070 51 %, #909090 27 %, #7090B0 5 % | 100 % | (0,0)-(15,15) |
+| `textures/blocks/oreTitanIron.png` | 16x64 | 4 (frametime 8) | #878989 | #707070 65 %, #909090 19 %, #D0D0D0 6 % | 100 % | frames at y 0-15, 16-31, 32-47, 48-63, each (0,y)-(15,y+15) |
+| `textures/blocks/oreUranium.png` | 16x64 | 4 (frametime 8) | #7F927C | #707070 38 %, #909090 19 %, #709070 14 % | 100 % | frames at y 0-15, 16-31, 32-47, 48-63 |
+
+The ore averages show how little of each block is ore: copper, tin and lead are all within a few levels of grey (#897D75, #838789, #7E8087), with copper warmest and lead coolest and bluest. Uranium is the only one whose average is clearly tinted green (#7F927C).
+
+### Ore-cluster overlays and legacy cluster art (32x32, no animation)
+
+Active overlays (each is one frame, (0,0)-(31,31)):
+
+| Path | Average | Dominant | Opaque |
+|---|---|---|---|
+| `textures/blocks/oreClusterNew1.png` | #696969 | #303030 20 %, #101010 15 %, #707070 15 % | 37 % |
+| `textures/blocks/oreClusterNew2.png` | #545454 | #303030 29 %, #505050 20 %, #707070 15 % | 33 % |
+| `textures/blocks/oreClusterNew3.png` | #838383 | #303030 17 %, #707070 16 %, #B0B0B0 15 % | 23 % |
+| `textures/blocks/oreClusterNew4.png` | #929292 | #909090 30 %, #B0B0B0 30 %, #D0D0D0 12 % | 57 % |
+
+Legacy cluster textures (unused):
+
+| Path | Role | Average | Dominant | Opaque |
+|---|---|---|---|---|
+| `textures/blocks/oreCluster.png` | base | #727272 | #707070 59 %, #909090 26 %, #505050 14 % | 62 % |
+| `textures/blocks/oreCluster1.png` | overlay | #808080 | #707070 16 %, #909090 15 %, #303030 13 % | 37 % |
+| `textures/blocks/oreCluster_1.png` | base | #797979 | #707070 52 %, #909090 43 %, #505050 3 % | 66 % |
+| `textures/blocks/oreCluster_11.png` | overlay | #6F6F6F | #303030 20 %, #505050 19 %, #909090 18 % | 33 % |
+| `textures/blocks/oreCluster_2.png` | base | #7A7A7A | #909090 48 %, #707070 47 %, #505050 4 % | 76 % |
+| `textures/blocks/oreCluster_21.png` | overlay | #A9A9A9 | #F0F0F0 26 %, #707070 19 %, #909090 16 % | 23 % |
+| `textures/blocks/oreCluster_3.png` | base (nether) | #612F2D | #301010 20 %, #503030 17 %, #501010 11 % | 62 % |
+| `textures/blocks/oreCluster_31.png` | overlay | #6B6B6B | #101010 30 %, #F0F0F0 13 %, #303030 11 % | 37 % |
+| `textures/blocks/oreCluster_4.png` | base | #4D4D4D | #505050 39 %, #303030 27 %, #909090 15 % | 42 % |
+| `textures/blocks/oreCluster_41.png` | overlay | #A1A1A1 | #B0B0B0 36 %, #909090 27 %, #D0D0D0 19 % | 57 % |
+| `textures/blocks/oreCluster_5.png` | base (nether) | #6B3331 | #503030 16 %, #301010 15 %, #905050 12 % | 76 % |
+
+In words: the four active overlays are greyscale masks (no colour at all in the averages), so their final colour comes entirely from the per-meta tint in [ore-generation.md](ore-generation.md). `oreClusterNew4` is the lightest (#929292) and the most opaque of the four (57 %); `oreClusterNew3` the sparsest (23 %). The two nether-red legacy bases (`oreCluster_3`, `oreCluster_5`) are the only coloured files in the set (averages #612F2D and #6B3331).
+
+Opaque shares tie each base to its overlay: a legacy base and the overlay that fills its holes together cover the face, so `oreCluster` (62 % opaque) pairs with `oreCluster1` (37 %), `oreCluster_1` (66 %) with `oreCluster_11` (33 %) and `oreCluster_2` (76 %) with `oreCluster_21` (23 %); each pair sums to about 100 %.
+
+Structure data files (`structures/*`) are text, not textures; their sizes and entry counts are in [structure-system.md](structure-system.md#6-structure-data-file-format-assetstechgunsstructures).
+
+---
+
+## Lang section (full)
+
+The language file is `assets/techguns/lang/en_US.lang` (the only language shipped; 697 lines). Line numbers below are from that file. The keys are grouped by owner; every key whose subject is placed, mined or used by worldgen is listed, with its exact English text. Keys owned by other areas appear only where worldgen depends on them.
+
+### Keys in scope
+
+| Key | Line | English | Owner |
+|---|---|---|---|
+| `techguns.tile.oreTin.name` | 69 | Tin Ore | [07](../07-blocks/index.md) |
+| `techguns.tile.oreCopper.name` | 70 | Copper Ore | [07](../07-blocks/index.md) |
+| `techguns.tile.oreLead.name` | 71 | Lead Ore | [07](../07-blocks/index.md) |
+| `techguns.tile.oreTitanIron_0.name` | 532 | Titanium Iron Ore | [07](../07-blocks/index.md) |
+| `techguns.tile.oreTitanIron_1.name` | 533 | Uranium Ore | [07](../07-blocks/index.md) |
+| `techguns.tile.oreCluster.name` | 226 | Ore Cluster | [07](../07-blocks/index.md) |
+| `techguns.tile.oreCluster_0.name` to `_15.name` | 227-242 | Ore Cluster (Iron), (Gold), (Redstone), (Coal), (Lapis), (Diamond), (Emerald), (Copper), (Tin), (Lead), (Osmium), (Silver), (Nickel), (Aluminium), (Platinum), (Uranium) | [07](../07-blocks/index.md) |
+| `techguns.tile.oreCluster2_0.name` to `_3.name` | 243-246 | Ore Cluster (Nether Quartz), (Titanium Iron), (Certus Quartz), (Oil Hole) | [07](../07-blocks/index.md) |
+| `techguns.tile.oreCluster2_4.name` | 647 | Ore Cluster (Glowstone) | [07](../07-blocks/index.md) |
+| `techguns.tile.oreClusterCustom.name` | 677 | Ore Cluster | [07](../07-blocks/index.md) |
+| `techguns.tile.oreClusterCustom2.name` | 681 | Ore Cluster | [07](../07-blocks/index.md) |
+| `techguns.item.oreClusterScanner.name` | 541 | Ore Cluster Scanner | [06](../06-items/index.md) |
+| `techguns.OreClusterScanner.msg.found` | 539 | Found Ore Clusters in this Chunk | [06](../06-items/index.md) |
+| `techguns.OreClusterScanner.msg.notFound` | 540 | No Clusters in this Chunk | [06](../06-items/index.md) |
+| `techguns.item.oreClusterDebugger.name` | 472 | Ore Cluster Debugger | [06](../06-items/index.md) |
+| `techguns.oreClusterDebugger.Tooltip` | 467 | WARNING: Removes all destroyable Blocks in a huge Radius, used to debug Ore cluster spawns | [06](../06-items/index.md) |
+| `techguns.item.structureTestTool.name` | 469 | Structure Test Tool | [06](../06-items/index.md) |
+| `techguns.structureTestTool.Tooltip` | 468 | Tool for structure spawning/world editing [WIP] | [06](../06-items/index.md) |
+| `techguns.item.buildingScanTool.name` | 470 | Building Scan Tool | [06](../06-items/index.md) |
+| `techguns.item.blockReaderTool.name` | 471 | Block Reader Tool | [06](../06-items/index.md) |
+| `techguns.tooltip.crowbar.destroycluster` | 679 | Can destroy Ore Clusters | [06](../06-items/index.md) |
+| `techguns.tile.AirMarker.name` | 617 | Air Marker | [07](../07-blocks/index.md) |
+| `techguns.tile.BasicMachine_7.name` | 193 | Flag | [09](../09-machines-utility/index.md) |
+| `techguns.tile.TGMonsterSpawner_0.name` | 582 | Bug Hole | [07](../07-blocks/index.md) |
+| `techguns.tile.TGMonsterSpawner_1.name` | 583 | Zombie Hole | [07](../07-blocks/index.md) |
+| `techguns.tile.chisel.bugnest.name` | 576 | Hardened Sand | [07](../07-blocks/index.md) |
+| `techguns.tile.bugnest.0.desc` | 596 | Bugnest Sand | [07](../07-blocks/index.md) |
+| `techguns.tile.bugnesteggs.name` | 577 | Strange Glowing Eggs | [07](../07-blocks/index.md) |
+| `techguns.tile.chisel.container.name` | 146 | Container Block | [07](../07-blocks/index.md) |
+| `techguns.tile.container.0.desc` | 147 | Shipping Container (Red) (used by the camp [`Containers`](structure-catalogue.md#b2-containers-containers) part) | [07](../07-blocks/index.md) |
+| `techguns.tile.chisel.concrete.name` | 153 | Concrete | [07](../07-blocks/index.md) |
+| `techguns.tile.concrete.0.desc` to `.6.desc` | 154-160 | Light, Dark, Steel Frame Light, Steel Frame Dark, Weathered Column, Light Noise, Dark Noise | [07](../07-blocks/index.md) |
+| `techguns.tile.chisel.metalpanel.name` | 161 | Metal Panel | [07](../07-blocks/index.md) |
+| `techguns.tile.metalpanel.3.desc` | 165 | Dark (the submarine hull) | [07](../07-blocks/index.md) |
+| `techguns.tile.chisel.metalpanel2.name` | 170 | Metal Panel (Connected) | [07](../07-blocks/index.md) |
+| `techguns.tile.metalpanel2.3.desc` | 174 | Dark Bars | [07](../07-blocks/index.md) |
+| `techguns.tile.camoNetPane.name` / `camoNetRoof.name` | 269 / 270 | Camo Net / Camo Net Roof | [07](../07-blocks/index.md) |
+| `techguns.tile.camoNetPane_0.name` / `_2` / `_1` | 413 / 414 / 415 | Camo Net (Woodland) / (Desert) / (Snow) | [07](../07-blocks/index.md) |
+| `techguns.tile.sandbags.name` | 412 | Sandbags | [07](../07-blocks/index.md) |
+| `techguns.tile.tgchest.name` | 635 | Reinforced Chest | [07](../07-blocks/index.md) |
+| `techguns.tile.tgchest_weapon.name` | 636 | Weapon Chest | [07](../07-blocks/index.md) |
+| `techguns.container.tgchest` / `.double` | 628 / 629 | Reinforced Chest / Large Reinforced Chest | [07](../07-blocks/index.md) |
+| `techguns.container.tgchest_weapon` / `.double` | 637 / 638 | Weapon Chest / Large Weapon Chest | [07](../07-blocks/index.md) |
+| `techguns.item.bunkerDoor.name` | 473 | Bunker Door | [06](../06-items/index.md) |
+| `techguns.tile.Lamp_0.name` to `_15.name` | 337-352 | Lamp (Yellow) for 0-6, Lamp (White) for 8-14, Lantern (Yellow) for 7, Lantern (White) for 15 | [07](../07-blocks/index.md) |
+| `techguns.tile.LadderBlock_0.name` to `_15.name` | 364-379 | Metal Ladder (Grey) / (Rusty) / (Shiny) / (Black) in groups of four | [07](../07-blocks/index.md) |
+| `entity.Techguns.ArmySoldier.name` | 272 | Army Soldier | 10 |
+| `entity.Techguns.Commando.name` | 644 | Commando | 10 |
+| `entity.Techguns.ZombieSoldier.name` | 273 | Zombie Soldier | 10 |
+| `entity.Techguns.AlienBug.name` | 282 | Alien Bug | 10 |
+| `entity.Techguns.AttackHelicopter.name` | 271 and 275 | Attack Helicopter (defined twice, same text) | 10 |
+
+Notes on the table:
+
+* The `techguns.tile.chisel.*` keys and the `.desc` keys are the parent-name and per-variant description keys of the concrete, container, metal-panel and bug-nest blocks. How they are looked up is documented in [07-blocks](../07-blocks/index.md).
+* The Zombie Hole and Bug Hole names are the block names; the mob names are the `entity.Techguns.*` keys.
+* Structure names (Small Factory Building, Aircraft Carrier, and so on) have no lang keys. Structures are not items and have no in-game name.
+
+### Strings generated in code
+
+| Source | Text or format | Condition |
+|---|---|---|
+| [`OreClusterScanner`](../06-items/special-items.md#ore-cluster-scanner-oreclusterscanner-techgunsoreclusterscanner) tooltip | `<stored>/30000 RF` | always shown on the item |
+| `OreClusterScanner` chat | the translated names `techguns.tile.<block>_<meta>.name`, one line per distinct cluster, after the "found" message | a successful scan found at least one cluster |
+| `OreClusterScanner` chat | `techguns.OreClusterScanner.msg.found` / `msg.notFound` | end of a completed scan (client only) |
+| [`BuildingScanTool`](../06-items/special-items.md#building-scan-tool-buildingscantool), [`StructureTestTool`](../06-items/special-items.md#structure-test-tool-structuretesttool) chat | `Position1 set (x/y/z).` | first click (client) |
+| `BuildingScanTool`, `StructureTestTool` chat | `Position2 set (x/y/z).` and `Size: (sx/sy/sz).` | second click (client) |
+| `StructureTestTool` chat | `structure tool mode set to "<mode>".` with modes `Structure`, `Camp`, `Smooth`, `Flatten`, `Remove Junk`, `Sphere`, `Cylinder` | sneak-click (client) |
+| `BuildingScanTool` output | the file `structure_scan.txt` and generated Java lines | every completed scan (server) |
+| [`CityRoad`](structure-catalogue.md#c1-city-generator-genericcity-genericcitysegment-citystructure-citybuilding-citybuildingtype-buildingstyle-cityroad-iroad-partsstaircase) stdout | `Set Road Blocks...`, `Set Road Blocks... DONE!` | every city road (dormant code) |
+| [`MilitaryCamp`](structure-catalogue.md#a6-military-base-militarybasestructure--militarycamp) stdout | `WTF!` | a camp segment of size 0 or less |
+
+### Hard-coded English (not localised)
+
+All of the chat strings above for the two authoring tools (`Position1 set`, `Position2 set`, `Size:`, `structure tool mode set to`, and the seven mode names), the two stdout debug strings, and the `structure_scan.txt` file name. None passes through the lang file, so none can be translated.
+
+### Missing keys and oddities
+
+| Item | Detail |
+|---|---|
+| `techguns.tile.oreCluster2.name` | absent. `oreCluster.name` ("Ore Cluster") exists, but its twin does not. The per-meta keys `oreCluster2_0` to `_4` exist, so the gap is only visible if a name is requested for the block without a meta. |
+| `techguns.tile.oreCluster2_5.name` to `_15.name` | absent. Those metas are unused (mining level 0, hidden from creative) so the gap is harmless |
+| `techguns.tile.oreClusterCustom_<meta>.name` | absent; every custom-cluster item shows the shared text "Ore Cluster" (`oreClusterCustom.name`, `oreClusterCustom2.name`) regardless of meta |
+| `techguns.tile.oreTitanIron.name` | absent (only the per-meta `_0` and `_1`) |
+| `techguns.tile.Lamp_*` and `LadderBlock_*` | several metas share one text, so the creative list shows duplicate-looking names (for example seven "Lamp (Yellow)" entries) |
+| Chisel parent names | `techguns.tile.chisel.bugnest.name` is "Hardened Sand" while the variant text is "Bugnest Sand", so the same block has two English names depending on where it is shown |
+| Duplicate definitions | `entity.Techguns.AttackHelicopter.name` (lines 271 and 275) is defined twice with the same text |
+| Structure names | none; structures are unlocalised by design |
