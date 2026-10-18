@@ -186,10 +186,10 @@ One gun, working end to end inside the GTNH dev pack.
 - The spec is [05-armor](techguns-spec/05-armor/index.md).
 
 **Exit gate:**
-- [ ] Protection and penetration values follow the D4 model, with unit tests.
-- [ ] Bonuses apply and are removed cleanly, with no step-height or potion interference (CORE-14, CORE-15).
+- [x] Protection and penetration values follow the D4 model, with unit tests. Evidence: `ArmorProtectionTest`, `ArmorTiersTest`, `PowerArmorTest` and `armor.damage` ([M3 exit gate](gregguns-spec/05-armor/implementation-notes.md#m3-exit-gate)).
+- [x] Bonuses apply and are removed cleanly, with no step-height or potion interference (CORE-14, CORE-15). Evidence: `Core14And15RegressionTest`, `BonusLifecycleTest`, `armor.lifecycle` and `armor.compat` ([M3 exit gate](gregguns-spec/05-armor/implementation-notes.md#m3-exit-gate)).
 - [ ] The special-slot inventory syncs, persists and works with automation where the spec says it should.
-- [ ] Powered items run on EU through GT chargers.
+- [x] Powered items run on EU through GT chargers. Evidence: `armor.power.charger` (exact-tier GT Battery Buffers, 0008) ([M3 exit gate](gregguns-spec/05-armor/implementation-notes.md#m3-exit-gate)).
 
 ## M4 · Production chain and machines
 
