@@ -18,6 +18,10 @@ public final class GunCatalog {
         public static final String NINE_MM = "ammo_9mm_bullet";
         /** Loose shotgun shells (the Sawed Off's ammo). */
         public static final String SHOTGUN_SHELL = "ammo_shotgun_shell";
+        /** Loose stone bullets (the Hand Cannon's round, ULV). */
+        public static final String STONE = "ammo_stone_bullet";
+        /** Loose rifle bullets (the Bolt Action Rifle's ammo; one item fills the gun). */
+        public static final String RIFLE = "ammo_rifle_bullet";
         /** Loaded 9mm pistol magazine (18 rounds). */
         public static final String NINE_MM_PISTOL_MAGAZINE = "mag_9mm_pistol";
         /** Empty 9mm pistol magazine. */
@@ -100,6 +104,59 @@ public final class GunCatalog {
         .penetration(0)
         .animation(5, 5)
         .ai(12, 60, 2, 20)
+        .build();
+
+    /**
+     * The Hand Cannon.
+     *
+     * <p>
+     * Spec: sheets-handguns-smgs.md, "Hand Cannon", section 3: damage 8 falling to 5 between 10 and 25 blocks, speed
+     * 1.0 blocks per tick for 25 ticks (gravity 0.015 comes from the SimpleProjectile), spread 0.035, no scope,
+     * full-auto every 12 ticks, one round loaded straight from one stone bullet (no magazine, no empty container),
+     * 30 tick reload, AI range 12 / attack time 60 / burst 0 / delay 0, recoil 5 ticks and muzzle flash 5 ticks.
+     */
+    public static final GunStats HANDCANNON = GunStats.builder("handcannon")
+        .damage(8.0)
+        .damageDrop(10, 25, 5.0)
+        .spread(0.035)
+        .fire(FireMode.AUTO, 12)
+        .magazine(1)
+        .ammoType(AmmoIds.STONE)
+        .reloadMode(ReloadMode.MAGAZINE, 1)
+        .reloadTicks(30)
+        .projectile(1.0, 25)
+        .projectileKind(ProjectileKind.GRAVITY_BULLET)
+        .penetration(0)
+        .animation(5, 5)
+        .ai(12, 60, 0, 0)
+        .build();
+
+    /**
+     * The Bolt Action Rifle, the first scoped gun.
+     *
+     * <p>
+     * Spec: sheets-rifles-shotguns.md, "Bolt Action Rifle", section 3: damage 16 falling to 10 between 20 and 30
+     * blocks, lifetime 40 ticks at 2.25 blocks per tick (the base 1.5 times 1.5), spread 0.05, armor penetration 0.15,
+     * semi-auto every 25 ticks (the rechamber), 6 rounds loaded straight from one rifle bullet item (no magazine, no
+     * empty container), 50 tick reload, scope FOV x0.35 and spread x0.125 while zoomed, AI range 36 / attack time 60 /
+     * no burst, recoil 15 ticks and muzzle flash 5 ticks.
+     */
+    // Deviation: Techguns' AI attack time has a variance of 20 ticks; GunStats has no variance field, so the NPC uses
+    // the plain 60.
+    public static final GunStats BOLT_ACTION = GunStats.builder("bolt_action_rifle")
+        .damage(16.0)
+        .damageDrop(20, 30, 10.0)
+        .spread(0.05)
+        .zoom(0.35, 0.125)
+        .fire(FireMode.SEMI, 25)
+        .magazine(6)
+        .ammoType(AmmoIds.RIFLE)
+        .reloadMode(ReloadMode.MAGAZINE, 1)
+        .reloadTicks(50)
+        .projectile(2.25, 40)
+        .penetration(0.15)
+        .animation(15, 5)
+        .ai(36, 60, 0, 0)
         .build();
 
     private GunCatalog() {}

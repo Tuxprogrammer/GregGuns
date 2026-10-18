@@ -59,6 +59,7 @@ public class ItemGun extends Item implements Tiered {
     private final DamageType damageType;
     private final String fireEvent;
     private final String reloadEvent;
+    private final String rechamberEvent;
 
     /**
      * @param contentName the registry name without the mod id, also the sound prefix (for example {@code pistol_9mm})
@@ -67,12 +68,26 @@ public class ItemGun extends Item implements Tiered {
      * @param damageType  the damage type of its projectiles, for the tooltip
      */
     public ItemGun(String contentName, GunStats stats, Tier tier, DamageType damageType) {
+        this(contentName, stats, tier, damageType, false);
+    }
+
+    /**
+     * @param contentName the registry name without the mod id, also the sound prefix (for example
+     *                    {@code bolt_action_rifle})
+     * @param stats       the gun's stats
+     * @param tier        the GregTech tier the gun belongs to
+     * @param damageType  the damage type of its projectiles, for the tooltip
+     * @param rechambers  true if the gun plays a second sound, {@code guns.<name>.rechamber}, with every shot (a bolt
+     *                    or pump worked after the shot)
+     */
+    public ItemGun(String contentName, GunStats stats, Tier tier, DamageType damageType, boolean rechambers) {
         this.contentName = contentName;
         this.stats = stats;
         this.tier = tier;
         this.damageType = damageType;
         this.fireEvent = GunSoundEvents.gun(contentName, GunSoundEvents.FIRE);
         this.reloadEvent = GunSoundEvents.gun(contentName, GunSoundEvents.RELOAD);
+        this.rechamberEvent = rechambers ? GunSoundEvents.gun(contentName, GunSoundEvents.RECHAMBER) : null;
         setMaxStackSize(1);
         setNoRepair();
     }
@@ -90,6 +105,11 @@ public class ItemGun extends Item implements Tiered {
     /** @return the unprefixed sound event of one shot */
     public String fireEvent() {
         return fireEvent;
+    }
+
+    /** @return the unprefixed sound event played with every shot after the fire sound, or null if the gun has none */
+    public String rechamberEvent() {
+        return rechamberEvent;
     }
 
     /** @return the unprefixed sound event of a reload */

@@ -100,13 +100,19 @@ public final class GunVisualScenario implements Scenario {
         a.playerNetServerHandler.setPlayerLocation(ox, oy, oz, -90.0f, 0.0f);
         a.inventoryContainer.detectAndSendChanges();
         String p = prefix;
-        return ScenarioResult.pending(name, 700, t -> {
+        // A scoped gun gets a real zoom at the end: the server toggles the zoom state (what a right-click does) and
+        // the client narrows the FOV, hides the model and draws the overlay.
+        boolean scoped = gun.stats()
+            .hasScope();
+        int endTick = scoped ? 470 : 380;
+        return ScenarioResult.pending(name, endTick + 320, t -> {
             switch (t) {
                 case 10 -> signal(a, "view", "0");
                 case 25 -> signal(a, "shot", p + "-first-person-idle");
                 case 30 -> signal(a, "arm", "shot", p + "-first-person-fire", "1");
                 case 32 -> signal(a, "fire", "1");
-                case 60 -> {
+                // Late enough for the slowest fire interval (the rifle's 25 ticks plus the client's click lag).
+                case 80 -> {
                     signal(a, "arm", "reload", p + "-first-person-reload", "22");
                     ServerGunHandler.onReloadKey(a);
                 }
@@ -143,9 +149,39 @@ public final class GunVisualScenario implements Scenario {
                 case 350 -> signal(a, "scope", "gregguns:textures/fx/techscope.png");
                 case 365 -> signal(a, "shot", "scope-techscope");
                 case 370 -> signal(a, "scope", "off");
+                case 380 -> {
+                    if (scoped) {
+                        ServerGunHandler.onZoomToggle(a);
+                    }
+                }
+                case 400 -> {
+                    if (scoped) {
+                        signal(a, "shot", p + "-scoped");
+                    }
+                }
+                case 405 -> {
+                    if (scoped) {
+                        signal(a, "arm", "shot", p + "-scoped-fire", "1");
+                    }
+                }
+                case 407 -> {
+                    if (scoped) {
+                        signal(a, "fire", "1");
+                    }
+                }
+                case 440 -> {
+                    if (scoped) {
+                        ServerGunHandler.onZoomToggle(a);
+                    }
+                }
+                case 455 -> {
+                    if (scoped) {
+                        signal(a, "shot", p + "-unscoped");
+                    }
+                }
                 default -> {}
             }
-            if (t < 380) {
+            if (t < endTick) {
                 return null;
             }
             return ScenarioResult.builder(name)

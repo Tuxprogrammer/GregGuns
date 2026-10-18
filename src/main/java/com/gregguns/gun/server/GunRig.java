@@ -236,9 +236,21 @@ public final class GunRig {
 
     /** The health a target should lose from {@code rawDamage} of projectile damage, per the damage model. */
     public static float expectedLoss(EntityLivingBase target, double rawDamage) {
+        return expectedLoss(target, rawDamage, 0.0);
+    }
+
+    /**
+     * As {@link #expectedLoss(EntityLivingBase, double)} for a gun with armor penetration.
+     *
+     * @param penetration the gun's armor penetration, 0 to 1
+     */
+    public static float expectedLoss(EntityLivingBase target, double rawDamage, double penetration) {
         double armor = target.getTotalArmorValue();
-        return (float) DamageModel
-            .resolve(DamageType.PROJECTILE, rawDamage, 0.0, share -> share * DamageModel.vanillaArmorFactor(armor));
+        return (float) DamageModel.resolve(
+            DamageType.PROJECTILE,
+            rawDamage,
+            penetration,
+            share -> share * DamageModel.vanillaArmorFactor(armor));
     }
 
     /** @return true if two health values agree to within a twentieth of a half heart */

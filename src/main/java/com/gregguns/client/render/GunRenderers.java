@@ -10,7 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.gregguns.GregGuns;
+import com.gregguns.client.render.profile.BoltActionRifleProfile;
 import com.gregguns.client.render.profile.GunTransforms;
+import com.gregguns.client.render.profile.HandCannonProfile;
 import com.gregguns.client.render.profile.Pistol9mmProfile;
 import com.gregguns.client.render.profile.RevolverProfile;
 import com.gregguns.client.render.profile.SawedOffProfile;
@@ -129,6 +131,44 @@ public final class GunRenderers {
                 RevolverProfile.MUZZLE,
                 true),
             RevolverProfile.TRANSFORMS);
+    }
+
+    /**
+     * Registers the Hand Cannon: the original X-family box model built against {@code handcannon.png}, and its sheet
+     * transforms.
+     */
+    public static void registerHandCannon(Item handcannon) {
+        register(
+            handcannon,
+            new BoxGunModel(
+                HandCannonProfile.BOXES,
+                1,
+                HandCannonProfile.TEXTURE_WIDTH,
+                HandCannonProfile.TEXTURE_HEIGHT,
+                HandCannonProfile.MODEL_SCALE,
+                new String[] { HandCannonProfile.TEXTURE },
+                HandCannonProfile.MUZZLE,
+                true),
+            HandCannonProfile.TRANSFORMS);
+    }
+
+    /**
+     * Registers the Bolt Action Rifle: the original X-family box model built against {@code bolt_action_rifle.png}
+     * (three camo textures, chosen by the stack's camo index), its sheet transforms and its scope overlay.
+     */
+    public static void registerBoltAction(Item rifle) {
+        register(
+            rifle,
+            new BoxGunModel(
+                BoltActionRifleProfile.BOXES,
+                1,
+                BoltActionRifleProfile.TEXTURE_WIDTH,
+                BoltActionRifleProfile.TEXTURE_HEIGHT,
+                BoltActionRifleProfile.MODEL_SCALE,
+                BoltActionRifleProfile.TEXTURES,
+                BoltActionRifleProfile.MUZZLE,
+                true),
+            BoltActionRifleProfile.TRANSFORMS);
     }
 
     /**

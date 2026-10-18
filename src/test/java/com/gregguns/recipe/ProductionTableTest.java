@@ -44,9 +44,43 @@ class ProductionTableTest {
     }
 
     @Test
-    void everyRowIsLvSoTheRecipeCannotRunBelowItsTier() {
+    void ironReceiverAndRifleBulletRowsMatchTheSheet() {
+        // docs/gregguns-spec/06-items/recipes.md, RC-13 and RC-30.
+        ProductionTable.Row receiver = row("RC-13");
+        assertEquals("part_receiver_iron", receiver.output());
+        assertEquals(1, receiver.outputCount());
+        assertEquals(5, receiver.seconds());
+        assertEquals(ProductionTable.Target.ASSEMBLER, receiver.target());
+        assertEquals(
+            3,
+            receiver.inputs()
+                .size());
+        ProductionTable.Row rifle = row("RC-30");
+        assertEquals("ammo_rifle_bullet", rifle.output());
+        assertEquals(16, rifle.outputCount());
+        assertEquals(6, rifle.seconds());
+        assertEquals(Tier.LV, rifle.tier());
+        assertEquals(ProductionTable.Target.AMMO_PRESS, rifle.target());
+        assertEquals(
+            "round.Steel",
+            rifle.inputs()
+                .get(1)
+                .prefix() + "."
+                + rifle.inputs()
+                    .get(1)
+                    .material());
+        assertFalse(
+            ProductionTable.GATE_EXEMPT.contains("ammo_rifle_bullet"),
+            "the Steel rounds are the gate, so the rifle bullet is not exempt");
+        assertTrue(GateRule.satisfied(rifle, ProductionTable.byOutput(), ProductionTable.GATE_EXEMPT));
+    }
+
+    @Test
+    void everyRowIsLvSoTheRecipeCannotRunBelowItsTierExceptTheSteamStoneBullet() {
         for (ProductionTable.Row row : ProductionTable.ROWS) {
-            assertEquals(Tier.LV, row.tier(), row.id());
+            Tier expected = row.output()
+                .equals(ProductionTable.STONE_BULLET) ? Tier.STEAM : Tier.LV;
+            assertEquals(expected, row.tier(), row.id());
         }
     }
 
@@ -127,6 +161,38 @@ class ProductionTableTest {
     }
 
     @Test
+    void stoneBulletPressRowRunsOnTheSteamPressAndIsBronzeGated() {
+        // RC-27b: 24 bullets from cobblestone x3, gunpowder x1 and a Bronze nugget, ULV, Steam Ammo Press.
+        ProductionTable.Row stone = row("RC-27b");
+        assertEquals("ammo_stone_bullet", stone.output());
+        assertEquals(24, stone.outputCount());
+        assertEquals(Tier.STEAM, stone.tier());
+        assertEquals(ProductionTable.Target.AMMO_PRESS, stone.target());
+        assertEquals(5, stone.seconds());
+        assertTrue(
+            stone.inputs()
+                .size() <= 4,
+            "the Steam press has 4 input slots");
+        assertEquals(
+            "cobblestone",
+            stone.inputs()
+                .get(0)
+                .oreName());
+        assertEquals(
+            3,
+            stone.inputs()
+                .get(0)
+                .count());
+        assertTrue(
+            GateRule.satisfied(stone, ProductionTable.byOutput(), ProductionTable.GATE_EXEMPT),
+            "the Bronze nugget is the gate");
+        assertTrue(
+            ProductionTable.pressRowsFor(com.gregguns.machine.AmmoPressTier.STEAM)
+                .contains(stone),
+            "the Steam press can run it");
+    }
+
+    @Test
     void inputsAreUniquePerMapAndCircuit() {
         // GGS-06-37: (map, inputs, circuit) is unique.
         Set<String> seen = new HashSet<>();
@@ -134,7 +200,10 @@ class ProductionTableTest {
             StringBuilder key = new StringBuilder(row.target() + "|" + row.circuit());
             for (ProductionTable.Input input : row.inputs()) {
                 key.append('|')
-                    .append(input.isGregGuns() ? input.itemName() : input.prefix() + "." + input.material())
+                    .append(
+                        input.isGregGuns() ? input.itemName()
+                            : input.oreName() != null ? "ore:" + input.oreName()
+                                : input.prefix() + "." + input.material())
                     .append('x')
                     .append(input.count());
             }
@@ -147,7 +216,7 @@ class ProductionTableTest {
         Map<String, ProductionTable.Row> made = ProductionTable.byOutput();
         for (ProductionTable.Row row : ProductionTable.ROWS) {
             for (ProductionTable.Input input : row.inputs()) {
-                if (input.isGregGuns()) {
+                if (input.isGregGuns() && !ProductionTable.CRAFTED_PARTS.contains(input.itemName())) {
                     assertNotNull(made.get(input.itemName()), row.id() + " input " + input.itemName());
                 }
             }

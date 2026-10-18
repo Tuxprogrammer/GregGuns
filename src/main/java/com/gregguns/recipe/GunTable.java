@@ -75,9 +75,30 @@ public final class GunTable {
         ProductionTable.Input.gt("screw", "Steel", 2),
         ProductionTable.Input.gt("springSmall", "Steel", 1));
 
+    /**
+     * Bolt Action Rifle: Hardened Steel Barrel, Iron Receiver, Wooden Stock, a glass lens (the scope), 2 steel plates,
+     * 4
+     * steel screws and a small steel spring; Assembler, LV, 20 s, circuit 4. The gate is the steel plate.
+     */
+    public static final ProductionTable.Row BOLT_ACTION = new ProductionTable.Row(
+        "GR-04",
+        GunSoundEvents.BOLT_ACTION_RIFLE,
+        1,
+        Tier.LV,
+        ProductionTable.Target.ASSEMBLER,
+        20,
+        4,
+        ProductionTable.Input.mod(PartItems.BARREL_HARDENED, 1),
+        ProductionTable.Input.mod(PartItems.RECEIVER_IRON, 1),
+        ProductionTable.Input.mod(PartItems.STOCK_WOODEN, 1),
+        ProductionTable.Input.gt("lens", "Glass", 1),
+        ProductionTable.Input.gt("plate", "Steel", 2),
+        ProductionTable.Input.gt("screw", "Steel", 4),
+        ProductionTable.Input.gt("springSmall", "Steel", 1));
+
     /** Every gun assembly row, in sheet order. */
     public static final List<ProductionTable.Row> ROWS = Collections
-        .unmodifiableList(Arrays.asList(PISTOL, REVOLVER, SAWED_OFF));
+        .unmodifiableList(Arrays.asList(PISTOL, REVOLVER, SAWED_OFF, BOLT_ACTION));
 
     private GunTable() {}
 }

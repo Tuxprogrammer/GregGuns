@@ -23,7 +23,7 @@ import com.gregguns.machine.AmmoPressTier;
  * Inputs name GT parts as ore prefix + material (resolved through {@code GTOreDictUnificator} later) or GregGuns items
  * by registry name. No Minecraft or GT types appear here, so the table is testable without a game. Both sides.
  */
-// Spec: docs/gregguns-spec/06-items/recipes.md (RC-05, RC-11, RC-28, RC-37, RC-44, RC-51)
+// Spec: docs/gregguns-spec/06-items/recipes.md (RC-05, RC-11, RC-13, RC-28, RC-30, RC-37, RC-44, RC-51)
 public final class ProductionTable {
 
     /** The GT recipe map a row is registered on. */
@@ -45,9 +45,10 @@ public final class ProductionTable {
         private final String material;
         private final String itemName;
         private final String special;
+        private final String oreName;
         private final int count;
 
-        private Input(String prefix, String material, String itemName, String special, int count) {
+        private Input(String prefix, String material, String itemName, String special, String oreName, int count) {
             if (count < 1) {
                 throw new IllegalArgumentException("count must be positive");
             }
@@ -55,6 +56,7 @@ public final class ProductionTable {
             this.material = material;
             this.itemName = itemName;
             this.special = special;
+            this.oreName = oreName;
             this.count = count;
         }
 
@@ -65,7 +67,7 @@ public final class ProductionTable {
          * @return a GT part input
          */
         public static Input gt(String prefix, String material, int count) {
-            return new Input(prefix, material, null, null, count);
+            return new Input(prefix, material, null, null, null, count);
         }
 
         /**
@@ -74,7 +76,7 @@ public final class ProductionTable {
          * @return a GregGuns item input
          */
         public static Input mod(String registryName, int count) {
-            return new Input(null, null, registryName, null, count);
+            return new Input(null, null, registryName, null, null, count);
         }
 
         /**
@@ -83,7 +85,7 @@ public final class ProductionTable {
          * @return a GT machine part or other {@code ItemList} item
          */
         public static Input itemList(String name, int count) {
-            return new Input(null, null, null, "gt:" + name, count);
+            return new Input(null, null, null, "gt:" + name, null, count);
         }
 
         /**
@@ -92,7 +94,7 @@ public final class ProductionTable {
          * @return a vanilla item input
          */
         public static Input vanilla(String registryName, int count) {
-            return new Input(null, null, null, "mc:" + registryName, count);
+            return new Input(null, null, null, "mc:" + registryName, null, count);
         }
 
         /**
@@ -101,6 +103,23 @@ public final class ProductionTable {
          */
         public String special() {
             return special;
+        }
+
+        /**
+         * A plain ore-dictionary input that is not a GT material part, such as {@code "cobblestone"} for the stone
+         * bullet. A machine recipe takes the first stack the ore name lists.
+         *
+         * @param oreName an ore-dictionary name
+         * @param count   stack size
+         * @return an ore-name input
+         */
+        public static Input ore(String oreName, int count) {
+            return new Input(null, null, null, null, oreName, count);
+        }
+
+        /** @return the ore-dictionary name for an {@link #ore} input, or {@code null} */
+        public String oreName() {
+            return oreName;
         }
 
         /** @return {@code true} for a GregGuns item, {@code false} for a GT part */
@@ -234,6 +253,10 @@ public final class ProductionTable {
     public static final String BULLET = AmmoTypes.NINE_MM.roundItemName();
     /** Registry name of the shotgun shell. */
     public static final String SHELL = AmmoTypes.SHOTGUN_SHELL.roundItemName();
+    /** Registry name of the stone bullet. */
+    public static final String STONE_BULLET = AmmoTypes.STONE.roundItemName();
+    /** Stone bullets made per RC-27b press run. */
+    public static final int STONE_BULLETS_PER_RUN = 24;
     /** Registry name of the empty 9mm pistol magazine. */
     public static final String MAGAZINE_EMPTY = AmmoTypes.NINE_MM_PISTOL.emptyItemName();
     /** Registry name of the loaded 9mm pistol magazine. */
@@ -253,8 +276,8 @@ public final class ProductionTable {
      * Parts that are made at the crafting table (ULV, RC-02 and RC-03; see {@code PartCraftingRecipes}), so no
      * machine row exists for them. Guns may take these as inputs without a row in {@link #ROWS}.
      */
-    public static final Set<String> CRAFTED_PARTS = Collections
-        .unmodifiableSet(new HashSet<>(Arrays.asList(PartItems.STOCK_WOODEN, PartItems.MECHANICAL_1)));
+    public static final Set<String> CRAFTED_PARTS = Collections.unmodifiableSet(
+        new HashSet<>(Arrays.asList(PartItems.STOCK_WOODEN, PartItems.MECHANICAL_1, PartItems.BARREL_STONE)));
 
     /** The rows, in sheet order. */
     public static final List<Row> ROWS = Collections.unmodifiableList(
@@ -296,6 +319,18 @@ public final class ProductionTable {
                 Input.gt("gearGtSmall", "Steel", 2),
                 Input.gt("springSmall", "Steel", 2),
                 Input.gt("screw", "Steel", 4)),
+            // RC-13: the Steel screws are the gate. The receiver is iron plate around a set of mechanical parts.
+            new Row(
+                "RC-13",
+                PartItems.RECEIVER_IRON,
+                1,
+                Tier.LV,
+                Target.ASSEMBLER,
+                5,
+                1,
+                Input.gt("plate", "Iron", 3),
+                Input.mod(PartItems.MECHANICAL_1, 1),
+                Input.gt("screw", "Steel", 2)),
             // RC-28: no Steel input; the loose-ammo exemption of GGS-06-36 applies.
             new Row(
                 "RC-28",
@@ -320,6 +355,16 @@ public final class ProductionTable {
                 Input.gt("foil", "Brass", 8),
                 Input.gt("round", "Lead", 24),
                 Input.gt("dust", "Gunpowder", 4)),
+            // RC-30: the Steel rounds are the gate. Rifle bullets are not in GATE_EXEMPT.
+            pressRow(
+                "RC-30",
+                AmmoTypes.RIFLE.roundItemName(),
+                16,
+                Tier.LV,
+                6,
+                Input.gt("foil", "Brass", 16),
+                Input.gt("round", "Steel", 16),
+                Input.gt("dust", "Gunpowder", 4)),
             new Row(
                 "RC-37",
                 MAGAZINE_EMPTY,
@@ -340,7 +385,18 @@ public final class ProductionTable {
                 2,
                 0,
                 Input.mod(MAGAZINE_EMPTY, LOADED_PER_RUN),
-                Input.mod(BULLET, LOADED_PER_RUN * AmmoTypes.NINE_MM_PISTOL.roundsPerMagazine()))));
+                Input.mod(BULLET, LOADED_PER_RUN * AmmoTypes.NINE_MM_PISTOL.roundsPerMagazine())),
+            // RC-27b: the Steam Ammo Press (ULV, at most 4 inputs). Bronze is the gate: one nugget is the band.
+            // Deviation: 24 per run against the hand recipe's 16 (the press rewards building it, as the sheet says).
+            pressRow(
+                "RC-27b",
+                STONE_BULLET,
+                STONE_BULLETS_PER_RUN,
+                Tier.STEAM,
+                5,
+                Input.ore("cobblestone", 3),
+                Input.gt("dust", "Gunpowder", 1),
+                Input.gt("nugget", "Bronze", 1))));
 
     /** RC-51 for the 9mm pistol magazine: one empty magazine and the same bullets-per-magazine as RC-44. */
     public static final Refill PISTOL_REFILL = new Refill(

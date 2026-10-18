@@ -27,6 +27,19 @@ class AmmoIdsMatchItemsTest {
     }
 
     @Test
+    void handCannonUsesTheStoneBullet() {
+        assertEquals(AmmoTypes.STONE.roundItemName(), GunCatalog.AmmoIds.STONE);
+        assertEquals(AmmoTypes.STONE.roundItemName(), GunCatalog.HANDCANNON.ammoType());
+        assertEquals(com.gregguns.api.Tier.STEAM, AmmoTypes.STONE.tier());
+    }
+
+    @Test
+    void boltActionUsesTheRifleBullet() {
+        assertEquals(AmmoTypes.RIFLE.roundItemName(), GunCatalog.AmmoIds.RIFLE);
+        assertEquals(AmmoTypes.RIFLE.roundItemName(), GunCatalog.BOLT_ACTION.ammoType());
+    }
+
+    @Test
     void pistolUsesThePistolMagazine() {
         assertEquals(AmmoTypes.NINE_MM_PISTOL.loadedItemName(), GunCatalog.PISTOL.ammoType());
         assertEquals(AmmoTypes.NINE_MM_PISTOL.emptyItemName(), GunCatalog.PISTOL.emptyContainerType());

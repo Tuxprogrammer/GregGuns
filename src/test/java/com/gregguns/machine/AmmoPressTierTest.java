@@ -95,10 +95,15 @@ class AmmoPressTierTest {
     }
 
     @Test
-    void steamRunsNoLvRowsAndEveryElectricPressRunsTheLvRows() {
-        assertTrue(
+    void steamRunsOnlyTheUlvRowsAndEveryElectricPressRunsTheLvRows() {
+        // The Steam press runs ULV rows only: today that is the stone bullet (RC-27b), and no LV row.
+        for (ProductionTable.Row row : ProductionTable.pressRowsFor(AmmoPressTier.STEAM)) {
+            assertEquals(com.gregguns.api.Tier.STEAM, row.tier(), row.id());
+        }
+        assertEquals(
+            1,
             ProductionTable.pressRowsFor(AmmoPressTier.STEAM)
-                .isEmpty());
+                .size());
         int lvRows = ProductionTable.pressRowsFor(AmmoPressTier.LV)
             .size();
         assertTrue(lvRows >= 3);

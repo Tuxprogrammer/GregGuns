@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
@@ -66,12 +67,13 @@ public final class ProductionRecipes {
         List<ItemStack> inputs = new ArrayList<>();
         for (ProductionTable.Input input : row.inputs()) {
             ItemStack stack = input.isGregGuns() ? modStack(input.itemName(), input.count())
-                : input.special() != null ? specialStack(input) : gtStack(input);
+                : input.special() != null ? specialStack(input)
+                    : input.oreName() != null ? oreStack(input.oreName(), input.count()) : gtStack(input);
             if (stack == null) {
                 GregGuns.LOG.error(
                     "Skipping recipe {}: input {} of {} did not resolve",
                     row.id(),
-                    input.isGregGuns() ? input.itemName() : input.prefix() + "." + input.material(),
+                    describe(input),
                     row.output());
                 return;
             }
@@ -219,6 +221,29 @@ public final class ProductionRecipes {
             GregGuns.LOG.error("No GT ItemList constant {}", name);
             return null;
         }
+    }
+
+    /** The first stack the ore-dictionary lists under a name, or {@code null}. */
+    private static ItemStack oreStack(String oreName, int count) {
+        for (ItemStack ore : OreDictionary.getOres(oreName)) {
+            ItemStack copy = ore.copy();
+            if (copy.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+                copy.setItemDamage(0);
+            }
+            copy.stackSize = count;
+            return copy;
+        }
+        return null;
+    }
+
+    private static String describe(ProductionTable.Input input) {
+        if (input.isGregGuns()) {
+            return input.itemName();
+        }
+        if (input.special() != null) {
+            return input.special();
+        }
+        return input.oreName() != null ? "ore:" + input.oreName() : input.prefix() + "." + input.material();
     }
 
     private static ItemStack gtStack(ProductionTable.Input input) {

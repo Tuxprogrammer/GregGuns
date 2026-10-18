@@ -33,6 +33,18 @@ All evidence is pinned to GT5-Unofficial `5.09.54.205`, Backhand `1.8.16`, Battl
 
 **No integration point** (see [the Techguns spec](../../techguns-spec/02-guns/index.md) and the [design records](../../design/README.md)): gun stats and catalog, firing algorithm, spread and zoom math, reload rules, NBT layout, tooltips and lang keys, NPC firing, the weapon-stats config, grenade behavior. Their pack-facing parts (keybinds, networking, config library) are in [01-core](../01-core/).
 
+## Bolt Action Rifle (M2): deviations
+
+The rifle is the first scoped gun (`gregguns:bolt_action_rifle`, GR-04, LV). Its stats are the Techguns sheet's: 16 damage falling to 10 between 20 and 30 blocks, speed 2.25 blocks per tick, spread 0.05, 15% armor penetration, 6 rounds, a 25 tick rechamber, a 50 tick reload and a zoom of x0.35 FOV and x0.125 spread. What differs:
+
+- **Loading.** One `ammo_rifle_bullet` (RC-30, Ammo Press, 16 per run, Steel rounds as the gate) fills all 6 rounds, as the sheet says, so it uses `ReloadMode.MAGAZINE` like the Revolver and not `INCREMENTAL`.
+- **Rechamber sound.** `guns.bolt_action_rifle.rechamber` plays with every shot, beside the fire sound (a new optional `ItemGun` event). The 25 tick fire interval is the rechamber; the bolt is static geometry and the whole rifle cants in the firing transform.
+- **Recipe.** GR-04 adds the Iron Receiver (`part_receiver_iron`, RC-13, new) and a glass lens for the scope.
+- **Scope.** The overlay is `testscope.png` (downsampled to 1024 at load). The overlay's recoil shove is 0.04 up and 0.02 sideways as fractions of the screen height, much smaller than the sheet's (0.2, 0.25), which is in Techguns' own units.
+- **First person and third person.** The sheet's scale 1.5 was recorded for Techguns' 53 texel model; the GregGuns model is 82 texels long, so the profile uses its own scales (see the `// Deviation:` notes in `BoltActionRifleProfile`).
+- **NPC attack time.** The sheet's variance of 20 ticks is dropped; `GunStats` has no such field.
+- **Camo.** Three textures (default, Olive, Tactical Black) are chosen by the stack's `camo` byte; the Camo Bench that sets it is M4's.
+
 ## Pack-side changes
 
 These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack) and are collected in [PACK-CHANGES.md](../PACK-CHANGES.md).
