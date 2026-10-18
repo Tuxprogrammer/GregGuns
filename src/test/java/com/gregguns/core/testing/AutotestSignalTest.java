@@ -22,9 +22,7 @@ class AutotestSignalTest {
 
     @Test
     void findsASignalAfterASpeakerTag() {
-        assertArrayEquals(
-            new String[] { "quit" },
-            AutotestSignal.parse("[Server] " + AutotestSignal.format("quit")));
+        assertArrayEquals(new String[] { "quit" }, AutotestSignal.parse("[Server] " + AutotestSignal.format("quit")));
     }
 
     @Test

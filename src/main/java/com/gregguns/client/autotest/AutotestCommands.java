@@ -30,7 +30,8 @@ import cpw.mods.fml.relauncher.SideOnly;
  * <li>{@code gui nei <item>}: NEI's recipe view for the output {@code gregguns:<item>}.</li>
  * </ul>
  * Other commands (handled by {@link ClientAutotest}): {@code view <0|1|2>}, {@code shot <label>},
- * {@code arm <shot|reload> <label> <delayTicks>}, {@code fire <count>}, {@code close}, {@code quit}. Dev autotest only. Client only.
+ * {@code arm <shot|reload> <label> <delayTicks>}, {@code fire <count>}, {@code close}, {@code quit}. Dev autotest only.
+ * Client only.
  */
 @SideOnly(Side.CLIENT)
 final class AutotestCommands {
