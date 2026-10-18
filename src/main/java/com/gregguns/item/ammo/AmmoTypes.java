@@ -22,6 +22,9 @@ public final class AmmoTypes {
     /** 9mm loose round. LV (0001). Shared by the pistol magazine, revolvers and later the SMG magazine. */
     public static final AmmoType NINE_MM = new AmmoType("9mm", "ammo_9mm_bullet", Tier.LV);
 
+    /** Shotgun shell. LV (0001). Loose, loaded into the Sawed Off one shell per round. */
+    public static final AmmoType SHOTGUN_SHELL = new AmmoType("shotgun_shell", "ammo_shotgun_shell", Tier.LV);
+
     /** 9mm Pistol Magazine: 3 rounds per refill (ammo.md magazine table). */
     public static final MagazineType NINE_MM_PISTOL = new MagazineType(
         "9mm_pistol",
@@ -36,6 +39,7 @@ public final class AmmoTypes {
 
     static {
         AMMO.put(NINE_MM.id(), NINE_MM);
+        AMMO.put(SHOTGUN_SHELL.id(), SHOTGUN_SHELL);
         MAGAZINES.put(NINE_MM_PISTOL.id(), NINE_MM_PISTOL);
     }
 

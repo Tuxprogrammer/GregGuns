@@ -68,6 +68,23 @@ public final class GunRecipes {
         GTOreDictUnificator
             .addItemData(pistol, new ItemData(Materials.Steel, steel, new MaterialStack(Materials.Rubber, 2 * plate)));
         addRevolverData(plate);
+        addSawedOffData(plate);
+    }
+
+    /**
+     * Recycling data of the Sawed Off: the steel plate, screws and spring of the gun itself plus the iron and steel of
+     * its two Iron Barrels (the barrel part carries its own data from {@link #addRevolverData}).
+     */
+    private static void addSawedOffData(long plate) {
+        long screw = OrePrefixes.screw.getMaterialAmount();
+        long spring = OrePrefixes.springSmall.getMaterialAmount();
+        long barrelIron = GunComposition
+            .ironBarrelIron(OrePrefixes.stickLong.getMaterialAmount(), OrePrefixes.ring.getMaterialAmount());
+        long barrelSteel = GunComposition.ironBarrelSteel(screw);
+        long steel = GunComposition.sawedOffDirectSteel(plate, screw, spring) + 2 * barrelSteel;
+        attach(
+            GunTable.SAWED_OFF.output(),
+            new ItemData(Materials.Steel, steel, new MaterialStack(Materials.Iron, 2 * barrelIron)));
     }
 
     /**

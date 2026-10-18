@@ -56,8 +56,28 @@ public final class GunTable {
         ProductionTable.Input.gt("screw", "Steel", 4),
         ProductionTable.Input.gt("springSmall", "Steel", 1));
 
+    /**
+     * Sawed Off: two Iron Barrels, a Wooden Stock, a steel plate, 2 steel screws and a small steel spring; Assembler,
+     * LV, 10 s, circuit 3. Flint and Steel is dropped (the hammers are part of the mechanism). The gate is the steel
+     * plate.
+     */
+    public static final ProductionTable.Row SAWED_OFF = new ProductionTable.Row(
+        "GR-03",
+        GunSoundEvents.SAWED_OFF,
+        1,
+        Tier.LV,
+        ProductionTable.Target.ASSEMBLER,
+        10,
+        3,
+        ProductionTable.Input.mod(PartItems.BARREL_IRON, 2),
+        ProductionTable.Input.mod(PartItems.STOCK_WOODEN, 1),
+        ProductionTable.Input.gt("plate", "Steel", 1),
+        ProductionTable.Input.gt("screw", "Steel", 2),
+        ProductionTable.Input.gt("springSmall", "Steel", 1));
+
     /** Every gun assembly row, in sheet order. */
-    public static final List<ProductionTable.Row> ROWS = Collections.unmodifiableList(Arrays.asList(PISTOL, REVOLVER));
+    public static final List<ProductionTable.Row> ROWS = Collections
+        .unmodifiableList(Arrays.asList(PISTOL, REVOLVER, SAWED_OFF));
 
     private GunTable() {}
 }

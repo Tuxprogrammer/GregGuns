@@ -50,6 +50,12 @@ public final class GunRecipeScenarios {
                 "gun.revolver.recipe",
                 "The Revolver is in GT's assembler map (so NEI lists it) at LV, 15 s, matching its sheet inputs, and not below LV.",
                 GunTable.REVOLVER));
+        registry.register(
+            new GunAssemblerRecipe(
+                "gun.sawedoff.recipe",
+                "The Sawed Off is in GT's assembler map (so NEI lists it) at LV, 10 s, matching its sheet inputs, and not below LV.",
+                GunTable.SAWED_OFF));
+        registry.register(new ShellPressRecipe());
         registry.register(new RevolverPartRecipes());
     }
 
@@ -173,6 +179,46 @@ public final class GunRecipeScenarios {
                 }
             }
             return false;
+        }
+    }
+
+    /** RC-29: the LV Ammo Press makes 8 shotgun shells from brass foil, lead and gunpowder, and not below LV. */
+    private static final class ShellPressRecipe implements Scenario {
+
+        @Override
+        public String name() {
+            return "gun.sawedoff.shells.recipe";
+        }
+
+        @Override
+        public String description() {
+            return "The ammo map finds RC-29 (8 foil Brass, 24 round Lead, 4 Gunpowder) at RECIPE_LV for 6 s making 8 shotgun shells, and not below LV.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            ItemStack[] inputs = { gt("foil", "Brass", 8), gt("round", "Lead", 24), gt("dust", "Gunpowder", 4) };
+            GTRecipe found = GregGunsRecipeMaps.AMMO_PRESS.findRecipeQuery()
+                .items(inputs)
+                .voltage(GTValues.V[1])
+                .find();
+            out.check(found != null, "RC-29 should be found with the sheet inputs at LV");
+            if (found != null) {
+                out.checkEquals("RC-29 EU/t", (int) TierEU.RECIPE_LV, found.mEUt);
+                out.checkEquals("RC-29 duration (ticks)", 6 * GTRecipeBuilder.SECONDS, found.mDuration);
+                out.checkEquals("RC-29 output count", 8, found.mOutputs[0].stackSize);
+                ItemStack shell = modStack(ProductionTable.SHELL, 1);
+                out.check(
+                    shell != null && found.mOutputs[0].getItem() == shell.getItem(),
+                    "RC-29 should make the shotgun shell");
+            }
+            GTRecipe below = GregGunsRecipeMaps.AMMO_PRESS.findRecipeQuery()
+                .items(inputs)
+                .voltage(GTValues.V[0])
+                .find();
+            out.check(below == null, "RC-29 should not run below LV");
+            return out.build();
         }
     }
 }

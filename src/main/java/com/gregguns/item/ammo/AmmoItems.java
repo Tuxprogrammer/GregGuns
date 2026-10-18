@@ -20,6 +20,7 @@ public final class AmmoItems {
     private static ItemAmmoRound nineMmBullet;
     private static ItemMagazineEmpty nineMmPistolMagazineEmpty;
     private static ItemMagazine nineMmPistolMagazine;
+    private static ItemAmmoRound shotgunShell;
 
     private AmmoItems() {}
 
@@ -35,11 +36,18 @@ public final class AmmoItems {
         nineMmPistolMagazineEmpty = registrar.registerItem(pistol.emptyItemName(), new ItemMagazineEmpty(pistol));
         nineMmPistolMagazine = registrar
             .registerItem(pistol.loadedItemName(), new ItemMagazine(pistol, nineMmPistolMagazineEmpty, nineMmBullet));
+        AmmoType shell = AmmoTypes.SHOTGUN_SHELL;
+        shotgunShell = registrar.registerItem(shell.roundItemName(), new ItemAmmoRound(shell));
     }
 
     /** @return the 9mm bullet; {@code null} before registration or when the guns module is off */
     public static ItemAmmoRound nineMmBullet() {
         return nineMmBullet;
+    }
+
+    /** @return the shotgun shell ({@code ammo_shotgun_shell}); {@code null} before registration */
+    public static ItemAmmoRound shotgunShell() {
+        return shotgunShell;
     }
 
     /** @return the loaded 9mm pistol magazine; {@code null} before registration */
