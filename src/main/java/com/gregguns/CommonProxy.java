@@ -10,6 +10,7 @@ import com.gregguns.core.module.ModuleManager;
 import com.gregguns.core.selfcheck.SelfCheckRunner;
 import com.gregguns.core.testing.HarnessScenarios;
 import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.gun.GunsModule;
 import com.gregguns.network.GregGunsNetwork;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -62,7 +63,9 @@ public class CommonProxy {
      *
      * @param manager the manager to register with
      */
-    protected void registerModules(ModuleManager manager) {}
+    protected void registerModules(ModuleManager manager) {
+        manager.register(new GunsModule());
+    }
 
     /**
      * Runs the dev self-check once every mod has registered its recipes.
