@@ -151,6 +151,7 @@ One gun, working end to end inside the GTNH dev pack.
 - **Gun rendering framework:** recoil, muzzle flash and transforms. See [03-gun-visuals-audio/rendering-framework.md](techguns-spec/03-gun-visuals-audio/rendering-framework.md).
 - **Sound framework.**
 - **The first gun:** the **9mm Pistol** and its magazine, crafted through an LV GT recipe chain.
+- **Production chain slice (pulled into M1 from M4 for the vertical slice):** the `gregguns.ammoPress` recipe map, the LV Ammo Press (MTE 20101), the two components the pistol needs (`part_barrel_hardened`, `part_mechanical_2`), and the 9mm bullet, empty-magazine and loaded-magazine recipes plus the crafting-table refill. The animation synced to progress, the Steam, MV, HV and EV presses, the Ammunition Works multiblock and the rest of the M4 recipes stay in M4. See [ammo-press.md](gregguns-spec/08-machines-production/ammo-press.md#m1-slice-deviation).
 
 **Exit gate:**
 - [ ] The pistol is craftable in the dev pack only through its D1 tier gate, and the recipe shows in NEI.

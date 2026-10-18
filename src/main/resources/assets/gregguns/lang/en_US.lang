@@ -65,3 +65,10 @@ death.attack.gregguns.lightning.player=%1$s was electrocuted while trying to esc
 death.attack.gregguns.radiation=%1$s was irradiated by %2$s
 death.attack.gregguns.radiation.item=%1$s was irradiated by %2$s with %3$s
 death.attack.gregguns.radiation.player=%1$s was irradiated while trying to escape %2$s
+
+# Production chain: components, the Ammo Press and its recipe map
+item.gregguns.part_barrel_hardened.name=Hardened Steel Barrel
+item.gregguns.part_mechanical_2.name=Mechanical Parts T2
+gregguns.ammoPress=Ammo Press
+gregguns.machine.ammo_press.tooltip=Presses bullets and magazines
+gregguns.machine.ammo_press.type=Machine Type: Ammo Press
