@@ -7,9 +7,9 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import com.gregguns.api.Tier;
 import com.gregguns.armor.logic.ArmorCatalog;
 import com.gregguns.core.registry.ModuleRegistrar;
+import com.gregguns.item.part.ComponentItems;
 import com.gregguns.item.part.ItemPart;
 import com.gregguns.item.part.ItemTank;
-import com.gregguns.item.part.PartItems;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -41,10 +41,10 @@ public final class ArmorParts {
     public static void register(ModuleRegistrar registrar) {
         heavyCloth = registrar.registerItem(ArmorCatalog.HEAVY_CLOTH, new ItemPart(Tier.STEAM));
         // Area 06 owns both items; they stay registered here because the armor module can run without the guns
-        // module's PartItems. The filter is a plain part (RC-25); the Compressed Air Tank is the 1,000 mB
+        // module's ComponentItems. The filter is a plain part (RC-25); the Compressed Air Tank is the 1,000 mB
         // IFluidContainerItem of GGS-06-40.
         gasMaskFilter = registrar.registerItem(GAS_MASK_FILTER, new ItemPart(Tier.MV));
-        tankAir = registrar.registerItem(TANK_AIR, PartItems.tank(TANK_AIR, Tier.HV));
+        tankAir = registrar.registerItem(TANK_AIR, ComponentItems.tank(TANK_AIR, Tier.HV));
     }
 
     /** @return Heavy Cloth; null before registration or with the armor module off */

@@ -3,16 +3,16 @@ package com.gregguns.recipe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
 import com.gregguns.api.Tier;
 import com.gregguns.core.module.ModuleId;
+import com.gregguns.item.part.ComponentItems;
 import com.gregguns.item.part.PartItems;
 import com.gregguns.recipe.ProductionTable.Input;
 import com.gregguns.recipe.ProductionTable.Row;
@@ -157,7 +157,7 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-06",
-                PartItems.BARREL_CARBON,
+                ComponentItems.BARREL_CARBON,
                 1,
                 Tier.EV,
                 8,
@@ -170,7 +170,7 @@ public final class ComponentTable {
             new Spec(
                 new Row(
                     "RC-07",
-                    PartItems.BARREL_LASER,
+                    ComponentItems.BARREL_LASER,
                     1,
                     Tier.EV,
                     Target.ASSEMBLER,
@@ -186,7 +186,7 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-08",
-                PartItems.STOCK_PLASTIC,
+                ComponentItems.STOCK_PLASTIC,
                 1,
                 Tier.MV,
                 4,
@@ -196,7 +196,7 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-09",
-                PartItems.STOCK_CARBON,
+                ComponentItems.STOCK_CARBON,
                 1,
                 Tier.EV,
                 5,
@@ -207,7 +207,7 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-10",
-                PartItems.PUMP_MECHANISM,
+                ComponentItems.PUMP_MECHANISM,
                 1,
                 Tier.LV,
                 4,
@@ -219,7 +219,7 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-12",
-                PartItems.MECHANICAL_3,
+                ComponentItems.MECHANICAL_3,
                 2,
                 Tier.EV,
                 6,
@@ -229,19 +229,8 @@ public final class ComponentTable {
                 Input.gt("screw", TI, 4)));
         list.add(
             asm(
-                "RC-13",
-                PartItems.RECEIVER_IRON,
-                1,
-                Tier.LV,
-                5,
-                1,
-                Input.gt("plate", "Iron", 3),
-                Input.mod(PartItems.MECHANICAL_1, 1),
-                Input.gt("screw", "Steel", 2)));
-        list.add(
-            asm(
                 "RC-14",
-                PartItems.RECEIVER_STEEL,
+                ComponentItems.RECEIVER_STEEL,
                 1,
                 Tier.MV,
                 6,
@@ -249,11 +238,12 @@ public final class ComponentTable {
                 Input.gt("plate", "Steel", 3),
                 Input.mod(PartItems.MECHANICAL_2, 1),
                 Input.gt("screw", ALU, 2)));
-        // RC-15: the sheet's Mechanical Parts T2 stands in for the T3 that R12 asked for (an EV input under an HV part).
+        // RC-15: the sheet's Mechanical Parts T2 stands in for the T3 that R12 asked for (an EV input under an HV
+        // part).
         list.add(
             asm(
                 "RC-15",
-                PartItems.RECEIVER_HARDENED,
+                ComponentItems.RECEIVER_HARDENED,
                 1,
                 Tier.HV,
                 8,
@@ -264,19 +254,19 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-16",
-                PartItems.RECEIVER_CARBON,
+                ComponentItems.RECEIVER_CARBON,
                 1,
                 Tier.EV,
                 8,
                 1,
                 Input.gt("plate", TI, 3),
                 Input.gt("plate", EPOXY, 1),
-                Input.mod(PartItems.MECHANICAL_3, 1),
+                Input.mod(ComponentItems.MECHANICAL_3, 1),
                 Input.gt("screw", TI, 2)));
         list.add(
             asm(
                 "RC-17",
-                PartItems.UV_EMITTER,
+                ComponentItems.UV_EMITTER,
                 1,
                 Tier.EV,
                 8,
@@ -288,20 +278,20 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-18",
-                PartItems.SONIC_EMITTER,
+                ComponentItems.SONIC_EMITTER,
                 1,
                 Tier.EV,
                 10,
                 1,
                 Input.itemList("Emitter_EV", 1),
                 Input.itemList("Electric_Piston_EV", 1),
-                Input.mod(PartItems.MECHANICAL_3, 1),
+                Input.mod(ComponentItems.MECHANICAL_3, 1),
                 Input.gt("plate", TI, 1)));
         // RC-19: Assembly Line, gated through the ZPM emitter (the spec's "NaquadahAlloy through the ZPM emitter").
         list.add(
             line(
                 "RC-19",
-                PartItems.RAD_EMITTER,
+                ComponentItems.RAD_EMITTER,
                 1,
                 Tier.ZPM,
                 30,
@@ -310,13 +300,13 @@ public final class ComponentTable {
                 Input.itemList("Emitter_ZPM", 1),
                 Input.gt("plate", "Lead", 2),
                 Input.gt("dust", "Uranium235", 1),
-                Input.mod(PartItems.MECHANICAL_3, 2),
+                Input.mod(ComponentItems.MECHANICAL_3, 2),
                 Input.gt("circuit", "Ultimate", 2)));
         // RC-20: Titanium through circuit.EV (the spec's gate note).
         list.add(
             asm(
                 "RC-20",
-                PartItems.CYBERNETIC,
+                ComponentItems.CYBERNETIC,
                 2,
                 Tier.EV,
                 8,
@@ -332,7 +322,7 @@ public final class ComponentTable {
             new Spec(
                 new Row(
                     "RC-22",
-                    PartItems.TREATED_LEATHER,
+                    ComponentItems.TREATED_LEATHER,
                     2,
                     Tier.LV,
                     Target.CHEMICAL_BATH,
@@ -346,7 +336,7 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-23",
-                PartItems.STEAM_ARMOR_PLATING,
+                ComponentItems.STEAM_ARMOR_PLATING,
                 1,
                 Tier.EV,
                 6,
@@ -357,14 +347,14 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-24",
-                PartItems.POWER_PLATING,
+                ComponentItems.POWER_PLATING,
                 2,
                 Tier.IV,
                 15,
                 1,
                 Input.gt("plate", "TungstenSteel", 2),
                 Input.gt("plate", EPOXY, 4),
-                Input.mod(PartItems.MECHANICAL_3, 1),
+                Input.mod(ComponentItems.MECHANICAL_3, 1),
                 Input.gt("circuit", "Data", 2)));
         // RC-26: Assembly Line. Deviation: the research item is the GT EV sensor (the proximity fuze), not
         // ammo_rocket, which the ammo session registers later; and a Naquadah alloy plate (the warhead casing) joins
@@ -372,7 +362,7 @@ public final class ComponentTable {
         list.add(
             line(
                 "RC-26",
-                PartItems.NUCLEAR_WARHEAD,
+                ComponentItems.NUCLEAR_WARHEAD,
                 2,
                 Tier.ZPM,
                 20,
@@ -386,7 +376,7 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-52",
-                PartItems.TANK_FUEL,
+                ComponentItems.TANK_FUEL,
                 4,
                 Tier.HV,
                 10,
@@ -398,7 +388,7 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-53",
-                PartItems.TANK_BIO,
+                ComponentItems.TANK_BIO,
                 4,
                 Tier.EV,
                 8,
@@ -411,7 +401,7 @@ public final class ComponentTable {
         list.add(
             line(
                 "RC-59",
-                PartItems.CELL_NUCLEAR,
+                ComponentItems.CELL_NUCLEAR,
                 2,
                 Tier.ZPM,
                 30,
@@ -427,37 +417,37 @@ public final class ComponentTable {
         list.add(
             asm(
                 "RC-60",
-                PartItems.CELL_NUCLEAR,
+                ComponentItems.CELL_NUCLEAR,
                 1,
                 Tier.ZPM,
                 20,
                 1,
-                Input.mod(PartItems.CELL_NUCLEAR_DEPLETED, 1),
+                Input.mod(ComponentItems.CELL_NUCLEAR_DEPLETED, 1),
                 Input.gt("dust", "Uranium235", 4),
                 Input.gt("plate", "NaquadahAlloy", 1)));
         list.add(
             asm(
                 "RC-61",
-                PartItems.BANDAGES,
+                ComponentItems.BANDAGES,
                 2,
                 Tier.LV,
                 5,
                 2,
                 Input.vanilla("string", 3),
-                Input.vanilla("slime_ball", 1),
+                Input.ore("slimeball", 1),
                 Input.gt("ring", "Steel", 1)));
         list.add(
             new Spec(
                 new Row(
                     "RC-62",
-                    PartItems.MEDKIT,
+                    ComponentItems.MEDKIT,
                     1,
                     Tier.MV,
                     Target.ASSEMBLER,
                     10,
                     1,
                     Input.gt("plate", ALU, 2),
-                    Input.mod(PartItems.BANDAGES, 4),
+                    Input.mod(ComponentItems.BANDAGES, 4),
                     Input.gt("dust", "Redstone", 1)),
                 Arrays.asList(new FluidInput("Ethanol", FluidKind.FLUID, 250)),
                 null,
@@ -467,8 +457,7 @@ public final class ComponentTable {
 
     private ComponentTable() {}
 
-    private static Spec asm(String id, String output, int count, Tier tier, int seconds, int circuit,
-        Input... inputs) {
+    private static Spec asm(String id, String output, int count, Tier tier, int seconds, int circuit, Input... inputs) {
         return new Spec(
             new Row(id, output, count, tier, Target.ASSEMBLER, seconds, circuit, inputs),
             Collections.<FluidInput>emptyList(),
@@ -498,7 +487,9 @@ public final class ComponentTable {
         Set<String> out = new HashSet<>();
         for (Spec spec : SPECS) {
             if (spec.requiresModule() != null && !enabled.test(spec.requiresModule())) {
-                out.add(spec.row().output());
+                out.add(
+                    spec.row()
+                        .output());
             }
         }
         return out;

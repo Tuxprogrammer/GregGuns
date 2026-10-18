@@ -34,8 +34,10 @@ import gregtech.api.enums.Materials;
  */
 // Spec: docs/gregguns-spec/06-items/fluids.md (GGS-06-16, GGS-06-17), docs/gregguns-spec/06-items/recipes.md (RC-52 to
 // RC-58, GGS-06-40)
-// Deviation: the capacity is the constant 1,000 mB (design record 0010 decision 3), not a config value, and the accepted
-// fluids are fixed per tank instead of config-listed, until M2 balances the fuel set. No FluidContainerRegistry entries:
+// Deviation: the capacity is the constant 1,000 mB (design record 0010 decision 3), not a config value, and the
+// accepted
+// fluids are fixed per tank instead of config-listed, until M2 balances the fuel set. No FluidContainerRegistry
+// entries:
 // the Canner's dynamic IFluidContainerItem path covers every fill and drain.
 public final class ItemTank extends Item implements Tiered, IFluidContainerItem, GregGunsComponent {
 
@@ -74,8 +76,7 @@ public final class ItemTank extends Item implements Tiered, IFluidContainerItem,
 
     @Override
     public FluidStack getFluid(ItemStack container) {
-        if (container == null || container.stackTagCompound == null
-            || !container.stackTagCompound.hasKey(FLUID_TAG)) {
+        if (container == null || container.stackTagCompound == null || !container.stackTagCompound.hasKey(FLUID_TAG)) {
             return null;
         }
         return FluidStack.loadFluidStackFromNBT(container.stackTagCompound.getCompoundTag(FLUID_TAG));
@@ -125,7 +126,8 @@ public final class ItemTank extends Item implements Tiered, IFluidContainerItem,
                     container.stackTagCompound = null;
                 }
             } else {
-                container.stackTagCompound.setTag(FLUID_TAG, new FluidStack(current, left).writeToNBT(new NBTTagCompound()));
+                container.stackTagCompound
+                    .setTag(FLUID_TAG, new FluidStack(current, left).writeToNBT(new NBTTagCompound()));
             }
         }
         return new FluidStack(current, taken);
@@ -144,7 +146,9 @@ public final class ItemTank extends Item implements Tiered, IFluidContainerItem,
                     GregGuns.LOG.warn("Tank {} accepts {}, but GT has no fluid for it; skipping", name, material);
                     continue;
                 }
-                names.add(stack.getFluid().getName());
+                names.add(
+                    stack.getFluid()
+                        .getName());
             }
             acceptedFluidNames = names;
         }

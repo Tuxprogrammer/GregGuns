@@ -114,8 +114,7 @@ public final class SelfCheck {
                 }
             }
             violations.addAll(
-                ComponentChecks
-                    .check(components.components(), outputs, components.allowlist(), components.deferred()));
+                ComponentChecks.check(components.components(), outputs, components.allowlist(), components.deferred()));
         }
         return new Report(violations, contents.size(), recipes.size());
     }

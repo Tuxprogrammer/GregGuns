@@ -79,7 +79,10 @@ public final class ComponentComposition {
                     }
                 }
             } else if (input.special() == null && RECYCLED_PREFIXES.contains(input.prefix())) {
-                into.merge(input.material(), prefixAmount.applyAsLong(input.prefix()) * input.count() * multiplier, Long::sum);
+                into.merge(
+                    input.material(),
+                    prefixAmount.applyAsLong(input.prefix()) * input.count() * multiplier,
+                    Long::sum);
             }
         }
     }

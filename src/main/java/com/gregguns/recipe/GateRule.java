@@ -83,7 +83,8 @@ public final class GateRule {
     // parts as the gate for RC-19 and RC-20, so the rule accepts them.
     static boolean carriesTierGate(ProductionTable.Input input, Tier tier) {
         if ("circuit".equals(input.prefix())) {
-            return input.material() != null && input.material().equals(circuitMaterial(tier));
+            return input.material() != null && input.material()
+                .equals(circuitMaterial(tier));
         }
         return false;
     }
@@ -104,8 +105,13 @@ public final class GateRule {
         }
         String gate = gateMaterial(row.tier());
         for (ProductionTable.Input input : row.inputs()) {
-            if (input.special() != null && input.special().startsWith("gt:")
-                && input.special().endsWith("_" + row.tier().name().replace("LUV", "LuV"))) {
+            if (input.special() != null && input.special()
+                .startsWith("gt:")
+                && input.special()
+                    .endsWith(
+                        "_" + row.tier()
+                            .name()
+                            .replace("LUV", "LuV"))) {
                 return true;
             }
             if (!input.isGregGuns()) {

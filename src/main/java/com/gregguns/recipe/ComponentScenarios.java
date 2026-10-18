@@ -91,7 +91,8 @@ public final class ComponentScenarios {
                 out.check(fluids != null, row.id() + ": GT should have the fluid");
                 return;
             }
-            long voltage = row.tier().voltage();
+            long voltage = row.tier()
+                .voltage();
             GTRecipe found = map.findRecipeQuery()
                 .items(items.toArray(new ItemStack[0]))
                 .fluids(fluids)
@@ -108,7 +109,8 @@ public final class ComponentScenarios {
                 Tier.lowestForEut(found.mEUt) == row.tier(),
                 row.id() + ": the recipe's EU/t should need exactly " + row.tier());
             if (row.tier() != Tier.STEAM) {
-                Tier below = Tier.values()[row.tier().ordinal() - 1];
+                Tier below = Tier.values()[row.tier()
+                    .ordinal() - 1];
                 GTRecipe tooLow = map.findRecipeQuery()
                     .items(items.toArray(new ItemStack[0]))
                     .fluids(fluids)
@@ -134,20 +136,29 @@ public final class ComponentScenarios {
             out.checkEquals(row.id() + " EU/t", (int) ProductionRecipes.eutFor(row.tier()), line.mEUt);
             out.checkEquals(row.id() + " duration (ticks)", row.seconds() * GTRecipeBuilder.SECONDS, line.mDuration);
             out.checkEquals(row.id() + " output count", row.outputCount(), line.mOutput.stackSize);
-            ItemStack research = ProductionRecipes.resolve(spec.research().item());
+            ItemStack research = ProductionRecipes.resolve(
+                spec.research()
+                    .item());
             out.check(
                 research != null && line.mResearchItem != null && line.mResearchItem.getItem() == research.getItem(),
-                row.id() + ": the research item should be " + spec.research().item().special());
+                row.id() + ": the research item should be "
+                    + spec.research()
+                        .item()
+                        .special());
             out.checkEquals(
                 row.id() + " scan time (ticks)",
-                spec.research().scanSeconds() * GTRecipeBuilder.SECONDS,
+                spec.research()
+                    .scanSeconds() * GTRecipeBuilder.SECONDS,
                 line.mResearchTime);
             out.checkEquals(
                 row.id() + " scan voltage",
-                (int) ProductionRecipes.eutFor(spec.research().scanTier()),
+                (int) ProductionRecipes.eutFor(
+                    spec.research()
+                        .scanTier()),
                 line.mResearchVoltage);
             out.check(
-                GTValues.V[row.tier().voltageIndex()] >= line.mEUt,
+                GTValues.V[row.tier()
+                    .voltageIndex()] >= line.mEUt,
                 row.id() + ": the line's EU/t should fit its tier's voltage");
         }
 

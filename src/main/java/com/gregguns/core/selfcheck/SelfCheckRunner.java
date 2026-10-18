@@ -115,8 +115,11 @@ public final class SelfCheckRunner {
             unification.add(new UnificationDescriptor(name, oreNames, prefix, material));
         }
         List<String> prefixes = new ArrayList<>();
-        for (OrePrefixes prefix : OrePrefixes.values()) {
-            prefixes.add(prefix.name());
+        // The prefixes are public static constants of OrePrefixes, so they are listed by reflection on the fields.
+        for (java.lang.reflect.Field field : OrePrefixes.class.getFields()) {
+            if (field.getType() == OrePrefixes.class && java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                prefixes.add(field.getName());
+            }
         }
         Map<String, String> allowlist = new LinkedHashMap<>();
         for (Map.Entry<String, String> entry : PartCatalog.noRecipeAllowlist()

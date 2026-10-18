@@ -12,7 +12,8 @@ import com.gregguns.api.Tier;
 /**
  * The component inventory of area 06 as plain data: every GregGuns crafting component, its tier, which class
  * registers it, which kind of item it is, and where its recipe lives. The unit tests, the registration loop in
- * {@link PartItems} and the dev self-check's allowlist all read this one table, so they cannot drift apart.
+ * {@link PartItems}, {@link ComponentItems} and the dev self-check's allowlist all read this one table, so they cannot
+ * drift apart.
  *
  * <p>
  * Items the spec maps to a GT part (plates, wires, circuits, plastic, rubber, motors, the coil and so on) are not
@@ -39,8 +40,10 @@ public final class PartCatalog {
 
     /** The class that registers the item, so the registry name is never added twice. */
     public enum Owner {
-        /** {@link PartItems}, in the guns module. */
+        /** {@link PartItems} (M1 and M2 parts), in the guns module. */
         PART_ITEMS,
+        /** {@link ComponentItems} (the rest of the component index), in the guns module. */
+        COMPONENT_ITEMS,
         /** {@code com.gregguns.armor.ArmorParts}, in the armor module. */
         ARMOR_PARTS,
         /** {@code com.gregguns.machine.reaction.ReactionParts}, in the machines module. */
@@ -121,19 +124,19 @@ public final class PartCatalog {
     static {
         List<Entry> list = new ArrayList<>();
         // Gun parts. The first five were registered by M1 and M2; their names are kept.
-        list.add(part("part_barrel_hardened", Tier.LV, "RC-05 ProductionTable"));
-        list.add(part("part_mechanical_2", Tier.LV, "RC-11 ProductionTable"));
-        list.add(part("part_barrel_iron", Tier.LV, "RC-04 ProductionTable"));
-        list.add(part("part_mechanical_1", Tier.STEAM, "RC-03 PartCraftingRecipes"));
-        list.add(part("part_stock_wooden", Tier.STEAM, "RC-02 PartCraftingRecipes"));
-        list.add(part("part_barrel_stone", Tier.STEAM, "RC-01 PartCraftingRecipes"));
+        list.add(older("part_barrel_hardened", Tier.LV, "RC-05 ProductionTable"));
+        list.add(older("part_mechanical_2", Tier.LV, "RC-11 ProductionTable"));
+        list.add(older("part_barrel_iron", Tier.LV, "RC-04 ProductionTable"));
+        list.add(older("part_mechanical_1", Tier.STEAM, "RC-03 PartCraftingRecipes"));
+        list.add(older("part_stock_wooden", Tier.STEAM, "RC-02 PartCraftingRecipes"));
+        list.add(older("part_barrel_stone", Tier.STEAM, "RC-01 PartCraftingRecipes"));
         list.add(part("part_barrel_carbon", Tier.EV, "RC-06 ComponentTable"));
         list.add(part("part_barrel_laser", Tier.EV, "RC-07 ComponentTable"));
         list.add(part("part_stock_plastic", Tier.MV, "RC-08 ComponentTable"));
         list.add(part("part_stock_carbon", Tier.EV, "RC-09 ComponentTable"));
         list.add(part("part_pump_mechanism", Tier.LV, "RC-10 ComponentTable"));
         list.add(part("part_mechanical_3", Tier.EV, "RC-12 ComponentTable"));
-        list.add(part("part_receiver_iron", Tier.LV, "RC-13 ComponentTable"));
+        list.add(older("part_receiver_iron", Tier.LV, "RC-13 ProductionTable"));
         list.add(part("part_receiver_steel", Tier.MV, "RC-14 ComponentTable"));
         list.add(part("part_receiver_hardened", Tier.HV, "RC-15 ComponentTable"));
         list.add(part("part_receiver_carbon", Tier.EV, "RC-16 ComponentTable"));
@@ -148,20 +151,26 @@ public final class PartCatalog {
         list.add(part("part_power_plating", Tier.IV, "RC-24 ComponentTable"));
         list.add(part("part_nuclear_warhead", Tier.ZPM, "RC-26 ComponentTable (Assembly Line)"));
         // Tanks, cells and consumables.
-        list.add(new Entry("tank_fuel", Tier.HV, Kind.TANK, Owner.PART_ITEMS, "RC-52 ComponentTable", null));
-        list.add(new Entry("tank_bio", Tier.EV, Kind.TANK, Owner.PART_ITEMS, "RC-53 ComponentTable", null));
+        list.add(new Entry("tank_fuel", Tier.HV, Kind.TANK, Owner.COMPONENT_ITEMS, "RC-52 ComponentTable", null));
+        list.add(new Entry("tank_bio", Tier.EV, Kind.TANK, Owner.COMPONENT_ITEMS, "RC-53 ComponentTable", null));
         list.add(
-            new Entry("cell_nuclear", Tier.ZPM, Kind.CELL, Owner.PART_ITEMS, "RC-59 and RC-60 ComponentTable", null));
+            new Entry(
+                "cell_nuclear",
+                Tier.ZPM,
+                Kind.CELL,
+                Owner.COMPONENT_ITEMS,
+                "RC-59 and RC-60 ComponentTable",
+                null));
         list.add(
             new Entry(
                 "cell_nuclear_depleted",
                 Tier.ZPM,
                 Kind.CELL_HIDDEN,
-                Owner.PART_ITEMS,
+                Owner.COMPONENT_ITEMS,
                 null,
                 "made by use: a reload consumes cell_nuclear and returns this (GGS-06-42)"));
-        list.add(new Entry("bandages", Tier.LV, Kind.CONSUMABLE, Owner.PART_ITEMS, "RC-61 ComponentTable", null));
-        list.add(new Entry("medkit", Tier.MV, Kind.CONSUMABLE, Owner.PART_ITEMS, "RC-62 ComponentTable", null));
+        list.add(new Entry("bandages", Tier.LV, Kind.CONSUMABLE, Owner.COMPONENT_ITEMS, "RC-61 ComponentTable", null));
+        list.add(new Entry("medkit", Tier.MV, Kind.CONSUMABLE, Owner.COMPONENT_ITEMS, "RC-62 ComponentTable", null));
         // Registered by other classes; reused, never re-added. Their recipes are written by their owners.
         list.add(
             new Entry(
@@ -172,13 +181,7 @@ public final class PartCatalog {
                 "RC-21 ArmorParts (crafting table)",
                 null));
         list.add(
-            new Entry(
-                "part_gas_mask_filter",
-                Tier.MV,
-                Kind.PART,
-                Owner.ARMOR_PARTS,
-                "RC-25 EquipmentTable",
-                null));
+            new Entry("part_gas_mask_filter", Tier.MV, Kind.PART, Owner.ARMOR_PARTS, "RC-25 EquipmentTable", null));
         list.add(new Entry("tank_air", Tier.HV, Kind.TANK, Owner.ARMOR_PARTS, "RC-54 EquipmentTable", null));
         list.add(
             new Entry(
@@ -217,6 +220,10 @@ public final class PartCatalog {
     private PartCatalog() {}
 
     private static Entry part(String name, Tier tier, String recipe) {
+        return new Entry(name, tier, Kind.PART, Owner.COMPONENT_ITEMS, recipe, null);
+    }
+
+    private static Entry older(String name, Tier tier, String recipe) {
         return new Entry(name, tier, Kind.PART, Owner.PART_ITEMS, recipe, null);
     }
 

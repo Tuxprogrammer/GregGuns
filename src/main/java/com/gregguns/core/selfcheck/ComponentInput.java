@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Everything the component checks ({@link UnificationChecks}, {@link ComponentChecks}) need from the live game, as plain
+ * Everything the component checks ({@link UnificationChecks}, {@link ComponentChecks}) need from the live game, as
+ * plain
  * data: the unification descriptors and GT prefix names, the registered components, the allowlist and the components
  * whose recipe is deferred because a module is off.
  */

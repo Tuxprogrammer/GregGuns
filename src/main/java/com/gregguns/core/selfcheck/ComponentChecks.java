@@ -43,8 +43,7 @@ public final class ComponentChecks {
                 violations.add("allowlist entry " + entry.getKey() + " has no reason");
             }
             if (recipeOutputs.contains(entry.getKey())) {
-                violations
-                    .add("allowlist entry " + entry.getKey() + " now has a recipe; remove it from the allowlist");
+                violations.add("allowlist entry " + entry.getKey() + " now has a recipe; remove it from the allowlist");
             }
         }
         return violations;

@@ -21,6 +21,7 @@ import com.gregguns.item.grenade.GrenadeItems;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.melee.MeleeItems;
 import com.gregguns.item.melee.MeleeScenarios;
+import com.gregguns.item.part.ComponentItems;
 import com.gregguns.item.part.PartItems;
 import com.gregguns.machine.AmmoPressMachines;
 import com.gregguns.projectile.ProjectileModule;
@@ -57,6 +58,7 @@ public final class GunsModule implements GregGunsModule {
         // Items, entities and other content: one call per area, e.g. AmmoItems.register(registrar).
         AmmoItems.register(registrar);
         PartItems.register(registrar);
+        ComponentItems.register(registrar);
         // Built here so GT records GregGuns as the map's owner mod (NEI badge), see GregGunsRecipeMaps.
         GregGunsRecipeMaps.init();
         AmmoPressMachines.registerBlocks(registrar);

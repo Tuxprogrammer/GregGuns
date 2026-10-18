@@ -17,7 +17,6 @@ import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.objects.ItemData;
 import gregtech.api.objects.MaterialStack;
-import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipeBuilder;
@@ -49,8 +48,12 @@ public final class ComponentRecipes {
     private static void addAll() {
         for (ComponentTable.Spec spec : ComponentTable.SPECS) {
             if (spec.requiresModule() != null && !ModuleFlags.isEnabled(spec.requiresModule())) {
-                GregGuns.LOG
-                    .info("Skipping recipe {}: module {} is off", spec.row().id(), spec.requiresModule().configKey());
+                GregGuns.LOG.info(
+                    "Skipping recipe {}: module {} is off",
+                    spec.row()
+                        .id(),
+                    spec.requiresModule()
+                        .configKey());
                 continue;
             }
             addSpec(spec);
@@ -85,11 +88,8 @@ public final class ComponentRecipes {
             FluidStack stack = fluid.kind() == ComponentTable.FluidKind.MOLTEN ? material.getMolten(fluid.amount())
                 : material.getFluid(fluid.amount());
             if (stack == null) {
-                GregGuns.LOG.error(
-                    "Skipping recipe {}: GT has no {} fluid for {}",
-                    row.id(),
-                    fluid.kind(),
-                    fluid.material());
+                GregGuns.LOG
+                    .error("Skipping recipe {}: GT has no {} fluid for {}", row.id(), fluid.kind(), fluid.material());
                 return;
             }
             fluids.add(stack);
@@ -128,13 +128,18 @@ public final class ComponentRecipes {
         ComponentTable.Research research = spec.research();
         ItemStack researchItem = research == null ? null : ProductionRecipes.resolve(research.item());
         if (researchItem == null) {
-            GregGuns.LOG.error("Skipping recipe {}: its research item did not resolve", spec.row().id());
+            GregGuns.LOG.error(
+                "Skipping recipe {}: its research item did not resolve",
+                spec.row()
+                    .id());
             return;
         }
         builder.metadata(GTRecipeConstants.RESEARCH_ITEM, researchItem)
             .metadata(
                 GTRecipeConstants.SCANNING,
-                new Scanning(research.scanSeconds() * GTRecipeBuilder.SECONDS, ProductionRecipes.eutFor(research.scanTier())))
+                new Scanning(
+                    research.scanSeconds() * GTRecipeBuilder.SECONDS,
+                    ProductionRecipes.eutFor(research.scanTier())))
             .addTo(GTRecipeConstants.AssemblyLine);
     }
 
@@ -146,12 +151,17 @@ public final class ComponentRecipes {
     // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTOreDictUnificator.java#L350-L359
     private static void addRecyclingData() {
         Map<String, ProductionTable.Row> rows = new LinkedHashMap<>(ProductionTable.byOutput());
-        for (Map.Entry<String, ProductionTable.Row> entry : ComponentTable.byOutput().entrySet()) {
+        for (Map.Entry<String, ProductionTable.Row> entry : ComponentTable.byOutput()
+            .entrySet()) {
             rows.putIfAbsent(entry.getKey(), entry.getValue());
         }
-        for (ProductionTable.Row row : ComponentTable.byOutput().values()) {
-            Map<String, Long> composition = ComponentComposition
-                .perItem(row, rows, prefix -> OrePrefixes.getPrefix(prefix).getMaterialAmount());
+        for (ProductionTable.Row row : ComponentTable.byOutput()
+            .values()) {
+            Map<String, Long> composition = ComponentComposition.perItem(
+                row,
+                rows,
+                prefix -> OrePrefixes.getPrefix(prefix)
+                    .getMaterialAmount());
             ItemStack stack = ProductionRecipes.modStack(row.output(), 1);
             if (composition.isEmpty() || stack == null) {
                 continue;
@@ -169,7 +179,10 @@ public final class ComponentRecipes {
             MaterialStack main = stacks.get(0);
             GTOreDictUnificator.addItemData(
                 stack,
-                new ItemData(main, stacks.subList(1, stacks.size()).toArray(new MaterialStack[0])));
+                new ItemData(
+                    main,
+                    stacks.subList(1, stacks.size())
+                        .toArray(new MaterialStack[0])));
         }
     }
 }
