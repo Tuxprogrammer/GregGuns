@@ -1,5 +1,6 @@
 package com.gregguns.recipe;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,8 +36,28 @@ public final class GunTable {
         ProductionTable.Input.gt("screw", "Steel", 4),
         ProductionTable.Input.gt("springSmall", "Steel", 1));
 
+    /**
+     * Revolver: Iron Barrel, Mechanical Parts, Wooden Stock, 2 steel plates, 4 steel screws and a small steel spring;
+     * Assembler, LV, 15 s, circuit 2. Flint and Steel is dropped (the hammer is part of the mechanism). The gate is
+     * the steel plate.
+     */
+    public static final ProductionTable.Row REVOLVER = new ProductionTable.Row(
+        "GR-02",
+        GunSoundEvents.REVOLVER,
+        1,
+        Tier.LV,
+        ProductionTable.Target.ASSEMBLER,
+        15,
+        2,
+        ProductionTable.Input.mod(PartItems.BARREL_IRON, 1),
+        ProductionTable.Input.mod(PartItems.MECHANICAL_1, 1),
+        ProductionTable.Input.mod(PartItems.STOCK_WOODEN, 1),
+        ProductionTable.Input.gt("plate", "Steel", 2),
+        ProductionTable.Input.gt("screw", "Steel", 4),
+        ProductionTable.Input.gt("springSmall", "Steel", 1));
+
     /** Every gun assembly row, in sheet order. */
-    public static final List<ProductionTable.Row> ROWS = Collections.singletonList(PISTOL);
+    public static final List<ProductionTable.Row> ROWS = Collections.unmodifiableList(Arrays.asList(PISTOL, REVOLVER));
 
     private GunTable() {}
 }

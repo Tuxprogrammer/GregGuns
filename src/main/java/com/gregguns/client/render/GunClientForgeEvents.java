@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -61,6 +60,11 @@ public final class GunClientForgeEvents {
         Minecraft mc = Minecraft.getMinecraft();
         EntityPlayer player = mc.thePlayer;
         if (player == null || mc.gameSettings.thirdPersonView != 0) {
+            return;
+        }
+        ScopeSpec forced = GunRenderers.debugScope();
+        if (forced != null) {
+            drawScope(forced, event.resolution, 0.0);
             return;
         }
         ItemStack held = player.getHeldItem();
@@ -125,7 +129,7 @@ public final class GunClientForgeEvents {
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
             Minecraft.getMinecraft()
                 .getTextureManager()
-                .bindTexture(new ResourceLocation(scope.texture()));
+                .bindTexture(ScopeTextures.get(scope.texture()));
             Tessellator t = Tessellator.instance;
             t.startDrawingQuads();
             t.addVertexWithUV(x0, y1, -90.0, 0.0, 1.0);

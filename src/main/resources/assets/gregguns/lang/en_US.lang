@@ -70,6 +70,9 @@ death.attack.gregguns.radiation.player=%1$s was irradiated while trying to escap
 # Production chain: components, the Ammo Press and its recipe map
 item.gregguns.part_barrel_hardened.name=Hardened Steel Barrel
 item.gregguns.part_mechanical_2.name=Mechanical Parts T2
+item.gregguns.part_barrel_iron.name=Iron Barrel
+item.gregguns.part_mechanical_1.name=Mechanical Parts
+item.gregguns.part_stock_wooden.name=Wooden Stock
 gregguns.ammoPress=Ammo Press
 gregguns.machine.ammo_press.tooltip=Presses bullets and magazines
 gregguns.machine.ammo_press.type=Machine Type: Ammo Press
@@ -77,6 +80,7 @@ gregguns.machine.ammo_press_steam.tooltip=Presses ammunition on steam; vents ste
 
 # Guns: items, tooltips, keys and HUD
 item.gregguns.pistol_9mm.name=9mm Pistol
+item.gregguns.revolver.name=Revolver
 gregguns.gun.tooltip.ammo=Ammo: %s
 gregguns.gun.tooltip.loaded=Loaded: %s / %s
 gregguns.gun.tooltip.damage=Damage: %s

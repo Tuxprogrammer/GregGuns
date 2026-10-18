@@ -39,4 +39,12 @@ public interface GunModel {
      *         {x, y, z} in blocks, for the third-person flash
      */
     float[] muzzle();
+
+    /**
+     * @return true for an X-family model, whose barrel points along +X in the gun frame instead of -Z; the
+     *         third-person muzzle flash is drawn along that axis
+     */
+    default boolean muzzleAlongX() {
+        return false;
+    }
 }

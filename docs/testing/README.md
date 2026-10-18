@@ -125,6 +125,15 @@ The framework logic (registry, argument parsing, runner, report) is plain Java a
 | `gun.dryfire` | pistol slice (M1) | An empty pistol with no magazines or bullets, trigger pulled twice: no bullet, no reload, ammo stays 0, nothing throws. Waits for ticks. |
 | `gun.player` | pistol slice (M1) | A shot from one fake player hits a second fake player 6 blocks away and costs them the `DamageModel` figure (the victim sits in its chunk only, because a fake player has no network handler for the entity tracker). Waits for ticks. |
 | `gun.zoom` | pistol slice (M1) | A zoom intent on the unscoped pistol through `ServerGunHandler.onZoomToggle`: accepted, zoom state stays off, FOV factor stays 1, rounds untouched. |
+| `gun.kind` | gun framework (M2) | Guns with `ProjectileKind.BULLET` and `GRAVITY_BULLET` fired through the launcher spawn a plain bullet and a `SimpleProjectile`; a kind with no registered factory spawns nothing and logs one error (expected in the log). |
+| `gun.pellets` | gun framework (M2) | A gun with 7 extra pellets fires 8 projectiles from one shot, and their yaws fan out. |
+| `gun.knockback` | gun framework (M2) | Three bullets with knockback 0, 1 and 3 hit fresh AI-less zombies: the push is none, vanilla's, and three times vanilla's (GUN-38). |
+| `gun.revolver.fire` | revolver (M2) | A real `revolver` fired through `ServerGunHandler`: one bullet, a zombie 6 blocks away loses the `DamageModel` figure for 8, rounds 6 to 5, an early click is dropped and a click one tick before the 6 tick cooldown ends fires at tick 6. |
+| `gun.revolver.reload` | revolver (M2) | An empty revolver with one `ammo_9mm_bullet`: the dry trigger starts a reload, 0 rounds until the 45th tick, then 6; the bullet is consumed and nothing comes back. |
+| `gun.revolver.reload.forced` | revolver (M2) | The reload key at 5 rounds with one bullet: 6 rounds after 45 ticks, the bullet consumed and none refunded (a bullet is worth 6 rounds, so no round is multiplied into several). |
+| `gun.revolver.damage` | revolver (M2) | A zombie 16 blocks away takes the drop-off figure (8 falling to 6 between 12 and 20 blocks), below the full 8. |
+| `gun.revolver.recipe` | revolver (M2) | `RecipeMaps.assemblerRecipes` holds the revolver at `RECIPE_LV` and 15 s; an LV query with the sheet inputs and circuit 2 finds it; a voltage below LV does not. |
+| `gun.revolver.parts` | revolver (M2) | The Wooden Stock and Mechanical Parts have crafting-table recipes; the Iron Barrel is on the assembler map at LV. |
 | `gun.recipe` | pistol slice (M1) | `RecipeMaps.assemblerRecipes` (the map GT's NEI handler lists) holds the pistol at `RECIPE_LV` and 15 s; an LV query with the sheet inputs and circuit 1 finds it; a voltage below LV does not. |
 | `armor.equip` | armor (M3) | A fake player wears the Scout set: speed attribute x1.5, full set detected, jump +0.16, vanilla bar 13; boots off gives x1.375 and no full set; naked clears the modifier; sprinting doubles the bonus on top of vanilla's sprint modifier; full Combat gives 0.40 knockback resistance. |
 | `armor.damage` | armor (M3) | Full Combat set through the real damage handler and Forge `ApplyArmor`: 8 projectile loses 3.2, energy 4.4, poison 8, 15% penetration 3.92, unresistable and fall 8, a plain vanilla source uses the physical value; each piece wears once; broken pieces give nothing and never lose the last point. |
@@ -178,7 +187,7 @@ Maps each M1 exit-gate item and each relevant `BUGS.md` row to the tests that co
 | PFX-23, PFX-27 wall and plant hits | S: `projectile.blocks` | |
 | PFX-34 gravity not sent to client | U: `BulletSpawnDataTest.doesNotReproducePFX34_*` | |
 | GUN-36 converted sources absolute | Not applicable: GregGuns builds its own sources and has no Techguns-source conversion; only UNRESISTABLE is absolute (`DamageSourceTest.onlyUnresistableIsUnblockable`) | |
-| GUN-38 knockback ignores strength | Not in M1: knockback is not implemented yet | Add the test when knockback lands |
+| GUN-38 knockback ignores strength | U: `KnockbackTest.doesNotReproduceGUN38_theMultiplierChangesTheStrength`; S: `gun.knockback` | Fixed in M2: the per-gun `GunStats.knockback()` multiplier scales the velocity change vanilla gave the target |
 
 
 | `mp.sync` | multiplayer (M1) | Needs two connected clients. Players A and B (by username) face each other four blocks apart. A's client fires twice through the real input path and trigger packet, the server reloads A's pistol through `ServerGunHandler.onReloadKey`, and the scenario checks that a bullet was launched, B took damage, and A's rounds and magazines changed. Client B logs and screenshots what it sees. Waits for ticks. |
