@@ -115,6 +115,94 @@ class GunTableTest {
     }
 
     @Test
+    void sawedOffRowMatchesTheSheet() {
+        // docs/gregguns-spec/02-guns/recipes.md, LV table, Sawed Off: 10 s, cfg 3, Assembler, LV.
+        ProductionTable.Row r = GunTable.SAWED_OFF;
+        assertEquals("sawed_off", r.output());
+        assertEquals(Tier.LV, r.tier());
+        assertEquals(ProductionTable.Target.ASSEMBLER, r.target());
+        assertEquals(10, r.seconds());
+        assertEquals(3, r.circuit());
+        assertEquals(
+            5,
+            r.inputs()
+                .size());
+        assertEquals(
+            "part_barrel_iron",
+            r.inputs()
+                .get(0)
+                .itemName());
+        assertEquals(
+            "part_stock_wooden",
+            r.inputs()
+                .get(1)
+                .itemName());
+        assertGt(
+            r.inputs()
+                .get(2),
+            "plate",
+            "Steel",
+            1);
+        assertGt(
+            r.inputs()
+                .get(3),
+            "screw",
+            "Steel",
+            2);
+        assertGt(
+            r.inputs()
+                .get(4),
+            "springSmall",
+            "Steel",
+            1);
+    }
+
+    @Test
+    void sawedOffRecyclingSumsTheDirectInputs() {
+        assertEquals(100 + 2 * 10 + 5, GunComposition.sawedOffDirectSteel(100, 10, 5));
+    }
+
+    @Test
+    void shellPressRowMatchesTheSheet() {
+        // docs/gregguns-spec/06-items/recipes.md RC-29: 8 shells, LV press, 6 s, brass foil, lead round, gunpowder.
+        ProductionTable.Row r = null;
+        for (ProductionTable.Row row : ProductionTable.ROWS) {
+            if (row.id()
+                .equals("RC-29")) {
+                r = row;
+            }
+        }
+        assertTrue(r != null, "RC-29 exists");
+        assertEquals("ammo_shotgun_shell", r.output());
+        assertEquals(8, r.outputCount());
+        assertEquals(Tier.LV, r.tier());
+        assertEquals(ProductionTable.Target.AMMO_PRESS, r.target());
+        assertEquals(6, r.seconds());
+        assertEquals(
+            3,
+            r.inputs()
+                .size());
+        assertGt(
+            r.inputs()
+                .get(0),
+            "foil",
+            "Brass",
+            8);
+        assertGt(
+            r.inputs()
+                .get(1),
+            "round",
+            "Lead",
+            24);
+        assertGt(
+            r.inputs()
+                .get(2),
+            "dust",
+            "Gunpowder",
+            4);
+    }
+
+    @Test
     void everyGunRowUsesADistinctCircuitSoRecipesNeverCollide() {
         java.util.Set<Integer> seen = new java.util.HashSet<>();
         for (ProductionTable.Row row : GunTable.ROWS) {

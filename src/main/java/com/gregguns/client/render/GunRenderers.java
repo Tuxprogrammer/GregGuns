@@ -13,6 +13,7 @@ import com.gregguns.GregGuns;
 import com.gregguns.client.render.profile.GunTransforms;
 import com.gregguns.client.render.profile.Pistol9mmProfile;
 import com.gregguns.client.render.profile.RevolverProfile;
+import com.gregguns.client.render.profile.SawedOffProfile;
 import com.gregguns.client.render.profile.ScopeSpec;
 
 import cpw.mods.fml.relauncher.Side;
@@ -90,6 +91,25 @@ public final class GunRenderers {
                 new String[] { Pistol9mmProfile.TEXTURE },
                 Pistol9mmProfile.MUZZLE),
             Pistol9mmProfile.TRANSFORMS);
+    }
+
+    /**
+     * Registers the Sawed Off: the original X-family box model built against {@code sawed_off.png}, and its sheet
+     * transforms.
+     */
+    public static void registerSawedOff(Item sawedOff) {
+        register(
+            sawedOff,
+            new BoxGunModel(
+                SawedOffProfile.BOXES,
+                1,
+                SawedOffProfile.TEXTURE_WIDTH,
+                SawedOffProfile.TEXTURE_HEIGHT,
+                SawedOffProfile.MODEL_SCALE,
+                new String[] { SawedOffProfile.TEXTURE },
+                SawedOffProfile.MUZZLE,
+                true),
+            SawedOffProfile.TRANSFORMS);
     }
 
     /**

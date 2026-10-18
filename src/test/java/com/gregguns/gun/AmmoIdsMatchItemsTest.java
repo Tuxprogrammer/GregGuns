@@ -21,6 +21,12 @@ class AmmoIdsMatchItemsTest {
     }
 
     @Test
+    void sawedOffAmmoIdIsTheShellItemName() {
+        assertEquals(AmmoTypes.SHOTGUN_SHELL.roundItemName(), GunCatalog.AmmoIds.SHOTGUN_SHELL);
+        assertEquals(AmmoTypes.SHOTGUN_SHELL.roundItemName(), GunCatalog.SAWED_OFF.ammoType());
+    }
+
+    @Test
     void pistolUsesThePistolMagazine() {
         assertEquals(AmmoTypes.NINE_MM_PISTOL.loadedItemName(), GunCatalog.PISTOL.ammoType());
         assertEquals(AmmoTypes.NINE_MM_PISTOL.emptyItemName(), GunCatalog.PISTOL.emptyContainerType());

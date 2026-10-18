@@ -13,6 +13,7 @@ import com.gregguns.gun.server.GunKeybinds;
 import com.gregguns.gun.server.GunScenarios;
 import com.gregguns.gun.server.MpScenarios;
 import com.gregguns.gun.server.RevolverScenarios;
+import com.gregguns.gun.server.SawedOffScenarios;
 import com.gregguns.item.ammo.AmmoItems;
 import com.gregguns.item.grenade.GrenadeItems;
 import com.gregguns.item.gun.GunItems;
@@ -75,6 +76,7 @@ public final class GunsModule implements GregGunsModule {
             GunRecipeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             RevolverScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            SawedOffScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             FrameworkScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MeleeScenarios.registerAll(ScenarioRegistry.SCENARIOS);

@@ -15,6 +15,14 @@
     "category": "player",
     "sounds": ["guns/revolver_reload"]
   },
+  "guns.sawed_off.fire": {
+    "category": "player",
+    "sounds": ["guns/sawedoff_shot_a", "guns/sawedoff_shot_b", "guns/sawedoff_shot_c"]
+  },
+  "guns.sawed_off.reload": {
+    "category": "player",
+    "sounds": ["guns/sawedoff_reload"]
+  },
   "effects.bullet_impact": {
     "category": "player",
     "sounds": [

@@ -22,8 +22,26 @@ public final class GunComposition {
     }
 
     /**
+     * Steel in the Sawed Off's directly consumed GT inputs (GR-03: 1 plate, 2 screws, 1 small spring), excluding the
+     * two Iron Barrels, which carry their own item data.
+     *
+     * @param plate       steel in one plate
+     * @param screw       steel in one screw
+     * @param springSmall steel in one small spring
+     * @return steel units
+     */
+    public static long sawedOffDirectSteel(long plate, long screw, long springSmall) {
+        return plate + 2 * screw + springSmall;
+    }
+
+    /**
      * Steel in the Revolver's directly consumed GT inputs (GR-02: 2 plates, 4 screws, 1 small spring), excluding the
      * parts, which carry their own item data. Same figures as the pistol's, so the same sum.
+     *
+     * @param plate       steel in one plate
+     * @param screw       steel in one screw
+     * @param springSmall steel in one small spring
+     * @return steel units
      */
     public static long revolverDirectSteel(long plate, long screw, long springSmall) {
         return pistolDirectSteel(plate, screw, springSmall);

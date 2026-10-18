@@ -16,6 +16,8 @@ public final class GunCatalog {
 
         /** Loose 9mm bullets (refund item for forced reloads). */
         public static final String NINE_MM = "ammo_9mm_bullet";
+        /** Loose shotgun shells (the Sawed Off's ammo). */
+        public static final String SHOTGUN_SHELL = "ammo_shotgun_shell";
         /** Loaded 9mm pistol magazine (18 rounds). */
         public static final String NINE_MM_PISTOL_MAGAZINE = "mag_9mm_pistol";
         /** Empty 9mm pistol magazine. */
@@ -72,6 +74,32 @@ public final class GunCatalog {
         .penetration(0)
         .animation(6, 5)
         .ai(18, 90, 6, 20)
+        .build();
+
+    /**
+     * The Sawed Off, a double-barrel shotgun.
+     *
+     * <p>
+     * Spec: sheets-rifles-shotguns.md, "Sawed Off", section 3: 4 damage per pellet falling to 1.5 between 1 and 4
+     * blocks, lifetime 10 ticks at 1.5 blocks per tick, spread 0.01, 7 extra pellets at spread 0.2 (8 in all, one
+     * round per shot), full-auto every 4 ticks, 2 rounds, 28 tick reload, AI range 12 / attack time 60 / burst 2 /
+     * delay 20, recoil 5 ticks and muzzle flash 5 ticks. It loads shell by shell: up to 2 shells per reload, one
+     * round each, and the rounds already in the gun stay (so a forced reload tops up).
+     */
+    public static final GunStats SAWED_OFF = GunStats.builder("sawed_off")
+        .damage(4.0)
+        .damageDrop(1, 4, 1.5)
+        .spread(0.01)
+        .pellets(7, 0.2, false)
+        .fire(FireMode.AUTO, 4)
+        .magazine(2)
+        .ammoType(AmmoIds.SHOTGUN_SHELL)
+        .reloadMode(ReloadMode.INCREMENTAL, 2)
+        .reloadTicks(28)
+        .projectile(1.5, 10)
+        .penetration(0)
+        .animation(5, 5)
+        .ai(12, 60, 2, 20)
         .build();
 
     private GunCatalog() {}
