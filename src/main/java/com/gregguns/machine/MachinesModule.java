@@ -11,6 +11,8 @@ import com.gregguns.machine.reaction.ReactionParts;
 import com.gregguns.machine.reaction.ReactionRecipeMaps;
 import com.gregguns.machine.reaction.ReactionRecipes;
 import com.gregguns.machine.reaction.ReactionScenarios;
+import com.gregguns.machine.repair.RepairMachines;
+import com.gregguns.machine.repair.RepairScenarios;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -43,8 +45,12 @@ public final class MachinesModule implements GregGunsModule {
         ReactionMachines.register();
         ReactionRecipes.register();
         ReactionCraftingRecipes.register();
+        // Repair Bench, Armory Gantry and Camo Bench.
+        RepairMachines.register();
+        RepairMachines.registerRecipes();
         if (DevEnvironment.isActive()) {
             ReactionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            RepairScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }
 }
