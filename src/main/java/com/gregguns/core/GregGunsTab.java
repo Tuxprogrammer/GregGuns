@@ -4,6 +4,8 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 
+import com.gregguns.item.gun.GunItems;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -11,8 +13,8 @@ import cpw.mods.fml.relauncher.SideOnly;
  * The single GregGuns creative tab, {@code itemGroup.gregguns}.
  *
  * <p>
- * Placeholder icon: a vanilla arrow, because no GregGuns item exists yet. When the first GregGuns item exists (the M1
- * pistol), switch {@link #getTabIconItem()} to it.
+ * Icon: the 9mm Pistol when the guns module is enabled. With the module off no GregGuns item exists, so the tab falls
+ * back to a vanilla arrow.
  */
 // Spec: docs/techguns-spec/01-core/lifecycle-and-registration.md (Creative tab: one tab for everything)
 public final class GregGunsTab extends CreativeTabs {
@@ -28,6 +30,7 @@ public final class GregGunsTab extends CreativeTabs {
     @Override
     @SideOnly(Side.CLIENT)
     public Item getTabIconItem() {
-        return Items.arrow;
+        Item pistol = GunItems.pistol();
+        return pistol != null ? pistol : Items.arrow;
     }
 }

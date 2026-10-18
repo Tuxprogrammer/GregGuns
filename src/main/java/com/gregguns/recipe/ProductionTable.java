@@ -12,6 +12,7 @@ import java.util.Set;
 import com.gregguns.api.Tier;
 import com.gregguns.item.ammo.AmmoTypes;
 import com.gregguns.item.part.PartItems;
+import com.gregguns.machine.AmmoPressTier;
 
 /**
  * The machine recipes of the 9mm pistol production chain as plain data: what each row makes, from what, on which map,
@@ -282,6 +283,41 @@ public final class ProductionTable {
         AmmoTypes.NINE_MM_PISTOL.roundsPerMagazine());
 
     private ProductionTable() {}
+
+    /**
+     * Builds an Ammo Press row for any tier, Steam to EV. The row's EU/t is the tier's {@code TierEU.RECIPE_*}
+     * ({@code ProductionRecipes.eutFor}), so an MV row runs at {@code RECIPE_MV}, an HV row at {@code RECIPE_HV}, and
+     * only a press of that tier or higher can run it. Add the result to {@link #ROWS}; the gate rule, tier rule and
+     * recipe registration then pick it up. There is no programmed-circuit selector (the map is separate).
+     *
+     * @param id          the sheet id, for example {@code "RC-60"}
+     * @param output      the output's bare registry name
+     * @param outputCount how many one run makes
+     * @param tier        the output's D1 tier, which sets EU/t and the lowest press that runs the row
+     * @param seconds     duration in seconds
+     * @param inputs      inputs in slot order, at most 6 (the map's item inputs)
+     * @return the row, targeting {@code gregguns.ammoPress}
+     */
+    public static Row pressRow(String id, String output, int outputCount, Tier tier, int seconds, Input... inputs) {
+        if (inputs.length > 6) {
+            throw new IllegalArgumentException("the ammo press map has 6 item inputs");
+        }
+        return new Row(id, output, outputCount, tier, Target.AMMO_PRESS, seconds, 0, inputs);
+    }
+
+    /**
+     * @param press a press tier
+     * @return the {@link #ROWS} rows on the ammo map that this press can run (row tier at or below the press)
+     */
+    public static List<Row> pressRowsFor(AmmoPressTier press) {
+        List<Row> out = new ArrayList<>();
+        for (Row row : ROWS) {
+            if (row.target() == Target.AMMO_PRESS && press.canRun(row.tier())) {
+                out.add(row);
+            }
+        }
+        return out;
+    }
 
     /**
      * @return the rows keyed by output name, in table order

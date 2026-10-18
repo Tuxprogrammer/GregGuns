@@ -5,7 +5,8 @@ package com.gregguns.machine;
  * {@link #BLOCK_LAST}; IDs are saved in the world, so they never change and are never configurable.
  *
  * <p>
- * Only the machines built so far have a constant. The roster
+ * Only the machines built so far have a constant (the Ammo Press family, Steam to EV; the Ammunition Works, 20105, is
+ * not built yet). The roster
  * (docs/gregguns-spec/08-machines-production/machine-roster.md) holds the full plan; add a constant here when a machine
  * is built, using the ID the roster gives it. Pure data, both sides.
  */
@@ -18,15 +19,15 @@ public final class GregGunsMTEIDs {
     /** Last ID of the reserved GregGuns block. */
     public static final int BLOCK_LAST = 20163;
 
-    /** Ammo Press, Steam (Bronze). Not built yet: M4. */
+    /** Ammo Press, Steam (Bronze). Built in M4. */
     public static final int AMMO_PRESS_STEAM = 20100;
     /** Ammo Press, LV. Built in M1 for the pistol slice. */
     public static final int AMMO_PRESS_LV = 20101;
-    /** Ammo Press, MV. Not built yet: M4. */
+    /** Ammo Press, MV. Built in M4. */
     public static final int AMMO_PRESS_MV = 20102;
-    /** Ammo Press, HV. Not built yet: M4. */
+    /** Ammo Press, HV. Built in M4. */
     public static final int AMMO_PRESS_HV = 20103;
-    /** Ammo Press, EV. Not built yet: M4. */
+    /** Ammo Press, EV. Built in M4. */
     public static final int AMMO_PRESS_EV = 20104;
 
     private GregGunsMTEIDs() {}

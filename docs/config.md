@@ -44,6 +44,15 @@ Techguns' "Damage Factors" category. All keys are synced from server to client (
 | `damagefactors.armorPenetrationMultiplierNPCtoPlayer` | float | `1.0` | 0 to 1 | yes | Scales the armor penetration of non-player attackers against players. |
 | `damagefactors.armorPenetrationMultiplierPvP` | float | `1.0` | 0 to 1 | yes | Scales the armor penetration of a player's shots against other players. |
 
+## Explosions (`explosions`)
+
+Both keys are synced from server to client (GGS-01-03). Block removal always passes through the protection hooks: the explosion events (ServerUtilities filters the affected-block list) and, for a player's blast, a `BlockEvent.BreakEvent` per block. See [explosions-pack.md](gregguns-spec/04-projectiles-fx/explosions-pack.md).
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `explosions.blockDamage` | boolean | `false` | n/a | yes | Whether GregGuns explosions remove blocks. Off: they still hurt entities. An NPC-caused blast also needs the `mobGriefing` gamerule. |
+| `explosions.selfDamage` | boolean | `true` | n/a | yes | Whether the player who set off an explosion can be hurt by it (fixes PFX-25). |
+
 ## Client (`client`)
 
 Display options for the local player only. Not synced.
@@ -53,6 +62,7 @@ Display options for the local player only. Not synced.
 | `client.showAmmoHud` | boolean | `true` | n/a | no | Draws the ammo HUD (rounds in the gun, magazines carried, reload progress) while a gun is held. |
 | `client.hudOffsetX` | int | `6` | 0 to 2000 | no | Pixels from the right screen edge to the right edge of the ammo HUD text. |
 | `client.hudOffsetY` | int | `40` | 0 to 2000 | no | Pixels from the bottom screen edge to the bottom of the ammo HUD. The default clears the InGame-Info-XML potion lines in the same corner; M1 still owes a screenshot check with several potions active. |
+| `client.ammoPressAnimation` | boolean | `true` | n/a | no | Draws the Ammo Press's front animation, with the frame chosen from recipe progress. Off shows the still front. Cosmetic only. |
 
 ## Rules for new options
 

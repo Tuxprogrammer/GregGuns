@@ -54,6 +54,9 @@ public final class GunSoundEvents {
     /** Event: a bullet hitting a block or entity, five variants. */
     public static final String BULLET_IMPACT = effect("bullet_impact");
 
+    /** Event: an explosion, five variants. */
+    public static final String EXPLOSION = effect("explosion1");
+
     /**
      * Vanilla sound played when a gun is pulled on an empty magazine and has no registered {@code dry_fire} event.
      */

@@ -73,6 +73,7 @@ item.gregguns.part_mechanical_2.name=Mechanical Parts T2
 gregguns.ammoPress=Ammo Press
 gregguns.machine.ammo_press.tooltip=Presses bullets and magazines
 gregguns.machine.ammo_press.type=Machine Type: Ammo Press
+gregguns.machine.ammo_press_steam.tooltip=Presses ammunition on steam; vents steam from the front after each run
 
 # Guns: items, tooltips, keys and HUD
 item.gregguns.pistol_9mm.name=9mm Pistol
@@ -132,3 +133,13 @@ gregguns.armor.bonus.night_vision=Night vision
 gregguns.armor.bonus.gun_accuracy=Gun accuracy
 gregguns.armor.bonus.oxygen_gear=Oxygen gear
 gregguns.armor.bonus.cooling_system=Cooling system
+# Melee tools and the Stielgranate
+item.gregguns.combat_knife.name=Combat Knife
+item.gregguns.crowbar.name=Crowbar
+item.gregguns.stielgranate.name=Stielgranate
+gregguns.melee.tooltip.damage=Damage: %s
+gregguns.melee.tooltip.crowbar_tool=Mines like an iron pickaxe
+gregguns.grenade.tooltip.radius=Radius: %s blocks
+gregguns.grenade.tooltip.bounces=Bounces: %s
+gregguns.grenade.tooltip.fuse=Fuse: %s s
+gregguns.grenade.tooltip.hold=Hold Right click to throw harder
