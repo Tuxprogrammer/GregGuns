@@ -1,5 +1,6 @@
 package com.gregguns.client;
 
+import com.gregguns.client.autotest.ClientAutotest;
 import com.gregguns.client.gun.GunClientSetup;
 import com.gregguns.client.projectile.ProjectileRenderers;
 import com.gregguns.client.render.GunAnimations;
@@ -41,6 +42,7 @@ public final class GunsClientModule implements ClientModule {
         // Renderers, HUD overlays and keybinds: one call per area.
         ProjectileRenderers.register();
         GunRenderClient.init(ANIMATIONS);
-        GunClientSetup.init();
+        // Dev-only and inert unless -Dgregguns.autotest is set: see docs/testing/README.md.
+        ClientAutotest.init(GunClientSetup.init());
     }
 }
