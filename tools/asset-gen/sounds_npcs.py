@@ -57,115 +57,472 @@ def growl(c, N, dur, f_a, f_b, vowels=("a", "o"), breath=0.4, grit=0.8, am_rate=
 
 
 # =========================================================================== cyberdemon
+def vocal(c, dur, f_a, f_b, vowels=("a", "o"), breath=0.4, grit=1.0, am=(25, 40), am_depth=0.5, bw_scale=1.7,
+          wander=0.15, rasp_db=-14.0):
+    """Round-2 growl voice.  Fixes the round-1 faults of the older growl() helper:
+    * the formants WANDER: five formant sets, each scaled randomly by +-wander, are cross-faded over time, and
+      the bands are broadened, so there is no static resonance line near 1.7 or 2.5 kHz;
+    * the pitch sags and carries 5-12% random jitter (rough vocal cords), not a clean steady tone;
+    * a driven 1-3.5 kHz noise layer pulsed at 40-70 Hz gives the throat-rattle grit;
+    * irregular 25-40 Hz amplitude modulation (never a fixed-rate tremolo)."""
+    sr, rng = c.sr, c.rng
+    n = sfx.n_of(sr, dur)
+    f = np.linspace(f_a, f_b, n) * (1 + 0.06 * (churn(n, sr, rng, 4, 1.0) - 0.5))
+    src = _unit(pulse_source(n, sr, rng, f, jitter=0.22, level_var=0.6))
+    asp = _unit(sfx.band_noise(n, sr, rng, 300, 6000, order=1)) * churn(n, sr, rng, 40, 0.8)
+    src = src + (breath + 0.5) * asp
+    w = np.linspace(0, 1, n)
+    K = 5
+    cen = np.linspace(0, n - 1, K)
+    acc = np.zeros(n)
+    wsum = np.zeros(n)
+    idx = np.arange(n)
+    for k in range(K):
+        sc = 1 + wander * rng.uniform(-1, 1, 3)
+        # the third formant is smeared much wider: a narrow F3 near 2.5 kHz reads as a whistle-like line
+        wb = (1.0, 1.3, 3.5)
+        fa = [(fq * s_, bw * bw_scale * w_) for (fq, bw), s_, w_ in zip(sfx.VOWELS[vowels[0]], sc, wb)]
+        fb = [(fq * s_, bw * bw_scale * w_) for (fq, bw), s_, w_ in zip(sfx.VOWELS[vowels[1]], sc, wb)]
+        yk = sfx.formant_filter(src, sr, fa, floor=0.1) * (1 - w) + sfx.formant_filter(src, sr, fb, floor=0.1) * w
+        hat = np.maximum(0.0, 1 - np.abs(idx - cen[k]) / (n / (K - 1.0)))
+        acc += yk * hat
+        wsum += hat
+    y = _unit(acc / np.maximum(wsum, 1e-9))
+    y = np.tanh(y * (1 + 2.5 * grit))
+    y = y * churn(n, sr, rng, float(rng.uniform(*am)), am_depth)
+    g = _unit(sfx.band_noise(n, sr, rng, 1000, 3500, order=2))
+    g = np.tanh(g * 2.0) * churn(n, sr, rng, float(rng.uniform(40, 70)), 0.9)
+    y = _unit(y) + _db(rasp_db) * 1.0 * g
+    return sfx.fftfilt(y, sr, hp=50, order=2)
+
+
+def _phrases(tg, floor_db=-14.0):
+    """(t0, t1) spans where the original's loudness contour is above floor_db: one growl phrase per span."""
+    e = np.array(tg.env10, dtype=float) if tg.env10 else None
+    d = tg.end_t
+    if e is None or len(e) < 11:
+        return [(0.0, d)]
+    ts = np.array(tenth_times(tg))
+    e = e - e.max()
+    on = e > floor_db
+    spans, k = [], 0
+    step = ts[1] - ts[0]
+    while k < 11:
+        if on[k]:
+            j = k
+            while j + 1 < 11 and on[j + 1]:
+                j += 1
+            spans.append((max(0.0, ts[k] - 0.4 * step), min(d, ts[j] + 0.6 * step)))
+            k = j + 1
+        else:
+            k += 1
+    return [s_ for s_ in spans if s_[1] - s_[0] > 0.15] or [(0.0, d)]
+
+
 @recipe("cyberdemon_step_*")
 def cyberdemon_step(c, N):
-    """Swelling stomp, secondary heel settle, gravel/armor crunch, irregular rumble, clean fading tail."""
+    """Swelling stomp: one sub thump, a low-mid body thud, irregular rumble, and a gritty debris layer of
+    random 10-25 ms noise grains (broadband, no ring); clean fading tail."""
     tg = get_tg(c)
     sr, rng = c.sr, c.rng
     surges = tuple((t - 0.015, 0.1, 0.6) for t in tg.onsets if t > 0.2)
-    out = blast(c, N, crack_gain=0.35, sub=(75.0, 32.0), sub_gain=1.2, rumble=1.3, churn_rate=22, churn_depth=0.6,
-                thunk=0.8, crackle=(70, 800, 6000, 0.3, 0.45), surges=surges, tail_gain=0.5, debris=0.3, bumps=False)
-    return out
+    out = blast(c, N, crack_gain=0.25, sub=(75.0, 32.0), sub_gain=1.0, rumble=1.2, churn_rate=22, churn_depth=0.4,
+                thunk=0.8, crackle=(70, 800, 6000, 0.3, 0.45), surges=surges, tail_gain=0.6, debris=0.3, bumps=False)
+    out = out / (np.max(np.abs(out)) + 1e-9)
+    m = Mix(c, N)
+    pk = max(tg.peak_t, 0.05)
+    # low-mid body thud under the peak (150-400 Hz, ~100 ms decay)
+    nb = sfx.n_of(sr, 0.35)
+    body = sfx.band_noise(nb, sr, rng, 150, 420, order=2) * sfx.exp_env(nb, sr, 0.08, attack=0.012)
+    m.add(_unit(body), max(pk - 0.03, 0.0), 0.16)
+    # gritty gravel: 6-10 random grains, 1.5-8 kHz, decaying amplitude, spread 0.05-0.3 s after the peak
+    for i in range(int(rng.integers(6, 10))):
+        t = pk + 0.03 + rng.uniform(0, 0.26)
+        ng = sfx.n_of(sr, 0.05)
+        g = sfx.fftfilt(sfx.noise(ng, rng), sr, hp=1500, lp=8000, order=1) * sfx.exp_env(ng, sr, rng.uniform(0.008, 0.02), attack=0.0008)
+        m.add(g / (np.max(np.abs(g)) + 1e-9), t, 0.10 * np.exp(-(t - pk) / 0.2))
+    # lead-in scuffs
+    for t in (pk * 0.25, pk * 0.55):
+        ng = sfx.n_of(sr, 0.03)
+        g = sfx.fftfilt(sfx.noise(ng, rng), sr, hp=100, lp=800, order=1) * sfx.exp_env(ng, sr, 0.01, attack=0.002)
+        m.add(g / (np.max(np.abs(g)) + 1e-9), t, 0.05)
+    return out + fit(m.out, len(out))
 
 
 @recipe("cyberdemon_aggro_*", "cyberdemon_idle_*", "cyberdemon_hurt_*", "cyberdemon_death_*")
 def cyberdemon_voice(c, N):
-    """Growls and roars.  Phrases follow the original's loudness contour (conform); each phrase onset gets a
-    sharp breathy accent; deeper and rougher for idle/death, higher with a snarl for hurt/aggro."""
+    """Growls and roars: one vocal() phrase per loud span of the original's contour (the quiet gaps between
+    phrases stay quiet), each with a breathy onset accent; deeper for idle/death, higher with a snarl for
+    hurt/aggro; death sags about an octave."""
     tg = get_tg(c)
     sr, rng, nm = c.sr, c.rng, c.name
     m = Mix(c, N)
     heavy = "idle" in nm or "death" in nm
-    f_a = rng.uniform(60, 80) if heavy else rng.uniform(90, 125)
-    f_b = f_a * (0.55 if "death" in nm else 0.8)
+    f_a = rng.uniform(70, 95) if heavy else rng.uniform(95, 135)
+    f_b = f_a * (0.5 if "death" in nm else 0.8)
     vow = ("o", "a") if "idle" in nm else ("a", "u") if "death" in nm else ("ae", "o")
-    # split into phrases at the quiet spots of the original's contour
-    d = tg.end_t
-    phrases = [(0.0, d)]
-    if tg.onsets and len(tg.onsets) >= 3 and d > 1.2:
-        gaps = [(t, t) for t in tg.onsets[1:3]]
-        phrases = [(0.0, tg.onsets[1] if tg.onsets[1] > 0.4 else d * 0.5), (tg.onsets[1] if tg.onsets[1] > 0.4 else d * 0.5, d)]
-    for (t0, t1) in phrases:
+    for (t0, t1) in _phrases(tg):
         dd = max(t1 - t0, 0.25)
-        g = growl(c, N, dd, f_a * rng.uniform(0.9, 1.1), f_b * rng.uniform(0.9, 1.1), vowels=vow,
-                  breath=0.55 if "aggro" in nm or "hurt" in nm else 0.4, grit=1.0, am_rate=float(rng.uniform(9, 16)),
-                  am_depth=0.6, formant_wander=0.15)
-        m.add(g * sfx.smooth_env(len(g), sr, min(0.08, dd * 0.2), min(0.3, dd * 0.4)), t0, 1.0)
-    # breathy attack accents at the original's onsets
-    for t in tg.onsets[:6]:
+        g = vocal(c, dd, f_a * rng.uniform(0.92, 1.08), f_b * rng.uniform(0.92, 1.08), vowels=vow,
+                  breath=0.55 if ("aggro" in nm or "hurt" in nm) else 0.4, grit=1.0, am=(25, 40), am_depth=0.5)
+        m.add(g * sfx.smooth_env(len(g), sr, min(0.06, dd * 0.2), min(0.3, dd * 0.4)), t0, 1.0)
+    for t in tg.onsets[:5]:
         n = sfx.n_of(sr, 0.14)
-        m.add(sfx.band_noise(n, sr, rng, 600, 8000, order=1) * sfx.exp_env(n, sr, 0.04, attack=0.002), t, 0.5)
-        m.add(sub_drop(sr, 110, 55, 0.2, 0.06, k=0.03), t, 0.25)
-    # chest layer
-    nb = sfx.n_of(sr, d)
-    m.add(sfx.band_noise(nb, sr, rng, 40, 320, order=2) * churn(nb, sr, rng, 8, 0.7), 0.0, 0.35)
+        m.add(sfx.band_noise(n, sr, rng, 800, 8000, order=1) * sfx.exp_env(n, sr, 0.04, attack=0.004), t, 0.18)
+    nb = sfx.n_of(sr, tg.end_t)
+    m.add(sfx.band_noise(nb, sr, rng, 100, 450, order=2) * churn(nb, sr, rng, 8, 0.7), 0.0, 0.3)
     return m.out
 
 
 # =========================================================================== alien bug
-def _rasp(c, dur, f_lo=1500, f_hi=3500, grit=0.8, rate=45, depth=0.8):
-    """Raspy screech: noise through a sliding formant band with irregular flutter (no whistle, no sine)."""
+# Round-2 rework.  The round-1 reviews agreed on five points, so every alien bug sound is built from the same
+# few layers and none of them can bring the old faults back:
+#   * no energy below the original's lowest band (hard high-pass on everything except explicit thumps);
+#   * the chitter is a CONTINUOUS band-limited noise bed with irregular 30-150 Hz grain modulation and a
+#     swelling envelope, not separate hits with silent gaps;
+#   * resonant noise (moving formant bands) gives the organic, vocal rasp; there are no sine oscillators in the
+#     noise layers, so no tonal whistle lines;
+#   * clicks are short noise bursts with a sharp attack (optionally a small 200-400 Hz body);
+#   * tails are chains of decaying clicks over a faint crackle floor, never a few isolated loud ticks.
+def _db(x):
+    return 10.0 ** (x / 20.0)
+
+
+def _pts_env(n, sr, t0, pts):
+    """Piecewise-linear dB envelope with absolute times; holds the end values outside the points."""
+    ts = np.array([p[0] for p in pts], dtype=float)
+    ds = np.array([p[1] for p in pts], dtype=float)
+    t = t0 + np.arange(n) / sr
+    return _db(np.interp(t, ts, np.maximum(ds, -90.0)))
+
+
+def _unit(x):
+    return x / (np.std(x) + 1e-9)
+
+
+def _edge(x, sr, ms=2.0):
+    k = min(len(x) // 2, max(2, int(sr * ms / 1000.0)))
+    x[:k] *= np.linspace(0, 1, k)
+    x[-k:] *= np.linspace(1, 0, k)
+    return x
+
+
+def _bed(c, t0, t1, lo, hi, pts, rate=(30, 60), depth=0.5):
+    """Continuous band-limited noise with irregular grain modulation (chitter) and a dB envelope."""
     sr, rng = c.sr, c.rng
-    n = sfx.n_of(sr, dur)
+    n = sfx.n_of(sr, t1 - t0)
+    x = _unit(sfx.band_noise(n, sr, rng, lo, min(hi, sr * 0.45), order=2))
+    r = float(rng.uniform(*rate))
+    x = x * churn(n, sr, rng, r, depth) * churn(n, sr, rng, r * 0.37, depth * 0.5)
+    return _edge(x * _pts_env(n, sr, t0, pts), sr, 3.0)
+
+
+def _res(c, t0, t1, forms, pts, rate=(30, 60), depth=0.5, floor=0.04):
+    """Noise through moving resonant bands.  forms = [(f_start, f_end, bw)]; the bands glide start -> end."""
+    sr, rng = c.sr, c.rng
+    n = sfx.n_of(sr, t1 - t0)
     src = sfx.noise(n, rng)
-    a = sfx.formant_filter(src, sr, [(f_lo, 500), (f_lo * 2.0, 700)])
-    b = sfx.formant_filter(src, sr, [(f_hi, 500), (f_hi * 1.6, 800)])
+    a = sfx.formant_filter(src, sr, [(f0, bw) for f0, f1, bw in forms], floor=floor)
+    b = sfx.formant_filter(src, sr, [(f1, bw) for f0, f1, bw in forms], floor=floor)
     w = np.linspace(0, 1, n)
-    y = a * (1 - w) + b * w
-    y = y / (np.std(y) + 1e-9)
-    y = np.tanh(y * (1 + 2.5 * grit))
-    return y * churn(n, sr, rng, rate, depth)
+    x = _unit(a * (1 - w) + b * w)
+    x = np.tanh(x * 1.6) * churn(n, sr, rng, float(rng.uniform(*rate)), depth)
+    return _edge(x * _pts_env(n, sr, t0, pts), sr, 3.0)
+
+
+def _voice(c, t0, t1, f0a, f0b, va, vb, pts, am=(25, 40), depth=0.5, grit=1.2, jitter=0.1):
+    """Jittered glottal pulses through two formant sets (vowel glide), driven, with irregular AM."""
+    sr, rng = c.sr, c.rng
+    n = sfx.n_of(sr, t1 - t0)
+    f = np.linspace(f0a, f0b, n) * (1 + 0.05 * (churn(n, sr, rng, 3, 1.0) - 0.5))
+    src = _unit(pulse_source(n, sr, rng, f, jitter=jitter))
+    a = sfx.formant_filter(src, sr, va)
+    b = sfx.formant_filter(src, sr, vb)
+    w = np.linspace(0, 1, n)
+    x = _unit(a * (1 - w) + b * w)
+    x = np.tanh(x * (1 + grit)) * churn(n, sr, rng, float(rng.uniform(*am)), depth)
+    return _edge(x * _pts_env(n, sr, t0, pts), sr, 3.0)
+
+
+def _click(c, lo, hi, dur, body=0.0, bodyf=300.0):
+    """Short noise burst, near-instant attack, optional small damped low body (no tonal ring)."""
+    sr, rng = c.sr, c.rng
+    n = sfx.n_of(sr, max(dur * 6, 0.012))
+    x = sfx.noise(n, rng) * sfx.exp_env(n, sr, dur / 3.0, attack=0.0003)
+    x = sfx.fftfilt(x, sr, hp=lo, lp=min(hi, sr * 0.45), order=1)
+    x = x / (np.max(np.abs(x)) + 1e-9)
+    if body:
+        t = sfx.tvec(n, sr)
+        x = x + body * np.sin(sfx.TAU * bodyf * t * (1 - 0.3 * np.minimum(t / dur, 1.0))) * np.exp(-t / (dur * 1.2))
+    return x
+
+
+def _build_bug(c, N, spec):
+    """Mix a spec: items are tuples tagged bed / res / voice / click / train / crack / low / thump.  Everything
+    but low and thump passes the spec's high-pass and low-pass; levels are dB relative to a unit-RMS bed."""
+    sr, rng = c.sr, c.rng
+    m = Mix(c, N)
+    lowm = Mix(c, N)
+    for it in spec["items"]:
+        k = it[0]
+        if k == "bed":
+            _, t0, t1, lo, hi, pts, rate, depth, db = it
+            m.add(_bed(c, t0, t1, lo, hi, pts, rate, depth), t0, _db(db))
+        elif k == "res":
+            _, t0, t1, forms, pts, rate, depth, db = it
+            m.add(_res(c, t0, t1, forms, pts, rate, depth), t0, _db(db))
+        elif k == "voice":
+            _, t0, t1, fa, fb, va, vb, pts, am, depth, db = it
+            m.add(_voice(c, t0, t1, fa, fb, va, vb, pts, am, depth), t0, _db(db))
+        elif k == "click":
+            _, t, lo, hi, dur, db, body = it
+            m.add(_click(c, lo, hi, dur, body), t, _db(db) * 1.3)
+        elif k == "train":
+            _, times, lo, hi, dur, db0, step, body = it
+            for i, t in enumerate(times):
+                g = _db(db0 - step * i + rng.uniform(-1.5, 1.5)) * 1.3
+                m.add(_click(c, lo * (1 + 0.04 * i), hi, dur * rng.uniform(0.8, 1.3), body), t + rng.uniform(-0.004, 0.004), g)
+        elif k == "crack":
+            _, t0, t1, dens, lo, hi, db, pts = it
+            n = sfx.n_of(sr, t1 - t0)
+            g = sfx.grain_cloud(n, sr, rng, dens, 0.0015, lo, hi, amp_var=0.9)
+            m.add(_edge(_unit(g) * _pts_env(n, sr, t0, pts), sr, 2.0), t0, _db(db))
+        elif k == "low":     # band-limited rumble that must survive the high-pass
+            _, t0, t1, lo, hi, pts, db = it
+            n = sfx.n_of(sr, t1 - t0)
+            x = _unit(sfx.band_noise(n, sr, rng, lo, hi, order=2)) * churn(n, sr, rng, 14, 0.5)
+            lowm.add(_edge(x * _pts_env(n, sr, t0, pts), sr, 3.0), t0, _db(db))
+        elif k == "thump":
+            _, t, f0, f1, dur, db = it
+            lowm.add(sub_drop(sr, f0, f1, dur, dur * 0.4, k=0.04, attack=0.003), t, _db(db) * 1.3)
+    # a faint crackle floor that follows the original's loudness contour, so no frame is dead and the contour
+    # conform can lift it (the generic dead-zone filler is off: it leaks the thump's sub into the tail)
+    tg = get_tg(c)
+    ts = np.arange(N) / sr
+    lv = np.array([rel_env_at(tg, t) for t in ts[::256]])
+    gate = np.where(ts <= tg.end_t, 10 ** (np.interp(ts, ts[::256], np.maximum(lv, -50)) / 20.0), 0.0)
+    fl_lo, fl_hi = spec.get("floor", (2000, 9000))
+    dens = np.interp(ts, ts[::256], 20 + 60 * 10 ** (np.maximum(lv, -45) / 20.0))
+    fl = sfx.grain_cloud(N, sr, rng, dens, 0.002, fl_lo, fl_hi, amp_var=0.9)
+    m.add(_unit(fl) * gate, 0.0, _db(spec.get("floor_db", 2)))
+    y = sfx.fftfilt(m.out, sr, hp=spec.get("hp", 400), order=4)   # steep: A has essentially nothing below it
+    y = sfx.fftfilt(y, sr, lp=spec.get("lp", 14000), order=2)
+    k = 2.4 * (np.std(y[y != 0]) + 1e-9)   # memoryless soft clip: tames click peaks (crest) without the
+    y = k * np.tanh(y / k)                  # gain pumping of the generic crest limiter
+    y = sfx.fftfilt(y, sr, hp=spec.get("hp", 400), order=4)   # clipping products must not refill the stopband
+    return y + lowm.out
+
+
+def _chomp(t, dur, lo, hi, db, rate=(40, 70), depth=0.4):
+    """One bite burst: 3 ms attack, ~20 dB fall over `dur`."""
+    return ("bed", t, t + dur, lo, hi, [(t, -8), (t + 0.003, 0), (t + dur, -22)], rate, depth, db)
+
+
+_FLAT = lambda t0, t1, db=0: [(t0, db), (t1, db)]
+
+_BUG = {
+    "aggro_a": dict(hp=300, lp=9000, items=[
+        ("bed", 0.0, 0.31, 1500, 6500, [(0, -3), (0.003, 0), (0.27, 0), (0.31, -14)], (30, 60), 0.6, 0),
+        ("res", 0.0, 0.31, [(400, 450, 150), (2500, 3200, 600)], [(0, -3), (0.003, 0), (0.27, 0), (0.31, -14)], (30, 60), 0.6, -4),
+        ("click", 0.28, 2000, 8000, 0.008, 9, 0.0), ("click", 0.39, 2000, 8000, 0.008, 9, 0.0),
+        ("bed", 0.31, 0.48, 2500, 6000, [(0.31, -16), (0.48, -26)], (30, 60), 0.6, 0),
+        ("train", [0.53, 0.61, 0.73, 0.81, 0.89, 0.99], 2500, 6500, 0.015, -8, 2.5, 0.0),
+        ("crack", 0.45, 1.07, 60, 2000, 8000, -24, [(0.45, -10), (1.07, -22)]),
+    ]),
+    "aggro_b": dict(hp=120, lp=12000, items=[
+        ("bed", 0.0, 0.68, 1000, 6000, [(0, -24), (0.025, 0), (0.40, 0), (0.66, -22)], (20, 40), 0.5, 0),
+        ("bed", 0.0, 0.68, 200, 420, [(0, -24), (0.025, 0), (0.40, 0), (0.66, -22)], (20, 40), 0.5, -2),
+        ("click", 0.2, 2000, 4000, 0.005, 4, 0.0),
+        ("train", [0.40, 0.49, 0.59, 0.68, 0.78, 0.88, 0.97, 1.07, 1.16], 2000, 6000, 0.006, -14, 3.5, 0.6),
+        ("crack", 0.4, 1.17, 40, 2000, 6000, -26, [(0.4, -14), (1.17, -30)]),
+    ]),
+    "aggro_c": dict(hp=95, lp=6000, items=[
+        ("bed", 0.0, 0.08, 500, 5000, _FLAT(0, 0.08, 0), (30, 50), 0.4, -25),
+        ("voice", 0.06, 0.8, 150, 105, [(500, 180), (1000, 240), (1700, 500)], [(400, 180), (850, 240), (1500, 450)],
+         [(0.06, -22), (0.09, 0), (0.40, 0), (0.70, -20), (0.8, -30)], (40, 80), 0.5, 0),
+        ("bed", 0.06, 0.8, 1500, 3500, [(0.06, -22), (0.09, 0), (0.40, 0), (0.70, -20), (0.8, -30)], (40, 80), 0.6, -8),
+        ("train", [0.50, 0.58, 0.67, 0.76, 0.86, 0.95, 1.04], 1000, 4000, 0.008, -14, 2.5, 0.5),
+        ("crack", 0.55, 1.08, 40, 1500, 5000, -30, _FLAT(0.55, 1.08, -6)),
+    ]),
+    "aggro_d": dict(hp=220, lp=8000, items=[
+        ("bed", 0.0, 0.39, 2000, 7500, [(0, -4), (0.01, 0), (0.22, 0), (0.33, -2), (0.34, -8), (0.39, -30)], (40, 80), 0.5, 0),
+        ("voice", 0.0, 0.38, 135, 115, [(300, 80), (700, 120), (1500, 200)], [(350, 80), (800, 120), (1600, 200)],
+         _FLAT(0, 0.38, 0), (25, 40), 0.5, -6),
+        ("res", 0.0, 0.2, [(650, 650, 70), (1300, 1300, 110)], _FLAT(0, 0.2, 0), (30, 50), 0.5, -12),
+        ("bed", 0.24, 0.28, 800, 6000, [(0.24, 0), (0.28, -10)], (60, 90), 0.4, -3),
+        ("click", 0.40, 2000, 6000, 0.007, 7, 0.0),
+        ("train", [0.53, 0.61, 0.73, 0.81, 0.90, 0.99], 500, 6000, 0.022, -6, 3.0, 0.3),
+        ("bed", 0.0, 0.5, 3000, 6500, [(0, -14), (0.4, -14), (0.5, -30)], (50, 90), 0.5, 0),
+    ]),
+    "bite_a": dict(hp=150, lp=9000, items=[
+        _chomp(0.13, 0.06, 300, 8000, 0), _chomp(0.19, 0.06, 300, 8000, -2),
+        ("click", 0.13, 2000, 9000, 0.004, 2, 0.0), ("click", 0.19, 2000, 9000, 0.004, 0, 0.0),
+        ("thump", 0.13, 250, 120, 0.06, -6), ("thump", 0.19, 250, 120, 0.06, -8),
+        ("bed", 0.12, 0.40, 1000, 6000, [(0.12, -14), (0.25, -18), (0.40, -34)], (40, 70), 0.8, 0),
+        ("bed", 0.28, 0.34, 2000, 5000, [(0.28, -4), (0.34, -24)], (40, 70), 0.5, 0),
+        ("thump", 0.28, 300, 170, 0.05, -10), ("click", 0.44, 2000, 6000, 0.006, -14, 0.0),
+        ("low", 0.30, 0.6, 150, 400, [(0.3, -34), (0.6, -50)], 0),
+        ("crack", 0.3, 0.55, 25, 1500, 6000, -36, [(0.3, -6), (0.55, -14)]),
+    ]),
+    "bite_b": dict(hp=150, lp=9000, items=[
+        _chomp(0.02, 0.07, 1000, 6000, 0), _chomp(0.07, 0.07, 1000, 6000, -2), _chomp(0.13, 0.075, 1000, 6000, -4),
+        ("thump", 0.02, 180, 60, 0.12, -2), ("thump", 0.07, 180, 60, 0.12, -5), ("thump", 0.13, 180, 60, 0.12, -8),
+        ("low", 0.02, 0.46, 40, 200, [(0.02, -2), (0.45, -16)], -4),
+        ("bed", 0.08, 0.46, 400, 1500, [(0.08, -14), (0.18, -20), (0.45, -42)], (30, 60), 0.5, 0),
+        ("crack", 0.02, 0.22, 250, 2000, 8000, -6, [(0.02, 0), (0.22, -16)]),
+    ]),
+    "bite_c": dict(hp=150, lp=10000, items=[
+        ("bed", 0.07, 0.115, 2000, 6500, [(0.07, 0), (0.115, -18)], (80, 120), 0.6, 0),
+        ("click", 0.07, 4000, 9000, 0.004, 6, 0.0), ("click", 0.092, 3000, 8000, 0.004, 2, 0.0),
+        ("bed", 0.17, 0.24, 2000, 7000, [(0.17, -3), (0.24, -20)], (80, 120), 0.6, 0),
+        ("train", [0.17, 0.187, 0.2, 0.217], 2500, 7000, 0.005, 2, 1.0, 0.0),
+        ("crack", 0.07, 0.26, 130, 2000, 8000, -4, [(0.07, -4), (0.26, -16)]),
+        ("bed", 0.07, 0.46, 1500, 5000, [(0.07, -16), (0.12, -18), (0.46, -42)], (40, 70), 0.7, 0),
+        ("bed", 0.10, 0.14, 1000, 3000, [(0.10, -12), (0.14, -16)], (8, 12), 0.8, 0),
+        ("crack", 0.3, 0.6, 25, 3000, 6000, -28, [(0.3, -6), (0.6, -12)]),
+        ("thump", 0.07, 180, 70, 0.08, -5),
+    ]),
+    "bite_d": dict(hp=100, lp=9000, items=[
+        _chomp(0.04, 0.035, 2000, 8000, 0), _chomp(0.09, 0.03, 2000, 8000, -4), _chomp(0.13, 0.03, 2000, 8000, -6),
+        ("click", 0.04, 3000, 9000, 0.004, 3, 0.0), ("click", 0.09, 3000, 8000, 0.004, -2, 0.0), ("click", 0.13, 3000, 8000, 0.004, -3, 0.0),
+        ("low", 0.04, 0.24, 100, 250, [(0.04, -2), (0.09, -2), (0.13, 0), (0.22, -22)], -2),
+        ("thump", 0.22, 120, 70, 0.08, -6),
+        ("bed", 0.04, 0.6, 600, 3000, [(0.04, -16), (0.2, -22), (0.3, -28), (0.6, -60)], (40, 70), 0.6, 0),
+        ("crack", 0.05, 0.5, 60, 2500, 7000, -22, [(0.05, -4), (0.5, -26)]),
+    ]),
+    "death_a": dict(hp=100, lp=12000, items=[
+        ("thump", 0.0, 120, 45, 0.4, -3), ("low", 0.0, 0.55, 150, 300, [(0, 0), (0.5, -12)], -9),
+        ("voice", 0.0, 0.32, 600, 250, [(900, 150), (1800, 300)], [(700, 150), (1400, 300)], [(0, -4), (0.05, 0), (0.32, -16)], (25, 40), 0.5, -8),
+        ("res", 0.1, 0.5, [(800, 2500, 400), (1500, 900, 500)], [(0.1, -18), (0.5, -22)], (20, 40), 0.5, 0),
+        ("res", 0.5, 1.6, [(2500, 900, 400), (900, 1800, 500)], [(0.5, -22), (1.0, -26), (1.6, -42)], (20, 40), 0.5, 0),
+        ("bed", 0.5, 1.3, 600, 4000, _FLAT(0.5, 1.3, -26), (20, 40), 0.5, 0),
+        ("train", [0.45, 0.9, 1.33, 1.43, 1.62, 1.79, 1.89], 1200, 5000, 0.005, -4, 1.0, 0.0),
+        ("crack", 1.2, 2.0, 25, 1500, 6000, -28, [(1.2, -8), (2.0, -16)]),
+        ("bed", 1.6, 2.25, 4000, 10000, [(1.6, -38), (2.2, -50)], (30, 60), 0.4, 0),
+    ]),
+    "death_b": dict(hp=150, lp=13000, items=[
+        ("thump", 0.0, 100, 45, 0.15, -3),
+        ("bed", 0.0, 0.32, 300, 9000, [(0, -24), (0.025, 0), (0.2, -20), (0.3, -30)], (30, 60), 0.4, 0),
+        ("bed", 0.2, 1.38, 150, 3000, [(0.2, -22), (0.6, -26), (1.35, -40)], (20, 40), 0.5, 0),
+        ("train", [0.26, 0.34, 0.42, 0.6], 800, 4000, 0.009, -2, 1.0, 0.5),
+        ("train", [0.95, 1.28, 1.36], 1000, 4000, 0.006, -14, 0.0, 0.0),
+        ("crack", 0.2, 0.8, 80, 1500, 6000, -14, [(0.2, -4), (0.8, -18)]),
+        ("bed", 1.3, 1.6, 6000, 10000, [(1.3, -36), (1.5, -44), (1.6, -60)], (30, 50), 0.4, 0),
+    ]),
+    "hit-01": dict(hp=250, lp=14500, items=[
+        ("bed", 0.03, 0.42, 1500, 12000, [(0.03, -6), (0.06, 0), (0.25, 0), (0.4, -20)], (200, 400), 0.8, 0),
+        ("res", 0.04, 0.35, [(450, 300, 120), (1500, 1200, 400)], _FLAT(0.04, 0.35, 0), (30, 60), 0.5, -8),
+        ("bed", 0.03, 0.35, 8000, 16000, _FLAT(0.03, 0.35, 0), (100, 200), 0.6, -8),
+        ("crack", 0.3, 0.52, 120, 1500, 9000, -12, [(0.3, -2), (0.52, -14)]),
+        ("res", 0.54, 0.60, [(330, 320, 70), (2500, 3500, 600)], [(0.54, -4), (0.6, -14)], (50, 90), 0.4, -4),
+        ("res", 0.67, 0.73, [(330, 320, 70), (2500, 3500, 600)], [(0.67, -4), (0.73, -14)], (50, 90), 0.4, -10),
+        ("res", 0.77, 0.83, [(330, 320, 70), (2500, 3500, 600)], [(0.77, -4), (0.83, -14)], (50, 90), 0.4, -16),
+        ("res", 0.87, 0.93, [(330, 320, 70), (2500, 3500, 600)], [(0.87, -4), (0.93, -14)], (50, 90), 0.4, -22),
+    ]),
+    "hit-02": dict(hp=150, lp=10500, items=[
+        ("bed", 0.04, 0.2, 700, 7000, [(0.04, -6), (0.07, 0), (0.2, -10)], (150, 300), 0.7, 0),
+        ("train", [0.04, 0.085, 0.12, 0.175], 2000, 7000, 0.004, 4, 0.0, 0.0),
+        ("bed", 0.1, 0.75, 3000, 9000, [(0.1, -22), (0.38, -20), (0.45, -15), (0.52, -20), (0.58, -20), (0.65, -14), (0.72, -22), (0.75, -34)], (40, 80), 0.5, 0),
+        ("bed", 0.1, 0.75, 450, 900, [(0.1, -22), (0.38, -20), (0.45, -15), (0.52, -20), (0.58, -20), (0.65, -14), (0.72, -22), (0.75, -34)], (40, 80), 0.5, 0),
+        ("res", 0.58, 0.72, [(850, 940, 90)], [(0.58, -16), (0.72, -18)], (40, 80), 0.5, 0),
+        ("train", [0.53, 0.75, 0.84], 1500, 6000, 0.005, -10, 2.0, 0.0),
+        ("crack", 0.75, 1.03, 36, 1500, 9000, -40, [(0.75, -4), (1.02, -12)]),
+    ]),
+    "hit-03": dict(hp=300, lp=10000, items=[
+        ("click", 0.0, 2000, 8000, 0.015, 3, 0.0),
+        ("bed", 0.0, 0.2, 600, 1500, [(0, -6), (0.03, 0), (0.2, -20)], (40, 80), 0.5, -4),
+        ("bed", 0.02, 0.12, 4000, 10000, [(0.02, 0), (0.1, -14)], (60, 120), 0.5, 0),
+        ("train", [0.09, 0.18, 0.26, 0.34, 0.42, 0.50, 0.58], 4000, 10000, 0.03, -2, 1.3, 0.0),
+        ("train", [0.09, 0.18, 0.26, 0.34, 0.42, 0.50, 0.58, 0.66], 600, 1500, 0.025, -10, 1.0, 0.0),
+        ("res", 0.09, 0.66, [(4500, 4500, 900), (6500, 6500, 1300), (9000, 9000, 2000)], _FLAT(0.09, 0.66, -14), (50, 100), 0.6, 0),
+        ("bed", 0.66, 0.70, 300, 10000, [(0.66, 3), (0.70, -10)], (80, 120), 0.4, 0),
+        ("thump", 0.66, 450, 320, 0.03, -3),
+        ("bed", 0.72, 0.80, 3000, 6000, [(0.72, -36), (0.8, -48)], (60, 100), 0.5, 0),
+    ]),
+    "hit-04": dict(hp=180, lp=12000, items=[
+        ("click", 0.0, 2000, 12000, 0.002, 0, 0.0),
+        ("bed", 0.0, 0.32, 2000, 12000, [(0, 0), (0.2, 0), (0.3, -20)], (60, 120), 0.6, 0),
+        ("bed", 0.0, 0.3, 14000, 17000, _FLAT(0, 0.3, -14), (60, 100), 0.5, 0),
+        ("train", [0.33, 0.405, 0.47, 0.53, 0.62, 0.65], 500, 8000, 0.02, -14, 0.0, 0.5),
+        ("click", 0.58, 400, 9000, 0.03, -8, 0.8),
+        ("bed", 0.33, 0.66, 500, 1000, [(0.33, -20), (0.66, -28)], (40, 80), 0.5, -4),
+        ("res", 0.67, 0.76, [(500, 500, 100), (8000, 8000, 1200)], [(0.67, -22), (0.76, -30), (0.8, -50)], (40, 80), 0.5, 0),
+    ]),
+    "idle-01": dict(hp=450, lp=14500, items=[
+        ("bed", 0.03, 0.5, 3000, 14000, [(0.03, -45), (0.06, -35), (0.11, 0), (0.22, -20), (0.37, -40), (0.5, -60)], (30, 60), 0.65, 0),
+        ("res", 0.08, 0.2, [(1500, 2500, 500)], [(0.08, -14), (0.12, -2), (0.2, -16)], (30, 60), 0.5, 0),
+        ("click", 0.20, 3000, 9000, 0.005, -8, 0.0), ("click", 0.25, 3000, 9000, 0.005, -10, 0.0),
+    ]),
+    "idle-02": dict(hp=160, lp=13000, items=[
+        ("bed", 0.0, 0.3, 3000, 8000, [(0, -38), (0.06, -14), (0.19, 0), (0.25, -14), (0.3, -30)], (40, 70), 0.55, 0),
+        ("click", 0.07, 2000, 6000, 0.008, -12, 0.0),
+        ("train", [0.32, 0.36, 0.40], 900, 2500, 0.012, -9, 0.0, 0.8),
+        ("bed", 0.05, 0.3, 11000, 12500, _FLAT(0.05, 0.3, 0), (40, 70), 0.4, -16),
+        ("bed", 0.4, 0.58, 4000, 8000, [(0.4, -30), (0.57, -48)], (40, 70), 0.5, 0),
+    ]),
+    "idle-03": dict(hp=300, lp=12000, items=[
+        ("bed", 0.05, 0.4, 2000, 7000, [(0.05, -32), (0.15, 0), (0.23, 0), (0.27, -20), (0.39, -40)], (60, 120), 0.6, 0),
+        ("res", 0.05, 0.3, [(3000, 3000, 200), (4000, 4000, 250), (5500, 5500, 300)], [(0.05, -26), (0.15, -4), (0.23, -4), (0.3, -24)], (60, 120), 0.6, 0),
+        ("train", [0.28, 0.31, 0.35], 3000, 6000, 0.002, -20, 2.0, 0.0),
+    ]),
+    "idle-04": dict(hp=400, lp=10000, items=[
+        ("bed", 0.0, 0.43, 2000, 8000, [(0, -36), (0.18, 0), (0.29, -20), (0.41, -40)], (60, 150), 0.5, 0),
+        ("res", 0.0, 0.43, [(2500, 2900, 700), (3500, 3100, 900), (5000, 4500, 1100)], [(0, -36), (0.18, -4), (0.29, -24), (0.41, -44)], (60, 150), 0.5, 0),
+        ("crack", 0.27, 0.4, 150, 2500, 8000, -22, [(0.27, 0), (0.4, -10)]),
+    ]),
+    "idle-05": dict(hp=500, lp=14000, items=[
+        ("bed", 0.03, 0.62, 5000, 12000, [(0.03, -30), (0.06, 0), (0.3, -8), (0.4, -20), (0.6, -40)], (30, 60), 0.4, 0),
+        ("res", 0.05, 0.4, [(7500, 7500, 500)], [(0.05, -10), (0.4, -16)], (30, 60), 0.4, 0),
+        ("bed", 0.04, 0.065, 1000, 2000, [(0.04, -4), (0.065, -10)], (60, 90), 0.4, -2),
+        ("bed", 0.12, 0.145, 1000, 2000, [(0.12, -4), (0.145, -10)], (60, 90), 0.4, -2),
+        ("bed", 0.22, 0.25, 1000, 2000, [(0.22, -4), (0.25, -10)], (60, 90), 0.4, 3),
+    ]),
+    "idle-06": dict(hp=500, lp=11500, items=[
+        ("bed", 0.03, 0.25, 3000, 10000, [(0.03, -30), (0.1, -12), (0.2, -12), (0.23, -32)], (60, 120), 0.6, 0),
+        ("res", 0.03, 0.25, [(2000, 1500, 250), (3200, 2600, 400)], [(0.03, -30), (0.1, -14), (0.2, -14), (0.23, -34)], (60, 120), 0.6, 0),
+        ("train", [0.0, 0.04, 0.08, 0.12, 0.17], 2000, 5000, 0.004, -8, 0.0, 0.0),
+        ("click", 0.27, 2000, 10000, 0.009, -12, 0.0),
+    ]),
+    "step_a": dict(hp=120, lp=14000, items=[
+        ("click", 0.0, 2000, 14000, 0.003, 6, 0.0),
+        ("train", [0.09, 0.17], 1500, 11000, 0.02, 0, 3.0, 0.0),
+        ("crack", 0.14, 0.28, 110, 3000, 12000, 0, [(0.14, -4), (0.19, 0), (0.28, -8)]),
+        ("train", [0.32, 0.40], 1500, 11000, 0.02, -6, 3.0, 0.0), ("click", 0.51, 3000, 13000, 0.004, -2, 0.0),
+        ("crack", 0.04, 0.5, 60, 4000, 14000, -22, _FLAT(0.04, 0.5, 0)),
+        ("bed", 0.0, 0.75, 4000, 14000, [(0, -30), (0.3, -34), (0.75, -50)], (60, 120), 0.6, 0),
+        ("click", 0.71, 3000, 10000, 0.004, -22, 0.0),
+        ("thump", 0.09, 130, 90, 0.03, -8), ("thump", 0.17, 130, 90, 0.03, -10),
+    ]),
+    "step_b": dict(hp=100, lp=13000, items=[
+        ("bed", 0.0, 0.62, 2000, 10000, [(0, -12), (0.4, -16), (0.6, -28)], (80, 150), 0.9, 0),
+        ("click", 0.31, 3000, 12000, 0.008, 6, 0.0), ("thump", 0.31, 150, 40, 0.06, 0),
+        ("train", [0.05, 0.20, 0.25, 0.36, 0.39, 0.45, 0.51], 2500, 9000, 0.008, -6, 0.0, 0.0),
+        ("train", [0.59, 0.76], 2500, 9000, 0.006, -18, 2.0, 0.0),
+        ("thump", 0.36, 100, 60, 0.03, -14), ("thump", 0.45, 100, 60, 0.03, -16),
+        ("crack", 0.2, 0.6, 90, 3000, 10000, -14, _FLAT(0.2, 0.6, 0)),
+    ]),
+    "step_c": dict(hp=100, lp=8000, floor=(2000, 6000), items=[
+        ("click", 0.0, 2000, 13000, 0.004, 4, 0.0),
+        ("train", [0.07, 0.15, 0.23], 2000, 9000, 0.02, -2, 2.0, 0.0),
+        ("bed", 0.0, 0.8, 2000, 8000, [(0, -18), (0.3, -22), (0.8, -42)], (150, 300), 0.9, 0),
+        ("click", 0.31, 2000, 12000, 0.002, 4, 0.0),
+        ("bed", 0.31, 0.43, 2000, 6000, [(0.31, -2), (0.43, -16)], (100, 200), 0.7, 0),
+        ("thump", 0.31, 110, 65, 0.05, -6),
+        ("train", [0.45, 0.59, 0.73], 1200, 5000, 0.02, -10, 3.0, 0.0),
+        ("crack", 0.07, 0.31, 100, 2500, 8000, -12, _FLAT(0.07, 0.31, 0)),
+    ]),
+}
 
 
 @recipe("alienbug_*")
 def alienbug(c, N):
-    """Chitinous clicks and snaps at the original's onsets over a dense irregular chitter bed; raspy screech for
-    aggro/hit, wet crackle for death, skittering ticks for steps."""
-    tg = get_tg(c)
-    sr, rng, nm = c.sr, c.rng, c.name
-    m = Mix(c, N)
-    kind = nm.split("_")[1][:5]
-    ons = list(tg.onsets) if tg.onsets else [0.05]
-    big = min(range(len(ons)), key=lambda i: abs(ons[i] - tg.peak_t)) if ons else 0
-    # 1. discrete clicks / snaps
-    for i, t in enumerate(ons):
-        lvl = 10 ** (max(rel_env_at(tg, t), -30) * 0.5 / 20)
-        k = "clack" if (i == big and kind in ("step", "bite", "aggro")) else ("click" if rng.random() < 0.6 else "tick")
-        m.add(foley_event(sr, rng, k, 1.0, 1.4), t, 0.6 * lvl + 0.15)
-        if kind in ("bite", "step", "hit-0") or i == big:
-            m.add(crack_burst(sr, rng, tau=0.005, lo=1500, hi=12000, dur=0.06), t, 0.45)
-    c.env_smooth = 0.02
-    for t in tenth_times(tg):  # a loud original frame here means an event here
-        if rel_env_at_exact(tg, t) > -16 and all(abs(t - o) > 0.045 for o in ons):
-            m.add(foley_event(sr, rng, "click", 1.0, 1.4), max(t - 0.004, 0.0), 0.5 * 10 ** (rel_env_at_exact(tg, t) * 0.5 / 20) + 0.1)
-    # a snap at t=0 where the original has one (steps)
-    if kind == "step" and tg.peak_t < 0.02:
-        m.add(crack_burst(sr, rng, tau=0.006, lo=1200, hi=13000, dur=0.08), 0.0, 1.0)
-    # 2. chitter / skitter bed following the loudness contour
-    ts = np.arange(N) / sr
-    lv = np.array([rel_env_at(tg, t) for t in ts[::256]])
-    dens = np.interp(ts, ts[::256], 15 + 90 * 10 ** (np.maximum(lv, -45) / 20.0))
-    dens = np.where(ts <= tg.dur, dens, 0.0)
-    bed = sfx.grain_cloud(N, sr, rng, np.maximum(dens, 0.5), 0.0025, 2500 if kind != "death" else 1500, 11000, amp_var=0.9)
-    gate = 10 ** (np.interp(ts, ts[::256], np.maximum(lv, -60)) / 20.0)
-    m.add(bed * gate, 0.0, 0.8)
-    # 3. raspy screech (aggro / hit) and wet crackle (death / hit)
-    if kind == "aggro":
-        d = min(0.5, tg.end_t * 0.5)
-        m.add(_rasp(c, d, 1500, 2800) * sfx.smooth_env(sfx.n_of(sr, d), sr, 0.03, 0.2), max(tg.onsets[0] if tg.onsets else 0.05, 0.05), 0.6)
-        nl = sfx.n_of(sr, d)
-        m.add(sfx.band_noise(nl, sr, rng, 120, 450, order=2) * churn(nl, sr, rng, 25, 0.8) * sfx.smooth_env(nl, sr, 0.05, 0.2), 0.05, 0.4)
-    elif kind == "hit-0" or nm.startswith("alienbug_hit"):
-        d = 0.3
-        m.add(_rasp(c, d, 2000, 4500, rate=60) * sfx.exp_env(sfx.n_of(sr, d), sr, 0.1), 0.0, 0.5)
-    elif kind == "death":
-        nq = sfx.n_of(sr, min(1.2, tg.end_t))
-        m.add(sfx.band_noise(nq, sr, rng, 600, 6000, order=1) * churn(nq, sr, rng, 30, 0.9) ** 2 * sfx.decay_env(nq, sr, 0.35, 0.9), 0.05, 0.6)
-        if tg.band("sub") > 0.1:
-            m.add(sub_drop(sr, 120, 50, 0.4, 0.12, k=0.04), 0.0, 0.9)
-        nh = sfx.n_of(sr, tg.end_t)
-        m.add(sfx.band_noise(nh, sr, rng, 6000, 16000, order=1) * sfx.decay_env(nh, sr, 0.4, 1.0), 0.0, 0.3)
-    return m.out
+    """Continuous modulated noise beds, moving formant bands, noise clicks and decaying click tails; no sub or
+    bass except where the original has a bite or death thump.  The per-sound layout lives in _BUG."""
+    c.env_hi = 30.0
+    c.limit_crest = False   # the crest limiter leaks click energy down into 20-100 Hz stripes
+    c.fill_tail = False   # the generic dead-zone filler copies the thump's spectrum and makes a pulsing sub bed
+    c.band_limit = 9.0    # the layers are already built to the band balance; a big static EQ would raise the
+    return _build_bug(c, N, _BUG[c.name.split("alienbug_")[1]])   # sub-bass leakage into a pulsing 20-100 Hz bed
 
 
 # =========================================================================== apache
@@ -175,149 +532,215 @@ def _chops(c, n, rate, jitter, lo=40, hi=250, amp_var=0.35, tau=0.03):
 
 @recipe("apache_rotor")
 def apache_rotor(c, N):
-    """Blade chop at ~11.5 Hz with irregular flutter over a dense low-mid body and a faint engine hum."""
+    """Blade flutter: jittered blade rate (14-22 Hz, +-25% timing per pulse), soft 8-15 ms attacks, a second
+    slower 8 Hz modulator only ~5 dB deep, over a dense low-mid body.  Full level at both ends (seamless loop)."""
     sr, rng = c.sr, c.rng
     c.looping = True
     m = Mix(c, N)
-    m.add(_chops(c, N, 11.5, 0.08, 50, 400, 0.35, 0.03) * 3.0, 0.0, 1.0)
-    m.add(sfx.band_noise(N, sr, rng, 150, 900, order=2) * churn(N, sr, rng, 7, 0.45), 0.0, 0.9)
-    m.add(sfx.band_noise(N, sr, rng, 700, 2500, order=1) * churn(N, sr, rng, 9, 0.8), 0.0, 0.1)
-    f = np.full(N, 180.0) * (1 + 0.01 * (churn(N, sr, rng, 2, 1.0) - 0.5))
-    m.add(sfx.fftfilt(sfx.harmonic_stack(f, N, sr, nh=6, rolloff=1.0, rng=rng), sr, lp=1200, order=1), 0.0, 0.12)
+    ch = sfx.pulse_train(N, sr, rng, 18.0, jitter=0.25, tau=0.014, bp=(50, 1500), amp_var=0.35)
+    ch = sfx.fftfilt(ch, sr, lp=1500, order=2) * churn(N, sr, rng, 8, 0.45)
+    m.add(_unit(ch), 0.0, 1.0)
+    m.add(_unit(sfx.band_noise(N, sr, rng, 150, 900, order=2)) * churn(N, sr, rng, 7, 0.3), 0.0, 0.9)
+    m.add(_unit(sfx.band_noise(N, sr, rng, 700, 2500, order=1)) * churn(N, sr, rng, 9, 0.6), 0.0, 0.12)
     return m.out
+
+
+def _thud(c, t, f0=100.0, f1=45.0, dur=0.2, tau=0.05, g=1.0, m=None):
+    m.add(sub_drop(c.sr, f0, f1, dur, tau, k=0.03, attack=0.006), t, g)
 
 
 @recipe("apache_burst")
 def apache_burst(c, N):
-    """About ten hard rotor chops over 0.85 s with a thump on each, an abrupt drop, then a dark rumble tail
-    with a couple of crackle onsets."""
-    tg = get_tg(c)
+    """Nine or ten rotor-gun pulses at about 11 Hz over 0.85 s, each a 5 ms 1-6 kHz crack on a 60-100 Hz thump
+    with a 40 ms decay (bass-heavy, little 250-500 Hz), a plateau, then a smooth fall into a low-passed rumble
+    (600 -> 200 Hz) with a few faint crackle ticks."""
     sr, rng = c.sr, c.rng
     m = Mix(c, N)
-    t = tg.peak_t * 0.0
     k = 10
     per = 0.85 / k
     for i in range(k):
         g = rng.uniform(0.8, 1.0)
-        tt = i * per + rng.uniform(-0.005, 0.005)
-        nb = sfx.n_of(sr, 0.075)
-        m.add(sfx.dark_noise(nb, sr, rng, 4500, 500, steps=5, hp=120) * sfx.exp_env(nb, sr, 0.03, attack=0.008), tt, 0.9 * g)
-        m.add(sub_drop(sr, 120, 45, 0.15, 0.05, k=0.03, attack=0.006), tt, 1.0 * g)
-    m.add(crack_burst(sr, rng, tau=0.01, lo=600, hi=9000, dur=0.1), 0.0, 0.7)
-    nbed = sfx.n_of(sr, 0.9)
-    m.add(sfx.band_noise(nbed, sr, rng, 100, 6000, order=1) * (0.5 + 0.5 * churn(nbed, sr, rng, 12, 1.0)) * sfx.smooth_env(nbed, sr, 0.01, 0.05), 0.0, 0.5)
+        tt = i * per + rng.uniform(-0.006, 0.006)
+        nb = sfx.n_of(sr, 0.03)
+        cr = sfx.fftfilt(sfx.noise(nb, rng), sr, hp=1000, lp=6000, order=1) * sfx.exp_env(nb, sr, 0.005, attack=0.0005)
+        m.add(cr, max(tt, 0.0), 0.5 * g)
+        _thud(c, max(tt, 0.0), rng.uniform(85, 100), 60, 0.12, 0.04, 1.2 * g, m)
+        nl = sfx.n_of(sr, 0.09)
+        m.add(sfx.band_noise(nl, sr, rng, 60, 220, order=2) * sfx.exp_env(nl, sr, 0.03, attack=0.004), max(tt, 0.0), 0.9 * g)
+    nbed = sfx.n_of(sr, 0.95)
+    m.add(sfx.band_noise(nbed, sr, rng, 40, 300, order=2) * (0.5 + 0.5 * churn(nbed, sr, rng, 11, 1.0)) * sfx.smooth_env(nbed, sr, 0.01, 0.15), 0.0, 0.6)
     nt = N
-    m.add(sfx.dark_noise(nt, sr, rng, 900, 120, steps=6, hp=30) * sfx.decay_env(nt, sr, 0.5, 1.2) * churn(nt, sr, rng, 10, 0.5), 0.85, 0.7)
-    for tc in (1.33, 1.72):
+    m.add(sfx.dark_noise(nt, sr, rng, 350, 110, steps=6, hp=30) * sfx.decay_env(nt, sr, 0.35, 0.7) * churn(nt, sr, rng, 10, 0.5), 0.8, 0.5)
+    for tc in (1.05, 1.33, 1.72):
         nc = sfx.n_of(sr, 0.05)
-        m.add(sfx.band_noise(nc, sr, rng, 1000, 4000, order=1) * sfx.exp_env(nc, sr, 0.012, attack=0.0005), tc, 0.25)
+        m.add(sfx.band_noise(nc, sr, rng, 500, 2500, order=1) * sfx.exp_env(nc, sr, 0.012, attack=0.001), tc, 0.1)
     return m.out
+
+
+def _rumble_bed(c, N, t0, t1, lo, hi, rate, db0, db1, g=1.0):
+    sr, rng = c.sr, c.rng
+    n = sfx.n_of(sr, t1 - t0)
+    x = _unit(sfx.band_noise(n, sr, rng, lo, hi, order=2)) * churn(n, sr, rng, rate, 0.6)
+    env = _db(np.linspace(db0, db1, n))
+    out = np.zeros(N)
+    sfx.place(out, x * env * sfx.smooth_env(n, sr, 0.15, 0.3), t0, sr, g)
+    return out
 
 
 @recipe("apache_explode", "apache_hit_*")
 def apache_blast(c, N):
-    """Fireball crack, dark exponential-decay roar with irregular debris crackles/thumps, progressive darkening."""
+    """Fireball crack, dark exponential roar with sub boom and soft debris, progressively darker; hits add a
+    low rolling rumble bed under the body so the decay is continuous, with dull 50-120 Hz thud debris."""
     tg = get_tg(c)
     sr, rng = c.sr, c.rng
-    big = "explode" in c.name
-    m = Mix(c, N)
+    nm = c.name
     pops = [t for t in tg.onsets if t > 0.3][:24]
-    out = blast(c, N, crack_gain=1.1 if big else 0.8, sub=(80.0, 34.0), sub_gain=1.1, rumble=1.3, churn_rate=9,
-                churn_depth=0.5, crackle=(40, 500, 4000, min(tg.end_t, 5.0), 0.5), pops=pops, pop_gain=0.4,
-                tail_gain=0.9, debris=0.7, bumps=False)
-    return out
+    if "explode" in nm:
+        out = blast(c, N, crack_gain=0.9, crack_hi=7000, brightness=0.4, mid_gain=0.25, sub=(80.0, 35.0), sub_gain=1.5,
+                    rumble=1.5, churn_rate=9, churn_depth=0.4, crackle=(30, 300, 1800, min(tg.end_t, 5.0), 0.12),
+                    pops=pops, pop_gain=0.12, pop_hi=1500, tail_gain=0.9, debris=0.1, bumps=False, t20=1.1, t40=3.6)
+        return out
+    t20, t40 = (0.95, 1.9) if nm.endswith("hit_a") else (0.9, 2.3)
+    out = blast(c, N, crack_gain=0.7, crack_hi=8000, brightness=0.7, sub=(80.0, 34.0), sub_gain=1.1, rumble=1.3,
+                churn_rate=9, churn_depth=0.5, pops=[t for t in pops if t < 1.4], pop_gain=0.25, pop_lo=150,
+                pop_hi=900, tail_gain=0.9, debris=0.3, bumps=False, t20=t20, t40=t40)
+    m = Mix(c, N)
+    m.out += _rumble_bed(c, N, 0.3, 2.8, 40, 200, 10, -8, -32, 1.0)
+    for t in ([0.74, 0.91, 0.99] if nm.endswith("hit_a") else [0.5, 0.7, 0.9, 1.1, 1.3]):
+        nb = sfx.n_of(sr, 0.07)
+        th = sfx.band_noise(nb, sr, rng, 50, 700, order=2) * sfx.exp_env(nb, sr, 0.02, attack=0.004)
+        m.add(th, t, 0.25)
+    return out + fit(m.out, len(out)) * 0.5
 
 
 @recipe("apache_die")
 def apache_die(c, N):
-    """Slow swell to a distorted peak at ~0.44 s, three buzzy harmonic pulses, a thin high whine fading by ~3 s,
-    a mid-level crackling plateau."""
+    """Slow swell to a distorted peak at ~0.44 s with a hard noise crack and a soft-clipped sub thump, three
+    buzzy rough-voiced pulses (jittered pulse trains, not pure harmonics), a thin band-limited noise whine near
+    6 kHz fading by ~3 s (noise, not a sine), and a crackling mid plateau decaying by ~1.7 s to a thin tail."""
     tg = get_tg(c)
     sr, rng = c.sr, c.rng
-    out = blast(c, N, crack_gain=0.6, sub=(90.0, 40.0), sub_gain=0.9, rumble=0.9, churn_rate=12, churn_depth=0.5,
-                crackle=(60, 1500, 8000, 3.0, 0.5), tail_gain=0.9, debris=0.5, bumps=False)
+    out = blast(c, N, crack_gain=0.8, sub=(90.0, 40.0), sub_gain=1.0, rumble=0.9, churn_rate=12, churn_depth=0.5,
+                crackle=(60, 1500, 8000, 3.0, 0.4), tail_gain=0.9, debris=0.5, bumps=False, t20=1.7, t40=3.5)
     m = Mix(c, N)
     for t in (0.1, 0.5, 0.9):
-        b = tone_burst(sr, rng, rng.uniform(900, 1300), 0.22, ratios=(1, 2, 3, 4, 5), gains=(1, 0.8, 0.6, 0.5, 0.4),
-                       attack=0.004, release=0.05, grit=0.2)
+        n = sfx.n_of(sr, 0.2)
+        f = np.linspace(580, 540, n) * (1 + 0.03 * (churn(n, sr, rng, 30, 1.0) - 0.5))
+        p = pulse_source(n, sr, rng, f, jitter=0.4, level_var=0.7)
+        p = sfx.fftfilt(p, sr, hp=300, lp=6000, order=1)
+        b = np.tanh(_unit(p) * 2.5) * sfx.smooth_env(n, sr, 0.004, 0.05)
+        b = b + 1.0 * sfx.band_noise(n, sr, rng, 1000, 6000, order=1) * sfx.smooth_env(n, sr, 0.004, 0.05)
         m.add(b, t, 0.35)
     nw = sfx.n_of(sr, 3.0)
-    tw = sfx.tvec(nw, sr)
-    m.add(np.sin(sfx.TAU * 6000 * tw) * np.exp(-tw / 1.2) * churn(nw, sr, rng, 4, 0.4), 0.2, 0.04)
+    wh = _unit(sfx.band_noise(nw, sr, rng, 5000, 7200, order=2)) * churn(nw, sr, rng, 6, 0.6) * np.exp(-np.arange(nw) / sr / 1.2)
+    m.add(wh, 0.2, 0.05)
     return out + fit(m.out, len(out))
 
 
 # =========================================================================== turret
-# per variant: list of (t, dur, f, ratios, gains) beeps; extras handled below
-def _beep(sr, rng, f, d, ratios, gains, glide=None, release=0.003, grit=0.0, flutter=0.0):
-    return tone_burst(sr, rng, f, d, ratios=ratios, gains=gains, release=release, grit=grit, glide=glide, flutter=flutter)
+# The originals' beeps ARE tonal, so these keep tones, but each follows the measured structure and nothing
+# else: no thump or sub layer (A has nothing below ~1 kHz), no broadband noise burst unless noted, tones
+# with 1-3 ms edges and no stray partials.
+def _tone(c, f, t0, dur, ratios=(1.0,), gains=(1.0,), edge=0.002, am=None, glide=None, sq=False, m=None, g=1.0):
+    sr, rng = c.sr, c.rng
+    n = sfx.n_of(sr, dur)
+    t = sfx.tvec(n, sr)
+    ph = sfx.sweep(glide[0], glide[1], n, sr, k=dur * 0.4) if glide else sfx.TAU * f * t
+    y = np.zeros(n)
+    for r, gg in zip(ratios, gains):
+        if f * r < sr * 0.45:
+            a = gg
+            if am:   # per-partial detuned irregular modulation (rate Hz, depth)
+                a = a * (1 - am[1] * 0.5 * (1 + np.sin(sfx.TAU * am[0] * (1 + rng.uniform(-0.15, 0.15)) * t + rng.uniform(0, 6.28))))
+            y += a * np.sin(ph * r + rng.uniform(0, 6.28))
+    if sq:   # odd-harmonic buzz (square-like)
+        for h in range(3, 40, 2):
+            if f * h < sr * 0.45:
+                y += (1.0 / h) * np.sin(ph * h)
+    k = max(2, int(sr * edge))
+    env = np.ones(n)
+    env[:k] = np.linspace(0, 1, k)
+    env[-k:] = np.minimum(env[-k:], np.linspace(1, 0, k))
+    m.add(y * env, t0, g)
+
+
+def _tick(c, t, lo, hi, dur, g, m):
+    sr, rng = c.sr, c.rng
+    n = sfx.n_of(sr, max(dur * 6, 0.01))
+    x = sfx.fftfilt(sfx.noise(n, rng), sr, hp=lo, lp=hi, order=1) * sfx.exp_env(n, sr, dur / 3.0, attack=0.0004)
+    m.add(x / (np.max(np.abs(x)) + 1e-9), t, g)
+
+
+# Tone lines measured from the original beeps (frequency Hz, start s, end s, prominence dB over the local
+# neighborhood).  Numbers only, read off the published analysis; the audio itself is never used.
+_BEEP_LINES = {
+    1: [(7275, 0.08, 0.18, 45), (7250, 0.2, 0.3, 44), (7350, 0.32, 0.4, 44), (4775, 0.42, 0.5, 22), (7300, 0.42, 0.5, 29), (2050, 0.44, 0.48, 30), (2750, 0.44, 0.48, 32), (3250, 0.48, 0.52, 22), (2700, 0.52, 0.58, 21), (4125, 0.52, 0.58, 29), (10925, 0.52, 0.56, 16), (7300, 0.54, 0.62, 36), (4775, 0.6, 0.66, 20), (5150, 0.6, 0.64, 19), (2750, 0.62, 0.66, 26), (7275, 0.66, 0.74, 35), (1975, 0.68, 0.74, 17), (2675, 0.68, 0.74, 23), (3400, 0.68, 0.74, 21), (4100, 0.68, 0.74, 29), (10875, 0.7, 0.74, 19), (2750, 0.76, 0.8, 28), (7275, 0.78, 0.86, 41), (4100, 0.82, 0.88, 19), (2675, 0.84, 0.88, 15), (9075, 0.86, 0.92, 24), (7275, 0.92, 0.98, 33), (7275, 1.0, 1.1, 45), (7250, 1.12, 1.28, 41), (7350, 1.22, 1.32, 42), (7300, 1.34, 1.42, 37), (9050, 1.42, 1.48, 15), (7300, 1.46, 1.54, 39), (7300, 1.58, 1.66, 35), (7275, 1.7, 1.76, 41), (8975, 1.74, 1.82, 21), (6200, 1.76, 1.8, 16), (9150, 1.8, 1.84, 24), (7275, 1.84, 1.9, 31), (7275, 1.92, 2.02, 42), (7275, 2.04, 2.1, 45)],
+    2: [(3950, 0.0, 0.04, 36), (6600, 0.0, 0.04, 29), (7925, 0.0, 0.04, 34), (9275, 0.0, 0.04, 40), (3975, 0.1, 0.14, 35), (3750, 0.36, 0.4, 16), (3975, 0.36, 0.42, 49), (6600, 0.36, 0.42, 37), (7925, 0.36, 0.42, 47), (9275, 0.36, 0.42, 48), (11925, 0.36, 0.4, 31), (13250, 0.36, 0.4, 17), (14575, 0.36, 0.4, 39), (3975, 0.48, 0.52, 50)],
+    3: [(5900, 0.0, 0.74, 66), (11300, 0.0, 0.04, 28), (13425, 0.0, 0.62, 40), (7025, 0.02, 0.06, 34), (6000, 0.06, 0.62, 45), (7000, 0.08, 0.48, 35), (11300, 0.08, 0.12, 27), (5750, 0.14, 0.2, 27), (11325, 0.14, 0.2, 25), (5750, 0.22, 0.38, 31), (6100, 0.22, 0.3, 24), (11300, 0.44, 0.52, 24), (7000, 0.54, 0.6, 29), (11325, 0.54, 0.6, 28), (5800, 0.58, 0.62, 25)],
+    4: [(3750, 0.0, 0.22, 24), (3975, 0.0, 0.54, 55), (4225, 0.0, 0.06, 18), (6600, 0.0, 0.5, 40), (7925, 0.0, 0.52, 50), (9275, 0.0, 0.52, 52), (11925, 0.0, 0.48, 38), (13250, 0.0, 0.04, 22), (14575, 0.0, 0.48, 48), (6500, 0.06, 0.12, 26), (8175, 0.06, 0.1, 16), (9075, 0.06, 0.12, 26), (13250, 0.06, 0.12, 25), (14725, 0.08, 0.14, 25), (7750, 0.12, 0.18, 17), (9375, 0.12, 0.5, 31), (14725, 0.16, 0.22, 26), (8100, 0.2, 0.26, 19), (6500, 0.22, 0.38, 23), (11850, 0.22, 0.26, 22), (3800, 0.24, 0.3, 20), (4125, 0.24, 0.48, 24), (14725, 0.24, 0.48, 28), (6725, 0.28, 0.34, 18), (8050, 0.28, 0.34, 22), (9475, 0.28, 0.5, 25), (3800, 0.32, 0.38, 20), (8050, 0.36, 0.5, 25), (3800, 0.4, 0.5, 22), (9125, 0.4, 0.5, 30), (7825, 0.42, 0.48, 23)],
+    5: [(1550, 0.0, 0.04, 24), (1850, 0.0, 0.04, 24), (2075, 0.0, 0.04, 27), (2350, 0.0, 0.04, 22), (2750, 0.0, 0.04, 22), (3050, 0.0, 0.04, 22), (3250, 0.0, 0.04, 16), (3575, 0.0, 0.04, 25), (3950, 0.0, 0.04, 27), (4225, 0.0, 0.04, 18), (7850, 0.0, 0.06, 48), (10150, 0.0, 0.04, 25), (11350, 0.0, 0.04, 26), (12050, 0.0, 0.04, 20), (15550, 0.0, 0.06, 53), (5300, 0.04, 0.14, 38), (2425, 0.06, 0.12, 26), (6750, 0.1, 0.2, 40), (9175, 0.1, 0.18, 36), (13975, 0.1, 0.2, 41), (7850, 0.18, 0.28, 49), (15550, 0.18, 0.28, 54), (1550, 0.2, 0.24, 18), (1850, 0.2, 0.24, 18), (2075, 0.2, 0.24, 17), (2750, 0.2, 0.24, 17), (3050, 0.2, 0.24, 17), (3550, 0.2, 0.24, 18), (3950, 0.2, 0.24, 17), (5150, 0.2, 0.26, 27), (10250, 0.2, 0.24, 16), (11150, 0.2, 0.24, 18), (7750, 0.24, 0.28, 20), (15650, 0.24, 0.28, 26)],
+    6: [(2925, 0.0, 0.04, 27), (4750, 0.0, 0.04, 25), (5275, 0.02, 0.2, 31), (4325, 0.04, 0.1, 23), (4775, 0.06, 0.24, 30), (2950, 0.08, 0.2, 29), (4350, 0.16, 0.2, 20)],
+    7: [(8125, 0.0, 0.16, 22), (9650, 0.0, 0.18, 36), (11225, 0.0, 0.1, 16), (15975, 0.0, 0.16, 19), (6550, 0.02, 0.1, 26), (13125, 0.02, 0.16, 30), (13300, 0.08, 0.12, 16), (13125, 0.18, 0.24, 31)],
+}
 
 
 @recipe("turret_beep-*")
 def turret_beep(c, N):
-    """Electronic chirps: click-sharp attacks with a small thump, glassy partials, gated bursts (see per-variant
-    structure from the original's onsets)."""
-    tg = get_tg(c)
+    """Electronic chirps: a bank of short tone lines placed on the original's measured frequencies, times and
+    prominences, each with slight random FM and flutter (buzzy, never a clean sine), over a gated noise floor
+    that sets how far the lines stand above their neighborhood.  No sub, thump or click layers."""
     sr, rng = c.sr, c.rng
     k = int(c.name[-2:])
+    c.conform_env = False
+    c.conform_bands = False
+    c.limit_crest = False
     m = Mix(c, N)
-    c.conform_env = False   # the gating pattern is built explicitly below
-    ons = tg.onsets
-    if k == 1:  # long chatter: many short chirps
-        for t in ons:
-            f = float(rng.choice([1031, 2742, 7266]) * rng.uniform(0.98, 1.02))
-            m.add(_beep(sr, rng, f, rng.uniform(0.04, 0.08), (1.0, 2.0, 3.9), (1.0, 0.4, 0.2)), t, rng.uniform(0.5, 1.0))
-            m.add(click_thump(sr, rng, 0.7, 0.3, bright=1.0), t, 0.4)
-    elif k == 2:  # two clusters, second louder; faint echo blip after each beep
-        for t0, g in ((0.0, 0.5), (0.36, 1.0)):
-            for j in range(2):
-                t = t0 + j * 0.065
-                m.add(_beep(sr, rng, 1200, 0.045, (1.0, 3.3, 6.6, 7.7), (1.0, 0.5, 0.35, 0.3)), t, g)
-                m.add(_beep(sr, rng, 1200, 0.03, (1.0, 3.3, 6.6), (1.0, 0.4, 0.3)), t + 0.025, g * 0.2)
-                m.add(click_thump(sr, rng, 0.8, 0.5, bright=1.0), t, g * 0.5)
-    elif k == 3:  # fast gated stutter of ~5.9 kHz pulses that shrink in level and spacing
-        t = 0.0
-        sp = 0.1
-        for j in range(7):
-            m.add(_beep(sr, rng, 5900, 0.04, (1.0, 2.1), (1.0, 0.15)), t, 1.0 - 0.1 * j)
-            m.add(_beep(sr, rng, 500, 0.04, (1.0, 2.0), (1.0, 0.5)), t, 0.1)
-            t += sp
-            sp *= 0.93
-        m.add(_beep(sr, rng, 5900, 0.06, (1.0, 2.1), (1.0, 0.2)), 0.57, 1.0)
-        m.add(click_thump(sr, rng, 0.8, 0.0, bright=2.0), 0.0, 0.5)
-        m.add(click_thump(sr, rng, 0.8, 0.0, bright=1.5), 0.53, 0.4)
-    elif k == 4:  # 12-13 pulses, ~40 ms on / 40 ms off, buzzy 1.2 kHz body with 4 / 7.9 / 9.3 kHz partials
-        for j in range(13):
-            t = 0.0 + j * 0.0415
-            f = 1200 * rng.uniform(0.9, 1.1)
-            m.add(_beep(sr, rng, f, 0.022, (1.0, 3.3, 6.6, 7.7), (1.0, 0.8, 0.6, 0.5), grit=0.1), t, 0.9)
-            m.add(click_thump(sr, rng, 0.5, 0.0, bright=1.4), t, 0.4)
-        m.add(_beep(sr, rng, 1200, 0.03, (1.0, 3.3, 6.6), (1.0, 0.6, 0.4)), 0.52, 0.15)
-    elif k == 5:  # steady bright tone ~5.3 kHz with 7.85 and 15.5 kHz partials, hard end
-        m.add(_beep(sr, rng, 5300, 0.275, (1.0, 1.48, 2.94), (1.0, 0.3, 0.2), release=0.004), 0.0, 1.0)
-    elif k == 6:  # four-step ascending chirp 1.5 -> 5 kHz in ~70 ms, click, quiet ringing tail
-        for j, f in enumerate((1500, 2400, 3500, 5000)):
-            m.add(_beep(sr, rng, f, 0.016, (1.0, 2.0), (1.0, 0.2), release=0.002), 0.0 + j * 0.017, 1.0)
-        m.add(click_thump(sr, rng, 0.7, 0.0, bright=1.0), 0.0, 0.5)
-        nr = sfx.n_of(sr, 0.22)
-        tr = sfx.tvec(nr, sr)
-        ring = sum(np.sin(sfx.TAU * f * tr) for f in (1500, 3000, 5000)) * np.exp(-tr / 0.08)
-        m.add(ring, 0.07, 0.015)
-    else:  # 7: ~16 kHz tone with ~30 Hz irregular gating into 4-5 bursts, abrupt end, faint tail
-        n = sfx.n_of(sr, 0.16)
-        tt = sfx.tvec(n, sr)
-        tone = np.sin(sfx.TAU * 16200 * tt) + 0.5 * np.sin(sfx.TAU * 13100 * tt) + 0.4 * np.sin(sfx.TAU * 9600 * tt)
-        gate = (churn(n, sr, rng, 30, 1.0) > 0.45).astype(float)
-        gate = np.convolve(gate, np.hanning(41) / np.hanning(41).sum(), mode="same")
-        m.add(tone * gate, 0.0, 1.0)
-        nr = sfx.n_of(sr, 0.1)
-        m.add(sfx.band_noise(nr, sr, rng, 9000, 17000, order=1) * sfx.exp_env(nr, sr, 0.03), 0.16, 0.08)
-    return sfx.fftfilt(m.out, sr, hp=350, order=2)
+    floor = np.zeros(N)
+    for (hz, t0, t1, prom) in _BEEP_LINES[k]:
+        dur = max(t1 - t0 - (0.016 if t1 - t0 > 0.05 and k == 1 else 0.0), 0.012)   # keep A's short gaps between runs
+        n = sfx.n_of(sr, dur)
+        t = sfx.tvec(n, sr)
+        fm = 1 + 0.004 * (churn(n, sr, rng, 60, 1.0) - 0.5)
+        ph = sfx.TAU * np.cumsum(hz * fm) / sr + rng.uniform(0, 6.28)
+        y = np.sin(ph) * churn(n, sr, rng, 45, 0.25)
+        if k == 3 and hz == 5900:   # eight gated pulses ~80 ms apart, duty ~70 %
+            gate = ((t % 0.08) < 0.056).astype(float)
+            y = y * np.convolve(gate, np.hanning(41) / np.hanning(41).sum(), mode="same")
+        e = max(2, int(sr * 0.002))
+        env = np.ones(n)
+        env[:e] = np.linspace(0, 1, e)
+        env[-e:] = np.minimum(env[-e:], np.linspace(1, 0, e))
+        m.add(y * env, t0, 10 ** ((prom - 10.0) / 20.0) / 15.7)
+        i0 = sfx.n_of(sr, t0)
+        floor[i0:i0 + n] = 1.0
+    # gated white noise floor (std 1) across the spans where lines exist, 3 ms smoothed edges
+    if k == 1:   # the original's floor is continuous across the short gaps between runs
+        floor = (np.convolve(floor, np.ones(int(sr * 0.04)), mode="same") > 0).astype(float)
+    k3 = max(3, int(sr * 0.003))
+    floor = np.convolve(floor, np.hanning(2 * k3 + 1) / np.hanning(2 * k3 + 1).sum(), mode="same")
+    rng.uniform()   # decorrelate the noise realization from the tone phases
+    m.out += sfx.noise(N, rng) * floor * 1.0
+    return sfx.fftfilt(m.out, sr, hp=800, order=2)
 
 
 @recipe("turret_gunequip-*")
 def turret_gunequip(c, N):
-    """Ratchet of metallic clacks and ticks, a louder cluster, a heavy bolt-slam clunk with a short thud; noisy,
-    dry, bright; no tones."""
-    return events(c, N, mix=(("clack", 0.45), ("click", 0.35), ("tick", 0.2)), bright=1.35, rattle=0.9, rustle=0.0,
-                  peak_kind="slam", level_pow=0.7, slam_bass=(0.02, 0.08))
+    """Ratchet of broadband metallic clacks (noise with a 30-60 ms decaying body, no bell ring or sine), a louder
+    second cluster, a heavy bolt-slam at the end with a short 100-250 Hz thud; dry and bright."""
+    tg = get_tg(c)
+    sr, rng = c.sr, c.rng
+    m = Mix(c, N)
+    ons = [t for t in tg.onsets] or [0.1]
+    big = int(np.argmax([rel_env_at(tg, t) for t in ons]))
+    for i, t in enumerate(ons):
+        lvl = 10 ** (max(rel_env_at(tg, t), -30) * 0.5 / 20)
+        n = sfx.n_of(sr, 0.12)
+        # broadband snap + resonant-noise body (wide bands, not pings)
+        sn = sfx.fftfilt(sfx.noise(n, rng), sr, hp=1500, lp=9000, order=1) * sfx.exp_env(n, sr, 0.004, attack=0.0003)
+        bd = sfx.formant_filter(sfx.noise(n, rng), sr, [(rng.uniform(900, 1700), 500), (rng.uniform(2500, 4200), 900)], floor=0.05) * sfx.exp_env(n, sr, 0.03, attack=0.0005)
+        sn = _unit(sn) + 0.8 * _unit(bd)
+        m.add(sn, t, (0.4 + 0.6 * lvl) * (1.6 if i == big else 1.0))
+        if i == big or i == len(ons) - 1:
+            th = sub_drop(sr, 250, 150, 0.1, 0.03, k=0.03, attack=0.001)
+            m.add(th, t, 0.8)
+    return sfx.fftfilt(m.out, sr, hp=300, order=2)

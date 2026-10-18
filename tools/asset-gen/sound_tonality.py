@@ -168,7 +168,9 @@ def main():
         if args.ref_assets and os.path.exists(os.path.join(args.ref_assets, ref_of[p])):
             ta, _ = tinkle(decode(os.path.join(args.ref_assets, ref_of[p])))
         tinkly = tb > max(2.0, 1.5 * ta)
-        report[p] = {"b_lines": len(b), "a_lines": len(a), "spurious": bad, "tinkle_b": round(tb, 2),
+        a_list = [{"hz": round(f), "t": round(s, 3), "dur": round(fr * FRAME / SR, 3), "prom_db": round(pr, 1)}
+                  for f, s, fr, pr in a]
+        report[p] = {"b_lines": len(b), "a_lines": len(a), "spurious": bad, "a_line_list": a_list, "tinkle_b": round(tb, 2),
                      "tinkle_a": round(ta, 2), "tinkly": tinkly}
         fail = bool(bad)  # tinkle rate is informational: originals have bodiless high clicks too
         fails += fail
