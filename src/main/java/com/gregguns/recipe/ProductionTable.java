@@ -243,9 +243,30 @@ public final class ProductionTable {
     public static final Set<String> GATE_EXEMPT = Collections
         .unmodifiableSet(new HashSet<>(Arrays.asList(BULLET, "ammo_shotgun_shell")));
 
+    /**
+     * Parts that are made at the crafting table (ULV, RC-02 and RC-03; see {@code PartCraftingRecipes}), so no
+     * machine row exists for them. Guns may take these as inputs without a row in {@link #ROWS}.
+     */
+    public static final Set<String> CRAFTED_PARTS = Collections
+        .unmodifiableSet(new HashSet<>(Arrays.asList(PartItems.STOCK_WOODEN, PartItems.MECHANICAL_1)));
+
     /** The rows, in sheet order. */
     public static final List<Row> ROWS = Collections.unmodifiableList(
         Arrays.asList(
+            // RC-04: the Steel screws are the gate (the barrel itself is iron). Deviation: GT has no Iron small pipe,
+            // so the
+            // bore blank is a long iron rod.
+            new Row(
+                "RC-04",
+                PartItems.BARREL_IRON,
+                1,
+                Tier.LV,
+                Target.ASSEMBLER,
+                5,
+                1,
+                Input.gt("stickLong", "Iron", 1),
+                Input.gt("ring", "Iron", 2),
+                Input.gt("screw", "Steel", 2)),
             // RC-05: Steel is the gate. The steel jacket plate is what "hardened" means.
             new Row(
                 "RC-05",

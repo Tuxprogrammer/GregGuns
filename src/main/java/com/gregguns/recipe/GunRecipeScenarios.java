@@ -1,11 +1,17 @@
 package com.gregguns.recipe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
 
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.item.part.PartItems;
 
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Materials;
@@ -18,7 +24,8 @@ import gregtech.api.util.GTRecipeBuilder;
 import gregtech.api.util.GTUtility;
 
 /**
- * In-game scenario for the pistol's final assembly recipe: it is in GT's assembler map ({@code
+ * In-game scenarios for the guns' final assembly recipes (pistol, revolver) and the revolver's parts: it is in GT's
+ * assembler map ({@code
  * RecipeMaps.assemblerRecipes}, which GT's NEI handler lists), matches its sheet inputs at LV, and is refused below
  * LV. Dev environment only, registered from {@code GunsModule}. Server side.
  */
@@ -33,7 +40,17 @@ public final class GunRecipeScenarios {
      * @param registry where to add it
      */
     public static void registerAll(ScenarioRegistry registry) {
-        registry.register(new PistolRecipe());
+        registry.register(
+            new GunAssemblerRecipe(
+                "gun.recipe",
+                "The 9mm Pistol is in GT's assembler map (so NEI lists it) at LV, 15 s, matching its sheet inputs, and not below LV.",
+                GunTable.PISTOL));
+        registry.register(
+            new GunAssemblerRecipe(
+                "gun.revolver.recipe",
+                "The Revolver is in GT's assembler map (so NEI lists it) at LV, 15 s, matching its sheet inputs, and not below LV.",
+                GunTable.REVOLVER));
+        registry.register(new RevolverPartRecipes());
     }
 
     private static ItemStack modStack(String name, int count) {
@@ -44,42 +61,57 @@ public final class GunRecipeScenarios {
         return GTOreDictUnificator.get(OrePrefixes.getPrefix(prefix), Materials.get(material), count);
     }
 
-    private static final class PistolRecipe implements Scenario {
+    /** A gun row is in GT's assembler map at its tier and duration, findable at its voltage and not below it. */
+    private static final class GunAssemblerRecipe implements Scenario {
+
+        private final String name;
+        private final String description;
+        private final ProductionTable.Row row;
+
+        GunAssemblerRecipe(String name, String description, ProductionTable.Row row) {
+            this.name = name;
+            this.description = description;
+            this.row = row;
+        }
 
         @Override
         public String name() {
-            return "gun.recipe";
+            return name;
         }
 
         @Override
         public String description() {
-            return "The 9mm Pistol is in GT's assembler map (so NEI lists it) at LV, 15 s, matching its sheet inputs, and not below LV.";
+            return description;
         }
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            ItemStack barrel = modStack("part_barrel_hardened", 1);
-            ItemStack mechanical = modStack("part_mechanical_2", 1);
-            ItemStack[] inputs = { barrel, mechanical, gt("plate", "Steel", 2), gt("plate", "Rubber", 2),
-                gt("screw", "Steel", 4), gt("springSmall", "Steel", 1), GTUtility.getIntegratedCircuit(1) };
-            for (ItemStack input : inputs) {
+            List<ItemStack> inputList = new ArrayList<>();
+            for (ProductionTable.Input input : row.inputs()) {
+                inputList.add(
+                    input.isGregGuns() ? modStack(input.itemName(), input.count())
+                        : gt(input.prefix(), input.material(), input.count()));
+            }
+            inputList.add(GTUtility.getIntegratedCircuit(row.circuit()));
+            for (ItemStack input : inputList) {
                 out.check(input != null, "every sheet input should resolve");
             }
-            ItemStack pistol = modStack(GunTable.PISTOL.output(), 1);
+            ItemStack[] inputs = inputList.toArray(new ItemStack[0]);
+            ItemStack gun = modStack(row.output(), 1);
 
             boolean listed = false;
             for (GTRecipe recipe : RecipeMaps.assemblerRecipes.getAllRecipes()) {
                 if (recipe.mOutputs != null && recipe.mOutputs.length > 0
                     && recipe.mOutputs[0] != null
-                    && pistol != null
-                    && recipe.mOutputs[0].getItem() == pistol.getItem()) {
+                    && gun != null
+                    && recipe.mOutputs[0].getItem() == gun.getItem()) {
                     listed = true;
                     out.checkEquals("EU/t", (int) TierEU.RECIPE_LV, recipe.mEUt);
-                    out.checkEquals("duration (ticks)", 15 * GTRecipeBuilder.SECONDS, recipe.mDuration);
+                    out.checkEquals("duration (ticks)", row.seconds() * GTRecipeBuilder.SECONDS, recipe.mDuration);
                 }
             }
-            out.check(listed, "RecipeMaps.assemblerRecipes should hold the pistol recipe (NEI lists that map)");
+            out.check(listed, "RecipeMaps.assemblerRecipes should hold the recipe (NEI lists that map)");
 
             GTRecipe found = RecipeMaps.assemblerRecipes.findRecipeQuery()
                 .items(inputs)
@@ -92,6 +124,55 @@ public final class GunRecipeScenarios {
                 .find();
             out.check(tooLow == null, "a machine below LV voltage should not be offered the recipe");
             return out.build();
+        }
+    }
+
+    /** The Revolver's hand-made parts have crafting-table recipes, and its machine-made barrel an assembler row. */
+    private static final class RevolverPartRecipes implements Scenario {
+
+        @Override
+        public String name() {
+            return "gun.revolver.parts";
+        }
+
+        @Override
+        public String description() {
+            return "The Wooden Stock and Mechanical Parts have crafting-table recipes and the Iron Barrel an LV assembler recipe, so the revolver can be built from raw GT parts.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            out.check(craftable(PartItems.STOCK_WOODEN), "no crafting recipe makes the Wooden Stock");
+            out.check(craftable(PartItems.MECHANICAL_1), "no crafting recipe makes Mechanical Parts");
+            ItemStack barrel = modStack(PartItems.BARREL_IRON, 1);
+            boolean listed = false;
+            for (GTRecipe recipe : RecipeMaps.assemblerRecipes.getAllRecipes()) {
+                if (recipe.mOutputs != null && recipe.mOutputs.length > 0
+                    && recipe.mOutputs[0] != null
+                    && barrel != null
+                    && recipe.mOutputs[0].getItem() == barrel.getItem()) {
+                    listed = true;
+                    out.checkEquals("iron barrel EU/t", (int) TierEU.RECIPE_LV, recipe.mEUt);
+                }
+            }
+            out.check(listed, "the assembler map should hold the Iron Barrel recipe");
+            return out.build();
+        }
+
+        private static boolean craftable(String registryName) {
+            ItemStack wanted = modStack(registryName, 1);
+            if (wanted == null) {
+                return false;
+            }
+            for (Object recipe : CraftingManager.getInstance()
+                .getRecipeList()) {
+                ItemStack result = ((IRecipe) recipe).getRecipeOutput();
+                if (result != null && result.getItem() == wanted.getItem()) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

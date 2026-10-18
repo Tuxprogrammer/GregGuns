@@ -148,8 +148,9 @@ class Pistol9mmProfileTest {
             "gregguns:textures/fx/muzzleflash2.png",
             t.muzzleFlash()
                 .texture());
+        // muzzleflash2.png paints cells 0 to 6; cell 7 is empty (MuzzleSheetsTest checks the PNG).
         assertEquals(
-            8,
+            7,
             t.muzzleFlash()
                 .sheet()
                 .frames());

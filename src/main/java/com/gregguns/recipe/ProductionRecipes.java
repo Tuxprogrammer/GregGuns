@@ -68,7 +68,11 @@ public final class ProductionRecipes {
             ItemStack stack = input.isGregGuns() ? modStack(input.itemName(), input.count())
                 : input.special() != null ? specialStack(input) : gtStack(input);
             if (stack == null) {
-                GregGuns.LOG.error("Skipping recipe {}: an input of {} did not resolve", row.id(), row.output());
+                GregGuns.LOG.error(
+                    "Skipping recipe {}: input {} of {} did not resolve",
+                    row.id(),
+                    input.isGregGuns() ? input.itemName() : input.prefix() + "." + input.material(),
+                    row.output());
                 return;
             }
             inputs.add(stack);

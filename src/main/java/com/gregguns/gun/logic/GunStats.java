@@ -40,6 +40,8 @@ public final class GunStats {
     private final double penetration;
     private final boolean akimbo;
     private final boolean doubleShot;
+    private final ProjectileKind projectileKind;
+    private final double knockback;
     private final int recoilTicks;
     private final int muzzleFlashTicks;
     private final double aiRange;
@@ -76,6 +78,8 @@ public final class GunStats {
         penetration = b.penetration;
         akimbo = b.akimbo;
         doubleShot = b.doubleShot;
+        projectileKind = b.projectileKind;
+        knockback = b.knockback;
         recoilTicks = b.recoilTicks;
         muzzleFlashTicks = b.muzzleFlashTicks;
         aiRange = b.aiRange;
@@ -107,6 +111,8 @@ public final class GunStats {
         require(projectileSpeed > 0 && lifetimeTicks >= 1, "projectile speed / lifetime");
         require(bulletsPerShot >= 1, "bulletsPerShot");
         require(penetration >= 0 && penetration <= 1, "penetration");
+        require(projectileKind != null, "projectileKind");
+        require(knockback >= 0, "knockback");
     }
 
     private static void require(boolean ok, String what) {
@@ -275,6 +281,19 @@ public final class GunStats {
         return doubleShot;
     }
 
+    /** The projectile entity this gun fires. */
+    public ProjectileKind projectileKind() {
+        return projectileKind;
+    }
+
+    /**
+     * Knockback multiplier of a hit (Techguns {@code knockbackMultiplier}): 1 is vanilla's push, 0 none, 2 twice the
+     * push. Unlike Techguns it changes the strength (GUN-38).
+     */
+    public double knockback() {
+        return knockback;
+    }
+
     /** Client recoil animation length in ticks. */
     public int recoilTicks() {
         return recoilTicks;
@@ -337,6 +356,8 @@ public final class GunStats {
         private double penetration;
         private boolean akimbo;
         private boolean doubleShot;
+        private ProjectileKind projectileKind = ProjectileKind.BULLET;
+        private double knockback = 1.0;
         private int recoilTicks = 5;
         private int muzzleFlashTicks = 5;
         private double aiRange = 15;
@@ -459,6 +480,18 @@ public final class GunStats {
         public Builder akimbo(boolean doubleShot) {
             akimbo = true;
             this.doubleShot = doubleShot;
+            return this;
+        }
+
+        /** The projectile entity to fire (default {@link ProjectileKind#BULLET}). */
+        public Builder projectileKind(ProjectileKind kind) {
+            projectileKind = kind;
+            return this;
+        }
+
+        /** Knockback multiplier of a hit: 1 vanilla, 0 none, above 1 stronger (GUN-38). */
+        public Builder knockback(double multiplier) {
+            knockback = multiplier;
             return this;
         }
 

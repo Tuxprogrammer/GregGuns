@@ -1,12 +1,28 @@
-"""Generate every manifest sound entry as an original, procedurally synthesised .ogg.
+"""Generate every manifest sound entry as an original, procedurally synthesized .ogg.
 
 Usage (from the repo root):
     python -I -X utf8 tools/asset-gen/gen_sounds.py [--only SUBSTR] [--prio P1,P2,P3] [--jobs N]
+                                                   [--only-file PATHS.txt] [--non-keep] [--no-write]
 
-Design spec comes from the written text in docs/techguns-spec/AUDIO-PROFILES.md
-(element timeline, envelope, frequency profile, recreation notes) and the manifest
-brief.  No audio file is read.  Each sound is seeded from its id, so a re-run
-reproduces the same files.
+Layout (round 1 of the A/B revision):
+    gen_sounds.py     shared machinery: context, synthesis dispatch, finishing (loudness, true peak, Vorbis),
+                      sounds.json fragment, credits and report.  Also the pre-revision text-driven interpreter
+                      (``synth_legacy``), which is now only used by sounds without a family recipe
+                      (flashbang_bang, which was never reviewed and must stay byte-identical).
+    sndlib.py         recipe registry, measured targets (sound-targets.json), the conforming stage
+                      (band balance, loudness contour, crest, silent end) and small reusable voices.
+    sndengines.py     shared engines: blast (shots, impacts, explosions), events (mechanical foley),
+                      rumble (sub-heavy textures), electronic beeps.
+    sounds_guns.py, sounds_npcs.py, sounds_effects.py, sounds_misc.py
+                      per-family recipes, registered by lower-case name prefix.  One agent per family.
+
+Design reference: the written text in docs/techguns-spec/AUDIO-PROFILES.md and the numeric measurements of
+the sound being replaced (length, decay points, onset times, band energies, loudness contour; stored in
+sound-targets.json).  No audio file is read, sampled or convolved.  Each sound is seeded from its id, so a
+re-run reproduces the same files.
+
+``--non-keep`` renders only sounds that tools/asset-gen/sound-status.json lists with a verdict other than
+keep; keep sounds (and sounds with no review status) are never touched and stay byte-identical.
 """
 from __future__ import annotations
 
@@ -24,6 +40,13 @@ sys.path.insert(0, HERE)
 import numpy as np  # noqa: E402
 
 import sfx  # noqa: E402
+import sndlib  # noqa: E402
+# Per-family recipe modules register themselves with sndlib.recipe(); import order only matters
+# when two patterns could match the same name (first registered wins).
+import sounds_guns  # noqa: E402,F401
+import sounds_npcs  # noqa: E402,F401
+import sounds_effects  # noqa: E402,F401
+import sounds_misc  # noqa: E402,F401
 
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 MANIFEST = os.path.join(HERE, "manifest.json")
@@ -33,8 +56,13 @@ FRAGMENT = os.path.join(HERE, "sounds.fragment.json")
 CREDITS = os.path.join(HERE, "credits", "sounds.csv")
 REPORT = os.path.join(ROOT, "docs", "assets", "previews", "sounds-report.md")
 STATS = os.path.join(HERE, "credits", ".sound-stats.json")
+STATUS = os.path.join(HERE, "sound-status.json")
 SCRATCH = os.environ.get("GG_SCRATCH", os.path.join(HERE, ".cache"))
 GEN_NAME = "tools/asset-gen/gen_sounds.py + sfx.py"
+GEN_NAME_R1 = "tools/asset-gen/gen_sounds.py + sndlib.py + sndengines.py + sounds_*.py + sfx.py"
+METHOD_OLD = "Procedural numpy synthesis (noise/FM/modal layers + synthetic-IR reverb) from written profile; libvorbis q5"
+METHOD_R1 = ("Procedural numpy synthesis: per-family noise/transient/foley recipes conformed to the measured band balance, "
+             "loudness contour and crest of the sound it replaces; true-peak limiter; libvorbis q7")
 
 TWO_PI = 2 * np.pi
 
@@ -88,6 +116,10 @@ class Ctx:
         self.n = sfx.n_of(self.sr, self.dur)
         self.scifi = False
         self.looping = False
+        self.tg = None            # measured targets of the original (see sndlib.Tg)
+        self.loop_xf = 0.0
+        self.conform_env = True   # reshape slow loudness contour to the original's
+        self.conform_bands = True  # match static band balance to the original's
 
 
 def T(w):
@@ -281,7 +313,7 @@ def interpret(c, elements):
     return out
 
 
-# =========================================================================== sci-fi flavour layers
+# =========================================================================== sci-fi flavor layers
 def scifi_layer(c, N):
     sr, rng, nm = c.sr, c.rng, c.name
     out = np.zeros(N)
@@ -698,8 +730,51 @@ def synth(c):
     N = c.n + sfx.n_of(sr, 1.5)
     c.stereo = None
     base = c.name
-    named = recipe_named(c, N)
     c.scifi = base.startswith(SCIFI_PREFIX) or base == "pulserifle_shot_stereo"
+    fam = sndlib.lookup(base)
+    if fam is not None:
+        return synth_family(c, fam, N)
+    return synth_legacy(c, N)
+
+
+def synth_family(c, fam, N):
+    """Round-1+ path: a per-family recipe, then contour/band conforming to the measured targets."""
+    sr = c.sr
+    sndlib.get_tg(c)
+    x = np.asarray(fam(c, N))
+    if x.ndim == 2:  # recipe supplied explicit stereo (L, R)
+        c.stereo = (x[0], x[1])
+        x = x.mean(axis=0)
+    if len(x) < N:
+        x = np.pad(x, (0, N - len(x)))
+    if c.looping:
+        c.loop_xf = min(0.25, c.dur * 0.2)
+        L = c.n
+        xfn = sfx.n_of(sr, c.loop_xf)
+        seg = x[:L + xfn]
+        if getattr(c, "conform_bands", True) and c.tg.bands:
+            seg = sfx.conform_bands(seg, sr, c.tg.bands, strength=getattr(c, "band_strength", 1.0), rng=c.rng)
+        x = sfx.make_loop(seg, sr, c.loop_xf)
+        if c.stereo is not None:
+            c.stereo = tuple(sfx.make_loop(s[:L + xfn], sr, c.loop_xf) for s in c.stereo)
+    else:
+        x = sndlib.conform(c, x)
+        # where the original ends while still audible (cut, not faded) only de-click the end
+        end_rel = (c.tg.env10[-1] - max(c.tg.env10)) if c.tg.env10 else -99
+        fout = 0.004 if end_rel > -42 else min(0.05, c.dur * 0.15)
+        x = sfx.fade(x, sr, 0.0005, fout)
+    if c.stereo is not None and c.e["channels"] == 2:
+        L, R = c.stereo
+        m = np.max(np.abs(np.concatenate([L, R]))) + 1e-9
+        return np.stack([L / m, R / m])
+    return x / (np.max(np.abs(x)) + 1e-9)
+
+
+def synth_legacy(c, N):
+    sr = c.sr
+    prof = c.prof
+    base = c.name
+    named = recipe_named(c, N)
     if named is not None:
         x = named
     else:
@@ -763,7 +838,7 @@ def encode_ogg(x, sr, ch, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     data = np.ascontiguousarray((x.T if ch == 2 else x).astype("<f4")).tobytes()
     cmd = FF + ["-y", "-f", "f32le", "-ar", str(sr), "-ac", str(ch), "-i", "-", "-map_metadata", "-1",
-                "-fflags", "+bitexact", "-flags:a", "+bitexact", "-c:a", "libvorbis", "-q:a", "5", path]
+                "-fflags", "+bitexact", "-flags:a", "+bitexact", "-c:a", "libvorbis", "-q:a", "7", path]
     r = subprocess.run(cmd, input=data, capture_output=True)
     if r.returncode:
         raise RuntimeError(r.stderr.decode(errors="replace"))
@@ -783,18 +858,30 @@ def measure(path):
     return {"lufs": f(I), "tp": f(P), "dur": float(j["duration"]), "ch": int(j["channels"]), "sr": int(j["sample_rate"])}
 
 
+def limit_tp(y, ceil, sr):
+    """Apply the true-peak limiter per channel."""
+    if y.ndim == 2:
+        return np.stack([sfx.tp_limit(ch, ceil, sr) for ch in y])
+    return sfx.tp_limit(y, ceil, sr)
+
+
 def finalize(x, c, outpath):
     sr = c.sr
     ch = 2 if x.ndim == 2 else 1
     target = float(c.e["target_lufs"])
     note = ""
-    short = target <= -60 or c.dur < 0.45
+    short = target <= -60 or c.dur < 0.41
     if short:
-        # integrated loudness is not measurable under 0.4 s: peak-normalise
-        y = x * 10 ** (-3.0 / 20)
-        encode_ogg(y, sr, ch, outpath)
-        m = measure(outpath)
-        m["note"] = "too short for integrated LUFS (or -70 sentinel target): peak-normalised to -3 dBFS"
+        # integrated loudness is not measurable under 0.4 s: peak-normalize
+        gdb = -3.0
+        for _ in range(5):
+            y = limit_tp(x * 10 ** (gdb / 20), 10 ** (-1.6 / 20), sr)
+            encode_ogg(y, sr, ch, outpath)
+            m = measure(outpath)
+            if m["tp"] <= -1.0:
+                break
+            gdb -= (m["tp"] + 1.4)
+        m["note"] = "too short for integrated LUFS (or -70 sentinel target): peak-normalized to about -3 dBFS, true peak checked"
         m["target"] = target
         m["limited"] = False
         return m
@@ -805,10 +892,19 @@ def finalize(x, c, outpath):
     mono = x if ch == 1 else x.mean(axis=0)
     est = sfx.lufs_estimate(mono, sr)
     g = 10 ** ((eff - (est if est is not None else -20)) / 20)
-    ceil = 0.89
+    ceil = 10 ** (-1.6 / 20)  # pre-encode true-peak ceiling; Vorbis adds a little overshoot
+    # never let the limiter take more than ~3.5 dB off the peak: a quieter file (still within the +-3 LU
+    # tolerance) keeps the original's envelope better than a squashed one
+    pk = float(np.max(np.abs(x))) + 1e-12
+    g_cap = ceil * 10 ** (3.5 / 20) / pk
+
+    def cap(gu):  # at most 3.5 dB of limiting, unless that would leave us more than 2 LU under target
+        return min(gu, max(g_cap, gu * 10 ** (-2.0 / 20)))
+
+    g = cap(g)
     best = None
     for it in range(8):
-        y = sfx.soft_clip(x * g, ceil)
+        y = limit_tp(x * g, ceil, sr)
         encode_ogg(y, sr, ch, outpath)
         m = measure(outpath)
         err = eff - m["lufs"]
@@ -818,21 +914,21 @@ def finalize(x, c, outpath):
         if ok:
             break
         if m["tp"] > -1.0:
-            ceil *= 10 ** ((-1.4 - m["tp"]) / 20)
+            ceil *= 10 ** ((-1.2 - m["tp"]) / 20)
             if abs(err) <= 0.5:
                 continue
-        g *= 10 ** (np.clip(err, -9, 9) * 0.9 / 20)
+        g = cap(g * 10 ** (np.clip(err, -9, 9) * 0.9 / 20))
     # final pass uses the best (g, ceil) found
     if not ok:
         g, _, ceil = best if best else (g, 0, ceil)
-        y = sfx.soft_clip(x * g, ceil)
+        y = limit_tp(x * g, ceil, sr)
         encode_ogg(y, sr, ch, outpath)
         m = measure(outpath)
         # last-ditch peak safety
         guard = 0
         while m["tp"] > -1.0 and guard < 4:
-            ceil *= 0.93
-            y = sfx.soft_clip(x * g, ceil)
+            ceil *= 0.9
+            y = limit_tp(x * g, ceil, sr)
             encode_ogg(y, sr, ch, outpath)
             m = measure(outpath)
             guard += 1
@@ -887,14 +983,18 @@ def write_fragment(entries, profiles):
 
 def write_credits(entries):
     os.makedirs(os.path.dirname(CREDITS), exist_ok=True)
+    revised = set()
+    if os.path.exists(STATUS):
+        st = json.load(open(STATUS, encoding="utf8"))
+        revised = {p for p, v in st.items() if v.get("verdict") != "keep"}
     with open(CREDITS, "w", encoding="utf8", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["asset", "path", "generator", "seed", "method", "licence", "date"])
         for e in entries:
             seed = zlib.crc32(e["id"].encode())
-            w.writerow([e["id"], "src/main/resources/assets/gregguns/" + e["path"], GEN_NAME, seed,
-                        "Procedural numpy synthesis (noise/FM/modal layers + synthetic-IR reverb) from written profile; libvorbis q5",
-                        "MIT", "2026-10-18"])
+            r1 = e["path"] in revised
+            w.writerow([e["id"], "src/main/resources/assets/gregguns/" + e["path"], GEN_NAME_R1 if r1 else GEN_NAME, seed,
+                        METHOD_R1 if r1 else METHOD_OLD, "MIT", "2026-10-18"])
 
 
 def write_report(results):
@@ -947,11 +1047,21 @@ def main():
     ap.add_argument("--prio", default="P1,P2,P3")
     ap.add_argument("--jobs", type=int, default=max(1, (os.cpu_count() or 2) - 1))
     ap.add_argument("--no-write", action="store_true", help="skip fragment/credits/report (partial runs)")
+    ap.add_argument("--only-file", default="", help="text file with one sound path (sounds/...ogg) per line; only those are rendered")
+    ap.add_argument("--non-keep", action="store_true",
+                    help="render only sounds that sound-status.json lists with a verdict other than keep")
     a = ap.parse_args()
     man = [e for e in json.load(open(MANIFEST, encoding="utf8")) if e["kind"] == "sound"]
     profiles = parse_profiles()
     prios = set(a.prio.split(","))
     todo = [e for e in man if e["priority"] in prios and a.only in e["id"]]
+    if a.only_file:
+        want = {ln.strip() for ln in open(a.only_file, encoding="utf8") if ln.strip()}
+        todo = [e for e in todo if e["path"] in want]
+    if a.non_keep:
+        st = json.load(open(STATUS, encoding="utf8"))
+        # keep sounds (and sounds with no review status) stay byte-identical: never re-rendered
+        todo = [e for e in todo if st.get(e["path"], {}).get("verdict") not in (None, "keep")]
     jobs = [(e, profiles.get(e["path"])) for e in todo]
     os.makedirs(SCRATCH, exist_ok=True)
     stats = {}

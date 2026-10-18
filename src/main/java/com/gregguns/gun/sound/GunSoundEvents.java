@@ -51,6 +51,15 @@ public final class GunSoundEvents {
     /** Event: the 9mm Pistol's reload. */
     public static final String PISTOL_9MM_RELOAD = gun(PISTOL_9MM, RELOAD);
 
+    /** The Revolver's content name. */
+    public static final String REVOLVER = "revolver";
+
+    /** Event: the Revolver's shot, three variants. */
+    public static final String REVOLVER_FIRE = gun(REVOLVER, FIRE);
+
+    /** Event: the Revolver's reload. */
+    public static final String REVOLVER_RELOAD = gun(REVOLVER, RELOAD);
+
     /** Event: a bullet hitting a block or entity, five variants. */
     public static final String BULLET_IMPACT = effect("bullet_impact");
 

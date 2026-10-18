@@ -473,3 +473,331 @@ def lufs_estimate(x, sr):
     if len(keep) == 0:
         return -70.0
     return -0.691 + 10 * np.log10(keep.mean())
+
+
+# =========================================================================== round-1 revision additions
+# Added in the first A/B revision round.  Nothing above this line changed, so older recipes
+# (and sounds that must stay byte-identical) render exactly as before.
+
+def ad_spectrum(x, sr, size=2048, step=512):
+    """Energy-weighted mean power spectrum, the same estimate the A/B review uses for band energy.
+
+    Returns (freqs, mean_spec)."""
+    n = len(x)
+    xp = np.pad(x, (0, size - n)) if n < size else x
+    win = np.hanning(size)
+    starts = np.arange(0, max(1, len(xp) - size + 1), step)
+    idx = starts[:, None] + np.arange(size)[None, :]
+    spec = np.abs(np.fft.rfft(xp[idx] * win, axis=1)) ** 2
+    freqs = np.fft.rfftfreq(size, 1.0 / sr)
+    w = spec.sum(axis=1)
+    mean = (spec * (w / max(w.sum(), 1e-20))[:, None]).sum(axis=0)
+    return freqs, mean
+
+
+# Seven analysis groups.  The review's "sub" band starts at 20 Hz; what a 2048-point Hann window sees
+# below that (infrasonic push of a gun, leakage) is its own group so the named bands can match.
+BAND_EDGES = [0.0, 20.0, 60.0, 250.0, 1000.0, 4000.0, 8000.0, 1e9]
+BAND_NAMES = ["infra", "sub", "bass", "low_mid", "mid", "presence", "air"]
+
+
+def band_fractions(x, sr):
+    f, m = ad_spectrum(x, sr)
+    tot = max(float(m.sum()), 1e-20)
+    return np.array([float(m[(f >= lo) & (f < hi)].sum()) / tot for lo, hi in zip(BAND_EDGES[:-1], BAND_EDGES[1:])])
+
+
+def eq_curve(x, sr, gains_db):
+    """Smooth static EQ: one gain (dB) per analysis group, interpolated over log frequency."""
+    n = len(x)
+    nfft = 1 << int(np.ceil(np.log2(n + 8192)))
+    X = np.fft.rfft(x, nfft)
+    f = np.fft.rfftfreq(nfft, 1.0 / sr)
+    cen = np.array([8.0, 38.0, 120.0, 500.0, 2000.0, 5600.0, 12000.0])
+    g = np.interp(np.log(np.maximum(f, 1.0)), np.log(cen), np.asarray(gains_db, dtype=float))
+    return np.fft.irfft(X * 10 ** (g / 20.0), nfft)[:n]
+
+
+def infra_shape(x, sr, rng):
+    """Unit-RMS slow (< 5 Hz) noise following x's own loudness contour."""
+    n = len(x)
+    base = fftfilt(noise(n, rng), sr, lp=4.0, order=2)
+    ed, hop = env_frames(x, sr)
+    env = np.interp(np.arange(n) / sr, (np.arange(len(ed)) + 0.5) * hop / sr, 10 ** (ed / 20.0))
+    k = max(3, int(sr * 0.05))
+    ker = np.hanning(2 * k + 1)
+    env = np.convolve(np.pad(env, (k, k), mode="edge"), ker / ker.sum(), mode="valid")
+    lay = base * env
+    return lay / np.sqrt(np.mean(lay ** 2) + 1e-20)
+
+
+def infra_fit(y, lay, sr, frac):
+    """Add ``lay`` to y with a gain found by bisection so that the sub-20 Hz share is ``frac``."""
+    r = np.sqrt(np.mean(y ** 2) + 1e-20)
+    lo, hi = 0.0, 3.0
+    for _ in range(12):
+        g = 0.5 * (lo + hi)
+        if band_fractions(y + lay * g * r, sr)[0] < frac:
+            lo = g
+        else:
+            hi = g
+    return y + lay * 0.5 * (lo + hi) * r
+
+
+def conform_bands(x, sr, target_pct, iters=6, limit=18.0, strength=1.0, rng=None):
+    """Nudge the static band balance of x toward ``target_pct`` (dict of the review's band names).
+
+    Whatever the six named bands leave out of 100 % is the target for the sub-20 Hz group; when
+    that is large (> 4 %) a slow infrasonic layer is added to reach it.  ``strength`` < 1 only
+    moves part of the way (in dB)."""
+    named = [float(target_pct.get(k, 0.0)) for k in BAND_NAMES[1:]]
+    resid = max(100.0 - sum(named), 0.0)
+    infra_t = resid if resid > 4.0 else 0.0
+    tgt = np.array([infra_t] + named)
+    tgt = tgt / tgt.sum()
+    tgt_f = np.maximum(tgt, 0.002)
+    lay = infra_shape(x, sr, rng if rng is not None else np.random.default_rng(7)) if infra_t > 0 else None
+    total = np.zeros(7)
+    y = x
+    for _ in range(iters):
+        cur = np.maximum(band_fractions(y, sr), 1e-5)
+        step = 10 * np.log10(tgt_f / cur) * 0.9 * strength
+        step[0] = 0.0
+        if np.max(np.abs(step[1:])) < 0.6:
+            break
+        total = np.clip(total + step, -limit, limit)
+        y = eq_curve(x, sr, total)
+        if lay is not None:
+            y = infra_fit(y, lay, sr, min(tgt[0], 0.5))
+    r0 = np.sqrt(np.mean(x ** 2) + 1e-20)
+    r1 = np.sqrt(np.mean(y ** 2) + 1e-20)
+    return y * (r0 / r1)
+
+
+def env_frames(x, sr, hop_s=0.010):
+    hop = max(1, int(sr * hop_s))
+    nf = max(1, len(x) // hop)
+    e = np.sqrt(np.mean(x[:nf * hop].reshape(nf, hop) ** 2, axis=1) + 1e-20)
+    return 20 * np.log10(e + 1e-10), hop
+
+
+def conform_env(x, sr, pts, smooth_s=0.05, lo=-30.0, hi=12.0, floor_db=-72.0, gain_smooth_s=0.015):
+    """Reshape the slow loudness contour of x to a target.
+
+    ``pts`` = (times, rel_db): wanted level in dB relative to the loudest 10 ms frame, at those times.
+    At each control time the local mean level (+-smooth_s) is compared with the wanted level and a
+    gain (dB, limited to lo..hi) is applied, interpolated linearly in dB between control times.
+    Transients and fine texture between control times are untouched."""
+    ts, rel = pts
+    n = len(x)
+    ed, hop = env_frames(x, sr)
+    nf = len(ed)
+    pw = 10 ** (ed / 10.0)
+    tt = (np.arange(nf) + 0.5) * hop / sr
+    ct = np.unique(np.asarray(ts, dtype=float))
+    ct = ct[(ct >= 0) & (ct <= n / sr)]
+    w = max(1, int(round(smooth_s / 0.010)))
+
+    def local(t):
+        i = int(np.clip(t / (hop / sr), 0, nf - 1))
+        return 10 * np.log10(np.mean(pw[max(0, i - w):i + w + 1]) + 1e-20)
+
+    # reference: our local level where the original is loudest (searched +-0.15 s for timing slop)
+    pk_a = float(ts[int(np.argmax(rel))])
+    nb = int(0.15 / (hop / sr))
+    i0 = int(np.clip(pk_a / (hop / sr), 0, nf - 1))
+    ref = max(local((j + 0.5) * hop / sr) for j in range(max(0, i0 - nb), min(nf, i0 + nb + 1)))
+    gains = []
+    for t in ct:
+        loc = local(t)
+        want = max(float(np.interp(t, ts, rel)), floor_db)
+        if want <= floor_db + 0.5:
+            gains.append(-40.0)
+        elif ref + want - loc > 28.0:
+            gains.append(0.0)  # nothing to work with here: boosting would only amplify junk
+        else:
+            gains.append(float(np.clip(ref + want - loc, lo, hi)))
+    gains = np.array(gains)
+    # smooth the gain curve at 1 kHz (cheap), then interpolate up to the sample rate
+    tk = np.arange(0.0, n / sr + 0.002, 0.001)
+    gk1 = np.interp(tk, ct, gains)
+    ks = max(2, int(gain_smooth_s * 1000))
+    ker = np.hanning(2 * ks + 1)
+    gk1 = np.convolve(np.pad(gk1, (ks, ks), mode="edge"), ker / ker.sum(), mode="valid")
+    g = np.interp(np.arange(n) / sr, tk, gk1)
+    return x * 10 ** (g / 20.0)
+
+
+def decay_env(n, sr, t20, t40=None, attack=0.0005, t0=0.0):
+    """Two-slope exponential decay: -20 dB at t20 and -40 dB at t40 (both measured from t0)."""
+    t = np.maximum(tvec(n, sr) - t0, 0.0)
+    t40 = t40 or t20 * 2.1
+    t40 = max(t40, t20 * 1.2)
+    s1 = -20.0 / max(t20, 1e-3)
+    s2 = -20.0 / max(t40 - t20, 1e-3)
+    db = np.where(t < t20, s1 * t, -20.0 + s2 * (t - t20))
+    e = 10 ** (db / 20.0)
+    if attack > 0:
+        e = e * np.minimum(tvec(n, sr) / attack, 1.0)
+    return e
+
+
+def sharp_attack(n, sr, attack=0.0004):
+    return np.minimum(tvec(n, sr) / attack, 1.0)
+
+
+def ping(sr, rng, freqs, tau, n=None, amp=1.0):
+    """Short inharmonic metallic ring at the given partial frequencies (Hz)."""
+    n = n or n_of(sr, tau * 6)
+    t = tvec(n, sr)
+    out = np.zeros(n)
+    for i, f in enumerate(freqs):
+        if f < sr * 0.45:
+            out += np.sin(TAU * f * (1 + 0.002 * rng.standard_normal()) * t + rng.uniform(0, TAU)) * np.exp(-t / (tau / (1 + 0.35 * i))) / (1 + 0.3 * i)
+    return out * amp
+
+
+def grain_cloud(n, sr, rng, density, grain_tau=0.004, lo=1000, hi=8000, env=None, amp_var=0.8):
+    """Poisson grain texture; density in grains/s may be an array (length n) or a scalar."""
+    out = np.zeros(n)
+    dens = np.broadcast_to(np.asarray(density, dtype=float), (n,))
+    glen = n_of(sr, grain_tau * 6)
+    i = 0
+    while i < n:
+        d = max(dens[min(i, n - 1)], 0.5)
+        i += int(rng.exponential(sr / d)) + 1
+        if i >= n:
+            break
+        g = noise(glen, rng) * exp_env(glen, sr, grain_tau * rng.uniform(0.6, 1.4))
+        g = fftfilt(g, sr, hp=lo, lp=min(hi, sr * 0.45), order=1)
+        seg = min(glen, n - i)
+        out[i:i + seg] += g[:seg] * (1 - amp_var * rng.random())
+    if env is not None:
+        out = out * env
+    return out
+
+
+def waveshape(x, drive=2.0):
+    return np.tanh(x * drive) / np.tanh(drive)
+
+
+def lp_sweep_noise(n, sr, rng, f0, f1, hp=None, steps=8, order=2):
+    """White noise through a low-pass whose corner moves f0 -> f1 (like dark_noise but more steps)."""
+    return dark_noise(n, sr, rng, f0, f1, steps=steps, hp=hp)
+
+
+def rand_walk_mod(n, sr, rng, rate, depth):
+    """Random (not periodic) amplitude modulation: no tremolo/beating artefacts."""
+    return rand_mod(n, sr, rng, rate, depth)
+
+
+def crest_db(x):
+    pk = float(np.max(np.abs(x)))
+    rms = float(np.sqrt(np.mean(x ** 2)))
+    return 20 * np.log10(max(pk, 1e-12) / max(rms, 1e-12))
+
+
+def limit_crest(x, target_db, tol=0.4, ratio=8.0):
+    """Compress only the tallest peaks (threshold + 1:ratio above it) until peak/RMS is ~``target_db``.
+
+    Keeps the finishing limiter from having to flatten a tall transient against a quiet body, which would
+    flatten the contour.  Unlike tanh saturation it leaves no wide flat tops.  Returns x unchanged when the
+    crest is already low enough."""
+    pk = float(np.max(np.abs(x))) + 1e-12
+    if crest_db(x) <= target_db + tol:
+        return x
+    a = np.abs(x)
+    lo, hi = 0.02, 1.0  # threshold as a fraction of the peak
+    best = x
+    for _ in range(18):
+        t = 0.5 * (lo + hi)
+        thr = t * pk
+        y = np.where(a > thr, np.sign(x) * (thr + (a - thr) / ratio), x)
+        c = crest_db(y)
+        best = y
+        if abs(c - target_db) < tol:
+            break
+        if c > target_db:
+            hi = t
+        else:
+            lo = t
+    return best
+
+
+def knee_clip(x, ceiling, knee=0.72):
+    """Transparent peak limiter: linear up to knee*ceiling, then tanh-compressed toward ceiling.
+
+    (``soft_clip`` bends the signal from about a third of the ceiling, which squashed transients against
+    their body whenever a sound needed a high gain to reach its loudness target.)"""
+    t = ceiling * knee
+    a = np.abs(x)
+    over = a > t
+    y = x.copy()
+    y[over] = np.sign(x[over]) * (t + (ceiling - t) * np.tanh((a[over] - t) / (ceiling - t)))
+    return y
+
+
+def tp_limit(x, ceil_lin, sr, os=4, look=0.003):
+    """Look-ahead true-peak limiter (oversampled peak detection, smoothed minimum gain).
+
+    Gain only dips around the offending peaks (a few ms), so the contour and texture stay intact."""
+    n = len(x)
+    X = np.fft.rfft(x)
+    Y = np.zeros(n * os // 2 + 1, dtype=complex)
+    m = min(len(X), len(Y))
+    Y[:m] = X[:m]
+    y = np.fft.irfft(Y, n * os) * os
+    a = np.abs(y[:n * os]).reshape(n, os).max(axis=1)
+    need = np.minimum(1.0, ceil_lin / (a + 1e-12))
+    if need.min() >= 1.0:
+        return x
+    w = max(3, int(look * sr))
+    pad = np.pad(need, (w, w), mode="edge")
+    sw = np.lib.stride_tricks.sliding_window_view(pad, 2 * w + 1).min(axis=1)
+    ker = np.hanning(2 * w + 1)
+    g = np.convolve(np.pad(sw, (w, w), mode="edge"), ker / ker.sum(), mode="valid")
+    return x * np.minimum(g, 1.0)
+
+
+def shaped_noise_like(x, sr, rng, n=None):
+    """Noise whose long-term spectrum follows x's (smoothed over ~1/3 octave), unit RMS."""
+    n = n or len(x)
+    nfft = 1 << int(np.ceil(np.log2(max(len(x), n) + 1024)))
+    X = np.abs(np.fft.rfft(x, nfft))
+    f = np.fft.rfftfreq(nfft, 1.0 / sr)
+    lf = np.log(np.maximum(f, 20.0))
+    # smooth the magnitude in log-frequency with a Gaussian of ~1/3 octave
+    edges = np.linspace(np.log(20.0), np.log(sr / 2), 160)
+    idx = np.clip(np.digitize(lf, edges) - 1, 0, len(edges) - 2)
+    band = np.zeros(len(edges) - 1)
+    cnt = np.bincount(idx, minlength=len(edges) - 1)
+    band = np.bincount(idx, weights=X ** 2, minlength=len(edges) - 1) / np.maximum(cnt, 1)
+    k = np.exp(-0.5 * (np.arange(-12, 13) / 4.0) ** 2)
+    band = np.convolve(np.pad(band, (12, 12), mode="edge"), k / k.sum(), mode="valid")
+    H = np.sqrt(band[idx] + 1e-20)
+    W = np.fft.rfft(rng.standard_normal(nfft))
+    y = np.fft.irfft(W * H, nfft)[:n]
+    return y / (np.sqrt(np.mean(y ** 2)) + 1e-12)
+
+
+def fill_dead(x, sr, pts, rng, margin_db=22.0, bed_db=-8.0, floor_rel=-68.0):
+    """Where the original is still audible (target above ``floor_rel`` dB under its peak) but x has died away
+    (more than ``margin_db`` below the target), add a quiet noise bed with x's own long-term spectrum at the
+    target level (minus ``bed_db`` headroom).  Recipes that end their layers early therefore still get a natural
+    tail instead of digital silence."""
+    ts, rel = pts
+    ed, hop = env_frames(x, sr)
+    top = float(ed.max())
+    tt = (np.arange(len(ed)) + 0.5) * hop / sr
+    want = np.interp(tt, ts, rel)
+    need = (want > floor_rel) & (ed - top < want - margin_db)
+    if not need.any():
+        return x
+    # smooth the on/off mask and the level so the bed fades in and out
+    lvl = np.where(need, top + want + bed_db, -200.0)
+    amp = 10 ** (lvl / 20.0)
+    amp = np.interp(np.arange(len(x)) / sr, tt, amp)
+    k = max(3, int(sr * 0.03))
+    amp = np.convolve(np.pad(amp, (k, k), mode="edge"), np.hanning(2 * k + 1) / np.hanning(2 * k + 1).sum(), mode="valid")
+    bed = shaped_noise_like(x, sr, rng) * amp
+    return x + bed

@@ -13,7 +13,8 @@ import com.gregguns.item.ammo.MagazineType;
  * Registers the gun items and holds them for other code (recipes, the renderer, the HUD).
  *
  * <p>
- * Registered for M1: the 9mm Pistol, {@code gregguns:pistol_9mm}. Its recipe is the Assembler row in
+ * Registered so far: the 9mm Pistol, {@code gregguns:pistol_9mm}, and the Revolver, {@code gregguns:revolver}. Its
+ * recipe is the Assembler row in
  * {@code GunTable}, registered by {@code GunRecipes}. Registry names are what the pack config lists for Backhand (see
  * {@code docs/gregguns-spec/PACK-CHANGES.md}).
  *
@@ -26,6 +27,7 @@ import com.gregguns.item.ammo.MagazineType;
 public final class GunItems {
 
     private static ItemGun pistol;
+    private static ItemGun revolver;
 
     private GunItems() {}
 
@@ -38,11 +40,19 @@ public final class GunItems {
         pistol = registrar.registerItem(
             GunSoundEvents.PISTOL_9MM,
             new ItemGun(GunSoundEvents.PISTOL_9MM, GunCatalog.PISTOL, Tier.LV, DamageType.PROJECTILE));
+        revolver = registrar.registerItem(
+            GunSoundEvents.REVOLVER,
+            new ItemGun(GunSoundEvents.REVOLVER, GunCatalog.REVOLVER, Tier.LV, DamageType.PROJECTILE));
     }
 
     /** @return the 9mm Pistol; {@code null} before registration or when the guns module is off */
     public static ItemGun pistol() {
         return pistol;
+    }
+
+    /** @return the Revolver; {@code null} before registration or when the guns module is off */
+    public static ItemGun revolver() {
+        return revolver;
     }
 
     /**
@@ -54,6 +64,12 @@ public final class GunItems {
      * @return rounds per loose item, at least 1
      */
     public static int roundsPerLooseItem(GunStats stats) {
+        if (stats.ammoType()
+            .equals(stats.looseAmmoType())) {
+            // The gun loads straight from its loose round item (the Revolver): one item fills the gun, so a refund
+            // is worth that many rounds per item, not one.
+            return Math.max(1, stats.roundsPerItem());
+        }
         for (MagazineType magazine : AmmoTypes.allMagazines()
             .values()) {
             if (magazine.loadedItemName()
