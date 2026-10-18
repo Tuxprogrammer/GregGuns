@@ -14,8 +14,10 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioRequest;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.core.testing.ScenarioRun;
 import com.gregguns.core.testing.ScenarioRunner;
 import com.gregguns.core.testing.ScenarioSummary;
+import com.gregguns.core.testing.ScenarioTicker;
 import com.gregguns.core.testing.WorldScenarioContext;
 
 /**
@@ -25,6 +27,7 @@ import com.gregguns.core.testing.WorldScenarioContext;
 public final class TestSubCommand implements GregGunsSubCommand {
 
     private final ScenarioRegistry registry;
+    private final ScenarioTicker ticker = new ScenarioTicker();
 
     /**
      * @param registry the scenarios to run
@@ -74,11 +77,24 @@ public final class TestSubCommand implements GregGunsSubCommand {
     }
 
     private void run(ICommandSender sender, List<Scenario> scenarios) {
+        if (ticker.isBusy()) {
+            sender.addChatMessage(new ChatComponentTranslation("gregguns.test.busy"));
+            return;
+        }
         World overworld = MinecraftServer.getServer()
             .worldServerForDimension(0);
         EntityPlayer player = sender instanceof EntityPlayer ? (EntityPlayer) sender : null;
         ScenarioRunner runner = new ScenarioRunner(s -> WorldScenarioContext.create(s, overworld, player));
-        ScenarioSummary summary = runner.run(scenarios);
+        ScenarioRun run = runner.begin(scenarios);
+        if (run.isDone()) {
+            report(sender, run.summary());
+        } else {
+            // Some scenario waits for server ticks: the report comes once every one of them has finished.
+            ticker.track(run, summary -> report(sender, summary));
+        }
+    }
+
+    private void report(ICommandSender sender, ScenarioSummary summary) {
         for (String line : summary.reportLines()) {
             GregGuns.LOG.info(line);
         }

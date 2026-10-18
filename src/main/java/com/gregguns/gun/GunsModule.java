@@ -9,6 +9,7 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.item.ammo.AmmoItems;
 import com.gregguns.item.part.PartItems;
 import com.gregguns.machine.AmmoPressMachines;
+import com.gregguns.projectile.ProjectileModule;
 import com.gregguns.recipe.GregGunsRecipeMaps;
 import com.gregguns.recipe.ProductionRecipes;
 import com.gregguns.recipe.ProductionScenarios;
@@ -39,6 +40,7 @@ public final class GunsModule implements GregGunsModule {
         PartItems.register(registrar);
         // Built here so GT records GregGuns as the map's owner mod (NEI badge), see GregGunsRecipeMaps.
         GregGunsRecipeMaps.init();
+        ProjectileModule.preInit(registrar);
     }
 
     @Override
@@ -51,5 +53,6 @@ public final class GunsModule implements GregGunsModule {
         if (DevEnvironment.isActive()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
+        ProjectileModule.init();
     }
 }

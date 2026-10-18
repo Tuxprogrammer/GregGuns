@@ -1,5 +1,6 @@
 package com.gregguns.client;
 
+import com.gregguns.client.projectile.ProjectileRenderers;
 import com.gregguns.client.sound.ClientGunSounds;
 import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
@@ -26,5 +27,6 @@ public final class GunsClientModule implements ClientModule {
     @Override
     public void init() {
         // Renderers, HUD overlays and keybinds: one call per area.
+        ProjectileRenderers.register();
     }
 }

@@ -5,6 +5,7 @@
 gregguns.command.usage=Usage: /gregguns <%s>
 gregguns.test.usage=Usage: /gregguns test <scenario|all|list>
 gregguns.test.unknown=Unknown scenario: %s (try /gregguns test list)
+gregguns.test.busy=A scenario run is still waiting for server ticks; try again when its summary prints.
 gregguns.test.list.header=Scenarios (%s):
 gregguns.test.list.entry=  %s - %s
 gregguns.test.result.pass=PASS %s
