@@ -203,6 +203,25 @@ class GunTableTest {
     }
 
     @Test
+    void boltActionPartsAreMadeByTheChainOrAtTheCraftingTable() {
+        Map<String, ProductionTable.Row> all = ProductionTable.byOutput();
+        for (ProductionTable.Input input : GunTable.BOLT_ACTION.inputs()) {
+            if (input.isGregGuns()) {
+                assertTrue(
+                    all.containsKey(input.itemName()) || ProductionTable.CRAFTED_PARTS.contains(input.itemName()),
+                    input.itemName());
+            }
+        }
+    }
+
+    @Test
+    void boltActionRecyclingSumsTheDirectInputs() {
+        assertEquals(2 * 100 + 4 * 10 + 5, GunComposition.boltActionDirectSteel(100, 10, 5));
+        assertEquals(3 * 100, GunComposition.ironReceiverIron(100));
+        assertEquals(2 * 10, GunComposition.ironReceiverSteel(10));
+    }
+
+    @Test
     void everyGunRowUsesADistinctCircuitSoRecipesNeverCollide() {
         java.util.Set<Integer> seen = new java.util.HashSet<>();
         for (ProductionTable.Row row : GunTable.ROWS) {
@@ -259,5 +278,59 @@ class GunTableTest {
         assertEquals(prefix, input.prefix());
         assertEquals(material, input.material());
         assertEquals(count, input.count());
+    }
+
+    @Test
+    void boltActionRowMatchesTheSheet() {
+        // docs/gregguns-spec/02-guns/recipes.md, LV table, Bolt Action Rifle: 20 s, cfg 4, Assembler, LV.
+        ProductionTable.Row r = GunTable.BOLT_ACTION;
+        assertEquals("bolt_action_rifle", r.output());
+        assertEquals(Tier.LV, r.tier());
+        assertEquals(ProductionTable.Target.ASSEMBLER, r.target());
+        assertEquals(20, r.seconds());
+        assertEquals(4, r.circuit());
+        assertEquals(
+            7,
+            r.inputs()
+                .size());
+        assertEquals(
+            "part_barrel_hardened",
+            r.inputs()
+                .get(0)
+                .itemName());
+        assertEquals(
+            "part_receiver_iron",
+            r.inputs()
+                .get(1)
+                .itemName());
+        assertEquals(
+            "part_stock_wooden",
+            r.inputs()
+                .get(2)
+                .itemName());
+        assertGt(
+            r.inputs()
+                .get(3),
+            "lens",
+            "Glass",
+            1);
+        assertGt(
+            r.inputs()
+                .get(4),
+            "plate",
+            "Steel",
+            2);
+        assertGt(
+            r.inputs()
+                .get(5),
+            "screw",
+            "Steel",
+            4);
+        assertGt(
+            r.inputs()
+                .get(6),
+            "springSmall",
+            "Steel",
+            1);
     }
 }

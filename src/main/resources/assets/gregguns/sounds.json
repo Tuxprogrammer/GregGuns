@@ -31,6 +31,18 @@
     "category": "player",
     "sounds": ["guns/handgun_reload"]
   },
+  "guns.bolt_action_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/boltaction_shot_a", "guns/boltaction_shot_b", "guns/boltaction_shot_c"]
+  },
+  "guns.bolt_action_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/boltaction_reload"]
+  },
+  "guns.bolt_action_rifle.rechamber": {
+    "category": "player",
+    "sounds": ["guns/boltaction_rechamber"]
+  },
   "effects.bullet_impact": {
     "category": "player",
     "sounds": [

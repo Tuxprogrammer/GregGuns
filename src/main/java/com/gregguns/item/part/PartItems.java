@@ -33,6 +33,10 @@ public final class PartItems {
     public static final String STOCK_WOODEN = "part_stock_wooden";
 
     private static ItemPart barrelStone;
+    /** Registry name of the Iron Receiver. */
+    public static final String RECEIVER_IRON = "part_receiver_iron";
+
+    private static ItemPart receiverIron;
     private static ItemPart barrelIron;
     private static ItemPart mechanical1;
     private static ItemPart stockWooden;
@@ -53,6 +57,7 @@ public final class PartItems {
         stockWooden = registrar.registerItem(STOCK_WOODEN, new ItemPart(Tier.STEAM));
         barrelHardened = registrar.registerItem(BARREL_HARDENED, new ItemPart(Tier.LV));
         mechanical2 = registrar.registerItem(MECHANICAL_2, new ItemPart(Tier.LV));
+        receiverIron = registrar.registerItem(RECEIVER_IRON, new ItemPart(Tier.LV));
     }
 
     /** @return the Stone Barrel; {@code null} before registration or when the guns module is off */
@@ -78,6 +83,11 @@ public final class PartItems {
     /** @return the Hardened Steel Barrel; {@code null} before registration or when the guns module is off */
     public static ItemPart barrelHardened() {
         return barrelHardened;
+    }
+
+    /** @return the Iron Receiver (RC-13); {@code null} before registration or when the guns module is off */
+    public static ItemPart receiverIron() {
+        return receiverIron;
     }
 
     /** @return Mechanical Parts T2; {@code null} before registration or when the guns module is off */

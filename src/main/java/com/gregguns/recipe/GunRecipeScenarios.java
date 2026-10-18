@@ -58,6 +58,11 @@ public final class GunRecipeScenarios {
         registry.register(new ShellPressRecipe());
         registry.register(new RevolverPartRecipes());
         registry.register(new HandCannonRecipeScenario());
+        registry.register(
+            new GunAssemblerRecipe(
+                "gun.boltaction.recipe",
+                "The Bolt Action Rifle is in GT's assembler map (so NEI lists it) at LV, 20 s, matching its sheet inputs (including the glass lens and the Iron Receiver), and not below LV.",
+                GunTable.BOLT_ACTION));
     }
 
     private static ItemStack modStack(String name, int count) {

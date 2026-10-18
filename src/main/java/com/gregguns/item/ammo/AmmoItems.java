@@ -20,6 +20,7 @@ public final class AmmoItems {
 
     private static ItemAmmoRound nineMmBullet;
     private static ItemAmmoRound stoneBullet;
+    private static ItemAmmoRound rifleBullet;
     private static ItemMagazineEmpty nineMmPistolMagazineEmpty;
     private static ItemMagazine nineMmPistolMagazine;
     private static ItemAmmoRound shotgunShell;
@@ -34,6 +35,7 @@ public final class AmmoItems {
     public static void register(ModuleRegistrar registrar) {
         AmmoType nine = AmmoTypes.NINE_MM;
         MagazineType pistol = AmmoTypes.NINE_MM_PISTOL;
+        rifleBullet = registrar.registerItem(AmmoTypes.RIFLE.roundItemName(), new ItemAmmoRound(AmmoTypes.RIFLE));
         nineMmBullet = registrar.registerItem(nine.roundItemName(), new ItemAmmoRound(nine));
         AmmoType stone = AmmoTypes.STONE;
         stoneBullet = registrar.registerItem(stone.roundItemName(), new ItemAmmoRound(stone));
@@ -57,6 +59,11 @@ public final class AmmoItems {
     /** @return the Hand Cannon's stone bullet; {@code null} before registration or when the guns module is off */
     public static ItemAmmoRound stoneBullet() {
         return stoneBullet;
+    }
+
+    /** @return the rifle bullet; {@code null} before registration or when the guns module is off */
+    public static ItemAmmoRound rifleBullet() {
+        return rifleBullet;
     }
 
     /** @return the loaded 9mm pistol magazine; {@code null} before registration */

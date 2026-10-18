@@ -31,6 +31,7 @@ public final class GunItems {
     private static ItemGun revolver;
     private static ItemGun sawedOff;
     private static ItemGun handcannon;
+    private static ItemGun boltAction;
 
     private GunItems() {}
 
@@ -52,6 +53,14 @@ public final class GunItems {
         handcannon = registrar.registerItem(
             GunSoundEvents.HANDCANNON,
             new ItemGun(GunSoundEvents.HANDCANNON, GunCatalog.HANDCANNON, Tier.STEAM, DamageType.PROJECTILE));
+        boltAction = registrar.registerItem(
+            GunSoundEvents.BOLT_ACTION_RIFLE,
+            new ItemGun(
+                GunSoundEvents.BOLT_ACTION_RIFLE,
+                GunCatalog.BOLT_ACTION,
+                Tier.LV,
+                DamageType.PROJECTILE,
+                true));
     }
 
     /** @return the 9mm Pistol; {@code null} before registration or when the guns module is off */
@@ -72,6 +81,11 @@ public final class GunItems {
     /** @return the Hand Cannon; {@code null} before registration or when the guns module is off */
     public static ItemGun handcannon() {
         return handcannon;
+    }
+
+    /** @return the Bolt Action Rifle; {@code null} before registration or when the guns module is off */
+    public static ItemGun boltAction() {
+        return boltAction;
     }
 
     /**

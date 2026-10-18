@@ -48,6 +48,10 @@ public final class ClientGunEvents implements GunClientEvents {
         if (isLocal(entity) && gun != null) {
             GunsClientModule.sounds()
                 .playFire((EntityPlayer) entity, gun.fireEvent());
+            if (gun.rechamberEvent() != null) {
+                GunsClientModule.sounds()
+                    .playHandling((EntityPlayer) entity, gun.rechamberEvent());
+            }
         }
     }
 

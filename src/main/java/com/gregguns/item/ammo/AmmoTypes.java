@@ -31,6 +31,12 @@ public final class AmmoTypes {
      */
     public static final AmmoType STONE = new AmmoType("stone", "ammo_stone_bullet", Tier.STEAM);
 
+    /**
+     * Rifle bullet. LV (0001, RC-30). The Bolt Action Rifle takes it straight; later rifle magazines are filled with
+     * it.
+     */
+    public static final AmmoType RIFLE = new AmmoType("rifle", "ammo_rifle_bullet", Tier.LV);
+
     /** 9mm Pistol Magazine: 3 rounds per refill (ammo.md magazine table). */
     public static final MagazineType NINE_MM_PISTOL = new MagazineType(
         "9mm_pistol",
@@ -47,6 +53,7 @@ public final class AmmoTypes {
         AMMO.put(NINE_MM.id(), NINE_MM);
         AMMO.put(SHOTGUN_SHELL.id(), SHOTGUN_SHELL);
         AMMO.put(STONE.id(), STONE);
+        AMMO.put(RIFLE.id(), RIFLE);
         MAGAZINES.put(NINE_MM_PISTOL.id(), NINE_MM_PISTOL);
     }
 
