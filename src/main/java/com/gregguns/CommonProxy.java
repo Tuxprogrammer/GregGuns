@@ -1,5 +1,6 @@
 package com.gregguns;
 
+import com.gregguns.armor.ArmorModule;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.GregGunsTab;
 import com.gregguns.core.command.GregGunsCommand;
@@ -65,6 +66,7 @@ public class CommonProxy {
      */
     protected void registerModules(ModuleManager manager) {
         manager.register(new GunsModule());
+        manager.register(new ArmorModule());
     }
 
     /**
