@@ -60,6 +60,20 @@ public final class BaublesCompat {
     }
 
     /**
+     * Asks Baubles Expanded for at least one slot of each type GregGuns uses. In the pack this changes nothing:
+     * {@code manualSlotSelection} replaces the assignment with the pack list, which already has {@code head},
+     * {@code wings} and {@code quiver}. In an unconfigured setup (dev runs) it is what gives those types a slot at all.
+     * Call from preInit only (Baubles Expanded ignores it later).
+     */
+    // Source: Baubles Expanded 2.2.25-GTNH, tryRegisterType and tryAssignSlotsUpToMinimum (pre-initialization only):
+    // https://github.com/GTNewHorizons/Baubles-Expanded/blob/2.2.25-GTNH/src/main/java/baubles/api/expanded/BaubleExpandedSlots.java#L45-L57
+    public static void requestSlots() {
+        if (isLoaded()) {
+            Impl.requestSlots();
+        }
+    }
+
+    /**
      * @param player a player
      * @param slot   a slot type
      * @return the stacks currently in the player's slots of that type; empty when none, or the mod is absent
@@ -165,6 +179,14 @@ public final class BaublesCompat {
 
     /** The code that links against Baubles. Never referenced unless the mod is loaded. */
     private static final class Impl {
+
+        static void requestSlots() {
+            for (BaubleSlot slot : BaubleSlot.values()) {
+                if (BaubleExpandedSlots.tryRegisterType(slot.typeName())) {
+                    BaubleExpandedSlots.tryAssignSlotsUpToMinimum(slot.typeName(), 1);
+                }
+            }
+        }
 
         static int[] indexes(BaubleSlot slot) {
             int[] idx = BaubleExpandedSlots.getIndexesOfAssignedSlotsOfType(slot.typeName());

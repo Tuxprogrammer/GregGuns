@@ -6,8 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.gregguns.armor.oxygen.FallbackOxygenMask;
 import com.gregguns.armor.oxygen.FallbackOxygenTanks;
-import com.gregguns.armor.oxygen.gc.OxygenMaskGC;
-import com.gregguns.armor.oxygen.gc.OxygenTanksGC;
+import com.gregguns.armor.oxygen.gc.GcOxygen;
 import com.gregguns.core.registry.ModuleRegistrar;
 
 import cpw.mods.fml.common.Loader;
@@ -48,14 +47,16 @@ public final class EquipmentItems {
      */
     public static void register(ModuleRegistrar registrar) {
         BaublesCompat.warnIfAbsent();
+        BaublesCompat.requestSlots();
         goggles = registrar.registerItem(ItemNightVisionGoggles.NAME, new ItemNightVisionGoggles());
         pouch = registrar.registerItem(ItemAmmoPouch.NAME, new ItemAmmoPouch());
         gasMask = registrar.registerItem(ItemGasMask.NAME, new ItemGasMask());
         tacticalMask = registrar.registerItem(ItemTacticalMask.NAME, new ItemTacticalMask());
         if (Loader.isModLoaded(GC_MODID)) {
             // The GC subclasses are only linked on this branch (GGS-05-23).
-            oxygenMask = registrar.registerItem(OXYGEN_MASK, new OxygenMaskGC());
-            oxygenTanks = registrar.registerItem(OXYGEN_TANKS, new OxygenTanksGC());
+            Item[] gc = GcOxygen.register(registrar, OXYGEN_MASK, OXYGEN_TANKS);
+            oxygenMask = gc[0];
+            oxygenTanks = gc[1];
         } else {
             oxygenMask = registrar.registerItem(OXYGEN_MASK, new FallbackOxygenMask());
             oxygenTanks = registrar.registerItem(OXYGEN_TANKS, new FallbackOxygenTanks());

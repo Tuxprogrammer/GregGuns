@@ -95,7 +95,7 @@ public final class EquipmentTable {
                 Target.ASSEMBLER,
                 10,
                 1,
-                Input.gt("plate", "Polyethylene", 2),
+                Input.gt("plate", "Plastic", 2),
                 Input.gt("plate", "Rubber", 2),
                 Input.gt("plate", "StainlessSteel", 1)),
             // RC-54
@@ -118,7 +118,7 @@ public final class EquipmentTable {
                 Target.ASSEMBLER,
                 16,
                 1,
-                Input.gt("plate", "Polyethylene", 4),
+                Input.gt("plate", "Plastic", 4),
                 Input.mod(ArmorParts.TANK_AIR, 2),
                 Input.gt("plate", "StainlessSteel", 2)),
             new Row(
@@ -129,7 +129,7 @@ public final class EquipmentTable {
                 Target.ASSEMBLER,
                 18,
                 1,
-                Input.gt("plate", "Polyethylene", 4),
+                Input.gt("plate", "Plastic", 4),
                 Input.gt("circuit", "Advanced", 2),
                 Input.mod(ItemNightVisionGoggles.NAME, 1),
                 Input.mod(ItemGasMask.NAME, 1),

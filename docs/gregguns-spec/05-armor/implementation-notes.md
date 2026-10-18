@@ -72,6 +72,8 @@ Branch `m3/slots-equipment`. Code: `com.gregguns.armor.slots` (items, Baubles ac
 | SLOT-DEV-10 | Oxygen Tanks refill from compressed air | Shapeless recipe: Oxygen Tanks (any damage) plus a Compressed Air Tank gives full tanks; Galacticraft's own compressor is an additional route | The Techguns automatic reload from the inventory is not kept |
 | SLOT-DEV-11 | One GUI handler per mod (FML) | `EquipmentGuiHandler` is registered for GregGuns; ids 1 and 2 are the pouch (held, worn) | A later module that needs a vanilla-style GUI adds ids there |
 | SLOT-DEV-12 | Space protection | `Hazard.SPACE` is never claimed; tooltips say a full spacesuit may be needed | oxygen-gear.md, GGS-05-28 |
+| SLOT-DEV-13 | Recipes use `plate.Polyethylene` | `plate.Plastic` | In GT 5.09.54.205 `Materials.Polyethylene` is only a field name; the material is registered under the name `Plastic` (`MaterialsInit.loadPolyethylene` calls `setName("Plastic")`), which `Materials.get` and the ore dictionary use. The dev boot caught it |
+| SLOT-DEV-14 | Request no slot assignments; the pack list has them | `BaublesCompat.requestSlots` (preInit) registers and assigns one slot each of `head`, `wings` and `quiver` | Without `manualSlotSelection` (dev runs, other packs) the types get no slot unless an item asks. In the pack `overrideSlots` replaces the assignment, so nothing changes. The scenarios need real slots |
 
 ## Not verified here
 
