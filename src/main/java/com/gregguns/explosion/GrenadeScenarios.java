@@ -1,13 +1,20 @@
 package com.gregguns.explosion;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.S09PacketHeldItemChange;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
@@ -17,10 +24,13 @@ import net.minecraftforge.event.world.ExplosionEvent;
 import com.gregguns.combat.DamageModel;
 import com.gregguns.combat.DamageType;
 import com.gregguns.core.config.ExplosionsConfig;
+import com.gregguns.core.testing.AutotestSignal;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.item.grenade.GrenadeItems;
+import com.gregguns.item.melee.MeleeItems;
 import com.gregguns.projectile.GrenadeMath;
 import com.gregguns.projectile.GrenadeProjectile;
 import com.mojang.authlib.GameProfile;
@@ -49,6 +59,7 @@ public final class GrenadeScenarios {
         registry.register(new Fuse());
         registry.register(new Bounce());
         registry.register(new Protected());
+        registry.register(new Visual());
     }
 
     /** A stone floor with clear air above, 19 by 19, all recorded for cleanup. */
@@ -366,6 +377,115 @@ public final class GrenadeScenarios {
             ctx.despawn(victim);
             ctx.despawn(zombieOwner);
             return t;
+        }
+    }
+
+    private static void signal(EntityPlayerMP player, String command, String... args) {
+        player.addChatMessage(new ChatComponentText(AutotestSignal.format(command, args)));
+    }
+
+    private static void select(EntityPlayerMP player, int slot) {
+        player.inventory.currentItem = slot;
+        player.playerNetServerHandler.sendPacket(new S09PacketHeldItemChange(slot));
+    }
+
+    /** Screenshots of the three held items and of a real throw, its flight and its crater. Needs one client. */
+    private static final class Visual implements Scenario {
+
+        private static final int FUSE = 40;
+
+        @Override
+        public boolean includedInAll() {
+            return false; // needs a connected client: run by name from the visual check
+        }
+
+        @Override
+        public String name() {
+            return "mp.grenade";
+        }
+
+        @Override
+        public String description() {
+            return "Gives the first connected player the knife, crowbar and Stielgranate, signals screenshots of each held item, throws a grenade through the item's release path with block damage on, and signals screenshots of its flight and crater. Needs 1 client.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            List<EntityPlayerMP> players = new ArrayList<>(
+                MinecraftServer.getServer()
+                    .getConfigurationManager().playerEntityList);
+            if (players.isEmpty()) {
+                return ScenarioResult.fail(name(), "needs a connected player");
+            }
+            EntityPlayerMP a = players.get(0);
+            boolean savedBlocks = ExplosionsConfig.blockDamage;
+            ExplosionsConfig.blockDamage = true;
+            a.inventory.clearInventory(null, -1);
+            a.setHealth(a.getMaxHealth());
+            a.inventory.mainInventory[0] = new ItemStack(MeleeItems.combatKnife());
+            a.inventory.mainInventory[1] = new ItemStack(MeleeItems.crowbar());
+            a.inventory.mainInventory[2] = new ItemStack(GrenadeItems.stielgranate(), 16);
+            a.playerNetServerHandler
+                .setPlayerLocation(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, -90.0F, -8.0F);
+            a.inventoryContainer.detectAndSendChanges();
+            return ScenarioResult.pending(name(), 400, t -> {
+                switch (t) {
+                    case 4:
+                        select(a, 0);
+                        break;
+                    case 15:
+                        signal(a, "shot", "g-knife");
+                        break;
+                    case 18:
+                        select(a, 1);
+                        break;
+                    case 29:
+                        signal(a, "shot", "g-crowbar");
+                        break;
+                    case 32:
+                        select(a, 2);
+                        break;
+                    case 43:
+                        signal(a, "shot", "g-stielgranate");
+                        break;
+                    case 45:
+                        ItemStack held = a.getHeldItem();
+                        held.getItem()
+                            .onPlayerStoppedUsing(
+                                held,
+                                ctx.world(),
+                                a,
+                                com.gregguns.item.grenade.ItemStielgranate.USE_DURATION - 20);
+                        for (Object o : ctx.world().loadedEntityList) {
+                            if (o instanceof GrenadeProjectile) {
+                                ((GrenadeProjectile) o).setFuse(FUSE);
+                            }
+                        }
+                        break;
+                    case 52:
+                        signal(a, "shot", "g-flight");
+                        break;
+                    case 45 + FUSE:
+                        signal(a, "shot", "g-explosion");
+                        break;
+                    case 45 + FUSE + 25:
+                        signal(a, "shot", "g-crater");
+                        break;
+                    default:
+                        break;
+                }
+                if (t < 45 + FUSE + 35) {
+                    return null;
+                }
+                ExplosionsConfig.blockDamage = savedBlocks;
+                ScenarioResult.Builder out = ScenarioResult.builder(name());
+                ItemStack rest = a.inventory.mainInventory[2];
+                out.check(
+                    rest != null && rest.stackSize == 15,
+                    "one grenade should have been used, left " + (rest == null ? 0 : rest.stackSize));
+                out.check(a.getHealth() > 0.0F, "the thrower should have survived at 16 blocks");
+                return out.build();
+            });
         }
     }
 }
