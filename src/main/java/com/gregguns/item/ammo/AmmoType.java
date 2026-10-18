@@ -5,7 +5,7 @@ import java.util.Objects;
 import com.gregguns.api.Tier;
 
 /**
- * One loose-round calibre, for example 9mm. Plain data with no Minecraft types, so it is unit-testable and shared by
+ * One loose-round caliber, for example 9mm. Plain data with no Minecraft types, so it is unit-testable and shared by
  * both sides. The {@link #id()} is the key guns use to say which ammo they take.
  *
  * <p>

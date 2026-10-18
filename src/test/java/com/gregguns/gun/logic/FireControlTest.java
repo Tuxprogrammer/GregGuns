@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 class FireControlTest {
 
-    private static final GunStats SEMI = GunCatalogue.PISTOL;
+    private static final GunStats SEMI = GunCatalog.PISTOL;
     private static final GunStats AUTO = GunStats.builder("auto")
         .ammoType("a")
         .magazine(30)

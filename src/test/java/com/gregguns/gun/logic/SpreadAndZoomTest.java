@@ -34,10 +34,10 @@ class SpreadAndZoomTest {
 
     @Test
     void pistolSpreadIsPlusMinusOneDegree() {
-        assertEquals(1.0, SpreadModel.maxDegrees(GunCatalogue.PISTOL.spread()), 1e-9);
+        assertEquals(1.0, SpreadModel.maxDegrees(GunCatalog.PISTOL.spread()), 1e-9);
         Random rnd = new Random(42);
         for (int i = 0; i < 2000; i++) {
-            ShotOffset o = SpreadModel.roll(rnd, GunCatalogue.PISTOL, ShotContext.DEFAULT, 0)[0];
+            ShotOffset o = SpreadModel.roll(rnd, GunCatalog.PISTOL, ShotContext.DEFAULT, 0)[0];
             assertTrue(Math.abs(o.yawDegrees()) <= 1.0);
             assertTrue(Math.abs(o.pitchDegrees()) <= 1.0);
         }
@@ -54,7 +54,7 @@ class SpreadAndZoomTest {
     }
 
     @Test
-    void offsetsFillTheRangeAndAreCentred() {
+    void offsetsFillTheRangeAndAreCentered() {
         Random rnd = new Random(1);
         double max = 0;
         double sum = 0;
@@ -82,7 +82,7 @@ class SpreadAndZoomTest {
     }
 
     @Test
-    void armourBonusReducesSpreadAndStacksWithZoom() {
+    void armorBonusReducesSpreadAndStacksWithZoom() {
         assertEquals(0.09, SpreadModel.mainSpread(SCOPED, ShotContext.player(false, 0.1)), 1e-12);
         assertEquals(0.045, SpreadModel.mainSpread(SCOPED, ShotContext.player(true, 0.1)), 1e-12);
         assertEquals(0.0, SpreadModel.mainSpread(SCOPED, ShotContext.player(false, 5.0)), 1e-12);
@@ -148,9 +148,9 @@ class SpreadAndZoomTest {
     @Test
     void doesNotReproduceGUN47_anUnscopedGunIsNeverZooming() {
         ZoomState z = new ZoomState();
-        assertFalse(z.toggle(GunCatalogue.PISTOL));
-        assertFalse(z.isZoomed(GunCatalogue.PISTOL));
-        assertEquals(1.0, z.fovMultiplier(GunCatalogue.PISTOL));
+        assertFalse(z.toggle(GunCatalog.PISTOL));
+        assertFalse(z.isZoomed(GunCatalog.PISTOL));
+        assertEquals(1.0, z.fovMultiplier(GunCatalog.PISTOL));
     }
 
     @Test
@@ -166,7 +166,7 @@ class SpreadAndZoomTest {
 
     @Test
     void rollsAreStableAcrossRuns() {
-        ShotOffset o = SpreadModel.roll(new Random(12345), GunCatalogue.PISTOL, ShotContext.DEFAULT, 0)[0];
+        ShotOffset o = SpreadModel.roll(new Random(12345), GunCatalog.PISTOL, ShotContext.DEFAULT, 0)[0];
         Random r = new Random(12345);
         double yaw = (r.nextDouble() * 2 - 1) * 1.0;
         double pitch = (r.nextDouble() * 2 - 1) * 1.0;

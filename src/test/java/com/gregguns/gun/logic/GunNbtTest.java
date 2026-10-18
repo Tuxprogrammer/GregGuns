@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class GunNbtTest {
 
-    private static final GunStats PISTOL = GunCatalogue.PISTOL;
+    private static final GunStats PISTOL = GunCatalog.PISTOL;
 
     @Test
     void roundTripKeepsAmmoAndCamo() {

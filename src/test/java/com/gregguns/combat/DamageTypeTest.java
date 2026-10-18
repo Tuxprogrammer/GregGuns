@@ -38,9 +38,9 @@ class DamageTypeTest {
     }
 
     @Test
-    void onlyUnresistableBypassesArmour() {
+    void onlyUnresistableBypassesArmor() {
         for (DamageType t : DamageType.values()) {
-            assertEquals(t == DamageType.UNRESISTABLE, t.bypassesArmour(), t.toString());
+            assertEquals(t == DamageType.UNRESISTABLE, t.bypassesArmor(), t.toString());
         }
     }
 

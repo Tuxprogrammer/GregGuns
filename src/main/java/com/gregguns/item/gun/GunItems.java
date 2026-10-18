@@ -3,7 +3,7 @@ package com.gregguns.item.gun;
 import com.gregguns.api.Tier;
 import com.gregguns.combat.DamageType;
 import com.gregguns.core.registry.ModuleRegistrar;
-import com.gregguns.gun.logic.GunCatalogue;
+import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.sound.GunSoundEvents;
 import com.gregguns.item.ammo.AmmoTypes;
@@ -37,7 +37,7 @@ public final class GunItems {
     public static void register(ModuleRegistrar registrar) {
         pistol = registrar.registerItem(
             GunSoundEvents.PISTOL_9MM,
-            new ItemGun(GunSoundEvents.PISTOL_9MM, GunCatalogue.PISTOL, Tier.LV, DamageType.PROJECTILE));
+            new ItemGun(GunSoundEvents.PISTOL_9MM, GunCatalog.PISTOL, Tier.LV, DamageType.PROJECTILE));
     }
 
     /** @return the 9mm Pistol; {@code null} before registration or when the guns module is off */

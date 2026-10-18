@@ -25,7 +25,7 @@ public enum DamageType {
     ENERGY(true, null),
     /** Gas and bio weapons. Vanilla magic flag. */
     POISON(true, HazardKind.BIOLOGICAL),
-    /** Starve, fall, suffocate. Bypasses armour; the only unblockable type. */
+    /** Starve, fall, suffocate. Bypasses armor; the only unblockable type. */
     UNRESISTABLE(false, null),
     /** Cold. Vanilla magic flag. */
     ICE(false, HazardKind.FROST),
@@ -66,12 +66,12 @@ public enum DamageType {
     }
 
     /**
-     * Whether hits of this type skip armour entirely (and set vanilla's unblockable flag). Only {@link #UNRESISTABLE}
+     * Whether hits of this type skip armor entirely (and set vanilla's unblockable flag). Only {@link #UNRESISTABLE}
      * does (GGS-02-21).
      *
      * @return true for the unresistable type
      */
-    public boolean bypassesArmour() {
+    public boolean bypassesArmor() {
         return this == UNRESISTABLE;
     }
 

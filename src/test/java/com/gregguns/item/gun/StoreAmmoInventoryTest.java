@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.gregguns.gun.logic.GunCatalogue;
-import com.gregguns.gun.logic.GunCatalogue.AmmoIds;
+import com.gregguns.gun.logic.GunCatalog;
+import com.gregguns.gun.logic.GunCatalog.AmmoIds;
 import com.gregguns.gun.logic.GunState;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ReloadStateMachine;
@@ -53,7 +53,7 @@ class StoreAmmoInventoryTest {
         }
     }
 
-    private static final GunStats PISTOL = GunCatalogue.PISTOL;
+    private static final GunStats PISTOL = GunCatalog.PISTOL;
 
     @Test
     void countsAndWithdrawsFromTheStore() {

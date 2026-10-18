@@ -55,7 +55,7 @@ public final class SenderRules extends Rules<SenderRules> {
     }
 
     /**
-     * Requires a block within {@code reachBlocks} of the sender, measured to the block centre.
+     * Requires a block within {@code reachBlocks} of the sender, measured to the block center.
      *
      * @param x           block x
      * @param y           block y
@@ -97,8 +97,8 @@ public final class SenderRules extends Rules<SenderRules> {
      * @param what      what is being permitted, for the log
      * @param permitted returns {@code true} when the sender may act
      */
-    public SenderRules authorised(String what, Predicate<Sender> permitted) {
-        custom(() -> permitted.test(sender) ? null : new Violation(Rejection.UNAUTHORISED, "not permitted: " + what));
+    public SenderRules authorized(String what, Predicate<Sender> permitted) {
+        custom(() -> permitted.test(sender) ? null : new Violation(Rejection.UNAUTHORIZED, "not permitted: " + what));
         return this;
     }
 

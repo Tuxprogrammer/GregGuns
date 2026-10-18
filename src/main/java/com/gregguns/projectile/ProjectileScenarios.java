@@ -19,7 +19,7 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
-import com.gregguns.gun.logic.GunCatalogue;
+import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ShotContext;
 import com.gregguns.gun.logic.ShotOffset;
@@ -75,7 +75,7 @@ final class ProjectileScenarios {
     private static EntityZombie zombie(ScenarioContext ctx, int dx) {
         EntityZombie z = new EntityZombie(ctx.world());
         z.setLocationAndAngles(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5, 90.0F, 0.0F);
-        // A pumpkin is not armour, but it stops the zombie burning in daylight.
+        // A pumpkin is not armor, but it stops the zombie burning in daylight.
         z.setCurrentItemOrArmor(4, new ItemStack(Blocks.pumpkin));
         return ctx.spawn(z);
     }
@@ -104,11 +104,11 @@ final class ProjectileScenarios {
         return true;
     }
 
-    /** Health the bullet should take off a target with this much armour, by the damage model. */
+    /** Health the bullet should take off a target with this much armor, by the damage model. */
     private static float expectedLoss(EntityLivingBase target, double rawDamage) {
-        double armour = target.getTotalArmorValue();
+        double armor = target.getTotalArmorValue();
         return (float) DamageModel
-            .resolve(DamageType.PROJECTILE, rawDamage, 0.0, share -> share * DamageModel.vanillaArmourFactor(armour));
+            .resolve(DamageType.PROJECTILE, rawDamage, 0.0, share -> share * DamageModel.vanillaArmorFactor(armor));
     }
 
     private static boolean near(float expected, float actual) {
@@ -140,7 +140,7 @@ final class ProjectileScenarios {
             EntityZombie corpse = zombie(ctx, 3);
             corpse.setHealth(0.0F);
             EntityZombie target = zombie(ctx, 6);
-            List<GenericProjectile> shots = fire(ctx, gunman, GunCatalogue.PISTOL);
+            List<GenericProjectile> shots = fire(ctx, gunman, GunCatalog.PISTOL);
             return ScenarioResult.pending(name(), GIVE_UP_TICKS, ticks -> {
                 if (!allDead(shots) && ticks < GIVE_UP_TICKS - 1) {
                     return null;
@@ -151,8 +151,8 @@ final class ProjectileScenarios {
                 out.check(allDead(shots), "the bullet should be gone after the hit");
                 float lost = target.getMaxHealth() - target.getHealth();
                 out.check(
-                    near(expectedLoss(target, GunCatalogue.PISTOL.damage()), lost),
-                    "zombie should lose " + expectedLoss(target, GunCatalogue.PISTOL.damage()) + " but lost " + lost);
+                    near(expectedLoss(target, GunCatalog.PISTOL.damage()), lost),
+                    "zombie should lose " + expectedLoss(target, GunCatalog.PISTOL.damage()) + " but lost " + lost);
                 return out.build();
             });
         }
@@ -178,26 +178,26 @@ final class ProjectileScenarios {
             corridor(ctx, RANGE + 3);
             FakePlayer gunman = shooter(ctx);
             EntityZombie target = zombie(ctx, RANGE);
-            List<GenericProjectile> shots = fire(ctx, gunman, GunCatalogue.PISTOL);
+            List<GenericProjectile> shots = fire(ctx, gunman, GunCatalog.PISTOL);
             double startX = shots.isEmpty() ? 0.0 : shots.get(0).posX;
             return ScenarioResult.pending(name(), GIVE_UP_TICKS, ticks -> {
                 if (!allDead(shots) && ticks < GIVE_UP_TICKS - 1) {
                     return null;
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
-                GunStats pistol = GunCatalogue.PISTOL;
+                GunStats pistol = GunCatalog.PISTOL;
                 // The bullet enters the target's box 0.3 (the hit margin) before its near face; the path is level.
-                double travelled = target.boundingBox.minX - 0.3 - startX;
+                double traveled = target.boundingBox.minX - 0.3 - startX;
                 double raw = DamageFalloff
-                    .damageAt(pistol.damage(), pistol.damageMin(), pistol.dropStart(), pistol.dropEnd(), travelled);
+                    .damageAt(pistol.damage(), pistol.damageMin(), pistol.dropStart(), pistol.dropEnd(), traveled);
                 float expected = expectedLoss(target, raw);
                 float lost = target.getMaxHealth() - target.getHealth();
                 out.check(
                     raw < pistol.damage() && raw > pistol.damageMin(),
-                    "test setup: " + travelled + " blocks should be inside the drop-off band, raw " + raw);
+                    "test setup: " + traveled + " blocks should be inside the drop-off band, raw " + raw);
                 out.check(
                     near(expected, lost),
-                    "zombie should lose " + expected + " at " + travelled + " but lost " + lost);
+                    "zombie should lose " + expected + " at " + traveled + " but lost " + lost);
                 return out.build();
             });
         }
@@ -227,7 +227,7 @@ final class ProjectileScenarios {
             }
             FakePlayer gunman = shooter(ctx);
             EntityZombie behind = zombie(ctx, 7);
-            List<GenericProjectile> shots = fire(ctx, gunman, GunCatalogue.PISTOL);
+            List<GenericProjectile> shots = fire(ctx, gunman, GunCatalog.PISTOL);
             double wallX = ctx.originX() + 4.0;
             return ScenarioResult.pending(name(), GIVE_UP_TICKS, ticks -> {
                 if (!allDead(shots) && ticks < GIVE_UP_TICKS - 1) {
@@ -273,7 +273,7 @@ final class ProjectileScenarios {
             EntityPig targetPig = new EntityPig(ctx.world());
             targetPig.setLocationAndAngles(ctx.originX() + 3.5, ctx.originY(), ctx.originZ() + 0.5, 90.0F, 0.0F);
             ctx.spawn(targetPig);
-            List<GenericProjectile> shots = fire(ctx, gunPig, GunCatalogue.PISTOL);
+            List<GenericProjectile> shots = fire(ctx, gunPig, GunCatalog.PISTOL);
             return ScenarioResult.pending(name(), GIVE_UP_TICKS, ticks -> {
                 if (!allDead(shots) && ticks < GIVE_UP_TICKS - 1) {
                     return null;
@@ -284,7 +284,7 @@ final class ProjectileScenarios {
                     "the shooter should be unhurt, health " + gunPig.getHealth());
                 out.check(
                     near(
-                        expectedLoss(targetPig, GunCatalogue.PISTOL.damage()),
+                        expectedLoss(targetPig, GunCatalog.PISTOL.damage()),
                         targetPig.getMaxHealth() - targetPig.getHealth()),
                     "the target pig should lose the full damage, health " + targetPig.getHealth());
                 return out.build();

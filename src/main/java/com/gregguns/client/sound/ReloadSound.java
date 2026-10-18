@@ -11,11 +11,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * A reload sound that follows the player who is reloading and ends when it is told to stop, when the owner's
- * {@code stillValid} check fails (reload cancelled, gun switched away), or when the player dies or leaves the world.
+ * {@code stillValid} check fails (reload canceled, gun switched away), or when the player dies or leaves the world.
  * Client only.
  */
 // Spec: docs/techguns-spec/01-core/client-effects-audio.md (TGSound: moving sounds follow their entity)
-// Deviation: Techguns' moving sounds never stop on their own (no auto-removal). A reload that is cancelled or
+// Deviation: Techguns' moving sounds never stop on their own (no auto-removal). A reload that is canceled or
 // swapped away now cuts its sound off.
 @SideOnly(Side.CLIENT)
 final class ReloadSound extends MovingSound {

@@ -26,7 +26,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * <ul>
  * <li>{@link #onShotFired}: a shot happened (the local player's own, or a packet for someone else's).</li>
  * <li>{@link #onShotEcho}: the server's echo of a shot; it never restarts the local player's own recoil (GVA-03).</li>
- * <li>{@link #onReloadStarted} and {@link #onReloadCancelled}.</li>
+ * <li>{@link #onReloadStarted} and {@link #onReloadCanceled}.</li>
  * <li>{@link #setZoom} and {@link #clearZoom} for the local player's scope.</li>
  * </ul>
  *
@@ -103,13 +103,13 @@ public final class GunAnimations {
     }
 
     /** Cancels a reload animation (gun switched, dropped, or the reload was interrupted). */
-    public void onReloadCancelled(EntityLivingBase shooter) {
+    public void onReloadCanceled(EntityLivingBase shooter) {
         if (shooter == null) {
             return;
         }
         GunAnimState s = states.get(shooter.getEntityId());
         if (s != null) {
-            s.reloadCancelled();
+            s.reloadCanceled();
         }
     }
 

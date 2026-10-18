@@ -154,7 +154,7 @@ public final class ServerGunHandler {
 
     private static void fire(EntityPlayerMP player, GunPlayerData data, ItemGun gun, ShotResult shot) {
         GunStats stats = gun.stats();
-        // Deviation: no armour accuracy bonus until the armour module (M3) exists; zoom is the server's own state.
+        // Deviation: no armor accuracy bonus until the armor module (M3) exists; zoom is the server's own state.
         ShotContext context = ShotContext.player(
             data.controller()
                 .zoom()
@@ -183,7 +183,7 @@ public final class ServerGunHandler {
                                 .reloadTicks()),
                         player);
                 break;
-            case CANCELLED:
+            case CANCELED:
                 GregGunsNetwork.channel()
                     .sendToAllTrackingAndSelf(new PacketGunEvent(player, GunEventKind.RELOAD_ENDED, 0), player);
                 break;

@@ -40,6 +40,6 @@ public final class GregGunsRecipeMaps {
 
     /** Forces this class to load, so the maps are built during GregGuns' own preInit. Call once. */
     public static void init() {
-        // Loading the class runs the static initialiser above; there is nothing else to do.
+        // Loading the class runs the static initializer above; there is nothing else to do.
     }
 }

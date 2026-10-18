@@ -69,7 +69,7 @@ public final class GregGunsNetwork {
      */
     public static synchronized void init() {
         if (channel != null) {
-            throw new IllegalStateException("GregGuns network channel already initialised");
+            throw new IllegalStateException("GregGuns network channel already initialized");
         }
         NetworkChannel created = new NetworkChannel(CHANNEL_NAME);
         for (IPacket packet : clientboundPackets()) {

@@ -24,7 +24,7 @@ import io.netty.buffer.ByteBuf;
  * <li>{@link #handle} runs on the server main thread, never on the Netty thread (CORE-05). GTNHLib's
  * {@code IPacket.onMessage} reschedules before calling {@code executeServer}, which this class implements.</li>
  * <li>Validation always runs first: the sender must be alive and not spectator-like, then the rules declared in
- * {@link #validate}, then {@link #isAuthorised}. A failed packet is dropped and logged at debug level through a rate
+ * {@link #validate}, then {@link #isAuthorized}. A failed packet is dropped and logged at debug level through a rate
  * limiter (CORE-06, CORE-08, CORE-40).</li>
  * <li>Nothing is thrown into Netty: a decode error marks the packet malformed and drops it, and an exception in
  * validation or in {@link #handle} is contained and logged.</li>
@@ -70,7 +70,7 @@ public abstract class ServerboundPacket implements IPacket {
 
     /**
      * Declares the validation rules for this packet's own fields. Called on the main thread after decoding; the
-     * always-on sender checks have already been added, and {@link #isAuthorised} runs after these rules. Declare cheap
+     * always-on sender checks have already been added, and {@link #isAuthorized} runs after these rules. Declare cheap
      * range checks before target lookups.
      *
      * @param rules where to declare; {@link SenderRules#sender()} is the player
@@ -92,7 +92,7 @@ public abstract class ServerboundPacket implements IPacket {
      * @param sender the sender; cast to {@link PlayerSender} to reach the {@link EntityPlayerMP}
      * @return {@code true} to let the packet through
      */
-    protected boolean isAuthorised(Sender sender) {
+    protected boolean isAuthorized(Sender sender) {
         return true;
     }
 
@@ -146,7 +146,7 @@ public abstract class ServerboundPacket implements IPacket {
         return PacketPipeline.run(name, sender.name(), new SenderRules(sender), rules -> {
             rules.senderMayAct();
             validate(rules);
-            rules.authorised(name, this::isAuthorised);
+            rules.authorized(name, this::isAuthorized);
         }, handler, sink);
     }
 }

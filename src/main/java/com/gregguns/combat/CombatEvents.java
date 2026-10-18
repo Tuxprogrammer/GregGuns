@@ -30,7 +30,7 @@ public final class CombatEvents {
      * {@link FrameRules} and leaves the frames untouched; {@link DamageSources#hit} restores them for any other
      * rejection.
      *
-     * @param event the attack event; never cancelled here
+     * @param event the attack event; never canceled here
      */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onLivingAttack(LivingAttackEvent event) {
@@ -57,11 +57,11 @@ public final class CombatEvents {
     }
 
     /**
-     * Applies the damage model to a GregGuns hit: penetration, armour (once), per-type values, then the secondary
-     * effect. Sets {@code event.ammount} to the final amount. Runs at LOW priority so other mods' pre-armour changes
+     * Applies the damage model to a GregGuns hit: penetration, armor (once), per-type values, then the secondary
+     * effect. Sets {@code event.ammount} to the final amount. Runs at LOW priority so other mods' pre-armor changes
      * to the amount are included.
      *
-     * @param event the hurt event; its amount is the raw damage before armour
+     * @param event the hurt event; its amount is the raw damage before armor
      */
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onLivingHurt(LivingHurtEvent event) {

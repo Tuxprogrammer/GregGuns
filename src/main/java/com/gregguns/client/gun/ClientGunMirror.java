@@ -33,7 +33,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * shot the server refused cannot leave the mirror permanently off.</li>
  * <li>Its ammo view only counts: the reload "withdraws" nothing from the real inventory.</li>
  * <li>The server corrects it through {@link GunClientSync}: an automatic reload the client did not predict starts the
- * mirror's reload, and a refused or cancelled reload stops it.</li>
+ * mirror's reload, and a refused or canceled reload stops it.</li>
  * </ul>
  *
  * <p>
@@ -174,7 +174,7 @@ public final class ClientGunMirror implements GunClientSync {
             controller.reload()
                 .cancel(ReloadStateMachine.CancelReason.OTHER);
             GunClientHooks.events()
-                .onReloadCancelled(entity);
+                .onReloadCanceled(entity);
         }
     }
 
@@ -211,7 +211,7 @@ public final class ClientGunMirror implements GunClientSync {
         lastServerLoaded = -1;
         if (wasReloading) {
             GunClientHooks.events()
-                .onReloadCancelled(player);
+                .onReloadCanceled(player);
         }
         GunClientHooks.events()
             .setZoom(player, false, 1.0);
@@ -232,9 +232,9 @@ public final class ClientGunMirror implements GunClientSync {
         if (event == ReloadStateMachine.Event.STARTED) {
             GunClientHooks.events()
                 .onReloadStarted(player, stats, stats.reloadTicks());
-        } else if (event == ReloadStateMachine.Event.CANCELLED) {
+        } else if (event == ReloadStateMachine.Event.CANCELED) {
             GunClientHooks.events()
-                .onReloadCancelled(player);
+                .onReloadCanceled(player);
         }
     }
 

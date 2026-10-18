@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import com.gregguns.network.validation.Sender;
 
 /**
- * The real {@link Sender}: a thin adapter over the {@link EntityPlayerMP} that sent a packet. Authorisation hooks that
+ * The real {@link Sender}: a thin adapter over the {@link EntityPlayerMP} that sent a packet. Authorization hooks that
  * need the player (for example a turret owner check) cast their {@link Sender} to this and call {@link #player()}.
  *
  * Side: server.

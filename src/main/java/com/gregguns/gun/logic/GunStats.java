@@ -8,7 +8,7 @@ package com.gregguns.gun.logic;
  * Durations are in game ticks (20 per second), distances in blocks.
  *
  * <p>
- * Spec: docs/techguns-spec/02-guns/gun-catalogue.md (constructor and setters), gun-lifecycle.md sections 1 to 8.
+ * Spec: docs/techguns-spec/02-guns/gun-catalog.md (constructor and setters), gun-lifecycle.md sections 1 to 8.
  */
 public final class GunStats {
 
@@ -260,7 +260,7 @@ public final class GunStats {
         return pelletsInLine;
     }
 
-    /** Armour penetration, 0 to 1. */
+    /** Armor penetration, 0 to 1. */
     public double penetration() {
         return penetration;
     }
@@ -305,7 +305,7 @@ public final class GunStats {
         return aiBurstDelay;
     }
 
-    /** Builder for {@link GunStats}. Defaults follow the catalogue's "defaults when no setter is called". */
+    /** Builder for {@link GunStats}. Defaults follow the catalog's "defaults when no setter is called". */
     public static final class Builder {
 
         private final String id;
@@ -449,7 +449,7 @@ public final class GunStats {
             return this;
         }
 
-        /** Armour penetration, 0 to 1. */
+        /** Armor penetration, 0 to 1. */
         public Builder penetration(double penetration) {
             this.penetration = penetration;
             return this;

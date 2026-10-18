@@ -18,6 +18,6 @@
  *
  * <p>
  * Ammo type ids are plain strings that must equal the ammo module's {@code AmmoType} ids. See
- * {@link com.gregguns.gun.logic.GunCatalogue.AmmoIds}.
+ * {@link com.gregguns.gun.logic.GunCatalog.AmmoIds}.
  */
 package com.gregguns.gun.logic;

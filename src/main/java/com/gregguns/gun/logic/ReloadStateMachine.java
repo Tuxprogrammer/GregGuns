@@ -1,15 +1,15 @@
 package com.gregguns.gun.logic;
 
 /**
- * The reload lifecycle: idle, reloading, then completed or cancelled. Timed in ticks, with no clock.
+ * The reload lifecycle: idle, reloading, then completed or canceled. Timed in ticks, with no clock.
  *
  * <h2>Rules</h2>
  * <ul>
  * <li>{@link #start} only checks that a reload is possible (gun not full, ammo available). It moves nothing, so
- * nothing can be lost if the reload is cancelled, the player logs out or the server stops.</li>
+ * nothing can be lost if the reload is canceled, the player logs out or the server stops.</li>
  * <li>{@link #tick} counts down. On the last tick the ammo moves atomically: the new ammo is withdrawn first, and
  * only if that succeeds are the rounds loaded and the old rounds and empty containers handed back. If the ammo is
- * gone by then the reload is cancelled and the gun is unchanged.</li>
+ * gone by then the reload is canceled and the gun is unchanged.</li>
  * <li>A <em>forced</em> reload (rounds still loaded, {@link ReloadMode#MAGAZINE}) hands the remaining rounds back
  * with {@link AmmoInventory#depositRounds}. They are never thrown away (GUN-13).</li>
  * <li>Interrupts: {@link #cancel} with {@link CancelReason#WEAPON_SWITCH} or {@link CancelReason#FIRE}. Firing may
@@ -42,8 +42,8 @@ public final class ReloadStateMachine {
         STARTED,
         /** The reload finished and the rounds are loaded. */
         COMPLETED,
-        /** The reload was cancelled; see {@link ReloadStateMachine#lastCancelReason()}. */
-        CANCELLED,
+        /** The reload was canceled; see {@link ReloadStateMachine#lastCancelReason()}. */
+        CANCELED,
         /** Refused: the gun is already full. */
         REJECTED_FULL,
         /** Refused: the inventory has no ammo for this gun. */
@@ -52,7 +52,7 @@ public final class ReloadStateMachine {
         REJECTED_BUSY
     }
 
-    /** Why a reload was cancelled. */
+    /** Why a reload was canceled. */
     public enum CancelReason {
         /** The player changed the held item or dropped the gun. */
         WEAPON_SWITCH,
@@ -60,7 +60,7 @@ public final class ReloadStateMachine {
         FIRE,
         /** The ammo disappeared before the reload completed. */
         NO_AMMO,
-        /** Cancelled by game logic, for example death. */
+        /** Canceled by game logic, for example death. */
         OTHER
     }
 
@@ -128,7 +128,7 @@ public final class ReloadStateMachine {
 
     /**
      * Advances a running reload by one tick. Returns {@link Event#NONE} while counting, {@link Event#COMPLETED} when
-     * the rounds were loaded, or {@link Event#CANCELLED} if the ammo was gone at the end.
+     * the rounds were loaded, or {@link Event#CANCELED} if the ammo was gone at the end.
      */
     public Event tick(GunStats stats, GunState state, AmmoInventory ammo) {
         if (!isReloading()) {
@@ -154,7 +154,7 @@ public final class ReloadStateMachine {
         }
         lastCancelReason = reason;
         finish();
-        return Event.CANCELLED;
+        return Event.CANCELED;
     }
 
     private void finish() {

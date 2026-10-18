@@ -46,7 +46,7 @@ final class CombatScenarios {
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new Types());
         registry.register(new Penetration());
-        registry.register(new PlayerArmour());
+        registry.register(new PlayerArmor());
         registry.register(new Frames());
         registry.register(new Rejected());
         registry.register(new Listeners());
@@ -71,14 +71,14 @@ final class CombatScenarios {
         return Math.abs(expected - actual) < EPS;
     }
 
-    private static void armourUp(EntityLivingBase e, ItemStack... piecesHelmetFirst) {
+    private static void armorUp(EntityLivingBase e, ItemStack... piecesHelmetFirst) {
         for (int i = 0; i < piecesHelmetFirst.length; i++) {
             e.setCurrentItemOrArmor(4 - i, piecesHelmetFirst[i]);
         }
     }
 
     private static void ironSet(EntityLivingBase e) {
-        armourUp(
+        armorUp(
             e,
             new ItemStack(Items.iron_helmet),
             new ItemStack(Items.iron_chestplate),
@@ -86,7 +86,7 @@ final class CombatScenarios {
             new ItemStack(Items.iron_boots));
     }
 
-    /** Every type through a real source against an unarmoured pig: health delta and secondary effect. */
+    /** Every type through a real source against an unarmored pig: health delta and secondary effect. */
     private static final class Types implements Scenario {
 
         @Override
@@ -96,7 +96,7 @@ final class CombatScenarios {
 
         @Override
         public String description() {
-            return "Each damage type hits an unarmoured pig: health lost equals the damage; fire/ice/poison/radiation/lightning add their effect.";
+            return "Each damage type hits an unarmored pig: health lost equals the damage; fire/ice/poison/radiation/lightning add their effect.";
         }
 
         @Override
@@ -138,7 +138,7 @@ final class CombatScenarios {
         }
     }
 
-    /** GUN-34: penetration against a mob in vanilla armour; GUN-37: the shooter survives; GUN-45: all types alike. */
+    /** GUN-34: penetration against a mob in vanilla armor; GUN-37: the shooter survives; GUN-45: all types alike. */
     private static final class Penetration implements Scenario {
 
         @Override
@@ -148,7 +148,7 @@ final class CombatScenarios {
 
         @Override
         public String description() {
-            return "Mob in full iron armour: 8 damage at 0/15/100% penetration, other blockable types, unresistable, and shooter credit.";
+            return "Mob in full iron armor: 8 damage at 0/15/100% penetration, other blockable types, unresistable, and shooter credit.";
         }
 
         @Override
@@ -158,7 +158,7 @@ final class CombatScenarios {
             EntityZombie shooter = spawn(ctx, new EntityZombie(ctx.world()), 3);
             EntityArrow bullet = new EntityArrow(ctx.world());
             ironSet(target);
-            out.checkEquals("armour points", 15, target.getTotalArmorValue());
+            out.checkEquals("armor points", 15, target.getTotalArmorValue());
 
             float pen0 = hitFresh(target, DamageSources.ranged(DamageType.PROJECTILE, bullet, shooter, 0.0), 8.0F);
             out.check(near(3.2F, pen0), "pen 0: expected 3.2, got " + pen0);
@@ -179,7 +179,7 @@ final class CombatScenarios {
                     8.0F);
                 out.check(
                     near(3.2F, lost),
-                    type + " at pen 0: expected 3.2 (GUN-45, same armour for every type), got " + lost);
+                    type + " at pen 0: expected 3.2 (GUN-45, same armor for every type), got " + lost);
             }
 
             RangedDamageSource src = DamageSources.ranged(DamageType.PROJECTILE, bullet, shooter, 0.0);
@@ -213,8 +213,8 @@ final class CombatScenarios {
         }
     }
 
-    /** The player branch through Forge ApplyArmor: same numbers as the mob, and armour worn exactly once. */
-    private static final class PlayerArmour implements Scenario {
+    /** The player branch through Forge ApplyArmor: same numbers as the mob, and armor worn exactly once. */
+    private static final class PlayerArmor implements Scenario {
 
         @Override
         public String name() {
@@ -223,7 +223,7 @@ final class CombatScenarios {
 
         @Override
         public String description() {
-            return "Fake player in full iron armour: 8 damage at 15% penetration loses 3.92 and each piece wears once.";
+            return "Fake player in full iron armor: 8 damage at 15% penetration loses 3.92 and each piece wears once.";
         }
 
         @Override
@@ -238,14 +238,14 @@ final class CombatScenarios {
                 new GameProfile(UUID.nameUUIDFromBytes(new byte[] { 7 }), "[GregGunsCombat]"));
             try {
                 ironSet(player);
-                out.checkEquals("armour points", 15, player.getTotalArmorValue());
+                out.checkEquals("armor points", 15, player.getTotalArmorValue());
                 float lost = player.hurt(DamageSources.direct(DamageType.PROJECTILE, null, 0.15), 8.0F);
                 out.check(near(3.92F, lost), "player pen 0.15: expected 3.92, got " + lost);
                 for (int i = 0; i < 4; i++) {
                     ItemStack piece = player.inventory.armorInventory[i];
                     out.check(
                         piece != null && piece.getItemDamage() == 1,
-                        "armour slot " + i
+                        "armor slot " + i
                             + " should be worn exactly once, damage="
                             + (piece == null ? "gone" : piece.getItemDamage()));
                 }
@@ -373,7 +373,7 @@ final class CombatScenarios {
         }
     }
 
-    /** GGS-02-18: other mods' listeners see the hit, with the real source and the pre-armour amount. */
+    /** GGS-02-18: other mods' listeners see the hit, with the real source and the pre-armor amount. */
     private static final class Listeners implements Scenario {
 
         /** Records what the other mods would see. */
@@ -402,7 +402,7 @@ final class CombatScenarios {
 
         @Override
         public String description() {
-            return "A foreign LivingAttackEvent/LivingHurtEvent listener sees the GregGuns source and the pre-armour amount.";
+            return "A foreign LivingAttackEvent/LivingHurtEvent listener sees the GregGuns source and the pre-armor amount.";
         }
 
         @Override
@@ -415,7 +415,7 @@ final class CombatScenarios {
             try {
                 RangedDamageSource src = DamageSources.ranged(DamageType.ENERGY, null, null, 0.0);
                 float lost = hitFresh(target, src, 10.0F);
-                out.check(near(4.0F, lost), "energy 10 vs 15 armour: expected 4.0, got " + lost);
+                out.check(near(4.0F, lost), "energy 10 vs 15 armor: expected 4.0, got " + lost);
                 out.check(
                     rec.attacks.size() == 1 && rec.attacks.get(0) == src,
                     "LivingAttackEvent should carry our source once");
@@ -433,7 +433,7 @@ final class CombatScenarios {
         }
     }
 
-    /** A stand-in hazmat armour piece: protects against every hazard; cloth armour values (7 points per set). */
+    /** A stand-in hazmat armor piece: protects against every hazard; cloth armor values (7 points per set). */
     private static final class HazmatPiece extends ItemArmor implements IHazardProtector {
 
         HazmatPiece(int slot) {
@@ -471,7 +471,7 @@ final class CombatScenarios {
                 out.check(Types.hasEffect(bare, effect), type + ": bare pig should get " + effect.kind());
 
                 EntityPig suited = spawn(ctx, new EntityPig(ctx.world()), 2);
-                armourUp(
+                armorUp(
                     suited,
                     new ItemStack(new HazmatPiece(0)),
                     new ItemStack(new HazmatPiece(1)),
@@ -482,7 +482,7 @@ final class CombatScenarios {
                 float expected = 2.0F * (18.0F / 25.0F);
                 out.check(
                     near(expected, lost),
-                    type + ": hazmat pig damage expected " + expected + " (7 cloth armour points), got " + lost);
+                    type + ": hazmat pig damage expected " + expected + " (7 cloth armor points), got " + lost);
                 ctx.despawn(bare);
                 ctx.despawn(suited);
             }

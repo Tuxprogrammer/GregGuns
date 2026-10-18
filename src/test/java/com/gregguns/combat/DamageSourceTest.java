@@ -96,14 +96,14 @@ class DamageSourceTest {
     }
 
     @Test
-    void armourSettledMakesAnyHitUnblockableUntilReset() {
+    void armorSettledMakesAnyHitUnblockableUntilReset() {
         RangedDamageSource s = DamageSources.ranged(DamageType.PROJECTILE, null, null, 0.1);
         assertFalse(s.isUnblockable());
         s.hit()
-            .setArmourSettled(true);
+            .setArmorSettled(true);
         assertTrue(s.isUnblockable());
         s.hit()
-            .setArmourSettled(false);
+            .setArmorSettled(false);
         assertFalse(s.isUnblockable());
     }
 

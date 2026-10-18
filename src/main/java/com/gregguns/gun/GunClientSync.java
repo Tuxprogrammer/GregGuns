@@ -16,7 +16,7 @@ public interface GunClientSync {
     /** The server started a reload for the local player (an automatic one, or one the client predicted). */
     void serverReloadStarted(EntityLivingBase player, int ticks);
 
-    /** The server cancelled, refused or finished a reload. The mirror stops its own reload state. */
+    /** The server canceled, refused or finished a reload. The mirror stops its own reload state. */
     void serverReloadEnded(EntityLivingBase player);
 
     /** The server set the local player's zoom. */

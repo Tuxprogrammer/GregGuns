@@ -23,7 +23,7 @@ public enum Tier {
     STEAM(VoltageIndex.ULV),
     /** LV: steel. */
     LV(VoltageIndex.LV),
-    /** MV: aluminium. */
+    /** MV: aluminum. */
     MV(VoltageIndex.MV),
     /** HV: stainless steel. */
     HV(VoltageIndex.HV),

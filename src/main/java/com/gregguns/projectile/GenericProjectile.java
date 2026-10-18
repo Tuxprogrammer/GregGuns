@@ -78,7 +78,7 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
     protected float dropStart;
     /** Distance beyond which damage is the minimum, blocks. */
     protected float dropEnd;
-    /** Armour penetration, 0 to 1. */
+    /** Armor penetration, 0 to 1. */
     protected float penetration;
     /** Blocks per tick squared pulled downwards. */
     protected float gravity;

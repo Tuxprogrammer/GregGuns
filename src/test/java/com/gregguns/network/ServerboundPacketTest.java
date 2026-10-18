@@ -39,7 +39,7 @@ class ServerboundPacketTest {
         int by = 0;
         int bz = 0;
         Object target = "tile";
-        boolean authorised = true;
+        boolean authorized = true;
         final List<String> order = new ArrayList<>();
 
         @Override
@@ -65,9 +65,9 @@ class ServerboundPacketTest {
         protected void handle(EntityPlayerMP player) {}
 
         @Override
-        protected boolean isAuthorised(Sender sender) {
-            order.add("authorise");
-            return authorised;
+        protected boolean isAuthorized(Sender sender) {
+            order.add("authorize");
+            return authorized;
         }
     }
 
@@ -119,18 +119,18 @@ class ServerboundPacketTest {
     }
 
     @Test
-    void rejectsUnauthorisedSender() {
+    void rejectsUnauthorizedSender() {
         TestPacket p = new TestPacket();
-        p.authorised = false;
-        assertEquals(Rejection.UNAUTHORISED, run(p).rejection());
+        p.authorized = false;
+        assertEquals(Rejection.UNAUTHORIZED, run(p).rejection());
         assertEquals(0, handled.get());
     }
 
     @Test
-    void authorisationRunsAfterTargetValidation() {
+    void authorizationRunsAfterTargetValidation() {
         TestPacket p = new TestPacket();
         run(p);
-        assertEquals(Arrays.asList("validate", "authorise"), p.order);
+        assertEquals(Arrays.asList("validate", "authorize"), p.order);
         TestPacket bad = new TestPacket();
         bad.slot = -5;
         run(bad);

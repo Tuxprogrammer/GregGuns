@@ -57,7 +57,7 @@ public final class GunAnimState {
     }
 
     /** Cancels a running reload (the gun was switched, dropped or the player died). */
-    public void reloadCancelled() {
+    public void reloadCanceled() {
         reload.clear();
     }
 

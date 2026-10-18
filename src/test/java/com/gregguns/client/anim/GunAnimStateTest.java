@@ -59,7 +59,7 @@ class GunAnimStateTest {
         GunAnimState s = new GunAnimState();
         s.reloadStarted(0.0, 35, PISTOL);
         assertEquals(0.5, s.reloadProgress(17.5, PISTOL), 1e-9);
-        s.reloadCancelled();
+        s.reloadCanceled();
         assertEquals(AnimWindow.NONE, s.reloadProgress(18.0, PISTOL));
     }
 

@@ -4,14 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.gregguns.gun.logic.GunCatalogue;
+import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.logic.GunStats;
 
 class GunTooltipFormatTest {
 
     @Test
     void pistolNumbersMatchTheSpecSheet() {
-        GunStats pistol = GunCatalogue.PISTOL;
+        GunStats pistol = GunCatalog.PISTOL;
         assertEquals("8.0-5.0", GunTooltipFormat.damage(pistol));
         assertEquals("18.0-25.0", GunTooltipFormat.dropOffRange(pistol));
         assertEquals("45", GunTooltipFormat.reach(pistol));
@@ -32,8 +32,8 @@ class GunTooltipFormatTest {
     @Test
     void doesNotReproduceGUN18_rangeIsInBlocksNotTicks() {
         // The pistol lives 30 ticks; the range line must show the 18-25 block drop-off and the 45 block reach.
-        String range = GunTooltipFormat.dropOffRange(GunCatalogue.PISTOL) + "/"
-            + GunTooltipFormat.reach(GunCatalogue.PISTOL);
+        String range = GunTooltipFormat.dropOffRange(GunCatalog.PISTOL) + "/"
+            + GunTooltipFormat.reach(GunCatalog.PISTOL);
         assertEquals("18.0-25.0/45", range);
     }
 

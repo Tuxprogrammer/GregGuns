@@ -3,7 +3,7 @@ package com.gregguns.network.validation;
 import java.util.function.LongSupplier;
 
 /**
- * A fixed-window rate limiter with an injectable clock. Not thread-safe by itself; callers synchronise.
+ * A fixed-window rate limiter with an injectable clock. Not thread-safe by itself; callers synchronize.
  *
  * Side: both.
  */

@@ -70,7 +70,7 @@ class SenderRulesTest {
     }
 
     @Test
-    void customReachIsHonoured() {
+    void customReachIsHonored() {
         assertNull(
             rules().withinReachOf(20, 0, 0, 24.0)
                 .firstViolation());
@@ -121,12 +121,12 @@ class SenderRulesTest {
     @Test
     void permissionHookRejectsAndAccepts() {
         assertEquals(
-            Rejection.UNAUTHORISED,
-            rules().authorised("owner", s -> false)
+            Rejection.UNAUTHORIZED,
+            rules().authorized("owner", s -> false)
                 .firstViolation()
                 .rejection());
         assertNull(
-            rules().authorised("owner", s -> true)
+            rules().authorized("owner", s -> true)
                 .firstViolation());
     }
 }

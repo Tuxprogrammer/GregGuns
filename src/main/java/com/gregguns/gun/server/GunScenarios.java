@@ -25,7 +25,7 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
-import com.gregguns.gun.logic.GunCatalogue;
+import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.item.ammo.AmmoTypes;
@@ -112,7 +112,7 @@ public final class GunScenarios {
         }
 
         int loaded() {
-            return GunNbt.read(gun.getTagCompound(), GunCatalogue.PISTOL)
+            return GunNbt.read(gun.getTagCompound(), GunCatalog.PISTOL)
                 .loaded();
         }
 
@@ -205,15 +205,15 @@ public final class GunScenarios {
     private static EntityZombie zombie(ScenarioContext ctx, int dx) {
         EntityZombie z = new EntityZombie(ctx.world());
         z.setLocationAndAngles(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5, 90.0F, 0.0F);
-        // A pumpkin is not armour, but it stops the zombie burning in daylight.
+        // A pumpkin is not armor, but it stops the zombie burning in daylight.
         z.setCurrentItemOrArmor(4, new ItemStack(Blocks.pumpkin));
         return ctx.spawn(z);
     }
 
     private static float expectedLoss(EntityLivingBase target, double rawDamage) {
-        double armour = target.getTotalArmorValue();
+        double armor = target.getTotalArmorValue();
         return (float) DamageModel
-            .resolve(DamageType.PROJECTILE, rawDamage, 0.0, share -> share * DamageModel.vanillaArmourFactor(armour));
+            .resolve(DamageType.PROJECTILE, rawDamage, 0.0, share -> share * DamageModel.vanillaArmorFactor(armor));
     }
 
     private static boolean near(float expected, float actual) {
@@ -240,7 +240,7 @@ public final class GunScenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
-            Rig rig = new Rig(ctx, GunCatalogue.PISTOL.magazineSize());
+            Rig rig = new Rig(ctx, GunCatalog.PISTOL.magazineSize());
             EntityZombie target = zombie(ctx, RANGE);
             float[] firstHit = { Float.NaN };
             int[] shotsAt = new int[END_TICK + 1];
@@ -270,7 +270,7 @@ public final class GunScenarios {
                     return null;
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
-                float expected = expectedLoss(target, GunCatalogue.PISTOL.damage());
+                float expected = expectedLoss(target, GunCatalog.PISTOL.damage());
                 out.checkEquals("rounds after the first shot", 17, afterFirst);
                 out.checkEquals("bullets launched by the first shot", 1, bulletsFirst);
                 out.check(
@@ -304,7 +304,7 @@ public final class GunScenarios {
             Rig rig = new Rig(ctx, 0);
             String loadedMag = AmmoTypes.NINE_MM_PISTOL.loadedItemName();
             rig.give(loadedMag, 1);
-            int reloadTicks = GunCatalogue.PISTOL.reloadTicks();
+            int reloadTicks = GunCatalog.PISTOL.reloadTicks();
             rig.press();
             rig.release();
             rig.tick(); // tick 0: empty, so the reload starts
@@ -350,7 +350,7 @@ public final class GunScenarios {
         public ScenarioResult run(ScenarioContext ctx) {
             Rig rig = new Rig(ctx, 7);
             rig.give(AmmoTypes.NINE_MM_PISTOL.loadedItemName(), 1);
-            int reloadTicks = GunCatalogue.PISTOL.reloadTicks();
+            int reloadTicks = GunCatalog.PISTOL.reloadTicks();
             rig.tick(); // registers the held gun with the handler
             ServerGunHandler.onReloadKey(rig.shooter);
             boolean started = rig.reloading();
@@ -422,7 +422,7 @@ public final class GunScenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
-            Rig rig = new Rig(ctx, GunCatalogue.PISTOL.magazineSize());
+            Rig rig = new Rig(ctx, GunCatalog.PISTOL.magazineSize());
             // A fake player has no network handler, so the entity tracker would crash on it if it were spawned through
             // the world. Put it into its chunk only: hit tests find it there, and it is never ticked or tracked.
             FakePlayer victim = fakePlayer(ctx, TARGET_NAME, 6);
@@ -448,7 +448,7 @@ public final class GunScenarios {
                     true,
                     MinecraftServer.getServer()
                         .isPVPEnabled());
-                float expected = expectedLoss(victim, (float) (GunCatalogue.PISTOL.damage() * pvpFactor));
+                float expected = expectedLoss(victim, (float) (GunCatalog.PISTOL.damage() * pvpFactor));
                 out.check(near(expected, lost), "the player should lose " + expected + " but lost " + lost);
                 out.checkEquals("bullets launched", 1, rig.bullets());
                 return out.build();
@@ -471,11 +471,11 @@ public final class GunScenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
-            Rig rig = new Rig(ctx, GunCatalogue.PISTOL.magazineSize());
+            Rig rig = new Rig(ctx, GunCatalog.PISTOL.magazineSize());
             rig.tick(); // registers the held gun with the handler
             ServerGunHandler.onZoomToggle(rig.shooter);
             rig.tick();
-            GunStats stats = GunCatalogue.PISTOL;
+            GunStats stats = GunCatalog.PISTOL;
             GunPlayerData data = GunPlayerData.get(rig.shooter);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             out.check(

@@ -43,7 +43,7 @@ public final class GregTechHazmat {
     public static boolean isProtected(EntityLivingBase entity, HazardKind kind) {
         // Source:
         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/hazards/HazardProtection.java#L44-L60
-        // (all four armour slots protect, or one slot protects fully; the Hazmat enchantment counts too)
+        // (all four armor slots protect, or one slot protects fully; the Hazmat enchantment counts too)
         return HazardProtection.isWearingFullHazmatAgainst(entity, toGt(kind));
     }
 }

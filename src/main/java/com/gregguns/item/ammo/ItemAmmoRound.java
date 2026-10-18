@@ -25,7 +25,7 @@ public final class ItemAmmoRound extends Item implements Tiered {
     private final AmmoType type;
 
     /**
-     * @param type the calibre this item represents
+     * @param type the caliber this item represents
      */
     public ItemAmmoRound(AmmoType type) {
         this.type = type;

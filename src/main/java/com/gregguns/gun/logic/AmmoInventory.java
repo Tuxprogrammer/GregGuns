@@ -5,7 +5,7 @@ package com.gregguns.gun.logic;
  * inventory (ammo pouch slots first, then the main inventory); an NPC uses {@link #INFINITE}.
  *
  * <p>
- * All counts are items of the given ammo type id (see {@link GunCatalogue.AmmoIds}), except
+ * All counts are items of the given ammo type id (see {@link GunCatalog.AmmoIds}), except
  * {@link #depositRounds}, which counts rounds. The logic always asks this interface; it never trusts a client count.
  * Implementations run on the server thread. Overflow that does not fit (full inventory) is the implementation's
  * problem: it drops the excess at the shooter, as Techguns does.

@@ -11,7 +11,7 @@ class GunStatsTest {
 
     @Test
     void pistolMatchesTheSpecSheet() {
-        GunStats p = GunCatalogue.PISTOL;
+        GunStats p = GunCatalog.PISTOL;
         assertEquals(8.0, p.damage());
         assertEquals(5.0, p.damageMin());
         assertEquals(18.0, p.dropStart());
@@ -36,7 +36,7 @@ class GunStatsTest {
     }
 
     @Test
-    void defaultsFollowTheCatalogue() {
+    void defaultsFollowTheCatalog() {
         GunStats s = GunStats.builder("x")
             .damage(4)
             .magazine(6)

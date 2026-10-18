@@ -9,7 +9,7 @@ import com.gregguns.core.registry.Naming;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
- * An {@link AmmoStore} over a player's main inventory. Ammo-pouch slots join in with the armour milestone. Works on
+ * An {@link AmmoStore} over a player's main inventory. Ammo-pouch slots join in with the armor milestone. Works on
  * either side (the client uses it read-only for the HUD count); only the server adds, removes and drops.
  */
 // Spec: gun-lifecycle.md section 7 (pouch first, then main inventory; pouch slots do not exist yet).

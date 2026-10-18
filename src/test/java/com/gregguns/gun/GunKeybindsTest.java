@@ -12,7 +12,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.gregguns.gun.logic.GunCatalogue;
+import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.server.GunKeybinds;
 
 /** GGS-01-13: every key, category and gun string has a lang entry. */
@@ -59,6 +59,6 @@ class GunKeybindsTest {
     @Test
     void doesNotReproduceGUN47_thePistolHasNoScopeSoItNeverSendsAZoomIntent() {
         // Techguns sent "zoomed = true" from unscoped guns. ItemGun sends a zoom intent only when hasScope().
-        assertFalse(GunCatalogue.PISTOL.hasScope());
+        assertFalse(GunCatalog.PISTOL.hasScope());
     }
 }

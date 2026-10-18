@@ -27,7 +27,7 @@ public class ModulesConfig {
     @Config.RequiresMcRestart
     public static boolean guns = false;
 
-    @Config.Comment({ "Armour, set bonuses and special slots (M3). Needs 'guns'.",
+    @Config.Comment({ "Armor, set bonuses and special slots (M3). Needs 'guns'.",
         "Default: false until the M3 exit gate is met." })
     @Config.RequiresMcRestart
     public static boolean armor = false;
@@ -42,7 +42,7 @@ public class ModulesConfig {
     @Config.RequiresMcRestart
     public static boolean energyWeapons = false;
 
-    @Config.Comment({ "Utility and defence machines (M6). Needs 'machines'.",
+    @Config.Comment({ "Utility and defense machines (M6). Needs 'machines'.",
         "Default: false until the M6 exit gate is met." })
     @Config.RequiresMcRestart
     public static boolean utility = false;

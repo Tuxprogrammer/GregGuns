@@ -7,12 +7,12 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 /**
- * A feature area (guns, armour, machines, ...) that registers its content through the module system.
+ * A feature area (guns, armor, machines, ...) that registers its content through the module system.
  *
  * <p>
  * The {@link ModuleManager} calls these hooks only when {@code modules.<name>} is on, so a disabled module registers
  * nothing: no items, no recipes, no event handlers. Anything a module adds must therefore be added from inside these
- * hooks, never from a static initialiser or from {@code GregGuns} directly. Both sides; client-only work goes in a
+ * hooks, never from a static initializer or from {@code GregGuns} directly. Both sides; client-only work goes in a
  * {@link ClientModule} registered by {@code ClientProxy}.
  */
 // Spec: docs/ROADMAP.md (M0 scope: registries); CONTRIBUTING.md (Registration order)

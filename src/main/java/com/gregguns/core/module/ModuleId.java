@@ -14,13 +14,13 @@ public enum ModuleId {
 
     /** Combat core and ballistic arsenal: damage system, guns, projectiles, ammo (M1 and M2). */
     GUNS("guns"),
-    /** Armour, set bonuses and special slots (M3). Entry gate: M1 done. */
+    /** Armor, set bonuses and special slots (M3). Entry gate: M1 done. */
     ARMOR("armor", GUNS),
     /** Production chain and machines (M4). Entry gate: M1 done. */
     MACHINES("machines", GUNS),
     /** Energy and exotic weapons (M5). Entry gate: M2 and M4 done. */
     ENERGY_WEAPONS("energyWeapons", GUNS, MACHINES),
-    /** Utility and defence machines (M6). Entry gate: M4 done. */
+    /** Utility and defense machines (M6). Entry gate: M4 done. */
     UTILITY("utility", MACHINES),
     /** NPCs and spawning (M7). Entry gate: M2 done. */
     NPCS("npcs", GUNS),

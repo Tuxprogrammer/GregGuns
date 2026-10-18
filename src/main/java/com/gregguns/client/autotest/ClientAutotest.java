@@ -361,9 +361,9 @@ public final class ClientAutotest {
         }
 
         @Override
-        public void onReloadCancelled(EntityLivingBase entity) {
+        public void onReloadCanceled(EntityLivingBase entity) {
             log(String.format(who(entity), "reload cancel"));
-            next.onReloadCancelled(entity);
+            next.onReloadCanceled(entity);
         }
 
         @Override

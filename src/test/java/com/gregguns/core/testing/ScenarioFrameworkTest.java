@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 class ScenarioFrameworkTest {
 
-    /** A scenario whose behaviour is a lambda. */
+    /** A scenario whose behavior is a lambda. */
     private static class Fake implements Scenario {
 
         private final String name;

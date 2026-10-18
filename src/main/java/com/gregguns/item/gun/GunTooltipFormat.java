@@ -46,7 +46,7 @@ public final class GunTooltipFormat {
         return String.format(Locale.ROOT, "%.2f", stats.reloadTicks() * SECONDS_PER_TICK);
     }
 
-    /** @return the armour penetration as a percentage, for example {@code 25} */
+    /** @return the armor penetration as a percentage, for example {@code 25} */
     public static String penetrationPercent(GunStats stats) {
         return String.valueOf(Math.round(stats.penetration() * 100.0));
     }

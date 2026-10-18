@@ -6,7 +6,7 @@ import com.gregguns.api.Tier;
 
 /**
  * One magazine family: a loaded item, its empty counterpart, and how many loose rounds fill one. A magazine is either
- * full or empty (Techguns behaviour kept, ammo.md "Magazine items"); how many shots a loaded magazine gives a gun is
+ * full or empty (Techguns behavior kept, ammo.md "Magazine items"); how many shots a loaded magazine gives a gun is
  * the gun's clip size and belongs to the gun, not here.
  *
  * <p>

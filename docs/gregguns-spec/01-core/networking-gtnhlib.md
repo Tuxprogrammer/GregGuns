@@ -66,7 +66,7 @@ Techguns registers 16 classes on a raw `SimpleNetworkWrapper` and runs every han
 ## Writing a packet
 
 1. Extend `ServerboundPacket` (client to server) or `ClientboundPacket` (server to client) from `com.gregguns.network`. Give it a public no-argument constructor and implement `encode` and `decode` (strings via `PacketStrings`).
-2. Declare rules in `validate(...)`. Server-bound rules: `sameDimension`, `withinReachOfBlock` and `withinReachOf` (default 8 blocks), `indexInRange`, `ordinalInRange`, `inRange`, `finite`, `targetOfType` and `targetExists` (use `WorldTargets`, which never loads chunks), and `authorized`. The base class always checks first that the sender is alive and not spectator-like, and calls the `isAuthorised(Sender)` hook last, after the target is known to exist. Later milestones override that hook for ownership checks.
+2. Declare rules in `validate(...)`. Server-bound rules: `sameDimension`, `withinReachOfBlock` and `withinReachOf` (default 8 blocks), `indexInRange`, `ordinalInRange`, `inRange`, `finite`, `targetOfType` and `targetExists` (use `WorldTargets`, which never loads chunks), and `authorized`. The base class always checks first that the sender is alive and not spectator-like, and calls the `isAuthorized(Sender)` hook last, after the target is known to exist. Later milestones override that hook for ownership checks.
 3. Do the work in `handle(...)`. It runs on the main thread and only after every rule passed, so validated targets can be cast without further checks.
 4. Append an instance to `GregGunsNetwork.serverboundPackets()` or `clientboundPackets()`.
 5. Unit-test the rules, following `ServerboundPacketTest` and `ClientboundPacketTest`.

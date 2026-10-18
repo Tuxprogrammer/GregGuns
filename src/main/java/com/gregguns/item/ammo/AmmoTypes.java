@@ -7,7 +7,7 @@ import java.util.Map;
 import com.gregguns.api.Tier;
 
 /**
- * The table of ammo and magazine types. Adding a calibre or magazine for a later milestone is one new row here plus
+ * The table of ammo and magazine types. Adding a caliber or magazine for a later milestone is one new row here plus
  * its items in {@link AmmoItems}.
  *
  * <p>

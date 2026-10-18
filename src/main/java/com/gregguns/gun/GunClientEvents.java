@@ -13,7 +13,7 @@ import com.gregguns.gun.logic.GunStats;
  * <ul>
  * <li><b>Local player:</b> the client mirror ({@code com.gregguns.client.gun.ClientGunMirror}) calls it the moment the
  * player acts, before the server answers. The server's own broadcast excludes the shooter, so each event reaches this
- * interface once. If the server rejects a predicted reload, {@link #onReloadCancelled} follows.</li>
+ * interface once. If the server rejects a predicted reload, {@link #onReloadCanceled} follows.</li>
  * <li><b>Other entities in range:</b> the client packet handler calls it when the server reports that entity X fired
  * or reloaded. Their sounds already arrive as ordinary sound packets, so implementations only animate for them.</li>
  * </ul>
@@ -69,7 +69,7 @@ public interface GunClientEvents {
      *
      * @param entity the entity that was reloading
      */
-    void onReloadCancelled(EntityLivingBase entity);
+    void onReloadCanceled(EntityLivingBase entity);
 
     /**
      * The local player's zoom changed. The server decides zoom; this is its answer. Unscoped guns never zoom.

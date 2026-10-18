@@ -64,15 +64,15 @@ public final class ClientGunEvents implements GunClientEvents {
         ItemGun gun = heldGun(entity);
         if (isLocal(entity) && gun != null) {
             reloading = true;
-            // The sound ends by itself when the reload is cancelled or the gun is no longer held.
+            // The sound ends by itself when the reload is canceled or the gun is no longer held.
             GunsClientModule.sounds()
                 .startReload((EntityPlayer) entity, gun.reloadEvent(), () -> reloading && heldGun(entity) == gun);
         }
     }
 
     @Override
-    public void onReloadCancelled(EntityLivingBase entity) {
-        animations.onReloadCancelled(entity);
+    public void onReloadCanceled(EntityLivingBase entity) {
+        animations.onReloadCanceled(entity);
         if (isLocal(entity)) {
             reloading = false;
             GunsClientModule.sounds()

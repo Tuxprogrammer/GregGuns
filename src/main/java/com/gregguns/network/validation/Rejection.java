@@ -22,7 +22,7 @@ public enum Rejection {
     /** The sender is in a spectator-equivalent state and may not act. */
     SENDER_SPECTATOR,
     /** The sender lacks permission, such as turret ownership. */
-    UNAUTHORISED,
+    UNAUTHORIZED,
     /** The packet bytes could not be decoded. */
     MALFORMED
 }

@@ -12,7 +12,7 @@ import com.gtnewhorizon.gtnhlib.config.ConfigurationManager;
  * <p>
  * Adding a config class: create it with {@code @Config(modid = "gregguns", category = "...")}, add it to
  * {@link #CLASSES}, and document every key in {@code docs/config.md}. For a field the client reads or that gates server
- * behaviour, annotate it {@code @Config.Sync} (GGS-01-03); the tests then require it to be listed as expected.
+ * behavior, annotate it {@code @Config.Sync} (GGS-01-03); the tests then require it to be listed as expected.
  */
 // Spec: docs/gregguns-spec/01-core/config-gtnhlib.md (GGS-01-01)
 public final class GregGunsConfig {

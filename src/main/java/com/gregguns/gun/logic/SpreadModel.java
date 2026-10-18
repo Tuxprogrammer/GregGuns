@@ -13,7 +13,7 @@ import java.util.Random;
  * <p>
  * Spec: gun-lifecycle.md section 5, "How the projectile applies spread": yaw and pitch each get an independent
  * uniform offset in +-{@code spread * 40} degrees, where spread is {@code accuracy * accuracyBonus} and the accuracy
- * bonus is {@code (1 - armour bonus) * (zoomed ? zoombonus : 1)}.
+ * bonus is {@code (1 - armor bonus) * (zoomed ? zoombonus : 1)}.
  */
 public final class SpreadModel {
 
@@ -24,7 +24,7 @@ public final class SpreadModel {
 
     /** The multiplier a context applies to the gun's base spread. */
     public static double multiplier(GunStats stats, ShotContext ctx) {
-        double m = (1.0 - ctx.armourAccuracyBonus()) * ctx.accuracyScale();
+        double m = (1.0 - ctx.armorAccuracyBonus()) * ctx.accuracyScale();
         if (ctx.zoomed() && stats.hasScope()) {
             m *= stats.zoomSpreadMultiplier();
         }

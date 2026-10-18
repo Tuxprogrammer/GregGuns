@@ -17,8 +17,8 @@ import cpw.mods.fml.relauncher.Side;
  * Event wiring for guns, registered once from the guns module. Both sides:
  * <ul>
  * <li>the server ticks each player's gun at the end of the player tick;</li>
- * <li>holding a gun, the attack button must not break blocks (the click is the trigger). The break speed is cancelled
- * and a left-click on a block is cancelled, which also covers creative mode.</li>
+ * <li>holding a gun, the attack button must not break blocks (the click is the trigger). The break speed is canceled
+ * and a left-click on a block is canceled, which also covers creative mode.</li>
  * </ul>
  *
  * <p>

@@ -6,13 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.gregguns.gun.logic.GunCatalogue.AmmoIds;
+import com.gregguns.gun.logic.GunCatalog.AmmoIds;
 import com.gregguns.gun.logic.ReloadStateMachine.CancelReason;
 import com.gregguns.gun.logic.ReloadStateMachine.Event;
 
 class ReloadStateMachineTest {
 
-    private static final GunStats PISTOL = GunCatalogue.PISTOL;
+    private static final GunStats PISTOL = GunCatalog.PISTOL;
 
     /** A revolver-style gun: loads loose bullets, no magazine item, six rounds per item. */
     private static final GunStats REVOLVER = GunStats.builder("revolver")
@@ -98,13 +98,13 @@ class ReloadStateMachineTest {
     }
 
     @Test
-    void cancellingLeavesGunAndInventoryUntouched() {
+    void cancelingLeavesGunAndInventoryUntouched() {
         ReloadStateMachine m = new ReloadStateMachine();
         GunState st = new GunState(4);
         MapAmmoInventory inv = new MapAmmoInventory().with(AmmoIds.NINE_MM_PISTOL_MAGAZINE, 1);
         m.start(PISTOL, st, inv);
         runToEnd(m, PISTOL, st, inv, 10);
-        assertEquals(Event.CANCELLED, m.cancel(CancelReason.WEAPON_SWITCH));
+        assertEquals(Event.CANCELED, m.cancel(CancelReason.WEAPON_SWITCH));
         assertEquals(CancelReason.WEAPON_SWITCH, m.lastCancelReason());
         assertEquals(4, st.loaded());
         assertEquals(1, inv.items(AmmoIds.NINE_MM_PISTOL_MAGAZINE));
@@ -120,7 +120,7 @@ class ReloadStateMachineTest {
         MapAmmoInventory inv = new MapAmmoInventory().with(AmmoIds.NINE_MM_PISTOL_MAGAZINE, 1);
         m.start(PISTOL, st, inv);
         inv.items.put(AmmoIds.NINE_MM_PISTOL_MAGAZINE, 0); // the player dropped it
-        assertEquals(Event.CANCELLED, runToEnd(m, PISTOL, st, inv, 35));
+        assertEquals(Event.CANCELED, runToEnd(m, PISTOL, st, inv, 35));
         assertEquals(CancelReason.NO_AMMO, m.lastCancelReason());
         assertEquals(5, st.loaded());
         assertEquals(0, inv.rounds(AmmoIds.NINE_MM));

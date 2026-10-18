@@ -47,7 +47,7 @@ public final class AmmoHud {
     private static final int BAR_HEIGHT = 3;
     private static final int BAR_BACK = 0x80000000;
     private static final int BAR_FILL = 0xFF55FF55;
-    private static final int TEXT_COLOUR = 0xFFFFFF;
+    private static final int TEXT_COLOR = 0xFFFFFF;
 
     private final ClientGunMirror mirror;
 
@@ -77,11 +77,11 @@ public final class AmmoHud {
         boolean reloading = mirror.isReloading();
 
         List<String> lines = new ArrayList<>();
-        EnumChatFormatting roundColour = state.canFire(stats) ? EnumChatFormatting.WHITE : EnumChatFormatting.RED;
+        EnumChatFormatting roundColor = state.canFire(stats) ? EnumChatFormatting.WHITE : EnumChatFormatting.RED;
         lines.add(
             StatCollector.translateToLocalFormatted(
                 "gregguns.hud.rounds",
-                roundColour.toString() + state.loaded() + EnumChatFormatting.RESET,
+                roundColor.toString() + state.loaded() + EnumChatFormatting.RESET,
                 stats.magazineSize()));
         int magazines = new PlayerAmmoStore(player).count(stats.ammoType());
         lines.add(StatCollector.translateToLocalFormatted("gregguns.hud.magazines", magazines));
@@ -98,7 +98,7 @@ public final class AmmoHud {
             int width = font.getStringWidth(HudLayout.stripFormatting(text));
             int x = HudLayout.rightAlignedX(res.getScaledWidth(), width, ClientConfig.hudOffsetX);
             int y = HudLayout.lineY(res.getScaledHeight(), ClientConfig.hudOffsetY, lines.size(), i, LINE_HEIGHT);
-            font.drawStringWithShadow(text, x, y, TEXT_COLOUR);
+            font.drawStringWithShadow(text, x, y, TEXT_COLOR);
         }
         if (reloading) {
             int right = res.getScaledWidth() - Math.max(0, ClientConfig.hudOffsetX);

@@ -26,7 +26,7 @@ public final class GunClientHooks {
         public void onReloadStarted(EntityLivingBase entity, GunStats stats, int ticks) {}
 
         @Override
-        public void onReloadCancelled(EntityLivingBase entity) {}
+        public void onReloadCanceled(EntityLivingBase entity) {}
 
         @Override
         public void setZoom(EntityLivingBase entity, boolean zoomed, double fovMultiplier) {}

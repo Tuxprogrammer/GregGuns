@@ -29,7 +29,7 @@ public final class DamageSources {
      * @param type        the damage type
      * @param projectile  the projectile entity (the direct cause), may be {@code null} for a beam
      * @param shooter     the shooter (the attacker and killer), may be {@code null}
-     * @param penetration the share of the damage that skips armour, 0..1
+     * @param penetration the share of the damage that skips armor, 0..1
      * @return a fresh source; use it for one hit
      */
     public static RangedDamageSource ranged(DamageType type, Entity projectile, Entity shooter, double penetration) {
@@ -41,7 +41,7 @@ public final class DamageSources {
      *
      * @param type        the damage type
      * @param attacker    the attacker, may be {@code null}
-     * @param penetration the share of the damage that skips armour, 0..1
+     * @param penetration the share of the damage that skips armor, 0..1
      * @return a fresh source; use it for one hit
      */
     public static DirectDamageSource direct(DamageType type, Entity attacker, double penetration) {
@@ -58,8 +58,8 @@ public final class DamageSources {
      * @param type        the damage type
      * @param projectile  the projectile entity, may be {@code null}
      * @param shooter     the shooter, may be {@code null} (counts as an NPC)
-     * @param damage      raw damage before armour, after drop-off; the damage factor is applied here
-     * @param penetration the share of the damage that skips armour, 0..1
+     * @param damage      raw damage before armor, after drop-off; the damage factor is applied here
+     * @param penetration the share of the damage that skips armor, 0..1
      * @return what {@code attackEntityFrom} returned: true when the target took the hit
      */
     public static boolean hit(Entity target, DamageType type, Entity projectile, Entity shooter, float damage,

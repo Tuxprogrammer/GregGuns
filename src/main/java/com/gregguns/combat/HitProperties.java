@@ -16,7 +16,7 @@ public final class HitProperties {
     private final double penetration;
     private boolean ignoreInvulnerabilityFrames;
     private boolean secondaryEffects = true;
-    private boolean armourSettled;
+    private boolean armorSettled;
     private int savedHurtResistantTime = -1;
     private double penetrationScale = 1.0;
 
@@ -31,7 +31,7 @@ public final class HitProperties {
         return type;
     }
 
-    /** @return the penetration of this hit, 0..1 (the share of damage that skips armour before resistances) */
+    /** @return the penetration of this hit, 0..1 (the share of damage that skips armor before resistances) */
     public double penetration() {
         return penetration;
     }
@@ -51,17 +51,17 @@ public final class HitProperties {
         return secondaryEffects;
     }
 
-    /** @return true once the damage handler has applied armour, so vanilla must not apply it again */
-    boolean isArmourSettled() {
-        return armourSettled;
+    /** @return true once the damage handler has applied armor, so vanilla must not apply it again */
+    boolean isArmorSettled() {
+        return armorSettled;
     }
 
     void setPenetrationScale(double scale) {
         this.penetrationScale = Double.isNaN(scale) ? 1.0 : Math.max(0.0, scale);
     }
 
-    void setArmourSettled(boolean settled) {
-        this.armourSettled = settled;
+    void setArmorSettled(boolean settled) {
+        this.armorSettled = settled;
     }
 
     void setIgnoreInvulnerabilityFrames(boolean ignore) {

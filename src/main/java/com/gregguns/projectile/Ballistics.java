@@ -1,7 +1,7 @@
 package com.gregguns.projectile;
 
 /**
- * The per-tick flight maths of a bullet: drag, gravity, distance travelled and the visual rotation. Plain Java with no
+ * The per-tick flight maths of a bullet: drag, gravity, distance traveled and the visual rotation. Plain Java with no
  * Minecraft types and no allocation, so the entity can call it every tick and tests can drive it directly. Units:
  * blocks, blocks per tick, degrees.
  */

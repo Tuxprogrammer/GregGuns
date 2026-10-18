@@ -62,12 +62,12 @@ public final class RangedDamageSource extends EntityDamageSourceIndirect impleme
     }
 
     /**
-     * Vanilla's unblockable flag, which both vanilla and mod armour read. True for the unresistable type, and for the
-     * rest of a hit once the damage handler has applied armour itself (so vanilla's own armour step does not run a
+     * Vanilla's unblockable flag, which both vanilla and mod armor read. True for the unresistable type, and for the
+     * rest of a hit once the damage handler has applied armor itself (so vanilla's own armor step does not run a
      * second time).
      */
     @Override
     public boolean isUnblockable() {
-        return super.isUnblockable() || hit.isArmourSettled();
+        return super.isUnblockable() || hit.isArmorSettled();
     }
 }

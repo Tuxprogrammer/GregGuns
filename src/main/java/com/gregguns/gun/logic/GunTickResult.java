@@ -18,7 +18,7 @@ public final class GunTickResult {
         return shot;
     }
 
-    /** The reload event of this call (started, completed, cancelled, rejected, or none). */
+    /** The reload event of this call (started, completed, canceled, rejected, or none). */
     public ReloadStateMachine.Event reload() {
         return reload;
     }

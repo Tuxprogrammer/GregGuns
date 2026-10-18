@@ -63,6 +63,6 @@ public final class DirectDamageSource extends EntityDamageSource implements GunD
     /** See {@link RangedDamageSource#isUnblockable()}. */
     @Override
     public boolean isUnblockable() {
-        return super.isUnblockable() || hit.isArmourSettled();
+        return super.isUnblockable() || hit.isArmorSettled();
     }
 }

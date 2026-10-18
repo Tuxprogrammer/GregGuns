@@ -42,7 +42,7 @@ public final class RenderBullet extends Render {
         GL11.glPushMatrix();
         try {
             GL11.glTranslated(x, y, z);
-            // The bullet is modelled along +X; yaw is atan2(x, z), so turn by yaw - 90 about Y, then tilt about Z.
+            // The bullet is modeled along +X; yaw is atan2(x, z), so turn by yaw - 90 about Y, then tilt about Z.
             GL11.glRotatef(heading - 90.0F, 0.0F, 1.0F, 0.0F);
             GL11.glRotatef(pitch, 0.0F, 0.0F, 1.0F);
             GL11.glDisable(GL11.GL_LIGHTING);
@@ -65,7 +65,7 @@ public final class RenderBullet extends Render {
         }
     }
 
-    /** One quad centred on the origin, long in X, wide in Y or Z. */
+    /** One quad centered on the origin, long in X, wide in Y or Z. */
     private static void quad(Tessellator t, double cx, double halfY, double halfZ) {
         t.addVertexWithUV(cx - HALF_LENGTH, -halfY, -halfZ, 0.0, V_MAX);
         t.addVertexWithUV(cx + HALF_LENGTH, -halfY, -halfZ, U_MAX, V_MAX);

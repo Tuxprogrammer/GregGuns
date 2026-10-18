@@ -1,13 +1,13 @@
 package com.gregguns.combat;
 
 /**
- * Damage drop-off over distance travelled, for projectiles. Full damage up to the start distance, the minimum damage
+ * Damage drop-off over distance traveled, for projectiles. Full damage up to the start distance, the minimum damage
  * beyond the end distance, and a straight line between. Plain Java, no Minecraft types.
  *
  * <p>
  * The caller measures the distance from the projectile's first-tick position, in blocks.
  */
-// Spec: docs/techguns-spec/02-guns/gun-catalogue.md (drop-off formula)
+// Spec: docs/techguns-spec/02-guns/gun-catalog.md (drop-off formula)
 public final class DamageFalloff {
 
     private DamageFalloff() {}
@@ -20,7 +20,7 @@ public final class DamageFalloff {
      * @param start    distance in blocks up to which damage is {@code base} (inclusive)
      * @param end      distance in blocks beyond which damage is {@code min}; at least {@code start}. Equal to
      *                 {@code start} means a hard step
-     * @param distance distance travelled in blocks; negative values count as zero
+     * @param distance distance traveled in blocks; negative values count as zero
      * @return the damage, between {@code min} and {@code base}; a {@code min} above {@code base} counts as
      *         {@code base}
      * @throws IllegalArgumentException if any value is NaN or negative (except {@code distance}), or

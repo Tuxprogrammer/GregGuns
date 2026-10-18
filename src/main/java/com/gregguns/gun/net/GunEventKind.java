@@ -9,7 +9,7 @@ public enum GunEventKind {
     SHOT_FIRED,
     /** A reload began; the argument is its duration in ticks. */
     RELOAD_STARTED,
-    /** A reload was cancelled or refused. The argument is unused. */
+    /** A reload was canceled or refused. The argument is unused. */
     RELOAD_ENDED,
     /** The shooter's zoom changed; the argument is 1 for zoomed, 0 for not. The shooter only. */
     ZOOM

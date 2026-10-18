@@ -103,7 +103,7 @@ public final class PacketGunEvent extends ClientboundPacket {
                         .serverReloadEnded(entity);
                 } else {
                     GunClientHooks.events()
-                        .onReloadCancelled(entity);
+                        .onReloadCanceled(entity);
                 }
                 break;
             case ZOOM:

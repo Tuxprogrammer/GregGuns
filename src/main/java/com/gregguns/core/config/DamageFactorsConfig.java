@@ -29,12 +29,12 @@ public class DamageFactorsConfig {
     @Config.RangeFloat(min = 0.0F, max = 100.0F)
     public static float damageFactorNPC = 1.0F;
 
-    @Config.Comment({ "Scales the armour penetration of non-player attackers against players. 0 makes armour",
+    @Config.Comment({ "Scales the armor penetration of non-player attackers against players. 0 makes armor",
         "fully effective against them. Range 0 to 1. Default: 1.0." })
     @Config.RangeFloat(min = 0.0F, max = 1.0F)
     public static float armorPenetrationMultiplierNPCtoPlayer = 1.0F;
 
-    @Config.Comment({ "Scales the armour penetration of a player's shots against other players. Range 0 to 1.",
+    @Config.Comment({ "Scales the armor penetration of a player's shots against other players. Range 0 to 1.",
         "Default: 1.0." })
     @Config.RangeFloat(min = 0.0F, max = 1.0F)
     public static float armorPenetrationMultiplierPvP = 1.0F;

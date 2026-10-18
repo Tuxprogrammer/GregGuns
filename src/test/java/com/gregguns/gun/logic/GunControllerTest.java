@@ -6,13 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import com.gregguns.gun.logic.GunCatalogue.AmmoIds;
+import com.gregguns.gun.logic.GunCatalog.AmmoIds;
 import com.gregguns.gun.logic.ReloadStateMachine.CancelReason;
 import com.gregguns.gun.logic.ReloadStateMachine.Event;
 
 class GunControllerTest {
 
-    private static final GunStats PISTOL = GunCatalogue.PISTOL;
+    private static final GunStats PISTOL = GunCatalog.PISTOL;
     private static final GunStats SCOPED = GunStats.builder("scoped")
         .ammoType("a")
         .magazine(10)
@@ -72,7 +72,7 @@ class GunControllerTest {
             c.reload()
                 .isReloading());
         GunTickResult r = c.tick(PISTOL, st, inv, false, false);
-        assertEquals(Event.CANCELLED, r.reload());
+        assertEquals(Event.CANCELED, r.reload());
         assertEquals(
             CancelReason.WEAPON_SWITCH,
             c.reload()
@@ -92,7 +92,7 @@ class GunControllerTest {
         }
         c.triggerPressed();
         GunTickResult r = tick(c, st, inv);
-        assertEquals(Event.CANCELLED, r.reload());
+        assertEquals(Event.CANCELED, r.reload());
         assertEquals(
             CancelReason.FIRE,
             c.reload()

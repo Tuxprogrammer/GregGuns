@@ -3,10 +3,10 @@ package com.gregguns.gun.logic;
 /**
  * Stat definitions for the guns built so far. Later guns are added here as their milestones land.
  */
-public final class GunCatalogue {
+public final class GunCatalog {
 
     /**
-     * Ammo type ids used by the catalogue: the GregGuns registry names of the ammo items, as declared by
+     * Ammo type ids used by the catalog: the GregGuns registry names of the ammo items, as declared by
      * {@code com.gregguns.item.ammo.AmmoTypes}.
      */
     public static final class AmmoIds {
@@ -50,5 +50,5 @@ public final class GunCatalogue {
         .ai(24, 30, 3, 10)
         .build();
 
-    private GunCatalogue() {}
+    private GunCatalog() {}
 }

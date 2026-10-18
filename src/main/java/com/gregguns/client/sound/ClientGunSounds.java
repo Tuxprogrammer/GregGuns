@@ -22,7 +22,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  *
  * <p>
  * Fire and dry-fire are one-shot sounds at the shooter's muzzle. A reload sound follows the player and is cut off by
- * {@link #stopReload()}, or by the {@code stillValid} check failing (reload cancelled, gun switched away). A second
+ * {@link #stopReload()}, or by the {@code stillValid} check failing (reload canceled, gun switched away). A second
  * reload sound within {@link ReloadSoundGate#WINDOW_TICKS} ticks of the previous one is suppressed. Client only; main
  * thread.
  */
@@ -69,7 +69,7 @@ public final class ClientGunSounds {
      *
      * @param shooter    the local player
      * @param event      an unprefixed reload event name
-     * @param stillValid asked every sound tick; return false once the reload is cancelled or the gun is switched away
+     * @param stillValid asked every sound tick; return false once the reload is canceled or the gun is switched away
      * @return true if it started, false if suppressed by the double-play window
      */
     public boolean startReload(EntityPlayer shooter, String event, BooleanSupplier stillValid) {
@@ -88,7 +88,7 @@ public final class ClientGunSounds {
         return true;
     }
 
-    /** Cuts off the reload sound, if one is playing. Call when a reload is cancelled or the gun is deselected. */
+    /** Cuts off the reload sound, if one is playing. Call when a reload is canceled or the gun is deselected. */
     public void stopReload() {
         cutOff();
         reloadGate.reset();

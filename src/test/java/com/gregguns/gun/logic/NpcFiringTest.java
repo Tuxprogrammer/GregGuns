@@ -13,7 +13,7 @@ import com.gregguns.gun.logic.NpcFiring.Scaling;
 
 class NpcFiringTest {
 
-    private static final GunStats PISTOL = GunCatalogue.PISTOL;
+    private static final GunStats PISTOL = GunCatalog.PISTOL;
 
     @Test
     void difficultyTableMatchesTheSpec() {

@@ -101,7 +101,7 @@ public final class GunClientForgeEvents {
     }
 
     /**
-     * Draws the scope: a square sized by the screen height, centred, shifted by the recoil kick, with black bars
+     * Draws the scope: a square sized by the screen height, centered, shifted by the recoil kick, with black bars
      * filling the rest of the screen.
      */
     private static void drawScope(ScopeSpec scope, ScaledResolution res, double kick) {

@@ -26,7 +26,7 @@ public final class GunsClientModule implements ClientModule {
 
     /**
      * @return the gun animation hooks: {@code onShotFired}, {@code onShotEcho}, {@code onReloadStarted},
-     *         {@code onReloadCancelled}, {@code setZoom}; client only, reached through the proxy
+     *         {@code onReloadCanceled}, {@code setZoom}; client only, reached through the proxy
      */
     public static GunAnimations animations() {
         return ANIMATIONS;
