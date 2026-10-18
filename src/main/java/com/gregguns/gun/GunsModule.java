@@ -8,12 +8,15 @@ import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.gun.server.GunEvents;
 import com.gregguns.gun.server.GunKeybinds;
+import com.gregguns.gun.server.GunScenarios;
 import com.gregguns.item.ammo.AmmoItems;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.part.PartItems;
 import com.gregguns.machine.AmmoPressMachines;
 import com.gregguns.projectile.ProjectileModule;
 import com.gregguns.recipe.GregGunsRecipeMaps;
+import com.gregguns.recipe.GunRecipeScenarios;
+import com.gregguns.recipe.GunRecipes;
 import com.gregguns.recipe.ProductionRecipes;
 import com.gregguns.recipe.ProductionScenarios;
 
@@ -55,8 +58,11 @@ public final class GunsModule implements GregGunsModule {
         // Pulled into M1 from M4 for the pistol slice: the LV Ammo Press and the 9mm chain's recipes.
         AmmoPressMachines.register();
         ProductionRecipes.register();
+        GunRecipes.register();
         if (DevEnvironment.isActive()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            GunRecipeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            GunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
         ProjectileModule.init();
         GunEvents.register();

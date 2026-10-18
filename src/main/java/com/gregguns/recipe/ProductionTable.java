@@ -108,7 +108,7 @@ public final class ProductionTable {
         private final int circuit;
         private final List<Input> inputs;
 
-        private Row(String id, String output, int outputCount, Tier tier, Target target, int seconds, int circuit,
+        Row(String id, String output, int outputCount, Tier tier, Target target, int seconds, int circuit,
             Input... inputs) {
             this.id = id;
             this.output = output;
