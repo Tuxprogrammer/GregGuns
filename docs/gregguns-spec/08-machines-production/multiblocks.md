@@ -431,6 +431,18 @@ Pieces `gate`, `bay` and `cap`. The check places `gate`, loops `bay` while it ma
 | 82 | Unit test over the shape strings |
 | 83, 84 | Code review and the texture-page unit test |
 
+## Ammunition Works built notes
+
+Built as `MTEAmmoWorks` (ID 20105) with pure data in `AmmoWorksShape` and `AmmoWorksRecipeSpec`, the casing block `BlockWorksCasing` (`gregguns:casings`, metas Works Casing and Ram Housing, texture page 50). Deviations from the sheet, all marked `// Deviation:` in code:
+
+- **Shape characters.** StructureLib 1.4.45 reserves space (skip), `-` (air) and `~`; `.` is not a wildcard, so the sheet's `.` is a space. Feeder and bay layers get an empty top row to share the station's seven rows.
+- **Bay loop.** A failed bay probe is checked into a scratch error list and its casing count is rolled back; the station check then reports a real mismatch. Fewer than 2 bays gives the named error `gregguns.machine.ammo_works.error.too_few_bays`; a ninth bay fails the station check.
+- **Belt tier** is GT's item pipe casing value (1 to 8, as the Mixer numbers it), so "belt tier 2" is the second pipe casing. Mixed tiers fail inside GT's tiered element.
+- **No energy hatch tier limit.** The sheet says LV to IV; parallels are already power-limited, so higher hatches are allowed, as are multi-amp hatches.
+- **Animation not built.** No ram, belt-round or crane drawing and no screwdriver toggle; the screwdriver toggles input separation. The Ram Housing active texture is not wired (GT casings have no active state), and casings render as plain cubes without GT's machine-metal tint.
+- **Hologram** takes the bay count from the length channel if present, else the stack size (2 to 8).
+- **Voiding** uses GT's void protection mode (item modes only), on by default; a full Output Bus pauses the hall.
+
 ## Open questions
 
 - **Glass tier numbering.** Does `BorosilicateGlass` tier map to GT voltage indices, and is there glass up to IV? The Retort's rating gate needs it. Confirm in M4.
