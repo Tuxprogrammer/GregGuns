@@ -58,6 +58,17 @@ class MuzzleSheetsTest {
     }
 
     @Test
+    void handCannonFlashPlaysEveryPaintedFrameOfMuzzleflash4x4() throws IOException {
+        int painted = paintedCells(load("/assets/gregguns/textures/fx/muzzleflash4x4.png"));
+        assertEquals(painted, HandCannonProfile.MUZZLE_FLASH_FRAMES);
+        assertEquals(
+            painted,
+            HandCannonProfile.TRANSFORMS.muzzleFlash()
+                .sheet()
+                .frames());
+    }
+
+    @Test
     void revolverFlashPlaysEveryPaintedFrameOfMuzzleflash4x4() throws IOException {
         int painted = paintedCells(load("/assets/gregguns/textures/fx/muzzleflash4x4.png"));
         assertEquals(painted, RevolverProfile.MUZZLE_FLASH_FRAMES);

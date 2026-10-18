@@ -69,34 +69,54 @@ public final class RevolverProfile {
         // front sight: on top of the muzzle end
         new BoxSpec("sight", 0, 48, 26, 2, 2, 2, 22f, -5.5f, -1f, NO_PIVOT, 0f), };
 
+    /** The sheet's first-person scale, recorded for Techguns' smaller model. */
+    private static final double SHEET_FP_SCALE = 1.5;
+    /**
+     * The first-person scale from {@link FirstPersonFit}: the 31-texel revolver is drawn as long on screen as the
+     * 9mm Pistol (15/16 of a block), which is about S(0.48), not the sheet's S(1.5).
+     */
+    public static final double FP_SCALE = FirstPersonFit
+        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
+    /** The sheet's fire and reload translation deltas are multiplied by this, because the scale changed. */
+    private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
+    /** The idle first-person translation from {@link FirstPersonFit}: this model's box centre on the family anchor. */
+    private static final double[] IDLE = FirstPersonFit
+        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+
     /** The sheet's render transforms, timing and muzzle flash for the revolver. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
 
     private RevolverProfile() {}
 
     private static GunTransforms buildTransforms() {
-        // First person (X-family): rotX180, rotY-45, S(1.5), then the state row.
+        // First person (X-family): rotX180, rotY-45, S(FP_SCALE), then the state row.
+        // Deviation: the sheet says S(1.5), which drew the revolver far too big (our model is larger than the one the
+        // sheet was written for). The scale and the idle position follow the FirstPersonFit rule; the sheet's fire
+        // and reload deltas are multiplied by K so the gun moves as far on screen as the sheet intends.
+        double x0 = IDLE[0];
+        double y0 = IDLE[1];
+        double z0 = IDLE[2];
         TransformProgram fpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(-45)
-            .scale(1.5)
+            .scale(FP_SCALE)
             .build();
         TransformProgram fpIdle = TransformProgram.builder()
-            .translate(0.20, -0.5, -0.45)
+            .translate(x0, y0, z0)
             .build();
         // Firing: a strong muzzle flip, rotZ(35 yF), the gun jumping up and back.
         TransformProgram fpFire = TransformProgram.builder()
             .rotZ((p, part) -> 35.0 * yF(p))
-            .translate((p, part) -> 0.2 + 0.5 * yF(p), (p, part) -> -0.5 + 0.4 * yF(p), TransformProgram.c(-0.45))
+            .translate((p, part) -> x0 + K * 0.5 * yF(p), (p, part) -> y0 + K * 0.4 * yF(p), TransformProgram.c(z0))
             .build();
         // Reload: s = P66(p); the gun tips out to the side to open the cylinder, then back.
         TransformProgram fpReload = TransformProgram.builder()
             .rotZ((p, part) -> 25.0 * p66(p))
             .rotY((p, part) -> -20.0 * p66(p))
             .translate(
-                (p, part) -> 0.2 + 0.6 * p66(p),
-                (p, part) -> -0.5 + 0.3 * p66(p),
-                (p, part) -> -0.45 + 0.25 * p66(p))
+                (p, part) -> x0 + K * 0.6 * p66(p),
+                (p, part) -> y0 + K * 0.3 * p66(p),
+                (p, part) -> z0 + K * 0.25 * p66(p))
             .build();
         // Third person: rotX180, rotY225, S(0.85), T(-1.4, -0.8, 0). Aimed extra translate (0, -0.05, 0.2).
         TransformProgram tpBase = TransformProgram.builder()
@@ -125,12 +145,17 @@ public final class RevolverProfile {
             .translate(-0.5, -0.2, 0)
             .build();
         // muzzleFlash sheet, (-0.4, -2.5, 0.7), scale 1.85; additive because the GregGuns sheet is black-backed.
+        // Deviation: the sheet's first-person flash offset was placed for Techguns' model. The flash is drawn in a
+        // fixed
+        // frame, not on the gun, so after the fit-rule rescale it floated above the muzzle. Measured on screen
+        // (960x540 sweep): +0.5 on x moves it 33 px up, +0.5 on z moves it 49 px right. (-1.25, -2.5, 2.0) puts it on
+        // the muzzle of an X-family handgun held at FirstPersonFit.ANCHOR_X_FAMILY.
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash4x4.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.4,
+            -1.25,
             -2.5,
-            0.7,
+            2.0,
             1.85,
             new double[] { 0, 0, 0 },
             true,

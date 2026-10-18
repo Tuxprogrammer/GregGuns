@@ -32,6 +32,7 @@ public final class GunClientSetup {
         GunRenderers.registerPistol9mm(GunItems.pistol());
         GunRenderers.registerRevolver(GunItems.revolver());
         GunRenderers.registerSawedOff(GunItems.sawedOff());
+        GunRenderers.registerHandCannon(GunItems.handcannon());
         GunClientHooks.installSync(mirror);
         GunInputHandler input = new GunInputHandler(mirror);
         FMLCommonHandler.instance()

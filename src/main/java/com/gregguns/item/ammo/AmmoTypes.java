@@ -25,6 +25,12 @@ public final class AmmoTypes {
     /** Shotgun shell. LV (0001). Loose, loaded into the Sawed Off one shell per round. */
     public static final AmmoType SHOTGUN_SHELL = new AmmoType("shotgun_shell", "ammo_shotgun_shell", Tier.LV);
 
+    /**
+     * Stone bullet: the Hand Cannon's round, loaded one at a time. Steam/ULV (0001); made by hand or in the Steam Ammo
+     * Press (RC-27, RC-27b).
+     */
+    public static final AmmoType STONE = new AmmoType("stone", "ammo_stone_bullet", Tier.STEAM);
+
     /** 9mm Pistol Magazine: 3 rounds per refill (ammo.md magazine table). */
     public static final MagazineType NINE_MM_PISTOL = new MagazineType(
         "9mm_pistol",
@@ -40,6 +46,7 @@ public final class AmmoTypes {
     static {
         AMMO.put(NINE_MM.id(), NINE_MM);
         AMMO.put(SHOTGUN_SHELL.id(), SHOTGUN_SHELL);
+        AMMO.put(STONE.id(), STONE);
         MAGAZINES.put(NINE_MM_PISTOL.id(), NINE_MM_PISTOL);
     }
 

@@ -13,8 +13,8 @@ import com.gregguns.item.ammo.MagazineType;
  * Registers the gun items and holds them for other code (recipes, the renderer, the HUD).
  *
  * <p>
- * Registered so far: the 9mm Pistol, {@code gregguns:pistol_9mm}, the Revolver, {@code gregguns:revolver}, and the
- * Sawed Off, {@code gregguns:sawed_off}. Its
+ * Registered so far: the 9mm Pistol, {@code gregguns:pistol_9mm}, the Revolver, {@code gregguns:revolver}, the
+ * Sawed Off, {@code gregguns:sawed_off}, and the Hand Cannon, {@code gregguns:handcannon}. Its
  * recipe is the Assembler row in
  * {@code GunTable}, registered by {@code GunRecipes}. Registry names are what the pack config lists for Backhand (see
  * {@code docs/gregguns-spec/PACK-CHANGES.md}).
@@ -30,6 +30,7 @@ public final class GunItems {
     private static ItemGun pistol;
     private static ItemGun revolver;
     private static ItemGun sawedOff;
+    private static ItemGun handcannon;
 
     private GunItems() {}
 
@@ -48,6 +49,9 @@ public final class GunItems {
         sawedOff = registrar.registerItem(
             GunSoundEvents.SAWED_OFF,
             new ItemGun(GunSoundEvents.SAWED_OFF, GunCatalog.SAWED_OFF, Tier.LV, DamageType.PROJECTILE));
+        handcannon = registrar.registerItem(
+            GunSoundEvents.HANDCANNON,
+            new ItemGun(GunSoundEvents.HANDCANNON, GunCatalog.HANDCANNON, Tier.STEAM, DamageType.PROJECTILE));
     }
 
     /** @return the 9mm Pistol; {@code null} before registration or when the guns module is off */
@@ -63,6 +67,11 @@ public final class GunItems {
     /** @return the Revolver; {@code null} before registration or when the guns module is off */
     public static ItemGun revolver() {
         return revolver;
+    }
+
+    /** @return the Hand Cannon; {@code null} before registration or when the guns module is off */
+    public static ItemGun handcannon() {
+        return handcannon;
     }
 
     /**

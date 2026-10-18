@@ -57,6 +57,7 @@ public final class GunRecipeScenarios {
                 GunTable.SAWED_OFF));
         registry.register(new ShellPressRecipe());
         registry.register(new RevolverPartRecipes());
+        registry.register(new HandCannonRecipeScenario());
     }
 
     private static ItemStack modStack(String name, int count) {
