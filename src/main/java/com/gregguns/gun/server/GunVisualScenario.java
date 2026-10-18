@@ -111,7 +111,8 @@ public final class GunVisualScenario implements Scenario {
                 case 25 -> signal(a, "shot", p + "-first-person-idle");
                 case 30 -> signal(a, "arm", "shot", p + "-first-person-fire", "1");
                 case 32 -> signal(a, "fire", "1");
-                case 60 -> {
+                // Late enough for the slowest fire interval (the rifle's 25 ticks plus the client's click lag).
+                case 80 -> {
                     signal(a, "arm", "reload", p + "-first-person-reload", "22");
                     ServerGunHandler.onReloadKey(a);
                 }

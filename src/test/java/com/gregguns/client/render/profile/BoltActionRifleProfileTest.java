@@ -169,7 +169,7 @@ class BoltActionRifleProfileTest {
     void firstPersonBaseIsTheSheetsRotationsAtTheTunedScale() {
         GunTransforms t = BoltActionRifleProfile.TRANSFORMS;
         assertEquals(
-            Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", "S(0.4500,0.4500,0.4500)"),
+            Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", "S(0.4000,0.4000,0.4000)"),
             run(t.fpBase(), 0, 0));
         assertEquals(1, run(t.fpIdle(), 0, 0).size());
     }

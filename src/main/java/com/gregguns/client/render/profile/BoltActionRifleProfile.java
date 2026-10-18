@@ -57,14 +57,15 @@ public final class BoltActionRifleProfile {
 
     // Deviation: the sheet says first-person S(1.5) and T(-0.09, -0.37, 0.07) / idle T(0.1, -0.25, -0.5). It was
     // recorded for Techguns' 53 texel rifle; this one is 82 texels long and the sheet scale would fill the screen
-    // (the pistol needed half the sheet's scale for the same reason). Scale 0.45 and the offsets below put the rifle
-    // low on the right with the muzzle forward, tuned against screenshots (m2boltaction visual autotest). The sheet's
+    // (the pistol needed half the sheet's scale for the same reason). Scale 0.4 and the offsets below put the rifle
+    // on a diagonal from the lower right of the screen to a muzzle left of centre, found by projecting the model
+    // through the first-person camera and checked against screenshots (m2boltaction visual autotest). The sheet's
     // fire and reload offsets are multiplied by FP_AMP so they move the rifle the same distance on screen.
-    private static final double FP_SCALE = 0.45;
+    private static final double FP_SCALE = 0.4;
     private static final double FP_AMP = 1.5 / FP_SCALE;
-    private static final double FP_X = 1.0;
-    private static final double FP_Y = -1.0;
-    private static final double FP_Z = -1.5;
+    private static final double FP_X = -0.4;
+    private static final double FP_Y = -3.4;
+    private static final double FP_Z = -0.4;
 
     private static final float[] NO_PIVOT = { 0, 0, 0 };
 
@@ -149,13 +150,15 @@ public final class BoltActionRifleProfile {
             .scale(0.4)
             .translate(-0.31, -0.125, 0)
             .build();
+        // Deviation: the sheet's flash offset (-0.4, -3.0, 1.15) is where Techguns' muzzle was on screen; this
+        // offset puts the fixed-frame first-person flash on this model's muzzle (solved from the same projection).
         // muzzleFlash2 sheet, additive because the GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.4,
-            -3.0,
-            1.15,
+            -0.055,
+            0.005,
+            0.357,
             1.85,
             new double[] { 0, 0, 0 },
             true,
