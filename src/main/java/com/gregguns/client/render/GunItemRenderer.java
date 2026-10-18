@@ -123,7 +123,7 @@ final class GunItemRenderer implements IItemRenderer {
                 if (part == parts - 1 && type == ItemRenderType.EQUIPPED
                     && flash != AnimWindow.NONE
                     && t.muzzleFlash() != null) {
-                    GlFx.drawThirdPersonFlash(t.muzzleFlash(), flash, model.muzzle());
+                    GlFx.drawThirdPersonFlash(t.muzzleFlash(), flash, model.muzzle(), model.muzzleAlongX());
                 }
             } finally {
                 GL11.glPopMatrix();

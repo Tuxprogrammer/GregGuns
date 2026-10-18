@@ -70,6 +70,9 @@ death.attack.gregguns.radiation.player=%1$s was irradiated while trying to escap
 # Production chain: components, the Ammo Press and its recipe map
 item.gregguns.part_barrel_hardened.name=Hardened Steel Barrel
 item.gregguns.part_mechanical_2.name=Mechanical Parts T2
+item.gregguns.part_barrel_iron.name=Iron Barrel
+item.gregguns.part_mechanical_1.name=Mechanical Parts
+item.gregguns.part_stock_wooden.name=Wooden Stock
 gregguns.ammoPress=Ammo Press
 gregguns.machine.ammo_press.tooltip=Presses bullets and magazines
 gregguns.machine.ammo_press.type=Machine Type: Ammo Press
@@ -94,6 +97,7 @@ gregguns.machine.ammo_works.error.too_few_bays=The hall needs at least 2 press b
 
 # Guns: items, tooltips, keys and HUD
 item.gregguns.pistol_9mm.name=9mm Pistol
+item.gregguns.revolver.name=Revolver
 gregguns.gun.tooltip.ammo=Ammo: %s
 gregguns.gun.tooltip.loaded=Loaded: %s / %s
 gregguns.gun.tooltip.damage=Damage: %s
@@ -111,6 +115,45 @@ gregguns.hud.rounds=Rounds: %s / %s
 gregguns.hud.magazines=Magazines: %s
 gregguns.hud.reloading=Reloading %s%%
 
+# Armor: T1 sets (Scout "Bandit", Miner, Combat "Soldier"), components, tooltips, bonus labels, camo names
+item.gregguns.part_heavy_cloth.name=Heavy Cloth
+item.gregguns.t1_scout_helmet.name=Bandit Mask
+item.gregguns.t1_scout_chestplate.name=Bandit Vest
+item.gregguns.t1_scout_leggings.name=Bandit Pants
+item.gregguns.t1_scout_boots.name=Bandit Boots
+item.gregguns.t1_miner_helmet.name=Miner's Helmet
+item.gregguns.t1_miner_chestplate.name=Miner's Jacket
+item.gregguns.t1_miner_leggings.name=Miner's Pants
+item.gregguns.t1_miner_boots.name=Miner's Boots
+item.gregguns.t1_combat_helmet.name=Soldier's Helmet
+item.gregguns.t1_combat_chestplate.name=Soldier's Vest
+item.gregguns.t1_combat_leggings.name=Soldier's Pants
+item.gregguns.t1_combat_boots.name=Soldier's Boots
+item.gregguns.t1_scout.camoname.0=Desert
+item.gregguns.t1_scout.camoname.1=Forest
+item.gregguns.t1_scout.camoname.2=Snow
+item.gregguns.t1_scout.camoname.3=Black
+item.gregguns.t1_miner.camoname.0=Blue
+item.gregguns.t1_miner.camoname.1=Red
+item.gregguns.t1_miner.camoname.2=Green
+item.gregguns.t1_miner.camoname.3=Black
+gregguns.armor.tooltip.broken=Worn out: no protection until repaired
+gregguns.armor.tooltip.protection=Armor: %s physical, %s energy
+gregguns.armor.tooltip.bonus=%s: +%s
+gregguns.armor.tooltip.camo=Camo: %s
+gregguns.armor.bonus.speed=Speed
+gregguns.armor.bonus.jump=Jump
+gregguns.armor.bonus.fall_reduction=Fall damage reduction
+gregguns.armor.bonus.free_fall_height=Free fall height
+gregguns.armor.bonus.break_speed=Mining speed
+gregguns.armor.bonus.break_speed_water=Underwater mining speed
+gregguns.armor.bonus.extra_health=Extra health
+gregguns.armor.bonus.knockback_resistance=Knockback resistance
+gregguns.armor.bonus.step_assist=Step assist
+gregguns.armor.bonus.night_vision=Night vision
+gregguns.armor.bonus.gun_accuracy=Gun accuracy
+gregguns.armor.bonus.oxygen_gear=Oxygen gear
+gregguns.armor.bonus.cooling_system=Cooling system
 # Melee tools and the Stielgranate
 item.gregguns.combat_knife.name=Combat Knife
 item.gregguns.crowbar.name=Crowbar

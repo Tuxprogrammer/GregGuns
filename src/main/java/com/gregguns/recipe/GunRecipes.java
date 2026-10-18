@@ -3,6 +3,7 @@ package com.gregguns.recipe;
 import net.minecraft.item.ItemStack;
 
 import com.gregguns.GregGuns;
+import com.gregguns.item.part.PartItems;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
@@ -37,6 +38,7 @@ public final class GunRecipes {
         for (ProductionTable.Row row : GunTable.ROWS) {
             ProductionRecipes.addMachineRecipe(row);
         }
+        PartCraftingRecipes.register();
         addRecyclingData();
     }
 
@@ -65,5 +67,40 @@ public final class GunRecipes {
         }
         GTOreDictUnificator
             .addItemData(pistol, new ItemData(Materials.Steel, steel, new MaterialStack(Materials.Rubber, 2 * plate)));
+        addRevolverData(plate);
+    }
+
+    /**
+     * Recycling data of the Revolver and its iron and hand-made parts: iron and steel in the barrel, bronze in the
+     * mechanical parts, and the plates, screws and spring of the gun itself.
+     */
+    private static void addRevolverData(long plate) {
+        long screw = OrePrefixes.screw.getMaterialAmount();
+        long spring = OrePrefixes.springSmall.getMaterialAmount();
+        long barrelIron = GunComposition
+            .ironBarrelIron(OrePrefixes.stickLong.getMaterialAmount(), OrePrefixes.ring.getMaterialAmount());
+        long barrelSteel = GunComposition.ironBarrelSteel(screw);
+        long mechanical1 = GunComposition.mechanical1Bronze(OrePrefixes.gearGtSmall.getMaterialAmount(), spring);
+        attach(
+            PartItems.BARREL_IRON,
+            new ItemData(Materials.Iron, barrelIron, new MaterialStack(Materials.Steel, barrelSteel)));
+        attach(PartItems.MECHANICAL_1, new ItemData(Materials.Bronze, mechanical1));
+        long steel = GunComposition.revolverDirectSteel(plate, screw, spring) + barrelSteel;
+        attach(
+            GunTable.REVOLVER.output(),
+            new ItemData(
+                Materials.Steel,
+                steel,
+                new MaterialStack(Materials.Iron, barrelIron),
+                new MaterialStack(Materials.Bronze, mechanical1)));
+    }
+
+    private static void attach(String registryName, ItemData data) {
+        ItemStack stack = ProductionRecipes.modStack(registryName, 1);
+        if (stack == null) {
+            GregGuns.LOG.error("Cannot attach ItemData to {}: not registered", registryName);
+            return;
+        }
+        GTOreDictUnificator.addItemData(stack, data);
     }
 }

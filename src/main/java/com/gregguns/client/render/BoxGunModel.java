@@ -29,6 +29,7 @@ public final class BoxGunModel extends ModelBase implements GunModel {
     private final float scale;
     private final ResourceLocation[] textures;
     private final float[] muzzle;
+    private final boolean xFamily;
 
     /**
      * @param boxes     the boxes, each tagged with its part
@@ -41,6 +42,18 @@ public final class BoxGunModel extends ModelBase implements GunModel {
      */
     public BoxGunModel(BoxSpec[] boxes, int parts, int texWidth, int texHeight, float scale, String[] textures,
         float[] muzzle) {
+        this(boxes, parts, texWidth, texHeight, scale, textures, muzzle, false);
+    }
+
+    /**
+     * As the main constructor, for either model family.
+     *
+     * @param xFamily true if the muzzle points along +X in the gun frame (the sheet's X-family transform rows), so the
+     *                boxes are drawn as authored; false turns them a quarter turn to the Z family
+     */
+    public BoxGunModel(BoxSpec[] boxes, int parts, int texWidth, int texHeight, float scale, String[] textures,
+        float[] muzzle, boolean xFamily) {
+        this.xFamily = xFamily;
         this.textureWidth = texWidth;
         this.textureHeight = texHeight;
         this.scale = scale;
@@ -94,13 +107,20 @@ public final class BoxGunModel extends ModelBase implements GunModel {
         }
         GL11.glPushMatrix();
         try {
-            GL11.glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+            if (!xFamily) {
+                GL11.glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+            }
             for (ModelRenderer r : byPart[part]) {
                 r.render(scale);
             }
         } finally {
             GL11.glPopMatrix();
         }
+    }
+
+    @Override
+    public boolean muzzleAlongX() {
+        return xFamily;
     }
 
     @Override
