@@ -1,0 +1,43 @@
+# Techguns behavioural spec
+
+A complete description of **Techguns 0.1.2 alpha (Minecraft 1.7.10)**, written so GregGuns can recreate it faithfully without copying its code or assets. Techguns is All Rights Reserved. Implementers should work from these documents, not from the Techguns source.
+
+Each area folder starts with an `index.md`: overview, table of contents, cross-references and that area's suspected bugs.
+
+| Area | Covers |
+|---|---|
+| [01-core](01-core/index.md) | Mod lifecycle and registration order, **every config key**, packets, keybinds, HUD overlay, extended player state, event handlers, utilities, TConstruct/FTBU/TE integrations, access transformer |
+| [02-guns](02-guns/index.md) | Master catalogue of all 43 guns and 2 grenades (stats, ammo, AI stats), firing/reload lifecycle, per-gun behaviour, the damage and armour-penetration system, every gun recipe |
+| [03-gun-visuals-audio](03-gun-visuals-audio/index.md) | Gun models (part breakdowns), item renderers, view transforms, recoil/reload/muzzle-flash animations, scopes, all 62 gun textures, all 185 gun sounds |
+| [04-projectiles-fx](04-projectiles-fx/index.md) | All 30 projectile classes, explosions, the particle engine and its data-file grammar, the full FX catalogue, death effects and gibs, all FX textures and effect sounds |
+| [05-armor](05-armor/index.md) | Every armour piece and set, set bonuses, powered armour, flight gear (jetpack, glider, jump pack, anti-grav), masks and goggles, the extra Techguns inventory, armour models and all 82 textures |
+| [06-items](06-items/index.md) | Every item and meta sub-item, ammo and magazines, the component/material tree, special items and tools, fluids, loot tables, all 121 item recipes, all 177 item textures |
+| [07-blocks](07-blocks/index.md) | Every block and variant, special block behaviour, connected textures, multipart, block renderers and models, all 163 block textures (including the ones machines use) |
+| [08-machines-production](08-machines-production/index.md) | Machine framework (energy, security, redstone, upgrades, multiblocks), the GUI ID table, Ammo Press, Metal Press, Chem Lab, Fabricator, Reaction Chamber, Charging Station, every machine recipe, NEI, MineTweaker, GUI textures, machine sounds |
+| [09-machines-utility](09-machines-utility/index.md) | Repair Bench, Camo Bench, Scrapper (an unfinished stub), Ore Drill multiblock, Turret, explosive charges, chests, camp flag, Bio Blob |
+| [10-entities-npcs](10-entities-npcs/index.md) | All mobs (stats, equipment, AI, factions), the spawn system, spawn eggs, turret and helicopter entities, NPC models, textures and sounds |
+| [11-worldgen](11-worldgen/index.md) | Ore generation and ore clusters, the structure system and file format, every structure, loot, village integration, the structure authoring tools |
+
+**[BUGS.md](BUGS.md):** all suspected bugs, merged across areas and grouped by severity.
+
+## Facts about Techguns worth knowing up front
+
+- Several features are present in code but not reachable in 0.1.2:
+  - natural ore-cluster generation is switched off;
+  - the village bunker is never registered;
+  - the Scrapper and the Flashbang are unregistered;
+  - the Medkit and UV Emitter can't be obtained;
+  - the alien blaster's projectile entity is unregistered.
+
+  Each area doc marks these as dead or unfinished, so you can decide whether to build them.
+- The scanned structures and the connected-texture blocks hard-depend on **Chisel**.
+- The energy system is RF-based.
+
+## How this was produced
+
+- **Who wrote it:** eleven agents, one per area. Each was told to read every source file in its scope in full and view every texture, and to describe behaviour in its own words with no verbatim code.
+- **Coverage check:** a script confirmed that every one of the 900 asset files (textures, sounds, models, structure data, lang) and every one of the 632 Java classes is referenced somewhere in these docs.
+- **Known limits:**
+  - Sounds are described from file names, sizes and when they play, because the audio couldn't be listened to.
+  - Chisel's connected-texture algorithm is inferred, because Chisel isn't in the Techguns source.
+  - A few vanilla 1.7.10 behaviours are described from knowledge rather than source; each area index flags these.

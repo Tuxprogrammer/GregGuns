@@ -1,0 +1,91 @@
+# 02-guns: gun mechanics (Techguns 1.7.10, v0.1.2 alpha)
+
+This area covers every weapon item Techguns registers and the rules behind them: stats, firing, ammo and reload, charge, spread, zoom, akimbo, tool-guns, grenades, NPC use, the Techguns damage/armour pipeline, the weapon-stats config, and every gun recipe.
+
+Out of scope (cross-references):
+
+* models, item renderers, gun textures and sound files: **03-gun-visuals-audio**
+* projectile entities, impacts, explosions, trails and particles: **04-projectiles-fx**
+* armour items and `TGArmors` materials: **05-armor**
+* ammo and crafting-part items: **06-items**
+* the camo bench: **09-machines-utility**
+* NPCs, turrets and the ranged-AI task: **10-entities-npcs**
+* packets, extended player properties, keybinds, config file and tick/event plumbing: **01-core**
+
+## Source files covered
+
+| File | Role |
+|---|---|
+| `java/techguns/TGuns.java` | Constructs and registers all 43 guns and 2 grenades (plus an unregistered flashbang). Registers all gun and grenade recipes. |
+| `java/techguns/TGWeaponStats.java` | Per-gun stat overrides in `Techguns_WeaponStats.cfg`. |
+| `java/techguns/items/guns/*.java` (27 classes) | Gun and grenade behaviour. |
+| `java/techguns/damagesystem/*.java` (6 files) | Damage types, damage source, damage pipeline, armour material data class, two hook interfaces. |
+| `java/techguns/items/RecipeAkimboGun.java`, `RecipeAkimboSplit.java`, `ShapelessOreRecipeCopyNBT.java` | NBT-aware crafting recipes. |
+
+## Contents
+
+1. [gun-catalogue.md](gun-catalogue.md): how to decode the builder; master tables A–F (identity/ammo, damage/ballistics, handling/sounds, AI/visual hooks/textures, tool guns, grenades); weapon-stats config layout.
+2. [gun-lifecycle.md](gun-lifecycle.md): NBT, input, zoom, the fire algorithm, projectile spawn, NPC firing and AI parameters, auto and forced reload, akimbo, shared tool-gun logic, tooltips and lang keys, the sound trigger table, the client/server split.
+3. [per-gun-behaviour.md](per-gun-behaviour.md): class hierarchy and a section per class or gun (charge base, launchers, beams, tesla, sonic rifle, bio gun, power hammer, chainsaw, akimbo deltas, grenades, dead classes).
+4. [damage-system.md](damage-system.md): `DamageType`, `TGDamageSource`, the `LivingAttackEvent` entry point, the player and non-player damage pipelines, armour and penetration formulas, damage-factor config, `TGArmorMaterial`, death-message keys.
+5. [recipes.md](recipes.md): every gun and grenade recipe grid, loaded vs empty variants, akimbo combine/split, NBT-copy recipe.
+
+## Key facts at a glance
+
+* Every gun stores rounds in NBT `ammo` (short) and its camo in `camo` (byte). Item damage is only used to carry "rounds missing" out of a crafting recipe.
+* Fire control is a single per-player `fireDelay` tick counter, shared across all guns. A shot sets it to `minFiretime`; a reload sets it to `reloadtime − minFiretime`. Reloads refill the gun **instantly**; the delay is only a lockout.
+* Left-click guns fire through client prediction plus `PacketShootGun`. Only the server spawns projectiles, then broadcasts `GunFiredMessage` (recoil and muzzle FX) and `ReloadStartedMessage`.
+* Spread is a uniform random offset of ±`spread × 40`° on yaw and pitch. It is multiplied by `1 − armour accuracy bonus` and, while zoomed, by the gun's zoom bonus.
+* Damage falls off linearly with distance travelled, from `damage` at `dropStart` to `damageMin` at `dropEnd`.
+* Most TG projectile damage bypasses invulnerability frames. Damage is reduced by armour as `d·pen + d·(1−pen)·(25−armour)/25` (non-players), or through `ISpecialArmor` ratios (players). Armour against non-physical types is halved or zeroed for non-TG armour on mobs.
+* NPC shots deal 25–37.5% of listed damage (GenericNPC, by difficulty) or 100% (turrets). Then `DamageFactorNPC`, `DamageTurretToPlayer` or `DamagePvP` apply.
+
+## Suspected bugs
+
+| ID | Title | Location | What looks wrong | Severity |
+|---|---|---|---|---|
+| GUN-01 | Camo switch on a tag-less gun empties it | `java/techguns/items/guns/GenericGun.java:1088` | `switchCamo` creates an NBT tag containing only `camo` when the stack has none. `getCurrentAmmo` only initialises tag-less stacks, so the gun then reads 0 rounds (and any damage-encoded state is lost). This affects guns from `/give` or loot taken to the camo bench. | gameplay |
+| GUN-02 | Bio Gun charge cost wrong when low on ammo | `java/techguns/items/guns/Biogun.java:64` | If ammo < charge level, the code computes `level − ammo` instead of `ammo`. With ammo 1 and level 3 you get a level-2 shot for 1 round; with ammo 2 and level 3 you get level 1. `ammoConsumedOnFullCharge = 3` is set but never used. | gameplay |
+| GUN-03 | Bio Gun ignores NPC damage scaling | `java/techguns/items/guns/Biogun.java:41` | The projectile gets raw `damage` and `damageMin`, ignoring `damagebonus`, so NPC Bio Guns deal full damage even on Peaceful. | gameplay |
+| GUN-04 | Grenade Launcher ignores most stats and NPC scaling | `java/techguns/items/guns/GrenadeLauncher.java:42` | Damage isn't multiplied by `damagebonus` (full damage from NPCs, including on Peaceful). TTL (100), spread (0.05) and penetration (0) are hard-coded, so the configured TTL, accuracy and penetration and the armour/zoom accuracy bonus have no effect. A shadowing `speed` field is declared. | gameplay |
+| GUN-05 | Ignite flag doubles as block-damage flag; NPC Nether Blasters always ignite | `java/techguns/items/guns/CyberdemonBlaster.java:38`, `:46`; `Flamethrower.java:97` | `ignite` is passed into the projectile's block-damage parameter. For the Nether Blaster it defaults to true for non-players, so NPC shots ignite and do block damage regardless of any safe mode. | gameplay |
+| GUN-06 | NPC accuracy difficulty factor applied twice | `java/techguns/items/guns/GenericGun.java:959`; `entities/npc/GenericNPC.java:348` | GenericNPC passes the difficulty accuracy factor as `accscale`, and `fireWeaponFromNPC` multiplies by the same factor again (Easy spread ×1.69, Normal ×1.32). | gameplay |
+| GUN-07 | NPCs always get the zoomed-spread bonus | `java/techguns/items/guns/GenericGun.java:959` | NPC accuracy is multiplied by `zoombonus`, so scoped guns (AS50/Bolt ×0.125) are near-perfect in NPC hands. It may be intentional. | gameplay |
+| GUN-08 | NPC-fired Power Hammer shoots a bullet | `java/techguns/items/guns/GenericGun.java:851` (PowerHammer has no `spawnProjectile` override) | `fireWeaponFromNPC` → `shootGun` → the inherited `spawnProjectile` spawns a plain `GenericProjectile` (2.5 damage, 3-block reach) instead of a hammer blast. | gameplay |
+| GUN-09 | Power Hammer charge doesn't scale minimum damage | `java/techguns/items/guns/PowerHammer.java:53` | Only `damage` is multiplied by the air used. Past the drop-off end (3 blocks; 2 for the Advanced hammer, which has no drop-off set) damage is a flat 2.5. | gameplay |
+| GUN-10 | Charge-gun reload path is a degraded copy | `java/techguns/items/guns/GenericGunCharge.java:166-212` | The empty container is added with no overflow drop (lost when the inventory is full). No `ReloadStartedMessage` is sent (others see no reload animation). The client animation uses attackType 1 (the normal path uses 0). The sound uses `world.playSoundAtEntity` instead of the reload helper. | gameplay |
+| GUN-11 | "Out of ammo" grunt spams every tick | `java/techguns/items/guns/GenericGun.java:737-740`; `events/TechgunsTickHandler.java:129` | With a full-auto gun, trigger held and no ammo, `fireDelay` stays 0, so the client sends a shot packet every tick and the server plays `mob.villager.idle` 20×/s. | cosmetic |
+| GUN-12 | Server trusts client zoom flag | `java/techguns/packets/PacketShootGun.java:43`; `GenericGun.java:611` | `isZooming` comes from the client and directly scales server-side spread, so a modified client gets zoomed accuracy while unzoomed. | gameplay |
+| GUN-13 | Forced reload throws away loaded rounds | `java/techguns/items/guns/GenericGun.java:762-781` | Magazine-less guns (revolvers, Nether Blaster) lose their remaining rounds with no refund. Energy and fuel guns get an *empty* container back even when the cell was partly charged. Bullet refunds round down. | gameplay |
+| GUN-14 | Akimbo Mac10 refund factor inconsistent | `java/techguns/TGuns.java:152` | `setEmptyMag(..., 2)` on a 64-round akimbo gives 32 rounds per bullet item, so a full akimbo (2 mags = 4 bullet items) refunds only 2. Akimbo pistols correctly use 6. | gameplay |
+| GUN-15 | Upgrade recipes produce loaded guns from empty inputs | `java/techguns/TGuns.java:315`, `:317`, `:320` | The Golden Revolver, Grim Reaper and Infiltrator recipes accept any crafted input gun (damage 0) and output damage 0, which means full. Ammo and camo of the inputs are ignored. Four empty rocket launchers give a Grim Reaper with 4 rockets. | gameplay |
+| GUN-16 | Pistol builder sets drop-off and muzzle twice | `java/techguns/TGuns.java:112` (also `:148`) | `setDamageDrop(15,22,6)` is immediately overridden by `setDamageDrop(18,25,5)`, and `setMuzzleParticle` is called twice. Probably a leftover. | cosmetic |
+| GUN-17 | Shortened weapon-stats list crashes on load | `java/techguns/items/guns/GenericGun.java:263-273`; `GenericGunRadiusGrav.java:38`; `TGWeaponStats.java:49` | `applyGunStats` indexes fixed positions 0–6 (0–8 for launchers). A user-edited list with fewer values throws ArrayIndexOutOfBounds during pre-init. The config comment warns about it but nothing validates the list. | crash |
+| GUN-18 | "Range" tooltip and config call TTL a distance | `java/techguns/items/guns/GenericGun.java:979`, `:1604` | The third Range value and the "TimeToLive" config comment are in ticks, not blocks. Real reach is speed × TTL. | cosmetic |
+| GUN-19 | Short tooltip always shows "max-min" | `java/techguns/items/guns/GenericGun.java:994` | It prints e.g. `12.0-12.0` for guns without drop-off. The SHIFT version checks for this; the short one doesn't. | cosmetic |
+| GUN-20 | Sonic Rifle tooltip shows wrong damage type | `java/techguns/items/guns/SonicShotgun.java:16` (no `getDamageType` override) | The tooltip says Projectile but the hits are PHYSICAL `tg_sonic`. | cosmetic |
+| GUN-21 | Tesla chain settings unused | `java/techguns/items/guns/Teslagun.java:20-21`, `:48` | The fields `chain = 4` and `chainDmgDrop = 4` are never read. The projectile is created with hard-coded 3 chains and 0 drop. Configured TTL and accuracy are also ignored. | gameplay |
+| GUN-22 | Grenade gravity divides by charge | `java/techguns/items/guns/GenericGrenade.java:129`; `FragGrenade.java:19`; `Flashbang.java:15` | Gravity = `0.015 / charge`. A release with 0 use ticks gives charge 0 → infinite gravity → NaN or infinite motion on the projectile. | gameplay |
+| GUN-23 | Grenade use-duration argument ignored | `java/techguns/items/guns/GenericGrenade.java:32`, `:139` | `maxUseDur` (144000) is stored but `getMaxItemUseDuration` returns a hard-coded 72000. | cosmetic |
+| GUN-24 | Flashbang never registered | `java/techguns/TGuns.java:163` (no matching `registerItem`) | The Flashbang item is constructed but not registered: no recipe, no lang name. The feature is dead. | gameplay |
+| GUN-25 | Dead gun classes and debug print | `java/techguns/items/guns/GenericGunTool.java:30`; `Railgun.java`; `NeutrinoGun.java`; `ScatterBeamGun.java` | Never instantiated. `GenericGunTool` would print to stdout on every shot. The registered scatter gun uses `Lasergun` instead of `ScatterBeamGun`. | cosmetic |
+| GUN-26 | Akimbo combine/split loses data and creates ghost items | `java/techguns/items/RecipeAkimboGun.java:48-58`; `events/TechgunsTickHandler.java:603-607` | Combining keeps only the first gun's camo. On split, the second gun is added to the inventory on the **client** too (the event runs on both sides), which can show a phantom item until the server syncs. | cosmetic |
+| GUN-27 | Tool-gun harvest check uses metadata 0 | `java/techguns/items/guns/GenericGun.java:1574-1578` | `canHarvestBlock` reads the harvest tool and level for meta 0, which is wrong for blocks whose tool or level depends on metadata. | gameplay |
+| GUN-28 | Tool tooltip lists the internal "default" class | `java/techguns/items/guns/GenericGun.java:1525`; `util/ItemUtil.java:113` | `setTool` stores a `default` pseudo-class that shows up as `default : N` in the tooltip. | cosmetic |
+| GUN-29 | Semi-auto click swallowed during cooldown | `java/techguns/events/TechgunsTickHandler.java:134-136` | `keyFirePressed` is cleared for semi-auto guns even when `fireDelay > 0` blocked the shot, so a click slightly too early does nothing. | gameplay |
+| GUN-30 | Grenade consumes first matching inventory item | `java/techguns/items/guns/GenericGrenade.java:112` | `consumeInventoryItem(item)` takes the first stack of that item in the inventory, not necessarily the held one (matters only for display order). | cosmetic |
+| GUN-31 | Charged shots aren't broadcast | `java/techguns/items/guns/GenericGunCharge.java:242-310` | Releasing a charge sends no `GunFiredMessage`, so other players see no recoil or muzzle FX for Power Hammer and Bio Gun charged shots. | visual |
+| GUN-32 | Client/server fire-delay desync | `java/techguns/items/guns/GenericGun.java:581`; `events/TechgunsTickHandler.java:129` | Both sides keep independent `fireDelay` counters. The client predicts the shot and spends the ammo; if the server's counter hasn't reached 0 the server silently drops the shot. This gives temporary ammo-count mismatches and lost shots for fast guns. | gameplay |
+| GUN-33 | I-frame hit applies full damage | `java/techguns/damagesystem/DamageSystem.java:394-413` | During invulnerability frames, a hit larger than `lastDamage` deals its **full** amount (vanilla deals only the difference). | gameplay |
+| GUN-34 | Armour penetration ignored against ordinary mobs | `java/techguns/damagesystem/DamageSystem.java:254-268` | For non-`INpcTGDamageSystem` living entities, penetration stays 0 (`calcPenetration` call commented out), so penetration stats do nothing against armoured vanilla mobs. | gameplay |
+| GUN-35 | Absorption subtracted twice for non-players | `java/techguns/damagesystem/DamageSystem.java:246` | After damage is applied, `setAbsorptionAmount(absorption − damage)` runs again on top of the normal absorption handling. | cosmetic |
+| GUN-36 | Converted sources mark difficulty-scaled damage as absolute | `java/techguns/damagesystem/TGDamageSource.java:185-187`, `:217-219` | `isDifficultyScaled()` is copied as `setDamageIsAbsolute()`. Converted mob attacks lose difficulty scaling and bypass the Resistance potion. | gameplay |
+| GUN-37 | Converted sources lose the real attacker | `java/techguns/damagesystem/TGDamageSource.java:205-209`; `DamageSystem.java:439-454` | Conversion keeps only the direct entity. `attacker` is null, so for e.g. a player's arrow hitting an INpc entity, `getEntity()` is the arrow: no revenge target, no `recentlyHit`/`attackingPlayer` (no XP or player-kill loot), and the death message names the arrow. | gameplay |
+| GUN-38 | Knockback multiplier has no strength effect | `java/techguns/damagesystem/DamageSystem.java:490` | `knockBack(…, damage × multiplier, …)`: vanilla 1.7.10 ignores the strength argument, so ×1.5/×2/×3/×10 multipliers behave the same as ×1. Only zero vs non-zero matters. | gameplay |
+| GUN-39 | Player armour penetration compounds across pieces | `java/techguns/items/armors/GenericArmor.java:571-578` (05 scope, uses `DamageSystem.calcPenetration`) | Each armour piece writes its reduced penetration back into the shared damage source, so the per-piece penetration resistance and the PvP/NPC multiplier are applied up to 4 times in sequence. | gameplay |
+| GUN-40 | INpc armour above 25 inverts damage | `java/techguns/damagesystem/DamageSystem.java:261`, `:270` | Armour from `INpcTGDamageSystem` isn't clamped. Values > 25 make `(25 − armor)` negative, so the target would be healed. Latent unless some NPC has more than 25. | gameplay |
+| GUN-41 | Client-only class referenced from common class | `java/techguns/damagesystem/DamageSystem.java:8`, `:161` | An unused overload takes `EntityClientPlayerMP` (client-only). This is a potential class-verification failure on dedicated servers. | crash |
+| GUN-42 | Unused reduction helper | `java/techguns/damagesystem/DamageSystem.java:126-137` | `getAdditionalReduction` (fire vs fire-immune) is never called. Dead code. | cosmetic |
+| GUN-43 | Missing lang key for UNRESISTABLE | `java/techguns/damagesystem/DamageType.java:34` | `techguns.TGDamageType.UNRESISTABLE` isn't in `en_US.lang`, so the raw key would show. | cosmetic |
+| GUN-44 | Fire-resistance check unreachable for TG fire | `java/techguns/damagesystem/DamageSystem.java:378`; `TGDamageSource.java:142-145` | TG FIRE sources are flagged magic, not fire, so the Fire Resistance early-out never triggers for flamethrower or blaster hits. Fire-immune mobs (Blazes, Ghasts) only get double armour. This is intended per the comment but surprising. | gameplay |
+| GUN-45 | Vanilla armour on players blocks all TG types fully | `java/techguns/damagesystem/DamageSystem.java:182` vs `:327` | Players run through Forge `ApplyArmor`, where vanilla armour reduces energy, poison and radiation at full value. Mobs with the same armour get ½ or 0 for those types. The two paths are inconsistent. | gameplay |

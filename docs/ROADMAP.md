@@ -4,7 +4,7 @@ GregGuns brings Techguns-style weapons and gear into GT New Horizons. The code i
 
 ## Principles
 
-- **Fresh code, not a port.** Read [Techguns](https://github.com/pWn3d1337/Techguns) to understand *what* a feature does, then build it against GTNH's APIs. Do not copy its code or assets. Its repository is unlicensed, so all rights are reserved.
+- **Fresh code, not a port.** Use the [Techguns behavioural spec](techguns-spec/README.md) to understand *what* a feature does, then build it against GTNH's APIs. Its [bug register](techguns-spec/BUGS.md) lists Techguns bugs not to reproduce. Do not copy its code or assets. Its repository is unlicensed, so all rights are reserved.
 - **GregTech owns progression.** Each weapon, component and piece of armor sits at a GT tier.
 - **One thing at a time.** Each change should cover one coherent slice that builds and runs.
 
