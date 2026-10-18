@@ -188,12 +188,23 @@ public final class MpScenarios {
                 signal(a, "fire", "2");
             }
             if (t > 60 && reloadAt < 0 && (loaded(a) <= roundsStart - 2 || t >= 140)) {
-                roundsAfterShots = loaded(a);
-                magsBefore = magazines(a);
-                reloadAt = t;
+                // The fire cooldown refuses a reload for a few ticks after a shot, so keep pressing until it starts.
+                if (roundsAfterShots < 0) {
+                    roundsAfterShots = loaded(a);
+                    magsBefore = magazines(a);
+                }
                 ServerGunHandler.onReloadKey(a);
+                if (GunPlayerData.get(a)
+                    .controller()
+                    .reload()
+                    .isReloading()) {
+                    reloadAt = t;
+                }
             }
             if (reloadAt >= 0 && t >= reloadAt + 60) {
+                return finish(t);
+            }
+            if (t > 400) {
                 return finish(t);
             }
             return null;
