@@ -60,6 +60,15 @@ public final class GunSoundEvents {
     /** Event: the Revolver's reload. */
     public static final String REVOLVER_RELOAD = gun(REVOLVER, RELOAD);
 
+    /** The Sawed Off's content name. */
+    public static final String SAWED_OFF = "sawed_off";
+
+    /** Event: the Sawed Off's shot, three variants. */
+    public static final String SAWED_OFF_FIRE = gun(SAWED_OFF, FIRE);
+
+    /** Event: the Sawed Off's reload. */
+    public static final String SAWED_OFF_RELOAD = gun(SAWED_OFF, RELOAD);
+
     /** Event: a bullet hitting a block or entity, five variants. */
     public static final String BULLET_IMPACT = effect("bullet_impact");
 

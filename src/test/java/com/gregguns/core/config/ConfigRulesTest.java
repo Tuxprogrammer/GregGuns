@@ -36,7 +36,12 @@ class ConfigRulesTest {
             "DamageFactorsConfig.armorPenetrationMultiplierNPCtoPlayer",
             "DamageFactorsConfig.armorPenetrationMultiplierPvP",
             "ExplosionsConfig.blockDamage",
-            "ExplosionsConfig.selfDamage"));
+            "ExplosionsConfig.selfDamage",
+            "EquipmentConfig.nightVisionCapacityEu",
+            "EquipmentConfig.nightVisionDrainEuPerTick",
+            "EquipmentConfig.tacticalMaskCapacityEu",
+            "EquipmentConfig.gasMaskFilterTicks",
+            "EquipmentConfig.oxygenTankCapacity"));
 
     private static Set<String> tokens(String key) {
         Set<String> result = new HashSet<>();

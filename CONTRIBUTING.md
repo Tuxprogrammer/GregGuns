@@ -218,7 +218,8 @@ Each layer catches different bugs, and features need all the layers that apply t
 
 ## Assets and localization
 
-- **Original assets only (must).** Every texture, model and sound is original work or properly licensed, with its provenance recorded in `docs/assets/CREDITS.md` (source, author, license).
+- **Original assets only (must).** Every texture, model and sound is original work, with its provenance recorded in `docs/assets/CREDITS.md` (source, author, license).
+- **MIT for everything (must).** The whole repository (code, assets, docs and tools) is MIT-licensed; see [README § License](README.md#license). By contributing, you release your contribution under the MIT License. Never add anything that can't be released under MIT, such as All Rights Reserved, CC-BY-NC or share-alike material.
 - **Spec as the brief.** [ASSET-FACTS.md](docs/techguns-spec/ASSET-FACTS.md) and each area's `textures.md` give the *footprint* an asset must fill: size, layout and frame count. Match the function, not the look.
 - **Style.** Follow D6. Item icons are 16×16 unless the spec's footprint needs more, and they should sit naturally next to GT items.
 - **Sounds.** Register every sound in `sounds.json` with a category. Keep loudness in line with D6, and use mono for positional sounds (see GVA-23).

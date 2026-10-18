@@ -24,7 +24,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gregguns.GregGuns;
-import com.gregguns.block.BlockWorksCasing;
+import com.gregguns.block.GregGunsCasings;
 import com.gregguns.recipe.GregGunsRecipeMaps;
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -64,7 +64,7 @@ import gregtech.common.misc.GTStructureChannels;
  *
  * <p>
  * The numbers live in {@link AmmoWorksShape}; this class is the StructureLib glue. Construct only inside GT's MTE
- * window ({@link AmmoPressMachines#register()}), and only after {@link BlockWorksCasing#create} has run. Both sides.
+ * window ({@link AmmoPressMachines#register()}), and only after {@link GregGunsCasings#create} has run. Both sides.
  */
 // Spec: docs/gregguns-spec/08-machines-production/multiblocks.md (Ammunition Works, GGS-08-57 to GGS-08-63),
 // docs/design/0011-machine-policy.md
@@ -125,11 +125,11 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
         private Structure() {}
 
         private static IStructureElement<MTEAmmoWorks> casing(int meta) {
-            return onElementPass(MTEAmmoWorks::onCasingAdded, lazy(() -> ofBlock(BlockWorksCasing.INSTANCE, meta)));
+            return onElementPass(MTEAmmoWorks::onCasingAdded, lazy(() -> ofBlock(GregGunsCasings.INSTANCE, meta)));
         }
 
         private static IStructureDefinition<MTEAmmoWorks> build() {
-            int casingIndex = BlockWorksCasing.textureIndex(BlockWorksCasing.WORKS_CASING);
+            int casingIndex = GregGunsCasings.textureIndex(GregGunsCasings.WORKS_CASING);
             return StructureDefinition.<MTEAmmoWorks>builder()
                 .addShape(PIECE_FEEDER, AmmoWorksShape.FEEDER)
                 .addShape(PIECE_BAY, AmmoWorksShape.BAY)
@@ -141,16 +141,16 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
                         .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance, Muffler)
                         .casingIndex(casingIndex)
                         .hint(1)
-                        .buildAndChain(casing(BlockWorksCasing.WORKS_CASING)))
+                        .buildAndChain(casing(GregGunsCasings.WORKS_CASING)))
                 // Packing casing: where the output hatches go, and spare power.
                 .addElement(
                     'O',
                     buildHatchAdder(MTEAmmoWorks.class).atLeast(OutputBus, OutputHatch, Energy, MultiAmpEnergy)
                         .casingIndex(casingIndex)
                         .hint(2)
-                        .buildAndChain(casing(BlockWorksCasing.WORKS_CASING)))
-                .addElement('A', casing(BlockWorksCasing.WORKS_CASING))
-                .addElement('M', casing(BlockWorksCasing.RAM_HOUSING))
+                        .buildAndChain(casing(GregGunsCasings.WORKS_CASING)))
+                .addElement('A', casing(GregGunsCasings.WORKS_CASING))
+                .addElement('M', casing(GregGunsCasings.RAM_HOUSING))
                 // Source:
                 // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L993-L1011
                 // (one tier for every block of the line: a second tier fails the check)
@@ -327,7 +327,7 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
 
     @Override
     public ITexture getCasingTexture() {
-        return Textures.BlockIcons.getCasingTextureForId(BlockWorksCasing.textureIndex(BlockWorksCasing.WORKS_CASING));
+        return Textures.BlockIcons.getCasingTextureForId(GregGunsCasings.textureIndex(GregGunsCasings.WORKS_CASING));
     }
 
     /**

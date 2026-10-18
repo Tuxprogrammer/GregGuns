@@ -70,6 +70,15 @@ The shared GT plumbing every GregGuns machine uses: MTE IDs, the registration wi
 - **GregGuns does:** claims **page 50** for the Reaction Chamber casing (and any later casing). Its casing block calls `GTUtility.addTexturePage((byte) 50)` once, then registers `(50 << 7) | meta` for each meta. The multiblock uses that ID in `casingIndex(...)` and `ICasingTextureProvider#getCasingTexture`.
 - **Pack-side change:** a comment PR to GT5-Unofficial adding `page 50: GregGuns casings` to the page list.
 
+**The GregGuns casing block.** One block, `gregguns:casings` (class `com.gregguns.block.GregGunsCasings`, registered by the guns module), holds every GregGuns casing as a meta. The page-50 index equals the meta (`GregGunsCasings.textureIndex(meta)`); new casings append a meta and a row here.
+
+| Meta | Page-50 index | Casing | Texture | Used by |
+|---|---|---|---|---|
+| 0 | `(50 << 7) \| 0` | Works Casing | `textures/blocks/casings/works_casing.png` | Ammunition Works |
+| 1 | `(50 << 7) \| 1` | Ram Housing | `textures/blocks/casings/ram_housing.png` | Ammunition Works |
+| 2 | `(50 << 7) \| 2` | Reaction Chamber Casing | `textures/blocks/casings/reaction_casing.png` | Retort |
+
+
 ### GT5-Unofficial: world rules every MTE inherits
 - **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/GregTech/GregTech.cfg`, all as shipped:
 

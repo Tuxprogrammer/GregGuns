@@ -65,7 +65,8 @@ public final class ProductionRecipes {
         ItemStack output = modStack(row.output(), row.outputCount());
         List<ItemStack> inputs = new ArrayList<>();
         for (ProductionTable.Input input : row.inputs()) {
-            ItemStack stack = input.isGregGuns() ? modStack(input.itemName(), input.count()) : gtStack(input);
+            ItemStack stack = input.isGregGuns() ? modStack(input.itemName(), input.count())
+                : input.special() != null ? specialStack(input) : gtStack(input);
             if (stack == null) {
                 GregGuns.LOG.error(
                     "Skipping recipe {}: input {} of {} did not resolve",
@@ -191,6 +192,23 @@ public final class ProductionRecipes {
     static ItemStack modStack(String registryName, int count) {
         Item item = GameRegistry.findItem(GregGuns.MODID, registryName);
         return item == null ? null : new ItemStack(item, count);
+    }
+
+    private static ItemStack specialStack(ProductionTable.Input input) {
+        String spec = input.special();
+        String name = spec.substring(3);
+        if (spec.startsWith("mc:")) {
+            Item item = GameRegistry.findItem("minecraft", name);
+            return item == null ? null : new ItemStack(item, input.count());
+        }
+        // Source: GT ItemList constants resolved by name (gregtech.api.enums.ItemList#get returns null when unset).
+        try {
+            return gregtech.api.enums.ItemList.valueOf(name)
+                .get(input.count());
+        } catch (IllegalArgumentException e) {
+            GregGuns.LOG.error("No GT ItemList constant {}", name);
+            return null;
+        }
     }
 
     private static ItemStack gtStack(ProductionTable.Input input) {

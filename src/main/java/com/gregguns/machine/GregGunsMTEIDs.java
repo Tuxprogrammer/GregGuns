@@ -30,6 +30,12 @@ public final class GregGunsMTEIDs {
     /** Ammo Press, EV. Built in M4. */
     public static final int AMMO_PRESS_EV = 20104;
 
+    /** Reaction Chamber, EV single block. */
+    public static final int REACTION_CHAMBER_EV = 20106;
+    /** Reaction Chamber, IV single block. */
+    public static final int REACTION_CHAMBER_IV = 20107;
+    /** Retort, the Reaction Chamber multiblock. */
+    public static final int RETORT = 20108;
     /** Ammunition Works multiblock (HV controller). Built in M4. */
     public static final int AMMO_WORKS = 20105;
 
@@ -55,7 +61,7 @@ public final class GregGunsMTEIDs {
      */
     public static int[] all() {
         return new int[] { AMMO_PRESS_STEAM, AMMO_PRESS_LV, AMMO_PRESS_MV, AMMO_PRESS_HV, AMMO_PRESS_EV, AMMO_WORKS,
-            REPAIR_BENCH_LV, REPAIR_BENCH_MV, REPAIR_BENCH_HV, REPAIR_BENCH_EV, REPAIR_BENCH_IV, ARMORY_GANTRY,
-            CAMO_BENCH };
+            REACTION_CHAMBER_EV, REACTION_CHAMBER_IV, RETORT, REPAIR_BENCH_LV, REPAIR_BENCH_MV, REPAIR_BENCH_HV,
+            REPAIR_BENCH_EV, REPAIR_BENCH_IV, ARMORY_GANTRY, CAMO_BENCH };
     }
 }

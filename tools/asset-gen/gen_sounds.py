@@ -989,7 +989,7 @@ def write_credits(entries):
         revised = {p for p, v in st.items() if v.get("verdict") != "keep"}
     with open(CREDITS, "w", encoding="utf8", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
-        w.writerow(["asset", "path", "generator", "seed", "method", "licence", "date"])
+        w.writerow(["asset", "path", "generator", "seed", "method", "license", "date"])
         for e in entries:
             seed = zlib.crc32(e["id"].encode())
             r1 = e["path"] in revised

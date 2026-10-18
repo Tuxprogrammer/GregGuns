@@ -55,6 +55,44 @@ class GunCatalogTest {
     }
 
     @Test
+    void sawedOffMatchesItsSheet() {
+        // docs/techguns-spec/02-guns/sheets-rifles-shotguns.md, Sawed Off, section 3.
+        GunStats s = GunCatalog.SAWED_OFF;
+        assertEquals(4.0, s.damage());
+        assertEquals(1.5, s.damageMin());
+        assertEquals(1.0, s.dropStart());
+        assertEquals(4.0, s.dropEnd());
+        assertEquals(10, s.lifetimeTicks());
+        assertEquals(1.5, s.projectileSpeed());
+        assertEquals(0.01, s.spread());
+        assertEquals(0.2, s.pelletSpread());
+        assertEquals(8, s.bulletsPerShot());
+        assertFalse(s.pelletsInLine());
+        assertEquals(0.0, s.penetration());
+        assertEquals(FireMode.AUTO, s.fireMode());
+        assertEquals(4, s.fireRateTicks());
+        assertEquals(2, s.magazineSize());
+        assertEquals(28, s.reloadTicks());
+        assertEquals(5, s.recoilTicks());
+        assertEquals(5, s.muzzleFlashTicks());
+        assertEquals(12.0, s.aiRange());
+        assertEquals(60, s.aiAttackTime());
+        assertEquals(2, s.aiBurstCount());
+        assertEquals(20, s.aiBurstDelay());
+        assertFalse(s.hasScope());
+    }
+
+    @Test
+    void sawedOffLoadsShellByShellAndKeepsItsRounds() {
+        GunStats s = GunCatalog.SAWED_OFF;
+        assertEquals(GunCatalog.AmmoIds.SHOTGUN_SHELL, s.ammoType());
+        assertNull(s.emptyContainerType());
+        assertEquals(ReloadMode.INCREMENTAL, s.reloadMode());
+        assertEquals(2, s.ammoItemsPerReload());
+        assertEquals(1, s.roundsPerItem());
+    }
+
+    @Test
     void gunsDefaultToABulletWithVanillaKnockback() {
         assertEquals(ProjectileKind.BULLET, GunCatalog.PISTOL.projectileKind());
         assertEquals(1.0, GunCatalog.PISTOL.knockback());

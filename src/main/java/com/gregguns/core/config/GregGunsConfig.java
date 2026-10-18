@@ -24,7 +24,9 @@ public final class GregGunsConfig {
             DebugConfig.class,
             ClientConfig.class,
             DamageFactorsConfig.class,
-            ExplosionsConfig.class));
+            ExplosionsConfig.class,
+            EquipmentConfig.class,
+            MachinesConfig.class));
 
     private GregGunsConfig() {}
 

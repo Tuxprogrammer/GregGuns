@@ -28,4 +28,8 @@ What Techguns does is captured in a behavioral spec at [docs/techguns-spec/](doc
 
 ## License
 
-GregGuns code is released under the [MIT License](LICENSE).
+Everything in this repository is released under the [MIT License](LICENSE). That covers code, textures, models, sounds, animations, logos, infographics, documentation, specs and tools. Anyone may download, use, copy, modify, merge, publish, distribute, sublicense and sell it under the terms of that license.
+
+Exceptions: a few files come from upstream projects and keep their own licenses. These are the Gradle wrapper (`gradlew`, `gradlew.bat`, `gradle/wrapper/`, Apache-2.0) and the GTNH buildscript files (`build.gradle.kts`, `settings.gradle.kts`, `gtnhShared/`, from [GTNewHorizons/ExampleMod1.7.10](https://github.com/GTNewHorizons/ExampleMod1.7.10)).
+
+The MIT License covers only what is in this repository. It grants no rights to Techguns, which is not included here (see [Relationship to Techguns](#relationship-to-techguns)).
