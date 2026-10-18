@@ -18,25 +18,29 @@ import gregtech.api.util.GTOreDictUnificator;
  * <p>
  * The tool letters are GT's own ({@code s} saw, {@code h} hard hammer, {@code f} file): {@code GTModHandler} turns
  * them into tool ore-dictionary entries and damages the tool on craft. Mechanical Parts are registered once per
- * material that exists (Bronze, then Wrought Iron). Common side; called from {@link GunRecipes}.
+ * material that exists (Bronze, then Wrought Iron). Common side; each method is the {@code recipes} hook of its
+ * part's {@code PartDefinition}.
  */
 // Spec: docs/gregguns-spec/06-items/recipes.md (RC-01, RC-02, RC-03)
 // Source:
 // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTModHandler.java#L626
 // (addCraftingRecipe: lowercase letters are tools, strings are ore names, ItemStacks are exact items).
-final class PartCraftingRecipes {
+public final class PartCraftingRecipes {
 
     private PartCraftingRecipes() {}
 
-    /** Registers RC-01, RC-02 and RC-03. */
-    static void register() {
-        registerStoneBarrel();
+    /** RC-02: the Wooden Stock, two cuts of log with a saw. */
+    public static void registerWoodenStock() {
         ItemStack stock = ProductionRecipes.modStack(PartItems.STOCK_WOODEN, 1);
         if (stock == null) {
             GregGuns.LOG.error("Skipping RC-02: {} is not registered", PartItems.STOCK_WOODEN);
         } else {
             GTModHandler.addCraftingRecipe(stock, new Object[] { "WW", "sW", 'W', "logWood" });
         }
+    }
+
+    /** RC-03: Mechanical Parts, once per material that exists (Bronze, then Wrought Iron). */
+    public static void registerMechanicalParts() {
         ItemStack mechanical = ProductionRecipes.modStack(PartItems.MECHANICAL_1, 1);
         if (mechanical == null) {
             GregGuns.LOG.error("Skipping RC-03: {} is not registered", PartItems.MECHANICAL_1);
@@ -61,7 +65,7 @@ final class PartCraftingRecipes {
      * RC-01: six stone around a Bronze tiny pipe (the bore liner and the gate), with a file and a hard hammer on the
      * middle row: {@code SSS / fPh / SSS}.
      */
-    private static void registerStoneBarrel() {
+    public static void registerStoneBarrel() {
         ItemStack barrel = ProductionRecipes.modStack(PartItems.BARREL_STONE, 1);
         ItemStack pipe = GTOreDictUnificator.get(OrePrefixes.pipeTiny, Materials.Bronze, 1);
         if (barrel == null || pipe == null) {

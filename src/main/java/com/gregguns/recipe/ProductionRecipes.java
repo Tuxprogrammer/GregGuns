@@ -9,7 +9,10 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
-import com.gregguns.item.part.PartItems;
+import com.gregguns.item.ammo.def.AmmoDefinition;
+import com.gregguns.item.ammo.def.AmmoDefinitions;
+import com.gregguns.item.part.PartDefinition;
+import com.gregguns.item.part.PartDefinitions;
 import com.gregguns.machine.AmmoPressMachines;
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -19,7 +22,6 @@ import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.enums.TierEU;
 import gregtech.api.objects.ItemData;
-import gregtech.api.objects.MaterialStack;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTOreDictUnificator;
@@ -56,9 +58,24 @@ public final class ProductionRecipes {
         for (ProductionTable.Row row : ProductionTable.ROWS) {
             addMachineRecipe(row);
         }
-        addRefill(ProductionTable.PISTOL_REFILL);
-        addRecyclingData();
+        for (AmmoDefinition ammo : AmmoDefinitions.ALL) {
+            for (ProductionTable.Refill refill : ammo.refills()) {
+                addRefill(refill);
+            }
+            run(ammo.recipes());
+            run(ammo.recycling());
+        }
+        for (PartDefinition part : PartDefinitions.ALL) {
+            run(part.recipes());
+            run(part.recycling());
+        }
         AmmoPressMachines.addCraftingRecipes();
+    }
+
+    private static void run(Runnable hook) {
+        if (hook != null) {
+            hook.run();
+        }
     }
 
     /** Registers one table row as a GT machine recipe; shared with {@link GunRecipes}. */
@@ -141,48 +158,8 @@ public final class ProductionRecipes {
         GameRegistry.addShapelessRecipe(output, ingredients);
     }
 
-    /**
-     * Attaches GT {@link ItemData} so GT's recycling and unification return what an item cost.
-     */
-    // Source:
-    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTOreDictUnificator.java#L350-L359
-    // (addItemData does not overwrite an existing composition); ItemData constructors at
-    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/objects/ItemData.java#L51-L58
-    private static void addRecyclingData() {
-        long foil = OrePrefixes.foil.getMaterialAmount();
-        long round = OrePrefixes.round.getMaterialAmount();
-        long mechanical2 = AmmoComposition.mechanical2Steel(
-            OrePrefixes.gearGtSmall.getMaterialAmount(),
-            OrePrefixes.springSmall.getMaterialAmount(),
-            OrePrefixes.screw.getMaterialAmount());
-        long emptySteel = AmmoComposition.emptyMagazineSteel(
-            OrePrefixes.plate.getMaterialAmount(),
-            OrePrefixes.springSmall.getMaterialAmount(),
-            mechanical2);
-        int rounds = ProductionTable.PISTOL_REFILL.roundCount();
-
-        // Per bullet: one brass foil and one lead round (RC-28 makes 16 from 16 of each). The powder burns away.
-        attach(ProductionTable.BULLET, new ItemData(Materials.Brass, foil, Materials.Lead, round));
-        attach(ProductionTable.MAGAZINE_EMPTY, new ItemData(Materials.Steel, emptySteel));
-        // Loaded: the empty magazine's steel plus the rounds it holds.
-        attach(
-            ProductionTable.MAGAZINE,
-            new ItemData(
-                Materials.Steel,
-                emptySteel,
-                new MaterialStack(Materials.Brass, foil * rounds),
-                new MaterialStack(Materials.Lead, round * rounds)));
-        attach(PartItems.MECHANICAL_2, new ItemData(Materials.Steel, mechanical2));
-        // RC-05: one small pipe, two rings and a plate per barrel.
-        attach(
-            PartItems.BARREL_HARDENED,
-            new ItemData(
-                Materials.Steel,
-                OrePrefixes.pipeSmall.getMaterialAmount() + 2 * OrePrefixes.ring.getMaterialAmount()
-                    + OrePrefixes.plate.getMaterialAmount()));
-    }
-
-    private static void attach(String registryName, ItemData data) {
+    /** Attaches GT item data to a GregGuns item by registry name; logs an error if it is not registered. */
+    static void attach(String registryName, ItemData data) {
         ItemStack stack = modStack(registryName, 1);
         if (stack == null) {
             GregGuns.LOG.error("Cannot attach ItemData to {}: not registered", registryName);

@@ -8,13 +8,22 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.gregguns.api.Tier;
+import com.gregguns.gun.def.GunDefinitions;
 
 class GunTableTest {
+
+    /** The assembly row of a gun, found through its definition. */
+    private static ProductionTable.Row row(String gunName) {
+        ProductionTable.Row row = GunDefinitions.byName(gunName)
+            .assembly();
+        assertTrue(row != null, gunName + " has an assembly row");
+        return row;
+    }
 
     @Test
     void pistolRowMatchesTheSheet() {
         // docs/gregguns-spec/02-guns/recipes.md, LV table, 9mm Pistol: 15 s, cfg 1, on the Assembler at LV.
-        ProductionTable.Row pistol = GunTable.PISTOL;
+        ProductionTable.Row pistol = row("pistol_9mm");
         assertEquals("pistol_9mm", pistol.output());
         assertEquals(1, pistol.outputCount());
         assertEquals(Tier.LV, pistol.tier());
@@ -29,7 +38,7 @@ class GunTableTest {
 
     @Test
     void pistolInputsAreTheSheetsParts() {
-        ProductionTable.Row pistol = GunTable.PISTOL;
+        ProductionTable.Row pistol = row("pistol_9mm");
         assertEquals(
             "part_barrel_hardened",
             pistol.inputs()
@@ -69,7 +78,7 @@ class GunTableTest {
     @Test
     void revolverRowMatchesTheSheet() {
         // docs/gregguns-spec/02-guns/recipes.md, LV table, Revolver: 15 s, cfg 2, Assembler, LV.
-        ProductionTable.Row r = GunTable.REVOLVER;
+        ProductionTable.Row r = row("revolver");
         assertEquals("revolver", r.output());
         assertEquals(Tier.LV, r.tier());
         assertEquals(ProductionTable.Target.ASSEMBLER, r.target());
@@ -117,7 +126,7 @@ class GunTableTest {
     @Test
     void sawedOffRowMatchesTheSheet() {
         // docs/gregguns-spec/02-guns/recipes.md, LV table, Sawed Off: 10 s, cfg 3, Assembler, LV.
-        ProductionTable.Row r = GunTable.SAWED_OFF;
+        ProductionTable.Row r = row("sawed_off");
         assertEquals("sawed_off", r.output());
         assertEquals(Tier.LV, r.tier());
         assertEquals(ProductionTable.Target.ASSEMBLER, r.target());
@@ -205,7 +214,7 @@ class GunTableTest {
     @Test
     void boltActionPartsAreMadeByTheChainOrAtTheCraftingTable() {
         Map<String, ProductionTable.Row> all = ProductionTable.byOutput();
-        for (ProductionTable.Input input : GunTable.BOLT_ACTION.inputs()) {
+        for (ProductionTable.Input input : row("bolt_action_rifle").inputs()) {
             if (input.isGregGuns()) {
                 assertTrue(
                     all.containsKey(input.itemName()) || ProductionTable.CRAFTED_PARTS.contains(input.itemName()),
@@ -232,7 +241,7 @@ class GunTableTest {
     @Test
     void revolverPartsAreMadeByTheChainOrAtTheCraftingTable() {
         Map<String, ProductionTable.Row> all = ProductionTable.byOutput();
-        for (ProductionTable.Input input : GunTable.REVOLVER.inputs()) {
+        for (ProductionTable.Input input : row("revolver").inputs()) {
             if (input.isGregGuns()) {
                 assertTrue(
                     all.containsKey(input.itemName()) || ProductionTable.CRAFTED_PARTS.contains(input.itemName()),
@@ -261,7 +270,7 @@ class GunTableTest {
     @Test
     void pistolPartsAreMadeByTheProductionChain() {
         Map<String, ProductionTable.Row> all = ProductionTable.byOutput();
-        for (ProductionTable.Input input : GunTable.PISTOL.inputs()) {
+        for (ProductionTable.Input input : row("pistol_9mm").inputs()) {
             if (input.isGregGuns()) {
                 assertTrue(all.containsKey(input.itemName()), input.itemName());
             }
@@ -283,7 +292,7 @@ class GunTableTest {
     @Test
     void boltActionRowMatchesTheSheet() {
         // docs/gregguns-spec/02-guns/recipes.md, LV table, Bolt Action Rifle: 20 s, cfg 4, Assembler, LV.
-        ProductionTable.Row r = GunTable.BOLT_ACTION;
+        ProductionTable.Row r = row("bolt_action_rifle");
         assertEquals("bolt_action_rifle", r.output());
         assertEquals(Tier.LV, r.tier());
         assertEquals(ProductionTable.Target.ASSEMBLER, r.target());

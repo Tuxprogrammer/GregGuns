@@ -86,6 +86,21 @@ public final class RevolverProfile {
     /** The sheet's render transforms, timing and muzzle flash for the revolver. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
 
+    /**
+     * The client half of the gun's definition: model, textures and transforms, listed in {@link ClientGunDefinitions}.
+     */
+    public static final ClientGunDefinition DEFINITION = new ClientGunDefinition(
+        "revolver",
+        BOXES,
+        1,
+        TEXTURE_WIDTH,
+        TEXTURE_HEIGHT,
+        MODEL_SCALE,
+        new String[] { TEXTURE },
+        MUZZLE,
+        true,
+        TRANSFORMS);
+
     private RevolverProfile() {}
 
     private static GunTransforms buildTransforms() {

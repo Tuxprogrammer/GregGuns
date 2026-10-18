@@ -4,6 +4,8 @@ import net.minecraftforge.common.MinecraftForge;
 
 import com.gregguns.client.GunsClientModule;
 import com.gregguns.client.render.GunRenderers;
+import com.gregguns.client.render.profile.ClientGunDefinition;
+import com.gregguns.client.render.profile.ClientGunDefinitions;
 import com.gregguns.gun.GunClientHooks;
 import com.gregguns.item.gun.GunItems;
 
@@ -29,11 +31,9 @@ public final class GunClientSetup {
     public static GunInputHandler init() {
         ClientGunMirror mirror = new ClientGunMirror();
         GunClientHooks.install(new ClientGunEvents(GunsClientModule.animations()));
-        GunRenderers.registerPistol9mm(GunItems.pistol());
-        GunRenderers.registerRevolver(GunItems.revolver());
-        GunRenderers.registerSawedOff(GunItems.sawedOff());
-        GunRenderers.registerHandCannon(GunItems.handcannon());
-        GunRenderers.registerBoltAction(GunItems.boltAction());
+        for (ClientGunDefinition definition : ClientGunDefinitions.ALL) {
+            GunRenderers.register(definition, GunItems.get(definition.gunName()));
+        }
         GunClientHooks.installSync(mirror);
         GunInputHandler input = new GunInputHandler(mirror);
         FMLCommonHandler.instance()
