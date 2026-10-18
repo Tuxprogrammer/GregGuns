@@ -1,0 +1,13 @@
+asset,path,generator,seed,method,licence,date
+gui.hud,src/main/resources/assets/gregguns/textures/gui/hud.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.ammo_press,src/main/resources/assets/gregguns/textures/gui/ammo_press.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.reaction_chamber,src/main/resources/assets/gregguns/textures/gui/reaction_chamber.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.ammo_pouch,src/main/resources/assets/gregguns/textures/gui/ammo_pouch.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.repair_bench,src/main/resources/assets/gregguns/textures/gui/repair_bench.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.camo_bench,src/main/resources/assets/gregguns/textures/gui/camo_bench.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.turret,src/main/resources/assets/gregguns/textures/gui/turret.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.explosive_charge,src/main/resources/assets/gregguns/textures/gui/explosive_charge.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.advanced_explosive_charge,src/main/resources/assets/gregguns/textures/gui/advanced_explosive_charge.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.storage_chest,src/main/resources/assets/gregguns/textures/gui/storage_chest.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.multiblock_widgets,src/main/resources/assets/gregguns/textures/gui/multiblock_widgets.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.gun_mount_hatch,src/main/resources/assets/gregguns/textures/gui/gun_mount_hatch.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/></marker><linearGradient id="ls" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8795a3"/><stop offset="0.5" stop-color="#4b5764"/><stop offset="1" stop-color="#2a323b"/></linearGradient><linearGradient id="lr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f8fb"/><stop offset="1" stop-color="#aab6c2"/></linearGradient><linearGradient id="lo" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffb347"/><stop offset="1" stop-color="#ff7a00"/></linearGradient></defs>
+<g transform="scale(1)">
+<polygon points="128.0,6.0 233.7,67.0 233.7,189.0 128.0,250.0 22.3,189.0 22.3,67.0" fill="url(#ls)" stroke="#0e1216" stroke-width="5" stroke-linejoin="round"/>
+<polygon points="128.0,24.0 218.1,76.0 218.1,180.0 128.0,232.0 37.9,180.0 37.9,76.0" fill="none" stroke="#2d8cff" stroke-width="5" stroke-linejoin="round"/>
+<polygon points="128.0,34.0 209.4,81.0 209.4,175.0 128.0,222.0 46.6,175.0 46.6,81.0" fill="#141a21" stroke="#0e1216" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="128.0" cy="17.0" r="5" fill="#cfd8e0" stroke="#1b2128" stroke-width="2"/><circle cx="224.1" cy="72.5" r="5" fill="#cfd8e0" stroke="#1b2128" stroke-width="2"/><circle cx="224.1" cy="183.5" r="5" fill="#cfd8e0" stroke="#1b2128" stroke-width="2"/><circle cx="128.0" cy="239.0" r="5" fill="#cfd8e0" stroke="#1b2128" stroke-width="2"/><circle cx="31.9" cy="183.5" r="5" fill="#cfd8e0" stroke="#1b2128" stroke-width="2"/><circle cx="31.9" cy="72.5" r="5" fill="#cfd8e0" stroke="#1b2128" stroke-width="2"/>
+<path d="M40 176 H88 L100 188 H152" fill="none" stroke="#3fd0ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="40" cy="176" r="6" fill="#3fd0ff"/><circle cx="152" cy="188" r="6" fill="#2d8cff" stroke="#0e1216" stroke-width="2"/>
+<path d="M48 114 L74 108 L84 104 L170 104 L170 100 L182 100 L182 104 L190 104 L190 112 L214 112 L214 120 L190 120 L190 128 L124 128 L120 134 L104 134 L102 160 L84 160 L86 134 L78 134 L70 148 L50 154 Z"
+ fill="url(#lr)" stroke="#0e1216" stroke-width="4" stroke-linejoin="round"/>
+<path d="M118 92 H162 V100 H118 Z" fill="#cfd8e0" stroke="#0e1216" stroke-width="3" stroke-linejoin="round"/>
+<path d="M124 134 H148 L146 160 H126 Z" fill="#7d8a97" stroke="#0e1216" stroke-width="3" stroke-linejoin="round"/>
+<rect x="132" y="108" width="24" height="8" fill="#2d8cff"/>
+<path d="M170 168 H196 L208 175 L196 182 H170 Z" fill="url(#lo)" stroke="#0e1216" stroke-width="3" stroke-linejoin="round"/>
+<rect x="158" y="168" width="12" height="14" fill="#d9a441" stroke="#0e1216" stroke-width="3"/>
+</g>
+</svg>
