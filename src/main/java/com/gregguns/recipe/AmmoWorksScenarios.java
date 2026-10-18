@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -61,6 +63,7 @@ public final class AmmoWorksScenarios {
         registry.register(new RegisteredScenario());
         registry.register(new RunScenario());
         registry.register(new BrokenScenario());
+        registry.register(new SweepScenario());
     }
 
     private static ItemStack mod(String name, int count) {
@@ -134,6 +137,20 @@ public final class AmmoWorksScenarios {
                 AmmoWorksShape.totalLength(bays) - 1,
                 ItemList.Hatch_Output_Bus_HV,
                 ForgeDirection.SOUTH);
+        }
+
+        /**
+         * Empties the buses. Breaking a machine block at cleanup drops its inventory as item entities, which the
+         * context does not track and which would sit in the next scenario's way.
+         */
+        void empty() {
+            for (IGregTechTileEntity bus : new IGregTechTileEntity[] { inputBus, outputBus }) {
+                if (bus != null) {
+                    for (int i = 0; i < bus.getSizeInventory(); i++) {
+                        bus.setInventorySlotContents(i, null);
+                    }
+                }
+            }
         }
 
         boolean form() {
@@ -257,6 +274,7 @@ public final class AmmoWorksScenarios {
             hall.addHatches();
             if (!hall.form()) {
                 fail.check(false, "the three-bay hall with all hatches should form");
+                hall.empty();
                 return fail.build();
             }
             hall.fixMaintenance();
@@ -275,6 +293,7 @@ public final class AmmoWorksScenarios {
                 .find();
             if (single == null) {
                 fail.check(false, "RC-28 should be found at HV voltage");
+                hall.empty();
                 return fail.build();
             }
             for (int i = 0; i < inputs.length; i++) {
@@ -312,6 +331,7 @@ public final class AmmoWorksScenarios {
                         + recipeDuration
                         + " ticks)");
                 out.note("finished after " + ticks + " ticks; batch duration " + firstDuration[0]);
+                hall.empty();
                 return out.build();
             });
         }
@@ -337,6 +357,7 @@ public final class AmmoWorksScenarios {
             hall.addHatches();
             if (!hall.form()) {
                 out.check(false, "the control hall (two bays, all hatches) should form");
+                hall.empty();
                 return out.build();
             }
             out.checkEquals("press bays of the control hall", AmmoWorksShape.MIN_BAYS, hall.mte.pressBays());
@@ -374,6 +395,40 @@ public final class AmmoWorksScenarios {
             int last = AmmoWorksShape.totalLength(hall.bays) - 1;
             ctx.setBlock(0, Hall.CY, last, casing, BlockWorksCasing.WORKS_CASING);
             out.check(!hall.form(), "a hall without an output bus should not form");
+            hall.empty();
+            return out.build();
+        }
+    }
+
+    /**
+     * Runs after the hall scenarios (names sort that way) and fails if any dropped item survived their cleanup, which
+     * would otherwise corrupt the scenarios that follow (a stray item in a bullet's path).
+     */
+    private static final class SweepScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "production.ammoworks.sweep";
+        }
+
+        @Override
+        public String description() {
+            return "No item entity is left in the hall area after the Ammunition Works scenarios cleaned up.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            int stray = 0;
+            for (Object o : ctx.world().loadedEntityList) {
+                Entity e = (Entity) o;
+                if (e instanceof EntityItem && Math.abs(e.posX - ctx.originX()) <= AREA_RADIUS
+                    && Math.abs(e.posZ - ctx.originZ()) <= AREA_RADIUS) {
+                    stray++;
+                    e.setDead();
+                }
+            }
+            out.checkEquals("item entities left in the hall area", 0, stray);
             return out.build();
         }
     }
