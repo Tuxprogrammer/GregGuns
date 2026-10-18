@@ -66,6 +66,7 @@ public final class ClientAutotest {
     public static final String CONNECT_PROPERTY = "gregguns.autotest.connect";
 
     private static final int MENU_SETTLE_TICKS = 100;
+    private static final int CONNECT_RETRY_TICKS = 300;
 
     private static final String LOG_PREFIX = "AUTOTEST ";
 
@@ -80,6 +81,8 @@ public final class ClientAutotest {
     private int fireRemaining;
     private int menuTicks;
     private boolean connectStarted;
+    private int connectTicks;
+    private int retries;
 
     private ClientAutotest(GunInputHandler input) {
         this.input = input;
@@ -154,14 +157,29 @@ public final class ClientAutotest {
 
     private void tickConnect(Minecraft mc) {
         String target = System.getProperty(CONNECT_PROPERTY);
-        if (target == null || connectStarted || !(mc.currentScreen instanceof GuiMainMenu)) {
+        if (target == null) {
             return;
         }
-        if (++menuTicks < MENU_SETTLE_TICKS) {
+        if (connectStarted) {
+            // About one run in five the first attempt is silently lost (the server never sees a handshake), so retry
+            // once the connection has had CONNECT_RETRY_TICKS without producing a world.
+            if (mc.theWorld == null && ++connectTicks >= CONNECT_RETRY_TICKS && retries < 2) {
+                retries++;
+                connectTicks = 0;
+                log("connect retry " + retries + " (no world after " + CONNECT_RETRY_TICKS + " ticks)");
+                connect(mc, target);
+            }
+            return;
+        }
+        if (!(mc.currentScreen instanceof GuiMainMenu) || ++menuTicks < MENU_SETTLE_TICKS) {
             return;
         }
         connectStarted = true;
         log("connecting to " + target);
+        connect(mc, target);
+    }
+
+    private void connect(Minecraft mc, String target) {
         // Source: FML 1.7.10 cpw.mods.fml.client.FMLClientHandler.connectToServer: it shows GuiConnecting first and
         // only
         // then creates playClientBlock, so a fast server's handshake reaches waitForPlayClient (on the netty thread)
@@ -173,7 +191,7 @@ public final class ClientAutotest {
         } catch (ReflectiveOperationException | RuntimeException e) {
             GregGuns.LOG.error("[gregguns] AUTOTEST could not prime playClientBlock", e);
         }
-        mc.displayGuiScreen(new GuiConnecting(mc.currentScreen, mc, new ServerData("autotest", target)));
+        mc.displayGuiScreen(new GuiConnecting(new GuiMainMenu(), mc, new ServerData("autotest", target)));
     }
 
     /** Presses the fire button for two ticks every six ticks, {@code fireRemaining} times. */
