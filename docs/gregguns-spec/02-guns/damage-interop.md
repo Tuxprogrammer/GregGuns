@@ -80,10 +80,33 @@
 - GGS-02-22: `/gregguns test` scenario with a target in a full hazmat set (a stub `IHazardProtector`) and one without.
 - GGS-02-23: lang-file check in the build.
 
+## Settled in M1 (implementation notes and deviations)
+
+Code: `com.gregguns.combat`. Decision: [0009 #3](../../design/0009-gtnh-integration-defaults.md), option B.
+
+- **How the model plugs into the hit (settled).** `CombatEvents.onLivingHurt` (LOW priority) runs inside vanilla's `damageEntity`. `LivingAttackEvent` is never cancelled.
+- **Evidence for the armour order (Forge 10.13.4.1614 patches `EntityLivingBase.java.patch`, `EntityPlayer.java.patch`, and `ISpecialArmor.java`).**
+  - `damageEntity` calls `ForgeHooks.onLivingHurt` **first**, then armour. Players run `ArmorProperties.ApplyArmor(this, armorInventory, source, amount)`; every other entity runs `applyArmorCalculations`, which does nothing when `source.isUnblockable()`.
+  - `ApplyArmor` skips vanilla `ItemArmor` for unblockable sources and leaves `ISpecialArmor` to decide (GT's `MechArmorBase` returns zero). It also wears the pieces.
+  - So the event amount is **pre-armour**. The handler cannot leave armour to vanilla, because armour must see only the non-penetrating share. It applies armour to that share itself (`ApplyArmor` for players, vanilla's `(25 - armour) / 25` for mobs), sets the event amount to `d * pen + armoured share`, then marks the source "armour settled". `RangedDamageSource` and `DirectDamageSource` report `isUnblockable()` as true from then on, so vanilla's own armour step is skipped and armour is applied exactly once (checked by `combat.player`: each piece is worn once).
+  - Potion/enchantment reductions and absorption still run after, once, as in vanilla. Vanilla's sword-block halving for players runs after our event, so it acts on the already-armoured amount. Accepted.
+- **Penetration travels with the source** (`HitProperties.penetration()`), is clamped to 0..1, and is computed once per hit by `DamageModel.effectivePenetration(base, scale, totalResistance)`. Resistance is the sum over worn `TypedArmour` pieces plus the target's own `TypedProtection`.
+- **Vanilla armour is plain vanilla (GUN-45).** Techguns' per-type halving of vanilla armour on mobs (`typeAdjust`) is **dropped**. A mob's armour is `getTotalArmorValue()` clamped to 0..24; players use `ApplyArmor`. Every blockable type sees the same result. Per-type values exist only for GregGuns armour (`TypedArmour`, M3) and NPCs (`TypedProtection`, M7). Consequence: poison and radiation are reduced by vanilla armour too (GGS-02-21 allows only `UNRESISTABLE` to skip armour).
+- **Worked example 5.7 changes for vanilla mobs.** The bullet against a zombie in iron now takes **3.92**, not 3.2: penetration applies to every living target (GUN-34). A zombie also carries 2 base armour points in 1.7.10, so a real zombie in iron has 17.
+- **Invulnerability frames (GUN-33).** Vanilla's `attackEntityFrom` already subtracts `lastDamage` inside the frames, so nothing is re-implemented. The `ignoresInvulnerabilityFrames` flag (on by default for projectile, fire, energy, poison, lightning and radiation, as in the Techguns factories) is honoured by clearing the frames in a LOWEST `LivingAttackEvent` handler and restoring them in the hurt handler. Edge case: a hit that vanilla still rejects after the attack event (dead or invulnerable target, fire against Fire Resistance) leaves the frames cleared.
+- **Fire sets the fire flag**, so Fire Resistance blocks it (GUN-44). The fire resistance check is vanilla's.
+- **Unresistable** sets bypass-armour and absolute (as in Techguns).
+- **Death messages.** `death.attack.gregguns.<type>` and the `.item` variant (used by `EntityDamageSource` when the killer holds a named item) and `.player` (used by plain sources) all exist for the ten types, including unresistable (GUN-43).
+- **Secondary effects** are a per-type default (`SecondaryEffects`), applied after the hit when final damage is above zero and skipped under full hazmat. Radiation also skips undead and arthropods, as GT's `applyRadioactivity` does. Techguns sets effects per projectile; a projectile can switch the default off with `withoutSecondaryEffects()`. The durations are placeholders for M9. Lightning's "shock" (Mining Fatigue) has no Techguns equivalent.
+- **Not in M1.**
+  - GUN-06 (NPC accuracy applied twice) is an accuracy/spread bug in the gun and NPC code, not in the damage path. It belongs to M2/M7.
+  - The Techguns damage-factor table (`getDamageFactor`: PvP, turret, NPC) and the `ArmorPenetrationMultiplier*` configs are not built. `effectivePenetration` already takes a `scale` argument for them. They need a config category and the projectile call sites (M2).
+  - Mobs do not lose armour durability (vanilla 1.7.10 does not wear mob armour).
+  - GUN-36, GUN-37, GUN-38, GUN-41, GUN-42, GUN-35 do not apply: vanilla sources are never converted, knockback is vanilla's, and absorption is subtracted once by vanilla.
+- **Drop-off** is `DamageFalloff.damageAt(base, min, start, end, distance)`, pure logic for the projectiles to call.
+
 ## Open questions
 
-- **How the model plugs into the hit.** Two options, for a new record under D4:
-  - (A) keep the Techguns design, cancel and re-implement. Simple, but breaks GGS-02-18.
-  - (B) let vanilla run the hit. The GregGuns handler runs in `LivingHurtEvent`, marks the source unblockable, and applies armour itself by calling Forge `ApplyArmor` on the penetrating share only.
-  - Option B satisfies GGS-02-18 but needs the M1 test above. This sheet assumes B.
 - **Hazmat mapping.** The mapping in GGS-02-22 is a proposed default. M9 balance may narrow it.
+- **Reused sources.** A source is meant for one hit. The handler tolerates reuse (it resets the settled flag), but a reused source reports `isUnblockable()` true between hits.
+- **Mod armour that ignores `isUnblockable()`.** If an `ISpecialArmor` from another mod reduces damage for unblockable sources, it would reduce it a second time after our handler. Only the player path is exposed (mobs use vanilla's formula). Not seen in the pack (GT's armour returns zero reduction).

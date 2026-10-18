@@ -1,5 +1,6 @@
 package com.gregguns.gun;
 
+import com.gregguns.combat.CombatModule;
 import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
@@ -31,5 +32,6 @@ public final class GunsModule implements GregGunsModule {
     @Override
     public void init(FMLInitializationEvent event) {
         // Recipes and event handlers: one call per area.
+        CombatModule.init();
     }
 }
