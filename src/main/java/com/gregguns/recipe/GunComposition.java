@@ -29,9 +29,9 @@ public final class GunComposition {
         return pistolDirectSteel(plate, screw, springSmall);
     }
 
-    /** Iron in an Iron Barrel (RC-04): one small pipe and two rings. */
-    public static long ironBarrelIron(long pipeSmall, long ring) {
-        return pipeSmall + 2 * ring;
+    /** Iron in an Iron Barrel (RC-04): one long rod and two rings. */
+    public static long ironBarrelIron(long stickLong, long ring) {
+        return stickLong + 2 * ring;
     }
 
     /** Steel in an Iron Barrel (RC-04): the two screws. */

@@ -78,7 +78,7 @@ public final class GunRecipes {
         long screw = OrePrefixes.screw.getMaterialAmount();
         long spring = OrePrefixes.springSmall.getMaterialAmount();
         long barrelIron = GunComposition
-            .ironBarrelIron(OrePrefixes.pipeSmall.getMaterialAmount(), OrePrefixes.ring.getMaterialAmount());
+            .ironBarrelIron(OrePrefixes.stickLong.getMaterialAmount(), OrePrefixes.ring.getMaterialAmount());
         long barrelSteel = GunComposition.ironBarrelSteel(screw);
         long mechanical1 = GunComposition.mechanical1Bronze(OrePrefixes.gearGtSmall.getMaterialAmount(), spring);
         attach(

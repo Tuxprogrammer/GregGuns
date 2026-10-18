@@ -224,7 +224,9 @@ public final class ProductionTable {
     /** The rows, in sheet order. */
     public static final List<Row> ROWS = Collections.unmodifiableList(
         Arrays.asList(
-            // RC-04: the Steel screws are the gate (the barrel itself is iron).
+            // RC-04: the Steel screws are the gate (the barrel itself is iron). Deviation: GT has no Iron small pipe,
+            // so the
+            // bore blank is a long iron rod.
             new Row(
                 "RC-04",
                 PartItems.BARREL_IRON,
@@ -233,7 +235,7 @@ public final class ProductionTable {
                 Target.ASSEMBLER,
                 5,
                 1,
-                Input.gt("pipeSmall", "Iron", 1),
+                Input.gt("stickLong", "Iron", 1),
                 Input.gt("ring", "Iron", 2),
                 Input.gt("screw", "Steel", 2)),
             // RC-05: Steel is the gate. The steel jacket plate is what "hardened" means.
