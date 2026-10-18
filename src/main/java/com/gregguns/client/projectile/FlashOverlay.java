@@ -5,6 +5,8 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
+import com.gregguns.GregGuns;
+import com.gregguns.core.DevEnvironment;
 import com.gregguns.explosion.FlashHooks;
 import com.gregguns.explosion.FlashMath;
 
@@ -33,6 +35,9 @@ public final class FlashOverlay implements FlashHooks.Sink {
         }
         startTime = mc.theWorld.getTotalWorldTime();
         total = ticks;
+        if (DevEnvironment.isActive()) {
+            GregGuns.LOG.info("[gregguns] AUTOTEST flash white-out {} ticks", ticks);
+        }
     }
 
     /** Draws the sheet over everything. */

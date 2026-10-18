@@ -304,7 +304,9 @@ public final class MvGrenadeScenarios {
 
         private static final int THROW = 45;
         private static final int FUSE = 40;
-        private static final int FRAG_THROW = 190;
+        private static final int NEAR = THROW + FUSE + 30;
+        private static final int NEAR_FUSE = 20;
+        private static final int FRAG_THROW = 330;
         private static final int FRAG_FUSE_TICKS = 30;
 
         @Override
@@ -319,7 +321,7 @@ public final class MvGrenadeScenarios {
 
         @Override
         public String description() {
-            return "Gives the first connected player a Frag Grenade and a Flashbang stack, signals screenshots of each held item, throws a flashbang through the item's release path and signals screenshots of it landing, the white-out, the fade and the blind aftermath, then does the same for a frag. Needs 1 client.";
+            return "Gives the first connected player a Frag Grenade and a Flashbang stack, signals screenshots of each held item, throws a flashbang through the item's release path (one screenshot of it in flight), sets one off two blocks in front of the player and signals screenshots of the white-out, two stages of the fade and the blind aftermath, then throws a frag. Needs 1 client.";
         }
 
         @Override
@@ -343,7 +345,7 @@ public final class MvGrenadeScenarios {
             // The frag lands a few blocks away and would hurt; the screenshot is of the blast, not of a respawn.
             a.capabilities.disableDamage = true;
             a.playerNetServerHandler.sendPacket(new S39PacketPlayerAbilities(a.capabilities));
-            return ScenarioResult.pending(name(), 400, t -> {
+            return ScenarioResult.pending(name(), 500, t -> {
                 switch (t) {
                     case 4:
                         select(a, 0);
@@ -360,16 +362,22 @@ public final class MvGrenadeScenarios {
                     case THROW:
                         throwHeld(ctx, a, FUSE);
                         break;
-                    case THROW + 14:
-                        signal(a, "shot", "f-landed");
+                    case THROW + 8:
+                        signal(a, "shot", "f-thrown");
                         break;
-                    case THROW + FUSE + 2:
+                    case NEAR:
+                        placeNear(ctx, a, NEAR_FUSE);
+                        break;
+                    case NEAR + NEAR_FUSE + 2:
                         signal(a, "shot", "f-flash");
                         break;
-                    case THROW + FUSE + 28:
-                        signal(a, "shot", "f-fade");
+                    case NEAR + NEAR_FUSE + 22:
+                        signal(a, "shot", "f-fade-1");
                         break;
-                    case THROW + FUSE + 75:
+                    case NEAR + NEAR_FUSE + 60:
+                        signal(a, "shot", "f-fade-2");
+                        break;
+                    case NEAR + NEAR_FUSE + 130:
                         signal(a, "shot", "f-aftermath");
                         break;
                     case FRAG_THROW - 2:
@@ -399,6 +407,14 @@ public final class MvGrenadeScenarios {
                 out.check(flash != null && flash.stackSize == 15, "one flashbang should have been used");
                 return out.build();
             });
+        }
+
+        /** Puts a flashbang on the floor two blocks in front of the player, so the white-out is at full strength. */
+        private static void placeNear(ScenarioContext ctx, EntityPlayerMP a, int fuse) {
+            FlashbangProjectile near = new FlashbangProjectile(ctx.world());
+            near.setLocationAndAngles(a.posX + 2.0, a.posY + 0.3, a.posZ, 0.0F, 0.0F);
+            near.setFuse(fuse);
+            ctx.spawn(near);
         }
 
         /** Releases the held grenade after a short wind-up (a gentle lob) and sets its fuse. */
