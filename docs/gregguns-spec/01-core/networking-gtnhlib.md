@@ -78,8 +78,8 @@ A failed packet is dropped and logged at debug level through a rate limiter (20 
 - GGS-01-07 (written, `GregGunsNetworkTest`): a unit test lists the registered packet classes and asserts each is an `IPacket`.
 - GGS-01-08: code review against the `IPacket` contract, plus a `runServer` smoke test that sends one packet from a test client.
 - GGS-01-09, GGS-01-10 (written: `RulesTest`, `SenderRulesTest`, `ServerboundPacketTest`, `ClientboundPacketTest`): unit tests on the validation rules and both base classes (missing target, wrong type, out of range, wrong dimension, too far, unauthorised). Regression tests are named `doesNotReproduceCORE05_...`, `CORE06`, `CORE08` and `CORE40`. The tests need GTNHLib on the test classpath (`testImplementation` in `dependencies.gradle`).
-- GGS-01-11: a unit test scans GregGuns classes for calls to `DataWatcher.addObject` and fails on any.
-- GGS-01-12: a round-trip test of every packet with non-ASCII text.
+- GGS-01-11 (written, `NoDataWatcherTest`): scans the compiled GregGuns classes for any constant-pool reference to `net/minecraft/entity/DataWatcher` and fails on one. It checks the class, not just `addObject`, which is stricter; a self-test proves the scan reports a planted class.
+- GGS-01-12 (written, `PacketStringsTest`): `PacketStrings` round-trips empty, ASCII, non-ASCII (2, 3 and 4-byte UTF-8), and maximum-length (32767 chars) strings through `PacketBuffer`, rejects an over-long write and a read over the field limit. None of the current packets (`PacketGunTrigger`, `PacketGunZoom`, `PacketGunEvent`) carries a string; a guard test fails when a registered packet gains a `String` field without being listed for its own round trip.
 
 ## Open questions
 

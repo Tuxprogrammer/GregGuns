@@ -18,6 +18,7 @@ public final class HitProperties {
     private boolean secondaryEffects = true;
     private boolean armourSettled;
     private int savedHurtResistantTime = -1;
+    private double penetrationScale = 1.0;
 
     HitProperties(DamageType type, double penetration) {
         this.type = type;
@@ -35,6 +36,11 @@ public final class HitProperties {
         return penetration;
     }
 
+    /** @return the multiplier on the penetration before resistances (PvP and NPC penetration settings); 1 by default */
+    public double penetrationScale() {
+        return penetrationScale;
+    }
+
     /** @return true when the hit neither checks nor sets invulnerability frames */
     public boolean ignoresInvulnerabilityFrames() {
         return ignoreInvulnerabilityFrames;
@@ -48,6 +54,10 @@ public final class HitProperties {
     /** @return true once the damage handler has applied armour, so vanilla must not apply it again */
     boolean isArmourSettled() {
         return armourSettled;
+    }
+
+    void setPenetrationScale(double scale) {
+        this.penetrationScale = Double.isNaN(scale) ? 1.0 : Math.max(0.0, scale);
     }
 
     void setArmourSettled(boolean settled) {

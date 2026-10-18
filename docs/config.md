@@ -32,6 +32,18 @@ The "Needs" column is the module order in `ModuleId`, taken from the roadmap's e
 |---|---|---|---|---|---|
 | `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Registers the numpad debug keybinds. Nothing reads it until the M1 keybinds exist. Kept from Techguns' `enableDebugKeybinds`. |
 
+## Damage factors (`damagefactors`)
+
+Techguns' "Damage Factors" category. All keys are synced from server to client (GGS-01-03). The factor is chosen at the hit from who shoots and who is hit (`DamageFactors`, [damage-interop.md](gregguns-spec/02-guns/damage-interop.md)). Turret and NPC factors take effect with those milestones (M6, M7).
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `damagefactors.damagePvP` | float | `0.5` | 0 to 100 | yes | Damage multiplier when a player's shot hits another player. Zero while server PvP is off. |
+| `damagefactors.damageTurretToPlayer` | float | `0.5` | 0 to 100 | yes | Damage multiplier when a turret's shot hits a player. |
+| `damagefactors.damageFactorNPC` | float | `1.0` | 0 to 100 | yes | Damage multiplier for other NPCs hitting players, and for NPC against NPC. |
+| `damagefactors.armorPenetrationMultiplierNPCtoPlayer` | float | `1.0` | 0 to 1 | yes | Scales the armour penetration of non-player attackers against players. |
+| `damagefactors.armorPenetrationMultiplierPvP` | float | `1.0` | 0 to 1 | yes | Scales the armour penetration of a player's shots against other players. |
+
 ## Client (`client`)
 
 Display options for the local player only. Not synced.

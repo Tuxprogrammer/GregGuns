@@ -18,8 +18,8 @@ import com.gtnewhorizon.gtnhlib.config.ConfigurationManager;
 public final class GregGunsConfig {
 
     /** Every config class, in registration order. */
-    public static final List<Class<?>> CLASSES = Collections
-        .unmodifiableList(Arrays.<Class<?>>asList(ModulesConfig.class, DebugConfig.class, ClientConfig.class));
+    public static final List<Class<?>> CLASSES = Collections.unmodifiableList(
+        Arrays.<Class<?>>asList(ModulesConfig.class, DebugConfig.class, ClientConfig.class, DamageFactorsConfig.class));
 
     private GregGunsConfig() {}
 

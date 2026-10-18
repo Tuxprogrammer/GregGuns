@@ -1,5 +1,8 @@
 package com.gregguns.combat;
 
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -22,8 +25,10 @@ public final class CombatEvents {
      * in {@link #onLivingHurt}, so the hit neither checks nor sets them.
      *
      * <p>
-     * Runs last, so a mod that cancels the attack earlier leaves the target's frames alone. A hit that vanilla still
-     * rejects after this point (dead or invulnerable target, Fire Resistance against fire) leaves the frames cleared.
+     * Runs last, so a mod that cancels the attack earlier leaves the target's frames alone. A hit that vanilla will
+     * reject after this point (dead or invulnerable target, creative, Fire Resistance against fire) is detected with
+     * {@link FrameRules} and leaves the frames untouched; {@link DamageSources#hit} restores them for any other
+     * rejection.
      *
      * @param event the attack event; never cancelled here
      */
@@ -34,10 +39,21 @@ public final class CombatEvents {
         }
         HitProperties hit = ((GunDamageSource) event.source).hit();
         hit.setSavedHurtResistantTime(-1);
-        if (hit.ignoresInvulnerabilityFrames()) {
+        if (hit.ignoresInvulnerabilityFrames() && !vanillaWillReject(event)) {
             hit.setSavedHurtResistantTime(event.entityLiving.hurtResistantTime);
             event.entityLiving.hurtResistantTime = 0;
         }
+    }
+
+    private static boolean vanillaWillReject(LivingAttackEvent event) {
+        EntityLivingBase target = event.entityLiving;
+        boolean creative = target instanceof EntityPlayer && ((EntityPlayer) target).capabilities.disableDamage
+            && !event.source.canHarmInCreative();
+        return FrameRules.vanillaRejects(
+            target.isEntityInvulnerable(),
+            creative,
+            target.getHealth() <= 0.0F,
+            event.source.isFireDamage() && target.isPotionActive(Potion.fireResistance));
     }
 
     /**
