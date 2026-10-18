@@ -12,7 +12,7 @@ A dev-only consistency check that stops the dev server when GregGuns content is 
 
 | Check | Rule |
 |---|---|
-| Recipes resolve | Crafting-table recipes (shaped, shapeless, ore-dict) and GT recipe-map recipes that have a GregGuns input or output have no null or empty item inputs, no empty ore-dict entries, no unregistered fluids, and no null outputs. A `null` in a shaped grid is a legitimate gap. |
+| Recipes resolve | Crafting-table recipes (shaped, shapeless, ore-dict) and GT recipe-map recipes that have a GregGuns input or output have no null or empty item inputs, no empty ore-dict entries, no unregistered fluids, and no null outputs. A `null` in a shaped grid is a legitimate gap. An input of a GT machine recipe with stack size 0 is valid too: GT uses size 0 for an input that is required but not consumed (programmed circuits, molds). |
 | Tier map | For each GregGuns output: the recipe's EU/t must fit the output's tier (`Tier.lowestForEut(eut) <= output tier`; exactly the tier voltage passes, one EU/t above fails), and no GregGuns input may be of a higher tier than the output. Crafting-table recipes have no voltage. A GregGuns output with no tier is a violation. |
 | Content | Every registered GregGuns item and block has a tier (`Tiered`), a lang key `<unlocalized name>.name` in `assets/gregguns/lang/en_US.lang`, an icon name whose PNG exists under `assets/<domain>/textures/items/` (`blocks/` for blocks), and a creative tab or the `HiddenFromCreativeTab` marker. |
 | Sounds | If `assets/gregguns/sounds.json` exists, every sound it references has an `.ogg` on the classpath. Absent or `{}` means no events. |

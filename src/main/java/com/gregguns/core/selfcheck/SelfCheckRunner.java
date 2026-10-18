@@ -215,6 +215,14 @@ public final class SelfCheckRunner {
     }
 
     private static StackDescriptor describeStack(ItemStack stack) {
+        return describeStack(stack, false);
+    }
+
+    /**
+     * @param gtInput {@code true} for an input of a GT machine recipe, where a stack size of 0 means "required but not
+     *                consumed" (programmed circuits, molds) and is valid
+     */
+    private static StackDescriptor describeStack(ItemStack stack, boolean gtInput) {
         if (stack == null || stack.getItem() == null) {
             return StackDescriptor.item("null", false, false, null);
         }
@@ -225,7 +233,11 @@ public final class SelfCheckRunner {
             Block block = Block.getBlockFromItem(stack.getItem());
             tier = block instanceof Tiered ? ((Tiered) block).getTier() : null;
         }
-        return StackDescriptor.item(String.valueOf(name), stack.stackSize > 0, gregGuns, tier);
+        // Source (size 0 = not consumed):
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipe.java#L1299-L1316
+        // (parallel maths skips an input whose consumption is 0; GT's builder gives a programmed circuit size 0).
+        return StackDescriptor
+            .item(String.valueOf(name), StackPresence.isPresent(true, stack.stackSize, gtInput), gregGuns, tier);
     }
 
     private static boolean isGregGuns(ItemStack stack) {
@@ -250,10 +262,10 @@ public final class SelfCheckRunner {
                     continue;
                 }
                 List<StackDescriptor> inputs = new ArrayList<>();
-                addStacks(recipe.mInputs, inputs);
+                addStacks(recipe.mInputs, inputs, true);
                 addFluids(recipe.mFluidInputs, inputs);
                 List<StackDescriptor> outputs = new ArrayList<>();
-                addStacks(recipe.mOutputs, outputs);
+                addStacks(recipe.mOutputs, outputs, false);
                 addFluids(recipe.mFluidOutputs, outputs);
                 String id = "gt:" + map.unlocalizedName + " -> " + firstLabel(outputs);
                 out.add(new RecipeDescriptor(id, recipe.mEUt, false, inputs, outputs));
@@ -273,12 +285,12 @@ public final class SelfCheckRunner {
         return false;
     }
 
-    private static void addStacks(ItemStack[] stacks, List<StackDescriptor> into) {
+    private static void addStacks(ItemStack[] stacks, List<StackDescriptor> into, boolean gtInput) {
         if (stacks == null) {
             return;
         }
         for (ItemStack stack : stacks) {
-            into.add(describeStack(stack));
+            into.add(describeStack(stack, gtInput));
         }
     }
 

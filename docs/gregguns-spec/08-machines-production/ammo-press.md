@@ -105,6 +105,17 @@ One mechanical stroke sound on each ram bottom, played from the client at the st
 - **GregGuns does:** five instances for the tiers in the table above. Recipe voltage is the gate.
 - **Pack-side change:** none. The optional NEI ordering row for `gregguns.ammoPress` is in [PACK-CHANGES](../PACK-CHANGES.md) if the lead adds it.
 
+## M1 slice deviation
+
+Pulled into M1 for the vertical slice (the 9mm Pistol must be craftable through its D1 gate, and the recipe must show in NEI); animation, the multiblock and the remaining tiers stay M4. What M1 builds:
+
+- The map `gregguns.ammoPress` (`GregGunsRecipeMaps`), built from `GunsModule.preInit`. It has the sheet's `maxIO(6, 3, 1, 0)` and GT's default arrow progress bar; the stroke-shaped bar waits for M4.
+- Only the **LV** press, MTE **20101** (`GregGunsMTEIDs.AMMO_PRESS_LV`), class `MTEAmmoPress`, with 6 item inputs, 3 item outputs and one fluid input. It is constructed from `GunsModule.init`, not from `sAfterGTPreload`: GregGuns loads after GregTech, so GT's preload is already over, and construction is still inside the legal window (after preload starts, before postload starts). CropsNH does the same.
+- Overlays only: `textures/blocks/machines/ammo_press/OVERLAY_*` through `Textures.BlockIcons.customOptional`, in `MTEBasicMachine`'s eight-slot order. There is no TESR, no progress-synced ram and no sound of its own (it borrows GT's compressor loop).
+- Its hand recipe is the sheet's `VPV / CMC / WEW` grid at LV, passed to GT's machine-recipe helper.
+- Recipes on the map: RC-28 (9mm bullet), RC-37 (empty pistol magazine), RC-44 (loaded pistol magazine). **Deviation:** no programmed circuit, because the map is separate (the option this sheet's recipe-move section allows). RC-05 and RC-11 go on GT's Assembler with `circuit(1)` as written. The RC-51 refill is a shapeless crafting recipe.
+- The bullet is exempt from the "one input of the tier's gate material" rule (GGS-06-36). The exemption list is `ProductionTable.GATE_EXEMPT` and is fixed.
+
 ## Requirements
 
 Continue from [machine-roster.md](machine-roster.md#requirements).

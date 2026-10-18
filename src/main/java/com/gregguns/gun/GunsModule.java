@@ -1,9 +1,16 @@
 package com.gregguns.gun;
 
+import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
+import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.item.ammo.AmmoItems;
+import com.gregguns.item.part.PartItems;
+import com.gregguns.machine.AmmoPressMachines;
+import com.gregguns.recipe.GregGunsRecipeMaps;
+import com.gregguns.recipe.ProductionRecipes;
+import com.gregguns.recipe.ProductionScenarios;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -28,10 +35,19 @@ public final class GunsModule implements GregGunsModule {
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
         // Items, entities and other content: one call per area, e.g. AmmoItems.register(registrar).
         AmmoItems.register(registrar);
+        PartItems.register(registrar);
+        // Built here so GT records GregGuns as the map's owner mod (NEI badge), see GregGunsRecipeMaps.
+        GregGunsRecipeMaps.init();
     }
 
     @Override
     public void init(FMLInitializationEvent event) {
         // Recipes and event handlers: one call per area.
+        // Pulled into M1 from M4 for the pistol slice: the LV Ammo Press and the 9mm chain's recipes.
+        AmmoPressMachines.register();
+        ProductionRecipes.register();
+        if (DevEnvironment.isActive()) {
+            ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+        }
     }
 }

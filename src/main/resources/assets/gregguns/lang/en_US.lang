@@ -23,3 +23,10 @@ gregguns.tooltip.ammo.round=Loose ammunition
 gregguns.tooltip.magazine.loaded=Holds %s rounds
 gregguns.tooltip.magazine.empty=Fill with %s rounds
 gregguns.tooltip.magazine.sneak=Sneak + Right click to empty
+
+# Production chain: components, the Ammo Press and its recipe map
+item.gregguns.part_barrel_hardened.name=Hardened Steel Barrel
+item.gregguns.part_mechanical_2.name=Mechanical Parts T2
+gregguns.ammoPress=Ammo Press
+gregguns.machine.ammo_press.tooltip=Presses bullets and magazines
+gregguns.machine.ammo_press.type=Machine Type: Ammo Press
