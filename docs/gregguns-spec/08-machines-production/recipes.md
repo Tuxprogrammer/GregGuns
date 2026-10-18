@@ -15,7 +15,7 @@ How every GregGuns production machine is built (Ammo Press, Ammunition Works, Re
 |---|---|---|
 | Housing x9 (B25), Glass x6 (B27), Controller (B26) built in the table from Cybernetic Parts, Mechanical Parts, elite circuits and a Chemical Laboratory | One **Reaction Chamber Casing** block (Assembler), GT glass for the ring, and a **controller** crafted from GT components around the casing | [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#what-changes-from-techguns): visible GT-style casings, GT hatches |
 | Hatches are three of the housing blocks | GT hatches. No GregGuns hatch exists | The Input Bus, Output Bus, Input Hatch, Energy Hatch, Maintenance Hatch and Muffler Hatch of GT are used as they are |
-| Heat Ray Focus in a GUI slot (R30) | Heat Ray Focus is a non-consumed (stack size 0) recipe input held in an Input Bus | GT's convention for moulds and lenses |
+| Heat Ray Focus in a GUI slot (R30) | Heat Ray Focus is a non-consumed (stack size 0) recipe input held in an Input Bus | GT's convention for molds and lenses |
 | Process cost in RF per reaction tick | `eut` at a `TierEU.RECIPE_*` value, which also gates the recipe by hatch voltage | Tier gating as in [0001](../../design/0001-tier-map.md) |
 | Seven Techguns recipes | Two kept, one deferred, four dropped | [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#recipe-map-and-the-7-techguns-recipes) |
 
@@ -24,7 +24,7 @@ How every GregGuns production machine is built (Ammo Press, Ammunition Works, Re
 ### GregTech: multiblock controllers are crafted around a casing
 
 - **Pack config:** none.
-- **Source:** GT's multiblock controllers are shaped crafting recipes with the controller's casing in the centre cell and a tier circuit, a cable and tier parts around it:
+- **Source:** GT's multiblock controllers are shaped crafting recipes with the controller's casing in the center cell and a tier circuit, a cable and tier parts around it:
   - Vacuum Freezer (EV): casing `Casing_FrostProof`, `Electric_Pump_HV`, `circuit.EV`, `cableGt01.Gold` ([MTERecipeLoader.java#L3407-L3413](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L3407-L3413)).
   - Blast Furnace and Implosion Compressor use the same layout with their own casing ([#L3401-L3406](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L3401-L3406), [#L3414-L3419](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L3414-L3419)).
   - Casings are Assembler recipes: 6 plates and a frame, programmed circuit 1, `RECIPE_LV / 2` ([AssemblerRecipes.java#L2671-L2700](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L2671-L2700)).
@@ -109,7 +109,7 @@ The structure's glass ring is BartWorks borosilicate glass of any tier (`Borosil
 
 ## Machine build recipes
 
-Every machine below is crafted in the crafting table around `ItemList.Hull_<tier>` and tier parts, with no tool letter and the same flags as GT's own machines (`BITS`, `DO_NOT_CHECK_FOR_COLLISIONS`). Casings and segment blocks are Assembler recipes in the style of GT's casings. The `W` cable per tier follows GT's own tier table, and the hull carries the tier material: GT builds `Casing_LV` to `Casing_IV` from 8 plates of Steel, Aluminium, Stainless Steel, Titanium and Tungstensteel ([AssemblerRecipes.java#L2589-L2640](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L2589-L2640)), which are exactly the [0001](../../design/0001-tier-map.md) gate materials. So no machine is craftable below its tier ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 1).
+Every machine below is crafted in the crafting table around `ItemList.Hull_<tier>` and tier parts, with no tool letter and the same flags as GT's own machines (`BITS`, `DO_NOT_CHECK_FOR_COLLISIONS`). Casings and segment blocks are Assembler recipes in the style of GT's casings. The `W` cable per tier follows GT's own tier table, and the hull carries the tier material: GT builds `Casing_LV` to `Casing_IV` from 8 plates of Steel, Aluminum, Stainless Steel, Titanium and Tungstensteel ([AssemblerRecipes.java#L2589-L2640](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L2589-L2640)), which are exactly the [0001](../../design/0001-tier-map.md) gate materials. So no machine is craftable below its tier ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 1).
 
 | Tier | Hull | Circuit `C` | `W` cable | Motor | Piston | Conveyor |
 |---|---|---|---|---|---|---|
@@ -158,7 +158,7 @@ One grid, four tiers from the table above. IDs 20101 (LV), 20102 (MV), 20103 (HV
 | Output | Ammo Press of the tier x1 |
 | Tier | LV, MV, HV, EV |
 | Method | Hand, shaped, GT machine style |
-| Gate | The tier's `Hull`, `Electric_Piston` and `circuit`. Hull metal is Steel, Aluminium, Stainless Steel, Titanium |
+| Gate | The tier's `Hull`, `Electric_Piston` and `circuit`. Hull metal is Steel, Aluminum, Stainless Steel, Titanium |
 | Notes | Adds the conveyor (feed belt) and motor (ram drive) to the Forming Press layout, because the press feeds rounds along a belt ([ammo-press.md](ammo-press.md#animation)) |
 
 ```
@@ -173,7 +173,7 @@ One grid, four tiers from the table above. IDs 20101 (LV), 20102 (MV), 20103 (HV
 | `P` | `ItemList.Electric_Piston_<tier>` |
 | `C` | `OrePrefixes.circuit.get(Materials.<tier>)` |
 | `M` | `ItemList.Hull_<tier>` |
-| `W` | `cableGt01` of the tier (Tin, AnyCopper, Gold, Aluminium) |
+| `W` | `cableGt01` of the tier (Tin, AnyCopper, Gold, Aluminum) |
 | `E` | `ItemList.Electric_Motor_<tier>` |
 
 ### Ammunition Works (3 recipes)
@@ -211,7 +211,7 @@ EV (MTE 20106) and IV (MTE 20107), [reaction-chamber-multiblock.md](reaction-cha
 | Tier | EV, IV |
 | Method | Hand, shaped, GT machine style |
 | Gate | `Hull_EV` or `Hull_IV`, `Emitter_<tier>`, `Electric_Pump_<tier>`, `Sensor_<tier>` and `circuit.<tier>`. Only the IV chamber can start the Anti Gravity Core ([GGS-08-46](reaction-chamber-multiblock.md#requirements)) |
-| Notes | Same three tier parts as the Retort controller. Cable `W` is Aluminium (EV) and Tungsten (IV) |
+| Notes | Same three tier parts as the Retort controller. Cable `W` is Aluminum (EV) and Tungsten (IV) |
 
 ```
  E  P  E
@@ -225,7 +225,7 @@ EV (MTE 20106) and IV (MTE 20107), [reaction-chamber-multiblock.md](reaction-cha
 | `P` | `ItemList.Electric_Pump_<tier>` |
 | `C` | `OrePrefixes.circuit.get(Materials.<tier>)` |
 | `M` | `ItemList.Hull_<tier>` |
-| `W` | `cableGt01` Aluminium (EV) or Tungsten (IV) |
+| `W` | `cableGt01` Aluminum (EV) or Tungsten (IV) |
 | `S` | `ItemList.Sensor_<tier>` |
 
 ### Retort
@@ -316,7 +316,7 @@ Numbering continues from [recipe-scripting.md](recipe-scripting.md).
 |---|---|---|
 | (none consumed from area 06) | n/a | Every input is a GT part or a vanilla item. The Works Casing and Ram Housing are produced and consumed within this sheet |
 
-The recipes in this sheet **produce** components that other areas consume: Laser Focus (a gun component, area 06 and the laser weapons), Anti Gravity Core (area 05, [armour recipes](../05-armor/recipes.md#anti-gravity-device-1-recipe)) and Heat Ray Focus (this sheet).
+The recipes in this sheet **produce** components that other areas consume: Laser Focus (a gun component, area 06 and the laser weapons), Anti Gravity Core (area 05, [armor recipes](../05-armor/recipes.md#anti-gravity-device-1-recipe)) and Heat Ray Focus (this sheet).
 
 ## Open questions
 

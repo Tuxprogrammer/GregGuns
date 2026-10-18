@@ -1,10 +1,10 @@
 # Shared host block and renderers (area 09)
 
-This file covers the parts of the shared `BasicMachine` block that apply to area 09's metadata values, and the two generic tile-entity renderers that only area 09 uses. The block class itself (all metas, wrench handling, fluid interaction) is catalogued in full by **[08-machines-production](../08-machines-production/index.md)**. The base tile-entity classes ([`BasicInventoryTileEnt`](../08-machines-production/framework.md#2-basicinventorytileent), [`BasicOwnedTileEnt`](../08-machines-production/framework.md#3-ownership-and-security-basicownedtileent-itgtileentsecurity), [`BasicPoweredTileEnt`](../08-machines-production/framework.md#4-energy-basicpoweredtileent), [`BasicMachineTileEntity`](../08-machines-production/framework.md#7-recipe-machine-state-basicmachinetileentity), the multiblock bases), the base GUIs ([`GuiTechgunsTileEntBase`](../08-machines-production/gui-handler.md#2-guitechgunstileentbase-abstract-guicontainer), [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine)) and [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table) are also [08](../08-machines-production/index.md)'s.
+This file covers the parts of the shared `BasicMachine` block that apply to area 09's metadata values, and the two generic tile-entity renderers that only area 09 uses. The block class itself (all metas, wrench handling, fluid interaction) is cataloged in full by **[08-machines-production](../08-machines-production/index.md)**. The base tile-entity classes ([`BasicInventoryTileEnt`](../08-machines-production/framework.md#2-basicinventorytileent), [`BasicOwnedTileEnt`](../08-machines-production/framework.md#3-ownership-and-security-basicownedtileent-itgtileentsecurity), [`BasicPoweredTileEnt`](../08-machines-production/framework.md#4-energy-basicpoweredtileent), [`BasicMachineTileEntity`](../08-machines-production/framework.md#7-recipe-machine-state-basicmachinetileentity), the multiblock bases), the base GUIs ([`GuiTechgunsTileEntBase`](../08-machines-production/gui-handler.md#2-guitechgunstileentbase-abstract-guicontainer), [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine)) and [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table) are also [08](../08-machines-production/index.md)'s.
 
 ## 1. `BasicMachine` metas owned by area 09
 
-Registry name [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks), item block [`ItemBlockMetaDataMachine`](../07-blocks/special-blocks.md#16-itemblockmetadatamachine). The unlocalized item name is `techguns.tile.BasicMachine_<meta>.name`.
+Registry name [`basicMachine`](../07-blocks/block-catalog.md#registered-blocks), item block [`ItemBlockMetaDataMachine`](../07-blocks/special-blocks.md#16-itemblockmetadatamachine). The unlocalized item name is `techguns.tile.BasicMachine_<meta>.name`.
 
 | Meta | Tile entity (registry id) | English name (lang key `techguns.tile.BasicMachine_N.name`) | GUI id | In creative list | Doc |
 |---|---|---|---|---|---|
@@ -36,8 +36,8 @@ Block properties that matter for these metas:
 
 | Output | Grid (rows) | Key |
 |---|---|---|
-| Turret ×1 (meta 2) | `pip` / `cec` / `prp` | p = [`plateIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), i = `circuitBasic`, c = concrete block (meta 0, 07), e = Electric Engine ([06](../06-items/index.md)), r = redstone |
-| Camo Bench ×1 (meta 3) | `ddd` / `ici` / `iii` | d = any `dye`, c = crafting table, i = [`nuggetIron`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) |
+| Turret ×1 (meta 2) | `pip` / `cec` / `prp` | p = [`plateIron`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo), i = `circuitBasic`, c = concrete block (meta 0, 07), e = Electric Engine ([06](../06-items/index.md)), r = redstone |
+| Camo Bench ×1 (meta 3) | `ddd` / `ici` / `iii` | d = any `dye`, c = crafting table, i = [`nuggetIron`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) |
 | Repair Bench ×1 (meta 5) | `pmp` / `ici` / `iii` | p = `plateIron`, m = Mechanical Parts ([06](../06-items/index.md)), c = crafting table, i = `nuggetIron` |
 | Explosive Charge ×8 (meta 6) | `rtr` / `tct` / `rtr` | r = `itemRubber`, t = TNT, c = `circuitBasic` |
 | Advanced Explosive Charge ×4 (meta 8) | `rtr` / `tct` / `rtr` | r = `sheetPlastic`, t = TGX explosive item ([06](../06-items/index.md)), c = `circuitBasic` |
@@ -83,8 +83,8 @@ The ore drill and chest recipes are in their own files.
 `RenderTileEntityBlock` is a TESR that draws one unit cube with the Tessellator, taking each face's UVs from a [`TesselatorCube`](../07-blocks/block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items) subclass. At draw time it:
 
 1. Translates to the block corner.
-2. Rotates about the block's vertical centre axis by `90° × rotation`, where `rotation` is `BasicInventoryTileEnt.rotation`.
-3. Sets the tessellator colour to the block's light value and the lightmap coordinates to the block's combined sky/block brightness.
+2. Rotates about the block's vertical center axis by `90° × rotation`, where `rotation` is `BasicInventoryTileEnt.rotation`.
+3. Sets the tessellator color to the block's light value and the lightmap coordinates to the block's combined sky/block brightness.
 4. Draws all six faces in one `startDrawingQuads`/`draw` pass.
 
 `TesselatorCube` holds a texture `ResourceLocation` plus `(u0,u1,v0,v1)` rectangles for top, bottom, front, back, left and right, each defaulting to the full texture. Face geometry:
@@ -111,9 +111,9 @@ Both bench cubes use the same 2×2 quadrant atlas:
 
 `RenderBlockTileEntModel` is a TESR that draws a `ModelBase` with one texture:
 
-1. Translates to the block centre, raised by 1.5 (x + 0.5, y + 1.5, z + 0.5).
+1. Translates to the block center, raised by 1.5 (x + 0.5, y + 1.5, z + 0.5).
 2. Applies `TGRenderHelper.adjustLightFixture`, which does the same light setup as above.
-3. Binds the texture. If the tile is a `TurretBaseEnt`, it binds the texture chosen by the turret's armour instead (see turret.md).
+3. Binds the texture. If the tile is a `TurretBaseEnt`, it binds the texture chosen by the turret's armor instead (see turret.md).
 4. Rotates 180° about Z, the standard "model upside-down" fix.
 5. Renders the model at scale 1/16.
 
@@ -121,7 +121,7 @@ The tile's rotation is ignored. A private helper that would rotate by metadata i
 
 | Tile | Model | Texture |
 |---|---|---|
-| `TurretBaseEnt` | `ModelTurretBase` | `textures/blocks/TurretBase.png` (or an armour variant) |
+| `TurretBaseEnt` | `ModelTurretBase` | `textures/blocks/TurretBase.png` (or an armor variant) |
 | `CampFlagTileEnt` | [`ModelFlagPost`](../07-blocks/block-rendering-and-models.md#modelflagpost-uv-6464-texture-flagpostpng) | [`textures/blocks/flagpost.png`](../07-blocks/textures.md#11-model-textures) |
 
 ## 4. Box-UV convention used in the texture descriptions

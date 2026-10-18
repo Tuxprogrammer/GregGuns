@@ -7,11 +7,11 @@ All recipes are Forge `ShapedOreRecipe` or `ShapelessOreRecipe` registered in th
 
 Grids are written top row first; `_` is an empty cell. A 2-row recipe can be placed in either the top or the bottom two rows.
 
-Armour recipes are in [`TGArmors.init()`](armor-catalogue.md). Special-equipment recipes are in [`TGItems`](../06-items/item-catalogue.md) ([06-items](../06-items/index.md)), listed here because the items belong to this area.
+Armor recipes are in [`TGArmors.init()`](armor-catalog.md). Special-equipment recipes are in [`TGItems`](../06-items/item-catalog.md) ([06-items](../06-items/index.md)), listed here because the items belong to this area.
 
-Crafted multi-camo armour gets `camo = 0`, and crafted powered armour gets `power = 0` (via `onCreated`).
+Crafted multi-camo armor gets `camo = 0`, and crafted powered armor gets `power = 0` (via `onCreated`).
 
-## 1. Armour
+## 1. Armor
 
 ### T1 Combat (key: `i` = "ingotIron", `c` = Heavy Cloth)
 | Output | Grid |
@@ -53,7 +53,7 @@ Crafted multi-camo armour gets `camo = 0`, and crafted powered armour gets `powe
 | Commando Pants | `hih` / `i_i` / `h_h` |
 | Commando Boots | `i_i` / `h_h` |
 
-### T2 Riot / Ranger Veteran (key: `p` = "plateLead", `l` = Treated Leather; the centre item is the matching T2 Combat piece, any damage and any camo)
+### T2 Riot / Ranger Veteran (key: `p` = "plateLead", `l` = Treated Leather; the center item is the matching T2 Combat piece, any damage and any camo)
 | Output | Grid |
 |---|---|
 | Ranger Veteran Helmet | `php` / `l_l` (`h` = Combat Helmet) |
@@ -69,7 +69,7 @@ Crafted multi-camo armour gets `camo = 0`, and crafted powered armour gets `powe
 | Advanced Combat Leggings | `pfp` / `p_p` / `f_f` |
 | Advanced Combat Boots | `f_f` / `p_p` |
 
-### Steam Armour (key: `s` = Steam Armor Plating)
+### Steam Armor (key: `s` = Steam Armor Plating)
 | Output | Grid |
 |---|---|
 | Steam Helmet | `sss` / `s_s` |
@@ -77,7 +77,7 @@ Crafted multi-camo armour gets `camo = 0`, and crafted powered armour gets `powe
 | Steam Legplates | `sss` / `s_s` / `s_s` |
 | Steam Boots | `s_s` / `s_s` |
 
-### T3 Power Armour (key: `p` = Power Plating, `g` = "paneGlass", `c` = "circuitElite", `e` = Electric Engine)
+### T3 Power Armor (key: `p` = Power Plating, `g` = "paneGlass", `c` = "circuitElite", `e` = Electric Engine)
 | Output | Grid |
 |---|---|
 | Power Armor Helmet | `cpc` / `pgp` |
@@ -130,9 +130,9 @@ The input piece's damage and camo are discarded; the output is a fresh piece.
 
 ## 3. Repair
 
-**Anvil:** an armour piece can be repaired with its "repair item" (the metal repair mat, or the cloth mat if there is no metal). Special-slot items have no anvil repair item.
+**Anvil:** an armor piece can be repaired with its "repair item" (the metal repair mat, or the cloth mat if there is no metal). Special-slot items have no anvil repair item.
 
-**Repair Bench:** uses each piece's repair-material list (armor-catalogue.md §3 and §5; machine in [09-machines-utility](../09-machines-utility/index.md)). T2 Commando has no repair mats.
+**Repair Bench:** uses each piece's repair-material list (armor-catalog.md §3 and §5; machine in [09-machines-utility](../09-machines-utility/index.md)). T2 Commando has no repair mats.
 
 **Vanilla two-item crafting repair** works on all of these damageable items, because nothing disables it. This also covers the fuel-based special items (bug [ARM-22](index.md#suspected-bugs)).
 
@@ -143,4 +143,4 @@ The input piece's damage and camo are discarded; the output is a fresh piece.
 | `techgunsMilBaseBarracks` | T1 Combat helmet, vest, pants, boots (1–1, w 2 each); T2 Combat helmet, vest, pants, boots (1–1, w 1 each); Glider (1, w 1); Gas Mask (1, w 2); Gas Mask Filter (1, w 1); Nightvision Goggles (1, w 1); Oxygen Mask (1, w 1); Oxygen Tanks (1, w 1) |
 | vanilla dungeon chest | Nightvision Goggles (1, w 1); Gas Mask (1, w 1) |
 
-Loot armour has no NBT, so its camo name shows "No Camo" (bug [ARM-11](index.md#suspected-bugs)).
+Loot armor has no NBT, so its camo name shows "No Camo" (bug [ARM-11](index.md#suspected-bugs)).

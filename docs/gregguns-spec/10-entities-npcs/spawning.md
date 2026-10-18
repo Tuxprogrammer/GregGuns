@@ -13,9 +13,9 @@
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
-| One placeholder mob (`TGDummySpawn`, an `EntityMob`) is added to vanilla spawning in every non-Nether, non-End biome. Its `EntityJoinWorldEvent` is intercepted and cancelled, and a real NPC is spawned in its place ([spawning.md § 1](../../techguns-spec/10-entities-npcs/spawning.md#12-replacement)). | Recommended: register the real NPC classes as spawn entries and apply dimension and danger rules in a `CheckSpawn` handler. No placeholder. | The placeholder is a real `IMob`. Infernal Mobs, Mobs Info and EnderZoo's global modifier all see it. Mobs Info's spawn tab shows only registered classes. See the table below. |
+| One placeholder mob (`TGDummySpawn`, an `EntityMob`) is added to vanilla spawning in every non-Nether, non-End biome. Its `EntityJoinWorldEvent` is intercepted and canceled, and a real NPC is spawned in its place ([spawning.md § 1](../../techguns-spec/10-entities-npcs/spawning.md#12-replacement)). | Recommended: register the real NPC classes as spawn entries and apply dimension and danger rules in a `CheckSpawn` handler. No placeholder. | The placeholder is a real `IMob`. Infernal Mobs, Mobs Info and EnderZoo's global modifier all see it. Mobs Info's spawn tab shows only registered classes. See the table below. |
 | Dimension list per spawn is `[0]` by default, and other dimensions print "TotalWeight 0" for every attempt ([NPC-16](../../techguns-spec/10-entities-npcs/index.md#suspected-bugs)). | One config list, default `[0]`, checked at spawn time. Other dimensions are skipped silently. | [0005](../../design/0005-world-presence.md). |
 | Weights: Farmer 200, Miner 200, Soldier 100, Skeleton 100, Bandit 50, Psycho Steve 3, placeholder 600. | Start at half, rounded down, minimum 1: Farmer 100, Miner 100, Soldier 50, Skeleton 50, Bandit 25, Psycho Steve 1. | [0005](../../design/0005-world-presence.md). Final numbers come from the M9 balance pass. |
 | Zombie Pigman Soldier and Cyberdemon spawn only in the Nether. | Not spawned naturally under 0005. | Open question 2. |
@@ -30,7 +30,7 @@
 | Mobs Info | Lists it in NEI as a mob with no drops, because `IncludeEmptyMobs=true`. It also gives the real NPCs no spawn tab, because it reads the biome lists, which hold only the placeholder. | [MobRecipe#L177-L190](https://github.com/GTNewHorizons/Mobs-Info/blob/0.6.0-GTNH/src/main/java/com/kuba6000/mobsinfo/api/MobRecipe.java#L177-L190) |
 | EnderZoo | Its join handler queues every `IMob` for the global difficulty modifier, which rewrites max health and attack damage. | [MobSpawnEventHandler#L96-L112](https://github.com/GTNewHorizons/EnderZoo/blob/1.3.6/src/main/java/crazypants/enderzoo/spawn/MobSpawnEventHandler.java#L96-L112) |
 
-A handler that cancels the join at `EventPriority.HIGHEST` stops the first and third. Forge skips a cancelled event for handlers that do not set `receiveCanceled`, and the Infernal Mobs and EnderZoo join handlers do not. It does nothing for the second.
+A handler that cancels the join at `EventPriority.HIGHEST` stops the first and third. Forge skips a canceled event for handlers that do not set `receiveCanceled`, and the Infernal Mobs and EnderZoo join handlers do not. It does nothing for the second.
 
 - **GregGuns does:** per GGS-10-26, register real classes. If the open question 1 record keeps the placeholder, then GGS-10-04 applies and the pack blacklists it in Mobs Info.
 - **Pack-side change:** only in the placeholder case: `mobhandler.MobBlacklist` gets `gregguns.TGDummySpawn`. See [mob-drops-nei.md](mob-drops-nei.md).

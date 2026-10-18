@@ -22,10 +22,12 @@ def render():
         with open(path, encoding="utf-8", newline="") as f:
             rows = list(csv.DictReader(f))
         kind = os.path.splitext(os.path.basename(path))[0]
-        out += ["", f"### {kind} ({len(rows)})", "", "| asset | path | generator | seed | method | licence | date |",
+        out += ["", f"### {kind} ({len(rows)})", "", "| asset | path | generator | seed | method | license | date |",
                 "|---|---|---|---|---|---|---|"]
         for r in rows:
-            cells = [r.get(k, "").replace("|", "\\|") for k in ("asset", "path", "generator", "seed", "method", "licence", "date")]
+            # sounds.csv (written by gen_sounds.py) may still use the old "licence" header
+            cells = [(r.get(k) or (r.get("licence") if k == "license" else "") or "").replace("|", "\\|")
+                     for k in ("asset", "path", "generator", "seed", "method", "license", "date")]
             out.append("| " + " | ".join(cells) + " |")
     out += ["", END]
     return "\n".join(out)

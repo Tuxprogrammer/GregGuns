@@ -2,9 +2,9 @@
 
 ## Overview
 
-This area records how GregGuns items differ from [Techguns' non-gun, non-armour items](../../techguns-spec/06-items/index.md) and how they plug into GTNH. The central change is that GT now supplies the metals, plates, wires, circuits, polymers and fluids that Techguns made itself ([0002](../../design/0002-machine-deconfliction.md)). GregGuns keeps only what GT does not make, and builds it from GT parts. The other half is loot: the pack's loot mods replace vanilla chest tables, so GregGuns items reach GTNH loot through pack-side data, not through code.
+This area records how GregGuns items differ from [Techguns' non-gun, non-armor items](../../techguns-spec/06-items/index.md) and how they plug into GTNH. The central change is that GT now supplies the metals, plates, wires, circuits, polymers and fluids that Techguns made itself ([0002](../../design/0002-machine-deconfliction.md)). GregGuns keeps only what GT does not make, and builds it from GT parts. The other half is loot: the pack's loot mods replace vanilla chest tables, so GregGuns items reach GTNH loot through pack-side data, not through code.
 
-Techguns topics with no integration point have no sheet here. Their behaviour is the Techguns spec plus the design records:
+Techguns topics with no integration point have no sheet here. Their behavior is the Techguns spec plus the design records:
 
 - sounds ([sounds.md](../../techguns-spec/06-items/sounds.md)), textures ([textures.md](../../techguns-spec/06-items/textures.md)) and lang ([lang.md](../../techguns-spec/06-items/lang.md)): art direction is [0006](../../design/0006-art-direction.md); no pack file touches them;
 - the shared meta item, glider, camo net placer, door item, tools and spawn eggs ([special-items.md](../../techguns-spec/06-items/special-items.md)): no pack mod or GT system replaces them, apart from the NEI display in [nei-visibility.md](nei-visibility.md);
@@ -61,7 +61,7 @@ These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHori
 | `config/InfernalMobs.cfg` | Append GregGuns entries to `droppedItemIDsElite`, `droppedItemIDsUltra`, `droppedItemIDsInfernal` (route A only) | Drop lists are global config | [pack-loot.md](pack-loot.md#infernal-mobs) |
 | `config/InfernalMobs.cfg` | Optional: set `permittedentities` or `entitiesalwaysinfernal` keys for GregGuns NPCs, by simple class name | `useSimpleEntityClassnames=true` in the pack | [pack-loot.md](pack-loot.md#infernal-mobs) |
 | `config/GTNewHorizons/CustomDrops.xml` | Optional: `CustomDrop` entries for boss NPCs, by full class name | Fixed, player-kill-only drops | [pack-loot.md](pack-loot.md#gtnh-customdrops) |
-| `config/NEI/collapsibleitems.cfg` | Add GregGuns groups (magazines, tanks, ammo by calibre, armour sets) and append the spawn egg to the existing egg group | Collapsible groups are file-only | [nei-visibility.md](nei-visibility.md#nei-collapsible-groups-file-only) |
+| `config/NEI/collapsibleitems.cfg` | Add GregGuns groups (magazines, tanks, ammo by caliber, armor sets) and append the spawn egg to the existing egg group | Collapsible groups are file-only | [nei-visibility.md](nei-visibility.md#nei-collapsible-groups-file-only) |
 | `config/ThaumcraftMobAspects/gregguns.cfg` | Optional: fill in aspect values after first run | The file is created empty | [thaumcraft-aspects.md](thaumcraft-aspects.md#thaumcraftmobaspects-entities) |
 
 ## Related areas

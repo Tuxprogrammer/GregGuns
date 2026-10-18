@@ -15,10 +15,10 @@ Projectile renderers (including [`RenderDummy`](../04-projectiles-fx/projectiles
 | [`ZombiePigmanSoldier`](per-mob.md#4-zombie-pigman-soldier-zombiepigmansoldier) | RenderGenericNPC | ModelGenericNPC | vanilla `minecraft:textures/entity/zombie_pigman.png` | 0.5 | 0 |
 | [`SkeletonSoldier`](per-mob.md#5-skeleton-soldier-skeletonsoldier) | RenderGenericNPC | ModelSkeletonSoldier | vanilla `minecraft:textures/entity/skeleton/skeleton.png` | 0.5 | 0.1, 0, 0.05 |
 | [`ArmySoldier`](per-mob.md#6-army-soldier-armysoldier) | RenderGenericNPC | ModelGenericNPC | [`textures/entity/army_soldier.png`](textures.md#texturesentityarmy_soldierpng-128128) | 0.5 | 0 |
-| [`Outcast`](per-mob.md#8-outcast-outcast) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (hidden under power armour) | 0.5 | 0 |
-| [`PsychoSteve`](per-mob.md#12-psycho-steve-psychosteve-early-game-mini-boss) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under miner armour) | 0.5 | 0 |
-| [`Commando`](per-mob.md#9-commando-commando) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under commando armour) | 0.5 | 0 |
-| [`StormTrooper`](per-mob.md#10-stormtrooper-stormtrooper-registry-name-stormtrooper) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under HEV armour) | 0.5 | 0 |
+| [`Outcast`](per-mob.md#8-outcast-outcast) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (hidden under power armor) | 0.5 | 0 |
+| [`PsychoSteve`](per-mob.md#12-psycho-steve-psychosteve-early-game-mini-boss) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under miner armor) | 0.5 | 0 |
+| [`Commando`](per-mob.md#9-commando-commando) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under commando armor) | 0.5 | 0 |
+| [`StormTrooper`](per-mob.md#10-stormtrooper-stormtrooper-registry-name-stormtrooper) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under HEV armor) | 0.5 | 0 |
 | [`Bandit`](per-mob.md#7-bandit-bandit) | RenderGenericNPC | ModelGenericNPC | [`textures/entity/bandit.png`](textures.md#texturesentitybanditpng-6464) | 0.5 | 0 |
 | [`DictatorDave`](per-mob.md#13-dictator-dave-dictatordave-mini-boss) | RenderGenericNPC | ModelGenericNPC | [`textures/entity/dictator.png`](textures.md#texturesentitydictatorpng-6464) | 0.5 | 0 |
 | [`CyberDemon`](per-mob.md#11-cyberdemon-cyberdemon) | RenderGenericNPC | ModelCyberDemon | [`textures/entity/cyberdemon.png`](textures.md#texturesentitycyberdemonpng-128128-fully-opaque-on-a-black-background) | 0.75 | −0.11, 0.15, −0.18 |
@@ -28,14 +28,14 @@ Projectile renderers (including [`RenderDummy`](../04-projectiles-fx/projectiles
 | [`AlienBug`](per-mob.md#15-alien-bug-alienbug) | RenderAlienBug | ModelAlienBug | [`textures/entity/alienbug.png`](textures.md#texturesentityalienbugpng-6464-about-34-opaque) | 1.0 | – |
 | [`AlienBugDomesticated`](per-mob.md#alienbugdomesticated-dead-code) (unregistered) | RenderAlienBug | ModelAlienBug | `textures/entity/alienbug.png` | 1.0 | – |
 | [`AttackHelicopter`](per-mob.md#16-attack-helicopter-attackhelicopter-boss) | RenderHelicopter | OBJ [`models/entity/apache.obj`](textures.md#texturesentityapachepng-256256-opaque) | [`textures/entity/apache.png`](textures.md#texturesentityapachepng-256256-opaque) | 5.0 | – |
-| `NPCTurret` | RenderSimpleTurret | ModelTurret | [`textures/blocks/TurretBase.png`](../07-blocks/textures.md#11-model-textures) … `_5.png` by armour (owned by [09](../09-machines-utility/index.md)) | none | turret offsets |
+| `NPCTurret` | RenderSimpleTurret | ModelTurret | [`textures/blocks/TurretBase.png`](../07-blocks/textures.md#11-model-textures) … `_5.png` by armor (owned by [09](../09-machines-utility/index.md)) | none | turret offsets |
 
 `entities/renderer/RenderTurret` is a minimal `RenderLiving` with a single static texture. It is not bound to anything; the binding using it for the unused turret entity is commented out.
 
 ## 2. `RenderGenericNPC` (extends vanilla `RenderBiped`)
 
-- **Base behaviour:** vanilla biped rendering, including the four armour layers through RenderBiped's armour models. Techguns armour supplies its own armour models and textures ([05-armor](../05-armor/index.md)). The constructor scale is 1.0.
-- **`preRenderCallback`:** if `getHasAimedBowAnim()` is true and the held item is a [`GenericGun`](../02-guns/gun-lifecycle.md), it sets `aimedBow = true` on both armour models (the inner and outer armour bipeds). A Forge render-pre event in [`TechgunsEventhandler`](../01-core/events.md#techgunseventhandler-forge-bus) sets the same flag on the main model, using the entity's `hasAimedBowAnim` (or true for non-GenericNPC shooters). Together they produce the two-handed aiming pose.
+- **Base behavior:** vanilla biped rendering, including the four armor layers through RenderBiped's armor models. Techguns armor supplies its own armor models and textures ([05-armor](../05-armor/index.md)). The constructor scale is 1.0.
+- **`preRenderCallback`:** if `getHasAimedBowAnim()` is true and the held item is a [`GenericGun`](../02-guns/gun-lifecycle.md), it sets `aimedBow = true` on both armor models (the inner and outer armor bipeds). A Forge render-pre event in [`TechgunsEventhandler`](../01-core/events.md#techgunseventhandler-forge-bus) sets the same flag on the main model, using the entity's `hasAimedBowAnim` (or true for non-GenericNPC shooters). Together they produce the two-handed aiming pose.
 - **`getEntityTexture`:** returns the fixed texture given at construction.
 - **`renderEquippedItems`**, a re-implementation of the vanilla one:
   - **Helmet slot:** a block item, or an item whose `IItemRenderer` wants BLOCK_3D, is drawn on the head the vanilla way. A vanilla skull is drawn with its owner profile. The vanilla code that draws the pumpkin/head is kept.
@@ -179,7 +179,7 @@ Texture 64 × 64. It is a quadruped insectoid with a long two-part mandible snou
 | `b2` | (23,33) | 6×4×4 | (−3, 13, 6) | X +34° | Abdomen segment rising |
 | `b3` | (43,31) | 4×3×4 | (−2, 11, 10) | X +13° | Second abdomen segment |
 | `b4` | (56,30) | 2×2×2 | (−1, 10.5, 14.2) | – | Tail tip |
-| `h1` head | (20,9) | 5×5×6 | pivot (0, 11.5, −1), box centred | X +7.8° (rest) | Head; yaw and pitch follow the look direction |
+| `h1` head | (20,9) | 5×5×6 | pivot (0, 11.5, −1), box centered | X +7.8° (rest) | Head; yaw and pitch follow the look direction |
 | `h2` (child of h1) | (36,18) | 6×3×8 | (−3, −6.5, 3.5) | X +20° | Carapace crest on top of the head |
 | `h3` (child of h1) | (22,0) | 14×0×14 flat plane | (−3, −6.5, 3.5), box x −4…10 | X +20° | Flat crest/frill plane with dark antennae painted on |
 | `JAW_U` (child of h1) | (2,15) | 4×4×10 | (−2, −1, −2), extends −Z | X −10.4° | Upper mandible/snout with eyes and teeth |
@@ -222,7 +222,7 @@ Texture 64 × 64 logical (the `TurretBase*.png` files are 128 × 128).
 An empty `ModelBase`. It is the placeholder model for the OBJ-rendered helicopter.
 
 ### 7.8 `ModelGrimReaper` and `ModelCyberdemonBlaster` (gun models, listed for completeness)
-`ModelGrimReaper` is **not** an NPC model. It is the item model for the Grim Reaper quad rocket launcher ([`TGuns.grimreaper`](../02-guns/gun-catalogue.md)), which Outcasts may carry: a [`ModelMultipart`](../03-gun-visuals-audio/rendering-framework.md#1-registration-client-proxy) with 59 boxes and a 128 × 64 texture ([`textures/guns/grimreaper.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures)), rendered by `RenderGrimReaper` with an extra 180° Y flip. Its geometry and texture are specified by **[03-gun-visuals-audio](../03-gun-visuals-audio/index.md)**, as is [`ModelCyberdemonBlaster`](../03-gun-visuals-audio/gun-models.md#modelcyberdemonblaster-6464-family-z-24-boxes-1-part) (the Cyberdemon's gun).
+`ModelGrimReaper` is **not** an NPC model. It is the item model for the Grim Reaper quad rocket launcher ([`TGuns.grimreaper`](../02-guns/gun-catalog.md)), which Outcasts may carry: a [`ModelMultipart`](../03-gun-visuals-audio/rendering-framework.md#1-registration-client-proxy) with 59 boxes and a 128 × 64 texture ([`textures/guns/grimreaper.png`](../03-gun-visuals-audio/textures.md#measured-colors-all-62-textures)), rendered by `RenderGrimReaper` with an extra 180° Y flip. Its geometry and texture are specified by **[03-gun-visuals-audio](../03-gun-visuals-audio/index.md)**, as is [`ModelCyberdemonBlaster`](../03-gun-visuals-audio/gun-models.md#modelcyberdemonblaster-6464-family-z-24-boxes-1-part) (the Cyberdemon's gun).
 
 ## 8. Death and gore hookup (cross-reference)
 

@@ -1,6 +1,6 @@
 # Lang keys and generated text (06-items)
 
-Item display names are in [item-catalogue.md](item-catalogue.md): every row gives its key (`techguns.item.<name>.name`) and its English text. This page covers the other strings, the text generated in code, and the lang-file anomalies.
+Item display names are in [item-catalog.md](item-catalog.md): every row gives its key (`techguns.item.<name>.name`) and its English text. This page covers the other strings, the text generated in code, and the lang-file anomalies.
 
 <a id="generated-tooltips"></a>
 ## Tooltip lines
@@ -11,14 +11,14 @@ Item display names are in [item-catalogue.md](item-catalogue.md): every row give
 | Ore drill heads (75–83) | `<size label> <dims>` | `techguns.oreDrillTooltip.size` → "Valid for drills with size", followed by the literal ` 1x1x1` / ` 1x1xN or 3x3xN` / ` 5x5xN or 7x7xN` | head size (small / medium / large) |
 | | `<level label>: <n>` | `techguns.oreDrillTooltip.mininglevel` → "Bonus mining level", followed by `: 1` / `: 2` / `: 3` | material (steel / obsidian steel / carbon) |
 | Ore Cluster Scanner | `<energy>/30000 RF` | literal | NBT `Energy` |
-| Combat Knife, Crowbar | `DamageType: <type>` | prefix is literal; type = coloured `techguns.TGDamageType.PHYSICAL` → "Physical" (dark grey) | `dmgType` field |
+| Combat Knife, Crowbar | `DamageType: <type>` | prefix is literal; type = colored `techguns.TGDamageType.PHYSICAL` → "Physical" (dark gray) | `dmgType` field |
 | | `ArmorPen: <x>%` | literal | only when penetration > 0 (never, for these two) |
 | Crowbar, Shift held | header + one line per class + note | `techguns.tooltip.toolclasses` → "Toolclasses"; lines `  default : 2`, `  pickaxe : 2`, `  wrench : 2` (HashMap order); `techguns.tooltip.crowbar.destroycluster` → "Can destroy Ore Clusters" | Shift key down (client keyboard poll) |
-| Crowbar, no Shift | 1 line | `techguns.gun.tooltip.shift1` "Press" + green `techguns.gun.tooltip.shift2` "[SHIFT]" + grey `techguns.gun.tooltip.shift3` "for detailed tooltip" | |
+| Crowbar, no Shift | 1 line | `techguns.gun.tooltip.shift1` "Press" + green `techguns.gun.tooltip.shift2` "[SHIFT]" + gray `techguns.gun.tooltip.shift3` "for detailed tooltip" | |
 | Structure Test Tool | 1 line | `techguns.structureTestTool.Tooltip` → "Tool for structure spawning/world editing [WIP]" | always |
 | Ore Cluster Debugger | 1 line | `techguns.oreClusterDebugger.Tooltip` → "WARNING: Removes all destroyable Blocks in a huge Radius, used to debug Ore cluster spawns" | always |
 
-Other damage-type strings exist for [02](../02-guns/index.md) and are shown by the same `toString`: PROJECTILE "Projectile" (grey), FIRE "Fire" (red), EXPLOSION "Explosion" (dark red), ENERGY "Energy" (dark aqua), POISON "Poison" (dark green), ICE "Ice" (aqua), LIGHTNING "Lightning" (yellow), RADIATION "Radiation" (green). UNRESISTABLE (black) uses the key `techguns.TGDamageType.UNRESISTABLE`, which has **no** entry in `en_US.lang`.
+Other damage-type strings exist for [02](../02-guns/index.md) and are shown by the same `toString`: PROJECTILE "Projectile" (gray), FIRE "Fire" (red), EXPLOSION "Explosion" (dark red), ENERGY "Energy" (dark aqua), POISON "Poison" (dark green), ICE "Ice" (aqua), LIGHTNING "Lightning" (yellow), RADIATION "Radiation" (green). UNRESISTABLE (black) uses the key `techguns.TGDamageType.UNRESISTABLE`, which has **no** entry in `en_US.lang`.
 
 ## Chat messages
 
@@ -52,7 +52,7 @@ Other damage-type strings exist for [02](../02-guns/index.md) and are shown by t
 | `techguns.item.blockReaderTool.name` | Block Reader Tool | |
 | `techguns.item.oreClusterDebugger.name` | Ore Cluster Debugger | |
 | `techguns.item.medkit_0.name` / `_1.name` | Bandages / Medkit | item not registered |
-| `techguns.item.gasMask.name` … `antiGravPack.name` | see the catalogue | [05](../05-armor/index.md) items |
+| `techguns.item.gasMask.name` … `antiGravPack.name` | see the catalog | [05](../05-armor/index.md) items |
 | Spawn eggs | (none) | the display name is generated as `Spawn <EntityName>` |
 | `techguns.tile.camoNetPane_<0/1/2>.name`, `techguns.tile.camoNetRoof_<n>.name` | Camo Net (Woodland/Snow/Desert), Camo Net Roof (…) | blocks consumed by the placer ([07](../07-blocks/index.md)) |
 

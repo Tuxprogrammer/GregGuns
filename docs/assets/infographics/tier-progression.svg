@@ -4,7 +4,7 @@
 <text x="36" y="54" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="700" fill="#eaf0f5" text-anchor="start" >GregGuns tier progression</text>
 <text x="36" y="84" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="normal" fill="#9fb0bf" text-anchor="start" >Every item sits at the GT tier of its final recipe machine AND needs a gate material that cannot be had earlier (docs/design/0001, amended by 0009 and 0010).</text>
 <text x="330" y="128" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#9fb0bf" text-anchor="start" letter-spacing="1.5">WEAPONS</text>
-<text x="910" y="128" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#9fb0bf" text-anchor="start" letter-spacing="1.5">ARMOUR AND EQUIPMENT</text>
+<text x="910" y="128" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#9fb0bf" text-anchor="start" letter-spacing="1.5">ARMOR AND EQUIPMENT</text>
 <text x="1330" y="128" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#9fb0bf" text-anchor="start" letter-spacing="1.5">AMMO AND CONSUMABLES</text>
 <text x="36" y="128" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="700" fill="#9fb0bf" text-anchor="start" letter-spacing="1.5">TIER AND GATE MATERIAL</text>
 <rect x="24" y="144" width="1712" height="72" rx="10" fill="#1a222b" />
@@ -32,7 +32,7 @@
 <rect x="46" y="316" width="108" height="30" rx="6" fill="#2fc4d6" />
 <text x="100" y="336.25" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="700" fill="#10151b" text-anchor="middle" >MV</text>
 <text x="166" y="336" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="normal" fill="#9fb0bf" text-anchor="start" >120 EU/t</text>
-<text x="46" y="368" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#eaf0f5" text-anchor="start" >Gate: Aluminium</text>
+<text x="46" y="368" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#eaf0f5" text-anchor="start" >Gate: Aluminum</text>
 <text x="330" y="332" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Thompson SMG, Mac10, Combat Shotgun, M4, AK47, akimbo pistols and</text>
 <text x="330" y="350.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >revolvers; frag grenade, Flashbang*</text>
 <text x="910" y="332" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >T2 Combat, Commando and Riot sets; gas mask, night-</text>
@@ -60,7 +60,7 @@
 <text x="46" y="547" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#eaf0f5" text-anchor="start" >Gate: Titanium</text>
 <text x="330" y="511" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Laser Rifle, PDW, Pulse Rifle, Minigun, Tesla Rifle, Sonic Rifle, Bio</text>
 <text x="330" y="529.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Gun, Power Hammer (Advanced)</text>
-<text x="910" y="511" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >T3 Combat set, steam armour (no jetpack, dropped by</text>
+<text x="910" y="511" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >T3 Combat set, steam armor (no jetpack, dropped by</text>
 <text x="910" y="529.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >0009)</text>
 <text x="910" y="548" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#ff8a1f" text-anchor="start" >+ HEV suit</text>
 <text x="1330" y="511" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Advanced magazines, minigun drums, bio tanks; UV</text>
@@ -74,7 +74,7 @@
 <text x="46" y="636.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#eaf0f5" text-anchor="start" >Gate: Tungstensteel</text>
 <text x="330" y="600.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Blaster Rifle, De-Atomizer Pistol and its akimbo, Scatter Laser Rifle*,</text>
 <text x="330" y="619" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Golden Revolver and its akimbo</text>
-<text x="910" y="600.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Power armour, exo suit, anti-grav device</text>
+<text x="910" y="600.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Power armor, exo suit, anti-grav device</text>
 <text x="1330" y="600.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="normal" fill="#6c7a88" text-anchor="start" font-style="italic">none</text>
 <rect x="24" y="652.5" width="1712" height="72" rx="10" fill="#1a222b" />
 <rect x="24" y="652.5" width="8" height="72" rx="3" fill="#ff6fd0" />
@@ -105,5 +105,5 @@
 <polygon points="1615.8,837.5 1625.3,843.0 1625.3,854.0 1615.8,859.5 1606.3,854.0 1606.3,843.0" fill="#4a63ff" stroke="#0e1216" stroke-width="2" stroke-linejoin="round" />
 <polygon points="1637.8,837.5 1647.4,843.0 1647.4,854.0 1637.8,859.5 1628.3,854.0 1628.3,843.0" fill="#ff6fd0" stroke="#0e1216" stroke-width="2" stroke-linejoin="round" />
 <polygon points="1659.9,837.5 1669.4,843.0 1669.4,854.0 1659.9,859.5 1650.4,854.0 1650.4,843.0" fill="#ff5a5a" stroke="#0e1216" stroke-width="2" stroke-linejoin="round" />
-<text x="1720" y="888.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="normal" fill="#9fb0bf" text-anchor="end" >Tier colours follow GT voltage names</text>
+<text x="1720" y="888.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="normal" fill="#9fb0bf" text-anchor="end" >Tier colors follow GT voltage names</text>
 </svg>

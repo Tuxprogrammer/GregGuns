@@ -7,7 +7,7 @@
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | 1 000 RF buffer, 5 RF/t upkeep | GT MetaTileEntity on EU at its tier voltage. The numbers are set in the energy model | [0003](../../design/0003-energy-model.md); MTE registration is in [08](../08-machines-production/) |
 | "Friends" come from FTB Utilities, a mod the pack does not contain. The dummy fallback says everyone is a friend ([NPC-13](../../techguns-spec/BUGS.md)) | Friends come from ServerUtilities teams. Without it, only the owner is a friend | ServerUtilities replaced FTBUtilities in GTNH |
@@ -16,7 +16,7 @@
 
 ## How ours differs from OpenModularTurrets
 
-Both are EU-powered, owner-aware defence blocks. They must not read as duplicates in NEI or in play.
+Both are EU-powered, owner-aware defense blocks. They must not read as duplicates in NEI or in play.
 
 | | OpenModularTurrets 2.4.8 | GregGuns Turret |
 |---|---|---|

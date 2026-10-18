@@ -1,4 +1,4 @@
-"""Helpers for GregGuns model textures (guns, armour, skins, machines, projectiles).
+"""Helpers for GregGuns model textures (guns, armor, skins, machines, projectiles).
 
 Original, procedural art. Nothing here reads or imitates Techguns assets.
 Everything is deterministic: randomness comes from rng_for(key), a numpy
@@ -126,7 +126,7 @@ def material(kind, r, h, w, base, pal=None):
             n = 0.5 + 0.5 * np.sin((xx0 + 7 * vnoise(r, h, w, 6, 10)) * 0.9) * 0.9 + 0.1 * vnoise(r, h, w, 2)
         elif pattern == "bark":       # long vertical streaks
             n = vnoise(r, h, w, 2, 14) * .7 + vnoise(r, h, w, 1, 4) * .3
-        elif pattern == "flecks":     # mostly one colour, sparse specks
+        elif pattern == "flecks":     # mostly one color, sparse specks
             n = np.where(r.random((h, w)) > 0.82, 0.9, 0.15) + 0.2 * vnoise(r, h, w, 5)
         else:
             n = vnoise(r, h, w, 6) * .6 + vnoise(r, h, w, 3) * .4

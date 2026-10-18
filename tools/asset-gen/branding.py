@@ -7,20 +7,20 @@ so the output is reproducible: run it again and the same files come out.
 
 Usage (from the repo root):
     python tools/asset-gen/branding.py            # SVG + PNG
-    python tools/asset-gen/branding.py --svg-only # SVG only, no rasteriser needed
+    python tools/asset-gen/branding.py --svg-only # SVG only, no rasterizer needed
 
 Outputs
     docs/assets/branding/     logo.svg, logo_pixel.svg, banner.svg, social_preview.svg (+ PNGs)
     docs/assets/infographics/ tier-progression, machine-roster, ammo-production-flow,
                               questbook-overview (.svg + .png)
 
-Rasteriser (documented as requested)
+Rasterizer (documented as requested)
     PRIMARY: Playwright for Python driving the installed Microsoft Edge
         (chromium.launch(channel="msedge")). The SVG is inlined into a bare HTML page and
         screenshotted at the exact target size. PNGs for logos keep a transparent background.
     FALLBACK: cairosvg, if Playwright/Edge is unavailable (needs libcairo on the machine).
     Install: `python -m pip install playwright` (Edge already ships with Windows 10/11).
-    Pixel-art PNGs (logo_pixel_*.png) are drawn with Pillow, nearest-neighbour, so they stay crisp.
+    Pixel-art PNGs (logo_pixel_*.png) are drawn with Pillow, nearest-neighbor, so they stay crisp.
 
 Fonts: lettering in the logo, banner and social card is drawn as pixel-block paths from a
 5x7 glyph table below, so it does not depend on any installed font. Infographic body text
@@ -58,7 +58,7 @@ ORANGE = "#ff8a1f"     # GT orange accent
 FONT = "'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
 MONO = "Consolas, 'Courier New', monospace"
 
-# GT voltage-name colours, readable on a dark card: key, label, EU/t, fill, text on fill
+# GT voltage-name colors, readable on a dark card: key, label, EU/t, fill, text on fill
 TIERS = [
     ("ULV", "Steam / ULV", "steam", "#7b8794", INK),
     ("LV", "LV", "30 EU/t", "#c5cdd6", INK),
@@ -249,7 +249,7 @@ PIX_OUTER, PIX_RING, PIX_IN = 15.6, 13.4, 12.0
 
 
 def pixel_logo_rects() -> list[tuple[int, int, int, int, str]]:
-    """32x32 pixel-art contents (rifle, cable, bullet) as (x, y, w, h, colour) rectangles.
+    """32x32 pixel-art contents (rifle, cable, bullet) as (x, y, w, h, color) rectangles.
 
     The hex casing behind them is vector (anti-aliased) so its edge is smooth; the
     contents stay hard-edged pixels.
@@ -302,7 +302,7 @@ def pixel_logo_svg(px=8) -> str:
 
 
 def tier_hex_strip(s: Svg, x, y, r, gap=4):
-    """Eight small hexes in the GT voltage-name colours (ULV..ZPM) as a row."""
+    """Eight small hexes in the GT voltage-name colors (ULV..ZPM) as a row."""
     w = math.sqrt(3) * r
     for i, t in enumerate(TIERS):
         cx = x + i * (w + gap) + w / 2
@@ -356,7 +356,7 @@ def make_banner() -> str:
     s.add(f'<g transform="translate(46 38)">{g}</g>')
     wordmark(s, 322, 58, 12)
     pixel_text(s, 324, 168, "GREGTECH-NATIVE WEAPONRY", 4.6, STEEL, "#0b0f13", shadow_off=2.5)
-    s.text(324, 232, "Tiered guns, armour and ammo for GT New Horizons (Minecraft 1.7.10).", 21, MUTED)
+    s.text(324, 232, "Tiered guns, armor and ammo for GT New Horizons (Minecraft 1.7.10).", 21, MUTED)
     tier_hex_strip(s, 324, 268, 14)
     s.text(324 + 8 * 31 + 14, 273, "ULV to ZPM, one voltage tier at a time", 15, MUTED)
     return s.render()
@@ -376,7 +376,7 @@ def make_social() -> str:
     wordmark(s, 520, 160, 13)
     pixel_text(s, 524, 280, "GREGTECH-NATIVE WEAPONRY", 4.8, STEEL, "#0b0f13", shadow_off=2.5)
     y = 362
-    for line in ("Guns, armour and ammo that climb the GregTech tiers.",
+    for line in ("Guns, armor and ammo that climb the GregTech tiers.",
                  "Built for GT New Horizons: GT materials, recipe maps and EU."):
         s.text(524, y, line, 27, TXT)
         y += 40
@@ -493,7 +493,7 @@ TIER_ROWS = [
      ("9mm Pistol, Revolver, Sawed Off, Bolt Action Rifle; Combat Knife, Crowbar", ""),
      ("T1 Combat set", "Bandages"),
      ("9mm rounds and pistol magazines, shotgun shells, rifle bullets", "")),
-    ("MV", "Aluminium",
+    ("MV", "Aluminum",
      ("Thompson SMG, Mac10, Combat Shotgun, M4, AK47, akimbo pistols and revolvers; frag grenade, Flashbang*", ""),
      ("T2 Combat, Commando and Riot sets; gas mask, night-vision goggles, Medkit*", "Beret"),
      ("SMG and assault-rifle magazines, 40 mm grenades", "")),
@@ -503,11 +503,11 @@ TIER_ROWS = [
      ("LMG and AS50 magazines, rockets, fuel tanks (GT fuels), compressed-air tanks", "High Caliber Rounds")),
     ("EV", "Titanium",
      ("Laser Rifle, PDW, Pulse Rifle, Minigun, Tesla Rifle, Sonic Rifle, Bio Gun, Power Hammer (Advanced)", ""),
-     ("T3 Combat set, steam armour (no jetpack, dropped by 0009)", "HEV suit"),
+     ("T3 Combat set, steam armor (no jetpack, dropped by 0009)", "HEV suit"),
      ("Advanced magazines, minigun drums, bio tanks; UV emitter component", "Advanced Bullets, Cybernetic Parts")),
     ("IV", "Tungstensteel",
      ("Blaster Rifle, De-Atomizer Pistol and its akimbo, Scatter Laser Rifle*, Golden Revolver and its akimbo", ""),
-     ("Power armour, exo suit, anti-grav device", ""),
+     ("Power armor, exo suit, anti-grav device", ""),
      ("none", "")),
     ("LuV", "HSS-G or LuV alloys",
      ("Nether Blaster, Alien Blaster, Grim Reaper", ""),
@@ -522,7 +522,7 @@ TIER_ROWS = [
 
 def make_tier_progression() -> str:
     W = 1760
-    cols = [(330, 560), (910, 400), (1330, 400)]  # x, width for weapons, armour, ammo
+    cols = [(330, 560), (910, 400), (1330, 400)]  # x, width for weapons, armor, ammo
     size, lh = 14, 18.5
     rows_h = []
     for r in TIER_ROWS:
@@ -538,7 +538,7 @@ def make_tier_progression() -> str:
     s = Svg(W, H, bg=INK, radius=14)
     s.text(36, 54, "GregGuns tier progression", 32, TXT, weight="700")
     s.text(36, 84, "Every item sits at the GT tier of its final recipe machine AND needs a gate material that cannot be had earlier (docs/design/0001, amended by 0009 and 0010).", 15, MUTED)
-    for x, t in ((330, "WEAPONS"), (910, "ARMOUR AND EQUIPMENT"), (1330, "AMMO AND CONSUMABLES"), (36, "TIER AND GATE MATERIAL")):
+    for x, t in ((330, "WEAPONS"), (910, "ARMOR AND EQUIPMENT"), (1330, "AMMO AND CONSUMABLES"), (36, "TIER AND GATE MATERIAL")):
         s.text(x, 128, t, 13, MUTED, weight="700", extra='letter-spacing="1.5"')
     y = top - 6
     for r, h in zip(TIER_ROWS, rows_h):
@@ -568,7 +568,7 @@ def make_tier_progression() -> str:
     s.text(46, ly + 28, "*  Unfinished in Techguns, built as a finished design here: Flashbang (MV), Medkit (MV), Scatter Laser Rifle (IV).", 14, TXT)
     s.text(46, ly + 54, "+  Tier added by record 0010 (orange). Dropped: the EV jetpack (GT Mech Armor has an HV jetpack augment, 0009) and the Scrapper (0002).", 14, MUTED)
     tier_hex_strip(s, W - 40 - 8 * 28, ly + 22, 11, gap=3)
-    s.text(W - 40, ly + 62, "Tier colours follow GT voltage names", 12, MUTED, "end")
+    s.text(W - 40, ly + 62, "Tier colors follow GT voltage names", 12, MUTED, "end")
     return s.render()
 
 
@@ -583,8 +583,8 @@ ROSTER = [
          multi="Retort", mk="Multiblock, 5 x 10 x 5 (taller by bulb layers, 2 to 6)", mt=["EV", "IV", "LuV", "ZPM"], mcls="Bottleneck",
          mdet="Controller EV, hatches EV to ZPM. Glass tier is the pressure rating. ID 20108", scene=scene_retort, ctrl="EV"),
     dict(single="Repair Bench", sk="Single block", st=["LV", "MV", "HV", "EV", "IV"], cls="Regular",
-         sdet="Mends armour and guns with GT materials; bench tier at least the item tier. IDs 20109-20113",
-         multi="Armoury Gantry", mk="Multiblock, 7 x 7 x 11 (more bays, 2 to 8)", mt=["HV", "EV", "IV", "LuV", "ZPM"], mcls="Regular",
+         sdet="Mends armor and guns with GT materials; bench tier at least the item tier. IDs 20109-20113",
+         multi="Armory Gantry", mk="Multiblock, 7 x 7 x 11 (more bays, 2 to 8)", mt=["HV", "EV", "IV", "LuV", "ZPM"], mcls="Regular",
          mdet="Controller HV, hatches up to ZPM; lowest hatch tier is the top item tier it repairs. ID 20114", scene=scene_gantry, ctrl="HV"),
     dict(single="Turret", sk="Single block", st=["MV", "HV", "EV", "IV"], cls="Regular",
          sdet="One gun on a platform, 30 HP turret entity; turret tier at least the gun tier. IDs 20116-20119",
@@ -674,7 +674,7 @@ def make_ammo_flow() -> str:
         s.rect(x - 6, top - 6, w + 12, colH, PANEL, rx=12)
 
     mats = [("Brass (Cu + Zn)", "#d9a441", "LV ammo casings"), ("Lead", "#7f8fa6", "LV bullets, shells"),
-            ("Steel", TIER["LV"][3], "LV rifle bullets, magazines"), ("Aluminium", TIER["MV"][3], "MV grenades, magazines"),
+            ("Steel", TIER["LV"][3], "LV rifle bullets, magazines"), ("Aluminum", TIER["MV"][3], "MV grenades, magazines"),
             ("Stainless steel", TIER["HV"][3], "HV rounds, rockets"), ("Titanium", TIER["EV"][3], "EV advanced ammo"),
             ("Gunpowder, TNT dust", "#9aa3ad", "every propellant"), ("Bronze, cobblestone", TIER["ULV"][3], "Stone bullets (Steam)")]
     y = top + 14
@@ -728,7 +728,7 @@ def make_ammo_flow() -> str:
     s.text(x3 + w3 / 2, top + 468, "Same recipe map: gregguns.ammoPress", 14, ORANGE, "middle", "700", MONO)
     s.text(x3 + w3 / 2, top + 488, "Voltage = the ammo's tier. Not in the Assembler map.", 12, MUTED, "middle")
 
-    outs = [("Loose ammo", "9mm, shotgun shell, rifle bullet,", "40 mm grenade, rocket, high-calibre,", "advanced bullet, stone bullet", "#d9a441"),
+    outs = [("Loose ammo", "9mm, shotgun shell, rifle bullet,", "40 mm grenade, rocket, high-caliber,", "advanced bullet, stone bullet", "#d9a441"),
             ("Empty magazines", "pistol, SMG, assault rifle, AS50,", "LMG, advanced, minigun drum", "", "#8e9aa6"),
             ("Filled magazines", "empty magazine + loose rounds", "(hand refill at a crafting table)", "", ORANGE)]
     y = top + 14
@@ -781,7 +781,7 @@ def make_ammo_flow() -> str:
     s.rect(24, by, W - 48, 150, PANEL, rx=12)
     s.text(48, by + 32, "Ammo by tier", 17, TXT, weight="700")
     ladder = [("ULV", "Stone bullet"), ("LV", "9mm, shell, rifle bullet, pistol magazine"), ("MV", "40 mm grenade, SMG and assault-rifle magazines"),
-              ("HV", "High-calibre round, rocket, AS50 and LMG magazines"), ("EV", "Advanced bullet, advanced magazine, minigun drum")]
+              ("HV", "High-caliber round, rocket, AS50 and LMG magazines"), ("EV", "Advanced bullet, advanced magazine, minigun drum")]
     lx = 48
     for k, d in ladder:
         tier_badge(s, lx, by + 48, k, 70, 24, 13)
@@ -811,7 +811,7 @@ BRANCHES = [
     ("NPCs and bosses", 14, "Pack 11 (Monster Hunter), then each rank by its tier quest", "Factions, loot, Infernal ranks; 3 boss quests are SECRET"),
     ("Structures", 6, "Pack 11 (Monster Hunter), then tier quests", "Where tiered chests are; all checkbox quests"),
     ("Machines", 9, "Pack 97 (Avengers, Assemble!, the LV assembler), then a tier quest per machine", "Ammo Press, Reaction Chamber, Repair Bench, Turret"),
-    ("Armour and equipment", 9, "Pack 88 (Welcome to Tier 1, LV), then tier quests", "Baubles slots, hazard and oxygen gear, back devices"),
+    ("Armor and equipment", 9, "Pack 88 (Welcome to Tier 1, LV), then tier quests", "Baubles slots, hazard and oxygen gear, back devices"),
     ("Ammo logistics", 9, "Pack 88 (Welcome to Tier 1, LV), then tier quests", "Ammo as a production line; exact-tier charging"),
 ]
 
@@ -954,7 +954,7 @@ MB = {
               "Same focus, drift and completion rules as the single Reaction Chamber."],
     ),
     "gantry": dict(
-        title="Armoury Gantry", cls="Regular", id="MTE 20114", scene=scene_gantry,
+        title="Armory Gantry", cls="Regular", id="MTE 20114", scene=scene_gantry,
         tiers=["HV", "EV", "IV", "LuV", "ZPM"], ctrl="HV",
         sub="Multiblock form of the Repair Bench: a row of portal-frame repair bays. No recipe map; repair cost is read from item NBT.",
         dims=[("Footprint", "7 wide x 7 tall x (3 + 2n) long"), ("Default n = 4", "7 x 7 x 11"),
@@ -997,7 +997,7 @@ MB = {
               "A missing hatch in any bay is a structure error."],
         mech=["Parallel = n mounts, no energy discount: upkeep 4 EU/t per mount plus 120 EU per HP healed (proposal). Ten mounts = 40 EU/t, inside an MV Energy Hatch.",
               "Gun Mount Hatch tier caps the gun tier a mount accepts.",
-              "Armour = lowest Bastion Plating meta: Iron 5, Steel 10, Aluminium 15, Carbon 20, for every mount.",
+              "Armor = lowest Bastion Plating meta: Iron 5, Steel 10, Aluminum 15, Carbon 20, for every mount.",
               "One owner, team and animal-target setting on the controller; breaking a hatch kills that mount's 30 HP turret."],
     ),
 }
@@ -1109,8 +1109,8 @@ def make_multiblock(key: str) -> str:
     return s.render()
 
 
-# ---------------------------------------------------------------- rasterising
-def _rasterise_playwright(jobs):
+# ---------------------------------------------------------------- rasterizing
+def _rasterize_playwright(jobs):
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as p:
@@ -1124,19 +1124,19 @@ def _rasterise_playwright(jobs):
         browser.close()
 
 
-def _rasterise_cairo(jobs):
+def _rasterize_cairo(jobs):
     import cairosvg
 
     for svg_text, png_path, w, h, _ in jobs:
         cairosvg.svg2png(bytestring=svg_text.encode("utf-8"), write_to=str(png_path), output_width=w, output_height=h)
 
 
-def rasterise(jobs):
+def rasterize(jobs):
     try:
-        _rasterise_playwright(jobs)
+        _rasterize_playwright(jobs)
     except Exception as e:  # noqa: BLE001 - fall back to cairosvg
         print("Playwright/Edge unavailable (%s); trying cairosvg" % e, file=sys.stderr)
-        _rasterise_cairo(jobs)
+        _rasterize_cairo(jobs)
 
 
 def pixel_pngs():
@@ -1178,12 +1178,12 @@ def main():
     for name, fn in (("tier-progression", make_tier_progression), ("machine-roster", make_machine_roster),
                      ("ammo-production-flow", make_ammo_flow), ("questbook-overview", make_questbook),
                      ("multiblock-ammunition-works", lambda: make_multiblock("works")), ("multiblock-retort", lambda: make_multiblock("retort")),
-                     ("multiblock-armoury-gantry", lambda: make_multiblock("gantry")), ("multiblock-rampart", lambda: make_multiblock("rampart"))):
+                     ("multiblock-armory-gantry", lambda: make_multiblock("gantry")), ("multiblock-rampart", lambda: make_multiblock("rampart"))):
         text = fn()
         m = re.search(r'width="(\d+)" height="(\d+)"', text)
         emit(INFO / f"{name}.svg", text, [("", int(m.group(1)), int(m.group(2)), False)])
     if not svg_only:
-        rasterise(jobs)
+        rasterize(jobs)
         pixel_pngs()
     print("wrote", len(jobs), "PNG jobs" if not svg_only else "SVGs only")
 

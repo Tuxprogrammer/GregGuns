@@ -1,13 +1,13 @@
 # Roadmap
 
-How GregGuns gets from an empty mod to a GTNH-ready release. The work follows the [Techguns behavioural spec](techguns-spec/README.md), rebuilt on GregTech progression.
+How GregGuns gets from an empty mod to a GTNH-ready release. The work follows the [Techguns behavioral spec](techguns-spec/README.md), rebuilt on GregTech progression.
 
 ## How to read this roadmap
 
 - **Milestones (M0–M9)** are delivered in order. Each one has an **entry gate**, which must be true before work starts, and an **exit gate**, which is its definition of done. A milestone isn't finished until every exit-gate box is ticked.
 - **Decision gates (D1–D6)** are design questions settled before the milestones that depend on them start. All six are **accepted by default** for the MVP: see [docs/design/](design/README.md). They're revisited after MVP.
   - Each decision is recorded in [`docs/design/`](design/README.md), and the gate is closed by marking that record `Status: Accepted`.
-  - The tables below summarise the accepted records; the records are authoritative.
+  - The tables below summarize the accepted records; the records are authoritative.
 - Every milestone also meets the universal **definition of done** in [CONTRIBUTING.md](../CONTRIBUTING.md#definition-of-done): tests, comments, lang keys, original assets, no reproduced Techguns bugs, and spec deviations recorded.
 - **Feature flags:** each milestone's content ships behind a config toggle such as `modules.armor`, defaulting to on once its exit gate is met. That way, unfinished or unwanted modules can be switched off in the pack without a rebuild.
 
@@ -16,9 +16,9 @@ Tick a box only in the PR that completes it.
 ```
 M0 Foundation ──► D1–D4 ──► M1 Combat core ──► M2 Ballistic arsenal ──► M5 Energy & exotic weapons
                     │             │                    │
-                    │             ├──► M3 Armour & equipment ─┘
+                    │             ├──► M3 Armor & equipment ─┘
                     │             └──► M4 Production chain & machines
-                    └──► D5 ──► M7 NPCs ──► M8 Worldgen         M6 Utility & defence (after M4)
+                    └──► D5 ──► M7 NPCs ──► M8 Worldgen         M6 Utility & defense (after M4)
                                                     all ──► M9 Pack integration & release
 ```
 
@@ -47,7 +47,7 @@ No gameplay. This milestone builds everything later milestones need.
 - [ ] `./gradlew runServer` boots with GT5-Unofficial loaded and no errors from GregGuns. The CI smoke test passes. *(Local boot verified 2026-10-18; CI pending the first push.)*
 - [ ] `./gradlew runClient` reaches the main menu, and the GregGuns creative tab exists. *(Main menu verified 2026-10-18 and the tab registers; the tab itself still needs an in-game look.)*
 - [x] Config module flags load, save and are documented.
-- [x] Every packet base class rejects out-of-range, wrong-dimension and unauthorised requests, with unit tests.
+- [x] Every packet base class rejects out-of-range, wrong-dimension and unauthorized requests, with unit tests.
 
 ---
 
@@ -59,7 +59,7 @@ Each gate produces a design record in [`docs/design/`](design/README.md). Nothin
 
 **Accepted:** [0001-tier-map.md](design/0001-tier-map.md)
 
-Every weapon, ammo type, armour set, component and machine is assigned a GT voltage tier and a **gating mechanism**: the machine voltage needed to craft it, or a material that can't be obtained before that tier.
+Every weapon, ammo type, armor set, component and machine is assigned a GT voltage tier and a **gating mechanism**: the machine voltage needed to craft it, or a material that can't be obtained before that tier.
 
 The table below lists example gate materials. **Verify each one against the current GTNH progression before accepting D1.**
 
@@ -67,10 +67,10 @@ The table below lists example gate materials. **Verify each one against the curr
 |---|---|---|
 | Steam / ULV | Bronze, wrought iron | Hand Cannon (stone bullets); T1 scout and miner sets |
 | LV | Steel | 9mm Pistol, Revolver, Sawed Off, Bolt Action Rifle; T1 combat set; Combat Knife, Crowbar |
-| MV | Aluminium | Submachine Gun (Thompson), Mac10, Combat Shotgun, M4, AK47, frag grenades; T2 combat, commando and riot sets; gas mask, night-vision goggles |
+| MV | Aluminum | Submachine Gun (Thompson), Mac10, Combat Shotgun, M4, AK47, frag grenades; T2 combat, commando and riot sets; gas mask, night-vision goggles |
 | HV | Stainless steel | AUG, SCAR, Vector, AS50, LMG, Grenade Launcher, Rocket Launcher, Flamethrower, Chainsaw, Power Hammer; Infiltrator; akimbo variants of earlier tiers; jump pack, glider, oxygen gear |
-| EV | Titanium | Laser Rifle, PDW, Pulse Rifle, Minigun, Tesla Rifle, Sonic Rifle, Bio Gun, Power Hammer (Advanced); T3 combat set; jetpack, steam armour |
-| IV | Tungstensteel | Blaster Rifle, De-Atomizer Pistol, Scatter Laser Rifle, Golden Revolver; power armour, exo suit; anti-grav device |
+| EV | Titanium | Laser Rifle, PDW, Pulse Rifle, Minigun, Tesla Rifle, Sonic Rifle, Bio Gun, Power Hammer (Advanced); T3 combat set; jetpack, steam armor |
+| IV | Tungstensteel | Blaster Rifle, De-Atomizer Pistol, Scatter Laser Rifle, Golden Revolver; power armor, exo suit; anti-grav device |
 | LuV+ | LuV materials, then naquadah and beyond | Nether Blaster, Alien Blaster, Nuclear Death Ray, Grim Reaper, Nuke Launcher (ZPM or higher) |
 
 The D1 record must also cover:
@@ -91,11 +91,11 @@ The rule: GT already has machines for most Techguns processes, so GregGuns uses 
 | Fabricator (multiblock) | **Replace** | GT Assembler and Circuit Assembler recipes |
 | Reaction Chamber (multiblock) | **Keep, candidate** | Unique focus, intensity and radiation gameplay. Rebuild as a GT multiblock running on EU |
 | Charging Station | **Drop** | GT battery buffers and chargers. Items use the IC2 electric-item API |
-| Repair Bench | **Keep** | Armour repair using GT materials |
+| Repair Bench | **Keep** | Armor repair using GT materials |
 | Camo Bench | **Keep** | Cosmetic, tasteful, no GT equivalent |
 | Ore Drill (multiblock) | **Drop** | GT miners and the GTNH ore system |
 | Scrapper | **Drop** | Unfinished in Techguns. GT recycling covers it |
-| Turret | **Keep** | Core to the defence theme |
+| Turret | **Keep** | Core to the defense theme |
 | Explosive charges | **Keep, gated** | Check for overlap with GT mining explosives |
 | Weapon and ammo chests | **Keep, low priority** | Decorative storage |
 | Techguns ores, ingots, plates, wires, circuits | **Drop** | GT materials and parts through ore-dict unification |
@@ -106,7 +106,7 @@ The rule: GT already has machines for most Techguns processes, so GregGuns uses 
 **Accepted:** [0003-energy-model.md](design/0003-energy-model.md)
 
 - All power is **GT EU**; there is no RF anywhere.
-- Energy weapons, powered armour and tools are IC2 electric items, charged by GT chargers and battery buffers.
+- Energy weapons, powered armor and tools are IC2 electric items, charged by GT chargers and battery buffers.
 - Fuel-based items (flamethrower, chainsaw, power hammer) take GT fluids.
 - The record defines capacity and use per tier.
 
@@ -114,8 +114,8 @@ The rule: GT already has machines for most Techguns processes, so GregGuns uses 
 
 **Accepted:** [0004-damage-model.md](design/0004-damage-model.md)
 
-- Decide whether to keep the Techguns damage types, armour penetration and per-type resistances, or simplify them.
-- Decide how GregGuns damage scales against GTNH mobs and other mods' armour.
+- Decide whether to keep the Techguns damage types, armor penetration and per-type resistances, or simplify them.
+- Decide how GregGuns damage scales against GTNH mobs and other mods' armor.
 - The record lists which damage-system bugs in [BUGS.md](techguns-spec/BUGS.md) (GUN-33 to GUN-45) the new design avoids.
 
 ### D5 · World presence. *Blocks M7 and M8.*
@@ -132,7 +132,7 @@ The rule: GT already has machines for most Techguns processes, so GregGuns uses 
 
 - Style rules so new textures sit naturally next to GT: resolution, palette and shading.
 - Sound loudness targets.
-- Asset provenance rules. Everything is original; see [CONTRIBUTING.md § Assets](../CONTRIBUTING.md#assets-and-localisation).
+- Asset provenance rules. Everything is original; see [CONTRIBUTING.md § Assets](../CONTRIBUTING.md#assets-and-localization).
 
 ---
 
@@ -171,15 +171,15 @@ One gun, working end to end inside the GTNH dev pack.
 **Exit gate (per tier batch):**
 - [ ] Every gun in the batch matches its spec sheet, or a deviation is recorded.
 - [ ] Every recipe is gated by tier and visible in NEI.
-- [ ] Unit tests cover each gun's unique behaviour, such as shotgun pellets, burst fire and the grenade fuse.
+- [ ] Unit tests cover each gun's unique behavior, such as shotgun pellets, burst fire and the grenade fuse.
 - [ ] Original textures and sounds are in place, following D6.
 
-## M3 · Armour and equipment
+## M3 · Armor and equipment
 
 **Entry gate:** M1 is done; D1 and D3 are accepted.
 
 **Scope:**
-- The T1 to T3 sets, steam armour, power armour and exo suit.
+- The T1 to T3 sets, steam armor, power armor and exo suit.
 - Set bonuses.
 - The extra Techguns inventory: face, back, hand and ammo slots.
 - Masks, goggles, tanks, jetpack, glider, jump pack and anti-grav.
@@ -216,9 +216,9 @@ One gun, working end to end inside the GTNH dev pack.
 **Exit gate:**
 - [ ] Each weapon is tier-gated with EU or fluid ammo per D3.
 - [ ] Explosions respect config and protection (fixing PFX-14, PFX-25 and CORE-19), with tests.
-- [ ] The particle and FX system carries the spec's FX catalogue, and performance is checked with many emitters on screen.
+- [ ] The particle and FX system carries the spec's FX catalog, and performance is checked with many emitters on screen.
 
-## M6 · Utility and defence
+## M6 · Utility and defense
 
 **Entry gate:** M4 is done.
 

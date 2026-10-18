@@ -4,7 +4,7 @@
 
 ## Purpose
 
-The bench is an unpowered workbench that fully repairs the Techguns armour the player is **wearing**. The player stocks it with repair materials, then clicks one of four per-armour-slot repair buttons.
+The bench is an unpowered workbench that fully repairs the Techguns armor the player is **wearing**. The player stocks it with repair materials, then clicks one of four per-armor-slot repair buttons.
 
 ## Tile entity
 
@@ -19,14 +19,14 @@ The bench is an unpowered workbench that fully repairs the Techguns armour the p
 
 Handles button ids 1–4, and only if the player passes `isUseableByPlayer`: same tile at the position and within 8 blocks (distance² ≤ 64).
 
-1. Map the button to a worn armour slot: button 1 → helmet, 2 → chestplate, 3 → leggings, 4 → boots. Internally, armour-inventory index = 3 − (id − 1).
-2. If that slot holds a [`GenericArmor`](../05-armor/armor-catalogue.md#1-class-hierarchy) (see [05-armor](../05-armor/index.md)), ask the armour for its **repair material list**. That list is computed by the armour from its current damage (formula summarised below; [05](../05-armor/index.md) owns it).
+1. Map the button to a worn armor slot: button 1 → helmet, 2 → chestplate, 3 → leggings, 4 → boots. Internally, armor-inventory index = 3 − (id − 1).
+2. If that slot holds a [`GenericArmor`](../05-armor/armor-catalog.md#1-class-hierarchy) (see [05-armor](../05-armor/index.md)), ask the armor for its **repair material list**. That list is computed by the armor from its current damage (formula summarized below; [05](../05-armor/index.md) owns it).
 3. If the list is non-empty and the bench's 9 slots together hold **every** listed stack, then:
    1. Consume all of them. Matching is by item and damage value and may span several slots.
-   2. Set the armour's damage to 0, which is a full repair.
+   2. Set the armor's damage to 0, which is a full repair.
 4. Otherwise nothing happens. There is no partial repair and no feedback message.
 
-The armour's `canRepairOnRepairBench` is not checked on the server. An armour with no repair materials returns an empty list, so the effect is the same.
+The armor's `canRepairOnRepairBench` is not checked on the server. An armor with no repair materials returns an empty list, so the effect is the same.
 
 **Repair-material formula** (from `GenericArmor`, for reference only; see [05-armor](../05-armor/index.md)):
 
@@ -36,7 +36,7 @@ The armour's `canRepairOnRepairBench` is not checked on the server. An armour wi
 - cloth count = total − metal count
 - Each of the two entries appears only if its material is set and its count > 0.
 
-The per-armour material pairs, ratios and counts are listed in [05-armor](../05-armor/index.md).
+The per-armor material pairs, ratios and counts are listed in [05-armor](../05-armor/index.md).
 
 ## Container layout (`RepairBenchContainer`)
 
@@ -45,42 +45,42 @@ The per-armour material pairs, ratios and counts are listed in [05-armor](../05-
 | 0–8 | bench 0–8 | plain `Slot` | (8 + 18·i, 57), one row |
 | 9–35 | player main 9–35 | plain | (8 + 18·col, 84 + 18·row) |
 | 36–44 | player hotbar 0–8 | plain | (8 + 18·i, 142) |
-| 45–48 | player armour (index 39 − i, so 45 = helmet … 48 = boots) | [`SlotArmor`](../05-armor/extra-inventory.md#4-container-tgplayercontainer) (stack limit 1, accepts only armour valid for that type, shows vanilla empty-armour background icons) | (89 + 20·i, 18) |
+| 45–48 | player armor (index 39 − i, so 45 = helmet … 48 = boots) | [`SlotArmor`](../05-armor/extra-inventory.md#4-container-tgplayercontainer) (stack limit 1, accepts only armor valid for that type, shows vanilla empty-armor background icons) | (89 + 20·i, 18) |
 
 Shift-click rules:
 
 | From | To |
 |---|---|
 | Bench slot (0–8) | Player inventory 9–44 |
-| Player slot | If `ItemArmor`, the matching armour slot 45 + armourType. Otherwise bench slots 0–8. |
-| Armour slot | Player inventory, filled from the end |
+| Player slot | If `ItemArmor`, the matching armor slot 45 + armor type. Otherwise bench slots 0–8. |
+| Armor slot | Player inventory, filled from the end |
 
 Container index 9 is excluded from the player-slot range by an off-by-one, so shift-clicking the top-left main-inventory slot does nothing ([MUTL-05](index.md#suspected-bugs)).
 
 ## GUI (`GuiRepairBench`)
 
-The GUI extends [`GuiTechgunsTileEntBase`](../08-machines-production/gui-handler.md#2-guitechgunstileentbase-abstract-guicontainer) and is not powered. Size is the default 176 × 166. The background is [`textures/gui/repairBench_GUI.png`](../08-machines-production/gui-textures.md#8-texturesguirepairbench_guipng-owned-by-09) at u,v (0,0), size 176 × 166. The file is catalogued by 08.
+The GUI extends [`GuiTechgunsTileEntBase`](../08-machines-production/gui-handler.md#2-guitechgunstileentbase-abstract-guicontainer) and is not powered. Size is the default 176 × 166. The background is [`textures/gui/repairBench_GUI.png`](../08-machines-production/gui-textures.md#8-texturesguirepairbench_guipng-owned-by-09) at u,v (0,0), size 176 × 166. The file is cataloged by 08.
 
 How this GUI uses the texture:
 
 | Texture region (px) | Content | Use |
 |---|---|---|
-| (0,0) 176×166 | Standard light-grey panel with bevelled border. Top-right: a raised frame (~(85,14)–(169,37)) containing 4 slot wells. Middle: a row of 9 slot wells at y ≈ 56–74. Bottom: 3×9 player inventory and the hotbar. | Background |
-| (176,0) 12×12 | Small dark-grey wrench icon, diagonal, head at top-right | Drawn on each repair button |
+| (0,0) 176×166 | Standard light-gray panel with beveled border. Top-right: a raised frame (~(85,14)–(169,37)) containing 4 slot wells. Middle: a row of 9 slot wells at y ≈ 56–74. Bottom: 3×9 player inventory and the hotbar. | Background |
+| (176,0) 12×12 | Small dark-gray wrench icon, diagonal, head at top-right | Drawn on each repair button |
 
-Foreground text (colour 0x404040):
+Foreground text (color 0x404040):
 
-- The title is centred at y = 6. It shows the custom name, or the translated `techguns.container.repairbench`.
+- The title is centered at y = 6. It shows the custom name, or the translated `techguns.container.repairbench`.
 - `container.inventory` ("Inventory") is drawn at (8, ySize − 92), which is y = 74.
 
-**Buttons:** four `GuiButtonRepair` controls, ids 1–4, each 14 × 14, at (90 + 20·i, 39) for i = 0..3. That places each one directly under the matching armour slot, helmet first. Each draws:
+**Buttons:** four `GuiButtonRepair` controls, ids 1–4, each 14 × 14, at (90 + 20·i, 39) for i = 0..3. That places each one directly under the matching armor slot, helmet first. Each draws:
 
 1. The vanilla button background from `textures/gui/widgets.png`, as a 9-slice continuous box; its hover state follows the vanilla button.
 2. The wrench icon from (176,0), size 12 × 12, at button offset (1,1).
 
 A click sends [`GUIButtonClick`](../01-core/networking.md#0--guibuttonclick-cs) (tile position + button id; packet owned by [01](../01-core/index.md)) to the server.
 
-**Hover tooltip** over each button area (90 + 20·i, 39, 14 × 14) describes the armour worn in the matching slot:
+**Hover tooltip** over each button area (90 + 20·i, 39, 14 × 14) describes the armor worn in the matching slot:
 
 | Condition | Tooltip |
 |---|---|
@@ -99,9 +99,9 @@ A click sends [`GUIButtonClick`](../01-core/networking.md#0--guibuttonclick-cs) 
 
 | Quadrant (px) | Used for | Depicts / palette |
 |---|---|---|
-| TL (0,0)–(32,32) | back, left, right, bottom | Plain dark-grey brushed/scratched metal panel with a lighter grey bevelled rim (greys #4a–#9a) |
-| TR (32,0)–(64,32) | front | Wooden wall shelving with a grey frame and two shelves. Top shelf: three glass jars (amber/orange, pale blue, lime green) with grey lids. Bottom shelf: a circular saw blade (grey with an orange hub cross) and a red-handled screwdriver lying flat. Dark brown back wall. |
-| BL (0,32)–(32,64) | top | Brown wooden pegboard / tool tray with a grey rim. Holds a small hammer, a red cordless drill (top right), a beige-handled mallet, a hand saw with a black handle, two small wrenches/pins and a spanner. Light browns with grey/white tools and red accents. |
+| TL (0,0)–(32,32) | back, left, right, bottom | Plain dark-gray brushed/scratched metal panel with a lighter gray beveled rim (grays #4a–#9a) |
+| TR (32,0)–(64,32) | front | Wooden wall shelving with a gray frame and two shelves. Top shelf: three glass jars (amber/orange, pale blue, lime green) with gray lids. Bottom shelf: a circular saw blade (gray with an orange hub cross) and a red-handled screwdriver lying flat. Dark brown back wall. |
+| BL (0,32)–(32,64) | top | Brown wooden pegboard / tool tray with a gray rim. Holds a small hammer, a red cordless drill (top right), a beige-handled mallet, a hand saw with a black handle, two small wrenches/pins and a spanner. Light browns with gray/white tools and red accents. |
 | BR | unused | transparent |
 
 The same texture and cube are used for the item form of meta 5, and also, by mistake, for metas 7 and 10 (see shared-rendering.md).

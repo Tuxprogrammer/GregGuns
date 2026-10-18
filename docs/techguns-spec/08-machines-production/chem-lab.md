@@ -35,7 +35,7 @@ Classes: [`ChemLabTileEnt`](framework.md#1-class-hierarchy) ([`BasicMachineTileE
 
 ## 2. Right-click with fluid containers
 
-[`BasicMachine.hasBucketInteraction`](blocks-and-items.md#1-basicmachine-registry-name-basicmachine) is true only for meta 4. Behaviour of `onFluidContainerInteract`:
+[`BasicMachine.hasBucketInteraction`](blocks-and-items.md#1-basicmachine-registry-name-basicmachine) is true only for meta 4. Behavior of `onFluidContainerInteract`:
 
 - **Empty registered container** (bucket, bottle…): pick the tank selected by `drainInput` (input if true, else output). If it holds at least the container's capacity of its fluid, fill the container and drain that amount. The full container is returned.
 - **Filled container:** if the input tank is empty or holds the same fluid, and the whole content fits, empty the container into the input tank. The empty container is returned.
@@ -125,7 +125,7 @@ Fluids: Water, Lava (vanilla); Creeper Acid (`creeper_acid`, Techguns); Milk (`m
 
 | Element | Position | Detail |
 |---|---|---|
-| Title | centred, y 6 | `techguns.container.chemlab` ("Chemical Laboratory") |
+| Title | centered, y 6 | `techguns.container.chemlab` ("Chemical Laboratory") |
 | Input tank | fluid area (19,17) 10×50 | Fluid icon tiled bottom-up, height = amount·50/8000. Gauge overlay u176 v32, 12×52 at (18,17): tick marks plus a red top line. |
 | Output tank | fluid area (158,17) 10×50; overlay at (157,17) | height = amount·50/16000 |
 | Tank tooltips | (18,16) 11×51 and (157,16) 11×51 | line 1: translated fluid name or `techguns.gui.empty` ("Empty"); line 2: "amount/capacitymB" |
@@ -157,9 +157,9 @@ Each finished stage stays fully drawn until the operation ends.
 
 ## 7. Visuals
 
-TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr) with [`ModelChemLab`](../07-blocks/block-rendering-and-models.md#modelchemlab-uv-12864-texture-chemlabpng) (declared 128×64) and texture [`textures/blocks/ChemLab.png`](../07-blocks/textures.md#11-model-textures) (256×128, catalogued in [07-blocks](../07-blocks/index.md)).
+TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr) with [`ModelChemLab`](../07-blocks/block-rendering-and-models.md#modelchemlab-uv-12864-texture-chemlabpng) (declared 128×64) and texture [`textures/blocks/ChemLab.png`](../07-blocks/textures.md#11-model-textures) (256×128, cataloged in [07-blocks](../07-blocks/index.md)).
 
-- **Look.** A lab bench with a steel frame, grey checker-plate panels, glassware and coloured liquid elements. The atlas has blue, cyan, orange, magenta and red liquid swatches.
+- **Look.** A lab bench with a steel frame, gray checker-plate panels, glassware and colored liquid elements. The atlas has blue, cyan, orange, magenta and red liquid swatches.
 - **Glass.** 11 glass parts (`G1..G11`) are always rendered with alpha blending.
 - **Animation**, while working (progress p > 0):
   - Parts `L4` and `L5` (liquid bits) are visible.
@@ -171,10 +171,10 @@ TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation-
 
 | # | Field | Contents |
 |---|---|---|
-| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 4; tile `ChemLabTileEnt`; name key `techguns.tile.BasicMachine_4.name`, English **Chemical Laboratory**; container `ChemLabContainer`, GUI ID 4; creative tab Techguns; oredict names none |
+| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalog.md#registered-blocks) meta 4; tile `ChemLabTileEnt`; name key `techguns.tile.BasicMachine_4.name`, English **Chemical Laboratory**; container `ChemLabContainer`, GUI ID 4; creative tab Techguns; oredict names none |
 | 2 | Obtaining | Shaped ore recipe `igi / geg / iri` (i `ingotIron`, g glass bottle, e Electric Engine, r redstone); also used as an ingredient of the Reaction Chamber Housing recipe. See [blocks-and-items.md](blocks-and-items.md#crafting-recipes-for-the-machines-in-this-area) |
 | 3 | Numbers | Buffer 20 000 RF; recipe-defined RF/t (not multiplied, MPRD-12); 100 ticks per operation; input tank 8 000 mB, output tank 16 000 mB; multiplier 1 to 8; 17 base recipes plus 5 furnace recipes |
-| 4 | Behaviour | Sections 2 and 3; right-click with fluid containers (section 2); server-only start and finish |
+| 4 | Behavior | Sections 2 and 3; right-click with fluid containers (section 2); server-only start and finish |
 | 5 | Persistence and sync | NBT `inputTank`, `outputTank` (Forge tank compounds), `drainInput` (boolean), `currentChemOperation` (compound with optional `output`, optional `liquidOutput`, int `powerPerTick`), plus the base keys. GUI progress-bar fields: 0 progress, 1 totalTime, 2 power, 3 input fluid ID (−1 none), 4 output fluid ID, 5 input amount, 6 output amount. Buttons: 3 dump input, 4 dump output, 5 toggle drain |
 | 6 | UI | Section 5. Tooltips (exact): "Dump Input Tank" / "Content will be lost"; "Dump Output Tank" / "Content will be lost"; "Toggle drained Tank" with "Fluids are drained from Output Tank" or "Fluids are drained from Input Tank"; tank tooltips show the fluid name or "Empty" and "amount/capacitymB". Item tooltip "Has TileEntity Data" when carrying `TileEntityData` |
 | 7 | Visuals | No per-face block texture (TESR only). TESR `RenderAmmoPress` + `ModelChemLab`; atlas `textures/blocks/ChemLab.png`, 256×128, average #363435, dominant #101010 63 %, #D0D0D0 9 %, #707070 4 %, 96 % opaque. Item renderer delegate 4. Particle: vanilla `spell` every 10 progress ticks |

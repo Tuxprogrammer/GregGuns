@@ -43,7 +43,7 @@ python audio_describe.py report   --work $WORK --spec ../../docs/techguns-spec
 
 ## A/B review of generated sounds
 
-`compare` pairs each generated GregGuns sound with the Techguns sound it replaces, through `footprint_ref` in [`tools/asset-gen/manifest.json`](../asset-gen/manifest.json). It then asks Claude to list every difference between the two, and to write change notes for the synthesiser.
+`compare` pairs each generated GregGuns sound with the Techguns sound it replaces, through `footprint_ref` in [`tools/asset-gen/manifest.json`](../asset-gen/manifest.json). It then asks Claude to list every difference between the two, and to write change notes for the synthesizer.
 
 Claude still can't hear either file. The comparison has three inputs:
 - both sides' spectrograms and waveforms;
@@ -67,4 +67,4 @@ python audio_describe.py compare-report --out $NEW/ab --report ../../docs/assets
 ## Boundaries
 
 - The Techguns audio is All Rights Reserved. This tool only *reads* it. Keep `$WORK` (spectrograms, waveforms, JSON) out of the repo; only the written descriptions and measurements go into the spec.
-- The descriptions are a brief for original sound design, not a recipe for imitation. See [CONTRIBUTING § Assets](../../CONTRIBUTING.md#assets-and-localisation).
+- The descriptions are a brief for original sound design, not a recipe for imitation. See [CONTRIBUTING § Assets](../../CONTRIBUTING.md#assets-and-localization).

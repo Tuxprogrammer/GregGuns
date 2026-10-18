@@ -1,15 +1,15 @@
-# Armour and equipment recipes
+# Armor and equipment recipes
 
-Every armour piece and every piece of special equipment that GregGuns keeps, as a GT recipe.
+Every armor piece and every piece of special equipment that GregGuns keeps, as a GT recipe.
 
-- **Techguns baseline:** [recipes.md](../../techguns-spec/05-armor/recipes.md) ([§ 1 Armour](../../techguns-spec/05-armor/recipes.md#1-armour), [§ 2 Special-slot equipment](../../techguns-spec/05-armor/recipes.md#2-special-slot-equipment-registered-in-tgitems)), [armor-catalogue.md](../../techguns-spec/05-armor/armor-catalogue.md), [special-equipment.md](../../techguns-spec/05-armor/special-equipment.md)
+- **Techguns baseline:** [recipes.md](../../techguns-spec/05-armor/recipes.md) ([§ 1 Armor](../../techguns-spec/05-armor/recipes.md#1-armor), [§ 2 Special-slot equipment](../../techguns-spec/05-armor/recipes.md#2-special-slot-equipment-registered-in-tgitems)), [armor-catalog.md](../../techguns-spec/05-armor/armor-catalog.md), [special-equipment.md](../../techguns-spec/05-armor/special-equipment.md)
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md) (authoritative for tiers), [0002 machine deconfliction](../../design/0002-machine-deconfliction.md) (Fabricator replaced by Assembler), [0003 energy model](../../design/0003-energy-model.md) and [0008 exact-tier charging](../../design/0008-exact-tier-charging.md) (electric items), [0009](../../design/0009-gtnh-integration-defaults.md) (Jetpack dropped, so it has no recipe)
 - **Sibling sheets:** [hazard-protection.md](hazard-protection.md), [oxygen-gear.md](oxygen-gear.md), [baubles-slots.md](baubles-slots.md), [powered-flight.md](powered-flight.md)
 - **Format:** [CONVENTIONS § Recipe sheets](../CONVENTIONS.md#recipe-sheets)
 - **Pack mods:** GregTech (`gregtech`, 5.09.54.205)
-- **Roadmap:** M3 (armour and equipment)
+- **Roadmap:** M3 (armor and equipment)
 
-This sheet absorbs the old `armour-recipes.md`, which is now a pointer.
+This sheet absorbs the old `armor-recipes.md`, which is now a pointer.
 
 ## What changes from Techguns
 
@@ -17,9 +17,9 @@ Techguns builds every piece in the crafting table from Techguns plates, cloth an
 
 | Techguns | GregGuns | Why |
 |---|---|---|
-| Crafting-table grids for all 45 armour pieces | Steam/ULV sets stay in the crafting table; every other piece is an Assembler recipe | [CONVENTIONS](../CONVENTIONS.md#recipe-sheets): from LV up the final step is a GT machine |
+| Crafting-table grids for all 45 armor pieces | Steam/ULV sets stay in the crafting table; every other piece is an Assembler recipe | [CONVENTIONS](../CONVENTIONS.md#recipe-sheets): from LV up the final step is a GT machine |
 | `ingotIron`, `ingotObsidianSteel`, `plateCarbon`, `circuitElite`, `itemRubber`, `sheetPlastic` | `plate.<tier material>`, `plate.EpoxidFiberReinforced`, `circuit.<tier>`, `plate.Rubber`, `plate.Polyethylene` | [0002](../../design/0002-machine-deconfliction.md) drops Techguns materials; [components-and-materials.md](../06-items/components-and-materials.md) has the mapping |
-| Obsidian Steel (T2) and carbon (T3) have no GT equivalent | The tier material of the consuming item replaces Obsidian Steel (the T2 sets are MV, so Aluminium). Carbon is `plate.EpoxidFiberReinforced` plus the tier material (Titanium for the EV sets); IC2 carbon plate is not used | [0010](../../design/0010-material-remap-and-tier-additions.md) decisions 1 and 2. See [Open questions](#open-questions) |
+| Obsidian Steel (T2) and carbon (T3) have no GT equivalent | The tier material of the consuming item replaces Obsidian Steel (the T2 sets are MV, so Aluminum). Carbon is `plate.EpoxidFiberReinforced` plus the tier material (Titanium for the EV sets); IC2 carbon plate is not used | [0010](../../design/0010-material-remap-and-tier-additions.md) decisions 1 and 2. See [Open questions](#open-questions) |
 | Energy Cell in the Nightvision Goggles recipe, charged and empty variants | One recipe. The goggles are an electric item and come out empty | [0003](../../design/0003-energy-model.md) |
 | Nuclear Power Cell in the Anti Gravity Device | `Field_Generator_IV` | The cell is a consumable fuel in Techguns; the device is now an IV electric item |
 | Tactical Mask folded NVG, Gas Mask and Oxygen Mask in one grid | Same idea, in the Assembler | Keeps the item |
@@ -38,15 +38,15 @@ Techguns builds every piece in the crafting table from Techguns plates, cloth an
 - **GregGuns does:** registers the recipes in this sheet through `GTValues.RA.stdBuilder()` into `assemblerRecipes`, fetches every GT part through `GTOreDictUnificator.get` or `ItemList` ([GGS-06-11](../06-items/components-and-materials.md#requirements)), and takes the voltage from `TierEU.RECIPE_<tier>`.
 - **Pack-side change:** none.
 
-### GregTech: hand-made armour at the Steam/ULV tier
+### GregTech: hand-made armor at the Steam/ULV tier
 
-- **Source:** GT's own Bronze armour is a hand recipe with a hammer in the grid, from the item's own plates: [CraftingRecipeLoader.java#L350-L368](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/CraftingRecipeLoader.java#L350-L368) (`"RhR", "RRR", "RRR"` with `plate.Bronze`).
-- **GregGuns does:** the two steam-age sets (T1 Scout, T1 Miner) use shaped crafting with `plate.Bronze` or `plate.WroughtIron`. This answers the old open question "is a crafting-table recipe acceptable for the Steam/ULV tier". It is, because GT does the same for its own steam-age armour.
+- **Source:** GT's own Bronze armor is a hand recipe with a hammer in the grid, from the item's own plates: [CraftingRecipeLoader.java#L350-L368](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/CraftingRecipeLoader.java#L350-L368) (`"RhR", "RRR", "RRR"` with `plate.Bronze`).
+- **GregGuns does:** the two steam-age sets (T1 Scout, T1 Miner) use shaped crafting with `plate.Bronze` or `plate.WroughtIron`. This answers the old open question "is a crafting-table recipe acceptable for the Steam/ULV tier". It is, because GT does the same for its own steam-age armor.
 - **Pack-side change:** none.
 
-### GregTech: powered armour precedent
+### GregTech: powered armor precedent
 
-- **Source:** the pack-adjusted GraviSuite chestplate, lappack and jetpack recipes are GT recipes: `plateAlloy.Carbon`, `plate.Titanium` or `plate.TungstenSteel`, a tier circuit and platinum wire around an IC2 armour item ([CraftingRecipeLoader.java#L1895-L1925](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/CraftingRecipeLoader.java#L1895-L1925)). GregGuns follows the shape (a plate, a tier plate and a tier circuit) but does not use IC2's carbon plate: the carbon plate here is `plate.EpoxidFiberReinforced` ([0010](../../design/0010-material-remap-and-tier-additions.md)).
+- **Source:** the pack-adjusted GraviSuite chestplate, lappack and jetpack recipes are GT recipes: `plateAlloy.Carbon`, `plate.Titanium` or `plate.TungstenSteel`, a tier circuit and platinum wire around an IC2 armor item ([CraftingRecipeLoader.java#L1895-L1925](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/CraftingRecipeLoader.java#L1895-L1925)). GregGuns follows the shape (a plate, a tier plate and a tier circuit) but does not use IC2's carbon plate: the carbon plate here is `plate.EpoxidFiberReinforced` ([0010](../../design/0010-material-remap-and-tier-additions.md)).
 
 ## Conventions used in every table
 
@@ -55,12 +55,12 @@ Techguns builds every piece in the crafting table from Techguns plates, cloth an
 - **Time.** 2 seconds per input item, at least 10 seconds. The programmed circuit is not counted.
 - **Programmed circuit** (`.circuit(n)`): helmet 1, chestplate 2, leggings 3, boots 4 in every set. Single items say their own number. The number keeps the four pieces of one set apart when a player loads a bus.
 - **Notation.** `HC` is Heavy Cloth, `TL` is Treated Leather, `PP` is Power Plating, `MP3` is Mechanical Parts T3, `CAT` is Compressed Air Tank, `SAP` is Steam Armor Plating. All are [assumed components](#assumed-components). `glass pane` is vanilla `Blocks.glass_pane`; `leather` is vanilla leather.
-- **Fresh output.** Every output of this sheet has camo index 0 and no stored charge, as Techguns' `onCreated` does for crafted multi-camo and powered armour.
+- **Fresh output.** Every output of this sheet has camo index 0 and no stored charge, as Techguns' `onCreated` does for crafted multi-camo and powered armor.
 - **Gate.** The input that cannot be had below the tier, plus the machine voltage.
 
 ## Steam / ULV (hand-crafted)
 
-Tier ([0001](../../design/0001-tier-map.md)): Steam / ULV. Gate material: Bronze, wrought iron. Method: Hand. The Techguns recipe is [§ 1](../../techguns-spec/05-armor/recipes.md#1-armour), "T1 Scout" and "T1 Miner". Notation in the grids: `c` Heavy Cloth, `B` `plate.Bronze`, `i` `plate.WroughtIron`, `y` yellow dye (`Dyes.dyeYellow`), `n` `nugget.WroughtIron`. Techguns' empty centre cells of the Scout grids now hold the gate plate.
+Tier ([0001](../../design/0001-tier-map.md)): Steam / ULV. Gate material: Bronze, wrought iron. Method: Hand. The Techguns recipe is [§ 1](../../techguns-spec/05-armor/recipes.md#1-armor), "T1 Scout" and "T1 Miner". Notation in the grids: `c` Heavy Cloth, `B` `plate.Bronze`, `i` `plate.WroughtIron`, `y` yellow dye (`Dyes.dyeYellow`), `n` `nugget.WroughtIron`. Techguns' empty center cells of the Scout grids now hold the gate plate.
 
 ### T1 Scout (4 recipes, gate: `plate.Bronze`)
 
@@ -80,7 +80,7 @@ Tier ([0001](../../design/0001-tier-map.md)): Steam / ULV. Gate material: Bronze
 | Miner's Pants | `ici` / `c_c` / `c_c` |
 | Miner's Boots | `c_c` / `n_n` |
 
-Notes: the Miner grids are the Techguns grids with `ingotIron` as `plate.WroughtIron` and the boots' `nuggetIron` as `nugget.WroughtIron`. Mirrors the hand-made Bronze armour at [CraftingRecipeLoader.java#L350-L368](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/CraftingRecipeLoader.java#L350-L368).
+Notes: the Miner grids are the Techguns grids with `ingotIron` as `plate.WroughtIron` and the boots' `nuggetIron` as `nugget.WroughtIron`. Mirrors the hand-made Bronze armor at [CraftingRecipeLoader.java#L350-L368](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/CraftingRecipeLoader.java#L350-L368).
 
 ## LV: T1 Combat (4 recipes)
 
@@ -121,7 +121,7 @@ Techguns: "T2 Commando" (`h` `itemRubber`, `i` `ingotObsidianSteel`, `g` `paneGl
 
 ### T2 Riot / Ranger Veteran (4 recipes)
 
-Techguns: "T2 Riot" (upgrade of the matching Combat piece, `p` `plateLead`, `l` Treated Leather). The Combat piece is an input at any damage and any camo, and the output is fresh. Gate: the Combat piece, which carries Aluminium and was itself made at MV.
+Techguns: "T2 Riot" (upgrade of the matching Combat piece, `p` `plateLead`, `l` Treated Leather). The Combat piece is an input at any damage and any camo, and the output is fresh. Gate: the Combat piece, which carries Aluminum and was itself made at MV.
 
 | Output | Inputs | Circuit | Time |
 |---|---|---|---|
@@ -162,7 +162,7 @@ Tier: HV. Method: Assembler, `TierEU.RECIPE_HV`. Gate material: `plate.Stainless
 
 Gate for the Glider parts: `plate.StainlessSteel` (Backpack) and `stick.StainlessSteel` (Wing). The Glider itself is gated by its parts.
 
-## EV: T3 Combat, HEV and Steam armour
+## EV: T3 Combat, HEV and Steam armor
 
 Tier: EV. Method: Assembler, `TierEU.RECIPE_EV`. Gate material: `plate.Titanium`.
 
@@ -188,9 +188,9 @@ Techguns: "T3 Hazardous Environment" (`p` `plateCarbon`, `l` `plateTitanium`, `c
 | Hazardous Environment Leggings | `plate.EpoxidFiberReinforced` ×3, `plate.Titanium` ×2, `circuit.EV` ×2 | 3 | 14 s |
 | Hazardous Environment Boots | `plate.EpoxidFiberReinforced` ×2, `plate.Titanium` ×2 | 4 | 10 s |
 
-### Steam armour (4 recipes)
+### Steam armor (4 recipes)
 
-Techguns: "Steam Armour" (every cell is Steam Armor Plating). Tier EV per [0001](../../design/0001-tier-map.md). Fuel-burning, so no electric item ([powered-flight.md](powered-flight.md)). Gate: Steam Armor Plating, which is a Titanium part ([Assumed components](#assumed-components)).
+Techguns: "Steam Armor" (every cell is Steam Armor Plating). Tier EV per [0001](../../design/0001-tier-map.md). Fuel-burning, so no electric item ([powered-flight.md](powered-flight.md)). Gate: Steam Armor Plating, which is a Titanium part ([Assumed components](#assumed-components)).
 
 | Output | Inputs | Circuit | Time |
 |---|---|---|---|
@@ -199,13 +199,13 @@ Techguns: "Steam Armour" (every cell is Steam Armor Plating). Tier EV per [0001]
 | Steam Legplates | SAP ×7 | 3 | 14 s |
 | Steam Boots | SAP ×4 | 4 | 10 s |
 
-## IV: Power armour, Exo suit and Anti Gravity Device
+## IV: Power armor, Exo suit and Anti Gravity Device
 
 Tier: IV. Method: Assembler, `TierEU.RECIPE_IV`. Gate material: `plate.TungstenSteel`. All outputs are IC2 electric items at tier IV and come out empty.
 
-### T3 Power Armour (4 recipes)
+### T3 Power Armor (4 recipes)
 
-Techguns: "T3 Power Armour" (`p` Power Plating, `g` `paneGlass`, `c` `circuitElite`, `e` Electric Engine). Here `c` is `circuit.IV` and `e` is `ItemList.Electric_Motor_IV`. A tungstensteel plate in each piece makes the gate explicit.
+Techguns: "T3 Power Armor" (`p` Power Plating, `g` `paneGlass`, `c` `circuitElite`, `e` Electric Engine). Here `c` is `circuit.IV` and `e` is `ItemList.Electric_Motor_IV`. A tungstensteel plate in each piece makes the gate explicit.
 
 | Output | Inputs | Circuit | Time |
 |---|---|---|---|
@@ -243,19 +243,19 @@ Techguns: `tet` / `cac` / `mbm`. Gate: `plate.TungstenSteel`, `Field_Generator_I
 
 ## Requirements
 
-Numbering continues from [powered-flight.md](powered-flight.md). GGS-05-29 to GGS-05-31 are moved here unchanged from the old `armour-recipes.md`.
+Numbering continues from [powered-flight.md](powered-flight.md). GGS-05-29 to GGS-05-31 are moved here unchanged from the old `armor-recipes.md`.
 
-- **GGS-05-29.** Every armour and equipment recipe is in `assemblerRecipes` (or, for the two steam-age sets, a shaped crafting recipe) with voltage `TierEU.RECIPE_<tier>` for its [0001](../../design/0001-tier-map.md) tier.
+- **GGS-05-29.** Every armor and equipment recipe is in `assemblerRecipes` (or, for the two steam-age sets, a shaped crafting recipe) with voltage `TierEU.RECIPE_<tier>` for its [0001](../../design/0001-tier-map.md) tier.
 - **GGS-05-30.** Every recipe has at least one input from that tier's gate material.
 - **GGS-05-31.** No recipe uses a Techguns plate, ingot or circuit.
 - **GGS-05-32.** Every recipe in this sheet resolves at boot. A `null` input from the unificator or `ItemList` skips that recipe and logs one warning ([GGS-06-11](../06-items/components-and-materials.md#requirements)).
 - **GGS-05-33.** No recipe in this sheet runs below its tier. The dev self-check compares each recipe's `eut` with the tier table in [0001](../../design/0001-tier-map.md); Beret (MV), HEV (EV) and Tactical Mask (HV) use the tiers fixed by [0010](../../design/0010-material-remap-and-tier-additions.md).
-- **GGS-05-34.** Each output of an armour or equipment recipe has camo index 0 and no stored charge.
+- **GGS-05-34.** Each output of an armor or equipment recipe has camo index 0 and no stored charge.
 - **GGS-05-35.** The Riot and Exo Suit recipes accept the base piece at any damage and any camo, and carry none of its NBT into the output.
-- **GGS-05-36.** The T1 Scout and T1 Miner sets are the only armour and equipment items made in the crafting table, apart from the Gas Mask refilter. Each has a GT `plate.Bronze` or `plate.WroughtIron` input.
+- **GGS-05-36.** The T1 Scout and T1 Miner sets are the only armor and equipment items made in the crafting table, apart from the Gas Mask refilter. Each has a GT `plate.Bronze` or `plate.WroughtIron` input.
 - **GGS-05-37.** The Gas Mask refilter recipe returns a mask at damage 0 and cannot produce a mask from a stack that is not a Gas Mask.
 - **GGS-05-38.** No recipe produces a Jetpack.
-- **GGS-05-39.** Night Vision Goggles, Jump Pack, HEV, Power Armour, Exo Suit and Anti Gravity Device are IC2 electric items whose `getTier` equals the tier of their recipe ([GGS-05-14](powered-flight.md#requirements), [0008](../../design/0008-exact-tier-charging.md)).
+- **GGS-05-39.** Night Vision Goggles, Jump Pack, HEV, Power Armor, Exo Suit and Anti Gravity Device are IC2 electric items whose `getTier` equals the tier of their recipe ([GGS-05-14](powered-flight.md#requirements), [0008](../../design/0008-exact-tier-charging.md)).
 
 ## Tests
 
@@ -265,7 +265,7 @@ Numbering continues from [powered-flight.md](powered-flight.md). GGS-05-29 to GG
 | 31 | Unit test that scans recipe inputs for the removed Techguns item names |
 | 32 | Unit test of the recipe loader with a stubbed unificator that returns `null` |
 | 34, 35 | Unit test: run each recipe's output hook and assert camo 0, charge 0 and no input NBT |
-| 36 | Unit test listing crafting-table recipes whose output is a GregGuns armour or equipment item |
+| 36 | Unit test listing crafting-table recipes whose output is a GregGuns armor or equipment item |
 | 37 | Unit test of the shapeless refilter matcher |
 | 38 | Unit test that the registry has no jetpack output |
 | 39 | Unit test over the electric items' `getTier` against the recipe table |
@@ -280,10 +280,10 @@ GregGuns components that these recipes consume. All except where noted are defin
 | Heavy Cloth (`HC`, `part_heavy_cloth`) | Scout, Miner, T1 Combat, T2 Combat, Beret, NVG, Glider parts | components-and-materials.md: "Heavy Cloth ... Keep" |
 | Treated Leather (`TL`, `part_treated_leather`) | Riot | same row |
 | Mechanical Parts T3 (`MP3`, `part_mechanical_3`) | Exo Suit, Anti Gravity Device | "Mechanical Parts T1, T2, T3 ... Keep" |
-| Power Plating (`PP`, `part_power_plating`) | Power Armour | "Cybernetic Parts, Power Plating, Anti Gravity Core ... Keep" |
+| Power Plating (`PP`, `part_power_plating`) | Power Armor | "Cybernetic Parts, Power Plating, Anti Gravity Core ... Keep" |
 | Gas Mask Filter (`part_gas_mask_filter`) | Gas Mask, refilter | "Gas Mask Filter ... Keep" |
 | Compressed Air Tank (`CAT`, `tank_air`) | Oxygen Tanks, Jump Pack | [fluids.md](../06-items/fluids.md) (a 1 000 mB `IFluidContainerItem`) |
-| Steam Armor Plating (`SAP`, `part_steam_armor_plating`) | Steam armour | [06 recipes](../06-items/recipes.md#part-steam-armor-plating) (RC-23): Assembler, EV, `plate.Titanium` ×2, `plate.Bronze` ×1, `plate.Steel` ×1 gives 1 SAP, `circuit(1)`, 6 s, `RECIPE_EV`. Techguns shared item 67. EV matches the steam armour row in [0001](../../design/0001-tier-map.md) |
+| Steam Armor Plating (`SAP`, `part_steam_armor_plating`) | Steam armor | [06 recipes](../06-items/recipes.md#part-steam-armor-plating) (RC-23): Assembler, EV, `plate.Titanium` ×2, `plate.Bronze` ×1, `plate.Steel` ×1 gives 1 SAP, `circuit(1)`, 6 s, `RECIPE_EV`. Techguns shared item 67. EV matches the steam armor row in [0001](../../design/0001-tier-map.md) |
 | Anti Gravity Core (`part_anti_gravity_core`) | Anti Gravity Device | Made by the Reaction Chamber, [08 recipes](../08-machines-production/recipes.md#anti-gravity-core-iv) |
 
 Defined in this sheet and consumed by it: Glider Backpack, Glider Wing, Oxygen Mask. Area 06 should link here rather than repeat them ("Glider parts, Oxygen Mask ... Other areas" in components-and-materials.md).

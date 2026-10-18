@@ -20,7 +20,7 @@ A from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 1.7.10, Forg
 | How a Techguns feature behaves | [docs/techguns-spec/README.md](docs/techguns-spec/README.md), then the area's `index.md` |
 | How spec sheets are laid out | [docs/techguns-spec/CONVENTIONS.md](docs/techguns-spec/CONVENTIONS.md) |
 | Techguns bugs not to reproduce | [docs/techguns-spec/BUGS.md](docs/techguns-spec/BUGS.md) |
-| Asset footprints (sizes, frames, colours, sound lengths) | [docs/techguns-spec/ASSET-FACTS.md](docs/techguns-spec/ASSET-FACTS.md); how each sound sounds: [AUDIO-PROFILES.md](docs/techguns-spec/AUDIO-PROFILES.md) |
+| Asset footprints (sizes, frames, colors, sound lengths) | [docs/techguns-spec/ASSET-FACTS.md](docs/techguns-spec/ASSET-FACTS.md); how each sound sounds: [AUDIO-PROFILES.md](docs/techguns-spec/AUDIO-PROFILES.md) |
 | How GregGuns differs from Techguns and plugs into GTNH, per area | [docs/gregguns-spec/README.md](docs/gregguns-spec/README.md), then the area's `index.md` |
 | Config and data changes the GTNH modpack must make for us | [docs/gregguns-spec/PACK-CHANGES.md](docs/gregguns-spec/PACK-CHANGES.md) |
 | Which machines we build (single blocks, multiblocks, MTE IDs) | [machine-roster.md](docs/gregguns-spec/08-machines-production/machine-roster.md) |
@@ -38,7 +38,7 @@ A from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 1.7.10, Forg
 | Gun stats, firing and reload, damage system, gun recipes | [02-guns](docs/techguns-spec/02-guns/index.md) |
 | Gun models, renderers, animations, gun textures and sounds | [03-gun-visuals-audio](docs/techguns-spec/03-gun-visuals-audio/index.md) |
 | Projectiles, explosions, particles and FX, death effects | [04-projectiles-fx](docs/techguns-spec/04-projectiles-fx/index.md) |
-| Armour, set bonuses, special slots, flight gear | [05-armor](docs/techguns-spec/05-armor/index.md) |
+| Armor, set bonuses, special slots, flight gear | [05-armor](docs/techguns-spec/05-armor/index.md) |
 | Items, ammo, components, tools, fluids, loot | [06-items](docs/techguns-spec/06-items/index.md) |
 | Blocks, connected textures, block models | [07-blocks](docs/techguns-spec/07-blocks/index.md) |
 | Machine framework, production machines, GUIs, NEI | [08-machines-production](docs/techguns-spec/08-machines-production/index.md) |
@@ -52,14 +52,14 @@ Every area also has a GregGuns counterpart, `docs/gregguns-spec/<area>/index.md`
 
 The extracted **GTNH 2.9.0-RC-2** pack is at `reference/gtnh/2.9.0-RC-2/`. It is git-ignored: never commit anything under `reference/`. Dig through it whenever you integrate with GT or any other mod in the pack.
 
-- `reference/gtnh/2.9.0-RC-2/MOD-INDEX.md` lists all 242 mods, with each mod's version, jar, mod IDs, licence and **where its source is** (the GitHub repo and the tag matching the pack).
+- `reference/gtnh/2.9.0-RC-2/MOD-INDEX.md` lists all 242 mods, with each mod's version, jar, mod IDs, license and **where its source is** (the GitHub repo and the tag matching the pack).
 - `.minecraft/mods/` holds the jars, and `.minecraft/config/` shows how the pack configures each mod.
 - [tools/gtnh-reference/](tools/gtnh-reference/README.md) has the helper: `python -I tools/gtnh-reference/gtnh_ref.py mod|where|clone|jars|decompile …`. If `reference/gtnh/` is missing, its `fetch` command recreates it.
 - Grep and Glob skip ignored folders, so point them at `reference/` explicitly.
 
 Rules (the detail is in [docs/gregguns-spec/INTEGRATION.md](docs/gregguns-spec/INTEGRATION.md)):
 
-1. These rules apply only to external integrations, meaning code that touches GTNH or other mods. For Techguns behaviour, use the spec.
+1. These rules apply only to external integrations, meaning code that touches GTNH or other mods. For Techguns behavior, use the spec.
 2. **Source first.** Read the mod's source on GitHub with `gh`, at the tag the pack ships.
 3. **Decompile only as a fallback**, for mods with no source. Never paste decompiled code.
 4. **Comment what you relied on.** Add a `// Source:` permalink pinned to the tag, and a `// Decompiled:` hedge wherever decompilation was the evidence.
@@ -77,4 +77,4 @@ Rules (the detail is in [docs/gregguns-spec/INTEGRATION.md](docs/gregguns-spec/I
 
 - Never edit `build.gradle.kts` or `settings.gradle.kts`; they are GTNH-managed.
 - Branch per change, never commit to `master`, and use the [PR template](.github/pull_request_template.md).
-- When behaviour changes, update the spec deviation notes or the design records in the same PR.
+- When behavior changes, update the spec deviation notes or the design records in the same PR.

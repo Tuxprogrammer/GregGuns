@@ -2,7 +2,7 @@
 
 How GregGuns items get Thaumcraft aspects, the way GT does it.
 
-- **Techguns baseline:** none. Techguns registers no aspects ([item-catalogue.md](../../techguns-spec/06-items/item-catalogue.md)).
+- **Techguns baseline:** none. Techguns registers no aspects ([item-catalog.md](../../techguns-spec/06-items/item-catalog.md)).
 - **Design records:** none. This follows [CONTRIBUTING § GTNH integration](../../../CONTRIBUTING.md#gtnh-integration) (GT conventions).
 - **Pack mods:**
   - Thaumcraft (`Thaumcraft`, 4.2.3.5), optional
@@ -43,7 +43,7 @@ Aspect values follow GT's scale: small integers, one or two per aspect. Choose f
 | Bullets, shells and loose ammo | `TELUM` 1, `METALLUM` 1 |
 | Magazines, drums | `TELUM` 1, `METALLUM` 1, `VACUOS` 1 |
 | Explosive ammo (rockets, grenades) | `TELUM` 2, `IGNIS` 2, `PERDITIO` 1 |
-| Armour pieces | `TUTAMEN` 2, `METALLUM` 1 |
+| Armor pieces | `TUTAMEN` 2, `METALLUM` 1 |
 | Tanks | `VACUOS` 1, `METALLUM` 1 |
 | Nuclear items (cells, warhead, Rad Emitter) | `RADIO` 2, `POTENTIA` 1 (plus `PERDITIO` 1 for the warhead) |
 | Gun parts (barrels, receivers) | `METALLUM` 1, `MACHINA` 1 |

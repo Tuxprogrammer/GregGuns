@@ -81,7 +81,7 @@ def db(x, floor=1e-10):
 def measure(samples, rate):
     """Time- and frequency-domain features of a decoded sound. Pure function: easy to self-test."""
     mono = samples.mean(axis=1)
-    # Anti-phase stereo cancels in a mono mix; analyse the left channel instead when the mix collapses.
+    # Anti-phase stereo cancels in a mono mix; analyze the left channel instead when the mix collapses.
     if samples.shape[1] > 1 and np.sqrt(np.mean(mono ** 2)) < 0.1 * np.sqrt(np.mean(samples[:, 0] ** 2)):
         mono = samples[:, 0].copy()
     n = len(mono)
@@ -141,7 +141,7 @@ def measure(samples, rate):
     flatness = float(np.exp(np.mean(np.log(mean_spec[1:] + 1e-20))) / (np.mean(mean_spec[1:]) + 1e-20))
     bands = {name: round(100 * float(mean_spec[(freqs >= lo) & (freqs < min(hi, rate / 2))].sum()) / total, 1)
              for name, lo, hi in ANALYSIS_BANDS if lo < rate / 2}
-    # Prominent peaks of the mean spectrum (local maxima >= 10 dB above their +-1/3-octave neighbourhood median).
+    # Prominent peaks of the mean spectrum (local maxima >= 10 dB above their +-1/3-octave neighborhood median).
     sdb = 10 * np.log10(mean_spec + 1e-20)
     peaks = []
     for i in np.argsort(sdb)[::-1]:
@@ -406,7 +406,7 @@ def run_requests(client, batch_file, args, items):
 
 COMPARE_PROMPT = """You are a game-audio lead reviewing replacement sound effects against the originals they replace.
 A Minecraft mod (GregGuns) is replacing every sound from an All Rights Reserved mod (Techguns) with original, procedurally
-synthesised sounds. Each replacement must fill the same role and feel: similar length, timing, energy, character and
+synthesized sounds. Each replacement must fill the same role and feel: similar length, timing, energy, character and
 loudness. It must stay an original sound, not a copy.
 
 You cannot hear audio. For each pair you get, for A (the Techguns original) and B (the GregGuns replacement):
@@ -429,10 +429,19 @@ Do a thorough A/B and list every audible difference, from the most important to 
 - stereo;
 - looping.
 
-Then write change notes a sound designer can apply directly to a procedural synthesiser: name the layer and the
+Then write change notes a sound designer can apply directly to a procedural synthesizer: name the layer and the
 parameter, with numbers. For example: "add a 2-4 kHz noise crack, 15 ms, at 0 s, +6 dB over the body"; "shorten the tail
 from 1.4 s to 0.8 s"; "pitch the thump from 120 Hz down to 50 Hz over 200 ms instead of holding it". Don't ask for B to
-copy A sample for sample: aim for the same role and feel."""
+copy A sample for sample: aim for the same role and feel.
+
+Verdict rules. Apply them strictly and consistently:
+- keep: a player who knows A would accept B as the same sound in game, meaning the same role, timing, character and
+  weight. Score 8-10. No moderate or major differences remain; only minor ones, or deliberate originality that doesn't
+  change the feel.
+- tweak: B is the right kind of sound but has at least one moderate difference. Score 5-7.
+- rework: B misses the role or feel, or has any major difference. Score 0-4.
+
+If B was revised from an earlier attempt, judge it afresh against A. Don't reward effort."""
 
 COMPARE_SCHEMA = {
     "type": "object", "additionalProperties": False,
@@ -520,6 +529,9 @@ def cmd_compare(args):
     pairs = compare_pairs(ref_work, new_work, args.manifest)
     out_path = out_dir / "compare.jsonl"
     done = {r["path"] for r in load_jsonl(out_path) if r.get("review")}
+    if args.only:
+        only = {line.strip() for line in Path(args.only).read_text(encoding="utf-8").splitlines() if line.strip()}
+        pairs = [p for p in pairs if p[2]["path"] in only]
     todo = [p for p in pairs if p[2]["path"] not in done][: args.limit or None]
     print(f"{len(pairs)} pairs, {len(done)} already reviewed, {len(todo)} to go, model {args.model}")
     if not todo:
@@ -741,6 +753,7 @@ def main():
     c.add_argument("--poll", type=int, default=60)
     c.add_argument("--limit", type=int, default=0)
     c.add_argument("--chunk", type=int, default=50, help="pairs per batch (each pair carries four images)")
+    c.add_argument("--only", help="text file of generated sound paths (sounds/...) to review; others are skipped")
     cr = sub.add_parser("compare-report", help="write the A/B review markdown")
     cr.add_argument("--out", required=True, help="folder holding compare.jsonl")
     cr.add_argument("--report", required=True, help="markdown file to write")

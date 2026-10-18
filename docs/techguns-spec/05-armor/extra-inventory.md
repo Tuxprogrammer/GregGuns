@@ -14,7 +14,7 @@ Wiring that lives in other areas (see [01-core](../01-core/index.md)): [`Techgun
 | 5 | `SLOT_AUTOHEAL` | "auto heal" | `HEALSLOT` items, but **no item reports HEALSLOT**, so the slot can never be filled (bug [ARM-17](index.md#suspected-bugs)) |
 | 6–11 | `SLOTS_AMMO_START`..`END` | ammo pouch | `AMMOSLOT` items (magazines, bullets, tanks, energy cells and the like from the shared item) |
 
-**Inventory behaviour:**
+**Inventory behavior:**
 - Name `TechgunsPlayerInventory`. Stack limit 64.
 - `isItemValidForSlot` always returns true; the restrictions live in the GUI slots.
 - `isUseableByPlayer` is always true.
@@ -57,10 +57,10 @@ Wiring that lives in other areas (see [01-core](../01-core/index.md)): [`Techgun
   - Any other item is accepted only if the slot type is `NORMAL`.
   - It is also used by machine GUIs.
 - **`SlotFood`:** accepts `ItemFood` only.
-- **`SlotArmor(inv, slotIndex, x, y, armorType, player)`:** a reimplementation of the vanilla armour slot.
+- **`SlotArmor(inv, slotIndex, x, y, armorType, player)`:** a reimplementation of the vanilla armor slot.
   - Stack limit 1.
   - Valid iff `item.isValidArmor(stack, armorType, player)`.
-  - Its background icon is the vanilla empty-armour-slot icon for that type.
+  - Its background icon is the vanilla empty-armor-slot icon for that type.
 
 ## 4. Container `TGPlayerContainer`
 
@@ -79,11 +79,11 @@ Wiring that lives in other areas (see [01-core](../01-core/index.md)): [`Techgun
 
 **Shift-click (`transferStackInSlot`):**
 1. **From a TG slot (0–11):** merge into the main inventory plus hotbar (16–51), filling from the end.
-2. **Else, if the stack is an `ItemArmor`** and the matching armour slot (12 + armourType) is empty: move it there.
+2. **Else, if the stack is an `ItemArmor`** and the matching armor slot (12 + armor type) is empty: move it there.
 3. **Else, if clicked in the main inventory or hotbar and the item fits some TG slot:** take the *first* TG slot whose `isItemValid` accepts the item and merge into a range starting there. The range is 6 slots for ammo, 3 for food, 1 otherwise.
 4. **Else, main inventory (16–42):** move to the hotbar (43–51).
 5. **Else, hotbar:** move to the main inventory.
-6. **Otherwise** (for example from an armour slot): merge into 16–51.
+6. **Otherwise** (for example from an armor slot): merge into 16–51.
 
 ## 5. GUI `GuiTGPlayerInventory`
 
@@ -91,13 +91,13 @@ Texture: [`textures/gui/TGPlayerInventory.png`](../08-machines-production/gui-te
 
 **Background:** the region (0,0)–(176,166) of the texture is drawn at the GUI origin. It contains:
 - a black 3-D player viewport at about (26,8)–(78,78)
-- the armour slot column at x 7–25
+- the armor slot column at x 7–25
 - face and back slot frames to the right of the viewport
 - a shield icon area at (99,7) 14×14
 - a radiation bar trough at (115,7) 54×6
 - the 3 food slots, 1 heal slot and 2×3 ammo slots
 - the standard 3×9 inventory and hotbar frames
-- a light-grey panel with bevelled white/dark edges
+- a light-gray panel with beveled white/dark edges
 
 On top of the background, the player is drawn 3-D at (51, 75) relative to the GUI, scale 30, looking at the mouse (it reuses [`GuiCamoBench.renderPlayer`](../09-machines-utility/camo-bench.md#gui-guicamobench)).
 
@@ -106,7 +106,7 @@ On top of the background, the player is drawn 3-D at (51, 75) relative to the GU
 | Area | Tooltip lines |
 |---|---|
 | Toggle button i at (173, 7 + 11·i), 11×11 | (1) toggle name; (2) `Current state: ` + red `Disabled` or green `Enabled`; (3)–(4) the two description lines (table below) |
-| (99,7) 14×14 shield | underlined `Total Armor Values`, then nine lines `<DamageType name>: <formatAV(total)>` coloured as in the armour tooltip (PHYSICAL dark grey, PROJECTILE grey, EXPLOSION dark red, ENERGY dark aqua, FIRE red, ICE aqua, LIGHTNING yellow, POISON dark green, RADIATION green). Totals come from [`DamageSystem.getTotalArmorAgainstType`](../02-guns/index.md#coverage): the sum over worn armour, where vanilla armour counts only toward PHYSICAL. |
+| (99,7) 14×14 shield | underlined `Total Armor Values`, then nine lines `<DamageType name>: <formatAV(total)>` colored as in the armor tooltip (PHYSICAL dark gray, PROJECTILE gray, EXPLOSION dark red, ENERGY dark aqua, FIRE red, ICE aqua, LIGHTNING yellow, POISON dark green, RADIATION green). Totals come from [`DamageSystem.getTotalArmorAgainstType`](../02-guns/index.md#coverage): the sum over worn armor, where vanilla armor counts only toward PHYSICAL. |
 | (115,7) 54×6 radiation bar | green underlined `Current Radioactive Contamination`; `<radlevel×0.001>/1000`; `Effects: ` + green `NONE` (hard-coded). The radiation system belongs to [01-core](../01-core/index.md). |
 
 | Toggle index | Player flag | Name key / text | Description keys / text |
@@ -140,16 +140,16 @@ Layout, so that a replacement keeps the same coordinates:
 
 | Region (x, y, w, h) | Content |
 |---|---|
-| (0, 0, 176, 166) | Main panel as described in §5. Light grey #C6C6C6-style panel, black viewport, slot wells in mid grey with dark top-left and white bottom-right bevels (vanilla style). |
-| (177, 0, 26, 26) + (213, 0, 3, 26) | Tab sprite, "current tab" variant: a light-grey (#C6C6C6) tab with a white top/left bevel and a black outline that is open on the right. The extra 3 px column joins the tab into the panel edge. |
-| (177, 26, 26, 26) | Tab sprite, "other tab" variant: the same shape in a darker grey (#8B8B8B) face, closed on the right. |
+| (0, 0, 176, 166) | Main panel as described in §5. Light gray #C6C6C6-style panel, black viewport, slot wells in mid gray with dark top-left and white bottom-right bevels (vanilla style). |
+| (177, 0, 26, 26) + (213, 0, 3, 26) | Tab sprite, "current tab" variant: a light-gray (#C6C6C6) tab with a white top/left bevel and a black outline that is open on the right. The extra 3 px column joins the tab into the panel edge. |
+| (177, 26, 26, 26) | Tab sprite, "other tab" variant: the same shape in a darker gray (#8B8B8B) face, closed on the right. |
 | (242, 0) / (249, 0) | HUD toggle icon, off / on: red X / green check mark. |
-| (242, 7) / (249, 7) | Night-vision icon, off / on: dark-grey goggles / green goggles on a green background. |
-| (242, 14) / (249, 14) | Safe-mode icon, off / on: red block "S" in a grey frame / green "S". |
+| (242, 7) / (249, 7) | Night-vision icon, off / on: dark-gray goggles / green goggles on a green background. |
+| (242, 14) / (249, 14) | Safe-mode icon, off / on: red block "S" in a gray frame / green "S". |
 | (242, 21) / (249, 21) | Step-assist icon, off / on: red stair step / green stair step. |
 | (242, 28) / (249, 28) | Yellow "!" and red "!" warning tiles. Not used by the toggles; the HUD overlay uses them ([01-core](../01-core/index.md) / [03-gun-visuals-audio](../03-gun-visuals-audio/index.md)). |
-| (249, 35) | Grey gas-canister glyph. Not used by the toggles (HUD overlay). |
-| (242, 42) / (249, 42) | Jetpack icon, off / on: grey twin-tank jetpack with red X / with yellow-red flames under the nozzles. |
-| (0, 168, 24, 8) | Three 8×8 tiles (black border with four black "dots"): fully grey, half grey/half empty, and empty. The HUD overlay uses them as a fill indicator ([01-core](../01-core/index.md) / [03](../03-gun-visuals-audio/index.md)). |
+| (249, 35) | Gray gas-canister glyph. Not used by the toggles (HUD overlay). |
+| (242, 42) / (249, 42) | Jetpack icon, off / on: gray twin-tank jetpack with red X / with yellow-red flames under the nozzles. |
+| (0, 168, 24, 8) | Three 8×8 tiles (black border with four black "dots"): fully gray, half gray/half empty, and empty. The HUD overlay uses them as a fill indicator ([01-core](../01-core/index.md) / [03](../03-gun-visuals-audio/index.md)). |
 
 The rest of the texture is transparent (shown magenta in the editor).

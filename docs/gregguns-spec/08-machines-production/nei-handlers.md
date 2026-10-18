@@ -31,7 +31,7 @@ What GregGuns needs to write for NEI, which is almost nothing: GT turns every re
   - Catalysts need no code. `generateRecipeCatalystIndex` loops over `GregTechAPI.METATILEENTITIES`, takes each `RecipeMapWorkable` and attaches it to its map's categories, ordered by `getRecipeCatalystPriority` ([NEIGTConfig#L267-L281](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/nei/NEIGTConfig.java#L267-L281)). `MTEMultiBlockBase` supplies `getRecipeMap`, so the Reaction Chamber controller appears on its own tab with no registration.
   - The tab title is `StatCollector.translateToLocal(unlocalizedName)`, so the lang file needs a key named exactly like the map.
 - **GregGuns does:**
-  - Creates `reactionChamberRecipes` in a class whose static initialiser runs **during GregGuns' own FML event** (call `GregGunsRecipeMaps.init()` from our `preInit`). If the class first loads inside GT's `sAfterGTPreload` callback, the active mod container is GregTech's, and NEI shows the tab as a GregTech tab with the wrong badge.
+  - Creates `reactionChamberRecipes` in a class whose static initializer runs **during GregGuns' own FML event** (call `GregGunsRecipeMaps.init()` from our `preInit`). If the class first loads inside GT's `sAfterGTPreload` callback, the active mod container is GregTech's, and NEI shows the tab as a GregTech tab with the wrong badge.
   - Adds `gregguns.recipe.reactionchamber=Reaction Chamber` to `en_US.lang`.
   - Gives the map a `neiHandlerInfo` display stack (the controller) only if the inferred catalyst icon looks wrong in play.
   - Writes no `IConfigureNEI`, no `TemplateRecipeHandler`, no `INEIGuiHandler`.
@@ -46,7 +46,7 @@ What GregGuns needs to write for NEI, which is almost nothing: GT turns every re
 ## Requirements
 
 - **GGS-08-31** GregGuns contains no NEI API code: no `IConfigureNEI`, no `TemplateRecipeHandler`, no NEI imports outside tests.
-- **GGS-08-32** `reactionChamberRecipes` is created from a class that GregGuns' own `preInit` initialises, so its `RecipeCategory.ownerMod` is GregGuns.
+- **GGS-08-32** `reactionChamberRecipes` is created from a class that GregGuns' own `preInit` initializes, so its `RecipeCategory.ownerMod` is GregGuns.
 - **GGS-08-33** The map name `gregguns.recipe.reactionchamber` has an `en_US.lang` entry.
 - **GGS-08-34** Every recipe a GregGuns item is made by is visible in an NEI tab that GT or GregGuns registers, and every GregGuns MTE with a recipe map appears as a catalyst.
 

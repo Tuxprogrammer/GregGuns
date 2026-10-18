@@ -1,6 +1,6 @@
 # Structure loot
 
-The loot tables are registered in [`TGItems.postInit`](../06-items/item-catalogue.md) (the code is owned by **[06-items](../06-items/index.md)**) through Forge `ChestGenHooks`. They are documented here because worldgen is what fills chests from them. Item identities (guns, ammo, armour) are cross-referenced to [02-guns](../02-guns/index.md), [05-armor](../05-armor/index.md) and [06-items](../06-items/index.md). Names below are the Java field names, for example [`TGuns.ak47`](../02-guns/gun-catalogue.md) or `TGItems.bullets9mm`.
+The loot tables are registered in [`TGItems.postInit`](../06-items/item-catalog.md) (the code is owned by **[06-items](../06-items/index.md)**) through Forge `ChestGenHooks`. They are documented here because worldgen is what fills chests from them. Item identities (guns, ammo, armor) are cross-referenced to [02-guns](../02-guns/index.md), [05-armor](../05-armor/index.md) and [06-items](../06-items/index.md). Names below are the Java field names, for example [`TGuns.ak47`](../02-guns/gun-catalog.md) or `TGItems.bullets9mm`.
 
 ## How chests get filled
 
@@ -14,11 +14,11 @@ Each fill calls `ChestGenHooks.getCount(category, rnd)` and then vanilla `Weight
 | Chest block | Category used |
 |---|---|
 | vanilla `chest` | `ChestGenHooks.DUNGEON_CHEST` (vanilla dungeon pool + TG additions below) |
-| [`TGBlocks.tgchest`](../07-blocks/block-catalogue.md#registered-blocks) (Reinforced chest) | `REINFORCEDCHEST_LOOT_TIER[lootTier]` = `techgunsReinforcedchestT1/T2/T3` |
+| [`TGBlocks.tgchest`](../07-blocks/block-catalog.md#registered-blocks) (Reinforced chest) | `REINFORCEDCHEST_LOOT_TIER[lootTier]` = `techgunsReinforcedchestT1/T2/T3` |
 | `TGBlocks.tgchest_weapon` (Weapon chest) | `WEAPONCHEST_LOOT_TIER[lootTier]` = `techgunsWeaponchestT1/T2/T3` |
 | Barracks vanilla chests | `techgunsMilBaseBarracks` |
 
-| Structure | lootTier → TG table | Vanilla chests | [`tgchest`](../07-blocks/block-catalogue.md#registered-blocks) | [`tgchest_weapon`](../07-blocks/block-catalogue.md#registered-blocks) | Other |
+| Structure | lootTier → TG table | Vanilla chests | [`tgchest`](../07-blocks/block-catalog.md#registered-blocks) | [`tgchest_weapon`](../07-blocks/block-catalog.md#registered-blocks) | Other |
 |---|---|---|---|---|---|
 | Small Factory Building | 0 → T1 | 2 | – | – | 2 furnaces (empty) |
 | Small Train Station | 0 → T1 | 1 | – | – | furnace |
@@ -51,20 +51,20 @@ Each row is: item, metadata (where it is passed), stack min–max, weight.
 ### `techgunsWeaponchestT2` (count 4–8)
 | Item | Stack | Weight |
 |---|---|---|
-| [`bullets9mm`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 4–12 | 4 |
-| [`shotgunShell`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 4–32 | 4 |
-| [`revolver`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 1 | 1 |
-| [`sawedoff`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 1 | 1 |
-| [`thompson`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 1 | 1 |
-| [`smgMag`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 3–6 | 3 |
-| [`rifleBullets`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 4–12 | 4 |
-| [`m4Mag`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 2–8 | 3 |
-| [`boltaction`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 1 | 1 |
-| [`mac10`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 1 | 1 |
-| [`ak47`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 1 | 1 |
+| [`bullets9mm`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 4–12 | 4 |
+| [`shotgunShell`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 4–32 | 4 |
+| [`revolver`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 1 | 1 |
+| [`sawedoff`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 1 | 1 |
+| [`thompson`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 1 | 1 |
+| [`smgMag`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 3–6 | 3 |
+| [`rifleBullets`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 4–12 | 4 |
+| [`m4Mag`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 2–8 | 3 |
+| [`boltaction`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 1 | 1 |
+| [`mac10`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 1 | 1 |
+| [`ak47`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 1 | 1 |
 | `m4` | 1 | 1 |
-| [`pistol`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 1 | 1 |
-| [`pistolMag9mm`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 2–5 | 2 |
+| [`pistol`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 1 | 1 |
+| [`pistolMag9mm`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 2–5 | 2 |
 | `TGuns.stielGranate` (meta 0) | 3–8 | 2 |
 
 ### `techgunsWeaponchestT3` (count 5–10)
@@ -82,12 +82,12 @@ Each row is: item, metadata (where it is passed), stack min–max, weight.
 | `m4` | 1 | 1 |
 | `pistol` | 1 | 1 |
 | `pistolMag9mm` | 2–5 | 4 |
-| [`flamethrowerTank`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 3–8 | 3 |
-| [`flamethrower`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 1 | 1 |
-| [`rocketlauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 1 | 1 |
-| [`rocketAmmo`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 4–8 | 2 |
-| [`fragGrenade`](../02-guns/gun-catalogue.md#table-f-grenades-not-genericgun) | 3–8 | 2 |
-| [`stielGranate`](../02-guns/gun-catalogue.md#table-f-grenades-not-genericgun) | 4–12 | 2 |
+| [`flamethrowerTank`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 3–8 | 3 |
+| [`flamethrower`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 1 | 1 |
+| [`rocketlauncher`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 1 | 1 |
+| [`rocketAmmo`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 4–8 | 2 |
+| [`fragGrenade`](../02-guns/gun-catalog.md#table-f-grenades-not-genericgun) | 3–8 | 2 |
+| [`stielGranate`](../02-guns/gun-catalog.md#table-f-grenades-not-genericgun) | 4–12 | 2 |
 
 ### `techgunsReinforcedchestT1` (count 3–6)
 | Item | Stack | Weight |
@@ -97,9 +97,9 @@ Each row is: item, metadata (where it is passed), stack min–max, weight.
 | stone | 16–32 | 3 |
 | oak log (`log` meta 0) | 8–16 | 3 |
 | gunpowder | 4–8 | 3 |
-| first OreDict [`ingotTin`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), if any | 8–32 | 3 |
-| first OreDict [`ingotCopper`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), if any | 8–32 | 3 |
-| first OreDict [`ingotLead`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), if any | 6–24 | 3 |
+| first OreDict [`ingotTin`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), if any | 8–32 | 3 |
+| first OreDict [`ingotCopper`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), if any | 8–32 | 3 |
+| first OreDict [`ingotLead`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), if any | 6–24 | 3 |
 
 ### `techgunsReinforcedchestT2` (count 4–8)
 | Item | Stack | Weight |
@@ -115,7 +115,7 @@ Each row is: item, metadata (where it is passed), stack min–max, weight.
 | `ingotCopper` | 4–16 | 3 |
 | `ingotLead` | 3–12 | 3 |
 | `ingotSilver` | 2–8 | 3 |
-| [`ingotSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 2–8 | 3 |
+| [`ingotSteel`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 2–8 | 3 |
 
 The OreDict ingot rows are only added if that OreDict entry exists.
 
@@ -128,7 +128,7 @@ The OreDict ingot rows are only added if that OreDict entry exists.
 | oak log | 8–16 | 3 |
 | gunpowder | 6–12 | 3 |
 | gold_ingot | 6–18 | 3 |
-| [`rubberBar`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 3–10 | 3 |
+| [`rubberBar`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 3–10 | 3 |
 | `TGItems.plasticSheet` | 2–8 | 3 |
 | `ingotTin` | 8–16 | 3 |
 | `ingotCopper` | 8–16 | 3 |
@@ -141,7 +141,7 @@ The OreDict ingot rows are only added if that OreDict entry exists.
 ### `techgunsMilBaseBarracks` (count 1–4)
 | Item | Stack | Weight |
 |---|---|---|
-| [`TGArmors.t1_combat_Boots`](../05-armor/armor-catalogue.md) | 1 | 2 |
+| [`TGArmors.t1_combat_Boots`](../05-armor/armor-catalog.md) | 1 | 2 |
 | `TGArmors.t1_combat_Chestplate` | 1 | 2 |
 | `TGArmors.t1_combat_Helmet` | 1 | 2 |
 | `TGArmors.t1_combat_Leggings` | 1 | 2 |
@@ -166,7 +166,7 @@ These pools are also hit by vanilla dungeons and other structures.
 | `bullets9mm` | 4–8 | 3 |
 | `shotgunShell` | 4–32 | 3 |
 | `rifleBullets` | 2–8 | 3 |
-| [`highCalibreBullets`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 2–6 | 1 |
+| [`highCalibreBullets`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 2–6 | 1 |
 | `m4Mag` | 2–4 | 2 |
 | `smgMag` | 3–6 | 2 |
 | `pistolMag9mm` | 2–6 | 2 |
@@ -177,11 +177,11 @@ These pools are also hit by vanilla dungeons and other structures.
 | `m4` | 1 | 1 |
 | `boltaction` | 1 | 1 |
 | `pistol` | 1 | 1 |
-| [`nightVisionGoggles`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems) | 1 | 1 |
-| [`gasMask`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems) | 1 | 1 |
+| [`nightVisionGoggles`](../06-items/item-catalog.md#2-stand-alone-items-registered-by-tgitems) | 1 | 1 |
+| [`gasMask`](../06-items/item-catalog.md#2-stand-alone-items-registered-by-tgitems) | 1 | 1 |
 
 **`BONUS_CHEST`:**
 | Item | Stack | Weight |
 |---|---|---|
-| [`handcannon`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 1 | 10 |
-| [`stonebullets`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 8–16 | 10 |
+| [`handcannon`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 1 | 10 |
+| [`stonebullets`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 8–16 | 10 |

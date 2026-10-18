@@ -4,14 +4,14 @@
 
 Techguns does **not** contain its own connected-texture algorithm. The relevant pieces are:
 
-- [`GenericBlockCTM`](block-catalogue.md#registered-blocks), `machines/OreDrillBlock` and `machines/MultiBlockMachineBlock` delegate icons and rendering to the **Chisel 2 API** class `com.cricketcraft.chisel.api.carving.CarvableHelper`. Their render type is `com.cricketcraft.chisel.api.rendering.ClientUtils.renderCTMId`.
+- [`GenericBlockCTM`](block-catalog.md#registered-blocks), `machines/OreDrillBlock` and `machines/MultiBlockMachineBlock` delegate icons and rendering to the **Chisel 2 API** class `com.cricketcraft.chisel.api.carving.CarvableHelper`. Their render type is `com.cricketcraft.chisel.api.rendering.ClientUtils.renderCTMId`.
 - The client creates Chisel's `team.chisel.client.render.RendererCTM` twice:
-  - in [`ClientProxy.initChisel()`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy), called from [`TGBlocks.init`](block-catalogue.md#registered-blocks) before the CTM blocks are built (commented "Workaround?");
+  - in [`ClientProxy.initChisel()`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy), called from [`TGBlocks.init`](block-catalog.md#registered-blocks) before the CTM blocks are built (commented "Workaround?");
   - in `ClientProxy.registerRenderers()`, where it is passed to `RenderingRegistry.registerBlockHandler`.
 - Neither class is bundled in the source tree; they come from the Chisel mod jar. Chisel is therefore a hard client dependency ([01-core](../01-core/index.md) [CORE-03](../01-core/index.md#suspected-bugs)).
-- `techguns.blocks.ctm.CarvingRegistry`, `CarvingGroup` and `CarvingVariation` are a small stand-alone implementation of Chisel's `ICarvingRegistry`, `ICarvingGroup` and `ICarvingVariation` interfaces. `TGBlocks.chiselRegistry` is set to a new `CarvingRegistry` but **nothing reads it**. It is never populated or handed to Chisel, so it is dead code. Its behaviour is described at the end for completeness.
+- `techguns.blocks.ctm.CarvingRegistry`, `CarvingGroup` and `CarvingVariation` are a small stand-alone implementation of Chisel's `ICarvingRegistry`, `ICarvingGroup` and `ICarvingVariation` interfaces. `TGBlocks.chiselRegistry` is set to a new `CarvingRegistry` but **nothing reads it**. It is never populated or handed to Chisel, so it is dead code. Its behavior is described at the end for completeness.
 
-The rest of this page describes the behaviour Techguns gets from Chisel and the texture layouts its assets follow, so a re-implementation can reproduce the visuals with its own CTM code.
+The rest of this page describes the behavior Techguns gets from Chisel and the texture layouts its assets follow, so a re-implementation can reproduce the visuals with its own CTM code.
 
 ## Registration flow (per block)
 
@@ -59,11 +59,11 @@ These assignments were confirmed against the art. For example, in `container_sci
 
 The top-left tile is clean plating.
 
-**Per-face rendering.** Each block face is split into four quadrants. Each quadrant is copied from the *same* quadrant position of one of the five images, chosen from three neighbour tests made in the plane of that face. For the quadrant at a given corner, test:
+**Per-face rendering.** Each block face is split into four quadrants. Each quadrant is copied from the *same* quadrant position of one of the five images, chosen from three neighbor tests made in the plane of that face. For the quadrant at a given corner, test:
 
-- the neighbour beside it along the face's horizontal axis (H)
-- the neighbour along its vertical axis (V)
-- the diagonal neighbour between them (D)
+- the neighbor beside it along the face's horizontal axis (H)
+- the neighbor along its vertical axis (V)
+- the diagonal neighbor between them (D)
 
 | H connected | V connected | D connected | Quadrant source |
 |---|---|---|---|
@@ -73,7 +73,7 @@ The top-left tile is clean plating.
 | yes | yes | no | tile D (inner corner notch) |
 | yes | yes | yes | tile A (seamless interior) |
 
-"Connected" is Chisel's test: the neighbour is the same block with the same metadata. Chisel's default also refuses a connection if that neighbour's face is covered by a matching block directly in front of it. The exact rule lives in Chisel, not Techguns.
+"Connected" is Chisel's test: the neighbor is the same block with the same metadata. Chisel's default also refuses a connection if that neighbor's face is covered by a matching block directly in front of it. The exact rule lives in Chisel, not Techguns.
 
 The inventory and item icon is the base texture.
 

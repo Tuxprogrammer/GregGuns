@@ -3,7 +3,7 @@
 
 Machines use GT's ModularUI2 backgrounds, so each sheet only carries the extra
 widget sprites (bars, gauges, buttons, slot overlays, icons), in GT's look:
-light-grey panels, white top-left bevel, dark bottom-right bevel.
+light-gray panels, white top-left bevel, dark bottom-right bevel.
 
 Run from repo root:  python -I -X utf8 tools/asset-gen/gui.py
 Writes src/main/resources/assets/gregguns/textures/gui/*.png (256x256 RGBA),
@@ -26,7 +26,7 @@ DARK = (40, 40, 44, 255); SLOT = (139, 139, 139, 255)
 RED = (200, 30, 30, 255); AMBER = (255, 180, 0, 255); GREEN = (60, 200, 70, 255)
 BLUE = (64, 192, 255, 255); ORANGE = (255, 96, 32, 255); CLEAR = (0, 0, 0, 0)
 OUT = (20, 20, 24, 255)
-BRASS = (220, 170, 60, 255); BR2 = (160, 110, 30, 255); GREY = (150, 150, 160, 255); G2 = (90, 90, 100, 255)
+BRASS = (220, 170, 60, 255); BR2 = (160, 110, 30, 255); GRAY = (150, 150, 160, 255); G2 = (90, 90, 100, 255)
 
 
 def sprite(w, h):
@@ -35,7 +35,7 @@ def sprite(w, h):
 
 
 def bevel(d, x0, y0, x1, y1, face=PANEL, hi=HI, lo=LO, edge=None):
-    """Raised bevelled box, inclusive coords."""
+    """Raised beveled box, inclusive coords."""
     if edge:
         d.rectangle([x0, y0, x1, y1], fill=edge)
         x0, y0, x1, y1 = x0 + 1, y0 + 1, x1 - 1, y1 - 1
@@ -179,7 +179,7 @@ def shield_pip(state, c=(120, 170, 220, 255)):
 
 
 def ammo_icon(kind):
-    P = {"o": OUT, "b": BRASS, "d": BR2, "g": GREY, "h": G2, "r": (200, 50, 40, 255), "w": (240, 240, 240, 255),
+    P = {"o": OUT, "b": BRASS, "d": BR2, "g": GRAY, "h": G2, "r": (200, 50, 40, 255), "w": (240, 240, 240, 255),
          "c": (64, 192, 255, 255), "k": (40, 130, 200, 255), "y": (255, 200, 40, 255), "n": (60, 180, 60, 255),
          "m": (30, 110, 40, 255), "f": (255, 120, 20, 255)}
     S = {
@@ -613,14 +613,14 @@ def main():
     for sid, im in tiles:
         im.save(os.path.join(RES, "textures", "gui", sid + ".png"))
         rows.append(["gui.%s" % sid, "src/main/resources/assets/gregguns/textures/gui/%s.png" % sid, "tools/asset-gen/gui.py", "none",
-                     "Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites", "MIT", "2026-10-18"])
+                     "Procedural PIL sprite sheet in GT-style gray bevels; shelf-packed widget sprites", "MIT", "2026-10-18"])
     scopes = write_scopes()
     for name, im in scopes:
         rows.append(["gui.scope_%s" % name, "src/main/resources/assets/gregguns/textures/gui/scopes/%s.png" % name, "tools/asset-gen/gui.py", "none",
                      "Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle", "MIT", "2026-10-18"])
     with open(os.path.join(ROOT, "tools", "asset-gen", "credits", "gui.csv"), "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, lineterminator="\n")
-        w.writerow(["asset", "path", "generator", "seed", "method", "licence", "date"]); w.writerows(rows)
+        w.writerow(["asset", "path", "generator", "seed", "method", "license", "date"]); w.writerows(rows)
     sc = 3; W = 1500; x = y = rowh = 0; items = []
     tiles = tiles + [("scopes/" + n, i.resize((160, 160), Image.LANCZOS)) for n, i in scopes]
     for sid, im in tiles:

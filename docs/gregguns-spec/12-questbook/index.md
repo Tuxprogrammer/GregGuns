@@ -43,7 +43,7 @@ The tab gates on GTNH progression. Each chapter intro lists the pack's tier ques
 | Start here | any of 11, 44 | none | n/a |
 | Steam / ULV | 44, 948 | Bronze, wrought iron (948 asks for wrought iron plates) | 948 is not |
 | LV | 88, 76 | Steel (76 is the Bricked Blast Furnace quest) | 76 is not |
-| MV | 1148, 1598 | Aluminium (1148 depends on 103, which asks for 8 aluminium plates) | 103 yes, 1598 not |
+| MV | 1148, 1598 | Aluminum (1148 depends on 103, which asks for 8 aluminum plates) | 103 yes, 1598 not |
 | HV | 160, 753 | Stainless steel (753 asks for 64 plates) | yes |
 | EV | 176, 860 | Titanium (860 asks for 16 plates) | yes |
 | IV | 213, 861 | Tungstensteel (861 asks for 64 plates) | yes |
@@ -162,7 +162,7 @@ All paths are relative to `config/betterquesting/DefaultQuests/` in GT-New-Horiz
 ## Related areas
 
 - [06-items](../06-items/pack-loot.md): the tier bags and the loot tables the structure quests point at.
-- [10-entities-npcs](../10-entities-npcs/index.md): entity names and Infernal behaviour used by the NPC branch.
+- [10-entities-npcs](../10-entities-npcs/index.md): entity names and Infernal behavior used by the NPC branch.
 - [11-worldgen](../11-worldgen/index.md): structures and their loot ceilings.
 - [08-machines-production](../08-machines-production/index.md) and [09-machines-utility](../09-machines-utility/index.md): the machines branch.
 - [05-armor](../05-armor/index.md): the equipment branch.
@@ -170,7 +170,7 @@ All paths are relative to `config/betterquesting/DefaultQuests/` in GT-New-Horiz
 
 ## Open questions
 
-1. **Infernal hunts.** A hunt cannot match "any infernal mob", so the three rank quests are honour-system checkboxes. A small GregGuns-registered BetterQuesting task (soft dependency on Infernal Mobs, reading `getIsRareEntity` and `getModSize`) would make them real. Needs a decision before M7.
+1. **Infernal hunts.** A hunt cannot match "any infernal mob", so the three rank quests are honor-system checkboxes. A small GregGuns-registered BetterQuesting task (soft dependency on Infernal Mobs, reading `getIsRareEntity` and `getModSize`) would make them real. Needs a decision before M7.
 2. **Structure visits.** Checkbox quests stand in for a visit check. If GregGuns registers its structures with a map-gen structure id, `location` tasks could name them. Needs the M8 structure design.
 3. **Repair Bench and Turret tier.** The quests assume MV and HV. Settled by area 09 and a record on machines.
 4. **Reward balance.** 26 bags may be too many or too few. The M9 balance pass decides, with the pack team.
@@ -178,4 +178,4 @@ All paths are relative to `config/betterquesting/DefaultQuests/` in GT-New-Horiz
 6. **Hunting with GregGuns damage.** `damageType` can require a damage source name. Whether GregGuns kills should be required (for example "kill with a bullet") depends on the names fixed in [0004](../../design/0004-damage-model.md).
 7. **Translation.** The pack ships English inline. Whether GregGuns lang files should carry `betterquesting.quest.<id>.name` keys is for the pack team.
 8. **Registry dump.** How the item and entity name lists for the validator are produced (a dev command or a client dump) is not decided.
-9. **Aluminium gate.** No pack quest is solely about aluminium. The MV gate relies on 1148 depending on 103. A direct prerequisite on 103 is optional.
+9. **Aluminum gate.** No pack quest is solely about aluminum. The MV gate relies on 1148 depending on 103. A direct prerequisite on 103 is optional.

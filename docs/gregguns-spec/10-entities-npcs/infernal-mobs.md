@@ -9,7 +9,7 @@ Techguns has no Infernal Mobs support. This sheet makes GregGuns hostile NPCs **
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | NPCs are plain `EntityMob`s. Infernal Mobs would already roll on them (the pack config defaults unknown entities to allowed), but nothing was checked. | Eligibility is a stated contract: every hostile-faction NPC is eligible, and the turret and any non-hostile NPC are not. | The user wants hostile NPCs able to spawn as elite, ultra and infernal mobs. |
 | `DamageSystem` cancels `LivingAttackEvent` and re-implements damage for TG damage sources and for `INpcTGDamageSystem` victims ([damage-system.md § 4](../../techguns-spec/02-guns/damage-system.md#4-entry-point-livingattackevent-high-priority)). | The pipeline must still deliver `LivingHurtEvent` with the final amount, and ranged sources must look like projectiles to Infernal Mobs. | The modifiers hook only `LivingHurtEvent`. Bulwark, Vengeance and the contact modifiers rely on it. |
@@ -19,7 +19,7 @@ Techguns has no Infernal Mobs support. This sheet makes GregGuns hostile NPCs **
 
 All of this is read from source at the pack tag. Line anchors are in the table.
 
-| Topic | Behaviour | Source |
+| Topic | Behavior | Source |
 |---|---|---|
 | When it rolls | On every server-side `EntityJoinWorldEvent` for a living entity that has no saved modifier string. Natural spawns, eggs, spawner blocks, camp flags and commands all reach it. | [EntityEventHandler#L70-L80](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/events/EntityEventHandler.java#L70-L80), [InfernalMobsCore#L382-L408](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/InfernalMobsCore.java#L382-L408) |
 | Eligibility | `instanceof IMob`, not `IEntityOwnable`, and `permittedentities.<key>` true. | [InfernalMobsCore#L411-L418](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/InfernalMobsCore.java#L411-L418), [#L438-L451](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/InfernalMobsCore.java#L438-L451) |
@@ -64,7 +64,7 @@ All of this is read from source at the pack tag. Line anchors are in the table.
 | `NPCTurret` | `gregguns.SimpleTurret` | **no** (`EntityCreature` + `IAnimals`) | not eligible | 30 | Faction TURRET. |
 | `TGDummySpawn` (if kept) | – | yes | must never be seen | – | See GGS-10-04. |
 
-Base HP is the Techguns value from [mob-catalogue.md](../../techguns-spec/10-entities-npcs/mob-catalogue.md#headline-stats). The Alien Bug and the Cyberdemon are not Techguns bosses, so they are eligible. Their rarity is already controlled by spawn gating.
+Base HP is the Techguns value from [mob-catalog.md](../../techguns-spec/10-entities-npcs/mob-catalog.md#headline-stats). The Alien Bug and the Cyberdemon are not Techguns bosses, so they are eligible. Their rarity is already controlled by spawn gating.
 
 - **Pack-side change:** add the `permittedentities`, `entitybasehealth` and `AttackHelicopter` entries to `config/InfernalMobs.cfg`. Without them Infernal Mobs writes its own on first sight, and `entitybasehealth` defaults to the **first spawned instance's** max health. The tuple is then frozen in the file.
 
@@ -86,9 +86,9 @@ How each enabled modifier meets a GregGuns NPC:
 |---|---|---|---|
 | Hurt reaction | Bulwark, Vengeance, Berserk | Needs `LivingHurtEvent` on the NPC victim with the final amount applied. Vengeance hits `source.getEntity()`, so for a bullet that is the shooter. | GGS-10-05, GGS-10-06 |
 | Attacker effects | Poisonous, Weakness, Wither, Sapper, Exhaust, Darkness, Fiery | `onAttack` runs on the NPC's own bullets because `getEntity()` is the shooter. Contact effects (`onHurt`) skip projectile and indirect sources. | GGS-10-06 |
-| Target abilities | Alchemist, Blastoff, Choke, Cloaking, Ghastly, Gravity, Quicksand, Sprint, Storm, Webber | Need `getAttackTarget()` set through `setAttackTarget`. Cloaking makes the NPC invisible, so the held gun and armour stay drawn as floating items, as for a vanilla zombie. | GGS-10-08 |
+| Target abilities | Alchemist, Blastoff, Choke, Cloaking, Ghastly, Gravity, Quicksand, Sprint, Storm, Webber | Need `getAttackTarget()` set through `setAttackTarget`. Cloaking makes the NPC invisible, so the held gun and armor stay drawn as floating items, as for a vanilla zombie. | GGS-10-08 |
 | Health | 1UP, Regen | Use `getHealth()`/`setHealth()` against the modifier's own maximum. | GGS-10-07 |
-| Disabled in the pack | Ender, Ninja, Lifesteal, Rust, Sticky | Ender and Ninja teleport the NPC beside the attacker. If re-enabled, check that the ranged AI recovers. Rust damages the target's armour. | none |
+| Disabled in the pack | Ender, Ninja, Lifesteal, Rust, Sticky | Ender and Ninja teleport the NPC beside the attacker. If re-enabled, check that the ranged AI recovers. Rust damages the target's armor. | none |
 
 ### Infernal Mobs: tiered GregGuns loot
 
@@ -105,7 +105,7 @@ How each enabled modifier meets a GregGuns NPC:
 
 - **Pack config:** none.
 - **Source:** if the entity's persistent data already holds a non-empty modifier string, the join handler calls `addEntityModifiersByString` and **skips** the rolling path, and an unparseable string adds no modifiers. [EntityEventHandler#L70-L80](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/events/EntityEventHandler.java#L70-L80), [InfernalMobsCore#L582-L595](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/InfernalMobsCore.java#L582-L595). The key is `InfernalMobsCore.getNBTTag()`.
-- **GregGuns does:** NPCs spawned by the Bug Hole and Zombie Hole spawner blocks ([07-blocks](../../techguns-spec/07-blocks/index.md)) get a non-modifier marker string in that key before they join the world, unless `infernal.allowSpawnerNpcs` is true (default false). A spawner is a farm, and the pack has anti-farming off. This relies on internal behaviour, so it is guarded by the soft-dependency check and covered by a test.
+- **GregGuns does:** NPCs spawned by the Bug Hole and Zombie Hole spawner blocks ([07-blocks](../../techguns-spec/07-blocks/index.md)) get a non-modifier marker string in that key before they join the world, unless `infernal.allowSpawnerNpcs` is true (default false). A spawner is a farm, and the pack has anti-farming off. This relies on internal behavior, so it is guarded by the soft-dependency check and covered by a test.
 - **Pack-side change:** none.
 
 ## Requirements
@@ -115,12 +115,12 @@ How each enabled modifier meets a GregGuns NPC:
 | GGS-10-01 | Every hostile-faction GregGuns NPC (all `GenericNPC` subclasses and the Alien Bug) is an `IMob` and is not an `IEntityOwnable`. |
 | GGS-10-02 | The turret entity and any future neutral or allied NPC are not `IMob`. An NPC that has an owner implements `IEntityOwnable`. |
 | GGS-10-03 | The simple names of NPC classes are stable and unique in the pack. A rename needs a matching pack-side change to `permittedentities` and `entitybasehealth`. |
-| GGS-10-04 | No throwaway entity (such as a spawn placeholder) can be processed by Infernal Mobs. A placeholder's join is cancelled at `EventPriority.HIGHEST`, or the design has no placeholder (see [spawning.md](spawning.md)). Infernal Mobs holds modified entities in a strong map. |
+| GGS-10-04 | No throwaway entity (such as a spawn placeholder) can be processed by Infernal Mobs. A placeholder's join is canceled at `EventPriority.HIGHEST`, or the design has no placeholder (see [spawning.md](spawning.md)). Infernal Mobs holds modified entities in a strong map. |
 | GGS-10-05 | Damage to and from a GregGuns NPC posts `LivingHurtEvent` exactly once, with the attacker's `DamageSource`, and the pipeline applies the event's final amount. This holds for player to NPC, NPC to player and NPC to NPC. |
 | GGS-10-06 | `DamageSource.getEntity()` returns the shooter for every ranged GregGuns source. Ranged sources (bullets, beams, projectiles, explosions) subclass `EntityDamageSourceIndirect`, with the projectile as the direct entity. Melee sources subclass `EntityDamageSource`. A laser shot at a Fiery or Poisonous infernal NPC must not ignite or poison the shooter. |
 | GGS-10-07 | NPC code reads and writes health only through `getHealth()` and `setHealth()`. It never caches the maximum, clamps health to it each tick, or compares against it for death. |
 | GGS-10-08 | NPC target selection and retargeting go through `setAttackTarget`, so `LivingSetAttackTargetEvent` fires. Clearing a stale target also goes through it ([NPC-31](../../techguns-spec/10-entities-npcs/index.md#suspected-bugs)). |
-| GGS-10-09 | The NPC death effects (gore, death sound, drops) run on the vanilla `onDeath` path after `LivingDeathEvent`, so a cancelled death produces no gore. |
+| GGS-10-09 | The NPC death effects (gore, death sound, drops) run on the vanilla `onDeath` path after `LivingDeathEvent`, so a canceled death produces no gore. |
 | GGS-10-10 | The infernal loot handler is a soft dependency in its own class. It runs at `EventPriority.HIGH` and acts only for GregGuns NPCs where `getIsRareEntity` is true and `recentlyHit` is true. The config toggle `infernal.tieredLoot` (default true) disables it. |
 | GGS-10-11 | The handler's tier bands match the core: up to 5 modifiers is `ELITE`, up to 10 `ULTRA`, above that `INFERNAL`. It rolls `ceil(modSize / 5)` items. The band logic is a pure function with unit tests. |
 | GGS-10-12 | Items added by the handler come from the tier tables in [pack-loot.md](../06-items/pack-loot.md#infernal-mobs-handler) and never exceed the tier ceiling in [0005](../../design/0005-world-presence.md). |
@@ -138,7 +138,7 @@ How each enabled modifier meets a GregGuns NPC:
 | GGS-10-06 | `/gregguns test` scenario: a Fiery infernal Bandit shot with a Laser Rifle from 20 blocks. The player must not burn. |
 | GGS-10-07 | `/gregguns test` scenario: `/spawninfernal` with Regen and 1UP, then read `getHealth()` against `getMaxHealth()` and the modifier's maximum. Record the result in the sheet (open question 1). |
 | GGS-10-08 | `/gregguns test` scenario: Ghastly Army Soldier fires fireballs at a player in view. |
-| GGS-10-09 | Unit test: a cancelled `LivingDeathEvent` leaves no gore request. |
+| GGS-10-09 | Unit test: a canceled `LivingDeathEvent` leaves no gore request. |
 | GGS-10-10 to 12 | Unit tests for the band function and roll count. `/gregguns test` scenario: kill 50 elite and 50 ultra spawns and check that every drop is in the table for its band. |
 | GGS-10-13 | runServer check: a Zombie Hole spawns 100 NPCs and none has a modifier. |
 | GGS-10-14 | Unit test: write and read an NPC with a modifier string in its persistent data. The string survives. |

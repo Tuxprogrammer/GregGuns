@@ -6,7 +6,7 @@
 Outputs
     src/main/resources/assets/gregguns/<manifest path>          PNG (+ .png.mcmeta for animated strips)
     tools/asset-gen/credits/blocks.csv                           provenance rows
-    docs/assets/previews/blocks.png, particles.png               labelled contact sheets
+    docs/assets/previews/blocks.png, particles.png               labeled contact sheets
     docs/assets/previews/ammo_press_active.gif                   animated Ammo Press preview
 
 Everything is painted from code with seeds derived from the manifest id (blocktex.seed_for), so
@@ -47,7 +47,7 @@ CASINGS = {
     "reaction_casing": ba.reaction_casing, "gantry_casing": ba.gantry_casing, "gantry_beam": ba.gantry_beam,
     "gantry_hoist": ba.gantry_hoist, "repair_cradle_side": ba.repair_cradle_side,
     "repair_cradle_top": ba.repair_cradle_top, "bastion_plating_iron": ba.bastion_iron,
-    "bastion_plating_steel": ba.bastion_steel, "bastion_plating_aluminium": ba.bastion_aluminium,
+    "bastion_plating_steel": ba.bastion_steel, "bastion_plating_aluminum": ba.bastion_aluminum,
     "bastion_plating_carbon": ba.bastion_carbon,
 }
 
@@ -93,7 +93,7 @@ METHOD = {
     "casing": "procedural 16x16 casing panel (blockart.py): tone-noise fill, bevel, rivets, per-machine motif",
     "decor": "procedural decorative block texture (blockart.py): value-noise tone fill with hand-coded motifs",
     "ctm": "procedural connected-texture tile set (blockart.py): base tile plus 2x2 CTM sheet from one interior painter",
-    "particle": "procedural FX sprite sheet (fx.py): analytic radial/noise fields through a colour ramp",
+    "particle": "procedural FX sprite sheet (fx.py): analytic radial/noise fields through a color ramp",
 }
 
 
@@ -228,7 +228,7 @@ def make_previews(results):
                 bg.paste(im2, (0, 0), im2)
                 tile = bg
             parts.append((label + frames_info, tile))
-    contact_sheet(blocks, PREV / "blocks.png", 1900, None, "GregGuns blocks: machine overlays shown over a grey hull, 4x nearest")
+    contact_sheet(blocks, PREV / "blocks.png", 1900, None, "GregGuns blocks: machine overlays shown over a gray hull, 4x nearest")
     contact_sheet(parts, PREV / "particles.png", 1700, None, "GregGuns particles / FX (additive sheets on black, alpha sheets on checker)")
 
 
@@ -298,7 +298,7 @@ GRIDS = {  # particle sheets laid out as grids: (cell, columns, frames)
 
 def verify(results) -> list:
     """Frame-border checks. Strips must be square frames stacked exactly; grid particle sheets must have no
-    light or opacity on the outer ring of any cell (nothing bleeds into a neighbour under linear filtering)."""
+    light or opacity on the outer ring of any cell (nothing bleeds into a neighbor under linear filtering)."""
     problems = []
     for spec, img in results:
         fr = spec["frames"]
@@ -354,7 +354,7 @@ def main() -> None:
         CREDITS.parent.mkdir(parents=True, exist_ok=True)
         with CREDITS.open("w", encoding="utf-8", newline="") as fh:
             w = csv.writer(fh, lineterminator="\n")
-            w.writerow(["asset", "path", "generator", "seed", "method", "licence", "date"])
+            w.writerow(["asset", "path", "generator", "seed", "method", "license", "date"])
             w.writerows(rows)
         if not args.no_preview:
             make_previews(results)

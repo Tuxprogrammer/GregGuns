@@ -4,7 +4,7 @@
 
 Techguns' gun models, item renderers, textures and sounds are in the [Techguns spec](../../techguns-spec/03-gun-visuals-audio/index.md). GregGuns rebuilds them from that spec under [design 0006](../../design/0006-art-direction.md). Most of the area has **no integration point**: model geometry, animation curves, textures and the per-gun sheets behave as the Techguns spec says.
 
-Two things in the pack change how that behaviour must be built:
+Two things in the pack change how that behavior must be built:
 
 - **Angelica 2.2.28** replaces the GL layer, batches entity model parts, instances particles, caches the HUD and adds a zoom key. Our `IItemRenderer`s, muzzle flashes and scope overlays must work under it.
 - **Hodgepodge 2.7.215** and **Extreme Sound Muffler 1.1.1** change how gun sounds are decoded, positioned, counted and muted.

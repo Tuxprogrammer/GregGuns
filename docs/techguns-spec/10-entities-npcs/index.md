@@ -5,14 +5,14 @@
 
 This area covers every **living** entity Techguns adds: the hostile gun-wielding NPCs, the Alien Bug, the Attack Helicopter boss and the turret head entity. It also covers the faction and targeting system, the gun-driven NPC AI, the natural-spawn system (the "dummy replacement" spawn manager with distance and biome danger levels), spawn eggs, the monster-spawner tile entity, [`NPCUtil`](spawning.md#4-camp-flags-and-npcutil), and the renderers, models, textures and sounds of these mobs.
 
-Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectiles-fx/index.md)**. Gun stats and NPC firing internals are in **[02-guns](../02-guns/index.md)**, and gun models in **[03-gun-visuals-audio](../03-gun-visuals-audio/index.md)**. Armour worn by NPCs is in **[05-armor](../05-armor/index.md)**, and loot items in **[06-items](../06-items/index.md)**. The spawner block and camp-flag block are in **[07-blocks](../07-blocks/index.md)** and **[09-machines-utility](../09-machines-utility/index.md)**. The turret base block, its power, ammo, repair and security, is in **[09-machines-utility](../09-machines-utility/index.md)**. Structures that place camp flags and spawners are in **[11-worldgen](../11-worldgen/index.md)**.
+Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectiles-fx/index.md)**. Gun stats and NPC firing internals are in **[02-guns](../02-guns/index.md)**, and gun models in **[03-gun-visuals-audio](../03-gun-visuals-audio/index.md)**. Armor worn by NPCs is in **[05-armor](../05-armor/index.md)**, and loot items in **[06-items](../06-items/index.md)**. The spawner block and camp-flag block are in **[07-blocks](../07-blocks/index.md)** and **[09-machines-utility](../09-machines-utility/index.md)**. The turret base block, its power, ammo, repair and security, is in **[09-machines-utility](../09-machines-utility/index.md)**. Structures that place camp flags and spawners are in **[11-worldgen](../11-worldgen/index.md)**.
 
 ## Contents
 
 | File | What it covers |
 |---|---|
-| [mob-catalogue.md](mob-catalogue.md) | Registry names, entity IDs, tracking parameters, spawn eggs and colours, lang keys, a headline stats table and an equipment summary |
-| [per-mob.md](per-mob.md) | Shared GenericNPC mechanics (equipment roll, ranged firing, drops, XP, TG armour), then every mob: stats, equipment probabilities, loot tables, sounds, special abilities, death sequences, and the turret entity side |
+| [mob-catalog.md](mob-catalog.md) | Registry names, entity IDs, tracking parameters, spawn eggs and colors, lang keys, a headline stats table and an equipment summary |
+| [per-mob.md](per-mob.md) | Shared GenericNPC mechanics (equipment roll, ranged firing, drops, XP, TG armor), then every mob: stats, equipment probabilities, loot tables, sounds, special abilities, death sequences, and the turret entity side |
 | [ai.md](ai.md) | The faction table, GenericNPC task list, [`EntityAIRangedAttack`](ai.md#3-entityairangedattack-the-gun-driven-shooting-ai) burst AI with per-gun AI stats, hurt-by-target faction rules, turret targeting, watching and linking, Attack Helicopter flight and attack AI, Alien Bug AI |
 | [spawning.md](spawning.md) | The TGDummySpawn replacement system, danger levels, spawn tables and config keys, spawn eggs, the [`TGSpawnerTileEnt`](spawning.md#3-monster-spawner-blocks-tgspawnertileent) spawner settings, camp-flag spawning via `NPCUtil` |
 | [rendering-and-models.md](rendering-and-models.md) | Renderer bindings, held-gun transforms, mutant scaling, helicopter OBJ rendering and crash animation, turret rendering, and the part breakdown and animation of every NPC model; gore hookup |
@@ -27,13 +27,13 @@ Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectile
 - **Factions.** HOSTILE, TURRET and NEUTRAL. Hostile NPCs ignore each other's friendly fire and target only players. Turrets shoot every `IMob`. Depending on base settings they also shoot non-friend players (via FTB Utilities), other owners' turrets and animals.
 - **Two mini-bosses.** Psycho Steve (chainsaw, very fast) and Dictator Dave (golden revolver) have guaranteed loot.
 - **One boss.** The Attack Helicopter is a ghast-like flyer with a boss bar. It fires 7-round MG bursts and a rocket, and has a 5-second crash-and-explode death.
-- **Cyberdemon and Super Mutants.** Heavy hitters with built-in per-damage-type armour; the Cyberdemon is Nether-only.
+- **Cyberdemon and Super Mutants.** Heavy hitters with built-in per-damage-type armor; the Cyberdemon is Nether-only.
 - **Alien Bug.** A spider-based insectoid from the "Bug Hole" spawner, with an animated jaw bite.
 
 ## Related areas
 
 - [02-guns](../02-guns/index.md): the guns NPCs carry and their AI stats.
-- [05-armor](../05-armor/index.md): the armour sets NPCs spawn with.
+- [05-armor](../05-armor/index.md): the armor sets NPCs spawn with.
 - [04-projectiles-fx](../04-projectiles-fx/index.md): the projectiles NPCs fire, and death and gore effects.
 - [09-machines-utility](../09-machines-utility/index.md): turret bases, camp flags and spawner tile entities.
 - [11-worldgen](../11-worldgen/index.md): structures that spawn mobs.
@@ -44,8 +44,8 @@ Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectile
 
 | Category | In scope | Covered |
 |---|---|---|
-| Java source | `TGEntities`, `TurretEntityUNUSED`, 27 files in `entities/npc`, 5 in `entities/ai`, 2 in `entities/spawn`, `RenderTurret`, `TGSpawnerTileEnt`, `TGMonsterPlacer`, `NPCUtil`, 5 living-entity renderers and 7 models | All of them, as listed under Scope coverage. The consistency pass re-checked registration, IDs and egg colours in `TGEntities`, every sound call site, the NBT and DataWatcher use of each mob class, and the unregistered classes against the source. |
-| Textures | 19 files in `textures/entity/` plus `spawn_egg.png` and `spawn_egg_overlay.png` | 21 of 21, each with size, opaque share, measured average and dominant colours, a palette in words and pixel rectangles ([textures.md](textures.md)) |
+| Java source | `TGEntities`, `TurretEntityUNUSED`, 27 files in `entities/npc`, 5 in `entities/ai`, 2 in `entities/spawn`, `RenderTurret`, `TGSpawnerTileEnt`, `TGMonsterPlacer`, `NPCUtil`, 5 living-entity renderers and 7 models | All of them, as listed under Scope coverage. The consistency pass re-checked registration, IDs and egg colors in `TGEntities`, every sound call site, the NBT and DataWatcher use of each mob class, and the unregistered classes against the source. |
+| Textures | 19 files in `textures/entity/` plus `spawn_egg.png` and `spawn_egg_overlay.png` | 21 of 21, each with size, opaque share, measured average and dominant colors, a palette in words and pixel rectangles ([textures.md](textures.md)) |
 | Sounds | 54 files in `sounds/npcs/` and 18 `sounds.json` events | 54 of 54 files with duration, sample rate, channels and category; 18 of 18 events with trigger, volume and pitch ([sounds.md](sounds.md)) |
 | Lang | 20 `entity.Techguns.*` mob lines (19 distinct keys), 2 spawner-block keys | All, plus the hard-coded strings and gaps ([lang.md](lang.md)) |
 | Mobs | 20 registered entities, 2 unregistered mob classes (`AlienBugDomesticated`, `TurretEntityUNUSED`) and the `GenericNPC` base | Each has an entity sheet at the top of its section in [per-mob.md](per-mob.md) |
@@ -55,7 +55,7 @@ Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectile
 
 | Source | Notes |
 |---|---|
-| [`java/techguns/TGEntities.java`](mob-catalogue.md#registration-javatechgunstgentitiesjava) | Registration, eggs, natural-spawn hook and spawn tables |
+| [`java/techguns/TGEntities.java`](mob-catalog.md#registration-javatechgunstgentitiesjava) | Registration, eggs, natural-spawn hook and spawn tables |
 | [`java/techguns/entities/TurretEntityUNUSED.java`](per-mob.md#19-turretentityunused-dead-code) | Dead prototype |
 | `java/techguns/entities/npc/*` (27 files) | Every NPC, including `NPCSpawnData` (fully commented out: an old `NPCType` enum ZOMBIESOLDIER/ARMYSOLDIER/CYBERDEMON and an empty `spawnNPC` switch), [`INPCTechgunsShooter`](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava), [`ITGNpcTeam`](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava), `TGNpcFaction(s)` and [`TGDummySpawn`](per-mob.md#18-tgdummyspawn-tgdummyspawn) |
 | `java/techguns/entities/ai/*` (5 files) | See ai.md |
@@ -64,22 +64,22 @@ Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectile
 | `java/techguns/tileentities/TGSpawnerTileEnt.java`, [`java/techguns/items/TGMonsterPlacer.java`](../06-items/special-items.md#spawn-eggs-tgmonsterplacer), `java/techguns/util/NPCUtil.java` | See spawning.md |
 | `client/renderer/entity/` living-entity renderers | RenderGenericNPC, RenderSuperMutant, RenderAlienBug, RenderHelicopter, RenderSimpleTurret. RenderDummy is noted but owned by 04. |
 | `client/models/` | ModelGenericNPC, ModelSkeletonSoldier, ModelCyberDemon, ModelSuperMutant, ModelAlienBug, ModelNull and `blocks/ModelTurret`. ModelGrimReaper and ModelCyberdemonBlaster are gun models, cross-referenced to 03. |
-| `models/entity/*.obj` | `apache.obj` (helicopter) in full; `launchergrenade.obj` and `reactionchamber.obj` summarised, with their owners |
+| `models/entity/*.obj` | `apache.obj` (helicopter) in full; `launchergrenade.obj` and `reactionchamber.obj` summarized, with their owners |
 
 ## Known limits
 
 - **Sound content.** The audio cannot be heard here, so every description of what a sound is like is inferred from its file name and use, and is marked as inferred in [sounds.md](sounds.md). Durations, sample rates and channels are measured.
-- **Colours.** The average and dominant colours are the measured values from [ASSET-FACTS.md](../ASSET-FACTS.md). The prose palettes and "depicts" descriptions in [textures.md](textures.md) were written by looking at the images and are approximate.
+- **Colors.** The average and dominant colors are the measured values from [ASSET-FACTS.md](../ASSET-FACTS.md). The prose palettes and "depicts" descriptions in [textures.md](textures.md) were written by looking at the images and are approximate.
 - **Pixel rectangles.** The biped, Cyberdemon, Super Mutant and Alien Bug rectangles are computed from the model box sizes (width 2D+2W, height D+H) and checked against the measured opaque bounding boxes, not read from the images region by region. The helicopter rectangles are the bounding boxes of the OBJ texture coordinates, so they describe scattered islands, not exact cells.
-- **Vanilla behaviour.** Sound volume and pitch jitter, talk interval, the vanilla NBT keys and DataWatcher indices are stated from the Minecraft 1.7.10 behaviour the classes inherit, not from Techguns source. They were not re-verified against a vanilla decompile here.
-- **Runtime behaviour.** Nothing was run in game; flight, targeting and spawn behaviour are read from the source.
-- **Other areas.** Gun AI stats, turret base mechanics, spawner and camp-flag blocks and structures are only summarised here and are owned by the areas named in Related areas.
+- **Vanilla behavior.** Sound volume and pitch jitter, talk interval, the vanilla NBT keys and DataWatcher indices are stated from the Minecraft 1.7.10 behavior the classes inherit, not from Techguns source. They were not re-verified against a vanilla decompile here.
+- **Runtime behavior.** Nothing was run in game; flight, targeting and spawn behavior are read from the source.
+- **Other areas.** Gun AI stats, turret base mechanics, spawner and camp-flag blocks and structures are only summarized here and are owned by the areas named in Related areas.
 
 ## Suspected bugs
 
 | ID | Title | Location | What looks wrong | Severity |
 |---|---|---|---|---|
-| NPC-01 | Fallback gun pool can't pick handcannon | [`java/techguns/entities/npc/GenericNPC.java:73`](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava) | `nextInt(4)` gives 0 to 3, but the handcannon is on case 4/default, so it is unreachable. The base pool is only used by the never-materialised dummy. | cosmetic |
+| NPC-01 | Fallback gun pool can't pick handcannon | [`java/techguns/entities/npc/GenericNPC.java:73`](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava) | `nextInt(4)` gives 0 to 3, but the handcannon is on case 4/default, so it is unreachable. The base pool is only used by the never-materialized dummy. | cosmetic |
 | NPC-02 | Skeleton Soldier stone-shovel branch unreachable | [`java/techguns/entities/npc/SkeletonSoldier.java:71`](per-mob.md#5-skeleton-soldier-skeletonsoldier) | `nextInt(3)` never reaches case 3/default. | cosmetic |
 | NPC-03 | Pigman Soldier always gets a helmet | [`java/techguns/entities/npc/ZombiePigmanSoldier.java:40-43`](per-mob.md#4-zombie-pigman-soldier-zombiepigmansoldier) | The `if` has no braces. It guards a discarded `getNewWithCamo` call, so `setCurrentItemOrArmor(4, …)` always runs and the intended 50% helmet is 100%. | gameplay |
 | NPC-04 | Pigman can drop a zero-size stack | `java/techguns/entities/npc/ZombiePigmanSoldier.java:150` | Obsidian Steel count is `rand.nextInt(2)`, which is 0 half the time, creating an empty/ghost item entity. | gameplay |

@@ -25,7 +25,7 @@ When TConstruct is loaded, `Techguns.isTConstructLoaded` is set to true. The int
 
 These are sent with `FMLInterModComms.sendMessage("TConstruct", …)`. The IDs are hard-coded (a TODO says "id to config file").
 
-| Material id | Name | Harvest lvl | Durability | Mining speed | Attack | Handle mod. | Reinforced | Text style | Colour (ARGB) | Bow draw / proj. speed | Arrow mass / fragility |
+| Material id | Name | Harvest lvl | Durability | Mining speed | Attack | Handle mod. | Reinforced | Text style | Color (ARGB) | Bow draw / proj. speed | Arrow mass / fragility |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 50 | Plastic | 1 | 1000 | 350 | 1 | 1.5 | — | WHITE | FF C8C8C8 | 150 / 1.2 | 1.0 / 0.95 |
 | 51 | Carbon | 5 | 2500 | 250 | 4 | 2.0 | 3 | BLACK | FF 232323 | 180 / 1.3 | 1.1 / 0.975 |
@@ -33,7 +33,7 @@ These are sent with `FMLInterModComms.sendMessage("TConstruct", …)`. The IDs a
 | 52 | Titanium | 4 | 2250 | 500 | 3 | 2.5 | — | GRAY | FF DCDCDC | 180 / 1.5 | 1.0 / 0.975 |
 | 54 | Rubber | 0 | 500 | 2500 | 0 | 1.0 | — | DARK_GRAY | FF 414100 | 20 / 1.0 | 0.25 / 1.0 |
 
-Each is sent as an `addMaterial` message. Then the item mappings follow (all items are [`TGItems`](../06-items/item-catalogue.md) sub-items, 06):
+Each is sent as an `addMaterial` message. Then the item mappings follow (all items are [`TGItems`](../06-items/item-catalog.md) sub-items, 06):
 
 | Message | Material | Item | Value |
 |---|---|---|---|

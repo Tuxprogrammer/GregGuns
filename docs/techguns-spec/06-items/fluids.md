@@ -6,11 +6,11 @@
 
 | Phase | What happens |
 |---|---|
-| preInit, `TGFluids.init()` (before [`TGBlocks.init`](../07-blocks/block-catalogue.md#registered-blocks)) | `WATER` and `LAVA` are set to Forge's water and lava. `ACID` is constructed but **not registered** yet. |
-| preInit, `TGBlocks.init()` | `FluidRegistry.registerFluid(ACID)`. The block [`BlockFluidAcid`](../07-blocks/special-blocks.md#14-creeper-acid-acid-blockfluidacid) is created and set as the acid's block; the block is registered as [`acid`](../07-blocks/block-catalogue.md#registered-blocks) ([07-blocks](../07-blocks/index.md)). |
+| preInit, `TGFluids.init()` (before [`TGBlocks.init`](../07-blocks/block-catalog.md#registered-blocks)) | `WATER` and `LAVA` are set to Forge's water and lava. `ACID` is constructed but **not registered** yet. |
+| preInit, `TGBlocks.init()` | `FluidRegistry.registerFluid(ACID)`. The block [`BlockFluidAcid`](../07-blocks/special-blocks.md#14-creeper-acid-acid-blockfluidacid) is created and set as the acid's block; the block is registered as [`acid`](../07-blocks/block-catalog.md#registered-blocks) ([07-blocks](../07-blocks/index.md)). |
 | client texture stitch | `BlockFluidAcid.registerBlockIcons` registers `techguns:acid_still` / `techguns:acid_flow` and assigns them to the fluid as still/flowing icons. If milk was added by Techguns, an event handler registers `techguns:milk_still` / `techguns:milk_flow` and assigns them to `MILK`. |
 | postInit, `TGFluids.postInit()` | Looks up the optional fluids (table below) and applies the fallbacks. |
-| postInit, [`TGItems.postInit()`](item-catalogue.md) | Creates and registers the acid bucket. Registers the fluid-container mappings. |
+| postInit, [`TGItems.postInit()`](item-catalog.md) | Creates and registers the acid bucket. Registers the fluid-container mappings. |
 
 ## Fluid table
 
@@ -54,7 +54,7 @@ The Bio Tank, Compressed Air Tank and Nuclear Power Cell are **not** Forge fluid
 ### Creeper Acid Bucket item
 - Class `GenericItemBucket` extends vanilla `ItemBucket`, bound to the acid fluid block. Its unlocalized name gets the `techguns.` prefix, so the full key is `techguns.item.bucket_acid`.
 - Container item: vanilla bucket. Max stack 1. Creative tab Techguns. Texture [`textures/items/bucket_acid.png`](textures.md#11-tools-placers-door-bucket-debug-items).
-- Behaviour is exactly the vanilla filled bucket: right-click places a source block of acid on the clicked face (it cannot replace a solid block) and leaves an empty bucket (in survival).
+- Behavior is exactly the vanilla filled bucket: right-click places a source block of acid on the clicked face (it cannot replace a solid block) and leaves an empty bucket (in survival).
 - Picking acid back up: Techguns registers **no** `FillBucketEvent` handler. The acid block uses `Material.water` and its source has meta 0, so the vanilla empty-bucket logic treats an acid source as water. It removes the acid and gives a **water bucket** (bug [ITEM-04](index.md#suspected-bugs)). An acid bucket can therefore only be obtained from the creative tab, or by filling through a Forge fluid-container-aware machine using the registered container mapping.
 - How the acid block behaves (damage, displacement, gore) is in [07-blocks](../07-blocks/index.md).
 
@@ -77,22 +77,22 @@ The Bio Tank, Compressed Air Tank and Nuclear Power Cell are **not** Forge fluid
 | Path | Size | Animation | Look |
 |---|---|---|---|
 | [`textures/blocks/acid_still.png`](../07-blocks/textures.md#9-fluids) | 16×512 (32 frames of 16×16) | `.mcmeta` frametime 2 | Semi-transparent (alpha about 165–226, average 178) murky mustard/olive yellow, around #918200, with subtle darker ripples. Same pattern as vanilla water, tinted acid-yellow. |
-| [`textures/blocks/acid_flow.png`](../07-blocks/textures.md#9-fluids) | 32×1024 (32 frames of 32×32) | `.mcmeta` default frametime 1 | Same colour, with vertical streaks for flowing liquid |
-| [`textures/blocks/milk_still.png`](../07-blocks/textures.md#9-fluids) | 16×512 (32 frames) | frametime 2 | The same ripple pattern in neutral light grey (#cdcdcd), semi-transparent |
-| [`textures/blocks/milk_flow.png`](../07-blocks/textures.md#9-fluids) | 32×1024 (32 frames) | default frametime | Light grey flowing streaks |
+| [`textures/blocks/acid_flow.png`](../07-blocks/textures.md#9-fluids) | 32×1024 (32 frames of 32×32) | `.mcmeta` default frametime 1 | Same color, with vertical streaks for flowing liquid |
+| [`textures/blocks/milk_still.png`](../07-blocks/textures.md#9-fluids) | 16×512 (32 frames) | frametime 2 | The same ripple pattern in neutral light gray (#cdcdcd), semi-transparent |
+| [`textures/blocks/milk_flow.png`](../07-blocks/textures.md#9-fluids) | 32×1024 (32 frames) | default frametime | Light gray flowing streaks |
 
 The acid textures are also used by the acid fluid block ([07-blocks](../07-blocks/index.md)).
 
 ### Measured facts for the fluid textures (from ASSET-FACTS.md)
 
-| Path | Size | Animation | Average colour | Dominant colours | Opaque |
+| Path | Size | Animation | Average color | Dominant colors | Opaque |
 |---|---|---|---|---|---|
 | `textures/blocks/acid_still.png` | 16×512 | 32 frames, frametime 2 | #918100 | #909010 90%, #907010 9%, #B07010 0% | 100% |
 | `textures/blocks/acid_flow.png` | 32×1024 | 32 frames, frametime 1 (default) | #928100 | #909010 82%, #907010 17%, #B07010 0% | 100% |
 | `textures/blocks/milk_still.png` | 16×512 | 32 frames, frametime 2 | #CDCDCD | #D0D0D0 100% | 100% |
 | `textures/blocks/milk_flow.png` | 32×1024 | 32 frames, frametime 1 (default) | #CDCDCD | #D0D0D0 100% | 100% |
 
-"Opaque 100%" uses the ASSET-FACTS threshold (alpha > 16). My own measurement shows that every pixel is partly translucent, with alpha 165–226 (mean 175–178). Fluids therefore render see-through, the same as vanilla water. The milk strips have the same alpha and luminance pattern as the acid strips, desaturated to neutral grey, so milk is effectively a recolour of the acid animation.
+"Opaque 100%" uses the ASSET-FACTS threshold (alpha > 16). My own measurement shows that every pixel is partly translucent, with alpha 165–226 (mean 175–178). Fluids therefore render see-through, the same as vanilla water. The milk strips have the same alpha and luminance pattern as the acid strips, desaturated to neutral gray, so milk is effectively a recolor of the acid animation.
 
 ## Fluid sheets (CONVENTIONS fields)
 
@@ -101,7 +101,7 @@ The acid textures are also used by the acid fluid block ([07-blocks](../07-block
 | 1 Identity | `Fluid("creeper_acid")`, unlocalized `creeperAcid` → `fluid.creeperAcid` "Creeper Acid"; block `BlockFluidAcid` registered as `acid` ([07-blocks](../07-blocks/index.md)); bucket `Techguns:bucket_acid` | `Fluid("milk")`, unlocalized `milk` → `fluid.milk` "Milk"; no block, no Techguns bucket (uses the vanilla milk bucket) |
 | 2 Obtaining | Chem Lab outputs (bio mass + gunpowder + water; `itemBioFuel` + gunpowder + water), see [08-machines-production](../08-machines-production/index.md). The bucket form has **no** survival source (ITEM-04). | Vanilla milk bucket through the container mapping; any mod that pipes milk |
 | 3 Numbers | density 100, viscosity 1000 (default), temperature 295 K (default), luminosity 0, gaseous false; bucket = 1000 mB | density 1050, viscosity 1050, temperature 295 K, luminosity 0, gaseous false |
-| 4 Behaviour | Placed as a `BlockFluidClassic` (Material.water). Contact damage and displacement rules are in [07-blocks](../07-blocks/index.md). | No world block from Techguns |
+| 4 Behavior | Placed as a `BlockFluidClassic` (Material.water). Contact damage and displacement rules are in [07-blocks](../07-blocks/index.md). | No world block from Techguns |
 | 5 Persistence and sync | none (Forge fluid registry id only) | none |
 | 6 UI | Shown in machine tanks using its still icon and the name "Creeper Acid" | Same, "Milk" |
 | 7 Visuals | `textures/blocks/acid_still.png` / `textures/blocks/acid_flow.png` (above) | `textures/blocks/milk_still.png` / `textures/blocks/milk_flow.png`, registered in the `TextureStitchEvent.Pre` handler only if `addedMilk` |

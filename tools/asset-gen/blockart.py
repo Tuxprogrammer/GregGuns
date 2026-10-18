@@ -14,7 +14,7 @@ from machines import AMB, AMB_D, AMB_L, BLK, DK, HI, LT, MD, OUT, WHITE
 
 # ---------------------------------------------------------------- shared helpers
 def tone_fill(c: Canvas, base, rng, spread=0.1, cells=4, rect=None, steps=4) -> None:
-    """Flat-tone value-noise fill: a handful of near colours, GT-ish rather than smooth."""
+    """Flat-tone value-noise fill: a handful of near colors, GT-ish rather than smooth."""
     x0, y0, x1, y1 = rect or (0, 0, c.w, c.h)
     w, h = x1 - x0, y1 - y0
     f = tile_noise(max(w, h), rng, cells)[:h, :w]
@@ -242,7 +242,7 @@ def bastion_steel(rng):
     return [c]
 
 
-def bastion_aluminium(rng):
+def bastion_aluminum(rng):
     base = hx("#8ab4d0")
     c = _plate_base(base, rng, 0.05)
     # diamond tread: raised lozenges alternating direction
@@ -664,7 +664,7 @@ def steelframe(kind: str):
     return f
 
 
-GLYPHS = {   # 3x5 pixel font for stencilled labels
+GLYPHS = {   # 3x5 pixel font for stenciled labels
     "0": "111101101101111", "1": "010110010010111", "2": "111001111100111", "3": "111001111001111",
     "4": "101101111001001", "5": "111100111001111", "6": "111100111101111", "7": "111001010010010",
     "8": "111101111101111", "9": "111101111001111", "-": "000000111000000", "G": "111100101101111",
@@ -692,12 +692,12 @@ def container_scifi(rusty: bool):
     def interior(nn, rng):
         c = Canvas(nn, fill=base)
         tone_fill(c, base, rng, 0.08, 4)
-        # panel seams: a vertical seam at 15 and the horizontal centre seam, bevelled
+        # panel seams: a vertical seam at 15 and the horizontal center seam, beveled
         c.vline(15, 0, nn, shade(base, 0.55))
         c.vline(16, 0, nn, shade(base, 1.3))
         c.hline(0, nn, nn // 2 - 1, shade(base, 0.55))
         c.hline(0, nn, nn // 2, shade(base, 1.3))
-        # upper-left: louvred vent with a dark plenum and slats
+        # upper-left: louverd vent with a dark plenum and slats
         c.rect(5, 5, 14, 12, OUT)
         for y in range(6, 11, 2):
             c.hline(6, 13, y, shade(base, 0.35))

@@ -26,7 +26,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--sounds", required=True, help="folder that contains the sounds/ tree (e.g. assets/techguns)")
     ap.add_argument("--out", required=True)
-    ap.add_argument("--load-4bit", action="store_true", help="4-bit quantisation (bitsandbytes) for smaller GPUs")
+    ap.add_argument("--load-4bit", action="store_true", help="4-bit quantization (bitsandbytes) for smaller GPUs")
     ap.add_argument("--max-new-tokens", type=int, default=400)
     ap.add_argument("--limit", type=int, default=0)
     args = ap.parse_args()

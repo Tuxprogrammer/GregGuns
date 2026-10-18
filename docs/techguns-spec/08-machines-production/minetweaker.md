@@ -104,7 +104,7 @@ The values are stored as bytes or shorts (the range limits keep them safe). `tic
 | Method | Parameters | Effect |
 |---|---|---|
 | `addOreCluster` | `int id, IItemStack ore, int miningLevel, float r, float g, float b, int textureType, float multPower, float multAmount` | `TGBlocks.oreClusterCustom.setOre(id, …)`: define meta `id` of custom ore cluster block 1 to yield `ore` |
-| `addOreCluster2` | same parameters | the same on [`oreClusterCustom2`](../07-blocks/block-catalogue.md#registered-blocks) |
+| `addOreCluster2` | same parameters | the same on [`oreClusterCustom2`](../07-blocks/block-catalog.md#registered-blocks) |
 | `addOreCluster` | `int id, ILiquidStack liquid, …same rest` | `setFluid(id, …)`: a fluid-yielding cluster on block 1 |
 | `addOreCluster2` | `int id, ILiquidStack liquid, …` | the same on block 2 |
 

@@ -24,7 +24,7 @@ Dependencies go in [`dependencies.gradle`](dependencies.gradle), extra repositor
 
 Techguns is by pWn3d1337, and its repository declares no license, so all rights are reserved. GregGuns uses Techguns as a design reference only. **Do not copy Techguns code, textures, models or sounds into this repository** without explicit permission from its author.
 
-What Techguns does is captured in a behavioural spec at [docs/techguns-spec/](docs/techguns-spec/README.md). Implement from that spec, not from the Techguns source.
+What Techguns does is captured in a behavioral spec at [docs/techguns-spec/](docs/techguns-spec/README.md). Implement from that spec, not from the Techguns source.
 
 ## License
 

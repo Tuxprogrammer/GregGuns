@@ -15,7 +15,7 @@ Model: [08-machines-production/sounds.md](../08-machines-production/sounds.md). 
 
 1. During a tick in which the controller is complete, has a drill, is redstone-enabled, has a running operation with progress < totalTime, and `haspower` is true, the client increments progress.
 2. On that same tick it decrements a private delay counter.
-3. When the counter is ≤ 0, it plays the event with `World.playSound(x, y, z, event, volume, 1.0, distanceDelay = true)` at the controller's corner coordinates (not the block centre), then sets the counter to 61.
+3. When the counter is ≤ 0, it plays the event with `World.playSound(x, y, z, event, volume, 1.0, distanceDelay = true)` at the controller's corner coordinates (not the block center), then sets the counter to 61.
 
 The result is one play every 62 powered ticks (≈ 3.1 s). The clips are longer than that, so consecutive plays overlap ([MUTL-46](index.md#suspected-bugs)). The server never plays it.
 
@@ -42,7 +42,7 @@ Notes:
 
 ## 2. Explosive charges
 
-All are played server-side with `World.playSoundEffect` at the block centre (x + 0.5, y + 0.5, z + 0.5).
+All are played server-side with `World.playSoundEffect` at the block center (x + 0.5, y + 0.5, z + 0.5).
 
 | Event | Category | Trigger | Volume | Pitch | File | Duration | Rate | Ch |
 |---|---|---|---|---|---|---|---|---|
@@ -60,7 +60,7 @@ Character (inferred): "plant" is a placing or sticking sound, "init" an arming b
 
 | Event | Category | Trigger | Volume | Pitch | File | Duration | Rate | Ch |
 |---|---|---|---|---|---|---|---|---|
-| `effects.biodeath` | hostile | Bio Blob bursts: size > 3 after `hitBlob`. Played by [`ProjectileExplosion.doExplosionB`](../04-projectiles-fx/explosions.md#projectileexplosion) at the blob centre via `playSoundEffect`. That method runs only on the server side of `doExplosion`. | 4.0 | (1 + (r1 − r2)·0.2)·0.7 | [`sounds/effects/biodeath.ogg`](../04-projectiles-fx/sounds.md) | 3.99 s | 32000 Hz | mono |
+| `effects.biodeath` | hostile | Bio Blob bursts: size > 3 after `hitBlob`. Played by [`ProjectileExplosion.doExplosionB`](../04-projectiles-fx/explosions.md#projectileexplosion) at the blob center via `playSoundEffect`. That method runs only on the server side of `doExplosion`. | 4.0 | (1 + (r1 − r2)·0.2)·0.7 | [`sounds/effects/biodeath.ogg`](../04-projectiles-fx/sounds.md) | 3.99 s | 32000 Hz | mono |
 
 The file is shared with the bio death effect. It is owned by [04-projectiles-fx](../04-projectiles-fx/index.md) / [10-entities-npcs](../10-entities-npcs/index.md).
 
@@ -94,7 +94,7 @@ Character (inferred): sentry beeps for target acquisition, and a weapon-mount cl
 
 ## 5. Chests
 
-The vanilla chest logic in [`TGChestTileEnt.updateEntity`](misc-tile-entities.md#tile-entity-tgchesttileent) plays these on both sides, centred on a double chest:
+The vanilla chest logic in [`TGChestTileEnt.updateEntity`](misc-tile-entities.md#tile-entity-tgchesttileent) plays these on both sides, centered on a double chest:
 
 | Event | Trigger | Volume | Pitch |
 |---|---|---|---|
@@ -103,7 +103,7 @@ The vanilla chest logic in [`TGChestTileEnt.updateEntity`](misc-tile-entities.md
 
 ## 6. Things with no sounds
 
-Repair Bench, Camo Bench, Scrapper, Camp Flag, the Ore Drill slaves, and the legacy [`OreDrillTileEnt`](entity-sheets.md#10-legacy-oredrill--oredrilltileent-dead-code): **none**. Block step and break sounds use the block's step sound: metal for [`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) and [`oreDrill`](../07-blocks/block-catalogue.md#registered-blocks), wood for the chests, and the default stone for [`Bioblob`](../07-blocks/special-blocks.md#13-bio-blob-bioblobsmall-bioblob).
+Repair Bench, Camo Bench, Scrapper, Camp Flag, the Ore Drill slaves, and the legacy [`OreDrillTileEnt`](entity-sheets.md#10-legacy-oredrill--oredrilltileent-dead-code): **none**. Block step and break sounds use the block's step sound: metal for [`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) and [`oreDrill`](../07-blocks/block-catalog.md#registered-blocks), wood for the chests, and the default stone for [`Bioblob`](../07-blocks/special-blocks.md#13-bio-blob-bioblobsmall-bioblob).
 
 ## 7. Consistency-pass summary
 
@@ -122,9 +122,9 @@ Step and break sounds (block `stepSound`, not `sounds.json` events):
 
 | Block | Sound type |
 |---|---|
-| [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) (all area-09 metas) | metal |
+| [`basicMachine`](../07-blocks/block-catalog.md#registered-blocks) (all area-09 metas) | metal |
 | `oreDrill` | metal |
-| [`tgchest`](../07-blocks/block-catalogue.md#registered-blocks), [`tgchest_weapon`](../07-blocks/block-catalogue.md#registered-blocks) | wood |
+| [`tgchest`](../07-blocks/block-catalog.md#registered-blocks), [`tgchest_weapon`](../07-blocks/block-catalog.md#registered-blocks) | wood |
 | `Bioblob` | default (stone), since none is set |
 
 The ore drill rate oddities are recorded as MUTL-47. The 8 kHz and 176.4 kHz rates are copied from the Ogg headers and were not listened to; whether the engine resamples them cleanly was not tested here.

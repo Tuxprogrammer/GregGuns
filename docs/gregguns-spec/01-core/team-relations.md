@@ -22,7 +22,7 @@ FTB Utilities is **not in the pack**. Neither is any `FriendsAPI`. The pack has 
 | Techguns | GregGuns | Why |
 |---|---|---|
 | `IFTBUtilitiesIntegration.areFriends(a, b)`, dummy returns `true` | `PlayerRelations.areFriendly(UUID owner, UUID other)` in `com.gregguns.api`, with a pure-logic core | One question, answered from the pack's real data |
-| Without the optional mod, everyone is a friend | Default mode `TEAMS`: friendly means same GTNHLib team, or an ServerUtilities ally or member when that mod is loaded. A config switch `playerRelationMode = EVERYONE_FRIENDLY` restores the Techguns default | GTNHLib is always loaded, so "no teams mod" is no longer a case. Pack makers on a trusted server can switch to the old behaviour |
+| Without the optional mod, everyone is a friend | Default mode `TEAMS`: friendly means same GTNHLib team, or an ServerUtilities ally or member when that mod is loaded. A config switch `playerRelationMode = EVERYONE_FRIENDLY` restores the Techguns default | GTNHLib is always loaded, so "no teams mod" is no longer a case. Pack makers on a trusted server can switch to the old behavior |
 
 ## Integration points
 
@@ -54,7 +54,7 @@ FTB Utilities is **not in the pack**. Neither is any `FriendsAPI`. The pack has 
 - **GGS-01-18** Player-versus-player friendliness is decided in one place, `PlayerRelations.areFriendly(owner, other)`, on the server only.
 - **GGS-01-19** In `TEAMS` mode, a player is friendly to an owner when both are in the same GTNHLib team.
 - **GGS-01-20** When `serverutilities` is loaded and the owner has a ServerUtilities team, an ally or member of that team is friendly, and an enemy of that team is not.
-- **GGS-01-21** In `EVERYONE_FRIENDLY` mode every player is friendly. This is the Techguns behaviour.
+- **GGS-01-21** In `EVERYONE_FRIENDLY` mode every player is friendly. This is the Techguns behavior.
 - **GGS-01-22** A missing team, a missing ServerUtilities universe or an unknown UUID never throws. The answer is "not friendly" in `TEAMS` mode.
 - **GGS-01-23** No class that references `serverutils.*` is loaded when `serverutilities` is absent.
 

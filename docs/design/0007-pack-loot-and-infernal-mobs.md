@@ -25,7 +25,7 @@ The research is in [06-items/pack-loot.md](../gregguns-spec/06-items/pack-loot.m
    - The handler makes one roll per 5 modifier points, as Infernal Mobs does.
    - The tables and the on/off switch are GregGuns config.
    - NPCs from spawner blocks are excluded unless config allows them.
-3. **Global drop lists (route A, pack-side, limited).** The pack appends only **ammunition, magazines, grenades and consumables** up to MV to Infernal Mobs' three global lists. Guns and armour never go in the global lists, so vanilla infernal mobs don't hand out weapons.
+3. **Global drop lists (route A, pack-side, limited).** The pack appends only **ammunition, magazines, grenades and consumables** up to MV to Infernal Mobs' three global lists. Guns and armor never go in the global lists, so vanilla infernal mobs don't hand out weapons.
 4. **Chests.**
    - GregGuns code never adds to vanilla `ChestGenHooks` categories.
    - It registers its own `gregguns:*` categories for its structures.

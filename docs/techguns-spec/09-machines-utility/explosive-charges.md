@@ -21,7 +21,7 @@ When the fuse runs out, it **bores a rectangular tunnel into the block it is att
 
 ## Placement and shape
 
-- [`ItemBlockMetaDataMachine`](../07-blocks/special-blocks.md#16-itemblockmetadatamachine) stores the clicked face (0–5) as `orientation` and plays the charge's **plant** sound on the server: volume 4.0, pitch 1.0, at the block centre.
+- [`ItemBlockMetaDataMachine`](../07-blocks/special-blocks.md#16-itemblockmetadatamachine) stores the clicked face (0–5) as `orientation` and plays the charge's **plant** sound on the server: volume 4.0, pitch 1.0, at the block center.
 - The owner is set to the placing player ([`BasicOwnedTileEnt`](../08-machines-production/framework.md#3-ownership-and-security-basicownedtileent-itgtileentsecurity)).
 
 **Blast direction** (`getDirection`): the charge always blasts *into* the block it is mounted on.
@@ -86,13 +86,13 @@ Ids 1–6 skip the usable check ([MUTL-31](index.md#suspected-bugs)).
 
 1. Server: play vanilla `random.explode` at the charge, volume 4.0, pitch (1 + (r1 − r2) × 0.2) × 0.7 with random r1 and r2.
 2. Build the cross-section: the set of columns in the plane through the **charge's own position**, perpendicular to the blast direction, sized and rounded as above.
-3. For each column, walk up to `blastlength` steps along the blast direction. The first step is the block immediately beyond the charge's plane, which is the mounting block for the centre column. At each step:
+3. For each column, walk up to `blastlength` steps along the blast direction. The first step is the block immediately beyond the charge's plane, which is the mounting block for the center column. At each step:
    1. If the block's hardness is breakable for this charge type, post a Forge `BlockEvent.BreakEvent`. The event uses the block and metadata, with the **owner player** looked up by UUID; that player can be null ([MUTL-30](index.md#suspected-bugs)).
-   2. If the event is not cancelled:
+   2. If the event is not canceled:
       - Server: drop the block's items (fortune 0) and set it to air.
       - Client: with 50% chance, spawn one "LargeSmoke" and one "Explosion" particle at a random point in the block, rising at 0.045 (particle definitions in [04](../04-projectiles-fx/index.md)).
       - Continue the column.
-   3. If the hardness is too high or the event is cancelled, **stop this column**. The column is blocked, and blocks beyond it survive.
+   3. If the hardness is too high or the event is canceled, **stop this column**. The column is blocked, and blocks beyond it survive.
    4. Air counts as breakable and does not stop the column.
 4. Server: set the charge's own block to air.
 
@@ -118,16 +118,16 @@ Other details:
 
 | Charge | Background (drawn (0,0) 176×166) | Look |
 |---|---|---|
-| TNT | [`textures/gui/tntChargeGui.png`](../08-machines-production/gui-textures.md#11-texturesguitntchargeguipng-owned-by-09) | Three vertical red dynamite sticks with dark shading between them, black rounded border. A light-grey bevelled display window (≈(28,19)–(148,100)) holds a flat grey screen. |
-| C4 | [`textures/gui/expChargeGui.png`](../08-machines-production/gui-textures.md#10-texturesguiexpchargeguipng-owned-by-09) | A dark olive-green C4 block crossed by grey duct-tape bands: two vertical bands, plus horizontal tape at the left and right edges. Same grey display window. |
+| TNT | [`textures/gui/tntChargeGui.png`](../08-machines-production/gui-textures.md#11-texturesguitntchargeguipng-owned-by-09) | Three vertical red dynamite sticks with dark shading between them, black rounded border. A light-gray beveled display window (≈(28,19)–(148,100)) holds a flat gray screen. |
+| C4 | [`textures/gui/expChargeGui.png`](../08-machines-production/gui-textures.md#10-texturesguiexpchargeguipng-owned-by-09) | A dark olive-green C4 block crossed by gray duct-tape bands: two vertical bands, plus horizontal tape at the left and right edges. Same gray display window. |
 
-Both files are 256 × 256 and catalogued by [08](../08-machines-production/index.md); only the 176 × 166 panel is used.
+Both files are 256 × 256 and cataloged by [08](../08-machines-production/index.md); only the 176 × 166 panel is used.
 
-**Text** (colour 0x404040; hardcoded English except the title):
+**Text** (color 0x404040; hardcoded English except the title):
 
 | Position | Text |
 |---|---|
-| centred, y = 28 | title |
+| centered, y = 28 | title |
 | (37, 40) | `Radius: N` |
 | (37, 50) | `Length: N` |
 | (37, 60) | `Delay: Ns`, where N = fusetime ÷ 20, integer |
@@ -180,9 +180,9 @@ Both files are 256 × 256 and catalogued by [08](../08-machines-production/index
 
 | File | Depicts |
 |---|---|
-| [`textures/blocks/tntCharge.png`](../07-blocks/textures.md#11-model-textures) | Sticks region (0,0)–(16,16 units): dark-red dynamite paper with darker vertical shading lines; the stick tops are darker red. Detonator region at (0,17): dark grey brushed metal, with a small black LCD on its front face reading **"RDY"** in green pixel letters. |
+| [`textures/blocks/tntCharge.png`](../07-blocks/textures.md#11-model-textures) | Sticks region (0,0)–(16,16 units): dark-red dynamite paper with darker vertical shading lines; the stick tops are darker red. Detonator region at (0,17): dark gray brushed metal, with a small black LCD on its front face reading **"RDY"** in green pixel letters. |
 | [`textures/blocks/tntCharge_2.png`](../07-blocks/textures.md#11-model-textures) | Identical, except the LCD reads **"ARM"** in red. Used while armed. |
-| [`textures/blocks/ExpCharge.png`](../07-blocks/textures.md#11-model-textures) | Brick region: dark olive / grey-green plastic with lighter blue-grey grid lines (tape wraps); the top and edges are slightly darker. Detonator: as the TNT charge, plus a dark-blue rectangular panel on its side; LCD **"RDY"** green. |
+| [`textures/blocks/ExpCharge.png`](../07-blocks/textures.md#11-model-textures) | Brick region: dark olive / gray-green plastic with lighter blue-gray grid lines (tape wraps); the top and edges are slightly darker. Detonator: as the TNT charge, plus a dark-blue rectangular panel on its side; LCD **"RDY"** green. |
 | [`textures/blocks/ExpCharge_2.png`](../07-blocks/textures.md#11-model-textures) | Identical, but the LCD reads **"ARM"** in red. |
 
 The item form uses texture 1 of each type, through [`RenderBlockModelItemTNTCharge`](shared-rendering.md#item-rendering-inventory-and-hand) (transforms in shared-rendering.md).

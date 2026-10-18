@@ -78,7 +78,7 @@ The handler runs for **every** player on **both** sides (client-world players in
 ### Phase END
 
 1. **Server:** refresh the DataWatcher face and back mirrors.
-2. Check whether any worn armor piece is Techguns armor ([`GenericArmor.isTechgunArmor`](../05-armor/armor-catalogue.md#1-class-hierarchy)).
+2. Check whether any worn armor piece is Techguns armor ([`GenericArmor.isTechgunArmor`](../05-armor/armor-catalog.md#1-class-hierarchy)).
 3. Remove the three Techguns attribute modifiers if present:
 
    | UUID | Attribute |
@@ -88,7 +88,7 @@ The handler runs for **every** player on **both** sides (client-world players in
    | `3441FC5D-F0B6-47F4-AFBB-DC5005670254` | knockback resistance, "TechgunsKnockbackresistbonus" |
 
 4. **If wearing Techguns armor:**
-   - [`PoweredArmor.calculateConsumptionTick(player)`](../05-armor/armor-catalogue.md#9-power-system-poweredarmor) (power drain, 05).
+   - [`PoweredArmor.calculateConsumptionTick(player)`](../05-armor/armor-catalog.md#9-power-system-poweredarmor) (power drain, 05).
    - If burning and the armor's COOLING_SYSTEM bonus is ≥ 1: extinguish.
    - **Speed:** speed = SPEED bonus. Add SPEED_WATER if inside water or lava. If speed > 0:
      - double it while sprinting;
@@ -175,9 +175,9 @@ One row per field of `TechgunsExtendedPlayerProperties`: NBT key, NBT type, in-c
 | `wasFlying` | none | false | n/a | none | tick handler | tick handler only |
 | `isJumpkeyPressed` (protected, accessor `isJumpkeyPressed()` / `setJumpkeyPressed`) | none | false | n/a | field sync id 0 to other clients | `PacketTGKeybindPress` (server); `ItemJetpack` (local client); field-sync handler | `ItemJetpack` boost, [`RenderJetpack`](../05-armor/rendering-and-models.md#3-special-slot-rendering-on-the-player-rendereradditionalslots), `TechgunsEventhandler` (cleanup branch, dead) |
 | `isForwardKeyPressed` | none | false | n/a | none | `PacketTGKeybindPress` ids 4 and 5 (never sent) | `ItemJetpack` only inside commented code |
-| `fireDelay` (int ticks) | none | 0 | n/a | none | guns when they fire | `TechgunsTickHandler` (decrement and fire check), `GenericGun`, [`GenericGunCharge`](../02-guns/per-gun-behaviour.md#genericguncharge-genericgunchargejava), `TGKeybinds` (force reload) |
+| `fireDelay` (int ticks) | none | 0 | n/a | none | guns when they fire | `TechgunsTickHandler` (decrement and fire check), `GenericGun`, [`GenericGunCharge`](../02-guns/per-gun-behavior.md#genericguncharge-genericgunchargejava), `TGKeybinds` (force reload) |
 | `loopSoundDelay` (int ticks) | none | 0 | n/a | none | guns with looping sounds | `TechgunsTickHandler`, `GenericGun` |
-| `isGliding` | none | false | n/a | none | [`GenericItemShared.onPlayerTickGlider`](../06-items/special-items.md#shared-item-genericitemshared-behaviour) each tick, reset before the back slot runs | [`ClientProxy.handlePlayerGliding`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy), `TechgunsEventhandler`, `TechgunsTickHandler`, `GenericItemShared` |
+| `isGliding` | none | false | n/a | none | [`GenericItemShared.onPlayerTickGlider`](../06-items/special-items.md#shared-item-genericitemshared-behavior) each tick, reset before the back slot runs | [`ClientProxy.handlePlayerGliding`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy), `TechgunsEventhandler`, `TechgunsTickHandler`, `GenericItemShared` |
 | `swingSoundDelay` (byte) | none | 0 | n/a | none | [`Chainsaw`](../02-guns/sheets-launchers-tools-grenades.md#chainsaw-chainsaw), [`PowerHammer`](../02-guns/sheets-launchers-tools-grenades.md#power-hammer-powerhammer) | `TechgunsTickHandler` (decrement) |
 | `gliderLoop`, `jetPackLoop` (client subclass only) | none | null | n/a | none | `ClientProxy.handlePlayerGliding`, `setJumpkeyPressed` | same two methods |
 

@@ -4,7 +4,7 @@ The standard every area of this spec meets, so that a gun, a mob, a machine and 
 
 ## Ground rules
 
-- **Describe, don't copy.** Write behaviour, formulas and state machines in your own words, tables or pseudocode. No pasted or closely paraphrased Techguns source.
+- **Describe, don't copy.** Write behavior, formulas and state machines in your own words, tables or pseudocode. No pasted or closely paraphrased Techguns source.
 - **Facts are welcome.** Names, IDs, metadata values, constants, recipe grids, NBT keys, packet fields, lang keys and their English text, and asset paths and sizes are all fair to record.
 - **Only add.** Raising one area never means trimming another. Correct a statement only when it's wrong, and mention the correction in the area's coverage notes.
 - **Say "none" explicitly.** If a template field doesn't apply (no sounds, no GUI, no NBT), write *none* rather than leaving it out. Then a reader can tell "doesn't exist" from "wasn't checked".
@@ -16,14 +16,14 @@ The standard every area of this spec meets, so that a gun, a mob, a machine and 
 
 ## Entity sheet
 
-Every documented *thing* gets a sheet: a gun, grenade, armour piece, special-slot item, item meta with behaviour, block family, machine, tile entity, projectile, mob, structure, packet or keybind. Use these fields, in this order, in a section or table.
+Every documented *thing* gets a sheet: a gun, grenade, armor piece, special-slot item, item meta with behavior, block family, machine, tile entity, projectile, mob, structure, packet or keybind. Use these fields, in this order, in a section or table.
 
 | # | Field | Contents |
 |---|---|---|
 | 1 | **Identity** | Classes; registry name; unlocalized name; metadata value; English name with its lang key; creative tab; oredict names |
 | 2 | **Obtaining** | Exact crafting grid, or a link to it. Otherwise: machine recipe, loot table, mob drop, worldgen source, or *unobtainable* with the reason |
 | 3 | **Numbers** | Every stat, constant and default, plus each config key that changes one (with its default) |
-| 4 | **Behaviour** | Ordered logic, with client and server labelled: tick logic; use, right-click, sneak and left-click interactions; automation (sided slots); redstone; edge cases |
+| 4 | **Behavior** | Ordered logic, with client and server labeled: tick logic; use, right-click, sneak and left-click interactions; automation (sided slots); redstone; edge cases |
 | 5 | **Persistence and sync** | NBT keys with type and meaning; packets, DataWatcher indices and GUI progress-bar fields |
 | 6 | **UI** | GUI layout with pixel coordinates for slots, bars, tanks and buttons; tooltip lines exactly as shown, and when each appears; chat messages |
 | 7 | **Visuals** | Renderer and model, transforms, the textures used (paths), animations, particle and FX names |
@@ -36,7 +36,7 @@ Every documented *thing* gets a sheet: a gun, grenade, armour piece, special-slo
 - [10-entities-npcs/per-mob.md](10-entities-npcs/per-mob.md) for compact, many-of-a-kind sheets;
 - [04-projectiles-fx/projectiles.md](04-projectiles-fx/projectiles.md) for per-class logic.
 
-Catalogue tables (gun, item, block, mob, armour) are kept as quick references. They are **in addition to** the sheets, not a replacement for them.
+Catalog tables (gun, item, block, mob, armor) are kept as quick references. They are **in addition to** the sheets, not a replacement for them.
 
 ## Asset entries
 
@@ -45,7 +45,7 @@ Measured numbers come from [ASSET-FACTS.md](ASSET-FACTS.md). Every area quotes t
 **Texture:**
 - path, size, and animation (frame count and frametime from `.mcmeta`);
 - what it depicts;
-- palette: the measured average and dominant colours, plus a description in words;
+- palette: the measured average and dominant colors, plus a description in words;
 - layout: UV or pixel rectangles for every region of a model, GUI or atlas texture;
 - what uses it;
 - notes such as unused, missing or wrong-case.

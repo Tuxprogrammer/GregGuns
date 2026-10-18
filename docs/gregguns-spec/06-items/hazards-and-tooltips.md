@@ -7,11 +7,11 @@ How the pack's hazard, tooltip and fuel data files relate to GregGuns items, and
 - **Pack mods:**
   - NewHorizonsCoreMod (`dreamcraft`, 2.9.84): modules `HazardousItems`, `CustomToolTips`, `CustomFuels`
   - GregTech (`gregtech`, 5.09.54.205): hazards and radioactivity
-- **Roadmap:** M2 (item registration), M3 (hazmat armour, area 05)
+- **Roadmap:** M2 (item registration), M3 (hazmat armor, area 05)
 
 ## What changes from Techguns
 
-Techguns' nuclear items carry no world hazard: the Nuclear Power Cell is a plain item. In GTNH, radioactive materials irradiate their holder. GregGuns hooks into that system so the Nuclear Power Cell, the Small Nuclear Warhead and the Rad Emitter are dangerous to carry without protection. This is the only change that touches player-visible behaviour. The tooltip and fuel files need no entries.
+Techguns' nuclear items carry no world hazard: the Nuclear Power Cell is a plain item. In GTNH, radioactive materials irradiate their holder. GregGuns hooks into that system so the Nuclear Power Cell, the Small Nuclear Warhead and the Rad Emitter are dangerous to carry without protection. This is the only change that touches player-visible behavior. The tooltip and fuel files need no entries.
 
 | File | Verdict | Reason |
 |---|---|---|
@@ -33,8 +33,8 @@ Techguns' nuclear items carry no world hazard: the Nuclear Power Cell is a plain
 
 - **Pack config:** none.
 - **Source:**
-  - [`GTProxy.applyItemEffects`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/GTProxy.java#L1306-L1311) runs on every stack in the player's main inventory and armour slots (L1295-L1304) and skips creative players. It calls `GTUtility.applyRadioactivity(player, getRadioactivityLevel(stack), stack.stackSize)`.
-  - [`GTUtility.getRadioactivityLevel`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTUtility.java#L1971-L1980) returns the level from the stack's `ItemData` material (its armour or tool enchantment, when that enchantment is `EnchantmentRadioactivity`), or, failing that, the level of the Radioactivity enchantment on the stack itself.
+  - [`GTProxy.applyItemEffects`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/GTProxy.java#L1306-L1311) runs on every stack in the player's main inventory and armor slots (L1295-L1304) and skips creative players. It calls `GTUtility.applyRadioactivity(player, getRadioactivityLevel(stack), stack.stackSize)`.
+  - [`GTUtility.getRadioactivityLevel`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTUtility.java#L1971-L1980) returns the level from the stack's `ItemData` material (its armor or tool enchantment, when that enchantment is `EnchantmentRadioactivity`), or, failing that, the level of the Radioactivity enchantment on the stack itself.
   - [`GTUtility.applyRadioactivity`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTUtility.java#L2018-L2022) applies slowness, mining fatigue and other effects scaled by level and stack size. It skips undead and arthropods, and skips anyone for whom `HazardProtection.isWearingFullRadioHazmat` is true.
   - `Uranium235` is level 2 in both slots: [`MaterialsInit.loadUranium235`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L2090-L2108).
   - [`GTOreDictUnificator.addItemData`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTOreDictUnificator.java#L350-L359) attaches composition data to a stack.
@@ -43,7 +43,7 @@ Techguns' nuclear items carry no world hazard: the Nuclear Power Cell is a plain
   - Gives the Nuclear Power Cell (full and depleted), the Small Nuclear Warhead, the tactical nuke rocket and the Rad Emitter `ItemData` whose material is `Materials.Uranium235` with a small amount, for example `new ItemData(Materials.Uranium235, OrePrefixes.dust.getMaterialAmount())`. GT then irradiates the holder at level 2, scaled by stack size.
   - Marks the depleted cell the same way (it is still radioactive).
   - The `ItemData` also feeds GT recycling, so a recycler returns uranium dust. If that is unwanted, use the Radioactivity enchantment on the stack instead (`EnchantmentRadioactivity.INSTANCE`, [file](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enchants/EnchantmentRadioactivity.java#L13-L15)), which does not touch recycling but shows an enchantment line.
-  - Area 05 makes the hazmat and nuclear-capable armour implement `IHazardProtector` for `RADIOLOGICAL`.
+  - Area 05 makes the hazmat and nuclear-capable armor implement `IHazardProtector` for `RADIOLOGICAL`.
 - **Pack-side change:** none.
 
 ### dreamcraft CustomToolTips

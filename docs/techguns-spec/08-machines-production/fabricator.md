@@ -6,7 +6,7 @@ Classes: [`FabricatorTileEntMaster`](framework.md#1-class-hierarchy) ([`MultiBlo
 
 ## 1. Structure
 
-Blocks (block [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-blocks)):
+Blocks (block [`machineMultiBlock`](../07-blocks/block-catalog.md#registered-blocks)):
 - Fabricator Controller (meta 4): ×1
 - Fabricator Housing (meta 3): ×3
 - Fabricator Glass (meta 5): ×4
@@ -51,7 +51,7 @@ The operation state is kept. `updateEntity` **doesn't check `complete`**, so an 
 | Block | Energy | Items |
 |---|---|---|
 | Controller | accepts RF from every side except the `dir` face, only while complete | sided access from every side except `dir`, only while complete: slots 0–4 visible; insert into 0–3 (hoppers also check `isItemValidForSlot`); extract slot 4 |
-| Housing (type 1) | forwards RF to the master (`canConnectEnergy` true while type 1) | forwards inventory calls to the master. Slots 0–4 visible; insert 0–3; extract 4 |
+| Housing (type 1) | forward RF to the master (`canConnectEnergy` true while type 1) | forward inventory calls to the master. Slots 0–4 visible; insert 0–3; extract 4 |
 | Glass (type 0) | none | none |
 
 Capacity: 100 000 RF.
@@ -63,7 +63,7 @@ Capacity: 100 000 RF.
 | 0 | `SLOT_INPUT` | main input | (19,17) | `Slot` | anything not in the three lists below and not an upgrade |
 | 1 | `SLOT_WIRES` | wires / circuits | (47,17) | `SlotRestrictedToList(items_wireslot)` | Copper Wire (shared 57), Gold Wire (86), `circuitBasic`, `circuitElite` |
 | 2 | `SLOT_POWDER` | powder / parts | (68,17) | `SlotRestrictedToList(items_powderslot)` | `dustRedstone`, Mechanical Parts (Carbon) (37) |
-| 3 | `SLOT_PLATE` | plate | (89,17) | `SlotRestrictedToList(items_plateslot)` | `sheetPlastic`, `plateCarbon`, [`plateTitanium`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), [`plateLead`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) |
+| 3 | `SLOT_PLATE` | plate | (89,17) | `SlotRestrictedToList(items_plateslot)` | `sheetPlastic`, `plateCarbon`, [`plateTitanium`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo), [`plateLead`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) |
 | 4 | `SLOT_OUTPUT` | output | (116,50) | [`SlotOutput`](ammo-press.md#1-inventory) | none |
 | 5 | `SLOT_UPGRADE` | stack upgrade | (150,50) | [`SlotMachineUpgrade`](ammo-press.md#1-inventory) | Machine Upgrade |
 
@@ -102,10 +102,10 @@ Each tick consumes 80 RF × m (8 000 RF per unit at m = 1). At 100 ticks the ser
 |---|---|---|---|---|---|
 | 1 | `ingotGold` (1) | Copper Wire (1) | `dustRedstone` (3) | `sheetPlastic` (1) | Energy Cell (Empty) ×1 (shared 16) |
 | 2 | Soul Sand (1) | Gold Wire (1) | `dustRedstone` (1) | `sheetPlastic` (1) | Cybernetic Parts ×1 (91) |
-| 3 | [`ingotTitanium`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) (2) | `circuitBasic` (4) | Mechanical Parts (Carbon) (1) | `plateCarbon` (4) | Power Plating ×2 (89) |
+| 3 | [`ingotTitanium`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) (2) | `circuitBasic` (4) | Mechanical Parts (Carbon) (1) | `plateCarbon` (4) | Power Plating ×2 (89) |
 | 4 | Coil (1) (shared 69) | `circuitElite` (2) | Mechanical Parts (Carbon) (1) | `plateTitanium` (1) | Sonic Emitter ×1 (97) |
 | 5 | Enriched Uranium (1) (102) | `circuitElite` (2) | Mechanical Parts (Carbon) (2) | `plateLead` (2) | Rad Emitter ×1 (108) |
-| 6 | [`ingotSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (1; ingredient declared with size 2, which is ignored) | `circuitBasic` (1) | `dustRedstone` (4) | `plateLead` (2) | Nuclear Power Cell (Depleted) ×1 (107) |
+| 6 | [`ingotSteel`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (1; ingredient declared with size 2, which is ignored) | `circuitBasic` (1) | `dustRedstone` (4) | `plateLead` (2) | Nuclear Power Cell (Depleted) ×1 (107) |
 
 ## 5. GUI (`GuiFabricator`, `textures/gui/Fabricator_Gui.png`)
 
@@ -123,7 +123,7 @@ Each tick consumes 80 RF × m (8 000 RF per unit at m = 1). At 100 ticks the ser
 ## 7. Visuals (`RenderFabricator`)
 
 - **What renders.** The TESR draws only while the structure is complete; unformed blocks show their CTM textures ([07-blocks](../07-blocks/index.md)).
-- **Model and texture.** `ModelFabricator` (declared 128×128) with texture [`textures/blocks/Fabricator.png`](../07-blocks/textures.md#11-model-textures) (256×256, catalogued in [07-blocks](../07-blocks/index.md)). The texture is mostly dark grey/black panels, a framed glass window region, a small screen with a cyan display (top right), and red and yellow indicator bits.
+- **Model and texture.** `ModelFabricator` (declared 128×128) with texture [`textures/blocks/Fabricator.png`](../07-blocks/textures.md#11-model-textures) (256×256, cataloged in [07-blocks](../07-blocks/index.md)). The texture is mostly dark gray/black panels, a framed glass window region, a small screen with a cyan display (top right), and red and yellow indicator bits.
 - **Transform.**
   1. Translate to (x+0.5, y+1.5, z+0.5) and flip 180° about Z.
   2. Rotate about Y by `dir`: 2 → 0°, 3 → −180°, 4 → −90°, 5 → +90°.
@@ -161,7 +161,7 @@ Each tick consumes 80 RF × m (8 000 RF per unit at m = 1). At 100 ticks the ser
 | 1 | Identity | Block `machineMultiBlock` metas 3 (Housing), 4 (Controller), 5 (Glass); tiles `FabricatorTileEntSlave` (3, 5) and `FabricatorTileEntMaster` (4); names `techguns.tile.machineMultiBlock_3/4/5.name` = **Fabricator Housing**, **Fabricator Controller**, **Fabricator Glass**; container `FabricatorContainer`; creative tab Techguns; oredict none |
 | 2 | Obtaining | Shaped ore recipes for Housing ×4, Controller ×1 and Glass ×4; full grids in [blocks-and-items.md](blocks-and-items.md#crafting-recipes) |
 | 3 | Numbers | Buffer 100 000 RF; 80 RF/t times the multiplier; 100 ticks per operation; multiplier clamped to 8; structure 2×2×2; hardness 8.0, resistance 50.0; 6 recipes |
-| 4 | Behaviour | Sections 1 to 4 |
+| 4 | Behavior | Sections 1 to 4 |
 | 5 | Persistence and sync | Master NBT: `complete`, `hasPower`, `dir` (the last two only when complete), `plateUsed` (item), plus base keys. Slave NBT: `hasMaster`, `masterX/Y/Z`, `type`. GUI progress-bar fields: 0 progress, 1 totalTime, 2 power/100 |
 | 6 | UI | Section 5. Tooltips: standard power, redstone and security. Chat on a failed form: `techguns.tgmessage.0` "Invalid Block for Reaction Chamber at x, y, z" (MPRD-27) |
 | 7 | Visuals | Unformed blocks use CTM textures `fabricatorHousing` (32×32, average #949494, dominant #F0F0F0 36 %, #101010 24 %, #D0D0D0 13 %), `fabricatorController` (32×32, average #787D7E, #101010 24 %, #D0D0D0 21 %, #B0B0B0 12 %) and `fabricatorGlass` (32×32, average #1A1919, #101010 99 %, 23 % opaque) (CTM variations; per-face differences were not examined); formed blocks show the transparent `invisible.png` (16×16, 0 % opaque). TESR `RenderFabricator` + `ModelFabricator`; atlas `textures/blocks/Fabricator.png`, 256×256, average #535151, dominant #303030 56 %, #909090 10 %, #707070 8 %, 36 % opaque. Item renderer: ordinary block icons (no custom item renderer) |

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""GregGuns model textures (kind: model): guns, armour layers, mob skins, projectiles, machines.
+"""GregGuns model textures (kind: model): guns, armor layers, mob skins, projectiles, machines.
 
 Original procedural art, fixed seeds, no Techguns input. We do not have Techguns' UV layouts,
 so:
-  * armour layers and biped mob skins use the standard Minecraft 1.7.10 / modern skin unwrap
+  * armor layers and biped mob skins use the standard Minecraft 1.7.10 / modern skin unwrap
     (scaled by width/64) so they map correctly on vanilla-layout models;
   * everything else (guns, packs, masks, turret, charges, atlases) is a *packed box atlas*:
     named boxes are unwrapped with the standard box layout and shelf-packed to fill the
     footprint. The exact rectangles are written to tools/asset-gen/model_layouts.md so a
-    modeller can UV to them.
+    modeler can UV to them.
 
 Run from repo root:  python -I -X utf8 tools/asset-gen/models.py
 Outputs: src/main/resources/assets/gregguns/<manifest path>, tools/asset-gen/credits/models.csv,
@@ -253,7 +253,7 @@ def make_gun(man):
     return t
 
 
-# ---- armour -----------------------------------------------------------------
+# ---- armor -----------------------------------------------------------------
 SETS = {
     "t1_combat": dict(cloth="#5C6150", cmat="fabric", plate=None, accent="#C8A040", flags=["vest"]),
     "t1_miner": dict(cloth="#7A6648", cmat="fabric", plate=None, accent="#E0C030", flags=["lamp", "hazard"]),
@@ -343,11 +343,11 @@ def _paint(t, x, y, w, h, sp, r):
     t.paste(x, y, rgb)
 
 
-def armour_layout_parts(s):
+def armor_layout_parts(s):
     return {"head": (0, 0, 8, 8, 8), "body": (16, 16, 8, 12, 4), "arm": (40, 16, 4, 12, 4), "leg": (0, 16, 4, 12, 4)}
 
 
-def paint_armour(t, r, cfg, s, layer, aid, var_name=""):
+def paint_armor(t, r, cfg, s, layer, aid, var_name=""):
     cloth = ("camo", "#808080", cfg["camo"], (4 * s, 9 * s, .75, False), .1) if cfg["camo"] else \
         (cfg["cmat"], cfg["cloth"], None, (5 * s, 12 * s, .78, False), .12)
     plate = ("steel", cfg["plate"], None, (3 * s + 2, 7 * s, .55, True), cfg["wear"])
@@ -355,7 +355,7 @@ def paint_armour(t, r, cfg, s, layer, aid, var_name=""):
     leather = ("leather", "#3A2C20", None, None, .1)
     heavy = cfg["heavy"]
     body_main = plate if heavy else cloth
-    P = armour_layout_parts(s)
+    P = armor_layout_parts(s)
     flags = cfg["flags"]
     for kind, (u, v, w, h, d) in P.items():
         faces = box_uv(u, v, w, h, d, s)
@@ -481,7 +481,7 @@ def glyph_text(V, x, y, letters, col, sc):
 
 
 def variant_overlay(t, r, s, var, cfg, P):
-    """Distinct patterns per colour variant (not just a recolour)."""
+    """Distinct patterns per color variant (not just a recolor)."""
     if not var:
         return
     for kind, (u, v, w, h, d) in P.items():
@@ -569,8 +569,8 @@ def make_armor(man):
     s = max(1, W // 64)
     r = rng_for("model.armor." + (name if var else name))
     t = Tex(W, H)
-    paint_armour(t, r, cfg, s, layer, name, var)
-    lines = ["standard 64x32 armour unwrap scaled x%d (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left))." % s]
+    paint_armor(t, r, cfg, s, layer, name, var)
+    lines = ["standard 64x32 armor unwrap scaled x%d (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left))." % s]
     t.a[:32 * s, :64 * s] = 255
     if H > 32 * s:
         ex = [("pauldron", "plate", 8, 4, 8, ["rivets"] if False else ["label"]), ("knee_guard", "plate", 5, 5, 5, ["rings"]),
@@ -588,7 +588,7 @@ def make_armor(man):
     return t
 
 
-# ---- armour accessories (packed atlases, 64x64) --------------------------------
+# ---- armor accessories (packed atlases, 64x64) --------------------------------
 ACCESSORIES = {
     "gas_mask": ([("faceplate", "rubber", 8, 8, 2, ["rings"]), ("filter", "metal", 3, 3, 3, ["grill", "rings"]), ("lens_l", "glass", 3, 2, 1, ["lens"]),
                   ("lens_r", "glass", 3, 2, 1, ["lens"]), ("strap", "rubber", 9, 2, 9, []), ("hose", "rubber", 1, 5, 1, ["rings"]),
@@ -1040,7 +1040,7 @@ def make_bio_blob_machine(man):
 
 # ---- structured projectiles (override the plain versions above) ---------------------------
 def make_beam(man, core, mid, edge):
-    """Beam quad: white-hot core, coloured inner sheath, exponential glow falloff, travelling
+    """Beam quad: white-hot core, colored inner sheath, exponential glow falloff, traveling
     energy bands along x and bright knots; ends fade."""
     t = Tex(32, 32)
     y = np.abs(np.arange(32) - 15.5)[:, None] / 15.5
@@ -1059,7 +1059,7 @@ def make_beam(man, core, mid, edge):
     cap = np.clip(np.minimum(x, 31 - x) / 4.0, 0.15, 1)
     a = np.clip(glow * 0.55 + inner * 0.6 + ring * 0.4 + hot, 0, 1) * cap * 255
     t.rgb[...] = np.clip(rgb, 0, 255); t.a[...] = a
-    LAYOUT_DOC[man["id"]] = ["beam quad: white-hot core rows 14..17, coloured sheath, exponential glow to transparent at y=0/31, 8 px energy bands with bright knots every 16 px, 4 px end fade."]
+    LAYOUT_DOC[man["id"]] = ["beam quad: white-hot core rows 14..17, colored sheath, exponential glow to transparent at y=0/31, 8 px energy bands with bright knots every 16 px, 4 px end fade."]
     return t
 
 
@@ -1250,12 +1250,12 @@ def write_layout_doc(order):
            "front (u+d, v+d, w x h); left (u+d+w, v+d, d x h); back (u+2d+w, v+d, w x h). This is the vanilla `ModelBox` layout.",
            "- **Packed atlases** (guns, accessories, machines, non-biped mobs): each named box below was shelf-packed into the sheet, scaled up so the "
            "footprint is filled. The listed `u v w h d` are in texels; model the part at that size (or scale UVs).",
-           "- **Armour layers** use the vanilla 64x32 armour unwrap scaled by width/64 (head 0,0 8x8x8; body 16,16 8x12x4; right arm 40,16 4x12x4; "
+           "- **Armor layers** use the vanilla 64x32 armor unwrap scaled by width/64 (head 0,0 8x8x8; body 16,16 8x12x4; right arm 40,16 4x12x4; "
            "right leg 0,16 4x12x4; left limbs mirror the right). Taller sheets keep the same layout in the top half and hold extra boxes below.",
            "- **Biped mob skins** use the modern 64x64 unwrap scaled by width/64 (left limbs at 32,48 and 16,48).",
            "- **Gun roles.** `metal` = gate-material steel, `dark` = darkened steel, `furn` = polymer or wood furniture, `glow` = emissive "
-           "colour (bright, intended for a lightmap/emissive pass). `_camoN` sheets share the base gun's layout exactly.",
-           "- Camo and colour variants share the base layout; only colours/patterns differ.", ""]
+           "color (bright, intended for a lightmap/emissive pass). `_camoN` sheets share the base gun's layout exactly.",
+           "- Camo and color variants share the base layout; only colors/patterns differ.", ""]
     out.append("## Model textures")
     out.append("")
     for aid in order:
@@ -1311,7 +1311,7 @@ def main():
                      "Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips", "MIT", "2026-10-18"])
     with open(os.path.join(ROOT, "tools", "asset-gen", "credits", "models.csv"), "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, lineterminator="\n")
-        w.writerow(["asset", "path", "generator", "seed", "method", "licence", "date"]); w.writerows(rows)
+        w.writerow(["asset", "path", "generator", "seed", "method", "license", "date"]); w.writerows(rows)
     write_layout_doc(ids)
     os.makedirs(PRE, exist_ok=True)
     contact_sheet(items).save(os.path.join(PRE, "models.png"))

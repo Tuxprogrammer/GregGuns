@@ -9,7 +9,7 @@ Concepts
   * Canvas.fill()   -> bevel-shaded fill of a pixel set (top/left lit,
                        bottom/right shadowed), the GT-style look
   * part helpers    -> barrels, receivers, stocks, magazines, scopes, grips,
-                       bullets, shells, plates, emitters, cloth, armour
+                       bullets, shells, plates, emitters, cloth, armor
                        silhouettes, tanks, canisters
 Sprites are drawn inside 1..14 so the outline fits inside the 16x16 frame.
 """
@@ -18,7 +18,7 @@ from PIL import Image
 W = H = 16
 
 
-# ---------------------------------------------------------------- colours
+# ---------------------------------------------------------------- colors
 def hexrgb(s):
     s = s.lstrip("#")
     return tuple(int(s[i:i + 2], 16) for i in (0, 2, 4))
@@ -171,7 +171,7 @@ class Canvas:
         return out
 
     def ellipse_coords(self, cx, cy, rx, ry):
-        """cx, cy may be half-integers (centre between pixels)."""
+        """cx, cy may be half-integers (center between pixels)."""
         out = []
         for y in range(H):
             for x in range(W):
@@ -224,7 +224,7 @@ class Canvas:
     def outline(self, strength=0.38, only=None):
         """Dark outline on transparent pixels 4-adjacent to the sprite.
 
-        Outline colour is the adjacent pixel darkened, so warm parts get warm
+        Outline color is the adjacent pixel darkened, so warm parts get warm
         outlines (GT does this).
         """
         add = {}
@@ -251,7 +251,7 @@ class Canvas:
         return n
 
     def rotated(self, deg):
-        """Nearest-neighbour rotation (clockwise, y down) about the canvas centre."""
+        """Nearest-neighbor rotation (clockwise, y down) about the canvas center."""
         import math
         a = math.radians(deg)
         ca, sa = math.cos(a), math.sin(a)
@@ -427,9 +427,9 @@ def canister(c, x0, y0, x1, y1, body_rp, fill_rp=None, fill_frac=0.75, cap_rp=No
         c.pix(ix0 + 1, iy0, (180, 188, 196)); c.pix(ix0 + 1, iy0 + 1, (166, 174, 182))
 
 
-# ---------------------------------------------------------------- armour
-def armour_piece(c, slot, cw):
-    """Draw one armour slot with a per-set silhouette and details.
+# ---------------------------------------------------------------- armor
+def armor_piece(c, slot, cw):
+    """Draw one armor slot with a per-set silhouette and details.
 
     cw keys: main, trim (ramps); acc (ramp, small details); vis (ramp, visor);
     kind (str) selecting the set's shape; glow (ramp, emissive) optional.
@@ -493,7 +493,7 @@ def _helmet(c, kind, M, T, A, V, G):
         c.hline(4, 11, 11, T[DK])
         c.hline(4, 11, 13, T[DK])
         c.rect(5, 2, 10, 2, M[HL], bevel=False)
-    elif kind == "fibre":      # angular faceted helm with chin guard
+    elif kind == "fiber":      # angular faceted helm with chin guard
         c.poly([(6, 1), (10, 1), (13, 5), (12, 11), (9, 14), (6, 14), (3, 11), (2, 5)], M)
         c.poly([(4, 5), (11, 5), (12, 7), (3, 7)], V or CYAN)
         c.hline(4, 11, 5, (200, 255, 255))
@@ -621,7 +621,7 @@ def _chest(c, kind, M, T, A, V, G):
         c.pix(6, 10, A[HL])
         c.pix(9, 10, A[HL])
         c.hline(2, 13, 14, M[DK])
-    elif kind == "fibre":      # angular chest, high collar, shoulder armour
+    elif kind == "fiber":      # angular chest, high collar, shoulder armor
         c.poly([(5, 1), (10, 1), (13, 3), (15, 6), (13, 7), (12, 14), (3, 14), (2, 7), (0, 6), (2, 3)], M)
         c.poly([(5, 1), (10, 1), (9, 4), (6, 4)], T)
         c.poly([(5, 5), (10, 5), (11, 9), (4, 9)], T)
@@ -654,7 +654,7 @@ def _chest(c, kind, M, T, A, V, G):
         c.hline(5, 10, 12, A[SH])
         c.rect(1, 9, 3, 10, T)
         c.rect(12, 9, 14, 10, T)
-    elif kind == "power":      # massive pauldrons, armoured torso, glowing core
+    elif kind == "power":      # massive pauldrons, armored torso, glowing core
         c.poly([(0, 1), (5, 0), (10, 0), (15, 1), (15, 6), (12, 7), (12, 14), (3, 14), (3, 7), (0, 6)], M)
         c.rect(0, 1, 3, 5, T)
         c.rect(12, 1, 15, 5, T)
@@ -723,14 +723,14 @@ def _legs(c, kind, M, T, A, V, G):
         c.rect(5, 8, 7, 9, T[LT], bevel=False)
         c.rect(8, 8, 10, 9, T[LT], bevel=False)
         c.hline(5, 10, 3, M[HL])
-    elif kind == "riot":       # coat skirt flaps over armoured shins
+    elif kind == "riot":       # coat skirt flaps over armored shins
         c.poly([(2, 2), (13, 2), (15, 11), (8, 11), (8, 14), (7, 14), (7, 11), (0, 11)], M)
         c.rect(4, 12, 6, 14, T)
         c.rect(9, 12, 11, 14, T)
         c.vline(7, 3, 11, M[DK])
         c.vline(8, 3, 11, M[SH])
         c.hline(2, 13, 4, T[LT])
-    elif kind == "fibre":      # angular faceted thigh and knee guards
+    elif kind == "fiber":      # angular faceted thigh and knee guards
         c.poly([(4, 2), (11, 2), (12, 5), (11, 7), (11, 13), (8, 13), (8, 8), (7, 8), (7, 13), (4, 13), (4, 7), (3, 5)], M)
         for (a, b) in ((4, 7), (8, 11)):
             c.poly([(a, 5), (b, 5), (b, 8), (a + 1, 9)], T)
@@ -788,7 +788,7 @@ def _boot(c, ox, shaft_top, M, sole, toe_x=7):
 
 def _boots(c, kind, M, T, A, V, G):
     tops = {"bandit": 6, "miner": 2, "steel": 4, "olive": 4, "commando": 3, "riot": 3,
-            "fibre": 4, "hev": 3, "steam": 4, "power": 2, "exo": 5}
+            "fiber": 4, "hev": 3, "steam": 4, "power": 2, "exo": 5}
     lamp = V[HL] if V else (200, 130, 255)
     for ox in (0, 7):
         top = tops.get(kind, 4)
@@ -815,7 +815,7 @@ def _boots(c, kind, M, T, A, V, G):
         elif kind == "riot":
             c.rect(2 + ox, 5, 5 + ox, 7, T)
             c.rect(6 + ox, 10, 7 + ox, 11, T)
-        elif kind == "fibre":
+        elif kind == "fiber":
             c.poly([(2 + ox, 5), (5 + ox, 5), (5 + ox, 8), (3 + ox, 8)], T)
             c.pix(6 + ox, 11, (200, 255, 255))
         elif kind == "hev":

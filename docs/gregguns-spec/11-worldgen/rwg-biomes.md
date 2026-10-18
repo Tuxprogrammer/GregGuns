@@ -1,19 +1,19 @@
 # World type and biomes
 
-- **Techguns baseline:** [structure-system.md § Spawn pipeline](../../techguns-spec/11-worldgen/structure-system.md#1-spawn-pipeline-world-generator), [structure-system.md § Structure base class](../../techguns-spec/11-worldgen/structure-system.md#2-structure-base-class) (colour types), [structure-catalogue.md § A5](../../techguns-spec/11-worldgen/structure-catalogue.md#a5-alien-bug-nest-alienbugneststructure--alienbugnest)
+- **Techguns baseline:** [structure-system.md § Spawn pipeline](../../techguns-spec/11-worldgen/structure-system.md#1-spawn-pipeline-world-generator), [structure-system.md § Structure base class](../../techguns-spec/11-worldgen/structure-system.md#2-structure-base-class) (color types), [structure-catalog.md § A5](../../techguns-spec/11-worldgen/structure-catalog.md#a5-alien-bug-nest-alienbugneststructure--alienbugnest)
 - **Design records:** [0005](../../design/0005-world-presence.md)
 - **Pack mods:** Realistic-World-Gen (`RWG`, alpha-1.5.2); DefaultWorldGenerator (`defaultworldgenerator`, 0.4.0); Biomes O' Plenty (`BiomesOPlenty`, 2.1.0.2308); Roguelike-Dungeons (`Roguelike`, 1.6.6-GTNH, as precedent)
 - **Roadmap:** M8
 
 ## What changes from Techguns
 
-Techguns picks structures by the biome at the chunk corner and tests it with `BiomeDictionary` types, except for the camp colour, which tests vanilla biome identity ([WGEN-32](../../techguns-spec/11-worldgen/index.md#suspected-bugs)). GregGuns keeps the type-based tests and removes every identity test and every biome ID. The pack forces RWG, so the biome set is not vanilla.
+Techguns picks structures by the biome at the chunk corner and tests it with `BiomeDictionary` types, except for the camp color, which tests vanilla biome identity ([WGEN-32](../../techguns-spec/11-worldgen/index.md#suspected-bugs)). GregGuns keeps the type-based tests and removes every identity test and every biome ID. The pack forces RWG, so the biome set is not vanilla.
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Land or water is `OCEAN` in the dictionary types | Same, via `BiomeDictionary.isBiomeOfType(biome, OCEAN)` | RWG registers its ocean base biomes with `OCEAN` (below) |
 | Alien Bug Nest: `SANDY` or `WASTELAND` | `(SANDY or WASTELAND) and not (RIVER or OCEAN or BEACH)`, from a config list of type names | RWG's hot river is `SANDY`, and its cold plains are `WASTELAND` |
-| Camp colour: `BlockUtils.getBiomeType` (vanilla identity) | Dictionary types: `COLD`/`SNOWY` snow, `SANDY`/`MESA` desert, `NETHER` nether, else woodland. `BEACH` is dropped from the desert list | Fixes WGEN-17 and WGEN-32. In RWG every ocean base biome is `BEACH` |
+| Camp color: `BlockUtils.getBiomeType` (vanilla identity) | Dictionary types: `COLD`/`SNOWY` snow, `SANDY`/`MESA` desert, `NETHER` nether, else woodland. `BEACH` is dropped from the desert list | Fixes WGEN-17 and WGEN-32. In RWG every ocean base biome is `BEACH` |
 | Any biome for most structures | Any non-`OCEAN` biome by default, plus a config blacklist of type names | Same default, but admins can exclude `MUSHROOM`, `RIVER` and so on |
 
 ## Integration points
@@ -42,7 +42,7 @@ Techguns picks structures by the biome at the chunk corner and tests it with `Bi
 
 - **Precedent:** Roguelike-Dungeons excludes `RIVER`, `BEACH`, `MUSHROOM` and `OCEAN` by type ([`Dungeon#validLocation`](https://github.com/GTNewHorizons/Roguelike-Dungeons/blob/1.6.6-GTNH/src/main/java/greymerk/roguelike/dungeon/Dungeon.java#L165-L211)). That is the pack's own idiom for "not a river, coast or sea".
 - **Biomes O' Plenty:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/biomesoplenty/biomeweights.cfg` sets `overworld biome weights`. BoP biomes reach RWG only where `SupportBOP` wires them in (many entries are commented out), and BoP registers its own dictionary types. GregGuns neither lists nor reads BoP biomes by name or ID.
-- **GregGuns does:** one `StructureBiomes` helper that takes a `BiomeGenBase` and answers `isWater`, `allowsLand(structure)` and `campColour`. All answers come from `BiomeDictionary`. It reads no biome ID.
+- **GregGuns does:** one `StructureBiomes` helper that takes a `BiomeGenBase` and answers `isWater`, `allowsLand(structure)` and `campColor`. All answers come from `BiomeDictionary`. It reads no biome ID.
 - **Pack-side change:** none.
 
 ## Requirements
@@ -50,9 +50,9 @@ Techguns picks structures by the biome at the chunk corner and tests it with `Bi
 - **GGS-11-01** No GregGuns worldgen code stores, compares or configures a biome ID. Config uses `BiomeDictionary.Type` names.
 - **GGS-11-02** `isWater(biome)` is `isBiomeOfType(biome, OCEAN)`. A `RIVER` biome is LAND.
 - **GGS-11-03** The Alien Bug Nest whitelist defaults to `(SANDY or WASTELAND) and not (RIVER or OCEAN or BEACH)`. It is a config list of type names.
-- **GGS-11-04** Camp colour comes from dictionary types as in the table above. `BEACH` does not select desert.
+- **GGS-11-04** Camp color comes from dictionary types as in the table above. `BEACH` does not select desert.
 - **GGS-11-05** Every structure has a config blacklist of dictionary type names. The default blacklist for land structures is empty.
-- **GGS-11-06** Code that finds no dictionary types for a biome (a modded biome that never registered any) treats it as LAND with woodland colour and does not throw.
+- **GGS-11-06** Code that finds no dictionary types for a biome (a modded biome that never registered any) treats it as LAND with woodland color and does not throw.
 
 ## Tests
 

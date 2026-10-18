@@ -9,10 +9,10 @@
 
 Entity damage, knockback and the ray-cast are unchanged. What changes is what happens to **blocks**, because the pack has a protection mod that works through Forge events, and GregTech machines react to being blown up.
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Part B breaks "each affected block" from the list it computed | Part B breaks the blocks that remain in the explosion's affected-block list **after** `ExplosionEvent.Detonate` has been posted | ServerUtilities removes protected blocks from that list. |
-| `MiningDummyProjectile` removes blocks with no `BreakEvent` (PFX-14) | Any GregGuns code that breaks blocks on a player's behalf posts `BlockEvent.BreakEvent` with the owner, and honours cancellation | ServerUtilities cancels `BreakEvent` in claimed chunks. |
+| `MiningDummyProjectile` removes blocks with no `BreakEvent` (PFX-14) | Any GregGuns code that breaks blocks on a player's behalf posts `BlockEvent.BreakEvent` with the owner, and honors cancellation | ServerUtilities cancels `BreakEvent` in claimed chunks. |
 | Blocks explode through `onBlockExploded` on a dummy `Explosion` | Same. A GregTech machine in the blast may then explode too. | `BlockMachines.onBlockExploded` chains a machine explosion. |
 | Resistance read through the exploder hook or the block | The block's full-signature `getExplosionResistance(Entity, World, x, y, z, ex, ey, ez)` | `BlockMachines` overrides that form. |
 
@@ -31,7 +31,7 @@ Entity damage, knockback and the ray-cast are unchanged. What changes is what ha
 
 - **Pack config:** `serverutilities.cfg`, `teams.grief_protection` = `true`, `teams.interaction_protection` = `true`; effective only when claiming is on (`world.chunk_claiming` = `false` as shipped).
 - **Source:** [ClaimedChunks.java#L244-L262](https://github.com/GTNewHorizons/ServerUtilities/blob/2.4.14/src/main/java/serverutils/data/ClaimedChunks.java#L244-L262) decides for an `EntityPlayerMP`; [L480-L485](https://github.com/GTNewHorizons/ServerUtilities/blob/2.4.14/src/main/java/serverutils/data/ClaimedChunks.java#L480-L485) cancels `BlockEvent.BreakEvent` at highest priority.
-- **GregGuns does:** the mining projectile, ore drill and any charge that breaks blocks one by one post `BlockEvent.BreakEvent` for the owner (an `EntityPlayerMP` or a fake player) and skip the block if the event is cancelled. This also fixes PFX-14 for any other protection mod.
+- **GregGuns does:** the mining projectile, ore drill and any charge that breaks blocks one by one post `BlockEvent.BreakEvent` for the owner (an `EntityPlayerMP` or a fake player) and skip the block if the event is canceled. This also fixes PFX-14 for any other protection mod.
 - **Pack-side change:** none.
 
 ### GregTech: machines react to nearby explosions
@@ -66,13 +66,13 @@ No pack file changes `mobGriefing`. A GregGuns NPC explosion that breaks blocks 
 ## Tests
 
 - GGS-04-10, GGS-04-11, GGS-04-13: unit tests on `ProjectileExplosion` with a fake world and a registered Forge listener. If a fake world is not practical, a `/gregguns test` scenario in `runServer`.
-- GGS-04-12: `/gregguns test` scenario with a cancelling `BreakEvent` listener.
+- GGS-04-12: `/gregguns test` scenario with a canceling `BreakEvent` listener.
 - GGS-04-14: unit test of the gating function.
 - GGS-04-15, GGS-04-16: unit test of the log message; GGS-04-16 by code review.
-- Pack behaviour: `runServer` with ServerUtilities loaded and `enable_explosions=FALSE`; a grenade must damage a mob and leave blocks intact.
+- Pack behavior: `runServer` with ServerUtilities loaded and `enable_explosions=FALSE`; a grenade must damage a mob and leave blocks intact.
 
 ## Open questions
 
-- **Chained GT machine explosions.** Is that wanted for GregGuns' balance, or should high-tier explosives skip `onBlockExploded` on GT machines? The Techguns behaviour calls it. Settle in the M5 or M6 design record on explosives.
+- **Chained GT machine explosions.** Is that wanted for GregGuns' balance, or should high-tier explosives skip `onBlockExploded` on GT machines? The Techguns behavior calls it. Settle in the M5 or M6 design record on explosives.
 - **Shooter immunity (PFX-25).** Keeping it is simpler. ServerUtilities has team and PvP settings that may expect friendly fire. Decide with the damage-model owner; no pack file forces either choice.
 - **Position conversion in the Detonate handler.** The handler builds a `ChunkDimPos` from the block coordinates it reads from each `ChunkPosition`. Whether that constructor converts block to chunk coordinates was not checked. If it does not, claim-based filtering would be wrong for every mod's explosions, not just ours. Check before relying on `enable_explosions=DEFAULT` in docs.

@@ -2,7 +2,7 @@
 
 Which Techguns parts become GT parts, and which stay GregGuns items.
 
-- **Techguns baseline:** [components-and-materials.md](../../techguns-spec/06-items/components-and-materials.md), [item-catalogue.md](../../techguns-spec/06-items/item-catalogue.md)
+- **Techguns baseline:** [components-and-materials.md](../../techguns-spec/06-items/components-and-materials.md), [item-catalog.md](../../techguns-spec/06-items/item-catalog.md)
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0002 machine deconfliction](../../design/0002-machine-deconfliction.md) (last row: "Techguns ores, ingots, plates, wires, circuits: Drop")
 - **Pack mods:** GregTech (GT5-Unofficial, `gregtech`, 5.09.54.205), IC2 (hard dependency)
 - **Roadmap:** M4 (production chain)
@@ -21,7 +21,7 @@ GregGuns items are what GT does not make: gun parts, ammo, emitters and the like
 - **Source:**
   - [`GTOreDictUnificator.get(OrePrefixes, Object, long)`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTOreDictUnificator.java#L126-L148) returns the unified stack for a prefix and material, or `null` (or the replacement) when none exists.
   - [`OrePrefixes`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/OrePrefixes.java) defines `plate` (L903), `plateDouble` (L892), `plateDense` (L834), `foil` (L925), `stick` (L949), `round` (L960), `bolt` (L971), `screw` (L990), `ring` (L1001), `springSmall` (L1012), `spring` (L1025), `wireFine` (L1036), `rotor` (L1048), `gearGtSmall` (L1058), `gearGt` (L1071), `cell` (L1119), `wireGt01` (L1896), `circuit` (L1974), `nugget` (L811), `ingot` (L670), `dust` (L801).
-  - [`Materials`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/Materials.java) has `Iron` (L93), `Copper` (L76), `Lead` (L95), `Gold` (L87), `Titanium` (L136), `Aluminium` (L59), `Uranium235` (L151), `Bronze` (L435), `Steel` (L658), `StainlessSteel` (L657), `TungstenSteel` (L770), `Rubber` (L507), `Polyethylene` (L496), `Electrum` (L456), `Carbon` (L70). There is no `Plastic`, no `ObsidianSteel` and no carbon-fibre material.
+  - [`Materials`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/Materials.java) has `Iron` (L93), `Copper` (L76), `Lead` (L95), `Gold` (L87), `Titanium` (L136), `Aluminium` (L59), `Uranium235` (L151), `Bronze` (L435), `Steel` (L658), `StainlessSteel` (L657), `TungstenSteel` (L770), `Rubber` (L507), `Polyethylene` (L496), `Electrum` (L456), `Carbon` (L70). There is no `Plastic`, no `ObsidianSteel` and no carbon-fiber material.
   - Circuits are addressed by tier material, for example `GTOreDictUnificator.get(OrePrefixes.circuit, Materials.MV, 1)`, as in [`Assembler.java` (BartWorks)](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/common/loaders/recipes/Assembler.java#L69).
   - GT machine parts live in [`ItemList`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java): `Electric_Motor_LV` (L358), `Electric_Piston_LV` (L435), `Robot_Arm_LV` (L450), `Emitter_LV` (L465), `Sensor_LV` (L480), `Circuit_Board_Basic` (L332), `ActivatedCarbonFilterMesh` (L2205), `Battery_RE_LV_Lithium` (L526). Each part has one entry per voltage tier.
 - **GregGuns does:** fetches every GT part with `GTOreDictUnificator.get(...)` or `ItemList.<part>.get(n)` when it writes a recipe. A `null` return skips the recipe and logs a warning; it never falls back to a GregGuns copy.
@@ -54,13 +54,13 @@ Legend: **GT** means GregGuns registers nothing and recipes use the GT part. **K
 | Pump Mechanism (32) | **Keep** | Built from GT `springSmall`, `ItemList.Electric_Piston_LV`-class parts if needed |
 | Laser Focus (36), UV Emitter (92), Sonic Emitter (97), Rad Emitter (108) | **Keep** | The emitters wrap `ItemList.Emitter_<tier>`, chosen by the consumer's tier. D1 keeps the UV Emitter as an EV component |
 | Reaction Chamber Heat Ray Focus (98) | **Keep** | Component of the kept multiblock ([0002](../../design/0002-machine-deconfliction.md)) |
-| Carbon Fibers, Carbon Plate (61, 62; `fiberCarbon`, `plateCarbon`) | **Drop as a material** | GT core has no carbon-fibre item. Carbon is `plate.EpoxidFiberReinforced` plus the tier material ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 2) |
+| Carbon Fibers, Carbon Plate (61, 62; `fiberCarbon`, `plateCarbon`) | **Drop as a material** | GT core has no carbon-fiber item. Carbon is `plate.EpoxidFiberReinforced` plus the tier material ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 2) |
 | Gas Mask Filter (74) | **Keep** | Built from `ItemList.ActivatedCarbonFilterMesh` |
 | Heavy Cloth (39), Treated Leather (109), Bio Mass (38) | **Keep** | Vanilla wool/leather and GT `Materials.Leather`, `Materials.Biomass`; the Chem Lab path is dropped, so recipes use the GT Chemical Reactor, Mixer or the crafting grid |
 | Cybernetic Parts (91), Power Plating (89), Anti Gravity Core (100) | **Keep** | GregGuns components, built from GT circuits, plates and `NetherStar` dust (`Materials.NetherStar`) |
 | Small Nuclear Warhead (103), Nuclear Power Cell, Depleted (106, 107) | **Keep** | GregGuns items; their radiation comes from GT ([hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items)) |
 | Nether Charge (63), Quartz Rod (99) | **Keep** / **Drop** | Nether Charge is ammo ([ammo.md](ammo.md)). Quartz Rod is a Reaction Chamber intermediate for blaze rods, which vanilla already gives; drop unless the chamber recipe needs it |
-| Glider parts, Oxygen Mask, turret armour, ore drill heads | Other areas | Armour: 05. Turret armour: 09. Ore drill heads: dropped with the Ore Drill ([0002](../../design/0002-machine-deconfliction.md)) |
+| Glider parts, Oxygen Mask, turret armor, ore drill heads | Other areas | Armor: 05. Turret armor: 09. Ore drill heads: dropped with the Ore Drill ([0002](../../design/0002-machine-deconfliction.md)) |
 
 ### Ore-dictionary names
 
@@ -91,5 +91,5 @@ Machine recipes use the GT recipe builder, `GTValues.RA.stdBuilder()`, with the 
 ## Open questions
 
 - **Obsidian Steel and Carbon tiers (closed).** Settled by [0010](../../design/0010-material-remap-and-tier-additions.md): the material follows the tier of the consuming item, and carbon is `plate.EpoxidFiberReinforced` plus the tier material.
-- **Carbon fibre (closed).** Not needed: [0010](../../design/0010-material-remap-and-tier-additions.md) decision 2 uses `plate.EpoxidFiberReinforced`.
+- **Carbon fiber (closed).** Not needed: [0010](../../design/0010-material-remap-and-tier-additions.md) decision 2 uses `plate.EpoxidFiberReinforced`.
 - **Quartz Rod and the Reaction Chamber's intermediates.** Depends on the Reaction Chamber's recipe design in area 08.

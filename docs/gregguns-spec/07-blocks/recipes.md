@@ -2,7 +2,7 @@
 
 Every recipe that makes a kept GregGuns block, written with GT parts and GT machines.
 
-- **Techguns baseline:** [block-catalogue.md § Recipes](../../techguns-spec/07-blocks/block-catalogue.md#recipes) (recipes B11 to B34 in [06-items/recipes.md](../../techguns-spec/06-items/recipes.md)), [block-sheets.md](../../techguns-spec/07-blocks/block-sheets.md)
+- **Techguns baseline:** [block-catalog.md § Recipes](../../techguns-spec/07-blocks/block-catalog.md#recipes) (recipes B11 to B34 in [06-items/recipes.md](../../techguns-spec/06-items/recipes.md)), [block-sheets.md](../../techguns-spec/07-blocks/block-sheets.md)
 - **Design records:** [0002 machine deconfliction](../../design/0002-machine-deconfliction.md) (decorative blocks kept; weapon and ammo chests kept as low-priority decorative storage; Chem Lab dropped), [0001 tier map](../../design/0001-tier-map.md) (lists no blocks)
 - **Sibling sheets:** [decorative-blocks.md](decorative-blocks.md), [storage-chests.md](storage-chests.md), [block-platform.md](block-platform.md)
 - **Format:** [CONVENTIONS § Recipe sheets](../CONVENTIONS.md#recipe-sheets)
@@ -27,7 +27,7 @@ Techguns' block recipes are crafting-table grids over Techguns plates and nugget
 
 - **Pack config:** none.
 - **Source:**
-  - Bulk, low-cost Assembler recipes with a programmed circuit and `RECIPE_LV / 2`: the casings at [AssemblerRecipes.java#L2671-L2700](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L2671-L2700), and the Drain Cover (2 aluminium plates and 2 iron bars) at [AssemblerRecipes.java#L326-L335](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L326-L335).
+  - Bulk, low-cost Assembler recipes with a programmed circuit and `RECIPE_LV / 2`: the casings at [AssemblerRecipes.java#L2671-L2700](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L2671-L2700), and the Drain Cover (2 aluminum plates and 2 iron bars) at [AssemblerRecipes.java#L326-L335](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L326-L335).
   - A block that wraps a chest in an Assembler recipe: the LV Input Bus (hull, chest, programmed circuit 1) at [AssemblerRecipes.java#L3472-L3480](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L3472-L3480).
   - The Mixer map is `RecipeMaps.mixerRecipes` ([RecipeMaps.java#L534](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L534)). The Industrial Mixer multiblock reads a **different** map, `mixerNonCellRecipes` ([RecipeMaps.java#L2185](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L2185), [MTEIndustrialMixer.java#L65](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/tileentities/machines/multi/MTEIndustrialMixer.java#L65)), so a recipe that needs no cell is registered to both, as GT does for its acid chains ([AcidRecipes.java#L114](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/chains/AcidRecipes.java#L114); [machine-roster.md](../08-machines-production/machine-roster.md#the-gt-coverage-check)). GT's own concrete block recipe is a Chemical Bath of a steel frame in molten concrete ([ChemicalBathRecipes.java#L64-L70](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/ChemicalBathRecipes.java#L64-L70)); GregGuns' concrete is a different block and keeps the Techguns inputs.
 - **GregGuns does:** registers these through `GTValues.RA.stdBuilder()`. Part lookups go through `GTOreDictUnificator.get` ([GGS-06-11](../06-items/components-and-materials.md#requirements)).
@@ -44,11 +44,11 @@ Techguns' block recipes are crafting-table grids over Techguns plates and nugget
 
 ## Metal Ladder, lamps and lanterns
 
-Techguns recipes B11 to B15. Lamp variants: meta 0 yellow lamp, meta 8 white lamp, meta 7 yellow lantern, meta 15 white lantern ([block-catalogue.md](../../techguns-spec/07-blocks/block-catalogue.md#registered-blocks)).
+Techguns recipes B11 to B15. Lamp variants: meta 0 yellow lamp, meta 8 white lamp, meta 7 yellow lantern, meta 15 white lantern ([block-catalog.md](../../techguns-spec/07-blocks/block-catalog.md#registered-blocks)).
 
 | Output | Method | Inputs | Circuit | Time | Notes |
 |---|---|---|---|---|---|
-| Metal Ladder (`ladder01`, grey) x16 | Assembler | `plate.Tin` x7 | 1 | 14 s | B11 (`iii` / `.i.` / `iii`) |
+| Metal Ladder (`ladder01`, gray) x16 | Assembler | `plate.Tin` x7 | 1 | 14 s | B11 (`iii` / `.i.` / `iii`) |
 | Lamp (`lamp01:0`, yellow) x16 | Assembler | glass pane x5, `dust.Redstone` x1, `nugget.Iron` x3 | 1 | 18 s | B12 (`iii` / `grg` / `ggg`) |
 | Lantern (`lamp01:7`, yellow) x16 | Assembler | `nugget.Iron` x6, glass pane x2, `dust.Redstone` x1 | 2 | 18 s | B14 (`iii` / `grg` / `iii`) |
 | Lamp, yellow to white (`lamp01:8`) x1 | Hand, shapeless | `lamp01:0` | n/a | n/a | B13, one direction |
@@ -93,7 +93,7 @@ Techguns recipes B21 to B24, B31, B32.
 | B25 to B27 Reaction Chamber Housing, Controller, Glass | Replaced by real casings and a GT controller in [08 recipes](../08-machines-production/recipes.md); the chamber glass is GT's |
 | B28 to B30 Fabricator Housing, Controller, Glass | Dropped ([0002](../../design/0002-machine-deconfliction.md)) |
 | Camo Net Placer items (R84 to R86) | Items, not blocks. Area 06 |
-| Screen, Control Panel, steel-frame variants, bug blocks, Monster Spawner, Air Marker, Bio Blob | No Techguns recipe ([block-catalogue.md](../../techguns-spec/07-blocks/block-catalogue.md#recipes)) |
+| Screen, Control Panel, steel-frame variants, bug blocks, Monster Spawner, Air Marker, Bio Blob | No Techguns recipe ([block-catalog.md](../../techguns-spec/07-blocks/block-catalog.md#recipes)) |
 
 ## Requirements
 
@@ -101,8 +101,8 @@ Numbering continues from [block-platform.md](block-platform.md).
 
 - **GGS-07-26.** Every recipe in this sheet resolves at boot. A `null` GT part skips that recipe and logs one warning ([GGS-06-11](../06-items/components-and-materials.md#requirements)).
 - **GGS-07-27.** No recipe input is a Techguns plate, nugget, ingot, circuit or rubber item ([GGS-06-10](../06-items/components-and-materials.md#requirements), [GGS-05-31](../05-armor/recipes.md#requirements) apply the same rule).
-- **GGS-07-28.** The bulk recipes (ladder, lamp, lantern, metal panel, connected metal panel, container) are Assembler recipes. Sandbags, camo nets and the lamp colour swaps are crafting-table recipes.
-- **GGS-07-29.** The lamp and lantern colour swaps are reversible: crafting one way and then back returns the original item, one for one.
+- **GGS-07-28.** The bulk recipes (ladder, lamp, lantern, metal panel, connected metal panel, container) are Assembler recipes. Sandbags, camo nets and the lamp color swaps are crafting-table recipes.
+- **GGS-07-29.** The lamp and lantern color swaps are reversible: crafting one way and then back returns the original item, one for one.
 - **GGS-07-30.** The concrete recipe outputs the GregGuns concrete block, never a block from a Chisel carving group.
 - **GGS-07-31.** The Reinforced Chest and Weapon Chest recipes accept only an empty vanilla chest, so no stored items are consumed or lost.
 - **GGS-07-32.** No recipe produces an ore drill, charging station, fabricator or ore cluster block.

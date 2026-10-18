@@ -18,11 +18,11 @@ GT recipe maps replace every Techguns process that GT can do. A machine stays on
 | Fabricator | Replace | GT Assembler and Circuit Assembler recipes |
 | Reaction Chamber | **Keep** | A GT single block plus a multiblock ([0011](0011-machine-policy.md)), on EU. Its focus, intensity and radiation gameplay is unique |
 | Charging Station | Drop | GT chargers and battery buffers |
-| Repair Bench | **Keep** | Armour and gun repair using GT materials. Single block plus the Armoury Gantry multiblock ([0011](0011-machine-policy.md)) |
+| Repair Bench | **Keep** | Armor and gun repair using GT materials. Single block plus the Armory Gantry multiblock ([0011](0011-machine-policy.md)) |
 | Camo Bench | **Keep** | Cosmetic, with no GT equivalent |
 | Ore Drill | Drop | GT miners and the GTNH ore system |
 | Scrapper | Drop | Unfinished in Techguns; GT recycling covers it |
-| Turret | **Keep** | Core to the defence theme. Single block plus the Rampart multiblock ([0011](0011-machine-policy.md)) |
+| Turret | **Keep** | Core to the defense theme. Single block plus the Rampart multiblock ([0011](0011-machine-policy.md)) |
 | Explosive charges | **Keep** | Tier-gated. Revisit if they overlap GT mining explosives in play |
 | Weapon and ammo chests | **Keep** | Low priority; decorative storage |
 | Techguns ores, ingots, plates, wires, circuits | Drop | GT materials and parts through unification |

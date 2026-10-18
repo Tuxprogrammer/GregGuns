@@ -2,7 +2,7 @@
 
 All the files are mono Ogg Vorbis. Durations and sample rates were read from the Ogg headers. Every event is in category `block`. When a sounds.json event lists several files, Minecraft picks one at random each time it plays.
 
-All playback in this area uses `World.playSound(x, y, z, event, volume, pitch, distanceDelay=true)` at the machine's block coordinates (the corner, not the centre). This call **is local-only**: it plays only on the side that calls it. The Ammo Press and Metal Press call it from both sides, so only the client call is audible. The others call it client-side only.
+All playback in this area uses `World.playSound(x, y, z, event, volume, pitch, distanceDelay=true)` at the machine's block coordinates (the corner, not the center). This call **is local-only**: it plays only on the side that calls it. The Ammo Press and Metal Press call it from both sides, so only the client call is audible. The others call it client-side only.
 
 ## 1. Events and files
 
@@ -110,7 +110,7 @@ Every call is `World.playSound(x, y, z, name, volume, pitch, distanceDelay)` usi
 Timing observations:
 - The Ammo Press, Metal Press and Chem Lab schedules are written as fractions of `totalTime`, but `totalTime` is always 100 for these machines, so the ticks are fixed.
 - The ore drill repeats every 62 ticks (3.1 s), which is shorter than every drill clip (4.0 to 9.7 s), so successive plays **overlap**.
-- No pitch or volume is randomised in any of these calls.
+- No pitch or volume is randomized in any of these calls.
 
 ## 6. Sounds in this area that are commented out or vanilla
 

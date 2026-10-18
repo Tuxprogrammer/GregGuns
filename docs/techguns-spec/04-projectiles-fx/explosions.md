@@ -23,23 +23,23 @@ A rewrite of vanilla `Explosion` with separate control over entity damage. It wr
 
 ### `doExplosion(blockDamage, attacker)`
 
-- **Server:** post Forge `ExplosionEvent.Start`. If it is not cancelled, run part A then part B.
+- **Server:** post Forge `ExplosionEvent.Start`. If it is not canceled, run part A then part B.
 - **Client:** run A and B unconditionally. Callers that run on both sides (alien blaster, grenades) therefore also execute it client-side. See bug [PFX-15](index.md#suspected-bugs).
 
 ### Part A: affected blocks and entity damage
 
 1. **Block ray-cast** (identical to vanilla 1.7.10):
-   - Cast a ray from the centre along each of the 16 × 16 × 16 grid directions that lie on the cube surface (1352 rays).
+   - Cast a ray from the center along each of the 16 × 16 × 16 grid directions that lie on the cube surface (1352 rays).
    - Each ray starts with intensity `size × (0.7 + rand × 0.6)` and steps 0.3 blocks at a time.
    - At each step, if the block is not air, subtract `(resistance + 0.3) × 0.3`. Resistance comes from the exploder's `func_145772_a` (entity explosion-resistance hook), or from the block's explosion resistance if there is no exploder.
    - Each step also costs `0.3 × 0.75`.
    - While intensity is above 0 and the exploder permits it (`func_145774_a`), record the block position.
    - The affected-block list is always computed, even when `blockDamage` is false.
 2. Temporarily double `explosionSize` (matches vanilla).
-3. **Entity list:** every entity except the exploder whose bounding box intersects the axis-aligned cube centred on the explosion with half-size `dmgRadius2 + 1`.
+3. **Entity list:** every entity except the exploder whose bounding box intersects the axis-aligned cube centered on the explosion with half-size `dmgRadius2 + 1`.
 4. **Server:** post `ForgeEventFactory.onExplosionDetonate(world, dummyExplosion, list, size)`. Listeners may remove entities from the list.
-5. For each entity, measure `distance` from its feet position to the centre. If `distance ≤ dmgRadius2`:
-   - **Push direction:** the unit vector from the centre to the entity's eye.
+5. For each entity, measure `distance` from its feet position to the center. If `distance ≤ dmgRadius2`:
+   - **Push direction:** the unit vector from the center to the entity's eye.
    - **Damage:** `entityDamage × min(1, 1 − (distance − dmgRadius1) / (dmgRadius2 − dmgRadius1))`. This is flat inside r1 and falls linearly to 0 at r2. There is no occlusion, and block density is *not* used for damage.
    - If an attacker is given and both parties are living, multiply by [`DamageSystem.getDamageFactor(attacker, entity)`](../02-guns/index.md#coverage). This is the friendly-fire and team factor, see [`01-core`](../01-core/index.md).
    - **Damage source:**
@@ -51,7 +51,7 @@ A rewrite of vanilla `Explosion` with separate control over entity damage. It wr
 
 ### Part B: sound, block destruction and fire
 
-1. Play `explosionSound` at the centre, volume **4.0**, pitch `(1 + (r1 − r2) × 0.2) × 0.7`, where r1 and r2 are two independent random floats.
+1. Play `explosionSound` at the center, volume **4.0**, pitch `(1 + (r1 − r2) × 0.2) × 0.7`, where r1 and r2 are two independent random floats.
 2. For each affected block: compute (but do not use) the vanilla particle vector. The vanilla `explode`/`smoke` particles and the `hugeexplosion`/`largeexplode` particles are commented out. **All visuals come from the FX packets the callers send.**
 3. If `blockDamage`, for each affected non-air block:
    - If `canDropFromExplosion`, call `dropBlockAsItemWithChance(chance = 1 / explosionSize)`.

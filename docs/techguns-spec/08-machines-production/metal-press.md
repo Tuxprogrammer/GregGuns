@@ -44,26 +44,26 @@ Each `MetalPressRecipe` has `slot1` and `slot2` ([`ItemStackOreDict`](gui-handle
 
 | # | Input A | Input B | Output |
 |---|---|---|---|
-| 1 | [`ingotSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | Obsidian (block) ×1 | Obsidian Steel Ingot ×1 (shared 40) |
-| 2 | [`ingotTin`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotTin` | Tin Plate ×2 (shared 41) |
-| 3 | [`ingotCopper`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotCopper` | Copper Plate ×2 (42) |
-| 4 | [`ingotBronze`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotBronze` | Bronze Plate ×2 (44) |
+| 1 | [`ingotSteel`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | Obsidian (block) ×1 | Obsidian Steel Ingot ×1 (shared 40) |
+| 2 | [`ingotTin`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotTin` | Tin Plate ×2 (shared 41) |
+| 3 | [`ingotCopper`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotCopper` | Copper Plate ×2 (42) |
+| 4 | [`ingotBronze`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotBronze` | Bronze Plate ×2 (44) |
 | 5 | `ingotIron` | `ingotIron` | Iron Plate ×2 (43) |
 | 6 | `ingotSteel` | `ingotSteel` | Steel Plate ×2 (45) |
-| 7 | [`ingotLead`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotLead` | Lead Plate ×2 (104) |
-| 8 | [`plateIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | Flint | Mechanical Parts ×1 (30) |
-| 9 | [`plateObsidianSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | `gemQuartz` | Mechanical Parts (Obsidian Steel) ×1 (34) |
+| 7 | [`ingotLead`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotLead` | Lead Plate ×2 (104) |
+| 8 | [`plateIron`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | Flint | Mechanical Parts ×1 (30) |
+| 9 | [`plateObsidianSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | `gemQuartz` | Mechanical Parts (Obsidian Steel) ×1 (34) |
 | 10 | `plateCarbon` | Blaze Rod | Mechanical Parts (Carbon) ×2 (37) |
-| 11 | [`plateCopper`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | `plateCopper` | Copper Wire ×8 (57) |
+| 11 | [`plateCopper`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | `plateCopper` | Copper Wire ×8 (57) |
 | 12 | `fiberCarbon` | `fiberCarbon` | Carbon Plate ×2 (62) |
 | 13 | `plateObsidianSteel` | TGX ×1 (60) | Advanced Bullets ×16 (22) |
-| 14 | [`ingotObsidianSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | `ingotObsidianSteel` | Obsidian Steel Plate ×2 (65) |
-| 15 | [`plateSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | [`plateBronze`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | Steam Armor Plating ×1 (67) |
+| 14 | [`ingotObsidianSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | `ingotObsidianSteel` | Obsidian Steel Plate ×2 (65) |
+| 15 | [`plateSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | [`plateBronze`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | Steam Armor Plating ×1 (67) |
 | 16 | `ingotGold` | `ingotGold` | Gold Wire ×2 (86) |
 | 17 | `plateIron` | TNT (block) | 40mm Grenade ×16 (93) |
-| 18 | [`ingotTitanium`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | `ingotTitanium` | Titanium Plate ×2 (96) |
+| 18 | [`ingotTitanium`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | `ingotTitanium` | Titanium Plate ×2 (96) |
 
-The shared-item numbers are metadata of [`TGItems.sharedItem`](../06-items/item-catalogue.md) (see [`06-items`](../06-items/index.md)).
+The shared-item numbers are metadata of [`TGItems.sharedItem`](../06-items/item-catalog.md) (see [`06-items`](../06-items/index.md)).
 
 ## 3. Auto-split mode
 
@@ -85,7 +85,7 @@ The effect is that a player can drop one stack of ingots in and both slots are f
 
 - **Title** `techguns.container.metalpress` ("Metal Press"). Inventory label as usual.
 - **Mode text.** "Stack split:" (`techguns.container.metalpress.autosplit` + ":") at (20,30), with "On" or "Off" (`techguns.container.info.on/off`) at (20,40).
-- **Button.** ID 3 at (20,50), 40×20, labelled `techguns.button.switch` ("Switch"). It toggles auto-split and requires access.
+- **Button.** ID 3 at (20,50), 40×20, labeled `techguns.button.switch` ("Switch"). It toggles auto-split and requires access.
 - **Upgrade slot frame.** Copied from u119 v59, 20×20, drawn at (149,59).
 - **Progress.** Sprite u176 v0, **20** wide × (progress·21/total + 1) tall, at (119,36). Fills top-down.
 - **Container sync:** 0 progress, 1 totalTime, 2 power (raw RF), 3 auto-split mode.
@@ -97,9 +97,9 @@ The effect is that a player can drop one stack of ingots in and both slots are f
 
 ## 6. Visuals
 
-TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr) (shared class) with [`ModelMetalPress`](../07-blocks/block-rendering-and-models.md#modelmetalpress-uv-12864-texture-metalpresspng) (declared 128×64) and texture [`textures/blocks/MetalPress.png`](../07-blocks/textures.md#11-model-textures) (256×128, catalogued in [07-blocks](../07-blocks/index.md)).
+TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr) (shared class) with [`ModelMetalPress`](../07-blocks/block-rendering-and-models.md#modelmetalpress-uv-12864-texture-metalpresspng) (declared 128×64) and texture [`textures/blocks/MetalPress.png`](../07-blocks/textures.md#11-model-textures) (256×128, cataloged in [07-blocks](../07-blocks/index.md)).
 
-- **Look.** A grey steel hydraulic press: a base table, columns and a heavy top block. The texture is mostly grey/silver weathered metal with a hazard-striped strip.
+- **Look.** A gray steel hydraulic press: a base table, columns and a heavy top block. The texture is mostly gray/silver weathered metal with a hazard-striped strip.
 - **Animation.**
   - Working: the `MetalPiece` blank shows on the table, and the press head (parts `p1..p6`) moves vertically by 0.25·y blocks, where y = 0.5 + sin((√(2q)+0.75)·2π)/2 and q = p mod 0.5. That's **two strokes per operation**; y starts and ends each stroke at 0.
   - Idle: the head is at rest and there's no blank.
@@ -108,10 +108,10 @@ TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation-
 
 | # | Field | Contents |
 |---|---|---|
-| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 1; tile `MetalPressTileEnt`; name key `techguns.tile.BasicMachine_1.name`, English **Metal Press**; container `MetalPressContainer`, GUI ID 1; creative tab Techguns; oredict names none |
+| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalog.md#registered-blocks) meta 1; tile `MetalPressTileEnt`; name key `techguns.tile.BasicMachine_1.name`, English **Metal Press**; container `MetalPressContainer`, GUI ID 1; creative tab Techguns; oredict names none |
 | 2 | Obtaining | Shaped ore recipe `ibi / iei / iri` (i `ingotIron`, b `blockIron`, e Electric Engine, r redstone), with an alternative using `plateIron` as b; table in [blocks-and-items.md](blocks-and-items.md#crafting-recipes-for-the-machines-in-this-area) |
 | 3 | Numbers | Buffer 20 000 RF; 20 RF/t times the multiplier; 100 ticks per operation; multiplier 1 to 8; 18 recipes (section 2); hardness 4.0, resistance 20.0 |
-| 4 | Behaviour | Sections 2 and 3 (recipe model, auto-split). Runs on both sides like the Ammo Press |
+| 4 | Behavior | Sections 2 and 3 (recipe model, auto-split). Runs on both sides like the Ammo Press |
 | 5 | Persistence and sync | NBT `autoSplitMode` (byte), plus the base keys (see [ammo-press.md](ammo-press.md#8-entity-sheet-summary-consistency-pass) and [framework.md](framework.md)). GUI progress-bar fields: 0 progress, 1 totalTime, 2 power (raw RF), 3 auto-split mode. Button ID 3 toggles auto-split |
 | 6 | UI | Section 4. Item tooltip: "Has TileEntity Data" only when carrying `TileEntityData`. GUI strings: "Metal Press", "Stack split:" with "On"/"Off", button "Switch" |
 | 7 | Visuals | No per-face block texture (TESR only; break icon `screen_top`). TESR `RenderAmmoPress` + `ModelMetalPress`; atlas `textures/blocks/MetalPress.png`, 256×128, average #383532, dominant #101010 58 %, #909090 7 %, #505050 5 %, 100 % opaque. Item renderer delegate 1 ([`RenderBlockModelItem`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand)) |

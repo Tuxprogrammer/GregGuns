@@ -9,12 +9,12 @@ The debug `KeyInputHandler` and [`TGKeybinds`](input-and-hud.md#keybinds-tgkeybi
 
 ## TechgunsEventhandler (Forge bus)
 
-| Event | Priority | Side | Behaviour |
+| Event | Priority | Side | Behavior |
 |---|---|---|---|
 | `FOVUpdateEvent` | normal | client | Applies zoom and the speed-FOV lock ([input-and-hud.md](input-and-hud.md#fov-and-zoom)) |
 | `LivingJumpEvent` | normal | both | Players: `motionY += JUMP bonus` from armor, consuming power ([05](../05-armor/index.md)) |
 | `LivingFallEvent` | normal | both | Players. Power is consumed only if the fall distance is over 3. `distance = max(0, distance − FREEHEIGHT)`, then multiplied by (1 − FALLDMG) if FALLDMG < 1, otherwise set to 0 |
-| `BreakSpeed` (`stopGunHarvesting`) | **highest** | both | Holding a left-click [`GenericGun`](../02-guns/gun-lifecycle.md) → `newSpeed = −1` and the event is cancelled (no mining with guns) |
+| `BreakSpeed` (`stopGunHarvesting`) | **highest** | both | Holding a left-click [`GenericGun`](../02-guns/gun-lifecycle.md) → `newSpeed = −1` and the event is canceled (no mining with guns) |
 | `BreakSpeed` | normal | both | `newSpeed ×= (1 + BREAKSPEED bonus)`. If the player is inside water or lava, it is also multiplied by (1 + BREAKSPEED_WATER). Both bonuses consume power |
 | `ChunkEvent.Unload` | normal | client worlds | Every `EntityLivingBase` in the unloading chunk is removed from the ClientProxy recoil/reload map |
 | `PlayerEvent.Clone` | normal | server | Copies all Techguns player data from the old to the new player entity ([player-state.md](player-state.md#drops-death-clone)) |
@@ -25,7 +25,7 @@ The debug `KeyInputHandler` and [`TGKeybinds`](input-and-hud.md#keybinds-tgkeybi
 | `GuiScreenEvent.InitGuiEvent.Post` | normal | client | Adds the two inventory tab buttons to `GuiInventory` when TConstruct is absent ([input-and-hud.md](input-and-hud.md#inventory-tab-buttons)) |
 | `RenderPlayerEvent.Specials.Pre` (`renderAkimboSecondGun`) | normal | client | If the held gun is akimbo, draws the off-hand copy through `RenderAdditionalSlotItem.getRenderForItem(stack)` ([03](../03-gun-visuals-audio/index.md)) |
 | `RenderPlayerEvent.Pre` | normal | client | Holding a `GenericGun` sets the aimed-bow pose on the player's main, armor and chestplate models (two-handed aim) |
-| `RenderPlayerEvent.SetArmorModel` | normal | client | Pass 0 (helmet): read the face item from the DataWatcher and draw it with its `RenderAdditionalSlotItem` renderer ([05](../05-armor/index.md)). It is drawn "visible" unless the worn helmet is a [`GenericArmor`](../05-armor/armor-catalogue.md#1-class-hierarchy) that hides the face slot. Pass 1 (chest): the same for the back item, hidden when the chestplate hides the back slot |
+| `RenderPlayerEvent.SetArmorModel` | normal | client | Pass 0 (helmet): read the face item from the DataWatcher and draw it with its `RenderAdditionalSlotItem` renderer ([05](../05-armor/index.md)). It is drawn "visible" unless the worn helmet is a [`GenericArmor`](../05-armor/armor-catalog.md#1-class-hierarchy) that hides the face slot. Pass 1 (chest): the same for the back item, hidden when the chestplate hides the back slot |
 | `EntityJoinWorldEvent` | normal | server | Player: send a full extended sync to that player. [`TGDummySpawn`](../10-entities-npcs/per-mob.md#18-tgdummyspawn-tgdummyspawn): hand it to [`TGSpawnManager.handleSpawn`](../10-entities-npcs/spawning.md#11-vanilla-hook) ([10](../10-entities-npcs/index.md)) and **cancel** the join, so the placeholder never exists |
 | `MouseEvent` | **high** | client | Left-click handling for guns ([input-and-hud.md](input-and-hud.md#firing-guns-with-the-left-mouse-button)) |
 | `LivingAttackEvent` | **high** | both | See [below](#livingattackevent-routing) |
@@ -43,17 +43,17 @@ A large amount of commented-out experimentation (fog color, block place/break te
 
 ## TechgunsTickHandler (FML bus)
 
-| Event | Side | Behaviour |
+| Event | Side | Behavior |
 |---|---|---|
 | `PlayerTickEvent` (`onPlayerTick`) | both | All per-player logic ([player-state.md](player-state.md#per-tick-player-logic-techgunstickhandleronplayertick-fml-playertickevent)) |
-| `PlayerTickEvent` (`updateCheckMessage`, receives cancelled events) | client | Posts the update-available chat message once ([client-effects-audio.md](client-effects-audio.md#version-checker)) |
+| `PlayerTickEvent` (`updateCheckMessage`, receives canceled events) | client | Posts the update-available chat message once ([client-effects-audio.md](client-effects-audio.md#version-checker)) |
 | `RenderTickEvent` | client | Updates `player_zoom` |
 | `ItemCraftedEvent` | both | Akimbo split: gives back the second gun ([player-state.md](player-state.md#other-handlers-in-the-tick-handler-class)) |
 | `PlayerLoggedOutEvent` | marked client | Removes the player from the recoil maps if `isRemote`. FML fires this on the server, so it does nothing |
 
 ## GuiOverlayAmmoCount (Forge bus, client)
 
-| Event | Behaviour |
+| Event | Behavior |
 |---|---|
 | `RenderGameOverlayEvent` (post, EXPERIENCE) | Ammo counter and status icon column |
 | `RenderGameOverlayEvent.Pre` (ARMOR) | Replaces the armor bar (up to 24 points) |
@@ -66,7 +66,7 @@ Full layout in [input-and-hud.md](input-and-hud.md#hud-overlay-guioverlayammocou
 
 ## Event handler sheets (consistency pass)
 
-For every subscription: the bus it sits on, the registration point, the method, its priority, whether `receiveCanceled` is set (that is, whether it still runs after another handler cancelled the event), whether the handler itself cancels the event, and the behaviour pointer. Where the source writes a bare `@SubscribeEvent`, the defaults are priority NORMAL and `receiveCanceled = false`.
+For every subscription: the bus it sits on, the registration point, the method, its priority, whether `receiveCanceled` is set (that is, whether it still runs after another handler canceled the event), whether the handler itself cancels the event, and the behavior pointer. Where the source writes a bare `@SubscribeEvent`, the defaults are priority NORMAL and `receiveCanceled = false`.
 
 ### Registration points
 
@@ -80,13 +80,13 @@ For every subscription: the bus it sits on, the registration point, the method, 
 
 ### `TechgunsEventhandler` (Forge bus)
 
-| Event type | Method | Priority | `receiveCanceled` | Cancels? | Side annotation | Behaviour |
+| Event type | Method | Priority | `receiveCanceled` | Cancels? | Side annotation | Behavior |
 |---|---|---|---|---|---|---|
 | `FOVUpdateEvent` | `handleFovEvent` | NORMAL (bare) | false | no, rewrites `newfov` | `@SideOnly(CLIENT)` | [FOV and zoom](input-and-hud.md#fov-and-zoom) |
-| `LivingJumpEvent` | `onEvent` | NORMAL | false | no | none (both sides) | Jump bonus from armour |
+| `LivingJumpEvent` | `onEvent` | NORMAL | false | no | none (both sides) | Jump bonus from armor |
 | `LivingFallEvent` | `onEvent` | NORMAL | false | no, rewrites `distance` | none | Fall-damage bonus |
 | `PlayerEvent.BreakSpeed` | `stopGunHarvesting` | HIGHEST | false | yes, when holding a left-click gun | none | No mining with guns |
-| `PlayerEvent.BreakSpeed` | `onEvent` | NORMAL | false | no, rewrites `newSpeed` | none | Armour break-speed bonuses |
+| `PlayerEvent.BreakSpeed` | `onEvent` | NORMAL | false | no, rewrites `newSpeed` | none | Armor break-speed bonuses |
 | `ChunkEvent.Unload` | `onEvent` | NORMAL | false | no | none; acts only when `world.isRemote` | Clears recoil/reload map entries |
 | `PlayerEvent.Clone` | `onPlayerClone` | NORMAL (bare) | false | no | none | Copies Techguns player data |
 | `RenderLivingEvent.Pre` | `handleEntityRenderEvent` | NORMAL (bare) | false | yes, for GORE / BIO / LASER / DISMEMBER corpses | `@SideOnly(CLIENT)` | Hides or replaces the corpse; aimed-bow pose for shooters |
@@ -104,11 +104,11 @@ For every subscription: the bus it sits on, the registration point, the method, 
 | `PlayerEvent.StopTracking` | `onStopTracking` | NORMAL | false (default) | no | none; body guarded by `isRemote` | Dead code ([CORE-10](index.md#suspected-bugs)) |
 | `TextureStitchEvent.Pre` | `onTextureStitch` | NORMAL | false (default) | no | `@SideOnly(CLIENT)` | Milk icons |
 
-All other `TechgunsEventhandler` subscriptions in the source (interact, block place and break, explosion start and detonate, fog density and colour, living update, GUI pre-draw, lava burn) are commented out and have no runtime effect.
+All other `TechgunsEventhandler` subscriptions in the source (interact, block place and break, explosion start and detonate, fog density and color, living update, GUI pre-draw, lava burn) are commented out and have no runtime effect.
 
 ### `TechgunsTickHandler` (FML bus)
 
-| Event type | Method | Priority | `receiveCanceled` | Cancels? | Side annotation | Behaviour |
+| Event type | Method | Priority | `receiveCanceled` | Cancels? | Side annotation | Behavior |
 |---|---|---|---|---|---|---|
 | `TickEvent.PlayerTickEvent` | `onPlayerTick` | NORMAL (bare) | false | not cancelable | none; internal `event.side` and `isRemote` branches | [Per-tick player logic](player-state.md#per-tick-player-logic-techgunstickhandleronplayertick-fml-playertickevent) |
 | `TickEvent.PlayerTickEvent` | `updateCheckMessage` | NORMAL | **true** | not cancelable | `@SideOnly(CLIENT)` | Update chat message ([CORE-02](index.md#suspected-bugs)) |
@@ -118,14 +118,14 @@ All other `TechgunsEventhandler` subscriptions in the source (interact, block pl
 
 ### `GuiOverlayAmmoCount` (Forge bus, client)
 
-| Event type | Method | Priority | `receiveCanceled` | Cancels? | Behaviour |
+| Event type | Method | Priority | `receiveCanceled` | Cancels? | Behavior |
 |---|---|---|---|---|---|
 | `RenderGameOverlayEvent` (base type; returns early unless the event is not cancelable and its element is `EXPERIENCE`) | `onEvent` | NORMAL | false | no | Ammo counter, safe-mode icon, status column |
-| `RenderGameOverlayEvent.Pre` (only element `ARMOR`) | `onEventArmorBar` | NORMAL | false | yes, when `showTGHudElements` is on and the properties exist | 24-point armour bar |
+| `RenderGameOverlayEvent.Pre` (only element `ARMOR`) | `onEventArmorBar` | NORMAL | false | yes, when `showTGHudElements` is on and the properties exist | 24-point armor bar |
 
 ### Key handlers (FML bus, client)
 
-| Event type | Class and method | Priority | `receiveCanceled` | Cancels? | Behaviour |
+| Event type | Class and method | Priority | `receiveCanceled` | Cancels? | Behavior |
 |---|---|---|---|---|---|
 | `InputEvent.KeyInputEvent` | `TGKeybinds.onKeyInput` | NORMAL (bare) | false | not cancelable | One packet per press, see [keybind sheets](input-and-hud.md#keybind-entity-sheets-consistency-pass) |
 | `InputEvent.KeyInputEvent` | `debug.KeyInputHandler.onKeyInput` | NORMAL (bare) | false | not cancelable | Debug offsets and FX reload |

@@ -15,7 +15,7 @@ IC2's own charge manager would accept a higher-tier charger, but GT's machines n
 ## Decision
 - A GregGuns electric item charges in a GT charger or battery buffer of **exactly** its D1 tier, the same as GT's own batteries and tools.
 - Its `getTier` returns that tier, and its `getTransferLimit` matches GT's battery of the same tier.
-- Charging from other sources (an IC2 battery item in the inventory, or armour that charges held items) follows the IC2 API's `tier` argument unchanged.
+- Charging from other sources (an IC2 battery item in the inventory, or armor that charges held items) follows the IC2 API's `tier` argument unchanged.
 - Everything else in 0003 stands.
 
 ## Consequences

@@ -31,7 +31,7 @@ These exist only when config [`enableDebugKeybinds`](config.md#category-debug) =
 | `key.+y` / `key.-y` | Numpad 4 / Numpad 5 | Y ± 0.1 |
 | `key.+z` / `key.-z` | Numpad 1 / Numpad 2 | Z ± 0.1 |
 | `key.show` | Numpad 0 | Chat "XYZ: x, y, z" |
-| `key.reloadFX` | Numpad Enter | Chat "Reloading FXList...", reloads [`particles/FXList.txt`](../04-projectiles-fx/fx-catalogue.md) ([04](../04-projectiles-fx/index.md)), then "Done!" |
+| `key.reloadFX` | Numpad Enter | Chat "Reloading FXList...", reloads [`particles/FXList.txt`](../04-projectiles-fx/fx-catalog.md) ([04](../04-projectiles-fx/index.md)), then "Done!" |
 | `key.killAllEntityFX` | Numpad , | Chat "Removing all Particles...", kills all FX particles, then "Done!" |
 
 `debug/Uuidgen.java` is a standalone `main` that prints a random UUID. It is a developer tool and is not used at runtime.
@@ -43,7 +43,7 @@ Guns can be "shoot with left click". When they are, vanilla attack and mining ar
 1. **MouseEvent** (Forge bus, client, priority HIGH): for button 0 while the game has focus and the player holds a `GenericGun`:
    - If the gun shoots with left click: store the button state (down or up) in [`ClientProxy.keyFirePressed`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) and **cancel** the event, so vanilla never sees the click.
    - Otherwise (a melee or mining type gun such as the chainsaw): if a reload is still in progress (reload end time in the future), cancel the press so you can't attack or mine while reloading.
-2. **BreakSpeed** (priority HIGHEST): while holding a left-click gun, the break speed becomes −1 and the event is cancelled, so the player can't mine.
+2. **BreakSpeed** (priority HIGHEST): while holding a left-click gun, the break speed becomes −1 and the event is canceled, so the player can't mine.
 3. **PlayerTickEvent START** (client, local player only, game focused):
    - If the held item is a left-click gun and `keyFirePressed` is set, and `fireDelay` ≤ 0: send `PacketShootGun(gun.isZooming())` and call `shootGunLeftClick` locally.
    - For **semi-auto** guns, `keyFirePressed` is then cleared, even when the shot was blocked by `fireDelay`. A click made slightly before the cooldown ends is lost ([CORE-32](index.md#suspected-bugs)).
@@ -90,7 +90,7 @@ Starts at y = H − 30. Each shown row draws a 7×7 icon at x = W − 10, and th
 
 | Order | Condition | Icon (u, v) | Text |
 |---|---|---|---|
-| 1 | Chest armor is a [`PoweredArmor`](../05-armor/armor-catalogue.md#9-power-system-poweredarmor) | (249, 35) battery | `§e<batteries>x§f<power%>%`, where batteries = count of that armor's battery item in main inventory and ammo slots, and power% = stored ÷ max power. Drawn at x = W + 14 − len×6 |
+| 1 | Chest armor is a [`PoweredArmor`](../05-armor/armor-catalog.md#9-power-system-poweredarmor) | (249, 35) battery | `§e<batteries>x§f<power%>%`, where batteries = count of that armor's battery item in main inventory and ammo slots, and power% = stored ÷ max power. Drawn at x = W + 14 − len×6 |
 | 2 | Back slot holds a jetpack, jump pack or anti-grav pack | (242, 42) jetpack off / (249, 42) jetpack on (shows `enableJetpack`) | `§e<fuel items>x§f<charge%>%`, where charge% = 1 − displayDamage ÷ maxDamage of the pack, and fuel items = count of the pack's ammo item. Same x formula |
 | 3 | `proxy.hasNightvision` (armor provides NV) | (242, 7) off / (249, 7) on, per `enableNightVision` | — |
 | 4 | `proxy.hasStepassist` (armor provides step assist) | (242, 21) off / (249, 21) on, per `enableStepAssist` | — |
@@ -100,12 +100,12 @@ For row 5 the pieces are checked in slot order. A piece under 35 % sets "warning
 
 ### Armor bar replacement (`RenderGameOverlayEvent.Pre`, ARMOR)
 
-When `showTGHudElements` is on, the vanilla armor bar is cancelled and replaced by a bar that can show up to **24** armor points:
+When `showTGHudElements` is on, the vanilla armor bar is canceled and replaced by a bar that can show up to **24** armor points:
 - Armor level = Forge's total armor value.
 - Start position: x = W/2 − 93, y = H − 48.
 - 12 icons, 8×8, spaced 7 px apart (they overlap by 1 px). They are drawn only if level > 0.
 - For i = 1, 3, 5, …, 23: draw a full icon (0, 168) if i < level, a half icon (8, 168) if i = level, and an empty icon (16, 168) if i > level.
-- Blending is enabled while drawing. Afterwards the vanilla `textures/gui/icons.png` is bound again.
+- Blending is enabled while drawing. Afterward the vanilla `textures/gui/icons.png` is bound again.
 
 The handler does not advance Forge's `left_height` ([CORE-33](index.md#suspected-bugs)).
 
@@ -132,24 +132,24 @@ The Techguns inventory GUI itself adds the mirror pair: the vanilla tab enabled 
 
 | Region (x, y, w, h) | Content | Used by |
 |---|---|---|
-| (0, 0, 176, 166) | Main panel of the Techguns player inventory, in the vanilla light-grey bevelled style. From top-left: a column of 4 armor slots; a black player-preview window (~52×72); a column of 2 slots right of the preview (face and back); a small grey shield (armor-value) icon; a thin horizontal graduated gauge strip with tick marks at the top right; a 3×3 slot grid on the right (3 food + 6 ammo slots) with one single slot to its left on the bottom row (the heal slot); then the standard 3×9 inventory and 1×9 hotbar | GuiTGPlayerInventory (the GUI's slot logic belongs to the player inventory GUI) |
-| (177, 0, 26, 26) | Tab background, light grey (current tab) | TGGuiTabButton (disabled) |
-| (177, 26, 26, 26) | Tab background, darker grey (other tab) | TGGuiTabButton (enabled) |
+| (0, 0, 176, 166) | Main panel of the Techguns player inventory, in the vanilla light-gray beveled style. From top-left: a column of 4 armor slots; a black player-preview window (~52×72); a column of 2 slots right of the preview (face and back); a small gray shield (armor-value) icon; a thin horizontal graduated gauge strip with tick marks at the top right; a 3×3 slot grid on the right (3 food + 6 ammo slots) with one single slot to its left on the bottom row (the heal slot); then the standard 3×9 inventory and 1×9 hotbar | GuiTGPlayerInventory (the GUI's slot logic belongs to the player inventory GUI) |
+| (177, 0, 26, 26) | Tab background, light gray (current tab) | TGGuiTabButton (disabled) |
+| (177, 26, 26, 26) | Tab background, darker gray (other tab) | TGGuiTabButton (enabled) |
 | (213, 0, 3, 26) | Connector strip for the current tab | TGGuiTabButton |
 | (242, 0, 7, 7) / (249, 0, 7, 7) | Red X (off) / green check mark (on) | on/off toggle buttons in the Techguns inventory |
-| (242, 7) / (249, 7), 7×5 | Goggles: dark grey (off) / green (on) | NV HUD row |
+| (242, 7) / (249, 7), 7×5 | Goggles: dark gray (off) / green (on) | NV HUD row |
 | (242, 14) / (249, 14) | Red "!" shield (unsafe) / green "S" (safe mode) | safe-mode HUD icon |
-| (242, 21) / (249, 21), 7×6 | Step-assist "stairs and arrow": red/grey (off) / green (on) | step-assist HUD row |
+| (242, 21) / (249, 21), 7×6 | Step-assist "stairs and arrow": red/gray (off) / green (on) | step-assist HUD row |
 | (242, 28) / (249, 28) | Yellow "!" panel (low durability) / red "!" panel (broken) | durability warning |
-| (249, 35) | Grey battery (242, 35 is empty) | powered-armor row |
+| (249, 35) | Gray battery (242, 35 is empty) | powered-armor row |
 | (242, 42) / (249, 42) | Jetpack with red crosses (disabled) / with yellow flames (enabled) | jetpack row |
-| (0, 168, 8, 8) / (8, 168) / (16, 168) | Armor point: full (grey gradient plate with 4 dark rivets in a black frame) / half (left half grey, right half transparent) / empty (transparent interior, frame and rivets only) | armor bar replacement |
+| (0, 168, 8, 8) / (8, 168) / (16, 168) | Armor point: full (gray gradient plate with 4 dark rivets in a black frame) / half (left half gray, right half transparent) / empty (transparent interior, frame and rivets only) | armor bar replacement |
 
-Palette: the vanilla GUI greys (#C6C6C6 panel, #8B8B8B slots, #373737 and #FFFFFF bevels), black (#000000) outlines, signal red #FF0000, greens #00C60E / #00FF12 / #1EFF00 / #006607, yellow #FFFF00, dark grey #353535 and mid grey #727272.
+Palette: the vanilla GUI grays (#C6C6C6 panel, #8B8B8B slots, #373737 and #FFFFFF bevels), black (#000000) outlines, signal red #FF0000, greens #00C60E / #00FF12 / #1EFF00 / #006607, yellow #FFFF00, dark gray #353535 and mid gray #727272.
 
 ## Keybind entity sheets (consistency pass)
 
-### Behaviour shared by all five Techguns keys
+### Behavior shared by all five Techguns keys
 
 | Aspect | Detail |
 |---|---|
@@ -158,7 +158,7 @@ Palette: the vanilla GUI greys (#C6C6C6 panel, #8B8B8B slots, #373737 and #FFFFF
 | Chain | One `else if` chain in the order night vision, safe mode, jetpack, step assist, force reload. A press that is not reached in one event stays queued and is handled on the next key event |
 | Prediction | None for the four toggles: the server flips the flag and replies with a full sync, so the HUD and GUI change one round trip later. Force reload predicts locally |
 | Feedback | No chat message. State shows in the HUD icon column and in the Techguns inventory toggle buttons. Night vision plays a sound (below) |
-| Works in GUIs | The Techguns handler has no screen check. Whether FML posts `KeyInputEvent` while a GUI is open is Forge behaviour that cannot be verified from the Techguns source |
+| Works in GUIs | The Techguns handler has no screen check. Whether FML posts `KeyInputEvent` while a GUI is open is Forge behavior that cannot be verified from the Techguns source |
 
 ### Entity sheets
 
@@ -207,32 +207,32 @@ Category for all nine: `key.categories.techguns` (no English text). Packets sent
 
 ## `TGPlayerInventory.png` pixel regions (measured, consistency pass)
 
-Measured from the file itself. The texture is 256x256; opaque content is confined to (0, 0)-(216, 52) plus the icon strip at x 242-255 (y 0-49) and the armour-point tiles at (0, 168, 24, 8). The earlier table above remains valid; this section gives the full rectangle list, including each slot, with the container coordinates that [`TGPlayerContainer`](../05-armor/extra-inventory.md#4-container-tgplayercontainer) and the vanilla-style frames use. A slot's 16x16 well sits inside an 18x18 bevelled frame, so the frame starts one pixel up and left of the listed well. Slot role and item filtering belong to [05-armor](../05-armor/extra-inventory.md).
+Measured from the file itself. The texture is 256x256; opaque content is confined to (0, 0)-(216, 52) plus the icon strip at x 242-255 (y 0-49) and the armor-point tiles at (0, 168, 24, 8). The earlier table above remains valid; this section gives the full rectangle list, including each slot, with the container coordinates that [`TGPlayerContainer`](../05-armor/extra-inventory.md#4-container-tgplayercontainer) and the vanilla-style frames use. A slot's 16x16 well sits inside an 18x18 beveled frame, so the frame starts one pixel up and left of the listed well. Slot role and item filtering belong to [05-armor](../05-armor/extra-inventory.md).
 
 ### Main panel (0, 0, 176, 166)
 
 | Rectangle (x, y, w, h) | Role | Notes |
 |---|---|---|
-| (0, 0, 176, 166) | Panel background | Light grey #C6C6C6 face with white and dark bevel edges |
+| (0, 0, 176, 166) | Panel background | Light gray #C6C6C6 face with white and dark bevel edges |
 | (26, 8, 52, 70) | Player-preview viewport | Pure black #000000, fully enclosed; the live 3-D player is drawn over it |
-| (8, 8, 16, 16) | Armour slot 0 (helmet) | Slot well colour #8B8B8B |
-| (8, 26, 16, 16) | Armour slot 1 (chestplate) | |
-| (8, 44, 16, 16) | Armour slot 2 (leggings) | |
-| (8, 62, 16, 16) | Armour slot 3 (boots) | |
+| (8, 8, 16, 16) | Armor slot 0 (helmet) | Slot well color #8B8B8B |
+| (8, 26, 16, 16) | Armor slot 1 (chestplate) | |
+| (8, 44, 16, 16) | Armor slot 2 (leggings) | |
+| (8, 62, 16, 16) | Armor slot 3 (boots) | |
 | (80, 8, 16, 16) | Face slot (Techguns slot 0) | |
 | (80, 26, 16, 16) | Back slot (Techguns slot 1) | |
 | (96, 62, 16, 16) | Heal slot (Techguns slot 5) | The only slot not in the 3x3 grid |
 | (116, 24, 16, 16), (134, 24, 16, 16), (152, 24, 16, 16) | Food slots (Techguns slots 2-4) | Top row of the 3x3 grid |
 | (116, 44, 16, 16), (134, 44, 16, 16), (152, 44, 16, 16) | Ammo slots 6-8 | Middle row |
 | (116, 62, 16, 16), (134, 62, 16, 16), (152, 62, 16, 16) | Ammo slots 9-11 | Bottom row |
-| (99, 7, 14, 14) | Total-armour-values icon (hover area) | Small bevelled shield well; hover tooltip lists the nine damage types ([05-armor](../05-armor/extra-inventory.md#5-gui-guitgplayerinventory)) |
-| (115, 7, 54, 6) | Radiation gauge trough | Measured fill of the strip (116, 8, 52, 4) in slot-well grey with a darker top-left and white bottom-right bevel; the bar shows `radlevel / 1000` ([CORE-42](index.md#suspected-bugs)) |
+| (99, 7, 14, 14) | Total-armor-values icon (hover area) | Small beveled shield well; hover tooltip lists the nine damage types ([05-armor](../05-armor/extra-inventory.md#5-gui-guitgplayerinventory)) |
+| (115, 7, 54, 6) | Radiation gauge trough | Measured fill of the strip (116, 8, 52, 4) in slot-well gray with a darker top-left and white bottom-right bevel; the bar shows `radlevel / 1000` ([CORE-42](index.md#suspected-bugs)) |
 | (8, 84) to (152, 120), 9 columns by 3 rows, pitch 18, each 16x16 | Main inventory (27 slots) | Standard vanilla layout |
 | (8, 142) to (152, 142), 9 slots, pitch 18, each 16x16 | Hotbar | |
 
 ### Tab sprites
 
-| Rectangle | Role | Colours (measured) |
+| Rectangle | Role | Colors (measured) |
 |---|---|---|
 | (177, 0, 26, 26) | Tab, current (disabled) variant | face #C6C6C6 (460 px), white bevel (90 px), black outline (76 px) |
 | (177, 26, 26, 26) | Tab, other (enabled) variant | face #8B8B8B (460 px), same bevel and outline counts |
@@ -243,23 +243,23 @@ Measured from the file itself. The texture is 256x256; opaque content is confine
 | v | Cell | Role | Measured content |
 |---|---|---|---|
 | 0 | (242, 0) / (249, 0) | HUD toggle: off / on | off: red X, 9 px of #FF0000 inside (243, 1, 5, 5); on: green check mark (#00C60E) with a black and white edge, bounding box (250, 0, 6, 7) |
-| 7 | (242, 7) / (249, 7) | Night vision: off / on | off: dark-grey #353535 goggles, bounding box (243, 9, 5, 2); on: green goggles (#00C60E and #006607), bounding box (249, 8, 7, 4) |
+| 7 | (242, 7) / (249, 7) | Night vision: off / on | off: dark-gray #353535 goggles, bounding box (243, 9, 5, 2); on: green goggles (#00C60E and #006607), bounding box (249, 8, 7, 4) |
 | 14 | (242, 14) / (249, 14) | Safe mode: unsafe / safe | full 7x7 cell. Unsafe: #353535 frame, red #FF0000 glyph, black detail. Safe: #353535 frame, green #00FF12 glyph |
 | 21 | (242, 21) / (249, 21) | Step assist: off / on | 7x6 cell. Off: #353535 with red #FF0000 steps; on: #353535 with green #1EFF00 and #00C60E steps |
 | 28 | (242, 28) / (249, 28) | Durability warning: yellow / red | full 7x7 cell, #FFFF00 (41 px) or #FF0000 (41 px) with #727272 and black corner pixels |
-| 35 | (242, 35) empty / (249, 35) | Powered-armour battery | (249, 35) glyph occupies (250, 35, 5, 7): black outline (19 px) and #727272 body (12 px). The cell at (242, 35) is fully transparent |
+| 35 | (242, 35) empty / (249, 35) | Powered-armor battery | (249, 35) glyph occupies (250, 35, 5, 7): black outline (19 px) and #727272 body (12 px). The cell at (242, 35) is fully transparent |
 | 42 | (242, 42) / (249, 42) | Jetpack: disabled / enabled | full 7x7 cell. Disabled: black and #727272 pack with red #FF0000 crosses; enabled: same pack with red flame pixels |
 | 49 | (242, 49), (249, 49) | unused | fully transparent |
 
 The toggle buttons in the inventory GUI read rows v = 0, 7, 14, 21 and 42 (index 4 skips to 42); the HUD overlay additionally reads v = 28 and 35. Sizes for the goggles (7x5) and step-assist (7x6) in the older table are approximate: the opaque bounding boxes are 7x4 (on goggles) and 5x2 (off goggles).
 
-### Armour-point tiles
+### Armor-point tiles
 
 | Rectangle | Role | Measured content |
 |---|---|---|
-| (0, 168, 8, 8) | Full armour point | 64 opaque px; 32 black outline px plus grey gradient plate, average #424242 |
-| (8, 168, 8, 8) | Half armour point | 48 opaque px, average #262626. Interior columns 1-3 (x 9-11) are filled grey; interior columns 4-6 (x 12-14) are transparent |
-| (16, 168, 8, 8) | Empty armour point | 32 opaque px, all black (#000000): only the frame and the four rivets |
-| Rivets at tile offsets (2, 2), (5, 2), (2, 5), (5, 5) | Rivet pixels | Four black pixels in every tile. They show up as isolated 1x1 components only where the neighbouring interior is transparent: (13, 170), (13, 173) in the half tile and (18, 170), (21, 170), (18, 173), (21, 173) in the empty tile |
+| (0, 168, 8, 8) | Full armor point | 64 opaque px; 32 black outline px plus gray gradient plate, average #424242 |
+| (8, 168, 8, 8) | Half armor point | 48 opaque px, average #262626. Interior columns 1-3 (x 9-11) are filled gray; interior columns 4-6 (x 12-14) are transparent |
+| (16, 168, 8, 8) | Empty armor point | 32 opaque px, all black (#000000): only the frame and the four rivets |
+| Rivets at tile offsets (2, 2), (5, 2), (2, 5), (5, 5) | Rivet pixels | Four black pixels in every tile. They show up as isolated 1x1 components only where the neighboring interior is transparent: (13, 170), (13, 173) in the half tile and (18, 170), (21, 170), (18, 173), (21, 173) in the empty tile |
 
 Correction: an earlier version of this document called the interior of the half and empty tiles "white". The pixels there are fully transparent (alpha 0); the white came from viewing the PNG on a white backdrop. In game, blending is on while the bar is drawn, so the HUD background shows through.

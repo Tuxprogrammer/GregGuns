@@ -36,7 +36,7 @@ Item names are placeholders (`gregguns:<name>`), as everywhere else in this spec
 3. **Machine-made items use retrieval.** `crafting` tasks listen for the crafting table, the furnace and the anvil only ([`TaskCrafting`](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/tasks/TaskCrafting.java#L189-L200)). The pack's own Readme also limits crafting quests to the early game. Only the four Steam-chapter quests use `crafting`; everything made in a GT machine uses `retrieval`, so a loot-bag find counts too.
 4. **Rewards are tier-legal.** A quest never pays above its Tier column, and its Tier never exceeds the highest pack tier among its prerequisites ([GGS-12-07](index.md#requirements)). This is the rule [0007](../../design/0007-pack-loot-and-infernal-mobs.md) uses for loot, applied to quest rewards.
 5. **Bags are random, so they are never the only help.** A tier bag draws one or two items from the whole tier group ([pack-loot.md](../06-items/pack-loot.md#enhancedlootbags)), and most of that group is not GregGuns. Quests that teach a weapon pay in ammunition or a magazine for it. Bags mark the end of a chapter or a hunt.
-6. **Honour-system quests are rare and labelled.** Infernal variants cannot be matched by a hunt task (see [Infernal variants](#npcs-and-bosses)), and structure visits have no location task. Both use a checkbox. There are 45 checkbox quests in all, 22 of them chapter intros and summaries; the rest are one-line "do this once" lessons.
+6. **Honor-system quests are rare and labeled.** Infernal variants cannot be matched by a hunt task (see [Infernal variants](#npcs-and-bosses)), and structure visits have no location task. Both use a checkbox. There are 45 checkbox quests in all, 22 of them chapter intros and summaries; the rest are one-line "do this once" lessons.
 7. **No command rewards.** A command reward runs with the quest's authority and skips the tier rule. None is used.
 
 ### Reward budget
@@ -80,14 +80,14 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 |---|---|---|---|---|---|---|---|
 | `gg.start.welcome` | Welcome to GregGuns | Steam | Guns here follow GregTech progression: each weapon needs a machine tier and a gate material. This tab walks you up the tiers. | checkbox | - | any of: pack 11, pack 44 | 24, 24 (72) |
 | `gg.start.controls` | Fire, Reload, Zoom | Steam | Hold use to fire, press the reload key to swap magazines, right-click to zoom. Rebind keys in Controls. | checkbox | - | `gg.start.welcome` | 108, 24 (24) |
-| `gg.start.ammo_types` | Ammo and Magazines | Steam | Each gun takes one calibre. Loose rounds fill a magazine; sneak-click a magazine to empty it. | checkbox | - | `gg.start.controls` | 192, 24 (24) |
+| `gg.start.ammo_types` | Ammo and Magazines | Steam | Each gun takes one caliber. Loose rounds fill a magazine; sneak-click a magazine to empty it. | checkbox | - | `gg.start.controls` | 192, 24 (24) |
 | `gg.start.find_gear` | Where Gear Comes From | Steam | Craft it in GT machines, or find it: quest loot bags, chests in ruins, drops from hostile soldiers. NEI lists every recipe and drop. | checkbox | - | `gg.start.welcome` | 276, 24 (24) |
-| `gg.start.tiers` | Reading a Tier | Steam | An LV item needs an LV machine and steel, an MV item needs aluminium, and so on. Tooltips show the tier. | checkbox | - | `gg.start.find_gear` | 360, 24 (24) |
+| `gg.start.tiers` | Reading a Tier | Steam | An LV item needs an LV machine and steel, an MV item needs aluminum, and so on. Tooltips show the tier. | checkbox | - | `gg.start.find_gear` | 360, 24 (24) |
 
 ### Steam / ULV
 
 - **Gate:** pack 44 and pack 948 (Better Than Iron: bronze and wrought iron, the tier-map gate for this tier).
-- **Teaches:** crafting-table guns and ammo, armour value. The only chapter that uses `crafting` tasks.
+- **Teaches:** crafting-table guns and ammo, armor value. The only chapter that uses `crafting` tasks.
 
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
@@ -95,14 +95,14 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | `gg.steam.hand_cannon` | Hand Cannon | Steam | A single-shot bronze and wrought-iron cannon. Slow and loud. | crafting `gregguns:hand_cannon` | `gregguns:ammo_stone_bullet` x16 | `gg.steam.intro` | 108, 144 (24) |
 | `gg.steam.stone_bullets` | Stone Bullets | Steam | Cobblestone and gunpowder at a crafting table. Your first lesson in ammo supply. | crafting `gregguns:ammo_stone_bullet` | `gregguns:ammo_stone_bullet` x16 | `gg.steam.hand_cannon` | 192, 144 (24) |
 | `gg.steam.first_blood` | First Blood | Steam | Shoot five zombies with the Hand Cannon. Reload between shots. | hunt `Zombie` x5 | `gregguns:ammo_stone_bullet` x32 | `gg.steam.hand_cannon`, `gg.steam.stone_bullets` | 276, 144 (24) |
-| `gg.steam.scout_armor` | T1 Scout Armour | Steam | Light armour. Each piece adds to your armour value; read the tooltips. | crafting `gregguns:armor_t1_scout_chestplate` | - | `gg.steam.intro` | 360, 144 (24) |
-| `gg.steam.miner_armor` | T1 Miner Armour | Steam | Miner set, crafted from bronze plate and wrought iron. | crafting `gregguns:armor_t1_miner_helmet` | - | `gg.steam.intro` | 444, 144 (24) |
+| `gg.steam.scout_armor` | T1 Scout Armor | Steam | Light armor. Each piece adds to your armor value; read the tooltips. | crafting `gregguns:armor_t1_scout_chestplate` | - | `gg.steam.intro` | 360, 144 (24) |
+| `gg.steam.miner_armor` | T1 Miner Armor | Steam | Miner set, crafted from bronze plate and wrought iron. | crafting `gregguns:armor_t1_miner_helmet` | - | `gg.steam.intro` | 444, 144 (24) |
 | `gg.steam.summary` | Steam Age Done | Steam | Steel is next. Make it in a GT furnace setup, then open the LV chapter. | checkbox | bag `enhancedlootbags:lootbag:2` (Steam) | `gg.steam.first_blood`, `gg.steam.scout_armor`, `gg.steam.miner_armor` | 528, 144 (48) |
 
 ### LV
 
 - **Gate:** pack 88 (Welcome to Tier 1, LV) and pack 76 (Time to Get Some Steel).
-- **Teaches:** forming-press parts, assembler ammo, magazines, sidearm, shotgun and rifle roles, melee, steel armour.
+- **Teaches:** forming-press parts, assembler ammo, magazines, sidearm, shotgun and rifle roles, melee, steel armor.
 
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
@@ -115,17 +115,17 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | `gg.lv.sawed_off` | Sawed Off | LV | Spread pellets: strong at point-blank range, weak far away. Uses shotgun shells. | retrieval `gregguns:sawed_off` | `gregguns:ammo_shotgun_shell` x8 | `gg.lv.casings` | 528, 264 (24) |
 | `gg.lv.bolt_rifle` | Bolt Action Rifle | LV | Long range and slow to cycle. Right-click to zoom. | retrieval `gregguns:bolt_action_rifle` | `gregguns:ammo_rifle_bullet` x8 | `gg.lv.casings` | 612, 264 (24) |
 | `gg.lv.melee` | Knife or Crowbar | LV | Melee tools never run dry. | retrieval `gregguns:combat_knife` or `gregguns:crowbar` | - | `gg.lv.intro` | 24, 348 (24) |
-| `gg.lv.combat_armor` | T1 Combat Armour | LV | Steel plate pressed in the LV Assembler. | retrieval `gregguns:armor_t1_combat_chestplate` | - | `gg.lv.intro` | 108, 348 (24) |
-| `gg.lv.summary` | Steel Age Done | LV | MV needs aluminium and a bigger power setup. Move on when your GT line gets there. | checkbox | bag `enhancedlootbags:lootbag:4` (LV) | `gg.lv.pistol`, `gg.lv.combat_armor` | 192, 348 (48) |
+| `gg.lv.combat_armor` | T1 Combat Armor | LV | Steel plate pressed in the LV Assembler. | retrieval `gregguns:armor_t1_combat_chestplate` | - | `gg.lv.intro` | 108, 348 (24) |
+| `gg.lv.summary` | Steel Age Done | LV | MV needs aluminum and a bigger power setup. Move on when your GT line gets there. | checkbox | bag `enhancedlootbags:lootbag:4` (LV) | `gg.lv.pistol`, `gg.lv.combat_armor` | 192, 348 (48) |
 
 ### MV
 
 - **Gate:** pack 1148 (Tier 2 (MV)) and pack 1598 (the MV assembler).
-- **Teaches:** automatic weapons and their separate magazines, offhand (akimbo) use, explosives, the stun grenade, second-tier armour sets.
+- **Teaches:** automatic weapons and their separate magazines, offhand (akimbo) use, explosives, the stun grenade, second-tier armor sets.
 
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
-| `gg.mv.intro` | Aluminium-Age Arms | MV | MV adds automatic weapons, grenades and second-tier armour. Aluminium is the gate. | checkbox | - | `gg.start.welcome`, pack 1148, pack 1598 | 24, 468 (72) |
+| `gg.mv.intro` | Aluminum-Age Arms | MV | MV adds automatic weapons, grenades and second-tier armor. Aluminum is the gate. | checkbox | - | `gg.start.welcome`, pack 1148, pack 1598 | 24, 468 (72) |
 | `gg.mv.smg_mags` | SMG Magazines | MV | Assemble an empty magazine in an MV Assembler, then fill it. | retrieval `gregguns:mag_smg` | - | `gg.mv.intro` | 108, 468 (24) |
 | `gg.mv.thompson` | Thompson SMG | MV | Fast, light automatic fire at MV. | retrieval `gregguns:thompson` | `gregguns:mag_smg` x1 | `gg.mv.smg_mags` | 192, 468 (24) |
 | `gg.mv.rifle` | M4 or AK47 | MV | Assault rifles use their own magazines, not SMG magazines. | retrieval `gregguns:m4` or `gregguns:ak47` | `gregguns:mag_assault_rifle` x1 | `gg.mv.intro` | 276, 468 (24) |
@@ -133,8 +133,8 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | `gg.mv.akimbo` | Akimbo | MV | A matching pistol in each hand. Needs the offhand slot. | retrieval `gregguns:pistol_9mm_akimbo` or `gregguns:revolver_akimbo` | - | `gg.mv.intro` | 444, 468 (24) |
 | `gg.mv.grenades` | Frag Grenade | MV | Explosives need TNT dust from the GT line. Throw from a safe distance. | retrieval `gregguns:grenade_frag` | `gregguns:grenade_frag` x4 | `gg.mv.intro`, pack 762 | 528, 468 (24) |
 | `gg.mv.flashbang` | Flashbang | MV | Blinds and stuns instead of killing. Useful for clearing a camp. | retrieval `gregguns:flashbang` | `gregguns:flashbang` x4 | `gg.mv.grenades` | 612, 468 (24) |
-| `gg.mv.t2_armor` | T2 Armour | MV | Combat, Commando or Riot. Pick the set that suits your style. | retrieval `gregguns:armor_t2_combat_chestplate` or `gregguns:armor_t2_commando_chestplate` or `gregguns:armor_t2_riot_chestplate` | - | `gg.mv.intro` | 24, 552 (24) |
-| `gg.mv.summary` | Aluminium Age Done | MV | HV brings heavy weapons and stainless steel. | checkbox | bag `enhancedlootbags:lootbag:5` (MV) | `gg.mv.thompson`, `gg.mv.rifle`, `gg.mv.t2_armor` | 108, 552 (48) |
+| `gg.mv.t2_armor` | T2 Armor | MV | Combat, Commando or Riot. Pick the set that suits your style. | retrieval `gregguns:armor_t2_combat_chestplate` or `gregguns:armor_t2_commando_chestplate` or `gregguns:armor_t2_riot_chestplate` | - | `gg.mv.intro` | 24, 552 (24) |
+| `gg.mv.summary` | Aluminum Age Done | MV | HV brings heavy weapons and stainless steel. | checkbox | bag `enhancedlootbags:lootbag:5` (MV) | `gg.mv.thompson`, `gg.mv.rifle`, `gg.mv.t2_armor` | 108, 552 (48) |
 
 ### HV
 
@@ -166,26 +166,26 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | `gg.ev.pulse` | Pulse Rifle or PDW | EV | Advanced magazines are the EV ammo step up. | retrieval `gregguns:pulse_rifle` or `gregguns:pdw` | `gregguns:mag_advanced` x2 | `gg.ev.intro` | 276, 876 (24) |
 | `gg.ev.minigun` | Minigun | EV | Drum-fed, very high fire rate. Heavy on ammo. | retrieval `gregguns:minigun` | `gregguns:minigun_drum` x1 | `gg.ev.pulse` | 360, 876 (24) |
 | `gg.ev.exotics` | Tesla, Sonic or Bio Gun | EV | Specialist weapons. Pick one. | retrieval `gregguns:tesla_rifle` or `gregguns:sonic_rifle` or `gregguns:bio_gun` | - | `gg.ev.intro` | 444, 876 (24) |
-| `gg.ev.t3_armor` | T3 Combat Armour | EV | Titanium plate in the EV Assembler. | retrieval `gregguns:armor_t3_combat_chestplate` | - | `gg.ev.intro` | 528, 876 (24) |
-| `gg.ev.steam_armor` | Steam Armour | EV | Self-contained powered suit. | retrieval `gregguns:armor_steam_chestplate` | - | `gg.ev.intro` | 612, 876 (24) |
-| `gg.ev.summary` | Energy Weapons Done | EV | IV brings blasters and power armour. | checkbox | bag `enhancedlootbags:lootbag:7` (EV) | `gg.ev.laser`, `gg.ev.minigun`, `gg.ev.t3_armor` | 24, 960 (48) |
+| `gg.ev.t3_armor` | T3 Combat Armor | EV | Titanium plate in the EV Assembler. | retrieval `gregguns:armor_t3_combat_chestplate` | - | `gg.ev.intro` | 528, 876 (24) |
+| `gg.ev.steam_armor` | Steam Armor | EV | Self-contained powered suit. | retrieval `gregguns:armor_steam_chestplate` | - | `gg.ev.intro` | 612, 876 (24) |
+| `gg.ev.summary` | Energy Weapons Done | EV | IV brings blasters and power armor. | checkbox | bag `enhancedlootbags:lootbag:7` (EV) | `gg.ev.laser`, `gg.ev.minigun`, `gg.ev.t3_armor` | 24, 960 (48) |
 
 ### IV
 
 - **Gate:** pack 213 (Tier 5 (IV)) and pack 861 (Tungstensteel).
-- **Teaches:** blasters, power armour and its charging, exo suit and anti-grav device.
+- **Teaches:** blasters, power armor and its charging, exo suit and anti-grav device.
 
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
-| `gg.iv.intro` | Power Armour Era | IV | IV adds blasters, power armour and the anti-grav device. Tungstensteel is the gate. | checkbox | - | `gg.start.welcome`, pack 213, pack 861 | 24, 1080 (72) |
+| `gg.iv.intro` | Power Armor Era | IV | IV adds blasters, power armor and the anti-grav device. Tungstensteel is the gate. | checkbox | - | `gg.start.welcome`, pack 213, pack 861 | 24, 1080 (72) |
 | `gg.iv.blaster` | Blaster Rifle | IV | High-damage energy rifle at IV voltage. | retrieval `gregguns:blaster_rifle` | - | `gg.iv.intro` | 108, 1080 (24) |
 | `gg.iv.deatomizer` | De-Atomizer Pistol | IV | One pistol or two; the akimbo pair needs the offhand slot. | retrieval `gregguns:de_atomizer_pistol` or `gregguns:de_atomizer_pistol_akimbo` | - | `gg.iv.intro` | 192, 1080 (24) |
 | `gg.iv.scatter` | Scatter Laser Rifle | IV | A shotgun-style laser. Short range, wide spread. | retrieval `gregguns:scatter_laser_rifle` | - | `gg.iv.blaster` | 276, 1080 (24) |
 | `gg.iv.golden` | Golden Revolver | IV | A showpiece sidearm. Single or akimbo. | retrieval `gregguns:golden_revolver` or `gregguns:golden_revolver_akimbo` | - | `gg.iv.intro` | 360, 1080 (24) |
-| `gg.iv.power_armor` | Power Armour | IV | Full powered suit. Charge it at an IV buffer. | retrieval `gregguns:armor_power_chestplate` | - | `gg.iv.intro` | 444, 1080 (24) |
+| `gg.iv.power_armor` | Power Armor | IV | Full powered suit. Charge it at an IV buffer. | retrieval `gregguns:armor_power_chestplate` | - | `gg.iv.intro` | 444, 1080 (24) |
 | `gg.iv.exo` | Exo Suit | IV | Strength and carry bonuses. | retrieval `gregguns:armor_exo_chestplate` | - | `gg.iv.power_armor` | 528, 1080 (24) |
 | `gg.iv.antigrav` | Anti-Gravity Device | IV | Back device for flight. Needs the wings slot. | retrieval `gregguns:anti_gravity_device` | - | `gg.iv.power_armor` | 612, 1080 (24) |
-| `gg.iv.summary` | Power Armour Era Done | IV | LuV recipes use the Assembly Line. | checkbox | bag `enhancedlootbags:lootbag:8` (IV) | `gg.iv.blaster`, `gg.iv.power_armor` | 24, 1164 (48) |
+| `gg.iv.summary` | Power Armor Era Done | IV | LuV recipes use the Assembly Line. | checkbox | bag `enhancedlootbags:lootbag:8` (IV) | `gg.iv.blaster`, `gg.iv.power_armor` | 24, 1164 (48) |
 
 ### LuV
 
@@ -230,7 +230,7 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | `gg.npc.bandits` | Bandits and Outcasts | LV | Raiders carry LV gear. Expect 9mm drops. | hunt `gregguns.Bandit` x3; hunt `gregguns.Outcast` x3 (all) | bag `enhancedlootbags:lootbag:4` (LV) | `gg.npc.skeletons`, pack 88 | 1092, 24 (24) |
 | `gg.npc.steve` | Psycho Steve | LV | A chainsaw mini-boss. His drop is tier-legal for the Overworld, not an HV saw. | hunt `gregguns.PsychoSteve` x1 | bag `enhancedlootbags:lootbag:4` (LV) | `gg.npc.bandits` | 1176, 24 (24) |
 | `gg.npc.army` | Army Soldiers | MV | Disciplined and well armed. They carry MV ammunition. | hunt `gregguns.ArmySoldier` x5 | bag `enhancedlootbags:lootbag:5` (MV) | `gg.npc.bandits`, pack 1148 | 1260, 24 (24) |
-| `gg.npc.commandos` | Commandos and Stormtroopers | MV | Elite soldiers. Armour up first. | hunt `gregguns.Commando` x2; hunt `gregguns.Stormtrooper` x2 (all) | bag `enhancedlootbags:lootbag:5` (MV) | `gg.npc.army` | 1344, 24 (24) |
+| `gg.npc.commandos` | Commandos and Stormtroopers | MV | Elite soldiers. Armor up first. | hunt `gregguns.Commando` x2; hunt `gregguns.Stormtrooper` x2 (all) | bag `enhancedlootbags:lootbag:5` (MV) | `gg.npc.army` | 1344, 24 (24) |
 | `gg.npc.helicopter` | Attack Helicopter | HV | A flying boss with its own health bar. Bring launchers. | hunt `gregguns.AttackHelicopter` x1 | bag `enhancedlootbags:lootbag:6` (HV) | `gg.npc.commandos`, pack 160 | 1428, 24 (24) |
 | `gg.npc.elite` | Elite Variants | LV | Kill one elite Infernal mob: up to five modifiers, glowing name. Tick the box when you have. | checkbox | bag `enhancedlootbags:lootbag:4` (LV) | `gg.npc.bandits` | 840, 108 (24) |
 | `gg.npc.ultra` | Ultra Variants | MV | Kill one ultra Infernal mob. Ultra drops are MV. | checkbox | bag `enhancedlootbags:lootbag:5` (MV) | `gg.npc.elite`, pack 1148 | 924, 108 (24) |
@@ -262,25 +262,25 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
 | `gg.mach.intro` | GregGuns Machines | LV | Most machines are plain GT. Only the Repair Bench, the Reaction Chamber and the Turret are GregGuns' own. | checkbox | - | `gg.start.welcome`, pack 97 | 840, 348 (72) |
-| `gg.mach.repair_bench` | Repair Bench | MV | Mends guns and armour using the item's gate material. Tier is provisional (MV) until area 09 settles it. | retrieval `gregguns:repair_bench` | - | `gg.mach.intro`, pack 1148 | 924, 348 (24) |
+| `gg.mach.repair_bench` | Repair Bench | MV | Mends guns and armor using the item's gate material. Tier is provisional (MV) until area 09 settles it. | retrieval `gregguns:repair_bench` | - | `gg.mach.intro`, pack 1148 | 924, 348 (24) |
 | `gg.mach.repair` | Mending a Weapon | MV | Put a damaged gun and its gate material in the bench. | checkbox | - | `gg.mach.repair_bench` | 1008, 348 (24) |
-| `gg.mach.turret` | Turret | HV | Automatic defence. Tier is provisional (HV) until area 09 settles it. | retrieval `gregguns:turret` | - | `gg.mach.intro`, pack 160 | 1092, 348 (24) |
+| `gg.mach.turret` | Turret | HV | Automatic defense. Tier is provisional (HV) until area 09 settles it. | retrieval `gregguns:turret` | - | `gg.mach.intro`, pack 160 | 1092, 348 (24) |
 | `gg.mach.turret_team` | Friend or Foe | HV | Turrets spare you and your allies on a GTNHLib team, and shoot hostiles. | checkbox | - | `gg.mach.turret` | 1176, 348 (24) |
 | `gg.mach.turret_power` | Powering the Turret | HV | The turret takes EU at its tier. Overvoltage damages it. | checkbox | - | `gg.mach.turret` | 1260, 348 (24) |
 | `gg.mach.rc_build` | Reaction Chamber | EV | A GT multiblock. Build it with a hologram projector or by hand. | retrieval `gregguns:reaction_chamber` | - | `gg.mach.intro`, pack 176 | 1344, 348 (24) |
 | `gg.mach.rc_run` | First Reaction | EV | Place the focus in an Input Bus as a non-consumed input and start a recipe. | checkbox | - | `gg.mach.rc_build` | 1428, 348 (24) |
 | `gg.mach.rc_risk` | Reactions Bite Back | EV | Wrong intensity risks the chamber. Watch the intensity buttons. | checkbox | bag `enhancedlootbags:lootbag:7` (EV) | `gg.mach.rc_run` | 840, 432 (24) |
 
-### Armour and equipment
+### Armor and equipment
 
 - **Gate:** pack 88 and `gg.start.welcome`, then tier quests.
-- **Teaches:** armour slots against Baubles slots ([baubles-slots.md](../05-armor/baubles-slots.md)), hazard protection ([hazard-protection.md](../05-armor/hazard-protection.md)), oxygen gear ([oxygen-gear.md](../05-armor/oxygen-gear.md)) and the back devices ([0009](../../design/0009-gtnh-integration-defaults.md) item 2).
+- **Teaches:** armor slots against Baubles slots ([baubles-slots.md](../05-armor/baubles-slots.md)), hazard protection ([hazard-protection.md](../05-armor/hazard-protection.md)), oxygen gear ([oxygen-gear.md](../05-armor/oxygen-gear.md)) and the back devices ([0009](../../design/0009-gtnh-integration-defaults.md) item 2).
 
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
-| `gg.gear.intro` | Equipment Slots | LV | Armour uses armour slots. Goggles, packs and pouches use Baubles slots. | checkbox | - | `gg.start.welcome`, pack 88 | 840, 552 (72) |
+| `gg.gear.intro` | Equipment Slots | LV | Armor uses armor slots. Goggles, packs and pouches use Baubles slots. | checkbox | - | `gg.start.welcome`, pack 88 | 840, 552 (72) |
 | `gg.gear.medkit` | Medkit | MV | Heals you over time. Craft one before a fight. | retrieval `gregguns:medkit` | - | `gg.gear.intro`, pack 1148 | 924, 552 (24) |
-| `gg.gear.gas_mask` | Gas Mask | MV | A helmet-slot mask. GT hazards check armour slots only. | retrieval `gregguns:gas_mask` | - | `gg.gear.intro`, pack 1148, pack 1888 | 1008, 552 (24) |
+| `gg.gear.gas_mask` | Gas Mask | MV | A helmet-slot mask. GT hazards check armor slots only. | retrieval `gregguns:gas_mask` | - | `gg.gear.intro`, pack 1148, pack 1888 | 1008, 552 (24) |
 | `gg.gear.hazards` | Know Your Hazards | MV | Each protective item lists the hazards it blocks. Check the tooltip. | checkbox | - | `gg.gear.gas_mask` | 1092, 552 (24) |
 | `gg.gear.nvg` | Night Vision Goggles | MV | Wear in the head Baubles slot, not the helmet slot. | retrieval `gregguns:night_vision_goggles` | - | `gg.gear.intro`, pack 1148 | 1176, 552 (24) |
 | `gg.gear.pouch` | Ammo Pouch | MV | Wear in the quiver Baubles slot. | retrieval `gregguns:ammo_pouch` | - | `gg.gear.nvg` | 1260, 552 (24) |
@@ -318,7 +318,7 @@ Where each mechanic is taught.
 | Charging at the exact tier | `gg.hv.tools`, `gg.ev.laser`, `gg.ammo.charging`, `gg.iv.power_armor` |
 | Repair | `gg.mach.repair_bench`, `gg.mach.repair` |
 | Offhand and akimbo | `gg.mv.akimbo`, `gg.iv.deatomizer` |
-| Armour sets | `gg.steam.scout_armor`, `gg.lv.combat_armor`, `gg.mv.t2_armor`, `gg.ev.t3_armor`, `gg.iv.power_armor` |
+| Armor sets | `gg.steam.scout_armor`, `gg.lv.combat_armor`, `gg.mv.t2_armor`, `gg.ev.t3_armor`, `gg.iv.power_armor` |
 | Baubles slots | `gg.gear.intro`, `gg.gear.nvg`, `gg.gear.pouch`, `gg.gear.jump_pack` |
 | Hazard protection | `gg.gear.gas_mask`, `gg.gear.hazards`, `gg.gear.oxygen` |
 | Hostile factions and bosses | `gg.npc.zombies`, `gg.npc.bandits`, `gg.npc.army`, `gg.npc.steve`, `gg.npc.helicopter` |
@@ -344,6 +344,6 @@ Where each mechanic is taught.
 | NPCs and bosses | 14 | 4 | 0 | 0 | 14 | 12 |
 | Structures | 6 | 6 | 0 | 0 | 0 | 5 |
 | Machines | 9 | 6 | 3 | 0 | 0 | 1 |
-| Armour and equipment | 9 | 2 | 8 | 0 | 0 | 0 |
+| Armor and equipment | 9 | 2 | 8 | 0 | 0 | 0 |
 | Ammo logistics | 9 | 6 | 3 | 0 | 0 | 0 |
 | **Total** | **118** | **45** | **60** | **4** | **15** | **26** |

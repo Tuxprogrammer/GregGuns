@@ -20,10 +20,10 @@ Tile-entity registry names (set in [`Techguns.java`](../01-core/lifecycle-and-re
 
 ## 2. `BasicInventoryTileEnt`
 
-- **Inventory.** A fixed-size `ItemStack[]` sized by the subclass. The stack limit is 64. `decrStackSize`, `getStackInSlotOnClosing` and `setInventorySlotContents` follow vanilla chest behaviour; `setInventorySlotContents` clamps oversize stacks to 64.
+- **Inventory.** A fixed-size `ItemStack[]` sized by the subclass. The stack limit is 64. `decrStackSize`, `getStackInSlotOnClosing` and `setInventorySlotContents` follow vanilla chest behavior; `setInventorySlotContents` clamps oversize stacks to 64.
 - **Rotation.** `rotation` is a byte from 0 to 3. `rotate()` adds 1 and wraps at 4. On the server it then calls `needUpdate()`. Renderers turn the model by `90° × rotation` about Y (see `rendering.md`).
 - **Custom name.** `name` is stored as `CustomName` and only written when it isn't empty. Nothing in the mod sets it (anvil-renamed blocks don't carry it over), so it's effectively unused.
-- **Use range.** `useRangeSquared` defaults to 64 (8 blocks). `isUseableByPlayer` checks that the tile at the position is still this tile and that the player's squared distance to the block centre is within that range.
+- **Use range.** `useRangeSquared` defaults to 64 (8 blocks). `isUseableByPlayer` checks that the tile at the position is still this tile and that the player's squared distance to the block center is within that range.
 - **`needUpdate()`** (server only): marks the block for update, which re-sends the description packet, and marks the tile dirty.
 - **Description packet.** `S35PacketUpdateTileEntity` carries the full NBT, including the whole inventory. The client applies it with `readFromNBT`. So every `needUpdate()` resyncs everything.
 - **`onBlockBreak()`.** Spills every stack at a random point inside the block, as vanilla chests do: chunks of 10–30 items, slight random velocity with +0.2 upward, NBT copied. It then notifies comparators.
@@ -54,7 +54,7 @@ Tile-entity registry names (set in [`Techguns.java`](../01-core/lifecycle-and-re
   - Machine-specific GUI buttons check `isUseableByPlayer` again on the server.
 - **Not protected:** breaking the block, wrench rotation and wrench dismantling ([MPRD-09](index.md#suspected-bugs)), automation (hoppers, pipes) and energy input.
 - **NBT keys:** `security` (byte) and `owner` (UUID string). Both are written **only when an owner exists**. An unparseable UUID loads as unowned.
-- **GUI security button** (see `gui-textures.md` for the sprites). The tooltip shows the owner's last known username (Forge `UsernameCache`, or `UNKNOW_PLAYERNAME`), the colour-coded level, the level description and "Only the owner can change this setting". Unowned machines show `techguns.container.security.tooltip.unowned`.
+- **GUI security button** (see `gui-textures.md` for the sprites). The tooltip shows the owner's last known username (Forge `UsernameCache`, or `UNKNOW_PLAYERNAME`), the color-coded level, the level description and "Only the owner can change this setting". Unowned machines show `techguns.container.security.tooltip.unowned`.
 
 ## 4. Energy (`BasicPoweredTileEnt`)
 
@@ -134,7 +134,7 @@ The Ammo Press and Metal Press run the whole `updateEntity` (including starting 
 
 ### Machine upgrade: stack operation
 
-- **Item.** Shared item meta 52, `techguns.item.machineStackUpgrade`, "Machine Upgrade (Stack Operation)". Its max stack size is 7. Recipe (owned by [`06-items`](../06-items/index.md)): `pgp / ncn / pnp` with p = [`plateIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), g = `dyeGreen`, n = `ingotGold`, c = vanilla chest.
+- **Item.** Shared item meta 52, `techguns.item.machineStackUpgrade`, "Machine Upgrade (Stack Operation)". Its max stack size is 7. Recipe (owned by [`06-items`](../06-items/index.md)): `pgp / ncn / pnp` with p = [`plateIron`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo), g = `dyeGreen`, n = `ingotGold`, c = vanilla chest.
 - **Slot.** [`SlotMachineUpgrade`](ammo-press.md#1-inventory) accepts only this item and has a slot limit of 7.
 - **Effect.** The maximum multiplier is upgrades + 1, so 1 to 8 (the Fabricator and Charging Station clamp it at 8 explicitly). The machine picks the **largest** multiplier m ≤ max for which:
   - the inputs hold at least m units, and

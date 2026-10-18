@@ -103,10 +103,10 @@ Entities in the gore list without a `GoreData` entry (horse, mooshroom, wolf, sq
 An invisible `EntityFX` (it renders nothing) with the entity's death motion, max age 5 ticks and vanilla gravity 0.08. On each of its ticks:
 
 - **Blood (`showBlood`):** spawn `1 + floor((width + height) / 2 × 2)` blood sprites.
-  - Position: uniform within the entity's box (x and z ± width/2, y ± height/2 around the centre).
+  - Position: uniform within the entity's box (x and z ± width/2, y ± height/2 around the center).
   - Velocity: (rand − 0.5) × 0.15 + motion × (0.5, 0.1, 0.5).
-  - Sprite parameters are in [fx-catalogue.md](fx-catalogue.md#death-effect-sprites-not-named-built-directly) (`blood4x4.png`, ALPHA, tinted with the blood RGB).
-- **No blood (skeletons):** one `dustclouds02.png` animated puff per tick, velocity (rand − 0.5) × 0.10 + motion × (0.3, 0.1, 0.3), tinted with the "blood" colour (white).
+  - Sprite parameters are in [fx-catalog.md](fx-catalog.md#death-effect-sprites-not-named-built-directly) (`blood4x4.png`, ALPHA, tinted with the blood RGB).
+- **No blood (skeletons):** one `dustclouds02.png` animated puff per tick, velocity (rand − 0.5) × 0.10 + motion × (0.3, 0.1, 0.3), tinted with the "blood" color (white).
 
 ### Gib models (`client/models/ModelGibs*.java`)
 
@@ -142,34 +142,34 @@ See [projectiles.md §3.19](projectiles.md#319-flyinggibs): lifetime 150–250 t
 
 ## 4. BIO death (`RendererDeadLivingEntity.renderModelDeathBio`)
 
-- Client FX: `createFX("biodeath", centre, motion)`. Green splats, see the catalogue.
+- Client FX: `createFX("biodeath", center, motion)`. Green splats, see the catalog.
 - Sound: `techguns:effects.biodeath`.
 - Render, with `prog = deathTime / 20` and a random seeded by the entity id:
   - Living animations are applied. Biped models get their rotation angles.
   - The model is rotated by the entity yaw (not interpolated). Slimes are scaled by their size (offset −0.8 for size 2, −1.2 for size 4).
   - For each top-level model box (child boxes render through their parent; hidden boxes are skipped):
     1. Scale the box uniformly by `1 + rand × prog` about its offset point, so each limb swells by a random amount.
-    2. **Base pass** with the entity texture, colour (1 − prog², 1, 1 − prog²) and alpha (1 − prog)². It turns green and fades; the alpha test cuts it once the alpha drops below 0.1.
-    3. **Overlay pass** with [`textures/fx/bio.png`](textures.md#single-images), ADDITIVE, full-bright, grey level `0.5 + sin((√prog + 0.75) × 2π) / 2`. This produces a bright green pulsing flash.
+    2. **Base pass** with the entity texture, color (1 − prog², 1, 1 − prog²) and alpha (1 − prog)². It turns green and fades; the alpha test cuts it once the alpha drops below 0.1.
+    3. **Overlay pass** with [`textures/fx/bio.png`](textures.md#single-images), ADDITIVE, full-bright, gray level `0.5 + sin((√prog + 0.75) × 2π) / 2`. This produces a bright green pulsing flash.
 
 ## 5. LASER death (`renderModelDeathLaser`)
 
-- Client FX: `createFX("laserdeathFire")` and `createFX("laserdeathAsh")` at the centre, with horizontal motion only (Y = 0).
+- Client FX: `createFX("laserdeathFire")` and `createFX("laserdeathAsh")` at the center, with horizontal motion only (Y = 0).
 - Sound: `techguns:effects.disintegrate`.
 - Render: the whole model is drawn in two passes, rotated by entity yaw with slime scaling:
   1. Entity texture tinted (1, 1 − prog², 1 − prog²) with alpha (1 − prog)². It turns red and fades.
-  2. Overlay [`textures/fx/laserDeathfx.png`](textures.md#single-images), ADDITIVE, full-bright, grey level `0.5 + sin((√prog + 0.75) × 2π) / 2`.
+  2. Overlay [`textures/fx/laserDeathfx.png`](textures.md#single-images), ADDITIVE, full-bright, gray level `0.5 + sin((√prog + 0.75) × 2π) / 2`.
 - A per-box swelling variant is commented out.
 
 ## 6. DISMEMBER (unused)
 
 `renderModelDeathDismember`, with `prog = (deathTime − pt) / 20` and `p = min(1, 2 × prog)`:
 
-- **`ModelBiped`:** body, arms and legs rotate together by −90 × (1 − cos πp)/2 degrees about the X axis, pivoting at 0.75 × height. They are also lifted by 0.25 × sin(πp). The head is drawn separately, rotated 360 × prog degrees about a random axis (seeded by entity id) through the centre of its cubes.
+- **`ModelBiped`:** body, arms and legs rotate together by −90 × (1 − cos πp)/2 degrees about the X axis, pivoting at 0.75 × height. They are also lifted by 0.25 × sin(πp). The head is drawn separately, rotated 360 × prog degrees about a random axis (seeded by entity id) through the center of its cubes.
 - **`ModelQuadruped`:** the same, with the body tipping about the Z axis.
 - **Other models:** draw all top-level boxes unchanged, and print `boxes.size = …` to stdout every frame.
 
-`RendererDeadLivingEntity` also contains unused helpers (`renderModel`, `renderExtraPasses`, `biped_renderEquippedItems`). They are reflection-based re-implementations of vanilla `RendererLivingEntity` passes (armour layers, enchant glint, hurt tint, held items) and are never called, so dying entities rendered by the BIO, LASER and DISMEMBER paths show **no armour or held items**. All reflection targets are looked up with SRG and MCP names via `ReflectionHelper`. Exceptions during rendering are swallowed.
+`RendererDeadLivingEntity` also contains unused helpers (`renderModel`, `renderExtraPasses`, `biped_renderEquippedItems`). They are reflection-based re-implementations of vanilla `RendererLivingEntity` passes (armor layers, enchant glint, hurt tint, held items) and are never called, so dying entities rendered by the BIO, LASER and DISMEMBER paths show **no armor or held items**. All reflection targets are looked up with SRG and MCP names via `ReflectionHelper`. Exceptions during rendering are swallowed.
 
 ## 7. Death messages (lang)
 

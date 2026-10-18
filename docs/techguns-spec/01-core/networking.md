@@ -208,7 +208,7 @@ One sheet per packet, using the CONVENTIONS fields that apply to a packet: sende
 | 11 | `PacketTGPlayerFieldSync` | 7 | `sendTo` one player or `sendToDimension` | CLIENT | `PacketTGKeybindPress` handler |
 | 12 | `PacketRequestTurretSync` | 4 | `sendToServer` | SERVER | `NPCTurret` |
 | 13 | `PacketSpawnParticle` | 50 + name length | `sendToAllAround` (r = 50, 150 or 200) | CLIENT | projectiles, bio blob, reaction chamber, jump pack, tesla beam |
-| 14 | `PacketSpawnParticleOnEntity` | 6 + name length | `sendToAllAround` (r = 200 for trails) | CLIENT | guns, dispenser behaviour, grenade projectile, jump pack |
+| 14 | `PacketSpawnParticleOnEntity` | 6 + name length | `sendToAllAround` (r = 200 for trails) | CLIENT | guns, dispenser behavior, grenade projectile, jump pack |
 | 15 | `PacketTGMessage` | 13 | `sendTo` one player | CLIENT | [`MultiBlockMachineBlock`](../08-machines-production/blocks-and-items.md#2-multiblockmachineblock-registry-name-machinemultiblock) (8 sites) |
 
 ### 0 · `GUIButtonClick`

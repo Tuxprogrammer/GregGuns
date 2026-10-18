@@ -7,7 +7,7 @@
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | `BlockEvent.BreakEvent` is posted with the owner looked up by UUID, which can be null ([MUTL-30](../../techguns-spec/BUGS.md)) | The event always carries a real `EntityPlayerMP`: the owner if online, otherwise a Forge `FakePlayer` built from the owner's profile | ServerUtilities skips claim protection for a null player (see below) |
 | Anyone who opens the GUI can change the settings ([MUTL-31](../../techguns-spec/BUGS.md)) | Only the owner, or a ServerUtilities team member, may change them | Same ownership rules as the Turret |
@@ -41,7 +41,7 @@ GT's own explosives are radial and destructive. Ours is a directional bore with 
   - The explosion hook ([ServerUtilitiesWorldEventHandler.java#L105-L135](https://github.com/GTNewHorizons/ServerUtilities/blob/2.4.14/src/main/java/serverutils/handlers/ServerUtilitiesWorldEventHandler.java#L105-L135)) only sees `ExplosionEvent.Detonate`. Our charge makes no `Explosion`, so the break event is its **only** protection.
 - **GregGuns does:**
   - posts `BlockEvent.BreakEvent` for each block, with the owner's `EntityPlayerMP` when online, else a `FakePlayer` from the stored owner profile;
-  - stops the column when the event is cancelled (unchanged from Techguns);
+  - stops the column when the event is canceled (unchanged from Techguns);
   - needs no ServerUtilities code. Any protection mod that listens to the break event works.
 - **Pack-side change:** none. A server that wants charges to ignore claims can already set `grief_protection=false`.
 
@@ -53,7 +53,7 @@ GT's own explosives are radial and destructive. Ours is a directional bore with 
 ## Requirements
 
 - **GGS-09-10** The break event's player is never null. Owner online: the owner. Owner offline: a `FakePlayer` carrying the owner's profile.
-- **GGS-09-11** A cancelled event stops that column and breaks nothing beyond it.
+- **GGS-09-11** A canceled event stops that column and breaks nothing beyond it.
 - **GGS-09-12** Blocks are not broken by an `Explosion`, so no entity damage and no fire occur.
 - **GGS-09-13** Drops use fortune 0 and are gathered before the block is removed.
 - **GGS-09-14** Both hardness caps are config options. Negative hardness is never broken.

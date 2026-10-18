@@ -4,14 +4,14 @@ Files: `DamageType.java`, `TGDamageSource.java`, [`DamageSystem.java`](index.md#
 
 Related code owned elsewhere:
 
-* the `LivingAttackEvent` hook in [`events/TechgunsEventhandler.java`](../01-core/events.md#techgunseventhandler-forge-bus) ([01-core](../01-core/index.md)), summarised in §4 because it is the entry point;
-* [`GenericArmor.getProperties`](../05-armor/armor-catalogue.md#1-class-hierarchy) ([05-armor](../05-armor/index.md)), which applies player armour;
+* the `LivingAttackEvent` hook in [`events/TechgunsEventhandler.java`](../01-core/events.md#techgunseventhandler-forge-bus) ([01-core](../01-core/index.md)), summarized in §4 because it is the entry point;
+* [`GenericArmor.getProperties`](../05-armor/armor-catalog.md#1-class-hierarchy) ([05-armor](../05-armor/index.md)), which applies player armor;
 * projectile `onImpact` code ([04](../04-projectiles-fx/index.md)), which calls `getDamageFactor` and `attackEntityFrom`;
-* the material instances in [`TGArmors.java`](../05-armor/armor-catalogue.md) ([05-armor](../05-armor/index.md)).
+* the material instances in [`TGArmors.java`](../05-armor/armor-catalog.md) ([05-armor](../05-armor/index.md)).
 
 ## 1. Damage types (`DamageType` enum)
 
-| Constant | Intended for | Tooltip colour | Lang key → English | Vanilla flags set on a new TGDamageSource |
+| Constant | Intended for | Tooltip color | Lang key → English | Vanilla flags set on a new TGDamageSource |
 |---|---|---|---|---|
 | PHYSICAL | melee hits | dark gray | `techguns.TGDamageType.PHYSICAL` → Physical | none |
 | PROJECTILE | bullets, arrows | gray | `…PROJECTILE` → Projectile | projectile |
@@ -19,12 +19,12 @@ Related code owned elsewhere:
 | EXPLOSION | rockets, TNT | dark red | `…EXPLOSION` → Explosion | explosion |
 | ENERGY | lasers, blasters, magic | dark aqua | `…ENERGY` → Energy | magic |
 | POISON | gas, bio | dark green | `…POISON` → Poison | magic |
-| UNRESISTABLE | starve, fall, suffocate… | black | `…UNRESISTABLE` → **missing** | bypasses armour + absolute |
+| UNRESISTABLE | starve, fall, suffocate… | black | `…UNRESISTABLE` → **missing** | bypasses armor + absolute |
 | ICE | – | aqua | `…ICE` → Ice | magic |
 | LIGHTNING | tesla | yellow | `…LIGHTNING` → Lightning | magic |
 | RADIATION | death ray | green | `…RADIATION` → Radiation | magic |
 
-`toString()` returns the colour code plus the translated name. It is used in tooltips (client-side translation).
+`toString()` returns the color code plus the translated name. It is used in tooltips (client-side translation).
 
 ## 2. `TGDamageSource` (extends vanilla `EntityDamageSource`)
 
@@ -55,7 +55,7 @@ Factory helpers (the name becomes the death-message key `death.attack.<name>`):
 | `causeLightningDamage` | `tg_lightning` | LIGHTNING | yes |
 | `getKnockbackDummyDmgSrc` | `tg_knockback` | PHYSICAL, DeathType DEFAULT | no |
 
-Other names constructed directly elsewhere: `player` (gun melee, PHYSICAL), [`chainsaw`](gun-catalogue.md#table-a-identity-and-ammunition) (PHYSICAL), `powerhammer` (PHYSICAL) and `tg_sonic` (PHYSICAL).
+Other names constructed directly elsewhere: `player` (gun melee, PHYSICAL), [`chainsaw`](gun-catalog.md#table-a-identity-and-ammunition) (PHYSICAL), `powerhammer` (PHYSICAL) and `tg_sonic` (PHYSICAL).
 
 `setNoKnockback()` sets the multiplier to 0. `setKnockback(m)` sets it to m. `hasKnockback()` is true when the multiplier is > 0.
 
@@ -100,7 +100,7 @@ Vanilla flags are copied: creative-harm, absolute, explosion, fire, magic, proje
 ## 3. Interfaces
 
 * `INpcTGDamageSystem` (implemented by [`GenericNPC`](../10-entities-npcs/per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava), [`AlienBug`](../10-entities-npcs/per-mob.md#15-alien-bug-alienbug), [`AlienBugDomesticated`](../10-entities-npcs/per-mob.md#alienbugdomesticated-dead-code) and [`AttackHelicopter`](../10-entities-npcs/per-mob.md#16-attack-helicopter-attackhelicopter-boss), documented in [10](../10-entities-npcs/index.md)):
-  * `getTotalArmorAgainstType(src)`: the entity's armour value for the source's damage type;
+  * `getTotalArmorAgainstType(src)`: the entity's armor value for the source's damage type;
   * `getPenetrationResistance(src)`: subtracted from the source's penetration.
 
   Any entity implementing it receives **all** damage through the Techguns pipeline, including vanilla damage.
@@ -109,7 +109,7 @@ Vanilla flags are copied: creative-harm, absolute, explosion, fire, magic, proje
 ## 4. Entry point: `LivingAttackEvent` (HIGH priority)
 
 1. If the source's direct entity is a living entity holding an `IToolTGDamageSystem` item, swap the source for the tool's TGDamageSource.
-2. If the victim is a player, the source is lava, inFire or onFire, and the player's armour COOLING_SYSTEM bonus is ≥ 1, cancel the event. No damage is taken.
+2. If the victim is a player, the source is lava, inFire or onFire, and the player's armor COOLING_SYSTEM bonus is ≥ 1, cancel the event. No damage is taken.
 3. Otherwise, if the (possibly swapped) source is a TGDamageSource **or** the victim implements `INpcTGDamageSystem`, cancel the vanilla event and run:
    * `DamageSystem.onLivingAttackPlayer` for players;
    * `DamageSystem.onLivingAttackEntityLivingBase` for everything else.
@@ -154,13 +154,13 @@ Reflection is used for the private vanilla fields and methods involved: `entityA
 
 1. Return if invulnerable. Fire Forge `LivingHurtEvent`; return if the result is ≤ 0.
 2. If the type is PHYSICAL and the player is blocking: `d = (1 + d) × 0.5`.
-3. `ArmorProperties.ApplyArmor` (Forge) runs over the four armour slots.
-   * Techguns armour is `ISpecialArmor`, so `GenericArmor.getProperties` supplies the ratio (see the formula below).
-   * Vanilla armour pieces use their own vanilla ratio for **every** non-unblockable TG type ([GUN-45](index.md#suspected-bugs)).
+3. `ArmorProperties.ApplyArmor` (Forge) runs over the four armor slots.
+   * Techguns armor is `ISpecialArmor`, so `GenericArmor.getProperties` supplies the ratio (see the formula below).
+   * Vanilla armor pieces use their own vanilla ratio for **every** non-unblockable TG type ([GUN-45](index.md#suspected-bugs)).
 4. Return if ≤ 0. Apply potion calculations (Resistance and similar).
 5. Absorption hearts absorb first. If anything remains: add exhaustion (`src.getHungerDamage()`), lower health, and record in the combat tracker.
 
-**Player armour formula** (`GenericArmor.getProperties` in [05](../05-armor/index.md), using `DamageSystem.getReduction` and `calcPenetration`). For each worn TG piece that isn't nearly broken, with `A` = that piece's armour value against the damage type (`TGArmorMaterial.getArmorValueSlot`):
+**Player armor formula** (`GenericArmor.getProperties` in [05](../05-armor/index.md), using `DamageSystem.getReduction` and `calcPenetration`). For each worn TG piece that isn't nearly broken, with `A` = that piece's armor value against the damage type (`TGArmorMaterial.getArmorValueSlot`):
 
 * if `A > 0`:
   * `pen = src.armorPenetration`;
@@ -187,13 +187,13 @@ else:
     armor = clamp(target.getTotalArmorValue(), 0, 24)       (GenericArmor.MAX_ARMOR = 24)
     armor = typeAdjust(target, armor, type)
     pen   = 0                                               (penetration ignored, GUN-34)
-target.damageArmor(d)            (vanilla armour wear, raw damage)
+target.damageArmor(d)            (vanilla armor wear, raw damage)
 return d × pen + d × (1 − pen) × (25 − armor) / 25
 ```
 
 `typeAdjust` (`getArmorAgainstDamageTypeDefault`):
 
-| Type | Effective armour |
+| Type | Effective armor |
 |---|---|
 | PHYSICAL, PROJECTILE | armor |
 | EXPLOSION, ENERGY, ICE, LIGHTNING | round(armor × 0.5) |
@@ -214,25 +214,25 @@ Called by projectiles ([04](../04-projectiles-fx/index.md)) and explosions ([`Pr
 
 ### 5.6 Other helpers
 
-* `getTotalArmorAgainstType(player, type)`: sums `GenericArmor.getArmorValue` over worn TG pieces, plus the vanilla reduction amount for vanilla `ItemArmor` (PHYSICAL only). It is used by the Techguns inventory GUI to show per-type armour ([01](../01-core/index.md)/[05](../05-armor/index.md)).
+* `getTotalArmorAgainstType(player, type)`: sums `GenericArmor.getArmorValue` over worn TG pieces, plus the vanilla reduction amount for vanilla `ItemArmor` (PHYSICAL only). It is used by the Techguns inventory GUI to show per-type armor ([01](../01-core/index.md)/[05](../05-armor/index.md)).
 * `getAdditionalReduction(target, type)`: returns 0.5 for fire against fire-immune targets, otherwise 1. Never called.
 * `damageEntity(EntityClientPlayerMP, …)`: subtracts health directly. Never called. Its signature uses a client-only class ([GUN-41](index.md#suspected-bugs)).
 
 ### 5.7 Worked example
 
-M4 bullet (8 damage, 15% pen) against a zombie wearing full iron armour (15 armour points):
+M4 bullet (8 damage, 15% pen) against a zombie wearing full iron armor (15 armor points):
 
-* `getDamage` uses pen 0 (vanilla mob) and armour 15 (PROJECTILE): 8 × (25 − 15)/25 = **3.2**.
-* The same bullet against a `GenericNPC` with 15 projectile armour and penetration resistance 0: 8 × 0.15 + 8 × 0.85 × 10/25 = **3.92**.
-* Against a player in TG armour with total projectile value 15 and per-piece penetration resistance 0: the ratio sums to (1 − 0.15) × 15/25 = 0.51 of the damage blocked, so **3.92** is taken (if the penetration had not compounded across pieces, see GUN-39).
+* `getDamage` uses pen 0 (vanilla mob) and armor 15 (PROJECTILE): 8 × (25 − 15)/25 = **3.2**.
+* The same bullet against a `GenericNPC` with 15 projectile armor and penetration resistance 0: 8 × 0.15 + 8 × 0.85 × 10/25 = **3.92**.
+* Against a player in TG armor with total projectile value 15 and per-piece penetration resistance 0: the ratio sums to (1 − 0.15) × 15/25 = 0.51 of the damage blocked, so **3.92** is taken (if the penetration had not compounded across pieces, see GUN-39).
 
 ## 6. `TGArmorMaterial`
 
-The data class behind every Techguns armour set. Instances and their values are in `TGArmors.java` ([05-armor](../05-armor/index.md)).
+The data class behind every Techguns armor set. Instances and their values are in `TGArmors.java` ([05-armor](../05-armor/index.md)).
 
 Fields: `name`, `baseDur`, `enchantability`, per-type totals `armorPhys`, `armorProjectile`, `armorExplosion`, `armorEnergy`, `armorFire`, `armorLightning`, `armorIce`, `armorPoison`, `armorRadiation` (all floats, default 0), and `penetrationResistance` (default 0).
 
-* Armour split per slot (`factorHead/Chest/Legs/Boots`): defaults 0.25 / 0.30 / 0.25 / 0.20 (sum 1.0). The slot value is `factor × typeTotal`. Change it with `setPartArmorSplit(helm, chest, legs, boots)`.
+* Armor split per slot (`factorHead/Chest/Legs/Boots`): defaults 0.25 / 0.30 / 0.25 / 0.20 (sum 1.0). The slot value is `factor × typeTotal`. Change it with `setPartArmorSplit(helm, chest, legs, boots)`.
 * Durability split per slot (`durHead/Chest/Legs/Boots`): defaults 0.25 each. Slot durability is `round(dur × 55 × baseDur)`, where 55 is the sum of the vanilla per-slot durability factors. Change it with `setPartDurabilitySplit`.
 * Constructors:
   1. **Full**: name, baseDur, enchant, then explicit phys, proj, fire, exp, energy, poison, ice, light, rad.
@@ -240,10 +240,10 @@ Fields: `name`, `baseDur`, `enchantability`, per-type totals `armorPhys`, `armor
   3. **Single**: name, baseDur, enchant, armor. Phys and proj are `armor`. Fire, explosion, energy, ice and lightning are `0.75 × armor`. Poison and radiation are 0.
 * Fluent setters exist for every type (`setArmorPhys`, `setArmorProjectile`, `setArmorExplosion`, `setArmorEnergy`, `setArmorFire`, `setArmorLightning`, `setArmorIce`, `setArmorPoison`, `setArmorRadiation`) and for `setPenetrationResistance`.
 * `getArmorValueTotal(type)` returns the type total (UNRESISTABLE → 0). `getArmorValueSlot(slot, type)` returns factor × total (slot 0 = helmet, 1 = chest, 2 = legs, 3 = boots). `getArmor(ItemArmor, type)` is shorthand for the item's slot.
-* `createVanillaMaterial()` registers a vanilla `ArmorMaterial` (via Forge EnumHelper) with the same name, baseDur and enchantability. Its per-slot reduction amounts are the rounded PHYSICAL slot values, so vanilla armour bars and `getTotalArmorValue` reflect physical armour.
+* `createVanillaMaterial()` registers a vanilla `ArmorMaterial` (via Forge EnumHelper) with the same name, baseDur and enchantability. Its per-slot reduction amounts are the rounded PHYSICAL slot values, so vanilla armor bars and `getTotalArmorValue` reflect physical armor.
 
 ## 7. Details confirmed in the consistency pass
 
-* **Tooltip colours.** `DamageType.toString()` builds its colour prefix from the Mojang Realms class `com.mojang.realmsclient.gui.ChatFormatting` (the same section-sign codes as vanilla `EnumChatFormatting`), then appends the translated type name.
+* **Tooltip colors.** `DamageType.toString()` builds its color prefix from the Mojang Realms class `com.mojang.realmsclient.gui.ChatFormatting` (the same section-sign codes as vanilla `EnumChatFormatting`), then appends the translated type name.
 * **Which source a grenade uses.** [`GrenadeProjectile.explode`](../04-projectiles-fx/projectiles.md#37-grenadeprojectile-family) (also used by the Frag Grenade and Grenade Launcher projectiles) damages a directly hit entity with a **vanilla** explosion source (`DamageSource.setExplosionSource`) scaled by [`getDamageFactor`](damage-system.md#55-damage-factors-getdamagefactorattacker-target), and applies the area damage through `ProjectileExplosion`, which uses `tg_explosion` with the shooter as the direct entity and no separate attacker. A vanilla source takes the Techguns pipeline only when the victim implements `INpcTGDamageSystem` (it is then converted, type EXPLOSION); against players and vanilla mobs a direct grenade hit goes through the vanilla path. Rockets ([`RocketProjectile`](../04-projectiles-fx/projectiles.md#34-rocketprojectile-and-nukerocketprojectile), [`NukeRocketProjectile`](../04-projectiles-fx/projectiles.md#34-rocketprojectile-and-nukerocketprojectile)) apply `tg_explosion` to the entity they hit.
-* **Per-gun use of the pipeline.** Which gun produces which source name and damage type is listed per gun in the [entity sheets](sheets-index.md#all-items-at-a-glance) (field 7) and in catalogue Table B.
+* **Per-gun use of the pipeline.** Which gun produces which source name and damage type is listed per gun in the [entity sheets](sheets-index.md#all-items-at-a-glance) (field 7) and in catalog Table B.

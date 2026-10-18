@@ -1,4 +1,4 @@
-# FX catalogue
+# FX catalog
 
 All named effects. The first part fully decodes the two data files `particles/FXList.txt` (16 FX lists, 50 particle systems) and `particles/Nuke.txt` (1 FX list, 8 systems). The format and engine are described in [particle-system.md](particle-system.md). The second part lists the hard-coded legacy particle names in [`ClientProxy.spawnParticle`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy).
 
@@ -16,9 +16,9 @@ Names are looked up case-insensitively. "Packet" means [`PacketSpawnParticle`](.
 
 | FX name (list or system) | Spawned by | How | Where |
 |---|---|---|---|
-| `RocketExplosion` (list) | [`RocketProjectile.explodeRocket`](projectiles.md#34-rocketprojectile-and-nukerocketprojectile), [`GrenadeProjectile`](projectiles.md#37-grenadeprojectile-family)/[`GrenadeLauncherProjectile.explode`](projectiles.md#1-registration), [`ReactionChamberTileEntMaster`](../08-machines-production/framework.md#1-class-hierarchy) (meltdown, [`08-machines-production`](../08-machines-production/index.md)) | Packet, 50 blocks | explosion centre |
-| `FragGrenadeExplosion` (list) | [`FragGrenadeProjectile.explode`](projectiles.md#1-registration), `ReactionChamberTileEntMaster` | Packet, 50 blocks | explosion centre |
-| `NukeExplosion` (list) | [`NukeRocketProjectile.explodeRocket`](projectiles.md#34-rocketprojectile-and-nukerocketprojectile) | Packet, **150** blocks | explosion centre |
+| `RocketExplosion` (list) | [`RocketProjectile.explodeRocket`](projectiles.md#34-rocketprojectile-and-nukerocketprojectile), [`GrenadeProjectile`](projectiles.md#37-grenadeprojectile-family)/[`GrenadeLauncherProjectile.explode`](projectiles.md#1-registration), [`ReactionChamberTileEntMaster`](../08-machines-production/framework.md#1-class-hierarchy) (meltdown, [`08-machines-production`](../08-machines-production/index.md)) | Packet, 50 blocks | explosion center |
+| `FragGrenadeExplosion` (list) | [`FragGrenadeProjectile.explode`](projectiles.md#1-registration), `ReactionChamberTileEntMaster` | Packet, 50 blocks | explosion center |
+| `NukeExplosion` (list) | [`NukeRocketProjectile.explodeRocket`](projectiles.md#34-rocketprojectile-and-nukerocketprojectile) | Packet, **150** blocks | explosion center |
 | `bioblobExplosion` (list) | [`BioblobTileEnt`](../09-machines-utility/misc-tile-entities.md#tile-entity-bioblobtileent) blob burst ([`07-blocks`](../07-blocks/index.md)) | Packet | blob |
 | `AlienExplosion` (list) | [`AlienBlasterProjectile`](projectiles.md#1-registration) impact | Packet, 50 blocks | impact |
 | `AlienBlasterTrail` (list) | [`AlienBlaster`](../02-guns/sheets-energy-special.md#alien-blaster-alienblaster) gun on fire | Packet on entity, but the entity is untracked, so it never shows ([PFX-01](index.md#suspected-bugs)) | follows projectile |
@@ -37,18 +37,18 @@ Names are looked up case-insensitively. "Packet" means [`PacketSpawnParticle`](.
 | `TeslaFlare` | [`TeslaBeam`](projectiles.md#1-registration) creation by the gun (not chain beams) | Packet, 50 blocks | beam end |
 | `BeamGunMuzzleFX` (list) | [`MovingBeam`](projectiles.md#1-registration)/[`NeutrinoBeam`](projectiles.md#1-registration) client constructor | `createFXOnEntity` | follows beam (the shooter's muzzle) |
 | `BeamGunImpactFX` (list) | `MovingBeam` every tick | `proxy.createFX` | beam end |
-| `biodeath` | BIO death effect | `createFX` (client, from the death packet) | entity centre |
-| `laserdeathFire`, `laserdeathAsh` | LASER death effect | `createFX` | entity centre |
+| `biodeath` | BIO death effect | `createFX` (client, from the death packet) | entity center |
+| `laserdeathFire`, `laserdeathAsh` | LASER death effect | `createFX` | entity center |
 | `JumpPackBoost` (list) | [`ItemJumppack.doJumpEffect`](../05-armor/special-equipment.md#44-jump-pack-itemjumppack) ([`05-armor`](../05-armor/index.md)) | Packet on player, 50 blocks | player |
 | `JumpPackFall` (list) | `ItemJumppack.doFallEffect` | Packet, 50 blocks | player feet |
-| `AntiGravRing` | [`TechgunsTickHandler`](../01-core/events.md#techgunstickhandler-fml-bus): creative-style flight granted by armour starts flying (client) | `createFXOnEntity` | player |
+| `AntiGravRing` | [`TechgunsTickHandler`](../01-core/events.md#techgunstickhandler-fml-bus): creative-style flight granted by armor starts flying (client) | `createFXOnEntity` | player |
 | `AntiGravRingGreen` | [`ItemAntiGravPack.doEffect`](../05-armor/special-equipment.md#45-anti-gravity-device-itemantigravpack) (client) | `createFXOnEntity`. **Not defined: NullPointerException** ([PFX-02](index.md#suspected-bugs)) | n/a |
 | `ChargeFlare` | [`ChargingStationTileEnt`](../08-machines-production/framework.md#1-class-hierarchy) (4 calls, [`09-machines-utility`](../09-machines-utility/index.md)) | `createFX` | station |
 | `OreClusterPing` | [`OreClusterScanner`](../06-items/special-items.md#ore-cluster-scanner-oreclusterscanner-techgunsoreclusterscanner) ([`06-items`](../06-items/index.md)) | `createFX` | ore cluster (visible through walls) |
 
 ## Data-file systems
 
-The tables below were extracted mechanically from the data files. They reflect the parser's actual behaviour: duplicate keys use the last value, defaults apply where a key is absent, and `NukeExplosionBlastwave` uses the partial-copy `EXTENDS`.
+The tables below were extracted mechanically from the data files. They reflect the parser's actual behavior: duplicate keys use the last value, defaults apply where a key is absent, and `NukeExplosionBlastwave` uses the partial-copy `EXTENDS`.
 
 ### FX lists (`FXLIST` blocks)
 
@@ -198,11 +198,11 @@ The tables below were extracted mechanically from the data files. They reflect t
 | `NukeExplosionMushroomCloud` | 4..8 | 3..6 | 0.86..0.91 | 0 (1) | 1 | OUTWARD | 1.5..3 | 14..15 | 0 | 0.87..0.88 | 0.01 | 0 | CYLINDER | 6 / 3 | - | 0 11.5 0 | - / 1 |
 | `NukeExplosionBall` | 12..14 | 5..8 | 0.96..0.98 | 0 (1) | 1 | HEMISPHERICAL | 1..4 | 0 | 0 | 0.95..0.97 | 0 | 0 | HEMISPHERE | 4 / 0 | - | 0 0 0 | - / 1 |
 
-### Particle systems: alpha and colour keys
+### Particle systems: alpha and color keys
 
-Raw keys are written `value@time` exactly as in the file. The "effective" columns apply the two engine quirks described in [particle-system.md](particle-system.md#35-alpha-and-colour-curves): each segment runs from the later key's value to the earlier key's value, and alpha is additionally stored as `1 - value`.
+Raw keys are written `value@time` exactly as in the file. The "effective" columns apply the two engine quirks described in [particle-system.md](particle-system.md#35-alpha-and-color-curves): each segment runs from the later key's value to the earlier key's value, and alpha is additionally stored as `1 - value`.
 
-| System | Alpha keys (raw) | Effective alpha per segment | Colour keys (raw RGB@time) | Effective colour per segment |
+| System | Alpha keys (raw) | Effective alpha per segment | Color keys (raw RGB@time) | Effective color per segment |
 |---|---|---|---|---|
 | `NetherBlasterImpactFlare` | 0@0, 1@0.25, 0@1 | 0-0.25: 0 to 1; 0.25-1: 1 to 0 | (255,255,255)@0, (255,255,255)@1 | 0-1: constant (255,255,255) |
 | `MediumExplosionSmoke` | 0@0, 1@0.25, 0@1 | 0-0.25: 0 to 1; 0.25-1: 1 to 0 | (255,255,255)@0, (192,168,128)@1 | 0-1: (192,168,128) to (255,255,255) |
@@ -270,7 +270,7 @@ Raw keys are written `value@time` exactly as in the file. The "effective" column
   - All use `shockwave.png` billboards that grow quickly; `AntiGravRing` shrinks from 24.
   - **They are camera-facing billboards, not flat ground rings.** The renderer always faces the camera.
   - `OreClusterPing` repeats every 11 ticks for 100 ticks and is NO_Z_TEST (visible through terrain).
-  - Most colour keys run white to black. With the swapped interpolation (particle-system.md §3.5) they *start* black and end white, while the alpha fades out.
+  - Most color keys run white to black. With the swapped interpolation (particle-system.md §3.5) they *start* black and end white, while the alpha fades out.
 - **Trails** (`TRAIL` volume): particles are laid evenly along the last `Volume1` blocks behind the projectile, in the direction opposite its motion, every burst. For example, `AlienBlasterTrailFlare` places 10 per tick over 5.5 blocks.
 - **Sonic shotgun waves** use `StartSizeRate 4` / `5` with damping 1. Each later burst starts 4 to 5 size units larger, so the trail widens linearly with distance from the muzzle.
 - **Nuke:**
@@ -284,12 +284,12 @@ Raw keys are written `value@time` exactly as in the file. The "effective" column
 
 ## Legacy named particles (`ClientProxy.spawnParticle`)
 
-These are hard-coded in `java/techguns/client/ClientProxy.java`. Each call creates a single sprite (see [particle-system.md §4](particle-system.md#4-legacy-sprite-particle-entityparticleanimated) for the [`EntityParticleAnimated`](particle-system.md#4-legacy-sprite-particle-entityparticleanimated) semantics). Sizes are `particleScale`, so the half-width is 0.1 × scale blocks. "Grow" is `setScaleIncrease(min, max, factor, soft = true)`. Values passed through `setMaxAge` and the scale setters are randomised ±20 % (randomness defaults to 0.20 unless the call sets it first; the scale and age setters are called before `setRandomness`). "Velocity" is the motion passed in.
+These are hard-coded in `java/techguns/client/ClientProxy.java`. Each call creates a single sprite (see [particle-system.md §4](particle-system.md#4-legacy-sprite-particle-entityparticleanimated) for the [`EntityParticleAnimated`](particle-system.md#4-legacy-sprite-particle-entityparticleanimated) semantics). Sizes are `particleScale`, so the half-width is 0.1 × scale blocks. "Grow" is `setScaleIncrease(min, max, factor, soft = true)`. Values passed through `setMaxAge` and the scale setters are randomized ±20 % (randomness defaults to 0.20 unless the call sets it first; the scale and age setters are called before `setRandomness`). "Velocity" is the motion passed in.
 
-| Name | Particle class | Texture (`textures/fx/...`) | Grid / sprites | Blend | Scale | Max age | Gravity | Grow | Colour | Other | Active callers |
+| Name | Particle class | Texture (`textures/fx/...`) | Grid / sprites | Blend | Scale | Max age | Gravity | Grow | Color | Other | Active callers |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | `Fireblast` | Animated | `fireblast.png` | 5×5 / 25 | ALPHA | 2.5 | 20 | 0 | 2.5 → 5 | white | random rotation, randomness 0.33, damping 0.90 | Rocket and Nuke rocket client trail (every tick); [`AttackHelicopter`](../10-entities-npcs/per-mob.md#16-attack-helicopter-attackhelicopter-boss) smoke and fire ([`10-entities-npcs`](../10-entities-npcs/index.md)) |
-| [`Flamethrower`](../02-guns/per-gun-behaviour.md#flamethrower-flamethrower-flamethrower) | Animated | `flamethrower_a.png` | 4×4 / 16 | ALPHA | 0.25 | 20 | 0 | 0.25 → 2.5, reaching max at 50 % of life | white | random rotation, randomness 0.75, damping 0.98 | [`FlamethrowerProjectile`](projectiles.md#32-flamethrowerprojectile) (2 per tick, client) |
+| [`Flamethrower`](../02-guns/per-gun-behavior.md#flamethrower-flamethrower-flamethrower) | Animated | `flamethrower_a.png` | 4×4 / 16 | ALPHA | 0.25 | 20 | 0 | 0.25 → 2.5, reaching max at 50 % of life | white | random rotation, randomness 0.75, damping 0.98 | [`FlamethrowerProjectile`](projectiles.md#32-flamethrowerprojectile) (2 per tick, client) |
 | `Jetpack` | Animated | `flamethrower_a.png` | 4×4 / 16 | ALPHA | 0.125 | 10 | 0 | 0.125 → 1.5, at 50 % | white | as Flamethrower | [`RenderJetpack`](../05-armor/rendering-and-models.md#3-special-slot-rendering-on-the-player-rendereradditionalslots) ([`05-armor`](../05-armor/index.md)) |
 | `Explosion` | Animated | `Explosion.png` | 5×5 / 20 | ALPHA | 5 | 20 | 0.05 | 5 → 10 | white | random rotation | [`ExplosiveChargeTileEnt`](../09-machines-utility/explosive-charges.md#nbt-explosivechargetileent) ([`07-blocks`](../07-blocks/index.md)); [`ProjectileExplosion.createExplosionEffect`](explosions.md#projectileexplosion) (dead) |
 | `ExplosionHuge` | Animated | `Explosion.png` | 5×5 / 20 | ALPHA | 5 | 40 | 0.05 | 20 → 40 | white | random rotation | `AttackHelicopter` death |
@@ -320,6 +320,6 @@ Unknown names produce no particle and no error message (the legacy switch simply
 
 | Source | Texture | Grid | Blend | Parameters |
 |---|---|---|---|---|
-| [`EntityBloodEffect`](death-effects.md#blood-burst-entitybloodeffect) (blood) | `blood4x4.png` | 2×2, used as 4 random variations | ALPHA | Scale 5 → 10 grow, age 20, gravity 0.07. Blood colour fades alpha 255 → 0 from 50 %. Random rotation, randomness 0.5, damping 0.98. |
-| `EntityBloodEffect` (no-blood dust) | `dustclouds02.png` | 3×3 / 9, animated | ALPHA_SHADED | Scale 5 → 10, age 40, gravity 0.05. Blood colour 255 → 0 from 50 %. Random rotation, randomness 0.5, damping 0.98. |
-| [`FlyingGibs`](projectiles.md#319-flyinggibs) blood trail | `blood4x4.png` | 2×2 variations | ALPHA | Scale size × 2 → size × 4, age 15, gravity 0.07. Blood colour 255 → 0 from 50 %. Random rotation, randomness 0.8, damping 0.92. |
+| [`EntityBloodEffect`](death-effects.md#blood-burst-entitybloodeffect) (blood) | `blood4x4.png` | 2×2, used as 4 random variations | ALPHA | Scale 5 → 10 grow, age 20, gravity 0.07. Blood color fades alpha 255 → 0 from 50 %. Random rotation, randomness 0.5, damping 0.98. |
+| `EntityBloodEffect` (no-blood dust) | `dustclouds02.png` | 3×3 / 9, animated | ALPHA_SHADED | Scale 5 → 10, age 40, gravity 0.05. Blood color 255 → 0 from 50 %. Random rotation, randomness 0.5, damping 0.98. |
+| [`FlyingGibs`](projectiles.md#319-flyinggibs) blood trail | `blood4x4.png` | 2×2 variations | ALPHA | Scale size × 2 → size × 4, age 15, gravity 0.07. Blood color 255 → 0 from 50 %. Random rotation, randomness 0.8, damping 0.92. |

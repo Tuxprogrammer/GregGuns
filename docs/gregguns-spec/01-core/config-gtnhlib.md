@@ -63,7 +63,7 @@ No RF key survives. The Techguns spec has RF only in `Ore Drills` and in the mac
 
 - **GGS-01-01** All GregGuns config is declared with GTNHLib `@Config` classes registered in `preInit`. No hand-written `Configuration` reads.
 - **GGS-01-02** No config key exists for ore generation, ingots, nuggets, ore drills, oil holes, DataWatcher IDs, GUI tab IDs or the version checker.
-- **GGS-01-03** Every field the client reads (damage factors, and toggles that gate server behaviour) is `@Config.Sync`, so a server value overrides a client value while connected.
+- **GGS-01-03** Every field the client reads (damage factors, and toggles that gate server behavior) is `@Config.Sync`, so a server value overrides a client value while connected.
 - **GGS-01-04** Every numeric field carries a `@Config.Comment` with its default, and a `@Config.Range*` where Techguns had a range.
 - **GGS-01-05** `FixedSprintFovMultiplier` changes the sprint FOV (fixes CORE-12).
 - **GGS-01-06** Config classes have no dependency on Minecraft classes, so they load in a plain unit test.

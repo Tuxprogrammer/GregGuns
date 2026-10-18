@@ -6,7 +6,7 @@ Source: `java/techguns/util/*`, `dispenser/*`, and the static inventory helpers 
 
 Two stacks "match" when they have the same item and the same damage value. NBT is ignored.
 
-| Method | Behaviour |
+| Method | Behavior |
 |---|---|
 | `addItemToInventory(inv[], stack, start, end)` | Works on a copy of the stack. First pass: top up partial stacks that match `OreDictionary.itemMatches(slot, stack, strict = true)` (item and damage; NBT ignored) up to the max stack size. Second pass: put the remainder into the first empty slot. Returns the number of items that **didn't** fit (0 = all fit) |
 | `addAmmoToPlayerInventory(player, stack)` | Fills Techguns ammo slots 6–11 first. If anything is left over, it then adds **the original full stack** (not the remainder) to the main inventory, which duplicates the part already stored ([CORE-04](index.md#suspected-bugs)). Without extended properties, it goes straight to the main inventory. Returns the number that didn't fit |
@@ -29,24 +29,24 @@ A custom explosion used by grenades, rockets and energy blasts ([04](../04-proje
 - `isFlaming`.
 
 **`doExplosion(blockDamage, attacker)`:**
-- On the server it first posts `ExplosionEvent.Start` with the dummy explosion. If that is cancelled, nothing happens.
+- On the server it first posts `ExplosionEvent.Start` with the dummy explosion. If that is canceled, nothing happens.
 - Then it runs phase A and phase B. The client runs both phases without the event.
 
 **Phase A: block selection.** This is the vanilla ray algorithm:
-1. Cast rays from the centre towards each of the 16×16×16 cube-surface directions.
+1. Cast rays from the center toward each of the 16×16×16 cube-surface directions.
 2. Each ray starts with strength explosionSize × (0.7 + 0.6·rand).
 3. The ray steps 0.3 blocks at a time, losing 0.225 strength per step.
 4. At a solid block it also loses (resistance + 0.3) × 0.3. The resistance comes from the exploder entity when there is one, otherwise from the block.
 5. A block is added to the affected list while strength > 0 and the exploder (if any) allows it.
 
 **Phase A: entity damage.**
-1. `explosionSize` is doubled temporarily. Entities are collected from a box of half-size dmgRadius2 + 1 around the centre, excluding the exploder.
+1. `explosionSize` is doubled temporarily. Entities are collected from a box of half-size dmgRadius2 + 1 around the center, excluding the exploder.
 2. On the server, `ForgeEventFactory.onExplosionDetonate` is called with the dummy explosion and this entity list. The dummy's block list stays empty, so protection mods can't remove blocks from it ([CORE-19](index.md#suspected-bugs)).
 3. For each entity within distance d ≤ dmgRadius2 (and d > 0):
    - `damage = entityDamage × min(1, 1 − (d − dmgRadius1) / (dmgRadius2 − dmgRadius1))`. That is full damage inside r1, falling linearly to 0 at r2. If r1 == r2 the expression divides by zero ([CORE-20](index.md#suspected-bugs)).
    - If an attacker is given and the target is living, multiply by [`DamageSystem.getDamageFactor(attacker, target)`](../02-guns/index.md#coverage) (the PvP, turret and NPC config factors).
    - Damage source: the override if one was set, otherwise `TGDamageSource.causeExplosionDamage(exploder, null, GORE)` with gore chance 0.35.
-   - Knockback: `(1 − d/(2·size)) × blockDensity`, adjusted by Blast Protection (`EnchantmentProtection`), and added along the centre-to-eye direction.
+   - Knockback: `(1 − d/(2·size)) × blockDensity`, adjusted by Blast Protection (`EnchantmentProtection`), and added along the center-to-eye direction.
    - Players are put in a knockback map, but that map is never sent to clients, so players don't feel the knockback (CORE-19).
 
 **Phase B:**
@@ -89,7 +89,7 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
 - `randomInt(rand, a, b)`: inclusive on both ends, in either order. `randomFloat(rand, min, max)`.
 - `polarOffsetXZ(x, z, r, angleRad)`: returns (x + r·cos a, z + r·sin a).
 - `traceVector(world, src, dir, distance, steps, ignoreEnt, shooter)`: a segmented ray trace.
-  1. Normalise the direction, then for each of up to `steps` segments of length `distance`:
+  1. Normalize the direction, then for each of up to `steps` segments of length `distance`:
   2. Ray-trace blocks with liquids ignored. In vanilla's argument order the flags are: stop on liquid = false, ignore blocks without a bounding box = true, return the last uncollidable block = false.
   3. Test entities found in the segment's box expanded by 1, excluding `ignoreEnt`, the shooter, dead entities and non-collidable ones. Each entity's bounding box is grown by 0.3 and intersected with the segment, and the nearest hit is kept.
   4. An entity hit overrides a block hit. The first segment with any hit returns it. If no segment hits, the result is null.
@@ -115,13 +115,13 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
 
 ## MBlock / MultiMBlock (structure block palette)
 
-**`MBlock`** has these fields: `block`, `meta`, `hasRotation`, `rotationType` (`BlockUtils.BlockType`) and `pass` (placement pass). Equality is by block and meta. A block equal to [`TGBlocks.airMarker`](../07-blocks/block-catalogue.md#registered-blocks) places air.
+**`MBlock`** has these fields: `block`, `meta`, `hasRotation`, `rotationType` (`BlockUtils.BlockType`) and `pass` (placement pass). Equality is by block and meta. A block equal to [`TGBlocks.airMarker`](../07-blocks/block-catalog.md#registered-blocks) places air.
 
 **`getRotationMeta(r)`** applies r clockwise quarter-turns:
 
 | BlockType | Meta cycle per quarter-turn |
 |---|---|
-| TG | delegated to [`GenericBlock.getRotationMeta(meta, r)`](../07-blocks/block-catalogue.md#conventions-and-defaults), otherwise unchanged |
+| TG | delegated to [`GenericBlock.getRotationMeta(meta, r)`](../07-blocks/block-catalog.md#conventions-and-defaults), otherwise unchanged |
 | DOOR | 0→3→2→1→0 and 7→6→5→4→7 |
 | FENCE_GATE | (m + r) mod 4, keeping the 4-bit (open flag) |
 | LADDER | 5→2→4→3→5 |
@@ -176,7 +176,7 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
 - `getValidSpawnYArea(…, step)`: samples a grid with the given step. Fails on liquid or when max − min > limit; otherwise returns the mean height. The intended clamp of the last row and column to the far edge never triggers ([CORE-25](index.md#suspected-bugs)).
 
 **Terrain shaping:**
-- `flattenArea(x, z, sx, sz, maxDiff)`: computes a "median" ground height. It is really the lower-middle element, and it is 0 when there are ≤ 2 samples ([CORE-24](index.md#suspected-bugs)). Columns are remapped linearly into a band of width maxDiff centred on that value.
+- `flattenArea(x, z, sx, sz, maxDiff)`: computes a "median" ground height. It is really the lower-middle element, and it is 0 when there are ≤ 2 samples ([CORE-24](index.md#suspected-bugs)). Columns are remapped linearly into a band of width maxDiff centered on that value.
 - `flattenAreaToMaxHeight`: raises every column to the highest one.
 - `apply2DHeightmapFilter(…, kernel)`: convolves the height map with `FILTER_GAUSSIAN_3x3` (1/16, 1/8, 1/16 / 1/8, 1/4, 1/8 / …) or `FILTER_GAUSSIAN_5x5`.
 - All of these adjust a column the same way:
@@ -209,7 +209,7 @@ It drives camo choices in worldgen ([11](../11-worldgen/index.md)).
 
 ## ItemUtil
 
-| Method | Behaviour |
+| Method | Behavior |
 |---|---|
 | `existsInOredict(key)` | the ore list is not empty |
 | `isItemEqual(a, b[, strict])` | null-safe `OreDictionary.itemMatches`; two nulls are equal |
@@ -248,14 +248,14 @@ These copy vanilla `PacketBuffer` logic for raw `ByteBuf`s.
 
 See [client-effects-audio.md](client-effects-audio.md#sound-routing-soundutil).
 
-## Dispenser behaviour
+## Dispenser behavior
 
-`dispenser.BehaviorProjectileDispenseDamagevalue` is registered for [`TGItems.sharedItem`](../06-items/item-catalogue.md). It extends the default "drop item" behaviour, so the vanilla click sound and smoke still play.
+`dispenser.BehaviorProjectileDispenseDamagevalue` is registered for [`TGItems.sharedItem`](../06-items/item-catalog.md). It extends the default "drop item" behavior, so the vanilla click sound and smoke still play.
 
 | Shared-item meta | Spawned projectile | Parameters |
 |---|---|---|
 | `TGItems.rocketAmmo` | [`RocketProjectile`](../04-projectiles-fx/projectiles.md#34-rocketprojectile-and-nukerocketprojectile) | damage and radius from the rocket launcher; speed 1.0; time-to-live 200; spread 0.3; gravity 0.01; no block damage; penetration 0 |
-| `TGItems._40mmGrenade` | [`GrenadeLauncherProjectile`](../04-projectiles-fx/projectiles.md#1-registration) | damage, radius, speed and gravity from the grenade launcher; time-to-live 100; spread 0.05; no block damage; penetration 0; 2 bounces. Afterwards, `GrenadeLauncherTrail` FX is sent to everyone within 200 blocks |
+| `TGItems._40mmGrenade` | [`GrenadeLauncherProjectile`](../04-projectiles-fx/projectiles.md#1-registration) | damage, radius, speed and gravity from the grenade launcher; time-to-live 100; spread 0.05; no block damage; penetration 0; 2 bounces. Afterward, `GrenadeLauncherTrail` FX is sent to everyone within 200 blocks |
 | `TGItems.rocketAmmoNuclear` | [`NukeRocketProjectile`](../04-projectiles-fx/projectiles.md#34-rocketprojectile-and-nukerocketprojectile) | values from the nuke launcher, otherwise the same as the rocket |
 | any other meta | (none) | the item is ejected as a normal item |
 

@@ -14,14 +14,14 @@ Each item's tier is fixed by **both** of these:
 
 The gate materials below are starting points. Confirm each against the current GTNH progression when its recipe is written.
 
-| Tier | Gate material | Weapons | Armour and equipment | Ammo and consumables |
+| Tier | Gate material | Weapons | Armor and equipment | Ammo and consumables |
 |---|---|---|---|---|
 | Steam / ULV | Bronze, wrought iron | Hand Cannon | T1 Scout and T1 Miner sets | Stone bullets |
 | LV | Steel | 9mm Pistol, Revolver, Sawed Off, Bolt Action Rifle; Combat Knife, Crowbar | T1 Combat set | 9mm rounds and pistol magazines, shotgun shells, rifle bullets |
-| MV | Aluminium | Thompson SMG, Mac10, Combat Shotgun, M4, AK47, akimbo pistols and revolvers; frag grenade, **Flashbang** | T2 Combat, Commando and Riot sets; gas mask, night-vision goggles, **Medkit** | SMG and assault-rifle magazines, 40 mm grenades |
+| MV | Aluminum | Thompson SMG, Mac10, Combat Shotgun, M4, AK47, akimbo pistols and revolvers; frag grenade, **Flashbang** | T2 Combat, Commando and Riot sets; gas mask, night-vision goggles, **Medkit** | SMG and assault-rifle magazines, 40 mm grenades |
 | HV | Stainless steel | AUG, SCAR, Vector, Infiltrator, AS50, LMG, Grenade Launcher, Rocket Launcher, Flamethrower, Chainsaw, Power Hammer; akimbo Mac10 | Jump pack, glider, oxygen mask and tanks | LMG and AS50 magazines, rockets, fuel tanks (GT fuels), compressed-air tanks |
-| EV | Titanium | Laser Rifle, PDW, Pulse Rifle, Minigun, Tesla Rifle, Sonic Rifle, Bio Gun, Power Hammer (Advanced) | T3 Combat set, steam armour (jetpack dropped: [0009](0009-gtnh-integration-defaults.md)) | Energy cells, advanced magazines, minigun drums, bio tanks; UV emitter as a component |
-| IV | Tungstensteel | Blaster Rifle, De-Atomizer Pistol and its akimbo, **Scatter Laser Rifle**, Golden Revolver and its akimbo | Power armour, exo suit, anti-grav device | — |
+| EV | Titanium | Laser Rifle, PDW, Pulse Rifle, Minigun, Tesla Rifle, Sonic Rifle, Bio Gun, Power Hammer (Advanced) | T3 Combat set, steam armor (jetpack dropped: [0009](0009-gtnh-integration-defaults.md)) | Energy cells, advanced magazines, minigun drums, bio tanks; UV emitter as a component |
+| IV | Tungstensteel | Blaster Rifle, De-Atomizer Pistol and its akimbo, **Scatter Laser Rifle**, Golden Revolver and its akimbo | Power armor, exo suit, anti-grav device | — |
 | LuV | HSS-G or LuV-tier alloys | Nether Blaster, Alien Blaster, Grim Reaper | — | Nether charges |
 | ZPM | Naquadah alloy | Nuclear Death Ray, Nuke Launcher | — | Nuclear power cells, tactical nuke rockets |
 

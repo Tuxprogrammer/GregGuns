@@ -1,6 +1,6 @@
 # Structure loot: which category each structure uses
 
-- **Techguns baseline:** [loot.md § How chests get filled](../../techguns-spec/11-worldgen/loot.md#how-chests-get-filled) (the per-structure table), [structure-catalogue.md Part A](../../techguns-spec/11-worldgen/structure-catalogue.md#part-a-structures-that-spawn-naturally); bug [WGEN-25](../../techguns-spec/11-worldgen/index.md#suspected-bugs)
+- **Techguns baseline:** [loot.md § How chests get filled](../../techguns-spec/11-worldgen/loot.md#how-chests-get-filled) (the per-structure table), [structure-catalog.md Part A](../../techguns-spec/11-worldgen/structure-catalog.md#part-a-structures-that-spawn-naturally); bug [WGEN-25](../../techguns-spec/11-worldgen/index.md#suspected-bugs)
 - **Design records:** [0005](../../design/0005-world-presence.md) ("tier-appropriate"), [0001](../../design/0001-tier-map.md)
 - **Pack mods:** TooMuchLoot (`TML`, 4.3.0-GTNH)
 - **Roadmap:** M8 (exit gate: loot is tier-appropriate for where the structure spawns)
@@ -8,7 +8,7 @@
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Vanilla chests in structures draw from `ChestGenHooks.DUNGEON_CHEST`, which Techguns also adds its guns to | Vanilla chests draw from a GregGuns category, never from `DUNGEON_CHEST` | TooMuchLoot loads every vanilla category with `OVERRIDE`, so additions made from code are wiped (below) |
 | `lootTier` 0/1/2 picks a T1/T2/T3 table for `tgchest` and `tgchest_weapon` | `lootTier` still picks richness (item count and weights). A separate **tier ceiling** caps the item tier | 0005: loot never exceeds the tier the location implies. Techguns T3 holds flamethrowers and rocket launchers, which 0001 puts at HV |
@@ -21,15 +21,15 @@ The default ceiling is **LV to MV for surface structures** (0005). Ships are sur
 
 | Structure | Techguns chests ([loot.md](../../techguns-spec/11-worldgen/loot.md#how-chests-get-filled)) | Techguns `lootTier` | GregGuns ceiling | Notes |
 |---|---|---|---|---|
-| [Small Factory Building](../../techguns-spec/11-worldgen/structure-catalogue.md#a1-small-factory-building-factoryhousesmall) | 2 vanilla | 0 | LV | Stone bullets, 9mm, shotgun shells, Hand Cannon, Revolver, Sawed Off |
-| [Small Train Station](../../techguns-spec/11-worldgen/structure-catalogue.md#a2-small-train-station-smalltrainstation) | 1 vanilla | 0 | LV | As above |
-| [Medium House](../../techguns-spec/11-worldgen/structure-catalogue.md#a3-medium-house-housemedium) | 8 vanilla, 6 `tgchest`, 4 `tgchest_weapon` | 0 | LV | The Thompson sits in Techguns' T1 table but is MV in 0001, so 06 moves it to the MV tables |
+| [Small Factory Building](../../techguns-spec/11-worldgen/structure-catalog.md#a1-small-factory-building-factoryhousesmall) | 2 vanilla | 0 | LV | Stone bullets, 9mm, shotgun shells, Hand Cannon, Revolver, Sawed Off |
+| [Small Train Station](../../techguns-spec/11-worldgen/structure-catalog.md#a2-small-train-station-smalltrainstation) | 1 vanilla | 0 | LV | As above |
+| [Medium House](../../techguns-spec/11-worldgen/structure-catalog.md#a3-medium-house-housemedium) | 8 vanilla, 6 `tgchest`, 4 `tgchest_weapon` | 0 | LV | The Thompson sits in Techguns' T1 table but is MV in 0001, so 06 moves it to the MV tables |
 | Gas station (dormant in Techguns; see the index) | 2 vanilla | 0 | LV | |
-| [Big Bunker](../../techguns-spec/11-worldgen/structure-catalogue.md#a4-big-bunker-bigbunker) | 3 vanilla, 3 `tgchest`, 8 `tgchest_weapon` | 1 | MV | |
-| [Military Base](../../techguns-spec/11-worldgen/structure-catalogue.md#a6-military-base-militarybasestructure--militarycamp) camp crates and bunkers; barracks chests | 5 % of interior columns hold `tgchest` or `tgchest_weapon`; barracks vanilla chests | 2; barracks table | MV | Barracks table drops the glider and oxygen gear (HV in 0001); keeps gas mask, night vision, T1 and T2 combat armour |
-| [Aircraft Carrier](../../techguns-spec/11-worldgen/structure-catalogue.md#a7-aircraft-carrier-aircraftcarriernew) | 6 vanilla, 8 `tgchest`, 12 `tgchest_weapon` | 2 | MV | Flamethrower, rocket launcher and rockets leave the T3 table |
-| [Submarine](../../techguns-spec/11-worldgen/structure-catalogue.md#a8-submarine-submarine) | 3 vanilla, 2 `tgchest`, 4 `tgchest_weapon` | 2 | MV | As the carrier |
-| [Alien Bug Nest](../../techguns-spec/11-worldgen/structure-catalogue.md#a5-alien-bug-nest-alienbugneststructure--alienbugnest) | none | none | none | Spawners and eggs only |
+| [Big Bunker](../../techguns-spec/11-worldgen/structure-catalog.md#a4-big-bunker-bigbunker) | 3 vanilla, 3 `tgchest`, 8 `tgchest_weapon` | 1 | MV | |
+| [Military Base](../../techguns-spec/11-worldgen/structure-catalog.md#a6-military-base-militarybasestructure--militarycamp) camp crates and bunkers; barracks chests | 5 % of interior columns hold `tgchest` or `tgchest_weapon`; barracks vanilla chests | 2; barracks table | MV | Barracks table drops the glider and oxygen gear (HV in 0001); keeps gas mask, night vision, T1 and T2 combat armor |
+| [Aircraft Carrier](../../techguns-spec/11-worldgen/structure-catalog.md#a7-aircraft-carrier-aircraftcarriernew) | 6 vanilla, 8 `tgchest`, 12 `tgchest_weapon` | 2 | MV | Flamethrower, rocket launcher and rockets leave the T3 table |
+| [Submarine](../../techguns-spec/11-worldgen/structure-catalog.md#a8-submarine-submarine) | 3 vanilla, 2 `tgchest`, 4 `tgchest_weapon` | 2 | MV | As the carrier |
+| [Alien Bug Nest](../../techguns-spec/11-worldgen/structure-catalog.md#a5-alien-bug-nest-alienbugneststructure--alienbugnest) | none | none | none | Spawners and eggs only |
 
 An admin can raise a ceiling with the config `lootTierCeiling.<structure>`. The default stays as above. Raising it above the tier that the location implies is the admin's call, not the mod's.
 

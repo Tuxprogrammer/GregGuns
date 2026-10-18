@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120">
 <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/></marker></defs>
 <rect width="1600" height="1120" rx="14" fill="#10151b"/>
-<text x="36" y="56" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="36" font-weight="700" fill="#eaf0f5" text-anchor="start" >Armoury Gantry</text>
-<rect x="340" y="32" width="68.96" height="28" rx="14" fill="#3fd0ff" />
-<text x="374.48" y="50.55" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="600" fill="#10151b" text-anchor="middle" >Regular</text>
-<text x="446" y="52" font-family="Consolas, 'Courier New', monospace" font-size="15" font-weight="normal" fill="#9fb0bf" text-anchor="start" >MTE 20114</text>
+<text x="36" y="56" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="36" font-weight="700" fill="#eaf0f5" text-anchor="start" >Armory Gantry</text>
+<rect x="320" y="32" width="68.96" height="28" rx="14" fill="#3fd0ff" />
+<text x="354.48" y="50.55" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="600" fill="#10151b" text-anchor="middle" >Regular</text>
+<text x="426" y="52" font-family="Consolas, 'Courier New', monospace" font-size="15" font-weight="normal" fill="#9fb0bf" text-anchor="start" >MTE 20114</text>
 <text x="36" y="86" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="normal" fill="#9fb0bf" text-anchor="start" >Multiblock form of the Repair Bench: a row of portal-frame repair bays. No recipe map; repair cost is read from item NBT.</text>
 <rect x="1264" y="36" width="34" height="22" rx="4" fill="#2a3541" />
 <text x="1281" y="50.8" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" font-weight="700" fill="#566473" text-anchor="middle" >ULV</text>

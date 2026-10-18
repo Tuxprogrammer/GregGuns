@@ -9,9 +9,9 @@ A sheet exists only when there is something in the pack to link it to. That mean
 - another mod's config in the GTNH pack;
 - another mod's API, registry, event or IMC message;
 - a GTNH-owned data file (loot tables, custom drops, tooltips, hazards, quests);
-- a GT system that replaces Techguns behaviour (recipe maps, materials, MetaTileEntities, EU).
+- a GT system that replaces Techguns behavior (recipe maps, materials, MetaTileEntities, EU).
 
-A Techguns feature with no integration point gets no sheet. Its behaviour is the Techguns spec plus the [design records](../design/README.md). An area with no integration points gets no folder.
+A Techguns feature with no integration point gets no sheet. Its behavior is the Techguns spec plus the [design records](../design/README.md). An area with no integration points gets no folder.
 
 ## Folder layout
 
@@ -42,7 +42,7 @@ The **Integration map** is a table:
 - **Roadmap:** milestone(s) that build this
 
 ## What changes from Techguns
-Short prose, then a table if there is more than one item: Techguns behaviour → GregGuns behaviour → why.
+Short prose, then a table if there is more than one item: Techguns behavior → GregGuns behavior → why.
 
 ## Integration points
 ### <Mod>: <contract in a few words>
@@ -70,7 +70,7 @@ Recipe sheets (`recipes.md` in an area) give **every** GregGuns recipe in that a
 | Output | GregGuns item (placeholder registry name) × count |
 | Tier | D1 tier from [0001](../design/0001-tier-map.md) |
 | Method | Crafting table (with GT tool letters) or a GT recipe map (`RecipeMaps.assemblerRecipes`, …) |
-| Inputs | GT parts written as `OrePrefixes.<prefix>` + `Materials.<material>` (for example `plate.Steel`), GT components as `ItemList.<name>` (for example `Electric_Motor_LV`), circuits as `circuit.<tier>`, fluids as `Materials.<m>.getMolten(L)` or a named fluid with litres, GregGuns components by name |
+| Inputs | GT parts written as `OrePrefixes.<prefix>` + `Materials.<material>` (for example `plate.Steel`), GT components as `ItemList.<name>` (for example `Electric_Motor_LV`), circuits as `circuit.<tier>`, fluids as `Materials.<m>.getMolten(L)` or a named fluid with liters, GregGuns components by name |
 | EU/t, time | `TierEU.RECIPE_<tier>` (or a fraction of it) and duration in seconds/ticks |
 | Gate | Which input and which machine voltage enforce the tier |
 | Notes | Programmed circuit number, GT precedent it mirrors, Techguns recipe it replaces |

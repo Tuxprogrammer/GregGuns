@@ -1,6 +1,6 @@
-# 07-blocks: block catalogue
+# 07-blocks: block catalog
 
-Every block constructed in `java/techguns/TGBlocks.java`, with its registration data. Behaviour beyond plain properties is in [special-blocks.md](special-blocks.md). Rendering is in [block-rendering-and-models.md](block-rendering-and-models.md). Textures are in [textures.md](textures.md).
+Every block constructed in `java/techguns/TGBlocks.java`, with its registration data. Behavior beyond plain properties is in [special-blocks.md](special-blocks.md). Rendering is in [block-rendering-and-models.md](block-rendering-and-models.md). Textures are in [textures.md](textures.md).
 
 ## Conventions and defaults
 
@@ -25,7 +25,7 @@ Every block constructed in `java/techguns/TGBlocks.java`, with its registration 
 | vanilla `ItemBlock` | block's unlocalized name | |
 | `GenericItemBlockMetadata` (extends `ItemBlockWithMetadata`) | `<block unlocalized>_<damage>` | has subtypes; icon from `block.getIcon(side, damage)` |
 | `GenericItemBlockMetadataStringPrefix` | `"techguns." + <GenericItemBlockMetadata name>` | used only by [`ItemBlockOreDrill`](special-blocks.md#17-itemblockoredrill-placement-rules) |
-| [`GenericItemBlockCamoChangeable`](special-blocks.md#18-camo-changeable-item-blocks-genericitemblockcamochangeable) | as `GenericItemBlockMetadata` | implements [`ICamoChangeable`](../05-armor/armor-catalogue.md#1-class-hierarchy) (Camo Bench, [09-machines-utility](../09-machines-utility/index.md)) and adds a "Current Camo" tooltip |
+| [`GenericItemBlockCamoChangeable`](special-blocks.md#18-camo-changeable-item-blocks-genericitemblockcamochangeable) | as `GenericItemBlockMetadata` | implements [`ICamoChangeable`](../05-armor/armor-catalog.md#1-class-hierarchy) (Camo Bench, [09-machines-utility](../09-machines-utility/index.md)) and adds a "Current Camo" tooltip |
 | [`ItemBlockMetaDataMachine`](special-blocks.md#16-itemblockmetadatamachine) | `"techguns." + <GenericItemBlockMetadata name>` | machine placement hooks, "Has TileEntity Data" tooltip |
 | `ItemBlockTGChest` | `"techguns." + <block unlocalized>` | "Has contents" tooltip |
 | `ItemBlockOreClusterCustom` | block's unlocalized name | tooltip shows the ore or fluid of that meta |
@@ -48,9 +48,9 @@ Registry names are given without the `Techguns:` mod prefix.
 | `oreCluster2` | `oreCluster2` / `OreCluster` | `oreCluster2` | rock | −1 / 6,000,000 | 0 | stone | crowbar only | `GenericItemBlockMetadata` | 0–4 ore types |
 | `oreClusterCustom` (only if config `addCustomOreCluster`) | `OreClusterCustom` | `oreClusterCustom` | rock | −1 / 6,000,000 | 0 | stone | crowbar only | `ItemBlockOreClusterCustom` | 0–15, filled by MineTweaker |
 | `oreClusterCustom2` (only if config `addCustomOreCluster2`) | `OreClusterCustom` | `oreClusterCustom2` | as above | | | | | `ItemBlockOreClusterCustom` | 0–15 |
-| `ladder01` | `ladder01` / [`BlockTGLadder`](special-blocks.md#6-metal-ladder-ladder01-blocktgladder) | `LadderBlock` | iron | 10.0 / 1000 (the TGBlocks values override the constructor's 2.0) | 0 | metal | pickaxe 1 | `GenericItemBlockCamoChangeable` | `variant*4 + facing`. Variants: 0 grey, 1 rusty, 2 shiny, 3 carbon/black. Facings 0–3. |
+| `ladder01` | `ladder01` / [`BlockTGLadder`](special-blocks.md#6-metal-ladder-ladder01-blocktgladder) | `LadderBlock` | iron | 10.0 / 1000 (the TGBlocks values override the constructor's 2.0) | 0 | metal | pickaxe 1 | `GenericItemBlockCamoChangeable` | `variant*4 + facing`. Variants: 0 gray, 1 rusty, 2 shiny, 3 carbon/black. Facings 0–3. |
 | `lamp01` | `lamp01` / [`BlockTGLamp`](special-blocks.md#7-lamps-and-lanterns-lamp01-blocktglamp) | `Lamp` | iron | 0.25 / – | 15 (`setLightLevel(1.0)`), light opacity 0 | glass | pickaxe 1 (iron material, so a pickaxe is needed for the drop) | `GenericItemBlockMetadata` | 0–6 yellow lamp, 7 yellow lantern, 8–14 white lamp, 15 white lantern |
-| `door01` | `door01` / [`BlockTGDoor`](special-blocks.md#8-metal-door-door01-blocktgdoor) (extends vanilla `BlockDoor`) | **none set** (vanilla gives `tile.null`) | iron | 20.0 / 2000 | 0 | vanilla door (stone) | vanilla door rules | ItemBlock (raw block item; the real placer is [`TGItems.door01`](../06-items/item-catalogue.md), [06-items](../06-items/index.md)) | vanilla door metas |
+| `door01` | `door01` / [`BlockTGDoor`](special-blocks.md#8-metal-door-door01-blocktgdoor) (extends vanilla `BlockDoor`) | **none set** (vanilla gives `tile.null`) | iron | 20.0 / 2000 | 0 | vanilla door (stone) | vanilla door rules | ItemBlock (raw block item; the real placer is [`TGItems.door01`](../06-items/item-catalog.md), [06-items](../06-items/index.md)) | vanilla door metas |
 | `sandbags` | `sandbags` / [`BlockSandbags`](special-blocks.md#5-sandbags-blocksandbags) | `sandbags` | cloth | 2.0 / 10.0 | 0 | stone (GenericBlock default) | none needed | ItemBlock | 0 |
 | `bugnesteggs` | `bugnesteggs` / `GenericBlock` | `bugnesteggs` | sand | 3.0 / 2.0 | `setLightLevel(5.0f)`, which gives **75** (bug [BLK-10](index.md#suspected-bugs)) | stone | none needed | ItemBlock | 0 |
 | `bugnestslimy` | `bugnestslimy` / `BlockBugSlime` (extends vanilla `BlockLadder`) | `slimetrail` | circuits (vanilla ladder material) | 3.0 / 2.0 | 0 | cloth | vanilla ladder | ItemBlock | vanilla ladder facings 2–5 |
@@ -116,7 +116,7 @@ All are registered through `carverHelper.addVariation(descKey, meta, textureBase
 | metalpanel2 | 6 | `metalpanel_techgrid` | V9 (3×3 pattern) | Silver |
 | bugnest | 0 | `bugnestblock` | plain | Bugnest Sand |
 
-The lang descriptions for metalpanel2 metas 2–6 do not match the art very well (e.g. "Shiny" is a blue-grey steel frame). They are recorded verbatim.
+The lang descriptions for metalpanel2 metas 2–6 do not match the art very well (e.g. "Shiny" is a blue-gray steel frame). They are recorded verbatim.
 
 **Machine variations registered here (owned by [08](../08-machines-production/index.md)).** All have an empty description and `forbidChiseling = true`.
 
@@ -155,7 +155,7 @@ The lang descriptions for metalpanel2 metas 2–6 do not match the art very well
 | Metal Panel (Connected) ×64 | B32 |
 | Reinforced Chest | B33 |
 | Weapon Chest | B34 |
-| Door item (2) | from 6 [`plateIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) ([06-items](../06-items/index.md)) |
+| Door item (2) | from 6 [`plateIron`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) ([06-items](../06-items/index.md)) |
 
 Concrete has no crafting recipe. It comes from the Chemical Laboratory (sand + gravel + 250 mB water → 2 `concrete:0`, [08-machines-production](../08-machines-production/index.md)). The other Chisel variants are reachable only with the Chisel mod's chisel (the carving groups are named `container`, `concrete`, `metalpanel`, `metalpanel2`, `bugnest`). The screen, control panel, steel-frame variants, bug blocks, monster spawner, air marker and Bioblob have no recipes. They come from world generation, the creative tab or gameplay.
 
@@ -179,4 +179,4 @@ The unused classes `TurretBase`, `BlockBugNest` and `ItemBlockOreCluster` are de
 | `oreTin` | `techguns:oreTinBlock` | [`doOreGenCopperTin`](../01-core/config.md#category-general) |
 | `oreCopper` | `techguns:oreCopperBlock` | `doOreGenCopperTin` |
 
-Their textures are catalogued in [textures.md](textures.md). Registration, oredict and smelting are in [01-core/lifecycle-and-registration.md](../01-core/lifecycle-and-registration.md).
+Their textures are cataloged in [textures.md](textures.md). Registration, oredict and smelting are in [01-core/lifecycle-and-registration.md](../01-core/lifecycle-and-registration.md).

@@ -3,17 +3,17 @@
 - **Techguns baseline:** [extra-inventory.md](../../techguns-spec/05-armor/extra-inventory.md#1-data-model-tgplayerinventory-iinventory-12-slots), [special-equipment.md](../../techguns-spec/05-armor/special-equipment.md#2-registered-items)
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0003 energy model](../../design/0003-energy-model.md)
 - **Pack mods:** Baubles Expanded (`Baubles|Expanded`, 2.2.25-GTNH), Galacticraft (`GalacticraftCore`, 3.4.34-GTNH; see [oxygen-gear.md](oxygen-gear.md))
-- **Roadmap:** M3 (armour and equipment)
+- **Roadmap:** M3 (armor and equipment)
 
 ## What changes from Techguns
 
 Techguns adds a 12-slot inventory tab, its own GUI, and two DataWatcher entries to show face and back gear to other players. GregGuns drops the tab. The pack already ships Baubles Expanded with a sidebar of typed slots, so GregGuns equipment becomes baubles where nothing else in the pack needs to see it.
 
-The rule is: **anything a pack system must see is an armour-slot item or a Galacticraft slot item; anything only GregGuns reads is a bauble.** GT hazard checks and Galacticraft breathing checks read the vanilla armour slots only (see [hazard-protection.md](hazard-protection.md) and [oxygen-gear.md](oxygen-gear.md)).
+The rule is: **anything a pack system must see is an armor-slot item or a Galacticraft slot item; anything only GregGuns reads is a bauble.** GT hazard checks and Galacticraft breathing checks read the vanilla armor slots only (see [hazard-protection.md](hazard-protection.md) and [oxygen-gear.md](oxygen-gear.md)).
 
 | Techguns slot (index) | Techguns items | GregGuns slot | Why |
 |---|---|---|---|
-| Face (0), protective | Gas Mask, Tactical Mask | Helmet armour slot | GT's gas hazard check reads armour slots only. See [hazard-protection.md](hazard-protection.md) |
+| Face (0), protective | Gas Mask, Tactical Mask | Helmet armor slot | GT's gas hazard check reads armor slots only. See [hazard-protection.md](hazard-protection.md) |
 | Face (0), protective | Oxygen Mask | Galacticraft mask slot (subclass of GC's mask item) | GC reads its own slots. See [oxygen-gear.md](oxygen-gear.md) |
 | Face (0), sensor | Night Vision Goggles | Baubles `head` | Nothing in the pack reads it, so a bauble keeps the "goggles plus helmet" feel |
 | Back (1) | Jetpack, Jump Pack, Glider, Anti Gravity Device | Baubles `wings` (one slot, so only one back device at a time) | The pack already has a `wings` slot, and one slot removes flight stacking inside GregGuns |
@@ -32,7 +32,7 @@ The Techguns toggle buttons (HUD, night vision, safe mode, step assist, jetpack)
 - **Source:**
   - Slot types pre-registered by the mod, including `head`, `body`, `cape`, `quiver` and `wings`: [BaubleExpandedSlots.java#L317-L332](https://github.com/GTNewHorizons/Baubles-Expanded/blob/2.2.25-GTNH/src/main/java/baubles/api/expanded/BaubleExpandedSlots.java#L317-L332).
   - `IBaubleExpanded.getBaubleTypes(ItemStack)` is how an item names the slot types it fits: [IBaubleExpanded.java#L13-L29](https://github.com/GTNewHorizons/Baubles-Expanded/blob/2.2.25-GTNH/src/main/java/baubles/api/expanded/IBaubleExpanded.java#L13-L29).
-  - Extra types can be added with `tryRegisterType`, only during pre-initialisation: [BaubleExpandedSlots.java#L45-L57](https://github.com/GTNewHorizons/Baubles-Expanded/blob/2.2.25-GTNH/src/main/java/baubles/api/expanded/BaubleExpandedSlots.java#L45-L57).
+  - Extra types can be added with `tryRegisterType`, only during pre-initialization: [BaubleExpandedSlots.java#L45-L57](https://github.com/GTNewHorizons/Baubles-Expanded/blob/2.2.25-GTNH/src/main/java/baubles/api/expanded/BaubleExpandedSlots.java#L45-L57).
   - With `manualSlotSelection` on, `overrideSlots` replaces the assignments from the config list: [BaubleExpandedSlots.java#L301-L313](https://github.com/GTNewHorizons/Baubles-Expanded/blob/2.2.25-GTNH/src/main/java/baubles/api/expanded/BaubleExpandedSlots.java#L301-L313). A registered type that is not in the pack list gets **no slot**.
   - Slot positions for a type: [getIndexesOfAssignedSlotsOfType, L184](https://github.com/GTNewHorizons/Baubles-Expanded/blob/2.2.25-GTNH/src/main/java/baubles/api/expanded/BaubleExpandedSlots.java#L184).
   - Items in baubles drop on death unless `keepInventory`: [EventHandlerEntity.java#L44-L54](https://github.com/GTNewHorizons/Baubles-Expanded/blob/2.2.25-GTNH/src/main/java/baubles/common/event/EventHandlerEntity.java#L44-L54).
@@ -52,10 +52,10 @@ The Techguns toggle buttons (HUD, night vision, safe mode, step assist, jetpack)
 
 ### Night vision: avoid fighting the pack's other sources
 
-- **Source:** GT's Mech Armor night-vision behaviour adds the effect with the *ambient* flag and, when switched off, removes only an ambient effect, so a potion's night vision survives: [NightVisionBehavior.java#L44-L62](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/items/armor/behaviors/NightVisionBehavior.java#L44-L62). GT drains 2 EU per tick for it.
+- **Source:** GT's Mech Armor night-vision behavior adds the effect with the *ambient* flag and, when switched off, removes only an ambient effect, so a potion's night vision survives: [NightVisionBehavior.java#L44-L62](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/items/armor/behaviors/NightVisionBehavior.java#L44-L62). GT drains 2 EU per tick for it.
 - **GregGuns does:** the goggles apply `Potion.nightVision` with `ambient = true`, remove the effect on unequip or toggle-off only if it is ambient, and remove `Potion.blindness` only while on. This fixes [ARM-29](../../techguns-spec/05-armor/index.md#suspected-bugs) and matches GT.
 - **Pack-side change:** none.
-- **Not done:** IC2's goggles are helmet armour with no source in the pack index; GregGuns does not inspect them. Two sources can overlap harmlessly because both use the same potion.
+- **Not done:** IC2's goggles are helmet armor with no source in the pack index; GregGuns does not inspect them. Two sources can overlap harmlessly because both use the same potion.
 
 ## Requirements
 

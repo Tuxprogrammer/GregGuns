@@ -1,12 +1,12 @@
-# Structure catalogue
+# Structure catalog
 
-This catalogue covers every structure class in `worldgen/` and `worldgen/structures/`. Shared mechanics are in [structure-system.md](structure-system.md): terrain checks, rotation, the meaning of pass 0/1, and the file format. Chest loot is in [loot.md](loot.md). NPC and mob types are cross-referenced to **[10-entities-npcs](../10-entities-npcs/index.md)**. Block definitions (concrete, lamps, TG doors, ladders, camo nets, sandbags, bug-nest blocks, spawner, chests, camp flag) belong to **[07-blocks](../07-blocks/index.md)** and **[09-machines-utility](../09-machines-utility/index.md)**.
+This catalog covers every structure class in `worldgen/` and `worldgen/structures/`. Shared mechanics are in [structure-system.md](structure-system.md): terrain checks, rotation, the meaning of pass 0/1, and the file format. Chest loot is in [loot.md](loot.md). NPC and mob types are cross-referenced to **[10-entities-npcs](../10-entities-npcs/index.md)**. Block definitions (concrete, lamps, TG doors, ladders, camo nets, sandbags, bug-nest blocks, spawner, chests, camp flag) belong to **[07-blocks](../07-blocks/index.md)** and **[09-machines-utility](../09-machines-utility/index.md)**.
 
 "Chisel `X` m" below means the Chisel 2 mod's block `team.chisel.init.ChiselBlocks.X` with metadata m. Techguns references these directly, so every scanned structure and most procedural ones need Chisel installed ([WGEN-24](index.md#suspected-bugs)). [`TGChiselBlocks`](../07-blocks/special-blocks.md#19-tgchiselblocks-block-constants-for-structures) names are aliases defined in `blocks/TGChiselBlocks`:
 
 | Alias | Block |
 |---|---|
-| [`concrete`](../07-blocks/block-catalogue.md#registered-blocks) | Chisel `concrete` 0 |
+| [`concrete`](../07-blocks/block-catalog.md#registered-blocks) | Chisel `concrete` 0 |
 | `concrete_dark` | Chisel `concrete` 10 |
 | `woodenCrate` | Chisel `planks[0]` 10 |
 | `glowblock` | Chisel `glowstone` 4 |
@@ -27,7 +27,7 @@ This catalogue covers every structure class in `worldgen/` and `worldgen/structu
 | `cobblestone_largetile` | Chisel `cobblestone` 4 |
 | `glass_bubble` | Chisel `glass` 1 |
 
-TG `concrete` metas, with their lang descriptions (block owned by [07](../07-blocks/index.md)): 0 Light, 1 Dark, 2 Steel Frame Light, 3 Steel Frame Dark, 4 Weathered Column, 5 Light Noise, 6 Dark Noise. TG [`container`](../07-blocks/block-catalogue.md#registered-blocks) meta 0 is "Shipping Container (Red)".
+TG `concrete` metas, with their lang descriptions (block owned by [07](../07-blocks/index.md)): 0 Light, 1 Dark, 2 Steel Frame Light, 3 Steel Frame Dark, 4 Weathered Column, 5 Light Noise, 6 Dark Noise. TG [`container`](../07-blocks/block-catalog.md#registered-blocks) meta 0 is "Shipping Container (Red)".
 
 Palette columns: **idx** = palette index used in the data file, **rot** = rotation type (blank = none), **pass** = 1 means placed in the second pass, **n** = how many file entries use it.
 
@@ -58,7 +58,7 @@ Grid spacing with the default config: SMALL every 16 chunks (256 blocks), MEDIUM
   3. Pass 0, then pass 1.
 
   World Y: file y0 sits at (spawn y − 1), on the surface block layer.
-* **Layout:** an L-shaped two-storey industrial building.
+* **Layout:** an L-shaped two-story industrial building.
   * **Ground floor:** a 9×5 hall (z1–5) with a 5×5 annex on the west side (x0–4, z5–9). The floor is Chisel technical 12 inside a TG concrete 5 slab border. Walls are Chisel technical 0, factoryblock 1 and vanilla glass panes.
   * **Contents:** two vanilla chests (DUNGEON loot) side by side, one crafting table, two furnaces. TG doors (door01 meta 7/8) are on the north wall and the south end of the annex.
   * **Upper level:** a 5×5 room (x0–4, z1–5, y4–6) with a factoryblock-0 roof and lamps. The roof of the rest of the hall is a terrace edged with Chisel iron_bars 6 railings.
@@ -168,14 +168,14 @@ All entries are pass 0. The multi-stair entries rotate the limestoneStairs[0] op
   2. Pass 0.
   3. Pass 1.
   4. `placeFoundation` range 4.
-* **Layout:** an irregular two-storey stone house with an attic. The footprint is roughly a 9×13 main wing (x1–9) plus a 6×5 east wing (x9–14, z3–8). There is a small porch and garden of Chisel cobblestone 4 at the north-west, and a 3-wide entrance path at the south (z13–15).
+* **Layout:** an irregular two-story stone house with an attic. The footprint is roughly a 9×13 main wing (x1–9) plus a 6×5 east wing (x9–14, z3–8). There is a small porch and garden of Chisel cobblestone 4 at the north-west, and a 3-wide entrance path at the south (z13–15).
   * **Walls:** Chisel cobblestone variants 1, 13 and 10 (base course), with vanilla glass panes and Chisel iron_bars 5 windows.
   * **Roof:** nether-brick-stair roof, nether-brick gables, and a dark-oak-plank floor in parts.
   * **Ground floor:** rooms separated by internal walls, with wooden doors. Contents: bookshelves (11), carpets (Chisel carpet 4/8/10), a wall sign, fence-and-pressure-plate tables, and a "metal storage" corner of Chisel lead, copper, tin, iron and gold storage blocks.
   * **First floor (y5–7):** two bedrooms with beds (vanilla bed 1/9 and 3/11 pairs), crafting tables, more chests and lamps.
   * **Attic (y9–10):** reached by a TG ladder at (7, 5–9, 5). It holds TG chests.
   * **Lighting:** TG lamps (metas 1, 3–7).
-* **Chests:** 8 vanilla (DUNGEON), 6 [`tgchest`](../07-blocks/block-catalogue.md#registered-blocks) (Reinforced T1), 4 [`tgchest_weapon`](../07-blocks/block-catalogue.md#registered-blocks) (Weapon T1).
+* **Chests:** 8 vanilla (DUNGEON), 6 [`tgchest`](../07-blocks/block-catalog.md#registered-blocks) (Reinforced T1), 4 [`tgchest_weapon`](../07-blocks/block-catalog.md#registered-blocks) (Weapon T1).
 
 | idx | block | rot | pass | n | | idx | block | rot | pass | n |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -280,23 +280,23 @@ Spawner tile values come from [`BlockTGMonsterSpawner`](../07-blocks/special-blo
 
 ### A5. Alien Bug Nest (`AlienBugNestStructure` → `AlienBugNest`)
 * **Spawn:** MEDIUM grid, LAND, weight 1, only in biomes of BiomeDictionary type `SANDY` or `WASTELAND`. `setXZSize(4,4)`.
-* **Terrain check:** `getValidSpawnY(x, z, 4, 4, 5)` at the chunk corner. A failure (−1) is **not** honoured; the nest is just built very low ([WGEN-09](index.md#suspected-bugs)).
-* **Generation:** procedural. `new AlienBugNest(x, y−7, z, 16+rnd(16), 8, 16+rnd(16), rnd)`, then `setBlocks`. The random X/Z size only serves to centre the nest at `(x + sizeX/2, z + sizeZ/2)`. The entrance point is that centre at height `(y−7) + 4 = y − 3`.
+* **Terrain check:** `getValidSpawnY(x, z, 4, 4, 5)` at the chunk corner. A failure (−1) is **not** honored; the nest is just built very low ([WGEN-09](index.md#suspected-bugs)).
+* **Generation:** procedural. `new AlienBugNest(x, y−7, z, 16+rnd(16), 8, 16+rnd(16), rnd)`, then `setBlocks`. The random X/Z size only serves to center the nest at `(x + sizeX/2, z + sizeZ/2)`. The entrance point is that center at height `(y−7) + 4 = y − 3`.
 * **Block set:**
-  * `wallBlock`: MultiMBlock of TG [`bugnest`](../07-blocks/block-catalogue.md#registered-blocks) 0 (weight 16), TG [`bugnesteggs`](../07-blocks/block-catalogue.md#registered-blocks) (1), vanilla sandstone (2).
+  * `wallBlock`: MultiMBlock of TG [`bugnest`](../07-blocks/block-catalog.md#registered-blocks) 0 (weight 16), TG [`bugnesteggs`](../07-blocks/block-catalog.md#registered-blocks) (1), vanilla sandstone (2).
   * `wallBlock2` (tunnels): `bugnest` (12) and sandstone (1).
   * Interior: air.
-  * `slimeLadder`: TG [`bugnestslimy`](../07-blocks/block-catalogue.md#registered-blocks) ("slimetrail"), a climbable wall-attached block. Its meta is set with [`BlockBugSlime.getDirectionMeta`](../07-blocks/block-catalogue.md#registered-blocks).
+  * `slimeLadder`: TG [`bugnestslimy`](../07-blocks/block-catalog.md#registered-blocks) ("slimetrail"), a climbable wall-attached block. Its meta is set with [`BlockBugSlime.getDirectionMeta`](../07-blocks/block-catalog.md#registered-blocks).
   * `slimyBlock`: `bugnest`, which also attaches slime trails to any air side where they can be placed.
   * Spawner: TG `monsterspawner` meta 0, "Bug Hole". It spawns `Techguns.AlienBug` (see [10](../10-entities-npcs/index.md)) with the same timing values as the Zombie Hole.
   * Eggs: TG `bugnesteggs`.
 * **Segment graph:**
   * Constants: `segments = 5`, `MIN_RADIUS = 3`, `MAX_RADIUS = 10`, `startRadius = min(10, 3 + 5/2) = 5`.
-  * **Entrance** (type 2, radius 2): at the centre point. It is not carved as a sphere.
+  * **Entrance** (type 2, radius 2): at the center point. It is not carved as a sphere.
   * **Main chamber** (type 0, radius 5): at `(cx + rnd(3), mainY, cz + rnd(3))`, where `mainY = entranceY − (5 + 5 + rnd(7))`, so 10–16 below the entrance. It links to the entrance.
   * **Satellite chambers** (type 1), for `i = 0..4`:
     * radius `max(3, 5 − rnd(i+1))`
-    * horizontal distance from the centre `5 + r + 5 + rnd·8`, at angle `i·72°`
+    * horizontal distance from the center `5 + r + 5 + rnd·8`, at angle `i·72°`
     * y = `mainY + rnd(15) − 10`
     * linking: satellite 0 links from main. Every later satellite links from the previous one with 50 % chance (and then also from main with 50 %); otherwise it links from main only.
     * extra child: each satellite has a 50 % chance of a further child chamber. The child has the same radius rule, lies another `5 + r + 5 + rnd·8` out at angle `i·72° ± up to 45°`, and is linked from that satellite.
@@ -308,7 +308,7 @@ Spawner tile values come from [`BlockTGMonsterSpawner`](../07-blocks/special-blo
        * The spawner goes at a random column in `[−ri, ri−1]²`, where `ri = r−2` (minus 1 when r−2 > 1), at height `posY − (r−2)`.
        * Every other column `(i, j)` in `[−(r−2), r−3]²` starts an egg pile with probability `(f_i + f_j)/2`, where `f = (r−2 − |offset|)/(r−2)`.
        * A pile climbs from the chamber floor, filling air cells. After each layer it continues with probability `(f_i + f_j)/3`, up to r layers.
-     * **Main chamber:** gets a vertical **slime pillar**, a 3D line of `bugnest` blocks each with slime ladders on its four sides. The line starts just above the chamber, on the entrance side (r+1 beyond centre), and runs 2(r−1) past the centre on the far side. It is offset 1–1.66 blocks horizontally in a random direction. Its purpose is to let the player climb from the chamber up into the entrance shaft.
+     * **Main chamber:** gets a vertical **slime pillar**, a 3D line of `bugnest` blocks each with slime ladders on its four sides. The line starts just above the chamber, on the entrance side (r+1 beyond center), and runs 2(r−1) past the center on the far side. It is offset 1–1.66 blocks horizontally in a random direction. Its purpose is to let the player climb from the chamber up into the entrance shaft.
 * **Footprint:** roughly 60×60 blocks and 20–30 blocks deep, all underground except the entrance tunnel mouth.
 
 **Sheet**
@@ -317,7 +317,7 @@ Spawner tile values come from [`BlockTGMonsterSpawner`](../07-blocks/special-blo
 |---|---|
 | Class and register entry | `AlienBugNestStructure` in `spawns_medium`: weight 1, whitelist `[SANDY, WASTELAND]`, dim `[0]`, LAND, MEDIUM, `setXZSize(4,4)`. It builds a procedural `AlienBugNest` |
 | Spawn conditions | Overworld, MEDIUM grid point, corner biome of BiomeDictionary type SANDY or WASTELAND. Pick chance 1/3 there (house, bunker and nest weigh 1 each). Terrain check `getValidSpawnY` over a 4 x 4 box with limit 5, whose failure is ignored (WGEN-09). Config gates: config `SpawnStructures` (general, default true) registers the generator; grid spacing `StructureSpawnWeightSmall` (16) / `StructureSpawnWeightMedium` (32) / `StructureSpawnWeightBig` (64) chunks |
-| Size | Declared 4 x 4. As built roughly 60 x 60 x 20-30 (nest centred on the chunk corner plus half of a random 16-31 extent) |
+| Size | Declared 4 x 4. As built roughly 60 x 60 x 20-30 (nest centered on the chunk corner plus half of a random 16-31 extent) |
 | Build steps | see the segment graph and carving order above: sphere carving, tunnels, interior re-carve, eggs, spawners, slime pillar |
 | Palette | none (no data file). Blocks: `bugnest` 0, `bugnesteggs`, `bugnestslimy`, vanilla sandstone, air, `monsterspawner` meta 0 |
 | Loot | none |
@@ -336,7 +336,7 @@ Spawner tile values come from [`BlockTGMonsterSpawner`](../07-blocks/special-blo
 | Constant | Value |
 |---|---|
 | Outer fence | Chisel `iron_bars` 2, height 2, width 1, spacing 1 to the inner area |
-| Road block | gravel (edge), `TGChiselBlocks.concrete` (Chisel concrete 0) centre lanes when width ≥ 4 |
+| Road block | gravel (edge), `TGChiselBlocks.concrete` (Chisel concrete 0) center lanes when width ≥ 4 |
 | Road width | `clamp(max(sx,sz)/8, 1, 5)` at the root, −1 per subdivision level (min 1) |
 | Ground block | none (keeps world blocks) |
 | NPC list | `["ArmySoldier"]` (see [10](../10-entities-npcs/index.md)) |
@@ -345,31 +345,31 @@ Spawner tile values come from [`BlockTGMonsterSpawner`](../07-blocks/special-blo
 | Sub-segment limits | min 5 if min(sx,sz) < 10 else 7; max 15 if min ≤ 45 else min/3 |
 
 * **`setBlocks`:**
-  1. Colour type comes from [`BlockUtils.getBiomeType`](../01-core/utilities.md#blockutils) at the camp centre.
+  1. Color type comes from [`BlockUtils.getBiomeType`](../01-core/utilities.md#blockutils) at the camp center.
   2. Terrain prep (because maxHeightDiff ≠ −1): `removeJunkInArea` (+1 border), `flattenArea(…, 4)`, then the 5×5 Gaussian smoothing (+1 border).
   3. Abort if either side is < 5.
   4. Fence: two layers of iron bars around the whole perimeter, each column at its own ground height + 1 and + 2.
   5. Roads and segments are placed recursively. The flag is placed last.
 * **Segment subdivision (BSP):**
   * The root segment is the area inset by 2. A segment splits along its longer axis.
-  * **No split** when `size < min`, or when `size < max` and `rand > s·0.75 + centerFactor·0.25`. Here `s = √((size − min)/(max − min))` and `centerFactor = 1 − dist²(segment centre, camp centre) / dist²(camp corner, camp centre)`. Central areas therefore split more.
+  * **No split** when `size < min`, or when `size < max` and `rand > s·0.75 + centerFactor·0.25`. Here `s = √((size − min)/(max − min))` and `centerFactor = 1 − dist²(segment center, camp center) / dist²(camp corner, camp center)`. Central areas therefore split more.
   * **Split count:** 2 for the root. Other segments use 2, or with 50 % chance `max(2, round(1 + rand·0.5·(size − (min+1)/2)/(roadWidth + 2)))`.
   * **Part sizes:** each part gets a weight `1 + rand`. Non-last parts get `round(w/Σw · (size − roadWidth·count))`; the last part gets the remainder. A road of the parent's width separates consecutive parts.
   * **Child direction:** non-last children face 2 (or 3 for Z splits), the last child faces 0 (or 1), so buildings face the road between them.
-  * **Centre flag:** children of a centre segment inherit the centre flag. When the parent's split step ≤ 1 this goes to the middle child and also the last child. The first centre leaf reached becomes the **flag segment**.
+  * **Center flag:** children of a center segment inherit the center flag. When the parent's split step ≤ 1 this goes to the middle child and also the last child. The first center leaf reached becomes the **flag segment**.
 * **Roads:**
-  * Between consecutive children, a road strip is flattened (`flattenArea` maxDiff 1) and paved at ground level, edge blocks gravel and centre concrete.
+  * Between consecutive children, a road strip is flattened (`flattenArea` maxDiff 1) and paved at ground level, edge blocks gravel and center concrete.
   * Root-level roads extend 3 blocks past the camp edge on both sides. They also open fence gates by removing iron-bar fence blocks across the road width, up to height + 10.
-  * Each road adds a **spawn point** at its centre: local `(x − campX, groundY + 1 − campY, z − campZ)`.
+  * Each road adds a **spawn point** at its center: local `(x − campX, groundY + 1 − campY, z − campZ)`.
 * **Leaf segment (not flag):**
   1. Pick a structure: the corner list if the leaf touches two camp edges (within 2 blocks) and `cornerChance > rand`; else the border list if it touches an X edge and `borderChanceX > rand`, or a Z edge and `borderChanceZ > rand`; else the regular list.
   2. Matching uses min/max bounds (−1 = unbounded), with X/Z swap allowed when `canSwapXZ`. The pick is uniform among matches. If nothing matches, an `EmptyPlane(cobblestone)` replaces the ground layer.
   3. Height: `minY` if `maxY == −1` or `maxY < minY`, else `minY + rnd(maxY + 1 − minY)`.
-  4. The leaf is flattened to 0 height difference, then the structure is built at (leaf x, ground y at the leaf centre, leaf z) with the leaf's size and direction.
+  4. The leaf is flattened to 0 height difference, then the structure is built at (leaf x, ground y at the leaf center, leaf z) with the leaf's size and direction.
 * **Flag:**
-  * The flag segment is flattened to 0. A **camp flag** (TG [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 7, lang `techguns.tile.BasicMachine_7.name=Flag`; machine owned by [09](../09-machines-utility/index.md)) is placed at the segment centre at ground + 1.
+  * The flag segment is flattened to 0. A **camp flag** (TG [`basicMachine`](../07-blocks/block-catalog.md#registered-blocks) meta 7, lang `techguns.tile.BasicMachine_7.name=Flag`; machine owned by [09](../09-machines-utility/index.md)) is placed at the segment center at ground + 1.
   * Its [`CampFlagTileEnt.init`](../09-machines-utility/shared-rendering.md#1-basicmachine-metas-owned-by-area-09) receives the camp size, the flag offset from the camp origin, the spawn-point list and `["ArmySoldier"]`.
-  * Resulting NPC behaviour ([09](../09-machines-utility/index.md)): `maxNPCs = ((sx+sz)/2)·0.75`. Every 60 ticks the flag counts NPCs inside the camp box, expanded by 8 and from −3 to +20 in Y. While under the cap, it spawns one NPC every 200 ticks at a random spawn point.
+  * Resulting NPC behavior ([09](../09-machines-utility/index.md)): `maxNPCs = ((sx+sz)/2)·0.75`. Every 60 ticks the flag counts NPCs inside the camp box, expanded by 8 and from −3 to +20 in Y. While under the cap, it spawns one NPC every 200 ticks at a random spawn point.
   * Breaking the flag spawns an [`AttackHelicopter`](../10-entities-npcs/per-mob.md#16-attack-helicopter-attackhelicopter-boss) 50 blocks above it (see [10](../10-entities-npcs/index.md)).
 
 **Camp structure lists** (instances are shared statics):
@@ -410,10 +410,10 @@ The camp component structures are described in Part B.
 | Spawn conditions | Overworld, BIG grid point (chunk coordinates both multiples of 64), corner biome not OCEAN. It is the only BIG land structure, so the pick chance is 1. Terrain: `getValidSpawnYArea` with limit 5 and step 8 at the unrotated chunk corner; a result of 0 or less counts as failure; on failure, if both sizes are still >= 32 both are cut by 16 and the check repeats. Config gates: config `SpawnStructures` (general, default true) registers the generator; grid spacing `StructureSpawnWeightSmall` (16) / `StructureSpawnWeightMedium` (32) / `StructureSpawnWeightBig` (64) chunks |
 | Size | Declared: random 32-79 per axis. As built: the same, or 16 less per failed retry, so 16-79 (a retry stops once a side is below 32). The camp aborts if either side is below 5 |
 | Build steps | see above: junk removal, flatten (max diff 4), 5x5 Gaussian smoothing, fence, BSP subdivision with roads, leaf structures, flag. The camp ignores the direction (no rotation) |
-| Palette | none (procedural). Road: gravel edge and Chisel concrete centre; fence: Chisel `iron_bars` 2; camp parts use the blocks listed in Part B |
+| Palette | none (procedural). Road: gravel edge and Chisel concrete center; fence: Chisel `iron_bars` 2; camp parts use the blocks listed in Part B |
 | Loot | from the parts: camp props and closed bunkers use tier 2 (T3 tables); barracks use `techgunsMilBaseBarracks`; the small factory building inside a camp uses tier 0 |
 | Spawners and NPCs | NPCs through the camp flag: [`ArmySoldier`](../10-entities-npcs/per-mob.md#6-army-soldier-armysoldier) only (see [10-entities-npcs](../10-entities-npcs/index.md)). No spawner blocks |
-| Camp flag and caps | one `basicMachine` meta 7 flag at the centre leaf; `maxNPCs` = int(((sx+sz)/2) x 0.75), so 24 for a 32 x 32 camp and 59 for a 79 x 79 camp (cap recomputed identically on reload); counted every 60 ticks inside the camp box expanded by 8, Y -3 to +20; one spawn per 200 ticks while under the cap. Breaking the flag spawns an Attack Helicopter 50 blocks above it |
+| Camp flag and caps | one `basicMachine` meta 7 flag at the center leaf; `maxNPCs` = int(((sx+sz)/2) x 0.75), so 24 for a 32 x 32 camp and 59 for a 79 x 79 camp (cap recomputed identically on reload); counted every 60 ticks inside the camp box expanded by 8, Y -3 to +20; one spawn per 200 ticks while under the cap. Breaking the flag spawns an Attack Helicopter 50 blocks above it |
 | NBT | flag tile entity keys `sizeX`, `sizeZ`, `xoffset`, `yoffset`, `zoffset`, `spawnPositions`, `npcListSize`, `npcName0..n`; see [09-machines-utility](../09-machines-utility/misc-tile-entities.md) |
 | Bugs | [WGEN-04](index.md#suspected-bugs), [WGEN-12](index.md#suspected-bugs), [WGEN-15](index.md#suspected-bugs), [WGEN-16](index.md#suspected-bugs), [WGEN-26](index.md#suspected-bugs), [WGEN-27](index.md#suspected-bugs), [WGEN-32](index.md#suspected-bugs), [WGEN-33](index.md#suspected-bugs) |
 
@@ -428,14 +428,14 @@ The camp component structures are described in Part B.
   * **Flight deck (y7):** Chisel factoryblock 3 over the whole length, with factoryblock 6 rim strips at both ends.
   * **Island superstructure:** on the north (low-Z) side at x25–47, z2–9, rising to y19. It has bridge windows of Chisel glass 12, glass panes, iron-bar railings and catwalks.
   * **Antenna mast:** Chisel iron_bars 3, up to y23 at x44.
-  * **Access:** TG ladders and aluminium stairs connect the levels.
+  * **Access:** TG ladders and aluminum stairs connect the levels.
 * **Chests:**
   * 6 vanilla (DUNGEON): two in the forward hold at (15,1,9–10), two on the hangar level at (30,4,9–10) and two in the island at y12
   * 8 `tgchest` (Reinforced T3)
   * 12 `tgchest_weapon` (Weapon T3)
 * **Flag and NPCs:**
   * A camp flag (TG `basicMachine` 7) is placed at local (24, y+8, 9), on the flight deck, rotated like everything else.
-  * The tile is initialised with `init(54, 21, 24, 8, 9, spawnPoints, ["ArmySoldier","Commando"], maxNPCs 9)`. The offset passed is unrotated ([WGEN-10](index.md#suspected-bugs)), and maxNPCs is not persisted ([WGEN-11](index.md#suspected-bugs)).
+  * The tile is initialized with `init(54, 21, 24, 8, 9, spawnPoints, ["ArmySoldier","Commando"], maxNPCs 9)`. The offset passed is unrotated ([WGEN-10](index.md#suspected-bugs)), and maxNPCs is not persisted ([WGEN-11](index.md#suspected-bugs)).
   * The 9 spawn points are given as local (x, y, z), each x/z rotated with the structure: (22,8,9), (28,12,6), (28,16,6), (43,8,6), (43,12,6), (18,4,9), (18,1,9), (43,4,9), (39,1,9).
 
 | idx | block | rot | pass | n | | idx | block | rot | pass | n |
@@ -481,7 +481,7 @@ The camp component structures are described in Part B.
 * **Terrain check:** `getValidSpawnYUnderwater(chunk x, chunk z, 33, 7, 2)`. The four corners' sea-floor heights must be within < 2 of corner 0, and the median is used. Nothing checks that water is actually present ([WGEN-08](index.md#suspected-bugs)).
 * **Build:** scanned file [`structures/submarine`](assets.md#structure-data-files) (992 entries, 7×10×33). It is placed at the floor block y (file y0 replaces the sea-floor top), with a random rotation around (16,3). Passes 0 and 1.
 * **Layout:** a sunken submarine lying on the sea floor, pointing along Z.
-  * **Hull:** round section about 7 wide × 7 tall, 33 long, built from TG [`metalpanel`](../07-blocks/block-catalogue.md#registered-blocks) 3. The stern is at z0–1, with a vertical rudder fin and a horizontal fin row carrying a Chisel technical 14 hub. There is a band of [`metalpanel2`](../07-blocks/block-catalogue.md#registered-blocks) 3 plating aft at z5–7, and the bow tapers at z29–32.
+  * **Hull:** round section about 7 wide × 7 tall, 33 long, built from TG [`metalpanel`](../07-blocks/block-catalog.md#registered-blocks) 3. The stern is at z0–1, with a vertical rudder fin and a horizontal fin row carrying a Chisel technical 14 hub. There is a band of [`metalpanel2`](../07-blocks/block-catalog.md#registered-blocks) 3 plating aft at z5–7, and the bow tapers at z29–32.
   * **Conning tower (sail):** at z23–25, rising to y9, topped by a vanilla trapdoor hatch (meta 9, LEVER rotation). A TG ladder (ladder01 0) runs down from y8 to the upper deck.
   * **Interior, two decks:**
     * **Lower deck (y1–3):** Chisel technical 5 walls. It holds 2 `tgchest` aft at z8–9, 2 `tgchest_weapon` (z15, z24), a ladder up at z9, and a Chisel warningSign.
@@ -527,14 +527,14 @@ The camp component structures are described in Part B.
 
 Part B covers the 9 procedural classes that `MilitaryCamp` places into the leaves of its subdivision: `Tent`, `Containers`, `CampProps`, `Bunker`, `Barracks`, `Helipad`, `Tanks`, `WatchTowerSmall` and `EmptyPlane`. None is in the spawn register, none checks terrain of its own (the camp flattens each leaf to 0 height difference first), and none reads the world seed. Their NPCs, flag and caps belong to the camp (A6). Each section ends with a **Sheet** table.
 
-All of these receive `(posX, posY = leaf ground y, posZ, sizeX, height, sizeZ, direction, colorType, rnd)`. Direction is the side the entrance faces: 0 = −X, 1 = −Z, 2 = +X, 3 = +Z. Camo colour comes from `colorType`: DESERT → camo meta 2, SNOW → 1, otherwise 0.
+All of these receive `(posX, posY = leaf ground y, posZ, sizeX, height, sizeZ, direction, colorType, rnd)`. Direction is the side the entrance faces: 0 = −X, 1 = −Z, 2 = +X, 3 = +Z. Camo color comes from `colorType`: DESERT → camo meta 2, SNOW → 1, otherwise 0.
 
 ### B1. Tent (`Tent`, types 0/1/2)
 * **Type 0** first insets the area by 1 on every side.
 * **Shell:**
   * y0: gravel floor
-  * y1 to sizeY−2: TG [`camoNetPane`](../07-blocks/block-catalogue.md#registered-blocks) walls around the perimeter, using the camo meta
-  * y sizeY−1: TG [`camoNetRoof`](../07-blocks/block-catalogue.md#registered-blocks) over the whole area, using the camo meta
+  * y1 to sizeY−2: TG [`camoNetPane`](../07-blocks/block-catalog.md#registered-blocks) walls around the perimeter, using the camo meta
+  * y sizeY−1: TG [`camoNetRoof`](../07-blocks/block-catalog.md#registered-blocks) over the whole area, using the camo meta
 * **Types 0 and 1:** a 2-high doorway (air) in the middle of the facing wall. Type 0 also lays one gravel block outside the door.
 * **Type 2 (open pavilion):** on the facing wall, every wall cell between the corners is removed except every third one. The test is `z % 3 == 0` (or `x % 3 == 1` on the X sides), which leaves the poles.
 
@@ -550,7 +550,7 @@ All of these receive `(posX, posY = leaf ground y, posZ, sizeX, height, sizeZ, d
 | Loot, spawners, NPCs | none |
 | Camp flag and caps | none |
 | NBT | none |
-| Bugs | WGEN-32 (colour from the camp, vanilla biome list only) |
+| Bugs | WGEN-32 (color from the camp, vanilla biome list only) |
 
 
 ### B2. Containers (`Containers`)
@@ -560,7 +560,7 @@ Parallel rows of shipping containers made of TG `container` block (meta 0, red).
 
 | Field | Value |
 |---|---|
-| Class and register entry | `Containers(minX..maxZ, width, height, minLength, block)` with a second constructor taking only the block (width 2, height 2, min length 2, default block `iron_block`). The camp instance is `(2,3,2 / 7,3,7)`, width 2, height 2, min length 2, block [`TGBlocks.container`](../07-blocks/block-catalogue.md#registered-blocks) (meta 0). Camp regular list, no swap |
+| Class and register entry | `Containers(minX..maxZ, width, height, minLength, block)` with a second constructor taking only the block (width 2, height 2, min length 2, default block `iron_block`). The camp instance is `(2,3,2 / 7,3,7)`, width 2, height 2, min length 2, block [`TGBlocks.container`](../07-blocks/block-catalog.md#registered-blocks) (meta 0). Camp regular list, no swap |
 | Spawn conditions | only via `MilitaryCamp` leaf matching: X and Z 2-7, height exactly 3. No terrain check of its own. Uses no direction, so it never rotates |
 | Size | declared 2-7 x 3 x 2-7; as built: full leaf extent on the long axis, rows 2 wide and 2 high at y+1 and y+2; leftover width after the last row (up to 2 blocks) stays empty. If the short side is 1 (not possible with the declared minimum 2) the row count is 0 |
 | Build steps | choose the axis: if sizeX > sizeZ rows run along X and stack along Z, otherwise rows run along Z and stack along X (equal sizes run along Z). Row count = floor((short + 1) / (width + 1)). Each row is one solid box fill of the container block, `height` blocks tall starting at y+1; rows are `width + 1` apart so one empty gap lane separates them |
@@ -576,10 +576,10 @@ Loot tier 2 (T3). Crate blocks are `factory_box` (Chisel factoryblock 9) or `woo
 * **Crate pile (used by variants 0, 1, 5):**
   * Gravel is laid over the area at y0.
   * Each column then rolls once: 5 % `tgchest`, next 5 % `tgchest_weapon` (random facing meta 2–5) at y1. Otherwise, for y = 1 … sizeY−1, a random crate is placed with 50 % chance when the block below is not "free space" (air, snow layer or TG lamp).
-  * Lantern: with probability `((sx+sz)/2)/6`, one TG [`lamp01`](../07-blocks/block-catalogue.md#registered-blocks) meta 7 is set on top of a pile. From the top down, it tries 3 random columns per level for an air cell above a non-free cell.
+  * Lantern: with probability `((sx+sz)/2)/6`, one TG [`lamp01`](../07-blocks/block-catalog.md#registered-blocks) meta 7 is set on top of a pile. From the top down, it tries 3 random columns per level for an air cell above a non-free cell.
 * **Roof:** vanilla fence posts at the 4 corners, height sizeY−2 from y+1. A full TG `camoNetRoof` layer (camo meta) sits at y+sizeY−1.
-* **Sandbag ring:** TG [`sandbags`](../07-blocks/block-catalogue.md#registered-blocks) around the perimeter at y+1, with a 1-block gap in the middle of the facing side.
-* **Sandbag row:** a stepped sandbag wall along the centre line of the longer axis. Level y (1 … sizeY−1) spans from y to length−y−1, so each level is one block shorter at each end.
+* **Sandbag ring:** TG [`sandbags`](../07-blocks/block-catalog.md#registered-blocks) around the perimeter at y+1, with a 1-block gap in the middle of the facing side.
+* **Sandbag row:** a stepped sandbag wall along the center line of the longer axis. Level y (1 … sizeY−1) spans from y to length−y−1, so each level is one block shorter at each end.
 
 | Variant | Contents |
 |---|---|
@@ -623,13 +623,13 @@ Loot tier 2 (T3).
   * Concrete 6 jambs on both sides at y0–1. The doorway is extended outward 2 blocks with walls on both sides at y−1..0.
   * Two TG `lamp01` (meta 0) sit on the jamb tops at y2 outside.
   * The concrete floor continues 1 block outward. A vanilla stone stair 2 blocks out steps up to ground level.
-* **Inner lamp:** types 2/3 put one beside the door inside at y1; types 0/1 put one at the centre at y1.
+* **Inner lamp:** types 2/3 put one beside the door inside at y1; types 0/1 put one at the center at y1.
 * **Crates (types 2/3):**
   * They fill the interior inset by 2: per column 5 % `tgchest`, 5 % `tgchest_weapon` (meta 2–5, placed at y0).
   * Otherwise, for y0 and y1, a 50 % chance of a random crate when the block below is not air.
   * This uses `world.rand`.
 * **Roof ladder (types 1/3):**
-  * TG [`ladder01`](../07-blocks/block-catalogue.md#registered-blocks) (meta 0 + 2/0/3/1 for directions 0/1/2/3) climbs y0–2 in the inner corner opposite the entrance.
+  * TG [`ladder01`](../07-blocks/block-catalog.md#registered-blocks) (meta 0 + 2/0/3/1 for directions 0/1/2/3) climbs y0–2 in the inner corner opposite the entrance.
   * The roof cell above it is opened, and a wall block is put behind the ladder at y1.
 
 **Sheet**
@@ -682,7 +682,7 @@ The height is fixed at 7.
 | Size | declared minimum 7 x 7, no maximum; height fixed 7; each horizontal side is snapped down to 4k + 1 after the entrance ramp takes 2 from the facing side |
 | Build steps | see the layer table above |
 | Palette | none (procedural): `wood_pillar`, `wood_scaffold`, `wood_floor`, `wood_wall`, `wood_roof`, `wood_roofSlab` (Chisel planks aliases), vanilla glass, wooden door, oak stairs, TG `lamp01` 0 / 7, vanilla chests, beds |
-| Loot | vanilla chests on the `techgunsMilBaseBarracks` table (count 1-4; combat armour, gas masks, glider and air tanks, see [loot.md](loot.md)); rolled with `world.rand` |
+| Loot | vanilla chests on the `techgunsMilBaseBarracks` table (count 1-4; combat armor, gas masks, glider and air tanks, see [loot.md](loot.md)); rolled with `world.rand` |
 | Spawners and NPCs | none |
 | Camp flag and caps | none |
 | NBT | chest `Items` only |
@@ -690,7 +690,7 @@ The height is fixed at 7.
 
 
 ### B6. Helipad (`Helipad`)
-* Requires ≥ 7×7. Larger areas are centred down to 9×9.
+* Requires ≥ 7×7. Larger areas are centered down to 9×9.
 * For an exact 9×9 area, a Chisel factoryblock 5 (wireframe) border is laid at y0 without corners, and the pad is inset to 7×7. Otherwise the pad is 7×7 at the origin.
 * **Pad (y+1):** `factory_hazard` (factoryblock 6) border, `concrete_dark` (Chisel concrete 10) inside.
 * **"H" in `glowblock` (Chisel glowstone 4):** cells (2..4, 2), (3, 3), (2..4, 4), relative to the pad.
@@ -731,7 +731,7 @@ Horizontal fuel tanks 4 wide, repeated every 5 blocks across the short side. Eac
 
 
 ### B8. Small watch tower (`WatchTowerSmall`, size 3 or 4)
-* Centred in its area. Its height is the camp height: 8 for size 3, 10–12 for size 4.
+* Centered in its area. Its height is the camp height: 8 for size 3, 10–12 for size 4.
 * Fence posts at the four corners from y1 to y+h−2.
 * A solid vanilla-planks core of `(size−2)²` cells (1×1 or 2×2) up to y+h−4, which is also the standing platform.
 * A 2-high hollow fence ring at y+h−4 and y+h−3. A TG `camoNetRoof` (meta 0 always) at y+h−1.
@@ -743,7 +743,7 @@ Horizontal fuel tanks 4 wide, repeated every 5 blocks across the short side. Eac
 |---|---|
 | Class and register entry | `WatchTowerSmall(minX..maxZ, tower)`. Camp corner list: tower 3 `(3,8,3 / 4,8,-1)` with swap, tower 4 `(4,10,4 / -1,12,-1)`. A third entry in the regular list is commented out |
 | Spawn conditions | only via `MilitaryCamp` corner matching: a leaf touching two camp edges within 2 blocks, passing the `cornerChance` roll = ((sx+sz)/2 - 20)/40 |
-| Size | declared 3-4 x 8 x 3-4 / 4+ x 10-12 x 4+; built centred in the leaf at the declared tower footprint (3 or 4) and the leaf height |
+| Size | declared 3-4 x 8 x 3-4 / 4+ x 10-12 x 4+; built centered in the leaf at the declared tower footprint (3 or 4) and the leaf height |
 | Build steps | see above: corner fence posts, planks core and platform, fence ring, camo roof, ladder, fence gate |
 | Palette | none (procedural): vanilla fence, planks, ladder, fence gate, TG `camoNetRoof` 0 |
 | Loot, spawners, NPCs, flag | none |
@@ -786,21 +786,21 @@ None of these spawn in normal worldgen.
   * road type `CityRoad(main = concrete_dark, side = concrete)`
   * fuzzyBorder 0.5
 * **`createCity`:**
-  1. Colour from `getBiomeType` if null.
+  1. Color from `getBiomeType` if null.
   2. Builds the same BSP as the camp (`GenericCitySegment`). It differs from the camp as follows:
      * It splits only when the *shorter* side ≥ min.
      * The child road width comes from the depth table.
      * If the root does not split, nothing is built.
   3. `setBlocks`: remove junk (+1), Gaussian smoothing, then the segments.
-* **Roads (`CityRoad`):** along the full segment length plus 1 extra block each end. The road gains height steps evenly to bridge the measured height difference between its two ends. Two layers are placed (y−1, y). The centre uses `main` when width ≥ 4 and the edges use `side`. It clears 3 blocks of air above (X-aligned) or 2 (Z-aligned, `SET_AIR_HEIGHT` 3). It prints `Set Road Blocks...` and `Set Road Blocks... DONE!` to stdout.
+* **Roads (`CityRoad`):** along the full segment length plus 1 extra block each end. The road gains height steps evenly to bridge the measured height difference between its two ends. Two layers are placed (y−1, y). The center uses `main` when width ≥ 4 and the edges use `side`. It clears 3 blocks of air above (X-aligned) or 2 (Z-aligned, `SET_AIR_HEIGHT` 3). It prints `Set Road Blocks...` and `Set Road Blocks... DONE!` to stdout.
 * **Leaves (`placeStructure`):**
   * Border leaves at depth > 2 are skipped with 50 % chance.
   * Otherwise 3 blocks of air are cleared, a fitting `CityBuilding` is picked, the leaf is flattened to 0, and the building is built at the segment's original y.
-* **`CityBuildingType` parametric building:** each type has `wall_x` (columns per wall segment), `wall_y` (storey height), `wall_el` 1, `floor_height` 1, a `wallPattern` and `doorPattern` (rows top-down, −1 = air), `doorWidth` and `doorOffset`. `BuildingStyle` rolls one block per role per building: 0 wall, 1 glass, 2 floor, 3 border, 4 door decoration; plus a stair pair (stairs + support).
-  1. Snap the size to whole wall segments: `segX = (sx − 1)/wall_x`. The storey count is `sizeY / wall_y`.
-  2. For each storey: an interior floor slab, lamp01 meta 1 ceiling lamps on a 3-grid under every upper floor, and four walls built segment by segment from the pattern. On the ground floor the middle segment of the facing wall uses the door pattern and gets `doorWidth` wooden doors.
+* **`CityBuildingType` parametric building:** each type has `wall_x` (columns per wall segment), `wall_y` (story height), `wall_el` 1, `floor_height` 1, a `wallPattern` and `doorPattern` (rows top-down, −1 = air), `doorWidth` and `doorOffset`. `BuildingStyle` rolls one block per role per building: 0 wall, 1 glass, 2 floor, 3 border, 4 door decoration; plus a stair pair (stairs + support).
+  1. Snap the size to whole wall segments: `segX = (sx − 1)/wall_x`. The story count is `sizeY / wall_y`.
+  2. For each story: an interior floor slab, lamp01 meta 1 ceiling lamps on a 3-grid under every upper floor, and four walls built segment by segment from the pattern. On the ground floor the middle segment of the facing wall uses the door pattern and gets `doorWidth` wooden doors.
   3. Roof: a floor slab, a 1-high parapet of the wall block, and (if `roofLikeFloor`) a border-block ring at roof level.
-  4. Vertical access: switchback `Staircase`s in a corner, alternating direction per storey. Small buildings (`max(sx−2, sz−2) < wall_y+1` or `min < 4`) get TG ladders instead ([WGEN-21](index.md#suspected-bugs)). A roof ladder ends at a vanilla trapdoor hatch.
+  4. Vertical access: switchback `Staircase`s in a corner, alternating direction per story. Small buildings (`max(sx−2, sz−2) < wall_y+1` or `min < 4`) get TG ladders instead ([WGEN-21](index.md#suspected-bugs)). A roof ladder ends at a vanilla trapdoor hatch.
 * **Building types:**
 
 | Type | wall_x × wall_y | Style | Pattern (top→bottom, by column) | Doors |
@@ -891,7 +891,7 @@ Fills the whole box with one [`MBlock`](structure-system.md#mblock). Unused.
 | Class and register entry | `BlockStructure(MBlock block, minX, minY, minZ, maxX, maxY, maxZ)` extends `Structure`. Nothing in the codebase constructs it |
 | Spawn conditions | none (unreferenced, dead code) |
 | Size | the full box passed to `setBlocks` |
-| Build steps | three nested loops over the box call `MBlock.setBlock` with rotation 0 and the default loot tier 0; direction, colour type and random are ignored |
+| Build steps | three nested loops over the box call `MBlock.setBlock` with rotation 0 and the default loot tier 0; direction, color type and random are ignored |
 | Palette | one `MBlock` supplied by the caller. If it were a chest it would be filled at tier 0 and an air-marker block would be placed as air |
 | Loot, spawners, NPCs, flag, NBT | none of its own |
 | Bugs | none |

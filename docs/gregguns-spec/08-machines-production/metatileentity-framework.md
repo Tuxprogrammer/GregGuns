@@ -8,7 +8,7 @@ The shared GT plumbing every GregGuns machine uses: MTE IDs, the registration wi
   - GT5-Unofficial (`gregtech`, 5.09.54.205). The same jar also carries TecTech, GoodGenerator, GGFab and others.
   - StructureLib (`structurelib`, 1.4.45)
   - GTNHLib (`gtnhlib`, 0.11.52)
-- **Roadmap:** M4 (production chain and machines), M6 (utility and defence)
+- **Roadmap:** M4 (production chain and machines), M6 (utility and defense)
 
 ## What changes from Techguns
 

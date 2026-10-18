@@ -1,6 +1,6 @@
 # Entity names, aspects and other pack hooks
 
-- **Techguns baseline:** [mob-catalogue.md § registration](../../techguns-spec/10-entities-npcs/mob-catalogue.md#registration-javatechgunstgentitiesjava), [lang.md](../../techguns-spec/10-entities-npcs/lang.md), [spawning.md § camp flags](../../techguns-spec/10-entities-npcs/spawning.md#4-camp-flags-and-npcutil)
+- **Techguns baseline:** [mob-catalog.md § registration](../../techguns-spec/10-entities-npcs/mob-catalog.md#registration-javatechgunstgentitiesjava), [lang.md](../../techguns-spec/10-entities-npcs/lang.md), [spawning.md § camp flags](../../techguns-spec/10-entities-npcs/spawning.md#4-camp-flags-and-npcutil)
 - **Design records:** [0005 World presence](../../design/0005-world-presence.md)
 - **Pack mods:**
   - ThaumcraftMobAspects (`ThaumcraftMobAspects`, 1.2.1-GTNH)
@@ -11,7 +11,7 @@ Five pack mods identify a GregGuns mob in five different ways. This sheet lists 
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Entities are registered under mod id `Techguns`, so the `EntityList` name is `Techguns.<Name>`. | Mod id `gregguns`, so the name is `gregguns.<Name>`. Registry names keep Techguns' spelling. | The mod id is `gregguns` in `gradle.properties`. |
 | Camp lists use short names and the NPC counter compares them with the full registered name, so the count never matches ([NPC-17](../../techguns-spec/10-entities-npcs/index.md#suspected-bugs)). | One constant per mob feeds registration, eggs, spawn tables and camp lists. | The same mistake would break pack-side configs that key off the name. |
@@ -58,7 +58,7 @@ Five pack mods identify a GregGuns mob in five different ways. This sheet lists 
 ]
 ```
 
-Starting values, modelled on the pack's `SpecialMobs.GatlingSkeleton` entry (`terra`, `machina`, `motus`, `exanimis`, `humanus`). The M9 pass can change them. Every aspect name below already appears in the shipped files.
+Starting values, modeled on the pack's `SpecialMobs.GatlingSkeleton` entry (`terra`, `machina`, `motus`, `exanimis`, `humanus`). The M9 pass can change them. Every aspect name below already appears in the shipped files.
 
 | Entity | Aspects |
 |---|---|

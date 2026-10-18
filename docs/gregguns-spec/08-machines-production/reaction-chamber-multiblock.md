@@ -16,9 +16,9 @@ The one Techguns production machine that [0002](../../design/0002-machine-deconf
 |---|---|---|
 | 36 hidden blocks (17 housing, 18 glass, 1 controller) drawn by a TESR | Visible GregGuns casing blocks and GT glass, built with StructureLib; the Techguns chamber model becomes an optional decoration | Standard GT multiblock; fixes [MPRD-35](../../techguns-spec/08-machines-production/index.md#suspected-bugs) |
 | Form by right-clicking the controller | Hologram projector or hand-built; GT checks the structure on its own timer | [metatileentity-framework.md](metatileentity-framework.md#structurelib-structure-definition-hologram-and-survival-build) |
-| Power port at the top centre, 1 M RF buffer | One or more GT Energy Hatches. EU/t is the recipe's `eut` | [0003](../../design/0003-energy-model.md) |
+| Power port at the top center, 1 M RF buffer | One or more GT Energy Hatches. EU/t is the recipe's `eut` | [0003](../../design/0003-energy-model.md) |
 | Item and fluid ports (3 bottom blocks); one 10 000 mB tank | Input Bus, Output Bus and Input Hatch placed in any bottom-ring casing | GT hatches |
-| Focus in a dedicated GUI slot | Focus is a **non-consumed recipe input** (stack size 0) held in an Input Bus | GT's convention for moulds and lenses; shows in NEI |
+| Focus in a dedicated GUI slot | Focus is a **non-consumed recipe input** (stack size 0) held in an Input Bus | GT's convention for molds and lenses; shows in NEI |
 | Liquid level setting 0-10 and exact tank match | Dropped. The recipe lists the fluid amount it consumes at start | GT consumes fluid at recipe start and has no level concept |
 | Intensity setting 0-10, drifting preferred intensity | Kept as an MTE field with GUI buttons | The unique gameplay |
 | 3-second reaction ticks, completion count, per-tick RF | Kept. Recipe duration is `ticks x 60` game ticks. `eut` is the per-tick draw | Same feel under GT's power rules |
@@ -47,8 +47,8 @@ How the sections below apply:
 
 | Layer | Content |
 |---|---|
-| 0 | 3 x 3 casing ring. Controller front-centre. Input Bus, Output Bus, Input Hatch, Maintenance Hatch may replace any casing here |
-| 1 and 2 | 3 x 3 glass, including the centre column |
+| 0 | 3 x 3 casing ring. Controller front-center. Input Bus, Output Bus, Input Hatch, Maintenance Hatch may replace any casing here |
+| 1 and 2 | 3 x 3 glass, including the center column |
 | 3 | 3 x 3 casing. Energy Hatch and Muffler Hatch may replace casings here |
 
 | Element | Choice | Evidence |
@@ -117,7 +117,7 @@ These are proposals for M4. Exact fluids, amounts, `eut` and durations are chose
   | `NONE`, `BREAK_ITEM` | `stopMachine`, nothing else |
   | `EXPLOSION_LOW` | `getBaseMetaTileEntity().doExplosion(GTValues.V[1])` on the controller only (blast power 3.0 from GT's lookup) and the glass ring removed. GT's own wire-fire and inventory-drop rules apply |
   | `EXPLOSION_MEDIUM` | `doExplosion(GTValues.V[2])` (blast power 4.0, the same as the vanilla-TNT-strength blast Techguns uses) and all the glass removed |
-  | `RAD_LOW`, `RAD_MEDIUM`, `RAD_HIGH` | `applyRadioactivity` on players within a config radius, with level 1 / 3 / 5, plus a short `stopMachine`. Respects GT hazmat, and so respects GregGuns hazmat armour if area 05 registers it with `IHazardProtector` |
+  | `RAD_LOW`, `RAD_MEDIUM`, `RAD_HIGH` | `applyRadioactivity` on players within a config radius, with level 1 / 3 / 5, plus a short `stopMachine`. Respects GT hazmat, and so respects GregGuns hazmat armor if area 05 registers it with `IHazardProtector` |
   | `EXPLOSION_HIGH`, `UNFORSEEN_CONSEQUENCES` | Not used by any kept recipe. Left out until a recipe needs them |
 
   The voltage index for each blast is a config option. The defaults above are far below `V[8]`. The power values come from `EXPLOSION_LOOKUP_V` and `EXPLOSION_LOOKUP_POWER` in [GTValues#L463-L466](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/GTValues.java#L463-L466).

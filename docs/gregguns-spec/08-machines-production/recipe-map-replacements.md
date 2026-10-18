@@ -22,7 +22,7 @@ GregGuns ships **no** machine block for these five. Each Techguns recipe becomes
 Side effects:
 
 - The Techguns **stack upgrade** (multiplier from upgrade items) has no GT counterpart. Throughput comes from machine tier, GT overclocking and multiblock parallel. Area [06](../../techguns-spec/06-items/index.md) decides whether the upgrade item survives.
-- Most Techguns machine bugs vanish with the machine: [MPRD-10](../../techguns-spec/08-machines-production/index.md#suspected-bugs), 13, 22 and 28 (Charging Station); 11, 12 and 14 (Chem Lab); 05 and 25 (Fabricator); 20, 21, 30 and 33 (presses). The GT machines have their own behaviour and their own bugs.
+- Most Techguns machine bugs vanish with the machine: [MPRD-10](../../techguns-spec/08-machines-production/index.md#suspected-bugs), 13, 22 and 28 (Charging Station); 11, 12 and 14 (Chem Lab); 05 and 25 (Fabricator); 20, 21, 30 and 33 (presses). The GT machines have their own behavior and their own bugs.
 
 ## Per-recipe mapping
 
@@ -32,7 +32,7 @@ The numbers are the row numbers of the Techguns sheets. "Drop" means GT already 
 
 | Techguns | GregGuns |
 |---|---|
-| Plans 0-3: 9mm bullets x12, shotgun shell x16, rifle bullets x8, high-calibre rounds x4. Inputs 1 metal1 + 2 metal2 + 1 powder, 100 ticks, 5 RF/t | One Assembler recipe per ammo type, `.circuit(1)` to `.circuit(4)` as the plan. Inputs are GT plates or rods of the gate material for the tier ([0001](../../design/0001-tier-map.md)) plus gunpowder dust. `eut` = the ammo's tier (LV for 9mm, shells, rifle rounds). Later ammo (SMG magazines, grenades, rockets) is added by the milestone that adds the item |
+| Plans 0-3: 9mm bullets x12, shotgun shell x16, rifle bullets x8, high-caliber rounds x4. Inputs 1 metal1 + 2 metal2 + 1 powder, 100 ticks, 5 RF/t | One Assembler recipe per ammo type, `.circuit(1)` to `.circuit(4)` as the plan. Inputs are GT plates or rods of the gate material for the tier ([0001](../../design/0001-tier-map.md)) plus gunpowder dust. `eut` = the ammo's tier (LV for 9mm, shells, rifle rounds). Later ammo (SMG magazines, grenades, rockets) is added by the milestone that adds the item |
 
 ### Metal Press (18 recipes)
 
@@ -43,7 +43,7 @@ The numbers are the row numbers of the Techguns sheets. "Drop" means GT already 
 | 1, 12 (Obsidian Steel, carbon plate) | Drop. GT steel and GT carbon materials |
 | 8-10 (Mechanical Parts) | Assembler. If GT already has a matching small-gear or motor part, use that instead of a new item |
 | 13, 17 (advanced bullets x16, 40 mm grenade x16) | Assembler, same pattern as the Ammo Press |
-| 15 (Steam Armor Plating) | Assembler or Forming Press, gated at the EV steam-armour tier of [0001](../../design/0001-tier-map.md) |
+| 15 (Steam Armor Plating) | Assembler or Forming Press, gated at the EV steam-armor tier of [0001](../../design/0001-tier-map.md) |
 
 ### Chem Lab (17 recipes)
 
@@ -53,7 +53,7 @@ The numbers are the row numbers of the Techguns sheets. "Drop" means GT already 
 | 3, 8 (rubber, plastic) | Drop. GT polymer chain |
 | 4, 5b, 15 (Creeper Acid, Treated Leather) | Drop the fluid ([0002](../../design/0002-machine-deconfliction.md)). Treated Leather becomes a Chemical Bath recipe only if a GregGuns item still needs it |
 | 5a, 6b, 6c, 9, 10 (fill or empty Bio, Fuel and Compressed Air tanks) | Fluid Canner. `cannerRecipes` fills any `IFluidContainerItem` with capacity above 0 ([FluidCannerBackend#L72-L73](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/maps/FluidCannerBackend.java#L72-L73)). So the GregGuns tank items implement `IFluidContainerItem` and use GT fuels ([0001](../../design/0001-tier-map.md) lists "fuel tanks (GT fuels), compressed-air tanks") |
-| 6a, 6d (TGX explosive), 11 (Nether Charge), 7 (carbon fibres) | Chemical Reactor or Mixer through `UniversalChemical`, which adds to both the single-block and multiblock reactor maps ([GTRecipeConstants#L386-L400](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipeConstants.java#L386-L400)) |
+| 6a, 6d (TGX explosive), 11 (Nether Charge), 7 (carbon fibers) | Chemical Reactor or Mixer through `UniversalChemical`, which adds to both the single-block and multiblock reactor maps ([GTRecipeConstants#L386-L400](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipeConstants.java#L386-L400)) |
 | 12, 13 (Yellowcake, Nuclear Power Cell refuel) | Rework on GT's uranium materials in M5; no GregGuns recipe in M4 |
 
 ### Fabricator (6 recipes)
@@ -105,7 +105,7 @@ All six go to `assemblerRecipes`. Rows 3 to 5 use Techguns circuit names (`circu
 - **GGS-08-10** Ammo recipes that differ only by output use a distinct programmed-circuit number, and the numbers are listed in one enum so no two ammo types share a circuit with the same inputs.
 - **GGS-08-11** GregGuns writes no recipe for a product GT already makes (plates, wires, rubber, plastic, gunpowder, concrete).
 - **GGS-08-12** Every input comes from `GTOreDictUnificator` or a GregGuns `ItemStack`, not from a raw ore-dictionary name string.
-- **GGS-08-13** Recipes are registered from a `GregTechAPI.sBeforeGTPostload` callback (or later), never from a constructor or static initialiser.
+- **GGS-08-13** Recipes are registered from a `GregTechAPI.sBeforeGTPostload` callback (or later), never from a constructor or static initializer.
 - **GGS-08-14** Fluid-filled GregGuns tanks implement `IFluidContainerItem` with capacity above 0, so GT's Fluid Canner can fill and empty them.
 - **GGS-08-15** Every chargeable GregGuns item reports one IC2 tier through `IElectricItem#getTier`, equal to its tier in [0001](../../design/0001-tier-map.md), and can be inserted into a GT Battery Buffer of that tier.
 

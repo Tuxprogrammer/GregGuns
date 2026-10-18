@@ -49,7 +49,7 @@ public final class PistolDamageScenario implements Scenario {
         ScenarioResult.Builder out = ScenarioResult.builder(name());
         EntityPig dummy = new EntityPig(ctx.world());
         dummy.setLocationAndAngles(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, 0, 0);
-        ctx.spawn(dummy);                       // removed automatically afterwards
+        ctx.spawn(dummy);                       // removed automatically afterward
         // ... fire, then:
         out.checkEquals("damage dealt", 40.0F, 10.0F - dummy.getHealth());
         return out.build();
@@ -100,12 +100,12 @@ The framework logic (registry, argument parsing, runner, report) is plain Java a
 |---|---|---|
 | `harness.entity` | test harness | Spawns a pig at the origin, checks it is alive, in the world and at 10 health, removes it, and checks it is dead. |
 | `harness.area` | test harness | Clears an area, places a block, then cleans up and checks the original block is back. |
-| `combat.types` | damage system | Each of the ten damage types hits an unarmoured pig through a real source: health lost equals the damage, and the type's secondary effect (fire, slowness, poison, radiation sickness, shock) appears only where it should. |
-| `combat.penetration` | damage system | A mob in full iron armour (15 points) takes 8 damage at 0/15/100% penetration as 3.2 / 3.92 / 8.0 (GUN-34), every blockable type alike (GUN-45), unresistable in full; the source keeps the shooter and the projectile (GUN-37). |
-| `combat.player` | damage system | A fake player in full iron armour takes the same 3.92 through Forge `ApplyArmor`, each armour piece is worn exactly once (armour not applied twice), and unresistable skips armour. |
+| `combat.types` | damage system | Each of the ten damage types hits an unarmored pig through a real source: health lost equals the damage, and the type's secondary effect (fire, slowness, poison, radiation sickness, shock) appears only where it should. |
+| `combat.penetration` | damage system | A mob in full iron armor (15 points) takes 8 damage at 0/15/100% penetration as 3.2 / 3.92 / 8.0 (GUN-34), every blockable type alike (GUN-45), unresistable in full; the source keeps the shooter and the projectile (GUN-37). |
+| `combat.player` | damage system | A fake player in full iron armor takes the same 3.92 through Forge `ApplyArmor`, each armor piece is worn exactly once (armor not applied twice), and unresistable skips armor. |
 | `combat.iframes` | damage system | Melee 6 then 8 inside the frames loses 8, not 14 (GUN-33); ignoring sources land every time and leave the frames as they found them. |
 | `combat.rejected` | damage system | Ignoring-frames hits that vanilla rejects (dead or invulnerable target, fire against Fire Resistance) leave the target's frames at 15 and its health alone, by raw `attackEntityFrom` and by `DamageSources.hit`; an unprotected control still takes the full hit. |
-| `combat.listeners` | damage system | A foreign `LivingAttackEvent`/`LivingHurtEvent` listener sees our source once, and the raw pre-armour amount at HIGHEST priority (GGS-02-18). |
+| `combat.listeners` | damage system | A foreign `LivingAttackEvent`/`LivingHurtEvent` listener sees our source once, and the raw pre-armor amount at HIGHEST priority (GGS-02-18). |
 | `combat.hazmat` | damage system | A pig in a full stub-hazmat set (GT `IHazardProtector`) takes the direct damage but none of the fire, ice, poison, radiation or shock effects (GGS-02-22). |
 | `production.ammopress` | production chain (M1) | The LV Ammo Press (MTE 20101) is registered as an `MTEAmmoPress` at LV on `gregguns.ammoPress`, has an item form, and places as a GT machine block. |
 | `production.recipes` | production chain (M1) | The ammo map finds RC-28, RC-37 and RC-44 at `RECIPE_LV` with the sheet's counts and durations, and the assembler holds RC-05 and RC-11 at LV. |
@@ -152,10 +152,10 @@ Maps each M1 exit-gate item and each relevant `BUGS.md` row to the tests that co
 | GUN-35 absorption twice | U: `DamageModelTest.doesNotReproduceGUN35_*` | |
 | GUN-37 attacker lost on conversion | U: `DamageSourceTest.doesNotReproduceGUN37_*`; S: `combat.penetration` | |
 | GUN-39 penetration compounds | U: `DamageModelTest.doesNotReproduceGUN39_*` | |
-| GUN-40 armour above cap inverts | U: `DamageModelTest.doesNotReproduceGUN40_*` | |
+| GUN-40 armor above cap inverts | U: `DamageModelTest.doesNotReproduceGUN40_*` | |
 | GUN-43 missing UNRESISTABLE lang key | U: `DamageTypeTest.doesNotReproduceGUN43_*` | |
 | GUN-44 fire flag | U: `DamageSourceTest.doesNotReproduceGUN44_*` | |
-| GUN-45 vanilla armour blocks all types | U: `DamageModelTest.doesNotReproduceGUN45_*`; S: `combat.penetration` | |
+| GUN-45 vanilla armor blocks all types | U: `DamageModelTest.doesNotReproduceGUN45_*`; S: `combat.penetration` | |
 | GUN-47 unscoped zoom flag | U: `SpreadAndZoomTest.doesNotReproduceGUN47_*`, `GunKeybindsTest.doesNotReproduceGUN47_*`; S: `gun.zoom` | |
 | PFX-01 projectile entity not registered | S: `projectile.hit` | |
 | PFX-23, PFX-27 wall and plant hits | S: `projectile.blocks` | |

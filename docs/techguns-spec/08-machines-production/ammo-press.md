@@ -23,8 +23,8 @@ Built once at recipe init from ore dictionary names, holding every registered or
 
 | List | Ore names (default) | Stored size |
 |---|---|---|
-| metal1 | [`ingotSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`ingotLead`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | reference to the ore stack |
-| metal2 | [`ingotCopper`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`ingotTin`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), `ingotIron`, [`ingotBronze`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | copy with stackSize 2 (display only) |
+| metal1 | [`ingotSteel`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`ingotLead`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | reference to the ore stack |
+| metal2 | [`ingotCopper`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`ingotTin`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), `ingotIron`, [`ingotBronze`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | copy with stackSize 2 (display only) |
 | powder | `itemGunpowder` | reference |
 
 Validity matching uses Forge `itemMatches` (wildcard-tolerant). MineTweaker can add or remove entries (see `minetweaker.md`).
@@ -61,7 +61,7 @@ This runs on both sides; the output is only created server-side. Each tick, if r
 
 ## 5. GUI (`GuiAmmoPress`, texture `textures/gui/ammoPress_GUI.png`)
 
-- **Title.** The translated `techguns.container.ammopress` ("Ammo Press"), centred at y 6. "Inventory" (vanilla `container.inventory`) at (8, 72).
+- **Title.** The translated `techguns.container.ammopress` ("Ammo Press"), centered at y 6. "Inventory" (vanilla `container.inventory`) at (8, 72).
 - **Plan text.** The literal string "Building:" at (20,30), not localized, then the translated name of the plan's ammo item at (20,40).
 - **Buttons.**
   - ID 3 `>` at (40,50), 20×20: next plan.
@@ -88,9 +88,9 @@ Both play client and server side, with the "distance delay" flag on, at the mach
 
 ## 7. Visuals
 
-TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr) with [`ModelAmmoPress`](../07-blocks/block-rendering-and-models.md#modelammopress-uv-12864-texture-ammopresspng) (texture size declared as 128×64) and texture [`textures/blocks/AmmoPress.png`](../07-blocks/textures.md#11-model-textures) (256×128, catalogued in [07-blocks](../07-blocks/index.md)). The rendering transform is in `rendering.md`.
+TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr) with [`ModelAmmoPress`](../07-blocks/block-rendering-and-models.md#modelammopress-uv-12864-texture-ammopresspng) (texture size declared as 128×64) and texture [`textures/blocks/AmmoPress.png`](../07-blocks/textures.md#11-model-textures) (256×128, cataloged in [07-blocks](../07-blocks/index.md)). The rendering transform is in `rendering.md`.
 
-- **Look.** A grey-and-silver steel workbench press: a boxy frame with two horizontal side punches (left `pa1/pa2`, right `pb1/pb2`), a top stamp (`pc1`), a small metal blank (`MetalPiece`) and three cartridge shapes (`bullet1..3`). The texture includes rust-grey panels, small green accents and a yellow/brass cartridge strip (bottom-right of the atlas).
+- **Look.** A gray-and-silver steel workbench press: a boxy frame with two horizontal side punches (left `pa1/pa2`, right `pb1/pb2`), a top stamp (`pc1`), a small metal blank (`MetalPiece`) and three cartridge shapes (`bullet1..3`). The texture includes rust-gray panels, small green accents and a yellow/brass cartridge strip (bottom-right of the atlas).
 - **Animation.** Driven by p = progress/totalTime. It runs **twice per operation**; each half is remapped to 0..1 (call it q):
 
 | q range | Visible extras | Motion |
@@ -108,10 +108,10 @@ The numbered fields follow `CONVENTIONS.md`. Detail lives in the sections above;
 
 | # | Field | Contents |
 |---|---|---|
-| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 0; item class [`ItemBlockMetaDataMachine`](../07-blocks/special-blocks.md#16-itemblockmetadatamachine); tile `AmmoPressTileEnt` (registered under that name); item name key `techguns.tile.BasicMachine_0.name`, English **Ammo Press**; container `AmmoPressContainer`, GUI ID 0; creative tab Techguns; oredict names none |
+| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalog.md#registered-blocks) meta 0; item class [`ItemBlockMetaDataMachine`](../07-blocks/special-blocks.md#16-itemblockmetadatamachine); tile `AmmoPressTileEnt` (registered under that name); item name key `techguns.tile.BasicMachine_0.name`, English **Ammo Press**; container `AmmoPressContainer`, GUI ID 0; creative tab Techguns; oredict names none |
 | 2 | Obtaining | Shaped ore recipe, `ili / cec / iri` (i `ingotIron`, l `ingotLead`, c `ingotCopper`, e Electric Engine, r redstone); full table in [blocks-and-items.md](blocks-and-items.md#crafting-recipes-for-the-machines-in-this-area). Not found in loot or worldgen |
 | 3 | Numbers | Buffer 20 000 RF; 5 RF/t times the stack multiplier; 100 ticks per operation; multiplier 1 to 8 (upgrades + 1); build plans 0 to 3; block hardness 4.0, resistance 20.0, pickaxe level 1 |
-| 4 | Behaviour | Sections 3 and 4. Runs on both sides (client prediction), output created on the server only |
+| 4 | Behavior | Sections 3 and 4. Runs on both sides (client prediction), output created on the server only |
 | 5 | Persistence and sync | NBT `BuildPlan` (byte), plus the base keys `Items`, `rotation`, `owner`, `security`, `Energy`, `hasSignal`, `redstoneBehaviour`, `CurrentOperation`, `Progress`, `TotalTime`, `StackMultiplier` (see [framework.md](framework.md)). Full tile NBT goes to the client on every `needUpdate()`. GUI progress-bar fields: 0 progress, 1 totalTime, 2 buildPlan, 3 power (raw RF). Wrench-dismantle stores the tile NBT in the item under `TileEntityData` |
 | 6 | UI | Layout in section 5. Item tooltip: one line, `techguns.block.hasTileEntityData` ("Has TileEntity Data"), only when the stack carries `TileEntityData`; otherwise none. In-GUI tooltips: power ("Power: n/max RF"), redstone and security, exact strings in [lang.md](lang.md#3-shared-machine-gui). Chat: `techguns.container.security.denied` on a denied right-click |
 | 7 | Visuals | Block render type −1 (TESR only), so no per-face block texture; the break-particle icon is `techguns:screen_top` ([`textures/blocks/screen_top.png`](../07-blocks/textures.md#6-radar-screen-and-control-panel), 32×32, average #534540). TESR `RenderAmmoPress` + `ModelAmmoPress`; atlas `textures/blocks/AmmoPress.png`, 256×128, average #292724, dominant #101010 66 %, #505050 5 %, #909090 3 %, 100 % opaque. Item renderer [`RenderMachineBlockItem`](rendering.md#5-machine-item-rendering) delegate 0 (`RenderBlockModelItem`, same model and texture). Particles: none |

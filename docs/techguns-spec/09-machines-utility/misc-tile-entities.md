@@ -8,12 +8,12 @@ This file covers the Reinforced and Weapon chests, the Camp Flag, and the Bio Bl
 
 | | Reinforced Chest | Weapon Chest |
 |---|---|---|
-| Block | `BlockTGChest(type 0)`, registry [`tgchest`](../07-blocks/block-catalogue.md#registered-blocks) | `BlockTGChest(type 1)`, registry [`tgchest_weapon`](../07-blocks/block-catalogue.md#registered-blocks) |
-| Item block | [`ItemBlockTGChest`](../07-blocks/block-catalogue.md#conventions-and-defaults) | `ItemBlockTGChest` |
+| Block | `BlockTGChest(type 0)`, registry [`tgchest`](../07-blocks/block-catalog.md#registered-blocks) | `BlockTGChest(type 1)`, registry [`tgchest_weapon`](../07-blocks/block-catalog.md#registered-blocks) |
+| Item block | [`ItemBlockTGChest`](../07-blocks/block-catalog.md#conventions-and-defaults) | `ItemBlockTGChest` |
 | Item name | `techguns.tile.tgchest.name` = "Reinforced Chest" | `techguns.tile.tgchest_weapon.name` = "Weapon Chest" |
 | Container title, single | `techguns.container.tgchest` = "Reinforced Chest" | `techguns.container.tgchest_weapon` = "Weapon Chest" |
 | Container title, double | `techguns.container.tgchest.double` = "Large Reinforced Chest" | `techguns.container.tgchest_weapon.double` = "Large Weapon Chest" |
-| Recipe | `n n` / ` c ` / `n n`; n = [`nuggetIron`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), c = vanilla chest | `pcp`; p = [`plateIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), c = vanilla chest |
+| Recipe | `n n` / ` c ` / `n n`; n = [`nuggetIron`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), c = vanilla chest | `pcp`; p = [`plateIron`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo), c = vanilla chest |
 | World textures | [`textures/blocks/reinforced_chest.png`](../07-blocks/textures.md#11-model-textures), [`textures/blocks/reinforced_chest_double.png`](../07-blocks/textures.md#11-model-textures) | [`textures/blocks/weapon_chest.png`](../07-blocks/textures.md#11-model-textures), [`textures/blocks/weapon_chest_double.png`](../07-blocks/textures.md#11-model-textures) |
 
 Both share tile entity `TGChestTileEnt` (registered `TGChestTileEnt`), GUI id 20, container `TGChestContainer`, GUI `GuiTechgunsChest` and TESR `RenderTGChest`.
@@ -21,7 +21,7 @@ Both share tile entity `TGChestTileEnt` (registered `TGChestTileEnt`), GUI id 20
 ### Block (`BlockTGChest`, adapted from the vanilla chest)
 
 - Material wood, **hardness 5**, **resistance 500** (blast-proof), wood step sound, Techguns creative tab.
-- Bounds are the vanilla chest's: 1/16 inset, 14/16 tall. A half that joins a neighbour extends to that side.
+- Bounds are the vanilla chest's: 1/16 inset, 14/16 tall. A half that joins a neighbor extends to that side.
 - Render type −1 (TESR). The particle and break icon is vanilla `planks_oak`.
 - **Placement and double chests:**
   - Vanilla logic. A chest joins **one** horizontally adjacent chest **of the same block**; the two types never merge.
@@ -49,7 +49,7 @@ Both share tile entity `TGChestTileEnt` (registered `TGChestTileEnt`), GUI id 20
 - Automation: every side exposes every slot; insert and extract are allowed everywhere; everything is valid.
 - Lid animation, open/close sounds and the adjacent-chest bookkeeping are the vanilla chest's:
   - the lid opens and closes by 0.1 per tick;
-  - `random.chestopen` plays when the lid starts opening and `random.chestclosed` when it passes half-closed, both at volume 0.5 and pitch 0.9–1.0, centred on a double chest;
+  - `random.chestopen` plays when the lid starts opening and `random.chestclosed` when it passes half-closed, both at volume 0.5 and pitch 0.9–1.0, centered on a double chest;
   - the viewer count travels by block event id 1.
 - The periodic viewer recount (every 200 ticks, offset by position) only counts players whose open container is a vanilla `ContainerChest`. The Techguns container is not one, so the server count drops to 0 while players are looking ([MUTL-34](index.md#suspected-bugs)).
 - Render bounding box: from (x−1, y, z−1) to (x+2, y+2, z+2).
@@ -76,16 +76,16 @@ The extended-inventory slots belong to the player-inventory system, owned by [05
 The GUI extends [`GuiTechgunsTileEntBase`](../08-machines-production/gui-handler.md#2-guitechgunstileentbase-abstract-guicontainer).
 
 - **xSize = 230**, ySize = 114 + rows × 18 (168 single, 222 double).
-- Background [`textures/gui/tgchest_gui.png`](../08-machines-production/gui-textures.md#13-texturesguitgchest_guipng-owned-by-09) (256 × 256, catalogued by [08](../08-machines-production/index.md)). Two parts are drawn:
+- Background [`textures/gui/tgchest_gui.png`](../08-machines-production/gui-textures.md#13-texturesguitgchest_guipng-owned-by-09) (256 × 256, cataloged by [08](../08-machines-production/index.md)). Two parts are drawn:
   1. Top part: (0,0), height rows × 18 + 17.
   2. Bottom part: from v = 126, height 96, placed directly below the top part.
 
 | Texture region (px) | Depicts |
 |---|---|
-| (0,0)–(230,~125) | Grey panel top border and **6 rows × 12** slot wells, starting at (7,17) |
+| (0,0)–(230,~125) | Gray panel top border and **6 rows × 12** slot wells, starting at (7,17) |
 | (0,126)–(230,222) | Gap, then the 3×9 player inventory wells and the 9-slot hotbar on the left. On the right (x ≈ 171–225): a row of 3 wells (auto-food), and below it a 2×3 block of wells (ammo). Bottom-right corner plain. |
 
-- **Text** (colour 0x404040): the chest inventory name at (8,6), via `I18n` of the names above; the player inventory name ("Inventory") at (8, ySize − 94).
+- **Text** (color 0x404040): the chest inventory name at (8,6), via `I18n` of the names above; the player inventory name ("Inventory") at (8, ySize − 94).
 - There are no buttons; the security button is commented out.
 
 ### World and item rendering
@@ -115,9 +115,9 @@ The layout is the **vanilla chest UV layout at 2× resolution**:
 
 | File | Size | Look |
 |---|---|---|
-| `textures/blocks/reinforced_chest.png` | 128×128 | Oak-plank wood faces (tan, horizontal grain) framed on every edge by dark-grey iron banding. Lid underside and body top are dark brown/black (the interior). Small grey steel latch with a black keyhole at the top-left. |
+| `textures/blocks/reinforced_chest.png` | 128×128 | Oak-plank wood faces (tan, horizontal grain) framed on every edge by dark-gray iron banding. Lid underside and body top are dark brown/black (the interior). Small gray steel latch with a black keyhole at the top-left. |
 | `textures/blocks/reinforced_chest_double.png` | 256×128 | The same style, stretched for the double chest |
-| `textures/blocks/weapon_chest.png` | 128×128 | The same layout in flat dark olive-drab military paint with near-black edge banding and faint scratches. Interior black. Grey latch. |
+| `textures/blocks/weapon_chest.png` | 128×128 | The same layout in flat dark olive-drab military paint with near-black edge banding and faint scratches. Interior black. Gray latch. |
 | `textures/blocks/weapon_chest_double.png` | 256×128 | The double version |
 
 ---
@@ -128,10 +128,10 @@ The layout is the **vanilla chest UV layout at 2× resolution**:
 
 ### Role
 
-The flag is the NPC spawner and controller for generated military structures. World-gen ([11](../11-worldgen/index.md)) places and initialises it:
+The flag is the NPC spawner and controller for generated military structures. World-gen ([11](../11-worldgen/index.md)) places and initializes it:
 
-- **Military camps** ([`MilitaryCamp`](../11-worldgen/structure-catalogue.md#a6-military-base-militarybasestructure--militarycamp)) place it in the camp centre.
-- The **aircraft carrier** ([`AircraftCarrierNew`](../11-worldgen/structure-catalogue.md#a7-aircraft-carrier-aircraftcarriernew)) places it at a fixed deck position and initialises it with `maxNPCs` = 9.
+- **Military camps** ([`MilitaryCamp`](../11-worldgen/structure-catalog.md#a6-military-base-militarybasestructure--militarycamp)) place it in the camp center.
+- The **aircraft carrier** ([`AircraftCarrierNew`](../11-worldgen/structure-catalog.md#a7-aircraft-carrier-aircraftcarriernew)) places it at a fixed deck position and initializes it with `maxNPCs` = 9.
 
 Players cannot obtain it normally:
 
@@ -140,7 +140,7 @@ Players cannot obtain it normally:
 - Right-clicking does nothing.
 - Wrenches are ignored.
 
-### Initialisation (`init`)
+### Initialization (`init`)
 
 The structure generator calls `init` with:
 
@@ -166,7 +166,7 @@ Constants:
 1. Every 60 ticks, count the living entities whose entity name is in the NPC list. The counting box runs from the origin to origin + (sizeX, 20, sizeZ), starting 3 below the origin, widened by 8 blocks on each horizontal side. If count < maxNPCs, spawning is enabled. Otherwise it is disabled and the spawn timer resets to 200.
 2. While enabled and there is at least one spawn point, the spawn timer counts down. At ≤ 0:
    1. Pick a random spawn point and a random NPC name.
-   2. Spawn it via [`NPCUtil.spawnEntity`](../10-entities-npcs/spawning.md#4-camp-flags-and-npcutil) ([10](../10-entities-npcs/index.md)) at origin + point, centred in X/Z (+0.5).
+   2. Spawn it via [`NPCUtil.spawnEntity`](../10-entities-npcs/spawning.md#4-camp-flags-and-npcutil) ([10](../10-entities-npcs/index.md)) at origin + point, centered in X/Z (+0.5).
    3. Reset the timer to 200.
 
 The result is at most one NPC per 10 s while the camp is below its cap.
@@ -218,12 +218,12 @@ The chained rotation produces a rippling flag.
 
 | Region (units) | Look |
 |---|---|
-| (0,0) foot plate | Weathered grey metal with a dark square socket mark |
-| (0,14) lower post | Darker grey metal with reddish rust specks |
-| (22,14)/(34,15) poles, (33,3) cap | Pale whitish-grey metal with vertical streaks |
+| (0,0) foot plate | Weathered gray metal with a dark square socket mark |
+| (0,14) lower post | Darker gray metal with reddish rust specks |
+| (22,14)/(34,15) poles, (33,3) cap | Pale whitish-gray metal with vertical streaks |
 | (0,50)–(36,64) flag strip | Cloth flag spread over the three segments (front and back faces side by side for each): a red stripe along the top and bottom edges, a white field, and dark-blue roundels each holding a white five-pointed star. Soft cloth shading. |
 
-[`textures/blocks/flagBlock.png`](../07-blocks/textures.md#4-camo-nets-sandbags-tent-flag-air-marker-invisible) (32 × 32) exists but is not referenced in code; [07](../07-blocks/index.md) catalogues it.
+[`textures/blocks/flagBlock.png`](../07-blocks/textures.md#4-camo-nets-sandbags-tent-flag-air-marker-invisible) (32 × 32) exists but is not referenced in code; [07](../07-blocks/index.md) catalogs it.
 
 ---
 
@@ -233,7 +233,7 @@ The Bio Blob is the slime block left behind by Biogun projectiles ([02](../02-gu
 
 | | |
 |---|---|
-| Block | [`Bioblob`](../07-blocks/special-blocks.md#13-bio-blob-bioblobsmall-bioblob), [`TGBlocks.bioBlobSmall`](../07-blocks/block-catalogue.md#registered-blocks), registry [`BioBlobSmall`](../07-blocks/block-catalogue.md#registered-blocks), unlocalized `Bioblob` |
+| Block | [`Bioblob`](../07-blocks/special-blocks.md#13-bio-blob-bioblobsmall-bioblob), [`TGBlocks.bioBlobSmall`](../07-blocks/block-catalog.md#registered-blocks), registry [`BioBlobSmall`](../07-blocks/block-catalog.md#registered-blocks), unlocalized `Bioblob` |
 | Tile entity | `BioblobTileEnt`, registered `BioblobTileEnt` |
 | Lang | `techguns.tile.Bioblob.name` = "Bio Blob" (the default item block looks up `tile.Bioblob.name`, so the name is unresolved; see [MUTL-43](index.md#suspected-bugs)) |
 
@@ -249,7 +249,7 @@ The Bio Blob is the slime block left behind by Biogun projectiles ([02](../02-gu
   - width w = 10 + 6s (16, 22, 28 → 0.5, 0.69, 0.875 blocks);
   - thickness h = 2 + 4s (6, 10, 14 → 0.19, 0.31, 0.44 blocks).
 
-  The box is centred on the face and flush against the supporting block. For example, meta 1 spans (½ − w/2) to (½ + w/2) in X and Z, and 0..h in Y.
+  The box is centered on the face and flush against the supporting block. For example, meta 1 spans (½ − w/2) to (½ + w/2) in X and Z, and 0..h in Y.
 
   Selection uses these bounds. The collision box is not recomputed per position ([MUTL-42](index.md#suspected-bugs)).
 - **Contact effect:** any entity touching the block that is an `EntityLiving` (mobs, not players; [MUTL-41](index.md#suspected-bugs)) gets **Poison, amplifier 2 (Poison III), 100 ticks**.
@@ -258,7 +258,7 @@ The Bio Blob is the slime block left behind by Biogun projectiles ([02](../02-gu
 ### Placement and growth (driven by `BiogunProjectile`, owned by 04)
 
 - **Hitting an existing blob** calls `hitBlob(level, shooter)`.
-- **Hitting another block** (server), if the neighbouring cell on the hit side can take it:
+- **Hitting another block** (server), if the neighboring cell on the hit side can take it:
   1. Place a new blob there with meta = hit side.
   2. If the projectile's level is above 1, call `hitBlob(level − 1)`.
 
@@ -276,8 +276,8 @@ The Bio Blob is the slime block left behind by Biogun projectiles ([02](../02-gu
 
 1. size += power.
 2. If size > 3, the blob **bursts**:
-   1. Create a [`ProjectileExplosion`](../04-projectiles-fx/explosions.md#projectileexplosion) ([04](../04-projectiles-fx/index.md)) at the block centre: radius 3, damage 15, inner radius 1.5, outer radius 4.5, no exploder entity.
-   2. Its damage source is TG poison damage, death type BIO, with gore chance 1.0 and armour penetration 0.35. Its explosion sound is `techguns:effects.biodeath`.
+   1. Create a [`ProjectileExplosion`](../04-projectiles-fx/explosions.md#projectileexplosion) ([04](../04-projectiles-fx/index.md)) at the block center: radius 3, damage 15, inner radius 1.5, outer radius 4.5, no exploder entity.
+   2. Its damage source is TG poison damage, death type BIO, with gore chance 1.0 and armor penetration 0.35. Its explosion sound is `techguns:effects.biodeath`.
    3. Set the block to air.
    4. Run the explosion without terrain damage, crediting the attacker.
    5. Server: broadcast particle effect `bioblobExplosion` ([04](../04-projectiles-fx/index.md)) to players within 50 blocks.
@@ -299,6 +299,6 @@ A client-side size change triggers a render refresh, so the bounds update.
 | Asset | Details |
 |---|---|
 | `textures/blocks/bio.png` | 16 × 16, no animation. Mottled bright slime green (#2a9a10–#5cd030) with darker green blotches. Used on every face. |
-| [`sounds/effects/biodeath.ogg`](../04-projectiles-fx/sounds.md) (event `techguns:effects.biodeath`) | Played by the burst explosion. The file is catalogued by [04](../04-projectiles-fx/index.md)/10. |
+| [`sounds/effects/biodeath.ogg`](../04-projectiles-fx/sounds.md) (event `techguns:effects.biodeath`) | Played by the burst explosion. The file is cataloged by [04](../04-projectiles-fx/index.md)/10. |
 
 The projectile's own texture [`textures/entity/bioblob.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) belongs to 04.

@@ -1,6 +1,6 @@
 # Mob drops, NEI display and progression
 
-- **Techguns baseline:** [per-mob.md § Drops](../../techguns-spec/10-entities-npcs/per-mob.md#drops), [per-mob.md § lifecycle and equipment](../../techguns-spec/10-entities-npcs/per-mob.md#lifecycle-and-equipment), [mob-catalogue.md § equipment](../../techguns-spec/10-entities-npcs/mob-catalogue.md#equipment-at-a-glance)
+- **Techguns baseline:** [per-mob.md § Drops](../../techguns-spec/10-entities-npcs/per-mob.md#drops), [per-mob.md § lifecycle and equipment](../../techguns-spec/10-entities-npcs/per-mob.md#lifecycle-and-equipment), [mob-catalog.md § equipment](../../techguns-spec/10-entities-npcs/mob-catalog.md#equipment-at-a-glance)
 - **Design records:** [0001 Tier map](../../design/0001-tier-map.md), [0005 World presence](../../design/0005-world-presence.md)
 - **Pack mods:**
   - Mobs Info (`mobsinfo`, 0.6.0, source tag `0.6.0-GTNH`)
@@ -12,7 +12,7 @@ This sheet covers three things: how the pack's NEI "Mob Info" page finds our NPC
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Equipment is rolled by `addRandomArmor(int difficulty)`, an overload. Vanilla's no-argument `addRandomArmor()` is not overridden ([per-mob.md](../../techguns-spec/10-entities-npcs/per-mob.md#lifecycle-and-equipment)). | The no-argument override is the single equipment entry point, and rolls the difficulty itself. | Mobs Info only simulates the vanilla entry point. Otherwise NEI shows no equipment drops. |
 | Loot code is free-form. | Drop code draws only from the entity's own `rand` and touches no world state. | Mobs Info replaces that RNG to enumerate every outcome. |
@@ -65,7 +65,7 @@ The class name and package above are a placeholder until M7 fixes them.
 - **Pack config:** none. The tier map is [0001](../../design/0001-tier-map.md), the surface ceiling is [0005](../../design/0005-world-presence.md).
 - **GregGuns does:** gives each NPC a tier ceiling. Everything the NPC can hold, wear or drop is at or below it. The ceiling is data, and a dev self-check reads it against the 0001 table.
 
-| NPC | Natural path under 0005 | Held guns (0001 tier) | Armour (0001 tier) | Fixed drops | Ceiling |
+| NPC | Natural path under 0005 | Held guns (0001 tier) | Armor (0001 tier) | Fixed drops | Ceiling |
 |---|---|---|---|---|---|
 | Zombie Farmer, Zombie Miner | Overworld, danger 0 | hoes, picks, Hand Cannon (Steam) | T1 Miner (Steam) | none | Steam |
 | Zombie Soldier | Overworld, danger 1 | Revolver (LV), Thompson (MV) | T1 Combat (LV) | none | MV |
@@ -76,12 +76,12 @@ The class name and package above are a placeholder until M7 fixes them.
 | Commando | camp flags | silenced M4 (MV) | T2 Commando (MV) | none | MV |
 | Zombie Pigman Soldier | Nether only | up to Rocket Launcher, LMG, Flamethrower (HV) | T2 Combat (MV) | none | HV, and not natural under 0005 |
 | Cyberdemon | Nether only | Cyberdemon Blaster (not in 0001) | none | none | not in 0001 |
-| Outcast | egg only | Laser, Minigun, Bio, Tesla (EV), Flamethrower, LMG (HV), Grim Reaper (LuV) | Power Armour (IV) | none | LuV |
+| Outcast | egg only | Laser, Minigun, Bio, Tesla (EV), Flamethrower, LMG (HV), Grim Reaper (LuV) | Power Armor (IV) | none | LuV |
 | Stormtrooper | egg only | Blaster Rifle (IV), Laser (EV) | T3 Miner HEV suit (not in 0001) | none | IV |
 | Super Mutants | egg only | Rocket Launcher (HV), AK47, Combat Shotgun (MV), Laser (EV) | none | none | EV |
 | Dictator Dave | egg only | Golden Revolver (IV) | T2 Beret and T1 mix | Golden Revolver (IV), 9mm rounds | IV |
 
-Held-gun and armour tiers come from [0001](../../design/0001-tier-map.md). Rosters come from [per-mob.md](../../techguns-spec/10-entities-npcs/per-mob.md). Egg-only NPCs are not a progression problem while only eggs, commands and creative tools spawn them. They become one the moment a spawner block or camp flag places them.
+Held-gun and armor tiers come from [0001](../../design/0001-tier-map.md). Rosters come from [per-mob.md](../../techguns-spec/10-entities-npcs/per-mob.md). Egg-only NPCs are not a progression problem while only eggs, commands and creative tools spawn them. They become one the moment a spawner block or camp flag places them.
 
 - **Pack-side change:** none.
 
@@ -93,9 +93,9 @@ Held-gun and armour tiers come from [0001](../../design/0001-tier-map.md). Roste
 | GGS-10-16 | NPC constructors and the three drop methods run against a stub world. They read no chunk, biome, difficulty-dependent world state or config that changes at runtime. |
 | GGS-10-17 | The no-argument `addRandomArmor()` override is the only code path that rolls NPC equipment. It sets equipment through the vanilla equipment slots (`setCurrentItemOrArmor`). `enchantEquipment()` is overridden to do nothing. Natural spawns call the same logic with their danger level. |
 | GGS-10-18 | Counts that Techguns draws as a rounded float (such as `1 + round(7y)`) use integer draws where the distribution allows. Where it does not, the NPC implements `IMobInfoProvider` (soft dependency) and lists those drops itself. |
-| GGS-10-19 | Held guns and armour drop at the vanilla equipment rate (8.5% per slot, plus looting). If GregGuns changes it for any NPC, that NPC implements `IMobInfoProvider`. |
+| GGS-10-19 | Held guns and armor drop at the vanilla equipment rate (8.5% per slot, plus looting). If GregGuns changes it for any NPC, that NPC implements `IMobInfoProvider`. |
 | GGS-10-20 | Every registered NPC entity has a lang key `entity.gregguns.<Name>.name` with English text. This fixes the Techguns missing-key problems in [lang.md](../../techguns-spec/10-entities-npcs/lang.md). |
-| GGS-10-21 | Each NPC has a data-driven tier ceiling. A dev self-check fails if any held gun, armour piece or fixed or table drop of that NPC has a recipe tier above its ceiling in 0001. Exceptions are listed in the open questions. |
+| GGS-10-21 | Each NPC has a data-driven tier ceiling. A dev self-check fails if any held gun, armor piece or fixed or table drop of that NPC has a recipe tier above its ceiling in 0001. Exceptions are listed in the open questions. |
 | GGS-10-22 | A GregGuns class that implements a Mobs Info interface does so under `@Optional.Interface(iface=..., modid="mobsinfo")` and `@Optional.Method`, so the mod works without Mobs Info. |
 
 ## Tests

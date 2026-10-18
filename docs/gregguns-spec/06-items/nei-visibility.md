@@ -2,7 +2,7 @@
 
 Which GregGuns items NEI shows, hides and collapses.
 
-- **Techguns baseline:** [item-catalogue.md](../../techguns-spec/06-items/item-catalogue.md) (metas, debug items, spawn eggs), [special-items.md](../../techguns-spec/06-items/special-items.md)
+- **Techguns baseline:** [item-catalog.md](../../techguns-spec/06-items/item-catalog.md) (metas, debug items, spawn eggs), [special-items.md](../../techguns-spec/06-items/special-items.md)
 - **Design records:** [0002 machine deconfliction](../../design/0002-machine-deconfliction.md) (dropped machines leave no NEI handlers), [CONTRIBUTING § NEI](../../../CONTRIBUTING.md#gtnh-integration) ("Hide unobtainable and technical items")
 - **Pack mods:** NotEnoughItems (`NotEnoughItems`, 2.8.155-GTNH)
 - **Roadmap:** M2 (items exist), M4 (recipes shown by GT's maps)
@@ -16,7 +16,7 @@ Techguns lists every shared-item meta in the creative tab and registers four deb
 | Debug tools (Block Reader, Building Scan Tool, Structure Test Tool, Ore Cluster Debugger) | Not registered in release builds; if kept for development, hidden | `API.hideItem` in a dev-only branch |
 | Ore Cluster Scanner | Not built (no ore generation, [0005](../../design/0005-world-presence.md)) | n/a |
 | Empty magazines, tanks and cells | Collapsed with their full form | Pack `collapsibleitems.cfg` |
-| Ammo of one calibre in several tiers | Collapsed per calibre | Pack `collapsibleitems.cfg` |
+| Ammo of one caliber in several tiers | Collapsed per caliber | Pack `collapsibleitems.cfg` |
 | Spawn eggs | Collapsed with the pack's existing spawn-egg group | Pack `collapsibleitems.cfg` |
 | Guns | One entry per gun, in the default state, not one per damage value | `API.setItemListEntries` |
 | Items with 3D-only models | Normal entries; fix icons ([ITEM-08](../../techguns-spec/06-items/index.md#suspected-bugs)) in the item code | n/a |
@@ -50,11 +50,11 @@ Techguns lists every shared-item meta in the creative tab and registers four deb
 ... | gregguns:spawn_egg
 # gregguns magazines, tanks and cells (full and empty)
 r/^gregguns:(mag|tank|cell)_/
-# gregguns ammo by calibre
+# gregguns ammo by caliber
 r/^gregguns:ammo_9mm/
 r/^gregguns:ammo_rifle/
 r/^gregguns:ammo_shotgun/
-# gregguns armour sets
+# gregguns armor sets
 r/^gregguns:armor_t1_/
 r/^gregguns:armor_t2_/
 ```

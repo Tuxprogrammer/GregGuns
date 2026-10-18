@@ -67,7 +67,7 @@ Construction comes from [`GenericGun.getAIAttack(shooter)`](../02-guns/gun-lifec
 | `maxBurstCount` | `AI_burstCount` |
 | `shotDelay` | `AI_burstAttackTime` |
 
-Gun defaults are range 15, attack time 60 and no burst. Each gun overrides them with `setAIStats(range, attackTime, burstCount, burstDelay)`. The range constants in [`TGuns`](../02-guns/gun-catalogue.md) are MELEE 3, CLOSE 12, SHORT 18, MEDIUM 24 and FAR 36.
+Gun defaults are range 15, attack time 60 and no burst. Each gun overrides them with `setAIStats(range, attackTime, burstCount, burstDelay)`. The range constants in [`TGuns`](../02-guns/gun-catalog.md) are MELEE 3, CLOSE 12, SHORT 18, MEDIUM 24 and FAR 36.
 
 These are the guns NPCs actually carry, with their AI stats (from `TGuns.java`):
 
@@ -117,7 +117,7 @@ The pause between bursts therefore scales linearly with distance: about `varianc
 
 The host's `attackEntityWithRangedAttack` then fires the gun ([per-mob.md §0](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava) for NPCs, §17 for turrets).
 
-**Arm pose.** While a GenericNPC holds a gun and `getHasAimedBowAnim()` is true, the client render-event handler and [`RenderGenericNPC`](rendering-and-models.md#2-rendergenericnpc-extends-vanilla-renderbiped) set `aimedBow` on the biped and armour models. This gives the two-arms-forward pose.
+**Arm pose.** While a GenericNPC holds a gun and `getHasAimedBowAnim()` is true, the client render-event handler and [`RenderGenericNPC`](rendering-and-models.md#2-rendergenericnpc-extends-vanilla-renderbiped) set `aimedBow` on the biped and armor models. This gives the two-arms-forward pose.
 
 ## 4. `EntityAIHurtByTargetTGFactions`
 
@@ -171,7 +171,7 @@ A copy of vanilla `EntityAIWatchClosest` with a custom vertical range:
 - Mutex bit 2.
 
 ### Linking and sync
-- **Placement:** the base spawns the turret one block above itself at the block centre ([09](../09-machines-utility/index.md)).
+- **Placement:** the base spawns the turret one block above itself at the block center ([09](../09-machines-utility/index.md)).
 - **Server relink:** while `mountedTileEnt` is null, every tick the turret looks for a [`TurretBaseEnt`](../09-machines-utility/turret.md#tile-entity-turretbaseent) at `(floor(x), round(y) − 1, floor(z))`. If it finds one, it links both ways, marks the block for update and re-runs `setCombatTask`.
 - **Client:**
   - while unlinked and within 64 blocks horizontally of the client player (`clientInRangeSquared(x, z, 4096)`), it sends `PacketRequestTurretSync{int turret_entityId}` to the server, at most once every 600 ticks;
@@ -192,14 +192,14 @@ Legacy `updateEntityActionState` (Ghast-derived). Each tick:
    - If blocked, set the waypoint to the current position, which forces a new pick next tick.
 4. **Target:** drop the target if it is dead. If there is no target, or `aggroCooldown` has run out, take the closest vulnerable player within **100** blocks. If one is found, set `aggroCooldown = 20`.
 5. **Engaging** (target within **64** blocks):
-   - Face the target. Body yaw is the horizontal angle to the target's centre.
+   - Face the target. Body yaw is the horizontal angle to the target's center.
    - **If the target is visible**, increment `attackCounter`:
      - **counter = 16:** play `techguns:npcs.apacheBurst` (volume 5).
      - **counter 16 to 29, odd values only** (7 shots): fire a machine-gun bullet.
        - It is a `GenericProjectile` with yaw = heli yaw, damage 12, speed 1.0, lifetime 100, spread 0.05, damage-drop start 30 / end 40, min damage 8, penetration 0.25, no block damage, and **no shooter**.
        - Pitch is the angle between the horizontal direction to the target and the direction from `(posY + 2.25)` to the target's feet. That angle comes from `acos`, so it is always ≥ 0 and the gun can only aim level or down (bug [NPC-10](index.md#suspected-bugs)).
        - Spawn point: 8 blocks along the horizontal look vector, at `posY + height/2 − 1.5`.
-       - A `Fireblast` muzzle particle (±0.1 jitter) appears 4 blocks from the centre along the body yaw, at `posY − 0.25`.
+       - A `Fireblast` muzzle particle (±0.1 jitter) appears 4 blocks from the center along the body yaw, at `posY − 0.25`.
      - **counter = 30:** fire a rocket.
        - Play vanilla aux SFX 1008 (ghast fireball sound).
        - Spawn a [`RocketProjectile`](../04-projectiles-fx/projectiles.md#34-rocketprojectile-and-nukerocketprojectile) with damage 20, blast radius 2, speed 1.0, lifetime 100, spread 0.05, gravity 0, no block damage, penetration 0, and no shooter.

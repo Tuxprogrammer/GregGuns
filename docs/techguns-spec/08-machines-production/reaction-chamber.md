@@ -10,7 +10,7 @@ Classes:
 
 ## 1. Structure
 
-Blocks (block [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-blocks)):
+Blocks (block [`machineMultiBlock`](../07-blocks/block-catalog.md#registered-blocks)):
 - Reaction Chamber Controller (meta 1): ×1
 - Reaction Chamber Housing (meta 0): ×17
 - Reaction Chamber Glass (meta 2): ×18
@@ -19,8 +19,8 @@ Blocks (block [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-b
 
 | Layer (y offset) | Content |
 |---|---|
-| 0 (bottom) | 3×3 housing, with the **controller at the front-centre** |
-| 1 and 2 | 3×3 glass each, including the centre column (solid glass) |
+| 0 (bottom) | 3×3 housing, with the **controller at the front-center** |
+| 1 and 2 | 3×3 glass each, including the center column (solid glass) |
 | 3 (top) | 3×3 housing |
 
 **Forming.** Right-click the unformed controller on one of its four side faces. The clicked face is `dir`, and the box extends away from that face. Top or bottom faces do nothing.
@@ -38,12 +38,12 @@ Blocks (block [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-b
 
 The first failure sends "Invalid Block for Reaction Chamber at x, y, z" (`techguns.tgmessage.0`) and stops.
 
-**On success**, every slave links to the master and ports are assigned. The "middle" is the bottom-layer centre, one block behind the controller.
+**On success**, every slave links to the master and ports are assigned. The "middle" is the bottom-layer center, one block behind the controller.
 
 | Port | Position | Slave type |
 |---|---|---|
-| Power input | top-layer centre (middle + 3 up) | 2 |
-| Item / fluid I/O | the bottom-layer centre-back, centre-left and centre-right (the middle's horizontal neighbours other than the controller) | 1 |
+| Power input | top-layer center (middle + 3 up) | 2 |
+| Item / fluid I/O | the bottom-layer center-back, center-left and center-right (the middle's horizontal neighbors other than the controller) | 1 |
 | Everything else | | 0 (inert) |
 
 The master then sets `complete = true` and `dir`, and syncs. All 36 blocks render invisible and the TESR draws the chamber.
@@ -51,7 +51,7 @@ The master then sets `complete = true` and `dir`, and syncs. All 36 blocks rende
 **Opening the GUI.**
 - Complete controller: open GUI 18 if `isUseableByPlayer` (range **12 blocks**, `useRangeSquared` 144); otherwise send the denial chat line.
 - Linked slave: the same check against the master, then GUI 18 at the master.
-- Debug: holding [`blockReaderTool`](../06-items/item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) prints master or slave info instead of opening the GUI.
+- Debug: holding [`blockReaderTool`](../06-items/item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) prints master or slave info instead of opening the GUI.
 
 **Unforming.** Breaking any part, or a failed explosion, unlinks every block in the box, resets the slave types, sets the master incomplete with `dir` 0, and syncs. The master's `updateEntity` does nothing while incomplete, so a running reaction **pauses** and resumes when the structure is re-formed. Breaking the controller spills its inventory; the fluid and energy are lost.
 
@@ -59,7 +59,7 @@ The master then sets `complete = true` and `dir`, and syncs. All 36 blocks rende
 
 | Thing | Detail |
 |---|---|
-| Energy | 1 000 000 RF. The controller itself refuses connections. Only the power port (type 2) accepts RF and forwards it to the master. |
+| Energy | 1 000 000 RF. The controller itself refuses connections. Only the power port (type 2) accepts RF and forward it to the master. |
 | Fluid tank | 10 000 mB (NBT `inputTank`). Only type-1 ports accept fluid. **Fill** is capped so the tank never exceeds `liquidLevel × 1000` mB. **Drain** only gives back the excess above `liquidLevel × 1000`. The controller's own fluid-handler methods refuse everything. There's no bucket interaction. |
 | Items | Type-1 ports expose slots 0, 2, 3, 4, 5. Insert into slot 0 only; extract slots 2–5. The focus slot (1) is manual only. |
 
@@ -168,18 +168,18 @@ Because the reaction tick at `duration == maxDuration` is excluded, a recipe wit
 
 - In every case the server then calls `needUpdate()`, so the client receives the full state once per reaction tick.
 
-**`explode(type)`** (server). The centre block is the middle column at layer 1.
+**`explode(type)`** (server). The center block is the middle column at layer 1.
 1. Unform the structure.
-2. Set the centre block to air.
-3. Type 0 (low): set the centre's 4 horizontal neighbours to air (the glass ring of layer 1). Put the tank fluid's block at the centre if the fluid has one, otherwise air. Spawn particle system `FragGrenadeExplosion` at the centre for players within 50 blocks (see [`04-projectiles-fx`](../04-projectiles-fx/index.md)) and play `random.explode` at volume 4 and a randomised pitch.
-4. Type 1 (medium): set every other block of the 3×2×3 box (layers 1–2) to air, i.e. all the glass. Create a vanilla explosion of power 4 that damages terrain, with no source entity. Then, if the fluid has a block, place it at the centre and **a glass block right above it** ([MPRD-19](index.md#suspected-bugs)).
-5. Both types: set stored energy to 0, empty the tank, and drop the slot-0 contents (the next queued inputs) as an item at the centre. Removed blocks don't drop anything.
+2. Set the center block to air.
+3. Type 0 (low): set the center's 4 horizontal neighbors to air (the glass ring of layer 1). Put the tank fluid's block at the center if the fluid has one, otherwise air. Spawn particle system `FragGrenadeExplosion` at the center for players within 50 blocks (see [`04-projectiles-fx`](../04-projectiles-fx/index.md)) and play `random.explode` at volume 4 and a randomized pitch.
+4. Type 1 (medium): set every other block of the 3×2×3 box (layers 1–2) to air, i.e. all the glass. Create a vanilla explosion of power 4 that damages terrain, with no source entity. Then, if the fluid has a block, place it at the center and **a glass block right above it** ([MPRD-19](index.md#suspected-bugs)).
+5. Both types: set stored energy to 0, empty the tank, and drop the slot-0 contents (the next queued inputs) as an item at the center. Removed blocks don't drop anything.
 
 ### Client feedback
 
 When the client-side `nextTick` reaches 59 (right after each server sync):
 - the focus sound plays (if a known focus is in slot 1);
-- 4 vanilla `spell` particles spawn at random points in the centre block, with velocity (0,1,0);
+- 4 vanilla `spell` particles spawn at random points in the center block, with velocity (0,1,0);
 - `techguns:machines.rc_beep` plays if the current intensity setting equals the operation's preferred intensity, otherwise `techguns:machines.rc_warning`.
 
 All sounds play at the controller, volume 1, pitch 1.
@@ -206,7 +206,7 @@ Fluids: "Liquid Redstone" is the fluid named `redstone` if some mod registers it
 
 | Element | Position | Detail |
 |---|---|---|
-| Title | centred, y 6 | `techguns.container.reactionChamber` ("Reaction Chamber") |
+| Title | centered, y 6 | `techguns.container.reactionChamber` ("Reaction Chamber") |
 | Tank | fluid area (19,17) 10×50 | Fluid icon tiled bottom-up, height = amount·50/10000. Gauge overlay u176 v32, 12×52, at (18,17). |
 | Level marker | (19, 17+50−level·5), 7×1 | sprite u177 v32 (red line) marks the target level |
 | Level text | (34,50) | "\<level×10>%" |
@@ -228,19 +228,19 @@ Drawn only while complete.
 
 - OBJ model [`models/entity/reactionchamber.obj`](../10-entities-npcs/rendering-and-models.md#other-obj-files-in-modelsentity-in-this-folder-used-elsewhere), scaled ×1/32. Group `CHAMBER` (324 faces) is 96×128×96 model units, i.e. 3×4×3 blocks. Group `GLASS` is the glass shell.
 - [`textures/entity/reactionchamber.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) (256×256) is the chamber atlas. Mostly black background with:
-  - light-grey and white sci-fi panels, including a large framed panel with a black cross/vent symbol (right middle);
-  - dark-grey grated and riveted plates with a diagonal-stripe vent (bottom left);
-  - a small yellow/black hazard square (top centre);
+  - light-gray and white sci-fi panels, including a large framed panel with a black cross/vent symbol (right middle);
+  - dark-gray grated and riveted plates with a diagonal-stripe vent (bottom left);
+  - a small yellow/black hazard square (top center);
   - a blue display panel (bottom).
-  - Palette: white #f0f0f0, light greys, near-black, small yellow and blue accents.
-- [`textures/entity/reactionchamberglass.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) (128×128) is the glass shell texture: two square panes outlined in light grey with thin white diagonal glare streaks and corner brackets, mostly transparent.
-- [`textures/fx/heatray.png`](../04-projectiles-fx/textures.md#single-images) (128×128) is used as the beam billboard: a soft yellow-white teardrop glow fading to black (additive). Catalogued in [`04-projectiles-fx`](../04-projectiles-fx/index.md).
+  - Palette: white #f0f0f0, light grays, near-black, small yellow and blue accents.
+- [`textures/entity/reactionchamberglass.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) (128×128) is the glass shell texture: two square panes outlined in light gray with thin white diagonal glare streaks and corner brackets, mostly transparent.
+- [`textures/fx/heatray.png`](../04-projectiles-fx/textures.md#single-images) (128×128) is used as the beam billboard: a soft yellow-white teardrop glow fading to black (additive). Cataloged in [`04-projectiles-fx`](../04-projectiles-fx/index.md).
 
 ### Transform
 
-1. Translate to the controller, then to its block centre.
+1. Translate to the controller, then to its block center.
 2. Rotate about Y by `dir`: 2 → −180°, 3 → 0°, 4 → −90°, 5 → +90°.
-3. Translate −1 along local Z to the chamber centre column.
+3. Translate −1 along local Z to the chamber center column.
 
 Render bounding box: ±2 blocks in X and Z, 4 tall.
 
@@ -265,7 +265,7 @@ Render bounding box: ±2 blocks in X and Z, 4 tall.
 | 1 | Identity | Block `machineMultiBlock` metas 0 (Housing), 1 (Controller), 2 (Glass); tiles `ReactionChamberTileEntSlave` (0, 2) and `ReactionChamberTileEntMaster` (1); names `techguns.tile.machineMultiBlock_0/1/2.name` = **Reaction Chamber Housing**, **Reaction Chamber Controller**, **Reaction Chamber Glass**; container `ReactionChamberContainer`; creative tab Techguns; oredict none |
 | 2 | Obtaining | Shaped ore recipes: Housing ×9, Controller ×1, Glass ×6 ([blocks-and-items.md](blocks-and-items.md#crafting-recipes)). The Housing recipe consumes a Chemical Laboratory block |
 | 3 | Numbers | Buffer 1 000 000 RF; tank 10 000 mB; structure 3×4×3; intensity and level settings 0 to 10; reaction tick every 60 game ticks; hardness 8.0, resistance 50.0; 2 foci, 7 recipes |
-| 4 | Behaviour | Sections 3 and 4 |
+| 4 | Behavior | Sections 3 and 4 |
 | 5 | Persistence and sync | Master NBT: `complete`, `hasPower`, `dir`, `inputTank`, `intensity`, `liquidLevel`, `operationData`, plus base keys. Slave NBT: `hasMaster`, `masterX/Y/Z`, `type`. GUI fields: 0 progress, 1 totalTime (unused), 2 power/100, 3 fluid ID, 4 fluid amount, 5 liquid level, 6 intensity. Buttons are in section 3 |
 | 6 | UI | Section 6. Exact strings: title "Reaction Chamber", tank tooltip fluid name or the literal "Empty", level text "n0%" (level times 10), intensity number; NEI shows "Unstable" / "Risk" with the risk names None, Destroy Input Item, Small Explosion, Medium Explosion |
 | 7 | Visuals | Unformed blocks use CTM textures `rc_block` (32×32, average #C5C5C5, dominant #F0F0F0 56 %, #B0B0B0 28 %, #505050 7 %), `rc_controller` (32×32, average #C8D3DC, #F0F0F0 50 %, #B0B0B0 34 %, #B0D0F0 2 %) and `rc_glass` (32×32, average #D7D7D7, #F0F0F0 55 %, #B0B0B0 42 %, 52 % opaque). Formed: TESR `RenderReactionChamber`, OBJ chamber and glass groups (section 7 and the glass-geometry subsection), textures `textures/entity/reactionchamber.png` (256×256, average #3B3B3B, dominant #101010 64 %, #F0F0F0 9 %, #303030 7 %) and `textures/entity/reactionchamberglass.png` (128×128, average #C7C7C7, 4 % opaque), beam `textures/fx/heatray.png` (128×128). Particle: vanilla `spell` ×4 per reaction tick. Item renderer: ordinary block icons |
@@ -279,7 +279,7 @@ Earlier passes recorded only that the glass is a shell. Reading the OBJ directly
 
 - **File layout.** 284 vertices, 620 texture coordinates, 284 normals and 334 triangular faces in total. The `CHAMBER` group (324 triangles) starts at file line 1171; `GLASS` starts at line 1535 and has **10 triangles**, which is 5 quads. The header comment says "10 faces".
 - **Vertices.** The glass uses the last eight vertices (numbers 277 to 284), forming an axis-aligned box:
-  - X from −32 to +32 and Z from −32 to +32 (one of the Z values is −31.999998, a rounding artefact);
+  - X from −32 to +32 and Z from −32 to +32 (one of the Z values is −31.999998, a rounding artifact);
   - Y from 34 to 112.
 - **In blocks.** The renderer scales by 1/32, so the box is **2.0 × 2.4375 × 2.0 blocks**, from 1.0625 to 3.5 blocks above the model origin. It sits inside the 3×4×3 hull (the `CHAMBER` group spans ±48 units in X and Z, i.e. 3 blocks): a smaller glass core, not a full-size shell.
 - **Faces.** Four side quads plus one **top** quad (at Y = 112). There is **no bottom face**, so from below the box is open.
@@ -287,6 +287,6 @@ Earlier passes recorded only that the glass is a shell. Reading the OBJ directly
   - each of the four sides uses the rectangle **(0,0)–(63,77)**, i.e. 64 × 78 px (source V values 0.390625 to 1.0 before the flip);
   - the top uses **(64,0)–(127,63)**, i.e. 64 × 64 px (source U 0.5 to 1.0, V 0.5 to 1.0 before the flip).
   The right-hand 64 columns below row 64 and the bottom 50 rows of the left column are unused.
-- **What the texture holds in those rectangles** (measured, 683 non-transparent pixels out of 16 384): the side-pane rectangle contains 377 of them and the top-pane rectangle 306; nothing outside the two rectangles is opaque. Both panes are outline-and-glare patterns on a transparent field: a one-pixel frame in light grey (about #C5C5C5 to #CACACA; the commonest colour is #C9C9C9) plus a few diagonal streaks. That matches the 4 % opaque figure.
+- **What the texture holds in those rectangles** (measured, 683 non-transparent pixels out of 16 384): the side-pane rectangle contains 377 of them and the top-pane rectangle 306; nothing outside the two rectangles is opaque. Both panes are outline-and-glare patterns on a transparent field: a one-pixel frame in light gray (about #C5C5C5 to #CACACA; the commonest color is #C9C9C9) plus a few diagonal streaks. That matches the 4 % opaque figure.
 - **Normals.** The `vn` entries are rotation-style triples (values of 1.570796, i.e. π/2) rather than unit vectors, so the file carries no usable lighting normals; the renderer doesn't light the glass.
 - **Rendering state.** Per section 7, the glass group is drawn last with the glass texture. Whether alpha blending is enabled for that draw is not set in the OBJ itself.

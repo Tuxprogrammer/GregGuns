@@ -3,7 +3,7 @@
 How to find out how GregTech, IC2, NEI, Thaumcraft or any other mod in the pack really behaves before GregGuns integrates with it.
 
 > [!IMPORTANT]
-> **Scope.** This guide covers **external integrations only**: GregGuns code that calls, extends, registers with or reacts to GT5-Unofficial, GTNHLib, ModularUI, IC2, NEI, other mods or the GTNH modpack itself. It does **not** apply to Techguns. Techguns behaviour comes from the [spec](../techguns-spec/README.md), under the [originality rule](../../CONTRIBUTING.md#originality-the-techguns-boundary).
+> **Scope.** This guide covers **external integrations only**: GregGuns code that calls, extends, registers with or reacts to GT5-Unofficial, GTNHLib, ModularUI, IC2, NEI, other mods or the GTNH modpack itself. It does **not** apply to Techguns. Techguns behavior comes from the [spec](../techguns-spec/README.md), under the [originality rule](../../CONTRIBUTING.md#originality-the-techguns-boundary).
 
 ## Contents
 
@@ -13,7 +13,7 @@ How to find out how GregTech, IC2, NEI, Thaumcraft or any other mod in the pack 
 4. [Step 2: read the source on GitHub (preferred)](#step-2-read-the-source-on-github-preferred)
 5. [Step 3: decompile (fallback only)](#step-3-decompile-fallback-only)
 6. [Comment conventions](#comment-conventions)
-7. [Licences and copying](#licences-and-copying)
+7. [Licenses and copying](#licenses-and-copying)
 8. [Updating the reference pack](#updating-the-reference-pack)
 
 ## The reference pack
@@ -26,7 +26,7 @@ A full, extracted GTNH client pack lives in the repo at `reference/gtnh/`. That 
 | **Fetched from** | `https://downloads.gtnewhorizons.com/Multi_mc_downloads/betas/GT_New_Horizons_2.9.0-RC-2_Java_17-26.zip` |
 | **Mod jars** | `reference/gtnh/2.9.0-RC-2/.minecraft/mods/` (242 jars) |
 | **Pack config** | `reference/gtnh/2.9.0-RC-2/.minecraft/config/`: how the pack actually configures each mod |
-| **Mod index** | `reference/gtnh/2.9.0-RC-2/MOD-INDEX.md` (and `mod-index.json`): every mod with its version, jar, mod IDs, side, licence and source link |
+| **Mod index** | `reference/gtnh/2.9.0-RC-2/MOD-INDEX.md` (and `mod-index.json`): every mod with its version, jar, mod IDs, side, license and source link |
 | **Release manifest** | `reference/gtnh/2.9.0-RC-2/manifest.json`, from [DreamAssemblerXXL](https://github.com/GTNewHorizons/DreamAssemblerXXL/tree/master/releases/manifests) |
 | **Cloned sources** | `reference/src/<Mod>@<tag>/` (created on demand) |
 | **Dev, API and sources jars** | `reference/maven/<Mod>/` (created on demand by `jars`) |
@@ -62,7 +62,7 @@ python -I $T mod gregtech                      # by mod ID, pack name or jar nam
 python -I $T where gregtech.api.enums.GTValues # which jar ships a class (also takes fragments: IElectricItem)
 ```
 
-`mod` prints the jar, mod IDs (for `Loader.isModLoaded`), licence, source status, notes, extras and ready-to-run `gh` commands. The index combines GTNH's own release metadata with hand-verified entries from [`tools/gtnh-reference/source-overrides.json`](../../tools/gtnh-reference/source-overrides.json). The **Source** column says what's available, best first:
+`mod` prints the jar, mod IDs (for `Loader.isModLoaded`), license, source status, notes, extras and ready-to-run `gh` commands. The index combines GTNH's own release metadata with hand-verified entries from [`tools/gtnh-reference/source-overrides.json`](../../tools/gtnh-reference/source-overrides.json). The **Source** column says what's available, best first:
 
 | Source | Meaning | What to do |
 |---|---|---|
@@ -149,9 +149,9 @@ Hard rules for decompiled material:
 
 ## Comment conventions
 
-Put these on the class Javadoc, or directly above the call site, override or registration that depends on the external behaviour. One comment per external contract relied on.
+Put these on the class Javadoc, or directly above the call site, override or registration that depends on the external behavior. One comment per external contract relied on.
 
-**Source link (should, wherever source exists).** A permalink **pinned to the pack's tag**, never `master` or `HEAD`, with line anchors when it points at specific behaviour:
+**Source link (should, wherever source exists).** A permalink **pinned to the pack's tag**, never `master` or `HEAD`, with line anchors when it points at specific behavior:
 
 ```java
 // Source: https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipeBuilder.java#L1201-L1206
@@ -164,16 +164,16 @@ For an `upstream-branch`, `api-source` or `decompiled-source` repository the ref
 
 ```java
 // Decompiled: industrialcraft-2-2.2.828-experimental-dev.jar (GTNH 2.9.0-RC-2), ic2.core.item.ElectricItemManager#charge.
-// No source is available for IC2 internals; this behaviour was inferred from decompiled bytecode and may be
+// No source is available for IC2 internals; this behavior was inferred from decompiled bytecode and may be
 // wrong or change without notice. Re-check when the pack updates IC2.
 ```
 
 When a pack update changes the version, update the tag in `// Source:` links and re-check each `// Decompiled:` hedge for the affected mods.
 
-## Licences and copying
+## Licenses and copying
 
 - Reading any mod's source or bytecode to learn how to interoperate with it is fine.
-- **Copying is not.** GregGuns is MIT. The pack's mods are mostly LGPL or GPL, and some are All Rights Reserved (see the Licence column of `MOD-INDEX.md`). Write integration code from your understanding of the API; don't transplant implementation code.
+- **Copying is not.** GregGuns is MIT. The pack's mods are mostly LGPL or GPL, and some are All Rights Reserved (see the License column of `MOD-INDEX.md`). Write integration code from your understanding of the API; don't transplant implementation code.
 - Calling a mod's public API, implementing its interfaces and reading its constants is integration, not copying.
 
 ## Updating the reference pack

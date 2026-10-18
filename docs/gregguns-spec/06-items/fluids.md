@@ -9,7 +9,7 @@ Techguns fluids become GT materials' fluids, and Techguns' tanks become fluid co
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | `TGFluids` looks up `oil`, `fuel`, `redstone`, `ender`, `biofuel` by name and falls back to lava or `null` ([fluid table](../../techguns-spec/06-items/fluids.md#fluid-table)) | Fluids come from `Materials.<X>.getFluid(n)` or `.getMolten(n)`. No name lookup and no lava fallback | GT owns the fluids; a missing one is a bug in our recipe, not a reason to substitute lava. Avoids [ITEM-19](../../techguns-spec/06-items/index.md#suspected-bugs) |
 | Creates `creeper_acid` always, and `milk` if no other mod has one | Creates **no** fluid. Acid is dropped. Milk is `Materials.Milk` | [0002](../../design/0002-machine-deconfliction.md); GT has milk |

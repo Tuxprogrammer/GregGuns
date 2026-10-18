@@ -4,7 +4,7 @@ Geometry of every weapon model in `java/techguns/client/models/` that belongs to
 
 **Conventions**
 
-* Units are model units (1/16 block before renderer scaling). A box is written *w×h×d* (X × Y × Z). Y grows **downwards** in model space; renderers flip it with rotX(180).
+* Units are model units (1/16 block before renderer scaling). A box is written *w×h×d* (X × Y × Z). Y grows **downward** in model space; renderers flip it with rotX(180).
 * "Family X/Z" is the orientation family from [rendering-framework.md §6.1](rendering-framework.md#61-model-space). X-family models point the muzzle to +X, Z-family models to −Z.
 * "rot45" means the box is rotated 45° about its own long axis. In practice that is how Techguns makes square boxes read as round barrels.
 * "Extent" is the overall bounding box of the unrotated boxes. Rotated boxes can poke slightly outside it.
@@ -19,7 +19,7 @@ Geometry of every weapon model in `java/techguns/client/models/` that belongs to
 
 | Class | Role |
 |---|---|
-| ModelMultipart | Abstract base. Adds the extended render (ammoLeft, reloadProgress, renderType, part, fireProgress). The plain render forwards with ammo 100, reload −1, type ENTITY, part 0, fire 0. |
+| ModelMultipart | Abstract base. Adds the extended render (ammoLeft, reloadProgress, renderType, part, fireProgress). The plain render forward with ammo 100, reload −1, type ENTITY, part 0, fire 0. |
 | ModelAkimbo(model, partsPerModel) | Wraps another multipart model. Part ≥ partsPerModel is folded to part − partsPerModel, so the same geometry is drawn for the left gun. |
 | ModelModel(objPath) | Loads a Wavefront OBJ via Forge `AdvancedModelLoader` from `assets/techguns/<objPath>`. Its render scales by the passed factor (0.0625) and renders the OBJ group named after the part index (`"0"`, `"1"`). The plain render draws every group. |
 | ModelNull | Empty ModelBase (used by the helicopter renderer, area [10](../10-entities-npcs/index.md)). |
@@ -30,9 +30,9 @@ Geometry of every weapon model in `java/techguns/client/models/` that belongs to
 ## Handguns
 
 ### ModelHandgun ("Hand Cannon"): 64×32, family X, 14 boxes, 1 part
-Extent x −17…22, y −3…5, z −2…3 (39 × 8 × 5): a crude stone-barrelled flintlock pistol.
+Extent x −17…22, y −3…5, z −2…3 (39 × 8 × 5): a crude stone-barreled flintlock pistol.
 * **Barrel** (x 0…22): core slab 22×5×3 sandwiched between two 22×3×1 side plates. Front sight 1×1×1 on top at the muzzle (x 21).
-* **Lock/breech** (x −8…0): two 2×5×5 blocks (x −8 and −2) around a 4×4×5 centre block. Each block has a 2×1×3 top cap (the hammer and frizzen silhouette).
+* **Lock/breech** (x −8…0): two 2×5×5 blocks (x −8 and −2) around a 4×4×5 center block. Each block has a 2×1×3 top cap (the hammer and frizzen silhouette).
 * **Stock** (x −17…−8): 7×4×3 wrist, two 7×2×1 side plates, 2×1×3 lower lip, 2×6×5 butt block at x −17.
 * No moving parts. A commented-out duplicate barrel box ("Shape13") was removed.
 
@@ -43,12 +43,12 @@ Extent z −3…12, y −0.5…10, x −2…1 (15 long): a modern semi-automatic
 * The slide is the moving part. While firing, the renderer pushes it back further than the frame (§ Pistol in the gun sheets).
 
 ### Unused pistol variants
-* **ModelPistol** (64×32, ModelBase, 9 boxes): early boxy pistol. Top 2×3×12, stepped grip 2×(3,5,4)×1, barrel 1×1×2, sights. Pairs with [`textures/guns/pistol.png`](textures.md#measured-colours-all-62-textures). Not registered.
-* **ModelPistol2** (64×32, 8 boxes): ModelPistol3's frame with a solid 3×3×14 top instead of separate frame and slide. Pairs with [`textures/guns/pistol2Texture.png`](textures.md#measured-colours-all-62-textures). Not registered.
+* **ModelPistol** (64×32, ModelBase, 9 boxes): early boxy pistol. Top 2×3×12, stepped grip 2×(3,5,4)×1, barrel 1×1×2, sights. Pairs with [`textures/guns/pistol.png`](textures.md#measured-colors-all-62-textures). Not registered.
+* **ModelPistol2** (64×32, 8 boxes): ModelPistol3's frame with a solid 3×3×14 top instead of separate frame and slide. Pairs with [`textures/guns/pistol2Texture.png`](textures.md#measured-colors-all-62-textures). Not registered.
 * **ModelPistol3Akimbo**: a [`ModelBipedMultipart`](../05-armor/rendering-and-models.md#27-back-models-modelbipedmultipart-subclasses) (area [05](../05-armor/index.md) base) that attaches the Pistol3 boxes as children of `bipedLeftArm` and renders only that arm. Its only reference is an import in [`RenderAkimboGun`](../05-armor/rendering-and-models.md#3-special-slot-rendering-on-the-player-rendereradditionalslots), which actually uses plain ModelPistol3. Dead.
 
 ### ModelRevolver: 64×32, family X, 20 boxes, 1 part
-Extent x −5…23, y −2.8…11.5, z −1.5…3.5: a long-barrelled six-shooter.
+Extent x −5…23, y −2.8…11.5, z −1.5…3.5: a long-barreled six-shooter.
 * **Barrel** (x 9…23): 14×2×2 rotated 45° about X (a diamond-section barrel), 8×1×1 rot45 ejector rod underneath, front sight 2×1×1 at x 20.5.
 * **Frame:** 9×1×2 top strap, 9×2×2 and 9×2×3 frame blocks (x 0…9), 1×4×2 recoil shield at x −1.
 * **Cylinder** (x 1.5…6.5): 5×2×5 drum plus 5×1×4 top and bottom slices, about 5 units in diameter.
@@ -73,7 +73,7 @@ Extent z −11…7, y 2…13.8, x −2…1.8: a tiny chrome "cricket" blaster.
 * **Hexagonal body tube** (z −2…7): top 2×2×9, bottom 2×1×9, six 1×1×9 side bars (two straight, four rotated ±28° about Z).
 * **Core:** 2×2×6 core + 2×2×1 core cap + 2×2×1 *light* lamp at the very front (z −10), which is blue in the texture.
 * **Barrel ring:** twelve 1×1×6 barrels (z −8…−2) arranged in a ring of radius ≈1.3 around the core, rotated 0°, ±24° or −67° about Z. Twelve 1×1×1 "roundel" muzzle caps at z −9.
-* **Prongs:** four 1×1×2 tips at z −11, angled ±23° outwards (up, down, left, right).
+* **Prongs:** four 1×1×2 tips at z −11, angled ±23° outward (up, down, left, right).
 * **Grip and details:** laser rod 1×1×7 rot45, two zero-width holders 0×1×6, holder 1×2×1 tilted 31°, grip 2×7×3 tilted 12°, guard 1×3×1 + 1×1×3, trigger 1×2×1 tilted −31°, side button 1×1×1 rotated 45° about X, rear tilt plate 2×3×1 (10°), bottom tilt 2×1×2 (27°).
 
 ---
@@ -97,9 +97,9 @@ Extent x −23…32, y −3.5…8.5, z −1.5…2.5: a pump shotgun with a foldi
 
 ### ModelSonicShotgun: 128×64, family X, 65 boxes (Tabula), 1 part
 Extent x −24…35, y −8…15, z −2.5…4.5: a sci-fi shotgun with a horn-shaped emitter.
-* **Emitter horn** (x 27…35): 1×8×4 back plate. 7×1×4 top and bottom plates and four 7×3×1 side plates tilted ±12° about X flare outwards. 5×4×4 core, 5×1×3 inner lips.
+* **Emitter horn** (x 27…35): 1×8×4 back plate. 7×1×4 top and bottom plates and four 7×3×1 side plates tilted ±12° about X flare outward. 5×4×4 core, 5×1×3 inner lips.
 * **Barrel** (x 11…27): two 16×2×5 slabs, 16×3×3 underside, 16×1×3 top, 10×2×4 + 9×1×3 under-shroud. Three 2×2×5 rings (x 11, 18, 25). Four 5×2×2 rot45 coil segments at z ±1.4 (x 13 and 20).
-* **Body** (x 2…11): 8×4×7 centre, 8×1×6 top and bottom, 8×2×5, 8×1×4, with a **7×3×6 GLOW01 core** (full bright). Power cell 8×7×4 hanging below (y 4…11). Front plate 1×9×4 at x 10.
+* **Body** (x 2…11): 8×4×7 center, 8×1×6 top and bottom, 8×2×5, 8×1×4, with a **7×3×6 GLOW01 core** (full bright). Power cell 8×7×4 hanging below (y 4…11). Front plate 1×9×4 at x 10.
 * **Carry handle:** 18×1×2 bar at y −7 (x −0.5…17.5) on posts, with tiny sight pips.
 * **Grip:** 3×8×2 tilted 18°, small guard bits, 4×5×4 + 3×4×2 rear housing.
 * **Stock** (x −24…−2): 10×4×4 + 10×1×3 + 12×4×3 + 8×1×2 frame, 20×1×2 bottom rail, 9×6×2 and 2×7×2 (tilted −66°) supports, 8×8×3 butt block, 2×7×4 butt plate, two 2×2×3 nubs.
@@ -194,7 +194,7 @@ Extent z −67…33, y −19.5…11, x −4.3…4.5: an anti-materiel sniper rif
 * **Magazine:** 2×8×12 (z −11.5…0.5), 2×2×11 tilted −5°, 2×2×1 base. Holder 3×4×13 tilted −5°.
 * **Trigger group:** 4×3×17 upper, 3×1×13 lower, grip 3×9×4 tilted 26°, trigger 2×1×6 + 2×2×1 + 1×2×1.
 * **Stock:** 4×5×14 lower (z 17…31), 4×4×16 rot45 cheek rest, 3×2×10 flip, butt plates 4×10×1 and 5×10×1 (z 31…33).
-* **Scope:** rings 3×3×1 ×2, mount 3×1×10, objective bell 5×5×5 rot45 (z −18…−13), tube 3×3×14 rot45, 4×4×5 and 4×4×7 rot45 sections, centre 4×4×4. Turrets 2×3×3 (rotated 45° about X) and 3×2×3 (45° about Y).
+* **Scope:** rings 3×3×1 ×2, mount 3×1×10, objective bell 5×5×5 rot45 (z −18…−13), tube 3×3×14 rot45, 4×4×5 and 4×4×7 rot45 sections, center 4×4×4. Turrets 2×3×3 (rotated 45° about X) and 3×2×3 (45° about Y).
 
 ### ModelAS50Mag(empty) (item model): 256×128
 The AS50 magazine boxes (2×8×12, 2×2×11 tilted, 2×2×1). The full variant adds a 2×2×6 rot45 cartridge with a 1×1×5 rot45 tip on top. In the empty variant those two `ModelRenderer` fields stay null and are never rendered.
@@ -207,7 +207,7 @@ Extent x −25…27, y −3.5…10.5, z −1…3.
 * Stock (x −25…−13): 10×3×3, 6×2×3, 4×2×3, 2×1×3, 1×1×3 ×2, 3×1×3, butt 2×6×3 at x −25.
 
 ### ModelPDW: 64×64, family X, 41 boxes, 1 part
-Extent x −15…17, y −5…14, z −2…2: a bullpup personal defence weapon (P90-like).
+Extent x −15…17, y −5…14, z −2…2: a bullpup personal defense weapon (P90-like).
 * **Upper body:** 25×3×4 shell (x −13…12) with 25×1×3 top, 9×1×3 rear top, 13×1×2 sight rail (y −4). Rear sight block 3×2×3 with two 2×2×1 ears. Front sight 2×1×2 + 1×2×2 + 1×1×0 planes at x 9…10.
 * **Muzzle** (x 12…17): 3×2×2 rotated 45° about X, 1×2×1 / 1×2×2 ears, two 1×1×1 rings (one rotated 45°).
 * **Under-body:** 6×2×3, 6×1×2, 1×3×3, 1×1×2 trigger housing (x 4.5…11.5). 1×8×1 tilted 25° trigger guard, 4×8×2 tilted 25° pistol grip, 2×2×3, 4×3×3, trigger 2×0×2 rotated −45°.
@@ -317,7 +317,7 @@ Extent z −40…26, y −2.5…7.5, x −8…9. A large rifle built from bundle
 ### ModelGrimReaper: 128×64, family X, 59 boxes, 1 part
 The model's render applies **rotY(180)** before drawing, without push/pop, so the authored −X end becomes the front. Authored extent x −18…31, y −6.5…15.5, z −11.5…7.5: a four-tube rocket launcher.
 * **Front housing** (authored x −14…3): 17×9×11 block, 17×1×9 top and bottom plates, 6×6×1 side plates ×2, 6×2×10 lower plate.
-* **Muzzle face** (authored x −18…−14): 4×3×3 centre, eight 4×3×1 / 4×1×3 dividers and a 4×8×1 / 4×1×10 frame forming four barrel openings. Sight vanes 4×0×11, 4×1×0, 4×4×0 planes and 2×2×1 knobs at x −16.
+* **Muzzle face** (authored x −18…−14): 4×3×3 center, eight 4×3×1 / 4×1×3 dividers and a 4×8×1 / 4×1×10 frame forming four barrel openings. Sight vanes 4×0×11, 4×1×0, 4×4×0 planes and 2×2×1 knobs at x −16.
 * **Quad tubes** (x 3…27): two 24×11×4 and two 24×4×11 slabs crossing to form four tubes. Rear plate 4×12×10 (x 27…31) with 4×10×1 ×2.
 * **Mid band** (x 0…16): 16×1×10 top and bottom, 16×1×2 edges ×4, 16×8×1 side plates ×2.
 * **Grips:** 4×1×3, 3×7×2 rear grip (x 3, y 7.5), 7×1×4, 2×7×2 rotated 45° about Y front grip (x −9), 4×1×4.
@@ -378,13 +378,13 @@ Extent x −24…38, y −11…10.5, z −13.5…9.
 ### ModelDriller (unused): 128×64, family Z, 18 boxes, 2 parts
 * Part 0: 7×7×28 drill motor body (z −16…12) on the shared grip and trigger skeleton.
 * Part 1: drill bit made of stacked 2-thick plates shrinking from 11×11 to 1×1 (z −18…−36), alternately rotated 45° about Z.
-* Paired with the unused `RenderDriller` (spins part 1 about Z) and [`textures/guns/drillTexture.png`](textures.md#measured-colours-all-62-textures). The Driller item is commented out.
+* Paired with the unused `RenderDriller` (spins part 1 about Z) and [`textures/guns/drillTexture.png`](textures.md#measured-colors-all-62-textures). The Driller item is commented out.
 
 ### ModelMp5 (unused): 64×32, family Z, 18 boxes, 1 part
 * 2×2×20 receiver, 1×1×19 top rail, 2×1×11 / 2×1×8 lower body, 1×1×2 barrel, 1×4×1 front sight, 1×1×2 rear sight.
 * Magazine 2×2×2 + 2×3×2 + 2×2×2 (curved). Stepped grip 2×(3, 5, 4)×1, trigger 1×2×1 + 1×1×2.
 * Stock 2×1×8 + 2×3×1 + 2×6×1.
-* Paired with [`textures/guns/mp5Texture.png`](textures.md#measured-colours-all-62-textures). The MP5 item is commented out.
+* Paired with [`textures/guns/mp5Texture.png`](textures.md#measured-colors-all-62-textures). The MP5 item is commented out.
 
 ---
 
@@ -416,7 +416,7 @@ Exported with "Max2Obj Version 4.0", all triangles, 252 vertices, 594 texture ve
 | `0` | 324 tris (240 verts) | x −26…18, y −12…9, z ±6.93 | Launcher body: long barrel, frame, stock and grip. The X axis is the long axis. The muzzle-flash placement suggests the barrel points to +X. | Whole sheet |
 | `1` | 12 tris (12 verts) | x −4…4, y −11…3, z ±6.06 | **Revolving drum**: a hexagonal prism around the X axis. The renderer rotates it about X during firing. | u 0.797…0.953, v 0.469…0.867: the strip of red 40 mm rounds on the right of the texture |
 
-Used only by `RenderGrenadeLauncher` with [`textures/guns/grenadelauncher.png`](textures.md#measured-colours-all-62-textures). A second OBJ, [`models/entity/launchergrenade.obj`](../10-entities-npcs/rendering-and-models.md#other-obj-files-in-modelsentity-in-this-folder-used-elsewhere), renders the grenade projectile (area [04](../04-projectiles-fx/index.md)).
+Used only by `RenderGrenadeLauncher` with [`textures/guns/grenadelauncher.png`](textures.md#measured-colors-all-62-textures). A second OBJ, [`models/entity/launchergrenade.obj`](../10-entities-npcs/rendering-and-models.md#other-obj-files-in-modelsentity-in-this-folder-used-elsewhere), renders the grenade projectile (area [04](../04-projectiles-fx/index.md)).
 
 ---
 
@@ -427,16 +427,16 @@ A ModelBase holding a texture reference and one 1080×1080×0 plane. Texture siz
 
 ## Model to texture and size table (all model classes)
 
-*Added in the consistency pass.* Each model with the texture it is drawn with and both sizes: the UV size the model class declares (which normalises every box UV) and the measured size of the PNG ([ASSET-FACTS.md](../ASSET-FACTS.md)). A ratio of x2 means the PNG is a higher-resolution version of the same layout and all UVs scale by two. Texture names are `textures/guns/<name>.png`. Colours and layouts are in [textures.md](textures.md).
+*Added in the consistency pass.* Each model with the texture it is drawn with and both sizes: the UV size the model class declares (which normalizes every box UV) and the measured size of the PNG ([ASSET-FACTS.md](../ASSET-FACTS.md)). A ratio of x2 means the PNG is a higher-resolution version of the same layout and all UVs scale by two. Texture names are `textures/guns/<name>.png`. Colors and layouts are in [textures.md](textures.md).
 
 | Model class | Declared UV size | Texture | PNG size | Ratio | Used by |
 |---|---|---|---|---|---|
 | ModelHandgun | 64x32 | `handgun` | 64×32 | x1 | Hand Cannon |
 | ModelPistol3 | 64x32 | `pistol3` | 128×64 | x2 | Pistol, Akimbo Pistols |
-| ModelPistol / ModelPistol2 (unused) | 64x32 | [`pistol`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) / `pistol2Texture` | 64×32 | x1 | none |
+| ModelPistol / ModelPistol2 (unused) | 64x32 | [`pistol`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) / `pistol2Texture` | 64×32 | x1 | none |
 | ModelPistol3Akimbo (unused) | not used | `pistol3` | 128×64 | x2 | none |
-| ModelRevolver | 64x32 | [`revolver`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 64×32 | x1 | Revolver, Akimbo Revolvers |
-| ModelGoldenRevolver | 64x32 | [`goldenrevolver`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 64×32 | x1 | Golden Revolver, Akimbo Golden Revolvers |
+| ModelRevolver | 64x32 | [`revolver`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 64×32 | x1 | Revolver, Akimbo Revolvers |
+| ModelGoldenRevolver | 64x32 | [`goldenrevolver`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 64×32 | x1 | Golden Revolver, Akimbo Golden Revolvers |
 | ModelMac10 | 64x32 | `mac10texture` | 128×64 | x2 | Mac-10, Akimbo Mac-10 |
 | ModelMibGun | 64x64 | `mibgun` | 128×128 | x2 | MIB Gun, Akimbo MIB |
 | ModelSawedoff | 64x32 | `sawedOff` | 64×32 | x1 | Sawed-off |
@@ -450,11 +450,11 @@ A ModelBase holding a texture reference and one 1080×1080×0 plane. Texture siz
 | ModelVector | 128x64 | `vector_texture`, `_1` | 256×128 | x2 | Vector |
 | ModelLMG / ModelLmgMag / ModelLmgMagE | 128x128 | `mg2_texture` | 128×128 | x1 | LMG and its magazine items |
 | ModelAS50 / ModelAS50Mag | 256x128 | `as50Texture` | 256×128 | x1 | AS50 and its magazine items |
-| ModelThompson | 64x64 | [`thompson`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 64×64 | x1 | Thompson |
+| ModelThompson | 64x64 | [`thompson`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 64×64 | x1 | Thompson |
 | ModelPDW | 64x64 | `PDW`, `_1`, `_2` | 64×64 | x1 | PDW |
-| ModelPulseRifle | 128x64 | [`pulseRifle`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition), `_1`, `_2` | 128×64 | x1 | Pulse Rifle |
+| ModelPulseRifle | 128x64 | [`pulseRifle`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition), `_1`, `_2` | 128×64 | x1 | Pulse Rifle |
 | ModelBoltaction | 128x32 | `boltactionrifle`, `_1`, `_2` | 128×32 | x1 | Bolt-action |
-| ModelBlasterRifle | 128x64 | [`blasterRifle`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 256×128 | x2 | Blaster Rifle |
+| ModelBlasterRifle | 128x64 | [`blasterRifle`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 256×128 | x2 | Blaster Rifle |
 | ModelLaserGunNew | 128x128 | `laserGunNew` | 128×128 | x1 | Scatter Beam Gun |
 | ModelLasergun | 64x64 | [`Lasergun`](../02-guns/sheets-energy-special.md#laser-rifle-lasergun) | 64×64 | x1 | Laser Gun |
 | ModelTeslaGun | 64x64 | `TeslaGun` | 64×64 | x1 | Tesla Gun |
@@ -463,15 +463,15 @@ A ModelBase holding a texture reference and one 1080×1080×0 plane. Texture siz
 | ModelAlienBlaster | 128x64 | `alien_blaster` | 128×64 | x1 | Alien Blaster |
 | ModelNDR | 64x64 | `NDR` | 64×64 | x1 | Nuclear Death Ray |
 | ModelNeutrinoGun (unused) | 128x128 | `neutrinogun` | 256×256 | x2 | none |
-| ModelGrimReaper | 128x64 | [`grimreaper`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 128×64 | x1 | Grim Reaper |
-| ModelRocketLauncher / ModelRocket | 128x64 | [`rocketlauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) / `nukerocketlauncher` | 128×64 | x1 | Rocket and Nuke Launcher, rocket ammo items |
+| ModelGrimReaper | 128x64 | [`grimreaper`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 128×64 | x1 | Grim Reaper |
+| ModelRocketLauncher / ModelRocket | 128x64 | [`rocketlauncher`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) / `nukerocketlauncher` | 128×64 | x1 | Rocket and Nuke Launcher, rocket ammo items |
 | ModelFlamethrower | 64x64 | [`Flamethrower`](../02-guns/sheets-energy-special.md#flamethrower-flamethrower) | 64×64 | x1 | Flamethrower |
-| ModelPowerHammer | 64x64 | [`powerHammer`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) / [`powerHammerAdv`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 64×64 | x1 | Power Hammer, Advanced Power Hammer |
-| ModelChainsaw | 128x64 | [`chainsaw`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 128×64 | x1 | Chainsaw |
-| ModelMinigun | 128x128 | [`minigun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 128×128 | x1 | Minigun |
+| ModelPowerHammer | 64x64 | [`powerHammer`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) / [`powerHammerAdv`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 64×64 | x1 | Power Hammer, Advanced Power Hammer |
+| ModelChainsaw | 128x64 | [`chainsaw`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 128×64 | x1 | Chainsaw |
+| ModelMinigun | 128x128 | [`minigun`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 128×128 | x1 | Minigun |
 | ModelDriller (unused) | 128x64 | `drillTexture` | 128×64 | x1 | none |
 | ModelMp5 (unused) | 64x32 | `mp5Texture` | 64×32 | x1 | none |
 | ModelStielgranate | 32x32 | `stielgranate` | 32×32 | x1 | Stielhandgranate |
 | ModelFragGrenade | 32x32 | `fragGrenade_texture` | 64×64 | x2 | Frag Grenade |
-| `models/guns/grenadelauncher.obj` | none (normalised OBJ UVs) | [`grenadelauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | 128×128 | n/a | Grenade Launcher |
+| `models/guns/grenadelauncher.obj` | none (normalized OBJ UVs) | [`grenadelauncher`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | 128×128 | n/a | Grenade Launcher |
 | ModelSniperScope (unused) | 64x32 (vanilla default) | none set | n/a | n/a | none |

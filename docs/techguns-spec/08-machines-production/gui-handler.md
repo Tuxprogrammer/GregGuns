@@ -36,7 +36,7 @@ Registered with `NetworkRegistry.registerGuiHandler(Techguns.instance, …)`. Bo
 
 The size is the vanilla default, 176×166. Machine GUIs draw their own background and call `super` **last**, so these elements draw on top of the machine background.
 
-| Element | Position (GUI-relative) | Texture source ([`textures/gui/ammoPress_GUI.png`](gui-textures.md#1-texturesguiammopress_guipng)) | Behaviour |
+| Element | Position (GUI-relative) | Texture source ([`textures/gui/ammoPress_GUI.png`](gui-textures.md#1-texturesguiammopress_guipng)) | Behavior |
 |---|---|---|---|
 | Power bar | x 8, y 17, 4×48 | u 251, v 1, 4×48 gradient (green top → yellow → red bottom) | Fills **bottom-up**. Filled height = stored·48/max; drawn from y 17+(48−h) using v 1+(48−h). The empty background is part of each machine's own texture. |
 | Power tooltip | rect (7,17) 5×49 | none | "Power: \<stored>/\<max> RF" (`techguns.container.power`) |
@@ -46,7 +46,7 @@ The size is the vanilla default, 176×166. Machine GUIs draw their own backgroun
 | Redstone button (ID 2) | (−22,10), 20×20 | vanilla button background plus icon u234 v(10+16·mode), 16×16 at +2,+2 | icon by mode: crossed-out dust (ignore), glowing dust (high), dark dust (low) |
 | Security button (ID 1) | (−22,40), 20×20 | vanilla button background plus icon u234 v(58+16·level) | green open padlock (0), yellow padlock (1), red padlock (2) |
 | Redstone tooltip | lamps rect (6,5) 10×5, or button rect (−22,10) 20×20 | none | "Redstone Info" / "Required: \<mode>" / "Signal: \<high/low>" |
-| Security tooltip | rect (−22,40) 20×20 | none | "Owned by: \<name or Unowned…>" / "Security: \<colour>\<Public/Friends/Owner>" (green/yellow/red) / description for the level / "Only the owner can change this setting" |
+| Security tooltip | rect (−22,40) 20×20 | none | "Owned by: \<name or Unowned…>" / "Security: \<color>\<Public/Friends/Owner>" (green/yellow/red) / description for the level / "Only the owner can change this setting" |
 
 - `actionPerformed` sends `GUIButtonClick(tile, button.id)` for **every** button, including the machine-specific ones.
 - **Fluid-tank helper `drawFluidWithTesselator(icon, x, y, w, h, px)`.** Tiles the fluid's block icon upward from the bottom of an (x, y, w, h) box until `px` pixels are filled. Each segment is at most one icon tall and is cropped from the icon's top when partial. Bind the block atlas before calling it.
@@ -79,7 +79,7 @@ An ingredient is exactly one of:
 - a concrete `ItemStack` plus a stack size;
 - a "null stack" (neither set), which means the slot **must be empty**.
 
-| Member | Behaviour |
+| Member | Behavior |
 |---|---|
 | `strict` (default false) | When false, a `WILDCARD_VALUE` damage on the recipe side matches any damage. When true, damage must match exactly. Forge `itemMatches` semantics. |
 | `isEqualWithOreDict(stack)` | Item form: compare against the item (null stack matches only null). Ore form: true if any registered ore stack matches. **Stack size is not checked.** |

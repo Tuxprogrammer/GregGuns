@@ -49,7 +49,7 @@ The branches are checked in this order:
 
 ### Placement
 
-- `onBlockAdded` (server) sets a furnace-like default rotation from solid neighbours: start at 3; solid at z−1 only → 1; solid at z+1 only → 0; solid at x−1 only → 3; solid at x+1 only → 2.
+- `onBlockAdded` (server) sets a furnace-like default rotation from solid neighbors: start at 3; solid at z−1 only → 1; solid at z+1 only → 0; solid at x−1 only → 3; solid at x+1 only → 2.
 - `onBlockPlacedBy`:
   - sets the owner (player placers only);
   - server, if the item has `TileEntityData`: loads it into the tile, which restores the previous owner and security as well, then sets rotation = (yaw quadrant + 2) mod 4;
@@ -66,19 +66,19 @@ The branches are checked in this order:
 
 - `breakBlock` destroys the mounted turret (meta 2), spills the inventory and removes the tile entity.
 - Drops are the block itself with the same meta (`damageDropped = meta`). Exception: meta 7 drops an iron ingot. Energy, fluids and the running operation are lost unless the block was wrench-dismantled.
-- `onNeighborBlockChange` forwards to `BasicPoweredTileEnt.onNeighborBlockChange` (redstone).
+- `onNeighborBlockChange` forward to `BasicPoweredTileEnt.onNeighborBlockChange` (redstone).
 
 ### Crafting recipes for the machines in this area
 
-Shaped ore recipes in [`TGItems`](../06-items/item-catalogue.md); [`06-items`](../06-items/index.md) owns the ingredient items.
+Shaped ore recipes in [`TGItems`](../06-items/item-catalog.md); [`06-items`](../06-items/index.md) owns the ingredient items.
 
 | Output | Pattern | Key |
 |---|---|---|
-| Ammo Press ×1 (meta 0) | `ili / cec / iri` | i `ingotIron`, l [`ingotLead`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), c [`ingotCopper`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), e Electric Engine (shared meta 64), r redstone |
+| Ammo Press ×1 (meta 0) | `ili / cec / iri` | i `ingotIron`, l [`ingotLead`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), c [`ingotCopper`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), e Electric Engine (shared meta 64), r redstone |
 | Metal Press ×1 (meta 1) | `ibi / iei / iri` | i `ingotIron`, b `blockIron`, e Electric Engine, r redstone |
-| Metal Press ×1 (meta 1, alt) | `ibi / iei / iri` | as above but b = [`plateIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) |
+| Metal Press ×1 (meta 1, alt) | `ibi / iei / iri` | as above but b = [`plateIron`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) |
 | Chemical Laboratory ×1 (meta 4) | `igi / geg / iri` | i `ingotIron`, g glass bottle, e Electric Engine, r redstone |
-| Charging Station ×1 (meta 9) | `sgs / cbc / sgs` | s [`plateSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), g `wireGold`, b `circuitBasic`, c Coil (shared meta 69) |
+| Charging Station ×1 (meta 9) | `sgs / cbc / sgs` | s [`plateSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo), g `wireGold`, b `circuitBasic`, c Coil (shared meta 69) |
 
 ## 2. `MultiBlockMachineBlock`: registry name `machineMultiBlock`
 
@@ -90,7 +90,7 @@ Shaped ore recipes in [`TGItems`](../06-items/item-catalogue.md); [`06-items`](.
 | Render type | Chisel CTM (`ClientUtils.renderCTMId`). `isNormalCube` true, `isOpaqueCube` false |
 | Creative | metas 0–5 |
 
-| Meta | Lang name | CTM texture (`textures/blocks/...`, catalogued in [07-blocks](../07-blocks/index.md)) | Tile |
+| Meta | Lang name | CTM texture (`textures/blocks/...`, cataloged in [07-blocks](../07-blocks/index.md)) | Tile |
 |---|---|---|---|
 | 0 | Reaction Chamber Housing | `rc_block` | `ReactionChamberTileEntSlave` |
 | 1 | Reaction Chamber Controller | `rc_controller` | [`ReactionChamberTileEntMaster`](framework.md#1-class-hierarchy) |
@@ -102,7 +102,7 @@ Shaped ore recipes in [`TGItems`](../06-items/item-catalogue.md); [`06-items`](.
 
 - **Icon selection.** For metas ≤5, the block shows variation 15 (invisible) when its tile is a linked slave or a complete master. Otherwise it shows its own meta's texture.
 - **Placement.** Metas 1 and 4 (controllers) set the owner. No rotation.
-- **Activation.** See `fabricator.md` and `reaction-chamber.md`. Clicking an unformed controller tries to form the structure, using the clicked side as the direction. Clicking a linked slave opens the master's GUI. Holding the debug [`blockReaderTool`](../06-items/item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) on a Reaction Chamber block prints master or slave debug info to chat.
+- **Activation.** See `fabricator.md` and `reaction-chamber.md`. Clicking an unformed controller tries to form the structure, using the clicked side as the direction. Clicking a linked slave opens the master's GUI. Holding the debug [`blockReaderTool`](../06-items/item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) on a Reaction Chamber block prints master or slave debug info to chat.
 - **Breaking.** See the multiblock notes in `framework.md`. The block drops itself with the same meta.
 
 ### Crafting recipes
@@ -128,10 +128,10 @@ When structure validation fails, the server sends the client-bound packet `Packe
 
 | # | Field | Contents |
 |---|---|---|
-| 1 | Identity | Class `BasicMachine`; registry [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks); unlocalized `tile.BasicMachine`; item `ItemBlockMetaDataMachine`; metas 0, 1, 4, 9 belong to 08 (lang keys in [lang.md](lang.md#1-blocks)); creative tab Techguns; oredict none |
+| 1 | Identity | Class `BasicMachine`; registry [`basicMachine`](../07-blocks/block-catalog.md#registered-blocks); unlocalized `tile.BasicMachine`; item `ItemBlockMetaDataMachine`; metas 0, 1, 4, 9 belong to 08 (lang keys in [lang.md](lang.md#1-blocks)); creative tab Techguns; oredict none |
 | 2 | Obtaining | Section 1 recipe table; each machine file repeats it in its sheet |
 | 3 | Numbers | Hardness 4.0, resistance 20.0, iron material, metal step sound, pickaxe level 1, never spawns mobs |
-| 4 | Behaviour | Interaction, placement, breaking sections above |
+| 4 | Behavior | Interaction, placement, breaking sections above |
 | 5 | Persistence and sync | Item NBT `TileEntityData` (the whole tile compound) on wrench-dismantled machines; tile keys in [framework.md](framework.md) |
 | 6 | UI | Item tooltip: `techguns.block.hasTileEntityData`, "Has TileEntity Data", added by `ItemBlockMetaDataMachine.addInformation` whenever the stack's NBT has `TileEntityData`; no other item tooltip lines. Chat: "[DENIED] You have no permission to use" |
 | 7 | Visuals | Render type −1; no face textures. Break-particle icon [`textures/blocks/screen_top.png`](../07-blocks/textures.md#6-radar-screen-and-control-panel) (32×32, average #534540, dominant #503030 49 %, #505030 20 %, #707070 12 %). Per-machine models in [rendering.md](rendering.md) |
@@ -143,10 +143,10 @@ When structure validation fails, the server sends the client-bound packet `Packe
 
 | # | Field | Contents |
 |---|---|---|
-| 1 | Identity | Class `MultiBlockMachineBlock`; registry [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-blocks); metas 0 to 5 plus the render-only 15; names in [lang.md](lang.md#1-blocks); creative tab Techguns |
+| 1 | Identity | Class `MultiBlockMachineBlock`; registry [`machineMultiBlock`](../07-blocks/block-catalog.md#registered-blocks); metas 0 to 5 plus the render-only 15; names in [lang.md](lang.md#1-blocks); creative tab Techguns |
 | 2 | Obtaining | Section 2 recipe table |
 | 3 | Numbers | Hardness 8.0, resistance 50.0, pickaxe level 1, Chisel CTM, chiseling forbidden |
-| 4 | Behaviour | Section 2 and the machine files |
+| 4 | Behavior | Section 2 and the machine files |
 | 5 | Persistence and sync | Slave `type` byte and master link in [framework.md](framework.md#9-multiblock-framework) |
 | 6 | UI | Same tooltip rules as `basicMachine` (same item class) |
 | 7 | Visuals | Textures per meta in the section 2 table. Measured: `rc_block` 32×32 #C5C5C5; `rc_controller` 32×32 #C8D3DC; `rc_glass` 32×32 #D7D7D7 (52 % opaque); `fabricatorHousing` 32×32 #949494; `fabricatorController` 32×32 #787D7E; `fabricatorGlass` 32×32 #1A1919 (23 % opaque); `invisible` 16×16, fully transparent. Per-face CTM variations were not examined |

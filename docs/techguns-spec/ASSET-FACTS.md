@@ -3,8 +3,8 @@
 Machine-measured facts for every Techguns texture and sound, generated from the files themselves. Areas cite these numbers so every asset is described the same way.
 
 - **Textures:**
-  - **Average colour:** the mean of opaque pixels (alpha > 16).
-  - **Dominant colours:** the three most common colours after bucketing each channel into 8 levels, with their share of opaque pixels.
+  - **Average color:** the mean of opaque pixels (alpha > 16).
+  - **Dominant colors:** the three most common colors after bucketing each channel into 8 levels, with their share of opaque pixels.
   - **Opaque:** the share of all pixels that are opaque.
   - **Animation:** the frame count for textures with an `.mcmeta` (vertical strips).
 - **Sounds:**
@@ -16,7 +16,7 @@ What each asset *depicts*, and how it is laid out, is described in the owning ar
 
 ## Textures
 
-| Texture | Size | Animation | Average colour (opaque px) | Dominant colours | Opaque |
+| Texture | Size | Animation | Average color (opaque px) | Dominant colors | Opaque |
 |---|---|---|---|---|---|
 | `textures/armor/AntiGravPack.png` | 64×64 |  | #788A8E | #707070 29%, #B0B0B0 24%, #909090 13% | 30% |
 | `textures/armor/AntiGravPack_black.png` | 64×64 |  | #342626 | #303030 44%, #101010 30%, #505050 10% | 30% |

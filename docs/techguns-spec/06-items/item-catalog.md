@@ -1,6 +1,6 @@
-# Item catalogue (06-items)
+# Item catalog (06-items)
 
-Every non-gun, non-armour item Techguns registers, plus the special-slot armour-like items that `TGItems` registers (listed for completeness; their wearable behaviour belongs to **[05-armor](../05-armor/index.md)**).
+Every non-gun, non-armor item Techguns registers, plus the special-slot armor-like items that `TGItems` registers (listed for completeness; their wearable behavior belongs to **[05-armor](../05-armor/index.md)**).
 
 Notation:
 - **Registry id** is the `GameRegistry.registerItem` name. FML prefixes it with the mod id [`Techguns`](../01-core/lifecycle-and-registration.md#lifecycle-overview), so the full id is `Techguns:<name>`.
@@ -11,7 +11,7 @@ Notation:
 
 ## 1. The shared meta item `Techguns:TechgunsAmmo`
 
-One `Item` instance ([`GenericItemShared`](special-items.md#shared-item-genericitemshared-behaviour), field `TGItems.sharedItem`) carries 110 sub-items, metas 0–109. The meta is fixed by registration order in `TGItems.init()`, and the internal name comes from the parallel `GenericItemShared.names[]` array. **Save compatibility depends on these meta numbers.**
+One `Item` instance ([`GenericItemShared`](special-items.md#shared-item-genericitemshared-behavior), field `TGItems.sharedItem`) carries 110 sub-items, metas 0–109. The meta is fixed by registration order in `TGItems.init()`, and the internal name comes from the parallel `GenericItemShared.names[]` array. **Save compatibility depends on these meta numbers.**
 
 Common properties:
 - `hasSubtypes = true`. The creative tab lists every meta 0–109 in order.
@@ -60,7 +60,7 @@ Common properties:
 | 36 | laserFocus | laserFocus | Laser Focus | 64 | NORMAL | – | laserFocus.png | made in the Reaction Chamber |
 | 37 | mechanicalPartsT3 | mechanicalPartsT3 | Mechanical Parts (Carbon) | 64 | NORMAL | – | mechanicalPartsT3.png | tier-3 component |
 | 38 | bioMass | bioMass | Bio Mass | 64 | NORMAL | – | bioMass.png | |
-| 39 | heavyCloth | heavyCloth | Heavy Cloth | 64 | NORMAL | – | heavyCloth.png | armour material |
+| 39 | heavyCloth | heavyCloth | Heavy Cloth | 64 | NORMAL | – | heavyCloth.png | armor material |
 | 40 | ingotObsidianSteel | ingotObsidianSteel | Obsidian Steel Ingot | 64 | NORMAL | `ingotObsidianSteel` | ingotObsidianSteel.png | |
 | 41 | plateTin | plateTin | Tin Plate | 64 | NORMAL | `plateTin` | plateTin.png | |
 | 42 | plateCopper | plateCopper | Copper Plate | 64 | NORMAL | `plateCopper` | plateCopper.png | |
@@ -69,9 +69,9 @@ Common properties:
 | 45 | plateSteel | plateSteel | Steel Plate | 64 | NORMAL | `plateSteel` | plateSteel.png | |
 | 46 | minigunDrum | minigunMag | Minigun Ammo Drum | 64 | AMMOSLOT | – | minigunDrum.png | magazine tooltip; sneak-use empties it |
 | 47 | minigunDrum_empty | minigunMagEmpty | Minigun Ammo Drum (empty) | 64 | AMMOSLOT | – | minigunDrum_empty.png | |
-| 48 | turretArmorIron | turretArmorIron | Iron Turret Armor | **1** | TURRETARMOR | – | turretArmorIron.png | turret armour +5 |
-| 49 | turretArmorSteel | turretArmorSteel | Steel Turret Armor | **1** | TURRETARMOR | – | turretArmorSteel.png | turret armour +10 |
-| 50 | turretArmorObsidianSteel | turretArmorObsidianSteel | Obsidian Steel Turret Armor | **1** | TURRETARMOR | – | turretArmorObsidianSteel.png | turret armour +15 |
+| 48 | turretArmorIron | turretArmorIron | Iron Turret Armor | **1** | TURRETARMOR | – | turretArmorIron.png | turret armor +5 |
+| 49 | turretArmorSteel | turretArmorSteel | Steel Turret Armor | **1** | TURRETARMOR | – | turretArmorSteel.png | turret armor +10 |
+| 50 | turretArmorObsidianSteel | turretArmorObsidianSteel | Obsidian Steel Turret Armor | **1** | TURRETARMOR | – | turretArmorObsidianSteel.png | turret armor +15 |
 | 51 | glider | glider | Glider | **1** | BACKSLOT | – | glider.png | wearable, see special-items |
 | 52 | machineStackUpgrade | machineStackUpgrade | Machine Upgrade (Stack Operation) | **7** | NORMAL | – | machineStackUpgrade.png | machine upgrade slot |
 | 53 | ironReceiver | ironReceiver | Iron Receiver | 64 | NORMAL | – | ironReceiver.png | gun part |
@@ -87,8 +87,8 @@ Common properties:
 | 63 | nethercharge | nethercharge | Nether Charge | 64 | NORMAL | – | nethercharge.png | Nether Blaster ammo (slot NORMAL, not AMMOSLOT) |
 | 64 | electricEngine | electricEngine | Electric Engine | 64 | NORMAL | – | electricEngine.png | |
 | 65 | plateObsidianSteel | plateObsidianSteel | Obsidian Steel Plate | 64 | NORMAL | `plateObsidianSteel` | plateObsidianSteel.png | |
-| 66 | turretArmorCarbon | turretArmorCarbon | Carbon Turret Armor | **1** | TURRETARMOR | – | turretArmorCarbon.png | turret armour +20 |
-| 67 | steamArmorPlate | steamArmorPlate | Steam Armor Plating | 64 | NORMAL | – | steamArmorPlate.png | armour material |
+| 66 | turretArmorCarbon | turretArmorCarbon | Carbon Turret Armor | **1** | TURRETARMOR | – | turretArmorCarbon.png | turret armor +20 |
+| 67 | steamArmorPlate | steamArmorPlate | Steam Armor Plating | 64 | NORMAL | – | steamArmorPlate.png | armor material |
 | 68 | circuitBoard | circuitBoard | Circuit Board | 64 | NORMAL | `circuitBasic` | circuitBoard.png | |
 | 69 | coil | coil | Coil | 64 | NORMAL | – | coil.png | |
 | 70 | rawRubber | rawRubber | Raw Rubber | 64 | NORMAL | `itemRawRubber` | rawRubber.png | |
@@ -110,7 +110,7 @@ Common properties:
 | 86 | goldWire | goldWire | Gold Wire | 64 | NORMAL | `wireGold` | goldWire.png | |
 | 87 | circuitBoardElite | circuitBoardElite | Elite Circuit Board | 64 | NORMAL | `circuitElite` | circuitBoardElite.png | |
 | 88 | rifleBulletsStack | rifleBulletsStack | Rifle Bullets Stack | 64 | AMMOSLOT | – | rifleBulletsStack.png | holds 4 Rifle Bullets |
-| 89 | powerPlating | powerPlating | Power Plating | 64 | NORMAL | – | powerPlating.png | armour material |
+| 89 | powerPlating | powerPlating | Power Plating | 64 | NORMAL | – | powerPlating.png | armor material |
 | 90 | oxygenMask | oxygenMask | Oxygen Mask | **1** | FACESLOT | – | oxygenMask.png | gives OXYGEN_GEAR bonus 1.0 |
 | 91 | cyberneticParts | cyberneticParts | Cybernetic Parts | 64 | NORMAL | – | cyberneticParts.png | |
 | 92 | uvemitter | focus_uvemitter | UV Emitter | **1** | REACTION_CHAMBER_FOCUS | – | uvemitter.png | Reaction Chamber beam focus |
@@ -130,7 +130,7 @@ Common properties:
 | 106 | nuclearPowerCell | nuclearPowerCell | Nuclear Power Cell | 64 | AMMOSLOT | – | nuclearPowerCell.png | |
 | 107 | nuclearPowerCellDepleted | nuclearPowerCellDepleted | Nuclear Power Cell (Depleted) | 64 | AMMOSLOT | – | nuclearPowerCellDepleted.png | |
 | 108 | radEmitter | radEmitter | Rad Emitter | 64 | NORMAL | – | radEmitter.png | |
-| 109 | treatedLeather | treatedLeather | Treated Leather | 64 | NORMAL | – | treatedLeather.png | armour material |
+| 109 | treatedLeather | treatedLeather | Treated Leather | 64 | NORMAL | – | treatedLeather.png | armor material |
 
 Magazine tooltips (two extra lines, see [lang.md](lang.md#tooltip-lines)) are attached to metas **2, 5, 12, 17, 20, 23, 46**. Drill-head tooltips go on metas 75–83.
 
@@ -256,7 +256,7 @@ The lang key is `techguns.item.<internalName>.name`; all 110 keys exist in `en_U
 
 ## 2. Stand-alone items registered by `TGItems`
 
-| Registry id | Field | Class | English name (lang key) | Stack | Max damage | Texture | Area owning behaviour |
+| Registry id | Field | Class | English name (lang key) | Stack | Max damage | Texture | Area owning behavior |
 |---|---|---|---|---|---|---|---|
 | `doorItem01` | `door01` | [`ItemTGDoor`](special-items.md#bunker-door-item-itemtgdoor-techgunsdooritem01) | Bunker Door (`techguns.item.bunkerDoor.name`) | 64 | – | [`textures/items/metalDoor.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 06 (item); door block in [07](../07-blocks/index.md) |
 | `gasMask` | `gasMask` | [`ItemGasMask`](../05-armor/special-equipment.md#31-gas-mask-itemgasmask) | Gas Mask | 1 | 300 | [`textures/items/gasMask.png`](textures.md#9-wearables-and-special-slot-icons) | [05](../05-armor/index.md) |
@@ -274,12 +274,12 @@ The lang key is `techguns.item.<internalName>.name`; all 110 keys exist in `en_U
 
 For the special-slot items the "max damage" column is the last constructor argument in `TGItems`. Its meaning (charges, ticks, air) is in [05-armor](../05-armor/index.md).
 
-The armour-item constructor's second argument (`"nightVisionGoggles"`, `"jetPackIcon"`, `"oxygenFlasksIcon"`, `"tacticalMaskItem"`, `"jumpPackIcon"`) is used by 05. The inventory icon always comes from the unlocalized name, so it is `textures/items/<registry id>.png`.
+The armor-item constructor's second argument (`"nightVisionGoggles"`, `"jetPackIcon"`, `"oxygenFlasksIcon"`, `"tacticalMaskItem"`, `"jumpPackIcon"`) is used by 05. The inventory icon always comes from the unlocalized name, so it is `textures/items/<registry id>.png`.
 
 Tool material `TG_STEEL` is created with `EnumHelper.addToolMaterial("Steel", harvestLevel 2, maxUses 1000, efficiency 7.5, damage 2.5, enchantability 12)`. Both tools use it. See [special-items.md](special-items.md#tools).
 
 ### Registered but commented out
-- `medkit` (`ItemMedkit("medkit", 2)`): the registration lines in `TGItems.init()` are commented out, and so is its recipe (and a Chem Lab recipe in [`TGMachineRecipes`](../08-machines-production/index.md#tgmachinerecipesaddrecipes-what-it-registers)). The class, the textures [`textures/items/medkit_0.png`](textures.md#12-unused--unregistered) and `medkit_1.png`, and the lang keys (`techguns.item.medkit_0.name=Bandages`, `techguns.item.medkit_1.name=Medkit`) all exist. Its behaviour is in [special-items.md](special-items.md#medkit-itemmedkit-present-in-code-not-registered).
+- `medkit` (`ItemMedkit("medkit", 2)`): the registration lines in `TGItems.init()` are commented out, and so is its recipe (and a Chem Lab recipe in [`TGMachineRecipes`](../08-machines-production/index.md#tgmachinerecipesaddrecipes-what-it-registers)). The class, the textures [`textures/items/medkit_0.png`](textures.md#12-unused--unregistered) and `medkit_1.png`, and the lang keys (`techguns.item.medkit_0.name=Bandages`, `techguns.item.medkit_1.name=Medkit`) all exist. Its behavior is in [special-items.md](special-items.md#medkit-itemmedkit-present-in-code-not-registered).
 - `gasMaskHeavy`: commented out.
 
 ## 3. Items registered in `Techguns.java` (preInit), not in `TGItems`
@@ -315,11 +315,11 @@ Note that `ingotTitanium` and `ingotObsidianSteel` are always present (shared me
 | `buildingScanTool` | [`BuildingScanTool`](special-items.md#building-scan-tool-buildingscantool) | `techguns.item.buildingScanTool` | Building Scan Tool | [`textures/items/structureScanTool.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 1 |
 | [`oreClusterDebugger`](special-items.md#ore-cluster-debugger-oreclusterdebugger) | `oreClusterDebugger` | `techguns.item.oreClusterDebugger` | Ore Cluster Debugger | [`textures/items/testItem.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 1 |
 
-All four go in the normal Techguns creative tab. Behaviour is in [special-items.md](special-items.md#debug-and-developer-tools).
+All four go in the normal Techguns creative tab. Behavior is in [special-items.md](special-items.md#debug-and-developer-tools).
 
 ## 5. Spawn eggs (`TGMonsterPlacer`, registered by `TGEntities`)
 
-There is one item per NPC: registry id `spawnEgg<EntityName>`, unlocalized `spawn_egg_<entityname lower-case>`, texture `techguns:spawn_egg` with overlay `techguns:spawn_egg_overlay`. The display name is hard-coded `"Spawn " + <EntityName>` (not localized). Colours (base / spots):
+There is one item per NPC: registry id `spawnEgg<EntityName>`, unlocalized `spawn_egg_<entityname lower-case>`, texture `techguns:spawn_egg` with overlay `techguns:spawn_egg_overlay`. The display name is hard-coded `"Spawn " + <EntityName>` (not localized). Colors (base / spots):
 
 | Entity name | Base | Spots |
 |---|---|---|
@@ -342,15 +342,15 @@ There is one item per NPC: registry id `spawnEgg<EntityName>`, unlocalized `spaw
 | SuperMutantHeavy | 0xc6a96b | 0x71552e |
 | SuperMutantElite | 0xc6a96b | 0x71552e |
 
-The NPCs themselves are in [10-entities-npcs](../10-entities-npcs/index.md). The item behaviour is in [special-items.md](special-items.md#spawn-eggs-tgmonsterplacer).
+The NPCs themselves are in [10-entities-npcs](../10-entities-npcs/index.md). The item behavior is in [special-items.md](special-items.md#spawn-eggs-tgmonsterplacer).
 
 ## 6. Where the items are consumed (cross-reference)
 
 | Consumer | Items |
 |---|---|
 | Gun recipes and gun ammo ([02-guns](../02-guns/index.md)) | gun parts (barrels, stocks, receivers, pump), mech parts T1–T3, laser parts, all ammo/mags/tanks/cells, nethercharge, coil, cybernetic parts, sonic emitter, rad emitter, carbon parts |
-| Armour recipes ([05-armor](../05-armor/index.md)) | heavyCloth, treatedLeather, steamArmorPlate, powerPlating, carbonFibers, carbonPlate, ingotObsidianSteel, circuitBoardElite, copperWire, goldWire, electricEngine, energyCell(Empty), compressedAirTank(Empty), mechanicalPartsT3 |
-| Machines ([08](../08-machines-production/index.md)/[09](../09-machines-utility/index.md)) | machineStackUpgrade (Ammo Press, Metal Press, Chem Lab, Fabricator, Charging Station upgrade slot); turretArmor* (turret base armour slot); oreDrill* heads (Ore Drill); uvemitter / rcHeatRay (Reaction Chamber focus) |
+| Armor recipes ([05-armor](../05-armor/index.md)) | heavyCloth, treatedLeather, steamArmorPlate, powerPlating, carbonFibers, carbonPlate, ingotObsidianSteel, circuitBoardElite, copperWire, goldWire, electricEngine, energyCell(Empty), compressedAirTank(Empty), mechanicalPartsT3 |
+| Machines ([08](../08-machines-production/index.md)/[09](../09-machines-utility/index.md)) | machineStackUpgrade (Ammo Press, Metal Press, Chem Lab, Fabricator, Charging Station upgrade slot); turretArmor* (turret base armor slot); oreDrill* heads (Ore Drill); uvemitter / rcHeatRay (Reaction Chamber focus) |
 | NPC drops ([10](../10-entities-npcs/index.md)) | bullets9mm, rifleBullets, shotgunShell, heavyCloth, circuitBoard, cyberneticParts, energyCell, ingotObsidianSteel, plasticSheet, plateSteel, rubberBar, flamethrowerTank, rocketAmmo |
 | Crowbar | ore cluster blocks ([07](../07-blocks/index.md)/[11](../11-worldgen/index.md)) |
 

@@ -2,7 +2,7 @@
 
 Forge `ChestGenHooks` is used throughout. Each entry is `item, min count, max count, weight`. For guns and the stand-alone items, the stack is the item at damage 0. Note that a gun at damage 0 is *fully loaded*, because gun damage counts shots fired (see [02](../02-guns/index.md)).
 
-Category-name constants (in [`TGItems`](item-catalogue.md)):
+Category-name constants (in [`TGItems`](item-catalog.md)):
 
 | Constant | Category string | Min / max items per chest |
 |---|---|---|
@@ -14,7 +14,7 @@ Category-name constants (in [`TGItems`](item-catalogue.md)):
 | `CHESTGEN_REINFORCEDCHEST_T3` | `techgunsReinforcedchestT3` | 5 / 9 |
 | `CHESTGEN_MILBASEBARRACKS` | `techgunsMilBaseBarracks` | 1 / 4 |
 
-Two arrays group them: `WEAPONCHEST_LOOT_TIER = {T1, T2, T3}` and `REINFORCEDCHEST_LOOT_TIER = {T1, T2, T3}`. Worldgen structures pick a category through `util/MBlock` and [`Barracks`](../11-worldgen/structure-catalogue.md#b5-barracks-barracks) ([11-worldgen](../11-worldgen/index.md)).
+Two arrays group them: `WEAPONCHEST_LOOT_TIER = {T1, T2, T3}` and `REINFORCEDCHEST_LOOT_TIER = {T1, T2, T3}`. Worldgen structures pick a category through `util/MBlock` and [`Barracks`](../11-worldgen/structure-catalog.md#b5-barracks-barracks) ([11-worldgen](../11-worldgen/index.md)).
 
 ## Vanilla categories
 
@@ -77,9 +77,9 @@ For the "OreDict first" rows, the code adds the **first** item registered under 
 | T1 | Stone | 16–32 | 3 |
 | T1 | Oak Log (log:0) | 8–16 | 3 |
 | T1 | Gunpowder | 4–8 | 3 |
-| T1 | OreDict first [`ingotTin`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 8–32 | 3 |
-| T1 | OreDict first [`ingotCopper`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 8–32 | 3 |
-| T1 | OreDict first [`ingotLead`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 6–24 | 3 |
+| T1 | OreDict first [`ingotTin`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 8–32 | 3 |
+| T1 | OreDict first [`ingotCopper`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 8–32 | 3 |
+| T1 | OreDict first [`ingotLead`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 6–24 | 3 |
 | T2 | Coal | 4–16 | 3 |
 | T2 | Iron Ingot | 3–12 | 3 |
 | T2 | Stone | 16–32 | 3 |
@@ -88,7 +88,7 @@ For the "OreDict first" rows, the code adds the **first** item registered under 
 | T2 | Gold Ingot | 2–6 | 3 |
 | T2 | Rubber Bar | 2–8 | 3 |
 | T2 | first `ingotTin` / `ingotCopper` / `ingotLead` | 4–16 / 4–16 / 3–12 | 3 each |
-| T2 | first `ingotSilver` / [`ingotSteel`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 2–8 / 2–8 | 3 each |
+| T2 | first `ingotSilver` / [`ingotSteel`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 2–8 / 2–8 | 3 each |
 | T3 | Coal | 8–16 | 3 |
 | T3 | Iron Ingot | 8–16 | 3 |
 | T3 | Stone | 24–32 | 3 |

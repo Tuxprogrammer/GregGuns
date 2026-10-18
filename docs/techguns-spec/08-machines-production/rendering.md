@@ -16,7 +16,7 @@ Per-machine animation is described in each machine's file. This file covers the 
 | [`CamoBenchTileEnt`](blocks-and-items.md#1-basicmachine-registry-name-basicmachine), [`RepairBenchTileEnt`](blocks-and-items.md#1-basicmachine-registry-name-basicmachine) | `RenderTileEntityBlock` | tesselator cubes ([09](../09-machines-utility/index.md)) | ([09](../09-machines-utility/index.md)) |
 | explosive charges, ore drill, TG chest | [`RenderExplosiveCharge`](../09-machines-utility/explosive-charges.md#world-rendering-renderexplosivecharge), [`RenderOreDrill`](../09-machines-utility/ore-drill.md#9-tesr-renderoredrill), [`RenderTGChest`](../09-machines-utility/misc-tile-entities.md#1-reinforced-chest-and-weapon-chest) | ([09](../09-machines-utility/index.md)) | ([09](../09-machines-utility/index.md)) |
 
-The textures under `textures/blocks/` are catalogued in [`07-blocks`](../07-blocks/index.md). The model classes live in `client/models/blocks/`. [`ModelMachine`](../07-blocks/block-rendering-and-models.md#modelmachine-and-modelbasetesselator) is their abstract base: it adds a `render(..., progress)` overload, and the plain render calls it with progress 0.
+The textures under `textures/blocks/` are cataloged in [`07-blocks`](../07-blocks/index.md). The model classes live in `client/models/blocks/`. [`ModelMachine`](../07-blocks/block-rendering-and-models.md#modelmachine-and-modelbasetesselator) is their abstract base: it adds a `render(..., progress)` overload, and the plain render calls it with progress 0.
 
 ## 2. `RenderAmmoPress` (generic "model + rotation + progress" TESR)
 
@@ -34,11 +34,11 @@ The same transform as above, but without rotation. It calls `TGRenderHelper.adju
 
 ## 4. `RenderTileEntityBlock` (used by 09's camo and repair benches)
 
-Translates to the block corner, rotates `90° × rotation` about the block's vertical centre axis, applies the block light value and sky light to the tessellator and lightmap, then draws a [`TesselatorCube`](../07-blocks/block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items).
+Translates to the block corner, rotates `90° × rotation` about the block's vertical center axis, applies the block light value and sky light to the tessellator and lightmap, then draws a [`TesselatorCube`](../07-blocks/block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items).
 
 ## 5. Machine item rendering
 
-- **`RenderMachineBlockItem`** is the `IItemRenderer` registered for the [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) item. It holds an array of `RenderMachineBlockItemBase` delegates and forwards every call to `renderers[itemDamage]`. Damage values outside 0..10 throw an index error ([MPRD-24](index.md#suspected-bugs)).
+- **`RenderMachineBlockItem`** is the `IItemRenderer` registered for the [`basicMachine`](../07-blocks/block-catalog.md#registered-blocks) item. It holds an array of `RenderMachineBlockItemBase` delegates and forward every call to `renderers[itemDamage]`. Damage values outside 0..10 throw an index error ([MPRD-24](index.md#suspected-bugs)).
 
 | Meta | Delegate | Texture | Model |
 |---|---|---|---|
@@ -71,7 +71,7 @@ Translates to the block corner, rotates `90° × rotation` about the block's ver
 | Entity (dropped) | translate (0, −1, 0) |
 | Inventory | translate (0, −1, 0) |
 
-- The [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-blocks) items use normal block-icon rendering (their CTM textures).
+- The [`machineMultiBlock`](../07-blocks/block-catalog.md#registered-blocks) items use normal block-icon rendering (their CTM textures).
 
 ## 6. Entity sheet summary for the shared renderers (consistency pass)
 
@@ -80,10 +80,10 @@ Translates to the block corner, rotates `90° × rotation` about the block's ver
 | 1 | Identity | `RenderAmmoPress`, `RenderChargingStation`, `RenderFabricator`, `RenderReactionChamber` (TESRs bound in [`ClientProxy`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy)); `RenderMachineBlockItem` and `RenderMachineBlockItemBase`/`RenderBlockModelItem` (item renderers); model base `ModelMachine` |
 | 2 | Obtaining | not applicable (client code) |
 | 3 | Numbers | Model scale 1/16 for the `ModelMachine` classes; OBJ scale 1/32 for the Reaction Chamber; item transforms in section 5 |
-| 4 | Behaviour | Sections 2 to 5; every TESR is client-only and runs each frame; the model animation depends on `getProgress()` |
+| 4 | Behavior | Sections 2 to 5; every TESR is client-only and runs each frame; the model animation depends on `getProgress()` |
 | 5 | Persistence and sync | none of its own; reads tile fields synced by the description packet (`progress`, `totalTime`, `rotation`, `dir`, `complete`) |
 | 6 | UI | none |
-| 7 | Visuals | Table in section 1 (model and texture per tile) and section 5 (item delegates). Measured sizes and colours for the machine textures are in each machine file's sheet summary |
+| 7 | Visuals | Table in section 1 (model and texture per tile) and section 5 (item delegates). Measured sizes and colors for the machine textures are in each machine file's sheet summary |
 | 8 | Audio | none (sounds belong to the tile entities, see [sounds.md](sounds.md)) |
-| 9 | Relationships | Models are catalogued in [`07-blocks`](../07-blocks/index.md) ([block-rendering-and-models.md](../07-blocks/block-rendering-and-models.md)); `RenderBlockTileEntModel` and `RenderTileEntityBlock` serve [`09-machines-utility`](../09-machines-utility/index.md) |
+| 9 | Relationships | Models are cataloged in [`07-blocks`](../07-blocks/index.md) ([block-rendering-and-models.md](../07-blocks/block-rendering-and-models.md)); `RenderBlockTileEntModel` and `RenderTileEntityBlock` serve [`09-machines-utility`](../09-machines-utility/index.md) |
 | 10 | Bugs | [MPRD-24](index.md#suspected-bugs) (unknown meta crashes the item renderer) |

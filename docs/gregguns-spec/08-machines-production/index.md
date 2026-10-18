@@ -17,8 +17,8 @@ The MetaTileEntity facts are shared with area [09](../../techguns-spec/09-machin
 
 | File | Topic |
 |---|---|
-| [machine-roster.md](machine-roster.md) | The authoritative list of every machine, kind, usage class, tier range, MTE IDs, and which GT multiblock already parallelises each recipe map GregGuns uses |
-| [multiblocks.md](multiblocks.md) | The four multiblocks (Ammunition Works, Retort, Armoury Gantry, Rampart): silhouettes, layer diagrams, hatches, tier and parallel mechanics, GT precedents |
+| [machine-roster.md](machine-roster.md) | The authoritative list of every machine, kind, usage class, tier range, MTE IDs, and which GT multiblock already parallelizes each recipe map GregGuns uses |
+| [multiblocks.md](multiblocks.md) | The four multiblocks (Ammunition Works, Retort, Armory Gantry, Rampart): silhouettes, layer diagrams, hatches, tier and parallel mechanics, GT precedents |
 | [ammo-press.md](ammo-press.md) | The reinstated Ammo Press: tiers, its own recipe map, the animation, and the recipe move out of the Assembler map |
 | [metatileentity-framework.md](metatileentity-framework.md) | MTE ID block, registration window, base classes, casing texture pages, inherited explosion/rain/fire/maintenance rules, pollution, StructureLib |
 | [recipe-map-replacements.md](recipe-map-replacements.md) | Ammo Press, Metal Press, Chem Lab, Fabricator and Charging Station as GT recipes; the recipe builder |
@@ -50,7 +50,7 @@ The MetaTileEntity facts are shared with area [09](../../techguns-spec/09-machin
 | Block metas as machine IDs | MTE ID block 20100-20163 (proposed) | `MetaTileEntityIDs`, `GregTechAPI.METATILEENTITIES` | [framework, ID reservation](metatileentity-framework.md#gt5-unofficial-mte-id-reservation) |
 | Master/slave multiblock with hidden blocks | StructureLib structure, casing on texture page 50, hologram projector | StructureLib 1.4.45, `Textures.BlockIcons` | [framework, StructureLib](metatileentity-framework.md#structurelib-structure-definition-hologram-and-survival-build) |
 | Ammo Press | **Reinstated** as an animated single block (Steam to EV) with its own map `gregguns.ammoPress`, plus the Ammunition Works multiblock | `MTEBasicMachineWithRecipe`, `IMTERenderer`, `RecipeMapBuilder` | [ammo-press.md](ammo-press.md), [multiblocks.md](multiblocks.md#ammunition-works) |
-| (not in Techguns) multiblocks for regular machines | Retort, Armoury Gantry, Rampart (with the Gun Mount Hatch) beside their single blocks | `MTEExtendedPowerMultiBlockBase`, StructureLib | [machine-roster.md](machine-roster.md), [multiblocks.md](multiblocks.md) |
+| (not in Techguns) multiblocks for regular machines | Retort, Armory Gantry, Rampart (with the Gun Mount Hatch) beside their single blocks | `MTEExtendedPowerMultiBlockBase`, StructureLib | [machine-roster.md](machine-roster.md), [multiblocks.md](multiblocks.md) |
 | Metal Press | Bender, Wiremill and Forming Press already cover it; Assembler for parts | `benderRecipes`, `wiremillRecipes`, `formingPressRecipes` | [recipe-map-replacements.md](recipe-map-replacements.md) |
 | Chem Lab | Chemical Reactor, Mixer, Fluid Canner | `UniversalChemical`, `mixerRecipes`, `cannerRecipes` | [recipe-map-replacements.md](recipe-map-replacements.md) |
 | Fabricator | Assembler, Circuit Assembler, Assembly Line for top tier | `assemblerRecipes`, `circuitAssemblerRecipes`, `GTRecipeConstants.AssemblyLine` | [recipe-map-replacements.md](recipe-map-replacements.md) |
@@ -62,7 +62,7 @@ The MetaTileEntity facts are shared with area [09](../../techguns-spec/09-machin
 | `TechgunsGuiHandler`, containers, GUI button packet | MUI2 panels via GT's MTE GUI handler; sync values | ModularUI2 2.3.92, `MetaTileEntityGuiHandler` | [modularui2-guis.md](modularui2-guis.md) |
 | Six NEI handlers (`Techguns:*`) | None. GT's automatic handler per recipe map, auto catalysts | NEI 2.8.155, `NEIGTConfig` | [nei-handlers.md](nei-handlers.md) |
 | Seven `mods.techguns.*` ZenClasses | GTTweaker for GT maps; one `mods.gregguns.ReactionChamber` | CraftTweaker 3.4.8, GTTweaker 2.3.4 | [recipe-scripting.md](recipe-scripting.md) |
-| Rendering (TESRs, item renderer), sounds, lang, GUI PNG regions, block catalogue | No integration point; see the Techguns sheets and [0006](../../design/0006-art-direction.md). Sounds and renderers follow areas 03 and 07 | none | [rendering.md](../../techguns-spec/08-machines-production/rendering.md), [sounds.md](../../techguns-spec/08-machines-production/sounds.md), [lang.md](../../techguns-spec/08-machines-production/lang.md) |
+| Rendering (TESRs, item renderer), sounds, lang, GUI PNG regions, block catalog | No integration point; see the Techguns sheets and [0006](../../design/0006-art-direction.md). Sounds and renderers follow areas 03 and 07 | none | [rendering.md](../../techguns-spec/08-machines-production/rendering.md), [sounds.md](../../techguns-spec/08-machines-production/sounds.md), [lang.md](../../techguns-spec/08-machines-production/lang.md) |
 
 ## Pack-side changes
 
@@ -81,7 +81,7 @@ No change is needed in `config/GregTech/GregTech.cfg`, `MachineStats.cfg`, `Poll
 | Repair Bench, Camo Bench and Turret as MTEs | [09-machines-utility](../../techguns-spec/09-machines-utility/index.md), which reuses the framework sheet |
 | Machine block textures, casing block definition | [07-blocks](../../techguns-spec/07-blocks/index.md) |
 | Ammo, plates, wires, foci and the Machine Upgrade item | [06-items](../../techguns-spec/06-items/index.md) |
-| Hazmat armour that should register with GT's `IHazardProtector` | [05-armor](../../techguns-spec/05-armor/index.md) |
+| Hazmat armor that should register with GT's `IHazardProtector` | [05-armor](../../techguns-spec/05-armor/index.md) |
 | Config file, packets (`GUIButtonClick` goes away), HUD | [01-core](../../techguns-spec/01-core/index.md) |
 
 ## Open questions
@@ -114,4 +114,4 @@ Each needs the named decision before M4 starts.
 | GGS-08-46 to 47 | [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#requirements) |
 | GGS-08-48 to 52 | [machine-roster.md](machine-roster.md#requirements) |
 | GGS-08-53 to 56 | [ammo-press.md](ammo-press.md#requirements) |
-| GGS-08-57 to 84 | [multiblocks.md](multiblocks.md) (Ammunition Works 57 to 63, Retort 64 to 68, Armoury Gantry 69 to 73, Rampart 74 to 81, shared 82 to 84) |
+| GGS-08-57 to 84 | [multiblocks.md](multiblocks.md) (Ammunition Works 57 to 63, Retort 64 to 68, Armory Gantry 69 to 73, Rampart 74 to 81, shared 82 to 84) |

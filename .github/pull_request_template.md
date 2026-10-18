@@ -3,7 +3,7 @@
 <!-- One or two sentences. Link the roadmap item, e.g. "M1 · Combat core: pistol reload". -->
 
 **Roadmap:**
-**Spec sheets:** <!-- e.g. docs/techguns-spec/02-guns/per-gun-behaviour.md#… -->
+**Spec sheets:** <!-- e.g. docs/techguns-spec/02-guns/per-gun-behavior.md#… -->
 **Design records:** <!-- docs/design/NNNN-… if any -->
 
 ## Deviations from the spec

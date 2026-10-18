@@ -1,4 +1,4 @@
-# Item behaviour: shared items, placers, scanners, tools and debug items
+# Item behavior: shared items, placers, scanners, tools and debug items
 
 ## Base classes
 
@@ -21,14 +21,14 @@ Each shared meta carries one of these. Machines and the player inventory read it
 | AMMOSLOT | "Ammo" | ammo, mags, tanks, cells (Techguns ammo slots 6–11) |
 | FOODSLOT | "Food" | (no shared item) |
 | HEALSLOT | "Healing" | (no shared item) |
-| TURRETARMOR | "Turret armor" | turret armour plates |
+| TURRETARMOR | "Turret armor" | turret armor plates |
 | REACTION_CHAMBER_FOCUS | "Reaction Chamber Focus" | UV Emitter, Heat Ray focus |
 | DRILL_SMALL / DRILL_MEDIUM / DRILL_LARGE | "Small Drill" / "Medium Drill" / "Large Drill" | ore drill heads |
 
-## Shared item (`GenericItemShared`) behaviour
+## Shared item (`GenericItemShared`) behavior
 
 ### Stack size and bad metadata
-- `getItemStackLimit` returns the per-meta value from the catalogue. If the meta is ≥ 110, it prints `Techguns GenericItem has bad metadata:<m> Max is:109` and returns 64.
+- `getItemStackLimit` returns the per-meta value from the catalog. If the meta is ≥ 110, it prints `Techguns GenericItem has bad metadata:<m> Max is:109` and returns 64.
 - `getIconFromDamage` falls back to meta 0's icon for an out-of-range meta.
 - `getUnlocalizedName` and the right-click handler do **not** range-check (bug [ITEM-05](index.md#suspected-bugs)).
 
@@ -48,7 +48,7 @@ Each shared meta carries one of these. Machines and the player inventory read it
    This runs on both client and server. Anything that does not fit anywhere is silently lost (bug [ITEM-06](index.md#suspected-bugs)). For the duplication in the helper, see [ITEM-07](index.md#suspected-bugs).
 2. **Not sneaking, item's slot type is AMMOSLOT**: the whole held stack is merged into the Techguns ammo slots (6–11). It first tops up matching stacks, then fills empty slots. The held stack shrinks to whatever did not fit.
 3. **Item's slot type is BACKSLOT (the Glider)**: if the Techguns back slot is empty, a copy goes there and the held stack becomes 0. Otherwise nothing happens.
-4. Otherwise: vanilla behaviour (nothing).
+4. Otherwise: vanilla behavior (nothing).
 
 Sneak + right-click on a non-magazine ammo item does nothing (branch 1 matches only full mags, and branch 2 is skipped while sneaking).
 
@@ -58,7 +58,7 @@ Sneak + right-click on a non-magazine ammo item does nothing (branch 1 matches o
   - `"<techguns.oreDrillTooltip.mininglevel>: <n>"`, where n = 1 for Steel, 2 for Obsidian Steel, 3 for Carbon. English: `Bonus mining level: 2`.
 - Metas registered with `addMagazineTooltip` (2, 5, 12, 17, 20, 23, 46) get two lines: `Right click to put in ammo inventory` (`techguns.item.ammotooltip.ammobag`) and `Sneak + Right click to empty` (`techguns.item.ammotooltip.empty`).
 
-### Armour bonus
+### Armor bonus
 `getBonus(OXYGEN_GEAR)` returns 1.0 for the Oxygen Mask (meta 90) and 0 for everything else. The mask counts as oxygen gear while it is in the Techguns face slot. Combined with Oxygen Tanks it refills air underwater. That logic, and the worn-model rendering of the mask, belong to [05-armor](../05-armor/index.md).
 
 ### Glider (meta 51), back-slot tick
@@ -68,8 +68,8 @@ Every player tick (phase START, on both client and server), the Techguns tick ha
 if player is airborne AND sneaking:
     if motionY < -0.1:
         isGliding = true
-        dir = horizontal look vector (x, z), normalised
-        lift = min(0.08, -0.1 - motionY)        # brakes the fall towards -0.1 blocks/tick
+        dir = horizontal look vector (x, z), normalized
+        lift = min(0.08, -0.1 - motionY)        # brakes the fall toward -0.1 blocks/tick
         motionY += lift
         motionX += dir.x * lift                  # converts the braking into forward speed
         motionZ += dir.z * lift
@@ -91,12 +91,12 @@ The client registers `RenderGenericItem` as the `IItemRenderer` for the whole sh
 |---|---|---|
 | 12 Assault Rifle Magazine | [`ModelM4Mag`](../03-gun-visuals-audio/gun-models.md#modelm4mag--modelm4mage-item-models-12864) | [`textures/guns/m4Texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsm4texturepng--camo-variants-m4-m4-magazine-items) |
 | 13 AR Magazine (Empty) | `ModelM4MagE` | `textures/guns/m4Texture.png` |
-| 14 Rocket | [`ModelRocket`](../03-gun-visuals-audio/gun-models.md#modelrocket-rocket-item--projectile-12864-11-boxes) | [`textures/guns/rocketlauncher.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) |
+| 14 Rocket | [`ModelRocket`](../03-gun-visuals-audio/gun-models.md#modelrocket-rocket-item--projectile-12864-11-boxes) | [`textures/guns/rocketlauncher.png`](../03-gun-visuals-audio/textures.md#measured-colors-all-62-textures) |
 | 17 AS50 Magazine | `ModelAS50Mag(empty=false)` | [`textures/guns/as50Texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsas50texturepng-as50-as50-magazine-items) |
 | 18 AS50 Magazine (Empty) | `ModelAS50Mag(empty=true)` | `textures/guns/as50Texture.png` |
 | 20 LMG Magazine | [`ModelLmgMag`](../03-gun-visuals-audio/gun-models.md#modellmgmag--modellmgmage-item-models-128128) | [`textures/guns/mg2_texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsmg2_texturepng-lmg-lmg-magazine-items) |
 | 21 LMG Magazine (Empty) | `ModelLmgMagE` | `textures/guns/mg2_texture.png` |
-| 105 Rocket (Tactical Nuke) | `ModelRocket` | [`textures/guns/nukerocketlauncher.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) |
+| 105 Rocket (Tactical Nuke) | `ModelRocket` | [`textures/guns/nukerocketlauncher.png`](../03-gun-visuals-audio/textures.md#measured-colors-all-62-textures) |
 
 So the mags share the gun model's texture atlas, and the nuke rocket is the normal rocket model with the nuke launcher's texture. The models and textures are documented in [03-gun-visuals-audio](../03-gun-visuals-audio/index.md). Each sub-renderer binds its texture and draws the model at scale 1/16 after a per-context transform:
 
@@ -112,7 +112,7 @@ The constructors also take a scale and an xyz offset (all passed as 1.0 / 0,0,0)
 `GenericItemShared.registerIcons` still asks for `techguns:<name>` icons for these eight metas. No PNG exists for them, which causes "missing texture" log entries (bug [ITEM-08](index.md#suspected-bugs)).
 
 ## Bunker Door item (`ItemTGDoor`, `Techguns:doorItem01`)
-- A `GenericItem` with unlocalized name `bunkerDoor` (lang `Bunker Door`), icon [`textures/items/metalDoor.png`](textures.md#11-tools-placers-door-bucket-debug-items), stack 64. The door block ([`TGBlocks.door01`](../07-blocks/block-catalogue.md#registered-blocks)) is linked in [`TGItems.postInit`](item-catalogue.md).
+- A `GenericItem` with unlocalized name `bunkerDoor` (lang `Bunker Door`), icon [`textures/items/metalDoor.png`](textures.md#11-tools-placers-door-bucket-debug-items), stack 64. The door block ([`TGBlocks.door01`](../07-blocks/block-catalog.md#registered-blocks)) is linked in [`TGItems.postInit`](item-catalog.md).
 - Use on a block: works only when clicking the **top face**. The door base goes one block above the clicked block. The player must be allowed to edit both that position and the one above, and the door block's `canPlaceBlockAt` must succeed. The facing is `floor((yaw + 180) × 4 / 360 − 0.5) & 3`, the same as a vanilla door. Placement uses vanilla `ItemDoor.placeDoorBlock`, which also handles double-door hinge mirroring. One item is consumed (also in creative). The door block is in [07-blocks](../07-blocks/index.md).
 
 ## Camo Net Placer (`ItemCamoNetPlacer`, `Techguns:camoNetPlacer`)
@@ -162,7 +162,7 @@ If it were enabled as `new ItemMedkit("medkit", 2)` (the commented-out line), it
 - Use: right-click starts an "in use" state (duration effectively infinite). After 40 ticks of holding (`SCANDURATION`), use stops automatically.
 - On stopping, by release or by the 40-tick auto-stop: 300 RF is extracted, **whether or not** 40 ticks passed. If the extraction yielded the full 300 and at least 40 ticks passed, the scan runs **client-side only**:
   1. It scans the **chunk the player stands in**, every column, from `floor(playerY) + 16` (clamped to world height) down to y = 1.
-  2. For every ore-cluster block (`TGBlocks.isOrecluster`) it spawns the client FX `OreClusterPing` at the block centre ([04-projectiles-fx](../04-projectiles-fx/index.md)) and records the name `translate(<blockUnlocalized>_<meta>.name)`, once per type.
+  2. For every ore-cluster block (`TGBlocks.isOrecluster`) it spawns the client FX `OreClusterPing` at the block center ([04-projectiles-fx](../04-projectiles-fx/index.md)) and records the name `translate(<blockUnlocalized>_<meta>.name)`, once per type.
   3. Chat: if any were found, `Found Ore Clusters in this Chunk` (`techguns.OreClusterScanner.msg.found`) followed by one line per type. Otherwise `No Clusters in this Chunk` (`techguns.OreClusterScanner.msg.notFound`).
 - Ore clusters themselves are [07](../07-blocks/index.md)/11.
 
@@ -174,8 +174,8 @@ Tool material `TG_STEEL` = `EnumHelper.addToolMaterial("Steel", 2, 1000, 7.5F, 2
 ### Combat Knife (`TGSword`, `Techguns:combatKnife`)
 - A vanilla `ItemSword` with TG_STEEL: attack-damage modifier 4 + 2.5 = +6.5 (7.5 total with the player's base 1), 1000 durability, blocks like a sword. Texture [`textures/items/combatKnife.png`](textures.md#11-tools-placers-door-bucket-debug-items) (96×96, drawn flat like any item icon).
 - Unlocalized `techguns.item.combatKnife`.
-- Damage-system hook ([`IToolTGDamageSystem`](../02-guns/damage-system.md#3-interfaces)): when a living entity holding it attacks, Techguns' `LivingAttackEvent` handler swaps the damage source for a [`TGDamageSource`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource) with damage type **PHYSICAL**, death type **GORE**, gore chance 0.25, hurt-resistance respected. The resistance maths are in [01](../01-core/index.md)/05.
-- Tooltip: `DamageType: <coloured localized type>`. The prefix is hard-coded; PHYSICAL is shown in dark grey as `techguns.TGDamageType.PHYSICAL=Physical`. An `ArmorPen: <p×100>%` line would be added if penetration > 0, but the knife's penetration is 0.
+- Damage-system hook ([`IToolTGDamageSystem`](../02-guns/damage-system.md#3-interfaces)): when a living entity holding it attacks, Techguns' `LivingAttackEvent` handler swaps the damage source for a [`TGDamageSource`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource) with damage type **PHYSICAL**, death type **GORE**, gore chance 0.25, hurt-resistance respected. The resistance math are in [01](../01-core/index.md)/05.
+- Tooltip: `DamageType: <colored localized type>`. The prefix is hard-coded; PHYSICAL is shown in dark gray as `techguns.TGDamageType.PHYSICAL=Physical`. An `ArmorPen: <p×100>%` line would be added if penetration > 0, but the knife's penetration is 0.
 
 ### Crowbar (`TGCrowbar` → `TGPickaxe`, `Techguns:crowbar`)
 - A vanilla `ItemPickaxe` with TG_STEEL: mines pickaxe blocks at harvest level 2, efficiency 7.5, 1000 uses, attack-damage modifier 2 + 2.5 = +4.5. Texture [`textures/items/crowbar.png`](textures.md#11-tools-placers-door-bucket-debug-items).
@@ -183,7 +183,7 @@ Tool material `TG_STEEL` = `EnumHelper.addToolMaterial("Steel", 2, 1000, 7.5F, 2
   - Right-click on a Techguns basic machine (except metas 6, 7, 8: explosive charges and flag) rotates it. Sneak + right-click dismantles it into an item that keeps its tile data in NBT `TileEntityData` ([08](../08-machines-production/index.md)/[09](../09-machines-utility/index.md)).
   - Sneak + right-click on a Reinforced or Weapon Chest the player may use picks the chest up with its contents ([07](../07-blocks/index.md)).
   - `doesSneakBypassUse` is true, so sneak-clicks still reach the block.
-- **Ore clusters**: while held, [`OreCluster.getPlayerRelativeBlockHardness`](../07-blocks/block-catalogue.md#registered-blocks) returns 0.005 for non-bedrock cluster types, so a cluster breaks in about 200 ticks (10 s). Cluster blocks drop nothing ([07](../07-blocks/index.md)/[11](../11-worldgen/index.md)).
+- **Ore clusters**: while held, [`OreCluster.getPlayerRelativeBlockHardness`](../07-blocks/block-catalog.md#registered-blocks) returns 0.005 for non-bedrock cluster types, so a cluster breaks in about 200 ticks (10 s). Cluster blocks drop nothing ([07](../07-blocks/index.md)/[11](../11-worldgen/index.md)).
 - Damage hook: same as the knife (PHYSICAL, GORE, gore chance 0.25).
 - Tooltip:
   - Always: `DamageType: Physical` (hard-coded prefix).
@@ -191,7 +191,7 @@ Tool material `TG_STEEL` = `EnumHelper.addToolMaterial("Steel", 2, 1000, 7.5F, 2
   - Without Shift: `Press [SHIFT] for detailed tooltip` (`techguns.gun.tooltip.shift1/2/3`, with `[SHIFT]` in green).
 
 ### `GenericTool` (unused)
-An `ItemTool` subclass (stack 1, no repair, Techguns tab, texture `techguns:<name>`) that implements [`ICamoChangeable`](../05-armor/armor-catalogue.md#1-class-hierarchy) with stub methods (0 camos) and writes NBT byte `camo = 0` in `onCreated`. Nothing instantiates it. Its `getMeleeDamageSource` (PHYSICAL, GORE, gore chance 0.5) is dead code.
+An `ItemTool` subclass (stack 1, no repair, Techguns tab, texture `techguns:<name>`) that implements [`ICamoChangeable`](../05-armor/armor-catalog.md#1-class-hierarchy) with stub methods (0 camos) and writes NBT byte `camo = 0` in `onCreated`. Nothing instantiates it. Its `getMeleeDamageSource` (PHYSICAL, GORE, gore chance 0.5) is dead code.
 
 <a id="debug-and-scanner-tools"></a>
 ## Debug and developer tools
@@ -224,12 +224,12 @@ A two-click region scanner that writes a structure template for the [11-worldgen
 
 | Mode | Label | Action (algorithms in [11-worldgen](../11-worldgen/index.md) [`BlockUtils`](../01-core/utilities.md#blockutils) / structures) |
 |---|---|---|
-| 0 | Structure | Builds [`AircraftCarrierNew`](../11-worldgen/structure-catalogue.md#a7-aircraft-carrier-aircraftcarriernew) at the box min corner, size (sx, 24, sz), random rotation 0–3, WOODLAND colour, and prints the origin to stdout |
+| 0 | Structure | Builds [`AircraftCarrierNew`](../11-worldgen/structure-catalog.md#a7-aircraft-carrier-aircraftcarriernew) at the box min corner, size (sx, 24, sz), random rotation 0–3, WOODLAND color, and prints the origin to stdout |
 | 1 | Camp | Actually runs `GenericCity.testCity.createCity` over the box (the label is stale) |
 | 2 | Smooth | 2D heightmap Gaussian 5×5 filter over the XZ area |
 | 3 | Flatten | `flattenArea(…, 2)` |
 | 4 | Remove Junk | `removeJunkInArea` |
-| 5 | Sphere | Radius r = (sx + sz)/4. Hollow-ish sphere centred at (minX + sx/2, minY + r + 1, minZ + sz/2), filled with the air-marker block and a glass shell |
+| 5 | Sphere | Radius r = (sx + sz)/4. Hollow-ish sphere centered at (minX + sx/2, minY + r + 1, minZ + sz/2), filled with the air-marker block and a glass shell |
 | 6 | Cylinder | A cylinder of radius 3 from corner 1 to corner 2, with air-marker inside and a glass shell |
 
 Texture [`textures/items/structureTestTool.png`](textures.md#11-tools-placers-door-bucket-debug-items).
@@ -241,34 +241,34 @@ Texture [`textures/items/structureTestTool.png`](textures.md#11-tools-placers-do
 
 <a id="spawn-eggs"></a>
 ## Spawn eggs (`TGMonsterPlacer`)
-A copy of the vanilla spawn egg with a fixed entity per item (the list is in the catalogue §5).
-- Two render passes: pass 0 = `techguns:spawn_egg` tinted with the base colour, pass 1 = `techguns:spawn_egg_overlay` tinted with the spots colour.
+A copy of the vanilla spawn egg with a fixed entity per item (the list is in the catalog §5).
+- Two render passes: pass 0 = `techguns:spawn_egg` tinted with the base color, pass 1 = `techguns:spawn_egg_overlay` tinted with the spots color.
 - Display name: `"Spawn " + entityName` (no localization).
 - The creative tab lists only meta 0.
 - Use on a block (server): spawn position is the clicked face offset, at (x+0.5, y, z+0.5), plus 0.5 in y if the top face of a fence-type block (render type 11) was clicked. The entity is looked up as `"Techguns." + entityName` in `EntityList`. It is placed with a random yaw, then `onSpawnWithEgg(null)` and `playLivingSound()` run. A named egg applies its custom name as the name tag. One egg is consumed unless in creative. If the name is not registered, it prints `Entity not found <name>`.
 - Right-click aimed at a liquid: spawns at the liquid block's integer corner (x, y, z), with the same naming and consumption rules.
-- NPC behaviour belongs to [10-entities-npcs](../10-entities-npcs/index.md).
+- NPC behavior belongs to [10-entities-npcs](../10-entities-npcs/index.md).
 
 ---
 
 # Entity sheets (consistency pass)
 
-The sections above describe behaviour. The sheets below restate each tool, the door and the shared item in the field order of [CONVENTIONS.md](../CONVENTIONS.md), so each can be read on its own. Texture figures are quoted from [textures.md](textures.md), which quotes [ASSET-FACTS.md](../ASSET-FACTS.md). Where a field has nothing to say it says *none*.
+The sections above describe behavior. The sheets below restate each tool, the door and the shared item in the field order of [CONVENTIONS.md](../CONVENTIONS.md), so each can be read on its own. Texture figures are quoted from [textures.md](textures.md), which quotes [ASSET-FACTS.md](../ASSET-FACTS.md). Where a field has nothing to say it says *none*.
 
 ## Sheet: Bunker Door item (`doorItem01`)
 
 | # | Field | Contents |
 |---|---|---|
 | 1 | Identity | Class `ItemTGDoor` (extends `GenericItem`); registry name `Techguns:doorItem01`; unlocalized name set to `bunkerDoor` and then prefixed with `techguns.`, giving the key stem `techguns.item.bunkerDoor`; English "Bunker Door", lang key `techguns.item.bunkerDoor.name`; meta: none (single item); creative tab Techguns; OreDict: none; stack size 64; `TGItems` field `door01`. |
-| 2 | Obtaining | Crafting R71 in [recipes.md](recipes.md#4-tools-wearables-and-stand-alone-items): `pp / pp / pp` with p = [`plateIron`](item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), yields 2 doors. A commented-out variant used tin plates. No loot, no NPC drop. |
+| 2 | Obtaining | Crafting R71 in [recipes.md](recipes.md#4-tools-wearables-and-stand-alone-items): `pp / pp / pp` with p = [`plateIron`](item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo), yields 2 doors. A commented-out variant used tin plates. No loot, no NPC drop. |
 | 3 | Numbers | Stack 64; no durability; no config key. The door block is `TGBlocks.door01` ([07-blocks](../07-blocks/index.md)), linked once in `TGItems.postInit` through `setDoorBlock`. |
-| 4 | Behaviour | Server and client both run `onItemUse`. (1) Only the top face (side 1) is accepted; any other face returns false. (2) The target is the block above the clicked one. (3) The player must be allowed to edit that position and the one above it. (4) The door block's own placement test (`canPlaceBlockAt`) must pass; if it fails nothing happens and the item is kept. (5) Facing = floor((yaw + 180) x 4 / 360 - 0.5) masked to 2 bits, like a vanilla door. (6) The vanilla door-placement helper writes both halves and picks the hinge side from neighbouring doors. (7) The stack is reduced by 1, also in creative mode. Edge case: if `doorBlock` were never linked (`postInit` not run) the call would throw a null pointer; in a normal start-up it is always linked. |
-| 5 | Persistence and sync | *none*: no NBT. Block placement is synchronised by vanilla block-change packets. |
+| 4 | Behavior | Server and client both run `onItemUse`. (1) Only the top face (side 1) is accepted; any other face returns false. (2) The target is the block above the clicked one. (3) The player must be allowed to edit that position and the one above it. (4) The door block's own placement test (`canPlaceBlockAt`) must pass; if it fails nothing happens and the item is kept. (5) Facing = floor((yaw + 180) x 4 / 360 - 0.5) masked to 2 bits, like a vanilla door. (6) The vanilla door-placement helper writes both halves and picks the hinge side from neighboring doors. (7) The stack is reduced by 1, also in creative mode. Edge case: if `doorBlock` were never linked (`postInit` not run) the call would throw a null pointer; in a normal start-up it is always linked. |
+| 5 | Persistence and sync | *none*: no NBT. Block placement is synchronized by vanilla block-change packets. |
 | 6 | UI | No tooltip lines, no chat messages. |
-| 7 | Visuals | Plain 2D icon `textures/items/metalDoor.png`, 32x32, static, average #6F756B, dominant #707070 (30 %), #909090 (16 %), #505050 (12 %), opaque 73 %. Grey-green bunker door in front view with rivets and a handle bar. No item renderer. |
+| 7 | Visuals | Plain 2D icon `textures/items/metalDoor.png`, 32x32, static, average #6F756B, dominant #707070 (30 %), #909090 (16 %), #505050 (12 %), opaque 73 %. Gray-green bunker door in front view with rivets and a handle bar. No item renderer. |
 | 8 | Audio | *none* from the item. The placed door block plays its own sounds ([07-blocks](../07-blocks/index.md)). |
 | 9 | Relationships | Uses `plateIron` (Metal Press, 08). Places `door01` in 07. Read by the Block Reader Tool (it prints the door's open/facing bits). |
-| 10 | Bugs | None specific; the door block's behaviour is in 07. |
+| 10 | Bugs | None specific; the door block's behavior is in 07. |
 
 ## Sheet: tool material `TG_STEEL`
 
@@ -290,11 +290,11 @@ Common to both tools: stack size 1 (all vanilla tool classes), creative tab Tech
 | # | Field | Contents |
 |---|---|---|
 | 1 | Identity | Class `TGSword` (extends vanilla `ItemSword`, implements `IToolTGDamageSystem`); registry `Techguns:combatKnife`; unlocalized `techguns.item.combatKnife`; English "Combat Knife", lang key `techguns.item.combatKnife.name`; creative tab Techguns; OreDict none; `TGItems.combatKnife`. |
-| 2 | Obtaining | Crafting R82: `.s / p.` with s = [`plateSteel`](item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), p = `sheetPlastic` ([recipes.md](recipes.md#4-tools-wearables-and-stand-alone-items)). No loot or drop. |
-| 3 | Numbers | Material `TG_STEEL`: durability 1000, enchantability 12. Melee damage = 4 (sword base) + 2.5 = 6.5 attribute bonus, so 7.5 including the player's base 1. Damage type `PHYSICAL`; armour penetration field 0.0 (the second constructor that sets it is unused). Death type GORE, gore chance 0.25, hurt-resistance time respected. Each hit costs 1 durability, each block mined 2 (vanilla sword rules). |
-| 4 | Behaviour | Blocking pose on right-click, as a vanilla sword. When the holder deals melee damage, the Techguns living-attack handler asks the tool for a `TGDamageSource` (see [damage-system](../02-guns/damage-system.md#3-interfaces)) so armour and resistances use the PHYSICAL channel. No other interaction. |
+| 2 | Obtaining | Crafting R82: `.s / p.` with s = [`plateSteel`](item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo), p = `sheetPlastic` ([recipes.md](recipes.md#4-tools-wearables-and-stand-alone-items)). No loot or drop. |
+| 3 | Numbers | Material `TG_STEEL`: durability 1000, enchantability 12. Melee damage = 4 (sword base) + 2.5 = 6.5 attribute bonus, so 7.5 including the player's base 1. Damage type `PHYSICAL`; armor penetration field 0.0 (the second constructor that sets it is unused). Death type GORE, gore chance 0.25, hurt-resistance time respected. Each hit costs 1 durability, each block mined 2 (vanilla sword rules). |
+| 4 | Behavior | Blocking pose on right-click, as a vanilla sword. When the holder deals melee damage, the Techguns living-attack handler asks the tool for a `TGDamageSource` (see [damage-system](../02-guns/damage-system.md#3-interfaces)) so armor and resistances use the PHYSICAL channel. No other interaction. |
 | 5 | Persistence and sync | Item damage only; no NBT keys. |
-| 6 | UI | Vanilla name line, then `DamageType: <coloured Physical>` (prefix hard-coded English, [ITEM-16](index.md#suspected-bugs)). The `ArmorPen:` line is absent because penetration is 0. The game adds its own attack-damage attribute line. |
+| 6 | UI | Vanilla name line, then `DamageType: <colored Physical>` (prefix hard-coded English, [ITEM-16](index.md#suspected-bugs)). The `ArmorPen:` line is absent because penetration is 0. The game adds its own attack-damage attribute line. |
 | 7 | Visuals | Icon `textures/items/combatKnife.png`, 96x96, static, average #2F3532, dominant #303030 (57 %), #505050 (13 %), #101010 (9 %), opaque 7 %. Dark gunmetal blade on the diagonal. Held with the vanilla sword transform (no custom renderer). |
 | 8 | Audio | *none* custom; vanilla hit sounds. |
 | 9 | Relationships | Uses `plateSteel` and `sheetPlastic`. Damage hook in [02-guns](../02-guns/index.md). |
@@ -307,7 +307,7 @@ Common to both tools: stack size 1 (all vanilla tool classes), creative tab Tech
 | 1 | Identity | Class `TGCrowbar` (extends `TGPickaxe`, which extends vanilla `ItemPickaxe`); registry `Techguns:crowbar`; unlocalized `techguns.item.crowbar`; English "Crowbar", lang key `techguns.item.crowbar.name`; creative tab Techguns; OreDict none; `TGItems.crowbar`. |
 | 2 | Obtaining | Crafting R87: `..p / .p. / p..` with p = `plateSteel`. No loot or drop. |
 | 3 | Numbers | Material `TG_STEEL`: harvest level 2 for class `pickaxe`, durability 1000, efficiency 7.5, enchantability 12. Attack damage = 2 (pickaxe base) + 2.5 = +4.5. `getToolClasses` returns three classes (`default`, `pickaxe`, `wrench`), each valued 2 in the tooltip map, but Forge's per-class harvest level is set only for `pickaxe`, so `wrench` reports -1 ([ITEM-15](index.md#suspected-bugs)). Cluster-block mining speed: the block's relative hardness is overridden to 0.005 per tick while held, about 200 ticks. |
-| 4 | Behaviour | As a pickaxe: fast on stone and iron-material blocks. As a wrench (Techguns' own machines check the tool class): right-click rotates a basic machine; sneak + right-click dismantles it to an item keeping NBT `TileEntityData`; sneak + right-click picks up a chest with its contents ([09-machines-utility](../09-machines-utility/index.md), [07-blocks](../07-blocks/index.md)). `doesSneakBypassUse` is true, so sneaking still interacts with the block. Breaks ore clusters. Damage hook: PHYSICAL, GORE, gore chance 0.25. |
+| 4 | Behavior | As a pickaxe: fast on stone and iron-material blocks. As a wrench (Techguns' own machines check the tool class): right-click rotates a basic machine; sneak + right-click dismantles it to an item keeping NBT `TileEntityData`; sneak + right-click picks up a chest with its contents ([09-machines-utility](../09-machines-utility/index.md), [07-blocks](../07-blocks/index.md)). `doesSneakBypassUse` is true, so sneaking still interacts with the block. Breaks ore clusters. Damage hook: PHYSICAL, GORE, gore chance 0.25. |
 | 5 | Persistence and sync | Item damage only; no NBT keys on the tool (`TileEntityData` is written on the dismantled machine item, not the crowbar). |
 | 6 | UI | Always: `DamageType: <Physical>`. Shift held: `Toolclasses` (`techguns.tooltip.toolclasses`), then lines `  default : 2`, `  pickaxe : 2`, `  wrench : 2` (hash-map order, not fixed), then `Can destroy Ore Clusters` (`techguns.tooltip.crowbar.destroycluster`). Shift not held: "Press [SHIFT] for detailed tooltip" (`techguns.gun.tooltip.shift1`, `.shift2` in green, `.shift3`). |
 | 7 | Visuals | Icon `textures/items/crowbar.png`, 32x32, static, average #713B3B, dominant #703030 (25 %), #503030 (24 %), #905050 (15 %), opaque 10 %. Thin maroon crowbar with a hook at the top right. Vanilla pickaxe-style held transform. |
@@ -322,17 +322,17 @@ Common to both tools: stack size 1 (all vanilla tool classes), creative tab Tech
 | 1 | Identity | Class `GenericTool` extends vanilla `ItemTool`, implements `ICamoChangeable`. Not registered anywhere: no registry name, no lang key, no creative-tab entry. The constructor takes a damage value, a tool material, the effective-block set and a name; it sets unlocalized name = name and texture `techguns:<name>`. |
 | 2 | Obtaining | *unobtainable*: nothing instantiates it. |
 | 3 | Numbers | Stack 1; `setNoRepair` (no anvil repair); max damage comes from the material passed in; `getCamoCount` returns 0. |
-| 4 | Behaviour | `onCreated` writes NBT byte `camo = 0` if the stack has no tag. The camo-switch methods are stubs returning 0 or null. `getMeleeDamageSource` builds a PHYSICAL/GORE source with gore chance 0.5, but nothing calls it (dead code). |
+| 4 | Behavior | `onCreated` writes NBT byte `camo = 0` if the stack has no tag. The camo-switch methods are stubs returning 0 or null. `getMeleeDamageSource` builds a PHYSICAL/GORE source with gore chance 0.5, but nothing calls it (dead code). |
 | 5 | Persistence and sync | NBT `camo` (byte), written only by `onCreated`. |
 | 6 | UI | *none*. |
 | 7 | Visuals | *none* (no texture exists for any name). |
 | 8 | Audio | *none*. |
-| 9 | Relationships | Implements the camo interface used by armour and guns ([05-armor](../05-armor/armor-catalogue.md#1-class-hierarchy)). |
+| 9 | Relationships | Implements the camo interface used by armor and guns ([05-armor](../05-armor/armor-catalog.md#1-class-hierarchy)). |
 | 10 | Bugs | None numbered; dead code. |
 
 ## Sheet: `TGPickaxe` and `TGSword` base classes
 
-Both are plain wrappers. They set the creative tab, the unlocalized name and the texture (`techguns:<name>`), prefix the unlocalized name with `techguns.`, and implement the damage-source hook (PHYSICAL type, GORE death, gore chance 0.25, hurt resistance respected). A second constructor accepting a damage type and a penetration exists but is unused. Their tooltip adds `DamageType: ` plus the damage type's own coloured, localised text and, if penetration is above zero, `ArmorPen: <percent>%`. No NBT, no sounds, no config.
+Both are plain wrappers. They set the creative tab, the unlocalized name and the texture (`techguns:<name>`), prefix the unlocalized name with `techguns.`, and implement the damage-source hook (PHYSICAL type, GORE death, gore chance 0.25, hurt resistance respected). A second constructor accepting a damage type and a penetration exists but is unused. Their tooltip adds `DamageType: ` plus the damage type's own colored, localized text and, if penetration is above zero, `ArmorPen: <percent>%`. No NBT, no sounds, no config.
 
 ## Sheet: debug and developer tools
 
@@ -340,7 +340,7 @@ Common fields for all four tools:
 
 | Field | Value |
 |---|---|
-| Identity | Extend `GenericItem` (so `techguns.` prefix, creative tab Techguns); stack 1 via `setMaxStackSize(1)`. Registered unconditionally in [`Techguns.java`](../01-core/lifecycle-and-registration.md#lifecycle-overview) (see [item-catalogue.md](item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava)). |
+| Identity | Extend `GenericItem` (so `techguns.` prefix, creative tab Techguns); stack 1 via `setMaxStackSize(1)`. Registered unconditionally in [`Techguns.java`](../01-core/lifecycle-and-registration.md#lifecycle-overview) (see [item-catalog.md](item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava)). |
 | Obtaining | Creative tab only; *no recipe*, no loot. |
 | Numbers | No durability, no config key. |
 | Audio | *none*. |
@@ -348,11 +348,11 @@ Common fields for all four tools:
 
 Per tool:
 
-| Tool | Registry / lang key | Behaviour summary | Persistence | UI strings | Texture |
+| Tool | Registry / lang key | Behavior summary | Persistence | UI strings | Texture |
 |---|---|---|---|---|---|
-| Block Reader Tool | [`blockReaderTool`](item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava), `techguns.item.blockReaderTool.name` | `onItemUse` returns true on both sides. Client chat: `Block:<id> - Meta: <meta> - Side: <side>`; for a Techguns door also `Door: i1 = <n> - j1 = <0-3> - flag = <bool>` (i1 is the door's packed state, j1 its low 2 bits, flag bit 4); client chat `Blockbounds: X:<min>,<max>\|Y:...\|Z:...`. The server prints `Server Bounds:Blockbounds: ...` to the console. | none | the strings listed, all hard-coded English | `blockReaderTool.png` 32x32, avg #5E5E5F, opaque 62 % |
-| Building Scan Tool | [`buildingScanTool`](item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava), `techguns.item.buildingScanTool.name` | Two-click region scan; writes `structure_scan.txt` on the server (palette code plus position list; details above). | NBT ints `x1`, `y1`, `z1` for the first corner, cleared after the second click | `Position1 set (x/y/z).`, `Position2 set (x/y/z).`, `Size: (sx/sy/sz).` (client chat, hard-coded) | `structureScanTool.png` 32x32, avg #5A4C4C, opaque 50 % |
-| Structure Test Tool | [`structureTestTool`](item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava), `techguns.item.structureTestTool.name` | Seven-mode world editor (table above). | NBT int `mode`, ints `x1`, `y1`, `z1` | tooltip `techguns.structureTestTool.Tooltip` = "Tool for structure spawning/world editing [WIP]"; chat `structure tool mode set to "<name>".`, `Position2 set`, `Size` | `structureTestTool.png` 32x32, avg #534444, opaque 62 % |
+| Block Reader Tool | [`blockReaderTool`](item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava), `techguns.item.blockReaderTool.name` | `onItemUse` returns true on both sides. Client chat: `Block:<id> - Meta: <meta> - Side: <side>`; for a Techguns door also `Door: i1 = <n> - j1 = <0-3> - flag = <bool>` (i1 is the door's packed state, j1 its low 2 bits, flag bit 4); client chat `Blockbounds: X:<min>,<max>\|Y:...\|Z:...`. The server prints `Server Bounds:Blockbounds: ...` to the console. | none | the strings listed, all hard-coded English | `blockReaderTool.png` 32x32, avg #5E5E5F, opaque 62 % |
+| Building Scan Tool | [`buildingScanTool`](item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava), `techguns.item.buildingScanTool.name` | Two-click region scan; writes `structure_scan.txt` on the server (palette code plus position list; details above). | NBT ints `x1`, `y1`, `z1` for the first corner, cleared after the second click | `Position1 set (x/y/z).`, `Position2 set (x/y/z).`, `Size: (sx/sy/sz).` (client chat, hard-coded) | `structureScanTool.png` 32x32, avg #5A4C4C, opaque 50 % |
+| Structure Test Tool | [`structureTestTool`](item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava), `techguns.item.structureTestTool.name` | Seven-mode world editor (table above). | NBT int `mode`, ints `x1`, `y1`, `z1` | tooltip `techguns.structureTestTool.Tooltip` = "Tool for structure spawning/world editing [WIP]"; chat `structure tool mode set to "<name>".`, `Position2 set`, `Size` | `structureTestTool.png` 32x32, avg #534444, opaque 62 % |
 | Ore Cluster Debugger | `oreClusterDebugger`, `techguns.item.oreClusterDebugger.name` | Server only: clears the 32x32 column below the clicked block down to y=1 (everything with non-negative hardness). | none | tooltip `techguns.oreClusterDebugger.Tooltip` = "WARNING: Removes all destroyable Blocks in a huge Radius, used to debug Ore cluster spawns" | `testItem.png` 32x32, avg #000000, dominant #101010 (100 %), opaque 28 %; the same placeholder icon as the `GenericItem` default |
 
 ## Sheet: Ore Cluster Scanner, Camo Net Placer and spawn eggs (recap)
@@ -361,19 +361,19 @@ Per tool:
 |---|---|---|---|
 | Ore Cluster Scanner | Capacity 30 000 RF; receive and extract 3 000/t; scan costs 300 RF; hold 40 ticks; NBT int `Energy`; scan range one chunk, y from player+16 down to 1; the durability bar shows missing energy | Crafting R83 (output starts full via `onCreated`) | `techguns.item.oreClusterScanner.name`; chat `techguns.OreClusterScanner.msg.found` and `.notFound`; tooltip `<energy>/30000 RF` is hard-coded (ITEM-16) |
 | Camo Net Placer | Stack 1; metas 0-2; NBT ints `x1`, `y1`, `z1`; at most 64 blocks; takes blocks from the main inventory | Crafting R84 to R86 | `techguns.item.camoNetPlacer.name` and the message keys `techguns.item.camoNetPlacer.info.*` |
-| Spawn eggs | One item per entity (18); colours in [item-catalogue.md](item-catalogue.md#5-spawn-eggs-tgmonsterplacer-registered-by-tgentities); no NBT | Creative tab only | none; the name is hard-coded ([ITEM-12](index.md#suspected-bugs)) |
+| Spawn eggs | One item per entity (18); colors in [item-catalog.md](item-catalog.md#5-spawn-eggs-tgmonsterplacer-registered-by-tgentities); no NBT | Creative tab only | none; the name is hard-coded ([ITEM-12](index.md#suspected-bugs)) |
 
-## Sheet: shared item behaviour (`GenericItemShared`, `Techguns:TechgunsAmmo`)
+## Sheet: shared item behavior (`GenericItemShared`, `Techguns:TechgunsAmmo`)
 
 | # | Field | Contents |
 |---|---|---|
-| 1 | Identity | Class `GenericItemShared` (extends `GenericItem`, implements `ITGSpecialSlot`); registry `Techguns:TechgunsAmmo`; `TGItems.sharedItem`; 110 metas (0-109) named by `names[]`; unlocalized `techguns.item.<internalName>`; lang `techguns.item.<internalName>.name`; creative tab Techguns lists every meta in order; OreDict names per meta are in [item-catalogue.md](item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo); `hasSubtypes` is true. |
-| 2 | Obtaining | Per meta in [item-catalogue.md](item-catalogue.md#1b-lang-key-and-obtained-from-for-every-shared-meta-consistency-pass). |
-| 3 | Numbers | Per-meta max stack (64 default; 1 for turret armour, glider, oxygen mask, drill heads and reaction-chamber foci; 7 for the stack upgrade); per-meta slot type; drill-head bonus level 1/2/3; no durability, no config key. |
-| 4 | Behaviour | Right-click ladder: sneak on a full magazine empties one (refund table above); otherwise ammo-slot types merge into the Techguns ammo slots 6-11; a back-slot item (Glider) goes into the back slot if empty; otherwise nothing. Back-slot tick for the Glider (formula above). Dispenser: rockets, nuke rockets and 40 mm grenades are launched as projectiles. Out-of-range meta handling is inconsistent (ITEM-05). |
+| 1 | Identity | Class `GenericItemShared` (extends `GenericItem`, implements `ITGSpecialSlot`); registry `Techguns:TechgunsAmmo`; `TGItems.sharedItem`; 110 metas (0-109) named by `names[]`; unlocalized `techguns.item.<internalName>`; lang `techguns.item.<internalName>.name`; creative tab Techguns lists every meta in order; OreDict names per meta are in [item-catalog.md](item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo); `hasSubtypes` is true. |
+| 2 | Obtaining | Per meta in [item-catalog.md](item-catalog.md#1b-lang-key-and-obtained-from-for-every-shared-meta-consistency-pass). |
+| 3 | Numbers | Per-meta max stack (64 default; 1 for turret armor, glider, oxygen mask, drill heads and reaction-chamber foci; 7 for the stack upgrade); per-meta slot type; drill-head bonus level 1/2/3; no durability, no config key. |
+| 4 | Behavior | Right-click ladder: sneak on a full magazine empties one (refund table above); otherwise ammo-slot types merge into the Techguns ammo slots 6-11; a back-slot item (Glider) goes into the back slot if empty; otherwise nothing. Back-slot tick for the Glider (formula above). Dispenser: rockets, nuke rockets and 40 mm grenades are launched as projectiles. Out-of-range meta handling is inconsistent (ITEM-05). |
 | 5 | Persistence and sync | *none*: the shared item stores no NBT of its own; the meta value is the whole state. The Glider's `isGliding` flag lives in the player's extended properties ([01-core](../01-core/index.md)). |
 | 6 | UI | Magazine tooltip (metas 2, 5, 12, 17, 20, 23, 46): `Right click to put in ammo inventory` (`techguns.item.ammotooltip.ammobag`), `Sneak + Right click to empty` (`techguns.item.ammotooltip.empty`). Drill heads (75-83): `Valid for drills with size <size>` and `Bonus mining level: <n>` (`techguns.oreDrillTooltip.size`, `techguns.oreDrillTooltip.mininglevel`). No chat messages. |
 | 7 | Visuals | 2D icons from `textures/items/<internalName>.png` for 102 metas; 3D model renderer `RenderGenericItem` for the eight metas 12, 13, 14, 17, 18, 20, 21, 105 (table above); an out-of-range meta falls back to the meta-0 icon in the icon lookup. |
 | 8 | Audio | *none* from the shared item. The Glider's loop sound is played by the client player tick ([sounds.md](sounds.md)). Dispensed projectiles use the vanilla dispenser sound. |
-| 9 | Relationships | Consumed by guns ([02-guns](../02-guns/index.md)), machines ([08](../08-machines-production/index.md)), turrets, armour recipes ([05](../05-armor/index.md)), the player ammo inventory ([01](../01-core/index.md), [05](../05-armor/index.md)). |
+| 9 | Relationships | Consumed by guns ([02-guns](../02-guns/index.md)), machines ([08](../08-machines-production/index.md)), turrets, armor recipes ([05](../05-armor/index.md)), the player ammo inventory ([01](../01-core/index.md), [05](../05-armor/index.md)). |
 | 10 | Bugs | ITEM-05, ITEM-06, ITEM-07, ITEM-08, [ITEM-20](index.md#suspected-bugs). |

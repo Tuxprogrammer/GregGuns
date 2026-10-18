@@ -7,7 +7,7 @@ Techguns mobs reach the world in five ways:
 4. **Camp flags** in generated structures, via `NPCUtil.spawnEntity` (the structures belong to [11-worldgen](../11-worldgen/index.md)).
 5. The turret base block, for turrets ([09](../09-machines-utility/index.md)).
 
-Source files: [`TGEntities.postInit`](mob-catalogue.md#registration-javatechgunstgentitiesjava), `entities/spawn/TGNpcSpawn.java`, `entities/spawn/TGSpawnManager.java`, [`entities/npc/TGDummySpawn.java`](per-mob.md#18-tgdummyspawn-tgdummyspawn), the [`TechgunsEventhandler.onEntityJoinWorld`](../01-core/events.md#techgunseventhandler-forge-bus) hook, `tileentities/TGSpawnerTileEnt.java`, `items/TGMonsterPlacer.java` and `util/NPCUtil.java`.
+Source files: [`TGEntities.postInit`](mob-catalog.md#registration-javatechgunstgentitiesjava), `entities/spawn/TGNpcSpawn.java`, `entities/spawn/TGSpawnManager.java`, [`entities/npc/TGDummySpawn.java`](per-mob.md#18-tgdummyspawn-tgdummyspawn), the [`TechgunsEventhandler.onEntityJoinWorld`](../01-core/events.md#techgunseventhandler-forge-bus) hook, `tileentities/TGSpawnerTileEnt.java`, `items/TGMonsterPlacer.java` and `util/NPCUtil.java`.
 
 ---
 
@@ -24,7 +24,7 @@ So vanilla `SpawnerAnimals` decides **whether and where** a Techguns mob appears
 By default the dummy has 6× a vanilla zombie's weight in the overworld (600 vs 100) and 3× a zombie pigman's in the Nether (300 vs 100).
 
 ### 1.2 Replacement
-`TechgunsEventhandler.onEntityJoinWorld`, on the server: if the joining entity is a `TGDummySpawn`, call `TGSpawnManager.handleSpawn(world, dummy)` and **cancel** the join. The dummy is never added to the world. Vanilla still calls `onSpawnWithEgg` on the discarded dummy afterwards, which has no effect.
+`TechgunsEventhandler.onEntityJoinWorld`, on the server: if the joining entity is a `TGDummySpawn`, call `TGSpawnManager.handleSpawn(world, dummy)` and **cancel** the join. The dummy is never added to the world. Vanilla still calls `onSpawnWithEgg` on the discarded dummy afterward, which has no effect.
 
 `handleSpawn(world, dummy)`:
 1. Look up the biome at `(round(x), round(z))`.
@@ -108,7 +108,7 @@ Despite the "will not be registered" wording, a weight of 0 **is** still registe
 Related damage config, owned by [01-core](../01-core/index.md) but affecting NPCs (category `"Damage Factors"`):
 - [`DamageTurretToPlayer`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) (0.5): turret damage to players.
 - [`DamageFactorNPC`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) (1.0): damage from other NPCs to players. Helicopter bullets have no shooter and also count as NPC damage.
-- [`ArmorPenetrationMultiplierNPCtoPlayer`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) (1.0): multiplier on NPC armour penetration against players.
+- [`ArmorPenetrationMultiplierNPCtoPlayer`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) (1.0): multiplier on NPC armor penetration against players.
 
 ### 1.5 Which mobs never spawn naturally
 Army Soldier, Commando, Outcast, Stormtrooper, Dictator Dave, the three Super Mutants, Alien Bug and Attack Helicopter. They come only from eggs, spawner blocks or camp flags.
@@ -117,12 +117,12 @@ Army Soldier, Commando, Outcast, Stormtrooper, Dictator Dave, the three Super Mu
 
 ## 2. Spawn eggs (`TGMonsterPlacer`)
 
-Registration, colours and names are in [mob-catalogue.md](mob-catalogue.md#spawn-eggs-javatechgunsitemstgmonsterplacerjava). The egg extends vanilla `ItemMonsterPlacer` but ignores its entity-ID metadata.
+Registration, colors and names are in [mob-catalog.md](mob-catalog.md#spawn-eggs-javatechgunsitemstgmonsterplacerjava). The egg extends vanilla `ItemMonsterPlacer` but ignores its entity-ID metadata.
 
 **Use on a block** (`onItemUse`, server only):
 - The target is the clicked block offset one step toward the clicked face.
 - If the top face of a block with render type 11 (fences) was clicked, add 0.5 to Y.
-- Spawn the entity at the block centre (x + 0.5, z + 0.5).
+- Spawn the entity at the block center (x + 0.5, z + 0.5).
 - If the egg has a custom display name, apply it as the entity's name tag.
 - In survival, consume one egg.
 - Clicking a vanilla mob spawner does nothing special.
@@ -168,7 +168,7 @@ The block [`BlockTGMonsterSpawner`](../07-blocks/special-blocks.md#monster-spawn
 | 0 | Bug Hole | [`Techguns.AlienBug`](../01-core/lifecycle-and-registration.md#lifecycle-overview) | 20 | 100 | 300 | 3 | 5 | 24 | 3 |
 | 1 | Zombie Hole | `Techguns.ZombieSoldier` | 20 | 100 | 300 | 3 | 5 | 24 | 3 |
 
-The rest is vanilla spawner behaviour:
+The rest is vanilla spawner behavior:
 - Active while a player is within 24 blocks.
 - Every 100 to 300 ticks it tries 3 spawns within ±3 blocks horizontally (Y −1 to +1), unless 5 or more of the same class are nearby.
 - Each candidate must pass `getCanSpawnHere`. Zombie Soldiers therefore need darkness; Alien Bugs accept any light level.

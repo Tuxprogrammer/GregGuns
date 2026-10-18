@@ -4,7 +4,7 @@ Pairs with [techguns-spec/07-blocks](../../techguns-spec/07-blocks/index.md).
 
 ## Overview
 
-Most of the Techguns block catalogue has no integration point: shipped shapes, models, door sounds and textures are covered by the Techguns spec and the design records. Three topics do touch the pack, and each has a sheet.
+Most of the Techguns block catalog has no integration point: shipped shapes, models, door sounds and textures are covered by the Techguns spec and the design records. Three topics do touch the pack, and each has a sheet.
 
 ## Contents
 

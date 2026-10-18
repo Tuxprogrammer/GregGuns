@@ -15,7 +15,7 @@ GregGuns is a from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 
 6. [Code standards](#code-standards)
 7. [Comments and documentation](#comments-and-documentation)
 8. [Testing](#testing)
-9. [Assets and localisation](#assets-and-localisation)
+9. [Assets and localization](#assets-and-localization)
 10. [Commits and pull requests](#commits-and-pull-requests)
 11. [Definition of done](#definition-of-done)
 
@@ -35,8 +35,8 @@ GregGuns is a from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 
 
 Techguns is **All Rights Reserved**. This boundary is a **must**:
 
-- **No Techguns code.** Don't copy it, translate it line by line, or closely paraphrase it. Implement from the spec's behavioural descriptions.
-- **No Techguns assets.** No textures, models, sounds or structure files, and nothing traced or edited from them. Every asset is original (see [Assets](#assets-and-localisation)).
+- **No Techguns code.** Don't copy it, translate it line by line, or closely paraphrase it. Implement from the spec's behavioral descriptions.
+- **No Techguns assets.** No textures, models, sounds or structure files, and nothing traced or edited from them. Every asset is original (see [Assets](#assets-and-localization)).
 - **Facts are fine.** Names, numbers, formulas and recipes as gameplay facts are allowed, and the spec records them for this purpose.
 - **Keep the reference clone out of the repo.** If you consult the Techguns source to settle a question the spec doesn't answer, never add the clone to the repo. Write the answer back into the spec in your own words.
 
@@ -70,10 +70,10 @@ Root package: `com.gregguns`. Target layout:
 | `com.gregguns.api` | Stable interfaces other mods may use, kept minimal and documented |
 | `com.gregguns.core` | Module system, registration helpers, config, logging, the creative tab |
 | `com.gregguns.network` | Channel, packet base classes, packet types |
-| `com.gregguns.combat` | The damage system, damage types, armour penetration (pure logic where possible) |
+| `com.gregguns.combat` | The damage system, damage types, armor penetration (pure logic where possible) |
 | `com.gregguns.gun` | Gun items, firing and reload logic, ammo handling |
 | `com.gregguns.projectile` | Projectile entities, ballistics, explosions |
-| `com.gregguns.armor` | Armour, set bonuses, special slots, flight equipment |
+| `com.gregguns.armor` | Armor, set bonuses, special slots, flight equipment |
 | `com.gregguns.item` | Components, ammo and magazines, tools, miscellaneous items |
 | `com.gregguns.block` | Blocks and item blocks |
 | `com.gregguns.machine` | GT MetaTileEntities and their GUIs |
@@ -106,7 +106,7 @@ GregGuns must feel native to GTNH. These are the coupling rules.
 - **Source first.** Read the mod's source on GitHub (`gh search code`, `gh api …?ref=<tag>`) at the tag the pack ships.
 - **Decompile only as a fallback**, for mods or internals with no available source. Never paste decompiled code into GregGuns.
 - **Cite it.**
-  - Put a `// Source:` permalink, pinned to the tag (or the commit, for branches), where code relies on another mod's behaviour.
+  - Put a `// Source:` permalink, pinned to the tag (or the commit, for branches), where code relies on another mod's behavior.
   - Put a `// Decompiled:` hedge comment wherever decompiled bytecode or decompiled source was the evidence.
 
 **Materials and parts (must)**
@@ -179,15 +179,15 @@ GregGuns must feel native to GTNH. These are the coupling rules.
 ## Comments and documentation
 
 - **Javadoc (must)** on every public class and every public method that isn't trivial. Say what it does, what each parameter means, units (ticks, blocks, EU), and side (client, server or both).
-- **Comments explain why**, not what. Explain constraints, GT conventions and non-obvious maths.
+- **Comments explain why**, not what. Explain constraints, GT conventions and non-obvious math.
 - **Spec traceability.** A class that implements a spec sheet cites it at the top: `// Spec: docs/techguns-spec/02-guns/gun-lifecycle.md`.
-- **Deviations.** When behaviour intentionally differs from the spec, say so where it happens: `// Deviation: energy is EU (D3), Techguns used RF.` or `// Avoids GUN-34: penetration applies to all mobs.`
-- **External behaviour.** Where code depends on how another mod behaves, cite it.
+- **Deviations.** When behavior intentionally differs from the spec, say so where it happens: `// Deviation: energy is EU (D3), Techguns used RF.` or `// Avoids GUN-34: penetration applies to all mobs.`
+- **External behavior.** Where code depends on how another mod behaves, cite it.
   - Use `// Source: <pinned GitHub permalink>` when the source exists.
   - Use `// Decompiled: <jar, pack version, member>; inferred from decompiled bytecode and may be wrong` when it doesn't.
   - See [docs/gregguns-spec/INTEGRATION.md § Comment conventions](docs/gregguns-spec/INTEGRATION.md#comment-conventions).
 - **No commented-out code** in commits. Delete it; git keeps history.
-- **Docs.** When you change behaviour that a doc describes, update the doc in the same PR. Design decisions go in [docs/design/](docs/design/README.md).
+- **Docs.** When you change behavior that a doc describes, update the doc in the same PR. Design decisions go in [docs/design/](docs/design/README.md).
 
 ## Testing
 
@@ -216,9 +216,9 @@ Each layer catches different bugs, and features need all the layers that apply t
 - **Multiplayer:** a dedicated server with two clients. Check that other players see the animations, sounds and effects, that inventories and NBT stay in sync, and that nothing desyncs after a relog.
 - **Visual:** `runClient` checks of first person, third person, inventory and dropped-item rendering. Attach screenshots to the PR.
 
-## Assets and localisation
+## Assets and localization
 
-- **Original assets only (must).** Every texture, model and sound is original work or properly licensed, with its provenance recorded in `docs/assets/CREDITS.md` (source, author, licence).
+- **Original assets only (must).** Every texture, model and sound is original work or properly licensed, with its provenance recorded in `docs/assets/CREDITS.md` (source, author, license).
 - **Spec as the brief.** [ASSET-FACTS.md](docs/techguns-spec/ASSET-FACTS.md) and each area's `textures.md` give the *footprint* an asset must fill: size, layout and frame count. Match the function, not the look.
 - **Style.** Follow D6. Item icons are 16×16 unless the spec's footprint needs more, and they should sit naturally next to GT items.
 - **Sounds.** Register every sound in `sounds.json` with a category. Keep loudness in line with D6, and use mono for positional sounds (see GVA-23).

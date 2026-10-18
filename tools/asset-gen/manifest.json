@@ -14,7 +14,7 @@
   "palette": [
    "#FF8000"
   ],
-  "brief": "Hand Cannon (ULV): GT-style 16x16 item icon, soft top-left light, dark outline. stubby stone-barrel pistol with a wooden stock. Metal parts take the Bronze gate colour.",
+  "brief": "Hand Cannon (ULV): GT-style 16x16 item icon, soft top-left light, dark outline. stubby stone-barrel pistol with a wooden stock. Metal parts take the Bronze gate color.",
   "footprint_ref": "textures/guns/handgun.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -33,7 +33,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "9mm Pistol (LV): GT-style 16x16 item icon, soft top-left light, dark outline. compact black polymer pistol, steel slide. Metal parts take the Steel gate colour.",
+  "brief": "9mm Pistol (LV): GT-style 16x16 item icon, soft top-left light, dark outline. compact black polymer pistol, steel slide. Metal parts take the Steel gate color.",
   "footprint_ref": "textures/guns/pistol3.png (model sheet, silhouette reference only)",
   "priority": "P1"
  },
@@ -52,7 +52,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Revolver (LV): GT-style 16x16 item icon, soft top-left light, dark outline. six-shot revolver with wooden grip. Metal parts take the Steel gate colour.",
+  "brief": "Revolver (LV): GT-style 16x16 item icon, soft top-left light, dark outline. six-shot revolver with wooden grip. Metal parts take the Steel gate color.",
   "footprint_ref": "textures/guns/revolver.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -71,7 +71,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Sawed Off (LV): GT-style 16x16 item icon, soft top-left light, dark outline. double-barrel sawed-off shotgun. Metal parts take the Steel gate colour.",
+  "brief": "Sawed Off (LV): GT-style 16x16 item icon, soft top-left light, dark outline. double-barrel sawed-off shotgun. Metal parts take the Steel gate color.",
   "footprint_ref": "textures/guns/sawedOff.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -90,7 +90,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Bolt Action Rifle (LV): GT-style 16x16 item icon, soft top-left light, dark outline. long bolt-action rifle with scope. Metal parts take the Steel gate colour.",
+  "brief": "Bolt Action Rifle (LV): GT-style 16x16 item icon, soft top-left light, dark outline. long bolt-action rifle with scope. Metal parts take the Steel gate color.",
   "footprint_ref": "textures/guns/boltactionrifle.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -109,7 +109,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Combat Knife (LV): GT-style 16x16 item icon, soft top-left light, dark outline. black-bladed combat knife, rubber grip. Metal parts take the Steel gate colour.",
+  "brief": "Combat Knife (LV): GT-style 16x16 item icon, soft top-left light, dark outline. black-bladed combat knife, rubber grip. Metal parts take the Steel gate color.",
   "footprint_ref": "textures/items/combatKnife.png",
   "priority": "P2"
  },
@@ -128,7 +128,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Crowbar (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel crowbar, hooked end. Metal parts take the Steel gate colour.",
+  "brief": "Crowbar (LV): GT-style 16x16 item icon, soft top-left light, dark outline. steel crowbar, hooked end. Metal parts take the Steel gate color.",
   "footprint_ref": "textures/items/crowbar.png",
   "priority": "P2"
  },
@@ -147,7 +147,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Stielgranate (LV): GT-style 16x16 item icon, soft top-left light, dark outline. stick grenade with wooden handle. Metal parts take the Steel gate colour.",
+  "brief": "Stielgranate (LV): GT-style 16x16 item icon, soft top-left light, dark outline. stick grenade with wooden handle. Metal parts take the Steel gate color.",
   "footprint_ref": "textures/guns/stielgranate.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -166,7 +166,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Thompson SMG (MV): GT-style 16x16 item icon, soft top-left light, dark outline. drum-less submachine gun, wooden stock. Metal parts take the Aluminium gate colour.",
+  "brief": "Thompson SMG (MV): GT-style 16x16 item icon, soft top-left light, dark outline. drum-less submachine gun, wooden stock. Metal parts take the Aluminum gate color.",
   "footprint_ref": "textures/guns/thompson.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -185,7 +185,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Mac10 (MV): GT-style 16x16 item icon, soft top-left light, dark outline. boxy machine pistol. Metal parts take the Aluminium gate colour.",
+  "brief": "Mac10 (MV): GT-style 16x16 item icon, soft top-left light, dark outline. boxy machine pistol. Metal parts take the Aluminum gate color.",
   "footprint_ref": "textures/guns/mac10texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -204,7 +204,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Combat Shotgun (MV): GT-style 16x16 item icon, soft top-left light, dark outline. pump shotgun, polymer stock. Metal parts take the Aluminium gate colour.",
+  "brief": "Combat Shotgun (MV): GT-style 16x16 item icon, soft top-left light, dark outline. pump shotgun, polymer stock. Metal parts take the Aluminum gate color.",
   "footprint_ref": "textures/guns/combatShotgun.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -223,7 +223,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "M4 Assault Rifle (MV): GT-style 16x16 item icon, soft top-left light, dark outline. M4-style rifle with optic. Metal parts take the Aluminium gate colour.",
+  "brief": "M4 Assault Rifle (MV): GT-style 16x16 item icon, soft top-left light, dark outline. M4-style rifle with optic. Metal parts take the Aluminum gate color.",
   "footprint_ref": "textures/guns/m4Texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -242,7 +242,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "AK47 (MV): GT-style 16x16 item icon, soft top-left light, dark outline. AK-style rifle, curved magazine, wood foregrip. Metal parts take the Aluminium gate colour.",
+  "brief": "AK47 (MV): GT-style 16x16 item icon, soft top-left light, dark outline. AK-style rifle, curved magazine, wood foregrip. Metal parts take the Aluminum gate color.",
   "footprint_ref": "textures/guns/ak47Texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -261,7 +261,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Frag Grenade (MV): GT-style 16x16 item icon, soft top-left light, dark outline. olive fragmentation grenade with pin. Metal parts take the Aluminium gate colour.",
+  "brief": "Frag Grenade (MV): GT-style 16x16 item icon, soft top-left light, dark outline. olive fragmentation grenade with pin. Metal parts take the Aluminum gate color.",
   "footprint_ref": "textures/guns/fragGrenade_texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -280,7 +280,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Flashbang (MV): GT-style 16x16 item icon, soft top-left light, dark outline. grey cylinder grenade with magnesium-white band (new design). Metal parts take the Aluminium gate colour.",
+  "brief": "Flashbang (MV): GT-style 16x16 item icon, soft top-left light, dark outline. gray cylinder grenade with magnesium-white band (new design). Metal parts take the Aluminum gate color.",
   "footprint_ref": "textures/guns/fragGrenade_texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -299,7 +299,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Akimbo Pistols (MV): GT-style 16x16 item icon, soft top-left light, dark outline. two 9mm pistols crossed. Metal parts take the Aluminium gate colour.",
+  "brief": "Akimbo Pistols (MV): GT-style 16x16 item icon, soft top-left light, dark outline. two 9mm pistols crossed. Metal parts take the Aluminum gate color.",
   "footprint_ref": "textures/guns/pistol3.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -318,7 +318,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Akimbo Revolvers (MV): GT-style 16x16 item icon, soft top-left light, dark outline. two revolvers crossed. Metal parts take the Aluminium gate colour.",
+  "brief": "Akimbo Revolvers (MV): GT-style 16x16 item icon, soft top-left light, dark outline. two revolvers crossed. Metal parts take the Aluminum gate color.",
   "footprint_ref": "textures/guns/revolver.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -337,7 +337,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "AUG (HV): GT-style 16x16 item icon, soft top-left light, dark outline. bullpup rifle with optic. Metal parts take the StainlessSteel gate colour.",
+  "brief": "AUG (HV): GT-style 16x16 item icon, soft top-left light, dark outline. bullpup rifle with optic. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/AugTexture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -356,7 +356,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "SCAR (HV): GT-style 16x16 item icon, soft top-left light, dark outline. modular tan battle rifle. Metal parts take the StainlessSteel gate colour.",
+  "brief": "SCAR (HV): GT-style 16x16 item icon, soft top-left light, dark outline. modular tan battle rifle. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/scar_texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -375,7 +375,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Vector (HV): GT-style 16x16 item icon, soft top-left light, dark outline. angular compact SMG. Metal parts take the StainlessSteel gate colour.",
+  "brief": "Vector (HV): GT-style 16x16 item icon, soft top-left light, dark outline. angular compact SMG. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/vector_texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -394,7 +394,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "The Infiltrator (HV): GT-style 16x16 item icon, soft top-left light, dark outline. suppressed M4 with long rubber-wrapped suppressor. Metal parts take the StainlessSteel gate colour.",
+  "brief": "The Infiltrator (HV): GT-style 16x16 item icon, soft top-left light, dark outline. suppressed M4 with long rubber-wrapped suppressor. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/m4_uq_Texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -413,7 +413,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "AS50 Sniper Rifle (HV): GT-style 16x16 item icon, soft top-left light, dark outline. heavy anti-materiel sniper rifle with large scope. Metal parts take the StainlessSteel gate colour.",
+  "brief": "AS50 Sniper Rifle (HV): GT-style 16x16 item icon, soft top-left light, dark outline. heavy anti-materiel sniper rifle with large scope. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/as50Texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -432,7 +432,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "LMG (HV): GT-style 16x16 item icon, soft top-left light, dark outline. belt-fed light machine gun with bipod. Metal parts take the StainlessSteel gate colour.",
+  "brief": "LMG (HV): GT-style 16x16 item icon, soft top-left light, dark outline. belt-fed light machine gun with bipod. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/mg2_texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -451,7 +451,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Grenade Launcher (HV): GT-style 16x16 item icon, soft top-left light, dark outline. revolving 40 mm launcher. Metal parts take the StainlessSteel gate colour.",
+  "brief": "Grenade Launcher (HV): GT-style 16x16 item icon, soft top-left light, dark outline. revolving 40 mm launcher. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/grenadelauncher.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -470,7 +470,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Rocket Launcher (HV): GT-style 16x16 item icon, soft top-left light, dark outline. shoulder tube launcher. Metal parts take the StainlessSteel gate colour.",
+  "brief": "Rocket Launcher (HV): GT-style 16x16 item icon, soft top-left light, dark outline. shoulder tube launcher. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/rocketlauncher.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -489,7 +489,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Flamethrower (HV): GT-style 16x16 item icon, soft top-left light, dark outline. nozzle gun with fuel line and igniter coil. Metal parts take the StainlessSteel gate colour.",
+  "brief": "Flamethrower (HV): GT-style 16x16 item icon, soft top-left light, dark outline. nozzle gun with fuel line and igniter coil. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/Flamethrower.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -508,7 +508,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Akimbo Mac10s (HV): GT-style 16x16 item icon, soft top-left light, dark outline. two Mac10 crossed. Metal parts take the StainlessSteel gate colour.",
+  "brief": "Akimbo Mac10s (HV): GT-style 16x16 item icon, soft top-left light, dark outline. two Mac10 crossed. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/mac10texture.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -527,7 +527,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Chainsaw (HV): GT-style 16x16 item icon, soft top-left light, dark outline. gasoline chainsaw with steel bar. Metal parts take the StainlessSteel gate colour.",
+  "brief": "Chainsaw (HV): GT-style 16x16 item icon, soft top-left light, dark outline. gasoline chainsaw with steel bar. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/chainsaw.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -546,7 +546,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Power Hammer (HV): GT-style 16x16 item icon, soft top-left light, dark outline. pneumatic hammer with air hose. Metal parts take the StainlessSteel gate colour.",
+  "brief": "Power Hammer (HV): GT-style 16x16 item icon, soft top-left light, dark outline. pneumatic hammer with air hose. Metal parts take the StainlessSteel gate color.",
   "footprint_ref": "textures/guns/powerHammer.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -565,7 +565,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Laser Rifle (EV): GT-style 16x16 item icon, soft top-left light, dark outline. warm-grey sci-fi rifle with red emitter. Metal parts take the Titanium gate colour.",
+  "brief": "Laser Rifle (EV): GT-style 16x16 item icon, soft top-left light, dark outline. warm-gray sci-fi rifle with red emitter. Metal parts take the Titanium gate color.",
   "footprint_ref": "textures/guns/Lasergun.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -584,7 +584,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "PDW (EV): GT-style 16x16 item icon, soft top-left light, dark outline. dark compact carbon PDW. Metal parts take the Titanium gate colour.",
+  "brief": "PDW (EV): GT-style 16x16 item icon, soft top-left light, dark outline. dark compact carbon PDW. Metal parts take the Titanium gate color.",
   "footprint_ref": "textures/guns/PDW.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -603,7 +603,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Pulse Rifle (EV): GT-style 16x16 item icon, soft top-left light, dark outline. carbon rifle with diamond-lens fire control. Metal parts take the Titanium gate colour.",
+  "brief": "Pulse Rifle (EV): GT-style 16x16 item icon, soft top-left light, dark outline. carbon rifle with diamond-lens fire control. Metal parts take the Titanium gate color.",
   "footprint_ref": "textures/guns/pulseRifle.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -622,7 +622,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Minigun (EV): GT-style 16x16 item icon, soft top-left light, dark outline. six-barrel rotary gun with drum. Metal parts take the Titanium gate colour.",
+  "brief": "Minigun (EV): GT-style 16x16 item icon, soft top-left light, dark outline. six-barrel rotary gun with drum. Metal parts take the Titanium gate color.",
   "footprint_ref": "textures/guns/minigun.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -641,7 +641,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Tesla Rifle (EV): GT-style 16x16 item icon, soft top-left light, dark outline. rifle with a coil emitter and cyan arcs. Metal parts take the Titanium gate colour.",
+  "brief": "Tesla Rifle (EV): GT-style 16x16 item icon, soft top-left light, dark outline. rifle with a coil emitter and cyan arcs. Metal parts take the Titanium gate color.",
   "footprint_ref": "textures/guns/TeslaGun.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -660,7 +660,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Sonic Rifle (EV): GT-style 16x16 item icon, soft top-left light, dark outline. slate and teal rifle with cyan glow strip. Metal parts take the Titanium gate colour.",
+  "brief": "Sonic Rifle (EV): GT-style 16x16 item icon, soft top-left light, dark outline. slate and teal rifle with cyan glow strip. Metal parts take the Titanium gate color.",
   "footprint_ref": "textures/guns/sonicshotgun.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -679,7 +679,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Bio Gun (EV): GT-style 16x16 item icon, soft top-left light, dark outline. green-tanked fluid gun. Metal parts take the Titanium gate colour.",
+  "brief": "Bio Gun (EV): GT-style 16x16 item icon, soft top-left light, dark outline. green-tanked fluid gun. Metal parts take the Titanium gate color.",
   "footprint_ref": "textures/guns/BioGun.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -698,7 +698,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Power Hammer (Advanced) (EV): GT-style 16x16 item icon, soft top-left light, dark outline. diamond-studded power hammer. Metal parts take the Titanium gate colour.",
+  "brief": "Power Hammer (Advanced) (EV): GT-style 16x16 item icon, soft top-left light, dark outline. diamond-studded power hammer. Metal parts take the Titanium gate color.",
   "footprint_ref": "textures/guns/powerHammerAdv.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -717,7 +717,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Blaster Rifle (IV): GT-style 16x16 item icon, soft top-left light, dark outline. heavy blaster rifle, orange emitter. Metal parts take the TungstenSteel gate colour.",
+  "brief": "Blaster Rifle (IV): GT-style 16x16 item icon, soft top-left light, dark outline. heavy blaster rifle, orange emitter. Metal parts take the TungstenSteel gate color.",
   "footprint_ref": "textures/guns/blasterRifle.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -736,7 +736,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "De-Atomizer Pistol (IV): GT-style 16x16 item icon, soft top-left light, dark outline. chrome sci-fi pistol with blue lamp. Metal parts take the TungstenSteel gate colour.",
+  "brief": "De-Atomizer Pistol (IV): GT-style 16x16 item icon, soft top-left light, dark outline. chrome sci-fi pistol with blue lamp. Metal parts take the TungstenSteel gate color.",
   "footprint_ref": "textures/guns/mibgun.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -755,7 +755,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Scatter Laser Rifle (IV): GT-style 16x16 item icon, soft top-left light, dark outline. grey multi-emitter laser rifle (new design). Metal parts take the TungstenSteel gate colour.",
+  "brief": "Scatter Laser Rifle (IV): GT-style 16x16 item icon, soft top-left light, dark outline. gray multi-emitter laser rifle (new design). Metal parts take the TungstenSteel gate color.",
   "footprint_ref": "textures/guns/laserGunNew.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -774,7 +774,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Golden Revolver (IV): GT-style 16x16 item icon, soft top-left light, dark outline. gold-plated revolver. Metal parts take the TungstenSteel gate colour.",
+  "brief": "Golden Revolver (IV): GT-style 16x16 item icon, soft top-left light, dark outline. gold-plated revolver. Metal parts take the TungstenSteel gate color.",
   "footprint_ref": "textures/guns/goldenrevolver.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -793,7 +793,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Akimbo De-Atomizer Pistols (IV): GT-style 16x16 item icon, soft top-left light, dark outline. two De-Atomizer pistols crossed. Metal parts take the TungstenSteel gate colour.",
+  "brief": "Akimbo De-Atomizer Pistols (IV): GT-style 16x16 item icon, soft top-left light, dark outline. two De-Atomizer pistols crossed. Metal parts take the TungstenSteel gate color.",
   "footprint_ref": "textures/guns/mibgun.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -812,7 +812,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Akimbo Golden Revolvers (IV): GT-style 16x16 item icon, soft top-left light, dark outline. two golden revolvers crossed. Metal parts take the TungstenSteel gate colour.",
+  "brief": "Akimbo Golden Revolvers (IV): GT-style 16x16 item icon, soft top-left light, dark outline. two golden revolvers crossed. Metal parts take the TungstenSteel gate color.",
   "footprint_ref": "textures/guns/goldenrevolver.png (model sheet, silhouette reference only)",
   "priority": "P2"
  },
@@ -831,7 +831,7 @@
   "palette": [
    "#999900"
   ],
-  "brief": "Nether Blaster (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. worn grey blaster with lava-orange core. Metal parts take the HSSG gate colour.",
+  "brief": "Nether Blaster (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. worn gray blaster with lava-orange core. Metal parts take the HSSG gate color.",
   "footprint_ref": "textures/guns/cyberdemonblaster.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -850,7 +850,7 @@
   "palette": [
    "#999900"
   ],
-  "brief": "Alien Blaster (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. pale alloy alien pistol, violet glow. Metal parts take the HSSG gate colour.",
+  "brief": "Alien Blaster (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. pale alloy alien pistol, violet glow. Metal parts take the HSSG gate color.",
   "footprint_ref": "textures/guns/alien_blaster.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -869,7 +869,7 @@
   "palette": [
    "#999900"
   ],
-  "brief": "Grim Reaper (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. quad-tube rocket battery. Metal parts take the HSSG gate colour.",
+  "brief": "Grim Reaper (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. quad-tube rocket battery. Metal parts take the HSSG gate color.",
   "footprint_ref": "textures/guns/grimreaper.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -888,7 +888,7 @@
   "palette": [
    "#282828"
   ],
-  "brief": "Nuclear Death Ray (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. bulky ray projector, golden plasma core. Metal parts take the NaquadahAlloy gate colour.",
+  "brief": "Nuclear Death Ray (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. bulky ray projector, golden plasma core. Metal parts take the NaquadahAlloy gate color.",
   "footprint_ref": "textures/guns/NDR.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -907,7 +907,7 @@
   "palette": [
    "#282828"
   ],
-  "brief": "Nuke Launcher (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. olive launcher with hazard trefoil. Metal parts take the NaquadahAlloy gate colour.",
+  "brief": "Nuke Launcher (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. olive launcher with hazard trefoil. Metal parts take the NaquadahAlloy gate color.",
   "footprint_ref": "textures/guns/nukerocketlauncher.png (model sheet, silhouette reference only)",
   "priority": "P3"
  },
@@ -986,7 +986,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "Carbon Barrel (EV): GT-style 16x16 item icon, soft top-left light, dark outline. black fibre-wrapped barrel.",
+  "brief": "Carbon Barrel (EV): GT-style 16x16 item icon, soft top-left light, dark outline. black fiber-wrapped barrel.",
   "footprint_ref": "textures/items/carbonBarrel.png",
   "priority": "P3"
  },
@@ -1065,7 +1065,7 @@
    "#A07010",
    "#DCA0F0"
   ],
-  "brief": "Carbon Gunstock (EV): GT-style 16x16 item icon, soft top-left light, dark outline. black fibre stock.",
+  "brief": "Carbon Gunstock (EV): GT-style 16x16 item icon, soft top-left light, dark outline. black fiber stock.",
   "footprint_ref": "textures/items/carbonGunstock.png",
   "priority": "P3"
  },
@@ -1162,7 +1162,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "Carbon Receiver (EV): GT-style 16x16 item icon, soft top-left light, dark outline. black fibre receiver.",
+  "brief": "Carbon Receiver (EV): GT-style 16x16 item icon, soft top-left light, dark outline. black fiber receiver.",
   "footprint_ref": "textures/items/carbonReceiver.png",
   "priority": "P3"
  },
@@ -1356,7 +1356,7 @@
    "#FFFF64",
    "#DCA0F0"
   ],
-  "brief": "Cybernetic Parts (EV): GT-style 16x16 item icon, soft top-left light, dark outline. wires and plates, warm grey.",
+  "brief": "Cybernetic Parts (EV): GT-style 16x16 item icon, soft top-left light, dark outline. wires and plates, warm gray.",
   "footprint_ref": "textures/items/cyberneticParts.png",
   "priority": "P3"
  },
@@ -1434,7 +1434,7 @@
    "#6464A0",
    "#A07010"
   ],
-  "brief": "Power Plating (IV): GT-style 16x16 item icon, soft top-left light, dark outline. slate plate with fibre layer.",
+  "brief": "Power Plating (IV): GT-style 16x16 item icon, soft top-left light, dark outline. slate plate with fiber layer.",
   "footprint_ref": "textures/items/powerPlating.png",
   "priority": "P2"
  },
@@ -1532,7 +1532,7 @@
   "palette": [
    "#CDCDCD"
   ],
-  "brief": "Stone Bullet (ULV): GT-style 16x16 item icon, soft top-left light, dark outline. round grey stone shot.",
+  "brief": "Stone Bullet (ULV): GT-style 16x16 item icon, soft top-left light, dark outline. round gray stone shot.",
   "footprint_ref": "textures/items/stonebullets.png",
   "priority": "P2"
  },
@@ -1551,7 +1551,7 @@
   "palette": [
    "#FFB400"
   ],
-  "brief": "9mm Bullets (LV): GT-style 16x16 item icon, soft top-left light, dark outline. short brass-cased pistol rounds with grey tips.",
+  "brief": "9mm Bullets (LV): GT-style 16x16 item icon, soft top-left light, dark outline. short brass-cased pistol rounds with gray tips.",
   "footprint_ref": "textures/items/bullets9mm.png",
   "priority": "P1"
  },
@@ -1725,7 +1725,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "9mm Pistol Magazine (LV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate colour.",
+  "brief": "9mm Pistol Magazine (LV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate color.",
   "footprint_ref": "textures/items/pistolMag9mm.png",
   "priority": "P1"
  },
@@ -1744,7 +1744,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "9mm Pistol Magazine (Empty) (LV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate colour.",
+  "brief": "9mm Pistol Magazine (Empty) (LV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate color.",
   "footprint_ref": "textures/items/pistolMag9mmEmpty.png",
   "priority": "P1"
  },
@@ -1763,7 +1763,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "SMG Magazine (MV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate colour.",
+  "brief": "SMG Magazine (MV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate color.",
   "footprint_ref": "textures/items/smgMag.png",
   "priority": "P2"
  },
@@ -1782,7 +1782,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "SMG Magazine (Empty) (MV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate colour.",
+  "brief": "SMG Magazine (Empty) (MV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate color.",
   "footprint_ref": "textures/items/smgMagEmpty.png",
   "priority": "P2"
  },
@@ -1801,7 +1801,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Assault Rifle Magazine (MV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate colour.",
+  "brief": "Assault Rifle Magazine (MV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate color.",
   "footprint_ref": "",
   "priority": "P2"
  },
@@ -1820,7 +1820,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Assault Rifle Magazine (Empty) (MV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate colour.",
+  "brief": "Assault Rifle Magazine (Empty) (MV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate color.",
   "footprint_ref": "",
   "priority": "P2"
  },
@@ -1839,7 +1839,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "AS50 Magazine (HV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate colour.",
+  "brief": "AS50 Magazine (HV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate color.",
   "footprint_ref": "",
   "priority": "P2"
  },
@@ -1858,7 +1858,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "AS50 Magazine (Empty) (HV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate colour.",
+  "brief": "AS50 Magazine (Empty) (HV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate color.",
   "footprint_ref": "",
   "priority": "P2"
  },
@@ -1877,7 +1877,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "LMG Magazine (HV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate colour.",
+  "brief": "LMG Magazine (HV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate color.",
   "footprint_ref": "",
   "priority": "P2"
  },
@@ -1896,7 +1896,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "LMG Magazine (Empty) (HV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate colour.",
+  "brief": "LMG Magazine (Empty) (HV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate color.",
   "footprint_ref": "",
   "priority": "P2"
  },
@@ -1915,7 +1915,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Advanced Magazine (EV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate colour.",
+  "brief": "Advanced Magazine (EV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate color.",
   "footprint_ref": "textures/items/pdwMag.png",
   "priority": "P3"
  },
@@ -1934,7 +1934,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Advanced Magazine (Empty) (EV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate colour.",
+  "brief": "Advanced Magazine (Empty) (EV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate color.",
   "footprint_ref": "textures/items/pdwMagEmpty.png",
   "priority": "P3"
  },
@@ -1953,7 +1953,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Minigun Ammo Drum (EV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate colour.",
+  "brief": "Minigun Ammo Drum (EV): GT-style 16x16 item icon, soft top-left light, dark outline. Loaded magazine: visible brass round tops. Body in the tier gate color.",
   "footprint_ref": "textures/items/minigunDrum.png",
   "priority": "P3"
  },
@@ -1972,7 +1972,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Minigun Ammo Drum (Empty) (EV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate colour.",
+  "brief": "Minigun Ammo Drum (Empty) (EV): GT-style 16x16 item icon, soft top-left light, dark outline. Empty magazine: same silhouette, no rounds visible, darker interior. Body in the tier gate color.",
   "footprint_ref": "textures/items/minigunDrum_empty.png",
   "priority": "P3"
  },
@@ -2010,7 +2010,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Fuel Tank (Empty) (HV): GT-style 16x16 item icon, soft top-left light, dark outline. orange-brown fuel canister, drained: grey glass, no fill.",
+  "brief": "Fuel Tank (Empty) (HV): GT-style 16x16 item icon, soft top-left light, dark outline. orange-brown fuel canister, drained: gray glass, no fill.",
   "footprint_ref": "textures/items/flamethrowerTankEmpty.png",
   "priority": "P2"
  },
@@ -2048,7 +2048,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Bio Tank (Empty) (EV): GT-style 16x16 item icon, soft top-left light, dark outline. green-filled glass canister, drained: grey glass, no fill.",
+  "brief": "Bio Tank (Empty) (EV): GT-style 16x16 item icon, soft top-left light, dark outline. green-filled glass canister, drained: gray glass, no fill.",
   "footprint_ref": "textures/items/bioTankEmpty.png",
   "priority": "P3"
  },
@@ -2086,7 +2086,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Compressed Air Tank (Empty) (HV): GT-style 16x16 item icon, soft top-left light, dark outline. pale-blue air bottle, drained: grey glass, no fill.",
+  "brief": "Compressed Air Tank (Empty) (HV): GT-style 16x16 item icon, soft top-left light, dark outline. pale-blue air bottle, drained: gray glass, no fill.",
   "footprint_ref": "textures/items/compressedAirTankEmpty.png",
   "priority": "P2"
  },
@@ -2127,7 +2127,7 @@
    "#282828",
    "#8C648C"
   ],
-  "brief": "Nuclear Power Cell, Depleted (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. same cell, glow gone, dull grey-brown.",
+  "brief": "Nuclear Power Cell, Depleted (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. same cell, glow gone, dull gray-brown.",
   "footprint_ref": "textures/items/nuclearPowerCellDepleted.png",
   "priority": "P3"
  },
@@ -2246,7 +2246,7 @@
   "palette": [
    "#C8C8C8"
   ],
-  "brief": "Bunker Door (item): GT-style 16x16 item icon, soft top-left light, dark outline. grey riveted steel door slab.",
+  "brief": "Bunker Door (item): GT-style 16x16 item icon, soft top-left light, dark outline. gray riveted steel door slab.",
   "footprint_ref": "textures/items/metalDoor.png",
   "priority": "P3"
  },
@@ -2285,7 +2285,7 @@
   "palette": [
    "#898989"
   ],
-  "brief": "Spawn Egg (base): GT-style 16x16 item icon, soft top-left light, dark outline. greyscale mottled egg, transparent outside, tintable per mob.",
+  "brief": "Spawn Egg (base): GT-style 16x16 item icon, soft top-left light, dark outline. grayscale mottled egg, transparent outside, tintable per mob.",
   "footprint_ref": "textures/items/spawn_egg.png",
   "priority": "P3"
  },
@@ -2304,7 +2304,7 @@
   "palette": [
    "#FFFFFF"
   ],
-  "brief": "Spawn Egg (overlay): GT-style 16x16 item icon, soft top-left light, dark outline. white 'GG' lettering with a 1 px dark outline, greyscale so tint works.",
+  "brief": "Spawn Egg (overlay): GT-style 16x16 item icon, soft top-left light, dark outline. white 'GG' lettering with a 1 px dark outline, grayscale so tint works.",
   "footprint_ref": "textures/items/spawn_egg_overlay.png",
   "priority": "P3"
  },
@@ -2323,7 +2323,7 @@
   "palette": [
    "#C8C8C8"
   ],
-  "brief": "Turret Armour Plate, Iron: GT-style 16x16 item icon, soft top-left light, dark outline. curved armour plate with bolt holes.",
+  "brief": "Turret Armor Plate, Iron: GT-style 16x16 item icon, soft top-left light, dark outline. curved armor plate with bolt holes.",
   "footprint_ref": "textures/items/turretArmorIron.png",
   "priority": "P3"
  },
@@ -2342,14 +2342,14 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Turret Armour Plate, Steel: GT-style 16x16 item icon, soft top-left light, dark outline. curved armour plate with bolt holes.",
+  "brief": "Turret Armor Plate, Steel: GT-style 16x16 item icon, soft top-left light, dark outline. curved armor plate with bolt holes.",
   "footprint_ref": "textures/items/turretArmorSteel.png",
   "priority": "P3"
  },
  {
-  "id": "icon.turret_armor_aluminium",
+  "id": "icon.turret_armor_aluminum",
   "kind": "icon",
-  "path": "textures/items/turret_armor_aluminium.png",
+  "path": "textures/items/turret_armor_aluminum.png",
   "width": 16,
   "height": 16,
   "frames": 1,
@@ -2361,7 +2361,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Turret Armour Plate, Aluminium: GT-style 16x16 item icon, soft top-left light, dark outline. curved armour plate with bolt holes.",
+  "brief": "Turret Armor Plate, Aluminum: GT-style 16x16 item icon, soft top-left light, dark outline. curved armor plate with bolt holes.",
   "footprint_ref": "textures/items/turretArmorObsidianSteel.png",
   "priority": "P3"
  },
@@ -2380,7 +2380,7 @@
   "palette": [
    "#A07010"
   ],
-  "brief": "Turret Armour Plate, Carbon: GT-style 16x16 item icon, soft top-left light, dark outline. curved armour plate with bolt holes.",
+  "brief": "Turret Armor Plate, Carbon: GT-style 16x16 item icon, soft top-left light, dark outline. curved armor plate with bolt holes.",
   "footprint_ref": "textures/items/turretArmorCarbon.png",
   "priority": "P3"
  },
@@ -2627,7 +2627,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Combat Helmet (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminium trim. Slot: helmet.",
+  "brief": "Combat Helmet (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminum trim. Slot: helmet.",
   "footprint_ref": "textures/items/t2_combat_helmet.png",
   "priority": "P2"
  },
@@ -2646,7 +2646,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Combat Vest (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminium trim. Slot: chestplate.",
+  "brief": "Combat Vest (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminum trim. Slot: chestplate.",
   "footprint_ref": "textures/items/t2_combat_chestplate.png",
   "priority": "P2"
  },
@@ -2665,7 +2665,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Combat Pants (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminium trim. Slot: leggings.",
+  "brief": "Combat Pants (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminum trim. Slot: leggings.",
   "footprint_ref": "textures/items/t2_combat_leggings.png",
   "priority": "P2"
  },
@@ -2684,7 +2684,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Combat Boots (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminium trim. Slot: boots.",
+  "brief": "Combat Boots (MV): GT-style 16x16 item icon, soft top-left light, dark outline. dark olive plates with aluminum trim. Slot: boots.",
   "footprint_ref": "textures/items/t2_combat_boots.png",
   "priority": "P2"
  },
@@ -2779,7 +2779,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Riot Helmet (MV): GT-style 16x16 item icon, soft top-left light, dark outline. brown long coat, visor helmet, aluminium shield plates. Slot: helmet.",
+  "brief": "Riot Helmet (MV): GT-style 16x16 item icon, soft top-left light, dark outline. brown long coat, visor helmet, aluminum shield plates. Slot: helmet.",
   "footprint_ref": "textures/items/t2_riot_helmet.png",
   "priority": "P2"
  },
@@ -2798,7 +2798,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Riot Coat (MV): GT-style 16x16 item icon, soft top-left light, dark outline. brown long coat, visor helmet, aluminium shield plates. Slot: chestplate.",
+  "brief": "Riot Coat (MV): GT-style 16x16 item icon, soft top-left light, dark outline. brown long coat, visor helmet, aluminum shield plates. Slot: chestplate.",
   "footprint_ref": "textures/items/t2_riot_chestplate.png",
   "priority": "P2"
  },
@@ -2817,7 +2817,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Riot Pants (MV): GT-style 16x16 item icon, soft top-left light, dark outline. brown long coat, visor helmet, aluminium shield plates. Slot: leggings.",
+  "brief": "Riot Pants (MV): GT-style 16x16 item icon, soft top-left light, dark outline. brown long coat, visor helmet, aluminum shield plates. Slot: leggings.",
   "footprint_ref": "textures/items/t2_riot_leggings.png",
   "priority": "P2"
  },
@@ -2836,7 +2836,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Riot Boots (MV): GT-style 16x16 item icon, soft top-left light, dark outline. brown long coat, visor helmet, aluminium shield plates. Slot: boots.",
+  "brief": "Riot Boots (MV): GT-style 16x16 item icon, soft top-left light, dark outline. brown long coat, visor helmet, aluminum shield plates. Slot: boots.",
   "footprint_ref": "textures/items/t2_riot_boots.png",
   "priority": "P2"
  },
@@ -2856,7 +2856,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "Advanced Combat Helmet (EV): GT-style 16x16 item icon, soft top-left light, dark outline. blue-grey fibre armour with titanium panels. Slot: helmet.",
+  "brief": "Advanced Combat Helmet (EV): GT-style 16x16 item icon, soft top-left light, dark outline. blue-gray fiber armor with titanium panels. Slot: helmet.",
   "footprint_ref": "textures/items/t3_combat_helmet.png",
   "priority": "P2"
  },
@@ -2876,7 +2876,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "Advanced Combat Chestplate (EV): GT-style 16x16 item icon, soft top-left light, dark outline. blue-grey fibre armour with titanium panels. Slot: chestplate.",
+  "brief": "Advanced Combat Chestplate (EV): GT-style 16x16 item icon, soft top-left light, dark outline. blue-gray fiber armor with titanium panels. Slot: chestplate.",
   "footprint_ref": "textures/items/t3_combat_chestplate.png",
   "priority": "P2"
  },
@@ -2896,7 +2896,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "Advanced Combat Leggings (EV): GT-style 16x16 item icon, soft top-left light, dark outline. blue-grey fibre armour with titanium panels. Slot: leggings.",
+  "brief": "Advanced Combat Leggings (EV): GT-style 16x16 item icon, soft top-left light, dark outline. blue-gray fiber armor with titanium panels. Slot: leggings.",
   "footprint_ref": "textures/items/t3_combat_leggings.png",
   "priority": "P2"
  },
@@ -2916,7 +2916,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "Advanced Combat Boots (EV): GT-style 16x16 item icon, soft top-left light, dark outline. blue-grey fibre armour with titanium panels. Slot: boots.",
+  "brief": "Advanced Combat Boots (EV): GT-style 16x16 item icon, soft top-left light, dark outline. blue-gray fiber armor with titanium panels. Slot: boots.",
   "footprint_ref": "textures/items/t3_combat_boots.png",
   "priority": "P2"
  },
@@ -3016,7 +3016,7 @@
    "#DCA0F0",
    "#FF8000"
   ],
-  "brief": "Steam Helmet (EV): GT-style 16x16 item icon, soft top-left light, dark outline. bronze-and-iron steam armour with pipes and vents. Slot: helmet.",
+  "brief": "Steam Helmet (EV): GT-style 16x16 item icon, soft top-left light, dark outline. bronze-and-iron steam armor with pipes and vents. Slot: helmet.",
   "footprint_ref": "(no Techguns icon)",
   "priority": "P2"
  },
@@ -3036,7 +3036,7 @@
    "#DCA0F0",
    "#FF8000"
   ],
-  "brief": "Steam Chestplate (EV): GT-style 16x16 item icon, soft top-left light, dark outline. bronze-and-iron steam armour with pipes and vents. Slot: chestplate.",
+  "brief": "Steam Chestplate (EV): GT-style 16x16 item icon, soft top-left light, dark outline. bronze-and-iron steam armor with pipes and vents. Slot: chestplate.",
   "footprint_ref": "(no Techguns icon)",
   "priority": "P2"
  },
@@ -3056,7 +3056,7 @@
    "#DCA0F0",
    "#FF8000"
   ],
-  "brief": "Steam Legplates (EV): GT-style 16x16 item icon, soft top-left light, dark outline. bronze-and-iron steam armour with pipes and vents. Slot: leggings.",
+  "brief": "Steam Legplates (EV): GT-style 16x16 item icon, soft top-left light, dark outline. bronze-and-iron steam armor with pipes and vents. Slot: leggings.",
   "footprint_ref": "(no Techguns icon)",
   "priority": "P2"
  },
@@ -3076,7 +3076,7 @@
    "#DCA0F0",
    "#FF8000"
   ],
-  "brief": "Steam Boots (EV): GT-style 16x16 item icon, soft top-left light, dark outline. bronze-and-iron steam armour with pipes and vents. Slot: boots.",
+  "brief": "Steam Boots (EV): GT-style 16x16 item icon, soft top-left light, dark outline. bronze-and-iron steam armor with pipes and vents. Slot: boots.",
   "footprint_ref": "(no Techguns icon)",
   "priority": "P2"
  },
@@ -3095,7 +3095,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Power Armor Helmet (IV): GT-style 16x16 item icon, soft top-left light, dark outline. bulky slate power armour with glass visor. Slot: helmet.",
+  "brief": "Power Armor Helmet (IV): GT-style 16x16 item icon, soft top-left light, dark outline. bulky slate power armor with glass visor. Slot: helmet.",
   "footprint_ref": "(no Techguns icon)",
   "priority": "P2"
  },
@@ -3114,7 +3114,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Power Armor Chestplate (IV): GT-style 16x16 item icon, soft top-left light, dark outline. bulky slate power armour with glass visor. Slot: chestplate.",
+  "brief": "Power Armor Chestplate (IV): GT-style 16x16 item icon, soft top-left light, dark outline. bulky slate power armor with glass visor. Slot: chestplate.",
   "footprint_ref": "(no Techguns icon)",
   "priority": "P2"
  },
@@ -3133,7 +3133,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Power Armor Leggings (IV): GT-style 16x16 item icon, soft top-left light, dark outline. bulky slate power armour with glass visor. Slot: leggings.",
+  "brief": "Power Armor Leggings (IV): GT-style 16x16 item icon, soft top-left light, dark outline. bulky slate power armor with glass visor. Slot: leggings.",
   "footprint_ref": "(no Techguns icon)",
   "priority": "P2"
  },
@@ -3152,7 +3152,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Power Armor Boots (IV): GT-style 16x16 item icon, soft top-left light, dark outline. bulky slate power armour with glass visor. Slot: boots.",
+  "brief": "Power Armor Boots (IV): GT-style 16x16 item icon, soft top-left light, dark outline. bulky slate power armor with glass visor. Slot: boots.",
   "footprint_ref": "(no Techguns icon)",
   "priority": "P2"
  },
@@ -3311,7 +3311,7 @@
    "#C8C8DC",
    "#000000"
   ],
-  "brief": "Oxygen Mask (HV): GT-style 16x16 item icon, soft top-left light, dark outline. grey half-mask with hose port.",
+  "brief": "Oxygen Mask (HV): GT-style 16x16 item icon, soft top-left light, dark outline. gray half-mask with hose port.",
   "footprint_ref": "textures/items/oxygenMask.png",
   "priority": "P2"
  },
@@ -3330,7 +3330,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Oxygen Tanks (HV): GT-style 16x16 item icon, soft top-left light, dark outline. twin grey oxygen cylinders.",
+  "brief": "Oxygen Tanks (HV): GT-style 16x16 item icon, soft top-left light, dark outline. twin gray oxygen cylinders.",
   "footprint_ref": "textures/items/scubaTanks.png",
   "priority": "P2"
  },
@@ -3408,7 +3408,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Anti Gravity Device (IV): GT-style 16x16 item icon, soft top-left light, dark outline. grey pack with glowing cyan core.",
+  "brief": "Anti Gravity Device (IV): GT-style 16x16 item icon, soft top-left light, dark outline. gray pack with glowing cyan core.",
   "footprint_ref": "textures/items/antiGravPack.png",
   "priority": "P2"
  },
@@ -3428,7 +3428,7 @@
    "#C8C8DC",
    "#1F372C"
   ],
-  "brief": "AUG model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "AUG model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/AugTexture.png",
   "priority": "P2"
  },
@@ -3447,7 +3447,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "AUG model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "AUG model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/AugTexture_1.png",
   "priority": "P3"
  },
@@ -3466,7 +3466,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "AUG model sheet camo variant 2. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "AUG model sheet camo variant 2. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/AugTexture_2.png",
   "priority": "P3"
  },
@@ -3485,7 +3485,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "AUG model sheet camo variant 3. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "AUG model sheet camo variant 3. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/AugTexture_3.png",
   "priority": "P3"
  },
@@ -3504,7 +3504,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "AUG model sheet camo variant 4. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "AUG model sheet camo variant 4. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/AugTexture_4.png",
   "priority": "P3"
  },
@@ -3524,7 +3524,7 @@
    "#DCA0F0",
    "#2E452C"
   ],
-  "brief": "Bio Gun model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Bio Gun model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/BioGun.png",
   "priority": "P3"
  },
@@ -3544,7 +3544,7 @@
    "#C8C8DC",
    "#463C3B"
   ],
-  "brief": "Flamethrower model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Flamethrower model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/Flamethrower.png",
   "priority": "P2"
  },
@@ -3564,7 +3564,7 @@
    "#DCA0F0",
    "#423D3A"
   ],
-  "brief": "Laser Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Laser Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/Lasergun.png",
   "priority": "P3"
  },
@@ -3584,7 +3584,7 @@
    "#282828",
    "#967E6E"
   ],
-  "brief": "Nuclear Death Ray model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the NaquadahAlloy gate colour; glow regions stay pure emissive colours.",
+  "brief": "Nuclear Death Ray model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the NaquadahAlloy gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/NDR.png",
   "priority": "P3"
  },
@@ -3604,7 +3604,7 @@
    "#DCA0F0",
    "#262A2C"
   ],
-  "brief": "PDW model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "PDW model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/PDW.png",
   "priority": "P3"
  },
@@ -3623,7 +3623,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "PDW model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "PDW model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/PDW_1.png",
   "priority": "P3"
  },
@@ -3642,7 +3642,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "PDW model sheet camo variant 2. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "PDW model sheet camo variant 2. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/PDW_2.png",
   "priority": "P3"
  },
@@ -3662,7 +3662,7 @@
    "#DCA0F0",
    "#383839"
   ],
-  "brief": "Tesla Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Tesla Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/TeslaGun.png",
   "priority": "P3"
  },
@@ -3682,7 +3682,7 @@
    "#80C8F0",
    "#382C22"
   ],
-  "brief": "AK47 model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "AK47 model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/ak47Texture.png",
   "priority": "P2"
  },
@@ -3701,7 +3701,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "AK47 model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "AK47 model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/ak47Texture_1.png",
   "priority": "P3"
  },
@@ -3721,7 +3721,7 @@
    "#999900",
    "#C6C9CE"
   ],
-  "brief": "Alien Blaster model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the HSSG gate colour; glow regions stay pure emissive colours.",
+  "brief": "Alien Blaster model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the HSSG gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/alien_blaster.png",
   "priority": "P3"
  },
@@ -3741,7 +3741,7 @@
    "#C8C8DC",
    "#33322C"
   ],
-  "brief": "AS50 Sniper Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "AS50 Sniper Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/as50Texture.png",
   "priority": "P2"
  },
@@ -3761,7 +3761,7 @@
    "#6464A0",
    "#1E1E1E"
   ],
-  "brief": "Blaster Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the TungstenSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Blaster Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the TungstenSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/blasterRifle.png",
   "priority": "P3"
  },
@@ -3781,7 +3781,7 @@
    "#808080",
    "#13100D"
   ],
-  "brief": "Bolt Action Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Steel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Bolt Action Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Steel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/boltactionrifle.png",
   "priority": "P2"
  },
@@ -3800,7 +3800,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Bolt Action Rifle model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Steel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Bolt Action Rifle model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Steel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/boltactionrifle_1.png",
   "priority": "P3"
  },
@@ -3819,7 +3819,7 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Bolt Action Rifle model sheet camo variant 2. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Steel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Bolt Action Rifle model sheet camo variant 2. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Steel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/boltactionrifle_2.png",
   "priority": "P3"
  },
@@ -3839,7 +3839,7 @@
    "#C8C8DC",
    "#5C492C"
   ],
-  "brief": "Chainsaw model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Chainsaw model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/chainsaw.png",
   "priority": "P3"
  },
@@ -3859,7 +3859,7 @@
    "#80C8F0",
    "#373737"
   ],
-  "brief": "Combat Shotgun model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Combat Shotgun model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/combatShotgun.png",
   "priority": "P2"
  },
@@ -3879,7 +3879,7 @@
    "#999900",
    "#4E3F39"
   ],
-  "brief": "Nether Blaster model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the HSSG gate colour; glow regions stay pure emissive colours.",
+  "brief": "Nether Blaster model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the HSSG gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/cyberdemonblaster.png",
   "priority": "P3"
  },
@@ -3899,7 +3899,7 @@
    "#80C8F0",
    "#434F43"
   ],
-  "brief": "Frag Grenade model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also the Flashbang (recoloured). Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Frag Grenade model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also the Flashbang (recolored). Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/fragGrenade_texture.png",
   "priority": "P2"
  },
@@ -3919,7 +3919,7 @@
    "#6464A0",
    "#636136"
   ],
-  "brief": "Golden Revolver model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also Akimbo Golden Revolvers. Metal parts take the TungstenSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Golden Revolver model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also Akimbo Golden Revolvers. Metal parts take the TungstenSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/goldenrevolver.png",
   "priority": "P2"
  },
@@ -3939,7 +3939,7 @@
    "#C8C8DC",
    "#3F3E3D"
   ],
-  "brief": "Grenade Launcher model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Grenade Launcher model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/grenadelauncher.png",
   "priority": "P2"
  },
@@ -3959,7 +3959,7 @@
    "#999900",
    "#727461"
   ],
-  "brief": "Grim Reaper model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the HSSG gate colour; glow regions stay pure emissive colours.",
+  "brief": "Grim Reaper model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the HSSG gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/grimreaper.png",
   "priority": "P3"
  },
@@ -3979,7 +3979,7 @@
    "#FF8000",
    "#615E55"
   ],
-  "brief": "Hand Cannon model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Bronze gate colour; glow regions stay pure emissive colours.",
+  "brief": "Hand Cannon model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Bronze gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/handgun.png",
   "priority": "P2"
  },
@@ -3999,7 +3999,7 @@
    "#6464A0",
    "#515150"
   ],
-  "brief": "Scatter Laser Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the TungstenSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Scatter Laser Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the TungstenSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/laserGunNew.png",
   "priority": "P3"
  },
@@ -4019,7 +4019,7 @@
    "#80C8F0",
    "#25262A"
   ],
-  "brief": "M4 Assault Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "M4 Assault Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/m4Texture.png",
   "priority": "P2"
  },
@@ -4038,7 +4038,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "M4 Assault Rifle model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "M4 Assault Rifle model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/m4Texture_1.png",
   "priority": "P3"
  },
@@ -4057,7 +4057,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "M4 Assault Rifle model sheet camo variant 2. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "M4 Assault Rifle model sheet camo variant 2. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/m4Texture_2.png",
   "priority": "P3"
  },
@@ -4076,7 +4076,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "M4 Assault Rifle model sheet camo variant 3. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "M4 Assault Rifle model sheet camo variant 3. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/m4Texture_3.png",
   "priority": "P3"
  },
@@ -4095,7 +4095,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "M4 Assault Rifle model sheet camo variant 4. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "M4 Assault Rifle model sheet camo variant 4. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/m4Texture_4.png",
   "priority": "P3"
  },
@@ -4115,7 +4115,7 @@
    "#C8C8DC",
    "#2B2325"
   ],
-  "brief": "The Infiltrator model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "The Infiltrator model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/m4_uq_Texture.png",
   "priority": "P2"
  },
@@ -4135,7 +4135,7 @@
    "#80C8F0",
    "#555958"
   ],
-  "brief": "Mac10 model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also Akimbo Mac10s. Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Mac10 model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also Akimbo Mac10s. Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/mac10texture.png",
   "priority": "P2"
  },
@@ -4155,7 +4155,7 @@
    "#C8C8DC",
    "#22272A"
   ],
-  "brief": "LMG model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "LMG model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/mg2_texture.png",
   "priority": "P2"
  },
@@ -4175,7 +4175,7 @@
    "#6464A0",
    "#F0F1F1"
   ],
-  "brief": "De-Atomizer Pistol model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also Akimbo De-Atomizer Pistols. Metal parts take the TungstenSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "De-Atomizer Pistol model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also Akimbo De-Atomizer Pistols. Metal parts take the TungstenSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/mibgun.png",
   "priority": "P3"
  },
@@ -4195,7 +4195,7 @@
    "#DCA0F0",
    "#2A2929"
   ],
-  "brief": "Minigun model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Minigun model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/minigun.png",
   "priority": "P3"
  },
@@ -4215,7 +4215,7 @@
    "#282828",
    "#241D0E"
   ],
-  "brief": "Nuke Launcher model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the NaquadahAlloy gate colour; glow regions stay pure emissive colours.",
+  "brief": "Nuke Launcher model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the NaquadahAlloy gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/nukerocketlauncher.png",
   "priority": "P3"
  },
@@ -4235,7 +4235,7 @@
    "#808080",
    "#252323"
   ],
-  "brief": "9mm Pistol model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also Akimbo Pistols. Metal parts take the Steel gate colour; glow regions stay pure emissive colours.",
+  "brief": "9mm Pistol model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also Akimbo Pistols. Metal parts take the Steel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/pistol3.png",
   "priority": "P1"
  },
@@ -4255,7 +4255,7 @@
    "#C8C8DC",
    "#2B2522"
   ],
-  "brief": "Power Hammer model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Power Hammer model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/powerHammer.png",
   "priority": "P3"
  },
@@ -4275,7 +4275,7 @@
    "#DCA0F0",
    "#2A2421"
   ],
-  "brief": "Power Hammer (Advanced) model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Power Hammer (Advanced) model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/powerHammerAdv.png",
   "priority": "P3"
  },
@@ -4295,7 +4295,7 @@
    "#DCA0F0",
    "#333A3C"
   ],
-  "brief": "Pulse Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Pulse Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/pulseRifle.png",
   "priority": "P3"
  },
@@ -4314,7 +4314,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Pulse Rifle model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Pulse Rifle model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/pulseRifle_1.png",
   "priority": "P3"
  },
@@ -4333,7 +4333,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Pulse Rifle model sheet camo variant 2. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Pulse Rifle model sheet camo variant 2. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/pulseRifle_2.png",
   "priority": "P3"
  },
@@ -4353,7 +4353,7 @@
    "#808080",
    "#433D37"
   ],
-  "brief": "Revolver model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also Akimbo Revolvers. Metal parts take the Steel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Revolver model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Shared: also Akimbo Revolvers. Metal parts take the Steel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/revolver.png",
   "priority": "P2"
  },
@@ -4373,7 +4373,7 @@
    "#C8C8DC",
    "#272728"
   ],
-  "brief": "Rocket Launcher model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Rocket Launcher model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/rocketlauncher.png",
   "priority": "P2"
  },
@@ -4393,7 +4393,7 @@
    "#808080",
    "#524C3E"
   ],
-  "brief": "Sawed Off model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Steel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Sawed Off model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Steel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/sawedOff.png",
   "priority": "P2"
  },
@@ -4413,7 +4413,7 @@
    "#C8C8DC",
    "#757559"
   ],
-  "brief": "SCAR model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "SCAR model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/scar_texture.png",
   "priority": "P2"
  },
@@ -4432,7 +4432,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "SCAR model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "SCAR model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/scar_texture_1.png",
   "priority": "P3"
  },
@@ -4452,7 +4452,7 @@
    "#DCA0F0",
    "#3C4447"
   ],
-  "brief": "Sonic Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Sonic Rifle model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Titanium gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/sonicshotgun.png",
   "priority": "P3"
  },
@@ -4472,7 +4472,7 @@
    "#808080",
    "#4F603E"
   ],
-  "brief": "Stielgranate model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Steel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Stielgranate model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Steel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/stielgranate.png",
   "priority": "P2"
  },
@@ -4492,7 +4492,7 @@
    "#80C8F0",
    "#271E15"
   ],
-  "brief": "Thompson SMG model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminium gate colour; glow regions stay pure emissive colours.",
+  "brief": "Thompson SMG model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the Aluminum gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/thompson.png",
   "priority": "P2"
  },
@@ -4512,7 +4512,7 @@
    "#C8C8DC",
    "#585842"
   ],
-  "brief": "Vector model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Vector model sheet. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/vector_texture.png",
   "priority": "P2"
  },
@@ -4531,7 +4531,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Vector model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate colour; glow regions stay pure emissive colours.",
+  "brief": "Vector model sheet camo variant 1. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. Metal parts take the StainlessSteel gate color; glow regions stay pure emissive colors.",
   "footprint_ref": "textures/guns/vector_texture_1.png",
   "priority": "P3"
  },
@@ -4569,7 +4569,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Anti Gravity Device worn-model texture (camo/colour variant of the base set): metal pack with cyan core. Keep the Techguns UV layout (64x64).",
+  "brief": "Anti Gravity Device worn-model texture (camo/color variant of the base set): metal pack with cyan core. Keep the Techguns UV layout (64x64).",
   "footprint_ref": "textures/armor/AntiGravPack_black.png",
   "priority": "P3"
  },
@@ -4588,7 +4588,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Anti Gravity Device worn-model texture (camo/colour variant of the base set): metal pack with cyan core. Keep the Techguns UV layout (64x64).",
+  "brief": "Anti Gravity Device worn-model texture (camo/color variant of the base set): metal pack with cyan core. Keep the Techguns UV layout (64x64).",
   "footprint_ref": "textures/armor/AntiGravPack_bronze.png",
   "priority": "P3"
  },
@@ -4607,7 +4607,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Anti Gravity Device worn-model texture (camo/colour variant of the base set): metal pack with cyan core. Keep the Techguns UV layout (64x64).",
+  "brief": "Anti Gravity Device worn-model texture (camo/color variant of the base set): metal pack with cyan core. Keep the Techguns UV layout (64x64).",
   "footprint_ref": "textures/armor/AntiGravPack_darkGreen.png",
   "priority": "P3"
  },
@@ -4626,7 +4626,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "Anti Gravity Device worn-model texture (camo/colour variant of the base set): metal pack with cyan core. Keep the Techguns UV layout (64x64).",
+  "brief": "Anti Gravity Device worn-model texture (camo/color variant of the base set): metal pack with cyan core. Keep the Techguns UV layout (64x64).",
   "footprint_ref": "textures/armor/AntiGravPack_silver.png",
   "priority": "P3"
  },
@@ -4664,7 +4664,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Beret worn-model texture (camo/colour variant of the base set): wool beret. Keep the Techguns UV layout (64x64).",
+  "brief": "Beret worn-model texture (camo/color variant of the base set): wool beret. Keep the Techguns UV layout (64x64).",
   "footprint_ref": "textures/armor/beret_texture_black.png",
   "priority": "P3"
  },
@@ -4683,7 +4683,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Beret worn-model texture (camo/colour variant of the base set): wool beret. Keep the Techguns UV layout (64x64).",
+  "brief": "Beret worn-model texture (camo/color variant of the base set): wool beret. Keep the Techguns UV layout (64x64).",
   "footprint_ref": "textures/armor/beret_texture_green.png",
   "priority": "P3"
  },
@@ -4782,7 +4782,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "T3 Hazardous Environment (HEV) worn-model texture (camo/colour variant of the base set): sealed brown-orange suit. Keep the Techguns UV layout (128x64).",
+  "brief": "T3 Hazardous Environment (HEV) worn-model texture (camo/color variant of the base set): sealed brown-orange suit. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/hevsuit_black_1.png",
   "priority": "P3"
  },
@@ -4802,7 +4802,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "T3 Hazardous Environment (HEV) worn-model texture (camo/colour variant of the base set): sealed brown-orange suit. Keep the Techguns UV layout (128x64).",
+  "brief": "T3 Hazardous Environment (HEV) worn-model texture (camo/color variant of the base set): sealed brown-orange suit. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/hevsuit_black_2.png",
   "priority": "P3"
  },
@@ -4822,7 +4822,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "T3 Hazardous Environment (HEV) worn-model texture (camo/colour variant of the base set): sealed brown-orange suit. Keep the Techguns UV layout (128x64).",
+  "brief": "T3 Hazardous Environment (HEV) worn-model texture (camo/color variant of the base set): sealed brown-orange suit. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/hevsuit_silver_1.png",
   "priority": "P3"
  },
@@ -4842,7 +4842,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "T3 Hazardous Environment (HEV) worn-model texture (camo/colour variant of the base set): sealed brown-orange suit. Keep the Techguns UV layout (128x64).",
+  "brief": "T3 Hazardous Environment (HEV) worn-model texture (camo/color variant of the base set): sealed brown-orange suit. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/hevsuit_silver_2.png",
   "priority": "P3"
  },
@@ -4919,7 +4919,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "T3 Power Armor worn-model texture: bulky slate power armour. Keep the Techguns UV layout (256x128).",
+  "brief": "T3 Power Armor worn-model texture: bulky slate power armor. Keep the Techguns UV layout (256x128).",
   "footprint_ref": "textures/armor/powerarmor.png",
   "priority": "P2"
  },
@@ -4938,7 +4938,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "T3 Power Armor worn-model texture (camo/colour variant of the base set): bulky slate power armour. Keep the Techguns UV layout (256x128).",
+  "brief": "T3 Power Armor worn-model texture (camo/color variant of the base set): bulky slate power armor. Keep the Techguns UV layout (256x128).",
   "footprint_ref": "textures/armor/powerarmor_dark.png",
   "priority": "P3"
  },
@@ -4957,7 +4957,7 @@
   "palette": [
    "#6464A0"
   ],
-  "brief": "T3 Power Armor worn-model texture (camo/colour variant of the base set): bulky slate power armour. Keep the Techguns UV layout (256x128).",
+  "brief": "T3 Power Armor worn-model texture (camo/color variant of the base set): bulky slate power armor. Keep the Techguns UV layout (256x128).",
   "footprint_ref": "textures/armor/powerarmor_dark2.png",
   "priority": "P3"
  },
@@ -4977,7 +4977,7 @@
    "#DCA0F0",
    "#FF8000"
   ],
-  "brief": "Steam armour worn-model texture: pipes, vents and bronze plates. Keep the Techguns UV layout (256x128).",
+  "brief": "Steam armor worn-model texture: pipes, vents and bronze plates. Keep the Techguns UV layout (256x128).",
   "footprint_ref": "textures/armor/steam_armor.png",
   "priority": "P2"
  },
@@ -4997,7 +4997,7 @@
    "#DCA0F0",
    "#FF8000"
   ],
-  "brief": "Steam armour worn-model texture (camo/colour variant of the base set): pipes, vents and bronze plates. Keep the Techguns UV layout (256x128).",
+  "brief": "Steam armor worn-model texture (camo/color variant of the base set): pipes, vents and bronze plates. Keep the Techguns UV layout (256x128).",
   "footprint_ref": "textures/armor/steam_armor_1.png",
   "priority": "P3"
  },
@@ -5017,7 +5017,7 @@
    "#DCA0F0",
    "#FF8000"
   ],
-  "brief": "Steam armour worn-model texture (camo/colour variant of the base set): pipes, vents and bronze plates. Keep the Techguns UV layout (256x128).",
+  "brief": "Steam armor worn-model texture (camo/color variant of the base set): pipes, vents and bronze plates. Keep the Techguns UV layout (256x128).",
   "footprint_ref": "textures/armor/steam_armor_hazard.png",
   "priority": "P3"
  },
@@ -5037,7 +5037,7 @@
    "#DCA0F0",
    "#FF8000"
   ],
-  "brief": "Steam armour worn-model texture (camo/colour variant of the base set): pipes, vents and bronze plates. Keep the Techguns UV layout (256x128).",
+  "brief": "Steam armor worn-model texture (camo/color variant of the base set): pipes, vents and bronze plates. Keep the Techguns UV layout (256x128).",
   "footprint_ref": "textures/armor/steam_armor_iron.png",
   "priority": "P3"
  },
@@ -5057,7 +5057,7 @@
    "#DCA0F0",
    "#FF8000"
   ],
-  "brief": "Steam armour worn-model texture (camo/colour variant of the base set): pipes, vents and bronze plates. Keep the Techguns UV layout (256x128).",
+  "brief": "Steam armor worn-model texture (camo/color variant of the base set): pipes, vents and bronze plates. Keep the Techguns UV layout (256x128).",
   "footprint_ref": "textures/armor/steam_armor_rusty.png",
   "priority": "P3"
  },
@@ -5152,7 +5152,7 @@
   "palette": [
    "#C8B4B4"
   ],
-  "brief": "T1 Miner worn-model texture (camo/colour variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Miner worn-model texture (camo/color variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_miner_black_1.png",
   "priority": "P3"
  },
@@ -5171,7 +5171,7 @@
   "palette": [
    "#C8B4B4"
   ],
-  "brief": "T1 Miner worn-model texture (camo/colour variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Miner worn-model texture (camo/color variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_miner_black_2.png",
   "priority": "P3"
  },
@@ -5190,7 +5190,7 @@
   "palette": [
    "#C8B4B4"
   ],
-  "brief": "T1 Miner worn-model texture (camo/colour variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Miner worn-model texture (camo/color variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_miner_green_1.png",
   "priority": "P3"
  },
@@ -5209,7 +5209,7 @@
   "palette": [
    "#C8B4B4"
   ],
-  "brief": "T1 Miner worn-model texture (camo/colour variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Miner worn-model texture (camo/color variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_miner_green_2.png",
   "priority": "P3"
  },
@@ -5228,7 +5228,7 @@
   "palette": [
    "#C8B4B4"
   ],
-  "brief": "T1 Miner worn-model texture (camo/colour variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Miner worn-model texture (camo/color variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_miner_red_1.png",
   "priority": "P3"
  },
@@ -5247,7 +5247,7 @@
   "palette": [
    "#C8B4B4"
   ],
-  "brief": "T1 Miner worn-model texture (camo/colour variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Miner worn-model texture (camo/color variant of the base set): blue canvas, yellow lamp helmet. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_miner_red_2.png",
   "priority": "P3"
  },
@@ -5304,7 +5304,7 @@
   "palette": [
    "#FF8000"
   ],
-  "brief": "T1 Scout / Bandit worn-model texture (camo/colour variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Scout / Bandit worn-model texture (camo/color variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_scout_black_1.png",
   "priority": "P3"
  },
@@ -5323,7 +5323,7 @@
   "palette": [
    "#FF8000"
   ],
-  "brief": "T1 Scout / Bandit worn-model texture (camo/colour variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Scout / Bandit worn-model texture (camo/color variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_scout_black_2.png",
   "priority": "P3"
  },
@@ -5342,7 +5342,7 @@
   "palette": [
    "#FF8000"
   ],
-  "brief": "T1 Scout / Bandit worn-model texture (camo/colour variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Scout / Bandit worn-model texture (camo/color variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_scout_forest_1.png",
   "priority": "P3"
  },
@@ -5361,7 +5361,7 @@
   "palette": [
    "#FF8000"
   ],
-  "brief": "T1 Scout / Bandit worn-model texture (camo/colour variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Scout / Bandit worn-model texture (camo/color variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_scout_forest_2.png",
   "priority": "P3"
  },
@@ -5380,7 +5380,7 @@
   "palette": [
    "#FF8000"
   ],
-  "brief": "T1 Scout / Bandit worn-model texture (camo/colour variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Scout / Bandit worn-model texture (camo/color variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_scout_snow_1.png",
   "priority": "P3"
  },
@@ -5399,7 +5399,7 @@
   "palette": [
    "#FF8000"
   ],
-  "brief": "T1 Scout / Bandit worn-model texture (camo/colour variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
+  "brief": "T1 Scout / Bandit worn-model texture (camo/color variant of the base set): rough bandit cloth, bronze studs. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t1_scout_snow_2.png",
   "priority": "P3"
  },
@@ -5456,7 +5456,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "T2 Combat worn-model texture (camo/colour variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
+  "brief": "T2 Combat worn-model texture (camo/color variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t2_combat_arctic_1.png",
   "priority": "P3"
  },
@@ -5475,7 +5475,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "T2 Combat worn-model texture (camo/colour variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
+  "brief": "T2 Combat worn-model texture (camo/color variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t2_combat_arctic_2.png",
   "priority": "P3"
  },
@@ -5494,7 +5494,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "T2 Combat worn-model texture (camo/colour variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
+  "brief": "T2 Combat worn-model texture (camo/color variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t2_combat_desert_1.png",
   "priority": "P3"
  },
@@ -5513,7 +5513,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "T2 Combat worn-model texture (camo/colour variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
+  "brief": "T2 Combat worn-model texture (camo/color variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t2_combat_desert_2.png",
   "priority": "P3"
  },
@@ -5532,7 +5532,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "T2 Combat worn-model texture (camo/colour variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
+  "brief": "T2 Combat worn-model texture (camo/color variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t2_combat_security_1.png",
   "priority": "P3"
  },
@@ -5551,7 +5551,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "T2 Combat worn-model texture (camo/colour variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
+  "brief": "T2 Combat worn-model texture (camo/color variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t2_combat_security_2.png",
   "priority": "P3"
  },
@@ -5570,7 +5570,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "T2 Combat worn-model texture (camo/colour variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
+  "brief": "T2 Combat worn-model texture (camo/color variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t2_combat_swat_1.png",
   "priority": "P3"
  },
@@ -5589,7 +5589,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "T2 Combat worn-model texture (camo/colour variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
+  "brief": "T2 Combat worn-model texture (camo/color variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t2_combat_swat_2.png",
   "priority": "P3"
  },
@@ -5608,7 +5608,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "T2 Combat worn-model texture (camo/colour variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
+  "brief": "T2 Combat worn-model texture (camo/color variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t2_combat_wood_1.png",
   "priority": "P3"
  },
@@ -5627,7 +5627,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "T2 Combat worn-model texture (camo/colour variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
+  "brief": "T2 Combat worn-model texture (camo/color variant of the base set): dark olive plated combat gear. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t2_combat_wood_2.png",
   "priority": "P3"
  },
@@ -5742,7 +5742,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "T3 Advanced Combat worn-model texture: blue-grey fibre armour. Keep the Techguns UV layout (128x64).",
+  "brief": "T3 Advanced Combat worn-model texture: blue-gray fiber armor. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t3_combat_1.png",
   "priority": "P2"
  },
@@ -5762,7 +5762,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "T3 Advanced Combat worn-model texture: blue-grey fibre armour. Keep the Techguns UV layout (128x64).",
+  "brief": "T3 Advanced Combat worn-model texture: blue-gray fiber armor. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t3_combat_2.png",
   "priority": "P2"
  },
@@ -5782,7 +5782,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "T3 Advanced Combat worn-model texture (camo/colour variant of the base set): blue-grey fibre armour. Keep the Techguns UV layout (128x64).",
+  "brief": "T3 Advanced Combat worn-model texture (camo/color variant of the base set): blue-gray fiber armor. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t3_combat_green_1.png",
   "priority": "P3"
  },
@@ -5802,7 +5802,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "T3 Advanced Combat worn-model texture (camo/colour variant of the base set): blue-grey fibre armour. Keep the Techguns UV layout (128x64).",
+  "brief": "T3 Advanced Combat worn-model texture (camo/color variant of the base set): blue-gray fiber armor. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t3_combat_green_2.png",
   "priority": "P3"
  },
@@ -5822,7 +5822,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "T3 Advanced Combat worn-model texture (camo/colour variant of the base set): blue-grey fibre armour. Keep the Techguns UV layout (128x64).",
+  "brief": "T3 Advanced Combat worn-model texture (camo/color variant of the base set): blue-gray fiber armor. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t3_combat_silver_1.png",
   "priority": "P3"
  },
@@ -5842,7 +5842,7 @@
    "#DCA0F0",
    "#A07010"
   ],
-  "brief": "T3 Advanced Combat worn-model texture (camo/colour variant of the base set): blue-grey fibre armour. Keep the Techguns UV layout (128x64).",
+  "brief": "T3 Advanced Combat worn-model texture (camo/color variant of the base set): blue-gray fiber armor. Keep the Techguns UV layout (128x64).",
   "footprint_ref": "textures/armor/t3_combat_silver_2.png",
   "priority": "P3"
  },
@@ -5902,7 +5902,7 @@
    "#6464A0",
    "#DCA0F0"
   ],
-  "brief": "T3 Exo Suit worn-model texture (camo/colour variant of the base set): exoskeleton frame. Keep the Techguns UV layout (128x128).",
+  "brief": "T3 Exo Suit worn-model texture (camo/color variant of the base set): exoskeleton frame. Keep the Techguns UV layout (128x128).",
   "footprint_ref": "textures/armor/t3_exo_green_1.png",
   "priority": "P3"
  },
@@ -5922,7 +5922,7 @@
    "#6464A0",
    "#DCA0F0"
   ],
-  "brief": "T3 Exo Suit worn-model texture (camo/colour variant of the base set): exoskeleton frame. Keep the Techguns UV layout (128x128).",
+  "brief": "T3 Exo Suit worn-model texture (camo/color variant of the base set): exoskeleton frame. Keep the Techguns UV layout (128x128).",
   "footprint_ref": "textures/armor/t3_exo_green_2.png",
   "priority": "P3"
  },
@@ -5942,7 +5942,7 @@
    "#6464A0",
    "#DCA0F0"
   ],
-  "brief": "T3 Exo Suit worn-model texture (camo/colour variant of the base set): exoskeleton frame. Keep the Techguns UV layout (128x128).",
+  "brief": "T3 Exo Suit worn-model texture (camo/color variant of the base set): exoskeleton frame. Keep the Techguns UV layout (128x128).",
   "footprint_ref": "textures/armor/t3_exo_silver_1.png",
   "priority": "P3"
  },
@@ -5962,7 +5962,7 @@
    "#6464A0",
    "#DCA0F0"
   ],
-  "brief": "T3 Exo Suit worn-model texture (camo/colour variant of the base set): exoskeleton frame. Keep the Techguns UV layout (128x128).",
+  "brief": "T3 Exo Suit worn-model texture (camo/color variant of the base set): exoskeleton frame. Keep the Techguns UV layout (128x128).",
   "footprint_ref": "textures/armor/t3_exo_silver_2.png",
   "priority": "P3"
  },
@@ -6000,7 +6000,7 @@
   "palette": [
    "#C8C8C8"
   ],
-  "brief": "Tactical Mask worn-model texture (camo/colour variant of the base set): full-face mask. Keep the Techguns UV layout (64x64).",
+  "brief": "Tactical Mask worn-model texture (camo/color variant of the base set): full-face mask. Keep the Techguns UV layout (64x64).",
   "footprint_ref": "textures/armor/tacticalMask_green.png",
   "priority": "P3"
  },
@@ -6019,7 +6019,7 @@
   "palette": [
    "#C8C8C8"
   ],
-  "brief": "Tactical Mask worn-model texture (camo/colour variant of the base set): full-face mask. Keep the Techguns UV layout (64x64).",
+  "brief": "Tactical Mask worn-model texture (camo/color variant of the base set): full-face mask. Keep the Techguns UV layout (64x64).",
   "footprint_ref": "textures/armor/tacticalMask_white.png",
   "priority": "P3"
  },
@@ -6038,7 +6038,7 @@
   "palette": [
    "#C8C8C8"
   ],
-  "brief": "Tactical Mask worn-model texture (camo/colour variant of the base set): full-face mask. Keep the Techguns UV layout (64x64).",
+  "brief": "Tactical Mask worn-model texture (camo/color variant of the base set): full-face mask. Keep the Techguns UV layout (64x64).",
   "footprint_ref": "textures/armor/tacticalmask_lightgreen.png",
   "priority": "P3"
  },
@@ -6095,7 +6095,7 @@
   "palette": [
    "#484E2B"
   ],
-  "brief": "Zombie Soldier, Zombie Farmer and Zombie Miner: rotting green skin, red eyes, torn grey-brown fatigues. Keep the Techguns UV layout and size.",
+  "brief": "Zombie Soldier, Zombie Farmer and Zombie Miner: rotting green skin, red eyes, torn gray-brown fatigues. Keep the Techguns UV layout and size.",
   "footprint_ref": "textures/entity/zombie_soldier.png",
   "priority": "P3"
  },
@@ -6114,7 +6114,7 @@
   "palette": [
    "#5B514B"
   ],
-  "brief": "Bandit: dark skin, black dreadlocks, light-grey vest. Keep the Techguns UV layout and size.",
+  "brief": "Bandit: dark skin, black dreadlocks, light-gray vest. Keep the Techguns UV layout and size.",
   "footprint_ref": "textures/entity/bandit.png",
   "priority": "P3"
  },
@@ -6133,7 +6133,7 @@
   "palette": [
    "#594F49"
   ],
-  "brief": "Dictator Dave: bandit base with sunglasses and moustache-beard. Keep the Techguns UV layout and size.",
+  "brief": "Dictator Dave: bandit base with sunglasses and mustache-beard. Keep the Techguns UV layout and size.",
   "footprint_ref": "textures/entity/dictator.png",
   "priority": "P3"
  },
@@ -6152,7 +6152,7 @@
   "palette": [
    "#38120D"
   ],
-  "brief": "Cyberdemon: red muscle, grey cybernetic implants, orange cables. Keep the Techguns UV layout and size.",
+  "brief": "Cyberdemon: red muscle, gray cybernetic implants, orange cables. Keep the Techguns UV layout and size.",
   "footprint_ref": "textures/entity/cyberdemon.png",
   "priority": "P3"
  },
@@ -6247,7 +6247,7 @@
   "palette": [
    "#3A402A"
   ],
-  "brief": "Attack Helicopter (OBJ UV atlas): dark olive-grey military helicopter atlas. Keep the Techguns UV layout and size.",
+  "brief": "Attack Helicopter (OBJ UV atlas): dark olive-gray military helicopter atlas. Keep the Techguns UV layout and size.",
   "footprint_ref": "textures/entity/apache.png",
   "priority": "P3"
  },
@@ -6343,7 +6343,7 @@
    "#C00000",
    "#E06000"
   ],
-  "brief": "Projectile texture, red laser bolt gradient, white-hot centre.",
+  "brief": "Projectile texture, red laser bolt gradient, white-hot center.",
   "footprint_ref": "textures/entity/Laser.png",
   "priority": "P3"
  },
@@ -6363,7 +6363,7 @@
    "#004080",
    "#2060C0"
   ],
-  "brief": "Projectile texture, blue energy bolt gradient, white-hot centre.",
+  "brief": "Projectile texture, blue energy bolt gradient, white-hot center.",
   "footprint_ref": "textures/entity/BlueBeam.png",
   "priority": "P3"
  },
@@ -6400,7 +6400,7 @@
   "sample_rate": null,
   "target_lufs": null,
   "palette": [],
-  "brief": "Attack Helicopter OBJ mesh (new topology to the Techguns UV atlas model.entity.apache). Not an image: modelled, not painted.",
+  "brief": "Attack Helicopter OBJ mesh (new topology to the Techguns UV atlas model.entity.apache). Not an image: modeled, not painted.",
   "footprint_ref": "models/entity/apache.obj",
   "priority": "P3"
  },
@@ -6456,7 +6456,7 @@
   "palette": [
    "#717171"
   ],
-  "brief": "Turret base and head model sheet, no armour: mid-grey concrete body, charcoal trim. Same UV layout in every variant.",
+  "brief": "Turret base and head model sheet, no armor: mid-gray concrete body, charcoal trim. Same UV layout in every variant.",
   "footprint_ref": "textures/blocks/TurretBase.png",
   "priority": "P3"
  },
@@ -6475,7 +6475,7 @@
   "palette": [
    "#C8C8C8"
   ],
-  "brief": "Turret base and head model sheet, iron armour: clean light grey. Same UV layout in every variant.",
+  "brief": "Turret base and head model sheet, iron armor: clean light gray. Same UV layout in every variant.",
   "footprint_ref": "textures/blocks/TurretBase_2.png",
   "priority": "P3"
  },
@@ -6494,14 +6494,14 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Turret base and head model sheet, steel armour: darker speckled grey. Same UV layout in every variant.",
+  "brief": "Turret base and head model sheet, steel armor: darker speckled gray. Same UV layout in every variant.",
   "footprint_ref": "textures/blocks/TurretBase_3.png",
   "priority": "P3"
  },
  {
-  "id": "model.machine.turret_base_aluminium",
+  "id": "model.machine.turret_base_aluminum",
   "kind": "model",
-  "path": "textures/models/machines/turret_base_aluminium.png",
+  "path": "textures/models/machines/turret_base_aluminum.png",
   "width": 128,
   "height": 128,
   "frames": 1,
@@ -6513,7 +6513,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Turret base and head model sheet, aluminium armour (was obsidian steel: remapped by 0010): cool light-blue grey. Same UV layout in every variant.",
+  "brief": "Turret base and head model sheet, aluminum armor (was obsidian steel: remapped by 0010): cool light-blue gray. Same UV layout in every variant.",
   "footprint_ref": "textures/blocks/TurretBase_4.png",
   "priority": "P3"
  },
@@ -6532,7 +6532,7 @@
   "palette": [
    "#A07010"
   ],
-  "brief": "Turret base and head model sheet, carbon armour: near-black fibre. Same UV layout in every variant.",
+  "brief": "Turret base and head model sheet, carbon armor: near-black fiber. Same UV layout in every variant.",
   "footprint_ref": "textures/blocks/TurretBase_5.png",
   "priority": "P3"
  },
@@ -6551,7 +6551,7 @@
   "palette": [
    "#303030"
   ],
-  "brief": "Explosive Charge model sheet, unarmed: dark olive plastic charge pack, steel-blue straps, grey detonator (LCD 'RDY' green).",
+  "brief": "Explosive Charge model sheet, unarmed: dark olive plastic charge pack, steel-blue straps, gray detonator (LCD 'RDY' green).",
   "footprint_ref": "textures/blocks/ExpCharge.png",
   "priority": "P3"
  },
@@ -6570,7 +6570,7 @@
   "palette": [
    "#303030"
   ],
-  "brief": "Explosive Charge model sheet, armed: dark olive plastic charge pack, steel-blue straps, grey detonator (LCD 'RDY' green); LCD text red 'ARM'.",
+  "brief": "Explosive Charge model sheet, armed: dark olive plastic charge pack, steel-blue straps, gray detonator (LCD 'RDY' green); LCD text red 'ARM'.",
   "footprint_ref": "textures/blocks/ExpCharge_2.png",
   "priority": "P3"
  },
@@ -6589,7 +6589,7 @@
   "palette": [
    "#901010"
   ],
-  "brief": "Advanced Explosive Charge model sheet, unarmed: dynamite bundle in dark red, grey detonator (LCD 'RDY' green).",
+  "brief": "Advanced Explosive Charge model sheet, unarmed: dynamite bundle in dark red, gray detonator (LCD 'RDY' green).",
   "footprint_ref": "textures/blocks/tntCharge.png",
   "priority": "P3"
  },
@@ -6608,7 +6608,7 @@
   "palette": [
    "#901010"
   ],
-  "brief": "Advanced Explosive Charge model sheet, armed: dynamite bundle in dark red, grey detonator (LCD 'RDY' green); LCD text red 'ARM'.",
+  "brief": "Advanced Explosive Charge model sheet, armed: dynamite bundle in dark red, gray detonator (LCD 'RDY' green); LCD text red 'ARM'.",
   "footprint_ref": "textures/blocks/tntCharge_2.png",
   "priority": "P3"
  },
@@ -6709,7 +6709,7 @@
    "#C03030",
    "#203060"
   ],
-  "brief": "Camp flag post model sheet: grey concrete foot, pale poles, cloth strip with red/white/navy flag.",
+  "brief": "Camp flag post model sheet: gray concrete foot, pale poles, cloth strip with red/white/navy flag.",
   "footprint_ref": "textures/blocks/flagpost.png",
   "priority": "P3"
  },
@@ -7417,7 +7417,7 @@
    "#30A030",
    "#3050C0"
   ],
-  "brief": "Camo Bench overlay, top: grey housing with lamps, louvred vent and rollers. Cosmetic machine.",
+  "brief": "Camo Bench overlay, top: gray housing with lamps, louvered vent and rollers. Cosmetic machine.",
   "footprint_ref": "textures/blocks/paintmachine_textures.png (cube atlas, role reference only)",
   "priority": "P3"
  },
@@ -7586,9 +7586,9 @@
   "priority": "P3"
  },
  {
-  "id": "block.machine.armoury_gantry.overlay_front",
+  "id": "block.machine.armory_gantry.overlay_front",
   "kind": "block",
-  "path": "textures/blocks/machines/armoury_gantry/OVERLAY_FRONT.png",
+  "path": "textures/blocks/machines/armory_gantry/OVERLAY_FRONT.png",
   "width": 16,
   "height": 16,
   "frames": 1,
@@ -7601,14 +7601,14 @@
    "#DCA0F0",
    "#C8C8DC"
   ],
-  "brief": "Armoury Gantry controller front overlay, inactive: hoist hook and cradle emblem. Controller tier HV.",
+  "brief": "Armory Gantry controller front overlay, inactive: hoist hook and cradle emblem. Controller tier HV.",
   "footprint_ref": "(new, GT controller overlay pattern)",
   "priority": "P3"
  },
  {
-  "id": "block.machine.armoury_gantry.overlay_front_active",
+  "id": "block.machine.armory_gantry.overlay_front_active",
   "kind": "block",
-  "path": "textures/blocks/machines/armoury_gantry/OVERLAY_FRONT_ACTIVE.png",
+  "path": "textures/blocks/machines/armory_gantry/OVERLAY_FRONT_ACTIVE.png",
   "width": 16,
   "height": 64,
   "frames": 4,
@@ -7621,14 +7621,14 @@
    "#DCA0F0",
    "#C8C8DC"
   ],
-  "brief": "Armoury Gantry controller front overlay, active: active: hook lowers. 4-frame strip, 3 ticks per frame.",
+  "brief": "Armory Gantry controller front overlay, active: active: hook lowers. 4-frame strip, 3 ticks per frame.",
   "footprint_ref": "(new, GT controller overlay pattern)",
   "priority": "P3"
  },
  {
-  "id": "block.machine.armoury_gantry.overlay_front_active_glow",
+  "id": "block.machine.armory_gantry.overlay_front_active_glow",
   "kind": "block",
-  "path": "textures/blocks/machines/armoury_gantry/OVERLAY_FRONT_ACTIVE_GLOW.png",
+  "path": "textures/blocks/machines/armory_gantry/OVERLAY_FRONT_ACTIVE_GLOW.png",
   "width": 16,
   "height": 64,
   "frames": 4,
@@ -7641,7 +7641,7 @@
    "#DCA0F0",
    "#C8C8DC"
   ],
-  "brief": "Armoury Gantry controller active glow layer, same 4-frame strip.",
+  "brief": "Armory Gantry controller active glow layer, same 4-frame strip.",
   "footprint_ref": "(new)",
   "priority": "P3"
  },
@@ -7760,7 +7760,7 @@
   "palette": [
    "#C8C8DC"
   ],
-  "brief": "Works Casing - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Ammunition Works hull. Ribbed grey-steel panel with rivet lines; plain, hatches allowed on feeder/packing positions.",
+  "brief": "Works Casing - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Ammunition Works hull. Ribbed gray-steel panel with rivet lines; plain, hatches allowed on feeder/packing positions.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -7820,7 +7820,7 @@
    "#DCA0F0",
    "#FAFAFA"
   ],
-  "brief": "Reaction Casing (Reaction Chamber Casing) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Retort and Reaction Chamber hull. Smooth white-grey bevelled panels with hazard-striped corner marks.",
+  "brief": "Reaction Casing (Reaction Chamber Casing) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Retort and Reaction Chamber hull. Smooth white-gray beveled panels with hazard-striped corner marks.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -7840,7 +7840,7 @@
    "#DCA0F0",
    "#C8C8DC"
   ],
-  "brief": "Gantry Casing - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armoury Gantry hull. Painted blue-grey steel panel with yellow edge stripe.",
+  "brief": "Gantry Casing - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armory Gantry hull. Painted blue-gray steel panel with yellow edge stripe.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -7859,7 +7859,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Gantry Beam - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armoury Gantry roof beam. I-beam end and side, yellow-black safety stripe.",
+  "brief": "Gantry Beam - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armory Gantry roof beam. I-beam end and side, yellow-black safety stripe.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -7879,7 +7879,7 @@
    "#DCA0F0",
    "#808080"
   ],
-  "brief": "Gantry Hoist - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armoury Gantry hoist. Motor housing with cable drum; one face shows the hook block.",
+  "brief": "Gantry Hoist - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armory Gantry hoist. Motor housing with cable drum; one face shows the hook block.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -7899,7 +7899,7 @@
    "#DCA0F0",
    "#000000"
   ],
-  "brief": "Repair Cradle (side) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armoury Gantry repair cradle side: padded clamp frame.",
+  "brief": "Repair Cradle (side) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armory Gantry repair cradle side: padded clamp frame.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -7919,7 +7919,7 @@
    "#000000",
    "#808080"
   ],
-  "brief": "Repair Cradle (top) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armoury Gantry repair cradle pad: grey rubber mat with clamp slots.",
+  "brief": "Repair Cradle (top) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armory Gantry repair cradle pad: gray rubber mat with clamp slots.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -7938,7 +7938,7 @@
   "palette": [
    "#C8C8C8"
   ],
-  "brief": "Bastion Plating, Iron (meta 0) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Rampart wall plating, iron meta: plain riveted iron plate, armour value 5.",
+  "brief": "Bastion Plating, Iron (meta 0) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Rampart wall plating, iron meta: plain riveted iron plate, armor value 5.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -7957,14 +7957,14 @@
   "palette": [
    "#808080"
   ],
-  "brief": "Bastion Plating, Steel (meta 1) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Rampart wall plating, steel meta: darker riveted steel plate, armour value 10.",
+  "brief": "Bastion Plating, Steel (meta 1) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Rampart wall plating, steel meta: darker riveted steel plate, armor value 10.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
  {
-  "id": "block.casing.bastion_plating_aluminium",
+  "id": "block.casing.bastion_plating_aluminum",
   "kind": "block",
-  "path": "textures/blocks/casings/bastion_plating_aluminium.png",
+  "path": "textures/blocks/casings/bastion_plating_aluminum.png",
   "width": 16,
   "height": 16,
   "frames": 1,
@@ -7976,7 +7976,7 @@
   "palette": [
    "#80C8F0"
   ],
-  "brief": "Bastion Plating, Aluminium (meta 2) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Rampart wall plating, aluminium meta: light blue-grey plate, armour value 15.",
+  "brief": "Bastion Plating, Aluminum (meta 2) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Rampart wall plating, aluminum meta: light blue-gray plate, armor value 15.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -7995,7 +7995,7 @@
   "palette": [
    "#A07010"
   ],
-  "brief": "Bastion Plating, Carbon (meta 3) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Rampart wall plating, carbon meta: near-black fibre-weave plate, armour value 20.",
+  "brief": "Bastion Plating, Carbon (meta 3) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Rampart wall plating, carbon meta: near-black fiber-weave plate, armor value 20.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -8385,7 +8385,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_blue-ctm'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
+  "brief": "Shipping container (Chisel CTM group), 'container_blue-ctm'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/container_blue-ctm.png",
   "priority": "P3"
  },
@@ -8404,7 +8404,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_blue'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (16x16).",
+  "brief": "Shipping container (Chisel CTM group), 'container_blue'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (16x16).",
   "footprint_ref": "textures/blocks/container_blue.png",
   "priority": "P3"
  },
@@ -8423,7 +8423,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_green-ctm'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
+  "brief": "Shipping container (Chisel CTM group), 'container_green-ctm'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/container_green-ctm.png",
   "priority": "P3"
  },
@@ -8442,7 +8442,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_green'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (16x16).",
+  "brief": "Shipping container (Chisel CTM group), 'container_green'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (16x16).",
   "footprint_ref": "textures/blocks/container_green.png",
   "priority": "P3"
  },
@@ -8461,7 +8461,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_orange-ctm'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
+  "brief": "Shipping container (Chisel CTM group), 'container_orange-ctm'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/container_orange-ctm.png",
   "priority": "P3"
  },
@@ -8480,7 +8480,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_orange'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (16x16).",
+  "brief": "Shipping container (Chisel CTM group), 'container_orange'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (16x16).",
   "footprint_ref": "textures/blocks/container_orange.png",
   "priority": "P3"
  },
@@ -8499,7 +8499,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_red-ctm'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
+  "brief": "Shipping container (Chisel CTM group), 'container_red-ctm'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/container_red-ctm.png",
   "priority": "P3"
  },
@@ -8518,7 +8518,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_red'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (16x16).",
+  "brief": "Shipping container (Chisel CTM group), 'container_red'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (16x16).",
   "footprint_ref": "textures/blocks/container_red.png",
   "priority": "P3"
  },
@@ -8537,7 +8537,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_scifi1-ctm'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (64x64).",
+  "brief": "Shipping container (Chisel CTM group), 'container_scifi1-ctm'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (64x64).",
   "footprint_ref": "textures/blocks/container_scifi1-ctm.png",
   "priority": "P3"
  },
@@ -8556,7 +8556,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_scifi1'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
+  "brief": "Shipping container (Chisel CTM group), 'container_scifi1'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/container_scifi1.png",
   "priority": "P3"
  },
@@ -8575,7 +8575,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_scifi_rusty-ctm'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (64x64).",
+  "brief": "Shipping container (Chisel CTM group), 'container_scifi_rusty-ctm'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (64x64).",
   "footprint_ref": "textures/blocks/container_scifi_rusty-ctm.png",
   "priority": "P3"
  },
@@ -8594,7 +8594,7 @@
   "palette": [
    "#8B2A2A"
   ],
-  "brief": "Shipping container (Chisel CTM group), 'container_scifi_rusty'. Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
+  "brief": "Shipping container (Chisel CTM group), 'container_scifi_rusty'. Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles. Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/container_scifi_rusty.png",
   "priority": "P3"
  },
@@ -8693,7 +8693,7 @@
   "palette": [
    "#C8C8C8"
   ],
-  "brief": "Bunker door, 'door01'. Riveted grey steel door half (upper has window slit). Footprint kept (32x32).",
+  "brief": "Bunker door, 'door01'. Riveted gray steel door half (upper has window slit). Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/door01.png",
   "priority": "P3"
  },
@@ -8712,7 +8712,7 @@
   "palette": [
    "#C8C8C8"
   ],
-  "brief": "Bunker door, 'door01_lower'. Riveted grey steel door half (upper has window slit). Footprint kept (32x32).",
+  "brief": "Bunker door, 'door01_lower'. Riveted gray steel door half (upper has window slit). Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/door01_lower.png",
   "priority": "P3"
  },
@@ -8731,7 +8731,7 @@
   "palette": [
    "#C8C8C8"
   ],
-  "brief": "Bunker door, 'door01_upper'. Riveted grey steel door half (upper has window slit). Footprint kept (32x32).",
+  "brief": "Bunker door, 'door01_upper'. Riveted gray steel door half (upper has window slit). Footprint kept (32x32).",
   "footprint_ref": "textures/blocks/door01_upper.png",
   "priority": "P3"
  },
@@ -9484,7 +9484,7 @@
    "#C80000",
    "#FFB400"
   ],
-  "brief": "HUD sprite sheet: ammo-type icons, magazine/clip pips, armour pips (full/half/empty), hit-marker, sprint/charge bar caps. Transparent background, 256x256 sheet; only the used regions are painted.",
+  "brief": "HUD sprite sheet: ammo-type icons, magazine/clip pips, armor pips (full/half/empty), hit-marker, sprint/charge bar caps. Transparent background, 256x256 sheet; only the used regions are painted.",
   "footprint_ref": "textures/gui/TGPlayerInventory.png (layout reference only)",
   "priority": "P1"
  },
@@ -9679,7 +9679,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Shared multiblock panel sprites for Ammunition Works, Retort, Armoury Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs.",
+  "brief": "Shared multiblock panel sprites for Ammunition Works, Retort, Armory Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs.",
   "footprint_ref": "(new, no Techguns GUI)",
   "priority": "P3"
  },
@@ -9758,7 +9758,7 @@
    "#40E0FF",
    "#000A10"
   ],
-  "brief": "Energy / tech scope overlay (laser, pulse and plasma weapons): 512x512 RGBA, alpha-blended cyan HUD brackets, ring reticle with ticks, scanline vignette, transparent centre.",
+  "brief": "Energy / tech scope overlay (laser, pulse and plasma weapons): 512x512 RGBA, alpha-blended cyan HUD brackets, ring reticle with ticks, scanline vignette, transparent center.",
   "footprint_ref": "techScope overlay (alpha-blended), design only",
   "priority": "P2"
  },
@@ -9840,7 +9840,7 @@
    "#FF9020",
    "#808080"
   ],
-  "brief": "FX sprite (5x5 grid, 20 frames): full explosion cycle: seed, white flash, fire, char, grey smoke. Painted from scratch; additive sheets are black-background, alpha sheets transparent.",
+  "brief": "FX sprite (5x5 grid, 20 frames): full explosion cycle: seed, white flash, fire, char, gray smoke. Painted from scratch; additive sheets are black-background, alpha sheets transparent.",
   "footprint_ref": "textures/fx/fireblast.png",
   "priority": "P2"
  },
@@ -10095,7 +10095,7 @@
   "palette": [
    "#E0E0E0"
   ],
-  "brief": "FX sprite (3x3 grid of 128 px (variations), 6 frames): thin vein-like splatter lines, greyscale for tinting. Painted from scratch; additive sheets are black-background, alpha sheets transparent.",
+  "brief": "FX sprite (3x3 grid of 128 px (variations), 6 frames): thin vein-like splatter lines, grayscale for tinting. Painted from scratch; additive sheets are black-background, alpha sheets transparent.",
   "footprint_ref": "textures/fx/splat.png",
   "priority": "P3"
  },
@@ -10114,7 +10114,7 @@
   "palette": [
    "#858585"
   ],
-  "brief": "FX sprite (2x2 grid of 128 px (variations), 4 frames): blood splatter puffs, greyscale for tinting. Painted from scratch; additive sheets are black-background, alpha sheets transparent.",
+  "brief": "FX sprite (2x2 grid of 128 px (variations), 4 frames): blood splatter puffs, grayscale for tinting. Painted from scratch; additive sheets are black-background, alpha sheets transparent.",
   "footprint_ref": "textures/fx/blood4x4.png",
   "priority": "P3"
  },
@@ -14483,7 +14483,7 @@
   "sample_rate": 44100,
   "target_lufs": -14.8,
   "palette": [],
-  "brief": "npcs.alienbugIdle. Reads as: a short, noisy, bright chittering rasp, like a clicky insect or alien bug vocalisation that swells to a peak around 0.2s and then fades quickly into a quiet tail. Match length (0.54 s) and loudness within +/-3 LU of -14.8 LUFS; peak at or below -1 dBFS.",
+  "brief": "npcs.alienbugIdle. Reads as: a short, noisy, bright chittering rasp, like a clicky insect or alien bug vocalization that swells to a peak around 0.2s and then fades quickly into a quiet tail. Match length (0.54 s) and loudness within +/-3 LU of -14.8 LUFS; peak at or below -1 dBFS.",
   "footprint_ref": "sounds/npcs/alienbug_idle-04.ogg",
   "priority": "P3"
  },
@@ -14840,7 +14840,7 @@
   "sample_rate": 44100,
   "target_lufs": -22.9,
   "palette": [],
-  "brief": "npcs.cyberdemonIdle. Reads as: a low, guttural, growling monster idle vocalisation made of two heavy rumbling phrases separated by a brief dip around 1.1s, with a formant-rich bass body. Match length (2.13 s) and loudness within +/-3 LU of -22.9 LUFS; peak at or below -1 dBFS.",
+  "brief": "npcs.cyberdemonIdle. Reads as: a low, guttural, growling monster idle vocalization made of two heavy rumbling phrases separated by a brief dip around 1.1s, with a formant-rich bass body. Match length (2.13 s) and loudness within +/-3 LU of -22.9 LUFS; peak at or below -1 dBFS.",
   "footprint_ref": "sounds/npcs/cyberdemon_idle_b.ogg",
   "priority": "P3"
  },
@@ -15376,7 +15376,7 @@
    "#101418",
    "#F2F2F2"
   ],
-  "brief": "Tier progression chart: weapons, armour and ammo per GT tier with gate materials (design 0001, 0009, 0010). Ship the source SVG beside the PNG. [Delivered: generated by tools/asset-gen/branding.py.]",
+  "brief": "Tier progression chart: weapons, armor and ammo per GT tier with gate materials (design 0001, 0009, 0010). Ship the source SVG beside the PNG. [Delivered: generated by tools/asset-gen/branding.py.]",
   "footprint_ref": "(new)",
   "priority": "P3"
  },
@@ -15579,9 +15579,9 @@
   "priority": "P3"
  },
  {
-  "id": "info.multiblock_armoury_gantry",
+  "id": "info.multiblock_armory_gantry",
   "kind": "infographic",
-  "path": "docs/assets/infographics/multiblock-armoury-gantry.png",
+  "path": "docs/assets/infographics/multiblock-armory-gantry.png",
   "width": 1600,
   "height": 900,
   "frames": 1,
@@ -15596,7 +15596,7 @@
    "#101418",
    "#F2F2F2"
   ],
-  "brief": "Optional detail explainer: Armoury Gantry head, bays and tail, cradle per bay. Ship the source SVG beside the PNG. [Not yet produced.]",
+  "brief": "Optional detail explainer: Armory Gantry head, bays and tail, cradle per bay. Ship the source SVG beside the PNG. [Not yet produced.]",
   "footprint_ref": "(new)",
   "priority": "P3"
  },

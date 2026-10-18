@@ -18,11 +18,11 @@ A second file, `config/Techguns_WeaponStats.cfg` (category `Weapon Stats`, one d
 | `addLeadIngot` | bool | false | | Registers the lead ingot item and its oredict entry |
 | `addLeadNuggets` | bool | false | | Lead nugget item and recipes |
 | `addSteelIngot` | bool | false | | Registers the steel ingot item and its oredict entry |
-| `addSteelNuggets` | bool | false | | Steel nugget item and recipes. If `addSteelIngot` is false, the recipes are built in postInit against the first oredict [`ingotSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) |
+| `addSteelNuggets` | bool | false | | Steel nugget item and recipes. If `addSteelIngot` is false, the recipes are built in postInit against the first oredict [`ingotSteel`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) |
 | `addIronNuggets` | bool | false | | Iron nugget item and recipes. **Crash when enabled** (double registration, [CORE-01](index.md#suspected-bugs)) |
 | `disableAutofeeder` | bool | false | | Turns off automatic eating from the Techguns food slots ([player-state.md](player-state.md#auto-feeder)) |
-| `addCustomOreCluster` | bool | false | | Adds block [`oreClusterCustom`](../07-blocks/block-catalogue.md#registered-blocks), an empty ore cluster that MineTweaker can fill ([07](../07-blocks/index.md)/[08](../08-machines-production/index.md)) |
-| `addCustomOreCluster2` | bool | false | | Adds a second one, [`oreClusterCustom2`](../07-blocks/block-catalogue.md#registered-blocks) |
+| `addCustomOreCluster` | bool | false | | Adds block [`oreClusterCustom`](../07-blocks/block-catalog.md#registered-blocks), an empty ore cluster that MineTweaker can fill ([07](../07-blocks/index.md)/[08](../08-machines-production/index.md)) |
+| `addCustomOreCluster2` | bool | false | | Adds a second one, [`oreClusterCustom2`](../07-blocks/block-catalog.md#registered-blocks) |
 | `SpawnStructures` | bool | true | | Registers [`WorldGenTGStructureSpawn`](../11-worldgen/index.md#overview) ([11](../11-worldgen/index.md)) |
 | `StructureSpawnWeightBig` | int | 64 | 1–100000 | A big structure is attempted in chunks where both chunkX and chunkZ are divisible by this value ([11](../11-worldgen/index.md)) |
 | `StructureSpawnWeightSmall` | int | 16 | 1–100000 | Same, for small structures |
@@ -70,9 +70,9 @@ The comments say "at 0 spawn will not be registered". Whether that holds depends
 | `oreDrillFuelMultiplier` | float | 1000 | 1–100000 | Internal RF per unit of furnace burn time (burnTime × value = RF) |
 | `oreDrillFuelValueFuel` | float | 96 | 1–100000 | Fuel value of Techguns liquid Fuel per mB |
 | `oreDrillFuelValueBioFuel` | float | 48 | 1–100000 | Fuel value of MFR BioFuel per mB |
-| `oreClusterMultipliersAmount` | double[16] | 2.0, 1.0, 1.0, 1.2, 1.0, 0.25, 0.25, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.35, 0.25 | 0–1000 each | Per-metadata amount multiplier for [`oreCluster`](../07-blocks/block-catalogue.md#registered-blocks): iron, gold, redstone, coal, lapis, diamond, emerald, copper, tin, lead, osmium, silver, nickel, aluminium, platinum, uranium |
+| `oreClusterMultipliersAmount` | double[16] | 2.0, 1.0, 1.0, 1.2, 1.0, 0.25, 0.25, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.35, 0.25 | 0–1000 each | Per-metadata amount multiplier for [`oreCluster`](../07-blocks/block-catalog.md#registered-blocks): iron, gold, redstone, coal, lapis, diamond, emerald, copper, tin, lead, osmium, silver, nickel, aluminum, platinum, uranium |
 | `oreClusterMultipliersPower` | double[16] | 0.15, 0.4, 0.3, 0.25, 0.3, 1.0, 1.0, 0.1, 0.1, 0.2, 0.3, 0.35, 0.3, 0.2, 1.0, 1.0 | 0–1000 | Per-metadata power multiplier, same order |
-| `oreClusterMultipliersAmount2` | double[16] | 1.5, 0.5, 1.5, 1.0, 1.5, then 1.0 × 11 | 0–1000 | For [`oreCluster2`](../07-blocks/block-catalogue.md#registered-blocks): nether quartz, titanium, certus quartz, oil, glowstone, then unused |
+| `oreClusterMultipliersAmount2` | double[16] | 1.5, 0.5, 1.5, 1.0, 1.5, then 1.0 × 11 | 0–1000 | For [`oreCluster2`](../07-blocks/block-catalog.md#registered-blocks): nether quartz, titanium, certus quartz, oil, glowstone, then unused |
 | `oreClusterMultipliersPower2` | double[16] | 0.35, 0.8, 0.4, 0.5, 0.35, then 1.0 × 11 | 0–1000 | Power multipliers, same order |
 
 ## Category `Spawn Controll` (sic)
@@ -133,7 +133,7 @@ Each row names the `TGConfig` static field the key is loaded into and every clas
 | `addSteelNuggets` | `addSteelNuggets` | `Techguns.java` (365, 481, 550, 706) | both |
 | `addIronNuggets` | `addIronNuggets` | `Techguns.java` (359, 373, 472, 536); lines 360 and 374 are the double registration ([CORE-01](index.md#suspected-bugs)) | both |
 | `disableAutofeeder` | `disableAutofeeder` | [`TechgunsTickHandler`](events.md#techgunstickhandler-fml-bus) (line 383) | both (the client runs the feeder too, [CORE-16](index.md#suspected-bugs)) |
-| `addCustomOreCluster` | `addOreClusterCustom` | [`TGBlocks`](../07-blocks/block-catalogue.md#registered-blocks) (block registration), [`ClientProxy`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) (renderer registration) | both |
+| `addCustomOreCluster` | `addOreClusterCustom` | [`TGBlocks`](../07-blocks/block-catalog.md#registered-blocks) (block registration), [`ClientProxy`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) (renderer registration) | both |
 | `addCustomOreCluster2` | `addOreClusterCustom2` | `TGBlocks`, `ClientProxy` | both |
 | `DataWatcherID_FaceSlot` | `dataWatcherID_FaceSlot` | [`TechgunsExtendedPlayerProperties`](player-state.md#techgunsextendedplayerproperties) (constructor, read and write of the watcher) | both (must match) |
 | `DataWatcherID_BackSlot` | `dataWatcherID_BackSlot` | `TechgunsExtendedPlayerProperties` | both (must match) |
@@ -142,7 +142,7 @@ Each row names the `TGConfig` static field the key is loaded into and every clas
 | `StructureSpawnWeightBig` | `spawnWeightTGStructureBig` | `WorldGenTGStructureSpawn` | server |
 | `StructureSpawnWeightSmall` | `spawnWeightTGStructureSmall` | `WorldGenTGStructureSpawn` | server |
 | `StructureSpawnWeightMedium` | `spawnWeightTGStructureMedium` | `WorldGenTGStructureSpawn` | server |
-| `Techguns Spawnweight Overworld` | `spawnWeightTGOverworld` | [`TGEntities`](../10-entities-npcs/mob-catalogue.md#registration-javatechgunstgentitiesjava) (line 134, `TGDummySpawn` overworld registration) | server |
+| `Techguns Spawnweight Overworld` | `spawnWeightTGOverworld` | [`TGEntities`](../10-entities-npcs/mob-catalog.md#registration-javatechgunstgentitiesjava) (line 134, `TGDummySpawn` overworld registration) | server |
 | `Techguns Spawnweight NEther` | `spawnWeightTGNether` | `TGEntities` (line 135, nether registration) | server |
 | `SpawnWeightZombieSoldier` | `spawnWeightZombieSoldier` | `TGEntities` (line 141, [`TGNpcSpawn`](../10-entities-npcs/spawning.md#12-replacement) level 1) | server |
 | `SpawnWeightZombieFarmer` | `spawnWeightZombieFarmer` | `TGEntities` (142, level 0) | server |

@@ -1,6 +1,6 @@
 # Structure system: spawning, placement, file format, authoring
 
-This file covers the machinery shared by every Techguns structure. Individual structures are in [structure-catalogue.md](structure-catalogue.md). Loot tables are in [loot.md](loot.md).
+This file covers the machinery shared by every Techguns structure. Individual structures are in [structure-catalog.md](structure-catalog.md). Loot tables are in [loot.md](loot.md).
 
 Classes covered: `worldgen/WorldGenTGStructureSpawn`, `TGStructureSpawnRegister`, `TGStructureSpawn`, `StructureSize`, `StructureType`, `worldgen/structures/Structure`, `util/BlockUtils`, `util/MBlock`, `util/MultiMBlock`, `util/BlockPosInd`, `items/BuildingScanTool`, `items/StructureTestTool`.
 
@@ -56,7 +56,7 @@ These fields are set by the constructor `(minX, minY, minZ, maxX, maxY, maxZ)`:
 * `removeJunkOnWorldspawn` (default false). No registered structure sets it to true.
 * `lootTier` (default 0). This is the index into the TG chest loot-tier arrays (see [loot.md](loot.md)).
 * `getStep()` returns 4 by default. It is the sample spacing for the terrain check.
-* Biome type lists used to choose the colour type:
+* Biome type lists used to choose the color type:
   * `coldTypes = {COLD, SNOWY}` → `SNOW`
   * `sandTypes = {SANDY, BEACH, MESA}` → `DESERT`. The source spells `SAVANNA.BEACH`, which resolves to BEACH ([WGEN-17](index.md#suspected-bugs)).
   * `netherTypes = {NETHER}` → `NETHER`
@@ -76,12 +76,12 @@ Steps:
 4. Set `x = chunkX*16 + minX`, `z = chunkZ*16 + minZ`, plus the per-class shift `getRotationShiftX/Z(direction)`. The shift is 0 by default. BigBunker overrides it.
 5. `y = BlockUtils.getValidSpawnYArea(world, x+shiftX, z+shiftZ, sizeXr, sizeZr, heightDiffLimit=3, step=getStep())`. Abort if `y < 0`.
 6. If `removeJunkOnWorldspawn` is set, clear junk on the footprint plus a 1-block border.
-7. `setBlocks(world, x, y−1, z, sizeX, sizeY, sizeZ, direction, colorTypeFromBiome, rnd)`. Note that `x/z` already include `minX/minZ`, and `setBlocks` rotates again around the centre. For non-square footprints the area that was checked and the area actually built differ ([WGEN-05](index.md#suspected-bugs)).
+7. `setBlocks(world, x, y−1, z, sizeX, sizeY, sizeZ, direction, colorTypeFromBiome, rnd)`. Note that `x/z` already include `minX/minZ`, and `setBlocks` rotates again around the center. For non-square footprints the area that was checked and the area actually built differ ([WGEN-05](index.md#suspected-bugs)).
 
-Subclasses override this method for different terrain rules: water, underwater, a camp area, or the bug nest. See the catalogue.
+Subclasses override this method for different terrain rules: water, underwater, a camp area, or the bug nest. See the catalog.
 
 ### Common `setBlocks` for scanned structures
-[`HouseMedium`](structure-catalogue.md#a3-medium-house-housemedium), [`FactoryHouseSmall`](structure-catalogue.md#a1-small-factory-building-factoryhousesmall), [`SmallTrainstation`](structure-catalogue.md#a2-small-train-station-smalltrainstation), [`CityGasStation`](structure-catalogue.md#c2-city-gas-station-citygasstation) and [`AircraftCarrierNew`](structure-catalogue.md#a7-aircraft-carrier-aircraftcarriernew) share this preamble. When `(sizeX < minX && sizeZ > minX && sizeX >= minZ)` or `(sizeZ < minZ && sizeX > minZ && sizeZ >= minX)`, the direction is incremented by 1 and the centre swapped to `(sizeZ/2, sizeX/2)`. Otherwise the centre is `(sizeX/2, sizeZ/2)`. With the registered sizes this swap never triggers. [`BigBunker`](structure-catalogue.md#a4-big-bunker-bigbunker) and [`Submarine`](structure-catalogue.md#a8-submarine-submarine) skip it.
+[`HouseMedium`](structure-catalog.md#a3-medium-house-housemedium), [`FactoryHouseSmall`](structure-catalog.md#a1-small-factory-building-factoryhousesmall), [`SmallTrainstation`](structure-catalog.md#a2-small-train-station-smalltrainstation), [`CityGasStation`](structure-catalog.md#c2-city-gas-station-citygasstation) and [`AircraftCarrierNew`](structure-catalog.md#a7-aircraft-carrier-aircraftcarriernew) share this preamble. When `(sizeX < minX && sizeZ > minX && sizeX >= minZ)` or `(sizeZ < minZ && sizeX > minZ && sizeZ >= minX)`, the direction is incremented by 1 and the center swapped to `(sizeZ/2, sizeX/2)`. Otherwise the center is `(sizeX/2, sizeZ/2)`. With the registered sizes this swap never triggers. [`BigBunker`](structure-catalog.md#a4-big-bunker-bigbunker) and [`Submarine`](structure-catalog.md#a8-submarine-submarine) skip it.
 
 ---
 
@@ -121,7 +121,7 @@ Subclasses override this method for different terrain rules: water, underwater, 
 * `fillSphere2(c, r, thickness, inner, shell)`: places `inner` where d² < (r−thickness)² and `shell` where d² < r².
 * `fillCylinder(p1, p2, r, inner, shell)`: point-to-line distance over the bounding box expanded by r. Places `inner` where distance < r−1 and `shell` where distance < r.
 * `drawLine(p1, p2, block)`: 3D Bresenham line. On a Y-dominant line it also places the block at each horizontal step, so the line stays 4-connected.
-* `getBiomeType(world,x,z)`: maps vanilla biome identity to a colour type.
+* `getBiomeType(world,x,z)`: maps vanilla biome identity to a color type.
   * DESERT: beach, desert, desertHills, mesa, mesaPlateau(_F), savanna, savannaPlateau.
   * SNOW: coldBeach, coldTaiga(Hills), frozenOcean, frozenRiver, iceMountains, icePlains, megaTaiga(Hills), taiga(Hills).
   * NETHER: hell.
@@ -137,7 +137,7 @@ Subclasses override this method for different terrain rules: water, underwater, 
 ## 4. Block descriptors: `MBlock`, `MultiMBlock`, `BlockPosInd`
 
 ### `MBlock`
-Fields: `block`, `meta`, `hasRotation`, `rotationType` (a `BlockUtils.BlockType`), and `pass` (default 0, set with `setPass`). Equality compares block and meta only. `isAirBlock()` is true when the block is [`TGBlocks.airMarker`](../07-blocks/block-catalogue.md#registered-blocks).
+Fields: `block`, `meta`, `hasRotation`, `rotationType` (a `BlockUtils.BlockType`), and `pass` (default 0, set with `setPass`). Equality compares block and meta only. `isAirBlock()` is true when the block is [`TGBlocks.airMarker`](../07-blocks/block-catalog.md#registered-blocks).
 
 `setBlock(world, x, y, z, rotation, lootTier)`:
 1. If the block is the air marker, set air.
@@ -162,7 +162,7 @@ For each rotation step (applied `rotation` times), the meta is remapped as shown
 | `STAIRS2_CHISEL` | Chisel limestone stairs (packed metas) | 8→11, 11→9, 9→10, 10→8; 12→15, 15→13, 13→14, 14→12 |
 | `LEVER` | levers, trapdoors | 1→4, 4→2, 2→3, 3→1; 9→12, 12→10, 10→11, 11→9 |
 | `CHEST` | chests, furnaces | 3→5, 5→2, 2→4, 4→3 |
-| `TG` | TG blocks (lamps, ladders) | delegated to [`GenericBlock.getRotationMeta(meta, r)`](../07-blocks/block-catalogue.md#conventions-and-defaults). The base returns meta unchanged; subclasses (see [07-blocks](../07-blocks/index.md)) rotate. |
+| `TG` | TG blocks (lamps, ladders) | delegated to [`GenericBlock.getRotationMeta(meta, r)`](../07-blocks/block-catalog.md#conventions-and-defaults). The base returns meta unchanged; subclasses (see [07-blocks](../07-blocks/index.md)) rotate. |
 
 These tables are consistent with the position rotation (+X→−Z). For example, a chest facing east (5) ends up facing north (2).
 
@@ -185,9 +185,9 @@ A `BlockCoords (x,y,z)` plus an `index` into a block list. `toString()` gives `"
 
 ## 5. Scanned-structure placement (`BlockUtils`)
 
-| Method | Behaviour |
+| Method | Behavior |
 |---|---|
-| `loadStructureFromFile(name)` | Opens the classpath resource `/assets/techguns/structures/<name>` (Java resource, not resource-pack aware). Line 1 is the entry count N. Each following line is `x,y,z,index` (comma-separated shorts), loaded into a `short[N][4]`. Only `IOException` is caught; a missing file throws a null-stream exception inside the static initialiser ([WGEN-23](index.md#suspected-bugs)). Line endings in the shipped files are CRLF. |
+| `loadStructureFromFile(name)` | Opens the classpath resource `/assets/techguns/structures/<name>` (Java resource, not resource-pack aware). Line 1 is the entry count N. Each following line is `x,y,z,index` (comma-separated shorts), loaded into a `short[N][4]`. Only `IOException` is caught; a missing file throws a null-stream exception inside the static initializer ([WGEN-23](index.md#suspected-bugs)). Line endings in the shipped files are CRLF. |
 | `placeScannedStructure(world, data, palette, posX, posY, posZ, cx, cz, rotation, pass, lootTier)` | For each entry whose palette `MBlock.pass == pass`, places it at `(posX, posY+y, posZ) + rotatePoint(x, z, rotation, cx, cz)` with rotated meta and loot tier. Callers always run pass 0 and then pass 1. Pass 1 holds attachments: upper door halves, lamps, ladders, pressure plates and signs, so their supports exist first. |
 | `placeFoundation(…, pass, range)` | For every entry with `y == 0` in the given pass, places the same palette block at depths 1…`range` below, but only into air cells. Water is not filled. |
 | `cleanUpwards(…, pass, range)` | For every `y == 0` entry, sets air at heights 1…`range` above that cell (rotated). The palette block is ignored. |
@@ -206,8 +206,8 @@ x,y,z,i             N lines; local coordinates (≥0) relative to the scan's min
 ```
 
 * Entries are ordered x-major, then y, then z, because that is the scanner's loop order. No position is duplicated.
-* The palette is **not** in the file. It is the hand-written `blockList` in the Java class that loads the file. Palette order equals first-encounter order during the scan, re-typed by hand. See the per-structure tables in the catalogue.
-* Cells absent from the file are left untouched in the world. Cells that must be cleared are stored explicitly with an air palette entry, either `Blocks.air` or the [`airMarker`](../07-blocks/block-catalogue.md#registered-blocks) MBlock, which places air.
+* The palette is **not** in the file. It is the hand-written `blockList` in the Java class that loads the file. Palette order equals first-encounter order during the scan, re-typed by hand. See the per-structure tables in the catalog.
+* Cells absent from the file are left untouched in the world. Cells that must be cleared are stored explicitly with an air palette entry, either `Blocks.air` or the [`airMarker`](../07-blocks/block-catalog.md#registered-blocks) MBlock, which places air.
 * Natural cover is never captured: the scanner skipped air, plain dirt (meta 0) and grass. Tile-entity contents and NBT are never captured either.
 
 Summary of the shipped files (counts and bounds were verified by decoding):
@@ -226,12 +226,12 @@ Summary of the shipped files (counts and bounds were verified by decoding):
 
 ## 7. Authoring workflow and tools
 
-The structures were built by hand in a test world, scanned into text, and wired up as a resource file plus a hand-written palette. Two older carrier classes embedded the scan output directly as Java `int[][]` literals instead, split across [`AircraftCarrier`](structure-catalogue.md#c5-legacy-carrier-aircraftcarrier-aircraftcarrier2) and [`AircraftCarrier2`](structure-catalogue.md#c5-legacy-carrier-aircraftcarrier-aircraftcarrier2) to stay under the JVM method-size limit. Moving the data to resource files (`AircraftCarrierNew`) replaced that approach.
+The structures were built by hand in a test world, scanned into text, and wired up as a resource file plus a hand-written palette. Two older carrier classes embedded the scan output directly as Java `int[][]` literals instead, split across [`AircraftCarrier`](structure-catalog.md#c5-legacy-carrier-aircraftcarrier-aircraftcarrier2) and [`AircraftCarrier2`](structure-catalog.md#c5-legacy-carrier-aircraftcarrier-aircraftcarrier2) to stay under the JVM method-size limit. Moving the data to resource files (`AircraftCarrierNew`) replaced that approach.
 
 To mark cells that must become air on placement, the author placed `TGBlocks.airMarker` blocks ("Air Marker"), because real air is not scanned. In the palettes these appear either as the `airMarker` MBlock or as `Blocks.air`.
 
 ### Building Scan Tool (`items/BuildingScanTool`)
-* Registry name [`buildingScanTool`](../06-items/item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava), unlocalized `buildingScanTool`, lang `techguns.item.buildingScanTool.name=Building Scan Tool`, texture `techguns:structureScanTool` → [`textures/items/structureScanTool.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items). Max stack 1, Techguns creative tab. No tooltip. The item side is owned by [06-items](../06-items/index.md).
+* Registry name [`buildingScanTool`](../06-items/item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava), unlocalized `buildingScanTool`, lang `techguns.item.buildingScanTool.name=Building Scan Tool`, texture `techguns:structureScanTool` → [`textures/items/structureScanTool.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items). Max stack 1, Techguns creative tab. No tooltip. The item side is owned by [06-items](../06-items/index.md).
 * NBT on the stack: `x1`, `y1`, `z1` (int).
 * **First right-click on a block:** stores the clicked position. The client prints the chat message `Position1 set (x/y/z).`
 * **Second right-click:** the client prints `Position2 set (x/y/z).` and `Size: (sx/sy/sz).`, where size is |Δ|+1 on each axis. The server scans the box from the min corner, and the tag is cleared on both sides.
@@ -247,20 +247,20 @@ To mark cells that must become air on placement, the author placed `TGBlocks.air
   Items 5 and 6 are byte-for-byte the structure-file format.
 
 ### Structure Test Tool (`items/StructureTestTool`)
-* Registry name [`structureTestTool`](../06-items/item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava), texture [`textures/items/structureTestTool.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items), max stack 1. Lang: `techguns.item.structureTestTool.name=Structure Test Tool`. Tooltip line from `techguns.structureTestTool.Tooltip=Tool for structure spawning/world editing [WIP]`.
+* Registry name [`structureTestTool`](../06-items/item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava), texture [`textures/items/structureTestTool.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items), max stack 1. Lang: `techguns.item.structureTestTool.name=Structure Test Tool`. Tooltip line from `techguns.structureTestTool.Tooltip=Tool for structure spawning/world editing [WIP]`.
 * NBT on the stack: `x1`, `y1`, `z1`, `mode` (int).
 * **Sneak + right-click** cycles the mode: `mode = (mode+1) % 7`. When there is no `mode` tag yet, it is set to 1. The client prints `structure tool mode set to "<name>".`
 * **Normal right-click** works in two clicks, with the same Position1/Position2/Size chat as the scan tool. On the second click the server runs the current mode on the selected box (min corner + size). The default mode is 0 when the tag is absent.
 
 | Mode | Label shown | What actually runs |
 |---|---|---|
-| 0 | Structure | Places `AircraftCarrierNew` at the min corner with a random rotation and sizeY 24, using the selection's sizeX/sizeZ for the rotation centre. Prints the origin to stdout. Other structures are left commented out in the source as alternatives. |
-| 1 | Camp | **Runs the city generator** (`GenericCity.testCity.createCity` with colour type from biome). The label is stale ([WGEN-18](index.md#suspected-bugs)). |
+| 0 | Structure | Places `AircraftCarrierNew` at the min corner with a random rotation and sizeY 24, using the selection's sizeX/sizeZ for the rotation center. Prints the origin to stdout. Other structures are left commented out in the source as alternatives. |
+| 1 | Camp | **Runs the city generator** (`GenericCity.testCity.createCity` with color type from biome). The label is stale ([WGEN-18](index.md#suspected-bugs)). |
 | 2 | Smooth | `apply2DHeightmapFilter` with the 5×5 Gaussian over the box. |
 | 3 | Flatten | `flattenArea(maxDiff = 2)`. |
 | 4 | Remove Junk | `removeJunkInArea`. |
-| 5 | Sphere | Hollow glass sphere: radius `(sizeX+sizeZ)/4`, centre `(x+sizeX/2, y+radius+1, z+sizeZ/2)`, inside cleared to air with the air marker, 1-thick glass shell. |
+| 5 | Sphere | Hollow glass sphere: radius `(sizeX+sizeZ)/4`, center `(x+sizeX/2, y+radius+1, z+sizeZ/2)`, inside cleared to air with the air marker, 1-thick glass shell. |
 | 6 | Cylinder | Glass-walled tube of radius 3 between the two raw clicked positions (not the min corner). Inside is air. |
 
 ### Block Reader Tool
-[`blockReaderTool`](../06-items/item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) (lang `techguns.item.blockReaderTool.name=Block Reader Tool`) is registered next to these tools, but its class is outside this area. See [06-items](../06-items/index.md).
+[`blockReaderTool`](../06-items/item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) (lang `techguns.item.blockReaderTool.name=Block Reader Tool`) is registered next to these tools, but its class is outside this area. See [06-items](../06-items/index.md).

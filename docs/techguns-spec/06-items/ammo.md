@@ -11,7 +11,7 @@ Each gun is built with an ammo `ItemStack` and a `clipsize` (the gun's item max 
 
 `setAkimbo(..)` doubles the ammo stack size, so akimbo guns consume **two** magazines/cells/bullets per reload and return two empties.
 
-The third argument of `setEmptyMag(empty, bullet, n)` records the bullet item and the bullets-per-magazine count. It sets `shotsPerBullet = clipsize / n`, which [02](../02-guns/index.md) uses (for example for NPC/turret ammo accounting). It matches the bullet count in the crafting refill recipe and in the sneak-use emptying behaviour below.
+The third argument of `setEmptyMag(empty, bullet, n)` records the bullet item and the bullets-per-magazine count. It sets `shotsPerBullet = clipsize / n`, which [02](../02-guns/index.md) uses (for example for NPC/turret ammo accounting). It matches the bullet count in the crafting refill recipe and in the sneak-use emptying behavior below.
 
 ## Gun → ammo table
 
@@ -108,9 +108,9 @@ There is **no** crafting recipe for a full Energy Cell or a full Nuclear Power C
 | 40mm Grenade (93) | – | Metal Press: Iron Plate + TNT → 16 | – |
 | Nether Charge (63) | – | Chem Lab: netherrack + soul sand + 1000 mB lava → 4 | – |
 
-The Ammo Press inputs are one "metal1" OreDict ingot ([`ingotSteel`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) / [`ingotLead`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems)), one "metal2" ingot ([`ingotCopper`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) / [`ingotTin`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) / `ingotIron` / [`ingotBronze`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems)) and `itemGunpowder`. The plan selects the output ([08](../08-machines-production/index.md)).
+The Ammo Press inputs are one "metal1" OreDict ingot ([`ingotSteel`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) / [`ingotLead`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems)), one "metal2" ingot ([`ingotCopper`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) / [`ingotTin`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) / `ingotIron` / [`ingotBronze`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems)) and `itemGunpowder`. The plan selects the output ([08](../08-machines-production/index.md)).
 
-## Dispenser behaviour
+## Dispenser behavior
 
 A dispenser holding the shared item fires metas **14 (Rocket)**, **93 (40mm Grenade)** and **105 (Tactical Nuke Rocket)** as live projectiles. Every other meta is dropped like a normal item. Details:
 - The projectile is created at the dispenser's output position and aimed along the dispenser's facing (vertical +0.1), velocity 1.1, inaccuracy 6.0. One item is consumed.

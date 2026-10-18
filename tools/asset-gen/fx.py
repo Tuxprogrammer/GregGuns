@@ -1,6 +1,6 @@
 """Particle and FX sprite sheets for GregGuns (particle.* manifest entries).
 
-All sheets are painted from analytic fields plus seeded value noise. Two output flavours, as the
+All sheets are painted from analytic fields plus seeded value noise. Two output flavors, as the
 manifest brief says: additive sheets have an opaque black background (RGB carries the light), alpha
 sheets are transparent. Each painter returns a PIL RGBA image of exactly the manifest size.
 """
@@ -16,7 +16,7 @@ F32 = np.float32
 
 # ---------------------------------------------------------------- field helpers
 def grid(n: int, w: int | None = None):
-    """Centred coordinates in [-1, 1]: returns U, V, R, TH for an (h=n, w) cell."""
+    """Centered coordinates in [-1, 1]: returns U, V, R, TH for an (h=n, w) cell."""
     w = n if w is None else w
     v = (np.arange(n, dtype=F32) + 0.5) / n * 2 - 1
     u = (np.arange(w, dtype=F32) + 0.5) / w * 2 - 1
@@ -48,7 +48,7 @@ FIRE = [(0.0, "#000000"), (0.12, "#3a0600"), (0.3, "#b02404"), (0.5, "#ff6a10"),
 
 
 def tint(col: str, i):
-    """Light of a single hue: white core fading to the colour then black."""
+    """Light of a single hue: white core fading to the color then black."""
     c = np.array(hx(col), F32)
     i = np.clip(i, 0, 1)[..., None]
     base = c * np.clip(i * 1.4, 0, 1)
@@ -58,7 +58,7 @@ def tint(col: str, i):
 
 def edge_fade(fr, frac=0.1):
     """Fade a cell to nothing over its outer 10 percent (and zero the outermost 2 px) so animated grid
-    sheets never bleed light or opacity into the neighbouring cell."""
+    sheets never bleed light or opacity into the neighboring cell."""
     h, w = fr.shape[:2]
     yy = np.minimum(np.arange(h), h - 1 - np.arange(h))[:, None].astype(F32)
     xx = np.minimum(np.arange(w), w - 1 - np.arange(w))[None, :].astype(F32)
@@ -161,7 +161,7 @@ def fireball_cell(n, t, rng, kind="explosion"):
     core = smooth(rad * 0.55, 0.0, d) * heat
     i = np.clip((body * 0.75 + core * 0.55) * (0.35 + 0.65 * heat), 0, 1)
     rgb = heat_ramp(i, FIRE)
-    # late wisps: dim grey smoke curls that stay after the fire cools
+    # late wisps: dim gray smoke curls that stay after the fire cools
     smoke = smooth(0.35, 0.9, t) * smooth(rad * 1.15, rad * 0.2, R + (nz2 - 0.5) * 0.7) * (0.35 - 0.2 * smooth(0.8, 1.0, t))
     rgb = np.maximum(rgb, smoke[..., None] * np.array([120, 112, 108], F32) * (0.4 + nz[..., None] * 0.9))
     return rgb
@@ -210,7 +210,7 @@ def fireblast(rng):
             ember = np.clip((nz - 0.6) * 4, 0, 1) * (1 - k) * a
             rgb = np.stack([30 + 200 * ember, 22 + 90 * ember, 18 + 20 * ember], -1)
             frames.append(rgba(rgb, a))
-        else:                                         # grey smoke dissipating
+        else:                                         # gray smoke dissipating
             k = (f - 14) / 5
             rad = 0.9 - 0.05 * k
             a = smooth(rad, rad * 0.2, R + (nz - 0.5) * 0.8) * (0.7 - 0.65 * k)
@@ -326,7 +326,7 @@ def testscope(rng):
     px = 1.0 / (n / 2)
     thin = 1.6 * px
     cross = ((np.abs(U) < thin) | (np.abs(V) < thin)) & (R < win)
-    gap = R < 0.025                                      # open centre
+    gap = R < 0.025                                      # open center
     cross &= ~gap
     # fine reticle ticks along both axes
     ticks = np.zeros_like(R, bool)
@@ -339,7 +339,7 @@ def testscope(rng):
     a = np.clip(alpha, 0, 1)
     a = np.where(cross | ticks, 1.0, a)
     out[..., 3] = np.rint(a * 255).astype(np.uint8)
-    # the surround and reticle are black; a very faint dark grey rim line just outside the window
+    # the surround and reticle are black; a very faint dark gray rim line just outside the window
     rim = np.exp(-(((R - (win + 0.012)) / 0.004) ** 2))
     out[..., :3] = np.rint(np.clip(rim, 0, 1)[..., None] * 24).astype(np.uint8)
     return Image.fromarray(out, "RGBA")
@@ -371,7 +371,7 @@ def techscope(rng):
     hd = hexd(U, V)
     for rad, w in ((0.30, 2.0), (0.46, 1.2)):
         add_line(np.exp(-(((hd - rad) / (w * px)) ** 2)))
-    # cross-hair with a clear centre and ticks
+    # cross-hair with a clear center and ticks
     for axis in (U, V):
         other = V if axis is U else U
         line = np.exp(-((axis / (1.4 * px)) ** 2)) * (np.abs(other) > 0.04) * (np.abs(other) < 0.64)
@@ -542,7 +542,7 @@ def blood4x4(rng):
             r = 0.02 + 0.06 * rng.random()
             cx, cy = dist * np.cos(ang), dist * np.sin(ang)
             a = np.maximum(a, smooth(r, r * 0.5, np.sqrt((U - cx) ** 2 + (V - cy) ** 2)))
-            # elongated drip toward the centre
+            # elongated drip toward the center
             for s in np.linspace(0.2, 0.9, 5):
                 a = np.maximum(a, smooth(r * 0.5, r * 0.2, np.sqrt((U - cx * (1 - s * 0.3)) ** 2 + (V - cy * (1 - s * 0.3)) ** 2)) * 0.8)
         g = 133 + 40 * (nz - 0.5) - 30 * (U * 0.5 + V * 0.5) * (a > 0.4)

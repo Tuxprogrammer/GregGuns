@@ -8,7 +8,7 @@ Paths are relative to `assets/techguns`. "Item" and "Block" textures are registe
 
 | Path | Size | Anim | Depicts / layout | Palette | Used by |
 |---|---|---|---|---|---|
-| [`textures/gui/TGPlayerInventory.png`](../08-machines-production/gui-textures.md#14-texturesguitgplayerinventorypng-owned-by-the-player-inventory-area-0105) | 256×256 | no | Techguns player-inventory panel (0, 0, 176×166), tab backgrounds at (177, 0) and (177, 26) (26×26 each), tab connector strip (213, 0, 3×26), a 2-column HUD icon sheet at u = 242/249 (off/on), v = 0, 7, 14, 21, 28, 35, 42 (7×7 each), and the 8×8 armor-point icons at (0/8/16, 168). Full region table in [input-and-hud.md](input-and-hud.md#tgplayerinventorypng-layout) | vanilla GUI greys, black outlines, red #FF0000, greens #00C60E / #00FF12, yellow #FFFF00 | HUD overlay, armor bar, inventory tab buttons, Techguns player inventory GUI (ID 17); also referenced as [`ClientProxy.player_inv_texture`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) |
+| [`textures/gui/TGPlayerInventory.png`](../08-machines-production/gui-textures.md#14-texturesguitgplayerinventorypng-owned-by-the-player-inventory-area-0105) | 256×256 | no | Techguns player-inventory panel (0, 0, 176×166), tab backgrounds at (177, 0) and (177, 26) (26×26 each), tab connector strip (213, 0, 3×26), a 2-column HUD icon sheet at u = 242/249 (off/on), v = 0, 7, 14, 21, 28, 35, 42 (7×7 each), and the 8×8 armor-point icons at (0/8/16, 168). Full region table in [input-and-hud.md](input-and-hud.md#tgplayerinventorypng-layout) | vanilla GUI grays, black outlines, red #FF0000, greens #00C60E / #00FF12, yellow #FFFF00 | HUD overlay, armor bar, inventory tab buttons, Techguns player inventory GUI (ID 17); also referenced as [`ClientProxy.player_inv_texture`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) |
 
 ### Gore
 
@@ -22,8 +22,8 @@ These are registered by the core `TextureStitchEvent` handler only when Techguns
 
 | Path | Size | Anim | Depicts | Palette | Used by |
 |---|---|---|---|---|---|
-| [`textures/blocks/milk_still.png`](../07-blocks/textures.md#9-fluids) | 16×512 | 32 frames of 16×16, `frametime` 2 | Still milk surface: near-uniform off-white with faint blotchy luminance noise drifting between frames (a recoloured still-water animation) | light grey-white ~#CDCDCD, ~70 % alpha (avg 178/255) | icon `techguns:milk_still` → [`TGFluids.MILK`](../06-items/fluids.md) still icon |
-| [`textures/blocks/milk_flow.png`](../07-blocks/textures.md#9-fluids) | 32×1024 | 32 frames of 32×32, `animation {}` (frametime 1) | Flowing milk: off-white with faint vertical streaks scrolling down (a recoloured water flow) | ~#CDCDCD, ~69 % alpha | icon `techguns:milk_flow` → `TGFluids.MILK` flowing icon |
+| [`textures/blocks/milk_still.png`](../07-blocks/textures.md#9-fluids) | 16×512 | 32 frames of 16×16, `frametime` 2 | Still milk surface: near-uniform off-white with faint blotchy luminance noise drifting between frames (a recolored still-water animation) | light gray-white ~#CDCDCD, ~70 % alpha (avg 178/255) | icon `techguns:milk_still` → [`TGFluids.MILK`](../06-items/fluids.md) still icon |
+| [`textures/blocks/milk_flow.png`](../07-blocks/textures.md#9-fluids) | 32×1024 | 32 frames of 32×32, `animation {}` (frametime 1) | Flowing milk: off-white with faint vertical streaks scrolling down (a recolored water flow) | ~#CDCDCD, ~69 % alpha | icon `techguns:milk_flow` → `TGFluids.MILK` flowing icon |
 
 ### Metal items, ores and debug tools registered in `Techguns.java`
 
@@ -31,21 +31,21 @@ All are 16×16 (the tools are 32×32), not animated, with transparent background
 
 | Path | Size | Depicts | Palette | Used by |
 |---|---|---|---|---|
-| [`textures/items/ingotSteel.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Vanilla-style ingot: a slanted rectangular bar seen from above at an angle, with a dark outline and a light top edge | neutral greys, avg #565656, highlights ~#D0D0D0 | Steel Ingot |
+| [`textures/items/ingotSteel.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Vanilla-style ingot: a slanted rectangular bar seen from above at an angle, with a dark outline and a light top edge | neutral grays, avg #565656, highlights ~#D0D0D0 | Steel Ingot |
 | [`textures/items/ingotCopper.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Same ingot silhouette | golden ochre / yellow (avg #9B8232). Reads closer to gold or brass than to copper | Copper Ingot |
 | [`textures/items/ingotTin.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Same ingot silhouette | pale cyan-white, avg #6F9792 | Tin Ingot |
 | [`textures/items/ingotBronze.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Same ingot silhouette | dark orange-brown, avg #5E3707, highlights ~#C07020 | Bronze Ingot |
-| [`textures/items/ingotLead.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Same ingot silhouette | dark blue-grey, avg #40505C | Lead Ingot |
-| [`textures/items/nuggetIron.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Small rounded nugget (~5×8 px) in the centre with a dark outline and a top highlight | light grey, avg #8F8F8F | Iron Nugget |
+| [`textures/items/ingotLead.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Same ingot silhouette | dark blue-gray, avg #40505C | Lead Ingot |
+| [`textures/items/nuggetIron.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Small rounded nugget (~5×8 px) in the center with a dark outline and a top highlight | light gray, avg #8F8F8F | Iron Nugget |
 | [`textures/items/copperNugget.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Same nugget shape | orange-gold, avg #BC934A | Copper Nugget |
-| [`textures/items/nuggetLead.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Same nugget shape | blue-grey, avg #455164 | Lead Nugget |
-| [`textures/items/nuggetSteel.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Same nugget shape | dark grey, avg #4B4B4B, white highlight | Steel Nugget |
-| [`textures/blocks/oreLeadBlock.png`](../07-blocks/textures.md#7-ores) | 16×16 | Vanilla-stone-style grey noise with scattered small flecks | stone greys + pale blue/lavender flecks, avg #7E8087 | Lead Ore block (all faces) |
-| [`textures/blocks/oreTinBlock.png`](../07-blocks/textures.md#7-ores) | 16×16 | Stone with flecks | stone greys + pale cyan-white flecks, avg #838789 | Tin Ore |
-| [`textures/blocks/oreCopperBlock.png`](../07-blocks/textures.md#7-ores) | 16×16 | Stone with flecks | stone greys + orange-brown flecks, avg #897D75 | Copper Ore |
-| [`textures/items/structureTestTool.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) | 32×32 | A grey wrench and a black-headed hammer standing upright behind a small red-brick wall segment | greys, red brick #8A2A2A, black | Structure Test Tool ([06](../06-items/index.md)) |
-| [`textures/items/blockReaderTool.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) | 32×32 | A magnifying glass (grey ring, white-grey lens, diagonal handle to the lower right) over a grey stone cube | greys, white lens highlight | Block Reader Tool ([06](../06-items/index.md)) |
-| [`textures/items/structureScanTool.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) | 32×32 | The same magnifying glass over a red-brick wall segment | greys, red brick | Building Scan Tool ([06](../06-items/index.md)) |
+| [`textures/items/nuggetLead.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Same nugget shape | blue-gray, avg #455164 | Lead Nugget |
+| [`textures/items/nuggetSteel.png`](../06-items/textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | 16×16 | Same nugget shape | dark gray, avg #4B4B4B, white highlight | Steel Nugget |
+| [`textures/blocks/oreLeadBlock.png`](../07-blocks/textures.md#7-ores) | 16×16 | Vanilla-stone-style gray noise with scattered small flecks | stone grays + pale blue/lavender flecks, avg #7E8087 | Lead Ore block (all faces) |
+| [`textures/blocks/oreTinBlock.png`](../07-blocks/textures.md#7-ores) | 16×16 | Stone with flecks | stone grays + pale cyan-white flecks, avg #838789 | Tin Ore |
+| [`textures/blocks/oreCopperBlock.png`](../07-blocks/textures.md#7-ores) | 16×16 | Stone with flecks | stone grays + orange-brown flecks, avg #897D75 | Copper Ore |
+| [`textures/items/structureTestTool.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) | 32×32 | A gray wrench and a black-headed hammer standing upright behind a small red-brick wall segment | grays, red brick #8A2A2A, black | Structure Test Tool ([06](../06-items/index.md)) |
+| [`textures/items/blockReaderTool.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) | 32×32 | A magnifying glass (gray ring, white-gray lens, diagonal handle to the lower right) over a gray stone cube | grays, white lens highlight | Block Reader Tool ([06](../06-items/index.md)) |
+| [`textures/items/structureScanTool.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) | 32×32 | The same magnifying glass over a red-brick wall segment | grays, red brick | Building Scan Tool ([06](../06-items/index.md)) |
 
 ### Textures referenced but owned elsewhere
 
@@ -73,7 +73,7 @@ The full list of sounds played by core code, with trigger conditions, is in [cli
 | [`sounds/items/glider_loop_stereo.ogg`](../06-items/sounds.md) | `glider.loop` |
 | [`sounds/items/glider_loop.ogg`](../06-items/sounds.md) | (none; unreferenced mono version) |
 | [`sounds/items/antigrav_start_a.ogg`](../06-items/sounds.md), [`sounds/items/antigrav_start_b.ogg`](../06-items/sounds.md) | `items.antiGravStart` |
-| `sounds/test.ogg` | `test` (category `master`). A leftover placeholder: no code plays it. The only reference is a commented-out `techguns:test` block texture in [`TGBlocks.java:162`](../07-blocks/block-catalogue.md#registered-blocks). It doesn't need recreating. |
+| `sounds/test.ogg` | `test` (category `master`). A leftover placeholder: no code plays it. The only reference is a commented-out `techguns:test` block texture in [`TGBlocks.java:162`](../07-blocks/block-catalog.md#registered-blocks). It doesn't need recreating. |
 
 ## Lang keys (core-owned)
 
@@ -172,9 +172,9 @@ The second tooltip lines start with a leading space, so the two halves concatena
 
 ## Measured texture facts (consistency pass)
 
-Numbers come from [ASSET-FACTS.md](../ASSET-FACTS.md) (average of opaque pixels with alpha above 16; the three dominant colours after bucketing each channel into 8 levels, so values land on multiples of 0x20 plus 0x10; "opaque" is the share of all pixels that are opaque) plus the opaque bounding box, which I measured from the file. The bounding box is the pixel rectangle (x, y, w, h) of everything with alpha above 16. All 19 core-owned textures are listed.
+Numbers come from [ASSET-FACTS.md](../ASSET-FACTS.md) (average of opaque pixels with alpha above 16; the three dominant colors after bucketing each channel into 8 levels, so values land on multiples of 0x20 plus 0x10; "opaque" is the share of all pixels that are opaque) plus the opaque bounding box, which I measured from the file. The bounding box is the pixel rectangle (x, y, w, h) of everything with alpha above 16. All 19 core-owned textures are listed.
 
-| # | Path | Size | Animation | Average | Dominant colours | Opaque | Opaque bounding box (x, y, w, h) |
+| # | Path | Size | Animation | Average | Dominant colors | Opaque | Opaque bounding box (x, y, w, h) |
 |---|---|---|---|---|---|---|---|
 | 1 | `textures/gui/TGPlayerInventory.png` | 256x256 | none | #868685 | #909090 45%, #D0D0D0 21%, #101010 14% | 48% | several islands, see [input-and-hud.md](input-and-hud.md#tgplayerinventorypng-pixel-regions-measured-consistency-pass) |
 | 2 | `textures/entity/gore.png` | 128x128 | none | #761E18 | #701010 29%, #501010 19%, #903030 16% | 28% | (0, 0, 112, 64) |
@@ -197,9 +197,9 @@ Numbers come from [ASSET-FACTS.md](../ASSET-FACTS.md) (average of opaque pixels 
 | 19 | `textures/items/structureScanTool.png` | 32x32 | none | #5A4C4C | #101010 36%, #909090 11%, #F0F0F0 7% | 50% | (1, 1, 29, 30) |
 
 **Palette in words.**
-- Ingots share one silhouette (a 16x12 bar from y = 2 to y = 13) and differ only in hue: steel is a dark neutral grey, copper a yellow-ochre, tin a teal-white, bronze a dark orange-brown, lead a dark slate blue. The 31 % black share of the steel ingot is its outline.
-- Nuggets share one 6x8 silhouette centred at (5, 4); only 13 % of the tile is opaque. Iron and steel are grey (iron brighter), copper is orange-gold with a pale highlight, lead is blue-grey.
-- Ore blocks are fully opaque vanilla-stone-style noise: about half of the pixels are mid grey (#707070), a quarter lighter grey (#909090), and 5 to 8 % are the ore flecks (blue-lavender for lead, pale cyan for tin, brown-pink for copper).
+- Ingots share one silhouette (a 16x12 bar from y = 2 to y = 13) and differ only in hue: steel is a dark neutral gray, copper a yellow-ochre, tin a teal-white, bronze a dark orange-brown, lead a dark slate blue. The 31 % black share of the steel ingot is its outline.
+- Nuggets share one 6x8 silhouette centered at (5, 4); only 13 % of the tile is opaque. Iron and steel are gray (iron brighter), copper is orange-gold with a pale highlight, lead is blue-gray.
+- Ore blocks are fully opaque vanilla-stone-style noise: about half of the pixels are mid gray (#707070), a quarter lighter gray (#909090), and 5 to 8 % are the ore flecks (blue-lavender for lead, pale cyan for tin, brown-pink for copper).
 - Milk is a single flat off-white (#D0D0D0 bucket) at about 65 to 90 % alpha, animated only in subtle luminance noise.
 - The three tool icons are dark outlined 32x32 sprites; the large black share (20 to 36 %) is the outline and the handle. They are the only core items that use 32x32 art.
 - `gore.png` is dominated by dark red (#701010 and #501010 buckets) with lighter flesh (#903030); 72 % of the sheet is transparent because only the upper band is painted.
@@ -209,7 +209,7 @@ Numbers come from [ASSET-FACTS.md](../ASSET-FACTS.md) (average of opaque pixels 
 - `gore.png`: painted band (0, 0, 112, 64) on a 128x128 sheet. It follows the 64x32 player-skin layout at 2x scale (head, body, arm and leg strips); the rest is transparent.
 - Milk sheets: the strip is `frames x frame height` tall, so milk_still has frames of (0, 16n, 16, 16) for n = 0..31 and milk_flow has frames of (0, 32n, 32, 32) for n = 0..31.
 
-**Corrections to earlier numbers in this file** (previous averages were approximate, now replaced with the measured values): [`ingotSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) #4E4E4E to #565656; [`ingotCopper`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) #937B2F to #9B8232; [`ingotTin`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) #688F8A to #6F9792; [`ingotBronze`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) #573306 to #5E3707; [`ingotLead`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) #3C4B57 to #40505C. The nugget size changes from "about 5x8" to 6x8.
+**Corrections to earlier numbers in this file** (previous averages were approximate, now replaced with the measured values): [`ingotSteel`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) #4E4E4E to #565656; [`ingotCopper`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) #937B2F to #9B8232; [`ingotTin`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) #688F8A to #6F9792; [`ingotBronze`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) #573306 to #5E3707; [`ingotLead`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) #3C4B57 to #40505C. The nugget size changes from "about 5x8" to 6x8.
 
 ## Measured sound facts and play parameters (consistency pass)
 
@@ -284,11 +284,11 @@ All keys are in `assets/techguns/lang/en_US.lang`, the only language file. Line 
 | Chat | `techguns.tgmessage.0` (515), `techguns.updateCheck.newVersion.beta` (691), `.stable` (692), `.download` (693), `.click` (694) |
 | Tooltip helpers | `techguns.gun.tooltip.shift1` (597), `.shift2` (598), `.shift3` (599), `techguns.tooltip.toolclasses` (680) |
 | Materials and fluid | `material.carbon` (672), `material.plastic` (673), `material.titanium` (674), `material.obsidiansteel` (675), `material.rubber.name` (676), `fluid.milk` (649) |
-| Death messages (damage sources, owned by [02](../02-guns/index.md)) | `death.attack.tg_bullet` (99) and `.item` (100), `tg_explosion` (101-102), `tg_fire` (103-104), `tg_poison` (105-106), `powerhammer` (107-108), `tg_lightning` (109-110), `tg_energy` (111-112), [`chainsaw`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) (113, no `.item` variant), `tg_sonic` (114), `tg_rad` (115) |
+| Death messages (damage sources, owned by [02](../02-guns/index.md)) | `death.attack.tg_bullet` (99) and `.item` (100), `tg_explosion` (101-102), `tg_fire` (103-104), `tg_poison` (105-106), `powerhammer` (107-108), `tg_lightning` (109-110), `tg_energy` (111-112), [`chainsaw`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) (113, no `.item` variant), `tg_sonic` (114), `tg_rad` (115) |
 
 **Generated and hard-coded strings** (conditions):
 - The update-check chat line 1 starts with the literal `§a[Techguns](<VERSION>): §f` before the translated text; the "§7>" prefix on line 2 is also literal.
 - Debug keybind chat: `X:`, `Y:`, `Z:`, `XYZ: `, `Reloading FXList...`, `Removing all Particles...`, `Done!` (only with [`enableDebugKeybinds`](config.md#category-debug)).
 - Log lines (never shown in chat): "Techguns is up to date.", "Could not check Techguns version: ...", "Got Packet for FX ... but ent was null".
-- Tooltip helper: `Press §a[SHIFT] §7for detailed tooltip` is assembled from the three `shift` keys with literal colour codes; the Toolclasses list uses the literal `  <class> : <level>` format.
+- Tooltip helper: `Press §a[SHIFT] §7for detailed tooltip` is assembled from the three `shift` keys with literal color codes; the Toolclasses list uses the literal `  <class> : <level>` format.
 - Missing keys: `key.categories.techguns`, `key.+x`, `key.-x`, `key.+y`, `key.-y`, `key.+z`, `key.-z`, `key.show`, `key.reloadFX`, `key.killAllEntityFX` (debug keybinds, [CORE-29](index.md#suspected-bugs)); `death.attack.bullet` and `death.attack.bullet.item` ([CORE-34](index.md#suspected-bugs)); `death.attack.chainsaw` and `death.attack.tg_sonic` have no `.item` variant in the lang file, unlike the other damage types (whether the code ever asks for one was not traced).

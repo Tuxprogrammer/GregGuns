@@ -66,7 +66,7 @@ Techguns registers 16 classes on a raw `SimpleNetworkWrapper` and runs every han
 ## Writing a packet
 
 1. Extend `ServerboundPacket` (client to server) or `ClientboundPacket` (server to client) from `com.gregguns.network`. Give it a public no-argument constructor and implement `encode` and `decode` (strings via `PacketStrings`).
-2. Declare rules in `validate(...)`. Server-bound rules: `sameDimension`, `withinReachOfBlock` and `withinReachOf` (default 8 blocks), `indexInRange`, `ordinalInRange`, `inRange`, `finite`, `targetOfType` and `targetExists` (use `WorldTargets`, which never loads chunks), and `authorised`. The base class always checks first that the sender is alive and not spectator-like, and calls the `isAuthorised(Sender)` hook last, after the target is known to exist. Later milestones override that hook for ownership checks.
+2. Declare rules in `validate(...)`. Server-bound rules: `sameDimension`, `withinReachOfBlock` and `withinReachOf` (default 8 blocks), `indexInRange`, `ordinalInRange`, `inRange`, `finite`, `targetOfType` and `targetExists` (use `WorldTargets`, which never loads chunks), and `authorized`. The base class always checks first that the sender is alive and not spectator-like, and calls the `isAuthorised(Sender)` hook last, after the target is known to exist. Later milestones override that hook for ownership checks.
 3. Do the work in `handle(...)`. It runs on the main thread and only after every rule passed, so validated targets can be cast without further checks.
 4. Append an instance to `GregGunsNetwork.serverboundPackets()` or `clientboundPackets()`.
 5. Unit-test the rules, following `ServerboundPacketTest` and `ClientboundPacketTest`.
@@ -77,10 +77,10 @@ A failed packet is dropped and logged at debug level through a rate limiter (20 
 
 - GGS-01-07 (written, `GregGunsNetworkTest`): a unit test lists the registered packet classes and asserts each is an `IPacket`.
 - GGS-01-08: code review against the `IPacket` contract, plus a `runServer` smoke test that sends one packet from a test client.
-- GGS-01-09, GGS-01-10 (written: `RulesTest`, `SenderRulesTest`, `ServerboundPacketTest`, `ClientboundPacketTest`): unit tests on the validation rules and both base classes (missing target, wrong type, out of range, wrong dimension, too far, unauthorised). Regression tests are named `doesNotReproduceCORE05_...`, `CORE06`, `CORE08` and `CORE40`. The tests need GTNHLib on the test classpath (`testImplementation` in `dependencies.gradle`).
+- GGS-01-09, GGS-01-10 (written: `RulesTest`, `SenderRulesTest`, `ServerboundPacketTest`, `ClientboundPacketTest`): unit tests on the validation rules and both base classes (missing target, wrong type, out of range, wrong dimension, too far, unauthorized). Regression tests are named `doesNotReproduceCORE05_...`, `CORE06`, `CORE08` and `CORE40`. The tests need GTNHLib on the test classpath (`testImplementation` in `dependencies.gradle`).
 - GGS-01-11 (written, `NoDataWatcherTest`): scans the compiled GregGuns classes for any constant-pool reference to `net/minecraft/entity/DataWatcher` and fails on one. It checks the class, not just `addObject`, which is stricter; a self-test proves the scan reports a planted class.
 - GGS-01-12 (written, `PacketStringsTest`): `PacketStrings` round-trips empty, ASCII, non-ASCII (2, 3 and 4-byte UTF-8), and maximum-length (32767 chars) strings through `PacketBuffer`, rejects an over-long write and a read over the field limit. None of the current packets (`PacketGunTrigger`, `PacketGunZoom`, `PacketGunEvent`) carries a string; a guard test fails when a registered packet gains a `String` field without being listed for its own round trip.
 
 ## Open questions
 
-- Face and back cosmetic items: are they worth a tracking packet, or should GregGuns use Baubles Expanded or TravellersGear slots instead? That is a [05-armor](../../techguns-spec/05-armor/index.md) decision and needs a record before the armour milestone.
+- Face and back cosmetic items: are they worth a tracking packet, or should GregGuns use Baubles Expanded or TravellersGear slots instead? That is a [05-armor](../../techguns-spec/05-armor/index.md) decision and needs a record before the armor milestone.

@@ -4,7 +4,7 @@ Source:
 - `java/techguns/client/models/`: `ModelSteamArmor`, `ModelT3PowerArmor`, `ModelT3PowerArmorOld`, `ModelExoSuit`, `ModelArmorCoat`, `ModelBeret`, `ModelFaceMask`, `ModelGasMask`, `ModelGasMask2`, `ModelNightVisionGoggles`, `ModelNightVisionGogglesOff`, `ModelGlider`, `ModelJetPack`, `ModelOxygenFlasks`, `ModelAntiGravPack`, `ModelBipedMultipart`, `ModelBipedTGBackSlot`
 - [`java/techguns/client/renderer/item/RenderArmor.java`](index.md#coverage), [`RenderArmorItem.java`](index.md#contents)
 - `java/techguns/client/renderer/additionalslots/*`
-- [`GenericArmor.getArmorModel`](armor-catalogue.md#1-class-hierarchy)
+- [`GenericArmor.getArmorModel`](armor-catalog.md#1-class-hierarchy)
 
 Conventions:
 - Geometry is in model units, where 1 unit = 1/16 block and the vanilla head box is 8×8×8.
@@ -12,9 +12,9 @@ Conventions:
 - Boxes are listed as W×H×D.
 - Each part is a child of the named biped limb, so it follows that limb's animation.
 
-## 1. Armour model pipeline (`GenericArmor.getArmorModel`)
+## 1. Armor model pipeline (`GenericArmor.getArmorModel`)
 
-Only pieces with a model index ≥ 0 return a model (armor-catalogue.md §4). Pieces with −1 use the vanilla armour model and texture layer.
+Only pieces with a model index ≥ 0 return a model (armor-catalog.md §4). Pieces with −1 use the vanilla armor model and texture layer.
 
 The returned model is one of the 12 shared static instances in [`ClientProxy.armorModels`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy). It is configured before every render:
 - **Visible parts by slot:**
@@ -27,11 +27,11 @@ The returned model is one of the 12 shared static instances in [`ClientProxy.arm
 - **Players:** `aimedBow` is true while holding any [`GenericGun`](../02-guns/gun-lifecycle.md); otherwise it follows vanilla bow-drawing (use duration > 2 with a bow action). `heldItemRight` = 3 while blocking.
 - **Techguns NPCs ([`GenericNPC`](../10-entities-npcs/per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava)):** `aimedBow` is true when the NPC has its aimed-bow animation flag and holds a `GenericGun`.
 
-A separate `RenderPlayerEvent.Pre` hook also sets `aimedBow` on the player's main and armour models whenever a `GenericGun` is held ([01-core](../01-core/index.md) / [03](../03-gun-visuals-audio/index.md)).
+A separate `RenderPlayerEvent.Pre` hook also sets `aimedBow` on the player's main and armor models whenever a `GenericGun` is held ([01-core](../01-core/index.md) / [03](../03-gun-visuals-audio/index.md)).
 
-## 2. Armour models
+## 2. Armor models
 
-### 2.1 `ModelSteamArmor(type)`: Steam Armour (indices 0 and 1)
+### 2.1 `ModelSteamArmor(type)`: Steam Armor (indices 0 and 1)
 - UV space 128×64. The PNGs are 256×128, so ×2.
 - All vanilla biped limbs are replaced by **empty** pivots (same pivot positions as vanilla), so only the custom boxes render. It reads as bulky brass and leather plating with pistons and pipes.
 
@@ -53,10 +53,10 @@ A separate `RenderPlayerEvent.Pre` hook also sets `aimedBow` on the player's mai
 
 The helmet and leggings parts share several UV regions with other parts (the piston rod, rings and joints); a texture repaint must keep those shared regions consistent.
 
-### 2.2 `ModelT3PowerArmor(type)`: Power Armour (indices 2 and 3)
+### 2.2 `ModelT3PowerArmor(type)`: Power Armor (indices 2 and 3)
 - UV space 128×64; the PNGs are 256×128 (×2).
 - Vanilla limbs are again replaced by empty pivots.
-- The silhouette is Fallout-style power armour: a huge helmet with a snout respirator, massive tilted pauldrons and a stepped chest.
+- The silhouette is Fallout-style power armor: a huge helmet with a snout respirator, massive tilted pauldrons and a stepped chest.
 
 **Type 0:**
 
@@ -80,7 +80,7 @@ The helmet and leggings parts share several UV regions with other parts (the pis
 - A vanilla biped built with box inflation = `scale`, on a 64×64 UV grid. The PNGs are 128×128 (×2).
 - The top half of the texture uses the vanilla biped layout; the exo frame parts use the lower half.
 - Inflation by use: helmet 1.0, chest and boots 0.75, leggings 0.5.
-- The look is a white armour suit with a grey mechanical exoskeleton frame bolted on.
+- The look is a white armor suit with a gray mechanical exoskeleton frame bolted on.
 
 **Type 0:**
 
@@ -94,7 +94,7 @@ The helmet and leggings parts share several UV regions with other parts (the pis
 
 | Limb | Frame parts |
 |---|---|
-| Body | **Belt** 10×2×6 (0,43). **Centre strip** 2×2×6 (0,52). |
+| Body | **Belt** 10×2×6 (0,43). **Center strip** 2×2×6 (0,52). |
 | Each leg | **Outer leg rod** 2×10×2 (56,32). **Knee joint** 2×3×3 (27,41). **Thigh cuff** 5×2×6 (17,52). |
 
 ### 2.4 `ModelArmorCoat(type, scale)`: Riot / Ranger Veteran (indices 8–11)
@@ -125,7 +125,7 @@ All are `ModelBiped(0.0625, 0, 32×32)` subclasses: the inherited head box is in
 |---|---|
 | `ModelFaceMask(hasFront)` (Oxygen Mask, Tactical Mask) | **Hood** 8×8×8 over the head (0,0). If `hasFront`: a **mouth piece** 4×3×1 in front of the mouth (9,17). |
 | `ModelGasMask` (Gas Mask) | Hood (0,0). Mouth piece 4×3×1 (9,17). **Filter mount** 3×3×1 in front, tilted 19° downward (0,17). **Filter canister** 2×2×2, rotated (20°, −13°, 45°) so it sits as a diamond on the snout (20,17). |
-| `ModelGasMask2` (**unused**; a `ModelBase`, not a biped) | Hood, a 4×2×1 mouth piece, and **twin side filters** (3×3×1 discs angled ±34°) on 2×2×3 mounts, plus a centre mount. |
+| `ModelGasMask2` (**unused**; a `ModelBase`, not a biped) | Hood, a 4×2×1 mouth piece, and **twin side filters** (3×3×1 discs angled ±34°) on 2×2×3 mounts, plus a center mount. |
 | `ModelNightVisionGoggles` (goggles **down**) | **Strap/hood** 8×8×8 (0,0). Two **lens tubes** 2×2×4 rotated 45° about Z (diamond section) sticking forward from the eyes (0,17). **Bridge** 3×1×2 (13,17). **Mount arm** 2×1×4 angled 45° up to the forehead (13,21). |
 | `ModelNightVisionGogglesOff` (goggles **flipped up**) | The same parts, re-posed. The tubes sit above the forehead, pointing up and back (rotated about −135° X, −31° Y, 35° Z). The mount arm is folded back about 75°, and the bridge is on top of the head. |
 
@@ -149,14 +149,14 @@ UV 32×32; the PNGs are 64×64 (×2). Every part's X-rotation copies the body's 
 ## 3. Special-slot rendering on the player (`renderer/additionalslots`)
 
 **Hook:** `RenderPlayerEvent.SetArmorModel` in the event handler ([01-core](../01-core/index.md)).
-- **Armour pass 0** (helmet pass): read the face stack from the DataWatcher. `showSlot` = not (the helmet is a `GenericArmor` with `hideFaceslot`).
-- **Armour pass 1** (chest pass): the same with the back stack and `hideBackslot`.
+- **Armor pass 0** (helmet pass): read the face stack from the DataWatcher. `showSlot` = not (the helmet is a `GenericArmor` with `hideFaceslot`).
+- **Armor pass 1** (chest pass): the same with the back stack and `hideBackslot`.
 
 Rendering happens inside the player's model space, so the slot models line up with the player's biped.
 
 `RenderAdditionalSlotItem.getRenderForItem(stack)` picks one shared renderer per item:
 
-| Item | Renderer | Texture(s) (`textures/armor/…`), indexed by camo | Honours `showSlot`? |
+| Item | Renderer | Texture(s) (`textures/armor/…`), indexed by camo | Honors `showSlot`? |
 |---|---|---|---|
 | Gas Mask (only while not empty) | `RenderAdditionalArmorModel` + `ModelGasMask` | `gasMask.png` | yes |
 | Oxygen Mask (shared item) | `RenderAdditionalArmorModel` + `ModelFaceMask(true)` | `oxygenMask.png` | yes |
@@ -170,7 +170,7 @@ Rendering happens inside the player's model space, so the slot models line up wi
 | Akimbo guns (held item) | `RenderAkimboGun` family (see §4) | gun textures ([03](../03-gun-visuals-audio/index.md)) | n/a |
 
 **`RenderAdditionalArmorModel.render`** (base for all except the akimbo guns), when showing:
-1. Bind the texture for the item's camo index, or index 0 if the item is not [`ICamoChangeable`](armor-catalogue.md#1-class-hierarchy).
+1. Bind the texture for the item's camo index, or index 0 if the item is not [`ICamoChangeable`](armor-catalog.md#1-class-hierarchy).
 2. Compute the head yaw relative to the body:
    - Interpolate body yaw and head yaw.
    - If riding a living entity, use the mount's body yaw, clamp the difference to ±85°, and add 20 % of the difference when it exceeds 50°. This matches vanilla living-render logic.
@@ -203,13 +203,13 @@ So head-mounted gear follows head yaw and pitch, and back gear follows the body 
 6. Apply the per-gun translation.
 7. For each model part: push, apply reload/recoil, render the part (type EQUIPPED), pop.
 
-| Gun ([`TGuns`](../02-guns/gun-catalogue.md) field) | Renderer | Model, texture | Parts | Scale | Translation | Double-shot recoil |
+| Gun ([`TGuns`](../02-guns/gun-catalog.md) field) | Renderer | Model, texture | Parts | Scale | Translation | Double-shot recoil |
 |---|---|---|---|---|---|---|
-| `akimbo_pistol` | `RenderAkimboGun` | [`ModelPistol3`](../03-gun-visuals-audio/gun-models.md#modelpistol3-pistol-declared-6432-used-with-a-12864-png-family-z-9-boxes-2-parts), [`textures/guns/pistol3.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | 2 | 0.55 | (0.2, −0.5, −2.0) | no |
-| `akimbo_revoler` | `RenderAkimboRevolver` | [`ModelRevolver`](../03-gun-visuals-audio/gun-models.md#modelrevolver-6432-family-x-20-boxes-1-part), [`textures/guns/revolver.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
-| `akimbo_goldenrevolver` | `RenderAkimboRevolver` | [`ModelGoldenRevolver`](../03-gun-visuals-audio/gun-models.md#modelgoldenrevolver-6432-family-x-24-boxes-1-part), [`textures/guns/goldenrevolver.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
-| `akimbo_mac10` | `RenderAkimboMac10` | [`ModelMac10`](../03-gun-visuals-audio/gun-models.md#modelmac10-declared-6432-used-with-a-12864-png-family-z-23-boxes-tabula-1-part), [`textures/guns/mac10texture.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | 1 | 0.5 | (0.2, −0.45, −2.15) | yes |
-| `akimbo_mibGun` | `RenderAkimboMibGun` | [`ModelMibGun`](../03-gun-visuals-audio/gun-models.md#modelmibgun-mib-gun-declared-6464-used-with-a-128128-png-family-z-50-boxes-tabula-1-part), [`textures/guns/mibgun.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | 1 | 0.55 | (0.1, −0.7, −1.7) plus the debug offsets (bug [ARM-25](index.md#suspected-bugs)) | no |
+| `akimbo_pistol` | `RenderAkimboGun` | [`ModelPistol3`](../03-gun-visuals-audio/gun-models.md#modelpistol3-pistol-declared-6432-used-with-a-12864-png-family-z-9-boxes-2-parts), [`textures/guns/pistol3.png`](../03-gun-visuals-audio/textures.md#measured-colors-all-62-textures) | 2 | 0.55 | (0.2, −0.5, −2.0) | no |
+| `akimbo_revoler` | `RenderAkimboRevolver` | [`ModelRevolver`](../03-gun-visuals-audio/gun-models.md#modelrevolver-6432-family-x-20-boxes-1-part), [`textures/guns/revolver.png`](../03-gun-visuals-audio/textures.md#measured-colors-all-62-textures) | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
+| `akimbo_goldenrevolver` | `RenderAkimboRevolver` | [`ModelGoldenRevolver`](../03-gun-visuals-audio/gun-models.md#modelgoldenrevolver-6432-family-x-24-boxes-1-part), [`textures/guns/goldenrevolver.png`](../03-gun-visuals-audio/textures.md#measured-colors-all-62-textures) | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
+| `akimbo_mac10` | `RenderAkimboMac10` | [`ModelMac10`](../03-gun-visuals-audio/gun-models.md#modelmac10-declared-6432-used-with-a-12864-png-family-z-23-boxes-tabula-1-part), [`textures/guns/mac10texture.png`](../03-gun-visuals-audio/textures.md#measured-colors-all-62-textures) | 1 | 0.5 | (0.2, −0.45, −2.15) | yes |
+| `akimbo_mibGun` | `RenderAkimboMibGun` | [`ModelMibGun`](../03-gun-visuals-audio/gun-models.md#modelmibgun-mib-gun-declared-6464-used-with-a-128128-png-family-z-50-boxes-tabula-1-part), [`textures/guns/mibgun.png`](../03-gun-visuals-audio/textures.md#measured-colors-all-62-textures) | 1 | 0.55 | (0.1, −0.7, −1.7) plus the debug offsets (bug [ARM-25](index.md#suspected-bugs)) | no |
 
 **Animation inputs:** per-entity reload and recoil timers held by `ClientProxy` ([03](../03-gun-visuals-audio/index.md)).
 - Reload progress p = 1 − remaining/total.
@@ -232,7 +232,7 @@ So head-mounted gear follows head yaw and pitch, and back gear follows the body 
 | Revolver | −30° about Z. |
 | MIB | For p < 0.5, with q = 2p: rise to −15° over q < 0.25, then ease back over the rest. Pivot (0, 0.3, 0.5). |
 
-## 5. 3-D inventory icons for Steam and Power armour (`RenderArmorItem`)
+## 5. 3-D inventory icons for Steam and Power armor (`RenderArmorItem`)
 
 `RenderArmorItem(model, slot, textureFile)` is registered as the item renderer for the 8 Steam and Power pieces:
 - Steam: `ModelSteamArmor(0)` for helmet, chest and boots; `ModelSteamArmor(1)` for leggings; texture `steam_armor.png`.

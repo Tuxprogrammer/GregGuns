@@ -146,7 +146,7 @@
 <text x="1240" y="506" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#9fb0bf" text-anchor="start" >Ammo Press, Reaction Chamber, Repair Bench, Turret</text>
 <rect x="1210" y="534" width="520" height="118" rx="10" fill="#232e3a" />
 <rect x="1210" y="534" width="12" height="118" rx="4" fill="#3fd0ff" />
-<text x="1240" y="566" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" fill="#eaf0f5" text-anchor="start" >Armour and equipment</text>
+<text x="1240" y="566" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="20" font-weight="700" fill="#eaf0f5" text-anchor="start" >Armor and equipment</text>
 <rect x="1624" y="548" width="74" height="24" rx="12" fill="#3fd0ff" />
 <text x="1661" y="564.375" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="600" fill="#10151b" text-anchor="middle" >9 quests</text>
 <text x="1240" y="590" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13.5" font-weight="normal" fill="#ff8a1f" text-anchor="start" >Gate: Pack 88 (Welcome to Tier 1, LV), then tier quests</text>

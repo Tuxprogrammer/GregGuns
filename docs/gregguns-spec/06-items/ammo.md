@@ -9,11 +9,11 @@ How GregGuns ammo plugs into GT recipe maps and GT's own ammo-like parts.
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Ammo Press makes bullets and shells ([ammo.md](../../techguns-spec/06-items/ammo.md#loose-ammunition-sources)) | The GregGuns Ammo Press (animated single block) and Ammunition Works multiblock, on the `gregguns.ammoPress` map ([ammo-press.md](../08-machines-production/ammo-press.md)) | [0011](../../design/0011-machine-policy.md), which reverses 0002 here |
 | Bullets from iron, copper and lead nuggets by OreDict lookup | Bullets built from GT `round` parts and GT dusts, through the unificator | GT first; avoids the OreDict lookups behind [ITEM-02](../../techguns-spec/06-items/index.md#suspected-bugs) |
-| Magazine refill by crafting grid; sneak-click to empty ([magazine items](../../techguns-spec/06-items/ammo.md#magazine-items)) | Same behaviour, kept. Empty-magazine recipes use GT plates and springs | Behaviour is gameplay, not a GT overlap |
+| Magazine refill by crafting grid; sneak-click to empty ([magazine items](../../techguns-spec/06-items/ammo.md#magazine-items)) | Same behavior, kept. Empty-magazine recipes use GT plates and springs | Behavior is gameplay, not a GT overlap |
 | Energy Cell and Nuclear Power Cell are consumables filled in the Charging Station | Rechargeable electric items ([0003](../../design/0003-energy-model.md)); fluid ammo uses GT fluids ([fluids.md](fluids.md)) | Charging Station dropped |
 | Ammo comes out of a Techguns-specific slot in the extra inventory | Unchanged here; the slot is area 05's | n/a |
 
@@ -44,9 +44,9 @@ The per-ammo recipes (inputs, programmed circuit, EU/t, time and batch size) are
 - **GT has no ammo of its own.** A word search for ammo, bullet and cartridge across the `gregtech` package at this tag matches only `OrePrefixes.java`; the bullet prefixes and `round` are the only ammo-like data.
 - **Pack-side change:** none.
 
-### Dispenser behaviour and projectile ammo
+### Dispenser behavior and projectile ammo
 
-Rockets, 40 mm grenades and tactical nuke rockets are fired by dispensers in Techguns ([dispenser behaviour](../../techguns-spec/06-items/ammo.md#dispenser-behaviour)). GT does not change vanilla dispensers, so there is no integration point; the behaviour is kept as the Techguns spec says.
+Rockets, 40 mm grenades and tactical nuke rockets are fired by dispensers in Techguns ([dispenser behavior](../../techguns-spec/06-items/ammo.md#dispenser-behavior)). GT does not change vanilla dispensers, so there is no integration point; the behavior is kept as the Techguns spec says.
 
 ## Requirements
 

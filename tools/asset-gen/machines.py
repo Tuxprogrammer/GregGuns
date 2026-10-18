@@ -1,6 +1,6 @@
 """GT-style machine overlays for GregGuns (block.machine.* manifest entries).
 
-GT machines are a tier-coloured hull casing with a transparent overlay on top, so every
+GT machines are a tier-colored hull casing with a transparent overlay on top, so every
 overlay here is RGBA with a transparent surround: the hull shows through. Overlays only
 carry the detail (hoods, slots, belts, lenses, gauges) and a dark outline for contrast.
 
@@ -227,7 +227,7 @@ def hopper_top(f: int | None, steam: bool = False) -> Canvas:
                     for dy in range(0, 2):
                         c.blend(px_ + dx + (ph % 2), y + dy, hx("#f0f0f0"), max(40, al))
         return c
-    # hopper mouth: bevelled rim, funnel, black opening
+    # hopper mouth: beveled rim, funnel, black opening
     c.rect(1, 1, 15, 15, OUT)
     c.rect(2, 2, 14, 14, MD)
     c.bevel(2, 2, 14, 14, HI, DK)
@@ -433,7 +433,7 @@ def repair_front(f: int | None) -> Canvas:
 
 
 def repair_side(f: int | None = None) -> Canvas:
-    """Clamp arm. Active (f=0..3): the arm lowers onto the work and lifts again, status lamp changes colour."""
+    """Clamp arm. Active (f=0..3): the arm lowers onto the work and lifts again, status lamp changes color."""
     c = Canvas(16)
     off = 0 if f is None else [0, 1, 2, 1][f]
     c.rect(2, 2, 7, 14, OUT)                         # fixed column
@@ -756,7 +756,7 @@ def frames_for(machine: str, part: str, n: int) -> list:
         return [works_front(i if active else None, glow) for i in fr]
     if machine == "retort":
         return [retort_front(i if active else None, glow) for i in fr]
-    if machine == "armoury_gantry":
+    if machine == "armory_gantry":
         return [gantry_front(i if active else None, glow) for i in fr]
     if machine == "rampart":
         return [rampart_front(i if active else None, glow) for i in fr]

@@ -10,7 +10,7 @@ All 26 files in `sounds/effects/` are covered below. Event names are keys in `so
 | `sounds/effects/gore_a.ogg`, `sounds/effects/gore_b.ogg`, `sounds/effects/gore_c.ogg` | `effects.gore` | hostile | Client, when a GORE death packet arrives ([`PacketEntityDeathType`](../01-core/networking.md#6--packetentitydeathtype-sc)). Attached to the dying entity via [`TGSound`](../01-core/client-effects-audio.md#tgsound), volume 1, pitch 1, not repeating, category [`TGSoundCategory.DEATHEFFECT`](../01-core/client-effects-audio.md#tgsoundcategory) ("deathFX"). |
 | `sounds/effects/biodeath.ogg` | `effects.biodeath` | hostile | Client, BIO death packet (same mechanism as gore). Also the explosion sound of a bursting bio blob ([`BioblobTileEnt`](../09-machines-utility/misc-tile-entities.md#tile-entity-bioblobtileent), [`07-blocks`](../07-blocks/index.md)). |
 | `sounds/effects/disintegrate.ogg` | `effects.disintegrate` | hostile | Client, LASER death packet (same mechanism as gore). |
-| `sounds/effects/steamarmor_jump_a.ogg`, `sounds/effects/steamarmor_jump_b.ogg`, `sounds/effects/steamarmor_jump_c.ogg` | `effects.steamarmorJump` | player | Server, a powered/steam armour leg piece's jump boost is used ([`PoweredArmor.applyPowerConsumptionOnAction`](../05-armor/armor-catalogue.md#9-power-system-poweredarmor), JUMP bonus, `armorType == 2`). Volume 0.66, pitch 1.0 at the player. See [`05-armor`](../05-armor/index.md). |
+| `sounds/effects/steamarmor_jump_a.ogg`, `sounds/effects/steamarmor_jump_b.ogg`, `sounds/effects/steamarmor_jump_c.ogg` | `effects.steamarmorJump` | player | Server, a powered/steam armor leg piece's jump boost is used ([`PoweredArmor.applyPowerConsumptionOnAction`](../05-armor/armor-catalog.md#9-power-system-poweredarmor), JUMP bonus, `armorType == 2`). Volume 0.66, pitch 1.0 at the player. See [`05-armor`](../05-armor/index.md). |
 | `sounds/effects/steamarmor_jump_d.ogg` | `effects.steamarmorJump2` | player | Jump-pack boost ([`ItemJumppack.doJumpEffect`](../05-armor/special-equipment.md#44-jump-pack-itemjumppack)): server sends [`PacketPlaySound`](../01-core/networking.md#9--packetplaysound-sc) to players within 50 blocks, attached to the player, category PLAYER_EFFECT, together with the `JumpPackBoost` FX. See [`05-armor`](../05-armor/index.md). |
 | `sounds/effects/DemoCharge_Plant.ogg` | `tntcharge.plant` | block | TNT/demolition charge block placed ([`ItemBlockMetaDataMachine`](../07-blocks/special-blocks.md#16-itemblockmetadatamachine)), volume 4.0, pitch 1.0. See [`07-blocks`](../07-blocks/index.md). |
 | `sounds/effects/DemoCharge_Init.ogg` | `tntcharge.init` | block | Demolition charge armed via its GUI button ([`ExplosiveChargeTileEnt.buttonClicked`](../09-machines-utility/explosive-charges.md#nbt-explosivechargetileent), id 0), volume 4.0. |
@@ -77,26 +77,26 @@ Duration, sample rate, channels and category are quoted unchanged from [ASSET-FA
 | `sounds/effects/C4Charge_Init.ogg` | 0.88 s | 44100 Hz | mono | `c4charge.init` [block] |
 | `sounds/effects/C4Charge_Tick.ogg` | 0.70 s | 44100 Hz | mono | `c4charge.tick` [block] |
 
-Observations: the five bullet-impact files share one length (0.98 s) and the lowest rate in the folder (22050 Hz), consistent with the "identical copies" note above. `biodeath` and `disintegrate` are 32000 Hz; everything else is 44100 Hz. All four steam-armour files are the same length.
+Observations: the five bullet-impact files share one length (0.98 s) and the lowest rate in the folder (22050 Hz), consistent with the "identical copies" note above. `biodeath` and `disintegrate` are 32000 Hz; everything else is 44100 Hz. All four steam-armor files are the same length.
 
 ### Every event: trigger, volume, pitch
 
 | Event | Call site | Volume | Pitch | Notes |
 |---|---|---|---|---|
 | `effects.bulletimpact` | `playSoundAtEntity(this, ...)` in the default `hitBlock` of `GenericProjectile`, and in `MiningDummyProjectile` | 1.0 | 1.0 | Played when the struck material is not rock, wood, glass, iron or anvil. The same event string appears in a commented-out headshot branch and a commented-out [`BlasterRifleProjectile`](projectiles.md#1-registration) line (dead code). |
-| `effects.explosion1` | End of `ProjectileExplosion.doExplosion`, after [`GrenadeProjectile`](projectiles.md#37-grenadeprojectile-family) (stick, frag, 40 mm launcher) calls `setExplosionSound` | 4.0 | `(1 + (rand - rand) * 0.2) * 0.7`, so 0.56 to 0.84, mean 0.7 | `playSoundEffect` at the explosion centre. Callers run on both sides ([PFX-15](index.md#suspected-bugs)). |
+| `effects.explosion1` | End of `ProjectileExplosion.doExplosion`, after [`GrenadeProjectile`](projectiles.md#37-grenadeprojectile-family) (stick, frag, 40 mm launcher) calls `setExplosionSound` | 4.0 | `(1 + (rand - rand) * 0.2) * 0.7`, so 0.56 to 0.84, mean 0.7 | `playSoundEffect` at the explosion center. Callers run on both sides ([PFX-15](index.md#suspected-bugs)). |
 | `effects.nukeexplosion` | `NukeRocketProjectile.explodeRocket`, server only | 8.0 | 1.0 | `playSoundEffect` at the rocket. An identical call in a commented-out older method is dead code. Plays together with the vanilla `random.explode` from the `ProjectileExplosion` (volume 4.0, pitch as above). |
 | `effects.gore` | `PacketEntityDeathType` client handler, GORE branch, through `proxy.playSoundOnEntity` | 1.0 | 1.0 | Client; not repeating; attached to the dying entity; category `DEATHEFFECT`. The older server-side `playSoundEffect` calls (volume 1.0, pitch 1.0) in [`TechgunsEventhandler`](../01-core/events.md#techgunseventhandler-forge-bus) and [`DeathEffect`](../01-core/client-effects-audio.md#deatheffectcreatedeatheffectentity-type-mx-my-mz) are commented out. |
 | `effects.biodeath` (death) | `PacketEntityDeathType` client handler, BIO branch | 1.0 | 1.0 | As gore. |
-| `effects.biodeath` (bio blob burst) | `BioblobTileEnt` passes it to `ProjectileExplosion.setExplosionSound` | 4.0 | `(1 + (rand - rand) * 0.2) * 0.7` | `playSoundEffect` at the block centre; here it is an explosion sound, not a death sound. |
+| `effects.biodeath` (bio blob burst) | `BioblobTileEnt` passes it to `ProjectileExplosion.setExplosionSound` | 4.0 | `(1 + (rand - rand) * 0.2) * 0.7` | `playSoundEffect` at the block center; here it is an explosion sound, not a death sound. |
 | `effects.disintegrate` | `PacketEntityDeathType` client handler, LASER branch | 1.0 | 1.0 | As gore. |
 | `effects.steamarmorJump` | `PoweredArmor.applyPowerConsumptionOnAction`, JUMP bonus | 0.66 | 1.0 | Server `playSoundAtEntity` on the player. |
 | `effects.steamarmorJump2` | `ItemJumppack.doJumpEffect` through `PacketPlaySound` | 1.0 | 1.0 | Packet flags: repeat false, moving true, gunPosition false, playOnOwnPlayer true; category `PLAYER_EFFECT`; sent to players near the wearer (50 blocks). |
-| `tntcharge.plant`, `c4charge.plant` | `ItemBlockMetaDataMachine` when the charge block is placed | 4.0 | 1.0 | `playSoundEffect` at the block centre. |
+| `tntcharge.plant`, `c4charge.plant` | `ItemBlockMetaDataMachine` when the charge block is placed | 4.0 | 1.0 | `playSoundEffect` at the block center. |
 | `tntcharge.init`, `c4charge.init` | `ExplosiveChargeTileEnt` arming button handler | 4.0 | 1.0 | `playSoundEffect`. |
-| `tntcharge.tick`, `c4charge.tick` | `ExplosiveChargeTileEnt` update, once per 20 ticks while armed | 4.0 | 1.0 | `playSoundEffect`. A randomised pitch is present only as a comment. |
+| `tntcharge.tick`, `c4charge.tick` | `ExplosiveChargeTileEnt` update, once per 20 ticks while armed | 4.0 | 1.0 | `playSoundEffect`. A randomized pitch is present only as a comment. |
 
-The charge detonation itself plays vanilla `random.explode` at volume 4.0 with the same randomised 0.7-scaled pitch; that belongs to [`09-machines-utility`](../09-machines-utility/index.md).
+The charge detonation itself plays vanilla `random.explode` at volume 4.0 with the same randomized 0.7-scaled pitch; that belongs to [`09-machines-utility`](../09-machines-utility/index.md).
 
 ### Vanilla sounds used by code in this area, with parameters
 

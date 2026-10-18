@@ -21,7 +21,7 @@ Every area turned out to have integration points. Numbers 01–11 match the Tech
 | [02-guns](02-guns/index.md) | [02-guns](../techguns-spec/02-guns/index.md) | GT recipe maps, IC2 electric weapons, damage sources, offhand |
 | [03-gun-visuals-audio](03-gun-visuals-audio/index.md) | [03-gun-visuals-audio](../techguns-spec/03-gun-visuals-audio/index.md) | Angelica rendering, shaders, dynamic lights, sound categories |
 | [04-projectiles-fx](04-projectiles-fx/index.md) | [04-projectiles-fx](../techguns-spec/04-projectiles-fx/index.md) | Explosions, block protection, particles under Angelica |
-| [05-armor](05-armor/index.md) | [05-armor](../techguns-spec/05-armor/index.md) | Baubles slots, IC2 electric armour, GT hazard protection, flight and oxygen gear |
+| [05-armor](05-armor/index.md) | [05-armor](../techguns-spec/05-armor/index.md) | Baubles slots, IC2 electric armor, GT hazard protection, flight and oxygen gear |
 | [06-items](06-items/index.md) | [06-items](../techguns-spec/06-items/index.md) | GT materials and fluids, **pack loot tables**, tooltips, hazards, NEI |
 | [07-blocks](07-blocks/index.md) | [07-blocks](../techguns-spec/07-blocks/index.md) | Block IDs, decorative-block overlap, chests, wrench and Waila |
 | [08-machines-production](08-machines-production/index.md) | [08-machines-production](../techguns-spec/08-machines-production/index.md) | GT MetaTileEntities, recipe maps, NEI, ModularUI2 |

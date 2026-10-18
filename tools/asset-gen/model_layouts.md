@@ -7,10 +7,10 @@ layouts of the GregGuns textures; build or adapt the models to them.
 
 - **Box unwrap.** For a box of size w x h x d at (u, v): top (u+d, v, w x d); bottom (u+d+w, v, w x d); right (u, v+d, d x h); front (u+d, v+d, w x h); left (u+d+w, v+d, d x h); back (u+2d+w, v+d, w x h). This is the vanilla `ModelBox` layout.
 - **Packed atlases** (guns, accessories, machines, non-biped mobs): each named box below was shelf-packed into the sheet, scaled up so the footprint is filled. The listed `u v w h d` are in texels; model the part at that size (or scale UVs).
-- **Armour layers** use the vanilla 64x32 armour unwrap scaled by width/64 (head 0,0 8x8x8; body 16,16 8x12x4; right arm 40,16 4x12x4; right leg 0,16 4x12x4; left limbs mirror the right). Taller sheets keep the same layout in the top half and hold extra boxes below.
+- **Armor layers** use the vanilla 64x32 armor unwrap scaled by width/64 (head 0,0 8x8x8; body 16,16 8x12x4; right arm 40,16 4x12x4; right leg 0,16 4x12x4; left limbs mirror the right). Taller sheets keep the same layout in the top half and hold extra boxes below.
 - **Biped mob skins** use the modern 64x64 unwrap scaled by width/64 (left limbs at 32,48 and 16,48).
-- **Gun roles.** `metal` = gate-material steel, `dark` = darkened steel, `furn` = polymer or wood furniture, `glow` = emissive colour (bright, intended for a lightmap/emissive pass). `_camoN` sheets share the base gun's layout exactly.
-- Camo and colour variants share the base layout; only colours/patterns differ.
+- **Gun roles.** `metal` = gate-material steel, `dark` = darkened steel, `furn` = polymer or wood furniture, `glow` = emissive color (bright, intended for a lightmap/emissive pass). `_camoN` sheets share the base gun's layout exactly.
+- Camo and color variants share the base layout; only colors/patterns differ.
 
 ## Model textures
 
@@ -91,25 +91,25 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `cap_r` box u=0 v=58 w=4 h=2 d=4
 
 ### armor.steam
-- standard 64x32 armour unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_combat_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_combat_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_miner_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_miner_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_scout_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_scout_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_beret
 - `crown` box u=0 v=0 w=16 h=4 d=16
@@ -118,19 +118,19 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `nub` box u=14 v=38 w=2 h=2 d=2
 
 ### armor.t2_combat_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_combat_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_commando_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_commando_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_riot
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 - extra boxes below the vanilla layout (free for pauldrons, knee guards, back plate etc.):
 - `pauldron` box u=0 v=89 w=14 h=7 d=14
 - `knee_guard` box u=0 v=110 w=9 h=9 d=9
@@ -141,7 +141,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `holster` box u=36 v=110 w=7 h=11 d=5
 
 ### armor.t2_riot_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 - extra boxes below the vanilla layout (free for pauldrons, knee guards, back plate etc.):
 - `pauldron` box u=0 v=89 w=14 h=7 d=14
 - `knee_guard` box u=0 v=110 w=9 h=9 d=9
@@ -152,7 +152,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `holster` box u=36 v=110 w=7 h=11 d=5
 
 ### armor.t2_riot_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 - extra boxes below the vanilla layout (free for pauldrons, knee guards, back plate etc.):
 - `pauldron` box u=0 v=89 w=14 h=7 d=14
 - `knee_guard` box u=0 v=110 w=9 h=9 d=9
@@ -163,13 +163,13 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `holster` box u=36 v=110 w=7 h=11 d=5
 
 ### armor.t3_combat_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_combat_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_exo_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 - extra boxes below the vanilla layout (free for pauldrons, knee guards, back plate etc.):
 - `pauldron` box u=0 v=89 w=14 h=7 d=14
 - `knee_guard` box u=0 v=110 w=9 h=9 d=9
@@ -180,7 +180,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `holster` box u=36 v=110 w=7 h=11 d=5
 
 ### armor.t3_exo_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 - extra boxes below the vanilla layout (free for pauldrons, knee guards, back plate etc.):
 - `pauldron` box u=0 v=89 w=14 h=7 d=14
 - `knee_guard` box u=0 v=110 w=9 h=9 d=9
@@ -191,13 +191,13 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `holster` box u=36 v=110 w=7 h=11 d=5
 
 ### armor.t3_hev_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_hev_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_power
-- standard 64x32 armour unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.tactical_mask
 - `faceplate` box u=0 v=20 w=15 h=15 d=2
@@ -451,52 +451,52 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `battery` box u=0 v=36 w=8 h=6 d=3
 
 ### armor.steam_1
-- standard 64x32 armour unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.steam_hazard
-- standard 64x32 armour unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.steam_iron
-- standard 64x32 armour unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.steam_rusty
-- standard 64x32 armour unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_miner_black_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_miner_black_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_miner_green_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_miner_green_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_miner_red_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_miner_red_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_scout_black_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_scout_black_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_scout_forest_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_scout_forest_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_scout_snow_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t1_scout_snow_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_beret_black
 - `crown` box u=0 v=0 w=16 h=4 d=16
@@ -511,49 +511,49 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `nub` box u=14 v=38 w=2 h=2 d=2
 
 ### armor.t2_combat_arctic_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_combat_arctic_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_combat_desert_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_combat_desert_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_combat_security_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_combat_security_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_combat_swat_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_combat_swat_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_combat_wood_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t2_combat_wood_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_combat_green_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_combat_green_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_combat_silver_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_combat_silver_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_exo_green_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 - extra boxes below the vanilla layout (free for pauldrons, knee guards, back plate etc.):
 - `pauldron` box u=0 v=89 w=14 h=7 d=14
 - `knee_guard` box u=0 v=110 w=9 h=9 d=9
@@ -564,7 +564,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `holster` box u=36 v=110 w=7 h=11 d=5
 
 ### armor.t3_exo_green_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 - extra boxes below the vanilla layout (free for pauldrons, knee guards, back plate etc.):
 - `pauldron` box u=0 v=89 w=14 h=7 d=14
 - `knee_guard` box u=0 v=110 w=9 h=9 d=9
@@ -575,7 +575,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `holster` box u=36 v=110 w=7 h=11 d=5
 
 ### armor.t3_exo_silver_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 - extra boxes below the vanilla layout (free for pauldrons, knee guards, back plate etc.):
 - `pauldron` box u=0 v=89 w=14 h=7 d=14
 - `knee_guard` box u=0 v=110 w=9 h=9 d=9
@@ -586,7 +586,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `holster` box u=36 v=110 w=7 h=11 d=5
 
 ### armor.t3_exo_silver_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 - extra boxes below the vanilla layout (free for pauldrons, knee guards, back plate etc.):
 - `pauldron` box u=0 v=89 w=14 h=7 d=14
 - `knee_guard` box u=0 v=110 w=9 h=9 d=9
@@ -597,22 +597,22 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `holster` box u=36 v=110 w=7 h=11 d=5
 
 ### armor.t3_hev_black_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_hev_black_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_hev_silver_1
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_hev_silver_2
-- standard 64x32 armour unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x2 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_power_dark
-- standard 64x32 armour unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.t3_power_dark2
-- standard 64x32 armour unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
+- standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
 ### armor.tactical_mask_green
 - `faceplate` box u=0 v=20 w=15 h=15 d=2
@@ -682,7 +682,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - membrane ring, darker nucleus, concentric banding and bubbles on a translucent 64x64 blob (single sprite).
 
 ### entity.blue_beam
-- beam quad: white-hot core rows 14..17, coloured sheath, exponential glow to transparent at y=0/31, 8 px energy bands with bright knots every 16 px, 4 px end fade.
+- beam quad: white-hot core rows 14..17, colored sheath, exponential glow to transparent at y=0/31, 8 px energy bands with bright knots every 16 px, 4 px end fade.
 
 ### entity.cyberdemon
 - modern 64x64 skin unwrap scaled x2: head 0,0 8x8x8; body 16,16 8x12x4; right arm 40,16; right leg 0,16; left arm 32,48; left leg 16,48 (each 4x12x4). Overlay (hat/jacket/sleeve) regions left transparent.
@@ -704,7 +704,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `limb` box u=34 v=106 w=28 h=7 d=7
 
 ### entity.laser_beam
-- beam quad: white-hot core rows 14..17, coloured sheath, exponential glow to transparent at y=0/31, 8 px energy bands with bright knots every 16 px, 4 px end fade.
+- beam quad: white-hot core rows 14..17, colored sheath, exponential glow to transparent at y=0/31, 8 px energy bands with bright knots every 16 px, 4 px end fade.
 
 ### entity.supermutant_1
 - modern 64x64 skin unwrap scaled x2: head 0,0 8x8x8; body 16,16 8x12x4; right arm 40,16; right leg 0,16; left arm 32,48; left leg 16,48 (each 4x12x4). Overlay (hat/jacket/sleeve) regions left transparent.
@@ -1111,7 +1111,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `foot_a` box u=64 v=108 w=8 h=4 d=8
 - `foot_b` box u=96 v=108 w=8 h=4 d=8
 
-### machine.turret_base_aluminium
+### machine.turret_base_aluminum
 - `base_plate` box u=0 v=0 w=30 h=4 d=30
 - `pedestal` box u=0 v=34 w=11 h=19 d=11
 - `swivel` box u=0 v=64 w=19 h=6 d=19

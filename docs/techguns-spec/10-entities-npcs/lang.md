@@ -4,7 +4,7 @@ Every lang key in scope for this area (mob names, spawn-egg names, the two spawn
 
 ## 1. Entity name keys (`entity.Techguns.<registry name>.name`)
 
-Forge builds an entity's translation key from the name given at registration, `entity.<modid>.<name>.name`. The mod ID string is [`Techguns`](../01-core/lifecycle-and-registration.md#lifecycle-overview) with a capital T (see [mob-catalogue.md](mob-catalogue.md#registration-javatechgunstgentitiesjava)). The name is shown in the death message of a killed mob, in the boss bar of the Attack Helicopter, in name tags and in the kill feed of other mods.
+Forge builds an entity's translation key from the name given at registration, `entity.<modid>.<name>.name`. The mod ID string is [`Techguns`](../01-core/lifecycle-and-registration.md#lifecycle-overview) with a capital T (see [mob-catalog.md](mob-catalog.md#registration-javatechgunstgentitiesjava)). The name is shown in the death message of a killed mob, in the boss bar of the Attack Helicopter, in name tags and in the kill feed of other mods.
 
 | Line | Key | English text | Registered entity | Note |
 |---|---|---|---|---|
@@ -14,7 +14,7 @@ Forge builds an entity's translation key from the name given at registration, `e
 | 274 | `entity.Techguns.ZombiePigmanSoldier.name` | Zombie Pigman Soldier | [`ZombiePigmanSoldier`](per-mob.md#4-zombie-pigman-soldier-zombiepigmansoldier) (ID 30) | |
 | 275 | `entity.Techguns.AttackHelicopter.name` | Attack Helicopter | `AttackHelicopter` | Duplicate of line 271 ([NPC-29](index.md#suspected-bugs)) |
 | 276 | `entity.Techguns.CyberDemon.name` | Cyberdemon | [`CyberDemon`](per-mob.md#11-cyberdemon-cyberdemon) (ID 33) | The English text has no capital D, unlike the registry name |
-| 277 | `entity.Techguns.SimpleTurret.name` | Turret | [`SimpleTurret`](mob-catalogue.md#registration-javatechgunstgentitiesjava) = [`NPCTurret`](ai.md#5-turret-npcturret) (ID 38) | |
+| 277 | `entity.Techguns.SimpleTurret.name` | Turret | [`SimpleTurret`](mob-catalog.md#registration-javatechgunstgentitiesjava) = [`NPCTurret`](ai.md#5-turret-npcturret) (ID 38) | |
 | 278 | `entity.Techguns.ZombieFarmer.name` | Zombie Farmer | [`ZombieFarmer`](per-mob.md#2-zombie-farmer-zombiefarmer) (ID 28) | |
 | 279 | `entity.Techguns.ZombieMiner.name` | Zombie Miner | [`ZombieMiner`](per-mob.md#3-zombie-miner-zombieminer) (ID 29) | |
 | 280 | `entity.Techguns.Bandit.name` | Bandit | [`Bandit`](per-mob.md#7-bandit-bandit) (ID 35) | |
@@ -24,7 +24,7 @@ Forge builds an entity's translation key from the name given at registration, `e
 | 554 | `entity.Techguns.SkeletonSoldier.name` | Skeleton Soldier | [`SkeletonSoldier`](per-mob.md#5-skeleton-soldier-skeletonsoldier) (ID 37) | |
 | 632 | `entity.Techguns.DictatorDave.name` | Dictator Dave | [`DictatorDave`](per-mob.md#13-dictator-dave-dictatordave-mini-boss) (ID 41) | |
 | 644 | `entity.Techguns.Commando.name` | Commando | [`Commando`](per-mob.md#9-commando-commando) (ID 42) | |
-| 645 | `entity.Techguns.Stormtrooper.name` | Stormtrooper | [`Stormtrooper`](mob-catalogue.md#registration-javatechgunstgentitiesjava) = [`StormTrooper`](per-mob.md#10-stormtrooper-stormtrooper-registry-name-stormtrooper) (ID 43) | The key follows the registry name `Stormtrooper`, not the class name `StormTrooper` |
+| 645 | `entity.Techguns.Stormtrooper.name` | Stormtrooper | [`Stormtrooper`](mob-catalog.md#registration-javatechgunstgentitiesjava) = [`StormTrooper`](per-mob.md#10-stormtrooper-stormtrooper-registry-name-stormtrooper) (ID 43) | The key follows the registry name `Stormtrooper`, not the class name `StormTrooper` |
 | 650 | `entity.Techguns.SuperMutantBasic.name` | Super Mutant | [`SuperMutantBasic`](per-mob.md#14-super-mutants-supermutantbasic-supermutantheavy-supermutantelite) (ID 44) | The three mutants share one English name |
 | 651 | `entity.Techguns.SuperMutantHeavy.name` | Super Mutant | [`SuperMutantHeavy`](per-mob.md#14-super-mutants-supermutantbasic-supermutantheavy-supermutantelite) (ID 45) | |
 | 652 | `entity.Techguns.SuperMutantElite.name` | Super Mutant | [`SuperMutantElite`](per-mob.md#14-super-mutants-supermutantbasic-supermutantheavy-supermutantelite) (ID 46) | |
@@ -39,12 +39,12 @@ That is 20 `entity.Techguns.*` lines for 19 distinct mob keys (the helicopter is
 
 | Line | Key | English text | Where it is used |
 |---|---|---|---|
-| 582 | `techguns.tile.TGMonsterSpawner_0.name` | Bug Hole | The monster-spawner block, metadata 0 (the Alien Bug spawner); the block is owned by [07-blocks](../07-blocks/index.md), its tile entity behaviour by [spawning.md](spawning.md#3-monster-spawner-blocks-tgspawnertileent) |
+| 582 | `techguns.tile.TGMonsterSpawner_0.name` | Bug Hole | The monster-spawner block, metadata 0 (the Alien Bug spawner); the block is owned by [07-blocks](../07-blocks/index.md), its tile entity behavior by [spawning.md](spawning.md#3-monster-spawner-blocks-tgspawnertileent) |
 | 583 | `techguns.tile.TGMonsterSpawner_1.name` | Zombie Hole | The same block, metadata 1 (the zombie spawner) |
 | 72 | `techguns.itemGroup.Techguns` | Techguns | The creative tab that the spawn eggs are filed under |
 | 188 | `techguns.tile.BasicMachine_2.name` | Turret | The turret base block (meta 2 of the basic machine); distinct from the entity key `entity.Techguns.SimpleTurret.name`, though both read "Turret" |
 
-The turret-armour item names and the turret GUI strings (for example `techguns.container.turretbase` = "Turret Platform" and `techguns.turret.targetAnimals` = "Target Animals") belong to [09-machines-utility](../09-machines-utility/index.md).
+The turret-armor item names and the turret GUI strings (for example `techguns.container.turretbase` = "Turret Platform" and `techguns.turret.targetAnimals` = "Target Animals") belong to [09-machines-utility](../09-machines-utility/index.md).
 
 ## 3. Strings the code produces
 
@@ -58,7 +58,7 @@ The turret-armour item names and the turret GUI strings (for example `techguns.c
 
 ## 4. The 18 spawn-egg names in full (hard-coded, NPC-19)
 
-The egg display names are produced from the registered name in [`TGEntities`](mob-catalogue.md#registration-javatechgunstgentitiesjava), so they are not in the lang file and cannot be translated:
+The egg display names are produced from the registered name in [`TGEntities`](mob-catalog.md#registration-javatechgunstgentitiesjava), so they are not in the lang file and cannot be translated:
 
 | Egg item (GameRegistry name) | Displayed name |
 |---|---|

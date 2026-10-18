@@ -1,6 +1,6 @@
-# 02-guns: per-class and per-gun behaviour
+# 02-guns: per-class and per-gun behavior
 
-Every gun and grenade also has a full ten-field entity sheet (identity, obtaining, numbers, tooltips, sounds, NPC use, bugs): start at [sheets-index.md](sheets-index.md). Numbers are listed in [gun-catalogue.md](gun-catalogue.md). This file describes what each class does **differently** from the shared lifecycle in [gun-lifecycle.md](gun-lifecycle.md). Projectile internals (flight, impact, explosion, chaining, beams) belong to [04-projectiles-fx](../04-projectiles-fx/index.md); only the parameters a gun hands to them are documented here.
+Every gun and grenade also has a full ten-field entity sheet (identity, obtaining, numbers, tooltips, sounds, NPC use, bugs): start at [sheets-index.md](sheets-index.md). Numbers are listed in [gun-catalog.md](gun-catalog.md). This file describes what each class does **differently** from the shared lifecycle in [gun-lifecycle.md](gun-lifecycle.md). Projectile internals (flight, impact, explosion, chaining, beams) belong to [04-projectiles-fx](../04-projectiles-fx/index.md); only the parameters a gun hands to them are documented here.
 
 ## Class hierarchy (`java/techguns/items/guns/`)
 
@@ -64,7 +64,7 @@ Fields: `fullChargeTime` (ticks, default 20) and `ammoConsumedOnFullCharge` (def
 
 * Server: `spawnChargedProjectile(world, player, stack, accuracy, charge, ammoUsed)`. If shotgun, also `bulletcount` more with `spread`. Then `world.playSoundAtEntity(firesound)` and the rechamber sound if one is set.
 * Client: recoil animation (`getRecoilTime(charge)`, base value `recoiltime` in ms, attackType 1), muzzle-flash timer, `client_weaponFired`.
-* The release path ignores armour accuracy, zoom bonus and NPC damage bonus. No [`GunFiredMessage`](../01-core/networking.md#1--gunfiredmessage-sc) is sent, so other players see no recoil or muzzle flash.
+* The release path ignores armor accuracy, zoom bonus and NPC damage bonus. No [`GunFiredMessage`](../01-core/networking.md#1--gunfiredmessage-sc) is sent, so other players see no recoil or muzzle flash.
 * The base `spawnChargedProjectile` spawns a plain [`GenericProjectile`](../04-projectiles-fx/projectiles.md#2-genericprojectile-the-base-for-almost-everything) with full stats.
 
 Charge guns still inherit the left-click path (`shootGunLeftClick`). The Biogun keeps `shootWithLeftClick = true`, so it can be fired with both buttons.
@@ -87,7 +87,7 @@ Semi-auto. Its damage drop-off is set twice in the builder; the second call wins
 
 ### Sawed Off (`sawedoff`) and Combat Shotgun (`combatshotgun`)
 
-Shell-by-shell shotguns (`ammoCount = clip`). Each shot fires 1 centre projectile with `accuracy` spread plus 7 pellets with the pellet spread (0.2 / 0.15). A reload from empty loads as many shells as are available, up to the clip. The Combat Shotgun plays a pump sound after every shot and has a long recoil animation (12 ticks).
+Shell-by-shell shotguns (`ammoCount = clip`). Each shot fires 1 center projectile with `accuracy` spread plus 7 pellets with the pellet spread (0.2 / 0.15). A reload from empty loads as many shells as are available, up to the clip. The Combat Shotgun plays a pump sound after every shot and has a long recoil animation (12 ticks).
 
 ### Bolt Action Rifle (`boltaction`)
 
@@ -95,7 +95,7 @@ Semi-auto, scoped (FOV ×0.35; zoomed spread ×0.125). Bullet speed ×1.5 (2.25 
 
 ### M4 (`m4`), AK47 (`ak47`), AUG (`aug`), SCAR (`scar`), The Infiltrator (`m4_uq`)
 
-Standard automatic rifles that share the Assault Rifle Magazine (and its empty version). SCAR loads only 20 of the magazine's 30. The Infiltrator is silenced (the projectile is flagged silenced, with effects in [04](../04-projectiles-fx/index.md)) and has no muzzle-flash particle. Camos: M4 has 5 (Swamp, Desert, Ice, Hazard), AK47 has 2 (Blue), AUG has 5 (Grey, Wood, Sand, Nether), SCAR has 2 (Black).
+Standard automatic rifles that share the Assault Rifle Magazine (and its empty version). SCAR loads only 20 of the magazine's 30. The Infiltrator is silenced (the projectile is flagged silenced, with effects in [04](../04-projectiles-fx/index.md)) and has no muzzle-flash particle. Camos: M4 has 5 (Swamp, Desert, Ice, Hazard), AK47 has 2 (Blue), AUG has 5 (Gray, Wood, Sand, Nether), SCAR has 2 (Black).
 
 ### Thompson (`thompson`), Mac10 (`mac10`), Vector (`vector`)
 
@@ -111,7 +111,7 @@ Semi-auto anti-materiel rifle. Scope FOV ×0.35, zoomed spread ×0.125. Speed 2.
 
 ### PDW (`pdw`) and Pulse Rifle (`pulseRifle`)
 
-Burst guns (`setShotgunSpread(n, s, burst=true)`). Each trigger pull uses **1** round but spawns 1 + n projectiles in a line, each later one shifted forward by `i/n` of a tick's travel. That gives 2-round bursts (PDW) or 3-round bursts (Pulse Rifle). The HUD and tooltip multiply round counts by (n+1). The PDW also sets `checkRecoil`. The Pulse Rifle has 1.5× bullet speed and a scope (×0.35, zoomed spread ×0.5). Both use the Advanced Magazine; each has 3 camos (PDW: Silver, Dark Green; Pulse Rifle: Grey, Dark Green).
+Burst guns (`setShotgunSpread(n, s, burst=true)`). Each trigger pull uses **1** round but spawns 1 + n projectiles in a line, each later one shifted forward by `i/n` of a tick's travel. That gives 2-round bursts (PDW) or 3-round bursts (Pulse Rifle). The HUD and tooltip multiply round counts by (n+1). The PDW also sets `checkRecoil`. The Pulse Rifle has 1.5× bullet speed and a scope (×0.35, zoomed spread ×0.5). Both use the Advanced Magazine; each has 3 camos (PDW: Silver, Dark Green; Pulse Rifle: Gray, Dark Green).
 
 ### LMG (`lmg`)
 
@@ -130,11 +130,11 @@ It spawns a [`FlamethrowerProjectile`](../04-projectiles-fx/projectiles.md#32-fl
 Class constants: `BEAM_LIFETIME = 5`, `LIFETIME = 5`, `SPEED = 5.0`. Both guns pass `LIFETIME` as TTL and `setSpeed(SPEED)` (giving 7.5 b/t). They spawn [`LaserProjectile`](../04-projectiles-fx/projectiles.md#33-laserprojectile). Neither gun has damage drop-off.
 
 * Laser Rifle: one beam, scope ×0.75 (zoomed spread ×0.75).
-* Scatter Laser Rifle: `setShotgunSpread(4, 0.15)`, so 5 beams per shot, with 0.1 main accuracy. It also has the scope. It has no crafting recipe and is marked "[WIP]" in its name. A separate [`ScatterBeamGun`](index.md#coverage) class exists with identical behaviour but is never instantiated.
+* Scatter Laser Rifle: `setShotgunSpread(4, 0.15)`, so 5 beams per shot, with 0.1 main accuracy. It also has the scope. It has no crafting recipe and is marked "[WIP]" in its name. A separate [`ScatterBeamGun`](index.md#coverage) class exists with identical behavior but is never instantiated.
 
 ### Nuclear Death Ray (`nuclearDeathRay`, registry `beamtestgun`, Beamgun)
 
-Class constants: `BEAM_LIFETIME = 10`, `LIFETIME = 5`, `SPEED = 5.0`, but the builder applies [`Lasergun.SPEED`](gun-catalogue.md#table-d-ai-visual-hooks-and-textures), so speed is 7.5 b/t. It spawns a [`MovingBeam`](../04-projectiles-fx/fx-catalogue.md#triggers-which-game-event-spawns-which-fx) (radiation damage, 04) with NPC bonus scaling. Damage 6 falls to 1 between 20 and 40 blocks, 35% penetration. It has a looping sound (`guns.beamgunStart` then `guns.beamgunFire`). It is powered by a Nuclear Power Cell (100 shots) and returns a Depleted cell.
+Class constants: `BEAM_LIFETIME = 10`, `LIFETIME = 5`, `SPEED = 5.0`, but the builder applies [`Lasergun.SPEED`](gun-catalog.md#table-d-ai-visual-hooks-and-textures), so speed is 7.5 b/t. It spawns a [`MovingBeam`](../04-projectiles-fx/fx-catalog.md#triggers-which-game-event-spawns-which-fx) (radiation damage, 04) with NPC bonus scaling. Damage 6 falls to 1 between 20 and 40 blocks, 35% penetration. It has a looping sound (`guns.beamgunStart` then `guns.beamgunFire`). It is powered by a Nuclear Power Cell (100 shots) and returns a Depleted cell.
 
 ### Tesla Rifle (`teslagun`, Teslagun)
 
@@ -163,13 +163,13 @@ They spawn an [`EnergyBlastProjectile`](../04-projectiles-fx/projectiles.md#310-
 
 ### Sonic Rifle (`sonicShotgun`, SonicShotgun)
 
-Semi-auto. It overrides `spawnProjectile` and ignores the passed spread (so no zoom, armour or NPC accuracy effect). It uses a fixed ring angle of 0.075 rad.
+Semi-auto. It overrides `spawnProjectile` and ignores the passed spread (so no zoom, armor or NPC accuracy effect). It uses a fixed ring angle of 0.075 rad.
 
 * All projectiles share one `entitiesHit` list, so together they damage each entity once ([04](../04-projectiles-fx/index.md)).
-* Centre: one [`SonicShotgunProjectile`](../04-projectiles-fx/projectiles.md#313-sonicshotgunprojectile) along the look vector, flagged `mainProjectile`, plus the "SonicShotgunTrail" particle packet.
+* Center: one [`SonicShotgunProjectile`](../04-projectiles-fx/projectiles.md#313-sonicshotgunprojectile) along the look vector, flagged `mainProjectile`, plus the "SonicShotgunTrail" particle packet.
 * Rings: for ring j = 1..2, place 5·j projectiles evenly around the axis (angle step 2π/(5j)) at a cone angle of 0.075·j rad (about 4.3° and 8.6°). That gives 5 + 10 = 15 ring projectiles, 16 in total. Each direction is built from (1,0,0): rotate by the cone angle about Y, by the ring angle about X, then by the shooter's pitch about Z, then by (−headYaw − 90°) about Y. It is then multiplied by `speed`.
 
-  Damage and min are scaled by the NPC bonus. Forward offset is honoured.
+  Damage and min are scaled by the NPC bonus. Forward offset is honored.
 * The tooltip says Projectile, but hits are PHYSICAL `tg_sonic` with knockback ×2 ([GUN-20](index.md#suspected-bugs)). The death message key is `death.attack.tg_sonic`.
 
 ### Rocket Launcher (`rocketlauncher`) and Grim Reaper (`grimreaper`) (RocketLauncher)
@@ -217,7 +217,7 @@ Its constructor fixes TTL 2, accuracy 0 and `fullChargeTime 20`, with `ammoConsu
 
 * **Charge** (RMB): requires ammo > 0 and `fireDelay ≤ 0`. It sets `fireDelay = 4` and plays `guns.powerhammerCharge` at the player.
 * **Release**: `consume = floor(10 × charge)`, clamped to 1..10 and then to the available air (none consumed in creative). It spawns a [`PowerHammerProjectile`](../04-projectiles-fx/projectiles.md#311-powerhammerprojectile) with damage = `consume × 2.5` (2.5 to 25), speed 1.5, TTL 2 (so about 3 blocks of reach), a **4×4-block** collision box, the charge value, the gun's drop-off (powerHammer: 3→3 with min 2.5; Adv: none set, so 2→2 with min 2.5; min is **not** scaled by air used, [GUN-09](index.md#suspected-bugs)), penetration 0, and block damage from safe mode. It plays `guns.powerhammerFire`. Projectile effects (knockback, block interaction) are in 04.
-* **Melee** (LMB on an entity): attribute damage 6 (Adv 7) with air, 2 without. With air, the melee damage source is gore 1.0, armour penetration 0.25 and knockback multiplier 1.5. Without air it uses the default death type. Each hit uses 1 air (shared logic).
+* **Melee** (LMB on an entity): attribute damage 6 (Adv 7) with air, 2 without. With air, the melee damage source is gore 1.0, armor penetration 0.25 and knockback multiplier 1.5. Without air it uses the default death type. Each hit uses 1 air (shared logic).
 * **Mining**: pickaxe and shovel, level 2 (Adv 3). Dig speed 12 (Adv 15) when the block's tool is pickaxe, shovel or none and the hammer has air; otherwise 1. Each block broken with air uses 1 air and plays `guns.powerhammerImpactGround`.
 * **Swing** (`onEntitySwing`): with air, the client starts a 250 ms recoil animation (if the previous one is over) and cancels the vanilla swing. The server sends the swing sound `guns.powerhammerSwing` to players within 50 blocks, at most every 5 ticks, and not when the swing came from clicking inside an open container GUI. Without air, the vanilla swing happens.
 * The Advanced hammer is crafted from a normal one plus 3 diamonds. NBT is copied, so ammo and camo carry over.
@@ -227,7 +227,7 @@ Its constructor fixes TTL 2, accuracy 0 and `fullChargeTime 20`, with `ammoConsu
 
 `setShootWithLeftClick(false)`, recoil 5, penetration 0.25, TTL 2, damage 10, 300 fuel per Fuel Tank.
 
-* **RMB** (`onItemRightClick`) calls `shootGunLeftClick` directly on both sides, with no zoom. Holding RMB repeats at the vanilla right-click rate, limited by `minFiretime 3`. Each "shot" uses 1 fuel and spawns an [`InvisibleProjectile`](../04-projectiles-fx/projectiles.md#312-invisibleprojectile-chainsaw) (speed 1.5, TTL 2, so about 3 blocks): damage 10 × NPC bonus, PHYSICAL [`chainsaw`](gun-catalogue.md#table-a-identity-and-ammunition) source, gore 1.0, no knockback. It plays the loop sound (start `guns.chainsawLoopStart` after ≥ 10 idle ticks, then `guns.chainsawLoop`). An empty saw reloads through the normal path (Fuel Tank in, empty tank out).
+* **RMB** (`onItemRightClick`) calls `shootGunLeftClick` directly on both sides, with no zoom. Holding RMB repeats at the vanilla right-click rate, limited by `minFiretime 3`. Each "shot" uses 1 fuel and spawns an [`InvisibleProjectile`](../04-projectiles-fx/projectiles.md#312-invisibleprojectile-chainsaw) (speed 1.5, TTL 2, so about 3 blocks): damage 10 × NPC bonus, PHYSICAL [`chainsaw`](gun-catalog.md#table-a-identity-and-ammunition) source, gore 1.0, no knockback. It plays the loop sound (start `guns.chainsawLoopStart` after ≥ 10 idle ticks, then `guns.chainsawLoop`). An empty saw reloads through the normal path (Fuel Tank in, empty tank out).
 * **Melee** (LMB): attribute damage 12 with fuel, 2 without. With fuel the source is gore 1.0, penetration 0.25 and **no** knockback. Each hit uses 1 fuel.
 * **Mining**: axe level 3, dig speed 14. Each block broken with fuel uses 1 fuel and plays `guns.chainsawHit` (vol 0.65).
 * **Swing**: same as the Power Hammer, but the sound is `guns.chainsawSwing` with distance 2.0.
@@ -248,7 +248,7 @@ See lifecycle §8. Stat differences from the single guns:
 
 ## Grenades (`GenericGrenade`, `FragGrenade`, `Flashbang`)
 
-They extend vanilla `Item` directly, not `GenericGun`, and are modelled on the bow. The unlocalized name gets the `techguns.` prefix (stack variant only).
+They extend vanilla `Item` directly, not `GenericGun`, and are modeled on the bow. The unlocalized name gets the `techguns.` prefix (stack variant only).
 
 * Fields: `damage` (20), `radius` (5), `maxBounces` (3). The constructor's `maxUseDur` argument (144000) is stored but **ignored**; the use duration is always 72000 ([GUN-23](index.md#suspected-bugs)). Max stack size 16, no repair.
 * **Right-click**: start using (wind-up). The Frag Grenade also plays `guns.grenade_pin` here.
@@ -265,7 +265,7 @@ They extend vanilla `Item` directly, not `GenericGun`, and are modelled on the b
   | Flashbang | [`FlashBangProjectile`](../04-projectiles-fx/index.md#key-facts) | 200 | 20 | 5 | 0 | `random.bow` (same pitch formula) |
 
 * Tooltip: see lifecycle §10. The damage type is always Explosion.
-* The Flashbang is created in [`TGuns.init`](gun-catalogue.md) but never registered with `GameRegistry`, so it doesn't exist in game ([GUN-24](index.md#suspected-bugs)).
+* The Flashbang is created in [`TGuns.init`](gun-catalog.md) but never registered with `GameRegistry`, so it doesn't exist in game ([GUN-24](index.md#suspected-bugs)).
 
 ---
 

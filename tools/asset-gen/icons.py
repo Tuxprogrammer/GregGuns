@@ -25,7 +25,7 @@ ASSETS = ROOT / "src/main/resources/assets/gregguns"
 STONE = ramp((142, 142, 146))
 TAN = ramp((196, 164, 108))
 CARBON = ramp((34, 36, 44), 0.8)
-WARMGREY = ramp((172, 164, 154))
+WARMGRAY = ramp((172, 164, 154))
 SLATE = ramp((86, 96, 108))
 TEAL = glow((60, 220, 200))
 LEATHER = ramp((120, 78, 40))
@@ -455,8 +455,8 @@ def _(c, x):
 # ---------------------------------------------------------------- energy guns
 @icon("laser_rifle")
 def _(c, x):
-    stock(c, 0, 6, 3, 8, WARMGREY, drop=1)
-    c.rect(3, 5, 10, 8, WARMGREY)
+    stock(c, 0, 6, 3, 8, WARMGRAY, drop=1)
+    c.rect(3, 5, 10, 8, WARMGRAY)
     c.rect(4, 4, 9, 4, x.m)
     c.rect(11, 6, 13, 7, x.m)
     c.rect(14, 5, 14, 8, RED_G, bevel=False)
@@ -1374,7 +1374,7 @@ def _(c, x):
     for _ in range(14):
         p = rng.choice(sorted(pts))
         c.pix(p[0], p[1], egg[rng.choice((SH, LT, HL, DK))])
-    # greyscale: no outline pass colourisation issue (outline also grey)
+    # grayscale: no outline pass colorization issue (outline also gray)
 
 
 @icon("spawn_egg_overlay")
@@ -1407,7 +1407,7 @@ def _(c, x):
     c.vline(7, 4, 9, x.m[DK]); c.vline(8, 4, 9, x.m[LT])
 
 
-@icon("turret_armor_aluminium")
+@icon("turret_armor_aluminum")
 def _(c, x):
     _turret(c, x)
 
@@ -1418,23 +1418,23 @@ def _(c, x):
     weave(c, [(a, b) for a in range(2, 14) for b in range(3, 11)], x.m[HL])
 
 
-# ======================================================== armour
-COLOURWAYS = {
+# ======================================================== armor
+COLORWAYS = {
     "t1_scout": dict(kind="bandit", main=ramp((150, 120, 84)), trim=BRONZE, acc=ramp((235, 150, 60))),
     "t1_miner": dict(kind="miner", main=ramp((228, 188, 38)), trim=ramp((200, 180, 180)), acc=ramp((220, 200, 200))),
     "t1_combat": dict(kind="steel", main=ramp((122, 100, 76)), trim=ramp((140, 144, 152)), acc=ramp((150, 154, 162))),
     "t2_combat": dict(kind="olive", main=ramp((72, 86, 52)), trim=ramp((120, 190, 235)), acc=ramp((128, 200, 240))),
     "t2_commando": dict(kind="commando", main=ramp((38, 38, 44), 0.6), trim=ramp((60, 62, 70), 0.6), acc=ramp((52, 54, 62), 0.6), vis=ramp((110, 200, 255))),
     "t2_riot": dict(kind="riot", main=ramp((116, 78, 46)), trim=ramp((128, 200, 240)), acc=ramp((130, 200, 240)), vis=ramp((70, 90, 100))),
-    "t3_combat": dict(kind="fibre", main=ramp((78, 94, 116)), trim=ramp((214, 160, 236)), acc=ramp((214, 160, 236)), vis=CYAN),
+    "t3_combat": dict(kind="fiber", main=ramp((78, 94, 116)), trim=ramp((214, 160, 236)), acc=ramp((214, 160, 236)), vis=CYAN),
     "t3_hev": dict(kind="hev", main=ramp((196, 104, 30)), trim=ramp((150, 80, 28)), acc=ramp((160, 84, 28)), vis=ramp((110, 220, 230))),
     "steam": dict(kind="steam", main=ramp((190, 190, 196)), trim=BRONZE, acc=ramp((176, 108, 44)), vis=ramp((250, 200, 80))),
     "t3_power": dict(kind="power", main=ramp((82, 92, 108)), trim=ramp((100, 100, 160)), acc=ramp((100, 100, 160)), vis=CYAN, glow=CYAN),
     "t3_exo": dict(kind="exo", main=ramp((58, 62, 72)), trim=ramp((112, 112, 176)), acc=ramp((176, 130, 214)), vis=VIOLET_G),
 }
-for _set, _cw in COLOURWAYS.items():
+for _set, _cw in COLORWAYS.items():
     for _slot in ("helmet", "chestplate", "leggings", "boots"):
-        REG[f"{_set}_{_slot}"] = (lambda s, cw: (lambda c, x: armour_piece(c, s, cw)))(_slot, _cw)
+        REG[f"{_set}_{_slot}"] = (lambda s, cw: (lambda c, x: armor_piece(c, s, cw)))(_slot, _cw)
 
 
 @icon("t2_beret")
@@ -1576,7 +1576,7 @@ def main():
     cdir.mkdir(parents=True, exist_ok=True)
     with open(cdir / "icons.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, lineterminator="\n")
-        w.writerow(["asset", "path", "generator", "seed", "method", "licence", "date"])
+        w.writerow(["asset", "path", "generator", "seed", "method", "license", "date"])
         w.writerows(rows)
     print(f"rendered {made}/{len(icons)}; missing: {missing}")
     if "--sheet" in sys.argv or True:

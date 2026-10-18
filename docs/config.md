@@ -15,10 +15,10 @@ A module also needs the modules listed in "Needs". If a flag is on but a needed 
 | Key | Type | Default | Range | Synced | Needs | Milestone | What it enables |
 |---|---|---|---|---|---|---|---|
 | `modules.guns` | boolean | `false` | n/a | no | none | M1, M2 | Damage system, guns, projectiles, ammo |
-| `modules.armor` | boolean | `false` | n/a | no | `guns` | M3 | Armour, set bonuses, special slots |
+| `modules.armor` | boolean | `false` | n/a | no | `guns` | M3 | Armor, set bonuses, special slots |
 | `modules.machines` | boolean | `false` | n/a | no | `guns` | M4 | Production chain and GregTech machines |
 | `modules.energyWeapons` | boolean | `false` | n/a | no | `guns`, `machines` | M5 | Energy and exotic weapons |
-| `modules.utility` | boolean | `false` | n/a | no | `machines` | M6 | Utility and defence machines |
+| `modules.utility` | boolean | `false` | n/a | no | `machines` | M6 | Utility and defense machines |
 | `modules.npcs` | boolean | `false` | n/a | no | `guns` | M7 | NPCs and spawning |
 | `modules.worldgen` | boolean | `false` | n/a | no | `npcs` | M8 | Structures and worldgen loot |
 
@@ -41,8 +41,8 @@ Techguns' "Damage Factors" category. All keys are synced from server to client (
 | `damagefactors.damagePvP` | float | `0.5` | 0 to 100 | yes | Damage multiplier when a player's shot hits another player. Zero while server PvP is off. |
 | `damagefactors.damageTurretToPlayer` | float | `0.5` | 0 to 100 | yes | Damage multiplier when a turret's shot hits a player. |
 | `damagefactors.damageFactorNPC` | float | `1.0` | 0 to 100 | yes | Damage multiplier for other NPCs hitting players, and for NPC against NPC. |
-| `damagefactors.armorPenetrationMultiplierNPCtoPlayer` | float | `1.0` | 0 to 1 | yes | Scales the armour penetration of non-player attackers against players. |
-| `damagefactors.armorPenetrationMultiplierPvP` | float | `1.0` | 0 to 1 | yes | Scales the armour penetration of a player's shots against other players. |
+| `damagefactors.armorPenetrationMultiplierNPCtoPlayer` | float | `1.0` | 0 to 1 | yes | Scales the armor penetration of non-player attackers against players. |
+| `damagefactors.armorPenetrationMultiplierPvP` | float | `1.0` | 0 to 1 | yes | Scales the armor penetration of a player's shots against other players. |
 
 ## Client (`client`)
 
@@ -58,7 +58,7 @@ Display options for the local player only. Not synced.
 
 - Declare it in a `@Config` class listed in `GregGunsConfig.CLASSES`; never read a `Configuration` by hand (GGS-01-01).
 - Every field has a `@Config.Comment` that includes `Default: ...`, and every numeric field has a `@Config.Range*` (GGS-01-04). Unit tests enforce both.
-- Fields the client reads, or that gate server behaviour at runtime, are `@Config.Sync` (GGS-01-03). Add them to `EXPECTED_SYNCED` in `ConfigRulesTest` and mark "Synced: yes" here.
+- Fields the client reads, or that gate server behavior at runtime, are `@Config.Sync` (GGS-01-03). Add them to `EXPECTED_SYNCED` in `ConfigRulesTest` and mark "Synced: yes" here.
 - Do not add keys for ore generation, ingots, nuggets, ore drills, oil holes, DataWatcher IDs, GUI tab IDs or a version checker (GGS-01-02). A test rejects those names.
 - Config classes hold fields only and import no Minecraft types (GGS-01-06).
 - Document the option in this file.

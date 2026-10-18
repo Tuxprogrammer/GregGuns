@@ -15,10 +15,10 @@
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | `IWorldGenerator` weight 4, set in `postInit` | Weight 4 kept | GT forces its ore generator to the end whatever its weight, so ours runs before ores |
-| Structures anchored at the chunk corner, up to 79 blocks into ungenerated neighbours ([WGEN-04](../../techguns-spec/11-worldgen/index.md#suspected-bugs)) | Every populate call writes only inside the populate window (below). A structure bigger than the window is built across several calls | ArchaicFix detects cascading worldgen; the M8 exit gate needs none |
+| Structures anchored at the chunk corner, up to 79 blocks into ungenerated neighbors ([WGEN-04](../../techguns-spec/11-worldgen/index.md#suspected-bugs)) | Every populate call writes only inside the populate window (below). A structure bigger than the window is built across several calls | ArchaicFix detects cascading worldgen; the M8 exit gate needs none |
 | Grid points at chunk multiples of 16/32/64, so a BIG structure sits at chunk (0,0), the world spawn | Each grid cell holds one attempt at a seeded offset inside the cell | Roguelike-Dungeons does the same; no structure on the spawn point |
 | Hard-coded dimension 0 check; the dimension list is never consulted (WGEN-28) | One allow-list of dimension IDs from config, default `[0]` | Excludes every pack dimension without naming it |
 | Terrain checked on an unrotated box (WGEN-05, 06, 07, 08) | Terrain checked on the rotated footprint, with a water-depth test for ships | Fixes the listed bugs |
@@ -34,8 +34,8 @@
   - GT registers its ore generator with `Integer.MAX_VALUE` ([GTWorldgenerator#L150](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/GTWorldgenerator.java#L150)). A mixin then moves it to the end of the sorted list, because "the ore world gen expects to be the last pass over the world" ([GameRegistryMixin#L17-L39](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/mixin/java/gregtech/mixin/mixins/early/forge/GameRegistryMixin.java#L17-L39)).
   - Roguelike-Dungeons registers with weight 0 ([Roguelike#L34](https://github.com/GTNewHorizons/Roguelike-Dungeons/blob/1.6.6-GTNH/src/main/java/greymerk/roguelike/Roguelike.java#L34)).
   - GT queues ore work and runs at most 5 queued chunks per call, under a comment "Hack to prevent cascading worldgen lag" ([GTWorldgenerator#L176-L213](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/GTWorldgenerator.java#L176-L213)).
-- **Consequence:** any weight below `MAX_VALUE` runs before GT ores. GregGuns structures are placed first and GT veins are generated afterwards. Whether GT replaces only natural stone is a test (below), not a claim.
-- **The populate window.** `populate(cx, cz)` runs once the neighbouring chunks exist, and vanilla convention treats the 16x16 square from `(cx*16 + 8, cz*16 + 8)` to `(cx*16 + 23, cz*16 + 23)` as the safe area. A block write outside it can force chunk generation.
+- **Consequence:** any weight below `MAX_VALUE` runs before GT ores. GregGuns structures are placed first and GT veins are generated afterward. Whether GT replaces only natural stone is a test (below), not a claim.
+- **The populate window.** `populate(cx, cz)` runs once the neighboring chunks exist, and vanilla convention treats the 16x16 square from `(cx*16 + 8, cz*16 + 8)` to `(cx*16 + 23, cz*16 + 23)` as the safe area. A block write outside it can force chunk generation.
 - **GregGuns does:**
   - plans each structure from the world seed and its grid cell (position, rotation, variant) with no world access;
   - on each populate call, writes only the part of each overlapping plan that falls in the window;
@@ -54,7 +54,7 @@
 - **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/hodgepodge.cfg`: `throttleChunkGeneration` = `true`, `chunkGenBudgetMs` = `20`, `maxChunkGenPerPlayerPerTick` = `4`, `preventEntityChunkLoading` = `true`, `limitRecursiveBlockUpdateDepth` = `256`.
 - **Source:** [`MixinPlayerManager_ThrottleChunkGen`](https://github.com/GTNewHorizons/Hodgepodge/blob/2.7.215/src/main/java/com/mitchej123/hodgepodge/mixins/early/minecraft/fastload/MixinPlayerManager_ThrottleChunkGen.java) spreads generation across ticks.
 - **Consequence:** population is not synchronous with a player's move, so a structure may appear a few ticks after its chunk loads. Generation has a 20 ms per-tick budget, so a cascade shows up as server lag as well as a log line.
-- **GregGuns does:** keeps each populate call small (no entity ticks, no chunk loads) and never assumes a neighbouring chunk is generated.
+- **GregGuns does:** keeps each populate call small (no entity ticks, no chunk loads) and never assumes a neighboring chunk is generated.
 - **Pack-side change:** none.
 
 ### Dimension gate

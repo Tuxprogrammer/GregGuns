@@ -1,13 +1,13 @@
 # Block platform: GT wrench, Waila and ID space
 
-- **Techguns baseline:** [special-blocks.md, chests](../../techguns-spec/07-blocks/special-blocks.md), [block-catalogue.md](../../techguns-spec/07-blocks/block-catalogue.md), bug [BLK-15](../../techguns-spec/BUGS.md)
+- **Techguns baseline:** [special-blocks.md, chests](../../techguns-spec/07-blocks/special-blocks.md), [block-catalog.md](../../techguns-spec/07-blocks/block-catalog.md), bug [BLK-15](../../techguns-spec/BUGS.md)
 - **Design records:** [0002 machine deconfliction](../../design/0002-machine-deconfliction.md), [0003 energy model](../../design/0003-energy-model.md)
 - **Pack mods:** GT5-Unofficial (`gregtech`, 5.09.54.205), IC2 (`IC2`, API only), Waila (`Waila`, 1.19.34), EndlessIDs (`endlessids`, 1.7.4)
 - **Roadmap:** the blocks milestone in [ROADMAP](../../ROADMAP.md)
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | A sneaking right-click with an item of tool class `wrench` triggers chest pickup in the block code ([BLK-15](../../techguns-spec/BUGS.md) puts the drop at the block corner) | The block declares harvest tool `wrench` and its tile entity implements IC2's `IWrenchable`. The GT wrench then picks it up through its own path | The pack's wrench is the GT wrench |
 | No Waila support | Waila providers for non-MTE blocks. MTEs get GT's provider for free | The pack ships Waila |

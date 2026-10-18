@@ -4,7 +4,7 @@ The Techguns baseline is [02-guns](../../techguns-spec/02-guns/index.md). This f
 
 ## Overview
 
-Guns touch the pack in five places: how they are built (GT recipe maps), how energy weapons store and gain charge (IC2 electric items and GT chargers), how damage meets GT's and other mods' systems, how the offhand slot (Backhand) interacts with right-click, and how fuel guns take GT fluids. Everything else about guns (stats, firing, reload, projectiles, tooltips, NPC firing, the catalogue) has no integration point; see the Techguns spec and the design records.
+Guns touch the pack in five places: how they are built (GT recipe maps), how energy weapons store and gain charge (IC2 electric items and GT chargers), how damage meets GT's and other mods' systems, how the offhand slot (Backhand) interacts with right-click, and how fuel guns take GT fluids. Everything else about guns (stats, firing, reload, projectiles, tooltips, NPC firing, the catalog) has no integration point; see the Techguns spec and the design records.
 
 All evidence is pinned to GT5-Unofficial `5.09.54.205`, Backhand `1.8.16`, Battlegear2-for-Backhand `1.6.8-backhand` and IC2 `2.2.2.828` (API source plus decompiled internals, hedged where used).
 
@@ -14,7 +14,7 @@ All evidence is pinned to GT5-Unofficial `5.09.54.205`, Backhand `1.8.16`, Battl
 |---|---|---|
 | [recipes.md](recipes.md) | Every weapon recipe (guns, akimbo, melee, grenades): GT recipe maps, Assembly Line for LuV and ZPM, assumed components. Replaces the old `gt-recipes.md` (now a pointer) | GGS-02-01 to 08, 35 to 42 |
 | [energy-electric-items.md](energy-electric-items.md) | Energy guns as `IElectricItem`, GT charging rules, capacity baselines | GGS-02-09 to 16 |
-| [damage-interop.md](damage-interop.md) | Damage sources, GT hazmat, other mods' armour, `LivingAttackEvent` listeners | GGS-02-17 to 23 |
+| [damage-interop.md](damage-interop.md) | Damage sources, GT hazmat, other mods' armor, `LivingAttackEvent` listeners | GGS-02-17 to 23 |
 | [offhand-backhand.md](offhand-backhand.md) | Right-click fallback, offhand blacklist, Battlegear2, enchantments | GGS-02-24 to 28 |
 | [fluid-ammo.md](fluid-ammo.md) | Fuel, bio and air tanks on GT fluids and the Fluid Canner | GGS-02-29 to 34 |
 
@@ -25,13 +25,13 @@ All evidence is pinned to GT5-Unofficial `5.09.54.205`, Backhand `1.8.16`, Battl
 | Gun crafting-table recipes | Final assembly on `assemblerRecipes` at the 0001 tier voltage; Assembly Line for LuV and ZPM; Hand Cannon and akimbo stay in the crafting table | GT5-Unofficial recipe maps | [recipes.md](recipes.md) |
 | Ammo Press, Fabricator, Metal Press | GT Assembler, Lathe, Extruder, Bender, Hammer; GT `round` prefix for slugs | GT5-Unofficial | [recipes.md](recipes.md) |
 | Energy Cell ammo, Charging Station | The gun is an `IElectricItem`; GT chargers and battery buffers charge it | IC2 API, GT5-Unofficial | [energy-electric-items.md](energy-electric-items.md) |
-| Cancel-and-reimplement damage event | Keep the model, keep other mods' listeners and armour working | GT5-Unofficial (hazmat, armour), GT++, Forge | [damage-interop.md](damage-interop.md) |
+| Cancel-and-reimplement damage event | Keep the model, keep other mods' listeners and armor working | GT5-Unofficial (hazmat, armor), GT++, Forge | [damage-interop.md](damage-interop.md) |
 | Unflagged fire damage | Fire flag set; secondary effects respect GT hazmat | GT5-Unofficial `HazardProtection` | [damage-interop.md](damage-interop.md) |
 | RMB zoom and charge; akimbo as one item | Stop-list entries so the offhand is not also used; guns blacklisted from the offhand | Backhand, Battlegear2 | [offhand-backhand.md](offhand-backhand.md) |
 | Fuel, bio and air tanks filled in the Chem Lab | `IFluidContainerItem` tanks filled in the GT Fluid Canner; fuels from GT fuel maps | GT5-Unofficial | [fluid-ammo.md](fluid-ammo.md) |
 | Gun enchantability, enchanting | Unchanged: not enchantable (enchantability 0). No enchantment is registered, so no ID collides. | Battlegear2 (IDs 126 to 132), Infernal Mobs | [offhand-backhand.md](offhand-backhand.md#battlegear2-backhand-edition) |
 
-**No integration point** (see [the Techguns spec](../../techguns-spec/02-guns/index.md) and the [design records](../../design/README.md)): gun stats and catalogue, firing algorithm, spread and zoom maths, reload rules, NBT layout, tooltips and lang keys, NPC firing, the weapon-stats config, grenade behaviour. Their pack-facing parts (keybinds, networking, config library) are in [01-core](../01-core/).
+**No integration point** (see [the Techguns spec](../../techguns-spec/02-guns/index.md) and the [design records](../../design/README.md)): gun stats and catalog, firing algorithm, spread and zoom math, reload rules, NBT layout, tooltips and lang keys, NPC firing, the weapon-stats config, grenade behavior. Their pack-facing parts (keybinds, networking, config library) are in [01-core](../01-core/).
 
 ## Pack-side changes
 
@@ -47,7 +47,7 @@ Registry names are fixed when M1 and M2 register the items. GregGuns never write
 ## Related areas
 
 - [01-core](../01-core/): keybinds (the zoom decision in the offhand sheet's open questions), config library.
-- [05-armor](../05-armor/): which GregGuns armour sets implement GT's `IHazardProtector`; the baubles sheet for equipment slots.
+- [05-armor](../05-armor/): which GregGuns armor sets implement GT's `IHazardProtector`; the baubles sheet for equipment slots.
 - [06-items](../../techguns-spec/06-items/index.md): ammo and tank items, whose recipes also use the GT maps described here.
 - [10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md): NPC-held guns (no EU spend), infernal-mob drops of guns.
 

@@ -36,7 +36,7 @@ There is exactly one creative tab:
 | Field | Value |
 |---|---|
 | Internal label | `Techguns` |
-| Icon | the Handcannon gun item ([`TGuns.handcannon`](../02-guns/gun-catalogue.md)) |
+| Icon | the Handcannon gun item ([`TGuns.handcannon`](../02-guns/gun-catalog.md)) |
 | Translated label | the tab overrides the label key to `techguns.itemGroup.Techguns`, which `en_US.lang` maps to **Techguns** |
 
 Every Techguns item and block uses this tab.
@@ -46,7 +46,7 @@ Every Techguns item and block uses this tab.
 ```
 preInit  → config, items, guns, weapon-stats config, metals/ores, oredict, projectile entities,
            metal recipes, tile entities, recipe sorter, armors, fluids, blocks, NPC entities,
-           packets, FX list, ore worldgen, dispenser behaviours
+           packets, FX list, ore worldgen, dispenser behaviors
 init     → renderers, Forge-bus event handler, client handlers (HUD, keybinds), FML-bus tick handler,
            GUI handler
 postInit → fluids/blocks/items post-init, item + machine recipes, gun post-init, entity spawns,
@@ -60,26 +60,26 @@ postInit → fluids/blocks/items post-init, item + machine recipes, gun post-ini
 
    | Field | Class | Unlocalized name | Icon |
    |---|---|---|---|
-   | structureTestTool | `items.StructureTestTool` | [`structureTestTool`](../06-items/item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) | `techguns:structureTestTool` |
-   | blockReaderTool | `items.BlockReader` | [`blockReaderTool`](../06-items/item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) | `techguns:blockReaderTool` |
-   | buildingScanTool | `items.BuildingScanTool` | [`buildingScanTool`](../06-items/item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) | `techguns:structureScanTool` |
+   | structureTestTool | `items.StructureTestTool` | [`structureTestTool`](../06-items/item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) | `techguns:structureTestTool` |
+   | blockReaderTool | `items.BlockReader` | [`blockReaderTool`](../06-items/item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) | `techguns:blockReaderTool` |
+   | buildingScanTool | `items.BuildingScanTool` | [`buildingScanTool`](../06-items/item-catalog.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) | `techguns:structureScanTool` |
    | oreClusterDebugTool | `items.oreClusterDebugger` | (set by the class) | (set by the class) |
 
-3. [`TGItems.init()`](../06-items/item-catalogue.md) ([06-items](../06-items/index.md)), then `TGuns.init()` ([02-guns](../02-guns/index.md)), then `TGWeaponStats.init(event)` ([02-guns](../02-guns/index.md), writes `Techguns_WeaponStats.cfg`).
+3. [`TGItems.init()`](../06-items/item-catalog.md) ([06-items](../06-items/index.md)), then `TGuns.init()` ([02-guns](../02-guns/index.md)), then `TGWeaponStats.init(event)` ([02-guns](../02-guns/index.md), writes `Techguns_WeaponStats.cfg`).
 4. The metal items are **always constructed** as plain [`GenericItem`](../06-items/special-items.md#base-classes)s (max stack 64) and only **registered** if their config flag allows it. Ore blocks are constructed only when their flag is on:
 
    | Field | Unlocalized | Texture | Registered as | Condition |
    |---|---|---|---|---|
-   | ingotSteel | [`ingotSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:ingotSteel` | `ingotSteel` | [`addSteelIngot`](config.md#category-general) |
-   | ingotCopper | [`ingotCopper`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:ingotCopper` | `ingotCopper` | copper/tin/bronze group (see below) |
-   | ingotTin | [`ingotTin`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:ingotTin` | `ingotTin` | copper/tin/bronze group |
-   | ingotBronze | [`ingotBronze`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:ingotBronze` | `ingotBronze` | copper/tin/bronze group |
-   | ingotLead | [`ingotLead`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:ingotLead` | `ingotLead` | [`addLeadIngot`](config.md#category-general) |
-   | nuggetIron | [`nuggetIron`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:nuggetIron` | `nuggetIron` | [`addIronNuggets`](config.md#category-general) (registered **twice**, which is bug [CORE-01](index.md#suspected-bugs)) |
-   | nuggetCopper | [`nuggetCopper`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:copperNugget` | `nuggetCopper` | [`addCopperTinBronzeNuggets`](config.md#category-general) |
-   | nuggetLead | [`nuggetLead`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:nuggetLead` | `nuggetLead` | [`addLeadNuggets`](config.md#category-general) |
-   | nuggetSteel | [`nuggetSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:nuggetSteel` | `nuggetSteel` | [`addSteelNuggets`](config.md#category-general) |
-   | oreLead (block, [`GenericBlock`](../07-blocks/block-catalogue.md#conventions-and-defaults), rock) | `oreLead` | `techguns:oreLeadBlock` | `oreLead` | [`doOreGenLead`](config.md#category-general) |
+   | ingotSteel | [`ingotSteel`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:ingotSteel` | `ingotSteel` | [`addSteelIngot`](config.md#category-general) |
+   | ingotCopper | [`ingotCopper`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:ingotCopper` | `ingotCopper` | copper/tin/bronze group (see below) |
+   | ingotTin | [`ingotTin`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:ingotTin` | `ingotTin` | copper/tin/bronze group |
+   | ingotBronze | [`ingotBronze`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:ingotBronze` | `ingotBronze` | copper/tin/bronze group |
+   | ingotLead | [`ingotLead`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:ingotLead` | `ingotLead` | [`addLeadIngot`](config.md#category-general) |
+   | nuggetIron | [`nuggetIron`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:nuggetIron` | `nuggetIron` | [`addIronNuggets`](config.md#category-general) (registered **twice**, which is bug [CORE-01](index.md#suspected-bugs)) |
+   | nuggetCopper | [`nuggetCopper`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:copperNugget` | `nuggetCopper` | [`addCopperTinBronzeNuggets`](config.md#category-general) |
+   | nuggetLead | [`nuggetLead`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:nuggetLead` | `nuggetLead` | [`addLeadNuggets`](config.md#category-general) |
+   | nuggetSteel | [`nuggetSteel`](../06-items/item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `techguns:nuggetSteel` | `nuggetSteel` | [`addSteelNuggets`](config.md#category-general) |
+   | oreLead (block, [`GenericBlock`](../07-blocks/block-catalog.md#conventions-and-defaults), rock) | `oreLead` | `techguns:oreLeadBlock` | `oreLead` | [`doOreGenLead`](config.md#category-general) |
    | oreTin (block) | `oreTin` | `techguns:oreTinBlock` | `oreTin` | [`doOreGenCopperTin`](config.md#category-general) |
    | oreCopper (block) | `oreCopper` | `techguns:oreCopperBlock` | `oreCopper` | `doOreGenCopperTin` |
 
@@ -103,8 +103,8 @@ postInit → fluids/blocks/items post-init, item + machine recipes, gun post-ini
    | `nuggetLead` | nuggetLead | `addLeadNuggets` |
    | `nuggetSteel` | nuggetSteel | `addSteelNuggets` |
 
-   All other oredict registrations happen in `TGItems` and [`TGBlocks`](../07-blocks/block-catalogue.md#registered-blocks) ([06-items](../06-items/index.md), [07-blocks](../07-blocks/index.md)).
-7. **Projectile and FX entity registrations.** These use `EntityRegistry.registerModEntity` with a shared counter `modEntityID` that is pre-incremented, so IDs start at 1. Every entry sends velocity updates. [`TGEntities.init`](../10-entities-npcs/mob-catalogue.md#registration-javatechgunstgentitiesjava) (step 11) continues the same counter for the NPCs ([10-entities-npcs](../10-entities-npcs/index.md)).
+   All other oredict registrations happen in `TGItems` and [`TGBlocks`](../07-blocks/block-catalog.md#registered-blocks) ([06-items](../06-items/index.md), [07-blocks](../07-blocks/index.md)).
+7. **Projectile and FX entity registrations.** These use `EntityRegistry.registerModEntity` with a shared counter `modEntityID` that is pre-incremented, so IDs start at 1. Every entry sends velocity updates. [`TGEntities.init`](../10-entities-npcs/mob-catalog.md#registration-javatechgunstgentitiesjava) (step 11) continues the same counter for the NPCs ([10-entities-npcs](../10-entities-npcs/index.md)).
 
    | ID | Entity name | Class | Track range | Update freq |
    |---|---|---|---|---|
@@ -135,7 +135,7 @@ postInit → fluids/blocks/items post-init, item + machine recipes, gun post-ini
    | 25 | NeutrinoBeam | NeutrinoBeam | 80 | 3 |
    | 26 | EnergyBlastProjectile | EnergyBlastProjectile | 80 | 3 |
 
-   Behaviour of each entity is described in [04-projectiles-fx](../04-projectiles-fx/index.md).
+   Behavior of each entity is described in [04-projectiles-fx](../04-projectiles-fx/index.md).
 
 8. **Metal recipes registered in `Techguns.java`:**
 
@@ -159,14 +159,14 @@ postInit → fluids/blocks/items post-init, item + machine recipes, gun post-ini
     - `Techguns:shapelessNBTcopy` → `items.ShapelessOreRecipeCopyNBT`
 
     (Recipe classes are covered in [02-guns](../02-guns/index.md) and [06-items](../06-items/index.md).)
-11. Category inits, in order: [`TGArmors.init()`](../05-armor/armor-catalogue.md) ([05](../05-armor/index.md)), [`TGFluids.init()`](../06-items/fluids.md) ([07](../07-blocks/index.md)), `TGBlocks.init()` ([07](../07-blocks/index.md)), `TGEntities.init()` ([10](../10-entities-npcs/index.md)), [`TGPackets.init()`](networking.md) ([networking.md](networking.md)).
-12. `proxy.loadFXList()`. On the client this loads the particle definition list ([`particles/FXList.txt`](../04-projectiles-fx/fx-catalogue.md), see [04](../04-projectiles-fx/index.md)). On the server it does nothing.
+11. Category inits, in order: [`TGArmors.init()`](../05-armor/armor-catalog.md) ([05](../05-armor/index.md)), [`TGFluids.init()`](../06-items/fluids.md) ([07](../07-blocks/index.md)), `TGBlocks.init()` ([07](../07-blocks/index.md)), `TGEntities.init()` ([10](../10-entities-npcs/index.md)), [`TGPackets.init()`](networking.md) ([networking.md](networking.md)).
+12. `proxy.loadFXList()`. On the client this loads the particle definition list ([`particles/FXList.txt`](../04-projectiles-fx/fx-catalog.md), see [04](../04-projectiles-fx/index.md)). On the server it does nothing.
 13. **Ore world generator:** if any of [`doOreGenTitanium`](config.md#category-general), `doOreGenLead`, `doOreGenCopperTin` or [`doOreGenUranium`](config.md#category-general) is on, `worldgen.OreGenerator` is registered with weight 1 and receives the four flags ([11-worldgen](../11-worldgen/index.md)).
-14. **Dispenser behaviours:**
+14. **Dispenser behaviors:**
 
-    | Item | Behaviour |
+    | Item | Behavior |
     |---|---|
-    | `TGItems.sharedItem` (the shared metadata item) | `BehaviorProjectileDispenseDamagevalue` (see [utilities.md](utilities.md#dispenser-behaviour)): fires rockets, 40 mm grenades and nuke rockets; any other metadata is dropped like a normal item |
+    | `TGItems.sharedItem` (the shared metadata item) | `BehaviorProjectileDispenseDamagevalue` (see [utilities.md](utilities.md#dispenser-behavior)): fires rockets, 40 mm grenades and nuke rockets; any other metadata is dropped like a normal item |
     | `TGuns.stielGranate` (stick grenade) | vanilla projectile dispense creating a [`GrenadeProjectile`](../04-projectiles-fx/projectiles.md#37-grenadeprojectile-family). Settings: damage and radius from the grenade item, speed 1.0, time-to-live 200 ticks, spread 0.05, gravity 0.015, no block damage, penetration 0, max bounces from the item, origin = dispense position |
     | `TGuns.fragGrenade` | same as the stick grenade but spawns a [`FragGrenadeProjectile`](../04-projectiles-fx/projectiles.md#1-registration) with a 120-tick time-to-live |
 
@@ -235,8 +235,8 @@ This index only says what is bound to what. Models, textures and animations are 
 | FlamethrowerProjectile, LaserProjectile, TeslaProjectile, CyberdemonBlasterProjectile, AlienBlasterProjectile, EnergyBlastProjectile, EntityParticleSystem, InvisibleProjectile, BeamProjectile | RenderDummy (draws nothing; visuals come from particles) | [04](../04-projectiles-fx/index.md) |
 | LaserBeam | RenderGenericLaser | [04](../04-projectiles-fx/index.md) |
 | TeslaBeam | RenderTeslaBeam (width 0.25) | [04](../04-projectiles-fx/index.md) |
-| RocketProjectile | RenderRocketProjectile + ModelRocket + [`textures/guns/rocketlauncher.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | [04](../04-projectiles-fx/index.md) |
-| NukeRocketProjectile | same, with [`textures/guns/nukerocketlauncher.png`](../03-gun-visuals-audio/textures.md#measured-colours-all-62-textures) | [04](../04-projectiles-fx/index.md) |
+| RocketProjectile | RenderRocketProjectile + ModelRocket + [`textures/guns/rocketlauncher.png`](../03-gun-visuals-audio/textures.md#measured-colors-all-62-textures) | [04](../04-projectiles-fx/index.md) |
+| NukeRocketProjectile | same, with [`textures/guns/nukerocketlauncher.png`](../03-gun-visuals-audio/textures.md#measured-colors-all-62-textures) | [04](../04-projectiles-fx/index.md) |
 | BiogunProjectile | RenderBiogunProjectile, [`textures/entity/bioblob.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) | [04](../04-projectiles-fx/index.md) |
 | RailgunProjectile | RenderRailgunProjectile | [04](../04-projectiles-fx/index.md) |
 | PowerHammerProjectile | RenderPowerHammerProjectile | [04](../04-projectiles-fx/index.md) |
@@ -252,7 +252,7 @@ This index only says what is bound to what. Models, textures and animations are 
 
 ### Item renderers
 
-Each gun has its own `IItemRenderer` subclass built from a model and a texture under `textures/guns/` ([03-gun-visuals-audio](../03-gun-visuals-audio/index.md)): handcannon, pistol, sawedoff, boltaction, flamethrower, m4, combatShotgun, lasergun, blasterRifle, rocketlauncher, biogun, thompson, revolver, ak47, as50, teslagun, pdw, lmg, m4_uq, grimreaper, goldenrevolver, pulseRifle, alienBlaster, cyberdemonBlaster, minigun, powerHammer, nukeLauncher, powerHammerAdv, aug, grenadeLauncher, sonicShotgun, chainsaw, scatterBeamGun, ndr, stielGranate, fragGrenade, akimbo_pistol, akimbo_revoler, akimbo_goldenrevolver, mac10, akimbo_mac10, mibGun, neutrinoGun, scar, vector and akimbo_mibGun. `TGItems.sharedItem` uses [`RenderGenericItem`](../06-items/special-items.md#3d-rendered-shared-items-rendergenericitem) ([06](../06-items/index.md)). The steam and T3 power armor pieces use [`RenderArmorItem`](../05-armor/index.md#contents) ([05](../05-armor/index.md)). The [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) block item uses a [`RenderMachineBlockItem`](../08-machines-production/rendering.md#5-machine-item-rendering) array holding one model renderer per metadata 0–10 ([08](../08-machines-production/index.md)/[09](../09-machines-utility/index.md)). [`tgchest`](../07-blocks/block-catalogue.md#registered-blocks) and [`tgchest_weapon`](../07-blocks/block-catalogue.md#registered-blocks) use chest model item renderers ([07](../07-blocks/index.md)).
+Each gun has its own `IItemRenderer` subclass built from a model and a texture under `textures/guns/` ([03-gun-visuals-audio](../03-gun-visuals-audio/index.md)): handcannon, pistol, sawedoff, boltaction, flamethrower, m4, combatShotgun, lasergun, blasterRifle, rocketlauncher, biogun, thompson, revolver, ak47, as50, teslagun, pdw, lmg, m4_uq, grimreaper, goldenrevolver, pulseRifle, alienBlaster, cyberdemonBlaster, minigun, powerHammer, nukeLauncher, powerHammerAdv, aug, grenadeLauncher, sonicShotgun, chainsaw, scatterBeamGun, ndr, stielGranate, fragGrenade, akimbo_pistol, akimbo_revoler, akimbo_goldenrevolver, mac10, akimbo_mac10, mibGun, neutrinoGun, scar, vector and akimbo_mibGun. `TGItems.sharedItem` uses [`RenderGenericItem`](../06-items/special-items.md#3d-rendered-shared-items-rendergenericitem) ([06](../06-items/index.md)). The steam and T3 power armor pieces use [`RenderArmorItem`](../05-armor/index.md#contents) ([05](../05-armor/index.md)). The [`basicMachine`](../07-blocks/block-catalog.md#registered-blocks) block item uses a [`RenderMachineBlockItem`](../08-machines-production/rendering.md#5-machine-item-rendering) array holding one model renderer per metadata 0–10 ([08](../08-machines-production/index.md)/[09](../09-machines-utility/index.md)). [`tgchest`](../07-blocks/block-catalog.md#registered-blocks) and [`tgchest_weapon`](../07-blocks/block-catalog.md#registered-blocks) use chest model item renderers ([07](../07-blocks/index.md)).
 
 ### Tile entity special renderers (08/09/07)
 
@@ -260,7 +260,7 @@ AmmoPress, MetalPress, ChemLab (RenderAmmoPress with the matching model); Turret
 
 ### Block render handlers (07)
 
-These ISBRHs are created and their render IDs assigned to blocks: RenderLadder → [`ladder01`](../07-blocks/block-catalogue.md#registered-blocks); RenderLamp → [`lamp01`](../07-blocks/block-catalogue.md#registered-blocks); RenderGenericPane → [`camoNetPane`](../07-blocks/block-catalogue.md#registered-blocks); RenderDirectionalBlock → [`screen`](../07-blocks/block-catalogue.md#registered-blocks) and [`controlpanel`](../07-blocks/block-catalogue.md#registered-blocks); Chisel `RendererCTM` (unconditional); RenderOrecluster → [`oreCluster`](../07-blocks/block-catalogue.md#registered-blocks), [`oreCluster2`](../07-blocks/block-catalogue.md#registered-blocks), and [`oreClusterCustom`](../07-blocks/block-catalogue.md#registered-blocks)/[`oreClusterCustom2`](../07-blocks/block-catalogue.md#registered-blocks) when those config flags are on.
+These ISBRHs are created and their render IDs assigned to blocks: RenderLadder → [`ladder01`](../07-blocks/block-catalog.md#registered-blocks); RenderLamp → [`lamp01`](../07-blocks/block-catalog.md#registered-blocks); RenderGenericPane → [`camoNetPane`](../07-blocks/block-catalog.md#registered-blocks); RenderDirectionalBlock → [`screen`](../07-blocks/block-catalog.md#registered-blocks) and [`controlpanel`](../07-blocks/block-catalog.md#registered-blocks); Chisel `RendererCTM` (unconditional); RenderOrecluster → [`oreCluster`](../07-blocks/block-catalog.md#registered-blocks), [`oreCluster2`](../07-blocks/block-catalog.md#registered-blocks), and [`oreClusterCustom`](../07-blocks/block-catalog.md#registered-blocks)/[`oreClusterCustom2`](../07-blocks/block-catalog.md#registered-blocks) when those config flags are on.
 
 ### Static armor model table
 

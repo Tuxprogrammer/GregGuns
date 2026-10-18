@@ -6,16 +6,16 @@ Legend: **[C]** crafting table, **[S]** furnace smelting, **[MP]** Metal Press, 
 
 ## 1. Base metals (external inputs)
 
-Techguns assumes these OreDict ingots/nuggets come from other mods. It can add its own when the config flags are on (see [item-catalogue.md §3](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems)).
+Techguns assumes these OreDict ingots/nuggets come from other mods. It can add its own when the config flags are on (see [item-catalog.md §3](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems)).
 
 | OreDict | Needed for |
 |---|---|
-| `ingotIron`, [`nuggetIron`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | almost everything tier 1 |
-| [`ingotCopper`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`nuggetCopper`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 9mm bullets, shotgun shells, copper wire, copper plates |
-| [`ingotTin`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | tin plates (ladders, air tanks) |
-| [`ingotBronze`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | bronze plate → steam armour plate |
-| [`ingotLead`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`nuggetLead`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 9mm bullets, shotgun shells, lead plate, Ammo Press |
-| [`ingotSteel`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`nuggetSteel`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | steel plates, receivers, magazines, drill heads, obsidian steel |
+| `ingotIron`, [`nuggetIron`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | almost everything tier 1 |
+| [`ingotCopper`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`nuggetCopper`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 9mm bullets, shotgun shells, copper wire, copper plates |
+| [`ingotTin`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | tin plates (ladders, air tanks) |
+| [`ingotBronze`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | bronze plate → steam armor plate |
+| [`ingotLead`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`nuggetLead`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | 9mm bullets, shotgun shells, lead plate, Ammo Press |
+| [`ingotSteel`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`nuggetSteel`](item-catalog.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | steel plates, receivers, magazines, drill heads, obsidian steel |
 | `ingotGold` (or `ingotElectrum`) | gold wire, laser barrel, stack upgrade |
 | `gemQuartz`, `gemDiamond`, `gemLapis`, `dyeGreen`, `slimeball`, `logWood`, `stone`, `cobblestone` | various |
 | `oreUranium` | Yellowcake ([CL]) |
@@ -34,7 +34,7 @@ nuggetCopper ×5           --[C]--->  1 copper wire
 ingotGold ×2              --[MP]-->  2 gold wire
 fiberCarbon ×2            --[MP]-->  2 carbon plate
 gemDiamond + blaze powder + 1000 mB lava --[CL]--> 2 carbon fibers
-plateSteel + plateBronze  --[MP]-->  1 steam armour plating
+plateSteel + plateBronze  --[MP]-->  1 steam armor plating
 ```
 
 The only way to make plates is the Metal Press. No crafting-table plate recipe exists.
@@ -56,7 +56,7 @@ The tier feeds the matching receiver: Iron Receiver ← T1, Steel Receiver ← T
 | Stone Barrel | 6 stone |
 | Wooden Stock | 3 logs |
 | Iron Barrel | 6 iron ingots |
-| Hardened Steel Barrel ([`obsidianSteelBarrel`](item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo)) | 6 obsidian-steel ingots (exact Techguns item, not OreDict) |
+| Hardened Steel Barrel ([`obsidianSteelBarrel`](item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo)) | 6 obsidian-steel ingots (exact Techguns item, not OreDict) |
 | Carbon Barrel | 6 carbon plates |
 | Laser Barrel | 6 gold (or electrum) ingots, 2 glass (hardened glass if available), Laser Focus |
 | Laser Focus | [RC] diamond in liquid redstone (lava if no redstone fluid) with the heat-ray focus |
@@ -126,7 +126,7 @@ plastic ×4 + NVG + gas mask + oxygen mask + 2 circuits --> Tactical Mask (05)
 | Item | Made from | Used by |
 |---|---|---|
 | Machine Upgrade (Stack Operation) | 4 iron plates, 3 gold ingots, green dye, chest | Upgrade slot of Ammo Press, Metal Press, Chem Lab, Fabricator, Charging Station ([`SlotMachineUpgrade`](../08-machines-production/ammo-press.md#1-inventory) accepts only this meta). In the Metal Press, up to `upgrades + 1` items are processed per operation, so 7 upgrades give 8×. The other machines' use is in 08. Max stack 7. |
-| Turret Armor (Iron / Steel / Obsidian Steel / Carbon) | 5 plates of the material (T shape) | Turret armour slot: +5 / +10 / +15 / +20 armour |
+| Turret Armor (Iron / Steel / Obsidian Steel / Carbon) | 5 plates of the material (T shape) | Turret armor slot: +5 / +10 / +15 / +20 armor |
 | Ore Drill Heads Small / Medium / Large × Steel / Obsidian Steel / Carbon | Small: ingots + plates of the material (carbon: 7 carbon plates). Medium = 3 small. Large = 3 medium. | Ore Drill head slot ([08](../08-machines-production/index.md)). Tooltip shows valid drill sizes and the bonus mining level 1 / 2 / 3. |
 | UV Emitter (beam focus) | **No recipe** (creative/loot only) | Reaction Chamber focus, plays `techguns:machines.chemlabWork` |
 | Reaction Chamber Heat Ray Focus | 2 elite circuits, gold wire, 4 steel plates, 2 redstone lamps | Reaction Chamber focus, plays `techguns:machines.rc_heatrayWork` |

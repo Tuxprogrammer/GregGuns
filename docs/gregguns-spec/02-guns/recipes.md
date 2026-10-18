@@ -43,7 +43,7 @@ Techguns builds every gun at a crafting table from one grid and often consumes a
 
 ### GT5-Unofficial: precedent for electric tools and weapons
 
-- **Source:** GT's electric tools are crafted at the **crafting table** from a tier motor or piston, a battery, and the tier metal's plate, screw and small gear. The Chainsaw LV is `"SXd" / "GMG" / "PBP"` with `Electric_Motor_LV`, `Battery_RE_LV_Lithium` and Steel parts; the MV and HV versions swap in Aluminium and Stainless Steel parts and the MV and HV motor and battery: [ProcessingToolHead.java#L164-L250](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/oreprocessing/ProcessingToolHead.java#L164-L250). The tool is created with `{ maxCharge, transfer limit, tier, -1 }` stats and no stored charge.
+- **Source:** GT's electric tools are crafted at the **crafting table** from a tier motor or piston, a battery, and the tier metal's plate, screw and small gear. The Chainsaw LV is `"SXd" / "GMG" / "PBP"` with `Electric_Motor_LV`, `Battery_RE_LV_Lithium` and Steel parts; the MV and HV versions swap in Aluminum and Stainless Steel parts and the MV and HV motor and battery: [ProcessingToolHead.java#L164-L250](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/oreprocessing/ProcessingToolHead.java#L164-L250). The tool is created with `{ maxCharge, transfer limit, tier, -1 }` stats and no stored charge.
 - **GregGuns does:** copies the **input mix** (tier motor or piston, battery, tier-metal plate, screw, small spring) but moves the final step to the Assembler, as [CONVENTIONS § Recipe sheets](../CONVENTIONS.md#recipe-sheets) requires from LV up. Costs scale the way GT's tool costs do: one battery per energy weapon, a tier-matched motor, piston or emitter where the weapon has that part.
 - **Pack-side change:** none.
 
@@ -66,7 +66,7 @@ Techguns builds every gun at a crafting table from one grid and often consumes a
 - **Time** is in seconds.
 - **Output** is the unloaded gun, with no stored charge (energy guns: [GGS-02-06](#requirements)). Registry names are placeholders until M2 registers them.
 - **Gate** is the 0001 gate input plus the voltage. Every recipe at a tier carries that tier's gate plate, so the dev self-check can test one rule.
-- **Tier materials** (0001): Steel (LV), Aluminium (MV), Stainless Steel (HV), Titanium (EV), Tungstensteel (IV), HSS-G (LuV), Naquadah Alloy (ZPM).
+- **Tier materials** (0001): Steel (LV), Aluminum (MV), Stainless Steel (HV), Titanium (EV), Tungstensteel (IV), HSS-G (LuV), Naquadah Alloy (ZPM).
 
 ## Steam / ULV
 
@@ -95,7 +95,7 @@ Method: `Asm`, `eut(TierEU.RECIPE_LV)` (30 EU/t). Gate: `plate.Steel` and an LV 
 | Crowbar | `stickLong.Steel` x2, `plate.Steel` x1, `screw.Steel` x1 | 10 | 6 | Melee and block-breaking tool. [R87](../../techguns-spec/06-items/recipes.md) |
 | Stielgranate x16 | `plate.Steel` x2, `dust.Gunpowder` x4, `stick.Wood` x1 | 10 | 7 | **Not in 0001.** Placed at LV provisionally ([Open questions](#open-questions)). [Grenade table](../../techguns-spec/02-guns/recipes.md#grenade-recipes) |
 
-## MV (Aluminium)
+## MV (Aluminum)
 
 Method: `Asm`, `eut(TierEU.RECIPE_MV)` (120 EU/t). Gate: `plate.Aluminium` and an MV Assembler. `plate.Polyethylene` replaces Techguns' plastic sheet from here up.
 
@@ -155,7 +155,7 @@ Method: `Asm`, `eut(TierEU.RECIPE_IV)` (7,680 EU/t). Gate: `plate.TungstenSteel`
 |---|---|---|---|---|
 | Blaster Rifle | Laser Barrel x1, Carbon Receiver x1, Carbon Gunstock x1, `ItemList.Emitter_IV` x1, `Energy_LapotronicOrb` x1, `circuit.IV` x2, `lens.Glass` x1, `plate.TungstenSteel` x2, `screw.TungstenSteel` x4 | 40 | 1 | Electric. [#12](../../techguns-spec/02-guns/recipes.md#shaped-gun-recipes) |
 | De-Atomizer Pistol | Laser Barrel x1, Sonic Emitter x1, Mechanical Parts T3 x1, `Energy_LapotronicOrb` x1, `circuit.IV` x1, `plate.Titanium` x2, `plate.TungstenSteel` x2, `screw.TungstenSteel` x4 | 40 | 2 | Electric. [#35](../../techguns-spec/02-guns/recipes.md#shaped-gun-recipes) |
-| Scatter Laser Rifle | Laser Barrel x2, Carbon Receiver x1, Carbon Gunstock x1, `Emitter_IV` x2, `Energy_LapotronicOrb` x1, `circuit.IV` x2, `plate.TungstenSteel` x3, `screw.TungstenSteel` x6 | 45 | 3 | **New design.** The five-beam gun is "[WIP]" in Techguns ([catalogue](../../techguns-spec/02-guns/gun-catalogue.md)); two barrels and two emitters pay for the extra beams. |
+| Scatter Laser Rifle | Laser Barrel x2, Carbon Receiver x1, Carbon Gunstock x1, `Emitter_IV` x2, `Energy_LapotronicOrb` x1, `circuit.IV` x2, `plate.TungstenSteel` x3, `screw.TungstenSteel` x6 | 45 | 3 | **New design.** The five-beam gun is "[WIP]" in Techguns ([catalog](../../techguns-spec/02-guns/gun-catalog.md)); two barrels and two emitters pay for the extra beams. |
 | Golden Revolver | **Revolver x1** (any NBT), `plate.Gold` x8, `plate.TungstenSteel` x2, `screw.TungstenSteel` x4 | 30 | 4 | Upgrade; camo not kept. [#22](../../techguns-spec/02-guns/recipes.md#shaped-gun-recipes) |
 | Akimbo De-Atomizer Pistols | Crafting table, 2x De-Atomizer Pistol | n/a | n/a | Electric. See [Akimbo](#akimbo-combine-and-split) |
 | Akimbo Golden Revolvers | Crafting table, 2x Golden Revolver | n/a | n/a | See [Akimbo](#akimbo-combine-and-split) |
@@ -180,7 +180,7 @@ The research items follow "scan the weapon one tier below": the Blaster Rifle (I
 
 ## Akimbo combine and split
 
-Akimbo recipes stay in the crafting table and keep Techguns' behaviour ([RecipeAkimboGun and RecipeAkimboSplit](../../techguns-spec/02-guns/recipes.md#shapeless--custom-recipes)), with the camo and ammo bug GUN-26 in [index.md](../../techguns-spec/02-guns/index.md#suspected-bugs) fixed. A GT recipe consumes its inputs and cannot copy their NBT, so a machine cannot do this job.
+Akimbo recipes stay in the crafting table and keep Techguns' behavior ([RecipeAkimboGun and RecipeAkimboSplit](../../techguns-spec/02-guns/recipes.md#shapeless--custom-recipes)), with the camo and ammo bug GUN-26 in [index.md](../../techguns-spec/02-guns/index.md#suspected-bugs) fixed. A GT recipe consumes its inputs and cannot copy their NBT, so a machine cannot do this job.
 
 | Combine (2 identical guns in, 1 out) | Split (1 in, 2 out) | 0001 tier | Electric |
 |---|---|---|---|
@@ -204,7 +204,7 @@ The first eight are carried over unchanged from the retired `gt-recipes.md`.
 - **GGS-02-04.** LuV and ZPM guns are added to `AssemblyLine` with both `RESEARCH_ITEM` and `SCANNING` metadata.
 - **GGS-02-05.** Metal bullet slugs use GT's `round` prefix. They are not a GregGuns item. (The Frag Grenade's fragments use it here.)
 - **GGS-02-06.** Guns that are IC2 electric items are crafted **uncharged** (see [energy-electric-items.md](energy-electric-items.md)).
-- **GGS-02-07.** Akimbo combine and split stay crafting-table recipes and keep the Techguns NBT behaviour, with bug GUN-26 fixed.
+- **GGS-02-07.** Akimbo combine and split stay crafting-table recipes and keep the Techguns NBT behavior, with bug GUN-26 fixed.
 - **GGS-02-08.** A dev self-check iterates all registered gun recipes and fails if any recipe's `eut` exceeds its tier's `TierEU.RECIPE_*` value or if the recipe lacks a gate material.
 - **GGS-02-35.** Every weapon in the [0001](../../design/0001-tier-map.md) Weapons column has a recipe in this sheet, and every recipe here outputs a 0001 weapon. The only exception is the Stielgranate ([Open questions](#open-questions)).
 - **GGS-02-36.** No weapon recipe takes a magazine, tank, rocket, Nether Charge or Nuclear Power Cell as an input. Weapons are crafted unloaded.

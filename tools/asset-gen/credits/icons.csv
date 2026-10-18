@@ -1,4 +1,4 @@
-asset,path,generator,seed,method,licence,date
+asset,path,generator,seed,method,license,date
 icon.pistol_9mm,src/main/resources/assets/gregguns/textures/items/pistol_9mm.png,tools/asset-gen/icons.py,3988574526,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
 icon.part_barrel_hardened,src/main/resources/assets/gregguns/textures/items/part_barrel_hardened.png,tools/asset-gen/icons.py,260038983,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
 icon.part_mechanical_2,src/main/resources/assets/gregguns/textures/items/part_mechanical_2.png,tools/asset-gen/icons.py,2144130171,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
@@ -174,5 +174,5 @@ icon.spawn_egg,src/main/resources/assets/gregguns/textures/items/spawn_egg.png,t
 icon.spawn_egg_overlay,src/main/resources/assets/gregguns/textures/items/spawn_egg_overlay.png,tools/asset-gen/icons.py,274691974,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
 icon.turret_armor_iron,src/main/resources/assets/gregguns/textures/items/turret_armor_iron.png,tools/asset-gen/icons.py,265726376,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
 icon.turret_armor_steel,src/main/resources/assets/gregguns/textures/items/turret_armor_steel.png,tools/asset-gen/icons.py,2942088047,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
-icon.turret_armor_aluminium,src/main/resources/assets/gregguns/textures/items/turret_armor_aluminium.png,tools/asset-gen/icons.py,1188029778,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
+icon.turret_armor_aluminum,src/main/resources/assets/gregguns/textures/items/turret_armor_aluminum.png,tools/asset-gen/icons.py,1546297071,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
 icon.turret_armor_carbon,src/main/resources/assets/gregguns/textures/items/turret_armor_carbon.png,tools/asset-gen/icons.py,3989877665,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18

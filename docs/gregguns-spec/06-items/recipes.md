@@ -1,8 +1,8 @@
 # Item recipes
 
-Every GregGuns recipe for the items in area 06, plus the **component index** that areas 02 (guns), 05 (armour) and 07 to 09 (blocks and machines) use to name the parts they consume.
+Every GregGuns recipe for the items in area 06, plus the **component index** that areas 02 (guns), 05 (armor) and 07 to 09 (blocks and machines) use to name the parts they consume.
 
-- **Techguns baseline:** [recipes.md](../../techguns-spec/06-items/recipes.md) (R01 to R87, B01 to B34), [ammo.md](../../techguns-spec/06-items/ammo.md), [components-and-materials.md](../../techguns-spec/06-items/components-and-materials.md), [item-catalogue.md](../../techguns-spec/06-items/item-catalogue.md); the replaced machines: [ammo-press.md](../../techguns-spec/08-machines-production/ammo-press.md), [metal-press.md](../../techguns-spec/08-machines-production/metal-press.md), [chem-lab.md](../../techguns-spec/08-machines-production/chem-lab.md), [fabricator.md](../../techguns-spec/08-machines-production/fabricator.md)
+- **Techguns baseline:** [recipes.md](../../techguns-spec/06-items/recipes.md) (R01 to R87, B01 to B34), [ammo.md](../../techguns-spec/06-items/ammo.md), [components-and-materials.md](../../techguns-spec/06-items/components-and-materials.md), [item-catalog.md](../../techguns-spec/06-items/item-catalog.md); the replaced machines: [ammo-press.md](../../techguns-spec/08-machines-production/ammo-press.md), [metal-press.md](../../techguns-spec/08-machines-production/metal-press.md), [chem-lab.md](../../techguns-spec/08-machines-production/chem-lab.md), [fabricator.md](../../techguns-spec/08-machines-production/fabricator.md)
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0002 machine deconfliction](../../design/0002-machine-deconfliction.md), [0003 energy model](../../design/0003-energy-model.md), [0008 exact-tier charging](../../design/0008-exact-tier-charging.md), [0009 integration defaults](../../design/0009-gtnh-integration-defaults.md)
 - **Pack mods:** GregTech (`gregtech`, GT5-Unofficial 5.09.54.205), IC2 (hard dependency, API only)
 - **Roadmap:** M2 (ballistic parts and ammo), M4 (production chain), M5 (EV and above)
@@ -14,8 +14,8 @@ Every GregGuns recipe for the items in area 06, plus the **component index** tha
 | About 70 shaped crafting grids, plus Ammo Press, Metal Press, Chem Lab and Fabricator plans | Crafting table only for Steam/ULV items and for magazine refills. Everything else is a GT machine recipe at the item's tier voltage | [0001](../../design/0001-tier-map.md), [0002](../../design/0002-machine-deconfliction.md) |
 | Ammo Press: one plan per bullet, 4 to 16 per cycle | One **GregGuns Ammo Press** (`AP`) recipe per ammo type, selected by a programmed circuit, 8 to 16 rounds per run. The Ammo Press is reinstated by [0011](../../design/0011-machine-policy.md) as the one exception to GT maps; it was previously to be replaced by GT maps ([recipe-map-replacements](../08-machines-production/recipe-map-replacements.md#ammo-press)) |
 | Bullets from copper, lead and iron nuggets by OreDict lookup ([ITEM-02](../../techguns-spec/06-items/index.md#suspected-bugs)) | Bullets are built from GT `round`, `foil` and `itemCasing` parts and vanilla gunpowder (GT `dust.Gunpowder`) | GT first. No casing item of our own |
-| Iron / steel / obsidian steel / carbon material tiers | Steel / aluminium / stainless steel / titanium hardware, with GT's fibre-reinforced epoxy standing in for carbon | [Material remap](#material-remap), fixed by [0010](../../design/0010-material-remap-and-tier-additions.md) |
-| Energy Cell and Nuclear Power Cell are consumables filled in the Charging Station | No Energy Cell: energy weapons are their own IC2 batteries ([0003](../../design/0003-energy-model.md), [0008](../../design/0008-exact-tier-charging.md), [0010](../../design/0010-material-remap-and-tier-additions.md)). Nuclear Power Cell is a consumable refuelled in a ZPM machine | [0010](../../design/0010-material-remap-and-tier-additions.md) |
+| Iron / steel / obsidian steel / carbon material tiers | Steel / aluminum / stainless steel / titanium hardware, with GT's fiber-reinforced epoxy standing in for carbon | [Material remap](#material-remap), fixed by [0010](../../design/0010-material-remap-and-tier-additions.md) |
+| Energy Cell and Nuclear Power Cell are consumables filled in the Charging Station | No Energy Cell: energy weapons are their own IC2 batteries ([0003](../../design/0003-energy-model.md), [0008](../../design/0008-exact-tier-charging.md), [0010](../../design/0010-material-remap-and-tier-additions.md)). Nuclear Power Cell is a consumable refueled in a ZPM machine | [0010](../../design/0010-material-remap-and-tier-additions.md) |
 | Tanks filled in the Chem Lab | Tanks are crafted in the Assembler and filled in the GT Fluid Canner | [fluids.md](fluids.md#gregtech-fluid-containers) |
 | Rifle Bullets Stack (compression item) | Dropped. Magazines are assembled from loose bullets | Assembler inputs already take stacks |
 | Medkit and Bandages unregistered | Built. Bandages at LV, Medkit at MV | [0001](../../design/0001-tier-map.md): "Build: Medkit (MV)" |
@@ -39,9 +39,9 @@ Techguns' four material tiers have no GT counterpart for obsidian steel and carb
 | Iron | LV | `Steel` screws and rings on `Iron` parts | The part name stays "Iron" |
 | Steel | MV | `Aluminium` screws on `Steel` parts | |
 | Obsidian steel | HV | `StainlessSteel` | Renamed "Hardened" |
-| Carbon | EV | `Titanium`, with `EpoxidFiberReinforced` plates for the carbon parts | `Materials.EpoxidFiberReinforced` has metal items ([MaterialsInit#L10359-L10376](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L10359-L10376); declared at [Materials#L707](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/Materials.java#L707)). GT has no carbon-fibre item in core |
+| Carbon | EV | `Titanium`, with `EpoxidFiberReinforced` plates for the carbon parts | `Materials.EpoxidFiberReinforced` has metal items ([MaterialsInit#L10359-L10376](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L10359-L10376); declared at [Materials#L707](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/Materials.java#L707)). GT has no carbon-fiber item in core |
 
-Areas [05](../05-armor/recipes.md#open-questions) and [09](../09-machines-utility/recipes.md#open-questions) follow the same rule: an MV armour or turret plate that was "obsidian steel" is Aluminium, an HV gun receiver is Stainless Steel. These are instances of one rule, not conflicting ladders.
+Areas [05](../05-armor/recipes.md#open-questions) and [09](../09-machines-utility/recipes.md#open-questions) follow the same rule: an MV armor or turret plate that was "obsidian steel" is Aluminum, an HV gun receiver is Stainless Steel. These are instances of one rule, not conflicting ladders.
 
 ## Component index
 
@@ -57,11 +57,11 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 | `part_barrel_carbon` | Carbon Barrel | Carbon Barrel (85) | EV | Titanium | [RC-06](#part-barrel-carbon) | 02 |
 | `part_barrel_laser` | Laser Barrel | Laser Barrel (35) | EV | Titanium | [RC-07](#part-barrel-laser) | 02 |
 | `part_stock_wooden` | Wooden Stock | Wooden Stock (26) | ULV | none | [RC-02](#part-stock-wooden) | 02 |
-| `part_stock_plastic` | Plastic Gun Stock | Plastic Gun Stock (31) | MV | Aluminium | [RC-08](#part-stock-plastic) | 02 |
+| `part_stock_plastic` | Plastic Gun Stock | Plastic Gun Stock (31) | MV | Aluminum | [RC-08](#part-stock-plastic) | 02 |
 | `part_stock_carbon` | Carbon Gunstock | Carbon Gunstock (84) | EV | Titanium | [RC-09](#part-stock-carbon) | 02 |
 | `part_pump_mechanism` | Pump Mechanism | Pump Mechanism (32) | LV | Steel | [RC-10](#part-pump-mechanism) | 02 Flamethrower, Bio Gun, Nether Blaster |
 | `part_receiver_iron` | Iron Receiver | Iron Receiver (53) | LV | Steel (screws) | [RC-13](#part-receiver-iron) | 02 |
-| `part_receiver_steel` | Steel Receiver | Steel Receiver (54) | MV | Aluminium (screws) | [RC-14](#part-receiver-steel) | 02 |
+| `part_receiver_steel` | Steel Receiver | Steel Receiver (54) | MV | Aluminum (screws) | [RC-14](#part-receiver-steel) | 02 |
 | `part_receiver_hardened` | Hardened Receiver | Obsidian Steel Receiver (55) | HV | Stainless steel | [RC-15](#part-receiver-hardened) | 02 |
 | `part_receiver_carbon` | Carbon Receiver | Carbon Receiver (56) | EV | Titanium | [RC-16](#part-receiver-carbon) | 02 |
 | `part_mechanical_1` | Mechanical Parts | Mechanical Parts (30) | ULV | Bronze | [RC-03](#part-mechanical-1) | 02, 05, 07 to 09 |
@@ -86,9 +86,9 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 |---|---|---|---|---|---|---|
 | `part_heavy_cloth` | Heavy Cloth | Heavy Cloth (39) | ULV | none | [RC-21](#part-heavy-cloth) | 05 |
 | `part_treated_leather` | Treated Leather | Treated Leather (109) | LV | Steel (Bath at LV) | [RC-22](#part-treated-leather) | 05 |
-| `part_steam_armor_plating` | Steam Armor Plating | Steam Armor Plating (67) | EV | Titanium | [RC-23](#part-steam-armor-plating) | 05 Steam armour |
-| `part_power_plating` | Power Plating | Power Plating (89) | IV | Tungstensteel | [RC-24](#part-power-plating) | 05 Power armour, exo suit |
-| `part_gas_mask_filter` | Gas Mask Filter | Gas Mask Filter (74) | MV | Aluminium | [RC-25](#part-gas-mask-filter) | 05 Gas Mask |
+| `part_steam_armor_plating` | Steam Armor Plating | Steam Armor Plating (67) | EV | Titanium | [RC-23](#part-steam-armor-plating) | 05 Steam armor |
+| `part_power_plating` | Power Plating | Power Plating (89) | IV | Tungstensteel | [RC-24](#part-power-plating) | 05 Power armor, exo suit |
+| `part_gas_mask_filter` | Gas Mask Filter | Gas Mask Filter (74) | MV | Aluminum | [RC-25](#part-gas-mask-filter) | 05 Gas Mask |
 | `part_nuclear_warhead` | Small Nuclear Warhead | Small Nuclear Warhead (103) | ZPM | Naquadah alloy | [RC-26](#part-nuclear-warhead) | RC-35 (this sheet) |
 
 ### Ammunition
@@ -101,7 +101,7 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 | `ammo_rifle_bullet` | Rifle Bullets | (7) | LV | Steel | [RC-30](#ammo-rifle-bullet) | Bolt Action Rifle, rifle magazines |
 | `ammo_high_caliber_round` | High Caliber Rounds | (19) | HV | Stainless steel | [RC-31](#ammo-high-caliber-round) | AS50 magazine |
 | `ammo_advanced_bullet` | Advanced Bullets | (22) | EV | Titanium | [RC-32](#ammo-advanced-bullet) | Advanced magazine |
-| `ammo_40mm_grenade` | 40mm Grenade | (93) | MV | Aluminium | [RC-33](#ammo-40mm-grenade) | Grenade Launcher |
+| `ammo_40mm_grenade` | 40mm Grenade | (93) | MV | Aluminum | [RC-33](#ammo-40mm-grenade) | Grenade Launcher |
 | `ammo_rocket` | Rocket | (14) | HV | Stainless steel | [RC-34](#ammo-rocket) | Rocket Launcher, Grim Reaper |
 | `ammo_rocket_nuke` | Rocket (Tactical Nuke) | (105) | ZPM | Naquadah alloy | [RC-35](#ammo-rocket-nuke) | Nuke Launcher |
 | `ammo_nether_charge` | Nether Charge | (63) | LuV | HSS-G | [RC-36](#ammo-nether-charge) | Nether Blaster |
@@ -111,8 +111,8 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 | Registry name | Display name | Techguns (meta) | Tier | Gate | Recipes | Used by |
 |---|---|---|---|---|---|---|
 | `mag_9mm_pistol` / `mag_9mm_pistol_empty` | 9mm Pistol Magazine | (2) / (3) | LV | Steel | [RC-37](#mag-9mm-pistol-empty), [RC-44](#mag-9mm-pistol), [RC-51](#mag-refill) | Pistol, akimbo |
-| `mag_smg` / `mag_smg_empty` | SMG Magazine | (5) / (6) | MV | Aluminium | [RC-38](#mag-smg-empty), [RC-45](#mag-smg), [RC-51](#mag-refill) | Thompson, Mac10, Vector |
-| `mag_assault_rifle` / `mag_assault_rifle_empty` | Assault Rifle Magazine | (12) / (13) | MV | Aluminium | [RC-39](#mag-assault-rifle-empty), [RC-46](#mag-assault-rifle), [RC-51](#mag-refill) | M4, AK47, AUG, SCAR |
+| `mag_smg` / `mag_smg_empty` | SMG Magazine | (5) / (6) | MV | Aluminum | [RC-38](#mag-smg-empty), [RC-45](#mag-smg), [RC-51](#mag-refill) | Thompson, Mac10, Vector |
+| `mag_assault_rifle` / `mag_assault_rifle_empty` | Assault Rifle Magazine | (12) / (13) | MV | Aluminum | [RC-39](#mag-assault-rifle-empty), [RC-46](#mag-assault-rifle), [RC-51](#mag-refill) | M4, AK47, AUG, SCAR |
 | `mag_as50` / `mag_as50_empty` | AS50 Magazine | (17) / (18) | HV | Stainless steel | [RC-40](#mag-as50-empty), [RC-47](#mag-as50), [RC-51](#mag-refill) | AS50 |
 | `mag_lmg` / `mag_lmg_empty` | LMG Magazine | (20) / (21) | HV | Stainless steel | [RC-41](#mag-lmg-empty), [RC-48](#mag-lmg), [RC-51](#mag-refill) | LMG |
 | `mag_advanced` / `mag_advanced_empty` | Advanced Magazine | (23) / (24) | EV | Titanium | [RC-42](#mag-advanced-empty), [RC-49](#mag-advanced), [RC-51](#mag-refill) | PDW, Pulse Rifle |
@@ -129,13 +129,13 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 | Registry name | Display name | Techguns | Tier | Gate | Recipe |
 |---|---|---|---|---|---|
 | `bandages` | Bandages | Medkit meta 0 | LV | Steel | [RC-61](#consumables) |
-| `medkit` | Medkit | Medkit meta 1 | MV | Aluminium | [RC-62](#consumables) |
+| `medkit` | Medkit | Medkit meta 1 | MV | Aluminum | [RC-62](#consumables) |
 | `combat_knife` | Combat Knife | Combat Knife | LV | Steel | Owned by [02 recipes](../02-guns/recipes.md#lv-steel) |
 | `crowbar` | Crowbar | Crowbar | LV | Steel | Owned by [02 recipes](../02-guns/recipes.md#lv-steel) |
 | `bunker_door` | Bunker Door | Bunker Door (`doorItem01`) | LV | Iron plates | Owned by [07 recipes](../07-blocks/recipes.md#chests-and-the-door) |
 | `camo_net_placer` (metas 0 to 2) | Camo Net Placer (Woodland, Snow, Desert) | Camo Net Placer | ULV | none | [RC-63](#tools-and-placeables) |
 
-Guns, grenades, armour, blocks and machines are in their own areas. The Frag Grenade, Stielgranate and Flashbang are guns ([02](../02-guns/recipes.md)); the Glider, wings and backpack, Oxygen Mask and Tactical Mask are armour ([05](../05-armor/armour-recipes.md)); turret armour is [09](../09-machines-utility/index.md); the Camo Net block is [07](../07-blocks/decorative-blocks.md).
+Guns, grenades, armor, blocks and machines are in their own areas. The Frag Grenade, Stielgranate and Flashbang are guns ([02](../02-guns/recipes.md)); the Glider, wings and backpack, Oxygen Mask and Tactical Mask are armor ([05](../05-armor/armor-recipes.md)); turret armor is [09](../09-machines-utility/index.md); the Camo Net block is [07](../07-blocks/decorative-blocks.md).
 
 ## Gun parts
 
@@ -183,7 +183,7 @@ All rows are `Asm`, `c=1` unless noted.
 |---|---|---|---|---|---|
 | RC-04<a id="part-barrel-iron"></a> | `part_barrel_iron` ×1 | LV | `pipeSmall.Iron` ×1, `ring.Iron` ×2, `screw.Steel` ×2 | `RECIPE_LV`, 5 s | `Steel` (screws). Replaces R03. Barrel = liner pipe plus two mounting rings. Mirrors GT's [Large Fluid Cell (Steel) recipe](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L104-L112): 10 s at LV for four double plates and four rings |
 | RC-05<a id="part-barrel-hardened"></a> | `part_barrel_hardened` ×1 | LV | `pipeSmall.Steel` ×1, `ring.Steel` ×2, `plate.Steel` ×1 | `RECIPE_LV`, 6 s | `Steel`. Replaces R06. LV because [02](../02-guns/recipes.md#lv-steel) builds the 9mm Pistol and the Bolt Action Rifle from it; the steel jacket plate is what "hardened" means here |
-| RC-06<a id="part-barrel-carbon"></a> | `part_barrel_carbon` ×1 | EV | `pipeSmall.Titanium` ×1, `ring.Titanium` ×2, `plate.EpoxidFiberReinforced` ×2 | `RECIPE_EV`, 8 s | `Titanium`. Replaces R23 (the "carbon" wrap is fibre-reinforced epoxy) |
+| RC-06<a id="part-barrel-carbon"></a> | `part_barrel_carbon` ×1 | EV | `pipeSmall.Titanium` ×1, `ring.Titanium` ×2, `plate.EpoxidFiberReinforced` ×2 | `RECIPE_EV`, 8 s | `Titanium`. Replaces R23 (the "carbon" wrap is fiber-reinforced epoxy) |
 | RC-07<a id="part-barrel-laser"></a> | `part_barrel_laser` ×1 | EV | `part_laser_focus` ×1, `lens.Glass` ×1, `pipeTiny.Titanium` ×2, `foil.Electrum` ×4 | `RECIPE_EV`, 10 s | `Titanium`. Replaces R08 (electrum or gold, glass, Laser Focus). `lens.Glass` is registered by GT ([MTEIndustrialLaserEngraver#L482](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/tileentities/machines/multi/MTEIndustrialLaserEngraver.java#L482)) |
 | RC-08<a id="part-stock-plastic"></a> | `part_stock_plastic` ×1 | MV | `plate.Polyethylene` ×3, `screw.Aluminium` ×2 | `RECIPE_MV`, 4 s | `Aluminium`. Replaces R05. Polyethylene is GT's plastic (`Materials.Polyethylene`, no `Plastic` material exists) |
 | RC-09<a id="part-stock-carbon"></a> | `part_stock_carbon` ×1 | EV | `plate.EpoxidFiberReinforced` ×3, `plate.Polyethylene` ×2, `screw.Titanium` ×2 | `RECIPE_EV`, 5 s | `Titanium`. Replaces R24 (3 carbon plates, 2 plastic sheets) |
@@ -221,7 +221,7 @@ W L W
 · W ·
 ```
 
-`W` = ore name `blockWool` ×4 (any colour), `L` = vanilla leather. Unchanged from Techguns.
+`W` = ore name `blockWool` ×4 (any color), `L` = vanilla leather. Unchanged from Techguns.
 
 | ID | Output | Tier | Method | Inputs | EU/t, time | Gate, notes |
 |---|---|---|---|---|---|---|
@@ -372,7 +372,7 @@ RC-55 is withdrawn (see below). RC-56 to RC-58 are the three dynamic fills, whic
 <a id="bandages"></a>
 **RC-61 · `bandages` ×2** · LV · Asm, `c=2`, `RECIPE_LV`, 5 s · gate `ring.Steel`
 
-Inputs: string ×3, ore name `slimeball` ×1, `ring.Steel` ×1 (the clasp, and the gate). Not listed in [0001](../../design/0001-tier-map.md); LV per [0010](../../design/0010-material-remap-and-tier-additions.md) decision 5, so it is a machine recipe like the rest of LV. Heals 2 HP and gives Regeneration I (use time 60 ticks), per the [Techguns behaviour](../../techguns-spec/06-items/special-items.md#medkit-itemmedkit-present-in-code-not-registered).
+Inputs: string ×3, ore name `slimeball` ×1, `ring.Steel` ×1 (the clasp, and the gate). Not listed in [0001](../../design/0001-tier-map.md); LV per [0010](../../design/0010-material-remap-and-tier-additions.md) decision 5, so it is a machine recipe like the rest of LV. Heals 2 HP and gives Regeneration I (use time 60 ticks), per the [Techguns behavior](../../techguns-spec/06-items/special-items.md#medkit-itemmedkit-present-in-code-not-registered).
 
 | ID | Output | Tier | Method | Inputs | EU/t, time | Gate, notes |
 |---|---|---|---|---|---|---|
@@ -405,7 +405,7 @@ For completeness: every Techguns meta not covered above, and where it went. See 
 | Metal plates, ingots, titanium ore (40 to 45, 65, 94 to 96, 104) | Not registered | GT `plate`, `ingot` |
 | Wires (57, 86), circuit boards (68, 87) | Not registered | GT `wireFine`, `circuit.<tier>` |
 | Raw rubber, rubber bar, raw plastic, plastic sheet (70 to 73) | Not registered | GT `plate.Rubber`, `plate.Polyethylene` |
-| Carbon fibres, carbon plate (61, 62) | Not registered | `plate.EpoxidFiberReinforced` ([material remap](#material-remap)) |
+| Carbon fibers, carbon plate (61, 62) | Not registered | `plate.EpoxidFiberReinforced` ([material remap](#material-remap)) |
 | Electric Engine (64) | Not registered | `ItemList.Electric_Motor_<tier>` |
 | Coil (69) | Not registered | Folded into emitter and motor recipes |
 | TGX (60) | Not registered | `Materials.TNT` |
@@ -415,7 +415,7 @@ For completeness: every Techguns meta not covered above, and where it went. See 
 | Rifle Bullets Stack (88) | Dropped | Loose bullets in the Assembler |
 | Energy Cell, Energy Cell (Empty) (15, 16) | Dropped | Energy weapons are their own batteries ([0010](../../design/0010-material-remap-and-tier-additions.md)) |
 | Machine Upgrade (52), ore drill heads (75 to 83) | Dropped | Machines dropped ([0002](../../design/0002-machine-deconfliction.md)) |
-| Turret armour (48 to 50, 66) | Area 09 | |
+| Turret armor (48 to 50, 66) | Area 09 | |
 | Glider, wing, backpack (51, 58, 59), Oxygen Mask (90) | Area 05 | |
 | Ore Cluster Scanner, Creeper Acid Bucket, debug tools | Not built | [nei-visibility.md](nei-visibility.md) |
 

@@ -1,12 +1,12 @@
 # Ore Drill (multiblock)
 
-The Ore Drill is a configurable, axis-aligned multiblock. It is built in a line from a **controller** towards an **ore cluster** block (the cluster blocks are owned by [07-blocks](../07-blocks/index.md) / [11-worldgen](../11-worldgen/index.md)). It produces that cluster's ore, or fluid, **indefinitely**, without consuming the cluster.
+The Ore Drill is a configurable, axis-aligned multiblock. It is built in a line from a **controller** toward an **ore cluster** block (the cluster blocks are owned by [07-blocks](../07-blocks/index.md) / [11-worldgen](../11-worldgen/index.md)). It produces that cluster's ore, or fluid, **indefinitely**, without consuming the cluster.
 
 It runs on RF, on furnace fuel, or on liquid fuel (lava, fuel, biofuel). It needs an **ore drill head** item ([06-items](../06-items/index.md)) that matches its size class.
 
 | Class | Role |
 |---|---|
-| `blocks/machines/OreDrillBlock` | The block, registry name [`oreDrill`](../07-blocks/block-catalogue.md#registered-blocks), metas 0–4. Chisel `ICarvable` with CTM rendering. |
+| `blocks/machines/OreDrillBlock` | The block, registry name [`oreDrill`](../07-blocks/block-catalog.md#registered-blocks), metas 0–4. Chisel `ICarvable` with CTM rendering. |
 | `blocks/ItemBlockOreDrill` | Item block. Placement restrictions and the cluster helper functions. |
 | `tileentities/OreDrillTileEntMaster` | Controller tile (meta 4), registered as `OreDrillTileEntMaster`. Does all the logic. |
 | `tileentities/OreDrillTileEntSlave` | Tile for metas 0–3, registered as [`OreDrillTileEntSlave`](index.md#key-facts). Stores its link to the master. |
@@ -27,17 +27,17 @@ Shared base classes ([`MultiBlockMasterTileEntBase`](../08-machines-production/f
 - `isOpaqueCube` false, `renderAsNormalBlock` false, `isNormalCube` **true** for every meta.
 - Render type: Chisel's CTM renderer.
 - Creatures cannot spawn on it.
-- Chiselling is forbidden.
+- Chiseling is forbidden.
 - The creative list shows the variations with block meta ≤ 4.
 
 Item names come from [`ItemBlockOreDrill`](../07-blocks/special-blocks.md#17-itemblockoredrill-placement-rules): `techguns.tile.oreDrill_<meta>.name`.
 
 | Meta | Lang key → English | Role | Recipe (shaped, ore-dict) |
 |---|---|---|---|
-| 0 | `techguns.tile.oreDrill_0.name` = "Ore Drill Frame" | **Heavy frame.** Corners of every slice, the whole ring of the first and last slices. | ×8: `pbp`/`bpb`/`pbp`, p = [`plateIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), b = iron bars |
+| 0 | `techguns.tile.oreDrill_0.name` = "Ore Drill Frame" | **Heavy frame.** Corners of every slice, the whole ring of the first and last slices. | ×8: `pbp`/`bpb`/`pbp`, p = [`plateIron`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo), b = iron bars |
 | 1 | `techguns.tile.oreDrill_1.name` = "Ore Drill Scaffold" | **Light frame.** Ring edges of middle slices, and the fill of the last slice. | ×8: `bbb`/`bpb`/`bbb` |
-| 2 | `techguns.tile.oreDrill_2.name` = "Ore Drill Rod" | Rod, the centre line between the engines and the cluster | ×4: `ipi`/`ipi`/`ipi`, i = `ingotIron`, p = `plateIron` |
-| 3 | `techguns.tile.oreDrill_3.name` = "Ore Drill Engine" | Engine: centre line next to the controller and the inner fill of engine slices | ×4: `bbb`/`beb`/`bbb`, b = iron bars, e = Electric Engine ([06](../06-items/index.md)) |
+| 2 | `techguns.tile.oreDrill_2.name` = "Ore Drill Rod" | Rod, the center line between the engines and the cluster | ×4: `ipi`/`ipi`/`ipi`, i = `ingotIron`, p = `plateIron` |
+| 3 | `techguns.tile.oreDrill_3.name` = "Ore Drill Engine" | Engine: center line next to the controller and the inner fill of engine slices | ×4: `bbb`/`beb`/`bbb`, b = iron bars, e = Electric Engine ([06](../06-items/index.md)) |
 | 4 | `techguns.tile.oreDrill_4.name` = "Ore Drill Controller" | Controller / master | ×1: `pcp`/`cec`/`pcp`, p = `plateIron`, c = `circuitBasic`, e = Electric Engine |
 
 These lang keys are present but unused (stale): `techguns.tile.oreDrill.name` = "Ore Drill" and `techguns.tile.OreDrillBlock_0..3.name` = "Ore Drill Heavy Frame / Light Frame / Rod / Engine".
@@ -46,7 +46,7 @@ These lang keys are present but unused (stale): `techguns.tile.oreDrill.name` = 
 
 **Rod (meta 2):**
 
-1. Look for an ore cluster among the six neighbours, in the order up, down, −Z, +X, +Z, −X. The candidates are any block in [`TGBlocks.oreclusters`](../07-blocks/block-catalogue.md#registered-blocks), any meta. Only the first neighbour found is used.
+1. Look for an ore cluster among the six neighbors, in the order up, down, −Z, +X, +Z, −X. The candidates are any block in [`TGBlocks.oreclusters`](../07-blocks/block-catalog.md#registered-blocks), any meta. Only the first neighbor found is used.
 2. **If a cluster is adjacent:** flood-fill through connected cluster blocks of the same block and meta, 6-connectivity. If any block of that cluster already touches a rod (meta 2), placement fails. The client gets chat `techguns.msg.error.alreadyrod` = "Can't place here, this cluster already has a connected drill rod". Otherwise the rod is placed. The result is **one rod per cluster**.
 3. **If no cluster is adjacent:** the rod may be placed only next to another rod. Otherwise placement fails **silently**.
 
@@ -59,15 +59,15 @@ These lang keys are present but unused (stale): `techguns.tile.oreDrill.name` = 
 
 ### 1.2 Block textures and face usage
 
-The textures are catalogued by **[07-blocks](../07-blocks/index.md)**. The CTM variations are registered in `TGBlocks`; each meta maps to a texture base name.
+The textures are cataloged by **[07-blocks](../07-blocks/index.md)**. The CTM variations are registered in `TGBlocks`; each meta maps to a texture base name.
 
 | Meta (state) | Texture base | Files | Faces |
 |---|---|---|---|
-| 0 unformed | `drillFrame_outer` | [`textures/blocks/drillFrame_outer.png`](../07-blocks/textures.md#ore-drill-oredrill-08) (32²) | all six: rusty riveted steel plate with a recessed square centre (brown-red rust, grey) |
-| 1 unformed | `drillFrame` | [`textures/blocks/drillFrame.png`](../07-blocks/textures.md#ore-drill-oredrill-08) (32²) | all: grey steel X-brace on a transparent background (see-through) |
+| 0 unformed | `drillFrame_outer` | [`textures/blocks/drillFrame_outer.png`](../07-blocks/textures.md#ore-drill-oredrill-08) (32²) | all six: rusty riveted steel plate with a recessed square center (brown-red rust, gray) |
+| 1 unformed | `drillFrame` | [`textures/blocks/drillFrame.png`](../07-blocks/textures.md#ore-drill-oredrill-08) (32²) | all: gray steel X-brace on a transparent background (see-through) |
 | 2 unformed | `drillRod` (Chisel vertical-CTM) | [`textures/blocks/drillRod-ctmv.png`](../07-blocks/textures.md#ore-drill-oredrill-08) (64²), [`textures/blocks/drillRod-top.png`](../07-blocks/textures.md#ore-drill-oredrill-08) (32²) | sides: ribbed chrome pipe that connects vertically. Ends: the round flange with a cross hub. |
 | 3 unformed | `drillEngine` | [`textures/blocks/drillEngine.png`](../07-blocks/textures.md#ore-drill-oredrill-08) (32²) | all: dark machinery panel with a gear housing, pipes and one green LED |
-| 4 (always) | `drillEngineController` | [`textures/blocks/drillEngineController.png`](../07-blocks/textures.md#ore-drill-oredrill-08) (32²) | all: the same machinery frame with a riveted centre hatch and four coloured corner LEDs (red, green, yellow, blue) |
+| 4 (always) | `drillEngineController` | [`textures/blocks/drillEngineController.png`](../07-blocks/textures.md#ore-drill-oredrill-08) (32²) | all: the same machinery frame with a riveted center hatch and four colored corner LEDs (red, green, yellow, blue) |
 | 0 formed (meta + 8 = 8) | `drillFrame_outer_c` (CTM) | [`textures/blocks/drillFrame_outer_c.png`](../07-blocks/textures.md#ore-drill-oredrill-08), [`textures/blocks/drillFrame_outer_c-ctm.png`](../07-blocks/textures.md#ore-drill-oredrill-08) (64²) | connected rusty frame plates that merge into a continuous riveted border |
 | 1 formed (9) | `drillFrame_c` (CTM) | [`textures/blocks/drillFrame_c.png`](../07-blocks/textures.md#ore-drill-oredrill-08), [`textures/blocks/drillFrame_c-ctm.png`](../07-blocks/textures.md#ore-drill-oredrill-08) | connected X-brace scaffold |
 | 2 formed (10) | `invisible` | [`textures/blocks/invisible.png`](../07-blocks/textures.md#4-camo-nets-sandbags-tent-flag-air-marker-invisible) (16², fully transparent) | rods disappear; the TESR draws the drill instead |
@@ -76,7 +76,7 @@ The textures are catalogued by **[07-blocks](../07-blocks/index.md)**. The CTM v
 
 "Formed" means a slave tile with `hasMaster` true. `getIcon` and `getManager` then add 8 to the meta. The controller (meta 4) is never remapped.
 
-These files exist but nothing references them ([07](../07-blocks/index.md) catalogues them):
+These files exist but nothing references them ([07](../07-blocks/index.md) catalogs them):
 
 - [`textures/blocks/drillFrameCorner.png`](../07-blocks/textures.md#ore-drill-oredrill-08): green X-brace in a frame
 - [`textures/blocks/drillRodSide.png`](../07-blocks/textures.md#ore-drill-oredrill-08)
@@ -101,7 +101,7 @@ The drill is built along one of six axes from the controller C. Let **dir** be t
 |---|---|---|---|---|---|---|
 | axis | +Y | −Y | +X | −X | +Z | −Z |
 
-Number the positions along the axis p = 1, 2, … from C. The centre line holds
+Number the positions along the axis p = 1, 2, … from C. The center line holds
 
 - **E engines** (meta 3) at p = 1..E,
 - then **R rods** (meta 2) at p = E+1..E+R,
@@ -109,9 +109,9 @@ Number the positions along the axis p = 1, 2, … from C. The centre line holds
 
 Each position p ≥ 1 is a square **slice** perpendicular to the axis, of side 2r + 1, where **r** is the **radius**, 0 to 4.
 
-### Slice contents (r ≥ 1; the centre is always the centre-line block)
+### Slice contents (r ≥ 1; the center is always the center-line block)
 
-| Slice | Corners (4) | Ring edges (non-corner) | Interior (inside the ring, excluding centre) |
+| Slice | Corners (4) | Ring edges (non-corner) | Interior (inside the ring, excluding center) |
 |---|---|---|---|
 | p = 1 (first engine slice) | heavy frame (0) | heavy frame (0) | engines (3) |
 | p = 2..E (other engine slices) | heavy frame (0) | light frame (1) | engines (3) |
@@ -125,7 +125,7 @@ Example, r = 2 (5 × 5), first engine slice:
 ```
 0 0 0 0 0
 0 3 3 3 0
-0 3 3 3 0      centre = engine
+0 3 3 3 0      center = engine
 0 3 3 3 0
 0 0 0 0 0
 ```
@@ -158,8 +158,8 @@ A radius-0 drill is therefore just controller → one rod → cluster.
 
 When a player right-clicks the controller **without sneaking** and it is not complete, the formation check below runs on **both sides**. Chat messages are added on the client only. Tiles are linked on the server only.
 
-1. **Axis.** Exactly one of the controller's six neighbours may be a rod or engine. That neighbour gives `dir`. If there are none, or more than one, the result is `techguns.msg.error.oredrill.invalidmulti.dir` = "The main engine block must have exactly 1 neighboring engine or rod".
-2. **Centre line.** Walk along `dir`:
+1. **Axis.** Exactly one of the controller's six neighbors may be a rod or engine. That neighbor gives `dir`. If there are none, or more than one, the result is `techguns.msg.error.oredrill.invalidmulti.dir` = "The main engine block must have exactly 1 neighboring engine or rod".
+2. **Center line.** Walk along `dir`:
    - First, any number of engines.
    - Then one or more rods.
    - It must end on an ore cluster block (any registered cluster, any meta).
@@ -170,7 +170,7 @@ When a player right-clicks the controller **without sneaking** and it is not com
    - Check engine slices p = 2..E: heavy corners, light edges, engine interior.
    - Check rod slices p = E+1..E+R−1: heavy corners, light edges, air interior.
    - Check the last slice p = E+R: heavy corners and edges, light interior.
-   - The first mismatch gives `techguns.msg.error.oredrill.invalid3` = "Invalid block in slice around  " followed by `(x,y,z) ` of the slice centre.
+   - The first mismatch gives `techguns.msg.error.oredrill.invalid3` = "Invalid block in slice around  " followed by `(x,y,z) ` of the slice center.
 5. **Success.**
    - Server: link the tiles (below).
    - Client chat: `techguns.msg.oredrill.formed1` + r + " " + `techguns.msg.oredrill.formed2` + E + " " + `techguns.msg.oredrill.formed3` + R. In English: "Ore driller multiblock formed with radius: 2 , extra engine size: 2  and drill size: 3".
@@ -181,7 +181,7 @@ For every slice p = 1..E+R:
 
 1. Choose which blocks to link:
    - In **solid** slices (engine slices and the last slice), every block is linked.
-   - In **hollow** slices (middle rod slices), only the ring and the centre rod are linked.
+   - In **hollow** slices (middle rod slices), only the ring and the center rod are linked.
 2. For each chosen slave:
    - Set its master position and set `direction = dir`.
    - In the last slice, set `bottomrow = true`.
@@ -213,13 +213,13 @@ If an operation finds **no cluster** at the target position (§5), the master se
 
 ## 4. Drill heads (items owned by 06)
 
-The heads are [`TGItems.sharedItem`](../06-items/item-catalogue.md) metas with slot types `DRILL_SMALL`, `DRILL_MEDIUM` and `DRILL_LARGE`. The head must match the drill's size class. Each head material gives a **head mining level**; the GUI renderer also uses it as `drillType` to pick a texture.
+The heads are [`TGItems.sharedItem`](../06-items/item-catalog.md) metas with slot types `DRILL_SMALL`, `DRILL_MEDIUM` and `DRILL_LARGE`. The head must match the drill's size class. Each head material gives a **head mining level**; the GUI renderer also uses it as `drillType` to pick a texture.
 
 | Size class (radius) | Steel (level 1, drillType 1) | Obsidian Steel (level 2, drillType 2) | Carbon (level 3, drillType 3) |
 |---|---|---|---|
-| Small (r = 0) | [`oreDrillSmallSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) "Small Ore Drill Head (Steel)" | [`oreDrillSmallObsidianSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | [`oreDrillSmallCarbon`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) |
-| Medium (r = 1–2) | [`oreDrillMediumSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | [`oreDrillMediumObsidianSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | [`oreDrillMediumCarbon`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) |
-| Large (r = 3–4) | [`oreDrillLargeSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | [`oreDrillLargeObsidianSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | [`oreDrillLargeCarbon`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) |
+| Small (r = 0) | [`oreDrillSmallSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) "Small Ore Drill Head (Steel)" | [`oreDrillSmallObsidianSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | [`oreDrillSmallCarbon`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) |
+| Medium (r = 1–2) | [`oreDrillMediumSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | [`oreDrillMediumObsidianSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | [`oreDrillMediumCarbon`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) |
+| Large (r = 3–4) | [`oreDrillLargeSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | [`oreDrillLargeObsidianSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | [`oreDrillLargeCarbon`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) |
 
 A head of the wrong size, or any other item, counts as **no drill** (level −1). Heads never wear out.
 
@@ -273,7 +273,7 @@ Nothing happens unless `complete`, `hasDrill` and the redstone condition all hol
 1. **Target position** = controller + (E + R + 1) × dir. If it is not an ore cluster, `complete = false` and the method stops.
 2. **Head level** L_h from slot 0, using the size-class table. If L_h ≤ 0: `hasDrill = false`, `drillType = 0`, sync, stop.
 3. Set `hasDrill = true` and `drillType`.
-4. **Effective mining level** E_m = L_h + r − L_c, where L_c is the cluster meta's mining level. L_c is defined per cluster type in [07](../07-blocks/index.md)/11. In the default set it is 1 for iron, coal, copper and tin; 2 for gold, redstone, lapis, lead, osmium, silver, nickel, aluminium, platinum, nether quartz and glowstone; 3 for diamond, emerald, uranium, titanium, certus quartz and oil.
+4. **Effective mining level** E_m = L_h + r − L_c, where L_c is the cluster meta's mining level. L_c is defined per cluster type in [07](../07-blocks/index.md)/11. In the default set it is 1 for iron, coal, copper and tin; 2 for gold, redstone, lapis, lead, osmium, silver, nickel, aluminum, platinum, nether quartz and glowstone; 3 for diamond, emerald, uranium, titanium, certus quartz and oil.
 5. **If E_m ≥ 0:**
    - Cluster size S_c = flood-fill count of connected blocks with the same cluster block and meta (6-connectivity).
    - Effective size S = min(S_c, E + R). Longer drills can exploit bigger clusters.
@@ -303,17 +303,17 @@ Medium drill, r = 2, E = 2, R = 3, carbon medium head (L_h = 3), on a gold clust
 
 **Per-cluster multipliers** (config, category "Ore Drills"; defaults):
 
-| [`oreClusterMultipliersAmount`](../01-core/config.md#category-ore-drills) / [`oreClusterMultipliersPower`](../01-core/config.md#category-ore-drills) (cluster block [`oreCluster`](../07-blocks/block-catalogue.md#registered-blocks), metas 0–15) | iron | gold | redstone | coal | lapis | diamond | emerald | copper | tin | lead | osmium | silver | nickel | aluminium | platinum | uranium |
+| [`oreClusterMultipliersAmount`](../01-core/config.md#category-ore-drills) / [`oreClusterMultipliersPower`](../01-core/config.md#category-ore-drills) (cluster block [`oreCluster`](../07-blocks/block-catalog.md#registered-blocks), metas 0–15) | iron | gold | redstone | coal | lapis | diamond | emerald | copper | tin | lead | osmium | silver | nickel | aluminum | platinum | uranium |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | amount | 2.0 | 1.0 | 1.0 | 1.2 | 1.0 | 0.25 | 0.25 | 2.0 | 2.0 | 1.0 | 1.0 | 1.0 | 1.0 | 1.0 | 0.35 | 0.25 |
 | power | 0.15 | 0.4 | 0.3 | 0.25 | 0.3 | 1.0 | 1.0 | 0.1 | 0.1 | 0.2 | 0.3 | 0.35 | 0.3 | 0.2 | 1.0 | 1.0 |
 
-| `…Amount2` / `…Power2` (cluster block [`oreCluster2`](../07-blocks/block-catalogue.md#registered-blocks)) | nether quartz | titanium | certus quartz | oil | glowstone | metas 5–15 |
+| `…Amount2` / `…Power2` (cluster block [`oreCluster2`](../07-blocks/block-catalog.md#registered-blocks)) | nether quartz | titanium | certus quartz | oil | glowstone | metas 5–15 |
 |---|---|---|---|---|---|---|
 | amount | 1.5 | 0.5 | 1.5 | 1.0 | 1.5 | 1.0 |
 | power | 0.35 | 0.8 | 0.4 | 0.5 | 0.35 | 1.0 |
 
-The optional MineTweaker clusters [`oreClusterCustom`](../07-blocks/block-catalogue.md#registered-blocks) and [`oreClusterCustom2`](../07-blocks/block-catalogue.md#registered-blocks) use 1.0 for everything. The full cluster catalogue (which ore each meta yields, colours, rarity, depth) belongs to [07](../07-blocks/index.md)/11.
+The optional MineTweaker clusters [`oreClusterCustom`](../07-blocks/block-catalog.md#registered-blocks) and [`oreClusterCustom2`](../07-blocks/block-catalog.md#registered-blocks) use 1.0 for everything. The full cluster catalog (which ore each meta yields, colors, rarity, depth) belongs to [07](../07-blocks/index.md)/11.
 
 Other config keys used here:
 
@@ -374,7 +374,7 @@ The GUI extends [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-hand
 - a power bar at (8,17) 4 × 48, with tooltip "Power: n/max RF";
 - redstone and security side buttons at x = −22, y = 10 and 40.
 
-Its background is [`textures/gui/oreDrill_GUI.png`](../08-machines-production/gui-textures.md#9-texturesguioredrill_guipng-owned-by-09), 256 × 256, catalogued by 08.
+Its background is [`textures/gui/oreDrill_GUI.png`](../08-machines-production/gui-textures.md#9-texturesguioredrill_guipng-owned-by-09), 256 × 256, cataloged by 08.
 
 ### Container slots (`OreDrillContainer`)
 
@@ -416,8 +416,8 @@ Ids 0–8 travel as window-property shorts:
 
 | Texture region (px) | Depicts | Drawn |
 |---|---|---|
-| (0,0) 176×166 | Grey panel. Left: the power-bar slot (≈(7,16)–(12,66)); next to it the input-tank window (≈(15,16)–(26,67)) with a ruler scale. Head slot with a downward drill-bit silhouette. A pipe connecting down to a small flame window and the fuel slot (flame silhouettes). A large hollow downward triangle (drill progress) at ≈(72,16)–(98,54). 3×3 output grid. Output-tank window at the right edge (≈(157,16)–(168,67)). Player inventory. | always at (0,0) |
-| (177,1) 25×(n+1) | Filled drill cone: light-grey stepped triangle, white highlight on the right edge | while working, at (73,17); n = progress scaled to 36, so it fills top-down |
+| (0,0) 176×166 | Gray panel. Left: the power-bar slot (≈(7,16)–(12,66)); next to it the input-tank window (≈(15,16)–(26,67)) with a ruler scale. Head slot with a downward drill-bit silhouette. A pipe connecting down to a small flame window and the fuel slot (flame silhouettes). A large hollow downward triangle (drill progress) at ≈(72,16)–(98,54). 3×3 output grid. Output-tank window at the right edge (≈(157,16)–(168,67)). Player inventory. | always at (0,0) |
+| (177,1) 25×(n+1) | Filled drill cone: light-gray stepped triangle, white highlight on the right edge | while working, at (73,17); n = progress scaled to 36, so it fills top-down |
 | (188, 39+s) 6×(12−s) | Fuel flame gauge: vertical gradient from dark red (top) through orange to yellow (bottom) | when bufferMax > 0, at (35, 36+s), where s = 12 − buffer scaled to 12; it fills bottom-up |
 | (176,40) 11×52 and 12×52 | Tank gauge overlay: transparent window, white rim, dark tick marks (long tick every 5) and a red max line at the top | over the input tank at (15,17) and the output tank at (157,17) |
 
@@ -429,9 +429,9 @@ The tank fluids are drawn first, using the fluid's still icon from the block atl
 
 ### Text and tooltips
 
-- The title is centred at y = 6 (`techguns.container.oredrill` = "Ore Drill").
+- The title is centered at y = 6 (`techguns.container.oredrill` = "Ore Drill").
 - "Inventory" is drawn at (8, 72).
-- When the multiblock is **not complete**, two red (0xFFFF2020) lines are centred around x = 88 − 16:
+- When the multiblock is **not complete**, two red (0xFFFF2020) lines are centered around x = 88 − 16:
   - y = 44: `techguns.container.oredrill.broken` = "Multiblock broken"
   - y = 52: `techguns.container.oredrill.broken2` = "or invalid Drill"
 
@@ -454,7 +454,7 @@ The work loop plays only on the **client**, during each tick in which progress a
 | 1–2 | `techguns:machines.oredrillMediumWork` | 2.25 | [`sounds/machines/oredrill_m_work_a.ogg`](../08-machines-production/sounds.md#1-events-and-files) … `_d` |
 | 3–4 | `techguns:machines.oredrillLargeWork` | 3.0 | [`sounds/machines/oredrill_l_work_a.ogg`](../08-machines-production/sounds.md#1-events-and-files) … `_d` |
 
-The files themselves are catalogued in [08](../08-machines-production/index.md)'s machine sound catalogue.
+The files themselves are cataloged in [08](../08-machines-production/index.md)'s machine sound catalog.
 
 ---
 
@@ -464,9 +464,9 @@ The renderer is bound to the master. It draws nothing unless the drill is comple
 
 **Culling box.** When complete, the render bounding box spans from the controller along `dir` for E + R blocks, with half-width 2 when r = 2 and 1 otherwise ([MUTL-15](index.md#suspected-bugs)).
 
-**Placement.** The column is drawn on the drill axis. It starts at the first rod block (E + 1 blocks from the controller) and runs R blocks towards the cluster:
+**Placement.** The column is drawn on the drill axis. It starts at the first rod block (E + 1 blocks from the controller) and runs R blocks toward the cluster:
 
-1. The renderer works in a local frame whose +Y is the drill direction. For −Y it rotates 180° about Z. For ±X it rotates −90°·sign about Z. For ±Z it rotates 90°·sign about X. Small offsets (±0.75, −1.5) centre the column.
+1. The renderer works in a local frame whose +Y is the drill direction. For −Y it rotates 180° about Z. For ±X it rotates −90°·sign about Z. For ±Z it rotates 90°·sign about X. Small offsets (±0.75, −1.5) center the column.
 2. It then translates 2·(E + 1) along local Y. Each segment takes the lighting of the world block it passes through ([MUTL-16](index.md#suspected-bugs)).
 
 **Spin.** When `hasDrill`, the redstone condition and `haspower` all hold, the whole column rotates about its axis by angle = (worldTime mod 360) × 10° plus a partial-tick term. That is 10° per tick, one turn per 36 ticks.
@@ -504,13 +504,13 @@ The renderer is bound to the master. It draws nothing unless the drill is comple
 
 | File | Depicts / palette |
 |---|---|
-| `textures/blocks/drillhead.png` | Vertical metallic streaks: a dark charcoal band down the centre fading to light grey at the left and right edges, noisy brushed-steel grain. Wrapped around each box it reads as a polished steel cylinder. |
-| `textures/blocks/drillheadObsidian.png` | The same shading in desaturated violet / blue-grey (obsidian steel) |
-| `textures/blocks/drillheadCarbon.png` | The same shading in near-black to dark grey (carbon) |
+| `textures/blocks/drillhead.png` | Vertical metallic streaks: a dark charcoal band down the center fading to light gray at the left and right edges, noisy brushed-steel grain. Wrapped around each box it reads as a polished steel cylinder. |
+| `textures/blocks/drillheadObsidian.png` | The same shading in desaturated violet / blue-gray (obsidian steel) |
+| `textures/blocks/drillheadCarbon.png` | The same shading in near-black to dark gray (carbon) |
 
 ---
 
-## 10. Behaviour summary for implementers
+## 10. Behavior summary for implementers
 
 - The cluster is never depleted. Output is unlimited, with a rate set by cluster size (capped by drill length), mining-level surplus and config multipliers.
 - The drill must be **started by right-clicking the controller** after a head is inserted, or after `hasDrill` was cleared by removing the head.

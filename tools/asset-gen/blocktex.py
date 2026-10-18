@@ -45,7 +45,7 @@ def mix(a: Sequence[int], b: Sequence[int], t: float) -> tuple:
 
 
 def ramp(base: Sequence[int]) -> list:
-    """Five GT-style tones from outline to highlight, built around a base colour."""
+    """Five GT-style tones from outline to highlight, built around a base color."""
     return [shade(base, 0.38), shade(base, 0.68), tuple(base[:3]), shade(base, 1.18), shade(base, 1.4)]
 
 
@@ -181,7 +181,7 @@ def tile_noise(n: int, rng: np.random.Generator, cells: int = 4) -> np.ndarray:
 
 
 def quantize_ramp(field: np.ndarray, cols: Sequence[Color]) -> np.ndarray:
-    """Map a 0..1 field to the nearest of len(cols) flat colours -> (h,w,3) uint8."""
+    """Map a 0..1 field to the nearest of len(cols) flat colors -> (h,w,3) uint8."""
     idx = np.clip((field * len(cols)).astype(int), 0, len(cols) - 1)
     pal = np.array([c[:3] for c in cols], np.uint8)
     return pal[idx]

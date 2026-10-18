@@ -134,7 +134,7 @@ Textures are under `textures/fx/` and owned by [04-projectiles-fx](../04-project
 | BioTrail | vanilla slime-ball breaking particle | — | — | — | — | — |
 | LaserImpact | vanilla redstone breaking particle | — | — | — | — | — |
 | RailgunTrail | trail particle using the diamond icon | — | — | — | — | params 0.1, 0.5, 1.0, 0.5 |
-| LaserBeam | [`EntityLaserBeamFX`](../04-projectiles-fx/fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle); the "motion" arguments are the beam's end point | — | — | — | — | — |
+| LaserBeam | [`EntityLaserBeamFX`](../04-projectiles-fx/fx-catalog.md#legacy-named-particles-clientproxyspawnparticle); the "motion" arguments are the beam's end point | — | — | — | — | — |
 | Fireball | fireball_4x4_add.png | 1.5 | 4×4:16 | ADD | default | gravity 0.025, random rotation |
 | FireballImpact | fireball_4x4_add.png | 3.5 | 4×4:16 | ADD | 20 | gravity 0.025, random rotation, scale 3.5→6 |
 | Explosion | Explosion.png | 5 | 5×5:20 | ALPHA | 20 | gravity 0.05, scale 5→10, random rotation |
@@ -151,9 +151,9 @@ Textures are under `textures/fx/` and owned by [04-projectiles-fx](../04-project
 | MuzzleFlashExp | muzzleflash4x4.png | 1.5 | 4×4:10 | ADD | 4 | — |
 | MuzzleFlashBlue | muzzleflash_blue.png | 1.5 | 4×4:8 | ADD | 4 | — |
 | MuzzleFlashLaser | laserflare02.png | 1.5 | 4×4:7 | ADD | 4 | — |
-| MuzzleFlashAlienBlue | alienflare.png | 1.5 | 4×4:14 | ADD | 4 | colour fixed at RGBA (40, 255, 140, 255), FAST mode |
+| MuzzleFlashAlienBlue | alienflare.png | 1.5 | 4×4:14 | ADD | 4 | color fixed at RGBA (40, 255, 140, 255), FAST mode |
 | Blood | blood01.png | 5 | 1×1:1 | ALPHA | 20 | gravity 0.07, scale 5→10, alpha fades 255→0 linearly from 50 % of life, random rotation, randomness 0.5, damping 0.98 |
-| impact | impact.png | 2.5 | 2×2:4 | ADD | 5 | scale 2.5→7.5, colour (255, 215, 155) with alpha fading 128→0 linearly |
+| impact | impact.png | 2.5 | 2×2:4 | ADD | 5 | scale 2.5→7.5, color (255, 215, 155) with alpha fading 128→0 linearly |
 | DustClouds | dustclouds.png | 7.5 | 4×4:16 | ALPHA_SHADED | 40 | scale 5→10, random rotation, randomness 0.5, damping 0.98, alpha 255→0 sinusoidal |
 | TeslaFlare | teslaflare01.png | 5.0 | 4×4:14 | ADD | 15 | scale 5→10, alpha fades 255→0 linearly from 75 % of life |
 
@@ -172,11 +172,11 @@ Unknown names spawn nothing.
 
 ### `DeathEffect.createDeathEffect(entity, type, mx, my, mz)`
 
-The origin is the entity's centre: (posX, posY + height/2, posZ).
+The origin is the entity's center: (posX, posY + height/2, posZ).
 
 - **GORE:**
   1. Look up the entity's `GoreData` by exact class. Unknown classes fall back to the generic gore entry.
-  2. Spawn one [`EntityBloodEffect`](../04-projectiles-fx/death-effects.md#blood-burst-entitybloodeffect) particle ([04](../04-projectiles-fx/index.md)), sized by the entity's width and height and tinted with the gore data's blood colour.
+  2. Spawn one [`EntityBloodEffect`](../04-projectiles-fx/death-effects.md#blood-burst-entitybloodeffect) particle ([04](../04-projectiles-fx/index.md)), sized by the entity's width and height and tinted with the gore data's blood color.
   3. Spawn `numGibs` [`FlyingGibs`](../04-projectiles-fx/projectiles.md#319-flyinggibs) entities ([04](../04-projectiles-fx/index.md)). Each gets a velocity of (mx·0.35 + rx, my·0.15 + ry, mz·0.35 + rz), where:
      - rx and rz are uniform in ±0.175;
      - ry is uniform in [0, 0.35) when the entity is on the ground, otherwise ±0.175.
@@ -195,7 +195,7 @@ The FX names refer to FXList entries ([04](../04-projectiles-fx/index.md)).
 - gib count;
 - texture;
 - scale;
-- blood colour (R, G, B);
+- blood color (R, G, B);
 - `showBlood` (default true);
 - per-gib random scale range (default 1–1).
 
@@ -262,6 +262,6 @@ All timing figures in this table are code constants; nothing here was timed at r
 
 ### Death-effect and gore parameters not stated above
 
-- The origin of the blood and gib effect is the entity centre. The gib velocity formula uses 0.35 for horizontal and 0.15 for vertical motion inheritance, with random spread of plus or minus 0.175; this is unchanged from the section above.
+- The origin of the blood and gib effect is the entity center. The gib velocity formula uses 0.35 for horizontal and 0.15 for vertical motion inheritance, with random spread of plus or minus 0.175; this is unchanged from the section above.
 - `GoreData` default values: `showBlood` true, gib scale random range 1 to 1. The generic entry overrides the range to 0.5 to 0.8, as in the gore table.
 - The death sound is played after the effect is created, in the same handler call, so sound and gibs start on the same client tick.

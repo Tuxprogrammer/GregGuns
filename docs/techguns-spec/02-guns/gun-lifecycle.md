@@ -1,14 +1,14 @@
 # 02-guns: gun lifecycle (input → fire → projectile → reload)
 
-This file covers the general behaviour shared by every `GenericGun` (`java/techguns/items/guns/GenericGun.java`). Class-specific overrides are in [per-gun-behaviour.md](per-gun-behaviour.md). Packet wire formats, the extended player properties object and the tick/event handlers are owned by **[01-core](../01-core/index.md)**. Projectile movement, impact and effects are owned by **[04-projectiles-fx](../04-projectiles-fx/index.md)**. Rendering, animation and sound files are owned by **[03-gun-visuals-audio](../03-gun-visuals-audio/index.md)**.
+This file covers the general behavior shared by every `GenericGun` (`java/techguns/items/guns/GenericGun.java`). Class-specific overrides are in [per-gun-behavior.md](per-gun-behavior.md). Packet wire formats, the extended player properties object and the tick/event handlers are owned by **[01-core](../01-core/index.md)**. Projectile movement, impact and effects are owned by **[04-projectiles-fx](../04-projectiles-fx/index.md)**. Rendering, animation and sound files are owned by **[03-gun-visuals-audio](../03-gun-visuals-audio/index.md)**.
 
 ## 1. Item basics
 
-* `GenericGun` extends [`GenericItem`](../06-items/special-items.md#base-classes) (which prefixes unlocalized names with `techguns.`, so the lang key is `techguns.item.<name>.name`) and implements [`ICamoChangeable`](../05-armor/armor-catalogue.md#1-class-hierarchy).
+* `GenericGun` extends [`GenericItem`](../06-items/special-items.md#base-classes) (which prefixes unlocalized names with `techguns.`, so the lang key is `techguns.item.<name>.name`) and implements [`ICamoChangeable`](../05-armor/armor-catalog.md#1-class-hierarchy).
 * Max stack size 1. `setNoRepair()` disables anvil and crafting repair. Not enchantable (enchantability 0). Creative tab [`Techguns.tabTechgun`](../01-core/lifecycle-and-registration.md#lifecycle-overview).
 * `maxDamage = clipsize`, but the damage value is **not** wear. It only carries "how many rounds are missing" from a crafting recipe into NBT (see §2). Guns never wear out.
 * The durability bar is always shown. Its fill is `1 − ammo/clipsize` (an empty gun shows an empty bar). If the stack has no NBT, it falls back to `damage/maxDamage`.
-* Every constructed gun adds itself to a static list (`GenericGun.getGuns()`). The weapon-stats config iterates this list (see catalogue → config).
+* Every constructed gun adds itself to a static list (`GenericGun.getGuns()`). The weapon-stats config iterates this list (see catalog → config).
 
 ## 2. NBT and ammo storage
 
@@ -17,7 +17,7 @@ This file covers the general behaviour shared by every `GenericGun` (`java/techg
 | `ammo` | short | Rounds currently loaded. |
 | `camo` | byte | Selected camo index (0 = default texture). |
 
-* **Initialisation (`onCreated`)**: only runs if the stack has no NBT at all. It creates the tag with `camo=0` and `ammo = clipsize` when the item damage is 0, otherwise `clipsize − damage`. It then resets the item damage to 0. It is called by vanilla when a gun is taken out of a crafting grid, and lazily by `getCurrentAmmo` whenever a tag-less stack is read. Recipes that produce `new ItemStack(gun, 1, gun.getMaxDamage())` therefore yield an **empty** gun; recipes with damage 0 yield a **full** gun.
+* **Initialization (`onCreated`)**: only runs if the stack has no NBT at all. It creates the tag with `camo=0` and `ammo = clipsize` when the item damage is 0, otherwise `clipsize − damage`. It then resets the item damage to 0. It is called by vanilla when a gun is taken out of a crafting grid, and lazily by `getCurrentAmmo` whenever a tag-less stack is read. Recipes that produce `new ItemStack(gun, 1, gun.getMaxDamage())` therefore yield an **empty** gun; recipes with damage 0 yield a **full** gun.
 * Creative-menu stacks (`getSubItems`) are created with `camo=0` and `ammo=clipsize`.
 * `useAmmo(n)` subtracts n, clamped at 0. `reloadAmmo(n)` adds n with **no** upper clamp. `reloadAmmo()` with no argument adds `clipsize`, which is only called when the gun is empty. `isFullyLoaded` is `ammo == clipsize`.
 * **Camo** (`ICamoChangeable`, used by the camo bench in [09](../09-machines-utility/index.md)): `getCamoCount` is the number of texture variants. `switchCamo(back)` cycles the index forward or backward, wrapping in `[0, camoCount)`, and returns 0 when only one variant exists. If the stack had no tag, it creates one containing only `camo` (see bug [GUN-01](index.md#suspected-bugs)). `getCurrentCamoName` returns the lang string `techguns.item.<name>.camoname.<id>` for id > 0, or `techguns.item.defaultcamo` ("Default Camo").
@@ -35,7 +35,7 @@ These fields live in [`TechgunsExtendedPlayerProperties`](../01-core/player-stat
 
 ## 4. Input (client)
 
-1. **Left mouse button** ([`TechgunsEventhandler.onMouseEvent`](../01-core/events.md#techgunseventhandler-forge-bus), client): while holding a gun whose `shootWithLeftClick` is true, the LMB event is cancelled and [`ClientProxy.keyFirePressed`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) mirrors the button state. For tool guns (`shootWithLeftClick=false`), LMB is left to vanilla (mining and melee), but an LMB press is cancelled while the client reload timer is running.
+1. **Left mouse button** ([`TechgunsEventhandler.onMouseEvent`](../01-core/events.md#techgunseventhandler-forge-bus), client): while holding a gun whose `shootWithLeftClick` is true, the LMB event is canceled and [`ClientProxy.keyFirePressed`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) mirrors the button state. For tool guns (`shootWithLeftClick=false`), LMB is left to vanilla (mining and melee), but an LMB press is canceled while the client reload timer is running.
 2. **Every client player tick** (START phase, own player only, and only while the game window has focus): if the held item is a left-click gun and `keyFirePressed` is set:
    * if `fireDelay ≤ 0`: send `PacketShootGun(isZooming)` to the server, then run `shootGunLeftClick` locally (client-side prediction);
    * then, if the gun is semi-auto, clear `keyFirePressed`. This happens **whether or not** a shot was fired, so a click during cooldown is swallowed.
@@ -66,7 +66,7 @@ if ammo > 0:
         fireDelay = minFiretime
         if not creative: use 1 round (2 if doubleShot)
         if akimbo, creative and not doubleShot: flip parity (use 1 if even, add 1 if odd) so hands still alternate
-        SERVER: accuracyBonus = 1 − armour GUN_ACCURACY bonus (05-armor)
+        SERVER: accuracyBonus = 1 − armor GUN_ACCURACY bonus (05-armor)
                 if isZooming: accuracyBonus *= zoombonus
                 shootGun(world, player, stack, accuracyBonus, damageBonus = 1.0, attackType)
         CLIENT: start local recoil animation (recoiltime → ms), unless checkRecoil and still recoiling
@@ -99,7 +99,7 @@ So the Flamethrower, Chainsaw and Nuclear Death Ray play their "start" sound on 
 It creates a [`GenericProjectile`](../04-projectiles-fx/projectiles.md#2-genericprojectile-the-base-for-almost-everything) ([04](../04-projectiles-fx/index.md)) with `damage × damageBonus`, `speed`, `ticksToLive`, the given spread, `damageDropStart`, `damageDropEnd`, `damageMin × damageBonus`, `penetration`, `blockDamage = getDoBlockDamage(shooter)` and `leftGun`. It calls `setSilenced()` if silenced, and shifts forward by the offset if one was given.
 
 * `getDoBlockDamage(shooter)` is true only if the shooter is a player whose safe mode is **off**. NPCs never do block damage through this path.
-* How the projectile applies spread ([04](../04-projectiles-fx/index.md), summarised): the start orientation is the shooter's head yaw and pitch, each plus an independent uniform random offset in ±`spread × 40`°. The spawn point is at eye height, 0.1 below, and 0.16 blocks to the right (to the left for `leftGun`). The velocity is the normalised look vector × `speed`. Damage drop-off is measured from the projectile's first-tick position.
+* How the projectile applies spread ([04](../04-projectiles-fx/index.md), summarized): the start orientation is the shooter's head yaw and pitch, each plus an independent uniform random offset in ±`spread × 40`°. The spawn point is at eye height, 0.1 below, and 0.16 blocks to the right (to the left for `leftGun`). The velocity is the normalized look vector × `speed`. Damage drop-off is measured from the projectile's first-tick position.
 
 ## 6. Damage bonus and NPC firing (`fireWeaponFromNPC(shooter, dmgScale, accScale)`)
 
@@ -118,12 +118,12 @@ Used by [`GenericNPC.attackEntityWithRangedAttack`](../10-entities-npcs/per-mob.
 
 * Server only: calls `shootGun(world, shooter, null stack, accuracyBonus = zoombonus × accScale × acc, damageBonus = dmgScale × dmg, attackType 0)`.
 * `GenericNPC` passes `dmgScale = 0.5` and `accScale` set to the same difficulty acc factor (1.3/1.15/1.0, 1.0 on Peaceful). Turrets pass 1.0/1.0. Effective NPC damage is therefore 0.25 / 0.30 / 0.375 of the listed damage on Easy/Normal/Hard. Effective NPC spread is `accuracy × zoombonus × acc²` ([GUN-06](index.md#suspected-bugs), [GUN-07](index.md#suspected-bugs)).
-* NPCs never use ammo, never reload and never apply zoom or armour accuracy bonuses (other than the zoombonus above). Later, when the projectile hits, [`DamageSystem.getDamageFactor`](index.md#coverage) applies a further factor (see damage-system.md).
+* NPCs never use ammo, never reload and never apply zoom or armor accuracy bonuses (other than the zoombonus above). Later, when the projectile hits, [`DamageSystem.getDamageFactor`](index.md#coverage) applies a further factor (see damage-system.md).
 * Guns that ignore `damageBonus`: Biogun ([GUN-03](index.md#suspected-bugs)), Grenade Launcher ([GUN-04](index.md#suspected-bugs)), Power Hammer (fires a plain bullet for NPCs, [GUN-08](index.md#suspected-bugs)).
 
 ### AI stats → `EntityAIRangedAttack` (implemented in 10; parameters defined here)
 
-`getAIAttack(mob)` builds the AI with move speed 1.0, `attackTimeVariance = attackTime / 3`, `maxRangedAttackTime = attackTime`, `attackRange = range` (blocks; compared squared), `maxBurstCount = burstCount` and `shotDelay = burstDelay`. In behaviour terms:
+`getAIAttack(mob)` builds the AI with move speed 1.0, `attackTimeVariance = attackTime / 3`, `maxRangedAttackTime = attackTime`, `attackRange = range` (blocks; compared squared), `maxBurstCount = burstCount` and `shotDelay = burstDelay`. In behavior terms:
 
 * The mob paths toward the target unless the target is within range and has been seen for at least 20 ticks. It always looks at the target.
 * The attack timer counts down every tick. At 0 it fires only if the target is within range and visible. With `f = distance / range` (clamped to 0.1..1 for the value passed to the shot), after each shot:
@@ -164,7 +164,7 @@ This only does something if `fireDelay ≤ 0` and the gun isn't full.
 
 ### Charge guns
 
-Charge guns ([`GenericGunCharge`](per-gun-behaviour.md#genericguncharge-genericgunchargejava)) have their own reload path inside `onItemRightClick`. See per-gun-behaviour.
+Charge guns ([`GenericGunCharge`](per-gun-behavior.md#genericguncharge-genericgunchargejava)) have their own reload path inside `onItemRightClick`. See per-gun-behavior.
 
 ## 8. Akimbo
 
@@ -178,10 +178,10 @@ Charge guns ([`GenericGunCharge`](per-gun-behaviour.md#genericguncharge-genericg
 
 ## 9. Tool guns (shootWithLeftClick = false): shared logic in GenericGun
 
-These hooks are shared logic; the per-gun specifics are in per-gun-behaviour.
+These hooks are shared logic; the per-gun specifics are in per-gun-behavior.
 
 * `onEntitySwing`: returns true (cancels the vanilla swing) when ammo ≥ `miningAmmoConsumption` (1), otherwise false. The Chainsaw and Power Hammer override it.
-* `onLeftClickEntity`: a reimplementation of the vanilla player melee attack with a custom [`TGDamageSource`](damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource) from `getMeleeDamageSource` (default: name `player`, PHYSICAL, gore death). It keeps the vanilla behaviour: attack-damage attribute, enchantment bonus, ×1.5 critical while falling, sprint knockback, fire aspect, crit and magic-crit particles, the Overkill achievement at ≥ 18 damage, `hitEntity`, damage stat and 0.3 exhaustion. After the attack attempt it uses `meleeHitAmmoConsumption` (1) round if available. On the client it also starts the recoil animation (`recoiltime`). It always returns true, which cancels the vanilla attack.
+* `onLeftClickEntity`: a reimplementation of the vanilla player melee attack with a custom [`TGDamageSource`](damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource) from `getMeleeDamageSource` (default: name `player`, PHYSICAL, gore death). It keeps the vanilla behavior: attack-damage attribute, enchantment bonus, ×1.5 critical while falling, sprint knockback, fire aspect, crit and magic-crit particles, the Overkill achievement at ≥ 18 damage, `hitEntity`, damage stat and 0.3 exhaustion. After the attack attempt it uses `meleeHitAmmoConsumption` (1) round if available. On the client it also starts the recoil animation (`recoiltime`). It always returns true, which cancels the vanilla attack.
 * `onBlockStartBreak` returns false, so breaking is allowed.
 * `getDigSpeed(block, meta)`: returns 1 if ammo < 1 or the gun has no tool classes. Otherwise it returns `digSpeed` if the block's harvest tool is null or is one of the gun's tool classes, and 1 for any other tool class.
 * `getHarvestLevel(toolClass)`: the stored level for that class, the `default` entry when the class is null, and 0 otherwise.
@@ -224,7 +224,7 @@ Lang keys and their English strings:
 | `techguns.TGDamageType.RADIATION` | Radiation |
 | `techguns.TGDamageType.UNRESISTABLE` | (missing from en_US.lang, [GUN-43](index.md#suspected-bugs)) |
 
-Lines built in code (`§x` = chat colour). Without SHIFT held:
+Lines built in code (`§x` = chat color). Without SHIFT held:
 
 1. `Ammo: ` + (`<ammoCount>x ` if ammoCount > 1) + `§f` + localized ammo item name.
 2. `Damage` + (`(x<bulletcount+1>)` if the gun is a shotgun or burst gun) + `: <damage>-<damageMin>` (always prints both values).
@@ -233,7 +233,7 @@ Lines built in code (`§x` = chat colour). Without SHIFT held:
 With either SHIFT key held:
 
 1. The Ammo line, as above.
-2. `DamageType: ` + the coloured type name. Colours: Physical dark-gray, Projectile gray, Fire red, Explosion dark-red, Energy dark-aqua, Poison dark-green, Unresistable black, Ice aqua, Lightning yellow, Radiation green.
+2. `DamageType: ` + the colored type name. Colors: Physical dark-gray, Projectile gray, Fire red, Explosion dark-red, Energy dark-aqua, Poison dark-green, Unresistable black, Ice aqua, Lightning yellow, Radiation green.
 3. `Damage[(xN)]: <damage>` + (`-<damageMin>` only if min < max).
 4. `Range: <dropStart>,<dropEnd>,<TTL>` (raw numbers; the third value is in ticks).
 5. `Spread: <accuracy>`.
@@ -243,13 +243,13 @@ With either SHIFT key held:
 9. `Zoom:(toggle) Mult:<zoomMult>` or `Zoom:(hold) …`, only for scoped guns.
 10. For tool guns: `Toolclasses`, then one line `  <class> : <level>` per entry, including the internal `default` entry ([GUN-28](index.md#suspected-bugs)).
 
-Grenades ([`GenericGrenade.addInformation`](per-gun-behaviour.md#grenades-genericgrenade-fraggrenade-flashbang)): without SHIFT, `Damage: <damage>` and the SHIFT hint line. With SHIFT: `DamageType: Explosion`, `Damage: <damage>`, `Radius: <radius>`, `Bounces: <maxBounces>`.
+Grenades ([`GenericGrenade.addInformation`](per-gun-behavior.md#grenades-genericgrenade-fraggrenade-flashbang)): without SHIFT, `Damage: <damage>` and the SHIFT hint line. With SHIFT: `DamageType: Explosion`, `Damage: <damage>`, `Radius: <radius>`, `Bounces: <maxBounces>`.
 
 HUD helpers used by the ammo overlay ([01](../01-core/index.md)/[03](../03-gun-visuals-audio/index.md)): `getAmmoLeftCountTooltip` (rounds × (bulletcount+1) for burst guns), `getClipsizeTooltip` (likewise) and `getAmmoLeftCount(mags)` (`clipsize / ammoCount × mags`, × (bulletcount+1) for burst guns).
 
 ## 11. Sounds triggered by gun mechanics
 
-Event names (all `techguns:` events exist in `sounds.json`; files are documented in [03](../03-gun-visuals-audio/index.md)). The per-gun mapping is in catalogue Table C.
+Event names (all `techguns:` events exist in `sounds.json`; files are documented in [03](../03-gun-visuals-audio/index.md)). The per-gun mapping is in catalog Table C.
 
 | Event | When it plays | Played by |
 |---|---|---|
@@ -263,7 +263,7 @@ Event names (all `techguns:` events exist in `sounds.json`; files are documented
 | `guns.biogunFire` | Bio Gun charged-shot release (the auto-fire path uses the normal fire-sound path) | server `world.playSoundAtEntity` |
 | `guns.powerhammerSwing` | Power Hammer LMB swing with air, at most every 5 ticks, not while a container GUI is open | server sends [`PacketPlaySound`](../01-core/networking.md#9--packetplaysound-sc) (distance 1.0, vol 1.0, category GUN_FIRE) to players within 50 blocks |
 | `guns.chainsawSwing` | Chainsaw LMB swing with fuel (same throttle) | `PacketPlaySound`, distance 2.0 |
-| `guns.powerhammerImpactGround` | Block broken by the Power Hammer with air | `world.playSoundEffect` at the block centre, vol 1.0 |
+| `guns.powerhammerImpactGround` | Block broken by the Power Hammer with air | `world.playSoundEffect` at the block center, vol 1.0 |
 | `guns.chainsawHit` | Block broken by the Chainsaw with fuel | `world.playSoundEffect`, vol 0.65 |
 | `random.bow` (vanilla) | Stielgranate / Flashbang throw; pitch `1/(rand·0.4+1.2) + 0.5·charge` | server |
 | `guns.grenade_throw` | Frag Grenade throw | server, vol 1, pitch 1 |
@@ -291,7 +291,7 @@ These facts were added after re-reading `GenericGun`, `SoundUtil` and the tick h
 * **Sound call parameters.** `SoundUtil.playSoundOnEntityGunPosition` takes (world, entity, event, volume, pitch, repeat, moving, category). The fire sound passes volume 4.0, pitch 1.0, repeat false, moving false and category `GUN_FIRE`; the rechamber sound passes 1.0, 1.0, false, false, `RELOAD`. On the server the call broadcasts [`PacketPlaySound`](../01-core/networking.md#9--packetplaysound-sc) to players within 100 blocks with the gun-position flag set and the play-on-own-player flag off, so the shooter hears only the locally played copy. `playReloadSoundOnEntity` passes 1.0, 1.0, repeat false, moving true, `RELOAD`, and the client plays it only if the previous reload sound started more than 500 ms earlier.
 * **`isZooming()`** is "client zoom equals this gun's `zoomMult`". Guns without a scope keep `zoomMult` at its default of 1.0, which equals the idle client zoom, so they report `true` and send `PacketShootGun(true)`. It has no effect because their `zoombonus` is 1.0 ([GUN-47](index.md#suspected-bugs)).
 * **`PacketShootGun` handler.** It checks only that the held item is a `GenericGun`, then calls `shootGunLeftClick`. It does not check `isShootWithLeftClick()`, so a modified client can also trigger the left-click path of the Chainsaw or Power Hammer. Like every handler it runs on the network thread ([CORE-05](../01-core/index.md#suspected-bugs)).
-* **Construction order versus registration order.** `GenericGun.getGuns()` lists guns in construction order, which `TGWeaponStats` iterates when it writes the config; this differs slightly from the registration order used by catalogue Table A (for example the Mac10 is constructed after the pistol, revolver and golden-revolver akimbo guns but registered before them). Config keys are looked up by name, so the order does not matter.
+* **Construction order versus registration order.** `GenericGun.getGuns()` lists guns in construction order, which `TGWeaponStats` iterates when it writes the config; this differs slightly from the registration order used by catalog Table A (for example the Mac10 is constructed after the pistol, revolver and golden-revolver akimbo guns but registered before them). Config keys are looked up by name, so the order does not matter.
 * **Ammo-count helpers.** `getAmmoLeftCount(mags)` uses integer division `clipsize / ammoCount` before multiplying by the number of magazines, and multiplies by (pellets + 1) for burst guns only; for a shotgun (`burst` false) the HUD shows plain rounds.
 * **Tool-gun tooltip.** The tool-class lines come from a Java `HashMap`, so their order is not defined. Vanilla 1.7.10 adds its own attribute line for the attack-damage modifier of the Power Hammer and Chainsaw (6 or 2, and 12 or 2); that line is not produced by Techguns code.
-* **Loot and NPC stacks.** Stacks from chest hooks and from `new ItemStack(gun)` in NPC code carry no NBT; `getCurrentAmmo` initialises them as full guns on first read, and vanilla equipment-drop wear (a random item damage) becomes a partial clip through the same path.
+* **Loot and NPC stacks.** Stacks from chest hooks and from `new ItemStack(gun)` in NPC code carry no NBT; `getCurrentAmmo` initializes them as full guns on first read, and vanilla equipment-drop wear (a random item damage) becomes a partial clip through the same path.

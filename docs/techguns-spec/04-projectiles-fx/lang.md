@@ -15,7 +15,7 @@ The key is built by the vanilla entity-damage-source message routine as `death.a
 | `powerhammer` | [`PowerHammerProjectile`](projectiles.md#311-powerhammerprojectile) | PHYSICAL, GORE | `death.attack.powerhammer` = `%s was dismembered by %s with a powerhammer` | `.item` = `%s was dismembered by %s with %s` |
 | `tg_lightning` | [`TeslaProjectile`](projectiles.md#36-teslaprojectile-chain-lightning) | LIGHTNING, LASER | `death.attack.tg_lightning` = `%s was electrocuted by %s` | `.item` = `%s was electrocuted by %s with %s` |
 | `tg_energy` | [`LaserProjectile`](projectiles.md#33-laserprojectile), [`BeamProjectile`](projectiles.md#1-registration), [`BlasterRifleProjectile`](projectiles.md#1-registration), [`EnergyBlastProjectile`](projectiles.md#310-energyblastprojectile-mib-gun) | ENERGY | `death.attack.tg_energy` = `%s was melted by %s` | `.item` = `%s was melted by %s with %s` |
-| [`chainsaw`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) | [`InvisibleProjectile`](projectiles.md#43-invisibleprojectile) | PHYSICAL, GORE | `death.attack.chainsaw` = `%s was dismembered by %s with a chainsaw` | none |
+| [`chainsaw`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition) | [`InvisibleProjectile`](projectiles.md#43-invisibleprojectile) | PHYSICAL, GORE | `death.attack.chainsaw` = `%s was dismembered by %s with a chainsaw` | none |
 | `tg_sonic` | [`SonicShotgunProjectile`](projectiles.md#313-sonicshotgunprojectile) | PHYSICAL, GORE | `death.attack.tg_sonic` = `%s was shreddered by %s's sonic weapon` | none |
 | `tg_rad` | [`MovingBeam`](projectiles.md#1-registration), [`NeutrinoBeam`](projectiles.md#1-registration) | RADIATION, LASER | `death.attack.tg_rad` = `%s was radiated by %s` | none |
 

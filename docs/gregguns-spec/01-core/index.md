@@ -24,7 +24,7 @@ No integration point (see the Techguns sheet and the [design records](../../desi
 
 - Lifecycle and registration, creative tab, GUI ID table ([lifecycle-and-registration.md](../../techguns-spec/01-core/lifecycle-and-registration.md)). Techguns ore, metal and fluid registrations are dropped by [0002](../../design/0002-machine-deconfliction.md) and [0005](../../design/0005-world-presence.md); the rest is GregGuns' own code.
 - Player state and per-tick logic ([player-state.md](../../techguns-spec/01-core/player-state.md)). The only pack touchpoint is the DataWatcher slots, covered in [networking-gtnhlib.md](networking-gtnhlib.md).
-- Event catalogue, client effects, utilities, textures, sounds and lang files. These are internal. The sound-muffler check is in [hud-overlays.md](hud-overlays.md).
+- Event catalog, client effects, utilities, textures, sounds and lang files. These are internal. The sound-muffler check is in [hud-overlays.md](hud-overlays.md).
 - Potions: no custom potion in the Techguns config, so no sheet (a check is in [networking-gtnhlib.md](networking-gtnhlib.md#hodgepodge-potion-array-checked-no-change)).
 
 ## Integration map
@@ -41,7 +41,7 @@ No integration point (see the Techguns sheet and the [design records](../../desi
 | TConstruct inventory tab | One `AbstractTab`, soft dependency | TinkersConstruct | [mod-compat-tinkers-scripting.md](mod-compat-tinkers-scripting.md) |
 | Thermal Expansion stub | Dropped | Not in the pack | [mod-compat-tinkers-scripting.md](mod-compat-tinkers-scripting.md) |
 | MineTweaker 3 ZenScript | None; GT recipe maps are reachable by name | CraftTweaker 3.4.8, GTTweaker 2.3.4 | [mod-compat-tinkers-scripting.md](mod-compat-tinkers-scripting.md) |
-| 24-point armour bar | Dropped; Forge armour value feeds the pack's bar | OverloadedArmorBar 1.1.1 | [hud-overlays.md](hud-overlays.md) |
+| 24-point armor bar | Dropped; Forge armor value feeds the pack's bar | OverloadedArmorBar 1.1.1 | [hud-overlays.md](hud-overlays.md) |
 | Ammo HUD, bottom-right | Same corner, config offsets | InGame-Info-XML 2.9.7, Angelica 2.2.28 | [hud-overlays.md](hud-overlays.md) |
 | Block tooltips | Waila providers; HoloInventory unchanged | waila 1.19.34, HoloInventory 2.5.17-GTNH | [hud-overlays.md](hud-overlays.md) |
 | Sound categories | Names work with the muffler; categories are a 03 decision | Extreme Sound Muffler 1.1.1 | [hud-overlays.md](hud-overlays.md) |
@@ -58,7 +58,7 @@ No other pack-side change is needed for this area.
 ## Related areas
 
 - [02-guns](../../techguns-spec/02-guns/index.md): fire and reload packets, damage factors (synced config).
-- [05-armor](../05-armor/index.md): armour value, extra-inventory GUI and cosmetic slots.
+- [05-armor](../05-armor/index.md): armor value, extra-inventory GUI and cosmetic slots.
 - [10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md): faction hostility uses `PlayerRelations`.
 - [09-machines-utility](../../techguns-spec/09-machines-utility/index.md): turret and security owner checks use `PlayerRelations`.
 - [../INTEGRATION.md](../INTEGRATION.md): the evidence rules used on every sheet here.

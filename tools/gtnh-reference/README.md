@@ -10,7 +10,7 @@ Requirements: Python 3.9+ (standard library only), `git`, a JDK on `PATH` for `d
 T=tools/gtnh-reference/gtnh_ref.py
 python -I $T fetch <pack-zip-url> [--keep-archive]  # download, extract, index; sets reference/gtnh/CURRENT
 python -I $T index                                  # rebuild MOD-INDEX.md / mod-index.json
-python -I $T mod <name|modid|jar>                   # jar, mod IDs, licence, source link, extras, gh commands
+python -I $T mod <name|modid|jar>                   # jar, mod IDs, license, source link, extras, gh commands
 python -I $T where <class-or-fragment>              # which jar ships a class
 python -I $T clone <name|modid|jar>                 # shallow clone at the pinned ref -> reference/src/
 python -I $T jars <name|modid|jar>                  # download dev / API-source / sources jars -> reference/maven/
@@ -27,7 +27,7 @@ What it writes, all under `reference/` (git-ignored):
 |---|---|
 | `gtnh/CURRENT` | The active pack version |
 | `gtnh/<version>/` | The extracted MultiMC instance, plus `manifest.json`, `MOD-INDEX.md` and `mod-index.json` |
-| `gtnh/gtnh-assets.json` | GTNH's index of mod repos, licences and jar names |
+| `gtnh/gtnh-assets.json` | GTNH's index of mod repos, licenses and jar names |
 | `gtnh/_download/` | The pack zip, if kept |
 | `src/<Mod>@<tag>/` | Shallow source clones |
 | `maven/<Mod>/` | Downloaded dev, API-source and sources jars |

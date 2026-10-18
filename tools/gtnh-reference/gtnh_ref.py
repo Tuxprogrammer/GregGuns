@@ -48,7 +48,7 @@ FULL_SOURCE = ("gtnh-github", "upstream-tag")
 CLONABLE = ("gtnh-github", "upstream-tag", "upstream-branch", "api-source", "decompiled-source")
 
 # GTNH's release tooling publishes, per pack version, the exact mod versions (manifest) and,
-# across all versions, each mod's repo, licence and jar filename (assets).
+# across all versions, each mod's repo, license and jar filename (assets).
 DAXXL_RAW = "https://raw.githubusercontent.com/GTNewHorizons/DreamAssemblerXXL/master"
 MANIFEST_URL = DAXXL_RAW + "/releases/manifests/{version}.json"
 ASSETS_URL = DAXXL_RAW + "/gtnh-assets.json"
@@ -277,7 +277,7 @@ def write_index_md(path: Path, version: str, rows: list[dict]) -> None:
         "and the rules for using them: docs/gregguns-spec/INTEGRATION.md. Run `gtnh_ref.py mod <name>` for a mod's",
         "notes and extras (dev jars, API source, maven coordinates).",
         "",
-        "| Mod | Version | Jar | Mod IDs | Side | Source | Extras | Licence | Link |",
+        "| Mod | Version | Jar | Mod IDs | Side | Source | Extras | License | Link |",
         "|---|---|---|---|---|---|---|---|---|",
     ]
     for r in rows:
@@ -305,7 +305,7 @@ def describe(mod: dict) -> str:
         "mod:      " + mod["name"] + " " + (mod["version"] or ""),
         "jar:      " + str(mod["jar"]),
         "modids:   " + ", ".join(mod["modids"]),
-        "licence:  " + str(mod["license"]),
+        "license:  " + str(mod["license"]),
         "source:   " + mod["source"] + ("  " + mod["source_url"] if mod["source_url"] else ""),
     ]
     if mod.get("note"):
@@ -491,7 +491,7 @@ def main() -> None:
     p.add_argument("--version", help="pack version folder (default: CURRENT)")
     p.set_defaults(func=cmd_index)
 
-    p = sub.add_parser("mod", help="show a mod's jar, mod IDs, licence and where its source is")
+    p = sub.add_parser("mod", help="show a mod's jar, mod IDs, license and where its source is")
     p.add_argument("query")
     p.set_defaults(func=cmd_mod)
 

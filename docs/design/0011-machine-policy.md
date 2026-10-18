@@ -20,7 +20,7 @@
   - It runs a GregGuns **ammo recipe map**.
   - The ammunition manufacturing multiblock runs the same map, and is the flagship bottleneck machine.
   - Ammo recipes move from `assemblerRecipes` to that map ([06 recipes](../gregguns-spec/06-items/recipes.md)), keeping their inputs, EU/t and durations.
-- **Everything else stays on GT.** Gun parts, armour and components keep using GT recipe maps, and GT's own multiblocks scale them. The roster records which GT multiblock parallelises each GT map we rely on.
+- **Everything else stays on GT.** Gun parts, armor and components keep using GT recipe maps, and GT's own multiblocks scale them. The roster records which GT multiblock parallelizes each GT map we rely on.
 
 ## Consequences
 - M4 builds the Ammo Press, its recipe map and the Reaction Chamber single block. M6 builds the remaining multiblocks.

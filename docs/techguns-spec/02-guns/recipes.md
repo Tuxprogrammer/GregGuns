@@ -1,6 +1,6 @@
 # 02-guns: gun and grenade recipes (`TGuns.postInit`)
 
-All recipes are registered in [`TGuns.postInit()`](gun-catalogue.md).
+All recipes are registered in [`TGuns.postInit()`](gun-catalog.md).
 
 * Recipe type is Forge `ShapedOreRecipe` unless noted as "vanilla shaped".
 * Grids are written row by row, with `·` for an empty cell. Shorter rows and fewer rows follow normal shaped-recipe rules, so the pattern can be placed anywhere in the grid.
@@ -13,7 +13,7 @@ All recipes are registered in [`TGuns.postInit()`](gun-catalogue.md).
 
 The conversion into the `ammo` NBT happens in `onCreated` (see lifecycle §2).
 
-Ore-dict name `blockGlassHardened|blockGlass` stands for [`TGItems.hardenedGlassOrGlass`](../06-items/item-catalogue.md): the ore name `blockGlassHardened` if any item is registered under it at init time, otherwise `blockGlass`.
+Ore-dict name `blockGlassHardened|blockGlass` stands for [`TGItems.hardenedGlassOrGlass`](../06-items/item-catalog.md): the ore name `blockGlassHardened` if any item is registered under it at init time, otherwise `blockGlass`.
 
 ## Shaped gun recipes
 
@@ -79,7 +79,7 @@ Guns with **no** recipe: Alien Blaster, Scatter Laser Rifle [WIP], and the four 
 
 ## Shapeless / custom recipes
 
-| Output | Recipe class | Ingredients | Behaviour |
+| Output | Recipe class | Ingredients | Behavior |
 |---|---|---|---|
 | Power Hammer (Advanced) | `ShapelessOreRecipeCopyNBT` | Power Hammer + 3× "gemDiamond" | Copies the full NBT (ammo, camo) of the first matching Power Hammer in the grid onto the result. |
 | Akimbo Pistols | `RecipeAkimboGun` | 2× 9mm Pistol | See below. |

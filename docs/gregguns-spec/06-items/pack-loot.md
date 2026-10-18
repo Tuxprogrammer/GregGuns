@@ -34,7 +34,7 @@ How GregGuns items get into GTNH loot. This sheet is cross-cutting: [10-entities
 
 Techguns calls `ChestGenHooks.addItem` into vanilla categories from its own code. In GTNH that is wiped: every vanilla category ships as an `OVERRIDE` file in TooMuchLoot, which replaces the category wholesale after our code has run. GregGuns therefore splits loot into two routes.
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Adds guns, ammo and gear to vanilla `bonusChest` and `dungeonChest` in code ([loot.md](../../techguns-spec/06-items/loot.md#vanilla-categories)) | Adds nothing to vanilla categories in code. The pack ships `ADD` XML files ([draft](#draft-add-files)) | TML `OVERRIDE` replaces the category after our code has run |
 | Seven private categories `techgunsWeaponchestT1..T3`, `techgunsReinforcedchestT1..T3`, `techgunsMilBaseBarracks` | Private categories `gregguns:*`, still registered in code ([below](#gregguns-loot-categories)) | No pack file overrides them, and a pack author can retune them through TML |
@@ -75,13 +75,13 @@ TooMuchLoot (`TML`) reads every `*.xml` in `config/TooMuchLoot/loot/` when the s
   - [`TooMuchLoot.serverStarting`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/TooMuchLoot.java#L71-L104) caches the table, then calls `loadFiles`.
   - [`ChestLootLoader.loadFiles`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/data/chest/ChestLootLoader.java#L117-L170): `OVERRIDE` entries are collected and `putAll`-ed into the table first (L159-L165). `ADD` entries are then added one by one with `ChestGenHooks.getInfo(category).addItem` (L167-L170), so an `ADD` file also works on a category an `OVERRIDE` file has just replaced. `REMOVE` entries are matched by item stack.
   - [`LootGroupXML`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/data/LootGroupXML.java#L13-L63): the XML attributes are `category`, `loading_mode`, `count_min`, `count_max` on `LootGroup`, and `item`, `damage`, `nbt`, `weight`, `count_min`, `count_max` on `loot`.
-  - [`XMLDataBridge.parseToChestLootCat`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/data/XMLDataBridge.java#L47-L77): a missing or misspelt `loading_mode` **falls back to `OVERRIDE`** (L47-L56), which would wipe the category. `nbt` is parsed with `JsonToNBT` (L66-L68).
+  - [`XMLDataBridge.parseToChestLootCat`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/data/XMLDataBridge.java#L47-L77): a missing or misspelled `loading_mode` **falls back to `OVERRIDE`** (L47-L56), which would wipe the category. `nbt` is parsed with `JsonToNBT` (L66-L68).
   - [`ChestLootItem`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/data/chest/ChestLootItem.java#L32-L53): a missing count becomes 1; `item` is a registry name.
   - [`LootLoadingMode`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/data/LootLoadingMode.java): `OVERRIDE`, `ADD`, `REMOVE`.
   - [`CommandChestLoot`](https://github.com/GTNewHorizons/TooMuchLoot/blob/4.3.0-GTNH/src/main/java/dmillerw/tml/command/CommandChestLoot.java#L24-L56): `/loot reload`, `/loot generate`, `/loot reset`, `/loot spawnDebugChest`. Use them to test the XML below.
 - **GregGuns does:** nothing at runtime for vanilla categories. The pack adds the files.
 - **Pack-side change:** one file per category, named `gregguns_<category>.xml` (the file name does not matter; `*.xml` is scanned, but one category per file keeps diffs small). Rules:
-  - `loading_mode="ADD"`, spelt exactly.
+  - `loading_mode="ADD"`, spelled exactly.
   - `count_min` and `count_max` on `LootGroup` are **ignored** in `ADD` mode (only the `loot` children are read), so write them as `0` to make that obvious.
   - Item names use the registry name `gregguns:<name>`. The names below are **placeholders**; M2 fixes the real ones.
   - Gun and ammo `damage` is `0`.
@@ -262,7 +262,7 @@ Roguelike Dungeons builds its chests from JSON loot rules.
   - [`WeightedRandomLoot(JsonObject, int)`](https://github.com/GTNewHorizons/Roguelike-Dungeons/blob/1.6.6-GTNH/src/main/java/greymerk/roguelike/treasure/loot/WeightedRandomLoot.java#L60-L83): `name` is looked up in the item registry, `meta` defaults to 0, `min` and `max` apply only when both are present, `nbt` is parsed from JSON.
   - [`LootRuleManager`](https://github.com/GTNewHorizons/Roguelike-Dungeons/blob/1.6.6-GTNH/src/main/java/greymerk/roguelike/treasure/loot/LootRuleManager.java#L86-L88): `type` is optional, `each` and `quantity` are required.
 - **GregGuns does:** nothing in code.
-- **Pack-side change:** append rules to `loot_weapons.json` (guns, knife, crowbar), `loot_supplies.json` (ammo, medkit) and `loot_armor.json` (armour). Dungeon levels map to tiers as in [Tier bands](#tier-bands). Example for `loot_weapons.json`:
+- **Pack-side change:** append rules to `loot_weapons.json` (guns, knife, crowbar), `loot_supplies.json` (ammo, medkit) and `loot_armor.json` (armor). Dungeon levels map to tiers as in [Tier bands](#tier-bands). Example for `loot_weapons.json`:
 ```json
 {"level": [0, 1], "type": "WEAPONS", "each": true, "quantity": 1, "loot": [
     {"data": {"name": "gregguns:pistol_9mm", "meta": 0}, "weight": 4},

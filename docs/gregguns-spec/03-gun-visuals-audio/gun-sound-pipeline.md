@@ -9,7 +9,7 @@
 
 Techguns has 13 stereo gun files out of 185, and its spec reasons that they play flat (GVA-23). The pack changes three things around that.
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Stereo files play flat, with no distance or direction (reasoned, not observed) | All positional sounds are mono (design 0006). The pack's stereo repair is a safety net, not a plan. | Hodgepodge can fix stereo, but only with a fallback, and it costs memory. |
 | Every shot starts a new 1 to 3 s sound | Same sounds, but the longest sound times the fire rate must fit a channel budget | The pack allows 64 normal channels in total. |
@@ -21,8 +21,8 @@ Techguns has 13 stereo gun files out of 185, and its spec reasons that they play
 ### Hodgepodge: stereo sounds are repaired in the pack
 
 - **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/hodgepodge.cfg`, section `sound`: `downmixStereoSounds` = `true`, `spatializeStereoSounds` = `true`, `downmixExclusions` = `button, click, /gui, menu, typing, page`.
-- **Source:** [DownmixingOggCodec.java#L18-L34](https://github.com/GTNewHorizons/Hodgepodge/blob/2.7.215/src/main/java/com/mitchej123/hodgepodge/client/sound/DownmixingOggCodec.java#L18-L34) explains that OpenAL only spatialises mono buffers, so a stereo sound plays centred whatever its position, and that the downmix is the fallback for the Java 8 build. `SpatializeSupport` is the primary fix and needs lwjgl3ify and the `AL_SOFT_source_spatialize` extension. The config keys are declared in [SoundConfig.java#L82-L99](https://github.com/GTNewHorizons/Hodgepodge/blob/2.7.215/src/main/java/com/mitchej123/hodgepodge/config/SoundConfig.java#L82-L99).
-- **What it means:** under the pack, Techguns' 13 stereo files would most likely be positioned correctly. Stereo-spatialised playback uses about twice the buffer memory of mono (config comment). Whether it works depends on the player's audio device and Java build, which GregGuns cannot control.
+- **Source:** [DownmixingOggCodec.java#L18-L34](https://github.com/GTNewHorizons/Hodgepodge/blob/2.7.215/src/main/java/com/mitchej123/hodgepodge/client/sound/DownmixingOggCodec.java#L18-L34) explains that OpenAL only spatializes mono buffers, so a stereo sound plays centered whatever its position, and that the downmix is the fallback for the Java 8 build. `SpatializeSupport` is the primary fix and needs lwjgl3ify and the `AL_SOFT_source_spatialize` extension. The config keys are declared in [SoundConfig.java#L82-L99](https://github.com/GTNewHorizons/Hodgepodge/blob/2.7.215/src/main/java/com/mitchej123/hodgepodge/config/SoundConfig.java#L82-L99).
+- **What it means:** under the pack, Techguns' 13 stereo files would most likely be positioned correctly. Stereo-spatialized playback uses about twice the buffer memory of mono (config comment). Whether it works depends on the player's audio device and Java build, which GregGuns cannot control.
 - **GregGuns does:** ships mono for every positional sound, as design 0006 requires. It does not name any gun sound path that matches `downmixExclusions` (`button`, `click`, `/gui`, `menu`, `typing`, `page`), because those are kept stereo and unpositioned.
 - **Pack-side change:** none.
 
@@ -55,7 +55,7 @@ Techguns has 13 stereo gun files out of 185, and its spec reasons that they play
 - **Events:** `guns.<weapon>.<action>` and `effects.<name>`, built by `com.gregguns.gun.sound.GunSoundEvents`, which also documents how M2 adds a gun: drop the mono files, add one `sounds.json` row, add a constant. `GunSoundsJsonTest` checks every row against GGS-03-07, 08, 09 and 11 (file exists, mono, name and path rules).
 - **M1 rows:** `guns.pistol_9mm.fire` (`pistol_shot_a`-`c`), `guns.pistol_9mm.reload` (`pistol_reload`), `effects.bullet_impact` (`bullet_impact_a`-`e`). The 9mm Pistol takes the `pistol_*` files (Techguns' Pistol), not `handgun_*` (the Hand Cannon). No ricochet, flyby or dry-fire files exist yet; dry fire plays vanilla `random.click` (deviation from Techguns' `mob.villager.idle`).
 - **Server:** `GunSoundPlayer` sends the vanilla sound packet to players within `16 * max(1, volume)` blocks and excludes the shooter, whose client predicted the sound (`ClientGunSounds`). Fire is volume 4 (64 blocks), reload 1 (16 blocks).
-- **Deviations:** other players hear a reload where it started (the vanilla packet cannot move a sound); the shooter's own reload sound follows them and is cut off when the reload is cancelled or the gun is switched away; the muzzle offset is in front of the shooter (CORE-21 not reproduced).
+- **Deviations:** other players hear a reload where it started (the vanilla packet cannot move a sound); the shooter's own reload sound follows them and is cut off when the reload is canceled or the gun is switched away; the muzzle offset is in front of the shooter (CORE-21 not reproduced).
 
 ## Tests
 

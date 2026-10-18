@@ -1,6 +1,6 @@
 # Dynamic lights for muzzle flashes and projectiles
 
-- **Techguns baseline:** [rendering-framework.md §7](../../techguns-spec/03-gun-visuals-audio/rendering-framework.md#7-muzzle-flash-first-person-screen-effect) (muzzle flash sprite), [projectiles.md](../../techguns-spec/04-projectiles-fx/projectiles.md), [fx-catalogue.md](../../techguns-spec/04-projectiles-fx/fx-catalogue.md). Techguns has no dynamic light. Its flashes are full-bright sprites only.
+- **Techguns baseline:** [rendering-framework.md §7](../../techguns-spec/03-gun-visuals-audio/rendering-framework.md#7-muzzle-flash-first-person-screen-effect) (muzzle flash sprite), [projectiles.md](../../techguns-spec/04-projectiles-fx/projectiles.md), [fx-catalog.md](../../techguns-spec/04-projectiles-fx/fx-catalog.md). Techguns has no dynamic light. Its flashes are full-bright sprites only.
 - **Design records:** [0006 art direction](../../design/0006-art-direction.md)
 - **Pack mods:** Angelica (`angelica`, 2.2.28)
 - **Roadmap:** M5 (energy and exotic weapons); the held-gun part may land with M1
@@ -9,7 +9,7 @@
 
 Techguns' effects glow on screen but do not light the world. Angelica ships dynamic lights, so a muzzle flash, a plasma bolt or a burning rocket can light nearby blocks. This is optional polish that costs nothing when Angelica or the player's setting is off. It is not a gameplay feature, and the server never knows about it.
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Muzzle flash is a sprite only | A held gun may report a luminance for a few ticks after a shot | Light on nearby walls sells the shot. |
 | Energy and fire projectiles are lit sprites only | Slow, rare projectiles (rockets, plasma, flame) may emit light. Bullets never do. | Each moving light rebuilds chunk sections every tick. |
@@ -23,17 +23,17 @@ Techguns' effects glow on screen but do not light the world. Angelica ships dyna
   - [DynamicLights.java#L76-L82](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/dynamiclights/DynamicLights.java#L76-L82): lights are active only if the config is on, the mode is not `OFF`, and either no shader pack is in use or `ShaderForce` is set (default `false`, [L49](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/dynamiclights/DynamicLights.java#L49)). **With a shader pack, dynamic lights are off by default.**
   - [L55](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/dynamiclights/DynamicLights.java#L55) and [L318-L327](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/dynamiclights/DynamicLights.java#L318-L327): radius is 7.75 blocks, luminance falls off linearly, maximum 15.
   - [DynamicLights.java#L584-L591](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/dynamiclights/DynamicLights.java#L584-L591): an item emits light if its `Item` implements `IDynamicLightProducer` ([IDynamicLightProducer.java#L8-L10](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/api/IDynamicLightProducer.java#L8-L10), method `int getLuminance(ItemStack)`), or is an `ItemBlock` with light.
-  - [L605-L651](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/dynamiclights/DynamicLights.java#L605-L651): any burning entity gives 15 (L610) and nothing in water. A living entity takes the maximum over its five equipment slots (held item and armour), Backhand's off-hand item and Baubles slots. This covers NPCs as well as players.
+  - [L605-L651](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/dynamiclights/DynamicLights.java#L605-L651): any burning entity gives 15 (L610) and nothing in water. A living entity takes the maximum over its five equipment slots (held item and armor), Backhand's off-hand item and Baubles slots. This covers NPCs as well as players.
   - [MixinEntity.java#L84-L117](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/mixin/java/com/gtnewhorizons/angelica/mixins/early/angelica/dynamiclights/MixinEntity.java#L84-L117): the mixin sits on `Entity`, so every entity type is a light source. It runs on the client only, at the end of `onEntityUpdate`.
-  - [MixinEntity.java#L125-L172](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/mixin/java/com/gtnewhorizons/angelica/mixins/early/angelica/dynamiclights/MixinEntity.java#L125-L172): when a source moves more than 0.1 blocks or its luminance changes, it schedules chunk-section rebuilds for its own section and seven neighbours.
+  - [MixinEntity.java#L125-L172](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/mixin/java/com/gtnewhorizons/angelica/mixins/early/angelica/dynamiclights/MixinEntity.java#L125-L172): when a source moves more than 0.1 blocks or its luminance changes, it schedules chunk-section rebuilds for its own section and seven neighbors.
   - [EntityLightConfig.java#L29-L48](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/dynamiclights/config/EntityLightConfig.java#L29-L48): a player can disable lights per entity class, stored in `angelica-dynamiclights-entities.txt`.
 - **GregGuns does:** see the next two sections.
 - **Pack-side change:** none. Players choose the mode. Defaults leave lights off.
 
-### Held guns and armour: `IDynamicLightProducer`
+### Held guns and armor: `IDynamicLightProducer`
 
 - **Source:** the producer contract above. Equipment, off-hand and bauble slots are all scanned, so one implementation lights the player's own gun, other players' guns and NPCs' guns.
-- **GregGuns does:** the base gun `Item` carries `@Optional.Interface(iface = "com.gtnewhorizons.angelica.api.IDynamicLightProducer", modid = "angelica")`, so the interface is dropped when Angelica is missing. `getLuminance(stack)` returns 0 except for a short window after a shot (a proposal: 10 to 12 for 3 ticks), and a steady low value for powered energy weapons while they are charged. Glowing armour pieces (a lamp helmet) use the same hook.
+- **GregGuns does:** the base gun `Item` carries `@Optional.Interface(iface = "com.gtnewhorizons.angelica.api.IDynamicLightProducer", modid = "angelica")`, so the interface is dropped when Angelica is missing. `getLuminance(stack)` returns 0 except for a short window after a shot (a proposal: 10 to 12 for 3 ticks), and a steady low value for powered energy weapons while they are charged. Glowing armor pieces (a lamp helmet) use the same hook.
 - **Pack-side change:** none.
 
 ### Projectiles: two options, both soft
@@ -63,4 +63,4 @@ Techguns' effects glow on screen but do not light the world. Angelica ships dyna
 
 - **How does a held gun know it just fired?** `getLuminance` receives only the `ItemStack`. For other players' guns, the client sees the stack from the equipment packet, so a server-written NBT key would change the stack identity every shot. Options: a client-only map keyed by player id, written by the existing shot-FX packet, read through the stack's holder (not available in the call); or a transient client-side NBT key set by the shot-FX handler on the local copy. Needs a decision before M1; it may become design record 0007.
 - Does the pack want a `ShaderForce` entry in an Angelica profile so lights survive shader packs? It is a player option and out of scope for GregGuns.
-- `@Optional.Interface` is standard FML behaviour for 1.7.10. It was not re-verified against the pack's Forge source in this pass.
+- `@Optional.Interface` is standard FML behavior for 1.7.10. It was not re-verified against the pack's Forge source in this pass.

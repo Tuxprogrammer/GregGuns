@@ -15,7 +15,7 @@ No integration point; see [techguns-spec](../../techguns-spec/04-projectiles-fx/
 
 | File | What it covers |
 |---|---|
-| [dynamic-lights.md](dynamic-lights.md) | Angelica dynamic lights for held guns, armour and projectiles: the contract, the cost and the rules. |
+| [dynamic-lights.md](dynamic-lights.md) | Angelica dynamic lights for held guns, armor and projectiles: the contract, the cost and the rules. |
 | [particle-rendering.md](particle-rendering.md) | What `EntityParticle` must do to be instanced by Angelica, and the pack's 8000-particle cap. |
 | [explosions-pack.md](explosions-pack.md) | ServerUtilities' explosion filter and claim protection, GregTech machine chain explosions and logging, resistance lookup. |
 
@@ -35,7 +35,7 @@ No integration point; see [techguns-spec](../../techguns-spec/04-projectiles-fx/
 
 Code: `com.gregguns.projectile` (`GenericProjectile`, `SimpleProjectile`, `BulletLauncher`, `ProjectileModule`); renderers in `com.gregguns.client.projectile`. Entity IDs 1 (`generic_projectile`) and 2 (`simple_projectile`) keep Techguns' numbers, with range 80, frequency 3 and velocity updates, as in [projectiles.md section 1](../../techguns-spec/04-projectiles-fx/projectiles.md#1-registration).
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | The shooter is never hit by its bullet | Not hit for the first 5 ticks (`HitRules.SHOOTER_GRACE_TICKS`), then hit like anything else | The muzzle starts inside the shooter's box. A lobbed ball can fall back onto its shooter. |
 | Block trace loads chunks it looks into | The step ends the bullet silently if any chunk its bounding rectangle touches is not loaded (`ChunkCoverage`) | WGEN-27 class of bug; CONTRIBUTING. |

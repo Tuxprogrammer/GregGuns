@@ -24,7 +24,7 @@ Quests/<LineName>-<line id>/
 ```
 
 - The exporter puts quests that belong to one line in that line's folder, quests in several lines in `MultipleQuestLine/` and quests in none in `NoQuestLine/`. The loader reads every file under `Quests/` and takes the ID from the file body, so the folder is for humans ([QuestCommandDefaults#L69-L82](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L69-L82), [#L444-L456](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L444-L456)).
-- **File name** is the name with colour codes and non-alphanumerics removed, cut to 16 characters, then `-`, then the ID in Base64 ([#L168-L177](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L168-L177)). `Underground Geodes` becomes `UndergroundGeode-w00gbWZ4QG60V0neazNERw==.json`. The line entry and the quest file of one quest have the same file name.
+- **File name** is the name with color codes and non-alphanumerics removed, cut to 16 characters, then `-`, then the ID in Base64 ([#L168-L177](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L168-L177)). `Underground Geodes` becomes `UndergroundGeode-w00gbWZ4QG60V0neazNERw==.json`. The line entry and the quest file of one quest have the same file name.
 - **Tab order** is the order of lines in `QuestLinesOrder.txt`. Only the text before the first colon is read ([#L429](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L429)).
 - The GregGuns files are the only new files; the sole edits to existing files are one appended line in `QuestLinesOrder.txt` and the `pack_version:3` bump in `QuestSettings.json` ([index.md](index.md#pack-side-changes)).
 
@@ -60,7 +60,7 @@ BetterQuesting writes NBT as JSON. Every key carries a type suffix, and a list i
 | `:4` | long | `:10` | compound |
 | `:5` | float | | |
 
-The exporter sorts keys, indents two spaces, and writes `'` as `'` and `=` as `=`. The loader accepts any valid JSON, so hand-written files work; a later `/bq_admin default save` normalises them.
+The exporter sorts keys, indents two spaces, and writes `'` as `'` and `=` as `=`. The loader accepts any valid JSON, so hand-written files work; a later `/bq_admin default save` normalizes them.
 
 ## Quest files
 
@@ -91,7 +91,7 @@ Properties that matter (the exporter writes about forty; the builder writes all 
 
 | `taskID:8` | JSON | Used for |
 |---|---|---|
-| `bq_standard:checkbox` | `{"index:3": 0, "taskID:8": "bq_standard:checkbox"}` | Intros, summaries, honour-system lessons |
+| `bq_standard:checkbox` | `{"index:3": 0, "taskID:8": "bq_standard:checkbox"}` | Intros, summaries, honor-system lessons |
 | `bq_standard:retrieval` | `requiredItems:9` (stacks), `requireOnlyOneItem:1` (1 = any one of the stacks), `consume:1` (0), `ignoreNBT:1` (1), `partialMatch:1` (1), `autoConsume:1`, `groupDetect:1` | Anything made in a machine or found |
 | `bq_standard:crafting` | `requiredItems:9`, `allowCraft:1`, `allowSmelt:1`, `allowAnvil:1`, `ignoreNBT:1`, `partialMatch:1`. Listens for the crafting table, furnace and anvil only ([TaskCrafting#L189-L200](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/tasks/TaskCrafting.java#L189-L200)) | Steam-chapter quests |
 | `bq_standard:hunt` | `target:8` (an `EntityList` name), `required:3`, `subtypes:1` (0 = exact class), `ignoreNBT:1` (1), `targetNBT:10`, `damageType:8` (empty = any) | NPC branch |
@@ -263,10 +263,10 @@ D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns
 
 What the example shows: one prerequisite (`gg.lv.ammo_9mm`, whose ID the builder derives); one `retrieval` task with `consume:1` = 0; one `bq_standard:item` reward of a single magazine; `visibility` `NORMAL`; the text kept in `desc:8`.
 
-## Text and localisation
+## Text and localization
 
 - **Inline.** Write `name:8` and `desc:8` in the quest file, as the pack does. The pack Readme asks for information first; GregGuns quests say what to do, which machine or slot is involved, and what the reward is for.
-- **Tags.** `[warn]…[/warn]` (red), `[note]…[/note]` (aqua, for a postscript) and `[url]…[/url]` (blue link). Use `[warn]` for explosives and nuclear items. Colour codes (`§`) are used by some pack titles; GregGuns avoids them except on the chapter intros.
+- **Tags.** `[warn]…[/warn]` (red), `[note]…[/note]` (aqua, for a postscript) and `[url]…[/url]` (blue link). Use `[warn]` for explosives and nuclear items. Color codes (`§`) are used by some pack titles; GregGuns avoids them except on the chapter intros.
 - **Length.** Two to four short paragraphs. The Hint column in [quest-line.md](quest-line.md) is the first paragraph.
 - **Icon.** The first task item. A checkbox-only quest uses the chapter icon: `gregguns:pistol_9mm` (Start, LV), `hand_cannon` (Steam), `thompson` (MV), `lmg` (HV), `laser_rifle` (EV), `blaster_rifle` (IV), `alien_blaster` (LuV), `nuclear_death_ray` (ZPM), `spawn_egg` (NPCs), `weaponchest_t1` (Structures), `repair_bench` (Machines), `gas_mask` (Equipment), `ammo_9mm_bullet` (Ammo).
 - **Translations.** BetterQuesting looks for `betterquesting.quest.<id>.name` and `.desc` before the inline text. `<id>` is the Base64 ID with the trailing `=` removed. `/bq_admin default exportlang` writes a `template.lang` with every key, escaping `%` as `%%` and newlines as `%n` ([QuestCommandDefaults#L570-L612](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L570-L612)). The pack ships none today, so GregGuns ships none.

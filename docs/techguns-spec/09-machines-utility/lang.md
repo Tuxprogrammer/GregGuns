@@ -19,8 +19,8 @@ Every lang key this area uses, with the exact English text from `assets/techguns
 | `techguns.tile.oreDrill_2.name` | Ore Drill Rod | `oreDrill:2` |
 | `techguns.tile.oreDrill_3.name` | Ore Drill Engine | `oreDrill:3` |
 | `techguns.tile.oreDrill_4.name` | Ore Drill Controller | `oreDrill:4` |
-| `techguns.tile.tgchest.name` | Reinforced Chest | [`tgchest`](../07-blocks/block-catalogue.md#registered-blocks) (the item block adds the `techguns.` prefix) |
-| `techguns.tile.tgchest_weapon.name` | Weapon Chest | [`tgchest_weapon`](../07-blocks/block-catalogue.md#registered-blocks) |
+| `techguns.tile.tgchest.name` | Reinforced Chest | [`tgchest`](../07-blocks/block-catalog.md#registered-blocks) (the item block adds the `techguns.` prefix) |
+| `techguns.tile.tgchest_weapon.name` | Weapon Chest | [`tgchest_weapon`](../07-blocks/block-catalog.md#registered-blocks) |
 | `techguns.tile.Bioblob.name` | Bio Blob | defined, but the plain item block asks for `tile.Bioblob.name` ([MUTL-43](index.md#suspected-bugs)) |
 | `entity.Techguns.SimpleTurret.name` | Turret | the mounted [`NPCTurret`](../10-entities-npcs/ai.md#5-turret-npcturret) entity (10 owns the entity) |
 
@@ -47,8 +47,8 @@ Adjacent area-08 names in the same numbering (listed for orientation only): `Bas
 |---|---|---|
 | `techguns.repairBench.noarmor` | No armor | hover over a repair button while nothing is worn in that slot |
 | `techguns.repairBench.cantrepair` | Can't repair this armor | worn item is not repairable on the bench |
-| `techguns.repairBench.fullcondition` | Armor is fully repaired | worn armour has damage 0 |
-| `techguns.repairBench.requiredMats` | Required materials for repair: | first line of the damaged-armour tooltip |
+| `techguns.repairBench.fullcondition` | Armor is fully repaired | worn armor has damage 0 |
+| `techguns.repairBench.requiredMats` | Required materials for repair: | first line of the damaged-armor tooltip |
 | `techguns.item.invalidcamo` | No Camo | camo bench, when the bench slot item has no camo name |
 | `techguns.container.repair` | Repair time left | turret GUI repair-bar tooltip, followed by " " and seconds and "s" |
 | `techguns.turret.targetAnimals` | Target Animals | turret GUI button tooltip, followed by ": " and Yes or No |
@@ -73,12 +73,12 @@ Camo names shown by the camo bench are lang keys returned by each item's `getCur
 |---|---|---|
 | `techguns.msg.error.alreadyrod` | Can't place here, this cluster already has a connected drill rod | placing a rod next to a cluster that already has one |
 | `techguns.msg.error.oredrill.controllernext` | Can't place 2 ore drill controllers next to each other | placing a controller next to another; looked up without the `techguns.` prefix, so the raw key is printed ([MUTL-20](index.md#suspected-bugs)) |
-| `techguns.msg.error.oredrill.invalidmulti.dir` | The main engine block must have exactly 1 neighboring engine or rod | formation: zero or several neighbouring engines or rods |
-| `techguns.msg.error.oredrill.invalid1` | There must be engines followed by rods that are connected to a cluster | formation: centre line is wrong |
+| `techguns.msg.error.oredrill.invalidmulti.dir` | The main engine block must have exactly 1 neighboring engine or rod | formation: zero or several neighboring engines or rods |
+| `techguns.msg.error.oredrill.invalid1` | There must be engines followed by rods that are connected to a cluster | formation: center line is wrong |
 | `techguns.msg.error.oredrill.invalid2` | A drill bigger than 1 rod and 1 engine needs a frame | radius 0 check failing |
 | `techguns.msg.error.oredrill.invalid2.1` | A medium drill needs at least 1 engine and a rod of length 2 or more | radius 1 too short |
 | `techguns.msg.error.oredrill.invalid2.2` | A large drill needs at least 2 engine rows and a rod of length 3 or more | radius 2 to 4 too short (shown for four different failures) |
-| `techguns.msg.error.oredrill.invalid3` | Invalid block in slice around (two trailing spaces) | slice mismatch, then the code appends a parenthesised coordinate triple |
+| `techguns.msg.error.oredrill.invalid3` | Invalid block in slice around (two trailing spaces) | slice mismatch, then the code appends a parenthesized coordinate triple |
 | `techguns.msg.oredrill.formed1` / `formed2` / `formed3` | "Ore driller multiblock formed with radius: " / ", extra engine size: " / " and drill size: " | success, concatenated with the numbers |
 
 The three `formed` strings carry leading and trailing spaces in the lang file, and the code adds more spaces between parts. Example output: "Ore driller multiblock formed with radius: 2 , extra engine size: 2  and drill size: 3".
@@ -87,14 +87,14 @@ The three `formed` strings carry leading and trailing spaces in the lang file, a
 
 | String | Built from | Condition |
 |---|---|---|
-| "Nx item name" per material | stack size, "x ", then the translated item name | each line of the damaged-armour tooltip; prefixed with the red colour code when the bench lacks the material |
+| "Nx item name" per material | stack size, "x ", then the translated item name | each line of the damaged-armor tooltip; prefixed with the red color code when the bench lacks the material |
 | "Repair time left 7s" | `techguns.container.repair`, space, seconds, "s" | turret GUI, while the turret is dead |
-| "Target Animals: Yes" / "...: No" | key, ": ", coloured Yes/No | turret GUI button |
+| "Target Animals: Yes" / "...: No" | key, ": ", colored Yes/No | turret GUI button |
 | "RF/t: n", "p.pp%", "Ores/h: n.nn" | numbers with hard-coded labels | ore drill GUI hover over the cone; the percentage divides by `totalTime` ([MUTL-22](index.md#suspected-bugs)) |
 | "tank fluid name", "amount/capacityMB" | fluid unlocalized name plus ".name"-style lookup, then numbers | ore drill tank tooltips |
 | "(i/n):" | one-based camo index and count | camo bench, left caption |
 | "Fuel a/b" and "Remaining time: N ticks." | buffer numbers | ore drill fuel tooltip; N is -1 when RF/t is 0 |
-| numbers 0..n | camo index + 1 per armour, back and face slot | camo bench footer row |
+| numbers 0..n | camo index + 1 per armor, back and face slot | camo bench footer row |
 
 ## 6. Hard-coded English (not in the lang file)
 

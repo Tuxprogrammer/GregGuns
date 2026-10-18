@@ -1,17 +1,17 @@
 # Repair Bench: GT materials as repair inputs
 
 - **Techguns baseline:** [repair-bench.md](../../techguns-spec/09-machines-utility/repair-bench.md), [repair action](../../techguns-spec/09-machines-utility/repair-bench.md#repair-action-buttonclicked-server)
-- **Design records:** [0002 machine deconfliction](../../design/0002-machine-deconfliction.md) (kept: "armour and gun repair using GT materials"), [0001 tier map](../../design/0001-tier-map.md), [0003 energy model](../../design/0003-energy-model.md)
+- **Design records:** [0002 machine deconfliction](../../design/0002-machine-deconfliction.md) (kept: "armor and gun repair using GT materials"), [0001 tier map](../../design/0001-tier-map.md), [0003 energy model](../../design/0003-energy-model.md)
 - **Pack mods:** GT5-Unofficial (`gregtech`, 5.09.54.205)
 - **Roadmap:** the utility-machines milestone in [ROADMAP](../../ROADMAP.md). Machine registration is owned by [08](../08-machines-production/).
 
 ## What changes from Techguns
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
-| Armour asks for a metal stack and a cloth stack, each a Techguns item | The repair list is made of GT stacks looked up by ore prefix and material, for example plate of the item's gate material | GT first; unification means any mod's plate counts |
+| Armor asks for a metal stack and a cloth stack, each a Techguns item | The repair list is made of GT stacks looked up by ore prefix and material, for example plate of the item's gate material | GT first; unification means any mod's plate counts |
 | Matching is by item and damage value | Matching uses `GTOreDictUnificator.isInputStackEqual`, so unified equivalents match | Players should not need one specific mod's plate |
-| Armour only, and only worn armour | Worn armour **and** guns, as [0002](../../design/0002-machine-deconfliction.md) says | Guns have durability too |
+| Armor only, and only worn armor | Worn armor **and** guns, as [0002](../../design/0002-machine-deconfliction.md) says | Guns have durability too |
 | Unpowered | Registered as a GT MetaTileEntity ([08](../08-machines-production/)). Whether it draws EU is an open question | [0002](../../design/0002-machine-deconfliction.md) rebuilds kept machines as MTEs |
 | Shift-click off-by-one ([MUTL-05](../../techguns-spec/BUGS.md)) | Fixed in the container | Cited bug |
 
@@ -51,4 +51,4 @@ GT's own tools are not repaired here. They keep their damage in the `GT.ToolStat
 ## Open questions
 
 - Does the bench consume EU per repair? This needs a record with the area 08 owner. It would decide the MTE class and tier.
-- Do guns share the armour formula, or do they need their own? [02-guns](../../techguns-spec/02-guns/index.md) owns durability. A design record on repair costs would settle it.
+- Do guns share the armor formula, or do they need their own? [02-guns](../../techguns-spec/02-guns/index.md) owns durability. A design record on repair costs would settle it.

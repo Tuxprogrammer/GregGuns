@@ -73,13 +73,13 @@ MineTweaker can add or remove recipes (`minetweaker.md`).
 
 - **Title.** `techguns.container.chargingStation` ("Charging Station"). Inventory label as usual.
 - **Upgrade slot frame.** u7 v83, 18×18, drawn at (149,49).
-- **Progress.** Between the two slots the texture prints a grey outline of a lightning-bolt arrow at about (38,18). While working, sprite u0 v167 (a red→orange→yellow lightning arrow), width progress·26/total + 1, height 10, is drawn at (39,19). It fills **left→right**. In item mode totalTime is 0, so only a 1-pixel sliver shows ([MPRD-28](index.md#suspected-bugs)).
+- **Progress.** Between the two slots the texture prints a gray outline of a lightning-bolt arrow at about (38,18). While working, sprite u0 v167 (a red→orange→yellow lightning arrow), width progress·26/total + 1, height 10, is drawn at (39,19). It fills **left→right**. In item mode totalTime is 0, so only a 1-pixel sliver shows ([MPRD-28](index.md#suspected-bugs)).
 - **Container sync:** 0 progress, 1 totalTime, 2 power/100.
 
 ## 4. Effects and sound (client only, called while working)
 
 The effects routine:
-- **ChargeFlare particles.** Only when the client player is within 10 blocks (squared distance < 100). Spawned every tick of activity at four points at block-centre height, skipping the one on the side matching `rotation`:
+- **ChargeFlare particles.** Only when the client player is within 10 blocks (squared distance < 100). Spawned every tick of activity at four points at block-center height, skipping the one on the side matching `rotation`:
   - (0.5, 0.5, 0.3), skipped when rotation 2;
   - (0.5, 0.5, 0.7), skipped when rotation 0;
   - (0.3, 0.5, 0.5), skipped when rotation 1;
@@ -90,9 +90,9 @@ The effects routine:
 
 ## 5. Visuals
 
-- **Renderer.** `RenderChargingStation` (extends [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr)) with `ModelChargingStation` (declared 64×64) and texture [`textures/blocks/ChargingStation.png`](../07-blocks/textures.md#11-model-textures) (128×128, catalogued in [07-blocks](../07-blocks/index.md)).
-- **Look.** A cage: bottom and top plates (each with an inner plate), four corner pillars, three side plates (one side open) and three power coils with sockets (`Power1..3`, `PowerS1..3`), joined by connectors. The texture is light concrete-grey panels, black/grey sockets and red accent stripes. A glass part exists in the model but isn't rendered.
-- **Item inside.** `currentOperation` (recipe mode), or the slot-0 item while `charging` (item mode), rendered as an `EntityItem` hovering in the middle of the cage. It's turned by −90° − 90°·rotation about Y and placed at local y −1.225 (block centre after the base translate).
+- **Renderer.** `RenderChargingStation` (extends [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr)) with `ModelChargingStation` (declared 64×64) and texture [`textures/blocks/ChargingStation.png`](../07-blocks/textures.md#11-model-textures) (128×128, cataloged in [07-blocks](../07-blocks/index.md)).
+- **Look.** A cage: bottom and top plates (each with an inner plate), four corner pillars, three side plates (one side open) and three power coils with sockets (`Power1..3`, `PowerS1..3`), joined by connectors. The texture is light concrete-gray panels, black/gray sockets and red accent stripes. A glass part exists in the model but isn't rendered.
+- **Item inside.** `currentOperation` (recipe mode), or the slot-0 item while `charging` (item mode), rendered as an `EntityItem` hovering in the middle of the cage. It's turned by −90° − 90°·rotation about Y and placed at local y −1.225 (block center after the base translate).
 - **Model orientation.** Rotated 180° + 90°·rotation about Y, i.e. 180° offset from the other machines' convention. The flare positions in §4 suggest the closed side sits at the back.
 - No moving parts. The progress argument is passed in but ignored.
 
@@ -100,10 +100,10 @@ The effects routine:
 
 | # | Field | Contents |
 |---|---|---|
-| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 9; tile `ChargingStationTileEnt`; name key `techguns.tile.BasicMachine_9.name`, English **Charging Station**; container `ChargingStationContainer`, GUI ID 9; creative tab Techguns; oredict names none |
-| 2 | Obtaining | Shaped ore recipe `sgs / cbc / sgs` (s [`plateSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), g `wireGold`, b `circuitBasic`, c Coil); see [blocks-and-items.md](blocks-and-items.md#crafting-recipes-for-the-machines-in-this-area) |
+| 1 | Identity | Block [`basicMachine`](../07-blocks/block-catalog.md#registered-blocks) meta 9; tile `ChargingStationTileEnt`; name key `techguns.tile.BasicMachine_9.name`, English **Charging Station**; container `ChargingStationContainer`, GUI ID 9; creative tab Techguns; oredict names none |
+| 2 | Obtaining | Shaped ore recipe `sgs / cbc / sgs` (s [`plateSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo), g `wireGold`, b `circuitBasic`, c Coil); see [blocks-and-items.md](blocks-and-items.md#crafting-recipes-for-the-machines-in-this-area) |
 | 3 | Numbers | Buffer 100 000 RF; recipe mode 20 RF/t times the multiplier; item mode up to 100 RF/t into the item; multiplier clamped to 8; hardness 4.0, resistance 20.0; one recipe (section 2) |
-| 4 | Behaviour | Section 2 (recipe mode versus item mode); effects in section 4 |
+| 4 | Behavior | Section 2 (recipe mode versus item mode); effects in section 4 |
 | 5 | Persistence and sync | NBT `charging` (boolean), plus the base keys. GUI progress-bar fields: 0 progress, 1 totalTime, 2 power/100 (the RF value is divided by 100 to fit a short) |
 | 6 | UI | Section 3. Item tooltip "Has TileEntity Data" when carrying `TileEntityData`. GUI title "Charging Station" |
 | 7 | Visuals | No per-face block texture (TESR only). TESR `RenderChargingStation` + `ModelChargingStation`; atlas `textures/blocks/ChargingStation.png`, 128×128, average #7A7B74, dominant #707070 20 %, #505050 12 %, #B0B0B0 11 %, 43 % opaque. Item renderer delegate 9. Particles: `ChargeFlare` (see section 4) |

@@ -61,8 +61,8 @@ All guns use Forge 1.7.10 `IItemRenderer` custom item renderers. They draw a `Mo
 
 Notes on the flags:
 
-* **handleDamage**: the model's extended `render(…, ammoLeft, reloadProgress, renderType, part, fireProgress)` is called. Otherwise the plain `render(…)` is called, which `ModelMultipart` forwards with `ammoLeft = 100`, `reloadProgress = -1`, `renderType = ENTITY`, `part = 0`, `fireProgress = 0`. **Consequence:** a multipart model whose renderer has `handleDamage = false` always receives `part = 0`. This is why `RenderAUG`/`RenderScar` are given `dmg = true`. Without it, their bolt part would never be selected.
-* **handleProgress**: in first person, while the player has the item "in use" (`getItemInUse() != null`), `prog` = ticks in use ÷ `fullChargeTime` for charge guns ([`GenericGunCharge`](../02-guns/per-gun-behaviour.md#genericguncharge-genericgunchargejava)), otherwise ticks in use ÷ 20, clamped to [0,1]. Only charge guns and grenades ever put the item in use, so this only animates the Power Hammer and Bio Gun charge. For the other flagged guns it stays 0 until firing overwrites it (see §3).
+* **handleDamage**: the model's extended `render(…, ammoLeft, reloadProgress, renderType, part, fireProgress)` is called. Otherwise the plain `render(…)` is called, which `ModelMultipart` forward with `ammoLeft = 100`, `reloadProgress = -1`, `renderType = ENTITY`, `part = 0`, `fireProgress = 0`. **Consequence:** a multipart model whose renderer has `handleDamage = false` always receives `part = 0`. This is why `RenderAUG`/`RenderScar` are given `dmg = true`. Without it, their bolt part would never be selected.
+* **handleProgress**: in first person, while the player has the item "in use" (`getItemInUse() != null`), `prog` = ticks in use ÷ `fullChargeTime` for charge guns ([`GenericGunCharge`](../02-guns/per-gun-behavior.md#genericguncharge-genericgunchargejava)), otherwise ticks in use ÷ 20, clamped to [0,1]. Only charge guns and grenades ever put the item in use, so this only animates the Power Hammer and Bio Gun charge. For the other flagged guns it stays 0 until firing overwrites it (see §3).
 * **parts**: the model is drawn *parts* times per frame. Each pass gets its own GL matrix and its own transform calls with the part index. Multipart models render a different subset of boxes per index. This is how slides, pumps, bolts, drums, spinning barrels and hammer heads move independently.
 
 Unused renderer classes are present in the source but never registered: `RenderGun` (legacy single-part base), `RenderGunScoped` + `RenderM4Scoped`, `RenderGunMultipart` + [`RenderDriller`](gun-models.md#modeldriller-unused-12864-family-z-18-boxes-2-parts), `RenderMP5` (extends RenderPistol, adds nothing), and `RenderNeutrinoGun` (registered against a `null` item). `RenderGenericItem` *is* used, for magazine and rocket shared items.
@@ -87,7 +87,7 @@ IItemRenderer
 
 Models: `ModelMultipart` (abstract, extends ModelBase) declares the extended `render` with part, ammo, reload and fire progress. `ModelAkimbo` wraps another ModelMultipart: part indices ≥ partsPerModel are folded back (`part − partsPerModel`) so the same geometry is drawn for the second gun. [`ModelModel`](gun-models.md#obj-model-modelsgunsgrenadelauncherobj) wraps an OBJ (`AdvancedModelLoader`). It scales by the 0.0625 factor and renders the OBJ group whose name is the part index as a string (`"0"`, `"1"`); the plain `render` draws all groups. `ModelGunAmmo` is the legacy ammo-aware base used only by the dead `RenderGun`. `ModelNull` is an empty model (used by the helicopter renderer, area [10](../10-entities-npcs/index.md)).
 
-`handleRenderType` returns true for all render types and `shouldUseRenderHelper` returns true for all helpers on every gun renderer. Forge's standard inventory and entity helpers (bobbing, centring) therefore apply.
+`handleRenderType` returns true for all render types and `shouldUseRenderHelper` returns true for all helpers on every gun renderer. Forge's standard inventory and entity helpers (bobbing, centering) therefore apply.
 
 ---
 
@@ -142,7 +142,7 @@ For each part index `i` in 0 … parts−1:
 4. **Dropped (`ENTITY`):** apply **Ground transform**(i).
 5. **Inventory (`INVENTORY`):** apply **Icon transform**(i).
 6. If not *renderScope*:
-   * Pick the texture: index = the item's camo index if the item implements [`ICamoChangeable`](../05-armor/armor-catalogue.md#1-class-hierarchy) (all guns do), else 0. Bind `gun.textures[index]`.
+   * Pick the texture: index = the item's camo index if the item implements [`ICamoChangeable`](../05-armor/armor-catalog.md#1-class-hierarchy) (all guns do), else 0. Bind `gun.textures[index]`.
    * Render the model: extended call with `ammoLeft = gun.getCurrentAmmo(stack)`, reloadProgress, render type, part i and `prog` (handleDamage), or the plain call.
    * Pop matrix.
    * After the **last** part only: if *showMuzzleFX*, draw the muzzle effect (§7) in the muzzle frame. If first person, call `drawExtraEffects()` in the same frame (only the flamethrower overrides it).
@@ -201,7 +201,7 @@ The muzzle flash, extra effects and scope are drawn in a frame that is *not* att
 
 ### 6.3 Third-person aimed pre-rotation
 
-Applied before the equipped base transform for players (always, whenever any [`GenericGun`](../02-guns/gun-lifecycle.md) is held) and for Techguns NPCs with the aimed-bow animation: rotX(−45), rotY(−18), rotZ(45), rotY(45), T(0, −1.3, −0.4), *[gun-specific extra translate]*, rotY(−45). The gun-specific extra translate (`transformEquippedAimed` override) is listed per gun in the sheets. At the same time an event handler (`RenderPlayerEvent.Pre`) forces `aimedBow = true` on the player's biped, armour and chestplate models whenever a GenericGun is held. Both arms are therefore raised forward like a drawn bow. Grenades are not GenericGuns and use the normal arm pose.
+Applied before the equipped base transform for players (always, whenever any [`GenericGun`](../02-guns/gun-lifecycle.md) is held) and for Techguns NPCs with the aimed-bow animation: rotX(−45), rotY(−18), rotZ(45), rotY(45), T(0, −1.3, −0.4), *[gun-specific extra translate]*, rotY(−45). The gun-specific extra translate (`transformEquippedAimed` override) is listed per gun in the sheets. At the same time an event handler (`RenderPlayerEvent.Pre`) forces `aimedBow = true` on the player's biped, armor and chestplate models whenever a GenericGun is held. Both arms are therefore raised forward like a drawn bow. Grenades are not GenericGuns and use the normal arm pose.
 
 ---
 
@@ -211,7 +211,7 @@ Applied before the equipped base transform for players (always, whenever any [`G
 
 * frame = ⌊frames × progress⌋. Nothing is drawn once frame ≥ frames. Frames are read left to right, top to bottom.
 * Enables "FX lighting" (lighting off, lightmap forced to full bright 240/240). Binds the sheet, pushes, rotates X, Y, Z, then scales by `scale`.
-* Draws a single quad in the local XZ plane (normal ±Y) centred at (offX, offY, offZ), side length `scale`. Because the scale is applied first, the **effective** offset is `scale × off` and the effective side is `scale²` GL units.
+* Draws a single quad in the local XZ plane (normal ±Y) centered at (offX, offY, offZ), side length `scale`. Because the scale is applied first, the **effective** offset is `scale × off` and the effective side is `scale²` GL units.
 * Brightness 15728880 (full). Restores lighting.
 
 Blending is whatever the caller sets: *default* (no explicit blend; uses the current item-render state, normally alpha-tested), *additive* (`enableAlphaBlendAdditive`: blend ONE, ONE inside a pushed ENABLE_BIT), or *additive + alpha test*.
@@ -244,7 +244,7 @@ The flash plays over the gun's `muzzleFlashtime` window (§3). Per-gun offsets, 
 
 `GenericGun.setTexture(path)` = `setTextures(path, 1)`. `setTextures(path, n)` makes the client add `assets/techguns/<path>.png` for index 0 and `<path>_<i>.png` for i = 1 … n−1. It also sets `camoCount = n`. The renderer binds `textures[camoIndex]`.
 
-Camo state lives in item NBT: byte tag **`camo`** (absent = 0). `switchCamo(stack[, back])` cycles 0 … camoCount−1 forwards or backwards and creates the tag if missing (UI and keybind in areas [01](../01-core/index.md)/[08](../08-machines-production/index.md)). The display name of a camo is the lang key `<unlocalizedName>.camoname.<i>` for i > 0. For i = 0 it is `techguns.item.defaultcamo` = "Default Camo".
+Camo state lives in item NBT: byte tag **`camo`** (absent = 0). `switchCamo(stack[, back])` cycles 0 … camoCount−1 forward or backward and creates the tag if missing (UI and keybind in areas [01](../01-core/index.md)/[08](../08-machines-production/index.md)). The display name of a camo is the lang key `<unlocalizedName>.camoname.<i>` for i > 0. For i = 0 it is `techguns.item.defaultcamo` = "Default Camo".
 
 | Gun | Texture base | Variants | Lang keys (en_US) |
 |---|---|---|---|
@@ -252,15 +252,15 @@ Camo state lives in item NBT: byte tag **`camo`** (absent = 0). `switchCamo(stac
 | M4 | textures/guns/m4Texture | 5 | techguns.item.m4.camoname.1 = Swamp, .2 = Desert, .3 = Ice, .4 = Hazard |
 | AK-47 | textures/guns/ak47Texture | 2 | techguns.item.ak47.camoname.1 = Blue |
 | PDW | textures/guns/PDW | 3 | techguns.item.pdw.camoname.1 = Silver, .2 = Dark Green |
-| Pulse Rifle | textures/guns/pulseRifle | 3 | techguns.item.pulseRifle.camoname.1 = Grey, .2 = Dark Green |
-| AUG | textures/guns/AugTexture | 5 | techguns.item.aug.camoname.1 = Grey, .2 = Wood, .3 = Sand, .4 = Nether |
+| Pulse Rifle | textures/guns/pulseRifle | 3 | techguns.item.pulseRifle.camoname.1 = Gray, .2 = Dark Green |
+| AUG | textures/guns/AugTexture | 5 | techguns.item.aug.camoname.1 = Gray, .2 = Wood, .3 = Sand, .4 = Nether |
 | SCAR | textures/guns/scar_texture | 2 | techguns.item.scar.camoname.1 = Black |
 | Vector | textures/guns/vector_texture | 2 | techguns.item.vector.camoname.1 = Black |
 | every other gun | its single texture | 1 | – |
 
-Other related lang strings: `techguns.item.defaultcamo` = Default Camo. `techguns.item.invalidcamo` = No Camo. `techguns.tooltip.currentcamo` = Current Camo. `techguns.message.camoswitch` = Switched Camo to. The tooltip line itself is built in area 02. *Correction (consistency pass):* no gun tooltip or chat message shows the camo; `techguns.tooltip.currentcamo` and `techguns.message.camoswitch` are used by armour only, and a gun's camo is changed only in the Camo Bench GUI. See [lang-and-strings.md](lang-and-strings.md).
+Other related lang strings: `techguns.item.defaultcamo` = Default Camo. `techguns.item.invalidcamo` = No Camo. `techguns.tooltip.currentcamo` = Current Camo. `techguns.message.camoswitch` = Switched Camo to. The tooltip line itself is built in area 02. *Correction (consistency pass):* no gun tooltip or chat message shows the camo; `techguns.tooltip.currentcamo` and `techguns.message.camoswitch` are used by armor only, and a gun's camo is changed only in the Camo Bench GUI. See [lang-and-strings.md](lang-and-strings.md).
 
-**Texture resolution vs model.** Box UVs are normalised by the model's declared `textureWidth/Height`, so a PNG may be an exact integer multiple of the declared size and render as a higher-resolution version of the same layout. Mismatches (all ×2) are: Blaster Rifle (model 128×64, PNG 256×128), Frag Grenade (32×32 / 64×64), Mac-10 (64×32 / 128×64), MIB gun (64×64 / 128×128), Neutrino gun (128×128 / 256×256), Pistol3 (64×32 / 128×64), SCAR (128×64 / 256×128), Vector (128×64 / 256×128). See [textures.md](textures.md).
+**Texture resolution vs model.** Box UVs are normalized by the model's declared `textureWidth/Height`, so a PNG may be an exact integer multiple of the declared size and render as a higher-resolution version of the same layout. Mismatches (all ×2) are: Blaster Rifle (model 128×64, PNG 256×128), Frag Grenade (32×32 / 64×64), Mac-10 (64×32 / 128×64), MIB gun (64×64 / 128×128), Neutrino gun (128×128 / 256×256), Pistol3 (64×32 / 128×64), SCAR (128×64 / 256×128), Vector (128×64 / 256×128). See [textures.md](textures.md).
 
 ---
 
@@ -299,7 +299,7 @@ While a recoil window is live and the overlay is shown: r = 5p for p < 0.2, else
 | M4 Infiltrator | (0.1, 0.15, 0.05) |
 | Pulse Rifle | (0.10, 0.10, 0) |
 
-In the rotated muzzle frame, X is screen up/down. The overlay therefore kicks upwards and slightly sideways.
+In the rotated muzzle frame, X is screen up/down. The overlay therefore kicks upward and slightly sideways.
 
 [`ModelSniperScope`](gun-models.md#modelsniperscope-unused) (a single 1080×1080×0 box with no texture size set) is an abandoned scope model. It is not referenced anywhere.
 
@@ -340,7 +340,7 @@ In the rotated muzzle frame, X is screen up/down. The overlay therefore kicks up
 
 ## 12. Grenade renderers (`RenderGrenade`)
 
-The texture argument *is* used here: [`textures/guns/stielgranate.png`](textures.md#measured-colours-all-62-textures) and [`textures/guns/fragGrenade_texture.png`](textures.md#measured-colours-all-62-textures). There are no timers. In first person, prog = item-in-use ticks ÷ 20, clamped to [0,1] (the throw wind-up). Every view calls the model's extended render with part 0, ammo 0, reloadProgress 0 and fireProgress = prog (0 outside first person).
+The texture argument *is* used here: [`textures/guns/stielgranate.png`](textures.md#measured-colors-all-62-textures) and [`textures/guns/fragGrenade_texture.png`](textures.md#measured-colors-all-62-textures). There are no timers. In first person, prog = item-in-use ticks ÷ 20, clamped to [0,1] (the throw wind-up). Every view calls the model's extended render with part 0, ammo 0, reloadProgress 0 and fireProgress = prog (0 outside first person).
 
 | | Stielhandgranate | Frag grenade |
 |---|---|---|
@@ -356,7 +356,7 @@ The same models, with `ModelFragGrenade(false)` (no ring), render the thrown pro
 
 ## 13. Magazine and rocket item renderers (`RenderGenericItem`)
 
-[`TGItems.sharedItem`](../06-items/item-catalogue.md) is a metadata item (area [06](../06-items/index.md)). Its renderer claims only these metas and draws a 3D model. All other metas fall back to normal 2D icons. Metas below were computed from registration order in `TGItems` (verify against area [06](../06-items/index.md)).
+[`TGItems.sharedItem`](../06-items/item-catalog.md) is a metadata item (area [06](../06-items/index.md)). Its renderer claims only these metas and draws a 3D model. All other metas fall back to normal 2D icons. Metas below were computed from registration order in `TGItems` (verify against area [06](../06-items/index.md)).
 
 | Shared item | meta | Renderer | Model | Texture |
 |---|---|---|---|---|
@@ -384,7 +384,7 @@ The magazine models reuse the exact boxes, and UV positions, of the magazine on 
 
 ## 14. Sound playback mechanics (summary)
 
-Full catalogue in [sounds.md](sounds.md). Gun sounds are [`TGSound`](../01-core/client-effects-audio.md#tgsound) moving sounds:
+Full catalog in [sounds.md](sounds.md). Gun sounds are [`TGSound`](../01-core/client-effects-audio.md#tgsound) moving sounds:
 
 * **Fire / loop-start / rechamber:** [`SoundUtil.playSoundOnEntityGunPosition`](../01-core/utilities.md#soundutil). Server side, it sends [`PacketPlaySound`](../01-core/networking.md#9--packetplaysound-sc) to every client within 100 blocks. Clients other than the shooter (`playOnOwnPlayer` is false for these) play it. On the shooting client the same call runs locally, so the shooter hears it without waiting for the server. Volume: `SOUND_DISTANCE` = 4.0 for fire sounds (with vanilla attenuation that is audible to about 64 blocks), 1.0 for rechamber. Pitch 1. "Gun position" = 1 block in front of the entity along its head yaw, at half its height. The sound follows the entity only if *moving* is set (fire sounds are not moving, so they stay where they were emitted).
 * **Reload:** `SoundUtil.playReloadSoundOnEntity`: same packet path, moving = true. Locally it is suppressed if the previous local reload sound started less than 500 ms ago (prevents double play).

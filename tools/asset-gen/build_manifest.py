@@ -2,7 +2,7 @@
 """Build the GregGuns asset manifest.
 
 Reads the measured Techguns footprints (docs/techguns-spec/ASSET-FACTS.md and AUDIO-PROFILES.md)
-and the GT material colours, applies the GregGuns scope decisions (design records 0001, 0002,
+and the GT material colors, applies the GregGuns scope decisions (design records 0001, 0002,
 0006, 0009, 0010, 0011) and writes:
 
     tools/asset-gen/manifest.json   machine-readable manifest
@@ -12,7 +12,7 @@ and the GT material colours, applies the GregGuns scope decisions (design record
 Run:  python -I tools/asset-gen/build_manifest.py
 
 Nothing here generates an asset. Techguns paths appear only as footprint references (size,
-frames, colour, duration). No Techguns pixel or sample is read.
+frames, color, duration). No Techguns pixel or sample is read.
 """
 import json
 import os
@@ -141,7 +141,7 @@ GUNS = [
     ("m4", "M4 Assault Rifle", "MV", "m4Texture", "P2", "M4-style rifle with optic"),
     ("ak47", "AK47", "MV", "ak47Texture", "P2", "AK-style rifle, curved magazine, wood foregrip"),
     ("frag_grenade", "Frag Grenade", "MV", "fragGrenade_texture", "P2", "olive fragmentation grenade with pin"),
-    ("flashbang", "Flashbang", "MV", None, "P2", "grey cylinder grenade with magnesium-white band (new design)"),
+    ("flashbang", "Flashbang", "MV", None, "P2", "gray cylinder grenade with magnesium-white band (new design)"),
     ("akimbo_pistols", "Akimbo Pistols", "MV", "pistol3", "P2", "two 9mm pistols crossed"),
     ("akimbo_revolvers", "Akimbo Revolvers", "MV", "revolver", "P2", "two revolvers crossed"),
     ("aug", "AUG", "HV", "AugTexture", "P2", "bullpup rifle with optic"),
@@ -156,7 +156,7 @@ GUNS = [
     ("akimbo_mac10s", "Akimbo Mac10s", "HV", "mac10texture", "P2", "two Mac10 crossed"),
     ("chainsaw", "Chainsaw", "HV", "chainsaw", "P3", "gasoline chainsaw with steel bar"),
     ("power_hammer", "Power Hammer", "HV", "powerHammer", "P3", "pneumatic hammer with air hose"),
-    ("laser_rifle", "Laser Rifle", "EV", "Lasergun", "P3", "warm-grey sci-fi rifle with red emitter"),
+    ("laser_rifle", "Laser Rifle", "EV", "Lasergun", "P3", "warm-gray sci-fi rifle with red emitter"),
     ("pdw", "PDW", "EV", "PDW", "P3", "dark compact carbon PDW"),
     ("pulse_rifle", "Pulse Rifle", "EV", "pulseRifle", "P3", "carbon rifle with diamond-lens fire control"),
     ("minigun", "Minigun", "EV", "minigun", "P3", "six-barrel rotary gun with drum"),
@@ -166,11 +166,11 @@ GUNS = [
     ("power_hammer_adv", "Power Hammer (Advanced)", "EV", "powerHammerAdv", "P3", "diamond-studded power hammer"),
     ("blaster_rifle", "Blaster Rifle", "IV", "blasterRifle", "P3", "heavy blaster rifle, orange emitter"),
     ("deatomizer_pistol", "De-Atomizer Pistol", "IV", "mibgun", "P3", "chrome sci-fi pistol with blue lamp"),
-    ("scatter_laser_rifle", "Scatter Laser Rifle", "IV", "laserGunNew", "P3", "grey multi-emitter laser rifle (new design)"),
+    ("scatter_laser_rifle", "Scatter Laser Rifle", "IV", "laserGunNew", "P3", "gray multi-emitter laser rifle (new design)"),
     ("golden_revolver", "Golden Revolver", "IV", "goldenrevolver", "P2", "gold-plated revolver"),
     ("akimbo_deatomizer_pistols", "Akimbo De-Atomizer Pistols", "IV", "mibgun", "P3", "two De-Atomizer pistols crossed"),
     ("akimbo_golden_revolvers", "Akimbo Golden Revolvers", "IV", "goldenrevolver", "P2", "two golden revolvers crossed"),
-    ("nether_blaster", "Nether Blaster", "LuV", "cyberdemonblaster", "P3", "worn grey blaster with lava-orange core"),
+    ("nether_blaster", "Nether Blaster", "LuV", "cyberdemonblaster", "P3", "worn gray blaster with lava-orange core"),
     ("alien_blaster", "Alien Blaster", "LuV", "alien_blaster", "P3", "pale alloy alien pistol, violet glow"),
     ("grim_reaper", "Grim Reaper", "LuV", "grimreaper", "P3", "quad-tube rocket battery"),
     ("nuclear_death_ray", "Nuclear Death Ray", "ZPM", "NDR", "P3", "bulky ray projector, golden plasma core"),
@@ -186,7 +186,7 @@ for reg, disp, tier, tex, pri, desc in GUNS:
         fp = ttex("guns/%s.png" % tex) + " (model sheet, silhouette reference only)"
     else:
         fp = ttex("guns/fragGrenade_texture.png") + " (model sheet, silhouette reference only)"
-    icon(reg, "%s (%s)" % (disp, tier), G + desc + ". Metal parts take the %s gate colour." % TIER_MAT[tier],
+    icon(reg, "%s (%s)" % (disp, tier), G + desc + ". Metal parts take the %s gate color." % TIER_MAT[tier].replace("Aluminium", "Aluminum"),
          tier=tier, fp=fp, pri=pri)
 
 # Components (06 recipes component index). (reg, display, tier, material, Techguns icon, pri, description)
@@ -194,16 +194,16 @@ PARTS = [
     ("part_barrel_stone", "Stone Barrel", "ULV", ["Bronze", "Stone"], "stoneBarrel", "P2", "stone barrel with a bronze liner"),
     ("part_barrel_iron", "Iron Barrel", "LV", ["Iron", "Steel"], "ironBarrel", "P2", "plain iron barrel, two steel rings"),
     ("part_barrel_hardened", "Hardened Steel Barrel", "LV", ["Steel"], "obsidianSteelBarrel", "P1", "dark steel barrel with jacket plate"),
-    ("part_barrel_carbon", "Carbon Barrel", "EV", ["Titanium", "EpoxidFiberReinforced"], "carbonBarrel", "P3", "black fibre-wrapped barrel"),
+    ("part_barrel_carbon", "Carbon Barrel", "EV", ["Titanium", "EpoxidFiberReinforced"], "carbonBarrel", "P3", "black fiber-wrapped barrel"),
     ("part_barrel_laser", "Laser Barrel", "EV", ["Titanium", "Electrum"], "laserBarrel", "P3", "barrel with a glass lens and electrum foil"),
     ("part_stock_wooden", "Wooden Stock", "ULV", ["Wood"], "woodStock", "P2", "carved wooden gun stock"),
     ("part_stock_plastic", "Plastic Gun Stock", "MV", ["Polyethylene", "Aluminium"], "plasticGunstock", "P2", "off-white polymer stock"),
-    ("part_stock_carbon", "Carbon Gunstock", "EV", ["EpoxidFiberReinforced", "Titanium"], "carbonGunstock", "P3", "black fibre stock"),
+    ("part_stock_carbon", "Carbon Gunstock", "EV", ["EpoxidFiberReinforced", "Titanium"], "carbonGunstock", "P3", "black fiber stock"),
     ("part_pump_mechanism", "Pump Mechanism", "LV", ["Steel", "Rubber"], "pumpMechanism", "P2", "spring and rubber-seal pump slide"),
     ("part_receiver_iron", "Iron Receiver", "LV", ["Iron"], "ironReceiver", "P2", "boxy iron receiver block"),
     ("part_receiver_steel", "Steel Receiver", "MV", ["Steel"], "steelReceiver", "P2", "machined steel receiver"),
     ("part_receiver_hardened", "Hardened Receiver", "HV", ["StainlessSteel"], "obsidianSteelReceiver", "P2", "dark stainless receiver"),
-    ("part_receiver_carbon", "Carbon Receiver", "EV", ["Titanium", "EpoxidFiberReinforced"], "carbonReceiver", "P3", "black fibre receiver"),
+    ("part_receiver_carbon", "Carbon Receiver", "EV", ["Titanium", "EpoxidFiberReinforced"], "carbonReceiver", "P3", "black fiber receiver"),
     ("part_mechanical_1", "Mechanical Parts", "ULV", ["Bronze"], "mechanicalParts", "P2", "bronze gears and a small spring"),
     ("part_mechanical_2", "Mechanical Parts T2", "LV", ["Steel"], "mechanicalPartsT2", "P1", "steel gears, spring and screws"),
     ("part_mechanical_3", "Mechanical Parts T3", "EV", ["Titanium"], "mechanicalPartsT3", "P3", "titanium gears, spring and screws"),
@@ -213,11 +213,11 @@ PARTS = [
     ("part_heat_ray_focus", "Heat Ray Focus", "EV", ["Titanium"], "rcHeatRay", "P3", "teardrop orange-red focus lens"),
     ("part_rad_emitter", "Rad Emitter", "ZPM", ["NaquadahAlloy", "Uranium235"], "radEmitter", "P3", "lead-shielded emitter with green glow"),
     ("part_anti_gravity_core", "Anti Gravity Core", "IV", ["TungstenSteel"], "antiGravityCore", "P3", "cyan core sphere in a steel cage"),
-    ("part_cybernetic", "Cybernetic Parts", "EV", ["Electrum", "Titanium"], "cyberneticParts", "P3", "wires and plates, warm grey"),
+    ("part_cybernetic", "Cybernetic Parts", "EV", ["Electrum", "Titanium"], "cyberneticParts", "P3", "wires and plates, warm gray"),
     ("part_heavy_cloth", "Heavy Cloth", "ULV", ["Wood"], "heavyCloth", "P2", "folded brown heavy cloth"),
     ("part_treated_leather", "Treated Leather", "LV", ["Steel"], "treatedLeather", "P2", "dark green-black treated leather"),
     ("part_steam_armor_plating", "Steam Armor Plating", "EV", ["Titanium", "Bronze"], "steamArmorPlate", "P2", "riveted bronze-titanium plate"),
-    ("part_power_plating", "Power Plating", "IV", ["TungstenSteel", "EpoxidFiberReinforced"], "powerPlating", "P2", "slate plate with fibre layer"),
+    ("part_power_plating", "Power Plating", "IV", ["TungstenSteel", "EpoxidFiberReinforced"], "powerPlating", "P2", "slate plate with fiber layer"),
     ("part_gas_mask_filter", "Gas Mask Filter", "MV", ["Aluminium"], "gasMaskFilter", "P2", "round filter canister"),
     ("part_nuclear_warhead", "Small Nuclear Warhead", "ZPM", ["NaquadahAlloy", "Lead"], "tacticalNuclearWarhead", "P3", "olive warhead with hazard band"),
     ("part_glider_backpack", "Glider Backpack", "HV", ["StainlessSteel", "Wood"], "gliderBackback", "P2", "canvas backpack with steel frame"),
@@ -229,8 +229,8 @@ for reg, disp, tier, mats, fpn, pri, desc in PARTS:
 
 # Ammunition
 AMMO = [
-    ("ammo_stone_bullet", "Stone Bullet", "ULV", ["Stone"], "stonebullets", "P2", "round grey stone shot"),
-    ("ammo_9mm_bullet", "9mm Bullets", "LV", ["Brass"], "bullets9mm", "P1", "short brass-cased pistol rounds with grey tips"),
+    ("ammo_stone_bullet", "Stone Bullet", "ULV", ["Stone"], "stonebullets", "P2", "round gray stone shot"),
+    ("ammo_9mm_bullet", "9mm Bullets", "LV", ["Brass"], "bullets9mm", "P1", "short brass-cased pistol rounds with gray tips"),
     ("ammo_shotgun_shell", "Shotgun Shell", "LV", ["Brass"], "shotgunShell", "P2", "red plastic shell with brass base"),
     ("ammo_rifle_bullet", "Rifle Bullets", "LV", ["Brass", "Steel"], "rifleBullets", "P2", "long brass rifle cartridges"),
     ("ammo_high_caliber_round", "High Caliber Rounds", "HV", ["Brass", "StainlessSteel"], "highCalibreBullets", "P2", "large brass anti-materiel rounds"),
@@ -262,7 +262,7 @@ for reg, disp, tier, fpn, pri in MAGS:
             fp = ttex("items/%s%s.png" % (fpn, ("Empty" if fpn != "minigunDrum" else "_empty") if empty else ""))
         icon(r, "%s%s (%s)" % (disp, " (Empty)" if empty else "", tier),
              G + ("Empty magazine: same silhouette, no rounds visible, darker interior."
-                  if empty else "Loaded magazine: visible brass round tops.") + " Body in the tier gate colour.",
+                  if empty else "Loaded magazine: visible brass round tops.") + " Body in the tier gate color.",
              tier=tier, pri=pri, fp=fp)
 TANKS = [
     ("tank_fuel", "Fuel Tank", "HV", "flamethrowerTank", "P2", ["StainlessSteel"], "orange-brown fuel canister"),
@@ -272,11 +272,11 @@ TANKS = [
 for reg, disp, tier, fpn, pri, mats, desc in TANKS:
     for empty in (False, True):
         icon(reg + ("_empty" if empty else ""), "%s%s (%s)" % (disp, " (Empty)" if empty else "", tier),
-             G + desc + (", drained: grey glass, no fill" if empty else ", full") + ".", mats=mats, pri=pri,
+             G + desc + (", drained: gray glass, no fill" if empty else ", full") + ".", mats=mats, pri=pri,
              fp=ttex("items/%s%s.png" % (fpn, "Empty" if empty else "")))
 icon("cell_nuclear", "Nuclear Power Cell (ZPM)", G + "green-glow uranium cell in a lead sleeve.", mats=["NaquadahAlloy", "Uranium235", "Lead"],
      pri="P3", fp=ttex("items/nuclearPowerCell.png"))
-icon("cell_nuclear_depleted", "Nuclear Power Cell, Depleted (ZPM)", G + "same cell, glow gone, dull grey-brown.", mats=["NaquadahAlloy", "Lead"],
+icon("cell_nuclear_depleted", "Nuclear Power Cell, Depleted (ZPM)", G + "same cell, glow gone, dull gray-brown.", mats=["NaquadahAlloy", "Lead"],
      pri="P3", fp=ttex("items/nuclearPowerCellDepleted.png"))
 
 # Consumables, tools, placers, misc
@@ -289,33 +289,33 @@ for i, nm in enumerate(("Woodland", "Snow", "Desert")):
          G + "folded net roll, %s camouflage pattern." % nm.lower(), pri="P3",
          extra_palette={"Woodland": ["#3C5A28", "#6E7A3C"], "Snow": ["#E6EBEF", "#AEB9C4"], "Desert": ["#B49664", "#8C7448"]}[nm],
          fp=ttex("items/camoNetPlacer%d.png" % i))
-icon("bunker_door", "Bunker Door (item)", G + "grey riveted steel door slab.", mats=["Iron"], pri="P3",
+icon("bunker_door", "Bunker Door (item)", G + "gray riveted steel door slab.", mats=["Iron"], pri="P3",
      fp=ttex("items/metalDoor.png"))
 icon("ammo_pouch", "Ammo Pouch (Baubles quiver)", G + "small leather pouch with brass snaps and three bullets showing.",
      mats=["Brass"], extra_palette=["#6B4A2B"], pri="P2", fp="(new item, no Techguns icon)")
-icon("spawn_egg", "Spawn Egg (base)", G + "greyscale mottled egg, transparent outside, tintable per mob.",
+icon("spawn_egg", "Spawn Egg (base)", G + "grayscale mottled egg, transparent outside, tintable per mob.",
      pri="P3", extra_palette=["#898989"], fp=ttex("items/spawn_egg.png"))
-icon("spawn_egg_overlay", "Spawn Egg (overlay)", G + "white 'GG' lettering with a 1 px dark outline, greyscale so tint works.",
+icon("spawn_egg_overlay", "Spawn Egg (overlay)", G + "white 'GG' lettering with a 1 px dark outline, grayscale so tint works.",
      pri="P3", extra_palette=["#FFFFFF"], fp=ttex("items/spawn_egg_overlay.png"))
-for mat, disp, tier in (("Iron", "Iron", "LV"), ("Steel", "Steel", "LV"), ("Aluminium", "Aluminium", "MV"),
+for mat, disp, tier in (("Iron", "Iron", "LV"), ("Steel", "Steel", "LV"), ("Aluminium", "Aluminum", "MV"),
                          ("EpoxidFiberReinforced", "Carbon", "EV")):
-    icon("turret_armor_" + mat.lower().replace("epoxidfiberreinforced", "carbon"), "Turret Armour Plate, %s" % disp,
-         G + "curved armour plate with bolt holes.", mats=[mat], pri="P3",
+    icon("turret_armor_" + mat.lower().replace("epoxidfiberreinforced", "carbon").replace("aluminium", "aluminum"), "Turret Armor Plate, %s" % disp,
+         G + "curved armor plate with bolt holes.", mats=[mat], pri="P3",
          fp=ttex("items/turretArmor%s.png" % {"Iron": "Iron", "Steel": "Steel", "Aluminium": "ObsidianSteel", "EpoxidFiberReinforced": "Carbon"}[mat]))
 
-# Armour: sets of four, plus single pieces. (set id, display prefix, tier, materials, pieces, Techguns item prefix, description)
+# Armor: sets of four, plus single pieces. (set id, display prefix, tier, materials, pieces, Techguns item prefix, description)
 PIECES = (("helmet", "Helmet"), ("chestplate", "Chestplate"), ("leggings", "Leggings"), ("boots", "Boots"))
 SETS = [
     ("t1_scout", "Bandit", "ULV", ["Bronze"], ("Mask", "Vest", "Pants", "Boots"), "t1_scout", "rough cloth with bronze studs"),
     ("t1_miner", "Miner's", "ULV", ["WroughtIron"], ("Helmet", "Jacket", "Pants", "Boots"), "t1_miner", "blue canvas, yellow helmet with lamp, wrought-iron rivets"),
     ("t1_combat", "Soldier's", "LV", ["Steel"], ("Helmet", "Vest", "Pants", "Boots"), "t1_combat", "steel plates on heavy cloth"),
-    ("t2_combat", "Combat", "MV", ["Aluminium"], ("Helmet", "Vest", "Pants", "Boots"), "t2_combat", "dark olive plates with aluminium trim"),
+    ("t2_combat", "Combat", "MV", ["Aluminium"], ("Helmet", "Vest", "Pants", "Boots"), "t2_combat", "dark olive plates with aluminum trim"),
     ("t2_commando", "Commando", "MV", ["Aluminium"], ("Helmet", "Vest", "Pants", "Boots"), "t2_commando", "near-black tactical gear"),
-    ("t2_riot", "Riot", "MV", ["Aluminium"], ("Helmet", "Coat", "Pants", "Boots"), "t2_riot", "brown long coat, visor helmet, aluminium shield plates"),
-    ("t3_combat", "Advanced Combat", "EV", ["Titanium", "EpoxidFiberReinforced"], ("Helmet", "Chestplate", "Leggings", "Boots"), "t3_combat", "blue-grey fibre armour with titanium panels"),
+    ("t2_riot", "Riot", "MV", ["Aluminium"], ("Helmet", "Coat", "Pants", "Boots"), "t2_riot", "brown long coat, visor helmet, aluminum shield plates"),
+    ("t3_combat", "Advanced Combat", "EV", ["Titanium", "EpoxidFiberReinforced"], ("Helmet", "Chestplate", "Leggings", "Boots"), "t3_combat", "blue-gray fiber armor with titanium panels"),
     ("t3_hev", "Hazardous Environment", "EV", ["Titanium", "EpoxidFiberReinforced"], ("Helmet", "Chestplate", "Leggings", "Boots"), "t3_miner", "sealed brown-orange hazmat suit with glass visor"),
-    ("steam", "Steam", "EV", ["Titanium", "Bronze"], ("Helmet", "Chestplate", "Legplates", "Boots"), None, "bronze-and-iron steam armour with pipes and vents"),
-    ("t3_power", "Power Armor", "IV", ["TungstenSteel"], ("Helmet", "Chestplate", "Leggings", "Boots"), None, "bulky slate power armour with glass visor"),
+    ("steam", "Steam", "EV", ["Titanium", "Bronze"], ("Helmet", "Chestplate", "Legplates", "Boots"), None, "bronze-and-iron steam armor with pipes and vents"),
+    ("t3_power", "Power Armor", "IV", ["TungstenSteel"], ("Helmet", "Chestplate", "Leggings", "Boots"), None, "bulky slate power armor with glass visor"),
     ("t3_exo", "Exo Suit", "IV", ["TungstenSteel", "Titanium"], ("Helmet", "Chestplate", "Leggings", "Boots"), "t3_exo", "light exoskeleton frame over combat gear"),
 ]
 for sid, pre, tier, mats, names, fpb, desc in SETS:
@@ -327,19 +327,19 @@ SINGLES = [
     ("t2_beret", "Beret", "MV", ["Aluminium"], "t2_beret", "red beret with a small badge"),
     ("gas_mask", "Gas Mask", "MV", ["Aluminium", "Rubber"], "gasMask", "rubber mask with round filter"),
     ("night_vision_goggles", "Night Vision Goggles", "MV", ["Aluminium", "Rubber"], "nightVisionGoggles", "black goggles with green lenses"),
-    ("oxygen_mask", "Oxygen Mask", "HV", ["StainlessSteel", "Rubber"], "oxygenMask", "grey half-mask with hose port"),
-    ("oxygen_tanks", "Oxygen Tanks", "HV", ["StainlessSteel"], "scubaTanks", "twin grey oxygen cylinders"),
+    ("oxygen_mask", "Oxygen Mask", "HV", ["StainlessSteel", "Rubber"], "oxygenMask", "gray half-mask with hose port"),
+    ("oxygen_tanks", "Oxygen Tanks", "HV", ["StainlessSteel"], "scubaTanks", "twin gray oxygen cylinders"),
     ("glider", "Glider", "HV", ["StainlessSteel", "Wood"], "glider", "folded canvas glider pack"),
     ("jump_pack", "Jump Pack", "HV", ["StainlessSteel"], "jumppack", "boxy back unit with twin thruster cones"),
     ("tactical_mask", "Tactical Mask", "HV", ["Polyethylene", "StainlessSteel"], "tacticalMask", "black full-face mask with green lens"),
-    ("anti_gravity_device", "Anti Gravity Device", "IV", ["TungstenSteel"], "antiGravPack", "grey pack with glowing cyan core"),
+    ("anti_gravity_device", "Anti Gravity Device", "IV", ["TungstenSteel"], "antiGravPack", "gray pack with glowing cyan core"),
 ]
 for reg, disp, tier, mats, fpn, desc in SINGLES:
     pri = "P2"
     icon(reg, "%s (%s)" % (disp, tier), G + desc + ".", mats=mats, pri=pri, fp=ttex("items/%s.png" % fpn))
 
 # ----------------------------------------------------------------------------------------------
-# 2. Model textures: guns, armour, entities, machine models
+# 2. Model textures: guns, armor, entities, machine models
 # ----------------------------------------------------------------------------------------------
 GUN_TEX = {  # Techguns model sheet -> (gregguns gun id, priority, note)
     "handgun": ("handcannon", "P2"), "pistol3": ("pistol_9mm", "P1"), "revolver": ("revolver", "P2"),
@@ -362,7 +362,7 @@ GUN_TEX = {  # Techguns model sheet -> (gregguns gun id, priority, note)
 GUN_TIER = {g[0]: g[2] for g in GUNS}
 GUN_SHARE = {"pistol3": "also Akimbo Pistols", "revolver": "also Akimbo Revolvers", "mac10texture": "also Akimbo Mac10s",
              "mibgun": "also Akimbo De-Atomizer Pistols", "goldenrevolver": "also Akimbo Golden Revolvers",
-             "fragGrenade_texture": "also the Flashbang (recoloured)"}
+             "fragGrenade_texture": "also the Flashbang (recolored)"}
 UNUSED_GUN_TEX = {"pistol", "pistol2Texture", "mp5Texture", "neutrinogun", "drillTexture"}
 for p, f in sorted(TEX.items()):
     if not p.startswith("textures/guns/"):
@@ -381,10 +381,10 @@ for p, f in sorted(TEX.items()):
         brief="%s model sheet%s. Keep the Techguns UV layout and size so the rebuilt model maps 1:1. %s%s" % (
             dict((g[0], g[1]) for g in GUNS)[gid], " camo variant %d" % var if var else "",
             ("Shared: %s. " % GUN_SHARE[base]) if (base in GUN_SHARE and not var) else "",
-            "Metal parts take the %s gate colour; glow regions stay pure emissive colours." % TIER_MAT[tier]),
+            "Metal parts take the %s gate color; glow regions stay pure emissive colors." % TIER_MAT[tier].replace("Aluminium", "Aluminum")),
         fp=p, pri="P3" if var else pri)
 
-# Armour model textures (worn layers)
+# Armor model textures (worn layers)
 ARMOR_REN = [("t2_riotArmor", "t2_riot"), ("AntiGravPack", "anti_gravity_pack"), ("hevsuit", "t3_hev"),
              ("powerarmor", "t3_power"), ("beret_texture", "t2_beret"), ("gasMask", "gas_mask"),
              ("nightVisionGoggles", "night_vision_goggles"), ("oxygenFlasks", "oxygen_tanks"),
@@ -402,11 +402,11 @@ ARMOR_DESC = {
     "t2_combat": ("T2 Combat", ["Aluminium"], "dark olive plated combat gear"),
     "t2_commando": ("T2 Commando", ["Aluminium"], "near-black tactical gear"),
     "t2_riot": ("T2 Riot / Ranger Veteran coat", ["Aluminium"], "long brown coat with shield plates"),
-    "t3_combat": ("T3 Advanced Combat", ["Titanium", "EpoxidFiberReinforced"], "blue-grey fibre armour"),
+    "t3_combat": ("T3 Advanced Combat", ["Titanium", "EpoxidFiberReinforced"], "blue-gray fiber armor"),
     "t3_exo": ("T3 Exo Suit", ["TungstenSteel", "Titanium"], "exoskeleton frame"),
     "t3_hev": ("T3 Hazardous Environment (HEV)", ["Titanium", "EpoxidFiberReinforced"], "sealed brown-orange suit"),
-    "steam": ("Steam armour", ["Titanium", "Bronze"], "pipes, vents and bronze plates"),
-    "t3_power": ("T3 Power Armor", ["TungstenSteel"], "bulky slate power armour"),
+    "steam": ("Steam armor", ["Titanium", "Bronze"], "pipes, vents and bronze plates"),
+    "t3_power": ("T3 Power Armor", ["TungstenSteel"], "bulky slate power armor"),
     "t2_beret": ("Beret", ["Aluminium"], "wool beret"),
     "gas_mask": ("Gas Mask", ["Rubber"], "rubber mask with filter"),
     "night_vision_goggles": ("Night Vision Goggles", ["Rubber"], "strap goggles with lenses"),
@@ -434,7 +434,7 @@ for p, f in sorted(TEX.items()):
     add("model.armor." + new, "model", "textures/models/armor/%s.png" % new, f["w"], f["h"],
         palette=[MC[m] for m in mats],
         brief="%s worn-model texture%s: %s. Keep the Techguns UV layout (%dx%d)." % (
-            disp, "" if base else " (camo/colour variant of the base set)", desc, f["w"], f["h"]),
+            disp, "" if base else " (camo/color variant of the base set)", desc, f["w"], f["h"]),
         fp=p, pri="P2" if base else "P3")
 add("model.armor.jump_pack", "model", "textures/models/armor/jump_pack.png", 64, 64,
     palette=mc("StainlessSteel"),
@@ -444,15 +444,15 @@ add("model.armor.jump_pack", "model", "textures/models/armor/jump_pack.png", 64,
 # Entities: mobs, projectiles
 MOBS = [
     ("army_soldier", "entity/army_soldier.png", "Army Soldier, base skin of Outcast, Psycho Steve, Commando and Stormtrooper", "olive camo fatigues, tan skin, dark-brown hair"),
-    ("zombie_soldier", "entity/zombie_soldier.png", "Zombie Soldier, Zombie Farmer and Zombie Miner", "rotting green skin, red eyes, torn grey-brown fatigues"),
-    ("bandit", "entity/bandit.png", "Bandit", "dark skin, black dreadlocks, light-grey vest"),
-    ("dictator", "entity/dictator.png", "Dictator Dave", "bandit base with sunglasses and moustache-beard"),
-    ("cyberdemon", "entity/cyberdemon.png", "Cyberdemon", "red muscle, grey cybernetic implants, orange cables"),
+    ("zombie_soldier", "entity/zombie_soldier.png", "Zombie Soldier, Zombie Farmer and Zombie Miner", "rotting green skin, red eyes, torn gray-brown fatigues"),
+    ("bandit", "entity/bandit.png", "Bandit", "dark skin, black dreadlocks, light-gray vest"),
+    ("dictator", "entity/dictator.png", "Dictator Dave", "bandit base with sunglasses and mustache-beard"),
+    ("cyberdemon", "entity/cyberdemon.png", "Cyberdemon", "red muscle, gray cybernetic implants, orange cables"),
     ("supermutant_1", "entity/supermutant_texture_1.png", "Super Mutant Basic", "mustard-yellow mottled skin, bare"),
     ("supermutant_2", "entity/supermutant_texture_2.png", "Super Mutant Heavy", "as basic plus leather harness and riveted chest plates"),
     ("supermutant_3", "entity/supermutant_texture_3.png", "Super Mutant Elite", "as heavy plus steel helmet and pauldrons"),
     ("alienbug", "entity/alienbug.png", "Alien Bug", "chitinous brown-tan insectoid"),
-    ("apache", "entity/apache.png", "Attack Helicopter (OBJ UV atlas)", "dark olive-grey military helicopter atlas"),
+    ("apache", "entity/apache.png", "Attack Helicopter (OBJ UV atlas)", "dark olive-gray military helicopter atlas"),
     ("gore", "entity/gore.png", "generic gibs", "flayed dark-red flesh in biped layout"),
 ]
 for mid, src, who, desc in MOBS:
@@ -463,15 +463,15 @@ PROJ = [
     ("bullet", "entity/bullet.png", "generic bullet tracer sprite (brass capsule, orange twin)", ["#B45A0A"], "P1"),
     ("handgun_bullet", "entity/handgunBullet.png", "Hand Cannon stone ball", mc("Stone"), "P2"),
     ("launcher_grenade", "entity/launchergrenade.png", "40 mm grenade strip map (cream casing, red band, brass)", ["#C04030"], "P2"),
-    ("laser_beam", "entity/Laser.png", "red laser bolt gradient, white-hot centre", ["#C00000", "#E06000"], "P3"),
-    ("blue_beam", "entity/BlueBeam.png", "blue energy bolt gradient, white-hot centre", ["#004080", "#2060C0"], "P3"),
+    ("laser_beam", "entity/Laser.png", "red laser bolt gradient, white-hot center", ["#C00000", "#E06000"], "P3"),
+    ("blue_beam", "entity/BlueBeam.png", "blue energy bolt gradient, white-hot center", ["#004080", "#2060C0"], "P3"),
     ("bioblob", "entity/bioblob.png", "glossy lime-green Bio Gun glob", ["#408000", "#A0E0A0"], "P3"),
 ]
 for mid, src, desc, pal, pri in PROJ:
     f = TEX["textures/" + src]
     add("model.entity." + mid, "model", "textures/entity/%s.png" % mid, f["w"], f["h"], palette=pal,
         brief="Projectile texture, %s." % desc, fp="textures/" + src, pri=pri)
-add("model.obj.apache", "model", "models/entity/apache.obj", brief="Attack Helicopter OBJ mesh (new topology to the Techguns UV atlas model.entity.apache). Not an image: modelled, not painted.",
+add("model.obj.apache", "model", "models/entity/apache.obj", brief="Attack Helicopter OBJ mesh (new topology to the Techguns UV atlas model.entity.apache). Not an image: modeled, not painted.",
     fp="models/entity/apache.obj", pri="P3")
 add("model.obj.launcher_grenade", "model", "models/entity/launcher_grenade.obj", brief="40 mm grenade projectile OBJ mesh, UV-mapped to the launchergrenade strip map.",
     fp="models/entity/launchergrenade.obj", pri="P2")
@@ -484,16 +484,16 @@ def mt(id, path, ref, brief, pal, pri="P3", w=None, h=None):
 mt("model.machine.ammo_press_parts", "textures/models/machines/ammo_press_parts.png", ttex("blocks/AmmoPress.png"),
    "Ammo Press TESR parts sheet: ram piston with flat head and glow face, hood cutout, feed-belt box models, small ejected round models, steam-puff plane. Footprint of the Techguns press sheet; only the moving parts are drawn on it (the cube comes from overlays).",
    mc("Steel") + ["#E8A040"], "P2")
-for tname, tfp, tdesc, tmat in (("", "TurretBase.png", "no armour: mid-grey concrete body, charcoal trim", None),
-                                 ("_iron", "TurretBase_2.png", "iron armour: clean light grey", "Iron"),
-                                 ("_steel", "TurretBase_3.png", "steel armour: darker speckled grey", "Steel"),
-                                 ("_aluminium", "TurretBase_4.png", "aluminium armour (was obsidian steel: remapped by 0010): cool light-blue grey", "Aluminium"),
-                                 ("_carbon", "TurretBase_5.png", "carbon armour: near-black fibre", "EpoxidFiberReinforced")):
+for tname, tfp, tdesc, tmat in (("", "TurretBase.png", "no armor: mid-gray concrete body, charcoal trim", None),
+                                 ("_iron", "TurretBase_2.png", "iron armor: clean light gray", "Iron"),
+                                 ("_steel", "TurretBase_3.png", "steel armor: darker speckled gray", "Steel"),
+                                 ("_aluminum", "TurretBase_4.png", "aluminum armor (was obsidian steel: remapped by 0010): cool light-blue gray", "Aluminium"),
+                                 ("_carbon", "TurretBase_5.png", "carbon armor: near-black fiber", "EpoxidFiberReinforced")):
     mt("model.machine.turret_base" + tname, "textures/models/machines/turret_base%s.png" % tname, ttex("blocks/" + tfp),
        "Turret base and head model sheet, %s. Same UV layout in every variant." % tdesc,
        [MC[tmat]] if tmat else ["#717171"], "P3")
-for nm, fpf, desc in (("explosive_charge", "ExpCharge", "dark olive plastic charge pack, steel-blue straps, grey detonator (LCD 'RDY' green)"),
-                      ("advanced_explosive_charge", "tntCharge", "dynamite bundle in dark red, grey detonator (LCD 'RDY' green)")):
+for nm, fpf, desc in (("explosive_charge", "ExpCharge", "dark olive plastic charge pack, steel-blue straps, gray detonator (LCD 'RDY' green)"),
+                      ("advanced_explosive_charge", "tntCharge", "dynamite bundle in dark red, gray detonator (LCD 'RDY' green)")):
     for armed in (False, True):
         fn = fpf + ("_2" if armed else "")
         mt("model.machine.%s%s" % (nm, "_armed" if armed else ""), "textures/models/machines/%s%s.png" % (nm, "_armed" if armed else ""),
@@ -506,7 +506,7 @@ for nm, fpf, desc, pal in (("reinforced_chest", "reinforced_chest", "oak planks 
     mt("model.machine.%s_double" % nm, "textures/models/machines/%s_double.png" % nm, ttex("blocks/%s_double.png" % fpf),
        "%s double-chest sheet (vanilla double layout at 2x), same art." % nm.replace("_", " ").title(), pal, "P3")
 mt("model.machine.flagpost", "textures/models/machines/flagpost.png", ttex("blocks/flagpost.png"),
-   "Camp flag post model sheet: grey concrete foot, pale poles, cloth strip with red/white/navy flag.", ["#D0D0D0", "#C03030", "#203060"], "P3")
+   "Camp flag post model sheet: gray concrete foot, pale poles, cloth strip with red/white/navy flag.", ["#D0D0D0", "#C03030", "#203060"], "P3")
 mt("model.machine.bio_blob", "textures/blocks/bio_blob.png", ttex("blocks/bio.png"),
    "Bio Blob block, all faces: saturated slime green, mottled.", ["#33A40C"], "P3")
 
@@ -580,7 +580,7 @@ for slot in ("front", "side", "top", "bottom"):
 # Camo Bench (LV), no active state
 for slot in ("front", "side", "top", "bottom"):
     d = {"front": "three paint canisters (red, green, blue)", "side": "plain mottled metal",
-         "top": "grey housing with lamps, louvred vent and rollers", "bottom": "bare plate"}[slot]
+         "top": "gray housing with lamps, louverd vent and rollers", "bottom": "bare plate"}[slot]
     overlay("camo_bench", "Camo Bench", slot, False, 1, None, "Camo Bench overlay, %s: %s. Cosmetic machine." % (slot, d), "P3",
             pal=["#515150", "#C03030", "#30A030", "#3050C0"], fp=ttex("blocks/paintmachine_textures.png") + " (cube atlas, role reference only)")
     if slot in ("front", "top"):   # polish pass: subtle active animation (spray LEDs, scanning light)
@@ -592,7 +592,7 @@ for slot in ("front", "side", "top", "bottom"):
 for mid, disp, tier, desc, pal in (
         ("ammunition_works", "Ammunition Works", "HV", "ammo crate and press-ram emblem; active: indicator row runs", mc("StainlessSteel", "Brass")),
         ("retort", "Retort", "EV", "round glass port with violet-white fluid; active: swirl", mc("Titanium", "Glass")),
-        ("armoury_gantry", "Armoury Gantry", "HV", "hoist hook and cradle emblem; active: hook lowers", mc("Titanium", "StainlessSteel")),
+        ("armory_gantry", "Armory Gantry", "HV", "hoist hook and cradle emblem; active: hook lowers", mc("Titanium", "StainlessSteel")),
         ("rampart", "Rampart", "HV", "crenellation emblem with a gun silhouette; active: red status light", mc("Steel", "Aluminium"))):
     overlay(mid, disp, "front", False, 1, None, "%s controller front overlay, inactive: %s. Controller tier %s." % (disp, desc.split(";")[0], tier), "P3", pal=pal, fp="(new, GT controller overlay pattern)")
     overlay(mid, disp, "front", True, 4, 3, "%s controller front overlay, active: %s. 4-frame strip, 3 ticks per frame." % (disp, desc.split(";")[1].strip()), "P3", pal=pal, fp="(new, GT controller overlay pattern)")
@@ -605,19 +605,19 @@ for active in (False, True):
 
 # Multiblock casings, GregGuns texture page 50
 CASINGS = [
-    ("works_casing", "Works Casing", "Ammunition Works hull. Ribbed grey-steel panel with rivet lines; plain, hatches allowed on feeder/packing positions.", mc("StainlessSteel"), 1, None),
+    ("works_casing", "Works Casing", "Ammunition Works hull. Ribbed gray-steel panel with rivet lines; plain, hatches allowed on feeder/packing positions.", mc("StainlessSteel"), 1, None),
     ("ram_housing", "Ram Housing", "Ammunition Works press column. Dark steel box with a slotted top hood, inactive.", mc("StainlessSteel", "Steel"), 1, None),
     ("ram_housing_active", "Ram Housing (active)", "Ram Housing active state: the same box with a piston rod stroking behind the hood slot, glow strip on the downstroke. 4-frame strip.", mc("StainlessSteel") + ["#FF8000"], 4, 4),
-    ("reaction_casing", "Reaction Casing (Reaction Chamber Casing)", "Retort and Reaction Chamber hull. Smooth white-grey bevelled panels with hazard-striped corner marks.", mc("Titanium", "Glass"), 1, None),
-    ("gantry_casing", "Gantry Casing", "Armoury Gantry hull. Painted blue-grey steel panel with yellow edge stripe.", mc("Titanium", "StainlessSteel"), 1, None),
-    ("gantry_beam", "Gantry Beam", "Armoury Gantry roof beam. I-beam end and side, yellow-black safety stripe.", mc("Titanium"), 1, None),
-    ("gantry_hoist", "Gantry Hoist", "Armoury Gantry hoist. Motor housing with cable drum; one face shows the hook block.", mc("Titanium", "Steel"), 1, None),
-    ("repair_cradle_side", "Repair Cradle (side)", "Armoury Gantry repair cradle side: padded clamp frame.", mc("Titanium", "Rubber"), 1, None),
-    ("repair_cradle_top", "Repair Cradle (top)", "Armoury Gantry repair cradle pad: grey rubber mat with clamp slots.", mc("Rubber", "Steel"), 1, None),
-    ("bastion_plating_iron", "Bastion Plating, Iron (meta 0)", "Rampart wall plating, iron meta: plain riveted iron plate, armour value 5.", mc("Iron"), 1, None),
-    ("bastion_plating_steel", "Bastion Plating, Steel (meta 1)", "Rampart wall plating, steel meta: darker riveted steel plate, armour value 10.", mc("Steel"), 1, None),
-    ("bastion_plating_aluminium", "Bastion Plating, Aluminium (meta 2)", "Rampart wall plating, aluminium meta: light blue-grey plate, armour value 15.", mc("Aluminium"), 1, None),
-    ("bastion_plating_carbon", "Bastion Plating, Carbon (meta 3)", "Rampart wall plating, carbon meta: near-black fibre-weave plate, armour value 20.", mc("EpoxidFiberReinforced"), 1, None),
+    ("reaction_casing", "Reaction Casing (Reaction Chamber Casing)", "Retort and Reaction Chamber hull. Smooth white-gray beveled panels with hazard-striped corner marks.", mc("Titanium", "Glass"), 1, None),
+    ("gantry_casing", "Gantry Casing", "Armory Gantry hull. Painted blue-gray steel panel with yellow edge stripe.", mc("Titanium", "StainlessSteel"), 1, None),
+    ("gantry_beam", "Gantry Beam", "Armory Gantry roof beam. I-beam end and side, yellow-black safety stripe.", mc("Titanium"), 1, None),
+    ("gantry_hoist", "Gantry Hoist", "Armory Gantry hoist. Motor housing with cable drum; one face shows the hook block.", mc("Titanium", "Steel"), 1, None),
+    ("repair_cradle_side", "Repair Cradle (side)", "Armory Gantry repair cradle side: padded clamp frame.", mc("Titanium", "Rubber"), 1, None),
+    ("repair_cradle_top", "Repair Cradle (top)", "Armory Gantry repair cradle pad: gray rubber mat with clamp slots.", mc("Rubber", "Steel"), 1, None),
+    ("bastion_plating_iron", "Bastion Plating, Iron (meta 0)", "Rampart wall plating, iron meta: plain riveted iron plate, armor value 5.", mc("Iron"), 1, None),
+    ("bastion_plating_steel", "Bastion Plating, Steel (meta 1)", "Rampart wall plating, steel meta: darker riveted steel plate, armor value 10.", mc("Steel"), 1, None),
+    ("bastion_plating_aluminum", "Bastion Plating, Aluminum (meta 2)", "Rampart wall plating, aluminum meta: light blue-gray plate, armor value 15.", mc("Aluminium"), 1, None),
+    ("bastion_plating_carbon", "Bastion Plating, Carbon (meta 3)", "Rampart wall plating, carbon meta: near-black fiber-weave plate, armor value 20.", mc("EpoxidFiberReinforced"), 1, None),
 ]
 for i, (cid, disp, desc, pal, fr, ft) in enumerate(CASINGS):
     add("block.casing." + cid, "block", "textures/blocks/casings/%s.png" % cid, 16, 16 * fr, frames=fr, frametime=ft, palette=pal,
@@ -626,7 +626,7 @@ for i, (cid, disp, desc, pal, fr, ft) in enumerate(CASINGS):
 
 # Decorative blocks (07). Techguns footprints kept (32 px, ctm 64 px sheets).
 DECOR = [  # (prefix pattern, family, brief, palette, pri)
-    (r"container_", "Shipping container (Chisel CTM group)", "Corrugated steel container panel in the stated colour; -ctm sheet carries the connected-texture tiles.", ["#8B2A2A"], "P3"),
+    (r"container_", "Shipping container (Chisel CTM group)", "Corrugated steel container panel in the stated color; -ctm sheet carries the connected-texture tiles.", ["#8B2A2A"], "P3"),
     (r"concrete", "Concrete (Chisel CTM group)", "Poured concrete in the stated variant; hole = Zombie Hole top; -ctm/-ctmv sheets are connected tiles.", mc("Stone"), "P3"),
     (r"metalpanel2_", "Connected metal panel (metalpanel2)", "Connected-texture metal panel, stated variant.", mc("Iron"), "P3"),
     (r"metalpanel", "Metal panel", "Riveted metal panel, stated variant (dark, hazard-stripe, rusty).", mc("Iron"), "P3"),
@@ -635,7 +635,7 @@ DECOR = [  # (prefix pattern, family, brief, palette, pri)
     (r"lamp0|lantern0", "Lamp / lantern", "Lamp or lantern face; lit, warm yellow or white.", ["#FFE88A", "#FAFAFA"], "P3"),
     (r"camoNet", "Camo net (pane and roof)", "Camouflage net in the stated pattern, transparent holes.", ["#3C5A28", "#E6EBEF", "#B49664"], "P3"),
     (r"sandbags", "Sandbags", "Stacked burlap sandbags, tan; top face is a flat bag top.", ["#B49664"], "P3"),
-    (r"door01", "Bunker door", "Riveted grey steel door half (upper has window slit).", mc("Iron"), "P3"),
+    (r"door01", "Bunker door", "Riveted gray steel door half (upper has window slit).", mc("Iron"), "P3"),
     (r"screen_|controlpanel_", "Radar screen / control panel", "Radar screen or control-panel face; overlay is an animated scan/blink strip.", ["#101010", "#30F060"], "P3"),
     (r"steelframe_", "Steel frame (Chisel CTM group)", "Open steel scaffold/frame block, stated finish.", mc("Steel"), "P3"),
     (r"bugnest", "Alien nest block", "Alien nest sand/slime/egg block (worldgen structure parts, hole = Bug Hole top).", ["#B0A070", "#303020"], "P3"),
@@ -661,7 +661,7 @@ for p, f in sorted(TEX.items()):
 # 4. GUI textures (256x256 sprite sheets used through UITexture.fullImage)
 # ----------------------------------------------------------------------------------------------
 GUIS = [
-    ("hud", "HUD sprite sheet: ammo-type icons, magazine/clip pips, armour pips (full/half/empty), hit-marker, sprint/charge bar caps. Transparent background, 256x256 sheet; only the used regions are painted.", "gui/TGPlayerInventory.png", "P1", ["#FFFFFF", "#C80000", "#FFB400"]),
+    ("hud", "HUD sprite sheet: ammo-type icons, magazine/clip pips, armor pips (full/half/empty), hit-marker, sprint/charge bar caps. Transparent background, 256x256 sheet; only the used regions are painted.", "gui/TGPlayerInventory.png", "P1", ["#FFFFFF", "#C80000", "#FFB400"]),
     ("ammo_press", "Ammo Press panel sprites: progress arrow, ram-stroke gauge (8 pips), input slot overlays (bullet, casing, powder, magazine) and output slot frame. Uses GT panel background; only sprites are painted.", "gui/ammoPress_GUI.png", "P1", mc("Steel") + ["#E8A040"]),
     ("reaction_chamber", "Reaction Chamber panel sprites: intensity gauge 0-10 with marker, plus/minus buttons (normal, hover, pressed), completion bar, risk indicator.", "gui/ReactionChamber_Gui.png", "P2", ["#FF6020", "#40C0FF", "#808080"]),
     ("ammo_pouch", "Ammo Pouch 6-slot GUI sprites: pouch frame, slot overlays.", "gui/TGPlayerInventory.png", "P2", ["#6B4A2B"]),
@@ -671,7 +671,7 @@ GUIS = [
     ("explosive_charge", "Explosive Charge panel sprites: timer digits, arm button, owner lock icon.", "gui/expChargeGui.png", "P3", ["#303030", "#C80000"]),
     ("advanced_explosive_charge", "Advanced Explosive Charge panel sprites: timer digits, arm button, remote-link icon.", "gui/tntChargeGui.png", "P3", ["#901010"]),
     ("storage_chest", "Reinforced / Weapon Chest GUI sprites: slot grid frame and sort-button art.", "gui/tgchest_gui.png", "P3", ["#989898"]),
-    ("multiblock_widgets", "Shared multiblock panel sprites for Ammunition Works, Retort, Armoury Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs.", None, "P3", mc("Titanium")),
+    ("multiblock_widgets", "Shared multiblock panel sprites for Ammunition Works, Retort, Armory Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs.", None, "P3", mc("Titanium")),
     ("gun_mount_hatch", "Gun Mount Hatch panel sprites: single gun slot, lock icon.", None, "P3", ["#505050"]),
 ]
 for gid, brief, ref, pri, pal in GUIS:
@@ -681,7 +681,7 @@ for gid, brief, ref, pri, pal in GUIS:
 for sid, brief, pal in [
     ("sniper", "Sniper scope overlay (sniper rifles, bolt-action and AS50 style): 512x512 RGBA, transparent circular lens with fine crosshair and mil-dots, black surround with soft vignette ring. Stretched to the screen height.", ["#000000", "#303030"]),
     ("assault", "Assault / reflex scope overlay (rifles with a zoom toggle): 512x512 RGBA, smaller transparent view circle in a thick dark housing, red chevron reticle with drop ticks.", ["#080A0A", "#FF281E"]),
-    ("energy", "Energy / tech scope overlay (laser, pulse and plasma weapons): 512x512 RGBA, alpha-blended cyan HUD brackets, ring reticle with ticks, scanline vignette, transparent centre.", ["#40E0FF", "#000A10"]),
+    ("energy", "Energy / tech scope overlay (laser, pulse and plasma weapons): 512x512 RGBA, alpha-blended cyan HUD brackets, ring reticle with ticks, scanline vignette, transparent center.", ["#40E0FF", "#000A10"]),
 ]:
     add("gui.scope_" + sid, "gui", "textures/gui/scopes/%s.png" % sid, 512, 512, palette=pal, brief=brief,
         fp="(new, no Techguns GUI)", pri="P2")
@@ -693,7 +693,7 @@ FX = [  # name, frames, grid note, pri, role, palette
     ("muzzleflash2", 8, "4x4 grid of 64 px", "P1", "yellow four-pointed muzzle flash: pistol and light ballistic guns", ["#F0D050", "#FFFFFF"]),
     ("muzzleflash4x4", 10, "4x4 grid of 64 px", "P2", "orange explosive muzzle puff (revolver, shotguns, hand cannon)", ["#F07050", "#FFFFFF", "#D0D0D0"]),
     ("Explosion", 20, "5x5 grid of 96 px", "P2", "fireball explosion life cycle: flicker, yellow-white core, red-orange rim, smoke wisps", ["#FFE070", "#FF6020"]),
-    ("fireblast", 20, "5x5 grid", "P2", "full explosion cycle: seed, white flash, fire, char, grey smoke", ["#FFFFFF", "#FF9020", "#808080"]),
+    ("fireblast", 20, "5x5 grid", "P2", "full explosion cycle: seed, white flash, fire, char, gray smoke", ["#FFFFFF", "#FF9020", "#808080"]),
     ("dustclouds02", 9, "3x3 grid", "P2", "soft smoke puff for launcher trails and explosion smoke", ["#787878"]),
     ("largesmoke", 4, "2x2 grid of 256 px (variations)", "P2", "large billowing smoke clouds, dense to faint", ["#957F80"]),
     ("shockwave", 1, "single image", "P2", "faint thin ring for shockwaves", ["#E0E0E0"]),
@@ -706,8 +706,8 @@ FX = [  # name, frames, grid note, pri, role, palette
     ("teslaflare01", 14, "4x4 grid of 128 px", "P3", "electric blue flare with a ring mid-phase", ["#40A0FF", "#E0FFFF"]),
     ("laserflare02", 7, "4x2 used of 4x4 grid", "P3", "red lens flare with radial streaks", ["#FF2020", "#FFFFFF"]),
     ("blobs", 16, "4x4 grid of 128 px (variations)", "P3", "lime-green slime globs with highlights", ["#80E020", "#A0FFFF"]),
-    ("splat", 6, "3x3 grid of 128 px (variations)", "P3", "thin vein-like splatter lines, greyscale for tinting", ["#E0E0E0"]),
-    ("blood4x4", 4, "2x2 grid of 128 px (variations)", "P3", "blood splatter puffs, greyscale for tinting", ["#858585"]),
+    ("splat", 6, "3x3 grid of 128 px (variations)", "P3", "thin vein-like splatter lines, grayscale for tinting", ["#E0E0E0"]),
+    ("blood4x4", 4, "2x2 grid of 128 px (variations)", "P3", "blood splatter puffs, grayscale for tinting", ["#858585"]),
     ("impact", 4, "2x2 grid of 128 px", "P3", "jagged white impact shards (power hammer)", ["#F0F0F0"]),
     ("muzzleflash_blue", 8, "4x4 grid of 64 px", "P3", "tri-blade blue energy muzzle flash", ["#9CB5FF"]),
     ("nukebeamflare", 16, "4x4 grid of 128 px", "P3", "golden plasma orb with concentric rings (Nuclear Death Ray)", ["#FFD040", "#FFFFFF"]),
@@ -826,13 +826,13 @@ asset_doc("brand.social_preview_svg", "branding", B + "social_preview.svg", None
 asset_doc("brand.social_preview", "branding", B + "social_preview.png", 1280, 640, "GitHub social preview (1280x640), keep key content inside the central 1000x500.", "P3")
 I = "docs/assets/infographics/"
 INFO = [
-    ("tier_progression", "tier-progression", "Tier progression chart: weapons, armour and ammo per GT tier with gate materials (design 0001, 0009, 0010).", "P3"),
+    ("tier_progression", "tier-progression", "Tier progression chart: weapons, armor and ammo per GT tier with gate materials (design 0001, 0009, 0010).", "P3"),
     ("machine_roster", "machine-roster", "Machine roster explainer: single block to multiblock, usage class, tier range; includes isometric sketches of the four multiblocks.", "P3"),
     ("ammo_production_flow", "ammo-production-flow", "Ammo production flow: GT materials to parts to Ammo Press or Ammunition Works to ammo, magazines and guns.", "P3"),
     ("questbook_overview", "questbook-overview", "Questbook overview: 118 quests in 14 chapters and their pack gates.", "P3"),
     ("multiblock_ammunition_works", "multiblock-ammunition-works", "Optional detail explainer: Ammunition Works layers, casing legend and hatch positions (the roster sheet only sketches it).", "P3"),
     ("multiblock_retort", "multiblock-retort", "Optional detail explainer: Retort bulb-and-neck vessel, glass tier = pressure rating, hatch positions.", "P3"),
-    ("multiblock_armoury_gantry", "multiblock-armoury-gantry", "Optional detail explainer: Armoury Gantry head, bays and tail, cradle per bay.", "P3"),
+    ("multiblock_armory_gantry", "multiblock-armory-gantry", "Optional detail explainer: Armory Gantry head, bays and tail, cradle per bay.", "P3"),
     ("multiblock_rampart", "multiblock-rampart", "Optional detail explainer: Rampart crenellated wall, mounts, Bastion Plating tiers.", "P3"),
 ]
 for iid, fn, brief, pri in INFO:
@@ -884,15 +884,15 @@ def build_md():
         len(ENTRIES), ", ".join("%s %d" % (k, c[k]) for k in KINDS), ", ".join("%s %d" % (k, v) for k, v in pc.items())))
     A("## Conventions\n")
     A("- **Target paths** are under `src/main/resources/assets/gregguns/` unless they start with `docs/assets/`.")
-    A("- **Techguns footprint** is a path in the Techguns resource tree used only for its size, frame count, colour or duration. Nothing is copied from it ([CONTRIBUTING § Originality](../../CONTRIBUTING.md#originality-the-techguns-boundary)).")
-    A("- **Item icons** are 16x16 GT-style ([0006](../design/0006-art-direction.md)). Palettes come from the GT material colour (`MaterialsInit.java`, 5.09.54.205); items made of a material use that colour. Rubber is `#000000` in GT: paint it as a lifted dark grey (`#2A2A2E`) so it reads.")
+    A("- **Techguns footprint** is a path in the Techguns resource tree used only for its size, frame count, color or duration. Nothing is copied from it ([CONTRIBUTING § Originality](../../CONTRIBUTING.md#originality-the-techguns-boundary)).")
+    A("- **Item icons** are 16x16 GT-style ([0006](../design/0006-art-direction.md)). Palettes come from the GT material color (`MaterialsInit.java`, 5.09.54.205); items made of a material use that color. Rubber is `#000000` in GT: paint it as a lifted dark gray (`#2A2A2E`) so it reads.")
     A("- **Model textures** keep the Techguns size and UV layout. **Decorative block textures** keep the Techguns footprint (32 px, connected-texture sheets 64 px). **Machine overlays and multiblock casings** are GT-native 16 px; animated ones are vertical strips with a `.png.mcmeta` (`frametime` in ticks).")
     A("- **Sounds** match role, length and loudness: integrated loudness within +/-3 LU of the measured original (`target_lufs`), peak at or below -1 dBFS, positional sounds mono (GVA-23). Delivery rate is 44.1 kHz, or 48 kHz where the original was 48 kHz. Stereo only for the glider loop (player-bound ambience).")
-    A("- **Priority:** **P1** is the M1 vertical slice (9mm Pistol, its ammo and magazine, its sounds, the LV Ammo Press and its HUD/GUI). **P2** is M2 to M4 content (ballistic arsenal, armour, production chain, Reaction Chamber, branding basics). **P3** is M5 onwards (energy and exotic weapons, utility and defence, NPCs, worldgen), camo and colour variants, social and infographic art.")
+    A("- **Priority:** **P1** is the M1 vertical slice (9mm Pistol, its ammo and magazine, its sounds, the LV Ammo Press and its HUD/GUI). **P2** is M2 to M4 content (ballistic arsenal, armor, production chain, Reaction Chamber, branding basics). **P3** is M5 onwards (energy and exotic weapons, utility and defense, NPCs, worldgen), camo and color variants, social and infographic art.")
     A("- Provenance for every delivered asset goes in [CREDITS.md](CREDITS.md).\n")
     groups = [
         ("Item icons", "icon", None),
-        ("Model, armour and entity textures", "model", None),
+        ("Model, armor and entity textures", "model", None),
         ("Block textures: machine overlays, multiblock casings, decorative blocks", "block", None),
         ("GUI textures", "gui", None),
         ("Particles and FX", "particle", None),
@@ -905,10 +905,10 @@ def build_md():
                  ("Gun parts, emitters, plating and cloth", lambda e: e["id"].startswith("icon.part_")),
                  ("Ammunition", lambda e: e["id"].startswith("icon.ammo_") and e["id"] != "icon.ammo_pouch"),
                  ("Magazines, tanks and cells", lambda e: e["id"].startswith(("icon.mag_", "icon.tank_", "icon.cell_"))),
-                 ("Armour sets", lambda e: re.match(r"icon\.(t\d_|steam_)", e["id"]) and not e["id"].startswith("icon.t2_beret")),
+                 ("Armor sets", lambda e: re.match(r"icon\.(t\d_|steam_)", e["id"]) and not e["id"].startswith("icon.t2_beret")),
                  ("Equipment, consumables, placers and misc", lambda e: True)],
         "model": [("Gun model sheets", lambda e: e["id"].startswith("model.gun.")),
-                  ("Armour worn-model textures", lambda e: e["id"].startswith("model.armor.")),
+                  ("Armor worn-model textures", lambda e: e["id"].startswith("model.armor.")),
                   ("Mobs, gibs and projectiles", lambda e: e["id"].startswith(("model.entity.", "model.obj."))),
                   ("Machine, charge, chest and flag model sheets", lambda e: True)],
         "block": [("Machine overlays (GT eight-slot layout plus glow)", lambda e: e["id"].startswith("block.machine.")),
@@ -937,7 +937,7 @@ def build_md():
     A("## 10. Excluded on purpose\n")
     A("Not in the manifest because GregGuns dropped them or GT supplies them.\n")
     A("- **Ores, ore clusters, oil, fluids** (`oreCluster*`, `oreTitanIron`, `oreUranium`, `ore*Block`, `acid_*`, `milk_*`, creeper acid bucket): 0002/0005, GT owns ores and fluids.")
-    A("- **Techguns materials** (ingots, nuggets, plates, wires, circuit boards, rubber, plastic, carbon fibres, coil, ore items, obsidian steel): 0002, GT materials.")
+    A("- **Techguns materials** (ingots, nuggets, plates, wires, circuit boards, rubber, plastic, carbon fibers, coil, ore items, obsidian steel): 0002, GT materials.")
     A("- **Dropped machines** (Metal Press, Chem Lab, Fabricator, Charging Station, Ore Drill, Scrapper): their block sheets, ore-drill frame/rod/head textures, GUIs and work sounds. Machine upgrade item (`machineStackUpgrade`) and the Techguns `paintmachine_*` / legacy `rc_*` block files.")
     A("- **Energy cell** (`cell_energy`, `energyCell*`): 0010. **Jetpack** (item, worn texture and four sounds): 0009. **Electric engine** item: GT motors.")
     A("- **Debug and authoring tools** (`blockReaderTool`, `structureScanTool`, `structureTestTool`, `oreClusterScanner`, `tgx`, `testItem`) and `TGPlayerInventory` as a tab GUI (Baubles Expanded replaces it; only the HUD sprites are kept, as `gui.hud`).")
@@ -947,18 +947,18 @@ def build_md():
     A("## 11. Notes and non-image data\n")
     A("- **Structures (11-worldgen)** need no textures. Structure templates, loot tables and `sounds.json`/lang files are data, written alongside the code (structure files are written fresh, never copied).")
     A("- **Sounds not in this list:** Rampart, Gantry, Retort and Ammunition Works have no sound brief yet ([ammo-press.md § Sound](../gregguns-spec/08-machines-production/ammo-press.md#sound) asks only for the stroke hook). The Ammo Press stroke reuses the `ammopress_work2` role.")
-    A("- **Armoured-turret variants** use the five Techguns turret sheets; the obsidian-steel variant becomes aluminium (0010).")
-    A("- **Recolour rule:** one gun sheet serves its akimbo form; the Flashbang recolours the Frag Grenade sheet.\n")
+    A("- **Armored-turret variants** use the five Techguns turret sheets; the obsidian-steel variant becomes aluminum (0010).")
+    A("- **Recolor rule:** one gun sheet serves its akimbo form; the Flashbang recolors the Frag Grenade sheet.\n")
     return "\n".join(L)
 
 
 CREDITS = """# Credits
 
-Provenance for every GregGuns asset ([0006](../design/0006-art-direction.md#decision)). One row per delivered file. Generated assets record the tool and prompt or generator and seed. All assets are released under the MIT licence (see [LICENSE](../../LICENSE)).
+Provenance for every GregGuns asset ([0006](../design/0006-art-direction.md#decision)). One row per delivered file. Generated assets record the tool and prompt or generator and seed. All assets are released under the MIT license (see [LICENSE](../../LICENSE)).
 
 Techguns is All Rights Reserved: no Techguns pixel, sample or model is used. Techguns paths in [MANIFEST.md](MANIFEST.md) are footprint references only.
 
-| Asset | Author / tool | Method / prompt or generator + seed | Licence | Date |
+| Asset | Author / tool | Method / prompt or generator + seed | License | Date |
 |---|---|---|---|---|
 | _(example)_ `textures/items/pistol_9mm.png` | _tool name and version_ | _prompt text, or generator script and seed_ | MIT | _YYYY-MM-DD_ |
 """

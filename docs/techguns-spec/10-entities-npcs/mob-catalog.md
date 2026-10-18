@@ -1,6 +1,6 @@
-# Mob catalogue (registration, stats, eggs, names)
+# Mob catalog (registration, stats, eggs, names)
 
-All living entities that Techguns 0.1.2 registers, with their registry data and headline stats. Each mob's full behaviour is in [per-mob.md](per-mob.md).
+All living entities that Techguns 0.1.2 registers, with their registry data and headline stats. Each mob's full behavior is in [per-mob.md](per-mob.md).
 
 ## Registration (`java/techguns/TGEntities.java`)
 
@@ -8,7 +8,7 @@ Every entity is registered with FML `registerModEntity`. The mod ID string is [`
 
 The mod-local network IDs come from a shared counter (`Techguns.modEntityID`). The projectile entities take IDs 1 to 26 first, in `Techguns.preInit` (see [04-projectiles-fx](../04-projectiles-fx/index.md)). `TGEntities.init()` runs later in the same `preInit`, so the living entities get IDs 27 to 46 in this order:
 
-| ID | Registry name | Class | Tracking range | Update freq. | Velocity updates | Spawn egg | Egg base colour | Egg spot colour |
+| ID | Registry name | Class | Tracking range | Update freq. | Velocity updates | Spawn egg | Egg base color | Egg spot color |
 |---|---|---|---|---|---|---|---|---|
 | 27 | [`ZombieSoldier`](per-mob.md#1-zombie-soldier-zombiesoldier) | `ZombieSoldier` | 80 | 3 | no | yes | `0x757468` | `0x38B038` |
 | 28 | [`ZombieFarmer`](per-mob.md#2-zombie-farmer-zombiefarmer) | `ZombieFarmer` | 80 | 3 | no | yes | `0x757468` | `0x38B038` |
@@ -49,12 +49,12 @@ Each of the 18 egg-bearing mobs gets its own [`TGMonsterPlacer`](../06-items/spe
 | GameRegistry name | `spawnEgg<Name>`, e.g. `spawnEggZombieSoldier` |
 | Unlocalized name | `spawn_egg_<name lower-cased>`, e.g. `spawn_egg_stormtrooper` |
 | Icon | `techguns:spawn_egg`, i.e. [`textures/items/spawn_egg.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) (pass 0) plus [`textures/items/spawn_egg_overlay.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) (pass 1). See [textures.md](textures.md) |
-| Tint | Render pass 0 uses the base colour and pass 1 the spot colour (table above) |
-| Display name | Hard-coded `"Spawn " + <registry name>`, e.g. **"Spawn ZombieSoldier"** and **"Spawn Stormtrooper"**. It is not localised and has no lang key |
+| Tint | Render pass 0 uses the base color and pass 1 the spot color (table above) |
+| Display name | Hard-coded `"Spawn " + <registry name>`, e.g. **"Spawn ZombieSoldier"** and **"Spawn Stormtrooper"**. It is not localized and has no lang key |
 | Creative tab | Techguns tab |
 | Stack size | 64. There are no subtypes and the creative list shows a single stack (meta 0) |
 
-For spawn behaviour see [spawning.md § Spawn eggs](spawning.md#2-spawn-eggs-tgmonsterplacer).
+For spawn behavior see [spawning.md § Spawn eggs](spawning.md#2-spawn-eggs-tgmonsterplacer).
 
 ## Lang keys (`lang/en_US.lang`)
 
@@ -88,7 +88,7 @@ The full key list with file line numbers, the hard-coded egg names and the missi
 
 ## Headline stats
 
-Base attributes come from `applyEntityAttributes`. "Armour" is the vanilla armour value from worn items or the `getTotalArmorValue` override. The per-damage-type Techguns armour is in [per-mob.md](per-mob.md). Speed is the vanilla `movementSpeed` attribute (a player walks at 0.1; a zombie is 0.23). XP is the base `experienceValue`; for `EntityLiving` the game adds 1 to 3 per equipped item.
+Base attributes come from `applyEntityAttributes`. "Armor" is the vanilla armor value from worn items or the `getTotalArmorValue` override. The per-damage-type Techguns armor is in [per-mob.md](per-mob.md). Speed is the vanilla `movementSpeed` attribute (a player walks at 0.1; a zombie is 0.23). XP is the base `experienceValue`; for `EntityLiving` the game adds 1 to 3 per equipped item.
 
 | Mob | Base class | Faction | HP | Melee dmg | Speed | Follow range | Size (W×H) | Base XP | Fire immune |
 |---|---|---|---|---|---|---|---|---|---|
@@ -113,13 +113,13 @@ Base attributes come from `applyEntityAttributes`. "Armour" is the vanilla armou
 | Turret (`SimpleTurret`) | EntityCreature | TURRET | 30 | – | 0 | 20, then the gun's AI range | 0.6×1.0 | 0 | no |
 | TGDummySpawn | GenericNPC | HOSTILE | (20) | – | – | – | 0.6×1.8 | – | – |
 
-Vanilla armour values for the super mutants come from the `getTotalArmorValue` override: Basic 7, Heavy 12, Elite 10. The Heavy has more armour than the Elite, though the Elite has more HP and damage. The turret's armour value equals the turret-armour item installed in its base: 0, 5, 10, 15 or 20.
+Vanilla armor values for the super mutants come from the `getTotalArmorValue` override: Basic 7, Heavy 12, Elite 10. The Heavy has more armor than the Elite, though the Elite has more HP and damage. The turret's armor value equals the turret-armor item installed in its base: 0, 5, 10, 15 or 20.
 
 ## Equipment at a glance
 
 The full probability tables are in [per-mob.md](per-mob.md).
 
-| Mob | Armour | Weapon pool |
+| Mob | Armor | Weapon pool |
 |---|---|---|
 | Zombie Soldier | T1 Combat, each piece 50% | revolver, thompson, iron shovel, stone shovel (25% each) |
 | Zombie Farmer | T1 Miner, random shared camo; chest 100%, legs and boots 50% | wooden, iron or stone hoe, handcannon (25% each) |
@@ -128,11 +128,11 @@ The full probability tables are in [per-mob.md](per-mob.md).
 | Skeleton Soldier | helmet T1 combat or T1 scout; boots T1 combat or T1 scout | revolver, thompson, handcannon (⅓ each) |
 | Army Soldier | 66% helmet (T2 combat or green beret), T2 Combat chest, legs and boots 50% each | M4, combat shotgun, bolt-action (⅓ each) |
 | Bandit | T1 Scout chest, legs and boots always; helmet 50% | pistol, AK-47, bolt-action, sawed-off, thompson, revolver (⅙ each) |
-| Outcast | full T3 Power Armour, each piece dark or dark2 | laser gun, Grim Reaper, minigun, bio gun, flamethrower, tesla gun, LMG (1/7 each) |
-| Commando | full T2 Commando | silenced M4 ([`m4_uq`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) |
+| Outcast | full T3 Power Armor, each piece dark or dark2 | laser gun, Grim Reaper, minigun, bio gun, flamethrower, tesla gun, LMG (1/7 each) |
+| Commando | full T2 Commando | silenced M4 ([`m4_uq`](../02-guns/gun-catalog.md#table-a-identity-and-ammunition)) |
 | Stormtrooper | full T3 Miner (HEV) camo 1 "silver" | blaster rifle or laser gun (50/50) |
 | Cyberdemon | none | Cyberdemon Blaster |
 | Psycho Steve | full T1 Miner camo 1 "red" | chainsaw |
 | Dictator Dave | default beret, T1 combat chest, T1 scout legs camo 2 "snow", T1 combat boots | golden revolver |
-| Super Mutants (all) | none (built-in armour) | rocket launcher, AK-47, combat shotgun (⅕ each), laser gun (⅖) |
+| Super Mutants (all) | none (built-in armor) | rocket launcher, AK-47, combat shotgun (⅕ each), laser gun (⅖) |
 | Alien Bug, Helicopter, Turret | – | built-in attacks; the turret uses whatever gun is in its base |

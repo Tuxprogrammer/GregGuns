@@ -91,7 +91,7 @@ Source: `resources/assets/techguns/lang/en_US.lang` (only `en_US` is listed here
 - `techguns.item.t2_riotArmor.camoname.0`
 - `techguns.item.tacticalMask.camoname.3`
 
-## 3. Armour tooltips
+## 3. Armor tooltips
 
 | Key | English | Used |
 |---|---|---|
@@ -107,7 +107,7 @@ Source: `resources/assets/techguns/lang/en_US.lang` (only `en_US` is listed here
 | `techguns.armorTooltip.miningspeed` | Mining speed | shift |
 | `techguns.armorTooltip.underwatermining` | Underwater mining speed | shift |
 | `techguns.armorTooltip.knockbackresistance` | Knockback Resistance | shift |
-| `techguns.armorTooltip.nightvision` | Nightvision | shift (never true for armour) |
+| `techguns.armorTooltip.nightvision` | Nightvision | shift (never true for armor) |
 | `techguns.armorTooltip.stepassist` | Step Assist | shift |
 | `techguns.armorTooltip.oxygengear` | Oxygen Gear | shift |
 | `techguns.armorTooltip.coolingsystem` | Cooling System | shift |
@@ -116,14 +116,14 @@ Source: `resources/assets/techguns/lang/en_US.lang` (only `en_US` is listed here
 | `techguns.armorTooltip.armorvalue` | Armor Value | unused (the line is commented out) |
 | `techguns.gun.tooltip.shift1` / `shift2` / `shift3` | Press / [SHIFT] / for detailed tooltip | non-shift hint |
 
-**Hard-coded English tooltip lines (not localised):**
+**Hard-coded English tooltip lines (not localized):**
 
 | Source | Text |
 |---|---|
-| [`PoweredArmor`](armor-catalogue.md#9-power-system-poweredarmor) | `Power: <p>/<max>` and `PowerType: Steam\|RF[ (<battery name>)]`, both aqua |
-| [`ItemTGSpecialSlot`](special-equipment.md#1-interfaces-and-base-classes) | `Slot: <Face\|Back>`, grey (the slot name comes from [`TGSlotType.toString`](extra-inventory.md#2-tgslottype-enum)) |
+| [`PoweredArmor`](armor-catalog.md#9-power-system-poweredarmor) | `Power: <p>/<max>` and `PowerType: Steam\|RF[ (<battery name>)]`, both aqua |
+| [`ItemTGSpecialSlot`](special-equipment.md#1-interfaces-and-base-classes) | `Slot: <Face\|Back>`, gray (the slot name comes from [`TGSlotType.toString`](extra-inventory.md#2-tgslottype-enum)) |
 | [`ItemTGSpecialSlotAmmo`](special-equipment.md#1-interfaces-and-base-classes) | `Reloads with: <ammo name>`, aqua |
-| Armour resistance lines | Prefixes ` AR: `, ` PR: `, ` EX: `, ` E: `, ` F: `, ` I: `, ` L: `, ` P: `, ` RAD: ` |
+| Armor resistance lines | Prefixes ` AR: `, ` PR: `, ` EX: `, ` E: `, ` F: `, ` I: `, ` L: `, ` P: `, ` RAD: ` |
 | GUI radiation tooltip | `Effects: NONE` |
 
 ## 4. Inventory GUI and keys

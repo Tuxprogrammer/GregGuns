@@ -10,15 +10,15 @@
 | GUI | `GuiTurretBase` |
 | Extra button | `GuiButtonTurretTargetAnimals` |
 | Base TESR | [`RenderBlockTileEntModel`](../08-machines-production/rendering.md#3-renderblocktileentmodel-used-by-09s-turret-base-and-flag) + [`ModelTurretBase`](../07-blocks/block-rendering-and-models.md#modelturretbase-uv-6464-texture-turretbasepng) |
-| Mounted entity | [`NPCTurret`](../10-entities-npcs/ai.md#5-turret-npcturret), registered as [`SimpleTurret`](../10-entities-npcs/mob-catalogue.md#registration-javatechgunstgentitiesjava), lang `entity.Techguns.SimpleTurret.name` = "Turret". Its AI, rendering ([`RenderSimpleTurret`](../10-entities-npcs/rendering-and-models.md#6-rendersimpleturret-extends-plain-render-for-npcturret), [`ModelTurret`](../07-blocks/block-rendering-and-models.md#modelturret-and-modelsimpleturret-uv-6464--6432)) and combat belong to **[10-entities-npcs](../10-entities-npcs/index.md)**; this file covers only the base and how the two are linked. |
+| Mounted entity | [`NPCTurret`](../10-entities-npcs/ai.md#5-turret-npcturret), registered as [`SimpleTurret`](../10-entities-npcs/mob-catalog.md#registration-javatechgunstgentitiesjava), lang `entity.Techguns.SimpleTurret.name` = "Turret". Its AI, rendering ([`RenderSimpleTurret`](../10-entities-npcs/rendering-and-models.md#6-rendersimpleturret-extends-plain-render-for-npcturret), [`ModelTurret`](../07-blocks/block-rendering-and-models.md#modelturret-and-modelsimpleturret-uv-6464--6432)) and combat belong to **[10-entities-npcs](../10-entities-npcs/index.md)**; this file covers only the base and how the two are linked. |
 
 ## Concept
 
-The block is a powered platform. Loaded with a Techguns gun, ammunition and optional armour plating, it maintains an immobile turret entity standing on top of it.
+The block is a powered platform. Loaded with a Techguns gun, ammunition and optional armor plating, it maintains an immobile turret entity standing on top of it.
 
 The base:
 
-- supplies the gun, the ammo and the armour value;
+- supplies the gun, the ammo and the armor value;
 - pays a power upkeep;
 - heals the turret;
 - respawns the turret after a delay when it is destroyed.
@@ -34,7 +34,7 @@ The base:
 | 0–8 | ammo input | anything |
 | 9–17 | empty magazine output | anything |
 | 18 | weapon | [`GenericGun`](../02-guns/gun-lifecycle.md) only (GUI slot also rejects akimbo guns) |
-| 19 | turret armour | anything by `isItemValidForSlot`; the GUI slot accepts only [`ITGSpecialSlot`](../05-armor/special-equipment.md#1-interfaces-and-base-classes) items whose slot type is `TURRETARMOR` |
+| 19 | turret armor | anything by `isItemValidForSlot`; the GUI slot accepts only [`ITGSpecialSlot`](../05-armor/special-equipment.md#1-interfaces-and-base-classes) items whose slot type is `TURRETARMOR` |
 
 **Automation:**
 
@@ -43,7 +43,7 @@ The base:
 
 ### Linked entity
 
-- `spawnTurret` (server) creates an `NPCTurret` bound to the base and positions it at block centre, y + 1 (on top of the base). An overload sets the turret's starting health.
+- `spawnTurret` (server) creates an `NPCTurret` bound to the base and positions it at block center, y + 1 (on top of the base). An overload sets the turret's starting health.
 - `BasicMachine.onBlockPlacedBy` spawns a turret at placement unless `turretDeath` is set. The flag can be set when the block is placed from a wrenched item.
 - On every **server** tick, if the turret's held weapon (its base's slot 18) changed since last tick, the base syncs the block and tells the turret to rebuild its ranged-attack AI (`setCombatTask`).
 - **Client re-linking:**
@@ -85,17 +85,17 @@ Without power the countdown stalls.
 
 The turret calls `fireWeaponFromNPC(turret, 1.0, 1.0)` on the gun only when `consumeAmmo` succeeds (see [02](../02-guns/index.md) and [10](../10-entities-npcs/index.md)).
 
-### Armour
+### Armor
 
-Slot 19 sets both the turret's armour value (vanilla armour points; each point reduces damage by 4%) and the textures:
+Slot 19 sets both the turret's armor value (vanilla armor points; each point reduces damage by 4%) and the textures:
 
-| Slot 19 item ([06](../06-items/index.md)) | Armour value | Base and turret texture |
+| Slot 19 item ([06](../06-items/index.md)) | Armor value | Base and turret texture |
 |---|---|---|
 | empty or other | 0 | [`textures/blocks/TurretBase.png`](../07-blocks/textures.md#11-model-textures) |
-| [`turretArmorIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) "Iron Turret Armor" | 5 | [`textures/blocks/TurretBase_2.png`](../07-blocks/textures.md#11-model-textures) |
-| [`turretArmorSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 10 | [`textures/blocks/TurretBase_3.png`](../07-blocks/textures.md#11-model-textures) |
-| [`turretArmorObsidianSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 15 | [`textures/blocks/TurretBase_4.png`](../07-blocks/textures.md#11-model-textures) |
-| [`turretArmorCarbon`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 20 | [`textures/blocks/TurretBase_5.png`](../07-blocks/textures.md#11-model-textures) |
+| [`turretArmorIron`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) "Iron Turret Armor" | 5 | [`textures/blocks/TurretBase_2.png`](../07-blocks/textures.md#11-model-textures) |
+| [`turretArmorSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 10 | [`textures/blocks/TurretBase_3.png`](../07-blocks/textures.md#11-model-textures) |
+| [`turretArmorObsidianSteel`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 15 | [`textures/blocks/TurretBase_4.png`](../07-blocks/textures.md#11-model-textures) |
+| [`turretArmorCarbon`](../06-items/item-catalog.md#1-the-shared-meta-item-techgunstechgunsammo) | 20 | [`textures/blocks/TurretBase_5.png`](../07-blocks/textures.md#11-model-textures) |
 
 ### Targeting rules
 
@@ -151,7 +151,7 @@ Shift-click rules:
 |---|---|
 | Machine slot | player slots 20–55, from the end |
 | Player slot, `GenericGun` | slot 18 |
-| Player slot, turret armour | slot 19 |
+| Player slot, turret armor | slot 19 |
 | Player slot, anything else | ammo slots 0–8, from the end |
 
 Progress-bar sync:
@@ -164,12 +164,12 @@ Progress-bar sync:
 
 ## GUI (`GuiTurretBase`)
 
-The GUI extends [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine) ([08](../08-machines-production/index.md)): power bar at (8,17), redstone button at (−22,10), security button at (−22,40). The background is [`textures/gui/turretBase_GUI.png`](../08-machines-production/gui-textures.md#12-texturesguiturretbase_guipng-owned-by-09), catalogued by 08.
+The GUI extends [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine) ([08](../08-machines-production/index.md)): power bar at (8,17), redstone button at (−22,10), security button at (−22,40). The background is [`textures/gui/turretBase_GUI.png`](../08-machines-production/gui-textures.md#12-texturesguiturretbase_guipng-owned-by-09), cataloged by 08.
 
 | Texture region (px) | Depicts | Drawn |
 |---|---|---|
-| (0,0) 176×166 | Grey panel. Power-bar slot at the left (≈(7,16)–(12,66)). 3×3 ammo grid whose wells show three-bullet silhouettes. Weapon slot with a pistol silhouette. Armour slot with a riveted-plate silhouette. 3×3 output grid whose wells show three short bar (empty magazine) silhouettes. Below the output grid, a long thin repair-bar frame (≈(115,73)–(168,78)) with a small grey wrench mark in the middle. Player inventory. | (0,0) |
-| (177,1) 52×4 | Repair fill: horizontal gradient red → orange → yellow → green, with the grey wrench mark overlaid | while dead, at (116,74), width = 52 − (repairTime × 52 ÷ 200) + 1 |
+| (0,0) 176×166 | Gray panel. Power-bar slot at the left (≈(7,16)–(12,66)). 3×3 ammo grid whose wells show three-bullet silhouettes. Weapon slot with a pistol silhouette. Armor slot with a riveted-plate silhouette. 3×3 output grid whose wells show three short bar (empty magazine) silhouettes. Below the output grid, a long thin repair-bar frame (≈(115,73)–(168,78)) with a small gray wrench mark in the middle. Player inventory. | (0,0) |
+| (177,1) 52×4 | Repair fill: horizontal gradient red → orange → yellow → green, with the gray wrench mark overlaid | while dead, at (116,74), width = 52 − (repairTime × 52 ÷ 200) + 1 |
 | (176,6) 16×16 | Pink pig with a green check mark ("animals safe") | Target-animals button icon when `attackAnimals` is false |
 | (176,22) 16×16 | Pink pig with a red crosshair over it ("animals targeted") | the same button when true |
 
@@ -179,7 +179,7 @@ After the parent's background, the GUI draws one more side-button backdrop: `amm
 
 **Text:**
 
-- The title is centred at y = 6. "Inventory" is drawn at (8, 72).
+- The title is centered at y = 6. "Inventory" is drawn at (8, 72).
 
 | Hover rect | Tooltip |
 |---|---|
@@ -190,16 +190,16 @@ The power, redstone and security tooltips come from the parent ([08](../08-machi
 
 ## Base model and rendering
 
-`RenderBlockTileEntModel` draws `ModelTurretBase` with the armour-dependent texture (see shared-rendering.md §3); the tile's rotation is ignored. The item form uses the same model with [`TurretBase.png`](../07-blocks/block-catalogue.md#blocks-constructed-but-not-registered-not-in-game).
+`RenderBlockTileEntModel` draws `ModelTurretBase` with the armor-dependent texture (see shared-rendering.md §3); the tile's rotation is ignored. The item form uses the same model with [`TurretBase.png`](../07-blocks/block-catalog.md#blocks-constructed-but-not-registered-not-in-game).
 
 `ModelTurretBase` uses 64 × 64 texture units, drawn on a 128 px texture (2 px per unit). Its boxes, in units (Y down, block occupies y 8..24, x/z −8..8):
 
 | Part | Box w×h×d | Position | UV origin | Look |
 |---|---|---|---|---|
-| Base | 14×14×14 | centred, y 10..24 | (8,36) | main body cube: concrete/metal faces with a recessed square panel |
-| Top | 8×2×8 | centred on top, y 8..10 | (30,0) | turret mounting plate |
+| Base | 14×14×14 | centered, y 10..24 | (8,36) | main body cube: concrete/metal faces with a recessed square panel |
+| Top | 8×2×8 | centered on top, y 8..10 | (30,0) | turret mounting plate |
 | Corner posts ×4 | 2×15×2 | at the four corners, y 9..24 | (0,30) | dark vertical posts |
-| Diagonal bars ×4 | 6×1×2 | from each corner post top toward the centre (45° yaw) | (36,18) | dark braces |
+| Diagonal bars ×4 | 6×1×2 | from each corner post top toward the center (45° yaw) | (36,18) | dark braces |
 | Bottom rails ×4 | 1×2×12 | along the bottom edges, y 22..24 | (0,15) | dark skirting |
 | Sockets ×4 | 1×6×6 | middle of each side face, y 13..19 | (0,0) | dark square ports (power/data sockets) |
 
@@ -217,9 +217,9 @@ All are 128 × 128 with no animation and share one layout. Magenta-free areas ar
 
 | File | Variant | Palette / look |
 |---|---|---|
-| `textures/blocks/TurretBase.png` | no armour | Body: mottled mid/light-grey concrete with a darker recessed square on each face. Posts, rails and braces: near-black charcoal. Sockets: two dark squares with lighter inset squares. Head pieces: dark grey, with a radial dark gradient on the top plate. |
-| `textures/blocks/TurretBase_2.png` | iron | Body: cleaner, lighter brushed grey with a bevelled square panel. Same dark trim. |
-| `textures/blocks/TurretBase_3.png` | steel | Body: grey with white speckle noise (galvanised steel); trim slightly darker |
+| `textures/blocks/TurretBase.png` | no armor | Body: mottled mid/light-gray concrete with a darker recessed square on each face. Posts, rails and braces: near-black charcoal. Sockets: two dark squares with lighter inset squares. Head pieces: dark gray, with a radial dark gradient on the top plate. |
+| `textures/blocks/TurretBase_2.png` | iron | Body: cleaner, lighter brushed gray with a beveled square panel. Same dark trim. |
+| `textures/blocks/TurretBase_3.png` | steel | Body: gray with white speckle noise (galvanized steel); trim slightly darker |
 | `textures/blocks/TurretBase_4.png` | obsidian steel | Body: very dark purple-black with lilac speckles (obsidian) |
 | `textures/blocks/TurretBase_5.png` | carbon | Body: near-black, faint woven carbon texture; trim black |
 
@@ -242,4 +242,4 @@ Their intended use is presumably an idle or target-acquired beep, and a sound wh
 - on being added to the world it spawned a [`TurretEntityUNUSED`](../10-entities-npcs/per-mob.md#19-turretentityunused-dead-code);
 - on break it called `breakTurret()`.
 
-Its registration in [`TGBlocks`](../07-blocks/block-catalogue.md#registered-blocks) is commented out. `TurretBaseEnt.breakTurret()` is only reachable from that dead class; the live path is `BasicMachine.breakBlock` → `NPCTurret.destroy()`.
+Its registration in [`TGBlocks`](../07-blocks/block-catalog.md#registered-blocks) is commented out. `TurretBaseEnt.breakTurret()` is only reachable from that dead class; the live path is `BasicMachine.breakBlock` → `NPCTurret.destroy()`.

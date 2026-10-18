@@ -24,7 +24,7 @@
 ### Tinkers-Gregworks: materials already cover GT materials
 - **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/TGregworks.cfg`: `addMaterialsAnyway` = `true` (L361), `materialIDRangeStart` = `1500` (L367). The `materials` blocks list per-material entries including `Carbon`, `Plastic`, `Rubber`, `Steel` and `Titanium` (for example L1530, L1677, L1701, L1718, L1737).
 - **Source:** config only. Tinkers-Gregworks is an `upstream-branch` mod (branch `GT-NH`) and its code was not read.
-- **GregGuns does:** nothing. GregGuns guns and armour do not use Tinkers' materials. If a later milestone wants GregGuns tool parts, add them as GT materials and let Tinkers-Gregworks pick them up.
+- **GregGuns does:** nothing. GregGuns guns and armor do not use Tinkers' materials. If a later milestone wants GregGuns tool parts, add them as GT materials and let Tinkers-Gregworks pick them up.
 - **Pack-side change:** none.
 
 ### TinkersConstruct: IMC and inventory tab (reference)

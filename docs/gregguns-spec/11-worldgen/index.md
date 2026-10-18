@@ -25,7 +25,7 @@ The pack makes four things matter: it forces the RWG world generator, it ships A
 
 | Techguns feature | GregGuns approach | Pack mod or system | Evidence |
 |---|---|---|---|
-| Biome tests for land, water, bug nest, camp colour | `BiomeDictionary` types only, no IDs | RWG, Biomes O' Plenty | [rwg-biomes.md](rwg-biomes.md) |
+| Biome tests for land, water, bug nest, camp color | `BiomeDictionary` types only, no IDs | RWG, Biomes O' Plenty | [rwg-biomes.md](rwg-biomes.md) |
 | `WorldGenTGStructureSpawn`, weight 4 | Kept at weight 4, runs before GT ores | GT5-Unofficial `GTWorldgenerator` | [structure-placement.md](structure-placement.md) |
 | Structures reaching into ungenerated chunks (WGEN-04) | Writes limited to the populate window; seeded plans | ArchaicFix cascade detector, Hodgepodge throttle | [structure-placement.md](structure-placement.md) |
 | Hard-coded dimension 0 (WGEN-28) | Config allow-list, default `[0]` | TwilightForest, PersonalSpace, Galacticraft, GalaxySpace | [structure-placement.md](structure-placement.md) |
@@ -37,7 +37,7 @@ The pack makes four things matter: it forces the RWG world generator, it ships A
 
 ### No integration point
 
-For these, the behaviour is the Techguns spec plus the design records.
+For these, the behavior is the Techguns spec plus the design records.
 
 | Topic | Why no sheet |
 |---|---|
@@ -67,7 +67,7 @@ For testing only, set `logCascadingWorldgen` = `true` in `config/archaicfix.cfg`
 
 ## Open questions
 
-- **Gas station.** 0005 lists it among the natural structures, but Techguns leaves it dormant: it has no register entry and no spawn size ([C2](../../techguns-spec/11-worldgen/structure-catalogue.md#c2-city-gas-station-citygasstation)). The plan is to register it as a SMALL land structure (13 x 16 as built) and fix its door rotation (WGEN-31). That makes the SMALL pool three structures with a 1/3 pick each. A design record is only needed if that dilution is unwanted.
+- **Gas station.** 0005 lists it among the natural structures, but Techguns leaves it dormant: it has no register entry and no spawn size ([C2](../../techguns-spec/11-worldgen/structure-catalog.md#c2-city-gas-station-citygasstation)). The plan is to register it as a SMALL land structure (13 x 16 as built) and fix its door rotation (WGEN-31). That makes the SMALL pool three structures with a 1/3 pick each. A design record is only needed if that dilution is unwanted.
 - **Alien Bug Nest default.** GGS-11-15 defaults it to disabled because 0005 gates the Alien Bug as late-game content. Confirm when area 10 fixes the Alien Bug config.
 - **Ore Cluster Scanner, Ore Drill and cluster blocks.** See [ore-and-oil.md](ore-and-oil.md).
 - **Village avoidance.** See [structure-placement.md](structure-placement.md).

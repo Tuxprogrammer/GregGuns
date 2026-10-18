@@ -1,15 +1,15 @@
 # Structure palettes and Chisel
 
-- **Techguns baseline:** [structure-catalogue.md § Chisel aliases](../../techguns-spec/11-worldgen/structure-catalogue.md), [structure-system.md § MBlock](../../techguns-spec/11-worldgen/structure-system.md#4-block-descriptors-mblock-multimblock-blockposind); bug [WGEN-24](../../techguns-spec/11-worldgen/index.md#suspected-bugs) (also CORE-03 in [BUGS.md](../../techguns-spec/BUGS.md))
+- **Techguns baseline:** [structure-catalog.md § Chisel aliases](../../techguns-spec/11-worldgen/structure-catalog.md), [structure-system.md § MBlock](../../techguns-spec/11-worldgen/structure-system.md#4-block-descriptors-mblock-multimblock-blockposind); bug [WGEN-24](../../techguns-spec/11-worldgen/index.md#suspected-bugs) (also CORE-03 in [BUGS.md](../../techguns-spec/BUGS.md))
 - **Design records:** [0005](../../design/0005-world-presence.md), [0006](../../design/0006-art-direction.md)
 - **Pack mods:** Chisel (`chisel`, 2.17.34-GTNH)
 - **Roadmap:** M8
 
 ## What changes from Techguns
 
-Techguns' scanned structures name Chisel blocks (`team.chisel.init.ChiselBlocks.*`) in static initialisers, but the mod only declares `after:Chisel`. Without Chisel, structure generation throws `NoClassDefFoundError` (WGEN-24). Chisel is part of the GTNH pack, so the blocks exist there, but GregGuns still must not crash when it is absent (a dev instance, a stripped server).
+Techguns' scanned structures name Chisel blocks (`team.chisel.init.ChiselBlocks.*`) in static initializers, but the mod only declares `after:Chisel`. Without Chisel, structure generation throws `NoClassDefFoundError` (WGEN-24). Chisel is part of the GTNH pack, so the blocks exist there, but GregGuns still must not crash when it is absent (a dev instance, a stripped server).
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Palette entries hold Chisel block references directly | Palette entries hold a **palette key** (`concrete`, `factory_wall`, …) resolved once at `postInit` to a block and meta | One place to change a block |
 | No fallback | If `Loader.isModLoaded("chisel")` is false, or a Chisel field is null, the key resolves to a vanilla or GregGuns fallback block | Fixes WGEN-24 |
@@ -29,7 +29,7 @@ Techguns' scanned structures name Chisel blocks (`team.chisel.init.ChiselBlocks.
 - **GGS-11-25** No structure class references `team.chisel.*` outside the palette resolver.
 - **GGS-11-26** With Chisel absent, every palette key resolves to a vanilla block and the structures still generate.
 - **GGS-11-27** A palette key that resolves to null logs one warning with the key name and uses its fallback. It never throws during worldgen.
-- **GGS-11-28** Structure data files and palette keys are validated at `postInit`. A missing file or a malformed header disables that structure and logs an error. It does not throw from a static initialiser (WGEN-23).
+- **GGS-11-28** Structure data files and palette keys are validated at `postInit`. A missing file or a malformed header disables that structure and logs an error. It does not throw from a static initializer (WGEN-23).
 
 ## Tests
 

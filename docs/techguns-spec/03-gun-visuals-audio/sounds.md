@@ -1,8 +1,8 @@
-# Sound catalogue: `sounds/guns/`
+# Sound catalog: `sounds/guns/`
 
 All 185 `.ogg` files in `assets/techguns/sounds/guns/`, the `sounds.json` events that reference them, and exactly when each event plays. Playback mechanics (TGSound, packets, gun position, volume categories) are in [rendering-framework.md §14](rendering-framework.md#14-sound-playback-mechanics-summary). Event names are used with the `techguns:` prefix in code, e.g. `techguns:guns.ak47Fire`.
 
-When an event lists several files, Minecraft picks one at random each time it plays (vanilla `sounds.json` behaviour). Every gun event uses `"category": "player"` except `guns.chainsawLoopStart`, which uses `"master"`. The sound-system category is distinct from Techguns' own volume-multiplier category (GUN_FIRE / RELOAD / …, framework §14). That multiplier is an identity function in v0.1.2 (correction made in the consistency pass).
+When an event lists several files, Minecraft picks one at random each time it plays (vanilla `sounds.json` behavior). Every gun event uses `"category": "player"` except `guns.chainsawLoopStart`, which uses `"master"`. The sound-system category is distinct from Techguns' own volume-multiplier category (GUN_FIRE / RELOAD / …, framework §14). That multiplier is an identity function in v0.1.2 (correction made in the consistency pass).
 
 Measured durations, sample rates and channels for every file, plus the exact volume and pitch each event is played with, are in [§ Volume, pitch and exact trigger per event](#volume-pitch-and-exact-trigger-per-event) and [§ Measured file facts](#measured-file-facts-all-185-files) below. All measured numbers are quoted from [ASSET-FACTS.md](../ASSET-FACTS.md). **What each sound *sounds like* is inferred from its file name, size and use. The audio was not listened to.**
 
@@ -120,7 +120,7 @@ The Stielhandgranate uses vanilla `random.bow`. No Techguns sound is involved.
 | `flamethrower_start_a` / `_shot_*` | ignition whoosh, then short burning-roar segments that chain together at 2-tick intervals |
 | `beamgun_start_*` / `beamgun_loop_*` | beam power-up, then sustained hum segments (fired every 5 ticks) |
 | `chainsaw_loop_*`, `chainsaw_swing_*`, `chainsaw_hit_*` | engine buzz segments, revving swing, cutting into wood |
-| `powerhammer_charge_*`, `_shot_*`, `_swing_*`, `_impact_*`, `_impactGround_*` | pneumatic wind-up, piston release, whoosh, flesh/armour hit, ground or rock thud |
+| `powerhammer_charge_*`, `_shot_*`, `_swing_*`, `_impact_*`, `_impactGround_*` | pneumatic wind-up, piston release, whoosh, flesh/armor hit, ground or rock thud |
 | `teslagun_shot_*`, `cdb_shot_*`, `alienblaster_shot_*`, `MIB_blaster_shot_*`, `lasergun_shot_*`, `blasterrifle_shot_*`, `pulserifle_shot_*`, `sonicshotgun_shot_*` | energy-weapon zaps, crackles and pulses |
 | `grenade_pin_*`, `grenade_throw_*` | pin pull clink, throw whoosh |
 | `minigun_start_*` | spin-up whine (unused) |
@@ -335,7 +335,7 @@ Transport legend:
 * **TGSound following the shooter**: `SoundUtil.playReloadSoundOnEntity`. Same path, but the sound tracks the entity each tick.
 * **vanilla**: `World.playSoundAtEntity` / `playSoundEffect`. The server broadcasts it to nearby players, at a fixed position.
 
-No call randomises pitch. Every Techguns gun sound plays at pitch 1.0. The only randomised pitch belongs to the Stielhandgranate's vanilla `random.bow`, see the next section.
+No call randomizes pitch. Every Techguns gun sound plays at pitch 1.0. The only randomized pitch belongs to the Stielhandgranate's vanilla `random.bow`, see the next section.
 
 | Event | Category | Durations (s) / rate / channels | Transport | Volume | Pitch | Exact trigger (code condition) | Used by |
 |---|---|---|---|---|---|---|---|
@@ -407,15 +407,15 @@ No call randomises pitch. Every Techguns gun sound plays at pitch 1.0. The only 
 | `guns.beamgunStart` | player | 1.31, 1.31, 1.83 / 48000 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | first shot of a run: player loop timer (`loopSoundDelay`) ≤ 0 when firing | NDR |
 | `guns.beamgunFire` | player | 1.01, 1.01, 1.01, 1.01, 1.01, 1.01 / 48000 Hz / mono | TGSound at gun position, not moving, GUN_FIRE | 4.0 | 1.0 | each shot after the first of a run, while the player loop timer (10 ticks, refreshed each shot) is still running; NPC shots always use this event | NDR |
 | `guns.biogunFire` | player | 1.58, 1.58, 1.58 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` on the player (server broadcast) | 1.0 | 1.0 | right-click released after charging (`onPlayerStoppedUsing`), server side only | Bio Gun |
-| `guns.biogunReload` | player | 3.42 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` (right-click path, [`GenericGunCharge`](../02-guns/per-gun-behaviour.md#genericguncharge-genericgunchargejava)); the reload key uses the TGSound reload path instead | 1.0 | 1.0 | right-click on an empty Bio Gun with reserve ammo | Bio Gun |
+| `guns.biogunReload` | player | 3.42 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` (right-click path, [`GenericGunCharge`](../02-guns/per-gun-behavior.md#genericguncharge-genericgunchargejava)); the reload key uses the TGSound reload path instead | 1.0 | 1.0 | right-click on an empty Bio Gun with reserve ammo | Bio Gun |
 | `guns.powerhammerFire` | player | 3.19, 2.20, 2.58 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` on the player (server broadcast) | 1.0 | 1.0 | right-click released after charging, server side only | Power Hammers |
 | `guns.powerhammerReload` | player | 3.43 / 44100 Hz / mono | Power Hammers: vanilla `World.playSoundAtEntity` (right-click path) or TGSound reload (reload key). Chainsaw: TGSound reload path | 1.0 | 1.0 | reload start (see Common trigger rules) | Power Hammers, Chainsaw |
 | `guns.powerhammerCharge` | player | 2.53, 2.53, 2.53 / 48000 Hz / mono | vanilla `World.playSoundAtEntity` on the player (server broadcast) | 1.0 | 1.0 | right-click with ammo and fire delay elapsed: charging begins (`startCharge`) | Power Hammers |
 | `guns.powerhammerSwing` | player | 1.67, 1.39, 1.49 / 48000 Hz / mono | `PacketPlaySound` to all clients within 50 blocks including the swinger; TGSound at gun position, not moving, GUN_FIRE | 1.0 | 1.0 | left-click swing (`onEntitySwing`) with ammo > 0, server side, at most once per 5 ticks (`swingSoundDelay`), not while a non-player container is open | Power Hammers |
 | `guns.powerhammerImpact` | player | 1.65, 1.14, 1.65, 1.14 / 32000 Hz / mono | vanilla `World.playSoundAtEntity` on the hammer projectile | 1.0 | 1.0 | PowerHammerProjectile impact on an entity | Power Hammers |
-| `guns.powerhammerImpactGround` | player | 1.72, 1.55, 1.80, 1.72 / 32000 Hz / mono | vanilla: `playSoundAtEntity` on the projectile, or `playSoundEffect` at the block centre | 1.0 | 1.0 | PowerHammerProjectile impact without an entity hit; also `onBlockDestroyed` with ammo > 0 (block mined) | Power Hammers |
+| `guns.powerhammerImpactGround` | player | 1.72, 1.55, 1.80, 1.72 / 32000 Hz / mono | vanilla: `playSoundAtEntity` on the projectile, or `playSoundEffect` at the block center | 1.0 | 1.0 | PowerHammerProjectile impact without an entity hit; also `onBlockDestroyed` with ammo > 0 (block mined) | Power Hammers |
 | `guns.chainsawSwing` | player | 1.28, 1.62, 1.10 / 44100 Hz / mono | `PacketPlaySound` to all clients within 50 blocks including the swinger; TGSound at gun position, not moving, GUN_FIRE | 2.0 | 1.0 | left-click swing with fuel, server side, at most once per 5 ticks, not while a non-player container is open | Chainsaw |
-| `guns.chainsawHit` | player | 1.34, 1.34, 1.34, 1.34, 1.34, 1.34 / 44100 Hz / mono | vanilla `World.playSoundEffect` at the block centre | 0.65 | 1.0 | `onBlockDestroyed` with fuel > 0 (each block cut) | Chainsaw |
+| `guns.chainsawHit` | player | 1.34, 1.34, 1.34, 1.34, 1.34, 1.34 / 44100 Hz / mono | vanilla `World.playSoundEffect` at the block center | 0.65 | 1.0 | `onBlockDestroyed` with fuel > 0 (each block cut) | Chainsaw |
 | `guns.chainsawLoopEnd` | player | 0.86 / 32000 Hz / mono | – | – | – | never played (no code reference) | – |
 | `guns.minigunStart` | player | 0.30 / 44100 Hz / mono | – | – | – | never played (setter commented out in TGuns) | – |
 | `guns.pulserifleFireStereo` | player | 2.75 / 44100 Hz / stereo | – | – | – | never played (no code reference) | – |
@@ -429,7 +429,7 @@ No call randomises pitch. Every Techguns gun sound plays at pitch 1.0. The only 
 
 | Sound | Trigger | Volume | Pitch | Side |
 |---|---|---|---|---|
-| `random.bow` (vanilla) | Stielhandgranate released ([`GenericGrenade.spawnGrenade`](../02-guns/per-gun-behaviour.md#grenades-genericgrenade-fraggrenade-flashbang)) | 1.0 | 1 / (rand × 0.4 + 1.2) + charge × 0.5, where charge = (t² + 2t)/3 with t = ticks held ÷ 20, capped at 1 | server |
+| `random.bow` (vanilla) | Stielhandgranate released ([`GenericGrenade.spawnGrenade`](../02-guns/per-gun-behavior.md#grenades-genericgrenade-fraggrenade-flashbang)) | 1.0 | 1 / (rand × 0.4 + 1.2) + charge × 0.5, where charge = (t² + 2t)/3 with t = ticks held ÷ 20, capped at 1 | server |
 | `random.bow` (vanilla) | Flashbang throw: unregistered item, so unreachable | 1.0 | same formula | server |
 | `mob.villager.idle` (vanilla) | firing or forced reload with an empty magazine and no reserve ammo | 1.0 | 1.0 | server |
 

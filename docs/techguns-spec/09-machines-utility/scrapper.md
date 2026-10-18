@@ -18,7 +18,7 @@
 
 **There is no "what scraps into what" table.** The code only hints at the intended design:
 
-- **Armour (`ItemArmor`, repairable):** look up the armour material's repair item and the item's damage fraction (damage ÷ maxDamage). This was presumably meant to return a share of the repair material scaled by remaining durability.
+- **Armor (`ItemArmor`, repairable):** look up the armor material's repair item and the item's damage fraction (damage ÷ maxDamage). This was presumably meant to return a share of the repair material scaled by remaining durability.
 - **Tools (`ItemTool`, repairable):** look up the tool material by name and use its repair item stack.
 - **Anything else:** print the item.
 
@@ -58,7 +58,7 @@ Shift-click is not implemented; it falls through to vanilla `Container.transferS
 
 ## GUI (`GuiScrapper`)
 
-The GUI extends [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine) ([08](../08-machines-production/index.md)), so it has the power bar, redstone button and security button. Its background is the ammo press texture [`textures/gui/ammoPress_GUI.png`](../08-machines-production/gui-textures.md#1-texturesguiammopress_guipng); [08](../08-machines-production/index.md) catalogues the file.
+The GUI extends [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine) ([08](../08-machines-production/index.md)), so it has the power bar, redstone button and security button. Its background is the ammo press texture [`textures/gui/ammoPress_GUI.png`](../08-machines-production/gui-textures.md#1-texturesguiammopress_guipng); [08](../08-machines-production/index.md) catalogs the file.
 
 | Element | Source (u,v,w,h) | Destination |
 |---|---|---|
@@ -66,7 +66,7 @@ The GUI extends [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-hand
 | Extra patch | (119,59,20,20) | (151,59) |
 | Progress arrow, while working: height = progress scaled to 21, plus 1 | (176,0,19,h) | (119,36) |
 
-Text: the title is centred at y = 6, and "Inventory" is drawn at (8, ySize − 94).
+Text: the title is centered at y = 6, and "Inventory" is drawn at (8, ySize − 94).
 
 ## Textures and sounds
 

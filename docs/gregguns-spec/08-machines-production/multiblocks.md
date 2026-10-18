@@ -1,6 +1,6 @@
 # GregGuns multiblocks
 
-The four multiblocks of the [machine roster](machine-roster.md): the Ammunition Works, the Retort, the Armoury Gantry and the Rampart. Each has a distinctive silhouette, a length or size that players choose, and a tier mechanic that is not just "more hatches".
+The four multiblocks of the [machine roster](machine-roster.md): the Ammunition Works, the Retort, the Armory Gantry and the Rampart. Each has a distinctive silhouette, a length or size that players choose, and a tier mechanic that is not just "more hatches".
 
 - **Techguns baseline:** [reaction-chamber.md](../../techguns-spec/08-machines-production/reaction-chamber.md), [ammo-press.md](../../techguns-spec/08-machines-production/ammo-press.md), [repair-bench.md](../../techguns-spec/09-machines-utility/repair-bench.md), [turret.md](../../techguns-spec/09-machines-utility/turret.md), [framework.md § multiblock](../../techguns-spec/08-machines-production/framework.md#9-multiblock-framework)
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0002 machine deconfliction](../../design/0002-machine-deconfliction.md) (amended: see [machine-roster.md](machine-roster.md#what-changes-from-techguns-and-from-0002)), [0003 energy model](../../design/0003-energy-model.md), [0006 art direction](../../design/0006-art-direction.md)
@@ -51,8 +51,8 @@ All of these are GregGuns blocks on page 50 unless a GT name is given.
 | **Item pipe casing** (GT, any tier) | Ammunition Works belt | Tier sets speed, as in the Industrial Mixer |
 | **Reaction Casing** (the Reaction Chamber Casing of [recipes.md](recipes.md#reaction-chamber-casing-1-recipe)) | Retort | Reused, not renamed |
 | **Borosilicate glass** (GT, any tier, read with `chainAllGlasses`) | Retort vessel, Gantry windows | Retort glass tier is the vessel's pressure rating |
-| **Gantry Casing**, **Gantry Beam**, **Gantry Hoist**, **Repair Cradle** | Armoury Gantry | Cradle is one per bay floor pad |
-| **Bastion Plating** | Rampart, four metas: Iron, Steel, Aluminium, Carbon | The meta sets the armour value of every mount |
+| **Gantry Casing**, **Gantry Beam**, **Gantry Hoist**, **Repair Cradle** | Armory Gantry | Cradle is one per bay floor pad |
+| **Bastion Plating** | Rampart, four metas: Iron, Steel, Aluminum, Carbon | The meta sets the armor value of every mount |
 | `frameGt` Steel / Titanium | Retort feet, Gantry legs | GT frame boxes |
 
 ## Ammunition Works
@@ -228,9 +228,9 @@ Focus (non-consumed input), intensity with drift, 3-second reaction ticks, compl
 - **GGS-08-67** A failed batch applies its risk once.
 - **GGS-08-68** The Retort accepts only GT hatches. It requires an Energy, a Maintenance, a Muffler, an Input Bus, an Output Bus and an Input Hatch.
 
-## Armoury Gantry
+## Armory Gantry
 
-**Concept.** A repair **gantry**: a row of portal frames on rails, each frame a repair bay with a cradle on its floor and a hoist on its beam. Armour and guns go in on an Input Bus, repair materials alongside, and repaired items come out on an Output Bus, damage zero and NBT intact.
+**Concept.** A repair **gantry**: a row of portal frames on rails, each frame a repair bay with a cradle on its floor and a hoist on its beam. Armor and guns go in on an Input Bus, repair materials alongside, and repaired items come out on an Output Bus, damage zero and NBT intact.
 
 **Silhouette.** A line of open portal arches under a shared beam, hoists standing above the beam, and a closed booth at the front. Seen from the side it is a row of arches. Never a cube.
 
@@ -297,16 +297,16 @@ There is no NEI recipe tab. NEI shows the controller's tooltip and the multibloc
 
 ### Single block versus multiblock
 
-| | Repair Bench (single) | Armoury Gantry |
+| | Repair Bench (single) | Armory Gantry |
 |---|---|---|
-| Items | Worn armour (by player) and held guns | Any damaged armour or gun in the Input Bus |
+| Items | Worn armor (by player) and held guns | Any damaged armor or gun in the Input Bus |
 | Batch | One item per click | Up to `n` per cycle |
 | Tier | Bench tier at least item tier | Lowest Energy Hatch tier at least item tier |
 | Interaction | GUI, click | Bus automation, ME-friendly |
 
 ### Requirements
 
-- **GGS-08-69** The Armoury Gantry is one MTE, ID 20114, built from `head`, two to eight `bay` and `tail`, with the shape above.
+- **GGS-08-69** The Armory Gantry is one MTE, ID 20114, built from `head`, two to eight `bay` and `tail`, with the shape above.
 - **GGS-08-70** It repairs up to `n` items per cycle, each all or nothing against its own repair list, matched with `GTOreDictUnificator.isInputStackEqual`.
 - **GGS-08-71** Repaired items come out with damage 0 and every other NBT key unchanged.
 - **GGS-08-72** An item above the lowest Energy Hatch tier is skipped and reported, never repaired.
@@ -314,7 +314,7 @@ There is no NEI recipe tab. NEI shows the controller's tooltip and the multibloc
 
 ## Rampart
 
-**Concept.** A **crenellated wall** of turret mounts. A gatehouse tower on the left holds the controller, the ammo feed and the power feed. A run of bays, each a stone-style merlon and an open crenel with a **Gun Mount Hatch** on its sill, extends to the right. A turret stands in each crenel. Plating tier is armour tier.
+**Concept.** A **crenellated wall** of turret mounts. A gatehouse tower on the left holds the controller, the ammo feed and the power feed. A run of bays, each a stone-style merlon and an open crenel with a **Gun Mount Hatch** on its sill, extends to the right. A turret stands in each crenel. Plating tier is armor tier.
 
 **Silhouette.** Alternating tall merlons and low crenels along the wall, a taller gatehouse at one end and a one-block end cap at the other: a battlement. Never a cube.
 
@@ -369,12 +369,12 @@ P   P   P   P   P
 - **Ammo feed.** The controller's Input Buses are one shared ammo store for every mount. On a mount's reload, the Rampart takes ammo from the buses exactly as Techguns' base takes it from slots 0-8 ([turret.md](../../techguns-spec/09-machines-utility/turret.md#ammunition-consumeammo-called-by-the-turret-for-each-shot)), and puts the empty magazines on the Output Bus. One Input Bus replaces up to ten hand-fed inventories. An ME Input Bus works.
 - **Mounted entity.** Each hatch spawns the existing 30 HP `NPCTurret` above itself, owned by the controller's owner, with the friend rules of [turret.md](../09-machines-utility/turret.md). Breaking a hatch, or the structure, kills that turret. The respawn timer and healing are per mount.
 - **One security setting.** Owner, team status (ServerUtilities, ALLY or higher) and the "target animals" switch are set once on the controller and apply to every mount.
-- **Turret armour from casing.** The lowest Bastion Plating meta found gives every mount the same armour value: Iron 5, Steel 10, Aluminium 15, Carbon 20, the Techguns values ([turret.md](../../techguns-spec/09-machines-utility/turret.md#armour)). This replaces the per-turret armour slot. Each plating block is crafted from its matching turret armour item ([09 recipes](../09-machines-utility/recipes.md#turret-armour-plates-4-recipes)). The meta is read the way GT reads coil and glass tier ([`ofCoil`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L608)).
+- **Turret armor from casing.** The lowest Bastion Plating meta found gives every mount the same armor value: Iron 5, Steel 10, Aluminum 15, Carbon 20, the Techguns values ([turret.md](../../techguns-spec/09-machines-utility/turret.md#armor)). This replaces the per-turret armor slot. Each plating block is crafted from its matching turret armor item ([09 recipes](../09-machines-utility/recipes.md#turret-armor-plates-4-recipes)). The meta is read the way GT reads coil and glass tier ([`ofCoil`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L608)).
 - **No recipe.** Like the Cleanroom ([L213-L233](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/tileentities/machines/multi/MTECleanroom.java#L213-L233)) the Rampart sets its own EU/t in `checkProcessing` and runs in rolling cycles. Draw is the sum of mount upkeep, 4 EU/t each (proposal, from Techguns' 5 RF/t), plus 120 EU per HP healed. If the hatch cannot pay, the mounts go inactive, as the single turret does.
 
 ### Parallel and EU
 
-The "parallel" is `n` mounts. EU is the same per mount as a single Turret: there is no energy discount. The gain is logistics (one feed, one setting) and the shared armour. A 10-mount Rampart upkeep is 40 EU/t, inside an MV Energy Hatch.
+The "parallel" is `n` mounts. EU is the same per mount as a single Turret: there is no energy discount. The gain is logistics (one feed, one setting) and the shared armor. A 10-mount Rampart upkeep is 40 EU/t, inside an MV Energy Hatch.
 
 ### Single block versus multiblock
 
@@ -382,7 +382,7 @@ The "parallel" is `n` mounts. EU is the same per mount as a single Turret: there
 |---|---|---|
 | Guns | One, in its own slot 18 | One per Gun Mount Hatch, up to ten |
 | Ammo | 9 slots per turret, hand or automation | Shared Input Bus (ME ok) |
-| Armour | One slot, Techguns plates | Plating tier, all mounts |
+| Armor | One slot, Techguns plates | Plating tier, all mounts |
 | Security | Per turret | Per Rampart |
 | Power | Per turret hatch | One Energy Hatch |
 
@@ -400,7 +400,7 @@ Pieces `gate`, `bay` and `cap`. The check places `gate`, loops `bay` while it ma
 - **GGS-08-75** There is exactly one Gun Mount Hatch per bay, at `H`. A missing one is a structure error.
 - **GGS-08-76** The Gun Mount Hatch is an MTE for each of MV, HV, EV and IV (IDs 20121-20124) and holds one gun. A gun above the hatch's tier is refused.
 - **GGS-08-77** One shared ammo store: reloads draw from the controller's Input Buses and return empty magazines to its Output Bus.
-- **GGS-08-78** Every mount's armour value is that of the lowest Bastion Plating meta in the structure.
+- **GGS-08-78** Every mount's armor value is that of the lowest Bastion Plating meta in the structure.
 - **GGS-08-79** Owner, team and animal-target settings are on the controller and apply to every mount.
 - **GGS-08-80** Breaking a mount hatch or the structure kills that mount's turret entity.
 - **GGS-08-81** The Rampart draws EU only (upkeep per mount plus healing) and never explodes in rain.

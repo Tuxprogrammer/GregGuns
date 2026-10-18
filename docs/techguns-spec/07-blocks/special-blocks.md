@@ -1,14 +1,14 @@
-# 07-blocks: block behaviours
+# 07-blocks: block behaviors
 
-Behaviour of each block family, beyond the property table in [block-catalogue.md](block-catalogue.md). Coordinates: +X east, +Z south, +Y up. Vanilla side indices: 0 down, 1 up, 2 north (−Z), 3 south (+Z), 4 west (−X), 5 east (+X). Model and renderer details are in [block-rendering-and-models.md](block-rendering-and-models.md).
+Behavior of each block family, beyond the property table in [block-catalog.md](block-catalog.md). Coordinates: +X east, +Z south, +Y up. Vanilla side indices: 0 down, 1 up, 2 north (−Z), 3 south (+Z), 4 west (−X), 5 east (+X). Model and renderer details are in [block-rendering-and-models.md](block-rendering-and-models.md).
 
 ---
 
 ## 1. Decorative Chisel blocks (container, concrete, metalpanel, metalpanel2, bugnest)
 
-[`GenericBlockCTM`](block-catalogue.md#registered-blocks) implements Chisel's `ICarvable`. It does nothing itself: icons, sub-blocks (one creative entry per variation), the world icon and the render type all come from Chisel's `CarvableHelper` and its connected-texture renderer. Metadata = variation, and it drops itself. With the Chisel mod's chisel the variations can be swapped within each carving group. See [connected-textures.md](connected-textures.md) for the texture behaviour.
+[`GenericBlockCTM`](block-catalog.md#registered-blocks) implements Chisel's `ICarvable`. It does nothing itself: icons, sub-blocks (one creative entry per variation), the world icon and the render type all come from Chisel's `CarvableHelper` and its connected-texture renderer. Metadata = variation, and it drops itself. With the Chisel mod's chisel the variations can be swapped within each carving group. See [connected-textures.md](connected-textures.md) for the texture behavior.
 
-[`BlockBugSand`](block-catalogue.md#registered-blocks) (bugnest) adds an `updateTick` that, on the server, spawns one [`AlienBug`](../10-entities-npcs/per-mob.md#15-alien-bug-alienbug) ([10-entities-npcs](../10-entities-npcs/index.md)) centred on top of the block with random yaw and pitch if the block above is air. The constructor calls `setTickRandomly(false)` and nothing schedules ticks, so **this never runs** ([BLK-11](index.md#suspected-bugs)). In practice the block is inert hardened sand used by alien bug nest world generation ([11-worldgen](../11-worldgen/index.md)).
+[`BlockBugSand`](block-catalog.md#registered-blocks) (bugnest) adds an `updateTick` that, on the server, spawns one [`AlienBug`](../10-entities-npcs/per-mob.md#15-alien-bug-alienbug) ([10-entities-npcs](../10-entities-npcs/index.md)) centered on top of the block with random yaw and pitch if the block above is air. The constructor calls `setTickRandomly(false)` and nothing schedules ticks, so **this never runs** ([BLK-11](index.md#suspected-bugs)). In practice the block is inert hardened sand used by alien bug nest world generation ([11-worldgen](../11-worldgen/index.md)).
 
 ---
 
@@ -24,7 +24,7 @@ Behaviour of each block family, beyond the property table in [block-catalogue.md
 | front (2) | `<name>_front` | side |
 | back (3) | `<name>_back` | side |
 
-When the overlay flag is set (it is for both blocks), the optional overlay icons `<name>_overlay_bottom`, `_overlay_top`, `_overlay_front`, `_overlay_back` and `_overlay_side` are loaded too. Only `_overlay_front` exists, for both [`screen`](block-catalogue.md#registered-blocks) and [`controlpanel`](block-catalogue.md#registered-blocks).
+When the overlay flag is set (it is for both blocks), the optional overlay icons `<name>_overlay_bottom`, `_overlay_top`, `_overlay_front`, `_overlay_back` and `_overlay_side` are loaded too. Only `_overlay_front` exists, for both [`screen`](block-catalog.md#registered-blocks) and [`controlpanel`](block-catalog.md#registered-blocks).
 
 **Facing on placement.** Uses the placer's yaw quadrant `q = floor(yaw·4/360 + 0.5) & 3`, then sets the metadata:
 
@@ -42,7 +42,7 @@ When the overlay flag is set (it is for both blocks), the optional overlay icons
 - **Pass 0:** a normal opaque cube.
 - **Pass 1:** the animated overlay icon is drawn on the front face only, just above the surface, with "FX lighting" calls meant to make it full-bright (see [BLK-20](index.md#suspected-bugs)).
 
-Result: a brown/grey metal box whose front shows a glowing green animated display. On the screen it is a radar sweep; on the control panel it is an oscilloscope trace with blinking LEDs.
+Result: a brown/gray metal box whose front shows a glowing green animated display. On the screen it is a radar sweep; on the control panel it is an oscilloscope trace with blinking LEDs.
 
 In the inventory the renderer draws nothing in 3D, so the item shows the flat `_top` icon.
 
@@ -64,13 +64,13 @@ Unlike vanilla panes, it does **not** connect to solid blocks.
 **Collision and selection box.** A 2-px (0.4375–0.5625) thick, full-height slab:
 
 - With no connections it is a 2×2-px post.
-- On each axis, it extends to the 0 or 1 edge toward each connected neighbour.
-- When both neighbours on an axis connect, it spans that axis fully.
+- On each axis, it extends to the 0 or 1 edge toward each connected neighbor.
+- When both neighbors on an axis connect, it spans that axis fully.
 
 **World rendering** ([`RenderGenericPane`](block-rendering-and-models.md#1-isbrh-renderers-and-render-ids)):
 
 - **Net:** if it has any connection, vanilla pane rendering draws the net texture (variant icon) on the pane quads. The pane's top and edge strip icon is `techguns:invisible`, so the 2-px top and edges are transparent. An isolated net draws no net at all.
-- **Pole:** a 2×2-px full-height centre post, textured with the variant's pole icon, is drawn when the net is:
+- **Pole:** a 2×2-px full-height center post, textured with the variant's pole icon, is drawn when the net is:
   - isolated (no connections),
   - an end piece (exactly one connection), or
   - an L-corner (two connections on different axes).
@@ -88,7 +88,7 @@ Unlike vanilla panes, it does **not** connect to solid blocks.
 - It drops itself but always as meta 0 ([BLK-04](index.md#suspected-bugs)).
 - The item renders as a flat icon (the net texture).
 - Flamethrower and Cyberdemon blaster projectiles treat camo nets specially ([04-projectiles-fx](../04-projectiles-fx/index.md)).
-- The [`camoNetPlacer`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems) item places whole planes of nets ([06-items](../06-items/index.md)).
+- The [`camoNetPlacer`](../06-items/item-catalog.md#2-stand-alone-items-registered-by-tgitems) item places whole planes of nets ([06-items](../06-items/index.md)).
 
 ---
 
@@ -96,7 +96,7 @@ Unlike vanilla panes, it does **not** connect to solid blocks.
 
 A flat, horizontal net slab 3 px (0.1875) high at the bottom of the block. It uses the same three variants and textures as the camo net, on all faces.
 
-**Connections.** A neighbour connects if it is:
+**Connections.** A neighbor connects if it is:
 
 - the same block, or
 - a fence gate, or
@@ -104,7 +104,7 @@ A flat, horizontal net slab 3 px (0.1875) high at the bottom of the block. It us
 
 **Horizontal extent, per axis.**
 
-| Neighbours that connect on this axis | Extent |
+| Neighbors that connect on this axis | Extent |
 |---|---|
 | both | 0 → 1 |
 | only the + side | 0.4375 → 1 |
@@ -121,7 +121,7 @@ This uses "width" 0.5625 and "width2" 0.75. A `setDimensions` helper exists but 
 
 A connecting wall of sandbags. The box is computed with the same per-axis rule as the camo net roof, but with both widths set to 0.75 and full height 1.0:
 
-| Neighbours that connect on this axis | Extent |
+| Neighbors that connect on this axis | Extent |
 |---|---|
 | both | 0 → 1 |
 | only + | 0.25 → 1 |
@@ -139,7 +139,7 @@ A lone sandbag is therefore a 0.5 × 1 × 0.5 pillar, and a straight run is a 0.
 
 ## 6. Metal Ladder (`ladder01`, `BlockTGLadder`)
 
-A wall ladder in four colour variants, with the orientation packed into metadata as `meta = variant·4 + facing`.
+A wall ladder in four color variants, with the orientation packed into metadata as `meta = variant·4 + facing`.
 
 | Facing (meta % 4) | Attached to the solid face of | Rails and collision slab at |
 |---|---|---|
@@ -150,18 +150,18 @@ A wall ladder in four colour variants, with the orientation packed into metadata
 
 | Variant | Item damage | Texture | Lang (tooltip "Current Camo") |
 |---|---|---|---|
-| 0 | 0 | `techguns:metalLadder` | Grey |
+| 0 | 0 | `techguns:metalLadder` | Gray |
 | 1 | 4 | `techguns:metalLadderRusty` | Rusty |
 | 2 | 8 | `techguns:metalLadderShiny` | Shiny |
 | 3 | 12 | `techguns:metalLadderCarbon` | Black |
 
-**Behaviour.**
+**Behavior.**
 
 - `isLadder` is always true, so it is climbable.
 - **Collision and selection:** a 2-px (0.125) slab against the supporting wall, full height.
-- **Placement** is allowed if any horizontal neighbour presents a solid face toward it.
+- **Placement** is allowed if any horizontal neighbor presents a solid face toward it.
 - **Facing on placement** checks the four supports in the order z+1, z−1, x+1, x−1. Each check runs if nothing is chosen yet *or* the clicked side matches that direction, and sets the facing if that support is solid, otherwise "none". A later failing check can wipe out an earlier success, so the result can be "none" (−1). The stored metadata is then `itemDamage − 1` ([BLK-07](index.md#suspected-bugs)).
-- **Neighbour change:** if the support for the current facing is gone, the ladder pops off ([BLK-06](index.md#suspected-bugs): it drops variant 0).
+- **Neighbor change:** if the support for the current facing is gone, the ladder pops off ([BLK-06](index.md#suspected-bugs): it drops variant 0).
 - **Drops:** 1 item, damage `meta − meta%4`.
 - **Rotation for structures:** facing cycles 0 → 2 → 1 → 3 → 0 per clockwise step, keeping the variant.
 - **Creative tab:** lists damages 0, 4, 8 and 12.
@@ -172,11 +172,11 @@ A wall ladder in four colour variants, with the orientation packed into metadata
 
 ## 7. Lamps and lanterns (`lamp01`, `BlockTGLamp`)
 
-One block id holds two colours, each as a wall-mounted lamp or a free-standing lantern.
+One block id holds two colors, each as a wall-mounted lamp or a free-standing lantern.
 
 | Meta | Kind | Icon (all faces) |
 |---|---|---|
-| 0 | yellow lamp, item form ("unattached") | [`lamp01`](block-catalogue.md#registered-blocks) |
+| 0 | yellow lamp, item form ("unattached") | [`lamp01`](block-catalog.md#registered-blocks) |
 | 1 | yellow lamp on a ceiling (attached to the block above) | `lamp01` |
 | 2 | yellow lamp on a floor | `lamp01` |
 | 3 | yellow lamp on the block at z+1 | `lamp01` |
@@ -204,14 +204,14 @@ One block id holds two colours, each as a wall-mounted lamp or a free-standing l
   | 5 | block at x−1 | 6 |
 
   A white lamp adds 8.
-- If the metadata is still 0 or 8 when the block is added (or on a scheduled tick), it auto-attaches to the first solid neighbour in the order above, below, z+1, z−1, x+1, x−1.
-- `canPlaceBlockAt` needs at least one solid neighbouring face in any of the six directions.
+- If the metadata is still 0 or 8 when the block is added (or on a scheduled tick), it auto-attaches to the first solid neighbor in the order above, below, z+1, z−1, x+1, x−1.
+- `canPlaceBlockAt` needs at least one solid neighboring face in any of the six directions.
 
 **Support checks.**
 
-- On every neighbour change, the block is dropped (with its normalised item metadata) if no solid neighbour face exists at all.
+- On every neighbor change, the block is dropped (with its normalized item metadata) if no solid neighbor face exists at all.
 - A lamp is also dropped when its own specific support is gone.
-- A lantern only needs any one solid neighbour.
+- A lantern only needs any one solid neighbor.
 
 **Bounds.** Computed at 32-px resolution:
 
@@ -220,9 +220,9 @@ One block id holds two colours, each as a wall-mounted lamp or a free-standing l
 
 **Rendered geometry.**
 
-- **Lamp:** a socket 16/32 wide and 2/32 thick against the support, plus a lens box 14/32 wide and 4/32 thick in front of it. Both use the same icon, projected by position. The texture has a bright centre square and four bright edge bars, so the lens front and sides glow and the socket stays dark.
+- **Lamp:** a socket 16/32 wide and 2/32 thick against the support, plus a lens box 14/32 wide and 4/32 thick in front of it. Both use the same icon, projected by position. The texture has a bright center square and four bright edge bars, so the lens front and sides glow and the socket stays dark.
 - **Lantern:** a central post (0.375–0.625, y 0.125–0.875), two ring plates (0.28125–0.71875; y 0.1875–0.25 and 0.75–0.8125), and a lens body (0.3125–0.6875, y 0.25–0.75).
-- **Lantern connector arms** are added toward each neighbour that is an opaque, normally rendered, non-gourd, non-lamp block:
+- **Lantern connector arms** are added toward each neighbor that is an opaque, normally rendered, non-gourd, non-lamp block:
   - above or below: a 0.25 × 0.25 stub filling the gap to the block edge;
   - horizontal: two 0.25-wide bars (at the two ring heights) running from the ring to the block edge.
 
@@ -238,7 +238,7 @@ One block id holds two colours, each as a wall-mounted lamp or a free-standing l
 A reskinned vanilla iron door with these changes:
 
 - **Opens by hand** (right-click), unlike a vanilla iron door. Redstone opening is inherited from vanilla.
-- **Double doors:** after toggling, it looks at the two neighbours across the door's width and toggles any `door01` there too. That covers ±X when the lower-half metadata is 1, 3, 5 or 7, and ±Z when it is 0, 2, 4 or 6. This makes double doors open together. The neighbour toggle does not cascade further.
+- **Double doors:** after toggling, it looks at the two neighbors across the door's width and toggles any `door01` there too. That covers ±X when the lower-half metadata is 1, 3, 5 or 7, and ±Z when it is 0, 2, 4 or 6. This makes double doors open together. The neighbor toggle does not cascade further.
 - **Sound:** `techguns:blocks.metaldoorOpen` (volume 1, pitch 1) through `World.playSound`, which is client-only. Only the clicking client hears it, once per door leaf toggled ([BLK-02](index.md#suspected-bugs)). Redstone toggling uses vanilla's door sound.
 - **Icons:**
   - `techguns:door01` for the top and bottom faces;
@@ -246,19 +246,19 @@ A reskinned vanilla iron door with these changes:
   - horizontally mirrored copies (vanilla `IconFlipped`) for the flipped side.
 
   Which side is mirrored depends on the facing, the open state and the hinge flag, so the texture always reads the right way round from both sides. The item-form icon is `door01_upper`.
-- **Drops and pick-block:** both give [`TGItems.door01`](../06-items/item-catalogue.md) (Bunker Door item, [06-items](../06-items/index.md)), except upper-half metadata exactly 8 ([BLK-01](index.md#suspected-bugs)).
+- **Drops and pick-block:** both give [`TGItems.door01`](../06-items/item-catalog.md) (Bunker Door item, [06-items](../06-items/index.md)), except upper-half metadata exactly 8 ([BLK-01](index.md#suspected-bugs)).
 - It sits in the Techguns creative tab as a raw block item ([BLK-03](index.md#suspected-bugs)). It is placed by structures ([11-worldgen](../11-worldgen/index.md)).
 
 ---
 
 ## 9. Reinforced Chest and Weapon Chest (`tgchest`, `tgchest_weapon`, `BlockTGChest`)
 
-This is a near-copy of the vanilla chest. Type 0 is the reinforced chest and type 1 the weapon chest. The tile entity is [`TGChestTileEnt`](../09-machines-utility/misc-tile-entities.md#tile-entity-tgchesttileent) and the TESR is [`RenderTGChest`](../09-machines-utility/misc-tile-entities.md#1-reinforced-chest-and-weapon-chest). Both sit outside this area's file scope, but their key facts are summarised here so the block is implementable.
+This is a near-copy of the vanilla chest. Type 0 is the reinforced chest and type 1 the weapon chest. The tile entity is [`TGChestTileEnt`](../09-machines-utility/misc-tile-entities.md#tile-entity-tgchesttileent) and the TESR is [`RenderTGChest`](../09-machines-utility/misc-tile-entities.md#1-reinforced-chest-and-weapon-chest). Both sit outside this area's file scope, but their key facts are summarized here so the block is implementable.
 
 - **Shape:** 1/16 inset on every side, 14/16 tall. The box extends to the shared edge when a chest of the same block is adjacent.
 - **Placement:**
   - It faces the placer: q 0 → meta 2, 1 → 5, 2 → 3, 3 → 4.
-  - If one neighbour is the same chest, both halves are aligned the way vanilla does it.
+  - If one neighbor is the same chest, both halves are aligned the way vanilla does it.
   - At most two in a row, with no third chest next to a double.
   - On the server, if the item has an NBT compound `TileEntityData`, it is loaded into the new tile entity. That restores the contents.
 - **Inventory:** 36 slots per chest (vanilla has 27), all sides insert and extract. A double chest opens as a vanilla `InventoryLargeChest`.
@@ -284,7 +284,7 @@ This is a near-copy of the vanilla chest. Type 0 is the reinforced chest and typ
 
 | Meta | Name | Texture (animated, 4 frames × 8 ticks) | Light | Pickaxe level |
 |---|---|---|---|---|
-| 0 | Titanium Iron Ore | [`oreTitanIron`](block-catalogue.md#registered-blocks) | 3 | 3 |
+| 0 | Titanium Iron Ore | [`oreTitanIron`](block-catalog.md#registered-blocks) | 3 | 3 |
 | 1 | Uranium Ore | `oreUranium` | 5 | 2 |
 
 `GenericBlockMetadata` is a generic per-meta texture and light holder: `setBlockTypeForMeta(meta, texture)`, `setLightLevelForMeta(meta, level)`, per-meta `getLightValue` from the world metadata, `damageDropped = meta`, and creative entries for each meta in use.
@@ -310,7 +310,7 @@ An ore cluster is an unbreakable, ore-rich block that an Ore Drill ([08-machines
 
 **Unbreakable.** Hardness −1 and resistance 6,000,000. Exception: if the player holds `TGItems.crowbar` and the type is not a bedrock type, the per-tick break progress is 0.005, so a hand break takes 200 ticks. It drops nothing.
 
-**Rendering** ([`RenderOrecluster`](block-rendering-and-models.md#1-isbrh-renderers-and-render-ids)). First a full cube with the base icon, then all six faces again with the overlay icon tinted by the type's colour.
+**Rendering** ([`RenderOrecluster`](block-rendering-and-models.md#1-isbrh-renderers-and-render-ids)). First a full cube with the base icon, then all six faces again with the overlay icon tinted by the type's color.
 
 - **Base icon:** bedrock if the type is a bedrock type. Otherwise it depends on the client player's current dimension: netherrack in −1, end stone in 1, stone elsewhere ([BLK-23](index.md#suspected-bugs)).
 - **Inventory:** a stone cube plus the tinted overlay, with standard item lighting.
@@ -350,24 +350,24 @@ Metas 7–15 are filled in `postInit`. If an oredict entry is missing, a placeho
 
 ### Custom clusters
 
-[`OreClusterCustom`](block-catalogue.md#registered-blocks) is created only when the config flags are on. It starts with all 16 slots empty (multipliers all 1). MineTweaker fills slots with `setOre(id, ore, level, r, g, b, tex, multPower, multAmount)` or `setFluid(...)`, which also set rarity and maxY to 0 ([08-machines-production](../08-machines-production/index.md) documents the tweaker).
+[`OreClusterCustom`](block-catalog.md#registered-blocks) is created only when the config flags are on. It starts with all 16 slots empty (multipliers all 1). MineTweaker fills slots with `setOre(id, ore, level, r, g, b, tex, multPower, multAmount)` or `setFluid(...)`, which also set rarity and maxY to 0 ([08-machines-production](../08-machines-production/index.md) documents the tweaker).
 
 - **Creative tab:** lists every slot with level > 0.
 - **Item name:** "Ore Cluster" for every meta.
 - **Tooltip:** the fluid's localized name, or the ore's `<unlocalized>.name` translated.
 
-Helper [`TGBlocks.isOrecluster(block)`](block-catalogue.md#registered-blocks) tells whether a block is one of the registered clusters.
+Helper [`TGBlocks.isOrecluster(block)`](block-catalog.md#registered-blocks) tells whether a block is one of the registered clusters.
 
 ---
 
 ## 12. Alien bug nest blocks
 
-| Block | Behaviour |
+| Block | Behavior |
 |---|---|
-| [`bugnest`](block-catalogue.md#registered-blocks) (Hardened Sand) | Plain sand-coloured block (see §1). The bug-spawning tick is dead code (BLK-11). |
-| [`bugnesteggs`](block-catalogue.md#registered-blocks) (Strange Glowing Eggs) | Plain [`GenericBlock`](block-catalogue.md#conventions-and-defaults), sand material. The animated egg texture plays frames 0,1,2,3,2,1,0 at 2 ticks each. It emits light, but `setLightLevel(5.0)` gives an out-of-range 75 ([BLK-10](index.md#suspected-bugs)). |
-| [`bugnestslimy`](block-catalogue.md#registered-blocks) (Slime Trail) | Subclass of vanilla `BlockLadder`: climbable, attaches to walls with vanilla ladder rules and vanilla render type 8. Texture `techguns:bugnestslimy` (a transparent slime streak). A helper `getDirectionMeta` (prints to stdout) is never called. |
-| [`TGMonsterSpawner`](block-catalogue.md#registered-blocks) | See below. |
+| [`bugnest`](block-catalog.md#registered-blocks) (Hardened Sand) | Plain sand-colored block (see §1). The bug-spawning tick is dead code (BLK-11). |
+| [`bugnesteggs`](block-catalog.md#registered-blocks) (Strange Glowing Eggs) | Plain [`GenericBlock`](block-catalog.md#conventions-and-defaults), sand material. The animated egg texture plays frames 0,1,2,3,2,1,0 at 2 ticks each. It emits light, but `setLightLevel(5.0)` gives an out-of-range 75 ([BLK-10](index.md#suspected-bugs)). |
+| [`bugnestslimy`](block-catalog.md#registered-blocks) (Slime Trail) | Subclass of vanilla `BlockLadder`: climbable, attaches to walls with vanilla ladder rules and vanilla render type 8. Texture `techguns:bugnestslimy` (a transparent slime streak). A helper `getDirectionMeta` (prints to stdout) is never called. |
+| [`TGMonsterSpawner`](block-catalog.md#registered-blocks) | See below. |
 
 ### Monster spawner holes (`BlockTGMonsterSpawner`)
 
@@ -402,14 +402,14 @@ Size `s` = 1–3, read from the tile entity. Bounds are computed at 32-px resolu
 - width = (10 + 6s)/32: 16, 22 or 28 px
 - thickness = (2 + 4s)/32: 6, 10 or 14 px
 
-The box is centred on the face, flush against the attached side.
+The box is centered on the face, flush against the attached side.
 
-**Behaviour.**
+**Behavior.**
 
 - **Contact:** any `EntityLiving` touching it gets Poison III (amplifier 2) for 100 ticks. Players are not `EntityLiving` and are never poisoned ([BLK-08](index.md#suspected-bugs)).
 - Not harvestable, no drop, instant break (hardness 0), not opaque, all faces rendered with `techguns:bio`.
 - Not in any creative tab.
-- **Lifecycle** (in `BioblobTileEnt`, summarised for completeness):
+- **Lifecycle** (in `BioblobTileEnt`, summarized for completeness):
   - Every 60 ticks the size drops by 1. At size 1 the blob vanishes.
   - Each further Bio Gun hit adds power to the size and resets the timer.
   - Above size 3 it bursts: a 3-block bio explosion with `techguns:effects.biodeath` and the `bioblobExplosion` particle. Owned by [04-projectiles-fx](../04-projectiles-fx/index.md).
@@ -435,14 +435,14 @@ The Forge classic fluid block for fluid `creeper_acid`. Fluid properties (from [
 
 An editor-only block. Structure scanning ([`StructureTestTool`](../06-items/special-items.md#structure-test-tool-structuretesttool)) and [`MBlock`](../11-worldgen/structure-system.md#mblock) use it to mean "force air here" in structure templates ([11-worldgen](../11-worldgen/index.md)).
 
-- Cloth material, hardness 1, not a normal cube, not opaque, uses neighbour brightness.
-- Rendered as a plain cube with the see-through [`airMarker`](block-catalogue.md#registered-blocks) texture (an "AIR" stencil in a frame).
+- Cloth material, hardness 1, not a normal cube, not opaque, uses neighbor brightness.
+- Rendered as a plain cube with the see-through [`airMarker`](block-catalog.md#registered-blocks) texture (an "AIR" stencil in a frame).
 
 ---
 
 ## 16. `ItemBlockMetaDataMachine`
 
-The item block for [`basicMachine`](block-catalogue.md#registered-blocks) and [`machineMultiBlock`](block-catalogue.md#registered-blocks) (blocks owned by [08](../08-machines-production/index.md) and [09](../09-machines-utility/index.md)).
+The item block for [`basicMachine`](block-catalog.md#registered-blocks) and [`machineMultiBlock`](block-catalog.md#registered-blocks) (blocks owned by [08](../08-machines-production/index.md) and [09](../09-machines-utility/index.md)).
 
 - **Tooltip:** "Has TileEntity Data" when the stack has NBT `TileEntityData`.
 
@@ -450,7 +450,7 @@ After a successful placement:
 
 | Metadata | Effect |
 |---|---|
-| 6, 8 (explosive charges) | The [`ExplosiveChargeTileEnt`](../09-machines-utility/explosive-charges.md#nbt-explosivechargetileent) orientation is set to the clicked side. On the server, the charge's "plant" sound is played at the block centre, volume 4.0, pitch 1.0. |
+| 6, 8 (explosive charges) | The [`ExplosiveChargeTileEnt`](../09-machines-utility/explosive-charges.md#nbt-explosivechargetileent) orientation is set to the clicked side. On the server, the charge's "plant" sound is played at the block center, volume 4.0, pitch 1.0. |
 | 0, 1, 4, 9 | A [`BasicInventoryTileEnt`](../08-machines-production/framework.md#2-basicinventorytileent) gets `rotation = (q + 2) mod 4`, where q is the yaw quadrant. Used for ammo press, metal press, chem lab and charging station; for `machineMultiBlock` the same metas are RC housing, RC controller and fabricator controller. |
 | 3, 5 (camo bench, repair bench) | q is remapped 0↔2, then `rotation = (q − 2) mod 4` with Java remainder, giving values −2, −1, 0 or 1 ([BLK-22](index.md#suspected-bugs), comment "just don't ask why"). |
 | others | nothing |
@@ -459,11 +459,11 @@ After a successful placement:
 
 ## 17. `ItemBlockOreDrill` placement rules
 
-The item block for [`oreDrill`](block-catalogue.md#registered-blocks) (owned by [08](../08-machines-production/index.md)). Constants: rod meta 2, controller meta 4.
+The item block for [`oreDrill`](block-catalog.md#registered-blocks) (owned by [08](../08-machines-production/index.md)). Constants: rod meta 2, controller meta 4.
 
 **Placing a rod (meta 2).**
 
-1. Look for an ore cluster (any registered cluster block) in the six neighbours, in the order up, down, z−1, x+1, z+1, x−1.
+1. Look for an ore cluster (any registered cluster block) in the six neighbors, in the order up, down, z−1, x+1, z+1, x−1.
 2. If one is found, flood-fill through all connected blocks of that cluster block **and metadata**. If any cell of the cluster touches an existing drill rod, refuse with `techguns.msg.error.alreadyrod` ("Can't place here, this cluster already has a connected drill rod"), shown client-side. Otherwise place.
 3. If no cluster is adjacent, the rod may only be placed next to another rod (meta 2). Otherwise refuse silently.
 
@@ -481,14 +481,14 @@ Helpers:
 
 ## 18. Camo-changeable item blocks (`GenericItemBlockCamoChangeable`)
 
-Used by [`camoNetPane`](block-catalogue.md#registered-blocks), [`camoNetRoof`](block-catalogue.md#registered-blocks) and [`ladder01`](block-catalogue.md#registered-blocks). The blocks implement `IBlockCamoChangeable`:
+Used by [`camoNetPane`](block-catalog.md#registered-blocks), [`camoNetRoof`](block-catalog.md#registered-blocks) and [`ladder01`](block-catalog.md#registered-blocks). The blocks implement `IBlockCamoChangeable`:
 
 | Block | `getVariationCount` | `getMetaOffset` | `getVariationName(damage)` |
 |---|---|---|---|
 | camo net / roof | 3 | 1 | `techguns.tile.<name>.camo.<damage>` |
 | ladder | 4 | 4 | the already-translated `techguns.tile.LadderBlock.<damage>` |
 
-The item implements [`ICamoChangeable`](../05-armor/armor-catalogue.md#1-class-hierarchy), so the Camo Bench ([09-machines-utility](../09-machines-utility/index.md)) can cycle it:
+The item implements [`ICamoChangeable`](../05-armor/armor-catalog.md#1-class-hierarchy), so the Camo Bench ([09-machines-utility](../09-machines-utility/index.md)) can cycle it:
 
 - `getCurrentCamoIndex = damage / offset`
 - forward: `damage = ((index + 1) mod count) · offset`
@@ -504,7 +504,7 @@ Static `MBlock` (block + meta) shortcuts into Chisel's block instances (`ChiselB
 
 | Field | Block : meta | Comment in source |
 |---|---|---|
-| [`concrete`](block-catalogue.md#registered-blocks) | Chisel `concrete` : 0 | |
+| [`concrete`](block-catalog.md#registered-blocks) | Chisel `concrete` : 0 | |
 | `concrete_dark` | Chisel `concrete` : 10 | |
 | `woodenCrate` | Chisel `planks[0]` (oak) : 10 | wooden box |
 | `glowblock` | Chisel `glowstone` : 4 | neon glowstone |
@@ -533,9 +533,9 @@ This class makes Chisel a hard dependency ([01-core](../01-core/index.md) bug [C
 
 These are in scope but never instantiated or never registered:
 
-- **[`TurretBase`](block-catalogue.md#blocks-constructed-but-not-registered-not-in-game)** (BlockContainer, [`TurretBaseEnt`](../09-machines-utility/turret.md#tile-entity-turretbaseent)): stone sound, hardness 4, pickaxe 2. On add it spawns a [`TurretEntityUNUSED`](../10-entities-npcs/per-mob.md#19-turretentityunused-dead-code) one block up. On break it calls `breakTurret()`. Not referenced. The live turret is `basicMachine:2` ([09](../09-machines-utility/index.md)).
-- **[`BlockBugNest`](block-catalogue.md#blocks-constructed-but-not-registered-not-in-game):** a ladder-like 0.35-wide vertical pillar (bounds 0.325–0.675) that is always a ladder. Never instantiated.
-- **[`ItemBlockOreCluster`](block-catalogue.md#blocks-constructed-but-not-registered-not-in-game):** names an item "Ore Cluster (<ore name>)". Never used. Clusters use [`GenericItemBlockMetadata`](block-catalogue.md#conventions-and-defaults) and the per-meta lang keys.
-- **[`GenericItemBlockMetadataStringPrefix`](block-catalogue.md#conventions-and-defaults):** only used as the superclass of `ItemBlockOreDrill`.
-- **[`BlockTGLampFMP`](multipart.md#status-inactive), `smallCube`, `steelframe_glass`:** constructed but not registered (see the catalogue).
+- **[`TurretBase`](block-catalog.md#blocks-constructed-but-not-registered-not-in-game)** (BlockContainer, [`TurretBaseEnt`](../09-machines-utility/turret.md#tile-entity-turretbaseent)): stone sound, hardness 4, pickaxe 2. On add it spawns a [`TurretEntityUNUSED`](../10-entities-npcs/per-mob.md#19-turretentityunused-dead-code) one block up. On break it calls `breakTurret()`. Not referenced. The live turret is `basicMachine:2` ([09](../09-machines-utility/index.md)).
+- **[`BlockBugNest`](block-catalog.md#blocks-constructed-but-not-registered-not-in-game):** a ladder-like 0.35-wide vertical pillar (bounds 0.325–0.675) that is always a ladder. Never instantiated.
+- **[`ItemBlockOreCluster`](block-catalog.md#blocks-constructed-but-not-registered-not-in-game):** names an item "Ore Cluster (<ore name>)". Never used. Clusters use [`GenericItemBlockMetadata`](block-catalog.md#conventions-and-defaults) and the per-meta lang keys.
+- **[`GenericItemBlockMetadataStringPrefix`](block-catalog.md#conventions-and-defaults):** only used as the superclass of `ItemBlockOreDrill`.
+- **[`BlockTGLampFMP`](multipart.md#status-inactive), `smallCube`, `steelframe_glass`:** constructed but not registered (see the catalog).
 - **The multipart classes:** see [multipart.md](multipart.md).

@@ -2,10 +2,10 @@
 
 Techguns has two particle mechanisms, both client-side:
 
-1. **Data-driven particle systems** (`FXList`, `FXType`, `FXListType`, `ParticleSystemType`, `EntityParticleSystem`, `EntityParticle`). They are defined in [`particles/FXList.txt`](fx-catalogue.md) and [`particles/Nuke.txt`](fx-catalogue.md) and spawned by name. The full catalogue is in [fx-catalogue.md](fx-catalogue.md).
-2. **Legacy hard-coded sprites** (`EntityParticleAnimated` plus the [`ClientProxy.spawnParticle(String, …)`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) name switch). This mechanism is marked `@Deprecated` but is still used heavily. Catalogue: [fx-catalogue.md §Legacy](fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle).
+1. **Data-driven particle systems** (`FXList`, `FXType`, `FXListType`, `ParticleSystemType`, `EntityParticleSystem`, `EntityParticle`). They are defined in [`particles/FXList.txt`](fx-catalog.md) and [`particles/Nuke.txt`](fx-catalog.md) and spawned by name. The full catalog is in [fx-catalog.md](fx-catalog.md).
+2. **Legacy hard-coded sprites** (`EntityParticleAnimated` plus the [`ClientProxy.spawnParticle(String, …)`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) name switch). This mechanism is marked `@Deprecated` but is still used heavily. Catalog: [fx-catalog.md §Legacy](fx-catalog.md#legacy-named-particles-clientproxyspawnparticle).
 
-It also contains a few special `EntityFX` classes: [`EntityParticleTrail`](fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle), [`EntityBloodEffect`](death-effects.md#blood-burst-entitybloodeffect), [`EntityLaserBeamFX`](fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle), and `EntityMuzzleFlashFX` (fully commented out).
+It also contains a few special `EntityFX` classes: [`EntityParticleTrail`](fx-catalog.md#legacy-named-particles-clientproxyspawnparticle), [`EntityBloodEffect`](death-effects.md#blood-burst-entitybloodeffect), [`EntityLaserBeamFX`](fx-catalog.md#legacy-named-particles-clientproxyspawnparticle), and `EntityMuzzleFlashFX` (fully commented out).
 
 ---
 
@@ -43,7 +43,7 @@ The file is read with `java.util.Scanner` (English locale). Its token delimiter 
 - CRLF
 - any whitespace
 
-So `Key = a b`, `Key =a b` and `Key= a b` all work. A block opens with `Name {` (the `{` must follow whitespace) and closes with a `}` token. Keys are case-insensitive. Values are whitespace-separated numbers, booleans (`true`/`false`) or identifiers. The parser does not recognise unknown keys: it silently consumes only the key token, so any value tokens left behind are then read as keys.
+So `Key = a b`, `Key =a b` and `Key= a b` all work. A block opens with `Name {` (the `{` must follow whitespace) and closes with a `}` token. Keys are case-insensitive. Values are whitespace-separated numbers, booleans (`true`/`false`) or identifiers. The parser does not recognize unknown keys: it silently consumes only the key token, so any value tokens left behind are then read as keys.
 
 ### 2.2 Block types
 
@@ -89,8 +89,8 @@ All `A B` pairs are uniform random ranges [A, B]. Integer ranges are inclusive. 
 | `SizeRateDamping` | float float | 1 1 | Multiplies SizeRate each tick. |
 | `StartSizeRate` | float float | 0 0 | Per-*system*: added to a running "start size" each active tick. Later particles are born larger. |
 | `StartSizeRateDamping` | float float | 1 1 | Multiplies StartSizeRate each tick. |
-| `Alpha` | value time | none | Alpha key at normalised lifetime `time` (0–1). Repeat for multiple keys, in ascending time. See 3.5 for the quirks. |
-| `Color` | R G B time | none | Colour key (0–255 ints) at normalised time. See 3.5. |
+| `Alpha` | value time | none | Alpha key at normalized lifetime `time` (0–1). Repeat for multiple keys, in ascending time. See 3.5 for the quirks. |
+| `Color` | R G B time | none | Color key (0–255 ints) at normalized time. See 3.5. |
 | `VelocityType` | `SPHERICAL`, `HEMISPHERICAL`, `OUTWARD`, `ORTHO` | `SPHERICAL` | Initial velocity rule (section 3.2). |
 | `Velocity1`, `Velocity2`, `Velocity3` | float float | 0 0 | Velocity parameters, in blocks per **second** (× 0.05 per tick). |
 | `VelocityDamping` | float float | 0.98 0.98 | Multiplies velocity each tick. |
@@ -108,7 +108,7 @@ All `A B` pairs are uniform random ranges [A, B]. Integer ranges are inclusive. 
 
 `extend(parent)` copies, by **reference** for the list and array fields:
 
-- alpha keys and colour keys (list references)
+- alpha keys and color keys (list references)
 - animation speed, columns, frames, gravity, has-variations, is-hollow, lifetime min/max, random rotation, remove-on-ground, render type, rows, size min/max, size-rate and size-rate-damping min/max, spawn-delay min/max, texture, velocity damping and on-ground damping
 - velocity data arrays (references), velocity type, volume data array (reference), volume type, offset, particles-move-with-system
 
@@ -119,7 +119,7 @@ Quirks:
 
 ---
 
-## 3. Runtime behaviour
+## 3. Runtime behavior
 
 ### 3.1 `EntityParticleSystem` (the emitter)
 
@@ -155,7 +155,7 @@ Each tick:
    - Local **+X** becomes the look direction of an entity with that yaw and pitch (vanilla entity convention, for example yaw 0 → +Z, yaw 90 → −X, positive pitch tilts down).
    - Local +Y stays roughly up.
    - Free systems have yaw = pitch = 0, so their local +X is world +Z. All shipped free effects are rotationally symmetric about Y, so this does not show.
-   - Projectiles store yaw in the *projectile* convention (`atan2(mx, mz)`), which mirrors X. For systems attached to projectiles, local +X therefore does not follow the flight direction. All shipped projectile trails use TRAIL volumes (unrotated) and direction-less velocities, so this has no visible effect. `BeamGunMuzzleFX` is attached to [`MovingBeam`](fx-catalogue.md#triggers-which-game-event-spawns-which-fx), whose yaw is the shooter's head yaw, so there the beam forward axis is correct.
+   - Projectiles store yaw in the *projectile* convention (`atan2(mx, mz)`), which mirrors X. For systems attached to projectiles, local +X therefore does not follow the flight direction. All shipped projectile trails use TRAIL volumes (unrotated) and direction-less velocities, so this has no visible effect. `BeamGunMuzzleFX` is attached to [`MovingBeam`](fx-catalog.md#triggers-which-game-event-spawns-which-fx), whose yaw is the shooter's head yaw, so there the beam forward axis is correct.
 5. Spawn `EntityParticle` at system position + pos, with initial motion = vel × **0.05** (per-second to per-tick).
 
 ### 3.2 Volume and velocity rules
@@ -167,7 +167,7 @@ Each tick:
 | `HEMISPHERE` | As SPHERE with y uniform in [0, 1] (upper half) | that unit direction |
 | `CYLINDER` | Horizontal unit vector at a random azimuth × r (as above), with y uniform in [0, Volume2]. A vertical cylinder from the base upward. | the horizontal unit radial vector |
 | `CYLINDER2` | x uniform in [0, Volume2] along local X, with (y, z) = a unit vector rotated about X at a random angle × r. A cylinder along the forward axis. | that radial vector in the YZ plane |
-| `TRAIL` | Requires an attached entity. Position = −normalised(entity motion) × (i / count) × Volume1. Particles are spread evenly along the segment behind the entity. **Not rotated.** With no entity it returns the system's absolute position as an offset (bug, unused). | unchanged (zero) |
+| `TRAIL` | Requires an attached entity. Position = −normalized(entity motion) × (i / count) × Volume1. Particles are spread evenly along the segment behind the entity. **Not rotated.** With no entity it returns the system's absolute position as an offset (bug, unused). | unchanged (zero) |
 
 | VelocityType | Velocity (local, per second) |
 |---|---|
@@ -215,17 +215,17 @@ Rendering (`getFXLayer() = 2`, render pass 1):
 | `SOLID` | none | full-bright | normal |
 | `NO_Z_TEST` | SRC_ALPHA, ONE | full-bright | depth test and depth writes **off** (visible through walls) |
 
-### 3.5 Alpha and colour curves
+### 3.5 Alpha and color curves
 
 Keys are searched in file order. Let `prev` be the last key with `time ≤ progress` and `next` the first key with `time > progress`.
 
 - Segment weight `p = (progress − prev.time) / (next.time − prev.time)`.
-- **Colour:** both keys are converted to HSB. The particle colour is `HSB(prev × p + next × (1 − p))`, converted back to RGB. Note the **swapped weights**: at the start of a segment the colour equals the *later* key and it approaches the *earlier* key by the end of the segment.
+- **Color:** both keys are converted to HSB. The particle color is `HSB(prev × p + next × (1 − p))`, converted back to RGB. Note the **swapped weights**: at the start of a segment the color equals the *later* key and it approaches the *earlier* key by the end of the segment.
 - **Alpha:** the stored value is `1 − Alpha` from the file, interpolated with the same swapped weights. Within a segment from key (α₁ at t₁) to key (α₂ at t₂), the displayed alpha runs linearly from **1 − α₂** at t₁ to **1 − α₁** at t₂. When α₁ + α₂ = 1, as in the common `0 → 1 → 0` envelopes, this happens to equal the intended α₁ → α₂ curve. Otherwise it differs. For example, `0@0, 0@1` (TeslaFlare) displays as fully opaque.
-- If `progress` lies before the first key (first key time > 0), or after the last key, or there is only one key, then prev = next and `p = 0/0 = NaN`. The colour and alpha become NaN, which renders as black or undefined. Every shipped system has its first key at time 0 and its last key at time 1, so this never happens with the shipped data.
+- If `progress` lies before the first key (first key time > 0), or after the last key, or there is only one key, then prev = next and `p = 0/0 = NaN`. The color and alpha become NaN, which renders as black or undefined. Every shipped system has its first key at time 0 and its last key at time 1, so this never happens with the shipped data.
 - Hue is interpolated linearly with no wrap-around.
 
-Effective per-system curves are tabulated in [fx-catalogue.md](fx-catalogue.md#particle-systems-alpha-and-colour-keys).
+Effective per-system curves are tabulated in [fx-catalog.md](fx-catalog.md#particle-systems-alpha-and-color-keys).
 
 ---
 
@@ -235,7 +235,7 @@ Effective per-system curves are tabulated in [fx-catalogue.md](fx-catalogue.md#p
 
 Constructor `(world, x, y, z, scale, textureFileName, cols, rows, numSprites, renderType)`:
 - Texture path `techguns:textures/fx/<textureFileName>`.
-- `particleScale = scale`, white colour, `noClip`, gravity 0.
+- `particleScale = scale`, white color, `noClip`, gravity 0.
 - `maxAge = 10 + rand(0..4)`.
 
 Setters. "Random" means a value drawn with `v × (1 − R) + 2 × v × R × rand`, where R is the `randomness` *at the time of the call* (default **0.20**):
@@ -246,7 +246,7 @@ Setters. "Random" means a value drawn with `v × (1 − R) + 2 × v × R × rand
 | `setGravity(g)` | motionY −= 0.04 × g per tick (accumulating, vanilla style) |
 | `setScaleIncrease(min, max, factor, soft)` | Scale grows from random(min) to random(max). Applied scale = `min(minScale + (max − min) × p / factor, maxScale)` with p = progress, or √progress if `soft`. The initial scale is min. |
 | `setDynamicColor(R1, G1, B1, A1, R2, G2, B2, A2, type)` | 0–255 values. Interpolates RGBA from the first set to the second over the life. |
-| `setDynamicColorStart(s)` | The colour progress stays 0 until life fraction s, then is rescaled to [s, 1] → [0, 1]. |
+| `setDynamicColorStart(s)` | The color progress stays 0 until life fraction s, then is rescaled to [s, 1] → [0, 1]. |
 | `setRandomRotation(true)` | One of 4 UV orientations. |
 | `setRandomRotation(min, max)` | Stores an angle that is never used. Deprecated. |
 | `setRandomness(R)` | Affects later random() calls only. |
@@ -254,7 +254,7 @@ Setters. "Random" means a value drawn with `v × (1 − R) + 2 × v × R × rand
 | `setDelay(n)` | Invisible and frozen for n ticks. |
 | `setFramesAsVariations(true)` | Choose one random sprite for the whole life. |
 
-Dynamic colour types (applied to the colour progress c ∈ [0, 1]):
+Dynamic color types (applied to the color progress c ∈ [0, 1]):
 
 | Type | Curve |
 |---|---|
@@ -263,7 +263,7 @@ Dynamic colour types (applied to the colour progress c ∈ [0, 1]):
 | `SINUS` | sin(2πc), which goes negative in the second half |
 | `SMOOTH` | sin(πc) |
 | `FAST` | √c |
-| `NONE` | colour not updated (default) |
+| `NONE` | color not updated (default) |
 
 Update:
 - Skip while delayed.
@@ -271,12 +271,12 @@ Update:
 - motionY −= 0.04 × gravity.
 - `moveEntity` (noClip, so no collision).
 - Multiply motion by damping. On ground multiply X and Z by 0.7.
-- Update the dynamic colour.
+- Update the dynamic color.
 
 Render:
 - Frame = floor(numSprites × age / maxAge), or the fixed variation frame.
 - Draw only while frame < numSprites.
-- UV cell = 1/cols × 1/rows (rows are honoured here, unlike `EntityParticle`).
+- UV cell = 1/cols × 1/rows (rows are honored here, unlike `EntityParticle`).
 - Billboard half-size 0.1 × scale.
 - Blend per render type: ADDITIVE (SRC_ALPHA, ONE); ALPHA (SRC_ALPHA, 1 − SRC_ALPHA); alpha test on. Full-bright except ALPHA_SHADED.
 
@@ -284,9 +284,9 @@ Render:
 
 ## 5. Other `EntityFX` classes
 
-| Class | Behaviour |
+| Class | Behavior |
 |---|---|
-| `EntityParticleTrail(world, x, y, z, item, r, g, b, scale)` | A vanilla-motion particle tinted (r, g, b), scale × the vanilla random scale, no gravity, noClip. It always renders [`textures/fx/glow.png`](textures.md#single-images) as an alpha-blended billboard of half-size 0.1 × scale. The item icon argument is set but not drawn. Used only by the legacy `"RailgunTrail"` name (diamond icon, colour (0.1, 0.5, 1.0), scale 0.5), which nothing calls. |
+| `EntityParticleTrail(world, x, y, z, item, r, g, b, scale)` | A vanilla-motion particle tinted (r, g, b), scale × the vanilla random scale, no gravity, noClip. It always renders [`textures/fx/glow.png`](textures.md#single-images) as an alpha-blended billboard of half-size 0.1 × scale. The item icon argument is set but not drawn. Used only by the legacy `"RailgunTrail"` name (diamond icon, color (0.1, 0.5, 1.0), scale 0.5), which nothing calls. |
 | `EntityBloodEffect` | An invisible, 5-tick emitter used by the gore death. See [death-effects.md](death-effects.md#blood-burst-entitybloodeffect). |
 | `EntityLaserBeamFX(world, source xyz, target xyz)` | Experimental. Draws a quad from source to target using [`textures/fx/laser2_a.png`](textures.md#single-images), width from the viewer cross product, alpha-blended. It prints debug text **every frame** ("I AM A NEW LASERBEAM HARRRRRRR!" in the constructor, plus position dumps). Only the legacy name `"LaserBeam"` creates it, and the only caller is commented out. Its quad vertex order and world-space coordinates are wrong (no interpolation offset), so it would not render correctly. |
 | `EntityMuzzleFlashFX` | The whole file is commented out (a vanilla flame-like particle sketch). |

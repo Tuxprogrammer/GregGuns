@@ -9,7 +9,7 @@
 
 Techguns was written for vanilla GL. In the pack, every GL call from a mod class goes through Angelica's `GLStateManager`, with Iris shaders and fixed-function emulation behind it. The Techguns approach still works. GregGuns adds rules so that it keeps working, and so that the optional fast paths can be used.
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Raw `GL11` calls in renderers, with leaked state in places (GVA-04, GVA-05) | Same API, but every attribute or matrix push is paired with a restore on all paths | `GLStateManager` tracks state. A leak survives into the next frame under Angelica and can break shader-pack passes. |
 | Muzzle flash and scope overlay drawn from a mixture of item-render and overlay code | Scope overlay and any per-frame HUD effect hang off overlay event types that stay live under HUD caching | HUD caching reuses stale pixels for most elements. |

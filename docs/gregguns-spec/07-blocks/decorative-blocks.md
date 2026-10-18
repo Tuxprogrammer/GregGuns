@@ -1,6 +1,6 @@
 # Decorative blocks: Chisel, connected textures and overlap
 
-- **Techguns baseline:** [connected-textures.md](../../techguns-spec/07-blocks/connected-textures.md), [registration flow](../../techguns-spec/07-blocks/connected-textures.md#registration-flow-per-block), [block-catalogue.md](../../techguns-spec/07-blocks/block-catalogue.md), [multipart.md](../../techguns-spec/07-blocks/multipart.md)
+- **Techguns baseline:** [connected-textures.md](../../techguns-spec/07-blocks/connected-textures.md), [registration flow](../../techguns-spec/07-blocks/connected-textures.md#registration-flow-per-block), [block-catalog.md](../../techguns-spec/07-blocks/block-catalog.md), [multipart.md](../../techguns-spec/07-blocks/multipart.md)
 - **Design records:** [0006 art direction](../../design/0006-art-direction.md), [0002 machine deconfliction](../../design/0002-machine-deconfliction.md) (the Techguns machines list, not blocks)
 - **Pack mods:** Chisel (`chisel`, 2.17.34-GTNH), ForgeMultipart (`ForgeMultipart`, 1.7.16), ChiselTones (`chiseltones`, 1.2.0-GTNH), Ztones (`Ztones`, 2.2.2, no source)
 - **Roadmap:** the blocks milestone in [ROADMAP](../../ROADMAP.md)
@@ -9,7 +9,7 @@
 
 Techguns reaches into the Chisel API for its decorative blocks. GregGuns keeps that, but as a **soft** dependency on the client and for carving, and picks its own group names.
 
-| Techguns behaviour | GregGuns behaviour | Why |
+| Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Chisel is a hard client dependency (CORE-03) | Chisel is optional. Blocks render without connected textures if it is missing | The pack has Chisel, but a dev environment or other pack may not |
 | `registerAll(block, "concrete")` puts Techguns concrete in the group named `concrete`, which is also **Chisel's own concrete group** | Group names are prefixed `gregguns_` so the two sets stay separate | Chisel registers its own `concrete` group. Both sets are different art, so they should not cycle into each other |
@@ -21,7 +21,7 @@ Techguns reaches into the Chisel API for its decorative blocks. GregGuns keeps t
 | GregGuns / Techguns block | Pack equivalent | Decision |
 |---|---|---|
 | Concrete (7 variants) | Chisel `concrete` (11 variants, [Features.java#L850-L868](https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/Features.java#L850-L868)) | Keep ours. Different art; kept in a separate group |
-| Metal panels, connected metal panels | ChiselTones and Ztones (`Ztones.cfg` enables most colour sets) | Keep ours; art follows [0006](../../design/0006-art-direction.md). Nothing to call |
+| Metal panels, connected metal panels | ChiselTones and Ztones (`Ztones.cfg` enables most color sets) | Keep ours; art follows [0006](../../design/0006-art-direction.md). Nothing to call |
 | Shipping containers | none | Keep |
 | Hardened bug sand | none | Keep, or drop with alien nests in area 11 |
 | Camo nets, sandbags, ladders, lamps, doors, radar | none | Keep |

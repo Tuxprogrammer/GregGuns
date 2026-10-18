@@ -1,6 +1,6 @@
-# Armour catalogue
+# Armor catalog
 
-Source: `java/techguns/TGArmors.java`, `java/techguns/items/armors/GenericArmor.java`, `GenericArmorMultiCamo.java`, `PoweredArmor.java`, `ArmorPowerType.java`, plus `java/techguns/damagesystem/TGArmorMaterial.java` (owned by [01-core](../01-core/index.md), summarised here only as far as armour stats need it).
+Source: `java/techguns/TGArmors.java`, `java/techguns/items/armors/GenericArmor.java`, `GenericArmorMultiCamo.java`, `PoweredArmor.java`, `ArmorPowerType.java`, plus `java/techguns/damagesystem/TGArmorMaterial.java` (owned by [01-core](../01-core/index.md), summarized here only as far as armor stats need it).
 
 Everything is registered in `TGArmors.init()`. There are **11 four-piece sets and 1 single-piece hat (the beret)**, 45 items in total. All are in the Techguns creative tab.
 
@@ -8,30 +8,30 @@ Everything is registered in `TGArmors.init()`. There are **11 four-piece sets an
 
 | Class | Extends | Role |
 |---|---|---|
-| `GenericArmor` | vanilla `ItemArmor`, implements Forge `ISpecialArmor` | Base armour. Holds a `TGArmorMaterial`, a texture base name, per-piece bonus values, an optional custom-model index, repair material data and the face/back-slot hide flags. |
+| `GenericArmor` | vanilla `ItemArmor`, implements Forge `ISpecialArmor` | Base armor. Holds a `TGArmorMaterial`, a texture base name, per-piece bonus values, an optional custom-model index, repair material data and the face/back-slot hide flags. |
 | `GenericArmorMultiCamo` | `GenericArmor`, implements `ICamoChangeable` | Has an array of texture base names (one per camo). The camo index is stored in item NBT. |
 | `PoweredArmor` | `GenericArmorMultiCamo` | Adds a power type (`STEAM` or `RF`), an internal power store (NBT), a battery item for the chestplate, and a second "unpowered" set of bonus values. |
 | `ArmorPowerType` | enum | `STEAM` (shown as "Steam") and `RF` (shown as "RF"). Labels only; nothing converts between them. |
 | `ICamoChangeable` | interface | `getCamoCount`, `switchCamo(stack)`, `switchCamo(stack, back)`, `getCurrentCamoIndex`, `getCurrentCamoName`. Also implemented by guns, tools, camo-net item blocks and the special-slot items. |
 
-Constructor behaviour (`GenericArmor`):
-- Builds a vanilla `ArmorMaterial` from the TG material (see §2): the vanilla per-slot armour points are the rounded **physical** values, and the vanilla durability multiplier is the base durability. Enchantability comes from the material, and every Techguns material passes **0**, so no Techguns armour can be enchanted at a table.
+Constructor behavior (`GenericArmor`):
+- Builds a vanilla `ArmorMaterial` from the TG material (see §2): the vanilla per-slot armor points are the rounded **physical** values, and the vanilla durability multiplier is the base durability. Enchantability comes from the material, and every Techguns material passes **0**, so no Techguns armor can be enchanted at a table.
 - Unlocalized name = the given name. The item icon is `techguns:<unlocalizedName>` (so `textures/items/<name>.png`, owned by [06-items](../06-items/index.md)).
 - `getUnlocalizedName(stack)` prefixes `techguns.`, so lang keys are `techguns.item.<name>.name`.
 - Max damage = `material.getDurability(slot)`, which overrides the vanilla value.
-- `armorValue` (used for the vanilla armour bar) = the rounded physical value for the slot.
+- `armorValue` (used for the vanilla armor bar) = the rounded physical value for the slot.
 
 ## 2. Materials (`TGArmorMaterial`)
 
-Each material has a **base durability**, an enchantability (always 0 here), nine damage-type armour totals, and a penetration resistance.
+Each material has a **base durability**, an enchantability (always 0 here), nine damage-type armor totals, and a penetration resistance.
 
-The constructor used by `TGArmors` takes one armour value **A**. It sets PHYSICAL = PROJECTILE = A, sets FIRE, EXPLOSION, ENERGY, ICE and LIGHTNING to 0.75·A, and sets POISON and RADIATION to 0. Chained setters then override individual types.
+The constructor used by `TGArmors` takes one armor value **A**. It sets PHYSICAL = PROJECTILE = A, sets FIRE, EXPLOSION, ENERGY, ICE and LIGHTNING to 0.75·A, and sets POISON and RADIATION to 0. Chained setters then override individual types.
 
 **Per-slot split** (same for every material; there are setters to change it, but nothing calls them): helmet 0.25, chestplate 0.30, leggings 0.25, boots 0.20 of each total.
 
 **Durability per piece** = round(0.25 × 55 × baseDur) = 13.75 × baseDur. It is the same for all four slots.
 
-| Material | baseDur | Durability (each piece) | PHYS | PROJ | EXPL | ENERGY | FIRE | ICE | LIGHTN | POISON | RAD | Pen. resist | Vanilla armour points H/C/L/B |
+| Material | baseDur | Durability (each piece) | PHYS | PROJ | EXPL | ENERGY | FIRE | ICE | LIGHTN | POISON | RAD | Pen. resist | Vanilla armor points H/C/L/B |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | T1_COMBAT | 60 | 825 | 15 | 15 | 11.25 | 11.25 | 11.25 | 11.25 | 11.25 | 0 | 0 | 0 | 4/5/4/3 |
 | T1_SCOUT | 60 | 825 | 13 | 13 | 9.75 | 9.75 | 9.75 | 9.75 | 9.75 | 0 | 0 | 0 | 3/4/3/3 |
@@ -46,17 +46,17 @@ The constructor used by `TGArmors` takes one armour value **A**. It sets PHYSICA
 | T3_EXO | 300 | 4125 | 22 | 22 | 18 | 18 | 18 | 18 | 18 | 10 | 6 | 0.15 | 6/7/6/4 |
 | T2_BERET | 60 | 825 | 8 | 8 | 6 | 6 | 6 | 6 | 6 | 0 | 0 | 0 | 2/2/2/2 (only the helmet exists) |
 
-Per-piece value for a damage type = total × slot factor. For example, T3_POWER chestplate PHYS = 24 × 0.30 = 7.2. A full set's per-type value equals the material total. The vanilla points are rounded half-up, so the full T3_POWER set fills the vanilla armour bar (6+7+6+5 = 24).
+Per-piece value for a damage type = total × slot factor. For example, T3_POWER chestplate PHYS = 24 × 0.30 = 7.2. A full set's per-type value equals the material total. The vanilla points are rounded half-up, so the full T3_POWER set fills the vanilla armor bar (6+7+6+5 = 24).
 
 A commented-out block of older vanilla `EnumHelper` materials remains in the source. It is inactive.
 
-## 3. Protection and durability behaviour (`ISpecialArmor`)
+## 3. Protection and durability behavior (`ISpecialArmor`)
 
-- **"Broken" state:** a piece whose damage is ≥ maxDamage−1 (one durability point left) counts as broken. It gives 0 protection, shows 0 on the vanilla armour bar, and contributes no bonuses. Armour **never actually breaks**. `damageArmor` caps incoming durability damage so that at least 1 point always remains, and creative-mode players take no durability damage.
+- **"Broken" state:** a piece whose damage is ≥ maxDamage−1 (one durability point left) counts as broken. It gives 0 protection, shows 0 on the vanilla armor bar, and contributes no bonuses. Armor **never actually breaks**. `damageArmor` caps incoming durability damage so that at least 1 point always remains, and creative-mode players take no durability damage.
 - **Damage reduction (`getProperties`)**, when not broken:
-  1. Convert the incoming `DamageSource` to a [`TGDamageSource`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource) ([01-core](../01-core/index.md)). Its `damageType` picks which armour value applies.
-  2. If that armour value > 0 and the source has armour penetration > 0: subtract this piece's material penetration resistance, apply the config PvP/NPC penetration multiplier ([`DamageSystem.calcPenetration`](../02-guns/index.md#coverage), [01-core](../01-core/index.md)), clamp to [0,1], and **write the result back into the damage source** (see bug [ARM-02](index.md#suspected-bugs)).
-  3. Reduction ratio for this piece = (1 − penetration) × 0.04 × pieceArmorValue (from `DamageSystem.getReduction`, [01-core](../01-core/index.md)). In effect each armour point blocks 4 % of the non-penetrating share, so 24 points block 96 %.
+  1. Convert the incoming `DamageSource` to a [`TGDamageSource`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource) ([01-core](../01-core/index.md)). Its `damageType` picks which armor value applies.
+  2. If that armor value > 0 and the source has armor penetration > 0: subtract this piece's material penetration resistance, apply the config PvP/NPC penetration multiplier ([`DamageSystem.calcPenetration`](../02-guns/index.md#coverage), [01-core](../01-core/index.md)), clamp to [0,1], and **write the result back into the damage source** (see bug [ARM-02](index.md#suspected-bugs)).
+  3. Reduction ratio for this piece = (1 − penetration) × 0.04 × pieceArmorValue (from `DamageSystem.getReduction`, [01-core](../01-core/index.md)). In effect each armor point blocks 4 % of the non-penetrating share, so 24 points block 96 %.
   4. The piece returns Forge `ArmorProperties(priority 0, ratio, maxAbsorb = maxDamage + 1 − damage)`. Forge adds up the ratios of all pieces.
 - **Tooltip percentage helper `formatAV(value)`:** prints the value (format `#.##`) and, in parentheses, value/24 × 0.96 × 100 %. Constants: `MAX_ARMOR = 24`, `ARMOR_CAP = 24/25` (the cap is the same for every damage type).
 - **Vanilla anvil repair** (`getIsRepairable`): the repair item is the metal repair mat if set, otherwise the cloth mat (matched with the OreDictionary wildcard). If neither is set, the piece cannot be repaired on an anvil.
@@ -71,7 +71,7 @@ A commented-out block of older vanilla `EnumHelper` materials remains in the sou
 
 | Index | Model instance ([`ClientProxy.armorModels`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy)) | Used by |
 |---|---|---|
-| −1 (default) | vanilla biped armour model | T1 combat/scout/miner, T2 combat/commando, T3 combat, T3 HEV |
+| −1 (default) | vanilla biped armor model | T1 combat/scout/miner, T2 combat/commando, T3 combat, T3 HEV |
 | 0 | `ModelSteamArmor(type 0)` | steam helmet, chestplate, boots |
 | 1 | `ModelSteamArmor(type 1)` | steam leggings |
 | 2 | `ModelT3PowerArmor(type 0)` | power helmet, chestplate, boots |
@@ -86,15 +86,15 @@ A commented-out block of older vanilla `EnumHelper` materials remains in the sou
 | 11 | `ModelArmorCoat(type 3, scale 0.75)` | riot boots |
 
 **Texture-name rule** (`getArmorTexture`):
-- The armour uses a **double texture** (`textures/armor/<base>_1.png` for helmet, chest and boots; `<base>_2.png` for leggings) when its model index is −1, 4, 5, 6 or 8–11.
+- The armor uses a **double texture** (`textures/armor/<base>_1.png` for helmet, chest and boots; `<base>_2.png` for leggings) when its model index is −1, 4, 5, 6 or 8–11.
 - Otherwise (0–3 and 7) it uses a **single texture** `textures/armor/<base>.png` for all slots.
 - For multi-camo items, `<base>` = `textureNames[camo]`.
 
 See rendering-and-models.md for how the model is posed.
 
-## 5. Piece catalogue
+## 5. Piece catalog
 
-Column legend: **Spd** = movement speed bonus; **Jmp** = jump bonus (added to motionY); **Fall** = fall-damage multiplier reduction / free fall height in blocks; **Mine** = break-speed bonus; **WMine** = extra underwater break-speed bonus; **Acc** = gun accuracy bonus; **HP** = extra max health (half-hearts); **KB** = knockback resistance; **Step** = step assist; **O2** = oxygen gear; **Cool** = cooling system; **WSpd** = speed bonus in water or lava. Blank = 0. For powered armour, all values apply **only while the piece has power**. Every unpowered value is 0, because every registration passes 0 for the unpowered variants, and the single-argument `setKnockbackResistance` sets only the powered value.
+Column legend: **Spd** = movement speed bonus; **Jmp** = jump bonus (added to motionY); **Fall** = fall-damage multiplier reduction / free fall height in blocks; **Mine** = break-speed bonus; **WMine** = extra underwater break-speed bonus; **Acc** = gun accuracy bonus; **HP** = extra max health (half-hearts); **KB** = knockback resistance; **Step** = step assist; **O2** = oxygen gear; **Cool** = cooling system; **WSpd** = speed bonus in water or lava. Blank = 0. For powered armor, all values apply **only while the piece has power**. Every unpowered value is 0, because every registration passes 0 for the unpowered variants, and the single-argument `setKnockbackResistance` sets only the powered value.
 
 Repair column format: *metal item / cloth item, metal ratio, total mats*.
 
@@ -129,11 +129,11 @@ The helmet calls `setCamoNameSuffix("helmet")`, so its camo names come from `tec
 | `t1_miner_leggings` | Miner's Pants | 0.08 | | 0.05 | | iron / cloth, 1/3, **2** |
 | `t1_miner_boots` | Miner's Boots | 0.08 | 0.10 | 0.05 | 0.2 / 1.0 | iron / cloth, 0.5, 2 |
 
-### 5.4 Steam Armour: `PoweredArmor`, STEAM, T1_STEAM, camos `steam_armor`, `steam_armor_rusty`, `steam_armor_iron`, `steam_armor_hazard`
+### 5.4 Steam Armor: `PoweredArmor`, STEAM, T1_STEAM, camos `steam_armor`, `steam_armor_rusty`, `steam_armor_iron`, `steam_armor_hazard`
 
 | Registry name | English | maxpower | Spd | Jmp | Mine | HP | Fall | Step | KB | Model | Flags | Repair |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| **`steam,_helmet`** (typo, unlocalized `steam_helmet`) | Steam Helmet | 10 | 0.05 | 0.03 | 0.05 | 1 | | | 0.15 | 0 | hides face slot | steam armour plate / steam armour plate, 1.0, 2 |
+| **`steam,_helmet`** (typo, unlocalized `steam_helmet`) | Steam Helmet | 10 | 0.05 | 0.03 | 0.05 | 1 | | | 0.15 | 0 | hides face slot | steam armor plate / steam armor plate, 1.0, 2 |
 | `steam_chestplate` | Steam Chestplate | 3600 | 0.05 | 0.03 | 0.05 | 2 | | | 0.30 | 0 | hides back slot; battery = compressed air tank → empty tank | plate, 1.0, 4 |
 | `steam_leggings` | Steam Legplates | 10 | 0.05 | 0.03 | 0.05 | 1 | | | 0.20 | 1 | | plate, 1.0, 3 |
 | `steam_boots` | Steam Boots | 10 | 0.05 | 0.15 | 0.05 | 1 | 0.2 / 1.0 | 1.0 | 0.15 | 0 | | plate, 1.0, 2 |
@@ -169,12 +169,12 @@ The helmet calls `setCamoNameSuffix("helmet")`, so its camo names come from `tec
 
 | Registry name | English | Spd | Jmp | KB | Repair |
 |---|---|---|---|---|---|
-| `t3_combat_helmet` | Advanced Combat Helmet | 0.10 | | 0.15 | carbon plate / carbon fibres, 0.5, 2 |
+| `t3_combat_helmet` | Advanced Combat Helmet | 0.10 | | 0.15 | carbon plate / carbon fibers, 0.5, 2 |
 | `t3_combat_chestplate` | Advanced Combat Chestplate | 0.10 | | 0.30 | 0.5, 4 |
 | `t3_combat_leggings` | Advanced Combat Leggings | 0.10 | | 0.20 | 1/3, 3 |
 | `t3_combat_boots` | Advanced Combat Boots | 0.10 | 0.10 | 0.15 | 0.5, 2 |
 
-### 5.9 T3 Power Armour: `PoweredArmor`, RF, T3_POWER, camos `powerarmor` (Paladin), `powerarmor_dark` (Outcast), `powerarmor_dark2` (Outcast 2)
+### 5.9 T3 Power Armor: `PoweredArmor`, RF, T3_POWER, camos `powerarmor` (Paladin), `powerarmor_dark` (Outcast), `powerarmor_dark2` (Outcast 2)
 
 | Registry name | English | maxpower | Spd | Jmp | Mine | HP | Fall | Step | KB | Model | Flags | Repair |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -196,9 +196,9 @@ The helmet calls `setCamoNameSuffix("helmet")`, so its camo names come from `tec
 
 | Registry name | English | maxpower | Spd | Jmp | Mine | Other | KB | Model | Repair |
 |---|---|---|---|---|---|---|---|---|---|
-| `t3_exo_helmet` | Exo Suit Helmet | 10 | 0.20 | 0.10 | 0.075 | face slot shown | 0.15 | 4 | carbon plate / carbon fibres, 0.5, 2 |
+| `t3_exo_helmet` | Exo Suit Helmet | 10 | 0.20 | 0.10 | 0.075 | face slot shown | 0.15 | 4 | carbon plate / carbon fibers, 0.5, 2 |
 | `t3_exo_chestplate` | Exo Suit Chestplate | 7200 | 0.20 | 0.10 | 0.075 | battery energy cell; back slot shown | 0.30 | 6 | carbon plate / **copper wire**, 0.5, 4 |
-| `t3_exo_leggings` | Exo Suit Leggings | 10 | 0.20 | 0.10 | 0.075 | | 0.20 | 5 | carbon plate / carbon fibres, 1/3, 3 |
+| `t3_exo_leggings` | Exo Suit Leggings | 10 | 0.20 | 0.10 | 0.075 | | 0.20 | 5 | carbon plate / carbon fibers, 1/3, 3 |
 | `t3_exo_boots` | Exo Suit Boots | 10 | 0.20 | 0.30 | 0.075 | Step 1.0; Fall 0.5 / 5.0 | 0.15 | 6 | 0.5, 2 |
 
 ### 5.12 Beret: `GenericArmorMultiCamo`, T2_BERET, helmet only, camos `beret_texture` (Red), `beret_texture_black`, `beret_texture_green`, model 7 (single texture)
@@ -209,7 +209,7 @@ The helmet calls `setCamoNameSuffix("helmet")`, so its camo names come from `tec
 
 ### 5.13 Obtaining, lang key and English name for every piece
 
-Added by the consistency pass. All 45 pieces: the lang key is `techguns.item.<unlocalized>.name` (full text in [lang-and-strings.md](lang-and-strings.md) §1). Grids are top row first; keys are defined per set. The full recipe tables, repair routes and loot are in [recipes.md](recipes.md). Armour is also worn by NPCs ([`ArmySoldier`](../10-entities-npcs/per-mob.md#6-army-soldier-armysoldier), [`Bandit`](../10-entities-npcs/per-mob.md#7-bandit-bandit), [`Commando`](../10-entities-npcs/per-mob.md#9-commando-commando), [`DictatorDave`](../10-entities-npcs/per-mob.md#13-dictator-dave-dictatordave-mini-boss), [`Outcast`](../10-entities-npcs/per-mob.md#8-outcast-outcast), [`PsychoSteve`](../10-entities-npcs/per-mob.md#12-psycho-steve-psychosteve-early-game-mini-boss), [`SkeletonSoldier`](../10-entities-npcs/per-mob.md#5-skeleton-soldier-skeletonsoldier), [`StormTrooper`](../10-entities-npcs/per-mob.md#10-stormtrooper-stormtrooper-registry-name-stormtrooper), [`ZombieFarmer`](../10-entities-npcs/per-mob.md#2-zombie-farmer-zombiefarmer), [`ZombieMiner`](../10-entities-npcs/per-mob.md#3-zombie-miner-zombieminer), [`ZombiePigmanSoldier`](../10-entities-npcs/per-mob.md#4-zombie-pigman-soldier-zombiepigmansoldier), [`GenericNPC`](../10-entities-npcs/per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava) default kit; see [10-entities-npcs](../10-entities-npcs/index.md)). None of those classes overrides the equipment drop chances, so the vanilla default (inferred from vanilla 1.7.10 `EntityLiving`, not read in the Techguns source: about 8.5 % per equipped slot, only when killed by a player) applies to worn pieces. Camo on NPC pieces is set with `getNewWithCamo`. There is no armour in worldgen or any shop. Loot chest entries are listed in each row's note and in [recipes.md](recipes.md) §4.
+Added by the consistency pass. All 45 pieces: the lang key is `techguns.item.<unlocalized>.name` (full text in [lang-and-strings.md](lang-and-strings.md) §1). Grids are top row first; keys are defined per set. The full recipe tables, repair routes and loot are in [recipes.md](recipes.md). Armor is also worn by NPCs ([`ArmySoldier`](../10-entities-npcs/per-mob.md#6-army-soldier-armysoldier), [`Bandit`](../10-entities-npcs/per-mob.md#7-bandit-bandit), [`Commando`](../10-entities-npcs/per-mob.md#9-commando-commando), [`DictatorDave`](../10-entities-npcs/per-mob.md#13-dictator-dave-dictatordave-mini-boss), [`Outcast`](../10-entities-npcs/per-mob.md#8-outcast-outcast), [`PsychoSteve`](../10-entities-npcs/per-mob.md#12-psycho-steve-psychosteve-early-game-mini-boss), [`SkeletonSoldier`](../10-entities-npcs/per-mob.md#5-skeleton-soldier-skeletonsoldier), [`StormTrooper`](../10-entities-npcs/per-mob.md#10-stormtrooper-stormtrooper-registry-name-stormtrooper), [`ZombieFarmer`](../10-entities-npcs/per-mob.md#2-zombie-farmer-zombiefarmer), [`ZombieMiner`](../10-entities-npcs/per-mob.md#3-zombie-miner-zombieminer), [`ZombiePigmanSoldier`](../10-entities-npcs/per-mob.md#4-zombie-pigman-soldier-zombiepigmansoldier), [`GenericNPC`](../10-entities-npcs/per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava) default kit; see [10-entities-npcs](../10-entities-npcs/index.md)). None of those classes overrides the equipment drop chances, so the vanilla default (inferred from vanilla 1.7.10 `EntityLiving`, not read in the Techguns source: about 8.5 % per equipped slot, only when killed by a player) applies to worn pieces. Camo on NPC pieces is set with `getNewWithCamo`. There is no armor in worldgen or any shop. Loot chest entries are listed in each row's note and in [recipes.md](recipes.md) §4.
 
 | Registry name | Lang key | English name | Obtained from |
 |---|---|---|---|
@@ -237,10 +237,10 @@ Added by the consistency pass. All 45 pieces: the lang key is `techguns.item.<un
 | `t2_commando_chestplate` | `techguns.item.t2_commando_chestplate.name` | Commando Vest | Crafting: `h_h` / `hih` / `iii` (`h` = "itemRubber", `i` = "ingotObsidianSteel", `g` = "paneGlass"). Crafting only. |
 | `t2_commando_leggings` | `techguns.item.t2_commando_leggings.name` | Commando Pants | Crafting: `hih` / `i_i` / `h_h` (`h` = "itemRubber", `i` = "ingotObsidianSteel", `g` = "paneGlass"). Crafting only. |
 | `t2_commando_boots` | `techguns.item.t2_commando_boots.name` | Commando Boots | Crafting: `i_i` / `h_h` (`h` = "itemRubber", `i` = "ingotObsidianSteel", `g` = "paneGlass"). Crafting only. |
-| `t2_riot_helmet` | `techguns.item.t2_riot_helmet.name` | Ranger Veteran Helmet | Crafting: `php` / `l_l` (`h` = Combat Helmet) (`p` = "plateLead", `l` = Treated Leather; the centre item is the matching T2 Combat piece (any damage and camo)). Crafting only (consumes a T2 Combat piece). |
-| `t2_riot_chestplate` | `techguns.item.t2_riot_chestplate.name` | Ranger Veteran Jacket | Crafting: `p_p` / `lcl` / `lpl` (`c` = Combat Vest) (`p` = "plateLead", `l` = Treated Leather; the centre item is the matching T2 Combat piece (any damage and camo)). Crafting only (consumes a T2 Combat piece). |
-| `t2_riot_leggings` | `techguns.item.t2_riot_leggings.name` | Ranger Veteran Pants | Crafting: `lhl` / `p_p` / `l_l` (`h` = Combat Pants) (`p` = "plateLead", `l` = Treated Leather; the centre item is the matching T2 Combat piece (any damage and camo)). Crafting only (consumes a T2 Combat piece). |
-| `t2_riot_boots` | `techguns.item.t2_riot_boots.name` | Ranger Veteran Boots | Crafting: `lhl` / `p_p` (`h` = Combat Boots) (`p` = "plateLead", `l` = Treated Leather; the centre item is the matching T2 Combat piece (any damage and camo)). Crafting only (consumes a T2 Combat piece). |
+| `t2_riot_helmet` | `techguns.item.t2_riot_helmet.name` | Ranger Veteran Helmet | Crafting: `php` / `l_l` (`h` = Combat Helmet) (`p` = "plateLead", `l` = Treated Leather; the center item is the matching T2 Combat piece (any damage and camo)). Crafting only (consumes a T2 Combat piece). |
+| `t2_riot_chestplate` | `techguns.item.t2_riot_chestplate.name` | Ranger Veteran Jacket | Crafting: `p_p` / `lcl` / `lpl` (`c` = Combat Vest) (`p` = "plateLead", `l` = Treated Leather; the center item is the matching T2 Combat piece (any damage and camo)). Crafting only (consumes a T2 Combat piece). |
+| `t2_riot_leggings` | `techguns.item.t2_riot_leggings.name` | Ranger Veteran Pants | Crafting: `lhl` / `p_p` / `l_l` (`h` = Combat Pants) (`p` = "plateLead", `l` = Treated Leather; the center item is the matching T2 Combat piece (any damage and camo)). Crafting only (consumes a T2 Combat piece). |
+| `t2_riot_boots` | `techguns.item.t2_riot_boots.name` | Ranger Veteran Boots | Crafting: `lhl` / `p_p` (`h` = Combat Boots) (`p` = "plateLead", `l` = Treated Leather; the center item is the matching T2 Combat piece (any damage and camo)). Crafting only (consumes a T2 Combat piece). |
 | `t3_combat_helmet` | `techguns.item.t3_combat_helmet.name` | Advanced Combat Helmet | Crafting: `ppp` / `f_f` (`p` = "plateCarbon", `f` = "fiberCarbon"). Crafting only. |
 | `t3_combat_chestplate` | `techguns.item.t3_combat_chestplate.name` | Advanced Combat Chestplate | Crafting: `p_p` / `ppp` / `fpf` (`p` = "plateCarbon", `f` = "fiberCarbon"). Crafting only. |
 | `t3_combat_leggings` | `techguns.item.t3_combat_leggings.name` | Advanced Combat Leggings | Crafting: `pfp` / `p_p` / `f_f` (`p` = "plateCarbon", `f` = "fiberCarbon"). Crafting only. |
@@ -259,7 +259,7 @@ Added by the consistency pass. All 45 pieces: the lang key is `techguns.item.<un
 | `t3_exo_boots` | `techguns.item.t3_exo_boots.name` | Exo Suit Boots | Crafting: shapeless: Advanced Combat Boots (any) + Mechanical Parts T3 + "circuitElite" + Electric Engine + "ingotTitanium" (upgrade of the matching T3 Combat piece (damage and camo discarded)). Crafting only. Crafted stacks start with `power` 0. |
 | `t2_beret` | `techguns.item.t2_beret.name` | Beret | Crafting: `cc_` / `l_l` (`c` = Heavy Cloth, `l` = vanilla leather). Crafting only. |
 
-Other loot: the vanilla dungeon chest has no armour pieces (only Nightvision Goggles and Gas Mask, see [special-equipment.md](special-equipment.md)).
+Other loot: the vanilla dungeon chest has no armor pieces (only Nightvision Goggles and Gas Mask, see [special-equipment.md](special-equipment.md)).
 
 ## 6. Full-set totals (all bonuses add up per piece; there is no extra full-set bonus)
 
@@ -292,7 +292,7 @@ How each bonus is applied is described in set-bonuses.md.
 |---|---|
 | `t1_scout` | 0 `t1_scout`, 1 `t1_scout_forest`, 2 `t1_scout_snow`, 3 `t1_scout_black`. **No lang keys exist**, so the raw key is shown. |
 | `t1_miner` (body) | 0 Blue, 1 Red, 2 Green, 3 Black |
-| `t1_miner` + `helmet.` | 0 Yellow, 1 Lime, 2 Light Blue, 3 Orange (the helmet colours on the same sheets) |
+| `t1_miner` + `helmet.` | 0 Yellow, 1 Lime, 2 Light Blue, 3 Orange (the helmet colors on the same sheets) |
 | `steam_armor` | 0 Default, 1 Rusty, 2 Steel (`steam_armor_iron`), 3 Hazard |
 | `t2_combat` | 0 Urban, 1 Woodland (`_wood`), 2 Desert, 3 Arctic, 4 SWAT, 5 Security |
 | `t2_riotArmor` | 0 only. **No lang key.** |
@@ -312,15 +312,15 @@ All text uses the lang keys in index.md §Lang.
 
 **Without Shift:**
 - `Durability: <max−damage>/<max>`
-- Then `Press` + green `[SHIFT]` + grey `for detailed tooltip` (keys `techguns.gun.tooltip.shift1/2/3`).
+- Then `Press` + green `[SHIFT]` + gray `for detailed tooltip` (keys `techguns.gun.tooltip.shift1/2/3`).
 
 **With Shift (Left or Right Shift):**
 1. `Durability: …`
 2. `Armor Values:`
-3. If the penetration resistance > 0: dark-grey `Penetration Resistance <pct>%`.
-4. Nine resistance lines, each in the form `" <ABBR>: <value> (<pct>%)"` (`formatAV`). The abbreviations and colours, in order, are:
-   - `AR` (physical), dark grey
-   - `PR` (projectile), grey
+3. If the penetration resistance > 0: dark-gray `Penetration Resistance <pct>%`.
+4. Nine resistance lines, each in the form `" <ABBR>: <value> (<pct>%)"` (`formatAV`). The abbreviations and colors, in order, are:
+   - `AR` (physical), dark gray
+   - `PR` (projectile), gray
    - `EX`, dark red
    - `E` (energy), dark aqua
    - `F` (fire), red
@@ -336,7 +336,7 @@ All text uses the lang keys in index.md §Lang.
      - `Mining speed: +<x×100>%`
      - `Underwater mining speed: +<x×100>%`
      - `Knockback Resistance: +<x×100>%`
-     - `Nightvision` (no armour sets this)
+     - `Nightvision` (no armor sets this)
      - `Step Assist`
      - `Oxygen Gear`
      - `Cooling System`
@@ -347,7 +347,7 @@ Numbers are printed with Java's default float `toString` (e.g. `12.5`, `0.300000
 ## 9. Power system (PoweredArmor)
 
 - **NBT ints:** `power` and `maxpower`. `maxpower` is filled in from the item's `maxpower` whenever it is missing or 0.
-- **Ticking:** `calculateConsumptionTick(player)` is called from the player tick handler (END phase, both sides) whenever the player wears at least one Techguns armour piece.
+- **Ticking:** `calculateConsumptionTick(player)` is called from the player tick handler (END phase, both sides) whenever the player wears at least one Techguns armor piece.
   1. "Moving" = |motionX| > 0.001 or |motionZ| > 0.001.
   2. The chest power type comes from the chestplate (`armorItemInSlot(2)`) if it is a `PoweredArmor`.
   3. For each worn `PoweredArmor` piece **other than the chestplate** whose power type matches the chest's: top it up from the chest's current power, moving at most the piece's missing amount, and deduct the same amount from the chest. Pieces of a different type (or with no powered chest) are never recharged.
@@ -362,8 +362,8 @@ Numbers are printed with Java's default float `toString` (e.g. `12.5`, `0.300000
   |---|---|---|---|
   | JUMP | leggings only | 5 | server plays `techguns:effects.steamarmorJump` (vol 0.66, pitch 1.0) at the player, for **every** powered leggings type |
   | FALLDMG | boots only | 5 | only when the fall distance is > 3 |
-  | COOLING_SYSTEM | chestplate only | 1 | per fire/lava damage event that was cancelled |
+  | COOLING_SYSTEM | chestplate only | 1 | per fire/lava damage event that was canceled |
   | anything else | – | 0 | |
 
-- A piece with power > 0 uses its powered bonuses. With 0 power it uses its unpowered bonuses, which are all 0 for every registered piece. **Armour values and protection do not depend on power.**
+- A piece with power > 0 uses its powered bonuses. With 0 power it uses its unpowered bonuses, which are all 0 for every registered piece. **Armor values and protection do not depend on power.**
 - Batteries and consumables (compressed air tank, energy cell and their empties) are [06-items](../06-items/index.md).

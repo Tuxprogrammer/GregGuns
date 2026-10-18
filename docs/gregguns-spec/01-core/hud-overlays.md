@@ -1,6 +1,6 @@
 # HUD and overlay mods
 
-- **Techguns baseline:** [input-and-hud.md § HUD overlay](../../techguns-spec/01-core/input-and-hud.md#hud-overlay-guioverlayammocount), [armour bar replacement](../../techguns-spec/01-core/input-and-hud.md#armor-bar-replacement-rendergameoverlayeventpre-armor), [events.md § GuiOverlayAmmoCount](../../techguns-spec/01-core/events.md#guioverlayammocount-forge-bus-client), [CORE-17](../../techguns-spec/01-core/index.md#suspected-bugs), [CORE-18](../../techguns-spec/01-core/index.md#suspected-bugs), [CORE-33](../../techguns-spec/01-core/index.md#suspected-bugs)
+- **Techguns baseline:** [input-and-hud.md § HUD overlay](../../techguns-spec/01-core/input-and-hud.md#hud-overlay-guioverlayammocount), [armor bar replacement](../../techguns-spec/01-core/input-and-hud.md#armor-bar-replacement-rendergameoverlayeventpre-armor), [events.md § GuiOverlayAmmoCount](../../techguns-spec/01-core/events.md#guioverlayammocount-forge-bus-client), [CORE-17](../../techguns-spec/01-core/index.md#suspected-bugs), [CORE-18](../../techguns-spec/01-core/index.md#suspected-bugs), [CORE-33](../../techguns-spec/01-core/index.md#suspected-bugs)
 - **Design records:** none
 - **Pack mods:**
   - Angelica (`angelica`, 2.2.28)
@@ -14,7 +14,7 @@
 
 | Techguns | GregGuns | Why |
 |---|---|---|
-| A 24-point armour bar: cancels the vanilla `ARMOR` element at `NORMAL` priority and redraws it at a fixed height | **Not ported.** GregGuns armour reports its value through Forge's total armour value and lets OverloadedArmorBar draw it | OverloadedArmorBar already cancels `ARMOR` first (see below), so the Techguns bar would never run in the pack. It also removes [CORE-33](../../techguns-spec/01-core/index.md#suspected-bugs) |
+| A 24-point armor bar: cancels the vanilla `ARMOR` element at `NORMAL` priority and redraws it at a fixed height | **Not ported.** GregGuns armor reports its value through Forge's total armor value and lets OverloadedArmorBar draw it | OverloadedArmorBar already cancels `ARMOR` first (see below), so the Techguns bar would never run in the pack. It also removes [CORE-33](../../techguns-spec/01-core/index.md#suspected-bugs) |
 | Ammo text pinned to the bottom-right corner, at fixed coordinates | Ammo and status HUD anchored bottom-right with client config offsets `hudOffsetX` and `hudOffsetY` | InGame-Info-XML also draws in the bottom-right corner (see below) |
 | Draws in the `POST` phase of `EXPERIENCE`, and ignores cancelable events | Same hook, kept inside `RenderGameOverlayEvent` handlers only | Keeps HUD caching safe if the pack turns it on |
 | Right alignment by `String.length() * 6` (CORE-18) | Right alignment by `FontRenderer.getStringWidth` on the string without formatting codes | Fixes CORE-18 |
@@ -24,7 +24,7 @@
 ### OverloadedArmorBar: owns the `ARMOR` element
 - **Pack config:** none read.
 - **Source:** [`ArmorBarRenderer.onRenderGameOverlayEvent`](https://github.com/GTNewHorizons/OverloadedArmorBar/blob/1.1.1/src/main/java/locusway/overloadedarmorbar/overlay/ArmorBarRenderer.java#L34-L45) is a `HIGHEST`-priority `RenderGameOverlayEvent.Pre` handler for `ARMOR`. It reads `ForgeHooks.getTotalArmorValue`, draws, advances `GuiIngameForge.left_height` by 10 ([L82](https://github.com/GTNewHorizons/OverloadedArmorBar/blob/1.1.1/src/main/java/locusway/overloadedarmorbar/overlay/ArmorBarRenderer.java#L82-L86)) and cancels the event.
-- **GregGuns does:** adds no `ARMOR` handler. GregGuns armour implements Forge's armour interfaces so the value counts in `getTotalArmorValue` (the armour spec is [05-armor](../../techguns-spec/05-armor/index.md)). Any other GregGuns element drawn on the left side reads and advances `GuiIngameForge.left_height`.
+- **GregGuns does:** adds no `ARMOR` handler. GregGuns armor implements Forge's armor interfaces so the value counts in `getTotalArmorValue` (the armor spec is [05-armor](../../techguns-spec/05-armor/index.md)). Any other GregGuns element drawn on the left side reads and advances `GuiIngameForge.left_height`.
 - **Pack-side change:** none.
 
 ### Angelica: HUD caching
@@ -52,14 +52,14 @@
 - **Pack-side change:** none.
 
 ### Extreme Sound Muffler (checked, no change)
-- **Pack config:** `config/extremesoundmuffler.cfg`, key `forbiddenSounds` = `ui.`, `music.`, `ambient.`. The config comment says the list holds sound names to blacklist, so the mod works on sound names. Its behaviour for other sounds was inferred from this, not read from source (`Lyfts/ExtremeSoundMuffler-Legacy`, tag 1.1.1).
+- **Pack config:** `config/extremesoundmuffler.cfg`, key `forbiddenSounds` = `ui.`, `music.`, `ambient.`. The config comment says the list holds sound names to blacklist, so the mod works on sound names. Its behavior for other sounds was inferred from this, not read from source (`Lyfts/ExtremeSoundMuffler-Legacy`, tag 1.1.1).
 - **GregGuns does:** nothing. Gun and NPC sounds use `gregguns:`-prefixed event names, so they show up and can be muffled. (Techguns' sound categories had no effect in the original, [CORE-39](../../techguns-spec/01-core/index.md#suspected-bugs); GregGuns should make its categories real, which is an audio decision for [03](../../techguns-spec/03-gun-visuals-audio/index.md).)
 - **Pack-side change:** none.
 
 ## Requirements
 
 - **GGS-01-29** GregGuns registers no `RenderGameOverlayEvent.Pre` handler for `ARMOR`.
-- **GGS-01-30** GregGuns armour counts in `ForgeHooks.getTotalArmorValue`.
+- **GGS-01-30** GregGuns armor counts in `ForgeHooks.getTotalArmorValue`.
 - **GGS-01-31** All GregGuns HUD drawing runs inside `RenderGameOverlayEvent` handlers and does not depend on being called once per frame.
 - **GGS-01-32** The ammo and status HUD position is `bottom-right + (hudOffsetX, hudOffsetY)` from client config, and text is aligned by `getStringWidth` on the stripped string.
 - **GGS-01-33** Any left-side HUD element reads `GuiIngameForge.left_height` and advances it by its own height.

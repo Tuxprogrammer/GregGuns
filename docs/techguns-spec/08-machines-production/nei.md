@@ -21,9 +21,9 @@
 - **Transfer rect.** (122,35) 12×23.
 - **Extras.**
   - Animated arrow: sprite u180 v0, 10×21, at (123,36), direction 1 (fills downward), 100 ticks.
-  - Text "500 RF" at (57,25) and "100 ticks" at (57,35), centred, white. The power is always 5·100.
+  - Text "500 RF" at (57,25) and "100 ticks" at (57,35), centered, white. The power is always 5·100.
 - **Positions.** metal1 (100,17), metal2 (120,17), powder (140,17), result (120,60).
-- **All recipes:** the four ammo outputs (9mm ×12, shotgun ×16, rifle ×8, high-calibre ×4), each with the full metal1/metal2/powder lists cycling.
+- **All recipes:** the four ammo outputs (9mm ×12, shotgun ×16, rifle ×8, high-caliber ×4), each with the full metal1/metal2/powder lists cycling.
 - **Crafting lookup:** for any of the four ammo items, one recipe whose output stack size comes from the plan table.
 - **Usage lookup:** an ingredient in the metal1, metal2 or powder list shows all four plans with that slot fixed to the ingredient (metal2 shown ×2). The fixed-ingredient list is reused and grows each iteration ([MPRD-30](index.md#suspected-bugs)).
 
@@ -50,7 +50,7 @@ This handler extends `TechgunsLiquidTemplateRecipeHandler`.
 - **Positions.** input 1 (35,17), input 2 (57,17), flask (35,40), output (135,17). Ingredient display sizes are set to the recipe amounts. This **writes into shared ore stacks** ([MPRD-23](index.md#suspected-bugs)).
 - **Extras.**
   - The 5-stage progress animation exactly as in the GUI (`chem-lab.md`), looping every 100 NEI ticks.
-  - "\<RF/t> RF/t" centred at (105,50).
+  - "\<RF/t> RF/t" centered at (105,50).
   - Input fluid drawn in the left tank (19,17) and output fluid in the right tank (158,17). The fill height is amount·50/**2000**, so 2000 mB looks full.
   - "\<amount> mB" with shadow under each tank, at (35,60) and (115,60).
   - Tank gauges from `chemLab_Gui.png` (u176 v32).
@@ -98,11 +98,11 @@ This handler extends `TechgunsLiquidTemplateRecipeHandler`.
 | Intensity bar | u190 v px, 6 × (40−px), at (114,16+px), px = (10−preferred)·4 |
 | Fluid | the recipe fluid drawn in the tank at (19,17) with height level·5 px; gauge u176 v31 12×52 at (18,16); level marker u178 v32 8×1 at (18, 17+50−level·5) |
 | Danger icon | u205 v(12·danger), 12×12, at (94,37). Danger 0 = NONE or BREAK_ITEM with margin 0 (green); 1 = NONE or BREAK_ITEM with margin > 0 (yellow); 2 = EXPLOSION_LOW (orange); 3 = any other risk (red). It's looked up with the NEI list index instead of the recipe (MPRD-22) |
-| Text | "\<RFTick/60>" at (57,35) and "RF/T" at (57,45), centred; "\<level×10>%" at (34,58); preferred intensity at (121,16) |
+| Text | "\<RFTick/60>" at (57,35) and "RF/T" at (57,45), centered; "\<level×10>%" at (34,58); preferred intensity at (121,16) |
 
 - **Tooltips.**
   - Over the tank: the fluid name and "Consumed \<liquidConsumtion>mB" (`techguns.reactionTooltip.consume`), or "No Fluid Input".
-  - Over the danger icon: "Unstable: Yes/No" (`techguns.reactionChamberNEI.Instability`, `techguns.yes`/`techguns.no`; yellow Yes when margin > 0, green No otherwise) and "Risk: \<RiskType text>" (`techguns.reactionChamberNEI.Danger`; the risk text comes from `RiskType.toString`, colour-coded green/yellow/red/white).
+  - Over the danger icon: "Unstable: Yes/No" (`techguns.reactionChamberNEI.Instability`, `techguns.yes`/`techguns.no`; yellow Yes when margin > 0, green No otherwise) and "Risk: \<RiskType text>" (`techguns.reactionChamberNEI.Danger`; the risk text comes from `RiskType.toString`, color-coded green/yellow/red/white).
 - **Fluid navigation.** Clicking the tank opens recipes or usages for (fluid, level·1000 mB).
 - **Lookups.**
   - Crafting: all recipes that list the item as any output.
