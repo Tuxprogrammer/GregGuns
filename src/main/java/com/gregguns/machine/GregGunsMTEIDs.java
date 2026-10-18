@@ -33,12 +33,29 @@ public final class GregGunsMTEIDs {
     /** Ammunition Works multiblock (HV controller). Built in M4. */
     public static final int AMMO_WORKS = 20105;
 
+    /** Repair Bench, LV. Built in M4. */
+    public static final int REPAIR_BENCH_LV = 20109;
+    /** Repair Bench, MV. Built in M4. */
+    public static final int REPAIR_BENCH_MV = 20110;
+    /** Repair Bench, HV. Built in M4. */
+    public static final int REPAIR_BENCH_HV = 20111;
+    /** Repair Bench, EV. Built in M4. */
+    public static final int REPAIR_BENCH_EV = 20112;
+    /** Repair Bench, IV. Built in M4. */
+    public static final int REPAIR_BENCH_IV = 20113;
+    /** Armory Gantry multiblock (HV controller). Built in M4. */
+    public static final int ARMORY_GANTRY = 20114;
+    /** Camo Bench (LV). Built in M4. */
+    public static final int CAMO_BENCH = 20115;
+
     private GregGunsMTEIDs() {}
 
     /**
      * @return every ID defined above, in ascending order, for the uniqueness and range checks
      */
     public static int[] all() {
-        return new int[] { AMMO_PRESS_STEAM, AMMO_PRESS_LV, AMMO_PRESS_MV, AMMO_PRESS_HV, AMMO_PRESS_EV, AMMO_WORKS };
+        return new int[] { AMMO_PRESS_STEAM, AMMO_PRESS_LV, AMMO_PRESS_MV, AMMO_PRESS_HV, AMMO_PRESS_EV, AMMO_WORKS,
+            REPAIR_BENCH_LV, REPAIR_BENCH_MV, REPAIR_BENCH_HV, REPAIR_BENCH_EV, REPAIR_BENCH_IV, ARMORY_GANTRY,
+            CAMO_BENCH };
     }
 }

@@ -164,3 +164,27 @@ gregguns.grenade.tooltip.radius=Radius: %s blocks
 gregguns.grenade.tooltip.bounces=Bounces: %s
 gregguns.grenade.tooltip.fuse=Fuse: %s s
 gregguns.grenade.tooltip.hold=Hold Right click to throw harder
+
+# Machines: Repair Bench, Camo Bench, Armory Gantry
+gregguns.machine.repair_bench.tooltip=Restores worn GregGuns armor with its repair parts
+gregguns.machine.repair_bench.tier=Repairs items of its own tier and below
+gregguns.machine.camo_bench.tooltip=Cycles the camouflage of an item or of the armor you wear
+gregguns.repair.ok=Repaired.
+gregguns.repair.no_item=Nothing in that slot.
+gregguns.repair.cannot=That item cannot be repaired here.
+gregguns.repair.undamaged=That item is not damaged.
+gregguns.repair.tier=This bench's tier is too low for that item.
+gregguns.repair.materials=The bench is missing repair parts.
+gregguns.repair.power=The bench needs more energy for this repair.
+gregguns.repair.gui.title=Repair parts
+gregguns.repair.gui.helmet=Head
+gregguns.repair.gui.chestplate=Chest
+gregguns.repair.gui.leggings=Legs
+gregguns.repair.gui.boots=Feet
+gregguns.repair.gui.held=Held
+gregguns.camo.gui.item=Item
+gregguns.camo.gui.helmet=Head
+gregguns.camo.gui.chestplate=Chest
+gregguns.camo.gui.leggings=Legs
+gregguns.camo.gui.boots=Feet
+gregguns.camo.gui.none=none

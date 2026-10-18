@@ -15,6 +15,8 @@ import net.minecraftforge.common.util.EnumHelper;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.gregguns.api.BenchRepairable;
+import com.gregguns.api.CamoChangeable;
 import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.armor.logic.ArmorBonus;
@@ -23,6 +25,7 @@ import com.gregguns.armor.logic.ArmorProtection;
 import com.gregguns.armor.logic.ArmorSlot;
 import com.gregguns.armor.logic.HazardFlag;
 import com.gregguns.armor.logic.PieceDef;
+import com.gregguns.armor.logic.RepairSpec;
 import com.gregguns.armor.logic.SetDef;
 import com.gregguns.combat.DamageType;
 import com.gregguns.combat.TypedArmor;
@@ -51,7 +54,8 @@ import gregtech.api.hazards.IHazardProtector;
  * electrical protection by accident, GGS-05-10) and with enchantability 0 (Techguns rule).
  */
 // Spec: docs/techguns-spec/05-armor/armor-catalog.md sections 1 to 3; docs/gregguns-spec/05-armor/hazard-protection.md
-public final class ItemGregGunsArmor extends ItemArmor implements ISpecialArmor, TypedArmor, IHazardProtector, Tiered {
+public final class ItemGregGunsArmor extends ItemArmor
+    implements ISpecialArmor, TypedArmor, IHazardProtector, Tiered, CamoChangeable, BenchRepairable {
 
     private static final String CAMO_TAG = "camo";
 
@@ -113,6 +117,7 @@ public final class ItemGregGunsArmor extends ItemArmor implements ISpecialArmor,
      * @param stack a piece of this set
      * @return the stored camo index, clamped to the set's range (ARM-12); 0 when none is stored (ARM-11)
      */
+    @Override
     public int getCamo(ItemStack stack) {
         NBTTagCompound tag = stack.getTagCompound();
         return tag == null ? 0 : set.clampCamo(tag.getInteger(CAMO_TAG));
@@ -124,6 +129,7 @@ public final class ItemGregGunsArmor extends ItemArmor implements ISpecialArmor,
      * @param stack a piece of this set
      * @param camo  the index; out-of-range values store 0
      */
+    @Override
     public void setCamo(ItemStack stack, int camo) {
         NBTTagCompound tag = stack.getTagCompound();
         if (tag == null) {
@@ -131,6 +137,16 @@ public final class ItemGregGunsArmor extends ItemArmor implements ISpecialArmor,
             stack.setTagCompound(tag);
         }
         tag.setInteger(CAMO_TAG, set.clampCamo(camo));
+    }
+
+    @Override
+    public int camoCount(ItemStack stack) {
+        return set.camoCount();
+    }
+
+    @Override
+    public String camoNameKey(ItemStack stack) {
+        return "item.gregguns." + set.id() + ".camoname." + getCamo(stack);
     }
 
     @Override
@@ -189,6 +205,11 @@ public final class ItemGregGunsArmor extends ItemArmor implements ISpecialArmor,
     @Override
     public boolean getIsRepairable(ItemStack armor, ItemStack repairItem) {
         return ArmorRepair.isRepairItem(piece.repair(), repairItem);
+    }
+
+    @Override
+    public @Nullable RepairSpec repairSpec(ItemStack stack) {
+        return piece.repair();
     }
 
     // --- hazards ----------------------------------------------------------------------------------------------------
