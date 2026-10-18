@@ -20,9 +20,9 @@ public final class GateRule {
     /**
      * The GT material name that gates a tier's recipes.
      *
-     * @param tier a tier from Steam to IV; later tiers are not defined until a recipe needs them
+     * @param tier any tier from Steam to ZPM
      * @return the GT material name from the tier map
-     * @throws IllegalArgumentException for a tier above IV
+     * @throws IllegalArgumentException for a tier with no gate material
      */
     public static String gateMaterial(Tier tier) {
         switch (tier) {
@@ -38,9 +38,55 @@ public final class GateRule {
                 return "Titanium";
             case IV:
                 return "TungstenSteel";
+            case LUV:
+                return "HSSG";
+            case ZPM:
+                return "NaquadahAlloy";
             default:
                 throw new IllegalArgumentException("gate material for " + tier + " is not defined yet");
         }
+    }
+
+    /**
+     * The GT circuit material name ({@code Materials} {@code mName}) of a tier.
+     *
+     * @param tier a tier from LV to ZPM
+     * @return "Basic", "Good", "Advanced", "Data", "Elite", "Master" or "Ultimate"; {@code null} for Steam
+     */
+    public static String circuitMaterial(Tier tier) {
+        switch (tier) {
+            case LV:
+                return "Basic";
+            case MV:
+                return "Good";
+            case HV:
+                return "Advanced";
+            case EV:
+                return "Data";
+            case IV:
+                return "Elite";
+            case LUV:
+                return "Master";
+            case ZPM:
+                return "Ultimate";
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Whether a GT part of the row's own tier carries the tier's gate material by itself: a circuit of the tier's
+     * circuit material, or a GT machine part named for the tier ({@code Emitter_ZPM}). The spec gates RC-19 "through
+     * the ZPM emitter" and RC-20 "via circuit.EV", so a tier part counts as the gate.
+     */
+    // Deviation: GGS-06-36 asks for an input of the gate material; the sheet's own gate column names these GT tier
+    // parts as the gate for RC-19 and RC-20, so the rule accepts them.
+    static boolean carriesTierGate(ProductionTable.Input input, Tier tier) {
+        if ("circuit".equals(input.prefix())) {
+            return input.material() != null && input.material()
+                .equals(circuitMaterial(tier));
+        }
+        return false;
     }
 
     /**
@@ -59,8 +105,17 @@ public final class GateRule {
         }
         String gate = gateMaterial(row.tier());
         for (ProductionTable.Input input : row.inputs()) {
+            if (input.special() != null && input.special()
+                .startsWith("gt:")
+                && input.special()
+                    .endsWith(
+                        "_" + row.tier()
+                            .name()
+                            .replace("LUV", "LuV"))) {
+                return true;
+            }
             if (!input.isGregGuns()) {
-                if (gate.equals(input.material())) {
+                if (gate.equals(input.material()) || carriesTierGate(input, row.tier())) {
                     return true;
                 }
                 continue;

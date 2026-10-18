@@ -7,7 +7,9 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import com.gregguns.api.Tier;
 import com.gregguns.armor.logic.ArmorCatalog;
 import com.gregguns.core.registry.ModuleRegistrar;
+import com.gregguns.item.part.ComponentItems;
 import com.gregguns.item.part.ItemPart;
+import com.gregguns.item.part.ItemTank;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -34,7 +36,7 @@ public final class ArmorParts {
     private static ItemPart gliderBackpack;
     private static ItemPart gliderWing;
     private static ItemPart gasMaskFilter;
-    private static ItemPart tankAir;
+    private static ItemTank tankAir;
     private static ItemPart treatedLeather;
     private static ItemPart steamArmorPlating;
 
@@ -47,13 +49,11 @@ public final class ArmorParts {
      */
     public static void register(ModuleRegistrar registrar) {
         heavyCloth = registrar.registerItem(ArmorCatalog.HEAVY_CLOTH, new ItemPart(Tier.STEAM));
-        // Deviation: area 06 owns both items. The filter is a plain part here (RC-25); the Compressed Air Tank is a
-        // plain
-        // part too, without the 1,000 mB IFluidContainerItem behavior of GGS-06-40, because the Oxygen Tanks recipe
-        // and the refill need an item named tank_air today. When area 06 adds them, delete these two lines and keep
-        // the registry names.
+        // Area 06 owns both items; they stay registered here because the armor module can run without the guns
+        // module's ComponentItems. The filter is a plain part (RC-25); the Compressed Air Tank is the 1,000 mB
+        // IFluidContainerItem of GGS-06-40.
         gasMaskFilter = registrar.registerItem(GAS_MASK_FILTER, new ItemPart(Tier.MV));
-        tankAir = registrar.registerItem(TANK_AIR, new ItemPart(Tier.HV));
+        tankAir = registrar.registerItem(TANK_AIR, ComponentItems.tank(TANK_AIR, Tier.HV));
         // Glider parts are defined by the armor recipes sheet (recipes.md, HV), which area 06 links to.
         gliderBackpack = registrar.registerItem(GLIDER_BACKPACK, new ItemPart(Tier.HV));
         gliderWing = registrar.registerItem(GLIDER_WING, new ItemPart(Tier.HV));
@@ -95,7 +95,7 @@ public final class ArmorParts {
     }
 
     /** @return the Compressed Air Tank; null before registration or with the armor module off */
-    public static ItemPart tankAir() {
+    public static ItemTank tankAir() {
         return tankAir;
     }
 

@@ -459,6 +459,23 @@ Numbering continues from the highest existing ID in this area (GGS-06-33).
 | GGS-06-47 | Unit test: the registry contains every name in the component index |
 | GGS-06-48 | Unit test scanning other areas' recipes for `gregguns:` names not in the index |
 
+## Deviations (M4 component pass)
+
+Implemented in `ComponentTable`, `ComponentRecipes` and `PartCatalog`. Where the code departs from the rows above:
+
+- **RC-22 Treated Leather and RC-23 Steam Armor Plating.** Registered and recipe'd by the armor branches (`ArmorParts`, m3); this pass leaves them alone. (The Bath rows there should carry a Steel input for the gate, as GGS-06-36 asks.)
+- **RC-26 Small Nuclear Warhead.** One `plate.NaquadahAlloy` (the casing) joins the inputs: the sheet's inputs have no ZPM gate material. The research item is `ItemList.Sensor_EV` (the proximity fuze) instead of `ammo_rocket`, which the ammo session registers; switch it when `ammo_rocket` exists.
+- **No TNT or soul sand dust.** `Materials.TNT` and `Materials.SoulSand` resolve to no dust item in the pinned GT, so RC-26 takes the vanilla TNT block (4) and RC-20 the vanilla soul sand block.
+- **RC-60 refuel.** One `plate.NaquadahAlloy` (the fresh seal) joins the spent cell and uranium, for the same gate reason.
+- **Gate rule.** `GateRule` now defines LuV (`HSSG`) and ZPM (`NaquadahAlloy`), and accepts a GT part of the row's own tier as carrying the gate: `circuit.<tier>` (RC-20 "Titanium via circuit.EV") and `ItemList.*_<tier>` (RC-19 "through the ZPM emitter").
+- **Material names.** GT names Polyethylene `Plastic` and the circuit materials `Basic`, `Good`, `Advanced`, `Data`, `Elite`, `Master`, `Ultimate` (LV to ZPM); the table uses those `mName`s.
+- **RC-61 Bandages.** The slimeball is the ore name `slimeball`; string and leather are vanilla items.
+- **Tanks (GGS-06-16, GGS-06-40).** `ItemTank` has a fixed 1,000 mB capacity (not config) and a fixed accepted-fluid list per tank. The Bio Tank takes `Biomass` only (RC-57), not `BioDiesel`. No `FluidContainerRegistry` entries: the Fluid Canner's dynamic `IFluidContainerItem` path fills and drains them. `tank_air` stays registered by the armor module (`ArmorParts`) so armor works without the guns module; it uses the same `ItemTank`.
+- **RC-63 Camo Net Placer.** Not built here: the Camo Net block (area 07) does not exist yet. Textures `camo_net_placer_0..2` are ready.
+- **Ore names (GGS-06-10).** GregGuns registers no ore-dictionary name for its components; every recipe uses exact stacks. The self-check fails the boot if one ever collides with a GT prefix.
+- **Recycling data (GGS-06-12, GGS-06-46).** Computed from each recipe row by `ComponentComposition`: metal and plastic part forms only. Dusts (uranium, redstone, TNT) are left out, which also leaves the nuclear-recycling open question closed in favor of "no uranium back from recycling".
+- **Module gating.** RC-07 needs the Laser Focus from the machines module; with that module off the row is skipped quietly and the self-check defers the Laser Barrel.
+
 ## Open questions
 
 Each needs a decision before this sheet is final.
