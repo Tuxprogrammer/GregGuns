@@ -1,5 +1,7 @@
 package com.gregguns.client;
 
+import com.gregguns.client.render.GunAnimations;
+import com.gregguns.client.render.GunRenderClient;
 import com.gregguns.client.sound.ClientGunSounds;
 import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
@@ -12,10 +14,19 @@ import com.gregguns.core.module.ModuleId;
 public final class GunsClientModule implements ClientModule {
 
     private static final ClientGunSounds SOUNDS = new ClientGunSounds();
+    private static final GunAnimations ANIMATIONS = new GunAnimations();
 
     /** @return the shooter's predicted gun sounds; client only, reached through the proxy */
     public static ClientGunSounds sounds() {
         return SOUNDS;
+    }
+
+    /**
+     * @return the gun animation hooks: {@code onShotFired}, {@code onShotEcho}, {@code onReloadStarted},
+     *         {@code onReloadCancelled}, {@code setZoom}; client only, reached through the proxy
+     */
+    public static GunAnimations animations() {
+        return ANIMATIONS;
     }
 
     @Override
@@ -26,5 +37,6 @@ public final class GunsClientModule implements ClientModule {
     @Override
     public void init() {
         // Renderers, HUD overlays and keybinds: one call per area.
+        GunRenderClient.init(ANIMATIONS);
     }
 }
