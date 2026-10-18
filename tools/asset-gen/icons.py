@@ -73,43 +73,46 @@ def icon(*names):
 
 
 # ======================================================== small gun drawers
-def pistol_small(c, slide, frame, trig=True):
-    c.rect(0, 0, 8, 2, slide)
-    c.rect(0, 3, 6, 3, frame)
-    grip(c, 1, 4, 6, frame, w=3, lean=1)
-    c.pix(9, 1, slide[DK])
-    c.pix(0, -1, slide[DK]) if False else None
+def pistol_small(c, x):
+    c.rect(0, 0, 8, 2, x.m)
+    c.rect(0, 3, 6, 3, POLY)
+    grip(c, 1, 4, 6, POLY, w=3, lean=1)
+    c.pix(9, 1, x.m[DK])
+    c.hline(2, 3, 1, x.m[DK])
 
 
-def revolver_small(c, body, gr):
+def revolver_small(c, x, body=None, gr=WOOD):
+    body = body or x.m
     c.rect(0, 0, 3, 3, body)
     c.rect(4, 0, 9, 1, body)
-    c.rect(2, -0 + 0, 2, 3, body[DK], bevel=False)
+    c.vline(2, 0, 3, body[DK])
     grip(c, 0, 4, 6, gr, w=3, lean=1)
 
 
-def mac_small(c, body, gr):
-    c.rect(1, 0, 7, 3, body)
-    c.rect(8, 1, 9, 2, body[DK])
-    c.rect(4, 4, 6, 6, gr)
-    c.pix(1, 1, body[DK])
+def mac_small(c, x):
+    c.rect(1, 0, 7, 3, x.m)
+    c.rect(8, 1, 9, 2, POLY)
+    c.rect(4, 4, 6, 6, POLY)
+    c.pix(1, 1, x.m[DK])
 
 
-def deatom_small(c, body, gr, lamp):
-    c.rect(0, 0, 7, 3, body)
-    c.rect(8, 1, 9, 2, body[DK])
-    c.pix(4, 1, lamp[HL]); c.pix(5, 1, lamp[BS])
-    grip(c, 1, 4, 6, gr, w=3, lean=1)
+def deatom_small(c, x):
+    c.rect(0, 0, 7, 3, CHROME)
+    c.rect(8, 1, 9, 2, CHROME[DK])
+    c.pix(4, 1, BLUE_G[HL])
+    c.pix(5, 1, BLUE_G[BS])
+    grip(c, 1, 4, 6, POLY, w=3, lean=1)
 
 
-def akimbo(small, top_dx=3, bot_dx=1):
-    """Compose two small guns (drawn at origin) stacked and opposed."""
-    t = Canvas(); small(t)
-    a = t.shifted(top_dx, 1)
-    b = t.flipped().shifted(bot_dx - 5, 8)
+def akimbo(small, x):
+    """Two guns offset diagonally: the front one bright, the one behind dimmed."""
+    t = Canvas()
+    small(t, x)
+    back = Canvas()
+    back.px = {p: tint(col, 0.72) + (255,) for p, col in t.shifted(0, 0).px.items()}
     c = Canvas()
-    c.paste(b)
-    c.paste(a)
+    c.paste(back.shifted(1, 7))
+    c.paste(t.shifted(5, 1))
     return c
 
 
@@ -180,7 +183,6 @@ def _(c, x):
     c.rect(7, 9, 12, 9, WOOD)
     scope(c, 5, 11, 4, BLACK, lens=(130, 200, 230), h=2)
     c.pix(9, 6, BLACK[DK]); c.pix(8, 6, x.m[LT])
-    c.pix(10, 10, x.m[DK]) if False else None
     c.pix(6, 9, x.m[DK]); c.pix(13, 6, x.m[DK])
     c.pix(10, 6, x.m[HL])                                          # bolt handle
 
@@ -350,7 +352,6 @@ def _(c, x):
     c.pix(13, 7, x.m[DK]); c.pix(13, 8, x.m[DK])
     magazine(c, 5, 10, 12, POLY, w=3)
     c.line(10, 9, 8, 13, x.m[SH]); c.line(11, 9, 13, 13, x.m[SH])  # bipod
-    c.pix(8, 14, x.m[DK]) if False else None
 
 
 @icon("lmg")
@@ -429,7 +430,6 @@ def _hammer(c, x, adv=False):
     c.rect(13, 2, 14, 4, ramp(tint(x.pal[0], .8)))
     c.rect(7, 6, 8, 13, POLY)
     c.hline(7, 8, 13, POLY[DK])
-    c.stripes([(7, y) for y in range(7, 13)], POLY[HL], 2, 1, False) if False else None
     for p in ((9, 7), (10, 8), (10, 9), (9, 10), (9, 11)):
         c.pix(p[0], p[1], RUBBER[HL] if p[1] % 2 else RUBBER[BS])
     if adv:
@@ -529,9 +529,7 @@ def _(c, x):
     stock(c, 0, 6, 3, 8, SLATE, drop=1)
     c.rect(3, 5, 10, 8, SLATE)
     c.hline(4, 9, 6, TEAL[BS])
-    c.hline(4, 9, 6, TEAL[HL]) if False else None
     c.pix(4, 6, TEAL[HL]); c.pix(5, 6, TEAL[HL])
-    c.poly([(11, 3), (13, 3), (14, 2), (14, 11), (13, 10), (11, 10)], SLATE) if False else None
     c.poly([(10, 5), (12, 5), (12, 8), (10, 8)], x.m)
     c.rect(13, 2, 14, 11, SLATE)
     c.rect(13, 4, 14, 9, TEAL[SH] and ramp((30, 150, 140)), bevel=False)
@@ -545,7 +543,6 @@ def _(c, x):
 @icon("bio_gun")
 def _(c, x):
     c.rect(3, 6, 10, 8, x.m)
-    canister(c, 3, 0, 8, 5, ramp((70, 90, 70)), GREEN_G, 0.8, cap_rp=x.m, glass=True) if False else None
     c.rect(4, 1, 8, 5, GLASS)
     c.rect(4, 3, 8, 5, GREEN_G, bevel=False)
     c.hline(4, 8, 3, GREEN_G[HL]); c.hline(4, 8, 1, x.m[LT]); c.vline(4, 1, 5, x.m[HL])
@@ -566,7 +563,6 @@ def _(c, x):
     c.rect(11, 4, 12, 9, x.m[DK] and ramp(tint(x.pal[0], 0.6)))
     c.rect(13, 5, 14, 8, ORANGE_G, bevel=False)
     c.pix(14, 6, (255, 240, 150)); c.pix(13, 6, (255, 200, 80))
-    c.rect(4, 6, 8, 7, ORANGE_G, bevel=False) if False else None
     c.hline(4, 9, 6, x.m[DK])
     c.rect(5, 10, 8, 12, POLY)
     c.pix(6, 11, ORANGE_G[BS]); c.pix(7, 11, ORANGE_G[BS])
@@ -594,7 +590,6 @@ def _(c, x):
     c.rect(10, 3, 14, 4, x.m)
     c.rect(10, 6, 14, 7, x.m)
     c.rect(10, 9, 14, 10, x.m)
-    c.vline(10, 3, 10, x.m[DK]) if False else None
     c.rect(9, 3, 9, 10, x.m[DK] and ramp(tint(x.pal[0], 0.65)), bevel=False)
     for yy in (3, 6, 9):
         c.pix(14, yy, RED_G[HL]); c.pix(14, yy + 1, RED_G[BS])
@@ -630,7 +625,6 @@ def _(c, x):
     c.hline(7, 12, 5, VIOLET_G[BS])
     c.pix(6, 5, VIOLET_G[HL]); c.pix(13, 6, VIOLET_G[HL])
     c.pix(5, 10, VIOLET_G[SH]); c.pix(6, 11, VIOLET_G[SH])
-    c.vline(9, 4, 5, ALIEN[DK]) if False else None
     c.pix(4, 5, ALIEN[SH])
 
 
@@ -679,34 +673,33 @@ def _(c, x):
 # akimbo pairs ----------------------------------------------------------
 @icon("akimbo_pistols")
 def _(c, x):
-    c.paste(akimbo(lambda t: pistol_small(t, x.m, POLY)))
+    c.paste(akimbo(pistol_small, x))
 
 
 @icon("akimbo_revolvers")
 def _(c, x):
-    c.paste(akimbo(lambda t: revolver_small(t, x.m, WOOD)))
+    c.paste(akimbo(revolver_small, x))
 
 
 @icon("akimbo_mac10s")
 def _(c, x):
-    c.paste(akimbo(lambda t: mac_small(t, x.m, POLY)))
+    c.paste(akimbo(mac_small, x))
 
 
 @icon("akimbo_deatomizer_pistols")
 def _(c, x):
-    c.paste(akimbo(lambda t: deatom_small(t, CHROME, POLY, BLUE_G)))
+    c.paste(akimbo(deatom_small, x))
 
 
 @icon("akimbo_golden_revolvers")
 def _(c, x):
-    c.paste(akimbo(lambda t: revolver_small(t, GOLD, ramp((60, 40, 30)))))
+    c.paste(akimbo(lambda t, xx: revolver_small(t, xx, GOLD, ramp((60, 40, 30))), x))
 
 
 @icon("frag_grenade")
 def _(c, x):
     c.ellipse(7.5, 8.5, 4, 5, OLIVE)
     c.hline(4, 11, 7, OLIVE[DK]); c.hline(4, 11, 10, OLIVE[DK])
-    c.vline(7, 4, 12, OLIVE[DK]); c.vline(9, 4, 12, OLIVE[SH]) if False else None
     c.rect(6, 2, 9, 3, x.m)
     c.rect(10, 3, 11, 3, x.m[HL], bevel=False)                      # spoon
     c.pix(11, 4, x.m[BS]); c.pix(11, 5, x.m[SH])
@@ -760,7 +753,6 @@ def _(c, x):
 def _(c, x):
     c.rect(1, 5, 13, 9, CARBON)
     weave(c, [(a, b) for a in range(1, 14) for b in range(5, 10)], CARBON[HL])
-    c.dither([(a, b) for a in range(1, 14) for b in (6, 8)], CARBON[LT], CARBON[BS], 1) if False else None
     c.rect(1, 4, 2, 10, x.m2)
     c.rect(12, 4, 13, 10, x.m2)
     c.pix(13, 7, BLACK[DK])
@@ -791,7 +783,6 @@ def _(c, x):
 def _(c, x):
     pl = ramp((226, 226, 218))
     c.poly([(1, 3), (5, 3), (14, 5), (14, 8), (8, 8), (5, 13), (1, 13)], pl)
-    c.rect(6, 5, 9, 6, (0, 0, 0, 0)) if False else None
     for p in ((5, 6), (6, 6), (5, 7), (6, 7)):
         c.erase(*p)
     c.rect(1, 3, 2, 13, x.m2 if len(x.pal) > 1 else x.m)
@@ -816,7 +807,6 @@ def _(c, x):
     c.pix(11, 4, RUBBER[HL])
     spring(c, 2, 12, 10, x.m2)
     c.vline(1, 9, 12, x.m[SH])
-    c.rect(13, 9, 13, 12, x.m[DK], bevel=False) if False else None
 
 
 @icon("part_receiver_iron")
@@ -862,37 +852,29 @@ def _(c, x):
     c.hline(3, 7, 12, x.m2)
 
 
-def _spring_gear_part(c, x, rp, spring_rp, screws, layout):
-    gear(c, 5, 6, 4, rp, 10)
-    gear(c, 11, 10, 3, rp, 8)
-    spring(c, 10, 13, 2, spring_rp)
-    if screws:
-        for p in ((2, 12), (4, 12), (3, 13)):
-            c.pix(p[0], p[1], rp[HL] if p[1] == 12 else rp[SH])
-        c.pix(2, 11, rp[DK]); c.pix(4, 13, rp[DK])
-
-
 @icon("part_mechanical_1")
-def _(c, x):
-    gear(c, 6, 7, 4, x.m, 10)
-    gear(c, 12, 10, 2, x.m, 8)
-    spring(c, 2, 8, 12, x.m[LT:LT + 1] * 5 if False else x.m)
-    c.pix(6, 7, x.m[DK])
+def _(c, x):                       # one big bronze gear, one small gear, short spring
+    gear(c, 6, 7, 4, x.m, 8)
+    gear(c, 12, 11, 2, x.m, 6)
+    spring(c, 2, 6, 13, x.m)
 
 
 @icon("part_mechanical_2")
-def _(c, x):
-    _spring_gear_part(c, x, x.m, x.m, True, 0)
+def _(c, x):                       # steel: twin gears, spring below, two screws
+    gear(c, 5, 5, 3, x.m, 8)
+    gear(c, 11, 8, 3, x.m, 8)
+    spring(c, 3, 8, 12, x.m)
+    c.pix(12, 13, x.m[HL])
+    c.pix(14, 12, x.m[SH])
 
 
 @icon("part_mechanical_3")
-def _(c, x):
-    gear(c, 10, 5, 3, x.m, 8)
-    gear(c, 5, 9, 4, x.m, 10)
-    spring(c, 10, 13, 12, x.m)
-    for p in ((2, 3), (3, 2), (13, 8)):
-        c.pix(p[0], p[1], x.m[HL])
-    c.pix(2, 2, x.m[DK]); c.pix(12, 8, x.m[DK])
+def _(c, x):                       # titanium: large gear + cog, vertical spring, screw
+    gear(c, 9, 6, 4, x.m, 10)
+    gear(c, 3, 11, 2, x.m, 6)
+    spring(c, 7, 12, 13, x.m)
+    c.pix(3, 3, x.m[HL])
+    c.pix(3, 4, x.m[DK])
 
 
 @icon("part_laser_focus")
@@ -940,7 +922,6 @@ def _(c, x):
     c.rect(5, 5, 10, 10, BLACK[DK], bevel=False)
     c.disc(7.5, 7.5, 2, GREEN_G)
     c.pix(7, 7, (230, 255, 230))
-    trefoil(c, 3, 11, (250, 210, 30), LEAD[DK]) if False else None
     for p in ((3, 4), (12, 4), (3, 11), (12, 11)):
         c.pix(p[0], p[1], LEAD[HL])
 
@@ -954,7 +935,6 @@ def _(c, x):
     for yy in (2, 13):
         c.hline(2, 13, yy, x.m[BS])
     c.pix(2, 2, x.m[HL]); c.pix(13, 13, x.m[DK])
-    c.hline(4, 11, 4, x.m[DK]) if False else None
     c.vline(5, 3, 12, x.m[SH]); c.vline(10, 3, 12, x.m[SH])
 
 
@@ -1010,7 +990,7 @@ def _(c, x):
     c.rect(1, 2, 14, 13, x.m)
     c.rect(2, 4, 13, 11, CARBON)
     weave(c, [(a, b) for a in range(2, 14) for b in range(4, 12)], CARBON[HL])
-    c.rect(4, 6, 11, 9, x.m2 if False else x.m)
+    c.rect(4, 6, 11, 9, x.m)
     for p in ((2, 3), (13, 3), (2, 12), (13, 12)):
         c.pix(p[0], p[1], x.m[HL])
 
@@ -1021,30 +1001,26 @@ def _(c, x):
     c.disc(7.5, 7.5, 4, ramp(tint(x.pal[0], 0.5)), bevel=False)
     for yy in (5, 7, 9):
         c.hline(5, 10, yy, x.m[LT])
-    c.disc(7.5, 7.5, 1, x.m, bevel=False) if False else None
     c.rect(6, 1, 9, 2, BLACK)
 
 
 @icon("part_nuclear_warhead")
 def _(c, x):
-    c.poly([(8, 1), (11, 4), (12, 12), (4, 12), (4, 4)], OLIVE) if False else None
     c.poly([(8, 1), (11, 4), (12, 13), (4, 13), (5, 4)], OLIVE)
     c.rect(4, 8, 12, 10, ramp((240, 200, 40)))
     c.stripes([(a, b) for a in range(4, 13) for b in range(8, 11)], (30, 30, 30), 3, 0, True)
-    c.rect(6, 13, 10, 14, x.m2 if False else BLACK)
+    c.rect(6, 13, 10, 14, BLACK)
     c.pix(7, 4, OLIVE[HL])
 
 
 @icon("part_glider_backpack")
 def _(c, x):
     c.rect(3, 3, 12, 13, CANVAS)
-    c.rect(3, 3, 12, 6, CANVAS[LT], bevel=False) if False else None
     c.hline(3, 12, 6, CANVAS[SH])
     c.vline(3, 2, 13, x.m); c.vline(12, 2, 13, x.m)
     c.hline(3, 12, 2, x.m)
     c.rect(6, 8, 9, 11, CANVAS[SH], bevel=False)
     c.hline(6, 9, 8, CANVAS[LT])
-    c.pix(7, 9, WOOD[BS]) if False else None
     c.rect(6, 1, 9, 1, x.m)
     c.pix(7, 10, BRASS[BS]); c.pix(8, 10, BRASS[BS])
 
@@ -1078,7 +1054,6 @@ def _(c, x):
 def _(c, x):
     shell(c, 2, 4, 13, RED, BRASS, w=4, base_h=3)
     shell(c, 8, 2, 11, RED, BRASS, w=4, base_h=3)
-    c.pix(3, 5, RED[HL]) if False else None
     c.hline(9, 11, 7, RED[DK])
     c.hline(3, 5, 9, RED[DK])
 
@@ -1113,9 +1088,8 @@ def _(c, x):
 def _(c, x):
     c.rect(4, 7, 11, 13, BRASS)
     c.rect(4, 9, 11, 10, RED)
-    c.poly([(6, 3), (9, 3), (11, 7), (4, 7)], x.m2 if False else ramp((120, 120, 128)))
+    c.poly([(6, 3), (9, 3), (11, 7), (4, 7)], ramp((120, 120, 128)))
     c.hline(4, 11, 13, BRASS[DK])
-    c.pix(7, 12, BRASS[HL]) if False else None
     c.pix(7, 4, (200, 200, 210))
 
 
@@ -1126,8 +1100,7 @@ def _(c, x):
     c.hline(6, 9, 6, x.m[DK])
     c.poly([(6, 8), (3, 12), (3, 14), (6, 12)], RED)
     c.poly([(9, 8), (12, 12), (12, 14), (9, 12)], RED)
-    c.rect(6, 12, 9, 13, x.m[DK] if False else BLACK)
-    c.pix(8, 14, ORANGE_G[BS]) if False else None
+    c.rect(6, 12, 9, 13, BLACK)
 
 
 @icon("ammo_rocket_nuke")
@@ -1147,7 +1120,6 @@ def _(c, x):
     c.rect(5, 7, 10, 10, ORANGE_G, bevel=False)
     c.vline(5, 7, 10, ORANGE_G[HL]); c.hline(5, 10, 7, ORANGE_G[LT]); c.vline(10, 7, 10, ORANGE_G[SH])
     c.vline(4, 5, 12, tan[DK]); c.vline(11, 5, 12, tan[DK])
-    c.line(7, 4, 9, 1, BRASS[BS]); c.pix(9, 0, ORANGE_G[HL]) if False else None
     c.pix(9, 1, ORANGE_G[HL])
 
 
@@ -1234,9 +1206,7 @@ for _name, _kind in (("mag_9mm_pistol", "9mm"), ("mag_smg", "smg"), ("mag_assaul
 # ======================================================== tanks and cells
 def _tank_canister(c, x, body, fill, full, cap=None):
     canister(c, 3, 1, 12, 14, body, fill if full else None, 0.8, cap_rp=cap or x.m)
-    c.pix(7, 0, x.m[HL]) if False else None
     c.rect(6, 0, 9, 0, x.m[LT], bevel=False)
-    c.rect(11, 4, 11, 4, body[HL]) if False else None
 
 
 @icon("tank_fuel")
@@ -1316,8 +1286,6 @@ def _(c, x):
     c.ellipse(7.5, 8.5, 5, 4, WHITE)
     c.ellipse(7.5, 8.5, 2, 1, WHITE[SH] and ramp((205, 205, 212)))
     c.pix(7, 8, WHITE[DK]); c.pix(8, 8, WHITE[SH])
-    c.hline(4, 11, 6, WHITE[SH]); c.hline(4, 11, 11, WHITE[SH]) if False else None
-    c.rect(7, 4, 8, 5, RED[BS], bevel=False) if False else None
     c.hline(5, 10, 10, WHITE[SH])
     c.poly([(11, 8), (14, 10), (14, 13), (11, 11)], WHITE)
     c.rect(6, 4, 9, 4, RED[BS], bevel=False)
@@ -1328,11 +1296,8 @@ def _(c, x):
 def _(c, x):
     c.rect(2, 4, 13, 13, ramp((240, 240, 244)))
     c.rect(5, 1, 10, 3, ramp((200, 200, 208)))
-    c.rect(6, 2, 9, 3, (0, 0, 0, 0)) if False else None
-    c.hline(6, 9, 2, (0, 0, 0)) if False else None
     c.rect(6, 2, 9, 2, ramp((140, 140, 150))[SH], bevel=False)
     cross(c, 7, 8, RED[BS], 2)
-    cross(c, 8, 8, RED[SH], 2) if False else None
     c.hline(2, 13, 6, (200, 200, 208)); c.pix(3, 6, (160, 160, 168)); c.pix(12, 6, (160, 160, 168))
     c.vline(8, 6, 10, RED[BS])
     c.hline(5, 9, 8, RED[BS])
@@ -1385,8 +1350,6 @@ def _(c, x):
     c.rect(9, 7, 10, 8, BLACK)
     c.rect(2, 4, 2, 5, BLACK[BS], bevel=False)
     c.rect(2, 10, 2, 11, BLACK[BS], bevel=False)
-    c.hline(4, 11, 7, x.m[DK]) if False else None
-    c.disc(7.5, 7.5, 1, x.m, bevel=True) if False else None
     c.hline(5, 7, 5, x.m[LT])
 
 
@@ -1447,7 +1410,6 @@ def _(c, x):
 @icon("turret_armor_aluminium")
 def _(c, x):
     _turret(c, x)
-    c.hline(4, 11, 8, x.m[DK]); c.hline(4, 11, 9, x.m[HL]) if False else None
 
 
 @icon("turret_armor_carbon")
@@ -1516,7 +1478,6 @@ def _(c, x):
     gm = ramp((150, 154, 160))
     c.poly([(2, 4), (13, 4), (13, 9), (10, 13), (5, 13), (2, 9)], gm)
     c.rect(5, 8, 10, 11, BLACK, bevel=False)
-    c.hline(5, 10, 9, gm[HL]) if False else None
     c.rect(6, 9, 9, 10, x.m[SH], bevel=False)
     c.rect(12, 9, 14, 11, x.m)                                # hose port
     c.line(13, 12, 14, 14, BLACK[BS])
@@ -1542,7 +1503,6 @@ def _(c, x):
     c.rect(2, 11, 13, 13, x.m)
     c.vline(5, 5, 13, x.m[DK]); c.vline(10, 5, 13, x.m[DK])
     c.hline(2, 13, 13, x.m[DK])
-    c.rect(1, 2, 2, 5, WOOD) if False else None
     c.pix(7, 12, BRASS[BS]); c.pix(8, 12, BRASS[BS])
     c.vline(3, 3, 5, x.m[BS]); c.vline(12, 3, 5, x.m[BS])
 
@@ -1554,7 +1514,7 @@ def _(c, x):
     c.hline(5, 10, 4, x.m[HL])
     c.rect(2, 3, 2, 8, BLACK[BS], bevel=False); c.rect(13, 3, 13, 8, BLACK[BS], bevel=False)
     for ox in (3, 9):
-        c.poly([(ox, 10), (ox + 4, 10), (ox + 3, 14), (ox + 1, 14)], x.m2 if False else ramp(tint(x.pal[0], 0.7)))
+        c.poly([(ox, 10), (ox + 4, 10), (ox + 3, 14), (ox + 1, 14)], ramp(tint(x.pal[0], 0.7)))
         c.pix(ox + 1, 13, ORANGE_G[BS]); c.pix(ox + 2, 13, ORANGE_G[SH])
     c.pix(5, 7, RED[BS]); c.pix(10, 7, GREEN_G[BS])
 
@@ -1566,12 +1526,12 @@ def _(c, x):
     c.hline(4, 11, 4, (200, 255, 200)); c.pix(4, 5, (160, 255, 170))
     c.hline(4, 11, 7, BLACK[DK])
     c.stripes([(a, b) for a in range(5, 11) for b in range(9, 13)], BLACK[HL], 2, 0, False)
-    c.pix(3, 2, x.m2[HL]) if False else c.pix(3, 2, BLACK[HL])
+    c.pix(3, 2, BLACK[HL])
 
 
 @icon("anti_gravity_device")
 def _(c, x):
-    c.rect(2, 2, 13, 13, x.m if False else ramp((130, 134, 142)))
+    c.rect(2, 2, 13, 13, ramp((130, 134, 142)))
     c.rect(2, 2, 13, 3, ramp((150, 154, 162)))
     c.disc(7.5, 7.5, 3, CYAN)
     c.pix(6, 6, (230, 255, 255)); c.pix(7, 6, (200, 252, 255))

@@ -7254,9 +7254,9 @@
   "kind": "block",
   "path": "textures/blocks/machines/repair_bench/OVERLAY_SIDE_ACTIVE.png",
   "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
+  "height": 64,
+  "frames": 4,
+  "frametime": 4,
   "duration_s": null,
   "channels": null,
   "sample_rate": null,
@@ -7266,7 +7266,7 @@
    "#705030",
    "#909090"
   ],
-  "brief": "Repair Bench overlay, side active: plain scratched metal.",
+  "brief": "Repair Bench overlay, side active: plain scratched metal; the clamp arm raises and lowers with a status lamp (4 frames).",
   "footprint_ref": "textures/blocks/repairbench_textures.png (cube atlas, role reference only)",
   "priority": "P3"
  },
@@ -7296,9 +7296,9 @@
   "kind": "block",
   "path": "textures/blocks/machines/repair_bench/OVERLAY_TOP_ACTIVE.png",
   "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
+  "height": 64,
+  "frames": 4,
+  "frametime": 4,
   "duration_s": null,
   "channels": null,
   "sample_rate": null,
@@ -7308,7 +7308,7 @@
    "#705030",
    "#909090"
   ],
-  "brief": "Repair Bench overlay, top active: pegboard with tools.",
+  "brief": "Repair Bench overlay, top active: pegboard with tools; a scanning light bar sweeps the bench top (4 frames).",
   "footprint_ref": "textures/blocks/repairbench_textures.png (cube atlas, role reference only)",
   "priority": "P3"
  },
@@ -7351,8 +7351,30 @@
    "#30A030",
    "#3050C0"
   ],
-  "brief": "Camo Bench overlay, front: three paint canisters (red, green, blue). Cosmetic machine, no active state.",
+  "brief": "Camo Bench overlay, front: three paint canisters (red, green, blue). Cosmetic machine.",
   "footprint_ref": "textures/blocks/paintmachine_textures.png (cube atlas, role reference only)",
+  "priority": "P3"
+ },
+ {
+  "id": "block.machine.camo_bench.overlay_front_active",
+  "kind": "block",
+  "path": "textures/blocks/machines/camo_bench/OVERLAY_FRONT_ACTIVE.png",
+  "width": 16,
+  "height": 64,
+  "frames": 4,
+  "frametime": 4,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#515150",
+   "#C03030",
+   "#30A030",
+   "#3050C0"
+  ],
+  "brief": "Camo Bench overlay, front active: status LEDs step along the canister row and the nozzle puffs paint (4-frame vertical strip at 4 ticks per frame).",
+  "footprint_ref": "(new, polish pass)",
   "priority": "P3"
  },
  {
@@ -7373,7 +7395,7 @@
    "#30A030",
    "#3050C0"
   ],
-  "brief": "Camo Bench overlay, side: plain mottled metal. Cosmetic machine, no active state.",
+  "brief": "Camo Bench overlay, side: plain mottled metal. Cosmetic machine.",
   "footprint_ref": "textures/blocks/paintmachine_textures.png (cube atlas, role reference only)",
   "priority": "P3"
  },
@@ -7395,8 +7417,30 @@
    "#30A030",
    "#3050C0"
   ],
-  "brief": "Camo Bench overlay, top: grey housing with lamps, louvred vent and rollers. Cosmetic machine, no active state.",
+  "brief": "Camo Bench overlay, top: grey housing with lamps, louvred vent and rollers. Cosmetic machine.",
   "footprint_ref": "textures/blocks/paintmachine_textures.png (cube atlas, role reference only)",
+  "priority": "P3"
+ },
+ {
+  "id": "block.machine.camo_bench.overlay_top_active",
+  "kind": "block",
+  "path": "textures/blocks/machines/camo_bench/OVERLAY_TOP_ACTIVE.png",
+  "width": 16,
+  "height": 64,
+  "frames": 4,
+  "frametime": 4,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#515150",
+   "#C03030",
+   "#30A030",
+   "#3050C0"
+  ],
+  "brief": "Camo Bench overlay, top active: a scanning light bar sweeps the stencil tray (4-frame vertical strip at 4 ticks per frame).",
+  "footprint_ref": "(new, polish pass)",
   "priority": "P3"
  },
  {
@@ -7417,7 +7461,7 @@
    "#30A030",
    "#3050C0"
   ],
-  "brief": "Camo Bench overlay, bottom: bare plate. Cosmetic machine, no active state.",
+  "brief": "Camo Bench overlay, bottom: bare plate. Cosmetic machine.",
   "footprint_ref": "textures/blocks/paintmachine_textures.png (cube atlas, role reference only)",
   "priority": "P3"
  },
@@ -7686,9 +7730,9 @@
   "kind": "block",
   "path": "textures/blocks/machines/gun_mount_hatch/OVERLAY_FRONT_ACTIVE.png",
   "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
+  "height": 64,
+  "frames": 4,
+  "frametime": 3,
   "duration_s": null,
   "channels": null,
   "sample_rate": null,
@@ -7697,7 +7741,7 @@
    "#505050",
    "#E0E0E0"
   ],
-  "brief": "Gun Mount Hatch overlay (Rampart hatch, MV-IV, tier tint from GT hatch casing): gun-clamp cradle with a gun silhouette locked in.",
+  "brief": "Gun Mount Hatch overlay (Rampart hatch, MV-IV, tier tint from GT hatch casing): gun-clamp cradle with a gun silhouette locked in; clamp lamps chase around the ring (4 frames, 3 ticks per frame).",
   "footprint_ref": "(new)",
   "priority": "P3"
  },
@@ -9659,6 +9703,66 @@
   "priority": "P3"
  },
  {
+  "id": "gui.scope_sniper",
+  "kind": "gui",
+  "path": "textures/gui/scopes/sniper.png",
+  "width": 512,
+  "height": 512,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#000000",
+   "#303030"
+  ],
+  "brief": "Sniper scope overlay (sniper rifles, bolt-action and AS50 style): 512x512 RGBA, transparent circular lens with fine crosshair and mil-dots, black surround with soft vignette ring. Stretched to the screen height.",
+  "footprint_ref": "Sniper overlay (ScreenEffect.sniperScope), size/shape not copied",
+  "priority": "P2"
+ },
+ {
+  "id": "gui.scope_assault",
+  "kind": "gui",
+  "path": "textures/gui/scopes/assault.png",
+  "width": 512,
+  "height": 512,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#080A0A",
+   "#FF281E"
+  ],
+  "brief": "Assault / reflex scope overlay (rifles with a zoom toggle): 512x512 RGBA, smaller transparent view circle in a thick dark housing, red chevron reticle with drop ticks.",
+  "footprint_ref": "(new, no Techguns GUI)",
+  "priority": "P2"
+ },
+ {
+  "id": "gui.scope_energy",
+  "kind": "gui",
+  "path": "textures/gui/scopes/energy.png",
+  "width": 512,
+  "height": 512,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#40E0FF",
+   "#000A10"
+  ],
+  "brief": "Energy / tech scope overlay (laser, pulse and plasma weapons): 512x512 RGBA, alpha-blended cyan HUD brackets, ring reticle with ticks, scanline vignette, transparent centre.",
+  "footprint_ref": "techScope overlay (alpha-blended), design only",
+  "priority": "P2"
+ },
+ {
   "id": "particle.muzzleflash2",
   "kind": "particle",
   "path": "textures/fx/muzzleflash2.png",
@@ -10097,7 +10201,7 @@
   "kind": "particle",
   "path": "textures/fx/nukebeam.png",
   "width": 128,
-  "height": 1088,
+  "height": 2176,
   "frames": 17,
   "frametime": 2,
   "duration_s": null,
@@ -10108,7 +10212,7 @@
    "#FFD040",
    "#B06020"
   ],
-  "brief": "FX sprite (1x17 strip of 128x64, 17 frames): horizontal nuclear plasma band, 17 frames, one frame per 2 ticks. Painted from scratch; additive sheets are black-background, alpha sheets transparent.",
+  "brief": "FX sprite (1x17 strip of 128x128 square frames (re-laid out from 128x64 frames; the beam band sits in the middle rows), 17 frames): horizontal nuclear plasma band, 17 frames, one frame per 2 ticks. Painted from scratch; additive sheets are black-background, alpha sheets transparent.",
   "footprint_ref": "textures/fx/nukebeam.png",
   "priority": "P3"
  },

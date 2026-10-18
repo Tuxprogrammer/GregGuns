@@ -47,31 +47,31 @@
 <text x="60" y="625" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" font-weight="normal" fill="#9fb0bf" text-anchor="start" >Stone bullets (Steam)</text>
 <rect x="415" y="164" width="320" height="66" rx="8" fill="#232e3a" />
 <text x="431" y="190" font-family="Consolas, 'Courier New', monospace" font-size="14.5" font-weight="600" fill="#3fd0ff" text-anchor="start" >round.&lt;Material&gt;</text>
-<text x="431" y="210" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Bullet slugs</text>
-<text x="431" y="225" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: GT lathe/bender maps</text>
+<text x="431" y="210" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Bullet slug, 1/9 ingot</text>
+<text x="431" y="225" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: Lathe, from a nugget</text>
 <rect x="415" y="236" width="320" height="66" rx="8" fill="#232e3a" />
 <text x="431" y="262" font-family="Consolas, 'Courier New', monospace" font-size="14.5" font-weight="600" fill="#3fd0ff" text-anchor="start" >foil.&lt;Material&gt;</text>
-<text x="431" y="282" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Thin metal for casings</text>
-<text x="431" y="297" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: GT lathe/bender maps</text>
+<text x="431" y="282" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Case, 1/4 ingot</text>
+<text x="431" y="297" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: Bending Machine</text>
 <rect x="415" y="308" width="320" height="66" rx="8" fill="#232e3a" />
 <text x="431" y="334" font-family="Consolas, 'Courier New', monospace" font-size="14.5" font-weight="600" fill="#3fd0ff" text-anchor="start" >itemCasing.&lt;Material&gt;</text>
-<text x="431" y="354" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Heavy casings (high calibre)</text>
-<text x="431" y="369" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: GT recipes</text>
+<text x="431" y="354" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Large case, 1/2 ingot (AS50)</text>
+<text x="431" y="369" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: Cutting Machine, Extruder, Alloy Smelter</text>
 <rect x="415" y="380" width="320" height="66" rx="8" fill="#232e3a" />
 <text x="431" y="406" font-family="Consolas, 'Courier New', monospace" font-size="14.5" font-weight="600" fill="#3fd0ff" text-anchor="start" >dust.Gunpowder / dust.TNT</text>
-<text x="431" y="426" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Propellant and charge</text>
-<text x="431" y="441" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: GT recipes</text>
+<text x="431" y="426" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Vanilla gunpowder / TNT dust</text>
+<text x="431" y="441" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: GT dust recipes</text>
 <rect x="415" y="452" width="320" height="66" rx="8" fill="#232e3a" />
 <text x="431" y="478" font-family="Consolas, 'Courier New', monospace" font-size="14.5" font-weight="600" fill="#3fd0ff" text-anchor="start" >plate + springSmall</text>
-<text x="431" y="498" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Magazine bodies</text>
-<text x="431" y="513" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: GT recipes</text>
+<text x="431" y="498" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Magazine bodies and springs</text>
+<text x="431" y="513" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: GT plate and spring recipes</text>
 <rect x="415" y="524" width="320" height="66" rx="8" fill="#232e3a" />
 <text x="431" y="550" font-family="Consolas, 'Courier New', monospace" font-size="14.5" font-weight="600" fill="#3fd0ff" text-anchor="start" >part_mechanical_2 / _3</text>
 <text x="431" y="570" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="normal" fill="#eaf0f5" text-anchor="start" >Feed mechanism part</text>
-<text x="431" y="585" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: Assembler (RC-11)</text>
-<text x="417" y="602" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="normal" fill="#9fb0bf" text-anchor="start" >Registered in GT's own lathe,</text>
-<text x="417" y="618" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="normal" fill="#9fb0bf" text-anchor="start" >bender and wiremill maps.</text>
-<text x="417" y="634" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="normal" fill="#9fb0bf" text-anchor="start" >GregGuns adds no casing item.</text>
+<text x="431" y="585" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="normal" fill="#9fb0bf" text-anchor="start" >made by: Assembler (RC-11)</text>
+<text x="417" y="602" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="normal" fill="#9fb0bf" text-anchor="start" >Made by GT's own recipes.</text>
+<text x="417" y="618" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="normal" fill="#9fb0bf" text-anchor="start" >Ammo itself: GregGuns Ammo Press</text>
+<text x="417" y="634" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="normal" fill="#9fb0bf" text-anchor="start" >(gregguns.ammoPress, per 0011).</text>
 <rect x="810" y="164" width="380" height="200" rx="10" fill="#232e3a" stroke="#ff8a1f" stroke-width="2" />
 <text x="828" y="198" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="700" fill="#eaf0f5" text-anchor="start" >Ammo Press</text>
 <text x="828" y="220" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13.5" font-weight="normal" fill="#9fb0bf" text-anchor="start" >Single block, animated ram and belt</text>

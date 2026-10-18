@@ -11,3 +11,6 @@ gui.advanced_explosive_charge,src/main/resources/assets/gregguns/textures/gui/ad
 gui.storage_chest,src/main/resources/assets/gregguns/textures/gui/storage_chest.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
 gui.multiblock_widgets,src/main/resources/assets/gregguns/textures/gui/multiblock_widgets.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
 gui.gun_mount_hatch,src/main/resources/assets/gregguns/textures/gui/gun_mount_hatch.png,tools/asset-gen/gui.py,none,Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites,MIT,2026-10-18
+gui.scope_sniper,src/main/resources/assets/gregguns/textures/gui/scopes/sniper.png,tools/asset-gen/gui.py,none,Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle,MIT,2026-10-18
+gui.scope_assault,src/main/resources/assets/gregguns/textures/gui/scopes/assault.png,tools/asset-gen/gui.py,none,Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle,MIT,2026-10-18
+gui.scope_energy,src/main/resources/assets/gregguns/textures/gui/scopes/energy.png,tools/asset-gen/gui.py,none,Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle,MIT,2026-10-18

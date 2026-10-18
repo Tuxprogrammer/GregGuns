@@ -285,6 +285,44 @@ def make_gif(results):
                 optimize=False, disposal=1)
 
 
+# ---------------------------------------------------------------- verification
+GRIDS = {  # particle sheets laid out as grids: (cell, columns, frames)
+    "muzzleflash2": (64, 4, 8), "muzzleflash4x4": (64, 4, 10), "explosion": (96, 5, 20), "fireblast": (102, 5, 20),
+    "dustclouds02": (85, 3, 9), "largesmoke": (256, 2, 4), "flamethrower": (128, 4, 16), "flamethrower2": (128, 4, 16),
+    "flamethrower_a": (128, 4, 16), "alienflare": (128, 4, 14), "blasterflare01": (128, 4, 14),
+    "teslaflare01": (128, 4, 14), "laserflare02": (128, 4, 7), "blobs": (128, 4, 16), "splat": (128, 3, 6),
+    "blood4x4": (128, 2, 4), "impact": (128, 2, 4), "muzzleflash_blue": (64, 4, 8), "nukebeamflare": (128, 4, 16),
+    "sonicwave4x4": (256, 4, 16), "nukebeam": (128, 1, 17),
+}
+
+
+def verify(results) -> list:
+    """Frame-border checks. Strips must be square frames stacked exactly; grid particle sheets must have no
+    light or opacity on the outer ring of any cell (nothing bleeds into a neighbour under linear filtering)."""
+    problems = []
+    for spec, img in results:
+        fr = spec["frames"]
+        a = np.asarray(img)
+        if spec["kind"] == "block" and fr > 1:
+            if img.height != img.width * fr:
+                problems.append(f"{spec['id']}: strip {img.size} is not {fr} square frames")
+        if spec["kind"] == "particle":
+            name = spec["id"].split(".", 1)[1]
+            if name == "nukebeam" and img.size != (128, 128 * 17):
+                problems.append(f"{name}: not square frames")
+            if name in GRIDS:
+                cell, cols, n = GRIDS[name]
+                additive = _is_additive(img)
+                for k in range(n):
+                    x0, y0 = (k % cols) * cell, (k // cols) * cell
+                    c = a[y0:y0 + cell, x0:x0 + cell]
+                    ring = np.concatenate([c[0], c[-1]] + ([] if name == "nukebeam" else [c[:, 0], c[:, -1]]))
+                    worst = int(ring[:, :3].max()) if additive else int(ring[:, 3].max())
+                    if worst > (10 if additive else 6):
+                        problems.append(f"{name}: frame {k} edge value {worst}")
+    return problems
+
+
 # ---------------------------------------------------------------- main
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -321,6 +359,8 @@ def main() -> None:
         if not args.no_preview:
             make_previews(results)
             make_gif(results)
+    for msg in verify(results):
+        print("BORDER:", msg)
     print("generated", sum(counts.values()), dict(sorted(counts.items())))
 
 

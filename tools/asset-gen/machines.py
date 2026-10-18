@@ -432,25 +432,31 @@ def repair_front(f: int | None) -> Canvas:
     return c
 
 
-def repair_side(lit: bool = False) -> Canvas:
+def repair_side(f: int | None = None) -> Canvas:
+    """Clamp arm. Active (f=0..3): the arm lowers onto the work and lifts again, status lamp changes colour."""
     c = Canvas(16)
-    # clamp arm: dark steel bracket with a wooden screw handle
-    c.rect(2, 2, 7, 14, OUT)
+    off = 0 if f is None else [0, 1, 2, 1][f]
+    c.rect(2, 2, 7, 14, OUT)                         # fixed column
     c.rect(3, 3, 6, 13, MD)
     c.vline(3, 3, 13, LT)
-    c.rect(2, 2, 12, 6, OUT)
-    c.rect(3, 3, 11, 5, MD)
-    c.hline(3, 11, 3, LT)
-    c.rect(9, 5, 12, 11, OUT)                        # screw
-    c.rect(10, 6, 11, 11, LT)
-    c.rect(8, 11, 14, 14, OUT)                       # handle
+    c.rect(2, 2 + off, 12, 6 + off, OUT)             # moving arm
+    c.rect(3, 3 + off, 11, 5 + off, MD)
+    c.hline(3, 11, 3 + off, LT)
+    c.rect(9, 5 + off, 12, 11, OUT)                  # screw
+    c.rect(10, 6 + off, 11, 11, LT)
+    c.rect(8, 11, 14, 14, OUT)                       # handle (fixed)
     c.rect(9, 12, 13, 13, WOOD_L)
     c.px(9, 12, WOOD)
-    c.px(13, 3, AMB if lit else AMB_D)
+    if f is None:
+        c.px(13, 3, AMB_D)
+    else:
+        c.px(13, 3, [AMB, AMB_L, hx("#44ff66"), AMB_L][f])
+        c.px(13, 2, [AMB_D, AMB, hx("#1f9a3a"), AMB][f])
     return c
 
 
-def repair_top(lit: bool = False) -> Canvas:
+def repair_top(f: int | None = None) -> Canvas:
+    """Bench top. Active (f=0..3): a pale scanning light bar sweeps across the planks, LED blinks."""
     c = Canvas(16)
     c.rect(1, 1, 15, 15, OUT)
     c.rect(2, 2, 14, 14, WOOD)
@@ -464,11 +470,19 @@ def repair_top(lit: bool = False) -> Canvas:
     c.hline(10, 12, 3, HI)
     c.px(10, 4, LT)
     c.px(12, 4, LT)
-    c.px(3, 12, hx("#44ff66") if lit else hx("#1f6a33"))
+    if f is None:
+        c.px(3, 12, hx("#1f6a33"))
+        return c
+    c.px(3, 12, hx("#44ff66") if f % 2 == 0 else hx("#1f6a33"))
+    sx = 3 + f * 3
+    for y in range(2, 14):                           # scan bar with a soft trailing edge
+        c.blend(sx, y, hx("#cfeaff"), 170)
+        c.blend(sx - 1, y, hx("#9ac8ff"), 70)
+        c.blend(sx + 1, y, hx("#9ac8ff"), 40)
     return c
 
 
-def camo_front() -> Canvas:
+def camo_front(f: int | None = None) -> Canvas:
     c = Canvas(16)
     c.rect(1, 1, 15, 15, OUT)
     c.rect(2, 2, 14, 14, hx("#3a3b40"))
@@ -484,6 +498,14 @@ def camo_front() -> Canvas:
     c.hline(12, 14, 6, hx("#f06060"))
     c.rect(12, 3, 14, 5, OUT)
     c.px(12, 4, HI)
+    if f is not None:                                # status LEDs chase along the base; nozzle puffs paint
+        cols = ["#c03030", "#3c8a28", "#b49664", "#e6ebef"]
+        for i, col in enumerate(cols):
+            c.px(3 + i * 2, 14, hx(col) if i == f else shade(hx(col), 0.3))
+        if f in (1, 2):
+            c.blend(13, 2, hx("#f06060"), 200 if f == 1 else 110)
+            c.blend(12, 1, hx("#f06060"), 120 if f == 1 else 60)
+            c.blend(14, 1, hx("#f06060"), 90)
     return c
 
 
@@ -503,7 +525,7 @@ def camo_side() -> Canvas:
     return c
 
 
-def camo_top() -> Canvas:
+def camo_top(f: int | None = None) -> Canvas:
     c = Canvas(16)
     c.rect(1, 1, 15, 15, OUT)
     c.rect(2, 2, 14, 14, hx("#3f4047"))
@@ -513,6 +535,11 @@ def camo_top() -> Canvas:
         c.rect(x, y, x + 5, y + 5, OUT)
         c.rect(x + 1, y + 1, x + 4, y + 4, hx(col))
         c.px(x + 1, y + 1, shade(hx(col), 1.4))
+    if f is not None:                                # scanning light bar over the stencil tray
+        sy = 3 + f * 3
+        for x in range(2, 14):
+            c.blend(x, sy, hx("#ffffff"), 150)
+            c.blend(x, sy + 1, hx("#ffffff"), 55)
     return c
 
 
@@ -658,7 +685,7 @@ def rampart_front(f: int | None, glow: bool = False) -> Canvas:
     return c
 
 
-def hatch_front(lit: bool) -> Canvas:
+def hatch_front(lit: bool, f: int | None = None) -> Canvas:
     c = Canvas(16)
     c.disc(8, 8, 7, OUT)
     c.disc(8, 8, 6.2, MD)
@@ -673,9 +700,13 @@ def hatch_front(lit: bool) -> Canvas:
         x = 8 + round(6.0 * np.cos(k * np.pi / 2 + np.pi / 4))
         y = 8 + round(6.0 * np.sin(k * np.pi / 2 + np.pi / 4))
         c.px(x, y, OUT)
+        if f is not None:                            # clamp lamps chase around the ring
+            c.px(x, y, AMB_L if k == f else AMB_D)
+            if k == f:
+                c.blend(x + (1 if x < 8 else -1), y, AMB, 120)
     if lit:
         for (x, y) in ((7, 7), (8, 7)):
-            c.px(x, y, mix(AMB, WHITE, 0.3))
+            c.px(x, y, mix(AMB, WHITE, 0.3) if f is None or f % 2 == 0 else AMB)
     return c
 
 
@@ -712,12 +743,15 @@ def frames_for(machine: str, part: str, n: int) -> list:
         if base == "front":
             return [repair_front(i if active else None) for i in fr]
         if base == "side":
-            return [repair_side(active)]
+            return [repair_side(i if active else None) for i in fr]
         if base == "top":
-            return [repair_top(active)]
+            return [repair_top(i if active else None) for i in fr]
         return [bottom_plate()]
     if machine == "camo_bench":
-        return [{"front": camo_front, "side": camo_side, "top": camo_top}.get(base, bottom_plate)()]
+        fn = {"front": camo_front, "side": camo_side, "top": camo_top}.get(base, bottom_plate)
+        if base in ("front", "top"):
+            return [fn(i if active else None) for i in fr]
+        return [fn()]
     if machine == "ammunition_works":
         return [works_front(i if active else None, glow) for i in fr]
     if machine == "retort":
@@ -727,5 +761,5 @@ def frames_for(machine: str, part: str, n: int) -> list:
     if machine == "rampart":
         return [rampart_front(i if active else None, glow) for i in fr]
     if machine == "gun_mount_hatch":
-        return [hatch_front(active)]
+        return [hatch_front(active, i if active else None) for i in fr]
     raise KeyError(f"{machine}.{part}")

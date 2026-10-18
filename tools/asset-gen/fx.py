@@ -56,6 +56,23 @@ def tint(col: str, i):
     return base + white
 
 
+def edge_fade(fr, frac=0.1):
+    """Fade a cell to nothing over its outer 10 percent (and zero the outermost 2 px) so animated grid
+    sheets never bleed light or opacity into the neighbouring cell."""
+    h, w = fr.shape[:2]
+    yy = np.minimum(np.arange(h), h - 1 - np.arange(h))[:, None].astype(F32)
+    xx = np.minimum(np.arange(w), w - 1 - np.arange(w))[None, :].astype(F32)
+    d = np.minimum(yy, xx)
+    m = np.clip((d - 1.5) / max(frac * min(h, w), 1), 0, 1)
+    m = m * m * (3 - 2 * m)
+    out = fr.astype(F32).copy()
+    if fr.shape[2] == 4:
+        out[..., 3] = out[..., 3] * m
+    else:
+        out = out * m[..., None]
+    return out
+
+
 def sheet(size: int, cell: int, cols: int, frames, additive: bool, count: int | None = None, h: int | None = None):
     """Assemble frame arrays into a sheet. frames: list of (cell,cell,4 or 3) float arrays 0..255."""
     H = size if h is None else h
@@ -65,6 +82,8 @@ def sheet(size: int, cell: int, cols: int, frames, additive: bool, count: int | 
     for idx, fr in enumerate(frames):
         cx, cy = (idx % cols) * cell, (idx // cols) * cell
         fh, fw = fr.shape[0], fr.shape[1]
+        if len(frames) > 1:
+            fr = edge_fade(fr)
         if fr.shape[2] == 3:
             out[cy:cy + fh, cx:cx + fw, :3] = fr
             out[cy:cy + fh, cx:cx + fw, 3] = 255
@@ -604,7 +623,8 @@ def nukebeam(rng):
         outer = np.exp(-((d / (0.5 + 0.12 * n1)) ** 2)) * (0.45 + 0.5 * n2)
         i = np.clip(core * 1.05 + outer * 0.6, 0, 1)
         rgb = heat_ramp(i, [(0, "#000000"), (0.25, "#6a3010"), (0.5, "#b06020"), (0.8, "#ffd040"), (1, "#ffffff")])
-        frames.append(rgb)
+        pad = np.zeros(((w - h) // 2, w, 3), F32)          # square frame: band in the middle, black above/below
+        frames.append(np.concatenate([pad, rgb, pad], 0))
     img = np.concatenate(frames, 0)
     out = np.dstack([img, np.full(img.shape[:2], 255, F32)])
     return Image.fromarray(np.clip(np.rint(out), 0, 255).astype(np.uint8), "RGBA")
@@ -688,6 +708,7 @@ def laser_deathfx(rng):
 
 
 def bio(rng):
+    """Tileable mottled slime: wrapped cell membranes, glossy nuclei, spore specks."""
     n = 64
     a = tile_noise(n, rng, 4)
     b = tile_noise(n, rng, 8)
@@ -696,8 +717,18 @@ def bio(rng):
     cols = [hx("#2c7a1c"), hx("#3d9a28"), hx("#5db049"), hx("#82cc5c")]
     idx = np.clip((f * 4 * 1.05).astype(int), 0, 3)
     rgb = np.array(cols, F32)[idx]
-    blobs_m = (tile_noise(n, rng, 5) > 0.82)
-    rgb = np.where(blobs_m[..., None], np.array(hx("#b8e890"), F32), rgb)
+    d1, d2 = _wrap_voronoi(n, rng, 11)
+    membrane = (d2 - d1) < 1.6                              # dark cell walls
+    rgb = np.where(membrane[..., None], np.array(hx("#1c5a14"), F32), rgb)
+    wall_hi = ((d2 - d1) >= 1.6) & ((d2 - d1) < 2.6)        # lit inner lip of each cell
+    rgb = np.where(wall_hi[..., None], rgb * 0.82, rgb)
+    nuc = d1 < 3.2                                           # nucleus: darker core with a glossy spot
+    rgb = np.where(nuc[..., None], np.array(hx("#256c1a"), F32) + 18 * (d1 < 2.2)[..., None], rgb)
+    # gloss highlight on the upper-left of each nucleus: nearest point direction is unknown, so use noise gates
+    gate = tile_noise(n, rng, 10) > 0.74
+    rgb = np.where((nuc & gate)[..., None], np.array(hx("#c8f6a0"), F32), rgb)
+    specks = tile_noise(n, rng, 20) > 0.86
+    rgb = np.where((specks & ~membrane)[..., None], np.array(hx("#b8e890"), F32), rgb)
     return sheet(n, n, 1, [rgb], False)
 
 
@@ -710,7 +741,7 @@ def heatray(rng):
     half = 0.38 * (1 - t) ** 0.9
     half = np.where(V > 0.75, 0, half)
     d = np.abs(U + 0.12 * np.sin(t * 5) * t + (nz - 0.5) * 0.15 * t)
-    body = smooth(half, half * 0.3, d) * (V < 0.78)
+    body = smooth(half, half * 0.3, d) * (half > 0.01) * (V < 0.78)
     head = smooth(0.4, 0.15, np.sqrt(U * U + (V - 0.38) ** 2))
     i = np.clip(np.maximum(body * (1 - t ** 2), head) * (0.75 + 0.5 * nz), 0, 1)
     i = i * smooth(0.98, 0.8, np.abs(V)) * smooth(0.98, 0.8, np.abs(U))

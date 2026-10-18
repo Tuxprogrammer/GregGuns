@@ -15,7 +15,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 ## Model textures
 
 ### entity.bullet
-- two sprites: brass capsule tracer y=5..10, orange twin y=20..25 (both x=6..25, tip at +x).
+- two sprites: brass tracer at y=5..10, orange twin y=20..25 (capsule x=9..26, tip +x, fading trail x=0..8).
 
 ### gun.pistol_9mm
 - `slide` box u=0 v=27 w=35 h=9 d=7
@@ -208,10 +208,10 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `eye_r` box u=50 v=46 w=4 h=2 d=2
 
 ### entity.handgun_bullet
-- silver slug with copper base, x=3..12 y=6..9.
+- silver jacketed slug, copper base with groove, x=3..12 y=6..9.
 
 ### entity.launcher_grenade
-- strip map: body 0..21 x 2..13 with red band at x=8..11; nose 22..31; flat 32x16 (no seams).
+- strip map: body 0..21 x 2..13 (red band x=8..11, yellow rings at x=3/14/17, copper driving band x=19..21); nose 22..31 (white stencil ring, red fuse tip).
 
 ### gun.ak47
 - `receiver` box u=0 v=24 w=33 h=9 d=7
@@ -679,10 +679,10 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - modern 64x64 skin unwrap scaled x1: head 0,0 8x8x8; body 16,16 8x12x4; right arm 40,16; right leg 0,16; left arm 32,48; left leg 16,48 (each 4x12x4). Overlay (hat/jacket/sleeve) regions left transparent.
 
 ### entity.bioblob
-- radial translucent blob filling the 64x64 sheet (single sprite).
+- membrane ring, darker nucleus, concentric banding and bubbles on a translucent 64x64 blob (single sprite).
 
 ### entity.blue_beam
-- beam gradient across rows (white-hot core at y=15..16, fading to transparent at y=0/31); ends fade over 4 px.
+- beam quad: white-hot core rows 14..17, coloured sheath, exponential glow to transparent at y=0/31, 8 px energy bands with bright knots every 16 px, 4 px end fade.
 
 ### entity.cyberdemon
 - modern 64x64 skin unwrap scaled x2: head 0,0 8x8x8; body 16,16 8x12x4; right arm 40,16; right leg 0,16; left arm 32,48; left leg 16,48 (each 4x12x4). Overlay (hat/jacket/sleeve) regions left transparent.
@@ -704,7 +704,7 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `limb` box u=34 v=106 w=28 h=7 d=7
 
 ### entity.laser_beam
-- beam gradient across rows (white-hot core at y=15..16, fading to transparent at y=0/31); ends fade over 4 px.
+- beam quad: white-hot core rows 14..17, coloured sheath, exponential glow to transparent at y=0/31, 8 px energy bands with bright knots every 16 px, 4 px end fade.
 
 ### entity.supermutant_1
 - modern 64x64 skin unwrap scaled x2: head 0,0 8x8x8; body 16,16 8x12x4; right arm 40,16; right leg 0,16; left arm 32,48; left leg 16,48 (each 4x12x4). Overlay (hat/jacket/sleeve) regions left transparent.

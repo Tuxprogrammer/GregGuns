@@ -14,6 +14,7 @@ Deterministic: no randomness is used.
 import csv
 import math
 import os
+import numpy as np
 from PIL import Image, ImageDraw
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -482,6 +483,115 @@ SHEETS = {
 }
 
 
+# ---- full-screen scope overlays (textures/gui/scopes/*.png, 512x512) ----------------------
+SCOPES = {
+    "sniper": "Sniper scope: circular lens, hard black surround with soft vignette ring, fine crosshair, mil-dots.",
+    "assault": "Assault / reflex scope: smaller view circle in a thick housing, red chevron reticle, drop ticks.",
+    "energy": "Energy / tech scope: cyan HUD brackets, ring reticle with ticks, scanline vignette (alpha blended).",
+}
+SC = 512
+
+
+def _radial(r0, r1, power=1.6):
+    """Alpha (0..255) = 0 inside r0, ramping to 255 at r1."""
+    yy, xx = np.mgrid[0:SC, 0:SC]
+    r = np.hypot(xx - 255.5, yy - 255.5)
+    return np.clip((r - r0) / (r1 - r0), 0, 1) ** power * 255, r
+
+
+def _compose(alpha, color=(0, 0, 0), extra=None):
+    base = np.zeros((SC, SC, 4), np.uint8)
+    base[..., :3] = color
+    base[..., 3] = np.clip(alpha, 0, 255).astype(np.uint8)
+    im = Image.fromarray(base, "RGBA")
+    if extra is not None:
+        im.alpha_composite(extra)
+    return im
+
+
+def scope_sniper():
+    a, r = _radial(200, 238, 1.4)
+    a = np.where(r >= 238, 255, a)
+    a = np.maximum(a, np.where((r > 226) & (r < 236), 255, 0))
+    lay = Image.new("RGBA", (SC, SC), (0, 0, 0, 0)); d = ImageDraw.Draw(lay); K = (0, 0, 0, 255)
+    c = 256
+    # hairlines edge to edge, heavy posts outside 60 px
+    d.rectangle([16, c - 1, c - 60, c], fill=K); d.rectangle([c + 60, c - 1, 496, c], fill=K)
+    d.rectangle([c - 1, 16, c, c - 60], fill=K); d.rectangle([c - 1, c + 60, c, 496], fill=K)
+    for s0, s1 in ((-100, -60), (60, 100)):
+        d.rectangle([c + s0, c - 3, c + s1, c + 2], fill=K); d.rectangle([c - 3, c + s0, c + 2, c + s1], fill=K)
+    for i in range(1, 5):
+        for sgn in (-1, 1):
+            o = sgn * (6 + i * 10)
+            d.ellipse([c + o - 2, c - 2, c + o + 2, c + 2], fill=K); d.ellipse([c - 2, c + o - 2, c + 2, c + o + 2], fill=K)
+    for k in range(1, 6):
+        d.rectangle([c - 9, c + 100 + k * 15, c + 9, c + 101 + k * 15], fill=K) if 100 + k * 15 < 200 else None
+    d.ellipse([c - 1, c - 1, c + 1, c + 1], fill=(0, 0, 0, 0))
+    return _compose(a, extra=lay)
+
+
+def scope_assault():
+    a, r = _radial(120, 150, 1.0)
+    a = np.where(r >= 150, 255, a)
+    lay = Image.new("RGBA", (SC, SC), (0, 0, 0, 0)); d = ImageDraw.Draw(lay)
+    c = 256
+    RED = (255, 40, 30, 255); GLOW = (255, 40, 30, 70)
+    d.line([(c - 28, c + 22), (c, c - 4), (c + 28, c + 22)], fill=GLOW, width=7)
+    d.line([(c - 28, c + 22), (c, c - 4), (c + 28, c + 22)], fill=RED, width=3)
+    d.ellipse([c - 2, c + 2, c + 2, c + 6], fill=RED)
+    for k in range(1, 5):
+        y = c + 22 + k * 20; w = 22 - k * 3
+        d.line([(c - w, y + 6), (c, y), (c + w, y + 6)], fill=(255, 60, 40, 230), width=2)
+    d.line([(c - 100, c), (c - 40, c)], fill=(0, 0, 0, 255), width=2); d.line([(c + 40, c), (c + 100, c)], fill=(0, 0, 0, 255), width=2)
+    for k in range(5):
+        d.line([(c - 100 + k * 15, c - 4), (c - 100 + k * 15, c + 4)], fill=(0, 0, 0, 255), width=2)
+        d.line([(c + 100 - k * 15, c - 4), (c + 100 - k * 15, c + 4)], fill=(0, 0, 0, 255), width=2)
+    im = _compose(a, color=(8, 8, 10), extra=lay)
+    px = np.array(im)
+    px[(r >= 146) & (r < 152)] = (60, 60, 68, 255)   # lens ring highlight
+    px[(r >= 170) & (r < 176)] = (40, 40, 46, 255)   # housing bevel
+    return Image.fromarray(px, "RGBA")
+
+
+def scope_energy():
+    a, r = _radial(180, 260, 1.5)
+    yy, xx = np.mgrid[0:SC, 0:SC]
+    a = np.clip(a + np.where((yy % 4 == 0) & (r > 190), 40, 0), 0, 235)
+    lay = Image.new("RGBA", (SC, SC), (0, 0, 0, 0)); d = ImageDraw.Draw(lay)
+    C = (64, 224, 255, 255); G = (64, 224, 255, 60); c = 256
+    d.ellipse([c - 60, c - 60, c + 60, c + 60], outline=C, width=2)
+    d.ellipse([c - 64, c - 64, c + 64, c + 64], outline=G, width=4)
+    bb = [c - 110, c - 110, c + 110, c + 110]
+    d.arc(bb, 200, 250, fill=C, width=3); d.arc(bb, 20, 70, fill=C, width=3)
+    d.arc(bb, 290, 340, fill=G, width=3); d.arc(bb, 110, 160, fill=G, width=3)
+    for ang in range(0, 360, 30):
+        ca, sa = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+        d.line([(c + 60 * ca, c + 60 * sa), (c + 72 * ca, c + 72 * sa)], fill=C, width=2)
+    for sgn in (-1, 1):
+        d.line([(c + sgn * 20, c), (c + sgn * 52, c)], fill=C, width=2); d.line([(c, c + sgn * 20), (c, c + sgn * 52)], fill=C, width=2)
+    d.rectangle([c - 1, c - 1, c + 1, c + 1], fill=C)
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            x, y = c + sx * 210, c + sy * 210
+            d.line([(x, y), (x - sx * 46, y)], fill=C, width=3); d.line([(x, y), (x, y - sy * 46)], fill=C, width=3)
+            d.line([(x - sx * 8, y - sy * 8), (x - sx * 30, y - sy * 8)], fill=G, width=3)
+    for k in range(-5, 6):
+        w = 14 if k % 5 == 0 else 8
+        d.line([(c - 232, c + k * 18), (c - 232 + w, c + k * 18)], fill=C, width=2)
+        d.line([(c + 232 - w, c + k * 18), (c + 232, c + k * 18)], fill=C, width=2)
+    for i in range(6):
+        d.rectangle([c - 28 + i * 10, c + 190, c - 22 + i * 10, c + 198], fill=C if i < 4 else G)
+    return _compose(a, color=(0, 10, 16), extra=lay)
+
+
+def write_scopes():
+    os.makedirs(os.path.join(RES, "textures", "gui", "scopes"), exist_ok=True)
+    out = []
+    for name, fn in (("sniper", scope_sniper), ("assault", scope_assault), ("energy", scope_energy)):
+        im = fn(); im.save(os.path.join(RES, "textures", "gui", "scopes", name + ".png")); out.append((name, im))
+    return out
+
+
 def layout_markdown():
     out = ["## GUI sprite sheets (kind gui)", "",
            "Each sheet is 256x256 RGBA; only the listed rectangles are painted (x, y, w, h in pixels). "
@@ -504,10 +614,15 @@ def main():
         im.save(os.path.join(RES, "textures", "gui", sid + ".png"))
         rows.append(["gui.%s" % sid, "src/main/resources/assets/gregguns/textures/gui/%s.png" % sid, "tools/asset-gen/gui.py", "none",
                      "Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites", "MIT", "2026-10-18"])
+    scopes = write_scopes()
+    for name, im in scopes:
+        rows.append(["gui.scope_%s" % name, "src/main/resources/assets/gregguns/textures/gui/scopes/%s.png" % name, "tools/asset-gen/gui.py", "none",
+                     "Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle", "MIT", "2026-10-18"])
     with open(os.path.join(ROOT, "tools", "asset-gen", "credits", "gui.csv"), "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["asset", "path", "generator", "seed", "method", "licence", "date"]); w.writerows(rows)
     sc = 3; W = 1500; x = y = rowh = 0; items = []
+    tiles = tiles + [("scopes/" + n, i.resize((160, 160), Image.LANCZOS)) for n, i in scopes]
     for sid, im in tiles:
         bb = im.getbbox(); c = im.crop(bb)
         bg = Image.new("RGBA", c.size, (70, 110, 90, 255)); bg.alpha_composite(c)

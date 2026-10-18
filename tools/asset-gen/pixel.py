@@ -63,7 +63,7 @@ def glow(rgb):
 
 # Shared neutral ramps
 BLACK = ramp((60, 62, 72), 0.8)
-POLY = ramp((82, 86, 98), 0.8)
+POLY = ramp((104, 108, 122), 0.9)
 WOOD = ramp((130, 84, 40))
 DARKWOOD = ramp((96, 60, 30))
 BRASS = ramp((214, 160, 40))
@@ -250,6 +250,27 @@ class Canvas:
                 if 0 <= x + dx < W and 0 <= y + dy < H}
         return n
 
+    def rotated(self, deg):
+        """Nearest-neighbour rotation (clockwise, y down) about the canvas centre."""
+        import math
+        a = math.radians(deg)
+        ca, sa = math.cos(a), math.sin(a)
+        n = Canvas()
+        for y in range(H):
+            for x in range(W):
+                dx, dy = x - 7.5, y - 7.5
+                sx = ca * dx + sa * dy + 7.5
+                sy = -sa * dx + ca * dy + 7.5
+                p = (int(round(sx)), int(round(sy)))
+                if p in self.px:
+                    n.px[(x, y)] = self.px[p]
+        return n
+
+    def bbox_center_shift(self):
+        xs = [p[0] for p in self.px]
+        ys = [p[1] for p in self.px]
+        return int(round(7.5 - (min(xs) + max(xs)) / 2)), int(round(7.5 - (min(ys) + max(ys)) / 2))
+
     def paste(self, other):
         self.px.update(other.px)
 
@@ -288,7 +309,10 @@ def stock(c, x0, y0, x1, y1, rp, drop=1):
 def grip(c, x, y0, y1, rp, w=2, lean=1):
     """Pistol grip leaning backward (down-left)."""
     pts = [(x, y0), (x + w, y0), (x + w - lean, y1 + 1), (x - lean, y1 + 1)]
-    c.poly(pts, rp)
+    cells = c.poly(pts, rp)
+    for (px_, py_) in cells:                      # rim highlight on the lit (left) edge
+        if (px_ - 1, py_) not in cells:
+            c.pix(px_, py_, rp[HL])
 
 
 def magazine(c, x, y0, y1, rp, w=2, curve=0, rounds=None):
@@ -341,19 +365,20 @@ def plate(c, x0, y0, x1, y1, rp, rivets=True, rivet_c=None):
 
 
 def gear(c, cx, cy, r, rp, teeth=8):
-    """cx, cy are pixel-centres (ints). r = radius in pixels (>=2)."""
-    import math
-    cells = set(c.ellipse_coords(cx, cy, r - 0.5, r - 0.5))
-    for i in range(teeth):                       # notch the rim between teeth
-        a = 2 * math.pi * (i + 0.5) / teeth
-        cells.discard((int(round(cx + math.cos(a) * (r - 0.4))), int(round(cy + math.sin(a) * (r - 0.4)))))
+    """Solid cog: a disc with four square teeth and a dark axle hole."""
+    cells = set(c.ellipse_coords(cx, cy, r - 1, r - 1))
+    for (dx, dy) in ((r, 0), (-r, 0), (0, r), (0, -r)):
+        cells.add((cx + dx, cy + dy))
+        if r >= 3:
+            cells.add((cx + dx + (1 if dy else 0), cy + dy + (1 if dx else 0)))
     c.fill(cells, rp)
     c.pix(cx, cy, rp[DK])
 
 
 def spring(c, x0, x1, y, rp):
+    """Coil seen side-on: alternating light and dark turns on one row."""
     for i, x in enumerate(range(x0, x1 + 1)):
-        c.pix(x, y + (i % 2), rp[HL] if i % 2 == 0 else rp[BS])
+        c.pix(x, y, rp[HL] if i % 2 == 0 else rp[DK])
 
 
 def trefoil(c, cx, cy, fg=(250, 210, 30), bg=(30, 30, 30)):
@@ -403,280 +428,408 @@ def canister(c, x0, y0, x1, y1, body_rp, fill_rp=None, fill_frac=0.75, cap_rp=No
 
 
 # ---------------------------------------------------------------- armour
-def helmet_shape(c, rp, flare=True):
+def armour_piece(c, slot, cw):
+    """Draw one armour slot with a per-set silhouette and details.
+
+    cw keys: main, trim (ramps); acc (ramp, small details); vis (ramp, visor);
+    kind (str) selecting the set's shape; glow (ramp, emissive) optional.
+    """
+    kind = cw["kind"]
+    M, T = cw["main"], cw["trim"]
+    A = cw.get("acc", T)
+    args = (c, kind, M, T, A, cw.get("vis"), cw.get("glow"))
+    {"helmet": _helmet, "chestplate": _chest, "leggings": _legs, "boots": _boots}[slot](*args)
+
+
+def _dome(c, rp):
     c.poly([(5, 2), (11, 2), (12, 4), (13, 9), (11, 9), (11, 7), (5, 7), (5, 9), (3, 9), (4, 4)], rp)
 
 
-def armour_piece(c, slot, cw):
-    """Draw one armour slot silhouette with per-set details.
-
-    cw keys: main, trim (ramps); acc (ramp, small details); vis (ramp, visor);
-    kind (str) selecting a style variant; glow (ramp, emissive) optional.
-    """
-    kind = cw["kind"]
-    M, T, A = cw["main"], cw["trim"], cw.get("acc", cw["trim"])
-    V = cw.get("vis")
-    G = cw.get("glow")
-    if slot == "helmet":
-        _helmet(c, kind, M, T, A, V, G)
-    elif slot == "chestplate":
-        _chest(c, kind, M, T, A, V, G)
-    elif slot == "leggings":
-        _legs(c, kind, M, T, A, V, G)
-    else:
-        _boots(c, kind, M, T, A, V, G)
-
-
 def _helmet(c, kind, M, T, A, V, G):
-    if kind == "bandit":       # cloth hood with face mask and studs
-        c.poly([(5, 2), (10, 2), (12, 4), (13, 12), (11, 13), (11, 9), (4, 9), (4, 13), (2, 12), (3, 4)], M)
-        c.rect(5, 6, 10, 8, T if False else BLACK)               # mask band over eyes/face
-        c.rect(5, 5, 10, 5, M[SH], bevel=False)
-        c.hline(6, 9, 7, (240, 220, 190))                          # eye slit
-        for x in (4, 8, 11):
-            c.pix(x, 3, A[HL])
-    elif kind == "miner":      # yellow hard hat with lamp
-        c.poly([(4, 3), (11, 3), (12, 6), (14, 7), (14, 9), (2, 9), (2, 7), (3, 6)], M)
-        c.rect(7, 2, 8, 3, M)
-        c.rect(7, 5, 8, 6, CYAN if False else glow((255, 240, 150)), bevel=False)
-        c.rect(7, 7, 8, 7, T[SH], bevel=False)
-        c.hline(3, 12, 9, M[DK])
-        c.pix(5, 5, T[HL]); c.pix(10, 5, T[HL])                    # rivets
-        c.rect(4, 10, 11, 12, ramp((50, 80, 150)))                 # blue canvas hood below
-        c.rect(6, 10, 9, 11, (200, 160, 130), bevel=False) if False else None
-    elif kind in ("steel", "olive"):  # classic dome helmet with cheek plates
-        helmet_shape(c, M)
-        c.hline(5, 11, 3, M[HL])
-        c.rect(6, 5, 9, 5, T[BS], bevel=False)                     # trim band
-        c.rect(5, 8, 10, 10, (200, 150, 120)) if False else None
-        c.vline(7, 6, 9, T[LT]) if kind == "steel" else None
-        c.hline(4, 11, 7, T[LT])
-        c.pix(4, 10, M[SH]); c.pix(11, 10, M[SH])
-    elif kind == "commando":   # balaclava + goggles, near-black
-        c.poly([(4, 2), (11, 2), (12, 4), (12, 11), (10, 13), (5, 13), (3, 11), (3, 4)], M)
-        c.rect(4, 6, 11, 7, A, bevel=False)
-        c.hline(5, 10, 6, V[HL] if V else (120, 200, 255))
-        c.hline(5, 10, 7, V[BS] if V else (60, 120, 180))
-        c.hline(4, 11, 3, M[HL])
-        c.vline(7, 9, 12, M[DK]); c.vline(8, 9, 12, M[DK])
-    elif kind == "riot":       # visored full helmet with shield plates
-        c.poly([(4, 2), (11, 2), (13, 4), (13, 11), (11, 13), (4, 13), (2, 11), (2, 4)], M)
-        c.rect(4, 5, 11, 8, V or GLASS, bevel=False)
-        c.hline(4, 11, 5, (200, 235, 245))
-        c.hline(4, 11, 8, (60, 90, 110))
+    if kind == "bandit":       # pointed cowl, eye-slit mask, bronze studs
+        c.poly([(8, 0), (10, 2), (11, 4), (12, 8), (14, 14), (11, 14), (11, 11), (5, 11), (5, 14),
+                (2, 14), (4, 8), (5, 4), (6, 2)], M)
+        c.rect(5, 6, 10, 8, BLACK)
+        c.hline(6, 9, 7, (240, 220, 190))
+        for p in ((8, 2), (6, 4), (10, 4)):
+            c.pix(p[0], p[1], A[HL])
+    elif kind == "miner":      # hard hat: wide brim, ridge, lamp
+        c.poly([(5, 3), (10, 3), (12, 6), (15, 7), (15, 9), (0, 9), (0, 7), (3, 6)], M)
+        c.rect(7, 1, 8, 3, M)
+        c.rect(7, 5, 8, 6, glow((255, 240, 150)), bevel=False)
+        c.hline(1, 14, 9, M[DK])
+        c.pix(5, 5, T[HL])
+        c.pix(10, 5, T[HL])
+        c.rect(4, 10, 11, 12, ramp((50, 80, 150)))
+    elif kind == "steel":      # open dome, nasal bar, cheek flaps
+        c.poly([(4, 3), (11, 3), (12, 5), (12, 8), (3, 8), (3, 5)], M)
+        c.rect(7, 8, 8, 11, T)
         c.rect(3, 9, 5, 12, T)
         c.rect(10, 9, 12, 12, T)
-        c.hline(5, 10, 3, M[HL])
-    elif kind == "fibre":      # sleek advanced combat helmet with titanium panels
-        c.poly([(5, 2), (10, 2), (12, 4), (12, 10), (11, 12), (4, 12), (3, 10), (3, 4)], M)
-        c.rect(5, 5, 10, 7, V or CYAN, bevel=False)
-        c.hline(5, 10, 5, V[HL] if V else (200, 255, 255))
-        c.rect(4, 8, 5, 11, T); c.rect(10, 8, 11, 11, T)
-        c.rect(6, 2, 9, 3, T)
-    elif kind == "hev":        # sealed hood with wide glass visor
-        c.poly([(4, 2), (11, 2), (13, 4), (13, 11), (11, 13), (4, 13), (2, 11), (2, 4)], M)
-        c.rect(4, 4, 11, 8, V, bevel=False)
-        c.hline(4, 11, 4, V[HL]); c.vline(4, 4, 8, V[LT])
-        c.rect(6, 10, 9, 12, T)
-        c.hline(7, 8, 11, T[DK])
-        c.pix(3, 3, T[HL]); c.pix(12, 3, T[HL])
-    elif kind == "steam":      # bronze pot helm, pipe + vent
-        helmet_shape(c, M)
-        c.rect(5, 5, 10, 6, V or ramp((250, 200, 80)), bevel=False)
-        c.hline(5, 10, 5, (255, 240, 170))
-        c.rect(11, 1, 12, 4, A)
-        c.pix(12, 0, (235, 235, 245)); c.pix(13, 1, (200, 200, 210))
-        c.rect(5, 8, 10, 9, T)
-        c.stripes([(a, b) for a in range(5, 11) for b in (8, 9)], T[DK], 2, 0, False)
-        for x in (5, 7, 9):
-            c.pix(x, 3, T[HL])
-    elif kind == "power":      # bulky full helm, glass visor, crest
-        c.poly([(4, 1), (11, 1), (13, 3), (14, 12), (12, 14), (3, 14), (1, 12), (2, 3)], M)
-        c.rect(4, 5, 11, 7, V or CYAN, bevel=False)
-        c.hline(4, 11, 5, (210, 250, 255))
-        c.rect(7, 1, 8, 4, T)
-        c.rect(3, 9, 5, 12, T); c.rect(10, 9, 12, 12, T)
-        c.hline(6, 9, 10, M[DK]); c.hline(6, 9, 12, M[DK])
-    elif kind == "exo":        # open-faced frame helm with glowing monocle
-        helmet_shape(c, M)
-        c.rect(4, 4, 11, 5, T[SH], bevel=False)
-        c.rect(7, 4, 11, 5, V or glow((190, 90, 255)), bevel=False)
-        c.hline(4, 6, 4, T[HL])
-        c.vline(7, 6, 10, A[BS]); c.hline(5, 10, 10, A[LT])
-        c.pix(4, 10, M[DK]); c.pix(11, 10, M[DK])
+        c.hline(4, 11, 4, M[HL])
+        c.hline(3, 12, 8, T[DK])
+    elif kind == "olive":      # low dome, broad brim, net straps, mount
+        c.poly([(5, 3), (10, 3), (12, 5), (12, 8), (3, 8), (3, 5)], M)
+        c.rect(1, 8, 14, 9, M)
+        c.rect(7, 2, 8, 4, T)
+        c.stripes([(a, b) for a in range(4, 12) for b in range(4, 8)], M[DK], 3, 0, True)
+        c.vline(3, 10, 12, A[BS])
+        c.vline(12, 10, 12, A[BS])
+        c.hline(4, 11, 12, A[BS])
+    elif kind == "commando":   # tall balaclava, wide goggle bar
+        c.poly([(5, 1), (10, 1), (11, 4), (11, 14), (4, 14), (4, 4)], M)
+        c.rect(1, 5, 14, 7, BLACK)
+        c.rect(2, 5, 6, 7, V or ramp((110, 200, 255)), bevel=False)
+        c.rect(9, 5, 13, 7, V or ramp((110, 200, 255)), bevel=False)
+        c.hline(2, 13, 5, (210, 240, 255))
+        c.vline(7, 9, 13, M[DK])
+        c.vline(8, 9, 13, M[DK])
+    elif kind == "riot":       # flat-topped box helm, huge visor, jaw shield
+        c.rect(2, 2, 13, 13, M)
+        c.rect(3, 4, 12, 8, V or GLASS, bevel=False)
+        c.hline(3, 12, 4, (200, 235, 245))
+        c.hline(3, 12, 8, (60, 90, 110))
+        c.rect(3, 10, 12, 13, T)
+        c.hline(4, 11, 11, T[DK])
+        c.hline(4, 11, 13, T[DK])
+        c.rect(5, 2, 10, 2, M[HL], bevel=False)
+    elif kind == "fibre":      # angular faceted helm with chin guard
+        c.poly([(6, 1), (10, 1), (13, 5), (12, 11), (9, 14), (6, 14), (3, 11), (2, 5)], M)
+        c.poly([(4, 5), (11, 5), (12, 7), (3, 7)], V or CYAN)
+        c.hline(4, 11, 5, (200, 255, 255))
+        c.poly([(6, 1), (9, 1), (8, 4), (7, 4)], T)
+        c.rect(5, 10, 10, 13, T)
+        c.pix(3, 8, T[HL])
+        c.pix(12, 8, T[HL])
+    elif kind == "hev":        # round sealed hood, big bubble visor
+        c.ellipse(7.5, 7.5, 6, 6.5, M)
+        c.ellipse(7.5, 6.5, 4, 3, V)
+        c.hline(5, 9, 4, V[HL])
+        c.vline(4, 5, 7, V[LT])
+        c.rect(5, 12, 10, 14, T)
+        c.hline(6, 9, 13, T[DK])
+        c.pix(2, 8, T[HL])
+        c.pix(13, 8, T[HL])
+    elif kind == "steam":      # bronze pot helm, round porthole, steam pipe
+        _dome(c, M)
+        c.disc(7.5, 6.5, 2, V or ramp((250, 200, 80)))
+        c.pix(6, 5, (255, 245, 190))
+        c.rect(11, 0, 12, 4, A)
+        c.pix(13, 0, (235, 235, 245))
+        c.pix(14, 1, (205, 205, 215))
+        c.rect(5, 9, 10, 10, T)
+        c.stripes([(a, b) for a in range(5, 11) for b in (9, 10)], T[DK], 2, 0, False)
+        for p in ((4, 3), (11, 3), (4, 8)):
+            c.pix(p[0], p[1], T[HL])
+    elif kind == "power":      # wide crested full helm, wide visor
+        c.poly([(4, 2), (11, 2), (14, 4), (15, 11), (13, 14), (2, 14), (0, 11), (1, 4)], M)
+        c.rect(7, 0, 8, 3, T)
+        c.rect(3, 5, 12, 7, V or CYAN, bevel=False)
+        c.hline(3, 12, 5, (210, 250, 255))
+        c.rect(6, 8, 9, 13, T)
+        c.rect(2, 9, 3, 12, T)
+        c.rect(12, 9, 13, 12, T)
+    elif kind == "exo":        # skeletal frame, side monocle
+        c.hline(4, 11, 2, M[HL])
+        c.poly([(4, 3), (11, 3), (12, 6), (3, 6)], M)
+        c.vline(3, 6, 12, T[BS])
+        c.vline(12, 6, 12, T[BS])
+        c.hline(3, 12, 12, T[SH])
+        c.vline(7, 6, 11, A[BS])
+        c.rect(8, 7, 11, 9, V or glow((190, 90, 255)), bevel=False)
+        c.pix(8, 7, (250, 220, 255))
     else:
-        helmet_shape(c, M)
+        _dome(c, M)
+
+
+def _sleeve_l(c, M, y1=10):
+    c.poly([(1, 3), (4, 2), (4, y1), (2, y1 + 1), (1, y1)], M)
+
+
+def _sleeve_r(c, M, y1=10):
+    c.poly([(12, 2), (15, 3), (15, y1), (13, y1 + 1), (12, y1)], M)
+
+
+def _torso(c, M, w0=4, w1=11, y1=13):
+    c.poly([(w0, 2), (6, 2), (7, 3), (8, 3), (9, 2), (w1 + 1, 2), (w1 + 1, y1 + 1), (w0, y1 + 1)], M)
 
 
 def _chest(c, kind, M, T, A, V, G):
-    def torso(sleeves=True, y1=13, w0=4, w1=11):
-        pts = [(w0, 2), (6, 2), (7, 3), (8, 3), (9, 2), (w1 + 1, 2), (w1 + 1, y1 + 1), (w0, y1 + 1)]
-        c.poly(pts, M)
-        if sleeves:
-            c.poly([(1, 3), (4, 2), (4, 10), (2, 11), (1, 10)], M)
-            c.poly([(12, 2), (15, 3), (15, 10), (13, 11), (12, 10)], M)
-
-    if kind == "bandit":       # sleeveless cloth vest, studs, lacing
-        torso(sleeves=False, y1=13, w0=3, w1=12)
-        c.rect(1, 3, 3, 6, M); c.rect(12, 3, 14, 6, M)
-        c.vline(7, 4, 13, M[DK]); c.vline(8, 4, 13, M[SH])
-        for y in (5, 8, 11):
-            c.pix(6, y, A[HL]); c.pix(9, y, A[HL])
+    if kind == "bandit":       # sleeveless cloth vest, laced front, studs
+        _torso(c, M, 3, 12, 12)
+        c.rect(1, 3, 3, 5, M)
+        c.rect(12, 3, 14, 5, M)
+        c.vline(7, 4, 12, M[DK])
+        c.vline(8, 4, 12, M[SH])
+        for y in (5, 7, 9, 11):
+            c.pix(6, y, A[HL])
+            c.pix(9, y, A[HL])
+        c.hline(3, 12, 12, A[BS])
+    elif kind == "miner":      # denim jacket: flap pockets, cuffs
+        _torso(c, M)
+        _sleeve_l(c, M)
+        _sleeve_r(c, M)
+        c.vline(7, 3, 13, M[DK])
+        c.vline(8, 3, 13, M[SH])
+        for x in (4, 9):
+            c.rect(x, 8, x + 2, 10, T[SH], bevel=False)
+            c.hline(x, x + 2, 8, T[HL])
+        yel = ramp((228, 188, 38))
+        c.hline(1, 3, 10, yel[BS])
+        c.hline(12, 14, 10, yel[BS])
+        c.pix(7, 5, A[HL])
+        c.pix(8, 7, A[HL])
+    elif kind == "steel":      # steel breast + back plates, short cloth sleeves
+        _torso(c, M)
+        c.rect(1, 3, 3, 6, M)
+        c.rect(12, 3, 14, 6, M)
+        c.rect(5, 3, 10, 7, T)
+        c.hline(5, 10, 5, T[DK])
+        c.rect(5, 9, 10, 12, T)
+        c.hline(5, 10, 10, T[DK])
+        c.rect(2, 3, 3, 4, T)
+        c.rect(12, 3, 13, 4, T)
+    elif kind == "olive":      # padded epaulettes, chest rig with straps
+        _torso(c, M)
+        _sleeve_l(c, M, 11)
+        _sleeve_r(c, M, 11)
+        c.rect(0, 1, 3, 3, T)
+        c.rect(12, 1, 15, 3, T)
+        c.vline(5, 3, 13, A[BS])
+        c.vline(10, 3, 13, A[BS])
+        c.rect(6, 6, 9, 9, M[DK], bevel=False)
         c.hline(4, 11, 12, A[BS])
-    elif kind == "miner":      # denim jacket with pocket and rivets
-        torso()
-        c.vline(7, 3, 13, M[DK]); c.vline(8, 3, 13, M[SH])
-        c.rect(4, 8, 6, 10, T[SH], bevel=False); c.hline(4, 6, 8, T[HL])
-        c.rect(9, 8, 11, 10, T[SH], bevel=False); c.hline(9, 11, 8, T[HL])
-        c.pix(7, 5, A[HL]); c.pix(8, 7, A[HL])
-        c.hline(1, 3, 10, M[DK]); c.hline(12, 14, 10, M[DK])
-    elif kind in ("steel", "olive", "fibre"):  # plate carrier over cloth
-        torso()
-        c.rect(5, 3, 10, 9, T)
-        c.rect(5, 10, 10, 12, T[SH] and T)
-        c.hline(5, 10, 6, T[DK])
-        c.vline(7, 4, 9, T[DK]) if kind == "steel" else None
-        if kind == "olive":
-            c.hline(5, 10, 11, A[BS])
-        if kind == "fibre":
-            c.rect(2, 3, 3, 4, T); c.rect(12, 3, 13, 4, T)
-            c.pix(7, 5, (200, 255, 255)); c.pix(8, 5, (200, 255, 255))
-    elif kind == "commando":   # tactical vest with pouches
-        torso()
-        c.rect(5, 3, 10, 7, A)
-        for x in (5, 9):
+        c.hline(6, 9, 6, A[HL])
+    elif kind == "commando":   # slim tactical vest: ammo pouches, shoulder straps
+        _torso(c, M, 4, 11, 13)
+        _sleeve_l(c, M, 9)
+        _sleeve_r(c, M, 9)
+        for x in (4, 7, 10):
             c.rect(x, 8, x + 1, 11, A)
             c.hline(x, x + 1, 8, A[HL])
-        c.vline(7, 3, 13, M[DK])
-        c.pix(2, 5, T[LT]); c.pix(13, 5, T[LT])
-    elif kind == "riot":       # long coat with shield plates
-        pts = [(4, 2), (6, 2), (7, 3), (8, 3), (9, 2), (12, 2), (13, 14), (2, 14)]
-        c.poly(pts, M)
-        c.poly([(1, 3), (4, 2), (4, 11), (2, 12), (1, 11)], M)
-        c.poly([(12, 2), (15, 3), (15, 11), (13, 12), (12, 11)], M)
+        c.rect(5, 3, 6, 6, A)
+        c.rect(9, 3, 10, 6, A)
+        c.pix(2, 5, T[LT])
+        c.pix(13, 5, T[LT])
+    elif kind == "riot":       # long coat to the knee, lapels, shield plate
+        c.poly([(4, 2), (6, 2), (7, 4), (8, 4), (9, 2), (12, 2), (14, 15), (1, 15)], M)
+        _sleeve_l(c, M, 11)
+        _sleeve_r(c, M, 11)
         c.rect(5, 3, 10, 7, T)
-        c.vline(7, 8, 14, M[DK]); c.vline(8, 8, 14, M[SH])
-        c.rect(2, 3, 3, 4, T); c.rect(12, 3, 13, 4, T)
-        c.pix(6, 10, A[HL]); c.pix(9, 10, A[HL])
-    elif kind == "hev":        # sealed suit with chest hatch and seams
-        torso()
-        c.rect(5, 4, 10, 8, T)
-        c.rect(6, 5, 9, 7, V or glow((255, 190, 60)), bevel=False)
-        c.hline(4, 11, 10, M[DK]); c.hline(4, 11, 12, M[DK])
-        c.hline(1, 3, 7, M[DK]); c.hline(12, 14, 7, M[DK])
-    elif kind == "steam":      # bronze breastplate with pipes and gauge
-        torso()
+        c.vline(7, 8, 15, M[DK])
+        c.vline(8, 8, 15, M[SH])
+        c.pix(6, 10, A[HL])
+        c.pix(9, 10, A[HL])
+        c.hline(2, 13, 14, M[DK])
+    elif kind == "fibre":      # angular chest, high collar, shoulder armour
+        c.poly([(5, 1), (10, 1), (13, 3), (15, 6), (13, 7), (12, 14), (3, 14), (2, 7), (0, 6), (2, 3)], M)
+        c.poly([(5, 1), (10, 1), (9, 4), (6, 4)], T)
+        c.poly([(5, 5), (10, 5), (11, 9), (4, 9)], T)
+        c.pix(7, 6, (200, 255, 255))
+        c.pix(8, 6, (200, 255, 255))
+        c.rect(0, 3, 2, 5, T)
+        c.rect(13, 3, 15, 5, T)
+    elif kind == "hev":        # bulky sealed suit, collar ring, chest hatch
+        _torso(c, M, 3, 12, 13)
+        _sleeve_l(c, M, 11)
+        _sleeve_r(c, M, 11)
+        c.rect(5, 2, 10, 3, T)
+        c.rect(5, 5, 10, 9, T)
+        c.rect(6, 6, 9, 8, V or glow((255, 190, 60)), bevel=False)
+        c.hline(3, 12, 11, M[DK])
+        c.hline(1, 3, 7, M[DK])
+        c.hline(12, 14, 7, M[DK])
+    elif kind == "steam":      # bronze cuirass, shoulder pipes venting, gauge
+        _torso(c, M)
+        _sleeve_l(c, M, 9)
+        _sleeve_r(c, M, 9)
         c.rect(5, 3, 10, 9, T)
         c.disc(7.5, 6.5, 1, ramp((235, 235, 230)))
         c.pix(7, 6, (30, 30, 30))
-        c.vline(3, 3, 10, A[BS]); c.vline(12, 3, 10, A[BS])
-        c.hline(5, 10, 11, A[LT]); c.hline(5, 10, 12, A[SH])
-        c.pix(2, 2, (230, 230, 240)); c.pix(13, 2, (230, 230, 240))
-        c.hline(2, 3, 3, T[HL]); c.hline(12, 13, 3, T[HL])
-    elif kind == "power":      # heavy pauldrons + glowing core
-        c.poly([(0, 2), (4, 1), (11, 1), (15, 2), (15, 6), (12, 6), (12, 14), (3, 14), (3, 6), (0, 6)], M)
-        c.rect(0, 2, 3, 5, T); c.rect(12, 2, 15, 5, T)
+        c.rect(2, 0, 3, 3, A)
+        c.rect(12, 0, 13, 3, A)
+        c.pix(1, 0, (235, 235, 245))
+        c.pix(14, 0, (235, 235, 245))
+        c.hline(5, 10, 11, A[LT])
+        c.hline(5, 10, 12, A[SH])
+        c.rect(1, 9, 3, 10, T)
+        c.rect(12, 9, 14, 10, T)
+    elif kind == "power":      # massive pauldrons, armoured torso, glowing core
+        c.poly([(0, 1), (5, 0), (10, 0), (15, 1), (15, 6), (12, 7), (12, 14), (3, 14), (3, 7), (0, 6)], M)
+        c.rect(0, 1, 3, 5, T)
+        c.rect(12, 1, 15, 5, T)
         c.rect(5, 3, 10, 9, T)
         c.rect(7, 5, 8, 7, G or CYAN, bevel=False)
         c.hline(4, 11, 11, M[DK])
-    elif kind == "exo":        # frame struts over undersuit
-        torso()
-        c.vline(5, 3, 12, T[BS]); c.vline(10, 3, 12, T[BS])
-        c.hline(5, 10, 3, T[LT]); c.hline(5, 10, 12, T[SH])
-        c.rect(7, 6, 8, 8, V or glow((190, 90, 255)), bevel=False)
-        c.pix(2, 4, T[HL]); c.pix(13, 4, T[HL])
+    elif kind == "exo":        # thin torso with outer frame struts and spine light
+        _torso(c, M, 5, 10, 13)
+        c.vline(3, 2, 13, T[BS])
+        c.vline(12, 2, 13, T[BS])
+        c.hline(3, 12, 2, T[LT])
+        c.hline(3, 12, 7, T[SH])
+        c.hline(3, 12, 13, T[SH])
+        c.rect(7, 4, 8, 11, V or glow((190, 90, 255)), bevel=False)
+        c.vline(1, 3, 8, T[SH])
+        c.vline(14, 3, 8, T[SH])
     else:
-        torso()
+        _torso(c, M)
+        _sleeve_l(c, M)
+        _sleeve_r(c, M)
+
+
+def _leg_pair(c, M, xl0, xl1, xr0, xr1, y0=5, y1=13):
+    c.rect(xl0, y0, xl1, y1, M)
+    c.rect(xr0, y0, xr1, y1, M)
 
 
 def _legs(c, kind, M, T, A, V, G):
-    wide = kind in ("power", "riot")
-    xl0, xl1, xr0, xr1 = (3, 7, 8, 12) if wide else (4, 7, 8, 11)
-    if kind == "riot":
-        c.poly([(2, 2), (13, 2), (14, 13), (8, 13), (8, 5), (7, 5), (7, 13), (1, 13)], M)
-    else:
-        c.rect(xl0, 2, xr1, 4, M)                      # waist
-        c.rect(xl0, 5, xl1, 13, M)
-        c.rect(xr0, 5, xr1, 13, M)
-    c.hline(xl0, xr1, 3, T[LT] if kind not in ("commando",) else M[HL])
-    if kind == "bandit":
-        c.pix(5, 8, A[HL]); c.pix(10, 8, A[HL]); c.hline(xl0, xr1, 4, A[BS])
-        c.hline(xl0, xl1, 12, A[SH]); c.hline(xr0, xr1, 12, A[SH])
-    elif kind == "miner":
-        c.rect(xl0, 7, xl1, 9, T[SH], bevel=False) if False else None
-        c.hline(xl0, xl1, 8, M[DK]); c.hline(xr0, xr1, 8, M[DK])
-        c.pix(xl0 + 1, 3, A[HL]); c.pix(xr1 - 1, 3, A[HL])
-        c.rect(xl0, 11, xl1, 13, T[SH] if False else ramp((150, 110, 60)))
-        c.rect(xr0, 11, xr1, 13, ramp((150, 110, 60)))
-    elif kind in ("steel", "olive", "fibre"):
-        for (a, b) in ((xl0, xl1), (xr0, xr1)):
+    if kind == "bandit":       # ragged short trousers with rope belt
+        c.rect(4, 2, 11, 4, M)
+        _leg_pair(c, M, 4, 7, 8, 11, 5, 11)
+        c.hline(4, 11, 3, A[BS])
+        for x in (4, 6, 9, 11):
+            c.pix(x, 12, M[SH])
+        c.pix(5, 8, A[HL])
+        c.pix(10, 8, A[HL])
+    elif kind == "miner":      # overalls: bib, straps, turn-up cuffs
+        c.rect(4, 1, 11, 4, M)
+        _leg_pair(c, M, 4, 7, 8, 11)
+        c.vline(5, 0, 2, A[BS])
+        c.vline(10, 0, 2, A[BS])
+        c.rect(4, 12, 7, 13, ramp((150, 110, 60)))
+        c.rect(8, 12, 11, 13, ramp((150, 110, 60)))
+        c.rect(6, 2, 9, 3, T[SH], bevel=False)
+    elif kind == "steel":      # trousers with steel knee plates
+        c.rect(4, 2, 11, 4, M)
+        _leg_pair(c, M, 4, 7, 8, 11)
+        for (a, b) in ((4, 7), (8, 11)):
             c.rect(a, 6, b, 8, T)
             c.hline(a, b, 12, T[SH])
-        if kind == "fibre":
-            c.pix(5, 7, (200, 255, 255)); c.pix(10, 7, (200, 255, 255))
-    elif kind == "commando":
-        for (a, b) in ((xl0, xl1), (xr0, xr1)):
-            c.rect(a, 7, b, 9, A)
-            c.hline(a, b, 7, A[HL])
-        c.rect(xl0, 11, xl1, 11, T[LT], bevel=False); c.rect(xr0, 11, xr1, 11, T[LT], bevel=False)
-    elif kind == "riot":
-        c.rect(3, 6, 6, 8, T); c.rect(9, 6, 12, 8, T)
-        c.vline(7, 6, 13, M[DK])
-    elif kind == "hev":
-        for (a, b) in ((xl0, xl1), (xr0, xr1)):
-            c.hline(a, b, 8, M[DK])
-            c.rect(a, 6, b, 7, T)
-        c.hline(xl0, xr1, 4, M[DK])
-    elif kind == "steam":
-        for (a, b) in ((xl0, xl1), (xr0, xr1)):
-            c.rect(a, 6, b, 8, T)
-            c.hline(a, b, 12, A[BS])
-        c.vline(xl0, 9, 12, A[BS]); c.vline(xr1, 9, 12, A[BS])
-        c.pix(5, 4, (230, 230, 240))
-    elif kind == "power":
-        for (a, b) in ((xl0, xl1), (xr0, xr1)):
-            c.rect(a, 6, b, 9, T)
-            c.hline(a, b, 12, T[DK])
-        c.rect(7, 4, 8, 5, G or CYAN, bevel=False)
-    elif kind == "exo":
-        c.vline(xl0, 5, 13, T[BS]); c.vline(xr1, 5, 13, T[BS])
-        c.hline(xl0, xl1, 8, T[LT]); c.hline(xr0, xr1, 8, T[LT])
-        c.pix(5, 8, V[HL] if V else (200, 130, 255)); c.pix(10, 8, V[HL] if V else (200, 130, 255))
-    if kind != "riot":
-        c.vline(xl1 + 0 if False else 7, 6, 13, M[DK]) if False else None
-        c.vline(7, 5, 13, M[DK])
-        c.vline(8, 5, 13, M[SH])
+        c.hline(4, 11, 3, T[LT])
+    elif kind == "olive":      # wide cargo pants with side pouches
+        c.rect(3, 2, 12, 4, M)
+        _leg_pair(c, M, 3, 7, 8, 12)
+        c.rect(1, 6, 3, 9, A)
+        c.rect(12, 6, 14, 9, A)
+        c.hline(1, 3, 6, A[HL])
+        c.hline(12, 14, 6, A[HL])
+        c.hline(3, 12, 3, T[LT])
+        c.hline(3, 7, 11, T[BS])
+        c.hline(8, 12, 11, T[BS])
+    elif kind == "commando":   # slim legs, thigh holster, knee pads
+        c.rect(5, 2, 10, 4, M)
+        _leg_pair(c, M, 5, 7, 8, 10)
+        c.rect(3, 7, 4, 10, A)
+        c.rect(5, 8, 7, 9, T[LT], bevel=False)
+        c.rect(8, 8, 10, 9, T[LT], bevel=False)
+        c.hline(5, 10, 3, M[HL])
+    elif kind == "riot":       # coat skirt flaps over armoured shins
+        c.poly([(2, 2), (13, 2), (15, 11), (8, 11), (8, 14), (7, 14), (7, 11), (0, 11)], M)
+        c.rect(4, 12, 6, 14, T)
+        c.rect(9, 12, 11, 14, T)
+        c.vline(7, 3, 11, M[DK])
+        c.vline(8, 3, 11, M[SH])
+        c.hline(2, 13, 4, T[LT])
+    elif kind == "fibre":      # angular faceted thigh and knee guards
+        c.poly([(4, 2), (11, 2), (12, 5), (11, 7), (11, 13), (8, 13), (8, 8), (7, 8), (7, 13), (4, 13), (4, 7), (3, 5)], M)
+        for (a, b) in ((4, 7), (8, 11)):
+            c.poly([(a, 5), (b, 5), (b, 8), (a + 1, 9)], T)
+            c.hline(a, b, 12, T[SH])
+        c.pix(5, 7, (200, 255, 255))
+        c.pix(10, 7, (200, 255, 255))
+    elif kind == "hev":        # baggy sealed trousers with strap bands
+        c.rect(3, 2, 12, 4, M)
+        _leg_pair(c, M, 3, 7, 8, 12)
+        for y in (7, 11):
+            c.hline(3, 7, y, T[BS])
+            c.hline(8, 12, y, T[BS])
+        c.hline(3, 12, 3, M[DK])
+    elif kind == "steam":      # bronze greaves with piping
+        c.rect(4, 2, 11, 4, M)
+        _leg_pair(c, M, 4, 7, 8, 11)
+        c.rect(4, 6, 7, 8, T)
+        c.rect(8, 6, 11, 8, T)
+        c.pix(5, 7, A[HL])
+        c.pix(10, 7, A[HL])
+        c.vline(3, 4, 12, A[BS])
+        c.vline(12, 4, 12, A[BS])
+        c.rect(4, 12, 7, 13, A)
+        c.rect(8, 12, 11, 13, A)
+    elif kind == "power":      # wide heavy plated legs, glowing hip
+        c.rect(2, 2, 13, 5, M)
+        _leg_pair(c, M, 2, 7, 8, 13, 6, 13)
+        c.rect(2, 7, 7, 10, T)
+        c.rect(8, 7, 13, 10, T)
+        c.rect(7, 3, 8, 4, G or CYAN, bevel=False)
+        c.hline(2, 7, 13, T[DK])
+        c.hline(8, 13, 13, T[DK])
+    elif kind == "exo":        # thin legs with outer struts and joint lights
+        c.rect(5, 2, 10, 4, M)
+        _leg_pair(c, M, 5, 6, 9, 10)
+        c.vline(4, 4, 13, T[BS])
+        c.vline(11, 4, 13, T[BS])
+        c.hline(4, 6, 8, T[LT])
+        c.hline(9, 11, 8, T[LT])
+        lamp = V[HL] if V else (200, 130, 255)
+        c.pix(5, 8, lamp)
+        c.pix(10, 8, lamp)
+    else:
+        c.rect(4, 2, 11, 4, M)
+        _leg_pair(c, M, 4, 7, 8, 11)
+
+
+def _boot(c, ox, shaft_top, M, sole, toe_x=7):
+    """One side-on boot: shaft from shaft_top, foot to y=13."""
+    c.rect(2 + ox, shaft_top, 5 + ox, 9, M)
+    c.poly([(1 + ox, 9), (6 + ox, 9), (toe_x + ox, 11), (toe_x + ox, 13), (1 + ox, 13)], M)
+    c.rect(1 + ox, 12, toe_x + ox, 13, sole, bevel=False)
+    c.hline(1 + ox, toe_x + ox, 13, BLACK[DK])
 
 
 def _boots(c, kind, M, T, A, V, G):
-    # pair of boots, side-on; left faces left, right faces right? both face right-ish
+    tops = {"bandit": 6, "miner": 2, "steel": 4, "olive": 4, "commando": 3, "riot": 3,
+            "fibre": 4, "hev": 3, "steam": 4, "power": 2, "exo": 5}
+    lamp = V[HL] if V else (200, 130, 255)
     for ox in (0, 7):
-        shaft_h = 3 if kind in ("bandit", "miner") else 4
-        c.rect(2 + ox, 3, 5 + ox, 9, M)                # shaft
-        c.poly([(1 + ox, 9), (6 + ox, 9), (7 + ox, 11), (7 + ox, 13), (1 + ox, 13)], M)  # foot
-        c.rect(1 + ox, 12, 7 + ox, 13, A[SH] if kind not in ("hev",) else T[SH], bevel=False)  # sole
-        c.hline(1 + ox, 7 + ox, 13, BLACK[DK])
-        c.hline(2 + ox, 5 + ox, 3, T[LT] if kind not in ("commando",) else M[HL])
-        if kind == "bandit":
-            c.pix(3 + ox, 5, A[HL]); c.pix(3 + ox, 7, A[HL])
-        elif kind == "miner":
-            c.rect(2 + ox, 3, 5 + ox, 4, ramp((50, 80, 150)))
+        top = tops.get(kind, 4)
+        sole = A[SH] if kind != "hev" else T[SH]
+        _boot(c, ox, top, M, sole)
+        if kind == "bandit":        # ankle wraps
+            c.hline(2 + ox, 5 + ox, 6, A[BS])
             c.pix(3 + ox, 8, A[HL])
-        elif kind in ("steel", "olive", "fibre"):
+            c.pix(4 + ox, 7, A[HL])
+        elif kind == "miner":       # tall rubber waders, blue cuff
+            c.rect(2 + ox, 2, 5 + ox, 3, ramp((50, 80, 150)))
+            c.pix(3 + ox, 7, A[HL])
+        elif kind == "steel":
             c.rect(2 + ox, 5, 5 + ox, 7, T)
             c.rect(6 + ox, 10, 7 + ox, 11, T)
+        elif kind == "olive":
+            c.hline(2 + ox, 5 + ox, 5, A[BS])
+            c.hline(2 + ox, 5 + ox, 7, A[BS])
+            c.pix(6 + ox, 10, T[HL])
         elif kind == "commando":
-            c.hline(2 + ox, 5 + ox, 6, A[BS]); c.hline(2 + ox, 5 + ox, 8, A[BS])
+            c.hline(2 + ox, 5 + ox, 5, A[BS])
+            c.hline(2 + ox, 5 + ox, 8, A[BS])
+            c.vline(3 + ox, 3, 9, A[SH])
         elif kind == "riot":
-            c.rect(2 + ox, 5, 5 + ox, 6, T)
+            c.rect(2 + ox, 5, 5 + ox, 7, T)
             c.rect(6 + ox, 10, 7 + ox, 11, T)
+        elif kind == "fibre":
+            c.poly([(2 + ox, 5), (5 + ox, 5), (5 + ox, 8), (3 + ox, 8)], T)
+            c.pix(6 + ox, 11, (200, 255, 255))
         elif kind == "hev":
-            c.hline(2 + ox, 5 + ox, 8, M[DK]); c.rect(6 + ox, 10, 7 + ox, 11, T)
+            c.hline(2 + ox, 5 + ox, 6, T[BS])
+            c.hline(2 + ox, 5 + ox, 8, M[DK])
+            c.rect(6 + ox, 10, 7 + ox, 11, T)
         elif kind == "steam":
             c.rect(2 + ox, 5, 5 + ox, 6, T)
-            c.pix(3 + ox, 8, A[HL]); c.pix(4 + ox, 8, A[HL]); c.rect(6 + ox, 10, 7 + ox, 11, T)
+            c.rect(6 + ox, 10, 7 + ox, 11, T)
+            c.pix(3 + ox, 8, A[HL])
+            c.pix(4 + ox, 8, A[HL])
         elif kind == "power":
-            c.rect(1 + ox, 4, 6 + ox, 7, T)
+            c.rect(1 + ox, 3, 6 + ox, 7, T)
             c.pix(3 + ox, 5, G[HL] if G else (150, 255, 255))
         elif kind == "exo":
-            c.vline(2 + ox, 4, 8, T[BS]); c.pix(6 + ox, 10, V[HL] if V else (200, 130, 255))
+            c.vline(2 + ox, 5, 9, T[BS])
+            c.pix(6 + ox, 10, lamp)

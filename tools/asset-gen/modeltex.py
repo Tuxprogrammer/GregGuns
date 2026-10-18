@@ -111,8 +111,25 @@ def material(kind, r, h, w, base, pal=None):
         d = (xx + yy) / max(1, w + h)
         return _f(0.55 + 0.7 * np.clip(1.2 - d * 2.2, 0, 1) ** 2 + 0.05 * (fine - .5), b)
     if kind == "camo":
+        pattern = "blotch"
+        if isinstance(pal, tuple):
+            pattern, pal = pal
         pal = [hx(c) for c in pal]
-        n = vnoise(r, h, w, 6) * .6 + vnoise(r, h, w, 3) * .4
+        yy0, xx0 = np.mgrid[0:h, 0:w]
+        if pattern == "digital":      # blocky pixel camo
+            gh, gw = h // 3 + 2, w // 3 + 2
+            n = np.kron(r.random((gh, gw)) * .6 + vnoise(r, gh, gw, 4) * .4, np.ones((3, 3)))[:h, :w]
+        elif pattern == "splinter":   # angular sheared shards
+            big = vnoise(r, h, w + h, 9, 3)
+            n = np.stack([np.roll(big[y], int(y * 0.9))[:w] for y in range(h)])
+        elif pattern == "tiger":      # vertical stripes with wobble
+            n = 0.5 + 0.5 * np.sin((xx0 + 7 * vnoise(r, h, w, 6, 10)) * 0.9) * 0.9 + 0.1 * vnoise(r, h, w, 2)
+        elif pattern == "bark":       # long vertical streaks
+            n = vnoise(r, h, w, 2, 14) * .7 + vnoise(r, h, w, 1, 4) * .3
+        elif pattern == "flecks":     # mostly one colour, sparse specks
+            n = np.where(r.random((h, w)) > 0.82, 0.9, 0.15) + 0.2 * vnoise(r, h, w, 5)
+        else:
+            n = vnoise(r, h, w, 6) * .6 + vnoise(r, h, w, 3) * .4
         q = np.quantile(n, [.28, .55, .82])
         idx = (n > q[0]).astype(int) + (n > q[1]) + (n > q[2])
         out = np.array(pal)[np.clip(idx, 0, len(pal) - 1)]

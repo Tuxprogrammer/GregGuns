@@ -97,16 +97,18 @@ for _n, _f in list(globals().items()):
         DET[_n[2:]] = _f
 
 CAMO = [
-    ["#4B5320", "#6B7D3A", "#3A2F1E", "#20260F"],   # woodland
-    ["#C2A878", "#A88C5A", "#7D6842", "#DCC9A0"],   # desert
-    ["#E8EEF2", "#B8C4CC", "#8896A0", "#F8FBFD"],   # arctic
-    ["#6E7075", "#4A4C50", "#2E3033", "#8E9094"],   # urban
+    ("blotch", ["#4B5320", "#6B7D3A", "#3A2F1E", "#20260F"]),    # 0 woodland blotches
+    ("digital", ["#C2A878", "#A88C5A", "#7D6842", "#DCC9A0"]),   # 1 desert pixel camo
+    ("splinter", ["#E8EEF2", "#B8C4CC", "#8896A0", "#5A6670"]),  # 2 arctic splinter shards
+    ("tiger", ["#6E7075", "#2E3033", "#4A4C50", "#16171A"]),     # 3 urban tiger stripes
+    ("bark", ["#4A3A24", "#2E3A1E", "#6A5232", "#1E1A10"]),      # 4 bark streaks (wood)
+    ("flecks", ["#EEF2F4", "#D8DEE2", "#A8B0B8", "#FFFFFF"]),    # 5 snow flecks
 ]
 SOLID = {"black": "#26262A", "green": "#4E6B3A", "dark_green": "#2F4A32", "red": "#8A2A24", "silver": "#B8BCC4",
          "bronze": "#B8733A", "white": "#E8E8E8", "lightgreen": "#8FBF6A", "iron": "#9A9A9E", "rusty": "#8A5230",
          "dark": "#2C2F3A", "dark2": "#3A2C2C", "swat": "#1C2030", "security": "#1F2E4A", "1": "#4A8A70",
          "hazard": "#D0A020"}
-CAMO_NAMES = {"forest": 0, "wood": 0, "desert": 1, "snow": 2, "arctic": 2}
+CAMO_NAMES = {"forest": 0, "wood": 4, "desert": 1, "snow": 5, "arctic": 2}
 
 
 def tone(c, f):
@@ -244,6 +246,9 @@ def make_gun(man):
     ctx = {"glow": glow or "#FF8000", "accent": tone(pal[0], .6) if arch != "energy" else (glow or "#FF8000"),
            "lens": "#3A9AD0" if not glow else glow}
     camo = ((camo_n - 1) % 4, ("furn", "dark")) if camo_n else None
+    if camo_n:
+        tint = ["#5A6A3A", "#B89A60", "#C8D0D8", "#34363A"][(camo_n - 1) % 4]
+        mm["metal"] = ("steel", mix(metal, tint, .55), None)
     t = paint_atlas("model.gun." + gid, w, h, parts, mm, ctx, r_key="model.gun." + base_id, camo=camo)
     return t
 
@@ -342,7 +347,7 @@ def armour_layout_parts(s):
     return {"head": (0, 0, 8, 8, 8), "body": (16, 16, 8, 12, 4), "arm": (40, 16, 4, 12, 4), "leg": (0, 16, 4, 12, 4)}
 
 
-def paint_armour(t, r, cfg, s, layer, aid):
+def paint_armour(t, r, cfg, s, layer, aid, var_name=""):
     cloth = ("camo", "#808080", cfg["camo"], (4 * s, 9 * s, .75, False), .1) if cfg["camo"] else \
         (cfg["cmat"], cfg["cloth"], None, (5 * s, 12 * s, .78, False), .12)
     plate = ("steel", cfg["plate"], None, (3 * s + 2, 7 * s, .55, True), cfg["wear"])
@@ -457,8 +462,92 @@ def paint_armour(t, r, cfg, s, layer, aid):
                     continue
                 view = t.rgb[y:y + fh, x:x + fw]
                 DET["hazard"](view, r, fname, {})
-    # sheet extras (lower half) on square sheets
+    variant_overlay(t, r, s, var_name, cfg, P)
     return t
+
+
+GLYPH = {"S": ["###", "#..", "###", "..#", "###"], "W": ["#.#", "#.#", "#.#", "###", "#.#"], "A": [".#.", "#.#", "###", "#.#", "#.#"],
+         "T": ["###", ".#.", ".#.", ".#.", ".#."], "E": ["###", "#..", "##.", "#..", "###"], "C": ["###", "#..", "#..", "#..", "###"],
+         "U": ["#.#", "#.#", "#.#", "#.#", "###"]}
+
+
+def glyph_text(V, x, y, letters, col, sc):
+    for k, chh in enumerate(letters):
+        gx, gy = x + (k % 2) * 4 * sc, y + (k // 2) * 6 * sc
+        for j, row in enumerate(GLYPH[chh]):
+            for i, c in enumerate(row):
+                if c == "#":
+                    rect(V, gx + i * sc, gy + j * sc, sc, sc, col)
+
+
+def variant_overlay(t, r, s, var, cfg, P):
+    """Distinct patterns per colour variant (not just a recolour)."""
+    if not var:
+        return
+    for kind, (u, v, w, h, d) in P.items():
+        if kind == "head":
+            continue
+        for fn, (x, y, fw, fh) in box_uv(u, v, w, h, d, s).items():
+            if fw < 2 or fh < 2:
+                continue
+            V = t.rgb[y:y + fh, x:x + fw]
+            yy, xx = np.mgrid[0:fh, 0:fw]
+            side = fn in ("front", "back", "left", "right")
+            if var == "black":
+                m = ((xx + yy) // max(1, s)) % 7 == 0
+                V[m] = np.clip(V[m] * 1.5 + 8, 0, 255)
+                if side:
+                    rect(V, 0, fh // 3, fw, max(1, s // 2) + 1, "#D04010", .9)
+            elif var in ("green", "dark_green", "lightgreen"):
+                pat = ("digital", ["#3A5A2A", "#5E8A3E", "#2A4020", "#7AA050"]) if var == "green" else \
+                      ("tiger", ["#1E3A24", "#2F5A38", "#10241A", "#3E6A44"])
+                V[...] = V * .35 + material("camo", r, fh, fw, "#808080", pat) * .65
+            elif var == "red":
+                if side:
+                    cx = fw // 2
+                    rect(V, cx - s, 0, s, fh, "#EDEDED", .95); rect(V, cx + s, 0, max(1, s // 2), fh, "#EDEDED", .95)
+                    rect(V, 0, fh - 3 * s, fw, max(1, s // 2) + 1, "#1A1A1A", .9)
+            elif var == "silver":
+                streak = vnoise(r, fh, fw, max(3, fw // 2), 1)
+                V[...] = np.clip(V * (0.9 + 0.25 * streak[..., None]), 0, 255)
+                if side:
+                    rect(V, 0, 2 * s, fw, max(1, s // 2), "#3A6AD0", .95)
+            elif var in ("dark", "dark2"):
+                V[...] = V * .55 + material("carbon", r, fh, fw, "#202024") * .6
+            elif var == "iron":
+                m = (xx % (4 * s) == s) & (yy % (4 * s) == s)
+                V[m] = (30, 30, 34)
+                V[(xx % (8 * s) == 0)] *= .75
+            elif var == "rusty":
+                n = vnoise(r, fh, fw, max(2, 2 * s)) * .6 + vnoise(r, fh, fw, 1) * .4
+                m = n > .52
+                V[m] = np.array(hx("#8A4A20")) * (0.7 + 0.5 * n[m])[:, None]
+                st = (vnoise(r, fh, fw, 1, 9) > .72)
+                V[st] = V[st] * .55 + np.array(hx("#6A2E10")) * .45
+            elif var == "1":
+                n = vnoise(r, fh, fw, max(2, 2 * s))
+                m = n > .6
+                V[m] = np.array(hx("#9A6A3A")) * (0.8 + 0.4 * n[m])[:, None]
+            elif var == "bronze":
+                if side:
+                    for ly in range(2 * s, fh, 6 * s):
+                        rect(V, 0, ly, fw, max(1, s // 2), "#E8C060", .8)
+            elif var == "swat":
+                if side:
+                    rect(V, 0, 4 * s, fw, 2 * s, "#E8E8E8", .9) if kind in ("arm", "leg") else None
+                if kind == "body" and fn == "back":
+                    glyph_text(V, 0, 2 * s, "SWAT", "#E8E8E8", s)
+                if kind == "body" and fn == "front":
+                    rect(V, 0, 0, fw, s, "#E8E8E8", .9)
+            elif var == "security":
+                if side:
+                    for k in range(0, fw, 4 * s):
+                        rect(V, k, 5 * s, 2 * s, 2 * s, "#E0C020", .95)
+                    rect(V, 0, 5 * s, fw, 0, "#E0C020")
+                if kind == "body" and fn == "back":
+                    glyph_text(V, 0, 2 * s, "SECU", "#E0C020", s)
+                if kind == "body" and fn == "front":
+                    rect(V, 0, 0, fw, s, "#E0C020", .9)
 
 
 def _pipe(view, x, y, w, h, col):
@@ -480,7 +569,7 @@ def make_armor(man):
     s = max(1, W // 64)
     r = rng_for("model.armor." + (name if var else name))
     t = Tex(W, H)
-    paint_armour(t, r, cfg, s, layer, name)
+    paint_armour(t, r, cfg, s, layer, name, var)
     lines = ["standard 64x32 armour unwrap scaled x%d (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left))." % s]
     t.a[:32 * s, :64 * s] = 255
     if H > 32 * s:
@@ -543,6 +632,15 @@ def make_accessory(man):
           "glass": ("glass", "#3A8AB8" if key != "night_vision_goggles" else "#2A5A2A", None),
           "glow": ("plain", glowc, None), "cloth": ("fabric" if key != "glider" else "fabric", tone(main, 1.0), None),
           "leather": ("leather", "#4A3322", None)}
+    VPAT = {"black": ("carbon", "#26262A", None), "green": ("camo", "#808080", ("digital", ["#3A5A2A", "#5E8A3E", "#2A4020", "#7AA050"])),
+            "dark_green": ("camo", "#808080", ("tiger", ["#1E3A24", "#2F5A38", "#10241A", "#3E6A44"])),
+            "lightgreen": ("camo", "#808080", ("splinter", ["#8FBF6A", "#6A9A4A", "#B8DC90", "#4A7A32"])),
+            "white": ("camo", "#808080", ("flecks", ["#F0F0F0", "#D8DCE0", "#A8B0B8", "#FFFFFF"])),
+            "silver": ("steel", "#C8CCD4", None), "bronze": ("camo", "#808080", ("bark", ["#B8733A", "#8A5226", "#D8944A", "#6A3E1C"]))}
+    if var in VPAT:
+        mm["main"] = VPAT[var]
+        if key == "t2_beret":
+            mm["cloth"] = VPAT[var] if var != "black" else ("fabric", "#1E1E22", None)
     ctx = {"glow": glowc, "accent": "#C8A040", "lens": "#4AA8D8" if key != "night_vision_goggles" else "#40FF60"}
     return paint_atlas("model.armor." + name, 64, 64, parts, mm, ctx, r_key="model.armor." + key, cell=(4, 9), wear_amt=.25)
 
@@ -628,8 +726,107 @@ def biped(man, cfg):
         rect(V, x, y, s, h_, cfg["horns"]); rect(V, x + w_ - s, y, s, h_, cfg["horns"])
         for fn in ("left", "right"):
             xx, yy, ww, hh = hf[fn]; rect(V, xx + 3 * s, yy, 2 * s, s, cfg["horns"])
-    # body / limbs details
+    # ---- recognisable markings: face paint, eyewear, tusks, jaw plates, faction symbols ----
+    skin_c = cfg["skin"]
+    if cfg.get("mohawk"):
+        x, y, w_, h_ = hf["top"]
+        _paint(t, x, y, w_, h_, skin, r); rect(V, x + 3 * s, y, 2 * s, h_, cfg["mohawk"])
+        for fn in ("left", "right"):
+            xx, yy, ww, hh = hf[fn]; _paint(t, xx, yy, ww, 4 * s, skin, r)
+        _paint(t, fx, fy, fw, 2 * s, skin, r); rect(V, fx + 3 * s, fy, 2 * s, 2 * s, cfg["mohawk"])
+        xx, yy, ww, hh = hf["back"]; _paint(t, xx, yy, ww, 5 * s, skin, r); rect(V, xx + 3 * s, yy, 2 * s, 5 * s, cfg["mohawk"])
+    if cfg.get("face_paint"):
+        for ex in (1, 5):
+            rect(V, fx + ex * s, fy + 5 * s, 2 * s, max(1, s // 2) + s // 2, cfg["face_paint"], .9)
+        rect(V, fx, fy + 3 * s, fw, max(1, s // 2), cfg["face_paint"], .7)
+        rect(V, fx + 3 * s, fy + 5 * s, 2 * s, s, cfg["face_paint"], .6)
+    if cfg.get("one_eye"):  # zombie: milky blind left eye, glowing right
+        rect(V, fx + 5 * s, fy + 4 * s, 2 * s, s, "#C8D0C0"); rect(V, fx + 5 * s, fy + 3 * s, 2 * s, max(1, s // 2), "#4A5A3A")
+    if cfg.get("sunglasses"):
+        for ex in (1, 5):
+            rect(V, fx + ex * s, fy + 4 * s, 2 * s, s + s // 2, "#0C0C10"); rect(V, fx + ex * s, fy + 4 * s, max(1, s // 2) + 1, 1, "#7A8AA0")
+        rect(V, fx + 3 * s, fy + 4 * s, 2 * s, max(1, s // 2), "#0C0C10"); rect(V, fx, fy + 4 * s, s, max(1, s // 2), "#0C0C10"); rect(V, fx + 7 * s, fy + 4 * s, s, max(1, s // 2), "#0C0C10")
+    if cfg.get("eyepatch"):
+        rect(V, fx + 5 * s, fy + 3 * s, 3 * s, 3 * s - s // 2, "#0E0E10"); rect(V, fx, fy + 3 * s, fw, max(1, s // 2), "#0E0E10")
+    if cfg.get("tusks"):
+        for tx in (2, 5):
+            rect(V, fx + tx * s, fy + 6 * s - s // 2, max(1, s // 2) + s // 2, 2 * s, "#E8E0C0"); rect(V, fx + tx * s, fy + 6 * s - s // 2, 1, 2 * s, "#FFFFFF")
+    if cfg.get("brow"):
+        rect(V, fx + s // 2, fy + 3 * s - s // 2, fw - s, s, tone(skin_c, .55)); rect(V, fx + s // 2, fy + 4 * s - s // 2, 2 * s + s, max(1, s // 2), tone(skin_c, .7), .8)
+    if cfg.get("jaw_plate"):
+        rect(V, fx + s // 2, fy + 6 * s, fw - s, 2 * s, cfg["jaw_plate"])
+        for i in range(1, 8):
+            rect(V, fx + i * s - 1, fy + 6 * s + s // 2, 1, 2 * s - s // 2, "#101012")
+        if cfg.get("jaw_glow"):
+            rect(V, fx + s, fy + 7 * s - s // 2, fw - 2 * s, max(1, s // 2), cfg["jaw_glow"], .85)
+        for fn in ("left", "right"):
+            xx, yy, ww, hh = hf[fn]; rect(V, xx + 3 * s, yy + 5 * s, 4 * s, 3 * s, cfg["jaw_plate"])
+    if cfg.get("headband"):
+        rect(V, fx, fy + 2 * s, fw, max(1, s // 2) + s // 2, cfg["headband"])
+        for fn in ("left", "right", "back"):
+            xx, yy, ww, hh = hf[fn]; rect(V, xx, yy + 2 * s, ww, max(1, s // 2) + s // 2, cfg["headband"])
+    if cfg.get("bandage"):
+        rect(V, fx + s, fy + s, 5 * s, max(1, s // 2) + s // 2, "#CFC8B0"); rect(V, fx + 5 * s, fy + 5 * s, 2 * s, 2 * s, "#CFC8B0", .9)
+        rect(V, fx + 5 * s + s // 2, fy + 5 * s, max(1, s // 2), 2 * s, "#7A2010", .8)
+    if cfg.get("chinstrap"):
+        for fn in ("left", "right"):
+            xx, yy, ww, hh = hf[fn]; rect(V, xx + 2 * s, yy + 3 * s, max(1, s // 2) + s // 2, 5 * s, "#1E1E1A")
+        rect(V, fx + s, fy + 7 * s, 6 * s, max(1, s // 2), "#1E1E1A")
+    if cfg.get("net"):
+        for fn in ("top", "left", "right", "back", "front"):
+            xx, yy, ww, hh = hf[fn]; hh2 = hh if fn == "top" else (3 * s if fn == "front" else 4 * s)
+            sub = V[yy:yy + hh2, xx:xx + ww]
+            m = vnoise(r, hh2, ww, max(2, s * 2)) > .55
+            sub[m] = np.array(hx(cfg["net"])) * (0.8 + 0.3 * vnoise(r, hh2, ww, 1)[m])[:, None]
     bf = box_uv(*P["body"], s); bx, by, bw, bh = bf["front"]
+    SYM = {"star": ["#.#", ".#.", "#.#"], "cross": [".#.", "###", ".#."], "skull": ["###", "#.#", ".#."],
+           "chevron": ["#.#", ".#.", "#.#"], "gear": ["###", "#.#", "###"], "bar": ["###", "...", "###"]}
+
+    def symbol(x0, y0, kind, col, sc):
+        for j, row in enumerate(SYM[kind]):
+            for i, chh in enumerate(row):
+                if chh == "#":
+                    rect(V, x0 + i * sc, y0 + j * sc, sc, sc, col)
+    if cfg.get("faction"):
+        kind, col = cfg["faction"]
+        for k in ("rarm", "larm"):
+            for fn in ("left", "right"):
+                xx, yy, ww, hh = box_uv(*P[k], s)[fn]
+                rect(V, xx + s // 2, yy + s // 2, 3 * s, 3 * s, cfg.get("patch_bg", "#1A1A1C")); symbol(xx + s // 2, yy + s // 2, kind, col, s)
+        xx, yy, ww, hh = bf["back"]
+        symbol(xx + 2 * s, yy + 2 * s, kind, col, 2 * s)
+    if cfg.get("bandolier"):
+        for fn in ("front", "back"):
+            xx, yy, ww, hh = bf[fn]
+            for i in range(ww):
+                yv = yy + int(i * (hh - 2 * s) / ww) if fn == "front" else yy + int((ww - 1 - i) * (hh - 2 * s) / ww)
+                rect(V, xx + i, yv, 1, max(1, s) + s // 2, "#4A3320"); rect(V, xx + i, yv, 1, 1, "#6A4A2E")
+                if i % max(2, s * 2) == 0:
+                    rect(V, xx + i, yv + 1, 1, max(1, s), "#D8B040")
+    if cfg.get("epaulettes"):
+        for k in ("rarm", "larm"):
+            for fn in ("front", "back", "left", "right", "top"):
+                xx, yy, ww, hh = box_uv(*P[k], s)[fn]; hh2 = hh if fn == "top" else s * 2
+                rect(V, xx, yy, ww, hh2, "#D8B040"); rect(V, xx, yy + hh2 - 1, ww, 1, "#8A6A18")
+                if fn != "top":
+                    for i in range(0, ww, 2):
+                        rect(V, xx + i, yy + hh2, 1, max(1, s // 2) + 1, "#D8B040")
+    if cfg.get("spikes"):
+        for k in ("rarm", "larm"):
+            for fn in ("left", "right"):
+                xx, yy, ww, hh = box_uv(*P[k], s)[fn]
+                for j in range(3):
+                    rect(V, xx + ww // 2 - (2 - j) * max(1, s // 2), yy + j * s, (2 - j) * max(1, s) + 1, s, "#D8D0B0")
+                rect(V, xx + ww // 2, yy, max(1, s // 2), s, "#6A6050")
+    if cfg.get("cracks"):
+        for _ in range(9):
+            k = ("body", "rarm", "larm", "rleg", "lleg")[int(r.integers(0, 5))]
+            xx, yy, ww, hh = box_uv(*P[k], s)[("front", "back")[int(r.integers(0, 2))]]
+            cx, cy = int(r.integers(0, ww)), int(r.integers(0, max(1, hh // 2)))
+            for _s in range(int(r.integers(4, 9)) * s):
+                rect(V, xx + cx, yy + cy, 1, 1, cfg["cracks"]); cy = min(hh - 1, cy + 1)
+                cx = max(0, min(ww - 1, cx + int(r.integers(-1, 2))))
+    # body / limbs details
     if cfg.get("vest"):
         for fn in ("front", "back"):
             x, y, w_, h_ = bf[fn]
@@ -699,6 +896,22 @@ SKINS = {
     "supermutant_2": dict(skin="#907525", hair="#3A2A14", shirt="#4A3C28", pants="#3A3A30", boots="#2A2218", scars=True, mouth="#3A1A10", sleeve=4, belt="#5A4020", chest_plate="#6E5A3A", iris="#A03010"),
     "supermutant_3": dict(skin="#877130", hair="#1E1608", shirt="#50462E", pants="#4A3E28", boots="#2A2218", bandana="#7A4A2A", scars=True, teeth=True, mouth="#3A1A10", sleeve=6, vest="#3A3022", eye="#F0E080", blood=10),
 }
+
+# Recognisability pass: faction symbols, face/eye treatment per NPC type.
+SKIN_EXTRA = {
+    "army_soldier": dict(face_paint="#2A3A1E", net="#2C3A1E", chinstrap=True, faction=("star", "#E8E8E0"), patch_bg="#3A4A28", helmet_camo=True),
+    "zombie_soldier": dict(one_eye=True, bandage=True, faction=("star", "#7A8A6A"), patch_bg="#2A301C", jaw_ragged=True),
+    "bandit": dict(face_paint=None, headband="#7A2A22", mask="#2A2622", bandolier=True, faction=("skull", "#D8D0B8"), patch_bg="#2A2420"),
+    "dictator": dict(sunglasses=True, epaulettes=True, faction=("bar", "#E0C040"), patch_bg="#4A1A1A"),
+    "cyberdemon": dict(brow=True, jaw_plate="#4A4C54", jaw_glow="#FF7020", cracks="#FF9A30", tusks=True),
+    "supermutant_1": dict(brow=True, tusks=True, spikes=True, face_paint=None),
+    "supermutant_2": dict(mohawk="#3A5A2A", brow=True, eyepatch=True, faction=("cross", "#C03030"), patch_bg="#2A2218"),
+    "supermutant_3": dict(headband="#B03030", brow=True, spikes=True, bandolier=True, faction=("gear", "#E0C040"), patch_bg="#2A2218"),
+}
+for _k, _v in SKIN_EXTRA.items():
+    SKINS[_k].update({a: b for a, b in _v.items() if b is not None})
+SKINS["bandit"].pop("bandana", None)
+SKINS["bandit"]["mask"] = "#2A2622"
 
 
 # ---- non-biped entity atlases ----------------------------------------------------
@@ -822,6 +1035,99 @@ def make_bio_blob_machine(man):
     t.a[d < 1] = 255
     rect(t.rgb, 4, 4, 2, 2, "#E4FFD4")
     LAYOUT_DOC[man["id"]] = ["single 16x16 gel sprite (the blob block-entity renders it as one face)."]
+    return t
+
+
+# ---- structured projectiles (override the plain versions above) ---------------------------
+def make_beam(man, core, mid, edge):
+    """Beam quad: white-hot core, coloured inner sheath, exponential glow falloff, travelling
+    energy bands along x and bright knots; ends fade."""
+    t = Tex(32, 32)
+    y = np.abs(np.arange(32) - 15.5)[:, None] / 15.5
+    x = np.arange(32)[None, :]
+    glow = np.exp(-(y / 0.75) ** 2)
+    sheath = np.exp(-(y / 0.34) ** 2)
+    hot = np.exp(-(y / 0.11) ** 2)
+    band = 0.78 + 0.22 * np.sin(x * 2 * np.pi / 8.0)
+    knot = np.exp(-((x % 16 - 8) / 2.2) ** 2) * 0.5
+    inner = np.clip(sheath * band + knot * sheath, 0, 1)
+    ring = np.exp(-((y - 0.55) / 0.06) ** 2) * 0.55 * (0.6 + 0.4 * np.sin(x * 2 * np.pi / 8.0 + 1.5))
+    E, M, C = np.array(hx(edge)), np.array(hx(mid)), np.array(hx(core))
+    rgb = E * glow[..., None] * 1.0 + M * np.clip(inner + ring, 0, 1)[..., None]
+    rgb = rgb / np.maximum(1, (glow + inner + ring)[..., None]) * 1.6
+    rgb = rgb * (1 - hot[..., None]) + C * hot[..., None]
+    cap = np.clip(np.minimum(x, 31 - x) / 4.0, 0.15, 1)
+    a = np.clip(glow * 0.55 + inner * 0.6 + ring * 0.4 + hot, 0, 1) * cap * 255
+    t.rgb[...] = np.clip(rgb, 0, 255); t.a[...] = a
+    LAYOUT_DOC[man["id"]] = ["beam quad: white-hot core rows 14..17, coloured sheath, exponential glow to transparent at y=0/31, 8 px energy bands with bright knots every 16 px, 4 px end fade."]
+    return t
+
+
+def make_bioblob(man):
+    t = Tex(64, 64); r = rng_for(man["id"])
+    yy, xx = np.mgrid[0:64, 0:64]
+    wob = (vnoise(r, 64, 64, 8) - .5) * .3
+    d = np.hypot(xx - 31.5, yy - 31.5) / 30 + wob
+    inside = d < 1
+    membrane = np.exp(-((d - 0.9) / 0.07) ** 2)
+    body = np.clip(1 - d, 0, 1)
+    nuc_d = np.hypot(xx - 28, yy - 28) / 12 + wob * .5
+    nucleus = np.exp(-(nuc_d / 0.8) ** 3)
+    band = 0.9 + 0.1 * np.sin(d * 28)
+    base = np.array(hx("#2E6A10")) * (0.6 + 0.6 * body)[..., None] * band[..., None]
+    rgb = base * (1 - nucleus[..., None] * .5) + np.array(hx("#A0F070")) * membrane[..., None] * .9 + np.array(hx("#D8FFC0")) * (nucleus ** 3)[..., None] * .6
+    t.rgb[...] = np.clip(rgb, 0, 255)
+    t.a[inside] = np.clip(110 + 90 * body[inside] + 120 * membrane[inside] + 80 * nucleus[inside], 0, 255)
+    for _ in range(9):  # bubbles
+        bx, by = int(r.integers(12, 52)), int(r.integers(12, 52)); br = int(r.integers(2, 4))
+        if inside[by, bx]:
+            dd = np.hypot(xx - bx, yy - by)
+            t.rgb[(dd > br - 1) & (dd <= br)] = (210, 255, 190); t.a[(dd > br - 1) & (dd <= br)] = 230
+            t.rgb[by - 1, bx - 1] = (255, 255, 255)
+    LAYOUT_DOC[man["id"]] = ["membrane ring, darker nucleus, concentric banding and bubbles on a translucent 64x64 blob (single sprite)."]
+    return t
+
+
+def make_bullet(man):
+    t = Tex(32, 32)
+    for y0, body, tip, glow in ((5, "#D8A838", "#F4D878", "#FFB040"), (20, "#FF8A20", "#FFE090", "#FF6010")):
+        capsule(t, 9, y0, 18, 6, body, tip, glow)
+        for gx in (12, 14):   # casing grooves
+            rect(t.rgb, gx, y0, 1, 6, (70, 40, 10), .6)
+        rect(t.rgb, 9, y0, 3, 6, "#8A5A18"); rect(t.rgb, 9, y0 + 2, 3, 1, "#C89038")   # base band + primer ring
+        rect(t.rgb, 11, y0 + 1, 15, 1, (255, 255, 255), .35)                           # specular line
+        for i in range(9):                                                              # tracer trail, fading left
+            a = int(190 * (i + 1) / 9)
+            t.a[y0 + 2:y0 + 4, i] = np.maximum(t.a[y0 + 2:y0 + 4, i], a)
+            t.rgb[y0 + 2:y0 + 4, i] = np.array(hx(glow)) * (0.7 + 0.3 * i / 9)
+    LAYOUT_DOC[man["id"]] = ["two sprites: brass tracer at y=5..10, orange twin y=20..25 (capsule x=9..26, tip +x, fading trail x=0..8)."]
+    return t
+
+
+def make_handgun_bullet(man):
+    t = Tex(16, 16)
+    capsule(t, 3, 6, 10, 4, "#CDCDD2", "#EEEEF2", None)
+    rect(t.rgb, 3, 6, 3, 4, "#B07038"); rect(t.rgb, 5, 6, 1, 4, (80, 40, 10), .7)          # copper base with crimp groove
+    rect(t.rgb, 6, 6, 5, 1, (255, 255, 255), .5); rect(t.rgb, 11, 7, 2, 2, "#8A8A92", .6)    # jacket highlight, nose shade
+    LAYOUT_DOC[man["id"]] = ["silver jacketed slug, copper base with groove, x=3..12 y=6..9."]
+    return t
+
+
+def make_launcher_grenade(man):
+    t = Tex(32, 16); r = rng_for(man["id"])
+    body = material("steel", r, 12, 22, "#5A6048"); panelize(body, r, 5, 10)
+    t.paste(0, 2, body)
+    for y in range(2, 14):
+        t.rgb[y, :22] *= 1.12 - 0.35 * (y - 2) / 11
+    rect(t.rgb, 8, 2, 4, 12, "#C04030"); mul(t.rgb, 8, 2, 4, 1, 1.25); mul(t.rgb, 8, 13, 4, 1, .7)   # warhead band
+    for bx in (3, 14, 17):                                                                           # banding: yellow rings + driving band
+        rect(t.rgb, bx, 2, 1, 12, "#D8B848", .9)
+    rect(t.rgb, 19, 2, 3, 12, "#B8742E"); mul(t.rgb, 19, 2, 1, 12, 1.2)
+    nose = material("steel", r, 12, 8, "#3A3E2C"); t.paste(22, 2, nose)
+    rect(t.rgb, 22, 2, 1, 12, "#D8B848"); rect(t.rgb, 25, 2, 2, 12, "#E8E8E0", .6)
+    rect(t.rgb, 29, 5, 3, 6, "#202220"); rect(t.rgb, 29, 7, 3, 2, "#C04030")
+    t.a[2:14, 0:32] = 255
+    LAYOUT_DOC[man["id"]] = ["strip map: body 0..21 x 2..13 (red band x=8..11, yellow rings at x=3/14/17, copper driving band x=19..21); nose 22..31 (white stencil ring, red fuse tip)."]
     return t
 
 

@@ -245,33 +245,16 @@ def logo_mark(uid: str, size: float = 256) -> tuple[str, str]:
     return defs, g
 
 
+PIX_OUTER, PIX_RING, PIX_IN = 15.6, 13.4, 12.0
+
+
 def pixel_logo_rects() -> list[tuple[int, int, int, int, str]]:
-    """32x32 pixel-art mark as (x, y, w, h, colour) rectangles (hex ring + rifle + bullet)."""
+    """32x32 pixel-art contents (rifle, cable, bullet) as (x, y, w, h, colour) rectangles.
+
+    The hex casing behind them is vector (anti-aliased) so its edge is smooth; the
+    contents stay hard-edged pixels.
+    """
     grid: list[list] = [[None] * 32 for _ in range(32)]
-    poly_outer = hex_points(16, 16, 15.6)
-    poly_ring = hex_points(16, 16, 13.4)
-    poly_in = hex_points(16, 16, 12.0)
-
-    def inside(px, py, poly):
-        n, c = len(poly), False
-        j = n - 1
-        for i in range(n):
-            xi, yi = poly[i]
-            xj, yj = poly[j]
-            if (yi > py) != (yj > py) and px < (xj - xi) * (py - yi) / (yj - yi) + xi:
-                c = not c
-            j = i
-        return c
-
-    for y in range(32):
-        for x in range(32):
-            cx, cy = x + 0.5, y + 0.5
-            if inside(cx, cy, poly_outer):
-                grid[y][x] = "#4b5764" if y > 15 else "#6b7885"
-            if inside(cx, cy, poly_ring):
-                grid[y][x] = BLUE
-            if inside(cx, cy, poly_in):
-                grid[y][x] = "#141a21"
 
     def fill(x, y, w, h, c):
         for yy in range(y, y + h):
@@ -309,6 +292,8 @@ def pixel_logo_rects() -> list[tuple[int, int, int, int, str]]:
 
 def pixel_logo_svg(px=8) -> str:
     s = Svg(32 * px, 32 * px, bg=None)
+    for r, col in ((PIX_OUTER, "#5b6876"), (PIX_RING, BLUE), (PIX_IN, "#141a21")):
+        s.poly([(x * px, y * px) for x, y in hex_points(16, 16, r)], col)
     s.add('<g shape-rendering="crispEdges">')
     for x, y, w, h, c in pixel_logo_rects():
         s.add(f'<rect x="{x*px}" y="{y*px}" width="{w*px}" height="{h*px}" fill="{c}"/>')
@@ -444,6 +429,7 @@ class Iso:
         for pts, col, op in faces:
             t = [(ox + px * sc, oy + py * sc) for px, py in pts]
             s.poly(t, col, stroke="#0b0f13", sw=0.8, extra=f'fill-opacity="{op}"')
+        return lambda X, Y, Z: (ox + P(X, Y, Z)[0] * sc, oy + P(X, Y, Z)[1] * sc)
 
 
 def scene_works(iso: Iso):
@@ -482,6 +468,7 @@ def scene_gantry(iso: Iso):
         iso.box(x, 0, 4, 0.5, 5, 0.5, beam)
         iso.box(x, 2, 4.5, 0.5, 1, 1.4, hoist)
     iso.box(2.5, 0, 4.5, 9.2, 0.4, 0.4, beam)
+    iso.box(12.0, 0, 0, 1, 5, 3, cas)
 
 
 def scene_rampart(iso: Iso):
@@ -618,7 +605,7 @@ def tier_ruler(s: Svg, x, y, lit: list[str], sz=22, gap=4, ctrl: str | None = No
 
 
 def make_machine_roster() -> str:
-    W, H = 1760, 1180
+    W, H = 1760, 1290
     s = Svg(W, H, bg=INK, radius=14)
     s.text(36, 54, "GregGuns machine roster", 32, TXT, weight="700")
     s.text(36, 84, "Policy: every machine is a Techguns-style single block, and every machine used regularly also gets a multiblock for scale (docs/gregguns-spec/08).", 15, MUTED)
@@ -627,12 +614,13 @@ def make_machine_roster() -> str:
         lx += chip(s, lx, 104, k, c, INK, 12.5) + 10
     s.text(lx + 6, 121, "Bottleneck = gates progression, multiblock mandatory.  Regular = used every session.", 13, MUTED)
     y0 = 160
-    rh = 200
+    rhs = [200, 280, 200, 236]
     s.text(48, y0 - 2, "SINGLE BLOCK", 12.5, MUTED, weight="700", extra='letter-spacing="1.5"')
     s.text(712, y0 - 2, "MULTIBLOCK", 12.5, MUTED, weight="700", extra='letter-spacing="1.5"')
     s.text(1360, y0 - 2, "SKETCH (isometric, not to scale)", 12.5, MUTED, weight="700", extra='letter-spacing="1.5"')
     for i, m in enumerate(ROSTER):
-        y = y0 + 10 + i * (rh + 10)
+        rh = rhs[i]
+        y = y0 + 10 + sum(rhs[:i]) + i * 10
         s.rect(24, y, W - 48, rh, PANEL, rx=12)
         s.rect(40, y + 14, 590, rh - 28, PANEL2, rx=10)
         s.text(60, y + 50, m["single"], 25, TXT, weight="700")
@@ -650,8 +638,8 @@ def make_machine_roster() -> str:
         iso = Iso(u=14)
         m["scene"](iso)
         s.rect(1348, y + 14, 376, rh - 28, "#121920", rx=10)
-        iso.draw(s, 1536, y + rh / 2 + 2, 344, rh - 56)
-    by = y0 + 10 + len(ROSTER) * (rh + 10)
+        iso.draw(s, 1536, y + rh / 2 + 2, 352, rh - 40)
+    by = y0 + 10 + sum(rhs) + len(ROSTER) * 10
     s.rect(24, by, W - 48, 120, PANEL, rx=12)
     s.text(48, by + 34, "No multiblock, by design", 18, TXT, weight="700")
     items = [
@@ -696,21 +684,21 @@ def make_ammo_flow() -> str:
         s.text(colx[0] + 30, y + 22, n, 15, TXT, weight="600")
         s.text(colx[0] + 30, y + 41, d, 12.5, MUTED)
         y += 60
-    parts = [("round.<Material>", "Bullet slugs", "GT lathe/bender maps"), ("foil.<Material>", "Thin metal for casings", "GT lathe/bender maps"),
-             ("itemCasing.<Material>", "Heavy casings (high calibre)", "GT recipes"),
-             ("dust.Gunpowder / dust.TNT", "Propellant and charge", "GT recipes"),
-             ("plate + springSmall", "Magazine bodies", "GT recipes"),
+    parts = [("round.<Material>", "Bullet slug, 1/9 ingot", "Lathe, from a nugget"), ("foil.<Material>", "Case, 1/4 ingot", "Bending Machine"),
+             ("itemCasing.<Material>", "Large case, 1/2 ingot (AS50)", "Cutting Machine, Extruder, Alloy Smelter"),
+             ("dust.Gunpowder / dust.TNT", "Vanilla gunpowder / TNT dust", "GT dust recipes"),
+             ("plate + springSmall", "Magazine bodies and springs", "GT plate and spring recipes"),
              ("part_mechanical_2 / _3", "Feed mechanism part", "Assembler (RC-11)")]
     y = top + 14
     for n, d, mch in parts:
         s.rect(colx[1] + 10, y, colw[1] - 20, 66, PANEL2, rx=8)
         s.text(colx[1] + 26, y + 26, n, 14.5, CYAN, weight="600", family=MONO)
         s.text(colx[1] + 26, y + 46, d, 13, TXT)
-        s.text(colx[1] + 26, y + 61, "made by: " + mch, 11.5, MUTED)
+        s.text(colx[1] + 26, y + 61, "made by: " + mch, 11, MUTED)
         y += 72
-    s.text(colx[1] + 12, y + 6, "Registered in GT's own lathe,", 12, MUTED)
-    s.text(colx[1] + 12, y + 22, "bender and wiremill maps.", 12, MUTED)
-    s.text(colx[1] + 12, y + 38, "GregGuns adds no casing item.", 12, MUTED)
+    s.text(colx[1] + 12, y + 6, "Made by GT's own recipes.", 12, MUTED)
+    s.text(colx[1] + 12, y + 22, "Ammo itself: GregGuns Ammo Press", 12, MUTED)
+    s.text(colx[1] + 12, y + 38, "(gregguns.ammoPress, per 0011).", 12, MUTED)
 
     x3, w3 = colx[2], colw[2]
     s.rect(x3 + 10, top + 14, w3 - 20, 200, PANEL2, rx=10, stroke=ORANGE, sw=2)
@@ -888,6 +876,239 @@ def make_questbook() -> str:
     return s.render()
 
 
+# ---------------------------------------------------------------- multiblock explainers
+# Layer diagrams are copied from docs/gregguns-spec/08-machines-production/multiblocks.md
+# (layers left to right as in the spec; rows run front to back).
+CELL_COL = {
+    "~": ("#ffffff", "Controller"),
+}
+
+
+def layer_grid(s: Svg, x, y, rows, cmap, c=11):
+    """One layer as a small top-down grid. '.' = anything (small dot), '-' = air (dark)."""
+    for r, row in enumerate(rows):
+        for q, ch in enumerate(row):
+            cx, cy = x + q * c, y + r * c
+            if ch == ".":
+                s.rect(cx + 4, cy + 4, c - 8, c - 8, "#2c3743", rx=1)
+            elif ch == "-":
+                s.rect(cx + 0.5, cy + 0.5, c - 1, c - 1, "#0d1217", rx=1, stroke="#2c3743", sw=0.8)
+            elif ch == "~":
+                s.rect(cx + 0.5, cy + 0.5, c - 1, c - 1, "#ffffff", rx=2, stroke=ORANGE, sw=2)
+            else:
+                s.rect(cx + 0.5, cy + 0.5, c - 1, c - 1, cmap[ch][0], rx=1)
+
+
+MB = {
+    "works": dict(
+        title="Ammunition Works", cls="Bottleneck", id="MTE 20105", scene=scene_works,
+        tiers=["LV", "MV", "HV", "EV", "IV"], ctrl="HV",
+        sub="Multiblock form of the Ammo Press. A production hall: feeder, a run of press bays, a packing station. Reads the same gregguns.ammoPress map.",
+        dims=[("Footprint", "5 wide x 7 tall x (7 + 3n) long"), ("Default n = 4", "5 x 7 x 19"),
+              ("Layers", "feeder 6, press bay 6, packing station 7"), ("Blocks", "feeder 18 F, 40 A, 2 I; each bay 44 A, 2 M, 3 I; station 16 O, 67 A, 3 I")],
+        legend={"F": ("#7b8794", "Works Casing, feeder (hatches)"), "A": ("#4c5865", "Works Casing, plain"), "O": ("#c5cdd6", "Works Casing, packing (output)"),
+                "M": (ORANGE, "Ram Housing (animated)"), "I": (CYAN, "GT item pipe casing (belt, any tier)")},
+        pieces=[("Feeder (3 long, once)", [("y5", ["F...F", ".....", "F...F"]), ("y4", ["AAAAA"] * 3), ("y3", ["FFFFF", "A---A", "A---A"]),
+                                            ("y2", ["FFFFF", "A---A", "A---A"]), ("y1", ["FF~FF", "A---A", "A---A"]), ("y0", ["AAAAA", "AAIAA", "AAIAA"])]),
+                ("Press bay (3 long, repeat n = 2 to 8)", [("y5", [".....", "..M..", "....."]), ("y4", ["AAAAA", "AAMAA", "AAAAA"]), ("y3", ["A---A"] * 3),
+                                                           ("y2", ["A---A"] * 3), ("y1", ["A---A"] * 3), ("y0", ["AAIAA"] * 3)]),
+                ("Packing station (4 long, once)", [("y6", [".....", "..O..", "..O..", "....."]), ("y5", ["AAAAA", "AAOAA", "AAOAA", "AAAAA"]),
+                                                    ("y4", ["A---A", "A---A", "A---A", "AOOOA"]), ("y3", ["A---A", "A---A", "A---A", "AOOOA"]),
+                                                    ("y2", ["A---A", "A---A", "A---A", "AOOOA"]), ("y1", ["A---A", "A---A", "A---A", "AOOOA"]),
+                                                    ("y0", ["AAIAA", "AAIAA", "AAIAA", "AAAAA"])])],
+        hatches=["Controller: front of the feeder, middle, second layer from the bottom (the ~ cell).",
+                 "Input Bus (1+): on any F; hopper tops are the intended spot. Input Hatch 0+.",
+                 "Energy, Maintenance and Muffler (one each, Muffler required): any F.",
+                 "Output Bus (1+): on the O cells of the back wall of the packing station.",
+                 "Belt: one tier of GT item pipe casing for the whole I line; mixed tiers fail."],
+        grow=["Add press bays: n = 2 to 8, each 3 blocks long (+3 length).",
+              "Hologram stack size selects n; survival build places feeder, bays in order, station.",
+              "A structure with fewer than 2 or more than 8 bays fails with a named error."],
+        mech=["Parallels = 4 x n x tier (tier of the max input voltage). HV: 48 at n = 4, 96 at n = 8. Capped by the power the Energy Hatches supply.",
+              "Belt speed: duration x 1 / (1 + 0.25 x (beltTier + 1)).",
+              "Worked example (proposal): HV, 8 bays, belt tier 2: 256 rifle bullets per 3.4 s, about 4,500 a minute against 160 a minute from one LV Ammo Press.",
+              "Needs Energy, Maintenance, Muffler (40 pollution/s proposal), Input Bus, Output Bus."],
+    ),
+    "retort": dict(
+        title="Retort", cls="Bottleneck", id="MTE 20108", scene=scene_retort,
+        tiers=["EV", "IV", "LuV", "ZPM"], ctrl="EV",
+        sub="Multiblock form of the Reaction Chamber: a glass lab retort on stilts. Reads the gregguns.recipe.reactionchamber map.",
+        dims=[("Footprint", "5 wide x (7 + n) tall x 5 deep"), ("Default n = 3", "5 x 10 x 5"),
+              ("Layers", "7 fixed (cap, 2 neck, shoulder, low ring, floor, feet) + n bulb layers"), ("Blocks", "R 61, G 16 + 12n, F 4; casing minimum 51, independent of n")],
+        legend={"R": ("#b04fd8", "Reaction Casing (hatches)"), "G": ("#59b8ff", "GT borosilicate glass, any tier"), "F": ("#8e9aa6", "frameGt Steel (feet)")},
+        pieces=[("Layers, top to bottom (mid layer repeats n = 2 to 6 times)", [
+            ("cap", [".....", ".RRR.", ".RRR.", ".RRR.", "....."]), ("neck", [".....", ".GGG.", ".G-G.", ".GGG.", "....."]),
+            ("neck", [".....", ".GGG.", ".G-G.", ".GGG.", "....."]), ("shoulder", [".RRR.", "RRRRR", "RR-RR", "RRRRR", ".RRR."]),
+            ("mid x n", [".GGG.", "G---G", "G---G", "G---G", ".GGG."]), ("low ring", [".RRR.", "R---R", "R---R", "R---R", ".RRR."]),
+            ("floor", [".R~R.", "RRRRR", "RRRRR", "RRRRR", ".RRR."]), ("feet", [".....", ".F.F.", ".....", ".F.F.", "....."])])],
+        hatches=["Controller: front, middle of the floor layer (the ~ cell).",
+                 "Input Bus (holds the non-consumed Heat Ray Focus and inputs), Output Bus, Input Hatch, Energy, Maintenance: on R in the floor and low ring.",
+                 "Muffler Hatch: on the cap.",
+                 "All hatches are GT's. Needs Energy, Maintenance, Muffler, Input Bus, Output Bus, Input Hatch."],
+        grow=["Add bulb layers: n = 2 to 6, each 1 block taller; the shape stays a bulb and neck.",
+              "Pieces: base (low ring, floor, feet), bulb x n, top (cap, neck, shoulder).",
+              "Hologram stack size selects n; survival build places base, bulbs, then top."],
+        mech=["Parallels = 2 x n (4 to 12), capped by power: six Laser Focus runs need 11,520 EU/t.",
+              "Pressure rating: the lowest glass tier must be at least the recipe tier (Laser Focus EV, Anti Gravity Core IV), else insufficientMachineTier.",
+              "One shared intensity for the batch: a failed batch applies its risk once, but still loses all its inputs. A bigger batch is a bigger gamble.",
+              "Same focus, drift and completion rules as the single Reaction Chamber."],
+    ),
+    "gantry": dict(
+        title="Armoury Gantry", cls="Regular", id="MTE 20114", scene=scene_gantry,
+        tiers=["HV", "EV", "IV", "LuV", "ZPM"], ctrl="HV",
+        sub="Multiblock form of the Repair Bench: a row of portal-frame repair bays. No recipe map; repair cost is read from item NBT.",
+        dims=[("Footprint", "7 wide x 7 tall x (3 + 2n) long"), ("Default n = 4", "7 x 7 x 11"),
+              ("Layers", "7 tall (y0 to y6); head 2 long, bay 2 long, tail 1 long"), ("Blocks", "head B 14, L 20, G 10, R 19, H 1; bay B 14, L 10, R 6, T 6, H 1")],
+        legend={"R": ("#7b8794", "Gantry Casing (hatches)"), "B": (TIER["HV"][3], "Gantry Beam"), "H": (ORANGE, "Gantry Hoist"), "L": ("#d8dee4", "frameGt Titanium (legs)"),
+                "G": ("#59b8ff", "GT borosilicate glass"), "T": (CYAN, "Repair Cradle (one per bay)")},
+        pieces=[("Head (2 long, booth)", [("y6", ["...H...", "......."]), ("y5", ["BBBBBBB"] * 2), ("y4", ["LGGGGGL", "L-----L"]), ("y3", ["LGGGGGL", "L-----L"]),
+                                          ("y2", ["LRR~RRL", "L-----L"]), ("y1", ["LRRRRRL", "L-----L"]), ("y0", ["LRRRRRL", "LRRRRRL"])]),
+                ("Bay (2 long, repeat n = 2 to 8)", [("y6", ["...H...", "......."]), ("y5", ["BBBBBBB"] * 2), ("y4", ["L-----L", "-------"]), ("y3", ["L-----L", "-------"]),
+                                                     ("y2", ["L-----L", "-------"]), ("y1", ["L-----L", "-------"]), ("y0", ["LRTTTRL", "RRTTTRR"])]),
+                ("Tail (1 long, once)", [("y6", ["......."]), ("y5", ["BBBBBBB"]), ("y4", ["LRRRRRL"]), ("y3", ["LRRRRRL"]), ("y2", ["LRRRRRL"]), ("y1", ["LRRRRRL"]), ("y0", ["LRRRRRL"])])],
+        hatches=["Controller: in the front wall of the head booth, middle height (the ~ cell).",
+                 "Input Bus (1+), Output Bus (1+), Energy (1+), Maintenance (1): on R in the head and tail walls and floors.",
+                 "No Muffler and no pollution: repairing makes none."],
+        grow=["Add repair bays: n = 2 to 8, each 2 blocks long (+2 length), one cradle and one hoist per bay.",
+              "Hologram stack size selects n. Default 4 bays; 8 bays clear a locker in one cycle."],
+        mech=["Parallels = n bays: each repairs one item per cycle, scanned from the Input Bus in order.",
+              "Tier gate: the lowest Energy Hatch tier is the highest item tier it repairs; a LuV or ZPM item needs a LuV or ZPM hatch.",
+              "Cycle = 2 s + 8 s x largest damage fraction; draws RECIPE_<tier>/2 x items repaired (proposal).",
+              "Each item is all-or-nothing against its repair list. Output keeps every NBT key (enchants, camo, IC2 charge); GT tools are never touched."],
+    ),
+    "rampart": dict(
+        title="Rampart", cls="Regular", id="MTE 20120", scene=scene_rampart,
+        tiers=["MV", "HV", "EV", "IV"], ctrl="HV",
+        sub="Multiblock form of the Turret: a crenellated wall of turret mounts on one ammo feed and one power feed. No recipe; it sets its own EU draw.",
+        dims=[("Footprint", "(4 + 2n) long x 6 tall x 3 deep"), ("Default n = 6", "16 x 6 x 3"),
+              ("Layers", "gatehouse 6 tall, wall 5 tall; gate 3 long, bay 2 long, cap 1 long"), ("Blocks", "gatehouse T 47, G 2; bay P 21, H 1; cap P 15")],
+        legend={"T": ("#6b7885", "Bastion Plating, gatehouse (hatches)"), "P": ("#8e9aa6", "Bastion Plating, wall"), "G": ("#59b8ff", "GT borosilicate glass"),
+                "H": (ORANGE, "Gun Mount Hatch (one per bay)")},
+        pieces=[("Gatehouse (3 long, once)", [("y5", ["TTT"] * 3), ("y4", ["TGT", "T-T", "TTT"]), ("y3", ["TGT", "T-T", "TTT"]), ("y2", ["TTT", "T-T", "TTT"]),
+                                              ("y1", ["T~T", "T-T", "TTT"]), ("y0", ["TTT"] * 3)]),
+                ("Bay (2 long, repeat n = 2 to 10)", [("y4", ["P-"] * 3), ("y3", ["P-"] * 3), ("y2", ["PH", "P-", "P-"]), ("y1", ["PP"] * 3), ("y0", ["PP"] * 3)]),
+                ("End cap (1 long, once)", [("y4", ["P"] * 3), ("y3", ["P"] * 3), ("y2", ["P"] * 3), ("y1", ["P"] * 3), ("y0", ["P"] * 3)])],
+        hatches=["Controller: front of the gatehouse, middle, second layer (the ~ cell).",
+                 "Input Bus, Output Bus, Energy, Maintenance: on T in the gatehouse. Input Buses are one shared ammo store for every mount.",
+                 "Gun Mount Hatch (MV to IV, IDs 20121-20124): exactly one per bay, on the sill at H; holds one gun.",
+                 "No Muffler and no pollution. Never explodes in rain."],
+        grow=["Add mounts: n = 2 to 10, each 2 blocks long (+2 length): a merlon, a crenel and a hatch.",
+              "Hologram stack size selects n; survival build places gatehouse, bays in order, then cap.",
+              "A missing hatch in any bay is a structure error."],
+        mech=["Parallel = n mounts, no energy discount: upkeep 4 EU/t per mount plus 120 EU per HP healed (proposal). Ten mounts = 40 EU/t, inside an MV Energy Hatch.",
+              "Gun Mount Hatch tier caps the gun tier a mount accepts.",
+              "Armour = lowest Bastion Plating meta: Iron 5, Steel 10, Aluminium 15, Carbon 20, for every mount.",
+              "One owner, team and animal-target setting on the controller; breaking a hatch kills that mount's 30 HP turret."],
+    ),
+}
+
+# 3D positions for callout markers, per structure: (number, (x, y, z))
+MB_MARKS = {
+    "works": [(1, (1.5, 5, 1.0)), (2, (1.1, 1.2, 3.6)), (3, (2.4, 5, 1.7)), (4, (14, 2.5, 1.8)), (5, (7, 5.4, 0.6))],
+    "retort": [(1, (2.5, 4.5, 1.8)), (2, (5, 2.5, 1.8)), (3, (2.5, 2.5, 8.2))],
+    "gantry": [(1, (1, 5, 2.5)), (2, (1, 5, 0.6)), (3, (3.1, 3.4, 0.3)), (4, (2.75, 2.5, 5.9))],
+    "rampart": [(1, (1.5, 3, 1.5)), (2, (1.5, 3, 4.4)), (3, (4.5, 2.1, 3.4))],
+}
+MB_BRACKET = {
+    "works": ((3, 6.6, 0), (11, 6.6, 0), "n press bays (2 to 8)"),
+    "retort": ((-0.6, 5.6, 2.2), (-0.6, 5.6, 4.8), "n bulb layers (2 to 6)"),
+    "gantry": ((2.5, 5.9, 0), (12, 5.9, 0), "n bays (2 to 8)"),
+    "rampart": ((3, 3.8, 0), (15, 3.8, 0), "n mounts (2 to 10)"),
+}
+MB_HATCH_KEY = {
+    "works": ["Controller", "Input Bus (hopper tops)", "Energy, Maintenance, Muffler", "Output Bus", "Belt (item pipe casing)"],
+    "retort": ["Controller (floor, front)", "Buses, Input Hatch, Energy, Maintenance", "Muffler (cap)"],
+    "gantry": ["Controller (head booth)", "Buses, Energy, Maintenance", "Repair Cradle", "Gantry Hoist"],
+    "rampart": ["Controller (gatehouse)", "Buses, Energy, Maintenance", "Gun Mount Hatch"],
+}
+
+
+def make_multiblock(key: str) -> str:
+    m = MB[key]
+    W, H = 1600, 1120
+    s = Svg(W, H, bg=INK, radius=14)
+    s.text(36, 56, m["title"], 36, TXT, weight="700")
+    cx = 36 + len(m["title"]) * 20 + 24
+    chip(s, cx, 32, m["cls"], CLS_COL[m["cls"]], INK, 13, h=28)
+    s.text(cx + len(m["cls"]) * 8 + 50, 52, m["id"], 15, MUTED, family=MONO)
+    s.para(36, 86, m["sub"], 1100, 15, MUTED)
+    tier_ruler(s, W - 36 - 8 * 34 - 7 * 4, 36, m["tiers"], ctrl=m["ctrl"])
+    s.text(W - 36, 84, "lit = hatch tiers, white outline = controller tier", 12, MUTED, "end")
+    # left: sketch
+    s.rect(24, 130, 800, 500, PANEL, rx=12)
+    s.text(44, 160, "ISOMETRIC SKETCH (default size)", 12.5, MUTED, weight="700", extra='letter-spacing="1.5"')
+    iso = Iso(u=14)
+    m["scene"](iso)
+    P = iso.draw(s, 424, 400, 700, 380)
+    (a, b, lab) = MB_BRACKET[key]
+    pa, pb = P(*a), P(*b)
+    s.line(pa[0], pa[1], pb[0], pb[1], ORANGE, 3)
+    for q in (pa, pb):
+        s.line(q[0] - 6, q[1] - 6, q[0] + 6, q[1] + 6, ORANGE, 3)
+    mx, my = (pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2
+    if key == "retort":
+        s.text(mx - 14, my + 5, lab, 15, ORANGE, "end", "700")
+    else:
+        s.text(pb[0] + 8, pb[1] + 28, lab, 15, ORANGE, "end", "700")
+    for num, pos in MB_MARKS[key]:
+        q = P(*pos)
+        s.add(f'<circle cx="{q[0]:.1f}" cy="{q[1]:.1f}" r="11" fill="#ffffff" stroke="{ORANGE}" stroke-width="3"/>')
+        s.text(q[0], q[1] + 4.5, str(num), 13, INK, "middle", "700")
+    # right: layers
+    s.rect(844, 130, 732, 500, PANEL, rx=12)
+    s.text(864, 160, "LAYERS (each grid is one layer from above; rows run front to back)", 12.5, MUTED, weight="700", extra='letter-spacing="1"')
+    y = 182
+    cell = int(min(20, min((692 - len(L) * 14) // (len(L) * len(L[0][1][0])) for _, L in m["pieces"])))
+    for name, layers in m["pieces"]:
+        s.text(864, y + 12, name, 14, TXT, weight="700")
+        y += 22
+        x = 864
+        gh = len(layers[0][1]) * cell
+        for lname, rows in layers:
+            layer_grid(s, x, y, rows, m["legend"] | CELL_COL, cell)
+            s.text(x + len(rows[0]) * cell / 2, y + gh + 13, lname, 10.5, MUTED, "middle")
+            x += len(rows[0]) * cell + 14
+        y += gh + 30
+    ly = y + 10
+    lx = 864
+    items = [("~", "Controller")] + [(k, v[1]) for k, v in m["legend"].items()]
+    for k, lab in items:
+        w = 26 + (len(lab) + 2) * 6.4 + 14
+        if lx + w > 1560:
+            lx = 864
+            ly += 22
+        if k == "~":
+            s.rect(lx, ly - 11, 13, 13, "#ffffff", rx=2, stroke=ORANGE, sw=2)
+        else:
+            s.rect(lx, ly - 11, 13, 13, m["legend"][k][0], rx=2)
+        s.text(lx + 19, ly, f"{k} {lab}" if k != "~" else lab, 11.5, TXT)
+        lx += w
+    cards = [("Dimensions and layers", [f"{a}: {b}" for a, b in m["dims"]], None),
+             ("Controller and hatches", m["hatches"], MB_HATCH_KEY[key]),
+             ("Expandable segments", m["grow"], None),
+             ("Tier and parallel mechanic", m["mech"], None)]
+    x = 24
+    cw = (W - 48 - 3 * 14) / 4
+    for title, lines, keys in cards:
+        s.rect(x, 650, cw, 420, PANEL, rx=12)
+        s.text(x + 18, 684, title, 17, ORANGE, weight="700")
+        yy = 712
+        for ln in lines:
+            yy = s.para(x + 18, yy, ln, cw - 36, 13.5, TXT, lh=1.32) + 9
+        if keys:
+            yy += 8
+            s.text(x + 18, yy, "SKETCH MARKERS", 12, MUTED, weight="700", extra='letter-spacing="1"')
+            yy += 22
+            for i, k in enumerate(keys):
+                s.add(f'<circle cx="{x + 28}" cy="{yy - 4}" r="9" fill="#ffffff" stroke="{ORANGE}" stroke-width="2.5"/>')
+                s.text(x + 28, yy, str(i + 1), 11, INK, "middle", "700")
+                s.text(x + 46, yy, k, 13, TXT)
+                yy += 24
+        x += cw + 14
+    s.text(36, H - 14, "Source: docs/gregguns-spec/08-machines-production/multiblocks.md and machine-roster.md. Layouts are designs, not Java; figures marked proposal are not settled.", 12, MUTED)
+    return s.render()
+
+
 # ---------------------------------------------------------------- rasterising
 def _rasterise_playwright(jobs):
     from playwright.sync_api import sync_playwright
@@ -919,17 +1140,24 @@ def rasterise(jobs):
 
 
 def pixel_pngs():
-    from PIL import Image
+    from PIL import Image, ImageDraw
 
-    img = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
-    for x, y, w, h, c in pixel_logo_rects():
-        rgb = tuple(int(c.lstrip("#")[i:i + 2], 16) for i in (0, 2, 4)) + (255,)
-        for xx in range(x, x + w):
-            for yy in range(y, y + h):
-                img.putpixel((xx, yy), rgb)
-    img.save(BRAND / "logo_pixel_32.png")
-    img.resize((128, 128), Image.NEAREST).save(BRAND / "logo_pixel_128.png")
-    img.resize((256, 256), Image.NEAREST).save(BRAND / "logo_pixel_256.png")
+    def hexed(size):
+        ss = 8  # supersample the vector hex, then reduce: smooth edge
+        big = Image.new("RGBA", (size * ss, size * ss), (0, 0, 0, 0))
+        d = ImageDraw.Draw(big)
+        k = size * ss / 32
+        for r, col in ((PIX_OUTER, "#5b6876"), (PIX_RING, BLUE), (PIX_IN, "#141a21")):
+            d.polygon([(x * k, y * k) for x, y in hex_points(16, 16, r)], fill=col)
+        return big.resize((size, size), Image.LANCZOS)
+
+    for size in (32, 128, 256):
+        img = hexed(size)
+        k = size // 32
+        d = ImageDraw.Draw(img)
+        for x, y, w, h, c in pixel_logo_rects():
+            d.rectangle([x * k, y * k, (x + w) * k - 1, (y + h) * k - 1], fill=c)
+        img.save(BRAND / f"logo_pixel_{size}.png")
 
 
 def main():
@@ -948,7 +1176,9 @@ def main():
     emit(BRAND / "banner.svg", make_banner(), [("", 1280, 320, False)])
     emit(BRAND / "social_preview.svg", make_social(), [("", 1280, 640, False)])
     for name, fn in (("tier-progression", make_tier_progression), ("machine-roster", make_machine_roster),
-                     ("ammo-production-flow", make_ammo_flow), ("questbook-overview", make_questbook)):
+                     ("ammo-production-flow", make_ammo_flow), ("questbook-overview", make_questbook),
+                     ("multiblock-ammunition-works", lambda: make_multiblock("works")), ("multiblock-retort", lambda: make_multiblock("retort")),
+                     ("multiblock-armoury-gantry", lambda: make_multiblock("gantry")), ("multiblock-rampart", lambda: make_multiblock("rampart"))):
         text = fn()
         m = re.search(r'width="(\d+)" height="(\d+)"', text)
         emit(INFO / f"{name}.svg", text, [("", int(m.group(1)), int(m.group(2)), False)])

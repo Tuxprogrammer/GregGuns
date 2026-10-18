@@ -664,27 +664,73 @@ def steelframe(kind: str):
     return f
 
 
+GLYPHS = {   # 3x5 pixel font for stencilled labels
+    "0": "111101101101111", "1": "010110010010111", "2": "111001111100111", "3": "111001111001111",
+    "4": "101101111001001", "5": "111100111001111", "6": "111100111101111", "7": "111001010010010",
+    "8": "111101111101111", "9": "111101111001111", "-": "000000111000000", "G": "111100101101111",
+    "S": "111100111001111", "C": "111100100100111", "R": "110101110101101", "M": "101111111101101",
+    "A": "010101111101101", "X": "101101010101101", "F": "111100110100100", "L": "100100100100111",
+}
+
+
+def text(c: Canvas, x: int, y: int, msg: str, col) -> None:
+    for i, ch in enumerate(msg):
+        g = GLYPHS.get(ch)
+        if not g:
+            continue
+        for k, bit in enumerate(g):
+            if bit == "1":
+                c.px(x + i * 4 + k % 3, y + k // 3, col)
+
+
 def container_scifi(rusty: bool):
     n = 32
     base = hx("#777262") if not rusty else hx("#826947")
+    code = "G7" if not rusty else "R3"
+    accent = hx("#40c8d8") if not rusty else hx("#c88a40")
 
     def interior(nn, rng):
         c = Canvas(nn, fill=base)
         tone_fill(c, base, rng, 0.08, 4)
-        for y in (nn // 2 - 1,):
-            c.hline(0, nn, y, shade(base, 0.6))
-            c.hline(0, nn, y + 1, shade(base, 1.3))
-        for x in range(4, nn, 8):                             # recessed panels with glow strips
-            c.rect(x, 5, x + 4, nn // 2 - 4, shade(base, 0.7))
-            c.hline(x, x + 4, nn // 2 - 5, hx("#40c8d8") if not rusty else hx("#c88a40"))
-            c.rect(x, nn // 2 + 4, x + 4, nn - 5, shade(base, 0.7))
+        # panel seams: a vertical seam at 15 and the horizontal centre seam, bevelled
+        c.vline(15, 0, nn, shade(base, 0.55))
+        c.vline(16, 0, nn, shade(base, 1.3))
+        c.hline(0, nn, nn // 2 - 1, shade(base, 0.55))
+        c.hline(0, nn, nn // 2, shade(base, 1.3))
+        # upper-left: louvred vent with a dark plenum and slats
+        c.rect(5, 5, 14, 12, OUT)
+        for y in range(6, 11, 2):
+            c.hline(6, 13, y, shade(base, 0.35))
+            c.hline(6, 13, y + 1, shade(base, 1.2))
+        c.px(5, 5, shade(base, 1.4))
+        # upper-right: label plate with stencil code, barcode and an accent stripe
+        c.rect(18, 5, 29, 15, shade(base, 0.45))
+        c.rect(19, 6, 28, 14, hx("#cfcab8") if not rusty else hx("#b8a888"))
+        text(c, 21, 7, code, hx("#25262a"))
+        for i, x in enumerate(range(20, 28)):
+            if (i * 5) % 3 != 1:
+                c.vline(x, 12, 14, hx("#25262a"))
+        c.hline(19, 28, 6, accent)
+        # lower-left: recessed hatch panel with a lever handle and corner bolts
+        c.rect(5, 19, 14, 28, shade(base, 0.62))
+        c.frame(5, 19, 14, 28, shade(base, 0.4))
+        c.rect(7, 22, 12, 25, shade(base, 0.82))
+        c.hline(8, 11, 23, hx("#c8ccd4"))
+        for (x, y) in ((6, 20), (12, 20), (6, 26), (12, 26)):
+            rivet(c, x, y, base)
+        # lower-right: glowing strip lights and a small hazard badge
+        for k in range(3):
+            c.rect(19, 19 + k * 3, 29, 20 + k * 3, accent)
+        for y in range(25, 29):
+            for x in range(23, 29):
+                c.px(x, y, hx("#e0b020") if ((x + y) // 2) % 2 == 0 else hx("#202226"))
+        c.frame(23, 25, 29, 29, hx("#14161a"))
         if rusty:
-            rust(c, rng, 0.45)
+            rust(c, rng, 0.2)
         return c
 
     def f(rng):
-        return ctm_set(n, lambda: np.random.default_rng(66), interior, shade(base, 0.55), 4,
-                       "hazard" if False else "bar")
+        return ctm_set(n, lambda: np.random.default_rng(66), interior, shade(base, 0.55), 4, "bar")
     return f
 
 
@@ -945,6 +991,7 @@ def _metalpanel(kind: str):
 
 
 def techgrid_v9(rng):
+    """48x48 = a 3x3 block of 16 px tiles that repeat seamlessly; each tile has its own circuit motif."""
     n = 48
     base = hx("#9ea1a2")
     c = Canvas(n, fill=base)
@@ -952,29 +999,79 @@ def techgrid_v9(rng):
     for y in range(n):
         for x in range(n):
             c.px(x, y, shade(base, 0.9 + 0.2 * float(f[y, x])))
-    for g in range(0, n, 16):                                         # tile seams
+    cyan, cyan_d = hx("#4ac0c8"), hx("#2c7f86")
+    dark = shade(base, 0.5)
+    chip = hx("#2a2d33")
+
+    def chipat(ox, oy, w, h):
+        c.rect(ox, oy, ox + w, oy + h, chip)
+        c.hline(ox, ox + w, oy, hx("#4a4e57"))
+        for k in range(1, w, 2):
+            c.px(ox + k, oy - 1, hx("#c8ccd4"))
+            c.px(ox + k, oy + h, hx("#c8ccd4"))
+        c.px(ox + 1, oy + 1, hx("#d8dce4"))
+
+    def led(x, y, col):
+        c.px(x, y, col)
+        c.px(x + 1, y, shade(col, 0.6))
+
+    for ty in range(3):
+        for tx in range(3):
+            ox, oy = tx * 16, ty * 16
+            k = tx * 3 + ty
+            c.rect(ox + 3, oy + 3, ox + 5, oy + 5, dark)
+            c.px(ox + 3, oy + 3, shade(base, 1.4))
+            if k == 0:
+                c.hline(ox + 3, ox + 13, oy + 8, cyan)
+                c.vline(ox + 8, oy + 3, oy + 13, cyan)
+                c.rect(ox + 7, oy + 7, ox + 10, oy + 10, dark)
+                c.px(ox + 8, oy + 8, cyan)
+            elif k == 1:
+                chipat(ox + 5, oy + 6, 6, 4)
+                c.hline(ox + 6, ox + 13, oy + 12, cyan)
+                c.vline(ox + 12, oy + 8, oy + 13, cyan)
+                c.hline(ox + 3, ox + 6, oy + 5, cyan_d)
+            elif k == 2:
+                for i, col in enumerate(("#4ac0c8", "#e0b020", "#4ac0c8", "#d04030")):
+                    led(ox + 3 + (i % 2) * 6, oy + 7 + (i // 2) * 3, hx(col))
+                c.hline(ox + 3, ox + 13, oy + 13, cyan_d)
+            elif k == 3:
+                c.hline(ox + 3, ox + 8, oy + 9, cyan)
+                for d in range(3):
+                    c.px(ox + 8 + d, oy + 9 - d, cyan)
+                c.hline(ox + 11, ox + 14, oy + 6, cyan)
+                c.rect(ox + 6, oy + 11, ox + 12, oy + 13, dark)
+            elif k == 4:
+                c.rect(ox + 5, oy + 5, ox + 11, oy + 11, shade(base, 0.7))
+                c.frame(ox + 5, oy + 5, ox + 11, oy + 11, cyan)
+                c.rect(ox + 7, oy + 7, ox + 9, oy + 9, hx("#c8f6f8"))
+                c.px(ox + 8, oy + 8, WHITE)
+            elif k == 5:
+                for y in range(7, 13, 2):
+                    c.hline(ox + 6, ox + 13, oy + y, hx("#202328"))
+                    c.hline(ox + 6, ox + 13, oy + y + 1, shade(base, 1.25))
+            elif k == 6:
+                c.hline(ox + 3, ox + 12, oy + 5, cyan)
+                c.vline(ox + 12, oy + 5, oy + 12, cyan)
+                c.rect(ox + 11, oy + 11, ox + 14, oy + 14, dark)
+                c.px(ox + 12, oy + 12, cyan)
+            elif k == 7:
+                chipat(ox + 4, oy + 7, 4, 3)
+                chipat(ox + 10, oy + 7, 4, 3)
+                c.hline(ox + 8, ox + 10, oy + 8, cyan_d)
+                c.hline(ox + 3, ox + 13, oy + 13, cyan)
+            else:
+                for i in range(5):
+                    h = 2 + (i * 2) % 5
+                    c.rect(ox + 5 + i * 2, oy + 12 - h, ox + 6 + i * 2, oy + 12, cyan if h > 3 else cyan_d)
+                for y in range(3):
+                    for x in range(3):
+                        c.px(ox + 11 + x, oy + 3 + y, hx("#e0b020") if (x + y) % 2 == 0 else hx("#2a2a30"))
+    for g in range(0, n, 16):
         c.hline(0, n, g, shade(base, 0.62))
         c.vline(g, 0, n, shade(base, 0.62))
         c.hline(0, n, (g + 1) % n, shade(base, 1.3))
         c.vline((g + 1) % n, 0, n, shade(base, 1.3))
-    cyan = hx("#4ac0c8")
-    for ty in range(3):                                                # circuit traces differ per tile
-        for tx in range(3):
-            ox, oy = tx * 16, ty * 16
-            k = (tx * 3 + ty) % 4
-            if k == 0:
-                c.hline(ox + 3, ox + 13, oy + 8, cyan)
-                c.vline(ox + 8, oy + 3, oy + 13, cyan)
-            elif k == 1:
-                c.hline(ox + 3, ox + 13, oy + 5, cyan)
-                c.vline(ox + 12, oy + 5, oy + 13, cyan)
-            elif k == 2:
-                c.rect(ox + 5, oy + 5, ox + 11, oy + 11, shade(base, 0.7))
-                c.frame(ox + 5, oy + 5, ox + 11, oy + 11, cyan)
-            else:
-                c.hline(ox + 3, ox + 9, oy + 10, cyan)
-                c.vline(ox + 3, oy + 4, oy + 11, cyan)
-            c.rect(ox + 3, oy + 3, ox + 5, oy + 5, shade(base, 0.5))
     return [c]
 
 

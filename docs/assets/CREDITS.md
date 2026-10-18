@@ -21,6 +21,14 @@
 | infographics/ammo-production-flow.png | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge (Pillow for pixel PNGs) | MIT | 2026-10-18 |
 | infographics/questbook-overview.svg | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge (Pillow for pixel PNGs) | MIT | 2026-10-18 |
 | infographics/questbook-overview.png | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge (Pillow for pixel PNGs) | MIT | 2026-10-18 |
+| infographics/multiblock-ammunition-works.svg | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge | MIT | 2026-10-18 |
+| infographics/multiblock-ammunition-works.png | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge | MIT | 2026-10-18 |
+| infographics/multiblock-retort.svg | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge | MIT | 2026-10-18 |
+| infographics/multiblock-retort.png | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge | MIT | 2026-10-18 |
+| infographics/multiblock-armoury-gantry.svg | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge | MIT | 2026-10-18 |
+| infographics/multiblock-armoury-gantry.png | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge | MIT | 2026-10-18 |
+| infographics/multiblock-rampart.svg | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge | MIT | 2026-10-18 |
+| infographics/multiblock-rampart.png | Claude (Anthropic) via tools/asset-gen/branding.py | Hand-authored SVG strings; PNG via Playwright + Edge | MIT | 2026-10-18 |
 
 <!-- generated-credits:start -->
 
@@ -28,7 +36,7 @@
 
 Every asset below was generated procedurally by Claude (Anthropic) with the named generator and seed. Re-running the generator reproduces it.
 
-### blocks (167)
+### blocks (169)
 
 | asset | path | generator | seed | method | licence | date |
 |---|---|---|---|---|---|---|
@@ -162,8 +170,10 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | block.machine.armoury_gantry.overlay_front_active_glow | src/main/resources/assets/gregguns/textures/blocks/machines/armoury_gantry/OVERLAY_FRONT_ACTIVE_GLOW.png | tools/asset-gen/blocks.py | 4051486518 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
 | block.machine.camo_bench.overlay_bottom | src/main/resources/assets/gregguns/textures/blocks/machines/camo_bench/OVERLAY_BOTTOM.png | tools/asset-gen/blocks.py | 2127940810 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
 | block.machine.camo_bench.overlay_front | src/main/resources/assets/gregguns/textures/blocks/machines/camo_bench/OVERLAY_FRONT.png | tools/asset-gen/blocks.py | 370299234 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
+| block.machine.camo_bench.overlay_front_active | src/main/resources/assets/gregguns/textures/blocks/machines/camo_bench/OVERLAY_FRONT_ACTIVE.png | tools/asset-gen/blocks.py | 109334974 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
 | block.machine.camo_bench.overlay_side | src/main/resources/assets/gregguns/textures/blocks/machines/camo_bench/OVERLAY_SIDE.png | tools/asset-gen/blocks.py | 1919335666 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
 | block.machine.camo_bench.overlay_top | src/main/resources/assets/gregguns/textures/blocks/machines/camo_bench/OVERLAY_TOP.png | tools/asset-gen/blocks.py | 662594299 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
+| block.machine.camo_bench.overlay_top_active | src/main/resources/assets/gregguns/textures/blocks/machines/camo_bench/OVERLAY_TOP_ACTIVE.png | tools/asset-gen/blocks.py | 3933147866 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
 | block.machine.gun_mount_hatch.overlay_front | src/main/resources/assets/gregguns/textures/blocks/machines/gun_mount_hatch/OVERLAY_FRONT.png | tools/asset-gen/blocks.py | 3566144253 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
 | block.machine.gun_mount_hatch.overlay_front_active | src/main/resources/assets/gregguns/textures/blocks/machines/gun_mount_hatch/OVERLAY_FRONT_ACTIVE.png | tools/asset-gen/blocks.py | 2359257715 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
 | block.machine.rampart.overlay_front | src/main/resources/assets/gregguns/textures/blocks/machines/rampart/OVERLAY_FRONT.png | tools/asset-gen/blocks.py | 1134554956 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
@@ -200,7 +210,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | particle.techscope | src/main/resources/assets/gregguns/textures/fx/techscope.png | tools/asset-gen/blocks.py | 4011541779 | procedural FX sprite sheet (fx.py): analytic radial/noise fields through a colour ramp | MIT | 2026-10-18 |
 | particle.teslaflare01 | src/main/resources/assets/gregguns/textures/fx/teslaflare01.png | tools/asset-gen/blocks.py | 653321173 | procedural FX sprite sheet (fx.py): analytic radial/noise fields through a colour ramp | MIT | 2026-10-18 |
 
-### gui (12)
+### gui (15)
 
 | asset | path | generator | seed | method | licence | date |
 |---|---|---|---|---|---|---|
@@ -216,6 +226,9 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | gui.storage_chest | src/main/resources/assets/gregguns/textures/gui/storage_chest.png | tools/asset-gen/gui.py | none | Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites | MIT | 2026-10-18 |
 | gui.multiblock_widgets | src/main/resources/assets/gregguns/textures/gui/multiblock_widgets.png | tools/asset-gen/gui.py | none | Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites | MIT | 2026-10-18 |
 | gui.gun_mount_hatch | src/main/resources/assets/gregguns/textures/gui/gun_mount_hatch.png | tools/asset-gen/gui.py | none | Procedural PIL sprite sheet in GT-style grey bevels; shelf-packed widget sprites | MIT | 2026-10-18 |
+| gui.scope_sniper | src/main/resources/assets/gregguns/textures/gui/scopes/sniper.png | tools/asset-gen/gui.py | none | Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle | MIT | 2026-10-18 |
+| gui.scope_assault | src/main/resources/assets/gregguns/textures/gui/scopes/assault.png | tools/asset-gen/gui.py | none | Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle | MIT | 2026-10-18 |
+| gui.scope_energy | src/main/resources/assets/gregguns/textures/gui/scopes/energy.png | tools/asset-gen/gui.py | none | Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle | MIT | 2026-10-18 |
 
 ### icons (177)
 
