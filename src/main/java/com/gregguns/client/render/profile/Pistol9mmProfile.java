@@ -41,6 +41,12 @@ public final class Pistol9mmProfile {
     /** The muzzle in the gun frame (after the model's own orientation), blocks: x, y down, z. */
     public static final float[] MUZZLE = { 0.0f, 0.1f, -0.2f };
 
+    /**
+     * Frames of {@code muzzleflash2.png} that are painted: 0 to 6. Frame 7 is empty (the sheet's cell 7 is fully
+     * transparent), so playing eight frames made the flash vanish for the last eighth of its window.
+     */
+    public static final int MUZZLE_FLASH_FRAMES = 7;
+
     private static final float[] NO_PIVOT = { 0, 0, 0 };
     // The grip tilts back about its top edge, and the magazine tilts with it.
     private static final float[] GRIP_PIVOT = { -29.5f, 9.0f, 0.0f };
@@ -118,7 +124,7 @@ public final class Pistol9mmProfile {
         // an additive black-background sheet (docs/assets/MANIFEST.md), so it is drawn additively.
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
-            new SpriteSheet(4, 4, 8),
+            new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
             -0.65,
             -0.75,
             1.55,

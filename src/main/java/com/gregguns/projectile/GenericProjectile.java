@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import com.gregguns.combat.DamageFalloff;
 import com.gregguns.combat.DamageSources;
 import com.gregguns.combat.DamageType;
+import com.gregguns.combat.Knockback;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ShotOffset;
 import com.gregguns.gun.sound.GunSoundPlayer;
@@ -80,6 +81,8 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
     protected float dropEnd;
     /** Armor penetration, 0 to 1. */
     protected float penetration;
+    /** Knockback multiplier of a hit, 1 for vanilla's push (GUN-38). */
+    protected float knockback = 1.0F;
     /** Blocks per tick squared pulled downwards. */
     protected float gravity;
     /** Ticks of flight left. */
@@ -127,6 +130,7 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
         dropStart = (float) stats.dropStart();
         dropEnd = (float) stats.dropEnd();
         penetration = (float) stats.penetration();
+        knockback = (float) stats.knockback();
         ticksToLive = stats.lifetimeTicks();
         lifetime = stats.lifetimeTicks();
         // Players keep their look in rotationYaw on the server; other living entities turn their head.
@@ -343,10 +347,28 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
             dropEnd,
             Ballistics.distance(startX, startY, startZ, hitX, hitY, hitZ));
         if (dealt > 0) {
+            double beforeX = target.motionX;
+            double beforeY = target.motionY;
+            double beforeZ = target.motionZ;
             // A fresh source per hit: sources carry per-hit state.
-            DamageSources.hit(target, getDamageType(), this, shooter, (float) dealt, penetration);
+            boolean taken = DamageSources.hit(target, getDamageType(), this, shooter, (float) dealt, penetration);
+            if (taken && Knockback.needsAdjustment(knockback)) {
+                scaleKnockback(target, beforeX, beforeY, beforeZ);
+            }
         }
         onHitEffect(target);
+    }
+
+    /**
+     * Rescales the push vanilla gave the target in this hit by the gun's multiplier (GUN-38). Vanilla's
+     * {@code knockBack} ignores the strength it is given, so the velocity change is measured and scaled here.
+     */
+    private void scaleKnockback(Entity target, double beforeX, double beforeY, double beforeZ) {
+        target.motionX = Knockback.scale(beforeX, target.motionX, knockback);
+        target.motionY = Knockback.scale(beforeY, target.motionY, knockback);
+        target.motionZ = Knockback.scale(beforeZ, target.motionZ, knockback);
+        // A player's velocity only reaches their client when flagged.
+        target.velocityChanged = true;
     }
 
     /**

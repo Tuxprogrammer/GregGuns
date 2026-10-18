@@ -7,6 +7,14 @@
     "category": "player",
     "sounds": ["guns/pistol_reload"]
   },
+  "guns.revolver.fire": {
+    "category": "player",
+    "sounds": ["guns/revolver_shot_a", "guns/revolver_shot_b", "guns/revolver_shot_c"]
+  },
+  "guns.revolver.reload": {
+    "category": "player",
+    "sounds": ["guns/revolver_reload"]
+  },
   "effects.bullet_impact": {
     "category": "player",
     "sounds": [
