@@ -1,6 +1,6 @@
 # Input, HUD and inventory tab
 
-Source: `keybinds/TGKeybinds.java`, `keybinds/TGKeybindsID.java`, `debug/*`, `events/GuiOverlayAmmoCount.java`, and parts of `events/TechgunsEventhandler.java` and `events/TechgunsTickHandler.java`.
+Source: `keybinds/TGKeybinds.java`, [`keybinds/TGKeybindsID.java`](networking.md#7--packettgkeybindpress-cs), `debug/*`, `events/GuiOverlayAmmoCount.java`, and parts of [`events/TechgunsEventhandler.java`](events.md#techgunseventhandler-forge-bus) and [`events/TechgunsTickHandler.java`](events.md#techgunstickhandler-fml-bus).
 
 ## Keybinds (`TGKeybinds`, client only)
 
@@ -12,18 +12,18 @@ All five are registered in init (client handlers step), in the category `techgun
 | KEY_TOGGLE_SAFEMODE | `techguns.key.toggleSafemode` | Toggle Safe Mode | **B** | Sends id 1 |
 | KEY_TOGGLE_JETPACK | `techguns.key.toggleJetpack` | Toggle Jetpack | **J** | Sends id 7 |
 | KEY_TOGGLE_STEPASSIST | `techguns.key.toggleStepassist` | Toggle Step Assist | **V** | Sends id 8 |
-| KEY_FORCE_RELOAD | `techguns.key.forceReload` | Force Reload | **R** | Only when holding a `GenericGun`, the local `fireDelay` ≤ 0 and the gun is not fully loaded: sends id 6 **and** calls the gun's `tryForcedReload` locally as a prediction |
+| KEY_FORCE_RELOAD | `techguns.key.forceReload` | Force Reload | **R** | Only when holding a [`GenericGun`](../02-guns/gun-lifecycle.md), the local `fireDelay` ≤ 0 and the gun is not fully loaded: sends id 6 **and** calls the gun's `tryForcedReload` locally as a prediction |
 
 What the server does with each ID is in [networking.md](networking.md) (packet 7, PacketTGKeybindPress). The other keybind IDs aren't tied to a key binding:
-- Jetpack boost start/stop is driven by the vanilla jump key, read by the jetpack and jump-pack items (05).
+- Jetpack boost start/stop is driven by the vanilla jump key, read by the jetpack and jump-pack items ([05](../05-armor/index.md)).
 - TOGGLE_HUD (9) comes from a toggle button in the Techguns inventory GUI.
 - Jetpack-forward start/stop (4/5) are never sent.
 
-Safe mode ("In safe mode guns don't destroy or ignite blocks.") starts **on**. Guns check it when deciding whether to damage blocks (02).
+Safe mode ("In safe mode guns don't destroy or ignite blocks.") starts **on**. Guns check it when deciding whether to damage blocks ([02](../02-guns/index.md)).
 
 ### Debug keybinds
 
-These exist only when config `enableDebugKeybinds` = true. They tune three global offsets, `debug.Keybinds.X/Y/Z` (doubles, start at 0), that developers used for live positioning. In this build no gameplay code reads X/Y/Z; the reads are commented out. The category `key.categories.techguns` and every name below have **no lang entries**, so they show as raw keys.
+These exist only when config [`enableDebugKeybinds`](config.md#category-debug) = true. They tune three global offsets, `debug.Keybinds.X/Y/Z` (doubles, start at 0), that developers used for live positioning. In this build no gameplay code reads X/Y/Z; the reads are commented out. The category `key.categories.techguns` and every name below have **no lang entries**, so they show as raw keys.
 
 | Name | Default key | Effect (prints chat feedback) |
 |---|---|---|
@@ -31,7 +31,7 @@ These exist only when config `enableDebugKeybinds` = true. They tune three globa
 | `key.+y` / `key.-y` | Numpad 4 / Numpad 5 | Y ± 0.1 |
 | `key.+z` / `key.-z` | Numpad 1 / Numpad 2 | Z ± 0.1 |
 | `key.show` | Numpad 0 | Chat "XYZ: x, y, z" |
-| `key.reloadFX` | Numpad Enter | Chat "Reloading FXList...", reloads `particles/FXList.txt` (04), then "Done!" |
+| `key.reloadFX` | Numpad Enter | Chat "Reloading FXList...", reloads [`particles/FXList.txt`](../04-projectiles-fx/fx-catalogue.md) ([04](../04-projectiles-fx/index.md)), then "Done!" |
 | `key.killAllEntityFX` | Numpad , | Chat "Removing all Particles...", kills all FX particles, then "Done!" |
 
 `debug/Uuidgen.java` is a standalone `main` that prints a random UUID. It is a developer tool and is not used at runtime.
@@ -41,14 +41,14 @@ These exist only when config `enableDebugKeybinds` = true. They tune three globa
 Guns can be "shoot with left click". When they are, vanilla attack and mining are suppressed and Techguns runs its own fire loop:
 
 1. **MouseEvent** (Forge bus, client, priority HIGH): for button 0 while the game has focus and the player holds a `GenericGun`:
-   - If the gun shoots with left click: store the button state (down or up) in `ClientProxy.keyFirePressed` and **cancel** the event, so vanilla never sees the click.
+   - If the gun shoots with left click: store the button state (down or up) in [`ClientProxy.keyFirePressed`](lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) and **cancel** the event, so vanilla never sees the click.
    - Otherwise (a melee or mining type gun such as the chainsaw): if a reload is still in progress (reload end time in the future), cancel the press so you can't attack or mine while reloading.
 2. **BreakSpeed** (priority HIGHEST): while holding a left-click gun, the break speed becomes −1 and the event is cancelled, so the player can't mine.
 3. **PlayerTickEvent START** (client, local player only, game focused):
    - If the held item is a left-click gun and `keyFirePressed` is set, and `fireDelay` ≤ 0: send `PacketShootGun(gun.isZooming())` and call `shootGunLeftClick` locally.
-   - For **semi-auto** guns, `keyFirePressed` is then cleared, even when the shot was blocked by `fireDelay`. A click made slightly before the cooldown ends is lost (CORE-32).
+   - For **semi-auto** guns, `keyFirePressed` is then cleared, even when the shot was blocked by `fireDelay`. A click made slightly before the cooldown ends is lost ([CORE-32](index.md#suspected-bugs)).
    - Switching to a non-gun item, or losing focus, clears `keyFirePressed`.
-4. `fireDelay` (ticks) is decremented at the start of every player tick on both sides. Guns set it when they fire (02).
+4. `fireDelay` (ticks) is decremented at the start of every player tick on both sides. Guns set it when they fire ([02](../02-guns/index.md)).
 
 ## FOV and zoom
 
@@ -60,23 +60,23 @@ Each render tick, `ClientProxy.player_zoom` is updated from the item in the loca
 |---|---|
 | Not a `GenericGun` | 1.0 |
 | Gun with "hold zoom" | the gun's zoom multiplier while sneaking, otherwise 1.0 |
-| Other gun | reset to 1.0 only if the gun reports it isn't zooming; otherwise the value set by the gun's toggle-zoom logic (02) stays |
+| Other gun | reset to 1.0 only if the gun reports it isn't zooming; otherwise the value set by the gun's toggle-zoom logic ([02](../02-guns/index.md)) stays |
 
 ### FOV event (`FOVUpdateEvent`)
 
-`newFov` is multiplied by `player_zoom × f`. When `LockSpeedDependantFov` is off, f = 1. When it is on:
+`newFov` is multiplied by `player_zoom × f`. When [`LockSpeedDependantFov`](config.md#category-clientside) is off, f = 1. When it is on:
 - f = 1 / ((movementSpeedAttribute / walkSpeed + 1) / 2). This undoes the vanilla speed-based widening, including speed from Techguns armor.
-- If the local player is sprinting, f is multiplied by a hard-coded **1.2** to keep a fixed sprint widening. The config value `FixedSprintFovMultiplier` (1.15) is never read (CORE-12).
+- If the local player is sprinting, f is multiplied by a hard-coded **1.2** to keep a fixed sprint widening. The config value [`FixedSprintFovMultiplier`](config.md#category-clientside) (1.15) is never read ([CORE-12](index.md#suspected-bugs)).
 
 ## HUD overlay (`GuiOverlayAmmoCount`)
 
-Registered on the Forge bus (client only). All coordinates use the scaled resolution: W = scaled width, H = scaled height. Icons come from `textures/gui/TGPlayerInventory.png` (layout [below](#tgplayerinventorypng-layout)). Texts use the vanilla font in white (0xFFFFFFFF), and "§e" (yellow) and "§f" (white) formatting codes appear inside them. Right alignment is computed as `string length × 6` px, and that length includes the two-character formatting codes, so texts end up about 12 px further left than intended (CORE-18).
+Registered on the Forge bus (client only). All coordinates use the scaled resolution: W = scaled width, H = scaled height. Icons come from [`textures/gui/TGPlayerInventory.png`](../08-machines-production/gui-textures.md#14-texturesguitgplayerinventorypng-owned-by-the-player-inventory-area-0105) (layout [below](#tgplayerinventorypng-layout)). Texts use the vanilla font in white (0xFFFFFFFF), and "§e" (yellow) and "§f" (white) formatting codes appear inside them. Right alignment is computed as `string length × 6` px, and that length includes the two-character formatting codes, so texts end up about 12 px further left than intended ([CORE-18](index.md#suspected-bugs)).
 
 The main overlay is drawn on the **post** phase of the `EXPERIENCE` element. The handler ignores cancelable (pre) events, so it runs once per frame after the XP bar.
 
 ### Ammo counter (always shown when a gun is held)
 
-- **Text:** `<ammo left>/<clip size>§ex<magazines>`. Ammo left and clip size come from the gun's tooltip helpers (02).
+- **Text:** `<ammo left>/<clip size>§ex<magazines>`. Ammo left and clip size come from the gun's tooltip helpers ([02](../02-guns/index.md)).
 - **Magazines:**
   1. Count every item stack matching the gun's ammo item (same item and damage) in the 36 main inventory slots, plus Techguns ammo slots 6–11.
   2. Divide by the gun's "ammo count" (ammo items per reload) when it is above 1.
@@ -90,13 +90,13 @@ Starts at y = H − 30. Each shown row draws a 7×7 icon at x = W − 10, and th
 
 | Order | Condition | Icon (u, v) | Text |
 |---|---|---|---|
-| 1 | Chest armor is a `PoweredArmor` | (249, 35) battery | `§e<batteries>x§f<power%>%`, where batteries = count of that armor's battery item in main inventory and ammo slots, and power% = stored ÷ max power. Drawn at x = W + 14 − len×6 |
+| 1 | Chest armor is a [`PoweredArmor`](../05-armor/armor-catalogue.md#9-power-system-poweredarmor) | (249, 35) battery | `§e<batteries>x§f<power%>%`, where batteries = count of that armor's battery item in main inventory and ammo slots, and power% = stored ÷ max power. Drawn at x = W + 14 − len×6 |
 | 2 | Back slot holds a jetpack, jump pack or anti-grav pack | (242, 42) jetpack off / (249, 42) jetpack on (shows `enableJetpack`) | `§e<fuel items>x§f<charge%>%`, where charge% = 1 − displayDamage ÷ maxDamage of the pack, and fuel items = count of the pack's ammo item. Same x formula |
 | 3 | `proxy.hasNightvision` (armor provides NV) | (242, 7) off / (249, 7) on, per `enableNightVision` | — |
 | 4 | `proxy.hasStepassist` (armor provides step assist) | (242, 21) off / (249, 21) on, per `enableStepAssist` | — |
 | 5 | Armor durability warning | (242, 28) yellow "!" when any worn piece is under 35 % durability; (249, 28) red "!" when a piece is broken (damage ≥ max − 1) | — |
 
-For row 5 the pieces are checked in slot order. A piece under 35 % sets "warning" and skips the broken check for that same piece. A single broken piece therefore only shows yellow; red appears only if a *later* piece is broken (CORE-17).
+For row 5 the pieces are checked in slot order. A piece under 35 % sets "warning" and skips the broken check for that same piece. A single broken piece therefore only shows yellow; red appears only if a *later* piece is broken ([CORE-17](index.md#suspected-bugs)).
 
 ### Armor bar replacement (`RenderGameOverlayEvent.Pre`, ARMOR)
 
@@ -107,18 +107,18 @@ When `showTGHudElements` is on, the vanilla armor bar is cancelled and replaced 
 - For i = 1, 3, 5, …, 23: draw a full icon (0, 168) if i < level, a half icon (8, 168) if i = level, and an empty icon (16, 168) if i > level.
 - Blending is enabled while drawing. Afterwards the vanilla `textures/gui/icons.png` is bound again.
 
-The handler does not advance Forge's `left_height` (CORE-33).
+The handler does not advance Forge's `left_height` ([CORE-33](index.md#suspected-bugs)).
 
 ## Inventory tab buttons
 
-When **TConstruct is not loaded**, opening the vanilla `GuiInventory` adds two `TGGuiTabButton`s (`InitGuiEvent.Post`). Both use button ID 2. With k = (screenW − 176)/2 and l = (screenH − 166)/2:
+When **TConstruct is not loaded**, opening the vanilla `GuiInventory` adds two [`TGGuiTabButton`](../05-armor/extra-inventory.md)s (`InitGuiEvent.Post`). Both use button ID 2. With k = (screenW − 176)/2 and l = (screenH − 166)/2:
 
 | Button | Position | State | Icon | Action |
 |---|---|---|---|---|
 | Vanilla inventory | (k − 26, l + 5) | disabled (this is the current tab) | crafting table | none |
 | Techguns inventory | (k − 26, l + 31) | enabled | 9 mm bullets item | sends `PacketOpenPlayerGUI(TechgunsGUI_TabID)` |
 
-The Techguns inventory GUI itself adds the mirror pair: the vanilla tab enabled (it closes the container and opens `GuiInventory` client-side), and its own tab disabled. With TConstruct present, Techguns registers a TConstruct tab instead ([integrations.md](integrations.md#tinkers-construct)).
+The Techguns inventory GUI itself adds the mirror pair: the vanilla tab enabled (it closes the container and opens `GuiInventory` client-side), and its own tab disabled. With TConstruct present, Techguns registers a TConstruct tab instead ([integrations.md](integrations.md#tinkers-construct-tconstruct)).
 
 `TGGuiTabButton` is 26×26:
 - Background: (177, 0) when disabled/current, (177, 26) when enabled.

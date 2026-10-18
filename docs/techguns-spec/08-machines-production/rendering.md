@@ -6,17 +6,17 @@ Per-machine animation is described in each machine's file. This file covers the 
 
 | Tile | Renderer | Model | Texture |
 |---|---|---|---|
-| `AmmoPressTileEnt` | `RenderAmmoPress` | `ModelAmmoPress` | `textures/blocks/AmmoPress.png` |
-| `MetalPressTileEnt` | `RenderAmmoPress` | `ModelMetalPress` | `textures/blocks/MetalPress.png` |
-| `ChemLabTileEnt` | `RenderAmmoPress` | `ModelChemLab` | `textures/blocks/ChemLab.png` |
-| `ChargingStationTileEnt` | `RenderChargingStation` | `ModelChargingStation` | `textures/blocks/ChargingStation.png` |
-| `FabricatorTileEntMaster` | `RenderFabricator` | `ModelFabricator` | `textures/blocks/Fabricator.png` |
-| `ReactionChamberTileEntMaster` | `RenderReactionChamber` | OBJ `models/entity/reactionchamber.obj` | `textures/entity/reactionchamber.png` + `textures/entity/reactionchamberglass.png` + `textures/fx/heatray.png` |
-| `TurretBaseEnt`, `CampFlagTileEnt` | `RenderBlockTileEntModel` | (09) | (09) |
-| `CamoBenchTileEnt`, `RepairBenchTileEnt` | `RenderTileEntityBlock` | tesselator cubes (09) | (09) |
-| explosive charges, ore drill, TG chest | `RenderExplosiveCharge`, `RenderOreDrill`, `RenderTGChest` | (09) | (09) |
+| [`AmmoPressTileEnt`](framework.md#1-class-hierarchy) | `RenderAmmoPress` | [`ModelAmmoPress`](../07-blocks/block-rendering-and-models.md#modelammopress-uv-12864-texture-ammopresspng) | [`textures/blocks/AmmoPress.png`](../07-blocks/textures.md#11-model-textures) |
+| [`MetalPressTileEnt`](framework.md#1-class-hierarchy) | `RenderAmmoPress` | [`ModelMetalPress`](../07-blocks/block-rendering-and-models.md#modelmetalpress-uv-12864-texture-metalpresspng) | [`textures/blocks/MetalPress.png`](../07-blocks/textures.md#11-model-textures) |
+| [`ChemLabTileEnt`](framework.md#1-class-hierarchy) | `RenderAmmoPress` | [`ModelChemLab`](../07-blocks/block-rendering-and-models.md#modelchemlab-uv-12864-texture-chemlabpng) | [`textures/blocks/ChemLab.png`](../07-blocks/textures.md#11-model-textures) |
+| [`ChargingStationTileEnt`](framework.md#1-class-hierarchy) | [`RenderChargingStation`](charging-station.md) | [`ModelChargingStation`](../07-blocks/block-rendering-and-models.md#modelchargingstation-uv-6464-texture-chargingstationpng) | [`textures/blocks/ChargingStation.png`](../07-blocks/textures.md#11-model-textures) |
+| [`FabricatorTileEntMaster`](framework.md#1-class-hierarchy) | [`RenderFabricator`](fabricator.md#7-visuals-renderfabricator) | [`ModelFabricator`](../07-blocks/block-rendering-and-models.md#modelfabricator-uv-128128-texture-fabricatorpng) | [`textures/blocks/Fabricator.png`](../07-blocks/textures.md#11-model-textures) |
+| [`ReactionChamberTileEntMaster`](framework.md#1-class-hierarchy) | [`RenderReactionChamber`](reaction-chamber.md#7-visuals-renderreactionchamber) | OBJ [`models/entity/reactionchamber.obj`](../10-entities-npcs/rendering-and-models.md#other-obj-files-in-modelsentity-in-this-folder-used-elsewhere) | [`textures/entity/reactionchamber.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) + [`textures/entity/reactionchamberglass.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) + [`textures/fx/heatray.png`](../04-projectiles-fx/textures.md#single-images) |
+| [`TurretBaseEnt`](../09-machines-utility/turret.md#tile-entity-turretbaseent), [`CampFlagTileEnt`](../09-machines-utility/shared-rendering.md#1-basicmachine-metas-owned-by-area-09) | `RenderBlockTileEntModel` | ([09](../09-machines-utility/index.md)) | ([09](../09-machines-utility/index.md)) |
+| [`CamoBenchTileEnt`](blocks-and-items.md#1-basicmachine-registry-name-basicmachine), [`RepairBenchTileEnt`](blocks-and-items.md#1-basicmachine-registry-name-basicmachine) | `RenderTileEntityBlock` | tesselator cubes ([09](../09-machines-utility/index.md)) | ([09](../09-machines-utility/index.md)) |
+| explosive charges, ore drill, TG chest | [`RenderExplosiveCharge`](../09-machines-utility/explosive-charges.md#world-rendering-renderexplosivecharge), [`RenderOreDrill`](../09-machines-utility/ore-drill.md#9-tesr-renderoredrill), [`RenderTGChest`](../09-machines-utility/misc-tile-entities.md#1-reinforced-chest-and-weapon-chest) | ([09](../09-machines-utility/index.md)) | ([09](../09-machines-utility/index.md)) |
 
-The textures under `textures/blocks/` are catalogued in `07-blocks`. The model classes live in `client/models/blocks/`. `ModelMachine` is their abstract base: it adds a `render(..., progress)` overload, and the plain render calls it with progress 0.
+The textures under `textures/blocks/` are catalogued in [`07-blocks`](../07-blocks/index.md). The model classes live in `client/models/blocks/`. [`ModelMachine`](../07-blocks/block-rendering-and-models.md#modelmachine-and-modelbasetesselator) is their abstract base: it adds a `render(..., progress)` overload, and the plain render calls it with progress 0.
 
 ## 2. `RenderAmmoPress` (generic "model + rotation + progress" TESR)
 
@@ -34,23 +34,23 @@ The same transform as above, but without rotation. It calls `TGRenderHelper.adju
 
 ## 4. `RenderTileEntityBlock` (used by 09's camo and repair benches)
 
-Translates to the block corner, rotates `90° × rotation` about the block's vertical centre axis, applies the block light value and sky light to the tessellator and lightmap, then draws a `TesselatorCube`.
+Translates to the block corner, rotates `90° × rotation` about the block's vertical centre axis, applies the block light value and sky light to the tessellator and lightmap, then draws a [`TesselatorCube`](../07-blocks/block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items).
 
 ## 5. Machine item rendering
 
-- **`RenderMachineBlockItem`** is the `IItemRenderer` registered for the `basicMachine` item. It holds an array of `RenderMachineBlockItemBase` delegates and forwards every call to `renderers[itemDamage]`. Damage values outside 0..10 throw an index error (MPRD-24).
+- **`RenderMachineBlockItem`** is the `IItemRenderer` registered for the [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) item. It holds an array of `RenderMachineBlockItemBase` delegates and forwards every call to `renderers[itemDamage]`. Damage values outside 0..10 throw an index error ([MPRD-24](index.md#suspected-bugs)).
 
 | Meta | Delegate | Texture | Model |
 |---|---|---|---|
-| 0 | `RenderBlockModelItem` | `textures/blocks/AmmoPress.png` | `ModelAmmoPress` |
+| 0 | [`RenderBlockModelItem`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand) | `textures/blocks/AmmoPress.png` | `ModelAmmoPress` |
 | 1 | `RenderBlockModelItem` | `textures/blocks/MetalPress.png` | `ModelMetalPress` |
-| 2 | `RenderBlockModelItem` | `textures/blocks/TurretBase.png` | `ModelTurretBase` |
-| 3 | `RenderBlockModelItem` | `textures/blocks/paintmachine_textures.png` | tesselator model (camo bench) |
+| 2 | `RenderBlockModelItem` | [`textures/blocks/TurretBase.png`](../07-blocks/textures.md#11-model-textures) | [`ModelTurretBase`](../07-blocks/block-rendering-and-models.md#modelturretbase-uv-6464-texture-turretbasepng) |
+| 3 | `RenderBlockModelItem` | [`textures/blocks/paintmachine_textures.png`](../07-blocks/textures.md#camo-bench-and-repair-bench-09) | tesselator model (camo bench) |
 | 4 | `RenderBlockModelItem` | `textures/blocks/ChemLab.png` | `ModelChemLab` |
-| 5 | `RenderBlockModelItem` | `textures/blocks/repairbench_textures.png` | tesselator model (repair bench) |
-| 6 | `RenderBlockModelItemTNTCharge` | `textures/blocks/tntCharge.png` | `ModelTNTCharge` |
+| 5 | `RenderBlockModelItem` | [`textures/blocks/repairbench_textures.png`](../07-blocks/textures.md#camo-bench-and-repair-bench-09) | tesselator model (repair bench) |
+| 6 | [`RenderBlockModelItemTNTCharge`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand) | [`textures/blocks/tntCharge.png`](../07-blocks/textures.md#11-model-textures) | [`ModelTNTCharge`](../07-blocks/block-rendering-and-models.md#modeltntcharge-uv-3232-textures-tntchargepng--tntcharge_2png) |
 | 7 | `RenderBlockModelItem` | repair bench (placeholder for the flag) | repair bench |
-| 8 | `RenderBlockModelItemTNTCharge` | `textures/blocks/ExpCharge.png` | `ModelExpCharge` |
+| 8 | `RenderBlockModelItemTNTCharge` | [`textures/blocks/ExpCharge.png`](../07-blocks/textures.md#11-model-textures) | [`ModelExpCharge`](../07-blocks/block-rendering-and-models.md#modelexpcharge-uv-3232-textures-expchargepng--expcharge_2png) |
 | 9 | `RenderBlockModelItem` | `textures/blocks/ChargingStation.png` | `ModelChargingStation` |
 | 10 | `RenderBlockModelItem` | repair bench (placeholder for the scrapper) | repair bench |
 
@@ -71,4 +71,4 @@ Translates to the block corner, rotates `90° × rotation` about the block's ver
 | Entity (dropped) | translate (0, −1, 0) |
 | Inventory | translate (0, −1, 0) |
 
-- The `machineMultiBlock` items use normal block-icon rendering (their CTM textures).
+- The [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-blocks) items use normal block-icon rendering (their CTM textures).

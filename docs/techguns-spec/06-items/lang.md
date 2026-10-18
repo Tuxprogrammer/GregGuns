@@ -18,7 +18,7 @@ Item display names are in [item-catalogue.md](item-catalogue.md): every row give
 | Structure Test Tool | 1 line | `techguns.structureTestTool.Tooltip` → "Tool for structure spawning/world editing [WIP]" | always |
 | Ore Cluster Debugger | 1 line | `techguns.oreClusterDebugger.Tooltip` → "WARNING: Removes all destroyable Blocks in a huge Radius, used to debug Ore cluster spawns" | always |
 
-Other damage-type strings exist for 02 and are shown by the same `toString`: PROJECTILE "Projectile" (grey), FIRE "Fire" (red), EXPLOSION "Explosion" (dark red), ENERGY "Energy" (dark aqua), POISON "Poison" (dark green), ICE "Ice" (aqua), LIGHTNING "Lightning" (yellow), RADIATION "Radiation" (green). UNRESISTABLE (black) uses the key `techguns.TGDamageType.UNRESISTABLE`, which has **no** entry in `en_US.lang`.
+Other damage-type strings exist for [02](../02-guns/index.md) and are shown by the same `toString`: PROJECTILE "Projectile" (grey), FIRE "Fire" (red), EXPLOSION "Explosion" (dark red), ENERGY "Energy" (dark aqua), POISON "Poison" (dark green), ICE "Ice" (aqua), LIGHTNING "Lightning" (yellow), RADIATION "Radiation" (green). UNRESISTABLE (black) uses the key `techguns.TGDamageType.UNRESISTABLE`, which has **no** entry in `en_US.lang`.
 
 ## Chat messages
 
@@ -31,7 +31,7 @@ Other damage-type strings exist for 02 and are shown by the same `toString`: PRO
 | | `…info.maxBlock.1` "Can only Place a maximum of" + ` 64 ` + `…info.maxBlock.2` "in a single use." |
 | | `…info.notEnough` "Not enough camo net blocks in inventory." |
 | | `…info.placed` "Camo net placed." |
-| Ore Cluster Scanner | `techguns.OreClusterScanner.msg.found` "Found Ore Clusters in this Chunk", then one line per cluster type (translated `<clusterBlockUnlocalized>_<meta>.name`, from 07/11) |
+| Ore Cluster Scanner | `techguns.OreClusterScanner.msg.found` "Found Ore Clusters in this Chunk", then one line per cluster type (translated `<clusterBlockUnlocalized>_<meta>.name`, from [07](../07-blocks/index.md)/[11](../11-worldgen/index.md)) |
 | | `techguns.OreClusterScanner.msg.notFound` "No Clusters in this Chunk" |
 | Building Scan / Structure Test Tool (literal, not localized) | `Position1 set (x/y/z).`, `Position2 set (x/y/z).`, `Size: (sx/sy/sz).`, `structure tool mode set to "<mode>".` |
 | Block Reader (literal) | `Block:<id> - Meta: <m> - Side: <s>`; `Door: i1 = … - j1 = … - flag = …`; `Blockbounds: X:a,b\|Y:c,d\|Z:e,f` |
@@ -52,9 +52,9 @@ Other damage-type strings exist for 02 and are shown by the same `toString`: PRO
 | `techguns.item.blockReaderTool.name` | Block Reader Tool | |
 | `techguns.item.oreClusterDebugger.name` | Ore Cluster Debugger | |
 | `techguns.item.medkit_0.name` / `_1.name` | Bandages / Medkit | item not registered |
-| `techguns.item.gasMask.name` … `antiGravPack.name` | see the catalogue | 05 items |
+| `techguns.item.gasMask.name` … `antiGravPack.name` | see the catalogue | [05](../05-armor/index.md) items |
 | Spawn eggs | (none) | the display name is generated as `Spawn <EntityName>` |
-| `techguns.tile.camoNetPane_<0/1/2>.name`, `techguns.tile.camoNetRoof_<n>.name` | Camo Net (Woodland/Snow/Desert), Camo Net Roof (…) | blocks consumed by the placer (07) |
+| `techguns.tile.camoNetPane_<0/1/2>.name`, `techguns.tile.camoNetRoof_<n>.name` | Camo Net (Woodland/Snow/Desert), Camo Net Roof (…) | blocks consumed by the placer ([07](../07-blocks/index.md)) |
 
 ## Lang anomalies (cosmetic)
 

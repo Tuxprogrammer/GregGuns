@@ -5,8 +5,8 @@
 | Class | Role |
 |---|---|
 | `GenericItem` | A plain `Item` with stack 64 and the Techguns creative tab. The no-arg constructor uses unlocalized name `testItem` and texture `techguns:testItem`. The `(name)` constructor sets unlocalized name = `name` and texture = `techguns:<name>`. Both `getUnlocalizedName` overloads put `techguns.` in front of the vanilla result, so the key becomes `techguns.item.<name>`. |
-| `GenericItemShared` | The single meta item `TechgunsAmmo` (110 metas). It implements `ITGSpecialSlot` so its metas can sit in the Techguns face/back/ammo slots (the player inventory itself is 05/01). |
-| `GenericItemBucket` | `ItemBucket` with the `techguns.` prefix (see [fluids.md](fluids.md)). |
+| `GenericItemShared` | The single meta item `TechgunsAmmo` (110 metas). It implements [`ITGSpecialSlot`](../05-armor/special-equipment.md#1-interfaces-and-base-classes) so its metas can sit in the Techguns face/back/ammo slots (the player inventory itself is [05](../05-armor/index.md)/[01](../01-core/index.md)). |
+| [`GenericItemBucket`](fluids.md#creeper-acid-bucket-item) | `ItemBucket` with the `techguns.` prefix (see [fluids.md](fluids.md)). |
 
 <a id="slot-types"></a>
 ## Slot types (`TGSlotType`)
@@ -30,7 +30,7 @@ Each shared meta carries one of these. Machines and the player inventory read it
 ### Stack size and bad metadata
 - `getItemStackLimit` returns the per-meta value from the catalogue. If the meta is ≥ 110, it prints `Techguns GenericItem has bad metadata:<m> Max is:109` and returns 64.
 - `getIconFromDamage` falls back to meta 0's icon for an out-of-range meta.
-- `getUnlocalizedName` and the right-click handler do **not** range-check (bug ITEM-05).
+- `getUnlocalizedName` and the right-click handler do **not** range-check (bug [ITEM-05](index.md#suspected-bugs)).
 
 ### Right-click (in air), in priority order
 1. **Sneaking while holding a full magazine** (pistol mag 2, AR mag 12, advanced mag 23, SMG mag 5, AS50 mag 17, minigun drum 46, LMG mag 20): one magazine is removed from the held stack. Its empty version (×1) and its contents go to the player through `addAmmoToPlayerInventory`, which fills the Techguns ammo slots first and then the main inventory:
@@ -45,7 +45,7 @@ Each shared meta carries one of these. Machines and the player inventory read it
    | Minigun Ammo Drum | Empty ×1 + Rifle Bullets Stack ×4 |
    | LMG Magazine | Empty ×1 + Rifle Bullets Stack ×2 |
 
-   This runs on both client and server. Anything that does not fit anywhere is silently lost (bug ITEM-06). For the duplication in the helper, see ITEM-07.
+   This runs on both client and server. Anything that does not fit anywhere is silently lost (bug [ITEM-06](index.md#suspected-bugs)). For the duplication in the helper, see [ITEM-07](index.md#suspected-bugs).
 2. **Not sneaking, item's slot type is AMMOSLOT**: the whole held stack is merged into the Techguns ammo slots (6–11). It first tops up matching stacks, then fills empty slots. The held stack shrinks to whatever did not fit.
 3. **Item's slot type is BACKSLOT (the Glider)**: if the Techguns back slot is empty, a copy goes there and the held stack becomes 0. Otherwise nothing happens.
 4. Otherwise: vanilla behaviour (nothing).
@@ -59,7 +59,7 @@ Sneak + right-click on a non-magazine ammo item does nothing (branch 1 matches o
 - Metas registered with `addMagazineTooltip` (2, 5, 12, 17, 20, 23, 46) get two lines: `Right click to put in ammo inventory` (`techguns.item.ammotooltip.ammobag`) and `Sneak + Right click to empty` (`techguns.item.ammotooltip.empty`).
 
 ### Armour bonus
-`getBonus(OXYGEN_GEAR)` returns 1.0 for the Oxygen Mask (meta 90) and 0 for everything else. The mask counts as oxygen gear while it is in the Techguns face slot. Combined with Oxygen Tanks it refills air underwater. That logic, and the worn-model rendering of the mask, belong to 05-armor.
+`getBonus(OXYGEN_GEAR)` returns 1.0 for the Oxygen Mask (meta 90) and 0 for everything else. The mask counts as oxygen gear while it is in the Techguns face slot. Combined with Oxygen Tanks it refills air underwater. That logic, and the worn-model rendering of the mask, belong to [05-armor](../05-armor/index.md).
 
 ### Glider (meta 51), back-slot tick
 Every player tick (phase START, on both client and server), the Techguns tick handler first clears `isGliding` and then calls the back-slot item's `onPlayerTick`. For the glider:
@@ -81,7 +81,7 @@ The terminal sink rate is therefore about 0.1 blocks/tick while sneaking, with f
 
 Client side, `handlePlayerGliding`: when `isGliding` becomes true and no loop is playing, it starts the looping sound `techguns:glider.loop` attached to the player (volume 1, pitch 1, repeat, category PLAYER_EFFECT). When gliding stops, the sound is stopped. `isGliding` is also cleared when another player stops being tracked.
 
-The worn glider model (`textures/armor/glider.png`, `ModelGlider`) is drawn by the additional-slot renderer (05-armor). The Jetpack also reuses this glider logic (05).
+The worn glider model ([`textures/armor/glider.png`](../05-armor/textures.md#10-back-gear-layout-d-6464), [`ModelGlider`](../05-armor/rendering-and-models.md)) is drawn by the additional-slot renderer ([05-armor](../05-armor/index.md)). The Jetpack also reuses this glider logic ([05](../05-armor/index.md)).
 
 <a id="3d-rendered-shared-items"></a>
 ### 3D-rendered shared items (`RenderGenericItem`)
@@ -89,16 +89,16 @@ The client registers `RenderGenericItem` as the `IItemRenderer` for the whole sh
 
 | Meta | Model | Texture |
 |---|---|---|
-| 12 Assault Rifle Magazine | `ModelM4Mag` | `textures/guns/m4Texture.png` |
+| 12 Assault Rifle Magazine | [`ModelM4Mag`](../03-gun-visuals-audio/gun-models.md#modelm4mag--modelm4mage-item-models-12864) | [`textures/guns/m4Texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsm4texturepng--camo-variants-m4-m4-magazine-items) |
 | 13 AR Magazine (Empty) | `ModelM4MagE` | `textures/guns/m4Texture.png` |
-| 14 Rocket | `ModelRocket` | `textures/guns/rocketlauncher.png` |
-| 17 AS50 Magazine | `ModelAS50Mag(empty=false)` | `textures/guns/as50Texture.png` |
+| 14 Rocket | [`ModelRocket`](../03-gun-visuals-audio/gun-models.md#modelrocket-rocket-item--projectile-12864-11-boxes) | `textures/guns/rocketlauncher.png` |
+| 17 AS50 Magazine | `ModelAS50Mag(empty=false)` | [`textures/guns/as50Texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsas50texturepng-as50-as50-magazine-items) |
 | 18 AS50 Magazine (Empty) | `ModelAS50Mag(empty=true)` | `textures/guns/as50Texture.png` |
-| 20 LMG Magazine | `ModelLmgMag` | `textures/guns/mg2_texture.png` |
+| 20 LMG Magazine | [`ModelLmgMag`](../03-gun-visuals-audio/gun-models.md#modellmgmag--modellmgmage-item-models-128128) | [`textures/guns/mg2_texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsmg2_texturepng-lmg-lmg-magazine-items) |
 | 21 LMG Magazine (Empty) | `ModelLmgMagE` | `textures/guns/mg2_texture.png` |
 | 105 Rocket (Tactical Nuke) | `ModelRocket` | `textures/guns/nukerocketlauncher.png` |
 
-So the mags share the gun model's texture atlas, and the nuke rocket is the normal rocket model with the nuke launcher's texture. The models and textures are documented in 03-gun-visuals-audio. Each sub-renderer binds its texture and draws the model at scale 1/16 after a per-context transform:
+So the mags share the gun model's texture atlas, and the nuke rocket is the normal rocket model with the nuke launcher's texture. The models and textures are documented in [03-gun-visuals-audio](../03-gun-visuals-audio/index.md). Each sub-renderer binds its texture and draws the model at scale 1/16 after a per-context transform:
 
 | Renderer | First person | Equipped (3rd person) | Entity (dropped) | Inventory |
 |---|---|---|---|---|
@@ -109,16 +109,16 @@ So the mags share the gun model's texture atlas, and the nuke rocket is the norm
 
 The constructors also take a scale and an xyz offset (all passed as 1.0 / 0,0,0), but these are never applied.
 
-`GenericItemShared.registerIcons` still asks for `techguns:<name>` icons for these eight metas. No PNG exists for them, which causes "missing texture" log entries (bug ITEM-08).
+`GenericItemShared.registerIcons` still asks for `techguns:<name>` icons for these eight metas. No PNG exists for them, which causes "missing texture" log entries (bug [ITEM-08](index.md#suspected-bugs)).
 
 ## Bunker Door item (`ItemTGDoor`, `Techguns:doorItem01`)
-- A `GenericItem` with unlocalized name `bunkerDoor` (lang `Bunker Door`), icon `textures/items/metalDoor.png`, stack 64. The door block (`TGBlocks.door01`) is linked in `TGItems.postInit`.
-- Use on a block: works only when clicking the **top face**. The door base goes one block above the clicked block. The player must be allowed to edit both that position and the one above, and the door block's `canPlaceBlockAt` must succeed. The facing is `floor((yaw + 180) × 4 / 360 − 0.5) & 3`, the same as a vanilla door. Placement uses vanilla `ItemDoor.placeDoorBlock`, which also handles double-door hinge mirroring. One item is consumed (also in creative). The door block is in 07-blocks.
+- A `GenericItem` with unlocalized name `bunkerDoor` (lang `Bunker Door`), icon [`textures/items/metalDoor.png`](textures.md#11-tools-placers-door-bucket-debug-items), stack 64. The door block ([`TGBlocks.door01`](../07-blocks/block-catalogue.md#registered-blocks)) is linked in [`TGItems.postInit`](item-catalogue.md).
+- Use on a block: works only when clicking the **top face**. The door base goes one block above the clicked block. The player must be allowed to edit both that position and the one above, and the door block's `canPlaceBlockAt` must succeed. The facing is `floor((yaw + 180) × 4 / 360 − 0.5) & 3`, the same as a vanilla door. Placement uses vanilla `ItemDoor.placeDoorBlock`, which also handles double-door hinge mirroring. One item is consumed (also in creative). The door block is in [07-blocks](../07-blocks/index.md).
 
 ## Camo Net Placer (`ItemCamoNetPlacer`, `Techguns:camoNetPlacer`)
 A creative-friendly area-fill tool that places camo net blocks from the player's inventory.
 
-- Stack 1. Meta = camo type: 0 Woodland, 1 Snow, 2 Desert. Icon per meta: `textures/items/camoNetPlacer0.png`, `…1.png`, `…2.png` (meta ≥ 3 falls back to the meta-0 icon). The display name is the same for all metas: "Camo Net Placer".
+- Stack 1. Meta = camo type: 0 Woodland, 1 Snow, 2 Desert. Icon per meta: [`textures/items/camoNetPlacer0.png`](textures.md#11-tools-placers-door-bucket-debug-items), `…1.png`, `…2.png` (meta ≥ 3 falls back to the meta-0 icon). The display name is the same for all metas: "Camo Net Placer".
 - NBT on the stack: `x1`, `y1`, `z1` (int), the stored first corner. A tag compound is created on first use.
 - Constants: 3 camo types, at most **64** blocks per operation.
 
@@ -135,7 +135,7 @@ Fill algorithm (second click at (x, y, z), corner (x1, y1, z1)):
 3. Block type: a horizontal plane (mode 1) uses **Camo Net Roof** (`TGBlocks.camoNetRoof`) with meta = camo. A vertical plane uses **Camo Net** (`TGBlocks.camoNetPane`) with meta = camo.
 4. The player's main inventory must hold at least *volume* blocks of that exact block/meta. Occupied cells are counted too. If not: chat `Not enough camo net blocks in inventory.`, clear and stop.
 5. For a horizontal plane where the second click was on a top face (side 1), the whole box moves up by 1, so the roof is placed on top of the clicked surface.
-6. Every **air** cell in the box gets the block (server only, meta = camo, through `MBlock.setBlock` with flags 0). The number of air cells is counted on both sides, and exactly that many items are taken from the main inventory.
+6. Every **air** cell in the box gets the block (server only, meta = camo, through [`MBlock.setBlock`](../11-worldgen/structure-system.md#mblock) with flags 0). The number of air cells is counted on both sides, and exactly that many items are taken from the main inventory.
 7. Chat `Camo net placed.`; clear the corner.
 
 All chat messages are client-side only. The item has no durability and is never consumed.
@@ -143,7 +143,7 @@ All chat messages are client-side only. The item has no durability and is never 
 <a id="medkit-unregistered"></a>
 ## Medkit (`ItemMedkit`): present in code, **not registered**
 If it were enabled as `new ItemMedkit("medkit", 2)` (the commented-out line), it would behave as follows:
-- Stack 16, metas 0..1, icons `textures/items/medkit_0.png` (bandage roll) and `textures/items/medkit_1.png` (red medkit). Unlocalized name `techguns.item.medkit_<meta>`, giving "Bandages" and "Medkit".
+- Stack 16, metas 0..1, icons [`textures/items/medkit_0.png`](textures.md#12-unused--unregistered) (bandage roll) and [`textures/items/medkit_1.png`](textures.md#12-unused--unregistered) (red medkit). Unlocalized name `techguns.item.medkit_<meta>`, giving "Bandages" and "Medkit".
 - Right-click starts using it **only if the player is below max health**. Use animation: none.
 
 | Meta | Use time (ticks) | Instant heal (HP) | Regeneration effect |
@@ -155,16 +155,16 @@ If it were enabled as `new ItemMedkit("medkit", 2)` (the commented-out line), it
 - On completion (`onEaten`) it consumes 1, plays `random.burp` (volume 0.5, pitch 0.9–1.0), heals, and on the server applies the regeneration effect.
 
 ## Ore Cluster Scanner (`OreClusterScanner`, `Techguns:oreClusterScanner`)
-- Stack 1, texture `textures/items/oreClusterScanner.png`. Implements CoFH `IEnergyContainerItem` (RF).
+- Stack 1, texture [`textures/items/oreClusterScanner.png`](textures.md#11-tools-placers-door-bucket-debug-items). Implements CoFH `IEnergyContainerItem` (RF).
 - Energy is stored in NBT int `Energy`. Capacity 30 000 RF, max receive 3 000/t, max extract 3 000/t. The durability bar is always shown, with fullness = 1 − energy/capacity.
 - The creative-tab copy and freshly crafted copies (`onCreated`) are set to full energy (30 000).
 - Tooltip line: `<energy>/30000 RF` (not localized).
 - Use: right-click starts an "in use" state (duration effectively infinite). After 40 ticks of holding (`SCANDURATION`), use stops automatically.
 - On stopping, by release or by the 40-tick auto-stop: 300 RF is extracted, **whether or not** 40 ticks passed. If the extraction yielded the full 300 and at least 40 ticks passed, the scan runs **client-side only**:
   1. It scans the **chunk the player stands in**, every column, from `floor(playerY) + 16` (clamped to world height) down to y = 1.
-  2. For every ore-cluster block (`TGBlocks.isOrecluster`) it spawns the client FX `OreClusterPing` at the block centre (04-projectiles-fx) and records the name `translate(<blockUnlocalized>_<meta>.name)`, once per type.
+  2. For every ore-cluster block (`TGBlocks.isOrecluster`) it spawns the client FX `OreClusterPing` at the block centre ([04-projectiles-fx](../04-projectiles-fx/index.md)) and records the name `translate(<blockUnlocalized>_<meta>.name)`, once per type.
   3. Chat: if any were found, `Found Ore Clusters in this Chunk` (`techguns.OreClusterScanner.msg.found`) followed by one line per type. Otherwise `No Clusters in this Chunk` (`techguns.OreClusterScanner.msg.notFound`).
-- Ore clusters themselves are 07/11.
+- Ore clusters themselves are [07](../07-blocks/index.md)/11.
 
 <a id="tools"></a>
 ## Tools
@@ -172,18 +172,18 @@ If it were enabled as `new ItemMedkit("medkit", 2)` (the commented-out line), it
 Tool material `TG_STEEL` = `EnumHelper.addToolMaterial("Steel", 2, 1000, 7.5F, 2.5F, 12)`: harvest level 2 (iron), 1000 uses, efficiency 7.5, damage bonus 2.5, enchantability 12. No repair item is set.
 
 ### Combat Knife (`TGSword`, `Techguns:combatKnife`)
-- A vanilla `ItemSword` with TG_STEEL: attack-damage modifier 4 + 2.5 = +6.5 (7.5 total with the player's base 1), 1000 durability, blocks like a sword. Texture `textures/items/combatKnife.png` (96×96, drawn flat like any item icon).
+- A vanilla `ItemSword` with TG_STEEL: attack-damage modifier 4 + 2.5 = +6.5 (7.5 total with the player's base 1), 1000 durability, blocks like a sword. Texture [`textures/items/combatKnife.png`](textures.md#11-tools-placers-door-bucket-debug-items) (96×96, drawn flat like any item icon).
 - Unlocalized `techguns.item.combatKnife`.
-- Damage-system hook (`IToolTGDamageSystem`): when a living entity holding it attacks, Techguns' `LivingAttackEvent` handler swaps the damage source for a `TGDamageSource` with damage type **PHYSICAL**, death type **GORE**, gore chance 0.25, hurt-resistance respected. The resistance maths are in 01/05.
+- Damage-system hook ([`IToolTGDamageSystem`](../02-guns/damage-system.md#3-interfaces)): when a living entity holding it attacks, Techguns' `LivingAttackEvent` handler swaps the damage source for a [`TGDamageSource`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource) with damage type **PHYSICAL**, death type **GORE**, gore chance 0.25, hurt-resistance respected. The resistance maths are in [01](../01-core/index.md)/05.
 - Tooltip: `DamageType: <coloured localized type>`. The prefix is hard-coded; PHYSICAL is shown in dark grey as `techguns.TGDamageType.PHYSICAL=Physical`. An `ArmorPen: <p×100>%` line would be added if penetration > 0, but the knife's penetration is 0.
 
 ### Crowbar (`TGCrowbar` → `TGPickaxe`, `Techguns:crowbar`)
-- A vanilla `ItemPickaxe` with TG_STEEL: mines pickaxe blocks at harvest level 2, efficiency 7.5, 1000 uses, attack-damage modifier 2 + 2.5 = +4.5. Texture `textures/items/crowbar.png`.
+- A vanilla `ItemPickaxe` with TG_STEEL: mines pickaxe blocks at harvest level 2, efficiency 7.5, 1000 uses, attack-damage modifier 2 + 2.5 = +4.5. Texture [`textures/items/crowbar.png`](textures.md#11-tools-placers-door-bucket-debug-items).
 - `getToolClasses` returns `{"default", "pickaxe", "wrench"}`, each mapped to level 2 for the tooltip. Because it reports the class `wrench`:
-  - Right-click on a Techguns basic machine (except metas 6, 7, 8: explosive charges and flag) rotates it. Sneak + right-click dismantles it into an item that keeps its tile data in NBT `TileEntityData` (08/09).
-  - Sneak + right-click on a Reinforced or Weapon Chest the player may use picks the chest up with its contents (07).
+  - Right-click on a Techguns basic machine (except metas 6, 7, 8: explosive charges and flag) rotates it. Sneak + right-click dismantles it into an item that keeps its tile data in NBT `TileEntityData` ([08](../08-machines-production/index.md)/[09](../09-machines-utility/index.md)).
+  - Sneak + right-click on a Reinforced or Weapon Chest the player may use picks the chest up with its contents ([07](../07-blocks/index.md)).
   - `doesSneakBypassUse` is true, so sneak-clicks still reach the block.
-- **Ore clusters**: while held, `OreCluster.getPlayerRelativeBlockHardness` returns 0.005 for non-bedrock cluster types, so a cluster breaks in about 200 ticks (10 s). Cluster blocks drop nothing (07/11).
+- **Ore clusters**: while held, [`OreCluster.getPlayerRelativeBlockHardness`](../07-blocks/block-catalogue.md#registered-blocks) returns 0.005 for non-bedrock cluster types, so a cluster breaks in about 200 ticks (10 s). Cluster blocks drop nothing ([07](../07-blocks/index.md)/[11](../11-worldgen/index.md)).
 - Damage hook: same as the knife (PHYSICAL, GORE, gore chance 0.25).
 - Tooltip:
   - Always: `DamageType: Physical` (hard-coded prefix).
@@ -191,7 +191,7 @@ Tool material `TG_STEEL` = `EnumHelper.addToolMaterial("Steel", 2, 1000, 7.5F, 2
   - Without Shift: `Press [SHIFT] for detailed tooltip` (`techguns.gun.tooltip.shift1/2/3`, with `[SHIFT]` in green).
 
 ### `GenericTool` (unused)
-An `ItemTool` subclass (stack 1, no repair, Techguns tab, texture `techguns:<name>`) that implements `ICamoChangeable` with stub methods (0 camos) and writes NBT byte `camo = 0` in `onCreated`. Nothing instantiates it. Its `getMeleeDamageSource` (PHYSICAL, GORE, gore chance 0.5) is dead code.
+An `ItemTool` subclass (stack 1, no repair, Techguns tab, texture `techguns:<name>`) that implements [`ICamoChangeable`](../05-armor/armor-catalogue.md#1-class-hierarchy) with stub methods (0 camos) and writes NBT byte `camo = 0` in `onCreated`. Nothing instantiates it. Its `getMeleeDamageSource` (PHYSICAL, GORE, gore chance 0.5) is dead code.
 
 <a id="debug-and-scanner-tools"></a>
 ## Debug and developer tools
@@ -204,17 +204,17 @@ Right-click on a block. Client chat:
 - for a Techguns door: `Door: i1 = <full door meta> - j1 = <facing 0-3> - flag = <open bit>`
 - `Blockbounds: X:<minX>,<maxX>|Y:<minY>,<maxY>|Z:<minZ>,<maxZ>` (the server prints the same bounds to stdout).
 
-Texture `textures/items/blockReaderTool.png`.
+Texture [`textures/items/blockReaderTool.png`](textures.md#11-tools-placers-door-bucket-debug-items).
 
 ### Building Scan Tool (`BuildingScanTool`)
-A two-click region scanner that writes a structure template for the 11-worldgen structure system.
+A two-click region scanner that writes a structure template for the [11-worldgen](../11-worldgen/index.md) structure system.
 - NBT `x1/y1/z1` as with the camo placer. First click: `Position1 set (x/y/z).` Second click: `Position2 set (…)` and `Size: (sx/sy/sz).`, then the corner is cleared.
 - Server side: iterate the box with x, then y, then z (outer to inner). Skip air, plain dirt meta 0, and grass. Every other block/meta pair gets a palette index (first-seen order). Write `structure_scan.txt` to the game's working directory:
   1. `ArrayList<MBlock> blockList = new ArrayList<MBlock>();` followed by one `blockList.add(new MBlock(Block.getBlockFromName("<unlocalizedName>"), <meta>));` line per palette entry (a code snippet to paste into Java; it uses the unlocalized name, not the registry name),
   2. `---`, a blank line,
   3. the number of positions,
-  4. one line per position in `BlockPosInd.toString()` format (relative x, y, z, palette index; see 11).
-- Texture `textures/items/structureScanTool.png`.
+  4. one line per position in [`BlockPosInd.toString()`](../11-worldgen/structure-system.md#blockposind) format (relative x, y, z, palette index; see [11](../11-worldgen/index.md)).
+- Texture [`textures/items/structureScanTool.png`](textures.md#11-tools-placers-door-bucket-debug-items).
 
 ### Structure Test Tool (`StructureTestTool`)
 - Tooltip: `Tool for structure spawning/world editing [WIP]` (`techguns.structureTestTool.Tooltip`).
@@ -222,9 +222,9 @@ A two-click region scanner that writes a structure template for the 11-worldgen 
 - Sneak + use on block cycles the mode. If no `mode` key exists, the first cycle sets 1, not 0. Otherwise `(mode + 1) % 7`. Chat: `structure tool mode set to "<name>".` The names are `Structure, Camp, Smooth, Flatten, Remove Junk, Sphere, Cylinder`.
 - Two clicks define a box (same messages as the scan tool). On the second click, the server runs the mode (0 if no tag):
 
-| Mode | Label | Action (algorithms in 11-worldgen `BlockUtils` / structures) |
+| Mode | Label | Action (algorithms in [11-worldgen](../11-worldgen/index.md) [`BlockUtils`](../01-core/utilities.md#blockutils) / structures) |
 |---|---|---|
-| 0 | Structure | Builds `AircraftCarrierNew` at the box min corner, size (sx, 24, sz), random rotation 0–3, WOODLAND colour, and prints the origin to stdout |
+| 0 | Structure | Builds [`AircraftCarrierNew`](../11-worldgen/structure-catalogue.md#a7-aircraft-carrier-aircraftcarriernew) at the box min corner, size (sx, 24, sz), random rotation 0–3, WOODLAND colour, and prints the origin to stdout |
 | 1 | Camp | Actually runs `GenericCity.testCity.createCity` over the box (the label is stale) |
 | 2 | Smooth | 2D heightmap Gaussian 5×5 filter over the XZ area |
 | 3 | Flatten | `flattenArea(…, 2)` |
@@ -232,12 +232,12 @@ A two-click region scanner that writes a structure template for the 11-worldgen 
 | 5 | Sphere | Radius r = (sx + sz)/4. Hollow-ish sphere centred at (minX + sx/2, minY + r + 1, minZ + sz/2), filled with the air-marker block and a glass shell |
 | 6 | Cylinder | A cylinder of radius 3 from corner 1 to corner 2, with air-marker inside and a glass shell |
 
-Texture `textures/items/structureTestTool.png`.
+Texture [`textures/items/structureTestTool.png`](textures.md#11-tools-placers-door-bucket-debug-items).
 
 ### Ore Cluster Debugger (`oreClusterDebugger`)
 - Tooltip: `WARNING: Removes all destroyable Blocks in a huge Radius, used to debug Ore cluster spawns` (`techguns.oreClusterDebugger.Tooltip`).
 - Use on block (server): for every y from the clicked y down to 1, and x/z in `[click − 16, click + 16)` (a 32×32 column), it sets to air every block with hardness ≥ 0, i.e. everything except bedrock-like unbreakables.
-- Texture `textures/items/testItem.png`.
+- Texture [`textures/items/testItem.png`](textures.md#11-tools-placers-door-bucket-debug-items).
 
 <a id="spawn-eggs"></a>
 ## Spawn eggs (`TGMonsterPlacer`)
@@ -247,4 +247,4 @@ A copy of the vanilla spawn egg with a fixed entity per item (the list is in the
 - The creative tab lists only meta 0.
 - Use on a block (server): spawn position is the clicked face offset, at (x+0.5, y, z+0.5), plus 0.5 in y if the top face of a fence-type block (render type 11) was clicked. The entity is looked up as `"Techguns." + entityName` in `EntityList`. It is placed with a random yaw, then `onSpawnWithEgg(null)` and `playLivingSound()` run. A named egg applies its custom name as the name tag. One egg is consumed unless in creative. If the name is not registered, it prints `Entity not found <name>`.
 - Right-click aimed at a liquid: spawns at the liquid block's integer corner (x, y, z), with the same naming and consumption rules.
-- NPC behaviour belongs to 10-entities-npcs.
+- NPC behaviour belongs to [10-entities-npcs](../10-entities-npcs/index.md).

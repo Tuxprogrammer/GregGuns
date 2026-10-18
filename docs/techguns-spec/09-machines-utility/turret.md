@@ -1,6 +1,6 @@
 # Turret (base block + mounted turret entity)
 
-`BasicMachine` meta 2. Item/tile name `techguns.tile.BasicMachine_2.name` = "Turret". Container title `techguns.container.turretbase` = "Turret Platform".
+[`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) meta 2. Item/tile name `techguns.tile.BasicMachine_2.name` = "Turret". Container title `techguns.container.turretbase` = "Turret Platform".
 
 | Part | Class / value |
 |---|---|
@@ -9,8 +9,8 @@
 | Container | `TurretBaseContainer`, with slot classes `SlotTechgun` and `SlotTurretArmor` |
 | GUI | `GuiTurretBase` |
 | Extra button | `GuiButtonTurretTargetAnimals` |
-| Base TESR | `RenderBlockTileEntModel` + `ModelTurretBase` |
-| Mounted entity | `NPCTurret`, registered as `SimpleTurret`, lang `entity.Techguns.SimpleTurret.name` = "Turret". Its AI, rendering (`RenderSimpleTurret`, `ModelTurret`) and combat belong to **10-entities-npcs**; this file covers only the base and how the two are linked. |
+| Base TESR | [`RenderBlockTileEntModel`](../08-machines-production/rendering.md#3-renderblocktileentmodel-used-by-09s-turret-base-and-flag) + [`ModelTurretBase`](../07-blocks/block-rendering-and-models.md#modelturretbase-uv-6464-texture-turretbasepng) |
+| Mounted entity | [`NPCTurret`](../10-entities-npcs/ai.md#5-turret-npcturret), registered as [`SimpleTurret`](../10-entities-npcs/mob-catalogue.md#registration-javatechgunstgentitiesjava), lang `entity.Techguns.SimpleTurret.name` = "Turret". Its AI, rendering ([`RenderSimpleTurret`](../10-entities-npcs/rendering-and-models.md#6-rendersimpleturret-extends-plain-render-for-npcturret), [`ModelTurret`](../07-blocks/block-rendering-and-models.md#modelturret-and-modelsimpleturret-uv-6464--6432)) and combat belong to **[10-entities-npcs](../10-entities-npcs/index.md)**; this file covers only the base and how the two are linked. |
 
 ## Concept
 
@@ -25,7 +25,7 @@ The base:
 
 ## Tile entity `TurretBaseEnt`
 
-- Extends `BasicPoweredTileEnt` (08): **20 slots**, **1 000 RF** buffer.
+- Extends [`BasicPoweredTileEnt`](../08-machines-production/framework.md#4-energy-basicpoweredtileent) ([08](../08-machines-production/index.md)): **20 slots**, **1 000 RF** buffer.
 - It has an owner, a security level (0 public, 1 friends, 2 owner) and a redstone mode.
 - Energy connects on every side **except the top**.
 
@@ -33,8 +33,8 @@ The base:
 |---|---|---|
 | 0–8 | ammo input | anything |
 | 9–17 | empty magazine output | anything |
-| 18 | weapon | `GenericGun` only (GUI slot also rejects akimbo guns) |
-| 19 | turret armour | anything by `isItemValidForSlot`; the GUI slot accepts only `ITGSpecialSlot` items whose slot type is `TURRETARMOR` |
+| 18 | weapon | [`GenericGun`](../02-guns/gun-lifecycle.md) only (GUI slot also rejects akimbo guns) |
+| 19 | turret armour | anything by `isItemValidForSlot`; the GUI slot accepts only [`ITGSpecialSlot`](../05-armor/special-equipment.md#1-interfaces-and-base-classes) items whose slot type is `TURRETARMOR` |
 
 **Automation:**
 
@@ -50,7 +50,7 @@ The base:
   - A client base with no turret, while not dead, sends `RequestTileEntitySync(x, short y, z)` to the server at most once per 1 000 ms of system time. The server answers with the tile's description packet.
   - A client turret with no base, within 64 blocks horizontally of the player, sends `PacketRequestTurretSync(entityId)` at most every 600 ticks. The server answers with its base's description packet.
   - The tile NBT carries the turret's entity id. On read, it looks up that entity and links both ways.
-- **Server-side re-linking:** a turret with no base checks the block below its position every tick. If that block is a `TurretBaseEnt`, it links itself (see 10).
+- **Server-side re-linking:** a turret with no base checks the block below its position every tick. If that block is a `TurretBaseEnt`, it links itself (see [10](../10-entities-npcs/index.md)).
 - **Breaking the base** (`BasicMachine.breakBlock` for meta 2): the mounted turret is killed (health 0, set dead) and the inventory spills.
 
 ### Per-tick logic (both sides; power consumption is authoritative on the server)
@@ -76,30 +76,30 @@ Without power the countdown stalls.
 ### Ammunition (`consumeAmmo`, called by the turret for each shot)
 
 1. If there is no gun in slot 18, the shot fails.
-2. If the gun's loaded ammo (gun NBT `ammo`, see 02) is ≤ 0, **reload instantly**:
+2. If the gun's loaded ammo (gun NBT `ammo`, see [02](../02-guns/index.md)) is ≤ 0, **reload instantly**:
    1. Take one item of the gun's ammo type (matching item and damage) from slots 0–8. If there is none, the reload fails.
-   2. If the gun has an empty-magazine item, add one to slots 9–17. Any overflow is dropped above the base. A stack-size-0 drop is spawned even when there is no overflow (MUTL-24).
+   2. If the gun has an empty-magazine item, add one to slots 9–17. Any overflow is dropped above the base. A stack-size-0 drop is spawned even when there is no overflow ([MUTL-24](index.md#suspected-bugs)).
    3. If the gun's `ammoCount` > 1, keep taking ammo items, up to `ammoCount` in total, and add as many rounds as items consumed. Otherwise refill to the full clip size.
    4. Sync.
 3. If at least 1 round is loaded, use 1 round and allow the shot.
 
-The turret calls `fireWeaponFromNPC(turret, 1.0, 1.0)` on the gun only when `consumeAmmo` succeeds (see 02 and 10).
+The turret calls `fireWeaponFromNPC(turret, 1.0, 1.0)` on the gun only when `consumeAmmo` succeeds (see [02](../02-guns/index.md) and [10](../10-entities-npcs/index.md)).
 
 ### Armour
 
 Slot 19 sets both the turret's armour value (vanilla armour points; each point reduces damage by 4%) and the textures:
 
-| Slot 19 item (06) | Armour value | Base and turret texture |
+| Slot 19 item ([06](../06-items/index.md)) | Armour value | Base and turret texture |
 |---|---|---|
-| empty or other | 0 | `textures/blocks/TurretBase.png` |
-| `turretArmorIron` "Iron Turret Armor" | 5 | `textures/blocks/TurretBase_2.png` |
-| `turretArmorSteel` | 10 | `textures/blocks/TurretBase_3.png` |
-| `turretArmorObsidianSteel` | 15 | `textures/blocks/TurretBase_4.png` |
-| `turretArmorCarbon` | 20 | `textures/blocks/TurretBase_5.png` |
+| empty or other | 0 | [`textures/blocks/TurretBase.png`](../07-blocks/textures.md#11-model-textures) |
+| [`turretArmorIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) "Iron Turret Armor" | 5 | [`textures/blocks/TurretBase_2.png`](../07-blocks/textures.md#11-model-textures) |
+| [`turretArmorSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 10 | [`textures/blocks/TurretBase_3.png`](../07-blocks/textures.md#11-model-textures) |
+| [`turretArmorObsidianSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 15 | [`textures/blocks/TurretBase_4.png`](../07-blocks/textures.md#11-model-textures) |
+| [`turretArmorCarbon`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | 20 | [`textures/blocks/TurretBase_5.png`](../07-blocks/textures.md#11-model-textures) |
 
 ### Targeting rules
 
-The selector is `TurretTargetSelector`; 10 owns the AI that uses it. A candidate is chosen as follows:
+The selector is [`TurretTargetSelector`](../10-entities-npcs/ai.md#turrettargetselector-the-target-filter); 10 owns the AI that uses it. A candidate is chosen as follows:
 
 1. **Any hostile mob (`IMob`): target.**
 2. If the base has an owner **and** security ≠ 0:
@@ -112,7 +112,7 @@ The selector is `TurretTargetSelector`; 10 owns the AI that uses it. A candidate
    - everything else is a target.
 4. Otherwise: not a target. With security 0 (the default after placement) players and turrets are never targeted.
 
-The turret also retaliates against whoever hurts it, using faction rules (10).
+The turret also retaliates against whoever hurts it, using faction rules ([10](../10-entities-npcs/index.md)).
 
 The turret entity's base stats are listed for reference; 10 owns them:
 
@@ -164,7 +164,7 @@ Progress-bar sync:
 
 ## GUI (`GuiTurretBase`)
 
-The GUI extends `GuiTechgunsPoweredTileEnt` (08): power bar at (8,17), redstone button at (−22,10), security button at (−22,40). The background is `textures/gui/turretBase_GUI.png`, catalogued by 08.
+The GUI extends [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine) ([08](../08-machines-production/index.md)): power bar at (8,17), redstone button at (−22,10), security button at (−22,40). The background is [`textures/gui/turretBase_GUI.png`](../08-machines-production/gui-textures.md#12-texturesguiturretbase_guipng-owned-by-09), catalogued by 08.
 
 | Texture region (px) | Depicts | Drawn |
 |---|---|---|
@@ -186,11 +186,11 @@ After the parent's background, the GUI draws one more side-button backdrop: `amm
 | (115, 73, 53, 5), only while dead | `techguns.container.repair` + " " + seconds + "s", for example "Repair time left 7s" |
 | (−22, 70, 20, 20) | `techguns.turret.targetAnimals` + ": " + either red `techguns.yes` "Yes" or green `techguns.no` "No". Displayed as "Target Animals: Yes/No". |
 
-The power, redstone and security tooltips come from the parent (08).
+The power, redstone and security tooltips come from the parent ([08](../08-machines-production/index.md)).
 
 ## Base model and rendering
 
-`RenderBlockTileEntModel` draws `ModelTurretBase` with the armour-dependent texture (see shared-rendering.md §3); the tile's rotation is ignored. The item form uses the same model with `TurretBase.png`.
+`RenderBlockTileEntModel` draws `ModelTurretBase` with the armour-dependent texture (see shared-rendering.md §3); the tile's rotation is ignored. The item form uses the same model with [`TurretBase.png`](../07-blocks/block-catalogue.md#blocks-constructed-but-not-registered-not-in-game).
 
 `ModelTurretBase` uses 64 × 64 texture units, drawn on a 128 px texture (2 px per unit). Its boxes, in units (Y down, block occupies y 8..24, x/z −8..8):
 
@@ -203,7 +203,7 @@ The power, redstone and security tooltips come from the parent (08).
 | Bottom rails ×4 | 1×2×12 | along the bottom edges, y 22..24 | (0,15) | dark skirting |
 | Sockets ×4 | 1×6×6 | middle of each side face, y 13..19 | (0,0) | dark square ports (power/data sockets) |
 
-The turret head model (10's `ModelTurret`) maps into the **same texture**:
+The turret head model ([10](../10-entities-npcs/index.md)'s `ModelTurret`) maps into the **same texture**:
 
 - mount 4×1×4 at UV (34,12);
 - plate 8×1×8 at (32,22);
@@ -225,12 +225,12 @@ All are 128 × 128 with no animation and share one layout. Magenta-free areas ar
 
 ## Sounds
 
-The base itself plays none. `sounds.json` defines two turret events that nothing in the code plays (MUTL-28):
+The base itself plays none. `sounds.json` defines two turret events that nothing in the code plays ([MUTL-28](index.md#suspected-bugs)):
 
 | Event | Category | Files |
 |---|---|---|
-| `techguns:npcs.turretBeep` | hostile | `sounds/npcs/turret_beep-01.ogg` … `turret_beep-07.ogg` (7 variants) |
-| `techguns:npcs.turretGunequip` | hostile | `sounds/npcs/turret_gunequip-01.ogg` … `-03.ogg` (3 variants) |
+| `techguns:npcs.turretBeep` | hostile | [`sounds/npcs/turret_beep-01.ogg`](../10-entities-npcs/sounds.md#event-table) … `turret_beep-07.ogg` (7 variants) |
+| `techguns:npcs.turretGunequip` | hostile | [`sounds/npcs/turret_gunequip-01.ogg`](../10-entities-npcs/sounds.md#event-table) … `-03.ogg` (3 variants) |
 
 Their intended use is presumably an idle or target-acquired beep, and a sound when a gun is inserted. 10 may also list them.
 
@@ -239,7 +239,7 @@ Their intended use is presumably an idle or target-acquired beep, and a sound wh
 `blocks/TurretBase` is an old stand-alone `BlockContainer`:
 
 - material rock, hardness 4, pickaxe level 2, display name "Turret Base";
-- on being added to the world it spawned a `TurretEntityUNUSED`;
+- on being added to the world it spawned a [`TurretEntityUNUSED`](../10-entities-npcs/per-mob.md#19-turretentityunused-dead-code);
 - on break it called `breakTurret()`.
 
-Its registration in `TGBlocks` is commented out. `TurretBaseEnt.breakTurret()` is only reachable from that dead class; the live path is `BasicMachine.breakBlock` → `NPCTurret.destroy()`.
+Its registration in [`TGBlocks`](../07-blocks/block-catalogue.md#registered-blocks) is commented out. `TurretBaseEnt.breakTurret()` is only reachable from that dead class; the live path is `BasicMachine.breakBlock` → `NPCTurret.destroy()`.

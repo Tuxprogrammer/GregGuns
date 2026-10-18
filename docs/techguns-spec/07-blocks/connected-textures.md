@@ -4,11 +4,11 @@
 
 Techguns does **not** contain its own connected-texture algorithm. The relevant pieces are:
 
-- `GenericBlockCTM`, `machines/OreDrillBlock` and `machines/MultiBlockMachineBlock` delegate icons and rendering to the **Chisel 2 API** class `com.cricketcraft.chisel.api.carving.CarvableHelper`. Their render type is `com.cricketcraft.chisel.api.rendering.ClientUtils.renderCTMId`.
+- [`GenericBlockCTM`](block-catalogue.md#registered-blocks), `machines/OreDrillBlock` and `machines/MultiBlockMachineBlock` delegate icons and rendering to the **Chisel 2 API** class `com.cricketcraft.chisel.api.carving.CarvableHelper`. Their render type is `com.cricketcraft.chisel.api.rendering.ClientUtils.renderCTMId`.
 - The client creates Chisel's `team.chisel.client.render.RendererCTM` twice:
-  - in `ClientProxy.initChisel()`, called from `TGBlocks.init` before the CTM blocks are built (commented "Workaround?");
+  - in [`ClientProxy.initChisel()`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy), called from [`TGBlocks.init`](block-catalogue.md#registered-blocks) before the CTM blocks are built (commented "Workaround?");
   - in `ClientProxy.registerRenderers()`, where it is passed to `RenderingRegistry.registerBlockHandler`.
-- Neither class is bundled in the source tree; they come from the Chisel mod jar. Chisel is therefore a hard client dependency (01-core CORE-03).
+- Neither class is bundled in the source tree; they come from the Chisel mod jar. Chisel is therefore a hard client dependency ([01-core](../01-core/index.md) [CORE-03](../01-core/index.md#suspected-bugs)).
 - `techguns.blocks.ctm.CarvingRegistry`, `CarvingGroup` and `CarvingVariation` are a small stand-alone implementation of Chisel's `ICarvingRegistry`, `ICarvingGroup` and `ICarvingVariation` interfaces. `TGBlocks.chiselRegistry` is set to a new `CarvingRegistry` but **nothing reads it**. It is never populated or handed to Chisel, so it is dead code. Its behaviour is described at the end for completeness.
 
 The rest of this page describes the behaviour Techguns gets from Chisel and the texture layouts its assets follow, so a re-implementation can reproduce the visuals with its own CTM code.

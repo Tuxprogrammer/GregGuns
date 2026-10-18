@@ -8,7 +8,7 @@ All guns use Forge 1.7.10 `IItemRenderer` custom item renderers. They draw a `Mo
 
 ## 1. Registration (client proxy)
 
-`ClientProxy.registerRenderers()` binds one renderer instance per gun item. The `ResourceLocation` texture argument passed to every renderer constructor is **ignored** by the live base class (`RenderGunBase`). The bound texture always comes from the gun item's own texture list (see §8). The constructor flags that matter are listed below. The `scale/x/y/z` arguments are stored but never read.
+[`ClientProxy.registerRenderers()`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) binds one renderer instance per gun item. The `ResourceLocation` texture argument passed to every renderer constructor is **ignored** by the live base class (`RenderGunBase`). The bound texture always comes from the gun item's own texture list (see §8). The constructor flags that matter are listed below. The `scale/x/y/z` arguments are stored but never read.
 
 | Item field (`TGuns.*`) | Renderer class | Model | handleDamage | handleProgress | parts | hasZoom (scope overlay) |
 |---|---|---|---|---|---|---|
@@ -62,10 +62,10 @@ All guns use Forge 1.7.10 `IItemRenderer` custom item renderers. They draw a `Mo
 Notes on the flags:
 
 * **handleDamage**: the model's extended `render(…, ammoLeft, reloadProgress, renderType, part, fireProgress)` is called. Otherwise the plain `render(…)` is called, which `ModelMultipart` forwards with `ammoLeft = 100`, `reloadProgress = -1`, `renderType = ENTITY`, `part = 0`, `fireProgress = 0`. **Consequence:** a multipart model whose renderer has `handleDamage = false` always receives `part = 0`. This is why `RenderAUG`/`RenderScar` are given `dmg = true`. Without it, their bolt part would never be selected.
-* **handleProgress**: in first person, while the player has the item "in use" (`getItemInUse() != null`), `prog` = ticks in use ÷ `fullChargeTime` for charge guns (`GenericGunCharge`), otherwise ticks in use ÷ 20, clamped to [0,1]. Only charge guns and grenades ever put the item in use, so this only animates the Power Hammer and Bio Gun charge. For the other flagged guns it stays 0 until firing overwrites it (see §3).
+* **handleProgress**: in first person, while the player has the item "in use" (`getItemInUse() != null`), `prog` = ticks in use ÷ `fullChargeTime` for charge guns ([`GenericGunCharge`](../02-guns/per-gun-behaviour.md#genericguncharge-genericgunchargejava)), otherwise ticks in use ÷ 20, clamped to [0,1]. Only charge guns and grenades ever put the item in use, so this only animates the Power Hammer and Bio Gun charge. For the other flagged guns it stays 0 until firing overwrites it (see §3).
 * **parts**: the model is drawn *parts* times per frame. Each pass gets its own GL matrix and its own transform calls with the part index. Multipart models render a different subset of boxes per index. This is how slides, pumps, bolts, drums, spinning barrels and hammer heads move independently.
 
-Unused renderer classes are present in the source but never registered: `RenderGun` (legacy single-part base), `RenderGunScoped` + `RenderM4Scoped`, `RenderGunMultipart` + `RenderDriller`, `RenderMP5` (extends RenderPistol, adds nothing), and `RenderNeutrinoGun` (registered against a `null` item). `RenderGenericItem` *is* used, for magazine and rocket shared items.
+Unused renderer classes are present in the source but never registered: `RenderGun` (legacy single-part base), `RenderGunScoped` + `RenderM4Scoped`, `RenderGunMultipart` + [`RenderDriller`](gun-models.md#modeldriller-unused-12864-family-z-18-boxes-2-parts), `RenderMP5` (extends RenderPistol, adds nothing), and `RenderNeutrinoGun` (registered against a `null` item). `RenderGenericItem` *is* used, for magazine and rocket shared items.
 
 ---
 
@@ -85,7 +85,7 @@ IItemRenderer
  └─ (RenderAkimboGun, in renderer/additionalslots: draws the off-hand gun on the third-person player; see §11)
 ```
 
-Models: `ModelMultipart` (abstract, extends ModelBase) declares the extended `render` with part, ammo, reload and fire progress. `ModelAkimbo` wraps another ModelMultipart: part indices ≥ partsPerModel are folded back (`part − partsPerModel`) so the same geometry is drawn for the second gun. `ModelModel` wraps an OBJ (`AdvancedModelLoader`). It scales by the 0.0625 factor and renders the OBJ group whose name is the part index as a string (`"0"`, `"1"`); the plain `render` draws all groups. `ModelGunAmmo` is the legacy ammo-aware base used only by the dead `RenderGun`. `ModelNull` is an empty model (used by the helicopter renderer, area 10).
+Models: `ModelMultipart` (abstract, extends ModelBase) declares the extended `render` with part, ammo, reload and fire progress. `ModelAkimbo` wraps another ModelMultipart: part indices ≥ partsPerModel are folded back (`part − partsPerModel`) so the same geometry is drawn for the second gun. [`ModelModel`](gun-models.md#obj-model-modelsgunsgrenadelauncherobj) wraps an OBJ (`AdvancedModelLoader`). It scales by the 0.0625 factor and renders the OBJ group whose name is the part index as a string (`"0"`, `"1"`); the plain `render` draws all groups. `ModelGunAmmo` is the legacy ammo-aware base used only by the dead `RenderGun`. `ModelNull` is an empty model (used by the helicopter renderer, area [10](../10-entities-npcs/index.md)).
 
 `handleRenderType` returns true for all render types and `shouldUseRenderHelper` returns true for all helpers on every gun renderer. Forge's standard inventory and entity helpers (bobbing, centring) therefore apply.
 
@@ -93,7 +93,7 @@ Models: `ModelMultipart` (abstract, extends ModelBase) declares the extended `re
 
 ## 3. Client timing state (what drives every animation)
 
-Per entity (key = player name for players, entity id for other mobs) the client keeps an `AttackTime` record in `ClientProxy.attackTimes`:
+Per entity (key = player name for players, entity id for other mobs) the client keeps an [`AttackTime`](../01-core/client-effects-audio.md#attack-timing-recoil--reload) record in `ClientProxy.attackTimes`:
 
 | Field | Meaning |
 |---|---|
@@ -110,9 +110,9 @@ Times are set from tick values with ms = ticks ÷ 20 × 1000:
 | Event | Where set | Values |
 |---|---|---|
 | Local player fires (client half of `shootGunLeftClick`) | recoil (skipped if the gun has `checkRecoil` and the same attackType is still recoiling in first person), muzzle flash | gun `recoiltime` (default 5 ticks = 250 ms), `muzzleFlashtime` (default 5 ticks) |
-| Any client receives `GunFiredMessage` (server echo to everyone within 100 blocks, **including the shooter**) | recoil for that shooter (same checkRecoil rule) and a muzzle-flash *particle* (area 04) | recoil ms from packet |
+| Any client receives [`GunFiredMessage`](../01-core/networking.md#1--gunfiredmessage-sc) (server echo to everyone within 100 blocks, **including the shooter**) | recoil for that shooter (same checkRecoil rule) and a muzzle-flash *particle* (area [04](../04-projectiles-fx/index.md)) | recoil ms from packet |
 | Local reload starts | reload | gun `reloadtime` |
-| `ReloadStartedMessage` (others only) | reload for that shooter | |
+| [`ReloadStartedMessage`](../01-core/networking.md#3--reloadstartedmessage-sc) (others only) | reload for that shooter | |
 | Charge gun released | recoil (attackType 1), muzzle flash | |
 | Chainsaw / Power Hammer swing (client) | recoil 250 ms, attackType 0 (only if no recoil is active) | |
 
@@ -135,20 +135,20 @@ For each part index `i` in 0 … parts−1:
    7. If the muzzle-flash window is live: *showMuzzleFX*, flashProgress = its progress (expired → cleared).
 3. **Third person (`EQUIPPED`, held by any living entity):**
    1. attackType = the shooter's. If reloading (window live): reloadProgress = progress, *reloading*. Else if recoiling: prog = recoil progress (expired windows are cleared).
-   2. *Aimed* = shooter is any player, or a Techguns NPC (`GenericNPC`) whose `getHasAimedBowAnim()` is true. If aimed, apply the **aimed pre-rotation** (§6.3).
+   2. *Aimed* = shooter is any player, or a Techguns NPC ([`GenericNPC`](../10-entities-npcs/per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava)) whose `getHasAimedBowAnim()` is true. If aimed, apply the **aimed pre-rotation** (§6.3).
    3. Apply **Equipped base transform**(i, prog, attackType).
-   4. If the shooter is an `NPCTurret`, prog = 0 (turrets never show recoil).
+   4. If the shooter is an [`NPCTurret`](../10-entities-npcs/ai.md#5-turret-npcturret), prog = 0 (turrets never show recoil).
    5. Apply **Equipped reload transform**(i, reloadProgress) if reloading, else **Equipped recoil transform**(i, prog).
 4. **Dropped (`ENTITY`):** apply **Ground transform**(i).
 5. **Inventory (`INVENTORY`):** apply **Icon transform**(i).
 6. If not *renderScope*:
-   * Pick the texture: index = the item's camo index if the item implements `ICamoChangeable` (all guns do), else 0. Bind `gun.textures[index]`.
+   * Pick the texture: index = the item's camo index if the item implements [`ICamoChangeable`](../05-armor/armor-catalogue.md#1-class-hierarchy) (all guns do), else 0. Bind `gun.textures[index]`.
    * Render the model: extended call with `ammoLeft = gun.getCurrentAmmo(stack)`, reloadProgress, render type, part i and `prog` (handleDamage), or the plain call.
    * Pop matrix.
    * After the **last** part only: if *showMuzzleFX*, draw the muzzle effect (§7) in the muzzle frame. If first person, call `drawExtraEffects()` in the same frame (only the flamethrower overrides it).
 7. If *renderScope*: pop matrix. On part 0 only, push the muzzle frame, apply scope recoil if a recoil window is live (§9.3), call `renderScope()`, then pop. The gun model and muzzle flash are **not** drawn while scoped.
 
-So in first person the gun is drawn with (base) → (reload | firing | idle) transforms. In third person it is drawn with (aimed) → (equipped base) → (reload | recoil). The muzzle flash is a first-person-only screen effect. Other players' flashes are particles (area 04).
+So in first person the gun is drawn with (base) → (reload | firing | idle) transforms. In third person it is drawn with (aimed) → (equipped base) → (reload | recoil). The muzzle flash is a first-person-only screen effect. Other players' flashes are particles (area [04](../04-projectiles-fx/index.md)).
 
 `RenderGrenade` (§12) and the magazine/rocket renderers (§13) are much simpler, fixed-transform renderers.
 
@@ -201,13 +201,13 @@ The muzzle flash, extra effects and scope are drawn in a frame that is *not* att
 
 ### 6.3 Third-person aimed pre-rotation
 
-Applied before the equipped base transform for players (always, whenever any `GenericGun` is held) and for Techguns NPCs with the aimed-bow animation: rotX(−45), rotY(−18), rotZ(45), rotY(45), T(0, −1.3, −0.4), *[gun-specific extra translate]*, rotY(−45). The gun-specific extra translate (`transformEquippedAimed` override) is listed per gun in the sheets. At the same time an event handler (`RenderPlayerEvent.Pre`) forces `aimedBow = true` on the player's biped, armour and chestplate models whenever a GenericGun is held. Both arms are therefore raised forward like a drawn bow. Grenades are not GenericGuns and use the normal arm pose.
+Applied before the equipped base transform for players (always, whenever any [`GenericGun`](../02-guns/gun-lifecycle.md) is held) and for Techguns NPCs with the aimed-bow animation: rotX(−45), rotY(−18), rotZ(45), rotY(45), T(0, −1.3, −0.4), *[gun-specific extra translate]*, rotY(−45). The gun-specific extra translate (`transformEquippedAimed` override) is listed per gun in the sheets. At the same time an event handler (`RenderPlayerEvent.Pre`) forces `aimedBow = true` on the player's biped, armour and chestplate models whenever a GenericGun is held. Both arms are therefore raised forward like a drawn bow. Grenades are not GenericGuns and use the normal arm pose.
 
 ---
 
 ## 7. Muzzle flash (first person screen effect)
 
-`ScreenEffect` is a sprite-sheet quad. An instance holds a texture, a column count, a row count and a frame count. `doRender(progress, offX, offY, offZ, scale [, rotX, rotY, rotZ])` does the following:
+[`ScreenEffect`](../04-projectiles-fx/renderers.md#screeneffect-muzzle-flashes-and-scope-overlays) is a sprite-sheet quad. An instance holds a texture, a column count, a row count and a frame count. `doRender(progress, offX, offY, offZ, scale [, rotX, rotY, rotZ])` does the following:
 
 * frame = ⌊frames × progress⌋. Nothing is drawn once frame ≥ frames. Frames are read left to right, top to bottom.
 * Enables "FX lighting" (lighting off, lightmap forced to full bright 240/240). Binds the sheet, pushes, rotates X, Y, Z, then scales by `scale`.
@@ -216,7 +216,7 @@ Applied before the equipped base transform for players (always, whenever any `Ge
 
 Blending is whatever the caller sets: *default* (no explicit blend; uses the current item-render state, normally alpha-tested), *additive* (`enableAlphaBlendAdditive`: blend ONE, ONE inside a pushed ENABLE_BIT), or *additive + alpha test*.
 
-Instances used by guns (textures belong to area 04, `textures/fx/…`):
+Instances used by guns (textures belong to area [04](../04-projectiles-fx/index.md), `textures/fx/…`):
 
 | ScreenEffect | Texture | Grid | Frames | Used by |
 |---|---|---|---|---|
@@ -244,7 +244,7 @@ The flash plays over the gun's `muzzleFlashtime` window (§3). Per-gun offsets, 
 
 `GenericGun.setTexture(path)` = `setTextures(path, 1)`. `setTextures(path, n)` makes the client add `assets/techguns/<path>.png` for index 0 and `<path>_<i>.png` for i = 1 … n−1. It also sets `camoCount = n`. The renderer binds `textures[camoIndex]`.
 
-Camo state lives in item NBT: byte tag **`camo`** (absent = 0). `switchCamo(stack[, back])` cycles 0 … camoCount−1 forwards or backwards and creates the tag if missing (UI and keybind in areas 01/08). The display name of a camo is the lang key `<unlocalizedName>.camoname.<i>` for i > 0. For i = 0 it is `techguns.item.defaultcamo` = "Default Camo".
+Camo state lives in item NBT: byte tag **`camo`** (absent = 0). `switchCamo(stack[, back])` cycles 0 … camoCount−1 forwards or backwards and creates the tag if missing (UI and keybind in areas [01](../01-core/index.md)/[08](../08-machines-production/index.md)). The display name of a camo is the lang key `<unlocalizedName>.camoname.<i>` for i > 0. For i = 0 it is `techguns.item.defaultcamo` = "Default Camo".
 
 | Gun | Texture base | Variants | Lang keys (en_US) |
 |---|---|---|---|
@@ -268,7 +268,7 @@ Other related lang strings: `techguns.item.defaultcamo` = Default Camo. `techgun
 
 ### 9.1 Zoom state
 
-`ClientProxy.player_zoom` (1.0 = none) multiplies the FOV in the FOV-update event: `newFov = newFov × player_zoom × speedFactor`. The speed factor is 1 unless the client config "lock speed FOV" is on (area 01). A gun's zoom is set by `setZoom(mult, toggle, accuracyBonus)`. Every gun that has zoom uses **toggle** mode:
+`ClientProxy.player_zoom` (1.0 = none) multiplies the FOV in the FOV-update event: `newFov = newFov × player_zoom × speedFactor`. The speed factor is 1 unless the client config "lock speed FOV" is on (area [01](../01-core/index.md)). A gun's zoom is set by `setZoom(mult, toggle, accuracyBonus)`. Every gun that has zoom uses **toggle** mode:
 
 * Right-click while holding the gun (client) toggles `player_zoom` between 1 and `zoomMult`.
 * Starting a reload resets the zoom to 1.
@@ -282,8 +282,8 @@ Only renderers built with `hasZoom = true` replace the gun model with an overlay
 
 While zoomed, the gun model, muzzle flash and extra effects are not drawn. On part 0 the scope quad is drawn in the muzzle frame (§6.2) plus T(1.795, 0, −0.685):
 
-* **sniperScope**: `textures/fx/Testscope.png`, scale `SNIPER_SCOPE_SCALE` = 2.75, no extra rotation, current blend state.
-* **techScope** (Pulse Rifle): `textures/fx/techscope.png`, scale 2.25, rotY(90). The quad is drawn with alpha blending (SRC_ALPHA, ONE_MINUS_SRC_ALPHA) inside a pushed ENABLE_BIT.
+* **sniperScope**: [`textures/fx/Testscope.png`](../04-projectiles-fx/textures.md#single-images), scale `SNIPER_SCOPE_SCALE` = 2.75, no extra rotation, current blend state.
+* **techScope** (Pulse Rifle): [`textures/fx/techscope.png`](../04-projectiles-fx/textures.md#single-images), scale 2.25, rotY(90). The quad is drawn with alpha blending (SRC_ALPHA, ONE_MINUS_SRC_ALPHA) inside a pushed ENABLE_BIT.
 
 Recoil while scoped never uses the firing transform. Instead the scope quad is shifted (§9.3).
 
@@ -301,7 +301,7 @@ While a recoil window is live and the overlay is shown: r = 5p for p < 0.2, else
 
 In the rotated muzzle frame, X is screen up/down. The overlay therefore kicks upwards and slightly sideways.
 
-`ModelSniperScope` (a single 1080×1080×0 box with no texture size set) is an abandoned scope model. It is not referenced anywhere.
+[`ModelSniperScope`](gun-models.md#modelsniperscope-unused) (a single 1080×1080×0 box with no texture size set) is an abandoned scope model. It is not referenced anywhere.
 
 ---
 
@@ -310,7 +310,7 @@ In the rotated muzzle frame, X is screen up/down. The overlay therefore kicks up
 | Model | Rule |
 |---|---|
 | ModelRocketLauncher (rocket and nuke launcher) | The rocket in the tube (boxes R1–R7) is drawn only if `ammoLeft > 0` **and** `reloadProgress > 0.5`. It is hidden when empty and during the first half of a reload, and reappears halfway through the reload. Outside reloads reloadProgress is the sentinel 10, so the rocket shows whenever loaded, in every view. |
-| ModelLMG | The six visible belt rounds Bullet01…06 are drawn only while `reloadProgress > 0.5` (always, outside reloads). Bullet *k* is drawn only if ammoLeft > *k* (Bullet06 if > 6 … Bullet01 if > 1). The belt therefore visibly empties over the last six rounds, and the belt is hidden in the first half of a reload. |
+| ModelLMG | The six visible belt rounds Bullet01…[06](../06-items/index.md) are drawn only while `reloadProgress > 0.5` (always, outside reloads). Bullet *k* is drawn only if ammoLeft > *k* (Bullet06 if > 6 … Bullet01 if > 1). The belt therefore visibly empties over the last six rounds, and the belt is hidden in the first half of a reload. |
 | ModelM4_UQ (Infiltrator) | Two crossed 60-unit laser-beam planes (LaserBeam, LaserBeam01) extend 60 units (3.75 blocks of model space) forward from the laser box in every render type **except** INVENTORY. They are textured from the red top row of the texture (see textures.md). |
 | ModelChainsaw | Two chain/blade planes alternate: with i = round(fireProgress × 40) mod 2, blade1 (i = 0) or blade2 (i = 1). While recoiling (each swing or tick of use) the chain therefore flickers between two tooth patterns about 40 times per window. Idle shows blade1. |
 | ModelFragGrenade(showRing) | The pull ring is drawn only if the instance was built with showRing (the item renderer is, the thrown projectile is not) **and** fireProgress ≤ 0. In first person fireProgress = right-click hold progress, so the ring disappears once the pin is pulled. |
@@ -327,7 +327,7 @@ In the rotated muzzle frame, X is screen up/down. The overlay therefore kicks up
 * **First person:** both guns are drawn. The left gun gets an extra sideways translation after the base scale (Pistol/Mac-10 +1.85 X, MIB +2.05 X, Revolver +1.75 Z).
 * **Which gun animates:** for alternating akimbo (pistol, revolvers, MIB; created with `setAkimbo(false)`), each shot's attackType = ammo % 2 picks the gun. Only the firing transform for the matching gun applies, and the muzzle flash is drawn at that gun's position. The Mac-10 akimbo (`setAkimbo(true)` = doubleShot) fires both guns on every shot: both animate and both muzzle flashes are drawn.
 * **Third person (right hand):** the base renderer draws *all* parts (both guns) at the same right-hand transform. Recoil applies only when attackType = 0 (Mac-10: always). The second copy coincides exactly with the first, so it is a harmless duplicate draw.
-* **Third person (left hand):** an event handler (`RenderPlayerEvent.Specials.Pre`) draws the off-hand gun on the player model's left arm through `RenderAkimboGun` (package `client.renderer.additionalslots`, shared with the back-slot renderers of area 05). It binds a hard-coded texture, applies the left-arm post-render transform, then T(0, 0.3, 0), rotX(−90), a per-gun scale and a per-gun translate. It draws `parts` passes, each with its own reload or recoil transform:
+* **Third person (left hand):** an event handler (`RenderPlayerEvent.Specials.Pre`) draws the off-hand gun on the player model's left arm through [`RenderAkimboGun`](../05-armor/rendering-and-models.md#3-special-slot-rendering-on-the-player-rendereradditionalslots) (package `client.renderer.additionalslots`, shared with the back-slot renderers of area [05](../05-armor/index.md)). It binds a hard-coded texture, applies the left-arm post-render transform, then T(0, 0.3, 0), rotX(−90), a per-gun scale and a per-gun translate. It draws `parts` passes, each with its own reload or recoil transform:
 
 | Off-hand renderer | Texture | Scale | Translate | Extra rotation | Recoil (left gun) | Reload |
 |---|---|---|---|---|---|---|
@@ -356,7 +356,7 @@ The same models, with `ModelFragGrenade(false)` (no ring), render the thrown pro
 
 ## 13. Magazine and rocket item renderers (`RenderGenericItem`)
 
-`TGItems.sharedItem` is a metadata item (area 06). Its renderer claims only these metas and draws a 3D model. All other metas fall back to normal 2D icons. Metas below were computed from registration order in `TGItems` (verify against area 06).
+[`TGItems.sharedItem`](../06-items/item-catalogue.md) is a metadata item (area [06](../06-items/index.md)). Its renderer claims only these metas and draws a 3D model. All other metas fall back to normal 2D icons. Metas below were computed from registration order in `TGItems` (verify against area [06](../06-items/index.md)).
 
 | Shared item | meta | Renderer | Model | Texture |
 |---|---|---|---|---|
@@ -384,10 +384,10 @@ The magazine models reuse the exact boxes, and UV positions, of the magazine on 
 
 ## 14. Sound playback mechanics (summary)
 
-Full catalogue in [sounds.md](sounds.md). Gun sounds are `TGSound` moving sounds:
+Full catalogue in [sounds.md](sounds.md). Gun sounds are [`TGSound`](../01-core/client-effects-audio.md#tgsound) moving sounds:
 
-* **Fire / loop-start / rechamber:** `SoundUtil.playSoundOnEntityGunPosition`. Server side, it sends `PacketPlaySound` to every client within 100 blocks. Clients other than the shooter (`playOnOwnPlayer` is false for these) play it. On the shooting client the same call runs locally, so the shooter hears it without waiting for the server. Volume: `SOUND_DISTANCE` = 4.0 for fire sounds (with vanilla attenuation that is audible to about 64 blocks), 1.0 for rechamber. Pitch 1. "Gun position" = 1 block in front of the entity along its head yaw, at half its height. The sound follows the entity only if *moving* is set (fire sounds are not moving, so they stay where they were emitted).
+* **Fire / loop-start / rechamber:** [`SoundUtil.playSoundOnEntityGunPosition`](../01-core/utilities.md#soundutil). Server side, it sends [`PacketPlaySound`](../01-core/networking.md#9--packetplaysound-sc) to every client within 100 blocks. Clients other than the shooter (`playOnOwnPlayer` is false for these) play it. On the shooting client the same call runs locally, so the shooter hears it without waiting for the server. Volume: `SOUND_DISTANCE` = 4.0 for fire sounds (with vanilla attenuation that is audible to about 64 blocks), 1.0 for rechamber. Pitch 1. "Gun position" = 1 block in front of the entity along its head yaw, at half its height. The sound follows the entity only if *moving* is set (fire sounds are not moving, so they stay where they were emitted).
 * **Reload:** `SoundUtil.playReloadSoundOnEntity`: same packet path, moving = true. Locally it is suppressed if the previous local reload sound started less than 500 ms ago (prevents double play).
-* Volume is multiplied by the per-category client config multiplier `TGConfig.getVolumeMultiplier(volume, category)` (area 01). Categories: GUN_FIRE (fire, loop, swing), RELOAD (reload, rechamber), PLAYER_EFFECT, EXPLOSION, MACHINE, DEATHEFFECT.
+* Volume is multiplied by the per-category client config multiplier [`TGConfig.getVolumeMultiplier(volume, category)`](../01-core/config.md) (area [01](../01-core/index.md)). Categories: GUN_FIRE (fire, loop, swing), RELOAD (reload, rechamber), PLAYER_EFFECT, EXPLOSION, MACHINE, DEATHEFFECT.
 * Charge guns (Power Hammer, Bio Gun) use plain `world.playSoundAtEntity(player, …, 1.0, 1.0)` for fire and reload. These are vanilla positional sounds, not TGSounds.
 * Out of ammo with no reserve: vanilla `mob.villager.idle` at volume 1 (server).

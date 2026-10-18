@@ -1,10 +1,10 @@
 # 02-guns: gun and grenade recipes (`TGuns.postInit`)
 
-All recipes are registered in `TGuns.postInit()`.
+All recipes are registered in [`TGuns.postInit()`](gun-catalogue.md).
 
 * Recipe type is Forge `ShapedOreRecipe` unless noted as "vanilla shaped".
 * Grids are written row by row, with `·` for an empty cell. Shorter rows and fewer rows follow normal shaped-recipe rules, so the pattern can be placed anywhere in the grid.
-* Quoted names are ore-dictionary entries. Named items are Techguns parts (documented in 06-items) or vanilla items.
+* Quoted names are ore-dictionary entries. Named items are Techguns parts (documented in [06-items](../06-items/index.md)) or vanilla items.
 
 **Loaded vs empty output.**
 
@@ -13,7 +13,7 @@ All recipes are registered in `TGuns.postInit()`.
 
 The conversion into the `ammo` NBT happens in `onCreated` (see lifecycle §2).
 
-Ore-dict name `blockGlassHardened|blockGlass` stands for `TGItems.hardenedGlassOrGlass`: the ore name `blockGlassHardened` if any item is registered under it at init time, otherwise `blockGlass`.
+Ore-dict name `blockGlassHardened|blockGlass` stands for [`TGItems.hardenedGlassOrGlass`](../06-items/item-catalogue.md): the ore name `blockGlassHardened` if any item is registered under it at init time, otherwise `blockGlass`.
 
 ## Shaped gun recipes
 
@@ -75,7 +75,7 @@ Ore-dict name `blockGlassHardened|blockGlass` stands for `TGItems.hardenedGlassO
 | 35 | De-Atomizer Pistol (mibGun) | loaded | `b s p` / `· f p` / `· · m` | b = Laser Barrel, s = Sonic Emitter, p = "plateTitanium" (×2), f = Mechanical Parts (Carbon), m = Energy Cell |
 | 35e | De-Atomizer Pistol | empty | same | m = Energy Cell (Empty) |
 
-Guns with **no** recipe: Alien Blaster, Scatter Laser Rifle [WIP], and the four akimbo guns (crafting combine only). Upgrade recipes 22–24 ignore the input gun's ammo and camo and output a fully loaded gun (GUN-15).
+Guns with **no** recipe: Alien Blaster, Scatter Laser Rifle [WIP], and the four akimbo guns (crafting combine only). Upgrade recipes 22–24 ignore the input gun's ammo and camo and output a fully loaded gun ([GUN-15](index.md#suspected-bugs)).
 
 ## Shapeless / custom recipes
 
@@ -103,7 +103,7 @@ Guns with **no** recipe: Alien Blaster, Scatter Laser Rifle [WIP], and the four 
 **`RecipeAkimboSplit`** (shapeless, one akimbo gun):
 
 * The result is **one** single gun carrying a copy of the akimbo gun's tag, with `ammo = floor(akimboAmmo / 2)`. The stack size is forced to 1.
-* The **second** gun comes from `TechgunsTickHandler.onCraftingEvent` (`ItemCraftedEvent`, 01-core). When the crafted item is a gun and the first non-empty grid slot holds an akimbo gun, a copy of the result is made with `ammo = akimboAmmo − resultAmmo` (so an odd round goes to the second gun). It is merged into the player's main inventory, and the server drops it at the player if there is no room. This runs on both sides.
+* The **second** gun comes from [`TechgunsTickHandler.onCraftingEvent`](../01-core/events.md#techgunstickhandler-fml-bus) (`ItemCraftedEvent`, [01-core](../01-core/index.md)). When the crafted item is a gun and the first non-empty grid slot holds an akimbo gun, a copy of the result is made with `ammo = akimboAmmo − resultAmmo` (so an odd round goes to the second gun). It is merged into the player's main inventory, and the server drops it at the player if there is no room. This runs on both sides.
 
 **`ShapelessOreRecipeCopyNBT`** (generic): finds the first grid slot containing the first ingredient's item type and copies its tag (if any) onto the result. It is only used for the advanced Power Hammer.
 

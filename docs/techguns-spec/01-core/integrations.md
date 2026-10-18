@@ -1,6 +1,6 @@
 # Mod integrations
 
-Source: `plugins/ftbutilities/*`, `plugins/tconstruct/*`, `plugins/thermalexpansion/*`, plus the loader checks in `Techguns.postInit`. MineTweaker (`plugins/minetweaker`) is documented in 08-machines-production. Chisel and ForgeMultipart only appear as load-order hints. Chisel is in fact required on the client (CORE-03). ForgeMultipart integration (`TGMultiPartRegister`) is commented out.
+Source: `plugins/ftbutilities/*`, `plugins/tconstruct/*`, `plugins/thermalexpansion/*`, plus the loader checks in [`Techguns.postInit`](lifecycle-and-registration.md#lifecycle-overview). MineTweaker (`plugins/minetweaker`) is documented in [08-machines-production](../08-machines-production/index.md). Chisel and ForgeMultipart only appear as load-order hints. Chisel is in fact required on the client ([CORE-03](index.md#suspected-bugs)). ForgeMultipart integration ([`TGMultiPartRegister`](../07-blocks/multipart.md#status-inactive)) is commented out.
 
 All checks happen in **postInit** through `Loader.isModLoaded`.
 
@@ -12,7 +12,7 @@ All checks happen in **postInit** through `Loader.isModLoaded`.
 | `FTBUtilitiesIntegrationActual` | delegates to FTBU's `FriendsAPI.areFriends(a, b)` |
 | `FTBUtilitiesIntegrationDummy` | always returns **true** |
 
-The chosen implementation is stored in `TGNpcFactions.friendsAPI`. `TGNpcFactions.isHostile(uuidA, uuidB)` returns the negation of `areFriends`. Turrets and owner-based security use it to decide whether one player's turret attacks, or blocks access for, another player (09/10).
+The chosen implementation is stored in [`TGNpcFactions.friendsAPI`](../10-entities-npcs/ai.md#1-factions-tgnpcfaction-tgnpcfactions). `TGNpcFactions.isHostile(uuidA, uuidB)` returns the negation of `areFriends`. Turrets and owner-based security use it to decide whether one player's turret attacks, or blocks access for, another player ([09](../09-machines-utility/index.md)/[10](../10-entities-npcs/index.md)).
 
 - Without FTBU, every player counts as everyone's friend: turrets never target other players and "Friends" security means everyone.
 - With FTBU, the FTBU friend list decides.
@@ -33,7 +33,7 @@ These are sent with `FMLInterModComms.sendMessage("TConstruct", …)`. The IDs a
 | 52 | Titanium | 4 | 2250 | 500 | 3 | 2.5 | — | GRAY | FF DCDCDC | 180 / 1.5 | 1.0 / 0.975 |
 | 54 | Rubber | 0 | 500 | 2500 | 0 | 1.0 | — | DARK_GRAY | FF 414100 | 20 / 1.0 | 0.25 / 1.0 |
 
-Each is sent as an `addMaterial` message. Then the item mappings follow (all items are `TGItems` sub-items, 06):
+Each is sent as an `addMaterial` message. Then the item mappings follow (all items are [`TGItems`](../06-items/item-catalogue.md) sub-items, 06):
 
 | Message | Material | Item | Value |
 |---|---|---|---|
@@ -45,7 +45,7 @@ Each is sent as an `addMaterial` message. Then the item mappings follow (all ite
 | `addPartBuilderMaterial` | 53 ObsidianSteel | ingotObsidianSteel | 1 |
 | `addPartBuilderMaterial` | 54 Rubber | rubberBar | 1 |
 
-The duplicate Plastic `addMaterialItem` looks like a copy-paste slip: carbon, titanium, obsidian steel and rubber get no repair-item mapping. Also, sending the messages in postInit may be too late for TConstruct to read them (CORE-26).
+The duplicate Plastic `addMaterialItem` looks like a copy-paste slip: carbon, titanium, obsidian steel and rubber get no repair-item mapping. Also, sending the messages in postInit may be too late for TConstruct to read them ([CORE-26](index.md#suspected-bugs)).
 
 **Lang keys for the material names:**
 - `material.plastic` = Plastic
@@ -56,16 +56,16 @@ The duplicate Plastic `addMaterialItem` looks like a copy-paste slip: carbon, ti
 
 ### Client: inventory tab
 
-`TechgunsTConstructIntegrationClient.init()` runs the common part and then registers `TGInventoryTab` with TConstruct's `TabRegistry`.
+[`TechgunsTConstructIntegrationClient.init()`](lifecycle-and-registration.md#postinit-in-order) runs the common part and then registers `TGInventoryTab` with TConstruct's `TabRegistry`.
 - `TGInventoryTab` extends TConstruct's `AbstractTab`. Its icon is the 9 mm bullets item and it is always added to the list.
-- Clicking it sends `PacketOpenPlayerGUI(17)`. The 17 is hard-coded and ignores `TechgunsGUI_TabID` (CORE-07).
+- Clicking it sends `PacketOpenPlayerGUI(17)`. The 17 is hard-coded and ignores [`TechgunsGUI_TabID`](config.md#category-id-conflicts) ([CORE-07](index.md#suspected-bugs)).
 - `addTabs(guiLeft, guiTop, buttonList)` updates the tab positions and adds TConstruct's tabs to a GUI. The Techguns player inventory GUI calls it so that, with TConstruct installed, its tab row matches TConstruct's.
 - While TConstruct is loaded, the vanilla-inventory tab buttons from [input-and-hud.md](input-and-hud.md#inventory-tab-buttons) are **not** added.
 
 ## Thermal Expansion (`ThermalExpansion`)
 
-`TechgunsThermalExpansionIntegration.init()` has an empty body. A Smelter recipe (iron ingot + coal dust → steel ingot, 1000 RF) is commented out. A static helper `addSmelterRecipe(energy, in1, in2, out1, out2, chance)` would build a TE `SmelterRecipe` IMC compound with keys `energy`, `primaryInput`, `secondaryInput`, `primaryOutput`, optional `secondaryOutput` and `secondaryChance`, but nothing calls it. The class's `@Optional.Interface` names a non-existent interface path (`techguns.plugins.tconstruct.ITechgunsThermalExpansionIntegration`) (CORE-27).
+`TechgunsThermalExpansionIntegration.init()` has an empty body. A Smelter recipe (iron ingot + coal dust → steel ingot, 1000 RF) is commented out. A static helper `addSmelterRecipe(energy, in1, in2, out1, out2, chance)` would build a TE `SmelterRecipe` IMC compound with keys `energy`, `primaryInput`, `secondaryInput`, `primaryOutput`, optional `secondaryOutput` and `secondaryChance`, but nothing calls it. The class's `@Optional.Interface` names a non-existent interface path (`techguns.plugins.tconstruct.ITechgunsThermalExpansionIntegration`) ([CORE-27](index.md#suspected-bugs)).
 
 ## MineTweaker 3 (`MineTweaker3`)
 
-`TechgunsMineTweakerIntegration.init()` is called. Described in 08-machines-production.
+`TechgunsMineTweakerIntegration.init()` is called. Described in [08-machines-production](../08-machines-production/index.md).

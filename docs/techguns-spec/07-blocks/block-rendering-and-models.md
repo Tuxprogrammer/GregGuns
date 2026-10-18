@@ -6,22 +6,22 @@ Scope:
 - `client/models/blocks/*`
 - `client/renderer/item/RenderBlockModelItem*.java`
 
-The tile-entity special renderers (TESRs) that drive the machine models (`RenderAmmoPress`, `RenderFabricator`, `RenderChargingStation`, `RenderExplosiveCharge`, `RenderOreDrill`, `RenderTileEntityBlock`, `RenderBlockTileEntModel`, `RenderTGChest`) live in `client/renderer/tileentity` and are owned by 08/09. Only the model geometry and the model-side animation formulas are described here.
+The tile-entity special renderers (TESRs) that drive the machine models ([`RenderAmmoPress`](../08-machines-production/rendering.md#2-renderammopress-generic-model--rotation--progress-tesr), [`RenderFabricator`](../08-machines-production/fabricator.md#7-visuals-renderfabricator), [`RenderChargingStation`](../08-machines-production/charging-station.md), [`RenderExplosiveCharge`](../09-machines-utility/explosive-charges.md#world-rendering-renderexplosivecharge), [`RenderOreDrill`](../09-machines-utility/ore-drill.md#9-tesr-renderoredrill), [`RenderTileEntityBlock`](../08-machines-production/rendering.md#4-rendertileentityblock-used-by-09s-camo-and-repair-benches), [`RenderBlockTileEntModel`](../08-machines-production/rendering.md#3-renderblocktileentmodel-used-by-09s-turret-base-and-flag), [`RenderTGChest`](../09-machines-utility/misc-tile-entities.md#1-reinforced-chest-and-weapon-chest)) live in `client/renderer/tileentity` and are owned by [08](../08-machines-production/index.md)/09. Only the model geometry and the model-side animation formulas are described here.
 
 **Model-space convention.** All `ModelBase` models use the standard Minecraft model space: 16 units = 1 block, Y pointing down, and the block's floor at model y = 24. They are drawn after a 180° flip about X. To get heights, read **height above floor (px) = 24 − model y**. X and Z are centred on the block (−8 … +8).
 
 ## 1. ISBRH renderers and render IDs
 
-No render ID is a constant. Each `ISimpleBlockRenderingHandler` takes `RenderingRegistry.getNextAvailableRenderId()` when it is constructed (`RenderGenericBlock` does it in a field initializer, `RenderGenericPane` the same way). `ClientProxy.registerRenderers()` then pushes that id into the block with `setRenderType(id)` and registers the handler. Construction order is ladder, lamp, pane, directional, Chisel CTM, ore cluster.
+No render ID is a constant. Each `ISimpleBlockRenderingHandler` takes `RenderingRegistry.getNextAvailableRenderId()` when it is constructed (`RenderGenericBlock` does it in a field initializer, `RenderGenericPane` the same way). [`ClientProxy.registerRenderers()`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) then pushes that id into the block with `setRenderType(id)` and registers the handler. Construction order is ladder, lamp, pane, directional, Chisel CTM, ore cluster.
 
 | Handler | Blocks | World rendering | Inventory | 3D in inventory |
 |---|---|---|---|---|
-| `RenderLadder(ModelLadder01, ladder01_inv.png, 1.0)` | `ladder01` | Rails and rungs built with `TessellatorCubeProper` (§2). The model and texture arguments are stored but never used. | Facing-0 ladder drawn with an offset of (−0.6, −0.45, −1.0) | yes |
-| `RenderLamp(ModelLadder01, ladder01_inv.png, 1.0)` | `lamp01` | Socket + lens, or lantern + arms (see special-blocks §7). Brightness is the block's mixed brightness and the colour is white. An inset of 0.001 on lens/socket faces avoids z-fighting. | Rotated 180° about X and scaled 1.5. Lamps are offset (−0.55, −0.80, −0.45) and drawn as the ceiling lamp; lanterns are offset (−1.0, −0.05, 0.05). | yes |
-| `RenderGenericPane` | `camoNetPane` | Vanilla pane renderer when any side connects, plus the 2-px pole (special-blocks §3). A non-pane block falls back to a standard cube. | nothing (flat icon) | no |
-| `RenderDirectionalBlock` (extends `RenderGenericBlock`) | `screen`, `controlpanel` | Pass 0: standard cube. Pass 1: the overlay icon on the front face, with `TGRenderHelper.enableFXLighting/disableFXLighting` around it (see BLK-20). | nothing (flat `_top` icon) | no |
-| Chisel `RendererCTM` (external) | `container`, `concrete`, `metalpanel`, `metalpanel2`, `bugnest`, `oreDrill`, `machineMultiBlock` | see [connected-textures.md](connected-textures.md) | Chisel | Chisel |
-| `RenderOrecluster` | `oreCluster`, `oreCluster2`, both custom clusters (only if enabled) | Standard cube with the base icon, then six faces with the tinted overlay (special-blocks §11) | Stone cube plus tinted overlay, standard item lighting, offset (0.15, 0, 0.15) | yes |
+| `RenderLadder(ModelLadder01, ladder01_inv.png, 1.0)` | [`ladder01`](block-catalogue.md#registered-blocks) | Rails and rungs built with `TessellatorCubeProper` (§2). The model and texture arguments are stored but never used. | Facing-0 ladder drawn with an offset of (−0.6, −0.45, −1.0) | yes |
+| `RenderLamp(ModelLadder01, ladder01_inv.png, 1.0)` | [`lamp01`](block-catalogue.md#registered-blocks) | Socket + lens, or lantern + arms (see special-blocks §7). Brightness is the block's mixed brightness and the colour is white. An inset of 0.001 on lens/socket faces avoids z-fighting. | Rotated 180° about X and scaled 1.5. Lamps are offset (−0.55, −0.80, −0.45) and drawn as the ceiling lamp; lanterns are offset (−1.0, −0.05, 0.05). | yes |
+| `RenderGenericPane` | [`camoNetPane`](block-catalogue.md#registered-blocks) | Vanilla pane renderer when any side connects, plus the 2-px pole (special-blocks §3). A non-pane block falls back to a standard cube. | nothing (flat icon) | no |
+| `RenderDirectionalBlock` (extends `RenderGenericBlock`) | [`screen`](block-catalogue.md#registered-blocks), [`controlpanel`](block-catalogue.md#registered-blocks) | Pass 0: standard cube. Pass 1: the overlay icon on the front face, with `TGRenderHelper.enableFXLighting/disableFXLighting` around it (see [BLK-20](index.md#suspected-bugs)). | nothing (flat `_top` icon) | no |
+| Chisel `RendererCTM` (external) | [`container`](block-catalogue.md#registered-blocks), [`concrete`](block-catalogue.md#registered-blocks), [`metalpanel`](block-catalogue.md#registered-blocks), [`metalpanel2`](block-catalogue.md#registered-blocks), [`bugnest`](block-catalogue.md#registered-blocks), [`oreDrill`](block-catalogue.md#registered-blocks), [`machineMultiBlock`](block-catalogue.md#registered-blocks) | see [connected-textures.md](connected-textures.md) | Chisel | Chisel |
+| `RenderOrecluster` | [`oreCluster`](block-catalogue.md#registered-blocks), [`oreCluster2`](block-catalogue.md#registered-blocks), both custom clusters (only if enabled) | Standard cube with the base icon, then six faces with the tinted overlay (special-blocks §11) | Stone cube plus tinted overlay, standard item lighting, offset (0.15, 0, 0.15) | yes |
 | `RenderGenericBlock` (base class) | none directly | does nothing; owns the render id | – | no |
 
 **The "8 empty vertices" workaround.** `RenderDirectionalBlock` and `RenderOrecluster` add eight `(0,0,0)` vertices (two degenerate quads) to the tessellator before drawing. The source calls this a workaround; it guards against a render pass that would otherwise produce no geometry. It is harmless.
@@ -51,7 +51,7 @@ No render ID is a constant. Each `ISimpleBlockRenderingHandler` takes `Rendering
 So a small box samples only the matching sub-rectangle of a 16×16-unit icon. That is how the ladder and lamp textures are designed: the art is painted where the geometry sits (see textures.md).
 
 - A "scaleUVs" mode stretches the whole icon over each face instead. No in-scope caller uses it.
-- The face normals are set inconsistently (e.g. "back" uses (−1, 1, 0)). This only matters for lit inventory rendering (BLK-29).
+- The face normals are set inconsistently (e.g. "back" uses (−1, 1, 0)). This only matters for lit inventory rendering ([BLK-29](index.md#suspected-bugs)).
 
 ### `TesselatorCube` family (fixed UVs; for TESRs and items)
 
@@ -68,9 +68,9 @@ These draw a unit cube (0–1) bound to their own `ResourceLocation` texture. Ea
 
 | Subclass | Texture | UV quadrants of the 64×64 atlas | Used by |
 |---|---|---|---|
-| `PaintMachineTesselatorCube` | `textures/blocks/paintmachine_textures.png` | top = bottom-left quadrant (u 0–0.5, v 0.5–1); front = top-right (u 0.5–1, v 0–0.5); back, left, right, bottom = top-left (0–0.5, 0–0.5) | Camo Bench TESR and item (09) |
-| `RepairBenchTesselatorCube(path)` (default `textures/blocks/repairbench_textures.png`) | same layout | same quadrants | Repair Bench TESR and item (09); also the Flag item (see §4) |
-| `OreDrillCube(texture)` | the given texture | full 0–1 on every face | Draws a box centred on the origin with half-sizes (sx, sy, sz). Used by `RenderOreDrill` (08) for the spinning drill head with `drillhead`, `drillheadObsidian` and `drillheadCarbon`. |
+| `PaintMachineTesselatorCube` | [`textures/blocks/paintmachine_textures.png`](textures.md#camo-bench-and-repair-bench-09) | top = bottom-left quadrant (u 0–0.5, v 0.5–1); front = top-right (u 0.5–1, v 0–0.5); back, left, right, bottom = top-left (0–0.5, 0–0.5) | Camo Bench TESR and item ([09](../09-machines-utility/index.md)) |
+| `RepairBenchTesselatorCube(path)` (default [`textures/blocks/repairbench_textures.png`](textures.md#camo-bench-and-repair-bench-09)) | same layout | same quadrants | Repair Bench TESR and item ([09](../09-machines-utility/index.md)); also the Flag item (see §4) |
+| `OreDrillCube(texture)` | the given texture | full 0–1 on every face | Draws a box centred on the origin with half-sizes (sx, sy, sz). Used by `RenderOreDrill` ([08](../08-machines-production/index.md)) for the spinning drill head with `drillhead`, `drillheadObsidian` and `drillheadCarbon`. |
 
 `ReactionChamberFluidBox` is an empty `TessellatorCubeProper` subclass with a null block. It is unreferenced, and would throw a NullPointerException unless an override icon is always passed.
 
@@ -173,11 +173,11 @@ Each side plate carries:
 - an outward 2×6×6 connector boss
 - an inward 1×4×4 emitter and a 2×2×2 tip (the "power" electrodes)
 
-A 0×12×12 front glass pane is defined (UV origin (40, −12)) but its render is commented out. The model has no animation; the TESR (09) adds effects.
+A 0×12×12 front glass pane is defined (UV origin (40, −12)) but its render is commented out. The model has no animation; the TESR ([09](../09-machines-utility/index.md)) adds effects.
 
 ### `ModelFabricator` (UV 128×128, texture `Fabricator.png`)
 
-A 2×2-block machine: its footprint spans 32×32 units, centred at (−8, +8) in model space. It is rendered in **parts** chosen by index. `render(…, progress)` draws only part 0. The TESR (08) draws and moves the others.
+A 2×2-block machine: its footprint spans 32×32 units, centred at (−8, +8) in model space. It is rendered in **parts** chosen by index. `render(…, progress)` draws only part 0. The TESR ([08](../08-machines-production/index.md)) draws and moves the others.
 
 | Part | Contents |
 |---|---|
@@ -202,19 +202,19 @@ The static pedestal of the turret machine (`basicMachine:2`, 09).
 
 ### `ModelTurret` and `ModelSimpleTurret` (UV 64×64 / 64×32)
 
-Both are `ModelMultipart` pedestals rendered by part:
+Both are [`ModelMultipart`](../03-gun-visuals-audio/rendering-framework.md#1-registration-client-proxy) pedestals rendered by part:
 
 - part 0: an 8×8×1 base and the strut(s), 11 px tall
 - other parts: the mount (a small plate at 10–11 px that rotates with the gun)
 
 | Model | Struts | Mount | Used by |
 |---|---|---|---|
-| `ModelTurret` | two 2×11×2 | 4×1×4 | `NPCTurret` entity renderer (10-entities-npcs), with textures `TurretBase_2`…`_5` |
+| `ModelTurret` | two 2×11×2 | 4×1×4 | [`NPCTurret`](../10-entities-npcs/ai.md#5-turret-npcturret) entity renderer ([10-entities-npcs](../10-entities-npcs/index.md)), with textures `TurretBase_2`…`_5` |
 | `ModelSimpleTurret` | one | 2×1×4 | unused |
 
 ### `ModelTNTCharge` (UV 32×32, textures `tntCharge.png` / `tntCharge_2.png`)
 
-Three 4×4×12 dynamite sticks turned 45° about Y (diamond section), standing upright side by side near the north edge (2–14 px). An 8×4×2 detonator box (6–10 px) sits in front of them. The TESR (08/09) orients the model to the attached face and swaps to `_2` (the "ARM" display) when armed.
+Three 4×4×12 dynamite sticks turned 45° about Y (diamond section), standing upright side by side near the north edge (2–14 px). An 8×4×2 detonator box (6–10 px) sits in front of them. The TESR ([08](../08-machines-production/index.md)/[09](../09-machines-utility/index.md)) orients the model to the attached face and swaps to `_2` (the "ARM" display) when armed.
 
 ### `ModelExpCharge` (UV 32×32, textures `ExpCharge.png` / `ExpCharge_2.png`)
 
@@ -252,7 +252,7 @@ A free-standing ladder model: two 2×16×2 rails and four 12×2×2 rungs. It is 
 
 ## 4. Block item renderers
 
-`RenderMachineBlockItemBase` (out of scope, summarised) is an `IItemRenderer` for every render type:
+[`RenderMachineBlockItemBase`](../08-machines-production/rendering.md#5-machine-item-rendering) (out of scope, summarised) is an `IItemRenderer` for every render type:
 
 1. push the matrix
 2. apply `GL_Transform_Translate`
@@ -261,13 +261,13 @@ A free-standing ladder model: two 2×16×2 rails and four 12×2×2 rungs. It is 
 5. draw `model.render(null, 0, 0, 0, 0, 0, 1/16)`
 6. pop
 
-`RenderMachineBlockItem` dispatches to an array of these by item damage.
+[`RenderMachineBlockItem`](../08-machines-production/rendering.md#5-machine-item-rendering) dispatches to an array of these by item damage.
 
 | Class | Translate (all types) | First person | Third person | Ground | Inventory |
 |---|---|---|---|---|---|
-| `RenderBlockModelItem` | rotate 180° about X | translate (0.3, −1.7, −0.5), scale 0.9 | translate (0.5, −1.6, −0.5) | translate (0, −1, 0) | translate (0, −1, 0) |
-| `RenderBlockModelItemChest` | rotate 180° about X | translate (−0.1, −1.0, −0.9), scale 0.9 | translate (0.5, −1.6, −0.5), **plus the debug offset (Keybinds.X, Y, Z)** (BLK-16) | translate (0, −1, 0) | translate (−0.5, 0.3, 0.5), scale 1.1, rotate −90° about Y |
-| `RenderBlockModelItemTNTCharge` | rotate 180° about X | translate (0.3, −1.7, −0.5), scale 1.2, rotate −122.5° about Y, translate (−0.2, −0.2, 0) | translate (0.4, −1.9, −0.4), rotate −45° about Y, scale 1.5 | scale 1.5, translate (0, −1, 0.3) | translate (0, −1.2, 0), rotate 135° about Y, scale 1.5 |
+| [`RenderBlockModelItem`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand) | rotate 180° about X | translate (0.3, −1.7, −0.5), scale 0.9 | translate (0.5, −1.6, −0.5) | translate (0, −1, 0) | translate (0, −1, 0) |
+| `RenderBlockModelItemChest` | rotate 180° about X | translate (−0.1, −1.0, −0.9), scale 0.9 | translate (0.5, −1.6, −0.5), **plus the debug offset (Keybinds.X, Y, Z)** ([BLK-16](index.md#suspected-bugs)) | translate (0, −1, 0) | translate (−0.5, 0.3, 0.5), scale 1.1, rotate −90° about Y |
+| [`RenderBlockModelItemTNTCharge`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand) | rotate 180° about X | translate (0.3, −1.7, −0.5), scale 1.2, rotate −122.5° about Y, translate (−0.2, −0.2, 0) | translate (0.4, −1.9, −0.4), rotate −45° about Y, scale 1.5 | scale 1.5, translate (0, −1, 0.3) | translate (0, −1.2, 0), rotate 135° about Y, scale 1.5 |
 
 **Item-renderer wiring** (set up in `ClientProxy`):
 
@@ -275,14 +275,14 @@ A free-standing ladder model: two 2×16×2 rails and four 12×2×2 rungs. It is 
 |---|---|---|
 | `basicMachine:0` | `ModelAmmoPress` | `AmmoPress.png` |
 | `basicMachine:1` | `ModelMetalPress` | `MetalPress.png` |
-| `basicMachine:2` | `ModelTurretBase` | `TurretBase.png` |
+| `basicMachine:2` | `ModelTurretBase` | [`TurretBase.png`](block-catalogue.md#blocks-constructed-but-not-registered-not-in-game) |
 | `basicMachine:3` | paint-machine cube | `paintmachine_textures.png` |
 | `basicMachine:4` | `ModelChemLab` | `ChemLab.png` |
 | `basicMachine:5` | repair-bench cube | `repairbench_textures.png` |
 | `basicMachine:6` | TNT charge (TNT transforms) | `tntCharge.png` |
-| `basicMachine:7` (Flag) | **repair-bench cube** | `repairbench_textures.png` (not the flag model; BLK-31) |
+| `basicMachine:7` (Flag) | **repair-bench cube** | `repairbench_textures.png` (not the flag model; [BLK-31](index.md#suspected-bugs)) |
 | `basicMachine:8` | `ModelExpCharge` (TNT transforms) | `ExpCharge.png` |
 | `basicMachine:9` | `ModelChargingStation` | `ChargingStation.png` |
 | `basicMachine:10` | repair-bench cube | spare entry, no such meta |
-| `tgchest` | `ModelChestInv` | `reinforced_chest.png` |
-| `tgchest_weapon` | `ModelChestInv` | `weapon_chest.png` |
+| [`tgchest`](block-catalogue.md#registered-blocks) | `ModelChestInv` | `reinforced_chest.png` |
+| [`tgchest_weapon`](block-catalogue.md#registered-blocks) | `ModelChestInv` | `weapon_chest.png` |

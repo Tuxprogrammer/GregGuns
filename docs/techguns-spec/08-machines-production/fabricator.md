@@ -2,11 +2,11 @@
 
 The Fabricator is a four-ingredient assembler for high-tier components.
 
-Classes: `FabricatorTileEntMaster` (`MultiBlockMasterTileEntBase`), `FabricatorTileEntSlave` (`MultiBlockSlaveTileEntBase`, `IEnergyReceiver`, `ISidedInventory`), `FabricatorContainer`, `GuiFabricator`, `FabricatorRecipe`, `RenderFabricator` with `ModelFabricator`.
+Classes: [`FabricatorTileEntMaster`](framework.md#1-class-hierarchy) ([`MultiBlockMasterTileEntBase`](framework.md#master-multiblockmastertileentbase)), [`FabricatorTileEntSlave`](blocks-and-items.md#2-multiblockmachineblock-registry-name-machinemultiblock) ([`MultiBlockSlaveTileEntBase`](framework.md#slave-multiblockslavetileentbase), `IEnergyReceiver`, `ISidedInventory`), `FabricatorContainer`, `GuiFabricator`, `FabricatorRecipe`, `RenderFabricator` with [`ModelFabricator`](../07-blocks/block-rendering-and-models.md#modelfabricator-uv-128128-texture-fabricatorpng).
 
 ## 1. Structure
 
-Blocks (block `machineMultiBlock`):
+Blocks (block [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-blocks)):
 - Fabricator Controller (meta 4): ×1
 - Fabricator Housing (meta 3): ×3
 - Fabricator Glass (meta 5): ×4
@@ -24,11 +24,11 @@ Offsets relative to the controller (layer y 0 = housings, y +1 = glass):
 | 4 (west face, player at −X) | 0..+1 | −1..0 |
 | 5 (east face, player at +X) | −1..0 | 0..+1 |
 
-**Validation** (`MultiBlockMachineBlock.CheckFormFabricator`):
+**Validation** ([`MultiBlockMachineBlock.CheckFormFabricator`](blocks-and-items.md#2-multiblockmachineblock-registry-name-machinemultiblock)):
 1. Every bottom-layer position except the controller must be `machineMultiBlock` meta 3 whose slave tile **isn't already linked**.
 2. Then every top-layer position must be meta 5, also unlinked.
 
-At the first failure the server sends `PacketTGMessage(0, x, y, z)` and forming stops. The chat shows "Invalid Block for Reaction Chamber at x, y, z" (wrong machine name, MPRD-27).
+At the first failure the server sends `PacketTGMessage(0, x, y, z)` and forming stops. The chat shows "Invalid Block for Reaction Chamber at x, y, z" (wrong machine name, [MPRD-27](index.md#suspected-bugs)).
 
 **On success:**
 - the 3 housings link to the master with **type 1** (item and energy port);
@@ -37,14 +37,14 @@ At the first failure the server sends `PacketTGMessage(0, x, y, z)` and forming 
 
 All 8 blocks switch to the `invisible` icon and the controller's TESR draws the machine.
 
-**Opening the GUI.** Right-click the complete controller, or any linked slave, to open GUI 19 at the controller. The block doesn't check security first (MPRD-08). The container's `canInteractWith` uses the security rule, so an unauthorized player's GUI closes on the next server tick. Use range is 8 blocks.
+**Opening the GUI.** Right-click the complete controller, or any linked slave, to open GUI 19 at the controller. The block doesn't check security first ([MPRD-08](index.md#suspected-bugs)). The container's `canInteractWith` uses the security rule, so an unauthorized player's GUI closes on the next server tick. Use range is 8 blocks.
 
 **Unforming.** Breaking the controller or any linked slave calls `master.unform()`:
 - every block in the 2×2×2 box is unlinked (type reset to 0), and their description is resent;
 - the master is set to incomplete with `dir` 0;
 - breaking the controller also spills its inventory.
 
-The operation state is kept. `updateEntity` **doesn't check `complete`**, so an operation keeps running while unformed as long as stored power lasts (MPRD-16).
+The operation state is kept. `updateEntity` **doesn't check `complete`**, so an operation keeps running while unformed as long as stored power lasts ([MPRD-16](index.md#suspected-bugs)).
 
 ## 2. Ports
 
@@ -63,9 +63,9 @@ Capacity: 100 000 RF.
 | 0 | `SLOT_INPUT` | main input | (19,17) | `Slot` | anything not in the three lists below and not an upgrade |
 | 1 | `SLOT_WIRES` | wires / circuits | (47,17) | `SlotRestrictedToList(items_wireslot)` | Copper Wire (shared 57), Gold Wire (86), `circuitBasic`, `circuitElite` |
 | 2 | `SLOT_POWDER` | powder / parts | (68,17) | `SlotRestrictedToList(items_powderslot)` | `dustRedstone`, Mechanical Parts (Carbon) (37) |
-| 3 | `SLOT_PLATE` | plate | (89,17) | `SlotRestrictedToList(items_plateslot)` | `sheetPlastic`, `plateCarbon`, `plateTitanium`, `plateLead` |
-| 4 | `SLOT_OUTPUT` | output | (116,50) | `SlotOutput` | none |
-| 5 | `SLOT_UPGRADE` | stack upgrade | (150,50) | `SlotMachineUpgrade` | Machine Upgrade |
+| 3 | `SLOT_PLATE` | plate | (89,17) | `SlotRestrictedToList(items_plateslot)` | `sheetPlastic`, `plateCarbon`, [`plateTitanium`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), [`plateLead`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) |
+| 4 | `SLOT_OUTPUT` | output | (116,50) | [`SlotOutput`](ammo-press.md#1-inventory) | none |
+| 5 | `SLOT_UPGRADE` | stack upgrade | (150,50) | [`SlotMachineUpgrade`](ammo-press.md#1-inventory) | Machine Upgrade |
 
 - `isItemValidForSlot(slot, item)` is true when `getValidSlotForItemInMachine(item) == slot`. The routing checks the wire list, then the powder list, then the plate list, then the upgrade, and falls back to input.
 - MineTweaker can extend the three lists (`minetweaker.md`).
@@ -74,7 +74,7 @@ Capacity: 100 000 RF.
 
 ## 4. Recipes
 
-A `FabricatorRecipe` has `inputItem`/`amountInput`, `wireSlot`/`amountWire`, `powderSlot`/`amountPowder`, `plateSlot`/`amountPlates` (each an `ItemStackOreDict`; a null stack = not required) and `outputItem`/`amountOutput`.
+A `FabricatorRecipe` has `inputItem`/`amountInput`, `wireSlot`/`amountWire`, `powderSlot`/`amountPowder`, `plateSlot`/`amountPlates` (each an [`ItemStackOreDict`](gui-handler.md#6-itemstackoredict-recipe-ingredient-wrapper); a null stack = not required) and `outputItem`/`amountOutput`.
 
 **Matching** (first recipe in list order):
 - the input matches and has ≥ `amountInput`;
@@ -102,10 +102,10 @@ Each tick consumes 80 RF × m (8 000 RF per unit at m = 1). At 100 ticks the ser
 |---|---|---|---|---|---|
 | 1 | `ingotGold` (1) | Copper Wire (1) | `dustRedstone` (3) | `sheetPlastic` (1) | Energy Cell (Empty) ×1 (shared 16) |
 | 2 | Soul Sand (1) | Gold Wire (1) | `dustRedstone` (1) | `sheetPlastic` (1) | Cybernetic Parts ×1 (91) |
-| 3 | `ingotTitanium` (2) | `circuitBasic` (4) | Mechanical Parts (Carbon) (1) | `plateCarbon` (4) | Power Plating ×2 (89) |
+| 3 | [`ingotTitanium`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) (2) | `circuitBasic` (4) | Mechanical Parts (Carbon) (1) | `plateCarbon` (4) | Power Plating ×2 (89) |
 | 4 | Coil (1) (shared 69) | `circuitElite` (2) | Mechanical Parts (Carbon) (1) | `plateTitanium` (1) | Sonic Emitter ×1 (97) |
 | 5 | Enriched Uranium (1) (102) | `circuitElite` (2) | Mechanical Parts (Carbon) (2) | `plateLead` (2) | Rad Emitter ×1 (108) |
-| 6 | `ingotSteel` (1; ingredient declared with size 2, which is ignored) | `circuitBasic` (1) | `dustRedstone` (4) | `plateLead` (2) | Nuclear Power Cell (Depleted) ×1 (107) |
+| 6 | [`ingotSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (1; ingredient declared with size 2, which is ignored) | `circuitBasic` (1) | `dustRedstone` (4) | `plateLead` (2) | Nuclear Power Cell (Depleted) ×1 (107) |
 
 ## 5. GUI (`GuiFabricator`, `textures/gui/Fabricator_Gui.png`)
 
@@ -122,8 +122,8 @@ Each tick consumes 80 RF × m (8 000 RF per unit at m = 1). At 100 ticks the ser
 
 ## 7. Visuals (`RenderFabricator`)
 
-- **What renders.** The TESR draws only while the structure is complete; unformed blocks show their CTM textures (07-blocks).
-- **Model and texture.** `ModelFabricator` (declared 128×128) with texture `textures/blocks/Fabricator.png` (256×256, catalogued in 07-blocks). The texture is mostly dark grey/black panels, a framed glass window region, a small screen with a cyan display (top right), and red and yellow indicator bits.
+- **What renders.** The TESR draws only while the structure is complete; unformed blocks show their CTM textures ([07-blocks](../07-blocks/index.md)).
+- **Model and texture.** `ModelFabricator` (declared 128×128) with texture [`textures/blocks/Fabricator.png`](../07-blocks/textures.md#11-model-textures) (256×256, catalogued in [07-blocks](../07-blocks/index.md)). The texture is mostly dark grey/black panels, a framed glass window region, a small screen with a cyan display (top right), and red and yellow indicator bits.
 - **Transform.**
   1. Translate to (x+0.5, y+1.5, z+0.5) and flip 180° about Z.
   2. Rotate about Y by `dir`: 2 → 0°, 3 → −180°, 4 → −90°, 5 → +90°.

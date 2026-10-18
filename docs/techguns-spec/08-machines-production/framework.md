@@ -1,6 +1,6 @@
 # Machine framework (shared base classes)
 
-Everything in this file is shared by the production machines in this area **and** by the utility machines documented in `09-machines-utility` (turret, camo bench, repair bench, explosive charges, camp flag, scrapper, ore drill, chest).
+Everything in this file is shared by the production machines in this area **and** by the utility machines documented in [`09-machines-utility`](../09-machines-utility/index.md) (turret, camo bench, repair bench, explosive charges, camp flag, scrapper, ore drill, chest).
 
 ## 1. Class hierarchy
 
@@ -14,9 +14,9 @@ Everything in this file is shared by the production machines in this area **and*
 | `MultiBlockSlaveTileEntBase` | `TileEntity` | Link to master position (no inventory or energy of its own) |
 | `ITGTileEntSecurity` | interface | `setOwner(player)`, `isOwnedByPlayer(player)`, `getOwner()`, `getSecurity()` |
 
-Concrete machines in this area: `AmmoPressTileEnt`, `MetalPressTileEnt`, `ChemLabTileEnt`, `ChargingStationTileEnt` (all `BasicMachineTileEntity`), `FabricatorTileEntMaster` and `ReactionChamberTileEntMaster` (`MultiBlockMasterTileEntBase`), `FabricatorTileEntSlave` and `ReactionChamberTileEntSlave` (`MultiBlockSlaveTileEntBase`).
+Concrete machines in this area: `AmmoPressTileEnt`, `MetalPressTileEnt`, `ChemLabTileEnt`, `ChargingStationTileEnt` (all `BasicMachineTileEntity`), `FabricatorTileEntMaster` and `ReactionChamberTileEntMaster` (`MultiBlockMasterTileEntBase`), [`FabricatorTileEntSlave`](blocks-and-items.md#2-multiblockmachineblock-registry-name-machinemultiblock) and [`ReactionChamberTileEntSlave`](blocks-and-items.md#2-multiblockmachineblock-registry-name-machinemultiblock) (`MultiBlockSlaveTileEntBase`).
 
-Tile-entity registry names (set in `Techguns.java`): `AmmoPressTileEnt`, `MetalPressTileEnt`, `ChemLabTileEnt`, `ChargingStationTileEnt`, `FabricatorTileEntMaster`, `FabricatorTileEntSlave`, `ReactionChamberTileEntMaster`, `ReactionChamberTileEntSlave` (plus the utility ones listed in 09).
+Tile-entity registry names (set in [`Techguns.java`](../01-core/lifecycle-and-registration.md#lifecycle-overview)): `AmmoPressTileEnt`, `MetalPressTileEnt`, `ChemLabTileEnt`, `ChargingStationTileEnt`, `FabricatorTileEntMaster`, `FabricatorTileEntSlave`, `ReactionChamberTileEntMaster`, `ReactionChamberTileEntSlave` (plus the utility ones listed in [09](../09-machines-utility/index.md)).
 
 ## 2. `BasicInventoryTileEnt`
 
@@ -45,14 +45,14 @@ Tile-entity registry names (set in `Techguns.java`): `AmmoPressTileEnt`, `MetalP
 - **Access rule.** `BasicPoweredTileEnt.isUseableByPlayer` first applies the base range check, then:
   - unowned, or security 0: allowed;
   - the player is the owner: allowed;
-  - security 1: allowed when the owner and the player are friends. The check is `!TGNpcFactions.isHostile(owner, player)`, which asks the FTBUtilities friends API. Without FTBUtilities the dummy integration says everyone is a friend, so level 1 behaves like level 0. See `10-entities-npcs` for factions.
+  - security 1: allowed when the owner and the player are friends. The check is `!TGNpcFactions.isHostile(owner, player)`, which asks the FTBUtilities friends API. Without FTBUtilities the dummy integration says everyone is a friend, so level 1 behaves like level 0. See [`10-entities-npcs`](../10-entities-npcs/index.md) for factions.
   - otherwise: denied.
 - **Where access is enforced.**
-  - Opening a GUI: `BasicMachine` checks before `openGui`. `MultiBlockMachineBlock` checks only for the Reaction Chamber (see bug MPRD-08 for the Fabricator).
+  - Opening a GUI: [`BasicMachine`](blocks-and-items.md#1-basicmachine-registry-name-basicmachine) checks before `openGui`. `MultiBlockMachineBlock` checks only for the Reaction Chamber (see bug [MPRD-08](index.md#suspected-bugs) for the Fabricator).
   - On denial, the client prints the chat line `techguns.container.security.denied` ("[DENIED] You have no permission to use"). The click is still consumed.
   - `Container.canInteractWith` calls `isUseableByPlayer` every tick, so an open GUI closes if access is lost or the player walks out of range.
   - Machine-specific GUI buttons check `isUseableByPlayer` again on the server.
-- **Not protected:** breaking the block, wrench rotation and wrench dismantling (MPRD-09), automation (hoppers, pipes) and energy input.
+- **Not protected:** breaking the block, wrench rotation and wrench dismantling ([MPRD-09](index.md#suspected-bugs)), automation (hoppers, pipes) and energy input.
 - **NBT keys:** `security` (byte) and `owner` (UUID string). Both are written **only when an owner exists**. An unparseable UUID loads as unowned.
 - **GUI security button** (see `gui-textures.md` for the sprites). The tooltip shows the owner's last known username (Forge `UsernameCache`, or `UNKNOW_PLAYERNAME`), the colour-coded level, the level description and "Only the owner can change this setting". Unowned machines show `techguns.container.security.tooltip.unowned`.
 
@@ -60,7 +60,7 @@ Tile-entity registry names (set in `Techguns.java`): `AmmoPressTileEnt`, `MetalP
 
 - **API.** CoFH RF: `IEnergyReceiver` backed by `cofh.api.energy.EnergyStorage(capacity)`. Max receive and max extract both equal the capacity, so there's no per-tick input limit.
 - **Connections.** `canConnectEnergy` is true on all six sides for single-block machines. Multiblocks override it (see their files). The block never pushes or exports energy.
-- **`consumePower(amount)`.** If config `MachinesNeedNoPower` (category `general`, default `false`) is true, it returns true without draining anything. Otherwise it drains `amount` and returns true only if at least that much was stored. When there isn't enough, nothing is drained and progress stalls for that tick; it isn't lost.
+- **`consumePower(amount)`.** If config [`MachinesNeedNoPower`](../01-core/config.md#category-general) (category `general`, default `false`) is true, it returns true without draining anything. Otherwise it drains `amount` and returns true only if at least that much was stored. When there isn't enough, nothing is drained and progress stalls for that tick; it isn't lost.
 - **NBT.** Compound `Energy` (CoFH's own key `Energy` inside), boolean `hasSignal`, byte `redstoneBehaviour`.
 
 | Machine | Capacity (RF) | Consumption |
@@ -83,7 +83,7 @@ Tile-entity registry names (set in `Techguns.java`): `AmmoPressTileEnt`, `MetalP
 | 2 | Low | `techguns.redstonemode.low` ("low") | the block doesn't receive power |
 
 - `hasSignal` is updated only when `BasicMachine.onNeighborBlockChange` calls the tile's `onNeighborBlockChange`. The tile reads `isBlockIndirectlyGettingPowered` server-side and calls `needUpdate()` when the value changes. It isn't computed on placement.
-- `MultiBlockMachineBlock` has that call commented out, so multiblock controllers never update `hasSignal` (MPRD-07).
+- `MultiBlockMachineBlock` has that call commented out, so multiblock controllers never update `hasSignal` ([MPRD-07](index.md#suspected-bugs)).
 - When `isRedstoneEnabled()` is false, the whole `updateEntity` work is skipped: progress doesn't advance and no power is used.
 - **GUI.** There's a two-lamp indicator at (6,5): the left lamp is red when the machine is disabled, the right lamp green when enabled. A redstone button sits in a side tab. Both areas share one tooltip:
   - "Redstone Info"
@@ -92,11 +92,11 @@ Tile-entity registry names (set in `Techguns.java`): `AmmoPressTileEnt`, `MetalP
 
 ## 6. GUI button protocol
 
-The client sends packet `GUIButtonClick` (server-bound) with fields `x:int, y:int, z:int, buttonId:int`. The server looks up the tile at that position and calls `buttonClicked(buttonId, player)` if it's a `BasicInventoryTileEnt`. Button IDs:
+The client sends packet [`GUIButtonClick`](../01-core/networking.md#0--guibuttonclick-cs) (server-bound) with fields `x:int, y:int, z:int, buttonId:int`. The server looks up the tile at that position and calls `buttonClicked(buttonId, player)` if it's a `BasicInventoryTileEnt`. Button IDs:
 
 | ID | Constant | Action | Who may press |
 |---|---|---|---|
-| 1 | `GuiTechgunsPoweredTileEnt.BUTTON2_ID` | cycle security 0→1→2→0, then `needUpdate()` | owner only |
+| 1 | [`GuiTechgunsPoweredTileEnt.BUTTON2_ID`](gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine) | cycle security 0→1→2→0, then `needUpdate()` | owner only |
 | 2 | `GuiTechgunsPoweredTileEnt.BUTTON_ID` (= `BasicPoweredTileEnt.MAX_BUTTON_USED`) | cycle redstone mode 0→1→2→0, then `needUpdate()` | anyone passing `isUseableByPlayer` |
 | 3+ | `MAX_BUTTON_USED + n` | machine-specific (see each machine file) | anyone passing `isUseableByPlayer` |
 
@@ -112,7 +112,7 @@ The client sends packet `GUIButtonClick` (server-bound) with fields `x:int, y:in
 - **Client helpers.**
   - `getProgress()` = progress/totalTime (0 when totalTime is 0).
   - `getProgressScaled(n)` = progress·n/totalTime.
-  - `getPowerScaled` is broken and unused (MPRD-02).
+  - `getPowerScaled` is broken and unused ([MPRD-02](index.md#suspected-bugs)).
 - **`onFluidContainerInteract(stack)`.** Hook for right-clicking with a fluid container. It returns the stack unchanged by default; only the Chem Lab overrides it.
 
 ### Common processing pattern
@@ -134,13 +134,13 @@ The Ammo Press and Metal Press run the whole `updateEntity` (including starting 
 
 ### Machine upgrade: stack operation
 
-- **Item.** Shared item meta 52, `techguns.item.machineStackUpgrade`, "Machine Upgrade (Stack Operation)". Its max stack size is 7. Recipe (owned by `06-items`): `pgp / ncn / pnp` with p = `plateIron`, g = `dyeGreen`, n = `ingotGold`, c = vanilla chest.
-- **Slot.** `SlotMachineUpgrade` accepts only this item and has a slot limit of 7.
+- **Item.** Shared item meta 52, `techguns.item.machineStackUpgrade`, "Machine Upgrade (Stack Operation)". Its max stack size is 7. Recipe (owned by [`06-items`](../06-items/index.md)): `pgp / ncn / pnp` with p = [`plateIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), g = `dyeGreen`, n = `ingotGold`, c = vanilla chest.
+- **Slot.** [`SlotMachineUpgrade`](ammo-press.md#1-inventory) accepts only this item and has a slot limit of 7.
 - **Effect.** The maximum multiplier is upgrades + 1, so 1 to 8 (the Fabricator and Charging Station clamp it at 8 explicitly). The machine picks the **largest** multiplier m ≤ max for which:
   - the inputs hold at least m units, and
   - the output slot can hold `output × m`.
 
-  It then consumes m units and produces m outputs in the same 100 ticks. Power per tick is multiplied by m, except in the Chem Lab (MPRD-12).
+  It then consumes m units and produces m outputs in the same 100 ticks. Power per tick is multiplied by m, except in the Chem Lab ([MPRD-12](index.md#suspected-bugs)).
 - There are no other machine upgrades (no speed or energy upgrades).
 
 ## 8. Sync summary
@@ -158,7 +158,7 @@ The Ammo Press and Metal Press run the whole `updateEntity` (including starting 
 - `complete` (NBT `complete`, boolean).
 - `notifiyMultiblockBreak()` (sic) sets complete false and calls `needUpdate()`. Both concrete masters override it to call their full `unform()`.
 - `needBlockUpdate()` (server) calls `notifyBlockChange` on its own position.
-- `causeRenderUpdate()` (client) marks its own block for re-render. It's meant to run when `complete` changes on NBT load, but never does (MPRD-01).
+- `causeRenderUpdate()` (client) marks its own block for re-render. It's meant to run when `complete` changes on NBT load, but never does ([MPRD-01](index.md#suspected-bugs)).
 
 ### Slave (`MultiBlockSlaveTileEntBase`)
 

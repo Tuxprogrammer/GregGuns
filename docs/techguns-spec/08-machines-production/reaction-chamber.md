@@ -3,14 +3,14 @@
 The Reaction Chamber transmutes items with a "beam focus", a fluid bath set to a chosen level, and an intensity setting. During a reaction the preferred intensity **drifts**, and the player has to keep re-tuning to follow it. If the reaction fails, the input can be lost or the chamber can explode.
 
 Classes:
-- `ReactionChamberTileEntMaster` (`MultiBlockMasterTileEntBase`, `IFluidHandler`)
-- `ReactionChamberTileEntSlave` (`MultiBlockSlaveTileEntBase`, `IEnergyReceiver`, `ISidedInventory`, `IFluidHandler`)
+- [`ReactionChamberTileEntMaster`](framework.md#1-class-hierarchy) ([`MultiBlockMasterTileEntBase`](framework.md#master-multiblockmastertileentbase), `IFluidHandler`)
+- [`ReactionChamberTileEntSlave`](blocks-and-items.md#2-multiblockmachineblock-registry-name-machinemultiblock) ([`MultiBlockSlaveTileEntBase`](framework.md#slave-multiblockslavetileentbase), `IEnergyReceiver`, `ISidedInventory`, `IFluidHandler`)
 - `ReactionChamberOperation`, `ReactionChamberRecipe` (with enum `RiskType`), `ReactionBeamFocus`
-- `ReactionChamberContainer`, `GuiReactionChamber`, `RenderReactionChamber`
+- [`ReactionChamberContainer`](gui-handler.md#1-techgunsguihandler-complete-gui-id-table), `GuiReactionChamber`, `RenderReactionChamber`
 
 ## 1. Structure
 
-Blocks (block `machineMultiBlock`):
+Blocks (block [`machineMultiBlock`](../07-blocks/block-catalogue.md#registered-blocks)):
 - Reaction Chamber Controller (meta 1): ×1
 - Reaction Chamber Housing (meta 0): ×17
 - Reaction Chamber Glass (meta 2): ×18
@@ -51,7 +51,7 @@ The master then sets `complete = true` and `dir`, and syncs. All 36 blocks rende
 **Opening the GUI.**
 - Complete controller: open GUI 18 if `isUseableByPlayer` (range **12 blocks**, `useRangeSquared` 144); otherwise send the denial chat line.
 - Linked slave: the same check against the master, then GUI 18 at the master.
-- Debug: holding `blockReaderTool` prints master or slave info instead of opening the GUI.
+- Debug: holding [`blockReaderTool`](../06-items/item-catalogue.md#4-debug--developer-items-registered-unconditionally-in-techgunsjava) prints master or slave info instead of opening the GUI.
 
 **Unforming.** Breaking any part, or a failed explosion, unlinks every block in the box, resets the slave types, sets the master incomplete with `dir` 0, and syncs. The master's `updateEntity` does nothing while incomplete, so a running reaction **pauses** and resumes when the structure is re-formed. Breaking the controller spills its inventory; the fluid and energy are lost.
 
@@ -71,7 +71,7 @@ The master then sets `complete = true` and `dir`, and syncs. All 36 blocks rende
 |---|---|---|---|
 | 0 | Input | (35,17) | `Slot` (anything) |
 | 1 | Beam focus | (93,17) | `Slot` (anything) |
-| 2–5 | Outputs | (134,17), (152,17), (134,35), (152,35) | `SlotOutput` |
+| 2–5 | Outputs | (134,17), (152,17), (134,35), (152,35) | [`SlotOutput`](ammo-press.md#1-inventory) |
 
 - Shift-click from the player inventory sends Techguns shared items whose slot type is `REACTION_CHAMBER_FOCUS` to slot 1, and everything else to slot 0.
 - The **liquid level** setting is 0–10 buckets (`liquidLevel`). The **intensity** setting is 0–10 (`intensity`).
@@ -102,7 +102,7 @@ A focus is identified by exact item and damage.
 | Field | Meaning |
 |---|---|
 | `ID` | the list index at registration time |
-| `input` | `ItemStackOreDict` |
+| `input` | [`ItemStackOreDict`](gui-handler.md#6-itemstackoredict-recipe-ingredient-wrapper) |
 | `beamFocus` | which focus is required |
 | `liquidIn` | which fluid is required |
 | `outputs` | list of output stacks |
@@ -112,7 +112,7 @@ A focus is identified by exact item and damage.
 | `intensityMargin` | 0–10: how far the preferred intensity may drift |
 | `liquidLevel` | 0–10 buckets |
 | `liquidConsumtion` | mB drained on success |
-| `instability` | **unused** (MPRD-17) |
+| `instability` | **unused** ([MPRD-17](index.md#suspected-bugs)) |
 | `risk` | `RiskType` |
 | `RFTick` | RF per reaction tick |
 
@@ -126,7 +126,7 @@ The server checks this every tick while complete, redstone-enabled and idle. The
 - the `liquidLevel` setting equals the recipe level, **and** the tank holds **exactly** level × 1000 mB;
 - the `intensity` setting equals the recipe's preferred intensity exactly.
 
-If stored energy ≥ `RFTick` (checked even when `MachinesNeedNoPower` is on, MPRD-15), the operation starts:
+If stored energy ≥ `RFTick` (checked even when [`MachinesNeedNoPower`](../01-core/config.md#category-general) is on, [MPRD-15](index.md#suspected-bugs)), the operation starts:
 1. One input item is consumed.
 2. `currentOperation` = a copy of the input (size 1). It's used for `isWorking()` and for rendering.
 3. A `ReactionChamberOperation` is created with preferred intensity = the recipe's, `nextTick` = 60, `duration` = 0, `maxDuration` = ticks × 60, completion 0, liquid level = the recipe's, power = `RFTick`.
@@ -150,7 +150,7 @@ Every game tick, on both sides, `nextTick` goes down by 1 and `duration` goes up
 
 On any other tick, the result is "finished" when `duration` ≥ `maxDuration` or `completion` ≥ required.
 
-Because the reaction tick at `duration == maxDuration` is excluded, a recipe with N ticks gives only N−1 chances to gain completion (MPRD-18).
+Because the reaction tick at `duration == maxDuration` is excluded, a recipe with N ticks gives only N−1 chances to gain completion ([MPRD-18](index.md#suspected-bugs)).
 
 ### Finishing (server, whenever `tick` reports a change)
 
@@ -171,8 +171,8 @@ Because the reaction tick at `duration == maxDuration` is excluded, a recipe wit
 **`explode(type)`** (server). The centre block is the middle column at layer 1.
 1. Unform the structure.
 2. Set the centre block to air.
-3. Type 0 (low): set the centre's 4 horizontal neighbours to air (the glass ring of layer 1). Put the tank fluid's block at the centre if the fluid has one, otherwise air. Spawn particle system `FragGrenadeExplosion` at the centre for players within 50 blocks (see `04-projectiles-fx`) and play `random.explode` at volume 4 and a randomised pitch.
-4. Type 1 (medium): set every other block of the 3×2×3 box (layers 1–2) to air, i.e. all the glass. Create a vanilla explosion of power 4 that damages terrain, with no source entity. Then, if the fluid has a block, place it at the centre and **a glass block right above it** (MPRD-19).
+3. Type 0 (low): set the centre's 4 horizontal neighbours to air (the glass ring of layer 1). Put the tank fluid's block at the centre if the fluid has one, otherwise air. Spawn particle system `FragGrenadeExplosion` at the centre for players within 50 blocks (see [`04-projectiles-fx`](../04-projectiles-fx/index.md)) and play `random.explode` at volume 4 and a randomised pitch.
+4. Type 1 (medium): set every other block of the 3×2×3 box (layers 1–2) to air, i.e. all the glass. Create a vanilla explosion of power 4 that damages terrain, with no source entity. Then, if the fluid has a block, place it at the centre and **a glass block right above it** ([MPRD-19](index.md#suspected-bugs)).
 5. Both types: set stored energy to 0, empty the tank, and drop the slot-0 contents (the next queued inputs) as an item at the centre. Removed blocks don't drop anything.
 
 ### Client feedback
@@ -186,7 +186,7 @@ All sounds play at the controller, volume 1, pitch 1.
 
 ### NBT `operationData` (written only while a reaction runs)
 
-Keys: `recipeID` (short, **but it's read back as `ID`**, MPRD-03), `duration`, `maxDuration`, `requiredCompletion`, `completion` (shorts), `preferedIntensity`, `liquidLevel`, `nextTick` (bytes), `powerPerTick` (int). On load, the recipe is looked up by **list index** with `getById`.
+Keys: `recipeID` (short, **but it's read back as `ID`**, [MPRD-03](index.md#suspected-bugs)), `duration`, `maxDuration`, `requiredCompletion`, `completion` (shorts), `preferedIntensity`, `liquidLevel`, `nextTick` (bytes), `powerPerTick` (int). On load, the recipe is looked up by **list index** with `getById`.
 
 ## 5. Full recipe list (`TGMachineRecipes`)
 
@@ -226,15 +226,15 @@ Drawn only while complete.
 
 ### Model and textures
 
-- OBJ model `models/entity/reactionchamber.obj`, scaled ×1/32. Group `CHAMBER` (324 faces) is 96×128×96 model units, i.e. 3×4×3 blocks. Group `GLASS` is the glass shell.
-- `textures/entity/reactionchamber.png` (256×256) is the chamber atlas. Mostly black background with:
+- OBJ model [`models/entity/reactionchamber.obj`](../10-entities-npcs/rendering-and-models.md#other-obj-files-in-modelsentity-in-this-folder-used-elsewhere), scaled ×1/32. Group `CHAMBER` (324 faces) is 96×128×96 model units, i.e. 3×4×3 blocks. Group `GLASS` is the glass shell.
+- [`textures/entity/reactionchamber.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) (256×256) is the chamber atlas. Mostly black background with:
   - light-grey and white sci-fi panels, including a large framed panel with a black cross/vent symbol (right middle);
   - dark-grey grated and riveted plates with a diagonal-stripe vent (bottom left);
   - a small yellow/black hazard square (top centre);
   - a blue display panel (bottom).
   - Palette: white #f0f0f0, light greys, near-black, small yellow and blue accents.
-- `textures/entity/reactionchamberglass.png` (128×128) is the glass shell texture: two square panes outlined in light grey with thin white diagonal glare streaks and corner brackets, mostly transparent.
-- `textures/fx/heatray.png` (128×128) is used as the beam billboard: a soft yellow-white teardrop glow fading to black (additive). Catalogued in `04-projectiles-fx`.
+- [`textures/entity/reactionchamberglass.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) (128×128) is the glass shell texture: two square panes outlined in light grey with thin white diagonal glare streaks and corner brackets, mostly transparent.
+- [`textures/fx/heatray.png`](../04-projectiles-fx/textures.md#single-images) (128×128) is used as the beam billboard: a soft yellow-white teardrop glow fading to black (additive). Catalogued in [`04-projectiles-fx`](../04-projectiles-fx/index.md).
 
 ### Transform
 
@@ -254,6 +254,6 @@ Render bounding box: ±2 blocks in X and Z, 4 tall.
    - Width 1.875·d, spanning local y 0.5 to 2.9375.
    - d pulses between 0.875 and 1.125 with a 10-tick cosine period.
    - Alpha = intensity/10·d − 0.25.
-   - The heat-ray texture is used **for any focus**, including the UV emitter (MPRD-26).
+   - The heat-ray texture is used **for any focus**, including the UV emitter ([MPRD-26](index.md#suspected-bugs)).
 4. **Liquid.** If the tank holds fluid: an alpha-blended cube 1.875 wide, from local y 0.5 up to 0.5 + 2.9375·(amount/10000), using the fluid's still icon (flowing icon while working).
 5. **Glass group** with the glass texture.

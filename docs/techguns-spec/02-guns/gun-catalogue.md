@@ -4,7 +4,7 @@ All values come from `java/techguns/TGuns.java` (the constructor plus the chaine
 
 ## How to read the constructor
 
-Every `GenericGun` subclass is built with the same 11 positional arguments:
+Every [`GenericGun`](gun-lifecycle.md) subclass is built with the same 11 positional arguments:
 
 | Pos | Field | Meaning |
 |---|---|---|
@@ -37,11 +37,11 @@ Setters and what they set:
 | `setCheckRecoil()` | The recoil animation only restarts if the previous one has finished. Used by fast-firing guns. |
 | `setRechamberSound(s)` | An extra sound played after every shot. |
 | `setFiresoundStart(s)` + `setMaxLoopDelay(n)` | Looping-sound guns. The start sound plays when no shot was fired in the last `n` ticks; otherwise the loop sound plays. |
-| `setSilenced(true)` | The projectile is flagged as silenced (see 04-projectiles-fx). |
+| `setSilenced(true)` | The projectile is flagged as silenced (see [04-projectiles-fx](../04-projectiles-fx/index.md)). |
 | `setAkimbo(doubleShot)` | Dual-wield. Doubles the ammo stack size. `doubleShot=false` alternates right/left guns. `doubleShot=true` fires both at once and uses 2 rounds. |
 | `setAIStats(range, attackTime, burstCount, burstDelay)` | NPC/turret ranged-AI parameters. |
 | `setTexture(path)` / `setTextures(path, n)` | Model texture plus `n` camo variants (`path.png`, `path_1.png` … `path_{n-1}.png`). `camoCount = n`. Documented in 03. |
-| `setMuzzleParticle(i[,x,y,z])`, `setMuzzleParticleOffsetTurret`, `setTurretPosOffset` | Visual hooks (see 03 and 10). |
+| `setMuzzleParticle(i[,x,y,z])`, `setMuzzleParticleOffsetTurret`, `setTurretPosOffset` | Visual hooks (see [03](../03-gun-visuals-audio/index.md) and [10](../10-entities-npcs/index.md)). |
 | `setTool(class, level)`, `setDigSpeed(f)`, `setShootWithLeftClick(false)`, `setMeleeDmg(full, empty)` | Tool-gun settings (see per-gun-behaviour). |
 
 Range constants used for AI stats: `RANGE_MELEE=3`, `RANGE_CLOSE=12`, `RANGE_SHORT=18`, `RANGE_MEDIUM=24`, `RANGE_FAR=36` (blocks).
@@ -92,23 +92,23 @@ Range constants used for AI stats: `RANGE_MELEE=3`, `RANGE_CLOSE=12`, `RANGE_SHO
 | 36 | `pistolAkimbo` | pistolAkimbo | Akimbo Pistols | GenericGun (akimbo, alternate) | **2×** 9mm Pistol Magazine | 36 | 2× 9mm Pistol Magazine (Empty) | 9mm Bullets, 6 |
 | 37 | `revolverAkimbo` | revolverAkimbo | Akimbo Revolvers | GenericGun (akimbo, alternate) | **2×** 9mm Bullets | 12 | – | – |
 | 38 | `goldenrevolverAkimbo` | goldenrevolverAkimbo | ` Akimbo Golden Revolvers` (the lang value has a leading space) | GenericGun (akimbo, alternate) | **2×** 9mm Bullets | 12 | – | – |
-| 39 | `mac10Akimbo` | mac10Akimbo | Akimbo Mac10s | GenericGun (akimbo, double-shot) | **2×** SMG Magazine | 64 | 2× SMG Magazine (Empty) | 9mm Bullets, 32 (see GUN-14) |
+| 39 | `mac10Akimbo` | mac10Akimbo | Akimbo Mac10s | GenericGun (akimbo, double-shot) | **2×** SMG Magazine | 64 | 2× SMG Magazine (Empty) | 9mm Bullets, 32 (see [GUN-14](index.md#suspected-bugs)) |
 | 40 | `mibGun` | mibGun | De-Atomizer Pistol | MibGun | 1× Energy Cell | 20 | Energy Cell (Empty) | – |
 | 41 | `scar` | scar | SCAR | GenericGun | 1× Assault Rifle Magazine | 20 | Assault Rifle Magazine (Empty) | Rifle Bullets, 6.67 |
 | 42 | `vector` | vector | Vector | GenericGun | 1× SMG Magazine | 25 | SMG Magazine (Empty) | 9mm Bullets, 12.5 |
 | 43 | `mibGunAkimbo` | mibGunAkimbo | Akimbo De-Atomizer Pistols | MibGun (akimbo, alternate) | **2×** Energy Cell | 40 | 2× Energy Cell (Empty) | – |
 
-Ammo items are meta-values of the shared item (documented in 06-items). "Empty returned" is only handed back when a reload actually consumes ammo. Guns with a `null` bullet but an empty container (energy and fuel guns) never refund on a forced reload: `shotsPerBullet` is `clip/0 = ∞` or `clip/1 = clip`, so the floor is always 0.
+Ammo items are meta-values of the shared item (documented in [06-items](../06-items/index.md)). "Empty returned" is only handed back when a reload actually consumes ammo. Guns with a `null` bullet but an empty container (energy and fuel guns) never refund on a forced reload: `shotsPerBullet` is `clip/0 = ∞` or `clip/1 = clip`, so the floor is always 0.
 
 ---
 
 ## Table B: damage and ballistics
 
-`speed` is in blocks/tick. Reach is `speed × TTL` (nominal; gravity projectiles fall short). "Spread ±°" is `accuracy × 40`, applied independently to yaw and pitch. "Pellets" is the extra projectiles per shot (total = 1 + pellets). "Tooltip type" comes from `getDamageType()`. "Hit source" is the TGDamageSource the projectile actually deals (owned by 04, summarised here).
+`speed` is in blocks/tick. Reach is `speed × TTL` (nominal; gravity projectiles fall short). "Spread ±°" is `accuracy × 40`, applied independently to yaw and pitch. "Pellets" is the extra projectiles per shot (total = 1 + pellets). "Tooltip type" comes from `getDamageType()`. "Hit source" is the TGDamageSource the projectile actually deals (owned by [04](../04-projectiles-fx/index.md), summarised here).
 
 | Gun | Dmg | Min | Drop start→end (blocks) | TTL | Speed | Reach | Accuracy | ±° | Pellets (spread) | Pen | Tooltip type | Hit source (name / type) | Projectile entity |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| handcannon | 8 | 5 | 10→25 | 25 | 1.0 (fixed) | 25 | 0.035 | 1.4 | – | 0 | Projectile | tg_bullet / PROJECTILE | SimpleProjectile (gravity 0.015, texture `textures/entity/handgunBullet.png`) |
+| handcannon | 8 | 5 | 10→25 | 25 | 1.0 (fixed) | 25 | 0.035 | 1.4 | – | 0 | Projectile | tg_bullet / PROJECTILE | SimpleProjectile (gravity 0.015, texture [`textures/entity/handgunBullet.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity)) |
 | pistol | 8 | 5 | 18→25 | 30 | 1.5 | 45 | 0.025 | 1.0 | – | 0 | Projectile | tg_bullet | GenericProjectile |
 | sawedoff | 4 | 1.5 | 1→4 | 10 | 1.5 | 15 | 0.01 | 0.4 | 7 (0.2 → ±8°) | 0 | Projectile | tg_bullet | GenericProjectile ×8 |
 | boltaction | 16 | 10 | 20→30 | 40 | 2.25 | 90 | 0.05 | 2.0 | – | 0.15 | Projectile | tg_bullet | GenericProjectile |
@@ -138,7 +138,7 @@ Ammo items are meta-values of the shared item (documented in 06-items). "Empty r
 | powerHammerAdv | 2.5 × air used | 2.5 | none (2→2) | 2 | 1.5 | 3 | 0 | 0 | – | 0 | Physical | powerhammer | PowerHammerProjectile |
 | grenadelauncher | 30 (fixed, unscaled) | – | n/a | 35 (ignored, uses 100) | 1.0 (own field) | ~100 (ballistic) | 0.015 (ignored, uses 0.05) | 2.0 | – | 0 (fixed) | Explosion | tg_explosion | GrenadeLauncherProjectile (radius 1.5, gravity 0.01, 2 bounces) + "GrenadeLauncherTrail" |
 | aug | 8 | 7 | 25→40 | 35 | 1.5 | 52.5 | 0.010 | 0.4 | – | 0.15 | Projectile | tg_bullet | GenericProjectile |
-| sonicShotgun | 25 | 5 | 5→15 | 20 | 1.5 | 30 | 0.0 (ignored) | fixed rings | 15 extra in 2 rings | 0.25 | **Projectile** (wrong, see GUN-20) | tg_sonic / PHYSICAL (knockback 2) | SonicShotgunProjectile ×16 + "SonicShotgunTrail" |
+| sonicShotgun | 25 | 5 | 5→15 | 20 | 1.5 | 30 | 0.0 (ignored) | fixed rings | 15 extra in 2 rings | 0.25 | **Projectile** (wrong, see [GUN-20](index.md#suspected-bugs)) | tg_sonic / PHYSICAL (knockback 2) | SonicShotgunProjectile ×16 + "SonicShotgunTrail" |
 | chainsaw | 10 | 10 | none (2→2) | 2 | 1.5 | 3 | 0 | 0 | – | 0.25 | Physical | chainsaw / PHYSICAL | InvisibleProjectile |
 | scatterBeamGun | 6 | 6 | none (5→5) | 5 | 7.5 | 37.5 | 0.1 | 4.0 | 4 (0.15 → ±6°) | 0 | Energy | tg_energy | LaserProjectile ×5 |
 | nuclearDeathRay | 6 | 1 | 20→40 | 5 | 7.5 | 37.5 | 0.0 | 0 | – | 0.35 | Radiation | tg_rad / RADIATION | MovingBeam |
@@ -206,7 +206,7 @@ Shots/s is `20 / minFiretime` (minFiretime 0 means one shot every tick). Reload 
 | vector | LMB | no | 2 | 10 | 40 / 2.0 | 0.75 | 0.35 | 2 | 5 | | guns.vectorFire | | guns.vectorReload | |
 | mibGunAkimbo | LMB | yes | 5 | 4 | 60 / 3.0 | – | – | 5 | 5 | | guns.MIBblasterFire | | guns.MIBblasterReloadAkimbo | |
 
-All sound events are prefixed with the `techguns:` namespace. Every one of them exists in `sounds.json`. The files behind them are documented in 03-gun-visuals-audio.
+All sound events are prefixed with the `techguns:` namespace. Every one of them exists in `sounds.json`. The files behind them are documented in [03-gun-visuals-audio](../03-gun-visuals-audio/index.md).
 
 ---
 
@@ -221,7 +221,7 @@ AI columns follow `setAIStats(range, attackTime, burstCount, burstDelay)` (see l
 | sawedoff | 12 | 60 | 2 | 20 | 2 | (0,0,0.1) | – | – | `sawedOff` (1) |
 | boltaction | 36 | 60 | 0 | 0 | 1 | (0,0.05,0.3) | – | – | `boltactionrifle` (3) |
 | m4 | 24 | 30 | 3 | 3 | 1 | (0,0.025,0) | – | – | `m4Texture` (5) |
-| flamethrower | 12 | 20 | 5 | 5 | 0 | – | – | – | `Flamethrower` (1) |
+| flamethrower | 12 | 20 | 5 | 5 | 0 | – | – | – | [`Flamethrower`](per-gun-behaviour.md#flamethrower-flamethrower-flamethrower) (1) |
 | combatshotgun | 12 | 30 | 0 | 0 | 2 | (0,0,0.1) | (0,0.075,0) | – | `combatShotgun` (1) |
 | lasergun | 24 | 30 | 0 | 0 | 0 | – | – | – | `Lasergun` (1) |
 | rocketlauncher | 24 | 80 | 0 | 0 | 0 | – | (0,−0.7,−0.2) | – | `rocketlauncher` (1) |
@@ -260,7 +260,7 @@ AI columns follow `setAIStats(range, attackTime, burstCount, burstDelay)` (see l
 | vector | 18 | 35 | 3 | 2 | 1 | (0,0.05,0) | – | (0,0,−0.45) | `vector_texture` (2) |
 | mibGunAkimbo | 24 | 60 | 0 | 0 | 5 | (0,−0.1,0.1) | – | (0,0,−0.2) | `mibgun` (1) |
 
-Texture files referenced (all present in the manifest; described in 03): `textures/guns/handgun.png`, `textures/guns/pistol3.png`, `textures/guns/sawedOff.png`, `textures/guns/boltactionrifle.png`, `textures/guns/boltactionrifle_1.png`, `textures/guns/boltactionrifle_2.png`, `textures/guns/m4Texture.png` … `textures/guns/m4Texture_4.png`, `textures/guns/Flamethrower.png`, `textures/guns/combatShotgun.png`, `textures/guns/Lasergun.png`, `textures/guns/rocketlauncher.png`, `textures/guns/grimreaper.png`, `textures/guns/BioGun.png`, `textures/guns/thompson.png`, `textures/guns/revolver.png`, `textures/guns/ak47Texture.png`, `textures/guns/ak47Texture_1.png`, `textures/guns/as50Texture.png`, `textures/guns/TeslaGun.png`, `textures/guns/PDW.png`, `textures/guns/PDW_1.png`, `textures/guns/PDW_2.png`, `textures/guns/mg2_texture.png`, `textures/guns/m4_uq_Texture.png`, `textures/guns/goldenrevolver.png`, `textures/guns/pulseRifle.png`, `textures/guns/pulseRifle_1.png`, `textures/guns/pulseRifle_2.png`, `textures/guns/alien_blaster.png`, `textures/guns/cyberdemonblaster.png`, `textures/guns/minigun.png`, `textures/guns/blasterRifle.png`, `textures/guns/powerHammer.png`, `textures/guns/nukerocketlauncher.png`, `textures/guns/powerHammerAdv.png`, `textures/guns/grenadelauncher.png`, `textures/guns/AugTexture.png` … `textures/guns/AugTexture_4.png`, `textures/guns/sonicshotgun.png`, `textures/guns/chainsaw.png`, `textures/guns/laserGunNew.png`, `textures/guns/NDR.png`, `textures/guns/mac10texture.png`, `textures/guns/mibgun.png`, `textures/guns/scar_texture.png`, `textures/guns/scar_texture_1.png`, `textures/guns/vector_texture.png`, `textures/guns/vector_texture_1.png`.
+Texture files referenced (all present in the manifest; described in [03](../03-gun-visuals-audio/index.md)): `textures/guns/handgun.png`, `textures/guns/pistol3.png`, `textures/guns/sawedOff.png`, `textures/guns/boltactionrifle.png`, `textures/guns/boltactionrifle_1.png`, `textures/guns/boltactionrifle_2.png`, [`textures/guns/m4Texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsm4texturepng--camo-variants-m4-m4-magazine-items) … `textures/guns/m4Texture_4.png`, [`textures/guns/Flamethrower.png`](../03-gun-visuals-audio/textures.md#texturesgunsflamethrowerpng-flamethrower), `textures/guns/combatShotgun.png`, `textures/guns/Lasergun.png`, `textures/guns/rocketlauncher.png`, `textures/guns/grimreaper.png`, `textures/guns/BioGun.png`, `textures/guns/thompson.png`, `textures/guns/revolver.png`, [`textures/guns/ak47Texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsak47texturepng-ak47texture_1png-ak-47), `textures/guns/ak47Texture_1.png`, [`textures/guns/as50Texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsas50texturepng-as50-as50-magazine-items), `textures/guns/TeslaGun.png`, [`textures/guns/PDW.png`](../03-gun-visuals-audio/textures.md#texturesgunspdwpng--camo-variants-pdw), `textures/guns/PDW_1.png`, `textures/guns/PDW_2.png`, [`textures/guns/mg2_texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsmg2_texturepng-lmg-lmg-magazine-items), [`textures/guns/m4_uq_Texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsm4_uq_texturepng-m4-infiltrator), `textures/guns/goldenrevolver.png`, [`textures/guns/pulseRifle.png`](../03-gun-visuals-audio/textures.md#texturesgunspulseriflepng--camo-variants-pulse-rifle), `textures/guns/pulseRifle_1.png`, `textures/guns/pulseRifle_2.png`, `textures/guns/alien_blaster.png`, `textures/guns/cyberdemonblaster.png`, `textures/guns/minigun.png`, [`textures/guns/blasterRifle.png`](../03-gun-visuals-audio/textures.md#texturesgunsblasterriflepng-blaster-rifle), `textures/guns/powerHammer.png`, `textures/guns/nukerocketlauncher.png`, `textures/guns/powerHammerAdv.png`, [`textures/guns/grenadelauncher.png`](../03-gun-visuals-audio/gun-models.md#obj-model-modelsgunsgrenadelauncherobj), [`textures/guns/AugTexture.png`](../03-gun-visuals-audio/textures.md#texturesgunsaugtexturepng--camo-variants-aug) … `textures/guns/AugTexture_4.png`, `textures/guns/sonicshotgun.png`, `textures/guns/chainsaw.png`, `textures/guns/laserGunNew.png`, `textures/guns/NDR.png`, `textures/guns/mac10texture.png`, `textures/guns/mibgun.png`, [`textures/guns/scar_texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsscar_texturepng-scar_texture_1png-scar), `textures/guns/scar_texture_1.png`, [`textures/guns/vector_texture.png`](../03-gun-visuals-audio/textures.md#texturesgunsvector_texturepng-vector_texture_1png-vector), `textures/guns/vector_texture_1.png`.
 
 ---
 
@@ -282,7 +282,7 @@ Melee damage is an attribute modifier on the item. The player's base 1 is added 
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `stielGranate` | yes, "stielGranate" | Stielgranate | GenericGrenade | 16 | 20 | 5 | 3 | GrenadeProjectile | 200 | 0.5 + 0.5·charge | 0.015 / charge | vanilla `random.bow`, pitch `1/(rand·0.4+1.2) + 0.5·charge` | – |
 | `fragGrenade` | yes, "fragGrenade" | Frag Grenade | FragGrenade | 16 | 25 | 6 | 2 | FragGrenadeProjectile | 120 | 0.5 + 0.5·charge | 0.015 / charge | `techguns:guns.grenade_throw` (1.0, 1.0) | right-click plays `techguns:guns.grenade_pin` |
-| `flashbang` | **no** (constructed, never registered) | – (no lang key) | Flashbang | 16 | 20 | 5 | 0 | FlashBangProjectile | 200 | 0.5 + 0.5·charge | 0.015 / charge | `random.bow` | dead (GUN-24) |
+| `flashbang` | **no** (constructed, never registered) | – (no lang key) | Flashbang | 16 | 20 | 5 | 0 | FlashBangProjectile | 200 | 0.5 + 0.5·charge | 0.015 / charge | `random.bow` | dead ([GUN-24](index.md#suspected-bugs)) |
 
 All grenades have spread 0.05, penetration 0 and block damage **off**.
 
@@ -305,7 +305,7 @@ All grenades have spread 0.05, penetration 0 and block damage **off**.
 | 4 | TimeToLive | int: "distance when the bullet gets deleted" (actually ticks) |
 | 5 | Accuracy | float: max random angular offset when shooting |
 | 6 | Penetration | float: 0.0–1.0 |
-| 7 | Radius | only for `GenericGunRadius` subclasses: AoE radius |
+| 7 | Radius | only for [`GenericGunRadius`](per-gun-behaviour.md#genericgunradius--genericgunradiusgrav) subclasses: AoE radius |
 | 8 | Gravity | only for `GenericGunRadiusGrav` subclasses: downward velocity |
 
 Radius and gravity apply to the rocket launcher, grim reaper, nuke launcher and grenade launcher, so those four have 9 values. Every other gun has 7. Stats that a class ignores:
@@ -313,7 +313,7 @@ Radius and gravity apply to the rocket launcher, grim reaper, nuke launcher and 
 | Class / gun | Ignored indices |
 |---|---|
 | Teslagun | 4 (TTL fixed 10), 5 (spread fixed 0) |
-| RocketLauncher, NukeLauncher | 1, 2, 3 (rockets don't use drop-off; 04 handles explosion damage) |
+| RocketLauncher, NukeLauncher | 1, 2, 3 (rockets don't use drop-off; [04](../04-projectiles-fx/index.md) handles explosion damage) |
 | GrenadeLauncher | 1–6 (only damage, radius and gravity are honoured) |
 | SonicShotgun | 5 (ring geometry is fixed) |
 | PowerHammer | 5 (spread fixed 0) |

@@ -1,22 +1,22 @@
 # Item catalogue (06-items)
 
-Every non-gun, non-armour item Techguns registers, plus the special-slot armour-like items that `TGItems` registers (listed for completeness; their wearable behaviour belongs to **05-armor**).
+Every non-gun, non-armour item Techguns registers, plus the special-slot armour-like items that `TGItems` registers (listed for completeness; their wearable behaviour belongs to **[05-armor](../05-armor/index.md)**).
 
 Notation:
-- **Registry id** is the `GameRegistry.registerItem` name. FML prefixes it with the mod id `Techguns`, so the full id is `Techguns:<name>`.
+- **Registry id** is the `GameRegistry.registerItem` name. FML prefixes it with the mod id [`Techguns`](../01-core/lifecycle-and-registration.md#lifecycle-overview), so the full id is `Techguns:<name>`.
 - **Lang key** is what the client looks up. For shared items it is `techguns.item.<internalName>.name`.
-- **Slot** is the `TGSlotType` stored for that metadata (see [special-items.md](special-items.md#slot-types)). `NORMAL` means a plain crafting item.
+- **Slot** is the [`TGSlotType`](../05-armor/extra-inventory.md#2-tgslottype-enum) stored for that metadata (see [special-items.md](special-items.md#slot-types-tgslottype)). `NORMAL` means a plain crafting item.
 - All items appear in the creative tab `Techguns` (lang `techguns.itemGroup.Techguns=Techguns`) unless noted.
 - No item in this area has a furnace burn time. Techguns registers no `IFuelHandler`.
 
 ## 1. The shared meta item `Techguns:TechgunsAmmo`
 
-One `Item` instance (`GenericItemShared`, field `TGItems.sharedItem`) carries 110 sub-items, metas 0–109. The meta is fixed by registration order in `TGItems.init()`, and the internal name comes from the parallel `GenericItemShared.names[]` array. **Save compatibility depends on these meta numbers.**
+One `Item` instance ([`GenericItemShared`](special-items.md#shared-item-genericitemshared-behaviour), field `TGItems.sharedItem`) carries 110 sub-items, metas 0–109. The meta is fixed by registration order in `TGItems.init()`, and the internal name comes from the parallel `GenericItemShared.names[]` array. **Save compatibility depends on these meta numbers.**
 
 Common properties:
 - `hasSubtypes = true`. The creative tab lists every meta 0–109 in order.
 - Default max stack is 64. A per-meta override comes from the table below.
-- The icon is `techguns:<internalName>`, i.e. `textures/items/<internalName>.png`. Eight metas have no PNG because they are drawn by a 3D model renderer instead (see [special-items.md](special-items.md#3d-rendered-shared-items)).
+- The icon is `techguns:<internalName>`, i.e. `textures/items/<internalName>.png`. Eight metas have no PNG because they are drawn by a 3D model renderer instead (see [special-items.md](special-items.md#3d-rendered-shared-items-rendergenericitem)).
 - The unlocalized name is `techguns.item.<internalName>`.
 
 | Meta | Internal name | `TGItems` field | English name | Stack | Slot | OreDict | Texture (`textures/items/…`) | Notes |
@@ -132,7 +132,7 @@ Common properties:
 | 108 | radEmitter | radEmitter | Rad Emitter | 64 | NORMAL | – | radEmitter.png | |
 | 109 | treatedLeather | treatedLeather | Treated Leather | 64 | NORMAL | – | treatedLeather.png | armour material |
 
-Magazine tooltips (two extra lines, see [lang.md](lang.md#generated-tooltips)) are attached to metas **2, 5, 12, 17, 20, 23, 46**. Drill-head tooltips go on metas 75–83.
+Magazine tooltips (two extra lines, see [lang.md](lang.md#tooltip-lines)) are attached to metas **2, 5, 12, 17, 20, 23, 46**. Drill-head tooltips go on metas 75–83.
 
 All the OreDict registrations in the table happen in `TGItems.init()`.
 
@@ -140,47 +140,47 @@ All the OreDict registrations in the table happen in `TGItems.init()`.
 
 | Registry id | Field | Class | English name (lang key) | Stack | Max damage | Texture | Area owning behaviour |
 |---|---|---|---|---|---|---|---|
-| `doorItem01` | `door01` | `ItemTGDoor` | Bunker Door (`techguns.item.bunkerDoor.name`) | 64 | – | `textures/items/metalDoor.png` | 06 (item); door block in 07 |
-| `gasMask` | `gasMask` | `ItemGasMask` | Gas Mask | 1 | 300 | `textures/items/gasMask.png` | 05 |
-| `nightVisionGoggles` | `nightVisionGoggles` | `ItemNightVisionGoggles` | Nightvision Goggles | 1 | 24000 | `textures/items/nightVisionGoggles.png` | 05 |
-| `jetpack` | `jetpack` | `ItemJetpack` | Jetpack | 1 | 5000 | `textures/items/jetpack.png` | 05 |
-| `scubaTanks` | `scubaTanks` | `ItemScubaTanks` | Oxygen Tanks | 1 | 600 | `textures/items/scubaTanks.png` | 05 |
-| `tacticalMask` | `tacticalMask` | `ItemTacticalMask` | Tactical Mask | 1 | 24000 | `textures/items/tacticalMask.png` | 05 |
-| `oreClusterScanner` | `oreClusterScanner` | `OreClusterScanner` | Ore Cluster Scanner | 1 | (RF bar) | `textures/items/oreClusterScanner.png` | 06 |
-| `combatKnife` | `combatKnife` | `TGSword` | Combat Knife | 1 | 1000 (material) | `textures/items/combatKnife.png` | 06 |
-| `jumppack` | `jumppack` | `ItemJumppack` | Jump Pack | 1 | 1000 | `textures/items/jumppack.png` | 05 |
-| `antiGravPack` | `antiGravPack` | `ItemAntiGravPack` | Anti Gravity Device | 1 | 12000 | `textures/items/antiGravPack.png` | 05 |
-| `camoNetPlacer` | `camoNetPlacer` | `ItemCamoNetPlacer` | Camo Net Placer (all metas) | 1 | – (meta 0–2 = camo) | `textures/items/camoNetPlacer0.png` … `camoNetPlacer2.png` | 06 |
-| `crowbar` | `crowbar` | `TGCrowbar` | Crowbar | 1 | 1000 (material) | `textures/items/crowbar.png` | 06 |
-| `bucket_acid` | `bucketAcid` | `GenericItemBucket` | Creeper Acid Bucket | 1 | – | `textures/items/bucket_acid.png` | 06 (registered in `postInit`) |
+| `doorItem01` | `door01` | [`ItemTGDoor`](special-items.md#bunker-door-item-itemtgdoor-techgunsdooritem01) | Bunker Door (`techguns.item.bunkerDoor.name`) | 64 | – | [`textures/items/metalDoor.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 06 (item); door block in [07](../07-blocks/index.md) |
+| `gasMask` | `gasMask` | [`ItemGasMask`](../05-armor/special-equipment.md#31-gas-mask-itemgasmask) | Gas Mask | 1 | 300 | [`textures/items/gasMask.png`](textures.md#9-wearables-and-special-slot-icons) | [05](../05-armor/index.md) |
+| `nightVisionGoggles` | `nightVisionGoggles` | [`ItemNightVisionGoggles`](../05-armor/special-equipment.md#32-night-vision-goggles-itemnightvisiongoggles) | Nightvision Goggles | 1 | 24000 | [`textures/items/nightVisionGoggles.png`](textures.md#9-wearables-and-special-slot-icons) | [05](../05-armor/index.md) |
+| `jetpack` | `jetpack` | [`ItemJetpack`](../05-armor/special-equipment.md#43-jetpack-itemjetpack) | Jetpack | 1 | 5000 | [`textures/items/jetpack.png`](textures.md#9-wearables-and-special-slot-icons) | [05](../05-armor/index.md) |
+| `scubaTanks` | `scubaTanks` | [`ItemScubaTanks`](../05-armor/special-equipment.md#41-oxygen-tanks-itemscubatanks) | Oxygen Tanks | 1 | 600 | [`textures/items/scubaTanks.png`](textures.md#9-wearables-and-special-slot-icons) | [05](../05-armor/index.md) |
+| `tacticalMask` | `tacticalMask` | [`ItemTacticalMask`](../05-armor/special-equipment.md#33-tactical-mask-itemtacticalmask) | Tactical Mask | 1 | 24000 | [`textures/items/tacticalMask.png`](textures.md#9-wearables-and-special-slot-icons) | [05](../05-armor/index.md) |
+| `oreClusterScanner` | `oreClusterScanner` | [`OreClusterScanner`](special-items.md#ore-cluster-scanner-oreclusterscanner-techgunsoreclusterscanner) | Ore Cluster Scanner | 1 | (RF bar) | [`textures/items/oreClusterScanner.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 06 |
+| `combatKnife` | `combatKnife` | [`TGSword`](special-items.md#combat-knife-tgsword-techgunscombatknife) | Combat Knife | 1 | 1000 (material) | [`textures/items/combatKnife.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 06 |
+| `jumppack` | `jumppack` | [`ItemJumppack`](../05-armor/special-equipment.md#44-jump-pack-itemjumppack) | Jump Pack | 1 | 1000 | [`textures/items/jumppack.png`](textures.md#9-wearables-and-special-slot-icons) | [05](../05-armor/index.md) |
+| `antiGravPack` | `antiGravPack` | [`ItemAntiGravPack`](../05-armor/special-equipment.md#45-anti-gravity-device-itemantigravpack) | Anti Gravity Device | 1 | 12000 | [`textures/items/antiGravPack.png`](textures.md#9-wearables-and-special-slot-icons) | [05](../05-armor/index.md) |
+| `camoNetPlacer` | `camoNetPlacer` | [`ItemCamoNetPlacer`](special-items.md#camo-net-placer-itemcamonetplacer-techgunscamonetplacer) | Camo Net Placer (all metas) | 1 | – (meta 0–2 = camo) | [`textures/items/camoNetPlacer0.png`](textures.md#11-tools-placers-door-bucket-debug-items) … `camoNetPlacer2.png` | 06 |
+| `crowbar` | `crowbar` | [`TGCrowbar`](special-items.md#crowbar-tgcrowbar--tgpickaxe-techgunscrowbar) | Crowbar | 1 | 1000 (material) | [`textures/items/crowbar.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 06 |
+| `bucket_acid` | `bucketAcid` | [`GenericItemBucket`](fluids.md#creeper-acid-bucket-item) | Creeper Acid Bucket | 1 | – | [`textures/items/bucket_acid.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 06 (registered in `postInit`) |
 
-For the special-slot items the "max damage" column is the last constructor argument in `TGItems`. Its meaning (charges, ticks, air) is in 05-armor.
+For the special-slot items the "max damage" column is the last constructor argument in `TGItems`. Its meaning (charges, ticks, air) is in [05-armor](../05-armor/index.md).
 
 The armour-item constructor's second argument (`"nightVisionGoggles"`, `"jetPackIcon"`, `"oxygenFlasksIcon"`, `"tacticalMaskItem"`, `"jumpPackIcon"`) is used by 05. The inventory icon always comes from the unlocalized name, so it is `textures/items/<registry id>.png`.
 
 Tool material `TG_STEEL` is created with `EnumHelper.addToolMaterial("Steel", harvestLevel 2, maxUses 1000, efficiency 7.5, damage 2.5, enchantability 12)`. Both tools use it. See [special-items.md](special-items.md#tools).
 
 ### Registered but commented out
-- `medkit` (`ItemMedkit("medkit", 2)`): the registration lines in `TGItems.init()` are commented out, and so is its recipe (and a Chem Lab recipe in `TGMachineRecipes`). The class, the textures `textures/items/medkit_0.png` and `medkit_1.png`, and the lang keys (`techguns.item.medkit_0.name=Bandages`, `techguns.item.medkit_1.name=Medkit`) all exist. Its behaviour is in [special-items.md](special-items.md#medkit-unregistered).
+- `medkit` (`ItemMedkit("medkit", 2)`): the registration lines in `TGItems.init()` are commented out, and so is its recipe (and a Chem Lab recipe in [`TGMachineRecipes`](../08-machines-production/index.md#tgmachinerecipesaddrecipes-what-it-registers)). The class, the textures [`textures/items/medkit_0.png`](textures.md#12-unused--unregistered) and `medkit_1.png`, and the lang keys (`techguns.item.medkit_0.name=Bandages`, `techguns.item.medkit_1.name=Medkit`) all exist. Its behaviour is in [special-items.md](special-items.md#medkit-itemmedkit-present-in-code-not-registered).
 - `gasMaskHeavy`: commented out.
 
 ## 3. Items registered in `Techguns.java` (preInit), not in `TGItems`
 
-These are plain `GenericItem`s (stack 64, unlocalized `techguns.item.<name>`). **Registration is conditional on config flags** (config file handled by 01-core; all defaults are `false`).
+These are plain [`GenericItem`](special-items.md#base-classes)s (stack 64, unlocalized `techguns.item.<name>`). **Registration is conditional on config flags** (config file handled by [01-core](../01-core/index.md); all defaults are `false`).
 
 | Registry id | English name | Texture | Registered when | OreDict (same condition) |
 |---|---|---|---|---|
-| `ingotSteel` | Steel Ingot | `textures/items/ingotSteel.png` | `addSteelIngot` | `ingotSteel` |
-| `ingotCopper` | Copper Ingot | `textures/items/ingotCopper.png` | not `dontAddCopperTinBronze()` † | `ingotCopper` |
-| `ingotTin` | Tin Ingot | `textures/items/ingotTin.png` | † | `ingotTin` |
-| `ingotBronze` | Bronze Ingot | `textures/items/ingotBronze.png` | † | `ingotBronze` |
-| `ingotLead` | Lead Ingot | `textures/items/ingotLead.png` | `addLeadIngot` | `ingotLead` |
-| `nuggetIron` | Iron Nugget | `textures/items/nuggetIron.png` | `addIronNuggets` (registered **twice**, see bug ITEM-01) | `nuggetIron` |
-| `nuggetCopper` | Copper Nugget | `textures/items/copperNugget.png` | `addCopperTinBronzeNuggets` | `nuggetCopper` |
-| `nuggetLead` | Lead Nugget | `textures/items/nuggetLead.png` | `addLeadNuggets` | `nuggetLead` |
-| `nuggetSteel` | Steel Nugget | `textures/items/nuggetSteel.png` | `addSteelNuggets` | `nuggetSteel` |
+| `ingotSteel` | Steel Ingot | [`textures/items/ingotSteel.png`](textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | [`addSteelIngot`](../01-core/config.md#category-general) | `ingotSteel` |
+| `ingotCopper` | Copper Ingot | [`textures/items/ingotCopper.png`](textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | not `dontAddCopperTinBronze()` † | `ingotCopper` |
+| `ingotTin` | Tin Ingot | [`textures/items/ingotTin.png`](textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | † | `ingotTin` |
+| `ingotBronze` | Bronze Ingot | [`textures/items/ingotBronze.png`](textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | † | `ingotBronze` |
+| `ingotLead` | Lead Ingot | [`textures/items/ingotLead.png`](textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | [`addLeadIngot`](../01-core/config.md#category-general) | `ingotLead` |
+| `nuggetIron` | Iron Nugget | [`textures/items/nuggetIron.png`](textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | [`addIronNuggets`](../01-core/config.md#category-general) (registered **twice**, see bug [ITEM-01](index.md#suspected-bugs)) | `nuggetIron` |
+| `nuggetCopper` | Copper Nugget | [`textures/items/copperNugget.png`](textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | [`addCopperTinBronzeNuggets`](../01-core/config.md#category-general) | `nuggetCopper` |
+| `nuggetLead` | Lead Nugget | [`textures/items/nuggetLead.png`](textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | [`addLeadNuggets`](../01-core/config.md#category-general) | `nuggetLead` |
+| `nuggetSteel` | Steel Nugget | [`textures/items/nuggetSteel.png`](textures.md#5a-ingots-and-nuggets-vanilla-silhouettes-1616) | [`addSteelNuggets`](../01-core/config.md#category-general) | `nuggetSteel` |
 
-† `dontAddCopperTinBronze()` is true when `addBronzeCrafting`, `addCopperTinBronzeNuggets` and `doOreGenCopperTin` are **all** false. So the three ingots are registered if any one of those flags is on.
+† `dontAddCopperTinBronze()` is true when [`addBronzeCrafting`](../01-core/config.md#category-general), `addCopperTinBronzeNuggets` and [`doOreGenCopperTin`](../01-core/config.md#category-general) are **all** false. So the three ingots are registered if any one of those flags is on.
 
 `Techguns.java` also registers `OreDictionary "itemGunpowder"` → vanilla gunpowder. The Ammo Press uses it.
 
@@ -192,12 +192,12 @@ Note that `ingotTitanium` and `ingotObsidianSteel` are always present (shared me
 
 | Registry id | Class | Unlocalized | English name | Texture | Stack |
 |---|---|---|---|---|---|
-| `structureTestTool` | `StructureTestTool` | `techguns.item.structureTestTool` | Structure Test Tool | `textures/items/structureTestTool.png` | 1 |
-| `blockReaderTool` | `BlockReader` | `techguns.item.blockReaderTool` | Block Reader Tool | `textures/items/blockReaderTool.png` | 1 |
-| `buildingScanTool` | `BuildingScanTool` | `techguns.item.buildingScanTool` | Building Scan Tool | `textures/items/structureScanTool.png` | 1 |
-| `oreClusterDebugger` | `oreClusterDebugger` | `techguns.item.oreClusterDebugger` | Ore Cluster Debugger | `textures/items/testItem.png` | 1 |
+| `structureTestTool` | [`StructureTestTool`](special-items.md#structure-test-tool-structuretesttool) | `techguns.item.structureTestTool` | Structure Test Tool | [`textures/items/structureTestTool.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 1 |
+| `blockReaderTool` | [`BlockReader`](special-items.md#block-reader-tool-blockreader) | `techguns.item.blockReaderTool` | Block Reader Tool | [`textures/items/blockReaderTool.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 1 |
+| `buildingScanTool` | [`BuildingScanTool`](special-items.md#building-scan-tool-buildingscantool) | `techguns.item.buildingScanTool` | Building Scan Tool | [`textures/items/structureScanTool.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 1 |
+| [`oreClusterDebugger`](special-items.md#ore-cluster-debugger-oreclusterdebugger) | `oreClusterDebugger` | `techguns.item.oreClusterDebugger` | Ore Cluster Debugger | [`textures/items/testItem.png`](textures.md#11-tools-placers-door-bucket-debug-items) | 1 |
 
-All four go in the normal Techguns creative tab. Behaviour is in [special-items.md](special-items.md#debug-and-scanner-tools).
+All four go in the normal Techguns creative tab. Behaviour is in [special-items.md](special-items.md#debug-and-developer-tools).
 
 ## 5. Spawn eggs (`TGMonsterPlacer`, registered by `TGEntities`)
 
@@ -224,14 +224,14 @@ There is one item per NPC: registry id `spawnEgg<EntityName>`, unlocalized `spaw
 | SuperMutantHeavy | 0xc6a96b | 0x71552e |
 | SuperMutantElite | 0xc6a96b | 0x71552e |
 
-The NPCs themselves are in 10-entities-npcs. The item behaviour is in [special-items.md](special-items.md#spawn-eggs).
+The NPCs themselves are in [10-entities-npcs](../10-entities-npcs/index.md). The item behaviour is in [special-items.md](special-items.md#spawn-eggs-tgmonsterplacer).
 
 ## 6. Where the items are consumed (cross-reference)
 
 | Consumer | Items |
 |---|---|
-| Gun recipes and gun ammo (02-guns) | gun parts (barrels, stocks, receivers, pump), mech parts T1–T3, laser parts, all ammo/mags/tanks/cells, nethercharge, coil, cybernetic parts, sonic emitter, rad emitter, carbon parts |
-| Armour recipes (05-armor) | heavyCloth, treatedLeather, steamArmorPlate, powerPlating, carbonFibers, carbonPlate, ingotObsidianSteel, circuitBoardElite, copperWire, goldWire, electricEngine, energyCell(Empty), compressedAirTank(Empty), mechanicalPartsT3 |
-| Machines (08/09) | machineStackUpgrade (Ammo Press, Metal Press, Chem Lab, Fabricator, Charging Station upgrade slot); turretArmor* (turret base armour slot); oreDrill* heads (Ore Drill); uvemitter / rcHeatRay (Reaction Chamber focus) |
-| NPC drops (10) | bullets9mm, rifleBullets, shotgunShell, heavyCloth, circuitBoard, cyberneticParts, energyCell, ingotObsidianSteel, plasticSheet, plateSteel, rubberBar, flamethrowerTank, rocketAmmo |
-| Crowbar | ore cluster blocks (07/11) |
+| Gun recipes and gun ammo ([02-guns](../02-guns/index.md)) | gun parts (barrels, stocks, receivers, pump), mech parts T1–T3, laser parts, all ammo/mags/tanks/cells, nethercharge, coil, cybernetic parts, sonic emitter, rad emitter, carbon parts |
+| Armour recipes ([05-armor](../05-armor/index.md)) | heavyCloth, treatedLeather, steamArmorPlate, powerPlating, carbonFibers, carbonPlate, ingotObsidianSteel, circuitBoardElite, copperWire, goldWire, electricEngine, energyCell(Empty), compressedAirTank(Empty), mechanicalPartsT3 |
+| Machines ([08](../08-machines-production/index.md)/[09](../09-machines-utility/index.md)) | machineStackUpgrade (Ammo Press, Metal Press, Chem Lab, Fabricator, Charging Station upgrade slot); turretArmor* (turret base armour slot); oreDrill* heads (Ore Drill); uvemitter / rcHeatRay (Reaction Chamber focus) |
+| NPC drops ([10](../10-entities-npcs/index.md)) | bullets9mm, rifleBullets, shotgunShell, heavyCloth, circuitBoard, cyberneticParts, energyCell, ingotObsidianSteel, plasticSheet, plateSteel, rubberBar, flamethrowerTank, rocketAmmo |
+| Crowbar | ore cluster blocks ([07](../07-blocks/index.md)/[11](../11-worldgen/index.md)) |

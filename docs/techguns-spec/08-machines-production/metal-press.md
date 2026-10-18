@@ -2,7 +2,7 @@
 
 The Metal Press is a two-input press: ingots into plates, plus a handful of combination recipes. It has an optional auto-split mode.
 
-Classes: `MetalPressTileEnt`, `MetalPressContainer`, `GuiMetalPress`, `MetalPressRecipes` (with inner class `MetalPressRecipe`).
+Classes: [`MetalPressTileEnt`](framework.md#1-class-hierarchy), [`MetalPressContainer`](gui-handler.md#1-techgunsguihandler-complete-gui-id-table), `GuiMetalPress`, `MetalPressRecipes` (with inner class `MetalPressRecipe`).
 
 ## 1. Inventory
 
@@ -10,8 +10,8 @@ Classes: `MetalPressTileEnt`, `MetalPressContainer`, `GuiMetalPress`, `MetalPres
 |---|---|---|---|
 | 0 | Input A | (110,17) | `Slot` |
 | 1 | Input B | (130,17) | `Slot` |
-| 2 | Output | (120,60) | `SlotOutput` |
-| 3 | Upgrade | (150,60) | `SlotMachineUpgrade` |
+| 2 | Output | (120,60) | [`SlotOutput`](ammo-press.md#1-inventory) |
+| 3 | Upgrade | (150,60) | [`SlotMachineUpgrade`](ammo-press.md#1-inventory) |
 
 - **Sided access.** Slots 0, 1 and 2 from every side. Insert if `isItemValidForSlot`; extract only slot 2.
 - **`isItemValidForSlot(slot, item)`** is true if any of these holds:
@@ -19,7 +19,7 @@ Classes: `MetalPressTileEnt`, `MetalPressContainer`, `GuiMetalPress`, `MetalPres
   - slot 0 is empty, this is slot 0, and some recipe uses the item; or
   - slot 0 is filled, this is slot 1, slot 1 is empty, and (slot 0, item) forms a recipe.
 
-  The first rule also lets automation push matching items into the **output** slot (MPRD-21).
+  The first rule also lets automation push matching items into the **output** slot ([MPRD-21](index.md#suspected-bugs)).
 - **Shift-click target (`getValidSlotForItemInMachine`)**, first match wins:
   1. same item as slot 0 → slot 0;
   2. same item as slot 1 → slot 1;
@@ -28,12 +28,12 @@ Classes: `MetalPressTileEnt`, `MetalPressContainer`, `GuiMetalPress`, `MetalPres
   5. upgrade → slot 3;
   6. otherwise rejected.
 
-  The container ranges are off by one (MPRD-20).
+  The container ranges are off by one ([MPRD-20](index.md#suspected-bugs)).
 - Capacity: 20 000 RF.
 
 ## 2. Recipe model
 
-Each `MetalPressRecipe` has `slot1` and `slot2` (`ItemStackOreDict`), `allowSwap` and `output`.
+Each `MetalPressRecipe` has `slot1` and `slot2` ([`ItemStackOreDict`](gui-handler.md#6-itemstackoredict-recipe-ingredient-wrapper)), `allowSwap` and `output`.
 
 - **Match.** (A matches slot1 and B matches slot2), or, if `allowSwap`, the reverse. **Each input consumes exactly 1 item per unit**, whatever size the ingredient declares.
 - **Lookup** returns the first matching recipe in list order.
@@ -44,26 +44,26 @@ Each `MetalPressRecipe` has `slot1` and `slot2` (`ItemStackOreDict`), `allowSwap
 
 | # | Input A | Input B | Output |
 |---|---|---|---|
-| 1 | `ingotSteel` | Obsidian (block) ×1 | Obsidian Steel Ingot ×1 (shared 40) |
-| 2 | `ingotTin` | `ingotTin` | Tin Plate ×2 (shared 41) |
-| 3 | `ingotCopper` | `ingotCopper` | Copper Plate ×2 (42) |
-| 4 | `ingotBronze` | `ingotBronze` | Bronze Plate ×2 (44) |
+| 1 | [`ingotSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | Obsidian (block) ×1 | Obsidian Steel Ingot ×1 (shared 40) |
+| 2 | [`ingotTin`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotTin` | Tin Plate ×2 (shared 41) |
+| 3 | [`ingotCopper`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotCopper` | Copper Plate ×2 (42) |
+| 4 | [`ingotBronze`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotBronze` | Bronze Plate ×2 (44) |
 | 5 | `ingotIron` | `ingotIron` | Iron Plate ×2 (43) |
 | 6 | `ingotSteel` | `ingotSteel` | Steel Plate ×2 (45) |
-| 7 | `ingotLead` | `ingotLead` | Lead Plate ×2 (104) |
-| 8 | `plateIron` | Flint | Mechanical Parts ×1 (30) |
-| 9 | `plateObsidianSteel` | `gemQuartz` | Mechanical Parts (Obsidian Steel) ×1 (34) |
+| 7 | [`ingotLead`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | `ingotLead` | Lead Plate ×2 (104) |
+| 8 | [`plateIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | Flint | Mechanical Parts ×1 (30) |
+| 9 | [`plateObsidianSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | `gemQuartz` | Mechanical Parts (Obsidian Steel) ×1 (34) |
 | 10 | `plateCarbon` | Blaze Rod | Mechanical Parts (Carbon) ×2 (37) |
-| 11 | `plateCopper` | `plateCopper` | Copper Wire ×8 (57) |
+| 11 | [`plateCopper`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | `plateCopper` | Copper Wire ×8 (57) |
 | 12 | `fiberCarbon` | `fiberCarbon` | Carbon Plate ×2 (62) |
 | 13 | `plateObsidianSteel` | TGX ×1 (60) | Advanced Bullets ×16 (22) |
-| 14 | `ingotObsidianSteel` | `ingotObsidianSteel` | Obsidian Steel Plate ×2 (65) |
-| 15 | `plateSteel` | `plateBronze` | Steam Armor Plating ×1 (67) |
+| 14 | [`ingotObsidianSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | `ingotObsidianSteel` | Obsidian Steel Plate ×2 (65) |
+| 15 | [`plateSteel`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | [`plateBronze`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | Steam Armor Plating ×1 (67) |
 | 16 | `ingotGold` | `ingotGold` | Gold Wire ×2 (86) |
 | 17 | `plateIron` | TNT (block) | 40mm Grenade ×16 (93) |
-| 18 | `ingotTitanium` | `ingotTitanium` | Titanium Plate ×2 (96) |
+| 18 | [`ingotTitanium`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | `ingotTitanium` | Titanium Plate ×2 (96) |
 
-The shared-item numbers are metadata of `TGItems.sharedItem` (see `06-items`).
+The shared-item numbers are metadata of [`TGItems.sharedItem`](../06-items/item-catalogue.md) (see [`06-items`](../06-items/index.md)).
 
 ## 3. Auto-split mode
 
@@ -97,7 +97,7 @@ The effect is that a player can drop one stack of ingots in and both slots are f
 
 ## 6. Visuals
 
-TESR `RenderAmmoPress` (shared class) with `ModelMetalPress` (declared 128×64) and texture `textures/blocks/MetalPress.png` (256×128, catalogued in 07-blocks).
+TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr) (shared class) with [`ModelMetalPress`](../07-blocks/block-rendering-and-models.md#modelmetalpress-uv-12864-texture-metalpresspng) (declared 128×64) and texture [`textures/blocks/MetalPress.png`](../07-blocks/textures.md#11-model-textures) (256×128, catalogued in [07-blocks](../07-blocks/index.md)).
 
 - **Look.** A grey steel hydraulic press: a base table, columns and a heavy top block. The texture is mostly grey/silver weathered metal with a hazard-striped strip.
 - **Animation.**

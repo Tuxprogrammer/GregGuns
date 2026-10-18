@@ -1,17 +1,17 @@
 # Special-slot equipment (face and back slots)
 
-Source: `java/techguns/items/armors/ITGSpecialSlot.java`, `ItemTGSpecialSlot.java`, `ItemTGSpecialSlotAmmo.java`, `ItemGasMask.java`, `ItemNightVisionGoggles.java`, `ItemTacticalMask.java`, `ItemScubaTanks.java`, `ItemJetpack.java`, `ItemJumppack.java`, `ItemAntiGravPack.java`.
+Source: `java/techguns/items/armors/ITGSpecialSlot.java`, [`ItemTGSpecialSlot.java`](lang-and-strings.md#3-armour-tooltips), [`ItemTGSpecialSlotAmmo.java`](lang-and-strings.md#3-armour-tooltips), `ItemGasMask.java`, `ItemNightVisionGoggles.java`, `ItemTacticalMask.java`, `ItemScubaTanks.java`, `ItemJetpack.java`, `ItemJumppack.java`, `ItemAntiGravPack.java`.
 
-Two items (the glider and the oxygen mask) are metadata variants of the shared item `GenericItemShared` (06-items). Their slot behaviour is described here. The registration lines are in `TGItems.java` (06-items) and are restated here for completeness.
+Two items (the glider and the oxygen mask) are metadata variants of the shared item [`GenericItemShared`](../06-items/special-items.md#shared-item-genericitemshared-behaviour) ([06-items](../06-items/index.md)). Their slot behaviour is described here. The registration lines are in [`TGItems.java`](../06-items/item-catalogue.md) ([06-items](../06-items/index.md)) and are restated here for completeness.
 
 ## 1. Interfaces and base classes
 
 **`ITGSpecialSlot`**
-- `getSlot(stack)` → a `TGSlotType`
+- `getSlot(stack)` → a [`TGSlotType`](extra-inventory.md#2-tgslottype-enum)
 - `onPlayerTick(stack, PlayerTickEvent, props)`, called every END-phase player tick on both sides while the stack is in the face or back slot
 - `getBonus(type, stack, consume, player)`, which feeds into the bonus aggregation (set-bonuses.md §2)
 
-**`ItemTGSpecialSlot`** (abstract; extends `GenericItem`, implements `ITGSpecialSlot` and `ICamoChangeable`)
+**`ItemTGSpecialSlot`** (abstract; extends [`GenericItem`](../06-items/special-items.md#base-classes), implements `ITGSpecialSlot` and [`ICamoChangeable`](armor-catalogue.md#1-class-hierarchy))
 - Constructor takes (unlocalizedName, textureName, camoCount, durability).
 - Max stack 1; max damage = durability. The **durability bar is the item's charge or fuel**: damage == maxDamage means empty.
 - The icon is `techguns:<unlocalizedName>`. The stored `textureName` field is **not used** for anything.
@@ -30,19 +30,19 @@ Two items (the glider and the oxygen mask) are metadata variants of the shared i
 
 | Item (registry / unlocalized) | English name | Class | Slot | Durability = charge | camoCount | Reload ammo → empty | Icon texture |
 |---|---|---|---|---|---|---|---|
-| `gasMask` | Gas Mask | `ItemGasMask` | Face | 300 | 1 | – (repaired by recipe) | `textures/items/gasMask.png` |
-| `nightVisionGoggles` | Nightvision Goggles | `ItemNightVisionGoggles` | Face | 24000 | 1 | Energy Cell → Energy Cell (Empty) | `textures/items/nightVisionGoggles.png` |
-| `tacticalMask` | Tactical Mask | `ItemTacticalMask` | Face | 24000 | 4 | Energy Cell → empty | `textures/items/tacticalMask.png` |
-| `scubaTanks` | Oxygen Tanks | `ItemScubaTanks` | Back | 600 | 1 | Compressed Air Tank → empty | `textures/items/scubaTanks.png` |
-| `jetpack` | Jetpack | `ItemJetpack` | Back | 5000 | 4 | Fuel Tank (`flamethrowerTank`) → Fuel Tank (Empty) | `textures/items/jetpack.png` (64×64) |
-| `jumppack` | Jump Pack | `ItemJumppack` | Back | 1000 | 4 | Compressed Air Tank → empty | `textures/items/jumppack.png` |
-| `antiGravPack` | Anti Gravity Device | `ItemAntiGravPack` | Back | 12000 | 5 | Nuclear Power Cell → Nuclear Power Cell (Depleted) | `textures/items/antiGravPack.png` |
-| shared item `glider` | Glider | `GenericItemShared` | Back (stack size 1) | – | – | – | `textures/items/glider.png` |
-| shared item `oxygenMask` | Oxygen Mask | `GenericItemShared` | Face (stack size 1) | – | – | – | `textures/items/oxygenMask.png` |
+| [`gasMask`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems) | Gas Mask | `ItemGasMask` | Face | 300 | 1 | – (repaired by recipe) | [`textures/items/gasMask.png`](../06-items/textures.md#9-wearables-and-special-slot-icons) |
+| [`nightVisionGoggles`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems) | Nightvision Goggles | `ItemNightVisionGoggles` | Face | 24000 | 1 | Energy Cell → Energy Cell (Empty) | [`textures/items/nightVisionGoggles.png`](../06-items/textures.md#9-wearables-and-special-slot-icons) |
+| [`tacticalMask`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems) | Tactical Mask | `ItemTacticalMask` | Face | 24000 | 4 | Energy Cell → empty | [`textures/items/tacticalMask.png`](../06-items/textures.md#9-wearables-and-special-slot-icons) |
+| [`scubaTanks`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems) | Oxygen Tanks | `ItemScubaTanks` | Back | 600 | 1 | Compressed Air Tank → empty | [`textures/items/scubaTanks.png`](../06-items/textures.md#9-wearables-and-special-slot-icons) |
+| [`jetpack`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems) | Jetpack | `ItemJetpack` | Back | 5000 | 4 | Fuel Tank ([`flamethrowerTank`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo)) → Fuel Tank (Empty) | [`textures/items/jetpack.png`](../06-items/textures.md#9-wearables-and-special-slot-icons) (64×64) |
+| [`jumppack`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems) | Jump Pack | `ItemJumppack` | Back | 1000 | 4 | Compressed Air Tank → empty | [`textures/items/jumppack.png`](../06-items/textures.md#9-wearables-and-special-slot-icons) |
+| [`antiGravPack`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems) | Anti Gravity Device | `ItemAntiGravPack` | Back | 12000 | 5 | Nuclear Power Cell → Nuclear Power Cell (Depleted) | [`textures/items/antiGravPack.png`](../06-items/textures.md#9-wearables-and-special-slot-icons) |
+| shared item [`glider`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | Glider | `GenericItemShared` | Back (stack size 1) | – | – | – | [`textures/items/glider.png`](../06-items/textures.md#9-wearables-and-special-slot-icons) |
+| shared item [`oxygenMask`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo) | Oxygen Mask | `GenericItemShared` | Face (stack size 1) | – | – | – | [`textures/items/oxygenMask.png`](../06-items/textures.md#9-wearables-and-special-slot-icons) |
 
 Constructor texture-name arguments, which are unused for icons: gas mask `techguns:textures/armor/gasMask.png`; goggles `nightVisionGoggles`; jetpack `jetPackIcon`; scuba `oxygenFlasksIcon`; tactical `tacticalMaskItem`; jump pack `jumpPackIcon`; anti-grav `jetPackIcon`.
 
-Recipes are in recipes.md. All icon textures are owned by 06-items.
+Recipes are in recipes.md. All icon textures are owned by [06-items](../06-items/index.md).
 
 ## 3. Face items
 
@@ -68,12 +68,12 @@ A combined Night Vision Goggles, Gas Mask and Oxygen Mask.
   - If not empty and night vision is enabled, add 1 damage per tick. If empty, try to reload from an Energy Cell.
   - Then, like the gas mask, remove Poison and Wither, costing 1 damage each while not empty.
 - **Bonuses:** NIGHTVISION = 1 and OXYGEN_GEAR = 1 while not empty.
-- **Camos:** 0 = `tacticalMask` (black), 1 = `tacticalMask_green`, 2 = `tacticalMask_white`, 3 = `tacticalMask_lightgreen`. The camo-3 path does not match the file's case; see bug ARM-14.
+- **Camos:** 0 = `tacticalMask` (black), 1 = `tacticalMask_green`, 2 = `tacticalMask_white`, 3 = `tacticalMask_lightgreen`. The camo-3 path does not match the file's case; see bug [ARM-14](index.md#suspected-bugs).
 
 ### 3.4 Oxygen Mask (shared item)
 - `GenericItemShared.getBonus` returns OXYGEN_GEAR = 1 for the oxygen-mask metadata.
 - It has no tick logic and no durability. Its only purpose is to enable the Oxygen Tanks.
-- Unlike the other special items, it cannot be quick-equipped by right-clicking (bug ARM-21). Put it in the slot through the GUI or with shift-click.
+- Unlike the other special items, it cannot be quick-equipped by right-clicking (bug [ARM-21](index.md#suspected-bugs)). Put it in the slot through the GUI or with shift-click.
 
 ## 4. Back items
 
@@ -102,7 +102,7 @@ The same routine runs for the glider and, as a side effect, for a jetpack that i
 - While active, fallDistance is reset to 0 every tick, whether or not the player is falling fast enough to glide.
 
 **Sound:** each tick, `handlePlayerGliding` (client) checks `props.isGliding` for every player.
-- When it becomes true, start a looping, moving `TGSound` `techguns:glider.loop` (volume 1, pitch 1, category PLAYER_EFFECT) attached to that player.
+- When it becomes true, start a looping, moving [`TGSound`](../01-core/client-effects-audio.md#tgsound) `techguns:glider.loop` (volume 1, pitch 1, category PLAYER_EFFECT) attached to that player.
 - When it becomes false, stop the loop.
 
 **Visual:** the folded backpack is always drawn. The wings are drawn only while the player is airborne and sneaking (rendering-and-models.md).
@@ -129,13 +129,13 @@ If the jetpack is empty and `jumpkeyPressed` is true, clear it and send BOOST_ST
 
 So a full tank (5000) gives 250 s of thrust. Thrust speed is capped at 0.4 blocks/tick upward. There is no horizontal thrust; the player steers with normal air control.
 
-**Jump-key state sync (`PacketTGKeybindPress` handler, 01-core):**
+**Jump-key state sync (`PacketTGKeybindPress` handler, [01-core](../01-core/index.md)):**
 - BOOST_START / BOOST_STOP set the server flag and broadcast `PacketTGPlayerFieldSync(FIELD_JUMPBUTTONPRESSED = 0, value)` to the whole dimension.
 - On every client, the client-side properties' `setJumpkeyPressed` plays the sounds:
   - On false→true: play `techguns:jetpack.start` once at the player, and start a looping, moving `techguns:jetpack.loop` sound (category PLAYER_EFFECT).
   - On true→false: stop the loop and play `techguns:jetpack.stop`.
 
-**Flames:** while a jetpack wearer's `jumpkeyPressed` is true, the renderer spawns two `Jetpack` particles per frame (04-projectiles-fx: an animated flamethrower sprite, 10-tick life).
+**Flames:** while a jetpack wearer's `jumpkeyPressed` is true, the renderer spawns two `Jetpack` particles per frame ([04-projectiles-fx](../04-projectiles-fx/index.md): an animated flamethrower sprite, 10-tick life).
 - Positions: offset from the player by ±0.2 sideways and −0.3 backwards (−0.45 when sneaking), rotated by the body yaw, at y − 0.7.
 - Vertical motion: min(−0.025, player motionY).
 
@@ -159,7 +159,7 @@ Constants: jump boost **0.8**, free fall height **8.0** blocks, fall-damage redu
 | FALLDMG, no consume (falls ≤ 3 blocks) | 0.2 while not empty |
 
 **Jump effects (server, within 50 blocks):**
-- Particle-on-entity `JumpPackBoost` (04-projectiles-fx).
+- Particle-on-entity `JumpPackBoost` ([04-projectiles-fx](../04-projectiles-fx/index.md)).
 - Sound `techguns:effects.steamarmorJump2`, volume 1, pitch 1, category PLAYER_EFFECT.
 
 **Tooltip** adds `Jump height: +0.8`, `Fall damage: -20.0%` and `Fall height: -8.0`.
@@ -185,26 +185,26 @@ Constants: consumption 1 per tick of flight; fly-speed bonus **0.25**.
 
 ## 5. Interaction with armour
 
-- `GenericArmor.hideFaceslot` (Steam, Power and HEV helmets) stops the face item from being **drawn**. It does not disable its function.
+- [`GenericArmor.hideFaceslot`](armor-catalogue.md#1-class-hierarchy) (Steam, Power and HEV helmets) stops the face item from being **drawn**. It does not disable its function.
 - `hideBackslot` (Steam chestplate only) stops the back item from being drawn, but only for renderers that honour it: Oxygen Tanks and Anti-Grav. The Jetpack, Jump Pack and Glider always draw (rendering-and-models.md §3).
 
 ## 6. Sounds used by armour and special equipment
 
-The sound files are owned by 04-projectiles-fx and 06-items; they are listed here with their trigger. All events are category `player` in `sounds.json`.
+The sound files are owned by [04-projectiles-fx](../04-projectiles-fx/index.md) and [06-items](../06-items/index.md); they are listed here with their trigger. All events are category `player` in `sounds.json`.
 
 | sounds.json event | Files | When it plays |
 |---|---|---|
-| `effects.steamarmorJump` | `sounds/effects/steamarmor_jump_a.ogg`, `sounds/effects/steamarmor_jump_b.ogg`, `sounds/effects/steamarmor_jump_c.ogg` | Server, on every jump while wearing powered leggings that have power (vol 0.66). The event plays one of the three variants at random. |
-| `effects.steamarmorJump2` | `sounds/effects/steamarmor_jump_d.ogg` | Jump Pack boost jump (broadcast within 50 blocks) |
-| `nightvision.on` | `sounds/items/nightvision_on.ogg` | Toggling night vision on while a NIGHTVISION source is worn (server, world sound at the player) |
-| `nightvision.off` | `sounds/items/nightvision_off.ogg` | Toggling night vision off while the Night Vision potion is active |
-| `glider.loop` | `sounds/items/glider_loop_stereo.ogg` | Looping while gliding (glider, or a jetpack used as a glider) |
-| `jetpack.start` | `sounds/items/jetpack_start_a.ogg`, `sounds/items/jetpack_start_b.ogg`, `sounds/items/jetpack_start_c.ogg` | Jetpack boost begins (every client) |
-| `jetpack.loop` | `sounds/items/jetpack_loop_a.ogg`, `sounds/items/jetpack_loop_b.ogg`, `sounds/items/jetpack_loop_c.ogg` | Looping while boosting |
-| `jetpack.stop` | `sounds/items/jetpack_stop_a.ogg`, `sounds/items/jetpack_stop_b.ogg`, `sounds/items/jetpack_stop_c.ogg` | Boost ends |
-| `items.antiGravStart` | `sounds/items/antigrav_start_a.ogg`, `sounds/items/antigrav_start_b.ogg` | Anti-grav flight begins (broadcast within 50 blocks) |
+| `effects.steamarmorJump` | [`sounds/effects/steamarmor_jump_a.ogg`](../04-projectiles-fx/sounds.md), [`sounds/effects/steamarmor_jump_b.ogg`](../04-projectiles-fx/sounds.md), [`sounds/effects/steamarmor_jump_c.ogg`](../04-projectiles-fx/sounds.md) | Server, on every jump while wearing powered leggings that have power (vol 0.66). The event plays one of the three variants at random. |
+| `effects.steamarmorJump2` | [`sounds/effects/steamarmor_jump_d.ogg`](../04-projectiles-fx/sounds.md) | Jump Pack boost jump (broadcast within 50 blocks) |
+| `nightvision.on` | [`sounds/items/nightvision_on.ogg`](../06-items/sounds.md) | Toggling night vision on while a NIGHTVISION source is worn (server, world sound at the player) |
+| `nightvision.off` | [`sounds/items/nightvision_off.ogg`](../06-items/sounds.md) | Toggling night vision off while the Night Vision potion is active |
+| `glider.loop` | [`sounds/items/glider_loop_stereo.ogg`](../06-items/sounds.md) | Looping while gliding (glider, or a jetpack used as a glider) |
+| `jetpack.start` | [`sounds/items/jetpack_start_a.ogg`](../06-items/sounds.md), [`sounds/items/jetpack_start_b.ogg`](../06-items/sounds.md), [`sounds/items/jetpack_start_c.ogg`](../06-items/sounds.md) | Jetpack boost begins (every client) |
+| `jetpack.loop` | [`sounds/items/jetpack_loop_a.ogg`](../06-items/sounds.md), [`sounds/items/jetpack_loop_b.ogg`](../06-items/sounds.md), [`sounds/items/jetpack_loop_c.ogg`](../06-items/sounds.md) | Looping while boosting |
+| `jetpack.stop` | [`sounds/items/jetpack_stop_a.ogg`](../06-items/sounds.md), [`sounds/items/jetpack_stop_b.ogg`](../06-items/sounds.md), [`sounds/items/jetpack_stop_c.ogg`](../06-items/sounds.md) | Boost ends |
+| `items.antiGravStart` | [`sounds/items/antigrav_start_a.ogg`](../06-items/sounds.md), [`sounds/items/antigrav_start_b.ogg`](../06-items/sounds.md) | Anti-grav flight begins (broadcast within 50 blocks) |
 
-`sounds/items/glider_loop.ogg` exists but no sounds.json event references it, so it is never played.
+[`sounds/items/glider_loop.ogg`](../06-items/sounds.md) exists but no sounds.json event references it, so it is never played.
 
 ## 7. FX names referenced (implemented in 04-projectiles-fx)
 
@@ -216,11 +216,11 @@ The packet carries one byte, the button ID.
 
 | ID | Constant | Server action |
 |---|---|---|
-| 0 | `TOGGLE_NIGHTVISION` | Flip `enableNightVision`. When turning off with Night Vision active, remove the effect and play `nightvision.off`. When turning on with a NIGHTVISION source worn, play `nightvision.on`. Then send a full player sync (01-core). |
-| 7 | `TOGGLE_JETPACK` | Only while the jump key is not held: flip `enableJetpack` and send a field sync (`FIELD_ENABLEJETPACK`) to that player. (A nested "stop boost" branch inside it can never run; bug ARM-16.) |
+| 0 | `TOGGLE_NIGHTVISION` | Flip `enableNightVision`. When turning off with Night Vision active, remove the effect and play `nightvision.off`. When turning on with a NIGHTVISION source worn, play `nightvision.on`. Then send a full player sync ([01-core](../01-core/index.md)). |
+| 7 | `TOGGLE_JETPACK` | Only while the jump key is not held: flip `enableJetpack` and send a field sync (`FIELD_ENABLEJETPACK`) to that player. (A nested "stop boost" branch inside it can never run; bug [ARM-16](index.md#suspected-bugs).) |
 | 8 | `TOGGLE_STEP_ASSIST` | Flip `enableStepAssist` and send a full sync. |
 | 2 / 3 | `JETPACK_BOOST_START` / `JETPACK_BOOST_STOP` | See §4.3. |
 | 4 / 5 | `JETPACK_FORWARD_START` / `JETPACK_FORWARD_STOP` | Set `isForwardKeyPressed` (unused). |
-| 1, 6, 9 | safe mode, force reload, toggle HUD | 01-core / 02-guns |
+| 1, 6, 9 | safe mode, force reload, toggle HUD | [01-core](../01-core/index.md) / [02-guns](../02-guns/index.md) |
 
 Default key bindings (category `techguns.key.categories.techguns`): night vision **N**, safe mode B, step assist **V**, force reload R, jetpack **J**. The jetpack boost uses the vanilla Jump key.

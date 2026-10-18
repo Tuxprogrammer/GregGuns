@@ -1,6 +1,6 @@
 # Utilities
 
-Source: `java/techguns/util/*`, `dispenser/*`, and the static inventory helpers in `Techguns.java`.
+Source: `java/techguns/util/*`, `dispenser/*`, and the static inventory helpers in [`Techguns.java`](lifecycle-and-registration.md#lifecycle-overview).
 
 ## Inventory helpers (static, in `Techguns`)
 
@@ -9,7 +9,7 @@ Two stacks "match" when they have the same item and the same damage value. NBT i
 | Method | Behaviour |
 |---|---|
 | `addItemToInventory(inv[], stack, start, end)` | Works on a copy of the stack. First pass: top up partial stacks that match `OreDictionary.itemMatches(slot, stack, strict = true)` (item and damage; NBT ignored) up to the max stack size. Second pass: put the remainder into the first empty slot. Returns the number of items that **didn't** fit (0 = all fit) |
-| `addAmmoToPlayerInventory(player, stack)` | Fills Techguns ammo slots 6–11 first. If anything is left over, it then adds **the original full stack** (not the remainder) to the main inventory, which duplicates the part already stored (CORE-04). Without extended properties, it goes straight to the main inventory. Returns the number that didn't fit |
+| `addAmmoToPlayerInventory(player, stack)` | Fills Techguns ammo slots 6–11 first. If anything is left over, it then adds **the original full stack** (not the remainder) to the main inventory, which duplicates the part already stored ([CORE-04](index.md#suspected-bugs)). Without extended properties, it goes straight to the main inventory. Returns the number that didn't fit |
 | `consumeAmmoPlayer(player, ammo)` | For an amount of 1: remove 1 from the first match in ammo slots 6–11, otherwise from the main inventory. For amounts above 1: check that the combined supply in both areas covers the amount (`canConsumeItem`), then consume from the ammo slots and take the rest from the main inventory. Returns success. Returns false when the player has no extended properties |
 | `consumeAmmo(inv[], ammo, start, end)` | Decrements the first match by 1 and nulls the slot when it empties. Returns true if something was taken |
 | `countMags(inv[], stack, start, end)` | Sum of stack sizes of matching items (used by the HUD) |
@@ -19,12 +19,12 @@ Two stacks "match" when they have the same item and the same damage value. NBT i
 
 ## ProjectileExplosion
 
-A custom explosion used by grenades, rockets and energy blasts (04). It holds a dummy vanilla `Explosion` so it can call vanilla and Forge APIs that need one.
+A custom explosion used by grenades, rockets and energy blasts ([04](../04-projectiles-fx/index.md)). It holds a dummy vanilla `Explosion` so it can call vanilla and Forge APIs that need one.
 
 **Construction:** (world, x, y, z, exploder `EntityLivingBase`, explosionSize, entityDamage int, dmgRadius1, dmgRadius2).
 
 **Optional settings:**
-- a `TGDamageSource` override;
+- a [`TGDamageSource`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource) override;
 - the explosion sound (default `random.explode`);
 - `isFlaming`.
 
@@ -41,9 +41,9 @@ A custom explosion used by grenades, rockets and energy blasts (04). It holds a 
 
 **Phase A: entity damage.**
 1. `explosionSize` is doubled temporarily. Entities are collected from a box of half-size dmgRadius2 + 1 around the centre, excluding the exploder.
-2. On the server, `ForgeEventFactory.onExplosionDetonate` is called with the dummy explosion and this entity list. The dummy's block list stays empty, so protection mods can't remove blocks from it (CORE-19).
+2. On the server, `ForgeEventFactory.onExplosionDetonate` is called with the dummy explosion and this entity list. The dummy's block list stays empty, so protection mods can't remove blocks from it ([CORE-19](index.md#suspected-bugs)).
 3. For each entity within distance d ≤ dmgRadius2 (and d > 0):
-   - `damage = entityDamage × min(1, 1 − (d − dmgRadius1) / (dmgRadius2 − dmgRadius1))`. That is full damage inside r1, falling linearly to 0 at r2. If r1 == r2 the expression divides by zero (CORE-20).
+   - `damage = entityDamage × min(1, 1 − (d − dmgRadius1) / (dmgRadius2 − dmgRadius1))`. That is full damage inside r1, falling linearly to 0 at r2. If r1 == r2 the expression divides by zero ([CORE-20](index.md#suspected-bugs)).
    - If an attacker is given and the target is living, multiply by `DamageSystem.getDamageFactor(attacker, target)` (the PvP, turret and NPC config factors).
    - Damage source: the override if one was set, otherwise `TGDamageSource.causeExplosionDamage(exploder, null, GORE)` with gore chance 0.35.
    - Knockback: `(1 − d/(2·size)) × blockDensity`, adjusted by Blast Protection (`EnchantmentProtection`), and added along the centre-to-eye direction.
@@ -58,8 +58,8 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
 
 ## Damage sources
 
-- **`BulletDamageSource`** (`EntityDamageSource`, type `"bullet"`): the projectile is the direct source and the shooter is the attacker. It is marked as a projectile, and `ArmorPiercing` sets "bypasses armor". It carries a `DeathType`. The death message uses `death.attack.bullet` (or `.item` when the shooter's held item has a custom name). Those keys **don't exist in the lang file**; only `death.attack.tg_bullet` does (CORE-34). It is legacy: current guns use `damagesystem.TGDamageSource` (02).
-- **`TGExplosionDamageSource`**: carries a `DeathType` and an attacker. It overrides the source entity and the attacker. Legacy as well.
+- **[`BulletDamageSource`](textures-sounds-lang.md#missing-or-untranslated-keys-used-by-core-code)** (`EntityDamageSource`, type `"bullet"`): the projectile is the direct source and the shooter is the attacker. It is marked as a projectile, and `ArmorPiercing` sets "bypasses armor". It carries a `DeathType`. The death message uses `death.attack.bullet` (or `.item` when the shooter's held item has a custom name). Those keys **don't exist in the lang file**; only `death.attack.tg_bullet` does ([CORE-34](index.md#suspected-bugs)). It is legacy: current guns use `damagesystem.TGDamageSource` ([02](../02-guns/index.md)).
+- **[`TGExplosionDamageSource`](../04-projectiles-fx/explosions.md#tgexplosiondamagesource)**: carries a `DeathType` and an attacker. It overrides the source entity and the attacker. Legacy as well.
 
 ## EntityDeathUtils
 
@@ -78,7 +78,7 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
 - Techguns: ZombieSoldier (listed twice), ArmySoldier, CyberDemon, ZombiePigmanSoldier, ZombieFarmer, ZombieMiner, Bandit, PsychoSteve, DictatorDave, SkeletonSoldier, AlienBug.
 
 **`hasSpecialDeathAnim(entity, type)`:**
-1. If the entity is a boss (`IBossDisplayData`): true only if it is a `GenericNPC`.
+1. If the entity is a boss (`IBossDisplayData`): true only if it is a [`GenericNPC`](../10-entities-npcs/per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava).
 2. Otherwise, BIO or LASER: always true.
 3. Otherwise: true if the entity's exact class is in the gore list. This holds for any type, so DISMEMBER is also allowed for listed classes.
 
@@ -99,7 +99,7 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
   - `lenSquared`, `len`, `normalize` (in place), `getNormalized` (returns (0, 0) for a zero vector), `dot`.
   - `getRotated(deg)`: rotates as `(x·cos + y·sin, y·cos − x·sin)`.
   - `add`.
-  - `substract(A, B)` returns **B − A**, despite its doc saying A − B. As a result `getVecTo(p)` returns `this − p` and `getVecFrom(p)` returns `p − this`, both reversed from their names. Only squared lengths are used today, so nothing breaks yet (CORE-22).
+  - `substract(A, B)` returns **B − A**, despite its doc saying A − B. As a result `getVecTo(p)` returns `this − p` and `getVecFrom(p)` returns `p − this`, both reversed from their names. Only squared lengths are used today, so nothing breaks yet ([CORE-22](index.md#suspected-bugs)).
   - The deprecated `getAngleBetween` is mathematically wrong.
 
 ## BlockCoords / BlockPosInd
@@ -107,21 +107,21 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
 `BlockCoords`: mutable int x, y, z.
 - **Constructors:** copy, from a tile entity, or from x/y/z.
 - `shift(dir, n)` and `getShifted(dir, n)` move by n along a `ForgeDirection`: DOWN/UP = ∓y, NORTH = −z, SOUTH = +z, EAST = +x, WEST = −x.
-- `getBoxWithOffsets(minX, maxX, minY, maxY, minZ, maxZ, includeOrigin)`: all positions in the inclusive offset box. Used by the multiblock machine checks (08).
+- `getBoxWithOffsets(minX, maxX, minY, maxY, minZ, maxZ, includeOrigin)`: all positions in the inclusive offset box. Used by the multiblock machine checks ([08](../08-machines-production/index.md)).
 - `getCuboid(dir, radius, length, round)`: a (2r+1)² cross-section extruded `length` blocks along `dir`. With `round`, the four corners of each slice are skipped.
 - `equals` compares coordinates. There is **no** `hashCode` override.
 
-`BlockPosInd` extends it with `index`, the palette index used when scanning and placing structures. Its `toString` is `x,y,z,index`.
+[`BlockPosInd`](../11-worldgen/structure-system.md#blockposind) extends it with `index`, the palette index used when scanning and placing structures. Its `toString` is `x,y,z,index`.
 
 ## MBlock / MultiMBlock (structure block palette)
 
-**`MBlock`** has these fields: `block`, `meta`, `hasRotation`, `rotationType` (`BlockUtils.BlockType`) and `pass` (placement pass). Equality is by block and meta. A block equal to `TGBlocks.airMarker` places air.
+**`MBlock`** has these fields: `block`, `meta`, `hasRotation`, `rotationType` (`BlockUtils.BlockType`) and `pass` (placement pass). Equality is by block and meta. A block equal to [`TGBlocks.airMarker`](../07-blocks/block-catalogue.md#registered-blocks) places air.
 
 **`getRotationMeta(r)`** applies r clockwise quarter-turns:
 
 | BlockType | Meta cycle per quarter-turn |
 |---|---|
-| TG | delegated to `GenericBlock.getRotationMeta(meta, r)`, otherwise unchanged |
+| TG | delegated to [`GenericBlock.getRotationMeta(meta, r)`](../07-blocks/block-catalogue.md#conventions-and-defaults), otherwise unchanged |
 | DOOR | 0→3→2→1→0 and 7→6→5→4→7 |
 | FENCE_GATE | (m + r) mod 4, keeping the 4-bit (open flag) |
 | LADDER | 5→2→4→3→5 |
@@ -140,8 +140,8 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
 
    All of this uses a static `Random`, not the world seed.
 
-**`MultiMBlock`** holds parallel arrays: blocks, metas, weights, rotation types and per-entry rotation flags.
-- Each placement rolls an index: roll an integer in [0, total weight] **inclusive** and pick the first index whose running sum ≥ roll. Index 0 therefore gets one extra outcome (CORE-23).
+**[`MultiMBlock`](../11-worldgen/structure-system.md#multimblock-random-palette-entry)** holds parallel arrays: blocks, metas, weights, rotation types and per-entry rotation flags.
+- Each placement rolls an index: roll an integer in [0, total weight] **inclusive** and pick the first index whose running sum ≥ roll. Index 0 therefore gets one extra outcome ([CORE-23](index.md#suspected-bugs)).
 - The dungeon-chest fill checks the *first* palette block, not the rolled one.
 
 ## BlockUtils
@@ -152,7 +152,7 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
 - Returns `short[N][4]`. The data files themselves are documented in 11.
 
 **Placement:**
-- `placeScannedStructure(world, blocks, palette, x, y, z, centerX, centerZ, rotation, pass, lootTier)`: for each entry whose palette block's `pass` equals `pass`, rotate (x, z) about (centerX, centerZ) by `rotation` quarter-turns (`Structure.rotatePoint`, 11) and place it at (x + rx, y + by, z + rz) with that rotation.
+- `placeScannedStructure(world, blocks, palette, x, y, z, centerX, centerZ, rotation, pass, lootTier)`: for each entry whose palette block's `pass` equals `pass`, rotate (x, z) about (centerX, centerZ) by `rotation` quarter-turns ([`Structure.rotatePoint`](../11-worldgen/assets.md#structure-data-files), 11) and place it at (x + rx, y + by, z + rz) with that rotation.
 - `placeFoundation(…, range)`: for every entry at layer y = 0, also place the same block 1…range blocks **below**, only into air. This fills gaps under structures.
 - `cleanUpwards(…, range)`: for every y = 0 entry, set the 1…range blocks **above** to air.
 - `setBlockRotated` and `setBlockRotatedReplaceAirOnly` are the per-block forms. The latter rotates with its own inline loop: (a, b) → (b, −a) per quarter-turn.
@@ -173,10 +173,10 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
 
 **Spawn validation:**
 - `getValidSpawnY`, `getValidSpawnYUnderwater`, `getValidSpawnYWater`: sample the 4 corners of a sizeX × sizeZ footprint. Fail (−1) if any sample is −1, or if any corner differs from corner 0 by ≥ the limit. Otherwise return the mean of the two middle values.
-- `getValidSpawnYArea(…, step)`: samples a grid with the given step. Fails on liquid or when max − min > limit; otherwise returns the mean height. The intended clamp of the last row and column to the far edge never triggers (CORE-25).
+- `getValidSpawnYArea(…, step)`: samples a grid with the given step. Fails on liquid or when max − min > limit; otherwise returns the mean height. The intended clamp of the last row and column to the far edge never triggers ([CORE-25](index.md#suspected-bugs)).
 
 **Terrain shaping:**
-- `flattenArea(x, z, sx, sz, maxDiff)`: computes a "median" ground height. It is really the lower-middle element, and it is 0 when there are ≤ 2 samples (CORE-24). Columns are remapped linearly into a band of width maxDiff centred on that value.
+- `flattenArea(x, z, sx, sz, maxDiff)`: computes a "median" ground height. It is really the lower-middle element, and it is 0 when there are ≤ 2 samples ([CORE-24](index.md#suspected-bugs)). Columns are remapped linearly into a band of width maxDiff centred on that value.
 - `flattenAreaToMaxHeight`: raises every column to the highest one.
 - `apply2DHeightmapFilter(…, kernel)`: convolves the height map with `FILTER_GAUSSIAN_3x3` (1/16, 1/8, 1/16 / 1/8, 1/4, 1/8 / …) or `FILTER_GAUSSIAN_5x5`.
 - All of these adjust a column the same way:
@@ -190,7 +190,7 @@ There are no particles here. A private `createExplosionEffect` routine (legacy E
 - NETHER: hell;
 - WOODLAND: everything else.
 
-It drives camo choices in worldgen (11).
+It drives camo choices in worldgen ([11](../11-worldgen/index.md)).
 
 **Shapes** (all place an `MBlock` with rotation 0):
 - `fillBlocks`, `fillBlocksAir`, `fillBlocksWithMeta` (with a flag) and `fillBlocksHollow` (walls only, no floor or roof).
@@ -200,7 +200,7 @@ It drives camo choices in worldgen (11).
 - `drawLine`: a 3-D Bresenham line. When the Y axis dominates, it also places side blocks when X or Z steps, keeping the line 4-connected.
 
 **Misc:**
-- `exists(path, suffix)`: client only. Checks whether `textures/blocks/<path><suffix>.png` exists in the resource manager. Used by directional blocks (07) to pick optional face textures.
+- `exists(path, suffix)`: client only. Checks whether `textures/blocks/<path><suffix>.png` exists in the resource manager. Used by directional blocks ([07](../07-blocks/index.md)) to pick optional face textures.
 - `selectEntitiesWithinAABB(world, box, filter)`: an entity query that walks chunk entity lists directly. It calls `getChunkFromChunkCoords` with no loaded-chunk check, so it can load chunks. The AT'd `chunkExists` check is commented out.
 
 ## DataWatcherUtil
@@ -217,7 +217,7 @@ It drives camo choices in worldgen (11).
 | `setStackSizes(list, n)` | sets every stack's size to n |
 | `isFluidEqual(a, b)` | null-safe `FluidStack.equals` |
 | `addToolClassesTooltip(map, tooltip)` | if the map isn't empty, adds a header line `techguns.tooltip.toolclasses` ("Toolclasses"), then one line per entry `"  <class> : <level>"` |
-| `addShiftExpandedTooltip(tooltip)` | adds `"<shift1> §a<shift2> §7<shift3>"`, which reads "Press §a[SHIFT]§7 for detailed tooltip" (keys `techguns.gun.tooltip.shift1/2/3`). Used by guns and items that have detailed tooltips (02/06) |
+| `addShiftExpandedTooltip(tooltip)` | adds `"<shift1> §a<shift2> §7<shift3>"`, which reads "Press §a[SHIFT]§7 for detailed tooltip" (keys `techguns.gun.tooltip.shift1/2/3`). Used by guns and items that have detailed tooltips ([02](../02-guns/index.md)/[06](../06-items/index.md)) |
 
 ## NPCUtil
 
@@ -250,13 +250,13 @@ See [client-effects-audio.md](client-effects-audio.md#sound-routing-soundutil).
 
 ## Dispenser behaviour
 
-`dispenser.BehaviorProjectileDispenseDamagevalue` is registered for `TGItems.sharedItem`. It extends the default "drop item" behaviour, so the vanilla click sound and smoke still play.
+`dispenser.BehaviorProjectileDispenseDamagevalue` is registered for [`TGItems.sharedItem`](../06-items/item-catalogue.md). It extends the default "drop item" behaviour, so the vanilla click sound and smoke still play.
 
 | Shared-item meta | Spawned projectile | Parameters |
 |---|---|---|
-| `TGItems.rocketAmmo` | `RocketProjectile` | damage and radius from the rocket launcher; speed 1.0; time-to-live 200; spread 0.3; gravity 0.01; no block damage; penetration 0 |
-| `TGItems._40mmGrenade` | `GrenadeLauncherProjectile` | damage, radius, speed and gravity from the grenade launcher; time-to-live 100; spread 0.05; no block damage; penetration 0; 2 bounces. Afterwards, `GrenadeLauncherTrail` FX is sent to everyone within 200 blocks |
-| `TGItems.rocketAmmoNuclear` | `NukeRocketProjectile` | values from the nuke launcher, otherwise the same as the rocket |
+| `TGItems.rocketAmmo` | [`RocketProjectile`](../04-projectiles-fx/projectiles.md#34-rocketprojectile-and-nukerocketprojectile) | damage and radius from the rocket launcher; speed 1.0; time-to-live 200; spread 0.3; gravity 0.01; no block damage; penetration 0 |
+| `TGItems._40mmGrenade` | [`GrenadeLauncherProjectile`](../04-projectiles-fx/projectiles.md#1-registration) | damage, radius, speed and gravity from the grenade launcher; time-to-live 100; spread 0.05; no block damage; penetration 0; 2 bounces. Afterwards, `GrenadeLauncherTrail` FX is sent to everyone within 200 blocks |
+| `TGItems.rocketAmmoNuclear` | [`NukeRocketProjectile`](../04-projectiles-fx/projectiles.md#34-rocketprojectile-and-nukerocketprojectile) | values from the nuke launcher, otherwise the same as the rocket |
 | any other meta | (none) | the item is ejected as a normal item |
 
 Each projectile spawns at the dispense position. It is aimed along the facing (with +0.1 Y) at velocity 1.1 and inaccuracy 6.0, then one item is consumed. Nothing records a shooter, so dispensed projectiles have no owner.

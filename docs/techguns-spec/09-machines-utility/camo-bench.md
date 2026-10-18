@@ -1,24 +1,24 @@
 # Camo Bench
 
-`BasicMachine` meta 3. English name "Camo Bench". The container title is `techguns.container.camobench` = "Camo Workbench".
+[`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) meta 3. English name "Camo Bench". The container title is `techguns.container.camobench` = "Camo Workbench".
 
 | Part | Class / value |
 |---|---|
-| Tile entity | `CamoBenchTileEnt`, registered as `CamoBenchTileEnt` |
+| Tile entity | [`CamoBenchTileEnt`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine), registered as `CamoBenchTileEnt` |
 | GUI id | 3 |
 | Container | `CamoBenchContainer` |
 | GUI | `GuiCamoBench` |
-| TESR | `RenderTileEntityBlock` with `PaintMachineTesselatorCube` |
+| TESR | [`RenderTileEntityBlock`](../08-machines-production/rendering.md#4-rendertileentityblock-used-by-09s-camo-and-repair-benches) with [`PaintMachineTesselatorCube`](../07-blocks/block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items) |
 
 ## Purpose
 
-The bench is an unpowered bench for cycling the camouflage variant of any item that implements `ICamoChangeable`:
+The bench is an unpowered bench for cycling the camouflage variant of any item that implements [`ICamoChangeable`](../05-armor/armor-catalogue.md#1-class-hierarchy):
 
-- guns (`GenericGun`, 02)
-- multi-camo armours (`GenericArmorMultiCamo`, 05)
-- special-slot items (`ItemTGSpecialSlot`, 05/06)
-- tools (`GenericTool`)
-- camo-changeable item blocks (`GenericItemBlockCamoChangeable`, 07)
+- guns ([`GenericGun`](../02-guns/gun-lifecycle.md), 02)
+- multi-camo armours ([`GenericArmorMultiCamo`](../05-armor/armor-catalogue.md#1-class-hierarchy), 05)
+- special-slot items ([`ItemTGSpecialSlot`](../05-armor/lang-and-strings.md#3-armour-tooltips), 05/06)
+- tools ([`GenericTool`](../06-items/special-items.md#generictool-unused))
+- camo-changeable item blocks ([`GenericItemBlockCamoChangeable`](../07-blocks/special-blocks.md#18-camo-changeable-item-blocks-genericitemblockcamochangeable), 07)
 
 It works on:
 
@@ -37,7 +37,7 @@ The camo storage and naming belong to the owning areas.
 
 ## Tile entity
 
-- Extends `BasicInventoryTileEnt` with **1** slot (index 0).
+- Extends [`BasicInventoryTileEnt`](../08-machines-production/framework.md#2-basicinventorytileent) with **1** slot (index 0).
 - `isItemValidForSlot` accepts only `ICamoChangeable` items. The GUI slot is a plain `Slot`, so the player can place anything there by hand.
 - **Automation:** no accessible slots; insert and extract are both refused.
 - Inventory name: the custom name if one is set, else `techguns.container.camobench`.
@@ -54,7 +54,7 @@ The camo storage and naming belong to the owning areas.
 | 5 / 6 | worn chestplate | 5 fwd / 6 back | as above |
 | 7 / 8 | worn leggings | 7 fwd / 8 back | as above |
 | 9 / 10 | worn boots | 9 fwd / 10 back | as above |
-| 11 / 12 | Techguns extended inventory **back slot** (`TGPlayerInventory.SLOT_BACK`) | 11 fwd / 12 back | none |
+| 11 / 12 | Techguns extended inventory **back slot** ([`TGPlayerInventory.SLOT_BACK`](../05-armor/extra-inventory.md#1-data-model-tgplayerinventory-iinventory-12-slots)) | 11 fwd / 12 back | none |
 | 13 / 14 | extended inventory **face slot** (`SLOT_FACE`) | 13 fwd / 14 back | none |
 
 How the ids map:
@@ -62,7 +62,7 @@ How the ids map:
 - Armour slot = 3 − (ceil((id − 2) / 2) − 1). Odd ids go forward; even ids go back.
 - For ids 11–14, even means back.
 - Items that are not `ICamoChangeable` are ignored.
-- Buttons 11–14 have no GUI buttons, because they are commented out (MUTL-06).
+- Buttons 11–14 have no GUI buttons, because they are commented out ([MUTL-06](index.md#suspected-bugs)).
 
 ## Container layout (`CamoBenchContainer`)
 
@@ -71,8 +71,8 @@ How the ids map:
 | 0 | bench slot | plain `Slot` | (21, 18) |
 | 1–27 | player main | plain | (8 + 18·col, 84 + 18·row) |
 | 28–36 | hotbar | plain | (8 + 18·i, 142) |
-| 37–40 | worn armour, 37 = helmet … 40 = boots | `SlotArmor` | (96 + 19·i, 18) |
-| 41 | extended-inventory back slot | `SlotTG`, type `BACKSLOT` | (75, 18) |
+| 37–40 | worn armour, 37 = helmet … 40 = boots | [`SlotArmor`](../05-armor/extra-inventory.md#4-container-tgplayercontainer) | (96 + 19·i, 18) |
+| 41 | extended-inventory back slot | [`SlotTG`](../05-armor/extra-inventory.md), type `BACKSLOT` | (75, 18) |
 | 42 | extended-inventory face slot | `SlotTG`, type `FACESLOT` | (56, 18) |
 
 Slots 41–42 exist only if the player's extended properties are present.
@@ -84,13 +84,13 @@ Shift-click rules:
 | Bench slot | `ItemArmor` goes to the matching armour slot 37 + armourType. Anything else goes to player slots 1–36, filled from the end. |
 | Any other slot | Moves into the bench slot, but only if the bench slot is empty. Otherwise nothing happens. |
 
-`addCraftingToCrafters`, `detectAndSendChanges` and `updateProgressBar` are all overridden to do nothing. The container never pushes slot contents to the client itself (MUTL-07).
+`addCraftingToCrafters`, `detectAndSendChanges` and `updateProgressBar` are all overridden to do nothing. The container never pushes slot contents to the client itself ([MUTL-07](index.md#suspected-bugs)).
 
 ## GUI (`GuiCamoBench`)
 
 The GUI extends vanilla `GuiContainer` directly. Size is the default 176 × 166.
 
-Background texture: `textures/gui/camoBench_GUI.png`, 256 × 256, catalogued by 08.
+Background texture: [`textures/gui/camoBench_GUI.png`](../08-machines-production/gui-textures.md#7-texturesguicamobench_guipng-owned-by-09), 256 × 256, catalogued by 08.
 
 | Texture region (px) | Content | Drawn at |
 |---|---|---|
@@ -113,7 +113,7 @@ dx and dy are the mouse offsets, negated.
 - (101 + 19·i, 38): camo index + 1 of worn armour piece i (helmet first), or 0 when the piece is absent or not camo-changeable.
 - (80, 38): back-slot item's index + 1. (61, 38): face-slot item's index + 1.
 
-**Buttons** (vanilla `GuiButtonExt`; every click sends `GUIButtonClick` with the id):
+**Buttons** (vanilla `GuiButtonExt`; every click sends [`GUIButtonClick`](../01-core/networking.md#0--guibuttonclick-cs) with the id):
 
 | Id | Label | Rect (x, y, w, h) relative to GUI |
 |---|---|---|
@@ -140,7 +140,7 @@ dx and dy are the mouse offsets, negated.
 | BL | top | Machine top: grey housing with three small square indicator lamps (red, green, blue) along the top edge. Centre: a white-and-grey louvred vent grille in a light frame. Left and right: two chrome cylindrical rollers. Black gaps. |
 | BR | unused | transparent |
 
-There are four older single-face textures for the same machine: `textures/blocks/paintmachine_top.png`, `paintmachine_front.png`, `paintmachine_side.png` and `paintmachine_bottom.png`, each 32 × 32. Nothing in the code references them. 07 catalogues them.
+There are four older single-face textures for the same machine: [`textures/blocks/paintmachine_top.png`](../07-blocks/textures.md#camo-bench-and-repair-bench-09), `paintmachine_front.png`, `paintmachine_side.png` and `paintmachine_bottom.png`, each 32 × 32. Nothing in the code references them. [07](../07-blocks/index.md) catalogues them.
 
 ## Sounds
 

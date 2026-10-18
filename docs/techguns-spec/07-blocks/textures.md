@@ -1,6 +1,6 @@
 # 07-blocks: texture catalogue (`textures/blocks/`, all 163 files)
 
-Every PNG in `assets/techguns/textures/blocks/`, including the ones used by machine blocks (owned by 08-machines-production and 09-machines-utility, which refer here).
+Every PNG in `assets/techguns/textures/blocks/`, including the ones used by machine blocks (owned by [08-machines-production](../08-machines-production/index.md) and [09-machines-utility](../09-machines-utility/index.md), which refer here).
 
 **Columns.**
 
@@ -96,7 +96,7 @@ The base file is the bordered "alone" look.
 | `textures/blocks/tent.png` | 32×32 | plain beige canvas | #c0b090, #b0a080 | – | unused |
 | `textures/blocks/flagBlock.png` | 32×32 | grey cloth background with a waving red/white/blue striped flag carrying a black star | #e0e0e0, red #e04040, blue #4040e0 | – | unused |
 | `textures/blocks/airMarker.png` | 32×32 | transparent with a 2-px dark grey frame and the outlined letters "AIR" | #303030, #404040, #707070 | – | airMarker |
-| `textures/blocks/invisible.png` | 16×16 | fully transparent | – | – | camo-net pane top/edge strip; oreDrill:10; machineMultiBlock:15 (08) |
+| `textures/blocks/invisible.png` | 16×16 | fully transparent | – | – | camo-net pane top/edge strip; oreDrill:10; machineMultiBlock:15 ([08](../08-machines-production/index.md)) |
 
 ## 5. Lamps, lanterns, ladders, door
 
@@ -113,7 +113,7 @@ The base file is the bordered "alone" look.
 | `textures/blocks/metalLadderShiny.png` | 32×32 | same layout, bright silver-white | #d0d0d0, #e0e0e0, #f0f0f0 | – | variant 2 |
 | `textures/blocks/metalLadderCarbon.png` | 32×32 | same layout, near-black | #101010, #202020 | – | variant 3 |
 | `textures/blocks/ladder01.png` | 16×16 | old 16-px grey ladder with transparent rung gaps | #707070, #606060 | – | unused |
-| `textures/blocks/ladder01_inv.png` | 32×32 | UV skin for `ModelLadder01`: 2×16×2 rails at (0,0) and 12×2×2 rungs at (0,19), grey, rest transparent | #808080, #909090 | – | passed to the ladder and lamp renderers but never bound (unused) |
+| `textures/blocks/ladder01_inv.png` | 32×32 | UV skin for [`ModelLadder01`](block-rendering-and-models.md#modelladder01-uv-3232): 2×16×2 rails at (0,0) and 12×2×2 rungs at (0,19), grey, rest transparent | #808080, #909090 | – | passed to the ladder and lamp renderers but never bound (unused) |
 | `textures/blocks/door01.png` | 32×32 | plain grey-green weathered steel | #708070, #809080, #707070 | – | door top/bottom faces |
 | `textures/blocks/door01_upper.png` | 32×32 | Upper door leaf: steel slab with a round-topped recessed panel framed by a ring of small red-brown rivets, a vertical hinge strip at the left with a horizontal strap, and a small square plate low in the panel | #606060, #809080, rivets #602020 | – | upper half (mirrored copy auto-generated) |
 | `textures/blocks/door01_lower.png` | 32×32 | Lower leaf: a round-bottomed recessed panel continuing from the upper one, rivets, hinge strip, grime at the bottom | #404030, #505040, #809080 | – | lower half |
@@ -125,7 +125,7 @@ The base file is the bordered "alone" look.
 | `textures/blocks/screen_front.png` | 32×32 | brown-grey metal casing with a large black rounded-rectangle screen (px about 2–30) and a seam line at mid-height on the frame edges | #101010, #000000, #706060 | – | screen front |
 | `textures/blocks/screen_overlay_front.png` | 32×256 | 8 frames, each 32×32. Transparent outside a rounded CRT matching the screen. Green radar: concentric rings, a centre dot, horizontal scanlines, and a bright sweep blip that moves around the rings from frame to frame. | #001000–#004000, #00f000 | 8 × 2 ticks (16-tick loop) | screen overlay, front, pass 1 |
 | `textures/blocks/screen_side.png` | 32×32 | casing with a round speaker grille at upper left, a button/vent block at lower left and a horizontal seam | #403030, #504030, #706060 | – | screen sides/back |
-| `textures/blocks/screen_top.png` | 32×32 | plain brown-grey casing with a slight bevel | #403030, #504030 | – | screen top/bottom; also the `basicMachine` break-particle icon (08/09) |
+| `textures/blocks/screen_top.png` | 32×32 | plain brown-grey casing with a slight bevel | #403030, #504030 | – | screen top/bottom; also the [`basicMachine`](block-catalogue.md#registered-blocks) break-particle icon ([08](../08-machines-production/index.md)/[09](../09-machines-utility/index.md)) |
 | `textures/blocks/controlpanel_front.png` | 32×32 | Console face: a black display window at top-left (px about 4–20 × 4–12) and a 2×3 grid of black keys at top-right. Below: a keypad of white/grey/red buttons, a rotary knob, a slider, toggle switches and a red push button at bottom-right. | #000000, #403030, #706060, red #c02020 | – | controlpanel front |
 | `textures/blocks/controlpanel_overlay_front.png` | 32×256 | 8 frames. Transparent except: a green oscilloscope trace inside the display window (px 4–20 × 4–12) that changes each frame; blinking red/green/yellow LEDs at about (23–28, 3–9); a steady green LED pair at about (22–25, 27–29) | #002000, #00f000, red, yellow | 8 × 2 ticks | controlpanel overlay |
 | `textures/blocks/controlpanel_side.png` | 32×32 | like `screen_side` but mirrored (grille upper right, vents lower left), no seam | #403030, #504030 | – | controlpanel sides/back |
@@ -137,9 +137,9 @@ The base file is the bordered "alone" look.
 |---|---|---|---|---|---|
 | `textures/blocks/oreTitanIron.png` | 16×64 | 4 frames: vanilla-style grey stone with pale whitish-cyan metallic flecks that shimmer between frames | #707070, #808080, #b0c0c0, #c0d0d0 | 4 × 8 ticks | oreTitanIron:0 |
 | `textures/blocks/oreUranium.png` | 16×64 | 4 frames: stone with bright green flecks that pulse | #707070, #708070, green #40c040 | 4 × 8 ticks | oreTitanIron:1 |
-| `textures/blocks/oreCopperBlock.png` | 16×16 | stone with orange-copper blotches | #707070, #808080, #c07030 | – | `oreCopper` block (01-core) |
-| `textures/blocks/oreTinBlock.png` | 16×16 | stone with pale blue-white flecks | #707070, #808080, #a0c0c0 | – | `oreTin` block (01-core) |
-| `textures/blocks/oreLeadBlock.png` | 16×16 | stone with dull blue-violet flecks | #707070, #808080, #7080b0 | – | `oreLead` block (01-core) |
+| `textures/blocks/oreCopperBlock.png` | 16×16 | stone with orange-copper blotches | #707070, #808080, #c07030 | – | `oreCopper` block ([01-core](../01-core/index.md)) |
+| `textures/blocks/oreTinBlock.png` | 16×16 | stone with pale blue-white flecks | #707070, #808080, #a0c0c0 | – | `oreTin` block ([01-core](../01-core/index.md)) |
+| `textures/blocks/oreLeadBlock.png` | 16×16 | stone with dull blue-violet flecks | #707070, #808080, #7080b0 | – | `oreLead` block ([01-core](../01-core/index.md)) |
 
 ### Ore-cluster overlays
 
@@ -187,7 +187,7 @@ All unused. The `registerIcon` calls are commented out. Bases have transparent h
 |---|---|---|---|---|---|
 | `textures/blocks/acid_still.png` | 16×512 | vanilla-water-style still liquid, recoloured murky olive-mustard with faint darker orange ripples | #908000, #907000; alpha 168–226 (average 178) | 32 frames × 2 ticks | acid block top/bottom; fluid still icon |
 | `textures/blocks/acid_flow.png` | 32×1024 | flowing variant with vertical streaks | #908000, #907000; alpha 165–211 | 32 frames × 1 tick (`{"animation":{}}`) | acid block sides; fluid flowing icon |
-| `textures/blocks/milk_still.png` | 16×512 | the same structure in light grey-white | #c0c0c0, #d0d0d0; same alpha | 32 × 2 ticks | Milk fluid still icon, only if Techguns registered `milk` (01-core event handler) |
+| `textures/blocks/milk_still.png` | 16×512 | the same structure in light grey-white | #c0c0c0, #d0d0d0; same alpha | 32 × 2 ticks | Milk fluid still icon, only if Techguns registered `milk` ([01-core](../01-core/index.md) event handler) |
 | `textures/blocks/milk_flow.png` | 32×1024 | flowing milk | #c0c0c0, #d0d0d0 | 32 × 1 tick | Milk flowing icon (same condition) |
 
 ## 10. Machine block textures (owned by 08 and 09)
@@ -213,7 +213,7 @@ All unused. The `registerIcon` calls are commented out. Bases have transparent h
 | `textures/blocks/drillRod-top.png` | 32×32 | rod end: grey square with a round four-spoke hub | #303030, #505050, #606060 | – | oreDrill:2 top/bottom |
 | `textures/blocks/drillRodSide.png` | 32×32 | noisy grey vertically brushed metal with horizontal scratches | #303030, #808080 | – | unused |
 | `textures/blocks/drillRodTop.png` | 32×32 | dark blurred square end | #000000, #101010 | – | unused |
-| `textures/blocks/drillhead.png` | 32×32 | cylinder shading: light edges, dark vertical centre band, steel grey | #202020, #303030, #707070 | – | `RenderOreDrill` drill head, tier 1 (08) |
+| `textures/blocks/drillhead.png` | 32×32 | cylinder shading: light edges, dark vertical centre band, steel grey | #202020, #303030, #707070 | – | [`RenderOreDrill`](../09-machines-utility/ore-drill.md#9-tesr-renderoredrill) drill head, tier 1 ([08](../08-machines-production/index.md)) |
 | `textures/blocks/drillheadObsidian.png` | 32×32 | the same in blue-violet obsidian | #202030, #303040, #505070 | – | drill head, obsidian tier |
 | `textures/blocks/drillheadCarbon.png` | 32×32 | the same, near-black | #101010, #202020 | – | drill head, carbon tier |
 
@@ -244,7 +244,7 @@ All unused: flat programmer art.
 
 | Path | Size | Depicts / layout | Use |
 |---|---|---|---|
-| `textures/blocks/paintmachine_textures.png` | 64×64 | Atlas in quadrants. **TL (0–32, 0–32):** dark grey panel with a bevelled frame (sides, back, bottom). **TR:** front, three tall paint canisters (red, green, blue liquid windows) in a recessed bay. **BL:** top, three square lamps (red, green, blue) above a white slatted grille, flanked by two cylindrical rollers. **BR:** transparent, unused. | `PaintMachineTesselatorCube` (Camo Bench TESR and item) |
+| `textures/blocks/paintmachine_textures.png` | 64×64 | Atlas in quadrants. **TL (0–32, 0–32):** dark grey panel with a bevelled frame (sides, back, bottom). **TR:** front, three tall paint canisters (red, green, blue liquid windows) in a recessed bay. **BL:** top, three square lamps (red, green, blue) above a white slatted grille, flanked by two cylindrical rollers. **BR:** transparent, unused. | [`PaintMachineTesselatorCube`](block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items) (Camo Bench TESR and item) |
 | `textures/blocks/repairbench_textures.png` | 64×64 | **TL:** grey panel. **TR:** front, a shelf of jars and cans (yellow, blue, green) above a shelf holding a circular saw blade and a red tool. **BL:** top, a brown pegboard worktop with tools (hammer, screwdriver, saw, drill, wrench, nuts). **BR:** transparent. | `RepairBenchTesselatorCube` (Repair Bench TESR and item; also the Flag item) |
 | `textures/blocks/paintmachine_top.png` | 32×32 | standalone copy of the atlas BL quadrant | unused |
 | `textures/blocks/paintmachine_front.png` | 32×32 | standalone copy of the atlas TR quadrant | unused |
@@ -257,21 +257,21 @@ All are 2× the model's UV size. The UV origin of each part is in [block-renderi
 
 | Path | Size (UV) | Depicts / layout | Palette | Use |
 |---|---|---|---|---|
-| `textures/blocks/AmmoPress.png` | 256×128 (128×64) | Black (unused) background with box unwraps. **Worn light grey/beige riveted metal:** floor plate (UV 0–64, 0–18; the top face has a chamfered inset border), rails, housings (66–86, 0–16) and top head. **Dark olive-green paint:** corner posts and brackets (50–64, 0–13) and die plate (100–128, 24–33). **Darker steel:** motor, discs and jaws. **Brass/gold:** the blank and bullets (110–122, 46–56). | #000000, #807070, #908080, green #406020, brass #d0b060 | `ModelAmmoPress` (TESR and item) |
-| `textures/blocks/MetalPress.png` | 256×128 (128×64) | Same frame art as the ammo press, all grey (no green). Riveted panels for the top beam and head. A ribbed band for the press guides. A diagonal-striped silver swatch for the metal sheet (104–128, 46–53). | #000000, #908080, #807070, #a09090 | `ModelMetalPress` |
-| `textures/blocks/ChemLab.png` | 256×128 (128×64) | Black background, light grey riveted metal for bench parts, and **semi-transparent white glass** regions (G parts, upper-left area). Liquid swatches: blue (front-left tube, 114–126, 22–26), cyan (front-right tube, 114–126, 27–31), orange (test-tube stands, 81–89, 32–41), magenta (flask liquid, 103–115, 43–51), and red / green / blue (the three test tubes, 123–127, 41–49). Pale grey tubing at 105–128, 0–11. | #000000, #d0d0d0, #c0c0c0, plus the liquid colours | `ModelChemLab` |
-| `textures/blocks/ChargingStation.png` | 128×128 (64×64) | Transparent background. Pale grey-green panels. **Side plates** (38–64, 19–43): white with a grey square and a black zig-zag cable. **Top/bottom plates** (0–64, 46–64): concentric grey squares with a black centre pad. **Red electrode tips** (0–8, 27–31). A grey translucent-looking square at (40–52, 0–12) for the disabled glass. | #606060, #000000, #b0b0b0, red #a02020 | `ModelChargingStation` |
-| `textures/blocks/Fabricator.png` | 256×256 (128×128) | Transparent background. **Dark charcoal:** base and inner plates (top area). **White/light grey:** walls and gantry bars. **Teal terminal screen:** controller (103–125, 0–11). **Grey:** work head and tubes. **Red:** laser emitter (≈14–18, 102–110). **Thin dark outline frames:** the glass hood (8–128, 86–128); the glass itself is clear. | #303030, #202020, #909090, teal, red | `ModelFabricator` |
-| `textures/blocks/TurretBase.png` | 128×128 (64×64) | Transparent background. Worn medium-grey steel/concrete: the core cube (8–64, 36–64) has recessed square panels on each face. Dark corner posts (0–8, 30–47), skirts, sockets, braces. The top-right area also holds the turret-stand parts used by `ModelTurret` (base 32–64, 22–31; mount 34–50, 12–17; struts 9–17, 30–43) and a dark radial spot. | #909090, #a0a0a0, #808080, #202020 | `ModelTurretBase` (turret machine block and item, 09) |
-| `textures/blocks/TurretBase_2.png` | 128×128 | same layout, clean light grey with soft edges | #404040, #a0a0a0, #b0b0b0 | `NPCTurret` texture variant (10-entities-npcs) |
+| `textures/blocks/AmmoPress.png` | 256×128 (128×64) | Black (unused) background with box unwraps. **Worn light grey/beige riveted metal:** floor plate (UV 0–64, 0–18; the top face has a chamfered inset border), rails, housings (66–86, 0–16) and top head. **Dark olive-green paint:** corner posts and brackets (50–64, 0–13) and die plate (100–128, 24–33). **Darker steel:** motor, discs and jaws. **Brass/gold:** the blank and bullets (110–122, 46–56). | #000000, #807070, #908080, green #406020, brass #d0b060 | [`ModelAmmoPress`](block-rendering-and-models.md#modelammopress-uv-12864-texture-ammopresspng) (TESR and item) |
+| `textures/blocks/MetalPress.png` | 256×128 (128×64) | Same frame art as the ammo press, all grey (no green). Riveted panels for the top beam and head. A ribbed band for the press guides. A diagonal-striped silver swatch for the metal sheet (104–128, 46–53). | #000000, #908080, #807070, #a09090 | [`ModelMetalPress`](block-rendering-and-models.md#modelmetalpress-uv-12864-texture-metalpresspng) |
+| `textures/blocks/ChemLab.png` | 256×128 (128×64) | Black background, light grey riveted metal for bench parts, and **semi-transparent white glass** regions (G parts, upper-left area). Liquid swatches: blue (front-left tube, 114–126, 22–26), cyan (front-right tube, 114–126, 27–31), orange (test-tube stands, 81–89, 32–41), magenta (flask liquid, 103–115, 43–51), and red / green / blue (the three test tubes, 123–127, 41–49). Pale grey tubing at 105–128, 0–11. | #000000, #d0d0d0, #c0c0c0, plus the liquid colours | [`ModelChemLab`](block-rendering-and-models.md#modelchemlab-uv-12864-texture-chemlabpng) |
+| `textures/blocks/ChargingStation.png` | 128×128 (64×64) | Transparent background. Pale grey-green panels. **Side plates** (38–64, 19–43): white with a grey square and a black zig-zag cable. **Top/bottom plates** (0–64, 46–64): concentric grey squares with a black centre pad. **Red electrode tips** (0–8, 27–31). A grey translucent-looking square at (40–52, 0–12) for the disabled glass. | #606060, #000000, #b0b0b0, red #a02020 | [`ModelChargingStation`](block-rendering-and-models.md#modelchargingstation-uv-6464-texture-chargingstationpng) |
+| `textures/blocks/Fabricator.png` | 256×256 (128×128) | Transparent background. **Dark charcoal:** base and inner plates (top area). **White/light grey:** walls and gantry bars. **Teal terminal screen:** controller (103–125, 0–11). **Grey:** work head and tubes. **Red:** laser emitter (≈14–18, 102–110). **Thin dark outline frames:** the glass hood (8–128, 86–128); the glass itself is clear. | #303030, #202020, #909090, teal, red | [`ModelFabricator`](block-rendering-and-models.md#modelfabricator-uv-128128-texture-fabricatorpng) |
+| `textures/blocks/TurretBase.png` | 128×128 (64×64) | Transparent background. Worn medium-grey steel/concrete: the core cube (8–64, 36–64) has recessed square panels on each face. Dark corner posts (0–8, 30–47), skirts, sockets, braces. The top-right area also holds the turret-stand parts used by [`ModelTurret`](block-rendering-and-models.md#modelturret-and-modelsimpleturret-uv-6464--6432) (base 32–64, 22–31; mount 34–50, 12–17; struts 9–17, 30–43) and a dark radial spot. | #909090, #a0a0a0, #808080, #202020 | [`ModelTurretBase`](block-rendering-and-models.md#modelturretbase-uv-6464-texture-turretbasepng) (turret machine block and item, 09) |
+| `textures/blocks/TurretBase_2.png` | 128×128 | same layout, clean light grey with soft edges | #404040, #a0a0a0, #b0b0b0 | [`NPCTurret`](../10-entities-npcs/ai.md#5-turret-npcturret) texture variant ([10-entities-npcs](../10-entities-npcs/index.md)) |
 | `textures/blocks/TurretBase_3.png` | 128×128 | same layout, white-grey speckled granite look | #202020, #808080, #909090 | `NPCTurret` variant |
 | `textures/blocks/TurretBase_4.png` | 128×128 | same layout, purple-grey speckled obsidian look | #101010, #403040, #504050 | `NPCTurret` variant |
 | `textures/blocks/TurretBase_5.png` | 128×128 | same layout, near-black carbon look | #000000, #101010, #202020 | `NPCTurret` variant |
-| `textures/blocks/ExpCharge.png` | 64×64 (32×32) | Charge pack (0–30, 0–15): dark green-grey crate panels with steel-blue cross straps. Detonator (0–20, 17–23): grey box with a dark-blue display and green "RDY" text. | #203020, #202020, #304040, blue #000080, green | `ModelExpCharge`, idle |
+| `textures/blocks/ExpCharge.png` | 64×64 (32×32) | Charge pack (0–30, 0–15): dark green-grey crate panels with steel-blue cross straps. Detonator (0–20, 17–23): grey box with a dark-blue display and green "RDY" text. | #203020, #202020, #304040, blue #000080, green | [`ModelExpCharge`](block-rendering-and-models.md#modelexpcharge-uv-3232-textures-expchargepng--expcharge_2png), idle |
 | `textures/blocks/ExpCharge_2.png` | 64×64 | identical except the detonator text is red "ARM" | | armed |
-| `textures/blocks/tntCharge.png` | 64×64 (32×32) | Dynamite sticks (0–16, 0–16): dark red with vertical highlight stripes. Detonator box with green "RDY". | #801010, #500000, #404040 | `ModelTNTCharge`, idle |
+| `textures/blocks/tntCharge.png` | 64×64 (32×32) | Dynamite sticks (0–16, 0–16): dark red with vertical highlight stripes. Detonator box with green "RDY". | #801010, #500000, #404040 | [`ModelTNTCharge`](block-rendering-and-models.md#modeltntcharge-uv-3232-textures-tntchargepng--tntcharge_2png), idle |
 | `textures/blocks/tntCharge_2.png` | 64×64 | identical except red "ARM" | | armed |
-| `textures/blocks/flagpost.png` | 128×128 (64×64) | **Base slab top** (0–40, 0–12): grey concrete with a black square socket. **Plinth** (0–20, 14–33): weathered grey. **Poles** (22–42, 14–40): white/light grey. **Cap** (33–45, 3–8). **Flag strip** (0–36, 50–64): white field, red bands top and bottom, blue discs with white stars. | #c0c0c0, #b0b0b0, #d0d0d0, red, blue | `ModelFlagPost` (Flag machine, 09) |
+| `textures/blocks/flagpost.png` | 128×128 (64×64) | **Base slab top** (0–40, 0–12): grey concrete with a black square socket. **Plinth** (0–20, 14–33): weathered grey. **Poles** (22–42, 14–40): white/light grey. **Cap** (33–45, 3–8). **Flag strip** (0–36, 50–64): white field, red bands top and bottom, blue discs with white stars. | #c0c0c0, #b0b0b0, #d0d0d0, red, blue | [`ModelFlagPost`](block-rendering-and-models.md#modelflagpost-uv-6464-texture-flagpostpng) (Flag machine, 09) |
 | `textures/blocks/reinforced_chest.png` | 128×128 (64×64) | Vanilla single-chest skin layout. Oak-plank panels framed by dark iron bands, dark interior faces, small grey metal latch (0–6, 0–5). | #303030, #807040, #505050, #706040 | Reinforced Chest TESR and item |
 | `textures/blocks/reinforced_chest_double.png` | 256×128 (128×64) | vanilla double-chest skin layout, same style | #303030, #807040, #706040 | double Reinforced Chest |
 | `textures/blocks/weapon_chest.png` | 128×128 (64×64) | single-chest layout, dark olive-drab military crate with darker band seams, black interior | #202010, #101010, #102010 | Weapon Chest TESR and item |

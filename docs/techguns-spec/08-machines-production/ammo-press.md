@@ -2,7 +2,7 @@
 
 The Ammo Press turns 1 "metal 1" + 2 "metal 2" + 1 gunpowder into a batch of ammo. A build-plan selector picks which ammo type.
 
-Classes: `AmmoPressTileEnt` (extends `BasicMachineTileEntity`), `AmmoPressContainer`, `GuiAmmoPress`, `AmmoPressBuildPlans` (the live recipe logic), `AmmoPressRecipe` (legacy, never used).
+Classes: [`AmmoPressTileEnt`](framework.md#1-class-hierarchy) (extends [`BasicMachineTileEntity`](framework.md#7-recipe-machine-state-basicmachinetileentity)), `AmmoPressContainer`, `GuiAmmoPress`, `AmmoPressBuildPlans` (the live recipe logic), `AmmoPressRecipe` (legacy, never used).
 
 ## 1. Inventory
 
@@ -23,8 +23,8 @@ Built once at recipe init from ore dictionary names, holding every registered or
 
 | List | Ore names (default) | Stored size |
 |---|---|---|
-| metal1 | `ingotSteel`, `ingotLead` | reference to the ore stack |
-| metal2 | `ingotCopper`, `ingotTin`, `ingotIron`, `ingotBronze` | copy with stackSize 2 (display only) |
+| metal1 | [`ingotSteel`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`ingotLead`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | reference to the ore stack |
+| metal2 | [`ingotCopper`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), [`ingotTin`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems), `ingotIron`, [`ingotBronze`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) | copy with stackSize 2 (display only) |
 | powder | `itemGunpowder` | reference |
 
 Validity matching uses Forge `itemMatches` (wildcard-tolerant). MineTweaker can add or remove entries (see `minetweaker.md`).
@@ -75,7 +75,7 @@ This runs on both sides; the output is only created server-side. Each tick, if r
 - **Shift-click.**
   - From machine slots 0–3: merge into slots 3–38, reverse order.
   - From slots 4–38: route to the valid machine slot (0, 1, 2, or 4 for upgrades).
-  - The ranges are off by one (MPRD-20).
+  - The ranges are off by one ([MPRD-20](index.md#suspected-bugs)).
 
 ## 6. Sounds
 
@@ -88,7 +88,7 @@ Both play client and server side, with the "distance delay" flag on, at the mach
 
 ## 7. Visuals
 
-TESR `RenderAmmoPress` with `ModelAmmoPress` (texture size declared as 128×64) and texture `textures/blocks/AmmoPress.png` (256×128, catalogued in 07-blocks). The rendering transform is in `rendering.md`.
+TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr) with [`ModelAmmoPress`](../07-blocks/block-rendering-and-models.md#modelammopress-uv-12864-texture-ammopresspng) (texture size declared as 128×64) and texture [`textures/blocks/AmmoPress.png`](../07-blocks/textures.md#11-model-textures) (256×128, catalogued in [07-blocks](../07-blocks/index.md)). The rendering transform is in `rendering.md`.
 
 - **Look.** A grey-and-silver steel workbench press: a boxy frame with two horizontal side punches (left `pa1/pa2`, right `pb1/pb2`), a top stamp (`pc1`), a small metal blank (`MetalPiece`) and three cartridge shapes (`bullet1..3`). The texture includes rust-grey panels, small green accents and a yellow/brass cartridge strip (bottom-right of the atlas).
 - **Animation.** Driven by p = progress/totalTime. It runs **twice per operation**; each half is remapped to 0..1 (call it q):
@@ -100,4 +100,4 @@ TESR `RenderAmmoPress` with `ModelAmmoPress` (texture size declared as 128×64) 
 | 0.66–1.0 | cartridges until q 0.9 | the top stamp drops by 0.09375·c blocks, c = 0.5+sin((√p′+0.75)·2π)/2 where p′ = min(1, (q−0.66)·3) |
 
   When idle, all punches sit at rest and no blank or cartridges are shown.
-- **Item form.** `RenderBlockModelItem` with the same model and texture (`rendering.md`).
+- **Item form.** [`RenderBlockModelItem`](../09-machines-utility/shared-rendering.md#item-rendering-inventory-and-hand) with the same model and texture (`rendering.md`).

@@ -87,17 +87,17 @@ Ingot silhouette: the vanilla ingot (trapezoid bar, 16 px wide, rows 2–13, cov
 
 | Path | Size | Colour | Used by |
 |---|---|---|---|
-| `textures/items/ingotSteel.png` | 16×16 | dark steel: black outline, #656565 body, #cccccc highlight | Techguns `ingotSteel` (config) |
-| `textures/items/ingotCopper.png` | 16×16 | golden copper: #bb9827, #dfc161, dark #4c3d0f | `ingotCopper` (config) |
-| `textures/items/ingotTin.png` | 16×16 | pale teal: #73ada5, #bbd8d3, #2c4c47 | `ingotTin` (config) |
-| `textures/items/ingotBronze.png` | 16×16 | dark orange-brown: #683d03, #b3751f, near-black #1d0b00 | `ingotBronze` (config) |
-| `textures/items/ingotLead.png` | 16×16 | blue-grey: #435563, #758ea1, #1c232a | `ingotLead` (config) |
+| `textures/items/ingotSteel.png` | 16×16 | dark steel: black outline, #656565 body, #cccccc highlight | Techguns [`ingotSteel`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (config) |
+| `textures/items/ingotCopper.png` | 16×16 | golden copper: #bb9827, #dfc161, dark #4c3d0f | [`ingotCopper`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (config) |
+| `textures/items/ingotTin.png` | 16×16 | pale teal: #73ada5, #bbd8d3, #2c4c47 | [`ingotTin`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (config) |
+| `textures/items/ingotBronze.png` | 16×16 | dark orange-brown: #683d03, #b3751f, near-black #1d0b00 | [`ingotBronze`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (config) |
+| `textures/items/ingotLead.png` | 16×16 | blue-grey: #435563, #758ea1, #1c232a | [`ingotLead`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (config) |
 | `textures/items/ingotObsidianSteel.png` | 16×16 | near-black with dark violet highlight #484361 | meta 40 |
 | `textures/items/ingotTitanium.png` | 16×16 | bright silver-white: #adadad, #ececec, #424242 | meta 95 |
-| `textures/items/nuggetIron.png` | 16×16 | white/light grey: #efefef, #626262 | `nuggetIron` (config) |
-| `textures/items/copperNugget.png` | 16×16 | orange-gold: #9f6601, #fcbf54, highlight #ffefd1 | `nuggetCopper` (config) |
-| `textures/items/nuggetLead.png` | 16×16 | slate blue: #697b97, #343d4b | `nuggetLead` (config) |
-| `textures/items/nuggetSteel.png` | 16×16 | black with grey highlight #b0b0b0 | `nuggetSteel` (config) |
+| `textures/items/nuggetIron.png` | 16×16 | white/light grey: #efefef, #626262 | [`nuggetIron`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (config) |
+| `textures/items/copperNugget.png` | 16×16 | orange-gold: #9f6601, #fcbf54, highlight #ffefd1 | [`nuggetCopper`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (config) |
+| `textures/items/nuggetLead.png` | 16×16 | slate blue: #697b97, #343d4b | [`nuggetLead`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (config) |
+| `textures/items/nuggetSteel.png` | 16×16 | black with grey highlight #b0b0b0 | [`nuggetSteel`](item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) (config) |
 
 ### 5b. Plates, current style (32×32)
 
@@ -189,17 +189,17 @@ Older 32×32 plates (inset 2 px, coverage 77 %): a noisy, stone-like metal textu
 | `textures/items/gliderWing.png` | 32×32 | One cream canvas wing panel (trapezoid) with a dark grey spar frame and vertical ribs | #c0bda5, #2c2c2c, #858372 | meta 58 |
 | `textures/items/oxygenMask.png` | 16×16 | Horizontal grey breathing mask: ribbed centre canister with a small valve on top, straps out to both sides | #747474, #888888, #adadad | meta 90 |
 | `textures/items/gasMaskFilter.png` | 32×32 | Round black filter disc, face-on, with six radial spokes | #272e27, #101310 | meta 74 |
-| `textures/items/gasMask.png` | 32×32 | Front view of a dark green gas mask, two round eye lenses (transparent holes), round filter at the bottom | #3a443d, #26392b, #3a6043 | Gas Mask (05) |
-| `textures/items/nightVisionGoggles.png` | 32×32 | Black head strap across the top, two round green lenses on a black housing below | #141613, #060606, green #017925 | Nightvision Goggles (05) |
-| `textures/items/tacticalMask.png` | 16×16 | Black full-face helmet/mask with a dark red visor band | #0e0e0e, red #591919 | Tactical Mask (05) |
-| `textures/items/scubaTanks.png` | 32×32 | Two grey cylinders side by side, joined by dark straps | #181818, #7d7d7d, #9d9d9d | Oxygen Tanks (05) |
-| `textures/items/jetpack.png` | 64×64 | Front view, middle band only (rows 16–47): two grey thruster cylinders with yellow/black hazard caps on top, joined by a dark central frame | #171512, #5e5c5e, #918f83 | Jetpack (05) |
-| `textures/items/jumppack.png` | 32×32 | Two upright grey canisters with yellow/black striped tops on a dark frame with straps | #747273, #24201a, #989686 | Jump Pack (05) |
-| `textures/items/antiGravPack.png` | 32×32 | Rectangular grey machined frame with dark side clamps and a glowing blue diamond in the centre | #57626c, #9ea3a5, #4eabc2 | Anti Gravity Device (05) |
+| `textures/items/gasMask.png` | 32×32 | Front view of a dark green gas mask, two round eye lenses (transparent holes), round filter at the bottom | #3a443d, #26392b, #3a6043 | Gas Mask ([05](../05-armor/index.md)) |
+| `textures/items/nightVisionGoggles.png` | 32×32 | Black head strap across the top, two round green lenses on a black housing below | #141613, #060606, green #017925 | Nightvision Goggles ([05](../05-armor/index.md)) |
+| `textures/items/tacticalMask.png` | 16×16 | Black full-face helmet/mask with a dark red visor band | #0e0e0e, red #591919 | Tactical Mask ([05](../05-armor/index.md)) |
+| `textures/items/scubaTanks.png` | 32×32 | Two grey cylinders side by side, joined by dark straps | #181818, #7d7d7d, #9d9d9d | Oxygen Tanks ([05](../05-armor/index.md)) |
+| `textures/items/jetpack.png` | 64×64 | Front view, middle band only (rows 16–47): two grey thruster cylinders with yellow/black hazard caps on top, joined by a dark central frame | #171512, #5e5c5e, #918f83 | Jetpack ([05](../05-armor/index.md)) |
+| `textures/items/jumppack.png` | 32×32 | Two upright grey canisters with yellow/black striped tops on a dark frame with straps | #747273, #24201a, #989686 | Jump Pack ([05](../05-armor/index.md)) |
+| `textures/items/antiGravPack.png` | 32×32 | Rectangular grey machined frame with dark side clamps and a glowing blue diamond in the centre | #57626c, #9ea3a5, #4eabc2 | Anti Gravity Device ([05](../05-armor/index.md)) |
 
 ## 10. Armour item icons (owned by 05-armor, stored here)
 
-All are 32×32 front-view inventory icons in the vanilla armour-icon layout: helmet in the upper area, chestplate as a torso, leggings as a pair of trousers, boots as a pair of boots. They are used as `techguns:<armour unlocalized name>` by `GenericArmor` (05).
+All are 32×32 front-view inventory icons in the vanilla armour-icon layout: helmet in the upper area, chestplate as a torso, leggings as a pair of trousers, boots as a pair of boots. They are used as `techguns:<armour unlocalized name>` by [`GenericArmor`](../05-armor/armor-catalogue.md#1-class-hierarchy) ([05](../05-armor/index.md)).
 
 | Path | Depicts | Palette |
 |---|---|---|
@@ -256,7 +256,7 @@ All are 32×32 front-view inventory icons in the vanilla armour-icon layout: hel
 | `textures/items/blockReaderTool.png` | 32×32 | Magnifying glass (white lens rim, grey handle to the lower-right) over a grey stone cube | #6f7073, #b9b9b9, #090909 | Block Reader Tool |
 | `textures/items/structureScanTool.png` | 32×32 | Magnifying glass over a dark-red brick wall | #000000, #a2a2a2, #421616 | Building Scan Tool |
 | `textures/items/structureTestTool.png` | 32×32 | Spanner and hammer crossed over a dark-red brick wall | #030303, #471e1e, #818181 | Structure Test Tool |
-| `textures/items/testItem.png` | 32×32 | Placeholder: the letters "LEL" scrawled in black | #000000 | Ore Cluster Debugger; `GenericItem` default |
+| `textures/items/testItem.png` | 32×32 | Placeholder: the letters "LEL" scrawled in black | #000000 | Ore Cluster Debugger; [`GenericItem`](special-items.md#base-classes) default |
 | `textures/items/spawn_egg.png` | 32×32 | Speckled egg in **greyscale** (it is tinted at runtime with the egg's base colour) | #797979, #a1a1a1, #d4d4d4 | all spawn eggs, render pass 0 |
 | `textures/items/spawn_egg_overlay.png` | 32×32 | The letters "TG" in white with a dark grey outline, centred (rows 11–25), tinted at runtime with the spots colour | #4f4f4f, #ffffff | all spawn eggs, render pass 1 |
 

@@ -13,23 +13,23 @@ All `npcs.*` events are in category **`hostile`** and are not streamed. When an 
 | `npcs.alienbugDeath` | `sounds/npcs/alienbug_death_a.ogg` (2.85 s), `alienbug_death_b.ogg` (1.78 s), 32 kHz | Alien Bug dies | default |
 | `npcs.alienbugStep` | `sounds/npcs/alienbug_step_a.ogg`, `_b`, `_c` (0.83–0.93 s, 48 kHz) | Every footstep of the Alien Bug; replaces the block step sound | 0.15 / 1.0 |
 | `npcs.alienbugBite` | `sounds/npcs/alienbug_bite_a.ogg` … `_d` (4 files, ~0.73 s) | Each bite (`attackEntityAsMob`), whether or not the hit lands | 0.75 / 1.0 |
-| `npcs.alienbugAggro` | `sounds/npcs/alienbug_aggro_a.ogg` (1.12 s, 44.1 kHz), `_b` (1.41 s), `_c` (1.28 s), `_d` (1.12 s), the last three at 22.05 kHz | While the bug has no target and a vulnerable player is within 16 blocks, even an unseen one. It can repeat every tick (bug NPC-07). | 1.0 / 1.0 |
+| `npcs.alienbugAggro` | `sounds/npcs/alienbug_aggro_a.ogg` (1.12 s, 44.1 kHz), `_b` (1.41 s), `_c` (1.28 s), `_d` (1.12 s), the last three at 22.05 kHz | While the bug has no target and a vulnerable player is within 16 blocks, even an unseen one. It can repeat every tick (bug [NPC-07](index.md#suspected-bugs)). | 1.0 / 1.0 |
 | `npcs.cyberdemonIdle` | `sounds/npcs/cyberdemon_idle_a.ogg`, `_b`, `_c` (1.9–2.1 s) | Cyberdemon and all Super Mutants, ambient | default |
 | `npcs.cyberdemonHurt` | `sounds/npcs/cyberdemon_hurt_a.ogg`, `_b`, `_c` (1.5–1.7 s) | Cyberdemon and Super Mutants take damage | default |
 | `npcs.cyberdemonDeath` | `sounds/npcs/cyberdemon_death_a.ogg` (2.18 s), `_b` (2.65 s), 48 kHz | Cyberdemon and Super Mutants die | default |
 | `npcs.cyberdemonStep` | `sounds/npcs/cyberdemon_step_a.ogg` … `_d` (4 files, 0.53 s each) | Each footstep of the Cyberdemon and Super Mutants, played *in addition to* the block step sound | 0.15 / 1.0 |
-| `npcs.cyberdemonAggro` | `sounds/npcs/cyberdemon_aggro_a.ogg` (3.31 s), `_b` (3.89 s), `_c` (3.93 s) | **Never in practice.** It is coded in `findPlayerToAttack` of the Cyberdemon and Super Mutants, a legacy hook that AI-enabled mobs never call (bug NPC-06). The intent was a roar when the mob acquires a player. | 1.0 / 1.0 |
+| `npcs.cyberdemonAggro` | `sounds/npcs/cyberdemon_aggro_a.ogg` (3.31 s), `_b` (3.89 s), `_c` (3.93 s) | **Never in practice.** It is coded in `findPlayerToAttack` of the Cyberdemon and Super Mutants, a legacy hook that AI-enabled mobs never call (bug [NPC-06](index.md#suspected-bugs)). The intent was a roar when the mob acquires a player. | 1.0 / 1.0 |
 | `npcs.apacheRotor` | `sounds/npcs/apache_rotor.ogg` (3.07 s, 22.05 kHz) | Attack Helicopter rotor loop. It is restarted every 61 ticks (≈3.05 s) while alive (`deathTime == 0`). | **6.0** / 1.0 |
 | `npcs.apacheBurst` | `sounds/npcs/apache_burst.ogg` (2.22 s) | Start of each machine-gun burst (`attackCounter == 16`). It covers all 7 shots, which have no individual sounds. | 5.0 / 1.0 |
 | `npcs.apacheHit` | `sounds/npcs/apache_hit_a.ogg` (3.25 s), `_b` (3.05 s) | Helicopter takes damage (hurt sound) | entity volume **10.0** |
 | `npcs.apacheDie` | `sounds/npcs/apache_die.ogg` (5.99 s, 48 kHz) | The first tick of the helicopter's 100-tick death sequence (a crash or alarm wind-down) | 6.0 / 1.0 |
 | `npcs.apacheExplode` | `sounds/npcs/apache_explode.ogg` (6.79 s) | Final explosion at death tick 100, when the entity is removed | 6.0 / 1.0 |
-| `npcs.turretBeep` | `sounds/npcs/turret_beep-01.ogg` (2.24 s), `-02` (0.62 s), `-03` (0.84 s), `-04` (0.55 s), `-05` (0.32 s), `-06` (0.31 s), `-07` (0.26 s), 48 kHz | **Unused.** No code plays this event. It was presumably meant as the turret targeting or acquire beep (see NPC-27). | – |
+| `npcs.turretBeep` | `sounds/npcs/turret_beep-01.ogg` (2.24 s), `-02` (0.62 s), `-03` (0.84 s), `-04` (0.55 s), `-05` (0.32 s), `-06` (0.31 s), `-07` (0.26 s), 48 kHz | **Unused.** No code plays this event. It was presumably meant as the turret targeting or acquire beep (see [NPC-27](index.md#suspected-bugs)). | – |
 | `npcs.turretGunequip` | `sounds/npcs/turret_gunequip-01.ogg` (0.81 s), `-02` (0.88 s), `-03` (0.50 s), 48 kHz | **Unused.** No code plays this event. It was presumably meant to play when a gun is fitted to a turret (see NPC-27). | – |
 
 That accounts for 54 files: 23 alien bug, 6 apache, 15 cyberdemon and 10 turret.
 
-The helicopter's rocket shot also plays `techguns:guns.rocketFire` (volume 5; owned by 02/03) and vanilla aux SFX **1008** (the ghast fireball whoosh). Its coded death sound `npcs.apacheHit` lacks the `techguns:` domain, so it resolves to a missing vanilla sound (NPC-08). Its ambient sound is the empty string (NPC-09).
+The helicopter's rocket shot also plays `techguns:guns.rocketFire` (volume 5; owned by [02](../02-guns/index.md)/[03](../03-gun-visuals-audio/index.md)) and vanilla aux SFX **1008** (the ghast fireball whoosh). Its coded death sound `npcs.apacheHit` lacks the `techguns:` domain, so it resolves to a missing vanilla sound ([NPC-08](index.md#suspected-bugs)). Its ambient sound is the empty string ([NPC-09](index.md#suspected-bugs)).
 
 ## Vanilla sounds used by this area's mobs
 
@@ -42,7 +42,7 @@ The helicopter's rocket shot also plays `techguns:guns.rocketFire` (volume 5; ow
 | Skeleton Soldier | `mob.skeleton.say` | `mob.skeleton.hurt` | `mob.skeleton.death` | `mob.skeleton.step` (replaces the block step) |
 | Turret | none | `mob.irongolem.hit` | `mob.irongolem.death` | none (step suppressed) |
 
-The NPCs' gunfire, reload and similar sounds are each gun's own sounds (02/03). `fireWeaponFromNPC` plays the fire sound at the shooter's gun position.
+The NPCs' gunfire, reload and similar sounds are each gun's own sounds ([02](../02-guns/index.md)/[03](../03-gun-visuals-audio/index.md)). `fireWeaponFromNPC` plays the fire sound at the shooter's gun position.
 
 ## Complete file list (54)
 

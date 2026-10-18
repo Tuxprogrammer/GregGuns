@@ -6,7 +6,7 @@ One sheet per hand-held weapon: model, textures, every render transform, animati
 
 | Row | Meaning |
 |---|---|
-| Item | `GameRegistry` name / unlocalized name (`techguns.item.<name>`, display strings in area 02) |
+| Item | `GameRegistry` name / unlocalized name (`techguns.item.<name>`, display strings in area [02](../02-guns/index.md)) |
 | Timing | animation windows, in ticks (ms = ticks × 50): recoil, muzzle flash, reload |
 | FP base | first-person base transform, applied every frame before the state transform |
 | FP idle | "Translate" transform used when idle, after reload or after recoil |
@@ -17,7 +17,7 @@ One sheet per hand-held weapon: model, textures, every render transform, animati
 | 3P recoil / 3P reload | third-person animation with p = recoil / reload progress |
 | Ground / Icon | dropped-item and inventory transforms |
 | Muzzle FX | first-person ScreenEffect: sheet, offset (x, y, z), scale, extra rotation, blend. Effective offset = scale × offset (framework §7) |
-| 3P flash | muzzle-flash particle index used for other viewers (area 04): 1 = MuzzleFlashYellow, 2 = MuzzleFlashExp, 3 = MuzzleFlashBlue, 4 = MuzzleFlashLaser, 5 = MuzzleFlashAlienBlue, – = none. The offset (x, y, z) is from `setMuzzleParticle`. |
+| 3P flash | muzzle-flash particle index used for other viewers (area [04](../04-projectiles-fx/index.md)): 1 = MuzzleFlashYellow, 2 = MuzzleFlashExp, 3 = MuzzleFlashBlue, 4 = MuzzleFlashLaser, 5 = MuzzleFlashAlienBlue, – = none. The offset (x, y, z) is from `setMuzzleParticle`. |
 | Sounds | `techguns:` event names (see [sounds.md](sounds.md)) |
 
 Transforms are listed in GL call order. "rotX180" = rotX(180), and so on. Unless a sheet says otherwise, the 3P recoil and 3P reload are applied about the gun's current origin.
@@ -28,7 +28,7 @@ Transforms are listed in GL call order. "rotX180" = rotX(180), and so on. Unless
 
 | | |
 |---|---|
-| Item | `handcannon` (class Handgun, single shot, crafted from a stone barrel and wood stock) |
+| Item | [`handcannon`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition) (class Handgun, single shot, crafted from a stone barrel and wood stock) |
 | Renderer / model | RenderHandgun / ModelHandgun (1 part) |
 | Texture | textures/guns/handgun.png |
 | Timing | recoil 5, flash 5, reload 30 |
@@ -157,7 +157,7 @@ Same transforms as the M4, with these differences:
 | 3P reload | rotX(30·yR), rotY(40·yR) |
 | Ground / Icon | rotX180, rotY90, S(0.85), T(0, −0.45, 0) / rotX180, rotY180, S(0.7), T(−0.3, 0, 0) |
 | Muzzle FX | none. **Pilot flame** extra effect instead (framework §7) |
-| 3P flash | none. The flame stream itself is particles (area 04) |
+| 3P flash | none. The flame stream itself is particles (area [04](../04-projectiles-fx/index.md)) |
 | Sounds | looping fire: the first shot after ≥ 10 ticks of silence plays `guns.flamethrowerStart`, later shots `guns.flamethrowerFire` (framework §14). Reload `guns.flamethrowerReload` |
 
 ## Combat Shotgun (`combatshotgun`)
@@ -198,7 +198,7 @@ Same transforms as the M4, with these differences:
 | Ground / Icon | rotX180, rotY90, T(0, −0.35, 0), S(0.75) / rotX180, rotY180, T(−0.1, 0, 0), S(0.55) |
 | Muzzle FX | muzzleFlashLaser, (−0.65, −1.0, −0.30), scale 1.5, rotY90, additive + alpha test |
 | Scope | zoom 0.75, FOV only |
-| 3P flash | none (the laser beam is the effect, area 04) |
+| 3P flash | none (the laser beam is the effect, area [04](../04-projectiles-fx/index.md)) |
 | Sounds | `guns.lasergunFire`, `guns.lasergunReload` |
 
 ## Blaster Rifle (`blasterRifle`)
@@ -236,7 +236,7 @@ Same transforms as the M4, with these differences:
 | 3P reload | rotX(40·yR), rotY(60·yR) |
 | Ground / Icon | rotX180, rotY90, T(0, −0.25, 0) / rotX180, rotY180, S(0.68), T(−0.3, 0.3, 0) |
 | Ammo visual | the rocket in the tube shows only when loaded, and only from 50 % of a reload onwards |
-| Muzzle FX / 3P flash | none / none (the rocket and exhaust are area 04) |
+| Muzzle FX / 3P flash | none / none (the rocket and exhaust are area [04](../04-projectiles-fx/index.md)) |
 | Sounds | `guns.rocketFire`, `guns.rocketReload` (both launchers) |
 
 ## Grim Reaper (`grimreaper`)
@@ -612,7 +612,7 @@ Identical to the AUG except:
 | | |
 |---|---|
 | Renderer / model | RenderBeamgun (handleDamage, handleProgress) / ModelNDR (glow, firing crown) |
-| Texture | textures/guns/NDR.png (the renderer argument `Lasergun.png` is ignored) |
+| Texture | textures/guns/NDR.png (the renderer argument [`Lasergun.png`](../02-guns/gun-catalogue.md#table-d-ai-visual-hooks-and-textures) is ignored) |
 | Timing | recoil 5, fires every 5 ticks (continuous beam), flash 5, reload 30 |
 | FP base | rotX180, rotY−45, S(1.1), **plus** T(0.2, −0.5, −0.2). The base already contains the idle translate, so it is applied twice |
 | FP idle | T(0.2, −0.5, −0.2) |
@@ -771,7 +771,7 @@ All use RenderGunAkimbo (framework §11). Only the left gun (`leftGun`) gets the
 
 ## Grenades
 
-| | Stielhandgranate (`stielGranate`) | Frag Grenade (`fragGrenade`) |
+| | Stielhandgranate ([`stielGranate`](../02-guns/gun-catalogue.md#table-f-grenades-not-genericgun)) | Frag Grenade ([`fragGrenade`](../02-guns/gun-catalogue.md#table-f-grenades-not-genericgun)) |
 |---|---|---|
 | Renderer / model | RenderStielgranate / ModelStielgranate | RenderFragGrenade / ModelFragGrenade(showRing = true) |
 | Texture | textures/guns/stielgranate.png | textures/guns/fragGrenade_texture.png |
@@ -779,7 +779,7 @@ All use RenderGunAkimbo (framework §11). Only the left gun (`leftGun`) gets the
 | Animation | tilts back up to 30° over a 1 s wind-up (hold right-click) | tilts back up to 20°. The pull ring disappears as soon as the hold starts |
 | Sounds | throw: vanilla `random.bow`, volume 1, pitch 1/(rand·0.4 + 1.2) + charge·0.5 | right-click (pin pulled): `guns.grenade_pin`. Throw: `guns.grenade_throw` (both vanilla positional, volume 1, pitch 1) |
 
-The `flashbang` item object is constructed in `TGuns` but never registered, and it has no custom renderer (area 02).
+The [`flashbang`](../02-guns/gun-catalogue.md#table-f-grenades-not-genericgun) item object is constructed in [`TGuns`](../02-guns/gun-catalogue.md) but never registered, and it has no custom renderer (area [02](../02-guns/index.md)).
 
 ---
 

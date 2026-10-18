@@ -2,40 +2,40 @@
 
 Source files: `client/ClientProxy.registerRenderers` (bindings), `client/renderer/entity/RenderGenericNPC.java`, `RenderSuperMutant.java`, `RenderAlienBug.java`, `RenderHelicopter.java`, `RenderSimpleTurret.java`, `entities/renderer/RenderTurret.java`, and the models `client/models/ModelGenericNPC.java`, `ModelSkeletonSoldier.java`, `ModelCyberDemon.java`, `ModelSuperMutant.java`, `ModelAlienBug.java`, `ModelNull.java`, `ModelGrimReaper.java` and `client/models/blocks/ModelTurret.java`. The OBJ models are `models/entity/*.obj`.
 
-Projectile renderers (including `RenderDummy`, which is also bound to the invisible particle-system entity) and the gib/death effects belong to 04-projectiles-fx. Texture details for every file named here are in [textures.md](textures.md).
+Projectile renderers (including [`RenderDummy`](../04-projectiles-fx/projectiles.md#1-registration), which is also bound to the invisible particle-system entity) and the gib/death effects belong to [04-projectiles-fx](../04-projectiles-fx/index.md). Texture details for every file named here are in [textures.md](textures.md).
 
 ## 1. Renderer bindings
 
 | Entity class | Renderer | Model | Texture | Shadow | Gun offset (x, y, z) |
 |---|---|---|---|---|---|
-| `GenericNPC` (fallback; also used by `TGDummySpawn`) | RenderGenericNPC | ModelGenericNPC | vanilla `minecraft:textures/entity/zombie/zombie.png` | 0.5 | 0, 0, 0 |
-| `ZombieSoldier` | RenderGenericNPC | ModelGenericNPC | `textures/entity/zombie_soldier.png` | 0.5 | 0 |
-| `ZombieFarmer` | RenderGenericNPC | ModelGenericNPC | `textures/entity/zombie_soldier.png` | 0.5 | 0 |
-| `ZombieMiner` | RenderGenericNPC | ModelGenericNPC | `textures/entity/zombie_soldier.png` | 0.5 | 0 |
-| `ZombiePigmanSoldier` | RenderGenericNPC | ModelGenericNPC | vanilla `minecraft:textures/entity/zombie_pigman.png` | 0.5 | 0 |
-| `SkeletonSoldier` | RenderGenericNPC | ModelSkeletonSoldier | vanilla `minecraft:textures/entity/skeleton/skeleton.png` | 0.5 | 0.1, 0, 0.05 |
-| `ArmySoldier` | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` | 0.5 | 0 |
-| `Outcast` | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (hidden under power armour) | 0.5 | 0 |
-| `PsychoSteve` | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under miner armour) | 0.5 | 0 |
-| `Commando` | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under commando armour) | 0.5 | 0 |
-| `StormTrooper` | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under HEV armour) | 0.5 | 0 |
-| `Bandit` | RenderGenericNPC | ModelGenericNPC | `textures/entity/bandit.png` | 0.5 | 0 |
-| `DictatorDave` | RenderGenericNPC | ModelGenericNPC | `textures/entity/dictator.png` | 0.5 | 0 |
-| `CyberDemon` | RenderGenericNPC | ModelCyberDemon | `textures/entity/cyberdemon.png` | 0.75 | −0.11, 0.15, −0.18 |
-| `SuperMutantBasic` | RenderSuperMutant (type 0) | ModelSuperMutant | `textures/entity/supermutant_texture_1.png` | 0.6 | −0.1, 0.3, 0 |
-| `SuperMutantHeavy` | RenderSuperMutant (type 1) | ModelSuperMutant | `textures/entity/supermutant_texture_2.png` | 0.65 | −0.15, 0.3, 0 |
-| `SuperMutantElite` | RenderSuperMutant (type 2) | ModelSuperMutant | `textures/entity/supermutant_texture_3.png` | 0.7 | −0.2, 0.4, 0 |
-| `AlienBug` | RenderAlienBug | ModelAlienBug | `textures/entity/alienbug.png` | 1.0 | – |
-| `AlienBugDomesticated` (unregistered) | RenderAlienBug | ModelAlienBug | `textures/entity/alienbug.png` | 1.0 | – |
-| `AttackHelicopter` | RenderHelicopter | OBJ `models/entity/apache.obj` | `textures/entity/apache.png` | 5.0 | – |
-| `NPCTurret` | RenderSimpleTurret | ModelTurret | `textures/blocks/TurretBase.png` … `_5.png` by armour (owned by 09) | none | turret offsets |
+| [`GenericNPC`](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava) (fallback; also used by [`TGDummySpawn`](per-mob.md#18-tgdummyspawn-tgdummyspawn)) | RenderGenericNPC | ModelGenericNPC | vanilla `minecraft:textures/entity/zombie/zombie.png` | 0.5 | 0, 0, 0 |
+| [`ZombieSoldier`](per-mob.md#1-zombie-soldier-zombiesoldier) | RenderGenericNPC | ModelGenericNPC | [`textures/entity/zombie_soldier.png`](textures.md#texturesentityzombie_soldierpng-128128) | 0.5 | 0 |
+| [`ZombieFarmer`](per-mob.md#2-zombie-farmer-zombiefarmer) | RenderGenericNPC | ModelGenericNPC | `textures/entity/zombie_soldier.png` | 0.5 | 0 |
+| [`ZombieMiner`](per-mob.md#3-zombie-miner-zombieminer) | RenderGenericNPC | ModelGenericNPC | `textures/entity/zombie_soldier.png` | 0.5 | 0 |
+| [`ZombiePigmanSoldier`](per-mob.md#4-zombie-pigman-soldier-zombiepigmansoldier) | RenderGenericNPC | ModelGenericNPC | vanilla `minecraft:textures/entity/zombie_pigman.png` | 0.5 | 0 |
+| [`SkeletonSoldier`](per-mob.md#5-skeleton-soldier-skeletonsoldier) | RenderGenericNPC | ModelSkeletonSoldier | vanilla `minecraft:textures/entity/skeleton/skeleton.png` | 0.5 | 0.1, 0, 0.05 |
+| [`ArmySoldier`](per-mob.md#6-army-soldier-armysoldier) | RenderGenericNPC | ModelGenericNPC | [`textures/entity/army_soldier.png`](textures.md#texturesentityarmy_soldierpng-128128) | 0.5 | 0 |
+| [`Outcast`](per-mob.md#8-outcast-outcast) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (hidden under power armour) | 0.5 | 0 |
+| [`PsychoSteve`](per-mob.md#12-psycho-steve-psychosteve-early-game-mini-boss) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under miner armour) | 0.5 | 0 |
+| [`Commando`](per-mob.md#9-commando-commando) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under commando armour) | 0.5 | 0 |
+| [`StormTrooper`](per-mob.md#10-stormtrooper-stormtrooper-registry-name-stormtrooper) | RenderGenericNPC | ModelGenericNPC | `textures/entity/army_soldier.png` (under HEV armour) | 0.5 | 0 |
+| [`Bandit`](per-mob.md#7-bandit-bandit) | RenderGenericNPC | ModelGenericNPC | [`textures/entity/bandit.png`](textures.md#texturesentitybanditpng-6464) | 0.5 | 0 |
+| [`DictatorDave`](per-mob.md#13-dictator-dave-dictatordave-mini-boss) | RenderGenericNPC | ModelGenericNPC | [`textures/entity/dictator.png`](textures.md#texturesentitydictatorpng-6464) | 0.5 | 0 |
+| [`CyberDemon`](per-mob.md#11-cyberdemon-cyberdemon) | RenderGenericNPC | ModelCyberDemon | [`textures/entity/cyberdemon.png`](textures.md#texturesentitycyberdemonpng-128128-fully-opaque-on-a-black-background) | 0.75 | −0.11, 0.15, −0.18 |
+| [`SuperMutantBasic`](per-mob.md#14-super-mutants-supermutantbasic-supermutantheavy-supermutantelite) | RenderSuperMutant (type 0) | ModelSuperMutant | [`textures/entity/supermutant_texture_1.png`](textures.md#texturesentitysupermutant_texture_1png-_2png-_3png-128128-each) | 0.6 | −0.1, 0.3, 0 |
+| [`SuperMutantHeavy`](per-mob.md#14-super-mutants-supermutantbasic-supermutantheavy-supermutantelite) | RenderSuperMutant (type 1) | ModelSuperMutant | [`textures/entity/supermutant_texture_2.png`](textures.md#texturesentitysupermutant_texture_1png-_2png-_3png-128128-each) | 0.65 | −0.15, 0.3, 0 |
+| [`SuperMutantElite`](per-mob.md#14-super-mutants-supermutantbasic-supermutantheavy-supermutantelite) | RenderSuperMutant (type 2) | ModelSuperMutant | [`textures/entity/supermutant_texture_3.png`](textures.md#texturesentitysupermutant_texture_1png-_2png-_3png-128128-each) | 0.7 | −0.2, 0.4, 0 |
+| [`AlienBug`](per-mob.md#15-alien-bug-alienbug) | RenderAlienBug | ModelAlienBug | [`textures/entity/alienbug.png`](textures.md#texturesentityalienbugpng-6464-about-34-opaque) | 1.0 | – |
+| [`AlienBugDomesticated`](per-mob.md#alienbugdomesticated-dead-code) (unregistered) | RenderAlienBug | ModelAlienBug | `textures/entity/alienbug.png` | 1.0 | – |
+| [`AttackHelicopter`](per-mob.md#16-attack-helicopter-attackhelicopter-boss) | RenderHelicopter | OBJ [`models/entity/apache.obj`](textures.md#texturesentityapachepng-256256-opaque) | [`textures/entity/apache.png`](textures.md#texturesentityapachepng-256256-opaque) | 5.0 | – |
+| `NPCTurret` | RenderSimpleTurret | ModelTurret | [`textures/blocks/TurretBase.png`](../07-blocks/textures.md#11-model-textures) … `_5.png` by armour (owned by [09](../09-machines-utility/index.md)) | none | turret offsets |
 
 `entities/renderer/RenderTurret` is a minimal `RenderLiving` with a single static texture. It is not bound to anything; the binding using it for the unused turret entity is commented out.
 
 ## 2. `RenderGenericNPC` (extends vanilla `RenderBiped`)
 
-- **Base behaviour:** vanilla biped rendering, including the four armour layers through RenderBiped's armour models. Techguns armour supplies its own armour models and textures (05-armor). The constructor scale is 1.0.
-- **`preRenderCallback`:** if `getHasAimedBowAnim()` is true and the held item is a `GenericGun`, it sets `aimedBow = true` on both armour models (the inner and outer armour bipeds). A Forge render-pre event in `TechgunsEventhandler` sets the same flag on the main model, using the entity's `hasAimedBowAnim` (or true for non-GenericNPC shooters). Together they produce the two-handed aiming pose.
+- **Base behaviour:** vanilla biped rendering, including the four armour layers through RenderBiped's armour models. Techguns armour supplies its own armour models and textures ([05-armor](../05-armor/index.md)). The constructor scale is 1.0.
+- **`preRenderCallback`:** if `getHasAimedBowAnim()` is true and the held item is a [`GenericGun`](../02-guns/gun-lifecycle.md), it sets `aimedBow = true` on both armour models (the inner and outer armour bipeds). A Forge render-pre event in [`TechgunsEventhandler`](../01-core/events.md#techgunseventhandler-forge-bus) sets the same flag on the main model, using the entity's `hasAimedBowAnim` (or true for non-GenericNPC shooters). Together they produce the two-handed aiming pose.
 - **`getEntityTexture`:** returns the fixed texture given at construction.
 - **`renderEquippedItems`**, a re-implementation of the vanilla one:
   - **Helmet slot:** a block item, or an item whose `IItemRenderer` wants BLOCK_3D, is drawn on the head the vanilla way. A vanilla skull is drawn with its owner profile. The vanilla code that draws the pumpkin/head is kept.
@@ -48,7 +48,7 @@ Projectile renderers (including `RenderDummy`, which is also bound to the invisi
       3. Rotate −100° about Y.
       4. Scale (0.375, −0.375, 0.375).
       5. Rotate 20° about Z, then 55° about Y.
-      6. Render with item render type EQUIPPED, so the gun's own custom renderer (03) draws the model.
+      6. Render with item render type EQUIPPED, so the gun's own custom renderer ([03](../03-gun-visuals-audio/index.md)) draws the model.
     - **Full-3D items** (tools): vanilla transform (scale 0.625, optional 180° flip, −100° X, 45° Y).
     - **Anything else:** vanilla flat-item transform.
   - Multi-pass items are tinted per pass with `getColorFromItemStack`.
@@ -56,7 +56,7 @@ Projectile renderers (including `RenderDummy`, which is also bound to the invisi
 
 ## 3. `RenderSuperMutant` (extends RenderGenericNPC)
 
-- **Construction:** it is given a texture prefix and `type`, and passes `prefix + type + ".png"` to the parent. That builds `supermutant_texture_0.png`, which does not exist, but the result is ignored (NPC-30).
+- **Construction:** it is given a texture prefix and `type`, and passes `prefix + type + ".png"` to the parent. That builds `supermutant_texture_0.png`, which does not exist, but the result is ignored ([NPC-30](index.md#suspected-bugs)).
 - **`getEntityTexture`:** returns `textures/entity/supermutant_texture_{type+1}.png`.
 - **`doRender`:** adds `getModelHeightOffset()` (0.55, 0.75 or 0.95) to the render Y. The model is scaled up about the model origin, which would otherwise sink the feet into the ground.
 - **Scaling:** done by the model, which multiplies its render scale by `getModelScale()`. The held gun is still attached through the unscaled arm transform, hence the larger gun offsets.
@@ -64,7 +64,7 @@ Projectile renderers (including `RenderDummy`, which is also bound to the invisi
 ## 4. `RenderAlienBug` (extends `RenderLiving`)
 
 - Model `ModelAlienBug`, shadow 1.0, texture `textures/entity/alienbug.png`.
-- It declares `getDeathMaxRotation(EntityLiving)` returning 180°. That does not override the `EntityLivingBase` signature, so the vanilla 90° death topple is used (NPC-21).
+- It declares `getDeathMaxRotation(EntityLiving)` returning 180°. That does not override the `EntityLivingBase` signature, so the vanilla 90° death topple is used ([NPC-21](index.md#suspected-bugs)).
 
 ## 5. `RenderHelicopter` (extends `RendererLivingEntity`)
 
@@ -99,8 +99,8 @@ The entity hitbox is only 10 × 4 blocks, so the visual model overhangs it consi
 ### Other OBJ files in `models/entity/` (in this folder, used elsewhere)
 | File | Groups | Bounds (units) | Used by |
 |---|---|---|---|
-| `models/entity/launchergrenade.obj` | `Cylinder01` (10 verts, 16 faces) | X −3…5, Y −2…2, Z −2…2 | `GrenadeLauncherProjectile` renderer via `ModelModel` with `textures/entity/launchergrenade.png`. See 04. |
-| `models/entity/reactionchamber.obj` | `CHAMBER` (276 verts), `GLASS` (8 verts) | CHAMBER X/Z −48…48, Y 0…128; GLASS X/Z −32…32, Y 34…112 | Reaction Chamber multiblock TESR (`RenderReactionChamber`) with `textures/entity/reactionchamber.png` and `reactionchamberglass.png`. See 08. |
+| `models/entity/launchergrenade.obj` | `Cylinder01` (10 verts, 16 faces) | X −3…5, Y −2…2, Z −2…2 | [`GrenadeLauncherProjectile`](../04-projectiles-fx/projectiles.md#1-registration) renderer via [`ModelModel`](../03-gun-visuals-audio/gun-models.md#obj-model-modelsgunsgrenadelauncherobj) with [`textures/entity/launchergrenade.png`](textures.md#non-mob-textures-stored-in-texturesentity). See 04. |
+| `models/entity/reactionchamber.obj` | `CHAMBER` (276 verts), `GLASS` (8 verts) | CHAMBER X/Z −48…48, Y 0…128; GLASS X/Z −32…32, Y 34…112 | Reaction Chamber multiblock TESR ([`RenderReactionChamber`](../08-machines-production/reaction-chamber.md#7-visuals-renderreactionchamber)) with [`textures/entity/reactionchamber.png`](textures.md#non-mob-textures-stored-in-texturesentity) and `reactionchamberglass.png`. See 08. |
 
 ## 6. `RenderSimpleTurret` (extends plain `Render`) for `NPCTurret`
 
@@ -113,7 +113,7 @@ Because it is not a living renderer, there is no name tag, hurt flash, death ani
 5. Translate by 0.9, rotate by `rotationPitch` about X, translate back, then render **part 1** (the mount plate). The turret head pitches about a hinge 0.9 units above the model origin.
 6. Rotate 170° about Y and draw the held gun:
    - flip 180° X;
-   - translate by (0.025, −1.0, 0.3) plus the gun's `turretPosOffsetX/Y/Z` (02);
+   - translate by (0.025, −1.0, 0.3) plus the gun's `turretPosOffsetX/Y/Z` ([02](../02-guns/index.md));
    - translate (0, 0.125, −0.3125);
    - scale 0.375;
    - rotate −55° Y;
@@ -216,17 +216,17 @@ Texture 64 × 64 logical (the `TurretBase*.png` files are 128 × 128).
 | Part 0 | `Stick01`, `Stick02` (9,30) | 2×11×2 | x +2 and −4, y 12…23 (two upright posts / gun cradle arms) |
 | Part 1 | `Mount` (34,12) | 4×1×4 | x −2…2, y 13 (gun mounting plate; pitches) |
 
-`ModelSimpleTurret` in the same folder is not used by any renderer (see 09).
+[`ModelSimpleTurret`](../07-blocks/block-rendering-and-models.md#modelturret-and-modelsimpleturret-uv-6464--6432) in the same folder is not used by any renderer (see [09](../09-machines-utility/index.md)).
 
 ### 7.7 `ModelNull`
 An empty `ModelBase`. It is the placeholder model for the OBJ-rendered helicopter.
 
 ### 7.8 `ModelGrimReaper` and `ModelCyberdemonBlaster` (gun models, listed for completeness)
-`ModelGrimReaper` is **not** an NPC model. It is the item model for the Grim Reaper quad rocket launcher (`TGuns.grimreaper`), which Outcasts may carry: a `ModelMultipart` with 59 boxes and a 128 × 64 texture (`textures/guns/grimreaper.png`), rendered by `RenderGrimReaper` with an extra 180° Y flip. Its geometry and texture are specified by **03-gun-visuals-audio**, as is `ModelCyberdemonBlaster` (the Cyberdemon's gun).
+`ModelGrimReaper` is **not** an NPC model. It is the item model for the Grim Reaper quad rocket launcher ([`TGuns.grimreaper`](../02-guns/gun-catalogue.md)), which Outcasts may carry: a [`ModelMultipart`](../03-gun-visuals-audio/rendering-framework.md#1-registration-client-proxy) with 59 boxes and a 128 × 64 texture (`textures/guns/grimreaper.png`), rendered by `RenderGrimReaper` with an extra 180° Y flip. Its geometry and texture are specified by **[03-gun-visuals-audio](../03-gun-visuals-audio/index.md)**, as is [`ModelCyberdemonBlaster`](../03-gun-visuals-audio/gun-models.md#modelcyberdemonblaster-6464-family-z-24-boxes-1-part) (the Cyberdemon's gun).
 
 ## 8. Death and gore hookup (cross-reference)
 
-When a mob dies from a Techguns damage source with a special death type, the server sends `PacketEntityDeathType` and the client plays gore, disintegration and similar effects. These are owned by 04-projectiles-fx. The per-mob gore registrations in `client/DeathEffect` that concern this area's mobs are:
+When a mob dies from a Techguns damage source with a special death type, the server sends [`PacketEntityDeathType`](../01-core/networking.md#6--packetentitydeathtype-sc) and the client plays gore, disintegration and similar effects. These are owned by [04-projectiles-fx](../04-projectiles-fx/index.md). The per-mob gore registrations in `client/DeathEffect` that concern this area's mobs are:
 
 | Mob | Gib model | Parts | Texture | Gib scale | Blood RGB |
 |---|---|---|---|---|---|
@@ -236,5 +236,5 @@ When a mob dies from a Techguns damage source with a special death type, the ser
 | ZombiePigmanSoldier | biped gibs | 6 | vanilla zombie_pigman | 0.66 | 110, 51, 11 |
 | SkeletonSoldier | skeleton gibs, no blood | 6 | vanilla skeleton | 0.66 | 255, 255, 255 |
 | CyberDemon | `ModelGibsBipedGeneric(ModelCyberDemon)` | 6 | `textures/entity/cyberdemon.png` | 1.0 | 85, 156, 17 |
-| AlienBug | `ModelGibsAlienBug` | 8 | `textures/entity/alienbug.png` | 0.8 | 235, 255, 70 |
-| *(others, e.g. Outcast, Commando, Stormtrooper, Steve, Dave, Super Mutants)* | generic fallback | 6 | `textures/entity/gore.png`, random scale 0.5–0.8 | 0.66 | 160, 21, 31 |
+| AlienBug | [`ModelGibsAlienBug`](../04-projectiles-fx/death-effects.md#gib-models-clientmodelsmodelgibsjava) | 8 | `textures/entity/alienbug.png` | 0.8 | 235, 255, 70 |
+| *(others, e.g. Outcast, Commando, Stormtrooper, Steve, Dave, Super Mutants)* | generic fallback | 6 | [`textures/entity/gore.png`](textures.md#non-mob-textures-stored-in-texturesentity), random scale 0.5–0.8 | 0.66 | 160, 21, 31 |

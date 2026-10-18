@@ -2,9 +2,9 @@
 
 Special death animations are chosen by the damage type that kills an entity.
 
-Sources: `java/techguns/util/EntityDeathUtils.java`, `java/techguns/client/renderer/death/RendererDeadLivingEntity.java`, `java/techguns/client/models/ModelGibs*.java`, `java/techguns/entities/projectiles/FlyingGibs.java`, `java/techguns/client/renderer/entity/RenderFlyingGibs.java`, `java/techguns/client/particle/EntityBloodEffect.java`.
+Sources: `java/techguns/util/EntityDeathUtils.java`, `java/techguns/client/renderer/death/RendererDeadLivingEntity.java`, `java/techguns/client/models/ModelGibs*.java`, [`java/techguns/entities/projectiles/FlyingGibs.java`](projectiles.md#319-flyinggibs), `java/techguns/client/renderer/entity/RenderFlyingGibs.java`, `java/techguns/client/particle/EntityBloodEffect.java`.
 
-Supporting code outside this area, described here only as far as the trigger chain needs: `client/DeathEffect.java`, `client/GoreData.java`, `packets/PacketEntityDeathType.java`, `events/TechgunsEventhandler.java` (death and render events), and the gore roll in `damagesystem/DamageSystem.java` (`01-core`).
+Supporting code outside this area, described here only as far as the trigger chain needs: [`client/DeathEffect.java`](../01-core/client-effects-audio.md#deatheffectcreatedeatheffectentity-type-mx-my-mz), `client/GoreData.java`, [`packets/PacketEntityDeathType.java`](../01-core/networking.md#6--packetentitydeathtype-sc), [`events/TechgunsEventhandler.java`](../01-core/events.md#techgunseventhandler-forge-bus) (death and render events), and the gore roll in `damagesystem/DamageSystem.java` ([`01-core`](../01-core/index.md)).
 
 ## 1. Death types
 
@@ -18,30 +18,30 @@ Supporting code outside this area, described here only as far as the trigger cha
 | `LASER` | 3 | The body turns red-hot, glows with a lava overlay and fades, with fire and ash particles. Sound `techguns:effects.disintegrate`. |
 | `DISMEMBER` | 4 | The body tips over, the head spins off. **No damage source ever uses it**, so it is effectively dead code. |
 
-Which projectile carries which death type and gore chance is listed in [projectiles.md §3](projectiles.md#3-per-projectile-reference). The default `TGDamageSource.goreChance` is 0.5.
+Which projectile carries which death type and gore chance is listed in [projectiles.md §3](projectiles.md#3-per-projectile-reference). The default [`TGDamageSource.goreChance`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource) is 0.5.
 
 ## 2. Trigger chain
 
-1. **Lethal hit (server, `DamageSystem`, `01-core`).** When a `TGDamageSource` kills an entity, the damage system rolls `rand > goreChance`. If true, it sets the source's `deathType` to `DEFAULT` before calling `onDeath`. So `goreChance` is the probability of the special death.
-   - `MiningDummyProjectile` does its own kill with the comparison **inverted** (bug PFX-13).
+1. **Lethal hit (server, `DamageSystem`, [`01-core`](../01-core/index.md)).** When a `TGDamageSource` kills an entity, the damage system rolls `rand > goreChance`. If true, it sets the source's `deathType` to `DEFAULT` before calling `onDeath`. So `goreChance` is the probability of the special death.
+   - [`MiningDummyProjectile`](projectiles.md#314-miningdummyprojectile) does its own kill with the comparison **inverted** (bug [PFX-13](index.md#suspected-bugs)).
    - Sources that bypass the damage system keep their death type unconditionally.
 2. **`LivingDeathEvent` (server, `TechgunsEventhandler.onLivingDeathEvent`).**
    - If the source is a `TGDamageSource` with a death type other than DEFAULT, and `EntityDeathUtils.hasSpecialDeathAnim(entity, deathType)` is true, send `PacketEntityDeathType` to all players within **100** blocks.
    - Server-side sound playback here is commented out; sounds are played client-side by the packet handler.
 3. **`hasSpecialDeathAnim(entity, type)`:**
-   - Bosses (`IBossDisplayData`) return true only if they are also a Techguns `GenericNPC`. Vanilla bosses (Wither, Dragon) never get special deaths.
+   - Bosses (`IBossDisplayData`) return true only if they are also a Techguns [`GenericNPC`](../10-entities-npcs/per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava). Vanilla bosses (Wither, Dragon) never get special deaths.
    - `BIO` and `LASER` return true for **every** other living entity (the code comments call this "test code").
    - `GORE` and `DISMEMBER` return true only if the entity's *exact* class is in the gore list:
      - vanilla: `EntityPlayer`, `EntityZombie`, `EntitySkeleton`, `EntityEnderman`, `EntityCreeper`, `EntityCow`, `EntitySheep`, `EntityPig`, `EntityChicken`, `EntityPigZombie`, `EntitySpider`, `EntityCaveSpider`, `EntityWitch`, `EntitySlime`, `EntityHorse`, `EntityMooshroom`, `EntityWolf`, `EntitySquid`, `EntityGhast`, `EntityVillager`
-     - Techguns: `ZombieSoldier` (listed twice), `ArmySoldier`, `CyberDemon`, `ZombiePigmanSoldier`, `ZombieFarmer`, `ZombieMiner`, `Bandit`, `PsychoSteve`, `DictatorDave`, `SkeletonSoldier`, `AlienBug`
-   - The exact-class test means subclasses (and `EntityPlayerMP`, the actual runtime class of players) do not match. **Players therefore never gore** (bug PFX-18), and the same applies to modded mob subclasses.
+     - Techguns: [`ZombieSoldier`](../10-entities-npcs/per-mob.md#1-zombie-soldier-zombiesoldier) (listed twice), [`ArmySoldier`](../10-entities-npcs/per-mob.md#6-army-soldier-armysoldier), [`CyberDemon`](../10-entities-npcs/per-mob.md#11-cyberdemon-cyberdemon), [`ZombiePigmanSoldier`](../10-entities-npcs/per-mob.md#4-zombie-pigman-soldier-zombiepigmansoldier), [`ZombieFarmer`](../10-entities-npcs/per-mob.md#2-zombie-farmer-zombiefarmer), [`ZombieMiner`](../10-entities-npcs/per-mob.md#3-zombie-miner-zombieminer), [`Bandit`](../10-entities-npcs/per-mob.md#7-bandit-bandit), [`PsychoSteve`](../10-entities-npcs/per-mob.md#12-psycho-steve-psychosteve-early-game-mini-boss), [`DictatorDave`](../10-entities-npcs/per-mob.md#13-dictator-dave-dictatordave-mini-boss), [`SkeletonSoldier`](../10-entities-npcs/per-mob.md#5-skeleton-soldier-skeletonsoldier), [`AlienBug`](../10-entities-npcs/per-mob.md#15-alien-bug-alienbug)
+   - The exact-class test means subclasses (and `EntityPlayerMP`, the actual runtime class of players) do not match. **Players therefore never gore** (bug [PFX-18](index.md#suspected-bugs)), and the same applies to modded mob subclasses.
 4. **`PacketEntityDeathType`.** Fields in order: `entityId` (int), `deathtypeId` (int), `motionX`, `motionY`, `motionZ` (floats, the entity's motion at death).
 5. **Client handler:**
    - Does nothing if config `cl_enableDeathFX` is off. Ignores `GORE` if `cl_enableDeathFX_Gore` is off.
    - Otherwise:
      1. Look up the entity.
      2. Overwrite its motion with the packet motion.
-     3. Store the death type in `ClientProxy.entityDeathTypes`, keyed by the player's name for players or the entity id otherwise.
+     3. Store the death type in [`ClientProxy.entityDeathTypes`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy), keyed by the player's name for players or the entity id otherwise.
      4. Call `DeathEffect.createDeathEffect(entity, type, motion)`.
      5. Play the death sound attached to the entity: `proxy.playSoundOnEntity(entity, sound, volume 1, pitch 1, non-repeating, TGSoundCategory.DEATHEFFECT)`. See [sounds.md](sounds.md).
 6. **Rendering (`TechgunsEventhandler.handleEntityRenderEvent`, `RenderLivingEvent.Pre`).** For an entity with a stored death type:
@@ -54,8 +54,8 @@ Which projectile carries which death type and gore chance is listed in [projecti
 
 | Key | Field | Default | Comment |
 |---|---|---|---|
-| `EnableDeathEffects` | `TGConfig.cl_enableDeathFX` | true | "Enable Death Effects, pure clientside check." |
-| `EnableGoreDeathEffect` | `TGConfig.cl_enableDeathFX_Gore` | true | "Enable the gore Death Effect, requires DeathEffects to be enabled, pure clientside check." |
+| [`EnableDeathEffects`](../01-core/config.md#category-clientside) | [`TGConfig.cl_enableDeathFX`](../01-core/config.md) | true | "Enable Death Effects, pure clientside check." |
+| [`EnableGoreDeathEffect`](../01-core/config.md#category-clientside) | `TGConfig.cl_enableDeathFX_Gore` | true | "Enable the gore Death Effect, requires DeathEffects to be enabled, pure clientside check." |
 
 ## 3. GORE: blood burst and flying gibs
 
@@ -150,7 +150,7 @@ See [projectiles.md §3.19](projectiles.md#319-flyinggibs): lifetime 150–250 t
   - For each top-level model box (child boxes render through their parent; hidden boxes are skipped):
     1. Scale the box uniformly by `1 + rand × prog` about its offset point, so each limb swells by a random amount.
     2. **Base pass** with the entity texture, colour (1 − prog², 1, 1 − prog²) and alpha (1 − prog)². It turns green and fades; the alpha test cuts it once the alpha drops below 0.1.
-    3. **Overlay pass** with `textures/fx/bio.png`, ADDITIVE, full-bright, grey level `0.5 + sin((√prog + 0.75) × 2π) / 2`. This produces a bright green pulsing flash.
+    3. **Overlay pass** with [`textures/fx/bio.png`](textures.md#single-images), ADDITIVE, full-bright, grey level `0.5 + sin((√prog + 0.75) × 2π) / 2`. This produces a bright green pulsing flash.
 
 ## 5. LASER death (`renderModelDeathLaser`)
 
@@ -158,7 +158,7 @@ See [projectiles.md §3.19](projectiles.md#319-flyinggibs): lifetime 150–250 t
 - Sound: `techguns:effects.disintegrate`.
 - Render: the whole model is drawn in two passes, rotated by entity yaw with slime scaling:
   1. Entity texture tinted (1, 1 − prog², 1 − prog²) with alpha (1 − prog)². It turns red and fades.
-  2. Overlay `textures/fx/laserDeathfx.png`, ADDITIVE, full-bright, grey level `0.5 + sin((√prog + 0.75) × 2π) / 2`.
+  2. Overlay [`textures/fx/laserDeathfx.png`](textures.md#single-images), ADDITIVE, full-bright, grey level `0.5 + sin((√prog + 0.75) × 2π) / 2`.
 - A per-box swelling variant is commented out.
 
 ## 6. DISMEMBER (unused)
@@ -195,4 +195,4 @@ These are used by the projectile damage sources in this area. The message is `de
 | `death.attack.tg_sonic` | `%s was shreddered by %s's sonic weapon` |
 | `death.attack.tg_rad` | `%s was radiated by %s` |
 
-Missing keys: `death.attack.tg_knockback` (a 0.01 dummy hit can kill a nearly dead entity and would show the raw key), `death.attack.bullet` (the `BulletDamageSource` name, used only by unspawned projectiles), and `.item` variants for chainsaw, sonic and rad. A missing `.item` key falls back to the plain message.
+Missing keys: `death.attack.tg_knockback` (a 0.01 dummy hit can kill a nearly dead entity and would show the raw key), `death.attack.bullet` (the [`BulletDamageSource`](../01-core/textures-sounds-lang.md#missing-or-untranslated-keys-used-by-core-code) name, used only by unspawned projectiles), and `.item` variants for chainsaw, sonic and rad. A missing `.item` key falls back to the plain message.

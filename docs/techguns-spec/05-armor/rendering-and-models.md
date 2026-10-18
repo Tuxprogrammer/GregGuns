@@ -2,9 +2,9 @@
 
 Source:
 - `java/techguns/client/models/`: `ModelSteamArmor`, `ModelT3PowerArmor`, `ModelT3PowerArmorOld`, `ModelExoSuit`, `ModelArmorCoat`, `ModelBeret`, `ModelFaceMask`, `ModelGasMask`, `ModelGasMask2`, `ModelNightVisionGoggles`, `ModelNightVisionGogglesOff`, `ModelGlider`, `ModelJetPack`, `ModelOxygenFlasks`, `ModelAntiGravPack`, `ModelBipedMultipart`, `ModelBipedTGBackSlot`
-- `java/techguns/client/renderer/item/RenderArmor.java`, `RenderArmorItem.java`
+- [`java/techguns/client/renderer/item/RenderArmor.java`](index.md#coverage), [`RenderArmorItem.java`](index.md#contents)
 - `java/techguns/client/renderer/additionalslots/*`
-- `GenericArmor.getArmorModel`
+- [`GenericArmor.getArmorModel`](armor-catalogue.md#1-class-hierarchy)
 
 Conventions:
 - Geometry is in model units, where 1 unit = 1/16 block and the vanilla head box is 8×8×8.
@@ -16,7 +16,7 @@ Conventions:
 
 Only pieces with a model index ≥ 0 return a model (armor-catalogue.md §4). Pieces with −1 use the vanilla armour model and texture layer.
 
-The returned model is one of the 12 shared static instances in `ClientProxy.armorModels`. It is configured before every render:
+The returned model is one of the 12 shared static instances in [`ClientProxy.armorModels`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy). It is configured before every render:
 - **Visible parts by slot:**
   - head and headwear: helmet only (headwear is always hidden for the beret)
   - body: chestplate or leggings
@@ -24,10 +24,10 @@ The returned model is one of the 12 shared static instances in `ClientProxy.armo
   - both legs: leggings or boots
 - **Pose flags** copied from the wearer: sneaking, riding, child.
 - `heldItemRight` = 1 if the wearer holds anything.
-- **Players:** `aimedBow` is true while holding any `GenericGun`; otherwise it follows vanilla bow-drawing (use duration > 2 with a bow action). `heldItemRight` = 3 while blocking.
-- **Techguns NPCs (`GenericNPC`):** `aimedBow` is true when the NPC has its aimed-bow animation flag and holds a `GenericGun`.
+- **Players:** `aimedBow` is true while holding any [`GenericGun`](../02-guns/gun-lifecycle.md); otherwise it follows vanilla bow-drawing (use duration > 2 with a bow action). `heldItemRight` = 3 while blocking.
+- **Techguns NPCs ([`GenericNPC`](../10-entities-npcs/per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava)):** `aimedBow` is true when the NPC has its aimed-bow animation flag and holds a `GenericGun`.
 
-A separate `RenderPlayerEvent.Pre` hook also sets `aimedBow` on the player's main and armour models whenever a `GenericGun` is held (01-core / 03).
+A separate `RenderPlayerEvent.Pre` hook also sets `aimedBow` on the player's main and armour models whenever a `GenericGun` is held ([01-core](../01-core/index.md) / [03](../03-gun-visuals-audio/index.md)).
 
 ## 2. Armour models
 
@@ -129,7 +129,7 @@ All are `ModelBiped(0.0625, 0, 32×32)` subclasses: the inherited head box is in
 | `ModelNightVisionGoggles` (goggles **down**) | **Strap/hood** 8×8×8 (0,0). Two **lens tubes** 2×2×4 rotated 45° about Z (diamond section) sticking forward from the eyes (0,17). **Bridge** 3×1×2 (13,17). **Mount arm** 2×1×4 angled 45° up to the forehead (13,21). |
 | `ModelNightVisionGogglesOff` (goggles **flipped up**) | The same parts, re-posed. The tubes sit above the forehead, pointing up and back (rotated about −135° X, −31° Y, 35° Z). The mount arm is folded back about 75°, and the bridge is on top of the head. |
 
-The inherited inflated head box *and* the child hood box both render, so the head is drawn twice, 1/16 apart (bug ARM-24).
+The inherited inflated head box *and* the child hood box both render, so the head is drawn twice, 1/16 apart (bug [ARM-24](index.md#suspected-bugs)).
 
 ### 2.7 Back models (`ModelBipedMultipart` subclasses)
 
@@ -140,7 +140,7 @@ UV 32×32; the PNGs are 64×64 (×2). Every part's X-rotation copies the body's 
 | `ModelGlider` | **Backpack** 7×10×4 (0,0) | **Wings**, spanning about 38 units (≈2.4 blocks) in total. Each side has: an inner strut 1×7×2 (23,0); two top spars 6×1×2 (13,15); an outer strut 1×6×2 (21,19); an inner canvas panel 5×7×1 (0,15); an outer canvas panel 6×6×1 (0,24). |
 | `ModelJetPack(variant)` | **Central pack** 4×7×4 (16,0). Two **fuel tanks** 3×9×3 either side (0,0), each with a 2×2×2 cap (0,13). Variant 0 (Jetpack) adds small **stub wings** on each side: a 5×6×1 panel (0,24), a 5×1×2 top edge (13,15) and a 1×6×2 outer edge (21,19). Variant 1 (Jump Pack) has no wings. | – |
 | `ModelOxygenFlasks` | A small **harness block** 2×6×3 (16,0). Two **air cylinders** 3×9×3 (0,0), each with a 2×1×2 **valve** (0,13). | – |
-| `ModelAntiGravPack` | **Pack** 6×6×3 (16,0) (its UV strip overruns the 32-wide texture; bug ARM-23). Two slim **side cylinders** 2×7×2 (0,0). A **core crystal** 3×3×3 rotated 45° about Z, showing as a diamond, on the back (6,10). A **back plate** 5×4×1 (20,11). Four tiny **fins** 2×1×1 (0,10), two of them turned 180°. | – |
+| `ModelAntiGravPack` | **Pack** 6×6×3 (16,0) (its UV strip overruns the 32-wide texture; bug [ARM-23](index.md#suspected-bugs)). Two slim **side cylinders** 2×7×2 (0,0). A **core crystal** 3×3×3 rotated 45° about Z, showing as a diamond, on the back (6,10). A **back plate** 5×4×1 (20,11). Four tiny **fins** 2×1×1 (0,10), two of them turned 180°. | – |
 
 `ModelBipedMultipart` (abstract) adds a multipart `render(entity, …, ammoLeft, reloadProgress, renderType, part, fireProgress)`. The plain `render` calls it with part 0 and type ENTITY.
 
@@ -148,7 +148,7 @@ UV 32×32; the PNGs are 64×64 (×2). Every part's X-rotation copies the body's 
 
 ## 3. Special-slot rendering on the player (`renderer/additionalslots`)
 
-**Hook:** `RenderPlayerEvent.SetArmorModel` in the event handler (01-core).
+**Hook:** `RenderPlayerEvent.SetArmorModel` in the event handler ([01-core](../01-core/index.md)).
 - **Armour pass 0** (helmet pass): read the face stack from the DataWatcher. `showSlot` = not (the helmet is a `GenericArmor` with `hideFaceslot`).
 - **Armour pass 1** (chest pass): the same with the back stack and `hideBackslot`.
 
@@ -167,10 +167,10 @@ Rendering happens inside the player's model space, so the slot models line up wi
 | Jump Pack | `RenderJetpack` + `ModelJetPack(1)` | same four jetpack textures | no |
 | Oxygen Tanks | `RenderOxygenFlasks` + `ModelOxygenFlasks` | `oxygenFlasks.png` | yes |
 | Anti Gravity Device | `RenderOxygenFlasks` + `ModelAntiGravPack` | `AntiGravPack.png`, `AntiGravPack_bronze.png`, `AntiGravPack_black.png`, `AntiGravPack_darkGreen.png`, `AntiGravPack_silver.png` | yes |
-| Akimbo guns (held item) | `RenderAkimboGun` family (see §4) | gun textures (03) | n/a |
+| Akimbo guns (held item) | `RenderAkimboGun` family (see §4) | gun textures ([03](../03-gun-visuals-audio/index.md)) | n/a |
 
 **`RenderAdditionalArmorModel.render`** (base for all except the akimbo guns), when showing:
-1. Bind the texture for the item's camo index, or index 0 if the item is not `ICamoChangeable`.
+1. Bind the texture for the item's camo index, or index 0 if the item is not [`ICamoChangeable`](armor-catalogue.md#1-class-hierarchy).
 2. Compute the head yaw relative to the body:
    - Interpolate body yaw and head yaw.
    - If riding a living entity, use the mount's body yaw, clamp the difference to ±85°, and add 20 % of the difference when it exceeds 50°. This matches vanilla living-render logic.
@@ -203,15 +203,15 @@ So head-mounted gear follows head yaw and pitch, and back gear follows the body 
 6. Apply the per-gun translation.
 7. For each model part: push, apply reload/recoil, render the part (type EQUIPPED), pop.
 
-| Gun (`TGuns` field) | Renderer | Model, texture | Parts | Scale | Translation | Double-shot recoil |
+| Gun ([`TGuns`](../02-guns/gun-catalogue.md) field) | Renderer | Model, texture | Parts | Scale | Translation | Double-shot recoil |
 |---|---|---|---|---|---|---|
-| `akimbo_pistol` | `RenderAkimboGun` | `ModelPistol3`, `textures/guns/pistol3.png` | 2 | 0.55 | (0.2, −0.5, −2.0) | no |
-| `akimbo_revoler` | `RenderAkimboRevolver` | `ModelRevolver`, `textures/guns/revolver.png` | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
-| `akimbo_goldenrevolver` | `RenderAkimboRevolver` | `ModelGoldenRevolver`, `textures/guns/goldenrevolver.png` | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
-| `akimbo_mac10` | `RenderAkimboMac10` | `ModelMac10`, `textures/guns/mac10texture.png` | 1 | 0.5 | (0.2, −0.45, −2.15) | yes |
-| `akimbo_mibGun` | `RenderAkimboMibGun` | `ModelMibGun`, `textures/guns/mibgun.png` | 1 | 0.55 | (0.1, −0.7, −1.7) plus the debug offsets (bug ARM-25) | no |
+| `akimbo_pistol` | `RenderAkimboGun` | [`ModelPistol3`](../03-gun-visuals-audio/gun-models.md#modelpistol3-pistol-declared-6432-used-with-a-12864-png-family-z-9-boxes-2-parts), `textures/guns/pistol3.png` | 2 | 0.55 | (0.2, −0.5, −2.0) | no |
+| `akimbo_revoler` | `RenderAkimboRevolver` | [`ModelRevolver`](../03-gun-visuals-audio/gun-models.md#modelrevolver-6432-family-x-20-boxes-1-part), `textures/guns/revolver.png` | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
+| `akimbo_goldenrevolver` | `RenderAkimboRevolver` | [`ModelGoldenRevolver`](../03-gun-visuals-audio/gun-models.md#modelgoldenrevolver-6432-family-x-24-boxes-1-part), `textures/guns/goldenrevolver.png` | 1 | 0.3 | (2.7, −0.55, 0.15) | no |
+| `akimbo_mac10` | `RenderAkimboMac10` | [`ModelMac10`](../03-gun-visuals-audio/gun-models.md#modelmac10-declared-6432-used-with-a-12864-png-family-z-23-boxes-tabula-1-part), `textures/guns/mac10texture.png` | 1 | 0.5 | (0.2, −0.45, −2.15) | yes |
+| `akimbo_mibGun` | `RenderAkimboMibGun` | [`ModelMibGun`](../03-gun-visuals-audio/gun-models.md#modelmibgun-mib-gun-declared-6464-used-with-a-128128-png-family-z-50-boxes-tabula-1-part), `textures/guns/mibgun.png` | 1 | 0.55 | (0.1, −0.7, −1.7) plus the debug offsets (bug [ARM-25](index.md#suspected-bugs)) | no |
 
-**Animation inputs:** per-entity reload and recoil timers held by `ClientProxy` (03).
+**Animation inputs:** per-entity reload and recoil timers held by `ClientProxy` ([03](../03-gun-visuals-audio/index.md)).
 - Reload progress p = 1 − remaining/total.
 - Recoil progress p = 1 − remaining/total. An expired timer is cleared.
 - Recoil is applied only when the gun is double-shot or the stored attack type is 1, meaning the off-hand fired.

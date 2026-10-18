@@ -1,6 +1,6 @@
 # Armour catalogue
 
-Source: `java/techguns/TGArmors.java`, `java/techguns/items/armors/GenericArmor.java`, `GenericArmorMultiCamo.java`, `PoweredArmor.java`, `ArmorPowerType.java`, plus `java/techguns/damagesystem/TGArmorMaterial.java` (owned by 01-core, summarised here only as far as armour stats need it).
+Source: `java/techguns/TGArmors.java`, `java/techguns/items/armors/GenericArmor.java`, `GenericArmorMultiCamo.java`, `PoweredArmor.java`, `ArmorPowerType.java`, plus `java/techguns/damagesystem/TGArmorMaterial.java` (owned by [01-core](../01-core/index.md), summarised here only as far as armour stats need it).
 
 Everything is registered in `TGArmors.init()`. There are **11 four-piece sets and 1 single-piece hat (the beret)**, 45 items in total. All are in the Techguns creative tab.
 
@@ -16,7 +16,7 @@ Everything is registered in `TGArmors.init()`. There are **11 four-piece sets an
 
 Constructor behaviour (`GenericArmor`):
 - Builds a vanilla `ArmorMaterial` from the TG material (see §2): the vanilla per-slot armour points are the rounded **physical** values, and the vanilla durability multiplier is the base durability. Enchantability comes from the material, and every Techguns material passes **0**, so no Techguns armour can be enchanted at a table.
-- Unlocalized name = the given name. The item icon is `techguns:<unlocalizedName>` (so `textures/items/<name>.png`, owned by 06-items).
+- Unlocalized name = the given name. The item icon is `techguns:<unlocalizedName>` (so `textures/items/<name>.png`, owned by [06-items](../06-items/index.md)).
 - `getUnlocalizedName(stack)` prefixes `techguns.`, so lang keys are `techguns.item.<name>.name`.
 - Max damage = `material.getDurability(slot)`, which overrides the vanilla value.
 - `armorValue` (used for the vanilla armour bar) = the rounded physical value for the slot.
@@ -54,13 +54,13 @@ A commented-out block of older vanilla `EnumHelper` materials remains in the sou
 
 - **"Broken" state:** a piece whose damage is ≥ maxDamage−1 (one durability point left) counts as broken. It gives 0 protection, shows 0 on the vanilla armour bar, and contributes no bonuses. Armour **never actually breaks**. `damageArmor` caps incoming durability damage so that at least 1 point always remains, and creative-mode players take no durability damage.
 - **Damage reduction (`getProperties`)**, when not broken:
-  1. Convert the incoming `DamageSource` to a `TGDamageSource` (01-core). Its `damageType` picks which armour value applies.
-  2. If that armour value > 0 and the source has armour penetration > 0: subtract this piece's material penetration resistance, apply the config PvP/NPC penetration multiplier (`DamageSystem.calcPenetration`, 01-core), clamp to [0,1], and **write the result back into the damage source** (see bug ARM-02).
-  3. Reduction ratio for this piece = (1 − penetration) × 0.04 × pieceArmorValue (from `DamageSystem.getReduction`, 01-core). In effect each armour point blocks 4 % of the non-penetrating share, so 24 points block 96 %.
+  1. Convert the incoming `DamageSource` to a [`TGDamageSource`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource) ([01-core](../01-core/index.md)). Its `damageType` picks which armour value applies.
+  2. If that armour value > 0 and the source has armour penetration > 0: subtract this piece's material penetration resistance, apply the config PvP/NPC penetration multiplier (`DamageSystem.calcPenetration`, [01-core](../01-core/index.md)), clamp to [0,1], and **write the result back into the damage source** (see bug [ARM-02](index.md#suspected-bugs)).
+  3. Reduction ratio for this piece = (1 − penetration) × 0.04 × pieceArmorValue (from `DamageSystem.getReduction`, [01-core](../01-core/index.md)). In effect each armour point blocks 4 % of the non-penetrating share, so 24 points block 96 %.
   4. The piece returns Forge `ArmorProperties(priority 0, ratio, maxAbsorb = maxDamage + 1 − damage)`. Forge adds up the ratios of all pieces.
 - **Tooltip percentage helper `formatAV(value)`:** prints the value (format `#.##`) and, in parentheses, value/24 × 0.96 × 100 %. Constants: `MAX_ARMOR = 24`, `ARMOR_CAP = 24/25` (the cap is the same for every damage type).
 - **Vanilla anvil repair** (`getIsRepairable`): the repair item is the metal repair mat if set, otherwise the cloth mat (matched with the OreDictionary wildcard). If neither is set, the piece cannot be repaired on an anvil.
-- **Repair Bench** (machine owned by 09-machines-utility): `canRepairOnRepairBench` is true when the piece's repair-material count > 0. `getRepairMats(stack)` returns:
+- **Repair Bench** (machine owned by [09-machines-utility](../09-machines-utility/index.md)): `canRepairOnRepairBench` is true when the piece's repair-material count > 0. `getRepairMats(stack)` returns:
   - `dmgFraction = damage / (maxDamage − 1)`
   - `count = ceil(totalMats × dmgFraction)`
   - `metal = ceil(count × metalRatio)`, `cloth = count − metal`
@@ -69,7 +69,7 @@ A commented-out block of older vanilla `EnumHelper` materials remains in the sou
 
 ## 4. Custom model index (`setArmorModel`)
 
-| Index | Model instance (`ClientProxy.armorModels`) | Used by |
+| Index | Model instance ([`ClientProxy.armorModels`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy)) | Used by |
 |---|---|---|
 | −1 (default) | vanilla biped armour model | T1 combat/scout/miner, T2 combat/commando, T3 combat, T3 HEV |
 | 0 | `ModelSteamArmor(type 0)` | steam helmet, chestplate, boots |
@@ -79,7 +79,7 @@ A commented-out block of older vanilla `EnumHelper` materials remains in the sou
 | 4 | `ModelExoSuit(type 0, scale 1.0)` | exo helmet |
 | 5 | `ModelExoSuit(type 1, scale 0.5)` | exo leggings |
 | 6 | `ModelExoSuit(type 0, scale 0.75)` | exo chestplate and exo boots |
-| 7 | `ModelBeret` | beret |
+| 7 | [`ModelBeret`](rendering-and-models.md#25-modelberet-index-7) | beret |
 | 8 | `ModelArmorCoat(type 0, scale 1.0)` | riot helmet |
 | 9 | `ModelArmorCoat(type 1, scale 0.51)` | riot chestplate |
 | 10 | `ModelArmorCoat(type 2, scale 0.49)` | riot leggings |
@@ -229,9 +229,9 @@ How each bonus is applied is described in set-bonuses.md.
 
 - NBT byte **`camo`** on the stack gives the index into `textureNames`. A missing tag means index 0 for the texture, but the camo *name* shows "No Camo" (`techguns.item.invalidcamo`).
 - `onCreated` (crafting or smelting output) writes `camo = 0`. `PoweredArmor.onCreated` also writes `power = 0` and `maxpower = <maxpower>`.
-- `switchCamo(stack, back)` steps forward (or back) through the camos with wrap-around and creates the tag if it is missing. It is called by the Camo Bench (09-machines-utility). Sneak-right-click camo switching on the item is present but commented out. The lang key `techguns.message.camoswitch` ("Switched Camo to") is a leftover from it.
+- `switchCamo(stack, back)` steps forward (or back) through the camos with wrap-around and creates the tag if it is missing. It is called by the Camo Bench ([09-machines-utility](../09-machines-utility/index.md)). Sneak-right-click camo switching on the item is present but commented out. The lang key `techguns.message.camoswitch` ("Switched Camo to") is a leftover from it.
 - Camo display name key: `techguns.item.<textureNames[0]>.<suffix>camoname.<index>`, where the suffix is empty or `helmet.`.
-- Static helpers used by NPC spawning (10-entities-npcs): `getRandomCamoIndexFor(item)` returns a uniform random index below the camo count, and `getNewWithCamo(item, camo)` returns a new stack with the `camo` byte set.
+- Static helpers used by NPC spawning ([10-entities-npcs](../10-entities-npcs/index.md)): `getRandomCamoIndexFor(item)` returns a uniform random index below the camo count, and `getNewWithCamo(item, camo)` returns a new stack with the `camo` byte set.
 - Shift tooltip line: `techguns.tooltip.currentcamo` + ": " + camo name.
 
 | Texture base[0] | Index → texture → English camo name |
@@ -275,7 +275,7 @@ All text uses the lang keys in index.md §Lang.
    - `P` (poison), dark green
    - `RAD`, green
 5. Bonus lines. These are computed from the *powered* values:
-   - `Health Bonus: +<int> Hearts`, **else if** speed > 0: `Move speed: +<speed×100>%`, **else if** jump > 0: `Jump height: +<jump>`. Because of the else-if chain, at most one of these three lines appears (bug ARM-03).
+   - `Health Bonus: +<int> Hearts`, **else if** speed > 0: `Move speed: +<speed×100>%`, **else if** jump > 0: `Jump height: +<jump>`. Because of the else-if chain, at most one of these three lines appears (bug [ARM-03](index.md#suspected-bugs)).
    - Then, each shown independently when > 0:
      - `Fall damage: -<x×100>%`
      - `Fall height: -<x>`
@@ -312,4 +312,4 @@ Numbers are printed with Java's default float `toString` (e.g. `12.5`, `0.300000
   | anything else | – | 0 | |
 
 - A piece with power > 0 uses its powered bonuses. With 0 power it uses its unpowered bonuses, which are all 0 for every registered piece. **Armour values and protection do not depend on power.**
-- Batteries and consumables (compressed air tank, energy cell and their empties) are 06-items.
+- Batteries and consumables (compressed air tank, energy cell and their empties) are [06-items](../06-items/index.md).

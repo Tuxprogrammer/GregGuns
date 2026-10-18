@@ -1,6 +1,6 @@
 # FX catalogue
 
-All named effects. The first part fully decodes the two data files `particles/FXList.txt` (16 FX lists, 50 particle systems) and `particles/Nuke.txt` (1 FX list, 8 systems). The format and engine are described in [particle-system.md](particle-system.md). The second part lists the hard-coded legacy particle names in `ClientProxy.spawnParticle`.
+All named effects. The first part fully decodes the two data files `particles/FXList.txt` (16 FX lists, 50 particle systems) and `particles/Nuke.txt` (1 FX list, 8 systems). The format and engine are described in [particle-system.md](particle-system.md). The second part lists the hard-coded legacy particle names in [`ClientProxy.spawnParticle`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy).
 
 How to read the numbers:
 - Time is in ticks. Velocities are in blocks per second (the engine multiplies them by 0.05 per tick).
@@ -12,39 +12,39 @@ How to read the numbers:
 
 ## Triggers: which game event spawns which FX
 
-Names are looked up case-insensitively. "Packet" means `PacketSpawnParticle` (at a point) or `PacketSpawnParticleOnEntity` (attached), sent by the server to players within the given range.
+Names are looked up case-insensitively. "Packet" means [`PacketSpawnParticle`](../01-core/networking.md#13--packetspawnparticle-sc) (at a point) or [`PacketSpawnParticleOnEntity`](../01-core/networking.md#14--packetspawnparticleonentity-sc) (attached), sent by the server to players within the given range.
 
 | FX name (list or system) | Spawned by | How | Where |
 |---|---|---|---|
-| `RocketExplosion` (list) | `RocketProjectile.explodeRocket`, `GrenadeProjectile`/`GrenadeLauncherProjectile.explode`, `ReactionChamberTileEntMaster` (meltdown, `08-machines-production`) | Packet, 50 blocks | explosion centre |
-| `FragGrenadeExplosion` (list) | `FragGrenadeProjectile.explode`, `ReactionChamberTileEntMaster` | Packet, 50 blocks | explosion centre |
-| `NukeExplosion` (list) | `NukeRocketProjectile.explodeRocket` | Packet, **150** blocks | explosion centre |
-| `bioblobExplosion` (list) | `BioblobTileEnt` blob burst (`07-blocks`) | Packet | blob |
-| `AlienExplosion` (list) | `AlienBlasterProjectile` impact | Packet, 50 blocks | impact |
-| `AlienBlasterTrail` (list) | `AlienBlaster` gun on fire | Packet on entity, but the entity is untracked, so it never shows (PFX-01) | follows projectile |
+| `RocketExplosion` (list) | [`RocketProjectile.explodeRocket`](projectiles.md#34-rocketprojectile-and-nukerocketprojectile), [`GrenadeProjectile`](projectiles.md#37-grenadeprojectile-family)/[`GrenadeLauncherProjectile.explode`](projectiles.md#1-registration), [`ReactionChamberTileEntMaster`](../08-machines-production/framework.md#1-class-hierarchy) (meltdown, [`08-machines-production`](../08-machines-production/index.md)) | Packet, 50 blocks | explosion centre |
+| `FragGrenadeExplosion` (list) | [`FragGrenadeProjectile.explode`](projectiles.md#1-registration), `ReactionChamberTileEntMaster` | Packet, 50 blocks | explosion centre |
+| `NukeExplosion` (list) | [`NukeRocketProjectile.explodeRocket`](projectiles.md#34-rocketprojectile-and-nukerocketprojectile) | Packet, **150** blocks | explosion centre |
+| `bioblobExplosion` (list) | [`BioblobTileEnt`](../09-machines-utility/misc-tile-entities.md#tile-entity-bioblobtileent) blob burst ([`07-blocks`](../07-blocks/index.md)) | Packet | blob |
+| `AlienExplosion` (list) | [`AlienBlasterProjectile`](projectiles.md#1-registration) impact | Packet, 50 blocks | impact |
+| `AlienBlasterTrail` (list) | `AlienBlaster` gun on fire | Packet on entity, but the entity is untracked, so it never shows ([PFX-01](index.md#suspected-bugs)) | follows projectile |
 | `BlueBlasterTrail` (list) | `MibGun` on fire | Packet on entity | follows projectile |
-| `BlueBlasterExplosion` (list) | `EnergyBlastProjectile` impact (block or entity) | Packet, 50 blocks | impact |
+| `BlueBlasterExplosion` (list) | [`EnergyBlastProjectile`](projectiles.md#310-energyblastprojectile-mib-gun) impact (block or entity) | Packet, 50 blocks | impact |
 | `CyberDemonBlasterTrail` (list) | `CyberdemonBlaster` gun on fire | Packet on entity | follows projectile |
 | `CyberDemonBlasterTrailLarge` (list) | nothing (unused) | n/a | n/a |
-| `NetherBlasterImpactFlare`, `MediumExplosionSmoke` | `CyberdemonBlasterProjectile` block hit (client call); entity hit (server call, SP only) | `proxy.createFX` | impact |
+| `NetherBlasterImpactFlare`, `MediumExplosionSmoke` | [`CyberdemonBlasterProjectile`](projectiles.md#38-cyberdemonblasterprojectile) block hit (client call); entity hit (server call, SP only) | `proxy.createFX` | impact |
 | `NetherBlasterImpactFlare2` | nothing (unused) | n/a | n/a |
 | `BioGunTrail` (list) | `Biogun` on fire | Packet on entity, 200 blocks | follows projectile |
 | `BioTrailGlow` | nothing (commented out of `BioGunTrail`) | n/a | n/a |
-| `GrenadeLauncherTrail` | `GrenadeLauncher` gun on fire; each grenade-launcher bounce; dispenser launch (`BehaviorProjectileDispenseDamagevalue`) | Packet on entity, 200 blocks | follows grenade |
+| `GrenadeLauncherTrail` | `GrenadeLauncher` gun on fire; each grenade-launcher bounce; dispenser launch ([`BehaviorProjectileDispenseDamagevalue`](../01-core/lifecycle-and-registration.md#preinit-in-exact-order)) | Packet on entity, 200 blocks | follows grenade |
 | `SonicShotgunTrail` (list) | `SonicShotgun` on fire (main projectile) | Packet on entity, 200 blocks | follows projectile |
-| `SonicShotgunImpact` (list) | `SonicShotgunProjectile` (main) solid-block hit | Packet, 50 blocks | impact |
-| `LaserFlareStart` / `LaserFlareEnd` | `LaserBeam2` creation (lasergun, scatter beam gun) | Packet, 50 blocks | muzzle / beam end |
-| `TeslaFlare` | `TeslaBeam` creation by the gun (not chain beams) | Packet, 50 blocks | beam end |
-| `BeamGunMuzzleFX` (list) | `MovingBeam`/`NeutrinoBeam` client constructor | `createFXOnEntity` | follows beam (the shooter's muzzle) |
+| `SonicShotgunImpact` (list) | [`SonicShotgunProjectile`](projectiles.md#313-sonicshotgunprojectile) (main) solid-block hit | Packet, 50 blocks | impact |
+| `LaserFlareStart` / `LaserFlareEnd` | [`LaserBeam2`](projectiles.md#1-registration) creation (lasergun, scatter beam gun) | Packet, 50 blocks | muzzle / beam end |
+| `TeslaFlare` | [`TeslaBeam`](projectiles.md#1-registration) creation by the gun (not chain beams) | Packet, 50 blocks | beam end |
+| `BeamGunMuzzleFX` (list) | `MovingBeam`/[`NeutrinoBeam`](projectiles.md#1-registration) client constructor | `createFXOnEntity` | follows beam (the shooter's muzzle) |
 | `BeamGunImpactFX` (list) | `MovingBeam` every tick | `proxy.createFX` | beam end |
 | `biodeath` | BIO death effect | `createFX` (client, from the death packet) | entity centre |
 | `laserdeathFire`, `laserdeathAsh` | LASER death effect | `createFX` | entity centre |
-| `JumpPackBoost` (list) | `ItemJumppack.doJumpEffect` (`05-armor`) | Packet on player, 50 blocks | player |
+| `JumpPackBoost` (list) | [`ItemJumppack.doJumpEffect`](../05-armor/special-equipment.md#44-jump-pack-itemjumppack) ([`05-armor`](../05-armor/index.md)) | Packet on player, 50 blocks | player |
 | `JumpPackFall` (list) | `ItemJumppack.doFallEffect` | Packet, 50 blocks | player feet |
-| `AntiGravRing` | `TechgunsTickHandler`: creative-style flight granted by armour starts flying (client) | `createFXOnEntity` | player |
-| `AntiGravRingGreen` | `ItemAntiGravPack.doEffect` (client) | `createFXOnEntity`. **Not defined: NullPointerException** (PFX-02) | n/a |
-| `ChargeFlare` | `ChargingStationTileEnt` (4 calls, `09-machines-utility`) | `createFX` | station |
-| `OreClusterPing` | `OreClusterScanner` (`06-items`) | `createFX` | ore cluster (visible through walls) |
+| `AntiGravRing` | [`TechgunsTickHandler`](../01-core/events.md#techgunstickhandler-fml-bus): creative-style flight granted by armour starts flying (client) | `createFXOnEntity` | player |
+| `AntiGravRingGreen` | [`ItemAntiGravPack.doEffect`](../05-armor/special-equipment.md#45-anti-gravity-device-itemantigravpack) (client) | `createFXOnEntity`. **Not defined: NullPointerException** ([PFX-02](index.md#suspected-bugs)) | n/a |
+| `ChargeFlare` | [`ChargingStationTileEnt`](../08-machines-production/framework.md#1-class-hierarchy) (4 calls, [`09-machines-utility`](../09-machines-utility/index.md)) | `createFX` | station |
+| `OreClusterPing` | [`OreClusterScanner`](../06-items/special-items.md#ore-cluster-scanner-oreclusterscanner-techgunsoreclusterscanner) ([`06-items`](../06-items/index.md)) | `createFX` | ore cluster (visible through walls) |
 
 ## Data-file systems
 
@@ -284,20 +284,20 @@ Raw keys are written `value@time` exactly as in the file. The "effective" column
 
 ## Legacy named particles (`ClientProxy.spawnParticle`)
 
-These are hard-coded in `java/techguns/client/ClientProxy.java`. Each call creates a single sprite (see [particle-system.md §4](particle-system.md#4-legacy-sprite-particle-entityparticleanimated) for the `EntityParticleAnimated` semantics). Sizes are `particleScale`, so the half-width is 0.1 × scale blocks. "Grow" is `setScaleIncrease(min, max, factor, soft = true)`. Values passed through `setMaxAge` and the scale setters are randomised ±20 % (randomness defaults to 0.20 unless the call sets it first; the scale and age setters are called before `setRandomness`). "Velocity" is the motion passed in.
+These are hard-coded in `java/techguns/client/ClientProxy.java`. Each call creates a single sprite (see [particle-system.md §4](particle-system.md#4-legacy-sprite-particle-entityparticleanimated) for the [`EntityParticleAnimated`](particle-system.md#4-legacy-sprite-particle-entityparticleanimated) semantics). Sizes are `particleScale`, so the half-width is 0.1 × scale blocks. "Grow" is `setScaleIncrease(min, max, factor, soft = true)`. Values passed through `setMaxAge` and the scale setters are randomised ±20 % (randomness defaults to 0.20 unless the call sets it first; the scale and age setters are called before `setRandomness`). "Velocity" is the motion passed in.
 
 | Name | Particle class | Texture (`textures/fx/...`) | Grid / sprites | Blend | Scale | Max age | Gravity | Grow | Colour | Other | Active callers |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| `Fireblast` | Animated | `fireblast.png` | 5×5 / 25 | ALPHA | 2.5 | 20 | 0 | 2.5 → 5 | white | random rotation, randomness 0.33, damping 0.90 | Rocket and Nuke rocket client trail (every tick); `AttackHelicopter` smoke and fire (`10-entities-npcs`) |
-| `Flamethrower` | Animated | `flamethrower_a.png` | 4×4 / 16 | ALPHA | 0.25 | 20 | 0 | 0.25 → 2.5, reaching max at 50 % of life | white | random rotation, randomness 0.75, damping 0.98 | `FlamethrowerProjectile` (2 per tick, client) |
-| `Jetpack` | Animated | `flamethrower_a.png` | 4×4 / 16 | ALPHA | 0.125 | 10 | 0 | 0.125 → 1.5, at 50 % | white | as Flamethrower | `RenderJetpack` (`05-armor`) |
-| `Explosion` | Animated | `Explosion.png` | 5×5 / 20 | ALPHA | 5 | 20 | 0.05 | 5 → 10 | white | random rotation | `ExplosiveChargeTileEnt` (`07-blocks`); `ProjectileExplosion.createExplosionEffect` (dead) |
+| `Fireblast` | Animated | `fireblast.png` | 5×5 / 25 | ALPHA | 2.5 | 20 | 0 | 2.5 → 5 | white | random rotation, randomness 0.33, damping 0.90 | Rocket and Nuke rocket client trail (every tick); [`AttackHelicopter`](../10-entities-npcs/per-mob.md#16-attack-helicopter-attackhelicopter-boss) smoke and fire ([`10-entities-npcs`](../10-entities-npcs/index.md)) |
+| [`Flamethrower`](../02-guns/per-gun-behaviour.md#flamethrower-flamethrower-flamethrower) | Animated | `flamethrower_a.png` | 4×4 / 16 | ALPHA | 0.25 | 20 | 0 | 0.25 → 2.5, reaching max at 50 % of life | white | random rotation, randomness 0.75, damping 0.98 | [`FlamethrowerProjectile`](projectiles.md#32-flamethrowerprojectile) (2 per tick, client) |
+| `Jetpack` | Animated | `flamethrower_a.png` | 4×4 / 16 | ALPHA | 0.125 | 10 | 0 | 0.125 → 1.5, at 50 % | white | as Flamethrower | [`RenderJetpack`](../05-armor/rendering-and-models.md#3-special-slot-rendering-on-the-player-rendereradditionalslots) ([`05-armor`](../05-armor/index.md)) |
+| `Explosion` | Animated | `Explosion.png` | 5×5 / 20 | ALPHA | 5 | 20 | 0.05 | 5 → 10 | white | random rotation | [`ExplosiveChargeTileEnt`](../09-machines-utility/explosive-charges.md#nbt-explosivechargetileent) ([`07-blocks`](../07-blocks/index.md)); [`ProjectileExplosion.createExplosionEffect`](explosions.md#projectileexplosion) (dead) |
 | `ExplosionHuge` | Animated | `Explosion.png` | 5×5 / 20 | ALPHA | 5 | 40 | 0.05 | 20 → 40 | white | random rotation | `AttackHelicopter` death |
 | `LargeSmoke` | Animated | `largesmoke.png` | 2×2 / 4 | ALPHA_SHADED | 7.5 | 40 | 0 | 7.5 → 12.5 | white | delay 7 ticks, random rotation, randomness 0.5, damping 0.98 | `AttackHelicopter`, `ExplosiveChargeTileEnt` |
-| `impact` | Animated | `impact.png` | 2×2 / 4 | ADDITIVE | 2.5 | 5 | 0 | 2.5 → 7.5 | (255, 215, 155) alpha 128 → 0, linear | n/a | `PowerHammerProjectile` impact |
+| `impact` | Animated | `impact.png` | 2×2 / 4 | ADDITIVE | 2.5 | 5 | 0 | 2.5 → 7.5 | (255, 215, 155) alpha 128 → 0, linear | n/a | [`PowerHammerProjectile`](projectiles.md#311-powerhammerprojectile) impact |
 | `BlasterFlare` | Animated | `blasterflare01.png` | 4×4 / 14 | ADDITIVE | 2.5 | 16 | 0 | n/a | white | n/a | `CyberdemonBlasterProjectile` constructor (server-side, single-player only) |
-| `AlienBlasterFlare` | Animated | `alienflare.png` | 4×4 / 14 | ADDITIVE | 3.0 | 5 | 0 | n/a | white | n/a | `RailgunProjectile` trail (unspawned entity) |
-| `MuzzleFlashYellow` | Animated | `muzzleflash2.png` | 4×4 / 8 | ADDITIVE | 1.5 | 4 | 0 | n/a | white | n/a | gun muzzle-particle index 1 (third-person and NPC flashes, `03-gun-visuals-audio`) |
+| `AlienBlasterFlare` | Animated | `alienflare.png` | 4×4 / 14 | ADDITIVE | 3.0 | 5 | 0 | n/a | white | n/a | [`RailgunProjectile`](projectiles.md#316-railgunprojectile-never-spawned) trail (unspawned entity) |
+| `MuzzleFlashYellow` | Animated | `muzzleflash2.png` | 4×4 / 8 | ADDITIVE | 1.5 | 4 | 0 | n/a | white | n/a | gun muzzle-particle index 1 (third-person and NPC flashes, [`03-gun-visuals-audio`](../03-gun-visuals-audio/index.md)) |
 | `MuzzleFlashExp` | Animated | `muzzleflash4x4.png` | 4×4 / 10 | ADDITIVE | 1.5 | 4 | 0 | n/a | white | n/a | muzzle index 2 |
 | `MuzzleFlashBlue` | Animated | `muzzleflash_blue.png` | 4×4 / 8 | ADDITIVE | 1.5 | 4 | 0 | n/a | white | n/a | muzzle index 3 |
 | `MuzzleFlashLaser` | Animated | `laserflare02.png` | 4×4 / 7 | ADDITIVE | 1.5 | 4 | 0 | n/a | white | n/a | muzzle index 4 |
@@ -320,6 +320,6 @@ Unknown names produce no particle and no error message (the legacy switch simply
 
 | Source | Texture | Grid | Blend | Parameters |
 |---|---|---|---|---|
-| `EntityBloodEffect` (blood) | `blood4x4.png` | 2×2, used as 4 random variations | ALPHA | Scale 5 → 10 grow, age 20, gravity 0.07. Blood colour fades alpha 255 → 0 from 50 %. Random rotation, randomness 0.5, damping 0.98. |
+| [`EntityBloodEffect`](death-effects.md#blood-burst-entitybloodeffect) (blood) | `blood4x4.png` | 2×2, used as 4 random variations | ALPHA | Scale 5 → 10 grow, age 20, gravity 0.07. Blood colour fades alpha 255 → 0 from 50 %. Random rotation, randomness 0.5, damping 0.98. |
 | `EntityBloodEffect` (no-blood dust) | `dustclouds02.png` | 3×3 / 9, animated | ALPHA_SHADED | Scale 5 → 10, age 40, gravity 0.05. Blood colour 255 → 0 from 50 %. Random rotation, randomness 0.5, damping 0.98. |
-| `FlyingGibs` blood trail | `blood4x4.png` | 2×2 variations | ALPHA | Scale size × 2 → size × 4, age 15, gravity 0.07. Blood colour 255 → 0 from 50 %. Random rotation, randomness 0.8, damping 0.92. |
+| [`FlyingGibs`](projectiles.md#319-flyinggibs) blood trail | `blood4x4.png` | 2×2 variations | ALPHA | Scale size × 2 → size × 4, age 15, gravity 0.07. Blood colour 255 → 0 from 50 %. Random rotation, randomness 0.8, damping 0.92. |

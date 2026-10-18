@@ -120,8 +120,8 @@ Source: `resources/assets/techguns/lang/en_US.lang` (only `en_US` is listed here
 
 | Source | Text |
 |---|---|
-| `PoweredArmor` | `Power: <p>/<max>` and `PowerType: Steam\|RF[ (<battery name>)]`, both aqua |
-| `ItemTGSpecialSlot` | `Slot: <Face\|Back>`, grey (the slot name comes from `TGSlotType.toString`) |
+| [`PoweredArmor`](armor-catalogue.md#9-power-system-poweredarmor) | `Power: <p>/<max>` and `PowerType: Steam\|RF[ (<battery name>)]`, both aqua |
+| `ItemTGSpecialSlot` | `Slot: <Face\|Back>`, grey (the slot name comes from [`TGSlotType.toString`](extra-inventory.md#2-tgslottype-enum)) |
 | `ItemTGSpecialSlotAmmo` | `Reloads with: <ammo name>`, aqua |
 | Armour resistance lines | Prefixes ` AR: `, ` PR: `, ` EX: `, ` E: `, ` F: `, ` I: `, ` L: `, ` P: `, ` RAD: ` |
 | GUI radiation tooltip | `Effects: NONE` |
@@ -151,5 +151,5 @@ Source: `resources/assets/techguns/lang/en_US.lang` (only `en_US` is listed here
 | `techguns.key.toggleNightvision` | Toggle Nightvision (default N) |
 | `techguns.key.toggleStepassist` | Toggle Step Assist (default V) |
 | `techguns.key.toggleJetpack` | Toggle Jetpack (default J) |
-| `techguns.key.toggleSafemode` | Toggle Safe Mode (default B; 02-guns) |
-| `techguns.key.forceReload` | Force Reload (default R; 02-guns) |
+| `techguns.key.toggleSafemode` | Toggle Safe Mode (default B; [02-guns](../02-guns/index.md)) |
+| `techguns.key.forceReload` | Force Reload (default R; [02-guns](../02-guns/index.md)) |

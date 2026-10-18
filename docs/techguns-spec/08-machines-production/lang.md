@@ -93,13 +93,13 @@ The security tooltip's first line is built as "Owned by: Owner: \<name>", since 
 
 The other risk types use the literal "NOT_YET_IMPLEMENTED".
 
-Item names referenced by the machines (Machine Upgrade, ammo, plates, foci, etc.) are documented in `06-items`. Notable ones: `techguns.item.machineStackUpgrade.name` "Machine Upgrade (Stack Operation)", `techguns.item.uvemitter.name` "UV Emitter", `techguns.item.rcHeatRay.name` "Reaction Chamber Heat Ray Focus".
+Item names referenced by the machines (Machine Upgrade, ammo, plates, foci, etc.) are documented in [`06-items`](../06-items/index.md). Notable ones: `techguns.item.machineStackUpgrade.name` "Machine Upgrade (Stack Operation)", `techguns.item.uvemitter.name` "UV Emitter", `techguns.item.rcHeatRay.name` "Reaction Chamber Heat Ray Focus".
 
 ## 5. Hard-coded (not localized) strings
 
 | String | Where |
 |---|---|
-| `Building:` | Ammo Press GUI (MPRD-31) |
+| `Building:` | Ammo Press GUI ([MPRD-31](index.md#suspected-bugs)) |
 | `Empty` | Reaction Chamber tank tooltip (MPRD-31) |
 | ` RF`, `RF/t`, `RF/T`, ` ticks`, ` mB`, `mB`, `%` | GUI and NEI number suffixes |
 | `>` `<` `+` `-` `x` | button labels |

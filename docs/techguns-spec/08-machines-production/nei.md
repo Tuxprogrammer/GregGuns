@@ -2,9 +2,9 @@
 
 ## 1. `NEITechgunsConfig` (`IConfigureNEI`, optional on mod `NotEnoughItems`)
 
-- `getName()` returns `Techguns.MODNAME`; `getVersion()` returns `Techguns.VERSION`.
+- `getName()` returns [`Techguns.MODNAME`](../01-core/lifecycle-and-registration.md#lifecycle-overview); `getVersion()` returns `Techguns.VERSION`.
 - `loadConfig()` creates six handlers and registers each one as **both** a recipe handler and a usage handler: Ammo Press, Metal Press, Chem Lab, Charging Station, Fabricator, Reaction Chamber.
-- It sets the NEI GUI offset to (+5, +11) for `GuiAmmoPress` and `GuiChemLab`, so NEI's transfer-rect clicks line up. The Metal Press offset call is commented out.
+- It sets the NEI GUI offset to (+5, +11) for [`GuiAmmoPress`](ammo-press.md#5-gui-guiammopress-texture-texturesguiammopress_guipng) and [`GuiChemLab`](chem-lab.md#5-gui-guichemlab-texturesguichemlab_guipng), so NEI's transfer-rect clicks line up. The Metal Press offset call is commented out.
 
 ## 2. Common conventions
 
@@ -25,7 +25,7 @@
 - **Positions.** metal1 (100,17), metal2 (120,17), powder (140,17), result (120,60).
 - **All recipes:** the four ammo outputs (9mm ×12, shotgun ×16, rifle ×8, high-calibre ×4), each with the full metal1/metal2/powder lists cycling.
 - **Crafting lookup:** for any of the four ammo items, one recipe whose output stack size comes from the plan table.
-- **Usage lookup:** an ingredient in the metal1, metal2 or powder list shows all four plans with that slot fixed to the ingredient (metal2 shown ×2). The fixed-ingredient list is reused and grows each iteration (MPRD-30).
+- **Usage lookup:** an ingredient in the metal1, metal2 or powder list shows all four plans with that slot fixed to the ingredient (metal2 shown ×2). The fixed-ingredient list is reused and grows each iteration ([MPRD-30](index.md#suspected-bugs)).
 
 ### Metal Press: `TechgunsMetalPressNEIRecipeHandler`, ID `Techguns:MetalPress`
 
@@ -47,7 +47,7 @@
 This handler extends `TechgunsLiquidTemplateRecipeHandler`.
 
 - **Transfer rect.** (75,4) 53×30.
-- **Positions.** input 1 (35,17), input 2 (57,17), flask (35,40), output (135,17). Ingredient display sizes are set to the recipe amounts. This **writes into shared ore stacks** (MPRD-23).
+- **Positions.** input 1 (35,17), input 2 (57,17), flask (35,40), output (135,17). Ingredient display sizes are set to the recipe amounts. This **writes into shared ore stacks** ([MPRD-23](index.md#suspected-bugs)).
 - **Extras.**
   - The 5-stage progress animation exactly as in the GUI (`chem-lab.md`), looping every 100 NEI ticks.
   - "\<RF/t> RF/t" centred at (105,50).
@@ -69,7 +69,7 @@ This handler extends `TechgunsLiquidTemplateRecipeHandler`.
 - **Extras.**
   - Animated lightning arrow from `ChargingStation_Gui.png`: u0 v167, 30×10, at (39,19), direction 0 (left→right), 100 ticks.
   - The power bar.
-  - "\<chargeAmount> RF" at (57,40). It's looked up by NEI list index rather than recipe index (MPRD-22).
+  - "\<chargeAmount> RF" at (57,40). It's looked up by NEI list index rather than recipe index ([MPRD-22](index.md#suspected-bugs)).
 - **Positions.** input (19,17), output (68,17).
 - **Lookups.** Crafting matches the output with exact damage. Usage matches the input through the ore-dict wrapper.
 

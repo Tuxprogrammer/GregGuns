@@ -4,10 +4,10 @@ Files: `DamageType.java`, `TGDamageSource.java`, `DamageSystem.java`, `TGArmorMa
 
 Related code owned elsewhere:
 
-* the `LivingAttackEvent` hook in `events/TechgunsEventhandler.java` (01-core), summarised in §4 because it is the entry point;
-* `GenericArmor.getProperties` (05-armor), which applies player armour;
-* projectile `onImpact` code (04), which calls `getDamageFactor` and `attackEntityFrom`;
-* the material instances in `TGArmors.java` (05-armor).
+* the `LivingAttackEvent` hook in [`events/TechgunsEventhandler.java`](../01-core/events.md#techgunseventhandler-forge-bus) ([01-core](../01-core/index.md)), summarised in §4 because it is the entry point;
+* [`GenericArmor.getProperties`](../05-armor/armor-catalogue.md#1-class-hierarchy) ([05-armor](../05-armor/index.md)), which applies player armour;
+* projectile `onImpact` code ([04](../04-projectiles-fx/index.md)), which calls `getDamageFactor` and `attackEntityFrom`;
+* the material instances in [`TGArmors.java`](../05-armor/armor-catalogue.md) ([05-armor](../05-armor/index.md)).
 
 ## 1. Damage types (`DamageType` enum)
 
@@ -35,7 +35,7 @@ Fields and defaults:
 | `attacker` | null | The real shooter. `getEntity()` returns it when set, otherwise the damaging entity. |
 | `damageSourceEntity` (inherited) | – | The directly damaging entity (projectile or player). `getSourceOfDamage()` returns it. |
 | `damageType` | – | `DamageType` |
-| `deathType` | – | `DeathType` (DEFAULT, GORE, LASER, BIO, … owned by 01/10). Drives special death effects. |
+| `deathType` | – | `DeathType` (DEFAULT, GORE, LASER, BIO, … owned by [01](../01-core/index.md)/[10](../10-entities-npcs/index.md)). Drives special death effects. |
 | `goreChance` | 0.5 | On a killing blow, if a random float exceeds `goreChance`, the death type falls back to DEFAULT. |
 | `armorPenetration` | 0.0 | 0..1 |
 | `ignoreHurtresistTime` | false | If true, the hit ignores and doesn't set invulnerability frames. |
@@ -55,7 +55,7 @@ Factory helpers (the name becomes the death-message key `death.attack.<name>`):
 | `causeLightningDamage` | `tg_lightning` | LIGHTNING | yes |
 | `getKnockbackDummyDmgSrc` | `tg_knockback` | PHYSICAL, DeathType DEFAULT | no |
 
-Other names constructed directly elsewhere: `player` (gun melee, PHYSICAL), `chainsaw` (PHYSICAL), `powerhammer` (PHYSICAL) and `tg_sonic` (PHYSICAL).
+Other names constructed directly elsewhere: `player` (gun melee, PHYSICAL), [`chainsaw`](gun-catalogue.md#table-a-identity-and-ammunition) (PHYSICAL), `powerhammer` (PHYSICAL) and `tg_sonic` (PHYSICAL).
 
 `setNoKnockback()` sets the multiplier to 0. `setKnockback(m)` sets it to m. `hasKnockback()` is true when the multiplier is > 0.
 
@@ -85,7 +85,7 @@ Death-message lang keys present:
 
 `tg_knockback` has no key. That source only deals 0.01 damage, so a kill by it is very unlikely.
 
-**Converting a vanilla DamageSource** (`getFromGenericDamageSource`): a TGDamageSource is returned unchanged. Anything else becomes a new TGDamageSource with the same name and the vanilla source's *direct* entity. `attacker` stays null and `wasConverted` is set to true (GUN-37). Type mapping, first match wins:
+**Converting a vanilla DamageSource** (`getFromGenericDamageSource`): a TGDamageSource is returned unchanged. Anything else becomes a new TGDamageSource with the same name and the vanilla source's *direct* entity. `attacker` stays null and `wasConverted` is set to true ([GUN-37](index.md#suspected-bugs)). Type mapping, first match wins:
 
 1. explosion → EXPLOSION
 2. magic → ENERGY
@@ -95,16 +95,16 @@ Death-message lang keys present:
 6. can harm in creative, or name in {`inWall`, `drown`, `starve`, `fall`, `outOfWorld`} → UNRESISTABLE
 7. otherwise → PHYSICAL
 
-Vanilla flags are copied: creative-harm, absolute, explosion, fire, magic, projectile, unblockable. The difficulty-scaled flag is mapped to **absolute** instead (GUN-36). A second constructor overload for `EntityDamageSource` does the same but starts from `getEntity()`; it is only reached with a statically typed `EntityDamageSource`.
+Vanilla flags are copied: creative-harm, absolute, explosion, fire, magic, projectile, unblockable. The difficulty-scaled flag is mapped to **absolute** instead ([GUN-36](index.md#suspected-bugs)). A second constructor overload for `EntityDamageSource` does the same but starts from `getEntity()`; it is only reached with a statically typed `EntityDamageSource`.
 
 ## 3. Interfaces
 
-* `INpcTGDamageSystem` (implemented by `GenericNPC`, `AlienBug`, `AlienBugDomesticated` and `AttackHelicopter`, documented in 10):
+* `INpcTGDamageSystem` (implemented by [`GenericNPC`](../10-entities-npcs/per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava), [`AlienBug`](../10-entities-npcs/per-mob.md#15-alien-bug-alienbug), [`AlienBugDomesticated`](../10-entities-npcs/per-mob.md#alienbugdomesticated-dead-code) and [`AttackHelicopter`](../10-entities-npcs/per-mob.md#16-attack-helicopter-attackhelicopter-boss), documented in [10](../10-entities-npcs/index.md)):
   * `getTotalArmorAgainstType(src)`: the entity's armour value for the source's damage type;
   * `getPenetrationResistance(src)`: subtracted from the source's penetration.
 
   Any entity implementing it receives **all** damage through the Techguns pipeline, including vanilla damage.
-* `IToolTGDamageSystem` (implemented by `TGSword` and `TGPickaxe`, 06): `getDamageSource(original)` turns the vanilla melee source into a TGDamageSource when the attacker holds that tool.
+* `IToolTGDamageSystem` (implemented by [`TGSword`](../06-items/special-items.md#combat-knife-tgsword-techgunscombatknife) and [`TGPickaxe`](../06-items/special-items.md#crowbar-tgcrowbar--tgpickaxe-techgunscrowbar), 06): `getDamageSource(original)` turns the vanilla melee source into a TGDamageSource when the attacker holds that tool.
 
 ## 4. Entry point: `LivingAttackEvent` (HIGH priority)
 
@@ -139,13 +139,13 @@ Re-implements vanilla `EntityLivingBase.attackEntityFrom`, with these TG differe
 4. **Invulnerability frames.** Let `flag` mean "this is a fresh hit".
    * If the source doesn't ignore i-frames and `hurtResistantTime > max/2`:
      * if `d ≤ lastDamage`, stop (no damage);
-     * otherwise apply the **full** `d` (vanilla applies only `d − lastDamage`, GUN-33) and set `lastDamage = d`. Not a fresh hit.
+     * otherwise apply the **full** `d` (vanilla applies only `d − lastDamage`, [GUN-33](index.md#suspected-bugs)) and set `lastDamage = d`. Not a fresh hit.
    * Otherwise: `prevHealth = health`. If the source doesn't ignore i-frames, set `lastDamage = d`, `hurtResistantTime = max`, and `hurtTime = maxHurtTime = 10` after damage. Apply `d`. Fresh hit.
 
    Sources that ignore i-frames (most TG projectiles) never set or check i-frames. That is why every pellet of a shotgun lands, and why the minigun hits every tick.
 5. **Apply** `d`: players go through `damageEntityPlayer` (§5.3), everything else through `damageEntity` (§5.4).
 6. `attackedAtYaw = 0`. If the source's entity (the attacker, or the projectile when no attacker is set) is living, set it as revenge target. If it is a player, set `recentlyHit = 100` and `attackingPlayer` (for XP and player-kill loot). If it is a tamed tameable, set `recentlyHit = 100` and `attackingPlayer = null`.
-7. On a fresh hit: send entity status 2 (hurt animation), mark the target as attacked (except for drowning), and apply knockback if the source has knockback and an entity. The knockback direction is from the attacker's position (the shooter, not the projectile), and it calls vanilla `knockBack(entity, d × multiplier, dx, dz)`. Vanilla 1.7.10 ignores the strength argument (fixed 0.4), so in practice the multiplier is a 0 / non-zero switch (GUN-38). Without knockback, `attackedAtYaw` is randomly 0 or 180.
+7. On a fresh hit: send entity status 2 (hurt animation), mark the target as attacked (except for drowning), and apply knockback if the source has knockback and an entity. The knockback direction is from the attacker's position (the shooter, not the projectile), and it calls vanilla `knockBack(entity, d × multiplier, dx, dz)`. Vanilla 1.7.10 ignores the strength argument (fixed 0.4), so in practice the multiplier is a 0 / non-zero switch ([GUN-38](index.md#suspected-bugs)). Without knockback, `attackedAtYaw` is randomly 0 or 180.
 8. If health ≤ 0: play the death sound (fresh hits only), roll gore (see `goreChance`), then `onDeath(src)`. Otherwise play the hurt sound (fresh hits only).
 
 Reflection is used for the private vanilla fields and methods involved: `entityAge`, `lastDamage`, `recentlyHit`, `attackingPlayer`, `setBeenAttacked`, `getDeathSound`, `getHurtSound`, `getSoundVolume`, `getSoundPitch`, `applyPotionDamageCalculations`, `damageArmor`.
@@ -156,25 +156,25 @@ Reflection is used for the private vanilla fields and methods involved: `entityA
 2. If the type is PHYSICAL and the player is blocking: `d = (1 + d) × 0.5`.
 3. `ArmorProperties.ApplyArmor` (Forge) runs over the four armour slots.
    * Techguns armour is `ISpecialArmor`, so `GenericArmor.getProperties` supplies the ratio (see the formula below).
-   * Vanilla armour pieces use their own vanilla ratio for **every** non-unblockable TG type (GUN-45).
+   * Vanilla armour pieces use their own vanilla ratio for **every** non-unblockable TG type ([GUN-45](index.md#suspected-bugs)).
 4. Return if ≤ 0. Apply potion calculations (Resistance and similar).
 5. Absorption hearts absorb first. If anything remains: add exhaustion (`src.getHungerDamage()`), lower health, and record in the combat tracker.
 
-**Player armour formula** (`GenericArmor.getProperties` in 05, using `DamageSystem.getReduction` and `calcPenetration`). For each worn TG piece that isn't nearly broken, with `A` = that piece's armour value against the damage type (`TGArmorMaterial.getArmorValueSlot`):
+**Player armour formula** (`GenericArmor.getProperties` in [05](../05-armor/index.md), using `DamageSystem.getReduction` and `calcPenetration`). For each worn TG piece that isn't nearly broken, with `A` = that piece's armour value against the damage type (`TGArmorMaterial.getArmorValueSlot`):
 
 * if `A > 0`:
   * `pen = src.armorPenetration`;
-  * if `pen > 0`: `pen = clamp(calcPenetration(player, pen − piecePenetrationResistance), 0, 1)`, written back into the source (GUN-39);
+  * if `pen > 0`: `pen = clamp(calcPenetration(player, pen − piecePenetrationResistance), 0, 1)`, written back into the source ([GUN-39](index.md#suspected-bugs));
   * `ratio = (1 − pen) × A / 25`. This is `getReduction`: the share of damage blocked. The penetrating part `d×pen` passes through, and the blocked part `d×(1−pen)` is scaled by `(25 − A) × 0.04`.
 * Forge sums the ratios of all pieces (capped at 1) and absorbs up to each piece's remaining durability.
 
-`calcPenetration(target, pen, src)`: if the target is a player, multiply `pen` by `TGConfig.armorPenPvP` (config `ArmorPenetrationMultiplierPvP`, default 1.0) when the attacker is a player, otherwise by `TGConfig.armorPenNPCtoPlayer` (`ArmorPenetrationMultiplierNPCtoPlayer`, default 1.0). Clamp to 0..1.
+`calcPenetration(target, pen, src)`: if the target is a player, multiply `pen` by [`TGConfig.armorPenPvP`](../01-core/config.md) (config [`ArmorPenetrationMultiplierPvP`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205), default 1.0) when the attacker is a player, otherwise by `TGConfig.armorPenNPCtoPlayer` ([`ArmorPenetrationMultiplierNPCtoPlayer`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205), default 1.0). Clamp to 0..1.
 
 ### 5.4 `damageEntity(elb, src, d)` (non-players)
 
 1. Return if invulnerable. Forge `LivingHurtEvent`; return if ≤ 0.
 2. `d = getDamage(src, d, elb)` (formula below). Then the potion calculations.
-3. Absorption first. Then lower health and record in the combat tracker. A second absorption subtraction follows (GUN-35).
+3. Absorption first. Then lower health and record in the combat tracker. A second absorption subtraction follows ([GUN-35](index.md#suspected-bugs)).
 
 **`getDamage(src, d, target)`:**
 
@@ -202,21 +202,21 @@ return d × pen + d × (1 − pen) × (25 − armor) / 25
 
 ### 5.5 Damage factors (`getDamageFactor(attacker, target)`)
 
-Called by projectiles (04) and explosions (`ProjectileExplosion`) before `attackEntityFrom`. The result multiplies the projectile damage.
+Called by projectiles ([04](../04-projectiles-fx/index.md)) and explosions ([`ProjectileExplosion`](../04-projectiles-fx/explosions.md#projectileexplosion)) before `attackEntityFrom`. The result multiplies the projectile damage.
 
-| Attacker → target | Factor | Config key (category "Damage Factors", file 01) | Default |
+| Attacker → target | Factor | Config key (category "Damage Factors", file [01](../01-core/index.md)) | Default |
 |---|---|---|---|
-| player → player | `damagePvP` if server PvP is on, else **0** | `DamagePvP` (0–100) | 0.5 |
-| NPCTurret → player | `damageTurretToPlayer` | `DamageTurretToPlayer` | 0.5 |
-| other (incl. null) → player | `damageFactorNPC` | `DamageFactorNPC` | 1.0 |
+| player → player | `damagePvP` if server PvP is on, else **0** | [`DamagePvP`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) (0–100) | 0.5 |
+| NPCTurret → player | `damageTurretToPlayer` | [`DamageTurretToPlayer`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) | 0.5 |
+| other (incl. null) → player | `damageFactorNPC` | [`DamageFactorNPC`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) | 1.0 |
 | player → non-player | 1.0 | – | – |
 | non-player → non-player | `damageFactorNPC` | `DamageFactorNPC` | 1.0 |
 
 ### 5.6 Other helpers
 
-* `getTotalArmorAgainstType(player, type)`: sums `GenericArmor.getArmorValue` over worn TG pieces, plus the vanilla reduction amount for vanilla `ItemArmor` (PHYSICAL only). It is used by the Techguns inventory GUI to show per-type armour (01/05).
+* `getTotalArmorAgainstType(player, type)`: sums `GenericArmor.getArmorValue` over worn TG pieces, plus the vanilla reduction amount for vanilla `ItemArmor` (PHYSICAL only). It is used by the Techguns inventory GUI to show per-type armour ([01](../01-core/index.md)/[05](../05-armor/index.md)).
 * `getAdditionalReduction(target, type)`: returns 0.5 for fire against fire-immune targets, otherwise 1. Never called.
-* `damageEntity(EntityClientPlayerMP, …)`: subtracts health directly. Never called. Its signature uses a client-only class (GUN-41).
+* `damageEntity(EntityClientPlayerMP, …)`: subtracts health directly. Never called. Its signature uses a client-only class ([GUN-41](index.md#suspected-bugs)).
 
 ### 5.7 Worked example
 
@@ -228,7 +228,7 @@ M4 bullet (8 damage, 15% pen) against a zombie wearing full iron armour (15 armo
 
 ## 6. `TGArmorMaterial`
 
-The data class behind every Techguns armour set. Instances and their values are in `TGArmors.java` (05-armor).
+The data class behind every Techguns armour set. Instances and their values are in `TGArmors.java` ([05-armor](../05-armor/index.md)).
 
 Fields: `name`, `baseDur`, `enchantability`, per-type totals `armorPhys`, `armorProjectile`, `armorExplosion`, `armorEnergy`, `armorFire`, `armorLightning`, `armorIce`, `armorPoison`, `armorRadiation` (all floats, default 0), and `penetrationResistance` (default 0).
 

@@ -37,7 +37,7 @@ When an event lists several files, Minecraft picks one at random each time it pl
 | guns.combatshotgunReload | combatshotgun_reload | reload | Combat Shotgun |
 | guns.lasergunFire | lasergun_shot_a–c | fire | Laser Gun, Scatter Beam Gun |
 | guns.lasergunReload | lasergun_reload | reload | Laser Gun, Scatter Beam Gun, Blaster Rifle, NDR |
-| guns.rocketFire | rocket_shot_a–c | fire | Rocket Launcher, Nuke Launcher, Grim Reaper. Also the Attack Helicopter NPC firing a rocket (volume 5, area 10). Dispenser use is commented out |
+| guns.rocketFire | rocket_shot_a–c | fire | Rocket Launcher, Nuke Launcher, Grim Reaper. Also the Attack Helicopter NPC firing a rocket (volume 5, area [10](../10-entities-npcs/index.md)). Dispenser use is commented out |
 | guns.rocketReload | rocket_reload | reload | Rocket Launcher, Nuke Launcher, Grim Reaper |
 | guns.biogunFire | biogun_shot_a–c | charge released | Bio Gun |
 | guns.biogunReload | biogun_reload | reload | Bio Gun |

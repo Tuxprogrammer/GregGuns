@@ -2,12 +2,12 @@
 
 ## 1. Loading
 
-- `Techguns` init: if mod `MineTweaker3` is loaded, it calls `new TechgunsMineTweakerIntegration().init()`. `ITechgunsMineTweakerIntegration` is the interface, with `@Optional.Interface` on `MineTweaker3`.
+- [`Techguns`](../01-core/lifecycle-and-registration.md#lifecycle-overview) init: if mod `MineTweaker3` is loaded, it calls `new TechgunsMineTweakerIntegration().init()`. `ITechgunsMineTweakerIntegration` is the interface, with `@Optional.Interface` on `MineTweaker3`.
 - `init()` registers seven Zen classes: `AmmoPressTweaker`, `CharginStationTweaker` (sic), `MetalPressTweaker`, `ChemLabTweaker`, `FabricatorTweaker`, `ReactionChamberTweaker`, `OreClusterTweaker`.
 
 **`TGMineTweakerHelper`:**
 - `getItemNames(IIngredient)` produces `[name,name,…]` for log text.
-- `toItemStackOreDict` converts an `IItemStack`, a `String` (ore name) or an `Object` into an `ItemStackOreDict`. Anything else becomes a null stack.
+- `toItemStackOreDict` converts an `IItemStack`, a `String` (ore name) or an `Object` into an [`ItemStackOreDict`](gui-handler.md#6-itemstackoredict-recipe-ingredient-wrapper). Anything else becomes a null stack.
 - The item form keeps the stack's size and damage, and is matched with wildcard damage allowed.
 
 **Undo.** "Undoable" actions support `/mt reload`. "One-way" actions (`OneWayAction`) can't be undone.
@@ -57,7 +57,7 @@ Each input still consumes 1 item per unit, whatever the stack size.
 
 **Add rules:**
 - `amount2 ≤ 0` turns input 2 into "must be empty".
-- A `fluidIn` or `fluidOut` amount ≤ 0 means no fluid. A null `ILiquidStack` would throw (MPRD-06), so scripts must pass an amount of 0 instead.
+- A `fluidIn` or `fluidOut` amount ≤ 0 means no fluid. A null `ILiquidStack` would throw ([MPRD-06](index.md#suspected-bugs)), so scripts must pass an amount of 0 instead.
 - An output stack size ≤ 0 means no item output.
 - The flask slot is always unused.
 - `amount1` isn't validated.
@@ -73,7 +73,7 @@ Each input still consumes 1 item per unit, whatever the stack size.
   - If the wire, powder or plate ingredient isn't in any of the three slot whitelists, it's added to the list for its slot.
   - If it's already only in the correct list, nothing changes.
   - If it's in a different slot's list, the log gets "WARNING while adding Fabricator Recipe for …: One input already in use in another slot by other recipes! THIS WILL NOT WORK!" and the recipe is still added.
-  - "Not required" null stacks get added to the lists too, which later crashes on comparison (MPRD-25).
+  - "Not required" null stacks get added to the lists too, which later crashes on comparison ([MPRD-25](index.md#suspected-bugs)).
 
 **`removeRecipe`** (one-way). Parameter: `IItemStack output`. Removes every recipe whose output equals it (exact damage). Each removed recipe's wire, powder and plate ingredients are taken off the whitelists if no remaining recipe uses them in that slot.
 
@@ -97,14 +97,14 @@ Validation happens at construction. On failure, the action logs "ERROR Adding Re
 
 The values are stored as bytes or shorts (the range limits keep them safe). `ticks` and `requiredCompletion` are cast to byte without checks.
 
-**`removeRecipe`** (one-way). Parameters: `(IItemStack | String) input, ILiquidStack fluid`. Removes every recipe whose input `matches` and whose fluid equals the given fluid. Removal shifts list indices, and saved reactions refer to recipes by index (MPRD-04).
+**`removeRecipe`** (one-way). Parameters: `(IItemStack | String) input, ILiquidStack fluid`. Removes every recipe whose input `matches` and whose fluid equals the given fluid. Removal shifts list indices, and saved reactions refer to recipes by index ([MPRD-04](index.md#suspected-bugs)).
 
 ## 8. `mods.techguns.OreCluster` (consumer documented in `09-machines-utility` / `11-worldgen`)
 
 | Method | Parameters | Effect |
 |---|---|---|
 | `addOreCluster` | `int id, IItemStack ore, int miningLevel, float r, float g, float b, int textureType, float multPower, float multAmount` | `TGBlocks.oreClusterCustom.setOre(id, …)`: define meta `id` of custom ore cluster block 1 to yield `ore` |
-| `addOreCluster2` | same parameters | the same on `oreClusterCustom2` |
+| `addOreCluster2` | same parameters | the same on [`oreClusterCustom2`](../07-blocks/block-catalogue.md#registered-blocks) |
 | `addOreCluster` | `int id, ILiquidStack liquid, …same rest` | `setFluid(id, …)`: a fluid-yielding cluster on block 1 |
 | `addOreCluster2` | `int id, ILiquidStack liquid, …` | the same on block 2 |
 

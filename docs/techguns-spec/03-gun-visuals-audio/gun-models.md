@@ -22,8 +22,8 @@ Geometry of every weapon model in `java/techguns/client/models/` that belongs to
 | ModelMultipart | Abstract base. Adds the extended render (ammoLeft, reloadProgress, renderType, part, fireProgress). The plain render forwards with ammo 100, reload −1, type ENTITY, part 0, fire 0. |
 | ModelAkimbo(model, partsPerModel) | Wraps another multipart model. Part ≥ partsPerModel is folded to part − partsPerModel, so the same geometry is drawn for the left gun. |
 | ModelModel(objPath) | Loads a Wavefront OBJ via Forge `AdvancedModelLoader` from `assets/techguns/<objPath>`. Its render scales by the passed factor (0.0625) and renders the OBJ group named after the part index (`"0"`, `"1"`). The plain render draws every group. |
-| ModelNull | Empty ModelBase (used by the helicopter renderer, area 10). |
-| ModelGunAmmo | Abstract legacy ammo-aware ModelBase (ammoLeft, reloadProgress, renderType). No concrete subclass remains. Only the dead `RenderGun` path casts to it. |
+| ModelNull | Empty ModelBase (used by the helicopter renderer, area [10](../10-entities-npcs/index.md)). |
+| ModelGunAmmo | Abstract legacy ammo-aware ModelBase (ammoLeft, reloadProgress, renderType). No concrete subclass remains. Only the dead [`RenderGun`](rendering-framework.md#1-registration-client-proxy) path casts to it. |
 
 ---
 
@@ -45,7 +45,7 @@ Extent z −3…12, y −0.5…10, x −2…1 (15 long): a modern semi-automatic
 ### Unused pistol variants
 * **ModelPistol** (64×32, ModelBase, 9 boxes): early boxy pistol. Top 2×3×12, stepped grip 2×(3,5,4)×1, barrel 1×1×2, sights. Pairs with `textures/guns/pistol.png`. Not registered.
 * **ModelPistol2** (64×32, 8 boxes): ModelPistol3's frame with a solid 3×3×14 top instead of separate frame and slide. Pairs with `textures/guns/pistol2Texture.png`. Not registered.
-* **ModelPistol3Akimbo**: a `ModelBipedMultipart` (area 05 base) that attaches the Pistol3 boxes as children of `bipedLeftArm` and renders only that arm. Its only reference is an import in `RenderAkimboGun`, which actually uses plain ModelPistol3. Dead.
+* **ModelPistol3Akimbo**: a [`ModelBipedMultipart`](../05-armor/rendering-and-models.md#27-back-models-modelbipedmultipart-subclasses) (area [05](../05-armor/index.md) base) that attaches the Pistol3 boxes as children of `bipedLeftArm` and renders only that arm. Its only reference is an import in [`RenderAkimboGun`](../05-armor/rendering-and-models.md#3-special-slot-rendering-on-the-player-rendereradditionalslots), which actually uses plain ModelPistol3. Dead.
 
 ### ModelRevolver: 64×32, family X, 20 boxes, 1 part
 Extent x −5…23, y −2.8…11.5, z −1.5…3.5: a long-barrelled six-shooter.
@@ -179,7 +179,7 @@ Extent z −44…29, y −12…11.5, x −7.5…5.5.
 * **Heavy receiver:** 5×6×18 front (z −26…−8) with 4×1×18 and 3×1×16 top plates. 5×5×21 main receiver (z −8…13) with 4×1×20 top cover, 3×3×8, 3×2×2 and 5×3×10 underside. Top rail 2×1×17, bottom rail 2×1×12.
 * **Holographic sight:** 3×2×8 base, 1×2×5 sides ×2, 1×3×4 uprights ×2, 2×1×4 top bar, 1×1×0 red dot.
 * **Box magazine** on the left side: 13×6×7 (x −7.5…5.5, y 5…11), 9×4×7 top, 3×6×7 rotated 45° about Z (feed lip).
-* **Belt:** six 1×1×6 rot45 rounds (Bullet01–06) stepping from the box up to the receiver (x 2.5…4.5, y −4…0.5). Visibility depends on ammo ([rendering-framework.md §10](rendering-framework.md#10-ammo--and-state-dependent-geometry)).
+* **Belt:** six 1×1×6 rot45 rounds (Bullet01–[06](../06-items/index.md)) stepping from the box up to the receiver (x 2.5…4.5, y −4…0.5). Visibility depends on ammo ([rendering-framework.md §10](rendering-framework.md#10-ammo--and-state-dependent-geometry)).
 * Grip 3×9×4 tilted 26°, trigger pieces, foregrip 3×2×4 + 2×8×2 rotated 45° about Y.
 * **Stock:** 3×3×8 tilted 10°, two 3×5×10 side cheeks splayed (−12° X, ±6° Y), 3×7×8 butt, 3×1×6, 3×1×7, 3×1×1.
 
@@ -395,7 +395,7 @@ Vertical (Y axis), extent y −27…−9: a stick grenade.
 * Handle 2×12×2 rotated 45° about Y (field `Granate01`).
 * Head 4×5×4 on top (field `Stiel01`, y −27…−22).
 * End cap 3×1×3 at the handle bottom (field `Stiel02`).
-* The field names are the reverse of the German words. The same model renders the thrown projectile (area 04).
+* The field names are the reverse of the German words. The same model renders the thrown projectile (area [04](../04-projectiles-fx/index.md)).
 
 ### ModelFragGrenade(showRing): declared 32×32 (used with a 64×64 PNG), 11 boxes
 Vertical, extent y −20.2…−11.
@@ -416,9 +416,9 @@ Exported with "Max2Obj Version 4.0", all triangles, 252 vertices, 594 texture ve
 | `0` | 324 tris (240 verts) | x −26…18, y −12…9, z ±6.93 | Launcher body: long barrel, frame, stock and grip. The X axis is the long axis. The muzzle-flash placement suggests the barrel points to +X. | Whole sheet |
 | `1` | 12 tris (12 verts) | x −4…4, y −11…3, z ±6.06 | **Revolving drum**: a hexagonal prism around the X axis. The renderer rotates it about X during firing. | u 0.797…0.953, v 0.469…0.867: the strip of red 40 mm rounds on the right of the texture |
 
-Used only by `RenderGrenadeLauncher` with `textures/guns/grenadelauncher.png`. A second OBJ, `models/entity/launchergrenade.obj`, renders the grenade projectile (area 04).
+Used only by `RenderGrenadeLauncher` with `textures/guns/grenadelauncher.png`. A second OBJ, [`models/entity/launchergrenade.obj`](../10-entities-npcs/rendering-and-models.md#other-obj-files-in-modelsentity-in-this-folder-used-elsewhere), renders the grenade projectile (area [04](../04-projectiles-fx/index.md)).
 
 ---
 
 ## ModelSniperScope (unused)
-A ModelBase holding a texture reference and one 1080×1080×0 plane. Texture size is not set (vanilla default 64×32). A commented-out tessellator quad remains in the source. It is never instantiated. The scope overlay is drawn by `ScreenEffect.sniperScope` instead ([rendering-framework.md §9](rendering-framework.md#9-zoom-and-scopes)).
+A ModelBase holding a texture reference and one 1080×1080×0 plane. Texture size is not set (vanilla default 64×32). A commented-out tessellator quad remains in the source. It is never instantiated. The scope overlay is drawn by [`ScreenEffect.sniperScope`](../04-projectiles-fx/renderers.md#screeneffect-muzzle-flashes-and-scope-overlays) instead ([rendering-framework.md §9](rendering-framework.md#9-zoom-and-scopes)).

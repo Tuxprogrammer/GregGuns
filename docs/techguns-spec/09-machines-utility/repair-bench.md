@@ -1,6 +1,6 @@
 # Repair Bench
 
-`BasicMachine` meta 5. Tile entity `RepairBenchTileEnt`, registered as `RepairBenchTileEnt`. GUI id 5. Container `RepairBenchContainer`, GUI `GuiRepairBench`, button `GuiButtonRepair`. TESR `RenderTileEntityBlock` with `RepairBenchTesselatorCube`.
+[`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) meta 5. Tile entity [`RepairBenchTileEnt`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine), registered as `RepairBenchTileEnt`. GUI id 5. Container `RepairBenchContainer`, GUI `GuiRepairBench`, button `GuiButtonRepair`. TESR [`RenderTileEntityBlock`](../08-machines-production/rendering.md#4-rendertileentityblock-used-by-09s-camo-and-repair-benches) with [`RepairBenchTesselatorCube`](../07-blocks/textures.md#camo-bench-and-repair-bench-09).
 
 ## Purpose
 
@@ -8,7 +8,7 @@ The bench is an unpowered workbench that fully repairs the Techguns armour the p
 
 ## Tile entity
 
-- Extends `BasicInventoryTileEnt` with **9** slots, all general storage. Stack limit is 64.
+- Extends [`BasicInventoryTileEnt`](../08-machines-production/framework.md#2-basicinventorytileent) with **9** slots, all general storage. Stack limit is 64.
 - Any item is valid in any slot.
 - **Automation:** every side exposes slots 0–8. Insertion is allowed into any slot; extraction is never allowed.
 - Inventory name key: `techguns.container.repairbench` = "Repair Bench".
@@ -20,7 +20,7 @@ The bench is an unpowered workbench that fully repairs the Techguns armour the p
 Handles button ids 1–4, and only if the player passes `isUseableByPlayer`: same tile at the position and within 8 blocks (distance² ≤ 64).
 
 1. Map the button to a worn armour slot: button 1 → helmet, 2 → chestplate, 3 → leggings, 4 → boots. Internally, armour-inventory index = 3 − (id − 1).
-2. If that slot holds a `GenericArmor` (see 05-armor), ask the armour for its **repair material list**. That list is computed by the armour from its current damage (formula summarised below; 05 owns it).
+2. If that slot holds a [`GenericArmor`](../05-armor/armor-catalogue.md#1-class-hierarchy) (see [05-armor](../05-armor/index.md)), ask the armour for its **repair material list**. That list is computed by the armour from its current damage (formula summarised below; [05](../05-armor/index.md) owns it).
 3. If the list is non-empty and the bench's 9 slots together hold **every** listed stack, then:
    1. Consume all of them. Matching is by item and damage value and may span several slots.
    2. Set the armour's damage to 0, which is a full repair.
@@ -28,7 +28,7 @@ Handles button ids 1–4, and only if the player passes `isUseableByPlayer`: sam
 
 The armour's `canRepairOnRepairBench` is not checked on the server. An armour with no repair materials returns an empty list, so the effect is the same.
 
-**Repair-material formula** (from `GenericArmor`, for reference only; see 05-armor):
+**Repair-material formula** (from `GenericArmor`, for reference only; see [05-armor](../05-armor/index.md)):
 
 - damage fraction = damage ÷ (maxDamage − 1)
 - total = ceil(repairMatCount × fraction)
@@ -36,7 +36,7 @@ The armour's `canRepairOnRepairBench` is not checked on the server. An armour wi
 - cloth count = total − metal count
 - Each of the two entries appears only if its material is set and its count > 0.
 
-The per-armour material pairs, ratios and counts are listed in 05-armor.
+The per-armour material pairs, ratios and counts are listed in [05-armor](../05-armor/index.md).
 
 ## Container layout (`RepairBenchContainer`)
 
@@ -45,7 +45,7 @@ The per-armour material pairs, ratios and counts are listed in 05-armor.
 | 0–8 | bench 0–8 | plain `Slot` | (8 + 18·i, 57), one row |
 | 9–35 | player main 9–35 | plain | (8 + 18·col, 84 + 18·row) |
 | 36–44 | player hotbar 0–8 | plain | (8 + 18·i, 142) |
-| 45–48 | player armour (index 39 − i, so 45 = helmet … 48 = boots) | `SlotArmor` (stack limit 1, accepts only armour valid for that type, shows vanilla empty-armour background icons) | (89 + 20·i, 18) |
+| 45–48 | player armour (index 39 − i, so 45 = helmet … 48 = boots) | [`SlotArmor`](../05-armor/extra-inventory.md#4-container-tgplayercontainer) (stack limit 1, accepts only armour valid for that type, shows vanilla empty-armour background icons) | (89 + 20·i, 18) |
 
 Shift-click rules:
 
@@ -55,11 +55,11 @@ Shift-click rules:
 | Player slot | If `ItemArmor`, the matching armour slot 45 + armourType. Otherwise bench slots 0–8. |
 | Armour slot | Player inventory, filled from the end |
 
-Container index 9 is excluded from the player-slot range by an off-by-one, so shift-clicking the top-left main-inventory slot does nothing (MUTL-05).
+Container index 9 is excluded from the player-slot range by an off-by-one, so shift-clicking the top-left main-inventory slot does nothing ([MUTL-05](index.md#suspected-bugs)).
 
 ## GUI (`GuiRepairBench`)
 
-The GUI extends `GuiTechgunsTileEntBase` and is not powered. Size is the default 176 × 166. The background is `textures/gui/repairBench_GUI.png` at u,v (0,0), size 176 × 166. The file is catalogued by 08.
+The GUI extends [`GuiTechgunsTileEntBase`](../08-machines-production/gui-handler.md#2-guitechgunstileentbase-abstract-guicontainer) and is not powered. Size is the default 176 × 166. The background is [`textures/gui/repairBench_GUI.png`](../08-machines-production/gui-textures.md#8-texturesguirepairbench_guipng-owned-by-09) at u,v (0,0), size 176 × 166. The file is catalogued by 08.
 
 How this GUI uses the texture:
 
@@ -78,7 +78,7 @@ Foreground text (colour 0x404040):
 1. The vanilla button background from `textures/gui/widgets.png`, as a 9-slice continuous box; its hover state follows the vanilla button.
 2. The wrench icon from (176,0), size 12 × 12, at button offset (1,1).
 
-A click sends `GUIButtonClick` (tile position + button id; packet owned by 01) to the server.
+A click sends [`GUIButtonClick`](../01-core/networking.md#0--guibuttonclick-cs) (tile position + button id; packet owned by [01](../01-core/index.md)) to the server.
 
 **Hover tooltip** over each button area (90 + 20·i, 39, 14 × 14) describes the armour worn in the matching slot:
 

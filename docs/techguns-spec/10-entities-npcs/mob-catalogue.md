@@ -4,37 +4,37 @@ All living entities that Techguns 0.1.2 registers, with their registry data and 
 
 ## Registration (`java/techguns/TGEntities.java`)
 
-Every entity is registered with FML `registerModEntity`. The mod ID string is `Techguns` (capital T), so the global entity name is `Techguns.<Name>`, and that full name is what spawners, `EntityList` lookups and lang keys use.
+Every entity is registered with FML `registerModEntity`. The mod ID string is [`Techguns`](../01-core/lifecycle-and-registration.md#lifecycle-overview) (capital T), so the global entity name is `Techguns.<Name>`, and that full name is what spawners, `EntityList` lookups and lang keys use.
 
-The mod-local network IDs come from a shared counter (`Techguns.modEntityID`). The projectile entities take IDs 1 to 26 first, in `Techguns.preInit` (see 04-projectiles-fx). `TGEntities.init()` runs later in the same `preInit`, so the living entities get IDs 27 to 46 in this order:
+The mod-local network IDs come from a shared counter (`Techguns.modEntityID`). The projectile entities take IDs 1 to 26 first, in `Techguns.preInit` (see [04-projectiles-fx](../04-projectiles-fx/index.md)). `TGEntities.init()` runs later in the same `preInit`, so the living entities get IDs 27 to 46 in this order:
 
 | ID | Registry name | Class | Tracking range | Update freq. | Velocity updates | Spawn egg | Egg base colour | Egg spot colour |
 |---|---|---|---|---|---|---|---|---|
-| 27 | `ZombieSoldier` | `ZombieSoldier` | 80 | 3 | no | yes | `0x757468` | `0x38B038` |
-| 28 | `ZombieFarmer` | `ZombieFarmer` | 80 | 3 | no | yes | `0x757468` | `0x38B038` |
-| 29 | `ZombieMiner` | `ZombieMiner` | 80 | 3 | no | yes | `0x757468` | `0x38B038` |
-| 30 | `ZombiePigmanSoldier` | `ZombiePigmanSoldier` | 80 | 3 | no | yes | `0xFF1111` | `0x770000` |
-| 31 | `AttackHelicopter` | `AttackHelicopter` | 80 | 3 | no | yes | `0x373d23` | `0x8ec0d7` |
-| 32 | `AlienBug` | `AlienBug` | 80 | 3 | no | yes | `0xc6a96b` | `0x71552e` |
-| 33 | `CyberDemon` | `CyberDemon` | 80 | 3 | no | yes | `0xFF1111` | `0x777777` |
-| 34 | `ArmySoldier` | `ArmySoldier` | 80 | 3 | no | yes | `0x74806e` | `0x191512` |
-| 35 | `Bandit` | `Bandit` | 80 | 3 | no | yes | `0x8f9d59` | `0x2c3117` |
-| 36 | `Outcast` | `Outcast` | 80 | 3 | no | yes | `0x101010` | `0xFF0000` |
-| 37 | `SkeletonSoldier` | `SkeletonSoldier` | 80 | 3 | no | yes | `0x404040` | `0xF0F0F0` |
-| 38 | `SimpleTurret` | `NPCTurret` | **120** | 3 | no | **no** | – | – |
-| 39 | `TGDummySpawn` | `TGDummySpawn` | 80 | 3 | no | **no** | – | – |
-| 40 | `PsychoSteve` | `PsychoSteve` | 80 | 3 | no | yes | `0x757468` | `0xF0F0F0` |
-| 41 | `DictatorDave` | `DictatorDave` | 80 | 3 | no | yes | `0x8f9d59` | `0xA0A000` |
-| 42 | `Commando` | `Commando` | 80 | 3 | no | yes | `0x191512` | `0x74806e` |
-| 43 | `Stormtrooper` | `StormTrooper` | 80 | 3 | no | yes | `0xF0F0F0` | `0x404040` |
-| 44 | `SuperMutantBasic` | `SuperMutantBasic` | 80 | 3 | no | yes | `0xc6a96b` | `0x71552e` |
-| 45 | `SuperMutantHeavy` | `SuperMutantHeavy` | 80 | 3 | no | yes | `0xc6a96b` | `0x71552e` |
-| 46 | `SuperMutantElite` | `SuperMutantElite` | 80 | 3 | no | yes | `0xc6a96b` | `0x71552e` |
+| 27 | [`ZombieSoldier`](per-mob.md#1-zombie-soldier-zombiesoldier) | `ZombieSoldier` | 80 | 3 | no | yes | `0x757468` | `0x38B038` |
+| 28 | [`ZombieFarmer`](per-mob.md#2-zombie-farmer-zombiefarmer) | `ZombieFarmer` | 80 | 3 | no | yes | `0x757468` | `0x38B038` |
+| 29 | [`ZombieMiner`](per-mob.md#3-zombie-miner-zombieminer) | `ZombieMiner` | 80 | 3 | no | yes | `0x757468` | `0x38B038` |
+| 30 | [`ZombiePigmanSoldier`](per-mob.md#4-zombie-pigman-soldier-zombiepigmansoldier) | `ZombiePigmanSoldier` | 80 | 3 | no | yes | `0xFF1111` | `0x770000` |
+| 31 | [`AttackHelicopter`](per-mob.md#16-attack-helicopter-attackhelicopter-boss) | `AttackHelicopter` | 80 | 3 | no | yes | `0x373d23` | `0x8ec0d7` |
+| 32 | [`AlienBug`](per-mob.md#15-alien-bug-alienbug) | `AlienBug` | 80 | 3 | no | yes | `0xc6a96b` | `0x71552e` |
+| 33 | [`CyberDemon`](per-mob.md#11-cyberdemon-cyberdemon) | `CyberDemon` | 80 | 3 | no | yes | `0xFF1111` | `0x777777` |
+| 34 | [`ArmySoldier`](per-mob.md#6-army-soldier-armysoldier) | `ArmySoldier` | 80 | 3 | no | yes | `0x74806e` | `0x191512` |
+| 35 | [`Bandit`](per-mob.md#7-bandit-bandit) | `Bandit` | 80 | 3 | no | yes | `0x8f9d59` | `0x2c3117` |
+| 36 | [`Outcast`](per-mob.md#8-outcast-outcast) | `Outcast` | 80 | 3 | no | yes | `0x101010` | `0xFF0000` |
+| 37 | [`SkeletonSoldier`](per-mob.md#5-skeleton-soldier-skeletonsoldier) | `SkeletonSoldier` | 80 | 3 | no | yes | `0x404040` | `0xF0F0F0` |
+| 38 | `SimpleTurret` | [`NPCTurret`](ai.md#5-turret-npcturret) | **120** | 3 | no | **no** | – | – |
+| 39 | [`TGDummySpawn`](per-mob.md#18-tgdummyspawn-tgdummyspawn) | `TGDummySpawn` | 80 | 3 | no | **no** | – | – |
+| 40 | [`PsychoSteve`](per-mob.md#12-psycho-steve-psychosteve-early-game-mini-boss) | `PsychoSteve` | 80 | 3 | no | yes | `0x757468` | `0xF0F0F0` |
+| 41 | [`DictatorDave`](per-mob.md#13-dictator-dave-dictatordave-mini-boss) | `DictatorDave` | 80 | 3 | no | yes | `0x8f9d59` | `0xA0A000` |
+| 42 | [`Commando`](per-mob.md#9-commando-commando) | `Commando` | 80 | 3 | no | yes | `0x191512` | `0x74806e` |
+| 43 | `Stormtrooper` | [`StormTrooper`](per-mob.md#10-stormtrooper-stormtrooper-registry-name-stormtrooper) | 80 | 3 | no | yes | `0xF0F0F0` | `0x404040` |
+| 44 | [`SuperMutantBasic`](per-mob.md#14-super-mutants-supermutantbasic-supermutantheavy-supermutantelite) | `SuperMutantBasic` | 80 | 3 | no | yes | `0xc6a96b` | `0x71552e` |
+| 45 | [`SuperMutantHeavy`](per-mob.md#14-super-mutants-supermutantbasic-supermutantheavy-supermutantelite) | `SuperMutantHeavy` | 80 | 3 | no | yes | `0xc6a96b` | `0x71552e` |
+| 46 | [`SuperMutantElite`](per-mob.md#14-super-mutants-supermutantbasic-supermutantheavy-supermutantelite) | `SuperMutantElite` | 80 | 3 | no | yes | `0xc6a96b` | `0x71552e` |
 
 Some classes exist in the code but are never registered:
-- `AlienBugDomesticated`: its registration line is commented out, though a renderer is still bound to it.
-- `TurretEntityUNUSED`: its registration in `Techguns.java` is commented out.
-- `GenericNPC`: the abstract-in-practice base class. The `"Skeleshooter"` registration of it is commented out.
+- [`AlienBugDomesticated`](per-mob.md#alienbugdomesticated-dead-code): its registration line is commented out, though a renderer is still bound to it.
+- [`TurretEntityUNUSED`](per-mob.md#19-turretentityunused-dead-code): its registration in `Techguns.java` is commented out.
+- [`GenericNPC`](per-mob.md#0-shared-genericnpc-mechanics-entitiesnpcgenericnpcjava): the abstract-in-practice base class. The `"Skeleshooter"` registration of it is commented out.
 
 The NPC registration also carries a commented-out block of vanilla `EntityRegistry.addSpawn` calls with hard-coded biome lists (overworld land, desert, ice). That block is dead and has been replaced by the TG spawn manager ([spawning.md](spawning.md)).
 
@@ -42,19 +42,19 @@ The NPC registration also carries a commented-out block of vanilla `EntityRegist
 
 ## Spawn eggs (`java/techguns/items/TGMonsterPlacer.java`)
 
-Each of the 18 egg-bearing mobs gets its own `TGMonsterPlacer` item:
+Each of the 18 egg-bearing mobs gets its own [`TGMonsterPlacer`](../06-items/special-items.md#spawn-eggs-tgmonsterplacer) item:
 
 | Property | Value |
 |---|---|
 | GameRegistry name | `spawnEgg<Name>`, e.g. `spawnEggZombieSoldier` |
 | Unlocalized name | `spawn_egg_<name lower-cased>`, e.g. `spawn_egg_stormtrooper` |
-| Icon | `techguns:spawn_egg`, i.e. `textures/items/spawn_egg.png` (pass 0) plus `textures/items/spawn_egg_overlay.png` (pass 1). See [textures.md](textures.md) |
+| Icon | `techguns:spawn_egg`, i.e. [`textures/items/spawn_egg.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) (pass 0) plus [`textures/items/spawn_egg_overlay.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) (pass 1). See [textures.md](textures.md) |
 | Tint | Render pass 0 uses the base colour and pass 1 the spot colour (table above) |
 | Display name | Hard-coded `"Spawn " + <registry name>`, e.g. **"Spawn ZombieSoldier"** and **"Spawn Stormtrooper"**. It is not localised and has no lang key |
 | Creative tab | Techguns tab |
 | Stack size | 64. There are no subtypes and the creative list shows a single stack (meta 0) |
 
-For spawn behaviour see [spawning.md § Spawn eggs](spawning.md#spawn-eggs).
+For spawn behaviour see [spawning.md § Spawn eggs](spawning.md#2-spawn-eggs-tgmonsterplacer).
 
 ## Lang keys (`lang/en_US.lang`)
 
@@ -80,7 +80,7 @@ For spawn behaviour see [spawning.md § Spawn eggs](spawning.md#spawn-eggs).
 | `entity.Techguns.SuperMutantHeavy.name` | Super Mutant |
 | `entity.Techguns.SuperMutantElite.name` | Super Mutant |
 
-`TGDummySpawn` has no lang key, but it never exists in the world. The related block names `techguns.tile.TGMonsterSpawner_0.name` = "Bug Hole" and `techguns.tile.TGMonsterSpawner_1.name` = "Zombie Hole" belong to 07-blocks.
+`TGDummySpawn` has no lang key, but it never exists in the world. The related block names `techguns.tile.TGMonsterSpawner_0.name` = "Bug Hole" and `techguns.tile.TGMonsterSpawner_1.name` = "Zombie Hole" belong to [07-blocks](../07-blocks/index.md).
 
 These entities generate no tooltips in code.
 
@@ -127,7 +127,7 @@ The full probability tables are in [per-mob.md](per-mob.md).
 | Army Soldier | 66% helmet (T2 combat or green beret), T2 Combat chest, legs and boots 50% each | M4, combat shotgun, bolt-action (⅓ each) |
 | Bandit | T1 Scout chest, legs and boots always; helmet 50% | pistol, AK-47, bolt-action, sawed-off, thompson, revolver (⅙ each) |
 | Outcast | full T3 Power Armour, each piece dark or dark2 | laser gun, Grim Reaper, minigun, bio gun, flamethrower, tesla gun, LMG (1/7 each) |
-| Commando | full T2 Commando | silenced M4 (`m4_uq`) |
+| Commando | full T2 Commando | silenced M4 ([`m4_uq`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) |
 | Stormtrooper | full T3 Miner (HEV) camo 1 "silver" | blaster rifle or laser gun (50/50) |
 | Cyberdemon | none | Cyberdemon Blaster |
 | Psycho Steve | full T1 Miner camo 1 "red" | chainsaw |

@@ -6,7 +6,7 @@ Techguns 0.1.2 has **no working ForgeMultipart (FMP) integration**:
 
 - **No microblocks.** No Techguns block is registered as a microblock material. No `MicroMaterialRegistry` call exists anywhere in the source.
 - **No parts.** `TGMultiPartRegister` is an empty class. Its whole body is commented out, the factory and converter interfaces are commented out of the class declaration, and nothing references the class.
-- **The test blocks are not registered.** `TGBlocks.lamp01FMP` (`BlockTGLampFMP`) and `TGBlocks.smallCube` are constructed in `TGBlocks.init`, but their `GameRegistry.registerBlock` calls are commented out.
+- **The test blocks are not registered.** [`TGBlocks.lamp01FMP`](block-catalogue.md#registered-blocks) (`BlockTGLampFMP`) and `TGBlocks.smallCube` are constructed in `TGBlocks.init`, but their `GameRegistry.registerBlock` calls are commented out.
 - The mod annotation lists `after:ForgeMultipart` as a load-order hint only.
 
 So, to the question "which blocks get microblocks": **none**.
@@ -44,4 +44,4 @@ The commented-out `TGMultiPartRegister` describes this design:
   | 5 | the −X face (x 0–0.1) |
 - **Other properties:** texture `techguns:lamp01`, light 15, glass material.
 
-The real lamp (`lamp01`, see [special-blocks.md](special-blocks.md#7-lamps-and-lanterns-lamp01-blocktglamp)) replaced it.
+The real lamp ([`lamp01`](block-catalogue.md#registered-blocks), see [special-blocks.md](special-blocks.md#7-lamps-and-lanterns-lamp01-blocktglamp)) replaced it.

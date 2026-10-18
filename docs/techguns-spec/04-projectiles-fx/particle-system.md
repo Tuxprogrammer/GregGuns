@@ -2,10 +2,10 @@
 
 Techguns has two particle mechanisms, both client-side:
 
-1. **Data-driven particle systems** (`FXList`, `FXType`, `FXListType`, `ParticleSystemType`, `EntityParticleSystem`, `EntityParticle`). They are defined in `particles/FXList.txt` and `particles/Nuke.txt` and spawned by name. The full catalogue is in [fx-catalogue.md](fx-catalogue.md).
-2. **Legacy hard-coded sprites** (`EntityParticleAnimated` plus the `ClientProxy.spawnParticle(String, …)` name switch). This mechanism is marked `@Deprecated` but is still used heavily. Catalogue: [fx-catalogue.md §Legacy](fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle).
+1. **Data-driven particle systems** (`FXList`, `FXType`, `FXListType`, `ParticleSystemType`, `EntityParticleSystem`, `EntityParticle`). They are defined in [`particles/FXList.txt`](fx-catalogue.md) and [`particles/Nuke.txt`](fx-catalogue.md) and spawned by name. The full catalogue is in [fx-catalogue.md](fx-catalogue.md).
+2. **Legacy hard-coded sprites** (`EntityParticleAnimated` plus the [`ClientProxy.spawnParticle(String, …)`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) name switch). This mechanism is marked `@Deprecated` but is still used heavily. Catalogue: [fx-catalogue.md §Legacy](fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle).
 
-It also contains a few special `EntityFX` classes: `EntityParticleTrail`, `EntityBloodEffect`, `EntityLaserBeamFX`, and `EntityMuzzleFlashFX` (fully commented out).
+It also contains a few special `EntityFX` classes: [`EntityParticleTrail`](fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle), [`EntityBloodEffect`](death-effects.md#blood-burst-entitybloodeffect), [`EntityLaserBeamFX`](fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle), and `EntityMuzzleFlashFX` (fully commented out).
 
 ---
 
@@ -22,8 +22,8 @@ It also contains a few special `EntityFX` classes: `EntityParticleTrail`, `Entit
 | `ClientProxy.spawnParticle(EntityFX)` (static) | client | Adds a pre-built particle to the effect renderer. |
 
 Notes:
-- Lookups go through `FXList.FXList` (a `HashMap<String, FXType>` with lowercase keys). **An unknown name prints `FX '<name>' not found!` and returns null, and the ClientProxy callers then iterate the null list and throw `NullPointerException`.** At least one shipped call (`AntiGravRingGreen`) hits this (bug PFX-02).
-- Server-side code paths that call `proxy.createFX` or `proxy.spawnParticle` do nothing on a dedicated server, because `CommonProxy` methods are empty. In single-player the integrated server thread *also* has `ClientProxy` as its proxy, so these calls spawn particle-system entities into the **server** world, or push `EntityFX` built from the server world into the client effect renderer from the server thread (bug PFX-04).
+- Lookups go through `FXList.FXList` (a `HashMap<String, FXType>` with lowercase keys). **An unknown name prints `FX '<name>' not found!` and returns null, and the ClientProxy callers then iterate the null list and throw `NullPointerException`.** At least one shipped call (`AntiGravRingGreen`) hits this (bug [PFX-02](index.md#suspected-bugs)).
+- Server-side code paths that call `proxy.createFX` or `proxy.spawnParticle` do nothing on a dedicated server, because [`CommonProxy`](../01-core/lifecycle-and-registration.md#proxy-api-surface-commonproxy-overridden-by-clientproxy) methods are empty. In single-player the integrated server thread *also* has `ClientProxy` as its proxy, so these calls spawn particle-system entities into the **server** world, or push `EntityFX` built from the server world into the client effect renderer from the server thread (bug [PFX-04](index.md#suspected-bugs)).
 - Packet handlers run on the Netty thread in 1.7.10 and spawn entities into the client world directly. This is not thread-safe (part of bug PFX-04).
 - `FXList.killAllParticles()` is a debug helper. It removes every `EntityFX` from the client world's entity list, which is ineffective because particles are not world entities.
 
@@ -123,7 +123,7 @@ Quirks:
 
 ### 3.1 `EntityParticleSystem` (the emitter)
 
-It is a real `Entity` (registered as `ParticleSystem`, ID 17, renderer `RenderDummy`) but is only spawned client-side. Fields:
+It is a real `Entity` (registered as [`ParticleSystem`](projectiles.md#1-registration), ID 17, renderer [`RenderDummy`](projectiles.md#1-registration)) but is only spawned client-side. Fields:
 
 - `type`
 - `systemLifetime` = rand(SystemLifetime)
@@ -155,7 +155,7 @@ Each tick:
    - Local **+X** becomes the look direction of an entity with that yaw and pitch (vanilla entity convention, for example yaw 0 → +Z, yaw 90 → −X, positive pitch tilts down).
    - Local +Y stays roughly up.
    - Free systems have yaw = pitch = 0, so their local +X is world +Z. All shipped free effects are rotationally symmetric about Y, so this does not show.
-   - Projectiles store yaw in the *projectile* convention (`atan2(mx, mz)`), which mirrors X. For systems attached to projectiles, local +X therefore does not follow the flight direction. All shipped projectile trails use TRAIL volumes (unrotated) and direction-less velocities, so this has no visible effect. `BeamGunMuzzleFX` is attached to `MovingBeam`, whose yaw is the shooter's head yaw, so there the beam forward axis is correct.
+   - Projectiles store yaw in the *projectile* convention (`atan2(mx, mz)`), which mirrors X. For systems attached to projectiles, local +X therefore does not follow the flight direction. All shipped projectile trails use TRAIL volumes (unrotated) and direction-less velocities, so this has no visible effect. `BeamGunMuzzleFX` is attached to [`MovingBeam`](fx-catalogue.md#triggers-which-game-event-spawns-which-fx), whose yaw is the shooter's head yaw, so there the beam forward axis is correct.
 5. Spawn `EntityParticle` at system position + pos, with initial motion = vel × **0.05** (per-second to per-tick).
 
 ### 3.2 Volume and velocity rules
@@ -193,7 +193,7 @@ Each tick:
 1. Age +1. Die when age ≥ lifetime (checked before the increment).
 2. Motion = stored velocity, then `motionY −= Gravity`. Move by setting the position directly (no collision).
 3. `velocity *= VelocityDamping`.
-4. On ground: extra damping, and removal if `RemoveOnGround`. **Because the position is set directly, `onGround` is never true, so these never fire** (bug PFX-17).
+4. On ground: extra damping, and removal if `RemoveOnGround`. **Because the position is set directly, `onGround` is never true, so these never fire** (bug [PFX-17](index.md#suspected-bugs)).
 5. `size += sizeRate`, then `sizeRate *= sizeRateDamping`.
 
 Note: Gravity does **not** accumulate. It is subtracted from a velocity that is re-read every tick, so the particle sinks at a constant `Gravity` blocks/tick on top of its damped velocity.
@@ -231,7 +231,7 @@ Effective per-system curves are tabulated in [fx-catalogue.md](fx-catalogue.md#p
 
 ## 4. Legacy sprite particle: `EntityParticleAnimated`
 
-`@Deprecated`, but used by `ClientProxy.spawnParticle`, `EntityBloodEffect` and `FlyingGibs`.
+`@Deprecated`, but used by `ClientProxy.spawnParticle`, `EntityBloodEffect` and [`FlyingGibs`](projectiles.md#319-flyinggibs).
 
 Constructor `(world, x, y, z, scale, textureFileName, cols, rows, numSprites, renderType)`:
 - Texture path `techguns:textures/fx/<textureFileName>`.
@@ -286,7 +286,7 @@ Render:
 
 | Class | Behaviour |
 |---|---|
-| `EntityParticleTrail(world, x, y, z, item, r, g, b, scale)` | A vanilla-motion particle tinted (r, g, b), scale × the vanilla random scale, no gravity, noClip. It always renders `textures/fx/glow.png` as an alpha-blended billboard of half-size 0.1 × scale. The item icon argument is set but not drawn. Used only by the legacy `"RailgunTrail"` name (diamond icon, colour (0.1, 0.5, 1.0), scale 0.5), which nothing calls. |
+| `EntityParticleTrail(world, x, y, z, item, r, g, b, scale)` | A vanilla-motion particle tinted (r, g, b), scale × the vanilla random scale, no gravity, noClip. It always renders [`textures/fx/glow.png`](textures.md#single-images) as an alpha-blended billboard of half-size 0.1 × scale. The item icon argument is set but not drawn. Used only by the legacy `"RailgunTrail"` name (diamond icon, colour (0.1, 0.5, 1.0), scale 0.5), which nothing calls. |
 | `EntityBloodEffect` | An invisible, 5-tick emitter used by the gore death. See [death-effects.md](death-effects.md#blood-burst-entitybloodeffect). |
-| `EntityLaserBeamFX(world, source xyz, target xyz)` | Experimental. Draws a quad from source to target using `textures/fx/laser2_a.png`, width from the viewer cross product, alpha-blended. It prints debug text **every frame** ("I AM A NEW LASERBEAM HARRRRRRR!" in the constructor, plus position dumps). Only the legacy name `"LaserBeam"` creates it, and the only caller is commented out. Its quad vertex order and world-space coordinates are wrong (no interpolation offset), so it would not render correctly. |
+| `EntityLaserBeamFX(world, source xyz, target xyz)` | Experimental. Draws a quad from source to target using [`textures/fx/laser2_a.png`](textures.md#single-images), width from the viewer cross product, alpha-blended. It prints debug text **every frame** ("I AM A NEW LASERBEAM HARRRRRRR!" in the constructor, plus position dumps). Only the legacy name `"LaserBeam"` creates it, and the only caller is commented out. Its quad vertex order and world-space coordinates are wrong (no interpolation offset), so it would not render correctly. |
 | `EntityMuzzleFlashFX` | The whole file is commented out (a vanilla flame-like particle sketch). |

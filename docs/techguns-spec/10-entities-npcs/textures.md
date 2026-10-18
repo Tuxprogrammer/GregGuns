@@ -9,7 +9,7 @@ Vanilla textures referenced by this area's renderers are **not** Techguns assets
 - `minecraft:textures/entity/skeleton/skeleton.png`
 - `minecraft:textures/entity/zombie/zombie.png`
 
-The turret entity's textures `textures/blocks/TurretBase.png` and `TurretBase_2.png` to `TurretBase_5.png` (128×128) are shared with the turret base block and are specified by 09-machines-utility. The entity only uses their `ModelTurret` UV regions (base plate (32,22), posts (9,30), mount (34,12), in 64-unit coordinates).
+The turret entity's textures [`textures/blocks/TurretBase.png`](../07-blocks/textures.md#11-model-textures) and `TurretBase_2.png` to `TurretBase_5.png` (128×128) are shared with the turret base block and are specified by [09-machines-utility](../09-machines-utility/index.md). The entity only uses their [`ModelTurret`](../07-blocks/block-rendering-and-models.md#modelturret-and-modelsimpleturret-uv-6464--6432) UV regions (base plate (32,22), posts (9,30), mount (34,12), in 64-unit coordinates).
 
 ## Biped skin layout reference
 
@@ -66,7 +66,7 @@ The 128-pixel files double every coordinate.
 - **Palette:** the same as bandit.png.
 
 ### `textures/entity/cyberdemon.png` (128×128, fully opaque on a black background)
-- **User:** `ModelCyberDemon`. Also the Cyberdemon gib texture.
+- **User:** [`ModelCyberDemon`](rendering-and-models.md#73-modelcyberdemon-extends-modelbiped). Also the Cyberdemon gib texture.
 - **Depicts:** a skinless demon. Saturated **red muscle flesh** with darker red striations, overlaid with **grey cybernetic implants** and **tan/orange cables**.
 - **UV regions** (64-unit coordinates; 2× in the file):
 
@@ -116,7 +116,7 @@ The 128-pixel files double every coordinate.
 | Belt | (0,53) |
 
 ### `textures/entity/alienbug.png` (64×64, about 34% opaque)
-- **User:** `ModelAlienBug`. Also the bug gib texture.
+- **User:** [`ModelAlienBug`](rendering-and-models.md#75-modelalienbug-extends-modelbase-tabula-411-export). Also the bug gib texture.
 - **Depicts:** a sand-coloured chitinous insect.
 - **UV regions:**
 
@@ -151,21 +151,21 @@ The 128-pixel files double every coordinate.
 
 | Path | Size | Depicts | Palette | Used by (owner) |
 |---|---|---|---|---|
-| `textures/entity/gore.png` | 128×128, top half used (biped layout) | A generic flayed body: dark red raw flesh and blood in a biped skin layout, with darker clotted areas and bright-red highlights | `#600000`, `#802020`, `#400000` | Generic gib fallback in `DeathEffect` (04) |
-| `textures/entity/BlueBeam.png` | 32×32, opaque | Horizontal glow-beam gradient: noisy dark blue edges, through mid blue, to a white-hot centre line | `#004080` → `#2060c0` → white | `RenderRailgunProjectile` (04) |
-| `textures/entity/Laser.png` | 32×32, opaque | The same gradient in red: noisy dark red edges, through orange and yellow, to a white centre line | `#c00000` → `#e06000` → white | `RenderBlasterProjectile` (04) |
-| `textures/entity/bioblob.png` | 64×64, round with transparent corners | A glossy lime-green sphere with swirl highlights and specular dots | `#408000`, `#206000`, `#a0e0a0` | `RenderBiogunProjectile` (04) |
-| `textures/entity/bullet.png` | 32×32, mostly transparent | Two small sprites at the top left: a pale brass/cream elongated tracer with a pointed tail, and below it an orange copy | `#c0c080`, `#e06000` | `RenderGenericBullet`, `RenderSonicShotgunProjectile` (04) |
-| `textures/entity/handgunBullet.png` | 16×16 | A grey shaded stone/lead ball with a lit top-left | `#a0a0a0` → `#202020` | `SimpleProjectile` (handcannon stone bullets) (04) |
-| `textures/entity/launchergrenade.png` | 32×16, opaque | A strip map for the 40 mm grenade: a cream/brass casing section, a red band, a brass section, and a small pale cap square at the top right | `#e0e0a0`, `#c04030`, `#a0a060` | `launchergrenade.obj` via `RenderGrenadeLauncherProjectile` (04) |
-| `textures/entity/reactionchamber.png` | 256×256, opaque | Machine atlas on black: white and light-grey sci-fi panels with bevels; a large square frame with a cross-shaped black port and hazard-striped corners; dark grey vent grids; small grilles; a yellow-black hazard marker; a light-blue glass tile | white `#e0e0e0`, greys, black | `reactionchamber.obj` TESR (08) |
-| `textures/entity/reactionchamberglass.png` | 128×128, ~4% opaque | Transparent glass: two large rectangles outlined in light grey, with diagonal white glint streaks and corner brackets | `#c0c0c0` on transparent | Reaction-chamber glass (08) |
+| `textures/entity/gore.png` | 128×128, top half used (biped layout) | A generic flayed body: dark red raw flesh and blood in a biped skin layout, with darker clotted areas and bright-red highlights | `#600000`, `#802020`, `#400000` | Generic gib fallback in [`DeathEffect`](../01-core/client-effects-audio.md#deatheffectcreatedeatheffectentity-type-mx-my-mz) ([04](../04-projectiles-fx/index.md)) |
+| `textures/entity/BlueBeam.png` | 32×32, opaque | Horizontal glow-beam gradient: noisy dark blue edges, through mid blue, to a white-hot centre line | `#004080` → `#2060c0` → white | [`RenderRailgunProjectile`](../04-projectiles-fx/projectiles.md#1-registration) ([04](../04-projectiles-fx/index.md)) |
+| `textures/entity/Laser.png` | 32×32, opaque | The same gradient in red: noisy dark red edges, through orange and yellow, to a white centre line | `#c00000` → `#e06000` → white | [`RenderBlasterProjectile`](../04-projectiles-fx/projectiles.md#1-registration) ([04](../04-projectiles-fx/index.md)) |
+| `textures/entity/bioblob.png` | 64×64, round with transparent corners | A glossy lime-green sphere with swirl highlights and specular dots | `#408000`, `#206000`, `#a0e0a0` | [`RenderBiogunProjectile`](../04-projectiles-fx/textures.md#projectile-entity-textures-outside-fx-bound-by-renderers-in-this-area) ([04](../04-projectiles-fx/index.md)) |
+| `textures/entity/bullet.png` | 32×32, mostly transparent | Two small sprites at the top left: a pale brass/cream elongated tracer with a pointed tail, and below it an orange copy | `#c0c080`, `#e06000` | [`RenderGenericBullet`](../04-projectiles-fx/projectiles.md#1-registration), [`RenderSonicShotgunProjectile`](../04-projectiles-fx/projectiles.md#1-registration) ([04](../04-projectiles-fx/index.md)) |
+| `textures/entity/handgunBullet.png` | 16×16 | A grey shaded stone/lead ball with a lit top-left | `#a0a0a0` → `#202020` | [`SimpleProjectile`](../04-projectiles-fx/projectiles.md#31-simpleprojectile) (handcannon stone bullets) ([04](../04-projectiles-fx/index.md)) |
+| `textures/entity/launchergrenade.png` | 32×16, opaque | A strip map for the 40 mm grenade: a cream/brass casing section, a red band, a brass section, and a small pale cap square at the top right | `#e0e0a0`, `#c04030`, `#a0a060` | `launchergrenade.obj` via [`RenderGrenadeLauncherProjectile`](../04-projectiles-fx/textures.md#projectile-entity-textures-outside-fx-bound-by-renderers-in-this-area) ([04](../04-projectiles-fx/index.md)) |
+| `textures/entity/reactionchamber.png` | 256×256, opaque | Machine atlas on black: white and light-grey sci-fi panels with bevels; a large square frame with a cross-shaped black port and hazard-striped corners; dark grey vent grids; small grilles; a yellow-black hazard marker; a light-blue glass tile | white `#e0e0e0`, greys, black | `reactionchamber.obj` TESR ([08](../08-machines-production/index.md)) |
+| `textures/entity/reactionchamberglass.png` | 128×128, ~4% opaque | Transparent glass: two large rectangles outlined in light grey, with diagonal white glint streaks and corner brackets | `#c0c0c0` on transparent | Reaction-chamber glass ([08](../08-machines-production/index.md)) |
 
 ## Spawn-egg item textures (registered in `TGEntities`)
 
 | Path | Size | Depicts | Use |
 |---|---|---|---|
-| `textures/items/spawn_egg.png` | 32×32 | An egg silhouette in **greyscale** mottled stone/speckle shading with a dark outline. Transparent outside the egg. | Render pass 0, tinted by the egg's base colour |
-| `textures/items/spawn_egg_overlay.png` | 32×32 | The letters **"TG"** in white with a dark-grey 1-px outline, centred in the lower-middle of the egg area. The rest is transparent. | Render pass 1, tinted by the egg's spot colour |
+| [`textures/items/spawn_egg.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) | 32×32 | An egg silhouette in **greyscale** mottled stone/speckle shading with a dark outline. Transparent outside the egg. | Render pass 0, tinted by the egg's base colour |
+| [`textures/items/spawn_egg_overlay.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) | 32×32 | The letters **"TG"** in white with a dark-grey 1-px outline, centred in the lower-middle of the egg area. The rest is transparent. | Render pass 1, tinted by the egg's spot colour |
 
 Replacement art should keep the overlay greyscale or white so tinting works, and keep the egg shape within the 32×32 canvas.

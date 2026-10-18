@@ -20,7 +20,7 @@ Conventions used in the tables:
 | `textures/fx/laserflare02.png` | 512×512 | 4×4 (128); data files say 4 cols × 2 rows | 7 | As laserflare01. | saturated red glow, white core; black | ADDITIVE | `LaserFlareStart`/`End`, ScreenEffect `muzzleFlashLaser`, legacy `LaserFlare*`, `MuzzleFlashLaser` |
 | `textures/fx/blobs.png` | 512×512 | 4×4 (128) | 16 variations | Sixteen glossy slime droplets/globs, each a different shape, with specular highlights. | lime/acid green, cyan highlights; black | ADDITIVE, variations | `bioblobExplosionBlobs` |
 | `textures/fx/splat.png` | 384×384 | 3×3 (128) | 6 variations (rows 0–1) | Thin, cracked, vein-like splatter lines (like a web of liquid streaks). | grey-white lines (tinted green in use); black | ADDITIVE, variations | `biodeath`, `bioblobExplosionSplat`, `BioTrailSplat` |
-| `textures/fx/blood4x4.png` | 256×256 (despite the name) | 2×2 (128) | 4 variations | Four blood-splatter puffs with spray droplets. | neutral grey (tinted to blood colour); transparent | ALPHA, variations | `EntityBloodEffect`, `FlyingGibs` trail |
+| `textures/fx/blood4x4.png` | 256×256 (despite the name) | 2×2 (128) | 4 variations | Four blood-splatter puffs with spray droplets. | neutral grey (tinted to blood colour); transparent | ALPHA, variations | [`EntityBloodEffect`](death-effects.md#blood-burst-entitybloodeffect), [`FlyingGibs`](projectiles.md#319-flyinggibs) trail |
 | `textures/fx/dustclouds.png` | 256×256 | 4×4 (64) | 16 | Grainy dust cloud: small dense puff → large → scattering and thinning. | mid grey; transparent | ALPHA_SHADED | legacy `DustClouds` (unused) |
 | `textures/fx/dustclouds02.png` | 256×256 (cells 85.3 px) | 3×3 | 9 | Soft smoke puff that slowly spreads and thins. | mid grey (tinted); transparent | ALPHA / ALPHA_SHADED | `MediumExplosionSmoke`, `GrenadeLauncherTrail`, `JumpBoostSmoke`, `JumpPackFallRing`, no-blood death dust |
 | `textures/fx/largesmoke.png` | 512×512 | 2×2 (256) | 4 variations | Large billowing smoke clouds of decreasing density (dense → faint). | grey with pinkish-mauve tint; transparent (max alpha 238) | ALPHA / ALPHA_SHADED | `LargeExplosionSmoke`, `laserdeathAsh`, `NukeExplosionSmoke`, legacy `LargeSmoke` |
@@ -28,7 +28,7 @@ Conventions used in the tables:
 | `textures/fx/fireball_4x4_alpha.png` | 256×256 | 4×4 (64) | 16 | Rising flame puff fading to transparent. | yellow-orange-red; transparent | ALPHA | ScreenEffect `muzzleFlashFireball_alpha` (unused) |
 | `textures/fx/flamethrower.png` | 512×512 | 4×4 (128) | 16 | Round turbulent fireball, swirling flame texture, changing each frame. | orange/yellow/white, dark red pockets; black | ADDITIVE | `laserdeathFire`, `CDBTrailFlames(_S)` |
 | `textures/fx/flamethrower2.png` | 512×512 | 4×4 (128) | 16 | Upward flame tongues: tall thin flame → mushroom-shaped flare → licks. | orange/yellow; black | ADDITIVE (gun flash) | ScreenEffect `FlamethrowerMuzzleFlame` |
-| `textures/fx/flamethrower_a.png` | 512×512 | 4×4 (128) | 16 | Fire ball with a soft white smoky halo: faint → full fire → whitish smoke. | yellow/orange core, white smoky edges; transparent | ALPHA | legacy `Flamethrower`, `Jetpack`; `NukeExplosionRing` |
+| `textures/fx/flamethrower_a.png` | 512×512 | 4×4 (128) | 16 | Fire ball with a soft white smoky halo: faint → full fire → whitish smoke. | yellow/orange core, white smoky edges; transparent | ALPHA | legacy [`Flamethrower`](../02-guns/per-gun-behaviour.md#flamethrower-flamethrower-flamethrower), `Jetpack`; `NukeExplosionRing` |
 | `textures/fx/impact.png` | 256×256 | 2×2 (128) | 4 | Jagged white impact bursts / shards. | white-grey (tinted warm); black | ADDITIVE | legacy `impact` (power hammer) |
 | `textures/fx/laserFlash2x2.png` | 256×256 | 2×2 (128) | 4 | Red spiky star flash, fading and breaking into dots in the second row. | red/pink; transparent | n/a | **unused** |
 | `textures/fx/lightningflare4x4.png` | 512×512 | 4×4 (128) | 16 | Electric arc blob: forming → full jagged cyan blot → crackling fragments and dust. | cyan-white with a black speckle; transparent | n/a | **unused** |
@@ -38,23 +38,23 @@ Conventions used in the tables:
 | `textures/fx/muzzleflash_blue.png` | 256×256 | 4×4 (64) | 8 | Three-pronged (tri-blade) energy flash that grows, then breaks into blue speckle. | light blue/periwinkle; transparent | ADDITIVE | ScreenEffect `muzzleFlash_blue`, legacy `MuzzleFlashBlue` |
 | `textures/fx/nukebeamflare.png` | 512×512 | 4×4 (128) | 16 | Circular plasma orb with concentric ring structure, varying each frame. | yellow-gold with white hot centre, orange rim; black | ADDITIVE | `BeamGunMuzzleFlare`, `BeamGunImpactFlare`, ScreenEffect `muzzleFlashNukeBeam` |
 | `textures/fx/sonicwave4x4.png` | 1024×1024 | 4×4 (256) | 16 (data files use 14) | Sonic ring: tiny ring → bright thick donut (dark hole in the middle) → breaking up into sparkles → fading. | blue/periwinkle, white highlights; black | ADDITIVE | `SonicShotgunWaves(2)`, `SonicShotgunImpactWave`, ScreenEffect `muzzleFlashSonic` |
-| `textures/fx/nukebeam.png` | 128×1088 | 1 column × 17 rows (128×64 each) | 17 (strip animation, 1 frame per 2 ticks) | Horizontal band of turbulent nuclear plasma, a different noise pattern per frame. Dark top and bottom edges, bright centre line. | yellow/white core, orange-brown edges; black | SRC_ALPHA/ONE | `RenderMovingBeam` (beam and spiral) |
+| `textures/fx/nukebeam.png` | 128×1088 | 1 column × 17 rows (128×64 each) | 17 (strip animation, 1 frame per 2 ticks) | Horizontal band of turbulent nuclear plasma, a different noise pattern per frame. Dark top and bottom edges, bright centre line. | yellow/white core, orange-brown edges; black | SRC_ALPHA/ONE | [`RenderMovingBeam`](renderers.md#nuclear-death-ray-rendermovingbeam) (beam and spiral) |
 
 ## Single images
 
 | Path | Size | Depicts | Palette / alpha | Layout notes | Used by |
 |---|---|---|---|---|---|
-| `textures/fx/fireball.png` | 64×64 | A single round fireball with a hot white-yellow centre and orange-red flaming rim. | orange/yellow; transparent | Full image | Default texture of a data-file system with no `Texture` key (none in practice); intended for `RenderFlamethrowerProjectile` (unbound). |
+| `textures/fx/fireball.png` | 64×64 | A single round fireball with a hot white-yellow centre and orange-red flaming rim. | orange/yellow; transparent | Full image | Default texture of a data-file system with no `Texture` key (none in practice); intended for [`RenderFlamethrowerProjectile`](renderers.md#catalogue) (unbound). |
 | `textures/fx/blood01.png` | 256×256 | One large dark blood splatter: dense central blotches with spray droplets and streaks. | dark red (84, 10, 11 avg); transparent | Full image (1×1) | legacy `Blood` (unused) |
-| `textures/fx/glow.png` | 64×64 | Plain white soft square glow: alpha 255 at the centre falling to 81 at the corners. | white RGB; alpha radial | Full image | `EntityParticleTrail` (legacy `RailgunTrail`, unused) |
-| `textures/fx/shockwave.png` | 64×64 | Thin faint ring (circle outline) near the edge of the square. | dim grey-white ring (peak ≈ 15–30/255) on black; RGB | Ring centred, radius ≈ 28 px | All shockwave/ring systems, `RenderPowerHammerProjectile`, `RenderSonicShotgunProjectile`, `RenderPiercingProjectile` |
-| `textures/fx/bio.png` | 64×64 | Seamless mottled organic/slime texture: greens with white and yellow patches. | green (93, 176, 73 avg); opaque RGB | Tileable (wrapped over the whole model) | BIO death overlay (`RendererDeadLivingEntity`), `RenderPiercingProjectile` |
+| `textures/fx/glow.png` | 64×64 | Plain white soft square glow: alpha 255 at the centre falling to 81 at the corners. | white RGB; alpha radial | Full image | [`EntityParticleTrail`](fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle) (legacy `RailgunTrail`, unused) |
+| `textures/fx/shockwave.png` | 64×64 | Thin faint ring (circle outline) near the edge of the square. | dim grey-white ring (peak ≈ 15–30/255) on black; RGB | Ring centred, radius ≈ 28 px | All shockwave/ring systems, [`RenderPowerHammerProjectile`](projectiles.md#1-registration), [`RenderSonicShotgunProjectile`](projectiles.md#1-registration), `RenderPiercingProjectile` |
+| `textures/fx/bio.png` | 64×64 | Seamless mottled organic/slime texture: greens with white and yellow patches. | green (93, 176, 73 avg); opaque RGB | Tileable (wrapped over the whole model) | BIO death overlay ([`RendererDeadLivingEntity`](death-effects.md#6-dismember-unused)), `RenderPiercingProjectile` |
 | `textures/fx/laserDeathfx.png` | 64×64 | Seamless lava/molten-crack texture: bright orange veins on dark red-black. | orange/red/black; opaque | Tileable | LASER death overlay |
 | `textures/fx/laser2.png` | 128×64 | Horizontal beam band: bright white-yellow centre line, orange body, dark red-black top and bottom edges, soft noise. | orange/yellow; opaque | u = along the beam (tiles), v = across | **unused** |
-| `textures/fx/laser2_a.png` | 128×64 | As laser2, with alpha fading out at the top and bottom edges instead of black. | orange/yellow; alpha 0–250 | as above | `EntityLaserBeamFX` (legacy, unused) |
-| `textures/fx/laser3.png` | 128×64 | As laser2, but red: bright pink-white core and red body, dark red edges. | red (197, 75, 59 avg); opaque | as above | `RenderLaserBeam2`, `RenderGenericLaser`, `RenderBlasterRifleProjectile` |
-| `textures/fx/laser_blue.png` | 128×64 | As laser2, in blue: white-cyan core, blue body, dark navy edges. | blue; opaque RGB | as above | `RenderTeslaBeam` |
-| `textures/fx/heatray.png` | 128×128 | Teardrop-shaped glowing flame (point up), white centre. | yellow/olive-gold; black background | Full image | `RenderReactionChamber` (`08-machines-production`) |
+| `textures/fx/laser2_a.png` | 128×64 | As laser2, with alpha fading out at the top and bottom edges instead of black. | orange/yellow; alpha 0–250 | as above | [`EntityLaserBeamFX`](fx-catalogue.md#legacy-named-particles-clientproxyspawnparticle) (legacy, unused) |
+| `textures/fx/laser3.png` | 128×64 | As laser2, but red: bright pink-white core and red body, dark red edges. | red (197, 75, 59 avg); opaque | as above | [`RenderLaserBeam2`](renderers.md#laser-beam-renderlaserbeam2-rendergenericlaser), [`RenderGenericLaser`](renderers.md#laser-beam-renderlaserbeam2-rendergenericlaser), [`RenderBlasterRifleProjectile`](projectiles.md#1-registration) |
+| `textures/fx/laser_blue.png` | 128×64 | As laser2, in blue: white-cyan core, blue body, dark navy edges. | blue; opaque RGB | as above | [`RenderTeslaBeam`](renderers.md#tesla-bolt-renderteslabeam) |
+| `textures/fx/heatray.png` | 128×128 | Teardrop-shaped glowing flame (point up), white centre. | yellow/olive-gold; black background | Full image | [`RenderReactionChamber`](../08-machines-production/reaction-chamber.md#7-visuals-renderreactionchamber) ([`08-machines-production`](../08-machines-production/index.md)) |
 | `textures/fx/heatray2.png` | 128×128 | Softer teardrop flame. | white→yellow→orange→pink; transparent | Full image | **unused** |
 | `textures/fx/lensflare1.png` | 128×128 | Soft round radial glow (no rays). | white→black radial; RGB | Full image | `AlienBlasterTrailGlow`, `BlueBlasterTrailGlow`, `BioTrailGlow` (all tinted) |
 | `textures/fx/lensflare2.png` | 128×128 | Soft multi-point star with a bright core. | white on black | Full image | **unused** |
@@ -68,23 +68,23 @@ Conventions used in the tables:
 
 ## Projectile entity textures (outside `fx/`, bound by renderers in this area)
 
-These live in `textures/entity/` and `textures/guns/`. The model textures for rocket, grenade and frag are described with their models in `03-gun-visuals-audio`. The `entity/` ones used only by projectiles are listed here for completeness.
+These live in `textures/entity/` and `textures/guns/`. The model textures for rocket, grenade and frag are described with their models in [`03-gun-visuals-audio`](../03-gun-visuals-audio/index.md). The `entity/` ones used only by projectiles are listed here for completeness.
 
 | Path | Size | Depicts | Used region | Used by |
 |---|---|---|---|---|
-| `textures/entity/bullet.png` | 32×32 | Small brass bullet sprite drawn as a horizontal capsule. | Only the top-left 16×5 px (u 0–0.5, v 0–5/32) is sampled. Brass/cream (≈ 220, 210, 155), darker edges, rest transparent. | `RenderGenericBullet` |
-| `textures/entity/handgunBullet.png` | 16×16 | Round grey stone/lead ball with shading. | Full | `RenderSimpleProjectile` (handcannon) |
-| `textures/entity/bioblob.png` | 64×64 | Glossy green slime ball with a lighter highlight. | Full (additive billboard) | `RenderBiogunProjectile` |
-| `textures/entity/BlueBeam.png` | 32×32 | Horizontal blue gradient band, white centre line. | top 5/32 of the left half | `RenderRailgunProjectile` (unused) |
-| `textures/entity/Laser.png` | 32×32 | Horizontal red → orange → yellow gradient band. | top 5/32 of the left half | `RenderBlasterProjectile` (unbound) |
-| `textures/entity/launchergrenade.png` | 32×16 | UV atlas for the 40 mm grenade OBJ: vertical stripes of cream/off-white, dark red and gold/brass. | per OBJ UVs | `RenderGrenadeLauncherProjectile` |
-| `textures/entity/gore.png` | 128×128 | Biped-style skin atlas filled with raw red flesh and gore texture. Only the standard 64 × 64-layout regions used by `ModelGibsBiped` matter. | biped UV layout | `genericGore` gibs (`RenderFlyingGibs`) |
+| [`textures/entity/bullet.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) | 32×32 | Small brass bullet sprite drawn as a horizontal capsule. | Only the top-left 16×5 px (u 0–0.5, v 0–5/32) is sampled. Brass/cream (≈ 220, 210, 155), darker edges, rest transparent. | [`RenderGenericBullet`](projectiles.md#1-registration) |
+| [`textures/entity/handgunBullet.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) | 16×16 | Round grey stone/lead ball with shading. | Full | `RenderSimpleProjectile` (handcannon) |
+| [`textures/entity/bioblob.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) | 64×64 | Glossy green slime ball with a lighter highlight. | Full (additive billboard) | `RenderBiogunProjectile` |
+| [`textures/entity/BlueBeam.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) | 32×32 | Horizontal blue gradient band, white centre line. | top 5/32 of the left half | [`RenderRailgunProjectile`](projectiles.md#1-registration) (unused) |
+| [`textures/entity/Laser.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) | 32×32 | Horizontal red → orange → yellow gradient band. | top 5/32 of the left half | [`RenderBlasterProjectile`](projectiles.md#1-registration) (unbound) |
+| [`textures/entity/launchergrenade.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) | 32×16 | UV atlas for the 40 mm grenade OBJ: vertical stripes of cream/off-white, dark red and gold/brass. | per OBJ UVs | `RenderGrenadeLauncherProjectile` |
+| [`textures/entity/gore.png`](../10-entities-npcs/textures.md#non-mob-textures-stored-in-texturesentity) | 128×128 | Biped-style skin atlas filled with raw red flesh and gore texture. Only the standard 64 × 64-layout regions used by `ModelGibsBiped` matter. | biped UV layout | `genericGore` gibs ([`RenderFlyingGibs`](death-effects.md#flying-gibs-rendering)) |
 
 ## Missing textures referenced in code
 
 | Referenced path | Referenced by | Effect |
 |---|---|---|
-| `textures/fx/muzzleFlashYellow2x2.png` | `ScreenEffect.muzzleFlashYellow` | never drawn |
+| `textures/fx/muzzleFlashYellow2x2.png` | [`ScreenEffect.muzzleFlashYellow`](renderers.md#screeneffect-muzzle-flashes-and-scope-overlays) | never drawn |
 | `textures/fx/muzzleflashnew.png` | `ScreenEffect.muzzleFlashNew` | never drawn |
 | `textures/fx/muzzleflashnew_2_add.png` | `ScreenEffect.muzzleFlashNew2` | never drawn |
-| `textures/items/testItem.png` (exists) | `SimpleProjectile` default field | never drawn |
+| [`textures/items/testItem.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items) (exists) | [`SimpleProjectile`](projectiles.md#31-simpleprojectile) default field | never drawn |

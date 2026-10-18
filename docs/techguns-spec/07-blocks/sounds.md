@@ -12,15 +12,15 @@ All three files are variants of one sound event.
 
 **When it plays.** It is a heavy metal door/hatch opening clank, used for **both opening and closing**:
 
-- Every time a player right-clicks a Techguns metal door (`door01`, `BlockTGDoor`).
+- Every time a player right-clicks a Techguns metal door (`door01`, [`BlockTGDoor`](special-blocks.md#8-metal-door-door01-blocktgdoor)).
 - Once more for each neighbouring `door01` leaf toggled as part of a double door.
 
-Volume 1.0, pitch 1.0. It is issued with `World.playSound(x, y, z, …, distanceDelay = false)` at the integer block corner. That method does nothing on the server, so only the clicking player's client hears it (BLK-02).
+Volume 1.0, pitch 1.0. It is issued with `World.playSound(x, y, z, …, distanceDelay = false)` at the integer block corner. That method does nothing on the server, so only the clicking player's client hears it ([BLK-02](index.md#suspected-bugs)).
 
 **Not used for redstone.** Opening the door with redstone goes through the inherited vanilla door code, which plays the vanilla door sound instead.
 
 **Other sounds connected to blocks in this area** live under other folders and are owned elsewhere:
 
-- `techguns:effects.biodeath`: Bioblob burst, 04-projectiles-fx.
-- The explosive-charge "plant" sound: played from `ItemBlockMetaDataMachine`, owned by 08/09.
+- `techguns:effects.biodeath`: Bioblob burst, [04-projectiles-fx](../04-projectiles-fx/index.md).
+- The explosive-charge "plant" sound: played from [`ItemBlockMetaDataMachine`](special-blocks.md#16-itemblockmetadatamachine), owned by [08](../08-machines-production/index.md)/09.
 - Vanilla `random.chestopen` and `random.chestclosed`: TG chests.

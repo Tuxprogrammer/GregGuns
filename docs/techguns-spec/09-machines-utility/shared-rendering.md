@@ -1,20 +1,20 @@
 # Shared host block and renderers (area 09)
 
-This file covers the parts of the shared `BasicMachine` block that apply to area 09's metadata values, and the two generic tile-entity renderers that only area 09 uses. The block class itself (all metas, wrench handling, fluid interaction) is catalogued in full by **08-machines-production**. The base tile-entity classes (`BasicInventoryTileEnt`, `BasicOwnedTileEnt`, `BasicPoweredTileEnt`, `BasicMachineTileEntity`, the multiblock bases), the base GUIs (`GuiTechgunsTileEntBase`, `GuiTechgunsPoweredTileEnt`) and `TechgunsGuiHandler` are also 08's.
+This file covers the parts of the shared `BasicMachine` block that apply to area 09's metadata values, and the two generic tile-entity renderers that only area 09 uses. The block class itself (all metas, wrench handling, fluid interaction) is catalogued in full by **[08-machines-production](../08-machines-production/index.md)**. The base tile-entity classes ([`BasicInventoryTileEnt`](../08-machines-production/framework.md#2-basicinventorytileent), [`BasicOwnedTileEnt`](../08-machines-production/framework.md#3-ownership-and-security-basicownedtileent-itgtileentsecurity), [`BasicPoweredTileEnt`](../08-machines-production/framework.md#4-energy-basicpoweredtileent), [`BasicMachineTileEntity`](../08-machines-production/framework.md#7-recipe-machine-state-basicmachinetileentity), the multiblock bases), the base GUIs ([`GuiTechgunsTileEntBase`](../08-machines-production/gui-handler.md#2-guitechgunstileentbase-abstract-guicontainer), [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine)) and [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table) are also [08](../08-machines-production/index.md)'s.
 
 ## 1. `BasicMachine` metas owned by area 09
 
-Registry name `basicMachine`, item block `ItemBlockMetaDataMachine`. The unlocalized item name is `techguns.tile.BasicMachine_<meta>.name`.
+Registry name [`basicMachine`](../07-blocks/block-catalogue.md#registered-blocks), item block [`ItemBlockMetaDataMachine`](../07-blocks/special-blocks.md#16-itemblockmetadatamachine). The unlocalized item name is `techguns.tile.BasicMachine_<meta>.name`.
 
 | Meta | Tile entity (registry id) | English name (lang key `techguns.tile.BasicMachine_N.name`) | GUI id | In creative list | Doc |
 |---|---|---|---|---|---|
-| 2 | `TurretBaseEnt` (`TurretBaseEnt`) | Turret | 2 | yes | [turret.md](turret.md) |
-| 3 | `CamoBenchTileEnt` (`CamoBenchTileEnt`) | Camo Bench | 3 | yes | [camo-bench.md](camo-bench.md) |
-| 5 | `RepairBenchTileEnt` (`RepairBenchTileEnt`) | Repair Bench | 5 | yes | [repair-bench.md](repair-bench.md) |
-| 6 | `ExplosiveChargeTileEnt` (`ExplosiveChargeTileEnt`) | Explosive Charge | 6 | yes | [explosive-charges.md](explosive-charges.md) |
+| 2 | [`TurretBaseEnt`](turret.md#tile-entity-turretbaseent) (`TurretBaseEnt`) | Turret | 2 | yes | [turret.md](turret.md) |
+| 3 | [`CamoBenchTileEnt`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) (`CamoBenchTileEnt`) | Camo Bench | 3 | yes | [camo-bench.md](camo-bench.md) |
+| 5 | [`RepairBenchTileEnt`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) (`RepairBenchTileEnt`) | Repair Bench | 5 | yes | [repair-bench.md](repair-bench.md) |
+| 6 | [`ExplosiveChargeTileEnt`](explosive-charges.md#nbt-explosivechargetileent) (`ExplosiveChargeTileEnt`) | Explosive Charge | 6 | yes | [explosive-charges.md](explosive-charges.md) |
 | 7 | `CampFlagTileEnt` (`CampFlagTileEnt`) | Flag | none | **no** (excluded) | [misc-tile-entities.md](misc-tile-entities.md) |
-| 8 | `ExplosiveChargeAdvTileEnt` (`ExplosiveChargeAdvTileEnt`) | Advanced Explosive Charge | 6 (shared) | yes | [explosive-charges.md](explosive-charges.md) |
-| (10) | `ScrapperTileEnt` (`ScrapperTileEnt`) | none | 10 | no, never created | [scrapper.md](scrapper.md) |
+| 8 | [`ExplosiveChargeAdvTileEnt`](explosive-charges.md) (`ExplosiveChargeAdvTileEnt`) | Advanced Explosive Charge | 6 (shared) | yes | [explosive-charges.md](explosive-charges.md) |
+| (10) | [`ScrapperTileEnt`](scrapper.md) (`ScrapperTileEnt`) | none | 10 | no, never created | [scrapper.md](scrapper.md) |
 
 Block properties that matter for these metas:
 
@@ -36,26 +36,26 @@ Block properties that matter for these metas:
 
 | Output | Grid (rows) | Key |
 |---|---|---|
-| Turret ×1 (meta 2) | `pip` / `cec` / `prp` | p = `plateIron`, i = `circuitBasic`, c = concrete block (meta 0, 07), e = Electric Engine (06), r = redstone |
-| Camo Bench ×1 (meta 3) | `ddd` / `ici` / `iii` | d = any `dye`, c = crafting table, i = `nuggetIron` |
-| Repair Bench ×1 (meta 5) | `pmp` / `ici` / `iii` | p = `plateIron`, m = Mechanical Parts (06), c = crafting table, i = `nuggetIron` |
+| Turret ×1 (meta 2) | `pip` / `cec` / `prp` | p = [`plateIron`](../06-items/item-catalogue.md#1-the-shared-meta-item-techgunstechgunsammo), i = `circuitBasic`, c = concrete block (meta 0, 07), e = Electric Engine ([06](../06-items/index.md)), r = redstone |
+| Camo Bench ×1 (meta 3) | `ddd` / `ici` / `iii` | d = any `dye`, c = crafting table, i = [`nuggetIron`](../06-items/item-catalogue.md#3-items-registered-in-techgunsjava-preinit-not-in-tgitems) |
+| Repair Bench ×1 (meta 5) | `pmp` / `ici` / `iii` | p = `plateIron`, m = Mechanical Parts ([06](../06-items/index.md)), c = crafting table, i = `nuggetIron` |
 | Explosive Charge ×8 (meta 6) | `rtr` / `tct` / `rtr` | r = `itemRubber`, t = TNT, c = `circuitBasic` |
-| Advanced Explosive Charge ×4 (meta 8) | `rtr` / `tct` / `rtr` | r = `sheetPlastic`, t = TGX explosive item (06), c = `circuitBasic` |
+| Advanced Explosive Charge ×4 (meta 8) | `rtr` / `tct` / `rtr` | r = `sheetPlastic`, t = TGX explosive item ([06](../06-items/index.md)), c = `circuitBasic` |
 
 The ore drill and chest recipes are in their own files.
 
 ### Item rendering (inventory and hand)
 
-`RenderMachineBlockItem` (an `IItemRenderer` registered for the `basicMachine` item, owned by 08) chooses a per-meta renderer. These are the entries for 09's metas:
+[`RenderMachineBlockItem`](../08-machines-production/rendering.md#5-machine-item-rendering) (an `IItemRenderer` registered for the `basicMachine` item, owned by [08](../08-machines-production/index.md)) chooses a per-meta renderer. These are the entries for 09's metas:
 
 | Meta | Renderer | Model | Texture |
 |---|---|---|---|
-| 2 | `RenderBlockModelItem` | `ModelTurretBase` | `textures/blocks/TurretBase.png` |
-| 3 | `RenderBlockModelItem` | tesselated cube (`PaintMachineTesselatorCube`) | `textures/blocks/paintmachine_textures.png` |
-| 5 | `RenderBlockModelItem` | tesselated cube (`RepairBenchTesselatorCube`) | `textures/blocks/repairbench_textures.png` |
-| 6 | `RenderBlockModelItemTNTCharge` | `ModelTNTCharge` | `textures/blocks/tntCharge.png` |
-| 7 | `RenderBlockModelItem` | **repair-bench cube** (wrong, see MUTL-40) | `textures/blocks/repairbench_textures.png` |
-| 8 | `RenderBlockModelItemTNTCharge` | `ModelExpCharge` | `textures/blocks/ExpCharge.png` |
+| 2 | `RenderBlockModelItem` | [`ModelTurretBase`](../07-blocks/block-rendering-and-models.md#modelturretbase-uv-6464-texture-turretbasepng) | [`textures/blocks/TurretBase.png`](../07-blocks/textures.md#11-model-textures) |
+| 3 | `RenderBlockModelItem` | tesselated cube ([`PaintMachineTesselatorCube`](../07-blocks/block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items)) | [`textures/blocks/paintmachine_textures.png`](../07-blocks/textures.md#camo-bench-and-repair-bench-09) |
+| 5 | `RenderBlockModelItem` | tesselated cube ([`RepairBenchTesselatorCube`](../07-blocks/textures.md#camo-bench-and-repair-bench-09)) | [`textures/blocks/repairbench_textures.png`](../07-blocks/textures.md#camo-bench-and-repair-bench-09) |
+| 6 | `RenderBlockModelItemTNTCharge` | [`ModelTNTCharge`](../07-blocks/block-rendering-and-models.md#modeltntcharge-uv-3232-textures-tntchargepng--tntcharge_2png) | [`textures/blocks/tntCharge.png`](../07-blocks/textures.md#11-model-textures) |
+| 7 | `RenderBlockModelItem` | **repair-bench cube** (wrong, see [MUTL-40](index.md#suspected-bugs)) | `textures/blocks/repairbench_textures.png` |
+| 8 | `RenderBlockModelItemTNTCharge` | [`ModelExpCharge`](../07-blocks/block-rendering-and-models.md#modelexpcharge-uv-3232-textures-expchargepng--expcharge_2png) | [`textures/blocks/ExpCharge.png`](../07-blocks/textures.md#11-model-textures) |
 | 10 | `RenderBlockModelItem` | repair-bench cube (placeholder) | `textures/blocks/repairbench_textures.png` |
 
 `RenderBlockModelItemTNTCharge` uses its own per-view transforms:
@@ -80,7 +80,7 @@ The ore drill and chest recipes are in their own files.
 
 ## 2. `RenderTileEntityBlock` + `TesselatorCube` (camo bench and repair bench)
 
-`RenderTileEntityBlock` is a TESR that draws one unit cube with the Tessellator, taking each face's UVs from a `TesselatorCube` subclass. At draw time it:
+`RenderTileEntityBlock` is a TESR that draws one unit cube with the Tessellator, taking each face's UVs from a [`TesselatorCube`](../07-blocks/block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items) subclass. At draw time it:
 
 1. Translates to the block corner.
 2. Rotates about the block's vertical centre axis by `90° × rotation`, where `rotation` is `BasicInventoryTileEnt.rotation`.
@@ -105,7 +105,7 @@ Both bench cubes use the same 2×2 quadrant atlas:
 | Back, left, right, bottom | u 0–0.5, v 0–0.5 | top-left |
 | — | — | bottom-right quadrant unused |
 
-`ModelBaseTesselator` wraps a `TesselatorCube` as a `ModelBase` for the item renderer. It flips 180° about X and Y and offsets by (−0.5, −1.5, −0.5).
+[`ModelBaseTesselator`](../07-blocks/block-rendering-and-models.md#modelmachine-and-modelbasetesselator) wraps a `TesselatorCube` as a `ModelBase` for the item renderer. It flips 180° about X and Y and offsets by (−0.5, −1.5, −0.5).
 
 ## 3. `RenderBlockTileEntModel` (turret base and camp flag)
 
@@ -122,7 +122,7 @@ The tile's rotation is ignored. A private helper that would rotate by metadata i
 | Tile | Model | Texture |
 |---|---|---|
 | `TurretBaseEnt` | `ModelTurretBase` | `textures/blocks/TurretBase.png` (or an armour variant) |
-| `CampFlagTileEnt` | `ModelFlagPost` | `textures/blocks/flagpost.png` |
+| `CampFlagTileEnt` | [`ModelFlagPost`](../07-blocks/block-rendering-and-models.md#modelflagpost-uv-6464-texture-flagpostpng) | [`textures/blocks/flagpost.png`](../07-blocks/textures.md#11-model-textures) |
 
 ## 4. Box-UV convention used in the texture descriptions
 

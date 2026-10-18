@@ -2,12 +2,12 @@
 
 All recipes are Forge `ShapedOreRecipe` or `ShapelessOreRecipe` registered in the crafting table. Each output is a stack of 1.
 - Strings in quotes are OreDictionary names.
-- Other ingredients are Techguns items (the shared-item metadata entries are documented in 06-items) or vanilla items.
+- Other ingredients are Techguns items (the shared-item metadata entries are documented in [06-items](../06-items/index.md)) or vanilla items.
 - "any" means the ingredient matches any damage/metadata (wildcard).
 
 Grids are written top row first; `_` is an empty cell. A 2-row recipe can be placed in either the top or the bottom two rows.
 
-Armour recipes are in `TGArmors.init()`. Special-equipment recipes are in `TGItems` (06-items), listed here because the items belong to this area.
+Armour recipes are in [`TGArmors.init()`](armor-catalogue.md). Special-equipment recipes are in [`TGItems`](../06-items/item-catalogue.md) ([06-items](../06-items/index.md)), listed here because the items belong to this area.
 
 Crafted multi-camo armour gets `camo = 0`, and crafted powered armour gets `power = 0` (via `onCreated`).
 
@@ -132,9 +132,9 @@ The input piece's damage and camo are discarded; the output is a fresh piece.
 
 **Anvil:** an armour piece can be repaired with its "repair item" (the metal repair mat, or the cloth mat if there is no metal). Special-slot items have no anvil repair item.
 
-**Repair Bench:** uses each piece's repair-material list (armor-catalogue.md §3 and §5; machine in 09-machines-utility). T2 Commando has no repair mats.
+**Repair Bench:** uses each piece's repair-material list (armor-catalogue.md §3 and §5; machine in [09-machines-utility](../09-machines-utility/index.md)). T2 Commando has no repair mats.
 
-**Vanilla two-item crafting repair** works on all of these damageable items, because nothing disables it. This also covers the fuel-based special items (bug ARM-22).
+**Vanilla two-item crafting repair** works on all of these damageable items, because nothing disables it. This also covers the fuel-based special items (bug [ARM-22](index.md#suspected-bugs)).
 
 ## 4. Loot (registered in `TGItems`; chest categories belong to 11-worldgen)
 
@@ -143,4 +143,4 @@ The input piece's damage and camo are discarded; the output is a fresh piece.
 | `techgunsMilBaseBarracks` | T1 Combat helmet, vest, pants, boots (1–1, w 2 each); T2 Combat helmet, vest, pants, boots (1–1, w 1 each); Glider (1, w 1); Gas Mask (1, w 2); Gas Mask Filter (1, w 1); Nightvision Goggles (1, w 1); Oxygen Mask (1, w 1); Oxygen Tanks (1, w 1) |
 | vanilla dungeon chest | Nightvision Goggles (1, w 1); Gas Mask (1, w 1) |
 
-Loot armour has no NBT, so its camo name shows "No Camo" (bug ARM-11).
+Loot armour has no NBT, so its camo name shows "No Camo" (bug [ARM-11](index.md#suspected-bugs)).

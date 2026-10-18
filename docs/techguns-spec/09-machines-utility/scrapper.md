@@ -5,13 +5,13 @@
 | Tile entity | `ScrapperTileEnt`, registered as `ScrapperTileEnt` |
 | Container | `ScrapperContainer` |
 | GUI | `GuiScrapper` |
-| GUI id | 10 (wired in `TechgunsGuiHandler`) |
+| GUI id | 10 (wired in [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table)) |
 
 ## Status in 0.1.2
 
 **The scrapper has no scrap table and cannot be obtained.**
 
-- The case that would create `ScrapperTileEnt` for `BasicMachine` meta 10 is commented out, so the block returns no tile entity.
+- The case that would create `ScrapperTileEnt` for [`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) meta 10 is commented out, so the block returns no tile entity.
 - `BasicMachine` only lists metas 0–9 in the creative tab, and no recipe produces meta 10.
 - The item renderer has a placeholder slot 10 that draws the repair-bench cube.
 - The machine's only "processing" code inspects the input item and prints debug text. It never produces output.
@@ -26,7 +26,7 @@ Only items for which `isRepairable()` is true are considered. Nothing is consume
 
 ## Tile entity (as written)
 
-- Extends `BasicMachineTileEntity` (08): **10** slots, **10 000 RF** buffer, standard redstone/security/owner fields.
+- Extends [`BasicMachineTileEntity`](../08-machines-production/framework.md#7-recipe-machine-state-basicmachinetileentity) ([08](../08-machines-production/index.md)): **10** slots, **10 000 RF** buffer, standard redstone/security/owner fields.
 - Slot 0 is the input; slots 1–9 are outputs.
 - Inventory name: the custom name if one is set, else `techguns.container.scrapper`. **This key is missing from `en_US.lang`.**
 - **Automation:** all sides expose slots 0–9. Insertion is allowed only into slot 0 and extraction only from slots 1–9. `isItemValidForSlot` always returns false, so automation can never actually insert.
@@ -42,7 +42,7 @@ Only items for which `isRepairable()` is true are considered. Nothing is consume
 | Index | Slot | Position |
 |---|---|---|
 | 0 | input, plain `Slot` | (35, 17) |
-| 1–9 | outputs, `SlotOutput` (rejects placement); index 1 + 3·col + row | (116 + 18·col, 17 + 18·row) |
+| 1–9 | outputs, [`SlotOutput`](../08-machines-production/ammo-press.md#1-inventory) (rejects placement); index 1 + 3·col + row | (116 + 18·col, 17 + 18·row) |
 | 10–36 | player main | (8 + 18·col, 84 + 18·row) |
 | 37–45 | hotbar | (8 + 18·i, 142) |
 
@@ -54,11 +54,11 @@ Progress-bar sync ids:
 | 1 | totalTime |
 | 2 | stored power, sent every tick while working or whenever it changes |
 
-Shift-click is not implemented; it falls through to vanilla `Container.transferStackInSlot`. See MUTL-04.
+Shift-click is not implemented; it falls through to vanilla `Container.transferStackInSlot`. See [MUTL-04](index.md#suspected-bugs).
 
 ## GUI (`GuiScrapper`)
 
-The GUI extends `GuiTechgunsPoweredTileEnt` (08), so it has the power bar, redstone button and security button. Its background is the ammo press texture `textures/gui/ammoPress_GUI.png`; 08 catalogues the file.
+The GUI extends [`GuiTechgunsPoweredTileEnt`](../08-machines-production/gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine) ([08](../08-machines-production/index.md)), so it has the power bar, redstone button and security button. Its background is the ammo press texture [`textures/gui/ammoPress_GUI.png`](../08-machines-production/gui-textures.md#1-texturesguiammopress_guipng); [08](../08-machines-production/index.md) catalogues the file.
 
 | Element | Source (u,v,w,h) | Destination |
 |---|---|---|

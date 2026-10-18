@@ -2,7 +2,7 @@
 
 This file covers each mob in turn. Shared mechanics are described once in the first section and referenced below it. AI task lists are in [ai.md](ai.md), spawning in [spawning.md](spawning.md), and visuals in [rendering-and-models.md](rendering-and-models.md).
 
-Item names refer to fields in `TGuns` and `TGItems` and to their English lang names. Their stats are owned by 02-guns, 05-armor and 06-items. Armour "camo N" means the NBT byte `camo` = N on a `GenericArmorMultiCamo` stack (see 05-armor). The camo indices used below are:
+Item names refer to fields in [`TGuns`](../02-guns/gun-catalogue.md) and [`TGItems`](../06-items/item-catalogue.md) and to their English lang names. Their stats are owned by [02-guns](../02-guns/index.md), [05-armor](../05-armor/index.md) and [06-items](../06-items/index.md). Armour "camo N" means the NBT byte `camo` = N on a [`GenericArmorMultiCamo`](../05-armor/armor-catalogue.md#1-class-hierarchy) stack (see [05-armor](../05-armor/index.md)). The camo indices used below are:
 
 | Armour set | Camo index → texture variant |
 |---|---|
@@ -17,7 +17,7 @@ Item names refer to fields in `TGuns` and `TGItems` and to their English lang na
 
 ## 0. Shared GenericNPC mechanics (`entities/npc/GenericNPC.java`)
 
-`GenericNPC` extends `EntityMob`. It implements `IRangedAttackMob`, `INPCTechgunsShooter` (muzzle position), `INpcTGDamageSystem` (Techguns armour per damage type) and `ITGNpcTeam` (faction). Every humanoid TG mob derives from it.
+`GenericNPC` extends `EntityMob`. It implements `IRangedAttackMob`, `INPCTechgunsShooter` (muzzle position), [`INpcTGDamageSystem`](../02-guns/damage-system.md#3-interfaces) (Techguns armour per damage type) and `ITGNpcTeam` (faction). Every humanoid TG mob derives from it.
 
 ### Lifecycle and equipment
 - **Equipment roll.** `onSpawnByManager(difficulty)` calls `addRandomArmor(difficulty)` (each subclass overrides it), then `setCombatTask()`.
@@ -28,7 +28,7 @@ Item names refer to fields in `TGuns` and `TGItems` and to their English lang na
   - The gun pick uses `nextInt(4)`: revolver, thompson, AS50 or Grim Reaper, each ¼. The handcannon branch is unreachable.
   - The only mob that uses the base version is the never-materialised `TGDummySpawn`.
 - **Combat task.** `setCombatTask()` removes both combat tasks, then adds one depending on the held item:
-  - a `GenericGun` adds the gun's ranged AI (`gun.getAIAttack(this)`) at priority 4;
+  - a [`GenericGun`](../02-guns/gun-lifecycle.md) adds the gun's ranged AI (`gun.getAIAttack(this)`) at priority 4;
   - anything else, including empty hands, adds the melee `EntityAIAttackOnCollide` (target class `EntityPlayer`, speed ×1.2, no long memory) at priority 4.
   - It runs in the constructor (server side), after NBT load, and whenever slot 0 (held item) changes.
 - **Persistence.** There is no custom NBT, so equipment persists through vanilla equipment saving. These are normal hostile mobs: they despawn like vanilla monsters, including the two mini-bosses. They do **not** burn in daylight.
@@ -36,12 +36,12 @@ Item names refer to fields in `TGuns` and `TGItems` and to their English lang na
 ### Ranged attack (`attackEntityWithRangedAttack`)
 If the NPC holds a `GenericGun`, it calls `gun.fireWeaponFromNPC(this, dmgscale = 0.5, accscale)`, where `accscale` depends on difficulty: Easy 1.3, Normal 1.15, Hard 1.0.
 
-Inside `fireWeaponFromNPC` (owned by 02-guns):
+Inside `fireWeaponFromNPC` (owned by [02-guns](../02-guns/index.md)):
 1. It plays the gun's fire sound at the gun position.
 2. It applies a **second** difficulty factor: damage ×0.5 / 0.6 / 0.75 / 0 and accuracy ×1.3 / 1.15 / 1.0 / 1.3 for Easy / Normal / Hard / Peaceful. Turrets always use 1.0 / 1.0.
 3. It calls `shootGun` with spread multiplier `gun.zoombonus × accscale × acc` and damage multiplier `dmgscale × dmg`.
 
-The net result for a humanoid NPC is the gun's player damage times 0.25 (Easy), 0.30 (Normal) or 0.375 (Hard). Spread is multiplied by 1.69 / 1.32 / 1.0. Players then also take the `DamageFactorNPC` config factor (default 1.0, see 01-core).
+The net result for a humanoid NPC is the gun's player damage times 0.25 (Easy), 0.30 (Normal) or 0.375 (Hard). Spread is multiplied by 1.69 / 1.32 / 1.0. Players then also take the [`DamageFactorNPC`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) config factor (default 1.0, see [01-core](../01-core/index.md)).
 
 ### Drops
 `EntityLivingBase.onDeath` always calls `dropFewItems`; the rare drop requires a recent player kill.
@@ -53,14 +53,14 @@ The net result for a humanoid NPC is the gun's player damage times 0.25 (Easy), 
 | Equipment | Vanilla `equipmentDropChances`: 8.5% per slot (+1% per looting), on a player kill only. Damageable items get random wear, so a dropped gun can be partially empty. |
 | XP | `experienceValue` (5 by default) plus 1 to 3 per equipped item. |
 
-**Reduced loot tables.** The config `RestrictedLoottables` (general category, default `false`, comment: *"Restricts mob loottables to only thing dropped by vanilla mods or techguns specific items. (No more Coal,Redstone,Iron,Bread,... drops etc)"*) switches the mobs that support it to `reducedLoottable()`. Army Soldier, Commando and Stormtrooper ignore the flag.
+**Reduced loot tables.** The config [`RestrictedLoottables`](../01-core/config.md#category-general) (general category, default `false`, comment: *"Restricts mob loottables to only thing dropped by vanilla mods or techguns specific items. (No more Coal,Redstone,Iron,Bread,... drops etc)"*) switches the mobs that support it to `reducedLoottable()`. Army Soldier, Commando and Stormtrooper ignore the flag.
 
 In the loot tables below, `y` is a uniform float in [0,1) rolled once per draw, and `round(k·y)` is Java `Math.round`. So "1+round(7y)" ranges from 1 to 8.
 
 ### Techguns armour (`getTotalArmorAgainstType`)
 This sums the Techguns armour value for the incoming damage type over the four worn armour slots:
-- a `GenericArmor` contributes its per-type value (05-armor);
-- a vanilla `ItemArmor` contributes `damageReductionAmount`, converted by `DamageSystem.getArmorAgainstDamageTypeDefault` (01-core).
+- a [`GenericArmor`](../05-armor/armor-catalogue.md#1-class-hierarchy) contributes its per-type value ([05-armor](../05-armor/index.md));
+- a vanilla `ItemArmor` contributes `damageReductionAmount`, converted by `DamageSystem.getArmorAgainstDamageTypeDefault` ([01-core](../01-core/index.md)).
 
 Penetration resistance is 0.
 
@@ -76,7 +76,7 @@ Penetration resistance is 0.
 - **Faction:** HOSTILE.
 - **Riding offset:** `getYOffset` is the default minus 0.5.
 - **Bow pose:** `hasAimedBowAnim = true`, so the arms are raised in the "aimed bow" pose while a gun is held. CyberDemon sets it to false.
-- **Muzzle position:** `getWeaponPosX/Y/Z` = (0, 1.6, 0). The client adds this to the muzzle-flash particle offset; see 03-gun-visuals-audio.
+- **Muzzle position:** `getWeaponPosX/Y/Z` = (0, 1.6, 0). The client adds this to the muzzle-flash particle offset; see [03-gun-visuals-audio](../03-gun-visuals-audio/index.md).
 
 ---
 
@@ -99,7 +99,7 @@ Penetration resistance is 0.
 | 7–10 | – | nothing |
 
 - **Spawning:** natural, danger level 1, overworld. Also from the "Zombie Hole" spawner block.
-- **Gore:** zombie-soldier gib texture with dark-red blood (04-projectiles-fx).
+- **Gore:** zombie-soldier gib texture with dark-red blood ([04-projectiles-fx](../04-projectiles-fx/index.md)).
 
 ## 2. Zombie Farmer (`ZombieFarmer`)
 - **Stats:** HP 18, attack 3, speed 0.20, follow 50.
@@ -122,7 +122,7 @@ Penetration resistance is 0.
 ## 4. Zombie Pigman Soldier (`ZombiePigmanSoldier`)
 - **Stats:** HP 25, attack 5, speed 0.30, follow 50, **fire immune**.
 - **Armour:** T2 Combat camo 3 ("arctic").
-  - Helmet: intended 50%, but a missing brace makes it **always** equipped (bug NPC-03).
+  - Helmet: intended 50%, but a missing brace makes it **always** equipped (bug [NPC-03](index.md#suspected-bugs)).
   - Chest, legs and boots: 50% each.
 - **Weapon:** the pool grows with spawn difficulty. Draw `r = nextInt(bound)`:
 
@@ -133,7 +133,7 @@ Penetration resistance is 0.
 | ≥2 | 15 | 3/15 | 2/15 | 2/15 | 2/15 | 2/15 | 2/15 | 1/15 | 1/15 |
 
 - **Sounds:** idle `mob.zombiepig.zpig`, hurt `mob.zombiepig.zpighurt`, death `mob.zombiepig.zpigdeath`, step `mob.zombie.step` (0.15).
-- **Loot** (`nextInt(6)`): 0 Steel Plate ×1; 1 Obsidian Steel Ingot ×`nextInt(2)` (can be **0**, bug NPC-04); 2 Gold Ingot ×(1–3); 3 Gunpowder ×(1–5); 4 Shotgun Shell ×(1–7); 5 Rifle Bullets ×(1–3). These counts use `1+nextInt(n)`.
+- **Loot** (`nextInt(6)`): 0 Steel Plate ×1; 1 Obsidian Steel Ingot ×`nextInt(2)` (can be **0**, bug [NPC-04](index.md#suspected-bugs)); 2 Gold Ingot ×(1–3); 3 Gunpowder ×(1–5); 4 Shotgun Shell ×(1–7); 5 Rifle Bullets ×(1–3). These counts use `1+nextInt(n)`.
 - **Reduced loot** (`nextInt(7)`): 0 Gold Nugget; 1 Gunpowder; 2 Shotgun Shell ×(1–7); 3 Rifle Bullets ×(1–3); 4–6 nothing.
 - **Spawning:** natural, danger level 0, **Nether only** (dimension −1, weight 100).
 - **Rendering:** uses the vanilla `minecraft:textures/entity/zombie_pigman.png`.
@@ -146,7 +146,7 @@ Penetration resistance is 0.
 - **Loot** (`nextInt(3)`): 0 Bone ×(1+round(y)); 1 Coal ×(1+round(2y)); 2 Gunpowder ×1.
 - **Reduced loot** (`nextInt(9)`): 0 Heavy Cloth; 1 Bone; 2 Gunpowder; else nothing.
 - **Spawning:** natural, danger level 1, overworld (weight 100).
-- **Rendering:** vanilla skeleton texture on the thin-limbed `ModelSkeletonSoldier`. Gore is bone-white with no blood.
+- **Rendering:** vanilla skeleton texture on the thin-limbed [`ModelSkeletonSoldier`](rendering-and-models.md#72-modelskeletonsoldier-extends-modelgenericnpc). Gore is bone-white with no blood.
 
 ## 6. Army Soldier (`ArmySoldier`)
 - **Stats:** HP 30, attack 4, speed 0.30, follow **75**.
@@ -156,7 +156,7 @@ Penetration resistance is 0.
 - **Weapon:** M4, combat shotgun, bolt-action rifle, ⅓ each.
 - **Sounds:** villager set.
 - **Loot** (`nextInt(5)`, no reduced variant): 0 Heavy Cloth; 1 Iron Ingot; 2 Gunpowder; 3 Shotgun Shell ×(1+round(7y)); 4 Rifle Bullets ×(1+round(2y)).
-- **Spawning:** not in the natural spawn tables. It comes from Military Camp and Aircraft Carrier camp flags (11-worldgen) and from its egg.
+- **Spawning:** not in the natural spawn tables. It comes from Military Camp and Aircraft Carrier camp flags ([11-worldgen](../11-worldgen/index.md)) and from its egg.
 
 ## 7. Bandit (`Bandit`)
 - **Stats:** HP 20, attack 5, speed 0.30, follow 40.
@@ -189,7 +189,7 @@ Penetration resistance is 0.
 | 2–3 | Rubber Bar ×1 |
 | 4–5 | Gunpowder ×1 |
 | 6–7 | Rifle Bullets ×(1+round(2y)) |
-| 8 | `TGBlocks.basicMachine` meta 6 = **Explosive Charge** |
+| 8 | [`TGBlocks.basicMachine`](../07-blocks/block-catalogue.md#registered-blocks) meta 6 = **Explosive Charge** |
 | 9 | `TGBlocks.basicMachine` meta 8 = **Advanced Explosive Charge** |
 
 - **Spawning:** Aircraft Carrier camp flag (with Army Soldiers), and egg.
@@ -199,7 +199,7 @@ Penetration resistance is 0.
 - **Armour:** full T3 Miner (HEV suit) camo 1 (silver).
 - **Weapon** (`nextInt(2)`): blaster rifle or laser gun, 50/50.
 - **Sounds:** villager set.
-- **Loot** (`nextInt(9)`, no reduced variant): 0–1 Plastic Sheet; 2–3 Obsidian Steel Ingot; 4–6 Redstone ×1 (the count formula always gives 1, bug NPC-05); 7 Circuit Board; 8 Energy Cell.
+- **Loot** (`nextInt(9)`, no reduced variant): 0–1 Plastic Sheet; 2–3 Obsidian Steel Ingot; 4–6 Redstone ×1 (the count formula always gives 1, bug [NPC-05](index.md#suspected-bugs)); 7 Circuit Board; 8 Energy Cell.
 - **Spawning:** egg only.
 
 ## 11. Cyberdemon (`CyberDemon`)
@@ -210,15 +210,15 @@ Penetration resistance is 0.
 - **Sounds:**
   - idle `techguns:npcs.cyberdemonIdle`, hurt `techguns:npcs.cyberdemonHurt`, death `techguns:npcs.cyberdemonDeath`;
   - each step plays `techguns:npcs.cyberdemonStep` at volume 0.15 through `world.playSoundAtEntity`, in addition to the block step sound;
-  - an "aggro" sound `techguns:npcs.cyberdemonAggro` (volume 1) is coded in `findPlayerToAttack`, but that legacy hook never runs for AI-enabled mobs, so **it never plays** (bug NPC-06).
+  - an "aggro" sound `techguns:npcs.cyberdemonAggro` (volume 1) is coded in `findPlayerToAttack`, but that legacy hook never runs for AI-enabled mobs, so **it never plays** (bug [NPC-06](index.md#suspected-bugs)).
 - **Loot** (`nextInt(20)`): 0 Ghast Tear; 2–5 Blaze Rod; **every other roll** (1, 6–19) Cybernetic Parts ×1, which is 75%.
 - **Reduced loot** (`nextInt(2)`): 0 Cybernetic Parts; 1 nothing.
 - **Spawning:** natural, danger level 0, **Nether only** (weight 30).
-- **Rendering:** custom `ModelCyberDemon` (red flesh with cybernetic implants). Gore is green "blood" at scale 1.0.
+- **Rendering:** custom [`ModelCyberDemon`](rendering-and-models.md#73-modelcyberdemon-extends-modelbiped) (red flesh with cybernetic implants). Gore is green "blood" at scale 1.0.
 
 ## 12. Psycho Steve (`PsychoSteve`), early-game mini-boss
 - **Stats:** HP 75, attack 7, speed **0.60** (very fast), follow 60, XP 25.
-- Implements `IBossDisplayData`, but nothing calls `BossStatus`, so no boss bar appears (bug NPC-22).
+- Implements `IBossDisplayData`, but nothing calls `BossStatus`, so no boss bar appears (bug [NPC-22](index.md#suspected-bugs)).
 - **Armour:** full T1 Miner camo 1 (red).
 - **Weapon:** chainsaw (melee-range gun AI, range 3, attack time 10).
 - **Drops:** the rare drop is disabled. `dropFewItems` always drops **Chainsaw ×1** and **Fuel Tank ×(4 + nextInt(5))**, so 4 to 8, regardless of how it died. Equipment can also drop at 8.5%.
@@ -272,16 +272,16 @@ Extends vanilla **`EntitySpider`**, not `GenericNPC`. It uses the legacy (non-AI
   - **Spawn light:** `isValidLightLevel` always returns true, so it can spawn in any light. In practice it only spawns from the Bug Hole spawner or an egg.
   - **Targeting:** `findPlayerToAttack` takes the closest vulnerable player within 16 blocks and accepts them only if visible. It **ignores daylight**, unlike the spider, so the bug is always aggressive.
     - Whenever such a player exists, even an unseen one, it plays `techguns:npcs.alienbugAggro` (volume 1).
-    - The method is polled every tick while the bug has no target, so the sound can repeat every tick (bug NPC-07).
+    - The method is polled every tick while the bug has no target, so the sound can repeat every tick (bug [NPC-07](index.md#suspected-bugs)).
   - **Melee:** `attackEntity` replaces the spider leap. When its attack timer is 0, the target is closer than 2 blocks, and the bounding boxes overlap vertically, it calls `attackEntityAsMob`. There is no leap.
   - **Bite:** `attackEntityAsMob` does the normal mob hit and sets `attackTimer = 10`. It plays `techguns:npcs.alienbugBite` (volume 0.75) and broadcasts entity status byte **4** so clients also set the timer to 10. The timer counts down 1 per tick and drives the jaw-snap animation.
 - **Sounds:** idle `techguns:npcs.alienbugIdle`, hurt `…alienbugHurt`, death `…alienbugDeath`. Step plays `…alienbugStep` (0.15), replacing the block step sound.
 - **TG armour:** energy, explosion, ice, lightning 5; physical 10; projectile 10; poison 20; radiation 20; fire 0; unresistable 0. Penetration resistance 0.
 - **XP:** 5 (EntityMob).
-- **Gore:** `ModelGibsAlienBug`, 8 parts, alienbug texture, scale 0.8, yellow-green blood (RGB 235, 255, 70); see 04.
+- **Gore:** [`ModelGibsAlienBug`](../04-projectiles-fx/death-effects.md#gib-models-clientmodelsmodelgibsjava), 8 parts, alienbug texture, scale 0.8, yellow-green blood (RGB 235, 255, 70); see 04.
 
 ### AlienBugDomesticated (dead code)
-An `EntityTameable` copy of the bug: HP 20, speed 1.0, same sounds, bite, attack timer and TG armour, faction **NEUTRAL**. `createChild` returns null and it has no AI tasks. Its registration is commented out, but `RenderAlienBug` is still bound to the class. It cannot appear in game.
+An `EntityTameable` copy of the bug: HP 20, speed 1.0, same sounds, bite, attack timer and TG armour, faction **NEUTRAL**. `createChild` returns null and it has no AI tasks. Its registration is commented out, but [`RenderAlienBug`](rendering-and-models.md#4-renderalienbug-extends-renderliving) is still bound to the class. It cannot appear in game.
 
 ## 16. Attack Helicopter (`AttackHelicopter`), boss
 
@@ -291,7 +291,7 @@ Extends `EntityFlying` (Ghast-style, legacy AI) and implements `IMob`, `IBossDis
 - **Boss bar:** the renderer calls `BossStatus.setBossStatus(entity, true)` every frame, so a boss health bar shows while it is rendered.
 - **Peaceful:** the helicopter removes itself.
 - **Despawning:** vanilla `despawnEntity` runs, so it can despawn like a normal mob.
-- **Flight and attack AI:** see [ai.md § Attack Helicopter](ai.md#attack-helicopter).
+- **Flight and attack AI:** see [ai.md § Attack Helicopter](ai.md#6-attack-helicopter).
 - **Damage:**
   - a `"fireball"` damage source from a player (a reflected ghast fireball) deals 1000, an instant kill. This is a Ghast leftover;
   - TG armour: explosion 5; lightning and energy 10; fire, ice, physical, projectile, poison and radiation 20; unresistable 0;
@@ -306,28 +306,28 @@ Extends `EntityFlying` (Ghast-style, legacy AI) and implements `IMob`, `IBossDis
 - **Sounds:**
   - rotor `techguns:npcs.apacheRotor` at volume 6 every 61 ticks while alive;
   - hurt `techguns:npcs.apacheHit`;
-  - death sound string `npcs.apacheHit` is missing its domain, so it resolves to a nonexistent vanilla sound (bug NPC-08);
-  - ambient is the empty string `""` (bug NPC-09).
+  - death sound string `npcs.apacheHit` is missing its domain, so it resolves to a nonexistent vanilla sound (bug [NPC-08](index.md#suspected-bugs));
+  - ambient is the empty string `""` (bug [NPC-09](index.md#suspected-bugs)).
 - **NBT:** `ExplosionPower` (int, default 1). It is saved and loaded but unused (Ghast leftover).
 - **DataWatcher:** index 16 (byte) is 1 while `attackCounter > 10`. The renderer does not use it.
 - **Natural-spawn guards** (`getCanSpawnHere`: 1/20 chance, not Peaceful; max 1 per chunk) are moot, because it is never added to any spawn list. It comes from its egg only.
 
 ## 17. Turret (`NPCTurret`, registry name `SimpleTurret`)
 
-This is the gun-wielding head that sits on a Turret base block (`BasicMachine` meta 2). The block, its GUI, power, ammo, repair and security settings are owned by **09-machines-utility**. This section covers the entity side.
+This is the gun-wielding head that sits on a Turret base block ([`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) meta 2). The block, its GUI, power, ammo, repair and security settings are owned by **[09-machines-utility](../09-machines-utility/index.md)**. This section covers the entity side.
 
 It extends `EntityCreature` and implements `IAnimals`, `IRangedAttackMob`, `INPCTechgunsShooter` and `ITGNpcTeam`. Its faction is **TURRET**.
 
 - **Stats:** HP 30, movement 0, knockback resistance 1.0, follow range 20 (replaced by the gun's AI range once a gun is fitted). Height is forced to 1.0 (width 0.6) and eye height is 0.8. It never despawns.
 - **Position lock:** after every `onUpdate` the turret resets its position to its previous-tick position, so it cannot be moved.
-- **Weapon:** `getHeldItem()` returns the gun in the linked `TurretBaseEnt` (`mountedTileEnt.getWeapon()`), or null if unlinked.
+- **Weapon:** `getHeldItem()` returns the gun in the linked [`TurretBaseEnt`](../09-machines-utility/turret.md#tile-entity-turretbaseent) (`mountedTileEnt.getWeapon()`), or null if unlinked.
 - **Armour:** `getTotalArmorValue()` returns the base's turret-armour value: 0, 5 (Iron Turret Armor), 10 (Steel), 15 (Obsidian Steel) or 20 (Carbon). Vanilla armour maths applies.
-- **Firing:** when the ranged AI fires, the turret checks it holds a `GenericGun` **and** that the base can `consumeAmmo()`. Only then does it call `fireWeaponFromNPC(this, 1.0, 1.0)`, giving full damage and accuracy. Against players, the `DamageTurretToPlayer` config factor (default 0.5) applies (01-core).
-- **Muzzle pos:** (0.05, 0.7, 0.8), plus the gun's turret offsets (02/03).
+- **Firing:** when the ranged AI fires, the turret checks it holds a `GenericGun` **and** that the base can `consumeAmmo()`. Only then does it call `fireWeaponFromNPC(this, 1.0, 1.0)`, giving full damage and accuracy. Against players, the [`DamageTurretToPlayer`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) config factor (default 0.5) applies ([01-core](../01-core/index.md)).
+- **Muzzle pos:** (0.05, 0.7, 0.8), plus the gun's turret offsets ([02](../02-guns/index.md)/[03](../03-gun-visuals-audio/index.md)).
 - **Sounds:** no ambient sound; hurt `mob.irongolem.hit`; death `mob.irongolem.death`; no step sound.
-- **Death:** `onDeath` does **not** call super. It calls `mountedTileEnt.onTurretDeath()` and the base starts its repair timer (09). This throws an NPE if the turret is unlinked (bug NPC-12). There are no drops, no rare drop, and 0 XP. The vanilla 20-tick death removal still runs.
+- **Death:** `onDeath` does **not** call super. It calls `mountedTileEnt.onTurretDeath()` and the base starts its repair timer ([09](../09-machines-utility/index.md)). This throws an NPE if the turret is unlinked (bug [NPC-12](index.md#suspected-bugs)). There are no drops, no rare drop, and 0 XP. The vanilla 20-tick death removal still runs.
 - **`destroy()`:** sets health to 0 and kills the entity. The base calls it when the block is broken.
-- **Linking:** see [ai.md § Turret](ai.md#turret-npcturret).
+- **Linking:** see [ai.md § Turret](ai.md#5-turret-npcturret).
 - **AI enable/disable:** `disable()` removes every AI task and sets `active = false`. The base does this when it is unpowered or redstone-disabled. Re-enabling calls `setAITasks()` and `setCombatTask()`.
 - **NBT:** none of its own. The link is re-established by position (see ai.md).
 

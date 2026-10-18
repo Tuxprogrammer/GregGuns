@@ -4,10 +4,10 @@ Techguns mobs reach the world in five ways:
 1. Natural spawning, through the **dummy-replacement spawn manager**.
 2. Spawn eggs (`TGMonsterPlacer`).
 3. The two **monster-spawner blocks** (`TGSpawnerTileEnt`).
-4. **Camp flags** in generated structures, via `NPCUtil.spawnEntity` (the structures belong to 11-worldgen).
-5. The turret base block, for turrets (09).
+4. **Camp flags** in generated structures, via `NPCUtil.spawnEntity` (the structures belong to [11-worldgen](../11-worldgen/index.md)).
+5. The turret base block, for turrets ([09](../09-machines-utility/index.md)).
 
-Source files: `TGEntities.postInit`, `entities/spawn/TGNpcSpawn.java`, `entities/spawn/TGSpawnManager.java`, `entities/npc/TGDummySpawn.java`, the `TechgunsEventhandler.onEntityJoinWorld` hook, `tileentities/TGSpawnerTileEnt.java`, `items/TGMonsterPlacer.java` and `util/NPCUtil.java`.
+Source files: [`TGEntities.postInit`](mob-catalogue.md#registration-javatechgunstgentitiesjava), `entities/spawn/TGNpcSpawn.java`, `entities/spawn/TGSpawnManager.java`, [`entities/npc/TGDummySpawn.java`](per-mob.md#18-tgdummyspawn-tgdummyspawn), the [`TechgunsEventhandler.onEntityJoinWorld`](../01-core/events.md#techgunseventhandler-forge-bus) hook, `tileentities/TGSpawnerTileEnt.java`, `items/TGMonsterPlacer.java` and `util/NPCUtil.java`.
 
 ---
 
@@ -30,9 +30,9 @@ By default the dummy has 6× a vanilla zombie's weight in the overworld (600 vs 
 1. Look up the biome at `(round(x), round(z))`.
 2. Compute `danger = distanceDanger + biomeDanger` (range 0 to 5).
 3. Sum the weights of every registered `TGNpcSpawn` in danger tables 0 through `danger` whose dimension list contains the current dimension ID. For each spawn, the weight counts only if its biome whitelist is null or contains the biome; otherwise it counts as 0.
-4. If the total is 0, print `TotalWeight 0, nothing to spawn???` and stop. This happens in every dimension other than 0 and −1 (bug NPC-16).
+4. If the total is 0, print `TotalWeight 0, nothing to spawn???` and stop. This happens in every dimension other than 0 and −1 (bug [NPC-16](index.md#suspected-bugs)).
 5. Draw `roll = rnd.nextInt(total)`. Walk the same lists in the same order, accumulating weights. Choose the first spawn whose running total is `>= roll`.
-   - This differs from a standard weighted pick. When `roll = 0`, the first dimension-matching entry is chosen **even if its weight is 0**, and every boundary is shifted by one (bug NPC-14).
+   - This differs from a standard weighted pick. When `roll = 0`, the first dimension-matching entry is chosen **even if its weight is 0**, and every boundary is shifted by one (bug [NPC-14](index.md#suspected-bugs)).
 6. Construct the chosen class reflectively with its `(World)` constructor.
    - Position it at the dummy's x, y, z and yaw, with pitch 0.
    - Call `onSpawnByManager(danger)`, which rolls equipment with **difficulty = danger** (0 to 5).
@@ -46,9 +46,9 @@ A pack of two dummies yields two independently chosen NPCs.
 
 | Distance (overworld) | Distance (Nether) | Distance danger |
 |---|---|---|
-| < `DistanceSpawnLevel0` (500) | < 250 | 0 |
-| < `DistanceSpawnLevel1` (1000) | < 500 | 1 |
-| < `DistanceSpawnLevel2` (2500) | < 1250 | 2 |
+| < [`DistanceSpawnLevel0`](../01-core/config.md#category-npc-spawn) (500) | < 250 | 0 |
+| < [`DistanceSpawnLevel1`](../01-core/config.md#category-npc-spawn) (1000) | < 500 | 1 |
+| < [`DistanceSpawnLevel2`](../01-core/config.md#category-npc-spawn) (2500) | < 1250 | 2 |
 | otherwise | otherwise | 3 |
 
 **Biome danger.** The first matching rule wins:
@@ -73,19 +73,19 @@ The class has constructors for (type, weight), (type, weight, biomes…), (type,
 
 | Table (danger level) | Mob | Weight config key | Default | Dimensions |
 |---|---|---|---|---|
-| 0 | Zombie Farmer | `SpawnWeightZombieFarmer` | 200 | 0 |
-| 0 | Zombie Miner | `SpawnWeightZombieMiner` | 200 | 0 |
-| 0 | Zombie Pigman Soldier | `SpawnWeightZombiePigmanSoldier` | 100 | −1 |
-| 0 | Cyberdemon | `SpawnWeightCyberDemon` | 30 | −1 |
-| 1 | Zombie Soldier | `SpawnWeightZombieSoldier` | 100 | 0 |
-| 1 | Skeleton Soldier | `SpawnWeightSkeletonSoldier` | 100 | 0 |
-| 1 | Psycho Steve | `SpawnWeightPsychoSteve` | 3 | 0 |
-| 2 | Bandit | `SpawnWeightBandit` | 50 | 0 |
+| 0 | Zombie Farmer | [`SpawnWeightZombieFarmer`](../01-core/config.md#category-npc-spawn) | 200 | 0 |
+| 0 | Zombie Miner | [`SpawnWeightZombieMiner`](../01-core/config.md#category-npc-spawn) | 200 | 0 |
+| 0 | Zombie Pigman Soldier | [`SpawnWeightZombiePigmanSoldier`](../01-core/config.md#category-npc-spawn) | 100 | −1 |
+| 0 | Cyberdemon | [`SpawnWeightCyberDemon`](../01-core/config.md#category-npc-spawn) | 30 | −1 |
+| 1 | Zombie Soldier | [`SpawnWeightZombieSoldier`](../01-core/config.md#category-npc-spawn) | 100 | 0 |
+| 1 | Skeleton Soldier | [`SpawnWeightSkeletonSoldier`](../01-core/config.md#category-npc-spawn) | 100 | 0 |
+| 1 | Psycho Steve | [`SpawnWeightPsychoSteve`](../01-core/config.md#category-npc-spawn) | 3 | 0 |
+| 2 | Bandit | [`SpawnWeightBandit`](../01-core/config.md#category-npc-spawn) | 50 | 0 |
 | 3–5 | *(empty)* | | | |
 
 Iteration order, which matters for the off-by-one pick, is table 0 then 1 then 2, in the order the rows are listed above. The first overworld entry is therefore Zombie Farmer, and the first Nether entry is Zombie Pigman Soldier.
 
-All NPC spawn options live in config category `"NPC Spawn"` (`TGConfig`):
+All NPC spawn options live in config category `"NPC Spawn"` ([`TGConfig`](../01-core/config.md)):
 
 | Key | Default | Range | Comment text |
 |---|---|---|---|
@@ -103,12 +103,12 @@ All NPC spawn options live in config category `"NPC Spawn"` (`TGConfig`):
 | `DistanceSpawnLevel1` | 1000 | 0–MAX_INT | "…up to 1…" |
 | `DistanceSpawnLevel2` | 2500 | 0–MAX_INT | "…up to 2…" |
 
-Despite the "will not be registered" wording, a weight of 0 **is** still registered. Combined with the off-by-one pick, a zero-weight mob can still spawn (bug NPC-15).
+Despite the "will not be registered" wording, a weight of 0 **is** still registered. Combined with the off-by-one pick, a zero-weight mob can still spawn (bug [NPC-15](index.md#suspected-bugs)).
 
-Related damage config, owned by 01-core but affecting NPCs (category `"Damage Factors"`):
-- `DamageTurretToPlayer` (0.5): turret damage to players.
-- `DamageFactorNPC` (1.0): damage from other NPCs to players. Helicopter bullets have no shooter and also count as NPC damage.
-- `ArmorPenetrationMultiplierNPCtoPlayer` (1.0): multiplier on NPC armour penetration against players.
+Related damage config, owned by [01-core](../01-core/index.md) but affecting NPCs (category `"Damage Factors"`):
+- [`DamageTurretToPlayer`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) (0.5): turret damage to players.
+- [`DamageFactorNPC`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) (1.0): damage from other NPCs to players. Helicopter bullets have no shooter and also count as NPC damage.
+- [`ArmorPenetrationMultiplierNPCtoPlayer`](../01-core/config.md#category-damage-factors-used-by-damagesystemdamagesystem-described-in-0205) (1.0): multiplier on NPC armour penetration against players.
 
 ### 1.5 Which mobs never spawn naturally
 Army Soldier, Commando, Outcast, Stormtrooper, Dictator Dave, the three Super Mutants, Alien Bug and Attack Helicopter. They come only from eggs, spawner blocks or camp flags.
@@ -130,7 +130,7 @@ Registration, colours and names are in [mob-catalogue.md](mob-catalogue.md#spawn
 **Right-click in air or liquid** (`onItemRightClick`, server only):
 - Ray-trace including liquids.
 - The block must be minable and editable by the player.
-- If the hit block is a `BlockLiquid`, spawn **at the block's integer corner** (no +0.5; bug NPC-20). Name tag and consumption work as above.
+- If the hit block is a `BlockLiquid`, spawn **at the block's integer corner** (no +0.5; bug [NPC-20](index.md#suspected-bugs)). Name tag and consumption work as above.
 
 **`spawnEntity(world, x, y, z)`:**
 1. Build `Techguns.<Name>` through `EntityList`.
@@ -138,7 +138,7 @@ Registration, colours and names are in [mob-catalogue.md](mob-catalogue.md#spawn
 3. Spawn it, then call `onSpawnWithEgg(null)`. For a GenericNPC this rolls equipment with a random difficulty 0 to 3.
 4. Call `playLivingSound()`.
 
-If the name is not registered it prints `Entity not found <name>`, but returns the **previously** spawned entity, because the result is held in a shared item field (bug NPC-18).
+If the name is not registered it prints `Entity not found <name>`, but returns the **previously** spawned entity, because the result is held in a shared item field (bug [NPC-18](index.md#suspected-bugs)).
 
 ---
 
@@ -161,11 +161,11 @@ If the name is not registered it prints `Entity not found <name>`, but returns t
 
 The Javadoc lists the vanilla defaults: 20 / 200 / 800 / 4 / 6 / 16 / 4.
 
-The block `BlockTGMonsterSpawner` (07-blocks) creates one per metadata:
+The block [`BlockTGMonsterSpawner`](../07-blocks/special-blocks.md#monster-spawner-holes-blocktgmonsterspawner) ([07-blocks](../07-blocks/index.md)) creates one per metadata:
 
 | Meta | Block name | EntityId | Delay | Min delay | Max delay | Count | Max nearby | Player range | Spawn range |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | Bug Hole | `Techguns.AlienBug` | 20 | 100 | 300 | 3 | 5 | 24 | 3 |
+| 0 | Bug Hole | [`Techguns.AlienBug`](../01-core/lifecycle-and-registration.md#lifecycle-overview) | 20 | 100 | 300 | 3 | 5 | 24 | 3 |
 | 1 | Zombie Hole | `Techguns.ZombieSoldier` | 20 | 100 | 300 | 3 | 5 | 24 | 3 |
 
 The rest is vanilla spawner behaviour:
@@ -183,7 +183,7 @@ The rest is vanilla spawner behaviour:
 
 `NPCUtil.EntityByNameSelector(names)` is an `IEntitySelector` that accepts living `EntityLivingBase` entities whose `EntityList.classToStringMapping` name is in `names`.
 
-The camp flag (`CampFlagTileEnt`, `BasicMachine` meta 7, owned by 09 and 11) uses both:
+The camp flag ([`CampFlagTileEnt`](../09-machines-utility/shared-rendering.md#1-basicmachine-metas-owned-by-area-09), [`BasicMachine`](../08-machines-production/blocks-and-items.md#1-basicmachine-registry-name-basicmachine) meta 7, owned by [09](../09-machines-utility/index.md) and [11](../11-worldgen/index.md)) uses both:
 - Every 60 ticks it counts NPCs from its list inside the camp box.
 - If the count is below `maxNPCs`, it spawns a random list entry at a random spawn point every 200 ticks.
 
@@ -191,4 +191,4 @@ The spawn lists are:
 - Military Camp: `{"ArmySoldier"}`.
 - Aircraft Carrier: `{"ArmySoldier", "Commando"}`, with max 9.
 
-**The counting never matches.** FML stores the full name `Techguns.ArmySoldier` in `classToStringMapping`, but the selector is given the short name `ArmySoldier`. The count is therefore always 0, and camps keep spawning a soldier every 200 ticks without limit while loaded (bug NPC-17).
+**The counting never matches.** FML stores the full name `Techguns.ArmySoldier` in `classToStringMapping`, but the selector is given the short name [`ArmySoldier`](per-mob.md#6-army-soldier-armysoldier). The count is therefore always 0, and camps keep spawning a soldier every 200 ticks without limit while loaded (bug [NPC-17](index.md#suspected-bugs)).

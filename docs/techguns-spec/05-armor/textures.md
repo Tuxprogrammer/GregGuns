@@ -16,7 +16,7 @@ There are **no `.mcmeta` files** in this folder, so none of these textures are a
 
 `<set>_1.png` is drawn for helmet, chest and boots; `<set>_2.png` for leggings. In `_2` only the leg box and the lower body box are painted.
 
-**B. 2× biped plus extras (128×128).** Used by `ModelExoSuit` and `ModelArmorCoat`, whose UV grid is 64×64.
+**B. 2× biped plus extras (128×128).** Used by `ModelExoSuit` and [`ModelArmorCoat`](rendering-and-models.md#24-modelarmorcoattype-scale-riot--ranger-veteran-indices-811), whose UV grid is 64×64.
 - The top half (rows 0–64 px) follows layout A.
 - The bottom half (rows 64–128 px) holds the extra boxes. Their UV offsets are given in rendering-and-models.md; multiply them by 2 to get pixels.
 
@@ -181,6 +181,6 @@ Counts: T1 18, T2 combat 12, T2 commando 2, T3 combat 6, HEV 6, riot 3, exo 6, s
 Unused files: `textures/armor/steam_armor_1.png` and `textures/armor/t2_riotArmor.png`.
 
 Related textures documented elsewhere:
-- `textures/gui/TGPlayerInventory.png`: extra-inventory.md §6.
-- Item icons `textures/items/*`: 06-items.
-- Gun textures used by the akimbo renderers: 03-gun-visuals-audio.
+- [`textures/gui/TGPlayerInventory.png`](../08-machines-production/gui-textures.md#14-texturesguitgplayerinventorypng-owned-by-the-player-inventory-area-0105): extra-inventory.md §6.
+- Item icons `textures/items/*`: [06-items](../06-items/index.md).
+- Gun textures used by the akimbo renderers: [03-gun-visuals-audio](../03-gun-visuals-audio/index.md).

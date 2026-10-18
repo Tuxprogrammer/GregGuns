@@ -2,7 +2,7 @@
 
 The Chem Lab is a two-item, one-fluid-in machine. Each recipe gives an optional item output and/or an optional fluid output. It has an input tank and an output tank.
 
-Classes: `ChemLabTileEnt` (`BasicMachineTileEntity` + Forge `IFluidHandler`), `ChemLabContainer`, `GuiChemLab`, `GuiButtonToggleDrainTank`, `ChemLabRecipes` (inner classes `ChemLabRecipe` and `ChemLabOutput`).
+Classes: [`ChemLabTileEnt`](framework.md#1-class-hierarchy) ([`BasicMachineTileEntity`](framework.md#7-recipe-machine-state-basicmachinetileentity) + Forge `IFluidHandler`), `ChemLabContainer`, `GuiChemLab`, `GuiButtonToggleDrainTank`, `ChemLabRecipes` (inner classes `ChemLabRecipe` and `ChemLabOutput`).
 
 ## 1. Inventory and tanks
 
@@ -11,8 +11,8 @@ Classes: `ChemLabTileEnt` (`BasicMachineTileEntity` + Forge `IFluidHandler`), `C
 | 0 | Input 1 | (35,17) | `Slot` |
 | 1 | Input 2 | (57,17) | `Slot` |
 | 2 | "Flask" slot (glass bottle only) | (35,40) | `Slot` |
-| 3 | Output | (135,17) | `SlotOutput` |
-| 4 | Upgrade | (135,47) | `SlotMachineUpgrade` |
+| 3 | Output | (135,17) | [`SlotOutput`](ammo-press.md#1-inventory) |
+| 4 | Upgrade | (135,47) | [`SlotMachineUpgrade`](ammo-press.md#1-inventory) |
 
 | Tank | Capacity | NBT | Filled by | Drained by |
 |---|---|---|---|---|
@@ -35,7 +35,7 @@ Classes: `ChemLabTileEnt` (`BasicMachineTileEntity` + Forge `IFluidHandler`), `C
 
 ## 2. Right-click with fluid containers
 
-`BasicMachine.hasBucketInteraction` is true only for meta 4. Behaviour of `onFluidContainerInteract`:
+[`BasicMachine.hasBucketInteraction`](blocks-and-items.md#1-basicmachine-registry-name-basicmachine) is true only for meta 4. Behaviour of `onFluidContainerInteract`:
 
 - **Empty registered container** (bucket, bottle…): pick the tank selected by `drainInput` (input if true, else output). If it holds at least the container's capacity of its fluid, fill the container and drain that amount. The full container is returned.
 - **Filled container:** if the input tank is empty or holds the same fluid, and the whole content fits, empty the container into the input tank. The empty container is returned.
@@ -49,7 +49,7 @@ A `ChemLabRecipe` has:
 
 | Field | Meaning |
 |---|---|
-| `slot1`, `slot2` | `ItemStackOreDict`. A null stack means "slot must be empty" |
+| `slot1`, `slot2` | [`ItemStackOreDict`](gui-handler.md#6-itemstackoredict-recipe-ingredient-wrapper). A null stack means "slot must be empty" |
 | `slot3` | ItemStack for the flask slot. Always null in practice |
 | `amounts[0..3]` | consumed amounts for slot1, slot2, slot3 and input fluid. The fluid amount = `fluidIn.amount` |
 | `fluidIn` | required fluid, or null for none |
@@ -64,14 +64,14 @@ A `ChemLabRecipe` has:
 3. **and** the fluid matches: recipe fluid null ⇒ anything (including other fluid in the tank) is fine; otherwise the same fluid with amount ≥ required.
 4. **and** the amounts are present: each slot has at least its amount, and a slot with amount 0 must be empty.
 
-Because no recipe uses slot3, **a glass bottle in the flask slot blocks every recipe** (MPRD-14). The first matching recipe in list order wins.
+Because no recipe uses slot3, **a glass bottle in the flask slot blocks every recipe** ([MPRD-14](index.md#suspected-bugs)). The first matching recipe in list order wins.
 
 **Operation.**
 - **Start** (server only), if the item output fits and the fluid output can merge into the output tank (same fluid and space, or empty tank):
   1. Choose the multiplier m: the largest m ≤ upgrades+1 where m× output fits and m× all amounts are present.
-  2. Consume `amount[i]·m` from slots 0, 1, 2 and `amount[3]·m` mB from the input tank. With a swapped match the amounts aren't swapped (MPRD-11).
+  2. Consume `amount[i]·m` from slots 0, 1, 2 and `amount[3]·m` mB from the input tank. With a swapped match the amounts aren't swapped ([MPRD-11](index.md#suspected-bugs)).
   3. totalTime = 100.
-- **Each tick:** consume `powerPerTick` RF. This is **not** multiplied by m (MPRD-12).
+- **Each tick:** consume `powerPerTick` RF. This is **not** multiplied by m ([MPRD-12](index.md#suspected-bugs)).
 - **Finish** (server): add item×m to slot 3 and fluid×m to the output tank, then reset and try the next operation.
 
 ## 4. Full recipe list (`TGMachineRecipes`, in registration order)
@@ -108,8 +108,8 @@ Fluids: Water, Lava (vanilla); Creeper Acid (`creeper_acid`, Techguns); Milk (`m
 | 17 | | Rotten Flesh (1) | — | Water 1000 | Leather ×1 | — | no | 5 |
 
 - Every operation takes 100 ticks. Total RF = RF/t × 100. NEI shows "RF/t".
-- Techguns item names are shared-item metadata (see `06-items`): Raw Plastic 71, Bio Mass 38, Bio Tank 10, Bio Tank (Empty) 11, TGX 60, Fuel Tank 8, Fuel Tank (Empty) 9, Carbon Fibers 61, Raw Rubber 70, Compressed Air Tank 28, Compressed Air Tank (Empty) 29, Nether Charge 63, Yellowcake 101, Nuclear Power Cell 106, Nuclear Power Cell (Depleted) 107, Enriched Uranium 102, Treated Leather 109.
-- Techguns registers these ore names: `itemRawRubber` (Raw Rubber); `dustUranium` (Yellowcake); `oreUranium` (presumably the Uranium Ore block, `oreTitanIron:1`, see 07/11).
+- Techguns item names are shared-item metadata (see [`06-items`](../06-items/index.md)): Raw Plastic 71, Bio Mass 38, Bio Tank 10, Bio Tank (Empty) 11, TGX 60, Fuel Tank 8, Fuel Tank (Empty) 9, Carbon Fibers 61, Raw Rubber 70, Compressed Air Tank 28, Compressed Air Tank (Empty) 29, Nether Charge 63, Yellowcake 101, Nuclear Power Cell 106, Nuclear Power Cell (Depleted) 107, Enriched Uranium 102, Treated Leather 109.
+- Techguns registers these ore names: `itemRawRubber` (Raw Rubber); `dustUranium` (Yellowcake); `oreUranium` (presumably the Uranium Ore block, `oreTitanIron:1`, see [07](../07-blocks/index.md)/[11](../11-worldgen/index.md)).
 
 ### Furnace recipes also registered in `TGMachineRecipes` (0 XP)
 
@@ -157,7 +157,7 @@ Each finished stage stays fully drawn until the operation ends.
 
 ## 7. Visuals
 
-TESR `RenderAmmoPress` with `ModelChemLab` (declared 128×64) and texture `textures/blocks/ChemLab.png` (256×128, catalogued in 07-blocks).
+TESR [`RenderAmmoPress`](rendering.md#2-renderammopress-generic-model--rotation--progress-tesr) with [`ModelChemLab`](../07-blocks/block-rendering-and-models.md#modelchemlab-uv-12864-texture-chemlabpng) (declared 128×64) and texture [`textures/blocks/ChemLab.png`](../07-blocks/textures.md#11-model-textures) (256×128, catalogued in [07-blocks](../07-blocks/index.md)).
 
 - **Look.** A lab bench with a steel frame, grey checker-plate panels, glassware and coloured liquid elements. The atlas has blue, cyan, orange, magenta and red liquid swatches.
 - **Glass.** 11 glass parts (`G1..G11`) are always rendered with alpha blending.

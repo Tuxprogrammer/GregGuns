@@ -6,12 +6,12 @@ Out of scope here, see the owning areas:
 
 | Topic | Area |
 |---|---|
-| Stats, ammo, firing logic, item classes, recipes, gun tooltips, packets | 02-guns |
-| Projectiles and their renderers, muzzle-flash *particles* seen by other players, FX textures (`textures/fx/*`, including the scope and flash sheets named here), particle systems | 04-projectiles-fx |
-| Armour models, back-slot and face-slot renderers (the `additionalslots` package also hosts the off-hand akimbo renderer described in §11 of the framework) | 05-armor |
-| Shared item metadata (magazines, rockets) | 06-items |
-| Keybinds, config (volume categories, FOV lock, debug keybinds), client proxy plumbing | 01-core |
-| NPC models, the Cyberdemon and helicopter that reuse gun sounds | 10-entities-npcs |
+| Stats, ammo, firing logic, item classes, recipes, gun tooltips, packets | [02-guns](../02-guns/index.md) |
+| Projectiles and their renderers, muzzle-flash *particles* seen by other players, FX textures (`textures/fx/*`, including the scope and flash sheets named here), particle systems | [04-projectiles-fx](../04-projectiles-fx/index.md) |
+| Armour models, back-slot and face-slot renderers (the `additionalslots` package also hosts the off-hand akimbo renderer described in §11 of the framework) | [05-armor](../05-armor/index.md) |
+| Shared item metadata (magazines, rockets) | [06-items](../06-items/index.md) |
+| Keybinds, config (volume categories, FOV lock, debug keybinds), client proxy plumbing | [01-core](../01-core/index.md) |
+| NPC models, the Cyberdemon and helicopter that reuse gun sounds | [10-entities-npcs](../10-entities-npcs/index.md) |
 
 ## Contents
 
@@ -27,50 +27,50 @@ Out of scope here, see the owning areas:
 
 | Weapon (registry name) | Renderer | Model | Texture(s) | Fire / reload sound |
 |---|---|---|---|---|
-| Hand Cannon (`handcannon`) | RenderHandgun | ModelHandgun | handgun | handgunFire / handgunReload |
-| Pistol (`pistol`) | RenderPistol | ModelPistol3 (2 parts) | pistol3 | pistolFire / pistolReload |
-| Sawed-off (`sawedoff`) | RenderSawedoff | ModelSawedoff | sawedOff | sawedoffFire / sawedoffReload |
-| Bolt-action (`boltaction`) | RenderBoltActionRifle (scope) | ModelBoltaction | boltactionrifle ×3 camo | boltactionFire + Rechamber / boltactionReload |
+| Hand Cannon ([`handcannon`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderHandgun | ModelHandgun | handgun | handgunFire / handgunReload |
+| Pistol ([`pistol`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderPistol | ModelPistol3 (2 parts) | pistol3 | pistolFire / pistolReload |
+| Sawed-off ([`sawedoff`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderSawedoff | ModelSawedoff | sawedOff | sawedoffFire / sawedoffReload |
+| Bolt-action ([`boltaction`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderBoltActionRifle (scope) | ModelBoltaction | boltactionrifle ×3 camo | boltactionFire + Rechamber / boltactionReload |
 | M4 (`m4`) | RenderM4 | ModelM4 | m4Texture ×5 camo | assaultRifleFire / assaultRifleReload |
-| M4 Infiltrator (`m4_uq`) | RenderM4_Infiltrator (scope) | ModelM4_UQ | m4_uq_Texture | silencedM4Fire / assaultRifleReload |
-| Flamethrower (`flamethrower`) | RenderFlamethrower | ModelFlamethrower | Flamethrower | flamethrowerStart → Fire / flamethrowerReload |
-| Combat Shotgun (`combatshotgun`) | RenderCombatShotgun | ModelCombatShotgun (2) | combatShotgun | combatshotgunFire + Pump / combatshotgunReload |
-| Laser Gun (`lasergun`) | RenderLasergun | ModelLasergun | Lasergun | lasergunFire / lasergunReload |
-| Blaster Rifle (`blasterRifle`) | RenderBlasterRifle (scope) | ModelBlasterRifle | blasterRifle | blasterrifleFire / lasergunReload |
-| Rocket Launcher (`rocketlauncher`) | RenderRocketLauncher | ModelRocketLauncher | rocketlauncher | rocketFire / rocketReload |
-| Nuke Launcher (`nukelauncher`) | RenderRocketLauncher | ModelRocketLauncher | nukerocketlauncher | rocketFire / rocketReload |
-| Grim Reaper (`grimreaper`) | RenderGrimReaper | ModelGrimReaper | grimreaper | rocketFire / rocketReload |
-| Bio Gun (`biogun`) | RenderBiogun | ModelBiogun | BioGun | biogunFire / biogunReload |
-| Thompson (`thompson`) | RenderThompson | ModelThompson | thompson | thompsonFire / thompsonReload |
-| Revolver (`revolver`) | RenderRevolver | ModelRevolver | revolver | revolverFire / revolverReload |
-| Golden Revolver (`goldenrevolver`) | RenderRevolver | ModelGoldenRevolver | goldenrevolver | goldenrevolverFire / revolverReload |
-| AK-47 (`ak47`) | RenderAK | ModelAK | ak47Texture ×2 camo | ak47Fire / ak47Reload |
-| AS50 (`as50`) | RenderAS50 (scope) | ModelAS50 | as50Texture | as50Fire / as50Reload |
-| Tesla Gun (`teslagun`) | RenderTeslaGun | ModelTeslaGun | TeslaGun | teslaFire / teslaReload |
-| PDW (`pdw`) | RenderPDW | ModelPDW | PDW ×3 camo | pdwFire / pdwReload |
-| LMG (`lmg`) | RenderLMG | ModelLMG | mg2_texture | lmgFire / lmgReload |
-| Pulse Rifle (`pulserifle`) | RenderPulseRifle (tech scope) | ModelPulseRifle | pulseRifle ×3 camo | pulserifleFire / pulserifleReload |
-| Alien Blaster (`alienBlaster`) | RenderAlienBlaster | ModelAlienBlaster | alien_blaster | alienblasterFire / alienblasterReload |
-| Cyberdemon Blaster (`cyberdemonBlaster`) | RenderCyberdemonBlaster | ModelCyberdemonBlaster | cyberdemonblaster | cyberdemonblasterFire / teslaReload |
-| Minigun (`minigun`) | RenderMinigun | ModelMinigun (2) | minigun | minigunFire / minigunReload |
-| Power Hammer (`powerHammer`) / Adv. (`powerHammerAdv`) | RenderPowerHammer | ModelPowerHammer (2) | powerHammer / powerHammerAdv | powerhammerCharge, Fire, Swing, Impact, ImpactGround / powerhammerReload |
-| Grenade Launcher (`grenadelauncher`) | RenderGrenadeLauncher | grenadelauncher.obj (2 groups) | grenadelauncher | grenadeLauncherFire / grenadeLauncherReload |
-| AUG (`aug`) | RenderAUG (scope) | ModelAUG (2) | AugTexture ×5 camo | augFire / augReload |
-| Sonic Shotgun (`sonicShotgun`) | RenderSonicShotgun | ModelSonicShotgun | sonicshotgun | sonicshotgunFire / sonicshotgunReload |
-| Chainsaw (`chainsaw`) | RenderChainsaw | ModelChainsaw | chainsaw | chainsawLoopStart → Loop, Swing, Hit / powerhammerReload |
-| Scatter Beam Gun (`scatterBeamGun`) | RenderLaserGunNew | ModelLaserGunNew | laserGunNew | lasergunFire / lasergunReload |
+| M4 Infiltrator ([`m4_uq`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderM4_Infiltrator (scope) | ModelM4_UQ | m4_uq_Texture | silencedM4Fire / assaultRifleReload |
+| Flamethrower ([`flamethrower`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderFlamethrower | ModelFlamethrower | Flamethrower | flamethrowerStart → Fire / flamethrowerReload |
+| Combat Shotgun ([`combatshotgun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderCombatShotgun | ModelCombatShotgun (2) | combatShotgun | combatshotgunFire + Pump / combatshotgunReload |
+| Laser Gun ([`lasergun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderLasergun | ModelLasergun | Lasergun | lasergunFire / lasergunReload |
+| Blaster Rifle ([`blasterRifle`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderBlasterRifle (scope) | ModelBlasterRifle | blasterRifle | blasterrifleFire / lasergunReload |
+| Rocket Launcher ([`rocketlauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderRocketLauncher | ModelRocketLauncher | rocketlauncher | rocketFire / rocketReload |
+| Nuke Launcher ([`nukelauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderRocketLauncher | ModelRocketLauncher | nukerocketlauncher | rocketFire / rocketReload |
+| Grim Reaper ([`grimreaper`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderGrimReaper | ModelGrimReaper | grimreaper | rocketFire / rocketReload |
+| Bio Gun ([`biogun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderBiogun | ModelBiogun | BioGun | biogunFire / biogunReload |
+| Thompson ([`thompson`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderThompson | ModelThompson | thompson | thompsonFire / thompsonReload |
+| Revolver ([`revolver`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderRevolver | ModelRevolver | revolver | revolverFire / revolverReload |
+| Golden Revolver ([`goldenrevolver`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderRevolver | ModelGoldenRevolver | goldenrevolver | goldenrevolverFire / revolverReload |
+| AK-47 ([`ak47`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderAK | ModelAK | ak47Texture ×2 camo | ak47Fire / ak47Reload |
+| AS50 ([`as50`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderAS50 (scope) | ModelAS50 | as50Texture | as50Fire / as50Reload |
+| Tesla Gun ([`teslagun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderTeslaGun | ModelTeslaGun | TeslaGun | teslaFire / teslaReload |
+| PDW ([`pdw`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderPDW | ModelPDW | PDW ×3 camo | pdwFire / pdwReload |
+| LMG ([`lmg`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderLMG | ModelLMG | mg2_texture | lmgFire / lmgReload |
+| Pulse Rifle ([`pulserifle`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderPulseRifle (tech scope) | ModelPulseRifle | pulseRifle ×3 camo | pulserifleFire / pulserifleReload |
+| Alien Blaster ([`alienBlaster`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderAlienBlaster | ModelAlienBlaster | alien_blaster | alienblasterFire / alienblasterReload |
+| Cyberdemon Blaster ([`cyberdemonBlaster`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderCyberdemonBlaster | ModelCyberdemonBlaster | cyberdemonblaster | cyberdemonblasterFire / teslaReload |
+| Minigun ([`minigun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderMinigun | ModelMinigun (2) | minigun | minigunFire / minigunReload |
+| Power Hammer ([`powerHammer`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) / Adv. ([`powerHammerAdv`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderPowerHammer | ModelPowerHammer (2) | powerHammer / powerHammerAdv | powerhammerCharge, Fire, Swing, Impact, ImpactGround / powerhammerReload |
+| Grenade Launcher ([`grenadelauncher`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderGrenadeLauncher | grenadelauncher.obj (2 groups) | grenadelauncher | grenadeLauncherFire / grenadeLauncherReload |
+| AUG ([`aug`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderAUG (scope) | ModelAUG (2) | AugTexture ×5 camo | augFire / augReload |
+| Sonic Shotgun ([`sonicShotgun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderSonicShotgun | ModelSonicShotgun | sonicshotgun | sonicshotgunFire / sonicshotgunReload |
+| Chainsaw ([`chainsaw`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderChainsaw | ModelChainsaw | chainsaw | chainsawLoopStart → Loop, Swing, Hit / powerhammerReload |
+| Scatter Beam Gun ([`scatterBeamGun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderLaserGunNew | ModelLaserGunNew | laserGunNew | lasergunFire / lasergunReload |
 | Nuclear Death Ray (`beamtestgun`) | RenderBeamgun | ModelNDR | NDR | beamgunStart → Fire / lasergunReload |
-| Mac-10 (`mac10`) | RenderMac10 | ModelMac10 | mac10texture | mac10Fire / mac10Reload |
-| MIB Gun (`mibGun`) | RenderMibGun | ModelMibGun | mibgun | MIBblasterFire / MIBblasterReload |
-| SCAR (`scar`) | RenderScar (scope) | ModelScar (2) | scar_texture ×2 camo | scarFire / scarReload |
-| Vector (`vector`) | RenderVector | ModelVector | vector_texture ×2 camo | vectorFire / vectorReload |
-| Akimbo Pistols (`pistolAkimbo`) | RenderPistolAkimbo | ModelAkimbo(Pistol3, 2) | pistol3 | pistolFire / pistolReloadAkimbo |
-| Akimbo Revolvers (`revolverAkimbo`) | RenderRevolverAkimbo | ModelAkimbo(Revolver) | revolver | revolverFire / revolverReloadAkimbo |
-| Akimbo Golden Revolvers (`goldenrevolverAkimbo`) | RenderRevolverAkimbo | ModelAkimbo(GoldenRevolver) | goldenrevolver | goldenrevolverFire / revolverReloadAkimbo |
-| Akimbo Mac-10 (`mac10Akimbo`) | RenderMac10Akimbo | ModelAkimbo(Mac10) | mac10texture | mac10Fire / mac10ReloadAkimbo |
-| Akimbo MIB (`mibGunAkimbo`) | RenderMibGunAkimbo | ModelAkimbo(MibGun) | mibgun | MIBblasterFire / MIBblasterReloadAkimbo |
-| Stielhandgranate (`stielGranate`) | RenderStielgranate | ModelStielgranate | stielgranate | vanilla random.bow |
-| Frag Grenade (`fragGrenade`) | RenderFragGrenade | ModelFragGrenade | fragGrenade_texture | grenade_pin / grenade_throw |
+| Mac-10 ([`mac10`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderMac10 | ModelMac10 | mac10texture | mac10Fire / mac10Reload |
+| MIB Gun ([`mibGun`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderMibGun | ModelMibGun | mibgun | MIBblasterFire / MIBblasterReload |
+| SCAR ([`scar`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderScar (scope) | ModelScar (2) | scar_texture ×2 camo | scarFire / scarReload |
+| Vector ([`vector`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderVector | ModelVector | vector_texture ×2 camo | vectorFire / vectorReload |
+| Akimbo Pistols ([`pistolAkimbo`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderPistolAkimbo | ModelAkimbo(Pistol3, 2) | pistol3 | pistolFire / pistolReloadAkimbo |
+| Akimbo Revolvers ([`revolverAkimbo`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderRevolverAkimbo | ModelAkimbo(Revolver) | revolver | revolverFire / revolverReloadAkimbo |
+| Akimbo Golden Revolvers ([`goldenrevolverAkimbo`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderRevolverAkimbo | ModelAkimbo(GoldenRevolver) | goldenrevolver | goldenrevolverFire / revolverReloadAkimbo |
+| Akimbo Mac-10 ([`mac10Akimbo`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderMac10Akimbo | ModelAkimbo(Mac10) | mac10texture | mac10Fire / mac10ReloadAkimbo |
+| Akimbo MIB ([`mibGunAkimbo`](../02-guns/gun-catalogue.md#table-a-identity-and-ammunition)) | RenderMibGunAkimbo | ModelAkimbo(MibGun) | mibgun | MIBblasterFire / MIBblasterReloadAkimbo |
+| Stielhandgranate ([`stielGranate`](../02-guns/gun-catalogue.md#table-f-grenades-not-genericgun)) | RenderStielgranate | ModelStielgranate | stielgranate | vanilla random.bow |
+| Frag Grenade ([`fragGrenade`](../02-guns/gun-catalogue.md#table-f-grenades-not-genericgun)) | RenderFragGrenade | ModelFragGrenade | fragGrenade_texture | grenade_pin / grenade_throw |
 | Magazines and rockets (shared item metas) | RenderGenericItem → M4Mag / AS50Mag / LMGMag / RocketAmmo | ModelM4Mag(E), ModelAS50Mag, ModelLmgMag(E), ModelRocket | m4Texture, as50Texture, mg2_texture, rocketlauncher, nukerocketlauncher | – |
 
 Texture names are `textures/guns/<name>.png`. Sound names are `techguns:guns.<name>`.
@@ -79,7 +79,7 @@ Texture names are `textures/guns/<name>.png`. Sound names are `techguns:guns.<na
 
 ## Lang keys in scope
 
-Only the camo names and the generic camo strings are in scope. They are listed in [rendering-framework.md §8](rendering-framework.md#8-textures-and-camouflage): `techguns.item.{boltaction,m4,ak47,pdw,pulseRifle,aug,scar,vector}.camoname.<i>`, `techguns.item.defaultcamo`, `techguns.item.invalidcamo`, `techguns.tooltip.currentcamo`, `techguns.message.camoswitch`. No tooltip lines are generated by renderers or models. Gun names, zoom tooltips (`techguns.gun.tooltip.zoom*`) and stat tooltips belong to 02-guns.
+Only the camo names and the generic camo strings are in scope. They are listed in [rendering-framework.md §8](rendering-framework.md#8-textures-and-camouflage): `techguns.item.{boltaction,m4,ak47,pdw,pulseRifle,aug,scar,vector}.camoname.<i>`, `techguns.item.defaultcamo`, `techguns.item.invalidcamo`, `techguns.tooltip.currentcamo`, `techguns.message.camoswitch`. No tooltip lines are generated by renderers or models. Gun names, zoom tooltips (`techguns.gun.tooltip.zoom*`) and stat tooltips belong to [02-guns](../02-guns/index.md).
 
 ## Source files covered
 
@@ -89,20 +89,29 @@ Only the camo names and the generic camo strings are in scope. They are listed i
 
 ---
 
+## Related areas
+
+- [02-guns](../02-guns/index.md): the stats and firing logic each visual reacts to.
+- [04-projectiles-fx](../04-projectiles-fx/index.md): muzzle-flash and scope textures, and the projectile and beam visuals.
+- [01-core](../01-core/index.md): client timing state and sound playback routing.
+- [05-armor](../05-armor/index.md): off-hand akimbo renderers in the additional-slot renderer package.
+- [06-items](../06-items/index.md): magazine and rocket item metas drawn by the 3D item renderers.
+- [10-entities-npcs](../10-entities-npcs/index.md): how NPCs hold and aim guns.
+
 ## Suspected bugs
 
 | ID | Title | Location | What looks wrong | Severity |
 |---|---|---|---|---|
-| GVA-01 | Renderer registered for a non-existent item | java/techguns/client/ClientProxy.java:528 | `TGuns.neutrinoGun` is never created (its construction and registration are commented out in TGuns.java:154 and :211), but a RenderNeutrinoGun is still registered against the null field. Forge stores it under a null key. It is dead, and only harmless while the map tolerates null keys. | cosmetic |
+| GVA-01 | Renderer registered for a non-existent item | java/techguns/client/ClientProxy.java:528 | [`TGuns.neutrinoGun`](../02-guns/gun-catalogue.md) is never created (its construction and registration are commented out in TGuns.java:154 and :211), but a RenderNeutrinoGun is still registered against the null field. Forge stores it under a null key. It is dead, and only harmless while the map tolerates null keys. | cosmetic |
 | GVA-02 | Debug keybind offsets leak into release rendering | java/techguns/client/renderer/item/RenderVector.java:73; java/techguns/client/renderer/item/RenderFragGrenade.java:34; java/techguns/client/renderer/additionalslots/RenderAkimboMibGun.java:17 | The Vector muzzle flash, the frag grenade's third-person transform and the off-hand MIB transform add `Keybinds.X/Y/Z` (debug tuning values). With the debug keybinds config on, numpad presses move these in game. | visual |
-| GVA-03 | Own recoil animation restarted by the server echo | java/techguns/packets/GunFiredMessage.java:70 | `GunFiredMessage` is sent to everyone, including the shooter. The shooter's client already started its recoil locally, and the echo resets the recoil window again (unless the gun uses checkRecoil). With any latency the first-person kick visibly restarts, most noticeably on long recoils (bolt-action 750 ms, combat shotgun 600 ms). | visual |
+| GVA-03 | Own recoil animation restarted by the server echo | java/techguns/packets/GunFiredMessage.java:70 | [`GunFiredMessage`](../01-core/networking.md#1--gunfiredmessage-sc) is sent to everyone, including the shooter. The shooter's client already started its recoil locally, and the echo resets the recoil window again (unless the gun uses checkRecoil). With any latency the first-person kick visibly restarts, most noticeably on long recoils (bolt-action 750 ms, combat shotgun 600 ms). | visual |
 | GVA-04 | Additive blend function leaks | java/techguns/client/renderer/TGRenderHelper.java:37 (also RenderCyberdemonBlaster `drawMuzzleFX`) | `enableAlphaBlendAdditive` sets `glBlendFunc(ONE, ONE)` but `disableAlphaBlend` only pops ENABLE_BIT, which does not save the blend function. Anything rendered later that enables blending without setting its own function becomes additive. | visual |
 | GVA-05 | Full-bright lightmap not restored | java/techguns/client/renderer/TGRenderHelper.java:20 | `enableFXLighting` forces lightmap 240/240, and `disableFXLighting` only re-enables lighting. Geometry drawn after glow parts or muzzle flashes in the same pass can stay full bright. | visual |
 | GVA-06 | Grim Reaper model rotates without push/pop | java/techguns/client/models/ModelGrimReaper.java:441 | `render` applies rotY(180) to the caller's matrix. It is contained only because RenderGunBase pops right after. Any other caller inherits the rotation. | cosmetic |
 | GVA-07 | NDR / Neutrino idle offset applied twice | java/techguns/client/renderer/item/RenderBeamgun.java:24 (and :53) | `GL_Transform_FirstPerson` already calls the idle translate, and the state branch translates again (idle, firing and reload all do). The resulting placement is double the declared offset. It may be tuned around, but it is inconsistent with every other renderer. | cosmetic |
 | GVA-08 | Akimbo guns drawn twice in the right hand in third person | java/techguns/client/renderer/item/RenderGunBase.java:262 with RenderPistolAkimbo.java:33 (and the other akimbo renderers) | The base loops over all parts of both guns in EQUIPPED, and the akimbo equipped transforms ignore `leftGun`. The second gun is therefore rendered exactly on top of the first, while the real off-hand gun is drawn separately by RenderAkimboGun. Wasted draw, and z-fighting if transforms ever differ. | cosmetic |
 | GVA-09 | Chainsaw third-person recoil is dead code | java/techguns/client/renderer/item/RenderChainsaw.java:108 | The recoil only moves `part == 1`, but the chainsaw renderer has 1 part. The attackType ≠ 0 lunge branch of the first-person firing transform is also unreachable (chainsaw recoils always use attackType 0). | cosmetic |
-| GVA-10 | Renderer texture arguments are ignored or wrong | java/techguns/client/ClientProxy.java:505, :507 | The live base class never uses the constructor texture. The arguments passed are misleading: the scatter beam gets `LasergunNew.png` (the file is `laserGunNew.png`) and the NDR gets `Lasergun.png`. Harmless today, but any code that switches to the argument would break. | cosmetic |
+| GVA-10 | Renderer texture arguments are ignored or wrong | java/techguns/client/ClientProxy.java:505, :507 | The live base class never uses the constructor texture. The arguments passed are misleading: the scatter beam gets `LasergunNew.png` (the file is `laserGunNew.png`) and the NDR gets [`Lasergun.png`](../02-guns/gun-catalogue.md#table-d-ai-visual-hooks-and-textures). Harmless today, but any code that switches to the argument would break. | cosmetic |
 | GVA-11 | M4 and Vector define scopes that can never show | java/techguns/client/ClientProxy.java:448, :532 | RenderM4 (for the M4) and RenderVector are built with `hasZoom = false`, so their sniper `renderScope()` is unreachable even though both guns zoom (0.75). Possibly intentional (iron or red-dot sights), but inconsistent with the M4 Infiltrator, AUG and SCAR. | cosmetic |
 | GVA-12 | Negative UV origins wrap to the far texture edge | java/techguns/client/models/ModelLasergun.java:201; ModelLaserGunNew.java:299; ModelPDW.java:219 | `Glow1` (−6, 47), `TopRails` (−1, 90) and `Shape28` (−1, 48) start outside the sheet, so a column of their faces samples pixels from the opposite edge. (The M4 Infiltrator laser at (0, −60) is a deliberate trick and not a bug.) | visual |
 | GVA-13 | Duplicate render call | java/techguns/client/models/ModelLaserGunNew.java:333, :338 | `Stock10` is rendered twice per frame. | cosmetic |

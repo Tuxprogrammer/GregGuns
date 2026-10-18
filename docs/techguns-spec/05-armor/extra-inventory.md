@@ -2,16 +2,16 @@
 
 Source: `java/techguns/gui/playerinventory/` (`TGPlayerInventory`, `TGPlayerContainer`, `GuiTGPlayerInventory`, `SlotTG`, `SlotFood`, `TGGuiTabButton`, `TGGuiToggleButton`), `java/techguns/items/TGSlotType.java`, `java/techguns/inventory/SlotArmor.java`.
 
-Wiring that lives in other areas (see 01-core): `TechgunsExtendedPlayerProperties` (owns the inventory, saves and loads it, drops it on death, DataWatcher IDs), `TechgunsGuiHandler` (GUI ID 17), `PacketOpenPlayerGUI`, the `InitGuiEvent` hook that adds the tabs to the vanilla inventory, and the auto-feeder in the tick handler.
+Wiring that lives in other areas (see [01-core](../01-core/index.md)): [`TechgunsExtendedPlayerProperties`](../01-core/player-state.md#techgunsextendedplayerproperties) (owns the inventory, saves and loads it, drops it on death, DataWatcher IDs), [`TechgunsGuiHandler`](../08-machines-production/gui-handler.md#1-techgunsguihandler-complete-gui-id-table) (GUI ID 17), [`PacketOpenPlayerGUI`](../01-core/networking.md#4--packetopenplayergui-cs), the `InitGuiEvent` hook that adds the tabs to the vanilla inventory, and the auto-feeder in the tick handler.
 
 ## 1. Data model: `TGPlayerInventory` (`IInventory`, 12 slots)
 
 | Index | Constant | Purpose | Accepts |
 |---|---|---|---|
-| 0 | `SLOT_FACE` | face gear | items whose `ITGSpecialSlot.getSlot` returns `FACESLOT` |
+| 0 | `SLOT_FACE` | face gear | items whose [`ITGSpecialSlot.getSlot`](special-equipment.md#1-interfaces-and-base-classes) returns `FACESLOT` |
 | 1 | `SLOT_BACK` | back gear | `BACKSLOT` items |
 | 2–4 | `SLOTS_AUTOFOOD_START`..`END` | auto-feeder food | any `ItemFood` |
-| 5 | `SLOT_AUTOHEAL` | "auto heal" | `HEALSLOT` items, but **no item reports HEALSLOT**, so the slot can never be filled (bug ARM-17) |
+| 5 | `SLOT_AUTOHEAL` | "auto heal" | `HEALSLOT` items, but **no item reports HEALSLOT**, so the slot can never be filled (bug [ARM-17](index.md#suspected-bugs)) |
 | 6–11 | `SLOTS_AMMO_START`..`END` | ammo pouch | `AMMOSLOT` items (magazines, bullets, tanks, energy cells and the like from the shared item) |
 
 **Inventory behaviour:**
@@ -24,16 +24,16 @@ Wiring that lives in other areas (see 01-core): `TechgunsExtendedPlayerPropertie
 
 **Multiplayer visibility:**
 - Face and back stacks are mirrored into two DataWatcher ItemStack entries (type 5), so other clients can render them.
-- IDs come from the config: `DataWatcherID_FaceSlot` (default 23) and `DataWatcherID_BackSlot` (default 24), category "ID Conflicts", range 2–31.
+- IDs come from the config: [`DataWatcherID_FaceSlot`](../01-core/config.md#category-id-conflicts) (default 23) and [`DataWatcherID_BackSlot`](../01-core/config.md#category-id-conflicts) (default 24), category "ID Conflicts", range 2–31.
 - The server rewrites both entries every END-phase player tick.
 
-**Death:** if `keepInventory` is off, all 12 slots drop with the player's drops. On respawn or dimension change (clone), the whole extended-properties NBT is copied across (01-core).
+**Death:** if `keepInventory` is off, all 12 slots drop with the player's drops. On respawn or dimension change (clone), the whole extended-properties NBT is copied across ([01-core](../01-core/index.md)).
 
 **Who reads it:**
 - Bonus aggregation reads the face and back slots.
 - Ammo consumption and reloads check slots 6–11 before the main inventory.
-- The auto-feeder eats from slots 2–4 when food ≤ 19, unless the config `disableAutofeeder` is set (01-core).
-- Ammo-type shared items quick-insert into slots 6–11 on right-click (06-items).
+- The auto-feeder eats from slots 2–4 when food ≤ 19, unless the config [`disableAutofeeder`](../01-core/config.md#category-general) is set ([01-core](../01-core/index.md)).
+- Ammo-type shared items quick-insert into slots 6–11 on right-click ([06-items](../06-items/index.md)).
 - Special-slot items quick-equip into face or back on right-click (special-equipment.md).
 
 ## 2. `TGSlotType` enum
@@ -46,9 +46,9 @@ Wiring that lives in other areas (see 01-core): `TechgunsExtendedPlayerPropertie
 | `AMMOSLOT` | "Ammo" | TG inventory slots 6–11 |
 | `FOODSLOT` | "Food" | declared, unused (the food slots use `SlotFood` instead) |
 | `HEALSLOT` | "Healing" | slot 5 (nothing provides it) |
-| `TURRETARMOR` | "Turret armor" | turret base slot (09-machines-utility) |
-| `REACTION_CHAMBER_FOCUS` | "Reaction Chamber Focus" | 08-machines-production |
-| `DRILL_SMALL` / `DRILL_MEDIUM` / `DRILL_LARGE` | "Small Drill" / "Medium Drill" / "Large Drill" | ore drill (08) |
+| `TURRETARMOR` | "Turret armor" | turret base slot ([09-machines-utility](../09-machines-utility/index.md)) |
+| `REACTION_CHAMBER_FOCUS` | "Reaction Chamber Focus" | [08-machines-production](../08-machines-production/index.md) |
+| `DRILL_SMALL` / `DRILL_MEDIUM` / `DRILL_LARGE` | "Small Drill" / "Medium Drill" / "Large Drill" | ore drill ([08](../08-machines-production/index.md)) |
 
 ## 3. Slot classes
 
@@ -87,7 +87,7 @@ Wiring that lives in other areas (see 01-core): `TechgunsExtendedPlayerPropertie
 
 ## 5. GUI `GuiTGPlayerInventory`
 
-Texture: `textures/gui/TGPlayerInventory.png` (256×256). The GUI is 176×166, the vanilla size.
+Texture: [`textures/gui/TGPlayerInventory.png`](../08-machines-production/gui-textures.md#14-texturesguitgplayerinventorypng-owned-by-the-player-inventory-area-0105) (256×256). The GUI is 176×166, the vanilla size.
 
 **Background:** the region (0,0)–(176,166) of the texture is drawn at the GUI origin. It contains:
 - a black 3-D player viewport at about (26,8)–(78,78)
@@ -99,7 +99,7 @@ Texture: `textures/gui/TGPlayerInventory.png` (256×256). The GUI is 176×166, t
 - the standard 3×9 inventory and hotbar frames
 - a light-grey panel with bevelled white/dark edges
 
-On top of the background, the player is drawn 3-D at (51, 75) relative to the GUI, scale 30, looking at the mouse (it reuses `GuiCamoBench.renderPlayer`).
+On top of the background, the player is drawn 3-D at (51, 75) relative to the GUI, scale 30, looking at the mouse (it reuses [`GuiCamoBench.renderPlayer`](../09-machines-utility/camo-bench.md#gui-guicamobench)).
 
 **Hover tooltips** (foreground layer, coordinates relative to the GUI):
 
@@ -107,7 +107,7 @@ On top of the background, the player is drawn 3-D at (51, 75) relative to the GU
 |---|---|
 | Toggle button i at (173, 7 + 11·i), 11×11 | (1) toggle name; (2) `Current state: ` + red `Disabled` or green `Enabled`; (3)–(4) the two description lines (table below) |
 | (99,7) 14×14 shield | underlined `Total Armor Values`, then nine lines `<DamageType name>: <formatAV(total)>` coloured as in the armour tooltip (PHYSICAL dark grey, PROJECTILE grey, EXPLOSION dark red, ENERGY dark aqua, FIRE red, ICE aqua, LIGHTNING yellow, POISON dark green, RADIATION green). Totals come from `DamageSystem.getTotalArmorAgainstType`: the sum over worn armour, where vanilla armour counts only toward PHYSICAL. |
-| (115,7) 54×6 radiation bar | green underlined `Current Radioactive Contamination`; `<radlevel×0.001>/1000`; `Effects: ` + green `NONE` (hard-coded). The radiation system belongs to 01-core. |
+| (115,7) 54×6 radiation bar | green underlined `Current Radioactive Contamination`; `<radlevel×0.001>/1000`; `Effects: ` + green `NONE` (hard-coded). The radiation system belongs to [01-core](../01-core/index.md). |
 
 | Toggle index | Player flag | Name key / text | Description keys / text |
 |---|---|---|---|
@@ -120,15 +120,15 @@ On top of the background, the player is drawn 3-D at (51, 75) relative to the GU
 **Toggle buttons (`TGGuiToggleButton`, 11×11 at (173, 7 + 11·i)):**
 - Drawn with the vanilla button texture (`widgets.png`, continuous box) in its hover state.
 - A 7×7 state icon is drawn at +2,+2 from the TG texture. Source u = 242 when off and 249 when on; v = 7 × index (0, 7, 14, 21) for indices 0–3 and **42** for index 4.
-- Clicking sends `PacketTGKeybindPress` with button ID 9 (HUD), 0 (NV), 1 (safe mode), 8 (step) or 7 (jetpack). The server flips the flag and syncs it back. The button reads the flags from a statically cached properties object (bug ARM-19).
+- Clicking sends [`PacketTGKeybindPress`](../01-core/networking.md#7--packettgkeybindpress-cs) with button ID 9 (HUD), 0 (NV), 1 (safe mode), 8 (step) or 7 (jetpack). The server flips the flag and syncs it back. The button reads the flags from a statically cached properties object (bug [ARM-19](index.md#suspected-bugs)).
 
 **Tab buttons (`TGGuiTabButton`, 26×26):**
 - Without Tinkers' Construct, two tabs are placed at (guiLeft − 26, guiTop + 5) and (guiLeft − 26, guiTop + 31):
   - Tab 1: vanilla inventory, crafting-table icon, GUI id 0.
-  - Tab 2: Techguns inventory, 9 mm bullets icon, GUI id = config `TechgunsGUI_TabID` (default **17**, category "ID Conflicts", range 0–1000).
+  - Tab 2: Techguns inventory, 9 mm bullets icon, GUI id = config [`TechgunsGUI_TabID`](../01-core/config.md#category-id-conflicts) (default **17**, category "ID Conflicts", range 0–1000).
 - The tab for the current screen is disabled.
   - The vanilla `GuiInventory` gets the same two tabs through an `InitGuiEvent.Post` hook, with tab 1 disabled.
-  - With Tinkers' Construct loaded, the tabs are added through TConstruct's tab API instead (`TechgunsTConstructIntegrationClient`, 01-core).
+  - With Tinkers' Construct loaded, the tabs are added through TConstruct's tab API instead ([`TechgunsTConstructIntegrationClient`](../01-core/lifecycle-and-registration.md#postinit-in-order), [01-core](../01-core/index.md)).
 - **Sprite:** from the TG texture at (177, 26·i), where i = 1 for an enabled (clickable) tab and 0 for the current one. A disabled tab also draws a 3×26 connector strip from (213, 0) at its right edge. The icon item is rendered at +6,+5. The click sound is `gui.button.press`, played only if enabled.
 - **Click:**
   - GUI id ≤ 0: close the container (send a vanilla close-window packet) and open the vanilla `GuiInventory`.
@@ -147,9 +147,9 @@ Layout, so that a replacement keeps the same coordinates:
 | (242, 7) / (249, 7) | Night-vision icon, off / on: dark-grey goggles / green goggles on a green background. |
 | (242, 14) / (249, 14) | Safe-mode icon, off / on: red block "S" in a grey frame / green "S". |
 | (242, 21) / (249, 21) | Step-assist icon, off / on: red stair step / green stair step. |
-| (242, 28) / (249, 28) | Yellow "!" and red "!" warning tiles. Not used by the toggles; the HUD overlay uses them (01-core / 03-gun-visuals-audio). |
+| (242, 28) / (249, 28) | Yellow "!" and red "!" warning tiles. Not used by the toggles; the HUD overlay uses them ([01-core](../01-core/index.md) / [03-gun-visuals-audio](../03-gun-visuals-audio/index.md)). |
 | (249, 35) | Grey gas-canister glyph. Not used by the toggles (HUD overlay). |
 | (242, 42) / (249, 42) | Jetpack icon, off / on: grey twin-tank jetpack with red X / with yellow-red flames under the nozzles. |
-| (0, 168, 24, 8) | Three 8×8 tiles (black border with four black "dots"): fully grey, half grey/half empty, and empty. The HUD overlay uses them as a fill indicator (01-core / 03). |
+| (0, 168, 24, 8) | Three 8×8 tiles (black border with four black "dots"): fully grey, half grey/half empty, and empty. The HUD overlay uses them as a fill indicator ([01-core](../01-core/index.md) / [03](../03-gun-visuals-audio/index.md)). |
 
 The rest of the texture is transparent (shown magenta in the editor).

@@ -1,6 +1,6 @@
 # Recipes registered in `TGItems.registerRecipes()` (and related)
 
-`TGItems.registerRecipes()` runs in `Techguns.postInit` after `TGFluids.postInit`, `TGBlocks.postInit` and `TGItems.postInit`. The two fallback OreDict names are therefore already resolved when it runs:
+[`TGItems.registerRecipes()`](item-catalogue.md) runs in [`Techguns.postInit`](../01-core/lifecycle-and-registration.md#lifecycle-overview) after [`TGFluids.postInit`](fluids.md), [`TGBlocks.postInit`](../07-blocks/block-catalogue.md#registered-blocks) and `TGItems.postInit`. The two fallback OreDict names are therefore already resolved when it runs:
 
 | Variable | Value |
 |---|---|
@@ -11,7 +11,7 @@ Conventions:
 - Grids are written row by row as `row1 / row2 / row3`. `·` is an empty cell. Shaped recipes have the normal vanilla behaviour: they can be placed anywhere in the 3×3 grid if smaller, and mirrored placement is accepted.
 - Quoted names (`"ingotIron"`) are OreDict names. Anything else is an exact item. *meta N* means a shared `TechgunsAmmo` item with that metadata (see [item-catalogue.md](item-catalogue.md)).
 - "Shaped (ore)" / "Shapeless (ore)" means Forge `ShapedOreRecipe` / `ShapelessOreRecipe`. Here a vanilla `Block` ingredient matches any metadata, and an `Item` ingredient matches meta 0. "Shapeless (vanilla)" means `GameRegistry.addShapelessRecipe`, which matches exact stacks.
-- Recipes that make **blocks** are listed because they are registered here. The blocks themselves are documented in 07-blocks / 08 / 09.
+- Recipes that make **blocks** are listed because they are registered here. The blocks themselves are documented in [07-blocks](../07-blocks/index.md) / [08](../08-machines-production/index.md) / 09.
 
 ## 1. Gun parts and components
 
@@ -98,7 +98,7 @@ Conventions:
 
 | # | Output | Type | Grid | Key |
 |---|---|---|---|---|
-| R71 | Bunker Door (`doorItem01`) ×2 | Shaped (ore) | `pp / pp / pp` | p = `"plateIron"` |
+| R71 | Bunker Door ([`doorItem01`](item-catalogue.md#2-stand-alone-items-registered-by-tgitems)) ×2 | Shaped (ore) | `pp / pp / pp` | p = `"plateIron"` |
 | R72 | Gas Mask ×1 | Shaped (ore) | `grg / rrr / rfr` | r = `"itemRubber"`, f = Gas Mask Filter, g = `"paneGlass"` |
 | R73 | Gas Mask (damage 0) ×1 | Shapeless (ore) | Gas Mask (any damage) + Gas Mask Filter | refills the mask |
 | R74 | Nightvision Goggles (charged, damage 0) | Shaped (ore) | `rhr / cec / gsg` | r = `"itemRubber"`, h = Heavy Cloth, c = `"circuitBasic"`, e = Energy Cell, g = `"blockGlass"`, s = `"ingotIron"` |
@@ -106,7 +106,7 @@ Conventions:
 | R76 | Jetpack | Shaped (ore) | `f·f / pgp / rmr` | f = Fuel Tank, p = `"plateObsidianSteel"`, g = Glider (meta 51), r = Rocket, m = Mechanical Parts (Obsidian Steel) |
 | R77 | Jetpack | Shaped (ore) | same | g = Jump Pack (any damage) |
 | R78 | Anti Gravity Device | Shaped (ore) | `tet / cac / mbm` | t = `"plateTitanium"`, e = Nuclear Power Cell, c = `"circuitElite"`, a = Anti Gravity Core, m = Mechanical Parts (Carbon), b = Glider Backback |
-| R79 | Oxygen Tanks (`scubaTanks`) | Shaped (ore) | `p·p / aia / p·p` | p = `"sheetPlastic"`, a = Compressed Air Tank (full), i = `"plateIron"` |
+| R79 | Oxygen Tanks ([`scubaTanks`](item-catalogue.md#2-stand-alone-items-registered-by-tgitems)) | Shaped (ore) | `p·p / aia / p·p` | p = `"sheetPlastic"`, a = Compressed Air Tank (full), i = `"plateIron"` |
 | R80 | Jump Pack | Shaped (ore) | `n·n / pbp / c·c` | n = `"nuggetIron"`, p = `"plateIron"`, b = Glider Backback, c = Compressed Air Tank (full) |
 | R81 | Tactical Mask | Shaped (ore) | `pnp / cgc / pop` | p = `"sheetPlastic"`, n = Nightvision Goggles (any damage), c = `"circuitBasic"`, g = Gas Mask (any damage), o = Oxygen Mask |
 | R82 | Combat Knife | Shaped (ore) | `·s / p·` | s = `"plateSteel"`, p = `"sheetPlastic"` |
@@ -132,7 +132,7 @@ The tool and Ore Cluster Scanner outputs carry no NBT. The scanner's `onCreated`
 | B08 | Explosive Charge (`basicMachine:6`) ×8 | Shaped (ore) | `rtr / tct / rtr` | r = `"itemRubber"`, t = TNT, c = `"circuitBasic"` |
 | B09 | Advanced Explosive Charge (`basicMachine:8`) ×4 | Shaped (ore) | `rtr / tct / rtr` | r = `"sheetPlastic"`, t = TGX, c = `"circuitBasic"` |
 | B10 | Charging Station (`basicMachine:9`) | Shaped (ore) | `sgs / cbc / sgs` | s = `"plateSteel"`, g = `"wireGold"`, b = `"circuitBasic"`, c = Coil |
-| B11 | Metal Ladder (`ladder01`) ×16 | Shaped (ore) | `iii / ·i· / iii` | i = `"plateTin"` |
+| B11 | Metal Ladder ([`ladder01`](../07-blocks/block-catalogue.md#registered-blocks)) ×16 | Shaped (ore) | `iii / ·i· / iii` | i = `"plateTin"` |
 | B12 | Lamp (`lamp01:0`) ×16 | Shaped (ore) | `iii / grg / ggg` | i = `"nuggetIron"`, r = `"dustRedstone"`, g = `"paneGlass"` |
 | B13 | `lamp01:0` ↔ `lamp01:8` | Shapeless (ore) | 1 → 1 each way (two recipes) | |
 | B14 | Lamp (`lamp01:7`) ×16 | Shaped (ore) | `iii / grg / iii` | as B12 |
@@ -154,10 +154,10 @@ The tool and Ore Cluster Scanner outputs carry no NBT. The scanner's `onCreated`
 | B30 | Fabricator Glass (`machineMultiBlock:5`) ×4 | Shaped (ore) | `fgf / g·g / fgf` | f = Fabricator Housing, g = hardenedGlassOrGlass |
 | B31 | Metal Panel (`metalpanel:0`) ×32 | Shaped (ore) | `sss / sps / sss` | s = `"stone"`, p = `"plateCopper"` |
 | B32 | Metal Panel (Connected) (`metalpanel2:0`) ×64 | Shaped (ore) | `sss / psp / sss` | s = `"stone"`, p = `"plateCopper"` |
-| B33 | Reinforced Chest (`tgchest`) | Shaped (ore) | `n·n / ·c· / n·n` | n = `"nuggetIron"`, c = chest |
-| B34 | Weapon Chest (`tgchest_weapon`) | Shaped (ore) | `pcp` (one row) | p = `"plateIron"`, c = chest |
+| B33 | Reinforced Chest ([`tgchest`](../07-blocks/block-catalogue.md#registered-blocks)) | Shaped (ore) | `n·n / ·c· / n·n` | n = `"nuggetIron"`, c = chest |
+| B34 | Weapon Chest ([`tgchest_weapon`](../07-blocks/block-catalogue.md#registered-blocks)) | Shaped (ore) | `pcp` (one row) | p = `"plateIron"`, c = chest |
 
-Gun recipes are in `TGuns` (02-guns) and armour recipes in `TGArmors` (05-armor). They are not repeated here.
+Gun recipes are in [`TGuns`](../02-guns/gun-catalogue.md) ([02-guns](../02-guns/index.md)) and armour recipes in [`TGArmors`](../05-armor/armor-catalogue.md) ([05-armor](../05-armor/index.md)). They are not repeated here.
 
 ### Commented-out recipes (not active)
 These recipes exist only as comments: spring, iron gears, Mechanical Parts T2/T3 crafting, pistol-mag fill via shaped grid, Rifle Bullets and High Caliber Rounds crafting, Fuel Tank crafting and fill, Bio Tank fill, Energy Cell crafting, Laser Focus crafting, Obsidian Steel crafting, Power Plating crafting, Medkit crafting, Nuclear Power Cell crafting, and Bunker Door from tin plates.
@@ -176,14 +176,14 @@ These recipes exist only as comments: spring, iron gears, Mechanical Parts T2/T3
 
 | Condition (config key, default false) | Recipe |
 |---|---|
-| `addBronzeCrafting` | Shapeless (ore): `"ingotCopper"` ×3 + `"ingotTin"` → 4 Bronze Ingot |
-| `addSteelCrafting` | Smelting: iron ingot → Techguns Steel Ingot, 0.35 XP (the output item is only registered if `addSteelIngot`, see bug ITEM-02) |
-| `addIronNuggets` | Shapeless (vanilla): iron ingot → 9 Iron Nugget; shaped (vanilla) `nnn/nnn/nnn` nuggets → iron ingot |
-| `addCopperTinBronzeNuggets` | Shapeless (ore) `"ingotCopper"` → 9 Copper Nugget; shaped (ore) 9 `"nuggetCopper"` → Techguns Copper Ingot |
-| `addLeadNuggets` | Shapeless (ore) `"ingotLead"` → 9 Lead Nugget; shaped (ore) 9 `"nuggetLead"` → Techguns Lead Ingot |
-| `addSteelNuggets` and `addSteelIngot` | Shapeless (ore) Techguns Steel Ingot → 9 Steel Nugget; shaped 9 Steel Nugget → Techguns Steel Ingot |
+| [`addBronzeCrafting`](../01-core/config.md#category-general) | Shapeless (ore): `"ingotCopper"` ×3 + `"ingotTin"` → 4 Bronze Ingot |
+| [`addSteelCrafting`](../01-core/config.md#category-general) | Smelting: iron ingot → Techguns Steel Ingot, 0.35 XP (the output item is only registered if [`addSteelIngot`](../01-core/config.md#category-general), see bug [ITEM-02](index.md#suspected-bugs)) |
+| [`addIronNuggets`](../01-core/config.md#category-general) | Shapeless (vanilla): iron ingot → 9 Iron Nugget; shaped (vanilla) `nnn/nnn/nnn` nuggets → iron ingot |
+| [`addCopperTinBronzeNuggets`](../01-core/config.md#category-general) | Shapeless (ore) `"ingotCopper"` → 9 Copper Nugget; shaped (ore) 9 `"nuggetCopper"` → Techguns Copper Ingot |
+| [`addLeadNuggets`](../01-core/config.md#category-general) | Shapeless (ore) `"ingotLead"` → 9 Lead Nugget; shaped (ore) 9 `"nuggetLead"` → Techguns Lead Ingot |
+| [`addSteelNuggets`](../01-core/config.md#category-general) and `addSteelIngot` | Shapeless (ore) Techguns Steel Ingot → 9 Steel Nugget; shaped 9 Steel Nugget → Techguns Steel Ingot |
 | `addSteelNuggets` and not `addSteelIngot` (postInit) | if any `"ingotSteel"` exists: Shapeless (ore) `"ingotSteel"` → 9 Steel Nugget; shaped 9 `"nuggetSteel"` → first OreDict steel ingot |
-| `doOreGenCopperTin` | Smelting: Techguns copper/tin ore → Copper/Tin Ingot, 0.7 XP each |
-| `doOreGenLead` | Smelting: Techguns lead ore → Lead Ingot, 0.7 XP |
+| [`doOreGenCopperTin`](../01-core/config.md#category-general) | Smelting: Techguns copper/tin ore → Copper/Tin Ingot, 0.7 XP each |
+| [`doOreGenLead`](../01-core/config.md#category-general) | Smelting: Techguns lead ore → Lead Ingot, 0.7 XP |
 
-The ore blocks belong to 07/11.
+The ore blocks belong to [07](../07-blocks/index.md)/11.

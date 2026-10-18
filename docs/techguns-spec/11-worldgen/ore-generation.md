@@ -1,12 +1,12 @@
 # Ore generation, ore clusters and oil holes
 
-Classes covered: `worldgen/OreGenerator`, `worldgen/OreClusterWorldspawn`, `worldgen/WorldGenOilHoles`, plus the cluster-related parts of `blocks/OreCluster` and `TGBlocks`, and the items `OreClusterScanner` and `oreClusterDebugger`. Block definitions are owned by **07-blocks**, items by **06-items**, and the Ore Drill that mines clusters by **08-machines-production**. Textures are catalogued in [assets.md](assets.md).
+Classes covered: `worldgen/OreGenerator`, `worldgen/OreClusterWorldspawn`, `worldgen/WorldGenOilHoles`, plus the cluster-related parts of `blocks/OreCluster` and [`TGBlocks`](../07-blocks/block-catalogue.md#registered-blocks), and the items [`OreClusterScanner`](../06-items/special-items.md#ore-cluster-scanner-oreclusterscanner-techgunsoreclusterscanner) and [`oreClusterDebugger`](../06-items/special-items.md#ore-cluster-debugger-oreclusterdebugger). Block definitions are owned by **[07-blocks](../07-blocks/index.md)**, items by **[06-items](../06-items/index.md)**, and the Ore Drill that mines clusters by **[08-machines-production](../08-machines-production/index.md)**. Textures are catalogued in [assets.md](assets.md).
 
 ---
 
 ## 1. Ore veins (`OreGenerator`)
 
-* **Registration:** FML world generator registered in `Techguns.preInit`, weight **1**, but only if at least one of `doOreGenLead`, `doOreGenCopperTin`, `doOreGenTitanium` or `doOreGenUranium` is true. The four flags are passed into the constructor.
+* **Registration:** FML world generator registered in [`Techguns.preInit`](../01-core/lifecycle-and-registration.md#lifecycle-overview), weight **1**, but only if at least one of [`doOreGenLead`](../01-core/config.md#category-general), [`doOreGenCopperTin`](../01-core/config.md#category-general), [`doOreGenTitanium`](../01-core/config.md#category-general) or [`doOreGenUranium`](../01-core/config.md#category-general) is true. The four flags are passed into the constructor.
 * **Dimension:** Overworld only (`dimensionId == 0`). No biome rules.
 * **Vein algorithm:**
   1. For each ore, the vein size is rolled once per chunk.
@@ -22,9 +22,9 @@ Classes covered: `worldgen/OreGenerator`, `worldgen/OreClusterWorldspawn`, `worl
 | Titanium | `TGBlocks.oreTitanIron` meta 0 | `doOreGenTitanium` | 4 + rnd(2) → 4–5 | 4 | 4–23 |
 | Uranium | `TGBlocks.oreTitanIron` meta 1 | `doOreGenUranium` | 4 + rnd(4) → 4–7 | 5 | 4–31 |
 
-Facts about the ore blocks that worldgen depends on (owned by 07-blocks and 01-core):
+Facts about the ore blocks that worldgen depends on (owned by [07-blocks](../07-blocks/index.md) and [01-core](../01-core/index.md)):
 * Copper, tin and lead are plain `GenericBlock(Material.rock)` blocks. They are created and registered only when their config flag is on, and get OreDict names `oreCopper`, `oreTin` and `oreLead`.
-* `oreTitanIron` is a 2-meta block:
+* [`oreTitanIron`](../07-blocks/block-catalogue.md#registered-blocks) is a 2-meta block:
   * hardness 4, resistance 7
   * meta 0: "Titanium Iron Ore", texture `techguns:oreTitanIron`, harvest level pickaxe 3, light 3
   * meta 1: "Uranium Ore", texture `techguns:oreUranium`, harvest level pickaxe 2, light 5
@@ -35,11 +35,11 @@ Facts about the ore blocks that worldgen depends on (owned by 07-blocks and 01-c
 
 ## 2. The ore-cluster system
 
-Ore clusters are unbreakable "deposit" blocks that the Ore Drill multiblock mines indefinitely (see 08). One `OreCluster` block holds up to 16 cluster types, one per metadata.
+Ore clusters are unbreakable "deposit" blocks that the Ore Drill multiblock mines indefinitely (see [08](../08-machines-production/index.md)). One `OreCluster` block holds up to 16 cluster types, one per metadata.
 
 ### 2.1 `OreCluster` block (worldgen-relevant facts)
 * **Material and strength:** `Material.rock`, stone step sound, hardness **−1** (unbreakable), resistance 6,000,000. Drops nothing.
-* **Crowbar exception:** a player holding `TGItems.crowbar` breaks a cluster with relative hardness 0.005, unless that meta is flagged `isBedrock`.
+* **Crowbar exception:** a player holding [`TGItems.crowbar`](../06-items/item-catalogue.md) breaks a cluster with relative hardness 0.005, unless that meta is flagged `isBedrock`.
 * **Per-meta arrays** (filled by `addOre` / `addLiquid`):
 
 | Array | Meaning |
@@ -53,15 +53,15 @@ Ore clusters are unbreakable "deposit" blocks that the Ore Drill multiblock mine
 | `fluids[]` | FluidStack for liquid clusters, else null |
 | `isBedrock[]` | Base texture is bedrock and the crowbar cannot break it |
 
-* **Rendering** (render type set by the block; renderer `RenderOrecluster`, owned by 07/03):
+* **Rendering** (render type set by the block; renderer [`RenderOrecluster`](../07-blocks/block-rendering-and-models.md#1-isbrh-renderers-and-render-ids), owned by [07](../07-blocks/index.md)/[03](../03-gun-visuals-audio/index.md)):
   * **Base:** stone, or netherrack if the client player is in dimension −1, or end_stone in dimension 1, or bedrock when `isBedrock`.
   * **Overlay:** the same cube faces drawn again with `overlay_texture[textureType[meta]]`, tinted by `colors[meta]`.
   * Overlay icons: index 0 `techguns:oreClusterNew1`, 1 `oreClusterNew2`, 2 `oreClusterNew3`, 3 `oreClusterNew4`.
 * **Creative listing and naming:** `getSubBlocks` lists only metas whose mining level is > 0. Item and lang names are `techguns.tile.<oreCluster|oreCluster2>_<meta>.name`.
-* **Config multipliers:** each block receives per-meta amount and power multipliers from config category `Ore Drills`. `oreCluster` uses `oreClusterMultipliersAmount` and `oreClusterMultipliersPower`; `oreCluster2` uses the `…2` variants. Only the Ore Drill consumes them (see 08). Custom clusters default to 1.0.
+* **Config multipliers:** each block receives per-meta amount and power multipliers from config category `Ore Drills`. [`oreCluster`](../07-blocks/block-catalogue.md#registered-blocks) uses [`oreClusterMultipliersAmount`](../01-core/config.md#category-ore-drills) and [`oreClusterMultipliersPower`](../01-core/config.md#category-ore-drills); [`oreCluster2`](../07-blocks/block-catalogue.md#registered-blocks) uses the `…2` variants. Only the Ore Drill consumes them (see [08](../08-machines-production/index.md)). Custom clusters default to 1.0.
 
 ### 2.2 Registered cluster types (`TGBlocks.init` / `postInit`)
-`TGBlocks.oreclusters` is the list of all cluster blocks: `oreCluster`, `oreCluster2`, and optionally `oreClusterCustom` / `oreClusterCustom2` when config `addCustomOreCluster` / `addCustomOreCluster2` is on. The custom clusters start empty and are filled through MineTweaker (see 01/06).
+`TGBlocks.oreclusters` is the list of all cluster blocks: `oreCluster`, `oreCluster2`, and optionally [`oreClusterCustom`](../07-blocks/block-catalogue.md#registered-blocks) / [`oreClusterCustom2`](../07-blocks/block-catalogue.md#registered-blocks) when config `addCustomOreCluster` / `addCustomOreCluster2` is on. The custom clusters start empty and are filled through MineTweaker (see [01](../01-core/index.md)/[06](../06-items/index.md)).
 
 The metas 7–15 of `oreCluster` and 2–3 of `oreCluster2` are added in `postInit`. Each modded ore is looked up as the first OreDictionary entry for its name. If none exists, a **placeholder** (vanilla stone, mining level 0, all zeros) takes the slot, so meta numbering never shifts.
 
@@ -112,26 +112,26 @@ The registration line in `Techguns.preInit` is commented out. **In this version,
 | 4 | 2–3 | 1 |
 
 * Y range: 0 … `maxy − 1`, at a random XZ in the chunk.
-* As written, it uses the meta-less `WorldGenMinable` constructor, so every vein would be meta 0 (iron, or nether quartz) (WGEN-02). A rarity of 5 or more would give `nextInt(0)` and crash.
+* As written, it uses the meta-less `WorldGenMinable` constructor, so every vein would be meta 0 (iron, or nether quartz) ([WGEN-02](index.md#suspected-bugs)). A rarity of 5 or more would give `nextInt(0)` and crash.
 
 ### 2.4 Ore Cluster Scanner (`items/OreClusterScanner`)
 The item side is owned by 06. Its interaction with the cluster system:
-* Registry and unlocalized name `oreClusterScanner`, texture `textures/items/oreClusterScanner.png`, lang `techguns.item.oreClusterScanner.name=Ore Cluster Scanner`. Max stack 1.
+* Registry and unlocalized name [`oreClusterScanner`](../06-items/item-catalogue.md#2-stand-alone-items-registered-by-tgitems), texture [`textures/items/oreClusterScanner.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items), lang `techguns.item.oreClusterScanner.name=Ore Cluster Scanner`. Max stack 1.
 * **Energy:** CoFH `IEnergyContainerItem`. Capacity 30,000 RF, max receive and max extract 3,000 RF per call, stored in the NBT int `Energy`.
   * The creative-tab instance and any crafted instance (`onCreated`) start full.
   * The durability bar is always shown, at `1 − energy/capacity`.
   * The tooltip line is `<energy>/30000 RF`.
 * **Use:** right-click starts using, with an unlimited use duration. `onUsingTick` force-stops use once 40 ticks (`SCANDURATION`) have elapsed.
 * **On release** (`onPlayerStoppedUsing`):
-  1. Extract 300 RF, on both sides, for any hold length (WGEN-19).
+  1. Extract 300 RF, on both sides, for any hold length ([WGEN-19](index.md#suspected-bugs)).
   2. On the **client only**, if exactly 300 was extracted and the hold lasted ≥ 40 ticks, scan the player's current chunk: all 16×16 columns from player Y + 16 (capped at world height) down to Y 1.
-  3. For every block that is in `TGBlocks.oreclusters`, spawn the client particle effect `"OreClusterPing"` at the block centre (FX defined in 04-projectiles-fx) and collect the translated name `techguns.tile.<block>_<meta>.name`.
+  3. For every block that is in `TGBlocks.oreclusters`, spawn the client particle effect `"OreClusterPing"` at the block centre (FX defined in [04-projectiles-fx](../04-projectiles-fx/index.md)) and collect the translated name `techguns.tile.<block>_<meta>.name`.
   4. Chat output:
      * if any were found: `techguns.OreClusterScanner.msg.found` = "Found Ore Clusters in this Chunk", then one line per distinct cluster name
      * otherwise: `techguns.OreClusterScanner.msg.notFound` = "No Clusters in this Chunk"
 
 ### 2.5 Ore Cluster Debugger (`items/oreClusterDebugger`)
-* Registry `oreClusterDebugger`, unlocalized `oreClusterDebugger`, texture `techguns:testItem` (`textures/items/testItem.png`). Max stack 1.
+* Registry `oreClusterDebugger`, unlocalized `oreClusterDebugger`, texture `techguns:testItem` ([`textures/items/testItem.png`](../06-items/textures.md#11-tools-placers-door-bucket-debug-items)). Max stack 1.
 * Lang: `techguns.item.oreClusterDebugger.name=Ore Cluster Debugger`. Tooltip `techguns.oreClusterDebugger.Tooltip=WARNING: Removes all destroyable Blocks in a huge Radius, used to debug Ore cluster spawns`.
 * **Right-click on a block (server):** for every y from the clicked y down to 1, and every x in `[x−16, x+16)` and z in `[z−16, z+16)`, any block with hardness ≥ 0 is set to air. Bedrock, ore clusters and other unbreakable blocks remain, which exposes every cluster in a 32×32 column for inspection. There is no confirmation and no undo.
 
@@ -139,10 +139,10 @@ The item side is owned by 06. Its interaction with the cluster system:
 
 ## 3. Oil holes (`WorldGenOilHoles`)
 
-* **Registration:** in `Techguns.postInit`, weight **3**, when config `spawnOilHoles` is true **and** `TGFluids.OIL != TGFluids.LAVA`. `OIL` is `FluidRegistry.getFluid("oil")` and may be null, in which case this test still passes (WGEN-03).
+* **Registration:** in `Techguns.postInit`, weight **3**, when config [`spawnOilHoles`](../01-core/config.md#category-spawn-controll-sic) is true **and** `TGFluids.OIL != TGFluids.LAVA`. `OIL` is `FluidRegistry.getFluid("oil")` and may be null, in which case this test still passes ([WGEN-03](index.md#suspected-bugs)).
 * **Dimension:** Overworld only.
 * **Per chunk:**
-  1. With probability `oilHoleFrequency` (default 0.05), pick a random column (x, z) in the chunk.
+  1. With probability [`oilHoleFrequency`](../01-core/config.md#category-spawn-controll-sic) (default 0.05), pick a random column (x, z) in the chunk.
   2. Starting at y = 0, check whether bedrock occupies at least one cell of the "plus" pattern: (x,z) and its 4 horizontal neighbours.
   3. While that holds and y ≤ 10:
      * place `oreCluster2` meta **3** (Oil cluster) at (x, y, z) with flag 2

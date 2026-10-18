@@ -24,7 +24,7 @@ A rewrite of vanilla `Explosion` with separate control over entity damage. It wr
 ### `doExplosion(blockDamage, attacker)`
 
 - **Server:** post Forge `ExplosionEvent.Start`. If it is not cancelled, run part A then part B.
-- **Client:** run A and B unconditionally. Callers that run on both sides (alien blaster, grenades) therefore also execute it client-side. See bug PFX-15.
+- **Client:** run A and B unconditionally. Callers that run on both sides (alien blaster, grenades) therefore also execute it client-side. See bug [PFX-15](index.md#suspected-bugs).
 
 ### Part A: affected blocks and entity damage
 
@@ -41,12 +41,12 @@ A rewrite of vanilla `Explosion` with separate control over entity damage. It wr
 5. For each entity, measure `distance` from its feet position to the centre. If `distance ≤ dmgRadius2`:
    - **Push direction:** the unit vector from the centre to the entity's eye.
    - **Damage:** `entityDamage × min(1, 1 − (distance − dmgRadius1) / (dmgRadius2 − dmgRadius1))`. This is flat inside r1 and falls linearly to 0 at r2. There is no occlusion, and block density is *not* used for damage.
-   - If an attacker is given and both parties are living, multiply by `DamageSystem.getDamageFactor(attacker, entity)`. This is the friendly-fire and team factor, see `01-core`.
+   - If an attacker is given and both parties are living, multiply by `DamageSystem.getDamageFactor(attacker, entity)`. This is the friendly-fire and team factor, see [`01-core`](../01-core/index.md).
    - **Damage source:**
-     - If no override: `TGDamageSource.causeExplosionDamage(exploder, null, GORE)`. That is name `tg_explosion`, type EXPLOSION, `goreChance = 0.35`, damaging entity = exploder, attacker = null.
+     - If no override: [`TGDamageSource.causeExplosionDamage(exploder, null, GORE)`](../02-guns/damage-system.md#2-tgdamagesource-extends-vanilla-entitydamagesource). That is name `tg_explosion`, type EXPLOSION, `goreChance = 0.35`, damaging entity = exploder, attacker = null.
      - Otherwise the override.
    - **Knockback:** strength = `(1 − distance / (2 × size)) × blockDensity` (vanilla `getBlockDensity` occlusion), passed through Blast Protection (`EnchantmentProtection.func_92092_a`). It is added to the entity's motion along the push direction.
-   - Players are also recorded in a knockback map, `func_77277_b()`. **Nothing reads the map and no `S27PacketExplosion` is sent**, so server-side player knockback is never synced to the client (bug PFX-06).
+   - Players are also recorded in a knockback map, `func_77277_b()`. **Nothing reads the map and no `S27PacketExplosion` is sent**, so server-side player knockback is never synced to the client (bug [PFX-06](index.md#suspected-bugs)).
 6. Restore `explosionSize`.
 
 ### Part B: sound, block destruction and fire
@@ -64,15 +64,15 @@ A rewrite of vanilla `Explosion` with separate control over entity damage. It wr
 
 | Caller | Size (power) | entityDamage | r1 | r2 | blockDamage | Sound | FX |
 |---|---|---|---|---|---|---|---|
-| `RocketProjectile.explodeRocket` | `radius` (gun) | (int) damage | 0.5 × radius | 1.5 × radius | projectile `blockdamage` (safe mode) | `random.explode` | `RocketExplosion` (50 blocks) |
-| `NukeRocketProjectile.explodeRocket` | `radius` | (int) damage | 0.5 × radius | 1.5 × radius | `blockdamage` | `random.explode` **and** `techguns:effects.nukeexplosion` (volume 8) | `NukeExplosion` (150 blocks) |
-| `GrenadeProjectile.explode` (incl. launcher and frag) | `radius` | (int) damage | 0.5 × radius | 1.5 × radius | grenade `blockdamage` (false after a hand-grenade bounce) | `techguns:effects.explosion1` | `RocketExplosion` / `FragGrenadeExplosion` (50 blocks) |
-| `AlienBlasterProjectile.doExplosion` | 0.5 | (int) getDamage() | 0.25 | 0.75 | false | `random.explode` | `AlienExplosion` (50 blocks) |
-| `BioblobTileEnt` (see `07-blocks`) | blob-dependent | 15 | 0.5 × r | 1.5 × r | (block's own) | `techguns:effects.biodeath` | `bioblobExplosion` |
-| `BiogunProjectile.setBlockForLevel` (dead code) | 1.5 | 30 | 1.0 | 2.0 | false | n/a | n/a |
-| `EnergyBlastProjectile` | commented out | n/a | n/a | n/a | n/a | n/a | `BlueBlasterExplosion` only |
+| [`RocketProjectile.explodeRocket`](projectiles.md#34-rocketprojectile-and-nukerocketprojectile) | `radius` (gun) | (int) damage | 0.5 × radius | 1.5 × radius | projectile `blockdamage` (safe mode) | `random.explode` | `RocketExplosion` (50 blocks) |
+| [`NukeRocketProjectile.explodeRocket`](projectiles.md#34-rocketprojectile-and-nukerocketprojectile) | `radius` | (int) damage | 0.5 × radius | 1.5 × radius | `blockdamage` | `random.explode` **and** `techguns:effects.nukeexplosion` (volume 8) | `NukeExplosion` (150 blocks) |
+| [`GrenadeProjectile.explode`](projectiles.md#37-grenadeprojectile-family) (incl. launcher and frag) | `radius` | (int) damage | 0.5 × radius | 1.5 × radius | grenade `blockdamage` (false after a hand-grenade bounce) | `techguns:effects.explosion1` | `RocketExplosion` / `FragGrenadeExplosion` (50 blocks) |
+| [`AlienBlasterProjectile.doExplosion`](projectiles.md#1-registration) | 0.5 | (int) getDamage() | 0.25 | 0.75 | false | `random.explode` | `AlienExplosion` (50 blocks) |
+| [`BioblobTileEnt`](../09-machines-utility/misc-tile-entities.md#tile-entity-bioblobtileent) (see [`07-blocks`](../07-blocks/index.md)) | blob-dependent | 15 | 0.5 × r | 1.5 × r | (block's own) | `techguns:effects.biodeath` | `bioblobExplosion` |
+| [`BiogunProjectile.setBlockForLevel`](projectiles.md#35-biogunprojectile) (dead code) | 1.5 | 30 | 1.0 | 2.0 | false | n/a | n/a |
+| [`EnergyBlastProjectile`](projectiles.md#310-energyblastprojectile-mib-gun) | commented out | n/a | n/a | n/a | n/a | n/a | `BlueBlasterExplosion` only |
 
-"Gun-supplied" radius and damage values are in `02-guns`. There is **no global config gate** on projectile block damage. The only gate is the per-player safe-mode toggle (`TechgunsExtendedPlayerProperties.enableSafemode`, see `01-core`), read by `GenericGun.getDoBlockDamage` (players with safe mode off cause block damage; NPCs never do).
+"Gun-supplied" radius and damage values are in [`02-guns`](../02-guns/index.md). There is **no global config gate** on projectile block damage. The only gate is the per-player safe-mode toggle ([`TechgunsExtendedPlayerProperties.enableSafemode`](../01-core/player-state.md#techgunsextendedplayerproperties), see [`01-core`](../01-core/index.md)), read by [`GenericGun.getDoBlockDamage`](../02-guns/gun-lifecycle.md) (players with safe mode off cause block damage; NPCs never do).
 
 ### Direct-hit damage before the blast
 
@@ -87,7 +87,7 @@ A rewrite of vanilla `Explosion` with separate control over entity damage. It wr
 - `getEntity()` returns `attacker`.
 - The constructor is `(name, projectile, attacker, deathtype)`.
 
-**Unused.** Nothing constructs it; its factory and death-message override are commented out. Explosions use `TGDamageSource.causeExplosionDamage` instead (see `01-core`).
+**Unused.** Nothing constructs it; its factory and death-message override are commented out. Explosions use `TGDamageSource.causeExplosionDamage` instead (see [`01-core`](../01-core/index.md)).
 
 ## Death messages (lang, `en_US.lang`)
 

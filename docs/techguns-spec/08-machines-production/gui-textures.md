@@ -23,7 +23,7 @@ The coordinate notation is (u, v) for the source rectangle and (x, y) for where 
 
 ## 1. `textures/gui/ammoPress_GUI.png`
 
-- **Used by** `GuiAmmoPress`, `GuiScrapper` (09), and **every** powered-machine GUI for the power bar, redstone and security sprites (`GuiTechgunsPoweredTileEnt`, `GuiButtonRedstoneState`, `GuiButtonSecurity`). `GuiTechgunsChest` (09) for its security button. Also used by the NEI handlers.
+- **Used by** [`GuiAmmoPress`](ammo-press.md#5-gui-guiammopress-texture-texturesguiammopress_guipng), [`GuiScrapper`](../09-machines-utility/scrapper.md#gui-guiscrapper) ([09](../09-machines-utility/index.md)), and **every** powered-machine GUI for the power bar, redstone and security sprites ([`GuiTechgunsPoweredTileEnt`](gui-handler.md#3-guitechgunspoweredtileent-base-gui-for-every-powered-machine), [`GuiButtonRedstoneState`](gui-handler.md#4-buttons), [`GuiButtonSecurity`](gui-handler.md#4-buttons)). [`GuiTechgunsChest`](../09-machines-utility/misc-tile-entities.md#gui-guitechgunschest) ([09](../09-machines-utility/index.md)) for its security button. Also used by the NEI handlers.
 - **Main panel:**
   - power-bar well at (7,16)–(12,66), a sunken 6×51 trough;
   - three input slot frames at (99,16), (119,16) and (139,16);
@@ -50,13 +50,13 @@ The coordinate notation is (u, v) for the source rectangle and (x, y) for where 
 
 ## 2. `textures/gui/metalPress_GUI.png`
 
-- **Used by** `GuiMetalPress` and the Metal Press NEI handler.
+- **Used by** [`GuiMetalPress`](metal-press.md#4-gui-guimetalpress-texturesguimetalpress_guipng) and the Metal Press NEI handler.
 - **Main panel:** the power-bar well as above; two input frames at (109,16) and (129,16); a funnel/pipe outline down to the output frame at (119,59).
 - **Sprites:** only the progress funnel at u176 v0 (19–20×21), identical to the ammo press one. The upgrade frame is copied from (119,59), 20×20, to (149,59).
 
 ## 3. `textures/gui/chemLab_Gui.png`
 
-- **Used by** `GuiChemLab`, `GuiButtonToggleDrainTank`, the Chem Lab NEI handler.
+- **Used by** [`GuiChemLab`](chem-lab.md#5-gui-guichemlab-texturesguichemlab_guipng), [`GuiButtonToggleDrainTank`](chem-lab.md), the Chem Lab NEI handler.
 - **Main panel:**
   - power well at (7,16);
   - left tank well at (18,16), 12×52;
@@ -77,7 +77,7 @@ The coordinate notation is (u, v) for the source rectangle and (x, y) for where 
 
 ## 4. `textures/gui/Fabricator_Gui.png`
 
-- **Used by** `GuiFabricator` and the Fabricator NEI handler.
+- **Used by** [`GuiFabricator`](fabricator.md#5-gui-guifabricator-texturesguifabricator_guipng) and the Fabricator NEI handler.
 - **Main panel:**
   - power well at (7,16);
   - the input frame at (18,16);
@@ -91,7 +91,7 @@ The coordinate notation is (u, v) for the source rectangle and (x, y) for where 
 
 ## 5. `textures/gui/ReactionChamber_Gui.png`
 
-- **Used by** `GuiReactionChamber` and the RC NEI handler.
+- **Used by** [`GuiReactionChamber`](reaction-chamber.md#6-gui-guireactionchamber-texturesguireactionchamber_guipng) and the RC NEI handler.
 - **Main panel:**
   - power well at (7,16);
   - the tank well at (18,16);
@@ -116,13 +116,13 @@ The coordinate notation is (u, v) for the source rectangle and (x, y) for where 
 
 ## 6. `textures/gui/ChargingStation_Gui.png`
 
-- **Used by** `GuiChargingStation` and its NEI handler.
+- **Used by** [`GuiChargingStation`](charging-station.md#3-gui-guichargingstation-texturesguichargingstation_guipng) and its NEI handler.
 - **Main panel:** power well; the input frame at (18,16); a grey zig-zag **lightning-bolt arrow** outline at about (37,18)–(65,30); the output frame at (67,16). Code copies the upgrade frame from (7,83) to (149,49).
 - **Sprite:** u0 v167, about 30×10. A lightning arrow in a red → orange → yellow gradient. Progress fill, left→right at (39,19).
 
 ## 7. `textures/gui/camoBench_GUI.png` (owned by 09)
 
-- **Used by** `GuiCamoBench`.
+- **Used by** [`GuiCamoBench`](../09-machines-utility/camo-bench.md#gui-guicamobench).
 - **Main panel:**
   - one framed slot at (17,14) (camo target);
   - a raised frame holding 6 slot wells at (54,16)–(171,35), with small square tabs under each;
@@ -131,13 +131,13 @@ The coordinate notation is (u, v) for the source rectangle and (x, y) for where 
 
 ## 8. `textures/gui/repairBench_GUI.png` (owned by 09)
 
-- **Used by** `GuiRepairBench` and `GuiButtonRepair`.
+- **Used by** [`GuiRepairBench`](../09-machines-utility/repair-bench.md#gui-guirepairbench) and [`GuiButtonRepair`](../09-machines-utility/repair-bench.md).
 - **Main panel:** a raised frame with 4 armor slot wells at (89+20i, 18); a row of 9 slot wells at (8+18i, 57); the player inventory.
 - **Sprite:** u176 v0, 12×12. A dark-grey wrench icon drawn on the repair buttons (14×14 at (90+20i, 39)).
 
 ## 9. `textures/gui/oreDrill_GUI.png` (owned by 09)
 
-- **Used by** `GuiOreDrill`.
+- **Used by** [`GuiOreDrill`](../09-machines-utility/ore-drill.md#7-gui-guioredrill-id-16).
 - **Main panel:**
   - power well;
   - a left tank well at (15,16) and a right tank well at (157,16);
@@ -163,7 +163,7 @@ The coordinate notation is (u, v) for the source rectangle and (x, y) for where 
 
 ## 12. `textures/gui/turretBase_GUI.png` (owned by 09)
 
-- **Used by** `GuiTurretBase` and `GuiButtonTurretTargetAnimals`.
+- **Used by** [`GuiTurretBase`](../09-machines-utility/turret.md#gui-guiturretbase) and [`GuiButtonTurretTargetAnimals`](../09-machines-utility/turret.md).
 - **Main panel:**
   - power well;
   - a left 3×3 ammo grid (18+18i, 17+18j) with bullet-silhouette slot backgrounds;
@@ -175,7 +175,7 @@ The coordinate notation is (u, v) for the source rectangle and (x, y) for where 
 | Sprite | u,v | Size | Content | Use |
 |---|---|---|---|---|
 | Health bar | 177,1 | ~52×4 | gradient red (left) → yellow → green (right), with a grey centre marker | turret health fill, left→right at (116,74) |
-| Target-animals icon, mode 0 | 176,6 | 16×16 | pink pig with green check mark | target-animals button (mode semantics in 09) |
+| Target-animals icon, mode 0 | 176,6 | 16×16 | pink pig with green check mark | target-animals button (mode semantics in [09](../09-machines-utility/index.md)) |
 | Target-animals icon, mode 1 | 176,22 | 16×16 | pig with red crosshair/X | target-animals button |
 
 ## 13. `textures/gui/tgchest_gui.png` (owned by 09)
@@ -185,7 +185,7 @@ The coordinate notation is (u, v) for the source rectangle and (x, y) for where 
 
 ## 14. `textures/gui/TGPlayerInventory.png` (owned by the player-inventory area, 01/05)
 
-- **Used by** `GuiTGPlayerInventory`, `TGGuiTabButton`, `TGGuiToggleButton`.
+- **Used by** [`GuiTGPlayerInventory`](../05-armor/extra-inventory.md#5-gui-guitgplayerinventory), [`TGGuiTabButton`](../05-armor/extra-inventory.md), [`TGGuiToggleButton`](../05-armor/extra-inventory.md).
 - **Main panel (176×166):**
   - 4 armor slots at (8, 8+18i);
   - a black player-preview window at about (25,7)–(78,78);
