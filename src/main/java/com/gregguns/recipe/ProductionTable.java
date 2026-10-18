@@ -23,7 +23,7 @@ import com.gregguns.machine.AmmoPressTier;
  * Inputs name GT parts as ore prefix + material (resolved through {@code GTOreDictUnificator} later) or GregGuns items
  * by registry name. No Minecraft or GT types appear here, so the table is testable without a game. Both sides.
  */
-// Spec: docs/gregguns-spec/06-items/recipes.md (RC-05, RC-11, RC-28, RC-37, RC-44, RC-51)
+// Spec: docs/gregguns-spec/06-items/recipes.md (RC-05, RC-11, RC-13, RC-28, RC-30, RC-37, RC-44, RC-51)
 public final class ProductionTable {
 
     /** The GT recipe map a row is registered on. */
@@ -262,6 +262,18 @@ public final class ProductionTable {
                 Input.gt("gearGtSmall", "Steel", 2),
                 Input.gt("springSmall", "Steel", 2),
                 Input.gt("screw", "Steel", 4)),
+            // RC-13: the Steel screws are the gate. The receiver is iron plate around a set of mechanical parts.
+            new Row(
+                "RC-13",
+                PartItems.RECEIVER_IRON,
+                1,
+                Tier.LV,
+                Target.ASSEMBLER,
+                5,
+                1,
+                Input.gt("plate", "Iron", 3),
+                Input.mod(PartItems.MECHANICAL_1, 1),
+                Input.gt("screw", "Steel", 2)),
             // RC-28: no Steel input; the loose-ammo exemption of GGS-06-36 applies.
             new Row(
                 "RC-28",
@@ -274,6 +286,16 @@ public final class ProductionTable {
                 Input.gt("foil", "Brass", 16),
                 Input.gt("round", "Lead", 16),
                 Input.gt("dust", "Gunpowder", 2)),
+            // RC-30: the Steel rounds are the gate. Rifle bullets are not in GATE_EXEMPT.
+            pressRow(
+                "RC-30",
+                AmmoTypes.RIFLE.roundItemName(),
+                16,
+                Tier.LV,
+                6,
+                Input.gt("foil", "Brass", 16),
+                Input.gt("round", "Steel", 16),
+                Input.gt("dust", "Gunpowder", 4)),
             new Row(
                 "RC-37",
                 MAGAZINE_EMPTY,

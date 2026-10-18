@@ -31,6 +31,7 @@ public final class GunClientSetup {
         GunClientHooks.install(new ClientGunEvents(GunsClientModule.animations()));
         GunRenderers.registerPistol9mm(GunItems.pistol());
         GunRenderers.registerRevolver(GunItems.revolver());
+        GunRenderers.registerBoltAction(GunItems.boltAction());
         GunClientHooks.installSync(mirror);
         GunInputHandler input = new GunInputHandler(mirror);
         FMLCommonHandler.instance()

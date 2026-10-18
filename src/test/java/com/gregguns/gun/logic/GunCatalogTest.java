@@ -3,6 +3,7 @@ package com.gregguns.gun.logic;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +43,43 @@ class GunCatalogTest {
         assertEquals(20, r.aiBurstDelay());
         assertFalse(r.hasScope());
         assertEquals(FireMode.SEMI, r.fireMode());
+    }
+
+    @Test
+    void boltActionMatchesItsSheet() {
+        // docs/techguns-spec/02-guns/sheets-rifles-shotguns.md, Bolt Action Rifle, section 3.
+        GunStats r = GunCatalog.BOLT_ACTION;
+        assertEquals(16.0, r.damage());
+        assertEquals(10.0, r.damageMin());
+        assertEquals(20.0, r.dropStart());
+        assertEquals(30.0, r.dropEnd());
+        assertEquals(40, r.lifetimeTicks());
+        assertEquals(2.25, r.projectileSpeed());
+        assertEquals(0.05, r.spread());
+        assertEquals(0.15, r.penetration());
+        assertEquals(25, r.fireRateTicks());
+        assertEquals(6, r.magazineSize());
+        assertEquals(50, r.reloadTicks());
+        assertEquals(15, r.recoilTicks());
+        assertEquals(5, r.muzzleFlashTicks());
+        assertEquals(36.0, r.aiRange());
+        assertEquals(60, r.aiAttackTime());
+        assertEquals(0, r.aiBurstCount());
+        assertEquals(0, r.aiBurstDelay());
+        assertEquals(FireMode.SEMI, r.fireMode());
+        assertTrue(r.hasScope());
+        assertEquals(0.35, r.zoomFactor());
+        assertEquals(0.125, r.zoomSpreadMultiplier());
+    }
+
+    @Test
+    void boltActionLoadsAllSixRoundsFromOneRifleBullet() {
+        GunStats r = GunCatalog.BOLT_ACTION;
+        assertEquals(GunCatalog.AmmoIds.RIFLE, r.ammoType());
+        assertEquals(r.ammoType(), r.looseAmmoType());
+        assertNull(r.emptyContainerType());
+        assertEquals(1, r.ammoItemsPerReload());
+        assertEquals(6, r.roundsPerItem());
     }
 
     @Test

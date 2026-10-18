@@ -22,6 +22,12 @@ public final class AmmoTypes {
     /** 9mm loose round. LV (0001). Shared by the pistol magazine, revolvers and later the SMG magazine. */
     public static final AmmoType NINE_MM = new AmmoType("9mm", "ammo_9mm_bullet", Tier.LV);
 
+    /**
+     * Rifle bullet. LV (0001, RC-30). The Bolt Action Rifle takes it straight; later rifle magazines are filled with
+     * it.
+     */
+    public static final AmmoType RIFLE = new AmmoType("rifle", "ammo_rifle_bullet", Tier.LV);
+
     /** 9mm Pistol Magazine: 3 rounds per refill (ammo.md magazine table). */
     public static final MagazineType NINE_MM_PISTOL = new MagazineType(
         "9mm_pistol",
@@ -36,6 +42,7 @@ public final class AmmoTypes {
 
     static {
         AMMO.put(NINE_MM.id(), NINE_MM);
+        AMMO.put(RIFLE.id(), RIFLE);
         MAGAZINES.put(NINE_MM_PISTOL.id(), NINE_MM_PISTOL);
     }
 

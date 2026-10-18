@@ -7,6 +7,7 @@ import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.explosion.GrenadeScenarios;
+import com.gregguns.gun.server.BoltActionScenarios;
 import com.gregguns.gun.server.FrameworkScenarios;
 import com.gregguns.gun.server.GunEvents;
 import com.gregguns.gun.server.GunKeybinds;
@@ -75,6 +76,7 @@ public final class GunsModule implements GregGunsModule {
             GunRecipeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             RevolverScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            BoltActionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             FrameworkScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MeleeScenarios.registerAll(ScenarioRegistry.SCENARIOS);

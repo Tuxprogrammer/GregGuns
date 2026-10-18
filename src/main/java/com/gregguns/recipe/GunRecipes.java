@@ -68,6 +68,37 @@ public final class GunRecipes {
         GTOreDictUnificator
             .addItemData(pistol, new ItemData(Materials.Steel, steel, new MaterialStack(Materials.Rubber, 2 * plate)));
         addRevolverData(plate);
+        addBoltActionData(plate);
+    }
+
+    /**
+     * Recycling data of the Bolt Action Rifle and its Iron Receiver: iron and steel in the receiver, bronze in the
+     * mechanical parts inside it, the Hardened Steel Barrel's steel, the plates, screws and spring of the gun, and the
+     * glass of the scope lens.
+     */
+    private static void addBoltActionData(long plate) {
+        long screw = OrePrefixes.screw.getMaterialAmount();
+        long spring = OrePrefixes.springSmall.getMaterialAmount();
+        long mechanical1 = GunComposition.mechanical1Bronze(OrePrefixes.gearGtSmall.getMaterialAmount(), spring);
+        long receiverIron = GunComposition.ironReceiverIron(plate);
+        long receiverSteel = GunComposition.ironReceiverSteel(screw);
+        long barrel = OrePrefixes.pipeSmall.getMaterialAmount() + 2 * OrePrefixes.ring.getMaterialAmount() + plate;
+        attach(
+            PartItems.RECEIVER_IRON,
+            new ItemData(
+                Materials.Iron,
+                receiverIron,
+                new MaterialStack(Materials.Steel, receiverSteel),
+                new MaterialStack(Materials.Bronze, mechanical1)));
+        long steel = GunComposition.boltActionDirectSteel(plate, screw, spring) + barrel + receiverSteel;
+        attach(
+            GunTable.BOLT_ACTION.output(),
+            new ItemData(
+                Materials.Steel,
+                steel,
+                new MaterialStack(Materials.Iron, receiverIron),
+                new MaterialStack(Materials.Bronze, mechanical1),
+                new MaterialStack(Materials.Glass, OrePrefixes.lens.getMaterialAmount())));
     }
 
     /**

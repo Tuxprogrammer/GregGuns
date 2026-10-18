@@ -9,7 +9,8 @@ import com.gregguns.core.registry.ModuleRegistrar;
  * <p>
  * Registered so far: {@code part_barrel_hardened} (RC-05) and {@code part_mechanical_2} (RC-11), both LV, plus the
  * Revolver's {@code part_barrel_iron} (RC-04, LV), {@code part_mechanical_1} (RC-03) and {@code part_stock_wooden}
- * (RC-02), both ULV. The rest of the component index arrives with the guns that need it. Names match the texture files.
+ * (RC-02), both ULV, and the Bolt Action Rifle's {@code part_receiver_iron} (RC-13, LV). The rest of the component
+ * index arrives with the guns that need it. Names match the texture files.
  *
  * <p>
  * Usage: {@code new ItemStack(PartItems.barrelHardened(), 1)}. Spec: docs/gregguns-spec/06-items/recipes.md. Common
@@ -29,6 +30,10 @@ public final class PartItems {
     /** Registry name of the Wooden Stock. */
     public static final String STOCK_WOODEN = "part_stock_wooden";
 
+    /** Registry name of the Iron Receiver. */
+    public static final String RECEIVER_IRON = "part_receiver_iron";
+
+    private static ItemPart receiverIron;
     private static ItemPart barrelIron;
     private static ItemPart mechanical1;
     private static ItemPart stockWooden;
@@ -48,6 +53,7 @@ public final class PartItems {
         stockWooden = registrar.registerItem(STOCK_WOODEN, new ItemPart(Tier.STEAM));
         barrelHardened = registrar.registerItem(BARREL_HARDENED, new ItemPart(Tier.LV));
         mechanical2 = registrar.registerItem(MECHANICAL_2, new ItemPart(Tier.LV));
+        receiverIron = registrar.registerItem(RECEIVER_IRON, new ItemPart(Tier.LV));
     }
 
     /** @return the Iron Barrel; {@code null} before registration or when the guns module is off */
@@ -68,6 +74,11 @@ public final class PartItems {
     /** @return the Hardened Steel Barrel; {@code null} before registration or when the guns module is off */
     public static ItemPart barrelHardened() {
         return barrelHardened;
+    }
+
+    /** @return the Iron Receiver (RC-13); {@code null} before registration or when the guns module is off */
+    public static ItemPart receiverIron() {
+        return receiverIron;
     }
 
     /** @return Mechanical Parts T2; {@code null} before registration or when the guns module is off */

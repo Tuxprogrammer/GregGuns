@@ -51,6 +51,21 @@ public final class ClientGunSounds {
     }
 
     /**
+     * Plays a handling sound (the rechamber after a shot) at the shooter, at the reload volume.
+     *
+     * @param shooter the local player
+     * @param event   an unprefixed event name such as {@code GunSoundEvents.BOLT_ACTION_RIFLE_RECHAMBER}
+     */
+    public void playHandling(EntityPlayer shooter, String event) {
+        playOneShot(
+            GunSoundEvents.qualified(event),
+            GunSoundMath.HANDLING_VOLUME,
+            shooter.posX,
+            shooter.posY + shooter.height * 0.5,
+            shooter.posZ);
+    }
+
+    /**
      * Plays the empty-magazine click (the vanilla fallback) at the shooter.
      *
      * @param shooter the local player

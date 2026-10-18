@@ -29,6 +29,24 @@ public final class GunComposition {
         return pistolDirectSteel(plate, screw, springSmall);
     }
 
+    /**
+     * Steel in the Bolt Action Rifle's directly consumed GT inputs (GR-04: 2 plates, 4 screws, 1 small spring; the lens
+     * is glass). Same figures as the pistol's, so the same sum.
+     */
+    public static long boltActionDirectSteel(long plate, long screw, long springSmall) {
+        return pistolDirectSteel(plate, screw, springSmall);
+    }
+
+    /** Iron in an Iron Receiver (RC-13): three plates. */
+    public static long ironReceiverIron(long plate) {
+        return 3 * plate;
+    }
+
+    /** Steel in an Iron Receiver (RC-13): the two screws. */
+    public static long ironReceiverSteel(long screw) {
+        return 2 * screw;
+    }
+
     /** Iron in an Iron Barrel (RC-04): one long rod and two rings. */
     public static long ironBarrelIron(long stickLong, long ring) {
         return stickLong + 2 * ring;

@@ -60,6 +60,21 @@ public final class GunSoundEvents {
     /** Event: the Revolver's reload. */
     public static final String REVOLVER_RELOAD = gun(REVOLVER, RELOAD);
 
+    /** Action: the bolt worked after a shot (a gun that plays a second sound with every shot). */
+    public static final String RECHAMBER = "rechamber";
+
+    /** The Bolt Action Rifle's content name. */
+    public static final String BOLT_ACTION_RIFLE = "bolt_action_rifle";
+
+    /** Event: the Bolt Action Rifle's shot, three variants. */
+    public static final String BOLT_ACTION_RIFLE_FIRE = gun(BOLT_ACTION_RIFLE, FIRE);
+
+    /** Event: the Bolt Action Rifle's reload. */
+    public static final String BOLT_ACTION_RIFLE_RELOAD = gun(BOLT_ACTION_RIFLE, RELOAD);
+
+    /** Event: the Bolt Action Rifle's bolt, played with every shot. */
+    public static final String BOLT_ACTION_RIFLE_RECHAMBER = gun(BOLT_ACTION_RIFLE, RECHAMBER);
+
     /** Event: a bullet hitting a block or entity, five variants. */
     public static final String BULLET_IMPACT = effect("bullet_impact");
 

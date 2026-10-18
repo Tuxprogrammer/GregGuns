@@ -145,8 +145,7 @@ public final class ServerGunHandler {
             syncZoom(player, data, stats);
         } else if (event != ReloadStateMachine.Event.NONE) {
             // The client may have predicted a reload that the server refused: roll it back.
-            GregGunsNetwork.channel()
-                .sendTo(new PacketGunEvent(player, GunEventKind.RELOAD_ENDED, 0), player);
+            sendTo(player, new PacketGunEvent(player, GunEventKind.RELOAD_ENDED, 0));
         }
     }
 
@@ -166,6 +165,10 @@ public final class ServerGunHandler {
                 .launch(player.worldObj, player, stats, offset, 1.0f);
         }
         GunSoundPlayer.playFire(player, gun.fireEvent(), player);
+        if (gun.rechamberEvent() != null) {
+            // Spec: the rechamber sound plays with every shot (sheets-rifles-shotguns.md, Bolt Action Rifle, 4).
+            GunSoundPlayer.playReload(player, gun.rechamberEvent(), player);
+        }
         GregGunsNetwork.channel()
             .sendToAllTracking(new PacketGunEvent(player, GunEventKind.SHOT_FIRED, shot.attackType()), player);
     }
@@ -205,8 +208,18 @@ public final class ServerGunHandler {
         }
         if (data.zoomSent()) {
             data.setZoomSent(false);
+            sendTo(player, new PacketGunEvent(player, GunEventKind.ZOOM, 0));
+        }
+    }
+
+    /**
+     * Sends a packet to one player. A player with no connection (a scenario's fake player) has no channel to send on
+     * and is skipped; a real player always has one.
+     */
+    private static void sendTo(EntityPlayerMP player, PacketGunEvent packet) {
+        if (player.playerNetServerHandler != null) {
             GregGunsNetwork.channel()
-                .sendTo(new PacketGunEvent(player, GunEventKind.ZOOM, 0), player);
+                .sendTo(packet, player);
         }
     }
 
@@ -216,8 +229,7 @@ public final class ServerGunHandler {
             .isZoomed(stats);
         if (zoomed != data.zoomSent()) {
             data.setZoomSent(zoomed);
-            GregGunsNetwork.channel()
-                .sendTo(new PacketGunEvent(player, GunEventKind.ZOOM, zoomed ? 1 : 0), player);
+            sendTo(player, new PacketGunEvent(player, GunEventKind.ZOOM, zoomed ? 1 : 0));
         }
     }
 

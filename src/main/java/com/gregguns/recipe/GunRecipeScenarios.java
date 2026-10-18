@@ -51,6 +51,11 @@ public final class GunRecipeScenarios {
                 "The Revolver is in GT's assembler map (so NEI lists it) at LV, 15 s, matching its sheet inputs, and not below LV.",
                 GunTable.REVOLVER));
         registry.register(new RevolverPartRecipes());
+        registry.register(
+            new GunAssemblerRecipe(
+                "gun.boltaction.recipe",
+                "The Bolt Action Rifle is in GT's assembler map (so NEI lists it) at LV, 20 s, matching its sheet inputs (including the glass lens and the Iron Receiver), and not below LV.",
+                GunTable.BOLT_ACTION));
     }
 
     private static ItemStack modStack(String name, int count) {

@@ -67,4 +67,15 @@ class MuzzleSheetsTest {
                 .sheet()
                 .frames());
     }
+
+    @Test
+    void boltActionFlashPlaysEveryPaintedFrameOfMuzzleflash2() throws IOException {
+        int painted = paintedCells(load("/assets/gregguns/textures/fx/muzzleflash2.png"));
+        assertEquals(painted, BoltActionRifleProfile.MUZZLE_FLASH_FRAMES);
+        assertEquals(
+            painted,
+            BoltActionRifleProfile.TRANSFORMS.muzzleFlash()
+                .sheet()
+                .frames());
+    }
 }
