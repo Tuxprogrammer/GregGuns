@@ -20,5 +20,8 @@ Assign components, weapons and ammo to GTNH tiers. GTNH has two usual ways to ga
 ### Recipes and crafting chains
 Rework Techguns component recipes and crafting chains to use GT materials, parts and machines in place of standalone crafting.
 
+### Original assets
+Techguns is All Rights Reserved, including on CurseForge, so every texture, model and sound in GregGuns is made fresh for this mod.
+
 ### Machine deconfliction
 Techguns has its own crafting machines (ammo press, metal press, chem lab, reaction chamber, etc.). Some duplicate GT machines and should be dropped in favour of GT recipe maps. Keep the ones that are distinctive and tasteful in the pack.
