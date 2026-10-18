@@ -69,34 +69,59 @@ public final class RevolverProfile {
         // front sight: on top of the muzzle end
         new BoxSpec("sight", 0, 48, 26, 2, 2, 2, 22f, -5.5f, -1f, NO_PIVOT, 0f), };
 
+    /** The sheet's first-person scale, recorded for Techguns' smaller model. */
+    private static final double SHEET_FP_SCALE = 1.5;
+    /**
+     * The first-person scale from {@link FirstPersonFit}: the 31-texel revolver is drawn as long on screen as the
+     * 9mm Pistol (15/16 of a block), which is about S(0.48), not the sheet's S(1.5).
+     */
+    public static final double FP_SCALE = FirstPersonFit
+        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
+    /** Every first-person translation of the sheet is multiplied by this, because the scale changed. */
+    private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
+    // Hand nudge after the first-person screenshot (see FirstPersonFit, step 3): added to the sheet's idle offset
+    // before the factor, in the sheet's units.
+    private static final double NUDGE_X = 0.0;
+    private static final double NUDGE_Y = 0.0;
+    private static final double NUDGE_Z = 0.0;
+
     /** The sheet's render transforms, timing and muzzle flash for the revolver. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
 
     private RevolverProfile() {}
 
     private static GunTransforms buildTransforms() {
-        // First person (X-family): rotX180, rotY-45, S(1.5), then the state row.
+        // First person (X-family): rotX180, rotY-45, S(FP_SCALE), then the state row.
+        // Deviation: the sheet says S(1.5), which drew the revolver far too big (our model is larger than the one the
+        // sheet was written for). The scale follows the FirstPersonFit rule, and every sheet translation is
+        // multiplied by K so the gun keeps the place the sheet gives it.
+        double x0 = 0.20 + NUDGE_X;
+        double y0 = -0.5 + NUDGE_Y;
+        double z0 = -0.45 + NUDGE_Z;
         TransformProgram fpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(-45)
-            .scale(1.5)
+            .scale(FP_SCALE)
             .build();
         TransformProgram fpIdle = TransformProgram.builder()
-            .translate(0.20, -0.5, -0.45)
+            .translate(K * x0, K * y0, K * z0)
             .build();
         // Firing: a strong muzzle flip, rotZ(35 yF), the gun jumping up and back.
         TransformProgram fpFire = TransformProgram.builder()
             .rotZ((p, part) -> 35.0 * yF(p))
-            .translate((p, part) -> 0.2 + 0.5 * yF(p), (p, part) -> -0.5 + 0.4 * yF(p), TransformProgram.c(-0.45))
+            .translate(
+                (p, part) -> K * (x0 + 0.5 * yF(p)),
+                (p, part) -> K * (y0 + 0.4 * yF(p)),
+                TransformProgram.c(K * z0))
             .build();
         // Reload: s = P66(p); the gun tips out to the side to open the cylinder, then back.
         TransformProgram fpReload = TransformProgram.builder()
             .rotZ((p, part) -> 25.0 * p66(p))
             .rotY((p, part) -> -20.0 * p66(p))
             .translate(
-                (p, part) -> 0.2 + 0.6 * p66(p),
-                (p, part) -> -0.5 + 0.3 * p66(p),
-                (p, part) -> -0.45 + 0.25 * p66(p))
+                (p, part) -> K * (x0 + 0.6 * p66(p)),
+                (p, part) -> K * (y0 + 0.3 * p66(p)),
+                (p, part) -> K * (z0 + 0.25 * p66(p)))
             .build();
         // Third person: rotX180, rotY225, S(0.85), T(-1.4, -0.8, 0). Aimed extra translate (0, -0.05, 0.2).
         TransformProgram tpBase = TransformProgram.builder()

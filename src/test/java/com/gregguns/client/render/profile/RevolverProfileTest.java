@@ -151,12 +151,20 @@ class RevolverProfileTest {
     @Test
     void firstPersonRowsFollowTheSheet() {
         GunTransforms t = RevolverProfile.TRANSFORMS;
+        // Deviation: the sheet's S(1.5) is replaced by the FirstPersonFit scale, and every translation is the sheet's
+        // times sheetScale / scale.
+        double s = RevolverProfile.FP_SCALE;
+        double k = 1.5 / s;
         assertEquals(
-            Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", "S(1.5000,1.5000,1.5000)"),
+            Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", String.format("S(%.4f,%.4f,%.4f)", s, s, s)),
             run(t.fpBase(), 0, 0));
-        assertEquals(Arrays.asList("T(0.2000,-0.5000,-0.4500)"), run(t.fpIdle(), 0, 0));
-        // At the dip yF = -0.5: rotZ(35 yF) = -17.5, and the gun moves (0.5 yF, 0.4 yF) = (-0.25, -0.2).
-        assertEquals(Arrays.asList("R(-17.5000;0,0,1)", "T(-0.0500,-0.7000,-0.4500)"), run(t.fpFire(), 0.5, 0));
+        assertEquals(
+            Arrays.asList(String.format("T(%.4f,%.4f,%.4f)", k * 0.2, k * -0.5, k * -0.45)),
+            run(t.fpIdle(), 0, 0));
+        // At the dip yF = -0.5: rotZ(35 yF) = -17.5, and the gun moves (0.5 yF, 0.4 yF) = (-0.25, -0.2) from idle.
+        assertEquals(
+            Arrays.asList("R(-17.5000;0,0,1)", String.format("T(%.4f,%.4f,%.4f)", k * -0.05, k * -0.7, k * -0.45)),
+            run(t.fpFire(), 0.5, 0));
     }
 
     @Test

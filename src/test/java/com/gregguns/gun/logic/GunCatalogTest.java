@@ -55,6 +55,42 @@ class GunCatalogTest {
     }
 
     @Test
+    void handCannonMatchesItsSheet() {
+        // docs/techguns-spec/02-guns/sheets-handguns-smgs.md, Hand Cannon, section 3.
+        GunStats h = GunCatalog.HANDCANNON;
+        assertEquals(8.0, h.damage());
+        assertEquals(5.0, h.damageMin());
+        assertEquals(10.0, h.dropStart());
+        assertEquals(25.0, h.dropEnd());
+        assertEquals(25, h.lifetimeTicks());
+        assertEquals(1.0, h.projectileSpeed());
+        assertEquals(0.035, h.spread());
+        assertEquals(12, h.fireRateTicks());
+        assertEquals(1, h.magazineSize());
+        assertEquals(30, h.reloadTicks());
+        assertEquals(5, h.recoilTicks());
+        assertEquals(5, h.muzzleFlashTicks());
+        assertEquals(12.0, h.aiRange());
+        assertEquals(60, h.aiAttackTime());
+        assertEquals(0, h.aiBurstCount());
+        assertEquals(0, h.aiBurstDelay());
+        assertEquals(0.0, h.penetration());
+        assertFalse(h.hasScope());
+        assertEquals(FireMode.AUTO, h.fireMode());
+        assertEquals(ProjectileKind.GRAVITY_BULLET, h.projectileKind());
+    }
+
+    @Test
+    void handCannonLoadsOneStoneBulletWithNoContainerAndNoRefund() {
+        GunStats h = GunCatalog.HANDCANNON;
+        assertEquals(GunCatalog.AmmoIds.STONE, h.ammoType());
+        assertEquals(h.ammoType(), h.looseAmmoType());
+        assertNull(h.emptyContainerType());
+        assertEquals(1, h.ammoItemsPerReload());
+        assertEquals(1, h.roundsPerItem());
+    }
+
+    @Test
     void gunsDefaultToABulletWithVanillaKnockback() {
         assertEquals(ProjectileKind.BULLET, GunCatalog.PISTOL.projectileKind());
         assertEquals(1.0, GunCatalog.PISTOL.knockback());

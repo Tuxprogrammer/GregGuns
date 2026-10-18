@@ -60,6 +60,18 @@ public final class GunSoundEvents {
     /** Event: the Revolver's reload. */
     public static final String REVOLVER_RELOAD = gun(REVOLVER, RELOAD);
 
+    /**
+     * The Hand Cannon's content name. Its sound files are the {@code handgun_*} set (Techguns' event name is
+     * {@code handgunFire}).
+     */
+    public static final String HANDCANNON = "handcannon";
+
+    /** Event: the Hand Cannon's shot, three variants. */
+    public static final String HANDCANNON_FIRE = gun(HANDCANNON, FIRE);
+
+    /** Event: the Hand Cannon's reload. */
+    public static final String HANDCANNON_RELOAD = gun(HANDCANNON, RELOAD);
+
     /** Event: a bullet hitting a block or entity, five variants. */
     public static final String BULLET_IMPACT = effect("bullet_impact");
 
