@@ -1,2 +1,13 @@
 # GregGuns English strings. This file is the source of truth for every player-visible string (CONTRIBUTING.md).
 # Keys: item.gregguns.<name>, tile.gregguns.<name>, gregguns.<area>.<key>. Keep sections grouped by area.
+
+# Dev command: /gregguns and /gregguns test (core)
+gregguns.command.usage=Usage: /gregguns <%s>
+gregguns.test.usage=Usage: /gregguns test <scenario|all|list>
+gregguns.test.unknown=Unknown scenario: %s (try /gregguns test list)
+gregguns.test.list.header=Scenarios (%s):
+gregguns.test.list.entry=  %s - %s
+gregguns.test.result.pass=PASS %s
+gregguns.test.result.fail=FAIL %s
+gregguns.test.message=    %s
+gregguns.test.summary=[GregGuns] Scenarios: %s passed, %s failed
