@@ -43,11 +43,11 @@ No gameplay. This milestone builds everything later milestones need.
 - **Dev self-check:** a dev-only postInit check that every GregGuns recipe resolves and respects the tier map.
 
 **Exit gate:**
-- [ ] `./gradlew spotlessApply build` passes, with at least one real unit test.
-- [ ] `./gradlew runServer` boots with GT5-Unofficial loaded and no errors from GregGuns. The CI smoke test passes.
-- [ ] `./gradlew runClient` reaches the main menu, and the GregGuns creative tab exists.
-- [ ] Config module flags load, save and are documented.
-- [ ] Every packet base class rejects out-of-range, wrong-dimension and unauthorised requests, with unit tests.
+- [x] `./gradlew spotlessApply build` passes, with at least one real unit test.
+- [ ] `./gradlew runServer` boots with GT5-Unofficial loaded and no errors from GregGuns. The CI smoke test passes. *(Local boot verified 2026-10-18; CI pending the first push.)*
+- [ ] `./gradlew runClient` reaches the main menu, and the GregGuns creative tab exists. *(Main menu verified 2026-10-18 and the tab registers; the tab itself still needs an in-game look.)*
+- [x] Config module flags load, save and are documented.
+- [x] Every packet base class rejects out-of-range, wrong-dimension and unauthorised requests, with unit tests.
 
 ---
 
