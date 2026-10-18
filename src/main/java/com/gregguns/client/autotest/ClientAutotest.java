@@ -200,6 +200,7 @@ public final class ClientAutotest {
             return;
         }
         event.setCanceled(true);
+        log("signal " + String.join(" ", parts));
         try {
             run(parts);
         } catch (RuntimeException e) {
