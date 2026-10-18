@@ -44,9 +44,11 @@ class ProductionTableTest {
     }
 
     @Test
-    void everyRowIsLvSoTheRecipeCannotRunBelowItsTier() {
+    void everyRowIsLvSoTheRecipeCannotRunBelowItsTierExceptTheSteamStoneBullet() {
         for (ProductionTable.Row row : ProductionTable.ROWS) {
-            assertEquals(Tier.LV, row.tier(), row.id());
+            Tier expected = row.output()
+                .equals(ProductionTable.STONE_BULLET) ? Tier.STEAM : Tier.LV;
+            assertEquals(expected, row.tier(), row.id());
         }
     }
 
@@ -127,6 +129,38 @@ class ProductionTableTest {
     }
 
     @Test
+    void stoneBulletPressRowRunsOnTheSteamPressAndIsBronzeGated() {
+        // RC-27b: 24 bullets from cobblestone x3, gunpowder x1 and a Bronze nugget, ULV, Steam Ammo Press.
+        ProductionTable.Row stone = row("RC-27b");
+        assertEquals("ammo_stone_bullet", stone.output());
+        assertEquals(24, stone.outputCount());
+        assertEquals(Tier.STEAM, stone.tier());
+        assertEquals(ProductionTable.Target.AMMO_PRESS, stone.target());
+        assertEquals(5, stone.seconds());
+        assertTrue(
+            stone.inputs()
+                .size() <= 4,
+            "the Steam press has 4 input slots");
+        assertEquals(
+            "cobblestone",
+            stone.inputs()
+                .get(0)
+                .oreName());
+        assertEquals(
+            3,
+            stone.inputs()
+                .get(0)
+                .count());
+        assertTrue(
+            GateRule.satisfied(stone, ProductionTable.byOutput(), ProductionTable.GATE_EXEMPT),
+            "the Bronze nugget is the gate");
+        assertTrue(
+            ProductionTable.pressRowsFor(com.gregguns.machine.AmmoPressTier.STEAM)
+                .contains(stone),
+            "the Steam press can run it");
+    }
+
+    @Test
     void inputsAreUniquePerMapAndCircuit() {
         // GGS-06-37: (map, inputs, circuit) is unique.
         Set<String> seen = new HashSet<>();
@@ -134,7 +168,10 @@ class ProductionTableTest {
             StringBuilder key = new StringBuilder(row.target() + "|" + row.circuit());
             for (ProductionTable.Input input : row.inputs()) {
                 key.append('|')
-                    .append(input.isGregGuns() ? input.itemName() : input.prefix() + "." + input.material())
+                    .append(
+                        input.isGregGuns() ? input.itemName()
+                            : input.oreName() != null ? "ore:" + input.oreName()
+                                : input.prefix() + "." + input.material())
                     .append('x')
                     .append(input.count());
             }

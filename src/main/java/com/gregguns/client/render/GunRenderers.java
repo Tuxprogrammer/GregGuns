@@ -11,6 +11,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.gregguns.GregGuns;
 import com.gregguns.client.render.profile.GunTransforms;
+import com.gregguns.client.render.profile.HandCannonProfile;
 import com.gregguns.client.render.profile.Pistol9mmProfile;
 import com.gregguns.client.render.profile.RevolverProfile;
 import com.gregguns.client.render.profile.SawedOffProfile;
@@ -129,6 +130,25 @@ public final class GunRenderers {
                 RevolverProfile.MUZZLE,
                 true),
             RevolverProfile.TRANSFORMS);
+    }
+
+    /**
+     * Registers the Hand Cannon: the original X-family box model built against {@code handcannon.png}, and its sheet
+     * transforms.
+     */
+    public static void registerHandCannon(Item handcannon) {
+        register(
+            handcannon,
+            new BoxGunModel(
+                HandCannonProfile.BOXES,
+                1,
+                HandCannonProfile.TEXTURE_WIDTH,
+                HandCannonProfile.TEXTURE_HEIGHT,
+                HandCannonProfile.MODEL_SCALE,
+                new String[] { HandCannonProfile.TEXTURE },
+                HandCannonProfile.MUZZLE,
+                true),
+            HandCannonProfile.TRANSFORMS);
     }
 
     /**

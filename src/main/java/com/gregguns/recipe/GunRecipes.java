@@ -39,6 +39,7 @@ public final class GunRecipes {
             ProductionRecipes.addMachineRecipe(row);
         }
         PartCraftingRecipes.register();
+        HandCannonRecipes.register();
         addRecyclingData();
     }
 

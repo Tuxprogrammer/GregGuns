@@ -19,6 +19,7 @@ itemGroup.gregguns=GregGuns
 # Ammo and magazines
 item.gregguns.ammo_9mm_bullet.name=9mm Bullets
 item.gregguns.ammo_shotgun_shell.name=Shotgun Shells
+item.gregguns.ammo_stone_bullet.name=Stone Bullets
 item.gregguns.mag_9mm_pistol.name=9mm Pistol Magazine
 item.gregguns.mag_9mm_pistol_empty.name=9mm Pistol Magazine (Empty)
 gregguns.tooltip.ammo.round=Loose ammunition
@@ -71,6 +72,7 @@ death.attack.gregguns.radiation.player=%1$s was irradiated while trying to escap
 # Production chain: components, the Ammo Press and its recipe map
 item.gregguns.part_barrel_hardened.name=Hardened Steel Barrel
 item.gregguns.part_mechanical_2.name=Mechanical Parts T2
+item.gregguns.part_barrel_stone.name=Stone Barrel
 item.gregguns.part_barrel_iron.name=Iron Barrel
 item.gregguns.part_mechanical_1.name=Mechanical Parts
 item.gregguns.part_stock_wooden.name=Wooden Stock
@@ -99,6 +101,7 @@ gregguns.machine.ammo_works.error.too_few_bays=The hall needs at least 2 press b
 
 # Guns: items, tooltips, keys and HUD
 item.gregguns.pistol_9mm.name=9mm Pistol
+item.gregguns.handcannon.name=Hand Cannon
 item.gregguns.revolver.name=Revolver
 item.gregguns.sawed_off.name=Sawed Off
 gregguns.gun.tooltip.ammo=Ammo: %s

@@ -23,6 +23,14 @@
     "category": "player",
     "sounds": ["guns/sawedoff_reload"]
   },
+  "guns.handcannon.fire": {
+    "category": "player",
+    "sounds": ["guns/handgun_shot_a", "guns/handgun_shot_b", "guns/handgun_shot_c"]
+  },
+  "guns.handcannon.reload": {
+    "category": "player",
+    "sounds": ["guns/handgun_reload"]
+  },
   "effects.bullet_impact": {
     "category": "player",
     "sounds": [
