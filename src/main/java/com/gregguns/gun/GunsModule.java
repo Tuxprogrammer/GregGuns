@@ -7,6 +7,7 @@ import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.explosion.GrenadeScenarios;
+import com.gregguns.explosion.MvGrenadeScenarios;
 import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
 import com.gregguns.gun.server.FrameworkScenarios;
@@ -20,10 +21,14 @@ import com.gregguns.item.grenade.GrenadeItems;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.melee.MeleeItems;
 import com.gregguns.item.melee.MeleeScenarios;
+import com.gregguns.item.part.ComponentItems;
 import com.gregguns.item.part.PartItems;
 import com.gregguns.machine.AmmoPressMachines;
 import com.gregguns.projectile.ProjectileModule;
+import com.gregguns.recipe.ComponentRecipes;
+import com.gregguns.recipe.ComponentScenarios;
 import com.gregguns.recipe.GregGunsRecipeMaps;
+import com.gregguns.recipe.GrenadeRecipes;
 import com.gregguns.recipe.GunRecipes;
 import com.gregguns.recipe.MeleeRecipes;
 import com.gregguns.recipe.ProductionRecipes;
@@ -53,6 +58,7 @@ public final class GunsModule implements GregGunsModule {
         // Items, entities and other content: one call per area, e.g. AmmoItems.register(registrar).
         AmmoItems.register(registrar);
         PartItems.register(registrar);
+        ComponentItems.register(registrar);
         // Built here so GT records GregGuns as the map's owner mod (NEI badge), see GregGunsRecipeMaps.
         GregGunsRecipeMaps.init();
         AmmoPressMachines.registerBlocks(registrar);
@@ -71,7 +77,9 @@ public final class GunsModule implements GregGunsModule {
         AmmoPressMachines.register();
         ProductionRecipes.register();
         GunRecipes.register();
+        ComponentRecipes.register();
         MeleeRecipes.register();
+        GrenadeRecipes.register();
         if (DevEnvironment.isActive()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             for (GunDefinition gun : GunDefinitions.ALL) {
@@ -79,10 +87,12 @@ public final class GunsModule implements GregGunsModule {
             }
             GunCamoScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GunAccuracyScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            ComponentScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             FrameworkScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MeleeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GrenadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            MvGrenadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
         ProjectileModule.init();
         GunEvents.register();

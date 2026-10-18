@@ -13,7 +13,7 @@ import com.gregguns.explosion.ProjectileExplosion;
 /**
  * The base of the grenade family: a {@link GenericProjectile} that falls, bounces off blocks, and explodes when its
  * fuse runs out, when it meets an entity, or when it hits a surface hard with no bounces left. The Stielgranate is the
- * first subclass-free user; the Frag Grenade and the Grenade Launcher's round build on the same hooks.
+ * first subclass-free user; the Frag Grenade and the Flashbang extend it and the Grenade Launcher's round will.
  *
  * <p>
  * Server authority: only the server detonates. The client copy flies and bounces the same way from the same rules
@@ -97,6 +97,11 @@ public class GrenadeProjectile extends GenericProjectile {
         motionX = dx / length * speed;
         motionY = dy / length * speed;
         motionZ = dz / length * speed;
+    }
+
+    /** @return the entity that threw this, or {@code null} */
+    protected final EntityLivingBase thrower() {
+        return shooter;
     }
 
     /** @return ticks until the fuse runs out */
@@ -192,7 +197,18 @@ public class GrenadeProjectile extends GenericProjectile {
      * damage and radius, honoring {@code explosions.blockDamage}.
      */
     protected void explode() {
-        new ProjectileExplosion(
+        runBlast();
+    }
+
+    /**
+     * Runs the standard blast of the thrown damage and radius. Subclasses that add to the blast (fragments) call this
+     * from {@link #explode()} and look at the result.
+     *
+     * @return what the explosion did; {@link ProjectileExplosion.Result#happened()} is false when a listener cancelled
+     *         it
+     */
+    protected final ProjectileExplosion.Result runBlast() {
+        return new ProjectileExplosion(
             worldObj,
             this,
             shooter,

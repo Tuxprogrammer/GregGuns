@@ -100,6 +100,11 @@ public final class ProductionRecipes {
             GregGuns.LOG.error("Skipping recipe {}: output {} is not registered", row.id(), row.output());
             return;
         }
+        if (row.target() != ProductionTable.Target.AMMO_PRESS && row.target() != ProductionTable.Target.ASSEMBLER) {
+            GregGuns.LOG
+                .error("Skipping recipe {}: target {} is registered by ComponentRecipes", row.id(), row.target());
+            return;
+        }
         RecipeMap<?> map = row.target() == ProductionTable.Target.AMMO_PRESS ? GregGunsRecipeMaps.AMMO_PRESS
             : RecipeMaps.assemblerRecipes;
         // Source:
@@ -180,6 +185,13 @@ public final class ProductionRecipes {
     static ItemStack modStack(String registryName, int count) {
         Item item = GameRegistry.findItem(GregGuns.MODID, registryName);
         return item == null ? null : new ItemStack(item, count);
+    }
+
+    /** Resolves one table input to a stack, or {@code null} when it does not resolve. Shared with ComponentRecipes. */
+    static ItemStack resolve(ProductionTable.Input input) {
+        return input.isGregGuns() ? modStack(input.itemName(), input.count())
+            : input.special() != null ? specialStack(input)
+                : input.oreName() != null ? oreStack(input.oreName(), input.count()) : gtStack(input);
     }
 
     private static ItemStack specialStack(ProductionTable.Input input) {

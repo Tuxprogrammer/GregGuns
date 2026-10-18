@@ -36,7 +36,11 @@ public final class ProductionTable {
         /** GT's Assembler, for the parts. */
         ASSEMBLER,
         /** {@code gregguns.ammoPress}, for the ammo chain. */
-        AMMO_PRESS
+        AMMO_PRESS,
+        /** GT's Chemical Bath ({@code chemicalBathRecipes}), registered by {@link ComponentRecipes}. */
+        CHEMICAL_BATH,
+        /** GT's Assembly Line, for LuV and ZPM components, registered by {@link ComponentRecipes}. */
+        ASSEMBLY_LINE
     }
 
     /** One input of a row: a GT part or a GregGuns item, and how many. */

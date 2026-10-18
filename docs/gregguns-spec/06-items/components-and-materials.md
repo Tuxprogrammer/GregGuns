@@ -88,6 +88,10 @@ Machine recipes use the GT recipe builder, `GTValues.RA.stdBuilder()`, with the 
 | GGS-06-12 | Unit test: each kept item resolves `GTOreDictUnificator.getItemData` to non-null |
 | GGS-06-13 | Code review plus a grep check in the dev self-check |
 
+## Implementation notes (M4)
+
+The part-by-part table is implemented: `PartCatalog` lists every kept component (36), `ComponentItems` and `PartItems` register the GregGuns-only ones, and the "GT" rows have no item. The dev self-check enforces GGS-06-10 (no GT-prefixed ore names, no unified stacks) and that every component has a recipe or a reasoned allowlist entry. Deviations are in [recipes.md](recipes.md#deviations-m4-component-pass).
+
 ## Open questions
 
 - **Obsidian Steel and Carbon tiers (closed).** Settled by [0010](../../design/0010-material-remap-and-tier-additions.md): the material follows the tier of the consuming item, and carbon is `plate.EpoxidFiberReinforced` plus the tier material.

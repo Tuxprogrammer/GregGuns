@@ -15,6 +15,8 @@ A dev-only consistency check that stops the dev server when GregGuns content is 
 | Recipes resolve | Crafting-table recipes (shaped, shapeless, ore-dict) and GT recipe-map recipes that have a GregGuns input or output have no null or empty item inputs, no empty ore-dict entries, no unregistered fluids, and no null outputs. A `null` in a shaped grid is a legitimate gap. An input of a GT machine recipe with stack size 0 is valid too: GT uses size 0 for an input that is required but not consumed (programmed circuits, molds). |
 | Tier map | For each GregGuns output: the recipe's EU/t must fit the output's tier (`Tier.lowestForEut(eut) <= output tier`; exactly the tier voltage passes, one EU/t above fails), and no GregGuns input may be of a higher tier than the output. Crafting-table recipes have no voltage. A GregGuns output with no tier is a violation. |
 | Content | Every registered GregGuns item and block has a tier (`Tiered`), a lang key `<unlocalized name>.name` in `assets/gregguns/lang/en_US.lang`, an icon name whose PNG exists under `assets/<domain>/textures/items/` (`blocks/` for blocks), and a creative tab or the `HiddenFromCreativeTab` marker. |
+| Unification | No GregGuns item is ore-dictionaried under a GT `OrePrefixes` name (`plateSteel`, `circuitBasic`, or a bare `plate`), and GT's unificator (`GTOreDictUnificator.getAssociation`) does not treat any GregGuns stack as a `prefix.material` part. |
+| Component coverage | Every registered `GregGunsComponent` is the output of a crafting or GT-map recipe, unless it is on the allowlist (`PartCatalog.noRecipeAllowlist`, each entry with a reason; the depleted Nuclear Power Cell is made by use). A stale or reasonless allowlist entry fails too. A component whose row needs a disabled module (the Laser Barrel without the machines module) is deferred, not failed. |
 | Sounds | If `assets/gregguns/sounds.json` exists, every sound it references has an `.ogg` on the classpath. Absent or `{}` means no events. |
 
 Lang keys and textures are read from the classpath, because a dedicated server's `StatCollector` and resource manager do not load mod assets.
@@ -47,5 +49,5 @@ Fix them all, then rerun. A clean run logs one INFO line: `Self-check passed: N 
 
 ## Code map
 
-- Pure logic (unit tested, no Minecraft types): `com.gregguns.core.selfcheck` `RecipeTierCheck`, `RecipeChecks`, `ContentChecks`, `SoundChecks`, `SelfCheck`, over the descriptors `StackDescriptor`, `RecipeDescriptor`, `ContentDescriptor`.
+- Pure logic (unit tested, no Minecraft types): `com.gregguns.core.selfcheck` `RecipeTierCheck`, `RecipeChecks`, `ContentChecks`, `SoundChecks`, `UnificationChecks`, `ComponentChecks`, `SelfCheck`, over the descriptors `StackDescriptor`, `RecipeDescriptor`, `ContentDescriptor`.
 - Glue: `SelfCheckRunner` reads the item and block registries, `CraftingManager` and GT's `RecipeMap.ALL_RECIPE_MAPS` into descriptors. It reads a few `@SideOnly(CLIENT)` fields (`Item.iconString`, `Item.tabToDisplayOn`, `Block.textureName`, `Block.displayOnCreativeTab`) reflectively by their deobfuscated names, which is safe because it only runs in the dev workspace.
