@@ -5,6 +5,8 @@
 - **Pack mods:** GTNHLib (`gtnhlib`, 0.11.52)
 - **Roadmap:** M0 (skeleton); each later milestone adds its own keys
 
+Every option and module flag is documented in [docs/config.md](../../config.md).
+
 ## What changes from Techguns
 
 Techguns reads a Forge `Configuration` by hand in `TGConfig`. GregGuns declares each config as a plain Java class annotated with GTNHLib's `@Config`. GTNHLib then loads the file, writes comments and ranges, builds the in-game config GUI, and can sync chosen fields from server to client.

@@ -11,3 +11,6 @@ gregguns.test.result.pass=PASS %s
 gregguns.test.result.fail=FAIL %s
 gregguns.test.message=    %s
 gregguns.test.summary=[GregGuns] Scenarios: %s passed, %s failed
+
+# Creative tab (placeholder icon: vanilla arrow until the first GregGuns item exists)
+itemGroup.gregguns=GregGuns
