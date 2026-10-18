@@ -47,6 +47,7 @@ public final class GunsModule implements GregGunsModule {
         PartItems.register(registrar);
         // Built here so GT records GregGuns as the map's owner mod (NEI badge), see GregGunsRecipeMaps.
         GregGunsRecipeMaps.init();
+        AmmoPressMachines.registerBlocks(registrar);
         ProjectileModule.preInit(registrar);
         GunItems.register(registrar);
         GunKeybinds.register();
