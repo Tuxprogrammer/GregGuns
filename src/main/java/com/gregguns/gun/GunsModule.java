@@ -22,6 +22,8 @@ import com.gregguns.item.melee.MeleeScenarios;
 import com.gregguns.item.part.PartItems;
 import com.gregguns.machine.AmmoPressMachines;
 import com.gregguns.projectile.ProjectileModule;
+import com.gregguns.recipe.ComponentRecipes;
+import com.gregguns.recipe.ComponentScenarios;
 import com.gregguns.recipe.GregGunsRecipeMaps;
 import com.gregguns.recipe.GunRecipeScenarios;
 import com.gregguns.recipe.GunRecipes;
@@ -71,10 +73,12 @@ public final class GunsModule implements GregGunsModule {
         AmmoPressMachines.register();
         ProductionRecipes.register();
         GunRecipes.register();
+        ComponentRecipes.register();
         MeleeRecipes.register();
         if (DevEnvironment.isActive()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GunRecipeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            ComponentScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             RevolverScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             SawedOffScenarios.registerAll(ScenarioRegistry.SCENARIOS);

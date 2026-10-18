@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -16,16 +18,24 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import com.gregguns.GregGuns;
+import com.gregguns.api.GregGunsComponent;
 import com.gregguns.api.HiddenFromCreativeTab;
 import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
+import com.gregguns.core.config.ModuleFlags;
+import com.gregguns.item.part.PartCatalog;
+import com.gregguns.recipe.ComponentTable;
 
 import cpw.mods.fml.relauncher.ReflectionHelper;
+import gregtech.api.enums.OrePrefixes;
+import gregtech.api.objects.ItemData;
 import gregtech.api.recipe.RecipeMap;
+import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
 
 /**
@@ -63,7 +73,8 @@ public final class SelfCheckRunner {
         scanCraftingRecipes(recipes);
         scanGtRecipes(recipes);
 
-        SelfCheck.Report report = SelfCheck.run(contents, recipes, new ClasspathResources(), glueProblems);
+        SelfCheck.Report report = SelfCheck
+            .run(contents, recipes, new ClasspathResources(), glueProblems, scanComponents());
         if (report.violations()
             .isEmpty()) {
             GregGuns.LOG.info(report.summary());
@@ -71,6 +82,52 @@ public final class SelfCheckRunner {
         }
         GregGuns.LOG.error(report.failureMessage());
         report.throwIfFailed();
+    }
+
+    /**
+     * Reads the unification data (ore names and GT's association of each GregGuns item), the registered components,
+     * and the allowlist and module-deferred sets into plain data.
+     */
+    private static ComponentInput scanComponents() {
+        List<UnificationDescriptor> unification = new ArrayList<>();
+        List<String> components = new ArrayList<>();
+        for (Object key : Item.itemRegistry.getKeys()) {
+            String name = (String) key;
+            if (!name.startsWith(NAMESPACE_PREFIX)) {
+                continue;
+            }
+            Item item = (Item) Item.itemRegistry.getObject(name);
+            if (item instanceof GregGunsComponent) {
+                components.add(name);
+            }
+            ItemStack stack = new ItemStack(item, 1, 0);
+            List<String> oreNames = new ArrayList<>();
+            for (int id : OreDictionary.getOreIDs(stack)) {
+                oreNames.add(OreDictionary.getOreName(id));
+            }
+            // Source: GTOreDictUnificator.getAssociation returns the ItemData GT registered for the stack; mPrefix is
+            // null for plain composition data, set only when the stack is a unified prefix + material part.
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTOreDictUnificator.java
+            ItemData association = GTOreDictUnificator.getAssociation(stack);
+            String prefix = association == null || association.mPrefix == null ? null : association.mPrefix.name();
+            String material = association == null || association.mMaterial == null
+                || association.mMaterial.mMaterial == null ? null : association.mMaterial.mMaterial.mName;
+            unification.add(new UnificationDescriptor(name, oreNames, prefix, material));
+        }
+        List<String> prefixes = new ArrayList<>();
+        for (OrePrefixes prefix : OrePrefixes.values()) {
+            prefixes.add(prefix.name());
+        }
+        Map<String, String> allowlist = new LinkedHashMap<>();
+        for (Map.Entry<String, String> entry : PartCatalog.noRecipeAllowlist()
+            .entrySet()) {
+            allowlist.put(NAMESPACE_PREFIX + entry.getKey(), entry.getValue());
+        }
+        List<String> deferred = new ArrayList<>();
+        for (String output : ComponentTable.outputsDeferredBy(ModuleFlags::isEnabled)) {
+            deferred.add(NAMESPACE_PREFIX + output);
+        }
+        return new ComponentInput(unification, prefixes, components, allowlist, deferred);
     }
 
     private static List<ContentDescriptor> scanContent(List<String> glueProblems) {

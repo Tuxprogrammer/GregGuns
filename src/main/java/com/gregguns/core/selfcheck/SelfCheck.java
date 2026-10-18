@@ -2,7 +2,9 @@ package com.gregguns.core.selfcheck;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Runs every dev self-check over plain descriptors and collects all violations, not just the first.
@@ -82,12 +84,39 @@ public final class SelfCheck {
      */
     public static Report run(List<ContentDescriptor> contents, List<RecipeDescriptor> recipes, ResourceSource resources,
         List<String> glueProblems) {
+        return run(contents, recipes, resources, glueProblems, null);
+    }
+
+    /**
+     * Runs all checks, including the unification and component-coverage rules.
+     *
+     * @param contents     every registered GregGuns item and block
+     * @param recipes      every recipe that has a GregGuns input or output
+     * @param resources    the mod's classpath resources
+     * @param glueProblems problems the glue code met while reading the game
+     * @param components   the unification and component data, or {@code null} to skip those two checks
+     * @return the report
+     */
+    public static Report run(List<ContentDescriptor> contents, List<RecipeDescriptor> recipes, ResourceSource resources,
+        List<String> glueProblems, ComponentInput components) {
         List<String> violations = new ArrayList<>(glueProblems);
         violations.addAll(ContentChecks.check(contents, resources));
         for (RecipeDescriptor recipe : recipes) {
             violations.addAll(RecipeChecks.check(recipe));
         }
         violations.addAll(SoundChecks.check(resources));
+        if (components != null) {
+            violations.addAll(UnificationChecks.check(components.unification(), components.gtPrefixNames()));
+            Set<String> outputs = new HashSet<>();
+            for (RecipeDescriptor recipe : recipes) {
+                for (StackDescriptor output : recipe.outputs()) {
+                    outputs.add(output.label());
+                }
+            }
+            violations.addAll(
+                ComponentChecks
+                    .check(components.components(), outputs, components.allowlist(), components.deferred()));
+        }
         return new Report(violations, contents.size(), recipes.size());
     }
 }

@@ -27,14 +27,36 @@ final class PartCraftingRecipes {
 
     private PartCraftingRecipes() {}
 
-    /** Registers RC-02 and RC-03. */
+    /** Registers RC-01, RC-02 and RC-03. */
     static void register() {
+        addStoneBarrel();
+        addWoodenStock();
+        addMechanical1();
+    }
+
+    /**
+     * RC-01: six stone around a Bronze tiny pipe (the bore liner and the gate), shaped with a file and a hard hammer.
+     */
+    private static void addStoneBarrel() {
+        ItemStack barrel = ProductionRecipes.modStack(PartItems.BARREL_STONE, 1);
+        ItemStack pipe = GTOreDictUnificator.get(OrePrefixes.pipeTiny, Materials.Bronze, 1);
+        if (barrel == null || pipe == null) {
+            GregGuns.LOG.error("Skipping RC-01: the Stone Barrel or a Bronze tiny pipe did not resolve");
+            return;
+        }
+        GTModHandler.addCraftingRecipe(barrel, new Object[] { "SSS", "fPh", "SSS", 'S', "stone", 'P', pipe });
+    }
+
+    private static void addWoodenStock() {
         ItemStack stock = ProductionRecipes.modStack(PartItems.STOCK_WOODEN, 1);
         if (stock == null) {
             GregGuns.LOG.error("Skipping RC-02: {} is not registered", PartItems.STOCK_WOODEN);
         } else {
             GTModHandler.addCraftingRecipe(stock, new Object[] { "WW", "sW", 'W', "logWood" });
         }
+    }
+
+    private static void addMechanical1() {
         ItemStack mechanical = ProductionRecipes.modStack(PartItems.MECHANICAL_1, 1);
         if (mechanical == null) {
             GregGuns.LOG.error("Skipping RC-03: {} is not registered", PartItems.MECHANICAL_1);
