@@ -45,7 +45,7 @@ No gameplay. This milestone builds everything later milestones need.
 **Exit gate:**
 - [x] `./gradlew spotlessApply build` passes, with at least one real unit test.
 - [ ] `./gradlew runServer` boots with GT5-Unofficial loaded and no errors from GregGuns. The CI smoke test passes. *(Local boot verified 2026-10-18; CI pending the first push.)*
-- [ ] `./gradlew runClient` reaches the main menu, and the GregGuns creative tab exists. *(Main menu verified 2026-10-18 and the tab registers; the tab itself still needs an in-game look.)*
+- [x] `./gradlew runClient` reaches the main menu, and the GregGuns creative tab exists. *(Seen in game 2026-10-18 by the M1 visual autotest.)*
 - [x] Config module flags load, save and are documented.
 - [x] Every packet base class rejects out-of-range, wrong-dimension and unauthorized requests, with unit tests.
 
@@ -154,11 +154,11 @@ One gun, working end to end inside the GTNH dev pack.
 - **Production chain slice (pulled into M1 from M4 for the vertical slice):** the `gregguns.ammoPress` recipe map, the LV Ammo Press (MTE 20101), the two components the pistol needs (`part_barrel_hardened`, `part_mechanical_2`), and the 9mm bullet, empty-magazine and loaded-magazine recipes plus the crafting-table refill. The animation synced to progress, the Steam, MV, HV and EV presses, the Ammunition Works multiblock and the rest of the M4 recipes stay in M4. See [ammo-press.md](gregguns-spec/08-machines-production/ammo-press.md#m1-slice-deviation).
 
 **Exit gate:**
-- [ ] The pistol is craftable in the dev pack only through its D1 tier gate, and the recipe shows in NEI.
-- [ ] Fire, reload and zoom work, and the pistol hits and damages mobs and players.
-- [ ] Unit tests cover the damage formulas, drop-off, spread, ammo accounting and the reload state machine.
-- [ ] A dedicated server with two clients shows correct sync: shots, reloads, other players' animations and sounds.
-- [ ] Each relevant inherited bug from [BUGS.md](techguns-spec/BUGS.md) has a test showing it isn't reproduced. These include GUN-13, GUN-29, GUN-32, GUN-33 and GUN-34.
+- [x] The pistol is craftable in the dev pack only through its D1 tier gate, and the recipe shows in NEI. *(`gun.recipe`; NEI screenshot from the visual autotest.)*
+- [x] Fire, reload and zoom work, and the pistol hits and damages mobs and players. *(`gun.*` scenarios.)*
+- [x] Unit tests cover the damage formulas, drop-off, spread, ammo accounting and the reload state machine. *(See the M1 coverage table in docs/testing/README.md.)*
+- [x] A dedicated server with two clients shows correct sync: shots, reloads, other players' animations and sounds. *(`mp_check`: `mp.sync`, `mp.visual`, `mp.give` and client log evidence.)*
+- [x] Each relevant inherited bug from [BUGS.md](techguns-spec/BUGS.md) has a test showing it isn't reproduced. These include GUN-13, GUN-29, GUN-32, GUN-33 and GUN-34.
 
 ## M2 · Ballistic arsenal
 
