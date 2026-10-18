@@ -293,6 +293,15 @@ public final class MpScenarios {
             String pz = Integer.toString(ctx.originZ());
             return ScenarioResult.pending(name(), 600, t -> {
                 switch (t) {
+                    case 4 -> {
+                        a.inventory.currentItem = 8;
+                        a.playerNetServerHandler.sendPacket(new S09PacketHeldItemChange(8));
+                    }
+                    case 15 -> signal(a, "shot", "a-baseline-empty-hand");
+                    case 18 -> {
+                        a.inventory.currentItem = 0;
+                        a.playerNetServerHandler.sendPacket(new S09PacketHeldItemChange(0));
+                    }
                     case 20 -> signal(a, "view", "0");
                     case 30 -> signal(a, "shot", "a-first-person-idle");
                     case 38 -> signal(a, "arm", "shot", "a-first-person-fire", "1");

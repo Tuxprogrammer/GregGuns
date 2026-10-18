@@ -49,6 +49,18 @@ final class Screenshots {
             GregGuns.LOG.warn("[gregguns] AUTOTEST could not replace {}", target);
         }
         boolean renamed = newest.renameTo(target);
-        ClientAutotest.logLine("screenshot " + label + " " + (renamed ? target : newest));
+        ClientAutotest.logLine(
+            "screenshot " + label
+                + " "
+                + (renamed ? target : newest)
+                + " [yaw "
+                + mc.thePlayer.rotationYaw
+                + " pitch "
+                + mc.thePlayer.rotationPitch
+                + " fov "
+                + mc.gameSettings.fovSetting
+                + " view "
+                + mc.gameSettings.thirdPersonView
+                + "]");
     }
 }

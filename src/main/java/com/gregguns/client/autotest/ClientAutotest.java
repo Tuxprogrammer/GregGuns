@@ -209,8 +209,12 @@ public final class ClientAutotest {
 
     @SubscribeEvent
     public void onSound(PlaySoundEvent17 event) {
-        String name = event.name;
-        if (name != null && name.startsWith("gregguns:")) {
+        // The event's name field is the bare event name; the resource location carries the namespace.
+        String location = event.sound == null || event.sound.getPositionedSoundLocation() == null ? null
+            : event.sound.getPositionedSoundLocation()
+                .toString();
+        String name = location != null ? location : event.name;
+        if (name != null && (name.startsWith("gregguns:") || (event.name != null && event.name.contains("pistol")))) {
             log("sound " + name + " (client " + localName() + ")");
         }
     }
