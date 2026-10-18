@@ -65,13 +65,23 @@ public final class HandCannonProfile {
         // front sight: on top of the muzzle end
         new BoxSpec("sight", 0, 48, 26, 2, 2, 2, 17f, -5.5f, -1f, NO_PIVOT, 0f), };
 
+    /**
+     * Deviation: at the sheet's full travel (yF and sin(p) each move the gun a whole unit) the cannon left the screen
+     * during the shot and the reload (first-person screenshots), so its fire and reload translation deltas are trimmed
+     * to
+     * 40 per cent. The rotations are the sheet's.
+     */
+    private static final double TRAVEL = 0.4;
     /** The sheet's first-person scale, recorded for the smaller Techguns model. */
     private static final double SHEET_FP_SCALE = 2.5;
     /** The first-person scale from {@link FirstPersonFit}: as long on screen as the 9mm Pistol. */
     public static final double FP_SCALE = FirstPersonFit
         .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
-    /** The sheet's fire and reload translation deltas are multiplied by this, because the scale changed. */
-    private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
+    /**
+     * The sheet's fire and reload translation deltas are multiplied by this, because the scale changed, and by
+     * {@link #TRAVEL}.
+     */
+    private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE) * TRAVEL;
     /** The idle first-person translation from {@link FirstPersonFit}: this model's box centre on the family anchor. */
     private static final double[] IDLE = FirstPersonFit
         .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
@@ -136,12 +146,17 @@ public final class HandCannonProfile {
             .translate(-0.5, -0.2, 0)
             .build();
         // muzzleFlash sheet, (-0.75, -2.5, 1.2), scale 1.85; additive because the GregGuns sheet is black-backed.
+        // Deviation: the sheet's first-person flash offset was placed for Techguns' model. The flash is drawn in a
+        // fixed
+        // frame, not on the gun, so after the fit-rule rescale it floated above the muzzle. Measured on screen
+        // (960x540 sweep): +0.5 on x moves it 33 px up, +0.5 on z moves it 49 px right. (-1.25, -2.5, 2.0) puts it on
+        // the muzzle of an X-family handgun held at FirstPersonFit.ANCHOR_X_FAMILY.
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash4x4.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.75,
+            -1.25,
             -2.5,
-            1.2,
+            2.0,
             1.85,
             new double[] { 0, 0, 0 },
             true,

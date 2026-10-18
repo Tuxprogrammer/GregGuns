@@ -145,12 +145,17 @@ public final class RevolverProfile {
             .translate(-0.5, -0.2, 0)
             .build();
         // muzzleFlash sheet, (-0.4, -2.5, 0.7), scale 1.85; additive because the GregGuns sheet is black-backed.
+        // Deviation: the sheet's first-person flash offset was placed for Techguns' model. The flash is drawn in a
+        // fixed
+        // frame, not on the gun, so after the fit-rule rescale it floated above the muzzle. Measured on screen
+        // (960x540 sweep): +0.5 on x moves it 33 px up, +0.5 on z moves it 49 px right. (-1.25, -2.5, 2.0) puts it on
+        // the muzzle of an X-family handgun held at FirstPersonFit.ANCHOR_X_FAMILY.
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash4x4.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.4,
+            -1.25,
             -2.5,
-            0.7,
+            2.0,
             1.85,
             new double[] { 0, 0, 0 },
             true,
