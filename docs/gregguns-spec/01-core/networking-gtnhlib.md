@@ -30,7 +30,10 @@ Techguns registers 16 classes on a raw `SimpleNetworkWrapper` and runs every han
   - [`encode`/`decode`](https://github.com/GTNewHorizons/GTNHLib/blob/0.11.52/src/main/java/com/gtnewhorizon/gtnhlib/network/base/IPacket.java#L21-L23) and [`executeClient`/`executeServer`](https://github.com/GTNewHorizons/GTNHLib/blob/0.11.52/src/main/java/com/gtnewhorizon/gtnhlib/network/base/IPacket.java#L73-L80).
   - [`NetworkChannel`](https://github.com/GTNewHorizons/GTNHLib/blob/0.11.52/src/main/java/com/gtnewhorizon/gtnhlib/network/base/NetworkChannel.java#L15): `new NetworkChannel(String channel)`, `toClient` and `toServer` (L26, L31), plus `sendTo`, `sendToAll`, `sendToAllAround`, `sendToDimension`, `sendToAllTracking` and `sendToAllTrackingAndSelf`.
   - Precedent: GTNHLib's own channel in [`NetworkHandler`](https://github.com/GTNewHorizons/GTNHLib/blob/0.11.52/src/main/java/com/gtnewhorizon/gtnhlib/network/NetworkHandler.java) registers seven packets this way.
-- **GregGuns does:** one `NetworkChannel("gregguns")` in `com.gregguns.net`. Packets register in a fixed order, because the order is the wire ID. Validation logic sits in static methods so unit tests can call it without Minecraft.
+- **GregGuns does:** one `NetworkChannel("gregguns")`, held by `com.gregguns.network.GregGunsNetwork` and created in `CommonProxy.preInit`. Packets register in a fixed order (all client-bound, then all server-bound, each in list order), because the order is the wire ID. Append only.
+- **Verified at 0.11.52:** the API matches this sheet. Two details to know: `IPacket` is itself the `IMessageHandler`, and exceptions thrown by `executeServer` or `executeClient` are not caught by GTNHLib, so the GregGuns base classes catch them. `fromBytes` also lets decode errors escape into Netty, so the base classes override it.
+- **Deviation (package):** the sheet said `com.gregguns.net`; the package is `com.gregguns.network`, as CONTRIBUTING.md's architecture lists.
+- **Deviation (validation shape):** validation is not static methods on each packet. It is declarative rule sets (`Rules`, `SenderRules`, `ClientRules` in `com.gregguns.network.validation`), plain Java with no Minecraft types, driven by one `PacketPipeline`. This keeps the rules reusable and unit-testable.
 - **Pack-side change:** none.
 
 ### GTNHLib: config sync packet
@@ -60,11 +63,21 @@ Techguns registers 16 classes on a raw `SimpleNetworkWrapper` and runs every han
 - **GGS-01-11** GregGuns claims no DataWatcher slot on any entity.
 - **GGS-01-12** Packet strings are written with `PacketBuffer` string methods only.
 
+## Writing a packet
+
+1. Extend `ServerboundPacket` (client to server) or `ClientboundPacket` (server to client) from `com.gregguns.network`. Give it a public no-argument constructor and implement `encode` and `decode` (strings via `PacketStrings`).
+2. Declare rules in `validate(...)`. Server-bound rules: `sameDimension`, `withinReachOfBlock` and `withinReachOf` (default 8 blocks), `indexInRange`, `ordinalInRange`, `inRange`, `finite`, `targetOfType` and `targetExists` (use `WorldTargets`, which never loads chunks), and `authorised`. The base class always checks first that the sender is alive and not spectator-like, and calls the `isAuthorised(Sender)` hook last, after the target is known to exist. Later milestones override that hook for ownership checks.
+3. Do the work in `handle(...)`. It runs on the main thread and only after every rule passed, so validated targets can be cast without further checks.
+4. Append an instance to `GregGunsNetwork.serverboundPackets()` or `clientboundPackets()`.
+5. Unit-test the rules, following `ServerboundPacketTest` and `ClientboundPacketTest`.
+
+A failed packet is dropped and logged at debug level through a rate limiter (20 reports per 10 seconds, then a suppressed count), so a hostile client cannot flood the log. The Javadoc on `ServerboundPacket` and `ClientboundPacket` has full examples.
+
 ## Tests
 
-- GGS-01-07: a unit test lists the registered packet classes and asserts each is an `IPacket`.
+- GGS-01-07 (written, `GregGunsNetworkTest`): a unit test lists the registered packet classes and asserts each is an `IPacket`.
 - GGS-01-08: code review against the `IPacket` contract, plus a `runServer` smoke test that sends one packet from a test client.
-- GGS-01-09, GGS-01-10: unit tests on the static validation methods (missing target, wrong type, out of range, too far).
+- GGS-01-09, GGS-01-10 (written: `RulesTest`, `SenderRulesTest`, `ServerboundPacketTest`, `ClientboundPacketTest`): unit tests on the validation rules and both base classes (missing target, wrong type, out of range, wrong dimension, too far, unauthorised). Regression tests are named `doesNotReproduceCORE05_...`, `CORE06`, `CORE08` and `CORE40`. The tests need GTNHLib on the test classpath (`testImplementation` in `dependencies.gradle`).
 - GGS-01-11: a unit test scans GregGuns classes for calls to `DataWatcher.addObject` and fails on any.
 - GGS-01-12: a round-trip test of every packet with non-ASCII text.
 

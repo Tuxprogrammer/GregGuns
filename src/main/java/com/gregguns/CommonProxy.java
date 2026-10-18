@@ -9,6 +9,7 @@ import com.gregguns.core.config.ModuleFlags;
 import com.gregguns.core.module.ModuleManager;
 import com.gregguns.core.testing.HarnessScenarios;
 import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.network.GregGunsNetwork;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -23,6 +24,7 @@ public class CommonProxy {
         GregGuns.LOG.info("{} {} loading", GregGuns.NAME, Tags.VERSION);
         // Order per CONTRIBUTING.md: config first, then the modules register items, blocks and entities.
         GregGunsConfig.register();
+        GregGunsNetwork.init();
         modules = new ModuleManager(ModuleFlags::isEnabled, new GregGunsTab());
         registerModules(modules);
         modules.preInit(event);
