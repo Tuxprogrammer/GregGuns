@@ -44,7 +44,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 // Spec: docs/gregguns-spec/04-projectiles-fx/explosions-pack.md (GGS-04-10, 11, 12, 14); docs/testing/README.md
 public final class GrenadeScenarios {
 
-    private static final float EPS = 0.3F;
+    static final float EPS = 0.3F;
     private static final String NAME = "[GregGunsGrenadeTest]";
     private static final int RADIUS = 9;
 
@@ -63,7 +63,7 @@ public final class GrenadeScenarios {
     }
 
     /** A stone floor with clear air above, 19 by 19, all recorded for cleanup. */
-    private static void chamber(ScenarioContext ctx) {
+    static void chamber(ScenarioContext ctx) {
         for (int dx = -RADIUS; dx <= RADIUS; dx++) {
             for (int dz = -RADIUS; dz <= RADIUS; dz++) {
                 ctx.setBlock(dx, -2, dz, Blocks.stone, 0);
@@ -76,7 +76,7 @@ public final class GrenadeScenarios {
     }
 
     /** A zombie that cannot move or burn, with 100 health so a 20 damage blast does not kill it. */
-    private static EntityZombie dummy(ScenarioContext ctx, double dx) {
+    static EntityZombie dummy(ScenarioContext ctx, double dx) {
         EntityZombie z = new EntityZombie(ctx.world());
         z.setLocationAndAngles(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5, 90.0F, 0.0F);
         z.setCurrentItemOrArmor(4, new net.minecraft.item.ItemStack(Blocks.pumpkin));
@@ -87,13 +87,13 @@ public final class GrenadeScenarios {
         return ctx.spawn(z);
     }
 
-    private static float expectedLoss(EntityLivingBase target, double raw) {
+    static float expectedLoss(EntityLivingBase target, double raw) {
         double armor = target.getTotalArmorValue();
         return (float) DamageModel
             .resolve(DamageType.EXPLOSION, raw, 0.0, share -> share * DamageModel.vanillaArmorFactor(armor));
     }
 
-    private static float lost(EntityLivingBase e) {
+    static float lost(EntityLivingBase e) {
         return e.getMaxHealth() - e.getHealth();
     }
 
