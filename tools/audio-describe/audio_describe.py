@@ -412,7 +412,7 @@ loudness. It must stay an original sound, not a copy.
 You cannot hear audio. For each pair you get, for A (the Techguns original) and B (the GregGuns replacement):
 spectrogram (time left to right, log frequency bottom to top, brighter is louder), waveform, measured features
 (loudness, envelope, onsets, spectral balance, stereo) and listening notes from Qwen2-Audio, a model that actually heard
-the file. A also has an earlier written profile. Qwen's notes are a witness: good on timbre and recognisable sources,
+the file. A also has an earlier written profile. Qwen's notes are a witness: good on timbre and recognizable sources,
 but they can invent detail. Where they conflict with the images and measurements, trust the measurements.
 
 Do a thorough A/B and list every audible difference, from the most important to the least. Cover:
@@ -440,6 +440,12 @@ Verdict rules. Apply them strictly and consistently:
   change the feel.
 - tweak: B is the right kind of sound but has at least one moderate difference. Score 5-7.
 - rework: B misses the role or feel, or has any major difference. Score 0-4.
+
+Spurious tones are always a major difference. Look in B's spectrogram for thin horizontal lines: narrowband pings,
+beeps, sine whines or a sprinkle of tiny high clicks that reads as tinkling. If A has nothing matching them at the same
+time, level and frequency, B's verdict is rework. This matters most for mechanical foley (reloads, bolts, pumps, handling),
+which must sound like broadband clicks and clacks with body, not bells. The mod owner listened and rejected tinkling
+reloads, so these lines are never minor.
 
 If B was revised from an earlier attempt, judge it afresh against A. Don't reward effort."""
 
