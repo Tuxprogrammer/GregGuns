@@ -21,6 +21,7 @@ A from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 1.7.10, Forg
 | How spec sheets are laid out | [docs/techguns-spec/CONVENTIONS.md](docs/techguns-spec/CONVENTIONS.md) |
 | Techguns bugs not to reproduce | [docs/techguns-spec/BUGS.md](docs/techguns-spec/BUGS.md) |
 | Asset footprints (sizes, frames, colours, sound lengths) | [docs/techguns-spec/ASSET-FACTS.md](docs/techguns-spec/ASSET-FACTS.md) |
+| How a GT, IC2, NEI or other pack mod's API behaves (integration work) | [docs/gregguns-spec/INTEGRATION.md](docs/gregguns-spec/INTEGRATION.md), then the extracted pack in `reference/gtnh/` |
 | Build settings, mod ID, package | [gradle.properties](gradle.properties) |
 | Dependencies and repositories | [dependencies.gradle](dependencies.gradle), [repositories.gradle](repositories.gradle) |
 | CI | [.github/workflows/](.github/workflows/) |
@@ -40,6 +41,22 @@ A from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 1.7.10, Forg
 | Repair and camo benches, turret, ore drill, charges | [09-machines-utility](docs/techguns-spec/09-machines-utility/index.md) |
 | Mobs, AI, factions, spawning | [10-entities-npcs](docs/techguns-spec/10-entities-npcs/index.md) |
 | Structures, ore clusters, worldgen loot | [11-worldgen](docs/techguns-spec/11-worldgen/index.md) |
+
+## The GTNH reference pack
+
+The extracted **GTNH 2.9.0-RC-2** pack is at `reference/gtnh/2.9.0-RC-2/`. It is git-ignored: never commit anything under `reference/`. Dig through it whenever you integrate with GT or any other mod in the pack.
+
+- `reference/gtnh/2.9.0-RC-2/MOD-INDEX.md` lists all 242 mods, with each mod's version, jar, mod IDs, licence and **where its source is** (the GitHub repo and the tag matching the pack).
+- `.minecraft/mods/` holds the jars, and `.minecraft/config/` shows how the pack configures each mod.
+- [tools/gtnh-reference/](tools/gtnh-reference/README.md) has the helper: `python -I tools/gtnh-reference/gtnh_ref.py mod|where|clone|jars|decompile …`. If `reference/gtnh/` is missing, its `fetch` command recreates it.
+- Grep and Glob skip ignored folders, so point them at `reference/` explicitly.
+
+Rules (the detail is in [docs/gregguns-spec/INTEGRATION.md](docs/gregguns-spec/INTEGRATION.md)):
+
+1. These rules apply only to external integrations, meaning code that touches GTNH or other mods. For Techguns behaviour, use the spec.
+2. **Source first.** Read the mod's source on GitHub with `gh`, at the tag the pack ships.
+3. **Decompile only as a fallback**, for mods with no source. Never paste decompiled code.
+4. **Comment what you relied on.** Add a `// Source:` permalink pinned to the tag, and a `// Decompiled:` hedge wherever decompilation was the evidence.
 
 ## Commands
 

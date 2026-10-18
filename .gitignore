@@ -47,3 +47,6 @@ layout.json
 __pycache__/
 *.pyc
 .venv/
+
+# GTNH pack and decompiled/cloned sources for API research (docs/gregguns-spec/INTEGRATION.md) - never commit
+/reference/

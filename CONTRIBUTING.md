@@ -49,7 +49,7 @@ Techguns is **All Rights Reserved**. This boundary is a **must**:
 | Formatting | Spotless, using the GTNH shared Eclipse config. Run `./gradlew spotlessApply` before every commit; CI rejects unformatted code. |
 | Static checks | Checkstyle: no wildcard imports. |
 | Build files | **Never edit** `build.gradle.kts` or `settings.gradle.kts`, which come from the GTNH buildscript. Put dependencies in [`dependencies.gradle`](dependencies.gradle), repositories in [`repositories.gradle`](repositories.gradle), and mod settings in [`gradle.properties`](gradle.properties). |
-| Dependencies | Use GTNH Maven coordinates with the `:dev` classifier, pinned to the versions in the current GTNH pack. Use `compileOnly` for optional integrations, and `devOnlyNonPublishable` for things only needed at runtime in development. Never shade a mod. |
+| Dependencies | Use GTNH Maven coordinates with the `:dev` classifier, pinned to the versions in the current GTNH pack (see `reference/gtnh/<version>/MOD-INDEX.md` and [docs/gregguns-spec/INTEGRATION.md](docs/gregguns-spec/INTEGRATION.md)). Use `compileOnly` for optional integrations, and `devOnlyNonPublishable` for things only needed at runtime in development. Never shade a mod. |
 
 Commands:
 
@@ -100,6 +100,14 @@ GregGuns must feel native to GTNH. These are the coupling rules.
 
 > [!NOTE]
 > GT5-Unofficial renamed its API classes in 2024 (for example `GT_Values` became `GTValues`, and `GT_OreDictUnificator` became `GTOreDictUnificator`). The names below follow the current scheme. **Always check them against the GT5-Unofficial version pinned in `dependencies.gradle`.**
+
+**Researching external APIs (must)**
+- These rules cover code that touches GT, IC2, NEI, other mods or the pack. The full workflow is in [docs/gregguns-spec/INTEGRATION.md](docs/gregguns-spec/INTEGRATION.md). The extracted pack and its mod index live in the git-ignored `reference/gtnh/`.
+- **Source first.** Read the mod's source on GitHub (`gh search code`, `gh api …?ref=<tag>`) at the tag the pack ships.
+- **Decompile only as a fallback**, for mods or internals with no available source. Never paste decompiled code into GregGuns.
+- **Cite it.**
+  - Put a `// Source:` permalink, pinned to the tag (or the commit, for branches), where code relies on another mod's behaviour.
+  - Put a `// Decompiled:` hedge comment wherever decompiled bytecode or decompiled source was the evidence.
 
 **Materials and parts (must)**
 - Never register an ingot, plate, wire, rod, screw, circuit, ore or fluid that GT already provides.
@@ -174,6 +182,10 @@ GregGuns must feel native to GTNH. These are the coupling rules.
 - **Comments explain why**, not what. Explain constraints, GT conventions and non-obvious maths.
 - **Spec traceability.** A class that implements a spec sheet cites it at the top: `// Spec: docs/techguns-spec/02-guns/gun-lifecycle.md`.
 - **Deviations.** When behaviour intentionally differs from the spec, say so where it happens: `// Deviation: energy is EU (D3), Techguns used RF.` or `// Avoids GUN-34: penetration applies to all mobs.`
+- **External behaviour.** Where code depends on how another mod behaves, cite it.
+  - Use `// Source: <pinned GitHub permalink>` when the source exists.
+  - Use `// Decompiled: <jar, pack version, member>; inferred from decompiled bytecode and may be wrong` when it doesn't.
+  - See [docs/gregguns-spec/INTEGRATION.md § Comment conventions](docs/gregguns-spec/INTEGRATION.md#comment-conventions).
 - **No commented-out code** in commits. Delete it; git keeps history.
 - **Docs.** When you change behaviour that a doc describes, update the doc in the same PR. Design decisions go in [docs/design/](docs/design/README.md).
 
