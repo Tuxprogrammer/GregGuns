@@ -82,7 +82,7 @@ public final class ProductionTable {
          * @return a GregGuns item input that matches the item at any damage (a worn armor piece that is upgraded)
          */
         public static Input modAnyDamage(String registryName, int count) {
-            Input in = new Input(null, null, registryName, null, count);
+            Input in = new Input(null, null, registryName, null, null, count);
             in.anyDamage = true;
             return in;
         }
