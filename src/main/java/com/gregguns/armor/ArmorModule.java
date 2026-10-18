@@ -2,16 +2,24 @@ package com.gregguns.armor;
 
 import net.minecraftforge.common.MinecraftForge;
 
+import com.gregguns.GregGuns;
+import com.gregguns.armor.slots.AmmoPouch;
+import com.gregguns.armor.slots.EquipmentGuiHandler;
+import com.gregguns.armor.slots.EquipmentItems;
+import com.gregguns.armor.slots.EquipmentKeybinds;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.item.gun.AmmoSources;
 import com.gregguns.recipe.ArmorRecipes;
+import com.gregguns.recipe.EquipmentRecipes;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 
 /**
  * The {@code modules.armor} module: the armor framework, set bonuses and the armor sets (M3). Each feature area adds
@@ -41,6 +49,8 @@ public final class ArmorModule implements GregGunsModule {
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
         ArmorParts.register(registrar);
         ArmorItems.register(registrar);
+        EquipmentItems.register(registrar);
+        EquipmentKeybinds.register();
     }
 
     @Override
@@ -50,9 +60,13 @@ public final class ArmorModule implements GregGunsModule {
             .bus()
             .register(EVENTS);
         ArmorParts.addRecipes();
+        AmmoSources.register(AmmoPouch.SOURCE);
+        NetworkRegistry.INSTANCE.registerGuiHandler(GregGuns.instance, new EquipmentGuiHandler());
+        EquipmentRecipes.register();
         ArmorRecipes.register();
         if (DevEnvironment.isActive()) {
             ArmorScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            SlotScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }
 }

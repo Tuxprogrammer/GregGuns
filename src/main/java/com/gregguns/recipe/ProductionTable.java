@@ -40,15 +40,17 @@ public final class ProductionTable {
         private final String prefix;
         private final String material;
         private final String itemName;
+        private final String special;
         private final int count;
 
-        private Input(String prefix, String material, String itemName, int count) {
+        private Input(String prefix, String material, String itemName, String special, int count) {
             if (count < 1) {
                 throw new IllegalArgumentException("count must be positive");
             }
             this.prefix = prefix;
             this.material = material;
             this.itemName = itemName;
+            this.special = special;
             this.count = count;
         }
 
@@ -59,7 +61,7 @@ public final class ProductionTable {
          * @return a GT part input
          */
         public static Input gt(String prefix, String material, int count) {
-            return new Input(prefix, material, null, count);
+            return new Input(prefix, material, null, null, count);
         }
 
         /**
@@ -68,7 +70,33 @@ public final class ProductionTable {
          * @return a GregGuns item input
          */
         public static Input mod(String registryName, int count) {
-            return new Input(null, null, registryName, count);
+            return new Input(null, null, registryName, null, count);
+        }
+
+        /**
+         * @param name  a GT {@code ItemList} constant name, for example {@code "Sensor_MV"}
+         * @param count stack size
+         * @return a GT machine part or other {@code ItemList} item
+         */
+        public static Input itemList(String name, int count) {
+            return new Input(null, null, null, "gt:" + name, count);
+        }
+
+        /**
+         * @param registryName a vanilla item's registry name without the namespace, for example {@code "glass_pane"}
+         * @param count        stack size
+         * @return a vanilla item input
+         */
+        public static Input vanilla(String registryName, int count) {
+            return new Input(null, null, null, "mc:" + registryName, count);
+        }
+
+        /**
+         * @return {@code "gt:<ItemList name>"} or {@code "mc:<registry name>"} for {@link #itemList}/{@link #vanilla}
+         *         inputs, else null
+         */
+        public String special() {
+            return special;
         }
 
         /** @return {@code true} for a GregGuns item, {@code false} for a GT part */
