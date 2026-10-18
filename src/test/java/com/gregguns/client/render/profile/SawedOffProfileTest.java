@@ -151,15 +151,15 @@ class SawedOffProfileTest {
     @Test
     void firstPersonRowsFollowTheSheetShapeWithTheDeviationScale() {
         GunTransforms t = SawedOffProfile.TRANSFORMS;
-        // Sheet: rotX180, rotY-45, then a scale (deviation: 0.6 instead of 2.2, see SawedOffProfile).
+        // Sheet: rotX180, rotY-45, then a scale (deviation: 0.9 instead of 2.2, see SawedOffProfile).
         assertEquals(
-            Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", "S(0.6000,0.6000,0.6000)"),
+            Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", "S(0.9000,0.9000,0.9000)"),
             run(t.fpBase(), 0, 0));
-        assertEquals(Arrays.asList("T(-0.3000,-0.5000,-0.9000)"), run(t.fpIdle(), 0, 0));
+        assertEquals(Arrays.asList("T(0.3300,-0.8300,-0.7500)"), run(t.fpIdle(), 0, 0));
         // At the dip yF = -0.5: rotZ(30 yF) = -15, and the gun moves (0.5 yF, 0.3 yF) = (-0.25, -0.15) from idle.
-        assertEquals(Arrays.asList("R(-15.0000;0,0,1)", "T(-0.5500,-0.6500,-0.9000)"), run(t.fpFire(), 0.5, 0));
+        assertEquals(Arrays.asList("R(-15.0000;0,0,1)", "T(0.0800,-0.9800,-0.7500)"), run(t.fpFire(), 0.5, 0));
         // Reload peaks at p = 0.5 (s = 1): rotZ(70), T(idle.x + 1, idle.y - 0.5).
-        assertEquals(Arrays.asList("R(70.0000;0,0,1)", "T(0.7000,-1.0000,-0.9000)"), run(t.fpReload(), 0.5, 0));
+        assertEquals(Arrays.asList("R(70.0000;0,0,1)", "T(1.3300,-1.3300,-0.7500)"), run(t.fpReload(), 0.5, 0));
     }
 
     @Test

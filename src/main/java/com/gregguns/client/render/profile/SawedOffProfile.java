@@ -48,10 +48,10 @@ public final class SawedOffProfile {
      */
     public static final int MUZZLE_FLASH_FRAMES = 9;
 
-    private static final double FP_SCALE = 0.6;
-    private static final double FP_X = -0.3;
-    private static final double FP_Y = -0.5;
-    private static final double FP_Z = -0.9;
+    private static final double FP_SCALE = 0.9;
+    private static final double FP_X = 0.33;
+    private static final double FP_Y = -0.83;
+    private static final double FP_Z = -0.75;
 
     private static final float[] GRIP_PIVOT = { 3.0f, 2.0f, 0.0f };
     private static final float[] NO_PIVOT = { 0, 0, 0 };
@@ -80,8 +80,11 @@ public final class SawedOffProfile {
     private static GunTransforms buildTransforms() {
         // First person (X-family): rotX180, rotY-45, S(FP_SCALE), then the state row.
         // Deviation: the sheet says S(2.2) with idle T(0.1, -0.1, -0.5), recorded for Techguns' much smaller model.
-        // The GregGuns model is 3 blocks long, so the scale is 0.6 and the offset is moved to (-0.3, -0.5, -0.9)
-        // (tuned against client screenshots, see docs/testing/README.md) for a compact gun in the lower right.
+        // The GregGuns model is about 3 blocks long (51 texels), so the scale is 0.9 and the offset is
+        // (0.33, -0.83, -0.75): the Revolver's world shift (its 1.5 scale times (0.2, -0.5, -0.45)) divided by 0.9.
+        // Tuned against client screenshots (mp.visual.sawedoff): the muzzle sits left of centre, the grip in the
+        // lower right, and the fixed-frame muzzle flash lands on the barrels. The first try, S(0.6) with
+        // (-0.3, -0.5, -0.9), left only a corner of the gun on screen.
         TransformProgram fpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(-45)
@@ -114,9 +117,12 @@ public final class SawedOffProfile {
         TransformProgram tpReload = TransformProgram.builder()
             .about(-0.2, -0.1, 0, b -> b.rotZ((p, part) -> -40.0 * yR(p)))
             .build();
+        // Deviation: the sheet has no scale for the ground row; the 3 block long model is drawn at 0.6 so a dropped
+        // Sawed Off is about as long as a block and a half.
         TransformProgram ground = TransformProgram.builder()
             .rotX(180)
             .rotY(90)
+            .scale(0.6)
             .build();
         TransformProgram icon = TransformProgram.builder()
             .rotX(180)
