@@ -115,6 +115,7 @@ The framework logic (registry, argument parsing, runner, report) is plain Java a
 
 | `mp.sync` | multiplayer (M1) | Needs two connected clients. Players A and B (by username) face each other four blocks apart. A's client fires twice through the real input path and trigger packet, the server reloads A's pistol through `ServerGunHandler.onReloadKey`, and the scenario checks that a bullet was launched, B took damage, and A's rounds and magazines changed. Client B logs and screenshots what it sees. Waits for ticks. |
 | `mp.visual` | visuals (M0, M1) | Needs one connected client. Signals the first player to take screenshots of the first-person pistol with ammo HUD, third person, a dropped pistol, the inventory, the creative GregGuns tab, the LV Ammo Press GUI and NEI's recipe view for the pistol and the bullet. Passes once the signals are sent; the evidence is in the client's log and screenshots. Waits for ticks. |
+| `mp.give` | items and tooltips (M1) | Needs one or two connected clients. Gives each player every registered GregGuns item and the LV Ammo Press one at a time with the real `/give`, selects it, and has the client hold it and build its tooltip; then repeats through the client-side creative slot packet. Any exception in a log fails the orchestrator run. Waits for ticks. |
 
 ## Multiplayer and visual autotest
 
@@ -140,23 +141,23 @@ AUTOTEST sound gregguns:pistol_9mm.fire (client Bob)      # every gregguns sound
 AUTOTEST screenshot b-sees-a-shot <path>
 ```
 
-Signal commands: `view <0|1|2>` (first, third back, third front), `shot <label>` (screenshot at the end of the next frame), `arm <shot|reload> <label> <delayTicks>` (screenshot that many ticks after the next shot or reload event the client sees), `fire <n>` (hold the fire button for two ticks, n times, six ticks apart, through `GunInputHandler`, which also works without window focus), `gui inventory | creative <tab> | press <x> <y> <z> | nei <item>`, `close`, `quit`. Screenshots use vanilla `ScreenShotHelper` into `run/client/screenshots/<player>-<label>.png`.
+Signals run strictly in order on the client, and a `shot` waits for four rendered frames before the next command, so a GUI that stalls the client is still drawn and photographed before `close`. Signal commands: `view <0|1|2>` (first, third back, third front), `shot <label>` (screenshot at the end of the next frame), `arm <shot|reload> <label> <delayTicks>` (screenshot that many ticks after the next shot or reload event the client sees), `fire <n>` (hold the fire button for two ticks, n times, six ticks apart, through `GunInputHandler`, which also works without window focus), `gui inventory | creative <tab> | press <x> <y> <z> | nei <item>`, `hold <item>` (log the held stack and build its tooltip), `creativegive <modid:name[:meta]>` (client-side creative slot packet), `close`, `quit`. Screenshots use vanilla `ScreenShotHelper` into `run/client/screenshots/<player>-<label>.png`.
 
 ### Launching a client that joins a server by itself
 
 The GTNH buildscript's `runClient` task (RetroFuturaGradle) takes everything on the command line, so nothing needs editing:
 
 ```sh
-./gradlew runClient --username=Alice \
-    --mcJvmArgs=-Dgregguns.autotest=a \
-    "--mcArgs=--server 127.0.0.1 --port 25613 --width 960 --height 540"
+./gradlew runClient --username=Alice     --mcJvmArgs=-Dgregguns.autotest=a     --mcJvmArgs=-Dgregguns.autotest.connect=127.0.0.1:25613     --mcArgs=--width --mcArgs=960 --mcArgs=--height --mcArgs=540
 ```
 
-- `--username` overrides `developmentEnvironmentUserName` for this run (the offline-mode name; the server must have `online-mode=false`).
-- `--mcArgs` goes to Minecraft's own launch arguments: `--server`/`--port` join at startup, `--width`/`--height` size the window.
-- `--mcJvmArgs` adds JVM system properties.
+- `--username` overrides `developmentEnvironmentUserName` for this run (offline-mode name; the server needs `online-mode=false`).
+- `--mcArgs` and `--mcJvmArgs` are **list options**: repeat the flag once per word. One value containing spaces reaches Minecraft as a single argument.
+- **Do not use `--mcArgs=--server ... --port ...`.** It connects while the client is still starting and loses an FML race: `FMLClientHandler.connectToServer` creates `playClientBlock` only after it has shown `GuiConnecting`, so the handshake on the netty thread can reach `waitForPlayClient` first and throw a NullPointerException ("Connection Lost: a fatal error has occured"). Instead set `-Dgregguns.autotest.connect=host:port`: the autotest waits until the main menu has settled, primes the latch by reflection and shows `GuiConnecting` itself.
 - The run directory is `run/client` of the project directory, and **two Gradle builds cannot run at once in one project directory**. Use one git worktree per process: one for the server, one per client (all at the same commit).
-- The client needs `modules.guns` on in its own `run/client/config/gregguns.cfg` (the orchestrator writes it), and `pauseOnLostFocus:false` in `options.txt` so an unfocused window keeps ticking.
+- The client needs `modules.guns` on in its own `run/client/config/gregguns.cfg` and `pauseOnLostFocus:false` in `options.txt` so an unfocused window keeps ticking (the orchestrator writes both). `options.txt` stores `fov` as 0 to 1 (0.0 is 70 degrees): writing `70.0` gives a 2870 degree field of view and an upside-down world.
+- **Mod versions.** The buildscript bakes the git state into the mod version, so a server and a client from different worktrees would be refused by FML. `GregGuns.checkRemote` (`@NetworkCheckHandler`, decision in `RemoteVersionCheck`) accepts any GregGuns version in the dev workspace and requires an exact match in a released jar.
+- Start the clients one after the other. The orchestrator boots client B only after client A is in the world and requires each join to complete within 20 seconds of the connect attempt.
 
 ### Running the whole check
 
@@ -164,6 +165,6 @@ The GTNH buildscript's `runClient` task (RetroFuturaGradle) takes everything on 
 python -I build/mp_check.py <server-worktree> <client-a-worktree> <client-b-worktree> [port] [out-dir]
 ```
 
-It boots the server (flat, peaceful world; both users op), boots the two clients (users `Alice` and `Bob`), waits for `AUTOTEST joined` in both logs, runs `gregguns test mp.sync` and `gregguns test mp.visual` on the server console, checks the logs for the evidence lines, then shuts down (the clients quit on a `quit` signal, the server on `stop`; leftovers started from those checkouts are killed by command line). Output in `<out-dir>`: `server.log`, `client-a.log`, `client-b.log`, `*-autotest.txt` (only the AUTOTEST lines), `summary.txt` and `shots/*.png`. Exit code 0 means both scenarios passed and every expected log line was present. Allow 10 to 15 minutes, most of it booting.
+It boots the server (flat, peaceful world; both users op), boots the two clients (users `Alice` and `Bob`), waits for `AUTOTEST joined` in both logs, runs `gregguns test mp.sync` and `gregguns test mp.visual` on the server console, checks the logs for the evidence lines, then shuts down (the clients quit on a `quit` signal, the server on `stop`; leftovers started from those checkouts are killed by command line). The orchestrator runs `mp.sync`, `mp.visual` and `mp.give` (every registered GregGuns item and the Ammo Press through the real `/give`, then through the creative slot packet, each held for a few ticks so tooltip, HUD and renderer run). It aborts at once, with the exact line, on any failure signature in a log (`Connection Lost`, `Mod rejections`, `fatal error`, `lost connection`, `Crash Report`, `Exception`, `Caused by:`, `at com.gregguns`). Known noise it ignores: GT's NEI handler cache race in worker threads (`NEI-worker-thread`, not mentioning gregguns). Output in `<out-dir>`: `server.log`, `client-a.log`, `client-b.log`, `*-autotest.txt` (only the AUTOTEST lines), `summary.txt` and `shots/*.png`. Exit code 0 means both scenarios passed and every expected log line was present. Allow 10 to 15 minutes, most of it booting.
 
 What a screenshot proves is judged by looking at it: the script only proves a file was written. Read the PNGs.
