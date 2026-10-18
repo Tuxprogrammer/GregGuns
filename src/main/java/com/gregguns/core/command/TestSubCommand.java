@@ -1,5 +1,6 @@
 package com.gregguns.core.command;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -84,7 +85,11 @@ public final class TestSubCommand implements GregGunsSubCommand {
         World overworld = MinecraftServer.getServer()
             .worldServerForDimension(0);
         EntityPlayer player = sender instanceof EntityPlayer ? (EntityPlayer) sender : null;
-        ScenarioRunner runner = new ScenarioRunner(s -> WorldScenarioContext.create(s, overworld, player));
+        List<String> names = new ArrayList<>();
+        for (Scenario s : registry.all()) {
+            names.add(s.name());
+        }
+        ScenarioRunner runner = new ScenarioRunner(s -> WorldScenarioContext.create(s, overworld, player, names));
         ScenarioRun run = runner.begin(scenarios);
         if (run.isDone()) {
             report(sender, run.summary());

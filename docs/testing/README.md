@@ -8,7 +8,7 @@ Scenarios are reproducible in-world situations with a checked outcome ([CONTRIBU
 
 ```
 /gregguns test list          # every scenario and its description
-/gregguns test <scenario>    # one scenario, origin at your feet
+/gregguns test <scenario>    # one scenario, in its own arena offset from your column
 /gregguns test all           # every scenario
 ```
 
@@ -22,7 +22,7 @@ Type the same commands without the slash into the `runServer` console:
 gregguns test all
 ```
 
-There is no player, so the origin is the surface at the overworld spawn. The output ends with a line you can grep:
+There is no player, so the base origin is the overworld spawn column; each scenario then gets its own slot (see Scenario isolation). The output ends with a line you can grep:
 
 ```
 [GregGuns] PASS harness.area
@@ -60,7 +60,7 @@ public final class PistolDamageScenario implements Scenario {
 Rules:
 
 - **Name:** lower case `[a-z0-9_.-]+`, dot-separated by feature. `all` and `list` are reserved. Duplicates throw at registration.
-- **Clean up:** everything made through `ctx.spawn`, `ctx.setBlock` and `ctx.clearArea` is undone by the runner, even if the scenario throws. Do not change the world any other way. `clearArea` does not preserve tile entities, so scenarios run where there are none (the spawn area).
+- **Clean up:** everything made through `ctx.spawn`, `ctx.setBlock` and `ctx.clearArea` is undone by the runner, even if the scenario throws. Do not change the world any other way. `clearArea` does not preserve tile entities; the harness gives every scenario a private, pre-cleared area (see Scenario isolation).
 - **Determinism:** use `ctx.random()` (seeded from the scenario name), never `new Random()` or the clock.
 - **Report with the builder:** `check`, `checkEquals`, `note`. A failed check does not stop the scenario, so one run shows every problem.
 - **Server thread:** `run` is called on the server thread. A scenario that needs ticks to pass returns a pending result instead of a final one (next section).
@@ -88,11 +88,24 @@ public ScenarioResult run(ScenarioContext ctx) {
 - The poller is called once per server tick (at the end of the tick) with `1`, `2`, `3` and so on. It returns the final result, or `null` to wait on.
 - If it has not answered after `timeoutTicks` polls, the scenario fails with `timed out after N ticks`. Keep the timeout well above the expected time, and finish early by returning a result as soon as you can.
 - The scenario's context, with everything it spawned or changed, stays alive until the poller answers or times out, and is cleaned up then. A poller that throws fails only its scenario.
-- Scenarios run strictly one after another, because they share the origin area. The next one starts in the same tick the previous one finishes. Synchronous scenarios behave exactly as before.
+- Scenarios run strictly one after another. The next one starts in the same tick the previous one finishes. Synchronous scenarios behave exactly as before.
 - The console summary line and the chat report are printed once, after the last scenario of the run has finished. While a run is waiting, a second `gregguns test` is refused (`gregguns.test.busy`).
 - In plain Java: `ScenarioRunner.begin(list)` returns a `ScenarioRun` that you call `tick()` on; `ScenarioRunner.run(list)` is the old synchronous form and fails any scenario that asks to wait. `ScenarioTicker` (server side) drives `ScenarioRun`s from the FML server tick for the command.
 
 The framework logic (registry, argument parsing, runner, report) is plain Java and has unit tests in `src/test/java/com/gregguns/core/testing/`.
+
+## Scenario isolation
+
+Blocks and entities that a scenario leaves behind (a StructureLib multiblock, GT machines, a projectile corridor) used to break later scenarios, because everything shared one origin. Each scenario now runs in its own arena. The code is `ScenarioArea` (pure, unit-tested in `ScenarioAreaTest`), `ScenarioChunks` (Forge tickets) and `WorldScenarioContext.create`.
+
+- **Own origin.** Scenario names are sorted; the index in the full registry (not just the selected scenarios) is the slot. Slots fill a grid 6 wide, row by row, 80 blocks apart on X and Z, from a base: the overworld spawn column on the console, or the invoking player's column. The slot depends only on the registered names, so a failing scenario reproduces at the same place on every run of the same build (adding a scenario shifts the slots after it). `ctx.originX()`, `originY()` and `originZ()` return the slot's origin, so scenarios need no change.
+- **Fixed Y = 100.** Clear of the terrain in a normal dev world, below the nether ceiling, inside a superflat world's build limit. Ground is made, not found: `Y - 1` is stone, so a scenario that expects ground has it.
+- **Cleared before it runs.** For the scenario's `areaRadius()` (default 32, clamped to 48) the harness kills every non-player entity, sets 16 layers from the origin Y up to air (which removes tile entities) and lays the stone floor. This writes straight to the world, not through `ctx.setBlock`, so cleanup does not "restore" the residue of an earlier run.
+- **Loaded across ticks.** The same area is held with Forge chunk tickets (`ForgeChunkManager.requestTicket` / `forceChunk`, several tickets when the area is over a ticket's 25 chunk limit), so a projectile never meets an unloaded chunk (WGEN-27) and a multi-tick scenario's area stays loaded. The tickets are released in `ctx.cleanup()`, which the runner calls on finish, failure and timeout. The `LoadingCallback` registered for the mod releases any ticket saved in a world file by a killed server. Dev environment only: the callback is registered under `DevEnvironment.isActive()` and nothing in gameplay code requests tickets.
+- **Overriding.** A scenario that needs a bigger area overrides `Scenario.areaRadius()`. The maximum, 48, touches a default-sized neighbour but does not overlap it.
+- **Proof.** `gregguns test all` run twice in a row in one world passes 33 of 33 both times (`build/run_scenarios_twice.py`, a local variant of the orchestrator's runner that sends the command twice).
+
+Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` (Gradle cache, `minecraft/net/minecraftforge/forge/1.7.10-10.13.4.1614-1.7.10/unpacked/src/main/java/`).
 
 ## Scenarios
 
