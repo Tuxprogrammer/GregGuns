@@ -1,5 +1,6 @@
 package com.gregguns.client;
 
+import com.gregguns.client.sound.ClientGunSounds;
 import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
 
@@ -9,6 +10,13 @@ import com.gregguns.core.module.ModuleId;
  */
 // Spec: docs/ROADMAP.md (M1, M2)
 public final class GunsClientModule implements ClientModule {
+
+    private static final ClientGunSounds SOUNDS = new ClientGunSounds();
+
+    /** @return the shooter's predicted gun sounds; client only, reached through the proxy */
+    public static ClientGunSounds sounds() {
+        return SOUNDS;
+    }
 
     @Override
     public ModuleId id() {
