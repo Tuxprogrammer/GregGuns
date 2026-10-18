@@ -16,11 +16,23 @@ class FirstPersonFitTest {
     }
 
     @Test
-    void thePistolsTunedOffsetIsTheSheetsOffsetTimesTheFactorWithinATenth() {
-        double factor = FirstPersonFit.translationFactor(2.0, 1.0);
-        assertEquals(-1.2, -0.55 * factor, 0.11);
-        assertEquals(-1.0, -0.45 * factor, 0.11);
-        assertEquals(-1.7, -0.8 * factor, 0.11);
+    void theZFamilyAnchorReproducesThePistolsTunedOffset() {
+        double scale = FirstPersonFit.scale(
+            FirstPersonFit.lengthBlocks(Pistol9mmProfile.BOXES, Pistol9mmProfile.MODEL_SCALE),
+            FirstPersonFit.HANDGUN_LENGTH);
+        double[] idle = FirstPersonFit.idleOffset(
+            FirstPersonFit.ANCHOR_Z_FAMILY,
+            scale,
+            FirstPersonFit.centerBlocks(Pistol9mmProfile.BOXES, Pistol9mmProfile.MODEL_SCALE));
+        assertEquals(-1.2, idle[0], 0.01);
+        assertEquals(-1.0, idle[1], 0.01);
+        assertEquals(-1.7, idle[2], 0.01);
+    }
+
+    @Test
+    void theFactorKeepsTheSheetsMotionOnScreen() {
+        assertEquals(2.0, FirstPersonFit.translationFactor(2.0, 1.0), 1e-12);
+        assertEquals(3.1, FirstPersonFit.translationFactor(1.5, 1.5 / 3.1), 1e-12);
     }
 
     @Test

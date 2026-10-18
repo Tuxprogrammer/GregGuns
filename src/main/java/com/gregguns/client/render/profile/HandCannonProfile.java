@@ -70,12 +70,11 @@ public final class HandCannonProfile {
     /** The first-person scale from {@link FirstPersonFit}: as long on screen as the 9mm Pistol. */
     public static final double FP_SCALE = FirstPersonFit
         .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
-    /** Every first-person translation of the sheet is multiplied by this, because the scale changed. */
+    /** The sheet's fire and reload translation deltas are multiplied by this, because the scale changed. */
     private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
-    // Hand nudge after the first-person screenshot (see FirstPersonFit, step 3), in the sheet's units.
-    private static final double NUDGE_X = 0.0;
-    private static final double NUDGE_Y = 0.0;
-    private static final double NUDGE_Z = 0.0;
+    /** The idle first-person translation from {@link FirstPersonFit}: this model's box centre on the family anchor. */
+    private static final double[] IDLE = FirstPersonFit
+        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
 
     /** The sheet's render transforms, timing and muzzle flash for the hand cannon. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
@@ -83,28 +82,29 @@ public final class HandCannonProfile {
     private HandCannonProfile() {}
 
     private static GunTransforms buildTransforms() {
-        // First person (X-family): rotX180, rotY-45, S(FP_SCALE), then the state row. Sheet: S(2.5) and
-        // idle T(0.1, 0, -0.5); every translation is multiplied by K (FirstPersonFit).
-        double x0 = 0.1 + NUDGE_X;
-        double y0 = 0.0 + NUDGE_Y;
-        double z0 = -0.5 + NUDGE_Z;
+        // First person (X-family): rotX180, rotY-45, S(FP_SCALE), then the state row. Sheet: S(2.5), idle
+        // T(0.1, 0, -0.5). Deviation (FirstPersonFit): the scale and the idle position follow the fit rule (the sheet's
+        // offset put the gun off screen); the sheet's fire and reload deltas are multiplied by K.
+        double x0 = IDLE[0];
+        double y0 = IDLE[1];
+        double z0 = IDLE[2];
         TransformProgram fpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(-45)
             .scale(FP_SCALE)
             .build();
         TransformProgram fpIdle = TransformProgram.builder()
-            .translate(K * x0, K * y0, K * z0)
+            .translate(x0, y0, z0)
             .build();
         // Firing: the barrel tips up and the gun pulls back: rotZ(30 yF), T(0.1 + yF, 0.5 yF, -0.5).
         TransformProgram fpFire = TransformProgram.builder()
             .rotZ((p, part) -> 30.0 * yF(p))
-            .translate((p, part) -> K * (x0 + yF(p)), (p, part) -> K * (y0 + 0.5 * yF(p)), TransformProgram.c(K * z0))
+            .translate((p, part) -> x0 + K * yF(p), (p, part) -> y0 + K * 0.5 * yF(p), TransformProgram.c(z0))
             .build();
         // Reload: s = sin(p): rotZ(70 s), T(0.1 + s, -s/2, -0.5): swings far up and out, then back.
         TransformProgram fpReload = TransformProgram.builder()
             .rotZ((p, part) -> 70.0 * sin(p))
-            .translate((p, part) -> K * (x0 + sin(p)), (p, part) -> K * (y0 - sin(p) / 2.0), TransformProgram.c(K * z0))
+            .translate((p, part) -> x0 + K * sin(p), (p, part) -> y0 - K * sin(p) / 2.0, TransformProgram.c(z0))
             .build();
         // Third person: rotX180, rotY225, S(1.5), T(-0.3, -0.45, 0) on the sheet. Deviation: our model is larger than
         // the sheet's, so the third-person scale and offset use the Revolver's tuned values (S(0.85), T(-1.4, -0.8,

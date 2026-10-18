@@ -158,12 +158,23 @@ class RevolverProfileTest {
         assertEquals(
             Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", String.format("S(%.4f,%.4f,%.4f)", s, s, s)),
             run(t.fpBase(), 0, 0));
+        // The idle offset puts the box centre on the family anchor (FirstPersonFit); for the revolver that is the
+        // sheet's offset times k, which is where the anchor was measured.
+        double[] idle = FirstPersonFit.idleOffset(
+            FirstPersonFit.ANCHOR_X_FAMILY,
+            s,
+            FirstPersonFit.centerBlocks(RevolverProfile.BOXES, RevolverProfile.MODEL_SCALE));
+        assertEquals(k * 0.2, idle[0], 0.01);
+        assertEquals(k * -0.5, idle[1], 0.01);
+        assertEquals(k * -0.45, idle[2], 0.01);
         assertEquals(
-            Arrays.asList(String.format("T(%.4f,%.4f,%.4f)", k * 0.2, k * -0.5, k * -0.45)),
+            Arrays.asList(String.format("T(%.4f,%.4f,%.4f)", idle[0], idle[1], idle[2])),
             run(t.fpIdle(), 0, 0));
-        // At the dip yF = -0.5: rotZ(35 yF) = -17.5, and the gun moves (0.5 yF, 0.4 yF) = (-0.25, -0.2) from idle.
+        // At the dip yF = -0.5: rotZ(35 yF) = -17.5, and the gun moves k x (0.5 yF, 0.4 yF) = k x (-0.25, -0.2).
         assertEquals(
-            Arrays.asList("R(-17.5000;0,0,1)", String.format("T(%.4f,%.4f,%.4f)", k * -0.05, k * -0.7, k * -0.45)),
+            Arrays.asList(
+                "R(-17.5000;0,0,1)",
+                String.format("T(%.4f,%.4f,%.4f)", idle[0] + k * -0.25, idle[1] + k * -0.2, idle[2])),
             run(t.fpFire(), 0.5, 0));
     }
 
