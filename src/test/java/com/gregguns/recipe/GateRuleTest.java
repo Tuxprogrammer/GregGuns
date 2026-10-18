@@ -47,9 +47,9 @@ class GateRuleTest {
     }
 
     @Test
-    void exemptionListIsExactlyTheLooseLvAmmoOfTheSheet() {
+    void exemptionListIsExactlyTheLooseLvAmmoAndTreatedLeather() {
         assertEquals(
-            new HashSet<>(Arrays.asList("ammo_9mm_bullet", "ammo_shotgun_shell")),
+            new HashSet<>(Arrays.asList("ammo_9mm_bullet", "ammo_shotgun_shell", "part_treated_leather")),
             ProductionTable.GATE_EXEMPT);
         assertThrows(UnsupportedOperationException.class, () -> ProductionTable.GATE_EXEMPT.add("mag_9mm_pistol"));
     }
@@ -60,5 +60,14 @@ class GateRuleTest {
         Map<String, ProductionTable.Row> byOutput = ProductionTable.byOutput();
         assertTrue(
             GateRule.satisfied(byOutput.get(ProductionTable.MAGAZINE), byOutput, Collections.<String>emptySet()));
+    }
+
+    @Test
+    void treatedLeatherIsExemptAndHasNoGateInput() {
+        // GGS-06-36: RC-22 is gated by the LV Chemical Bath voltage, not by a Steel input.
+        Map<String, ProductionTable.Row> byOutput = new java.util.HashMap<>();
+        byOutput.put(ArmorTable.TREATED_LEATHER.output(), ArmorTable.TREATED_LEATHER);
+        assertTrue(GateRule.satisfied(ArmorTable.TREATED_LEATHER, byOutput, ProductionTable.GATE_EXEMPT));
+        assertFalse(GateRule.satisfied(ArmorTable.TREATED_LEATHER, byOutput, Collections.<String>emptySet()));
     }
 }

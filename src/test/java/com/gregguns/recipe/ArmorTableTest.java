@@ -183,6 +183,9 @@ class ArmorTableTest {
         for (ProductionTable.Row row : ArmorTable.MACHINE) {
             assertTrue(made.add(row.output()), row.id());
         }
+        for (ProductionTable.Row row : ArmorTable.IV_DEFERRED) {
+            assertTrue(made.add(row.output()), row.id());
+        }
         int pieces = 0;
         for (com.gregguns.armor.logic.SetDef set : ArmorCatalog.ALL) {
             for (ArmorSlot slot : set.pieces()
@@ -191,8 +194,9 @@ class ArmorTableTest {
                 pieces++;
             }
         }
-        // 12 T1 pieces + 4 + 4 + 4 + 1 + 4 + 4 + 4 = 37 pieces, and the one extra output is Steam Armor Plating.
-        assertEquals(37, pieces);
+        // 12 T1 pieces + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 = 45 pieces, and the one extra output is Steam Armor
+        // Plating.
+        assertEquals(45, pieces);
         assertEquals(pieces + 1, made.size());
     }
 

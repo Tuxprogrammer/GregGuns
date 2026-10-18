@@ -50,12 +50,36 @@ public final class ArmorRecipes {
             ProductionRecipes.addMachineRecipe(row);
         }
         addTreatedLeather();
+        addDeferredRows();
+    }
+
+    /**
+     * Adds the power armor and Exo Suit rows whose GregGuns inputs all exist in this run. Power Plating and Mechanical
+     * Parts T3 belong to the M4 component branch; until they are registered a row is skipped with an INFO line, and it
+     * appears by itself once they are (the {@link FlightRecipes} pattern).
+     */
+    private static void addDeferredRows() {
+        for (ProductionTable.Row row : ArmorTable.IV_DEFERRED) {
+            String missing = FlightRecipes.missingInput(row);
+            if (missing != null) {
+                GregGuns.LOG.info("Armor recipe {} deferred: {} is not registered in this run", row.id(), missing);
+                continue;
+            }
+            ProductionRecipes.addMachineRecipe(row);
+        }
     }
 
     /**
      * RC-22: two leather and 500 mB of sulfuric acid in the Chemical Bath make two Treated Leather, LV, 10 s.
      */
     private static void addTreatedLeather() {
+        // Spec: GGS-06-36. The row goes through the gate rule, which exempts RC-22 by name.
+        java.util.Map<String, ProductionTable.Row> byOutput = new java.util.HashMap<>();
+        byOutput.put(ArmorTable.TREATED_LEATHER.output(), ArmorTable.TREATED_LEATHER);
+        if (!GateRule.satisfied(ArmorTable.TREATED_LEATHER, byOutput, ProductionTable.GATE_EXEMPT)) {
+            GregGuns.LOG.error("Skipping recipe RC-22: it fails the gate rule");
+            return;
+        }
         ItemStack out = ProductionRecipes.modStack(ArmorCatalog.TREATED_LEATHER, 2);
         if (out == null) {
             GregGuns.LOG.error("Skipping recipe RC-22: {} is not registered", ArmorCatalog.TREATED_LEATHER);

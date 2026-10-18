@@ -303,6 +303,17 @@ public final class ArmorTable {
         in(epoxy(3), ti(2), evCircuit(2)),
         in(epoxy(2), ti(2)));
 
+    /** Treated Leather (RC-22): LV Chemical Bath; gate-exempt (GGS-06-36). The acid fluid input is added in code. */
+    public static final ProductionTable.Row TREATED_LEATHER = new ProductionTable.Row(
+        "RC-22",
+        ArmorCatalog.TREATED_LEATHER,
+        2,
+        Tier.LV,
+        ProductionTable.Target.CHEMICAL_BATH,
+        10,
+        0,
+        Input.vanilla("leather", 2));
+
     /** Steam Armor Plating (RC-23): EV, the gate part of the steam armor. */
     public static final ProductionTable.Row STEAM_PLATING = new ProductionTable.Row(
         "RC-23",
@@ -329,6 +340,70 @@ public final class ArmorTable {
         in(sap(8)),
         in(sap(7)),
         in(sap(4)));
+
+    // ---- M3 wave C: power armor and the Exo Suit (IV) -------------------------------------------------------------
+
+    /** Registry name of Power Plating (RC-24), an M4 component. */
+    public static final String POWER_PLATING = ArmorCatalog.POWER_PLATING;
+    /** Registry name of Mechanical Parts T3 (RC-12), an M4 component. */
+    public static final String MECHANICAL_3 = FlightTable.MECHANICAL_3;
+
+    private static Input tungstenSteel(int n) {
+        return Input.gt("plate", "TungstenSteel", n);
+    }
+
+    private static Input pp(int n) {
+        return Input.mod(POWER_PLATING, n);
+    }
+
+    private static Input ivCircuit(int n) {
+        return Input.gt("circuit", "Elite", n);
+    }
+
+    private static Input motorIv(int n) {
+        return Input.itemList("Electric_Motor_IV", n);
+    }
+
+    /** T3 Power Armor: IV, Power Plating, Elite circuits and IV motors; the chestplate comes out empty. */
+    public static final List<ProductionTable.Row> T3_POWER = fourPiece(
+        38,
+        ArmorCatalog.T3_POWER,
+        new int[] { 14, 20, 18, 10 },
+        in(pp(3), ivCircuit(2), Input.vanilla("glass_pane", 1), tungstenSteel(1)),
+        in(pp(5), motorIv(2), ivCircuit(1), tungstenSteel(2)),
+        in(pp(4), ivCircuit(1), motorIv(2), tungstenSteel(2)),
+        in(motorIv(2), pp(2), tungstenSteel(1)));
+
+    /** T3 Exo Suit: IV, an upgrade of the matching Advanced Combat piece at any damage and camo (GGS-05-35). */
+    public static final List<ProductionTable.Row> T3_EXO = fourPiece(
+        42,
+        ArmorCatalog.T3_EXO,
+        new int[] { 10, 12, 12, 10 },
+        in(exoBase(ArmorSlot.HELMET), mechanical3(), ivCircuit(1), motorIv(1), tungstenSteel(1)),
+        in(exoBase(ArmorSlot.CHESTPLATE), mechanical3(), ivCircuit(1), motorIv(1), tungstenSteel(2)),
+        in(exoBase(ArmorSlot.LEGGINGS), mechanical3(), ivCircuit(1), motorIv(1), tungstenSteel(2)),
+        in(exoBase(ArmorSlot.BOOTS), mechanical3(), ivCircuit(1), motorIv(1), tungstenSteel(1)));
+
+    private static Input exoBase(ArmorSlot slot) {
+        return Input.modAnyDamage(name(ArmorCatalog.T3_COMBAT, slot), 1);
+    }
+
+    private static Input mechanical3() {
+        return Input.mod(MECHANICAL_3, 1);
+    }
+
+    /**
+     * The IV rows. They need M4 components (Power Plating, Mechanical Parts T3) that may not be registered in a given
+     * run, so {@code ArmorRecipes} adds each row only when every GregGuns input exists (the pattern of
+     * {@code FlightRecipes}) and is not part of {@link #MACHINE}.
+     */
+    public static final List<ProductionTable.Row> IV_DEFERRED = Collections.unmodifiableList(ivRows());
+
+    private static List<ProductionTable.Row> ivRows() {
+        List<ProductionTable.Row> all = new java.util.ArrayList<>(T3_POWER);
+        all.addAll(T3_EXO);
+        return all;
+    }
 
     /** Every Assembler row of the armor sets, in registration order (the T1 Combat rows first). */
     public static final List<ProductionTable.Row> MACHINE = Collections.unmodifiableList(machineRows());

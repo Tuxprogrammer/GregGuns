@@ -286,8 +286,9 @@ public final class ProductionTable {
      * Outputs exempt from the "at least one input of the tier's gate material" rule (GGS-06-36). Their gate is the LV
      * machine voltage and the Brass case instead. The list is fixed: adding to it needs a spec change.
      */
+    // Spec: GGS-06-36 (RC-22 is gated by the LV Chemical Bath voltage; a metal input in a bath is artificial)
     public static final Set<String> GATE_EXEMPT = Collections
-        .unmodifiableSet(new HashSet<>(Arrays.asList(BULLET, SHELL)));
+        .unmodifiableSet(new HashSet<>(Arrays.asList(BULLET, SHELL, "part_treated_leather")));
 
     /**
      * Parts that are made at the crafting table (ULV, RC-02 and RC-03; see {@code PartCraftingRecipes}), so no

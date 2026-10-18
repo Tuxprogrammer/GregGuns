@@ -101,7 +101,7 @@ final class ArmorTierScenarios {
     }
 
     /** A fake player whose {@code damageEntity} can be called directly (a fresh server player is invulnerable). */
-    private static final class TestPlayer extends FakePlayer {
+    static final class TestPlayer extends FakePlayer {
 
         TestPlayer(WorldServer world, String name) {
             super(world, new GameProfile(UUID.nameUUIDFromBytes(name.getBytes()), name));
@@ -142,20 +142,20 @@ final class ArmorTierScenarios {
         }
     }
 
-    private static TestPlayer player(ScenarioContext ctx, String name) {
+    static TestPlayer player(ScenarioContext ctx, String name) {
         return new TestPlayer((WorldServer) ctx.world(), name);
     }
 
-    private static boolean near(double expected, double actual) {
+    static boolean near(double expected, double actual) {
         return Math.abs(expected - actual) < EPS;
     }
 
-    private static double speedFactor(TestPlayer p) {
+    static double speedFactor(TestPlayer p) {
         IAttributeInstance a = p.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
         return a.getAttributeValue() / a.getBaseValue();
     }
 
-    private static double knockback(TestPlayer p) {
+    static double knockback(TestPlayer p) {
         return p.getEntityAttribute(SharedMonsterAttributes.knockbackResistance)
             .getAttributeValue();
     }
@@ -164,19 +164,19 @@ final class ArmorTierScenarios {
      * Damage left after a hit of {@code damage} against {@code armor} points, with {@code pen} penetration and
      * {@code resist} penetration resistance (the D4 model: the penetrating share skips armor).
      */
-    private static double expected(double damage, double armor, double pen, double resist) {
+    static double expected(double damage, double armor, double pen, double resist) {
         double eff = Math.max(0.0, pen - resist);
         return damage * (eff + (1.0 - eff) * (1.0 - armor / 25.0));
     }
 
-    private static float hit(TestPlayer p, DamageType type, double pen) {
+    static float hit(TestPlayer p, DamageType type, double pen) {
         return p.hurt(
             DamageSources.direct(type, null, pen)
                 .withoutSecondaryEffects(),
             8.0F);
     }
 
-    private static void checkHit(ScenarioResult.Builder out, TestPlayer p, DamageType type, double armor, double pen,
+    static void checkHit(ScenarioResult.Builder out, TestPlayer p, DamageType type, double armor, double pen,
         double resist) {
         float got = hit(p, type, pen);
         double want = expected(8.0, armor, pen, resist);
@@ -185,13 +185,13 @@ final class ArmorTierScenarios {
             type + " 8 at " + armor + " armor, pen " + pen + ": expected " + want + ", got " + got);
     }
 
-    private static void finish(TestPlayer p) {
+    static void finish(TestPlayer p) {
         p.undress();
         ArmorModule.events()
             .strip(p);
     }
 
-    private static void checkUnequipped(ScenarioResult.Builder out, TestPlayer p, ArmorEvents events) {
+    static void checkUnequipped(ScenarioResult.Builder out, TestPlayer p, ArmorEvents events) {
         p.undress();
         events.update(p);
         out.check(near(1.0, speedFactor(p)), "unequipped: expected speed x1.0, got " + speedFactor(p));
@@ -433,7 +433,7 @@ final class ArmorTierScenarios {
         }
     }
 
-    private static double units(TestPlayer p) {
+    static double units(TestPlayer p) {
         ItemStack chest = p.worn(ArmorSlot.CHESTPLATE);
         return ((ItemGregGunsArmor) chest.getItem()).powerUnits(chest);
     }

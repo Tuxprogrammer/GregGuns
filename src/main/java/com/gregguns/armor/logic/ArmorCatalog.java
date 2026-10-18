@@ -422,6 +422,120 @@ public final class ArmorCatalog {
             .build();
     }
 
+    // ---- M3 wave C: power armor and the Exo Suit (IV, electric) ---------------------------------------------------
+
+    /** Registry name of the Power Plating the power armor is repaired with (RC-24, an M4 component). */
+    public static final String POWER_PLATING = "part_power_plating";
+    /** EU per power unit of the IV electric sets: one worn piece walking costs 10 EU/t. */
+    private static final double IV_EU_PER_UNIT = 200.0;
+
+    private static final ArmorMaterialDef T3_POWER_MATERIAL = ArmorMaterialDef.uniform("t3_power", 360, 24.0)
+        .with(DamageType.EXPLOSION, 22.0)
+        .with(DamageType.ENERGY, 20.0)
+        .with(DamageType.FIRE, 20.0)
+        .with(DamageType.ICE, 20.0)
+        .with(DamageType.LIGHTNING, 20.0)
+        .with(DamageType.POISON, 15.0)
+        .with(DamageType.RADIATION, 10.0)
+        .withPenetrationResistance(0.25);
+    private static final ArmorMaterialDef T3_EXO_MATERIAL = ArmorMaterialDef.uniform("t3_exo", 300, 22.0)
+        .with(DamageType.EXPLOSION, 18.0)
+        .with(DamageType.ENERGY, 18.0)
+        .with(DamageType.FIRE, 18.0)
+        .with(DamageType.ICE, 18.0)
+        .with(DamageType.LIGHTNING, 18.0)
+        .with(DamageType.POISON, 10.0)
+        .with(DamageType.RADIATION, 6.0)
+        .withPenetrationResistance(0.15);
+
+    private static final double[] POWER_KB = { 0.20, 0.35, 0.25, 0.20 };
+    private static final double[] POWER_HEALTH = { 1.0, 2.0, 1.0, 1.0 };
+    private static final double[] POWER_JUMP = { 0.03, 0.03, 0.03, 0.15 };
+    private static final double[] EXO_KB = { 0.15, 0.30, 0.20, 0.15 };
+    private static final double[] EXO_JUMP = { 0.10, 0.10, 0.10, 0.30 };
+
+    /**
+     * T3 Power Armor: IV, three camos (Paladin, Outcast, Outcast 2) on single sheets, an IC2 electric chestplate. Every
+     * bonus and the HEAT, FROST and ELECTRICAL cover need a charged chestplate.
+     */
+    public static final SetDef T3_POWER = new SetDef(
+        "t3_power",
+        Tier.IV,
+        T3_POWER_MATERIAL,
+        Arrays.asList("t3_power", "t3_power_dark", "t3_power_dark2"),
+        SetDef.TextureLayout.SINGLE,
+        PowerSpec.electric(3600, IV_EU_PER_UNIT),
+        BonusMap.EMPTY,
+        powerPiece(ArmorSlot.HELMET, "Power Armor Helmet", BonusMap.EMPTY),
+        powerPiece(ArmorSlot.CHESTPLATE, "Power Armor Chestplate", BonusMap.EMPTY),
+        powerPiece(ArmorSlot.LEGGINGS, "Power Armor Leggings", BonusMap.EMPTY),
+        powerPiece(
+            ArmorSlot.BOOTS,
+            "Power Armor Boots",
+            BonusMap
+                .of(ArmorBonus.STEP_ASSIST, 1.0, ArmorBonus.FALL_REDUCTION, 0.2, ArmorBonus.FREE_FALL_HEIGHT, 1.0)));
+
+    private static PieceDef powerPiece(ArmorSlot slot, String name, BonusMap extra) {
+        return PieceDef.builder(slot, name)
+            .poweredBonuses(
+                BonusMap
+                    .of(
+                        ArmorBonus.SPEED,
+                        0.05,
+                        ArmorBonus.JUMP,
+                        POWER_JUMP[slot.ordinal()],
+                        ArmorBonus.BREAK_SPEED,
+                        0.05,
+                        ArmorBonus.EXTRA_HEALTH,
+                        POWER_HEALTH[slot.ordinal()],
+                        ArmorBonus.KNOCKBACK_RESISTANCE,
+                        POWER_KB[slot.ordinal()])
+                    .plus(extra))
+            .poweredPartialHazards(HazardFlag.HEAT, HazardFlag.FROST, HazardFlag.ELECTRICAL)
+            .repair(repairFor(slot, "plate", "TungstenSteel", POWER_PLATING))
+            .build();
+    }
+
+    /**
+     * T3 Exo Suit: IV, three camos, an IC2 electric chestplate, upgraded from an Advanced Combat set. Fastest set in
+     * the game; every bonus and the HEAT, FROST and ELECTRICAL cover need a charged chestplate.
+     */
+    public static final SetDef T3_EXO = new SetDef(
+        "t3_exo",
+        Tier.IV,
+        T3_EXO_MATERIAL,
+        Arrays.asList("t3_exo", "t3_exo_silver", "t3_exo_green"),
+        SetDef.TextureLayout.DOUBLE,
+        PowerSpec.electric(7200, IV_EU_PER_UNIT),
+        BonusMap.EMPTY,
+        exoPiece(ArmorSlot.HELMET, "Exo Suit Helmet", BonusMap.EMPTY),
+        exoPiece(ArmorSlot.CHESTPLATE, "Exo Suit Chestplate", BonusMap.EMPTY),
+        exoPiece(ArmorSlot.LEGGINGS, "Exo Suit Leggings", BonusMap.EMPTY),
+        exoPiece(
+            ArmorSlot.BOOTS,
+            "Exo Suit Boots",
+            BonusMap
+                .of(ArmorBonus.STEP_ASSIST, 1.0, ArmorBonus.FALL_REDUCTION, 0.5, ArmorBonus.FREE_FALL_HEIGHT, 5.0)));
+
+    private static PieceDef exoPiece(ArmorSlot slot, String name, BonusMap extra) {
+        return PieceDef.builder(slot, name)
+            .poweredBonuses(
+                BonusMap
+                    .of(
+                        ArmorBonus.SPEED,
+                        0.20,
+                        ArmorBonus.JUMP,
+                        EXO_JUMP[slot.ordinal()],
+                        ArmorBonus.BREAK_SPEED,
+                        0.075,
+                        ArmorBonus.KNOCKBACK_RESISTANCE,
+                        EXO_KB[slot.ordinal()])
+                    .plus(extra))
+            .poweredPartialHazards(HazardFlag.HEAT, HazardFlag.FROST, HazardFlag.ELECTRICAL)
+            .repair(repairFor(slot, "plate", "EpoxidFiberReinforced", HEAVY_CLOTH))
+            .build();
+    }
+
     /** Every set, in registration order. Later waves append here. */
     public static final List<SetDef> ALL = Collections.unmodifiableList(
         Arrays.asList(
@@ -434,7 +548,9 @@ public final class ArmorCatalog {
             T2_BERET,
             T3_COMBAT,
             STEAM,
-            T3_HEV));
+            T3_HEV,
+            T3_POWER,
+            T3_EXO));
 
     private ArmorCatalog() {}
 
