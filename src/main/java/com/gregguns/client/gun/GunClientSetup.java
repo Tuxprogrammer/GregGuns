@@ -21,15 +21,21 @@ public final class GunClientSetup {
 
     private GunClientSetup() {}
 
-    /** Creates and registers the client gun handlers. */
-    public static void init() {
+    /**
+     * Creates and registers the client gun handlers.
+     *
+     * @return the input handler, which the dev autotest drives
+     */
+    public static GunInputHandler init() {
         ClientGunMirror mirror = new ClientGunMirror();
         GunClientHooks.install(new ClientGunEvents(GunsClientModule.animations()));
         GunRenderers.registerPistol9mm(GunItems.pistol());
         GunClientHooks.installSync(mirror);
+        GunInputHandler input = new GunInputHandler(mirror);
         FMLCommonHandler.instance()
             .bus()
-            .register(new GunInputHandler(mirror));
+            .register(input);
         MinecraftForge.EVENT_BUS.register(new AmmoHud(mirror));
+        return input;
     }
 }

@@ -8,6 +8,7 @@ import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.gun.server.GunEvents;
 import com.gregguns.gun.server.GunKeybinds;
+import com.gregguns.gun.server.MpScenarios;
 import com.gregguns.item.ammo.AmmoItems;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.part.PartItems;
@@ -57,6 +58,7 @@ public final class GunsModule implements GregGunsModule {
         ProductionRecipes.register();
         if (DevEnvironment.isActive()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            MpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
         ProjectileModule.init();
         GunEvents.register();

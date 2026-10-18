@@ -1,0 +1,283 @@
+package com.gregguns.client.autotest;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.client.event.sound.PlaySoundEvent17;
+import net.minecraftforge.common.MinecraftForge;
+
+import com.gregguns.GregGuns;
+import com.gregguns.client.gun.GunInputHandler;
+import com.gregguns.core.DevEnvironment;
+import com.gregguns.core.testing.AutotestSignal;
+import com.gregguns.gun.GunClientEvents;
+import com.gregguns.gun.GunClientHooks;
+import com.gregguns.gun.logic.GunStats;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+/**
+ * Dev-only client hooks that let a script collect multiplayer and visual evidence without a human at the screen.
+ * Active only when {@link DevEnvironment#isActive()} and the JVM property {@code -Dgregguns.autotest=<label>} is set;
+ * otherwise {@link #init} returns without registering anything, so a released pack never runs any of it.
+ *
+ * <h2>What it does</h2>
+ * <ul>
+ * <li><b>Logs</b> greppable lines, all starting {@code [gregguns] AUTOTEST}: {@code joined}, {@code client X saw shot
+ * from Y (predicted|remote)}, {@code saw reload start}, {@code saw reload cancel}, {@code sound <name>} and
+ * {@code screenshot <label> <file>}.</li>
+ * <li><b>Obeys the server's chat signals</b> ({@link AutotestSignal}): switch the camera, screenshot, hold the fire
+ * button through the real input path, open GUIs. The signal lines are hidden from the chat.</li>
+ * <li><b>Screenshots</b> use vanilla {@code ScreenShotHelper} at the end of the render tick into
+ * {@code screenshots/}, renamed to {@code <player>-<label>.png}.</li>
+ * </ul>
+ * The commands are documented on {@link AutotestCommands}. Auto-connecting to a server is done with the launch
+ * arguments, see {@code docs/testing/README.md}. Client only.
+ */
+@SideOnly(Side.CLIENT)
+public final class ClientAutotest {
+
+    /** The JVM property that switches the hooks on; its value is only a label for the log. */
+    public static final String PROPERTY = "gregguns.autotest";
+
+    private static final String LOG_PREFIX = "AUTOTEST ";
+
+    private final GunInputHandler input;
+    private final List<Task> tasks = new ArrayList<>();
+    private final Map<String, Armed> armed = new HashMap<>();
+    private String pendingShot;
+    private boolean joinLogged;
+    private int fireClock = -1;
+    private int fireRemaining;
+
+    private ClientAutotest(GunInputHandler input) {
+        this.input = input;
+    }
+
+    /** @return true if the dev environment is running with {@code -Dgregguns.autotest} set */
+    public static boolean enabled() {
+        return DevEnvironment.isActive() && System.getProperty(PROPERTY) != null;
+    }
+
+    /**
+     * Installs the hooks when {@link #enabled()}.
+     *
+     * @param input the gun input handler, so the script can hold the fire button
+     */
+    public static void init(GunInputHandler input) {
+        if (!enabled()) {
+            return;
+        }
+        ClientAutotest autotest = new ClientAutotest(input);
+        FMLCommonHandler.instance()
+            .bus()
+            .register(autotest);
+        MinecraftForge.EVENT_BUS.register(autotest);
+        GunClientHooks.install(autotest.new Logging(GunClientHooks.events()));
+        GregGuns.LOG.info("[gregguns] AUTOTEST hooks active, label {}", System.getProperty(PROPERTY));
+    }
+
+    private static String localName() {
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        return player == null ? "?" : player.getCommandSenderName();
+    }
+
+    private static void log(String message) {
+        GregGuns.LOG.info("[gregguns] {}{}", LOG_PREFIX, message);
+    }
+
+    private void schedule(int ticks, Runnable action) {
+        tasks.add(new Task(ticks, action));
+    }
+
+    // ----- events -------------------------------------------------------------------------------------------
+
+    @SubscribeEvent
+    public void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.thePlayer == null || mc.theWorld == null) {
+            return;
+        }
+        if (!joinLogged) {
+            joinLogged = true;
+            log("joined " + localName());
+        }
+        for (Iterator<Task> it = tasks.iterator(); it.hasNext();) {
+            Task task = it.next();
+            if (--task.ticks <= 0) {
+                it.remove();
+                task.action.run();
+            }
+        }
+        tickFire();
+    }
+
+    /** Presses the fire button for two ticks every six ticks, {@code fireRemaining} times. */
+    private void tickFire() {
+        if (fireClock < 0) {
+            return;
+        }
+        int phase = fireClock % 6;
+        input.setAutotestAttack(phase < 2);
+        fireClock++;
+        if (fireClock >= fireRemaining * 6) {
+            fireClock = -1;
+            input.setAutotestAttack(false);
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderTickEnd(TickEvent.RenderTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || pendingShot == null) {
+            return;
+        }
+        String label = pendingShot;
+        pendingShot = null;
+        Screenshots.take(localName(), label);
+    }
+
+    @SubscribeEvent
+    public void onChat(ClientChatReceivedEvent event) {
+        String[] parts = AutotestSignal.parse(event.message.getUnformattedText());
+        if (parts == null) {
+            return;
+        }
+        event.setCanceled(true);
+        try {
+            run(parts);
+        } catch (RuntimeException e) {
+            GregGuns.LOG.error("[gregguns] AUTOTEST command failed: {}", String.join(" ", parts), e);
+        }
+    }
+
+    @SubscribeEvent
+    public void onSound(PlaySoundEvent17 event) {
+        String name = event.name;
+        if (name != null && name.startsWith("gregguns:")) {
+            log("sound " + name + " (client " + localName() + ")");
+        }
+    }
+
+    // ----- commands -----------------------------------------------------------------------------------------
+
+    private void run(String[] parts) {
+        String[] args = AutotestSignal.args(parts);
+        switch (parts[0]) {
+            case "view" -> Minecraft.getMinecraft().gameSettings.thirdPersonView = Integer.parseInt(args[0]);
+            case "shot" -> pendingShot = args[0];
+            case "arm" -> armed.put(args[0], new Armed(args[1], Integer.parseInt(args[2])));
+            case "fire" -> {
+                fireRemaining = Integer.parseInt(args[0]);
+                fireClock = 0;
+                log("fire x" + args[0] + " (client " + localName() + ")");
+            }
+            case "gui" -> AutotestCommands.openGui(args);
+            case "close" -> {
+                Minecraft mc = Minecraft.getMinecraft();
+                if (mc.currentScreen != null) {
+                    mc.thePlayer.closeScreen();
+                }
+            }
+            default -> log("unknown command " + parts[0]);
+        }
+    }
+
+    private void shotEvent(String kind) {
+        Armed arm = armed.remove(kind);
+        if (arm != null) {
+            schedule(arm.delay, () -> pendingShot = arm.label);
+        }
+    }
+
+    // ----- helpers ------------------------------------------------------------------------------------------
+
+    private static final class Task {
+
+        int ticks;
+        final Runnable action;
+
+        Task(int ticks, Runnable action) {
+            this.ticks = ticks;
+            this.action = action;
+        }
+    }
+
+    private static final class Armed {
+
+        final String label;
+        final int delay;
+
+        Armed(String label, int delay) {
+            this.label = label;
+            this.delay = delay;
+        }
+    }
+
+    /** Wraps the installed gun events: logs each one, then passes it on unchanged. */
+    private final class Logging implements GunClientEvents {
+
+        private final GunClientEvents next;
+
+        Logging(GunClientEvents next) {
+            this.next = next;
+        }
+
+        private String who(EntityLivingBase entity) {
+            String name = entity.getCommandSenderName();
+            return "client " + localName()
+                + " saw %s from "
+                + name
+                + (entity == Minecraft.getMinecraft().thePlayer ? " (predicted)" : " (remote)");
+        }
+
+        @Override
+        public void onShotFired(EntityLivingBase entity, GunStats stats, int attackType) {
+            log(String.format(who(entity), "shot"));
+            shotEvent("shot");
+            next.onShotFired(entity, stats, attackType);
+        }
+
+        @Override
+        public void onDryFire(EntityLivingBase entity, GunStats stats) {
+            log(String.format(who(entity), "dry fire"));
+            next.onDryFire(entity, stats);
+        }
+
+        @Override
+        public void onReloadStarted(EntityLivingBase entity, GunStats stats, int ticks) {
+            log(String.format(who(entity), "reload start"));
+            shotEvent("reload");
+            next.onReloadStarted(entity, stats, ticks);
+        }
+
+        @Override
+        public void onReloadCancelled(EntityLivingBase entity) {
+            log(String.format(who(entity), "reload cancel"));
+            next.onReloadCancelled(entity);
+        }
+
+        @Override
+        public void setZoom(EntityLivingBase entity, boolean zoomed, double fovMultiplier) {
+            next.setZoom(entity, zoomed, fovMultiplier);
+        }
+    }
+
+    /** Package access for the helpers that log in the same format. */
+    static void logLine(String message) {
+        log(message);
+    }
+}
