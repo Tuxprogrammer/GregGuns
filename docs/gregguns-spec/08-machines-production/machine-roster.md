@@ -27,7 +27,7 @@ The single authoritative list of every machine GregGuns implements: what it is, 
 
 ## Roster
 
-> **Built so far (M1 slice):** only the LV Ammo Press, MTE **20101**, constant `GregGunsMTEIDs.AMMO_PRESS_LV`. Its animation synced to recipe progress, the Steam, MV, HV and EV presses and the Ammunition Works stay M4 ([ammo-press.md](ammo-press.md#m1-slice-deviation)).
+> **Built so far:** the five Ammo Press tiers, MTE **20100** to **20104** (`GregGunsMTEIDs.AMMO_PRESS_*`), with the front overlay synced to recipe progress ([ammo-press.md](ammo-press.md#m4-tiers-deviation)). The Ammunition Works (20105) and the other machines stay M4. The roster has no ID for a steel High Pressure steam press.
 
 IDs come from the proposed block 20100-20163 ([metatileentity-framework.md](metatileentity-framework.md#gt5-unofficial-mte-id-reservation)). Single-block tiers are contiguous. Tier names follow GT: Steam is the Bronze steam machine, then LV, MV and so on.
 

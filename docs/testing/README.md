@@ -109,6 +109,12 @@ The framework logic (registry, argument parsing, runner, report) is plain Java a
 | `combat.hazmat` | damage system | A pig in a full stub-hazmat set (GT `IHazardProtector`) takes the direct damage but none of the fire, ice, poison, radiation or shock effects (GGS-02-22). |
 | `production.ammopress` | production chain (M1) | The LV Ammo Press (MTE 20101) is registered as an `MTEAmmoPress` at LV on `gregguns.ammoPress`, has an item form, and places as a GT machine block. |
 | `production.recipes` | production chain (M1) | The ammo map finds RC-28, RC-37 and RC-44 at `RECIPE_LV` with the sheet's counts and durations, and the assembler holds RC-05 and RC-11 at LV. |
+| `production.ammopress.tiers` | Ammo Press tiers (M4) | Steam, LV, MV, HV and EV (20100 to 20104) have the right class, GT tier, slot counts, the ammo map, `RecipeMapWorkable` (so GT lists them as NEI catalysts) and a hand recipe; RC-28 is found at LV to EV voltage and not at ULV. |
+| `production.ammopress.run.steam` | Ammo Press tiers (M4) | A placed Steam Ammo Press with steam runs a scenario-registered ULV recipe (2 cobblestone to flint) and outputs it. |
+| `production.ammopress.run.lv` | Ammo Press tiers (M4) | A placed, powered LV press runs RC-28 and outputs 16 bullets. |
+| `production.ammopress.run.mv` | Ammo Press tiers (M4) | The same at MV (overclocked). |
+| `production.ammopress.run.hv` | Ammo Press tiers (M4) | The same at HV. |
+| `production.ammopress.run.ev` | Ammo Press tiers (M4) | The same at EV. |
 | `machines.reaction.place` | machines (M4) | The EV (20106) and IV (20107) chambers and the Retort (20108) are registered; tiers 4 and 5; both chambers run `gregguns.recipe.reactionchamber`; intensity clamps to 0 to 10; the Anti Gravity Core recipe matches at IV voltage and not at EV (GGS-08-46). |
 | `machines.reaction.run` | machines (M4) | A powered EV chamber, kept on the drifting preferred intensity, makes one Laser Focus in 300 to 599 ticks (early finish) and goes idle. Multi-tick. |
 | `machines.reaction.failure` | machines (M4) | A chamber started on target and then left on intensity 10 runs the full 600 ticks, consumes the diamond, makes nothing and goes idle (GGS-08-21). Multi-tick. |
@@ -125,6 +131,11 @@ The framework logic (registry, argument parsing, runner, report) is plain Java a
 | `gun.player` | pistol slice (M1) | A shot from one fake player hits a second fake player 6 blocks away and costs them the `DamageModel` figure (the victim sits in its chunk only, because a fake player has no network handler for the entity tracker). Waits for ticks. |
 | `gun.zoom` | pistol slice (M1) | A zoom intent on the unscoped pistol through `ServerGunHandler.onZoomToggle`: accepted, zoom state stays off, FOV factor stays 1, rounds untouched. |
 | `gun.recipe` | pistol slice (M1) | `RecipeMaps.assemblerRecipes` (the map GT's NEI handler lists) holds the pistol at `RECIPE_LV` and 15 s; an LV query with the sheet inputs and circuit 1 finds it; a voltage below LV does not. |
+| `melee.knife` | melee (M2) | A fake player hits a zombie with the Combat Knife through `attackTargetEntityWithCurrentItem`: it loses the damage model's figure for 7.5 PHYSICAL damage, the hurt source is a GregGuns PHYSICAL source naming the player, the knife loses 1 durability and has 1000 uses. |
+| `melee.crowbar` | melee (M2) | The same with the Crowbar: 5.5 PHYSICAL damage, durability loss 1 to 2, harvest level 2 for `pickaxe`, the `pickaxe` tool class, and it harvests iron ore. |
+| `grenade.fuse` | grenades (M2) | A Stielgranate at rest (thrown by a zombie standing 2 blocks away) is live and harmless until 20 ticks before its 200 tick fuse, then explodes at tick 200; zombies at 1.5, 5 and 8 blocks lose `BlastFalloff` damage (full, ramp, none) through the damage model, the thrower inside the radius is hurt too (PFX-25), the floor is intact with `explosions.blockDamage` off. Waits about 10 s. |
+| `grenade.bounce` | grenades (M2) | A grenade dropped from 3 blocks bounces (bounces left falls, still live), then lies on the floor with no vertical speed instead of spending every bounce at once. Waits for ticks. |
+| `grenade.protected` | explosions (M2) | `ProjectileExplosion` trials: block damage off breaks nothing but still hurts; on breaks the floor with the same entity damage; a cancelled `ExplosionEvent.Start` stops everything; a `Detonate` listener that clears the block list keeps every block and does not change entity damage (GGS-04-10, 11); cancelled `BlockEvent.BreakEvent`s (one per block for a player owner, GGS-04-12) keep the blocks; `explosions.selfDamage` off spares the owner. |
 
 ## M1 coverage
 
@@ -171,6 +182,7 @@ Maps each M1 exit-gate item and each relevant `BUGS.md` row to the tests that co
 
 | `mp.sync` | multiplayer (M1) | Needs two connected clients. Players A and B (by username) face each other four blocks apart. A's client fires twice through the real input path and trigger packet, the server reloads A's pistol through `ServerGunHandler.onReloadKey`, and the scenario checks that a bullet was launched, B took damage, and A's rounds and magazines changed. Client B logs and screenshots what it sees. Waits for ticks. |
 | `mp.visual` | visuals (M0, M1) | Needs one connected client. Signals the first player to take screenshots of the first-person pistol with ammo HUD, third person, a dropped pistol, the inventory, the creative GregGuns tab, the LV Ammo Press GUI and NEI's recipe view for the pistol and the bullet. Passes once the signals are sent; the evidence is in the client's log and screenshots. Waits for ticks. |
+| `mp.grenade` | visuals (M2) | Needs one connected client; not part of `test all`. Gives the first player the knife, crowbar and 16 Stielgranaten, signals a screenshot of each held item, throws one grenade through `ItemStielgranate.onPlayerStoppedUsing` (fuse shortened to 40 ticks, `explosions.blockDamage` on for the run), and signals screenshots of its flight, the blast and the crater. Checks one grenade was consumed. Evidence is the screenshots; read them. |
 | `mp.give` | items and tooltips (M1) | Needs one or two connected clients. Gives each player every registered GregGuns item and the LV Ammo Press one at a time with the real `/give`, selects it, and has the client hold it and build its tooltip; then repeats through the client-side creative slot packet. Any exception in a log fails the orchestrator run. Waits for ticks. |
 
 ## Multiplayer and visual autotest

@@ -73,6 +73,7 @@ item.gregguns.part_mechanical_2.name=Mechanical Parts T2
 gregguns.ammoPress=Ammo Press
 gregguns.machine.ammo_press.tooltip=Presses bullets and magazines
 gregguns.machine.ammo_press.type=Machine Type: Ammo Press
+gregguns.machine.ammo_press_steam.tooltip=Presses ammunition on steam; vents steam from the front after each run
 
 # Guns: items, tooltips, keys and HUD
 item.gregguns.pistol_9mm.name=9mm Pistol
@@ -126,3 +127,13 @@ gregguns.retort.tt.cap=Any cap casing
 gregguns.retort.error.energy_tier=Every Energy Hatch must be EV or better
 GT5U.gui.text.recipe_result.gregguns_rc_intensity=Set the intensity to the recipe's target
 GT5U.gui.text.shutdown_reason.gregguns_rc_failed=The reaction failed
+# Melee tools and the Stielgranate
+item.gregguns.combat_knife.name=Combat Knife
+item.gregguns.crowbar.name=Crowbar
+item.gregguns.stielgranate.name=Stielgranate
+gregguns.melee.tooltip.damage=Damage: %s
+gregguns.melee.tooltip.crowbar_tool=Mines like an iron pickaxe
+gregguns.grenade.tooltip.radius=Radius: %s blocks
+gregguns.grenade.tooltip.bounces=Bounces: %s
+gregguns.grenade.tooltip.fuse=Fuse: %s s
+gregguns.grenade.tooltip.hold=Hold Right click to throw harder

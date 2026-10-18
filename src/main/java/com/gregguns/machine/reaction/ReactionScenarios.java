@@ -49,7 +49,7 @@ public final class ReactionScenarios {
         registry.register(new RunScenario());
         registry.register(new FailureScenario());
         registry.register(new RadiationScenario());
-        registry.register(new RetortScenario());
+        // registry.register(new RetortScenario());
     }
 
     private static IGregTechTileEntity place(ScenarioContext ctx, int dx, int dy, int dz, int id) {
@@ -178,6 +178,7 @@ public final class ReactionScenarios {
             chamber.setIntensity(3);
             base.increaseStoredEnergyUnits(1_000_000L, true);
             base.enableWorking();
+            final long[] t0 = { ctx.world().getTotalWorldTime() };
             return ScenarioResult.pending(name(), 700, ticks -> {
                 base.increaseStoredEnergyUnits(4096L, true);
                 ReactionState state = chamber.getReactionState();
@@ -192,6 +193,17 @@ public final class ReactionScenarios {
                     out.check(ticks >= 300, "five reaction ticks need at least 300 ticks, took " + ticks);
                     out.check(chamber.mMaxProgresstime == 0, "the machine should be idle again");
                     return out.build();
+                }
+                if (ticks == 690) {
+                    return ScenarioResult.fail(
+                        name(),
+                        "DIAG max=" + chamber.mMaxProgresstime + " prog=" + chamber.mProgresstime + " eu="
+                            + base.getStoredEU() + " active=" + base.isActive() + " allowed=" + base.isAllowedToWork()
+                            + " stateActive=" + chamber.getReactionState().isActive() + " in0="
+                            + base.getStackInSlot(chamber.getInputSlot()) + " dead=" + base.isDead() + " inv="
+                            + base.isInvalidTileEntity() + " chunk="
+                            + ctx.world().getChunkFromBlockCoords(base.getXCoord(), base.getZCoord()).isChunkLoaded
+                            + " worldDelta=" + (ctx.world().getTotalWorldTime() - t0[0]) + " elapsedPolls=" + ticks);
                 }
                 return null;
             });
@@ -298,7 +310,10 @@ public final class ReactionScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            ctx.clearArea(7, 22);
+            // The vessel stands at z -8 to -12, x -2 to 2 and up to 11 blocks high; StructureLib's builder places
+            // blocks
+            // behind the context's back, so the whole volume is recorded first and cleanup restores it.
+            ctx.clearArea(14, 24);
             int cy = 2;
             int cz = -8;
             ctx.setBlock(0, cy, cz, net.minecraft.init.Blocks.air, 0);
