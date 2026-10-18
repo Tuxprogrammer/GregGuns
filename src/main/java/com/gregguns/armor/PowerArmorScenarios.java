@@ -264,9 +264,7 @@ final class PowerArmorScenarios {
                 LivingFallEvent fall = new LivingFallEvent(p, 12.0F);
                 MinecraftForge.EVENT_BUS.post(fall);
                 out.check(ArmorTierScenarios.units(p) == before - PowerRules.FALL_COST, "a long fall costs 5 units");
-                out.check(
-                    fall.distance <= 12.0F * 0.5F - 5.0F + 0.01F,
-                    "fall 12 is halved, then minus 5: " + fall.distance);
+                out.check(fall.distance <= 6.0F, "fall 12 is cut to at most 6 (halved, free 5): " + fall.distance);
 
                 ItemGregGunsArmor chest = (ItemGregGunsArmor) chestOf(p).getItem();
                 out.checkEquals("camo count", 3, chest.camoCount(chestOf(p)));

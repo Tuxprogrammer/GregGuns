@@ -303,6 +303,17 @@ public final class ArmorTable {
         in(epoxy(3), ti(2), evCircuit(2)),
         in(epoxy(2), ti(2)));
 
+    /** Treated Leather (RC-22): LV Chemical Bath; gate-exempt (GGS-06-36). The acid fluid input is added in code. */
+    public static final ProductionTable.Row TREATED_LEATHER = new ProductionTable.Row(
+        "RC-22",
+        ArmorCatalog.TREATED_LEATHER,
+        2,
+        Tier.LV,
+        ProductionTable.Target.CHEMICAL_BATH,
+        10,
+        0,
+        Input.vanilla("leather", 2));
+
     /** Steam Armor Plating (RC-23): EV, the gate part of the steam armor. */
     public static final ProductionTable.Row STEAM_PLATING = new ProductionTable.Row(
         "RC-23",

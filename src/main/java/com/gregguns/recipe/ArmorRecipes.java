@@ -73,6 +73,13 @@ public final class ArmorRecipes {
      * RC-22: two leather and 500 mB of sulfuric acid in the Chemical Bath make two Treated Leather, LV, 10 s.
      */
     private static void addTreatedLeather() {
+        // Spec: GGS-06-36. The row goes through the gate rule, which exempts RC-22 by name.
+        java.util.Map<String, ProductionTable.Row> byOutput = new java.util.HashMap<>();
+        byOutput.put(ArmorTable.TREATED_LEATHER.output(), ArmorTable.TREATED_LEATHER);
+        if (!GateRule.satisfied(ArmorTable.TREATED_LEATHER, byOutput, ProductionTable.GATE_EXEMPT)) {
+            GregGuns.LOG.error("Skipping recipe RC-22: it fails the gate rule");
+            return;
+        }
         ItemStack out = ProductionRecipes.modStack(ArmorCatalog.TREATED_LEATHER, 2);
         if (out == null) {
             GregGuns.LOG.error("Skipping recipe RC-22: {} is not registered", ArmorCatalog.TREATED_LEATHER);
