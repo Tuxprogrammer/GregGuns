@@ -72,7 +72,9 @@ public final class ClientAutotest {
     private final GunInputHandler input;
     private final List<Task> tasks = new ArrayList<>();
     private final Map<String, Armed> armed = new HashMap<>();
+    private final java.util.ArrayDeque<String[]> queue = new java.util.ArrayDeque<>();
     private String pendingShot;
+    private int shotFrames;
     private boolean joinLogged;
     private int fireClock = -1;
     private int fireRemaining;
@@ -131,6 +133,11 @@ public final class ClientAutotest {
         if (mc.thePlayer == null || mc.theWorld == null) {
             return;
         }
+        // Commands run strictly in order, and nothing runs while a screenshot is waiting for its frames: a GUI that
+        // stalls the client for a second must not be closed before it has been drawn and photographed.
+        while (!queue.isEmpty() && pendingShot == null) {
+            execute(queue.poll());
+        }
         if (!joinLogged) {
             joinLogged = true;
             log("joined " + localName());
@@ -188,8 +195,12 @@ public final class ClientAutotest {
         if (event.phase != TickEvent.Phase.END || pendingShot == null) {
             return;
         }
+        if (++shotFrames < 4) {
+            return; // let the screen draw a few frames first
+        }
         String label = pendingShot;
         pendingShot = null;
+        shotFrames = 0;
         Screenshots.take(localName(), label);
     }
 
@@ -201,6 +212,10 @@ public final class ClientAutotest {
         }
         event.setCanceled(true);
         log("signal " + String.join(" ", parts));
+        queue.add(parts);
+    }
+
+    private void execute(String[] parts) {
         try {
             run(parts);
         } catch (RuntimeException e) {
@@ -226,7 +241,10 @@ public final class ClientAutotest {
         String[] args = AutotestSignal.args(parts);
         switch (parts[0]) {
             case "view" -> Minecraft.getMinecraft().gameSettings.thirdPersonView = Integer.parseInt(args[0]);
-            case "shot" -> pendingShot = args[0];
+            case "shot" -> {
+                pendingShot = args[0];
+                shotFrames = 0;
+            }
             case "arm" -> armed.put(args[0], new Armed(args[1], Integer.parseInt(args[2])));
             case "fire" -> {
                 fireRemaining = Integer.parseInt(args[0]);
@@ -254,7 +272,12 @@ public final class ClientAutotest {
     private void shotEvent(String kind) {
         Armed arm = armed.remove(kind);
         if (arm != null) {
-            schedule(arm.delay, () -> pendingShot = arm.label);
+            schedule(arm.delay, () -> {
+                if (pendingShot == null) {
+                    pendingShot = arm.label;
+                    shotFrames = 3;
+                }
+            });
         }
     }
 
