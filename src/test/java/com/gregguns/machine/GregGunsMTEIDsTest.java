@@ -31,6 +31,15 @@ class GregGunsMTEIDsTest {
     }
 
     @Test
+    void theAmmunitionWorksFollowsThePressRun() {
+        // machine-roster.md: the Ammunition Works is 20105.
+        assertEquals(20105, GregGunsMTEIDs.AMMO_WORKS);
+        assertTrue(
+            java.util.Arrays.stream(GregGunsMTEIDs.all())
+                .anyMatch(id -> id == GregGunsMTEIDs.AMMO_WORKS));
+    }
+
+    @Test
     void theReservedBlockIs64Ids() {
         assertEquals(64, GregGunsMTEIDs.BLOCK_LAST - GregGunsMTEIDs.BLOCK_FIRST + 1);
     }

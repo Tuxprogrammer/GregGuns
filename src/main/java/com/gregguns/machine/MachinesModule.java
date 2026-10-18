@@ -5,7 +5,6 @@ import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
-import com.gregguns.machine.reaction.ReactionCasingBlock;
 import com.gregguns.machine.reaction.ReactionCraftingRecipes;
 import com.gregguns.machine.reaction.ReactionMachines;
 import com.gregguns.machine.reaction.ReactionParts;
@@ -35,7 +34,7 @@ public final class MachinesModule implements GregGunsModule {
         // Reaction Chamber and Retort. The map is built here so GT records GregGuns as its owner mod (NEI badge).
         ReactionRecipeMaps.init();
         ReactionParts.register(registrar);
-        ReactionCasingBlock.register(registrar);
+        // The Reaction Chamber Casing is meta 2 of the shared casings block, registered by the guns module.
     }
 
     @Override

@@ -29,6 +29,7 @@ import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.gregguns.GregGuns;
+import com.gregguns.block.GregGunsCasings;
 import com.gregguns.core.config.MachinesConfig;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -99,16 +100,24 @@ public final class MTERetort extends MTEExtendedPowerMultiBlockBase<MTERetort>
         .addElement(
             'B',
             buildHatchAdder(MTERetort.class).atLeast(InputBus, OutputBus, InputHatch, Energy, Maintenance)
-                .casingIndex(ReactionCasingBlock.TEXTURE_ID)
+                .casingIndex(GregGunsCasings.textureIndex(GregGunsCasings.REACTION_CASING))
                 .hint(1)
-                .buildAndChain(onElementPass(MTERetort::countCasing, ofBlock(ReactionCasingBlock.get(), 0))))
+                .buildAndChain(
+                    onElementPass(
+                        MTERetort::countCasing,
+                        ofBlock(GregGunsCasings.INSTANCE, GregGunsCasings.REACTION_CASING))))
         .addElement(
             'C',
             buildHatchAdder(MTERetort.class).atLeast(Muffler)
-                .casingIndex(ReactionCasingBlock.TEXTURE_ID)
+                .casingIndex(GregGunsCasings.textureIndex(GregGunsCasings.REACTION_CASING))
                 .hint(2)
-                .buildAndChain(onElementPass(MTERetort::countCasing, ofBlock(ReactionCasingBlock.get(), 0))))
-        .addElement('S', onElementPass(MTERetort::countCasing, ofBlock(ReactionCasingBlock.get(), 0)))
+                .buildAndChain(
+                    onElementPass(
+                        MTERetort::countCasing,
+                        ofBlock(GregGunsCasings.INSTANCE, GregGunsCasings.REACTION_CASING))))
+        .addElement(
+            'S',
+            onElementPass(MTERetort::countCasing, ofBlock(GregGunsCasings.INSTANCE, GregGunsCasings.REACTION_CASING)))
         .addElement('F', ofFrame(Materials.Steel))
         // Deviation: GT's own ofBlocksTiered insists every glass block is the same tier. The getter always answers
         // "not set", so mixed tiers pass and the setter keeps the lowest, which is the pressure rating (spec).
@@ -444,7 +453,7 @@ public final class MTERetort extends MTEExtendedPowerMultiBlockBase<MTERetort>
             .addController(StatCollector.translateToLocal("gregguns.retort.tt.controller"))
             .addCasing(
                 String.valueOf(RetortShape.casingMinimum()) + "+",
-                StatCollector.translateToLocal("tile.gregguns.casing_reaction.name"),
+                StatCollector.translateToLocal("gregguns.casings.2.name"),
                 false)
             .addOtherStructurePart(
                 StatCollector.translateToLocal("gregguns.retort.tt.glass"),
@@ -465,7 +474,8 @@ public final class MTERetort extends MTEExtendedPowerMultiBlockBase<MTERetort>
     @Override
     public ITexture[] getTexture(IGregTechTileEntity base, ForgeDirection side, ForgeDirection facing, int colorIndex,
         boolean active, boolean redstoneLevel) {
-        ITexture casing = Textures.BlockIcons.getCasingTextureForId(ReactionCasingBlock.TEXTURE_ID);
+        ITexture casing = Textures.BlockIcons
+            .getCasingTextureForId(GregGunsCasings.textureIndex(GregGunsCasings.REACTION_CASING));
         if (side == facing) {
             String file = active ? "OVERLAY_FRONT_ACTIVE" : "OVERLAY_FRONT";
             ITexture overlay = TextureFactory.builder()
@@ -484,7 +494,7 @@ public final class MTERetort extends MTEExtendedPowerMultiBlockBase<MTERetort>
 
     @Override
     public ITexture getCasingTexture() {
-        return Textures.BlockIcons.getCasingTextureForId(ReactionCasingBlock.TEXTURE_ID);
+        return Textures.BlockIcons.getCasingTextureForId(GregGunsCasings.textureIndex(GregGunsCasings.REACTION_CASING));
     }
 
     @Override

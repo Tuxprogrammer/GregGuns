@@ -173,6 +173,7 @@ Built in `com.gregguns.machine.reaction`. Deviations and decisions:
 - **NEI.** The map has a special-info formatter that shows intensity, drift, required completion and the risk. The Heat Ray Focus shows as a non-consumed input.
 - **GUI.** The intensity control is a minus button, a text readout ("Intensity n (target m)  Good a/b") and a plus button, shared with the Retort (`ReactionGuiWidgets`). Its placement inside the basic-machine panel has not been checked in a client yet.
 - **Config.** `machines.*` keys in `docs/config.md` (GGS-08-25).
+- **Casing.** The Reaction Chamber Casing is meta 2 of the shared `gregguns:casings` block, page-50 index 2 (see [metatileentity-framework.md](metatileentity-framework.md#gt5-unofficial-casing-texture-pages)); there is no separate Reaction Casing block.
 - **Items.** `part_heat_ray_focus`, `part_laser_focus` (EV) and `part_anti_gravity_core` (IV) are registered by the machines module (`ReactionParts`) so the machines work with only `modules.machines` and `modules.guns` on.
 
 ## Open questions

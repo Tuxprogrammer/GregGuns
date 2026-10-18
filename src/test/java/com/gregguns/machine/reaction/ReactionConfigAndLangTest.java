@@ -52,7 +52,7 @@ class ReactionConfigAndLangTest {
             .readAllLines(Paths.get("src/main/resources/assets/gregguns/lang/en_US.lang"), StandardCharsets.UTF_8);
         String[] keys = { "gregguns.recipe.reactionchamber", "item.gregguns.part_heat_ray_focus.name",
             "item.gregguns.part_laser_focus.name", "item.gregguns.part_anti_gravity_core.name",
-            "tile.gregguns.casing_reaction.name", "gregguns.reaction.gui.status", "gregguns.reaction.nei.intensity",
+            "gregguns.casings.2.name", "gregguns.reaction.gui.status", "gregguns.reaction.nei.intensity",
             "gregguns.reaction.nei.completion", "gregguns.machine.reaction_chamber.tooltip",
             "gregguns.machine.reaction_chamber.tooltip2", "gregguns.machine.reaction_chamber.type",
             "gregguns.retort.tt.type", "gregguns.retort.error.energy_tier",

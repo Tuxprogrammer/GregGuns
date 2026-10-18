@@ -4,6 +4,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 
 import com.gregguns.GregGuns;
+import com.gregguns.block.GregGunsCasings;
 import com.gregguns.machine.GregGunsMTEIDs;
 
 import gregtech.api.GregTechAPI;
@@ -33,7 +34,7 @@ public final class ReactionCraftingRecipes {
     }
 
     private static void addAll() {
-        ItemStack casing = new ItemStack(ReactionCasingBlock.get(), 1, 0);
+        ItemStack casing = new ItemStack(GregGunsCasings.INSTANCE, 1, GregGunsCasings.REACTION_CASING);
         ItemStack focus = ReactionParts.stack(ReactionParts.HEAT_RAY_FOCUS, 1);
         ItemStack plateTitanium = GTOreDictUnificator.get(OrePrefixes.plate, Materials.Titanium, 4);
         ItemStack plateLead = GTOreDictUnificator.get(OrePrefixes.plate, Materials.Lead, 2);
