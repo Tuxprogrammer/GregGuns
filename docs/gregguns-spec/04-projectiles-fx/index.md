@@ -18,7 +18,7 @@ No integration point; see [techguns-spec](../../techguns-spec/04-projectiles-fx/
 | [dynamic-lights.md](dynamic-lights.md) | Angelica dynamic lights for held guns, armor and projectiles: the contract, the cost and the rules. |
 | [particle-rendering.md](particle-rendering.md) | What `EntityParticle` must do to be instanced by Angelica, and the pack's 8000-particle cap. |
 | [explosions-pack.md](explosions-pack.md) | ServerUtilities' explosion filter and claim protection, GregTech machine chain explosions and logging, resistance lookup. |
-| [grenades.md](grenades.md) | The grenade family as built (Stielgranate): deviations from Techguns, the explosion pipeline, config, tests. |
+| [grenades.md](grenades.md) | The grenade family as built (Stielgranate, Frag Grenade, Flashbang): deviations from Techguns, the explosion pipeline, config, tests. |
 
 ## Integration map
 
