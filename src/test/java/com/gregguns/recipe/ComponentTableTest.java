@@ -173,15 +173,6 @@ class ComponentTableTest {
             spec("RC-52").row()
                 .outputCount());
         assertEquals(
-            ProductionTable.Target.CHEMICAL_BATH,
-            spec("RC-22").row()
-                .target());
-        assertEquals(
-            500,
-            spec("RC-22").fluids()
-                .get(0)
-                .amount());
-        assertEquals(
             250,
             spec("RC-62").fluids()
                 .get(0)

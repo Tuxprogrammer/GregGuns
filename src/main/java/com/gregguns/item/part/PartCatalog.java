@@ -146,8 +146,6 @@ public final class PartCatalog {
         list.add(part("part_rad_emitter", Tier.ZPM, "RC-19 ComponentTable (Assembly Line)"));
         list.add(part("part_cybernetic", Tier.EV, "RC-20 ComponentTable"));
         // Plating and cloth.
-        list.add(part("part_treated_leather", Tier.LV, "RC-22 ComponentTable (Chemical Bath)"));
-        list.add(part("part_steam_armor_plating", Tier.EV, "RC-23 ComponentTable"));
         list.add(part("part_power_plating", Tier.IV, "RC-24 ComponentTable"));
         list.add(part("part_nuclear_warhead", Tier.ZPM, "RC-26 ComponentTable (Assembly Line)"));
         // Tanks, cells and consumables.
@@ -183,6 +181,20 @@ public final class PartCatalog {
         list.add(
             new Entry("part_gas_mask_filter", Tier.MV, Kind.PART, Owner.ARMOR_PARTS, "RC-25 EquipmentTable", null));
         list.add(new Entry("tank_air", Tier.HV, Kind.TANK, Owner.ARMOR_PARTS, "RC-54 EquipmentTable", null));
+        // Registered by ArmorParts on the m3 branches (armor-t2-t3, flight-gear), with their own recipes.
+        list.add(new Entry("part_treated_leather", Tier.LV, Kind.PART, Owner.ARMOR_PARTS, "RC-22 armor (m3)", null));
+        list.add(
+            new Entry("part_steam_armor_plating", Tier.EV, Kind.PART, Owner.ARMOR_PARTS, "RC-23 armor (m3)", null));
+        list.add(
+            new Entry(
+                "part_glider_backpack",
+                Tier.HV,
+                Kind.PART,
+                Owner.ARMOR_PARTS,
+                "flight-gear Assembler (m3)",
+                null));
+        list.add(
+            new Entry("part_glider_wing", Tier.HV, Kind.PART, Owner.ARMOR_PARTS, "flight-gear Assembler (m3)", null));
         list.add(
             new Entry(
                 "part_heat_ray_focus",

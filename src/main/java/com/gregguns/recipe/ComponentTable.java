@@ -315,35 +315,7 @@ public final class ComponentTable {
                 Input.gt("circuit", "Data", 2),
                 Input.gt("plate", PLASTIC, 2),
                 Input.gt("dust", "Redstone", 1),
-                Input.gt("dust", "SoulSand", 1)));
-        // RC-22: Chemical Bath. Deviation: two Steel rings (the studs) join the leather so the recipe has a Steel gate
-        // input; the sheet's only gate was "the Bath's own LV voltage", which GGS-06-36 does not accept.
-        list.add(
-            new Spec(
-                new Row(
-                    "RC-22",
-                    ComponentItems.TREATED_LEATHER,
-                    2,
-                    Tier.LV,
-                    Target.CHEMICAL_BATH,
-                    10,
-                    0,
-                    Input.vanilla("leather", 2),
-                    Input.gt("ring", "Steel", 2)),
-                Arrays.asList(new FluidInput("SulfuricAcid", FluidKind.FLUID, 500)),
-                null,
-                null));
-        list.add(
-            asm(
-                "RC-23",
-                ComponentItems.STEAM_ARMOR_PLATING,
-                1,
-                Tier.EV,
-                6,
-                1,
-                Input.gt("plate", TI, 2),
-                Input.gt("plate", "Bronze", 1),
-                Input.gt("plate", "Steel", 1)));
+                Input.vanilla("soul_sand", 1)));
         list.add(
             asm(
                 "RC-24",
@@ -356,7 +328,8 @@ public final class ComponentTable {
                 Input.gt("plate", EPOXY, 4),
                 Input.mod(ComponentItems.MECHANICAL_3, 1),
                 Input.gt("circuit", "Data", 2)));
-        // RC-26: Assembly Line. Deviation: the research item is the GT EV sensor (the proximity fuze), not
+        // RC-26: Assembly Line. Deviation: the TNT is the vanilla block (Materials.TNT has no dust item in the pinned
+        // GT); the research item is the GT EV sensor (the proximity fuze), not
         // ammo_rocket, which the ammo session registers later; and a Naquadah alloy plate (the warhead casing) joins
         // the inputs so the row meets the ZPM gate rule, which the sheet's inputs alone do not.
         list.add(
@@ -369,7 +342,7 @@ public final class ComponentTable {
                 new Research(Input.itemList("Sensor_EV", 1), 60, Tier.EV),
                 solder(144),
                 Input.gt("plate", "Lead", 4),
-                Input.gt("dust", "TNT", 4),
+                Input.vanilla("tnt", 4),
                 Input.gt("circuit", "Master", 2),
                 Input.gt("dust", "Uranium235", 2),
                 Input.gt("plate", "NaquadahAlloy", 1)));

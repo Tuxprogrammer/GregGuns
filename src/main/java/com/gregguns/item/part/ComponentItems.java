@@ -51,10 +51,6 @@ public final class ComponentItems {
     public static final String RAD_EMITTER = "part_rad_emitter";
     /** Registry name of Cybernetic Parts. */
     public static final String CYBERNETIC = "part_cybernetic";
-    /** Registry name of Treated Leather. */
-    public static final String TREATED_LEATHER = "part_treated_leather";
-    /** Registry name of Steam Armor Plating. */
-    public static final String STEAM_ARMOR_PLATING = "part_steam_armor_plating";
     /** Registry name of Power Plating. */
     public static final String POWER_PLATING = "part_power_plating";
     /** Registry name of the Small Nuclear Warhead. */
