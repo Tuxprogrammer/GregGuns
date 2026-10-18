@@ -6,18 +6,23 @@ import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.explosion.GrenadeScenarios;
 import com.gregguns.gun.server.GunEvents;
 import com.gregguns.gun.server.GunKeybinds;
 import com.gregguns.gun.server.GunScenarios;
 import com.gregguns.gun.server.MpScenarios;
 import com.gregguns.item.ammo.AmmoItems;
+import com.gregguns.item.grenade.GrenadeItems;
 import com.gregguns.item.gun.GunItems;
+import com.gregguns.item.melee.MeleeItems;
+import com.gregguns.item.melee.MeleeScenarios;
 import com.gregguns.item.part.PartItems;
 import com.gregguns.machine.AmmoPressMachines;
 import com.gregguns.projectile.ProjectileModule;
 import com.gregguns.recipe.GregGunsRecipeMaps;
 import com.gregguns.recipe.GunRecipeScenarios;
 import com.gregguns.recipe.GunRecipes;
+import com.gregguns.recipe.MeleeRecipes;
 import com.gregguns.recipe.ProductionRecipes;
 import com.gregguns.recipe.ProductionScenarios;
 
@@ -51,6 +56,8 @@ public final class GunsModule implements GregGunsModule {
         ProjectileModule.preInit(registrar);
         GunItems.register(registrar);
         GunKeybinds.register();
+        MeleeItems.register(registrar);
+        GrenadeItems.register(registrar);
     }
 
     @Override
@@ -61,11 +68,14 @@ public final class GunsModule implements GregGunsModule {
         AmmoPressMachines.register();
         ProductionRecipes.register();
         GunRecipes.register();
+        MeleeRecipes.register();
         if (DevEnvironment.isActive()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GunRecipeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            MeleeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            GrenadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
         ProjectileModule.init();
         GunEvents.register();

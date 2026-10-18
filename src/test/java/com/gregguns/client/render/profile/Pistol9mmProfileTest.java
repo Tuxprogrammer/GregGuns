@@ -159,14 +159,14 @@ class Pistol9mmProfileTest {
     void firstPersonRowsFollowTheSheet() {
         GunTransforms t = Pistol9mmProfile.TRANSFORMS;
         assertEquals(
-            Arrays.asList("R(180.0000;1,0,0)", "R(225.0000;0,1,0)", "S(2.0000,2.0000,2.0000)"),
+            Arrays.asList("R(180.0000;1,0,0)", "R(225.0000;0,1,0)", "S(1.0000,1.0000,1.0000)"),
             run(t.fpBase(), 0, 0));
-        assertEquals(Arrays.asList("T(-0.5500,-0.4500,-0.8000)"), run(t.fpIdle(), 0, 0));
+        assertEquals(Arrays.asList("T(-1.2000,-1.0000,-1.7000)"), run(t.fpIdle(), 0, 0));
         // At the dip yF = -0.5: the frame pushes back 0.15, the slide 0.25; the muzzle climbs -5 degrees about X.
-        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", "T(-0.5500,-0.4500,-0.6500)"), run(t.fpFire(), 0.5, 0));
-        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", "T(-0.5500,-0.4500,-0.5500)"), run(t.fpFire(), 0.5, 1));
-        assertEquals(Arrays.asList("R(50.0000;1,0,0)", "T(-0.5500,-0.4500,-0.8000)"), run(t.fpReload(), 0.5, 0));
-        assertEquals(Arrays.asList("R(0.0000;1,0,0)", "T(-0.5500,-0.4500,-0.8000)"), run(t.fpFire(), 0.0, 0));
+        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", "T(-1.2000,-1.0000,-1.5500)"), run(t.fpFire(), 0.5, 0));
+        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", "T(-1.2000,-1.0000,-1.4500)"), run(t.fpFire(), 0.5, 1));
+        assertEquals(Arrays.asList("R(50.0000;1,0,0)", "T(-1.2000,-1.0000,-1.7000)"), run(t.fpReload(), 0.5, 0));
+        assertEquals(Arrays.asList("R(0.0000;1,0,0)", "T(-1.2000,-1.0000,-1.7000)"), run(t.fpFire(), 0.0, 0));
     }
 
     @Test

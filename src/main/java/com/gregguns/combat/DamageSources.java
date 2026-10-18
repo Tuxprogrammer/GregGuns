@@ -79,6 +79,36 @@ public final class DamageSources {
     }
 
     /**
+     * The call melee and explosions make: builds a {@linkplain #direct direct source}, applies the configured damage
+     * factor and penetration multiplier for this attacker and target, and deals the damage through vanilla's
+     * {@code attackEntityFrom}. A target hitting itself (a player in their own blast) takes the full amount.
+     *
+     * @param target      the entity hit
+     * @param type        the damage type
+     * @param attacker    the attacker, may be {@code null} (counts as an NPC)
+     * @param damage      raw damage before armor; the damage factor is applied here
+     * @param penetration the share of the damage that skips armor, 0..1
+     * @return what {@code attackEntityFrom} returned: true when the target took the hit
+     */
+    public static boolean strike(Entity target, DamageType type, Entity attacker, float damage, double penetration) {
+        boolean targetIsPlayer = target instanceof EntityPlayer;
+        DamageFactors.Attacker kind = attackerOf(attacker);
+        DamageFactors.Settings settings = settingsFromConfig();
+        float scaled = damage;
+        DirectDamageSource source = direct(type, attacker, penetration);
+        if (attacker != target) {
+            MinecraftServer server = MinecraftServer.getServer();
+            boolean pvp = server != null && server.isPVPEnabled();
+            scaled = (float) (damage * DamageFactors.damageFactor(settings, kind, targetIsPlayer, pvp));
+            source.hit()
+                .setPenetrationScale(DamageFactors.penetrationScale(settings, kind, targetIsPlayer));
+        }
+        boolean taken = target.attackEntityFrom(source, scaled);
+        restoreFramesIfRejected(target, source.hit());
+        return taken;
+    }
+
+    /**
      * Classifies a shooter for the damage factors: players, turrets ({@link TurretAttacker}) and everything else.
      *
      * @param shooter the shooter, may be {@code null}
