@@ -9,6 +9,7 @@ import com.gregguns.core.config.ModuleFlags;
 import com.gregguns.core.module.ModuleManager;
 import com.gregguns.core.selfcheck.SelfCheckRunner;
 import com.gregguns.core.testing.HarnessScenarios;
+import com.gregguns.core.testing.ScenarioChunks;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.gun.GunsModule;
 import com.gregguns.network.GregGunsNetwork;
@@ -35,6 +36,10 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         modules.init(event);
+        if (DevEnvironment.isActive()) {
+            // Dev scenario runs force-load their area; the ticket callback must exist before any world loads.
+            ScenarioChunks.registerCallback();
+        }
     }
 
     public void postInit(FMLPostInitializationEvent event) {
