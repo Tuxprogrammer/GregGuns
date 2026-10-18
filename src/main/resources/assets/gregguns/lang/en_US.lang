@@ -18,6 +18,7 @@ itemGroup.gregguns=GregGuns
 
 # Ammo and magazines
 item.gregguns.ammo_9mm_bullet.name=9mm Bullets
+item.gregguns.ammo_shotgun_shell.name=Shotgun Shells
 item.gregguns.mag_9mm_pistol.name=9mm Pistol Magazine
 item.gregguns.mag_9mm_pistol_empty.name=9mm Pistol Magazine (Empty)
 gregguns.tooltip.ammo.round=Loose ammunition
@@ -98,6 +99,7 @@ gregguns.machine.ammo_works.error.too_few_bays=The hall needs at least 2 press b
 # Guns: items, tooltips, keys and HUD
 item.gregguns.pistol_9mm.name=9mm Pistol
 item.gregguns.revolver.name=Revolver
+item.gregguns.sawed_off.name=Sawed Off
 gregguns.gun.tooltip.ammo=Ammo: %s
 gregguns.gun.tooltip.loaded=Loaded: %s / %s
 gregguns.gun.tooltip.damage=Damage: %s

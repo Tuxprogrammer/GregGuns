@@ -67,4 +67,15 @@ class MuzzleSheetsTest {
                 .sheet()
                 .frames());
     }
+
+    @Test
+    void sawedOffFlashPlaysEveryPaintedFrameOfMuzzleflash4x4() throws IOException {
+        int painted = paintedCells(load("/assets/gregguns/textures/fx/muzzleflash4x4.png"));
+        assertEquals(painted, SawedOffProfile.MUZZLE_FLASH_FRAMES);
+        assertEquals(
+            painted,
+            SawedOffProfile.TRANSFORMS.muzzleFlash()
+                .sheet()
+                .frames());
+    }
 }
