@@ -1,0 +1,6 @@
+// Project build additions applied by the GTNH buildscript (build.gradle.kts itself is GTNH-managed).
+
+// Unit tests run on the JUnit Platform (CONTRIBUTING.md, Testing). The JUnit 5 dependencies are in dependencies.gradle.
+tasks.named("test", Test) {
+    useJUnitPlatform()
+}
