@@ -43,6 +43,18 @@
     "category": "player",
     "sounds": ["guns/boltaction_rechamber"]
   },
+  "guns.grenade.pin": {
+    "category": "player",
+    "sounds": ["guns/grenade_pin_a", "guns/grenade_pin_b"]
+  },
+  "guns.grenade.throw": {
+    "category": "player",
+    "sounds": ["guns/grenade_throw_a", "guns/grenade_throw_b", "guns/grenade_throw_c"]
+  },
+  "guns.flashbang.bang": {
+    "category": "player",
+    "sounds": ["guns/flashbang_bang"]
+  },
   "effects.bullet_impact": {
     "category": "player",
     "sounds": [

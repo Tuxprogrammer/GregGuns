@@ -216,12 +216,17 @@ gregguns.armor.bonus.cooling_system=Cooling system
 item.gregguns.combat_knife.name=Combat Knife
 item.gregguns.crowbar.name=Crowbar
 item.gregguns.stielgranate.name=Stielgranate
+item.gregguns.frag_grenade.name=Frag Grenade
+item.gregguns.flashbang.name=Flashbang
 gregguns.melee.tooltip.damage=Damage: %s
 gregguns.melee.tooltip.crowbar_tool=Mines like an iron pickaxe
 gregguns.grenade.tooltip.radius=Radius: %s blocks
 gregguns.grenade.tooltip.bounces=Bounces: %s
 gregguns.grenade.tooltip.fuse=Fuse: %s s
 gregguns.grenade.tooltip.hold=Hold Right click to throw harder
+gregguns.grenade.tooltip.fragments=Fragments: %s, up to %s damage each
+gregguns.grenade.tooltip.flash=Blinds and sickens whatever can see it; harms nothing
+gregguns.grenade.tooltip.flash_range=Reach: %s blocks, up to %s s; look away to dodge it
 
 # Machines: Repair Bench, Camo Bench, Armory Gantry
 gregguns.machine.repair_bench.tooltip=Restores worn GregGuns armor with its repair parts

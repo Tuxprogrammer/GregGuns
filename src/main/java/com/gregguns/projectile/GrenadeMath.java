@@ -17,6 +17,14 @@ public final class GrenadeMath {
     public static final int FUSE_TICKS = 200;
     /** Hard bounces a Stielgranate survives. */
     public static final int STIELGRANATE_BOUNCES = 3;
+    /** Ticks from throw to detonation of a Frag Grenade. */
+    public static final int FRAG_FUSE_TICKS = 120;
+    /** Hard bounces a Frag Grenade survives. */
+    public static final int FRAG_BOUNCES = 2;
+    /** Ticks from throw to detonation of a Flashbang. */
+    public static final int FLASHBANG_FUSE_TICKS = 40;
+    /** Hard bounces a Flashbang survives. */
+    public static final int FLASHBANG_BOUNCES = 2;
     /** Share of the reflected speed that is kept per bounce. */
     public static final double BOUNCE_SPEED_FACTOR = 0.5;
     /** Speed into the surface, blocks per tick, below which a contact is a rest rather than a bounce. */

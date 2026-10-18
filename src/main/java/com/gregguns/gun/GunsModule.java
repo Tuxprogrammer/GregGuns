@@ -7,6 +7,7 @@ import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.explosion.GrenadeScenarios;
+import com.gregguns.explosion.MvGrenadeScenarios;
 import com.gregguns.gun.server.BoltActionScenarios;
 import com.gregguns.gun.server.FrameworkScenarios;
 import com.gregguns.gun.server.GunEvents;
@@ -25,6 +26,7 @@ import com.gregguns.item.part.PartItems;
 import com.gregguns.machine.AmmoPressMachines;
 import com.gregguns.projectile.ProjectileModule;
 import com.gregguns.recipe.GregGunsRecipeMaps;
+import com.gregguns.recipe.GrenadeRecipes;
 import com.gregguns.recipe.GunRecipeScenarios;
 import com.gregguns.recipe.GunRecipes;
 import com.gregguns.recipe.MeleeRecipes;
@@ -74,6 +76,7 @@ public final class GunsModule implements GregGunsModule {
         ProductionRecipes.register();
         GunRecipes.register();
         MeleeRecipes.register();
+        GrenadeRecipes.register();
         if (DevEnvironment.isActive()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GunRecipeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
@@ -86,6 +89,7 @@ public final class GunsModule implements GregGunsModule {
             MpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MeleeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GrenadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            MvGrenadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
         ProjectileModule.init();
         GunEvents.register();
