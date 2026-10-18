@@ -6,7 +6,7 @@
     "description": "Guns, armor and military tech for GT New Horizons. A from-scratch rewrite inspired by Techguns, built around GregTech progression.",
     "version": "${modVersion}",
     "mcversion": "${minecraftVersion}",
-    "url": "",
+    "url": "https://github.com/Tuxprogrammer/GregGuns",
     "updateUrl": "",
     "authorList": ["Spencer Callicott"],
     "credits": "Inspired by Techguns by pWn3d1337. Built on the GTNewHorizons ExampleMod1.7.10 buildscript.",
