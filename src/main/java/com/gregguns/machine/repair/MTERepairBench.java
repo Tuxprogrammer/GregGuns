@@ -221,8 +221,8 @@ public final class MTERepairBench extends MTETieredMachineBlock {
             || target < 0
             || target > TARGET_HELD
             || player.worldObj != base.getWorld()
-            || player.getDistanceSq(base.getXCoord() + 0.5, base.getYCoord() + 0.5, base.getZCoord() + 0.5)
-                > REACH_SQ) {
+            || player.getDistanceSq(base.getXCoord() + 0.5, base.getYCoord() + 0.5, base.getZCoord() + 0.5) > REACH_SQ
+            || !base.isUseableByPlayer(player)) {
             return Outcome.OUT_OF_REACH;
         }
         Outcome outcome = doRepair(base, player, target);

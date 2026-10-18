@@ -37,6 +37,17 @@ No integration point; see the Techguns spec and the design records:
 | Repair Bench inputs | GT prefix and material, unified matching | GT5-Unofficial | [repair-bench.md](repair-bench.md) |
 | Machine and charge recipes (B04 to B09, R58 to R61) | Hull-and-parts shaped recipes for the MTEs at every tier; Assembler for plates, casings, hatches and charges | GT5-Unofficial (`MTERecipeLoader`, `assemblerRecipes`) | [recipes.md](recipes.md) |
 
+## Camo Bench built notes (M4 wave A)
+
+Built as `MTECamoBench` (ID 20115, LV) with `PacketCamoCycle`. Decisions, each marked `// Deviation:` in code:
+
+- **No EU.** The sheets give an LV tier and no process; a click needs no time, so the bench draws nothing. The recipe still uses `Hull_LV`.
+- **Targets.** The item in the bench's slot and the four worn armor pieces. The Techguns back and face slots (buttons 11 to 14) do not exist in GregGuns.
+- **Opt-in.** An item is cycled when it implements `CamoChangeable` (camo count, index, name key). Armor does. Guns store a camo index (`GunNbt.KEY_CAMO`) but declare no camo count, so they stay out until a gun definition does; the hook is the interface, with no bench change.
+- **Packet.** The click is a `ServerboundPacket`: same dimension, within 8 blocks, a known target, a Camo Bench at the position, then `isAuthorized` asks GT's `isUseableByPlayer`. Only the camo index changes; every other tag is kept.
+- **GUI.** GT's frame with the slot, a pair of arrows per target and a text line showing index, count and camo name. Not built: the live player preview.
+- **Automation.** No accessible slots, as in Techguns.
+
 ## Pack-side changes
 
 None.
@@ -50,7 +61,7 @@ None.
 ## Open questions
 
 - Turret friend semantics (ALLY or MEMBER). Needs a turret-security record.
-- Does the Repair Bench use EU? Proposed in [machine-roster.md](../08-machines-production/machine-roster.md#open-questions): yes, 2 s plus 8 s times the damage fraction at half the recipe voltage. Needs a record.
+- Does the Repair Bench use EU? Settled in the build: yes, 2 s plus 8 s times the damage fraction at half the recipe voltage, charged at the button press ([repair-bench.md](repair-bench.md#built-notes-m4-wave-a)). Still needs a design record.
 - Are charges balanced against GT and IC2 explosives? Needs a balance pass after the tier map is live.
 - Turret and Repair Bench multiblocks (closed): the four turret armor plates are the crafting inputs of the Bastion Plating casing, and the tiered single blocks, controllers, casings and hatches are all in [recipes.md](recipes.md). Their costs are proposals for a balance pass.
 - Machine tiers (Turret MV, Repair Bench LV, Camo Bench LV) and charge tiers (MV, HV) are proposals in [recipes.md](recipes.md), because [0001](../../design/0001-tier-map.md) lists no machines. Needs a line in 0001 or a short record.
