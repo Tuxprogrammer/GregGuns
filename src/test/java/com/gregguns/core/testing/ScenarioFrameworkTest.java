@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 class ScenarioFrameworkTest {
 
     /** A scenario whose behaviour is a lambda. */
-    private static final class Fake implements Scenario {
+    private static class Fake implements Scenario {
 
         private final String name;
         private final Function<ScenarioContext, ScenarioResult> body;
@@ -115,6 +115,26 @@ class ScenarioFrameworkTest {
 
     private static Scenario failing(String name) {
         return new Fake(name, c -> ScenarioResult.fail(name, "nope"));
+    }
+
+    private static Scenario externalOnly(String name) {
+        return new Fake(name, c -> ScenarioResult.fail(name, "needs clients")) {
+
+            @Override
+            public boolean includedInAll() {
+                return false;
+            }
+        };
+    }
+
+    @Test
+    void testAllSkipsScenariosThatNeedAnExternalSetup() {
+        ScenarioRegistry reg = new ScenarioRegistry();
+        reg.register(passing("a.one"));
+        reg.register(externalOnly("mp.two"));
+        assertEquals(2, reg.all().size(), "both stay listed and runnable by name");
+        assertEquals(1, reg.forAll().size());
+        assertEquals("a.one", reg.forAll().get(0).name());
     }
 
     @Test

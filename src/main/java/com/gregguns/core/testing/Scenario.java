@@ -24,4 +24,14 @@ public interface Scenario {
      * @return the structured result
      */
     ScenarioResult run(ScenarioContext context);
+
+    /**
+     * Whether {@code /gregguns test all} runs this scenario. Scenarios that need a setup the console run can't give,
+     * such as connected client players, return false and are run by name from their own harness.
+     *
+     * @return true unless the scenario needs an external setup
+     */
+    default boolean includedInAll() {
+        return true;
+    }
 }

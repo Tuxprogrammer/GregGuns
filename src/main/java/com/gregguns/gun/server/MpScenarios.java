@@ -123,6 +123,11 @@ public final class MpScenarios {
     private static final class Sync implements Scenario {
 
         @Override
+        public boolean includedInAll() {
+            return false; // needs two connected clients: run by name from mp_check
+        }
+
+        @Override
         public String name() {
             return "mp.sync";
         }
@@ -252,6 +257,11 @@ public final class MpScenarios {
     private static final class Visual implements Scenario {
 
         @Override
+        public boolean includedInAll() {
+            return false; // needs two connected clients: run by name from mp_check
+        }
+
+        @Override
         public String name() {
             return "mp.visual";
         }
@@ -376,6 +386,11 @@ public final class MpScenarios {
     }
 
     private static final class Give implements Scenario {
+
+        @Override
+        public boolean includedInAll() {
+            return false; // needs two connected clients: run by name from mp_check
+        }
 
         @Override
         public String name() {

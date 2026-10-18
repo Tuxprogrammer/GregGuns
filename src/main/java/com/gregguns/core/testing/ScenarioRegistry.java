@@ -53,6 +53,20 @@ public final class ScenarioRegistry {
         return Collections.unmodifiableList(new ArrayList<>(byName.values()));
     }
 
+    /**
+     * @return the scenarios {@code test all} runs: every registered scenario that is {@link Scenario#includedInAll()},
+     *         in name order
+     */
+    public synchronized List<Scenario> forAll() {
+        List<Scenario> out = new ArrayList<>();
+        for (Scenario s : all()) {
+            if (s.includedInAll()) {
+                out.add(s);
+            }
+        }
+        return out;
+    }
+
     /** @return the number of registered scenarios */
     public synchronized int size() {
         return byName.size();
