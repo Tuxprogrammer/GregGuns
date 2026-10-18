@@ -41,6 +41,29 @@ python audio_describe.py report   --work $WORK --spec ../../docs/techguns-spec
 
 **Cost:** about 3.5k input and 1.2k output tokens per sound. For all 319 Techguns sounds that is roughly $3 through the Batches API on `claude-sonnet-5-5`.
 
+## A/B review of generated sounds
+
+`compare` pairs each generated GregGuns sound with the Techguns sound it replaces, through `footprint_ref` in [`tools/asset-gen/manifest.json`](../asset-gen/manifest.json). It then asks Claude to list every difference between the two, and to write change notes for the synthesiser.
+
+Claude still can't hear either file. The comparison has three inputs:
+- both sides' spectrograms and waveforms;
+- both sides' measurements;
+- Qwen2-Audio listening notes on both sides.
+
+```sh
+NEW=/some/scratch/dir-gg
+python audio_describe.py extract --assets <repo>/src/main/resources/assets/gregguns --work $NEW
+python listen_qwen.py --sounds <repo>/src/main/resources/assets/gregguns --out listen.jsonl   # on the GPU host; copy into $NEW
+python audio_describe.py compare --ref-work $WORK --new-work $NEW --manifest ../asset-gen/manifest.json --out $NEW/ab
+python audio_describe.py compare-report --out $NEW/ab --report ../../docs/assets/previews/sound-ab-review.md
+```
+
+**Cost:** each comparison sends four images and about 4k tokens of evidence, and gets about 1.5k tokens back.
+
+**Outputs:**
+- `compare.jsonl` holds one review per sound. Each review has a verdict (keep, tweak or rework), a 0–10 score, the differences with severity, missing and extra elements, and change notes.
+- The generator reads `compare.jsonl` to apply the change notes.
+
 ## Boundaries
 
 - The Techguns audio is All Rights Reserved. This tool only *reads* it. Keep `$WORK` (spectrograms, waveforms, JSON) out of the repo; only the written descriptions and measurements go into the spec.

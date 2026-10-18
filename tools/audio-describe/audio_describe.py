@@ -9,6 +9,8 @@ Subcommands
   extract   measure every .ogg and render its images              (no API calls, no cost)
   describe  send each sound's evidence to Claude, resumable       (Message Batches API by default)
   report    write AUDIO-PROFILES.md and per-area summaries into the spec
+  compare   A/B each generated sound against the original it replaces (Claude reviews both sides)
+  compare-report  write the A/B review markdown
   selftest  check the measurement code against synthetic signals
 
 See README.md in this folder for usage.
@@ -344,29 +346,45 @@ def cmd_describe(args):
             f.write(json.dumps({"id": rec["id"], "path": rec["path"], "model": args.model, "profile": profile,
                                 "error": error, "usage": usage}) + "\n")
 
+    by_id = {r["id"]: r for r in records}
+    for custom_id, msg, error in run_requests(client, work / "batch.json", args,
+                                              [(r["id"], build_params(r, work, args.model, args.effort, listening)) for r in todo]):
+        rec = by_id[custom_id]
+        if msg is not None:
+            profile, error = parse_message(msg)
+            save(rec, profile, error, msg.usage.model_dump())
+        else:
+            save(rec, None, error)
+        if args.sync:
+            print(f"{rec['path']}: {error or 'ok'}", flush=True)
+    print(f"results appended to {out_path}; re-run to retry any failures")
+
+
+def run_requests(client, batch_file, args, items):
+    """Send (custom_id, params) pairs and yield (custom_id, message | None, error | None).
+
+    Uses the Message Batches API unless args.sync. A pending batch recorded in batch_file is resumed
+    unless args.new_batch, so an interrupted run does not pay twice.
+    """
+    import anthropic
+
     if args.sync:
-        for rec in todo:
+        for custom_id, params in items:
             try:
-                msg = client.messages.create(**build_params(rec, work, args.model, args.effort, listening))
-                profile, error = parse_message(msg)
-                save(rec, profile, error, msg.usage.model_dump())
+                yield custom_id, client.messages.create(**params), None
             except anthropic.APIStatusError as exc:
-                save(rec, None, f"API {exc.status_code}: {exc.message}")
-            print(f"{rec['path']}: {'ok' if profile else error}", flush=True)
+                yield custom_id, None, f"API {exc.status_code}: {exc.message}"
         return
 
     from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
     from anthropic.types.messages.batch_create_params import Request
 
-    batch_file = work / "batch.json"
     if batch_file.exists() and not args.new_batch:
         batch_id = json.loads(batch_file.read_text())["id"]
         print(f"resuming batch {batch_id}")
     else:
-        requests = [Request(custom_id=r["id"], params=MessageCreateParamsNonStreaming(**build_params(r, work, args.model, args.effort, listening)))
-                    for r in todo]
-        batch = client.messages.batches.create(requests=requests)
-        batch_id = batch.id
+        requests = [Request(custom_id=cid, params=MessageCreateParamsNonStreaming(**params)) for cid, params in items]
+        batch_id = client.messages.batches.create(requests=requests).id
         batch_file.write_text(json.dumps({"id": batch_id, "count": len(requests), "model": args.model}))
         print(f"submitted batch {batch_id} with {len(requests)} requests")
     while True:
@@ -376,16 +394,209 @@ def cmd_describe(args):
         if batch.processing_status == "ended":
             break
         time.sleep(args.poll)
-    by_id = {r["id"]: r for r in records}
     for res in client.messages.batches.results(batch_id):
-        rec = by_id[res.custom_id]
         if res.result.type == "succeeded":
-            profile, error = parse_message(res.result.message)
-            save(rec, profile, error, res.result.message.usage.model_dump())
+            yield res.custom_id, res.result.message, None
         else:
-            save(rec, None, f"batch result {res.result.type}")
+            yield res.custom_id, None, f"batch result {res.result.type}"
     batch_file.unlink()
-    print(f"results appended to {out_path}; re-run describe to retry any failures")
+
+
+# --------------------------------------------------------------------------------------------- A/B compare
+
+COMPARE_PROMPT = """You are a game-audio lead reviewing replacement sound effects against the originals they replace.
+A Minecraft mod (GregGuns) is replacing every sound from an All Rights Reserved mod (Techguns) with original, procedurally
+synthesised sounds. Each replacement must fill the same role and feel: similar length, timing, energy, character and
+loudness. It must stay an original sound, not a copy.
+
+You cannot hear audio. For each pair you get, for A (the Techguns original) and B (the GregGuns replacement):
+spectrogram (time left to right, log frequency bottom to top, brighter is louder), waveform, measured features
+(loudness, envelope, onsets, spectral balance, stereo) and listening notes from Qwen2-Audio, a model that actually heard
+the file. A also has an earlier written profile. Qwen's notes are a witness: good on timbre and recognisable sources,
+but they can invent detail. Where they conflict with the images and measurements, trust the measurements.
+
+Do a thorough A/B and list every audible difference, from the most important to the least. Cover:
+- length and timing;
+- attack and transients;
+- envelope and decay;
+- tail and reverb;
+- pitch movement;
+- tonal balance and EQ;
+- noise versus tone;
+- missing or extra layers and elements;
+- texture and character;
+- loudness;
+- stereo;
+- looping.
+
+Then write change notes a sound designer can apply directly to a procedural synthesiser: name the layer and the
+parameter, with numbers. For example: "add a 2-4 kHz noise crack, 15 ms, at 0 s, +6 dB over the body"; "shorten the tail
+from 1.4 s to 0.8 s"; "pitch the thump from 120 Hz down to 50 Hz over 200 ms instead of holding it". Don't ask for B to
+copy A sample for sample: aim for the same role and feel."""
+
+COMPARE_SCHEMA = {
+    "type": "object", "additionalProperties": False,
+    "required": ["summary", "match_score", "verdict", "differences", "missing_elements", "extra_elements",
+                 "change_notes", "confidence"],
+    "properties": {
+        "summary": {"type": "string", "description": "One or two sentences: how B compares with A overall."},
+        "match_score": {"type": "integer", "description": "0-10: how well B fills A's role and feel (10 = interchangeable)."},
+        "verdict": {"type": "string", "enum": ["keep", "tweak", "rework"]},
+        "differences": {"type": "array", "items": {
+            "type": "object", "additionalProperties": False,
+            "required": ["aspect", "a", "b", "severity"],
+            "properties": {
+                "aspect": {"type": "string", "enum": ["length/timing", "attack/transients", "envelope/decay", "tail/reverb",
+                                                     "pitch", "tonal balance", "noise vs tone", "layers/elements",
+                                                     "texture/character", "loudness", "stereo", "looping", "other"]},
+                "a": {"type": "string", "description": "What A (Techguns) does."},
+                "b": {"type": "string", "description": "What B (GregGuns) does."},
+                "severity": {"type": "string", "enum": ["minor", "moderate", "major"]}}}},
+        "missing_elements": {"type": "array", "items": {"type": "string"}, "description": "Things in A that B lacks."},
+        "extra_elements": {"type": "array", "items": {"type": "string"}, "description": "Things in B that A lacks."},
+        "change_notes": {"type": "array", "items": {"type": "string"},
+                         "description": "Concrete synthesis changes for B, most important first, with numbers."},
+        "confidence": {"type": "string", "enum": ["low", "medium", "high"]},
+    },
+}
+
+
+def load_jsonl(path):
+    path = Path(path)
+    if not path.exists():
+        return []
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
+
+
+def compare_pairs(ref_work, new_work, manifest_path):
+    """Pair each generated sound with the Techguns sound it stands in for (manifest footprint_ref)."""
+    ref = {r["path"]: r for r in load_jsonl(ref_work / "manifest.jsonl")}
+    new = {r["path"]: r for r in load_jsonl(new_work / "manifest.jsonl")}
+    pairs = []
+    for e in json.loads(Path(manifest_path).read_text(encoding="utf-8")):
+        if e.get("kind") != "sound":
+            continue
+        b, a = new.get(e["path"]), ref.get(e.get("footprint_ref") or "")
+        if a and b:
+            pairs.append((e, a, b))
+    return pairs
+
+
+def build_compare_params(entry, a, b, ref_work, new_work, model, effort, ref_listen, new_listen, ref_profiles):
+    def side(rec, listen):
+        ev = {k: rec[k] for k in ("path", "probe", "features")}
+        heard = listen.get(rec["path"])
+        if heard:
+            ev["listening_notes"] = heard["notes"]
+        return ev
+
+    def img(work, name):
+        return {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": b64(work / name)}}
+
+    a_ev = side(a, ref_listen)
+    if ref_profiles.get(a["path"]):
+        a_ev["written_profile"] = ref_profiles[a["path"]]
+    b_ev = side(b, new_listen)
+    b_ev["design_brief"] = {"brief": entry.get("brief"), "target_lufs": entry.get("target_lufs")}
+    content = [
+        {"type": "text", "text": "A (Techguns original) spectrogram:"}, img(ref_work, a["spectrogram"]),
+        {"type": "text", "text": "A waveform:"}, img(ref_work, a["waveform"]),
+        {"type": "text", "text": "B (GregGuns replacement) spectrogram:"}, img(new_work, b["spectrogram"]),
+        {"type": "text", "text": "B waveform:"}, img(new_work, b["waveform"]),
+        {"type": "text", "text": "A evidence (JSON):\n" + json.dumps(a_ev, indent=1)},
+        {"type": "text", "text": "B evidence (JSON):\n" + json.dumps(b_ev, indent=1)},
+    ]
+    return {"model": model, "max_tokens": 8000, "system": COMPARE_PROMPT,
+            "output_config": {"effort": effort, "format": {"type": "json_schema", "schema": COMPARE_SCHEMA}},
+            "messages": [{"role": "user", "content": content}]}
+
+
+def cmd_compare(args):
+    import anthropic
+
+    load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+    ref_work, new_work, out_dir = Path(args.ref_work), Path(args.new_work), Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    pairs = compare_pairs(ref_work, new_work, args.manifest)
+    out_path = out_dir / "compare.jsonl"
+    done = {r["path"] for r in load_jsonl(out_path) if r.get("review")}
+    todo = [p for p in pairs if p[2]["path"] not in done][: args.limit or None]
+    print(f"{len(pairs)} pairs, {len(done)} already reviewed, {len(todo)} to go, model {args.model}")
+    if not todo:
+        return
+    ref_listen = {r["path"]: r for r in load_jsonl(ref_work / "listen.jsonl")}
+    new_listen = {r["path"]: r for r in load_jsonl(new_work / "listen.jsonl")}
+    ref_profiles = {r["path"]: r["profile"] for r in load_jsonl(ref_work / "descriptions.jsonl") if r.get("profile")}
+    print(f"listening notes: A {len(ref_listen)}, B {len(new_listen)}; written A profiles {len(ref_profiles)}")
+    by_id, items = {}, []
+    for i, (entry, a, b) in enumerate(todo):
+        cid = f"ab-{i:04d}"
+        by_id[cid] = (entry, a, b)
+        items.append((cid, build_compare_params(entry, a, b, ref_work, new_work, args.model, args.effort,
+                                                ref_listen, new_listen, ref_profiles)))
+    client = anthropic.Anthropic()
+    # Four images per pair make each request large, so submit in chunks under the 256 MB batch limit.
+    chunks = [items[i:i + args.chunk] for i in range(0, len(items), args.chunk)]
+    with out_path.open("a", encoding="utf-8") as f:
+        for k, chunk in enumerate(chunks):
+            print(f"chunk {k + 1}/{len(chunks)}: {len(chunk)} pairs", flush=True)
+            for cid, msg, error in run_requests(client, out_dir / f"batch-{k}.json", args, chunk):
+                entry, a, b = by_id[cid]
+                review, usage = None, None
+                if msg is not None:
+                    review, error = parse_message(msg)
+                    usage = msg.usage.model_dump()
+                f.write(json.dumps({"id": entry["id"], "path": b["path"], "techguns": a["path"], "model": args.model,
+                                    "review": review, "error": error, "usage": usage}) + "\n")
+                f.flush()
+                if args.sync:
+                    print(f"{b['path']}: {error or review['verdict']}", flush=True)
+    print(f"results appended to {out_path}; re-run compare to retry any failures")
+
+
+def slug(text):
+    return re.sub(r"[^a-z0-9 _-]", "", text.lower()).replace(" ", "-")
+
+
+def cmd_compare_report(args):
+    latest = {}
+    for r in load_jsonl(Path(args.out) / "compare.jsonl"):
+        if r.get("review"):
+            latest[r["path"]] = r
+    rows = sorted(latest.values(), key=lambda r: (r["review"]["match_score"], r["path"]))
+    counts = {v: sum(1 for r in rows if r["review"]["verdict"] == v) for v in ("rework", "tweak", "keep")}
+    mean = sum(r["review"]["match_score"] for r in rows) / max(len(rows), 1)
+    lines = ["# Sound A/B review", "",
+             "Each GregGuns sound compared with the Techguns sound it replaces, generated by "
+             "[`tools/audio-describe`](../../../tools/audio-describe/README.md) `compare`.", "",
+             "> [!NOTE]",
+             "> Claude can't take audio input. Each comparison reads both sounds' spectrograms, waveforms and "
+             "measurements, plus listening notes from Qwen2-Audio, which did hear both files. Scores run 0-10 for how "
+             "well the replacement fills the original's role and feel.", "",
+             f"Reviewed {len(rows)} sounds: **{counts['rework']} rework**, **{counts['tweak']} tweak**, "
+             f"**{counts['keep']} keep**. Mean score {mean:.1f}.", "",
+             "| Sound | Score | Verdict | Biggest difference |", "|---|---|---|---|"]
+    for r in rows:
+        rv = r["review"]
+        top = next((d for d in rv["differences"] if d["severity"] == "major"), (rv["differences"] or [None])[0])
+        topt = f"{top['aspect']}: {top['b']}" if top else ""
+        lines.append(f"| [`{r['path']}`](#{slug(r['path'])}) | {rv['match_score']} | {rv['verdict']} | "
+                     f"{topt.replace('|', '/')[:160]} |")
+    for r in rows:
+        rv = r["review"]
+        lines += ["", f"### {r['path']}", "",
+                  f"Replaces `{r['techguns']}`. **{rv['verdict']}**, score {rv['match_score']}/10, "
+                  f"confidence {rv['confidence']}.", "", rv["summary"], "",
+                  "| Aspect | Techguns (A) | GregGuns (B) | Severity |", "|---|---|---|---|"]
+        for d in rv["differences"]:
+            lines.append(f"| {d['aspect']} | {d['a'].replace('|', '/')} | {d['b'].replace('|', '/')} | {d['severity']} |")
+        if rv["missing_elements"]:
+            lines += ["", "**Missing:** " + "; ".join(rv["missing_elements"])]
+        if rv["extra_elements"]:
+            lines += ["", "**Extra:** " + "; ".join(rv["extra_elements"])]
+        lines += ["", "**Change notes:**"] + [f"{i}. {n}" for i, n in enumerate(rv["change_notes"], 1)]
+    Path(args.report).write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"wrote {args.report} ({len(rows)} sounds)")
 
 
 # --------------------------------------------------------------------------------------------- report
@@ -518,9 +729,25 @@ def main():
     r = sub.add_parser("report", help="write AUDIO-PROFILES.md and per-area summaries")
     r.add_argument("--work", required=True)
     r.add_argument("--spec", required=True, help="docs/techguns-spec folder")
+    c = sub.add_parser("compare", help="A/B each generated sound against the Techguns sound it replaces")
+    c.add_argument("--ref-work", required=True, help="work folder of the Techguns sounds (extract + listen + describe)")
+    c.add_argument("--new-work", required=True, help="work folder of the generated sounds (extract + listen)")
+    c.add_argument("--manifest", required=True, help="tools/asset-gen/manifest.json (pairs via footprint_ref)")
+    c.add_argument("--out", required=True, help="folder for compare.jsonl")
+    c.add_argument("--model", default=DEFAULT_MODEL)
+    c.add_argument("--effort", default="high", choices=["low", "medium", "high", "xhigh", "max"])
+    c.add_argument("--sync", action="store_true")
+    c.add_argument("--new-batch", action="store_true")
+    c.add_argument("--poll", type=int, default=60)
+    c.add_argument("--limit", type=int, default=0)
+    c.add_argument("--chunk", type=int, default=50, help="pairs per batch (each pair carries four images)")
+    cr = sub.add_parser("compare-report", help="write the A/B review markdown")
+    cr.add_argument("--out", required=True, help="folder holding compare.jsonl")
+    cr.add_argument("--report", required=True, help="markdown file to write")
     sub.add_parser("selftest", help="check the measurement code")
     args = ap.parse_args()
-    {"extract": cmd_extract, "describe": cmd_describe, "report": cmd_report, "selftest": cmd_selftest}[args.cmd](args)
+    {"extract": cmd_extract, "describe": cmd_describe, "compare": cmd_compare, "compare-report": cmd_compare_report,
+     "report": cmd_report, "selftest": cmd_selftest}[args.cmd](args)
 
 
 if __name__ == "__main__":
