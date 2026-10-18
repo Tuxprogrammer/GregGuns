@@ -19,6 +19,7 @@ The MetaTileEntity facts are shared with area [09](../../techguns-spec/09-machin
 | [metatileentity-framework.md](metatileentity-framework.md) | MTE ID block, registration window, base classes, casing texture pages, inherited explosion/rain/fire/maintenance rules, pollution, StructureLib |
 | [recipe-map-replacements.md](recipe-map-replacements.md) | Ammo Press, Metal Press, Chem Lab, Fabricator and Charging Station as GT recipes; the recipe builder |
 | [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md) | The Reaction Chamber as a `MTEExtendedPowerMultiBlockBase`: structure, recipe map, focus/intensity/risk rules, radiation, pollution |
+| [recipes.md](recipes.md) | Reaction Chamber build recipes (casing, controller, Heat Ray Focus) and its two processing recipes with exact fluids, EU/t and metadata |
 | [modularui2-guis.md](modularui2-guis.md) | GUIs through GT's MUI2 handler instead of `IGuiHandler` |
 | [nei-handlers.md](nei-handlers.md) | NEI tabs and catalysts, and the one handler-ordering row |
 | [recipe-scripting.md](recipe-scripting.md) | MineTweaker: GTTweaker for GT maps, one GregGuns ZenClass |
@@ -48,6 +49,7 @@ The MetaTileEntity facts are shared with area [09](../../techguns-spec/09-machin
 | Fabricator | Assembler, Circuit Assembler, Assembly Line for top tier | `assemblerRecipes`, `circuitAssemblerRecipes`, `GTRecipeConstants.AssemblyLine` | [recipe-map-replacements.md](recipe-map-replacements.md) |
 | Charging Station | GT Battery Buffer and IC2 electric items | `MTEBasicBatteryBuffer` | [recipe-map-replacements.md](recipe-map-replacements.md#charging-station) |
 | Reaction Chamber | GT multiblock, own recipe map, focus as non-consumed input, GT hatches | `MTEExtendedPowerMultiBlockBase`, `RecipeMapBuilder` | [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md) |
+| RC housing, controller, glass and Heat Ray Focus recipes (B25 to B27, R30) | Casing and controller crafted around GT parts; GT hatches; recipe voltage gates by energy hatch | `Casing_*` and multiblock controller recipes, `ParallelHelper` | [recipes.md](recipes.md) |
 | RC explosion and unimplemented radiation risks | `doExplosion(V[n])`, `GTUtility.applyRadioactivity`, GT hazmat | `Hazard.RADIOLOGICAL`, `HazardProtection` | [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#gt5-unofficial-risks-radiation-and-explosions) |
 | (not in Techguns) pollution | RC pollutes through a Muffler Hatch at a GregGuns-config rate | `Pollution`, `MTEMultiBlockBase#polluteEnvironment` | [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#gt5-unofficial-pollution) |
 | `TechgunsGuiHandler`, containers, GUI button packet | MUI2 panels via GT's MTE GUI handler; sync values | ModularUI2 2.3.92, `MetaTileEntityGuiHandler` | [modularui2-guis.md](modularui2-guis.md) |
@@ -85,6 +87,7 @@ Each needs the named decision before M4 starts.
 | 0003 says items charge in a buffer of "that tier or higher", but GT's Battery Buffer takes an item only at **exactly** its tier ([recipe-map-replacements.md](recipe-map-replacements.md#open-questions)) | An amendment to [0003](../../design/0003-energy-model.md) |
 | Fate of the Techguns stack upgrade (no GT counterpart) | Area 06 and a design record |
 | Which Reaction Chamber recipes survive, and dropping the fluid-level mini-game ([reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#open-questions)) | A design record at M4 start, since it changes gameplay |
+| Reaction Chamber `eut`, fluid amounts and the Ender fluid (GT's `Materials.Ender` has no fluid; [recipes.md](recipes.md) uses molten Enderium) | M4 balance pass, and a fix to [06 fluids.md](../06-items/fluids.md) |
 | Which MTE registration hook to use: `sAfterGTPreload` as GGFab does, or an `init` handler | M4 boot test (see the framework sheet) |
 
 ## Requirement index
@@ -97,3 +100,4 @@ Each needs the named decision before M4 starts.
 | GGS-08-26 to 30 | [modularui2-guis.md](modularui2-guis.md#requirements) |
 | GGS-08-31 to 34 | [nei-handlers.md](nei-handlers.md#requirements) |
 | GGS-08-35 to 38 | [recipe-scripting.md](recipe-scripting.md#requirements) |
+| GGS-08-39 to 45 | [recipes.md](recipes.md#requirements) |

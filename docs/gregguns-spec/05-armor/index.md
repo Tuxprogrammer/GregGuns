@@ -19,7 +19,7 @@ The main findings:
 | [hazard-protection.md](hazard-protection.md) | Gas mask, hazmat flags and the GT hazard API |
 | [powered-flight.md](powered-flight.md) | IC2 electric armour, GT Mech Armor overlap, flight stacking with other pack mods |
 | [oxygen-gear.md](oxygen-gear.md) | Oxygen mask and tanks in Galacticraft dimensions |
-| [armour-recipes.md](armour-recipes.md) | Armour and equipment recipes on GT recipe maps |
+| [recipes.md](recipes.md) | Every armour and equipment recipe on GT recipe maps (absorbs the old [armour-recipes.md](armour-recipes.md), now a pointer) |
 
 **No integration point, so no sheet.** See the Techguns spec and the [design records](../../design/README.md):
 
@@ -42,7 +42,7 @@ The main findings:
 | RF-powered armour and packs | IC2 electric items at GT tiers, `ISpecialArmor` | IC2 API, GregTech Mech Armor as precedent | [powered-flight.md](powered-flight.md) |
 | Jetpack, jump pack, anti-grav flight | Motion-based, never writes player abilities | GT Mech Armor, MagLev Harness, AdventureBackpack, Angel Ring, GraviSuite | [powered-flight.md](powered-flight.md) |
 | Oxygen mask, oxygen tanks, `OXYGEN_GEAR` | Subclass GC item classes; `IBreathableArmor` for gear | Galacticraft 3.4.34-GTNH | [oxygen-gear.md](oxygen-gear.md) |
-| Crafting-table armour recipes | GT Assembler at tier voltage | GregTech recipe maps | [armour-recipes.md](armour-recipes.md) |
+| Crafting-table armour recipes | GT Assembler at tier voltage; hand-made only for the Steam/ULV sets | GregTech recipe maps | [recipes.md](recipes.md) |
 | Charging Station, battery items | Dropped | GT chargers ([0002](../../design/0002-machine-deconfliction.md)) | [powered-flight.md](powered-flight.md) |
 
 ## Pack-side changes
@@ -69,3 +69,5 @@ Each needs a new design record.
 4. **Auto-feeder food slots.** Keep inside the Ammo Pouch or drop?
 5. **Armour hazard flags and balance.** The table in [hazard-protection.md](hazard-protection.md) is a proposal.
 6. **GalaxySpace spacesuit behaviour** is unverified because its source is not readable. Needs a source or a decompile.
+7. **Tiers for the Beret, HEV and Tactical Mask (closed by [0010](../../design/0010-material-remap-and-tier-additions.md): MV, EV, HV).** [recipes.md](recipes.md) uses MV, EV and HV because [0001](../../design/0001-tier-map.md) lists none of them. The hazard flag table in [hazard-protection.md](hazard-protection.md) lists the Tactical Mask at MV, which its HV Oxygen Mask input rules out.
+8. **Jump Pack power source.** Electric ([powered-flight.md](powered-flight.md)) or compressed air (06 fluids)? The recipe carries both until a record picks one.

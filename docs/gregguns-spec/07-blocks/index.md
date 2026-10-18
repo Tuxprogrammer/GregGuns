@@ -13,6 +13,7 @@ Most of the Techguns block catalogue has no integration point: shipped shapes, m
 | [decorative-blocks.md](decorative-blocks.md) | Chisel carving groups and connected textures, overlap with Chisel, ChiselTones and Ztones, the ForgeMultipart side effect |
 | [storage-chests.md](storage-chests.md) | Reinforced and Weapon chests: InventoryBogoSorter, overlap with IronChest, JABBA and StorageDrawers |
 | [block-platform.md](block-platform.md) | GT wrench and `IWrenchable`, Waila providers, EndlessIDs and ID space |
+| [recipes.md](recipes.md) | Every recipe that makes a kept block, as GT Assembler, Mixer and crafting-table recipes |
 
 No integration point; see the Techguns spec and the design records:
 
@@ -33,6 +34,7 @@ No integration point; see the Techguns spec and the design records:
 | Wrench pickup | Harvest tool `wrench` plus `IWrenchable` | GT5-Unofficial, IC2 API | [block-platform.md](block-platform.md) |
 | Block tooltips | Waila provider via IMC | Waila 1.19.34, GT5-Unofficial | [block-platform.md](block-platform.md) |
 | ID space | Name-based registration only | EndlessIDs 1.7.4 | [block-platform.md](block-platform.md) |
+| Block crafting recipes (B11 to B34) | Bulk recipes in the GT Assembler, concrete in the Mixer, small ones kept in the crafting table | GT5-Unofficial recipe maps | [recipes.md](recipes.md) |
 
 ## Pack-side changes
 
@@ -49,3 +51,4 @@ None.
 - Join Chisel groups or not for metal panels (decorative-blocks.md).
 - Weapon Chest filter or drop (storage-chests.md).
 - Wrench availability at early tiers (block-platform.md).
+- Do blocks get a tier in [0001](../../design/0001-tier-map.md)? [recipes.md](recipes.md) treats the chests as LV (Steel) and everything else as ungated.

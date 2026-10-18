@@ -8,12 +8,13 @@ Techguns topics with no integration point have no sheet here. Their behaviour is
 
 - sounds ([sounds.md](../../techguns-spec/06-items/sounds.md)), textures ([textures.md](../../techguns-spec/06-items/textures.md)) and lang ([lang.md](../../techguns-spec/06-items/lang.md)): art direction is [0006](../../design/0006-art-direction.md); no pack file touches them;
 - the shared meta item, glider, camo net placer, door item, tools and spawn eggs ([special-items.md](../../techguns-spec/06-items/special-items.md)): no pack mod or GT system replaces them, apart from the NEI display in [nei-visibility.md](nei-visibility.md);
-- recipe grids ([recipes.md](../../techguns-spec/06-items/recipes.md)): rewritten against GT in M4, using the sheets below.
+- recipe grids ([Techguns recipes.md](../../techguns-spec/06-items/recipes.md)): rewritten against GT in [recipes.md](recipes.md), which also holds the component index the other areas use.
 
 ## Contents
 
 | File | What it holds |
 |---|---|
+| [recipes.md](recipes.md) | Every GregGuns recipe in this area (63 rows: parts, emitters, plating, ammo, magazines, tanks, cells, consumables), with GT recipe maps, EU/t, durations and programmed circuits, and the **component index** of placeholder registry names for areas 02, 05 and 07 to 09 |
 | [pack-loot.md](pack-loot.md) | Cross-cutting. How GregGuns items enter GTNH loot: TooMuchLoot, LootGames, Roguelike Dungeons, EnhancedLootBags, Infernal Mobs, dreamcraft CustomDrops, Mobs Info. Draft `ADD` XML per category. Anchors for areas 10 and 11 |
 | [components-and-materials.md](components-and-materials.md) | Which Techguns parts become GT parts, which stay GregGuns items, and ore-dict rules |
 | [fluids.md](fluids.md) | Techguns fluids to GT materials' fluids; tanks as fluid containers |
@@ -36,7 +37,11 @@ Techguns topics with no integration point have no sheet here. Their behaviour is
 | Metals, plates, wires, circuits, plastic, rubber | Not registered; GT parts through the unificator | GT5-Unofficial 5.09.54.205 | [components-and-materials.md](components-and-materials.md#gregtech-parts-through-the-unificator) |
 | Oil, fuel, redstone, ender, biofuel, milk, acid | GT materials' fluids; acid dropped | GT5-Unofficial | [fluids.md](fluids.md#fluid-mapping) |
 | Fuel, bio, air and oxygen tanks | `IFluidContainerItem` items GT machines can fill | GT fluid containers | [fluids.md](fluids.md#gregtech-fluid-containers) |
-| Ammo Press | Assembler, Forming Press and Extruder recipes | GT recipe maps | [ammo.md](ammo.md#gregtech-recipe-maps-for-ammo) |
+| Ammo Press | One Assembler recipe per ammo type, picked by programmed circuit; slugs, cases and powder are GT `round`, `foil`, `itemCasing` and gunpowder | GT recipe maps | [recipes.md](recipes.md#ammunition) |
+| Metal Press, Chem Lab, Fabricator recipes for parts | Assembler, Chemical Bath and Assembly Line recipes at the part's tier | GT recipe maps | [recipes.md](recipes.md#gun-parts) |
+| Per-item crafting grids (R01 to R87) | Crafting table only for Steam/ULV items and magazine refills; everything else on a GT map | GT recipe maps, `TierEU` | [recipes.md](recipes.md) |
+| Chem Lab tank fill | GT Fluid Canner fills `IFluidContainerItem` tanks | GT `cannerRecipes` | [recipes.md](recipes.md#filling-tanks) |
+| Energy Cell | Rechargeable EV electric item, crafted uncharged | IC2 `IElectricItem`, GT chargers | [recipes.md](recipes.md#energy-cell-note) |
 | Bullets from nuggets | Built from GT `round` parts; `bulletGt*` prefixes unused by GT | GT `OrePrefixes` | [ammo.md](ammo.md#gregtech-bullet-prefixes-and-round) |
 | Nuclear Power Cell and warhead | Radioactive through GT `ItemData` | GT radiation, hazard protection | [hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items) |
 | Item hazards, tooltips, fuels | No entries needed | dreamcraft modules | [hazards-and-tooltips.md](hazards-and-tooltips.md) |
@@ -75,4 +80,5 @@ Each needs a decision before the sheet's requirement is final.
 - **Infernal HV drops.** D5 caps surface-structure loot at LV to MV, but Infernal's lists are global. An amendment to [0005](../../design/0005-world-presence.md) should say whether infernal drops may include rare HV items. See [pack-loot.md](pack-loot.md#open-questions).
 - **Route A or B for NPC loot.** Do vanilla infernal mobs drop GregGuns items (global lists), or only our NPCs? See [pack-loot.md](pack-loot.md#open-questions).
 - **Nuclear item recycling.** Radioactivity via `ItemData` also makes the item recyclable into uranium. Decide between that and the enchantment route. See [hazards-and-tooltips.md](hazards-and-tooltips.md#open-questions).
+- **Recipe-sheet decisions.** Several choices in [recipes.md](recipes.md#open-questions) need a ruling: the material remap against 05 and 09, tiers for Bandages, Cybernetic Parts and the two unnamed bullets, the Steel gate for loose LV ammo, the Energy Cell's role beside battery-guns, and the nuclear refuel route.
 - **`bulletGt*` ore names.** Whether to claim GT's unused bullet prefixes. See [ammo.md](ammo.md#open-questions).

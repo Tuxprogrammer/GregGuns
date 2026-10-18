@@ -33,21 +33,7 @@ Ammo tiers are in [0001](../../design/0001-tier-map.md): stone bullets at Steam/
 - **GregGuns does:** registers each ammo recipe with `GTValues.RA.stdBuilder()`, with `eut` from `TierEU` matching the ammo's D1 tier. The dev self-check from D1 fails if a recipe's inputs or EU/t exceed the tier of its output.
 - **Pack-side change:** none.
 
-Starting design for M4. Final inputs are set against the live GT progression ([D1](../../design/0001-tier-map.md)).
-
-| Ammo | Map | Inputs | Tier |
-|---|---|---|---|
-| Stone Bullet | Crafting table | Cobblestone, gunpowder | Steam/ULV |
-| 9mm Bullets | Assembler | One Lead `round`, one casing, gunpowder dust | LV |
-| Shotgun Shell | Assembler | Casing plate, lead `round` x N, gunpowder dust | LV |
-| Rifle Bullets | Assembler | Steel `round`, casing, gunpowder dust | LV |
-| Casing (internal part) | Forming Press | Brass or copper `plate` | LV |
-| Empty magazines | Assembler | Steel `plate`, `springSmall` | LV or MV by size |
-| Filled magazines | Crafting table (as Techguns) and Assembler | Empty magazine, bullets | Same as bullets |
-| 40 mm Grenade, Rocket | Assembler | Plates, explosive dust (`Materials.TNT`), circuit | MV, HV |
-| Advanced Bullets | Assembler | Higher-tier `round`, gunpowder dust | EV |
-| Nether Charge | Assembler | Netherrack, soul sand, gold, circuit | LuV |
-| Nuclear Power Cell | Assembler | Plates, `Uranium235` dust, circuit | ZPM |
+The per-ammo recipes (inputs, programmed circuit, EU/t, time and batch size) are in [recipes.md](recipes.md#ammunition). They use `assemblerRecipes` only: GT already makes the slug (`round`), the small case (`foil`) and the large case (`itemCasing`), so no Forming Press or Extruder recipe is needed for ammo.
 
 ### GregTech: bullet prefixes and `round`
 
@@ -83,4 +69,4 @@ Rockets, 40 mm grenades and tactical nuke rockets are fired by dispensers in Tec
 ## Open questions
 
 - **`bulletGt*` ore names.** Register GregGuns bullets under GT's unused bullet prefixes, or keep them private? A record is needed only if we choose to register.
-- **Extruder shape.** Is a bullet-casing recipe in the extruder wanted, or is the Forming Press enough? Decide in M4.
+- **Extruder shape (answered).** No casing recipe is needed: GT's `itemCasing` already has Extruder, Cutting Machine and Alloy Smelter recipes ([recipes.md](recipes.md#where-the-parts-come-from)).

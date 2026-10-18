@@ -61,6 +61,26 @@ How each requirement is verified: a unit test, a `/gregguns test` scenario, a ru
 Anything that needs a decision. Name the record that would settle it.
 ```
 
+## Recipe sheets
+
+Recipe sheets (`recipes.md` in an area) give **every** GregGuns recipe in that area, not a summary. One row or block per craftable:
+
+| Field | Content |
+|---|---|
+| Output | GregGuns item (placeholder registry name) × count |
+| Tier | D1 tier from [0001](../design/0001-tier-map.md) |
+| Method | Crafting table (with GT tool letters) or a GT recipe map (`RecipeMaps.assemblerRecipes`, …) |
+| Inputs | GT parts written as `OrePrefixes.<prefix>` + `Materials.<material>` (for example `plate.Steel`), GT components as `ItemList.<name>` (for example `Electric_Motor_LV`), circuits as `circuit.<tier>`, fluids as `Materials.<m>.getMolten(L)` or a named fluid with litres, GregGuns components by name |
+| EU/t, time | `TierEU.RECIPE_<tier>` (or a fraction of it) and duration in seconds/ticks |
+| Gate | Which input and which machine voltage enforce the tier |
+| Notes | Programmed circuit number, GT precedent it mirrors, Techguns recipe it replaces |
+
+Rules for recipes:
+- **GT shapes.** Early tiers use shaped crafting with GT tools the way GT's own early recipes do. From LV up, the final step is a GT machine at the item's tier voltage. LuV and up use the Assembly Line, with a research item, the way GT gates its own LuV+ parts.
+- **Inputs exist.** Every input is a real GT prefix-and-material pair, `ItemList` entry or GregGuns component. Check it against the GT5-Unofficial clone at `reference/src/GT5-Unofficial@5.09.54.205/`.
+- **GT precedent.** Cite the GT recipe for a comparable item at the same tier (for example a GT electric tool, battery or component), with a pinned permalink. Costs scale like it.
+- **Techguns link.** Link the Techguns recipe being replaced, so the reader can compare.
+
 ## Rules
 
 - **Evidence.** Follow [INTEGRATION.md](INTEGRATION.md): source first, pinned to the pack's tag. Every claim about another mod cites a `Source:` permalink or the pack config file and key. A claim that rests on decompilation says so.

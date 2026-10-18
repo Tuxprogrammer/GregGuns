@@ -13,6 +13,7 @@ Of the utility machines, only the Turret, the explosive charges and the Repair B
 | [turret.md](turret.md) | Turret vs OpenModularTurrets, ownership and friends through ServerUtilities, Infernal Mobs exclusion |
 | [explosive-charges.md](explosive-charges.md) | Claim protection through the break event, GT ore drops, overlap with GT mining explosives |
 | [repair-bench.md](repair-bench.md) | GT materials and unification as repair inputs |
+| [recipes.md](recipes.md) | Recipes for the Turret, its armour plates, the Repair Bench, the Camo Bench and both explosive charges |
 
 No integration point; see the Techguns spec and the design records:
 
@@ -32,6 +33,7 @@ No integration point; see the Techguns spec and the design records:
 | Charge break event | Real player in the event | ServerUtilities 2.4.14 | [explosive-charges.md](explosive-charges.md) |
 | Charges vs mining explosives | Directional bore, kept | GT5-Unofficial (Powder Barrel, GT++ Mining Explosives) | [explosive-charges.md](explosive-charges.md) |
 | Repair Bench inputs | GT prefix and material, unified matching | GT5-Unofficial | [repair-bench.md](repair-bench.md) |
+| Machine and charge recipes (B04 to B09, R58 to R61) | Hull-and-parts shaped recipes for the MTEs; Assembler for plates and charges | GT5-Unofficial (`MTERecipeLoader`, `assemblerRecipes`) | [recipes.md](recipes.md) |
 
 ## Pack-side changes
 
@@ -48,3 +50,4 @@ None.
 - Turret friend semantics (ALLY or MEMBER). Needs a turret-security record.
 - Does the Repair Bench use EU? Needs input from area 08.
 - Are charges balanced against GT and IC2 explosives? Needs a balance pass after the tier map is live.
+- Machine tiers (Turret MV, Repair Bench LV, Camo Bench LV) and charge tiers (MV, HV) are proposals in [recipes.md](recipes.md), because [0001](../../design/0001-tier-map.md) lists no machines. Needs a line in 0001 or a short record.

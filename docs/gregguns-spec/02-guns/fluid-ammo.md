@@ -25,9 +25,19 @@
   - GT's own `MetaBaseItem` is also an `IFluidContainerItem` ([MetaBaseItem.java#L54-L55](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/items/MetaBaseItem.java#L54-L55)), so this is a normal pack contract.
 - **GregGuns does:**
   - Each tank item class implements `IFluidContainerItem`. Techguns' Fuel Tank already does (see the baseline), so the contract is not new.
-  - The capacity is the tank's size in mB, a config option. The Techguns figure is the starting point: 250 mB for the Fuel Tank.
+  - The capacity is the tank's size in mB, a config option. The default is 1,000 mB for the Fuel, Bio and Compressed Air Tanks, the same as a GT cell ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 3; [06 recipes](../06-items/recipes.md#tanks-and-cells)). Techguns used 250 mB for the Fuel Tank.
   - A tank that is partly used is still "filled" to GT. The Canner can empty it, but it cannot top it up. The tooltip says so.
-  - GregGuns writes **no** Canner recipe. The tank is craftable on `assemblerRecipes` per [gt-recipes.md](gt-recipes.md).
+  - GregGuns writes **no** Canner recipe. The tank is craftable on `assemblerRecipes` per [recipes.md](recipes.md).
+- **Per-shot consumption.** Techguns' rounds per tank are kept, so the per-shot cost is the 1,000 mB capacity divided by those rounds. These are starting values, tuned in M2 and M5; a denser fuel scales them as below.
+
+  | Gun | Tank | Rounds per tank (Techguns) | mB per shot at 1,000 mB |
+  |---|---|---|---|
+  | Flamethrower | Fuel Tank | 100 | 10 |
+  | Chainsaw | Fuel Tank | 300 | 3.3 |
+  | Bio Gun | Bio Tank | 30 | 33.3 |
+  | Power Hammer | Compressed Air Tank | 300 | 3.3 |
+
+  Fractional mB are carried in the gun's NBT as a remainder, so rounding never short-changes a tank.
 - **Pack-side change:** none.
 
 ### GT fuel maps: which liquids the Flamethrower and Chainsaw accept
@@ -65,5 +75,5 @@
 
 ## Open questions
 
-- **Tank capacity versus Canner rule.** The fill helper fills a tank only from a fluid amount at least as big as the capacity. A 250 mB tank therefore needs 250 mB in the Canner's input. This is fine for M2, but check it when the tank sizes are tuned.
+- **Tank capacity versus Canner rule.** The fill helper fills a tank only from a fluid amount at least as big as the capacity. The 1,000 mB tank therefore needs 1,000 mB in the Canner's input, the same as a GT cell, so the Canner and the cell agree. Settled for tank size by [0010](../../design/0010-material-remap-and-tier-additions.md); re-check only if the config capacity is changed.
 - **Chainsaw and Power Hammer fuel.** [0003](../../design/0003-energy-model.md) says "a fuel or compressed air, chosen per item in M2 and M5". This sheet assumes fuel for the Chainsaw and air for the Power Hammer, as in Techguns. Confirm in those milestones.

@@ -12,7 +12,7 @@ All evidence is pinned to GT5-Unofficial `5.09.54.205`, Backhand `1.8.16`, Battl
 
 | Sheet | Topic | Requirements |
 |---|---|---|
-| [gt-recipes.md](gt-recipes.md) | Final assembly on GT recipe maps, per-family map and tier table, Assembly Line for LuV and ZPM | GGS-02-01 to 08 |
+| [recipes.md](recipes.md) | Every weapon recipe (guns, akimbo, melee, grenades): GT recipe maps, Assembly Line for LuV and ZPM, assumed components. Replaces the old `gt-recipes.md` (now a pointer) | GGS-02-01 to 08, 35 to 42 |
 | [energy-electric-items.md](energy-electric-items.md) | Energy guns as `IElectricItem`, GT charging rules, capacity baselines | GGS-02-09 to 16 |
 | [damage-interop.md](damage-interop.md) | Damage sources, GT hazmat, other mods' armour, `LivingAttackEvent` listeners | GGS-02-17 to 23 |
 | [offhand-backhand.md](offhand-backhand.md) | Right-click fallback, offhand blacklist, Battlegear2, enchantments | GGS-02-24 to 28 |
@@ -22,8 +22,8 @@ All evidence is pinned to GT5-Unofficial `5.09.54.205`, Backhand `1.8.16`, Battl
 
 | Techguns feature | GregGuns approach | Pack mod or system | Evidence |
 |---|---|---|---|
-| Gun crafting-table recipes | Final assembly on `assemblerRecipes` at the 0001 tier voltage; Assembly Line for LuV and ZPM | GT5-Unofficial recipe maps | [gt-recipes.md](gt-recipes.md) |
-| Ammo Press, Fabricator, Metal Press | GT Assembler, Lathe, Extruder, Bender, Hammer; GT `round` prefix for slugs | GT5-Unofficial | [gt-recipes.md](gt-recipes.md) |
+| Gun crafting-table recipes | Final assembly on `assemblerRecipes` at the 0001 tier voltage; Assembly Line for LuV and ZPM; Hand Cannon and akimbo stay in the crafting table | GT5-Unofficial recipe maps | [recipes.md](recipes.md) |
+| Ammo Press, Fabricator, Metal Press | GT Assembler, Lathe, Extruder, Bender, Hammer; GT `round` prefix for slugs | GT5-Unofficial | [recipes.md](recipes.md) |
 | Energy Cell ammo, Charging Station | The gun is an `IElectricItem`; GT chargers and battery buffers charge it | IC2 API, GT5-Unofficial | [energy-electric-items.md](energy-electric-items.md) |
 | Cancel-and-reimplement damage event | Keep the model, keep other mods' listeners and armour working | GT5-Unofficial (hazmat, armour), GT++, Forge | [damage-interop.md](damage-interop.md) |
 | Unflagged fire damage | Fire flag set; secondary effects respect GT hazmat | GT5-Unofficial `HazardProtection` | [damage-interop.md](damage-interop.md) |
@@ -55,7 +55,10 @@ Registry names are fixed when M1 and M2 register the items. GregGuns never write
 
 | Question | Needs | Sheet |
 |---|---|---|
-| LuV and ZPM final recipes: GT's own LuV motor uses `RECIPE_IV` on the Assembly Line, one tier below the item. 0001 says the item's own tier. | Amendment to 0001 | [gt-recipes.md](gt-recipes.md) |
+| LuV and ZPM final recipes: GT's own LuV motor uses `RECIPE_IV` on the Assembly Line, one tier below the item. Proposed answer: keep 0001 (the item's own tier), because the GT pattern exists to avoid a hatch-and-motor loop that weapons do not have. | Confirmation; no amendment to 0001 | [recipes.md](recipes.md#open-questions) |
+| Stielgranate is not in 0001 (placed at LV); akimbo tier cannot be enforced by a crafting-table combine; upgrade recipes lose camo; Alien Blaster has no Techguns recipe. | Notes to 0001 and decisions | [recipes.md](recipes.md#open-questions) |
 | 0003 says an item charges in a charger "of that tier or higher". GT's chargers and buffers accept the **exact** tier only. | Amendment to 0003 | [energy-electric-items.md](energy-electric-items.md) |
 | How the damage model runs inside vanilla's hit: keep Techguns' cancel-and-reimplement, or run in `LivingHurtEvent` with an unblockable source and a direct `ApplyArmor` call. The sheets assume the second. | New record under D4 (addendum to 0004) | [damage-interop.md](damage-interop.md) |
 | RMB zoom conflicts with an offhand item (stop list) and blocks an offhand grenade. Moving zoom to a key removes the conflict. | Input decision in [01-core](../01-core/) | [offhand-backhand.md](offhand-backhand.md) |
+
+Closed by [0010](../../design/0010-material-remap-and-tier-additions.md): the material remap (Obsidian Steel and carbon parts, tier-material hardware), tank capacity (1,000 mB, see [fluid-ammo.md](fluid-ammo.md)) and the dropped Energy Cell (energy weapons are their own batteries). See [recipes.md](recipes.md#open-questions).

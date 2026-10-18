@@ -49,5 +49,5 @@ Every change GregGuns needs outside this repo, collected from the area indexes. 
 
 | File | Change | Why | Sheet |
 |---|---|---|---|
-| `src/main/java/gregtech/api/enums/MetaTileEntityIDs.java` (header) | `20100 - 20163 are used by GregGuns` (proposed) | There is no registry of MTE ID ranges per addon | [metatileentity-framework.md](08-machines-production/metatileentity-framework.md#gt5-unofficial-mte-id-reservation) |
+| `src/main/java/gregtech/api/enums/MetaTileEntityIDs.java` | Add named entries `GregGuns<Machine>(20100)` … in sorted order, as CropsNH did for 28001-28055 (block 20100-20163 proposed) | GT has no automatic ID allocation for addons. Named entries in this enum are how external mods reserve IDs | [metatileentity-framework.md](08-machines-production/metatileentity-framework.md#gt5-unofficial-mte-id-reservation) |
 | `src/main/java/gregtech/api/enums/Textures.java` (page-owner comment) | `page 50: GregGuns casings` (proposed) | Same, for casing texture pages | [metatileentity-framework.md](08-machines-production/metatileentity-framework.md#gt5-unofficial-casing-texture-pages) |

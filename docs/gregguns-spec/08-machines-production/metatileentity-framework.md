@@ -24,14 +24,27 @@ The shared GT plumbing every GregGuns machine uses: MTE IDs, the registration wi
 
 ### GT5-Unofficial: MTE ID reservation
 - **Pack config:** none. IDs are a code-level registry.
-- **Source:**
-  - [`GregTechAPI.METATILEENTITIES`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/GregTechAPI.java#L73) is an array of `Short.MAX_VALUE - 1` slots (IDs 1 to 32766).
-  - The constructor throws `IllegalArgumentException` if a slot is taken ([CommonMetaTileEntity#L87-L103](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/CommonMetaTileEntity.java#L87-L103)).
-  - [`MetaTileEntityIDs`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/MetaTileEntityIDs.java#L3-L13) lists most IDs, "sorted by ID". Its Javadoc says it "does not list all used IDs", that `-Dgt.debug=true` prints every ID in use ([GTMod#L453-L460](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/GTMod.java#L453-L460)), and that 4096-5095 (frames) and 5096-6099 (pipes) are blocked.
-  - There is **no documented per-addon range** in the repo. We searched the `docs/`, `README.md` and `CODEOWNERS` of the tag.
-- **Findings:** the enum holds 2033 distinct IDs. The longest runs with no enum entry are 17000-19999 (3000 IDs) and 20001-28000 (about 8000). The enum is not authoritative (see the Javadoc), so a run being free in the enum does not make it free in the pack.
-- **GregGuns does:** claims one block of 64 consecutive IDs and keeps a `GregGunsMTEIDs` enum in our own package. Proposed block: **20100-20163**. Before M4 starts, check the block with `-Dgt.debug=true` on the pack, and open a PR on GT5-Unofficial that adds the range to the `MetaTileEntityIDs` Javadoc, so nobody else takes it. GregGuns needs about 10 IDs in total (Reaction Chamber, Repair Bench, Camo Bench, Turret, hatches if any).
-- **Pack-side change:** a one-line comment PR to GT5-Unofficial (not the modpack repo): add `20100 - 20163 are used by GregGuns` to the `MetaTileEntityIDs` header.
+- **Is there an automatic ID system? No, not for addons.**
+  - `GregTechAPI.METATILEENTITIES` is a fixed array ([GregTechAPI#L73](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/GregTechAPI.java#L73)). Every MTE constructor claims its own slot. If the slot is taken, it throws `IllegalArgumentException("MetaTileEntity id N is already occupied!")` and the game fails to boot ([CommonMetaTileEntity#L84-L100](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/CommonMetaTileEntity.java#L84-L100)).
+  - The only "automatic generation" GT has covers **its own** frames (4096-5095) and pipes (5096-6099), one per material, and the [`MetaTileEntityIDs`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/MetaTileEntityIDs.java#L3-L13) header says to keep away from those ranges.
+  - `-Dgt.debug=true` makes GT log every ID in use at postload ([GTMod#L452-L460](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/GTMod.java#L452-L460)). That is the tool for finding free IDs. Nothing hands them out.
+  - IDs must stay fixed, because they are saved in the world: a placed machine stores its ID. A runtime-assigned ID would scramble machines when the mod list changes.
+- **How other pack mods with machines do it.** All of them use fixed IDs. The modern GTNH convention also records them in GT's enum:
+
+  | Mod | IDs | How they are reserved |
+  |---|---|---|
+  | CropsNH 2.0.134 (separate repo) | 28001-28055 | Hard-coded constants in its own [`MTELoader`](https://github.com/GTNewHorizons/CropsNH/blob/2.0.134/src/main/java/com/gtnewhorizon/cropsnh/loaders/MTELoader.java#L15-L63), **and** matching named entries `CropsNHCropManagerLV(28001)` … `CropsNHIndustrialFarm(28055)` added to GT5-Unofficial's [`MetaTileEntityIDs`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/MetaTileEntityIDs.java#L1875-L1917) by PR |
+  | VendingMachine 0.4.101, Matter Manipulator (separate repos) | 2731-2732, 2741-2742 | Named entries in the same enum ([L738-L749](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/MetaTileEntityIDs.java#L738-L749)) |
+  | GGFab, Detrav, GT++, BartWorks, TecTech, KubaTech (merged into GT5-Unofficial) | various | Entries in the enum, referenced directly |
+  | HydroEnergy 1.4.25 (legacy) | 17000 and up | A **configurable** `blockIdOffset`, default 17000 ([HEConfig#L32](https://github.com/GTNewHorizons/HydroEnergy/blob/1.4.25/src/main/java/com/sinthoras/hydroenergy/config/HEConfig.java#L32)). It is **not** in the enum, which is why 17000-19999 looks free there but isn't |
+
+- **GregGuns does (the CropsNH pattern):**
+  1. Claims a fixed block, proposed as **20100-20163**, which is free in the enum and clear of HydroEnergy's 17000 block. That leaves room for about 10 IDs now (Reaction Chamber controller, Repair Bench, Camo Bench, Turret, and any hatches), with growth to 64.
+  2. Keeps the IDs as constants in a `GregGunsMTEIDs` class in our own package. These are the IDs our code uses, so we don't depend on a GT release that already contains our entries.
+  3. Opens a PR to GT5-Unofficial that adds matching named entries (`GregGunsReactionChamber(20100)`, …), inserted in sorted order the way CropsNH's were. This is the reservation. Once it ships in the pinned GT version, a unit test asserts that our constants equal GT's entries.
+  4. Never makes IDs configurable. The HydroEnergy-style offset is legacy and saves no work.
+  5. Before M4 starts, boots the full pack with `-Dgt.debug=true` and checks that nothing in 20100-20163 is in use.
+- **Pack-side change:** a PR to GT5-Unofficial (not the modpack repo) that adds the `GregGuns*` entries to `MetaTileEntityIDs`. See [PACK-CHANGES](../PACK-CHANGES.md#gt5-unofficial-needs-agreement-with-the-gtnh-team).
 
 ### GT5-Unofficial: registration window
 - **Source:**
@@ -97,7 +110,7 @@ The shared GT plumbing every GregGuns machine uses: MTE IDs, the registration wi
 
 ## Requirements
 
-- **GGS-08-01** GregGuns reserves one block of 64 consecutive MTE IDs, 20100-20163, in a `GregGunsMTEIDs` enum. No GregGuns MTE uses an ID outside the block.
+- **GGS-08-01** GregGuns uses fixed MTE IDs from one block of 64, 20100-20163, held as constants in `GregGunsMTEIDs`. No GregGuns MTE uses an ID outside the block, and no ID is configurable. Once GT5-Unofficial carries the matching `GregGuns*` entries in `MetaTileEntityIDs`, a unit test asserts that both agree.
 - **GGS-08-02** All GregGuns MTEs are constructed inside a `GregTechAPI.sAfterGTPreload` (or equivalent) callback, so construction happens between GT's preload start and postload start.
 - **GGS-08-03** Booting the pack with `-Dgt.debug=true` shows no `MetaTileEntity id N is already occupied` error and lists every GregGuns MTE under its ID.
 - **GGS-08-04** Every GregGuns multiblock casing texture uses texture page 50, registered with `GTUtility.addTexturePage`.
