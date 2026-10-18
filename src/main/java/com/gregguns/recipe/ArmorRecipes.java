@@ -50,6 +50,23 @@ public final class ArmorRecipes {
             ProductionRecipes.addMachineRecipe(row);
         }
         addTreatedLeather();
+        addDeferredRows();
+    }
+
+    /**
+     * Adds the power armor and Exo Suit rows whose GregGuns inputs all exist in this run. Power Plating and Mechanical
+     * Parts T3 belong to the M4 component branch; until they are registered a row is skipped with an INFO line, and it
+     * appears by itself once they are (the {@link FlightRecipes} pattern).
+     */
+    private static void addDeferredRows() {
+        for (ProductionTable.Row row : ArmorTable.IV_DEFERRED) {
+            String missing = FlightRecipes.missingInput(row);
+            if (missing != null) {
+                GregGuns.LOG.info("Armor recipe {} deferred: {} is not registered in this run", row.id(), missing);
+                continue;
+            }
+            ProductionRecipes.addMachineRecipe(row);
+        }
     }
 
     /**

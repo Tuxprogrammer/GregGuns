@@ -34,7 +34,8 @@ public final class FlightRecipes {
         }
     }
 
-    private static String missingInput(ProductionTable.Row row) {
+    /** @return the registry name of the first GregGuns input of the row that is not registered, or null */
+    static String missingInput(ProductionTable.Row row) {
         for (ProductionTable.Input input : row.inputs()) {
             if (input.isGregGuns() && GameRegistry.findItem(GregGuns.MODID, input.itemName()) == null) {
                 return input.itemName();

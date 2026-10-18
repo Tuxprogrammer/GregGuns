@@ -36,7 +36,7 @@ class ArmorCatalogTest {
 
     @Test
     void theThreeT1SetsHaveFourPiecesAndTheRightTiers() {
-        assertEquals(10, ArmorCatalog.ALL.size());
+        assertEquals(12, ArmorCatalog.ALL.size());
         for (SetDef set : ArmorCatalog.ALL) {
             assertEquals(set == ArmorCatalog.T2_BERET ? 1 : 4, set.pieceCount(), set.id());
         }

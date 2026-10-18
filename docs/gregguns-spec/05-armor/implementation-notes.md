@@ -175,3 +175,55 @@ Branch `m3/armor-t2-t3`. Sets (all data in `ArmorCatalog`): T2 Combat, T2 Comman
 
 - Power armor and the Exo Suit (EU-powered, later branch): reuse `PowerSpec.electric`, `ItemElectricArmor` and `PieceDef.poweredBonuses`.
 - Recycling data for the new pieces (same open item as wave A).
+
+
+---
+
+# M3 wave C: power armor, the Exo Suit and the M3 exit gate (implementation notes and deviations)
+
+Branch `m3/power-armor`. Both sets are pure `SetDef` data in `ArmorCatalog` (`T3_POWER`, `T3_EXO`) on the machinery wave B added: `PowerSpec.electric`, `ItemElectricArmor` (the chestplate), `PieceDef.poweredBonuses` and `poweredPartialHazards`, `ArmorPower` and `PowerRules`. No new `ArmorBonus` constant was needed (every power armor and exo bonus is already in the enum), no new item class and no new event handler. Recipes are `ArmorTable.T3_POWER` and `T3_EXO` (row ids AR-38 to AR-45), listed in `ArmorTable.IV_DEFERRED`. Scenarios: `PowerArmorScenarios` (`armor.power.*`). Unit tests: `PowerArmorTest`.
+
+## Deviations and decisions
+
+| Id | Techguns or spec | GregGuns | Why |
+|---|---|---|---|
+| PWR-DEV-01 | Power Armor and Exo Suit hold 3,600 and 7,200 RF; an empty chestplate eats a battery item | IC2 electric chestplates at IV, 3,600 and 7,200 units at 200 EU per unit: 720,000 EU and 1,440,000 EU. One worn piece walking costs 10 EU/t, a full set 40 EU/t; one IV amp (8,192 EU/t) fills either in under a minute. Charged only by a GT charger or buffer, never by consuming an item | 0003, 0008, GGS-05-14. The HEV rate is 2 EU/t per piece (GT Mech Armor's); IV gear scales it by 5, as Mech Armor cores scale by tier. The constants live in `ArmorCatalog` like the HEV's; config is still open (0003) |
+| PWR-DEV-02 | Techguns lists no hazards | Power Armor and Exo Suit: partial HEAT, FROST and ELECTRICAL while the chestplate is charged, nothing passive | hazard-protection.md flag table, GGS-05-11 |
+| PWR-DEV-03 | Power Armor repair: power plating / gold wire; Exo repair: carbon plate / carbon fibers (copper wire for the chestplate) | Power Armor: `plate.TungstenSteel` and `part_power_plating`; Exo Suit: `plate.EpoxidFiberReinforced` and Heavy Cloth, as T3 Combat and HEV | ARM-DEV-19: one GT metal plus one GregGuns soft part. The electric chestplates never wear and have no repair ([ARM-DEV-18](#deviations)) |
+| PWR-DEV-04 | Power Armor "hides face slot", Exo "face slot shown", back slot shown | Not carried | The face slot is gone (GGS-05-01); masks are helmet items |
+| PWR-DEV-05 | Power Armor and Exo use Techguns models 2/3 and 4/5/6 | Power Armor uses the three single sheets `t3_power`, `t3_power_dark`, `t3_power_dark2` (`TextureLayout.SINGLE`); Exo Suit the double sheets `t3_exo`, `t3_exo_silver`, `t3_exo_green`. Camo names: Paladin, Outcast, Outcast 2; White, Silver, Dark Green | Those are the files in the repo. As with ARM-DEV-12 they will not map correctly on the vanilla biped model until a model class exists (visual check owed) |
+| PWR-DEV-06 | Power armor recipes need Power Plating and Mechanical Parts T3 | Both are M4 components not on master (`m4/components` registers `part_power_plating` and `part_mechanical_3`). The eight IV rows are added at postload only when every GregGuns input is registered; otherwise an INFO line (`Armor recipe AR-nn deferred: ... is not registered in this run`) is logged. They appear without a code change once the component branch merges | The `FlightRecipes` pattern (FLT-DEV-10); the check is shared (`FlightRecipes.missingInput`). Until then the items exist in the creative tab but cannot be crafted |
+| PWR-DEV-07 | Exo upgrade is shapeless and keeps NBT | The Advanced Combat piece is an Assembler input at wildcard damage; the output is a fresh stack (no camo, no wear) | GGS-05-35, ARM-DEV-20 |
+| PWR-DEV-08 | Power Armor chestplate carries 2 extra health, others 1 | Same (1, 2, 1, 1); the Exo Suit has none | armor-catalog 5.9, 5.11 |
+
+## Stats and bonuses
+
+Power Armor: material row T3_POWER (physical 24, explosion 22, energy, fire, ice and lightning 20, poison 15, radiation 10, penetration resistance 25%, durability 4,950, vanilla bar 6/7/6/5). Powered, per piece speed +0.05, mining +0.05, jump +0.03 (boots +0.15), knockback resistance 0.20/0.35/0.25/0.20, health 1/2/1/1, boots step assist and fall 0.2/1. Full set: speed +0.20, jump +0.24, knockback 1.00, mining +0.20, +5 health.
+
+Exo Suit: material row T3_EXO (physical 22, other elements 18, poison 10, radiation 6, penetration resistance 15%, durability 4,125, bar 6/7/6/4). Powered, per piece speed +0.20, mining +0.075, jump +0.10 (boots +0.30), knockback 0.15/0.30/0.20/0.15, boots step assist and fall 0.5/5. Full set: speed +0.80, jump +0.60, knockback 0.80, mining +0.30.
+
+## Visual and client checks for the orchestrator
+
+- Power Armor and Exo Suit icons and tooltips (energy line, camo line, hazard lines) in the creative tab, empty and full.
+- Worn layers: the Power Armor single sheets and Exo double sheets on the vanilla biped model (expect misaligned UVs, see ARM-DEV-12); cycle the three camos at a Camo Bench.
+- Exo Suit speed +80% and jump +0.6 feel, and step assist, in a client.
+- A charged chestplate in a real GT Battery Buffer GUI of the matching tier (the scenario covers the logic).
+
+## M3 exit gate
+
+Evidence per box of [ROADMAP § M3](../../ROADMAP.md#m3--armor-and-equipment). The orchestrator ticks the boxes.
+
+1. **Protection and penetration follow the D4 model, with unit tests.**
+   - Unit: `ArmorProtectionTest` (`fullSetTotalEqualsTheMaterialTotal`, `fullSetRatioSumGivesTheD4Reduction`, `anUnresistableHitSeesNoArmor`, `penetrationResistanceOfAFullSetEqualsTheMaterialValue`, `doesNotReproduceARM02_penetrationResistanceDoesNotCompoundAcrossPieces`, `vanillaPointsMatchTheTable`); `ArmorTiersTest` (one `...MaterialIsTheSpecRow` per T2 and T3 set and steam armor); `PowerArmorTest` (`powerArmorMaterialIsTheT3PowerRow`, `exoSuitMaterialIsTheT3ExoRow`, `protectionNeverDependsOnPowerAndAChestplateCarriesThirtyPercent`).
+   - Scenarios: `armor.damage` (real damage handler, 15% penetration, unresistable), `armor.t2.riot`, `armor.t3.combat`, `armor.t3.hev`, `armor.steam.power`, `armor.power.power_armor`, `armor.power.exo` (each hits the worn set with several damage types through `DamageSources` and compares with the D4 formula, powered and empty).
+2. **Bonuses apply and are removed cleanly, with no step-height or potion interference (CORE-14, CORE-15).**
+   - Unit: `Core14And15RegressionTest` (`doesNotReproduceCORE14_anotherModsStepHeightIsNeverLowered`, `doesNotReproduceCORE14_equippingOverAHigherStepHeightLeavesItAlone`, `stepAssistRaisesAndRestoresExactlyWhatItReplaced`, `doesNotReproduceCORE15_aBrewedPotionSurvivesTheToggleGoingOff`, `doesNotReproduceCORE15_aPotionThatOutlastsOurGrantIsNotRemoved`, `doesNotReproduceCORE15_armorDoesNotRefreshOrShortenAForeignPotion`); `BonusLifecycleTest`; `SetEvaluatorTest`; `PowerArmorTest.bonusesNeedAPoweredChestplateButTheSetStillCounts`.
+   - Scenarios: `armor.compat` (CORE-14: a step height of 1.25 survives equip and unequip; CORE-15: a 6000-tick Night Vision survives), `armor.lifecycle` (logout, death, respawn and dimension change strip the modifiers), and `armor.power.power_armor` and `armor.power.exo`, which assert that the server wrote neither step height nor a potion with the powered set worn, and that unequipping clears every attribute (`checkUnequipped`). Step assist is only a bonus value read by the client (`StepHeightClient` through `StepHeightPolicy`); the server never writes it.
+3. **The special-slot inventory syncs, persists and works with automation where the spec says it should.**
+   - The spec replaces the Techguns tab with Baubles Expanded slots (GGS-05-01), so there is no GregGuns inventory sync code to test: syncing worn equipment to other players is Baubles' own packet (GGS-05-04), and GregGuns registers no equipment packet or DataWatcher entry. What GregGuns owns is the state in the stack: the electric charge (IC2 NBT) and the pouch's six slots (stack NBT).
+   - Persists: `armor.power.slot_gate` (a charged chestplate and a filled Ammo Pouch survive a stack NBT round trip, the format Baubles saves); `armor.slots.pouch` (contents taken first by the reload path and kept in the stack NBT); `armor.slots.goggles`, `armor.slots.back` (type, key, removal).
+   - Automation: the spec asks for none beyond (a) the ammo lookup scanning the pouch before the main inventory (GGS-05-03, `armor.slots.pouch`), (b) every special-slot item being producible on a GT recipe map (`armor.slots.recipes`, `armor.flight.recipes`), and (c) the refill recipes (`armor.slots.recipes`). The worn pouch is a Baubles item that GT pipes and hoppers cannot reach, and the spec does not ask for that. Decision: no hopper or pipe access to a worn bauble.
+4. **Powered items run on EU through GT chargers.**
+   - `armor.power.charger`: the HEV (EV), Power Armor (IV) and Exo Suit (IV) chestplates are put in real GT Battery Buffer MTEs filled to capacity. The buffer of the matching tier accepts the stack (`allowPutStack`) and, after 60 ticks, the item holds EU. The buffers one tier below and one above refuse it, and a copy forced into them with `setInventorySlotContents` stays at 0 EU, which is exact-tier charging (0008).
+   - Unit: `PowerArmorTest.ivSetsCostTenEuPerTickPerWalkingPieceAndFitAnIvCharger`; `ArmorTiersTest.electricUnitsRoundDownAndMatchTheMechArmorRate`.
+   - The Jump Pack (HV), Anti Gravity Device (IV) and Night Vision Goggles (MV) are IC2 electric items on the same `ElectricGear` path (`armor.flight.jump_pack`, `armor.flight.anti_gravity` and `armor.slots.goggles` check tier and transfer limit); only the armor chestplates are put in a real buffer here.
