@@ -49,7 +49,7 @@ public final class TestSubCommand implements GregGunsSubCommand {
                 list(sender);
                 break;
             case ALL:
-                run(sender, registry.all());
+                run(sender, registry.forAll());
                 break;
             case NAMED:
                 run(sender, Collections.singletonList(request.scenario()));

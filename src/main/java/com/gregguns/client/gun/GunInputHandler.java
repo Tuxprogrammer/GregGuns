@@ -40,10 +40,21 @@ public final class GunInputHandler {
     private boolean triggerDown;
     private int lastSlot = -1;
     private ItemGun lastGun;
+    private boolean autotestAttack;
 
     /** @param mirror the local prediction mirror */
     public GunInputHandler(ClientGunMirror mirror) {
         this.mirror = mirror;
+    }
+
+    /**
+     * Dev autotest only ({@code com.gregguns.client.autotest}): holds the fire button down without a real key press
+     * and without window focus, so the real input path (mirror plus trigger packet) can be driven by a script.
+     *
+     * @param down true to hold the button
+     */
+    public void setAutotestAttack(boolean down) {
+        this.autotestAttack = down;
     }
 
     /** Runs for the local player at the end of each client tick. */
@@ -56,7 +67,9 @@ public final class GunInputHandler {
         EntityPlayer player = event.player;
         ItemStack held = player.getHeldItem();
         ItemGun gun = held != null && held.getItem() instanceof ItemGun ? (ItemGun) held.getItem() : null;
-        boolean canAct = gun != null && mc.currentScreen == null && mc.inGameHasFocus && player.isEntityAlive();
+        boolean canAct = gun != null && mc.currentScreen == null
+            && (mc.inGameHasFocus || autotestAttack)
+            && player.isEntityAlive();
 
         // A switch makes the server drop its input state, so forget ours and let a still-held button press again.
         if (player.inventory.currentItem != lastSlot || gun != lastGun) {
@@ -66,7 +79,7 @@ public final class GunInputHandler {
             mirror.trigger(false);
         }
 
-        boolean wantDown = canAct && mc.gameSettings.keyBindAttack.getIsKeyPressed();
+        boolean wantDown = canAct && (autotestAttack || mc.gameSettings.keyBindAttack.getIsKeyPressed());
         if (wantDown != triggerDown) {
             triggerDown = wantDown;
             mirror.trigger(wantDown);
