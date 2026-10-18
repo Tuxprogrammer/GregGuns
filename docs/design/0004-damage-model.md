@@ -16,6 +16,8 @@ Techguns has its own damage system: damage types, armour penetration and per-typ
 ## Consequences
 - M1 implements this model and its regression tests before the first gun ships.
 
+- Implemented in M1 as `com.gregguns.combat`. The settled details and deviations (vanilla armour is plain vanilla; Worked example 5.7 now gives 3.92 for a zombie) are in [damage-interop.md](../gregguns-spec/02-guns/damage-interop.md#settled-in-m1-implementation-notes-and-deviations).
+
 ## Alternatives considered
 - **Vanilla damage only:** rejected, because armour penetration and the energy/explosive identity would be lost.
 - **A new model:** rejected, because it isn't needed for the MVP.

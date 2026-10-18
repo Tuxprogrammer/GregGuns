@@ -73,3 +73,9 @@ The framework logic (registry, argument parsing, runner, report) is plain Java a
 |---|---|---|
 | `harness.entity` | test harness | Spawns a pig at the origin, checks it is alive, in the world and at 10 health, removes it, and checks it is dead. |
 | `harness.area` | test harness | Clears an area, places a block, then cleans up and checks the original block is back. |
+| `combat.types` | damage system | Each of the ten damage types hits an unarmoured pig through a real source: health lost equals the damage, and the type's secondary effect (fire, slowness, poison, radiation sickness, shock) appears only where it should. |
+| `combat.penetration` | damage system | A mob in full iron armour (15 points) takes 8 damage at 0/15/100% penetration as 3.2 / 3.92 / 8.0 (GUN-34), every blockable type alike (GUN-45), unresistable in full; the source keeps the shooter and the projectile (GUN-37). |
+| `combat.player` | damage system | A fake player in full iron armour takes the same 3.92 through Forge `ApplyArmor`, each armour piece is worn exactly once (armour not applied twice), and unresistable skips armour. |
+| `combat.iframes` | damage system | Melee 6 then 8 inside the frames loses 8, not 14 (GUN-33); ignoring sources land every time and leave the frames as they found them. |
+| `combat.listeners` | damage system | A foreign `LivingAttackEvent`/`LivingHurtEvent` listener sees our source once, and the raw pre-armour amount at HIGHEST priority (GGS-02-18). |
+| `combat.hazmat` | damage system | A pig in a full stub-hazmat set (GT `IHazardProtector`) takes the direct damage but none of the fire, ice, poison, radiation or shock effects (GGS-02-22). |
