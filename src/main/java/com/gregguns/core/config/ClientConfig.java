@@ -24,4 +24,9 @@ public class ClientConfig {
         "Default: 40." })
     @Config.RangeInt(min = 0, max = 2000)
     public static int hudOffsetY = 40;
+
+    @Config.Comment({
+        "Draw the Ammo Press's progress-synced front animation. When off, the active press shows its still",
+        "front overlay. Purely cosmetic; never changes a recipe. Default: true." })
+    public static boolean ammoPressAnimation = true;
 }

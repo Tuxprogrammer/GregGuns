@@ -109,6 +109,12 @@ The framework logic (registry, argument parsing, runner, report) is plain Java a
 | `combat.hazmat` | damage system | A pig in a full stub-hazmat set (GT `IHazardProtector`) takes the direct damage but none of the fire, ice, poison, radiation or shock effects (GGS-02-22). |
 | `production.ammopress` | production chain (M1) | The LV Ammo Press (MTE 20101) is registered as an `MTEAmmoPress` at LV on `gregguns.ammoPress`, has an item form, and places as a GT machine block. |
 | `production.recipes` | production chain (M1) | The ammo map finds RC-28, RC-37 and RC-44 at `RECIPE_LV` with the sheet's counts and durations, and the assembler holds RC-05 and RC-11 at LV. |
+| `production.ammopress.tiers` | Ammo Press tiers (M4) | Steam, LV, MV, HV and EV (20100 to 20104) have the right class, GT tier, slot counts, the ammo map, `RecipeMapWorkable` (so GT lists them as NEI catalysts) and a hand recipe; RC-28 is found at LV to EV voltage and not at ULV. |
+| `production.ammopress.run.steam` | Ammo Press tiers (M4) | A placed Steam Ammo Press with steam runs a scenario-registered ULV recipe (2 cobblestone to flint) and outputs it. |
+| `production.ammopress.run.lv` | Ammo Press tiers (M4) | A placed, powered LV press runs RC-28 and outputs 16 bullets. |
+| `production.ammopress.run.mv` | Ammo Press tiers (M4) | The same at MV (overclocked). |
+| `production.ammopress.run.hv` | Ammo Press tiers (M4) | The same at HV. |
+| `production.ammopress.run.ev` | Ammo Press tiers (M4) | The same at EV. |
 | `projectile.hit` | projectile framework | A 9mm (`GunCatalog.PISTOL`) shot fired through `Projectiles.launcher()` from a fake player skips a dead zombie in front and takes the live zombie behind it down by the damage model's figure for 8 damage; the bullet is gone and the entity is registered (PFX-01). Waits for ticks. |
 | `projectile.falloff` | projectile framework | The same shot at a zombie 21 blocks away (past the 18 block drop-off start): health lost equals `DamageFalloff` at the measured distance run through `DamageModel`, strictly between the maximum and the minimum. Waits for ticks. |
 | `projectile.blocks` | projectile framework | A bullet flies through tall grass (PFX-27), ends at a stone wall without leaving an entity behind, and the zombie behind the wall is unhurt (PFX-23). Waits for ticks. |

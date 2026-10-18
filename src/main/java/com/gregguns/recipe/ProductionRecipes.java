@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
 import com.gregguns.item.part.PartItems;
+import com.gregguns.machine.AmmoPressMachines;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
@@ -56,6 +57,7 @@ public final class ProductionRecipes {
         }
         addRefill(ProductionTable.PISTOL_REFILL);
         addRecyclingData();
+        AmmoPressMachines.addCraftingRecipes();
     }
 
     /** Registers one table row as a GT machine recipe; shared with {@link GunRecipes}. */

@@ -105,6 +105,18 @@ One mechanical stroke sound on each ram bottom, played from the client at the st
 - **GregGuns does:** five instances for the tiers in the table above. Recipe voltage is the gate.
 - **Pack-side change:** none. The optional NEI ordering row for `gregguns.ammoPress` is in [PACK-CHANGES](../PACK-CHANGES.md) if the lead adds it.
 
+## M4 tiers deviation
+
+Built in M4 (branch `m4/ammo-press-tiers`): the Steam, MV, HV and EV presses, IDs 20100, 20102, 20103 and 20104, beside the M1 LV press. The Ammunition Works (20105) is a separate branch.
+
+- **One class, tier parameter.** LV to EV are `MTEAmmoPress` with the GT voltage index; all have 6 item inputs, 3 item outputs and 1 fluid input. There is **no parallel** in a single block (throughput is overclock and the Ammunition Works). `AmmoPressTier` (pure) holds the IDs, D1 tiers and the `canRun` rule: a press runs rows at or below its tier, which GT enforces through the recipe EU/t against the machine voltage.
+- **Steam press** is `MTEAmmoPressSteam extends MTEBasicMachineBronze`, as GT's Bronze Compressor: steam from any side but the front, and a steam vent through the front after every run (the base class does both). Deviation: **4 item inputs and 1 item output**, not 6 and 3, because the Bronze recipe check fills one output and the Stone Bullet needs few inputs. Deviation: it accepts **ULV recipes only** (`checkRecipe` queries at ULV voltage); GT's bronze base would otherwise run anything up to LV voltage. Steam use is GT's own (`SteamOverclockDescriber`), not computed here.
+- **No High Pressure (steel) steam variant.** GT pairs each bronze machine with a steel one. `machine-roster.md` gives no ID for it, so none is built. Gap: if wanted, the roster needs an ID (the free range is 20125 to 20163).
+- **Steam hand recipe** `XXX / PMP / BBB`: small bronze pipes, a piston (`craftingPiston`), `Hull_Bronze`, bronze plates (recipes.md). LV to EV use the `VPV / CMC / WEW` grid from M1, with the tier's hull, circuit, cable, motor, piston and conveyor.
+- **Progress-synced front (LV to EV).** The active front overlay strip (`OVERLAY_FRONT_ACTIVE`, 16 x 128, 8 frames, and its glow strip) is not animated by the vanilla timer. The block shows the still front when active; `AmmoPressRenderer` (client) draws one frame of the raw strip on the front face from `AmmoPressAnimation`: `S = clamp(D / 20, 2, 8)` strokes, phase `progress / D * S` modulo 1, frame `floor(phase * 8)`. GT does not send recipe progress to the client outside a GUI, so the press sends `(progress, max, running)` through GT's `IMTERenderer` render-data packet on start, stop and every 10 ticks, and the client counts ticks between samples. With no fresh sample (older than 30 ticks) it falls back to a free-running 20-tick stroke, the spec's fallback. Client config `client.ammoPressAnimation` (default on); off shows the still front. A press whose front faces up or down shows the still front.
+- **Not built (needs art or models).** The 3D ram, feed belt and ejected rounds of layer 2, and the stroke sound: no models or sounds exist for them. The front strip is the only synced part. The Steam press uses layer 1 only (vanilla animated overlays), as specified.
+- **Recipes.** This branch adds no ammo recipe. `ProductionTable.pressRow(...)` builds a row for any tier and `ProductionTable.pressRowsFor(AmmoPressTier)` lists what a press can run. The Stone Bullet ULV row and the MV, HV and EV ammo rows come from the M2 branch.
+
 ## M1 slice deviation
 
 Pulled into M1 for the vertical slice (the 9mm Pistol must be craftable through its D1 gate, and the recipe must show in NEI); animation, the multiblock and the remaining tiers stay M4. What M1 builds:
