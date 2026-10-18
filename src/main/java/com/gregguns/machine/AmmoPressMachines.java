@@ -2,14 +2,22 @@ package com.gregguns.machine;
 
 import net.minecraft.item.ItemStack;
 
+import com.gregguns.block.BlockWorksCasing;
+import com.gregguns.core.registry.ModuleRegistrar;
+
 import gregtech.api.GregTechAPI;
+import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OreDictNames;
 import gregtech.api.enums.OrePrefixes;
+import gregtech.api.enums.TierEU;
 import gregtech.api.enums.VoltageIndex;
 import gregtech.api.metatileentity.implementations.MTEBasicMachineWithRecipe;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTModHandler;
+import gregtech.api.util.GTOreDictUnificator;
+import gregtech.api.util.GTRecipeBuilder;
 
 /**
  * Creates and looks up the five Ammo Press machines (Steam, LV, MV, HV, EV).
@@ -37,7 +45,17 @@ public final class AmmoPressMachines {
     private AmmoPressMachines() {}
 
     /**
-     * Constructs every Ammo Press. Call once, from {@code GunsModule.init}.
+     * Creates the Ammunition Works casing block. Call once, from {@code GunsModule.preInit}, so the block has a
+     * registry id before any world loads.
+     *
+     * @param registrar the guns module's registrar (for the creative tab)
+     */
+    public static void registerBlocks(ModuleRegistrar registrar) {
+        BlockWorksCasing.create(registrar.tab());
+    }
+
+    /**
+     * Constructs every Ammo Press and the Ammunition Works. Call once, from {@code GunsModule.init}.
      */
     public static void register() {
         // Source:
@@ -58,6 +76,7 @@ public final class AmmoPressMachines {
             "gregguns.ammopress.tier.04",
             "Advanced Ammo Press III",
             VoltageIndex.EV);
+        new MTEAmmoWorks(GregGunsMTEIDs.AMMO_WORKS, "gregguns.multimachine.ammoworks", "Ammunition Works");
     }
 
     private static void electric(int id, String name, String regional, int voltageIndex) {
@@ -87,6 +106,62 @@ public final class AmmoPressMachines {
             GTModHandler.RecipeBits.BITS | GTModHandler.RecipeBits.DO_NOT_CHECK_FOR_COLLISIONS,
             new Object[] { "XXX", "PMP", "BBB", 'X', OrePrefixes.pipeSmall.get(Materials.Bronze), 'P',
                 OreDictNames.craftingPiston, 'M', ItemList.Hull_Bronze, 'B', OrePrefixes.plate.get(Materials.Bronze) });
+        addWorksRecipes();
+    }
+
+    /**
+     * Adds the Ammunition Works' own recipes: the Works Casing and Ram Housing in the Assembler and the controller's
+     * hand recipe.
+     */
+    // Spec: docs/gregguns-spec/08-machines-production/recipes.md (Ammunition Works, 3 recipes; GGS-08-86, GGS-08-89)
+    // Source (casing: 6 plates and a frame, circuit 1, RECIPE_LV / 2):
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L2671-L2700
+    // Source (controller: shaped around a hull, GT machine style):
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/load/MTERecipeLoader.java#L3767-L3771
+    // Gate material: Stainless Steel (HV, docs/design/0001-tier-map.md); AmmoWorksRecipeSpec pins it to GateRule.
+    private static void addWorksRecipes() {
+        ItemStack stainlessPlates = GTOreDictUnificator
+            .get(OrePrefixes.plate, Materials.StainlessSteel, AmmoWorksRecipeSpec.CASING_PLATES);
+        ItemStack stainlessFrame = GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.StainlessSteel, 1);
+        ItemStack stainlessGear = GTOreDictUnificator.get(OrePrefixes.gearGt, Materials.StainlessSteel, 1);
+        ItemStack casing = new ItemStack(BlockWorksCasing.INSTANCE, 1, BlockWorksCasing.WORKS_CASING);
+        ItemStack casingOut = new ItemStack(
+            BlockWorksCasing.INSTANCE,
+            AmmoWorksRecipeSpec.CASINGS_PER_CRAFT,
+            BlockWorksCasing.WORKS_CASING);
+        ItemStack housing = new ItemStack(BlockWorksCasing.INSTANCE, 1, BlockWorksCasing.RAM_HOUSING);
+
+        GTValues.RA.stdBuilder()
+            .itemInputs(stainlessPlates, stainlessFrame)
+            .circuit(1)
+            .itemOutputs(casingOut)
+            .duration(2 * GTRecipeBuilder.SECONDS + 10 * GTRecipeBuilder.TICKS)
+            .eut(TierEU.RECIPE_LV / 2)
+            .addTo(RecipeMaps.assemblerRecipes);
+        GTValues.RA.stdBuilder()
+            .itemInputs(casing, ItemList.Electric_Piston_HV.get(1), stainlessGear)
+            .circuit(2)
+            .itemOutputs(housing)
+            .duration(10 * GTRecipeBuilder.SECONDS)
+            .eut(TierEU.RECIPE_HV)
+            .addTo(RecipeMaps.assemblerRecipes);
+        GTModHandler.addCraftingRecipe(
+            worksStack(1),
+            GTModHandler.RecipeBits.BITS | GTModHandler.RecipeBits.DO_NOT_CHECK_FOR_COLLISIONS,
+            new Object[] { "WPW", "EME", "WVW", 'W', casing, 'P', ItemList.Electric_Piston_HV, 'E',
+                OrePrefixes.circuit.get(Materials.HV), 'M', ItemList.Hull_HV, 'V', ItemList.Conveyor_Module_HV });
+    }
+
+    /**
+     * @param amount stack size
+     * @return the Ammunition Works controller as an item stack
+     * @throws IllegalStateException if the machine was not registered (the guns module is off, or too early)
+     */
+    public static ItemStack worksStack(int amount) {
+        if (GregTechAPI.METATILEENTITIES[GregGunsMTEIDs.AMMO_WORKS] == null) {
+            throw new IllegalStateException("The Ammunition Works is not registered");
+        }
+        return GregTechAPI.METATILEENTITIES[GregGunsMTEIDs.AMMO_WORKS].getStackForm(amount);
     }
 
     /**

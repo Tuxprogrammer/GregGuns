@@ -78,6 +78,23 @@ gregguns.machine.ammo_press.tooltip=Presses bullets and magazines
 gregguns.machine.ammo_press.type=Machine Type: Ammo Press
 gregguns.machine.ammo_press_steam.tooltip=Presses ammunition on steam; vents steam from the front after each run
 
+# Ammunition Works multiblock: casings and controller
+gregguns.casings.name=Ammunition Works Casing
+gregguns.casings.0.name=Works Casing
+gregguns.casings.1.name=Ram Housing
+gregguns.machine.ammo_works.type=Ammo Press, Ammunition Works
+gregguns.machine.ammo_works.info.map=Runs every Ammo Press recipe, many at once
+gregguns.machine.ammo_works.info.parallel=Parallels: 4 x press bays x voltage tier
+gregguns.machine.ammo_works.info.bays=Add press bays (2 to 8) to lengthen the hall
+gregguns.machine.ammo_works.structure.controller=Front, middle, second layer from the bottom
+gregguns.machine.ammo_works.structure.belt=Item Pipe Casing (one tier along the whole floor line)
+gregguns.machine.ammo_works.structure.feeder=Any feeder casing (front end)
+gregguns.machine.ammo_works.structure.packing=Any packing casing (back end)
+gregguns.machine.ammo_works.structure.feeder_or_packing=Any feeder or packing casing
+gregguns.machine.ammo_works.structure.air=Interior of the hall
+gregguns.machine.ammo_works.structure.footer=Use the hologram projector with a stack size of 2 to 8 to choose the bay count
+gregguns.machine.ammo_works.error.too_few_bays=The hall needs at least 2 press bays
+
 # Guns: items, tooltips, keys and HUD
 item.gregguns.pistol_9mm.name=9mm Pistol
 item.gregguns.revolver.name=Revolver

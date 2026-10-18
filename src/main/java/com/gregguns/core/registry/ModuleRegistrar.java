@@ -61,6 +61,14 @@ public final class ModuleRegistrar {
     }
 
     /**
+     * @return the GregGuns creative tab, for blocks whose own base class registers them (GT casings), which therefore
+     *         cannot go through {@link #registerBlock}
+     */
+    public CreativeTabs tab() {
+        return tab;
+    }
+
+    /**
      * Registers an item and puts it in the GregGuns creative tab, unless it implements {@link HiddenFromCreativeTab}.
      *
      * <p>
