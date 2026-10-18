@@ -27,6 +27,8 @@ public final class EquipmentKeybinds {
     public static final String NIGHT_VISION_NAME_KEY = "key.gregguns.night_vision";
     /** Lang key of the ammo pouch key's name. */
     public static final String AMMO_POUCH_NAME_KEY = "key.gregguns.ammo_pouch";
+    /** Lang key of the back device key's name (Glider glide, Anti Gravity Device switch). */
+    public static final String BACK_DEVICE_NAME_KEY = "key.gregguns.back_device";
     /** LWJGL key code of N (Keyboard.KEY_N); inlined because LWJGL is absent on a server. */
     public static final int DEFAULT_NIGHT_VISION_KEY = 49;
     /** LWJGL key code of P (Keyboard.KEY_P). */
@@ -37,6 +39,11 @@ public final class EquipmentKeybinds {
             SlotEquipment.toggleNightVision(player);
         }
     };
+    /** LWJGL key code of J (Keyboard.KEY_J), the Techguns jetpack key. */
+    public static final int DEFAULT_BACK_DEVICE_KEY = 36;
+
+    private static final IKeyPressedListener BACK_DEVICE_LISTENER = (player, key, isDown) -> SlotEquipment
+        .backKey(player, isDown);
     private static final IKeyPressedListener POUCH_LISTENER = (player, key, isDown) -> {
         if (isDown) {
             AmmoPouch.openWorn(player);
@@ -46,6 +53,7 @@ public final class EquipmentKeybinds {
     // Set once in register(); a registry, not gameplay state.
     private static SyncedKeybind nightVision;
     private static SyncedKeybind ammoPouch;
+    private static SyncedKeybind backDevice;
 
     private EquipmentKeybinds() {}
 
@@ -59,6 +67,14 @@ public final class EquipmentKeybinds {
         nightVision.registerGlobalListener(NIGHT_VISION_LISTENER);
         ammoPouch = SyncedKeybind.createConfigurable(AMMO_POUCH_NAME_KEY, category, DEFAULT_AMMO_POUCH_KEY);
         ammoPouch.registerGlobalListener(POUCH_LISTENER);
+        // Appended last: key numbering is construction order (see the class comment).
+        backDevice = SyncedKeybind.createConfigurable(BACK_DEVICE_NAME_KEY, category, DEFAULT_BACK_DEVICE_KEY);
+        backDevice.registerGlobalListener(BACK_DEVICE_LISTENER);
         GregGuns.LOG.debug("Registered equipment keybinds");
+    }
+
+    /** @return the back device key (J by default); null before {@link #register()} */
+    public static SyncedKeybind backDevice() {
+        return backDevice;
     }
 }

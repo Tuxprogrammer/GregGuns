@@ -26,6 +26,7 @@ public final class GregGunsConfig {
             DamageFactorsConfig.class,
             ExplosionsConfig.class,
             EquipmentConfig.class,
+            FlightConfig.class,
             MachinesConfig.class));
 
     private GregGunsConfig() {}

@@ -25,7 +25,14 @@ public final class ArmorParts {
     /** Registry name of the Compressed Air Tank. */
     public static final String TANK_AIR = "tank_air";
 
+    /** Registry name of the Glider Backpack (flight recipes). */
+    public static final String GLIDER_BACKPACK = "part_glider_backpack";
+    /** Registry name of the Glider Wing (flight recipes). */
+    public static final String GLIDER_WING = "part_glider_wing";
+
     private static ItemPart heavyCloth;
+    private static ItemPart gliderBackpack;
+    private static ItemPart gliderWing;
     private static ItemPart gasMaskFilter;
     private static ItemPart tankAir;
 
@@ -45,6 +52,9 @@ public final class ArmorParts {
         // the registry names.
         gasMaskFilter = registrar.registerItem(GAS_MASK_FILTER, new ItemPart(Tier.MV));
         tankAir = registrar.registerItem(TANK_AIR, new ItemPart(Tier.HV));
+        // Glider parts are defined by the armor recipes sheet (recipes.md, HV), which area 06 links to.
+        gliderBackpack = registrar.registerItem(GLIDER_BACKPACK, new ItemPart(Tier.HV));
+        gliderWing = registrar.registerItem(GLIDER_WING, new ItemPart(Tier.HV));
     }
 
     /** @return Heavy Cloth; null before registration or with the armor module off */
@@ -55,6 +65,16 @@ public final class ArmorParts {
     /** @return the Gas Mask Filter; null before registration or with the armor module off */
     public static ItemPart gasMaskFilter() {
         return gasMaskFilter;
+    }
+
+    /** @return the Glider Backpack; null before registration or with the armor module off */
+    public static ItemPart gliderBackpack() {
+        return gliderBackpack;
+    }
+
+    /** @return the Glider Wing; null before registration or with the armor module off */
+    public static ItemPart gliderWing() {
+        return gliderWing;
     }
 
     /** @return the Compressed Air Tank; null before registration or with the armor module off */

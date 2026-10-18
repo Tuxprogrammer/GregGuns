@@ -41,7 +41,12 @@ class ConfigRulesTest {
             "EquipmentConfig.nightVisionDrainEuPerTick",
             "EquipmentConfig.tacticalMaskCapacityEu",
             "EquipmentConfig.gasMaskFilterTicks",
-            "EquipmentConfig.oxygenTankCapacity"));
+            "EquipmentConfig.oxygenTankCapacity",
+            "FlightConfig.jumpPackCapacityEu",
+            "FlightConfig.jumpPackJumpCostEu",
+            "FlightConfig.jumpPackFallCostEu",
+            "FlightConfig.antiGravityCapacityEu",
+            "FlightConfig.antiGravityDriveEuPerTick"));
 
     private static Set<String> tokens(String key) {
         Set<String> result = new HashSet<>();

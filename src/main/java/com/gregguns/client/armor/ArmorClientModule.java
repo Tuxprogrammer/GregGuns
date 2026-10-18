@@ -24,5 +24,8 @@ public final class ArmorClientModule implements ClientModule {
         FMLCommonHandler.instance()
             .bus()
             .register(new StepHeightClient());
+        FMLCommonHandler.instance()
+            .bus()
+            .register(new com.gregguns.client.flight.FlightClient());
     }
 }
