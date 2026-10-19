@@ -7,7 +7,8 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -127,10 +128,10 @@ public final class WorldBlockScenarios {
                 40,
                 copy.getStackInSlot(0) == null ? 0 : copy.getStackInSlot(0).stackSize);
             out.checkEquals(
-                "round trip slot 2 item",
+                "round trip slot 1 item",
                 plate,
-                copy.getStackInSlot(2) == null ? null
-                    : copy.getStackInSlot(2)
+                copy.getStackInSlot(1) == null ? null
+                    : copy.getStackInSlot(1)
                         .getItem());
 
             // Container, shift-click, viewers (MUTL-34, MUTL-36).
@@ -254,7 +255,7 @@ public final class WorldBlockScenarios {
         }
     }
 
-    /** Poison on a zombie and a player; the config spares players; the collision box follows the size. */
+    /** Poison on a creeper and a player; the config spares players; the collision box follows the size. */
     private static final class BlobPoison implements Scenario {
 
         @Override
@@ -264,7 +265,7 @@ public final class WorldBlockScenarios {
 
         @Override
         public String description() {
-            return "A Bio Blob poisons a zombie and a player (Poison III), spares players when configured, and collides with its per-size box.";
+            return "A Bio Blob poisons a creeper and a player (Poison III), spares players when configured, and collides with its per-size box.";
         }
 
         @Override
@@ -289,34 +290,52 @@ public final class WorldBlockScenarios {
                 out.check(Math.abs(box.maxX - box.minX - BlobState.width(3)) < 1e-6, "collision width follows size 3");
             }
 
-            EntityZombie zombie = ctx.spawn(new EntityZombie(world));
-            zombie.setPosition(ox + 0.5, oy, oz + 0.5);
-            blob.onEntityCollidedWithBlock(world, ox, oy, oz, zombie);
-            PotionEffect zombieEffect = zombie.getActivePotionEffect(Potion.poison);
-            out.check(zombieEffect != null, "the zombie is poisoned");
-            if (zombieEffect != null) {
-                out.checkEquals("zombie poison amplifier", 2, zombieEffect.getAmplifier());
+            EntityCreeper creeper = ctx.spawn(new EntityCreeper(world));
+            creeper.setPosition(ox + 0.5, oy, oz + 0.5);
+            blob.onEntityCollidedWithBlock(world, ox, oy, oz, creeper);
+            PotionEffect creeperEffect = creeper.getActivePotionEffect(Potion.poison);
+            out.check(creeperEffect != null, "the creeper is poisoned");
+            if (creeperEffect != null) {
+                out.checkEquals("creeper poison amplifier", 2, creeperEffect.getAmplifier());
             }
 
-            EntityPlayerMP player = fakePlayer(ctx);
-            player.clearActivePotions();
+            // A plain player entity: a FakePlayer has no network handler and fails on potion packets.
+            EntityPlayer player = new EntityPlayer(
+                world,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "blobtest")) {
+
+                @Override
+                public void addChatMessage(net.minecraft.util.IChatComponent message) {}
+
+                @Override
+                public boolean canCommandSenderUseCommand(int level, String command) {
+                    return false;
+                }
+
+                @Override
+                public net.minecraft.util.ChunkCoordinates getPlayerCoordinates() {
+                    return new net.minecraft.util.ChunkCoordinates(0, 0, 0);
+                }
+            };
             boolean spared = UtilityConfig.bioBlobSparesPlayers;
             try {
                 UtilityConfig.bioBlobSparesPlayers = false;
                 blob.onEntityCollidedWithBlock(world, ox, oy, oz, player);
                 out.check(player.getActivePotionEffect(Potion.poison) != null, "the player is poisoned by default");
-                player.clearActivePotions();
+                player.getActivePotionEffects()
+                    .clear();
                 UtilityConfig.bioBlobSparesPlayers = true;
                 blob.onEntityCollidedWithBlock(world, ox, oy, oz, player);
                 out.check(player.getActivePotionEffect(Potion.poison) == null, "the config spares players");
-                EntityZombie second = ctx.spawn(new EntityZombie(world));
+                EntityCreeper second = ctx.spawn(new EntityCreeper(world));
                 blob.onEntityCollidedWithBlock(world, ox, oy, oz, second);
                 out.check(
                     second.getActivePotionEffect(Potion.poison) != null,
                     "mobs are poisoned even when players are spared");
             } finally {
                 UtilityConfig.bioBlobSparesPlayers = spared;
-                player.clearActivePotions();
+                player.getActivePotionEffects()
+                    .clear();
             }
             world.setBlockToAir(ox, oy, oz);
             return out.build();
