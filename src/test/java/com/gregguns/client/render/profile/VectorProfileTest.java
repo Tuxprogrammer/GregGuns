@@ -84,12 +84,13 @@ class VectorProfileTest {
         assertEquals(0f, box("hood_roof").y(), 1e-6, "the roof plate is the top");
         BoxSpec mag = box("magazine");
         double bottom = mag.pivotY() + mag.h() * Math.cos(Math.toRadians(20));
-        assertEquals(27.4, bottom / U, 0.05, "magazine bottom");
-        assertTrue(maxZ / U <= 3.2, "nothing wider than 3.2");
+        assertEquals(27.5, bottom / U, 0.05, "magazine bottom");
+        assertEquals(4.0, maxZ / U, 1e-6, "the receiver and sight are the widest, 4 across");
         assertEquals(2.0, mag.d() / U, 1e-6, "magazine 2 wide");
         assertEquals(1.0, box("strut").d() / U, 1e-6, "strut 1 wide");
-        double ratio = 44.0 / (maxZ / U);
-        assertTrue(Math.abs(ratio - 13.8) / 13.8 < 0.1, "length to thickness within 10 percent");
+        assertEquals(3.0, box("handguard").d() / U, 1e-6, "everything under the receiver stays 3 wide");
+        assertEquals(3.0, box("stock_bar").d() / U, 1e-6);
+        assertEquals(3.0, box("butt_pad").d() / U, 1e-6);
     }
 
     @Test
@@ -97,15 +98,33 @@ class VectorProfileTest {
         BoxSpec r = box("receiver");
         assertEquals(25.0, r.w() / U, 1e-6);
         assertEquals(3.0, r.h() / U, 1e-6);
+        assertEquals(4.0, r.d() / U, 1e-6, "round 3: 4 wide");
+        assertEquals(-2.0, r.z() / U, 1e-6);
         assertEquals(16.0, r.x() / U, 1e-6);
-        assertEquals(5.1, r.y() / U, 1e-6);
+        assertEquals(5.2, r.y() / U, 1e-6);
         BoxSpec rail = box("top_rail");
         assertEquals(23.0, rail.w() / U, 1e-6);
         assertEquals(1.0, (rail.x() - r.x()) / U, 1e-6, "rail inset 1 from the rear");
         assertEquals(1.0, (r.x() + r.w() - rail.x() - rail.w()) / U, 1e-6, "rail inset 1 from the front");
-        assertEquals(7.2, box("dot_base").w() / U, 0.25);
-        assertEquals(3.2, box("hood_wall_l").w() / U, 0.25);
-        assertEquals(3.2, box("hood_roof").w() / U, 0.25);
+        BoxSpec base = box("dot_base");
+        assertEquals(9.0, base.w() / U, 1e-6);
+        assertEquals(23.5, base.x() / U, 1e-6);
+        assertEquals(4.0, base.d() / U, 1e-6);
+        assertEquals(3.0, base.h() / U, 1e-6);
+        assertEquals(2.2, base.y() / U, 1e-6);
+        BoxSpec wall = box("hood_wall_l");
+        assertEquals(4.0, wall.w() / U, 1e-6);
+        assertEquals(2.0, wall.h() / U, 1e-6);
+        assertEquals(0.7, wall.y() / U, 1e-6);
+        assertEquals(1.0, wall.d() / U, 1e-6);
+        assertEquals(0.7, wall.z() / U, 1e-6);
+        assertEquals(-1.7, box("hood_wall_r").z() / U, 1e-6);
+        BoxSpec roof = box("hood_roof");
+        assertEquals(4.0, roof.w() / U, 1e-6);
+        assertEquals(4.0, roof.d() / U, 1e-6);
+        assertEquals(24.6, roof.x() / U, 1e-6);
+        assertEquals(1.0, roof.h() / U, 1e-6);
+        assertEquals(1.1, box("red_dot").y() / U, 1e-6, "dot Y 1.1 to 2.1");
         assertEquals(0, box("red_dot").w(), "a plane facing along the barrel");
         assertEquals(26.0, box("red_dot").x() / U, 1e-6);
         assertEquals(2, box("red_dot").d());
@@ -121,6 +140,8 @@ class VectorProfileTest {
         assertEquals(45f, barrel.tiltXDegrees(), 1e-6);
         assertEquals(45f, collar.tiltXDegrees(), 1e-6);
         assertTrue(collar.h() > barrel.h(), "the collar is the fat step");
+        assertEquals(2.0, collar.h() / U, 1e-6, "collar is a full 2 by 2 bar: a 2.8 diamond");
+        assertEquals(2.0, collar.d() / U, 1e-6);
         assertEquals(44.0, (collar.x() + collar.w()) / U, 1e-6, "tip at 44");
         assertEquals(44.0 / 16.0, VectorProfile.MUZZLE[0], 1e-6, "muzzle at the tip");
         BoxSpec hg = box("handguard");
@@ -136,16 +157,27 @@ class VectorProfileTest {
         }
         assertEquals(5.0, (box("slab_front").pivotX() - box("slab_rear").pivotX()) / U, 1e-6, "slabs 5 apart");
         assertEquals(35.0, box("slab_front").pivotX() / U, 1e-6);
-        assertEquals(8.1, box("slab_front").pivotY() / U, 1e-6);
+        assertEquals(8.2, box("slab_front").pivotY() / U, 1e-6);
         assertEquals(11.0, box("slab_front").h() / U, 1e-6);
         assertEquals(5.0, box("slab_front").w() / U, 1e-6);
         // the front edge of the slab pair and of the magazine are one line: the magazine hinge is on it
         double t = Math.tan(Math.toRadians(20));
-        double lineX = box("slab_front").pivotX() / U - (box("magazine").pivotY() / U - 8.1) * t;
+        double lineX = box("slab_front").pivotX() / U - (box("magazine").pivotY() / U - 8.2) * t;
         assertEquals(lineX, box("magazine").pivotX() / U, 0.5, "magazine front edge continues the slab front edge");
         assertEquals(-10f, box("trigger").tiltZDegrees(), 1e-6, "trigger leans forward");
         assertEquals(3.9, (box("slab_rear").x() - box("grip").pivotX()) / U, 0.5, "open trigger slot about 3.6 wide");
         assertEquals(10.0, box("grip").h() / U, 1e-6);
+        BoxSpec trig = box("trigger");
+        assertEquals(10.5, (trig.pivotX() - 0.0) / U - 11.0 + 0.0, 1.0, "trigger near the grip front");
+        assertEquals(21.0, trig.x() / U, 0.05, "round 3: trigger X 21.0");
+    }
+
+    @Test
+    void foregripSitsOneTenthTowardPlusZAndTurnsAboutItsOwnAxis() {
+        BoxSpec fg = box("foregrip");
+        assertEquals(0.1, (fg.z() + fg.d() / 2.0) / U, 1e-6, "centre 0.1 toward +Z");
+        assertEquals(fg.z() + fg.d() / 2.0, fg.pivotZ(), 1e-6, "turns about its own axis");
+        assertEquals(12.2, fg.y() / U, 0.05);
     }
 
     @Test
