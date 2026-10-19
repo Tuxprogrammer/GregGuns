@@ -10,6 +10,7 @@ import com.gregguns.api.Tier;
 import com.gregguns.combat.DamageType;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.gun.logic.GunStats;
+import com.gregguns.gun.logic.ToolStats;
 import com.gregguns.gun.sound.GunSoundEvents;
 import com.gregguns.recipe.ProductionTable;
 
@@ -44,6 +45,8 @@ public final class GunDefinition {
     private final DamageType damageType;
     private final boolean rechambers;
     private final boolean startsLoop;
+    private final boolean charges;
+    private final ToolStats tool;
     private final String singleGun;
     private final int camoCount;
     private final List<ProductionTable.Row> rows;
@@ -58,6 +61,8 @@ public final class GunDefinition {
         this.damageType = Objects.requireNonNull(b.damageType, "damageType of " + b.name);
         this.rechambers = b.rechambers;
         this.startsLoop = b.startsLoop;
+        this.charges = b.charges;
+        this.tool = b.tool;
         this.singleGun = b.singleGun;
         this.camoCount = b.camoCount;
         this.rows = Collections.unmodifiableList(new ArrayList<>(b.rows));
@@ -104,6 +109,26 @@ public final class GunDefinition {
     /** @return true if the gun plays {@link #startEvent()} on the first shot after a pause instead of its fire event */
     public boolean startsLoop() {
         return startsLoop;
+    }
+
+    /** @return the unprefixed charge sound event, {@code guns.<name>.charge}, or null if the gun has none */
+    public String chargeEvent() {
+        return charges ? GunSoundEvents.gun(name, GunSoundEvents.CHARGE) : null;
+    }
+
+    /** @return the tool-gun data (melee, mining, drain), or null for an ordinary gun */
+    public ToolStats tool() {
+        return tool;
+    }
+
+    /** @return the unprefixed swing sound event, {@code guns.<name>.swing}, or null if the gun is not a tool gun */
+    public String swingEvent() {
+        return tool == null ? null : GunSoundEvents.gun(name, GunSoundEvents.SWING);
+    }
+
+    /** @return the unprefixed block-broken sound event, {@code guns.<name>.hit}, or null if not a tool gun */
+    public String hitEvent() {
+        return tool == null ? null : GunSoundEvents.gun(name, GunSoundEvents.HIT);
     }
 
     /** @return the unprefixed start sound event, {@code guns.<name>.start}, or null if the gun has no start sound */
@@ -191,6 +216,8 @@ public final class GunDefinition {
         private DamageType damageType;
         private boolean rechambers;
         private boolean startsLoop;
+        private boolean charges;
+        private ToolStats tool;
         private String singleGun;
         private int camoCount = 1;
         private final List<ProductionTable.Row> rows = new ArrayList<>();
@@ -239,6 +266,29 @@ public final class GunDefinition {
          */
         public Builder startsLoop() {
             this.startsLoop = true;
+            return this;
+        }
+
+        /**
+         * Marks a charge gun that plays {@code guns.<name>.charge} when the hold begins.
+         *
+         * @return this
+         */
+        public Builder charges() {
+            this.charges = true;
+            return this;
+        }
+
+        /**
+         * Makes the gun a tool gun (I11): the left button is vanilla melee and mining, paid for from the loaded rounds,
+         * and the item is an {@code ItemToolGun}. Its sounds are {@code guns.<name>.swing} and
+         * {@code guns.<name>.hit}.
+         *
+         * @param tool the melee, mining and drain data
+         * @return this
+         */
+        public Builder tool(ToolStats tool) {
+            this.tool = Objects.requireNonNull(tool, "tool");
             return this;
         }
 

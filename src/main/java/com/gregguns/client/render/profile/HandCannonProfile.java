@@ -65,20 +65,20 @@ public final class HandCannonProfile {
      * to
      * 40 per cent. The rotations are the sheet's.
      */
-    private static final double TRAVEL = 0.4;
+    private static final double TRAVEL = 1.0;
     /** The sheet's first-person scale, recorded for the smaller Techguns model. */
     private static final double SHEET_FP_SCALE = 2.5;
     /** The first-person scale from {@link FirstPersonFit}: as long on screen as the 9mm Pistol. */
-    public static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("handcannon", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, -0.1, 0 });
+    public static final double FP_SCALE = FIT.fpScale;
     /**
      * The sheet's fire and reload translation deltas are multiplied by this, because the scale changed, and by
      * {@link #TRAVEL}.
      */
     private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE) * TRAVEL;
     /** The idle first-person translation from {@link FirstPersonFit}: this model's box centre on the family anchor. */
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final double[] IDLE = FIT.fpIdle;
 
     /** The sheet's render transforms, timing and muzzle flash for the hand cannon. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
@@ -132,8 +132,8 @@ public final class HandCannonProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.85)
-            .translate(-1.4, -0.8, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         TransformProgram tpRecoil = TransformProgram.builder()
             .about(-0.2, -0.1, 0, b -> b.rotZ((p, part) -> p < 0.5 ? -40.0 * kick(p) : 0.0))
@@ -160,12 +160,13 @@ public final class HandCannonProfile {
         // frame, not on the gun, so after the fit-rule rescale it floated above the muzzle. Measured on screen
         // (960x540 sweep): +0.5 on x moves it 33 px up, +0.5 on z moves it 49 px right. (-1.25, -2.5, 2.0) puts it on
         // the muzzle of an X-family handgun held at FirstPersonFit.ANCHOR_X_FAMILY.
+        double[] fo = FIT.flashOffset(MUZZLE, 1.85);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash4x4.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -1.25,
-            -2.5,
-            2.0,
+            fo[0],
+            fo[1],
+            fo[2],
             1.85,
             new double[] { 0, 0, 0 },
             true,

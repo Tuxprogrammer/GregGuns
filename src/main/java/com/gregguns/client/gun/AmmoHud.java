@@ -14,8 +14,10 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import com.gregguns.core.config.ClientConfig;
+import com.gregguns.gun.logic.EnergyMath;
 import com.gregguns.gun.logic.GunState;
 import com.gregguns.gun.logic.GunStats;
+import com.gregguns.item.gun.ItemEnergyGun;
 import com.gregguns.item.gun.ItemGun;
 import com.gregguns.item.gun.PlayerAmmoStore;
 
@@ -47,6 +49,7 @@ public final class AmmoHud {
     private static final int BAR_HEIGHT = 3;
     private static final int BAR_BACK = 0x80000000;
     private static final int BAR_FILL = 0xFF55FF55;
+    private static final int CHARGE_FILL = 0xFFFFAA00;
     private static final int TEXT_COLOR = 0xFFFFFF;
 
     private final ClientGunMirror mirror;
@@ -54,6 +57,20 @@ public final class AmmoHud {
     /** @param mirror the prediction mirror, for the reload progress */
     public AmmoHud(ClientGunMirror mirror) {
         this.mirror = mirror;
+    }
+
+    /** Draws a bar above the crosshair while a charge gun is being charged. */
+    private void drawChargeBar(ScaledResolution res, GunStats stats) {
+        if (!stats.isCharge() || !mirror.charge()
+            .isCharging()) {
+            return;
+        }
+        int left = res.getScaledWidth() / 2 - BAR_WIDTH / 2;
+        int top = res.getScaledHeight() / 2 + 12;
+        double fraction = mirror.charge()
+            .fraction(stats);
+        Gui.drawRect(left, top, left + BAR_WIDTH, top + BAR_HEIGHT, BAR_BACK);
+        Gui.drawRect(left, top, left + HudLayout.filledWidth(fraction, BAR_WIDTH), top + BAR_HEIGHT, CHARGE_FILL);
     }
 
     /** Draws the overlay after the hotbar. */
@@ -77,14 +94,26 @@ public final class AmmoHud {
         boolean reloading = mirror.isReloading();
 
         List<String> lines = new ArrayList<>();
-        EnumChatFormatting roundColor = state.canFire(stats) ? EnumChatFormatting.WHITE : EnumChatFormatting.RED;
-        lines.add(
-            StatCollector.translateToLocalFormatted(
-                "gregguns.hud.rounds",
-                roundColor.toString() + state.loaded() + EnumChatFormatting.RESET,
-                stats.magazineSize()));
-        int magazines = new PlayerAmmoStore(player).count(stats.ammoType());
-        lines.add(StatCollector.translateToLocalFormatted("gregguns.hud.magazines", magazines));
+        if (gun instanceof ItemEnergyGun) {
+            // Q5: an energy gun has no clip; the HUD shows its charge percent (GGS-02-13).
+            ItemEnergyGun energy = (ItemEnergyGun) gun;
+            long charge = energy.chargeOf(held);
+            EnumChatFormatting color = EnergyMath.canFire(charge, stats.euPerShot()) ? EnumChatFormatting.WHITE
+                : EnumChatFormatting.RED;
+            lines.add(
+                StatCollector.translateToLocalFormatted(
+                    "gregguns.hud.charge",
+                    color.toString() + EnergyMath.percent(charge, energy.capacityEu()) + EnumChatFormatting.RESET));
+        } else {
+            EnumChatFormatting roundColor = state.canFire(stats) ? EnumChatFormatting.WHITE : EnumChatFormatting.RED;
+            lines.add(
+                StatCollector.translateToLocalFormatted(
+                    "gregguns.hud.rounds",
+                    roundColor.toString() + state.loaded() + EnumChatFormatting.RESET,
+                    stats.magazineSize()));
+            int magazines = new PlayerAmmoStore(player).count(stats.ammoType());
+            lines.add(StatCollector.translateToLocalFormatted("gregguns.hud.magazines", magazines));
+        }
         if (reloading) {
             lines.add(
                 StatCollector
@@ -92,6 +121,7 @@ public final class AmmoHud {
         }
 
         ScaledResolution res = event.resolution;
+        drawChargeBar(res, stats);
         FontRenderer font = mc.fontRenderer;
         for (int i = 0; i < lines.size(); i++) {
             String text = lines.get(i);

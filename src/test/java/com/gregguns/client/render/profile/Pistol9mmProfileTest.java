@@ -215,15 +215,33 @@ class Pistol9mmProfileTest {
     @Test
     void firstPersonRowsFollowTheSheet() {
         GunTransforms t = Pistol9mmProfile.TRANSFORMS;
+        double sc = Pistol9mmProfile.FP_SCALE;
+        double[] i = fit().fpIdle;
         assertEquals(
-            Arrays.asList("R(180.0000;1,0,0)", "R(225.0000;0,1,0)", "S(1.0000,1.0000,1.0000)"),
+            Arrays.asList("R(180.0000;1,0,0)", "R(225.0000;0,1,0)", String.format("S(%.4f,%.4f,%.4f)", sc, sc, sc)),
             run(t.fpBase(), 0, 0));
-        assertEquals(Arrays.asList("T(-1.2000,-0.9809,-1.7713)"), run(t.fpIdle(), 0, 0));
-        // At the dip yF = -0.5: the frame pushes back 0.15, the slide 0.25; the muzzle climbs -5 degrees about X.
-        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", "T(-1.2000,-0.9809,-1.6213)"), run(t.fpFire(), 0.5, 0));
-        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", "T(-1.2000,-0.9809,-1.5213)"), run(t.fpFire(), 0.5, 1));
-        assertEquals(Arrays.asList("R(50.0000;1,0,0)", "T(-1.2000,-0.9809,-1.7713)"), run(t.fpReload(), 0.5, 0));
-        assertEquals(Arrays.asList("R(0.0000;1,0,0)", "T(-1.2000,-0.9809,-1.7713)"), run(t.fpFire(), 0.0, 0));
+        assertEquals(Arrays.asList(tr(i[0], i[1], i[2])), run(t.fpIdle(), 0, 0));
+        // At the dip yF = -0.5: the frame pushes back 0.15 H-blocks and the slide 0.25 (the shift is divided by the
+        // scale, so it is the same on screen at any scale); the muzzle climbs -5 degrees about X.
+        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", tr(i[0], i[1], i[2] + 0.15 / sc)), run(t.fpFire(), 0.5, 0));
+        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", tr(i[0], i[1], i[2] + 0.25 / sc)), run(t.fpFire(), 0.5, 1));
+        assertEquals(Arrays.asList("R(50.0000;1,0,0)", tr(i[0], i[1], i[2])), run(t.fpReload(), 0.5, 0));
+        assertEquals(Arrays.asList("R(0.0000;1,0,0)", tr(i[0], i[1], i[2])), run(t.fpFire(), 0.0, 0));
+    }
+
+    private static InHandFit.Placement fit() {
+        return InHandFit.fit(
+            "pistol_9mm",
+            Pistol9mmProfile.BOXES,
+            Pistol9mmProfile.MODEL_SCALE,
+            false,
+            225,
+            135,
+            new double[] { 0, 0, 0.2 });
+    }
+
+    private static String tr(double x, double y, double z) {
+        return String.format("T(%.4f,%.4f,%.4f)", x, y, z);
     }
 
     @Test
@@ -233,8 +251,8 @@ class Pistol9mmProfileTest {
             Arrays.asList(
                 "R(180.0000;1,0,0)",
                 "R(135.0000;0,1,0)",
-                "S(1.5000,1.5000,1.5000)",
-                "T(0.0500,-0.5500,0.2000)"),
+                String.format("S(%.4f,%.4f,%.4f)", fit().tpScale, fit().tpScale, fit().tpScale),
+                tr(fit().tpTranslate[0], fit().tpTranslate[1], fit().tpTranslate[2])),
             run(t.tpBase(), 0, 0));
         // Recoil: about pivot (0,0,0.9) rotX(-15 K). K(0.1249) is almost 1, so the rotation is almost -15 degrees.
         List<String> recoil = run(t.tpRecoil(), 0.1249, 0);
@@ -283,6 +301,7 @@ class Pistol9mmProfileTest {
             15.0 / 16.0,
             FirstPersonFit.lengthBlocks(Pistol9mmProfile.BOXES, Pistol9mmProfile.MODEL_SCALE),
             1e-6);
-        assertEquals(1.0, Pistol9mmProfile.FP_SCALE, 1e-6);
+        // The first-person scale is solved from the in-hand targets (InHandFitTest), about the Techguns S(2.0).
+        assertEquals(2.0, Pistol9mmProfile.FP_SCALE, 0.01);
     }
 }

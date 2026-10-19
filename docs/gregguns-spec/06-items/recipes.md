@@ -268,7 +268,7 @@ A GT recipe consumes its inputs once, so ammo is made in batches, the way GT tur
 | ID | Output | Tier | Method | Inputs | EU/t, time | Research | Gate, notes |
 |---|---|---|---|---|---|---|---|
 | RC-35<a id="ammo-rocket-nuke"></a> | `ammo_rocket_nuke` ×1 | ZPM | AL | `ammo_rocket` ×1, `part_nuclear_warhead` ×1, `plate.NaquadahAlloy` ×2, `plate.Lead` ×2, `circuit.ZPM` ×1; fluid `Materials.SolderingAlloy.getMolten(288)` | `RECIPE_ZPM`, 30 s | `ammo_rocket`, `Scanning(1 * MINUTES, RECIPE_EV)` | `NaquadahAlloy`. Replaces R57 (rocket + warhead, shapeless) |
-| RC-36<a id="ammo-nether-charge"></a> | `ammo_nether_charge` ×16 | LuV | AL | `dust.Netherrack` ×16, `dust.SoulSand` ×8, `plate.HSSG` ×2, `circuit.LuV` ×1, `dust.Gunpowder` ×4; fluid `FluidRegistry.LAVA` ×4000 mB | `RECIPE_LuV`, 20 s | `ammo_advanced_bullet`, `Scanning(1 * MINUTES, RECIPE_EV)` | `HSSG`. Replaces Chem Lab recipe 11 (netherrack, soul sand, lava, ×4) |
+| RC-36<a id="ammo-nether-charge"></a> | `ammo_nether_charge` ×16 | LuV | AL | `dust.Netherrack` ×16, `mc:soul_sand` ×8, `plate.HSSG` ×2, `circuit.LuV` ×1, `dust.Gunpowder` ×4; fluid `FluidRegistry.LAVA` ×4000 mB | `RECIPE_LuV`, 20 s | `ammo_advanced_bullet`, `Scanning(1 * MINUTES, RECIPE_EV)` | `HSSG`. The soul sand is the vanilla block (`dust.SoulSand` did not resolve on a real boot). Replaces Chem Lab recipe 11 (netherrack, soul sand, lava, ×4) |
 
 ## Magazines and drums
 

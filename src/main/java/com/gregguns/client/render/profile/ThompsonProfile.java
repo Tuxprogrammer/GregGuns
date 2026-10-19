@@ -82,13 +82,11 @@ public final class ThompsonProfile {
     // precedent), and the idle position puts this model's box centre on the family anchor. The sheet's fire and
     // reload offsets are multiplied by K so they move the gun the same distance on screen as the sheet intends.
     private static final double SHEET_FP_SCALE = 1.8;
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("thompson_smg", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0, 0 });
+    private static final double FP_SCALE = FIT.fpScale;
     private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final double[] IDLE = FIT.fpIdle;
 
     /** The sheet's render transforms, timing and muzzle flash for the Thompson. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
@@ -141,8 +139,8 @@ public final class ThompsonProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.15)
-            .translate(-0.85, -0.6, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil about (0, 0.3, -0.9): rotZ(-20 K); reload rotX(30 yR), rotY(40 yR).
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -170,12 +168,13 @@ public final class ThompsonProfile {
         // Deviation: the sheet's flash offset (-0.5, -2.0, 1.0) is where Techguns' muzzle was on screen; this offset
         // puts the fixed-frame first-person flash on this model's muzzle (the bolt-action rifle's solved offset,
         // shifted for this barrel's 0.117 block higher axis). muzzleFlash2 sheet, additive: it is black-backed.
+        double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            0.01,
-            0.006,
-            0.44,
+            fo[0],
+            fo[1],
+            fo[2],
             1.5,
             new double[] { 0, 0, 0 },
             true,

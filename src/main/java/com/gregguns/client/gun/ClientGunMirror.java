@@ -7,6 +7,8 @@ import net.minecraft.item.ItemStack;
 import com.gregguns.gun.GunClientHooks;
 import com.gregguns.gun.GunClientSync;
 import com.gregguns.gun.logic.AmmoInventory;
+import com.gregguns.gun.logic.ChargeSource;
+import com.gregguns.gun.logic.ChargeState;
 import com.gregguns.gun.logic.GunController;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunState;
@@ -16,6 +18,7 @@ import com.gregguns.gun.logic.ReloadStateMachine;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.gun.ItemGun;
 import com.gregguns.item.gun.PlayerAmmoStore;
+import com.gregguns.item.gun.StackCharge;
 import com.gregguns.item.gun.StoreAmmoInventory;
 
 import cpw.mods.fml.relauncher.Side;
@@ -51,6 +54,7 @@ public final class ClientGunMirror implements GunClientSync {
 
     private final GunController controller = new GunController();
     private final GunState state = new GunState(0);
+    private final ChargeState charge = new ChargeState();
     private ItemGun activeGun;
     private int activeSlot = -1;
     private int lastServerLoaded = -1;
@@ -71,6 +75,25 @@ public final class ClientGunMirror implements GunClientSync {
     /** @return the gun the mirror is currently following, or null */
     public ItemGun activeGun() {
         return activeGun;
+    }
+
+    /** @return the local charge display state (the server keeps its own) */
+    public ChargeState charge() {
+        return charge;
+    }
+
+    /**
+     * Starts or ends the local charge display for the right button; the server counts its own hold ticks.
+     *
+     * @param down    true when pressed
+     * @param allowed false when the held gun is empty, so the press is ignored
+     */
+    public void chargeButton(boolean down, boolean allowed) {
+        if (down) {
+            charge.begin(allowed);
+        } else {
+            charge.cancel();
+        }
     }
 
     /** The fire button changed on the client. */
@@ -101,7 +124,7 @@ public final class ClientGunMirror implements GunClientSync {
         syncRounds(stats, held);
         int before = state.loaded();
         GunTickResult result = controller
-            .tick(stats, state, ammoView(player, stats), true, player.capabilities.isCreativeMode);
+            .tick(stats, state, ammoView(player, stats, held), true, player.capabilities.isCreativeMode);
         quietTicks = state.loaded() != before || isReloading() ? 0 : quietTicks + 1;
         if (result.shot()
             .wasFired()) {
@@ -133,7 +156,7 @@ public final class ClientGunMirror implements GunClientSync {
         follow(player, held, gun);
         GunStats stats = gun.stats();
         syncRounds(stats, held);
-        ReloadStateMachine.Event event = controller.forceReload(stats, state, ammoView(player, stats));
+        ReloadStateMachine.Event event = controller.forceReload(stats, state, ammoView(player, stats, held));
         if (event == ReloadStateMachine.Event.REJECTED_NO_AMMO) {
             GunClientHooks.events()
                 .onDryFire(player, stats);
@@ -163,7 +186,7 @@ public final class ClientGunMirror implements GunClientSync {
             player,
             stats,
             controller.reload()
-                .start(stats, state, ammoView(player, stats)));
+                .start(stats, state, ammoView(player, stats, held)));
         controller.zoom()
             .reset();
     }
@@ -239,7 +262,7 @@ public final class ClientGunMirror implements GunClientSync {
     }
 
     /** A counting-only ammo source: it reports the real inventory but never changes it. */
-    private static AmmoInventory ammoView(EntityPlayer player, GunStats stats) {
+    private static AmmoInventory ammoView(EntityPlayer player, GunStats stats, ItemStack held) {
         final AmmoInventory real = new StoreAmmoInventory(
             new PlayerAmmoStore(player),
             GunItems.roundsPerLooseItem(stats));
@@ -260,6 +283,11 @@ public final class ClientGunMirror implements GunClientSync {
 
             @Override
             public void depositRounds(String ammoType, int rounds) {}
+
+            @Override
+            public ChargeSource charge() {
+                return stats.isEnergy() ? StackCharge.view(held) : ChargeSource.NONE;
+            }
         };
     }
 }

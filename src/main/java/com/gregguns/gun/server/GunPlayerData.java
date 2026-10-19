@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
+import com.gregguns.gun.logic.ChargeState;
 import com.gregguns.gun.logic.GunController;
 import com.gregguns.gun.logic.LoopStart;
 import com.gregguns.item.gun.ItemGun;
@@ -29,10 +30,12 @@ public final class GunPlayerData implements IExtendedEntityProperties {
     public static final String ID = "gregguns.gun";
 
     private final GunController controller = new GunController();
+    private final ChargeState charge = new ChargeState();
     private ItemGun activeGun;
     private int activeSlot = -1;
     private boolean zoomSent;
     private long lastShotTick = LoopStart.NEVER;
+    private long lastSwingSoundTick = LoopStart.NEVER;
 
     /**
      * Returns the player's data, attaching it on first use.
@@ -52,6 +55,11 @@ public final class GunPlayerData implements IExtendedEntityProperties {
     /** @return the player's controller */
     public GunController controller() {
         return controller;
+    }
+
+    /** @return the player's hold-to-charge state (I10); idle unless a charge gun is being charged */
+    public ChargeState charge() {
+        return charge;
     }
 
     /** @return the gun driven on the last tick, or null if none was held */
@@ -76,6 +84,16 @@ public final class GunPlayerData implements IExtendedEntityProperties {
 
     void setZoomSent(boolean zoomSent) {
         this.zoomSent = zoomSent;
+    }
+
+    /** @return the world tick of this player's last tool-gun swing sound, or {@code LoopStart.NEVER} */
+    public long lastSwingSoundTick() {
+        return lastSwingSoundTick;
+    }
+
+    /** @param tick the world tick of a swing sound just sent */
+    public void setLastSwingSoundTick(long tick) {
+        this.lastSwingSoundTick = tick;
     }
 
     /** @return the world tick of the player's last shot, or {@link LoopStart#NEVER} */

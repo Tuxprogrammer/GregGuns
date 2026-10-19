@@ -167,15 +167,19 @@ class HandCannonProfileTest {
     void firstPersonRowsFollowTheSheetWithTheFitRule() {
         GunTransforms t = HandCannonProfile.TRANSFORMS;
         double sc = HandCannonProfile.FP_SCALE;
-        double k = 2.5 / sc * 0.4; // the sheet scale ratio, trimmed to 40 per cent travel (HandCannonProfile.TRAVEL)
+        double k = 2.5 / sc * 1.0; // the sheet scale ratio at full travel (HandCannonProfile.TRAVEL)
         assertEquals(
             Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", String.format("S(%.4f,%.4f,%.4f)", sc, sc, sc)),
             run(t.fpBase(), 0, 0));
         // The idle offset puts the box centre on the X-family anchor (FirstPersonFit), not the sheet's offset.
-        double[] idle = FirstPersonFit.idleOffset(
-            FirstPersonFit.ANCHOR_X_FAMILY,
-            sc,
-            FirstPersonFit.centerBlocks(HandCannonProfile.BOXES, HandCannonProfile.MODEL_SCALE));
+        double[] idle = InHandFit.fit(
+            "handcannon",
+            HandCannonProfile.BOXES,
+            HandCannonProfile.MODEL_SCALE,
+            true,
+            -45,
+            225,
+            new double[] { 0, -0.1, 0 }).fpIdle;
         assertEquals(
             Arrays.asList(String.format("T(%.4f,%.4f,%.4f)", idle[0], idle[1], idle[2])),
             run(t.fpIdle(), 0, 0));

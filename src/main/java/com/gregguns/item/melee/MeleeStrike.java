@@ -36,11 +36,29 @@ public final class MeleeStrike {
      * @return true when the target took damage
      */
     public static boolean attack(ItemStack stack, EntityPlayer player, Entity target) {
+        return attack(stack, player, target, 0.0F, 0.0);
+    }
+
+    /**
+     * As {@link #attack(ItemStack, EntityPlayer, Entity)} with the attack attribute shifted and an armor penetration.
+     * A tool gun uses it to hit as a bare hand when its tank is empty and to pierce armor when it is not.
+     *
+     * @param stack           the held tool
+     * @param player          the attacker
+     * @param target          the entity hit
+     * @param attributeAdjust added to the attack attribute (negative to weaken the hit)
+     * @param penetration     armor penetration of the hit, 0 to 1
+     * @return true when the target took damage
+     */
+    public static boolean attack(ItemStack stack, EntityPlayer player, Entity target, float attributeAdjust,
+        double penetration) {
         if (!target.canAttackWithItem() || target.hitByEntity(player)) {
             return false;
         }
-        float attribute = (float) player.getEntityAttribute(SharedMonsterAttributes.attackDamage)
-            .getAttributeValue();
+        float attribute = Math.max(
+            0.0F,
+            (float) player.getEntityAttribute(SharedMonsterAttributes.attackDamage)
+                .getAttributeValue() + attributeAdjust);
         float enchant = target instanceof EntityLivingBase
             ? EnchantmentHelper.getEnchantmentModifierLiving(player, (EntityLivingBase) target)
             : 0.0F;
@@ -62,7 +80,7 @@ public final class MeleeStrike {
         if (fire > 0 && !wasBurning) {
             target.setFire(1);
         }
-        boolean taken = DamageSources.strike(target, DamageType.PHYSICAL, player, amount, 0.0);
+        boolean taken = DamageSources.strike(target, DamageType.PHYSICAL, player, amount, penetration);
         if (!taken) {
             if (fire > 0 && !wasBurning) {
                 target.extinguish();

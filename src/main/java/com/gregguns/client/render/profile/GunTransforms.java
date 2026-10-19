@@ -90,6 +90,11 @@ public final class GunTransforms {
         sink.rotate(-45.0, 0, 1, 0);
     }
 
+    /** @return the gun's extra aimed translate (third person) */
+    public double[] tpAim() {
+        return tpAim.clone();
+    }
+
     /** @return how many model parts are drawn per frame, each in its own matrix */
     public int partCount() {
         return partCount;

@@ -122,4 +122,38 @@ class StoreAmmoInventoryTest {
         assertEquals(1, store.count(AmmoIds.NINE_MM_PISTOL_MAGAZINE_EMPTY));
         assertEquals(0, store.count(AmmoIds.NINE_MM_PISTOL_MAGAZINE));
     }
+
+    @Test
+    void roundInventoryHasNoChargeAndEnergyInventoryExposesIt() {
+        // Spec: docs/gregguns-spec/02-guns/energy-electric-items.md (GGS-02-12)
+        assertEquals(
+            0L,
+            new StoreAmmoInventory(new FakeStore(), 6).charge()
+                .stored());
+        com.gregguns.gun.logic.ChargeSource battery = new com.gregguns.gun.logic.ChargeSource() {
+
+            long eu = 1500;
+
+            @Override
+            public long stored() {
+                return eu;
+            }
+
+            @Override
+            public long drain(long want) {
+                long taken = Math.min(eu, want);
+                eu -= taken;
+                return taken;
+            }
+        };
+        StoreAmmoInventory inv = new StoreAmmoInventory(new FakeStore(), 6, battery);
+        assertEquals(
+            1000L,
+            inv.charge()
+                .drain(1000));
+        assertEquals(
+            500L,
+            inv.charge()
+                .stored());
+    }
 }

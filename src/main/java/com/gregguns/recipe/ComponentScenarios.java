@@ -41,7 +41,7 @@ public final class ComponentScenarios {
         registry.register(new ComponentRecipesScenario());
     }
 
-    private static final class ComponentRecipesScenario implements Scenario {
+    static final class ComponentRecipesScenario implements Scenario {
 
         @Override
         public String name() {
@@ -119,7 +119,7 @@ public final class ComponentScenarios {
             }
         }
 
-        private static void checkAssemblyLine(ScenarioResult.Builder out, ComponentTable.Spec spec) {
+        static void checkAssemblyLine(ScenarioResult.Builder out, ComponentTable.Spec spec) {
             ProductionTable.Row row = spec.row();
             ItemStack made = ProductionRecipes.modStack(row.output(), 1);
             GTRecipe.RecipeAssemblyLine line = null;

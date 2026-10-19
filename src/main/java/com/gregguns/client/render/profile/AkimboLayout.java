@@ -13,7 +13,8 @@ package com.gregguns.client.render.profile;
  * Spec: rendering-framework.md section 6 (Akimbo), section 3 (attackType), model-notes/revolver.md section 6.
  * Deviation: Techguns shifts the second gun about 1.75 blocks sideways without mirroring it, and draws the off-hand
  * gun on the third-person body with a separate layer renderer. Here the second gun is a true mirror image about the
- * screen centre in first person; in third person only the main-hand gun is drawn (the held-item renderer is handed
+ * screen centre in first person (equal depth and height, right negated; see {@link #MIRROR_SHIFT}); in third person
+ * only the main-hand gun is drawn (the held-item renderer is handed
  * only the right-hand matrix), and it recoils on every shot so no shot goes unseen.
  */
 public final class AkimboLayout {
@@ -22,11 +23,17 @@ public final class AkimboLayout {
     public static final int HANDS = 2;
 
     /**
-     * Where the screen centre sits on the item frame's X axis in first person, in frame units: the right hand's origin
-     * is about 0.56 world units right of the view centre and the frame is scaled by 0.4. Pending the batched in-game
-     * check.
+     * The shift of the second gun's mirror, in item-frame units, along both X and Z. The item frame is turned 45
+     * degrees from the screen, so the plane that splits the screen down the middle is the slanted plane
+     * {@code x + z = 1 - 2 x 0.56 / 0.4 / sqrt(2) x sqrt(2)} of the frame, not a plane of constant X. Reflecting across
+     * it sends {@code (x, y, z)} to {@code (-z + s, y, -x + s)} with {@code s = 1 - 2 x 0.56 / (0.4 x sqrt(2))}, which
+     * mirrors a gun's camera position to {@code (-right, up, same depth)}. The numbers are the item frame's: camera
+     * offset right 0.56, frame scale 0.4, helper shift 0.5 (in-hand-transforms notes, section 0).
      */
-    public static final double SCREEN_CENTRE_X = -1.4;
+    public static final double MIRROR_SHIFT = 1.0 - 2.0 * 0.56 / (0.4 * Math.sqrt(2.0));
+
+    /** The yaw, degrees, that turns the item frame square to the screen for the mirror. */
+    public static final double MIRROR_YAW = 45.0;
 
     private AkimboLayout() {}
 
@@ -75,7 +82,7 @@ public final class AkimboLayout {
 
     /**
      * @param hand 0 main or 1 second
-     * @return the X scale of the hand's copy: 1, or -1 for the mirrored second gun
+     * @return the X scale of the hand's copy in the screen-aligned frame: 1, or -1 for the mirrored second gun
      */
     public static double mirrorScaleX(int hand) {
         return hand == 0 ? 1.0 : -1.0;
@@ -83,22 +90,26 @@ public final class AkimboLayout {
 
     /**
      * @param hand 0 main or 1 second
-     * @return the X translation, in item-frame units, applied before the mirror scale so the copy lands on the other
-     *         side of {@link #SCREEN_CENTRE_X}: 0 for the main gun
+     * @return the translation, item-frame units, applied first for the hand's copy: zero for the main gun, else
+     *         {@link #MIRROR_SHIFT} on X and Z. The full mirror is translate, rotate Y -{@link #MIRROR_YAW}, scale X
+     *         by {@link #mirrorScaleX}, rotate Y {@link #MIRROR_YAW}.
      */
-    public static double mirrorTranslateX(int hand) {
-        return hand == 0 ? 0.0 : 2.0 * SCREEN_CENTRE_X;
+    public static double[] mirrorTranslate(int hand) {
+        return hand == 0 ? new double[3] : new double[] { MIRROR_SHIFT, 0.0, MIRROR_SHIFT };
     }
 
     /**
-     * Applies a hand's mirror to an X coordinate in the item frame (the same math the GL calls perform).
+     * Applies a hand's mirror to a point in the item frame (the same math the GL calls perform).
      *
-     * @param x    the coordinate of a point of the main gun
+     * @param p    a point of the main gun, item frame
      * @param hand 0 main or 1 second
      * @return where the point lands
      */
-    public static double mirroredX(double x, int hand) {
-        return mirrorTranslateX(hand) + mirrorScaleX(hand) * x;
+    public static double[] mirrored(double[] p, int hand) {
+        if (hand == 0) {
+            return p.clone();
+        }
+        return new double[] { -p[2] + MIRROR_SHIFT, p[1], -p[0] + MIRROR_SHIFT };
     }
 
     /**

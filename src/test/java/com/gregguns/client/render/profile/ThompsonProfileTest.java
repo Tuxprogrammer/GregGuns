@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -319,18 +318,12 @@ class ThompsonProfileTest {
         List<String> base = run(t.fpBase(), 0, 0);
         assertEquals("R(180.0000;1,0,0)", base.get(0));
         assertEquals("R(-45.0000;0,1,0)", base.get(1));
-        // The long-gun target puts the 3.25 block model 2 blocks long on screen.
+        // The in-hand target puts the 3.25 block model 5.85 H-blocks (2.34 camera blocks) long on screen.
         assertEquals(
-            2.0 / 3.25,
-            FirstPersonFit.scale(FirstPersonFit.lengthBlocks(ThompsonProfile.BOXES, ThompsonProfile.MODEL_SCALE), 2.0),
-            1e-9);
-        assertEquals(
-            Arrays.asList(
-                "R(180.0000;1,0,0)",
-                "R(225.0000;0,1,0)",
-                "S(1.1500,1.1500,1.1500)",
-                "T(-0.8500,-0.6000,0.0000)"),
-            run(t.tpBase(), 0, 0));
+            5.85 / 3.25,
+            InHandTestSupport.placement(ClientGunDefinitions.byName("thompson_smg")).fpScale,
+            0.05);
+        assertEquals(InHandTestSupport.tpBaseRows("thompson_smg"), run(t.tpBase(), 0, 0));
         // At p = 0.125 the curve yF is -0.125: rotZ(10 yF) = -1.25.
         assertEquals("R(-1.2500;0,0,1)", run(t.fpFire(), 0.125, 0).get(0));
     }

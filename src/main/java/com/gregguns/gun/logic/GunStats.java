@@ -57,6 +57,9 @@ public final class GunStats {
     private final int aiBurstDelay;
     private final long euPerShot;
     private final long capacityEu;
+    private final int chargeFullTicks;
+    private final ChargeMode chargeMode;
+    private final int chargeMaxUnits;
 
     private GunStats(Builder b) {
         id = b.id;
@@ -101,6 +104,9 @@ public final class GunStats {
         aiBurstDelay = b.aiBurstDelay;
         euPerShot = b.euPerShot;
         capacityEu = b.capacityEu;
+        chargeFullTicks = b.chargeFullTicks;
+        chargeMode = b.chargeMode;
+        chargeMaxUnits = b.chargeMaxUnits;
         validate();
     }
 
@@ -119,6 +125,8 @@ public final class GunStats {
         require(magazineSize >= ammoPerShot, "magazineSize");
         require(ammoType != null && !ammoType.isEmpty(), "ammoType");
         require(euPerShot == 0 || capacityEu >= euPerShot, "energy capacity must cover one shot");
+        // Deviation: I10 does not support a charge-hold gun that is also an energy gun.
+        require(chargeFullTicks == 0 || euPerShot == 0, "a charge-hold gun cannot also be an energy gun");
         require(ammoItemsPerReload >= 1, "ammoItemsPerReload");
         require(
             reloadMode != ReloadMode.INCREMENTAL || magazineSize % ammoItemsPerReload == 0,
@@ -131,6 +139,7 @@ public final class GunStats {
         require(projectileKind != null, "projectileKind");
         require(knockback >= 0, "knockback");
         require(blastRadius >= 0 && projectileGravity >= 0, "blast radius / projectile gravity");
+        require(chargeFullTicks >= 0 && chargeMaxUnits >= 1, "charge");
     }
 
     private static void require(boolean ok, String what) {
@@ -335,6 +344,26 @@ public final class GunStats {
         return euPerShot;
     }
 
+    /** True for a gun with a hold-to-charge shot on the right button (Bio Gun, Power Hammer). */
+    public boolean isCharge() {
+        return chargeFullTicks > 0;
+    }
+
+    /** Ticks of holding the charge button to a full charge; 0 for a gun that does not charge. */
+    public int chargeFullTicks() {
+        return chargeFullTicks;
+    }
+
+    /** How a held charge turns into rounds spent. */
+    public ChargeMode chargeMode() {
+        return chargeMode;
+    }
+
+    /** Rounds a full SCALED charge spends. */
+    public int chargeMaxUnits() {
+        return chargeMaxUnits;
+    }
+
     /** Default capacity in EU of a full charge before config (see {@link EnergyCapacity}); 0 for a round gun. */
     public long capacityEu() {
         return capacityEu;
@@ -439,6 +468,9 @@ public final class GunStats {
         private int aiBurstDelay;
         private long euPerShot;
         private long capacityEu;
+        private int chargeFullTicks;
+        private ChargeMode chargeMode = ChargeMode.LEVELS;
+        private int chargeMaxUnits = ChargeMath.LEVEL_COUNT;
 
         private Builder(String id) {
             this.id = id;
@@ -571,6 +603,20 @@ public final class GunStats {
         public Builder energy(long euPerShot, long capacityEu) {
             this.euPerShot = euPerShot;
             this.capacityEu = capacityEu;
+            return this;
+        }
+
+        /**
+         * Gives the gun a hold-to-charge shot on the right button, released to fire (I10).
+         *
+         * @param fullTicks ticks held to a full charge
+         * @param mode      LEVELS (three levels) or SCALED (up to {@code maxUnits} rounds)
+         * @param maxUnits  rounds a full SCALED charge spends (ignored for LEVELS)
+         */
+        public Builder charge(int fullTicks, ChargeMode mode, int maxUnits) {
+            chargeFullTicks = fullTicks;
+            chargeMode = mode;
+            chargeMaxUnits = mode == ChargeMode.LEVELS ? ChargeMath.LEVEL_COUNT : maxUnits;
             return this;
         }
 

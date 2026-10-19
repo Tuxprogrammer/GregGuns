@@ -19,6 +19,7 @@ import com.gregguns.client.render.profile.BlasterRifleProfile;
 import com.gregguns.client.render.profile.ClientGunDefinitions;
 import com.gregguns.client.render.profile.DeatomizerPistolProfile;
 import com.gregguns.client.render.profile.LaserRifleProfile;
+import com.gregguns.client.render.profile.MinigunProfile;
 import com.gregguns.client.render.profile.NukeLauncherProfile;
 import com.gregguns.client.render.profile.PdwProfile;
 import com.gregguns.client.render.profile.ScatterLaserRifleProfile;
@@ -140,6 +141,7 @@ class ModelExportTest {
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.BioGunProfile.DEFINITION);
         ModelExporter.exportProfile(dir, DeatomizerPistolProfile.DEFINITION);
         ModelExporter.exportProfile(dir, ScatterLaserRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, MinigunProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.NetherBlasterProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.GrimReaperProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.AlienBlasterProfile.DEFINITION);

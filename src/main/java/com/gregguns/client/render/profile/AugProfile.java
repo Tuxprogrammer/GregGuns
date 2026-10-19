@@ -94,12 +94,10 @@ public final class AugProfile {
     // The scale follows the FirstPersonFit rule with the long-gun target of 2 blocks on screen (the bolt-action's
     // precedent), and the idle position puts this model's box centre on the family anchor. The notes' small fire kick
     // (5 degrees, 0.15 back) is applied at that scale: a screen shift d is d / FP_SCALE in model axes.
-    /** On-screen length of the rifle in first person, blocks of the scaled frame. */
-    private static final double RIFLE_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), RIFLE_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("aug", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, 0 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -152,7 +150,7 @@ public final class AugProfile {
         TransformProgram fpFire = TransformProgram.builder()
             .rotZ((p, part) -> 10.0 * yF(p))
             .translate(
-                (p, part) -> FP_X + 0.3 / FP_SCALE * yF(p) - (part == 1 ? HANDLE_TRAVEL * handleSlide(p) : 0.0),
+                (p, part) -> FP_X + 0.42 / FP_SCALE * yF(p) - (part == 1 ? HANDLE_TRAVEL * handleSlide(p) : 0.0),
                 (p, part) -> FP_Y,
                 (p, part) -> FP_Z)
             .build();
@@ -166,8 +164,8 @@ public final class AugProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.9)
-            .translate(-1.6, -0.75, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the gun pitches up 15 degrees about the hand, in the first quarter of the first half; the charging
         // handle slides back with the same travel as in first person.
@@ -201,12 +199,13 @@ public final class AugProfile {
         // offset moved by the difference between the two muzzles' projected positions (this model is longer and
         // taller, so FP_SCALE differs and the muzzle sits elsewhere). muzzleFlash2 sheet, additive because the
         // GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.023,
-            0.005,
-            0.372,
+            fo[0],
+            fo[1],
+            fo[2],
             1.5,
             new double[] { 0, 0, 0 },
             true,

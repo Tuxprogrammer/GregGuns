@@ -5,9 +5,11 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import com.gregguns.gun.net.PacketGunCharge;
 import com.gregguns.gun.net.PacketGunTrigger;
 import com.gregguns.gun.server.GunKeybinds;
 import com.gregguns.item.gun.ItemGun;
+import com.gregguns.item.gun.ItemToolGun;
 import com.gregguns.network.GregGunsNetwork;
 import com.gtnewhorizon.gtnhlib.keybind.SyncedKeybind;
 
@@ -38,6 +40,7 @@ public final class GunInputHandler {
 
     private final ClientGunMirror mirror;
     private boolean triggerDown;
+    private boolean chargeDown;
     private int lastSlot = -1;
     private ItemGun lastGun;
     private boolean autotestAttack;
@@ -77,9 +80,11 @@ public final class GunInputHandler {
             lastGun = gun;
             triggerDown = false;
             mirror.trigger(false);
+            chargeDown = false;
+            mirror.chargeButton(false, false);
         }
 
-        boolean wantDown = canAct && (autotestAttack || mc.gameSettings.keyBindAttack.getIsKeyPressed());
+        boolean wantDown = canAct && (autotestAttack || triggerKey(mc, gun));
         if (wantDown != triggerDown) {
             triggerDown = wantDown;
             mirror.trigger(wantDown);
@@ -91,6 +96,27 @@ public final class GunInputHandler {
                             player.inventory.currentItem,
                             wantDown));
             }
+        }
+
+        // Charge guns (Bio Gun, Power Hammer): the right button charges while held and fires on release.
+        boolean wantCharge = canAct && gun.stats()
+            .isCharge() && mc.gameSettings.keyBindUseItem.getIsKeyPressed();
+        if (wantCharge != chargeDown) {
+            chargeDown = wantCharge;
+            mirror.chargeButton(
+                wantCharge,
+                player.capabilities.isCreativeMode || gun.stateOf(held)
+                    .loaded() > 0);
+            GregGunsNetwork.channel()
+                .sendToServer(
+                    new PacketGunCharge(
+                        player.worldObj.provider.dimensionId,
+                        player.inventory.currentItem,
+                        wantCharge));
+        }
+        if (gun != null) {
+            mirror.charge()
+                .tick(gun.stats());
         }
 
         SyncedKeybind reload = GunKeybinds.reload();
@@ -107,5 +133,17 @@ public final class GunInputHandler {
         }
 
         mirror.tick(player);
+    }
+
+    /**
+     * The button that pulls the trigger. A tool gun's left button is melee and mining, so its shot is the right
+     * button; a charge tool gun (Power Hammer) has no plain trigger at all, its right button is the charge.
+     */
+    private static boolean triggerKey(Minecraft mc, ItemGun gun) {
+        if (gun instanceof ItemToolGun) {
+            return !gun.stats()
+                .isCharge() && mc.gameSettings.keyBindUseItem.getIsKeyPressed();
+        }
+        return mc.gameSettings.keyBindAttack.getIsKeyPressed();
     }
 }
