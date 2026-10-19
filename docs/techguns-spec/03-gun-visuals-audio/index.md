@@ -43,6 +43,12 @@ Out of scope here, see the owning areas:
 | [model-notes/pdw.md](model-notes/pdw.md) | Clean-room design notes for rebuilding the PDW model and texture |
 | [model-notes/pulse_rifle.md](model-notes/pulse_rifle.md) | Clean-room design notes for rebuilding the Pulse Rifle model and texture |
 | [model-notes/minigun.md](model-notes/minigun.md) | Clean-room design notes for rebuilding the Minigun model and texture (spinning rotor) |
+| [model-notes/blaster_rifle.md](model-notes/blaster_rifle.md) | Clean-room design notes for rebuilding the Blaster Rifle model and texture |
+| [model-notes/deatomizer_pistol.md](model-notes/deatomizer_pistol.md) | Clean-room design notes for rebuilding the De-Atomizer (and Akimbo) model and texture |
+| [model-notes/scatter_laser_rifle.md](model-notes/scatter_laser_rifle.md) | Clean-room design notes for rebuilding the Scatter Laser Rifle model and texture |
+| [model-notes/laser_rifle.md](model-notes/laser_rifle.md) | Clean-room design notes for rebuilding the Laser Rifle model and texture |
+| [model-notes/tesla_rifle.md](model-notes/tesla_rifle.md) | Clean-room design notes for rebuilding the Tesla Rifle model and texture |
+| [model-notes/sonic_rifle.md](model-notes/sonic_rifle.md) | Clean-room design notes for rebuilding the Sonic Rifle (glow core) model and texture |
 | [textures.md](textures.md) | All 62 `textures/guns/` PNGs: size, what they depict, palette, UV layout, users, model-size mismatches |
 | [sounds.md](sounds.md) | All 185 `sounds/guns/` files, their `sounds.json` events and exactly when each plays |
 | [lang-and-strings.md](lang-and-strings.md) | The 17 gun camo-name keys, the generic camo strings, strings generated in code, missing keys and one correction |
