@@ -29,7 +29,18 @@ public final class ClientGunDefinitions {
 
             M4Profile.DEFINITION,
 
-            Ak47Profile.DEFINITION));
+            Ak47Profile.DEFINITION,
+
+            CombatShotgunProfile.DEFINITION,
+            RocketLauncherProfile.DEFINITION,
+            GrenadeLauncherProfile.DEFINITION,
+            As50Profile.DEFINITION,
+            LmgProfile.DEFINITION,
+
+            // The akimbo guns draw their single gun's model once per hand.
+            ClientGunDefinition.akimboOf("akimbo_pistols", Pistol9mmProfile.DEFINITION),
+            ClientGunDefinition.akimboOf("akimbo_revolvers", RevolverProfile.DEFINITION),
+            ClientGunDefinition.akimboOf("akimbo_mac10s", Mac10Profile.DEFINITION)));
 
     /**
      * The guns that have no 3D profile yet and are drawn as their flat item icon in hand, in the world and in the
@@ -38,7 +49,8 @@ public final class ClientGunDefinitions {
      * test pins this list to the guns that actually lack a profile, and <b>the M2 exit gate requires it empty</b>:
      * giving a gun its clean-room profile means removing its name here.
      */
-    public static final List<String> FLAT_ICON_FALLBACK = Collections.unmodifiableList(Collections.emptyList());
+    public static final List<String> FLAT_ICON_FALLBACK = Collections
+        .unmodifiableList(Arrays.asList("aug", "scar", "vector", "infiltrator"));
 
     private ClientGunDefinitions() {}
 

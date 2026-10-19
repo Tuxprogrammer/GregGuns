@@ -7,6 +7,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import com.gregguns.item.gun.ItemGun;
+import com.gregguns.recipe.AkimboRecipes;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -35,6 +36,7 @@ public final class GunEvents {
             .bus()
             .register(handler);
         MinecraftForge.EVENT_BUS.register(handler);
+        AkimboRecipes.registerHandler();
     }
 
     /** Ticks the held gun on the server. */

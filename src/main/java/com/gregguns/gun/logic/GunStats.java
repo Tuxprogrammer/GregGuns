@@ -43,6 +43,8 @@ public final class GunStats {
     private final boolean silenced;
     private final ProjectileKind projectileKind;
     private final double knockback;
+    private final double blastRadius;
+    private final double projectileGravity;
     private final int recoilTicks;
     private final int muzzleFlashTicks;
     private final double aiRange;
@@ -82,6 +84,8 @@ public final class GunStats {
         silenced = b.silenced;
         projectileKind = b.projectileKind;
         knockback = b.knockback;
+        blastRadius = b.blastRadius;
+        projectileGravity = b.projectileGravity;
         recoilTicks = b.recoilTicks;
         muzzleFlashTicks = b.muzzleFlashTicks;
         aiRange = b.aiRange;
@@ -115,6 +119,7 @@ public final class GunStats {
         require(penetration >= 0 && penetration <= 1, "penetration");
         require(projectileKind != null, "projectileKind");
         require(knockback >= 0, "knockback");
+        require(blastRadius >= 0 && projectileGravity >= 0, "blast radius / projectile gravity");
     }
 
     private static void require(boolean ok, String what) {
@@ -228,9 +233,14 @@ public final class GunStats {
         return ammoItemsPerReload;
     }
 
-    /** Rounds worth of one reload item: the whole magazine for {@link ReloadMode#MAGAZINE}, else clip / count. */
+    /**
+     * Rounds worth of one reload item: clip / items per reload. A single gun takes one item per reload, so this is
+     * its whole magazine; an akimbo pair takes two (one per gun), so each item is half the clip (36 rounds from two
+     * 18-round pistol magazines is 18 per item). Getting this right keeps the forced-reload refund of an akimbo gun
+     * at the single gun's rate (GUN-14 is the same factor gone wrong).
+     */
     public int roundsPerItem() {
-        return reloadMode == ReloadMode.MAGAZINE ? magazineSize : magazineSize / ammoItemsPerReload;
+        return magazineSize / ammoItemsPerReload;
     }
 
     /** Reload duration in ticks, from start to the rounds being loaded. */
@@ -284,7 +294,8 @@ public final class GunStats {
     }
 
     /**
-     * True for a silenced gun (the Infiltrator): its shot plays the quieter fire event and its tooltip says so. Techguns
+     * True for a silenced gun (the Infiltrator): its shot plays the quieter fire event and its tooltip says so.
+     * Techguns
      * only reads the flag in the mining dummy, so nothing else (NPC aggro, projectile effects) depends on it.
      */
     public boolean silenced() {
@@ -302,6 +313,16 @@ public final class GunStats {
      */
     public double knockback() {
         return knockback;
+    }
+
+    /** Blast radius in blocks of a rocket or launcher grenade; 0 for a gun whose projectile does not explode. */
+    public double blastRadius() {
+        return blastRadius;
+    }
+
+    /** Blocks per tick squared a rocket or launcher grenade falls; 0 for a straight bullet. */
+    public double projectileGravity() {
+        return projectileGravity;
     }
 
     /** Client recoil animation length in ticks. */
@@ -369,6 +390,8 @@ public final class GunStats {
         private boolean silenced;
         private ProjectileKind projectileKind = ProjectileKind.BULLET;
         private double knockback = 1.0;
+        private double blastRadius;
+        private double projectileGravity;
         private int recoilTicks = 5;
         private int muzzleFlashTicks = 5;
         private double aiRange = 15;
@@ -509,6 +532,16 @@ public final class GunStats {
         /** Marks a silenced gun: quiet fire event, tooltip line, no other effect. */
         public Builder silenced() {
             this.silenced = true;
+            return this;
+        }
+
+        /**
+         * Blast radius (blocks) and gravity (blocks per tick squared) of an exploding projectile (rocket, launcher
+         * grenade).
+         */
+        public Builder blast(double radius, double gravity) {
+            blastRadius = radius;
+            projectileGravity = gravity;
             return this;
         }
 

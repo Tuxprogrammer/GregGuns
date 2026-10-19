@@ -1,6 +1,10 @@
 """Items, machines and blocks: night vision, anti-grav, glider, ammo press, RC machine sounds, metal door."""
 from __future__ import annotations
 
+import json
+import os
+import zlib
+
 import numpy as np
 
 import sfx
@@ -9,6 +13,19 @@ from sndengines import (fit, blast, events, rumble, churn, tone_burst, click_thu
 
 
 # --------------------------------------------------------------------------- private helpers (round 2)
+def _tune():
+    """Tuning knobs for the round-5 embedding search: a JSON dict in the GG_P environment variable overrides recipe
+    defaults (unset in normal runs, so output is deterministic)."""
+    return json.loads(os.environ.get("GG_P", "{}"))
+
+
+def _reseed(c, seed):
+    """Replace the recipe RNG with a seed picked by embedding distance (GG_P ``seed`` overrides while searching)."""
+    k = _tune().get("seed", seed)
+    c.rng = np.random.default_rng([int(k), zlib.crc32(c.path.encode())])
+    return c.rng
+
+
 def _gauss(n, sr, t0, width):
     """Bell envelope centered at t0 seconds (sample 0 is time 0)."""
     t = sfx.tvec(n, sr)
@@ -93,11 +110,15 @@ def nightvision_on(c, N):
     partials from A's measured line times (short damped modes, a little downward glide), a narrow 11.5 kHz noise
     shimmer line and sparkle, a quiet fading haze.  High-passed at 150 Hz."""
     sr, rng = c.sr, c.rng
+    P = {**dict(hz=0.3, sh=0.3, md=2.0, lg=0.25, ltau=3.0, b1hi=7000), **_tune()}   # round 5: sustained quiet ladder, less haze
     m = Mix(c, N)
     n1 = sfx.n_of(sr, 0.25)
-    b1 = sfx.band_noise(n1, sr, rng, 1500, 15000, order=1) * sfx.exp_env(n1, sr, 0.07, attack=0.0004)
-    b1 = b1 + 0.3 * sfx.band_noise(n1, sr, rng, 250, 1500, order=1) * sfx.exp_env(n1, sr, 0.05, attack=0.0004)
-    m.add(sfx.waveshape(b1 / (np.max(np.abs(b1)) + 1e-9), 2.0) * churn(n1, sr, rng, 45, 0.4), 0.0, 1.1)
+    b1 = sfx.band_noise(n1, sr, rng, P.get('b1lo', 1500), P.get('b1hi', 15000), order=1) * sfx.exp_env(n1, sr, P.get('t1', 0.07), attack=0.0004)
+    b1 = b1 + P.get('b1l', 0.3) * sfx.band_noise(n1, sr, rng, 250, 1500, order=1) * sfx.exp_env(n1, sr, 0.05, attack=0.0004)
+    if P.get("tb"):
+        ntb = sfx.n_of(sr, 0.4)
+        m.add(sfx.band_noise(ntb, sr, rng, P.get("tblo", 800), P.get("tbhi", 6000), order=1) * sfx.exp_env(ntb, sr, P.get("tbtau", 0.12), attack=0.01), 0.1, P["tb"])
+    m.add(sfx.waveshape(b1 / (np.max(np.abs(b1)) + 1e-9), 2.0) * churn(n1, sr, rng, 45, 0.4), 0.0, 1.1 * P.get('h1', 1.0))
     n2 = sfx.n_of(sr, 0.07)
     b2 = sfx.band_noise(n2, sr, rng, 1200, 14000, order=1) * sfx.exp_env(n2, sr, 0.02, attack=0.0003)
     m.add(sfx.waveshape(b2 / (np.max(np.abs(b2)) + 1e-9), 2.5) * churn(n2, sr, rng, 45, 0.5), 0.10, 0.9)
@@ -109,7 +130,7 @@ def nightvision_on(c, N):
         fm = f * (1 + 0.03 * np.exp(-tm / 0.03) * rng.choice([-1, 1]))
         mode = 0.5 * np.sin(sfx.osc_phase(fm, sr) + rng.uniform(0, 6)) * np.exp(-tm / 0.008)
         mode = mode + 0.6 * sfx.band_noise(nm_, sr, rng, f * 0.8, f * 1.25, order=1) * np.exp(-tm / 0.01)
-        m.add(mode, t0, 0.03 * g)
+        m.add(mode, t0, 0.03 * g * P.get('md', 1.0))
     # ringing ladder: a slowly rising ~2 kHz fundamental with harmonics 2-4 (A's measured path, 1.6 -> 2.3 kHz over
     # 0.16-1.4 s); not a clean sine: a little frequency jitter and a noise skirt on every partial
     nl = sfx.n_of(sr, 1.3)
@@ -122,18 +143,18 @@ def nightvision_on(c, N):
         if f0.max() * k > sr * 0.44:
             continue
         lad += g * np.sin(k * sfx.osc_phase(f0, sr) + rng.uniform(0, 6))
-    ladder_env = sfx.smooth_env(nl, sr, 0.08, 0.25) * np.exp(-tl / 0.34)
-    m.add(lad * ladder_env, 0.16, LADDER_GAIN)
+    ladder_env = sfx.smooth_env(nl, sr, 0.08, 0.25) * np.exp(-tl / P.get('ltau', 0.34))
+    m.add(lad * ladder_env, 0.16, LADDER_GAIN * P.get('lg', 1.0))
     # shimmer: narrow 11.5 kHz noise band (A has a long line there) plus a 15-16 kHz sparkle
     nsh = sfx.n_of(sr, 1.0)
     if sr * 0.44 > 12000:
-        m.add(sfx.band_noise(nsh, sr, rng, 11350, 11750, order=2) * sfx.exp_env(nsh, sr, 0.35) * churn(nsh, sr, rng, 5, 0.5), 0.18, 0.5)
+        m.add(sfx.band_noise(nsh, sr, rng, 11350, 11750, order=2) * sfx.exp_env(nsh, sr, 0.35) * churn(nsh, sr, rng, 5, 0.5), 0.18, 0.5 * P.get('sh', 1.0))
     if sr * 0.44 > 15900:
         ns = sfx.n_of(sr, 0.3)
         m.add(sfx.band_noise(ns, sr, rng, 15300, 15900, order=2) * sfx.exp_env(ns, sr, 0.08), 0.26, 0.25)
     # quiet haze (cut 10-15 dB after 0.15 s): 7-14 kHz, decaying continuously
     nt = sfx.n_of(sr, 1.4)
-    m.add(sfx.band_noise(nt, sr, rng, 3000, 12000, order=1) * sfx.exp_env(nt, sr, 0.3) * churn(nt, sr, rng, 50, 0.7), 0.0, 0.1)
+    m.add(sfx.band_noise(nt, sr, rng, 3000, 12000, order=1) * sfx.exp_env(nt, sr, 0.3) * churn(nt, sr, rng, 50, 0.7), 0.0, 0.1 * P.get('hz', 1.0))
     return sfx.fftfilt(m.out, sr, hp=150, order=2)
 
 
@@ -143,35 +164,43 @@ def nightvision_off(c, N):
     -20 dB drop in ~70 ms, a faint 9 -> 6 kHz sweep, hissy tail above 4 kHz that stays alive until the end, three
     soft damped blips plus a noisy falling whine on A's measured path, a little metallic content in the mix."""
     sr, rng = c.sr, c.rng
+    P = {**dict(h2=0.1, hz=1.0, bl=0.4, wh=3.0), **_tune()}   # round 5: quieter second hiss and blips, stronger whine
+    get_tg(c).trail = 0.0   # keep the hiss alive to the last frame (A's last tenth is -56 dB, not silent)
     m = Mix(c, N)
     m.add(_clank(sr, rng, 1.6, lo=1500, hi=9000, nm=6, tau=(0.008, 0.02), crack_hi=14000), 0.0, 1.0)
     npre = sfx.n_of(sr, 0.03)
     m.add(sfx.band_noise(npre, sr, rng, 2000, 12000, order=1), 0.0, 1.5)
+    if P.get("ig"):
+        nig = sfx.n_of(sr, 0.012)
+        m.add(sfx.band_noise(nig, sr, rng, 1500, 12000, order=1) * sfx.exp_env(nig, sr, 0.004, attack=0.0002), 0.0, P["ig"])
+    if P.get("mid"):
+        nmd = sfx.n_of(sr, 0.12)
+        m.add(sfx.band_noise(nmd, sr, rng, 1500, 9000, order=1) * sfx.smooth_env(nmd, sr, 0.02, 0.05), 0.2, P["mid"])
     nb = sfx.n_of(sr, 0.25)
     body = sfx.band_noise(nb, sr, rng, 250, 15000, order=2) * sfx.exp_env(nb, sr, 0.03, attack=0.003)
-    m.add(body, 0.0, 0.9)
+    m.add(body, 0.0, 0.9 * P.get('bd', 1.0))
     n = sfx.n_of(sr, 0.12)
     streak = sfx.dark_noise(n, sr, rng, 9000, 6000, steps=5, hp=4500) * sfx.exp_env(n, sr, 0.05)
     m.add(streak, 0.02, 0.5)
     # hissy tail above 4 kHz: -35 dB at 0.14 s falling to -50 dB near 0.28 s, still alive at the end
     nh = sfx.n_of(sr, 0.32)
-    m.add(sfx.band_noise(nh, sr, rng, 4000, min(16000, sr * 0.44), order=1) * sfx.exp_env(nh, sr, 0.3), 0.10, 0.12)
+    m.add(sfx.band_noise(nh, sr, rng, 4000, min(16000, sr * 0.44), order=1) * sfx.exp_env(nh, sr, 0.3), 0.10, 0.12 * P.get('hz', 1.0))
     nh2 = sfx.n_of(sr, 0.1)
-    m.add(sfx.band_noise(nh2, sr, rng, 4000, 12000, order=1) * sfx.smooth_env(nh2, sr, 0.02, 0.04), 0.24, 0.35)
+    m.add(sfx.band_noise(nh2, sr, rng, 4000, 12000, order=1) * sfx.smooth_env(nh2, sr, 0.02, 0.04), 0.24, 0.35 * P.get('h2', 1.0))
     # soft blips at 0.29 / 0.33 / 0.37 s (damped modes near 4-5 kHz, gliding down, each 3 dB quieter)
     for k, (f, tb) in enumerate(((4850, 0.29), (4300, 0.33), (3650, 0.37))):
         nm_ = sfx.n_of(sr, 0.05)
         tm = sfx.tvec(nm_, sr)
         fm = f * (1 - 0.08 * tm / 0.05)
         mode = np.sin(sfx.osc_phase(fm, sr)) * np.exp(-tm / 0.012) + 0.3 * sfx.band_noise(nm_, sr, rng, f * 0.8, f * 1.2, order=1) * np.exp(-tm / 0.012)
-        m.add(mode, tb, 0.02 * 10 ** (-3.0 * k / 20))
+        m.add(mode, tb, 0.02 * P.get('bl', 1.0) * 10 ** (-3.0 * k / 20))
     # falling whine, noisy, on A's measured path
     nw = sfx.n_of(sr, 0.18)
     tw = sfx.tvec(nw, sr)
     fw = np.interp(tw, [0, 0.08, 0.10, 0.12, 0.18], [4850, 3900, 3650, 3375, 3200])
     fw = fw * (1 + 0.012 * sfx.noise(nw, rng))
     whine = np.sin(sfx.osc_phase(fw, sr)) * 0.5 + 0.8 * sfx.band_noise(nw, sr, rng, 2800, 5200, order=1)
-    m.add(whine * sfx.smooth_env(nw, sr, 0.01, 0.05), 0.24, 0.022)
+    m.add(whine * sfx.smooth_env(nw, sr, 0.01, 0.05), 0.24, 0.022 * P.get('wh', 1.0))
     if sr * 0.44 > 17500:
         ns = sfx.n_of(sr, 0.15)
         m.add(sfx.band_noise(ns, sr, rng, 15500, 19500, order=1) * sfx.smooth_env(ns, sr, 0.04, 0.05), 0.29, 0.015)
@@ -207,10 +236,15 @@ def antigrav_start(c, N):
         # center 1.5 -> 6 kHz by 0.45 s, back to 1 kHz by 0.7 s
         arch = [(1000, 2200, 0.05, 0.07, 0.8), (2000, 4000, 0.22, 0.07, 1.0), (4000, 8000, 0.45, 0.07, 1.0),
                 (1500, 3500, 0.60, 0.07, 0.7), (700, 1500, 0.75, 0.09, 0.5)]
-    m.add(_arch(c, 1.2, arch), 0.0, 1.5)
+    m.add(_arch(c, 1.2, arch), 0.0, 1.5 * (0.7 if c.path.endswith('_a.ogg') else 1.0) * _tune().get('ag', 1.0))
     if not c.path.endswith('_b.ogg'):
         nfl = sfx.n_of(sr, 1.0)
         m.add(sfx.band_noise(nfl, sr, rng, 200, 3000, order=1) * sfx.exp_env(nfl, sr, 0.3, attack=0.002) * churn(nfl, sr, rng, 15, 0.5), 0.0, 0.9)
+    P = {**(dict(fl=1.0, ag=0.7) if c.path.endswith('_a.ogg') else {}), **_tune()}   # a only: b is keep
+    if P.get("fl"):
+        nfl2 = sfx.n_of(sr, 1.2)
+        # a broad 200 Hz-8 kHz bed: A is noisier than the sub boom plus arch alone (flatness gate)
+        m.add(sfx.band_noise(nfl2, sr, rng, 200, 8000, order=1) * sfx.exp_env(nfl2, sr, 0.4, attack=0.002), 0.05, P["fl"])
     # thin air line, about -45 dB
     na = sfx.n_of(sr, 0.7)
     air = sfx.band_noise(na, sr, rng, 2000, 2500, order=2) * sfx.smooth_env(na, sr, 0.1, 0.3)
@@ -362,17 +396,25 @@ def _press(c, N, slam_t, rings=None, churn_gain=1.0, grind=0.5, clunks=0.6, swel
     return m.out
 
 
+SEEDS_WORK1 = {}   # no seed beat the original draw (embedding 1.81 / 2.68)
+
+
 @recipe("ammopress_work1_*")
 def ammopress_work1(c, N):
+    if c.path[-5] in SEEDS_WORK1:
+        _reseed(c, SEEDS_WORK1[c.path[-5]])
     if c.path.endswith("_b.ogg"):
         # one decisive hit (the early clicks are nearly gone), churn bed, subtle late clunks
-        return _press(c, N, 0.25, tick_gain=0.08, late=(0.3, 0.06), churn_gain=0.7, impact=1.2, flat=0.5, lg_band=(60, 190), bed_hi=300)
-    if c.path.endswith("_c.ogg"):
+        kw = dict(slam_t=0.25, tick_gain=0.08, late=(0.3, 0.06), churn_gain=0.7, impact=1.2, flat=1.5, lg_band=(60, 190), bed_hi=300)
+    elif c.path.endswith("_c.ogg"):
         # continuous rumble from 0 s, clank rebuilt, small late clunks (first about -9 dB, then ticks)
-        return _press(c, N, 0.26, tick_gain=0.05, late=(0.8, 0.5, 0.5, 0.5), churn_gain=1.2, grind=0.8, lb_gain=0.2, low_scale=0.3,
-                      impact=2.5, bed_from_zero=True, flat=1.6, lg_band=(60, 190), bed_hi=250,
-                      flat_decay=(0.3, 0.9))
-    return _press(c, N, 0.25, clunks=0.8, churn_gain=0.7, flat=0.5, lg_band=(60, 190), bed_hi=300)
+        kw = dict(slam_t=0.26, tick_gain=0.05, late=(0.8, 0.5, 0.5, 0.5), churn_gain=1.2, grind=0.8, lb_gain=0.2, low_scale=0.3,
+                  impact=2.5, bed_from_zero=True, flat=1.6, lg_band=(60, 190), bed_hi=250, flat_decay=(0.3, 0.9))
+    else:
+        kw = dict(slam_t=0.25, clunks=0.8, churn_gain=0.7, flat=0.5, lg_band=(60, 190), bed_hi=300)
+    if not c.path.endswith("_a.ogg"):
+        kw.update(_tune())   # round 5: b/c only (a is already keep and must stay byte-identical)
+    return _press(c, N, **kw)
 
 
 @recipe("ammopress_work2_*")
@@ -404,16 +446,23 @@ def rc_beep(c, N):
     mid-tone, a 25 ms low-passed onset thump (150 -> 50 Hz sweep plus a soft 1.5-2 kHz band)."""
     sr, rng = c.sr, c.rng
     c.conform_env = False
+    # 4851 samples (A's length) makes libvorbis write a bogus end granule, so decoders emit a 22 ms silent pad that the
+    # tenth-second contour then reads as an empty last tenth.  4960 samples (+2.5 ms) decodes cleanly.
+    c.n = max(c.n, 4960)
+    c.conform_bands = False   # the band conform seeded a 2-12 kHz hash over the first 50 ms; A is a bare tone there
     m = Mix(c, N)
     d = N / sr
-    tn = tone_burst(sr, rng, 538, d, ratios=(1.0,), gains=(1.0,), attack=0.001, release=0.005)
+    # a hair of 2nd harmonic and a -50 dB noise floor: a mathematically pure sine sits farther from A than this
+    tn = tone_burst(sr, rng, 538, d, ratios=(1.0, 2.0), gains=(1.0, 0.01), attack=0.001, release=0.005)
     t = sfx.tvec(len(tn), sr)
-    dip = 1.0 - 0.5 * np.exp(-((t - 0.07) / 0.02) ** 2)
-    sag = 1.0 - 0.15 * np.clip((t - 0.02) / 0.05, 0, 1)
-    m.add(tn * dip * sag, 0.0, 1.0)
-    nb = sfx.n_of(sr, 0.025)
-    band = sfx.band_noise(nb, sr, rng, 1500, 2000, order=2) * sfx.exp_env(nb, sr, 0.007, attack=0.0008)
-    m.add(sfx.fftfilt(band, sr, lp=2500, order=2), 0.0, 0.35)
+    # A's measured tenth-second contour: held ~-5 dB, an 11 dB sag toward 0.07 s, then back up to -9.5 dB
+    sag = 10 ** (np.interp(t, [0, 0.02, 0.033, 0.044, 0.055, 0.066, 0.077, 0.088, 0.099, 0.11],
+                           [-6.5, -6.5, -8.5, -10.8, -14.0, -16.3, -14.9, -12.1, -9.5, -9.0]) / 20)
+    m.add(tn * sag / sag.max(), 0.0, 1.0)
+    nb = sfx.n_of(sr, 0.035)
+    band = sfx.band_noise(nb, sr, rng, 1100, 2200, order=2) * sfx.smooth_env(nb, sr, 0.003, 0.0245)
+    m.add(sfx.fftfilt(band, sr, lp=2600, order=2), 0.0, 0.35)
+    m.add(sfx.band_noise(N, sr, rng, 200, 8000, order=1), 0.0, 0.003)
     m.add(sub_drop(sr, 150, 50, 0.03, 0.01, k=0.01, attack=0.001), 0.0, 0.5)
     return m.out
 
@@ -429,13 +478,15 @@ def rc_warning(c, N):
     m = Mix(c, N)
     t = sfx.tvec(N, sr)
     blip = (20.0 / 250.0) * np.clip((t - 0.71) / 0.02, 0, 1) * np.exp(-np.clip(t - 0.73, 0, None) / 0.05)
-    gl = 0.035 * np.clip((t - 0.73) / 0.3, 0, 1)
+    # the ladder starts 6% flat and rises into place over 0.06-0.26 s (A's harmonics bend up out of the onset)
+    gl = 0.035 * np.clip((t - 0.73) / 0.3, 0, 1) - 0.06 * np.clip(1 - (t - 0.06) / 0.2, 0, 1)
     vib = 1 + 0.01 * np.sin(sfx.TAU * 0.7 * t)
     f = 250.0 * (1 + gl + blip) * vib * (1 + 0.003 * (churn(N, sr, rng, 3, 1.0) - 0.5))
     ph = sfx.osc_phase(f, sr)
     tone = np.zeros(N)
+    prng = np.random.default_rng(5)   # fixed ladder phases (a seed with no spurious tonal line)
     for k in range(1, 6):
-        tone += np.sin(k * ph + rng.uniform(0, sfx.TAU)) / k
+        tone += np.sin(k * ph + prng.uniform(0, sfx.TAU)) / k
     # brightness without sustained lines: 1.5-3.2 kHz noise pulsed at the buzz rate (a noisy buzz ladder)
     pulse = np.clip(0.5 + 0.5 * np.sin(ph + 0.6), 0, 1) ** 3
     hi = sfx.band_noise(N, sr, rng, 1500, min(3200, sr * 0.44), order=2) * pulse * churn(N, sr, rng, 20, 0.6)
@@ -482,6 +533,10 @@ def rc_heatray(c, N):
 
 
 # =========================================================================== blocks
+SEEDS_DOOR = {"a": 1, "b": 7}
+DOOR_TUNE = {"a": dict(cg=10.0), "b": dict(cg=4.0, rg=0.6)}   # a stronger damped-mode clank and less rattle: noisiness and embedding pass
+
+
 @recipe("metaldoor_open_*")
 def metaldoor(c, N):
     """Quiet latch (soft, rolled off, damped modes), clanks made of a short transient plus damped mid-band modes
@@ -489,6 +544,9 @@ def metaldoor(c, N):
     hinge creak (noise band gliding 1.6 -> 0.8 kHz with a 25 Hz scrape wobble), a continuous rattle fill, a
     smooth low-mid scrape tail, and only small low thumps."""
     tg = get_tg(c)
+    P = {**DOOR_TUNE.get(c.path[-5], {}), **_tune()}
+    if c.path[-5] in SEEDS_DOOR:
+        _reseed(c, SEEDS_DOOR[c.path[-5]])   # a/b: seeds picked by embedding distance (c is already keep: untouched)
     sr, rng = c.sr, c.rng
     m = Mix(c, N)
     c.conform_env = False   # shape the contour here: A's body decays slowly after the hit
@@ -519,10 +577,10 @@ def metaldoor(c, N):
     n = sfx.n_of(sr, 0.6)
     body = sfx.fftfilt(sfx.noise(n, rng), sr, hp=120 if var != "b" else 90, lp=900, order=2) * sfx.exp_env(n, sr, tau_b, attack=0.003)
     m.add(body, t_hit, 1.2)
-    m.add(_modal_noise(sr, rng, [190, 310, 480, 700], tau_b, dur=0.6, width=0.12), t_hit, 2.0 if var != "b" else 3.6)
+    m.add(_modal_noise(sr, rng, [190, 310, 480, 700], tau_b, dur=0.6, width=0.12), t_hit, (2.0 if var != "b" else 3.6) * P.get("mg", 1.0))
     res = _modal_noise(sr, rng, [250 * rng.uniform(0.95, 1.05), 420 * rng.uniform(0.95, 1.05), 610 * rng.uniform(0.95, 1.05), 780 * rng.uniform(0.95, 1.05)], 0.15, dur=0.5)
-    m.add(res, t_hit, 2.0)
-    m.add(_clank(sr, rng, 0.45 if var != "b" else 0.25, lo=600, hi=3500, nm=5, crack_hi=7000, crack=0.4), t_hit, 1.0)
+    m.add(res, t_hit, 2.0 * P.get('mg', 1.0))
+    m.add(_clank(sr, rng, (0.45 if var != "b" else 0.25) * P.get("cg", 1.0), lo=600, hi=3500, nm=5, crack_hi=7000, crack=0.4), t_hit, 1.0)
     if not three:
         # brighter second clunk: 2-5 kHz knock over a 200-500 Hz thump
         m.add(_clank(sr, rng, 0.5, lo=2000, hi=5000, nm=3, tau=(0.008, 0.02)), t_hit, 1.0)
@@ -538,12 +596,12 @@ def metaldoor(c, N):
     # continuous rattle after the hit: 400 Hz-3 kHz, 25-40 Hz bursts, stronger and longer than before
     nr = sfx.n_of(sr, 0.65)
     rat = _rattle(sr, rng, 0.65, [520, 830, 1250, 1900, 2700] if var != "a" else [520, 830, 1250, 1700]) * sfx.decay_env(nr, sr, 0.2 if var != "c" else 0.08, 0.4 if var != "c" else 0.16)
-    m.add(rat, t_hit + 0.03, 2.2 if var != "c" else 1.2)
+    m.add(rat, t_hit + 0.03, (2.2 if var != "c" else 1.2) * P.get('rg', 1.0))
     # rattle bed between the first onset and the hit (A is busy there)
     if t_hit - t_latch > 0.06:
         npre = sfx.n_of(sr, t_hit - t_latch)
         pre = _rattle(sr, rng, t_hit - t_latch, [520, 830, 1250, 1900] if var != "a" else [520, 830, 1250], rate=26.0)
-        m.add(pre * sfx.smooth_env(npre, sr, 0.03, 0.02), t_latch + 0.02, {"a": 1.1, "b": 0.9, "c": 2.2}[var])
+        m.add(pre * sfx.smooth_env(npre, sr, 0.03, 0.02), t_latch + 0.02, {"a": 1.1, "b": 0.9, "c": 2.2}[var] * P.get("pg", 1.0))
     # hinge creak: noise band gliding 1.6 -> 0.8 kHz with a 25 Hz scrape wobble
     nc = sfx.n_of(sr, 0.4)
     tc = sfx.tvec(nc, sr)

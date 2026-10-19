@@ -78,13 +78,15 @@ class ProductionTableTest {
     @Test
     void everyRowIsLvSoTheRecipeCannotRunBelowItsTierExceptTheSteamStoneBullet() {
         for (ProductionTable.Row row : ProductionTable.ROWS) {
-            // The SMG and Assault Rifle magazine families are MV (Aluminium gate, 0001); everything else here is LV.
-            Tier expected = row.output()
-                .equals(ProductionTable.STONE_BULLET) ? Tier.STEAM
-                    : row.output()
-                        .startsWith("mag_smg")
-                        || row.output()
-                            .startsWith("mag_assault_rifle") ? Tier.MV : Tier.LV;
+            // The SMG and Assault Rifle magazine families and the 40 mm grenade are MV (Aluminium gate, 0001), the
+            // rocket is HV (stainless steel gate); everything else here is LV.
+            String out = row.output();
+            Tier expected = out.equals(ProductionTable.STONE_BULLET) ? Tier.STEAM
+                : out.equals("ammo_rocket") || out.equals("ammo_high_caliber_round")
+                    || out.startsWith("mag_as50")
+                    || out.startsWith("mag_lmg") ? Tier.HV
+                        : out.startsWith("mag_smg") || out.startsWith("mag_assault_rifle")
+                            || out.equals("ammo_40mm_grenade") ? Tier.MV : Tier.LV;
             assertEquals(expected, row.tier(), row.id());
         }
     }

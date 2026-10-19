@@ -87,6 +87,21 @@ public final class TurretScenarios {
         return base;
     }
 
+    /** Ticks to let GT finish initializing a freshly placed tile entity before it is used. */
+    private static final int WARMUP_TICKS = 45;
+
+    /**
+     * The turret base the world holds at the origin right now, or null. GT may replace a tile entity during its first
+     * ticks, so scenarios fetch it again after the warm-up instead of keeping the placement-tick handle.
+     */
+    private static IGregTechTileEntity live(ScenarioContext ctx) {
+        TileEntity tile = ctx.world()
+            .getTileEntity(ctx.originX(), ctx.originY(), ctx.originZ());
+        return tile instanceof IGregTechTileEntity
+            && ((IGregTechTileEntity) tile).getMetaTileEntity() instanceof MTETurret ? (IGregTechTileEntity) tile
+                : null;
+    }
+
     private static void arm(IGregTechTileEntity base, String gun, String ammo, int ammoCount) {
         base.setInventorySlotContents(MTETurret.GUN_SLOT, new ItemStack(GunItems.get(gun)));
         Item ammoItem = GameRegistry.findItem(GregGuns.MODID, ammo);
@@ -164,18 +179,33 @@ public final class TurretScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ctx.clearArea(AREA_RADIUS, 6);
-            IGregTechTileEntity base = place(ctx, GregGunsMTEIDs.TURRET_MV, uuid(OWNER_NAME));
-            arm(base, "pistol_9mm", "mag_9mm_pistol", 4);
-            // One round loaded, so the second shot reloads from the slots and hands back an empty magazine.
-            ItemStack mounted = base.getStackInSlot(MTETurret.GUN_SLOT);
-            mounted.setTagCompound(new NBTTagCompound());
-            GunNbt.write(mounted.getTagCompound(), new GunState(1));
-            power(base);
+            place(ctx, GregGunsMTEIDs.TURRET_MV, uuid(OWNER_NAME));
             EntityZombie zombie = new EntityZombie(ctx.world());
             zombie.setLocationAndAngles(ctx.originX() + 0.5 + 9, ctx.originY(), ctx.originZ() + 0.5, 90.0F, 0.0F);
             zombie.addPotionEffect(new PotionEffect(Potion.fireResistance.id, 4000));
-            ctx.spawn(zombie);
-            return ScenarioResult.pending(name(), 700, ticks -> {
+            IGregTechTileEntity[] held = { null };
+            return ScenarioResult.pending(name(), 700 + WARMUP_TICKS, ticks -> {
+                if (held[0] == null) {
+                    // Arm the turret and spawn the target only after the warm-up, on the world's current tile.
+                    if (ticks < WARMUP_TICKS) {
+                        return null;
+                    }
+                    IGregTechTileEntity fresh = live(ctx);
+                    if (fresh == null) {
+                        return ScenarioResult.fail(name(), "the turret base is gone after the warm-up");
+                    }
+                    arm(fresh, "pistol_9mm", "mag_9mm_pistol", 4);
+                    // One round loaded, so the second shot reloads from the slots and hands back an empty magazine.
+                    ItemStack mounted = fresh.getStackInSlot(MTETurret.GUN_SLOT);
+                    mounted.setTagCompound(new NBTTagCompound());
+                    GunNbt.write(mounted.getTagCompound(), new GunState(1));
+                    ctx.spawn(zombie);
+                    held[0] = fresh;
+                }
+                IGregTechTileEntity base = live(ctx);
+                if (base == null) {
+                    return ScenarioResult.fail(name(), "the turret base vanished while the scenario ran");
+                }
                 power(base);
                 if (!zombie.isDead && zombie.getHealth() > 0) {
                     return null;
@@ -194,9 +224,15 @@ public final class TurretScenarios {
                 }
                 out.checkEquals("empty magazines returned", 1, empties);
                 ItemStack gun = base.getStackInSlot(MTETurret.GUN_SLOT);
-                GunState state = GunNbt.read(gun.getTagCompound(), ((ItemGun) gun.getItem()).stats());
-                out.check(state.loaded() < 18, "the gun should have fired rounds");
-                out.checkEquals("magazines left in the ammo slot", 3, base.getStackInSlot(0).stackSize);
+                if (gun == null) {
+                    out.check(false, "the gun slot is unexpectedly empty");
+                } else {
+                    GunState state = GunNbt.read(gun.getTagCompound(), ((ItemGun) gun.getItem()).stats());
+                    out.check(state.loaded() < 18, "the gun should have fired rounds");
+                }
+                ItemStack ammoLeft = base.getStackInSlot(0);
+                out.check(ammoLeft != null, "the ammo slot is unexpectedly empty");
+                out.checkEquals("magazines left in the ammo slot", 3, ammoLeft == null ? -1 : ammoLeft.stackSize);
                 empty(base);
                 return out.build();
             });
@@ -221,17 +257,28 @@ public final class TurretScenarios {
             ctx.clearArea(AREA_RADIUS, 6);
             UUID owner = uuid(OWNER_NAME);
             UUID friendId = uuid("gregguns-turret-friend");
-            IGregTechTileEntity base = place(ctx, GregGunsMTEIDs.TURRET_HV, owner);
-            arm(base, "pistol_9mm", "mag_9mm_pistol", 1);
-            power(base);
-            mte(base).setFriendProvider((o, other) -> o.equals(owner) && other.equals(friendId));
+            place(ctx, GregGunsMTEIDs.TURRET_HV, owner);
             WorldServer world = (WorldServer) ctx.world();
             FakePlayer ownerPlayer = player(world, OWNER_NAME);
             FakePlayer friend = player(world, "gregguns-turret-friend");
             FakePlayer stranger = player(world, "gregguns-turret-stranger");
             EntityZombie zombie = new EntityZombie(world);
             EntityPig pig = new EntityPig(world);
-            return ScenarioResult.pending(name(), 120, ticks -> {
+            boolean[] armed = { false };
+            return ScenarioResult.pending(name(), 120 + WARMUP_TICKS, ticks -> {
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
+                IGregTechTileEntity base = live(ctx);
+                if (base == null) {
+                    return ScenarioResult.fail(name(), "the turret base is gone after the warm-up");
+                }
+                if (!armed[0]) {
+                    arm(base, "pistol_9mm", "mag_9mm_pistol", 1);
+                    power(base);
+                    mte(base).setFriendProvider((o, other) -> o.equals(owner) && other.equals(friendId));
+                    armed[0] = true;
+                }
                 TurretEntity turret = mte(base).linkedTurret();
                 if (turret == null) {
                     return null;
@@ -290,8 +337,7 @@ public final class TurretScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ctx.clearArea(AREA_RADIUS, 6);
-            IGregTechTileEntity base = place(ctx, GregGunsMTEIDs.TURRET_MV, uuid(OWNER_NAME));
-            power(base);
+            place(ctx, GregGunsMTEIDs.TURRET_MV, uuid(OWNER_NAME));
             EntityZombie zombie = new EntityZombie(ctx.world());
             zombie.setLocationAndAngles(ctx.originX() + 0.5 + 40, ctx.originY(), ctx.originZ() + 0.5, 0.0F, 0.0F);
             zombie.addPotionEffect(new PotionEffect(Potion.fireResistance.id, 4000));
@@ -299,7 +345,14 @@ public final class TurretScenarios {
             int[] stage = { 0 };
             TurretEntity[] first = { null };
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            return ScenarioResult.pending(name(), 900, ticks -> {
+            return ScenarioResult.pending(name(), 900 + WARMUP_TICKS, ticks -> {
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
+                IGregTechTileEntity base = live(ctx);
+                if (base == null) {
+                    return ScenarioResult.fail(name(), "the turret base is gone after the warm-up");
+                }
                 power(base);
                 try {
                     MTETurret turret = mte(base);

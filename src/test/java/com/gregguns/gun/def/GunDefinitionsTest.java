@@ -156,6 +156,7 @@ class GunDefinitionsTest {
                         assertTrue(
                             all.containsKey(input.itemName())
                                 || ProductionTable.CRAFTED_PARTS.contains(input.itemName())
+                                || GunDefinitions.byName(input.itemName()) != null // an upgrade consumes a gun
                                 || com.gregguns.recipe.ComponentTable.byOutput()
                                     .containsKey(input.itemName()),
                             row.id() + " input " + input.itemName() + " has no recipe");
@@ -176,7 +177,8 @@ class GunDefinitionsTest {
     void everyGunOwnsItsFireAndReloadSoundsAndRechamberWhenItHasOne() throws IOException {
         JsonObject events = sounds();
         for (GunDefinition def : GunDefinitions.ALL) {
-            assertEquals("guns." + def.name() + ".fire", def.fireEvent());
+            assertEquals("guns." + def.textureName() + ".fire", def.fireEvent()); // an akimbo gun shares its single
+                                                                                  // gun's
             assertEquals("guns." + def.name() + ".reload", def.reloadEvent());
             assertTrue(events.has(def.fireEvent()), def.fireEvent());
             assertTrue(events.has(def.reloadEvent()), def.reloadEvent());
@@ -192,8 +194,8 @@ class GunDefinitionsTest {
     @Test
     void camoCountMatchesTheTextureFilesOnDisk() {
         for (GunDefinition def : GunDefinitions.ALL) {
-            String base = ROOT + "textures/models/guns/" + def.name();
-            assertTrue(exists(base + ".png"), "missing base texture of " + def.name());
+            String base = ROOT + "textures/models/guns/" + def.textureName();
+            assertTrue(exists(base + ".png"), "missing base texture of " + def.textureName());
             int onDisk = 1;
             while (exists(base + "_camo" + onDisk + ".png")) {
                 onDisk++;
@@ -237,7 +239,9 @@ class GunDefinitionsTest {
             String[] textures = client.textures();
             assertEquals(def.camoCount(), textures.length, def.name() + " client textures vs camo count");
             for (int i = 0; i < textures.length; i++) {
-                String expected = "gregguns:textures/models/guns/" + def.name() + (i == 0 ? "" : "_camo" + i) + ".png";
+                String expected = "gregguns:textures/models/guns/" + def.textureName()
+                    + (i == 0 ? "" : "_camo" + i)
+                    + ".png";
                 assertEquals(expected, textures[i]);
                 assertTrue(exists("/assets/" + textures[i].replace(':', '/')), textures[i]);
             }
@@ -245,7 +249,7 @@ class GunDefinitionsTest {
     }
 
     /**
-     * The M2 exit gate. While the four B1 guns await their clean-room models this lists them; the M2 close changes the
+     * The M2 exit gate. While the four B3 guns await their clean-room models this lists them; the M2 close changes the
      * expectation to an empty list. Until then it documents exactly which guns draw as a flat icon.
      */
     @Test
@@ -257,7 +261,8 @@ class GunDefinitionsTest {
             }
         }
         assertEquals(ClientGunDefinitions.FLAT_ICON_FALLBACK, without);
-        assertEquals(java.util.Collections.emptyList(), without);
+        assertEquals(java.util.Arrays.asList("aug", "scar", "vector", "infiltrator"), without);
+        assertTrue(ClientGunDefinitions.usesFallback("aug"));
         assertFalse(ClientGunDefinitions.usesFallback("m4"));
         assertFalse(ClientGunDefinitions.usesFallback("pistol_9mm"));
     }

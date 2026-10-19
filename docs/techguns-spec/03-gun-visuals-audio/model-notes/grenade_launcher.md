@@ -196,3 +196,15 @@ This is the 40 mm grenade that flies after firing; it is a separate small mesh w
 Shading: a smooth **vertical gradient** from light on the top corner to dark on the bottom, repeated on each face, with soft 1-pixel steps. No noise.
 
 **In flight.** It is drawn at 0.8 scale (about 0.4 block long), pointing along its flight direction, and **spins about its own long axis** at one full turn per 40 ticks (2 s), so the diamond faces visibly rotate. It leaves a smoke trail (separate effect). On a bounce it continues as a new grenade with 75 percent speed.
+
+## Round 2 corrections (orchestrator review)
+
+Side-by-side silhouette comparison scored the worst view at 0.917 (side), top 0.947, front 0.983, mean of non-side views 0.956, so the proportions are right. What reads wrong is color and surface balance. Colors below were sampled from a lit render of the original, so they are the values a viewer actually sees.
+
+1. **The drum end faces are dark, not white.** Seen from the front or back, the hexagon is a dull dark stone gray, about #3F423F, carrying six round domed bumps (about 3 across each, a touch lighter, about #5A6666) around a center bump. Silver is confined to a **thin rim**: the 1-unit end plates show as a hexagon outline about 1 unit wide, roughly #808080 to #C8C8C8. Do not fill the end faces with silver or light gray panels. Only the rim and the side-flat rungs are light.
+2. **Drum side flats show two grenades stacked, not one.** Each side flat has two red grenade bodies one above the other, each about 6 long and 3 tall, with a cream cap (#D8C8A8) at each end and a thin silver rung between and outside them (a ladder). The ladder rungs are about 0.5 to 1 unit thick. Our single large red panel with one rung is wrong. The red is #D84838 with a darker top and bottom edge (#782818).
+3. **The tube sleeve is dark gunmetal, not silver.** The 8-long sleeve reads about #393C3A to #404342 in the lit render. Only the bare 3-unit neck of tube at the muzzle and its muzzle plate are light, about #969696. This overrides the older sleeve color in section 5; the bright silver there was a texture-sheen sample.
+4. **The pistol grip is mid-dark gray, not black.** About #404342, clearly lighter than the receiver, which stays near #1E1E1E to #222222. The underbarrel bar and the guard bar are also this gray, about #585858.
+5. **The stock rod is neutral gray, about #585858**, with no green tint, and the buffer block and end plate are near-black (#1E1E1E).
+6. **The receiver sides are plain near-black (#1C1C1C to #222222) with only faint 1-pixel edge lines.** The lighter inset panels from section 5 are small and low contrast; do not paint large gray plates. The rail on top is near-black (about #121314) with dark ribs, not blue-gray.
+7. Keep every size, position and angle in sections 2 and 3 as written; they were verified by overlay.

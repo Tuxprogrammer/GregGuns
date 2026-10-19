@@ -170,6 +170,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.sawedoff.reload.forced` | sawed off (M2) | The reload key at 1 round with 2 shells: 2 rounds after 28 ticks, exactly one shell used (INCREMENTAL keeps the loaded round). |
 | `gun.sawedoff.recipe` | sawed off (M2) | `RecipeMaps.assemblerRecipes` holds the Sawed Off (GR-03) at `RECIPE_LV` and 10 s; an LV query with the sheet inputs and circuit 3 finds it; a voltage below LV does not. |
 | `gun.sawedoff.shells.recipe` | sawed off (M2) | The ammo map finds RC-29 (8 foil Brass, 24 round Lead, 4 Gunpowder) at `RECIPE_LV` for 6 s making 8 shotgun shells, and not at ULV. |
+| `mp.look.<gunId>`, `mp.look.all` | visuals (M2) | Needs one connected client; not part of `test all`. `GeneratedGunLooks` registers one scenario per gun in `GunDefinitions.ALL` (akimbo and flat-icon guns included) with screenshots `look-<id>-first-person-idle`, `-first-person-fire`, `-first-person-aim` (scoped guns only) and `-third-person-front`; `mp.look.all` runs every gun in one session. Independent of the hand-written `mp.visual.*` walkthroughs. |
 | `mp.visual.sawedoff` | sawed off (M2) | The shared `GunVisualScenario` walkthrough for the Sawed Off (first and third person, dropped, inventory, NEI); not part of `test all`. |
 | `gun.handcannon.fire` | hand cannon (M2) | A real `handcannon` fired through `ServerGunHandler`: exactly one projectile, a `SimpleProjectile` (the gravity bullet); a zombie 6 blocks away loses the `DamageModel` figure for 8; the only round is spent. |
 | `gun.handcannon.fall` | hand cannon (M2) | The ball shot level in a 30 block corridor accelerates downwards by 0.010 to 0.020 blocks per tick squared (gravity 0.015; measured as the change of vertical speed so the random spread does not matter) and has gone 8 to 11 blocks forward after 10 ticks at speed 1.0. |
@@ -200,6 +201,66 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.ak47.reload.forced` | AK47 (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
 | `gun.ak47.recipe` | AK47 (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
 | `gun.m4.zoom` | M4 (M2 B1) | A zoom intent turns the server zoom state on with FOV factor 0.75 and 0.75 of the 0.015 spread; a second intent or a reload turns it off. |
+| `gun.aug.auto` | AUG (M2 B3) | Holding the trigger for 13 ticks fires on the pull and then every interval (AUG, Infiltrator 3 ticks, SCAR 4, Vector 2), one round and one bullet per shot. |
+| `gun.aug.reload` | AUG (M2 B3) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time (SCAR to 20 of the magazine's 30), the magazine is consumed and an empty one returned. |
+| `gun.aug.reload.forced` | AUG (M2 B3) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.aug.recipe` | AUG (M2 B3) | The HV assembly row is in GT's assembler map at its time and voltage, and a machine below HV is not offered it. |
+| `gun.aug.zoom` | AUG (M2 B3) | A zoom intent turns the server zoom state on with the gun's own FOV factor and spread multiplier; a second intent or a reload turns it off. |
+| `gun.scar.auto` | SCAR (M2 B3) | Holding the trigger for 13 ticks fires on the pull and then every interval (AUG, Infiltrator 3 ticks, SCAR 4, Vector 2), one round and one bullet per shot. |
+| `gun.scar.reload` | SCAR (M2 B3) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time (SCAR to 20 of the magazine's 30), the magazine is consumed and an empty one returned. |
+| `gun.scar.reload.forced` | SCAR (M2 B3) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.scar.recipe` | SCAR (M2 B3) | The HV assembly row is in GT's assembler map at its time and voltage, and a machine below HV is not offered it. |
+| `gun.scar.zoom` | SCAR (M2 B3) | A zoom intent turns the server zoom state on with the gun's own FOV factor and spread multiplier; a second intent or a reload turns it off. |
+| `gun.vector.auto` | Vector (M2 B3) | Holding the trigger for 13 ticks fires on the pull and then every interval (AUG, Infiltrator 3 ticks, SCAR 4, Vector 2), one round and one bullet per shot. |
+| `gun.vector.reload` | Vector (M2 B3) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time (SCAR to 20 of the magazine's 30), the magazine is consumed and an empty one returned. |
+| `gun.vector.reload.forced` | Vector (M2 B3) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.vector.recipe` | Vector (M2 B3) | The HV assembly row is in GT's assembler map at its time and voltage, and a machine below HV is not offered it. |
+| `gun.vector.zoom` | Vector (M2 B3) | A zoom intent turns the server zoom state on with the gun's own FOV factor and spread multiplier; a second intent or a reload turns it off. |
+| `gun.infiltrator.auto` | Infiltrator (M2 B3) | Holding the trigger for 13 ticks fires on the pull and then every interval (AUG, Infiltrator 3 ticks, SCAR 4, Vector 2), one round and one bullet per shot. |
+| `gun.infiltrator.reload` | Infiltrator (M2 B3) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time (SCAR to 20 of the magazine's 30), the magazine is consumed and an empty one returned. |
+| `gun.infiltrator.reload.forced` | Infiltrator (M2 B3) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.infiltrator.recipe` | Infiltrator (M2 B3) | The HV assembly row is in GT's assembler map at its time and voltage, and a machine below HV is not offered it. |
+| `gun.infiltrator.zoom` | Infiltrator (M2 B3) | A zoom intent turns the server zoom state on with the gun's own FOV factor and spread multiplier; a second intent or a reload turns it off. |
+| `gun.infiltrator.upgrade` | Infiltrator (M2 B3) | The GR-33 recipe is found with a used, camouflaged M4 (3 rounds left, camo 2) in slot 0, so the match ignores NBT, and the output is a fresh Infiltrator without the M4's NBT. |
+| `gun.combat_shotgun.fire` | Combat Shotgun (M2 B2) | A loaded gun fired point blank launches 8 pellets for one round; a zombie in front loses nearly 8 times the DamageModel figure for 4 damage at 15% penetration. |
+| `gun.combat_shotgun.reload` | Combat Shotgun (M2 B2) | An empty gun with 10 shells reloads after 50 ticks: 8 rounds, 8 shells used, 2 left, nothing returned. |
+| `gun.combat_shotgun.reload.forced` | Combat Shotgun (M2 B2) | The reload key with 5 rounds and 5 shells tops up to 8 using 3 shells, keeping the loaded rounds. |
+| `gun.combat_shotgun.recipe` | Combat Shotgun (M2 B2) | The MV assembly row (GR-14) is in GT's assembler map with its sheet inputs and not below MV, and the found recipe's output is ours. |
+| `gun.akimbo_pistols.fire` | Akimbo akimbo_pistols (M2 B2) | Three pulls spend one round and launch one bullet each. |
+| `gun.akimbo_pistols.reload` | Akimbo akimbo_pistols (M2 B2) | An empty gun with two ammo items fills the clip after the reload time; a magazine gun returns two empty magazines. |
+| `gun.akimbo_pistols.reload.forced` | Akimbo akimbo_pistols (M2 B2) | The reload key on a part-loaded gun swaps both items and refunds whole loose bullets at the single gun's rate (6 rounds each), not double. |
+| `gun.akimbo_pistols.combine` | Akimbo akimbo_pistols (M2 B2) | Through the real crafting manager and crafted event: two single guns (12 and 5 rounds, camo 0 and 2) craft one akimbo gun with 17 rounds and the first camo; one akimbo gun crafts back to a gun with 8 rounds and camo 0 and, once, a second to the player with 9 rounds and camo 2 (GUN-26). |
+| `gun.akimbo_revolvers.fire` | Akimbo akimbo_revolvers (M2 B2) | Three pulls spend one round and launch one bullet each. |
+| `gun.akimbo_revolvers.reload` | Akimbo akimbo_revolvers (M2 B2) | An empty gun with two ammo items fills the clip after the reload time; a magazine gun returns two empty magazines. |
+| `gun.akimbo_revolvers.reload.forced` | Akimbo akimbo_revolvers (M2 B2) | The reload key on a part-loaded gun swaps both items and refunds whole loose bullets at the single gun's rate (6 rounds each), not double. |
+| `gun.akimbo_revolvers.combine` | Akimbo akimbo_revolvers (M2 B2) | Through the real crafting manager and crafted event: two single guns (12 and 5 rounds, camo 0 and 2) craft one akimbo gun with 17 rounds and the first camo; one akimbo gun crafts back to a gun with 8 rounds and camo 0 and, once, a second to the player with 9 rounds and camo 2 (GUN-26). |
+| `gun.rocket_launcher.reload` | Rocket Launcher (M2 B5) | An empty launcher reloads after 40 ticks from one loose rocket: the clip fills, the rocket is consumed and nothing comes back. |
+| `gun.rocket_launcher.recipe` | Rocket Launcher (M2 B5) | The HV assembly row is in GT's assembler map at its time and voltage, and not below HV. |
+| `gun.rocket_launcher.direct` | Rocket Launcher (M2 B5) | A rocket into a zombie 4 blocks away deals the 50 damage once (left out of the splash), a zombie behind it takes the splash ramp, and the floor is intact with block damage off. |
+| `gun.rocket_launcher.wall.splash` | Rocket Launcher (M2 B5) | A rocket into a dirt wall with block damage off leaves the wall whole and hurts a nearby zombie by the exact ramp at its distance from the blast. |
+| `gun.rocket_launcher.wall.blocks` | Rocket Launcher (M2 B5) | With `explosions.blockDamage` on the same rocket breaks the dirt and the entity damage is unchanged. |
+| `gun.rocket_launcher.wall.self` | Rocket Launcher (M2 B5) | The shooter standing in the blast is hurt (PFX-25). |
+| `gun.rocket_launcher.wall.noself` | Rocket Launcher (M2 B5) | With `explosions.selfDamage` off the shooter is unhurt. |
+| `gun.rocket_launcher.wall.cancelled` | Rocket Launcher (M2 B5) | A cancelled `ExplosionEvent.Start` (a protection claim) stops all damage and keeps the wall. |
+| `gun.grenade_launcher.reload` | Grenade Launcher (M2 B5) | An empty launcher reloads after 100 ticks from 6 loose grenades: all six load and are consumed. |
+| `gun.grenade_launcher.recipe` | Grenade Launcher (M2 B5) | The HV assembly row is in GT's assembler map at its time and voltage, and not below HV. |
+| `gun.grenade_launcher.bounce` | Grenade Launcher (M2 B5) | A 40 mm grenade fired at a wall bounces (bounces left 1), the fuse is about 100 - 20 - ticks flown, and it explodes before its lifetime ends. |
+| `gun.grenade_launcher.direct` | Grenade Launcher (M2 B5) | A 40 mm grenade into a zombie explodes on contact and the zombie loses exactly the 30 damage ramp at its distance from the blast; the dirt wall behind is whole with block damage off. |
+| `gun.grenade_launcher.blocks` | Grenade Launcher (M2 B5) | With `explosions.blockDamage` on the same grenade breaks some of the dirt wall behind the zombie. |
+| `gun.as50.fire` | AS50 (M2 B4) | A loaded AS50 fired at a zombie in front spends one round, launches one bullet, and the zombie loses the DamageModel figure for 32 damage at 25% penetration. |
+| `gun.as50.reload` | AS50 (M2 B4) | An empty AS50 reloads after 80 ticks from one AS50 Magazine, which is consumed; an empty magazine comes back. |
+| `gun.as50.reload.forced` | AS50 (M2 B4) | The reload key on a part-loaded AS50 swaps the magazine and refunds one High Caliber Round per 5 rounds left, floored. |
+| `gun.as50.zoom` | AS50 (M2 B4) | A zoom intent turns the server zoom state on with FOV factor 0.35 and 0.125 of the 0.0625 spread; a second intent or a reload turns it off. |
+| `gun.as50.recipe` | AS50 (M2 B4) | The HV assembly row (GR-40) is in GT's assembler map with its sheet inputs, not below HV, and the found recipe's output is ours. |
+| `gun.lmg.auto` | LMG (M2 B4) | Holding the trigger for 61 ticks fires every 2 ticks: 31 rounds and bullets from the 100-round magazine, 69 left. |
+| `gun.lmg.reload` | LMG (M2 B4) | An empty LMG reloads after 100 ticks from one LMG Magazine, which is consumed; an empty magazine comes back. |
+| `gun.lmg.reload.forced` | LMG (M2 B4) | The reload key on a part-loaded LMG swaps the magazine and refunds one Rifle Bullet per 12 rounds left, floored. |
+| `gun.lmg.zoom` | LMG (M2 B4) | A zoom intent turns the server zoom state on with FOV factor 0.75 and 0.75 of the 0.02 spread; a second intent or a reload turns it off. |
+| `gun.lmg.recipe` | LMG (M2 B4) | The HV assembly row (GR-41) is in GT's assembler map with its sheet inputs, not below HV, and the found recipe's output is ours. |
+| `gun.akimbo_mac10s.fire` | Akimbo Mac10s (M2 B4) | Three pulls spend two rounds and launch two bullets each (double shot). |
+| `gun.akimbo_mac10s.reload` | Akimbo Mac10s (M2 B4) | An empty gun with two SMG Magazines fills the 64-round clip after 68 ticks and returns two empty magazines. |
+| `gun.akimbo_mac10s.reload.forced` | Akimbo Mac10s (M2 B4) | The reload key on a part-loaded gun swaps both magazines and refunds whole loose bullets at the single Mac10's rate (16 rounds each), not double. |
+| `gun.akimbo_mac10s.combine` | Akimbo Mac10s (M2 B4) | Through the real crafting manager and crafted event: two Mac10s craft one akimbo gun with the rounds summed and the first camo; one akimbo gun crafts back to a Mac10 and, once, a second to the player with its own camo (GUN-26). |
 | `mp.visual.boltaction` | bolt action rifle (M2) | The visual walkthrough (first person, third person, inventory, and the zoomed scope view) for the rifle; see the autotest section. |
 | `armor.showcase` | armor (M3) | Dresses a connected client in every armor set and camo in turn and screenshots it in third person (front for all, back for the five custom-model sets), with the HUD hidden; not part of `test all`; see "Armor showcase". |
 | `gun.camo.cycle` | gun definitions | Every gun in `GunDefinitions.ALL` is a `CamoChangeable` with the definition's camo count; the Camo Bench routine (`MTECamoBench.cycleStack`) steps it forward through every skin and around, and back below zero, keeping the loaded rounds (GUN-01); a tag-less gun stays full; an out-of-range index stores 0. |
@@ -260,6 +321,10 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `utility.bioblob_poison` | Bio Blob (M6) | A creeper (zombies are poison-immune) and a player get Poison III on contact; `bioBlobSparesPlayers` spares the player but not the zombie; the collision box follows the size. |
 | `utility.campflag_spawns` | Camp Flag (M6) | With a counting stub port, an initialized flag spawns once per 200 ticks up to its cap of 2 at its configured points; an uninitialized flag spawns nothing; the cap survives NBT; the default cap formula gives 24 for 32 x 32. |
 | `utility.campflag_break_drop` | Camp Flag (M6) | Breaking a flag drops exactly one iron ingot (damage 0) and calls the break port once; with `campFlagBreakHelicopter` off the port is not called. |
+| `utility.rampart_registered` | Rampart (M6) | The Rampart is `MTERampart` at 20120 with a hand recipe; the four Gun Mount Hatches are `MTEGunMountHatch` at 20121 to 20124 with the right tiers and an Assembler recipe at `RECIPE_<tier>`; Bastion Plating metas 7 to 10 each have an Assembler recipe making 4 blocks (GGS-09-35, GGS-09-37). Needs `GG_MODULES=guns,armor,machines,utility`. |
+| `utility.rampart_assembles` | Rampart, Bastion Plating (M6) | A hologram-built Rampart forms at 2, 6 and 10 mounts, counts its mounts, ends in the cap and keeps its crenels open; a missing Gun Mount Hatch, a block in a crenel or a missing Energy Hatch each stop it forming (GGS-08-75); the armor is that of the lowest Bastion Plating (5 with one Iron block in a Steel wall, GGS-08-78); the security level and Target Animals set on the controller reach every mount, and a stranger cannot change them (GGS-08-79). |
+| `utility.rampart_mount_fires` | Rampart, Gun Mount Hatch (M6) | A two-mount Rampart with a 9mm Pistol in a hatch and four magazines in the Input Bus shoots a zombie dead; the empty magazine lands in the Output Bus, three magazines remain, the turret has armor value 5 and its host is the hatch, and the controller draws 8 EU/t (GGS-08-77, GGS-08-81). |
+| `utility.rampart_break_hatch` | Rampart (M6) | In a running two-mount Rampart breaking one Gun Mount Hatch kills only its turret at once; the next structure check, which fails, kills the other (GGS-08-80). |
 
 ## M1 coverage
 

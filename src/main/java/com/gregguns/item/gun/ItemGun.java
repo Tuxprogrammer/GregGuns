@@ -300,6 +300,9 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
         if (stats.hasScope()) {
             tooltip.add(StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.zoom", stats.zoomFactor()));
         }
+        if (stats.silenced()) {
+            tooltip.add(StatCollector.translateToLocal("gregguns.gun.tooltip.silenced"));
+        }
     }
 
     @SideOnly(Side.CLIENT)

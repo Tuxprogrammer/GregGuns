@@ -44,6 +44,22 @@ public final class GunCatalog {
         /** Empty assault rifle magazine. */
         public static final String ASSAULT_RIFLE_MAGAZINE_EMPTY = "mag_assault_rifle_empty";
 
+        /** Loose high caliber rounds (the AS50's refund item, HV). */
+        public static final String HIGH_CALIBER_ROUND = "ammo_high_caliber_round";
+        /** Loaded AS50 magazine (10 rounds). */
+        public static final String AS50_MAGAZINE = "mag_as50";
+        /** Empty AS50 magazine. */
+        public static final String AS50_MAGAZINE_EMPTY = "mag_as50_empty";
+        /** Loaded LMG magazine (100 rounds). */
+        public static final String LMG_MAGAZINE = "mag_lmg";
+        /** Empty LMG magazine. */
+        public static final String LMG_MAGAZINE_EMPTY = "mag_lmg_empty";
+
+        /** Loose rocket (the Rocket Launcher's round, HV). */
+        public static final String ROCKET = "ammo_rocket";
+        /** Loose 40 mm grenade (the Grenade Launcher's round, MV). */
+        public static final String GRENADE_40MM = "ammo_40mm_grenade";
+
         private AmmoIds() {}
     }
 

@@ -13,7 +13,8 @@ import com.gregguns.item.gun.GunItems;
 import com.gregguns.recipe.GunRecipeScenarios;
 
 /**
- * The {@code gun.<name>.*} scenarios of the MV batch B1 guns (Thompson, Mac10, M4, AK47) and the HV batch B3 guns (AUG, SCAR, Vector, Infiltrator): full-auto fire at the
+ * The {@code gun.<name>.*} scenarios of the MV batch B1 guns (Thompson, Mac10, M4, AK47) and the HV batch B3 guns (AUG,
+ * SCAR, Vector, Infiltrator): full-auto fire at the
  * gun's own interval, the magazine reload (a loaded magazine in, an empty one back), the forced-reload refund of loose
  * rounds, the assembly recipe, and the M4's scope (FOV and spread without an overlay). All four go through the same
  * server handler as the pistol's scenarios, using {@link GunRig}. Dev environment only, server side.
@@ -39,7 +40,9 @@ public final class MvGunScenarios {
             GunRecipeScenarios.assembly(
                 "gun." + def.name() + ".recipe",
                 "The " + def.name()
-                    + " is in GT's assembler map (so NEI lists it) at " + def.tier() + " with its sheet inputs, and not below it.",
+                    + " is in GT's assembler map (so NEI lists it) at "
+                    + def.tier()
+                    + " with its sheet inputs, and not below it.",
                 def.assembly()));
         if (def.stats()
             .hasScope()) {
@@ -243,7 +246,8 @@ public final class MvGunScenarios {
 
         @Override
         public String description() {
-            return "A zoom intent on the " + def.name() + " turns the server zoom state on with its FOV factor and spread multiplier; a second intent or a reload turns it off.";
+            return "A zoom intent on the " + def.name()
+                + " turns the server zoom state on with its FOV factor and spread multiplier; a second intent or a reload turns it off.";
         }
 
         @Override
@@ -275,7 +279,10 @@ public final class MvGunScenarios {
                     < 1e-9,
                 "the FOV factor while zoomed should be the stats' factor");
             out.check(
-                Math.abs(SpreadModel.mainSpread(stats, ShotContext.player(zoomed, 0.0)) - stats.spread() * stats.zoomSpreadMultiplier()) < 1e-9,
+                Math.abs(
+                    SpreadModel.mainSpread(stats, ShotContext.player(zoomed, 0.0))
+                        - stats.spread() * stats.zoomSpreadMultiplier())
+                    < 1e-9,
                 "the spread of a zoomed shot should be the zoom multiplier of the base spread");
             out.check(
                 Math.abs(SpreadModel.mainSpread(stats, ShotContext.player(false, 0.0)) - stats.spread()) < 1e-9,

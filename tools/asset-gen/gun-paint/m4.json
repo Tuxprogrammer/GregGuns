@@ -452,7 +452,7 @@
  "roles": {
   "upper": {
    "material": "steel",
-   "base": "#1D1F26",
+   "base": "#272A33",
    "scratches": false,
    "noise": 0.04,
    "bevel": [
@@ -462,7 +462,7 @@
   },
   "lower": {
    "material": "steel",
-   "base": "#21242C",
+   "base": "#22242C",
    "scratches": false,
    "noise": 0.04,
    "bevel": [

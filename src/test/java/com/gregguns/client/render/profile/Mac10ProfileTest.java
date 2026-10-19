@@ -61,7 +61,9 @@ class Mac10ProfileTest {
         assertEquals(0f, g.tiltZDegrees(), 1e-6, "the grip is not raked");
         assertEquals(20, (r.x() + r.w()) - (g.x() + g.w()), 1e-6, "front face 10 units behind the receiver front");
         assertTrue(m.d() < g.d() && m.w() < g.w());
-        assertEquals(g.y() + g.h(), m.y(), 1e-6);
+        // Round 2: visible magazine is 6.4 tall (Y 11 to 17.4): its top is buried 0.1 unit (0.2 texel) in the grip.
+        assertEquals(g.y() + g.h() - 0.2f, m.y(), 1e-6);
+        assertEquals(17.4, (m.y() + m.h()) / 2.0, 1e-6, "magazine bottom");
         // Grip plus magazine hang about 13 units (26 texels) below the receiver.
         assertEquals(27, m.y() + m.h() - r.h(), 1.0);
     }
@@ -76,6 +78,32 @@ class Mac10ProfileTest {
         assertEquals(2, box("butt").h() / 2);
         assertEquals(6, box("butt").d());
         assertTrue(box("cross_bar").d() > box("rod_l").d());
+    }
+
+    @Test
+    void backstrapPlatesAreHingedOnThePlanesTheRoundTwoNotesGive() {
+        BoxSpec g = box("grip");
+        BoxSpec up = box("strap_up");
+        BoxSpec low = box("strap_low");
+        float gripBack = g.x() / 2f + 21f; // texels to notes units: X 6
+        assertEquals(6f, gripBack, 1e-6);
+        // Upper: front-top hinge on X 6.1 (1.0 thick, 0.9 proud at the top), leans forward 12.5 degrees.
+        assertEquals(6.1f, (up.pivotX() + 42f) / 2f, 1e-5);
+        assertEquals(-12.5f, up.tiltZDegrees(), 1e-6);
+        assertEquals(0.9f, 6f - (up.x() + 42f) / 2f, 1e-5);
+        // Lower: hinge 0.7 inside the grip (X 6.8 front edge), only 0.2 shows behind it, leans back 7.4 degrees.
+        assertEquals(6.8f, (low.pivotX() + 42f) / 2f, 1e-5);
+        assertEquals(0.2f, 6f - (low.x() + 42f) / 2f, 1e-5);
+        assertEquals(7.4f, low.tiltZDegrees(), 1e-6);
+    }
+
+    @Test
+    void triggerHingeIsItsFrontTopEdgeHalfBuriedInTheGrip() {
+        BoxSpec t = box("trigger");
+        assertEquals(-23.4f, t.tiltZDegrees(), 1e-6);
+        assertEquals(9.5f, (t.pivotX() + 42f) / 2f, 1e-6);
+        assertEquals(8.5f, (t.x() + 42f) / 2f, 1e-6, "runs X 8.5 to 9.5 at the top");
+        assertEquals(3.5f, t.pivotY() / 2f, 1e-6);
     }
 
     @Test

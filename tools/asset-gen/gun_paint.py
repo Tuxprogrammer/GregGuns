@@ -153,14 +153,15 @@ def splice_java(path, rows):
 
 
 # ------------------------------------------------------------------ painting
-def steel(r, h, w, base, grain_along_x=True, scratches=True, noise=0.0):
+def steel(r, h, w, base, grain_along_x=True, scratches=True, noise=0.0, drift_amp=0.07):
     """Flat steel: a gentle large-scale tonal drift, faint hairline scratches, no speckle.
 
-    `scratches` false skips the hairlines (a satin finish); `noise` adds per-pixel grain of that relative amplitude.
+    `scratches` false skips the hairlines (a satin finish); `noise` adds per-pixel grain of that relative amplitude;
+    `drift_amp` scales the tonal drift around 0.96 (0.07 by default; smaller reads as a flatter panel).
     """
     b = hx(base) if isinstance(base, str) else np.asarray(base, float)
     drift = vnoise(r, h, w, max(3, w // 2), max(3, h // 2))
-    rgb = np.tile(b, (h, w, 1)) * (0.96 + 0.07 * (drift - .5) * 2)[..., None]
+    rgb = np.tile(b, (h, w, 1)) * (0.96 + drift_amp * (drift - .5) * 2)[..., None]
     for _ in range(max(1, (w * h) // 40) if scratches else 0):
         x, y, n = int(r.integers(0, w)), int(r.integers(0, h)), int(r.integers(3, 7))
         if grain_along_x:
@@ -236,7 +237,7 @@ def apply_painter(rgb, p, face):
         mul(rgb, x + pw - 1, y, 1, ph, 1.15)
     elif kind == "bore":  # a round-ish dark opening with a lit rim
         pw = p.get("size", max(2, min(w, h) - 2 * p.get("inset", 1)))
-        cx, cy = w / 2.0, h / 2.0
+        cx, cy = p.get("cx", w / 2.0), p.get("cy", h / 2.0)  # optional centre, in texels
         yy, xx = np.mgrid[0:h, 0:w]
         dist = np.maximum(abs(xx + .5 - cx), abs(yy + .5 - cy))
         circ = np.hypot(xx + .5 - cx, yy + .5 - cy)
@@ -338,9 +339,16 @@ def paint_face(box_spec, role_def, name, dims, face, fw, fh, seed_key):
         rgb = np.tile(hx(base), (fh, fw, 1))
     else:
         rgb = steel(r, fh, fw, base, grain_along_x=box_spec.get("grain", "x") == "x",
-                    scratches=role_def.get("scratches", True), noise=role_def.get("noise", 0.0))
+                    scratches=role_def.get("scratches", True), noise=role_def.get("noise", 0.0),
+                    drift_amp=role_def.get("drift", 0.07))
     if role_def.get("patch"):  # worn lighter patches in short runs along the grain (oiled wood, polymer flecks)
         patches(r, rgb, role_def["patch"], role_def.get("patch_density", 0.2), box_spec.get("grain", "x") == "x")
+    if role_def.get("flecks"):  # single darker (or lighter) texels scattered over the face
+        fl = role_def["flecks"]
+        cols = [hx(c) for c in fl["colors"]]
+        for _ in range(max(1, int(round(fl.get("density", 0.08) * fw * fh)))):
+            y, x = int(r.integers(0, fh)), int(r.integers(0, fw))
+            rgb[y, x] = cols[int(r.integers(0, len(cols)))]
     for p in box_spec.get("painters", []):
         if face in p.get("faces", FACES):
             apply_painter(rgb, p, face)

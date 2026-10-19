@@ -56,6 +56,55 @@ Thompson SMG (`thompson_smg`, GR-10), Mac10 (`mac10`, GR-11), M4 (`m4`, GR-12) a
 - **Recipes.** Redstone and iron nuggets of the Techguns grids are dropped; the AK47's foregrip is two wooden sticks. The Assembler circuits 1, 2, 4, 5 repeat the LV table's numbers, so the uniqueness tests are per tier.
 - **Sounds.** Events point at the existing `thompson_*`, `mac10_*`, `ar1_*` (M4) and `ak47_*` files. The M4 has two fire variants, as in Techguns.
 
+## Combat Shotgun and the akimbo pair, batch B2 (M2): deviations
+
+Combat Shotgun (`combat_shotgun`, GR-14, MV), Akimbo Pistols (`akimbo_pistols`, crafting recipes GR-15) and Akimbo Revolvers (`akimbo_revolvers`, crafting recipes GR-16). Stats are the Techguns sheets' unchanged. What differs:
+
+- **Flat-icon fallback.** All three are on `ClientGunDefinitions.FLAT_ICON_FALLBACK`. The akimbo guns need no notes agent: the model pass wires them to the single gun's profile, which draws the model twice (`ModelAkimbo`). Until then they draw their flat item icons.
+- **Textures and fire sound.** An akimbo gun is `GunDefinition.akimboOf(single)`: it reuses the single gun's model textures (`textureName()`) and fires the single gun's `guns.<single>.fire` event, as Techguns does (one muffler entry silences both). It has its own reload event (`*_reload_akimbo` files).
+- **Tier.** The akimbo pair has no machine recipe, so its tier is its inputs' (LV), not 0001's MV. Note on [0001](../../design/0001-tier-map.md).
+- **Combine and split (GGS-02-07, GUN-26 fixed).** `AkimboRecipes` registers two shapeless recipes per pair (NEI lists them): any two single guns combine, one akimbo gun splits. `AkimboNbt` does the arithmetic. The akimbo tag is the first gun's tag with the rounds summed and the **second gun's whole tag (camo included) stored inside it**, so a split returns both guns' own camo and extra keys (Techguns lost the second camo). The rounds are conserved and re-balanced on split (floor half to the recipe's result, the remainder to the second gun), as in the baseline. The second gun is given by the crafted event on the **server only** (no ghost item on the client) and dropped at the player if the inventory is full.
+- **Refund rate.** `GunStats.roundsPerItem()` is now clip / items per reload, so an akimbo clip's two items are half each and the forced-reload refund stays at the single gun's 6 rounds per bullet (GUN-14's wrong factor does not recur).
+- **Combat Shotgun.** The pump's rechamber sound plays with each shot (`guns.combat_shotgun.rechamber`); 8 pellets spawn together from one round; 15% armor penetration. Recipe: the pump tube is two steel sticks.
+- **Recipes.** The Combat Shotgun's Assembler circuit is 3 at MV (circuit 3 is free at MV; the LV Sawed Off's 3 is a different tier).
+## Launchers, batch B5 (M2): deviations
+
+Rocket Launcher (`rocket_launcher`, GR-20) and Grenade Launcher (`grenade_launcher`, GR-21), both HV, with the Rocket (`ammo_rocket`, RC-34, HV press) and the 40 mm Grenade (`ammo_40mm_grenade`, RC-33, MV press, defined here with its first gun). Stats are the Techguns sheets' unchanged. What differs:
+
+- **Projectiles.** `RocketProjectile` (entity 6) and `GrenadeLauncherProjectile` (entity 19) are registered through `BulletLauncher.register` for `ProjectileKind.ROCKET` and `GRENADE`; `GunStats` gains `blast(radius, gravity)`. Both render as their ammo item's sprite and both launchers use the flat-icon fallback, until the model batches land.
+- **Explosions.** Both go through `ProjectileExplosion` (the frag grenade's path): `explosions.blockDamage` (default off), `explosions.selfDamage`, Forge's explosion events, the per-block `BreakEvent` check and the `mobGriefing` rule for NPC shooters all apply. PFX-14 (no checks), PFX-25 (shooter immune) and CORE-19 (no knockback packet) are not reproduced; tests are named `doesNotReproduce<ID>_...`.
+- **Rocket direct hit versus splash.** A rocket that meets an entity deals the gun's full damage to it once (with the x3 knockback) and the target is left out of the splash, so it is not hit twice; everything else within 1.5 radii takes the ramp (full to half the radius). Techguns hit the target directly and then let it take the blast as well. A rocket that runs out of lifetime in the air ends without exploding, as in Techguns. The blast centre stands 0.15 blocks off the wall so it is in open air.
+- **40 mm grenade.** Falls under the gun's 0.01 gravity, two bounces, each costing 20 ticks of fuse (fuse 100); explodes on an entity, on a hard hit with no bounces left, or when the fuse ends. As in the grenade family, the blast alone damages a direct hit (GGS-04 grenades deviation).
+- **GUN-04 not reproduced.** Techguns' launcher ignored the gun's lifetime, accuracy, penetration and damage bonus. The stats here hold the figures it hard-coded (100 ticks, 0.05, 0), so they are honored like any gun's and the NPC damage scale applies.
+- **Reload.** The rocket launcher takes one loose rocket and returns nothing (GUN-13 has nothing to refund); the grenade launcher loads up to 6 grenades, keeping the rounds already in it.
+- **Recipes.** GR-20 (circuit 8) and GR-21 (circuit 7) follow recipes.md. RC-33 and RC-34 use the vanilla TNT block for the TNT, as RC-26 does. No GT recycling data is attached to the two rounds yet.
+- **Sounds.** Events point at the existing `rocket_*` and `grenadelauncher_*` files; the explosion plays the grenade family's `random.explode`.
+
+## AS50, LMG and Akimbo Mac10s, batch B4 (M2): deviations
+
+AS50 Sniper Rifle (`as50`, GR-40, HV), LMG (`lmg`, GR-41, HV) and Akimbo Mac10s (`akimbo_mac10s`, crafting recipes GR-42), with High Caliber Rounds (`ammo_high_caliber_round`, RC-31), the AS50 Magazine (`mag_as50`, RC-40, RC-47) and the LMG Magazine (`mag_lmg`, RC-41, RC-48), all HV presses. Stats are the Techguns sheets' unchanged. What differs:
+
+- **Flat-icon fallback.** All three are on `ClientGunDefinitions.FLAT_ICON_FALLBACK` until their model pass. The Akimbo Mac10s will take the generic akimbo renderer, which draws the Mac10 profile twice.
+- **Ammo.** The AS50 Magazine holds 10 rounds from 2 High Caliber Rounds (5 rounds per round on a forced reload). The LMG Magazine holds 100 rounds from 8 Rifle Bullets; the LMG reuses the existing `ammo_rifle_bullet`, so only the magazine pair is new. A forced reload on the LMG refunds one bullet per 12 rounds left (100 / 8 floored), not Techguns' 12.5: the refund is in whole bullets either way, and the integer step can give one bullet more than the sheet's floor in rare cases (97 rounds left: 8 bullets, sheet 7).
+- **Scope.** The AS50 (FOV x0.35, spread x0.125) and the LMG (x0.75, x0.75) use the shared zoom state. Neither has a scope overlay yet: the overlay belongs to the model pass.
+- **Akimbo Mac10s: double shot.** Every pull spends 2 rounds and launches 2 bullets, one from each hand (`akimbo(true)` with `ammoPerShot(2)`); the hands do not alternate, unlike the Akimbo Pistols and Revolvers. A full 64-round clip is 32 pulls. The refund is the single Mac10's 16 rounds per bullet (GUN-14 not reproduced); the reload takes two SMG Magazines and returns two empty ones.
+- **Tier.** The Akimbo Mac10s have no machine row, so their tier is the input gun's (MV), not the HV listed in the recipe sheet; see the note on [0001](../../design/0001-tier-map.md). The AS50 and LMG are HV with a stainless steel gate.
+- **Recipes.** GR-40 (circuit 5) and GR-41 (circuit 6) follow recipes.md (seven and six distinct inputs; GT's assembler map takes up to nine). No GT recycling data is attached to the new magazines or the round yet.
+- **Sounds.** Events point at the existing `as50_*`, `lmg_*` and `mac10_reload_akimbo` files; the Akimbo Mac10s fire the Mac10's `guns.mac10.fire` event.
+
+## HV rifles and SMG, batch B3 (M2): deviations
+
+AUG (`aug`, GR-30), SCAR (`scar`, GR-31), Vector (`vector`, GR-32) and The Infiltrator (`infiltrator`, GR-33), all HV. They add no ammo: they load the Assault Rifle Magazine (AUG, SCAR, Infiltrator) and the SMG Magazine (Vector) of batch B1. Stats are the Techguns sheets' unchanged. What differs:
+
+- **Flat-icon fallback.** All four are on `ClientGunDefinitions.FLAT_ICON_FALLBACK` until their model pass; the Infiltrator's model is a variant of the M4's. `GunDefinitionsTest` pins the list.
+- **Scopes.** AUG FOV x0.5 / spread x0.5, SCAR x0.65 / x0.5, Vector x0.75 / x0.35, Infiltrator x0.5 / x0.5, all through the shared zoom state with no overlay yet.
+- **SCAR clip.** It holds 20 rounds of the 30-round magazine. The forced-reload refund divides by `floor(20 / 3) = 6` rounds per loose bullet (Techguns 6.67), which never refunds more than the magazine's 3 bullets.
+- **Infiltrator upgrade (GR-33, design record [0001](../../design/0001-tier-map.md)).** An Assembler row built with the new `ProductionTable.Row.upgrade` helper: the M4 in slot 0 is matched at any damage and ignoring NBT, so a used or camouflaged M4 is accepted, and the output is a fresh gun (full clip, default skin; the M4's loaded rounds and camo are lost, GGS-02-40). The Techguns grid's wool, redstone and ingot become two rubber plates, a long stainless steel rod and two glass lenses.
+- **Silenced flag.** `GunStats.silenced()` marks the Infiltrator. It selects the quiet `silencedm4` shot sounds (`guns.infiltrator.fire`) and adds a "Silenced" tooltip line. Like Techguns it has no other effect (no NPC aggro or projectile change).
+- **Skins.** AUG five (Gray, Wood, Sand, Nether), SCAR two (Black), Vector two (Black), Infiltrator one.
+- **Recipes.** HV Assembler, 30 s, circuits 1 to 4 (the HV numbering restarts at 1, the uniqueness test is per tier). The gate is the stainless steel plate. The glass panes and plastic sheets of the Techguns grids become lenses; the SCAR uses a diamond lens.
+- **Sounds.** Events point at the existing `aug_*`, `SCAR_*` (the files keep their upper-case names), `vector_*` and `silencedm4_*` files; the Infiltrator reloads with `ar1_reload`.
+
 ## Pack-side changes
 
 These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack) and are collected in [PACK-CHANGES.md](../PACK-CHANGES.md).
