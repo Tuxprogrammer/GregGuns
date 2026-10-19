@@ -137,6 +137,7 @@ class ModelExportTest {
         ModelExporter.exportProfile(dir, BlasterRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, DeatomizerPistolProfile.DEFINITION);
         ModelExporter.exportProfile(dir, ScatterLaserRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.NetherBlasterProfile.DEFINITION);
     }
 
     /** Every accessory model is exported with one JSON box per model box. */
