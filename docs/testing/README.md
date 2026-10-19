@@ -294,6 +294,15 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.tool.break_denied` | tool-gun block guard (M5 I11) | `breakBlock` goes through `BlockBreakGuard`: a listener cancelling `BreakEvent` leaves the block and the tank alone (DENIED); without it the block breaks and half a round is spent. |
 | `gun.tool.swing_throttle` | tool-gun swing sound (M5 I11) | The swing is never cancelled; its sound plays at most once per 5 ticks per player, and not at all when empty. |
 | `gun.tool.reload` | tool-gun reload (M5 I11) | An empty tool gun reloads from a full Fuel Tank: 300 rounds after 45 ticks, the tank consumed, an empty tank returned. |
+| `gun.power_hammer.shockwave` | Power Hammer (M5 B3b) | A full 20 tick charge spends 10 rounds and the shockwave breaks the 4 x 4 box of stone ahead (one round per block), leaving the back of the wall standing. |
+| `gun.power_hammer.shockwave_denied` | Power Hammer (M5 B3b) | With a listener cancelling `BreakEvent`, a full charge breaks no wall block and spends only the charge's 10 rounds; with the listener gone the next charge breaks blocks. |
+| `gun.power_hammer.shockwave_hit` | Power Hammer (M5 B3b) | A half charge spends 5 rounds and hits a zombie 2 blocks ahead for 5 x 2.5 raw PHYSICAL damage. |
+| `gun.power_hammer.recipe` | Power Hammer (M5 B3b) | The HV assembly row (GR-91) is in GT's assembler map with its sheet inputs and not below HV. |
+| `gun.power_hammer_adv.shockwave` | Power Hammer (Advanced) (M5 B3b) | The same full-charge shockwave on the Advanced hammer. |
+| `gun.power_hammer_adv.upgrade` | Power Hammer (Advanced) (M5 B3b) | The GR-92 upgrade is found with a used, camouflaged Power Hammer in slot 0 (any NBT) at EV and outputs a Power Hammer (Advanced). |
+| `gun.chainsaw.cut` | Chainsaw (M5 B3b) | Right click fires an `InvisibleProjectile` that costs a zombie 10 PHYSICAL damage with 25% armor penetration and one round. |
+| `gun.chainsaw.left_click` | Chainsaw (M5 B3b) | A loaded Chainsaw mines a log (axe 3, speed 14, harvested, one round) and its melee hit deals 1 + 12 with 25% penetration and one round. |
+| `gun.chainsaw.recipe` | Chainsaw (M5 B3b) | The HV assembly row (GR-90) is in GT's assembler map with its sheet inputs and not below HV. |
 | `gun.energy.core` | energy fire core (M5 I1) | A scripted energy gun (1000 EU per shot) on a 3500 EU battery fires three times through `GunController`, clicks dry once with no reload, ignores the reload key, and a creative or NPC charge source fires without draining (GGS-02-12, GGS-02-13). |
 | `gun.recipe` | pistol slice (M1) | `RecipeMaps.assemblerRecipes` (the map GT's NEI handler lists) holds the pistol at `RECIPE_LV` and 15 s; an LV query with the sheet inputs and circuit 1 finds it; a voltage below LV does not. |
 | `armor.equip` | armor (M3) | A fake player wears the Scout set: speed attribute x1.5, full set detected, jump +0.16, vanilla bar 13; boots off gives x1.375 and no full set; naked clears the modifier; sprinting doubles the bonus on top of vanilla's sprint modifier; full Combat gives 0.40 knockback resistance. |

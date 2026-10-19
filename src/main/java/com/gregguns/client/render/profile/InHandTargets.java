@@ -95,6 +95,13 @@ public final class InHandTargets {
         put("grenade_launcher", 2.20, 0.96, -0.72, 1.36, 0.96, -0.63, 2.46, 1.34);
         put("flamethrower", 2.15, 0.81, -0.62, 1.33, 0.81, -0.47, 2.41, 1.51);
         put("bolt_action_rifle", 2.01, 0.54, -0.35, 1.02, 0.52, -0.29, 2.02, 1.88);
+        // M5 tool guns (section 7; third-person length from section 3). The Advanced hammer has the same geometry.
+        put("power_hammer", 1.16, 0.34, -0.40, 0.70, 0.34, -0.33, 1.28, 1.05);
+        put("power_hammer_adv", 1.16, 0.34, -0.40, 0.70, 0.34, -0.33, 1.28, 1.05);
+        // Deviation: the bar is 5.5 texels off the box centre's side, so with the centre on 1.06 the bar tip lands at
+        // 1.26
+        // right (the notes put the tip on the centre line); the centre, length and depth keep the notes' figures.
+        put("chainsaw", 2.36, 1.06, -0.58, 1.75, 1.26, -0.74, 2.93, 2.13);
     }
 
     private InHandTargets() {}
