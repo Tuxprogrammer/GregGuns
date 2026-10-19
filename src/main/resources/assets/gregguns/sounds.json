@@ -94,6 +94,7 @@
   "guns.akimbo_revolvers.reload": {
     "category": "player",
     "sounds": ["guns/revolver_reload_akimbo"]
+  },
   "guns.rocket_launcher.fire": {
     "category": "player",
     "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b", "guns/rocket_shot_c"]

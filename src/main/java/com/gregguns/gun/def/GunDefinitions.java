@@ -29,7 +29,7 @@ public final class GunDefinitions {
             Ak47Def.DEFINITION,
             CombatShotgunDef.DEFINITION,
             AkimboPistolsDef.DEFINITION,
-            AkimboRevolversDef.DEFINITION));
+            AkimboRevolversDef.DEFINITION,
             RocketLauncherDef.DEFINITION,
             GrenadeLauncherDef.DEFINITION));
 
