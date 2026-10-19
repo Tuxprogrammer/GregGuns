@@ -49,10 +49,11 @@ final class ProjectileScenarios {
         registry.register(new Falloff());
         registry.register(new WallStop());
         registry.register(new OwnShooter());
+        HitscanScenarios.registerAll(registry);
     }
 
     /** Stone floor and clear air for {@code length} blocks east of the origin, three wide. */
-    private static void corridor(ScenarioContext ctx, int length) {
+    static void corridor(ScenarioContext ctx, int length) {
         for (int dx = -1; dx <= length; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 ctx.setBlock(dx, -1, dz, Blocks.stone, 0);
@@ -63,7 +64,7 @@ final class ProjectileScenarios {
         }
     }
 
-    private static FakePlayer shooter(ScenarioContext ctx) {
+    static FakePlayer shooter(ScenarioContext ctx) {
         FakePlayer fake = new FakePlayer(
             (WorldServer) ctx.world(),
             new GameProfile(UUID.nameUUIDFromBytes(SHOOTER_NAME.getBytes()), SHOOTER_NAME));
@@ -72,7 +73,7 @@ final class ProjectileScenarios {
         return fake;
     }
 
-    private static EntityZombie zombie(ScenarioContext ctx, int dx) {
+    static EntityZombie zombie(ScenarioContext ctx, int dx) {
         EntityZombie z = new EntityZombie(ctx.world());
         z.setLocationAndAngles(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5, 90.0F, 0.0F);
         // A pumpkin is not armor, but it stops the zombie burning in daylight.
@@ -105,13 +106,13 @@ final class ProjectileScenarios {
     }
 
     /** Health the bullet should take off a target with this much armor, by the damage model. */
-    private static float expectedLoss(EntityLivingBase target, double rawDamage) {
+    static float expectedLoss(EntityLivingBase target, double rawDamage) {
         double armor = target.getTotalArmorValue();
         return (float) DamageModel
             .resolve(DamageType.PROJECTILE, rawDamage, 0.0, share -> share * DamageModel.vanillaArmorFactor(armor));
     }
 
-    private static boolean near(float expected, float actual) {
+    static boolean near(float expected, float actual) {
         return Math.abs(expected - actual) < EPS;
     }
 
