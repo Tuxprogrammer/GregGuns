@@ -35,6 +35,7 @@ public final class GunPlayerData implements IExtendedEntityProperties {
     private int activeSlot = -1;
     private boolean zoomSent;
     private long lastShotTick = LoopStart.NEVER;
+    private long lastSwingSoundTick = LoopStart.NEVER;
 
     /**
      * Returns the player's data, attaching it on first use.
@@ -83,6 +84,16 @@ public final class GunPlayerData implements IExtendedEntityProperties {
 
     void setZoomSent(boolean zoomSent) {
         this.zoomSent = zoomSent;
+    }
+
+    /** @return the world tick of this player's last tool-gun swing sound, or {@code LoopStart.NEVER} */
+    public long lastSwingSoundTick() {
+        return lastSwingSoundTick;
+    }
+
+    /** @param tick the world tick of a swing sound just sent */
+    public void setLastSwingSoundTick(long tick) {
+        this.lastSwingSoundTick = tick;
     }
 
     /** @return the world tick of the player's last shot, or {@link LoopStart#NEVER} */
