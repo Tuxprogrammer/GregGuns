@@ -84,6 +84,14 @@ public final class ProjectileModule {
             GenericProjectile.TRACKING_RANGE,
             GenericProjectile.UPDATE_FREQUENCY,
             GenericProjectile.SENDS_VELOCITY);
+        registrar.registerEntity(
+            "biogun_projectile",
+            BiogunProjectile.class,
+            BiogunProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.BIO, BiogunProjectile::new);
         BulletLauncher.register(ProjectileKind.LASER, LaserProjectile::new);
         BulletLauncher.register(ProjectileKind.ENERGY_BLAST, EnergyBlastProjectile::new);
         BulletLauncher.register(ProjectileKind.FLAME, FlamethrowerProjectile::new);

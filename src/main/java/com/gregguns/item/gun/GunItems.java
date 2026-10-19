@@ -6,6 +6,7 @@ import java.util.Map;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.registry.Naming;
+import com.gregguns.gun.def.BioGunDef;
 import com.gregguns.gun.def.BoltActionDef;
 import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
@@ -50,7 +51,8 @@ public final class GunItems {
                     def.name(),
                     def.stats()
                         .isEnergy() ? new ItemEnergyGun(def)
-                            : def.tool() != null ? new ItemToolGun(def) : new ItemGun(def)));
+                            : def.tool() != null ? new ItemToolGun(def)
+                                : BioGunDef.NAME.equals(def.name()) ? new ItemBioGun(def) : new ItemGun(def)));
         }
         if (DevEnvironment.isActive()) {
             // The I11 scenario probe: not a content item, so no icon of its own (it borrows the pistol's).

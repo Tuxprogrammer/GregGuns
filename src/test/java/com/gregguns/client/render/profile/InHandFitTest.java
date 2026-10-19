@@ -110,7 +110,12 @@ class InHandFitTest {
             assertEquals(t.fpMuzzle()[1], muzzle[1], 0.15, n + " muzzle up");
             assertEquals(t.fpMuzzle()[2], muzzle[2], 0.1 * t.fpLength(), n + " muzzle depth");
         }
-        assertEquals(20, checked, "every M2 gun is on the table");
+        int onTable = 0;
+        for (String ignored : InHandTargets.names()) {
+            onTable++;
+        }
+        assertEquals(onTable, checked, "every gun on the table is registered and was checked");
+        assertTrue(checked >= 21, "the M2 guns and the Bio Gun are on the table");
     }
 
     @Test

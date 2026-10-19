@@ -76,6 +76,8 @@ public final class GunCatalog {
          * tank counts as ammo; the same id as the emptied container a reload hands back. See {@link FluidAmmo}.
          */
         public static final String FUEL_TANK = "tank_fuel";
+        /** The Bio Tank (the Bio Gun's ammo, a Forge fluid container holding Biomass). Same rules as the Fuel Tank. */
+        public static final String BIO_TANK = "tank_bio";
 
         private AmmoIds() {}
     }

@@ -133,6 +133,18 @@ Flamethrower (`flamethrower`, GR-50, HV), Golden Revolver (`golden_revolver`, GR
 - **Akimbo pair damage.** The pair does 16 against the single gun's 14, as the catalog lists (a Techguns quirk kept on purpose and pinned by `GoldenRevolversLogicTest`). The akimbo item is a crafting-table combine and carries its inputs' tier (IV, GGS-02-07); its forced-reload refund uses the single gun's 6 rounds per bullet (GUN-14 not repeated).
 - **Sounds.** `guns.golden_revolver.fire` uses the `goldenrevolver_shot_*` files, its reload and the pair's reload the Revolver's; the Akimbo Golden Revolvers fire the single gun's event. `guns.flamethrower.start`, `.fire` and `.reload` use the `flamethrower_*` files.
 
+## Bio Gun, batch B3a (M5): deviations
+
+Bio Gun (`bio_gun`, GR-65, EV). Ammo is the Bio Tank (`tank_bio`, a Forge fluid container that takes GT Biomass), the same fluid-tank rules as the Flamethrower: a full tank is 30 rounds, a reload swaps a full tank in and hands an empty one back, and GT's Fluid Canner fills it (no GregGuns recipe).
+
+- **Charge (I10).** The left button fires one round at level 1 every 6 ticks; the right button charges for up to 30 ticks and fires on release at level 1 to 3 (`ChargeMath`: up to 0.45 is 1, up to 0.95 is 2, else 3), spending one round per level and never more than are loaded (fixes GUN-02). The release is broadcast to nearby players (GUN-31) and plays the normal fire sound; there is no reload-sound quirk on the right-click path (GUN-10).
+- **No charge sound.** The original plays none, so the definition does not call `charges()` and `guns.bio_gun.charge` does not exist.
+- **Poison.** The glob deals POISON damage (10 falling to 8 between 8 and 15 blocks, 15% penetration). A living target is poisoned by the POISON type's own secondary effect and then raised to Poison IV (amplifier 3) for 100 ticks, so a target in full GT biological hazmat takes the damage and no poison (GGS-02-22). Techguns applied Poison IV unconditionally.
+- **Blobs obey safe mode and the place event (PFX-28).** A glob places or grows a Bio Blob only when `explosions.blockDamage` is true (GregGuns' safe-mode switch, default false, so a default server has no blobs) and, for a player's shot, only when `BlockEvent.PlaceEvent` is not cancelled. `BioRules.mayTouchBlocks` holds the switch. A burst plays the `bioblobExplosion` FX.
+- **FX and sounds.** The server sends `BioGunTrail` on the glob once; the entity renders nothing itself (`RenderInvisible`). `guns.bio_gun.fire`, `.reload` and `.impact` use the `biogun_shot_*`, `biogun_reload` and `biogun_impact_*` files.
+- **Recipe (GR-65).** Pump Mechanism, Steel Receiver, Plastic Gun Stock, a small titanium pipe, 2 titanium plates and 4 titanium screws; Assembler, EV, 30 s, circuit 7. Made empty.
+- **Model.** `BioGunProfile` is registered; the glow parts stay painted (no fullbright pass). The first-person charge shift (up to 0.25 block toward the camera while charging) is not drawn yet; the resting pose is fitted to the in-hand targets.
+
 ## Pack-side changes
 
 These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack) and are collected in [PACK-CHANGES.md](../PACK-CHANGES.md).
