@@ -279,6 +279,8 @@ class Mob:
             if b["group"] in done:
                 continue
             done.add(b["group"])
+            if b["material"] in pal and pal[b["material"]] is None:
+                continue  # a palette entry of None leaves the box unpainted (transparent): cut-out planes
             base = hx(pal.get(b["material"], pal.get("default", "#808080")))
             for face, (x, y, w, h) in face_rects(b).items():
                 for yy in range(h):
@@ -370,7 +372,7 @@ def preview(mob, key=None, scale=6):
         dr = ImageDraw.Draw(im)
         faces = []
         for p, b, cs in boxes:
-            base = hx(pal.get(b["material"], pal.get("default", "#808080")))
+            base = hx(pal.get(b["material"], pal.get("default", "#808080")) or "#584124")
             for qi, q in enumerate(quads):
                 pr = [f(cs[i]) for i in q]
                 depth = sum(v[2] for v in pr) / 4.0
@@ -726,6 +728,152 @@ def cyberdemon():
     return m
 
 
+def alien_bug():
+    """Sand-tan four-legged insect with a gaping toothed snout, a spiky cut-out frill and an upturned tail.
+
+    Built from docs/techguns-spec/10-entities-npcs/model-notes/alien_bug.md (clean room: notes only).
+    Generic living mode (not a biped). Absolute positions from the notes, converted to pivot-relative:
+    head group (head 5x5x6; upper jaw 4x4x10 pitched up 10, lower jaw 3x4x9 pitched down 26; crest 6x3x8 pitched
+    up 20 toward the back; zero-thickness 14x14 frill, alpha cut-out), fixed thorax 5x5x9, three abdomen segments
+    (6, 4, 2 wide), and four legs (3x3x9 upper leg rising 28 degrees and leaning 20 degrees toward its end of the
+    body, 2x2x11 bone-gray lower leg bent to the ground). Sheet 64x64, nearly full (the notes' unused two thirds
+    does not hold: our unwrap packs tight).
+    Notes' inconsistency: the head top is y=9 (not 11), so the crest pivot sits at y=9.5 and the frill (tilt 15,
+    so its rear edge lands at the notes' y 3.5) rides on it.
+    """
+    m = Mob("alien_bug", 64, 64)
+    # thorax and abdomen: fixed
+    m.part("thorax").box("thorax", -2.5, 14, -2, 5, 5, 9, material="thorax")
+    m.part("abdomen_1", pivot=(0, 13, 6), rotate=(34, 0, 0)).box("abdomen_1", -3, 0, 0, 6, 4, 4, material="abdomen")
+    m.part("abdomen_2", pivot=(0, 11, 10), rotate=(13, 0, 0)).box("abdomen_2", -2, 0, 0, 4, 3, 4, material="abdomen")
+    m.part("tail_tip").box("tail_tip", -1, 10.5, 13.6, 2, 2, 2, material="tip")
+    # head group: pivot at the head's center; jaws, crest and frill ride on it
+    m.part("head", pivot=(0, 11.5, -1)).box("head", -2.5, -2.5, -3, 5, 5, 6, material="head")
+    m.part("upper_jaw", parent="head", pivot=(0, -1, -2), rotate=(-10, 0, 0)).box(
+        "upper_jaw", -2, -2.5, -10, 4, 4, 10, material="jaw_u")
+    m.part("lower_jaw", parent="head", pivot=(0, -1.5, -2.5), rotate=(26, 0, 0)).box(
+        "lower_jaw", -1.5, 0, -9, 3, 4, 9, material="jaw_l")
+    m.part("crest", parent="head", pivot=(0, -2, -2), rotate=(20, 0, 0)).box(
+        "crest", -3, -3, 0, 6, 3, 8, material="crest")
+    m.part("frill", parent="head", pivot=(0, -6, 2.5), rotate=(15, 0, 0)).box(
+        "frill", -7, 0, -4.5, 14, 0, 14, material="frill")
+    # legs: pivot inside the thorax side at y 17; yaw leans toward the leg's end of the body, roll raises it
+    for side, sx in (("r", -1), ("l", 1)):
+        mir = side == "l"
+        for end, z, lean in (("f", 0, 20), ("b", 4, -20)):
+            up = "leg_%s%s" % (end, side)
+            m.part(up, pivot=(1.5 * sx, 17, z), rotate=(0, lean * sx, -28 * sx)).box(
+                up, 0 if sx > 0 else -9, -1.5, -1.5, 9, 3, 3, material="leg_u", mirror=mir, group="leg_u")
+            m.part("shin_%s%s" % (end, side), parent=up, pivot=(7.5 * sx, 0, 0), rotate=(0, 0, 100 * sx)).box(
+                "shin_%s%s" % (end, side), 0 if sx > 0 else -11, -1, -1, 11, 2, 2, material="leg_l", mirror=mir,
+                group="leg_l")
+    # motion
+    m.look("head")
+    m.idle("upper_jaw", "x", 5.73, speed=0.0997)  # +-0.1 rad, period ~63 ticks
+    m.idle("lower_jaw", "x", 5.73, speed=0.2027)  # +-0.1 rad, period ~31 ticks
+    m.pose("upper_jaw", "attacking", x=17.2, blend="sine", window=[0, 0.6])  # bite: jaws snap shut, then reopen
+    m.pose("lower_jaw", "attacking", x=-22.9, blend="sine", window=[0, 0.6])
+    for side, sx in (("r", -1), ("l", 1)):
+        for end, ph, lift_speed in (("f", 0, 3), ("b", 180, 4)):
+            up = "leg_%s%s" % (end, side)
+            m.swing(up, "y", -28.65 * sx, speed=2 * 0.6662, phase=ph)  # sweep 0.5 rad, front and rear opposed
+            m.swing(up, "x", 22.92 * sx, speed=2 * 0.6662, phase=ph)  # twist 0.4 rad about the leg's length
+            m.swing(up, "z", -17.19 * sx, speed=lift_speed * 0.6662)  # lift 0.3 rad, pairs in unison
+
+    tan = {"head": "#B88F51", "jaw_u": "#B8894E", "jaw_l": "#BC9A5C", "crest": "#CAA968", "thorax": "#C29958",
+           "abdomen": "#B68D4F", "tip": "#AC723E", "leg_u": "#B78E50", "leg_l": "#8E8877", "frill": None}
+    m.palettes["alien_bug"] = dict(tan, default="#B88F51")
+    hi, rust_a, rust_b, band_a, band_b = hx("#CAAF71"), hx("#BA7941"), hx("#AC6D38"), hx("#835E2D"), hx("#A36C38")
+    stripe_a, stripe_b, cream, foot = hx("#906934"), hx("#8F5A2E"), hx("#F1DCC8"), hx("#D4CDB9")
+
+    def detail(mob, key, put, rect):
+        rng = random.Random(seed_for("alien_bug.detail"))
+        groups = {}
+        for _, bx in mob.all_boxes():
+            groups.setdefault(bx["group"], bx)  # a mirrored left copy shares the right one's rectangle
+        byname = {bx["name"]: bx for bx in groups.values()}
+        chitin = ("head", "upper_jaw", "lower_jaw", "crest", "thorax", "abdomen_1", "abdomen_2", "tail_tip")
+        # chunky orange-rust patches, and pale sand speckle on the top faces
+        for name in chitin:
+            bx = byname[name]
+            for face in ("top", "bottom", "right", "front", "left", "back"):
+                x, y, w, h = rect(bx, face)
+                for _ in range(max(1, w * h // 9)):
+                    cx, cy = rng.randrange(w), rng.randrange(h)
+                    col = rng.choice((rust_a, rust_b))
+                    for dx, dy in ((0, 0), (1, 0), (0, 1)):
+                        if cx + dx < w and cy + dy < h:
+                            put(x + cx + dx, y + cy + dy, col)
+                if face == "top":
+                    for xx in range(w):
+                        for yy in range(h):
+                            if rng.random() < 0.3:
+                                put(x + xx, y + yy, hi)
+
+        def bands(bx, cols, colors):
+            for face in ("top", "bottom", "front", "back"):
+                x, y, w, h = rect(bx, face)
+                for i, c in enumerate(cols):
+                    if c < w:
+                        for yy in range(h):
+                            put(x + c, y + yy, colors[i % len(colors)])
+
+        bands(byname["thorax"], (2, 6), (band_a, band_b))
+        bands(byname["abdomen_1"], (1, 3), (band_a, band_b))
+        bands(byname["abdomen_2"], (1, 2), (band_a, band_b))
+        # ")(" bracket marks on the thorax's right side
+        x, y, w, h = rect(byname["thorax"], "right")
+        for yy in (1, 2, 3):
+            put(x + 3, y + yy, band_a)
+            put(x + 6, y + yy, band_a)
+        put(x + 4, y + 1, band_a)
+        put(x + 4, y + 3, band_a)
+        # upper legs: warm tan with dark stripes across; lower legs: bone gray, pale tips (columns 0 to 2)
+        for face in ("top", "bottom", "front", "back"):
+            x, y, w, h = rect(groups["leg_u"], face)
+            for i, c in enumerate((2, 5, 7)):
+                for yy in range(h):
+                    put(x + c, y + yy, (stripe_a, stripe_b)[i % 2])
+            x, y, w, h = rect(groups["leg_l"], face)
+            for c in range(3):
+                for yy in range(h):
+                    put(x + c, y + yy, foot)
+        # eyes (1x2, near the head end of each side) and cream teeth along the jaw edges
+        uj, lj = byname["upper_jaw"], byname["lower_jaw"]
+        x, y, w, h = rect(uj, "right")  # unwrap: the right region's left edge is the rear
+        for yy in (1, 2):
+            put(x + 2, y + yy, (0, 0, 0))
+        x, y, w, h = rect(uj, "left")  # the left region's right edge is the rear
+        for yy in (1, 2):
+            put(x + w - 3, y + yy, (0, 0, 0))
+        for face in ("right", "left"):
+            x, y, w, h = rect(uj, face)
+            for c in range(3, w, 2):
+                put(x + c, y + h - 1, cream)
+            x, y, w, h = rect(lj, face)
+            for c in range(2, w, 2):
+                put(x + c, y, cream)
+        # frill: dark oval blob with tan spikes on the top and bottom faces, the rest stays transparent
+        dark, dark2, spike = hx("#584124"), hx("#4A351C"), hx("#BFA36D")
+        fb = byname["frill"]
+        for face in ("top", "bottom"):
+            x, y, w, h = rect(fb, face)
+            for yy in range(h):
+                for xx in range(w):
+                    dx, dy = xx - 6.5, yy - 6.5
+                    if (dx / 3.4) ** 2 + (dy / 2.8) ** 2 <= 1.0:
+                        put(x + xx, y + yy, dark2 if (xx + yy) % 5 == 0 else dark)
+            for k in range(8):
+                ang = math.radians(k * 45 + 22.5)
+                for r in range(3, 7 + (k % 2)):
+                    px, py = int(round(6.5 + r * math.cos(ang))), int(round(6.5 + r * math.sin(ang)))
+                    if 0 <= px < w and 0 <= py < h:
+                        put(x + px, y + py, spike if r > 3 else dark)
+
+    m.detail = detail
+    return m
+
+
 def super_mutant():
     """Mustard-yellow gorilla-built brute: one model, three skins (Basic, Heavy, Elite).
 
@@ -943,7 +1091,7 @@ def biped():
     return m
 
 
-MODELS = [demo_biped, biped, cyberdemon, super_mutant]
+MODELS = [demo_biped, biped, cyberdemon, super_mutant, alien_bug]
 
 
 # ---------------------------------------------------------------------------------------------- main
