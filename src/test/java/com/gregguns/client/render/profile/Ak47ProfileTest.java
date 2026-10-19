@@ -175,13 +175,52 @@ class Ak47ProfileTest {
         assertEquals(-20f, lower.tiltZDegrees(), 1e-6);
         // Positive tilt carries the bottom toward the stock.
         BoxSpec grip = box("grip");
-        assertEquals(21f, grip.tiltZDegrees(), 1e-6);
+        assertEquals(21.3f, grip.tiltZDegrees(), 1e-6);
         assertEquals(3, grip.d());
         assertEquals(8, grip.h());
         // The magazine bottom is about Y 24, 26 below the sight tip.
         double bottom = bottomOf(lower);
         assertEquals(24.0, bottom, 0.3);
         assertEquals(26.0, bottom - box("sight_tip").y(), 0.3, "height from sight tip to magazine bottom");
+    }
+
+    @Test
+    void round2CorrectionsHold() {
+        // Magazine 7 deep: a 3-wide main plate plus a 2-wide front plate 2 further forward, same hinge and tilt.
+        for (String part : new String[] { "mag_upper", "mag_lower" }) {
+            BoxSpec main = box(part);
+            BoxSpec front = box(part + "_front");
+            assertEquals(2, front.w());
+            assertEquals(2, front.d(), "narrower than the 3-wide plate");
+            assertEquals(main.x() + main.w(), front.x(), 1e-6, part + " front plate directly ahead");
+            assertEquals(main.tiltZDegrees(), front.tiltZDegrees(), 1e-6);
+            assertEquals(main.pivotX(), front.pivotX(), 1e-6);
+            assertEquals(main.pivotY(), front.pivotY(), 1e-6);
+        }
+        assertEquals(8, box("mag_lower_front").h());
+        // Top cover X 29 to 52; the wedge is 4 long, tilted 50, hinged at the cover's rear top edge.
+        assertEquals(29f, box("dust_cover").x(), 1e-6);
+        BoxSpec slope = box("cover_slope");
+        assertEquals(4, slope.w());
+        assertEquals(-50f, slope.tiltZDegrees(), 1e-6);
+        assertEquals(29f, slope.pivotX(), 1e-6);
+        assertEquals(0f, slope.pivotY(), 1e-6);
+        assertEquals(29f, slope.x() + slope.w(), 1e-6, "wedge meets the cover");
+        double slopeEnd = slope.pivotX() + (slope.x() - slope.pivotX()) * Math.cos(Math.toRadians(50));
+        assertEquals(26.4, slopeEnd, 0.1, "wedge ends near X 26.4");
+        assertEquals(52f, box("sight_block").x(), 1e-6);
+        // Grip hinged on its top-front corner at X 33, Y 11; lowest corner near X 30.1, Y 18.5.
+        BoxSpec grip = box("grip");
+        assertEquals(33f, grip.pivotX(), 1e-6);
+        assertEquals(11f, grip.pivotY(), 1e-6);
+        assertEquals(33f, grip.x() + grip.w(), 1e-6);
+        assertEquals(11f, grip.y(), 1e-6);
+        assertEquals(18.5, bottomOf(grip), 0.1, "grip bottom");
+        // Sight leaf embedded in the cover top, flush at its low end, rising about 1 at the high end.
+        BoxSpec leaf = box("sight_leaf");
+        assertEquals(0f, leaf.y(), 1e-6, "leaf top on the cover line");
+        assertEquals(-8f, leaf.tiltZDegrees(), 1e-6);
+        assertEquals(-1.0, -7 * Math.sin(Math.toRadians(8)), 0.05, "high end 1 above the cover");
     }
 
     /** The lowest Y of a box tilted about Z, in texels. */

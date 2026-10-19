@@ -9,7 +9,20 @@
    "variant": {
     "roles": {
      "stock": {
-      "base": "#002C6A"
+      "base": "#002C6A",
+      "patch": [
+       "#003B83",
+       "#00367C",
+       "#003B83"
+      ],
+      "flecks": {
+       "colors": [
+        "#001744",
+        "#001030",
+        "#001744"
+       ],
+       "density": 0.08
+      }
      },
      "hand": {
       "base": "#000F36",
@@ -27,42 +40,46 @@
   "steel": {
    "material": "steel",
    "scratches": false,
-   "noise": 0.04,
+   "noise": 0.03,
    "bevel": [
     1.3,
-    0.87
+    0.93
    ],
-   "base": "#232323"
+   "base": "#262626",
+   "drift": 0.03
   },
   "cover": {
    "material": "steel",
    "scratches": false,
-   "noise": 0.04,
+   "noise": 0.03,
    "bevel": [
     1.3,
-    0.87
+    0.93
    ],
-   "base": "#2A2A2A"
+   "base": "#292929",
+   "drift": 0.03
   },
   "post": {
    "material": "steel",
    "scratches": false,
-   "noise": 0.04,
+   "noise": 0.03,
    "bevel": [
     1.15,
     0.85
    ],
-   "base": "#333333"
+   "base": "#333333",
+   "drift": 0.03
   },
   "trigger": {
    "material": "steel",
    "scratches": false,
-   "noise": 0.04,
+   "noise": 0.03,
    "bevel": [
     1.3,
-    0.87
+    0.93
    ],
-   "base": "#2A2A2A"
+   "base": "#292929",
+   "drift": 0.03
   },
   "stock": {
    "material": "wood",
@@ -71,7 +88,21 @@
     1.08,
     0.86
    ],
-   "base": "#553116"
+   "base": "#5C351A",
+   "patch": [
+    "#653A1A",
+    "#784828",
+    "#784828"
+   ],
+   "patch_density": 0.1,
+   "flecks": {
+    "colors": [
+     "#452914",
+     "#372313",
+     "#452914"
+    ],
+    "density": 0.08
+   }
   },
   "hand": {
    "material": "wood",
@@ -192,6 +223,14 @@
    "grain": "y"
   },
   "mag_lower": {
+   "role": "steel",
+   "grain": "y"
+  },
+  "mag_upper_front": {
+   "role": "steel",
+   "grain": "y"
+  },
+  "mag_lower_front": {
    "role": "steel",
    "grain": "y"
   }
