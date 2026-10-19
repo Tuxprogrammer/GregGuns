@@ -251,6 +251,10 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `utility.charge_respects_cancel` | explosive charges (M6) | A listener cancels two columns; each stops at its block, nothing past a canceled block breaks, and no break event has a null player (GGS-09-11, MUTL-30). |
 | `utility.charge_offline_owner` | explosive charges (M6) | With the owner offline the events carry a FakePlayer with the owner's UUID; an ownerless charge still gets a real player (GGS-09-10). |
 | `utility.charge_foreign_button` | explosive charges (M6) | `PacketChargeButton` from a non-owner is rejected (fuse and arm), an unknown id is rejected, the owner's press is applied (MUTL-31). |
+| `utility.turret_registered` | Turret (M6) | The four Turrets are `MTETurret` at 20116 to 20119 with the right tiers; the entity is registered as `gregguns.turret`, is not `IMob`, is `IEntityOwnable` and has 30 max health. |
+| `utility.turret_kills_zombie` | Turret (M6) | A powered MV Turret with a 9mm Pistol (one round loaded) and four magazines shoots a fire-resistant zombie dead; exactly one empty magazine is handed back and three remain. |
+| `utility.turret_spares_owner` | Turret (M6) | At security 0 no player is a target; at 2 the owner and a stub friend are spared, a stranger and a zombie are shot; at 1 without friends the old friend is shot (GGS-09-04); animals follow the Target Animals toggle; only the owner may cycle the security level. |
+| `utility.turret_no_npe` | Turret (M6) | Killing the entity starts the repair and it respawns 200 ticks later; a link to a zombie's UUID respawns a new turret; a turret with no base dies quietly (NPC-12); a malformed saved UUID reads as unlinked; breaking the base kills the turret. No exception anywhere (MUTL-25). |
 
 ## M1 coverage
 

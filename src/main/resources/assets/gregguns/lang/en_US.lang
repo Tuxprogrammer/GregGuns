@@ -405,6 +405,15 @@ item.gregguns.turret_armor_carbon.name=Carbon Turret Armor
 
 
 # Utility: Turret (m6/turret)
+entity.gregguns.turret.name=Turret
+gregguns.machine.turret.tooltip=Holds a gun and keeps a 30 HP turret standing guard on top
+gregguns.machine.turret.tier=Fires guns of its own tier and below
+gregguns.turret.locked=This turret is locked to its owner and friends
+gregguns.turret.gui.title=Turret
+gregguns.turret.gui.repair=Repairing: %ds left
+gregguns.turret.gui.security=Security: 0 public, 1 friends, 2 owner (owner only)
+gregguns.turret.gui.redstone=Redstone: I ignore, + with signal, - without signal
+gregguns.turret.gui.animals=Target animals: Y yes, N no
 
 
 
