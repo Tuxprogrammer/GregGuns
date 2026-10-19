@@ -736,6 +736,18 @@ public final class MpScenarios {
                             // In 1.7.10 /give drops the stack as an item entity that the player picks up by
                             // collision, so a stack that was not picked up yet is still on the ground: clear the
                             // strays and give again.
+                            com.gregguns.GregGuns.LOG.warn(
+                                "[mp.give] retrying /give {} for {}: attempt {}, selected slot {}, slot 0 {}, carrying {}, health {}, dead {}, {} dropped item entities nearby",
+                                item,
+                                p.getCommandSenderName(),
+                                attempts.get(p.getCommandSenderName()) + 1,
+                                p.inventory.currentItem,
+                                p.inventory.mainInventory[0],
+                                dump(p),
+                                p.getHealth(),
+                                p.isDead,
+                                p.worldObj.getEntitiesWithinAABB(EntityItem.class, p.boundingBox.expand(8.0, 8.0, 8.0))
+                                    .size());
                             sweepDrops(p);
                             give(p, item);
                             attempts.merge(p.getCommandSenderName(), 1, Integer::sum);
