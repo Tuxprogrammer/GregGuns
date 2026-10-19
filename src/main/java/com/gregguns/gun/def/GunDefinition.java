@@ -43,6 +43,7 @@ public final class GunDefinition {
     private final Tier tier;
     private final DamageType damageType;
     private final boolean rechambers;
+    private final String singleGun;
     private final int camoCount;
     private final List<ProductionTable.Row> rows;
     private final Runnable recipes;
@@ -55,6 +56,7 @@ public final class GunDefinition {
         this.tier = Objects.requireNonNull(b.tier, "tier of " + b.name);
         this.damageType = Objects.requireNonNull(b.damageType, "damageType of " + b.name);
         this.rechambers = b.rechambers;
+        this.singleGun = b.singleGun;
         this.camoCount = b.camoCount;
         this.rows = Collections.unmodifiableList(new ArrayList<>(b.rows));
         this.recipes = b.recipes;
@@ -98,6 +100,19 @@ public final class GunDefinition {
     }
 
     /**
+     * @return the registry name of the single gun this akimbo gun is a pair of, or null if it is not an akimbo gun.
+     *         An akimbo gun draws that gun's model twice and so reuses its textures.
+     */
+    public String singleGun() {
+        return singleGun;
+    }
+
+    /** @return the name of the model texture family: the single gun's for an akimbo gun, else the gun's own */
+    public String textureName() {
+        return singleGun != null ? singleGun : name;
+    }
+
+    /**
      * @return how many camo skins the gun has, the default included; 1 means the Camo Bench has nothing to cycle. The
      *         model needs one texture per skin ({@code <name>.png}, {@code <name>_camo1.png}, ...), which a test
      *         checks against the files.
@@ -106,9 +121,12 @@ public final class GunDefinition {
         return camoCount;
     }
 
-    /** @return the unprefixed sound event of one shot, {@code guns.<name>.fire} */
+    /**
+     * @return the unprefixed sound event of one shot, {@code guns.<name>.fire}; an akimbo gun fires its single gun's
+     *         event, as in Techguns (one muffle entry silences both)
+     */
     public String fireEvent() {
-        return GunSoundEvents.gun(name, GunSoundEvents.FIRE);
+        return GunSoundEvents.gun(singleGun != null ? singleGun : name, GunSoundEvents.FIRE);
     }
 
     /** @return the unprefixed sound event of a reload, {@code guns.<name>.reload} */
@@ -160,6 +178,7 @@ public final class GunDefinition {
         private Tier tier;
         private DamageType damageType;
         private boolean rechambers;
+        private String singleGun;
         private int camoCount = 1;
         private final List<ProductionTable.Row> rows = new ArrayList<>();
         private Runnable recipes;
@@ -196,6 +215,18 @@ public final class GunDefinition {
          */
         public Builder rechambers() {
             this.rechambers = true;
+            return this;
+        }
+
+        /**
+         * Marks this gun as the akimbo pair of another: it reuses that gun's model and textures, so its camo count
+         * must equal the single gun's.
+         *
+         * @param single the single gun's registry name
+         * @return this
+         */
+        public Builder akimboOf(String single) {
+            this.singleGun = Objects.requireNonNull(single, "single");
             return this;
         }
 

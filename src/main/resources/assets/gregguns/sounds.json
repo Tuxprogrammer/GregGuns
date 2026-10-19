@@ -75,6 +75,26 @@
     "category": "player",
     "sounds": ["guns/ak47_reload"]
   },
+  "guns.combat_shotgun.fire": {
+    "category": "player",
+    "sounds": ["guns/combatshotgun_shot_a", "guns/combatshotgun_shot_b", "guns/combatshotgun_shot_c"]
+  },
+  "guns.combat_shotgun.reload": {
+    "category": "player",
+    "sounds": ["guns/combatshotgun_reload"]
+  },
+  "guns.combat_shotgun.rechamber": {
+    "category": "player",
+    "sounds": ["guns/combatshotgun_pump"]
+  },
+  "guns.akimbo_pistols.reload": {
+    "category": "player",
+    "sounds": ["guns/pistol_reload_akimbo"]
+  },
+  "guns.akimbo_revolvers.reload": {
+    "category": "player",
+    "sounds": ["guns/revolver_reload_akimbo"]
+  },
   "guns.grenade.pin": {
     "category": "player",
     "sounds": ["guns/grenade_pin_a", "guns/grenade_pin_b"]

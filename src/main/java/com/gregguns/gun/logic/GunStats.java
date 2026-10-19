@@ -226,9 +226,14 @@ public final class GunStats {
         return ammoItemsPerReload;
     }
 
-    /** Rounds worth of one reload item: the whole magazine for {@link ReloadMode#MAGAZINE}, else clip / count. */
+    /**
+     * Rounds worth of one reload item: clip / items per reload. A single gun takes one item per reload, so this is
+     * its whole magazine; an akimbo pair takes two (one per gun), so each item is half the clip (36 rounds from two
+     * 18-round pistol magazines is 18 per item). Getting this right keeps the forced-reload refund of an akimbo gun
+     * at the single gun's rate (GUN-14 is the same factor gone wrong).
+     */
     public int roundsPerItem() {
-        return reloadMode == ReloadMode.MAGAZINE ? magazineSize : magazineSize / ammoItemsPerReload;
+        return magazineSize / ammoItemsPerReload;
     }
 
     /** Reload duration in ticks, from start to the rounds being loaded. */

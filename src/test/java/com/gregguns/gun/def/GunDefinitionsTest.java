@@ -176,7 +176,8 @@ class GunDefinitionsTest {
     void everyGunOwnsItsFireAndReloadSoundsAndRechamberWhenItHasOne() throws IOException {
         JsonObject events = sounds();
         for (GunDefinition def : GunDefinitions.ALL) {
-            assertEquals("guns." + def.name() + ".fire", def.fireEvent());
+            assertEquals("guns." + def.textureName() + ".fire", def.fireEvent()); // an akimbo gun shares its single
+                                                                                  // gun's
             assertEquals("guns." + def.name() + ".reload", def.reloadEvent());
             assertTrue(events.has(def.fireEvent()), def.fireEvent());
             assertTrue(events.has(def.reloadEvent()), def.reloadEvent());
@@ -192,8 +193,8 @@ class GunDefinitionsTest {
     @Test
     void camoCountMatchesTheTextureFilesOnDisk() {
         for (GunDefinition def : GunDefinitions.ALL) {
-            String base = ROOT + "textures/models/guns/" + def.name();
-            assertTrue(exists(base + ".png"), "missing base texture of " + def.name());
+            String base = ROOT + "textures/models/guns/" + def.textureName();
+            assertTrue(exists(base + ".png"), "missing base texture of " + def.textureName());
             int onDisk = 1;
             while (exists(base + "_camo" + onDisk + ".png")) {
                 onDisk++;
@@ -257,7 +258,10 @@ class GunDefinitionsTest {
             }
         }
         assertEquals(ClientGunDefinitions.FLAT_ICON_FALLBACK, without);
-        assertEquals(java.util.Arrays.asList("thompson_smg", "mac10", "m4", "ak47"), without);
+        assertEquals(
+            java.util.Arrays
+                .asList("thompson_smg", "mac10", "m4", "ak47", "combat_shotgun", "akimbo_pistols", "akimbo_revolvers"),
+            without);
         assertTrue(ClientGunDefinitions.usesFallback("m4"));
         assertFalse(ClientGunDefinitions.usesFallback("pistol_9mm"));
     }
