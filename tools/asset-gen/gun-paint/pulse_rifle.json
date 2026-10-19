@@ -1,0 +1,1016 @@
+{
+ "gun": "pulse_rifle",
+ "textures": [
+  {
+   "file": "pulse_rifle.png"
+  },
+  {
+   "file": "pulse_rifle_camo1.png",
+   "variant": {
+    "roles": {
+     "ice": {
+      "base": "#C8C8C8"
+     },
+     "ice_rail": {
+      "base": "#CDCDCD"
+     },
+     "ice_scope": {
+      "base": "#D0D0D0"
+     },
+     "ice_hg": {
+      "base": "#C2C2C2"
+     },
+     "ice_recv": {
+      "base": "#D2D2D2",
+      "colors": {
+       "stripe": "#F2E323"
+      }
+     },
+     "fg_light": {
+      "base": "#D4D4D4"
+     },
+     "dark": {
+      "base": "#232323"
+     },
+     "dark_hg": {
+      "base": "#1E1E1E"
+     },
+     "trig": {
+      "base": "#1E1E1E"
+     },
+     "bell": {
+      "base": "#0C0C0C"
+     },
+     "bell_rear": {
+      "base": "#0C0C0C",
+      "colors": {
+       "lens": "#BFBFBF",
+       "lens2": "#585858"
+      }
+     },
+     "inset": {
+      "base": "#1E1E1E"
+     },
+     "barrel": {
+      "base": "#070707"
+     }
+    }
+   }
+  },
+  {
+   "file": "pulse_rifle_camo2.png",
+   "variant": {
+    "roles": {
+     "ice": {
+      "base": "#10130D"
+     },
+     "ice_rail": {
+      "base": "#12140E"
+     },
+     "ice_scope": {
+      "base": "#12140E"
+     },
+     "ice_hg": {
+      "base": "#10130D"
+     },
+     "ice_recv": {
+      "base": "#12140E",
+      "colors": {
+       "stripe": "#12140E"
+      }
+     },
+     "fg_light": {
+      "base": "#12140E"
+     },
+     "dark": {
+      "base": "#1C2813"
+     },
+     "dark_hg": {
+      "base": "#17240E"
+     },
+     "trig": {
+      "base": "#17240E"
+     },
+     "bell": {
+      "base": "#0C0C0C"
+     },
+     "bell_rear": {
+      "base": "#0C0C0C",
+      "colors": {
+       "lens": "#FF0000",
+       "lens2": "#800000"
+      }
+     },
+     "inset": {
+      "base": "#12140E"
+     },
+     "barrel": {
+      "base": "#060606"
+     }
+    },
+    "boxes": {
+     "front_recv": {
+      "role": "ice_recv",
+      "painters": [
+       {
+        "type": "mottle",
+        "seed": 7,
+        "cx": 3,
+        "cy": 3,
+        "amp": 0.05
+       },
+       {
+        "type": "tone",
+        "faces": [
+         "top"
+        ],
+        "f": 1.05
+       }
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "roles": {
+  "ice": {
+   "material": "steel",
+   "base": "#BCE2E5",
+   "scratches": false,
+   "noise": 0.045,
+   "drift": 0.11,
+   "bevel": [
+    1.07,
+    0.9
+   ]
+  },
+  "ice_rail": {
+   "material": "steel",
+   "base": "#C3E5E8",
+   "scratches": false,
+   "noise": 0.045,
+   "drift": 0.11,
+   "bevel": [
+    1.07,
+    0.9
+   ]
+  },
+  "ice_scope": {
+   "material": "steel",
+   "base": "#CAE8EA",
+   "scratches": false,
+   "noise": 0.045,
+   "drift": 0.11,
+   "bevel": [
+    1.07,
+    0.9
+   ]
+  },
+  "ice_hg": {
+   "material": "steel",
+   "base": "#B6DCDF",
+   "scratches": false,
+   "noise": 0.045,
+   "drift": 0.11,
+   "bevel": [
+    1.07,
+    0.9
+   ]
+  },
+  "ice_recv": {
+   "material": "steel",
+   "base": "#CBE9EB",
+   "scratches": false,
+   "noise": 0.045,
+   "drift": 0.11,
+   "bevel": [
+    1.07,
+    0.9
+   ],
+   "colors": {
+    "stripe": "#CA0000"
+   }
+  },
+  "fg_light": {
+   "material": "steel",
+   "base": "#CEEAEC",
+   "scratches": false,
+   "noise": 0.045,
+   "drift": 0.11,
+   "bevel": [
+    1.07,
+    0.9
+   ]
+  },
+  "dark": {
+   "material": "steel",
+   "base": "#333840",
+   "scratches": false,
+   "noise": 0.012,
+   "drift": 0.03,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  },
+  "dark_hg": {
+   "material": "steel",
+   "base": "#2C2C2C",
+   "scratches": false,
+   "noise": 0.012,
+   "drift": 0.03,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  },
+  "trig": {
+   "material": "steel",
+   "base": "#282828",
+   "scratches": false,
+   "noise": 0.012,
+   "drift": 0.03,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  },
+  "bell": {
+   "material": "steel",
+   "base": "#2B2B2B",
+   "scratches": false,
+   "noise": 0.012,
+   "drift": 0.03,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  },
+  "bell_rear": {
+   "material": "steel",
+   "base": "#2B2B2B",
+   "scratches": false,
+   "noise": 0.0,
+   "drift": 0.0,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "colors": {
+    "lens": "#00FFFF",
+    "lens2": "#008080"
+   }
+  },
+  "inset": {
+   "material": "steel",
+   "base": "#292929",
+   "scratches": false,
+   "noise": 0.012,
+   "drift": 0.03,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  },
+  "barrel": {
+   "material": "steel",
+   "base": "#191919",
+   "scratches": false,
+   "noise": 0.012,
+   "drift": 0.03,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  }
+ },
+ "boxes": {
+  "spine": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 7,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "stock_top_a": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 8,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "stock_top_b": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 9,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "rear_stack": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 10,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "rear_bar": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 11,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "rear_hump": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 12,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "rear_thin": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 13,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "cheek": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 14,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "shelf": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 15,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "shelf_tab": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 16,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "butt_core": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 17,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "butt_top": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 18,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "butt_bottom": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 19,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "recv_cap": {
+   "role": "ice",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 20,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "step1": {
+   "role": "ice_rail",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 7,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "step2": {
+   "role": "ice_rail",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 8,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "step3": {
+   "role": "ice_rail",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 9,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "rail_light": {
+   "role": "ice_rail",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 10,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "scope_cap": {
+   "role": "ice_scope",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 7,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "hg_core": {
+   "role": "ice_hg",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 7,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "hg_plate_r": {
+   "role": "ice_hg",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 8,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "hg_plate_l": {
+   "role": "ice_hg",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 9,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "front_recv": {
+   "role": "ice_recv",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 7,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 4,
+     "y": 0,
+     "w": 1,
+     "h": 99,
+     "color": "@stripe"
+    }
+   ]
+  },
+  "fg_slab_light": {
+   "role": "fg_light",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 7,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "fg_slab_wide": {
+   "role": "fg_light",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 8,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "fg_bar_a": {
+   "role": "fg_light",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 9,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "fg_bar_b": {
+   "role": "fg_light",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 10,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "fg_tip": {
+   "role": "fg_light",
+   "painters": [
+    {
+     "type": "mottle",
+     "seed": 11,
+     "cx": 3,
+     "cy": 3,
+     "amp": 0.05
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "grip": {
+   "role": "dark"
+  },
+  "grip_front": {
+   "role": "dark"
+  },
+  "low_a": {
+   "role": "dark"
+  },
+  "low_b": {
+   "role": "dark"
+  },
+  "low_c": {
+   "role": "dark"
+  },
+  "low_d": {
+   "role": "dark"
+  },
+  "strut_a": {
+   "role": "dark"
+  },
+  "strut_b": {
+   "role": "dark"
+  },
+  "strut_c": {
+   "role": "dark"
+  },
+  "loop_block": {
+   "role": "dark"
+  },
+  "loop_floor": {
+   "role": "dark"
+  },
+  "stock_strut": {
+   "role": "dark"
+  },
+  "under_rail": {
+   "role": "dark"
+  },
+  "hg_lower": {
+   "role": "dark"
+  },
+  "hg_lower2": {
+   "role": "dark"
+  },
+  "fg_slab_dark": {
+   "role": "dark"
+  },
+  "fg_plate": {
+   "role": "dark"
+  },
+  "fg_post": {
+   "role": "dark"
+  },
+  "fg_foot": {
+   "role": "dark"
+  },
+  "hg_cap": {
+   "role": "dark_hg"
+  },
+  "hg_step": {
+   "role": "dark_hg"
+  },
+  "hg_step_bar": {
+   "role": "dark_hg"
+  },
+  "trigger": {
+   "role": "trig"
+  },
+  "trigger_housing": {
+   "role": "trig"
+  },
+  "bell_front": {
+   "role": "bell"
+  },
+  "mount_top": {
+   "role": "bell"
+  },
+  "mount_bottom": {
+   "role": "bell"
+  },
+  "mount_side_r": {
+   "role": "bell"
+  },
+  "mount_side_l": {
+   "role": "bell"
+  },
+  "rail_dark": {
+   "role": "bell"
+  },
+  "sight_wedge": {
+   "role": "bell"
+  },
+  "bell_rear": {
+   "role": "bell_rear",
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "@lens"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "@lens2"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "@lens2"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 2,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "@lens2"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 1,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "@lens2"
+    }
+   ]
+  },
+  "stock_inset": {
+   "role": "inset"
+  },
+  "barrel": {
+   "role": "barrel"
+  },
+  "neck_flat": {
+   "role": "barrel"
+  },
+  "neck_diamond": {
+   "role": "barrel"
+  },
+  "muzzle_block": {
+   "role": "barrel"
+  },
+  "prong_r": {
+   "role": "barrel"
+  },
+  "prong_l": {
+   "role": "barrel"
+  },
+  "gas_block": {
+   "role": "barrel"
+  }
+ }
+}

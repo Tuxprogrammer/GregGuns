@@ -18,6 +18,7 @@ import com.gregguns.armor.model.ArmorModels;
 import com.gregguns.client.render.profile.ClientGunDefinitions;
 import com.gregguns.client.render.profile.LaserRifleProfile;
 import com.gregguns.client.render.profile.PdwProfile;
+import com.gregguns.client.render.profile.TeslaRifleProfile;
 
 class ModelExportTest {
 
@@ -127,6 +128,7 @@ class ModelExportTest {
         Assumptions.assumeTrue(dir != null, "set -Dgregguns.exportModels=<dir> or GREGGUNS_EXPORT_MODELS");
         ModelExporter.exportProfile(dir, PdwProfile.DEFINITION);
         ModelExporter.exportProfile(dir, LaserRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, TeslaRifleProfile.DEFINITION);
     }
 
     /** Every accessory model is exported with one JSON box per model box. */
