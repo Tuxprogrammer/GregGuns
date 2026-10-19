@@ -1,0 +1,564 @@
+{
+ "gun": "scatter_laser_rifle",
+ "textures": [
+  {
+   "file": "scatter_laser_rifle.png"
+  }
+ ],
+ "roles": {
+  "body": {
+   "material": "steel",
+   "base": "#4D4D4D",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "hand": {
+   "material": "steel",
+   "base": "#505050",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "nose": {
+   "material": "steel",
+   "base": "#4F4F4F",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "grip": {
+   "material": "steel",
+   "base": "#4D4D4D",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "stock": {
+   "material": "steel",
+   "base": "#393939",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "rearplate": {
+   "material": "steel",
+   "base": "#3A3A3A",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "spine": {
+   "material": "steel",
+   "base": "#9E9E9E",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "pipe": {
+   "material": "steel",
+   "base": "#999999",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "cap": {
+   "material": "steel",
+   "base": "#4F4F4F",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "rail": {
+   "material": "steel",
+   "base": "#484848",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "sight": {
+   "material": "steel",
+   "base": "#363636",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "battplate": {
+   "material": "steel",
+   "base": "#9A9A9A",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "battcap": {
+   "material": "steel",
+   "base": "#5E5E5E",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "rod": {
+   "material": "flat",
+   "base": "#B0BA5E",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  }
+ },
+ "boxes": {
+  "receiver": {
+   "role": "body",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 21,
+     "y": 1,
+     "w": 1,
+     "h": 3,
+     "color": "#FF3C00"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 23,
+     "y": 1,
+     "w": 1,
+     "h": 3,
+     "color": "#FF3C00"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 25,
+     "y": 1,
+     "w": 1,
+     "h": 3,
+     "color": "#FF3C00"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 5,
+     "y": 1,
+     "w": 1,
+     "h": 3,
+     "color": "#FF3C00"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 3,
+     "y": 1,
+     "w": 1,
+     "h": 3,
+     "color": "#FF3C00"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 3,
+     "color": "#FF3C00"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 3,
+     "y": 1,
+     "w": 4,
+     "h": 1,
+     "color": "#3C3C3C"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 3,
+     "y": 3,
+     "w": 4,
+     "h": 1,
+     "color": "#3C3C3C"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 20,
+     "y": 1,
+     "w": 4,
+     "h": 1,
+     "color": "#3C3C3C"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 20,
+     "y": 3,
+     "w": 4,
+     "h": 1,
+     "color": "#3C3C3C"
+    }
+   ]
+  },
+  "top_plate": {
+   "role": "body"
+  },
+  "top_rail": {
+   "role": "rail"
+  },
+  "lower_body": {
+   "role": "body"
+  },
+  "side_front_p": {
+   "role": "hand"
+  },
+  "side_front_n": {
+   "role": "hand"
+  },
+  "side_rear_p": {
+   "role": "rearplate"
+  },
+  "side_rear_n": {
+   "role": "rearplate"
+  },
+  "front_box": {
+   "role": "body",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 8,
+     "y": 1,
+     "w": 4,
+     "h": 1,
+     "color": "#3C3C3C"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 8,
+     "y": 3,
+     "w": 4,
+     "h": 1,
+     "color": "#3C3C3C"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 7,
+     "y": 1,
+     "w": 4,
+     "h": 1,
+     "color": "#3C3C3C"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 7,
+     "y": 3,
+     "w": 4,
+     "h": 1,
+     "color": "#3C3C3C"
+    }
+   ]
+  },
+  "ridge_p": {
+   "role": "hand"
+  },
+  "ridge_n": {
+   "role": "hand"
+  },
+  "handguard": {
+   "role": "hand"
+  },
+  "pipe": {
+   "role": "pipe"
+  },
+  "pipe_cap": {
+   "role": "cap"
+  },
+  "strut": {
+   "role": "cap"
+  },
+  "hood": {
+   "role": "nose"
+  },
+  "slant": {
+   "role": "nose"
+  },
+  "stair_a": {
+   "role": "nose"
+  },
+  "stair_b": {
+   "role": "nose"
+  },
+  "stair_c": {
+   "role": "nose"
+  },
+  "stock_block": {
+   "role": "stock"
+  },
+  "stock_cover": {
+   "role": "stock"
+  },
+  "spine_a": {
+   "role": "spine",
+   "painters": [
+    {
+     "type": "hole",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 2,
+     "w": 1,
+     "h": 1
+    }
+   ]
+  },
+  "spine_b": {
+   "role": "spine",
+   "painters": [
+    {
+     "type": "hole",
+     "faces": [
+      "front"
+     ],
+     "x": 0,
+     "y": 3,
+     "w": 1,
+     "h": 1
+    },
+    {
+     "type": "hole",
+     "faces": [
+      "back"
+     ],
+     "x": 1,
+     "y": 3,
+     "w": 1,
+     "h": 1
+    }
+   ]
+  },
+  "spine_c": {
+   "role": "spine",
+   "painters": [
+    {
+     "type": "hole",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 2,
+     "w": 1,
+     "h": 1
+    },
+    {
+     "type": "hole",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 3,
+     "y": 2,
+     "w": 1,
+     "h": 1
+    },
+    {
+     "type": "hole",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 5,
+     "w": 1,
+     "h": 1
+    }
+   ]
+  },
+  "stock_front": {
+   "role": "stock"
+  },
+  "bottom_bar": {
+   "role": "stock"
+  },
+  "butt_plate": {
+   "role": "stock"
+  },
+  "brace": {
+   "role": "stock"
+  },
+  "grip": {
+   "role": "grip"
+  },
+  "guard_slope": {
+   "role": "grip"
+  },
+  "guard_floor": {
+   "role": "grip"
+  },
+  "trigger": {
+   "role": "grip"
+  },
+  "sight_base": {
+   "role": "sight"
+  },
+  "sight_post_p": {
+   "role": "sight"
+  },
+  "sight_post_n": {
+   "role": "sight"
+  },
+  "sight_glow_window": {
+   "role": "sight",
+   "clear": true,
+   "painters": [
+    {
+     "type": "solid",
+     "faces": [
+      "right",
+      "left"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#FF0000"
+    }
+   ]
+  },
+  "batt_plate": {
+   "role": "battplate",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#C8C040"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#C8C040"
+    }
+   ]
+  },
+  "batt_cap_top": {
+   "role": "battcap"
+  },
+  "batt_cap_bot": {
+   "role": "battcap"
+  },
+  "batt_rod_glow_1": {
+   "role": "rod"
+  },
+  "batt_rod_glow_2": {
+   "role": "rod"
+  },
+  "batt_rod_glow_3": {
+   "role": "rod"
+  },
+  "batt_foot": {
+   "role": "battcap"
+  }
+ }
+}
