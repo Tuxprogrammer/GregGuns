@@ -123,6 +123,7 @@ public final class GregGunsNetwork {
                 new PacketGunTrigger(),
                 new PacketGunZoom(),
                 new PacketCamoCycle(),
-                new com.gregguns.utility.charge.PacketChargeButton()));
+                new com.gregguns.utility.charge.PacketChargeButton(),
+                new com.gregguns.gun.net.PacketGunCharge()));
     }
 }

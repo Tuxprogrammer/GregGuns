@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 
 import com.gregguns.gun.GunAccuracy;
 import com.gregguns.gun.logic.AmmoInventory;
+import com.gregguns.gun.logic.ChargeRelease;
 import com.gregguns.gun.logic.GunController;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunState;
@@ -74,6 +75,16 @@ public final class ServerGunHandler {
         int before = state.loaded();
         GunTickResult result = data.controller()
             .tick(stats, state, ammoOf(player, stats), true, player.capabilities.isCreativeMode);
+        if (stats.isCharge()) {
+            if (data.controller()
+                .reload()
+                .isReloading()) {
+                data.charge()
+                    .cancel();
+            }
+            data.charge()
+                .tick(stats);
+        }
         if (state.loaded() != before) {
             GunNbt.write(held.getTagCompound(), state);
         }
@@ -105,6 +116,74 @@ public final class ServerGunHandler {
         } else {
             controller.triggerReleased();
         }
+    }
+
+    /**
+     * The charge button of a charge gun changed. Down starts a charge when the gun has a round, is off cooldown and is
+     * not reloading; up releases it: the rounds are spent from what is loaded (GUN-02), the shot is launched through
+     * {@link ItemGun#onChargedShot} and broadcast like any other shot (GUN-31).
+     *
+     * @param player the player, validated to hold a gun
+     * @param down   true for pressed
+     */
+    public static void onCharge(EntityPlayerMP player, boolean down) {
+        ItemStack held = player.getHeldItem();
+        ItemGun gun = gunOf(held);
+        if (gun == null || !isAlive(player)
+            || !gun.stats()
+                .isCharge()) {
+            return;
+        }
+        GunPlayerData data = GunPlayerData.get(player);
+        GunStats stats = gun.stats();
+        ItemGun.ensureTag(held, stats);
+        GunState state = GunNbt.read(held.getTagCompound(), stats);
+        boolean creative = player.capabilities.isCreativeMode;
+        if (down) {
+            boolean allowed = (creative || state.loaded() > 0) && data.controller()
+                .fire()
+                .isReady()
+                && !data.controller()
+                    .reload()
+                    .isReloading();
+            if (data.charge()
+                .begin(allowed) && gun.chargeEvent() != null) {
+                GunSoundPlayer.playReload(player, gun.chargeEvent(), null);
+            }
+            return;
+        }
+        boolean wasCharging = data.charge()
+            .isCharging();
+        ChargeRelease release = data.charge()
+            .release(stats, creative ? Integer.MAX_VALUE : state.loaded());
+        if (release == null) {
+            if (wasCharging) {
+                GunSoundPlayer.playDryFire(player, null);
+            }
+            return;
+        }
+        if (!creative) {
+            state.use(release.units());
+            GunNbt.write(held.getTagCompound(), state);
+        }
+        data.controller()
+            .fire()
+            .lockout(stats.fireRateTicks());
+        GunSoundPlayer.playFire(player, gun.fireEvent(), null);
+        ShotOffset[] offsets = SpreadModel.roll(
+            player.getRNG(),
+            stats,
+            GunAccuracy.shotContext(
+                player,
+                data.controller()
+                    .zoom()
+                    .isZoomed(stats)),
+            0);
+        gun.onChargedShot(player, release, offsets);
+        data.setLastShotTick(player.worldObj.getTotalWorldTime());
+        // Fixes GUN-31: Techguns sends no fired message on a charged release, so other players saw no recoil.
+        GregGunsNetwork.channel()
+            .sendToAllTracking(new PacketGunEvent(player, GunEventKind.SHOT_FIRED, 0), player);
     }
 
     /**
@@ -203,6 +282,8 @@ public final class ServerGunHandler {
             .isReloading();
         data.controller()
             .reset();
+        data.charge()
+            .cancel();
         data.setActive(null, -1);
         if (wasReloading) {
             GregGunsNetwork.channel()

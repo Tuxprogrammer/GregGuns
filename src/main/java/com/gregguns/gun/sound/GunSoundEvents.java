@@ -38,6 +38,8 @@ public final class GunSoundEvents {
 
     /** Action: the first shot after a pause of a continuous-fire gun (the Flamethrower). */
     public static final String START = "start";
+    /** Suffix of the sound a charge gun plays when the charge begins: {@code guns.<name>.charge}. */
+    public static final String CHARGE = "charge";
 
     /** Action: reload start. */
     public static final String RELOAD = "reload";

@@ -100,7 +100,8 @@ class PacketStringsTest {
 
     @Test
     void everyPacketWithAStringFieldIsCoveredByARoundTrip() {
-        // Today none of the registered packets (PacketGunTrigger, PacketGunZoom, PacketGunEvent) carries text. This
+        // Today none of the registered packets (PacketGunTrigger, PacketGunZoom, PacketGunCharge, PacketGunEvent)
+        // carries text. This
         // fails the day one does, so its non-ASCII round trip gets written with it (GGS-01-12).
         List<IPacket> all = new ArrayList<>(GregGunsNetwork.serverboundPackets());
         all.addAll(GregGunsNetwork.clientboundPackets());

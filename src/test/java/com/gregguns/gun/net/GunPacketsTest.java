@@ -142,6 +142,22 @@ class GunPacketsTest {
         assertTrue(java.util.Arrays.equals(original, copy));
     }
 
+    @Test
+    void chargePacketRoundTripsAndIsRegistered() {
+        ByteBuf buf = Unpooled.buffer();
+        new PacketGunCharge(0, 2, true).toBytes(buf);
+        assertEquals(6, buf.readableBytes());
+        PacketGunCharge decoded = new PacketGunCharge();
+        decoded.fromBytes(buf);
+        ByteBuf again = Unpooled.buffer();
+        decoded.toBytes(again);
+        assertEquals(6, again.readableBytes());
+        assertTrue(
+            GregGunsNetwork.serverboundPackets()
+                .stream()
+                .anyMatch(p -> p instanceof PacketGunCharge));
+    }
+
     // ----- the client-bound event ------------------------------------------------------------------------------
 
     private static PacketGunEvent eventPacket(int entityId, int kind, int argument) {
