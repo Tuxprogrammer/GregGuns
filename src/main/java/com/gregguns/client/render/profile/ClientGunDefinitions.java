@@ -32,7 +32,8 @@ public final class ClientGunDefinitions {
             Ak47Profile.DEFINITION,
 
             CombatShotgunProfile.DEFINITION,
-            RocketLauncherProfile.DEFINITION));
+            RocketLauncherProfile.DEFINITION,
+            GrenadeLauncherProfile.DEFINITION));
 
     /**
      * The guns that have no 3D profile yet and are drawn as their flat item icon in hand, in the world and in the
@@ -42,7 +43,7 @@ public final class ClientGunDefinitions {
      * giving a gun its clean-room profile means removing its name here.
      */
     public static final List<String> FLAT_ICON_FALLBACK = Collections
-        .unmodifiableList(Arrays.asList("akimbo_pistols", "akimbo_revolvers", "grenade_launcher"));
+        .unmodifiableList(Arrays.asList("akimbo_pistols", "akimbo_revolvers"));
 
     private ClientGunDefinitions() {}
 
