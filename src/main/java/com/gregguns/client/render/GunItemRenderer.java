@@ -21,6 +21,7 @@ import com.gregguns.client.render.profile.GunTransforms;
 import com.gregguns.client.render.profile.MuzzleFlashSpec;
 import com.gregguns.client.render.profile.TransformProgram;
 import com.gregguns.gun.logic.GunNbt;
+import com.gregguns.item.gun.ItemGun;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -114,9 +115,13 @@ final class GunItemRenderer implements IItemRenderer {
         int attackType = anim == null ? 0 : anim.attackType();
 
         // An akimbo gun in first person draws the single model once per hand; only the hand that fired recoils.
+        // A double-shot akimbo gun (2 rounds per pull) fires both hands at once, so both recoil.
+        boolean doubleShot = akimbo && stack.getItem() instanceof ItemGun
+            && ((ItemGun) stack.getItem()).stats()
+                .ammoPerShot() >= 2;
         int hands = AkimboLayout.handsDrawn(akimbo, firstPerson);
         for (int hand = 0; hand < hands; hand++) {
-            boolean fired = AkimboLayout.animates(akimbo, firstPerson, hand, attackType);
+            boolean fired = AkimboLayout.animates(akimbo, firstPerson, hand, attackType, doubleShot);
             double recoil = fired ? shotRecoil : AnimWindow.NONE;
             double flash = fired ? shotFlash : AnimWindow.NONE;
             boolean mirrored = hands > 1 && hand > 0;

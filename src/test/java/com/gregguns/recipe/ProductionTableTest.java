@@ -82,9 +82,11 @@ class ProductionTableTest {
             // rocket is HV (stainless steel gate); everything else here is LV.
             String out = row.output();
             Tier expected = out.equals(ProductionTable.STONE_BULLET) ? Tier.STEAM
-                : out.equals("ammo_rocket") ? Tier.HV
-                    : out.startsWith("mag_smg") || out.startsWith("mag_assault_rifle")
-                        || out.equals("ammo_40mm_grenade") ? Tier.MV : Tier.LV;
+                : out.equals("ammo_rocket") || out.equals("ammo_high_caliber_round")
+                    || out.startsWith("mag_as50")
+                    || out.startsWith("mag_lmg") ? Tier.HV
+                        : out.startsWith("mag_smg") || out.startsWith("mag_assault_rifle")
+                            || out.equals("ammo_40mm_grenade") ? Tier.MV : Tier.LV;
             assertEquals(expected, row.tier(), row.id());
         }
     }

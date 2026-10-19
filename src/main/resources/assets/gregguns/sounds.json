@@ -111,6 +111,26 @@
     "category": "player",
     "sounds": ["guns/grenadelauncher_reload"]
   },
+  "guns.as50.fire": {
+    "category": "player",
+    "sounds": ["guns/as50_shot_a", "guns/as50_shot_b"]
+  },
+  "guns.as50.reload": {
+    "category": "player",
+    "sounds": ["guns/as50_reload"]
+  },
+  "guns.lmg.fire": {
+    "category": "player",
+    "sounds": ["guns/lmg_shot_a", "guns/lmg_shot_b", "guns/lmg_shot_c"]
+  },
+  "guns.lmg.reload": {
+    "category": "player",
+    "sounds": ["guns/lmg_reload"]
+  },
+  "guns.akimbo_mac10s.reload": {
+    "category": "player",
+    "sounds": ["guns/mac10_reload_akimbo"]
+  },
   "guns.grenade.pin": {
     "category": "player",
     "sounds": ["guns/grenade_pin_a", "guns/grenade_pin_b"]

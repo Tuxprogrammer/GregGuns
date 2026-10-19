@@ -260,7 +260,7 @@ class GunDefinitionsTest {
             }
         }
         assertEquals(ClientGunDefinitions.FLAT_ICON_FALLBACK, without);
-        assertEquals(java.util.Collections.<String>emptyList(), without);
+        assertEquals(java.util.Arrays.asList("as50", "lmg"), without);
         assertFalse(ClientGunDefinitions.usesFallback("m4"));
         assertFalse(ClientGunDefinitions.usesFallback("pistol_9mm"));
     }
