@@ -17,6 +17,7 @@ import com.cleanroommc.modularui.factory.PosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.google.common.io.ByteArrayDataInput;
 import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
 import com.gregguns.core.config.UtilityConfig;
@@ -40,7 +41,10 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTETieredMachineBlock;
+import gregtech.api.render.ISBRWorldContext;
 import gregtech.api.render.TextureFactory;
+import gregtech.common.render.IMTERenderer;
+import io.netty.buffer.ByteBuf;
 
 /**
  * The Turret: a powered GT single block (MV to IV) that holds one GregGuns gun, nine stacks of ammo and an armor
@@ -62,7 +66,7 @@ import gregtech.api.render.TextureFactory;
 // docs/gregguns-spec/08-machines-production/machine-roster.md (Turret, GGS-08-50)
 // Deviation: EU instead of RF (turret.md); the entity link is its UUID (MUTL-25); the wrench-dismantle NBT carry and
 // the turret-death-at-placement flag are not built.
-public final class MTETurret extends MTETieredMachineBlock implements TurretHost {
+public final class MTETurret extends MTETieredMachineBlock implements TurretHost, IMTERenderer {
 
     /** Ammo input slots 0 to 8. */
     public static final int AMMO_FIRST = 0;
@@ -452,6 +456,12 @@ public final class MTETurret extends MTETieredMachineBlock implements TurretHost
         if (base.isClientSide()) {
             return;
         }
+        // The plate picks the base's sheet on clients; send it when it changes, and now and then for new viewers.
+        int plate = armorValue();
+        if (plate != sentPlate || tick % PLATE_RESEND_TICKS == 0) {
+            sentPlate = plate;
+            sendRenderDataToClient(this);
+        }
         enabled = redstone.allows(base.getRedstone());
         if (turret != null && turret.isDead) {
             turret = null;
@@ -679,6 +689,43 @@ public final class MTETurret extends MTETieredMachineBlock implements TurretHost
     @Override
     public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager syncManager, UISettings uiSettings) {
         return new TurretGui(this).build(guiData, syncManager, uiSettings);
+    }
+
+    // --- base rendering ---------------------------------------------------------------------------------------
+
+    /** Ticks between repeats of the plate value to the clients in range, so a player who walks up still gets it. */
+    private static final int PLATE_RESEND_TICKS = 100;
+    private int sentPlate = -1;
+    /** Client side: the plate's armor value, as last sent by the server. */
+    private int shownPlate;
+
+    /**
+     * Client: the base is drawn by {@link #renderTESR}, so GT's chunk-baked casing cube is suppressed by claiming
+     * the render and baking nothing.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/render/GTRendererBlock.java
+    // (renderInWorld returns false when the MTE bakes no vertices, so the block draws nothing)
+    @Override
+    public boolean renderInWorld(ISBRWorldContext ctx) {
+        return true;
+    }
+
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/render/BaseMetaTileEntityRenderer.java
+    @Override
+    public void renderTESR(double x, double y, double z, float timeSinceLastTick) {
+        com.gregguns.client.utility.TurretBaseRenderer.render(x, y, z, shownPlate);
+    }
+
+    @Override
+    public void encodeRenderData(ByteBuf buffer) {
+        buffer.writeByte(armorValue());
+    }
+
+    @Override
+    public void decodeRenderData(ByteArrayDataInput buffer) {
+        shownPlate = buffer.readByte();
     }
 
     // --- textures ---------------------------------------------------------------------------------------------

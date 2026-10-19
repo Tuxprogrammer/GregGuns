@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -66,6 +67,7 @@ public class TurretEntity extends EntityCreature implements IEntityOwnable, Turr
     private static final String KEY_BASE_Z = "baseZ";
 
     private int spawnArmor;
+    private int spawnGunId = -1;
     private TurretHost host;
     private boolean hasBase;
     private int baseX;
@@ -294,14 +296,29 @@ public class TurretEntity extends EntityCreature implements IEntityOwnable, Turr
         return worldObj.isRemote ? spawnArmor : getTotalArmorValue();
     }
 
+    /**
+     * @return the gun the head shows: the live gun on the server, the gun sent at spawn on a client (same limit as
+     *         {@link #displayArmorValue()}: a gun swapped later shows after a re-track); null for none
+     */
+    public ItemStack displayGun() {
+        if (!worldObj.isRemote) {
+            return host == null ? null : host.mountedGun();
+        }
+        Item item = spawnGunId < 0 ? null : Item.getItemById(spawnGunId);
+        return item instanceof ItemGun ? new ItemStack(item) : null;
+    }
+
     @Override
     public void writeSpawnData(ByteBuf buffer) {
         buffer.writeByte(getTotalArmorValue());
+        ItemStack gun = host == null ? null : host.mountedGun();
+        buffer.writeShort(gun == null ? -1 : Item.getIdFromItem(gun.getItem()));
     }
 
     @Override
     public void readSpawnData(ByteBuf additionalData) {
         spawnArmor = additionalData.readByte();
+        spawnGunId = additionalData.readShort();
     }
 
     @Override

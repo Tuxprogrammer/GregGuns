@@ -377,35 +377,70 @@ public final class RampartScenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
-            ScenarioResult.Builder out = ScenarioResult.builder(name());
             if (GregGunsCasings.INSTANCE == null
                 || !(GregTechAPI.METATILEENTITIES[GregGunsMTEIDs.RAMPART] instanceof MTERampart)) {
                 return ScenarioResult.fail(name(), "the Rampart is not registered (needs GG_MODULES=guns,...,utility)");
             }
-            for (int n : new int[] { RampartShape.MIN_MOUNTS, RampartShape.DEFAULT_MOUNTS, RampartShape.MAX_MOUNTS }) {
-                Wall w = new Wall(ctx, n);
-                w.addHatches();
-                boolean formed = w.form();
-                out.check(formed, "a " + n + "-mount Rampart with all hatches should form");
-                out.checkEquals("mounts of the " + n + "-mount Rampart", n, w.mte.mountCount());
-                out.checkEquals("armor of an all-Iron wall", 5, w.mte.armorValue());
-                int last = w.dir * (RampartShape.totalLength(n) - 2);
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            int[] sizes = { RampartShape.MIN_MOUNTS, RampartShape.DEFAULT_MOUNTS, RampartShape.MAX_MOUNTS };
+            // Phases 0 to 2 are the sizes, phase 3 the two-mount shape rules. Each phase builds a wall, waits out
+            // GT's warm-up, re-fetches the tiles, then forms with a retry window (the pattern of the other Rampart
+            // scenarios): forming synchronously at placement flaked under server lag.
+            Wall[] cur = { null };
+            int[] phase = { 0 };
+            int[] startTick = { 0 };
+            boolean[] settled = { false };
+            return ScenarioResult.pending(name(), 4 * (WARMUP_TICKS + 60) + 100, ticks -> {
+                if (cur[0] == null) {
+                    cur[0] = new Wall(ctx, phase[0] < sizes.length ? sizes[phase[0]] : 2);
+                    cur[0].addHatches();
+                    startTick[0] = ticks;
+                    settled[0] = false;
+                    return null;
+                }
+                Wall w = cur[0];
+                if (!settled[0]) {
+                    if (ticks - startTick[0] < WARMUP_TICKS) {
+                        return null;
+                    }
+                    w.refresh();
+                    if (!w.form()) {
+                        if (ticks - startTick[0] < WARMUP_TICKS + 40) {
+                            return null;
+                        }
+                        w.teardown();
+                        return ScenarioResult.fail(name(), "the " + w.mounts + "-mount Rampart should form");
+                    }
+                    settled[0] = true;
+                }
+                if (phase[0] < sizes.length) {
+                    int n = sizes[phase[0]];
+                    out.check(w.mte.mMachine, "a " + n + "-mount Rampart with all hatches should form");
+                    out.checkEquals("mounts of the " + n + "-mount Rampart", n, w.mte.mountCount());
+                    out.checkEquals("armor of an all-Iron wall", 5, w.mte.armorValue());
+                    int last = w.dir * (RampartShape.totalLength(n) - 2);
+                    out.check(
+                        ctx.world()
+                            .getBlock(ctx.originX() + last, ctx.originY() + Wall.CY, ctx.originZ())
+                            == GregGunsCasings.INSTANCE,
+                        "the cap should be the last block of the " + n + "-mount wall");
+                    out.check(
+                        ctx.world()
+                            .isAirBlock(ctx.originX() + w.hatchX(0), ctx.originY() + Wall.CY + 2, ctx.originZ()),
+                        "the crenel above a mount hatch should be open air (non-convex wall)");
+                    w.teardown();
+                    cur[0] = null;
+                    phase[0]++;
+                    return null;
+                }
                 out.check(
-                    ctx.world()
-                        .getBlock(ctx.originX() + last, ctx.originY() + Wall.CY, ctx.originZ())
-                        == GregGunsCasings.INSTANCE,
-                    "the cap should be the last block of the " + n + "-mount wall");
-                out.check(
-                    ctx.world()
-                        .isAirBlock(ctx.originX() + w.hatchX(0), ctx.originY() + Wall.CY + 2, ctx.originZ()),
-                    "the crenel above a mount hatch should be open air (non-convex wall)");
-                w.teardown();
-            }
-            out.check(RampartShape.isNonConvex(RampartShape.DEFAULT_MOUNTS), "the wall's shape should be non-convex");
+                    RampartShape.isNonConvex(RampartShape.DEFAULT_MOUNTS),
+                    "the wall's shape should be non-convex");
+                return finishShapeRules(ctx, out, w);
+            });
+        }
 
-            Wall w = new Wall(ctx, 2);
-            w.addHatches();
-            out.check(w.form(), "the two-mount Rampart should form");
+        private static ScenarioResult finishShapeRules(ScenarioContext ctx, ScenarioResult.Builder out, Wall w) {
             // GGS-08-75: a missing mount hatch is a structure error.
             int hx = w.hatchX(1);
             ctx.setBlock(hx, Wall.CY + 1, 0, Blocks.air, 0);
