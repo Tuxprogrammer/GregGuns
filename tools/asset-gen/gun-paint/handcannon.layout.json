@@ -1,0 +1,18 @@
+{
+ "gun": "handcannon",
+ "texture": [64, 64],
+ "scale": 0.0625,
+ "bodyRotationYDegrees": 90,
+ "muzzle": [1.25, -0.03125, 0.0],
+ "boxes": [
+  {"name": "handle_butt", "size": [3, 6, 5], "pos": [-20, -2, -2.5], "uv": [0, 0]},
+  {"name": "handle_mid", "size": [2, 5, 5], "pos": [-17, -2, -2.5], "uv": [30, 0]},
+  {"name": "handle_neck", "size": [3, 4, 5], "pos": [-15, -2, -2.5], "uv": [44, 0]},
+  {"name": "breech", "size": [8, 4, 5], "pos": [-12, -2, -2.5], "uv": [30, 10]},
+  {"name": "vent_rear", "size": [2, 2, 5], "pos": [-12, -4, -2.5], "uv": [14, 11]},
+  {"name": "vent_front", "size": [2, 2, 5], "pos": [-6, -4, -2.5], "uv": [0, 11]},
+  {"name": "barrel_core", "size": [22, 5, 3], "pos": [-4, -3, -1.5], "uv": [0, 27]},
+  {"name": "barrel_flank", "size": [22, 3, 5], "pos": [-4, -2, -2.5], "uv": [0, 19]},
+  {"name": "muzzle", "size": [2, 6, 5], "pos": [18, -3.5, -2.5], "uv": [16, 0]}
+ ]
+}

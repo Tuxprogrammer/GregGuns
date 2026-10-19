@@ -1,0 +1,168 @@
+
+signal (grade)
+  identical        mean   7.1250  range 6.0000 .. 8.0000
+  good_shots       mean   6.8000  range 6.0000 .. 7.0000
+  weak_shots       mean   6.8750  range 6.0000 .. 7.0000
+  rejected_static  mean   7.0000  range 7.0000 .. 7.0000
+  rejected_tinkly  mean   7.1250  range 7.0000 .. 8.0000
+  mismatched       mean   6.1250  range 6.0000 .. 7.0000
+  AUC good>rejected 0.37 | good>mismatched 0.84 | rejected>mismatched 0.94 | identical>good 0.64
+  AUC good>weak_shots 0.46 | weak_shots>mismatched 0.88
+  ordering identical>good>rejected>mismatched: False
+
+signal (grade_swapped)
+  identical        mean   7.0000  range 7.0000 .. 7.0000
+  good_shots       mean   7.3000  range 6.0000 .. 8.0000
+  weak_shots       mean   7.1250  range 7.0000 .. 8.0000
+  rejected_static  mean   6.8333  range 6.0000 .. 7.0000
+  rejected_tinkly  mean   6.7500  range 6.0000 .. 7.0000
+  mismatched       mean   6.8750  range 6.0000 .. 8.0000
+  AUC good>rejected 0.71 | good>mismatched 0.67 | rejected>mismatched 0.47 | identical>good 0.35
+  AUC good>weak_shots 0.59 | weak_shots>mismatched 0.61
+  ordering identical>good>rejected>mismatched: False
+
+signal (grade_mean)
+  identical        mean   7.0625  range 6.5000 .. 7.5000
+  good_shots       mean   7.0500  range 6.0000 .. 7.5000
+  weak_shots       mean   7.0000  range 6.5000 .. 7.5000
+  rejected_static  mean   6.9167  range 6.5000 .. 7.0000
+  rejected_tinkly  mean   6.9375  range 6.5000 .. 7.5000
+  mismatched       mean   6.5000  range 6.0000 .. 7.0000
+  AUC good>rejected 0.63 | good>mismatched 0.84 | rejected>mismatched 0.80 | identical>good 0.47
+  AUC good>weak_shots 0.58 | weak_shots>mismatched 0.84
+  ordering identical>good>rejected>mismatched: False
+
+signal (cos_last)
+  identical        mean   1.0000  range 1.0000 .. 1.0000
+  good_shots       mean   0.9999  range 0.9998 .. 1.0000
+  weak_shots       mean   0.9999  range 0.9998 .. 1.0000
+  rejected_static  mean   0.9999  range 0.9999 .. 1.0000
+  rejected_tinkly  mean   0.9999  range 0.9999 .. 1.0000
+  mismatched       mean   0.9996  range 0.9992 .. 0.9999
+  AUC good>rejected 0.69 | good>mismatched 0.99 | rejected>mismatched 1.00 | identical>good 1.00
+  AUC good>weak_shots 0.64 | weak_shots>mismatched 0.98
+  ordering identical>good>rejected>mismatched: False
+
+signal (cos_mid)
+  identical        mean   1.0000  range 1.0000 .. 1.0000
+  good_shots       mean   0.9952  range 0.9907 .. 0.9978
+  weak_shots       mean   0.9910  range 0.9817 .. 0.9952
+  rejected_static  mean   0.9903  range 0.9846 .. 0.9939
+  rejected_tinkly  mean   0.9898  range 0.9818 .. 0.9958
+  mismatched       mean   0.9542  range 0.8704 .. 0.9822
+  AUC good>rejected 0.89 | good>mismatched 1.00 | rejected>mismatched 0.99 | identical>good 1.00
+  AUC good>weak_shots 0.84 | weak_shots>mismatched 0.98
+  ordering identical>good>rejected>mismatched: True
+
+signal (cos_early)
+  identical        mean   1.0000  range 1.0000 .. 1.0000
+  good_shots       mean   0.9921  range 0.9872 .. 0.9959
+  weak_shots       mean   0.9837  range 0.9669 .. 0.9915
+  rejected_static  mean   0.9854  range 0.9751 .. 0.9901
+  rejected_tinkly  mean   0.9852  range 0.9757 .. 0.9931
+  mismatched       mean   0.9367  range 0.8624 .. 0.9720
+  AUC good>rejected 0.86 | good>mismatched 1.00 | rejected>mismatched 1.00 | identical>good 1.00
+  AUC good>weak_shots 0.86 | weak_shots>mismatched 0.95
+  ordering identical>good>rejected>mismatched: True
+
+signal (dist_early_milli)
+  identical        mean  -0.0000  range -0.0001 .. 0.0000
+  good_shots       mean   7.8823  range 4.1226 .. 12.7983
+  weak_shots       mean  16.3363  range 8.4832 .. 33.1101
+  rejected_static  mean  14.6323  range 9.8804 .. 24.8968
+  rejected_tinkly  mean  14.8082  range 6.8736 .. 24.2903
+  mismatched       mean  63.2785  range 27.9691 .. 137.5576
+  AUC good>rejected 0.86 | good>mismatched 1.00 | rejected>mismatched 1.00 | identical>good 1.00
+  AUC good>weak_shots 0.86 | weak_shots>mismatched 0.95
+  ordering identical>good>rejected>mismatched: True
+
+signal (cap_tfidf)
+  identical        mean   1.0000  range 1.0000 .. 1.0000
+  good_shots       mean   0.2076  range 0.1012 .. 0.3203
+  weak_shots       mean   0.1234  range 0.0528 .. 0.2376
+  rejected_static  mean   0.1742  range 0.0802 .. 0.3412
+  rejected_tinkly  mean   0.1586  range 0.0646 .. 0.3756
+  mismatched       mean   0.2108  range 0.0913 .. 0.3143
+  AUC good>rejected 0.66 | good>mismatched 0.51 | rejected>mismatched 0.31 | identical>good 1.00
+  AUC good>weak_shots 0.81 | weak_shots>mismatched 0.17
+  ordering identical>good>rejected>mismatched: False
+
+signal (base_logmel)
+  identical        mean   1.0000  range 1.0000 .. 1.0000
+  good_shots       mean   0.9845  range 0.9388 .. 0.9988
+  weak_shots       mean   0.9779  range 0.9364 .. 0.9935
+  rejected_static  mean   0.9927  range 0.9851 .. 0.9964
+  rejected_tinkly  mean   0.9824  range 0.9546 .. 0.9979
+  mismatched       mean   0.6396  range 0.1222 .. 0.9429
+  AUC good>rejected 0.49 | good>mismatched 0.99 | rejected>mismatched 1.00 | identical>good 1.00
+  AUC good>weak_shots 0.69 | weak_shots>mismatched 0.98
+  ordering identical>good>rejected>mismatched: False
+
+signal (cos_L2)
+  identical        mean   1.0000  range 1.0000 .. 1.0000
+  good_shots       mean   0.9921  range 0.9872 .. 0.9959
+  weak_shots       mean   0.9837  range 0.9669 .. 0.9915
+  rejected_static  mean   0.9854  range 0.9751 .. 0.9901
+  rejected_tinkly  mean   0.9852  range 0.9757 .. 0.9931
+  mismatched       mean   0.9367  range 0.8624 .. 0.9720
+  AUC good>rejected 0.86 | good>mismatched 1.00 | rejected>mismatched 1.00 | identical>good 1.00
+  AUC good>weak_shots 0.86 | weak_shots>mismatched 0.95
+  ordering identical>good>rejected>mismatched: True
+
+signal (cos_L8)
+  identical        mean   1.0000  range 1.0000 .. 1.0000
+  good_shots       mean   0.9947  range 0.9900 .. 0.9975
+  weak_shots       mean   0.9892  range 0.9777 .. 0.9949
+  rejected_static  mean   0.9893  range 0.9821 .. 0.9932
+  rejected_tinkly  mean   0.9888  range 0.9806 .. 0.9954
+  mismatched       mean   0.9508  range 0.8740 .. 0.9795
+  AUC good>rejected 0.87 | good>mismatched 1.00 | rejected>mismatched 1.00 | identical>good 1.00
+  AUC good>weak_shots 0.86 | weak_shots>mismatched 0.95
+  ordering identical>good>rejected>mismatched: True
+
+signal (cos_L16)
+  identical        mean   1.0000  range 1.0000 .. 1.0000
+  good_shots       mean   0.9952  range 0.9907 .. 0.9978
+  weak_shots       mean   0.9910  range 0.9817 .. 0.9952
+  rejected_static  mean   0.9903  range 0.9846 .. 0.9939
+  rejected_tinkly  mean   0.9898  range 0.9818 .. 0.9958
+  mismatched       mean   0.9542  range 0.8704 .. 0.9822
+  AUC good>rejected 0.89 | good>mismatched 1.00 | rejected>mismatched 0.99 | identical>good 1.00
+  AUC good>weak_shots 0.84 | weak_shots>mismatched 0.98
+  ordering identical>good>rejected>mismatched: True
+
+layer sweep: AUC good>rejected (raw / centered / z-scored), AUC good>mismatched (centered)
+  layer  0  raw 0.87  cen 0.71  z 0.69   good>mm raw 1.00 cen 1.00 z 1.00
+  layer  1  raw 0.89  cen 0.74  z 0.69   good>mm raw 1.00 cen 1.00 z 1.00
+  layer  2  raw 0.86  cen 0.74  z 0.70   good>mm raw 1.00 cen 1.00 z 1.00
+  layer  3  raw 0.87  cen 0.74  z 0.71   good>mm raw 1.00 cen 1.00 z 1.00
+  layer  4  raw 0.86  cen 0.73  z 0.70   good>mm raw 1.00 cen 1.00 z 1.00
+  layer  5  raw 0.86  cen 0.73  z 0.70   good>mm raw 1.00 cen 1.00 z 1.00
+  layer  6  raw 0.88  cen 0.73  z 0.71   good>mm raw 1.00 cen 1.00 z 1.00
+  layer  7  raw 0.88  cen 0.74  z 0.72   good>mm raw 1.00 cen 1.00 z 1.00
+  layer  8  raw 0.87  cen 0.74  z 0.71   good>mm raw 1.00 cen 1.00 z 1.00
+  layer  9  raw 0.86  cen 0.74  z 0.71   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 10  raw 0.88  cen 0.72  z 0.70   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 11  raw 0.87  cen 0.72  z 0.69   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 12  raw 0.88  cen 0.75  z 0.71   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 13  raw 0.89  cen 0.75  z 0.72   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 14  raw 0.89  cen 0.76  z 0.71   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 15  raw 0.89  cen 0.76  z 0.72   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 16  raw 0.89  cen 0.76  z 0.71   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 17  raw 0.89  cen 0.76  z 0.71   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 18  raw 0.89  cen 0.76  z 0.71   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 19  raw 0.90  cen 0.76  z 0.73   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 20  raw 0.90  cen 0.76  z 0.74   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 21  raw 0.90  cen 0.76  z 0.73   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 22  raw 0.90  cen 0.78  z 0.75   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 23  raw 0.89  cen 0.78  z 0.76   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 24  raw 0.89  cen 0.79  z 0.74   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 25  raw 0.89  cen 0.79  z 0.74   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 26  raw 0.86  cen 0.79  z 0.75   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 27  raw 0.85  cen 0.78  z 0.74   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 28  raw 0.83  cen 0.75  z 0.69   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 29  raw 0.82  cen 0.66  z 0.62   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 30  raw 0.79  cen 0.63  z 0.57   good>mm raw 1.00 cen 1.00 z 1.00
+  layer 31  raw 0.69  cen 0.59  z 0.61   good>mm raw 0.99 cen 0.93 z 1.00
+  layer 32  raw 0.69  cen 0.54  z 0.55   good>mm raw 0.99 cen 1.00 z 1.00
+  best z-scored layer for good>rejected: (0.7571428571428571, 23)

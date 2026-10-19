@@ -8,9 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
@@ -47,28 +52,38 @@ class HandCannonProfileTest {
     }
 
     @Test
-    void boxesMatchTheLayoutSheetExactly() {
-        // tools/asset-gen/model_layouts.md, gun.handcannon: name u v w h d
-        Object[][] layout = { { "frame", 0, 15, 13, 7, 4 }, { "barrel", 0, 26, 16, 3, 3 },
-            { "cylinder", 18, 0, 7, 7, 7 }, { "grip", 0, 0, 5, 11, 4 }, { "hammer", 38, 26, 3, 3, 2 },
-            { "sight", 48, 26, 2, 2, 2 } };
-        assertEquals(layout.length, HandCannonProfile.BOXES.length);
-        for (Object[] row : layout) {
+    void boxesMatchTheCommittedLayoutFile() throws IOException {
+        // tools/asset-gen/gun-paint/handcannon.layout.json is the design source; the BoxSpec rows are generated
+        // from it by gun_paint.py pack, so a hand edit of either side shows up here.
+        String json = new String(
+            Files.readAllBytes(Paths.get("tools/asset-gen/gun-paint/handcannon.layout.json")),
+            StandardCharsets.UTF_8);
+        Pattern row = Pattern.compile(
+            "\"name\": \"(\\w+)\", \"size\": \\[(\\d+), (\\d+), (\\d+)\\], \"pos\": \\[([-\\d.]+), ([-\\d.]+), ([-\\d.]+)\\]"
+                + ".*?\"uv\": \\[(\\d+), (\\d+)\\]");
+        Matcher m = row.matcher(json);
+        int count = 0;
+        while (m.find()) {
             BoxSpec found = null;
             for (BoxSpec b : HandCannonProfile.BOXES) {
                 if (b.name()
-                    .equals(row[0])) {
+                    .equals(m.group(1))) {
                     found = b;
                 }
             }
-            assertNotNull(found, "missing box " + row[0]);
-            assertEquals(row[1], found.u(), row[0] + " u");
-            assertEquals(row[2], found.v(), row[0] + " v");
-            assertEquals(row[3], found.w(), row[0] + " w");
-            assertEquals(row[4], found.h(), row[0] + " h");
-            assertEquals(row[5], found.d(), row[0] + " d");
+            assertNotNull(found, "missing box " + m.group(1));
+            assertEquals(Integer.parseInt(m.group(2)), found.w(), m.group(1) + " w");
+            assertEquals(Integer.parseInt(m.group(3)), found.h(), m.group(1) + " h");
+            assertEquals(Integer.parseInt(m.group(4)), found.d(), m.group(1) + " d");
+            assertEquals(Float.parseFloat(m.group(5)), found.x(), 1e-6, m.group(1) + " x");
+            assertEquals(Float.parseFloat(m.group(6)), found.y(), 1e-6, m.group(1) + " y");
+            assertEquals(Float.parseFloat(m.group(7)), found.z(), 1e-6, m.group(1) + " z");
+            assertEquals(Integer.parseInt(m.group(8)), found.u(), m.group(1) + " u");
+            assertEquals(Integer.parseInt(m.group(9)), found.v(), m.group(1) + " v");
             assertEquals(0, found.part());
+            count++;
         }
+        assertEquals(HandCannonProfile.BOXES.length, count, "every box is in the layout file");
     }
 
     @Test
@@ -116,17 +131,17 @@ class HandCannonProfileTest {
 
     @Test
     void theBarrelPointsAlongPlusXAndTheMuzzleIsAtItsFront() {
-        float barrelFront = 0;
+        float muzzleFront = 0;
         float maxX = -Float.MAX_VALUE;
         for (BoxSpec b : HandCannonProfile.BOXES) {
             maxX = Math.max(maxX, b.x() + b.w());
             if (b.name()
-                .equals("barrel")) {
-                barrelFront = b.x() + b.w();
+                .equals("muzzle")) {
+                muzzleFront = b.x() + b.w();
             }
         }
-        assertEquals(maxX, barrelFront, "the barrel is the frontmost box");
-        assertEquals(barrelFront / 16.0f, HandCannonProfile.MUZZLE[0], 1e-6);
+        assertEquals(maxX, muzzleFront, "the muzzle ring is the frontmost box");
+        assertEquals(muzzleFront / 16.0f, HandCannonProfile.MUZZLE[0], 1e-6);
     }
 
     @Test

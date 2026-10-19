@@ -8,6 +8,7 @@ Every GregGuns texture, sound, logo and infographic is generated procedurally by
 | `icons.py` (uses `pixel.py`) | 16×16 item icons | `src/main/resources/assets/gregguns/textures/items/` |
 | `blocks.py` (uses `blocktex.py`, `machines.py`, `blockart.py`, `fx.py`) | block, machine-overlay, casing and particle textures, including animated strips with `.mcmeta` | `textures/blocks/`, `textures/particles/` |
 | `gui.py`, `models.py` (use `modeltex.py`) | GUI sprite sheets; armor, entity and model textures. UV rectangles are listed in `model_layouts.md` | `textures/gui/`, `textures/models/` |
+| `armor_repaint.py` | region-painted sheets for the t1-t3 biped armor sets, matched to the reference palettes. Run it after `models.py`, which writes the same sheets. `armor_variant_check.py` checks that each variant differs from its base per region | `textures/models/armor/` |
 | `gen_sounds.py` (uses `sfx.py`, `sndlib.py`, `sndengines.py` and the per-family `sounds_guns.py`, `sounds_npcs.py`, `sounds_effects.py`, `sounds_misc.py`; `sound_preview.py` draws spectrograms) | `.ogg` sound effects, matched to the [audio profiles](../../docs/techguns-spec/AUDIO-PROFILES.md) and to the measured targets in `sound-targets.json` | `sounds/`, `sounds.fragment.json` |
 | `sound_compare.py` | numeric A/B check of generated sounds against `sound-targets.json` (band balance, contour, decay points, onsets, loudness) | console |
 | `branding.py` | logo, banner, social preview, infographics | [docs/assets/](../../docs/assets/README.md) |
@@ -22,6 +23,7 @@ python -I -X utf8 tools/asset-gen/icons.py
 python -I -X utf8 tools/asset-gen/blocks.py
 python -I -X utf8 tools/asset-gen/gui.py
 python -I -X utf8 tools/asset-gen/models.py
+python -I -X utf8 tools/asset-gen/armor_repaint.py
 python -I -X utf8 tools/asset-gen/gen_sounds.py
 python -I -X utf8 tools/asset-gen/branding.py
 python -I -X utf8 tools/asset-gen/merge_credits.py

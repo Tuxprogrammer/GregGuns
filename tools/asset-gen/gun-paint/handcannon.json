@@ -1,0 +1,28 @@
+{
+ "gun": "handcannon",
+ "textures": [{"file": "handcannon.png"}],
+ "roles": {
+  "metal": {"material": "steel", "base": "#8E9296"},
+  "band": {"material": "steel", "base": "#C2C6CA"},
+  "furn": {"material": "wood", "base": "#54402A"},
+  "bore": {"material": "flat", "base": "#18191B"}
+ },
+ "boxes": {
+  "handle_butt": {"role": "furn", "grain": "x"},
+  "handle_mid": {"role": "furn", "grain": "x"},
+  "handle_neck": {"role": "furn", "grain": "x"},
+  "breech": {"role": "band", "painters": [
+    {"type": "rect", "faces": ["top"], "x": 2, "y": 1, "w": 4, "h": 3, "color": "#0E0E10"},
+    {"type": "seam", "faces": ["front", "back", "top", "bottom"], "at": 7}]},
+  "vent_rear": {"role": "band"},
+  "vent_front": {"role": "band"},
+  "barrel_core": {"role": "metal", "painters": [
+    {"type": "bands", "faces": ["top", "front", "back", "bottom"], "start": 4, "every": 11},
+    {"type": "gradient", "faces": ["front", "back"], "top": 1.05, "bottom": 0.9}]},
+  "barrel_flank": {"role": "metal", "painters": [
+    {"type": "bands", "faces": ["front", "back", "top", "bottom"], "start": 4, "every": 11},
+    {"type": "gradient", "faces": ["top"], "top": 1.1, "bottom": 0.95}]},
+  "muzzle": {"role": "metal", "painters": [
+    {"type": "bore", "faces": ["left"], "size": 4}]}
+ }
+}

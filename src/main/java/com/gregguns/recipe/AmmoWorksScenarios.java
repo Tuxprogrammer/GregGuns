@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -19,6 +18,7 @@ import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
 import com.gregguns.block.GregGunsCasings;
 import com.gregguns.core.testing.Scenario;
+import com.gregguns.core.testing.ScenarioArea;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
@@ -406,14 +406,36 @@ public final class AmmoWorksScenarios {
 
     /**
      * Fails the scenario if a dropped item survived inside its own arena, and removes it so later scenarios are clean.
+     * The arena is the harness's cleared box: the origin's X and Z +- {@value #AREA_RADIUS}, from the floor layer
+     * (origin Y - 1) up {@link ScenarioArea#CLEAR_HEIGHT} layers. Items outside that box are not the scenario's: the
+     * dev world's terrain keeps worldgen items underground (mineshaft rails, torches, settled gravel; seen 60 blocks
+     * below the floor, aged hundreds of ticks), and a column-only test counted them.
      */
     private static void noStray(ScenarioContext ctx, ScenarioResult.Builder out) {
         int stray = 0;
         for (Object o : new java.util.ArrayList<>(ctx.world().loadedEntityList)) {
-            Entity e = (Entity) o;
-            if (e instanceof EntityItem && Math.abs(e.posX - ctx.originX()) <= AREA_RADIUS
-                && Math.abs(e.posZ - ctx.originZ()) <= AREA_RADIUS) {
+            if (!(o instanceof EntityItem)) {
+                continue;
+            }
+            EntityItem e = (EntityItem) o;
+            if (Math.abs(e.posX - ctx.originX()) <= AREA_RADIUS && Math.abs(e.posZ - ctx.originZ()) <= AREA_RADIUS
+                && e.posY >= ctx.originY() - 1
+                && e.posY < ctx.originY() + ScenarioArea.CLEAR_HEIGHT) {
                 stray++;
+                GregGuns.LOG.warn(
+                    "stray item in the arena: {} x{} at {}, {}, {} (origin {}, {}, {}), age {}, world tick {}",
+                    e.getEntityItem()
+                        .getDisplayName(),
+                    e.getEntityItem().stackSize,
+                    e.posX,
+                    e.posY,
+                    e.posZ,
+                    ctx.originX(),
+                    ctx.originY(),
+                    ctx.originZ(),
+                    e.age,
+                    ctx.world()
+                        .getTotalWorldTime());
                 e.setDead();
             }
         }
