@@ -133,13 +133,12 @@ public final class LmgProfile {
     // and the idle position puts this model's box centre on the family anchor. The notes' fire and reload offsets are
     // multiplied by K so they move the gun as far on screen as the notes intend.
     private static final double SHEET_FP_SCALE = 1.4;
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("lmg", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.2, -0.25 });
+    private static final double FP_SCALE = FIT.fpScale;
     private static final double FP_AMP = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
     private static final double[] CENTRE = FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE);
-    private static final double[] IDLE = FirstPersonFit.idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, CENTRE);
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -214,8 +213,8 @@ public final class LmgProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.8)
-            .translate(-1.3, -0.6, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil about (0, 0.3, -0.9): about 15 degrees of pitch over the first half of the window.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -244,12 +243,13 @@ public final class LmgProfile {
         // black-backed. The first-person offset is drawn in a fixed frame, not on the gun, so it is the AK-47's: both
         // guns are fitted to 2 blocks on screen about the same anchor with the muzzle at the front end (the muzzle
         // height differs by under 0.02 block). Headless work cannot look at the screen, so this is unverified in game.
+        double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.024,
-            0.006,
-            0.453,
+            fo[0],
+            fo[1],
+            fo[2],
             1.5,
             new double[] { 0, 0, 0 },
             true,

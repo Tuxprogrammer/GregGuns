@@ -69,15 +69,11 @@ public final class Pistol9mmProfile {
         // END GENERATED BOXES
     };
 
-    /**
-     * Where the box centre of a Z-family handgun sits in the scaled gun frame, blocks: the place the previous pistol
-     * was tuned to ({@code S(1.0)}, {@code T(-1.2, -1.0, -1.7)}), so the new model is framed the same way.
-     */
-    private static final double[] ANCHOR = { -1.2, -0.684, -1.4275 };
     /** First-person scale from {@link FirstPersonFit}: the model drawn 15/16 of a block long. */
-    public static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit.idleOffset(ANCHOR, FP_SCALE, gunFrameCentre());
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("pistol_9mm", BOXES, MODEL_SCALE, false, 225, 135, new double[] { 0, 0, 0.2 });
+    public static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
 
     /** The sheet's render transforms, timing and muzzle flash for the pistol. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
@@ -99,12 +95,6 @@ public final class Pistol9mmProfile {
 
     private Pistol9mmProfile() {}
 
-    /** The box centre in the gun frame: the model's quarter turn about Y sends (x, y, z) to (z, y, -x). */
-    private static double[] gunFrameCentre() {
-        double[] c = FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE);
-        return new double[] { c[2], c[1], -c[0] };
-    }
-
     private static GunTransforms buildTransforms() {
         // First person (Z-family): rotX180, rotY225, S(FP_SCALE), then the state row.
         // Deviation: the notes say S(2.0) and T(-0.55, -0.45, -0.8). A 15/16 block long pistol at that scale ran off
@@ -125,7 +115,7 @@ public final class Pistol9mmProfile {
             .translate(
                 TransformProgram.c(IDLE[0]),
                 TransformProgram.c(IDLE[1]),
-                (p, part) -> IDLE[2] - yF(p) * (0.3 + 0.2 * part))
+                (p, part) -> IDLE[2] - yF(p) * (0.3 + 0.2 * part) / FP_SCALE)
             .build();
         // Reload: tilt the muzzle up to 50 degrees and back.
         TransformProgram fpReload = TransformProgram.builder()
@@ -136,8 +126,8 @@ public final class Pistol9mmProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(135)
-            .scale(1.5)
-            .translate(0.05, -0.55, 0.2)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil about (0, 0, 0.9): rotX(-15 K); the slide also slides back 0.15 x 2p while p < 0.5.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -162,12 +152,13 @@ public final class Pistol9mmProfile {
             .build();
         // Deviation: the sheet says "default blend" for the pistol flash, but the GregGuns sheet muzzleflash2.png is
         // an additive black-background sheet (docs/assets/MANIFEST.md), so it is drawn additively.
+        double[] fo = FIT.flashOffset(MUZZLE, 1.0);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.65,
-            -0.75,
-            1.55,
+            fo[0],
+            fo[1],
+            fo[2],
             1.0,
             new double[] { 0, 0, 0 },
             true,

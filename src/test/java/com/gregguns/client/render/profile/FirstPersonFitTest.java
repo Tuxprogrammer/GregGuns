@@ -2,7 +2,6 @@ package com.gregguns.client.render.profile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,17 +34,6 @@ class FirstPersonFitTest {
     void theFactorKeepsTheSheetsMotionOnScreen() {
         assertEquals(2.0, FirstPersonFit.translationFactor(2.0, 1.0), 1e-12);
         assertEquals(3.1, FirstPersonFit.translationFactor(1.5, 1.5 / 3.1), 1e-12);
-    }
-
-    @Test
-    void everyGunOfAClassEndsUpTheSameLengthOnScreen() {
-        double revolver = FirstPersonFit.lengthBlocks(RevolverProfile.BOXES, RevolverProfile.MODEL_SCALE)
-            * RevolverProfile.FP_SCALE;
-        double handCannon = FirstPersonFit.lengthBlocks(HandCannonProfile.BOXES, HandCannonProfile.MODEL_SCALE)
-            * HandCannonProfile.FP_SCALE;
-        assertEquals(FirstPersonFit.HANDGUN_LENGTH, revolver, 1e-6);
-        assertEquals(FirstPersonFit.HANDGUN_LENGTH, handCannon, 1e-6);
-        assertTrue(RevolverProfile.FP_SCALE < 1.0, "the sheet's S(1.5) was far too big for our larger model");
     }
 
     @Test

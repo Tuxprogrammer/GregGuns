@@ -129,8 +129,11 @@ final class GunItemRenderer implements IItemRenderer {
             try {
                 if (mirrored) {
                     // The second gun: a mirror image about the screen centre. Mirroring flips the winding.
-                    GL11.glTranslated(AkimboLayout.mirrorTranslateX(hand), 0.0, 0.0);
+                    double[] shift = AkimboLayout.mirrorTranslate(hand);
+                    GL11.glTranslated(shift[0], shift[1], shift[2]);
+                    GL11.glRotated(-AkimboLayout.MIRROR_YAW, 0.0, 1.0, 0.0);
                     GL11.glScaled(AkimboLayout.mirrorScaleX(hand), 1.0, 1.0);
+                    GL11.glRotated(AkimboLayout.MIRROR_YAW, 0.0, 1.0, 0.0);
                     GL11.glFrontFace(GL11.GL_CW);
                 }
                 drawGun(stack, type, holder, hand, reload, recoil, flash, firstPerson);

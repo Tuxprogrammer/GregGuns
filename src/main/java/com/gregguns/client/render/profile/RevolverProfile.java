@@ -87,21 +87,13 @@ public final class RevolverProfile {
      * The first-person scale from {@link FirstPersonFit}: the 31-texel revolver is drawn as long on screen as the
      * 9mm Pistol (15/16 of a block), which is about S(0.48), not the sheet's S(1.5).
      */
-    public static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("revolver", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, -0.05, 0.2 });
+    public static final double FP_SCALE = FIT.fpScale;
     /** The sheet's fire and reload translation deltas are multiplied by this, because the scale changed. */
     private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
-    /**
-     * Nudge (FirstPersonFit step 4): the revolver's grip hangs 14 texels below the top strap, so its box centre sits
-     * low and the grip ran off the bottom-right of the screen at the family anchor (first-person screenshot). The
-     * anchor is moved up the screen and toward the middle so the whole gun, grip included, is in view, as the design
-     * notes' framing target asks (side plus the back of the frame).
-     */
-    private static final double[] ANCHOR = { FirstPersonFit.ANCHOR_X_FAMILY[0] + 0.7, FirstPersonFit.ANCHOR_X_FAMILY[1],
-        FirstPersonFit.ANCHOR_X_FAMILY[2] - 0.4 };
     /** The idle first-person translation from {@link FirstPersonFit}: this model's box centre on the family anchor. */
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(ANCHOR, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final double[] IDLE = FIT.fpIdle;
 
     /** The sheet's render transforms, timing and muzzle flash for the revolver. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
@@ -157,8 +149,8 @@ public final class RevolverProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.85)
-            .translate(-1.4, -0.8, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil about (0, 0.25, 1.0): while p < 0.5, rotZ(-30 K).
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -185,12 +177,13 @@ public final class RevolverProfile {
         // frame, not on the gun, so after the fit-rule rescale it floated above the muzzle. Measured on screen
         // (960x540 sweep): +0.5 on x moves it 33 px up, +0.5 on z moves it 49 px right. (-1.25, -2.5, 2.0) puts it on
         // the muzzle of an X-family handgun held at FirstPersonFit.ANCHOR_X_FAMILY.
+        double[] fo = FIT.flashOffset(MUZZLE, 1.85);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash4x4.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -1.25,
-            -2.5,
-            2.0,
+            fo[0],
+            fo[1],
+            fo[2],
             1.85,
             new double[] { 0, 0, 0 },
             true,

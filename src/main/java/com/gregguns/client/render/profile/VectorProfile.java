@@ -101,12 +101,10 @@ public final class VectorProfile {
     // Deviation: the notes give first-person scale 1.4 and an idle offset measured from the origin of Techguns' model.
     // The scale follows the FirstPersonFit rule with the long-gun target of 2 blocks on screen (the bolt-action's
     // precedent), and the idle position puts this model's box centre on the family anchor.
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("vector", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, 0 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -144,7 +142,7 @@ public final class VectorProfile {
         // Firing: a tiny muzzle-up kick, 5 degrees at the dip (yF = -0.5), and 0.15 block back on screen.
         TransformProgram fpFire = TransformProgram.builder()
             .rotZ((p, part) -> 10.0 * yF(p))
-            .translate((p, part) -> FP_X + 0.3 / FP_SCALE * yF(p), (p, part) -> FP_Y, (p, part) -> FP_Z)
+            .translate((p, part) -> FP_X + 0.42 / FP_SCALE * yF(p), (p, part) -> FP_Y, (p, part) -> FP_Z)
             .build();
         // Reload: the gun tips up to 50 degrees at mid-reload and comes back, over the 40 ticks.
         TransformProgram fpReload = TransformProgram.builder()
@@ -156,8 +154,8 @@ public final class VectorProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.9)
-            .translate(-1.2, -0.75, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the gun pitches up 15 degrees about the hand, in the first quarter of the first half.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -186,12 +184,13 @@ public final class VectorProfile {
         // sits at the same place on screen (same 2-block length and anchor, muzzle on the same side of the box
         // centre). Headless work cannot look at the screen, so this is unverified in game. muzzleFlash2 sheet,
         // additive because the GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.024,
-            0.006,
-            0.453,
+            fo[0],
+            fo[1],
+            fo[2],
             1.5,
             new double[] { 0, 0, 0 },
             true,

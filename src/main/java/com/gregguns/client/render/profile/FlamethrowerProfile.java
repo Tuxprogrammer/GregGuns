@@ -94,13 +94,12 @@ public final class FlamethrowerProfile {
     // the idle position puts this model's box centre on the family anchor. The reload shift is multiplied by FP_AMP so
     // it moves the gun as far on screen as the notes intend.
     private static final double SHEET_FP_SCALE = 2.0;
-    /** On-screen length of the flamethrower in first person, blocks of the scaled frame. */
-    private static final double LONG_GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), LONG_GUN_LENGTH);
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("flamethrower", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.2, -0.25 });
+    private static final double FP_SCALE = FIT.fpScale;
     private static final double FP_AMP = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
     private static final double[] CENTER = FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE);
-    private static final double[] IDLE = FirstPersonFit.idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, CENTER);
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -154,8 +153,8 @@ public final class FlamethrowerProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.1)
-            .translate(-0.75, -0.6, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Reload: up to -30 degrees about X and -40 about Y at mid-animation, on a triangle.
         TransformProgram tpReload = TransformProgram.builder()

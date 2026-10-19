@@ -318,11 +318,7 @@ class RevolverProfileTest {
             Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", String.format("S(%.4f,%.4f,%.4f)", s, s, s)),
             run(t.fpBase(), 0, 0));
         // The idle offset puts the box centre on the revolver's nudged anchor (FirstPersonFit).
-        double[] idle = FirstPersonFit.idleOffset(
-            new double[] { FirstPersonFit.ANCHOR_X_FAMILY[0] + 0.7, FirstPersonFit.ANCHOR_X_FAMILY[1],
-                FirstPersonFit.ANCHOR_X_FAMILY[2] - 0.4 },
-            s,
-            FirstPersonFit.centerBlocks(RevolverProfile.BOXES, RevolverProfile.MODEL_SCALE));
+        double[] idle = InHandTestSupport.placement(ClientGunDefinitions.byName("revolver")).fpIdle;
         assertEquals(
             Arrays.asList(String.format("T(%.4f,%.4f,%.4f)", idle[0], idle[1], idle[2])),
             run(t.fpIdle(), 0, 0));
@@ -337,13 +333,7 @@ class RevolverProfileTest {
     @Test
     void thirdPersonRowsFollowTheSheet() {
         GunTransforms t = RevolverProfile.TRANSFORMS;
-        assertEquals(
-            Arrays.asList(
-                "R(180.0000;1,0,0)",
-                "R(225.0000;0,1,0)",
-                "S(0.8500,0.8500,0.8500)",
-                "T(-1.4000,-0.8000,0.0000)"),
-            run(t.tpBase(), 0, 0));
+        assertEquals(InHandTestSupport.tpBaseRows("revolver"), run(t.tpBase(), 0, 0));
         List<String> recoil = run(t.tpRecoil(), 0.1, 0);
         assertEquals("T(0.0000,0.2500,1.0000)", recoil.get(0));
         assertTrue(

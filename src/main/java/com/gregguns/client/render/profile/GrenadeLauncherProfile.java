@@ -129,13 +129,11 @@ public final class GrenadeLauncherProfile {
     // the idle position puts this model's box centre on the family anchor. The notes' fire and reload offsets are
     // multiplied by K so they move the gun as far on screen as the notes intend.
     private static final double SHEET_FP_SCALE = 2.0;
-    /** On-screen length of the launcher in first person, blocks of the scaled frame. */
-    private static final double LONG_GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), LONG_GUN_LENGTH);
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("grenade_launcher", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.2, -0.25 });
+    private static final double FP_SCALE = FIT.fpScale;
     private static final double FP_AMP = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -206,8 +204,8 @@ public final class GrenadeLauncherProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.1)
-            .translate(-0.85, -0.7, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the gun pitches up in the first half of the window, then settles; the drum turns one chamber.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -236,12 +234,13 @@ public final class GrenadeLauncherProfile {
         // Muzzle flash: muzzleflash2 sheet at scale 1.5, additive because the GregGuns sheet is black-backed. The
         // first-person offset is drawn in a fixed frame, not on the gun; it is carried over from the AK-47's, which
         // shares the long-gun family anchor and 2-block length, and is unverified in game (headless work).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.024,
-            0.006,
-            0.453,
+            fo[0],
+            fo[1],
+            fo[2],
             1.5,
             new double[] { 0, 0, 0 },
             true,
