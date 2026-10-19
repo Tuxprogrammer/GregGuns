@@ -135,12 +135,14 @@ class ModelExportTest {
         ModelExporter.exportProfile(dir, TeslaRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, SonicRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, BlasterRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.BioGunProfile.DEFINITION);
         ModelExporter.exportProfile(dir, DeatomizerPistolProfile.DEFINITION);
         ModelExporter.exportProfile(dir, ScatterLaserRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.NetherBlasterProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.GrimReaperProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.AlienBlasterProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.ChainsawProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.PowerHammerProfile.DEFINITION);
     }
 
     /** Every accessory model is exported with one JSON box per model box. */
