@@ -655,3 +655,38 @@ def _recipe(name):
 
 for _nm in PARAMS:
     REGISTRY.insert(0, (_nm, _recipe(_nm)))
+
+
+# --------------------------------------------------------------------------- flashbang (clean-room recipe)
+def flashbang_bang(c, N):
+    """Concussive bang: a 75 Hz sub thump with a short pitch drop, a low-passed noise body that decays linearly in dB
+    (about -33 dB per second), a brief mid crack at t=0 and a string of small decaying room reflections
+    (low-passed noise bursts) over the first second.  Little above 4 kHz.  Length 1.21 s."""
+    sr, rng = c.sr, c.rng
+    c.n = sfx.n_of(sr, 1.21)
+    c.conform_bands = False
+    c.fill_tail = False
+    get_tg(c).trail = 0.0
+    m = Mix(c, N)
+    m.add(sub_drop(sr, 110, 70, 0.9, 0.35, k=0.03, attack=0.004), 0.0, 1.0)
+    nb = sfx.n_of(sr, 1.2)
+    tb = np.arange(nb) / sr
+    body = sfx.fftfilt(sfx.noise(nb, rng), sr, hp=60, lp=450, order=3)
+    env = 10 ** (-(33.0 * np.maximum(tb - 0.08, 0.0)) / 20.0) * np.minimum(tb / 0.04, 1.0)
+    m.add(_u(body) * env, 0.0, 1.0)
+    nm_ = sfx.n_of(sr, 1.2)
+    mid = sfx.fftfilt(sfx.noise(nm_, rng), sr, hp=450, lp=2500, order=2)
+    m.add(_u(mid) * 10 ** (-(45.0 * np.maximum(tb - 0.04, 0.0)) / 20.0) * np.minimum(tb / 0.02, 1.0), 0.0, 0.35)
+    nk = sfx.n_of(sr, 0.03)
+    m.add(_u(_band(sfx.noise(nk, rng) * sfx.exp_env(nk, sr, 0.006, attack=0.0005), sr, 200, 5000)), 0.0, 0.2)
+    for t0, g in ((0.125, 0.5), (0.245, 0.55), (0.3475, 0.45), (0.4025, 0.4), (0.45, 0.4), (0.545, 0.35), (0.615, 0.3),
+                  (0.7675, 0.3), (0.8925, 0.25), (0.955, 0.2), (1.105, 0.15)):
+        nr = sfx.n_of(sr, 0.09)
+        r = _band(sfx.noise(nr, rng), sr, 100, 1800, 2) * sfx.exp_env(nr, sr, 0.02, attack=0.002)
+        m.add(_u(r), t0, g * 10 ** (-(25.0 * t0) / 20.0))
+    y = m.out
+    # a concussion is dense: soft saturation flattens the crest to about 10 dB
+    return np.tanh(3.0 * y / (np.max(np.abs(y)) + 1e-9)) / np.tanh(3.0)
+
+
+REGISTRY.insert(0, ("flashbang_bang", flashbang_bang))
