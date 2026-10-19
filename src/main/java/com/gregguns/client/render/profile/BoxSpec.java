@@ -27,6 +27,7 @@ public final class BoxSpec {
     private final float pivotZ;
     private final float tiltZDegrees;
     private final float tiltXDegrees;
+    private final float tiltYDegrees;
 
     /**
      * @param name         label, matches the layout sheet
@@ -56,7 +57,20 @@ public final class BoxSpec {
      */
     public BoxSpec(String name, int part, int u, int v, int w, int h, int d, float x, float y, float z, float[] pivot,
         float tiltZDegrees, float tiltXDegrees) {
+        this(name, part, u, v, w, h, d, x, y, z, pivot, tiltZDegrees, tiltXDegrees, 0.0f);
+    }
+
+    /**
+     * As the two-tilt constructor, with a third: a turn about the model Y axis (vertical) through the pivot, used to
+     * show a square post as a diamond from above or to yaw a small side fitting. Use it with one tilt at a time.
+     *
+     * @param tiltYDegrees tilt about the model Y axis through the pivot, degrees; the pivot is used when any of the
+     *                     three tilts is not 0
+     */
+    public BoxSpec(String name, int part, int u, int v, int w, int h, int d, float x, float y, float z, float[] pivot,
+        float tiltZDegrees, float tiltXDegrees, float tiltYDegrees) {
         this.tiltXDegrees = tiltXDegrees;
+        this.tiltYDegrees = tiltYDegrees;
         this.name = name;
         this.part = part;
         this.u = u;
@@ -154,6 +168,11 @@ public final class BoxSpec {
     /** @return tilt about X in degrees, 0 for none */
     public float tiltXDegrees() {
         return tiltXDegrees;
+    }
+
+    /** @return tilt about Y in degrees, 0 for none */
+    public float tiltYDegrees() {
+        return tiltYDegrees;
     }
 
     /** @return tilt about Z in degrees, 0 for none */

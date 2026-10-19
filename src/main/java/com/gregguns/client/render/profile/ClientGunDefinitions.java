@@ -25,7 +25,9 @@ public final class ClientGunDefinitions {
             BoltActionRifleProfile.DEFINITION,
             ThompsonProfile.DEFINITION,
 
-            Mac10Profile.DEFINITION));
+            Mac10Profile.DEFINITION,
+
+            M4Profile.DEFINITION));
 
     /**
      * The guns that have no 3D profile yet and are drawn as their flat item icon in hand, in the world and in the
@@ -35,7 +37,7 @@ public final class ClientGunDefinitions {
      * giving a gun its clean-room profile means removing its name here.
      */
     public static final List<String> FLAT_ICON_FALLBACK = Collections
-        .unmodifiableList(Arrays.asList("m4", "ak47"));
+        .unmodifiableList(Arrays.asList("ak47"));
 
     private ClientGunDefinitions() {}
 
