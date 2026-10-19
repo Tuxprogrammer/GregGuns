@@ -76,6 +76,19 @@ One block `gregguns:explosive_charge` with two metas (0 TNT at MV, 1 Advanced at
 - **Not built.** Retaliation against whoever hurt the turret (M7 factions), `turretBeep` and `turretGunequip` sounds, the wrench-dismantle NBT carry, the death-at-placement flag, armor-dependent textures, the Techguns GUI art. The Turret recipe's Concrete ballast is GT's concrete block until the GregGuns Concrete exists.
 - **Placeholder rendering.** The block is a GT casing with the Gun Mount Hatch front. The entity uses `TurretModel`, built from the one box list in `com.gregguns.client.utility.TurretGeometry` (units, frame and moving parts are in its Javadoc); the base boxes in that list are not drawn yet.
 
+## Rampart built notes (M6 chunk 5)
+
+`MTERampart` (MTE 20120, `com.gregguns.utility.rampart`) and `MTEGunMountHatch` (MTE 20121 to 20124, MV to IV) implement the sheet's Rampart. The pure rules are `RampartShape` (pieces, counts, offsets, non-convexity), `BastionPlating` (metas 7 to 10 of `gregguns:casings`, armor and recipe data), `RampartPower` (draw and all-or-nothing payment) and `RampartRecipeSpec` (hatch rows). The hatch is the `TurretHost` of its mount, so `TurretEntity` is the one the single Turret uses and needed no change. Decisions, each marked `// Deviation:` in code:
+
+- **Gun in and out.** Right-click a Gun Mount Hatch with a gun to mount it and with an empty hand to take it back; there is no hatch GUI. Pipes can insert a gun, never pull one. The controller's security level decides who may.
+- **Settings.** Security and Target Animals live on the controller and are changed with a Screwdriver (sneak for the animal switch), owner only; there is no controller GUI. The Turret's redstone mode is replaced by the controller's own on/off.
+- **Power.** The controller has no recipe. `checkProcessing` sets a rolling 20-tick cycle and `lEUt` to 4 EU/t per mount; healing and repair are paid per mount from the same Energy Hatches, all or nothing. When GT stops the machine for lack of power every mount goes inactive.
+- **Ammo.** A mount reload takes magazines from every Input Bus and puts the empties on an Output Bus (the rest dropped only on a real overflow, MUTL-24). An ME Input Bus is not proven.
+- **Structure.** The wall extends to the right of the controller. A failed bay probe discards the hatch and plating it saw. A structure check that fails, or breaking the controller, kills every mount's turret; breaking one hatch kills that mount's turret at once.
+- **Gun tier gate.** A hatch refuses a gun above its tier. No gun above MV exists yet, so the refusal is proven by `RampartRecipeSpecTest` through the shared `TurretLogic.gunAllowed`, not in the world.
+- **Placeholder rendering.** The controller and hatches use the existing `rampart` and `gun_mount_hatch` overlays on the Iron Bastion Plating texture. Bastion Plating blocks have their own textures. Visual check owed. Asset gaps: none beyond the Turret's.
+- **Concrete.** The plating and controller recipes use GT's concrete block until GregGuns Concrete exists, as the Turret does.
+
 ## Pack-side changes
 
 None.
