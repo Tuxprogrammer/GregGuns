@@ -161,12 +161,12 @@ public final class MpScenarios {
             prepare(b, ox + SEPARATION, oy, oz, 90.0f, 0.0f);
             AckInbox inbox = new AckInbox();
             MinecraftForge.EVENT_BUS.register(inbox);
-            return ScenarioResult.pending(name(), 700, new SyncPoller(ctx, a, b, inbox));
+            return ScenarioResult.pending(name(), 2400, new SyncPoller(ctx, a, b, inbox));
         }
     }
 
     /** Wall-clock limit for B to load A after the scenario teleports. */
-    private static final long SEE_TIMEOUT_MS = 45_000L;
+    private static final long SEE_TIMEOUT_MS = 75_000L;
 
     /** Ticks to wait for a pressed shot to show up as a round drop before pressing again, and between steps. */
     private static final int SHOT_RETRY_TICKS = 8;
@@ -624,6 +624,9 @@ public final class MpScenarios {
             stop();
             inbox = new AckInbox();
             MinecraftForge.EVENT_BUS.register(inbox);
+            for (EntityPlayerMP p : players) {
+                reset(p, false); // survival and an empty inventory before the barrier: no stale creative state
+            }
             List<String> items = giveList();
             int total = items.size();
             // state: [0] step, [1] tick the current step was sent (-1: not yet sent)

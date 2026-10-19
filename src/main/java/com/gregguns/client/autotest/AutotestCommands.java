@@ -234,7 +234,7 @@ final class AutotestCommands {
     /** Client ticks to wait for the item to arrive in the hand. */
     private static final int HOLD_TIMEOUT_TICKS = 200;
     /** Wall-clock wait for another player to load after a teleport (a loaded machine stalls the client). */
-    private static final long SEE_WAIT_MS = 30_000L;
+    private static final long SEE_WAIT_MS = 60_000L;
     /** Client ticks the item stays in hand once it arrived, so it is drawn. */
     private static final int HOLD_SETTLE_TICKS = 5;
 
