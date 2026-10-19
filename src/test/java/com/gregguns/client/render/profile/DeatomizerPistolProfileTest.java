@@ -81,11 +81,11 @@ class DeatomizerPistolProfileTest {
         }
         // The prongs are tilted, so the untilted bound runs on to 18; the turned tips end near 18.
         assertEquals(-0.5, box("rear_plate").x() - 0.5, 1e-6, "rear plate lower edge reaches about -0.5");
-        assertTrue(maxX >= 18.0 && maxX <= 18.5, "length to the prong tips about 18.3: " + maxX);
+        assertTrue(maxX >= 17.5 && maxX <= 18.5, "length to the prong tips about 18.3: " + maxX);
         assertEquals(0.2, box("laser").y(), 1e-6, "the turned laser rod's top is at Y 0");
         assertEquals(11.85, lowest(box("grip")), 0.1, "grip bottom about 11.9");
         assertTrue(maxZ - minZ <= 4.5 && maxZ - minZ >= 3.5, "total width about 4: " + (maxZ - minZ));
-        assertEquals(18.0f / 16f, DeatomizerPistolProfile.MUZZLE[0], 1e-6, "muzzle at the prong tips");
+        assertEquals(17.84f / 16f, DeatomizerPistolProfile.MUZZLE[0], 1e-6, "muzzle at the prong tips");
         assertEquals(3.5f / 16f, DeatomizerPistolProfile.MUZZLE[1], 1e-6, "on the bore axis");
     }
 
@@ -147,7 +147,7 @@ class DeatomizerPistolProfileTest {
             assertEquals(2, p.w());
             assertEquals(1, p.h());
             assertEquals(1, p.d());
-            assertEquals(16f, p.pivotX(), 1e-6, n + " hinged at X 16");
+            assertEquals(15.8f, p.pivotX(), 1e-6, n + " hinged at X 15.8");
             float tilt = Math.max(Math.abs(p.tiltZDegrees()), Math.abs(p.tiltYDegrees()));
             assertEquals(23f, tilt, 1e-6, n + " turned 23 degrees");
         }

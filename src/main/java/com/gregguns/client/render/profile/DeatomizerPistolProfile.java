@@ -16,7 +16,7 @@ import com.gregguns.client.anim.SpriteSheet;
  * The boxes are original GregGuns geometry, built clean-room from written design notes only
  * ({@code docs/techguns-spec/03-gun-visuals-audio/model-notes/deatomizer_pistol.md}: proportions, silhouettes,
  * palettes), by an agent that never saw the original model or texture. Nothing is taken from Techguns code, box lists
- * or textures. The look: a small pale-gray sci-fi pistol 18.5 texels long and 11.9 tall. Its front half is a "flower"
+ * or textures. The look: a small pale-gray sci-fi pistol 18.35 texels long and 11.9 tall. Its front half is a "flower"
  * of twelve thin square rods ({@code rod_NN}, each capped by a cube {@code cap_NN}) round a white core ({@code core},
  * {@code core_cap}); in front of the core stands a 2x2 blue emitter disc ({@code disc_glow}) between four white prongs
  * ({@code prong_*}) that are turned 23 degrees in towards the beam. Behind the cluster is a 9-long ribbed housing (a
@@ -64,9 +64,9 @@ public final class DeatomizerPistolProfile {
     /** GL units per texel. */
     public static final float MODEL_SCALE = 1.0f / 16.0f;
     /**
-     * The muzzle in the gun frame, blocks: x forward, y down, z: the prong tips (texel 18) on the bore axis (3.5).
+     * The muzzle in the gun frame, blocks: x forward, y down, z: the prong tips (texel 17.84) on the bore axis (3.5).
      */
-    public static final float[] MUZZLE = { 18.0f / 16.0f, 3.5f / 16.0f, 0.0f };
+    public static final float[] MUZZLE = { 17.84f / 16.0f, 3.5f / 16.0f, 0.0f };
     /** Frames of {@code muzzleflash_blue.png} that are painted: 0 to 7. */
     public static final int MUZZLE_FLASH_FRAMES = 8;
 
@@ -154,10 +154,24 @@ public final class DeatomizerPistolProfile {
         new BoxSpec("cap_10", 0, 8, 19, 1, 1, 1, 15f, 4.169f, 0.175f, new float[] { 15.5f, 4.669f, 0.675f }, 0f, 30f),
         new BoxSpec("rod_11", 0, 14, 17, 6, 1, 1, 9f, 3.675f, 0.669f, new float[] { 12f, 4.175f, 1.169f }, 0f, -30f),
         new BoxSpec("cap_11", 0, 12, 19, 1, 1, 1, 15f, 3.675f, 0.669f, new float[] { 15.5f, 4.175f, 1.169f }, 0f, -30f),
-        new BoxSpec("prong_top", 0, 28, 17, 2, 1, 1, 16f, 1.5f, -0.5f, new float[] { 16f, 2f, 0f }, 23f),
-        new BoxSpec("prong_bot", 0, 10, 5, 2, 1, 1, 16f, 4.5f, -0.5f, new float[] { 16f, 5f, 0f }, -23f),
-        new BoxSpec("prong_l", 0, 10, 7, 2, 1, 1, 16f, 3f, 1f, new float[] { 16f, 3.5f, 1.5f }, 0f, 0f, 23f),
-        new BoxSpec("prong_r", 0, 56, 15, 2, 1, 1, 16f, 3f, -2f, new float[] { 16f, 3.5f, -1.5f }, 0f, 0f, -23f),
+        new BoxSpec("prong_top", 0, 28, 17, 2, 1, 1, 15.8f, 1.55f, -0.5f, new float[] { 15.8f, 2.05f, 0f }, 23f),
+        new BoxSpec("prong_bot", 0, 10, 5, 2, 1, 1, 15.8f, 4.45f, -0.5f, new float[] { 15.8f, 4.95f, 0f }, -23f),
+        new BoxSpec("prong_l", 0, 10, 7, 2, 1, 1, 15.8f, 3f, 0.95f, new float[] { 15.8f, 3.5f, 1.45f }, 0f, 0f, 23f),
+        new BoxSpec(
+            "prong_r",
+            0,
+            56,
+            15,
+            2,
+            1,
+            1,
+            15.8f,
+            3f,
+            -1.95f,
+            new float[] { 15.8f, 3.5f, -1.45f },
+            0f,
+            0f,
+            -23f),
         new BoxSpec("slab", 0, 16, 0, 9, 2, 2, 0f, 2f, -1f, NO_PIVOT, 0f),
         new BoxSpec("bar", 0, 22, 4, 9, 1, 2, 0f, 4f, -1f, NO_PIVOT, 0f),
         new BoxSpec("strip_l", 0, 40, 9, 9, 1, 1, 0f, 3f, 0.5f, NO_PIVOT, 0f),
@@ -177,7 +191,7 @@ public final class DeatomizerPistolProfile {
         new BoxSpec("laser_plate_l", 0, 16, 19, 6, 1, 0, 2f, 1f, 0.3f, NO_PIVOT, 0f),
         new BoxSpec("laser_plate_r", 0, 28, 19, 6, 1, 0, 2f, 1f, -0.3f, NO_PIVOT, 0f),
         new BoxSpec("laser_post", 0, 52, 4, 1, 2, 1, 2f, 1f, -0.5f, new float[] { 2.5f, 1f, 0f }, -31f),
-        new BoxSpec("button", 0, 60, 4, 1, 1, 1, 5f, 3.7f, -1.7f, new float[] { 5.5f, 4.2f, -1.2f }, 0f, 45f),
+        new BoxSpec("button", 0, 60, 4, 1, 1, 1, 5f, 3.7f, -1.6f, new float[] { 5.5f, 4.2f, -1.1f }, 0f, 45f),
         // END GENERATED BOXES
     };
 
