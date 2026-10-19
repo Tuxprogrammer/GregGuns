@@ -206,30 +206,6 @@
      "w": 6,
      "h": 1,
      "color": "@mark"
-    },
-    {
-     "type": "rect",
-     "faces": [
-      "front",
-      "back"
-     ],
-     "x": 12,
-     "y": 4,
-     "w": 1,
-     "h": 1,
-     "color": "@mark"
-    },
-    {
-     "type": "rect",
-     "faces": [
-      "front",
-      "back"
-     ],
-     "x": 15,
-     "y": 1,
-     "w": 1,
-     "h": 1,
-     "color": "@mark"
     }
    ]
   },
@@ -325,22 +301,10 @@
       "front",
       "back"
      ],
-     "x": 1,
-     "y": 6,
-     "w": 2,
-     "h": 9,
-     "color": "@recess"
-    },
-    {
-     "type": "rect",
-     "faces": [
-      "front",
-      "back"
-     ],
      "x": 4,
-     "y": 6,
-     "w": 2,
-     "h": 9,
+     "y": 3,
+     "w": 3,
+     "h": 13,
      "color": "@recess"
     },
     {
@@ -349,47 +313,23 @@
       "front",
       "back"
      ],
-     "x": 7,
-     "y": 5,
-     "w": 2,
-     "h": 1,
+     "x": 5,
+     "y": 4,
+     "w": 1,
+     "h": 11,
      "color": "@shade"
     },
     {
-     "type": "rect",
+     "type": "checker",
      "faces": [
       "front",
       "back"
      ],
-     "x": 7,
-     "y": 8,
-     "w": 2,
-     "h": 1,
-     "color": "@shade"
-    },
-    {
-     "type": "rect",
-     "faces": [
-      "front",
-      "back"
-     ],
-     "x": 7,
-     "y": 11,
-     "w": 2,
-     "h": 1,
-     "color": "@shade"
-    },
-    {
-     "type": "rect",
-     "faces": [
-      "front",
-      "back"
-     ],
-     "x": 7,
-     "y": 14,
-     "w": 2,
-     "h": 1,
-     "color": "@shade"
+     "x": 1,
+     "y": 17,
+     "w": 8,
+     "h": 4,
+     "amp": -0.14
     }
    ]
   },
@@ -402,10 +342,10 @@
       "front",
       "back"
      ],
-     "x": 2,
-     "y": 8,
-     "w": 2,
-     "h": 2,
+     "x": 4,
+     "y": 3,
+     "w": 3,
+     "h": 13,
      "color": "@recess"
     },
     {
@@ -414,35 +354,23 @@
       "front",
       "back"
      ],
-     "x": 2,
-     "y": 13,
-     "w": 2,
-     "h": 2,
-     "color": "@recess"
+     "x": 5,
+     "y": 4,
+     "w": 1,
+     "h": 11,
+     "color": "@shade"
     },
     {
-     "type": "rect",
+     "type": "checker",
      "faces": [
       "front",
       "back"
      ],
-     "x": 6,
-     "y": 8,
-     "w": 2,
-     "h": 2,
-     "color": "@recess"
-    },
-    {
-     "type": "rect",
-     "faces": [
-      "front",
-      "back"
-     ],
-     "x": 6,
-     "y": 13,
-     "w": 2,
-     "h": 2,
-     "color": "@recess"
+     "x": 1,
+     "y": 17,
+     "w": 8,
+     "h": 4,
+     "amp": -0.14
     }
    ]
   },
