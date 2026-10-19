@@ -39,6 +39,7 @@ Out of scope here, see the owning areas:
 | [model-notes/vector.md](model-notes/vector.md) | Clean-room design notes for rebuilding the Vector model and texture |
 | [model-notes/as50.md](model-notes/as50.md) | Clean-room design notes for rebuilding the AS50 model and texture |
 | [model-notes/lmg.md](model-notes/lmg.md) | Clean-room design notes for rebuilding the LMG model and texture |
+| [model-notes/flamethrower.md](model-notes/flamethrower.md) | Clean-room design notes for rebuilding the Flamethrower model and texture |
 | [textures.md](textures.md) | All 62 `textures/guns/` PNGs: size, what they depict, palette, UV layout, users, model-size mismatches |
 | [sounds.md](sounds.md) | All 185 `sounds/guns/` files, their `sounds.json` events and exactly when each plays |
 | [lang-and-strings.md](lang-and-strings.md) | The 17 gun camo-name keys, the generic camo strings, strings generated in code, missing keys and one correction |
