@@ -88,13 +88,12 @@ public final class RocketLauncherProfile {
     // position puts this model's box centre on the family anchor. The notes' fire and reload offsets are multiplied by
     // K so they move the launcher as far on screen as the notes intend.
     private static final double SHEET_FP_SCALE = 2.25;
-    /** On-screen length of the launcher in first person, blocks of the scaled frame. */
-    private static final double LAUNCHER_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), LAUNCHER_LENGTH);
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("rocket_launcher", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.2, -0.25 });
+    private static final double FP_SCALE = FIT.fpScale;
     private static final double FP_AMP = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
     private static final double[] CENTRE = FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE);
-    private static final double[] IDLE = FirstPersonFit.idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, CENTRE);
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -165,8 +164,8 @@ public final class RocketLauncherProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.4)
-            .translate(-1.7, -0.4, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil about (0, 0.3, -0.9): the launcher rolls about the shoulder to -20 degrees in the first eighth and
         // eases back over the rest of the first half.

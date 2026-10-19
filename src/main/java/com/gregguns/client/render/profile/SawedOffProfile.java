@@ -85,13 +85,13 @@ public final class SawedOffProfile {
      * The first-person scale from {@link FirstPersonFit}: the 39-texel gun is drawn 15/16 of a block long on screen.
      * The sheet's S(2.2) runs the gun off the frame.
      */
-    public static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("sawed_off", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.15, 0 });
+    public static final double FP_SCALE = FIT.fpScale;
     /** The sheet's fire and reload translation deltas are multiplied by this, because the scale changed. */
     private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
     /** The idle first-person translation from {@link FirstPersonFit}: this model's box centre on the family anchor. */
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final double[] IDLE = FIT.fpIdle;
 
     /** The sheet's render transforms, timing and muzzle flash for the Sawed Off. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
@@ -144,8 +144,8 @@ public final class SawedOffProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.7)
-            .translate(-1.4, -0.8, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil about (-0.2, -0.1, 0): rotZ(-40 K).
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -167,12 +167,13 @@ public final class SawedOffProfile {
             .scale(0.7)
             .build();
         // muzzleFlash sheet, (-0.55, -2.15, 1.05), scale 1.85; additive because the GregGuns sheet is black-backed.
+        double[] fo = FIT.flashOffset(MUZZLE, 1.85);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash4x4.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.55,
-            -2.15,
-            1.05,
+            fo[0],
+            fo[1],
+            fo[2],
             1.85,
             new double[] { 0, 0, 0 },
             true,

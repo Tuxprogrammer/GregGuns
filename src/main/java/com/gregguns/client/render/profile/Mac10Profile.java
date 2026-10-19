@@ -82,12 +82,11 @@ public final class Mac10Profile {
         // END GENERATED BOXES
     };
 
-    /** Where the box centre of a Z-family handgun sits in the scaled gun frame (the pistol's tuned place). */
-    private static final double[] ANCHOR = { -1.2, -0.684, -1.4275 };
     /** First-person scale from {@link FirstPersonFit}. */
-    public static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FP_LENGTH);
-    private static final double[] IDLE = FirstPersonFit.idleOffset(ANCHOR, FP_SCALE, gunFrameCentre());
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("mac10", BOXES, MODEL_SCALE, false, 225, 135, new double[] { 0, 0, 0.2 });
+    public static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
 
     /** The notes' render transforms, timing and muzzle flash for the Mac-10. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
@@ -106,12 +105,6 @@ public final class Mac10Profile {
         TRANSFORMS);
 
     private Mac10Profile() {}
-
-    /** The box centre in the gun frame: the model's quarter turn about Y sends (x, y, z) to (z, y, -x). */
-    private static double[] gunFrameCentre() {
-        double[] c = FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE);
-        return new double[] { c[2], c[1], -c[0] };
-    }
 
     private static GunTransforms buildTransforms() {
         // First person (Z-family): rotX180, rotY225, S(FP_SCALE), then the state row.
@@ -144,8 +137,8 @@ public final class Mac10Profile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(135)
-            .scale(1.0)
-            .translate(0.05, -0.6, 0.4)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil about the wrist (0, 0, 0.9): up to 10 degrees.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -168,12 +161,13 @@ public final class Mac10Profile {
         // Deviation: additive, because the GregGuns flash sheet is black-backed (docs/assets/MANIFEST.md). The offset
         // is the fixed first-person flash frame's image of the muzzle (solved from the same projection as the
         // pistol's, FP_SCALE and IDLE above).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.0);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.52,
-            -0.95,
-            1.65,
+            fo[0],
+            fo[1],
+            fo[2],
             1.0,
             new double[] { 0, 0, 0 },
             true,

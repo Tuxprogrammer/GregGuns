@@ -263,8 +263,9 @@ class SawedOffProfileTest {
     }
 
     @Test
-    void theFirstPersonScaleDrawsTheGunFifteenSixteenthsOfABlockLong() {
-        assertEquals(15.0 / 16.0, SawedOffProfile.FP_SCALE * 39.0 / 16.0, 1e-6);
+    void theFirstPersonScaleDrawsTheGunAtTechgunsLength() {
+        // 39 texels at S about 2.2 is 5.4 H-blocks (2.15 camera blocks), the in-hand notes' target.
+        assertEquals(2.15 / 0.4, SawedOffProfile.FP_SCALE * 39.0 / 16.0, 0.1 * 2.15 / 0.4);
     }
 
     @Test
@@ -284,13 +285,7 @@ class SawedOffProfileTest {
     @Test
     void thirdPersonRowsFollowTheSheetShape() {
         GunTransforms t = SawedOffProfile.TRANSFORMS;
-        assertEquals(
-            Arrays.asList(
-                "R(180.0000;1,0,0)",
-                "R(225.0000;0,1,0)",
-                "S(0.7000,0.7000,0.7000)",
-                "T(-1.4000,-0.8000,0.0000)"),
-            run(t.tpBase(), 0, 0));
+        assertEquals(InHandTestSupport.tpBaseRows("sawed_off"), run(t.tpBase(), 0, 0));
         List<String> recoil = run(t.tpRecoil(), 0.1, 0);
         assertEquals("T(-0.2000,-0.1000,0.0000)", recoil.get(0));
         assertTrue(

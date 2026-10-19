@@ -124,16 +124,14 @@ public final class InfiltratorProfile {
     // The scale follows the FirstPersonFit rule with the long-gun target of 2 blocks on screen (the bolt-action's
     // precedent), and the idle position puts this model's box centre on the family anchor. The notes' small fire kick
     // (5 degrees, 0.15 back) is applied at that scale: a screen shift d is d / FP_SCALE in model axes.
-    /** On-screen length of the rifle in first person, blocks of the scaled frame. */
-    private static final double RIFLE_LENGTH = 2.0;
     // The fit is taken on the rifle alone (part 0): the 60-long beam planes must not shrink or shift the gun.
     private static final BoxSpec[] RIFLE = java.util.Arrays.stream(BOXES)
         .filter(b -> b.part() == 0)
         .toArray(BoxSpec[]::new);
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(RIFLE, MODEL_SCALE), RIFLE_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(RIFLE, MODEL_SCALE));
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("infiltrator", RIFLE, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, 0 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -171,7 +169,7 @@ public final class InfiltratorProfile {
         // Firing: a light muzzle-up kick, 5 degrees at the dip (yF = -0.5), and 0.15 block back on screen.
         TransformProgram fpFire = TransformProgram.builder()
             .rotZ((p, part) -> 10.0 * yF(p))
-            .translate((p, part) -> FP_X + 0.3 / FP_SCALE * yF(p), (p, part) -> FP_Y, (p, part) -> FP_Z)
+            .translate((p, part) -> FP_X + 0.42 / FP_SCALE * yF(p), (p, part) -> FP_Y, (p, part) -> FP_Z)
             .build();
         // Reload: the barrel dips 25 degrees at mid-reload and comes back, over the 45 ticks.
         TransformProgram fpReload = TransformProgram.builder()
@@ -183,8 +181,8 @@ public final class InfiltratorProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.9)
-            .translate(-1.2, -0.75, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the gun pitches up 15 degrees about the hand, in the first quarter of the first half.
         TransformProgram tpRecoil = TransformProgram.builder()

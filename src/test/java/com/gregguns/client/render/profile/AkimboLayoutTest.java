@@ -1,5 +1,6 @@
 package com.gregguns.client.render.profile;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -45,21 +46,38 @@ class AkimboLayoutTest {
 
     @Test
     void theMainGunIsNotMovedAndTheSecondIsMirroredAboutTheScreenCentre() {
-        assertEquals(0.5, AkimboLayout.mirroredX(0.5, 0), 1e-12);
-        double right = 0.3; // a point of the main gun, right of the hand origin
-        double centre = AkimboLayout.SCREEN_CENTRE_X;
-        double left = AkimboLayout.mirroredX(right, 1);
-        // equidistant from the centre, on the other side
-        assertEquals(right - centre, centre - left, 1e-12);
-        assertEquals(-1.0, AkimboLayout.mirrorScaleX(1), 0.0);
+        double[] p = { 0.3, -0.2, 0.9 };
+        assertArrayEquals(p, AkimboLayout.mirrored(p, 0), 1e-12);
+        // The same point seen through the first-person camera: the left copy is at (-right, same up, same depth).
+        double[] right = InHandFit.cameraOf(
+            InHandFit.firstPersonItemFrame()
+                .apply(p));
+        double[] left = InHandFit.cameraOf(
+            InHandFit.firstPersonItemFrame()
+                .apply(AkimboLayout.mirrored(p, 1)));
+        assertEquals(-right[0], left[0], 1e-9);
+        assertEquals(right[1], left[1], 1e-9);
+        assertEquals(right[2], left[2], 1e-9);
+    }
+
+    @Test
+    void theGlCallsMatchTheMirrorFormula() {
+        // translate(shift), rotY(-yaw), scale(-1, 1, 1), rotY(yaw): the calls GunItemRenderer issues
+        double[] p = { 0.3, -0.2, 0.9 };
+        double[] shift = AkimboLayout.mirrorTranslate(1);
+        double[] viaOps = InHandFit.Affine.identity()
+            .translate(shift[0], shift[1], shift[2])
+            .rotY(-AkimboLayout.MIRROR_YAW)
+            .scale(AkimboLayout.mirrorScaleX(1), 1.0, 1.0)
+            .rotY(AkimboLayout.MIRROR_YAW)
+            .apply(p);
+        assertArrayEquals(AkimboLayout.mirrored(p, 1), viaOps, 1e-12);
     }
 
     @Test
     void mirroringTwiceReturnsTheOriginalPoint() {
-        double x = 0.77;
-        double once = AkimboLayout.mirroredX(x, 1);
-        double twice = AkimboLayout.mirrorTranslateX(1) + AkimboLayout.mirrorScaleX(1) * once;
-        assertEquals(x, twice, 1e-12);
+        double[] p = { 0.77, 0.1, -0.4 };
+        assertArrayEquals(p, AkimboLayout.mirrored(AkimboLayout.mirrored(p, 1), 1), 1e-12);
     }
 
     @Test
