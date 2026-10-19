@@ -95,6 +95,10 @@ public final class InHandTargets {
         put("grenade_launcher", 2.20, 0.96, -0.72, 1.36, 0.96, -0.63, 2.46, 1.34);
         put("flamethrower", 2.15, 0.81, -0.62, 1.33, 0.81, -0.47, 2.41, 1.51);
         put("bolt_action_rifle", 2.01, 0.54, -0.35, 1.02, 0.52, -0.29, 2.02, 1.88);
+        // M5 batch B4 (IV energy guns); the akimbo item draws the pistol twice and has no row of its own.
+        put("blaster_rifle", 1.75, 0.41, -0.49, 1.12, 0.41, -0.38, 1.99, 1.11);
+        put("deatomizer_pistol", 1.12, 1.03, -0.76, 1.65, 1.03, -0.61, 2.21, 0.63);
+        put("scatter_laser_rifle", 2.20, 0.59, -0.50, 1.21, 0.59, -0.33, 2.31, 1.18);
     }
 
     private InHandTargets() {}

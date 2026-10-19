@@ -110,7 +110,8 @@ class InHandFitTest {
             assertEquals(t.fpMuzzle()[1], muzzle[1], 0.15, n + " muzzle up");
             assertEquals(t.fpMuzzle()[2], muzzle[2], 0.1 * t.fpLength(), n + " muzzle depth");
         }
-        assertEquals(20, checked, "every M2 gun is on the table");
+        // Every M2 gun is on the table (20), plus the M5 guns whose batches have landed.
+        assertTrue(checked >= 20, "every M2 gun is on the table");
     }
 
     @Test

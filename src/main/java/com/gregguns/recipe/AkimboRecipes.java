@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.gregguns.GregGuns;
+import com.gregguns.armor.slots.ElectricGear;
 import com.gregguns.gun.logic.AkimboNbt;
 import com.gregguns.item.gun.ItemGun;
 
@@ -89,6 +90,15 @@ public final class AkimboRecipes {
         ItemGun.ensureTag(b, single.stats());
         ItemStack out = new ItemStack(akimbo);
         out.setTagCompound(AkimboNbt.combine(a.getTagCompound(), b.getTagCompound(), single.stats(), akimbo.stats()));
+        if (akimbo.stats()
+            .isEnergy()) {
+            // The akimbo gun holds the sum of both guns' charge (its capacity is twice the single gun's).
+            ElectricGear.charge(
+                out,
+                ElectricGear.charge(a) + ElectricGear.charge(b),
+                akimbo.definition()
+                    .tier());
+        }
         return out;
     }
 
@@ -108,6 +118,21 @@ public final class AkimboRecipes {
         first.setTagCompound(tags[0]);
         ItemStack second = new ItemStack(single);
         second.setTagCompound(tags[1]);
+        if (akimbo.stats()
+            .isEnergy()) {
+            // Half the charge to each gun, the odd EU to the second; the total is conserved.
+            long[] halves = AkimboNbt.splitCharge((long) Math.floor(ElectricGear.charge(copy)));
+            ElectricGear.charge(
+                first,
+                halves[0],
+                single.definition()
+                    .tier());
+            ElectricGear.charge(
+                second,
+                halves[1],
+                single.definition()
+                    .tier());
+        }
         return new ItemStack[] { first, second };
     }
 

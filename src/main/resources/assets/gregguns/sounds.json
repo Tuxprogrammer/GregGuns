@@ -139,6 +139,34 @@
     "category": "player",
     "sounds": ["guns/revolver_reload_akimbo"]
   },
+  "guns.blaster_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/blasterrifle_shot_a", "guns/blasterrifle_shot_b", "guns/blasterrifle_shot_c"]
+  },
+  "guns.blaster_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/lasergun_reload"]
+  },
+  "guns.deatomizer_pistol.fire": {
+    "category": "player",
+    "sounds": ["guns/MIB_blaster_shot_a", "guns/MIB_blaster_shot_b", "guns/MIB_blaster_shot_c"]
+  },
+  "guns.deatomizer_pistol.reload": {
+    "category": "player",
+    "sounds": ["guns/MIB_blaster_reload"]
+  },
+  "guns.akimbo_deatomizer_pistols.reload": {
+    "category": "player",
+    "sounds": ["guns/MIB_blaster_reload_akimbo"]
+  },
+  "guns.scatter_laser_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/lasergun_shot_a", "guns/lasergun_shot_b", "guns/lasergun_shot_c"]
+  },
+  "guns.scatter_laser_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/lasergun_reload"]
+  },
   "guns.flamethrower.fire": {
     "category": "player",
     "sounds": ["guns/flamethrower_shot_a", "guns/flamethrower_shot_b", "guns/flamethrower_shot_c", "guns/flamethrower_shot_d", "guns/flamethrower_shot_e"]

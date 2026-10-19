@@ -112,9 +112,9 @@ public final class GunRecipeScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             List<ItemStack> inputList = new ArrayList<>();
             for (ProductionTable.Input input : row.inputs()) {
-                inputList.add(
-                    input.isGregGuns() ? modStack(input.itemName(), input.count())
-                        : gt(input.prefix(), input.material(), input.count()));
+                // resolve() also covers GT machine parts (ItemList inputs) and ore names, as the recipe registration
+                // does.
+                inputList.add(ProductionRecipes.resolve(input));
             }
             inputList.add(GTUtility.getIntegratedCircuit(row.circuit()));
             for (ItemStack input : inputList) {
