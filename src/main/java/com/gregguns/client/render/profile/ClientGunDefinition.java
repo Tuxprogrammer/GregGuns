@@ -27,6 +27,7 @@ public final class ClientGunDefinition {
     private final float[] muzzle;
     private final boolean xFamily;
     private final GunTransforms transforms;
+    private final boolean akimbo;
 
     /**
      * @param gunName       the gun's registry name without the mod id (its {@code GunDefinition#name()})
@@ -42,6 +43,23 @@ public final class ClientGunDefinition {
      */
     public ClientGunDefinition(String gunName, BoxSpec[] boxes, int parts, int textureWidth, int textureHeight,
         float modelScale, String[] textures, float[] muzzle, boolean xFamily, GunTransforms transforms) {
+        this(
+            gunName,
+            boxes,
+            parts,
+            textureWidth,
+            textureHeight,
+            modelScale,
+            textures,
+            muzzle,
+            xFamily,
+            transforms,
+            false);
+    }
+
+    private ClientGunDefinition(String gunName, BoxSpec[] boxes, int parts, int textureWidth, int textureHeight,
+        float modelScale, String[] textures, float[] muzzle, boolean xFamily, GunTransforms transforms,
+        boolean akimbo) {
         if (textures.length < 1) {
             throw new IllegalArgumentException("a gun model needs at least one texture: " + gunName);
         }
@@ -55,6 +73,35 @@ public final class ClientGunDefinition {
         this.muzzle = muzzle.clone();
         this.xFamily = xFamily;
         this.transforms = transforms;
+        this.akimbo = akimbo;
+    }
+
+    /**
+     * The definition of an akimbo gun: the single gun's model, textures and transforms, drawn once per hand (see
+     * {@link AkimboLayout}). Generic over any single gun's profile.
+     *
+     * @param akimboName the akimbo gun's registry name without the mod id
+     * @param single     the single gun's client definition
+     * @return the akimbo gun's definition
+     */
+    public static ClientGunDefinition akimboOf(String akimboName, ClientGunDefinition single) {
+        return new ClientGunDefinition(
+            akimboName,
+            single.boxes,
+            single.parts,
+            single.textureWidth,
+            single.textureHeight,
+            single.modelScale,
+            single.textures,
+            single.muzzle,
+            single.xFamily,
+            single.transforms,
+            true);
+    }
+
+    /** @return true if this is an akimbo gun, drawn as two copies of its single gun's model */
+    public boolean akimbo() {
+        return akimbo;
     }
 
     /** @return the gun's registry name without the mod id */

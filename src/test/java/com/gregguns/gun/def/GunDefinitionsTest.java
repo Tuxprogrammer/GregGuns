@@ -238,7 +238,9 @@ class GunDefinitionsTest {
             String[] textures = client.textures();
             assertEquals(def.camoCount(), textures.length, def.name() + " client textures vs camo count");
             for (int i = 0; i < textures.length; i++) {
-                String expected = "gregguns:textures/models/guns/" + def.name() + (i == 0 ? "" : "_camo" + i) + ".png";
+                String expected = "gregguns:textures/models/guns/" + def.textureName()
+                    + (i == 0 ? "" : "_camo" + i)
+                    + ".png";
                 assertEquals(expected, textures[i]);
                 assertTrue(exists("/assets/" + textures[i].replace(':', '/')), textures[i]);
             }
@@ -258,10 +260,7 @@ class GunDefinitionsTest {
             }
         }
         assertEquals(ClientGunDefinitions.FLAT_ICON_FALLBACK, without);
-        assertEquals(
-            java.util.Arrays
-                .asList("combat_shotgun", "akimbo_pistols", "akimbo_revolvers", "rocket_launcher", "grenade_launcher"),
-            without);
+        assertEquals(java.util.Collections.<String>emptyList(), without);
         assertFalse(ClientGunDefinitions.usesFallback("m4"));
         assertFalse(ClientGunDefinitions.usesFallback("pistol_9mm"));
     }
