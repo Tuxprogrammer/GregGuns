@@ -224,6 +224,8 @@ Extent x −22…26, y −5.5…13, z −2.5…2.5: a slab-sided sci-fi rifle.
 * **Stock** (x −22…−11): 2×5×5 butt with 2×1×4 top and bottom (all tilted −10°), 6×1×3, 9×1×4, 3×2×4, 2×1×3, 3×1×3, 6×1×3, 6×1×4, 5×4×2 / 5×5×2 tilted −15°, 2×5×2 tilted −38°, 7×1×2 / 3×3×2 / 2×4×2 / 2×1×2 lower frame.
 
 ### ModelBoltaction: 128×32, family X, 22 boxes, 1 part
+
+Clean-room rebuild notes: [model-notes/bolt-action-rifle.md](model-notes/bolt-action-rifle.md).
 Extent x −19…34.5, y −6…6, z −3…3: a scoped hunting or sniper rifle.
 * Barrel 38×2×2 (x −3.5…34.5). Fore-end 24×1×3 + 13×1×3 underneath. Action 7×2×3 + 2×3×3.
 * Stock: 8×4×3 wrist, 3×7×3 butt (x −19), 9×2×1 side plates ×2, 3×1×3 and 2×1×3 lower pieces.
