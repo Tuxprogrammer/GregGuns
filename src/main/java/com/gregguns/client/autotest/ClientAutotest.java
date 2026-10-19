@@ -274,6 +274,7 @@ public final class ClientAutotest {
             case "scope" -> com.gregguns.client.render.GunRenderers
                 .setDebugScope("off".equals(args[0]) ? null : args[0]);
             case "creativegive" -> AutotestCommands.creativeGive(args[0]);
+            case "slots" -> AutotestCommands.reportSlots(args[0]);
             case "quit" -> {
                 log("quit (client " + localName() + ")");
                 Minecraft.getMinecraft()
