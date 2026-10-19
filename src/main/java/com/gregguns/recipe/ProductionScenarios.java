@@ -45,6 +45,7 @@ public final class ProductionScenarios {
         AmmoPressScenarios.registerAll(registry);
         AmmoWorksScenarios.registerAll(registry);
         EvAmmoScenarios.registerAll(registry);
+        AmmoLineScenarios.registerAll(registry);
     }
 
     private static ItemStack mod(String name, int count) {
