@@ -153,6 +153,17 @@ Blaster Rifle (`blaster_rifle`, GR-80), De-Atomizer Pistol (`deatomizer_pistol`,
 - **Akimbo.** `AkimboRecipes` combines two pistols into the pair and splits it back. The pair's charge is the sum of the two guns', and a split gives each gun half (the second takes the odd EU), so no EU is lost. The pair draws the single pistol's model twice; `AkimboLayout` mirrors the left copy.
 - **Scatter Laser Rifle.** Techguns has no recipe, loot or user for it (creative tab only); GregGuns gives it the `recipes.md` IV row. Five `LASER` hitscan beams per pull in a fan of 0.15 (`ShotPattern.fan`), 6 damage each, no drop-off, scope x0.75. The fan ignores the main spread of 0.1 (Techguns rolled one beam at 0.1 and four at 0.15). The gun model's sight window is an alpha cut-out, so the gun renderer now turns the alpha test on while it draws a part.
 - **Not built.** The EV battery's Solder fluid input (the production rows carry items only), and a tint for the De-Atomizer muzzle flash (the blue flash sheet stands in).
+## Bio Gun, batch B3a (M5): deviations
+
+Bio Gun (`bio_gun`, GR-65, EV). Ammo is the Bio Tank (`tank_bio`, a Forge fluid container that takes GT Biomass), the same fluid-tank rules as the Flamethrower: a full tank is 30 rounds, a reload swaps a full tank in and hands an empty one back, and GT's Fluid Canner fills it (no GregGuns recipe).
+
+- **Charge (I10).** The left button fires one round at level 1 every 6 ticks; the right button charges for up to 30 ticks and fires on release at level 1 to 3 (`ChargeMath`: up to 0.45 is 1, up to 0.95 is 2, else 3), spending one round per level and never more than are loaded (fixes GUN-02). The release is broadcast to nearby players (GUN-31) and plays the normal fire sound; there is no reload-sound quirk on the right-click path (GUN-10).
+- **No charge sound.** The original plays none, so the definition does not call `charges()` and `guns.bio_gun.charge` does not exist.
+- **Poison.** The glob deals POISON damage (10 falling to 8 between 8 and 15 blocks, 15% penetration). A living target is poisoned by the POISON type's own secondary effect and then raised to Poison IV (amplifier 3) for 100 ticks, so a target in full GT biological hazmat takes the damage and no poison (GGS-02-22). Techguns applied Poison IV unconditionally.
+- **Blobs obey safe mode and the place event (PFX-28).** A glob places or grows a Bio Blob only when `explosions.blockDamage` is true (GregGuns' safe-mode switch, default false, so a default server has no blobs) and, for a player's shot, only when `BlockEvent.PlaceEvent` is not cancelled. `BioRules.mayTouchBlocks` holds the switch. A burst plays the `bioblobExplosion` FX.
+- **FX and sounds.** The server sends `BioGunTrail` on the glob once; the entity renders nothing itself (`RenderInvisible`). `guns.bio_gun.fire`, `.reload` and `.impact` use the `biogun_shot_*`, `biogun_reload` and `biogun_impact_*` files.
+- **Recipe (GR-65).** Pump Mechanism, Steel Receiver, Plastic Gun Stock, a small titanium pipe, 2 titanium plates and 4 titanium screws; Assembler, EV, 30 s, circuit 7. Made empty.
+- **Model.** `BioGunProfile` is registered; the glow parts stay painted (no fullbright pass). The first-person charge shift (up to 0.25 block toward the camera while charging) is not drawn yet; the resting pose is fitted to the in-hand targets.
 
 ## Pack-side changes
 

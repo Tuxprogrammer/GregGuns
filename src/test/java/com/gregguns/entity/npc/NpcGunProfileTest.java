@@ -42,6 +42,7 @@ class NpcGunProfileTest {
         expect("as50", 36, 30, 0, 0);
         expect("lmg", 24, 40, 6, 3);
         expect("golden_revolver", 24, 60, 6, 15);
+        expect("bio_gun", 18, 30, 0, 0);
     }
 
     @Test

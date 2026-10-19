@@ -1,6 +1,7 @@
 package com.gregguns.client.render.profile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -153,11 +154,12 @@ class BioGunProfileTest {
     }
 
     @Test
-    void noCamoNoFlashAndNotRegistered() {
+    void noCamoNoFlashAndRegistered() {
         assertEquals(1, BioGunProfile.TEXTURES.length);
         assertEquals("bio_gun", BioGunProfile.DEFINITION.gunName());
         assertEquals(1, BioGunProfile.TRANSFORMS.partCount());
         assertNull(BioGunProfile.TRANSFORMS.muzzleFlash());
-        assertNull(ClientGunDefinitions.byName("bio_gun"));
+        assertEquals(BioGunProfile.DEFINITION, ClientGunDefinitions.byName("bio_gun"));
+        assertFalse(ClientGunDefinitions.usesFallback("bio_gun"));
     }
 }

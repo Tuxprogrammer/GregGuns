@@ -203,6 +203,18 @@
     "category": "player",
     "sounds": ["guns/sonicshotgun_reload"]
   },
+  "guns.bio_gun.fire": {
+    "category": "player",
+    "sounds": ["guns/biogun_shot_a", "guns/biogun_shot_b", "guns/biogun_shot_c"]
+  },
+  "guns.bio_gun.reload": {
+    "category": "player",
+    "sounds": ["guns/biogun_reload"]
+  },
+  "guns.bio_gun.impact": {
+    "category": "player",
+    "sounds": ["guns/biogun_impact_a", "guns/biogun_impact_b", "guns/biogun_impact_c"]
+  },
   "guns.rocket_launcher.fire": {
     "category": "player",
     "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b", "guns/rocket_shot_c"]
