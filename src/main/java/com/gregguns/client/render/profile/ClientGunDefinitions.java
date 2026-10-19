@@ -34,6 +34,8 @@ public final class ClientGunDefinitions {
             CombatShotgunProfile.DEFINITION,
             RocketLauncherProfile.DEFINITION,
             GrenadeLauncherProfile.DEFINITION,
+            As50Profile.DEFINITION,
+            LmgProfile.DEFINITION,
 
             // The akimbo guns draw their single gun's model once per hand.
             ClientGunDefinition.akimboOf("akimbo_pistols", Pistol9mmProfile.DEFINITION),
@@ -47,7 +49,7 @@ public final class ClientGunDefinitions {
      * test pins this list to the guns that actually lack a profile, and <b>the M2 exit gate requires it empty</b>:
      * giving a gun its clean-room profile means removing its name here.
      */
-    public static final List<String> FLAT_ICON_FALLBACK = Collections.unmodifiableList(Arrays.asList("as50", "lmg"));
+    public static final List<String> FLAT_ICON_FALLBACK = Collections.emptyList();
 
     private ClientGunDefinitions() {}
 
