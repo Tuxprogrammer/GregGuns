@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.gregguns.armor.model.ArmorBoxDef;
+import com.gregguns.armor.model.ArmorModelDef;
+import com.gregguns.armor.model.ArmorModels;
 import com.gregguns.client.render.profile.BoxSpec;
 import com.gregguns.client.render.profile.ClientGunDefinition;
 import com.gregguns.client.render.profile.ClientGunDefinitions;
@@ -202,6 +205,98 @@ public final class ModelExporter {
         }
         sb.append("\n  ]\n}\n");
         return sb.toString();
+    }
+
+    // --- armor ------------------------------------------------------------------------------------------------
+
+    /**
+     * Writes the box model of every custom armor set to {@code <dir>/armor/<set>.json}, in the same shape the game
+     * reads ({@code assets/gregguns/armor_models}), for the offline silhouette renderer. Additive: the gun export is
+     * untouched.
+     *
+     * @param dir output directory, created if missing
+     * @return the number of armor models written
+     * @throws IOException if a file cannot be written
+     */
+    public static int exportArmor(Path dir) throws IOException {
+        Path out = dir.resolve("armor");
+        Files.createDirectories(out);
+        int n = 0;
+        for (String id : ArmorModels.CUSTOM_SETS) {
+            ArmorModelDef def = ArmorModels.get(id);
+            if (def == null) {
+                throw new IOException("armor model " + id + " did not load");
+            }
+            try (Writer w = Files.newBufferedWriter(out.resolve(id + ".json"), StandardCharsets.UTF_8)) {
+                w.write(armorJson(def));
+            }
+            n++;
+        }
+        return n;
+    }
+
+    /**
+     * @param def an armor model
+     * @return its JSON text, the same layout the game's resource files use
+     */
+    static String armorJson(ArmorModelDef def) {
+        StringBuilder sb = new StringBuilder(4096);
+        sb.append("{\n  \"name\": ")
+            .append(str(def.name()))
+            .append(",\n  \"textureWidth\": ")
+            .append(def.textureWidth())
+            .append(",\n  \"textureHeight\": ")
+            .append(def.textureHeight())
+            .append(",\n  \"boxes\": [");
+        boolean first = true;
+        for (ArmorBoxDef b : def.boxes()) {
+            sb.append(first ? "\n    " : ",\n    ");
+            first = false;
+            sb.append("{\"name\": ")
+                .append(str(b.name()))
+                .append(", \"part\": ")
+                .append(
+                    str(
+                        b.part()
+                            .json()))
+                .append(", \"slot\": ")
+                .append(
+                    str(
+                        b.slot()
+                            .name()
+                            .toLowerCase(Locale.ROOT)))
+                .append(", \"material\": ")
+                .append(str(b.material()))
+                .append(", \"uv\": [")
+                .append(b.u())
+                .append(", ")
+                .append(b.v())
+                .append("], \"offset\": ")
+                .append(floats(b.offset()))
+                .append(", \"size\": [")
+                .append(b.size()[0])
+                .append(", ")
+                .append(b.size()[1])
+                .append(", ")
+                .append(b.size()[2])
+                .append("], \"inflate\": ")
+                .append(num(b.inflate()))
+                .append(", \"mirror\": ")
+                .append(b.mirror());
+            if (b.pivot() != null) {
+                sb.append(", \"pivot\": ")
+                    .append(floats(b.pivot()))
+                    .append(", \"rotate\": ")
+                    .append(floats(b.rotateDegrees()));
+            }
+            sb.append('}');
+        }
+        sb.append("\n  ]\n}\n");
+        return sb.toString();
+    }
+
+    private static String floats(float[] v) {
+        return "[" + num(v[0]) + ", " + num(v[1]) + ", " + num(v[2]) + "]";
     }
 
     private static String num(float v) {

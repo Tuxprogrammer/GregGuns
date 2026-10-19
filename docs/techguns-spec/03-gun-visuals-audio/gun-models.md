@@ -42,6 +42,8 @@ Extent z −3…12, y −0.5…10, x −2…1 (15 long): a modern semi-automatic
 * **Part 1, slide:** slide 3×2×14 (y 0…2) with front and rear sight cubes 1×1×1 (z −0.5 and z 9.5).
 * The slide is the moving part. While firing, the renderer pushes it back further than the frame (§ Pistol in the gun sheets).
 
+Clean-room rebuild notes: [model-notes/pistol-9mm.md](model-notes/pistol-9mm.md).
+
 ### Unused pistol variants
 * **ModelPistol** (64×32, ModelBase, 9 boxes): early boxy pistol. Top 2×3×12, stepped grip 2×(3,5,4)×1, barrel 1×1×2, sights. Pairs with [`textures/guns/pistol.png`](textures.md#measured-colors-all-62-textures). Not registered.
 * **ModelPistol2** (64×32, 8 boxes): ModelPistol3's frame with a solid 3×3×14 top instead of separate frame and slide. Pairs with [`textures/guns/pistol2Texture.png`](textures.md#measured-colors-all-62-textures). Not registered.
@@ -87,6 +89,7 @@ Extent x −17…22, y −4…5, z −3…4: a side-by-side double-barrel cut do
 * **Barrels** (x −6…22): two 28×4×2 tubes (z −2…0 and 1…3), with 28×2×1 ribs above, between and outside (z −3, 0, 3). Twin bead sights 1×1×1 at x 21. Under-rib 8×1×1.
 * **Breech face** (x −7): 1×1×1 / 1×2×1 caps closing the barrel ends.
 * **Action and grip** (x −17…−6): 2×3×3 lock block, 4×1×3 top lever, 6×1×3 trigger plate, 7×4×3 grip, two 7×2×1 side plates, 2×1×3, butt 2×6×5.
+Clean-room rebuild notes: [model-notes/sawed-off.md](model-notes/sawed-off.md).
 
 ### ModelCombatShotgun: 64×32, family X, 20 boxes, **2 parts**
 Extent x −23…32, y −3.5…8.5, z −1.5…2.5: a pump shotgun with a folding skeleton stock.

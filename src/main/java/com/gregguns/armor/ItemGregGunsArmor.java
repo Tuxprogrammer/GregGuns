@@ -255,6 +255,23 @@ public class ItemGregGunsArmor extends ItemArmor
         return set.layerTexture(this.piece.slot(), getCamo(stack));
     }
 
+    /**
+     * The worn model of a set that has one (Exo Suit, Power Armor, Steam Armor, Riot Coat, Beret); null for every other
+     * set, which keeps the vanilla biped armor layers. The model draws only this piece's boxes.
+     *
+     * @return a client {@code ModelBiped}, or null for vanilla
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public net.minecraft.client.model.ModelBiped getArmorModel(EntityLivingBase entity, ItemStack stack,
+        int armorSlot) {
+        // Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-20
+        return com.gregguns.client.armor.BoxArmorModel.forPiece(
+            set.id(),
+            this.piece.slot()
+                .armorType());
+    }
+
     // --- protection -----------------------------------------------------------------------------------------------
 
     /**
