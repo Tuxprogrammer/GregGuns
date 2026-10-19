@@ -9,8 +9,9 @@ features come from `tools/audio-describe/audio_describe.py extract` (both sides)
          [--only <file of sounds/... paths>] [--tonality <sound_tonality.py --json output>]
          [--json out.json] [--report out.md]
 
-Verdict: keep when every check passes (the owner's spot check can still overrule it), tweak when one or two fail,
-rework when three or more fail or the tonality check fails. The report lists each failing check with A's and B's
+Verdict: keep when every check passes (the owner's spot check can still overrule it); accept (MVP tier) when every
+measured check passes, tonality included, and only the embedding distance is above the keep line but below
+EMBED_ACCEPT; tweak when one or two fail; rework when three or more fail or the tonality check fails. The report lists each failing check with A's and B's
 numbers, which is what the revision agents work from.
 """
 import argparse
@@ -28,6 +29,8 @@ BANDS = ("sub", "bass", "low_mid", "mid", "presence", "air")
 # the owner-approved shots reach 1.71 at most and the owner-rejected reloads start at 1.76; mismatched sounds sit near 11.
 EMBED_PASS = 1.75
 EMBED_DIFFERENT = 5.5
+# MVP accept tier: the calibration's "should not ship" line. The owner closed the audio loop for MVP on 2026-10-19.
+EMBED_ACCEPT = 4.5
 
 
 SR = 32000  # common analysis rate: most Techguns files are 32 kHz or lower, so compare only what both sides have
@@ -171,7 +174,7 @@ def main():
         wanted = {l.strip() for l in open(args.only, encoding="utf-8") if l.strip()}
         paths = [p for p in paths if p in wanted]
 
-    results, counts = {}, {"keep": 0, "tweak": 0, "rework": 0}
+    results, counts = {}, {"keep": 0, "accept": 0, "tweak": 0, "rework": 0}
     for p in paths:
         e = entries[p]
         a_feat, b_feat = dict(fa[e["footprint_ref"]]), dict(fb[p])
@@ -195,20 +198,27 @@ def main():
                        % (d, EMBED_PASS, band)))
         fails = [c for c in cs if not c[1]]
         tonal_fail = any(c[0] == "tonality" for c in fails)
-        verdict = "keep" if not fails else ("tweak" if len(fails) <= 2 and not tonal_fail else "rework")
+        if not fails:
+            verdict = "keep"
+        elif (all(c[0] == "embedding" for c in fails) and p in embed and embed[p] < EMBED_ACCEPT):
+            verdict = "accept"  # every measured check passes; only the embedding sits between keep and the ship line
+        else:
+            verdict = "tweak" if len(fails) <= 2 and not tonal_fail else "rework"
         score = round(10.0 * (len(cs) - len(fails)) / max(len(cs), 1), 1)
         counts[verdict] += 1
         results[p] = {"verdict": verdict, "score": score, "ref": e["footprint_ref"],
                       "checks": [{"name": n, "pass": ok, "detail": d} for n, ok, d in cs]}
 
-    print("%d sounds: keep %d, tweak %d, rework %d" % (len(paths), counts["keep"], counts["tweak"], counts["rework"]))
+    print("%d sounds: keep %d, accept %d, tweak %d, rework %d" % (len(paths), counts["keep"], counts["accept"],
+                                                              counts["tweak"], counts["rework"]))
     if args.json:
         json.dump(results, open(args.json, "w", encoding="utf-8", newline="\n"), indent=1)
     if args.report:
         lines = ["# Sound gate report", "", "Measured A/B checks per sound (no model listening). Verdict: keep when all pass, "
-                 "tweak with one or two failures, rework with three or more or any tonality failure.", "",
-                 "%d sounds: keep %d, tweak %d, rework %d." % (len(paths), counts["keep"], counts["tweak"],
-                                                              counts["rework"]), ""]
+                 "accept when every measured check passes and the embedding distance is below %.1f (MVP tier), "
+                 "tweak with one or two failures, rework with three or more or any tonality failure." % EMBED_ACCEPT, "",
+                 "%d sounds: keep %d, accept %d, tweak %d, rework %d." % (len(paths), counts["keep"], counts["accept"],
+                                                                         counts["tweak"], counts["rework"]), ""]
         for p in sorted(results, key=lambda q: (results[q]["score"], q)):
             r = results[p]
             lines.append("## `%s`: %s (%s/10)" % (p, r["verdict"], r["score"]))

@@ -223,3 +223,13 @@ the flash-attention releases (einops may also be needed).
 * `/var` is shared. At one point only 4 GB was free; check `df -h /var` before downloads.
 * AF is licensed NVIDIA OneWay Noncommercial; our internal research and QA use is fine. MiMo is Apache-2.0.
 * A is only listened to or measured here. Nothing from A feeds generation.
+
+## MVP accept tier
+
+`tools/asset-gen/sound_gate.py` has a fourth verdict, **accept**: every measured check passes (tonality included) and the
+embedding distance is below 4.5, the "should not ship" line from the results above. **keep** is unchanged (all checks pass,
+distance 1.75 or less), and tweak and rework are unchanged for everything else.
+
+Why: the owner closed the audio loop for MVP on 2026-10-19. The 1.75 line was calibrated on gunshots only (approved shots
+reach 1.71, rejected reloads start at 1.76), so it is stricter than needed for other families. Sounds that pass every
+measured check and sit between 1.75 and 4.5 are good enough to ship now and stay on the list of generators to revisit later.
