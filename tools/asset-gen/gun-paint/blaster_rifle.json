@@ -1,0 +1,228 @@
+{
+ "gun": "blaster_rifle",
+ "textures": [
+  {
+   "file": "blaster_rifle.png"
+  }
+ ],
+ "roles": {
+  "recv": {
+   "material": "steel",
+   "base": "#212121",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.08,
+    0.9
+   ],
+   "drift": 0.015
+  },
+  "cap": {
+   "material": "steel",
+   "base": "#2A2A2A",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.15,
+    0.85
+   ],
+   "drift": 0.015
+  },
+  "guard": {
+   "material": "steel",
+   "base": "#1C1C1C",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.08,
+    0.9
+   ],
+   "drift": 0.015
+  },
+  "fin": {
+   "material": "steel",
+   "base": "#111111",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.08,
+    0.9
+   ],
+   "drift": 0.015
+  },
+  "muz": {
+   "material": "steel",
+   "base": "#1A1A1A",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.08,
+    0.9
+   ],
+   "drift": 0.015
+  },
+  "bar": {
+   "material": "steel",
+   "base": "#303030",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.3,
+    0.9
+   ],
+   "drift": 0.015
+  },
+  "fair": {
+   "material": "steel",
+   "base": "#2A2A2A",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.2,
+    0.9
+   ],
+   "drift": 0.015
+  },
+  "scope": {
+   "material": "steel",
+   "base": "#121212",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.1,
+    0.9
+   ],
+   "drift": 0.015
+  },
+  "grip": {
+   "material": "steel",
+   "base": "#242424",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.3,
+    0.8
+   ],
+   "drift": 0.015
+  },
+  "trig": {
+   "material": "steel",
+   "base": "#1F1F1F",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.08,
+    0.9
+   ],
+   "drift": 0.015
+  },
+  "kit": {
+   "material": "steel",
+   "base": "#1E1E1E",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.4,
+    0.85
+   ],
+   "drift": 0.015
+  }
+ },
+ "boxes": {
+  "receiver": {
+   "role": "recv"
+  },
+  "top_rail": {
+   "role": "recv"
+  },
+  "lower_recv": {
+   "role": "recv"
+  },
+  "rear_cap": {
+   "role": "cap"
+  },
+  "guard": {
+   "role": "guard"
+  },
+  "fin_a": {
+   "role": "fin"
+  },
+  "fin_b": {
+   "role": "fin"
+  },
+  "muzzle": {
+   "role": "muz",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 2,
+     "h": 2,
+     "color": "#000000"
+    }
+   ]
+  },
+  "rail_bar": {
+   "role": "bar"
+  },
+  "fairing": {
+   "role": "fair"
+  },
+  "scope_rear": {
+   "role": "scope"
+  },
+  "scope_mid": {
+   "role": "scope"
+  },
+  "scope_front": {
+   "role": "scope"
+  },
+  "side_box": {
+   "role": "kit"
+  },
+  "socket": {
+   "role": "kit"
+  },
+  "slab": {
+   "role": "kit"
+  },
+  "rod_a": {
+   "role": "kit"
+  },
+  "rod_b": {
+   "role": "kit"
+  },
+  "cap_plate": {
+   "role": "kit"
+  },
+  "grip": {
+   "role": "grip",
+   "painters": [
+    {
+     "type": "checker",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "amp": 0.3
+    }
+   ]
+  },
+  "guard_post": {
+   "role": "trig"
+  },
+  "guard_floor": {
+   "role": "trig"
+  },
+  "trigger": {
+   "role": "trig"
+  }
+ }
+}

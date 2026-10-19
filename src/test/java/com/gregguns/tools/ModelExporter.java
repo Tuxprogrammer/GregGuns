@@ -82,16 +82,11 @@ public final class ModelExporter {
         return dir == null || dir.isEmpty() ? null : Paths.get(dir);
     }
 
-    /** @return every GregGuns gun box model, one per entry of {@link ClientGunDefinitions#ALL} */
-    public static List<ExportModel> models() {
-        List<ExportModel> list = new ArrayList<>();
-        for (ClientGunDefinition def : ClientGunDefinitions.ALL) {
-            list.add(modelOf(def));
-        }
-        return list;
-    }
-
-    private static ExportModel modelOf(ClientGunDefinition def) {
+    /**
+     * @param def a client gun definition, registered or not
+     * @return its export model
+     */
+    public static ExportModel modelOf(ClientGunDefinition def) {
         String note = (def.parts() > 1 ? "moving parts are exported at rest; " : "")
             + (def.textures().length > 1 ? "textures[0] is the default, the rest are camo variants" : "");
         return new ExportModel(
@@ -107,19 +102,28 @@ public final class ModelExporter {
     }
 
     /**
-     * Writes one definition that is not in {@link ClientGunDefinitions#ALL} yet (a gun whose profile is built before
-     * the gun is registered), as {@code <name>.json}. Does not touch the index.
+     * Writes one named profile that is not (yet) in {@link ClientGunDefinitions#ALL}, as {@code <name>.json}. Leaves
+     * {@code index.json} and every other file alone.
      *
      * @param dir output directory, created if missing
-     * @param def the definition to export
+     * @param def the profile's definition
      * @throws IOException if the file cannot be written
      */
-    public static void exportDefinition(Path dir, ClientGunDefinition def) throws IOException {
+    public static void exportProfile(Path dir, ClientGunDefinition def) throws IOException {
         Files.createDirectories(dir);
         ExportModel m = modelOf(def);
         try (Writer w = Files.newBufferedWriter(dir.resolve(m.name + ".json"), StandardCharsets.UTF_8)) {
             w.write(toJson(m));
         }
+    }
+
+    /** @return every GregGuns gun box model, one per entry of {@link ClientGunDefinitions#ALL} */
+    public static List<ExportModel> models() {
+        List<ExportModel> list = new ArrayList<>();
+        for (ClientGunDefinition def : ClientGunDefinitions.ALL) {
+            list.add(modelOf(def));
+        }
+        return list;
     }
 
     /**

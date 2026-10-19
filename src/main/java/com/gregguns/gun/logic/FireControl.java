@@ -117,6 +117,21 @@ public final class FireControl {
      * @param infiniteAmmo true for creative players and NPCs: no rounds are spent
      */
     public ShotResult step(GunStats stats, GunState state, boolean infiniteAmmo) {
+        return step(stats, new RoundSupply(stats, state), infiniteAmmo);
+    }
+
+    /**
+     * Like {@link #step(GunStats, GunState, boolean)} for an energy gun: a shot drains
+     * {@link GunStats#euPerShot()} from {@code charge} instead of removing rounds.
+     *
+     * <p>
+     * Spec: docs/gregguns-spec/02-guns/energy-electric-items.md (GGS-02-12, GGS-02-13).
+     */
+    public ShotResult stepEnergy(GunStats stats, ChargeSource charge, boolean infiniteCharge) {
+        return step(stats, new EnergySupply(stats, charge), infiniteCharge);
+    }
+
+    private ShotResult step(GunStats stats, Supply supply, boolean infiniteAmmo) {
         if (!wantsShot(stats)) {
             return ShotResult.none();
         }
@@ -127,7 +142,7 @@ public final class FireControl {
             }
             return ShotResult.cooldown();
         }
-        if (!infiniteAmmo && !state.canFire(stats)) {
+        if (!infiniteAmmo && !supply.canFire()) {
             pendingPress = 0;
             burstRemaining = 0;
             if (dryReported) {
@@ -136,7 +151,7 @@ public final class FireControl {
             dryReported = true;
             return ShotResult.empty();
         }
-        return fire(stats, state, infiniteAmmo, 0);
+        return fire(stats, supply, infiniteAmmo, 0);
     }
 
     /**
@@ -148,22 +163,31 @@ public final class FireControl {
      * added to the next cooldown, so a client that fires early every time is still held to the fire rate (GUN-32).
      */
     public ShotResult requestShot(GunStats stats, GunState state, boolean infiniteAmmo) {
+        return requestShot(stats, new RoundSupply(stats, state), infiniteAmmo);
+    }
+
+    /** Like {@link #requestShot(GunStats, GunState, boolean)} for an energy gun (see {@link #stepEnergy}). */
+    public ShotResult requestEnergyShot(GunStats stats, ChargeSource charge, boolean infiniteCharge) {
+        return requestShot(stats, new EnergySupply(stats, charge), infiniteCharge);
+    }
+
+    private ShotResult requestShot(GunStats stats, Supply supply, boolean infiniteAmmo) {
         if (cooldown > latencyGraceTicks) {
             return ShotResult.cooldown();
         }
-        if (!infiniteAmmo && !state.canFire(stats)) {
+        if (!infiniteAmmo && !supply.canFire()) {
             return ShotResult.empty();
         }
-        return fire(stats, state, infiniteAmmo, Math.max(0, cooldown));
+        return fire(stats, supply, infiniteAmmo, Math.max(0, cooldown));
     }
 
-    private ShotResult fire(GunStats stats, GunState state, boolean infiniteAmmo, int debt) {
+    private ShotResult fire(GunStats stats, Supply supply, boolean infiniteAmmo, int debt) {
         int attackType = 0;
         if (stats.akimbo() && !stats.doubleShot()) {
-            attackType = infiniteAmmo ? alternateParity : state.loaded() % 2;
+            attackType = infiniteAmmo ? alternateParity : supply.parityBasis() % 2;
             alternateParity ^= 1;
         }
-        int used = infiniteAmmo ? 0 : state.use(stats.ammoPerShot());
+        int used = infiniteAmmo ? 0 : supply.spend();
         dryReported = false;
         pendingPress = 0;
 
@@ -180,5 +204,69 @@ public final class FireControl {
         }
         cooldown = base + debt;
         return ShotResult.fired(attackType, used);
+    }
+
+    /** What a shot draws on: rounds in the gun, or charge in the battery. */
+    private interface Supply {
+
+        boolean canFire();
+
+        /** A count whose parity alternates the akimbo hands (it drops by one with each shot). */
+        int parityBasis();
+
+        /** Spends one shot's worth; returns the rounds it used. */
+        int spend();
+    }
+
+    private static final class RoundSupply implements Supply {
+
+        private final GunStats stats;
+        private final GunState state;
+
+        RoundSupply(GunStats stats, GunState state) {
+            this.stats = stats;
+            this.state = state;
+        }
+
+        @Override
+        public boolean canFire() {
+            return state.canFire(stats);
+        }
+
+        @Override
+        public int parityBasis() {
+            return state.loaded();
+        }
+
+        @Override
+        public int spend() {
+            return state.use(stats.ammoPerShot());
+        }
+    }
+
+    private static final class EnergySupply implements Supply {
+
+        private final GunStats stats;
+        private final ChargeSource charge;
+
+        EnergySupply(GunStats stats, ChargeSource charge) {
+            this.stats = stats;
+            this.charge = charge;
+        }
+
+        @Override
+        public boolean canFire() {
+            return EnergyMath.canFire(charge.stored(), stats.euPerShot());
+        }
+
+        @Override
+        public int parityBasis() {
+            return (int) Math.min(Integer.MAX_VALUE, EnergyMath.shotsLeft(charge.stored(), stats.euPerShot()));
+        }
+
+        @Override
+        public int spend() {
+            return charge.drain(stats.euPerShot()) >= stats.euPerShot() ? stats.ammoPerShot() : 0;
+        }
     }
 }

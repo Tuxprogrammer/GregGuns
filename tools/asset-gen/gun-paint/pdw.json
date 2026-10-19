@@ -1,0 +1,492 @@
+{
+ "gun": "pdw",
+ "textures": [
+  {
+   "file": "pdw.png"
+  },
+  {
+   "file": "pdw_camo1.png",
+   "variant": {
+    "roles": {
+     "pale": {
+      "base": "#C7C7C7",
+      "colors": {
+       "stripe": "#C7C7C7",
+       "vent": "#1D1D1D",
+       "band": "#1D1D1D"
+      }
+     },
+     "pale2": {
+      "base": "#C7C7C7"
+     },
+     "slate": {
+      "base": "#202020"
+     },
+     "mid": {
+      "base": "#202020"
+     },
+     "graphite": {
+      "base": "#1D1D1D"
+     },
+     "railtop": {
+      "base": "#1A1A1A"
+     },
+     "front": {
+      "base": "#0E0E0E"
+     }
+    }
+   }
+  },
+  {
+   "file": "pdw_camo2.png",
+   "variant": {
+    "roles": {
+     "pale": {
+      "camo": [
+       "#12140E",
+       "#12140E",
+       "#14210B",
+       "#1F2C16",
+       "#25311C"
+      ],
+      "colors": {
+       "stripe": "#14210B",
+       "vent": "#020302",
+       "band": "#192610"
+      }
+     },
+     "pale2": {
+      "camo": [
+       "#12140E",
+       "#12140E",
+       "#14210B",
+       "#1F2C16"
+      ]
+     },
+     "slate": {
+      "camo": [
+       "#192610",
+       "#16230D",
+       "#192610",
+       "#2B3723"
+      ]
+     },
+     "mid": {
+      "camo": [
+       "#192610",
+       "#16230D",
+       "#192610",
+       "#192610"
+      ]
+     },
+     "graphite": {
+      "camo": [
+       "#12140E",
+       "#12140E",
+       "#14210B",
+       "#16230D"
+      ]
+     },
+     "railtop": {
+      "base": "#0E100A"
+     },
+     "front": {
+      "base": "#0E0E0E"
+     }
+    }
+   }
+  }
+ ],
+ "roles": {
+  "pale": {
+   "material": "steel",
+   "base": "#B8DEE1",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02,
+   "colors": {
+    "stripe": "#B80000",
+    "vent": "#121616",
+    "band": "#323740"
+   }
+  },
+  "pale2": {
+   "material": "steel",
+   "base": "#AED4D7",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "slate": {
+   "material": "steel",
+   "base": "#2E343D",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.1,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "mid": {
+   "material": "steel",
+   "base": "#2D313A",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "graphite": {
+   "material": "steel",
+   "base": "#2B2B2B",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "front": {
+   "material": "steel",
+   "base": "#2B2B2B",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "railtop": {
+   "material": "steel",
+   "base": "#252525",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "black": {
+   "material": "flat",
+   "base": "#000000",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  }
+ },
+ "boxes": {
+  "receiver": {
+   "role": "pale",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 4,
+     "h": 1,
+     "color": "@band"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 25,
+     "h": 1,
+     "color": "@band"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "bottom"
+     ],
+     "color": "@band"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 20,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "@vent"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 4,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "@vent"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 22,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "@vent"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "@vent"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 24,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "@vent"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "@vent"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 16,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "@stripe"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 8,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "@stripe"
+    }
+   ]
+  },
+  "cover": {
+   "role": "pale",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "x": 16,
+     "y": 0,
+     "w": 1,
+     "h": 3,
+     "color": "@stripe"
+    }
+   ]
+  },
+  "hump": {
+   "role": "pale2"
+  },
+  "rail": {
+   "role": "railtop"
+  },
+  "pillar": {
+   "role": "graphite"
+  },
+  "sight_ear_l": {
+   "role": "graphite"
+  },
+  "sight_ear_r": {
+   "role": "graphite"
+  },
+  "support": {
+   "role": "graphite"
+  },
+  "front_support": {
+   "role": "graphite"
+  },
+  "front_post": {
+   "role": "graphite"
+  },
+  "sight_mid": {
+   "role": "railtop"
+  },
+  "sight_horn_l": {
+   "role": "railtop"
+  },
+  "sight_horn_r": {
+   "role": "railtop"
+  },
+  "muz_base": {
+   "role": "graphite"
+  },
+  "muz_ring": {
+   "role": "graphite"
+  },
+  "muz_ring2": {
+   "role": "graphite"
+  },
+  "muz_tube": {
+   "role": "black"
+  },
+  "muz_ear_l": {
+   "role": "graphite"
+  },
+  "muz_ear_r": {
+   "role": "graphite"
+  },
+  "gas_block": {
+   "role": "graphite"
+  },
+  "ub_rear": {
+   "role": "slate"
+  },
+  "ub_mid": {
+   "role": "mid"
+  },
+  "ub_front": {
+   "role": "front"
+  },
+  "belly": {
+   "role": "front"
+  },
+  "front_wall": {
+   "role": "front"
+  },
+  "foot": {
+   "role": "front"
+  },
+  "grip": {
+   "role": "slate"
+  },
+  "strap": {
+   "role": "front"
+  },
+  "floor_bar": {
+   "role": "slate"
+  },
+  "strut": {
+   "role": "slate"
+  },
+  "strap_a": {
+   "role": "slate"
+  },
+  "strap_b": {
+   "role": "slate"
+  },
+  "brace": {
+   "role": "slate"
+  },
+  "leg": {
+   "role": "slate"
+  },
+  "heel_hook": {
+   "role": "slate"
+  },
+  "butt_cap": {
+   "role": "pale2"
+  },
+  "butt_main": {
+   "role": "pale",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 4,
+     "h": 2,
+     "color": "@band"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 4,
+     "h": 2,
+     "color": "@band"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 2,
+     "h": 2,
+     "color": "@band"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 0,
+     "y": 3,
+     "w": 4,
+     "h": 1,
+     "color": "@band"
+    }
+   ]
+  },
+  "butt_low": {
+   "role": "slate"
+  },
+  "butt_heel": {
+   "role": "slate"
+  }
+ }
+}

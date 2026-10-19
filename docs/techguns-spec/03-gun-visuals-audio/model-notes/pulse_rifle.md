@@ -216,3 +216,18 @@ All transforms apply to the model as a whole, in block units after the model's 1
 - **Foregrip slabs.** The three 36-degree slabs overlap heavily; their exact stacking in Z (2, 2 and 3 wide) is a reading from partly hidden faces.
 - **Trigger and guard.** The trigger parts are a few tiny pieces; the zero-thickness planes are invisible edge-on. A tiny dark trigger blade is enough.
 - **First-person offsets** come from formulas read, not seen in game. Treat them as approximate. The base per-gun scale (registered elsewhere) is not covered here.
+
+## Round 2 corrections
+
+Round 1 measured against the Techguns model with equal length normalization: worst view 0.865 (right-side silhouette, iso front-right), mean 0.951. Top 0.998, front 0.983 and back 0.980 are already good. All gaps are in the side view. Distances below are in model units (1 unit = 1/16 block), measured from the rear end of the stock, and "down" is measured from the top of the scope housing.
+
+1. **Rear stock grip block tilt is mirrored.** The 5 x 5 x 2 block under the rear stock leans 15 degrees the wrong way. Its top must lean toward the muzzle and its bottom toward the rear, a tilt of -15 degrees in the side view, opposite the current +15. Its bottom edge ends about 21 units down.
+2. **Forward V-shaped grip bars are mirrored.** The three 5 x 1 slabs (two 2 wide, one 3 wide) beneath the handguard tilt 36 degrees the wrong way. They form a V whose point is at the lower rear, with one arm rising toward the muzzle and the other toward the rear. Flip the sign of the tilt. The assembly spans x = 30 to 37.5 and 11 to 16 down. This crossed-bar mismatch is the largest single side-view error.
+3. **Missing solid block under the handguard.** There is a solid white block about 2.5 wide x 2.5 tall at x = 26 to 28.5, 9 to 11.5 down, joining the underside of the front receiver to the foregrip strut. It currently reads as empty space.
+4. **Strut between that block and the foregrip.** A thin 1.5-unit-wide white strut runs from the block's lower edge (about x = 27, 11.5 down) to the foregrip's lower rear corner (about x = 25, 16 down) at roughly 20 degrees from vertical. The current strut is shorter and sits further forward.
+5. **Underside taper at the front.** From x = 33 to 38 the underside of the handguard rises smoothly from 16 down to 13 down, so the hand area has no square step. The current model stays at 15 to 16 down until x = 37.
+6. **Rear bottom edge.** At x = 0 to 2 the stock bottom sits at 12.4 down. The current model is at 11.3, so lower it about 1 unit.
+7. **Grip and magazine well bottom.** At x = 9 to 11 the bottom edge is at 17.5 down. The current model is at 18.4, so raise it about 1 unit.
+8. **Small top slot.** A 1-unit-wide dark slot cuts into the top rail at x = 36 to 38, 3.5 to 4.5 down. It is currently filled.
+9. **Back view palette.** Seen from behind, the stock block and rear receiver face are dark gunmetal, about #34383f, with only thin white rails at the left and right edges (white about #b7d0d1). The current model shows the whole rear face pale (about #8da9ab). Paint the rear-facing and lower stock faces dark, and keep white only on the side rails and top.
+10. **Silhouette tolerance.** Front, back and top views are already at 0.97 or better, so leave widths and heights alone and change only the items above.

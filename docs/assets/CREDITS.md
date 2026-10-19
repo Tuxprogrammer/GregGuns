@@ -299,6 +299,12 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | model.charge.exp_charge | src/main/resources/assets/gregguns/textures/models/charges/exp_charge.png | tools/asset-gen/charge_models.py | 4076177377 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
 | model.charge.exp_charge_armed | src/main/resources/assets/gregguns/textures/models/charges/exp_charge_armed.png | tools/asset-gen/charge_models.py | 578581585 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
 
+### entity_models (1)
+
+| asset | path | generator | seed | method | license | date |
+|---|---|---|---|---|---|---|
+| entity.model.demo_biped | src/main/resources/assets/gregguns/textures/entity/demo_biped.png | tools/asset-gen/entity_models.py | 1392499027 | Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/demo_biped.json; flat material colors, edge bevels, fine noise | MIT | 2026-10-19 |
+
 ### flagpost (1)
 
 | asset | path | generator | seed | method | license | date |

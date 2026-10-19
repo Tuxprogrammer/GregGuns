@@ -62,6 +62,30 @@ public final class ProjectileModule {
             GenericProjectile.TRACKING_RANGE,
             GenericProjectile.UPDATE_FREQUENCY,
             GenericProjectile.SENDS_VELOCITY);
+        // The energy kinds: an instant laser (a damage carrier over Hitscan), its beam visual, and the energy bolt.
+        registrar.registerEntity(
+            "laser_projectile",
+            LaserProjectile.class,
+            LaserProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        registrar.registerEntity(
+            "beam_visual",
+            BeamVisual.class,
+            BeamVisual.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            false);
+        registrar.registerEntity(
+            "energy_blast_projectile",
+            EnergyBlastProjectile.class,
+            EnergyBlastProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.LASER, LaserProjectile::new);
+        BulletLauncher.register(ProjectileKind.ENERGY_BLAST, EnergyBlastProjectile::new);
         BulletLauncher.register(ProjectileKind.FLAME, FlamethrowerProjectile::new);
         BulletLauncher.register(ProjectileKind.ROCKET, RocketProjectile::new);
         BulletLauncher.register(ProjectileKind.GRENADE, GrenadeLauncherProjectile::new);

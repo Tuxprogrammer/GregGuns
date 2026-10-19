@@ -15,8 +15,15 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.gregguns.armor.model.ArmorModelDef;
 import com.gregguns.armor.model.ArmorModels;
+import com.gregguns.client.render.profile.BlasterRifleProfile;
 import com.gregguns.client.render.profile.ClientGunDefinitions;
+import com.gregguns.client.render.profile.DeatomizerPistolProfile;
+import com.gregguns.client.render.profile.LaserRifleProfile;
 import com.gregguns.client.render.profile.MinigunProfile;
+import com.gregguns.client.render.profile.PdwProfile;
+import com.gregguns.client.render.profile.ScatterLaserRifleProfile;
+import com.gregguns.client.render.profile.SonicRifleProfile;
+import com.gregguns.client.render.profile.TeslaRifleProfile;
 
 class ModelExportTest {
 
@@ -110,13 +117,28 @@ class ModelExportTest {
         assertTrue(ModelExporter.exportAccessories(dir) > 0);
     }
 
-    /** Runs only when an output directory is configured: writes profiles whose gun is not registered yet. */
+    /** A profile that is not registered yet can be exported by name, without touching the registered export. */
+    @Test
+    void exportsAnUnregisteredProfileByName(@TempDir Path dir) throws IOException {
+        ModelExporter.exportProfile(dir, PdwProfile.DEFINITION);
+        String json = new String(Files.readAllBytes(dir.resolve("pdw.json")), StandardCharsets.UTF_8);
+        assertEquals(PdwProfile.BOXES.length, json.split("\"rotationPoint\"", -1).length - 1);
+        assertTrue(!Files.exists(dir.resolve("index.json")));
+    }
+
+    /** Runs only when an output directory is configured: writes the unregistered PDW next to the real export. */
     @Test
     void exportUnregisteredProfilesToConfiguredDirectory() throws IOException {
         Path dir = ModelExporter.configuredDirectory();
         Assumptions.assumeTrue(dir != null, "set -Dgregguns.exportModels=<dir> or GREGGUNS_EXPORT_MODELS");
-        ModelExporter.exportDefinition(dir, MinigunProfile.DEFINITION);
-        assertTrue(Files.exists(dir.resolve("minigun.json")));
+        ModelExporter.exportProfile(dir, PdwProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, LaserRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, TeslaRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, SonicRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, BlasterRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, DeatomizerPistolProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, ScatterLaserRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, MinigunProfile.DEFINITION);
     }
 
     /** Every accessory model is exported with one JSON box per model box. */

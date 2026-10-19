@@ -43,6 +43,20 @@ Out of scope here, see the owning areas:
 | [model-notes/pdw.md](model-notes/pdw.md) | Clean-room design notes for rebuilding the PDW model and texture |
 | [model-notes/pulse_rifle.md](model-notes/pulse_rifle.md) | Clean-room design notes for rebuilding the Pulse Rifle model and texture |
 | [model-notes/minigun.md](model-notes/minigun.md) | Clean-room design notes for rebuilding the Minigun model and texture (spinning rotor) |
+| [model-notes/blaster_rifle.md](model-notes/blaster_rifle.md) | Clean-room design notes for rebuilding the Blaster Rifle model and texture |
+| [model-notes/deatomizer_pistol.md](model-notes/deatomizer_pistol.md) | Clean-room design notes for rebuilding the De-Atomizer (and Akimbo) model and texture |
+| [model-notes/scatter_laser_rifle.md](model-notes/scatter_laser_rifle.md) | Clean-room design notes for rebuilding the Scatter Laser Rifle model and texture |
+| [model-notes/laser_rifle.md](model-notes/laser_rifle.md) | Clean-room design notes for rebuilding the Laser Rifle model and texture |
+| [model-notes/tesla_rifle.md](model-notes/tesla_rifle.md) | Clean-room design notes for rebuilding the Tesla Rifle model and texture |
+| [model-notes/sonic_rifle.md](model-notes/sonic_rifle.md) | Clean-room design notes for rebuilding the Sonic Rifle (glow core) model and texture |
+| [model-notes/nether_blaster.md](model-notes/nether_blaster.md) | Clean-room design notes for rebuilding the Nether Blaster model and texture |
+| [model-notes/alien_blaster.md](model-notes/alien_blaster.md) | Clean-room design notes for rebuilding the Alien Blaster model and texture |
+| [model-notes/grim_reaper.md](model-notes/grim_reaper.md) | Clean-room design notes for rebuilding the Grim Reaper model and texture |
+| [model-notes/nuclear_death_ray.md](model-notes/nuclear_death_ray.md) | Clean-room design notes for rebuilding the Nuclear Death Ray model (child parts, firing starburst) and texture |
+| [model-notes/nuke_launcher.md](model-notes/nuke_launcher.md) | Clean-room skin notes for the Nuke Launcher (Rocket Launcher geometry, new texture) |
+| [model-notes/bio_gun.md](model-notes/bio_gun.md) | Clean-room design notes for rebuilding the Bio Gun model and texture |
+| [model-notes/power_hammer.md](model-notes/power_hammer.md) | Clean-room design notes for rebuilding the Power Hammer and Advanced Power Hammer (sliding piston) model and texture |
+| [model-notes/chainsaw.md](model-notes/chainsaw.md) | Clean-room design notes for rebuilding the Chainsaw (two-frame chain) model and texture |
 | [textures.md](textures.md) | All 62 `textures/guns/` PNGs: size, what they depict, palette, UV layout, users, model-size mismatches |
 | [sounds.md](sounds.md) | All 185 `sounds/guns/` files, their `sounds.json` events and exactly when each plays |
 | [lang-and-strings.md](lang-and-strings.md) | The 17 gun camo-name keys, the generic camo strings, strings generated in code, missing keys and one correction |

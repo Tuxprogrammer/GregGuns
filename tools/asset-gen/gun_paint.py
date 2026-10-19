@@ -29,6 +29,10 @@ A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A 
 about its long axis X ("tiltX", for a diamond bar) or about the vertical axis Y ("tiltY"), all about "pivot"; a size with a 0 is a zero-thickness plane.
 A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}}} or "camo" with a palette.
 A variant may also give "boxes": {name: {"role", "painters"}} to replace one box's spec for that sheet.
+Cut-outs: a box may set "clear": true to start fully transparent (alpha 0) on every face; painter "solid" (like "rect",
+but also opaque) puts opaque texels back, e.g. the dot on a holographic sight window; painter "hole" (a rect with
+"faces", "x", "y", "w", "h") makes texels transparent, e.g. a window cut in a thin panel. Boxes without these keep an
+opaque sheet, byte for byte.
 """
 import json
 import os
@@ -230,6 +234,11 @@ def apply_painter(rgb, p, face):
     if kind == "rect":
         x, y, pw, ph = face_xywh(p, w, h)
         rect(rgb, x, y, pw, ph, p.get("color", "#101012"), p.get("alpha", 1.0))
+    elif kind == "solid":  # as rect; the face_alpha pass also makes these texels opaque on a "clear" box
+        x, y, pw, ph = face_xywh(p, w, h)
+        rect(rgb, x, y, pw, ph, p.get("color", "#101012"), 1.0)
+    elif kind == "hole":  # transparent texels: handled by face_alpha, nothing to paint
+        pass
     elif kind == "inset":  # a recessed panel: dark rim on its top/left, light on its bottom/right
         x, y, pw, ph = face_xywh(p, w, h)
         mul(rgb, x, y, pw, ph, p.get("shade", 0.78))
@@ -298,6 +307,18 @@ def apply_painter(rgb, p, face):
                 mul(rgb, *edge, p["border"])
     else:
         raise SystemExit("unknown painter " + kind)
+
+
+def face_alpha(box_spec, face, fw, fh):
+    """Alpha plane for one face, or None for the usual opaque face. See the module docstring, "Cut-outs"."""
+    if not box_spec.get("clear") and not any(p.get("type") in ("hole", "solid") for p in box_spec.get("painters", [])):
+        return None
+    a = np.zeros((fh, fw)) if box_spec.get("clear") else np.full((fh, fw), 255.0)
+    for p in box_spec.get("painters", []):
+        if p.get("type") in ("hole", "solid") and face in p.get("faces", FACES):
+            x, y, pw, ph = face_xywh(p, fw, fh)
+            a[max(0, y):max(0, y + ph), max(0, x):max(0, x + pw)] = 0.0 if p["type"] == "hole" else 255.0
+    return a
 
 
 def camo(r, h, w, pal, pattern="blotch"):
@@ -387,7 +408,8 @@ def paint(gun, model_path=None):
                 if fw <= 0 or fh <= 0:
                     continue
                 key = "gunpaint:%s:%s:%s:%s" % (gun, entry["file"], b["name"], face)
-                tex.paste(x, y, paint_face(spec, roles[spec["role"]], b["name"], (w, h, d), face, fw, fh, key))
+                tex.paste(x, y, paint_face(spec, roles[spec["role"]], b["name"], (w, h, d), face, fw, fh, key),
+                          face_alpha(spec, face, fw, fh))
         out = os.path.join(TEX_DIR, entry["file"])
         tex.save(out)
         print("wrote", out)

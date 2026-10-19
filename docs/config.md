@@ -84,6 +84,7 @@ Both keys are synced from server to client (GGS-01-03). Block removal always pas
 |---|---|---|---|---|---|
 | `explosions.blockDamage` | boolean | `false` | n/a | yes | Whether GregGuns explosions remove blocks. Off: they still hurt entities. An NPC-caused blast also needs the `mobGriefing` gamerule. |
 | `explosions.selfDamage` | boolean | `true` | n/a | yes | Whether the player who set off an explosion can be hurt by it (fixes PFX-25). |
+| `explosions.machineExplosions` | boolean | `true` | n/a | yes | Whether GregTech machines in a GregGuns blast react to it (can chain). False leaves them standing (Q4). |
 
 ## Equipment (`equipment`)
 
@@ -108,6 +109,15 @@ All keys are synced. Used by the back devices of the armor module ([powered-flig
 | `flight.jumpPackFallCostEu` | int | `1000` | 0 to 1000000 | yes | EU the pack spends to absorb one fall longer than 3 blocks. |
 | `flight.antiGravityCapacityEu` | int | `2000000` | 1000 to 1000000000 | yes | EU the Anti Gravity Device holds (IV electric item). |
 | `flight.antiGravityDriveEuPerTick` | int | `100` | 0 to 100000 | yes | EU per tick the device draws while it is flying; about 17 minutes of flight on a full charge. |
+
+## Energy (`energy`)
+
+Used by the energy guns ([energy-electric-items.md](gregguns-spec/02-guns/energy-electric-items.md), GGS-02-14). A gun's capacity is the GT battery of its tier, scaled, unless a per-gun line overrides it.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `energy.capacityScalePercent` | int | `100` | 1 to 10000 | yes | Scales every energy gun's default capacity, in percent. |
+| `energy.capacityOverrides` | string list | empty | n/a | no | Lines `gunId=eu` (for example `laser_rifle=8000000`) that set one gun's capacity and win over the scale. Bad lines are ignored. Set the same lines on server and clients so tooltips match. |
 
 ## Client (`client`)
 
