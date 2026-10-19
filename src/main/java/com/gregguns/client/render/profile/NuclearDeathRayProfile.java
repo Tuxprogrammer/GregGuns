@@ -23,19 +23,16 @@ import static com.gregguns.client.anim.GunCurves.yR;
  * variants.
  *
  * <h2>Parts</h2>
- * Part 0 is the body, drawn in the gun's own matrix. Part 1 is the firing starburst: eight 7x4x1 blades named
- * {@code starburst_glow_0} to {@code _7}, painted faint translucent yellow (alpha 28) and hidden by
- * {@link #buildTransforms()}'s part rule until the gameplay batch drives it. The pulse (not expressible in a profile)
- * scales the whole fan uniformly about the barrel axis between 0.8 and 1.0 of its size, one sine cycle over the fire
- * progress, starting at 0.9. Part 2 is the fin and part 3 is the mast with its connector cube, so later code can
- * animate them; both rest at the notes' pose.
+ * Part 0 is the body, drawn in the gun's own matrix. Part 1 is the firing starburst: one 7x5x1 blade named
+ * {@code starburst_glow_0}, rolled 25 degrees about the barrel axis (round-3 measurement: the original has exactly one
+ * such plate in the reactor region), painted faint translucent yellow (alpha 28) and hidden by
+ * {@link #buildTransforms()}'s part rule until the gameplay batch drives it. Part 2 is the fin and part 3 is the mast
+ * with its connector cube, so later code can animate them; both rest at the notes' pose.
  *
  * <h2>Glow parts</h2>
  * Deviation: the profile has no per-box lighting flag yet, so the glow is painted into the sheet. The boxes named
- * {@code *_glow*} are the ones a renderer may draw without lighting: {@code core_glow} (the hidden 7x4x4 core),
- * {@code window_glow_r} and {@code window_glow_l} (the optional 4x3 pale-yellow windows of the notes' section 10, 0.02
- * texel proud of the housing sides; 3 tall rather than 4 so their top and bottom never share a coplanar face with the
- * housing) and the starburst blades.
+ * {@code *_glow*} are the ones a renderer may draw without lighting: {@code core_glow} (the hidden 7x4x4 core) and the
+ * starburst blade. The optional side windows were dropped in round 3 (the original has no such boxes).
  *
  * <h2>Frame of reference</h2>
  * X-family: muzzle toward +X, Y growing downward, in texels. X = 0 is the rear tip of the shoulder bracket, Y = 0 the
@@ -99,18 +96,18 @@ public final class NuclearDeathRayProfile {
         new BoxSpec("plate_rear", 0, 10, 0, 1, 7, 4, 14f, -4f, -2f, NO_PIVOT, 0f),
         new BoxSpec("plate_front", 0, 0, 0, 1, 7, 4, 23f, -4f, -2f, NO_PIVOT, 0f),
         new BoxSpec("sleeve_0", 0, 16, 27, 8, 3, 3, 15f, -3.5f, -1.5f, NO_PIVOT, 0f),
-        new BoxSpec("sleeve_1", 0, 20, 10, 8, 3, 6, 15f, -3.5f, -3f, new float[] { 15f, 0.4f, 0f }, 0f, 60f),
-        new BoxSpec("sleeve_2", 0, 38, 27, 8, 3, 3, 15f, -3.5f, -1.5f, new float[] { 15f, 0.4f, 0f }, 0f, 120f),
+        new BoxSpec("sleeve_1", 0, 20, 10, 8, 3, 6, 15f, -2.8f, -2.6f, new float[] { 15f, 1.1f, 0.4f }, 0f, 60f),
+        new BoxSpec("sleeve_2", 0, 38, 27, 8, 3, 3, 15f, -2.8f, -1.9f, new float[] { 15f, 1.1f, -0.4f }, 0f, 120f),
         new BoxSpec("sleeve_3", 0, 48, 10, 8, 3, 6, 15f, -3.5f, -3f, new float[] { 15f, 0.4f, 0f }, 0f, 180f),
-        new BoxSpec("sleeve_4", 0, 60, 27, 8, 3, 3, 15f, -3.5f, -1.5f, new float[] { 15f, 0.4f, 0f }, 0f, 240f),
-        new BoxSpec("sleeve_5", 0, 76, 10, 8, 3, 6, 15f, -3.5f, -3f, new float[] { 15f, 0.4f, 0f }, 0f, 300f),
+        new BoxSpec("sleeve_4", 0, 60, 27, 8, 3, 3, 15f, -2.8f, -1.1f, new float[] { 15f, 1.1f, 0.4f }, 0f, 240f),
+        new BoxSpec("sleeve_5", 0, 76, 10, 8, 3, 6, 15f, -2.8f, -3.4f, new float[] { 15f, 1.1f, -0.4f }, 0f, 300f),
         new BoxSpec("rail_1", 0, 16, 39, 14, 1, 4, 12f, -5f, -2f, NO_PIVOT, 0f),
         new BoxSpec("rail_2", 0, 28, 49, 10, 1, 3, 16f, -6f, -1.5f, NO_PIVOT, 0f),
         new BoxSpec("rail_3", 0, 54, 49, 6, 1, 3, 17f, -7f, -1.5f, NO_PIVOT, 0f),
-        new BoxSpec("fin", 2, 100, 40, 4, 1, 4, 14.2f, -9.1f, -2f, new float[] { 18.2f, -8.6f, 0f }, -45f),
+        new BoxSpec("fin", 2, 100, 40, 4, 1, 4, 14.6f, -8.7f, -2f, new float[] { 18.6f, -8.2f, 0f }, -45f),
         new BoxSpec("grip_block", 0, 82, 50, 3, 2, 2, 23.5f, 3f, -3f, NO_PIVOT, 0f),
         new BoxSpec("grip", 0, 96, 19, 2, 5, 2, 24f, 5f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("trigger", 0, 124, 5, 1, 3, 1, 26f, 4f, -2.5f, new float[] { 26.5f, 4f, -2f }, -23f),
+        new BoxSpec("trigger", 0, 124, 5, 1, 3, 1, 25.2f, 4f, -2.5f, new float[] { 25.7f, 4f, -2f }, -23f),
         new BoxSpec("reactor_a", 0, 46, 0, 7, 6, 4, 28f, -3f, -2f, NO_PIVOT, 0f),
         new BoxSpec("reactor_b", 0, 20, 0, 7, 4, 6, 28f, -2f, -3f, NO_PIVOT, 0f),
         new BoxSpec("cap_rear", 0, 82, 0, 1, 4, 6, 27f, -2f, -3f, NO_PIVOT, 0f),
@@ -120,11 +117,9 @@ public final class NuclearDeathRayProfile {
         new BoxSpec("cap_front_top", 0, 98, 45, 1, 1, 4, 35f, -3f, -2f, NO_PIVOT, 0f),
         new BoxSpec("cap_front_bot", 0, 88, 45, 1, 1, 4, 35f, 2f, -2f, NO_PIVOT, 0f),
         new BoxSpec("core_glow", 0, 104, 10, 7, 4, 4, 28f, -2f, -2f, NO_PIVOT, 0f),
-        new BoxSpec("window_glow_r", 0, 10, 49, 4, 3, 1, 29.5f, -1.5f, -3.02f, NO_PIVOT, 0f),
-        new BoxSpec("window_glow_l", 0, 0, 46, 4, 3, 1, 29.5f, -1.5f, 2.02f, NO_PIVOT, 0f),
-        new BoxSpec("knob_top", 0, 112, 50, 2, 2, 2, 24.5f, -5.3f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("knob_top", 0, 112, 50, 2, 2, 2, 25.5f, -5.3f, -1f, NO_PIVOT, 0f),
         new BoxSpec("bar_top", 0, 62, 54, 9, 1, 1, 27f, -4.8f, -0.5f, NO_PIVOT, 0f),
-        new BoxSpec("tip_top", 0, 92, 54, 4, 1, 1, 36f, -4.8f, -0.5f, new float[] { 36f, -4.3f, -0f }, 45f),
+        new BoxSpec("tip_top", 0, 92, 54, 4, 1, 1, 35.7f, -4.8f, -0.5f, new float[] { 35.7f, -4.3f, -0f }, 45f),
         new BoxSpec("knob_right", 0, 102, 50, 3, 2, 2, 24.5f, -5.3f, -1f, new float[] { 24.5f, 0f, 0f }, 0f, 120f),
         new BoxSpec("bar_right", 0, 0, 54, 9, 1, 1, 27f, -4.8f, -0.5f, new float[] { 27f, 0f, 0f }, 0f, 120f),
         new BoxSpec(
@@ -135,10 +130,10 @@ public final class NuclearDeathRayProfile {
             4,
             1,
             1,
-            36f,
+            35.7f,
             1.65f,
             -4.2239f,
-            new float[] { 36f, 2.15f, -3.7239f },
+            new float[] { 35.7f, 2.15f, -3.7239f },
             -26.5651f,
             129.232f,
             -37.7612f),
@@ -152,10 +147,10 @@ public final class NuclearDeathRayProfile {
             4,
             1,
             1,
-            36f,
+            35.7f,
             1.65f,
             3.2239f,
-            new float[] { 36f, 2.15f, 3.7239f },
+            new float[] { 35.7f, 2.15f, 3.7239f },
             -26.5651f,
             -129.232f,
             37.7612f),
@@ -175,26 +170,19 @@ public final class NuclearDeathRayProfile {
             -40.8934f,
             -112.208f,
             -20.7048f),
-        new BoxSpec("emitter_core_0", 0, 116, 40, 3, 2, 3, 36f, -2.6f, -1.5f, NO_PIVOT, 0f),
-        new BoxSpec("emitter_core_1", 0, 28, 44, 3, 2, 3, 36f, -2.6f, -1.5f, new float[] { 36f, 0f, 0f }, 0f, 60f),
-        new BoxSpec("emitter_core_2", 0, 40, 44, 3, 2, 3, 36f, -2.6f, -1.5f, new float[] { 36f, 0f, 0f }, 0f, 120f),
-        new BoxSpec("emitter_core_3", 0, 52, 44, 3, 2, 3, 36f, -2.6f, -1.5f, new float[] { 36f, 0f, 0f }, 0f, 180f),
-        new BoxSpec("emitter_core_4", 0, 64, 44, 3, 2, 3, 36f, -2.6f, -1.5f, new float[] { 36f, 0f, 0f }, 0f, 240f),
-        new BoxSpec("emitter_core_5", 0, 76, 45, 3, 2, 3, 36f, -2.6f, -1.5f, new float[] { 36f, 0f, 0f }, 0f, 300f),
+        new BoxSpec("emitter_core_0", 0, 116, 40, 3, 2, 3, 35.7f, -2.6f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("emitter_core_1", 0, 28, 44, 3, 2, 3, 35.7f, -2.6f, -1.5f, new float[] { 35.7f, 0f, 0f }, 0f, 60f),
+        new BoxSpec("emitter_core_2", 0, 40, 44, 3, 2, 3, 35.7f, -2.6f, -1.5f, new float[] { 35.7f, 0f, 0f }, 0f, 120f),
+        new BoxSpec("emitter_core_3", 0, 52, 44, 3, 2, 3, 35.7f, -2.6f, -1.5f, new float[] { 35.7f, 0f, 0f }, 0f, 180f),
+        new BoxSpec("emitter_core_4", 0, 64, 44, 3, 2, 3, 35.7f, -2.6f, -1.5f, new float[] { 35.7f, 0f, 0f }, 0f, 240f),
+        new BoxSpec("emitter_core_5", 0, 76, 45, 3, 2, 3, 35.7f, -2.6f, -1.5f, new float[] { 35.7f, 0f, 0f }, 0f, 300f),
         new BoxSpec("cup_0", 0, 82, 27, 3, 1, 4, 39f, -3.5f, -2f, NO_PIVOT, 0f),
         new BoxSpec("cup_1", 0, 52, 39, 4, 1, 4, 39f, -3.5f, -2f, new float[] { 39f, 0f, 0f }, 0f, 60f),
         new BoxSpec("cup_2", 0, 0, 41, 3, 1, 4, 39f, -3.5f, -2f, new float[] { 39f, 0f, 0f }, 0f, 120f),
         new BoxSpec("cup_3", 0, 68, 39, 4, 1, 4, 39f, -3.5f, -2f, new float[] { 39f, 0f, 0f }, 0f, 180f),
         new BoxSpec("cup_4", 0, 14, 44, 3, 1, 4, 39f, -3.5f, -2f, new float[] { 39f, 0f, 0f }, 0f, 240f),
         new BoxSpec("cup_5", 0, 84, 40, 4, 1, 4, 39f, -3.5f, -2f, new float[] { 39f, 0f, 0f }, 0f, 300f),
-        new BoxSpec("starburst_glow_0", 1, 16, 33, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 25f),
-        new BoxSpec("starburst_glow_1", 1, 32, 33, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -25f),
-        new BoxSpec("starburst_glow_2", 1, 48, 33, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 63f),
-        new BoxSpec("starburst_glow_3", 1, 64, 33, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -63f),
-        new BoxSpec("starburst_glow_4", 1, 80, 33, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 117f),
-        new BoxSpec("starburst_glow_5", 1, 96, 34, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -117f),
-        new BoxSpec("starburst_glow_6", 1, 112, 34, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 155f),
-        new BoxSpec("starburst_glow_7", 1, 0, 35, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -155f),
+        new BoxSpec("starburst_glow_0", 1, 16, 33, 7, 5, 1, 28f, -5.975f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 25f),
         // END GENERATED BOXES
     };
 

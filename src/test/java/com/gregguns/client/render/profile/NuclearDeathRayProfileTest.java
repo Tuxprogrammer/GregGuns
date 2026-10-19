@@ -156,24 +156,22 @@ class NuclearDeathRayProfileTest {
     }
 
     @Test
-    void starburstIsEightBladesAroundTheReactorWithoutOneStraightUpOrDown() {
-        assertEquals(8, count("starburst_glow_"));
-        int near = 0;
-        for (int i = 0; i < 8; i++) {
-            BoxSpec b = box("starburst_glow_" + i);
-            assertEquals(NuclearDeathRayProfile.PART_STARBURST, b.part());
-            assertEquals(7, b.w());
-            assertEquals(4, b.h());
-            assertEquals(1, b.d());
-            assertEquals(28f, b.x(), 1e-6);
-            assertEquals(-5f, b.y(), 1e-6, "radius 1 to 5");
-            float a = Math.abs(b.tiltXDegrees());
-            assertTrue(a > 0 && a < 180, "none straight up or down");
-            if (a == 25f || a == 63f) {
-                near++;
-            }
-        }
-        assertEquals(4, near);
+    void starburstIsOneRolledBladeAndRoundThreeMovesHold() {
+        assertEquals(1, count("starburst_glow_"));
+        assertEquals(0, count("window_glow_"));
+        BoxSpec b = box("starburst_glow_0");
+        assertEquals(NuclearDeathRayProfile.PART_STARBURST, b.part());
+        assertEquals(7, b.w());
+        assertEquals(5, b.h());
+        assertEquals(1, b.d());
+        assertEquals(25f, b.tiltXDegrees(), 1e-6);
+        assertEquals(14.6f, box("fin").x(), 1e-6, "rod 0.4 toward the muzzle");
+        assertEquals(-8.7f, box("fin").y(), 1e-6, "rod 0.4 down");
+        assertEquals(-2.8f, box("sleeve_1").y(), 1e-6, "slanted slabs lowered 0.7");
+        assertEquals(-3.5f, box("sleeve_0").y(), 1e-6, "top plate unchanged");
+        assertEquals(25.5f, box("knob_top").x(), 1e-6, "knob 1.0 toward the muzzle");
+        assertEquals(25.2f, box("trigger").x(), 1e-6, "trigger 0.8 toward the rear");
+        assertEquals(35.7f, box("emitter_core_0").x(), 1e-6, "emitter pulled back 0.3");
     }
 
     @Test

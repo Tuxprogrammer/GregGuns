@@ -108,6 +108,22 @@ class AugProfileTest {
     }
 
     @Test
+    void roundThreeLowerBodyIsCenteredAndMagazineIsPlacedAsMeasured() {
+        for (String n : new String[] { "lower_plate", "grip", "guard_front", "guard_floor", "slope", "socket" }) {
+            assertEquals(0.0, box(n).z() + box(n).d() / 2.0, 1e-6, n + " centered on the mid-plane");
+        }
+        assertEquals(0.0, box("mag_upper").z() + box("mag_upper").d() / 2.0, 1e-6);
+        assertEquals(0.0, box("mag_lower").z() + box("mag_lower").d() / 2.0, 1e-6);
+        assertEquals(0.0, box("trigger").z() + box("trigger").d() / 2.0, 1e-6);
+        assertEquals(0.1, box("foregrip").pivotZ(), 1e-6, "foregrip Z -2.0 to 2.2");
+        assertEquals(5, box("mag_upper").h(), "upper segment 5 long");
+        assertEquals(6, box("mag_upper").w(), "upper segment 6 deep");
+        assertEquals(12.5f, box("socket").pivotY(), 1e-6, "well box moved down 2");
+        assertEquals(15.2f, box("mag_upper").pivotX(), 1e-6);
+        assertEquals(18.6f, box("mag_upper").pivotY(), 1e-6);
+    }
+
+    @Test
     void scopeIsTwoBlackTubesAndTheStrutsLeanForward() {
         assertEquals(10, box("scope_rear").w());
         assertEquals(3, box("scope_rear").h());
@@ -120,8 +136,9 @@ class AugProfileTest {
         assertEquals(8, box("strut_front").h());
         assertEquals(7, box("strut_rear").h());
         // The window under the scope stays open: the struts are 9 apart at the top and about 10.6 at the receiver.
-        assertEquals(9.0, box("strut_front").pivotX() - box("strut_rear").pivotX(), 1e-6);
-        assertEquals(10.6, bottomX(box("strut_front")) - bottomX(box("strut_rear")), 0.1);
+        // Round 3 measured the struts 9.1 apart (front moved 0.4, rear 0.5 toward the butt).
+        assertEquals(9.1, box("strut_front").pivotX() - box("strut_rear").pivotX(), 1e-4);
+        assertEquals(10.6, bottomX(box("strut_front")) - bottomX(box("strut_rear")), 0.2);
         double housingBottom = box("scope_rear").pivotY() + Math.sqrt(2.0) * 3 / 2.0;
         assertEquals(2.3, box("receiver").pivotY() - Math.sqrt(2.0) * 4 / 2.0 - housingBottom, 0.1, "clearance");
     }
