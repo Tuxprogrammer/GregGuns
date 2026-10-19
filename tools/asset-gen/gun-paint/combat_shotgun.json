@@ -1,0 +1,428 @@
+{
+ "gun": "combat_shotgun",
+ "textures": [
+  {
+   "file": "combat_shotgun.png"
+  }
+ ],
+ "roles": {
+  "barrel": {
+   "material": "steel",
+   "base": "#68696A",
+   "scratches": false,
+   "noise": 0.04
+  },
+  "rail": {
+   "material": "steel",
+   "base": "#6E7070",
+   "scratches": false,
+   "noise": 0.04
+  },
+  "tube": {
+   "material": "steel",
+   "base": "#676969",
+   "scratches": false,
+   "noise": 0.04
+  },
+  "lower": {
+   "material": "steel",
+   "base": "#646666",
+   "scratches": false,
+   "noise": 0.04
+  },
+  "upper": {
+   "material": "steel",
+   "base": "#727474",
+   "scratches": false,
+   "noise": 0.04
+  },
+  "recv": {
+   "material": "steel",
+   "base": "#363636",
+   "scratches": false,
+   "noise": 0.1
+  },
+  "plate": {
+   "material": "steel",
+   "base": "#373737",
+   "scratches": false,
+   "noise": 0.1
+  },
+  "rear": {
+   "material": "steel",
+   "base": "#2C2C2C",
+   "scratches": false,
+   "noise": 0.1
+  },
+  "pump": {
+   "material": "steel",
+   "base": "#3A3A3A",
+   "scratches": false,
+   "noise": 0.1
+  },
+  "grip": {
+   "material": "steel",
+   "base": "#232323",
+   "scratches": false,
+   "noise": 0.05
+  },
+  "stock": {
+   "material": "steel",
+   "base": "#1F1F1F",
+   "scratches": false,
+   "noise": 0.04
+  },
+  "small": {
+   "material": "steel",
+   "base": "#323232",
+   "scratches": false,
+   "noise": 0.03
+  }
+ },
+ "boxes": {
+  "barrel_slab": {
+   "role": "barrel",
+   "bevel": [
+    1.04,
+    0.9
+   ],
+   "painters": [
+    {
+     "type": "seam",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "axis": "h",
+     "at": 0,
+     "dark": 0.9,
+     "light": 1.0
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.08
+    }
+   ]
+  },
+  "rail_right": {
+   "role": "rail",
+   "bevel": [
+    1.04,
+    0.9
+   ],
+   "painters": [
+    {
+     "type": "gradient",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "top": 1.06,
+     "bottom": 0.9
+    }
+   ]
+  },
+  "rail_left": {
+   "role": "rail",
+   "bevel": [
+    1.04,
+    0.9
+   ],
+   "painters": [
+    {
+     "type": "gradient",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "top": 1.06,
+     "bottom": 0.9
+    }
+   ]
+  },
+  "tube": {
+   "role": "tube",
+   "bevel": [
+    1.04,
+    0.9
+   ],
+   "painters": [
+    {
+     "type": "gradient",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "top": 1.06,
+     "bottom": 0.9
+    }
+   ]
+  },
+  "strut_lower": {
+   "role": "lower",
+   "bevel": [
+    1.04,
+    0.9
+   ],
+   "painters": [
+    {
+     "type": "gradient",
+     "faces": [
+      "front",
+      "back",
+      "top",
+      "bottom"
+     ],
+     "top": 1.05,
+     "bottom": 0.88
+    }
+   ]
+  },
+  "strut_upper": {
+   "role": "upper",
+   "bevel": [
+    1.04,
+    0.9
+   ]
+  },
+  "recv_main": {
+   "role": "recv",
+   "bevel": [
+    1.08,
+    0.85
+   ],
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "front",
+      "back",
+      "top"
+     ],
+     "amp": 0.16,
+     "cx": 4,
+     "cy": 2,
+     "seed": 3
+    },
+    {
+     "type": "inset",
+     "faces": [
+      "back"
+     ],
+     "x": 3,
+     "y": 1,
+     "w": 4,
+     "h": 2,
+     "shade": 0.8
+    }
+   ]
+  },
+  "plate_main": {
+   "role": "plate",
+   "bevel": [
+    1.1,
+    0.85
+   ],
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.1
+    }
+   ]
+  },
+  "plate_rear": {
+   "role": "plate",
+   "bevel": [
+    1.1,
+    0.85
+   ],
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.1
+    }
+   ]
+  },
+  "recv_rear": {
+   "role": "rear",
+   "bevel": [
+    1.08,
+    0.85
+   ],
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "amp": 0.15,
+     "cx": 3,
+     "cy": 2,
+     "seed": 5
+    }
+   ]
+  },
+  "pump": {
+   "role": "pump",
+   "bevel": [
+    1.0,
+    0.9
+   ],
+   "painters": [
+    {
+     "type": "stripes",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "axis": "x",
+     "step": 1,
+     "colors": [
+      "#4A4A4B",
+      "#2E2E2E",
+      "#2A2A2A"
+     ]
+    },
+    {
+     "type": "stripes",
+     "faces": [
+      "left"
+     ],
+     "axis": "x",
+     "step": 1,
+     "colors": [
+      "#3E3E3E",
+      "#2A2A2A",
+      "#2A2A2A"
+     ]
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.1
+    },
+    {
+     "type": "seam",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "axis": "h",
+     "at": 0,
+     "dark": 0.8,
+     "light": 1.0
+    }
+   ]
+  },
+  "grip": {
+   "role": "grip",
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "painters": [
+    {
+     "type": "checker",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "amp": 0.15,
+     "border": 0.8
+    }
+   ]
+  },
+  "butt_plate": {
+   "role": "stock",
+   "bevel": [
+    1.1,
+    0.85
+   ],
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "front",
+      "back",
+      "top",
+      "left",
+      "right"
+     ],
+     "amp": 0.12,
+     "cx": 3,
+     "cy": 3,
+     "seed": 7
+    }
+   ]
+  },
+  "hinge": {
+   "role": "stock",
+   "bevel": [
+    1.1,
+    0.85
+   ]
+  },
+  "toe": {
+   "role": "stock",
+   "bevel": [
+    1.1,
+    0.85
+   ]
+  },
+  "brace": {
+   "role": "stock",
+   "bevel": [
+    1.1,
+    0.85
+   ]
+  },
+  "rear_sight": {
+   "role": "small",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "front_sight": {
+   "role": "small",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "clamp": {
+   "role": "small",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "trigger": {
+   "role": "small",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  }
+ }
+}
