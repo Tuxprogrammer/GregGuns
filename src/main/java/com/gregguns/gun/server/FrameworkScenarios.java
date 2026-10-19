@@ -100,7 +100,7 @@ public final class FrameworkScenarios {
                 .build();
             GunStats drop = base("kind_gravity").projectileKind(ProjectileKind.GRAVITY_BULLET)
                 .build();
-            GunStats missing = base("kind_missing").projectileKind(ProjectileKind.TESLA)
+            GunStats missing = base("kind_missing").projectileKind(ProjectileKind.BIO)
                 .build();
             Map<GenericProjectile, Boolean> none = new IdentityHashMap<>();
             Map<GenericProjectile, Boolean> baseline = bulletsIn(ctx, none);
