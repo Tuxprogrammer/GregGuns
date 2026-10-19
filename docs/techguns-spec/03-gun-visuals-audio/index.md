@@ -31,6 +31,9 @@ Out of scope here, see the owning areas:
 | [model-notes/mac10.md](model-notes/mac10.md) | Clean-room design notes for rebuilding the Mac-10 model and texture (proportions, parts, palette, motion, checklist) |
 | [model-notes/m4.md](model-notes/m4.md) | Clean-room design notes for rebuilding the M4 (and Infiltrator delta) model and texture (proportions, parts, palette, motion, checklist) |
 | [model-notes/ak47.md](model-notes/ak47.md) | Clean-room design notes for rebuilding the AK-47 model and texture (proportions, parts, palette, motion, checklist) |
+| [model-notes/combat_shotgun.md](model-notes/combat_shotgun.md) | Clean-room design notes for rebuilding the Combat Shotgun model and texture |
+| [model-notes/rocket_launcher.md](model-notes/rocket_launcher.md) | Clean-room design notes for rebuilding the Rocket Launcher model and texture (plus the rocket projectile) |
+| [model-notes/grenade_launcher.md](model-notes/grenade_launcher.md) | Clean-room design notes for rebuilding the Grenade Launcher model and texture (OBJ original; plus the launcher grenade) |
 | [textures.md](textures.md) | All 62 `textures/guns/` PNGs: size, what they depict, palette, UV layout, users, model-size mismatches |
 | [sounds.md](sounds.md) | All 185 `sounds/guns/` files, their `sounds.json` events and exactly when each plays |
 | [lang-and-strings.md](lang-and-strings.md) | The 17 gun camo-name keys, the generic camo strings, strings generated in code, missing keys and one correction |
