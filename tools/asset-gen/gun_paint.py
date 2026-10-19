@@ -23,6 +23,7 @@ Role map (`gun-paint/<gun>.json`): {"gun", "textures": [{"file": "handcannon.png
 "roles": {role: {"material", "base", ...}}, "boxes": {name: {"role", "grain", "wear", "painters": [...]}}}.
 Materials: steel (flat, edge highlights, faint scratches), wood (grain streaks along the box's grain axis, dark end
 grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore, bands, gradient, tone, seam, inset.
+A wood role may set "calm" (0..1, streak contrast scale); a role may set "bevel": [hi, lo] edge shading.
 A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A box may be tilted about Z ("tilt") or
 about its long axis X ("tiltX", for a diamond bar), both about "pivot"; a size with a 0 is a zero-thickness plane.
 A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}}} or "camo" with a palette.
@@ -166,13 +167,15 @@ def steel(r, h, w, base, grain_along_x=True, scratches=True, noise=0.0):
     return rgb
 
 
-def wood(r, h, w, base, along_x, end_grain=False):
+def wood(r, h, w, base, along_x, end_grain=False, calm=1.0):
     """Wood: streaks running along the grain axis, a few dark pores, or concentric rings for end grain."""
     b = hx(base) if isinstance(base, str) else np.asarray(base, float)
     if end_grain:
         yy, xx = np.mgrid[0:h, 0:w]
         d = np.hypot(xx - w / 2.0, yy - h / 2.0)
         f = 0.74 + 0.12 * np.sin(d * 2.1 + 3 * vnoise(r, h, w, 4))
+        if calm != 1.0:
+            f = 1.0 + (f - 0.74) * calm
         return np.clip(b * f[..., None], 0, 255)
     n, m = (h, w) if along_x else (w, h)  # n lines, each m long
     lines = 0.82 + 0.28 * r.random(n)
@@ -180,11 +183,14 @@ def wood(r, h, w, base, along_x, end_grain=False):
     f = lines[:, None] * (0.93 + 0.14 * wob[None, :])
     for k in range(1, n, int(r.integers(3, 5))):
         f[k, :] *= 0.80  # dark grain line
+    if calm != 1.0:  # a calm finish: the same streaks at a fraction of the contrast, mean kept
+        f = 1.0 + (f - f.mean()) * calm
     f = f if along_x else f.T
     rgb = b * f[..., None]
     for _ in range(max(1, w * h // 60)):
         x, y = int(r.integers(0, w)), int(r.integers(0, h))
-        mul(rgb, x, y, int(r.integers(2, 5)) if along_x else 1, 1 if along_x else int(r.integers(2, 5)), 0.72)
+        mul(rgb, x, y, int(r.integers(2, 5)) if along_x else 1, 1 if along_x else int(r.integers(2, 5)),
+            1.0 - 0.28 * calm)
     return np.clip(rgb, 0, 255)
 
 
@@ -282,7 +288,7 @@ def paint_face(box_spec, role_def, name, dims, face, fw, fh, seed_key):
             end = face in ("left", "right")
         else:
             end = face in ("top", "bottom")
-        rgb = wood(r, fh, fw, base, along_x=(axis == "x"), end_grain=end)
+        rgb = wood(r, fh, fw, base, along_x=(axis == "x"), end_grain=end, calm=role_def.get("calm", 1.0))
     elif mat == "flat":
         rgb = np.tile(hx(base), (fh, fw, 1))
     else:
@@ -291,7 +297,7 @@ def paint_face(box_spec, role_def, name, dims, face, fw, fh, seed_key):
     for p in box_spec.get("painters", []):
         if face in p.get("faces", FACES):
             apply_painter(rgb, p, face)
-    bevel(rgb, *box_spec.get("bevel", (1.12, 0.84)))
+    bevel(rgb, *box_spec.get("bevel", role_def.get("bevel", (1.12, 0.84))))
     return rgb
 
 
