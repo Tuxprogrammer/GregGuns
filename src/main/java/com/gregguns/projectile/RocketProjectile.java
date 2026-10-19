@@ -11,9 +11,11 @@ import com.gregguns.combat.DamageSources;
 import com.gregguns.combat.DamageType;
 import com.gregguns.combat.Knockback;
 import com.gregguns.core.config.ExplosionsConfig;
+import com.gregguns.explosion.ExplosionRules;
 import com.gregguns.explosion.ProjectileExplosion;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ShotOffset;
+import com.gregguns.gun.sound.GunSoundEvents;
 
 /**
  * The Rocket Launcher's rocket: a {@link GenericProjectile} that falls a little (gravity 0.01), flies on underwater,
@@ -29,6 +31,12 @@ import com.gregguns.gun.logic.ShotOffset;
  * events and the per-block break checks all apply: the shooter is not immune to their own rocket (PFX-25), nothing is
  * removed without those checks (PFX-14), and knockback reaches player clients (CORE-19). A rocket that runs out of
  * lifetime in the air ends without exploding, as in Techguns.
+ *
+ * <p>
+ * The Nuke Launcher fires the same entity with a blast radius of 10: at or above
+ * {@link ExplosionRules#NUKE_FX_MIN_SIZE}
+ * the blast is a nuke, which is time-sliced by {@code BlastTicker}, sends the long-range FX packet and plays the
+ * {@code nukeexplosion} sound at volume {@value #NUKE_SOUND_VOLUME}.
  *
  * <pre>
  * 
@@ -46,6 +54,9 @@ public class RocketProjectile extends GenericProjectile {
 
     /** Mod-local entity ID; the same number Techguns uses for its rocket. */
     public static final int ENTITY_ID = 6;
+
+    /** Volume of the nuke blast's sound (Techguns plays {@code nukeexplosion} at 8). */
+    public static final float NUKE_SOUND_VOLUME = 8.0F;
 
     private float blastRadius = 1.75F;
     private String weaponName = "rocket_launcher";
@@ -126,7 +137,7 @@ public class RocketProjectile extends GenericProjectile {
             return;
         }
         exploded = true;
-        new ProjectileExplosion(
+        ProjectileExplosion.Result result = new ProjectileExplosion(
             worldObj,
             this,
             shooter,
@@ -139,6 +150,18 @@ public class RocketProjectile extends GenericProjectile {
             (float) LauncherMath.innerRadius(blastRadius),
             (float) LauncherMath.outerRadius(blastRadius)).excluding(directTarget)
                 .explode(ExplosionsConfig.blockDamage);
+        if (result.happened() && blastRadius >= ExplosionRules.NUKE_FX_MIN_SIZE) {
+            // A nuke-size blast also has its own sound, loud enough to carry (volume 8 is audible about 128 blocks
+            // away). The long-range flash and mushroom cloud come from the PacketBlastFx that ProjectileExplosion
+            // sends at this size, so FX are not sent a second time here.
+            worldObj.playSoundEffect(
+                posX,
+                posY,
+                posZ,
+                GunSoundEvents.qualified(GunSoundEvents.NUKE_EXPLOSION),
+                NUKE_SOUND_VOLUME,
+                1.0F);
+        }
     }
 
     @Override

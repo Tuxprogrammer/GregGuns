@@ -92,6 +92,9 @@ public final class InHandTargets {
         put("lmg", 2.55, 0.62, -0.52, 1.35, 0.60, -0.38, 2.62, 1.37);
         put("combat_shotgun", 3.09, 0.70, -0.65, 1.06, 0.70, -0.41, 2.61, 1.48);
         put("rocket_launcher", 2.70, 0.70, -0.63, 1.14, 0.70, -0.52, 2.49, 1.69);
+        // The Nuke Launcher wears the Rocket Launcher's model and shares its fitted transforms; the notes give it the
+        // same figures.
+        put("nuke_launcher", 2.70, 0.70, -0.63, 1.14, 0.70, -0.52, 2.49, 1.69);
         put("grenade_launcher", 2.20, 0.96, -0.72, 1.36, 0.96, -0.63, 2.46, 1.34);
         put("flamethrower", 2.15, 0.81, -0.62, 1.33, 0.81, -0.47, 2.41, 1.51);
         put("bio_gun", 1.90, 0.57, -0.78, 0.52, 0.57, -0.54, 1.47, 1.34);

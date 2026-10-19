@@ -185,6 +185,12 @@ class GunSoundsJsonTest {
                 .endsWith("." + GunSoundEvents.FIRE)) {
                 continue;
             }
+            // The Nuke Launcher keeps its own event (mutable on its own) but plays the Rocket Launcher's recordings,
+            // as Techguns' nukelauncher does (guns.rocketFire); it takes its own files if the asset agent makes them.
+            if (e.getKey()
+                .equals("guns.nuke_launcher.fire")) {
+                continue;
+            }
             for (String file : files(e.getValue())) {
                 assertFalse(seen.contains(file), file + " is shared between fire events");
                 seen.add(file);
