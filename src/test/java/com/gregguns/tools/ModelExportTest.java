@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import com.gregguns.armor.model.ArmorModelDef;
+import com.gregguns.armor.model.ArmorModels;
 import com.gregguns.client.render.profile.ClientGunDefinitions;
 
 class ModelExportTest {
@@ -47,11 +50,61 @@ class ModelExportTest {
         }
     }
 
+    /** The armor export writes every custom set, and what it writes parses back to the same boxes. */
+    @Test
+    void armorExportRoundTrips(@TempDir Path dir) throws IOException {
+        assertEquals(ArmorModels.CUSTOM_SETS.size(), ModelExporter.exportArmor(dir));
+        for (String id : ArmorModels.CUSTOM_SETS) {
+            ArmorModelDef original = ArmorModels.get(id);
+            try (Reader in = Files.newBufferedReader(
+                dir.resolve("armor")
+                    .resolve(id + ".json"),
+                StandardCharsets.UTF_8)) {
+                ArmorModelDef back = ArmorModelDef.parse(in);
+                assertEquals(
+                    original.boxes()
+                        .size(),
+                    back.boxes()
+                        .size(),
+                    id);
+                assertEquals(original.textureWidth(), back.textureWidth(), id);
+                for (int i = 0; i < back.boxes()
+                    .size(); i++) {
+                    assertEquals(
+                        original.boxes()
+                            .get(i)
+                            .name(),
+                        back.boxes()
+                            .get(i)
+                            .name(),
+                        id);
+                    assertEquals(
+                        original.boxes()
+                            .get(i)
+                            .u(),
+                        back.boxes()
+                            .get(i)
+                            .u(),
+                        id);
+                    assertEquals(
+                        original.boxes()
+                            .get(i)
+                            .slot(),
+                        back.boxes()
+                            .get(i)
+                            .slot(),
+                        id);
+                }
+            }
+        }
+    }
+
     /** Runs only when an output directory is configured: writes the real export for the offline renderer. */
     @Test
     void exportToConfiguredDirectory() throws IOException {
         Path dir = ModelExporter.configuredDirectory();
         Assumptions.assumeTrue(dir != null, "set -Dgregguns.exportModels=<dir> or GREGGUNS_EXPORT_MODELS");
         assertTrue(ModelExporter.exportAll(dir) > 0);
+        assertEquals(ArmorModels.CUSTOM_SETS.size(), ModelExporter.exportArmor(dir));
     }
 }

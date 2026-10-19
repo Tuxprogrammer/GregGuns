@@ -4,8 +4,8 @@ Guns, armor and military tech for [GT New Horizons](https://github.com/GTNewHori
 
 GregGuns is a from-scratch rewrite inspired by [Techguns](https://github.com/pWn3d1337/Techguns). It is not a port. GTNH has changed 1.7.10 so much that the original code would not carry over cleanly. GregGuns is written against GTNH's own APIs instead, and its weapons, components and recipes are gated by GregTech tiers rather than vanilla-style crafting.
 
-> [!NOTE]
-> Early development. Nothing is playable yet. See [docs/ROADMAP.md](docs/ROADMAP.md) for direction and open items.
+> [!WARNING]
+> Early alpha and very much a work in progress. An [alpha pre-release](https://github.com/Tuxprogrammer/GregGuns/releases) for GTNH 2.9.0-RC-2 is out for testing. Expect bugs and changes that break worlds, and back up your saves. Its content is switched off by default; the release notes say how to turn it on. See [docs/ROADMAP.md](docs/ROADMAP.md) for where it's headed.
 
 ## Building
 

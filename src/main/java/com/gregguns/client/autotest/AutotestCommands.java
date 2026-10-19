@@ -32,7 +32,8 @@ import cpw.mods.fml.relauncher.SideOnly;
  * <li>{@code gui press <x> <y> <z>}: a real right-click on the block's west face, which opens a machine GUI;</li>
  * <li>{@code gui nei <item>}: NEI's recipe view for the output {@code gregguns:<item>}.</li>
  * </ul>
- * Other commands (handled by {@link ClientAutotest}): {@code view <0|1|2>}, {@code shot <label>},
+ * Other commands (handled by {@link ClientAutotest}): {@code view <0|1|2>}, {@code hud <on|off>} (off hides the GUI
+ * layer, as F1 does, for clean third-person shots of worn armor: used by {@code armor.showcase}), {@code shot <label>},
  * {@code arm <shot|reload> <label> <delayTicks>}, {@code fire <count>}, {@code slots <owner>} (reports this client's
  * copy of a player's Baubles slots back to the server as chat lines, see {@code AutotestReport}),
  * {@code scope <texturePath|off>} (draws a scope

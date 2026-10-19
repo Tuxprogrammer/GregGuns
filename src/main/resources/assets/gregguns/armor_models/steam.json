@@ -1,0 +1,753 @@
+{
+ "name": "steam",
+ "textureWidth": 128,
+ "textureHeight": 64,
+ "boxes": [
+  {
+   "name": "shell",
+   "part": "head",
+   "slot": "helmet",
+   "material": "wood",
+   "uv": [
+    24,
+    0
+   ],
+   "offset": [
+    -4.25,
+    -8.0,
+    -4.25
+   ],
+   "size": [
+    8,
+    7,
+    8
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "visor",
+   "part": "head",
+   "slot": "helmet",
+   "material": "glass",
+   "uv": [
+    50,
+    32
+   ],
+   "offset": [
+    -4.0,
+    -5.5,
+    -5.1
+   ],
+   "size": [
+    8,
+    2,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "band",
+   "part": "head",
+   "slot": "helmet",
+   "material": "brass",
+   "uv": [
+    56,
+    0
+   ],
+   "offset": [
+    -4.75,
+    -2.5,
+    -4.75
+   ],
+   "size": [
+    9,
+    1,
+    9
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "pipe_l",
+   "part": "head",
+   "slot": "helmet",
+   "material": "pipe",
+   "uv": [
+    56,
+    25
+   ],
+   "offset": [
+    -3.0,
+    -7.5,
+    4.5
+   ],
+   "size": [
+    1,
+    6,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "pipe_r",
+   "part": "head",
+   "slot": "helmet",
+   "material": "pipe",
+   "uv": [
+    60,
+    25
+   ],
+   "offset": [
+    2.0,
+    -7.5,
+    4.5
+   ],
+   "size": [
+    1,
+    6,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "lamp",
+   "part": "head",
+   "slot": "helmet",
+   "material": "plate",
+   "uv": [
+    0,
+    32
+   ],
+   "offset": [
+    -5.5,
+    -5.0,
+    -1.5
+   ],
+   "size": [
+    1,
+    3,
+    3
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "torso",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "wood",
+   "uv": [
+    0,
+    0
+   ],
+   "offset": [
+    -4,
+    0,
+    -2
+   ],
+   "size": [
+    8,
+    12,
+    4
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "gauge",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "gauge",
+   "uv": [
+    40,
+    32
+   ],
+   "offset": [
+    -2,
+    0.5,
+    -3.0
+   ],
+   "size": [
+    4,
+    3,
+    1
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "belt",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "brass",
+   "uv": [
+    0,
+    25
+   ],
+   "offset": [
+    -4.5,
+    6,
+    -2.5
+   ],
+   "size": [
+    9,
+    2,
+    5
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "tank_l",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "plate",
+   "uv": [
+    40,
+    16
+   ],
+   "offset": [
+    -3.75,
+    2,
+    2.5
+   ],
+   "size": [
+    3,
+    6,
+    3
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "tank_r",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "plate",
+   "uv": [
+    52,
+    16
+   ],
+   "offset": [
+    0.75,
+    2,
+    2.5
+   ],
+   "size": [
+    3,
+    6,
+    3
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "tank_cap",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "brass",
+   "uv": [
+    8,
+    32
+   ],
+   "offset": [
+    -4.25,
+    1.5,
+    2.25
+   ],
+   "size": [
+    8,
+    1,
+    4
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "pad",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "brass",
+   "uv": [
+    0,
+    16
+   ],
+   "offset": [
+    -3.5,
+    -3.0,
+    -3
+   ],
+   "size": [
+    6,
+    3,
+    6
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "pad",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "brass",
+   "uv": [
+    0,
+    16
+   ],
+   "offset": [
+    -2.5,
+    -3.0,
+    -3
+   ],
+   "size": [
+    6,
+    3,
+    6
+   ],
+   "inflate": 0.0,
+   "mirror": true
+  },
+  {
+   "name": "upper",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "wood",
+   "uv": [
+    92,
+    0
+   ],
+   "offset": [
+    -3,
+    -0.5,
+    -2
+   ],
+   "size": [
+    4,
+    6,
+    4
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "upper",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "wood",
+   "uv": [
+    92,
+    0
+   ],
+   "offset": [
+    -1,
+    -0.5,
+    -2
+   ],
+   "size": [
+    4,
+    6,
+    4
+   ],
+   "inflate": 0.5,
+   "mirror": true
+  },
+  {
+   "name": "band",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "brass",
+   "uv": [
+    64,
+    25
+   ],
+   "offset": [
+    -3.5,
+    4.5,
+    -2.5
+   ],
+   "size": [
+    5,
+    1,
+    5
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "band",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "brass",
+   "uv": [
+    64,
+    25
+   ],
+   "offset": [
+    -1.5,
+    4.5,
+    -2.5
+   ],
+   "size": [
+    5,
+    1,
+    5
+   ],
+   "inflate": 0.5,
+   "mirror": true
+  },
+  {
+   "name": "fore",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "wood",
+   "uv": [
+    24,
+    16
+   ],
+   "offset": [
+    -3,
+    6,
+    -2
+   ],
+   "size": [
+    4,
+    5,
+    4
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "fore",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "wood",
+   "uv": [
+    24,
+    16
+   ],
+   "offset": [
+    -1,
+    6,
+    -2
+   ],
+   "size": [
+    4,
+    5,
+    4
+   ],
+   "inflate": 0.5,
+   "mirror": true
+  },
+  {
+   "name": "chimney",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "plate",
+   "uv": [
+    32,
+    32
+   ],
+   "offset": [
+    -1.0,
+    -3.5,
+    -1.0
+   ],
+   "size": [
+    2,
+    3,
+    2
+   ],
+   "inflate": 0.0,
+   "mirror": false,
+   "pivot": [
+    -1.5,
+    -3.0,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    -30
+   ]
+  },
+  {
+   "name": "chimney",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "plate",
+   "uv": [
+    32,
+    32
+   ],
+   "offset": [
+    -1.0,
+    -3.5,
+    -1.0
+   ],
+   "size": [
+    2,
+    3,
+    2
+   ],
+   "inflate": 0.0,
+   "mirror": true,
+   "pivot": [
+    1.5,
+    -3.0,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    30
+   ]
+  },
+  {
+   "name": "hip",
+   "part": "body",
+   "slot": "leggings",
+   "material": "brass",
+   "uv": [
+    28,
+    25
+   ],
+   "offset": [
+    -4.5,
+    9.5,
+    -2.5
+   ],
+   "size": [
+    9,
+    2,
+    5
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "thigh",
+   "part": "rightLeg",
+   "slot": "leggings",
+   "material": "wood",
+   "uv": [
+    108,
+    0
+   ],
+   "offset": [
+    -2,
+    0,
+    -2
+   ],
+   "size": [
+    4,
+    6,
+    4
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "thigh",
+   "part": "leftLeg",
+   "slot": "leggings",
+   "material": "wood",
+   "uv": [
+    108,
+    0
+   ],
+   "offset": [
+    -2,
+    0,
+    -2
+   ],
+   "size": [
+    4,
+    6,
+    4
+   ],
+   "inflate": 0.5,
+   "mirror": true
+  },
+  {
+   "name": "strap",
+   "part": "rightLeg",
+   "slot": "leggings",
+   "material": "brass",
+   "uv": [
+    104,
+    25
+   ],
+   "offset": [
+    -2.5,
+    3,
+    -2.5
+   ],
+   "size": [
+    5,
+    1,
+    5
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "strap",
+   "part": "leftLeg",
+   "slot": "leggings",
+   "material": "brass",
+   "uv": [
+    104,
+    25
+   ],
+   "offset": [
+    -2.5,
+    3,
+    -2.5
+   ],
+   "size": [
+    5,
+    1,
+    5
+   ],
+   "inflate": 0.5,
+   "mirror": true
+  },
+  {
+   "name": "shin",
+   "part": "rightLeg",
+   "slot": "boots",
+   "material": "wood",
+   "uv": [
+    86,
+    16
+   ],
+   "offset": [
+    -2,
+    6,
+    -2
+   ],
+   "size": [
+    4,
+    4,
+    4
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "shin",
+   "part": "leftLeg",
+   "slot": "boots",
+   "material": "wood",
+   "uv": [
+    86,
+    16
+   ],
+   "offset": [
+    -2,
+    6,
+    -2
+   ],
+   "size": [
+    4,
+    4,
+    4
+   ],
+   "inflate": 0.5,
+   "mirror": true
+  },
+  {
+   "name": "cuff",
+   "part": "rightLeg",
+   "slot": "boots",
+   "material": "brass",
+   "uv": [
+    84,
+    25
+   ],
+   "offset": [
+    -2.5,
+    9,
+    -2.5
+   ],
+   "size": [
+    5,
+    1,
+    5
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "cuff",
+   "part": "leftLeg",
+   "slot": "boots",
+   "material": "brass",
+   "uv": [
+    84,
+    25
+   ],
+   "offset": [
+    -2.5,
+    9,
+    -2.5
+   ],
+   "size": [
+    5,
+    1,
+    5
+   ],
+   "inflate": 0.5,
+   "mirror": true
+  },
+  {
+   "name": "foot",
+   "part": "rightLeg",
+   "slot": "boots",
+   "material": "brass",
+   "uv": [
+    64,
+    16
+   ],
+   "offset": [
+    -2.5,
+    10,
+    -3.5
+   ],
+   "size": [
+    5,
+    2,
+    6
+   ],
+   "inflate": 0.5,
+   "mirror": false
+  },
+  {
+   "name": "foot",
+   "part": "leftLeg",
+   "slot": "boots",
+   "material": "brass",
+   "uv": [
+    64,
+    16
+   ],
+   "offset": [
+    -2.5,
+    10,
+    -3.5
+   ],
+   "size": [
+    5,
+    2,
+    6
+   ],
+   "inflate": 0.5,
+   "mirror": true
+  }
+ ]
+}
