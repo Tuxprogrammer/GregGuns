@@ -79,11 +79,11 @@ class SuperMutantModelTest {
 
     @Test
     void widthAcrossSleeves() {
-        // round 2: sleeves one unit further out, pivot 5 + 4.9 = 9.9 on each side (arms rest splayed 6 degrees)
+        // sleeve outer edge: pivot 5 + offset 3.9 = 8.9 on each side
         float right = part("rightArm").pivot()[0] + box("rightArm", "sleeve_r").offset()[0];
         float left = part("leftArm").pivot()[0] + box("leftArm", "sleeve_l").offset()[0]
             + box("leftArm", "sleeve_l").size()[0];
-        assertEquals(19.8F, left - right, 0.001F);
+        assertEquals(17.8F, left - right, 0.001F);
         // head top -8, boot soles 11 + 6 + 7 = 24
         assertEquals(
             24F,
@@ -101,9 +101,9 @@ class SuperMutantModelTest {
     }
 
     @Test
-    void armsRestSplayed() {
-        assertEquals(6F, part("rightArm").rotateDegrees()[2], 0.001F);
-        assertEquals(-6F, part("leftArm").rotateDegrees()[2], 0.001F);
+    void armsRestStraight() {
+        assertEquals(0F, part("rightArm").rotateDegrees()[2], 0.001F);
+        assertEquals(0F, part("leftArm").rotateDegrees()[2], 0.001F);
     }
 
     @Test

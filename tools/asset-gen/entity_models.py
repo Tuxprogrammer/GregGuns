@@ -733,7 +733,7 @@ def super_mutant():
     corrected in round 2 against the orchestrator's comparison.
     Six biped parts at the vanilla pivots except the legs, which sit 1 unit higher (y 11). Head 8x8x8 with a separate
     0.5-inflated hat layer; torso 8x12x4 with 6x7x1 front and back plates and a 9x4x5 belt hanging to y 13; 4x12x4
-    arms (resting splayed 6 degrees) wearing 5x7x5 shoulder sleeves one unit further out; 4x12x4 legs wearing bulky
+    arms wearing 5x7x5 shoulder sleeves; 4x12x4 legs wearing bulky
     6x7x6 boots. Sheet 64x64, one pixel per model unit. The plate and hat boxes exist on every tier; Basic leaves
     them transparent, Heavy paints the plates, Elite adds a helmet on the hat layer and pauldrons on the sleeves.
     The skin is bare on every tier (no clothing): muscle lines, a dark loincloth band with a skull buckle, boots.
@@ -753,9 +753,9 @@ def super_mutant():
     b.box("belt", -4.5, 9, -2.5, 9, 4, 5, material="belt")
     for side, sx in (("r", -1), ("l", 1)):
         mir = side == "l"
-        arm = m.part("rightArm" if sx < 0 else "leftArm", pivot=(5 * sx, 2, 0), rotate=(0, 0, -6 * sx))
+        arm = m.part("rightArm" if sx < 0 else "leftArm", pivot=(5 * sx, 2, 0))
         arm.box("arm_" + side, -3 if sx < 0 else -1, -2, -2, 4, 12, 4, material="skin", mirror=mir, group="arm")
-        arm.box("sleeve_" + side, -4.9 if sx < 0 else -0.1, -2.2, -2.5, 5, 7, 5, material="sleeve", mirror=mir,
+        arm.box("sleeve_" + side, -3.9 if sx < 0 else -1.1, -2.2, -2.5, 5, 7, 5, material="sleeve", mirror=mir,
                 group="sleeve")
     for side, sx in (("r", -1), ("l", 1)):
         mir = side == "l"
