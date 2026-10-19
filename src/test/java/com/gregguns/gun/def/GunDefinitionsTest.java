@@ -142,18 +142,22 @@ class GunDefinitionsTest {
     @Test
     void everyAssemblyRowMakesItsGunAndMeetsTheGateRule() {
         Map<String, ProductionTable.Row> all = ProductionTable.byOutput();
-        Set<Integer> circuits = new HashSet<>();
+        Set<String> circuits = new HashSet<>();
         for (GunDefinition def : GunDefinitions.ALL) {
             for (ProductionTable.Row row : def.rows()) {
                 assertEquals(def.name(), row.output());
                 assertEquals(ProductionTable.Target.ASSEMBLER, row.target());
                 assertTrue(GateRule.satisfied(row, all, ProductionTable.GATE_EXEMPT), row.id());
-                assertTrue(circuits.add(row.circuit()), row.id() + " reuses circuit " + row.circuit());
+                assertTrue(
+                    circuits.add(row.tier() + "/" + row.circuit()),
+                    row.id() + " reuses circuit " + row.circuit() + " at " + row.tier());
                 for (ProductionTable.Input input : row.inputs()) {
                     if (input.isGregGuns()) {
                         assertTrue(
                             all.containsKey(input.itemName())
-                                || ProductionTable.CRAFTED_PARTS.contains(input.itemName()),
+                                || ProductionTable.CRAFTED_PARTS.contains(input.itemName())
+                                || com.gregguns.recipe.ComponentTable.byOutput()
+                                    .containsKey(input.itemName()),
                             row.id() + " input " + input.itemName() + " has no recipe");
                     }
                 }
@@ -215,11 +219,21 @@ class GunDefinitionsTest {
     }
 
     @Test
-    void theClientListMatchesTheCommonListAndItsTexturesAreTheCamos() {
-        assertEquals(GunDefinitions.ALL.size(), ClientGunDefinitions.ALL.size());
+    void theClientListPlusTheFlatIconFallbackIsTheCommonListAndTheProfilesTexturesAreTheCamos() {
+        assertEquals(
+            GunDefinitions.ALL.size(),
+            ClientGunDefinitions.ALL.size() + ClientGunDefinitions.FLAT_ICON_FALLBACK.size());
         for (GunDefinition def : GunDefinitions.ALL) {
             ClientGunDefinition client = ClientGunDefinitions.byName(def.name());
-            assertNotNull(client, "no client definition for " + def.name());
+            if (client == null) {
+                assertTrue(
+                    ClientGunDefinitions.FLAT_ICON_FALLBACK.contains(def.name()),
+                    "no client definition for " + def.name() + " and it is not on the flat-icon fallback list");
+                continue;
+            }
+            assertFalse(
+                ClientGunDefinitions.FLAT_ICON_FALLBACK.contains(def.name()),
+                def.name() + " has a profile, so it must leave the fallback list");
             String[] textures = client.textures();
             assertEquals(def.camoCount(), textures.length, def.name() + " client textures vs camo count");
             for (int i = 0; i < textures.length; i++) {
@@ -228,6 +242,24 @@ class GunDefinitionsTest {
                 assertTrue(exists("/assets/" + textures[i].replace(':', '/')), textures[i]);
             }
         }
+    }
+
+    /**
+     * The M2 exit gate. While the four B1 guns await their clean-room models this lists them; the M2 close changes the
+     * expectation to an empty list. Until then it documents exactly which guns draw as a flat icon.
+     */
+    @Test
+    void theFlatIconFallbackListsExactlyTheGunsStillWithoutAModel() {
+        java.util.List<String> without = new java.util.ArrayList<>();
+        for (GunDefinition def : GunDefinitions.ALL) {
+            if (ClientGunDefinitions.byName(def.name()) == null) {
+                without.add(def.name());
+            }
+        }
+        assertEquals(ClientGunDefinitions.FLAT_ICON_FALLBACK, without);
+        assertEquals(java.util.Arrays.asList("thompson_smg", "mac10", "m4", "ak47"), without);
+        assertTrue(ClientGunDefinitions.usesFallback("m4"));
+        assertFalse(ClientGunDefinitions.usesFallback("pistol_9mm"));
     }
 
     @Test

@@ -24,7 +24,25 @@ public final class ClientGunDefinitions {
             HandCannonProfile.DEFINITION,
             BoltActionRifleProfile.DEFINITION));
 
+    /**
+     * The guns that have no 3D profile yet and are drawn as their flat item icon in hand, in the world and in the
+     * inventory: nothing is registered for them in {@code GunRenderers}, so vanilla's item rendering draws the icon.
+     * Zoom, sounds, recoil timing and the HUD all work without a profile (they fall back to the shared defaults). A
+     * test pins this list to the guns that actually lack a profile, and <b>the M2 exit gate requires it empty</b>:
+     * giving a gun its clean-room profile means removing its name here.
+     */
+    public static final List<String> FLAT_ICON_FALLBACK = Collections
+        .unmodifiableList(Arrays.asList("thompson_smg", "mac10", "m4", "ak47"));
+
     private ClientGunDefinitions() {}
+
+    /**
+     * @param gunName a gun's registry name without the mod id
+     * @return true if the gun has no 3D profile and is drawn as its flat icon
+     */
+    public static boolean usesFallback(String gunName) {
+        return byName(gunName) == null;
+    }
 
     /**
      * @param gunName a gun's registry name without the mod id

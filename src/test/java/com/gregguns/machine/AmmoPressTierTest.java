@@ -107,9 +107,17 @@ class AmmoPressTierTest {
         int lvRows = ProductionTable.pressRowsFor(AmmoPressTier.LV)
             .size();
         assertTrue(lvRows >= 3);
+        // The MV rows (the SMG and Assault Rifle magazines) are the only ones above LV so far; the EV press runs all.
+        long mvRows = ProductionTable.ROWS.stream()
+            .filter(r -> r.target() == ProductionTable.Target.AMMO_PRESS && r.tier() == com.gregguns.api.Tier.MV)
+            .count();
+        assertEquals(
+            lvRows + mvRows,
+            ProductionTable.pressRowsFor(AmmoPressTier.EV)
+                .size());
         assertEquals(
             lvRows,
-            ProductionTable.pressRowsFor(AmmoPressTier.EV)
+            ProductionTable.pressRowsFor(AmmoPressTier.LV)
                 .size());
     }
 }
