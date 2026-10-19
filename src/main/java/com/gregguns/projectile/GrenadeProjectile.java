@@ -99,6 +99,23 @@ public class GrenadeProjectile extends GenericProjectile {
         motionZ = dz / length * speed;
     }
 
+    /**
+     * Arms a grenade that is not thrown by hand (the Grenade Launcher's round): sets the blast and the bounces without
+     * touching position or motion. Server side; call after {@code fire}.
+     *
+     * @param radius  the blast radius, blocks
+     * @param bounces hard bounces it survives
+     * @param weapon  the weapon's name, for the audit log
+     */
+    protected final void arm(float radius, int bounces, String weapon) {
+        blastRadius = radius;
+        bouncesLeft = bounces;
+        weaponName = weapon;
+    }
+
+    /** Called after each hard bounce, on both sides, once the bounce has been counted. The default does nothing. */
+    protected void onBounce() {}
+
     /** @return the entity that threw this, or {@code null} */
     protected final EntityLivingBase thrower() {
         return shooter;
@@ -148,6 +165,7 @@ public class GrenadeProjectile extends GenericProjectile {
                 double[] bounced = GrenadeMath.bounce(motionX, motionY, motionZ, normal);
                 setMotion(bounced);
                 surviveContact = true;
+                onBounce();
                 if (!worldObj.isRemote) {
                     // Source: Techguns plays the vanilla iron golem hit here (projectiles.md 3.7, step 4).
                     worldObj.playSoundAtEntity(this, "mob.irongolem.hit", 2.0F, 1.0F);

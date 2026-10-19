@@ -117,6 +117,7 @@ public final class ProjectileExplosion {
     private final float damage;
     private final float innerRadius;
     private final float outerRadius;
+    private Entity excluded;
 
     /**
      * @param world       the world
@@ -144,6 +145,18 @@ public final class ProjectileExplosion {
         this.damage = damage;
         this.innerRadius = innerRadius;
         this.outerRadius = outerRadius;
+    }
+
+    /**
+     * Leaves one entity out of the blast's damage and push: the target a rocket already hit directly, so it does not
+     * take the direct hit and the splash both. Everything else about the blast, block damage included, is unchanged.
+     *
+     * @param target the entity to skip, or {@code null} for none
+     * @return this
+     */
+    public ProjectileExplosion excluding(Entity target) {
+        this.excluded = target;
+        return this;
     }
 
     /**
@@ -182,6 +195,9 @@ public final class ProjectileExplosion {
                     z + outerRadius + 1)));
         if (!ExplosionsConfig.selfDamage) {
             victims.remove(owner);
+        }
+        if (excluded != null) {
+            victims.remove(excluded);
         }
         // Source: the live list is what the listeners edit; ServerUtilities clears and refills it.
         // https://github.com/GTNewHorizons/ServerUtilities/blob/2.4.14/src/main/java/serverutils/handlers/ServerUtilitiesWorldEventHandler.java#L105-L139
