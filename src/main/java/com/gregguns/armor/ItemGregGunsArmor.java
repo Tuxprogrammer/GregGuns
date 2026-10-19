@@ -220,6 +220,9 @@ public class ItemGregGunsArmor extends ItemArmor
      */
     @Override
     public int getCamo(ItemStack stack) {
+        if (stack == null) {
+            return 0;
+        }
         NBTTagCompound tag = stack.getTagCompound();
         return tag == null ? 0 : set.clampCamo(tag.getInteger(CAMO_TAG));
     }
@@ -232,6 +235,9 @@ public class ItemGregGunsArmor extends ItemArmor
      */
     @Override
     public void setCamo(ItemStack stack, int camo) {
+        if (stack == null) {
+            return;
+        }
         NBTTagCompound tag = stack.getTagCompound();
         if (tag == null) {
             tag = new NBTTagCompound();
