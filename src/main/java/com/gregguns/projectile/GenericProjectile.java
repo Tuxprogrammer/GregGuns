@@ -363,7 +363,7 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
      * Rescales the push vanilla gave the target in this hit by the gun's multiplier (GUN-38). Vanilla's
      * {@code knockBack} ignores the strength it is given, so the velocity change is measured and scaled here.
      */
-    private void scaleKnockback(Entity target, double beforeX, double beforeY, double beforeZ) {
+    protected final void scaleKnockback(Entity target, double beforeX, double beforeY, double beforeZ) {
         target.motionX = Knockback.scale(beforeX, target.motionX, knockback);
         target.motionY = Knockback.scale(beforeY, target.motionY, knockback);
         target.motionZ = Knockback.scale(beforeZ, target.motionZ, knockback);

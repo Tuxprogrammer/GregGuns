@@ -3,6 +3,7 @@ package com.gregguns.projectile;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.gun.logic.ProjectileKind;
 
 /**
  * Wires the projectile framework into the guns module: registers the projectile entities, installs the launcher, and
@@ -39,6 +40,23 @@ public final class ProjectileModule {
             GenericProjectile.TRACKING_RANGE,
             GenericProjectile.UPDATE_FREQUENCY,
             GenericProjectile.SENDS_VELOCITY);
+        // The launcher kinds: a rocket and a fired 40 mm grenade (ProjectileKind.ROCKET and GRENADE).
+        registrar.registerEntity(
+            "rocket_projectile",
+            RocketProjectile.class,
+            RocketProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        registrar.registerEntity(
+            "grenade_launcher_projectile",
+            GrenadeLauncherProjectile.class,
+            GrenadeLauncherProjectile.ENTITY_ID,
+            GrenadeProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.ROCKET, RocketProjectile::new);
+        BulletLauncher.register(ProjectileKind.GRENADE, GrenadeLauncherProjectile::new);
         Projectiles.install(new BulletLauncher());
     }
 

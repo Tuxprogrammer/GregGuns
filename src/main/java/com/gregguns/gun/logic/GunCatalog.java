@@ -44,6 +44,11 @@ public final class GunCatalog {
         /** Empty assault rifle magazine. */
         public static final String ASSAULT_RIFLE_MAGAZINE_EMPTY = "mag_assault_rifle_empty";
 
+        /** Loose rocket (the Rocket Launcher's round, HV). */
+        public static final String ROCKET = "ammo_rocket";
+        /** Loose 40 mm grenade (the Grenade Launcher's round, MV). */
+        public static final String GRENADE_40MM = "ammo_40mm_grenade";
+
         private AmmoIds() {}
     }
 

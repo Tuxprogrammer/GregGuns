@@ -200,6 +200,31 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.ak47.reload.forced` | AK47 (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
 | `gun.ak47.recipe` | AK47 (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
 | `gun.m4.zoom` | M4 (M2 B1) | A zoom intent turns the server zoom state on with FOV factor 0.75 and 0.75 of the 0.015 spread; a second intent or a reload turns it off. |
+| `gun.combat_shotgun.fire` | Combat Shotgun (M2 B2) | A loaded gun fired point blank launches 8 pellets for one round; a zombie in front loses nearly 8 times the DamageModel figure for 4 damage at 15% penetration. |
+| `gun.combat_shotgun.reload` | Combat Shotgun (M2 B2) | An empty gun with 10 shells reloads after 50 ticks: 8 rounds, 8 shells used, 2 left, nothing returned. |
+| `gun.combat_shotgun.reload.forced` | Combat Shotgun (M2 B2) | The reload key with 5 rounds and 5 shells tops up to 8 using 3 shells, keeping the loaded rounds. |
+| `gun.combat_shotgun.recipe` | Combat Shotgun (M2 B2) | The MV assembly row (GR-14) is in GT's assembler map with its sheet inputs and not below MV, and the found recipe's output is ours. |
+| `gun.akimbo_pistols.fire` | Akimbo akimbo_pistols (M2 B2) | Three pulls spend one round and launch one bullet each. |
+| `gun.akimbo_pistols.reload` | Akimbo akimbo_pistols (M2 B2) | An empty gun with two ammo items fills the clip after the reload time; a magazine gun returns two empty magazines. |
+| `gun.akimbo_pistols.reload.forced` | Akimbo akimbo_pistols (M2 B2) | The reload key on a part-loaded gun swaps both items and refunds whole loose bullets at the single gun's rate (6 rounds each), not double. |
+| `gun.akimbo_pistols.combine` | Akimbo akimbo_pistols (M2 B2) | Through the real crafting manager and crafted event: two single guns (12 and 5 rounds, camo 0 and 2) craft one akimbo gun with 17 rounds and the first camo; one akimbo gun crafts back to a gun with 8 rounds and camo 0 and, once, a second to the player with 9 rounds and camo 2 (GUN-26). |
+| `gun.akimbo_revolvers.fire` | Akimbo akimbo_revolvers (M2 B2) | Three pulls spend one round and launch one bullet each. |
+| `gun.akimbo_revolvers.reload` | Akimbo akimbo_revolvers (M2 B2) | An empty gun with two ammo items fills the clip after the reload time; a magazine gun returns two empty magazines. |
+| `gun.akimbo_revolvers.reload.forced` | Akimbo akimbo_revolvers (M2 B2) | The reload key on a part-loaded gun swaps both items and refunds whole loose bullets at the single gun's rate (6 rounds each), not double. |
+| `gun.akimbo_revolvers.combine` | Akimbo akimbo_revolvers (M2 B2) | Through the real crafting manager and crafted event: two single guns (12 and 5 rounds, camo 0 and 2) craft one akimbo gun with 17 rounds and the first camo; one akimbo gun crafts back to a gun with 8 rounds and camo 0 and, once, a second to the player with 9 rounds and camo 2 (GUN-26). |
+| `gun.rocket_launcher.reload` | Rocket Launcher (M2 B5) | An empty launcher reloads after 40 ticks from one loose rocket: the clip fills, the rocket is consumed and nothing comes back. |
+| `gun.rocket_launcher.recipe` | Rocket Launcher (M2 B5) | The HV assembly row is in GT's assembler map at its time and voltage, and not below HV. |
+| `gun.rocket_launcher.direct` | Rocket Launcher (M2 B5) | A rocket into a zombie 4 blocks away deals the 50 damage once (left out of the splash), a zombie behind it takes the splash ramp, and the floor is intact with block damage off. |
+| `gun.rocket_launcher.wall.splash` | Rocket Launcher (M2 B5) | A rocket into a dirt wall with block damage off leaves the wall whole and hurts a nearby zombie by the exact ramp at its distance from the blast. |
+| `gun.rocket_launcher.wall.blocks` | Rocket Launcher (M2 B5) | With `explosions.blockDamage` on the same rocket breaks the dirt and the entity damage is unchanged. |
+| `gun.rocket_launcher.wall.self` | Rocket Launcher (M2 B5) | The shooter standing in the blast is hurt (PFX-25). |
+| `gun.rocket_launcher.wall.noself` | Rocket Launcher (M2 B5) | With `explosions.selfDamage` off the shooter is unhurt. |
+| `gun.rocket_launcher.wall.cancelled` | Rocket Launcher (M2 B5) | A cancelled `ExplosionEvent.Start` (a protection claim) stops all damage and keeps the wall. |
+| `gun.grenade_launcher.reload` | Grenade Launcher (M2 B5) | An empty launcher reloads after 100 ticks from 6 loose grenades: all six load and are consumed. |
+| `gun.grenade_launcher.recipe` | Grenade Launcher (M2 B5) | The HV assembly row is in GT's assembler map at its time and voltage, and not below HV. |
+| `gun.grenade_launcher.bounce` | Grenade Launcher (M2 B5) | A 40 mm grenade fired at a wall bounces (bounces left 1), the fuse is about 100 - 20 - ticks flown, and it explodes before its lifetime ends. |
+| `gun.grenade_launcher.direct` | Grenade Launcher (M2 B5) | A 40 mm grenade into a zombie explodes on contact and the zombie loses exactly the 30 damage ramp at its distance from the blast; the dirt wall behind is whole with block damage off. |
+| `gun.grenade_launcher.blocks` | Grenade Launcher (M2 B5) | With `explosions.blockDamage` on the same grenade breaks some of the dirt wall behind the zombie. |
 | `mp.visual.boltaction` | bolt action rifle (M2) | The visual walkthrough (first person, third person, inventory, and the zoomed scope view) for the rifle; see the autotest section. |
 | `armor.showcase` | armor (M3) | Dresses a connected client in every armor set and camo in turn and screenshots it in third person (front for all, back for the five custom-model sets), with the HUD hidden; not part of `test all`; see "Armor showcase". |
 | `gun.camo.cycle` | gun definitions | Every gun in `GunDefinitions.ALL` is a `CamoChangeable` with the definition's camo count; the Camo Bench routine (`MTECamoBench.cycleStack`) steps it forward through every skin and around, and back below zero, keeping the loaded rounds (GUN-01); a tag-less gun stays full; an out-of-range index stores 0. |
