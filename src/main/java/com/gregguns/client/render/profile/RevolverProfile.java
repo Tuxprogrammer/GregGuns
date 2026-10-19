@@ -91,9 +91,17 @@ public final class RevolverProfile {
         .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
     /** The sheet's fire and reload translation deltas are multiplied by this, because the scale changed. */
     private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
+    /**
+     * Nudge (FirstPersonFit step 4): the revolver's grip hangs 14 texels below the top strap, so its box centre sits
+     * low and the grip ran off the bottom-right of the screen at the family anchor (first-person screenshot). The
+     * anchor is moved up the screen and toward the middle so the whole gun, grip included, is in view, as the design
+     * notes' framing target asks (side plus the back of the frame).
+     */
+    private static final double[] ANCHOR = { FirstPersonFit.ANCHOR_X_FAMILY[0] + 0.7, FirstPersonFit.ANCHOR_X_FAMILY[1],
+        FirstPersonFit.ANCHOR_X_FAMILY[2] - 0.4 };
     /** The idle first-person translation from {@link FirstPersonFit}: this model's box centre on the family anchor. */
     private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+        .idleOffset(ANCHOR, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
 
     /** The sheet's render transforms, timing and muzzle flash for the revolver. */
     public static final GunTransforms TRANSFORMS = buildTransforms();

@@ -317,9 +317,10 @@ class RevolverProfileTest {
         assertEquals(
             Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", String.format("S(%.4f,%.4f,%.4f)", s, s, s)),
             run(t.fpBase(), 0, 0));
-        // The idle offset puts the box centre on the family anchor (FirstPersonFit).
+        // The idle offset puts the box centre on the revolver's nudged anchor (FirstPersonFit).
         double[] idle = FirstPersonFit.idleOffset(
-            FirstPersonFit.ANCHOR_X_FAMILY,
+            new double[] { FirstPersonFit.ANCHOR_X_FAMILY[0] + 0.7, FirstPersonFit.ANCHOR_X_FAMILY[1],
+                FirstPersonFit.ANCHOR_X_FAMILY[2] - 0.4 },
             s,
             FirstPersonFit.centerBlocks(RevolverProfile.BOXES, RevolverProfile.MODEL_SCALE));
         assertEquals(
