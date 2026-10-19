@@ -1,0 +1,494 @@
+{
+ "name": "super_mutant",
+ "textureWidth": 64,
+ "textureHeight": 64,
+ "biped": true,
+ "parts": [
+  {
+   "name": "head",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "skull",
+     "uv": [
+      32,
+      0
+     ],
+     "offset": [
+      -4,
+      -8,
+      -4
+     ],
+     "size": [
+      8,
+      8,
+      8
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "skin"
+    },
+    {
+     "name": "hat",
+     "uv": [
+      0,
+      0
+     ],
+     "offset": [
+      -4,
+      -8,
+      -4
+     ],
+     "size": [
+      8,
+      8,
+      8
+     ],
+     "inflate": 0.5,
+     "mirror": false,
+     "material": "hat"
+    }
+   ]
+  },
+  {
+   "name": "body",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "torso",
+     "uv": [
+      0,
+      16
+     ],
+     "offset": [
+      -4,
+      0,
+      -2
+     ],
+     "size": [
+      8,
+      12,
+      4
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "skin"
+    },
+    {
+     "name": "plate_front",
+     "uv": [
+      48,
+      40
+     ],
+     "offset": [
+      -3,
+      1,
+      -3
+     ],
+     "size": [
+      6,
+      7,
+      1
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "plate_f"
+    },
+    {
+     "name": "plate_back",
+     "uv": [
+      40,
+      32
+     ],
+     "offset": [
+      -3,
+      1,
+      2
+     ],
+     "size": [
+      6,
+      7,
+      1
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "plate_b"
+    },
+    {
+     "name": "belt",
+     "uv": [
+      20,
+      43
+     ],
+     "offset": [
+      -4.5,
+      9,
+      -2.5
+     ],
+     "size": [
+      9,
+      4,
+      5
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "belt"
+    }
+   ]
+  },
+  {
+   "name": "rightArm",
+   "pivot": [
+    -5,
+    2,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "arm_r",
+     "uv": [
+      24,
+      16
+     ],
+     "offset": [
+      -3,
+      -2,
+      -2
+     ],
+     "size": [
+      4,
+      12,
+      4
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "skin"
+    },
+    {
+     "name": "sleeve_r",
+     "uv": [
+      0,
+      32
+     ],
+     "offset": [
+      -3.9,
+      -2.2,
+      -2.5
+     ],
+     "size": [
+      5,
+      7,
+      5
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "sleeve"
+    }
+   ]
+  },
+  {
+   "name": "leftArm",
+   "pivot": [
+    5,
+    2,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "arm_l",
+     "uv": [
+      24,
+      16
+     ],
+     "offset": [
+      -1,
+      -2,
+      -2
+     ],
+     "size": [
+      4,
+      12,
+      4
+     ],
+     "inflate": 0,
+     "mirror": true,
+     "material": "skin"
+    },
+    {
+     "name": "sleeve_l",
+     "uv": [
+      0,
+      32
+     ],
+     "offset": [
+      -1.1,
+      -2.2,
+      -2.5
+     ],
+     "size": [
+      5,
+      7,
+      5
+     ],
+     "inflate": 0,
+     "mirror": true,
+     "material": "sleeve"
+    }
+   ]
+  },
+  {
+   "name": "rightLeg",
+   "pivot": [
+    -1.9,
+    11,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "leg_r",
+     "uv": [
+      40,
+      16
+     ],
+     "offset": [
+      -2,
+      0,
+      -2
+     ],
+     "size": [
+      4,
+      12,
+      4
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "skin"
+    },
+    {
+     "name": "boot_r",
+     "uv": [
+      20,
+      32
+     ],
+     "offset": [
+      -2.6,
+      6,
+      -2.7
+     ],
+     "size": [
+      5,
+      6,
+      5
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "boot"
+    }
+   ]
+  },
+  {
+   "name": "leftLeg",
+   "pivot": [
+    1.9,
+    11,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "leg_l",
+     "uv": [
+      40,
+      16
+     ],
+     "offset": [
+      -2,
+      0,
+      -2
+     ],
+     "size": [
+      4,
+      12,
+      4
+     ],
+     "inflate": 0,
+     "mirror": true,
+     "material": "skin"
+    },
+    {
+     "name": "boot_l",
+     "uv": [
+      20,
+      32
+     ],
+     "offset": [
+      -2.4,
+      6,
+      -2.7
+     ],
+     "size": [
+      5,
+      6,
+      5
+     ],
+     "inflate": 0,
+     "mirror": true,
+     "material": "boot"
+    }
+   ]
+  }
+ ],
+ "animations": [
+  {
+   "type": "look",
+   "part": "head"
+  },
+  {
+   "type": "swing",
+   "part": "rightLeg",
+   "axis": "x",
+   "amplitude": 80.214
+  },
+  {
+   "type": "swing",
+   "part": "leftLeg",
+   "axis": "x",
+   "amplitude": 80.214,
+   "phase": 180
+  },
+  {
+   "type": "swing",
+   "part": "rightArm",
+   "axis": "x",
+   "amplitude": 57.296,
+   "phase": 180
+  },
+  {
+   "type": "swing",
+   "part": "leftArm",
+   "axis": "x",
+   "amplitude": 57.296
+  },
+  {
+   "type": "idle",
+   "part": "rightArm",
+   "axis": "z",
+   "amplitude": 2.865,
+   "speed": 0.09,
+   "phase": 90,
+   "offset": 2.865
+  },
+  {
+   "type": "idle",
+   "part": "leftArm",
+   "axis": "z",
+   "amplitude": -2.865,
+   "speed": 0.09,
+   "phase": 90,
+   "offset": -2.865
+  },
+  {
+   "type": "idle",
+   "part": "rightArm",
+   "axis": "x",
+   "amplitude": 2.865,
+   "speed": 0.067
+  },
+  {
+   "type": "idle",
+   "part": "leftArm",
+   "axis": "x",
+   "amplitude": -2.865,
+   "speed": 0.067
+  },
+  {
+   "type": "pose",
+   "part": "rightArm",
+   "when": "holding",
+   "angles": {
+    "x": -18
+   }
+  },
+  {
+   "type": "pose",
+   "part": "rightArm",
+   "when": "aiming",
+   "mode": "set",
+   "angles": {
+    "x": -90,
+    "y": -5.73,
+    "z": 0
+   },
+   "followYaw": 1,
+   "followPitch": 1
+  },
+  {
+   "type": "pose",
+   "part": "leftArm",
+   "when": "aiming",
+   "mode": "set",
+   "angles": {
+    "x": -90,
+    "y": 28.65,
+    "z": 0
+   },
+   "followYaw": 1,
+   "followPitch": 1
+  },
+  {
+   "type": "pose",
+   "part": "body",
+   "when": "attacking",
+   "angles": {
+    "y": 11.5
+   },
+   "blend": "sine"
+  },
+  {
+   "type": "pose",
+   "part": "rightArm",
+   "when": "attacking",
+   "angles": {
+    "x": -70
+   },
+   "blend": "sine"
+  }
+ ]
+}
