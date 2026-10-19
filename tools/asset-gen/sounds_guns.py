@@ -13,6 +13,8 @@ Round 1 design rules (from the first A/B review):
 """
 from __future__ import annotations
 
+import zlib
+
 import numpy as np
 
 import sfx
@@ -1036,9 +1038,17 @@ def _per_for(prefix_name):
     return PER.get(prefix_name, {})
 
 
+def _reseed(c, kw):
+    """Pop the optional ``reseed`` key and, if set, derive a different (still deterministic) noise stream."""
+    r = kw.pop("reseed", 0)
+    if r:
+        c.rng = np.random.default_rng(zlib.crc32(c.id.encode()) + 7919 * int(r))
+
+
 def _make_shot(c, N, prefix, base):
     kw = dict(base)
     kw.update(PER.get(c.name, {}))
+    _reseed(c, kw)
     return blast2(c, N, **kw)
 
 
@@ -1126,6 +1136,7 @@ def _sustain_recipe(**kw):
     def f(c, N):
         k = dict(kw)
         k.update(PER_SUS.get(c.name, {}))
+        _reseed(c, k)
         return sustain2(c, N, **k)
     return f
 
@@ -1361,3 +1372,73 @@ _TUNED = {
 }
 for (_tbl, _nm), _kw in _TUNED.items():
     globals()[_tbl].setdefault(_nm, {}).update(_kw)
+
+
+# --------------------------------------------------------------------------- round 5: minigun_start_a (tonal spin-up)
+# The original's low end is harmonic (spectral flatness near 0): a motor/rotor growl at roughly 80-100 Hz with
+# harmonics up to about 300 Hz, pulsed 11 times a second with 10-15 dB dips, plus faint grit.  Built that way
+# instead of from shaped noise.
+PER_MSA = {
+    "minigun_start_a": dict(f0=80.0, f1=95.0, nh=10, lp=380.0, rate=11.0, depth=0.8, grit=0.25, grit_lo=600.0,
+                            grit_hi=6000.0, drive=2.0, ramp=0.04, jit=0.01),
+}
+
+
+def minigun_start_tonal(c, N):
+    k = dict(PER_MSA.get(c.name, PER_MSA["minigun_start_a"]))
+    _reseed(c, k)
+    tg = _setup(c, None)
+    sr, rng = c.sr, c.rng
+    ts = np.arange(N) / sr
+    f = np.linspace(k["f0"], k["f1"], N)
+    saw = sfx.harmonic_stack(f, N, sr, nh=int(k["nh"]), rolloff=1.0, rng=rng)
+    low = _u(sfx.fftfilt(saw, sr, hp=40, lp=k["lp"], order=2))
+    low = sfx.waveshape(low / 3.0, k["drive"])
+    gr = _u(sfx.band_noise(N, sr, rng, k["grit_lo"], k["grit_hi"], order=1))
+    x = _u(low) + k["grit"] * gr
+    puls = _am_periodic(N, sr, rng, k["rate"], k["depth"], jitter=k["jit"])
+    return x * puls * np.minimum(ts / k["ramp"], 1.0)
+
+
+_reg2("minigun_start_a", minigun_start_tonal)
+
+
+import sounds_guns_other  # noqa: E402,F401  (slice guns-other: reloads, pins, impacts; registers its own recipes)
+
+
+# --------------------------------------------------------------------------- round 5: embedding-guided parameters
+# Found by a seeded population search against the Audio Flamingo early-layer distance (full parameter sets).
+_TUNED5 = {
+    ('PER', 'ar1_shot_a'): {"cen_k": 1.4300000000000002, "ons_tau": 0.0209, "reseed": 21},
+    ('PER', 'as50_shot_b'): {"body_hi": 14000.0, "low_gain": 0.15934567035156247, "cen_k": 1.5895000000000001, "crack_gain": 0.30617201875},
+    ('PER_SUS', 'beamgun_loop_a'): {"cen_k": 1.3, "body_hi": 500.0, "low": [28, 120, 1.0], "buzz": {"f0": 500, "f1": 480, "gain": 0.12, "lp0": 900, "lp1": 900, "nh": 6}, "hiss": [2000, 7000, 0.03], "dense": 0.4598, "smooth_s": 0.0259, "reseed": 18},
+    ('PER_SUS', 'beamgun_start_a'): {"cen_k": 1.4, "body_hi": 900.0, "low": [30, 110, 1.0], "buzz": {"f0": 200, "f1": 220, "gain": 0.3, "lp0": 1000, "lp1": 900, "nh": 8, "rate": 30, "depth": 0.5}, "hiss": [1500, 6000, 0.1], "crack": [0.5, 6000], "body_gain": 0.3333333333333333, "hp": 79.9951, "dense": 0.255, "smooth_s": 0.0236, "reseed": 34},
+    ('PER', 'biogun_shot_a'): {"ons_gain": 1.5, "sub_gain": 0.6768, "rumble_hp": 25.938, "thunk": 0.0987, "low_lp": 435.3165, "body_gain": 1.4267, "ons_tau": 0.0369, "rumble_gain": 0.8091},
+    ('PER', 'biogun_shot_b'): {"ons_gain": 0.30000000000000004},
+    ('PER', 'blasterrifle_shot_a'): {"cen_k": 3.854, "tail_gain": 1.6962, "crack2_gain": 0.7139, "ons_gain": 0.2123, "reseed": 29, "sub_tau": 0.1066},
+    ('PER', 'blasterrifle_shot_b'): {"cen_k": 3.3000000000000003, "body_hi": 6373.7449, "reseed": 11, "crack_lo": 1952.06, "crack_gain": 0.7587, "thunk": 0.2381},
+    ('PER_SUS', 'chainsaw_swing_b'): {"cen_k": 2.4062, "body_hi": 1859.3606, "body_gain": 0.3787, "hp": 112.3604, "smooth_s": 0.0778, "buzz": {"f0": 80, "f1": 84, "gain": 1.0, "lp0": 2500, "lp1": 1500, "rate": 9, "depth": 0.0, "nh": 22}, "dense": 1.1268, "reseed": 10},
+    ('PER', 'combatshotgun_shot_a'): {"tail_gain": 0.65, "low_gain": 0.65, "cen_k": 1.6874, "body_hi": 12390.0, "crack_gain": 0.5525},
+    ('PER', 'combatshotgun_shot_b'): {"cen_k": 3.3000000000000003, "body_hi": 5305.9022, "ons_tau": 0.041, "body_gain": 1.3993, "reseed": 14},
+    ('PER', 'grenadelauncher_shot_a'): {"ons_gain": 0.24, "dense": 2.5, "cen_k": 1.2155, "body_hi": 2136.7937500000003, "low_gain": 0.359125, "crack_gain": 0.9109, "tail_gain": 1.0507, "sub_tau": 0.1003, "ons_tau": 0.0587, "crack_hi": 9375.9809},
+    ('PER', 'handgun_shot_b'): {"cen_k": 1.5782, "body_hi": 16000, "thunk": 0.1639, "low_gain": 2.9162, "body_gain": 1.006, "crack_lo": 1265.8048, "reseed": 4, "low_lp": 312.5615, "tail_gain": 2.532, "sub_gain": 0.5557, "dense": 0.9567, "crack_hi": 5000, "rumble_hp": 52.4293, "crack_gain": 0.7009, "ons_tau": 0.0245, "rumble_gain": 0.4882},
+    ('PER', 'lmg_shot_b'): {"cen_k": 5.3642, "crack_gain": 1.1459, "reseed": 26, "rumble_hp": 36.2971},
+    ('PER', 'lmg_shot_c'): {"cen_k": 4.3145, "body_hi": 4550.0, "rumble_gain": 0.3384, "ons_tau": 0.0372, "crack_lo": 2548.252, "reseed": 0},
+    ('PER', 'mac10_shot_b'): {"cen_k": 3.8162, "body_hi": 4550.0, "low_gain": 0.65, "crack_hi": 5000, "thunk": 0.3151},
+    ('PER', 'mac10_shot_c'): {"sub_gain": 1.1294, "low_gain": 0.65, "cen_k": 3.3000000000000003, "crack_gain": 3, "crack_lo": 1139.3941, "rumble_gain": 0.7138, "reseed": 36, "dense": 1.9606, "thunk": 0.1529},
+    ('PER_MSA', 'minigun_start_a'): {"f0": 44.2327, "f1": 95.3089, "nh": 10, "lp": 869.0153, "rate": 9, "depth": 0.97, "grit": 0.25, "grit_lo": 618.3062, "grit_hi": 9158.9082, "drive": 2.0077, "ramp": 0.0135, "jit": 0.0109, "reseed": 16},
+    ('PER', 'powerhammer_shot_a'): {"ons_gain": 0.5132, "dense": 2.5634, "cen_k": 1.4300000000000002, "low_gain": 0.65, "crack_gain": 0.4707, "sub_tau": 0.0382, "crack_lo": 871.1221, "rumble_gain": 0.9462, "tail_gain": 1.6025, "crack2_gain": 0.7873, "sub_gain": 1.0049, "low_lp": 288.6183, "body_hi": 2593.556, "rumble_hp": 35.6174},
+    ('PER', 'powerhammer_shot_b'): {"dense": 1.1, "cen_k": 2.5311, "crack_gain": 1.5, "low_gain": 0.5525, "rumble_gain": 0.75, "body_hi": 5967.849999999999},
+    ('PER_SUS', 'powerhammer_swing_b'): {"cen_k": 0.7954, "body_hi": 515.7796, "low": [25, 200, 0.7], "hiss": [2000, 8000, 0.1], "crack": [0.3, 6000], "smooth_s": 0.0201, "dense": 2.9977, "body_gain": 3.958, "hp": 62.1813, "reseed": 30},
+    ('PER', 'revolver_shot_c'): {"ons_gain": 0.24, "cen_k": 1.2641, "body_hi": 3396.7979, "rumble_hp": 24.5528, "reseed": 20, "body_gain": 1.3912, "ons_tau": 0.0371, "dense": 1.2732, "crack_gain": 0.6101, "crack2_gain": 0.3656, "sub_tau": 0.0664, "tail_gain": 1.2139},
+    ('PER', 'teslagun_shot_a'): {"cen_k": 3.3000000000000003, "crack_gain": 1.6435, "low_gain": 0.6807, "crack_hi": 11267.0162, "body_hi": 7525.4656, "sub_tau": 0.0691, "body_gain": 0.789, "tail_gain": 0.6749, "crack2_gain": 1.1845},
+    ('PER', 'teslagun_shot_c'): {"dense": 4, "ons_gain": 1.5, "ons_tau": 0.035399999999999994, "crack2_gain": 0.5827, "tail_gain": 1.2285, "reseed": 29, "crack_lo": 2490.8519, "low_lp": 452.0194, "cen_k": 3.2042},
+    ('PER', 'thompson_shot_a'): {"cen_k": 3.3000000000000003, "rumble_hp": 24.5351, "crack_hi": 16000},
+    ('PER', 'thompson_shot_b'): {"sub_gain": 1.3593, "low_gain": 1.5, "cen_k": 3.3000000000000003, "tail_gain": 0.8623, "reseed": 14, "ons_gain": 0.2968, "sub_tau": 0.0372, "low_lp": 173.1894, "body_hi": 9127.1418, "ons_tau": 0.0171},
+    ('PER', 'thompson_shot_c'): {"sub_gain": 0.425, "low_gain": 0.5525, "rumble_gain": 0.7443, "cen_k": 3.3000000000000003, "body_hi": 6997.9616, "crack_gain": 0.65, "sub_tau": 0.0928, "tail_gain": 1.2148, "rumble_hp": 25.7631, "reseed": 39, "body_gain": 1.6971, "low_lp": 205.3751, "ons_tau": 0.0125},
+    ('PER', 'vector_shot_a'): {"sub_gain": 0.818, "low_gain": 0.1447, "cen_k": 3.1261, "body_hi": 2113.5983, "crack_gain": 0.1618, "rumble_gain": 0.10235416666666665, "thunk": 0.3288, "dense": 1.6833, "reseed": 12, "crack_hi": 5000, "sub_tau": 0.0801},
+    ('PER', 'vector_shot_b'): {"sub_gain": 0.65, "rumble_gain": 0.75, "cen_k": 5.2778, "crack_gain": 0.5525, "body_hi": 5057.5, "low_gain": 1.321, "low_lp": 164.0146, "crack_hi": 11613.8297, "rumble_hp": 27.981, "dense": 1.7862, "sub_tau": 0.0411},
+    ('PER', 'vector_shot_c'): {"sub_gain": 1.4568, "cen_k": 4.0145, "crack_hi": 10869.1823, "rumble_hp": 20.4233, "thunk": 0.2119, "body_hi": 3100.8637, "ons_gain": 0.2047, "reseed": 16, "crack_gain": 0.3453, "body_gain": 1.4195, "sub_tau": 0.0604, "tail_gain": 1.8399, "low_lp": 264.428, "ons_tau": 0.0261},
+}
+for (_tbl, _nm), _kw in _TUNED5.items():
+    globals()[_tbl][_nm] = _kw

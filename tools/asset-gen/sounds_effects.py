@@ -22,8 +22,36 @@ from __future__ import annotations
 import numpy as np
 
 import sfx
-from sndlib import Mix, get_tg, recipe, REGISTRY, crack_burst, sub_drop, mech_click
+import os
+import zlib
+
+import sndlib
+from sndlib import Mix, get_tg, REGISTRY, crack_burst, sub_drop, mech_click
 from sndengines import (fit, blast, events, rumble, churn, tone_burst, click_thump, foley_event, rel_env_at, _sum)
+
+
+# Per-sound noise-stream selection (round 5).  The embedding distance varies a lot between noise draws of the same
+# recipe, so the best draw per sound is pinned here; GG_SEEDOFF is only used for local sweeps.
+_SEEDS = {}
+
+
+def recipe(*patterns):
+    """``sndlib.recipe`` plus a pinned alternate noise stream for the sounds listed in ``_SEEDS``."""
+    reg = sndlib.recipe(*patterns)
+
+    def deco(fn):
+        def run(c, N):
+            k = int(os.environ.get("GG_SEEDOFF", "0") or 0) if c.name in _SWEEP else _SEEDS.get(c.name, 0)
+            if k:
+                c.rng = np.random.default_rng([zlib.crc32(c.id.encode()), k])
+            return fn(c, N)
+        run.__doc__ = fn.__doc__
+        return reg(run)
+    return deco
+
+
+_SWEEP = set()   # names under a local sweep (set by the sweep script through GG_SWEEP)
+_SWEEP.update(x for x in os.environ.get("GG_SWEEP", "").split(",") if x)
 
 
 # =========================================================================== private helpers
@@ -164,29 +192,51 @@ def _snap(sr, rng, g=1.0, thump_f=(130, 60), thump_g=0.5, thump_dur=0.04, crack_
     return _sum(_sum(cr * g, sz * g * sizzle), th * g * thump_g)
 
 
+def _lowbed(sr, rng, dur, lo=20.0, hi=220.0, rate=14.0, depth=0.8):
+    """Continuous 20-220 Hz rumble bed with irregular flutter, unit rms."""
+    n = sfx.n_of(sr, dur)
+    x = sfx.fftfilt(sfx.noise(n, rng), sr, hp=lo, lp=hi, order=2) * _flutter(n, sr, rng, rate, depth)
+    return x / (np.std(x) + 1e-9)
+
+
+def _whiteclick(sr, rng, tau=0.007, dur=0.05, hi=15500.0, knee=1000.0, slope=0.3, floor=0.03):
+    """Full-band click, unit rms: instant attack, exponential decay, spectrum pink above ``knee`` (amplitude
+    ~ f^-``slope``) and rolled off steeply below it down to a ``floor`` gain that keeps a faint sub-band body.
+    A's charge clicks hold their power at 1-16 kHz and are only ~-25 dB down below 1 kHz."""
+    n = sfx.n_of(sr, dur)
+    sp = np.fft.rfft(sfx.noise(n, rng))
+    f = np.fft.rfftfreq(n, 1.0 / sr)
+    g = np.where(f >= knee, (np.maximum(f, 1.0) / knee) ** -slope, np.maximum((f / knee) ** 3, floor))
+    g = g / (1.0 + (f / hi) ** 6)
+    x = np.fft.irfft(sp * g, n) * sfx.exp_env(n, sr, tau, attack=0.0004)
+    return x / (np.std(x) + 1e-9)
+
+
+BED = 0.03
+CK = 0.45
+BEEP = 0.10
+
+
 @recipe("c4charge_init")
 def c4_init(c, N):
-    """Three hard clicks (0, 0.10, 0.21 s, falling level) over a low rumble bed, then a flat 3.85 kHz
-    beep gated 0.29-0.43 s with a hard cut, and a very faint tail that is silent for the last 0.2 s."""
+    """Four full-band clicks (0.03, 0.115, 0.22 weak, 0.29 strong) over a continuous 20-200 Hz rumble bed
+    that fades to the end; a 3.83 kHz beep gated 0.30-0.43 s that ends on a burst."""
     _charge_flags(c)
     sr, rng = c.sr, c.rng
     m = Mix(c, N)
-    m.add(_snap(sr, rng, 1.0, thump_g=0.02, crack_dur=0.008, lo=4000, hi=16000, sizzle=1.2), 0.0, 0.25)
-    m.add(_snap(sr, rng, 1.0, thump_g=0.02, crack_dur=0.012, lo=4000, hi=11000, sizzle=0.5), 0.10, 4.5)
-    m.add(_snap(sr, rng, 0.8, thump_g=0.02, crack_dur=0.012, lo=4000, hi=11000, sizzle=0.5), 0.21, 2.7)
-    m.add(_modes(sr, rng, 3, 800, 1000, dur=0.05), 0.0, 0.05)   # weak ~900 Hz resonance under the clicks
-        # broadband hiss bed (the original's gaps between clicks are ~28 dB down but noisy, not a low rumble: it has
-    # almost no energy below 200 Hz); gone by ~0.45 s so the last 0.2 s is silent
-    nb = sfx.n_of(sr, 0.85)
-    tb = sfx.tvec(nb, sr)
-    bed = sfx.fftfilt(sfx.noise(nb, rng), sr, hp=500, lp=1800, order=2)
-    bed = bed * 10 ** (np.interp(tb, [0.0, 0.5, 0.6, 0.7, 0.8], [-8.0, -10.0, -14.0, -26.0, -45.0]) / 20)
-    m.add(bed / (np.std(bed) + 1e-9), 0.0, 0.012)
-    m.add(_noise_click(sr, rng, dur=0.006, lo=2000, hi=9000), 0.6, 0.18)   # the faint late tick A has
-    bp = _gated(sr, 3825, 0.14, ((1.0, 1.0),), ramp=0.005)
-    nbp = sfx.n_of(sr, 0.14)   # slight grit so the line is not a 100 dB digital sine
+    for t, g, tau in ((0.027, 1.0, 0.008), (0.115, 1.0, 0.008), (0.22, 0.25, 0.006), (0.29, 1.4, 0.010)):
+        m.add(_whiteclick(sr, rng, tau), t, CK * g)
+    bed = _lowbed(sr, rng, 0.86)
+    tb = sfx.tvec(len(bed), sr)
+    bed = bed * 10 ** (np.interp(tb, [0.0, 0.3, 0.5, 0.7, 0.86], [0.0, 0.0, -4.0, -8.0, -26.0]) / 20)
+    m.add(bed, 0.0, BED * CK)
+    hiss = sfx.fftfilt(sfx.noise(len(bed), rng), sr, hp=2000, lp=12000, order=1) * np.exp(-tb / 0.3)
+    m.add(hiss / (np.std(hiss) + 1e-9), 0.0, 0.01 * CK)
+    bp = _gated(sr, 3825, 0.14, ((1.0, 1.0),), ramp=0.004)
+    nbp = sfx.n_of(sr, 0.14)
     bp = bp + 0.03 * _hp(sfx.noise(nbp, rng), sr, 1500) * np.minimum(sfx.tvec(nbp, sr) / 0.002, 1.0)
-    m.add(bp, 0.29, 0.09)
+    m.add(bp, 0.30, BEEP)
+    m.add(_whiteclick(sr, rng, 0.004, dur=0.03), 0.425, CK * 0.12)   # the burst that closes the beep
     return m.out
 
 
@@ -256,31 +306,33 @@ def c4_tick(c, N):
     _charge_flags(c)
     sr, rng = c.sr, c.rng
     m = Mix(c, N)
-    m.add(_thump(sr, 140, 70, 0.1, 0.03, k=0.03), 0.05, 0.02)   # weak low thump
-    m.add(_noise_click(sr, rng, dur=0.004, lo=1500, hi=8000), 0.05, 0.25)
+    nlo = sfx.n_of(sr, 0.15)   # flat 20-300 Hz body that stops dead at 0.15 s (A)
+    lo_b = _lowbed(sr, rng, 0.15, 20.0, 300.0, rate=20.0, depth=0.5) * np.clip((0.15 - sfx.tvec(nlo, sr)) / 0.004, 0, 1)
+    m.add(lo_b, 0.0, 0.012)
+    m.add(_noise_click(sr, rng, dur=0.004, lo=1500, hi=8000), 0.03, 0.25)
     m.add(_noise_click(sr, rng, dur=0.003, lo=1500, hi=6000), 0.0, 0.03)   # faint pre-blip
-    d = 0.15
+    d = 0.108
     n = sfx.n_of(sr, d)
     t = sfx.tvec(n, sr)
     ph = np.cumsum(1.0 + 0.0 * np.sin(sfx.TAU * 47.0 * t)) / sr * sfx.TAU   # slight vibrato spreads each line
     b = (np.sin(ph * 1700) + 0.35 * np.sin(ph * 3400) + 0.6 * np.sin(ph * 6900))
-    hump = (1.0 + 0.25 * np.exp(-((t - 0.02) / 0.02) ** 2) - 0.2 * np.exp(-((t - 0.085) / 0.025) ** 2)
-            + 0.3 * np.exp(-((t - 0.135) / 0.014) ** 2))
+    hump = (1.0 + 0.25 * np.exp(-((t - 0.02) / 0.02) ** 2) - 0.2 * np.exp(-((t - 0.065) / 0.02) ** 2)
+            + 0.3 * np.exp(-((t - 0.097) / 0.012) ** 2))
     env = np.minimum(t / 0.007, 1.0) * np.minimum((d - t) / 0.004, 1.0)
-    b = b + 0.3 * _grit(n, sr, rng)   # grit so lines are not 100 dB pure
-    m.add(b * hump * np.clip(env, 0, 1), 0.05, 0.5)
+    b = b + 0.23 * _grit(n, sr, rng)   # grit so lines are not 100 dB pure
+    m.add(b * hump * np.clip(env, 0, 1), 0.03, 0.5)
     # continuous ring tail: 1.7 kHz + 3.4 kHz (-15 dB), starting ~13 dB under the beep, sagging to -40 dB by
     # ~0.4 s after the beep and gone by 0.55 s, with a slow 17 Hz flutter of ~2 dB
-    nr = sfx.n_of(sr, 0.36)
+    nr = sfx.n_of(sr, 0.58)
     tr = sfx.tvec(nr, sr)
     flut = 1.0 + 0.18 * np.sin(sfx.TAU * 17.0 * tr + 0.7)
     pr = np.cumsum(1.0 + 0.0 * np.sin(sfx.TAU * 41.0 * tr)) / sr * sfx.TAU
     ring = (np.sin(pr * 1700) + 0.18 * np.sin(pr * 3400) * np.exp(-tr / 0.08) + 0.3 * np.sin(pr * 6900) * np.exp(-tr / 0.08)) * flut
-    ring *= 10 ** (np.interp(tr, [0.0, 0.15, 0.3, 0.4, 0.5], [-4.0, -12.0, -24.0, -40.0, -70.0]) / 20)
+    ring *= 10 ** (np.interp(tr, [0.0, 0.1, 0.25, 0.4, 0.58], [-3.0, -9.0, -14.0, -20.0, -26.0]) / 20)
     ring *= np.minimum(tr / 0.004, 1.0)
-    ring = ring + 0.075 * _grit(nr, sr, rng)
-    m.add(ring, 0.2, 0.17)
-    return _hp(m.out, sr, 200)
+    ring = ring + 0.07 * _grit(nr, sr, rng)
+    m.add(ring, 0.138, 0.2)
+    return _hp(m.out, sr, 20)
 
 
 @recipe("democharge_init")
@@ -298,14 +350,16 @@ def demo_init(c, N):
     nbd = sfx.n_of(sr, 0.62)
     bed = sfx.grain_cloud(nbd, sr, rng, np.linspace(260, 90, nbd), 0.0025, 4000, 12000, env=sfx.exp_env(nbd, sr, 0.35), amp_var=0.9)
     m.add(bed, 0.0, 0.15)
-    for t in (0.34, 0.46):
-        b = tone_burst(sr, rng, 1400, 0.08, ratios=(1.0,), gains=(1.0,), attack=0.002, release=0.002, grit=0.25)
-        m.add(b, t, 0.06)
-    nr = sfx.n_of(sr, 0.6)
+    for t, bg, hg in ((0.322, 0.02, (1.0, 0.28, 0.4)), (0.458, 0.026, (0.8, 1.2, 1.5))):   # two harmonic beeps (1.7 / 3.48 / 5.13 kHz lines), each opened by a broadband snap
+        b = tone_burst(sr, rng, 1700, 0.075, ratios=(1.0, 2.045, 3.015), gains=hg, attack=0.002, release=0.002, grit=0.25)
+        m.add(b, t, bg)
+        m.add(_whiteclick(sr, rng, 0.004, dur=0.03, knee=500.0, slope=0.2), t, 0.03)
+    m.add(_whiteclick(sr, rng, 0.004, dur=0.03, knee=500.0, slope=0.2), 0.40, 0.02)
+    nr = sfx.n_of(sr, 0.85)
     sw = _lp(sfx.noise(nr, rng), sr, 160, order=2)
-    sw = _hp(sw, sr, 50) * sfx.smooth_env(nr, sr, 0.15, 0.4)
-    m.add(sw / (np.std(sw) + 1e-9), 0.35, 0.02)
-    m.add(_thump(sr, 120, 62, 0.3, 0.08), 0.35, 0.04)
+    sw = _hp(sw, sr, 50) * sfx.smooth_env(nr, sr, 0.15, 0.6)
+    m.add(sw / (np.std(sw) + 1e-9), 0.38, 0.0045)
+    m.add(_thump(sr, 120, 62, 0.3, 0.08), 0.38, 0.01)
     # nearly inaudible tail: 800 Hz line plus low-passed noise, fading to nothing by ~1.2 s
     nt = sfx.n_of(sr, 1.3)
     tt = sfx.tvec(nt, sr)
