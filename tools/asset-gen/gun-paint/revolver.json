@@ -1,6 +1,6 @@
 {
  "gun": "revolver",
- "textures": [{"file": "revolver.png"}, {"file": "golden_revolver.png", "variant": {"roles": {"bar": {"base": "#D8B53C"}, "frame": {"base": "#C9A32E"}, "drum": {"base": "#C9A32E"}, "hammer": {"base": "#6B5521"}}}}],
+ "textures": [{"file": "revolver.png"}],
  "roles": {
   "bar": {"material": "steel", "base": "#AEABA7", "scratches": false, "noise": 0.025},
   "frame": {"material": "steel", "base": "#A6A29F", "scratches": false, "noise": 0.03},
