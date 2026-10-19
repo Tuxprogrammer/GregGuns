@@ -26,6 +26,19 @@ Behavioral specification of Techguns 1.7.10 v0.1.2 alpha. This area covers:
 | [textures.md](textures.md) | All 82 armor textures: layout conventions, what each depicts, palette and usage |
 | [recipes.md](recipes.md) | Every armor and special-equipment recipe; repair routes; loot entries |
 | [lang-and-strings.md](lang-and-strings.md) | All lang keys with English text; hard-coded strings; missing keys |
+| [model-notes/steam.md](model-notes/steam.md) | Clean-room design notes for rebuilding the Steam Armor (`steam`, `hazard`, `iron`, `rusty`) (proportions, parts, palette, motion, checklist) |
+| [model-notes/t3_power.md](model-notes/t3_power.md) | Clean-room design notes for rebuilding the T3 Power Armor (`t3_power`, `dark`, `dark2`) (proportions, parts, palette, motion, checklist) |
+| [model-notes/t3_exo.md](model-notes/t3_exo.md) | Clean-room design notes for rebuilding the Exo Suit (`t3_exo`, `green`, `silver`) (proportions, parts, palette, motion, checklist) |
+| [model-notes/t2_riot.md](model-notes/t2_riot.md) | Clean-room design notes for rebuilding the Riot Armor (`t2_riot`) (proportions, parts, palette, motion, checklist) |
+| [model-notes/t2_beret.md](model-notes/t2_beret.md) | Clean-room design notes for rebuilding the Beret (`t2_beret`, `black`, `green`) (proportions, parts, palette, motion, checklist) |
+| [model-notes/gas_mask.md](model-notes/gas_mask.md) | Clean-room design notes for rebuilding the worn Gas Mask (proportions, parts, palette, motion, checklist) |
+| [model-notes/oxygen_mask.md](model-notes/oxygen_mask.md) | Clean-room design notes for rebuilding the worn Oxygen Mask (proportions, parts, palette, motion, checklist) |
+| [model-notes/tactical_mask.md](model-notes/tactical_mask.md) | Clean-room design notes for rebuilding the worn Tactical Mask and its recolors (proportions, parts, palette, motion, checklist) |
+| [model-notes/night_vision_goggles.md](model-notes/night_vision_goggles.md) | Clean-room design notes for rebuilding the worn Night Vision Goggles, on and off poses (proportions, parts, palette, motion, checklist) |
+| [model-notes/jump_pack.md](model-notes/jump_pack.md) | Clean-room design notes for rebuilding the worn Jump Pack (proportions, parts, palette, motion, checklist) |
+| [model-notes/anti_gravity_pack.md](model-notes/anti_gravity_pack.md) | Clean-room design notes for rebuilding the worn Anti Gravity Pack and its camos (proportions, parts, palette, motion, checklist) |
+| [model-notes/glider.md](model-notes/glider.md) | Clean-room design notes for rebuilding the worn Glider, folded and deployed (proportions, parts, palette, motion, checklist) |
+| [model-notes/oxygen_tanks.md](model-notes/oxygen_tanks.md) | Clean-room design notes for rebuilding the worn Oxygen Tanks (proportions, parts, palette, motion, checklist) |
 
 ## Key facts
 
