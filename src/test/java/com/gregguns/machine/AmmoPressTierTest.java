@@ -112,7 +112,8 @@ class AmmoPressTierTest {
         long upperRows = ProductionTable.ROWS.stream()
             .filter(
                 r -> r.target() == ProductionTable.Target.AMMO_PRESS
-                    && (r.tier() == com.gregguns.api.Tier.MV || r.tier() == com.gregguns.api.Tier.HV))
+                    && (r.tier() == com.gregguns.api.Tier.MV || r.tier() == com.gregguns.api.Tier.HV
+                        || r.tier() == com.gregguns.api.Tier.EV))
             .count();
         assertEquals(
             lvRows + upperRows,
