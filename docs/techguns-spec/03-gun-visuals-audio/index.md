@@ -52,6 +52,8 @@ Out of scope here, see the owning areas:
 | [model-notes/nether_blaster.md](model-notes/nether_blaster.md) | Clean-room design notes for rebuilding the Nether Blaster model and texture |
 | [model-notes/alien_blaster.md](model-notes/alien_blaster.md) | Clean-room design notes for rebuilding the Alien Blaster model and texture |
 | [model-notes/grim_reaper.md](model-notes/grim_reaper.md) | Clean-room design notes for rebuilding the Grim Reaper model and texture |
+| [model-notes/nuclear_death_ray.md](model-notes/nuclear_death_ray.md) | Clean-room design notes for rebuilding the Nuclear Death Ray model (child parts, firing starburst) and texture |
+| [model-notes/nuke_launcher.md](model-notes/nuke_launcher.md) | Clean-room skin notes for the Nuke Launcher (Rocket Launcher geometry, new texture) |
 | [textures.md](textures.md) | All 62 `textures/guns/` PNGs: size, what they depict, palette, UV layout, users, model-size mismatches |
 | [sounds.md](sounds.md) | All 185 `sounds/guns/` files, their `sounds.json` events and exactly when each plays |
 | [lang-and-strings.md](lang-and-strings.md) | The 17 gun camo-name keys, the generic camo strings, strings generated in code, missing keys and one correction |
