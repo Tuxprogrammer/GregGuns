@@ -28,14 +28,20 @@ public final class ClientGunDefinitions {
             Mac10Profile.DEFINITION,
 
             M4Profile.DEFINITION,
+            InfiltratorProfile.DEFINITION,
+
+            AugProfile.DEFINITION,
 
             Ak47Profile.DEFINITION,
+
+            VectorProfile.DEFINITION,
 
             CombatShotgunProfile.DEFINITION,
             RocketLauncherProfile.DEFINITION,
             GrenadeLauncherProfile.DEFINITION,
             As50Profile.DEFINITION,
             LmgProfile.DEFINITION,
+            ScarProfile.DEFINITION,
 
             // The akimbo guns draw their single gun's model once per hand.
             ClientGunDefinition.akimboOf("akimbo_pistols", Pistol9mmProfile.DEFINITION),
@@ -49,8 +55,7 @@ public final class ClientGunDefinitions {
      * test pins this list to the guns that actually lack a profile, and <b>the M2 exit gate requires it empty</b>:
      * giving a gun its clean-room profile means removing its name here.
      */
-    public static final List<String> FLAT_ICON_FALLBACK = Collections
-        .unmodifiableList(Arrays.asList("aug", "scar", "vector", "infiltrator"));
+    public static final List<String> FLAT_ICON_FALLBACK = Collections.unmodifiableList(Arrays.asList());
 
     private ClientGunDefinitions() {}
 

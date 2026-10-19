@@ -221,3 +221,13 @@ All transforms apply to the model as a whole, in block units after the model's 1
 - **First-person framing numbers** come from formulas read, not seen in game. Treat the offsets as approximate.
 - **Foregrip rotation.** The foregrip is turned 45 degrees about its vertical axis, so it shows a diamond from the front and top; from the side its width is the diamond's diagonal (about 2.8), not 2. Its center is within 0.1 unit of the mid-plane.
 - **Recess shadow color.** #6D6D47 is sampled from a few pixel clusters; treat it as approximate.
+
+## Round 2 corrections (orchestrator review)
+
+Round 1 comparison (side 0.965, iso 0.95, front 0.91, **top 0.805**, below the 0.93 bar).
+
+- **Width (the cause of the top and bottom error).** The original is **4 units wide (0.25 block)** at its widest, across the upper receiver and the tan slabs together. Ours is 3 units (0.188 block). Widen the upper receiver so the whole gun is 4 across, with the top rail and sight staying where they are. The grip, magazine and foregrip stay narrower than the body (the originals are about 3 units).
+- **Tan slabs.** In the original the two tan slabs sit **flush against the receiver sides** and are flat: seen from the right the lower slab is one clean rhombus outline with a long recessed slot window near its middle and a checkered stipple band along its lower rear edge. Ours are tilted so they poke out of the body in the iso views, and carry scattered square dots and bars instead of the slot. Make the slabs flat and flush, give each one long slot window plus the checker band, and remove the scattered dots.
+- **Rear stock.** The original's stock is a flat black bracket whose lower hook reaches down to about the grip's height with a notch; the shape reads the same, but the original's hook is narrower (about 3 units wide) than ours.
+- **Top rail.** The original's rail teeth are fine and low; ours are chunkier in the iso view. Keep them as flat 1-unit steps without raised blocks.
+- Keep the black sight with the red dot and the 2.75-block length.
