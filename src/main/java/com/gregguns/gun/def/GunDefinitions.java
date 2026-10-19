@@ -26,7 +26,11 @@ public final class GunDefinitions {
             ThompsonDef.DEFINITION,
             Mac10Def.DEFINITION,
             M4Def.DEFINITION,
-            Ak47Def.DEFINITION));
+            Ak47Def.DEFINITION,
+            AugDef.DEFINITION,
+            ScarDef.DEFINITION,
+            VectorDef.DEFINITION,
+            InfiltratorDef.DEFINITION));
 
     private GunDefinitions() {}
 

@@ -13,7 +13,7 @@ import com.gregguns.item.gun.GunItems;
 import com.gregguns.recipe.GunRecipeScenarios;
 
 /**
- * The {@code gun.<name>.*} scenarios of the MV batch B1 guns (Thompson, Mac10, M4, AK47): full-auto fire at the
+ * The {@code gun.<name>.*} scenarios of the MV batch B1 guns (Thompson, Mac10, M4, AK47) and the HV batch B3 guns (AUG, SCAR, Vector, Infiltrator): full-auto fire at the
  * gun's own interval, the magazine reload (a loaded magazine in, an empty one back), the forced-reload refund of loose
  * rounds, the assembly recipe, and the M4's scope (FOV and spread without an overlay). All four go through the same
  * server handler as the pistol's scenarios, using {@link GunRig}. Dev environment only, server side.
@@ -39,12 +39,31 @@ public final class MvGunScenarios {
             GunRecipeScenarios.assembly(
                 "gun." + def.name() + ".recipe",
                 "The " + def.name()
-                    + " is in GT's assembler map (so NEI lists it) at MV with its sheet inputs, and not below MV.",
+                    + " is in GT's assembler map (so NEI lists it) at " + def.tier() + " with its sheet inputs, and not below it.",
                 def.assembly()));
         if (def.stats()
             .hasScope()) {
             registry.register(new Zoom(def));
         }
+    }
+
+    /**
+     * Registers the upgrade scenario of a gun made by consuming another gun (the Infiltrator from the M4): the row
+     * is found with a used, camouflaged base gun.
+     *
+     * @param registry where to add it
+     * @param gunName  the upgraded gun's registry name
+     */
+    public static void registerUpgrade(ScenarioRegistry registry, String gunName) {
+        GunDefinition def = GunDefinitions.byName(gunName);
+        registry.register(
+            GunRecipeScenarios.upgrade(
+                "gun." + def.name() + ".upgrade",
+                "The " + def.name()
+                    + " upgrade recipe is found with a used, camouflaged base gun (any NBT) and outputs a fresh "
+                    + def.name()
+                    + ".",
+                def.assembly()));
     }
 
     private static GunRig rig(ScenarioContext ctx, GunDefinition def, int loaded) {
@@ -208,7 +227,7 @@ public final class MvGunScenarios {
         }
     }
 
-    /** The M4's scope: a plain FOV x0.75 and spread x0.75, toggled by the zoom intent, cancelled by a reload. */
+    /** A gun's scope: the stats' FOV and spread factors, toggled by the zoom intent, cancelled by a reload. */
     private static final class Zoom implements Scenario {
 
         private final GunDefinition def;
@@ -224,7 +243,7 @@ public final class MvGunScenarios {
 
         @Override
         public String description() {
-            return "A zoom intent on the M4 turns the server zoom state on with FOV factor 0.75 and 0.75 of the spread (0.015); a second intent or a reload turns it off.";
+            return "A zoom intent on the " + def.name() + " turns the server zoom state on with its FOV factor and spread multiplier; a second intent or a reload turns it off.";
         }
 
         @Override
@@ -235,7 +254,7 @@ public final class MvGunScenarios {
             rig.tick();
             GunPlayerData data = GunPlayerData.get(rig.shooter);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            out.check(stats.hasScope(), "the M4 is a scoped gun");
+            out.check(stats.hasScope(), "the gun is a scoped gun");
             out.check(
                 !data.controller()
                     .zoom()
@@ -252,15 +271,15 @@ public final class MvGunScenarios {
                 Math.abs(
                     data.controller()
                         .zoom()
-                        .fovMultiplier(stats) - 0.75)
+                        .fovMultiplier(stats) - stats.zoomFactor())
                     < 1e-9,
-                "the FOV factor while zoomed should be 0.75");
+                "the FOV factor while zoomed should be the stats' factor");
             out.check(
-                Math.abs(SpreadModel.mainSpread(stats, ShotContext.player(zoomed, 0.0)) - 0.015 * 0.75) < 1e-9,
-                "the spread of a zoomed shot should be 0.75 of 0.015");
+                Math.abs(SpreadModel.mainSpread(stats, ShotContext.player(zoomed, 0.0)) - stats.spread() * stats.zoomSpreadMultiplier()) < 1e-9,
+                "the spread of a zoomed shot should be the zoom multiplier of the base spread");
             out.check(
-                Math.abs(SpreadModel.mainSpread(stats, ShotContext.player(false, 0.0)) - 0.015) < 1e-9,
-                "the spread of an unzoomed shot should be the full 0.015");
+                Math.abs(SpreadModel.mainSpread(stats, ShotContext.player(false, 0.0)) - stats.spread()) < 1e-9,
+                "the spread of an unzoomed shot should be the full base spread");
 
             ServerGunHandler.onZoomToggle(rig.shooter);
             rig.tick();

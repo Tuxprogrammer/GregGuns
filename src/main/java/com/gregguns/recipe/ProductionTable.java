@@ -201,6 +201,28 @@ public final class ProductionTable {
         }
 
         /**
+         * An upgrade row: an Assembler row that consumes one base gun, matched at any damage and ignoring its NBT (a
+         * loaded, worn or camouflaged base gun is accepted), plus the extra inputs. The output is a fresh gun: GT recipes
+         * cannot copy NBT, so ammo and camo are lost (design record 0001, GGS-02-40).
+         *
+         * @param id       the sheet id, for example {@code "GR-33"}
+         * @param output   the upgraded gun's bare registry name
+         * @param baseGun  the consumed gun's bare registry name
+         * @param tier     the output's D1 tier
+         * @param seconds  duration in seconds
+         * @param circuit  the programmed-circuit selector, 1 or more
+         * @param extras   the other inputs in slot order; the base gun is slot 0
+         * @return the row, targeting GT's Assembler
+         */
+        public static Row upgrade(String id, String output, String baseGun, Tier tier, int seconds, int circuit,
+            Input... extras) {
+            Input[] inputs = new Input[extras.length + 1];
+            inputs[0] = Input.modAnyDamage(baseGun, 1);
+            System.arraycopy(extras, 0, inputs, 1, extras.length);
+            return new Row(id, output, 1, tier, Target.ASSEMBLER, seconds, circuit, inputs);
+        }
+
+        /**
          * An Ammo Press row for any tier; the same as {@link ProductionTable#pressRow} (which delegates here) but
          * reachable without initialising {@link ProductionTable}.
          *

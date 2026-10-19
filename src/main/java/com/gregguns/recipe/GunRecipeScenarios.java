@@ -6,10 +6,12 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.nbt.NBTTagCompound;
 
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.item.part.PartItems;
 
 import gregtech.api.enums.GTValues;
@@ -43,6 +45,20 @@ public final class GunRecipeScenarios {
      */
     public static Scenario assembly(String name, String description, ProductionTable.Row row) {
         return new GunAssemblerRecipe(name, description, row);
+    }
+
+    /**
+     * The scenario of an upgrade row (see {@link ProductionTable.Row#upgrade}): the recipe is found when the base gun
+     * in slot 0 is a used one (rounds spent, a camo selected), so the match ignores its NBT, and the output is the
+     * upgraded gun.
+     *
+     * @param name        the scenario name, for example {@code gun.infiltrator.upgrade}
+     * @param description what it checks, for the docs
+     * @param row         the upgrade row
+     * @return the scenario
+     */
+    public static Scenario upgrade(String name, String description, ProductionTable.Row row) {
+        return new UpgradeRecipe(name, description, row);
     }
 
     /** @return {@code gun.sawedoff.shells.recipe}: the shotgun shell's press recipe (RC-29) */
@@ -142,6 +158,80 @@ public final class GunRecipeScenarios {
                 && gun != null
                 && tooLow.mOutputs[0].getItem() == gun.getItem();
             out.check(!oursOffered, "a machine below the row's tier should not be offered the recipe");
+            return out.build();
+        }
+    }
+
+    /** An upgrade row accepts a used, camouflaged base gun and outputs the upgraded gun. */
+    private static final class UpgradeRecipe implements Scenario {
+
+        private final String name;
+        private final String description;
+        private final ProductionTable.Row row;
+
+        UpgradeRecipe(String name, String description, ProductionTable.Row row) {
+            this.name = name;
+            this.description = description;
+            this.row = row;
+        }
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+        @Override
+        public String description() {
+            return description;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            List<ItemStack> inputList = new ArrayList<>();
+            for (ProductionTable.Input input : row.inputs()) {
+                inputList.add(
+                    input.isGregGuns() ? modStack(input.itemName(), input.count())
+                        : gt(input.prefix(), input.material(), input.count()));
+            }
+            inputList.add(GTUtility.getIntegratedCircuit(row.circuit()));
+            for (ItemStack input : inputList) {
+                out.check(input != null, "every sheet input should resolve");
+            }
+            ItemStack base = inputList.get(0);
+            if (base == null) {
+                return out.build();
+            }
+            // A used, camouflaged base gun: 3 rounds left and camo 2. The recipe must match it all the same.
+            NBTTagCompound tag = new NBTTagCompound();
+            tag.setShort(GunNbt.KEY_AMMO, (short) 3);
+            tag.setByte(GunNbt.KEY_CAMO, (byte) 2);
+            base.setTagCompound(tag);
+            out.check(
+                row.inputs()
+                    .get(0)
+                    .anyDamage(),
+                "the base gun input should match at any damage");
+
+            GTRecipe found = RecipeMaps.assemblerRecipes.findRecipeQuery()
+                .items(inputList.toArray(new ItemStack[0]))
+                .voltage(
+                    GTValues.V[row.tier()
+                        .voltageIndex()])
+                .find();
+            out.check(found != null, "the upgrade should be found with a used, camouflaged base gun");
+            ItemStack gun = modStack(row.output(), 1);
+            boolean ours = found != null && found.mOutputs != null
+                && found.mOutputs.length > 0
+                && found.mOutputs[0] != null
+                && gun != null
+                && found.mOutputs[0].getItem() == gun.getItem();
+            out.check(ours, "the found recipe should output the upgraded gun");
+            if (ours) {
+                out.check(
+                    found.mOutputs[0].getTagCompound() == null,
+                    "the output is a fresh gun: it carries none of the base gun's NBT");
+            }
             return out.build();
         }
     }
