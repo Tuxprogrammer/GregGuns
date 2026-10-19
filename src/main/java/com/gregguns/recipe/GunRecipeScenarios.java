@@ -135,16 +135,13 @@ public final class GunRecipeScenarios {
                     GTValues.V[row.tier()
                         .voltageIndex() - 1] / 2)
                 .find();
-            out.check(
-                tooLow == null,
-                "a machine below the row's tier should not be offered the recipe, found " + (tooLow == null ? ""
-                    : java.util.Arrays.toString(tooLow.mOutputs) + " / "
-                        + java.util.Arrays.toString(tooLow.mInputs)
-                        + " / "
-                        + java.util.Arrays.toString(tooLow.mFluidOutputs)
-                        + " at "
-                        + tooLow.mEUt
-                        + " EU/t"));
+            // GT's query can match an unrelated circuit-only recipe (null output) at low voltage; only ours counts.
+            boolean oursOffered = tooLow != null && tooLow.mOutputs != null
+                && tooLow.mOutputs.length > 0
+                && tooLow.mOutputs[0] != null
+                && gun != null
+                && tooLow.mOutputs[0].getItem() == gun.getItem();
+            out.check(!oursOffered, "a machine below the row's tier should not be offered the recipe");
             return out.build();
         }
     }
