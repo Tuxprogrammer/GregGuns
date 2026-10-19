@@ -20,6 +20,7 @@ import com.gregguns.client.render.profile.ClientGunDefinitions;
 import com.gregguns.client.render.profile.DeatomizerPistolProfile;
 import com.gregguns.client.render.profile.LaserRifleProfile;
 import com.gregguns.client.render.profile.PdwProfile;
+import com.gregguns.client.render.profile.ScatterLaserRifleProfile;
 import com.gregguns.client.render.profile.SonicRifleProfile;
 import com.gregguns.client.render.profile.TeslaRifleProfile;
 
@@ -135,6 +136,7 @@ class ModelExportTest {
         ModelExporter.exportProfile(dir, SonicRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, BlasterRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, DeatomizerPistolProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, ScatterLaserRifleProfile.DEFINITION);
     }
 
     /** Every accessory model is exported with one JSON box per model box. */

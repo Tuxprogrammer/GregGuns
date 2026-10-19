@@ -203,6 +203,10 @@ def _target_frames(c, frames, hop):
     if K.get("droop"):   # round 6: tail pulled down faster than A's, so the -20 dB time (from a capped peak) holds
         tt = (np.arange(frames) + 0.5) * hop / c.sr
         T = T - K["droop"] * np.clip((tt - tg.peak_t) / max(c.dur - tg.peak_t, 0.1), 0.0, 1.0)
+    if K.get("tadj"):   # round 8 (C3): [[t_s, dB], ...] offset of the target frames (interpolated), to move energy in time
+        tt = (np.arange(frames) + 0.5) * hop / c.sr
+        pa = np.array(K["tadj"], dtype=float)
+        T = T + np.interp(tt, pa[:, 0], pa[:, 1])
     if K.get("cap") is not None:   # round 6: A is clipped far past full scale; B's loudest frames cannot follow it
         T = np.minimum(T, K["cap"])
     return np.maximum(T, -60.0)
@@ -366,6 +370,29 @@ def _contour(fn):
         peq = [float(v) for v in peq.split(",")] if peq else _POST_EQ.get(c.name)
         if peq:   # extra in-band tilt (still inside the band-balance tolerance) for the gate's noisiness check
             y = sfx.eq_curve(y, c.sr, peq)
+        tl = _knobs(c.name).get("tail")
+        if tl:   # (start_rel_db, end_rel_db, lo_hz, hi_hz): faint noise tail to the end of the render, dB re the loudest 20 ms
+            y = np.array(y, dtype=float)
+            sr_ = c.sr
+            w_ = max(1, int(sr_ * 0.02))
+            rms_ = np.sqrt(np.convolve(y * y, np.ones(w_) / w_, mode="same"))
+            pk_ = float(rms_.max())
+            hot = np.nonzero(rms_ > pk_ * 10 ** (-45 / 20.0))[0]
+            i0 = int(hot[-1]) if len(hot) else 0
+            nt_ = len(y) - i0
+            if nt_ > 8:
+                nz = sfx.fftfilt(c.rng.standard_normal(nt_), sr_, hp=tl[2], lp=min(tl[3], sr_ * 0.45), order=2)
+                nz = nz / (np.std(nz) + 1e-12)
+                lev = np.linspace(tl[0], tl[1], nt_)
+                y[i0:] += nz * pk_ * 10 ** (lev / 20.0) * np.minimum(np.arange(nt_) / (sr_ * 0.01), 1.0)
+            get_tg(c).trail = 0.0   # the generic silent-end cut would zero it
+        spk = _knobs(c.name).get("spk")
+        if spk:   # crest: lift the few samples around the loudest peak by spk dB (sharper transient, same RMS)
+            y = np.array(y, dtype=float)
+            ip = int(np.argmax(np.abs(y)))
+            w = max(2, int(c.sr * 0.0004))
+            lo_, hi_ = max(ip - w, 0), min(ip + w + 1, len(y))
+            y[lo_:hi_] *= 1.0 + (10 ** (spk / 20.0) - 1.0) * np.hanning(hi_ - lo_)
         return y
     wrapper.__name__ = fn.__name__
     wrapper.__doc__ = fn.__doc__
@@ -821,7 +848,15 @@ def apache_rotor(c, N):
     m.add(_unit(ch), 0.0, 0.3)   # the original has no distinct blade onsets: the chop rides on a dense body
     m.add(_unit(sfx.band_noise(N, sr, rng, 150, 900, order=2)) * churn(N, sr, rng, 7, 0.3), 0.0, 0.9)
     m.add(_unit(sfx.band_noise(N, sr, rng, 700, 2500, order=1)) * churn(N, sr, rng, 9, 0.6), 0.0, 0.12)
-    return _fit_contour(c, m.out, passes=3)
+    y = _fit_contour(c, m.out, passes=3)
+    # the loop cross-fade mixes x[n:n+xf] into the head; the contour fit leaves that overrun quiet, which dips the first
+    # 0.25 s by 5 dB.  Fill the overrun from the loud stretch just before the loop point (blueprint: flat from 0 ms).
+    n0 = c.n
+    xfn = sfx.n_of(sr, min(0.25, c.dur * 0.2))
+    if n0 + xfn <= len(y):
+        y = np.array(y, dtype=float)
+        y[n0:n0 + xfn] = y[n0 - 2 * xfn:n0 - xfn]
+    return y
 
 
 def _thud(c, t, f0=100.0, f1=45.0, dur=0.2, tau=0.05, g=1.0, m=None):
@@ -1180,7 +1215,7 @@ def turret_beep(c, N):
         for t_tick in tg_onsets(c):
             nt = sfx.n_of(sr, 0.04)
             tk = sfx.fftfilt(sfx.noise(nt, rng), sr, hp=1000, lp=4000, order=1) * sfx.exp_env(nt, sr, 0.012, attack=0.0005)
-            m.add(tk, t_tick, 3.0)
+            m.add(tk, t_tick, K.get("tk", 3.0))
     bz = _BEEP_TUNE.get(k, {}).get("buzz")
     if bz:   # a segment of the original that is a broadband buzz (no measured line): 300 Hz pulse comb up to ~4 kHz
         n = sfx.n_of(sr, bz[1] - bz[0])
@@ -1485,5 +1520,26 @@ for _n, _k in {
     'turret_beep-03': {'ine': 0.01, 'floor': -0.08},
     'turret_beep-05': {'pw': 0.17, 'noenv': 1},
     'turret_beep-07': {'nobands': 1, 'combhi': 2626.73},
+}.items():
+    _KNOB[_n] = dict(_KNOB.get(_n, {}), **_k)
+
+# ===== clean-room fixer: crest lift.  The blueprint peaks are far above full scale (decoded originals clip), the
+# finishing limiter caps ours at -1 dBTP, so these only add a short peak lift (spk dB on a +-0.4 ms window).
+for _n, _k in {
+    'alienbug_bite_d': {'spk': 15},
+    'alienbug_hit-03': {'spk': 15},
+}.items():
+    _KNOB[_n] = dict(_KNOB.get(_n, {}), **_k)
+
+# faint noise tail to the end of the render where the blueprint stays audible longer than the recipe's gate does
+for _n in ('alienbug_idle-06', 'alienbug_idle-03', 'alienbug_idle-02'):
+    _KNOB[_n] = dict(_KNOB.get(_n, {}), tail=[-55, -62, 1500, 9000])
+
+# ===== clean-room fixer C3: target-frame offsets (tadj: [[t_s, dB], ...]) that move energy in time to match the
+# blueprint's cumulative-energy times.
+for _n, _k in {
+    'alienbug_step_a': {'tadj': [[0, 0], [0.01, 0], [0.02, -15], [0.05, -15], [0.07, -3], [0.1, 0]]},
+    'turret_beep-02': {'tadj': [[0, -6], [0.06, -6], [0.1, 0], [0.34, 0], [0.36, 4], [0.46, 4], [0.5, 0]]},
+    'cyberdemon_aggro_b': {'tadj': [[0, 0], [0.03, 0], [0.06, -10], [0.3, -10], [0.4, 0], [1.9, 0], [2.1, 7], [2.5, 7], [2.6, 0]]},
 }.items():
     _KNOB[_n] = dict(_KNOB.get(_n, {}), **_k)
