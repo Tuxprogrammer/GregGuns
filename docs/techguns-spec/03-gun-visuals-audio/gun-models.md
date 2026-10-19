@@ -42,6 +42,8 @@ Extent z −3…12, y −0.5…10, x −2…1 (15 long): a modern semi-automatic
 * **Part 1, slide:** slide 3×2×14 (y 0…2) with front and rear sight cubes 1×1×1 (z −0.5 and z 9.5).
 * The slide is the moving part. While firing, the renderer pushes it back further than the frame (§ Pistol in the gun sheets).
 
+Clean-room rebuild notes: [model-notes/pistol-9mm.md](model-notes/pistol-9mm.md).
+
 ### Unused pistol variants
 * **ModelPistol** (64×32, ModelBase, 9 boxes): early boxy pistol. Top 2×3×12, stepped grip 2×(3,5,4)×1, barrel 1×1×2, sights. Pairs with [`textures/guns/pistol.png`](textures.md#measured-colors-all-62-textures). Not registered.
 * **ModelPistol2** (64×32, 8 boxes): ModelPistol3's frame with a solid 3×3×14 top instead of separate frame and slide. Pairs with [`textures/guns/pistol2Texture.png`](textures.md#measured-colors-all-62-textures). Not registered.
