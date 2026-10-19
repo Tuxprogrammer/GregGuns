@@ -52,6 +52,18 @@ Built as `MTECamoBench` (ID 20115, LV) with `PacketCamoCycle`. Decisions, each m
 
 `com.gregguns.utility` holds `UtilityModule` (module `utility`, needs `machines`), one registration stub per later chunk, `UtilityGuis` (FML GUI ids 30 and up, forwarded from `EquipmentGuiHandler`), `TurretPlate`/`ItemTurretArmor`/`UtilityParts` (the four plates and their recipes) and `security` (`SecurityLevel`, `FriendProvider`, `OwnerAccess`, `ServerUtilitiesFriends`, `FriendProviders`, `OwnerProfiles`). ServerUtilities is a `compileOnly` dependency; its adapter loads only behind `Loader.isModLoaded("serverutilities")` (GGS-09-06). MTE ids 20116 to 20124 are reserved in `GregGunsMTEIDs`. All tuning is in `UtilityConfig` (`docs/config.md`). Deviation: the Iron plate uses `plate.CastIron` (see [recipes.md](recipes.md)).
 
+## Turret built notes (M6 chunk 2)
+
+`MTETurret` (MTE 20116 to 20119, MV to IV; `TurretMachines`, `TurretRecipeSpec`) implements `TurretHost`; `TurretEntity` (registry id 60, `gregguns.turret`) talks to its base only through that interface, so the Rampart can reuse it. The pure rules are `TurretLogic` (upkeep, heal, repair, respawn), `TurretTargetSelector`, `TurretAmmo`, `TurretLink` and `RedstoneMode`. Decisions, each marked `// Deviation:` in code:
+
+- **Link.** The base saves the entity UUID and finds it again with an AABB search filtered to `TurretEntity`; nothing casts an entity id (MUTL-25). A turret with no host rejoins by the base position it saved and is removed after 100 ticks if no base adopts it. The death notice with no host is a no-op (NPC-12).
+- **Energy.** 4 EU/t upkeep, 120 EU per healed HP, 10 EU/t for 200 ticks of repair (`UtilityConfig`). The buffer is 64 ticks of the tier voltage. Energy enters on every side but the top.
+- **Gun tier gate.** The gun slot refuses a gun above the Turret's tier. A gun that got there anyway (NBT edit) is ignored by the entity.
+- **Ammo.** Magazine guns take their `ammoItemsPerReload` all or nothing and return the empty container; incremental guns are topped up; nothing is dropped unless a real overflow exists (MUTL-24).
+- **Security.** Level 0, 1, 2 as in Techguns; the GUI and the redstone and animals buttons follow the level, and only the owner changes the level. Right-click by a refused player says so and opens nothing.
+- **Not built.** Retaliation against whoever hurt the turret (M7 factions), `turretBeep` and `turretGunequip` sounds, the wrench-dismantle NBT carry, the death-at-placement flag, armor-dependent textures, the Techguns GUI art. The Turret recipe's Concrete ballast is GT's concrete block until the GregGuns Concrete exists.
+- **Placeholder rendering.** The block is a GT casing with the Gun Mount Hatch front. The entity uses `TurretModel`, built from the one box list in `com.gregguns.client.utility.TurretGeometry` (units, frame and moving parts are in its Javadoc); the base boxes in that list are not drawn yet.
+
 ## Pack-side changes
 
 None.
