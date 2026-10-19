@@ -26,6 +26,7 @@ The MetaTileEntity facts are shared with area [09](../../techguns-spec/09-machin
 | [recipes.md](recipes.md) | Build recipes for every production machine (Ammo Press Steam to EV, Ammunition Works controller and casings, Reaction Chamber single blocks, Retort controller and casing, Heat Ray Focus) and the Reaction Chamber's two processing recipes with exact fluids, EU/t and metadata |
 | [modularui2-guis.md](modularui2-guis.md) | GUIs through GT's MUI2 handler instead of `IGuiHandler` |
 | [nei-handlers.md](nei-handlers.md) | NEI tabs and catalysts, and the one handler-ordering row |
+| [m4-exit-gate.md](m4-exit-gate.md) | The M4 exit-gate audit: per machine, its GUI, EU input, NEI recipes and scenarios; unification and MTE ID recording |
 | [recipe-scripting.md](recipe-scripting.md) | MineTweaker: GTTweaker for GT maps, one GregGuns ZenClass |
 
 ### Anchors for area 09

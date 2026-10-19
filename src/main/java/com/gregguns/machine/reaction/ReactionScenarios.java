@@ -47,9 +47,11 @@ public final class ReactionScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new PlaceScenario());
         registry.register(new RunScenario());
+        registry.register(new IvRunScenario());
         registry.register(new FailureScenario());
         registry.register(new RadiationScenario());
         registry.register(new RetortScenario());
+        registry.register(new RetortRunScenario());
     }
 
     private static IGregTechTileEntity place(ScenarioContext ctx, int dx, int dy, int dz, int id) {
@@ -190,6 +192,62 @@ public final class ReactionScenarios {
                     out.checkEquals("Laser Focus made", 1, outputCount(base));
                     out.check(ticks < 600, "an early finish should beat the 600-tick duration, took " + ticks);
                     out.check(ticks >= 300, "five reaction ticks need at least 300 ticks, took " + ticks);
+                    out.check(chamber.mMaxProgresstime == 0, "the machine should be idle again");
+                    return out.build();
+                }
+                return null;
+            });
+        }
+    }
+
+    /** The IV chamber makes an Anti Gravity Core from a Nether Star and molten Enderium (GGS-08-46). */
+    private static final class IvRunScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "machines.reaction.run.iv";
+        }
+
+        @Override
+        public String description() {
+            return "A powered IV chamber, kept on the drifting preferred intensity, makes one Anti Gravity Core and goes idle.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            IGregTechTileEntity base = place(ctx, 12, 0, 0, GregGunsMTEIDs.REACTION_CHAMBER_IV);
+            if (base == null) {
+                return ScenarioResult.fail(name(), "the chamber did not place");
+            }
+            MTEReactionChamber chamber = (MTEReactionChamber) base.getMetaTileEntity();
+            base.setInventorySlotContents(
+                chamber.getInputSlot(),
+                GTOreDictUnificator.get(OrePrefixes.gem, Materials.NetherStar, 1));
+            base.setInventorySlotContents(
+                chamber.getInputSlot() + 1,
+                ReactionParts.stack(ReactionParts.HEAT_RAY_FOCUS, 1));
+            chamber.setFillableStack(Materials.Enderium.getMolten(ReactionRecipes.EIGHT_INGOTS));
+            chamber.setIntensity(8);
+            base.increaseStoredEnergyUnits(4_000_000L, true);
+            base.enableWorking();
+            ItemStack core = ReactionParts.stack(ReactionParts.ANTI_GRAVITY_CORE, 1);
+            return ScenarioResult.pending(name(), 700, ticks -> {
+                base.increaseStoredEnergyUnits(16_384L, true);
+                ReactionState state = chamber.getReactionState();
+                if (state.isActive()) {
+                    chamber.setIntensity(state.preferredIntensity());
+                }
+                int made = 0;
+                for (int i = 0; i < MTEReactionChamber.OUTPUT_SLOTS; i++) {
+                    ItemStack stack = base.getStackInSlot(chamber.getOutputSlot() + i);
+                    if (stack != null && stack.getItem() == core.getItem()) {
+                        made += stack.stackSize;
+                    }
+                }
+                if (made > 0) {
+                    ScenarioResult.Builder out = ScenarioResult.builder(name());
+                    out.checkEquals("Anti Gravity Core made", 1, made);
+                    out.check(ticks >= 420, "seven reaction ticks need at least 420 ticks, took " + ticks);
                     out.check(chamber.mMaxProgresstime == 0, "the machine should be idle again");
                     return out.build();
                 }
@@ -356,6 +414,132 @@ public final class ReactionScenarios {
 
         private static String describe(MTERetort retort) {
             return "bulbs=" + retort.getBulbs() + " glass=" + retort.getGlassTier();
+        }
+    }
+
+    /** The Retort runs the Laser Focus reaction end to end, with top-tier glass as its pressure rating. */
+    private static final class RetortRunScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "machines.reaction.retort.run";
+        }
+
+        @Override
+        public String description() {
+            return "A Retort with top-tier glass and an EV hatch, tuned to the preferred intensity, makes one Laser Focus into its output bus.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder fail = ScenarioResult.builder(name());
+            int cy = 2;
+            int cz = -8;
+            IGregTechTileEntity base = place(ctx, 0, cy, cz, GregGunsMTEIDs.RETORT);
+            if (base == null || !(base.getMetaTileEntity() instanceof MTERetort)) {
+                return ScenarioResult.fail(name(), "the Retort controller did not place");
+            }
+            MTERetort retort = (MTERetort) base.getMetaTileEntity();
+            base.setOwnerName("gregguns-test");
+            base.setOwnerUuid(new java.util.UUID(0L, 2L));
+            base.setFrontFacing(ForgeDirection.SOUTH);
+            retort.construct(new ItemStack(Items.stick, BULBS), false);
+
+            int[][] spots = { { -1, cy, cz }, { 1, cy, cz }, { -1, cy + 1, cz }, { 0, cy + 1, cz }, { 1, cy + 1, cz } };
+            ItemList[] kinds = { ItemList.Hatch_Energy_EV, ItemList.Hatch_Maintenance, ItemList.Hatch_Input_Bus_LV,
+                ItemList.Hatch_Output_Bus_LV, ItemList.Hatch_Input_LV };
+            IGregTechTileEntity[] hatches = new IGregTechTileEntity[spots.length];
+            for (int i = 0; i < spots.length; i++) {
+                hatches[i] = place(
+                    ctx,
+                    spots[i][0],
+                    spots[i][1],
+                    spots[i][2],
+                    kinds[i].get(1)
+                        .getItemDamage());
+                if (hatches[i] != null) {
+                    hatches[i].setFrontFacing(ForgeDirection.SOUTH);
+                }
+            }
+            int capY = cy + BULBS + 5;
+            IGregTechTileEntity muf = place(
+                ctx,
+                0,
+                capY,
+                cz - 2,
+                ItemList.Hatch_Muffler_LV.get(1)
+                    .getItemDamage());
+            if (muf != null) {
+                muf.setFrontFacing(ForgeDirection.UP);
+            }
+            // Upgrade every glass block of the vessel to the top tier, so the pressure rating allows the EV recipe.
+            Pair<net.minecraft.block.Block, Integer> top = GlassTier.getGlassList()
+                .get(
+                    GlassTier.getGlassList()
+                        .size() - 1);
+            for (int dx = -6; dx <= 6; dx++) {
+                for (int dy = cy; dy <= cy + 14; dy++) {
+                    for (int dz = cz - 8; dz <= cz + 2; dz++) {
+                        net.minecraft.block.Block block = ctx.world()
+                            .getBlock(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
+                        int meta = ctx.world()
+                            .getBlockMetadata(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
+                        for (Pair<net.minecraft.block.Block, Integer> glass : GlassTier.getGlassList()) {
+                            if (glass.getLeft() == block && glass.getRight() == meta) {
+                                ctx.setBlock(dx, dy, dz, top.getLeft(), top.getRight());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            fail.check(retort.checkStructure(true, base), "the Retort should form with top-tier glass");
+            fail.check(
+                retort.getGlassTier() >= 4,
+                "the pressure rating should allow EV, read " + retort.getGlassTier());
+            retort.mWrench = true;
+            retort.mScrewdriver = true;
+            retort.mSoftMallet = true;
+            retort.mHardHammer = true;
+            retort.mSolderingTool = true;
+            retort.mCrowbar = true;
+
+            IGregTechTileEntity inputBus = hatches[2];
+            IGregTechTileEntity outputBus = hatches[3];
+            IGregTechTileEntity energy = hatches[0];
+            inputBus.setInventorySlotContents(0, GTOreDictUnificator.get(OrePrefixes.gem, Materials.Diamond, 1));
+            inputBus.setInventorySlotContents(1, ReactionParts.stack(ReactionParts.HEAT_RAY_FOCUS, 1));
+            ((gregtech.api.metatileentity.implementations.MTEBasicTank) hatches[4].getMetaTileEntity())
+                .setFillableStack(Materials.Redstone.getMolten(ReactionRecipes.EIGHT_INGOTS));
+            retort.setIntensity(3);
+            energy.increaseStoredEnergyUnits(2_000_000L, true);
+            base.enableWorking();
+            return ScenarioResult.pending(name(), 800, ticks -> {
+                energy.increaseStoredEnergyUnits(8192L, true);
+                ReactionState state = retort.getReactionState();
+                if (state.isActive()) {
+                    retort.setIntensity(state.preferredIntensity());
+                }
+                int made = 0;
+                for (int i = 0; i < outputBus.getSizeInventory(); i++) {
+                    ItemStack stack = outputBus.getStackInSlot(i);
+                    if (stack != null && stack.getItem() == laserFocus().getItem()) {
+                        made += stack.stackSize;
+                    }
+                }
+                if (made > 0 || ticks >= 799) {
+                    ScenarioResult.Builder out = ScenarioResult.builder(name());
+                    out.checkEquals("Laser Focus in the output bus", 1, made);
+                    out.check(retort.mMaxProgresstime == 0, "the Retort should be idle again");
+                    for (IGregTechTileEntity h : hatches) {
+                        for (int i = 0; i < h.getSizeInventory(); i++) {
+                            h.setInventorySlotContents(i, null);
+                        }
+                    }
+                    return out.build();
+                }
+                return null;
+            });
         }
     }
 }
