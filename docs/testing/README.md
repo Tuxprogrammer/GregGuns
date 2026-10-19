@@ -184,6 +184,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.boltaction.zoom` | bolt action rifle (M2) | A zoom intent is accepted: the server zoom state turns on, the FOV factor is 0.35 and the shot spread is 0.125 of 0.05; a second intent or a reload key turns it off. |
 | `gun.boltaction.recipe` | bolt action rifle (M2) | `RecipeMaps.assemblerRecipes` holds the rifle at `RECIPE_LV` and 20 s; an LV query with the seven sheet inputs (barrel, Iron Receiver, stock, glass lens, plates, screws, spring) and circuit 4 finds it; a voltage below LV does not. |
 | `mp.visual.boltaction` | bolt action rifle (M2) | The visual walkthrough (first person, third person, inventory, and the zoomed scope view) for the rifle; see the autotest section. |
+| `armor.showcase` | armor (M3) | Dresses a connected client in every armor set and camo in turn and screenshots it in third person (front for all, back for the five custom-model sets), with the HUD hidden; not part of `test all`; see "Armor showcase". |
 | `gun.camo.cycle` | gun definitions | Every gun in `GunDefinitions.ALL` is a `CamoChangeable` with the definition's camo count; the Camo Bench routine (`MTECamoBench.cycleStack`) steps it forward through every skin and around, and back below zero, keeping the loaded rounds (GUN-01); a tag-less gun stays full; an out-of-range index stores 0. |
 | `gun.accuracy.armor` | gun definitions | A fake player in a stub set giving `GUN_ACCURACY` 0.2 reads that bonus through `GunAccuracy` and shoots exactly 20 percent tighter than one in no armor (pistol bullet and Sawed Off pellets, same seeded rolls); with `modules.armor` off the bonus reads 0. |
 | `gun.recipe` | pistol slice (M1) | `RecipeMaps.assemblerRecipes` (the map GT's NEI handler lists) holds the pistol at `RECIPE_LV` and 15 s; an LV query with the sheet inputs and circuit 1 finds it; a voltage below LV does not. |
@@ -302,7 +303,24 @@ AUTOTEST sound gregguns:pistol_9mm.fire (client Bob)      # every gregguns sound
 AUTOTEST screenshot b-sees-a-shot <path>
 ```
 
-Signals run strictly in order on the client, and a `shot` waits for four rendered frames before the next command, so a GUI that stalls the client is still drawn and photographed before `close`. Signal commands: `view <0|1|2>` (first, third back, third front), `shot <label>` (screenshot at the end of the next frame), `arm <shot|reload> <label> <delayTicks>` (screenshot that many ticks after the next shot or reload event the client sees), `fire <n>` (hold the fire button for two ticks, n times, six ticks apart, through `GunInputHandler`, which also works without window focus), `gui inventory | creative <tab> | press <x> <y> <z> | nei <item>`, `hold <item>` (log the held stack and build its tooltip), `creativegive <modid:name[:meta]>` (client-side creative slot packet), `close`, `quit`. Screenshots use vanilla `ScreenShotHelper` into `run/client/screenshots/<player>-<label>.png`.
+Signals run strictly in order on the client, and a `shot` waits for four rendered frames before the next command, so a GUI that stalls the client is still drawn and photographed before `close`. Signal commands: `view <0|1|2>` (first, third back, third front), `shot <label>` (screenshot at the end of the next frame), `arm <shot|reload> <label> <delayTicks>` (screenshot that many ticks after the next shot or reload event the client sees), `fire <n>` (hold the fire button for two ticks, n times, six ticks apart, through `GunInputHandler`, which also works without window focus), `gui inventory | creative <tab> | press <x> <y> <z> | nei <item>`, `hold <item>` (log the held stack and build its tooltip), `hud <on|off>` (off hides the GUI layer for clean worn-model shots), `creativegive <modid:name[:meta]>` (client-side creative slot packet), `close`, `quit`. Screenshots use vanilla `ScreenShotHelper` into `run/client/screenshots/<player>-<label>.png`.
+
+### Armor showcase
+
+`armor.showcase` (dev only, one client) settles how every worn model looks in game, including the 128 x 64 vanilla-layout sets. It sends `hud off`, then for each set of `ArmorCatalog` and each camo: equips the player (creative mode, so nothing hurts), `view 2` (third person from the front), `shot armor-<set>-<camo>-front`, and for the sets with a custom model also `view 1` and `shot armor-<set>-<camo>-back`; at the end it restores the first-person view, the HUD and survival mode. The timetable is `ShowcasePlan` (pure, unit-tested). The player is the first connected one by name, or the one named by `-Dgregguns.showcase.player=<name>` on the server.
+
+Exact command (server worktree on the same commit as the client; the orchestrator runs it under the client lock):
+
+```sh
+# 1. server: GG_MODULES=guns,armor,machines, offline mode, flat peaceful world; one client (Alice) with
+#    -Dgregguns.autotest=a and -Dgregguns.autotest.connect=127.0.0.1:<port> (see below), 960 x 540.
+# 2. when the client log has "AUTOTEST joined Alice", on the server console:
+gregguns test armor.showcase
+# 3. wait for the scenario's PASS line (about 1,000 server ticks, under a minute), then:
+say [gregguns-autotest] quit
+```
+
+Screenshots land in `run/client/screenshots/Alice-armor-<set>-<camo>-<front|back>.png`, for example `Alice-armor-steam-2-back.png` and `Alice-armor-t1_scout-0-front.png`. Read them: the script only proves the files were written. Look for: on the 128 x 64 sets, the helmet on the head, the chest on the torso and the belt line at the waist; on the five custom sets, the silhouette described in ARM-DEV-20.
 
 ### Launching a client that joins a server by itself
 

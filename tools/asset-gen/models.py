@@ -1292,12 +1292,18 @@ def contact_sheet(items):
     return sheet
 
 
+ARMOR_MODEL_PREFIXES = tuple("model.armor." + k for k in ("t3_exo", "t3_power", "steam", "t2_riot", "t2_beret"))
+
+
 def main():
     man = [m for m in json.load(open(MANIFEST, encoding="utf-8")) if m["kind"] == "model" and m["width"]]
     order = {"P1": 0, "P2": 1, "P3": 2}
     man.sort(key=lambda m: (order[m["priority"]], m["id"]))
     items, rows, ids = [], [], []
     counts = {}
+    # The five custom-model armor sets (Exo, Power, Steam, Riot, Beret) are painted to fit their box models by
+    # armor_models.py; skip the old vanilla-unwrap sheets here so a re-run never overwrites them.
+    man = [m for m in man if not m["id"].startswith(ARMOR_MODEL_PREFIXES)]
     for m in man:
         t = build(m)
         out = os.path.join(RES, m["path"])
