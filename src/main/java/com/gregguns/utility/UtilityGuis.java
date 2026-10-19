@@ -3,6 +3,9 @@ package com.gregguns.utility;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
+import com.gregguns.utility.storage.ContainerGregChest;
+import com.gregguns.utility.storage.TileGregChest;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -47,8 +50,9 @@ public final class UtilityGuis {
             case CHARGE:
                 return new com.gregguns.utility.charge.ChargeContainer(world, x, y, z);
             case CHEST:
-                // Filled by m6/world-blocks.
-                return null;
+                return world.getTileEntity(x, y, z) instanceof TileGregChest
+                    ? new ContainerGregChest(player, (TileGregChest) world.getTileEntity(x, y, z))
+                    : null;
             default:
                 return null;
         }
@@ -72,8 +76,10 @@ public final class UtilityGuis {
                 return new com.gregguns.client.utility.ChargeGui(
                     new com.gregguns.utility.charge.ChargeContainer(world, x, y, z));
             case CHEST:
-                // Filled by m6/world-blocks.
-                return null;
+                return world.getTileEntity(x, y, z) instanceof TileGregChest
+                    ? new com.gregguns.client.utility.GuiGregChest(
+                        new ContainerGregChest(player, (TileGregChest) world.getTileEntity(x, y, z)))
+                    : null;
             default:
                 return null;
         }

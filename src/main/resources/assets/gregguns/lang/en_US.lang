@@ -428,6 +428,12 @@ gui.gregguns.charge.detonate=Detonate
 
 
 # Utility: Chests, Bio Blob and Camp Flag (m6/world-blocks)
+tile.gregguns.reinforced_chest.name=Reinforced Chest
+tile.gregguns.weapon_chest.name=Weapon Chest
+tile.gregguns.bio_blob.name=Bio Blob
+tile.gregguns.camp_flag.name=Camp Flag
+container.gregguns.reinforced_chest=Reinforced Chest
+container.gregguns.weapon_chest=Weapon Chest
 
 
 

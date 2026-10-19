@@ -255,6 +255,11 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `utility.turret_kills_zombie` | Turret (M6) | A powered MV Turret with a 9mm Pistol (one round loaded) and four magazines shoots a fire-resistant zombie dead; exactly one empty magazine is handed back and three remain. |
 | `utility.turret_spares_owner` | Turret (M6) | At security 0 no player is a target; at 2 the owner and a stub friend are spared, a stranger and a zombie are shot; at 1 without friends the old friend is shot (GGS-09-04); animals follow the Target Animals toggle; only the owner may cycle the security level. |
 | `utility.turret_no_npe` | Turret (M6) | Killing the entity starts the repair and it respawns 200 ticks later; a link to a zombie's UUID respawns a new turret; a turret with no base dies quietly (NPC-12); a malformed saved UUID reads as unlinked; breaking the base kills the turret. No exception anywhere (MUTL-25). |
+| `utility.chest_roundtrip` | chests (M6) | Both chests store, stack and return items; the Weapon Chest refuses dirt, vanilla items and item blocks and takes a GregGuns item; NBT round trip; the GUI dispatcher gives a chest container; shift-click respects the filter; the viewer count rises on open and falls on close; neither chest gives redstone power. |
+| `utility.bioblob_lifecycle` | Bio Blob (M6) | A size-3 blob bursts on a hit and a neighboring stone survives; a projectile on the floor places a size-1 blob with the face as metadata; a power-2 hit makes size 3; then one decay step per `bioBlobDecayTicks` (3 to 2 to 1 to gone). |
+| `utility.bioblob_poison` | Bio Blob (M6) | A creeper (zombies are poison-immune) and a player get Poison III on contact; `bioBlobSparesPlayers` spares the player but not the zombie; the collision box follows the size. |
+| `utility.campflag_spawns` | Camp Flag (M6) | With a counting stub port, an initialized flag spawns once per 200 ticks up to its cap of 2 at its configured points; an uninitialized flag spawns nothing; the cap survives NBT; the default cap formula gives 24 for 32 x 32. |
+| `utility.campflag_break_drop` | Camp Flag (M6) | Breaking a flag drops exactly one iron ingot (damage 0) and calls the break port once; with `campFlagBreakHelicopter` off the port is not called. |
 
 ## M1 coverage
 
