@@ -141,6 +141,7 @@ class ModelExportTest {
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.NetherBlasterProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.GrimReaperProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.AlienBlasterProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.PowerHammerProfile.DEFINITION);
     }
 
     /** Every accessory model is exported with one JSON box per model box. */
