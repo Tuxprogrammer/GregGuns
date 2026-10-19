@@ -289,6 +289,19 @@ def camo(r, h, w, pal, pattern="blotch"):
     return np.array(pal)[idx]
 
 
+def patches(r, rgb, palette, density, along_x):
+    """Scatter short runs (2 to 4 texels long, 1 wide) of the palette colors over about `density` of the face."""
+    h, w = rgb.shape[:2]
+    cols = [hx(c) for c in palette]
+    for _ in range(int(round(density * w * h / 3.0))):
+        x, y, n = int(r.integers(0, w)), int(r.integers(0, h)), int(r.integers(2, 5))
+        c = cols[int(r.integers(0, len(cols)))] * (0.9 + 0.2 * r.random())
+        if along_x:
+            rgb[y, x:x + n] = np.clip(c, 0, 255)
+        else:
+            rgb[y:y + n, x] = np.clip(c, 0, 255)
+
+
 def paint_face(box_spec, role_def, name, dims, face, fw, fh, seed_key):
     r = rng_for(seed_key)
     mat = role_def.get("material", "steel")
@@ -308,6 +321,8 @@ def paint_face(box_spec, role_def, name, dims, face, fw, fh, seed_key):
     else:
         rgb = steel(r, fh, fw, base, grain_along_x=box_spec.get("grain", "x") == "x",
                     scratches=role_def.get("scratches", True), noise=role_def.get("noise", 0.0))
+    if role_def.get("patch"):  # worn lighter patches in short runs along the grain (oiled wood, polymer flecks)
+        patches(r, rgb, role_def["patch"], role_def.get("patch_density", 0.2), box_spec.get("grain", "x") == "x")
     for p in box_spec.get("painters", []):
         if face in p.get("faces", FACES):
             apply_painter(rgb, p, face)

@@ -1,0 +1,199 @@
+{
+ "gun": "ak47",
+ "textures": [
+  {
+   "file": "ak47.png"
+  },
+  {
+   "file": "ak47_camo1.png",
+   "variant": {
+    "roles": {
+     "stock": {
+      "base": "#002C6A"
+     },
+     "hand": {
+      "base": "#000F36",
+      "patch": [
+       "#005FC4",
+       "#0050A9",
+       "#005FC4"
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "roles": {
+  "steel": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.04,
+   "bevel": [
+    1.3,
+    0.87
+   ],
+   "base": "#232323"
+  },
+  "cover": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.04,
+   "bevel": [
+    1.3,
+    0.87
+   ],
+   "base": "#2A2A2A"
+  },
+  "post": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.04,
+   "bevel": [
+    1.15,
+    0.85
+   ],
+   "base": "#333333"
+  },
+  "trigger": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.04,
+   "bevel": [
+    1.3,
+    0.87
+   ],
+   "base": "#2A2A2A"
+  },
+  "stock": {
+   "material": "wood",
+   "calm": 0.7,
+   "bevel": [
+    1.08,
+    0.86
+   ],
+   "base": "#553116"
+  },
+  "hand": {
+   "material": "wood",
+   "calm": 0.45,
+   "bevel": [
+    1.08,
+    0.86
+   ],
+   "patch_density": 0.2,
+   "base": "#362113",
+   "patch": [
+    "#6C4225",
+    "#7A4F2B",
+    "#6C4225"
+   ]
+  }
+ },
+ "boxes": {
+  "stock_slab": {
+   "role": "stock"
+  },
+  "stock_comb": {
+   "role": "stock"
+  },
+  "stock_bump": {
+   "role": "stock"
+  },
+  "stock_step1": {
+   "role": "stock"
+  },
+  "stock_step2": {
+   "role": "stock"
+  },
+  "stock_step3": {
+   "role": "stock"
+  },
+  "stock_step4": {
+   "role": "stock"
+  },
+  "receiver": {
+   "role": "steel"
+  },
+  "dust_cover": {
+   "role": "cover"
+  },
+  "cover_slope": {
+   "role": "cover"
+  },
+  "sight_block": {
+   "role": "steel"
+  },
+  "sight_leaf": {
+   "role": "steel"
+  },
+  "hand_lower": {
+   "role": "hand"
+  },
+  "hand_upper": {
+   "role": "hand"
+  },
+  "barrel": {
+   "role": "steel"
+  },
+  "collar_rear": {
+   "role": "steel"
+  },
+  "gas_block": {
+   "role": "steel"
+  },
+  "collar_muzzle": {
+   "role": "steel"
+  },
+  "gas_tube": {
+   "role": "steel"
+  },
+  "gas_strut": {
+   "role": "steel"
+  },
+  "sight_post": {
+   "role": "post",
+   "grain": "y"
+  },
+  "sight_brace": {
+   "role": "post",
+   "grain": "y"
+  },
+  "sight_tip": {
+   "role": "post"
+  },
+  "grip": {
+   "role": "steel",
+   "grain": "y"
+  },
+  "grip_filler": {
+   "role": "steel",
+   "grain": "y"
+  },
+  "trigger_rear": {
+   "role": "steel"
+  },
+  "guard_floor": {
+   "role": "steel"
+  },
+  "guard_post": {
+   "role": "steel",
+   "grain": "y"
+  },
+  "well_lip": {
+   "role": "steel",
+   "grain": "y"
+  },
+  "trigger": {
+   "role": "trigger",
+   "grain": "y"
+  },
+  "mag_upper": {
+   "role": "steel",
+   "grain": "y"
+  },
+  "mag_lower": {
+   "role": "steel",
+   "grain": "y"
+  }
+ }
+}
