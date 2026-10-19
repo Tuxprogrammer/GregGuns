@@ -336,6 +336,14 @@ public final class MpScenarios {
                     + magazines(a)
                     + ", finished at tick "
                     + t
+                    + ", A health "
+                    + a.getHealth()
+                    + " dead "
+                    + a.isDead
+                    + ", A holds "
+                    + (a.getHeldItem() == null ? "nothing"
+                        : a.getHeldItem()
+                            .getDisplayName())
                     + ", reload started at "
                     + reloadAt
                     + ", presses "
@@ -493,6 +501,11 @@ public final class MpScenarios {
     private static final long GIVE_CONFIRM_TIMEOUT_MS = 10_000L;
 
     /** How long a client may take to work off the previous scenario's queued commands (screenshots, GUIs). */
+    /** A /give whose stack is not in the inventory after this long is repeated. */
+    private static final long GIVE_RETRY_MS = 1_500L;
+    /** Most /give attempts per player and item. */
+    private static final int GIVE_ATTEMPTS = 3;
+
     private static final long SYNC_TIMEOUT_MS = 90_000L;
 
     /**
@@ -544,6 +557,9 @@ public final class MpScenarios {
 
         private AckInbox inbox;
         private final Map<String, String> afterGive = new java.util.HashMap<>();
+        private final Map<String, Long> lastGiveMs = new java.util.HashMap<>();
+        private final Map<String, Integer> attempts = new java.util.HashMap<>();
+        private int retries;
 
         @Override
         public boolean includedInAll() {
@@ -603,6 +619,24 @@ public final class MpScenarios {
             return out.length() == 0 ? "nothing"
                 : out.toString()
                     .trim();
+        }
+
+        /**
+         * The real {@code /give}. Vanilla 1.7.10 drops the stack as an item entity at the player and the player
+         * collects it on a later tick, so the stack is not in the inventory when the command returns.
+         */
+        private static void give(EntityPlayerMP p, String item) {
+            String arg = item.equals(PRESS) ? "gregtech:gt.blockmachines 1 " + GregGunsMTEIDs.AMMO_PRESS_LV : item;
+            MinecraftServer.getServer()
+                .getCommandManager()
+                .executeCommand(MinecraftServer.getServer(), "give " + p.getCommandSenderName() + " " + arg);
+        }
+
+        /** Removes the item entities near the player (stacks that /give dropped and nobody picked up). */
+        private static void sweepDrops(EntityPlayerMP p) {
+            for (Object o : p.worldObj.getEntitiesWithinAABB(EntityItem.class, p.boundingBox.expand(8.0, 8.0, 8.0))) {
+                ((EntityItem) o).setDead();
+            }
         }
 
         private static void reset(EntityPlayerMP p, boolean creative) {
@@ -666,7 +700,9 @@ public final class MpScenarios {
                             "gave and held " + total
                                 + " items twice (command, then creative packet) for "
                                 + players.size()
-                                + " player(s)")
+                                + " player(s); /give repeated "
+                                + retries
+                                + " time(s) because the dropped stack was not picked up")
                         .build();
                 }
                 String item = items.get(step % total);
@@ -679,15 +715,10 @@ public final class MpScenarios {
                         if (creative) {
                             signal(p, "creativegive", item);
                         } else {
-                            String arg = item.equals(PRESS)
-                                ? "gregtech:gt.blockmachines 1 " + GregGunsMTEIDs.AMMO_PRESS_LV
-                                : item;
-                            MinecraftServer.getServer()
-                                .getCommandManager()
-                                .executeCommand(
-                                    MinecraftServer.getServer(),
-                                    "give " + p.getCommandSenderName() + " " + arg);
+                            give(p, item);
+                            attempts.put(p.getCommandSenderName(), 1);
                         }
+                        lastGiveMs.put(p.getCommandSenderName(), System.currentTimeMillis());
                         afterGive.put(p.getCommandSenderName(), dump(p));
                         signal(p, "hold", item);
                     }
@@ -699,6 +730,18 @@ public final class MpScenarios {
                     String ack = inbox.get(p.getCommandSenderName());
                     if (ack == null) {
                         all = false;
+                        if (!creative && "nothing".equals(dump(p))
+                            && System.currentTimeMillis() - lastGiveMs.get(p.getCommandSenderName()) > GIVE_RETRY_MS
+                            && attempts.get(p.getCommandSenderName()) < GIVE_ATTEMPTS) {
+                            // In 1.7.10 /give drops the stack as an item entity that the player picks up by
+                            // collision, so a stack that was not picked up yet is still on the ground: clear the
+                            // strays and give again.
+                            sweepDrops(p);
+                            give(p, item);
+                            attempts.merge(p.getCommandSenderName(), 1, Integer::sum);
+                            lastGiveMs.put(p.getCommandSenderName(), System.currentTimeMillis());
+                            retries++;
+                        }
                     } else if (!ack.equals("hold " + wire(item) + " ok")) {
                         stop();
                         return ScenarioResult.fail(
