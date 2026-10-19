@@ -231,7 +231,7 @@ class SawedOffProfileTest {
             int x = b.u() + b.d() + b.w();
             int y = b.v() + b.d();
             int rgb = img.getRGB(x, y + 1) & 0xFFFFFF;
-            assertTrue((rgb >> 16 & 0xFF) < 8, n + " bore is near black, got " + Integer.toHexString(rgb));
+            assertTrue((rgb >> 16 & 0xFF) < 48, n + " bore is very dark, got " + Integer.toHexString(rgb));
         }
     }
 

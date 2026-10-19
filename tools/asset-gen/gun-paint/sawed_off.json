@@ -1,38 +1,284 @@
 {
  "gun": "sawed_off",
- "textures": [{"file": "sawed_off.png"}],
+ "textures": [
+  {
+   "file": "sawed_off.png"
+  }
+ ],
  "roles": {
-  "bar": {"material": "steel", "base": "#B6B6B6", "scratches": true, "noise": 0.03},
-  "bead": {"material": "steel", "base": "#9A9A9A", "scratches": false, "noise": 0.02},
-  "lev": {"material": "steel", "base": "#A4A4A4", "scratches": false, "noise": 0.02},
-  "wood": {"material": "wood", "base": "#624A2A"}
+  "bar": {
+   "material": "steel",
+   "base": "#B6B6B6",
+   "scratches": true,
+   "noise": 0.03
+  },
+  "bead": {
+   "material": "steel",
+   "base": "#9A9A9A",
+   "scratches": false,
+   "noise": 0.02
+  },
+  "lev": {
+   "material": "steel",
+   "base": "#A4A4A4",
+   "scratches": false,
+   "noise": 0.02
+  },
+  "wood": {
+   "material": "wood",
+   "base": "#4E4123"
+  }
  },
  "boxes": {
-  "tube_l": {"role": "bar", "painters": [
-    {"type": "tone", "faces": ["top"], "f": 1.07},
-    {"type": "tone", "faces": ["bottom", "front", "back"], "f": 0.84},
-    {"type": "rect", "faces": ["left"], "x": 0, "y": 1, "w": 2, "h": 2, "color": "#000000"}]},
-  "tube_r": {"role": "bar", "painters": [
-    {"type": "tone", "faces": ["top"], "f": 1.07},
-    {"type": "tone", "faces": ["bottom", "front", "back"], "f": 0.84},
-    {"type": "rect", "faces": ["left"], "x": 0, "y": 1, "w": 2, "h": 2, "color": "#000000"}]},
-  "rib_c": {"role": "bar", "painters": [{"type": "tone", "faces": ["top", "bottom", "front", "back"], "f": 0.88}]},
-  "rib_l": {"role": "bar", "painters": [{"type": "tone", "faces": ["front"], "f": 0.88}]},
-  "rib_r": {"role": "bar", "painters": [{"type": "tone", "faces": ["back"], "f": 0.88}]},
-  "bead_l": {"role": "bead"},
-  "bead_r": {"role": "bead"},
-  "nub_l": {"role": "bead"},
-  "nub_r": {"role": "bead"},
-  "nubtop_l": {"role": "bead"},
-  "nubtop_r": {"role": "bead"},
-  "lever": {"role": "lev"},
-  "lock": {"role": "wood", "grain": "x"},
-  "hand": {"role": "wood", "grain": "x"},
-  "plate_l": {"role": "wood", "grain": "x"},
-  "plate_r": {"role": "wood", "grain": "x"},
-  "chin": {"role": "wood", "grain": "x"},
-  "butt": {"role": "wood", "grain": "y"},
-  "strip": {"role": "wood", "grain": "x"},
-  "sliver": {"role": "wood", "grain": "x"}
+  "tube_l": {
+   "role": "bar",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.07
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 0.84
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 2,
+     "h": 2,
+     "color": "#202020"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 2,
+     "h": 1,
+     "color": "#2C2C2C"
+    }
+   ]
+  },
+  "tube_r": {
+   "role": "bar",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.07
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 0.84
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 2,
+     "h": 2,
+     "color": "#202020"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 2,
+     "h": 1,
+     "color": "#2C2C2C"
+    }
+   ]
+  },
+  "rib_c": {
+   "role": "bar",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 0.88
+    }
+   ]
+  },
+  "rib_l": {
+   "role": "bar",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "front"
+     ],
+     "f": 0.88
+    }
+   ]
+  },
+  "rib_r": {
+   "role": "bar",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "back"
+     ],
+     "f": 0.88
+    }
+   ]
+  },
+  "bead_l": {
+   "role": "bead"
+  },
+  "bead_r": {
+   "role": "bead"
+  },
+  "nub_l": {
+   "role": "bead"
+  },
+  "nub_r": {
+   "role": "bead"
+  },
+  "nubtop_l": {
+   "role": "bead"
+  },
+  "nubtop_r": {
+   "role": "bead"
+  },
+  "lever": {
+   "role": "lev"
+  },
+  "lock": {
+   "role": "wood",
+   "grain": "x",
+   "painters": [
+    {
+     "type": "mottle",
+     "cx": 5,
+     "cy": 2,
+     "amp": 0.25,
+     "seed": 5
+    }
+   ]
+  },
+  "hand": {
+   "role": "wood",
+   "grain": "x",
+   "painters": [
+    {
+     "type": "mottle",
+     "cx": 5,
+     "cy": 2,
+     "amp": 0.25,
+     "seed": 5
+    }
+   ]
+  },
+  "plate_l": {
+   "role": "wood",
+   "grain": "x",
+   "painters": [
+    {
+     "type": "mottle",
+     "cx": 5,
+     "cy": 2,
+     "amp": 0.25,
+     "seed": 5
+    }
+   ]
+  },
+  "plate_r": {
+   "role": "wood",
+   "grain": "x",
+   "painters": [
+    {
+     "type": "mottle",
+     "cx": 5,
+     "cy": 2,
+     "amp": 0.25,
+     "seed": 5
+    }
+   ]
+  },
+  "chin": {
+   "role": "wood",
+   "grain": "x",
+   "painters": [
+    {
+     "type": "mottle",
+     "cx": 5,
+     "cy": 2,
+     "amp": 0.25,
+     "seed": 5
+    }
+   ]
+  },
+  "butt": {
+   "role": "wood",
+   "grain": "y",
+   "painters": [
+    {
+     "type": "mottle",
+     "cx": 2,
+     "cy": 5,
+     "amp": 0.28,
+     "seed": 3
+    }
+   ]
+  },
+  "strip": {
+   "role": "wood",
+   "grain": "x",
+   "painters": [
+    {
+     "type": "mottle",
+     "cx": 5,
+     "cy": 2,
+     "amp": 0.25,
+     "seed": 5
+    }
+   ]
+  },
+  "sliver": {
+   "role": "wood",
+   "grain": "x",
+   "painters": [
+    {
+     "type": "mottle",
+     "cx": 5,
+     "cy": 2,
+     "amp": 0.25,
+     "seed": 5
+    }
+   ]
+  }
  }
 }
