@@ -10,6 +10,7 @@ import com.gregguns.explosion.GrenadeScenarios;
 import com.gregguns.explosion.MvGrenadeScenarios;
 import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
+import com.gregguns.gun.server.EnergyCoreScenarios;
 import com.gregguns.gun.server.FrameworkScenarios;
 import com.gregguns.gun.server.GeneratedGunLooks;
 import com.gregguns.gun.server.GunAccuracyScenarios;
@@ -88,6 +89,7 @@ public final class GunsModule implements GregGunsModule {
             }
             GunCamoScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GunAccuracyScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            EnergyCoreScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ComponentScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             FrameworkScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MpScenarios.registerAll(ScenarioRegistry.SCENARIOS);

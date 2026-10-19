@@ -89,6 +89,9 @@ public final class GunController {
      * @return the reload event ({@code STARTED} or a {@code REJECTED_*})
      */
     public ReloadStateMachine.Event forceReload(GunStats stats, GunState state, AmmoInventory ammo) {
+        if (stats.isEnergy()) {
+            return ReloadStateMachine.Event.NONE; // Q5: the reload key does nothing on an energy gun
+        }
         if (!fire.isReady()) {
             return ReloadStateMachine.Event.REJECTED_BUSY;
         }
@@ -100,6 +103,10 @@ public final class GunController {
      * firing interrupts a top-up; otherwise the shot is refused while reloading.
      */
     public GunTickResult requestShot(GunStats stats, GunState state, AmmoInventory ammo, boolean infiniteAmmo) {
+        if (stats.isEnergy()) {
+            ShotResult shot = fire.requestEnergyShot(stats, ammo.charge(), infiniteAmmo);
+            return new GunTickResult(shot, ReloadStateMachine.Event.NONE, shot.outcome() == ShotResult.Outcome.EMPTY);
+        }
         ReloadStateMachine.Event ev = ReloadStateMachine.Event.NONE;
         if (reload.isReloading()) {
             if (!state.canFire(stats)) {
@@ -127,6 +134,9 @@ public final class GunController {
      */
     public GunTickResult tick(GunStats stats, GunState state, AmmoInventory ammo, boolean held, boolean infiniteAmmo) {
         fire.tick();
+        if (stats.isEnergy()) {
+            return tickEnergy(stats, ammo.charge(), held, infiniteAmmo);
+        }
         if (!held) {
             ReloadStateMachine.Event ev = reload.cancel(ReloadStateMachine.CancelReason.WEAPON_SWITCH);
             zoom.reset();
@@ -149,6 +159,20 @@ public final class GunController {
             dry = ev == ReloadStateMachine.Event.REJECTED_NO_AMMO;
         }
         return new GunTickResult(shot, ev, dry);
+    }
+
+    /**
+     * One server tick of an energy gun: no reload phase, the shot spends EU from {@code charge}. An empty battery
+     * reports {@code outOfAmmo} once per trigger pull (the dry click) and never starts a reload.
+     */
+    private GunTickResult tickEnergy(GunStats stats, ChargeSource charge, boolean held, boolean infiniteCharge) {
+        if (!held) {
+            zoom.reset();
+            fire.clearInput();
+            return new GunTickResult(ShotResult.none(), ReloadStateMachine.Event.NONE, false);
+        }
+        ShotResult shot = fire.stepEnergy(stats, charge, infiniteCharge);
+        return new GunTickResult(shot, ReloadStateMachine.Event.NONE, shot.outcome() == ShotResult.Outcome.EMPTY);
     }
 
     /** Drops every transient state: the gun left the inventory, the player died or logged out. */

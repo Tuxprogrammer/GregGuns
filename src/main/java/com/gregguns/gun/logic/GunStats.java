@@ -12,6 +12,9 @@ package com.gregguns.gun.logic;
  */
 public final class GunStats {
 
+    /** The ammo type id of an energy gun: a marker, since no item of this type exists. */
+    public static final String ENERGY_AMMO_TYPE = "energy";
+
     private final String id;
     private final double damage;
     private final double damageMin;
@@ -51,6 +54,8 @@ public final class GunStats {
     private final int aiAttackTime;
     private final int aiBurstCount;
     private final int aiBurstDelay;
+    private final long euPerShot;
+    private final long capacityEu;
 
     private GunStats(Builder b) {
         id = b.id;
@@ -66,8 +71,8 @@ public final class GunStats {
         burstShots = b.burstShots;
         burstDelayTicks = b.burstDelayTicks;
         ammoPerShot = b.ammoPerShot;
-        magazineSize = b.magazineSize;
-        ammoType = b.ammoType;
+        magazineSize = b.euPerShot > 0 ? (int) Math.min(Integer.MAX_VALUE, b.capacityEu / b.euPerShot) : b.magazineSize;
+        ammoType = b.euPerShot > 0 && b.ammoType == null ? ENERGY_AMMO_TYPE : b.ammoType;
         looseAmmoType = b.looseAmmoType;
         emptyContainerType = b.emptyContainerType;
         reloadMode = b.reloadMode;
@@ -92,6 +97,8 @@ public final class GunStats {
         aiAttackTime = b.aiAttackTime;
         aiBurstCount = b.aiBurstCount;
         aiBurstDelay = b.aiBurstDelay;
+        euPerShot = b.euPerShot;
+        capacityEu = b.capacityEu;
         validate();
     }
 
@@ -109,6 +116,7 @@ public final class GunStats {
         require(ammoPerShot >= 1, "ammoPerShot");
         require(magazineSize >= ammoPerShot, "magazineSize");
         require(ammoType != null && !ammoType.isEmpty(), "ammoType");
+        require(euPerShot == 0 || capacityEu >= euPerShot, "energy capacity must cover one shot");
         require(ammoItemsPerReload >= 1, "ammoItemsPerReload");
         require(
             reloadMode != ReloadMode.INCREMENTAL || magazineSize % ammoItemsPerReload == 0,
@@ -302,6 +310,25 @@ public final class GunStats {
         return silenced;
     }
 
+    /**
+     * True for an energy gun: a shot spends {@link #euPerShot()} from the gun's battery instead of a round, and there
+     * is no reload (energy-electric-items.md GGS-02-13). {@link #magazineSize()} is then the shots in a full default
+     * charge and {@link #ammoType()} is {@link #ENERGY_AMMO_TYPE}.
+     */
+    public boolean isEnergy() {
+        return euPerShot > 0;
+    }
+
+    /** EU one trigger pull costs; 0 for a gun that uses rounds. */
+    public long euPerShot() {
+        return euPerShot;
+    }
+
+    /** Default capacity in EU of a full charge before config (see {@link EnergyCapacity}); 0 for a round gun. */
+    public long capacityEu() {
+        return capacityEu;
+    }
+
     /** The projectile entity this gun fires. */
     public ProjectileKind projectileKind() {
         return projectileKind;
@@ -398,6 +425,8 @@ public final class GunStats {
         private int aiAttackTime = 60;
         private int aiBurstCount;
         private int aiBurstDelay;
+        private long euPerShot;
+        private long capacityEu;
 
         private Builder(String id) {
             this.id = id;
@@ -514,6 +543,16 @@ public final class GunStats {
         public Builder akimbo(boolean doubleShot) {
             akimbo = true;
             this.doubleShot = doubleShot;
+            return this;
+        }
+
+        /**
+         * Makes the gun an energy gun: one pull costs {@code euPerShot} EU and a full default charge holds
+         * {@code capacityEu}. The gun has no reload; its magazine size becomes the shots in a full charge.
+         */
+        public Builder energy(long euPerShot, long capacityEu) {
+            this.euPerShot = euPerShot;
+            this.capacityEu = capacityEu;
             return this;
         }
 
