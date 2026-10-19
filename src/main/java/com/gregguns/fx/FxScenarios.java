@@ -30,6 +30,7 @@ public final class FxScenarios {
      */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Core());
+        registry.register(new Stress());
     }
 
     private static final class Core implements Scenario {
@@ -104,6 +105,35 @@ public final class FxScenarios {
 
             FxSender.at(ctx.world(), "LaserFlareEnd", ctx.originX(), ctx.originY(), ctx.originZ(), FxSender.RANGE_NEAR);
             out.note("FxSender.at ran on the server world");
+            return out.build();
+        }
+    }
+
+    /** The M5 gate item: 50 emitters from the real catalog stay under the ceiling and nothing spills. */
+    private static final class Stress implements Scenario {
+
+        private static final int EMITTERS = 50;
+        private static final int CEILING = 2000;
+
+        @Override
+        public String name() {
+            return "fx.stress";
+        }
+
+        @Override
+        public String description() {
+            return "Fifty seeded emitters from the shipped M5 catalog (nuke and rocket blasts, trails, impacts) run for 200 ticks under the default 2000-particle ceiling: live never passes the ceiling and spilled is 0.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            FxStress.Result r = FxStress.run(FxResources.shared(), FxStress.M5_NAMES, EMITTERS, CEILING, 200, 11L);
+            out.check(r.emitters >= EMITTERS, "started " + r.emitters + " emitters");
+            out.check(r.peakLive > 0, "emitters produced particles (peak " + r.peakLive + ")");
+            out.check(r.peakLive <= CEILING, "live " + r.peakLive + " is within the ceiling " + CEILING);
+            out.checkEquals("spilled", 0, r.spilled);
+            out.note("granted " + r.granted + ", trimmed " + r.trimmed + ", peak live " + r.peakLive);
             return out.build();
         }
     }
