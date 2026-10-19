@@ -139,6 +139,7 @@ class ModelExportTest {
         ModelExporter.exportProfile(dir, DeatomizerPistolProfile.DEFINITION);
         ModelExporter.exportProfile(dir, ScatterLaserRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.NetherBlasterProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.GrimReaperProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.AlienBlasterProfile.DEFINITION);
     }
 
