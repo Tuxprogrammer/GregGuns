@@ -125,6 +125,8 @@ public final class GunStats {
         require(magazineSize >= ammoPerShot, "magazineSize");
         require(ammoType != null && !ammoType.isEmpty(), "ammoType");
         require(euPerShot == 0 || capacityEu >= euPerShot, "energy capacity must cover one shot");
+        // Deviation: I10 does not support a charge-hold gun that is also an energy gun.
+        require(chargeFullTicks == 0 || euPerShot == 0, "a charge-hold gun cannot also be an energy gun");
         require(ammoItemsPerReload >= 1, "ammoItemsPerReload");
         require(
             reloadMode != ReloadMode.INCREMENTAL || magazineSize % ammoItemsPerReload == 0,

@@ -64,6 +64,24 @@ Turret, explosive charge, Bio Blob and Camp Flag tuning (M6). Server-side only, 
 | `utility.campFlagCapFactor` | float | `0.75` | 0 to 10 | no | NPC cap is int(((sizeX + sizeZ) / 2) * factor). |
 | `utility.campFlagBreakHelicopter` | boolean | `true` | n/a | no | Breaking a Camp Flag sends a helicopter (inert until NPCs exist). |
 
+## NPCs (`npcs`)
+
+NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side only, not synced. A weight of 0 means the mob is never registered or selected.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `npcs.spawnDimensions` | int list | `[0]` | any | no | Dimension ids where NPCs spawn naturally. |
+| `npcs.zombies` / `military` / `bandits` / `miniBosses` / `mutants` | boolean | `true` | n/a | no | Per-faction spawn switch. |
+| `npcs.alienBug` / `cyberdemon` / `helicopter` | boolean | `false` | n/a | no | Switches for the special mobs. |
+| `npcs.weightZombieFarmer` / `weightZombieMiner` | int | `100` | 0 to 10000 | no | Spawn weights (half of Techguns). |
+| `npcs.weightZombieSoldier` / `weightSkeletonSoldier` | int | `50` | 0 to 10000 | no | Spawn weights. |
+| `npcs.weightBandit` | int | `25` | 0 to 10000 | no | Spawn weight. |
+| `npcs.weightPsychoSteve` | int | `1` | 0 to 10000 | no | Spawn weight. |
+| `npcs.distanceLevel0` / `1` / `2` | int | `500` / `1000` / `2500` | 0 to 100000 | no | Blocks from world spawn where each distance danger step begins. |
+| `npcs.perChunkCap` | int | `4` | 0 to 256 | no | Most NPCs per chunk before natural spawning stops. |
+| `npcs.perPlayerCap` | int | `8` | 0 to 1024 | no | Most NPCs around one player before natural spawning stops. |
+| `npcs.gunDamageEnabled` | boolean | `true` | n/a | no | NPC bullets deal damage. |
+
 ## Damage factors (`damagefactors`)
 
 Techguns' "Damage Factors" category. All keys are synced from server to client (GGS-01-03). The factor is chosen at the hit from who shoots and who is hit (`DamageFactors`, [damage-interop.md](gregguns-spec/02-guns/damage-interop.md)). Turret and NPC factors take effect with those milestones (M6, M7).
@@ -129,6 +147,7 @@ Display options for the local player only. Not synced.
 | `client.hudOffsetX` | int | `6` | 0 to 2000 | no | Pixels from the right screen edge to the right edge of the ammo HUD text. |
 | `client.hudOffsetY` | int | `40` | 0 to 2000 | no | Pixels from the bottom screen edge to the bottom of the ammo HUD. The default clears the InGame-Info-XML potion lines in the same corner; M1 still owes a screenshot check with several potions active. |
 | `client.ammoPressAnimation` | boolean | `true` | n/a | no | Draws the Ammo Press's front animation, with the frame chosen from recipe progress. Off shows the still front. Cosmetic only. |
+| `client.particleCeiling` | int | `2000` | 100 to 8000 | no | Most GregGuns effect particles alive at once. Bursts shrink as the count nears it and never pass it, leaving room under the pack's 8000-particle cap. |
 
 ## Rules for new options
 

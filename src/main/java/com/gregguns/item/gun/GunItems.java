@@ -41,7 +41,12 @@ public final class GunItems {
      */
     public static void register(ModuleRegistrar registrar) {
         for (GunDefinition def : GunDefinitions.ALL) {
-            ITEMS.put(def.name(), registrar.registerItem(def.name(), new ItemGun(def)));
+            ITEMS.put(
+                def.name(),
+                registrar.registerItem(
+                    def.name(),
+                    def.stats()
+                        .isEnergy() ? new ItemEnergyGun(def) : new ItemGun(def)));
         }
     }
 

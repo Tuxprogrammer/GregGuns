@@ -309,12 +309,16 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
         GunState state = stateOf(stack);
-        tooltip.add(
-            StatCollector
-                .translateToLocalFormatted("gregguns.gun.tooltip.ammo", EnumChatFormatting.WHITE + ammoName()));
-        tooltip.add(
-            StatCollector
-                .translateToLocalFormatted("gregguns.gun.tooltip.loaded", state.loaded(), stats.magazineSize()));
+        if (stats.isEnergy()) {
+            addPowerTooltip(stack, tooltip);
+        } else {
+            tooltip.add(
+                StatCollector
+                    .translateToLocalFormatted("gregguns.gun.tooltip.ammo", EnumChatFormatting.WHITE + ammoName()));
+            tooltip.add(
+                StatCollector
+                    .translateToLocalFormatted("gregguns.gun.tooltip.loaded", state.loaded(), stats.magazineSize()));
+        }
         tooltip.add(
             StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.damage", GunTooltipFormat.damage(stats)));
         if (!GuiScreen.isShiftKeyDown()) {
@@ -332,10 +336,13 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
                 GunTooltipFormat.reach(stats)));
         tooltip.add(
             StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.spread", GunTooltipFormat.spread(stats)));
-        tooltip.add(StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.clipsize", stats.magazineSize()));
-        tooltip.add(
-            StatCollector
-                .translateToLocalFormatted("gregguns.gun.tooltip.reload_time", GunTooltipFormat.reloadSeconds(stats)));
+        if (!stats.isEnergy()) {
+            tooltip.add(StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.clipsize", stats.magazineSize()));
+            tooltip.add(
+                StatCollector.translateToLocalFormatted(
+                    "gregguns.gun.tooltip.reload_time",
+                    GunTooltipFormat.reloadSeconds(stats)));
+        }
         if (stats.penetration() > 0) {
             tooltip.add(
                 StatCollector.translateToLocalFormatted(
@@ -349,6 +356,11 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
             tooltip.add(StatCollector.translateToLocal("gregguns.gun.tooltip.silenced"));
         }
     }
+
+    /** Tooltip lines of an energy gun's charge, in place of the ammo lines. Overridden by {@link ItemEnergyGun}. */
+    @SideOnly(Side.CLIENT)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected void addPowerTooltip(ItemStack stack, List tooltip) {}
 
     @SideOnly(Side.CLIENT)
     private String ammoName() {

@@ -3,6 +3,7 @@ package com.gregguns.item.ammo.def;
 import com.gregguns.api.Tier;
 import com.gregguns.item.ammo.AmmoType;
 import com.gregguns.item.ammo.MagazineType;
+import com.gregguns.item.part.ComponentItems;
 import com.gregguns.item.part.PartItems;
 import com.gregguns.recipe.AmmoRecycling;
 import com.gregguns.recipe.ProductionTable.Input;
@@ -43,10 +44,26 @@ public final class RifleAmmo {
         8,
         Tier.HV);
 
+    /** Magazines made per RC-50 run. */
+    public static final int DRUM_LOADED_PER_RUN = 4;
+
+    /**
+     * Minigun Ammo Drum: 16 rifle bullets per refill (RC-50). Holds 200 rounds in the Minigun. EV (0001). A drum is
+     * filled with the common rifle bullet, so it belongs to this definition and adds no round of its own.
+     */
+    public static final MagazineType MINIGUN_DRUM = new MagazineType(
+        "minigun_drum",
+        TYPE,
+        "mag_minigun_drum",
+        "mag_minigun_drum_empty",
+        16,
+        Tier.EV);
+
     /** The definition. */
     public static final AmmoDefinition DEFINITION = AmmoDefinition.of(TYPE)
         .magazine(ASSAULT_RIFLE_MAGAZINE)
         .magazine(LMG_MAGAZINE)
+        .magazine(MINIGUN_DRUM)
         // RC-30: the Steel rounds are the gate. Rifle bullets are not in GATE_EXEMPT.
         .row(
             Row.press(
@@ -98,6 +115,35 @@ public final class RifleAmmo {
                 3,
                 Input.mod(LMG_MAGAZINE.emptyItemName(), LMG_LOADED_PER_RUN),
                 Input.mod(TYPE.roundItemName(), LMG_LOADED_PER_RUN * LMG_MAGAZINE.roundsPerMagazine())))
+        // RC-43: the Titanium plates are the EV gate.
+        .row(
+            Row.press(
+                "RC-43",
+                MINIGUN_DRUM.emptyItemName(),
+                4,
+                Tier.EV,
+                6,
+                Input.gt("plate", "Titanium", 4),
+                // Source:
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L7067
+                // Materials.Polyethylene is registered under the name "Plastic" (platePlastic).
+                Input.gt("plate", "Plastic", 2),
+                Input.mod(ComponentItems.MECHANICAL_3, 1)))
+        .row(
+            Row.press(
+                "RC-50",
+                MINIGUN_DRUM.loadedItemName(),
+                DRUM_LOADED_PER_RUN,
+                Tier.EV,
+                3,
+                Input.mod(MINIGUN_DRUM.emptyItemName(), DRUM_LOADED_PER_RUN),
+                Input.mod(TYPE.roundItemName(), DRUM_LOADED_PER_RUN * MINIGUN_DRUM.roundsPerMagazine())))
+        .refill(
+            Refill.of(
+                MINIGUN_DRUM.loadedItemName(),
+                MINIGUN_DRUM.emptyItemName(),
+                TYPE.roundItemName(),
+                MINIGUN_DRUM.roundsPerMagazine()))
         .refill(
             Refill.of(
                 LMG_MAGAZINE.loadedItemName(),

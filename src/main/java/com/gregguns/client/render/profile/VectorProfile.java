@@ -33,9 +33,14 @@ import com.gregguns.client.anim.SpriteSheet;
  * a 45 degree turn about their own axis ({@code tiltX}, or {@code tiltY} for the vertical foregrip).
  *
  * <p>
- * Deviation: the box pipeline has whole-texel sizes, so the notes' 3.2 thickness is 3.0 (six half-units), the hood
- * walls are 1.0 wide (0.8 in the notes) and the barrel collar is a 1.5 by 1.5 section turned 45 degrees (2.1 across,
- * the notes' 2.0).
+ * Round 3 (measured corrections): the upper receiver, the red-dot base and the hood roof are 4.0 wide (the only wide
+ * parts); everything under the receiver stays 3.0. Every Y except the roof plate sits 0.1 unit lower than in the first
+ * round. The base is 9.0 long, the hood walls and roof 4.0 long with a 1.4 channel, the collar a full 2 by 2 bar
+ * turned 45 degrees (2.8 across), the foregrip centred 0.1 toward +Z and the trigger 0.3 farther back.
+ *
+ * <p>
+ * Deviation: the box pipeline has whole-texel sizes, so the notes' 3.2 thickness is 4.0 for the receiver (the
+ * measured round-3 value) and 3.0 elsewhere.
  *
  * <h2>Scope</h2>
  * The red-dot sight is the sight: aiming only narrows the field of view (zoom x0.75), so the profile sets no scope
@@ -58,7 +63,7 @@ public final class VectorProfile {
     /** GL units per texel: 1/32 block, half of the notes' unit. */
     public static final float MODEL_SCALE = 1.0f / 32.0f;
     /** The muzzle in the gun frame, blocks: x forward, y down, z: the collar's front (unit 44) on the barrel axis. */
-    public static final float[] MUZZLE = { 88.0f / 32.0f, 18.6f / 32.0f, 0.0f };
+    public static final float[] MUZZLE = { 88.0f / 32.0f, 18.8f / 32.0f, 0.0f };
     /** Frames of {@code muzzleflash2.png} that are painted: 0 to 6. Cell 7 is empty. */
     public static final int MUZZLE_FLASH_FRAMES = 7;
 
@@ -67,34 +72,34 @@ public final class VectorProfile {
     /** One part: the whole gun moves as a unit. */
     public static final BoxSpec[] BOXES = {
         // BEGIN GENERATED BOXES (tools/asset-gen/gun_paint.py pack; edit the layout, not this)
-        new BoxSpec("receiver", 0, 144, 18, 50, 6, 6, 32f, 10.2f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("top_rail", 0, 84, 38, 46, 2, 4, 34f, 8.2f, -2f, NO_PIVOT, 0f),
-        new BoxSpec("dot_base", 0, 212, 0, 14, 5, 6, 48.8f, 4.8f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("hood_wall_l", 0, 170, 12, 6, 3, 2, 50f, 2f, 1f, NO_PIVOT, 0f),
-        new BoxSpec("hood_wall_r", 0, 186, 12, 6, 3, 2, 50f, 2f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("hood_roof", 0, 0, 36, 6, 2, 6, 50f, 0f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("red_dot", 0, 252, 0, 0, 2, 2, 52f, 2f, -1f, NO_PIVOT, 0f),
-        new BoxSpec("handguard", 0, 160, 0, 20, 6, 6, 62f, 16.2f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("barrel", 0, 120, 26, 4, 2, 2, 82f, 17.6f, -1f, new float[] { 82f, 18.6f, 0f }, 0f, 45f),
-        new BoxSpec("collar", 0, 160, 12, 2, 3, 3, 86f, 17.1f, -1.5f, new float[] { 86f, 18.6f, 0f }, 0f, 45f),
-        new BoxSpec("bottom_rail", 0, 212, 11, 14, 2, 4, 67f, 22.2f, -2f, NO_PIVOT, 0f),
-        new BoxSpec("fg_mount", 0, 168, 30, 8, 2, 6, 71f, 22.4f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("foregrip", 0, 144, 0, 4, 14, 4, 73f, 24.2f, -2f, new float[] { 75f, 31.2f, 0f }, 0f, 0f, 45f),
-        new BoxSpec("slab_front", 0, 0, 0, 10, 22, 6, 60f, 16.2f, -3f, new float[] { 70f, 16.2f, 0f }, 20f),
-        new BoxSpec("slab_rear", 0, 32, 0, 10, 22, 6, 50f, 16.2f, -3f, new float[] { 60f, 16.2f, 0f }, 20f),
-        new BoxSpec("floor_upper", 0, 120, 30, 18, 2, 6, 43f, 33f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("floor_lower", 0, 0, 28, 20, 2, 6, 42.4f, 35f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("magazine", 0, 112, 0, 6, 22, 4, 56.6f, 34.2f, -2f, new float[] { 62.6f, 34.2f, 0f }, 20f),
-        new BoxSpec("grip", 0, 64, 0, 8, 20, 6, 34.2f, 16f, -3f, new float[] { 42.2f, 16f, 0f }, 20f),
-        new BoxSpec("guard_floor", 0, 196, 30, 8, 2, 6, 35.3f, 34f, -3f, new float[] { 39.3f, 35f, 0f }, 17.8f),
-        new BoxSpec("guard_wedge", 0, 48, 36, 4, 2, 6, 39.8f, 33.4f, -3f, new float[] { 41.8f, 34.4f, 0f }, -20f),
-        new BoxSpec("trigger", 0, 132, 22, 2, 6, 2, 42.5f, 15.2f, -1f, new float[] { 43.5f, 15.2f, 0f }, -10f),
-        new BoxSpec("stock_bar", 0, 64, 26, 22, 4, 6, 10f, 12.2f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("stock_ramp", 0, 24, 36, 6, 2, 6, 26.5f, 11.2f, -3f, new float[] { 29.5f, 12.2f, 0f }, -20f),
-        new BoxSpec("butt_pad", 0, 92, 0, 4, 20, 6, 0f, 15.8f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("strut", 0, 132, 0, 4, 20, 2, 9.8f, 14f, -1f, new float[] { 13.8f, 14f, 0f }, 20f),
-        new BoxSpec("cross_bar", 0, 224, 30, 8, 4, 4, 4f, 17.8f, -2f, new float[] { 8f, 19.8f, 0f }, 0f, 45f),
-        new BoxSpec("cross_block", 0, 68, 36, 4, 4, 4, 4f, 28.8f, -2f, new float[] { 6f, 30.8f, 0f }, 0f, 45f),
+        new BoxSpec("receiver", 0, 132, 22, 50, 6, 8, 32f, 10.4f, -4f, NO_PIVOT, 0f),
+        new BoxSpec("top_rail", 0, 20, 44, 46, 2, 4, 34f, 8.4f, -2f, NO_PIVOT, 0f),
+        new BoxSpec("dot_base", 0, 160, 0, 18, 6, 8, 47f, 4.4f, -4f, NO_PIVOT, 0f),
+        new BoxSpec("hood_wall_l", 0, 56, 38, 8, 4, 2, 49.2f, 1.4f, 1.4f, NO_PIVOT, 0f),
+        new BoxSpec("hood_wall_r", 0, 76, 38, 8, 4, 2, 49.2f, 1.4f, -3.4f, NO_PIVOT, 0f),
+        new BoxSpec("hood_roof", 0, 212, 0, 8, 2, 8, 49.2f, 0f, -4f, NO_PIVOT, 0f),
+        new BoxSpec("red_dot", 0, 156, 18, 0, 2, 2, 52f, 2.2f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("handguard", 0, 64, 26, 20, 6, 6, 62f, 16.4f, -3f, NO_PIVOT, 0f),
+        new BoxSpec("barrel", 0, 144, 18, 4, 2, 2, 82f, 17.8f, -1f, new float[] { 82f, 18.8f, 0f }, 0f, 45f),
+        new BoxSpec("collar", 0, 244, 0, 2, 4, 4, 86f, 16.8f, -2f, new float[] { 86f, 18.8f, 0f }, 0f, 45f),
+        new BoxSpec("bottom_rail", 0, 20, 38, 14, 2, 4, 67f, 22.4f, -2f, NO_PIVOT, 0f),
+        new BoxSpec("fg_mount", 0, 212, 10, 8, 2, 6, 71f, 22.6f, -3f, NO_PIVOT, 0f),
+        new BoxSpec("foregrip", 0, 144, 0, 4, 14, 4, 73f, 24.4f, -1.8f, new float[] { 75f, 31.4f, 0.2f }, 0f, 0f, 45f),
+        new BoxSpec("slab_front", 0, 0, 0, 10, 22, 6, 60f, 16.4f, -3f, new float[] { 70f, 16.4f, 0f }, 20f),
+        new BoxSpec("slab_rear", 0, 32, 0, 10, 22, 6, 50f, 16.4f, -3f, new float[] { 60f, 16.4f, 0f }, 20f),
+        new BoxSpec("floor_upper", 0, 116, 36, 18, 2, 6, 43f, 33.2f, -3f, NO_PIVOT, 0f),
+        new BoxSpec("floor_lower", 0, 160, 14, 20, 2, 6, 42.4f, 35.2f, -3f, NO_PIVOT, 0f),
+        new BoxSpec("magazine", 0, 112, 0, 6, 22, 4, 56.6f, 34.4f, -2f, new float[] { 62.6f, 34.4f, 0f }, 20f),
+        new BoxSpec("grip", 0, 64, 0, 8, 20, 6, 34.2f, 16.2f, -3f, new float[] { 42.2f, 16.2f, 0f }, 20f),
+        new BoxSpec("guard_floor", 0, 164, 36, 8, 2, 6, 35.3f, 34.2f, -3f, new float[] { 39.3f, 35.2f, 0f }, 17.8f),
+        new BoxSpec("guard_wedge", 0, 0, 38, 4, 2, 6, 39.8f, 33.6f, -3f, new float[] { 41.8f, 34.6f, 0f }, -20f),
+        new BoxSpec("trigger", 0, 248, 18, 2, 6, 2, 41.9f, 15.4f, -1f, new float[] { 42.9f, 15.4f, 0f }, -10f),
+        new BoxSpec("stock_bar", 0, 0, 28, 22, 4, 6, 10f, 12.4f, -3f, NO_PIVOT, 0f),
+        new BoxSpec("stock_ramp", 0, 216, 36, 6, 2, 6, 26.5f, 11.4f, -3f, new float[] { 29.5f, 12.4f, 0f }, -20f),
+        new BoxSpec("butt_pad", 0, 92, 0, 4, 20, 6, 0f, 16f, -3f, NO_PIVOT, 0f),
+        new BoxSpec("strut", 0, 132, 0, 4, 20, 2, 9.8f, 14.2f, -1f, new float[] { 13.8f, 14.2f, 0f }, 20f),
+        new BoxSpec("cross_bar", 0, 192, 36, 8, 4, 4, 4f, 18f, -2f, new float[] { 8f, 20f, 0f }, 0f, 45f),
+        new BoxSpec("cross_block", 0, 240, 10, 4, 4, 4, 4f, 29f, -2f, new float[] { 6f, 31f, 0f }, 0f, 45f),
         // END GENERATED BOXES
     };
 

@@ -1,6 +1,7 @@
 package com.gregguns.item.gun;
 
 import com.gregguns.gun.logic.AmmoInventory;
+import com.gregguns.gun.logic.ChargeSource;
 
 /**
  * Adapts an {@link AmmoStore} to the gun logic's {@link AmmoInventory}. Pure Java.
@@ -20,14 +21,30 @@ public final class StoreAmmoInventory implements AmmoInventory {
 
     private final AmmoStore store;
     private final int roundsPerLooseItem;
+    private final ChargeSource charge;
 
     /**
      * @param store              the shooter's ammo store
      * @param roundsPerLooseItem rounds one loose round item is worth (6 for the 9mm bullet); at least 1
      */
     public StoreAmmoInventory(AmmoStore store, int roundsPerLooseItem) {
+        this(store, roundsPerLooseItem, ChargeSource.NONE);
+    }
+
+    /**
+     * @param store              the shooter's ammo store
+     * @param roundsPerLooseItem rounds one loose round item is worth; at least 1
+     * @param charge             the held energy gun's charge, returned by {@link #charge()}
+     */
+    public StoreAmmoInventory(AmmoStore store, int roundsPerLooseItem, ChargeSource charge) {
         this.store = store;
         this.roundsPerLooseItem = Math.max(1, roundsPerLooseItem);
+        this.charge = charge;
+    }
+
+    @Override
+    public ChargeSource charge() {
+        return charge;
     }
 
     @Override

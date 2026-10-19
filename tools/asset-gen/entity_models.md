@@ -72,7 +72,7 @@ and bad values fail at load with a message naming the entry.
 | `look` | `yaw` (1), `pitch` (1), `maxYaw`, `maxPitch` | `clamp(netHeadYaw, maxYaw) * yaw` on Y and `clamp(headPitch, maxPitch) * pitch` on X. Limits default to none. |
 | `swing` | `axis`, `amplitude`, `speed` (0.6662), `phase` (0) | `amplitude * limbSwingAmount * cos(limbSwing * speed + phase)` |
 | `idle` | `axis`, `amplitude`, `speed` (0.1), `phase` (0), `offset` (0) | `offset + amplitude * sin(ageInTicks * speed + phase)` |
-| `spin` | `axis`, `rate` | `rate * ageInTicks` (degrees per tick) |
+| `spin` | `axis`, `rate`, `deathScale` (1) | `rate * ageInTicks` (degrees per tick). While the death progress is above 0 the rate is multiplied by `deathScale` (a step, not a ramp). |
 | `pose` | `when`, `mode`, `angles`, `followYaw`, `followPitch`, `blend`, `window` | see below |
 
 `axis` is `"x"`, `"y"` or `"z"`. `amplitude`, `offset`, `phase` and `rate` are degrees; `speed` is radians per unit of limb swing (`swing`) or per
@@ -88,8 +88,9 @@ tick (`idle`). A `swing` at limbSwing 0 and amount 1 equals its amplitude times 
 
 Angles that apply on a condition, for the aimed pose and attacks.
 
-- `when`: `aiming` (weight 1 while the mob aims; false otherwise), `holding` (an item is in the right hand), or `attacking` (weight from the
-  attack progress).
+- `when`: `aiming` (weight 1 while the mob aims; false otherwise), `holding` (an item is in the right hand), `attacking` (weight from the
+  attack progress), or `dying` (weight = `MobAnimSource.deathProgress`, 0 to 1; a `set` pose moves a part toward a target as the mob dies,
+  e.g. the helicopter's chin gun blends from its 25 degree rest pitch to level).
 - `angles`: `{"x": .., "y": .., "z": ..}`, any subset. `mode` is `"add"` (default; adds the weighted angles) or `"set"` (moves the listed axes toward
   the given values by the weight, so it overrides an earlier swing).
 - `followYaw`, `followPitch`: add that share of the head yaw to Y and of the head pitch to X (the aimed arms follow the head).
@@ -114,7 +115,7 @@ p.box("skull", x, y, z, w, h, d, uv=None, inflate=0, mirror=False, material="ski
 m.look(part, yaw=1, pitch=1, max_yaw=None, max_pitch=None)
 m.swing(part, axis, amplitude, speed=None, phase=0)
 m.idle(part, axis, amplitude, speed=0.1, phase=0, offset=0)
-m.spin(part, axis, rate)
+m.spin(part, axis, rate, death_scale=None)   # death_scale: factor on rate while dying
 m.pose(part, when, x=None, y=None, z=None, mode="add", follow_yaw=0, follow_pitch=0, blend=None, window=None)
 m.palettes["name"] = {"default": "#808080", "skin": "#c89a78"}   # one entry per sheet (color variants)
 m.detail = fn(mob, key, put, rect)           # optional: paint faces, eyes, marks over the base colors
