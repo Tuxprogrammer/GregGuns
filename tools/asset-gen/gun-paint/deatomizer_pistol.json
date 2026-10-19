@@ -166,14 +166,6 @@
     1.0,
     1.0
    ]
-  },
-  "dot": {
-   "material": "flat",
-   "base": "#FF5E1E",
-   "bevel": [
-    1.0,
-    1.0
-   ]
   }
  },
  "boxes": {
@@ -307,9 +299,6 @@
      "color": "#FF5E1E"
     }
    ]
-  },
-  "laser_tip_glow": {
-   "role": "dot"
   },
   "laser_plate_l": {
    "role": "support"

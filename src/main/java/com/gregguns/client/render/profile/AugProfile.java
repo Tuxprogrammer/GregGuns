@@ -64,29 +64,29 @@ public final class AugProfile {
     public static final BoxSpec[] BOXES = {
         // BEGIN GENERATED BOXES (tools/asset-gen/gun_paint.py pack; edit the layout, not this)
         new BoxSpec("receiver", 0, 16, 12, 44, 4, 4, 0f, 7.3f, -2f, new float[] { 22f, 9.3f, 0f }, 0f, 45f),
-        new BoxSpec("lower_plate", 0, 0, 26, 18, 2, 3, 24f, 10.5f, -2f, NO_PIVOT, 0f),
+        new BoxSpec("lower_plate", 0, 0, 26, 18, 2, 3, 24f, 10.5f, -1.5f, NO_PIVOT, 0f),
         new BoxSpec("barrel", 0, 42, 26, 23, 2, 2, 44f, 7.4f, -1f, new float[] { 55.5f, 8.4f, 0f }, 0f, 45f),
         new BoxSpec("muzzle_cap", 0, 118, 0, 3, 2, 2, 67f, 7.4f, -1f, new float[] { 68.5f, 8.4f, 0f }, 0f, 45f),
         new BoxSpec("gas_tube", 0, 50, 10, 6, 1, 1, 44f, 9f, -2f, new float[] { 47f, 9.5f, -1.5f }, 0f, 45f),
         new BoxSpec("scope_rear", 0, 26, 20, 10, 3, 3, 18f, 0.62f, -1.5f, new float[] { 23f, 2.12f, 0f }, 0f, 45f),
         new BoxSpec("scope_front", 0, 94, 20, 9, 2, 2, 28f, 0.9f, -1f, new float[] { 32.5f, 1.9f, 0f }, 0f, 45f),
-        new BoxSpec("strut_front", 0, 80, 0, 1, 8, 2, 35.5f, 1.5f, -1f, new float[] { 36f, 1.5f, 0f }, -35f),
-        new BoxSpec("strut_rear", 0, 86, 0, 1, 7, 2, 26.5f, 1.5f, -1f, new float[] { 27f, 1.5f, 0f }, -25f),
+        new BoxSpec("strut_front", 0, 80, 0, 1, 8, 2, 35.1f, 1.8f, -1f, new float[] { 35.6f, 1.8f, 0f }, -35f),
+        new BoxSpec("strut_rear", 0, 86, 0, 1, 7, 2, 26f, 1.7f, -1f, new float[] { 26.5f, 1.7f, 0f }, -25f),
         new BoxSpec("charge", 1, 86, 9, 2, 2, 1, 40f, 6.55f, 2.05f, new float[] { 41f, 7.55f, 2.55f }, 0f, 45f),
-        new BoxSpec("foregrip", 0, 30, 0, 3, 9, 3, 41.5f, 11.5f, -1.9f, new float[] { 43f, 16f, -0.4f }, 0f, 0f, 45f),
-        new BoxSpec("grip", 0, 16, 0, 4, 9, 3, 25.4f, 10.8f, -2f, new float[] { 25.4f, 10.8f, 0f }, 25.6f),
-        new BoxSpec("guard_front", 0, 42, 0, 1, 9, 3, 35.5f, 12.5f, -2f, new float[] { 36f, 12.5f, 0f }, 34f),
-        new BoxSpec("guard_floor", 0, 92, 8, 6, 1, 3, 25f, 19.5f, -2f, NO_PIVOT, 0f),
-        new BoxSpec("trigger", 0, 118, 4, 2, 3, 1, 28f, 12f, -1f, NO_PIVOT, 0f),
-        new BoxSpec("slope", 0, 74, 20, 7, 3, 3, 17f, 9.5f, -2f, new float[] { 24f, 9.5f, 0f }, -18f),
-        new BoxSpec("cheek", 0, 112, 14, 4, 2, 3, 17f, 9.5f, -2f, NO_PIVOT, 0f),
-        new BoxSpec("rear_block", 0, 92, 0, 10, 5, 3, 8f, 9.5f, -2f, NO_PIVOT, 0f),
-        new BoxSpec("ramp", 0, 0, 20, 10, 3, 3, 1f, 12.8f, -2f, new float[] { 11f, 12.8f, 0f }, -26f),
-        new BoxSpec("neck", 0, 66, 0, 4, 7, 3, 4f, 9.5f, -2f, NO_PIVOT, 0f),
+        new BoxSpec("foregrip", 0, 30, 0, 3, 9, 3, 41.5f, 11.5f, -1.4f, new float[] { 43f, 16f, 0.1f }, 0f, 0f, 45f),
+        new BoxSpec("grip", 0, 16, 0, 4, 9, 3, 25.4f, 10.8f, -1.5f, new float[] { 25.4f, 10.8f, 0f }, 25.6f),
+        new BoxSpec("guard_front", 0, 42, 0, 1, 9, 3, 35.1f, 12.3f, -1.5f, new float[] { 35.6f, 12.3f, 0f }, 34f),
+        new BoxSpec("guard_floor", 0, 92, 8, 6, 1, 3, 25f, 19.5f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("trigger", 0, 118, 4, 2, 3, 1, 28f, 12f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("slope", 0, 74, 20, 7, 3, 3, 17f, 9.5f, -1.5f, new float[] { 24f, 9.5f, 0f }, -18f),
+        new BoxSpec("cheek", 0, 112, 14, 4, 2, 3, 17f, 9.5f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("rear_block", 0, 92, 0, 10, 5, 3, 8f, 9.5f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("ramp", 0, 0, 20, 10, 3, 3, 1f, 12.8f, -1.5f, new float[] { 11f, 12.8f, 0f }, -26f),
+        new BoxSpec("neck", 0, 66, 0, 4, 7, 3, 4f, 9.5f, -1.5f, NO_PIVOT, 0f),
         new BoxSpec("butt", 0, 0, 0, 4, 12, 4, 0f, 9.5f, -2f, NO_PIVOT, 0f),
-        new BoxSpec("socket", 0, 52, 20, 8, 3, 3, 10f, 10.5f, -2f, new float[] { 18f, 10.5f, 0f }, -12f),
-        new BoxSpec("mag_upper", 0, 50, 0, 6, 8, 2, 11.6f, 12.5f, -1.5f, new float[] { 17.6f, 15.5f, 0f }, -12f),
-        new BoxSpec("mag_lower", 0, 112, 8, 6, 4, 2, 12.4f, 19.5f, -1.5f, new float[] { 18.4f, 19.5f, 0f }, -21f),
+        new BoxSpec("socket", 0, 52, 20, 8, 3, 3, 10f, 12.5f, -1.5f, new float[] { 18f, 12.5f, 0f }, -12f),
+        new BoxSpec("mag_upper", 0, 50, 0, 6, 5, 2, 12.2f, 16.1f, -1f, new float[] { 15.2f, 18.6f, 0f }, -12f),
+        new BoxSpec("mag_lower", 0, 112, 8, 6, 4, 2, 12.4f, 19.5f, -1f, new float[] { 18.4f, 19.5f, 0f }, -21f),
         // END GENERATED BOXES
     };
 
@@ -94,12 +94,10 @@ public final class AugProfile {
     // The scale follows the FirstPersonFit rule with the long-gun target of 2 blocks on screen (the bolt-action's
     // precedent), and the idle position puts this model's box centre on the family anchor. The notes' small fire kick
     // (5 degrees, 0.15 back) is applied at that scale: a screen shift d is d / FP_SCALE in model axes.
-    /** On-screen length of the rifle in first person, blocks of the scaled frame. */
-    private static final double RIFLE_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), RIFLE_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("aug", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, 0 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -152,7 +150,7 @@ public final class AugProfile {
         TransformProgram fpFire = TransformProgram.builder()
             .rotZ((p, part) -> 10.0 * yF(p))
             .translate(
-                (p, part) -> FP_X + 0.3 / FP_SCALE * yF(p) - (part == 1 ? HANDLE_TRAVEL * handleSlide(p) : 0.0),
+                (p, part) -> FP_X + 0.42 / FP_SCALE * yF(p) - (part == 1 ? HANDLE_TRAVEL * handleSlide(p) : 0.0),
                 (p, part) -> FP_Y,
                 (p, part) -> FP_Z)
             .build();
@@ -166,8 +164,8 @@ public final class AugProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.9)
-            .translate(-1.6, -0.75, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the gun pitches up 15 degrees about the hand, in the first quarter of the first half; the charging
         // handle slides back with the same travel as in first person.
@@ -201,12 +199,13 @@ public final class AugProfile {
         // offset moved by the difference between the two muzzles' projected positions (this model is longer and
         // taller, so FP_SCALE differs and the muzzle sits elsewhere). muzzleFlash2 sheet, additive because the
         // GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.023,
-            0.005,
-            0.372,
+            fo[0],
+            fo[1],
+            fo[2],
             1.5,
             new double[] { 0, 0, 0 },
             true,

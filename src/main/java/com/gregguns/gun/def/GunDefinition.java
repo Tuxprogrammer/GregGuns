@@ -44,6 +44,7 @@ public final class GunDefinition {
     private final DamageType damageType;
     private final boolean rechambers;
     private final boolean startsLoop;
+    private final boolean charges;
     private final String singleGun;
     private final int camoCount;
     private final List<ProductionTable.Row> rows;
@@ -58,6 +59,7 @@ public final class GunDefinition {
         this.damageType = Objects.requireNonNull(b.damageType, "damageType of " + b.name);
         this.rechambers = b.rechambers;
         this.startsLoop = b.startsLoop;
+        this.charges = b.charges;
         this.singleGun = b.singleGun;
         this.camoCount = b.camoCount;
         this.rows = Collections.unmodifiableList(new ArrayList<>(b.rows));
@@ -104,6 +106,11 @@ public final class GunDefinition {
     /** @return true if the gun plays {@link #startEvent()} on the first shot after a pause instead of its fire event */
     public boolean startsLoop() {
         return startsLoop;
+    }
+
+    /** @return the unprefixed charge sound event, {@code guns.<name>.charge}, or null if the gun has none */
+    public String chargeEvent() {
+        return charges ? GunSoundEvents.gun(name, GunSoundEvents.CHARGE) : null;
     }
 
     /** @return the unprefixed start sound event, {@code guns.<name>.start}, or null if the gun has no start sound */
@@ -191,6 +198,7 @@ public final class GunDefinition {
         private DamageType damageType;
         private boolean rechambers;
         private boolean startsLoop;
+        private boolean charges;
         private String singleGun;
         private int camoCount = 1;
         private final List<ProductionTable.Row> rows = new ArrayList<>();
@@ -239,6 +247,16 @@ public final class GunDefinition {
          */
         public Builder startsLoop() {
             this.startsLoop = true;
+            return this;
+        }
+
+        /**
+         * Marks a charge gun that plays {@code guns.<name>.charge} when the hold begins.
+         *
+         * @return this
+         */
+        public Builder charges() {
+            this.charges = true;
             return this;
         }
 

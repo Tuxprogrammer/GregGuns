@@ -893,9 +893,6 @@ SKINS = {
     "bandit": dict(skin="#C09070", hair="#2A1E14", shirt="#5B514B", pants="#3E3830", boots="#2A1E14", bandana="#7A2A22", vest="#3A2E24", belt="#1E1610", iris="#503010", sleeve=9, scars=True),
     "dictator": dict(skin="#D4A484", hair="#1E1812", shirt="#594F49", pants="#3E382F", boots="#18120E", cap="#4E5A3A", medals=True, mustache=True, iris="#403020", belt="#C8B050", glove="#E8E8E8", sleeve=12),
     "cyberdemon": dict(skin="#8A2418", hair=None, bald=True, shirt="#6A1A12", pants="#38120D", boots="#222226", eye="#FFD030", horns="#D8CFA8", chest_plate="#4A4C54", pads="#4A4C54", glow_chest="#FF7020", teeth=True, mouth="#2A0808", scars=True, sleeve=6, belt="#222226", rot="#5A1810"),
-    "supermutant_1": dict(skin="#987A22", hair="#2A2210", shirt="#5A4A30", pants="#46402C", boots="#2A2218", bald=True, hair_="", scars=True, teeth=True, mouth="#3A1A10", sleeve=5, eye="#F0F0A0", pads="#6A6258"),
-    "supermutant_2": dict(skin="#907525", hair="#3A2A14", shirt="#4A3C28", pants="#3A3A30", boots="#2A2218", scars=True, mouth="#3A1A10", sleeve=4, belt="#5A4020", chest_plate="#6E5A3A", iris="#A03010"),
-    "supermutant_3": dict(skin="#877130", hair="#1E1608", shirt="#50462E", pants="#4A3E28", boots="#2A2218", bandana="#7A4A2A", scars=True, teeth=True, mouth="#3A1A10", sleeve=6, vest="#3A3022", eye="#F0E080", blood=10),
 }
 
 # Recognisability pass: faction symbols, face/eye treatment per NPC type.
@@ -905,9 +902,6 @@ SKIN_EXTRA = {
     "bandit": dict(face_paint=None, headband="#7A2A22", mask="#2A2622", bandolier=True, faction=("skull", "#D8D0B8"), patch_bg="#2A2420"),
     "dictator": dict(sunglasses=True, epaulettes=True, faction=("bar", "#E0C040"), patch_bg="#4A1A1A"),
     "cyberdemon": dict(brow=True, jaw_plate="#4A4C54", jaw_glow="#FF7020", cracks="#FF9A30", tusks=True),
-    "supermutant_1": dict(brow=True, tusks=True, spikes=True, face_paint=None),
-    "supermutant_2": dict(mohawk="#3A5A2A", brow=True, eyepatch=True, faction=("cross", "#C03030"), patch_bg="#2A2218"),
-    "supermutant_3": dict(headband="#B03030", brow=True, spikes=True, bandolier=True, faction=("gear", "#E0C040"), patch_bg="#2A2218"),
 }
 for _k, _v in SKIN_EXTRA.items():
     SKINS[_k].update({a: b for a, b in _v.items() if b is not None})
@@ -916,32 +910,12 @@ SKINS["bandit"]["mask"] = "#2A2622"
 
 
 # ---- non-biped entity atlases ----------------------------------------------------
-def make_alienbug(man):
-    parts = [("thorax", "chitin", 16, 8, 12, ["spots", "rings"]), ("abdomen", "chitin", 20, 10, 14, ["spots"]), ("head", "chitin", 10, 8, 10, ["spots"]),
-             ("mandible_l", "bone", 6, 2, 3, ["rings"]), ("mandible_r", "bone", 6, 2, 3, ["rings"]), ("leg_front", "chitin", 14, 2, 2, ["rings"]),
-             ("leg_mid", "chitin", 14, 2, 2, ["rings"]), ("leg_back", "chitin", 14, 2, 2, ["rings"]), ("wing_l", "wing", 16, 1, 8, ["spots"]),
-             ("wing_r", "wing", 16, 1, 8, ["spots"]), ("eye_l", "glow", 3, 3, 2, ["strip"]), ("eye_r", "glow", 3, 3, 2, ["strip"]), ("stinger", "bone", 3, 3, 8, [])]
-    mm = {"chitin": ("polymer", "#AF8A56", None), "bone": ("polymer", "#D8C8A0", None), "wing": ("glass", "#B8A070", None), "glow": ("plain", "#FF4020", None)}
-    return paint_atlas(man["id"], 64, 64, parts, mm, {"glow": "#FF4020", "spot": (60, 36, 18), "accent": "#6A4A20"}, cell=(5, 10), wear_amt=.15)
-
-
 def make_gore(man):
     parts = [("chunk_a", "meat", 12, 8, 10, ["spots"]), ("chunk_b", "meat", 10, 6, 8, ["spots"]), ("chunk_c", "meat", 8, 8, 8, ["spots"]), ("chunk_d", "meat", 14, 5, 6, ["spots"]),
              ("organ", "organ", 10, 6, 6, ["spots"]), ("rib_cage", "bone", 12, 10, 6, ["rings", "grill"]), ("bone_a", "bone", 14, 2, 2, ["rings"]), ("bone_b", "bone", 10, 2, 2, ["rings"]),
              ("skull", "bone", 8, 8, 8, ["spots"]), ("gristle", "organ", 6, 4, 4, ["spots"]), ("limb", "meat", 16, 4, 4, ["spots"])]
     mm = {"meat": ("leather", "#761E18", None), "organ": ("skin", "#8A3A4A", None), "bone": ("leather", "#D8D0B8", None)}
     return paint_atlas(man["id"], 128, 128, parts, mm, {"spot": (50, 5, 5)}, cell=(6, 14), wear_amt=.2)
-
-
-def make_apache(man):
-    parts = [("fuselage", "hull", 40, 10, 12, ["vents", "label", "cross"]), ("tail_boom", "hull", 40, 4, 4, ["label"]), ("nose", "hull", 10, 6, 8, ["vents"]),
-             ("canopy", "glass", 14, 6, 8, ["lens"]), ("rotor_blade", "dark", 50, 1, 5, ["stripe"]), ("rotor_hub", "dark", 6, 4, 6, ["rings", "label"]),
-             ("tail_rotor", "dark", 10, 1, 3, []), ("stub_wing_l", "hull", 22, 1, 8, ["cross"]), ("stub_wing_r", "hull", 22, 1, 8, ["cross"]),
-             ("missile_pod_l", "dark", 12, 4, 4, ["grill", "hazard"]), ("missile_pod_r", "dark", 12, 4, 4, ["grill", "hazard"]),
-             ("engine_l", "hull", 12, 6, 6, ["vents"]), ("engine_r", "hull", 12, 6, 6, ["vents"]), ("skid_l", "dark", 30, 1, 2, ["rings"]),
-             ("skid_r", "dark", 30, 1, 2, ["rings"]), ("chin_gun", "dark", 6, 4, 4, ["rings"]), ("tail_fin", "hull", 8, 8, 1, ["label"])]
-    mm = {"hull": ("steel", "#3A402A", None), "dark": ("steel", "#22261A", None), "glass": ("glass", "#2A4A4A", None)}
-    return paint_atlas(man["id"], 256, 256, parts, mm, {"lens": "#3A6A6A", "accent": "#C8C8A0"}, cell=(8, 20), wear_amt=.4)
 
 
 # ---- projectiles ------------------------------------------------------------
@@ -1221,7 +1195,7 @@ def build(man):
         n = i[len("model.entity."):]
         if n in SKINS:
             return biped(man, SKINS[n])
-        return {"alienbug": make_alienbug, "gore": make_gore, "apache": make_apache, "bullet": make_bullet,
+        return {"gore": make_gore, "bullet": make_bullet,
                 "handgun_bullet": make_handgun_bullet, "launcher_grenade": make_launcher_grenade,
                 "laser_beam": lambda m: make_beam(m, "#FFFFFF", "#FF3030", "#C00000"),
                 "blue_beam": lambda m: make_beam(m, "#E8F4FF", "#3C88FF", "#004080"), "bioblob": make_bioblob}[n](man)
@@ -1266,7 +1240,7 @@ def write_layout_doc(order):
         for ln in LAYOUT_DOC[aid]:
             out.append("- " + ln)
         out.append("")
-    out.append("`model.obj.*` entries (apache.obj, launcher_grenade.obj) are meshes, not painted: skipped by this generator.")
+    out.append("`model.obj.*` entries (launcher_grenade.obj) are meshes, not painted: skipped by this generator.")
     out.append("")
     gui.build_all()
     out.append(gui.layout_markdown())

@@ -29,4 +29,9 @@ public class ClientConfig {
         "Draw the Ammo Press's progress-synced front animation. When off, the active press shows its still",
         "front overlay. Purely cosmetic; never changes a recipe. Default: true." })
     public static boolean ammoPressAnimation = true;
+
+    @Config.Comment({ "Most GregGuns effect particles alive at once. Bursts shrink as the count nears this ceiling and",
+        "never pass it, so other mods keep room under the pack's particle cap (8000 in GTNH).", "Default: 2000." })
+    @Config.RangeInt(min = 100, max = 8000)
+    public static int particleCeiling = 2000;
 }

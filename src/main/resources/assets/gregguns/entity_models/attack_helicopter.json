@@ -926,13 +926,23 @@
    "type": "spin",
    "part": "rotor",
    "axis": "y",
-   "rate": -24
+   "rate": -24,
+   "deathScale": 0.5
   },
   {
    "type": "look",
    "part": "chin_gun",
    "pitch": 0,
    "maxYaw": 30
+  },
+  {
+   "type": "pose",
+   "part": "chin_gun",
+   "when": "dying",
+   "mode": "set",
+   "angles": {
+    "x": 0
+   }
   }
  ]
 }

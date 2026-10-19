@@ -1,0 +1,1024 @@
+{
+ "gun": "minigun",
+ "textures": [
+  {
+   "file": "minigun.png"
+  }
+ ],
+ "roles": {
+  "gear": {
+   "material": "steel",
+   "base": "#999795",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "gear1": {
+   "material": "steel",
+   "base": "#9C9998",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "gear2": {
+   "material": "steel",
+   "base": "#A29F9E",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "drum_out": {
+   "material": "steel",
+   "base": "#E4E4E4",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "drum_core": {
+   "material": "steel",
+   "base": "#B6B2B0",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "drum_skin": {
+   "material": "steel",
+   "base": "#BCB8B6",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "drum_plate": {
+   "material": "steel",
+   "base": "#C5C5C5",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "yoke": {
+   "material": "steel",
+   "base": "#6A6867",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "yoke2": {
+   "material": "steel",
+   "base": "#6E6C6B",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "loop": {
+   "material": "steel",
+   "base": "#474545",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "loop_end": {
+   "material": "steel",
+   "base": "#424140",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "frame": {
+   "material": "steel",
+   "base": "#444342",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "handle": {
+   "material": "steel",
+   "base": "#4A4948",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "legs": {
+   "material": "steel",
+   "base": "#585555",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "pin": {
+   "material": "steel",
+   "base": "#CCC8C6",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "pincap": {
+   "material": "steel",
+   "base": "#272624",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "stub": {
+   "material": "steel",
+   "base": "#6E6C6B",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "tube": {
+   "material": "steel",
+   "base": "#C3BFBD",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "sleeve": {
+   "material": "steel",
+   "base": "#696766",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "disc2": {
+   "material": "steel",
+   "base": "#272424",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "barrel_rear": {
+   "material": "steel",
+   "base": "#A7A09D",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "barrel_front": {
+   "material": "steel",
+   "base": "#CDCAC9",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "tip": {
+   "material": "steel",
+   "base": "#BEB9B7",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  },
+  "rotor": {
+   "material": "steel",
+   "base": "#292727",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.02,
+   "bevel": [
+    1.03,
+    0.95
+   ]
+  }
+ },
+ "boxes": {
+  "barrel_r0": {
+   "role": "barrel_rear",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#6B6867"
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.12,
+     "x": 10,
+     "y": 0,
+     "w": 2,
+     "h": 2
+    }
+   ]
+  },
+  "barrel_f0": {
+   "role": "barrel_front",
+   "painters": [
+    {
+     "type": "gradient",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "top": 1.0,
+     "bottom": 1.0
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.06,
+     "x": 4,
+     "y": 0,
+     "w": 4,
+     "h": 2
+    }
+   ]
+  },
+  "tip0": {
+   "role": "tip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#111111"
+    }
+   ]
+  },
+  "barrel_r1": {
+   "role": "barrel_rear",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#6B6867"
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.12,
+     "x": 10,
+     "y": 0,
+     "w": 2,
+     "h": 2
+    }
+   ]
+  },
+  "barrel_f1": {
+   "role": "barrel_front",
+   "painters": [
+    {
+     "type": "gradient",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "top": 1.0,
+     "bottom": 1.0
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.06,
+     "x": 4,
+     "y": 0,
+     "w": 4,
+     "h": 2
+    }
+   ]
+  },
+  "tip1": {
+   "role": "tip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#111111"
+    }
+   ]
+  },
+  "barrel_r2": {
+   "role": "barrel_rear",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#6B6867"
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.12,
+     "x": 10,
+     "y": 0,
+     "w": 2,
+     "h": 2
+    }
+   ]
+  },
+  "barrel_f2": {
+   "role": "barrel_front",
+   "painters": [
+    {
+     "type": "gradient",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "top": 1.0,
+     "bottom": 1.0
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.06,
+     "x": 4,
+     "y": 0,
+     "w": 4,
+     "h": 2
+    }
+   ]
+  },
+  "tip2": {
+   "role": "tip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#111111"
+    }
+   ]
+  },
+  "barrel_r3": {
+   "role": "barrel_rear",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#6B6867"
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.12,
+     "x": 10,
+     "y": 0,
+     "w": 2,
+     "h": 2
+    }
+   ]
+  },
+  "barrel_f3": {
+   "role": "barrel_front",
+   "painters": [
+    {
+     "type": "gradient",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "top": 1.0,
+     "bottom": 1.0
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.06,
+     "x": 4,
+     "y": 0,
+     "w": 4,
+     "h": 2
+    }
+   ]
+  },
+  "tip3": {
+   "role": "tip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#111111"
+    }
+   ]
+  },
+  "barrel_r4": {
+   "role": "barrel_rear",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#6B6867"
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.12,
+     "x": 10,
+     "y": 0,
+     "w": 2,
+     "h": 2
+    }
+   ]
+  },
+  "barrel_f4": {
+   "role": "barrel_front",
+   "painters": [
+    {
+     "type": "gradient",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "top": 1.0,
+     "bottom": 1.0
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.06,
+     "x": 4,
+     "y": 0,
+     "w": 4,
+     "h": 2
+    }
+   ]
+  },
+  "tip4": {
+   "role": "tip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#111111"
+    }
+   ]
+  },
+  "barrel_r5": {
+   "role": "barrel_rear",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#6B6867"
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.12,
+     "x": 10,
+     "y": 0,
+     "w": 2,
+     "h": 2
+    }
+   ]
+  },
+  "barrel_f5": {
+   "role": "barrel_front",
+   "painters": [
+    {
+     "type": "gradient",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "top": 1.0,
+     "bottom": 1.0
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "f": 1.06,
+     "x": 4,
+     "y": 0,
+     "w": 4,
+     "h": 2
+    }
+   ]
+  },
+  "tip5": {
+   "role": "tip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#111111"
+    }
+   ]
+  },
+  "hub_mid": {
+   "role": "rotor"
+  },
+  "hub_stt": {
+   "role": "rotor"
+  },
+  "hub_stb": {
+   "role": "rotor"
+  },
+  "hub_cpt": {
+   "role": "rotor"
+  },
+  "hub_cpb": {
+   "role": "rotor"
+  },
+  "clamp_mid": {
+   "role": "rotor"
+  },
+  "clamp_stt": {
+   "role": "rotor"
+  },
+  "clamp_stb": {
+   "role": "rotor"
+  },
+  "clamp_cpt": {
+   "role": "rotor"
+  },
+  "clamp_cpb": {
+   "role": "rotor"
+  },
+  "front_mid": {
+   "role": "rotor"
+  },
+  "front_stt": {
+   "role": "rotor"
+  },
+  "front_stb": {
+   "role": "rotor"
+  },
+  "front_cpt": {
+   "role": "rotor"
+  },
+  "front_cpb": {
+   "role": "rotor"
+  },
+  "gear_core": {
+   "role": "gear",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "f": 0.42
+    }
+   ]
+  },
+  "gear_s1t": {
+   "role": "gear1",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "f": 0.42
+    }
+   ]
+  },
+  "gear_s1b": {
+   "role": "gear1",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "f": 0.42
+    }
+   ]
+  },
+  "gear_s2t": {
+   "role": "gear2",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "f": 0.42
+    }
+   ]
+  },
+  "gear_s2b": {
+   "role": "gear2",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "f": 0.42
+    }
+   ]
+  },
+  "yoke_top": {
+   "role": "yoke"
+  },
+  "yoke_pl_r": {
+   "role": "yoke"
+  },
+  "yoke_pl_l": {
+   "role": "yoke"
+  },
+  "yoke_cb_r": {
+   "role": "yoke"
+  },
+  "yoke_cb_l": {
+   "role": "yoke"
+  },
+  "yoke_bot": {
+   "role": "yoke"
+  },
+  "yoke_gus_r": {
+   "role": "yoke2"
+  },
+  "yoke_gus_l": {
+   "role": "yoke2"
+  },
+  "top_plate": {
+   "role": "frame"
+  },
+  "top_bridge": {
+   "role": "frame"
+  },
+  "strut_r": {
+   "role": "frame"
+  },
+  "strut_l": {
+   "role": "frame"
+  },
+  "carry_bar": {
+   "role": "handle"
+  },
+  "carry_leg_r": {
+   "role": "legs"
+  },
+  "carry_leg_l": {
+   "role": "legs"
+  },
+  "loop_front": {
+   "role": "loop"
+  },
+  "loop_end": {
+   "role": "loop_end"
+  },
+  "loop_up": {
+   "role": "loop"
+  },
+  "loop_lo": {
+   "role": "loop"
+  },
+  "drum_core": {
+   "role": "drum_core"
+  },
+  "drum_cst": {
+   "role": "drum_skin"
+  },
+  "drum_csb": {
+   "role": "drum_skin"
+  },
+  "drum_out": {
+   "role": "drum_out",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 7,
+     "color": "#5A5A5A"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 10,
+     "y": 0,
+     "w": 1,
+     "h": 7,
+     "color": "#5A5A5A"
+    }
+   ]
+  },
+  "drum_ost": {
+   "role": "drum_out"
+  },
+  "drum_osb": {
+   "role": "drum_out"
+  },
+  "drum_capt": {
+   "role": "drum_out"
+  },
+  "drum_capb": {
+   "role": "drum_out"
+  },
+  "drum_plate": {
+   "role": "drum_plate"
+  },
+  "drive_tube": {
+   "role": "tube"
+  },
+  "drive_core": {
+   "role": "sleeve"
+  },
+  "drive_disc_a": {
+   "role": "disc2"
+  },
+  "drive_disc_b": {
+   "role": "disc2"
+  },
+  "pin_r": {
+   "role": "pin"
+  },
+  "pin_rear_r": {
+   "role": "pincap"
+  },
+  "pin_front_r": {
+   "role": "pincap"
+  },
+  "pin_stub_r": {
+   "role": "stub"
+  },
+  "pin_l": {
+   "role": "pin"
+  },
+  "pin_rear_l": {
+   "role": "pincap"
+  },
+  "pin_front_l": {
+   "role": "pincap"
+  },
+  "pin_stub_l": {
+   "role": "stub"
+  }
+ }
+}

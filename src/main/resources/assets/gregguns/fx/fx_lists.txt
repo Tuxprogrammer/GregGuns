@@ -1,0 +1,1690 @@
+// GregGuns FX data. Format: see com.gregguns.fx.FxParser. Systems and FXLISTs are added here by the FX catalog (I8).
+// Texture names are files under assets/gregguns/textures/fx. Names are case-insensitive.
+//
+// FXLIST Example {
+//     ExampleFlare
+// }
+//
+// ExampleFlare {
+//     Texture = blasterflare01.png
+//     RenderType = ADDITIVE
+//     Columns = 4
+//     Rows = 4
+//     Frames = 14
+//     Lifetime = 15 25
+//     ParticleCount = 3 4
+//     SystemLifetime = 1
+//     VolumeType = SPHERE
+//     Volume1 = 0.15
+//     VelocityType = SPHERICAL
+//     Velocity1 = 0.5 1.5
+//     Alpha = 0 0
+//     Alpha = 1 0.3
+//     Alpha = 0 1
+// }
+
+// ---- M5 catalog (I8) ----
+// Numbers are from docs/techguns-spec/04-projectiles-fx/fx-catalog.md.
+// Alpha deviation: GregGuns Alpha is plain opacity. Every Alpha key below is the catalog's "effective" value (what a
+// Techguns player actually saw), not its raw file value, so TeslaFlare, AlienFlare and BlueBlasterFlare (raw 0 and 0)
+// are opaque here (1 and 1), not invisible. Color keys are likewise the catalog's effective values.
+
+FXLIST RocketExplosion {
+    LargeExplosionBlastwave
+    LargeExplosionSmoke
+    LargeExplosion
+    LargeExplosionRing
+}
+
+FXLIST bioblobExplosion {
+    bioblobExplosionExplosion
+    bioblobExplosionSplat
+    LargeExplosionBlastwave
+    bioblobExplosionBlobs
+}
+
+FXLIST AlienExplosion {
+    AlienFlare
+    AlienShockwave
+}
+
+FXLIST AlienBlasterTrail {
+    AlienBlasterTrailFlare
+    AlienBlasterTrailWave
+    AlienBlasterTrailGlow
+}
+
+FXLIST CyberDemonBlasterTrailLarge {
+    CDBTrailFlares
+    CDBSparkyFlares
+    CDBTrailFlames
+}
+
+FXLIST CyberDemonBlasterTrail {
+    CDBTrailFlares_S
+    CDBSparkyFlares_S
+    CDBTrailFlames_S
+}
+
+FXLIST BioGunTrail {
+    BioTrailSplat
+}
+
+FXLIST SonicShotgunTrail {
+    SonicShotgunWaves
+    SonicShotgunWaves2
+}
+
+FXLIST SonicShotgunImpact {
+    SonicShotgunImpactWave
+    SonicShotgunImpactBlastwave
+}
+
+FXLIST BeamGunMuzzleFX {
+    BeamGunMuzzleFlare
+    BeamGunMuzzleSparks
+}
+
+FXLIST BeamGunImpactFX {
+    BeamGunImpactFlare
+    BeamGunImpactSparks
+}
+
+FXLIST BlueBlasterTrail {
+    BlueBlasterTrailFlare
+    BlueBlasterTrailGlow
+}
+
+FXLIST BlueBlasterExplosion {
+    BlueBlasterFlare
+    BlueBlasterShockwave
+}
+
+FXLIST NukeExplosion {
+    NukeExplosionMain
+    NukeExplosionBlastwave
+    NukeExplosionBlast
+    NukeExplosionSmoke
+    NukeExplosionRing
+    NukeExplosionMushroomStem
+    NukeExplosionMushroomCloud
+    NukeExplosionBall
+}
+
+NetherBlasterImpactFlare {
+    Texture = blasterflare01.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = false
+    Lifetime = 15 25
+    ParticleCount = 3 4
+    SpawnDelay = 99
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 0.4 0.6
+    SizeRate = 0.8 1.4
+    SizeRateDamping = 0.88 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 0.5 1.5
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.85 0.9
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = SPHERE
+    Volume1 = 0.15
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+MediumExplosionSmoke {
+    Texture = dustclouds02.png
+    RenderType = ALPHA
+    Columns = 3
+    Rows = 3
+    Frames = 9
+    RandomRotation = true
+    Lifetime = 35 45
+    ParticleCount = 1
+    SpawnDelay = 1
+    InitialDelay = 5
+    SystemLifetime = 4
+    Size = 1.4 1.6
+    SizeRate = 0.4 0.6
+    SizeRateDamping = 0.95 0.96
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0 0.5
+    Velocity2 = 0.25 1.5
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = SPHERE
+    Volume1 = 0.45
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 192 168 128 0
+    Color = 255 255 255 1
+}
+
+LargeExplosionBlastwave {
+    Texture = shockwave.png
+    RenderType = ADDITIVE
+    Columns = 1
+    Rows = 1
+    Frames = 1
+    RandomRotation = true
+    Lifetime = 10 11
+    ParticleCount = 1
+    SpawnDelay = 99
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 2
+    SizeRate = 7 8
+    SizeRateDamping = 0.84 0.86
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.85 0.88
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0.1
+    Volume2 = 0.1
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 0 0 0 0
+    Color = 255 255 255 1
+}
+
+LargeExplosionSmoke {
+    Texture = largesmoke.png
+    RenderType = ALPHA
+    Columns = 2
+    Rows = 2
+    Frames = 4
+    HasVariations = true
+    RandomRotation = true
+    Lifetime = 65 85
+    ParticleCount = 5 6
+    SpawnDelay = 0
+    InitialDelay = 10
+    SystemLifetime = 1
+    Size = 5.8 9.6
+    SizeRate = 0.4 0.6
+    SizeRateDamping = 0.92 0.96
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0.2 0.3
+    Velocity2 = 0 0.05
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.98
+    Gravity = 0.02
+    SystemVelocityFactor = 0
+    VolumeType = SPHERE
+    Volume1 = 2
+    Volume2 = 0
+    Alpha = 0.3 0
+    Alpha = 1 0.6
+    Alpha = 0.3 1
+    Color = 135 123 115 0
+    Color = 196 189 179 1
+}
+
+LargeExplosion {
+    Texture = fireblast.png
+    RenderType = ALPHA
+    Columns = 5
+    Rows = 5
+    Frames = 20
+    RandomRotation = true
+    Lifetime = 25 35
+    ParticleCount = 6
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 1 2
+    SizeRate = 1.2 1.9
+    SizeRateDamping = 0.86 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 1 2
+    Velocity2 = -2 2
+    Velocity3 = 0
+    VelocityDamping = 0.85 0.88
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0.5
+    Volume2 = 0.25
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+LargeExplosionRing {
+    Texture = fireblast.png
+    RenderType = ALPHA
+    Columns = 5
+    Rows = 5
+    Frames = 20
+    RandomRotation = true
+    Lifetime = 15 22
+    ParticleCount = 16 18
+    SpawnDelay = 1
+    InitialDelay = 1
+    SystemLifetime = 1
+    Size = 0.35 0.5
+    SizeRate = 1 1.3
+    SizeRateDamping = 0.86 0.87
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 7 8
+    Velocity2 = -0.1 0.1
+    Velocity3 = 0
+    VelocityDamping = 0.85 0.86
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0.5
+    Volume2 = 0.1
+    IsHollow = true
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+bioblobExplosionExplosion {
+    Texture = explosion.png
+    RenderType = ADDITIVE
+    Columns = 5
+    Rows = 5
+    Frames = 20
+    RandomRotation = true
+    Lifetime = 12 17
+    ParticleCount = 8
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 1.8 2.9
+    SizeRate = 1.2 1.9
+    SizeRateDamping = 0.86 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 1 3
+    Velocity2 = -3 3
+    Velocity3 = 0
+    VelocityDamping = 0.85 0.89
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0.7
+    Volume2 = 0.45
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 55 255 55 0
+    Color = 155 255 155 1
+}
+
+bioblobExplosionSplat {
+    Texture = splat.png
+    RenderType = ADDITIVE
+    Columns = 3
+    Rows = 3
+    Frames = 6
+    HasVariations = true
+    RandomRotation = true
+    Lifetime = 30 45
+    ParticleCount = 5
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 5
+    Size = 1.8 2.8
+    SizeRate = 1.7 2.2
+    SizeRateDamping = 0.9 0.93
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0.5 1.5
+    Velocity2 = 0 0.25
+    Velocity3 = 0
+    VelocityDamping = 0.92 0.96
+    Gravity = 0.05
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0.5
+    Volume2 = 0.5
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 45 255 30 0
+    Color = 0 255 0 1
+}
+
+bioblobExplosionBlobs {
+    Texture = blobs.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 16
+    HasVariations = true
+    RandomRotation = true
+    Lifetime = 25 35
+    ParticleCount = 5
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 5
+    Size = 0.5 1.5
+    SizeRate = 0.2 0.4
+    SizeRateDamping = 0.85 0.86
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 1.5 4.5
+    Velocity2 = 6 12
+    Velocity3 = 0
+    VelocityDamping = 0.96 0.98
+    Gravity = 0.4
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0.5
+    Volume2 = 0.5
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+LaserFlareEnd {
+    Texture = laserflare02.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 2
+    Frames = 7
+    RandomRotation = true
+    Lifetime = 7
+    ParticleCount = 1
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 1 2
+    SizeRate = 1.2 1.87
+    SizeRateDamping = 0.9 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.98
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+LaserFlareStart {
+    Texture = laserflare02.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 2
+    Frames = 7
+    RandomRotation = true
+    Lifetime = 7
+    ParticleCount = 1
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 1 2
+    SizeRate = 1.2 1.87
+    SizeRateDamping = 0.9 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.98
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+TeslaFlare {
+    Texture = teslaflare01.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 14
+    ParticleCount = 1
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 1 2
+    SizeRate = 1.2 1.87
+    SizeRateDamping = 0.9 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.98
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 1 0
+    Alpha = 1 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+AlienFlare {
+    Texture = alienflare.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 10
+    ParticleCount = 1
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 1
+    SizeRate = 2.2 2.5
+    SizeRateDamping = 0.9 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.98
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 1 0
+    Alpha = 1 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+AlienShockwave {
+    Texture = shockwave.png
+    RenderType = ADDITIVE
+    Columns = 1
+    Rows = 1
+    Frames = 1
+    RandomRotation = true
+    Lifetime = 14
+    ParticleCount = 1
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 1
+    SizeRate = 2.5 2.6
+    SizeRateDamping = 0.9 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.98
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 50 255 0
+    Color = 255 50 255 1
+}
+
+AlienBlasterTrailFlare {
+    Texture = alienflare.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 6 7
+    ParticleCount = 10
+    SpawnDelay = 1
+    InitialDelay = 2
+    SystemLifetime = 0
+    Size = 3.5 5
+    SizeRate = -0.5 -0.8
+    SizeRateDamping = 0.92 0.94
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 0.5 1.5
+    VelocityType = SPHERICAL
+    Velocity1 = 0 0.1
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 5.5
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+AlienBlasterTrailWave {
+    Texture = shockwave.png
+    RenderType = ADDITIVE
+    Columns = 1
+    Rows = 1
+    Frames = 1
+    RandomRotation = true
+    Lifetime = 4
+    ParticleCount = 3
+    SpawnDelay = 1
+    InitialDelay = 3
+    SystemLifetime = 0
+    Size = 1
+    SizeRate = 5
+    SizeRateDamping = 0.9
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.98
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 4.5
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 50 255 0
+    Color = 255 50 255 1
+}
+
+AlienBlasterTrailGlow {
+    Texture = lensflare1.png
+    RenderType = ADDITIVE
+    Columns = 1
+    Rows = 1
+    Frames = 1
+    RandomRotation = true
+    Lifetime = 3
+    ParticleCount = 3
+    SpawnDelay = 0
+    InitialDelay = 2
+    SystemLifetime = 0
+    Size = 4
+    SizeRate = 5
+    SizeRateDamping = 0.9
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.98
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 4.5
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 125 255 0
+    Color = 255 125 255 1
+}
+
+CDBTrailFlares {
+    Texture = blasterflare01.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = false
+    Lifetime = 6
+    ParticleCount = 6
+    SpawnDelay = 0
+    InitialDelay = 2
+    SystemLifetime = 0
+    Size = 1.5 2
+    SizeRate = 0.75 1
+    SizeRateDamping = 0.92 0.94
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 0 0.5
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 3
+    Volume2 = 1.5
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+CDBTrailFlames {
+    Texture = flamethrower.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 16
+    RandomRotation = true
+    Lifetime = 4 5
+    ParticleCount = 2
+    SpawnDelay = 0
+    InitialDelay = 3
+    SystemLifetime = 0
+    Size = 1 2
+    SizeRate = 1 2
+    SizeRateDamping = 0.94 0.97
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 0 0.5
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 3
+    Volume2 = 1.5
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+CDBSparkyFlares {
+    Texture = blasterflare01.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 6 7
+    ParticleCount = 2
+    SpawnDelay = 0
+    InitialDelay = 3
+    SystemLifetime = 0
+    Size = 0.5 1.2
+    SizeRate = 0.75 1
+    SizeRateDamping = 0.92 0.94
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 1.5 3.5
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = POINT
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+CDBTrailFlares_S {
+    Texture = blasterflare01.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = false
+    Lifetime = 5
+    ParticleCount = 6
+    SpawnDelay = 0
+    InitialDelay = 2
+    SystemLifetime = 0
+    Size = 0.5 1
+    SizeRate = 0.45 0.65
+    SizeRateDamping = 0.92 0.94
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 0 0.5
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 3
+    Volume2 = 1.5
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+CDBTrailFlames_S {
+    Texture = flamethrower.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 16
+    RandomRotation = true
+    Lifetime = 4
+    ParticleCount = 1 2
+    SpawnDelay = 0
+    InitialDelay = 3
+    SystemLifetime = 0
+    Size = 0.5 1
+    SizeRate = 0.5 1
+    SizeRateDamping = 0.94 0.97
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 0 0.5
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 3
+    Volume2 = 1.5
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+CDBSparkyFlares_S {
+    Texture = blasterflare01.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 6
+    ParticleCount = 2
+    SpawnDelay = 0
+    InitialDelay = 3
+    SystemLifetime = 0
+    Size = 0.3 0.6
+    SizeRate = 0.35 0.6
+    SizeRateDamping = 0.92 0.94
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 1 2
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = POINT
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+BioTrailSplat {
+    Texture = splat.png
+    RenderType = ADDITIVE
+    Columns = 3
+    Rows = 3
+    Frames = 6
+    HasVariations = true
+    RandomRotation = true
+    Lifetime = 8 12
+    ParticleCount = 1
+    SpawnDelay = 0
+    InitialDelay = 0
+    SystemLifetime = 0
+    Size = 0.5 1.5
+    SizeRate = 0.5 1.5
+    SizeRateDamping = 0.9 0.93
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 0.5 1.5
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.92 0.96
+    Gravity = 0.05
+    SystemVelocityFactor = 0
+    VolumeType = POINT
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 45 255 30 0
+    Color = 0 255 0 1
+}
+
+SonicShotgunWaves {
+    Texture = sonicwave4x4.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 6 8
+    ParticleCount = 1 2
+    SpawnDelay = 0
+    InitialDelay = 1
+    SystemLifetime = 0
+    Size = 0.25 0.5
+    SizeRate = 0.5 2
+    SizeRateDamping = 0.75 0.78
+    StartSizeRate = 4
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 3
+    Volume2 = 1.5
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 0 0 0 0.25
+    Color = 255 255 255 1
+}
+
+SonicShotgunWaves2 {
+    Texture = sonicwave4x4.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 10 11
+    ParticleCount = 1
+    SpawnDelay = 1 2
+    InitialDelay = 3
+    SystemLifetime = 0
+    Size = 1 2
+    SizeRate = 4 8
+    SizeRateDamping = 0.75 0.78
+    StartSizeRate = 5
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 0 1.5
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = POINT
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 0 0 0 0.25
+    Color = 255 255 255 1
+}
+
+SonicShotgunImpactWave {
+    Texture = sonicwave4x4.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 8 9
+    ParticleCount = 1
+    SpawnDelay = 2
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 2 2.5
+    SizeRate = 1.5 2
+    SizeRateDamping = 0.75 0.78
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 0 0.2
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 3
+    Volume2 = 1.5
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 0 0 0 0.25
+    Color = 255 255 255 1
+}
+
+SonicShotgunImpactBlastwave {
+    Texture = shockwave.png
+    RenderType = ADDITIVE
+    Columns = 1
+    Rows = 1
+    Frames = 1
+    RandomRotation = true
+    Lifetime = 7 8
+    ParticleCount = 1
+    SpawnDelay = 99
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 2
+    SizeRate = 8 9
+    SizeRateDamping = 0.84 0.86
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.85 0.88
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0.1
+    Volume2 = 0.1
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 0 0 0 0
+    Color = 225 235 255 1
+}
+
+BeamGunMuzzleFlare {
+    Texture = nukebeamflare.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 16
+    RandomRotation = true
+    Lifetime = 5 6
+    ParticleCount = 1
+    SpawnDelay = 0
+    InitialDelay = 0
+    SystemLifetime = 5
+    Size = 0.25 0.5
+    SizeRate = 0.15 0.25
+    SizeRateDamping = 0.75 0.78
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = ORTHO
+    Velocity1 = 1 4
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.79 0.81
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER2
+    Volume1 = 0
+    Volume2 = 10
+    Offset = 1 0 0
+    Alpha = 0.75 0
+    Alpha = 1 0.5
+    Alpha = 0.75 1
+    Color = 0 0 0 0
+    Color = 155 155 155 1
+}
+
+BeamGunMuzzleSparks {
+    Texture = lensflare3.png
+    RenderType = ADDITIVE
+    Columns = 1
+    Rows = 1
+    Frames = 1
+    RandomRotation = true
+    Lifetime = 12 16
+    ParticleCount = 1
+    SpawnDelay = 0
+    InitialDelay = 0
+    SystemLifetime = 5
+    Size = 0.1 0.2
+    SizeRate = 0.1
+    SizeRateDamping = 0.75 0.78
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = ORTHO
+    Velocity1 = 5 15
+    Velocity2 = -0.7 0.7
+    Velocity3 = -0.7 0.7
+    VelocityDamping = 0.95 0.97
+    Gravity = 0.02
+    SystemVelocityFactor = 0
+    VolumeType = POINT
+    Volume1 = 0
+    Volume2 = 0
+    Offset = 0.25 0 0
+    Alpha = 0 0
+    Alpha = 1 0.5
+    Alpha = 0 1
+    Color = 255 128 0 0
+    Color = 255 196 128 1
+}
+
+BeamGunImpactFlare {
+    Texture = nukebeamflare.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 16
+    RandomRotation = true
+    Lifetime = 6
+    ParticleCount = 1
+    SpawnDelay = 0
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 0.3 0.6
+    SizeRate = 0.3 0.6
+    SizeRateDamping = 0.85 0.88
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = 0 0.5
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.79 0.81
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = POINT
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 0.9 0
+    Alpha = 1 0.5
+    Alpha = 0.9 1
+    Color = 255 255 255 0
+    Color = 0 0 0 0.25
+    Color = 255 255 255 1
+}
+
+BeamGunImpactSparks {
+    Texture = lensflare3.png
+    RenderType = ADDITIVE
+    Columns = 1
+    Rows = 1
+    Frames = 1
+    RandomRotation = true
+    Lifetime = 12 18
+    ParticleCount = 1
+    SpawnDelay = 0
+    InitialDelay = 0
+    SystemLifetime = 5
+    Size = 0.1 0.2
+    SizeRate = 0.1
+    SizeRateDamping = 0.75 0.78
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = SPHERICAL
+    Velocity1 = -4 4
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.84 0.87
+    Gravity = 0.02
+    SystemVelocityFactor = 0
+    VolumeType = POINT
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.5
+    Alpha = 0 1
+    Color = 255 128 0 0
+    Color = 255 196 128 1
+}
+
+BlueBlasterTrailFlare {
+    Texture = alienflare.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 6 7
+    ParticleCount = 10
+    SpawnDelay = 1
+    InitialDelay = 2
+    SystemLifetime = 0
+    Size = 2 2.5
+    SizeRate = -0.5 -0.8
+    SizeRateDamping = 0.92 0.94
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 0.5 1.5
+    VelocityType = SPHERICAL
+    Velocity1 = 0 0.1
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 5.5
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 40 255 140 0
+    Color = 40 255 140 1
+}
+
+BlueBlasterTrailGlow {
+    Texture = lensflare1.png
+    RenderType = ADDITIVE
+    Columns = 1
+    Rows = 1
+    Frames = 1
+    RandomRotation = true
+    Lifetime = 3
+    ParticleCount = 3
+    SpawnDelay = 0
+    InitialDelay = 2
+    SystemLifetime = 0
+    Size = 0.7
+    SizeRate = 5
+    SizeRateDamping = 0.9
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.98
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = TRAIL
+    Volume1 = 4.5
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 100 180 255 0
+    Color = 100 180 255 1
+}
+
+BlueBlasterFlare {
+    Texture = alienflare.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 7
+    ParticleCount = 1
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 1
+    SizeRate = 1.2 1.5
+    SizeRateDamping = 0.9 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.98
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 1 0
+    Alpha = 1 1
+    Color = 40 255 140 0
+    Color = 40 255 140 1
+}
+
+BlueBlasterShockwave {
+    Texture = shockwave.png
+    RenderType = ADDITIVE
+    Columns = 1
+    Rows = 1
+    Frames = 1
+    RandomRotation = true
+    Lifetime = 8
+    ParticleCount = 1
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 1
+    SizeRate = 1.5 1.6
+    SizeRateDamping = 0.9 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.98
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 50 255 0
+    Color = 255 50 255 1
+}
+
+NukeExplosionMain {
+    Texture = fireblast.png
+    RenderType = ALPHA
+    Columns = 5
+    Rows = 5
+    Frames = 20
+    RandomRotation = true
+    Lifetime = 105 115
+    ParticleCount = 20
+    SpawnDelay = 1
+    InitialDelay = 6
+    SystemLifetime = 1
+    Size = 3 6
+    SizeRate = 2 4
+    SizeRateDamping = 0.86 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 3 6
+    Velocity2 = 0 1
+    Velocity3 = 0
+    VelocityDamping = 0.85 0.88
+    Gravity = 0.01
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 8
+    Volume2 = 1
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+NukeExplosionBlastwave {
+    EXTENDS LargeExplosionBlastwave
+    Texture = shockwave.png
+    RenderType = ADDITIVE
+    Columns = 1
+    Rows = 1
+    Frames = 1
+    RandomRotation = true
+    Lifetime = 15 16
+    ParticleCount = 1
+    SpawnDelay = 99
+    InitialDelay = 0
+    SystemLifetime = 5
+    Size = 5
+    SizeRate = 25
+    SizeRateDamping = 0.84 0.86
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.85 0.88
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 0.1
+    Volume2 = 0.1
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 0 0 0 0
+    Color = 255 255 255 1
+}
+
+NukeExplosionBlast {
+    Texture = blasterflare01.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 8
+    RandomRotation = true
+    Lifetime = 7 10
+    ParticleCount = 35
+    SpawnDelay = 1
+    InitialDelay = 13
+    SystemLifetime = 3
+    Size = 5 10
+    SizeRate = 10 15
+    SizeRateDamping = 0.88 0.89
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 10 20
+    Velocity2 = 0 10
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 5
+    Volume2 = 2
+    Alpha = 0 0
+    Alpha = 1 0.5
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+NukeExplosionSmoke {
+    Texture = largesmoke.png
+    RenderType = ALPHA
+    Columns = 2
+    Rows = 2
+    Frames = 4
+    HasVariations = true
+    RandomRotation = true
+    Lifetime = 100 180
+    ParticleCount = 30
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 5
+    Size = 8 12
+    SizeRate = 0.4 0.6
+    SizeRateDamping = 0.92 0.96
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = -17 -8
+    Velocity2 = 1 3
+    Velocity3 = 0
+    VelocityDamping = 0.92 0.94
+    Gravity = 0.02
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 18
+    Volume2 = 2
+    IsHollow = true
+    Alpha = 0.3 0
+    Alpha = 1 0.6
+    Alpha = 0.3 1
+    Color = 135 123 115 0
+    Color = 196 189 179 1
+}
+
+NukeExplosionRing {
+    Texture = flamethrower_a.png
+    RenderType = ALPHA
+    Columns = 4
+    Rows = 4
+    Frames = 16
+    RandomRotation = true
+    Lifetime = 15 30
+    ParticleCount = 60
+    SpawnDelay = 1
+    InitialDelay = 14
+    SystemLifetime = 1
+    Size = 2 4
+    SizeRate = 2 3
+    SizeRateDamping = 0.86 0.87
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 30 45
+    Velocity2 = -0.2 0.2
+    Velocity3 = 0
+    VelocityDamping = 0.85 0.88
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 2
+    Volume2 = 0.5
+    Offset = 0 1.5 0
+    Alpha = 0 0
+    Alpha = 1 0.25
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+NukeExplosionMushroomStem {
+    Texture = fireblast.png
+    RenderType = ALPHA
+    Columns = 5
+    Rows = 5
+    Frames = 20
+    RandomRotation = true
+    Lifetime = 95 105
+    ParticleCount = 32
+    SpawnDelay = 1
+    InitialDelay = 12
+    SystemLifetime = 1
+    Size = 3 6
+    SizeRate = 2 4
+    SizeRateDamping = 0.86 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = -1 -0.5
+    Velocity2 = 1 25
+    Velocity3 = 0
+    VelocityDamping = 0.89 0.91
+    Gravity = 0.01
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 4
+    Volume2 = 8
+    Alpha = 0 0
+    Alpha = 1 0.35
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+NukeExplosionMushroomCloud {
+    Texture = fireblast.png
+    RenderType = ALPHA
+    Columns = 5
+    Rows = 5
+    Frames = 20
+    RandomRotation = true
+    Lifetime = 85 95
+    ParticleCount = 20
+    SpawnDelay = 1
+    InitialDelay = 14
+    SystemLifetime = 1
+    Size = 4 8
+    SizeRate = 3 6
+    SizeRateDamping = 0.86 0.91
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = OUTWARD
+    Velocity1 = 1.5 3
+    Velocity2 = 14 15
+    Velocity3 = 0
+    VelocityDamping = 0.87 0.88
+    Gravity = 0.01
+    SystemVelocityFactor = 0
+    VolumeType = CYLINDER
+    Volume1 = 6
+    Volume2 = 3
+    Offset = 0 11.5 0
+    Alpha = 0 0
+    Alpha = 1 0.5
+    Alpha = 0 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+NukeExplosionBall {
+    Texture = blasterflare01.png
+    RenderType = ADDITIVE
+    Columns = 4
+    Rows = 4
+    Frames = 14
+    RandomRotation = true
+    Lifetime = 20 22
+    ParticleCount = 25
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 12 14
+    SizeRate = 5 8
+    SizeRateDamping = 0.96 0.98
+    StartSizeRate = 0
+    StartSizeRateDamping = 1
+    AnimationSpeed = 1
+    VelocityType = HEMISPHERICAL
+    Velocity1 = 1 4
+    Velocity2 = 0
+    Velocity3 = 0
+    VelocityDamping = 0.95 0.97
+    Gravity = 0
+    SystemVelocityFactor = 0
+    VolumeType = HEMISPHERE
+    Volume1 = 4
+    Volume2 = 0
+    Alpha = 0 0
+    Alpha = 1 1
+    Color = 255 255 255 0
+    Color = 255 255 255 1
+}
+
+// Legacy named particle "impact" (Power Hammer hit): impact.png, scale 2.5 growing to 7.5 over 5 ticks, warm white
+// fading from alpha 0.5 (128) to 0.
+impact {
+    Texture = impact.png
+    RenderType = ADDITIVE
+    Columns = 2
+    Rows = 2
+    Frames = 4
+    RandomRotation = false
+    Lifetime = 5
+    ParticleCount = 1
+    SpawnDelay = 1
+    InitialDelay = 0
+    SystemLifetime = 1
+    Size = 2.5
+    SizeRate = 1
+    SizeRateDamping = 1
+    VelocityType = OUTWARD
+    Velocity1 = 0
+    VolumeType = POINT
+    Alpha = 0.5 0
+    Alpha = 0 1
+    Color = 255 215 155 0
+    Color = 255 215 155 1
+}

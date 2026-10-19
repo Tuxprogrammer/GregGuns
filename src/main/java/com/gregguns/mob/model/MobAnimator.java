@@ -11,7 +11,8 @@ package com.gregguns.mob.model;
  * to X;</li>
  * <li>{@code swing}: adds {@code amplitude * limbSwingAmount * cos(limbSwing * speed + phase)} on the axis;</li>
  * <li>{@code idle}: adds {@code offset + amplitude * sin(ageInTicks * speed + phase)};</li>
- * <li>{@code spin}: adds {@code rate * ageInTicks};</li>
+ * <li>{@code spin}: adds {@code rate * ageInTicks}, with the rate times {@code deathScale} once the death progress
+ * is above 0;</li>
  * <li>{@code pose}: with weight {@code w} (see {@link #poseWeight}) adds, or for {@code set} blends toward, the
  * given angles, plus {@code followYaw * netHeadYaw} on Y and {@code followPitch * headPitch} on X.</li>
  * </ul>
@@ -49,7 +50,7 @@ public final class MobAnimator {
                     r[a.axis()] += idle(a, in);
                     break;
                 case SPIN:
-                    r[a.axis()] += rad(a.rate() * in.ageInTicks);
+                    r[a.axis()] += spin(a, in);
                     break;
                 default:
                     pose(a, in, r);
@@ -65,6 +66,16 @@ public final class MobAnimator {
      */
     public static float swing(MobAnimDef a, AnimInput in) {
         return rad(a.amplitude()) * in.limbSwingAmount * (float) Math.cos(in.limbSwing * a.speed() + rad(a.phase()));
+    }
+
+    /**
+     * @param a  a spin entry
+     * @param in the inputs
+     * @return the angle it adds, radians; the rate drops to {@code rate * deathScale} while dying
+     */
+    public static float spin(MobAnimDef a, AnimInput in) {
+        float scale = in.deathProgress > 0.0F ? a.deathScale() : 1.0F;
+        return rad(a.rate() * scale * in.ageInTicks);
     }
 
     /**
@@ -89,6 +100,8 @@ public final class MobAnimator {
                 return in.aiming ? 1.0F : 0.0F;
             case HOLDING:
                 return in.holding ? 1.0F : 0.0F;
+            case DYING:
+                return Math.max(0.0F, Math.min(1.0F, in.deathProgress));
             default:
                 float p = (in.attackProgress - a.windowFrom()) / (a.windowTo() - a.windowFrom());
                 if (in.attackProgress <= 0.0F || p < 0.0F || p > 1.0F) {

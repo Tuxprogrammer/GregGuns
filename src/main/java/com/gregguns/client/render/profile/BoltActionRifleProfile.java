@@ -94,13 +94,11 @@ public final class BoltActionRifleProfile {
     // centre on the family anchor. The sheet's fire and reload offsets are multiplied by K so they move the rifle the
     // same distance on screen as the sheet intends.
     private static final double SHEET_FP_SCALE = 1.5;
-    /** On-screen length of the rifle in first person, blocks of the scaled frame. */
-    private static final double RIFLE_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), RIFLE_LENGTH);
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("bolt_action_rifle", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.2, -0.25 });
+    private static final double FP_SCALE = FIT.fpScale;
     private static final double FP_AMP = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -161,8 +159,8 @@ public final class BoltActionRifleProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.2)
-            .translate(-0.65, -0.25, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil about (0, 0.3, -0.9): rotZ(-20 K).
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -189,12 +187,13 @@ public final class BoltActionRifleProfile {
         // Deviation: the sheet's flash offset (-0.4, -3.0, 1.15) is where Techguns' muzzle was on screen; this
         // offset puts the fixed-frame first-person flash on this model's muzzle (solved from the same projection).
         // muzzleFlash2 sheet, additive because the GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.85);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.055,
-            0.005,
-            0.357,
+            fo[0],
+            fo[1],
+            fo[2],
             1.85,
             new double[] { 0, 0, 0 },
             true,

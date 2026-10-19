@@ -124,12 +124,10 @@ public final class M4Profile {
     // The scale follows the FirstPersonFit rule with the long-gun target of 2 blocks on screen (the bolt-action's
     // precedent), and the idle position puts this model's box centre on the family anchor. The notes' small fire kick
     // (5 degrees, 0.15 back) is applied at that scale: a screen shift d is d / FP_SCALE in model axes.
-    /** On-screen length of the rifle in first person, blocks of the scaled frame. */
-    private static final double RIFLE_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), RIFLE_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("m4", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, 0 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -167,7 +165,7 @@ public final class M4Profile {
         // Firing: a light muzzle-up kick, 5 degrees at the dip (yF = -0.5), and 0.15 block back on screen.
         TransformProgram fpFire = TransformProgram.builder()
             .rotZ((p, part) -> 10.0 * yF(p))
-            .translate((p, part) -> FP_X + 0.3 / FP_SCALE * yF(p), (p, part) -> FP_Y, (p, part) -> FP_Z)
+            .translate((p, part) -> FP_X + 0.42 / FP_SCALE * yF(p), (p, part) -> FP_Y, (p, part) -> FP_Z)
             .build();
         // Reload: the barrel dips 25 degrees at mid-reload and comes back, over the 45 ticks.
         TransformProgram fpReload = TransformProgram.builder()
@@ -179,8 +177,8 @@ public final class M4Profile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.9)
-            .translate(-1.2, -0.75, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the gun pitches up 15 degrees about the hand, in the first quarter of the first half.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -209,12 +207,13 @@ public final class M4Profile {
         // offset moved by the difference between the two muzzles' projected positions (this model is longer and
         // taller, so FP_SCALE differs and the muzzle sits elsewhere). muzzleFlash2 sheet, additive because the
         // GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.85);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.023,
-            0.005,
-            0.372,
+            fo[0],
+            fo[1],
+            fo[2],
             1.85,
             new double[] { 0, 0, 0 },
             true,

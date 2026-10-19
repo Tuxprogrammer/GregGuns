@@ -114,6 +114,8 @@ public final class GregGunsNetwork {
                 new PacketFlightStatus(),
                 new PacketFlash(),
                 new com.gregguns.explosion.PacketBlastFx(),
+                new com.gregguns.fx.PacketSpawnParticle(),
+                new com.gregguns.fx.PacketSpawnParticleOnEntity(),
                 new com.gregguns.entity.npc.PacketNpcAim()));
     }
 
@@ -124,6 +126,7 @@ public final class GregGunsNetwork {
                 new PacketGunTrigger(),
                 new PacketGunZoom(),
                 new PacketCamoCycle(),
-                new com.gregguns.utility.charge.PacketChargeButton()));
+                new com.gregguns.utility.charge.PacketChargeButton(),
+                new com.gregguns.gun.net.PacketGunCharge()));
     }
 }

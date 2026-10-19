@@ -132,6 +132,7 @@ final class ModelRig {
         in.holding = holding;
         in.aiming = aimedFlag;
         in.attackProgress = swingProgress;
+        in.deathProgress = 0.0F;
         if (entity instanceof MobAnimSource) {
             MobAnimSource src = (MobAnimSource) entity;
             in.aiming = src.isAiming();
@@ -139,6 +140,7 @@ final class ModelRig {
             if (p >= 0.0F) {
                 in.attackProgress = p;
             }
+            in.deathProgress = src.deathProgress(partialTicks);
         }
         MobAnimator.evaluate(def, in, angles);
         for (int i = 0; i < parts.length; i++) {

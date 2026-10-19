@@ -85,13 +85,11 @@ public final class CombatShotgunProfile {
     // position puts this model's box centre on the family anchor. The sheet's reload shift is multiplied by K as in
     // the bolt-action profile (a 1.5 sheet scale, the same class of long gun).
     private static final double SHEET_FP_SCALE = 1.5;
-    /** On-screen length of the shotgun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("combat_shotgun", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.2, -0.25 });
+    private static final double FP_SCALE = FIT.fpScale;
     private static final double FP_AMP = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -111,7 +109,7 @@ public final class CombatShotgunProfile {
         MODEL_SCALE,
         TEXTURES,
         MUZZLE,
-        false,
+        true,
         TRANSFORMS);
 
     private CombatShotgunProfile() {}
@@ -156,8 +154,8 @@ public final class CombatShotgunProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.15)
-            .translate(-0.95, -0.5, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: a 20 degree roll in the first half; in the second half the pump slides back 0.5 and returns.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -191,12 +189,13 @@ public final class CombatShotgunProfile {
         // black-backed. The first-person offset is drawn in a fixed frame; this model has the bolt-action's length
         // and the same anchor, so its solved offset is reused. Headless work cannot look at the screen, so this is
         // unverified in game.
+        double[] fo = FIT.flashOffset(MUZZLE, 1.85);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.055,
-            0.005,
-            0.357,
+            fo[0],
+            fo[1],
+            fo[2],
             1.85,
             new double[] { 0, 0, 0 },
             true,

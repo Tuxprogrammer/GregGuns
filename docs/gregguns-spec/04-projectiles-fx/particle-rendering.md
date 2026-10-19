@@ -54,3 +54,13 @@ The data-driven emitter model (`FXList.txt`, `EntityParticleSystem`, `EntityPart
 
 - Whether Angelica's capture path preserves a `NO_Z_TEST` particle's disabled depth test when instanced. The state is sampled at the first vertex ([ParticleCaptureTessellator.java#L144](https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/rendering/particles/ParticleCaptureTessellator.java#L144)), which suggests yes, but the sampled fields were not read. Check visually in `runClient`.
 - The 2000 default ceiling is a proposal. Tune it against a big Nuke FX list in M5.
+
+## M5 FX catalog (I8)
+
+`fx_lists.txt` ships the M5 subset of [fx-catalog.md](../../techguns-spec/04-projectiles-fx/fx-catalog.md): 14 FX lists and 44 systems (laser and tesla flares, bio, blue and alien blaster trails and impacts, Nether Blaster impact, sonic shotgun, beam gun, rocket, bioblob and nuke explosions) plus the legacy `impact` sprite.
+
+- **Alpha and color are the catalog's effective values**, not the raw file values. GregGuns `Alpha` is plain opacity, while the Techguns engine inverted and swapped its keys. Taking the raw values would make `TeslaFlare`, `AlienFlare` and `BlueBlasterFlare` (raw `0` and `0`) invisible, so they are `1` and `1` here. A unit test pins this.
+- `NukeExplosionBlastwave` uses `EXTENDS LargeExplosionBlastwave` and overrides what differs (full copy, see the `ParticleSystemDef` Javadoc).
+- `PacketBlastFx` spawns `NukeExplosion` for a blast of power 8 or more and `RocketExplosion` below that (`BlastFxSelector`); `BlastFxClient` installs the sink.
+- GGS-04-07 is enforced by `FxCatalogTest`: no shipped name is a slow-path class, every system names a shipped texture, and every frame grid is valid. Every system is one quad per particle by construction.
+- GGS-04-08 at scale: `FxStressTest` runs 500 emitters of the real catalog under the ceiling, and the `fx.stress` scenario runs 50. "Spilled" is particles alive past the ceiling and must be 0. Real frame cost is read in the batched client session.

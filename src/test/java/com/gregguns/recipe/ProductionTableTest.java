@@ -82,11 +82,14 @@ class ProductionTableTest {
             // rocket is HV (stainless steel gate); everything else here is LV.
             String out = row.output();
             Tier expected = out.equals(ProductionTable.STONE_BULLET) ? Tier.STEAM
-                : out.equals("ammo_rocket") || out.equals("ammo_high_caliber_round")
-                    || out.startsWith("mag_as50")
-                    || out.startsWith("mag_lmg") ? Tier.HV
-                        : out.startsWith("mag_smg") || out.startsWith("mag_assault_rifle")
-                            || out.equals("ammo_40mm_grenade") ? Tier.MV : Tier.LV;
+                : out.equals("ammo_advanced_bullet") || out.startsWith("mag_advanced")
+                    || out.startsWith("mag_minigun_drum")
+                        ? Tier.EV
+                        : out.equals("ammo_rocket") || out.equals("ammo_high_caliber_round")
+                            || out.startsWith("mag_as50")
+                            || out.startsWith("mag_lmg") ? Tier.HV
+                                : out.startsWith("mag_smg") || out.startsWith("mag_assault_rifle")
+                                    || out.equals("ammo_40mm_grenade") ? Tier.MV : Tier.LV;
             assertEquals(expected, row.tier(), row.id());
         }
     }
@@ -223,10 +226,22 @@ class ProductionTableTest {
         Map<String, ProductionTable.Row> made = ProductionTable.byOutput();
         for (ProductionTable.Row row : ProductionTable.ROWS) {
             for (ProductionTable.Input input : row.inputs()) {
-                if (input.isGregGuns() && !ProductionTable.CRAFTED_PARTS.contains(input.itemName())) {
+                if (input.isGregGuns() && !ProductionTable.CRAFTED_PARTS.contains(input.itemName())
+                    && !madeByComponentTable(input.itemName())) {
                     assertNotNull(made.get(input.itemName()), row.id() + " input " + input.itemName());
                 }
             }
         }
+    }
+
+    /** Parts such as Mechanical Parts T3 (RC-12) are made by the component table, not the ammo table. */
+    private static boolean madeByComponentTable(String item) {
+        for (ProductionTable.Row row : ComponentTable.rows()) {
+            if (row.output()
+                .equals(item)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

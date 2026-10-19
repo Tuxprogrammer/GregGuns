@@ -5,6 +5,8 @@ import net.minecraft.item.ItemStack;
 
 import com.gregguns.gun.GunAccuracy;
 import com.gregguns.gun.logic.AmmoInventory;
+import com.gregguns.gun.logic.ChargeRelease;
+import com.gregguns.gun.logic.ChargeSource;
 import com.gregguns.gun.logic.GunController;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunState;
@@ -21,6 +23,7 @@ import com.gregguns.gun.sound.GunSoundPlayer;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.gun.ItemGun;
 import com.gregguns.item.gun.PlayerAmmoStore;
+import com.gregguns.item.gun.StackCharge;
 import com.gregguns.item.gun.StoreAmmoInventory;
 import com.gregguns.network.GregGunsNetwork;
 import com.gregguns.projectile.Projectiles;
@@ -73,7 +76,17 @@ public final class ServerGunHandler {
         GunState state = GunNbt.read(held.getTagCompound(), stats);
         int before = state.loaded();
         GunTickResult result = data.controller()
-            .tick(stats, state, ammoOf(player, stats), true, player.capabilities.isCreativeMode);
+            .tick(stats, state, ammoOf(player, stats, held), true, player.capabilities.isCreativeMode);
+        if (stats.isCharge()) {
+            if (data.controller()
+                .reload()
+                .isReloading()) {
+                data.charge()
+                    .cancel();
+            }
+            data.charge()
+                .tick(stats);
+        }
         if (state.loaded() != before) {
             GunNbt.write(held.getTagCompound(), state);
         }
@@ -105,6 +118,74 @@ public final class ServerGunHandler {
         } else {
             controller.triggerReleased();
         }
+    }
+
+    /**
+     * The charge button of a charge gun changed. Down starts a charge when the gun has a round, is off cooldown and is
+     * not reloading; up releases it: the rounds are spent from what is loaded (GUN-02), the shot is launched through
+     * {@link ItemGun#onChargedShot} and broadcast like any other shot (GUN-31).
+     *
+     * @param player the player, validated to hold a gun
+     * @param down   true for pressed
+     */
+    public static void onCharge(EntityPlayerMP player, boolean down) {
+        ItemStack held = player.getHeldItem();
+        ItemGun gun = gunOf(held);
+        if (gun == null || !isAlive(player)
+            || !gun.stats()
+                .isCharge()) {
+            return;
+        }
+        GunPlayerData data = GunPlayerData.get(player);
+        GunStats stats = gun.stats();
+        ItemGun.ensureTag(held, stats);
+        GunState state = GunNbt.read(held.getTagCompound(), stats);
+        boolean creative = player.capabilities.isCreativeMode;
+        if (down) {
+            boolean allowed = (creative || state.loaded() > 0) && data.controller()
+                .fire()
+                .isReady()
+                && !data.controller()
+                    .reload()
+                    .isReloading();
+            if (data.charge()
+                .begin(allowed) && gun.chargeEvent() != null) {
+                GunSoundPlayer.playReload(player, gun.chargeEvent(), null);
+            }
+            return;
+        }
+        boolean wasCharging = data.charge()
+            .isCharging();
+        ChargeRelease release = data.charge()
+            .release(stats, creative ? Integer.MAX_VALUE : state.loaded());
+        if (release == null) {
+            if (wasCharging) {
+                GunSoundPlayer.playDryFire(player, null);
+            }
+            return;
+        }
+        if (!creative) {
+            state.use(release.units());
+            GunNbt.write(held.getTagCompound(), state);
+        }
+        data.controller()
+            .fire()
+            .lockout(stats.fireRateTicks());
+        GunSoundPlayer.playFire(player, gun.fireEvent(), null);
+        ShotOffset[] offsets = SpreadModel.roll(
+            player.getRNG(),
+            stats,
+            GunAccuracy.shotContext(
+                player,
+                data.controller()
+                    .zoom()
+                    .isZoomed(stats)),
+            0);
+        gun.onChargedShot(player, release, offsets);
+        data.setLastShotTick(player.worldObj.getTotalWorldTime());
+        // Fixes GUN-31: Techguns sends no fired message on a charged release, so other players saw no recoil.
+        GregGunsNetwork.channel()
+            .sendToAllTracking(new PacketGunEvent(player, GunEventKind.SHOT_FIRED, 0), player);
     }
 
     /**
@@ -140,7 +221,7 @@ public final class ServerGunHandler {
         ItemGun.ensureTag(held, stats);
         GunState state = GunNbt.read(held.getTagCompound(), stats);
         ReloadStateMachine.Event event = data.controller()
-            .forceReload(stats, state, ammoOf(player, stats));
+            .forceReload(stats, state, ammoOf(player, stats, held));
         if (event == ReloadStateMachine.Event.STARTED) {
             announceReload(player, gun, event);
             syncZoom(player, data, stats);
@@ -203,6 +284,8 @@ public final class ServerGunHandler {
             .isReloading();
         data.controller()
             .reset();
+        data.charge()
+            .cancel();
         data.setActive(null, -1);
         if (wasReloading) {
             GregGunsNetwork.channel()
@@ -235,8 +318,12 @@ public final class ServerGunHandler {
         }
     }
 
-    private static AmmoInventory ammoOf(EntityPlayerMP player, GunStats stats) {
-        return new StoreAmmoInventory(new PlayerAmmoStore(player), GunItems.roundsPerLooseItem(stats));
+    private static AmmoInventory ammoOf(EntityPlayerMP player, GunStats stats, ItemStack held) {
+        // An energy gun spends from its own stack's IC2 charge; a round gun's charge source is never asked.
+        return new StoreAmmoInventory(
+            new PlayerAmmoStore(player),
+            GunItems.roundsPerLooseItem(stats),
+            stats.isEnergy() ? StackCharge.spending(held, player) : ChargeSource.NONE);
     }
 
     private static ItemGun gunOf(ItemStack stack) {

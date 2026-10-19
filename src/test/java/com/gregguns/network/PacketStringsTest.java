@@ -98,9 +98,16 @@ class PacketStringsTest {
     /** Packets that carry text. A packet with a String field must be listed here and round-tripped above. */
     private static final Set<Class<?>> STRING_PACKETS = new HashSet<>();
 
+    static {
+        // FxPacketsTest round-trips non-ASCII names for both FX packets.
+        STRING_PACKETS.add(com.gregguns.fx.PacketSpawnParticle.class);
+        STRING_PACKETS.add(com.gregguns.fx.PacketSpawnParticleOnEntity.class);
+    }
+
     @Test
     void everyPacketWithAStringFieldIsCoveredByARoundTrip() {
-        // Today none of the registered packets (PacketGunTrigger, PacketGunZoom, PacketGunEvent) carries text. This
+        // Today none of the registered packets (PacketGunTrigger, PacketGunZoom, PacketGunCharge, PacketGunEvent)
+        // carries text. This
         // fails the day one does, so its non-ASCII round trip gets written with it (GGS-01-12).
         List<IPacket> all = new ArrayList<>(GregGunsNetwork.serverboundPackets());
         all.addAll(GregGunsNetwork.clientboundPackets());

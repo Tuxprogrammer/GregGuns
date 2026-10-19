@@ -23,7 +23,7 @@ Role map (`gun-paint/<gun>.json`): {"gun", "textures": [{"file": "handcannon.png
 "roles": {role: {"material", "base", ...}}, "boxes": {name: {"role", "grain", "wear", "painters": [...]}}}.
 Materials: steel (flat, edge highlights, faint scratches), wood (grain streaks along the box's grain axis, dark end
 grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore, bands, gradient, tone, mottle, seam, inset,
-checker, slots (cross-slot columns), stripes (a color cycle). A wood role may set "calm" (0..1, streak contrast scale); a role may set "bevel": [hi, lo] edge shading.
+checker, slots (cross-slot columns), stripes (a color cycle), diag (45 degree two-color hazard stripes). A wood role may set "calm" (0..1, streak contrast scale); a role may set "bevel": [hi, lo] edge shading.
 A painter "color" written "@name" is looked up in the role's "colors" map, so a variant can recolor painted details.
 A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A box may be tilted about Z ("tilt") or
 about its long axis X ("tiltX", for a diamond bar) or about the vertical axis Y ("tiltY"), all about "pivot"; a size with a 0 is a zero-thickness plane.
@@ -31,7 +31,7 @@ A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}
 A texture entry may set "noiseFile" (another sheet's file name) to share that sheet's grain, so two skins differ only where the role map says.
 A variant may also give "boxes": {name: {"role", "painters"}} to replace one box's spec for that sheet.
 Cut-outs: a box may set "clear": true to start fully transparent (alpha 0) on every face; painter "solid" (like "rect",
-but also opaque) puts opaque texels back, e.g. the dot on a holographic sight window; painter "hole" (a rect with
+but also opaque, or translucent with an "alpha" of 0..255) puts those texels back, e.g. the dot on a holographic sight window; painter "hole" (a rect with
 "faces", "x", "y", "w", "h") makes texels transparent, e.g. a window cut in a thin panel. Boxes without these keep an
 opaque sheet, byte for byte.
 """
@@ -296,6 +296,15 @@ def apply_painter(rgb, p, face):
                 rect(rgb, i, 0, step, h, c)
             else:
                 rect(rgb, 0, i, w, step, c)
+    elif kind == "diag":  # 45 degree hazard stripes: two flat colors alternating every `width` texels along x
+        cols = [np.array(hx(c)) for c in p["colors"]]
+        width, step, phase = p.get("width", 5), p.get("dir", 1), p.get("phase", 0)
+        lum = rgb.mean(axis=2) / max(1e-6, rgb.mean())  # keeps the underlying grain visible through the stripes
+        for j in range(h):
+            for i in range(w):
+                jitter = (i * 7 + j * 13) % 5  # ragged, dithered band edges
+                s = i + step * j + phase + (1 if jitter == 0 else -1 if jitter == 1 else 0)
+                rgb[j, i] = np.clip(cols[(s // width) % 2] * lum[j, i], 0, 255)
     elif kind == "checker":  # a soft checkerboard of 1-texel cells (textured polymer); optional darker border
         x, y, pw, ph = face_xywh(p, w, h)
         cell, amp = p.get("cell", 1), p.get("amp", 0.12)
@@ -318,7 +327,7 @@ def face_alpha(box_spec, face, fw, fh):
     for p in box_spec.get("painters", []):
         if p.get("type") in ("hole", "solid") and face in p.get("faces", FACES):
             x, y, pw, ph = face_xywh(p, fw, fh)
-            a[max(0, y):max(0, y + ph), max(0, x):max(0, x + pw)] = 0.0 if p["type"] == "hole" else 255.0
+            a[max(0, y):max(0, y + ph), max(0, x):max(0, x + pw)] = 0.0 if p["type"] == "hole" else float(p.get("alpha", 255.0))
     return a
 
 

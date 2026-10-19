@@ -7,6 +7,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,11 +21,14 @@ import com.gregguns.api.Tiered;
 import com.gregguns.combat.DamageType;
 import com.gregguns.core.registry.Naming;
 import com.gregguns.gun.def.GunDefinition;
+import com.gregguns.gun.logic.ChargeRelease;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunState;
 import com.gregguns.gun.logic.GunStats;
+import com.gregguns.gun.logic.ShotOffset;
 import com.gregguns.gun.net.PacketGunZoom;
 import com.gregguns.network.GregGunsNetwork;
+import com.gregguns.projectile.Projectiles;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -63,6 +67,7 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
     private final String reloadEvent;
     private final String rechamberEvent;
     private final String startEvent;
+    private final String chargeEvent;
     private final int camoCount;
 
     /**
@@ -79,6 +84,7 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
         this.reloadEvent = definition.reloadEvent();
         this.rechamberEvent = definition.rechamberEvent();
         this.startEvent = definition.startEvent();
+        this.chargeEvent = definition.chargeEvent();
         this.camoCount = definition.camoCount();
         setMaxStackSize(1);
         setNoRepair();
@@ -97,6 +103,24 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
     /** @return the registry name without the mod id */
     public String contentName() {
         return contentName;
+    }
+
+    /** @return the unprefixed sound event played when a charge begins, or null if the gun has none */
+    public String chargeEvent() {
+        return chargeEvent;
+    }
+
+    /**
+     * Fires a released charge (server only). The default launches the gun's normal volley, unscaled; a charge gun
+     * (Bio Gun, Power Hammer) overrides this to size, level or damage the projectile from the release.
+     *
+     * @param player  the shooter
+     * @param release the charge fraction and the rounds spent (also the level for a LEVELS gun)
+     * @param offsets the rolled shot offsets
+     */
+    public void onChargedShot(EntityPlayerMP player, ChargeRelease release, ShotOffset[] offsets) {
+        Projectiles.launcher()
+            .launchVolley(player.worldObj, player, stats, offsets, 1.0f);
     }
 
     /** @return the unprefixed sound event of one shot */
@@ -285,12 +309,16 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
         GunState state = stateOf(stack);
-        tooltip.add(
-            StatCollector
-                .translateToLocalFormatted("gregguns.gun.tooltip.ammo", EnumChatFormatting.WHITE + ammoName()));
-        tooltip.add(
-            StatCollector
-                .translateToLocalFormatted("gregguns.gun.tooltip.loaded", state.loaded(), stats.magazineSize()));
+        if (stats.isEnergy()) {
+            addPowerTooltip(stack, tooltip);
+        } else {
+            tooltip.add(
+                StatCollector
+                    .translateToLocalFormatted("gregguns.gun.tooltip.ammo", EnumChatFormatting.WHITE + ammoName()));
+            tooltip.add(
+                StatCollector
+                    .translateToLocalFormatted("gregguns.gun.tooltip.loaded", state.loaded(), stats.magazineSize()));
+        }
         tooltip.add(
             StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.damage", GunTooltipFormat.damage(stats)));
         if (!GuiScreen.isShiftKeyDown()) {
@@ -308,10 +336,13 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
                 GunTooltipFormat.reach(stats)));
         tooltip.add(
             StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.spread", GunTooltipFormat.spread(stats)));
-        tooltip.add(StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.clipsize", stats.magazineSize()));
-        tooltip.add(
-            StatCollector
-                .translateToLocalFormatted("gregguns.gun.tooltip.reload_time", GunTooltipFormat.reloadSeconds(stats)));
+        if (!stats.isEnergy()) {
+            tooltip.add(StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.clipsize", stats.magazineSize()));
+            tooltip.add(
+                StatCollector.translateToLocalFormatted(
+                    "gregguns.gun.tooltip.reload_time",
+                    GunTooltipFormat.reloadSeconds(stats)));
+        }
         if (stats.penetration() > 0) {
             tooltip.add(
                 StatCollector.translateToLocalFormatted(
@@ -325,6 +356,11 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
             tooltip.add(StatCollector.translateToLocal("gregguns.gun.tooltip.silenced"));
         }
     }
+
+    /** Tooltip lines of an energy gun's charge, in place of the ammo lines. Overridden by {@link ItemEnergyGun}. */
+    @SideOnly(Side.CLIENT)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected void addPowerTooltip(ItemStack stack, List tooltip) {}
 
     @SideOnly(Side.CLIENT)
     private String ammoName() {
