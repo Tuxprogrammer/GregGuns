@@ -19,6 +19,7 @@ import com.gregguns.client.render.profile.BlasterRifleProfile;
 import com.gregguns.client.render.profile.ClientGunDefinitions;
 import com.gregguns.client.render.profile.LaserRifleProfile;
 import com.gregguns.client.render.profile.PdwProfile;
+import com.gregguns.client.render.profile.SonicRifleProfile;
 import com.gregguns.client.render.profile.TeslaRifleProfile;
 
 class ModelExportTest {
@@ -130,6 +131,7 @@ class ModelExportTest {
         ModelExporter.exportProfile(dir, PdwProfile.DEFINITION);
         ModelExporter.exportProfile(dir, LaserRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, TeslaRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, SonicRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, BlasterRifleProfile.DEFINITION);
     }
 
