@@ -6,6 +6,7 @@ import com.gregguns.projectile.FlamethrowerProjectile;
 import com.gregguns.projectile.GenericProjectile;
 import com.gregguns.projectile.LaserProjectile;
 import com.gregguns.projectile.SimpleProjectile;
+import com.gregguns.projectile.TeslaProjectile;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
@@ -27,6 +28,7 @@ public final class ProjectileRenderers {
         RenderingRegistry.registerEntityRenderingHandler(FlamethrowerProjectile.class, new RenderInvisible());
         // The laser is an instant hitscan drawn by its BeamVisual; the carrier entity itself draws nothing.
         RenderingRegistry.registerEntityRenderingHandler(LaserProjectile.class, new RenderInvisible());
+        RenderingRegistry.registerEntityRenderingHandler(TeslaProjectile.class, new RenderInvisible());
         RenderingRegistry.registerEntityRenderingHandler(BeamVisual.class, new RenderBeam());
         // Impact and trail effects of the energy blast come with the FX core.
         RenderingRegistry.registerEntityRenderingHandler(EnergyBlastProjectile.class, new RenderInvisible());
