@@ -447,6 +447,285 @@ def demo_biped():
     return m
 
 
+# ---------------------------------------------------------------------------------------------- the cyberdemon
+def _lerp(a, b, t):
+    return tuple(int(a[i] + (b[i] - a[i]) * t + 0.5) for i in range(3))
+
+
+def cyberdemon():
+    """Skinless red demon with cheap cybernetics.
+
+    Built from docs/techguns-spec/10-entities-npcs/model-notes/cyberdemon.md (clean room: notes only).
+    Six vanilla biped pivots. Chest 12x7x6 over a 9x5x5 pelvis, 8x8x7 skull with a 6x5x2 snout and two temple
+    implants, bull horns (a base yawed 40 degrees out and forward, a tip pitched 25 degrees up), 5x7x5 upper arms
+    flush against the chest with 4x8x4 forearms pitched 30 degrees forward, and Z-shaped legs (thigh and shin both
+    pitched 30 degrees, shin shifted back) ending in flat 5x3x5 hooves. Sheet 64x64, one pixel per model unit.
+    Horn direction follows the notes' conclusion: out, then forward and up (not swept back).
+    The horn tip pivot sits 0.6 higher than the notes (y -4.9) so the tips stay under the skull top (y -8).
+    No fullbright part: the notes want only a painted bright-red lens and no glow pass.
+    """
+    m = Mob("cyberdemon", 64, 64, biped=True)
+    # head: skull shifted 1 unit back (z -3..4), snout on the lower front face, temple implants, bull horns
+    h = m.part("head")
+    h.box("skull", -4, -8, -3, 8, 8, 7, material="skull")
+    h.box("snout", -3, -5, -5, 6, 5, 2, material="snout")
+    for side, sx in (("r", -1), ("l", 1)):
+        mir = side == "l"
+        h.box("implant_" + side, 4 if sx > 0 else -6, -7, -2, 2, 4, 4, material="implant", mirror=mir,
+              group="implant")
+        m.part("horn_base_" + side, parent="head", pivot=(6 * sx, -5, 1.5), rotate=(0, 40 * sx, 0)).box(
+            "horn_base_" + side, -1 if sx > 0 else -3, -1.5, -1.5, 4, 3, 3, material="horn", mirror=mir,
+            group="horn_base")
+        m.part("horn_tip_" + side, parent="head", pivot=(7.5 * sx, -4.9, -1.5), rotate=(-25, 0, 0)).box(
+            "horn_tip_" + side, -1, -1, -5, 2, 2, 6, material="horn_tip", mirror=mir, group="horn_tip")
+    # torso: chest wider than the pelvis, V-shaped
+    b = m.part("body")
+    b.box("chest", -6, 0, -3.5, 12, 7, 7, material="chest")
+    b.box("pelvis", -4.5, 7, -2.5, 9, 5, 5, material="pelvis")
+    # arms: upper arm flush with the chest, forearm a fixed 30 degree forward offset inside the swinging arm node
+    for side, sx in (("r", -1), ("l", 1)):
+        mir = side == "l"
+        arm = "rightArm" if sx < 0 else "leftArm"
+        m.part(arm, pivot=(5 * sx, 2, 0)).box("upper_arm_" + side, 1 if sx > 0 else -6, -2, -2.5, 5, 7, 5,
+                                              material="upper_arm", mirror=mir, group="upper_arm_l" if mir else "upper_arm")
+        m.part("forearm_" + side, parent=arm, rotate=(-30, 0, 0)).box(
+            "forearm_" + side, 1.5 if sx > 0 else -5.5, 1, 0.5, 4, 9, 4, material="forearm", mirror=mir,
+            group="forearm")
+    # legs: thigh and shin pitched 30 degrees forward, shin shifted 1.5 back, flat unrotated hoof
+    for side, sx in (("r", -1), ("l", 1)):
+        mir = side == "l"
+        leg = "rightLeg" if sx < 0 else "leftLeg"
+        lx = -1.4 if sx > 0 else -3.6  # thigh and hoof: centered 3 units from the centerline
+        m.part(leg, pivot=(1.9 * sx, 12, 0)).box("hoof_" + side, lx, 9, -4, 5, 3, 5, material="hoof", mirror=mir,
+                                                 group="hoof")
+        m.part("thigh_" + side, parent=leg, rotate=(-30, 0, 0)).box(
+            "thigh_" + side, lx, -1, -3.5, 5, 7, 6, material="thigh", mirror=mir, group="thigh")
+        m.part("shin_" + side, parent=leg, rotate=(-30, 0, 0)).box(
+            "shin_" + side, -0.9 if sx > 0 else -3.1, 3, 1.5, 4, 7, 4, material="shin", mirror=mir, group="shin")
+    # motion: vanilla biped walk (legs 1.4 rad, arms 1.0 rad), idle sway, held-item tilt, melee twist; no aimed pose
+    m.look("head")
+    m.swing("rightLeg", "x", 80.214)
+    m.swing("leftLeg", "x", 80.214, phase=180)
+    m.swing("rightArm", "x", 57.296, phase=180)
+    m.swing("leftArm", "x", 57.296)
+    m.idle("rightArm", "z", 2.865, speed=0.09, phase=90, offset=2.865)
+    m.idle("leftArm", "z", -2.865, speed=0.09, phase=90, offset=-2.865)
+    m.idle("rightArm", "x", 2.865, speed=0.067)
+    m.idle("leftArm", "x", -2.865, speed=0.067)
+    m.pose("rightArm", "holding", x=-18)
+    m.pose("body", "attacking", y=11.5, blend="sine")
+    m.pose("rightArm", "attacking", x=-70, blend="sine")
+
+    flesh = {  # material: (shadow, base, highlight)
+        "skull": ("#6E0E0A", "#B01A12", "#D03A2A"), "snout": ("#6E0E0A", "#AC1A12", "#CC3626"),
+        "implant": ("#5A0C08", "#8E140E", "#B52418"), "chest": ("#6E0E0A", "#B81C14", "#D03A2A"),
+        "pelvis": ("#6E0E0A", "#B01A12", "#CC3626"), "upper_arm": ("#6E0E0A", "#BA1E16", "#D63E2C"),
+        "forearm": ("#6E0E0A", "#B41C14", "#CE382A"), "thigh": ("#6E0E0A", "#B01A12", "#CC3626")}
+    pal = {"default": "#B01A12", "horn": "#867E68", "horn_tip": "#827A64", "shin": "#9C7D71", "hoof": "#655F5D"}
+    pal.update({k: v[1] for k, v in flesh.items()})
+    m.palettes["cyberdemon"] = pal
+    steel, steel_hi, steel_lo, outline = hx("#6D6D6D"), hx("#7B7B7B"), hx("#484848"), hx("#202020")
+    cable_a, cable_b, cable_dark = hx("#C0875A"), hx("#B8703F"), hx("#7A4A2A")
+    faces = ("top", "bottom", "right", "front", "left", "back")
+
+    def detail(mob, key, put, rect):
+        rng = random.Random(seed_for("cyberdemon.detail"))
+        boxes = {}
+        for _, bx in mob.all_boxes():
+            boxes.setdefault(bx["group"], bx)  # a mirrored left copy shares the right one's rectangle
+        byname = {bx["name"]: bx for bx in boxes.values()}
+
+        def cable(box, face, pts, cols=None):
+            x, y, w, h = rect(box, face)
+            ca, cb, cd = cols or (cable_a, cable_b, cable_dark)
+            for i, (cx, cy) in enumerate(pts):
+                if 0 <= cx < w and 0 <= cy < h:
+                    col = cd if i == len(pts) - 1 else (ca if i % 2 == 0 else cb)
+                    put(x + cx, y + cy, col)
+
+        # raw red flesh: blotchy noise, vertical fibers, rare wet highlights, lit tops and dark undersides
+        for name, bx in byname.items():
+            mat = bx["material"]
+            if mat not in flesh:
+                continue
+            sh, ba, hi = (hx(c) for c in flesh[mat])
+            for face in faces:
+                x, y, w, h = rect(bx, face)
+                blob = [[rng.random() for _ in range(w + 2)] for _ in range(h + 2)]
+                fib = [rng.random() for _ in range(w)]
+                bias = {"top": 0.28, "bottom": -0.2, "front": 0.0, "back": -0.06, "left": -0.04, "right": -0.04}[face]
+                for yy in range(h):
+                    for xx in range(w):
+                        smooth = (blob[yy][xx] + blob[yy + 1][xx] + blob[yy][xx + 1] + blob[yy + 1][xx + 1]
+                                  + 4 * blob[yy + 1][xx + 1]) / 8.0
+                        t = 0.5 * smooth + 0.3 * fib[xx] + 0.2 * rng.random() + bias
+                        if t < 0.36:
+                            c = _lerp(sh, ba, max(0.0, t / 0.36) * 0.6)
+                        elif t < 0.78:
+                            c = _lerp(sh, ba, 0.5 + 0.5 * (t - 0.36) / 0.42)
+                        else:
+                            c = _lerp(ba, hi, min(1.0, (t - 0.78) / 0.25) * 0.9)
+                        put(x + xx, y + yy, c)
+
+        # horns: bone tan with faint darker bands and a lighter top
+        for name in ("horn_base_r", "horn_tip_r"):
+            bx = byname[name]
+            base = hx("#867E68" if "base" in name else "#827A64")
+            band, lite = hx("#565144"), hx("#948C76")
+            for face in faces:
+                x, y, w, h = rect(bx, face)
+                for yy in range(h):
+                    for xx in range(w):
+                        c = base
+                        if face in ("front", "back", "top", "bottom") and (xx + 2 * yy) % 5 == 4:
+                            c = _lerp(base, band, 0.45)
+                        if face == "top" and yy < 2:
+                            c = lite
+                        if face == "bottom" or (yy == h - 1 and face != "top"):
+                            c = _lerp(base, band, 0.35)
+                        put(x + xx, y + yy, _lerp(c, lite, 0.15) if rng.random() < 0.2 else c)
+
+        # shins: pink-white scuffed plate, two crossing cables and gray brackets
+        shin = byname["shin_r"]
+        pa, pl, pd = hx("#9C7D71"), hx("#C1A69C"), hx("#73564B")
+        for face in faces:
+            x, y, w, h = rect(shin, face)
+            for yy in range(h):
+                for xx in range(w):
+                    c = pa
+                    r = rng.random()
+                    if r < 0.2:
+                        c = pl
+                    elif r < 0.32:
+                        c = pd
+                    if face in ("front", "back", "left", "right"):
+                        if yy == 0 or yy == h - 1:
+                            c = steel_hi if xx % 2 == 0 else steel
+                        elif yy == 1 or yy == h - 2:
+                            c = pd
+                    put(x + xx, y + yy, c)
+        cable(shin, "front", [(0, 2), (1, 3), (2, 3), (3, 4), (3, 5)])
+        cable(shin, "front", [(3, 2), (2, 3), (1, 3), (0, 4), (0, 5)])
+        cable(shin, "back", [(0, 2), (1, 3), (2, 3), (3, 4), (3, 5)])
+        cable(shin, "back", [(3, 2), (2, 3), (1, 3), (0, 4), (0, 5)])
+        cable(shin, "left", [(0, 2), (1, 3), (2, 3), (3, 4)])
+        cable(shin, "right", [(0, 4), (1, 3), (2, 3), (3, 2)])
+
+        # hooves: gray-brown, lighter band on the top, darker toward the sole
+        hoof = byname["hoof_r"]
+        ha, hl, hd = hx("#655F5D"), hx("#696361"), hx("#332B28")
+        for face in faces:
+            x, y, w, h = rect(hoof, face)
+            for yy in range(h):
+                for xx in range(w):
+                    c = hl if face == "top" else ha
+                    if face in ("front", "back", "left", "right"):
+                        c = hl if yy == 0 else (ha if yy == 1 else hd)
+                    if face == "bottom":
+                        c = hd
+                    if rng.random() < 0.18:
+                        c = _lerp(c, hd, 0.3)
+                    put(x + xx, y + yy, c)
+
+        # head: cyber eye (gray plate, red lens) on the mob's right = left half of the front face, yellow slit on
+        # its left, black mouth with white teeth on the snout, an eye-plate cable over the skull top
+        x, y, w, h = rect(byname["skull"], "front")
+        for yy in range(3):
+            for xx in range(4):
+                put(x + xx, y + yy, steel_lo if (yy == 2 or xx == 3) else (steel_hi if yy == 0 else steel))
+        for yy in range(2):
+            for xx in (1, 2):
+                put(x + xx, y + yy, hx("#BE0000"))
+        put(x + 3, y, hx("#313131"))
+        for xx in range(4, 8):  # the yellow slit on the left eye, with a black outline
+            put(x + xx, y + 1, hx("#000000"))
+        for xx in (5, 6):
+            put(x + xx, y, hx("#000000"))
+            put(x + xx, y + 2, hx("#000000"))
+            put(x + xx, y + 1, hx("#E8C81C"))
+        cable(byname["skull"], "top", [(0, 6), (0, 5), (1, 4), (1, 3), (0, 2), (0, 1)])
+        x, y, w, h = rect(byname["snout"], "front")
+        black, tooth, tooth2 = hx("#000000"), hx("#F2DDDD"), hx("#D9B9B9")
+        for xx in range(w):
+            put(x + xx, y + 1, tooth if xx % 2 == 0 else tooth2)  # upper teeth
+            put(x + xx, y + 2, black)
+            put(x + xx, y + 3, tooth if xx % 2 else tooth2)  # lower jaw teeth
+            put(x + xx, y + 4, tooth2 if xx % 2 == 0 else hx("#B01A12"))
+        put(x + 1, y, hx("#200402"))  # nostrils
+        put(x + 4, y, hx("#200402"))
+
+        # chest: two pec lobes over a dark line, ribs below, a steel implant box with a cable, flank bruise
+        chest = byname["chest"]
+        x, y, w, h = rect(chest, "front")
+        for yy in range(h):
+            for xx in range(w):
+                if xx in (5, 6):
+                    put(x + xx, y + yy, hx("#6E0E0A"))
+                elif yy < 3 and 1 <= xx <= 10:
+                    put(x + xx, y + yy, hx("#D03A2A") if (xx + yy) % 3 else hx("#C0281A"))
+                elif yy == 3:
+                    put(x + xx, y + yy, hx("#7E100B"))
+                elif yy in (4, 6):
+                    put(x + xx, y + yy, hx("#7E100B"))
+                elif yy == 5:
+                    put(x + xx, y + yy, hx("#D03A2A"))
+        for yy in range(3):  # implant box, viewer's right = the mob's left
+            for xx in range(3):
+                edge = yy in (0, 2) or xx in (0, 2)
+                put(x + 8 + xx, y + yy, outline if edge else steel_hi)
+        put(x + 9, y + 1, steel)
+        gray = (hx("#B8B8B8"), hx("#B0B0B0"), hx("#7A7A7A"))
+        cable(chest, "front", [(7, 1), (6, 2), (5, 3), (4, 3), (3, 4), (3, 5), (2, 6)], gray)
+        x, y, w, h = rect(chest, "left")
+        for yy in range(h):
+            for xx in range(w):
+                if (xx - 2.5) ** 2 / 6.0 + (yy - 3) ** 2 / 9.0 < 1:
+                    put(x + xx, y + yy, hx("#6E0E0A") if rng.random() < 0.7 else hx("#8A120C"))
+
+        # pelvis: dark necrotic patch, small pale-gray striped plate on the belly
+        pel = byname["pelvis"]
+        x, y, w, h = rect(pel, "front")
+        for yy in range(1, 5):
+            for xx in range(0, 5):
+                if (xx - 2) ** 2 / 6.0 + (yy - 2.5) ** 2 / 4.0 < 1:
+                    put(x + xx, y + yy, hx("#7A0F0A") if rng.random() < 0.6 else hx("#8A130D"))
+        for yy in range(1, 4):
+            for xx in range(5, 8):
+                put(x + xx, y + yy, hx("#B8B8B8") if yy % 2 else hx("#7A7A7A"))
+        cable(pel, "front", [(1, 0), (1, 1)], gray)
+
+        # back: gray implant plates (head, upper back, mid-back) and a dark round socket low on the back
+        def plate(box, face, px, py, n):
+            x, y, w, h = rect(box, face)
+            for yy in range(n):
+                for xx in range(n):
+                    edge = yy in (0, n - 1) or xx in (0, n - 1)
+                    put(x + px + xx, y + py + yy, hx("#9A9A9A") if edge else hx("#6A6A6A"))
+
+        def socket(box, face, px, py):
+            x, y, w, h = rect(box, face)
+            for yy in range(3):
+                for xx in range(3):
+                    ring = (xx, yy) != (1, 1)
+                    if (xx, yy) in ((0, 0), (2, 0), (0, 2), (2, 2)):
+                        continue
+                    put(x + px + xx, y + py + yy, hx("#8A8A8A") if ring else hx("#2A2A2A"))
+
+        plate(byname["skull"], "back", 2, 2, 4)
+        plate(chest, "back", 8, 1, 4)
+        plate(chest, "back", 2, 3, 3)
+        socket(pel, "back", 3, 1)
+        # side implant: dark socket ringed with gray on the torso's left and the left upper arm
+        socket(chest, "left", 2, 2)
+        socket(byname["upper_arm_l"], "front" if False else "right", 1, 2)
+
+        # forearm: one cable
+        cable(byname["forearm_r"], "front", [(1, 1), (1, 2), (2, 3), (2, 4), (1, 5), (1, 6)])
+
+    m.detail = detail
+    return m
+
+
 def biped():
     """The standard biped: vanilla proportions and vanilla motion on a 64x64 logical sheet, shared by every plain
     humanoid skin (zombie_soldier, army_soldier, bandit, dictator). It has no sheet of its own: the skins are painted
@@ -456,7 +735,7 @@ def biped():
     return m
 
 
-MODELS = [demo_biped, biped]
+MODELS = [demo_biped, biped, cyberdemon]
 
 
 # ---------------------------------------------------------------------------------------------- main
