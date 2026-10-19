@@ -45,6 +45,17 @@ The rifle is the first scoped gun (`gregguns:bolt_action_rifle`, GR-04, LV). Its
 - **NPC attack time.** The sheet's variance of 20 ticks is dropped; `GunStats` has no such field.
 - **Camo.** Three textures (default, Olive, Tactical Black) are chosen by the stack's `camo` byte; the Camo Bench that sets it is M4's.
 
+## MV rifles and SMGs, batch B1 (M2): deviations
+
+Thompson SMG (`thompson_smg`, GR-10), Mac10 (`mac10`, GR-11), M4 (`m4`, GR-12) and AK47 (`ak47`, GR-13), all MV, with the SMG and Assault Rifle magazine families (RC-38, RC-45; RC-39, RC-46). Stats are the Techguns sheets' unchanged. What differs:
+
+- **Flat-icon fallback.** None of the four has a clean-room model yet, so `ClientGunDefinitions.FLAT_ICON_FALLBACK` lists them and they draw as their flat item icon (nothing is registered in `GunRenderers`; `ItemGun.isFull3D` holds the icon upright). Zoom, sounds, recoil timing and the HUD all run without a profile. `GunDefinitionsTest` pins the list to the guns that lack a profile, and **the M2 close must change that expectation to an empty list**.
+- **Registry name.** The Thompson is `thompson_smg` (the asset names), not `thompson`; display name "Thompson SMG".
+- **M4 scope.** The first scope on a non-bolt gun: FOV x0.75 and spread x0.75 while zoomed, through the shared `ZoomState`; no overlay (the future profile sets no `ScopeSpec`). Camos: five (Swamp, Desert, Ice, Hazard); AK47 two (Blue).
+- **Magazines.** The loaded SMG magazine is worth 2 loose 9mm bullets and the Assault Rifle magazine 3 rifle bullets; the refund of a forced reload is derived from each gun's own clip (Thompson 10 rounds per bullet, Mac10 16, M4 and AK47 10), so GUN-14's wrong factor does not recur on the Mac10.
+- **Recipes.** Redstone and iron nuggets of the Techguns grids are dropped; the AK47's foregrip is two wooden sticks. The Assembler circuits 1, 2, 4, 5 repeat the LV table's numbers, so the uniqueness tests are per tier.
+- **Sounds.** Events point at the existing `thompson_*`, `mac10_*`, `ar1_*` (M4) and `ak47_*` files. The M4 has two fire variants, as in Techguns.
+
 ## Pack-side changes
 
 These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack) and are collected in [PACK-CHANGES.md](../PACK-CHANGES.md).

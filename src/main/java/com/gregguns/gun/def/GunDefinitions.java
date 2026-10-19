@@ -22,7 +22,11 @@ public final class GunDefinitions {
             RevolverDef.DEFINITION,
             SawedOffDef.DEFINITION,
             HandCannonDef.DEFINITION,
-            BoltActionDef.DEFINITION));
+            BoltActionDef.DEFINITION,
+            ThompsonDef.DEFINITION,
+            Mac10Def.DEFINITION,
+            M4Def.DEFINITION,
+            Ak47Def.DEFINITION));
 
     private GunDefinitions() {}
 

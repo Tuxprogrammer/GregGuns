@@ -183,6 +183,23 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.boltaction.damage` | bolt action rifle (M2) | A zoomed shot hits a zombie 25 blocks away for the drop-off figure (16 falling to 10 between 20 and 30 blocks), below the full 16. |
 | `gun.boltaction.zoom` | bolt action rifle (M2) | A zoom intent is accepted: the server zoom state turns on, the FOV factor is 0.35 and the shot spread is 0.125 of 0.05; a second intent or a reload key turns it off. |
 | `gun.boltaction.recipe` | bolt action rifle (M2) | `RecipeMaps.assemblerRecipes` holds the rifle at `RECIPE_LV` and 20 s; an LV query with the seven sheet inputs (barrel, Iron Receiver, stock, glass lens, plates, screws, spring) and circuit 4 finds it; a voltage below LV does not. |
+| `gun.thompson_smg.auto` | Thompson SMG (M2 B1) | Holding the trigger for 13 ticks fires on the pull and then every interval (3 ticks, Mac10 2), one round and one bullet per shot. |
+| `gun.thompson_smg.reload` | Thompson SMG (M2 B1) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time, the magazine is consumed and an empty one returned. |
+| `gun.thompson_smg.reload.forced` | Thompson SMG (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.thompson_smg.recipe` | Thompson SMG (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
+| `gun.mac10.auto` | Mac10 (M2 B1) | Holding the trigger for 13 ticks fires on the pull and then every interval (3 ticks, Mac10 2), one round and one bullet per shot. |
+| `gun.mac10.reload` | Mac10 (M2 B1) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time, the magazine is consumed and an empty one returned. |
+| `gun.mac10.reload.forced` | Mac10 (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.mac10.recipe` | Mac10 (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
+| `gun.m4.auto` | M4 (M2 B1) | Holding the trigger for 13 ticks fires on the pull and then every interval (3 ticks, Mac10 2), one round and one bullet per shot. |
+| `gun.m4.reload` | M4 (M2 B1) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time, the magazine is consumed and an empty one returned. |
+| `gun.m4.reload.forced` | M4 (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.m4.recipe` | M4 (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
+| `gun.ak47.auto` | AK47 (M2 B1) | Holding the trigger for 13 ticks fires on the pull and then every interval (3 ticks, Mac10 2), one round and one bullet per shot. |
+| `gun.ak47.reload` | AK47 (M2 B1) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time, the magazine is consumed and an empty one returned. |
+| `gun.ak47.reload.forced` | AK47 (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.ak47.recipe` | AK47 (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
+| `gun.m4.zoom` | M4 (M2 B1) | A zoom intent turns the server zoom state on with FOV factor 0.75 and 0.75 of the 0.015 spread; a second intent or a reload turns it off. |
 | `mp.visual.boltaction` | bolt action rifle (M2) | The visual walkthrough (first person, third person, inventory, and the zoomed scope view) for the rifle; see the autotest section. |
 | `armor.showcase` | armor (M3) | Dresses a connected client in every armor set and camo in turn and screenshots it in third person (front for all, back for the five custom-model sets), with the HUD hidden; not part of `test all`; see "Armor showcase". |
 | `gun.camo.cycle` | gun definitions | Every gun in `GunDefinitions.ALL` is a `CamoChangeable` with the definition's camo count; the Camo Bench routine (`MTECamoBench.cycleStack`) steps it forward through every skin and around, and back below zero, keeping the loaded rounds (GUN-01); a tag-less gun stays full; an out-of-range index stores 0. |

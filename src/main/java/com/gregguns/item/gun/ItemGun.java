@@ -307,4 +307,15 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
         Item ammo = GameRegistry.findItem(Naming.NAMESPACE, stats.ammoType());
         return ammo == null ? stats.ammoType() : new ItemStack(ammo).getDisplayName();
     }
+
+    /**
+     * A gun with no 3D profile yet (see {@code ClientGunDefinitions.FLAT_ICON_FALLBACK}) is drawn as its flat icon;
+     * holding it like a tool keeps the icon upright in the hand instead of lying flat. Guns with a model draw
+     * themselves.
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean isFull3D() {
+        return com.gregguns.client.render.profile.ClientGunDefinitions.usesFallback(definition.name());
+    }
 }

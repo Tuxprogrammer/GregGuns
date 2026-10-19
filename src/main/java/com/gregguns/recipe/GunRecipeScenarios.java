@@ -114,7 +114,7 @@ public final class GunRecipeScenarios {
                     && gun != null
                     && recipe.mOutputs[0].getItem() == gun.getItem()) {
                     listed = true;
-                    out.checkEquals("EU/t", (int) TierEU.RECIPE_LV, recipe.mEUt);
+                    out.checkEquals("EU/t", (int) ProductionRecipes.eutFor(row.tier()), recipe.mEUt);
                     out.checkEquals("duration (ticks)", row.seconds() * GTRecipeBuilder.SECONDS, recipe.mDuration);
                 }
             }
@@ -122,14 +122,26 @@ public final class GunRecipeScenarios {
 
             GTRecipe found = RecipeMaps.assemblerRecipes.findRecipeQuery()
                 .items(inputs)
-                .voltage(GTValues.V[1])
+                .voltage(
+                    GTValues.V[row.tier()
+                        .voltageIndex()])
                 .find();
-            out.check(found != null, "an LV assembler with the sheet inputs and circuit should find the recipe");
+            out.check(
+                found != null,
+                "an assembler of the row's tier with the sheet inputs and circuit should find the recipe");
             GTRecipe tooLow = RecipeMaps.assemblerRecipes.findRecipeQuery()
                 .items(inputs)
-                .voltage(GTValues.V[0] / 2)
+                .voltage(
+                    GTValues.V[row.tier()
+                        .voltageIndex() - 1] / 2)
                 .find();
-            out.check(tooLow == null, "a machine below LV voltage should not be offered the recipe");
+            // GT's query can match an unrelated circuit-only recipe (null output) at low voltage; only ours counts.
+            boolean oursOffered = tooLow != null && tooLow.mOutputs != null
+                && tooLow.mOutputs.length > 0
+                && tooLow.mOutputs[0] != null
+                && gun != null
+                && tooLow.mOutputs[0].getItem() == gun.getItem();
+            out.check(!oursOffered, "a machine below the row's tier should not be offered the recipe");
             return out.build();
         }
     }
