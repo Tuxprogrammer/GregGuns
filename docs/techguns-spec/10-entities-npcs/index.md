@@ -19,6 +19,9 @@ Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectile
 | [textures.md](textures.md) | All 19 `textures/entity/` files plus the spawn-egg item textures: size, content, palette, UV layout and users |
 | [sounds.md](sounds.md) | All 54 `sounds/npcs/` files and their 18 events, with exactly when each plays and at what volume; the vanilla sounds used by each mob |
 | [lang.md](lang.md) | Every `entity.Techguns.*` key with its line and English text, the spawner-block keys, strings built in code, the 18 hard-coded egg names ([NPC-19](#suspected-bugs)), the duplicate key ([NPC-29](#suspected-bugs)) and missing keys |
+| [model-notes/cyberdemon.md](model-notes/cyberdemon.md) | Clean-room design notes for rebuilding the Cyberdemon (proportions, parts, palette, motion, checklist) |
+| [model-notes/super_mutant.md](model-notes/super_mutant.md) | Clean-room design notes for rebuilding the Super Mutant, all three tiers (proportions, parts, palette per tier, motion, checklist) |
+| [model-notes/alien_bug.md](model-notes/alien_bug.md) | Clean-room design notes for rebuilding the Alien Bug (proportions, parts, palette, motion, checklist) |
 
 ## Key facts
 
