@@ -16,6 +16,7 @@ import com.gregguns.GregGuns;
 import com.gregguns.armor.slots.SlotSyncProbe;
 import com.gregguns.armor.slots.logic.BaubleSlot;
 import com.gregguns.core.testing.AutotestReport;
+import com.gregguns.core.testing.AutotestSignal;
 
 import codechicken.nei.recipe.GuiCraftingRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -107,31 +108,146 @@ final class AutotestCommands {
         }
     }
 
+    /** A command that spans several client ticks; the command queue blocks while one is open. */
+    interface Wait {
+
+        /**
+         * @param player the local player
+         * @return true when the wait is over
+         */
+        boolean tick(EntityClientPlayerMP player);
+    }
+
     /**
-     * {@code hold <name>}: logs what the local player holds and builds its tooltip (plain and advanced), which runs
-     * the item's tooltip code; the held item is also drawn by the renderer every frame.
+     * {@code see <name>}: waits (up to {@link #SEE_WAIT_MS} ms) until a player of that name is loaded in
+     * the client world, then tells the server ({@code ack see <name> ok|fail}). A teleport leaves the other client
+     * without the entity for a while, and remote shot events need it.
      */
-    @SuppressWarnings("unchecked")
-    static void hold(String expected) {
-        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
-        ItemStack held = player.getHeldItem();
+    static final class SeeWait implements Wait {
+
+        private final String name;
+        private final long startMs = System.currentTimeMillis();
+
+        SeeWait(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public boolean tick(EntityClientPlayerMP player) {
+            boolean seen = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(name) != null;
+            if (!seen && System.currentTimeMillis() - startMs <= SEE_WAIT_MS) {
+                return false;
+            }
+            ClientAutotest.logLine("see " + name + " -> " + (seen ? "loaded" : "NOT LOADED"));
+            player.sendChatMessage(AutotestSignal.format("ack", "see", name, seen ? "ok" : "fail"));
+            return true;
+        }
+    }
+
+    /**
+     * {@code hold <name>}: waits (up to {@link #HOLD_TIMEOUT_TICKS} client ticks) until the selected hotbar slot holds
+     * the item, keeps it in hand for {@link #HOLD_SETTLE_TICKS} ticks so the renderer and HUD draw it, then logs what
+     * is held with its tooltip (plain and advanced, which runs the item's tooltip code) and tells the server
+     * ({@code ack hold <name> ok|fail}) so it can move on. The client command queue blocks while a wait is open.
+     */
+    static final class HoldWait implements Wait {
+
+        private final String expected;
+        private int waited;
+        private int settled = -1;
+
+        HoldWait(String expected) {
+            this.expected = expected;
+        }
+
+        /**
+         * @param player the local player
+         * @return true when the wait is over (reported either way)
+         */
+        @Override
+        public boolean tick(EntityClientPlayerMP player) {
+            if (settled < 0) {
+                if (matches(player.getHeldItem(), expected)) {
+                    settled = 0;
+                } else if (++waited > HOLD_TIMEOUT_TICKS) {
+                    report(player, false);
+                    return true;
+                }
+                return false;
+            }
+            if (++settled < HOLD_SETTLE_TICKS) {
+                return false;
+            }
+            report(player, matches(player.getHeldItem(), expected));
+            return true;
+        }
+
+        @SuppressWarnings("unchecked")
+        private void report(EntityClientPlayerMP player, boolean ok) {
+            ItemStack held = player.getHeldItem();
+            if (held == null) {
+                StringBuilder bar = new StringBuilder();
+                for (int i = 0; i < 9; i++) {
+                    ItemStack stack = player.inventory.mainInventory[i];
+                    bar.append(i)
+                        .append('=')
+                        .append(stack == null ? "-" : Item.itemRegistry.getNameForObject(stack.getItem()))
+                        .append(' ');
+                }
+                ClientAutotest.logLine(
+                    "hold " + expected
+                        + " -> NOTHING HELD (selected slot "
+                        + player.inventory.currentItem
+                        + ", hotbar "
+                        + bar
+                        + ")");
+            } else if (!ok) {
+                ClientAutotest.logLine(
+                    "hold " + expected
+                        + " -> NOTHING HELD (wrong item "
+                        + Item.itemRegistry.getNameForObject(held.getItem())
+                        + ")");
+            } else {
+                java.util.List<String> tip = held.getTooltip(player, true);
+                ClientAutotest.logLine(
+                    "hold " + expected
+                        + " -> "
+                        + Item.itemRegistry.getNameForObject(held.getItem())
+                        + " x"
+                        + held.stackSize
+                        + " tooltip "
+                        + tip.size()
+                        + " lines, name '"
+                        + held.getDisplayName()
+                        + "'");
+            }
+            player
+                .sendChatMessage(AutotestSignal.format("ack", "hold", expected.replace('_', '-'), ok ? "ok" : "fail"));
+        }
+    }
+
+    /** {@code sync}: runs in command order, so answering it proves every earlier queued command has finished. */
+    static void syncAck() {
+        Minecraft.getMinecraft().thePlayer.sendChatMessage(AutotestSignal.format("ack", "sync", "ready", "ok"));
+    }
+
+    /** Client ticks to wait for the item to arrive in the hand. */
+    private static final int HOLD_TIMEOUT_TICKS = 200;
+    /** Wall-clock wait for another player to load after a teleport (a loaded machine stalls the client). */
+    private static final long SEE_WAIT_MS = 60_000L;
+    /** Client ticks the item stays in hand once it arrived, so it is drawn. */
+    private static final int HOLD_SETTLE_TICKS = 5;
+
+    /** @return whether {@code held} is the item named {@code expected} (registry name, optionally {@code :meta}) */
+    private static boolean matches(ItemStack held, String expected) {
         if (held == null) {
-            ClientAutotest.logLine("hold " + expected + " -> NOTHING HELD");
-            return;
+            return false;
         }
         String name = Item.itemRegistry.getNameForObject(held.getItem());
-        java.util.List<String> tip = held.getTooltip(player, true);
-        ClientAutotest.logLine(
-            "hold " + expected
-                + " -> "
-                + name
-                + " x"
-                + held.stackSize
-                + " tooltip "
-                + tip.size()
-                + " lines, name '"
-                + held.getDisplayName()
-                + "'");
+        if (expected.equals(name)) {
+            return true;
+        }
+        return expected.startsWith(name + ":") && expected.equals(name + ":" + held.getItemDamage());
     }
 
     /**

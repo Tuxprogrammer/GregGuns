@@ -75,6 +75,7 @@ public final class ClientAutotest {
     private final Map<String, Armed> armed = new HashMap<>();
     private final java.util.ArrayDeque<String[]> queue = new java.util.ArrayDeque<>();
     private String pendingShot;
+    private AutotestCommands.Wait holdWait;
     private int shotFrames;
     private boolean joinLogged;
     private int fireClock = -1;
@@ -138,7 +139,10 @@ public final class ClientAutotest {
         }
         // Commands run strictly in order, and nothing runs while a screenshot is waiting for its frames: a GUI that
         // stalls the client for a second must not be closed before it has been drawn and photographed.
-        while (!queue.isEmpty() && pendingShot == null) {
+        if (holdWait != null && holdWait.tick(mc.thePlayer)) {
+            holdWait = null;
+        }
+        while (!queue.isEmpty() && pendingShot == null && holdWait == null) {
             execute(queue.poll());
         }
         if (!joinLogged) {
@@ -272,7 +276,9 @@ public final class ClientAutotest {
                 log("fire x" + args[0] + " (client " + localName() + ")");
             }
             case "gui" -> AutotestCommands.openGui(args);
-            case "hold" -> AutotestCommands.hold(args[0]);
+            case "see" -> holdWait = new AutotestCommands.SeeWait(args[0]);
+            case "sync" -> AutotestCommands.syncAck();
+            case "hold" -> holdWait = new AutotestCommands.HoldWait(args[0]);
             case "scope" -> com.gregguns.client.render.GunRenderers
                 .setDebugScope("off".equals(args[0]) ? null : args[0]);
             case "creativegive" -> AutotestCommands.creativeGive(args[0]);
