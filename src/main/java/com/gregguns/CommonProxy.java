@@ -59,6 +59,7 @@ public class CommonProxy {
             return;
         }
         HarnessScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+        com.gregguns.fx.FxScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         GregGunsCommand command = new GregGunsCommand();
         command.register(new TestSubCommand(ScenarioRegistry.SCENARIOS));
         event.registerServerCommand(command);
