@@ -167,7 +167,7 @@ public final class ModelExporter {
         sb.append(",\n  \"boxes\": [");
         for (int i = 0; i < m.boxes.length; i++) {
             BoxSpec b = m.boxes[i];
-            boolean tilted = b.tiltZDegrees() != 0.0f || b.tiltXDegrees() != 0.0f;
+            boolean tilted = b.tiltZDegrees() != 0.0f || b.tiltXDegrees() != 0.0f || b.tiltYDegrees() != 0.0f;
             // Same construction as BoxGunModel.build: a tilted box rotates about its pivot, an untilted one about its
             // own corner.
             float px = tilted ? b.pivotX() : b.x();
@@ -202,7 +202,9 @@ public final class ModelExporter {
                 .append(b.d())
                 .append("], \"rotate\": [")
                 .append(num((float) Math.toRadians(b.tiltXDegrees())))
-                .append(", 0, ")
+                .append(", ")
+                .append(num((float) Math.toRadians(b.tiltYDegrees())))
+                .append(", ")
                 .append(num((float) Math.toRadians(b.tiltZDegrees())))
                 .append("], \"mirror\": false}");
         }
