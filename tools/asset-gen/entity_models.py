@@ -729,12 +729,15 @@ def cyberdemon():
 def super_mutant():
     """Mustard-yellow gorilla-built brute: one model, three skins (Basic, Heavy, Elite).
 
-    Built from docs/techguns-spec/10-entities-npcs/model-notes/super_mutant.md (clean room: notes only).
+    Built from docs/techguns-spec/10-entities-npcs/model-notes/super_mutant.md (clean room: notes only), then
+    corrected in round 2 against the orchestrator's comparison.
     Six biped parts at the vanilla pivots except the legs, which sit 1 unit higher (y 11). Head 8x8x8 with a separate
     0.5-inflated hat layer; torso 8x12x4 with 6x7x1 front and back plates and a 9x4x5 belt hanging to y 13; 4x12x4
-    arms wearing 5x7x5 shoulder sleeves; 4x12x4 legs wearing 5x6x5 boots. Sheet 64x64, one pixel per model unit.
-    The plate and hat boxes exist on every tier; Basic leaves them transparent, Heavy paints the plates, Elite adds a
-    helmet on the hat layer and steel pauldrons on the sleeves. No fullbright part.
+    arms (resting splayed 6 degrees) wearing 5x7x5 shoulder sleeves one unit further out; 4x12x4 legs wearing bulky
+    6x7x6 boots. Sheet 64x64, one pixel per model unit. The plate and hat boxes exist on every tier; Basic leaves
+    them transparent, Heavy paints the plates, Elite adds a helmet on the hat layer and pauldrons on the sleeves.
+    The skin is bare on every tier (no clothing): muscle lines, a dark loincloth band with a skull buckle, boots.
+    No fullbright part.
     Per-tier render data lives in the renderer, not here: scale 1.35 / 1.50 / 1.65, vertical offset 0.55 / 0.75 /
     0.95 block, shadow radius 0.6 / 0.65 / 0.7 block, gun offset (-0.10, 0.30, 0) / (-0.15, 0.30, 0) / (-0.20, 0.40, 0).
     """
@@ -750,20 +753,20 @@ def super_mutant():
     b.box("belt", -4.5, 9, -2.5, 9, 4, 5, material="belt")
     for side, sx in (("r", -1), ("l", 1)):
         mir = side == "l"
-        arm = m.part("rightArm" if sx < 0 else "leftArm", pivot=(5 * sx, 2, 0))
+        arm = m.part("rightArm" if sx < 0 else "leftArm", pivot=(5 * sx, 2, 0), rotate=(0, 0, -6 * sx))
         arm.box("arm_" + side, -3 if sx < 0 else -1, -2, -2, 4, 12, 4, material="skin", mirror=mir, group="arm")
-        arm.box("sleeve_" + side, -3.9 if sx < 0 else -1.1, -2.2, -2.5, 5, 7, 5, material="sleeve", mirror=mir,
+        arm.box("sleeve_" + side, -4.9 if sx < 0 else -0.1, -2.2, -2.5, 5, 7, 5, material="sleeve", mirror=mir,
                 group="sleeve")
     for side, sx in (("r", -1), ("l", 1)):
         mir = side == "l"
         leg = m.part("rightLeg" if sx < 0 else "leftLeg", pivot=(1.9 * sx, 11, 0))
-        leg.box("leg_" + side, -2, 0, -2, 4, 12, 4, material="skin", mirror=mir, group="leg")
-        leg.box("boot_" + side, -2.6 if sx < 0 else -2.4, 6, -2.7, 5, 6, 5, material="boot", mirror=mir, group="boot")
-    skin_base = "#BE9822"
+        leg.box("leg_" + side, -2, 0, -2.5, 4, 12, 4, material="skin", mirror=mir, group="leg")
+        leg.box("boot_" + side, -3.2 if sx < 0 else -2.8, 6, -3.2, 6, 7, 6, material="boot", mirror=mir, group="boot")
+    skin_base = "#C8A21E"
     for tier in (1, 2, 3):
         m.palettes["super_mutant_%d" % tier] = {
-            "default": skin_base, "skin": skin_base, "boot": "#463B29", "belt": "#463B29", "plate_f": "#515151",
-            "plate_b": "#6C6C6C", "hat": "#757575", "sleeve": "#4E4E4E" if tier == 3 else skin_base}
+            "default": skin_base, "skin": skin_base, "boot": "#4A3C2C", "belt": "#2A2620", "plate_f": "#8C8C8C",
+            "plate_b": "#8C8C8C", "hat": "#8C8C8C", "sleeve": "#8C8C8C" if tier == 3 else skin_base}
     faces = ("top", "bottom", "right", "front", "left", "back")
 
     def detail(mob, key, put, rect):
@@ -773,9 +776,8 @@ def super_mutant():
         by = {}
         for _, bx in mob.all_boxes():
             by.setdefault(bx["name"][:-2] + "_r" if bx["name"][-2:] in ("_l", "_r") else bx["name"], bx)
-        S = {k: hx(v) for k, v in (("a", "#BE9822"), ("b", "#B99421"), ("c", "#C49D23"), ("hi", "#D1A725"),
-                                   ("scar", "#95771B"), ("deep", "#655112"), ("amber", "#A36D1D"),
-                                   ("tusk", "#848475"), ("harn", "#5A4202"), ("harn_d", "#3A2A00"))}
+        S = {k: hx(v) for k, v in (("base", "#C8A21E"), ("hi", "#E0C040"), ("sh", "#8A6A10"), ("line", "#9A7A18"),
+                                   ("eye", "#6AA030"), ("mouth", "#3A3418"), ("teeth", "#E4E0C8"))}
 
         def fill(bx, face, fn):
             x, y, w, h = rect(bx, face)
@@ -783,151 +785,120 @@ def super_mutant():
                 for xx in range(w):
                     put(x + xx, y + yy, fn(xx, yy, w, h))
 
-        def skin_face(bx, face, marks=True):
+        def skin_face(bx, face):
             def fn(xx, yy, w, h):
                 r = srng.random()
-                return S["hi"] if r < 0.06 else S["c"] if r < 0.22 else S["b"] if r < 0.55 else S["a"]
+                return S["hi"] if r < 0.12 else S["sh"] if r < 0.2 else S["base"]
             fill(bx, face, fn)
-            x, y, w, h = rect(bx, face)
-            if not marks or w < 4 or h < 4:
-                return
-            for _ in range(max(1, (w * h) // 22)):  # short curved scratches
-                px, py = srng.randrange(w), srng.randrange(h)
-                dx, dy = srng.choice(((1, 0), (0, 1), (1, 1), (1, -1)))
-                for i in range(srng.randrange(2, 4)):
-                    if 0 <= px < w and 0 <= py < h:
-                        put(x + px, y + py, S["scar"])
-                    px += dx
-                    py += dy + (1 if i == 1 and dy == 0 and srng.random() < 0.5 else 0)
-            for _ in range((w * h) // 40):  # deepest marks
-                put(x + srng.randrange(w), y + srng.randrange(h), S["deep"])
-            if w * h >= 40:  # one glyph: ring, hook or tally strokes
-                gx, gy = srng.randrange(0, w - 3), srng.randrange(0, h - 3)
-                kind = srng.randrange(3)
-                pts = ([(1, 0), (0, 1), (2, 1), (1, 2)] if kind == 0 else [(0, 0), (1, 0), (2, 1), (2, 2), (1, 2)]
-                       if kind == 1 else [(0, 0), (0, 1), (0, 2), (2, 0), (2, 1), (2, 2)])
-                for ox, oy in pts:
-                    put(x + gx + ox, y + gy + oy, S["scar"])
 
-        # skin: head, torso, arms, legs (and the sleeves where they are skin)
+        def pts(bx, face, coords, col="line"):
+            x, y, w, h = rect(bx, face)
+            for cx, cy in coords:
+                if 0 <= cx < w and 0 <= cy < h:
+                    put(x + cx, y + cy, S[col])
+
+        # bare muscular skin on head, torso, arms, legs (and the sleeves where they are skin)
         skin_boxes = [by[n] for n in ("skull", "torso", "arm_r", "leg_r")]
         if tier < 3:
             skin_boxes.append(by["sleeve_r"])
         for bx in skin_boxes:
             for face in faces:
                 skin_face(bx, face)
-        # head: a faint darker disc on top, furrowed brow, small eyes, flat nose, wide mouth with tusks
+        to = by["torso"]  # pecs, six-pack, back muscles
+        pts(to, "front", [(3, 0), (3, 1), (3, 2), (4, 0), (4, 1), (4, 2), (1, 3), (2, 3), (5, 3), (6, 3),
+                          (3, 4), (4, 4), (3, 5), (4, 5), (3, 6), (4, 6), (3, 7), (4, 7), (3, 8), (4, 8),
+                          (2, 5), (5, 5), (2, 7), (5, 7), (1, 4), (6, 4)])
+        pts(to, "back", [(3, y) for y in range(12)] + [(1, 2), (2, 3), (5, 3), (6, 2), (1, 5), (2, 6), (5, 6),
+                                                         (6, 5), (2, 9), (5, 9)])
+        for side in ("arm_r",):  # biceps / triceps definition, same art on the mirrored arm
+            pts(by[side], "front", [(1, 2), (2, 2), (1, 3), (2, 3), (1, 5), (2, 5), (1, 6), (1, 7), (2, 8)])
+            pts(by[side], "back", [(1, 3), (2, 3), (1, 5), (2, 6), (1, 8)])
+            pts(by[side], "right", [(1, 4), (2, 4), (2, 7), (1, 9)])
+        pts(by["leg_r"], "front", [(1, 3), (2, 3), (1, 7), (2, 7)])
+        # head: green eyes, dark open mouth with pale teeth, faint swirls and scars on the sides
         sk = by["skull"]
-        fill(sk, "top", lambda xx, yy, w, h: S["b"] if (xx - 3.5) ** 2 + (yy - 3.5) ** 2 < 11 else S["a"])
         x, y, w, h = rect(sk, "front")
-        for yy in (2, 3, 4):
-            for xx in range(8):
-                if yy == 2 or xx in (0, 3, 4, 7) or yy == 4:
-                    put(x + xx, y + yy, S["amber"])
-        put(x + 3, y + 1, S["scar"])
-        put(x + 4, y + 1, S["scar"])
-        for ex in (1, 5):  # yellow-green eyes, dark pupils toward the nose
-            put(x + ex, y + 3, hx("#A9C430"))
-            put(x + ex + 1, y + 3, hx("#202410"))
-        for yy in (4, 5):
-            put(x + 3, y + yy, S["scar"])
-            put(x + 4, y + yy, S["scar"])
-        for xx in range(1, 7):
-            put(x + xx, y + 6, S["deep"])
-            put(x + xx, y + 7, S["tusk"] if xx in (1, 2, 5, 6) else S["scar"])
-        # torso: ribs and spine on the back
-        to = by["torso"]
-        x, y, w, h = rect(to, "back")
-        for yy in range(h):
-            if yy % 2 == 0 and 1 <= yy <= 9:
-                for xx in (0, 1, 2, 5, 6, 7):
-                    put(x + xx, y + yy, S["scar"])
-            put(x + (3 if yy % 2 == 0 else 4), y + yy, S["deep"])
-        # harness (Heavy, Elite): crossing straps, an upper-chest patch, a stomach band
-        if tier >= 2:
-            for face in ("front", "back"):
-                x, y, w, h = rect(to, face)
-                for i in range(4):
-                    for xx in (i, i + 1, 7 - i, 6 - i):
-                        put(x + xx, y + i, S["harn"])
-                for xx in (3, 4):
-                    for yy in (4, 5):
-                        put(x + xx, y + yy, S["harn_d"])
-                for xx in range(8):
-                    put(x + xx, y + 8, S["harn"])
-        # boots: dark leather, stitches, creases, a black vent patch with three slits on the outer side
+        for xx in (1, 5):
+            put(x + xx, y + 3, S["eye"])
+            put(x + xx + 1, y + 3, S["eye"])
+            put(x + xx, y + 2, S["sh"])
+            put(x + xx + 1, y + 2, S["sh"])
+        put(x + 3, y + 4, S["line"])
+        put(x + 4, y + 4, S["line"])
+        for xx in range(2, 6):
+            for yy in (5, 6):
+                put(x + xx, y + yy, S["mouth"])
+        for xx in (2, 4):
+            put(x + xx, y + 5, S["teeth"])
+        for xx in (3, 5):
+            put(x + xx, y + 6, S["teeth"])
+        for face in ("left", "right"):
+            pts(sk, face, [(2, 3), (3, 3), (4, 3), (4, 4), (3, 5), (2, 5), (2, 4), (5, 6), (6, 2)])
+        # boots: dark leather with shading, stitched seams
         bt = by["boot_r"]
-        lb, lh, ld = hx("#463B29"), hx("#4B3F2C"), hx("#292218")
+        lb, ld = hx("#4A3C2C"), hx("#2E261C")
         for face in faces:
             def fn(xx, yy, w, h, face=face):
-                if face in ("front", "back", "left", "right") and (yy == 2 and xx % 2 == 0 or yy == h - 1):
+                if yy == h - 1 or (face in ("front", "back", "left", "right") and yy == 2 and xx % 2 == 0):
                     return ld
-                return lh if rng.random() < 0.3 else lb
+                return _lerp(lb, ld, 0.35) if rng.random() < 0.2 else lb
             fill(bt, face, fn)
-        x, y, w, h = rect(bt, "right")
-        for yy in range(1, 5):
-            for xx in range(1, 4):
-                put(x + xx, y + yy, hx("#000000"))
-        for yy in (1, 2, 3):
-            put(x + 1, y + yy, ld)
-            put(x + 2, y + yy, ld)
-        # belt: leather, steel end strips, silver buckle, two diagonal straps
+        # loincloth band (dark), 3 units tall at the front; skull buckle; thin gray belt line on the back
         be = by["belt"]
         for face in faces:
-            def fn(xx, yy, w, h, face=face):
-                if face in ("right", "left"):
-                    return hx("#5E5E5E")
-                if face in ("front", "back") and xx in (0, w - 1):
-                    return hx("#5E5E5E")
-                return hx("#352C22") if yy == h - 1 else lh if rng.random() < 0.3 else lb
-            fill(be, face, fn)
+            fill(be, face, lambda xx, yy, w, h: hx("#2A2620") if rng.random() > 0.15 else hx("#332E27"))
+        for face in ("front", "left", "right", "back"):
+            x, y, w, h = rect(be, face)
+            for xx in range(w):
+                put(x + xx, y + 3, hx("#6A6A6A") if face == "back" else hx("#2A2620"))
         x, y, w, h = rect(be, "front")
-        for (px, py) in ((1, 1), (2, 2), (7, 1), (6, 2)):
-            put(x + px, y + py, hx("#352C22"))
         for xx in (3, 4, 5):
-            for yy in (1, 2):
-                put(x + xx, y + yy, hx("#C8C8C8"))
-        put(x + 4, y + 1, hx("#E6E6E6"))
+            for yy in (0, 1, 2):
+                put(x + xx, y + yy, hx("#D8D8D8"))
+        put(x + 3, y + 1, hx("#2A2620"))
+        put(x + 5, y + 1, hx("#2A2620"))
         put(x + 4, y + 2, hx("#9A9A9A"))
+        x, y, w, h = rect(be, "back")
+        for xx in range(w):
+            put(x + xx, y + 0, hx("#6A6A6A"))
 
-        def steel(bx, face, base, hi, lo, panel=True):
-            base, hi, lo = hx(base), hx(hi), hx(lo)
+        stone, st_hi, st_lo, groove = hx("#8C8C8C"), hx("#A8A8A8"), hx("#6A6A6A"), hx("#5A5A5A")
 
+        def stone_face(bx, face):
             def fn(xx, yy, w, h):
-                if yy == 0 or xx == 0:
-                    return hi
-                if yy == h - 1 or xx == w - 1:
-                    return lo
-                if panel and w >= 5 and h >= 5:
-                    if xx in (1, w - 2) or yy in (1, h - 2):
-                        return lo
-                    if (xx, yy) in ((2, 2), (w - 3, 2), (2, h - 3), (w - 3, h - 3)):
-                        return hi
-                    if yy % 2 == 1:
-                        return _lerp(base, lo, 0.25)
-                return base
+                r = rng.random()
+                return st_hi if r < 0.15 else st_lo if r < 0.35 else stone
             fill(bx, face, fn)
+
+        def grill(bx, face):  # a recessed panel with horizontal grill slits
+            x, y, w, h = rect(bx, face)
+            for yy in range(1, h - 1):
+                for xx in range(1, w - 1):
+                    if xx in (1, w - 2) or yy in (1, h - 2) or yy % 2 == 1:
+                        put(x + xx, y + yy, groove)
 
         if tier >= 2:
             for face in faces:
-                steel(by["plate_front"], face, "#515151", "#757575", "#3D3D3D")
-                steel(by["plate_back"], face, "#6C6C6C", "#808080", "#3F3F3F")
+                stone_face(by["plate_front"], face)
+                stone_face(by["plate_back"], face)
+            grill(by["plate_front"], "front")
+            grill(by["plate_back"], "back")
         if tier == 3:
             for face in faces:
-                steel(by["hat"], face, "#757575", "#858585", "#4A4A4A", panel=False)
-                steel(by["sleeve_r"], face, "#4E4E4E", "#575757", "#3F3F3F", panel=False)
-            x, y, w, h = rect(by["hat"], "top")  # a darker steel panel on the crown
+                stone_face(by["hat"], face)
+                stone_face(by["sleeve_r"], face)
+            x, y, w, h = rect(by["hat"], "top")
             for yy in range(2, h - 2):
                 for xx in range(2, w - 2):
-                    put(x + xx, y + yy, hx("#5E5E5E"))
-            for face in ("right", "front", "left", "back"):  # panel seam around the dome, seams across the pauldron
+                    put(x + xx, y + yy, st_lo)
+            for face in ("right", "front", "left", "back"):  # a seam around the dome, seams across the pauldron
                 x, y, w, h = rect(by["hat"], face)
                 for xx in range(w):
-                    put(x + xx, y + 3, hx("#4A4A4A"))
+                    put(x + xx, y + 1, groove)
                 x, y, w, h = rect(by["sleeve_r"], face)
                 for xx in range(w):
-                    put(x + xx, y + 3, hx("#3F3F3F"))
-            skin_face(by["sleeve_r"], "bottom", marks=False)  # only the underside shows skin
+                    put(x + xx, y + 3, groove)
+            skin_face(by["sleeve_r"], "bottom")  # only the underside shows skin
 
     m.detail = detail
     plain_paint = m.paint
@@ -950,9 +921,9 @@ def super_mutant():
         if tier < 3:
             for face in faces:
                 clear(boxes["hat"], face)
-        else:  # open dome underneath; a 3x3 notch at the bottom center of the front, with a bar down its middle
+        else:  # open dome underneath; a 5x5 opening at the bottom of the front shows the face
             clear(boxes["hat"], "bottom")
-            clear(boxes["hat"], "front", lambda xx, yy, w, h: yy >= h - 3 and 3 <= xx <= 5 and xx != 4)
+            clear(boxes["hat"], "front", lambda xx, yy, w, h: yy >= h - 6 and 2 <= xx <= 6)
         for n in ("plate_front", "plate_back"):
             for face in faces:
                 if tier == 1 or face in ("top", "bottom", "left", "right"):

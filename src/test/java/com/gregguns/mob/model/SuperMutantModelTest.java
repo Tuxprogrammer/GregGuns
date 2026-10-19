@@ -74,19 +74,19 @@ class SuperMutantModelTest {
         assertArrayEquals(new int[] { 4, 12, 4 }, box("rightArm", "arm_r").size());
         assertArrayEquals(new int[] { 5, 7, 5 }, box("rightArm", "sleeve_r").size());
         assertArrayEquals(new int[] { 4, 12, 4 }, box("leftLeg", "leg_l").size());
-        assertArrayEquals(new int[] { 5, 6, 5 }, box("leftLeg", "boot_l").size());
+        assertArrayEquals(new int[] { 6, 7, 6 }, box("leftLeg", "boot_l").size());
     }
 
     @Test
-    void widthAcrossSleevesIsSeventeenPointEight() {
-        // sleeve outer edge: pivot 5 + offset 3.9 = 8.9 on each side
+    void widthAcrossSleeves() {
+        // round 2: sleeves one unit further out, pivot 5 + 4.9 = 9.9 on each side (arms rest splayed 6 degrees)
         float right = part("rightArm").pivot()[0] + box("rightArm", "sleeve_r").offset()[0];
         float left = part("leftArm").pivot()[0] + box("leftArm", "sleeve_l").offset()[0]
             + box("leftArm", "sleeve_l").size()[0];
-        assertEquals(17.8F, left - right, 0.001F);
-        // 31 units tall: head top -8, boot soles 11 + 6 + 6 = 23
+        assertEquals(19.8F, left - right, 0.001F);
+        // head top -8, boot soles 11 + 6 + 7 = 24
         assertEquals(
-            23F,
+            24F,
             part("rightLeg").pivot()[1] + box("rightLeg", "boot_r").offset()[1] + box("rightLeg", "boot_r").size()[1],
             0.001F);
         assertEquals(-8F, box("head", "skull").offset()[1]);
@@ -97,7 +97,13 @@ class SuperMutantModelTest {
         float rightEdge = part("rightLeg").pivot()[0] + box("rightLeg", "boot_r").offset()[0]
             + box("rightLeg", "boot_r").size()[0];
         float leftEdge = part("leftLeg").pivot()[0] + box("leftLeg", "boot_l").offset()[0];
-        assertEquals(1F, rightEdge - leftEdge, 0.001F);
+        assertEquals(1.8F, rightEdge - leftEdge, 0.001F);
+    }
+
+    @Test
+    void armsRestSplayed() {
+        assertEquals(6F, part("rightArm").rotateDegrees()[2], 0.001F);
+        assertEquals(-6F, part("leftArm").rotateDegrees()[2], 0.001F);
     }
 
     @Test
@@ -127,8 +133,8 @@ class SuperMutantModelTest {
     void tierSkinsHideOrShowThePlatesAndHat() throws IOException {
         MobBoxDef hat = box("head", "hat");
         MobBoxDef plate = box("body", "plate_front");
-        int hatX = hat.u() + 8 + 2;
-        int hatY = hat.v() + 8 + 2;
+        int hatX = hat.u() + 8;
+        int hatY = hat.v() + 8;
         int plateX = plate.u() + 1 + 2;
         int plateY = plate.v() + 1 + 3;
         assertEquals(0, alpha(sheet(1), hatX, hatY));
