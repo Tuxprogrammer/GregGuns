@@ -159,9 +159,18 @@ public final class MpScenarios {
             // MC yaw: -90 faces +X, 90 faces -X.
             prepare(a, ox, oy, oz, -90.0f, 0.0f);
             prepare(b, ox + SEPARATION, oy, oz, 90.0f, 0.0f);
-            return ScenarioResult.pending(name(), 600, new SyncPoller(ctx, a, b));
+            return ScenarioResult.pending(name(), 700, new SyncPoller(ctx, a, b));
         }
     }
+
+    /** Ticks to wait for a pressed shot to show up as a round drop before pressing again, and between steps. */
+    private static final int SHOT_RETRY_TICKS = 8;
+    /** Most fire presses before giving up (two are needed). */
+    private static final int MAX_PRESSES = 6;
+    /** Ticks to keep requesting the reload before giving up. */
+    private static final int RELOAD_START_TIMEOUT = 60;
+    /** Ticks after the reload started by which the rounds must have risen (the pistol reload takes well under it). */
+    private static final int RELOAD_TIMEOUT = 120;
 
     private static final class SyncPoller implements ScenarioPoller {
 
@@ -174,6 +183,9 @@ public final class MpScenarios {
         private int roundsAfterShots = -1;
         private int magsBefore;
         private int reloadAt = -1;
+        private int shotsSeen;
+        private int lastStep = -1;
+        private int presses;
 
         SyncPoller(ScenarioContext ctx, EntityPlayerMP a, EntityPlayerMP b) {
             this.ctx = ctx;
@@ -196,27 +208,51 @@ public final class MpScenarios {
                 signal(b, "arm", "shot", "b-sees-a-shot", "1");
                 signal(b, "arm", "reload", "b-sees-a-reload", "12");
             }
-            if (t == 60) {
-                signal(a, "fire", "2");
+            if (t < 60) {
+                return null;
             }
-            if (t > 60 && reloadAt < 0 && (loaded(a) <= roundsStart - 2 || t >= 140)) {
-                // The fire cooldown refuses a reload for a few ticks after a shot, so keep pressing until it starts.
-                if (roundsAfterShots < 0) {
-                    roundsAfterShots = loaded(a);
+            // Server-confirmed sequence: each step starts only when the server saw the previous one happen.
+            // Shots come from client A's real trigger packets ("fire 1" presses the fire button once).
+            if (shotsSeen < 2) {
+                int now = loaded(a);
+                if (shotsSeen == 0 && now >= 0 && now <= roundsStart - 1) {
+                    shotsSeen = 1;
+                    lastStep = t;
+                } else if (shotsSeen == 1 && now <= roundsStart - 2) {
+                    shotsSeen = 2;
+                    roundsAfterShots = now;
                     magsBefore = magazines(a);
+                    lastStep = t;
+                } else if (lastStep < 0 || t - lastStep >= SHOT_RETRY_TICKS) {
+                    // First press, or the previous press was lost (cooldown, input race): press again. The gap
+                    // after a seen drop is longer than the 4-tick fire cooldown.
+                    if (presses >= MAX_PRESSES) {
+                        return finish(t);
+                    }
+                    presses++;
+                    signal(a, "fire", "1");
+                    lastStep = t;
                 }
+                return null;
+            }
+            if (reloadAt < 0) {
+                if (t - lastStep < SHOT_RETRY_TICKS) {
+                    return null;
+                }
+                // The fire cooldown can still refuse a reload for a few ticks, so keep pressing until it starts.
                 ServerGunHandler.onReloadKey(a);
                 if (GunPlayerData.get(a)
                     .controller()
                     .reload()
                     .isReloading()) {
                     reloadAt = t;
+                } else if (t - lastStep > RELOAD_START_TIMEOUT) {
+                    return finish(t);
                 }
+                return null;
             }
-            if (reloadAt >= 0 && t >= reloadAt + 60) {
-                return finish(t);
-            }
-            if (t > 400) {
+            // Wait for the reload to finish (rounds rise), with margin.
+            if (loaded(a) > roundsAfterShots || t >= reloadAt + RELOAD_TIMEOUT) {
                 return finish(t);
             }
             return null;
@@ -391,8 +427,19 @@ public final class MpScenarios {
         return list;
     }
 
-    /** Per-item wait for every client's confirmation, in server ticks (a held item normally lands in under 15). */
-    private static final int GIVE_CONFIRM_TIMEOUT = 100;
+    /**
+     * Per-item wait for every client's confirmation, in wall-clock milliseconds: a stalled server skips ticks (a
+     * cold first login can skip 80), so a tick budget would expire without any real time passing.
+     */
+    private static final long GIVE_CONFIRM_TIMEOUT_MS = 10_000L;
+
+    /**
+     * Chat turns {@code _word_} into formatting in the pack (it ate "_9mm_" from an item name), so item names travel
+     * in acks with underscores swapped for dashes.
+     */
+    private static String wire(String item) {
+        return item.replace('_', '-');
+    }
 
     /**
      * Collects the clients' {@code hold} confirmations. A client sends a chat line
@@ -479,9 +526,9 @@ public final class MpScenarios {
             List<String> items = giveList();
             int total = items.size();
             // state: [0] step, [1] tick the current step was sent (-1: not yet sent)
-            int[] state = { 0, -1 };
-            return ScenarioResult.pending(name(), 2 * total * (GIVE_CONFIRM_TIMEOUT + 2) + 100, t -> {
-                int step = state[0];
+            long[] state = { 0, -1 };
+            return ScenarioResult.pending(name(), 2 * total * 200 + 100, t -> {
+                int step = (int) state[0];
                 if (step >= 2 * total) {
                     stop();
                     return ScenarioResult.builder(name())
@@ -513,7 +560,7 @@ public final class MpScenarios {
                         }
                         signal(p, "hold", item);
                     }
-                    state[1] = t;
+                    state[1] = System.currentTimeMillis();
                     return null;
                 }
                 boolean all = true;
@@ -521,7 +568,7 @@ public final class MpScenarios {
                     String ack = inbox.get(p.getCommandSenderName());
                     if (ack == null) {
                         all = false;
-                    } else if (!ack.equals("hold " + item + " ok")) {
+                    } else if (!ack.equals("hold " + wire(item) + " ok")) {
                         stop();
                         return ScenarioResult.fail(
                             name(),
@@ -537,7 +584,7 @@ public final class MpScenarios {
                 if (all) {
                     state[0]++;
                     state[1] = -1;
-                } else if (t - state[1] > GIVE_CONFIRM_TIMEOUT) {
+                } else if (System.currentTimeMillis() - state[1] > GIVE_CONFIRM_TIMEOUT_MS) {
                     stop();
                     return ScenarioResult.fail(
                         name(),
@@ -545,8 +592,8 @@ public final class MpScenarios {
                             + " ("
                             + how
                             + ") within "
-                            + GIVE_CONFIRM_TIMEOUT
-                            + " ticks");
+                            + GIVE_CONFIRM_TIMEOUT_MS / 1000
+                            + " s");
                 }
                 return null;
             });

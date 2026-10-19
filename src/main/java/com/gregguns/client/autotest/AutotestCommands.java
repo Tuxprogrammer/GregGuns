@@ -136,12 +136,13 @@ final class AutotestCommands {
                         + held.getDisplayName()
                         + "'");
             }
-            player.sendChatMessage(AutotestSignal.format("ack", "hold", expected, ok ? "ok" : "fail"));
+            player
+                .sendChatMessage(AutotestSignal.format("ack", "hold", expected.replace('_', '-'), ok ? "ok" : "fail"));
         }
     }
 
     /** Client ticks to wait for the item to arrive in the hand. */
-    private static final int HOLD_TIMEOUT_TICKS = 80;
+    private static final int HOLD_TIMEOUT_TICKS = 200;
     /** Client ticks the item stays in hand once it arrived, so it is drawn. */
     private static final int HOLD_SETTLE_TICKS = 5;
 
