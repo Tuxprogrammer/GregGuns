@@ -3,8 +3,10 @@ package com.gregguns.gun.server;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,7 +16,11 @@ import net.minecraft.network.play.server.S09PacketHeldItemChange;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.WorldSettings;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ServerChatEvent;
 
+import com.gregguns.armor.slots.BaublesCompat;
+import com.gregguns.armor.slots.logic.BaubleSlot;
 import com.gregguns.core.testing.AutotestSignal;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
@@ -31,6 +37,7 @@ import com.gregguns.machine.GregGunsMTEIDs;
 import com.gregguns.machine.MTEAmmoPress;
 import com.gregguns.projectile.GenericProjectile;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import gregtech.api.GregTechAPI;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 
@@ -369,7 +376,6 @@ public final class MpScenarios {
     // ----- mp.give ------------------------------------------------------------------------------------------
 
     private static final String PRESS = "gregtech:gt.blockmachines:" + GregGunsMTEIDs.AMMO_PRESS_LV;
-    private static final int GIVE_STEP = 12;
 
     /** Every item name to hand out: the registered {@code gregguns:} items plus the Ammo Press machine. */
     private static List<String> giveList() {
@@ -385,7 +391,49 @@ public final class MpScenarios {
         return list;
     }
 
+    /** Per-item wait for every client's confirmation, in server ticks (a held item normally lands in under 15). */
+    private static final int GIVE_CONFIRM_TIMEOUT = 100;
+
+    /**
+     * Collects the clients' {@code hold} confirmations. A client sends a chat line
+     * {@code PREFIX ack hold <item> ok|fail}; this handler stores it under the sender's name and hides it.
+     */
+    public static final class AckInbox {
+
+        private final Map<String, String> acks = new ConcurrentHashMap<>();
+
+        /**
+         * @param event a chat line from a client
+         */
+        @SubscribeEvent
+        public void onChat(ServerChatEvent event) {
+            String[] parts = AutotestSignal.parse(event.message);
+            if (parts == null || parts.length < 4 || !"ack".equals(parts[0])) {
+                return;
+            }
+            event.setCanceled(true);
+            acks.put(event.username, parts[1] + " " + parts[2] + " " + parts[3]);
+        }
+
+        void clear(String player) {
+            acks.remove(player);
+        }
+
+        /** @return {@code "hold <item> ok|fail"}, or null if nothing arrived since {@link #clear} */
+        String get(String player) {
+            return acks.get(player);
+        }
+    }
+
+    /**
+     * Closed loop, one item at a time: clear the player (inventory, armour, Baubles), put the item in the selected
+     * hotbar slot (command or creative packet), tell the client to hold it, and move on only when every client has
+     * confirmed that the item arrived in its hand and was drawn for a few ticks. A client that never confirms fails
+     * the scenario naming the item.
+     */
     private static final class Give implements Scenario {
+
+        private AckInbox inbox;
 
         @Override
         public boolean includedInAll() {
@@ -402,53 +450,103 @@ public final class MpScenarios {
             return "Gives every connected player every GregGuns item via /give, then via the creative slot packet.";
         }
 
+        private void stop() {
+            if (inbox != null) {
+                MinecraftForge.EVENT_BUS.unregister(inbox);
+                inbox = null;
+            }
+        }
+
+        private static void reset(EntityPlayerMP p, boolean creative) {
+            p.inventory.clearInventory(null, -1);
+            for (BaubleSlot slot : BaubleSlot.values()) {
+                BaublesCompat.clear(p, slot);
+            }
+            p.setGameType(creative ? WorldSettings.GameType.CREATIVE : WorldSettings.GameType.SURVIVAL);
+            p.inventory.currentItem = 0;
+            p.playerNetServerHandler.sendPacket(new S09PacketHeldItemChange(0));
+        }
+
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             List<EntityPlayerMP> players = players();
             if (players.isEmpty()) {
                 return ScenarioResult.fail(name(), "needs a connected player");
             }
+            stop();
+            inbox = new AckInbox();
+            MinecraftForge.EVENT_BUS.register(inbox);
             List<String> items = giveList();
             int total = items.size();
-            for (EntityPlayerMP p : players) {
-                p.setGameType(WorldSettings.GameType.SURVIVAL);
-            }
-            return ScenarioResult.pending(name(), (2 * total + 4) * GIVE_STEP + 40, t -> {
-                int step = (t - 1) / GIVE_STEP;
-                int phase = (t - 1) % GIVE_STEP;
+            // state: [0] step, [1] tick the current step was sent (-1: not yet sent)
+            int[] state = { 0, -1 };
+            return ScenarioResult.pending(name(), 2 * total * (GIVE_CONFIRM_TIMEOUT + 2) + 100, t -> {
+                int step = state[0];
                 if (step >= 2 * total) {
-                    return phase == 0 ? ScenarioResult.builder(name())
-                        .note("gave " + total + " items twice to " + players.size() + " player(s)")
-                        .build() : null;
+                    stop();
+                    return ScenarioResult.builder(name())
+                        .note(
+                            "gave and held " + total
+                                + " items twice (command, then creative packet) for "
+                                + players.size()
+                                + " player(s)")
+                        .build();
                 }
                 String item = items.get(step % total);
                 boolean creative = step >= total;
-                for (EntityPlayerMP p : players) {
-                    switch (phase) {
-                        case 0 -> {
-                            p.inventory.clearInventory(null, -1);
-                            p.setGameType(creative ? WorldSettings.GameType.CREATIVE : WorldSettings.GameType.SURVIVAL);
-                            p.inventory.currentItem = 0;
-                            p.playerNetServerHandler.sendPacket(new S09PacketHeldItemChange(0));
-                            if (!creative) {
-                                String arg = item.equals(PRESS)
-                                    ? "gregtech:gt.blockmachines 1 " + GregGunsMTEIDs.AMMO_PRESS_LV
-                                    : item;
-                                MinecraftServer.getServer()
-                                    .getCommandManager()
-                                    .executeCommand(
-                                        MinecraftServer.getServer(),
-                                        "give " + p.getCommandSenderName() + " " + arg);
-                            }
+                String how = creative ? "creative packet" : "/give";
+                if (state[1] < 0) {
+                    for (EntityPlayerMP p : players) {
+                        inbox.clear(p.getCommandSenderName());
+                        reset(p, creative);
+                        if (creative) {
+                            signal(p, "creativegive", item);
+                        } else {
+                            String arg = item.equals(PRESS)
+                                ? "gregtech:gt.blockmachines 1 " + GregGunsMTEIDs.AMMO_PRESS_LV
+                                : item;
+                            MinecraftServer.getServer()
+                                .getCommandManager()
+                                .executeCommand(
+                                    MinecraftServer.getServer(),
+                                    "give " + p.getCommandSenderName() + " " + arg);
                         }
-                        case 3 -> {
-                            if (creative) {
-                                signal(p, "creativegive", item);
-                            }
-                        }
-                        case 7 -> signal(p, "hold", item);
-                        default -> {}
+                        signal(p, "hold", item);
                     }
+                    state[1] = t;
+                    return null;
+                }
+                boolean all = true;
+                for (EntityPlayerMP p : players) {
+                    String ack = inbox.get(p.getCommandSenderName());
+                    if (ack == null) {
+                        all = false;
+                    } else if (!ack.equals("hold " + item + " ok")) {
+                        stop();
+                        return ScenarioResult.fail(
+                            name(),
+                            p.getCommandSenderName() + " could not hold "
+                                + item
+                                + " ("
+                                + how
+                                + "): client said '"
+                                + ack
+                                + "'");
+                    }
+                }
+                if (all) {
+                    state[0]++;
+                    state[1] = -1;
+                } else if (t - state[1] > GIVE_CONFIRM_TIMEOUT) {
+                    stop();
+                    return ScenarioResult.fail(
+                        name(),
+                        "no client confirmation for " + item
+                            + " ("
+                            + how
+                            + ") within "
+                            + GIVE_CONFIRM_TIMEOUT
+                            + " ticks");
                 }
                 return null;
             });
