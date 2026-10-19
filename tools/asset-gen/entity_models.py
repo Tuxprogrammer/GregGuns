@@ -729,39 +729,40 @@ def cyberdemon():
 
 
 def alien_bug():
-    """Sand-tan four-legged insect: big boxy gaping head, a fan of thin quills, a long rising segmented tail.
+    """Sand-tan four-legged insect: tall leaning thorax, big boxy gaping head, short side-splayed quills, a long low segmented tail.
 
     Built from docs/techguns-spec/10-entities-npcs/model-notes/alien_bug.md, then corrected by the orchestrator's
-    measurements (round 2), which win over the notes: no flat frill (ten thin quills fan out from the head top and
-    neck), a tall 8x8x6 head with jaws gaping 15 up and 20 down, and a 6x6 to 2x2 abdomen column rising 35 degrees
-    to about head height. Generic living mode. Sheet 64x64.
+    measurements (rounds 2 and 3), which win over the notes: no flat frill (ten short quills splay sideways from the
+    head top), a 10x8x8 head with jaws gaping 15 up and 20 down, an 8x10x8 thorax leaning 20 degrees forward as the
+    highest solid mass, and a 6x6 to 2x2 abdomen column rising only 12 degrees to about leg-hip height. Generic living mode. Sheet 64x64.
     """
     m = Mob("alien_bug", 64, 64)
-    m.part("thorax").box("thorax", -3, 14, -2, 6, 5, 9, material="thorax")
+    # tall solid thorax, 8x10x8, leaning forward 20 degrees about its bottom center
+    m.part("thorax", pivot=(0, 17, 2), rotate=(20, 0, 0)).box("thorax", -4, -10, -4, 8, 10, 8, material="thorax")
     # abdomen: a straight segmented column pitched 35 degrees, each segment a child of the one before
-    lens, widths = (5, 4, 4, 3), (6, 5, 3, 2)
+    lens, widths = (4, 3, 3, 2), (6, 5, 3, 2)
     prev = None
     for i in range(4):
         n = "abd_%d" % (i + 1)
         wd = widths[i]
         if prev is None:
-            part = m.part(n, pivot=(0, 16.5, 5), rotate=(35, 0, 0))
+            part = m.part(n, pivot=(0, 17, 4), rotate=(12, 0, 0))
         else:
             part = m.part(n, parent=prev, pivot=(0, 0, lens[i - 1] - 0.5))
         part.box(n, -wd / 2.0, -wd / 2.0, 0, wd, wd, lens[i], material="abdomen")
         prev = n
     # head group, pivot at the head's center
-    m.part("head", pivot=(0, 11, -5)).box("head", -4, -4, -3, 8, 8, 6, material="head")
-    m.part("upper_jaw", parent="head", pivot=(0, -0.5, -3), rotate=(-15, 0, 0)).box(
-        "upper_jaw", -2.5, -3, -5, 5, 3, 7, material="jaw_u")
-    m.part("lower_jaw", parent="head", pivot=(0, 1.5, -3), rotate=(20, 0, 0)).box(
-        "lower_jaw", -2, 0, -5, 4, 3, 7, material="jaw_l")
+    m.part("head", pivot=(0, 10, -7)).box("head", -4, -4, -5, 8, 8, 10, material="head")
+    m.part("upper_jaw", parent="head", pivot=(0, -0.5, -5), rotate=(-15, 0, 0)).box(
+        "upper_jaw", -2.5, -3, -3, 5, 3, 6, material="jaw_u")
+    m.part("lower_jaw", parent="head", pivot=(0, 1.5, -5), rotate=(20, 0, 0)).box(
+        "lower_jaw", -2, 0, -3, 4, 3, 6, material="jaw_l")
     # quills: five rows of pairs along the head top and neck, splayed outward and backward
-    rows = ((-2.5, 4, 25, 15, 2), (-1, 4, 33, 25, 1), (0.5, 5, 41, 32, 2), (1.8, 5, 48, 40, 1), (2.7, 6, 55, 48, 1))
+    rows = ((-2, 3, 45, 5, 2), (-0.5, 4, 52, 8, 1), (1, 4, 58, 10, 2), (2.5, 3, 64, 12, 1), (4, 3, 70, 15, 1))
     for i, (z, ln, out, back, wd) in enumerate(rows):
         for side, sx in (("r", -1), ("l", 1)):
             n = "quill_%d%s" % (i, side)
-            m.part(n, parent="head", pivot=(1.5 * sx, -3.5, z), rotate=(-back, 0, out * sx)).box(
+            m.part(n, parent="head", pivot=(2 * sx, -3.5, z), rotate=(-back, 0, out * sx)).box(
                 n, -wd / 2.0, -ln, -0.5, wd, ln, 1, material="quill", mirror=side == "l", group="quill_%d" % i)
     # legs: pivot inside the thorax side at y 17; yaw leans toward the leg's end of the body, roll raises it
     for side, sx in (("r", -1), ("l", 1)):
@@ -858,11 +859,11 @@ def alien_bug():
         hd, uj, lj = byname["head"], byname["upper_jaw"], byname["lower_jaw"]
         x, y, w, h = rect(hd, "right")  # the right region's right edge is the front, the left region's left edge
         for yy in (3, 4):
-            put(x + w - 3, y + yy, (0, 0, 0))
+            put(x + w - 4, y + yy, (0, 0, 0))
         x, y, w, h = rect(hd, "left")
         for yy in (3, 4):
             put(x + 2, y + yy, (0, 0, 0))
-        for face, ucols, lcols in (("right", (2, 4, 6), (3, 5)), ("left", (0, 2, 4), (1, 3))):
+        for face, ucols, lcols in (("right", (3, 5), (4,)), ("left", (0, 2), (1,))):
             x, y, w, h = rect(uj, face)
             for c in ucols:
                 put(x + c, y + h - 1, tooth)

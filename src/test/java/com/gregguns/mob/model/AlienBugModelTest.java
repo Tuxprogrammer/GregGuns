@@ -28,14 +28,14 @@ class AlienBugModelTest {
             26,
             MODEL.parts()
                 .size());
-        assertArrayEquals(new int[] { 6, 5, 9 }, box("thorax").size());
+        assertArrayEquals(new int[] { 8, 10, 8 }, box("thorax").size());
         // big boxy head and jaws
-        assertArrayEquals(new int[] { 8, 8, 6 }, box("head").size());
-        assertArrayEquals(new int[] { 5, 3, 7 }, box("upper_jaw").size());
-        assertArrayEquals(new int[] { 4, 3, 7 }, box("lower_jaw").size());
+        assertArrayEquals(new int[] { 8, 8, 10 }, box("head").size());
+        assertArrayEquals(new int[] { 5, 3, 6 }, box("upper_jaw").size());
+        assertArrayEquals(new int[] { 4, 3, 6 }, box("lower_jaw").size());
         // abdomen column tapers 6, 5, 3, 2 and is a chain of children
-        assertArrayEquals(new int[] { 6, 6, 5 }, box("abd_1").size());
-        assertArrayEquals(new int[] { 2, 2, 3 }, box("abd_4").size());
+        assertArrayEquals(new int[] { 6, 6, 4 }, box("abd_1").size());
+        assertArrayEquals(new int[] { 2, 2, 2 }, box("abd_4").size());
         assertEquals("abd_3", part("abd_4").parent());
         assertArrayEquals(new int[] { 9, 3, 3 }, box("leg_fl").size());
         assertArrayEquals(new int[] { 11, 2, 2 }, box("shin_fl").size());
@@ -54,13 +54,14 @@ class AlienBugModelTest {
 
     @Test
     void headGroupAndTilts() {
-        assertArrayEquals(new float[] { 0, 11, -5 }, part("head").pivot());
+        assertArrayEquals(new float[] { 0, 10, -7 }, part("head").pivot());
         for (String child : new String[] { "upper_jaw", "lower_jaw", "quill_0l", "quill_4r" }) {
             assertEquals("head", part(child).parent());
         }
         assertEquals(-15F, part("upper_jaw").rotateDegrees()[0]);
         assertEquals(20F, part("lower_jaw").rotateDegrees()[0]);
-        assertEquals(35F, part("abd_1").rotateDegrees()[0]);
+        assertEquals(12F, part("abd_1").rotateDegrees()[0]);
+        assertEquals(20F, part("thorax").rotateDegrees()[0]);
     }
 
     @Test
