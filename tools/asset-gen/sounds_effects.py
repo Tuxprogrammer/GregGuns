@@ -235,6 +235,7 @@ def _whiteclick(sr, rng, tau=0.007, dur=0.05, hi=15500.0, knee=1000.0, slope=0.3
 BED = 0.03
 CK = 0.45
 BEEP = 0.10
+_C4_TAIL0 = -14
 
 
 @recipe("c4charge_init")
@@ -257,6 +258,11 @@ def c4_init(c, N):
     bp = bp + 0.03 * _hp(sfx.noise(nbp, rng), sr, 1500) * np.minimum(sfx.tvec(nbp, sr) / 0.002, 1.0)
     m.add(bp, 0.30, BEEP)
     m.add(_whiteclick(sr, rng, 0.004, dur=0.03), 0.425, CK * 0.12)   # the burst that closes the beep
+    # blueprint: the 3.81 kHz line (F0 1.905 kHz) rings on, faint, to the end of the file
+    t_ = np.arange(N) / sr
+    tail = np.sin(sfx.TAU * 3811.0 * t_) * 10 ** (np.interp(t_, [0.43, 0.6, 0.86], [_C4_TAIL0, _C4_TAIL0 - 8, _C4_TAIL0 - 16]) / 20)
+    tail *= (t_ >= 0.43) * np.clip((t_ - 0.43) / 0.01, 0, 1)
+    m.add(tail, 0.0, BEEP)
     return m.out
 
 
@@ -433,28 +439,41 @@ def demo_tick(c, N):
     n = sfx.n_of(sr, d)
     t = sfx.tvec(n, sr)
     st = np.zeros(n)
-    for f, g in ((1625, 0.3), (2450, 0.3), (3225, 0.4), (4650, 1.2), (6050, 1.0), (7675, 1.0), (9275, 0.3), (10900, 0.25), (12325, 0.15)):
+    for f, g in ((273.3, _DT_LO), (546.6, _DT_LO), (819.9, _DT_LO * 0.7), (1640, 0.3), (2460, 0.3), (3280, 0.4), (4646, 1.2), (6013, 1.0), (7652, 1.0), (9292, 0.3), (10932, 0.25), (12299, 0.15)):   # harmonics 6..45 of 273.3 Hz
         st += g * np.sin(sfx.TAU * f * t + rng.uniform(0, 6.28))
-    buzz = 0.45 + 0.55 * (np.sin(sfx.TAU * 130 * t) > 0)       # 130 Hz pulse amplitude modulation
+    pt = np.zeros(n)   # exact 273.3 Hz pulse train above 1.4 kHz: the missing-fundamental periodicity the blueprint measures
+    for k_ in range(int(n / sr * 273.3) + 1):
+        i_ = int(round(k_ * sr / 273.3))
+        if i_ < n:
+            pt[i_] = 1.0 + _DT_PJ * rng.standard_normal()
+    pt = sfx.fftfilt(pt, sr, hp=_DT_HP, lp=12500, order=6)
+    st += _DT_PT * pt / (np.std(pt) + 1e-9)
+    buzz = 0.45 + 0.55 * (np.sin(sfx.TAU * 273.3 * t) > 0)       # 273 Hz pulse amplitude modulation (blueprint F0)
     st = np.tanh(1.6 * st / 2.2 * buzz) + 0.15 * sfx.fftfilt(sfx.noise(n, rng), sr, hp=900, lp=12000, order=1)
+    st = sfx.fftfilt(st, sr, hp=1300, order=4)   # intermodulation of the harmonic partials lands on 273 Hz multiples: keep it out of the low bands
     env = np.minimum(t / 0.0006, 1.0) * np.minimum((0.085 - t) / 0.0025, 1.0)
     st *= np.clip(env, 0, 1)
     m.add(st, 0.0, 0.35)
     m.add(_noise_click(sr, rng, dur=0.002, lo=1500, hi=12000), 0.0, 4.0)   # spike so the peak leads the loudness
     th = _thump(sr, 140, 60, 0.09, 0.03, k=0.02) * np.clip((0.085 - sfx.tvec(sfx.n_of(sr, 0.09), sr)) / 0.0025, 0, 1)
     m.add(th, 0.0, 0.04)
-    for i in range(9):
-        t0 = 0.1 * (i + 1)
+    for i in range(8):   # blueprint: eight ticks every 0.1 s from 0.2 s, ~25 ms of a 1.86 kHz line, about 18 dB under the opener
+        t0 = 0.2 + 0.1 * i
         nn = sfx.n_of(sr, 0.03)
         tt = sfx.tvec(nn, sr)
-        g = np.sin(sfx.TAU * 9340 * tt) * 0.5
-        g = g + 0.6 * sfx.fftfilt(sfx.noise(nn, rng), sr, hp=8000, lp=11000, order=3) / 0.35   # noise around the line
-        g = g * sfx.exp_env(nn, sr, 0.012, attack=0.0015)
-        m.add(g, t0, 0.02)
+        g = np.sin(sfx.TAU * 1864 * tt) + _DT_TK_N * sfx.fftfilt(sfx.noise(nn, rng), sr, hp=1500, lp=9000, order=2)
+        g = g * sfx.exp_env(nn, sr, _DT_TK_TAU, attack=0.0015)
+        m.add(g, t0, _DT_TK)
     return m.out
 
 
 # =========================================================================== impacts
+_HUM_G, _HUM_TAU = 1.0, 0.3
+_DT_LO = 0.0
+_DT_PT = 2.0
+_DT_HP = 3000
+_DT_PJ = 1.0
+_DT_TK, _DT_TK_N, _DT_TK_TAU = 0.6, 0.1, 0.0015
 @recipe("bullet_impact_*")
 def bullet_impact(c, N):
     """Quiet pre-tick, then at 0.05 s a hard gritty burst (damped mid-band metal modes, gravel-gated noise),
@@ -503,6 +522,11 @@ def bullet_impact(c, N):
     ring *= np.exp(-tr / 0.2) * np.clip(tr / 0.03, 0, 1) * np.clip((0.7 - tr) / 0.15, 0, 1)
     res = sfx.band_noise(nr, sr, rng, 300, 2000, order=2) * np.exp(-tr / 0.25)
     m.add(ring * 0.25 + res * 0.7, 0.22 if v != 2 else 0.05, 0.016 * G('g_ring'))
+    # blueprint: voiced ~53 Hz fundamental in over half of the active frames; a steady sub hum under the thumps
+    nh = sfx.n_of(sr, 0.5)
+    th_ = sfx.tvec(nh, sr)
+    hum = np.sin(sfx.TAU * 53.0 * th_) * np.exp(-th_ / _HUM_TAU) * np.clip(th_ / 0.01, 0, 1)
+    m.add(hum, t0, _HUM_G * G('g_hum'))
     _contour(c, head=[(0.0, -44.0), (0.04, -44.0), (0.048, -30.0), (0.056, -1.0), (0.075, 0.0), (0.12, -2.0), (0.14, -9.0)],
              t_from=0.14, smooth=0.04)
     c.env_smooth = 0.012
@@ -675,7 +699,7 @@ def gore(c, N):
     fade_w = {"a": 0.1, "b": 0.04, "c": 0.3}[v]
     out = out * np.clip((end_t + fade_w - tg_) / fade_w, 0, 1)   # block stops at end_t (b: a 40 ms cut like A)
     if v == "a":
-        tg.crest = 13.0   # A is hot and clipped: ask the crest limiter for a denser result so the final limiter doesn't gut the mids
+        tg.crest = 19.0   # A is hot and clipped: ask the crest limiter for a denser result so the final limiter doesn't gut the mids
         _contour(c, smooth=0.08, head=[(0.0, -3.0), (0.02, 0.0), (0.2, -2.0)], t_from=0.2)
     else:
         _contour(c, smooth=0.08)
@@ -820,8 +844,8 @@ def nuke(c, N):
     tt_ = np.arange(len(out)) / sr
     w = np.clip((tt_ - 2.5) / 1.5, 0, 1)
     out = out * (1 - w) + _lp(out, sr, 800, order=4) * w
-    _contour(c, head=[(0.0, -12.0), (0.05, -13.0), (0.69, -8.0), (1.1, 0.0), (1.8, 0.0), (2.75, -2.0), (4.13, -8.0), (5.5, -15.0),
-                      (6.9, -11.0), (8.26, -22.0), (9.4, -36.0), (9.64, -44.0), (9.9, -80.0)], t_from=99.0)
+    _contour(c, head=[(0.0, -12.0), (0.05, -13.0), (0.69, -8.0), (1.1, 0.0), (1.8, 0.0), (2.25, -2.0), (3.0, -8.0), (3.75, -12.0), (4.5, -14.0),
+                      (5.5, -16.0), (6.5, -19.0), (7.25, -20.0), (8.0, -23.0), (8.75, -29.0), (9.1, -34.0), (9.5, -38.0), (9.64, -44.0), (9.9, -80.0)], t_from=99.0)
     out = _debris_floor(out, sr, rng, -52.0, tau=4.0)
     c.env_smooth = 0.1
     return out
