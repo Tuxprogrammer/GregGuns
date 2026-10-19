@@ -192,7 +192,7 @@ Akimbo recipes stay in the crafting table and keep Techguns' behavior ([RecipeAk
 
 - **Gate.** The tier is carried by the inputs: each input is itself a gate-material gun. No other item is needed.
 - **Electric akimbo.** The Akimbo De-Atomizer Pistols is an IC2 electric item of the same tier as one pistol, with **twice** the capacity. Combining stores the sum of both guns' EU. Splitting gives each gun half, rounded down for the first and the remainder for the second, as ammo is split in Techguns.
-- **Camo and ammo.** The first gun's camo wins, as in Techguns. Magazine contents sum and split as in the baseline.
+- **Camo and ammo.** The akimbo gun shows the first gun's camo, as in Techguns, but the second gun's whole tag (camo included) is kept inside it and returned on split (GUN-26 fixed, `AkimboNbt`). Rounds sum on combine and split as in the baseline (floor half to the result, the remainder to the second gun).
 
 ## Requirements
 
