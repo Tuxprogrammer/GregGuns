@@ -30,6 +30,26 @@ public final class GunTransforms {
     private final TransformProgram icon;
     private final MuzzleFlashSpec muzzleFlash;
     private final ScopeSpec scope;
+    private final PartVisibility partVisibility;
+
+    /**
+     * Decides whether a model part is drawn this frame, from the state a model may see. Used for parts that appear
+     * and disappear with the ammo (a loaded rocket's nose). Pure.
+     */
+    @FunctionalInterface
+    public interface PartVisibility {
+
+        /** Every part always drawn. */
+        PartVisibility ALWAYS = (part, ammoLeft, reloadProgress) -> true;
+
+        /**
+         * @param part           part index
+         * @param ammoLeft       rounds loaded; 100 when unknown
+         * @param reloadProgress reload progress 0 to 1, or any value above 1 when not reloading
+         * @return true to draw the part
+         */
+        boolean visible(int part, int ammoLeft, float reloadProgress);
+    }
 
     private GunTransforms(Builder b) {
         partCount = b.partCount;
@@ -48,6 +68,7 @@ public final class GunTransforms {
         icon = b.icon;
         muzzleFlash = b.muzzleFlash;
         scope = b.scope;
+        partVisibility = b.partVisibility;
     }
 
     /** @return a new builder; every row defaults to no steps */
@@ -144,6 +165,13 @@ public final class GunTransforms {
         return scope;
     }
 
+    /**
+     * @return whether the given part is drawn for this ammo and reload state (always true unless the gun sets a rule)
+     */
+    public boolean partVisible(int part, int ammoLeft, float reloadProgress) {
+        return partVisibility.visible(part, ammoLeft, reloadProgress);
+    }
+
     /** Builds {@link GunTransforms}. */
     public static final class Builder {
 
@@ -163,8 +191,15 @@ public final class GunTransforms {
         private TransformProgram icon = TransformProgram.EMPTY;
         private MuzzleFlashSpec muzzleFlash;
         private ScopeSpec scope;
+        private PartVisibility partVisibility = PartVisibility.ALWAYS;
 
         private Builder() {}
+
+        /** A rule that hides parts by ammo and reload state; the default draws every part. */
+        public Builder partVisibility(PartVisibility rule) {
+            partVisibility = rule;
+            return this;
+        }
 
         /** Number of parts drawn per frame. */
         public Builder parts(int count) {
