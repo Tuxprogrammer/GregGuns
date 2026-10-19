@@ -34,5 +34,7 @@ public enum ProjectileKind {
     /** Energy blast (MIB gun), M5. Section 3.10. */
     ENERGY_BLAST,
     /** Sonic shotgun rings, M5. Section 3.13. */
-    SONIC
+    SONIC,
+    /** Plain bullet that is never drawn (the Chainsaw's cut), M5. Section 3.12. */
+    INVISIBLE
 }

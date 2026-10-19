@@ -112,9 +112,8 @@ public final class GunRecipeScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             List<ItemStack> inputList = new ArrayList<>();
             for (ProductionTable.Input input : row.inputs()) {
-                inputList.add(
-                    input.isGregGuns() ? modStack(input.itemName(), input.count())
-                        : gt(input.prefix(), input.material(), input.count()));
+                // Resolves GregGuns items, GT parts and ItemList machine parts the way the recipe loader does.
+                inputList.add(ProductionRecipes.resolve(input));
             }
             inputList.add(GTUtility.getIntegratedCircuit(row.circuit()));
             for (ItemStack input : inputList) {
@@ -197,9 +196,8 @@ public final class GunRecipeScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             List<ItemStack> inputList = new ArrayList<>();
             for (ProductionTable.Input input : row.inputs()) {
-                inputList.add(
-                    input.isGregGuns() ? modStack(input.itemName(), input.count())
-                        : gt(input.prefix(), input.material(), input.count()));
+                // Resolves GregGuns items, GT parts and ItemList machine parts the way the recipe loader does.
+                inputList.add(ProductionRecipes.resolve(input));
             }
             inputList.add(GTUtility.getIntegratedCircuit(row.circuit()));
             for (ItemStack input : inputList) {

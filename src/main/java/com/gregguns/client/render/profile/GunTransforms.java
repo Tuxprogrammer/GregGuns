@@ -49,6 +49,20 @@ public final class GunTransforms {
          * @return true to draw the part
          */
         boolean visible(int part, int ammoLeft, float reloadProgress);
+
+        /**
+         * The same decision with the fire animation progress, for parts that alternate while firing (the
+         * Chainsaw's two chain frames). Defaults to the rule without it.
+         *
+         * @param part           part index
+         * @param ammoLeft       rounds loaded; 100 when unknown
+         * @param reloadProgress reload progress 0 to 1, or any value above 1 when not reloading
+         * @param fireProgress   fire animation progress 0 to 1; 0 when not firing
+         * @return true to draw the part
+         */
+        default boolean visible(int part, int ammoLeft, float reloadProgress, float fireProgress) {
+            return visible(part, ammoLeft, reloadProgress);
+        }
     }
 
     private GunTransforms(Builder b) {
@@ -173,6 +187,11 @@ public final class GunTransforms {
     /**
      * @return whether the given part is drawn for this ammo and reload state (always true unless the gun sets a rule)
      */
+    public boolean partVisible(int part, int ammoLeft, float reloadProgress, float fireProgress) {
+        return partVisibility.visible(part, ammoLeft, reloadProgress, fireProgress);
+    }
+
+    /** @see PartVisibility#visible(int, int, float) */
     public boolean partVisible(int part, int ammoLeft, float reloadProgress) {
         return partVisibility.visible(part, ammoLeft, reloadProgress);
     }
