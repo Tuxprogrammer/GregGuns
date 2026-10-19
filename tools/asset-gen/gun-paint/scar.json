@@ -46,7 +46,7 @@
         ],
         "colors": [
          "#383838",
-         "#262626"
+         "#202020"
         ],
         "step": 1,
         "axis": "x"
@@ -87,7 +87,7 @@
         "y": 2,
         "w": 1,
         "h": 1,
-        "color": "#37372E"
+        "color": "#101010"
        },
        {
         "type": "rect",
@@ -98,7 +98,308 @@
         "y": 2,
         "w": 1,
         "h": 1,
-        "color": "#37372E"
+        "color": "#101010"
+       }
+      ]
+     },
+     "buttpad": {
+      "role": "black",
+      "painters": [
+       {
+        "type": "stripes",
+        "faces": [
+         "right"
+        ],
+        "colors": [
+         "#3B3B3B",
+         "#2A2A2A"
+        ],
+        "step": 1,
+        "axis": "y"
+       }
+      ]
+     },
+     "mag": {
+      "role": "mag",
+      "painters": [
+       {
+        "type": "tone",
+        "faces": [
+         "front"
+        ],
+        "x": 1,
+        "y": 0,
+        "w": 1,
+        "h": 6,
+        "f": 1.07
+       },
+       {
+        "type": "tone",
+        "faces": [
+         "back"
+        ],
+        "x": 5,
+        "y": 0,
+        "w": 1,
+        "h": 6,
+        "f": 1.07
+       },
+       {
+        "type": "tone",
+        "faces": [
+         "front"
+        ],
+        "x": 3,
+        "y": 0,
+        "w": 1,
+        "h": 6,
+        "f": 0.93
+       },
+       {
+        "type": "tone",
+        "faces": [
+         "back"
+        ],
+        "x": 3,
+        "y": 0,
+        "w": 1,
+        "h": 6,
+        "f": 0.93
+       },
+       {
+        "type": "tone",
+        "faces": [
+         "front"
+        ],
+        "x": 5,
+        "y": 0,
+        "w": 1,
+        "h": 6,
+        "f": 1.07
+       },
+       {
+        "type": "tone",
+        "faces": [
+         "back"
+        ],
+        "x": 1,
+        "y": 0,
+        "w": 1,
+        "h": 6,
+        "f": 1.07
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "front"
+        ],
+        "x": 0,
+        "y": 4,
+        "w": 2,
+        "h": 2,
+        "color": "#363636"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "back"
+        ],
+        "x": 5,
+        "y": 4,
+        "w": 2,
+        "h": 2,
+        "color": "#363636"
+       }
+      ]
+     },
+     "heel": {
+      "role": "tan",
+      "painters": [
+       {
+        "type": "rect",
+        "faces": [
+         "front"
+        ],
+        "x": 0,
+        "y": 7,
+        "w": 1,
+        "h": 1,
+        "color": "#181818"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "front"
+        ],
+        "x": 1,
+        "y": 8,
+        "w": 1,
+        "h": 1,
+        "color": "#181818"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "back"
+        ],
+        "x": 2,
+        "y": 7,
+        "w": 1,
+        "h": 1,
+        "color": "#181818"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "back"
+        ],
+        "x": 1,
+        "y": 8,
+        "w": 1,
+        "h": 1,
+        "color": "#181818"
+       }
+      ]
+     },
+     "stock_hinge": {
+      "role": "tan",
+      "painters": [
+       {
+        "type": "seam",
+        "faces": [
+         "front",
+         "back"
+        ],
+        "at": 0,
+        "axis": "v",
+        "dark": 0.8,
+        "light": 1.0
+       }
+      ]
+     },
+     "receiver": {
+      "role": "tan",
+      "painters": [
+       {
+        "type": "rect",
+        "faces": [
+         "front"
+        ],
+        "x": 10,
+        "y": 1,
+        "w": 12,
+        "h": 1,
+        "color": "#101010"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "back"
+        ],
+        "x": 15,
+        "y": 1,
+        "w": 12,
+        "h": 1,
+        "color": "#101010"
+       },
+       {
+        "type": "tone",
+        "faces": [
+         "front"
+        ],
+        "x": 8,
+        "y": 2,
+        "w": 13,
+        "h": 3,
+        "f": 1.1
+       },
+       {
+        "type": "tone",
+        "faces": [
+         "back"
+        ],
+        "x": 16,
+        "y": 2,
+        "w": 13,
+        "h": 3,
+        "f": 1.1
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "front"
+        ],
+        "x": 9,
+        "y": 3,
+        "w": 11,
+        "h": 2,
+        "color": "#181818"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "back"
+        ],
+        "x": 17,
+        "y": 3,
+        "w": 11,
+        "h": 2,
+        "color": "#181818"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "front"
+        ],
+        "x": 3,
+        "y": 1,
+        "w": 1,
+        "h": 1,
+        "color": "#101010"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "back"
+        ],
+        "x": 33,
+        "y": 1,
+        "w": 1,
+        "h": 1,
+        "color": "#101010"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "front"
+        ],
+        "x": 33,
+        "y": 3,
+        "w": 1,
+        "h": 1,
+        "color": "#101010"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "back"
+        ],
+        "x": 3,
+        "y": 3,
+        "w": 1,
+        "h": 1,
+        "color": "#101010"
+       },
+       {
+        "type": "seam",
+        "faces": [
+         "front",
+         "back"
+        ],
+        "at": 1,
+        "axis": "v",
+        "dark": 0.85,
+        "light": 1.0
        }
       ]
      }
@@ -635,7 +936,19 @@
    "role": "pin"
   },
   "cheek": {
-   "role": "tan"
+   "role": "tan",
+   "painters": [
+    {
+     "type": "seam",
+     "faces": [
+      "right"
+     ],
+     "at": 3,
+     "axis": "h",
+     "dark": 0.7,
+     "light": 1.0
+    }
+   ]
   },
   "stock_under": {
    "role": "tan"
@@ -693,7 +1006,21 @@
    "role": "tan"
   },
   "buttpad": {
-   "role": "black"
+   "role": "black",
+   "painters": [
+    {
+     "type": "stripes",
+     "faces": [
+      "right"
+     ],
+     "colors": [
+      "#282828",
+      "#363636"
+     ],
+     "step": 1,
+     "axis": "y"
+    }
+   ]
   },
   "latch": {
    "role": "latch"
