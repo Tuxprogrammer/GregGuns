@@ -2,8 +2,11 @@ package com.gregguns.recipe;
 
 import com.gregguns.item.ammo.MagazineType;
 import com.gregguns.item.ammo.def.AdvancedAmmo;
+import com.gregguns.item.ammo.def.NetherChargeAmmo;
 import com.gregguns.item.ammo.def.NineMmAmmo;
+import com.gregguns.item.ammo.def.NukeRocketAmmo;
 import com.gregguns.item.ammo.def.RifleAmmo;
+import com.gregguns.item.part.ComponentItems;
 
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
@@ -78,6 +81,29 @@ public final class AmmoRecycling {
         ProductionRecipes.attach(
             AdvancedAmmo.MAGAZINE.loadedItemName(),
             new ItemData(Materials.Titanium, titanium + (foil + round) * rounds));
+    }
+
+    /**
+     * The Nether Charge (RC-36): a charge is one sixteenth of the run's HSS-G plates, as GT item data. The netherrack,
+     * soul sand, powder and lava burn away.
+     */
+    public static void netherCharge() {
+        ProductionRecipes.attach(
+            NetherChargeAmmo.TYPE.roundItemName(),
+            new ItemData(Materials.HSSG, AmmoComposition.perItem(2 * OrePrefixes.plate.getMaterialAmount(), 16)));
+    }
+
+    /**
+     * The Tactical Nuke Rocket (RC-35) and the Depleted Nuclear Power Cell carry Uranium-235 as their main material,
+     * so GT's radiation applies to the holder (GGS-06-23).
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTUtility.java#L1971-L1980
+    // (getRadioactivityLevel reads only the main material of the stack's ItemData).
+    public static void nukeRocket() {
+        ItemData uranium = new ItemData(Materials.Uranium235, OrePrefixes.dust.getMaterialAmount());
+        ProductionRecipes.attach(NukeRocketAmmo.TYPE.roundItemName(), uranium);
+        ProductionRecipes.attach(ComponentItems.CELL_NUCLEAR_DEPLETED, uranium);
     }
 
     /**
