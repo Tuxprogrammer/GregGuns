@@ -73,7 +73,7 @@ public final class ChainsawDef {
                 Input.mod(PartItems.RECEIVER_IRON, 1),
                 Input.gt("toolHeadChainsaw", "Steel", 1),
                 Input.itemList("Electric_Piston_HV", 1),
-                Input.gt("plate", "Polyethylene", 1),
+                Input.gt("plate", "Plastic", 1),
                 Input.gt("plate", "StainlessSteel", 2),
                 Input.gt("screw", "StainlessSteel", 4)))
         .scenarios(registry -> ChainsawScenarios.registerAll(registry))
