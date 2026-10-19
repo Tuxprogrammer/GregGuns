@@ -38,8 +38,7 @@ public final class ClientGunDefinitions {
      * test pins this list to the guns that actually lack a profile, and <b>the M2 exit gate requires it empty</b>:
      * giving a gun its clean-room profile means removing its name here.
      */
-    public static final List<String> FLAT_ICON_FALLBACK = Collections
-        .unmodifiableList(Collections.emptyList());
+    public static final List<String> FLAT_ICON_FALLBACK = Collections.unmodifiableList(Collections.emptyList());
 
     private ClientGunDefinitions() {}
 
