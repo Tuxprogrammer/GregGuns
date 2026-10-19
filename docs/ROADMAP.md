@@ -272,3 +272,7 @@ One gun, working end to end inside the GTNH dev pack.
 - [ ] No unresolved crash-severity bugs.
 - [ ] The PACK-CHANGES modpack PR is open, with no placeholder names left.
 - [ ] Release notes, a tagged version and published jars (CI `release-tags` workflow).
+
+## Later
+
+- [ ] Revisit the sound generators against [SOUND-DIFFERENCES](assets/SOUND-DIFFERENCES.md) (the doc is written when the clean-room sound loop ends).
