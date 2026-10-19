@@ -96,15 +96,18 @@ class AugProfileTest {
         assertEquals(23, barrel.w());
         assertEquals(3, cap.w());
         assertEquals(2, barrel.h());
-        assertEquals(45f, barrel.tiltXDegrees(), 1e-6);
+        assertEquals(0f, barrel.tiltXDegrees(), 1e-6, "round 2: a thinner needle, not a 2.8 wide diamond");
         assertEquals(44f, barrel.x(), 1e-6);
         assertEquals(70f, cap.x() + cap.w(), 1e-6);
         assertEquals(26.0 / 70.0, (cap.x() + cap.w() - barrel.x()) / 70.0, 1e-6, "37 percent of the length");
         assertEquals(70f / 16f, AugProfile.MUZZLE[0], 1e-6);
         assertEquals(8.4f / 16f, AugProfile.MUZZLE[1], 1e-6, "on the barrel axis");
-        BoxSpec gas = box("gas_tube");
-        assertEquals(6, gas.w());
-        assertTrue(gas.z() < 0, "the gas tube is on the -Z side");
+        for (BoxSpec b : AugProfile.BOXES) {
+            assertTrue(
+                !b.name()
+                    .equals("gas_tube"),
+                "round 2: no second diamond on the receiver front");
+        }
     }
 
     @Test
@@ -117,6 +120,7 @@ class AugProfileTest {
         assertEquals(0.0, topCorner(box("scope_rear")), 0.02, "the housing top is Y 0");
         assertEquals(-35f, box("strut_front").tiltZDegrees(), 1e-6, "lower end forward");
         assertEquals(-25f, box("strut_rear").tiltZDegrees(), 1e-6, "lower end forward");
+        assertEquals(1, box("strut_front").d(), "thin struts");
         assertEquals(8, box("strut_front").h());
         assertEquals(7, box("strut_rear").h());
         // The window under the scope stays open: the struts are 9 apart at the top and about 10.6 at the receiver.
@@ -180,12 +184,12 @@ class AugProfileTest {
         assertTrue(near(topFaceMean(img, box("barrel")), 0x010101, 6), "barrel black");
         assertTrue(near(topFaceMean(img, box("scope_rear")), 0x010101, 6), "scope black");
         assertTrue(near(topFaceMean(img, box("foregrip")), 0x3B775A, 20), "foregrip mint");
-        assertTrue(near(topFaceMean(img, box("mag_upper")), 0x606060, 14), "magazine gray");
+        assertTrue(near(topFaceMean(img, box("mag_upper")), 0x444444, 14), "magazine dark gray");
         BufferedImage gray = image(AugProfile.TEXTURES[1]);
         BufferedImage nether = image(AugProfile.TEXTURES[4]);
         assertTrue(near(topFaceMean(gray, box("lower_plate")), 0x262626, 8), "gray body");
         assertTrue(near(topFaceMean(gray, box("barrel")), 0x010101, 6), "black unchanged in camo");
-        assertTrue(near(topFaceMean(gray, box("mag_upper")), 0x606060, 14), "magazine unchanged in camo");
+        assertTrue(near(topFaceMean(gray, box("mag_upper")), 0x444444, 14), "magazine unchanged in camo");
         int red = topFaceMean(nether, box("lower_plate"));
         assertTrue(((red >> 16) & 255) > 0x5A, "nether body is red");
         assertTrue((red & 0xFFFF) < 0x1000, "nether body has no green or blue");
