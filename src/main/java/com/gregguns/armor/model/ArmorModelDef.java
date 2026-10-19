@@ -16,7 +16,7 @@ import com.google.gson.JsonParser;
  * {@code assets/gregguns/armor_models/<set>.json}, which {@code tools/asset-gen/armor_models.py} writes together with
  * the texture painted to fit it. Pure (Gson only), so tests and the exporter can use it on a server.
  */
-// Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-20
+// Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-24
 public final class ArmorModelDef {
 
     private final String name;

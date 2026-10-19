@@ -14,6 +14,8 @@ layouts of the GregGuns textures; build or adapt the models to them.
 
 ## Model textures
 
+The worn accessory sheets (masks, goggles, tanks, jump pack, anti-gravity pack, glider) are laid out by the Java models; see [accessory_layouts.md](accessory_layouts.md).
+
 ### entity.bullet
 - two sprites: brass tracer at y=5..10, orange twin y=20..25 (capsule x=9..26, tip +x, fading trail x=0..8).
 
@@ -25,70 +27,6 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `magazine` box u=32 v=0 w=8 h=18 d=6
 - `sight` box u=30 v=55 w=9 h=3 d=3
 - `guard` box u=0 v=55 w=12 h=6 d=3
-
-### armor.anti_gravity_pack
-- `back_plate` box u=0 v=0 w=16 h=19 d=5
-- `ring_l` box u=0 v=24 w=6 h=6 d=6
-- `ring_r` box u=24 v=24 w=6 h=6 d=6
-- `core` box u=42 v=0 w=6 h=8 d=5
-- `emitter_l` box u=22 v=36 w=5 h=2 d=5
-- `emitter_r` box u=42 v=36 w=5 h=2 d=5
-- `strap` box u=0 v=45 w=13 h=3 d=3
-- `battery` box u=0 v=36 w=8 h=6 d=3
-
-### armor.gas_mask
-- `faceplate` box u=0 v=20 w=15 h=15 d=4
-- `filter` box u=0 v=39 w=5 h=5 d=5
-- `lens_l` box u=36 v=39 w=5 h=4 d=2
-- `lens_r` box u=50 v=39 w=5 h=4 d=2
-- `strap` box u=0 v=0 w=16 h=4 d=16
-- `hose` box u=38 v=20 w=2 h=9 d=2
-- `valve` box u=20 v=39 w=4 h=4 d=4
-
-### armor.glider
-- `wing_l` box u=0 v=0 w=21 h=1 d=11
-- `wing_r` box u=0 v=12 w=21 h=1 d=11
-- `spar_l` box u=0 v=36 w=23 h=1 d=1
-- `spar_r` box u=0 v=38 w=23 h=1 d=1
-- `harness` box u=0 v=24 w=10 h=10 d=2
-- `buckle` box u=24 v=24 w=3 h=2 d=1
-
-### armor.jump_pack
-- `back_plate` box u=0 v=0 w=18 h=22 d=5
-- `thruster_l` box u=0 v=27 w=5 h=15 d=5
-- `thruster_r` box u=20 v=27 w=5 h=15 d=5
-- `nozzle_l` box u=40 v=27 w=5 h=4 d=5
-- `nozzle_r` box u=0 v=47 w=5 h=4 d=5
-- `strap` box u=0 v=56 w=15 h=4 d=4
-- `fuel_cell` box u=20 v=47 w=7 h=5 d=4
-
-### armor.night_vision_goggles
-- `housing` box u=0 v=20 w=15 h=5 d=5
-- `tube_l` box u=40 v=20 w=4 h=4 d=5
-- `tube_r` box u=0 v=30 w=4 h=4 d=5
-- `lens_l` box u=36 v=30 w=4 h=4 d=2
-- `lens_r` box u=48 v=30 w=4 h=4 d=2
-- `strap` box u=0 v=0 w=16 h=4 d=16
-- `mount` box u=18 v=30 w=5 h=4 d=4
-
-### armor.oxygen_mask
-- `mask` box u=0 v=20 w=15 h=11 d=4
-- `visor` box u=0 v=35 w=11 h=5 d=2
-- `regulator` box u=46 v=20 w=5 h=5 d=4
-- `strap` box u=0 v=0 w=16 h=4 d=16
-- `hose` box u=38 v=20 w=2 h=11 d=2
-- `clip_l` box u=26 v=35 w=2 h=4 d=2
-- `clip_r` box u=34 v=35 w=2 h=4 d=2
-
-### armor.oxygen_tanks
-- `tank_l` box u=0 v=0 w=6 h=19 d=6
-- `tank_r` box u=24 v=0 w=6 h=19 d=6
-- `valve_block` box u=0 v=48 w=10 h=4 d=6
-- `harness` box u=0 v=25 w=16 h=19 d=4
-- `hose` box u=40 v=25 w=2 h=16 d=2
-- `gauge` box u=32 v=48 w=4 h=4 d=2
-- `cap_l` box u=44 v=48 w=4 h=2 d=4
-- `cap_r` box u=0 v=58 w=4 h=2 d=4
 
 ### armor.steam
 - standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
@@ -198,14 +136,6 @@ layouts of the GregGuns textures; build or adapt the models to them.
 
 ### armor.t3_power
 - standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
-
-### armor.tactical_mask
-- `faceplate` box u=0 v=20 w=15 h=15 d=2
-- `jaw` box u=0 v=37 w=15 h=5 d=4
-- `brow` box u=0 v=46 w=15 h=4 d=4
-- `strap` box u=0 v=0 w=16 h=4 d=16
-- `eye_l` box u=38 v=46 w=4 h=2 d=2
-- `eye_r` box u=50 v=46 w=4 h=2 d=2
 
 ### entity.handgun_bullet
 - silver jacketed slug, copper base with groove, x=3..12 y=6..9.
@@ -410,46 +340,6 @@ layouts of the GregGuns textures; build or adapt the models to them.
 - `casing_b` box u=84 v=76 w=4 h=7 d=4
 - `steam_puff` plane region u=0 v=96 w=64 h=32 (soft white blobs, alpha).
 
-### armor.anti_gravity_pack_black
-- `back_plate` box u=0 v=0 w=16 h=19 d=5
-- `ring_l` box u=0 v=24 w=6 h=6 d=6
-- `ring_r` box u=24 v=24 w=6 h=6 d=6
-- `core` box u=42 v=0 w=6 h=8 d=5
-- `emitter_l` box u=22 v=36 w=5 h=2 d=5
-- `emitter_r` box u=42 v=36 w=5 h=2 d=5
-- `strap` box u=0 v=45 w=13 h=3 d=3
-- `battery` box u=0 v=36 w=8 h=6 d=3
-
-### armor.anti_gravity_pack_bronze
-- `back_plate` box u=0 v=0 w=16 h=19 d=5
-- `ring_l` box u=0 v=24 w=6 h=6 d=6
-- `ring_r` box u=24 v=24 w=6 h=6 d=6
-- `core` box u=42 v=0 w=6 h=8 d=5
-- `emitter_l` box u=22 v=36 w=5 h=2 d=5
-- `emitter_r` box u=42 v=36 w=5 h=2 d=5
-- `strap` box u=0 v=45 w=13 h=3 d=3
-- `battery` box u=0 v=36 w=8 h=6 d=3
-
-### armor.anti_gravity_pack_dark_green
-- `back_plate` box u=0 v=0 w=16 h=19 d=5
-- `ring_l` box u=0 v=24 w=6 h=6 d=6
-- `ring_r` box u=24 v=24 w=6 h=6 d=6
-- `core` box u=42 v=0 w=6 h=8 d=5
-- `emitter_l` box u=22 v=36 w=5 h=2 d=5
-- `emitter_r` box u=42 v=36 w=5 h=2 d=5
-- `strap` box u=0 v=45 w=13 h=3 d=3
-- `battery` box u=0 v=36 w=8 h=6 d=3
-
-### armor.anti_gravity_pack_silver
-- `back_plate` box u=0 v=0 w=16 h=19 d=5
-- `ring_l` box u=0 v=24 w=6 h=6 d=6
-- `ring_r` box u=24 v=24 w=6 h=6 d=6
-- `core` box u=42 v=0 w=6 h=8 d=5
-- `emitter_l` box u=22 v=36 w=5 h=2 d=5
-- `emitter_r` box u=42 v=36 w=5 h=2 d=5
-- `strap` box u=0 v=45 w=13 h=3 d=3
-- `battery` box u=0 v=36 w=8 h=6 d=3
-
 ### armor.steam_1
 - standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
 
@@ -613,30 +503,6 @@ layouts of the GregGuns textures; build or adapt the models to them.
 
 ### armor.t3_power_dark2
 - standard 64x32 armor unwrap scaled x4 (head 0,0 8x8x8; body 16,16 8x12x4; arm 40,16 4x12x4 (mirrored for left); leg 0,16 4x12x4 (mirrored for left)).
-
-### armor.tactical_mask_green
-- `faceplate` box u=0 v=20 w=15 h=15 d=2
-- `jaw` box u=0 v=37 w=15 h=5 d=4
-- `brow` box u=0 v=46 w=15 h=4 d=4
-- `strap` box u=0 v=0 w=16 h=4 d=16
-- `eye_l` box u=38 v=46 w=4 h=2 d=2
-- `eye_r` box u=50 v=46 w=4 h=2 d=2
-
-### armor.tactical_mask_lightgreen
-- `faceplate` box u=0 v=20 w=15 h=15 d=2
-- `jaw` box u=0 v=37 w=15 h=5 d=4
-- `brow` box u=0 v=46 w=15 h=4 d=4
-- `strap` box u=0 v=0 w=16 h=4 d=16
-- `eye_l` box u=38 v=46 w=4 h=2 d=2
-- `eye_r` box u=50 v=46 w=4 h=2 d=2
-
-### armor.tactical_mask_white
-- `faceplate` box u=0 v=20 w=15 h=15 d=2
-- `jaw` box u=0 v=37 w=15 h=5 d=4
-- `brow` box u=0 v=46 w=15 h=4 d=4
-- `strap` box u=0 v=0 w=16 h=4 d=16
-- `eye_l` box u=38 v=46 w=4 h=2 d=2
-- `eye_r` box u=50 v=46 w=4 h=2 d=2
 
 ### entity.alienbug
 - `thorax` box u=0 v=17 w=12 h=6 d=9

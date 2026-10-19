@@ -1,0 +1,19 @@
+{
+  "name": "anti_gravity_pack",
+  "mount": "BACK",
+  "textureWidth": 64,
+  "textureHeight": 64,
+  "scale": 0.062500,
+  "textures": ["anti_gravity_pack", "anti_gravity_pack_bronze", "anti_gravity_pack_black", "anti_gravity_pack_dark_green", "anti_gravity_pack_silver"],
+  "hinges": {},
+  "boxes": [
+    {"name": "ring_left", "part": 0, "uv": [0, 0], "rotationPoint": [6.500000, 5.500000, 2.000000], "offset": [-1.500000, -5.500000, -2.000000], "size": [3, 11, 4], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "ring_right", "part": 0, "uv": [14, 0], "rotationPoint": [-6.500000, 5.500000, 2.000000], "offset": [-1.500000, -5.500000, -2.000000], "size": [3, 11, 4], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "plate", "part": 0, "uv": [28, 0], "rotationPoint": [0.000000, 5.500000, 4.000000], "offset": [-5.000000, -4.000000, -1.500000], "size": [10, 8, 3], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "core", "part": 0, "uv": [0, 15], "rotationPoint": [0.000000, 5.500000, 7.000000], "offset": [-2.500000, -2.500000, -1.500000], "size": [5, 5, 3], "rotate": [0.000000, 0.000000, 0.785398], "mirror": false},
+    {"name": "emitter_top_left", "part": 0, "uv": [16, 15], "rotationPoint": [6.000000, 3.000000, 5.000000], "offset": [-1.000000, -1.000000, -1.000000], "size": [2, 2, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "emitter_bottom_left", "part": 0, "uv": [24, 15], "rotationPoint": [6.000000, 8.000000, 5.000000], "offset": [-1.000000, -1.000000, -1.000000], "size": [2, 2, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "emitter_top_right", "part": 0, "uv": [32, 15], "rotationPoint": [-6.000000, 3.000000, 5.000000], "offset": [-1.000000, -1.000000, -1.000000], "size": [2, 2, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "emitter_bottom_right", "part": 0, "uv": [40, 15], "rotationPoint": [-6.000000, 8.000000, 5.000000], "offset": [-1.000000, -1.000000, -1.000000], "size": [2, 2, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false}
+  ]
+}

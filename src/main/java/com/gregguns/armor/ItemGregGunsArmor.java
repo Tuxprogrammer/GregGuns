@@ -265,7 +265,7 @@ public class ItemGregGunsArmor extends ItemArmor
     @SideOnly(Side.CLIENT)
     public net.minecraft.client.model.ModelBiped getArmorModel(EntityLivingBase entity, ItemStack stack,
         int armorSlot) {
-        // Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-20
+        // Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-24
         return com.gregguns.client.armor.BoxArmorModel.forPiece(
             set.id(),
             this.piece.slot()

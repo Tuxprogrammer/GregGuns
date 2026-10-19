@@ -20,7 +20,7 @@ import com.gregguns.GregGuns;
  * UVs are fractions of the sheet). Pure; the client turns a definition into a {@code ModelBiped} in
  * {@code com.gregguns.client.armor}.
  */
-// Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-20
+// Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-24
 public final class ArmorModels {
 
     /** Set ids with a box model, in the order of the spec. */
