@@ -260,6 +260,7 @@ The slot-19 item of the turret ([turret.md](../../techguns-spec/09-machines-util
 | Carbon Turret Armor (20) | R61, `plateCarbon` | EV | Assembler | `plate.EpoxidFiberReinforced` x3, `plate.Titanium` x2 | 1 | `TierEU.RECIPE_EV`, 10 s |
 
 Notes:
+- Built deviation (M6 utility core): in GT 5.09.54.205 `Materials.WroughtIron` is an alias of Cast Iron and `plateWroughtIron` has no items, so the Iron plate takes `plate.CastIron` x5 (the same substitution the Miner armor uses). Everything else on this row is unchanged.
 - The third plate is renamed from "Obsidian Steel" because there is no such GT material; the lang key and registry name change with it. It is Aluminum because the plate sits in the MV tier ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 1).
 - The Iron plate is wrought iron, which is the Steam/ULV gate material ([0001](../../design/0001-tier-map.md)). GT's own hand-made armor is the precedent: [CraftingRecipeLoader.java#L350-L368](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/CraftingRecipeLoader.java#L350-L368).
 - The carbon plate is GT's `plate.EpoxidFiberReinforced` plus the EV tier material, Titanium ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 2); IC2's carbon plate is not used, although GT uses it in the GraviSuite recipes ([CraftingRecipeLoader.java#L1909-L1923](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/CraftingRecipeLoader.java#L1909-L1923)).
