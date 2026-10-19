@@ -23,6 +23,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
+import com.gregguns.core.testing.ScenarioPoller;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.entity.npc.AimAngles;
@@ -115,10 +116,33 @@ final class NpcEntityScenarios {
         }
     }
 
-    private static void allowMobs(World world) {
-        if (world.difficultySetting == EnumDifficulty.PEACEFUL) {
+    /** Lifts a Peaceful world to Normal (Peaceful removes hostile mobs) and returns the difficulty to restore. */
+    private static EnumDifficulty allowMobs(World world) {
+        EnumDifficulty prior = world.difficultySetting;
+        if (prior == EnumDifficulty.PEACEFUL) {
             world.difficultySetting = EnumDifficulty.NORMAL;
         }
+        return prior;
+    }
+
+    /**
+     * Wraps a poller so the world difficulty from {@link #allowMobs} is restored when the scenario answers, throws or
+     * runs out of ticks. Later scenarios on the same world must see the difficulty they were written for.
+     */
+    private static ScenarioResult guarded(String name, World world, EnumDifficulty prior, int timeout,
+        ScenarioPoller poller) {
+        return ScenarioResult.pending(name, timeout, ticks -> {
+            boolean done = true;
+            try {
+                ScenarioResult answer = poller.poll(ticks);
+                done = answer != null || ticks >= timeout;
+                return answer;
+            } finally {
+                if (done) {
+                    world.difficultySetting = prior;
+                }
+            }
+        });
     }
 
     private static NpcEntity npc(ScenarioContext ctx, double dx, double dz, String gun) {
@@ -163,7 +187,7 @@ final class NpcEntityScenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
-            allowMobs(ctx.world());
+            EnumDifficulty prior = allowMobs(ctx.world());
             ctx.clearArea(14, 4);
             NpcEntity shooter = npc(ctx, 0, 0, PISTOL);
             NpcEntity victim = npc(ctx, 6, 0, null);
@@ -177,7 +201,7 @@ final class NpcEntityScenarios {
             boolean[] infight = { false };
             boolean[] revenged = { false };
             boolean[] bittenRetaliated = { false };
-            return ScenarioResult.pending(name(), TICKS + 20, ticks -> {
+            return guarded(name(), ctx.world(), prior, TICKS + 20, ticks -> {
                 if (ticks == STRIKE_TICK) {
                     // Vanilla's hurt-by task ignores a revenge target stamped on the entity's first tick, so strike
                     // a few ticks in. The shooter faces the victim and fires one real, unspread bullet.
@@ -246,13 +270,13 @@ final class NpcEntityScenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
-            allowMobs(ctx.world());
+            EnumDifficulty prior = allowMobs(ctx.world());
             ctx.clearArea(14, 4);
             NpcEntity gunner = npc(ctx, 0, 0, PISTOL);
             EntityPlayer victim = player(ctx, "npc_protected", 6, 0);
             victim.capabilities.disableDamage = true;
             ShotLog log = ShotLog.start();
-            return ScenarioResult.pending(name(), PROTECTED_TICKS + 200, ticks -> {
+            return guarded(name(), ctx.world(), prior, PROTECTED_TICKS + 200, ticks -> {
                 if (ticks < PROTECTED_TICKS) {
                     if (gunner.getAttackTarget() != null || log.count(gunner) > 0) {
                         log.stop();
@@ -289,13 +313,13 @@ final class NpcEntityScenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
-            allowMobs(ctx.world());
+            EnumDifficulty prior = allowMobs(ctx.world());
             ctx.clearArea(14, 4);
             NpcEntity gunner = npc(ctx, 0, 0, RIFLE);
             player(ctx, "npc_target", 10, 0);
             NpcGunProfile profile = NpcGunProfile.forGun(RIFLE);
             ShotLog log = ShotLog.start();
-            return ScenarioResult.pending(name(), 400, ticks -> {
+            return guarded(name(), ctx.world(), prior, 400, ticks -> {
                 if (log.count(gunner) < 3) {
                     return null;
                 }
