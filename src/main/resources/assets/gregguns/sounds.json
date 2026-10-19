@@ -83,5 +83,29 @@
       "effects/steamarmor_jump_c",
       "effects/steamarmor_jump_d"
     ]
+  },
+  "effects.tnt_charge_plant": {
+    "category": "block",
+    "sounds": ["effects/DemoCharge_Plant"]
+  },
+  "effects.tnt_charge_init": {
+    "category": "block",
+    "sounds": ["effects/DemoCharge_Init"]
+  },
+  "effects.tnt_charge_tick": {
+    "category": "block",
+    "sounds": ["effects/DemoCharge_Tick"]
+  },
+  "effects.c4_charge_plant": {
+    "category": "block",
+    "sounds": ["effects/C4Charge_Plant"]
+  },
+  "effects.c4_charge_init": {
+    "category": "block",
+    "sounds": ["effects/C4Charge_Init"]
+  },
+  "effects.c4_charge_tick": {
+    "category": "block",
+    "sounds": ["effects/C4Charge_Tick"]
   }
 }

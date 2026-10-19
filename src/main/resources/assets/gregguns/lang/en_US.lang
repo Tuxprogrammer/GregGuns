@@ -394,6 +394,12 @@ item.gregguns.turret_armor_carbon.name=Carbon Turret Armor
 
 
 # Utility: Explosive charges (m6/charges)
+tile.gregguns.explosive_charge.name=Explosive Charge
+tile.gregguns.advanced_explosive_charge.name=Advanced Explosive Charge
+gui.gregguns.charge.radius=Radius: %s
+gui.gregguns.charge.length=Length: %s
+gui.gregguns.charge.delay=Delay: %ss
+gui.gregguns.charge.detonate=Detonate
 
 
 
