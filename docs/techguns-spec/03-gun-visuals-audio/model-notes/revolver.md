@@ -197,3 +197,68 @@ All transforms apply to the model as a whole, in block units after the model's 1
 - **Gap between barrel and rod.** By the numbers the two diamonds' corners touch (overlap about 0.1 unit). In renders it reads as a hairline. A gap of 0 to 0.3 is fine.
 - **First-person framing numbers** come from formulas read, not seen in game. Treat the offsets as approximate.
 - **Drum chamber dots** on the front face are my reading of a very low-resolution texture, so they are optional.
+
+## Golden Revolver delta
+
+The Golden Revolver is the same revolver body with a **different barrel group, a ventilated top rib, flared side fins, taller sights and a gold-and-black palette**. Everything not listed here is identical to sections 2 and 3: the same frame, strap, shield, drum, hammer, trigger guard and grip slabs (same sizes and positions). The axes are the same as above (X from the frame's back face, Y down from the strap top, Z centered).
+
+### Overall change
+| Measure | Plain revolver | Golden |
+|---|---|---|
+| Total length | about 28 | about **29** (muzzle at x 24 instead of 23) |
+| Total height | about 14.3 | about **14.5** (sights reach 0.5 above the strap top) |
+| Thickness | 5 (drum) | 5 (the fins do not exceed the drum) |
+
+### Barrel
+- Same 2x2 square bar turned 45 degrees (diamond, 2.8 across), now **15 long** (x 9 to 24) instead of 14. Same axis (1.5 below the strap top).
+- The **front end face is painted pure black** (#000000), so the muzzle shows as a black diamond.
+
+### Ejector rod
+- Now **13 long** (x 9 to 22), still 1x1 turned 45 degrees, instead of 8. Its axis is 3.35 below the strap top (0.15 higher than the plain rod's 3.5). It ends **2 short of the muzzle** instead of 6 short.
+- It sits in the bottom of the fins' V (below), so the barrel-rod seam is hidden by the fins in most views.
+
+### Top rib (ventilated)
+- A bar **13 long x 1 tall x 1 wide** (x 9 to 22, y 0 to 1), centered on the mid-plane, continuing the top strap's line forward over the barrel. It is half a unit narrower than the 2-wide strap each side, and its lower half overlaps the barrel's top corner (the diamond's peak is at y 0.1).
+- Its side faces carry **dark ventilation slots**: on each side three slots, each **3 long**, separated by 1-long gold posts and ending with a 1-long gold post at the rear end (slots at about x 11 to 14, 15 to 18 and 19 to 22, full 1-unit height). Slot color #636140 (olive-dark). The top face is a plain, light gold.
+
+### Flared side fins
+- **Two thin slabs, one each side of the barrel,** each **12 long** (x 9 to 21), **2 tall** and **1 thick**, tilted **20.8 degrees** about the barrel's axis so each leans **outward at the top**.
+- Together they form a **V-shaped cradle**, open upward, under and around the barrel: at the top (y 1.1 to 1.5) the outer faces are 2.8 apart, matching the barrel's widest point, and at the bottom (y 3.0 to 3.4) the two slabs cross over each other and the outer faces are only about 1.4 apart.
+- Measured positions: each fin's outer top edge is at the barrel's axis height (y 1.5) and touches the barrel's side corner (z about 1.4 from the mid-plane); the fin's inner top edge is about y 1.1; the bottom edges are at about y 3.4, 0.7 from the mid-plane, so the two fins interpenetrate across the central 0.5 at their bottoms. They start flush with the frame's front face (x 9) and stop 3 short of the muzzle (x 21).
+- They read from the side as a long gold band under the barrel, replacing the plain gun's lone thin rod look, and from the front as a small "wing" outline about 3 wide around the barrel's lower half.
+
+### Sights
+- **Front sight:** a block **2 long x 2 tall x 1 wide** (x 21.8 to 23.8, y -0.5 to 1.5), centered on the mid-plane, standing on the barrel's top near the muzzle (ending 0.2 short of the muzzle face). It rises **0.5 above the strap top**. The plain gun's sight is 2x1x1, 1.5 behind the muzzle, 0.3 above the line.
+- **Rear sight (new):** a block **2 long x 2 tall x 1 wide** (x -0.2 to 1.8, y -0.5 to 1.5) at the top rear of the frame, overlapping the strap's rear end and the shield's top edge. It also rises 0.5 above the strap top.
+- Their side faces are an olive-gold (#A5A362); their top and end faces are bright gold.
+
+### Palette
+
+| Part | Base | Highlight | Shadow / detail |
+|---|---|---|---|
+| Barrel, rod, fins (broad faces) | #E5E28F | #E6E39D to #E6E3A0 | #D8D35B edge row, #D6CF35 deepest |
+| Fin faces (extra streak) | #E5E290 | #E6E3A2 | #D0CB75 to #CECB6C (streaks) |
+| Top rib (top face) | #E6E39B | #E6E3A2 | slots #636140 (#63613E to #636243) |
+| Frame (upper block sides) | #DCD756 | #E5E185 on end faces | #D6D245, #DBD449 |
+| Frame (lower block, belly) | #DCD869 | #E5E28A | #D6CF35 |
+| Top strap | #E5E298 (sides), #EAE8A8 (top) | #EBE9B1 | #DCD552 |
+| Drum slabs | #DCD871 | #DDD97E | one vertical seam per visible side, #9F9B42 to #9F9C52 |
+| Recoil shield | #E5E185 (top 3 units) | #E5E288 | bottom 1 unit painted #242424 (black, like the grip) |
+| Hammer and spur | #77753F | #77764A | #777437 |
+| Front and rear sights (sides) | #A5A362 | #A5A368 | tops and ends bright gold (#E5E28F) |
+| Grip slabs | #212020 (near-black) | #282828 | #181818 |
+| Grip inlay (side faces, butt and neck slabs) | #86892E | #B3B63E, #AAA839 | #7D7B2A, #7D802B |
+| Muzzle face | #000000 | | |
+
+- **Shading:** flat, bright, **satin gold** with noise of 2 to 4 levels; highlights on top and end faces, a darker one-unit edge on bottom edges. The gold is a **pale yellow** (greenish-lemon), not orange. It is lighter and more saturated than the plain gun's steel, and the whole metal body is one gold, with no second metal.
+- **Grip:** almost black. The inlay is a small panel on each side of the lower slabs, about **2 wide x 4 tall**, in an olive-gold diagonal mottle with lighter flecks (#B3B63E). The hammer is dark olive-bronze, not gunmetal.
+- **Drum:** same octagon shape and size as the plain revolver, but with a single dark gold seam instead of 2 or 3.
+
+### Silhouette and checklist additions
+- Side view: a long gold barrel with a flat dotted dark top rib, a sight block at the muzzle and one at the rear, a fin band below, and a black grip with gold inlay.
+- [ ] Barrel 15 long, black muzzle diamond, ejector rod 13 long ending 2 short of the muzzle.
+- [ ] A 13-long, 1-wide top rib with three dark slots per side along the barrel's top.
+- [ ] Two 12-long fins tilted 20.8 degrees in a V under the barrel, from the frame to 3 short of the muzzle.
+- [ ] Two 2x2x1 sights, front and rear, each 0.5 above the strap line.
+- [ ] Palette: gold #E5E28F body, black #212020 grip with olive inlay, dark olive hammer.
+- [ ] The other shapes (frame, drum, guard, grip slabs) stay exactly as the plain revolver.
