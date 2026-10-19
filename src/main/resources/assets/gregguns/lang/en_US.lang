@@ -395,3 +395,25 @@ item.gregguns.cell_nuclear.name=Nuclear Power Cell
 item.gregguns.cell_nuclear_depleted.name=Nuclear Power Cell (Depleted)
 item.gregguns.bandages.name=Bandages
 item.gregguns.medkit.name=Medkit
+
+# Utility core (M6): turret armor plates
+item.gregguns.turret_armor_iron.name=Iron Turret Armor
+item.gregguns.turret_armor_steel.name=Steel Turret Armor
+item.gregguns.turret_armor_aluminum.name=Aluminum Turret Armor
+item.gregguns.turret_armor_carbon.name=Carbon Turret Armor
+
+
+
+# Utility: Turret (m6/turret)
+
+
+
+# Utility: Explosive charges (m6/charges)
+
+
+
+# Utility: Chests, Bio Blob and Camp Flag (m6/world-blocks)
+
+
+
+# Utility: Rampart and Gun Mount Hatch (m6/rampart)

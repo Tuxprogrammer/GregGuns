@@ -3,6 +3,8 @@ package com.gregguns.armor.slots;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
+import com.gregguns.utility.UtilityGuis;
+
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -19,6 +21,9 @@ public final class EquipmentGuiHandler implements IGuiHandler {
 
     @Override
     public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+        if (UtilityGuis.owns(id)) {
+            return UtilityGuis.serverElement(id, player, world, x, y, z);
+        }
         PouchInventory pouch = pouchFor(id, player, x);
         return pouch == null ? null : new ContainerAmmoPouch(player, pouch, id, x);
     }
@@ -26,6 +31,9 @@ public final class EquipmentGuiHandler implements IGuiHandler {
     @Override
     @SideOnly(Side.CLIENT)
     public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
+        if (UtilityGuis.owns(id)) {
+            return UtilityGuis.clientElement(id, player, world, x, y, z);
+        }
         PouchInventory pouch = pouchFor(id, player, x);
         return pouch == null ? null
             : new com.gregguns.client.armor.GuiAmmoPouch(new ContainerAmmoPouch(player, pouch, id, x));

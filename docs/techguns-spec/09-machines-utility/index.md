@@ -22,6 +22,11 @@ This area covers the Techguns 0.1.2 tile entities that do **not** process recipe
 | [shared-rendering.md](shared-rendering.md) | `BasicMachine` metas owned here, their recipes and item renderers, [`RenderTileEntityBlock`](../08-machines-production/rendering.md#4-rendertileentityblock-used-by-09s-camo-and-repair-benches)/[`TesselatorCube`](../07-blocks/block-rendering-and-models.md#tesselatorcube-family-fixed-uvs-for-tesrs-and-items), [`RenderBlockTileEntModel`](../08-machines-production/rendering.md#3-renderblocktileentmodel-used-by-09s-turret-base-and-flag), box-UV convention |
 | [repair-bench.md](repair-bench.md) | Repair Bench (meta 5) |
 | [camo-bench.md](camo-bench.md) | Camo Bench (meta 3) |
+| [model-notes/turret_base.md](model-notes/turret_base.md) | Clean-room design notes for rebuilding the Turret base block model (proportions, parts, palette, motion, checklist) |
+| [model-notes/turret_head.md](model-notes/turret_head.md) | Clean-room design notes for rebuilding the Turret head (gun yoke) model (proportions, parts, palette, motion, checklist) |
+| [model-notes/tnt_charge.md](model-notes/tnt_charge.md) | Clean-room design notes for rebuilding the TNT charge model (proportions, parts, palette, motion, checklist) |
+| [model-notes/exp_charge.md](model-notes/exp_charge.md) | Clean-room design notes for rebuilding the Explosive charge model (proportions, parts, palette, motion, checklist) |
+| [model-notes/flag_post.md](model-notes/flag_post.md) | Clean-room design notes for rebuilding the Camp flag post model (proportions, parts, palette, motion, checklist) |
 | [scrapper.md](scrapper.md) | Scrapper stub (no scrap table exists) |
 | [ore-drill.md](ore-drill.md) | Ore Drill multiblock: blocks, placement, structure, formation, drill heads, yield and power formulas, fuel, GUI, TESR, sounds |
 | [turret.md](turret.md) | Turret platform (meta 2) and its link to `NPCTurret`; targeting rules; ammo; armor |

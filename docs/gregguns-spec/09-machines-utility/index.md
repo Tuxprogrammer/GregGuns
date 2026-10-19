@@ -48,6 +48,10 @@ Built as `MTECamoBench` (ID 20115, LV) with `PacketCamoCycle`. Decisions, each m
 - **GUI.** GT's frame with the slot, a pair of arrows per target and a text line showing index, count and camo name. Not built: the live player preview.
 - **Automation.** No accessible slots, as in Techguns.
 
+## M6 utility core built notes
+
+`com.gregguns.utility` holds `UtilityModule` (module `utility`, needs `machines`), one registration stub per later chunk, `UtilityGuis` (FML GUI ids 30 and up, forwarded from `EquipmentGuiHandler`), `TurretPlate`/`ItemTurretArmor`/`UtilityParts` (the four plates and their recipes) and `security` (`SecurityLevel`, `FriendProvider`, `OwnerAccess`, `ServerUtilitiesFriends`, `FriendProviders`, `OwnerProfiles`). ServerUtilities is a `compileOnly` dependency; its adapter loads only behind `Loader.isModLoaded("serverutilities")` (GGS-09-06). MTE ids 20116 to 20124 are reserved in `GregGunsMTEIDs`. All tuning is in `UtilityConfig` (`docs/config.md`). Deviation: the Iron plate uses `plate.CastIron` (see [recipes.md](recipes.md)).
+
 ## Pack-side changes
 
 None.

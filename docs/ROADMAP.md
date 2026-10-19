@@ -44,7 +44,7 @@ No gameplay. This milestone builds everything later milestones need.
 
 **Exit gate:**
 - [x] `./gradlew spotlessApply build` passes, with at least one real unit test.
-- [ ] `./gradlew runServer` boots with GT5-Unofficial loaded and no errors from GregGuns. The CI smoke test passes. *(Local boot verified 2026-10-18; CI pending the first push.)*
+- [x] `./gradlew runServer` boots with GT5-Unofficial loaded and no errors from GregGuns. The CI smoke test passes. *(Local boot verified 2026-10-18. GitHub CI build-and-test passed on the first push, 2026-10-19. The release jar also booted clean on the real GTNH 2.9.0-RC-2 dedicated server pack, with default config and with guns, armor and machines enabled.)*
 - [x] `./gradlew runClient` reaches the main menu, and the GregGuns creative tab exists. *(Seen in game 2026-10-18 by the M1 visual autotest.)*
 - [x] Config module flags load, save and are documented.
 - [x] Every packet base class rejects out-of-range, wrong-dimension and unauthorized requests, with unit tests.
