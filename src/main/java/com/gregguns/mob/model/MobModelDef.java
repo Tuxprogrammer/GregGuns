@@ -282,7 +282,7 @@ public final class MobModelDef {
         ANIM_KEYS.put("look", keys("type", "part", "yaw", "pitch", "maxYaw", "maxPitch"));
         ANIM_KEYS.put("swing", keys("type", "part", "axis", "amplitude", "speed", "phase"));
         ANIM_KEYS.put("idle", keys("type", "part", "axis", "amplitude", "speed", "phase", "offset"));
-        ANIM_KEYS.put("spin", keys("type", "part", "axis", "rate"));
+        ANIM_KEYS.put("spin", keys("type", "part", "axis", "rate", "deathScale"));
         ANIM_KEYS
             .put("pose", keys("type", "part", "when", "mode", "angles", "followYaw", "followPitch", "blend", "window"));
     }
@@ -412,7 +412,8 @@ public final class MobModelDef {
                 break;
             case SPIN:
                 b.axis(axis(o, where))
-                    .rate(req(o, "rate", where));
+                    .rate(req(o, "rate", where))
+                    .deathScale(opt(o, "deathScale", 1.0F, where));
                 break;
             default:
                 b.when(MobAnimDef.When.fromJson(str(o, "when", where)));

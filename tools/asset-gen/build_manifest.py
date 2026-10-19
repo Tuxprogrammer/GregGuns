@@ -448,7 +448,6 @@ MOBS = [
     ("bandit", "entity/bandit.png", "Bandit", "dark skin, black dreadlocks, light-gray vest"),
     ("dictator", "entity/dictator.png", "Dictator Dave", "bandit base with sunglasses and mustache-beard"),
     ("cyberdemon", "entity/cyberdemon.png", "Cyberdemon", "red muscle, gray cybernetic implants, orange cables"),
-    ("apache", "entity/apache.png", "Attack Helicopter (OBJ UV atlas)", "dark olive-gray military helicopter atlas"),
     ("gore", "entity/gore.png", "generic gibs", "flayed dark-red flesh in biped layout"),
 ]
 for mid, src, who, desc in MOBS:
@@ -467,8 +466,6 @@ for mid, src, desc, pal, pri in PROJ:
     f = TEX["textures/" + src]
     add("model.entity." + mid, "model", "textures/entity/%s.png" % mid, f["w"], f["h"], palette=pal,
         brief="Projectile texture, %s." % desc, fp="textures/" + src, pri=pri)
-add("model.obj.apache", "model", "models/entity/apache.obj", brief="Attack Helicopter OBJ mesh (new topology to the Techguns UV atlas model.entity.apache). Not an image: modeled, not painted.",
-    fp="models/entity/apache.obj", pri="P3")
 add("model.obj.launcher_grenade", "model", "models/entity/launcher_grenade.obj", brief="40 mm grenade projectile OBJ mesh, UV-mapped to the launchergrenade strip map.",
     fp="models/entity/launchergrenade.obj", pri="P2")
 

@@ -19,4 +19,15 @@ public interface MobAnimSource {
      *         then uses the vanilla swing progress)
      */
     float attackProgress(float partialTicks);
+
+    /**
+     * How far the mob is into its death sequence, for {@code pose} entries with {@code when: dying} and the
+     * {@code deathScale} of a {@code spin}.
+     *
+     * @param partialTicks the render partial tick
+     * @return 0 while alive, rising to 1 as the death animation completes
+     */
+    default float deathProgress(float partialTicks) {
+        return 0.0F;
+    }
 }

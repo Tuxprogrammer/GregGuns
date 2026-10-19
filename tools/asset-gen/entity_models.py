@@ -159,13 +159,17 @@ class Mob:
             a["offset"] = _num(offset)
         self.animations.append(a)
 
-    def spin(self, part, axis, rate):
-        """Constant rotation: adds rate degrees per tick about the axis."""
-        self.animations.append({"type": "spin", "part": part, "axis": axis, "rate": _num(rate)})
+    def spin(self, part, axis, rate, death_scale=None):
+        """Constant rotation: adds rate degrees per tick about the axis.
+        death_scale: factor on the rate while the mob is dying (death progress above 0); omit for no change."""
+        a = {"type": "spin", "part": part, "axis": axis, "rate": _num(rate)}
+        if death_scale is not None:
+            a["deathScale"] = _num(death_scale)
+        self.animations.append(a)
 
     def pose(self, part, when, x=None, y=None, z=None, mode="add", follow_yaw=0.0, follow_pitch=0.0, blend=None,
              window=None):
-        """Angles that apply while `when` is aiming, attacking or holding.
+        """Angles that apply while `when` is aiming, attacking, holding or dying (weight = death progress).
         mode='add' adds them, mode='set' replaces the axes given (blended by the weight).
         follow_yaw / follow_pitch add that share of the head yaw / pitch to Y / X.
         blend (attacking only): step, cosine or sine; window: [from, to] attack progress."""
@@ -1125,7 +1129,7 @@ def attack_helicopter():
     `rotor` (mast, hub, fore and aft blades; spins -24 deg per tick about the mast, counterclockwise from above)
     with child `rotor_side` (the left and right blades, yawed 90 degrees so all four share one texture rectangle),
     and `chin_gun` (pivot f 4.0, h -0.25, rest pitch 25 degrees nose-down). No tail rotor (the notes make it optional).
-    Death sink and spin are entity driven; the gun is level in death (the renderer zeroes its rest pitch)."""
+    Death sink is entity driven; while dying the rotor spin halves and the gun pitch blends to level (data: deathScale, dying pose)."""
     m = Mob("attack_helicopter", 512, 512)
 
     def B(part, name, f0, f1, h0, h1, w0, w1, mat, mirror=False, group=None):
@@ -1181,12 +1185,13 @@ def attack_helicopter():
     rs = m.part("rotor_side", parent="rotor", rotate=(0, 90, 0))
     rs.box("blade_left", -6, 0, -148, 12, 0, 140, material="blade", group="blade")
     rs.box("blade_right", -6, 0, 8, 12, 0, 140, material="blade", group="blade")
-    m.spin("rotor", "y", -24)
+    m.spin("rotor", "y", -24, death_scale=0.5)
     # chin gun: pivot f 4.0, h -0.25; mount under the nose tub, barrel forward; rest pitch 25 degrees nose-down
     g = m.part("chin_gun", pivot=(0, 28, -64), rotate=(25, 0, 0))
     g.box("mount", -4, -12, -8, 8, 8, 16, material="gun")
     g.box("barrel", -3, -11, -32, 6, 6, 24, material="gun")
     m.look("chin_gun", yaw=1, pitch=0, max_yaw=30)
+    m.pose("chin_gun", "dying", x=0, mode="set")  # the rest pitch blends to level with the death progress
 
     # material: (shadow, base, highlight)
     tone = {"hull": ("#2B2F1C", "#3B4127", "#4A5036"), "cabin": ("#32381E", "#3A4026", "#454B31"),
