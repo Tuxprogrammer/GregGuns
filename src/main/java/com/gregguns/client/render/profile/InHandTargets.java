@@ -95,6 +95,7 @@ public final class InHandTargets {
         put("grenade_launcher", 2.20, 0.96, -0.72, 1.36, 0.96, -0.63, 2.46, 1.34);
         put("flamethrower", 2.15, 0.81, -0.62, 1.33, 0.81, -0.47, 2.41, 1.51);
         put("bio_gun", 1.90, 0.57, -0.78, 0.52, 0.57, -0.54, 1.47, 1.34);
+        put("alien_blaster", 1.26, 0.60, -0.53, 1.08, 0.60, -0.40, 1.71, 0.68);
         put("bolt_action_rifle", 2.01, 0.54, -0.35, 1.02, 0.52, -0.29, 2.02, 1.88);
         // M5 tool guns (section 7; third-person length from section 3). The Advanced hammer has the same geometry.
         put("power_hammer", 1.16, 0.34, -0.40, 0.70, 0.34, -0.33, 1.28, 1.05);

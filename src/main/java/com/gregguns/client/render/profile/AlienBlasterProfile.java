@@ -86,12 +86,13 @@ public final class AlienBlasterProfile {
     };
 
     // Deviation: the notes give first-person scale 1.4 and an idle shift measured from the origin of the original
-    // model. The scale follows the FirstPersonFit rule for a handgun (the notes call this a pistol), and the idle
-    // position puts this model's box centre on the X-family handgun anchor.
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
+    // model. The scale, idle position and third-person placement are solved by InHandFit from the per-gun targets of
+    // the in-hand notes (section 7), so the gun lands where Techguns' sits on screen.
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("alien_blaster", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, 0 });
+    private static final double FP_SCALE = FIT.fpScale;
     private static final double[] CENTER = FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE);
-    private static final double[] IDLE = FirstPersonFit.idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, CENTER);
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -137,14 +138,14 @@ public final class AlienBlasterProfile {
             .rotZ((p, part) -> 50.0 * yR(p))
             .translate(FP_X, FP_Y, FP_Z)
             .build();
-        // Third person: rotX180, rotY225 (the notes' yaw 135 in the Z-family, turned to the X-family), scale 0.5 so
-        // the 2.25 block model is a pistol-sized 1.1 blocks. The grip (texel -9.5, 9) is moved to the origin, the
-        // hand. Aimed extra (0, 0.1, 0) as in the notes.
+        // Third person: rotX180, rotY225 (the notes' yaw 135 in the Z-family, turned to the X-family), then the scale
+        // and translate InHandFit solved so the box centre lands at the hand and the blaster is the notes' 0.68 world
+        // blocks long. Aimed extra (0, 0.1, 0) as in the notes.
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.5)
-            .translate(9.5 / 16.0, -9.0 / 16.0, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: about 25 degrees of pitch in the first quarter of the first half, about the hand (the notes).
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -168,16 +169,16 @@ public final class AlienBlasterProfile {
             .scale(0.4)
             .translate(-CENTER[0], -CENTER[1], 0)
             .build();
-        // Deviation: the first-person flash is a fixed-frame screen effect. Its offset is the De-Atomizer Pistol's,
-        // whose muzzle sits at the same place on screen (same handgun length and anchor). Headless work cannot look
-        // at the screen, so this is unverified in game. Additive because the GregGuns sheet is black-backed
-        // (docs/assets/MANIFEST.md).
+        // Deviation: the first-person flash is a fixed-frame screen effect, so its offset follows the gun's solved
+        // placement (InHandFit.Placement.flashOffset). Headless work cannot look at the screen, so this is unverified
+        // in game. Additive because the GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.0);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash_blue.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -1.25,
-            -2.5,
-            2.0,
+            fo[0],
+            fo[1],
+            fo[2],
             1.0,
             new double[] { 0, 0, 0 },
             true,

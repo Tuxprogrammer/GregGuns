@@ -109,6 +109,15 @@ public final class ProjectileModule {
             GenericProjectile.UPDATE_FREQUENCY,
             GenericProjectile.SENDS_VELOCITY);
         BulletLauncher.register(ProjectileKind.TESLA, TeslaProjectile::new);
+        // The Alien Blaster's bolt. Registered so the server tracks it to clients (PFX-01: Techguns never did).
+        registrar.registerEntity(
+            "alien_blaster_projectile",
+            AlienBlasterProjectile.class,
+            AlienBlasterProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.ALIEN_BLAST, AlienBlasterProjectile::new);
         BulletLauncher.register(ProjectileKind.LASER, LaserProjectile::new);
         BulletLauncher.register(ProjectileKind.ENERGY_BLAST, EnergyBlastProjectile::new);
         BulletLauncher.register(ProjectileKind.FLAME, FlamethrowerProjectile::new);

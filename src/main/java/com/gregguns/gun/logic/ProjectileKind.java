@@ -36,5 +36,7 @@ public enum ProjectileKind {
     /** Sonic shotgun rings, M5. Section 3.13. */
     SONIC,
     /** Plain bullet that is never drawn (the Chainsaw's cut), M5. Section 3.12. */
-    INVISIBLE
+    INVISIBLE,
+    /** Alien Blaster bolt: fire damage, trail and a tiny non-breaking blast, M5. Section 3.9. */
+    ALIEN_BLAST
 }

@@ -246,6 +246,12 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.bio_gun.blob.veto` | Bio Gun (M5 B3a) | The same glob with `BlockEvent.PlaceEvent` cancelled by a listener leaves no blob (PFX-28). |
 | `gun.bio_gun.recipe` | Bio Gun (M5 B3a) | The EV assembly row (GR-65) is in GT's assembler map with its sheet inputs and not below EV, and the found recipe's output is ours. |
 | `gun.bio_gun.tiergate` | Bio Gun (M5 B3a) | The row carries titanium, the EV gate material; an EV assembler finds it and an HV assembler does not. |
+| `gun.alien_blaster.fire` | Alien Blaster (M5 B5) | Holding the trigger on a charged LuV Alien Blaster fires every 8 ticks: each shot launches one `AlienBlasterProjectile` and spends exactly 100,000,000 EU; no reload, no round change. |
+| `gun.alien_blaster.hit` | Alien Blaster (M5 B5) | A bolt from a player hits a zombie 6 blocks away for 16 FIRE damage after the damage model with 20 percent penetration (no drop-off) and sets it alight. |
+| `gun.alien_blaster.blast` | Alien Blaster (M5 B5) | A bolt into a wooden wall ends in a power 0.5 explosion with block breaking off; the wall stands, and fire is on the hit face exactly when `explosions.blockDamage` is on. |
+| `gun.alien_blaster.trail` | Alien Blaster (M5 B5) | The `AlienBlasterTrail` FX is sent on the bolt's second tick while it is alive (PFX-01): the bolt is a registered, tracked entity and the FX list resolves to its three systems. |
+| `gun.alien_blaster.recipe` | Alien Blaster (M5 B5) | The LuV assembly row (GR-95) is in GT's assembler map with its sheet inputs and not below LuV; the found recipe's output is ours. |
+| `gun.alien_blaster.tiergate` | Alien Blaster (M5 B5) | The row carries HSS-G, the LuV gate material; a LuV assembler finds it and an IV assembler does not. |
 | `gun.golden_revolver.fire` | Golden Revolver (M2 B6) | One pull launches a bullet, costs a zombie the DamageModel figure for 14 and one round, and holds the 8 tick cooldown with a remembered click. |
 | `gun.golden_revolver.reload` | Golden Revolver (M2 B6) | An empty gun reloads after 45 ticks to 6 rounds from one 9mm bullet; nothing is returned. |
 | `gun.golden_revolver.reload.forced` | Golden Revolver (M2 B6) | The reload key on 5 rounds tops up to 6, consumes the bullet and refunds none. |
