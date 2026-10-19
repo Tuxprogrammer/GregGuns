@@ -331,5 +331,65 @@
   "effects.c4_charge_tick": {
     "category": "block",
     "sounds": ["effects/C4Charge_Tick"]
+  },
+  "guns.power_hammer.fire": {
+    "category": "player",
+    "sounds": ["guns/powerhammer_shot_a", "guns/powerhammer_shot_b"]
+  },
+  "guns.power_hammer.reload": {
+    "category": "player",
+    "sounds": ["guns/powerhammer_reload"]
+  },
+  "guns.power_hammer.charge": {
+    "category": "player",
+    "sounds": ["guns/powerhammer_charge_a", "guns/powerhammer_charge_b", "guns/powerhammer_charge_c"]
+  },
+  "guns.power_hammer.swing": {
+    "category": "player",
+    "sounds": ["guns/powerhammer_swing_a", "guns/powerhammer_swing_b", "guns/powerhammer_swing_c"]
+  },
+  "guns.power_hammer.hit": {
+    "category": "player",
+    "sounds": ["guns/powerhammer_impactGround_a", "guns/powerhammer_impactGround_b", "guns/powerhammer_impactGround_c", "guns/powerhammer_impactGround_d"]
+  },
+  "guns.power_hammer_adv.fire": {
+    "category": "player",
+    "sounds": ["guns/powerhammer_shot_c"]
+  },
+  "guns.power_hammer_adv.reload": {
+    "category": "player",
+    "sounds": ["guns/powerhammer_reload"]
+  },
+  "guns.power_hammer_adv.charge": {
+    "category": "player",
+    "sounds": ["guns/powerhammer_charge_a", "guns/powerhammer_charge_b", "guns/powerhammer_charge_c"]
+  },
+  "guns.power_hammer_adv.swing": {
+    "category": "player",
+    "sounds": ["guns/powerhammer_swing_a", "guns/powerhammer_swing_b", "guns/powerhammer_swing_c"]
+  },
+  "guns.power_hammer_adv.hit": {
+    "category": "player",
+    "sounds": ["guns/powerhammer_impactGround_a", "guns/powerhammer_impactGround_b", "guns/powerhammer_impactGround_c", "guns/powerhammer_impactGround_d"]
+  },
+  "guns.chainsaw.fire": {
+    "category": "player",
+    "sounds": ["guns/chainsaw_loop_a", "guns/chainsaw_loop_b", "guns/chainsaw_loop_c"]
+  },
+  "guns.chainsaw.start": {
+    "category": "player",
+    "sounds": ["guns/chainsaw_loopstart"]
+  },
+  "guns.chainsaw.reload": {
+    "category": "player",
+    "sounds": ["guns/flamethrower_reload"]
+  },
+  "guns.chainsaw.swing": {
+    "category": "player",
+    "sounds": ["guns/chainsaw_swing_a", "guns/chainsaw_swing_b", "guns/chainsaw_swing_c"]
+  },
+  "guns.chainsaw.hit": {
+    "category": "player",
+    "sounds": ["guns/chainsaw_hit_a", "guns/chainsaw_hit_b", "guns/chainsaw_hit_c", "guns/chainsaw_hit_d", "guns/chainsaw_hit_e", "guns/chainsaw_hit_f"]
   }
 }

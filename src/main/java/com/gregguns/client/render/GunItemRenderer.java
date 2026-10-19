@@ -162,7 +162,7 @@ final class GunItemRenderer implements IItemRenderer {
                 Minecraft.getMinecraft()
                     .getTextureManager()
                     .bindTexture(texture);
-                if (t.partVisible(part, state.ammoLeft, state.reloadProgress)) {
+                if (t.partVisible(part, state.ammoLeft, state.reloadProgress, state.fireProgress)) {
                     // Alpha cut-out textures (the scatter laser's sight window, the grim reaper's cage) need the alpha
                     // test: without it their transparent texels draw as solid. Restored right after.
                     boolean alphaWas = GL11.glIsEnabled(GL11.GL_ALPHA_TEST);

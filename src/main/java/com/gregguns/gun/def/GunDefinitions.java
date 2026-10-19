@@ -51,7 +51,10 @@ public final class GunDefinitions {
             BlasterRifleDef.DEFINITION,
             DeatomizerPistolDef.DEFINITION,
             AkimboDeatomizerPistolsDef.DEFINITION,
-            ScatterLaserRifleDef.DEFINITION));
+            ScatterLaserRifleDef.DEFINITION,
+            PowerHammerDef.DEFINITION,
+            PowerHammerAdvDef.DEFINITION,
+            ChainsawDef.DEFINITION));
 
     private GunDefinitions() {}
 

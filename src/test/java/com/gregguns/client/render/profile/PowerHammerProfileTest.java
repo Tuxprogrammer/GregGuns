@@ -312,7 +312,9 @@ class PowerHammerProfileTest {
     }
 
     @Test
-    void theGunIsNotRegisteredYet() {
-        assertNull(ClientGunDefinitions.byName("power_hammer"), "a later gameplay batch registers it");
+    void theGunIsRegisteredWithItsOwnSkin() {
+        ClientGunDefinition def = ClientGunDefinitions.byName("power_hammer");
+        assertNotNull(def, "M5 batch B3b registers it");
+        assertEquals(1, def.textures().length);
     }
 }
