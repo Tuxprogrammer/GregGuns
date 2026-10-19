@@ -7,8 +7,7 @@ import static com.gregguns.client.anim.GunCurves.yR;
 import com.gregguns.client.anim.SpriteSheet;
 
 /**
- * The Nether Blaster's model boxes and render transforms, as data. The gun is not registered yet: it is not in
- * {@link ClientGunDefinitions#ALL} until the gameplay batch adds it, together with its gun definition.
+ * The Nether Blaster's model boxes and render transforms, as data. Registered in {@link ClientGunDefinitions#ALL}.
  *
  * <h2>Where the model comes from (originality record)</h2>
  * The boxes are original GregGuns geometry, built clean-room from written design notes only
@@ -91,14 +90,12 @@ public final class NetherBlasterProfile {
     };
 
     // Deviation: the notes give first-person scale 1.3 and an idle offset measured from the origin of the original
-    // model. The scale follows the FirstPersonFit rule with the 2 blocks on screen of the other long guns, and the
-    // idle position puts this model's box centre on the family anchor.
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    // model. The in-hand targets (in-hand-transforms.md, section 7) set the first-person length and the third-person
+    // scale, and the idle position puts this model's box centre on the target centre, as for the M2 guns.
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("nether_blaster", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, -0.2 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -144,13 +141,13 @@ public final class NetherBlasterProfile {
             .rotY((p, part) -> -15.0 * yR(p))
             .translate(FP_X, FP_Y, FP_Z)
             .build();
-        // Third person: rotX180, rotY225, scale 1.2 like the other 3.3 block long guns. The grip (about 0.3 block
-        // behind the origin, 0.5 down) lands at the hand. Aimed extra (0, 0.1, -0.2), the notes.
+        // Third person: rotX180, rotY225, scaled and shifted by the fit to the in-hand targets. Aimed extra
+        // (0, 0.1, -0.2), the notes.
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.2)
-            .translate(-0.55, -0.4, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the gun pitches slightly about the hand, in the first quarter of the first half.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -175,16 +172,16 @@ public final class NetherBlasterProfile {
             .scale(0.6)
             .translate(-0.28, -0.125, 0)
             .build();
-        // Deviation: the first-person flash is a fixed-frame screen effect. Its offset is the bolt-action rifle's,
-        // whose muzzle sits at the same place on screen (same 2-block length and anchor). Headless work cannot look at
-        // the screen, so this is unverified in game. muzzleFlash2 sheet, additive because the GregGuns sheet is
-        // black-backed (docs/assets/MANIFEST.md).
+        // Deviation: the first-person flash is a fixed-frame screen effect. Its offset is solved from the fitted muzzle
+        // position (InHandFit.flashOffset), unverified in game. muzzleFlash2 sheet, additive because the GregGuns
+        // sheet is black-backed (docs/assets/MANIFEST.md).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.055,
-            0.005,
-            0.357,
+            fo[0],
+            fo[1],
+            fo[2],
             1.5,
             new double[] { 0, 0, 0 },
             true,

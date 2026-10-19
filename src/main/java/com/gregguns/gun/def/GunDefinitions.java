@@ -45,7 +45,8 @@ public final class GunDefinitions {
             BioGunDef.DEFINITION,
             PowerHammerDef.DEFINITION,
             PowerHammerAdvDef.DEFINITION,
-            ChainsawDef.DEFINITION));
+            ChainsawDef.DEFINITION,
+            NetherBlasterDef.DEFINITION));
 
     private GunDefinitions() {}
 

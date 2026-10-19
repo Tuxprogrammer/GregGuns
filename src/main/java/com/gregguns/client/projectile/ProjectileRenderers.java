@@ -7,6 +7,7 @@ import com.gregguns.projectile.FlamethrowerProjectile;
 import com.gregguns.projectile.GenericProjectile;
 import com.gregguns.projectile.InvisibleProjectile;
 import com.gregguns.projectile.LaserProjectile;
+import com.gregguns.projectile.NetherBlasterProjectile;
 import com.gregguns.projectile.SimpleProjectile;
 import com.gregguns.projectile.TeslaProjectile;
 
@@ -38,5 +39,7 @@ public final class ProjectileRenderers {
         RenderingRegistry.registerEntityRenderingHandler(BiogunProjectile.class, new RenderInvisible());
         // Impact and trail effects of the energy blast come with the FX core.
         RenderingRegistry.registerEntityRenderingHandler(EnergyBlastProjectile.class, new RenderInvisible());
+        // The Nether Blaster's bolt is drawn by its CyberDemonBlasterTrail FX; the entity draws nothing.
+        RenderingRegistry.registerEntityRenderingHandler(NetherBlasterProjectile.class, new RenderInvisible());
     }
 }
