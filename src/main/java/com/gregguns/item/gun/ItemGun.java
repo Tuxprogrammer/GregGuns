@@ -62,6 +62,7 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
     private final String fireEvent;
     private final String reloadEvent;
     private final String rechamberEvent;
+    private final String startEvent;
     private final int camoCount;
 
     /**
@@ -77,6 +78,7 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
         this.fireEvent = definition.fireEvent();
         this.reloadEvent = definition.reloadEvent();
         this.rechamberEvent = definition.rechamberEvent();
+        this.startEvent = definition.startEvent();
         this.camoCount = definition.camoCount();
         setMaxStackSize(1);
         setNoRepair();
@@ -100,6 +102,25 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
     /** @return the unprefixed sound event of one shot */
     public String fireEvent() {
         return fireEvent;
+    }
+
+    /**
+     * @return the unprefixed sound event of the first shot after a pause (a continuous-fire gun), or null if the gun
+     *         has none
+     */
+    public String startEvent() {
+        return startEvent;
+    }
+
+    /**
+     * @param nowTick      the world tick of a shot
+     * @param lastShotTick the world tick of the shooter's previous shot, or {@code LoopStart.NEVER}
+     * @return the sound event this shot plays: the start event after a pause for a gun that has one, else the fire
+     *         event
+     */
+    public String shotEvent(long nowTick, long lastShotTick) {
+        return startEvent != null && com.gregguns.gun.logic.LoopStart.isStart(nowTick, lastShotTick) ? startEvent
+            : fireEvent;
     }
 
     /** @return the unprefixed sound event played with every shot after the fire sound, or null if the gun has none */

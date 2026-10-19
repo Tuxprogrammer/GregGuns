@@ -127,6 +127,30 @@
     "category": "player",
     "sounds": ["guns/revolver_reload_akimbo"]
   },
+  "guns.golden_revolver.fire": {
+    "category": "player",
+    "sounds": ["guns/goldenrevolver_shot_a", "guns/goldenrevolver_shot_b", "guns/goldenrevolver_shot_c"]
+  },
+  "guns.golden_revolver.reload": {
+    "category": "player",
+    "sounds": ["guns/revolver_reload"]
+  },
+  "guns.akimbo_golden_revolvers.reload": {
+    "category": "player",
+    "sounds": ["guns/revolver_reload_akimbo"]
+  },
+  "guns.flamethrower.fire": {
+    "category": "player",
+    "sounds": ["guns/flamethrower_shot_a", "guns/flamethrower_shot_b", "guns/flamethrower_shot_c", "guns/flamethrower_shot_d", "guns/flamethrower_shot_e"]
+  },
+  "guns.flamethrower.start": {
+    "category": "player",
+    "sounds": ["guns/flamethrower_start_a"]
+  },
+  "guns.flamethrower.reload": {
+    "category": "player",
+    "sounds": ["guns/flamethrower_reload"]
+  },
   "guns.rocket_launcher.fire": {
     "category": "player",
     "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b", "guns/rocket_shot_c"]

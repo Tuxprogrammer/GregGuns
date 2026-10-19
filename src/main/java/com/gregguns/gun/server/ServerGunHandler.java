@@ -166,7 +166,9 @@ public final class ServerGunHandler {
             Projectiles.launcher()
                 .launch(player.worldObj, player, stats, offset, 1.0f);
         }
-        GunSoundPlayer.playFire(player, gun.fireEvent(), player);
+        long now = player.worldObj.getTotalWorldTime();
+        GunSoundPlayer.playFire(player, gun.shotEvent(now, data.lastShotTick()), player);
+        data.setLastShotTick(now);
         if (gun.rechamberEvent() != null) {
             // Spec: the rechamber sound plays with every shot (sheets-rifles-shotguns.md, Bolt Action Rifle, 4).
             GunSoundPlayer.playReload(player, gun.rechamberEvent(), player);

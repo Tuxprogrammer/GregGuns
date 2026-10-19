@@ -145,6 +145,13 @@ public final class GunRecipeScenarios {
             out.check(
                 found != null,
                 "an assembler of the row's tier with the sheet inputs and circuit should find the recipe");
+            out.check(
+                found != null && found.mOutputs != null
+                    && found.mOutputs.length > 0
+                    && found.mOutputs[0] != null
+                    && gun != null
+                    && found.mOutputs[0].getItem() == gun.getItem(),
+                "the recipe found for the sheet inputs should output " + row.output() + ", not another recipe's item");
             GTRecipe tooLow = RecipeMaps.assemblerRecipes.findRecipeQuery()
                 .items(inputs)
                 .voltage(

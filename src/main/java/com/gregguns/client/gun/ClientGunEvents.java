@@ -29,6 +29,7 @@ public final class ClientGunEvents implements GunClientEvents {
 
     private final GunAnimations animations;
     private boolean reloading;
+    private long lastShotTick = com.gregguns.gun.logic.LoopStart.NEVER;
 
     /**
      * @param animations the rendering framework's animation state: recoil, muzzle flash, reload pose and the zoom
@@ -46,8 +47,10 @@ public final class ClientGunEvents implements GunClientEvents {
         animations.onShotFired(entity, attackType);
         ItemGun gun = heldGun(entity);
         if (isLocal(entity) && gun != null) {
+            long now = entity.worldObj.getTotalWorldTime();
             GunsClientModule.sounds()
-                .playFire((EntityPlayer) entity, gun.fireEvent());
+                .playFire((EntityPlayer) entity, gun.shotEvent(now, lastShotTick));
+            lastShotTick = now;
             if (gun.rechamberEvent() != null) {
                 GunsClientModule.sounds()
                     .playHandling((EntityPlayer) entity, gun.rechamberEvent());

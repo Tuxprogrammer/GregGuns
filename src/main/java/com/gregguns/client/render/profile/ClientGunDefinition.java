@@ -99,6 +99,30 @@ public final class ClientGunDefinition {
             true);
     }
 
+    /**
+     * The definition of a gun that wears another gun's model with its own textures (the Golden Revolver is the
+     * Revolver's model in gold): same boxes, timing, transforms and muzzle, new name and texture sheets.
+     *
+     * @param variantName the variant gun's registry name without the mod id
+     * @param base        the gun whose model it wears
+     * @param textures    the variant's texture resource paths, the default first and then one per camo
+     * @return the variant's definition
+     */
+    public static ClientGunDefinition variantOf(String variantName, ClientGunDefinition base, String... textures) {
+        return new ClientGunDefinition(
+            variantName,
+            base.boxes,
+            base.parts,
+            base.textureWidth,
+            base.textureHeight,
+            base.modelScale,
+            textures,
+            base.muzzle,
+            base.xFamily,
+            base.transforms,
+            false);
+    }
+
     /** @return true if this is an akimbo gun, drawn as two copies of its single gun's model */
     public boolean akimbo() {
         return akimbo;

@@ -1,5 +1,6 @@
 package com.gregguns.client.projectile;
 
+import com.gregguns.projectile.FlamethrowerProjectile;
 import com.gregguns.projectile.GenericProjectile;
 import com.gregguns.projectile.SimpleProjectile;
 
@@ -19,5 +20,7 @@ public final class ProjectileRenderers {
     public static void register() {
         RenderingRegistry.registerEntityRenderingHandler(GenericProjectile.class, new RenderBullet());
         RenderingRegistry.registerEntityRenderingHandler(SimpleProjectile.class, new RenderSimpleBullet());
+        // The flame is drawn by the particles its client copy spawns each tick; the entity itself draws nothing.
+        RenderingRegistry.registerEntityRenderingHandler(FlamethrowerProjectile.class, new RenderInvisible());
     }
 }

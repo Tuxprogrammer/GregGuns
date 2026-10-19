@@ -351,7 +351,8 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
             double beforeY = target.motionY;
             double beforeZ = target.motionZ;
             // A fresh source per hit: sources carry per-hit state.
-            boolean taken = DamageSources.hit(target, getDamageType(), this, shooter, (float) dealt, penetration);
+            boolean taken = DamageSources
+                .hit(target, getDamageType(), this, shooter, (float) dealt, penetration, secondaryEffects());
             if (taken && Knockback.needsAdjustment(knockback)) {
                 scaleKnockback(target, beforeX, beforeY, beforeZ);
             }
@@ -377,6 +378,16 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
      * @param target the entity hit
      */
     protected void onHitEffect(Entity target) {}
+
+    /**
+     * Whether this projectile's hit applies the damage type's secondary effect (burning, slowness, poison). True by
+     * default; the flame turns it off for a shooter that must not ignite things.
+     *
+     * @return true to apply it
+     */
+    protected boolean secondaryEffects() {
+        return true;
+    }
 
     /**
      * Called when the bullet meets a solid block, on both sides (the caller ends the bullet). The server plays the
