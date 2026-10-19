@@ -43,6 +43,7 @@ Out of scope here, see the owning areas:
 | [model-notes/pdw.md](model-notes/pdw.md) | Clean-room design notes for rebuilding the PDW model and texture |
 | [model-notes/pulse_rifle.md](model-notes/pulse_rifle.md) | Clean-room design notes for rebuilding the Pulse Rifle model and texture |
 | [model-notes/minigun.md](model-notes/minigun.md) | Clean-room design notes for rebuilding the Minigun model and texture (spinning rotor) |
+| [model-notes/in-hand-transforms.md](model-notes/in-hand-transforms.md) | How Techguns places and scales every M2 gun in first person, third person, ground and inventory, compared with ours, with recommended targets |
 | [model-notes/blaster_rifle.md](model-notes/blaster_rifle.md) | Clean-room design notes for rebuilding the Blaster Rifle model and texture |
 | [model-notes/deatomizer_pistol.md](model-notes/deatomizer_pistol.md) | Clean-room design notes for rebuilding the De-Atomizer (and Akimbo) model and texture |
 | [model-notes/scatter_laser_rifle.md](model-notes/scatter_laser_rifle.md) | Clean-room design notes for rebuilding the Scatter Laser Rifle model and texture |
