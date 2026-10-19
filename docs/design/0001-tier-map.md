@@ -38,6 +38,8 @@ The gate materials below are starting points. Confirm each against the current G
 
 - **Akimbo tier (M2 B2).** The akimbo pistols and revolvers are crafting-table combines of two single guns (a machine recipe would lose the NBT), so they carry the **input gun's tier** (LV), not the MV row above; the "MV" in the table is read as the earliest a player is likely to want them. The same holds for the akimbo Mac10s (MV, M2 B4, from the MV Mac10; the recipe sheet lists HV) and Golden Revolvers (IV). The dev self-check does not gate a crafting-table item. See [02-guns index](../gregguns-spec/02-guns/index.md#combat-shotgun-and-the-akimbo-pair-batch-b2-m2-deviations).
 
+- **Upgrade recipes (M2 B3).** The Infiltrator (HV, from an M4) is an Assembler row built with `ProductionTable.Row.upgrade`: the base gun is matched at any damage and ignoring NBT, and the output is a fresh gun, so the base gun's loaded rounds and camo are lost (re-apply the camo at the Camo Bench). The same helper serves the Golden Revolver later. GGS-02-40.
+
 ## Alternatives considered
 - **Techguns' flat tiers** (T1–T3 crafting tables): rejected, because they break GTNH progression.
 - **Gating by material alone:** rejected, because voltage gating is how GTNH players read progress.

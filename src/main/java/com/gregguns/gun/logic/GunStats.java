@@ -40,6 +40,7 @@ public final class GunStats {
     private final double penetration;
     private final boolean akimbo;
     private final boolean doubleShot;
+    private final boolean silenced;
     private final ProjectileKind projectileKind;
     private final double knockback;
     private final double blastRadius;
@@ -80,6 +81,7 @@ public final class GunStats {
         penetration = b.penetration;
         akimbo = b.akimbo;
         doubleShot = b.doubleShot;
+        silenced = b.silenced;
         projectileKind = b.projectileKind;
         knockback = b.knockback;
         blastRadius = b.blastRadius;
@@ -291,6 +293,15 @@ public final class GunStats {
         return doubleShot;
     }
 
+    /**
+     * True for a silenced gun (the Infiltrator): its shot plays the quieter fire event and its tooltip says so.
+     * Techguns
+     * only reads the flag in the mining dummy, so nothing else (NPC aggro, projectile effects) depends on it.
+     */
+    public boolean silenced() {
+        return silenced;
+    }
+
     /** The projectile entity this gun fires. */
     public ProjectileKind projectileKind() {
         return projectileKind;
@@ -376,6 +387,7 @@ public final class GunStats {
         private double penetration;
         private boolean akimbo;
         private boolean doubleShot;
+        private boolean silenced;
         private ProjectileKind projectileKind = ProjectileKind.BULLET;
         private double knockback = 1.0;
         private double blastRadius;
@@ -514,6 +526,12 @@ public final class GunStats {
         /** Knockback multiplier of a hit: 1 vanilla, 0 none, above 1 stronger (GUN-38). */
         public Builder knockback(double multiplier) {
             knockback = multiplier;
+            return this;
+        }
+
+        /** Marks a silenced gun: quiet fire event, tooltip line, no other effect. */
+        public Builder silenced() {
+            this.silenced = true;
             return this;
         }
 

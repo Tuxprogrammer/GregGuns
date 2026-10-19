@@ -71,6 +71,38 @@
     "category": "player",
     "sounds": ["guns/ak47_shot_a", "guns/ak47_shot_b", "guns/ak47_shot_c"]
   },
+  "guns.aug.fire": {
+    "category": "player",
+    "sounds": ["guns/aug_shot_a", "guns/aug_shot_b", "guns/aug_shot_c"]
+  },
+  "guns.aug.reload": {
+    "category": "player",
+    "sounds": ["guns/aug_reload"]
+  },
+  "guns.scar.fire": {
+    "category": "player",
+    "sounds": ["guns/SCAR_shot_a", "guns/SCAR_shot_b", "guns/SCAR_shot_c"]
+  },
+  "guns.scar.reload": {
+    "category": "player",
+    "sounds": ["guns/SCAR_reload"]
+  },
+  "guns.vector.fire": {
+    "category": "player",
+    "sounds": ["guns/vector_shot_a", "guns/vector_shot_b", "guns/vector_shot_c"]
+  },
+  "guns.vector.reload": {
+    "category": "player",
+    "sounds": ["guns/vector_reload"]
+  },
+  "guns.infiltrator.fire": {
+    "category": "player",
+    "sounds": ["guns/silencedm4_shot_a", "guns/silencedm4_shot_b"]
+  },
+  "guns.infiltrator.reload": {
+    "category": "player",
+    "sounds": ["guns/ar1_reload"]
+  },
   "guns.ak47.reload": {
     "category": "player",
     "sounds": ["guns/ak47_reload"]

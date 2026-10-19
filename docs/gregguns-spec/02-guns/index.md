@@ -92,6 +92,19 @@ AS50 Sniper Rifle (`as50`, GR-40, HV), LMG (`lmg`, GR-41, HV) and Akimbo Mac10s 
 - **Recipes.** GR-40 (circuit 5) and GR-41 (circuit 6) follow recipes.md (seven and six distinct inputs; GT's assembler map takes up to nine). No GT recycling data is attached to the new magazines or the round yet.
 - **Sounds.** Events point at the existing `as50_*`, `lmg_*` and `mac10_reload_akimbo` files; the Akimbo Mac10s fire the Mac10's `guns.mac10.fire` event.
 
+## HV rifles and SMG, batch B3 (M2): deviations
+
+AUG (`aug`, GR-30), SCAR (`scar`, GR-31), Vector (`vector`, GR-32) and The Infiltrator (`infiltrator`, GR-33), all HV. They add no ammo: they load the Assault Rifle Magazine (AUG, SCAR, Infiltrator) and the SMG Magazine (Vector) of batch B1. Stats are the Techguns sheets' unchanged. What differs:
+
+- **Flat-icon fallback.** All four are on `ClientGunDefinitions.FLAT_ICON_FALLBACK` until their model pass; the Infiltrator's model is a variant of the M4's. `GunDefinitionsTest` pins the list.
+- **Scopes.** AUG FOV x0.5 / spread x0.5, SCAR x0.65 / x0.5, Vector x0.75 / x0.35, Infiltrator x0.5 / x0.5, all through the shared zoom state with no overlay yet.
+- **SCAR clip.** It holds 20 rounds of the 30-round magazine. The forced-reload refund divides by `floor(20 / 3) = 6` rounds per loose bullet (Techguns 6.67), which never refunds more than the magazine's 3 bullets.
+- **Infiltrator upgrade (GR-33, design record [0001](../../design/0001-tier-map.md)).** An Assembler row built with the new `ProductionTable.Row.upgrade` helper: the M4 in slot 0 is matched at any damage and ignoring NBT, so a used or camouflaged M4 is accepted, and the output is a fresh gun (full clip, default skin; the M4's loaded rounds and camo are lost, GGS-02-40). The Techguns grid's wool, redstone and ingot become two rubber plates, a long stainless steel rod and two glass lenses.
+- **Silenced flag.** `GunStats.silenced()` marks the Infiltrator. It selects the quiet `silencedm4` shot sounds (`guns.infiltrator.fire`) and adds a "Silenced" tooltip line. Like Techguns it has no other effect (no NPC aggro or projectile change).
+- **Skins.** AUG five (Gray, Wood, Sand, Nether), SCAR two (Black), Vector two (Black), Infiltrator one.
+- **Recipes.** HV Assembler, 30 s, circuits 1 to 4 (the HV numbering restarts at 1, the uniqueness test is per tier). The gate is the stainless steel plate. The glass panes and plastic sheets of the Techguns grids become lenses; the SCAR uses a diamond lens.
+- **Sounds.** Events point at the existing `aug_*`, `SCAR_*` (the files keep their upper-case names), `vector_*` and `silencedm4_*` files; the Infiltrator reloads with `ar1_reload`.
+
 ## Pack-side changes
 
 These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack) and are collected in [PACK-CHANGES.md](../PACK-CHANGES.md).

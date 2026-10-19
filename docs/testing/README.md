@@ -201,6 +201,27 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.ak47.reload.forced` | AK47 (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
 | `gun.ak47.recipe` | AK47 (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
 | `gun.m4.zoom` | M4 (M2 B1) | A zoom intent turns the server zoom state on with FOV factor 0.75 and 0.75 of the 0.015 spread; a second intent or a reload turns it off. |
+| `gun.aug.auto` | AUG (M2 B3) | Holding the trigger for 13 ticks fires on the pull and then every interval (AUG, Infiltrator 3 ticks, SCAR 4, Vector 2), one round and one bullet per shot. |
+| `gun.aug.reload` | AUG (M2 B3) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time (SCAR to 20 of the magazine's 30), the magazine is consumed and an empty one returned. |
+| `gun.aug.reload.forced` | AUG (M2 B3) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.aug.recipe` | AUG (M2 B3) | The HV assembly row is in GT's assembler map at its time and voltage, and a machine below HV is not offered it. |
+| `gun.aug.zoom` | AUG (M2 B3) | A zoom intent turns the server zoom state on with the gun's own FOV factor and spread multiplier; a second intent or a reload turns it off. |
+| `gun.scar.auto` | SCAR (M2 B3) | Holding the trigger for 13 ticks fires on the pull and then every interval (AUG, Infiltrator 3 ticks, SCAR 4, Vector 2), one round and one bullet per shot. |
+| `gun.scar.reload` | SCAR (M2 B3) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time (SCAR to 20 of the magazine's 30), the magazine is consumed and an empty one returned. |
+| `gun.scar.reload.forced` | SCAR (M2 B3) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.scar.recipe` | SCAR (M2 B3) | The HV assembly row is in GT's assembler map at its time and voltage, and a machine below HV is not offered it. |
+| `gun.scar.zoom` | SCAR (M2 B3) | A zoom intent turns the server zoom state on with the gun's own FOV factor and spread multiplier; a second intent or a reload turns it off. |
+| `gun.vector.auto` | Vector (M2 B3) | Holding the trigger for 13 ticks fires on the pull and then every interval (AUG, Infiltrator 3 ticks, SCAR 4, Vector 2), one round and one bullet per shot. |
+| `gun.vector.reload` | Vector (M2 B3) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time (SCAR to 20 of the magazine's 30), the magazine is consumed and an empty one returned. |
+| `gun.vector.reload.forced` | Vector (M2 B3) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.vector.recipe` | Vector (M2 B3) | The HV assembly row is in GT's assembler map at its time and voltage, and a machine below HV is not offered it. |
+| `gun.vector.zoom` | Vector (M2 B3) | A zoom intent turns the server zoom state on with the gun's own FOV factor and spread multiplier; a second intent or a reload turns it off. |
+| `gun.infiltrator.auto` | Infiltrator (M2 B3) | Holding the trigger for 13 ticks fires on the pull and then every interval (AUG, Infiltrator 3 ticks, SCAR 4, Vector 2), one round and one bullet per shot. |
+| `gun.infiltrator.reload` | Infiltrator (M2 B3) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time (SCAR to 20 of the magazine's 30), the magazine is consumed and an empty one returned. |
+| `gun.infiltrator.reload.forced` | Infiltrator (M2 B3) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.infiltrator.recipe` | Infiltrator (M2 B3) | The HV assembly row is in GT's assembler map at its time and voltage, and a machine below HV is not offered it. |
+| `gun.infiltrator.zoom` | Infiltrator (M2 B3) | A zoom intent turns the server zoom state on with the gun's own FOV factor and spread multiplier; a second intent or a reload turns it off. |
+| `gun.infiltrator.upgrade` | Infiltrator (M2 B3) | The GR-33 recipe is found with a used, camouflaged M4 (3 rounds left, camo 2) in slot 0, so the match ignores NBT, and the output is a fresh Infiltrator without the M4's NBT. |
 | `gun.combat_shotgun.fire` | Combat Shotgun (M2 B2) | A loaded gun fired point blank launches 8 pellets for one round; a zombie in front loses nearly 8 times the DamageModel figure for 4 damage at 15% penetration. |
 | `gun.combat_shotgun.reload` | Combat Shotgun (M2 B2) | An empty gun with 10 shells reloads after 50 ticks: 8 rounds, 8 shells used, 2 left, nothing returned. |
 | `gun.combat_shotgun.reload.forced` | Combat Shotgun (M2 B2) | The reload key with 5 rounds and 5 shells tops up to 8 using 3 shells, keeping the loaded rounds. |

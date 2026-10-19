@@ -34,7 +34,11 @@ public final class GunDefinitions {
             GrenadeLauncherDef.DEFINITION,
             As50Def.DEFINITION,
             LmgDef.DEFINITION,
-            AkimboMac10sDef.DEFINITION));
+            AkimboMac10sDef.DEFINITION,
+            AugDef.DEFINITION,
+            ScarDef.DEFINITION,
+            VectorDef.DEFINITION,
+            InfiltratorDef.DEFINITION));
 
     private GunDefinitions() {}
 

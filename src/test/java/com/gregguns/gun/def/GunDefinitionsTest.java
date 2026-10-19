@@ -156,6 +156,7 @@ class GunDefinitionsTest {
                         assertTrue(
                             all.containsKey(input.itemName())
                                 || ProductionTable.CRAFTED_PARTS.contains(input.itemName())
+                                || GunDefinitions.byName(input.itemName()) != null // an upgrade consumes a gun
                                 || com.gregguns.recipe.ComponentTable.byOutput()
                                     .containsKey(input.itemName()),
                             row.id() + " input " + input.itemName() + " has no recipe");
@@ -248,7 +249,7 @@ class GunDefinitionsTest {
     }
 
     /**
-     * The M2 exit gate. While the four B1 guns await their clean-room models this lists them; the M2 close changes the
+     * The M2 exit gate. While the four B3 guns await their clean-room models this lists them; the M2 close changes the
      * expectation to an empty list. Until then it documents exactly which guns draw as a flat icon.
      */
     @Test
@@ -260,7 +261,8 @@ class GunDefinitionsTest {
             }
         }
         assertEquals(ClientGunDefinitions.FLAT_ICON_FALLBACK, without);
-        assertEquals(java.util.Collections.<String>emptyList(), without);
+        assertEquals(java.util.Arrays.asList("aug", "scar", "vector", "infiltrator"), without);
+        assertTrue(ClientGunDefinitions.usesFallback("aug"));
         assertFalse(ClientGunDefinitions.usesFallback("m4"));
         assertFalse(ClientGunDefinitions.usesFallback("pistol_9mm"));
     }
