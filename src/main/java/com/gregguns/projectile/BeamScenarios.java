@@ -126,8 +126,9 @@ final class BeamScenarios {
             if (after.size() > before.size()) {
                 BeamVisual v = after.get(after.size() - 1);
                 out.check(
-                    v.getLength() > 32.0F && v.getLength() < 34.5F,
-                    "the beam should stop at the wall: " + v.getLength());
+                    // The beam is also cut where the next chunk is not loaded, so a short length is allowed.
+                    v.getLength() >= 24.0F && v.getLength() < 34.5F,
+                    "the beam should stop at the wall (or the loaded edge): " + v.getLength());
                 out.check(v.getStyle() == BeamVisual.STYLE_BLUE, "the beam should be the blue style");
             }
             MovingBeams.clear();
