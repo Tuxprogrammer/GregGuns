@@ -1,6 +1,7 @@
 package com.gregguns.gun.def;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -66,6 +67,40 @@ class EvEnergyGunsTest {
     }
 
     @Test
+    void sonicRifleMatchesItsSheet() {
+        GunStats s = SonicRifleDef.STATS;
+        assertEquals(25.0, s.damage());
+        assertEquals(5.0, s.damageMin());
+        assertEquals(5.0, s.dropStart());
+        assertEquals(15.0, s.dropEnd());
+        assertEquals(FireMode.SEMI, s.fireMode());
+        assertEquals(12, s.fireRateTicks());
+        assertEquals(0.25, s.penetration());
+        assertEquals(2.0, s.knockback());
+        assertFalse(s.hasScope(), "no scope");
+        assertEquals(ProjectileKind.SONIC, s.projectileKind());
+        assertEquals(30.0, s.projectileSpeed() * s.lifetimeTicks(), 1e-9, "30 blocks of reach");
+        assertTrue(
+            s.pattern()
+                .isActive());
+        assertEquals(
+            16,
+            s.pattern()
+                .projectileCount(),
+            "1 + 5 + 10");
+        assertEquals(DamageType.PHYSICAL, SonicRifleDef.DEFINITION.damageType());
+    }
+
+    @Test
+    void sonicRifleIsAnEvBatteryOfEightShots() {
+        GunStats s = SonicRifleDef.STATS;
+        assertTrue(s.isEnergy());
+        assertEquals(8, s.magazineSize());
+        assertEquals(s.capacityEu() / 8, s.euPerShot());
+        assertEquals(Tier.EV, SonicRifleDef.DEFINITION.tier());
+    }
+
+    @Test
     void laserRifleIsAnEvBatteryOfFortyFiveShots() {
         GunStats s = LaserRifleDef.STATS;
         assertTrue(s.isEnergy());
@@ -78,7 +113,8 @@ class EvEnergyGunsTest {
 
     @Test
     void everyEvEnergyGunHasATitaniumGatedEvRowAndItsSounds() {
-        for (GunDefinition def : new GunDefinition[] { LaserRifleDef.DEFINITION, TeslaRifleDef.DEFINITION }) {
+        for (GunDefinition def : new GunDefinition[] { LaserRifleDef.DEFINITION, TeslaRifleDef.DEFINITION,
+            SonicRifleDef.DEFINITION }) {
             ProductionTable.Row row = def.assembly();
             assertNotNull(row, def.name());
             assertEquals(Tier.EV, row.tier(), def.name());
@@ -94,7 +130,7 @@ class EvEnergyGunsTest {
 
     @Test
     void everyEvEnergyGunHasAProfileAndAnInHandTarget() {
-        for (String name : new String[] { LaserRifleDef.NAME, TeslaRifleDef.NAME }) {
+        for (String name : new String[] { LaserRifleDef.NAME, TeslaRifleDef.NAME, SonicRifleDef.NAME }) {
             assertNotNull(ClientGunDefinitions.byName(name), name + " profile");
             assertNotNull(InHandTargets.of(name), name + " in-hand target");
         }

@@ -167,6 +167,14 @@
     "category": "player",
     "sounds": ["guns/teslagun_reload"]
   },
+  "guns.sonic_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/sonicshotgun_shot_a", "guns/sonicshotgun_shot_b", "guns/sonicshotgun_shot_c"]
+  },
+  "guns.sonic_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/sonicshotgun_reload"]
+  },
   "guns.rocket_launcher.fire": {
     "category": "player",
     "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b", "guns/rocket_shot_c"]

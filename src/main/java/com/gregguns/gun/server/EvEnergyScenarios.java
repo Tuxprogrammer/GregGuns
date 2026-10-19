@@ -1,5 +1,6 @@
 package com.gregguns.gun.server;
 
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityZombie;
 
 import com.gregguns.armor.slots.ElectricGear;
@@ -65,6 +66,9 @@ public final class EvEnergyScenarios {
                 break;
             case TESLA:
                 registry.register(new TeslaChain(def));
+                break;
+            case SONIC:
+                registry.register(new SonicVolley(def));
                 break;
             default:
                 break;
@@ -219,6 +223,70 @@ public final class EvEnergyScenarios {
             out.checkEquals("EU spent by one pull", stats.euPerShot(), start - stored(rig));
             out.check(!rig.reloading(), "an energy gun never starts a reload");
             return out.build();
+        }
+    }
+
+    // ----- Sonic Rifle -------------------------------------------------------------------------------------------
+
+    /** One pull launches the 16-projectile volley, hurts a close target exactly once and pushes it twice as hard. */
+    private static final class SonicVolley implements Scenario {
+
+        private static final int TARGET_X = 4;
+        private static final double TARGET_HEALTH = 200.0;
+
+        private final GunDefinition def;
+
+        SonicVolley(GunDefinition def) {
+            this.def = def;
+        }
+
+        @Override
+        public String name() {
+            return "gun." + def.name() + ".fire";
+        }
+
+        @Override
+        public String description() {
+            return "One Sonic Rifle pull launches the 16-projectile ring volley, spends exactly its EU, hurts a sturdy zombie 4 blocks away exactly once (full 25 damage at 25% armor penetration, however many projectiles reach it) and pushes it; holding the trigger fires no second volley (semi-auto).";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            GunStats stats = def.stats();
+            GunRig rig = charged(ctx, def, 1.5, 12);
+            EntityZombie target = GunRig.zombie(ctx, TARGET_X);
+            target.getEntityAttribute(SharedMonsterAttributes.maxHealth)
+                .setBaseValue(TARGET_HEALTH);
+            target.setHealth((float) TARGET_HEALTH);
+            long start = stored(rig);
+            rig.press();
+            for (int i = 0; i < 6; i++) {
+                rig.tick();
+            }
+            rig.release();
+            int volley = rig.bullets();
+            long spent = start - stored(rig);
+            return ScenarioResult.pending(name(), 60, ticks -> {
+                if (!rig.bulletsGone()) {
+                    return null;
+                }
+                ScenarioResult.Builder out = ScenarioResult.builder(name());
+                out.checkEquals(
+                    "projectiles in the volley",
+                    stats.pattern()
+                        .projectileCount(),
+                    volley);
+                out.checkEquals("EU spent by a held semi-auto trigger", stats.euPerShot(), spent);
+                float expected = expectedLoss(target, DamageType.PHYSICAL, stats.damage(), stats.penetration());
+                out.check(
+                    near(expected, lost(target)),
+                    "the zombie should be hurt exactly once for " + expected + ", lost " + lost(target));
+                out.check(
+                    target.motionX > 0.6,
+                    "the hit should push the zombie east about twice a bullet's 0.4, motionX " + target.motionX);
+                out.check(!rig.reloading(), "an energy gun never starts a reload");
+                return out.build();
+            });
         }
     }
 }
