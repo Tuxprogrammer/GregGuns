@@ -39,7 +39,15 @@ public final class ClientGunDefinitions {
      * giving a gun its clean-room profile means removing its name here.
      */
     public static final List<String> FLAT_ICON_FALLBACK = Collections.unmodifiableList(
-        Arrays.asList("combat_shotgun", "akimbo_pistols", "akimbo_revolvers", "rocket_launcher", "grenade_launcher"));
+        Arrays.asList(
+            "combat_shotgun",
+            "akimbo_pistols",
+            "akimbo_revolvers",
+            "rocket_launcher",
+            "grenade_launcher",
+            "as50",
+            "lmg",
+            "akimbo_mac10s"));
 
     private ClientGunDefinitions() {}
 

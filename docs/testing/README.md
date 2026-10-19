@@ -225,6 +225,20 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.grenade_launcher.bounce` | Grenade Launcher (M2 B5) | A 40 mm grenade fired at a wall bounces (bounces left 1), the fuse is about 100 - 20 - ticks flown, and it explodes before its lifetime ends. |
 | `gun.grenade_launcher.direct` | Grenade Launcher (M2 B5) | A 40 mm grenade into a zombie explodes on contact and the zombie loses exactly the 30 damage ramp at its distance from the blast; the dirt wall behind is whole with block damage off. |
 | `gun.grenade_launcher.blocks` | Grenade Launcher (M2 B5) | With `explosions.blockDamage` on the same grenade breaks some of the dirt wall behind the zombie. |
+| `gun.as50.fire` | AS50 (M2 B4) | A loaded AS50 fired at a zombie in front spends one round, launches one bullet, and the zombie loses the DamageModel figure for 32 damage at 25% penetration. |
+| `gun.as50.reload` | AS50 (M2 B4) | An empty AS50 reloads after 80 ticks from one AS50 Magazine, which is consumed; an empty magazine comes back. |
+| `gun.as50.reload.forced` | AS50 (M2 B4) | The reload key on a part-loaded AS50 swaps the magazine and refunds one High Caliber Round per 5 rounds left, floored. |
+| `gun.as50.zoom` | AS50 (M2 B4) | A zoom intent turns the server zoom state on with FOV factor 0.35 and 0.125 of the 0.0625 spread; a second intent or a reload turns it off. |
+| `gun.as50.recipe` | AS50 (M2 B4) | The HV assembly row (GR-40) is in GT's assembler map with its sheet inputs, not below HV, and the found recipe's output is ours. |
+| `gun.lmg.auto` | LMG (M2 B4) | Holding the trigger for 61 ticks fires every 2 ticks: 31 rounds and bullets from the 100-round magazine, 69 left. |
+| `gun.lmg.reload` | LMG (M2 B4) | An empty LMG reloads after 100 ticks from one LMG Magazine, which is consumed; an empty magazine comes back. |
+| `gun.lmg.reload.forced` | LMG (M2 B4) | The reload key on a part-loaded LMG swaps the magazine and refunds one Rifle Bullet per 12 rounds left, floored. |
+| `gun.lmg.zoom` | LMG (M2 B4) | A zoom intent turns the server zoom state on with FOV factor 0.75 and 0.75 of the 0.02 spread; a second intent or a reload turns it off. |
+| `gun.lmg.recipe` | LMG (M2 B4) | The HV assembly row (GR-41) is in GT's assembler map with its sheet inputs, not below HV, and the found recipe's output is ours. |
+| `gun.akimbo_mac10s.fire` | Akimbo Mac10s (M2 B4) | Three pulls spend two rounds and launch two bullets each (double shot). |
+| `gun.akimbo_mac10s.reload` | Akimbo Mac10s (M2 B4) | An empty gun with two SMG Magazines fills the 64-round clip after 68 ticks and returns two empty magazines. |
+| `gun.akimbo_mac10s.reload.forced` | Akimbo Mac10s (M2 B4) | The reload key on a part-loaded gun swaps both magazines and refunds whole loose bullets at the single Mac10's rate (16 rounds each), not double. |
+| `gun.akimbo_mac10s.combine` | Akimbo Mac10s (M2 B4) | Through the real crafting manager and crafted event: two Mac10s craft one akimbo gun with the rounds summed and the first camo; one akimbo gun crafts back to a Mac10 and, once, a second to the player with its own camo (GUN-26). |
 | `mp.visual.boltaction` | bolt action rifle (M2) | The visual walkthrough (first person, third person, inventory, and the zoomed scope view) for the rifle; see the autotest section. |
 | `armor.showcase` | armor (M3) | Dresses a connected client in every armor set and camo in turn and screenshots it in third person (front for all, back for the five custom-model sets), with the HUD hidden; not part of `test all`; see "Armor showcase". |
 | `gun.camo.cycle` | gun definitions | Every gun in `GunDefinitions.ALL` is a `CamoChangeable` with the definition's camo count; the Camo Bench routine (`MTECamoBench.cycleStack`) steps it forward through every skin and around, and back below zero, keeping the loaded rounds (GUN-01); a tag-less gun stays full; an out-of-range index stores 0. |

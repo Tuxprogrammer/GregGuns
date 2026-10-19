@@ -67,8 +67,12 @@ public final class AkimboScenarios {
 
         @Override
         public String description() {
-            return "Three pulls on the " + def.name()
-                + " each spend one round and launch one bullet (the hands alternate, one bullet per pull).";
+            return def.stats()
+                .doubleShot()
+                    ? "Three pulls on the " + def.name()
+                        + " each spend two rounds and launch two bullets (double shot: both hands fire on every pull)."
+                    : "Three pulls on the " + def.name()
+                        + " each spend one round and launch one bullet (the hands alternate, one bullet per pull).";
         }
 
         @Override
@@ -88,9 +92,12 @@ public final class AkimboScenarios {
                     return null;
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
-                out.checkEquals("rounds spent by three pulls", 3, rig.shots());
-                out.checkEquals("rounds left", stats.magazineSize() - 3, rig.loaded());
-                out.checkEquals("bullets launched", 3, rig.bullets());
+                // Double shot (the Akimbo Mac10s) spends two rounds and launches two bullets per pull.
+                int perPull = stats.ammoPerShot();
+                int bulletsPerPull = stats.doubleShot() ? 2 : 1;
+                out.checkEquals("rounds spent by three pulls", 3 * perPull, rig.shots());
+                out.checkEquals("rounds left", stats.magazineSize() - 3 * perPull, rig.loaded());
+                out.checkEquals("bullets launched", 3 * bulletsPerPull, rig.bullets());
                 return out.build();
             });
         }
