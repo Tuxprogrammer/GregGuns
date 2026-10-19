@@ -41,7 +41,10 @@ public final class GunDefinitions {
             InfiltratorDef.DEFINITION,
             FlamethrowerDef.DEFINITION,
             GoldenRevolverDef.DEFINITION,
-            AkimboGoldenRevolversDef.DEFINITION));
+            AkimboGoldenRevolversDef.DEFINITION,
+            LaserRifleDef.DEFINITION,
+            TeslaRifleDef.DEFINITION,
+            SonicRifleDef.DEFINITION));
 
     private GunDefinitions() {}
 

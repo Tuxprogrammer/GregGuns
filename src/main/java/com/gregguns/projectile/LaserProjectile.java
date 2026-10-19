@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 
 import com.gregguns.combat.DamageType;
+import com.gregguns.fx.FxSender;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ShotOffset;
 
@@ -22,6 +23,10 @@ public class LaserProjectile extends GenericProjectile {
 
     /** Mod-local entity ID; the same number Techguns uses for its laser projectile. */
     public static final int ENTITY_ID = 4;
+    /** FX played at the muzzle end of the beam. */
+    public static final String FLARE_START_FX = "LaserFlareStart";
+    /** FX played where the beam ends. */
+    public static final String FLARE_END_FX = "LaserFlareEnd";
 
     /**
      * @param world the world
@@ -53,6 +58,9 @@ public class LaserProjectile extends GenericProjectile {
                 r.distance(),
                 BeamMath.LASER_LIFETIME,
                 BeamVisual.STYLE_LASER);
+            // Spec: projectiles.md 3.15 (LaserBeam2: "LaserFlareStart" at the muzzle, "LaserFlareEnd" at the target).
+            FxSender.at(worldObj, FLARE_START_FX, posX, posY, posZ, FxSender.RANGE_NEAR);
+            FxSender.at(worldObj, FLARE_END_FX, r.endX(), r.endY(), r.endZ(), FxSender.RANGE_NEAR);
         }
         // Nothing flies: stand still and end on the first update.
         motionX = 0;
