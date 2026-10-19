@@ -22,6 +22,10 @@ Projectiles and death/gore effects are in **[04-projectiles-fx](../04-projectile
 | [model-notes/cyberdemon.md](model-notes/cyberdemon.md) | Clean-room design notes for rebuilding the Cyberdemon (proportions, parts, palette, motion, checklist) |
 | [model-notes/super_mutant.md](model-notes/super_mutant.md) | Clean-room design notes for rebuilding the Super Mutant, all three tiers (proportions, parts, palette per tier, motion, checklist) |
 | [model-notes/alien_bug.md](model-notes/alien_bug.md) | Clean-room design notes for rebuilding the Alien Bug (proportions, parts, palette, motion, checklist) |
+| [model-notes/zombie_soldier.md](model-notes/zombie_soldier.md) | Clean-room design notes for rebuilding the Zombie Soldier skin (also Farmer and Miner): 128x128 scaled-up biped skin, palette, armor worn over it |
+| [model-notes/army_soldier.md](model-notes/army_soldier.md) | Clean-room design notes for rebuilding the Army Soldier skin (also under armor for Outcast, Psycho Steve, Commando, Stormtrooper): 128x128 scaled-up biped skin, palette, armor |
+| [model-notes/bandit.md](model-notes/bandit.md) | Clean-room design notes for rebuilding the Bandit skin: 64x64 half-sheet biped skin, palette, armor worn over it |
+| [model-notes/dictator.md](model-notes/dictator.md) | Clean-room design notes for rebuilding the Dictator Dave skin: 64x64 bandit variant with sunglasses and belt line, palette, armor |
 
 ## Key facts
 
