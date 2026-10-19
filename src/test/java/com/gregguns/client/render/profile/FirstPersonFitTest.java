@@ -24,9 +24,11 @@ class FirstPersonFitTest {
             FirstPersonFit.ANCHOR_Z_FAMILY,
             scale,
             FirstPersonFit.centerBlocks(Pistol9mmProfile.BOXES, Pistol9mmProfile.MODEL_SCALE));
-        assertEquals(-1.2, idle[0], 0.01);
-        assertEquals(-1.0, idle[1], 0.01);
-        assertEquals(-1.7, idle[2], 0.01);
+        // The anchor was tuned to the first pistol's box centre; the clean-room pistol's centre differs, so the same
+        // anchor gives these offsets (centre at x -5.5, y 4.75 texels of the 1/16 model).
+        assertEquals(-1.1288, idle[0], 0.001);
+        assertEquals(-0.9809, idle[1], 0.001);
+        assertEquals(-1.7, idle[2], 0.001);
     }
 
     @Test

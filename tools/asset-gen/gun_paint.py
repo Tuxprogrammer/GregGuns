@@ -22,8 +22,8 @@ Layout file: {"gun", "texture": [w, h], "scale", "bodyRotationYDegrees", "boxes"
 Role map (`gun-paint/<gun>.json`): {"gun", "textures": [{"file": "handcannon.png", "variant": null | {...}}],
 "roles": {role: {"material", "base", ...}}, "boxes": {name: {"role", "grain", "wear", "painters": [...]}}}.
 Materials: steel (flat, edge highlights, faint scratches), wood (grain streaks along the box's grain axis, dark end
-grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore, bands, gradient, tone, mottle, seam, inset.
-A wood role may set "calm" (0..1, streak contrast scale); a role may set "bevel": [hi, lo] edge shading.
+grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore, bands, gradient, tone, mottle, seam, inset,
+checker. A wood role may set "calm" (0..1, streak contrast scale); a role may set "bevel": [hi, lo] edge shading.
 A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A box may be tilted about Z ("tilt") or
 about its long axis X ("tiltX", for a diamond bar), both about "pivot"; a size with a 0 is a zero-thickness plane.
 A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}}} or "camo" with a palette.
@@ -265,6 +265,16 @@ def apply_painter(rgb, p, face):
         else:
             mul(rgb, 0, p["at"], w, 1, dark)
             mul(rgb, 0, p["at"] + 1, w, 1, light)
+    elif kind == "checker":  # a soft checkerboard of 1-texel cells (textured polymer); optional darker border
+        x, y, pw, ph = face_xywh(p, w, h)
+        cell, amp = p.get("cell", 1), p.get("amp", 0.12)
+        for j in range(ph):
+            for i in range(pw):
+                if ((i // cell) + (j // cell)) % 2:
+                    mul(rgb, x + i, y + j, 1, 1, 1.0 + amp)
+        if p.get("border"):
+            for edge in ((x, y, pw, 1), (x, y + ph - 1, pw, 1), (x, y, 1, ph), (x + pw - 1, y, 1, ph)):
+                mul(rgb, *edge, p["border"])
     else:
         raise SystemExit("unknown painter " + kind)
 
