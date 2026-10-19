@@ -156,10 +156,13 @@ class GrenadeLauncherProfileTest {
         BufferedImage img = read();
         assertEquals(GrenadeLauncherProfile.TEXTURE_WIDTH, img.getWidth());
         assertTrue(dist(rgb(img, box("rec_main"), 0), 0x1E1E1E) < 60, "black receiver top");
-        assertTrue(dist(rgb(img, box("sleeve0"), 0), 0xA2A2A2) < 40, "silver sleeve");
-        assertTrue(dist(rgb(img, box("plate_f0"), 4), 0xC8C8C8) < 40, "white-silver plate");
+        assertTrue(dist(rgb(img, box("sleeve0"), 0), 0x3C3F3D) < 40, "dark gunmetal sleeve (round 2)");
+        assertTrue(dist(rgb(img, box("plate_f0"), 4), 0x3F423F) < 40, "dark drum end face (round 2)");
+        int[] pf = box("plate_f0").faces()[4];
+        assertTrue(dist(img.getRGB(pf[0], pf[1] + 3) & 0xFFFFFF, 0x3F423F) > 120, "light rim outline on the end face");
+        assertTrue(dist(rgb(img, box("grip"), 0), 0x404342) < 40, "mid-dark gray grip (round 2)");
         int[] f = box("drum0").faces()[3];
-        int red = img.getRGB(f[0] + 3, f[1] + 3) & 0xFFFFFF;
+        int red = img.getRGB(f[0] + 3, f[1] + 1) & 0xFFFFFF;
         assertTrue(dist(red, 0xE85838) < 40, "red grenade on the drum side");
     }
 
