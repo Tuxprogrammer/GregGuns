@@ -37,6 +37,7 @@ public final class ClientGunDefinitions {
             As50Profile.DEFINITION,
             LmgProfile.DEFINITION,
             GoldenRevolverProfile.DEFINITION,
+            FlamethrowerProfile.DEFINITION,
 
             // The akimbo guns draw their single gun's model once per hand.
             ClientGunDefinition.akimboOf("akimbo_pistols", Pistol9mmProfile.DEFINITION),
@@ -52,7 +53,7 @@ public final class ClientGunDefinitions {
      * giving a gun its clean-room profile means removing its name here.
      */
     public static final List<String> FLAT_ICON_FALLBACK = Collections
-        .unmodifiableList(Arrays.asList("aug", "scar", "vector", "infiltrator", "flamethrower"));
+        .unmodifiableList(Arrays.asList("aug", "scar", "vector", "infiltrator"));
 
     private ClientGunDefinitions() {}
 
