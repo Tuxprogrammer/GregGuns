@@ -9,6 +9,7 @@ import com.gregguns.gun.net.PacketGunCharge;
 import com.gregguns.gun.net.PacketGunTrigger;
 import com.gregguns.gun.server.GunKeybinds;
 import com.gregguns.item.gun.ItemGun;
+import com.gregguns.item.gun.ItemToolGun;
 import com.gregguns.network.GregGunsNetwork;
 import com.gtnewhorizon.gtnhlib.keybind.SyncedKeybind;
 
@@ -83,7 +84,7 @@ public final class GunInputHandler {
             mirror.chargeButton(false, false);
         }
 
-        boolean wantDown = canAct && (autotestAttack || mc.gameSettings.keyBindAttack.getIsKeyPressed());
+        boolean wantDown = canAct && (autotestAttack || triggerKey(mc, gun));
         if (wantDown != triggerDown) {
             triggerDown = wantDown;
             mirror.trigger(wantDown);
@@ -132,5 +133,17 @@ public final class GunInputHandler {
         }
 
         mirror.tick(player);
+    }
+
+    /**
+     * The button that pulls the trigger. A tool gun's left button is melee and mining, so its shot is the right
+     * button; a charge tool gun (Power Hammer) has no plain trigger at all, its right button is the charge.
+     */
+    private static boolean triggerKey(Minecraft mc, ItemGun gun) {
+        if (gun instanceof ItemToolGun) {
+            return !gun.stats()
+                .isCharge() && mc.gameSettings.keyBindUseItem.getIsKeyPressed();
+        }
+        return mc.gameSettings.keyBindAttack.getIsKeyPressed();
     }
 }
