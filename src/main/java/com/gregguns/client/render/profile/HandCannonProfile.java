@@ -11,22 +11,18 @@ import com.gregguns.client.anim.SpriteSheet;
  * The Hand Cannon's model boxes and render transforms, as data.
  *
  * <h2>Where the model comes from (originality record)</h2>
- * The boxes are original GregGuns geometry. Nothing is taken from Techguns code or box lists. The model texture
- * {@code textures/models/guns/handcannon.png} (64x32) is a packed atlas painted by {@code tools/asset-gen/models.py},
- * and {@code tools/asset-gen/model_layouts.md} lists the six boxes it was painted for, each as {@code u v w h d} in
- * texels (frame, barrel, cylinder, grip, hammer, sight). Those sizes and texture origins are used here exactly, so
- * every
- * unwrap rectangle lands on painted pixels (checked by {@code HandCannonProfileTest}, which reads the PNG). The
- * positions are authored from the sizes and the one fact the spec records: a stubby single-shot cannon of stone and
- * wood. Here the 7x7x7 "cylinder" box is the breech block at the rear, the 13x7x4 frame is the lock block under the
- * barrel, and the 16-texel barrel runs forward over it, with the grip hanging from the rear and the hammer on top of
- * the
- * breech.
+ * The boxes are original GregGuns geometry, designed first and painted second. The target look is the one the spec
+ * records (a long, straight iron tube, a lighter steel breech band with a raised vent notch, and a short wooden handle
+ * continuing straight back, no pistol grip), matched by eye and by a silhouette comparison of rendered images. Nothing
+ * is taken from Techguns code, box lists or textures. The layout lives in
+ * {@code tools/asset-gen/gun-paint/handcannon.layout.json}; {@code tools/asset-gen/gun_paint.py pack} assigns the UV
+ * origins and writes the generated block below, and {@code gun_paint.py paint} paints
+ * {@code textures/models/guns/handcannon.png} (64x64) for exactly these boxes from the role map
+ * {@code gun-paint/handcannon.json}. {@code HandCannonProfileTest} checks the boxes against the layout file.
  *
  * <h2>Frame of reference</h2>
  * X-family: the boxes are laid out muzzle toward +X, Y growing downward, in texels, and drawn as authored. One texel is
- * a
- * sixteenth of a block, so the 32-texel gun is two blocks of model space before the rows scale it.
+ * a sixteenth of a block, so the 40-texel gun is two and a half blocks of model space before the rows scale it.
  *
  * <p>
  * Spec: gun-sheets.md "Hand Cannon" (rows and timing); rendering-framework.md section 6.1 (X-family) and section 8.
@@ -38,32 +34,30 @@ public final class HandCannonProfile {
     /** Model sheet width in texels. */
     public static final int TEXTURE_WIDTH = 64;
     /** Model sheet height in texels. */
-    public static final int TEXTURE_HEIGHT = 32;
+    public static final int TEXTURE_HEIGHT = 64;
     /** GL units per texel. */
     public static final float MODEL_SCALE = 1.0f / 16.0f;
-    /** The muzzle in the gun frame, blocks: x forward, y down, z. The barrel's front is 19 texels forward. */
-    public static final float[] MUZZLE = { 19.0f / 16.0f, -2.0f / 16.0f, 0.0f };
+    /** The muzzle in the gun frame, blocks: x forward, y down, z. The muzzle ring's face is 20 texels forward. */
+    public static final float[] MUZZLE = { 20.0f / 16.0f, -0.5f / 16.0f, 0.0f };
     /** Frames of {@code muzzleflash4x4.png} that are painted: 0 to 8 (see the Revolver). */
     public static final int MUZZLE_FLASH_FRAMES = 9;
 
-    private static final float[] GRIP_PIVOT = { -6.5f, 3.5f, 0.0f };
     private static final float[] NO_PIVOT = { 0, 0, 0 };
-    private static final float GRIP_TILT = 12.0f;
 
     /** One part: the whole cannon moves as a unit. */
     public static final BoxSpec[] BOXES = {
-        // frame: the lock block, under the barrel and forward of the breech
-        new BoxSpec("frame", 0, 0, 15, 13, 7, 4, -6f, -0.5f, -2f, NO_PIVOT, 0f),
-        // barrel: runs forward over the frame, its front 19 texels from the origin
-        new BoxSpec("barrel", 0, 0, 26, 16, 3, 3, 3f, -3.5f, -1.5f, NO_PIVOT, 0f),
-        // cylinder: the breech block at the rear, wider than the frame
-        new BoxSpec("cylinder", 0, 18, 0, 7, 7, 7, -13f, -3.5f, -3.5f, NO_PIVOT, 0f),
-        // grip: hangs from under the breech, tilted back about its top edge
-        new BoxSpec("grip", 0, 0, 0, 5, 11, 4, -11f, 3.5f, -2f, GRIP_PIVOT, GRIP_TILT),
-        // hammer: on top of the breech
-        new BoxSpec("hammer", 0, 38, 26, 3, 3, 2, -11f, -6.5f, -1f, NO_PIVOT, 0f),
-        // front sight: on top of the muzzle end
-        new BoxSpec("sight", 0, 48, 26, 2, 2, 2, 17f, -5.5f, -1f, NO_PIVOT, 0f), };
+        // BEGIN GENERATED BOXES (tools/asset-gen/gun_paint.py pack; edit the layout, not this)
+        new BoxSpec("handle_butt", 0, 0, 0, 3, 6, 5, -20f, -2f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("handle_mid", 0, 30, 0, 2, 5, 5, -17f, -2f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("handle_neck", 0, 44, 0, 3, 4, 5, -15f, -2f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("breech", 0, 30, 10, 8, 4, 5, -12f, -2f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("vent_rear", 0, 14, 11, 2, 2, 5, -12f, -4f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("vent_front", 0, 0, 11, 2, 2, 5, -6f, -4f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("barrel_core", 0, 0, 27, 22, 5, 3, -4f, -3f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("barrel_flank", 0, 0, 19, 22, 3, 5, -4f, -2f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("muzzle", 0, 16, 0, 2, 6, 5, 18f, -3.5f, -2.5f, NO_PIVOT, 0f),
+        // END GENERATED BOXES
+    };
 
     /**
      * Deviation: at the sheet's full travel (yF and sin(p) each move the gun a whole unit) the cannon left the screen
