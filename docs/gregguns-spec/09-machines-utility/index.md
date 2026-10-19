@@ -52,6 +52,12 @@ Built as `MTECamoBench` (ID 20115, LV) with `PacketCamoCycle`. Decisions, each m
 
 `com.gregguns.utility` holds `UtilityModule` (module `utility`, needs `machines`), one registration stub per later chunk, `UtilityGuis` (FML GUI ids 30 and up, forwarded from `EquipmentGuiHandler`), `TurretPlate`/`ItemTurretArmor`/`UtilityParts` (the four plates and their recipes) and `security` (`SecurityLevel`, `FriendProvider`, `OwnerAccess`, `ServerUtilitiesFriends`, `FriendProviders`, `OwnerProfiles`). ServerUtilities is a `compileOnly` dependency; its adapter loads only behind `Loader.isModLoaded("serverutilities")` (GGS-09-06). MTE ids 20116 to 20124 are reserved in `GregGunsMTEIDs`. All tuning is in `UtilityConfig` (`docs/config.md`). Deviation: the Iron plate uses `plate.CastIron` (see [recipes.md](recipes.md)).
 
+## Chests, Bio Blob and Camp Flag built notes (M6 world blocks)
+
+- **Chests.** `reinforced_chest` and `weapon_chest` are one block class with a flag. Single chests only, 36 slots (3 x 12), public. The Weapon Chest accepts only non-block items registered under `gregguns:` (`WeaponChestFilter`), for players, shift-click and hoppers alike. Neither gives redstone power (MUTL-35); the viewer count is the chest's own (MUTL-34); shift-click has no special slots (MUTL-36). Not built: double chests, wrench pickup, the auto-food and ammo slots, the Bogosorter opt-in (GGS-07-10, -11, -14 stay open). The GUI is drawn with flat rectangles because `textures/gui/storage_chest.png` is a widget sheet, not a background.
+- **Bio Blob.** `bio_blob`, size 1 to 3, burst past 3 with no terrain damage, one decay step per `bioBlobDecayTicks`, Poison III for 100 ticks on any living entity (players too unless `bioBlobSparesPlayers`). Only the server ticks; clients get the size in the description packet. The Biogun projectile calls `BlockBioBlob.onProjectileImpact(world, x, y, z, side, level, shooter)`.
+- **Camp Flag.** `camp_flag`, hidden from the creative tab. World generation calls `TileCampFlag.init(...)`. Spawning and counting go through `CampSpawnPorts.get()`, which counts and spawns nothing until the NPC module installs its port. The cap (`maxNPCs`) is saved (MUTL-38); an uninitialized flag is inert (MUTL-39); breaking drops one iron ingot (MUTL-48). Placeholder geometry and animation numbers live in `FlagPostGeometry`.
+
 ## Pack-side changes
 
 None.
