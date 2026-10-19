@@ -5,8 +5,10 @@ import com.gregguns.projectile.BiogunProjectile;
 import com.gregguns.projectile.EnergyBlastProjectile;
 import com.gregguns.projectile.FlamethrowerProjectile;
 import com.gregguns.projectile.GenericProjectile;
+import com.gregguns.projectile.InvisibleProjectile;
 import com.gregguns.projectile.LaserProjectile;
 import com.gregguns.projectile.SimpleProjectile;
+import com.gregguns.projectile.TeslaProjectile;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
@@ -28,6 +30,9 @@ public final class ProjectileRenderers {
         RenderingRegistry.registerEntityRenderingHandler(FlamethrowerProjectile.class, new RenderInvisible());
         // The laser is an instant hitscan drawn by its BeamVisual; the carrier entity itself draws nothing.
         RenderingRegistry.registerEntityRenderingHandler(LaserProjectile.class, new RenderInvisible());
+        // The Chainsaw's cut draws nothing; the saw itself and the hit sound are the feedback.
+        RenderingRegistry.registerEntityRenderingHandler(InvisibleProjectile.class, new RenderInvisible());
+        RenderingRegistry.registerEntityRenderingHandler(TeslaProjectile.class, new RenderInvisible());
         RenderingRegistry.registerEntityRenderingHandler(BeamVisual.class, new RenderBeam());
         // The bio glob is drawn by its BioGunTrail FX; the entity itself draws nothing.
         RenderingRegistry.registerEntityRenderingHandler(BiogunProjectile.class, new RenderInvisible());

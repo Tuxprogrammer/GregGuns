@@ -45,6 +45,12 @@ public final class ClientGunDefinitions {
             FlamethrowerProfile.DEFINITION,
             ScarProfile.DEFINITION,
             BioGunProfile.DEFINITION,
+            // One model, two items: each selects its own skin (the profile lists both sheets).
+            ClientGunDefinition
+                .variantOf("power_hammer", PowerHammerProfile.DEFINITION, PowerHammerProfile.TEXTURES[0]),
+            ClientGunDefinition
+                .variantOf("power_hammer_adv", PowerHammerProfile.DEFINITION, PowerHammerProfile.TEXTURES[1]),
+            ChainsawProfile.DEFINITION,
 
             // The akimbo guns draw their single gun's model once per hand.
             ClientGunDefinition.akimboOf("akimbo_pistols", Pistol9mmProfile.DEFINITION),

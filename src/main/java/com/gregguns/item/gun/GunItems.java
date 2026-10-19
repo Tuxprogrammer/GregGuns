@@ -45,14 +45,7 @@ public final class GunItems {
      */
     public static void register(ModuleRegistrar registrar) {
         for (GunDefinition def : GunDefinitions.ALL) {
-            ITEMS.put(
-                def.name(),
-                registrar.registerItem(
-                    def.name(),
-                    def.stats()
-                        .isEnergy() ? new ItemEnergyGun(def)
-                            : def.tool() != null ? new ItemToolGun(def)
-                                : BioGunDef.NAME.equals(def.name()) ? new ItemBioGun(def) : new ItemGun(def)));
+            ITEMS.put(def.name(), registrar.registerItem(def.name(), create(def)));
         }
         if (DevEnvironment.isActive()) {
             // The I11 scenario probe: not a content item, so no icon of its own (it borrows the pistol's).
@@ -60,6 +53,21 @@ public final class GunItems {
             probe.setTextureName(Naming.textureName(PistolDef.NAME));
             ITEMS.put(ToolProbeDef.NAME, probe);
         }
+    }
+
+    private static ItemGun create(GunDefinition def) {
+        if (def.stats()
+            .isEnergy()) {
+            return new ItemEnergyGun(def);
+        }
+        if (def.tool() != null) {
+            return def.stats()
+                .isCharge() ? new ItemPowerHammer(def) : new ItemToolGun(def);
+        }
+        if (BioGunDef.NAME.equals(def.name())) {
+            return new ItemBioGun(def);
+        }
+        return new ItemGun(def);
     }
 
     /**

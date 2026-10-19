@@ -26,3 +26,10 @@ Rounds are the fuel or air. A cost is in thousandths of a round (`ToolStats.cost
 - **GUN-28 not reproduced:** there is no internal `default` tool class and the tooltip lists real classes only.
 - The empty tool mines as a bare hand (dig speed 1, no classes); Techguns only fixed the dig speed at 1.
 - The vanilla mining path does not call `BlockBreakGuard` itself: Forge's `ItemInWorldManager` already posts `BlockEvent.BreakEvent` for a player's break.
+
+## The items (batch B3b)
+
+- **Power Hammer (HV, GR-91) and Power Hammer (Advanced) (EV, GR-92).** Compressed Air Tank, 300 rounds. Right click charges 20 ticks (`ChargeMode.SCALED`, 1 to 10 rounds). The release hits every living entity in a 4 x 4 x 4 cube for `rounds x 2.5` and breaks the cube's blocks nearest-first through `ItemToolGun.breakBlock` (one round each, `BlockBreakGuard` asked per block). The cube is carried 3 blocks along the look and stops at the first solid block. Tile entities, liquids and blocks the hammer cannot harvest are left alone (`Shockwave`, `ItemPowerHammer`). Adv: melee 7, level 3, speed 15, the second skin; GR-92 is an upgrade row, so the NBT of the base hammer is ignored and the result is fresh (GGS-02-40).
+- **Chainsaw (HV, GR-90).** Fuel Tank, 300 rounds. Right click cuts with an `InvisibleProjectile` (entity 21; 10 damage, 25% penetration, no knockback, speed 1.5 for 2 ticks). Melee 12, axe 3, speed 14.
+- **Deviation:** no gore on the cut or the melee hit (the death-effect milestone owns it). The hammer blast breaking blocks is new; Techguns' blast never did.
+- **Sounds:** `guns.power_hammer_adv.fire` plays only `powerhammer_shot_c` and `guns.power_hammer.fire` plays a and b, because each fire file belongs to one event (GGS-03-09).

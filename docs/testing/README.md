@@ -129,6 +129,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `production.ammopress.run.hv` | Ammo Press tiers (M4) | The same at HV. |
 | `production.ammopress.run.ev` | Ammo Press tiers (M4) | The same at EV. |
 | `production.ev_ammo` | EV ammo items (M5 I12) | The ammo map finds RC-32 (Advanced Bullets), RC-42 (Advanced Magazine, empty), RC-43 (Minigun Drum, empty), RC-49 and RC-50 (loaded) at `RECIPE_EV` with the sheet output counts, and none of them is found at HV voltage. |
+| `production.ammo_line` | LuV and ZPM ammo (M5 I13) | RC-35 (Tactical Nuke Rocket, ZPM) and RC-36 (Nether Charge, LuV) are on GT's Assembly Line list with the sheet's EU/t, duration, output count, research item, scan time and scan voltage; the nuke rocket and the Depleted Nuclear Power Cell have a GT radioactivity level above 0. |
 | `machines.reaction.place` | machines (M4) | The EV (20106) and IV (20107) chambers and the Retort (20108) are registered; tiers 4 and 5; both chambers run `gregguns.recipe.reactionchamber`; intensity clamps to 0 to 10; the Anti Gravity Core recipe matches at IV voltage and not at EV (GGS-08-46). |
 | `machines.reaction.run` | machines (M4) | A powered EV chamber, kept on the drifting preferred intensity, makes one Laser Focus in 300 to 599 ticks (early finish) and goes idle. Multi-tick. |
 | `machines.reaction.run.iv` | machines (M4 exit gate) | A powered IV chamber, kept on the drifting preferred intensity (8), makes one Anti Gravity Core from a Nether Star, a Heat Ray Focus and molten Enderium in 420 to 599 ticks and goes idle. Multi-tick. |
@@ -153,6 +154,8 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `projectile.shooter` | projectile framework | A pig fires from inside its own box: the shooter is unhurt (grace period) and a pig three blocks away takes the full damage. Waits for ticks. |
 | `projectile.laser.hit` | hitscan carrier (M5 I3) | A `LaserProjectile` shot (flat 12 damage, 7.5 b/t for 5 ticks) at a zombie 20 blocks away hurts it at once, in the launch call, by the ENERGY figure from `DamageModel`; exactly one `BeamVisual` about 20 blocks long is spawned and no laser bolt is left flying. |
 | `projectile.laser.blocks` | hitscan carrier (M5 I3) | The beam passes tall grass and hurts the zombie behind it (PFX-27); the next shot is stopped by a stone wall 8 blocks out, the beam is about 7.5 blocks long, and the zombie beyond the wall is unhurt (PFX-23). |
+| `projectile.tesla.chain` | chain lightning (M5 I4) | A `TeslaProjectile` shot at five zombies 3 blocks apart hurts the first and exactly three more (nearest-next, 3 jumps), leaves the fifth unhurt, and shows four beams. |
+| `projectile.tesla.wall` | chain lightning (M5 I4) | A zombie behind a stone wall, 4 blocks from the struck one, is not chained: line of sight is required (PFX-08). |
 | `fx.core` | FX core (M5 I7) | Headless. The shipped FX data files parse with no errors and no dangling list members; fifty seeded emitters under a 100-particle budget never pass the ceiling and do get trimmed; both FX packets survive an encode and decode round trip (name, position, entity id); `FxSender` on a server world with no players sends without error. Real rendering is read in the batched client session. |
 | `fx.stress` | FX catalog perf (M5 I8) | Headless. Fifty seeded emitters from the shipped M5 catalog (nuke and rocket blasts, trails, impacts) run 200 ticks under the default 2000-particle ceiling: live never passes the ceiling and spilled is 0. The 500-emitter case is a unit test (`FxStressTest`). Real frame cost is read in the batched client session. |
 | `gun.fire` | pistol slice (M1) | A fake player holding a real `pistol_9mm` presses the trigger through `ServerGunHandler`: one bullet is launched, a zombie 6 blocks away loses what `DamageModel` gives for 8 damage, the NBT `ammo` goes 18 to 17, a second click 1 tick later is swallowed, and a click made 3 ticks later fires on tick 4 (4 tick cooldown, GUN-29 buffer). Waits for ticks. |
@@ -302,6 +305,15 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.tool.break_denied` | tool-gun block guard (M5 I11) | `breakBlock` goes through `BlockBreakGuard`: a listener cancelling `BreakEvent` leaves the block and the tank alone (DENIED); without it the block breaks and half a round is spent. |
 | `gun.tool.swing_throttle` | tool-gun swing sound (M5 I11) | The swing is never cancelled; its sound plays at most once per 5 ticks per player, and not at all when empty. |
 | `gun.tool.reload` | tool-gun reload (M5 I11) | An empty tool gun reloads from a full Fuel Tank: 300 rounds after 45 ticks, the tank consumed, an empty tank returned. |
+| `gun.power_hammer.shockwave` | Power Hammer (M5 B3b) | A full 20 tick charge spends 10 rounds and the shockwave breaks the 4 x 4 box of stone ahead (one round per block), leaving the back of the wall standing. |
+| `gun.power_hammer.shockwave_denied` | Power Hammer (M5 B3b) | With a listener cancelling `BreakEvent`, a full charge breaks no wall block and spends only the charge's 10 rounds; with the listener gone the next charge breaks blocks. |
+| `gun.power_hammer.shockwave_hit` | Power Hammer (M5 B3b) | A half charge spends 5 rounds and hits a zombie 2 blocks ahead for 5 x 2.5 raw PHYSICAL damage. |
+| `gun.power_hammer.recipe` | Power Hammer (M5 B3b) | The HV assembly row (GR-91) is in GT's assembler map with its sheet inputs and not below HV. |
+| `gun.power_hammer_adv.shockwave` | Power Hammer (Advanced) (M5 B3b) | The same full-charge shockwave on the Advanced hammer. |
+| `gun.power_hammer_adv.upgrade` | Power Hammer (Advanced) (M5 B3b) | The GR-92 upgrade is found with a used, camouflaged Power Hammer in slot 0 (any NBT) at EV and outputs a Power Hammer (Advanced). |
+| `gun.chainsaw.cut` | Chainsaw (M5 B3b) | Right click fires an `InvisibleProjectile` that costs a zombie 10 PHYSICAL damage with 25% armor penetration and one round. |
+| `gun.chainsaw.left_click` | Chainsaw (M5 B3b) | A loaded Chainsaw mines a log (axe 3, speed 14, harvested, one round) and its melee hit deals 1 + 12 with 25% penetration and one round. |
+| `gun.chainsaw.recipe` | Chainsaw (M5 B3b) | The HV assembly row (GR-90) is in GT's assembler map with its sheet inputs and not below HV. |
 | `gun.energy.core` | energy fire core (M5 I1) | A scripted energy gun (1000 EU per shot) on a 3500 EU battery fires three times through `GunController`, clicks dry once with no reload, ignores the reload key, and a creative or NPC charge source fires without draining (GGS-02-12, GGS-02-13). |
 | `gun.recipe` | pistol slice (M1) | `RecipeMaps.assemblerRecipes` (the map GT's NEI handler lists) holds the pistol at `RECIPE_LV` and 15 s; an LV query with the sheet inputs and circuit 1 finds it; a voltage below LV does not. |
 | `armor.equip` | armor (M3) | A fake player wears the Scout set: speed attribute x1.5, full set detected, jump +0.16, vanilla bar 13; boots off gives x1.375 and no full set; naked clears the modifier; sprinting doubles the bonus on top of vanilla's sprint modifier; full Combat gives 0.40 knockback resistance. |
@@ -405,6 +417,7 @@ Maps each M1 exit-gate item and each relevant `BUGS.md` row to the tests that co
 | GUN-45 vanilla armor blocks all types | U: `DamageModelTest.doesNotReproduceGUN45_*`; S: `combat.penetration` | |
 | GUN-47 unscoped zoom flag | U: `SpreadAndZoomTest.doesNotReproduceGUN47_*`, `GunKeybindsTest.doesNotReproduceGUN47_*`; S: `gun.zoom` | |
 | PFX-01 projectile entity not registered | S: `projectile.hit` | |
+| PFX-07, PFX-08, GUN-21 chain damage, checks and jump count | S: `projectile.tesla.chain`, `projectile.tesla.wall`; U: `ChainSelectTest.doesNotReproducePFX0*_*` | |
 | PFX-23, PFX-27 wall and plant hits | S: `projectile.blocks`, `projectile.laser.blocks`; U: `HitscanTest.doesNotReproducePFX23_*` | |
 | PFX-34 gravity not sent to client | U: `BulletSpawnDataTest.doesNotReproducePFX34_*` | |
 | PFX-03 beam miss uses the direction as a point | U: `HitscanTest.doesNotReproducePFX03_*` | |

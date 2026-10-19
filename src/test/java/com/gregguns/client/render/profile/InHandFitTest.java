@@ -115,7 +115,7 @@ class InHandFitTest {
             onTable++;
         }
         assertEquals(onTable, checked, "every gun on the table is registered and was checked");
-        assertTrue(checked >= 21, "the M2 guns and the Bio Gun are on the table");
+        assertTrue(checked >= 24, "the M2 guns, the M5 tool guns and the Bio Gun are on the table");
     }
 
     @Test

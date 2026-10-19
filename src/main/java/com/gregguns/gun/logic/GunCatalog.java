@@ -66,6 +66,15 @@ public final class GunCatalog {
         /** Empty Minigun Ammo Drum. */
         public static final String MINIGUN_DRUM_EMPTY = "mag_minigun_drum_empty";
 
+        /** Loose Nether Charge (the Nether Blaster's round, LuV; 10 shots, no empty item). */
+        public static final String NETHER_CHARGE = "ammo_nether_charge";
+        /** Loose Tactical Nuke Rocket (the Nuke Launcher's round, ZPM). */
+        public static final String ROCKET_NUKE = "ammo_rocket_nuke";
+        /** Nuclear Power Cell (a component, the Nuclear Death Ray's consumable, ZPM). */
+        public static final String CELL_NUCLEAR = "cell_nuclear";
+        /** Depleted Nuclear Power Cell (returned on use). */
+        public static final String CELL_NUCLEAR_DEPLETED = "cell_nuclear_depleted";
+
         /** Loose rocket (the Rocket Launcher's round, HV). */
         public static final String ROCKET = "ammo_rocket";
         /** Loose 40 mm grenade (the Grenade Launcher's round, MV). */
@@ -78,6 +87,11 @@ public final class GunCatalog {
         public static final String FUEL_TANK = "tank_fuel";
         /** The Bio Tank (the Bio Gun's ammo, a Forge fluid container holding Biomass). Same rules as the Fuel Tank. */
         public static final String BIO_TANK = "tank_bio";
+        /**
+         * The Compressed Air Tank (the Power Hammers' ammo, a Forge fluid container registered by the armor module's
+         * tank list). Same contract as {@link #FUEL_TANK}.
+         */
+        public static final String AIR_TANK = "tank_air";
 
         private AmmoIds() {}
     }
