@@ -1454,3 +1454,36 @@ for _n, _k in {
     'turret_beep-06': {'tb': -33.58, 'noenv': 1},
 }.items():
     _KNOB[_n] = dict(_KNOB.get(_n, {}), **_k)
+
+# ===== round-7 baked search results (gate-aware search, generation 0; merges over the round-6 tables)
+_SALT.update({
+    'alienbug_aggro_c': 551,
+    'alienbug_bite_a': 208,
+    'alienbug_idle-06': 364,
+    'alienbug_step_a': 798,
+    'turret_beep-02': 169,
+    'turret_beep-05': 698,
+    'turret_beep-07': 283,
+})
+_HI_SMOOTH.update({
+})
+_SPLIT_OF.update({
+    'alienbug_idle-01': 150.0,
+    'cyberdemon_death_a': 500.0,
+})
+for _n, _k in {
+    'alienbug_aggro_c': {'low': 3.77},
+    'alienbug_death_b': {'floor': -0.88},
+    'alienbug_hit-04': {'bed': 0.64, 'click': -0.86},
+    'alienbug_step_c': {'click': -1.51},
+    'apache_burst': {'w4000': 1.51},
+    'apache_explode': {'tb': -7.02, 'fg': 47.33},
+    'cyberdemon_aggro_a': {'amd': -0.23},
+    'cyberdemon_death_a': {'fg': 63.82, 'tb': -34.88},
+    'cyberdemon_idle_a': {'clipk': 0.7},
+    'turret_beep-02': {'noenv': 1},
+    'turret_beep-03': {'ine': 0.01, 'floor': -0.08},
+    'turret_beep-05': {'pw': 0.17, 'noenv': 1},
+    'turret_beep-07': {'nobands': 1, 'combhi': 2626.73},
+}.items():
+    _KNOB[_n] = dict(_KNOB.get(_n, {}), **_k)

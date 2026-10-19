@@ -36,18 +36,21 @@ from sndengines import (fit, blast, events, rumble, churn, tone_burst, click_thu
 # recipe, so the best draw per sound is pinned here; GG_SEEDOFF is only used for local sweeps.
 _SEEDS = {}
 
-# Round 6: per-sound knobs found by the scripted embedding search (``seed`` plus recipe parameters read through ``c.kn``).
+# Rounds 6-7 (7 gate-aware): per-sound knobs found by the scripted embedding search (``seed`` plus recipe parameters read through ``c.kn``).
 _TUNED6 = {
-    'bullet_impact_a': {"seed": 9, "g_modes": 0.3388, "g_thump": 1.3961, "g_sweep": 0.6375, "g_ring": 1.5113, "g_tail": 1.8913, "g_click": 1.5621, "g_burst": 0.7462},
-    'bullet_impact_b': {"seed": 7, "g_tail": 2.357, "g_click": 0.6839, "g_ring": 1.8686, "g_burst": 0.9761},
-    'bullet_impact_c': {"seed": 18, "g_sweep": 0.6188, "g_modes": 0.4135, "g_burst": 0.6224, "g_deb": 0.8978, "g_thump": 1.3441, "g_ring": 1.3335, "g_click": 0.9997},
+    'bullet_impact_a': {"seed": 9, "g_modes": 0.3388, "g_thump": 1.3961, "g_sweep": 0.6375, "g_ring": 1.6769, "g_tail": 1.8913, "g_click": 1.5621, "g_burst": 0.7462},
+    'bullet_impact_b': {"seed": 7, "g_tail": 2.9839, "g_click": 0.6839, "g_ring": 1.8686, "g_burst": 0.9761, "g_deb": 1.3028},
+    'bullet_impact_c': {"seed": 18, "g_sweep": 0.6188, "g_modes": 0.3748, "g_burst": 0.646, "g_deb": 0.8978, "g_thump": 1.3441, "g_ring": 1.3335, "g_click": 0.9997},
     'bullet_impact_d': {"seed": 0, "g_click": 1.8564, "g_ring": 2.8963, "g_tail": 2.2312, "g_sweep": 1.0457, "g_deb": 1.6597, "g_burst": 1.0472, "g_modes": 0.7778},
-    'bullet_impact_e': {"seed": 53, "g_click": 0.6002, "g_modes": 0.5668, "g_sweep": 0.6369, "g_ring": 1.5638, "g_thump": 0.6182, "g_tail": 1.3667, "g_deb": 1.2789},
+    'bullet_impact_e': {"seed": 53, "g_click": 0.6002, "g_modes": 0.5668, "g_sweep": 0.6369, "g_ring": 1.5638, "g_thump": 0.4755, "g_tail": 1.3667, "g_deb": 1.2789, "g_burst": 0.8038},
     'explosion1_a': {"seed": 5, "hiss_gain": 0.0245, "body_gain": 2.0773, "t20": 2.4749, "tail_gain": 0.7469, "sub_gain": 0.4361, "body_lp": 868.4966, "t40": 1.275, "rumble_gain": 1.2058, "g_bump": 10},
     'explosion1_b': {"seed": 1, "rumble_gain": 1.0276, "debris": 0.3657, "t20": 4.268, "body_gain": 0.6275, "churn_depth": 0.3646, "tail_gain": 0.9015, "t40": 1.9451, "sub_gain": 1.1744, "crack": 1.0824},
     'explosion1_c': {"seed": 25, "sub_gain": 1.0141, "crack": 1.5653, "tail_gain": 0.5143, "body_lp": 917.1113, "t20": 1.5572, "debris": 0.143, "hiss_gain": 0.0644, "body_gain": 1.5819, "rumble_gain": 1.3047, "churn_depth": 0.2487, "g_bump": 6},
-    'gore_a': {"seed": 21, "g_splat": 2.4924, "g_crack": 2.1438, "g_low": 0.6316, "g_mid": 0.9686, "g_wet": 0.783},
-    'gore_b': {"seed": 0, "g_crack": 2.7921, "g_low": 2.2295, "g_mid": 1.4977, "g_wet": 0.9171, "g_splat": 2.0},
+    'gore_a': {"seed": 29, "g_splat": 2.4924, "g_crack": 2.1438, "g_low": 0.7392, "g_mid": 0.9686, "g_wet": 0.7306},
+    'gore_b': {"seed": 0, "g_crack": 2.7921, "g_low": 2.2295, "g_mid": 1.4977, "g_wet": 1.1902, "g_splat": 2.0},
+    'democharge_plant': {"seed": 27},
+    'biodeath': {"t20": 0.8805, "sub_gain": 1.2246},
+    'explosion1_e': {"t20": 1.1294, "body_gain": 1.0667, "body_lp": 729.4054, "t40": 2.5648, "sub_gain": 0.7342, "tail_gain": 1.2162, "rumble_gain": 1.3979},
 }
 
 

@@ -1444,4 +1444,56 @@ for (_tbl, _nm), _kw in _TUNED5.items():
     globals()[_tbl][_nm] = _kw
 
 
+
+
+# --------------------------------------------------------------------------- round 7: impacts and chainsaw hits
+# The round-5 "blast5" engine (sound-rounds/r5/body2.py) is the same one-event noise-body engine as ``blast2`` above
+# (contour-shaped noise body, centroid-following low-pass, crack, sub thump), so it is reused rather than copied.
+# What the port adds is a per-sound table with the same ``reseed`` and parameter plumbing the shots have, plus an
+# optional sustained-texture engine (``sustain2``) for the chainsaw hits, which are a swelling saw rasp.
+blast5 = blast2
+
+# name -> {"engine": "blast" | "sus", "p": parameter overrides}.  A name with no entry keeps its earlier recipe.
+IMPACT7 = {}
+
+
+def _impact_base(name):
+    """Effective blast2 parameters of an impact before the per-sound overrides."""
+    if name.startswith("biogun_impact"):
+        kw = dict(crack_gain=0.8, sub_gain=0.8, thunk=0.3, churn_rate=18, churn_depth=0.35,
+                  crackle=(90, 900, 4500, 0.6, 0.4), puffs=[(0.8, 0.06, 0.25), (0.95, 0.06, 0.2), (1.12, 0.06, 0.15)])
+    elif name.startswith("chainsaw_hit"):
+        kw = dict(sub=(90.0, 45.0), sub_tau=0.1, thunk=0.2, churn_rate=40, churn_depth=0.6, cen_k=1.6, body_hi=2500.0,
+                  buzz=(110.0, 0.6, 0.5))
+    else:
+        kw = dict(sub=(100.0, 40.0), sub_tau=0.12, thunk=0.5, churn_rate=14, churn_depth=0.25,
+                  crackle=(50, 500, 4000, 0.5, 0.3))
+        kw.update(PER_IMPACT.get(name, {}))
+    kw.update(PER.get(name, {}))
+    return kw
+
+
+def _impact7_recipe(name, prev):
+    def f(c, N):
+        e = IMPACT7.get(name)
+        if e is None:
+            return prev(c, N)
+        k = dict(e.get("p", {}))
+        if e.get("engine") == "sus":
+            _reseed(c, k)
+            return sustain2(c, N, **k)
+        kw = _impact_base(name)
+        kw.update(k)
+        _reseed(c, kw)
+        return blast5(c, N, **kw)
+    return f
+
+
+for _nm in ("biogun_impact_a", "biogun_impact_b", "biogun_impact_c", "powerhammer_impactground_a",
+            "powerhammer_impactground_b", "powerhammer_impact_a", "powerhammer_impact_c", "chainsaw_hit_a",
+            "chainsaw_hit_c"):
+    from sndlib import lookup as _lookup  # noqa: E402
+    REGISTRY.insert(0, (_nm, _impact7_recipe(_nm, _lookup(_nm))))
+
+
 import sounds_guns_shots6  # noqa: E402,F401  (round 6, slice guns-shots: tuned parameter sets)

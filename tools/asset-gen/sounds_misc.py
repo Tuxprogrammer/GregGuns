@@ -19,6 +19,18 @@ def _tune():
     return json.loads(os.environ.get("GG_P", "{}"))
 
 
+# Round 7: per-sound knobs found by the gate-aware embedding search (merged under GG_P, which still overrides while searching).
+_TUNED7 = {}
+
+
+def _tune7(c):
+    """Round-7 baked table for this sound, overridden by GG_P; a ``seed`` entry re-draws the noise stream."""
+    P = {**_TUNED7.get(c.name, {}), **_tune()}
+    if "seed" in P:
+        c.rng = np.random.default_rng([int(P["seed"]), zlib.crc32(c.path.encode())])
+    return P
+
+
 def _reseed(c, seed):
     """Replace the recipe RNG with a seed picked by embedding distance (GG_P ``seed`` overrides while searching)."""
     k = _tune().get("seed", seed)
@@ -109,8 +121,9 @@ def nightvision_on(c, N):
     """Noisy broadband double hit (0.03-0.12 s, soft-clipped, with 30-60 Hz flutter in the highs), thin ringing
     partials from A's measured line times (short damped modes, a little downward glide), a narrow 11.5 kHz noise
     shimmer line and sparkle, a quiet fading haze.  High-passed at 150 Hz."""
+    P7 = _tune7(c)
     sr, rng = c.sr, c.rng
-    P = {**dict(hz=0.3, sh=0.3, md=2.0, lg=0.25, ltau=3.0, b1hi=7000), **_tune()}   # round 5: sustained quiet ladder, less haze
+    P = {**dict(hz=0.3, sh=0.3, md=2.0, lg=0.25, ltau=3.0, b1hi=7000), **P7}   # round 5: sustained quiet ladder, less haze
     m = Mix(c, N)
     n1 = sfx.n_of(sr, 0.25)
     b1 = sfx.band_noise(n1, sr, rng, P.get('b1lo', 1500), P.get('b1hi', 15000), order=1) * sfx.exp_env(n1, sr, P.get('t1', 0.07), attack=0.0004)
@@ -163,8 +176,9 @@ def nightvision_off(c, N):
     """Sharp metallic snap at 0 s (4 ms attack, damped modes 2-12 kHz), noisy body high-passed at 200 Hz with a
     -20 dB drop in ~70 ms, a faint 9 -> 6 kHz sweep, hissy tail above 4 kHz that stays alive until the end, three
     soft damped blips plus a noisy falling whine on A's measured path, a little metallic content in the mix."""
+    P7 = _tune7(c)
     sr, rng = c.sr, c.rng
-    P = {**dict(h2=0.1, hz=1.0, bl=0.4, wh=3.0), **_tune()}   # round 5: quieter second hiss and blips, stronger whine
+    P = {**dict(h2=0.1, hz=1.0, bl=0.4, wh=3.0), **P7}   # round 5: quieter second hiss and blips, stronger whine
     get_tg(c).trail = 0.0   # keep the hiss alive to the last frame (A's last tenth is -56 dB, not silent)
     m = Mix(c, N)
     m.add(_clank(sr, rng, 1.6, lo=1500, hi=9000, nm=6, tau=(0.008, 0.02), crack_hi=14000), 0.0, 1.0)
@@ -413,7 +427,7 @@ def ammopress_work1(c, N):
     else:
         kw = dict(slam_t=0.25, clunks=0.8, churn_gain=0.7, flat=0.5, lg_band=(60, 190), bed_hi=300)
     if not c.path.endswith("_a.ogg"):
-        kw.update(_tune())   # round 5: b/c only (a is already keep and must stay byte-identical)
+        kw.update({k: v for k, v in _tune7(c).items() if k != "seed"})   # b/c only (a is keep and must stay byte-identical)
     return _press(c, N, **kw)
 
 
@@ -444,6 +458,7 @@ def ammopress_work2(c, N):
 def rc_beep(c, N):
     """A short 538 Hz beep (single clean sine, 5 ms fade-out, no trailing silence): a shallow dip (about 7 dB)
     mid-tone, a 25 ms low-passed onset thump (150 -> 50 Hz sweep plus a soft 1.5-2 kHz band)."""
+    P = _tune7(c)
     sr, rng = c.sr, c.rng
     c.conform_env = False
     # 4851 samples (A's length) makes libvorbis write a bogus end granule, so decoders emit a 22 ms silent pad that the
@@ -453,7 +468,7 @@ def rc_beep(c, N):
     m = Mix(c, N)
     d = N / sr
     # a hair of 2nd harmonic and a -50 dB noise floor: a mathematically pure sine sits farther from A than this
-    tn = tone_burst(sr, rng, 538, d, ratios=(1.0, 2.0), gains=(1.0, 0.01), attack=0.001, release=0.005)
+    tn = tone_burst(sr, rng, 538, d, ratios=(1.0, 2.0), gains=(1.0, P.get('h2', 0.01)), attack=0.001, release=0.005)
     t = sfx.tvec(len(tn), sr)
     # A's measured tenth-second contour: held ~-5 dB, an 11 dB sag toward 0.07 s, then back up to -9.5 dB
     sag = 10 ** (np.interp(t, [0, 0.02, 0.033, 0.044, 0.055, 0.066, 0.077, 0.088, 0.099, 0.11],
@@ -461,9 +476,9 @@ def rc_beep(c, N):
     m.add(tn * sag / sag.max(), 0.0, 1.0)
     nb = sfx.n_of(sr, 0.035)
     band = sfx.band_noise(nb, sr, rng, 1100, 2200, order=2) * sfx.smooth_env(nb, sr, 0.003, 0.0245)
-    m.add(sfx.fftfilt(band, sr, lp=2600, order=2), 0.0, 0.35)
-    m.add(sfx.band_noise(N, sr, rng, 200, 8000, order=1), 0.0, 0.003)
-    m.add(sub_drop(sr, 150, 50, 0.03, 0.01, k=0.01, attack=0.001), 0.0, 0.5)
+    m.add(sfx.fftfilt(band, sr, lp=2600, order=2), 0.0, 0.35 * P.get('band', 1.0))
+    m.add(sfx.band_noise(N, sr, rng, 200, 8000, order=1), 0.0, 0.003 * P.get('floor', 1.0))
+    m.add(sub_drop(sr, 150, 50, 0.03, 0.01, k=0.01, attack=0.001), 0.0, 0.5 * P.get('thump', 1.0))
     return m.out
 
 
@@ -474,6 +489,7 @@ def rc_warning(c, N):
     sub rumble with 30 Hz grit.  A 10-15 ms attack at 0.05 s, a noise burst at 0.18-0.28 s, a 0.12-0.14 s inharmonic
     ring-modulated swell at 0.29-0.42 s, a second burst at 0.55-0.8 s, a +20 Hz blip at 0.73 s then a +3.5% glide,
     the sub ramping out at 1.18 s.  Only tone plus sub from 0.8 s on."""
+    P = _tune7(c)
     sr, rng = c.sr, c.rng
     m = Mix(c, N)
     t = sfx.tvec(N, sr)
@@ -490,13 +506,13 @@ def rc_warning(c, N):
     # brightness without sustained lines: 1.5-3.2 kHz noise pulsed at the buzz rate (a noisy buzz ladder)
     pulse = np.clip(0.5 + 0.5 * np.sin(ph + 0.6), 0, 1) ** 3
     hi = sfx.band_noise(N, sr, rng, 1500, min(3200, sr * 0.44), order=2) * pulse * churn(N, sr, rng, 20, 0.6)
-    tone = tone + 0.15 * hi
+    tone = tone + 0.15 * P.get('hi', 1.0) * hi
     sw = np.clip((t - 1.18) / 0.05, 0, 1)
     tone = tone * (1 - 0.8 * sw)
     att = np.clip((t - 0.05) / 0.012, 0, 1)
     m.add(sfx.fftfilt(tone, sr, hp=70, lp=9000, order=1) * att, 0.0, 1.0)
     sub = sfx.band_noise(N, sr, rng, 25, 160, order=5) * churn(N, sr, rng, 12, 0.5) * (1 + 0.1 * np.sin(sfx.TAU * 30 * t)) * (1 - sw) * att
-    m.add(sub, 0.0, 1.2)
+    m.add(sub, 0.0, 1.2 * P.get('sub', 1.0))
     m.add(sub_drop(sr, 100, 60, 0.1, 0.02, k=0.015, attack=0.002), 0.05, 0.8)
     # inharmonic swell 0.29-0.42 s: ring-modulated partials between 400 and 2500 Hz, rise then fall
     ns = sfx.n_of(sr, 0.13)
@@ -505,12 +521,12 @@ def rc_warning(c, N):
     for fa, fb, g in ((430, 1010, 0.8), (680, 1080, 0.2), (560, 1150, 0.15)):
         swell += g * np.sin(sfx.TAU * fa * ts) * np.sin(sfx.TAU * fb * ts + rng.uniform(0, 6))
     swell = swell + 0.5 * sfx.band_noise(ns, sr, rng, 400, 2400, order=1)
-    m.add(swell * np.sin(np.pi * ts / 0.13) ** 2, 0.29, 0.9)
+    m.add(swell * np.sin(np.pi * ts / 0.13) ** 2, 0.29, 0.9 * P.get('swell', 1.0))
     # buzzy 4-9 kHz noise bursts pulsed at about 70 Hz
     for t0, d in ((0.18, 0.10), (0.55, 0.25)):
         nn = sfx.n_of(sr, d)
         gate = np.clip(np.sin(sfx.TAU * 70 * sfx.tvec(nn, sr)) * 3, 0, 1)
-        m.add(sfx.band_noise(nn, sr, rng, 4000, min(9000, sr * 0.44), order=2) * gate * sfx.smooth_env(nn, sr, 0.015, 0.04), t0, 0.3)
+        m.add(sfx.band_noise(nn, sr, rng, 4000, min(9000, sr * 0.44), order=2) * gate * sfx.smooth_env(nn, sr, 0.015, 0.04), t0, 0.3 * P.get('burst', 1.0))
     return m.out
 
 
