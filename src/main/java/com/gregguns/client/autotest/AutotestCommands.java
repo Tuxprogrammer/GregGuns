@@ -13,6 +13,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 
 import com.gregguns.GregGuns;
+import com.gregguns.armor.slots.SlotSyncProbe;
+import com.gregguns.armor.slots.logic.BaubleSlot;
+import com.gregguns.core.testing.AutotestReport;
 
 import codechicken.nei.recipe.GuiCraftingRecipe;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -30,7 +33,9 @@ import cpw.mods.fml.relauncher.SideOnly;
  * <li>{@code gui nei <item>}: NEI's recipe view for the output {@code gregguns:<item>}.</li>
  * </ul>
  * Other commands (handled by {@link ClientAutotest}): {@code view <0|1|2>}, {@code shot <label>},
- * {@code arm <shot|reload> <label> <delayTicks>}, {@code fire <count>}, {@code scope <texturePath|off>} (draws a scope
+ * {@code arm <shot|reload> <label> <delayTicks>}, {@code fire <count>}, {@code slots <owner>} (reports this client's
+ * copy of a player's Baubles slots back to the server as chat lines, see {@code AutotestReport}),
+ * {@code scope <texturePath|off>} (draws a scope
  * overlay on the HUD, loaded at the bounded size), {@code close}, {@code quit}. Dev autotest only.
  * Client only.
  */
@@ -38,6 +43,34 @@ import cpw.mods.fml.relauncher.SideOnly;
 final class AutotestCommands {
 
     private AutotestCommands() {}
+
+    /**
+     * {@code slots <owner>}: describes this client's copy of the named player's Baubles slots and sends one
+     * {@link AutotestReport} chat line per slot to the server, which files them for the {@code mp.slots} scenarios.
+     * The owner is the local player or another player in the client's world; an unknown name is logged and reports
+     * nothing, so the server scenario times out with a clear message.
+     */
+    static void reportSlots(String owner) {
+        Minecraft mc = Minecraft.getMinecraft();
+        EntityClientPlayerMP me = mc.thePlayer;
+        net.minecraft.entity.player.EntityPlayer target = mc.theWorld.getPlayerEntityByName(owner);
+        if (target == null) {
+            ClientAutotest.logLine("slots: no player " + owner + " in this client's world");
+            return;
+        }
+        for (BaubleSlot slot : BaubleSlot.values()) {
+            String payload = SlotSyncProbe.describe(target, slot);
+            String line;
+            try {
+                line = AutotestReport.format(me.getCommandSenderName(), owner, slot.typeName(), payload);
+            } catch (IllegalArgumentException e) {
+                ClientAutotest.logLine("slots: cannot report " + slot + ": " + e.getMessage());
+                continue;
+            }
+            ClientAutotest.logLine("slots " + owner + " " + slot.typeName() + " " + payload);
+            me.sendChatMessage(line);
+        }
+    }
 
     /** @param args the arguments after {@code gui} */
     static void openGui(String[] args) {
