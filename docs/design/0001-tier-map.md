@@ -36,7 +36,7 @@ The gate materials below are starting points. Confirm each against the current G
 
 ## Notes
 
-- **Akimbo tier (M2 B2).** The akimbo pistols and revolvers are crafting-table combines of two single guns (a machine recipe would lose the NBT), so they carry the **input gun's tier** (LV), not the MV row above; the "MV" in the table is read as the earliest a player is likely to want them. The same holds for the later akimbo Mac10s (HV) and Golden Revolvers (IV). The dev self-check does not gate a crafting-table item. See [02-guns index](../gregguns-spec/02-guns/index.md#combat-shotgun-and-the-akimbo-pair-batch-b2-m2-deviations).
+- **Akimbo tier (M2 B2).** The akimbo pistols and revolvers are crafting-table combines of two single guns (a machine recipe would lose the NBT), so they carry the **input gun's tier** (LV), not the MV row above; the "MV" in the table is read as the earliest a player is likely to want them. The same holds for the akimbo Mac10s (MV, M2 B4, from the MV Mac10; the recipe sheet lists HV) and Golden Revolvers (IV). The dev self-check does not gate a crafting-table item. See [02-guns index](../gregguns-spec/02-guns/index.md#combat-shotgun-and-the-akimbo-pair-batch-b2-m2-deviations).
 
 ## Alternatives considered
 - **Techguns' flat tiers** (T1–T3 crafting tables): rejected, because they break GTNH progression.

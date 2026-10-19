@@ -27,6 +27,16 @@ class AkimboLayoutTest {
     }
 
     @Test
+    void doubleShotAkimboRecoilsBothHandsWhateverTheAttackType() {
+        for (int attackType = 0; attackType <= 1; attackType++) {
+            assertTrue(AkimboLayout.animates(true, true, 0, attackType, true));
+            assertTrue(AkimboLayout.animates(true, true, 1, attackType, true));
+        }
+        assertFalse(AkimboLayout.animates(true, true, 1, 0, false));
+        assertFalse(AkimboLayout.animates(false, true, 1, 0, true));
+    }
+
+    @Test
     void theSingleDrawnGunTakesEveryShotInThirdPersonAndForSingleGuns() {
         assertTrue(AkimboLayout.animates(true, false, 0, 1));
         assertTrue(AkimboLayout.animates(true, false, 0, 0));

@@ -57,6 +57,23 @@ public final class AkimboLayout {
     }
 
     /**
+     * As {@link #animates(boolean, boolean, int, int)}, for guns that may fire both hands in one pull.
+     *
+     * @param akimbo      true if the item is an akimbo gun
+     * @param firstPerson true for the first-person view
+     * @param hand        the gun being drawn, 0 main or 1 second
+     * @param attackType  the hand that fired the last shot
+     * @param doubleShot  true if every pull fires both guns (the Akimbo Mac10s), so both recoil
+     * @return true if this gun animates
+     */
+    public static boolean animates(boolean akimbo, boolean firstPerson, int hand, int attackType, boolean doubleShot) {
+        if (akimbo && firstPerson && doubleShot) {
+            return true;
+        }
+        return animates(akimbo, firstPerson, hand, attackType);
+    }
+
+    /**
      * @param hand 0 main or 1 second
      * @return the X scale of the hand's copy: 1, or -1 for the mirrored second gun
      */

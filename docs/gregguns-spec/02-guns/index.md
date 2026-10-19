@@ -80,6 +80,18 @@ Rocket Launcher (`rocket_launcher`, GR-20) and Grenade Launcher (`grenade_launch
 - **Recipes.** GR-20 (circuit 8) and GR-21 (circuit 7) follow recipes.md. RC-33 and RC-34 use the vanilla TNT block for the TNT, as RC-26 does. No GT recycling data is attached to the two rounds yet.
 - **Sounds.** Events point at the existing `rocket_*` and `grenadelauncher_*` files; the explosion plays the grenade family's `random.explode`.
 
+## AS50, LMG and Akimbo Mac10s, batch B4 (M2): deviations
+
+AS50 Sniper Rifle (`as50`, GR-40, HV), LMG (`lmg`, GR-41, HV) and Akimbo Mac10s (`akimbo_mac10s`, crafting recipes GR-42), with High Caliber Rounds (`ammo_high_caliber_round`, RC-31), the AS50 Magazine (`mag_as50`, RC-40, RC-47) and the LMG Magazine (`mag_lmg`, RC-41, RC-48), all HV presses. Stats are the Techguns sheets' unchanged. What differs:
+
+- **Flat-icon fallback.** All three are on `ClientGunDefinitions.FLAT_ICON_FALLBACK` until their model pass. The Akimbo Mac10s will take the generic akimbo renderer, which draws the Mac10 profile twice.
+- **Ammo.** The AS50 Magazine holds 10 rounds from 2 High Caliber Rounds (5 rounds per round on a forced reload). The LMG Magazine holds 100 rounds from 8 Rifle Bullets; the LMG reuses the existing `ammo_rifle_bullet`, so only the magazine pair is new. A forced reload on the LMG refunds one bullet per 12 rounds left (100 / 8 floored), not Techguns' 12.5: the refund is in whole bullets either way, and the integer step can give one bullet more than the sheet's floor in rare cases (97 rounds left: 8 bullets, sheet 7).
+- **Scope.** The AS50 (FOV x0.35, spread x0.125) and the LMG (x0.75, x0.75) use the shared zoom state. Neither has a scope overlay yet: the overlay belongs to the model pass.
+- **Akimbo Mac10s: double shot.** Every pull spends 2 rounds and launches 2 bullets, one from each hand (`akimbo(true)` with `ammoPerShot(2)`); the hands do not alternate, unlike the Akimbo Pistols and Revolvers. A full 64-round clip is 32 pulls. The refund is the single Mac10's 16 rounds per bullet (GUN-14 not reproduced); the reload takes two SMG Magazines and returns two empty ones.
+- **Tier.** The Akimbo Mac10s have no machine row, so their tier is the input gun's (MV), not the HV listed in the recipe sheet; see the note on [0001](../../design/0001-tier-map.md). The AS50 and LMG are HV with a stainless steel gate.
+- **Recipes.** GR-40 (circuit 5) and GR-41 (circuit 6) follow recipes.md (seven and six distinct inputs; GT's assembler map takes up to nine). No GT recycling data is attached to the new magazines or the round yet.
+- **Sounds.** Events point at the existing `as50_*`, `lmg_*` and `mac10_reload_akimbo` files; the Akimbo Mac10s fire the Mac10's `guns.mac10.fire` event.
+
 ## Pack-side changes
 
 These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack) and are collected in [PACK-CHANGES.md](../PACK-CHANGES.md).

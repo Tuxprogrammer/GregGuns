@@ -31,9 +31,22 @@ public final class RifleAmmo {
         3,
         Tier.MV);
 
+    /** Magazines made per RC-48 run. */
+    public static final int LMG_LOADED_PER_RUN = 4;
+
+    /** LMG Magazine: 8 rifle bullets per refill (RC-48). Holds 100 rounds in the LMG. HV (0001). */
+    public static final MagazineType LMG_MAGAZINE = new MagazineType(
+        "lmg",
+        TYPE,
+        "mag_lmg",
+        "mag_lmg_empty",
+        8,
+        Tier.HV);
+
     /** The definition. */
     public static final AmmoDefinition DEFINITION = AmmoDefinition.of(TYPE)
         .magazine(ASSAULT_RIFLE_MAGAZINE)
+        .magazine(LMG_MAGAZINE)
         // RC-30: the Steel rounds are the gate. Rifle bullets are not in GATE_EXEMPT.
         .row(
             Row.press(
@@ -65,6 +78,32 @@ public final class RifleAmmo {
                 2,
                 Input.mod(ASSAULT_RIFLE_MAGAZINE.emptyItemName(), LOADED_PER_RUN),
                 Input.mod(TYPE.roundItemName(), LOADED_PER_RUN * ASSAULT_RIFLE_MAGAZINE.roundsPerMagazine())))
+        // RC-41: the stainless steel plates are the HV gate.
+        .row(
+            Row.press(
+                "RC-41",
+                LMG_MAGAZINE.emptyItemName(),
+                4,
+                Tier.HV,
+                6,
+                Input.gt("plate", "StainlessSteel", 4),
+                Input.gt("springSmall", "StainlessSteel", 4),
+                Input.mod(PartItems.MECHANICAL_2, 1)))
+        .row(
+            Row.press(
+                "RC-48",
+                LMG_MAGAZINE.loadedItemName(),
+                LMG_LOADED_PER_RUN,
+                Tier.HV,
+                3,
+                Input.mod(LMG_MAGAZINE.emptyItemName(), LMG_LOADED_PER_RUN),
+                Input.mod(TYPE.roundItemName(), LMG_LOADED_PER_RUN * LMG_MAGAZINE.roundsPerMagazine())))
+        .refill(
+            Refill.of(
+                LMG_MAGAZINE.loadedItemName(),
+                LMG_MAGAZINE.emptyItemName(),
+                TYPE.roundItemName(),
+                LMG_MAGAZINE.roundsPerMagazine()))
         .refill(
             Refill.of(
                 ASSAULT_RIFLE_MAGAZINE.loadedItemName(),

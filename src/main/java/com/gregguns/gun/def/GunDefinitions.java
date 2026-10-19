@@ -31,7 +31,10 @@ public final class GunDefinitions {
             AkimboPistolsDef.DEFINITION,
             AkimboRevolversDef.DEFINITION,
             RocketLauncherDef.DEFINITION,
-            GrenadeLauncherDef.DEFINITION));
+            GrenadeLauncherDef.DEFINITION,
+            As50Def.DEFINITION,
+            LmgDef.DEFINITION,
+            AkimboMac10sDef.DEFINITION));
 
     private GunDefinitions() {}
 
