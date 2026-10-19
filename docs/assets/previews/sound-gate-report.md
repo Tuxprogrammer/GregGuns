@@ -2,7 +2,7 @@
 
 Measured A/B checks per sound (no model listening). Verdict: keep when all pass, tweak with one or two failures, rework with three or more or any tonality failure.
 
-127 sounds: keep 28, tweak 91, rework 8.
+278 sounds: keep 142, tweak 128, rework 8.
 
 ## `sounds/npcs/apache_burst.ogg`: rework (5.5/10)
 - **envelope:** tenth-second contour r=0.85 (min 0.80), mean |dB| diff 9.2 (max 6)
@@ -41,13 +41,13 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 - **envelope:** tenth-second contour r=0.94 (min 0.80), mean |dB| diff 6.5 (max 6)
 - **embedding:** Audio Flamingo early-layer distance 2.46 (pass <= 1.75; same kind of sound but off)
 
-## `sounds/npcs/turret_beep-05.ogg`: tweak (8.0/10)
-- **envelope:** tenth-second contour r=0.98 (min 0.80), mean |dB| diff 10.2 (max 6)
-- **embedding:** Audio Flamingo early-layer distance 5.79 (pass <= 1.75; a different sound)
-
 ## `sounds/npcs/turret_beep-06.ogg`: rework (8.0/10)
-- **tonality:** 5 spurious tonal lines
-- **embedding:** Audio Flamingo early-layer distance 2.11 (pass <= 1.75; same kind of sound but off)
+- **tonality:** 8 spurious tonal lines
+- **embedding:** Audio Flamingo early-layer distance 2.70 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/npcs/turret_beep-07.ogg`: tweak (8.0/10)
+- **envelope:** tenth-second contour r=0.90 (min 0.80), mean |dB| diff 8.1 (max 6)
+- **embedding:** Audio Flamingo early-layer distance 3.34 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/MIB_blaster_reload_akimbo.ogg`: tweak (8.2/10)
 - **decay:** decay to -20 dB B 0.11 s vs A 0.05 s
@@ -95,7 +95,7 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 
 ## `sounds/guns/powerhammer_reload.ogg`: tweak (8.2/10)
 - **onsets:** B 12 onsets vs A 8
-- **embedding:** Audio Flamingo early-layer distance 2.57 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.56 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/revolver_reload.ogg`: tweak (8.2/10)
 - **envelope:** tenth-second contour r=0.97 (min 0.80), mean |dB| diff 8.4 (max 6)
@@ -115,21 +115,25 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 
 ## `sounds/items/nightvision_off.ogg`: tweak (8.2/10)
 - **envelope:** tenth-second contour r=0.83 (min 0.80), mean |dB| diff 7.1 (max 6)
-- **embedding:** Audio Flamingo early-layer distance 3.23 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 3.22 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/alienbug_idle-05.ogg`: tweak (8.2/10)
 - **noisiness:** flatness in 200 Hz-8 kHz B 0.213 vs A 0.072 (higher = more noise-like, lower = more tonal or resonant)
-- **embedding:** Audio Flamingo early-layer distance 2.96 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.95 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/cyberdemon_death_a.ogg`: tweak (8.2/10)
 - **noisiness:** flatness in 200 Hz-8 kHz B 0.061 vs A 0.019 (higher = more noise-like, lower = more tonal or resonant)
 - **embedding:** Audio Flamingo early-layer distance 3.10 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/npcs/cyberdemon_step_b.ogg`: tweak (8.2/10)
+- **noisiness:** flatness in 200 Hz-8 kHz B 0.138 vs A 0.411 (higher = more noise-like, lower = more tonal or resonant)
+- **embedding:** Audio Flamingo early-layer distance 5.07 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/machines/rc_beep.ogg`: tweak (8.9/10)
 - **embedding:** Audio Flamingo early-layer distance 4.30 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/effects/C4Charge_Init.ogg`: tweak (9.0/10)
-- **embedding:** Audio Flamingo early-layer distance 3.41 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 3.14 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/machines/rc_warning.ogg`: tweak (9.0/10)
 - **embedding:** Audio Flamingo early-layer distance 7.62 (pass <= 1.75; a different sound)
@@ -138,16 +142,16 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 - **envelope:** tenth-second contour r=0.27 (min 0.80), mean |dB| diff 2.3 (max 6)
 
 ## `sounds/npcs/turret_beep-02.ogg`: tweak (9.0/10)
-- **embedding:** Audio Flamingo early-layer distance 5.56 (pass <= 1.75; a different sound)
+- **embedding:** Audio Flamingo early-layer distance 5.55 (pass <= 1.75; a different sound)
 
 ## `sounds/npcs/turret_beep-04.ogg`: tweak (9.0/10)
 - **embedding:** Audio Flamingo early-layer distance 20.99 (pass <= 1.75; a different sound)
 
-## `sounds/npcs/turret_beep-07.ogg`: tweak (9.0/10)
-- **embedding:** Audio Flamingo early-layer distance 3.16 (pass <= 1.75; same kind of sound but off)
+## `sounds/npcs/turret_beep-05.ogg`: tweak (9.0/10)
+- **embedding:** Audio Flamingo early-layer distance 5.64 (pass <= 1.75; a different sound)
 
 ## `sounds/effects/C4Charge_Plant.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 5.75 (pass <= 1.75; a different sound)
+- **embedding:** Audio Flamingo early-layer distance 5.76 (pass <= 1.75; a different sound)
 
 ## `sounds/effects/C4Charge_Tick.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 4.40 (pass <= 1.75; same kind of sound but off)
@@ -170,14 +174,20 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 ## `sounds/effects/bullet_impact_b.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 3.34 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/effects/bullet_impact_c.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 3.67 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/effects/bullet_impact_d.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 3.52 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/effects/bullet_impact_e.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 2.74 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/effects/explosion1_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.61 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/effects/explosion1_b.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 3.68 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 3.69 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/effects/explosion1_c.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 5.20 (pass <= 1.75; same kind of sound but off)
@@ -188,6 +198,9 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 ## `sounds/effects/gore_a.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 2.77 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/effects/gore_b.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.14 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/effects/gore_c.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 3.52 (pass <= 1.75; same kind of sound but off)
 
@@ -197,11 +210,14 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 ## `sounds/guns/SCAR_reload.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 1.78 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/guns/SCAR_shot_c.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 1.77 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/guns/ar1_reload.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 2.54 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/as50_reload.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 1.79 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 1.78 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/as50_shot_b.ogg`: tweak (9.1/10)
 - **noisiness:** flatness in 200 Hz-8 kHz B 0.032 vs A 0.009 (higher = more noise-like, lower = more tonal or resonant)
@@ -209,17 +225,50 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 ## `sounds/guns/aug_reload.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 4.58 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/guns/biogun_impact_c.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.47 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/guns/biogun_shot_b.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 1.89 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/guns/biogun_shot_c.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.25 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/blasterrifle_shot_c.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.39 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/guns/boltaction_rechamber.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 1.87 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 1.89 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/chainsaw_hit_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 1.81 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/chainsaw_hit_c.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.06 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/chainsaw_loop_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 1.75 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/chainsaw_loop_b.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 1.85 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/chainsaw_loopstart.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 1.96 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/chainsaw_swing_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 3.24 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/chainsaw_swing_b.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 2.91 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/guns/chainsaw_swing_c.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 3.58 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/combatshotgun_reload.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.80 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/guns/combatshotgun_shot_a.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 2.33 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.34 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/combatshotgun_shot_b.ogg`: tweak (9.1/10)
 - **noisiness:** flatness in 200 Hz-8 kHz B 0.064 vs A 0.016 (higher = more noise-like, lower = more tonal or resonant)
@@ -227,17 +276,32 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 ## `sounds/guns/flamethrower_reload.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 1.98 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/guns/grenade_pin_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 9.58 (pass <= 1.75; a different sound)
+
 ## `sounds/guns/grenade_pin_b.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 7.38 (pass <= 1.75; a different sound)
+
+## `sounds/guns/grenade_throw_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.41 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/grenadelauncher_shot_a.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 3.18 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/guns/handgun_shot_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 1.89 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/guns/handgun_shot_b.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 1.99 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/guns/handgun_shot_c.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.88 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/guns/lasergun_reload.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 3.11 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/lmg_shot_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.28 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/lmg_shot_b.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 1.84 (pass <= 1.75; same kind of sound but off)
@@ -254,8 +318,20 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 ## `sounds/guns/pistol_reload.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 2.93 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/guns/pistol_shot_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 1.97 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/pistol_shot_b.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.23 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/guns/powerhammer_impactGround_a.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 2.52 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.51 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/powerhammer_impactGround_b.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 1.96 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/guns/powerhammer_impact_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.01 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/powerhammer_impact_c.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 1.83 (pass <= 1.75; same kind of sound but off)
@@ -273,10 +349,10 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 - **embedding:** Audio Flamingo early-layer distance 1.82 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/thompson_shot_a.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 1.96 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 1.95 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/thompson_shot_c.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 1.78 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 1.79 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/guns/vector_reload.ogg`: tweak (9.1/10)
 - **envelope:** tenth-second contour r=0.93 (min 0.80), mean |dB| diff 6.8 (max 6)
@@ -287,53 +363,89 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 ## `sounds/machines/ammopress_work1_c.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 2.68 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/npcs/alienbug_aggro_c.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 3.72 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/npcs/alienbug_aggro_d.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 2.03 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.04 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/npcs/alienbug_bite_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.53 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/alienbug_bite_b.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 2.18 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/alienbug_bite_c.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 2.13 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.12 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/alienbug_bite_d.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 2.24 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.23 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/alienbug_death_b.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 1.81 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/alienbug_hit-03.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 2.48 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.89 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/npcs/alienbug_hit-04.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.08 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/npcs/alienbug_idle-01.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.74 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/alienbug_idle-02.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 2.53 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/alienbug_idle-03.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 2.67 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.66 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/alienbug_idle-04.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 1.96 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/npcs/alienbug_idle-06.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 3.25 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/npcs/alienbug_step_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 3.35 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/npcs/alienbug_step_c.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 2.37 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.33 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/apache_hit_b.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 1.83 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/npcs/cyberdemon_aggro_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 3.45 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/npcs/cyberdemon_aggro_b.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 2.40 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.41 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/npcs/cyberdemon_hurt_b.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 1.75 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/cyberdemon_hurt_c.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 2.20 (pass <= 1.75; same kind of sound but off)
 
+## `sounds/npcs/cyberdemon_idle_a.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.83 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/npcs/cyberdemon_idle_b.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.78 (pass <= 1.75; same kind of sound but off)
+
 ## `sounds/npcs/cyberdemon_idle_c.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 2.59 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 2.60 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/npcs/cyberdemon_step_c.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 2.44 (pass <= 1.75; same kind of sound but off)
+
+## `sounds/npcs/cyberdemon_step_d.ogg`: tweak (9.1/10)
+- **embedding:** Audio Flamingo early-layer distance 1.98 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/turret_beep-01.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 2.53 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/turret_beep-03.ogg`: tweak (9.1/10)
-- **embedding:** Audio Flamingo early-layer distance 5.12 (pass <= 1.75; same kind of sound but off)
+- **embedding:** Audio Flamingo early-layer distance 5.17 (pass <= 1.75; same kind of sound but off)
 
 ## `sounds/npcs/turret_gunequip-03.ogg`: tweak (9.1/10)
 - **embedding:** Audio Flamingo early-layer distance 1.78 (pass <= 1.75; same kind of sound but off)
@@ -342,11 +454,73 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 
 ## `sounds/blocks/metaldoor_open_b.ogg`: keep (10.0/10)
 
+## `sounds/blocks/metaldoor_open_c.ogg`: keep (10.0/10)
+
+## `sounds/effects/disintegrate.ogg`: keep (10.0/10)
+
+## `sounds/effects/explosion1_d.ogg`: keep (10.0/10)
+
+## `sounds/effects/nukeexplosion.ogg`: keep (10.0/10)
+
+## `sounds/effects/steamarmor_jump_a.ogg`: keep (10.0/10)
+
+## `sounds/effects/steamarmor_jump_b.ogg`: keep (10.0/10)
+
+## `sounds/effects/steamarmor_jump_c.ogg`: keep (10.0/10)
+
+## `sounds/effects/steamarmor_jump_d.ogg`: keep (10.0/10)
+
+## `sounds/guns/MIB_blaster_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/MIB_blaster_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/MIB_blaster_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/SCAR_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/SCAR_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/ak47_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/ak47_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/ak47_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/alienblaster_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/alienblaster_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/alienblaster_shot_c.ogg`: keep (10.0/10)
+
 ## `sounds/guns/ar1_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/ar1_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/as50_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/aug_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/aug_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/aug_shot_c.ogg`: keep (10.0/10)
 
 ## `sounds/guns/beamgun_loop_a.ogg`: keep (10.0/10)
 
+## `sounds/guns/beamgun_loop_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/beamgun_loop_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/beamgun_loop_d.ogg`: keep (10.0/10)
+
+## `sounds/guns/beamgun_loop_e.ogg`: keep (10.0/10)
+
+## `sounds/guns/beamgun_loop_f.ogg`: keep (10.0/10)
+
 ## `sounds/guns/beamgun_start_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/beamgun_start_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/beamgun_start_c.ogg`: keep (10.0/10)
 
 ## `sounds/guns/biogun_shot_a.ogg`: keep (10.0/10)
 
@@ -354,15 +528,161 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 
 ## `sounds/guns/blasterrifle_shot_b.ogg`: keep (10.0/10)
 
+## `sounds/guns/boltaction_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/boltaction_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/boltaction_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/cdb_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/cdb_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/cdb_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/cdb_shot_d.ogg`: keep (10.0/10)
+
+## `sounds/guns/chainsaw_hit_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/chainsaw_hit_d.ogg`: keep (10.0/10)
+
+## `sounds/guns/chainsaw_hit_e.ogg`: keep (10.0/10)
+
+## `sounds/guns/chainsaw_hit_f.ogg`: keep (10.0/10)
+
+## `sounds/guns/chainsaw_loop_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/chainsaw_loopend.ogg`: keep (10.0/10)
+
+## `sounds/guns/combatshotgun_pump.ogg`: keep (10.0/10)
+
+## `sounds/guns/combatshotgun_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/flamethrower_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/flamethrower_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/flamethrower_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/flamethrower_shot_d.ogg`: keep (10.0/10)
+
+## `sounds/guns/flamethrower_shot_e.ogg`: keep (10.0/10)
+
+## `sounds/guns/flamethrower_start_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/goldenrevolver_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/goldenrevolver_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/goldenrevolver_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/grenade_throw_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/grenade_throw_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/grenadelauncher_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/grenadelauncher_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/lasergun_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/lasergun_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/lasergun_shot_c.ogg`: keep (10.0/10)
+
 ## `sounds/guns/lmg_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/mac10_shot_a.ogg`: keep (10.0/10)
 
 ## `sounds/guns/mac10_shot_b.ogg`: keep (10.0/10)
 
+## `sounds/guns/minigun_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/minigun_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/minigun_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/minigun_shot_d.ogg`: keep (10.0/10)
+
+## `sounds/guns/pdw_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/pdw_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/pdw_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/pistol_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/powerhammer_charge_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/powerhammer_charge_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/powerhammer_charge_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/powerhammer_impactGround_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/powerhammer_impactGround_d.ogg`: keep (10.0/10)
+
+## `sounds/guns/powerhammer_impact_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/powerhammer_impact_d.ogg`: keep (10.0/10)
+
 ## `sounds/guns/powerhammer_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/powerhammer_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/powerhammer_swing_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/powerhammer_swing_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/pulserifle_reload.ogg`: keep (10.0/10)
+
+## `sounds/guns/pulserifle_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/pulserifle_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/pulserifle_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/pulserifle_shot_d.ogg`: keep (10.0/10)
+
+## `sounds/guns/pulserifle_shot_stereo.ogg`: keep (10.0/10)
+
+## `sounds/guns/revolver_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/revolver_shot_b.ogg`: keep (10.0/10)
 
 ## `sounds/guns/revolver_shot_c.ogg`: keep (10.0/10)
 
+## `sounds/guns/rocket_reload.ogg`: keep (10.0/10)
+
+## `sounds/guns/rocket_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/rocket_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/rocket_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/sawedoff_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/sawedoff_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/sawedoff_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/silencedm4_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/silencedm4_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/sonicshotgun_shot_a.ogg`: keep (10.0/10)
+
+## `sounds/guns/sonicshotgun_shot_b.ogg`: keep (10.0/10)
+
+## `sounds/guns/sonicshotgun_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/teslagun_reload.ogg`: keep (10.0/10)
+
+## `sounds/guns/teslagun_shot_b.ogg`: keep (10.0/10)
+
 ## `sounds/guns/teslagun_shot_c.ogg`: keep (10.0/10)
+
+## `sounds/guns/teslagun_shot_d.ogg`: keep (10.0/10)
 
 ## `sounds/guns/thompson_shot_b.ogg`: keep (10.0/10)
 
@@ -370,7 +690,21 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 
 ## `sounds/items/antigrav_start_a.ogg`: keep (10.0/10)
 
+## `sounds/items/antigrav_start_b.ogg`: keep (10.0/10)
+
+## `sounds/items/glider_loop_stereo.ogg`: keep (10.0/10)
+
+## `sounds/machines/ammopress_work1_a.ogg`: keep (10.0/10)
+
 ## `sounds/machines/ammopress_work1_b.ogg`: keep (10.0/10)
+
+## `sounds/machines/ammopress_work2_a.ogg`: keep (10.0/10)
+
+## `sounds/machines/ammopress_work2_b.ogg`: keep (10.0/10)
+
+## `sounds/machines/ammopress_work2_c.ogg`: keep (10.0/10)
+
+## `sounds/machines/rc_heatray_work.ogg`: keep (10.0/10)
 
 ## `sounds/npcs/alienbug_aggro_a.ogg`: keep (10.0/10)
 
@@ -384,9 +718,15 @@ Measured A/B checks per sound (no model listening). Verdict: keep when all pass,
 
 ## `sounds/npcs/alienbug_step_b.ogg`: keep (10.0/10)
 
+## `sounds/npcs/apache_die.ogg`: keep (10.0/10)
+
 ## `sounds/npcs/apache_hit_a.ogg`: keep (10.0/10)
 
+## `sounds/npcs/cyberdemon_aggro_c.ogg`: keep (10.0/10)
+
 ## `sounds/npcs/cyberdemon_death_b.ogg`: keep (10.0/10)
+
+## `sounds/npcs/cyberdemon_hurt_a.ogg`: keep (10.0/10)
 
 ## `sounds/npcs/cyberdemon_step_a.ogg`: keep (10.0/10)
 
