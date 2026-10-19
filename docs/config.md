@@ -109,6 +109,15 @@ All keys are synced. Used by the back devices of the armor module ([powered-flig
 | `flight.antiGravityCapacityEu` | int | `2000000` | 1000 to 1000000000 | yes | EU the Anti Gravity Device holds (IV electric item). |
 | `flight.antiGravityDriveEuPerTick` | int | `100` | 0 to 100000 | yes | EU per tick the device draws while it is flying; about 17 minutes of flight on a full charge. |
 
+## Energy (`energy`)
+
+Used by the energy guns ([energy-electric-items.md](gregguns-spec/02-guns/energy-electric-items.md), GGS-02-14). A gun's capacity is the GT battery of its tier, scaled, unless a per-gun line overrides it.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `energy.capacityScalePercent` | int | `100` | 1 to 10000 | yes | Scales every energy gun's default capacity, in percent. |
+| `energy.capacityOverrides` | string list | empty | n/a | no | Lines `gunId=eu` (for example `laser_rifle=8000000`) that set one gun's capacity and win over the scale. Bad lines are ignored. Set the same lines on server and clients so tooltips match. |
+
 ## Client (`client`)
 
 Display options for the local player only. Not synced.
