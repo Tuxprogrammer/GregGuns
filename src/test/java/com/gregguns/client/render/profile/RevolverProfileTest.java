@@ -8,9 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
@@ -47,28 +52,183 @@ class RevolverProfileTest {
     }
 
     @Test
-    void boxesMatchTheLayoutSheetExactly() {
-        // tools/asset-gen/model_layouts.md, gun.revolver: name u v w h d
-        Object[][] layout = { { "frame", 0, 15, 13, 7, 4 }, { "barrel", 0, 26, 16, 3, 3 },
-            { "cylinder", 18, 0, 7, 7, 7 }, { "grip", 0, 0, 5, 11, 4 }, { "hammer", 38, 26, 3, 3, 2 },
-            { "sight", 48, 26, 2, 2, 2 } };
-        assertEquals(layout.length, RevolverProfile.BOXES.length);
-        for (Object[] row : layout) {
-            BoxSpec found = null;
-            for (BoxSpec b : RevolverProfile.BOXES) {
-                if (b.name()
-                    .equals(row[0])) {
-                    found = b;
-                }
-            }
-            assertNotNull(found, "missing box " + row[0]);
-            assertEquals(row[1], found.u(), row[0] + " u");
-            assertEquals(row[2], found.v(), row[0] + " v");
-            assertEquals(row[3], found.w(), row[0] + " w");
-            assertEquals(row[4], found.h(), row[0] + " h");
-            assertEquals(row[5], found.d(), row[0] + " d");
+    void boxesMatchTheCommittedLayoutFile() throws IOException {
+        // tools/asset-gen/gun-paint/revolver.layout.json is the design source; the BoxSpec rows are generated from
+        // it by gun_paint.py pack, so a hand edit of either side shows up here.
+        String json = new String(
+            Files.readAllBytes(Paths.get("tools/asset-gen/gun-paint/revolver.layout.json")),
+            StandardCharsets.UTF_8);
+        Pattern row = Pattern.compile(
+            "\"name\": \"(\\w+)\", \"size\": \\[(\\d+), (\\d+), (\\d+)\\], \"pos\": \\[([-\\d.]+), ([-\\d.]+), ([-\\d.]+)\\]"
+                + "(.*?)\"uv\": \\[(\\d+), (\\d+)\\]");
+        Matcher m = row.matcher(json);
+        int count = 0;
+        while (m.find()) {
+            BoxSpec found = box(m.group(1));
+            assertEquals(Integer.parseInt(m.group(2)), found.w(), m.group(1) + " w");
+            assertEquals(Integer.parseInt(m.group(3)), found.h(), m.group(1) + " h");
+            assertEquals(Integer.parseInt(m.group(4)), found.d(), m.group(1) + " d");
+            assertEquals(Float.parseFloat(m.group(5)), found.x(), 1e-6, m.group(1) + " x");
+            assertEquals(Float.parseFloat(m.group(6)), found.y(), 1e-6, m.group(1) + " y");
+            assertEquals(Float.parseFloat(m.group(7)), found.z(), 1e-6, m.group(1) + " z");
+            assertEquals(Integer.parseInt(m.group(9)), found.u(), m.group(1) + " u");
+            assertEquals(Integer.parseInt(m.group(10)), found.v(), m.group(1) + " v");
+            assertEquals(
+                m.group(8)
+                    .contains("\"tiltX\": 45") ? 45.0f : 0.0f,
+                found.tiltXDegrees(),
+                1e-6);
             assertEquals(0, found.part());
+            count++;
         }
+        assertEquals(RevolverProfile.BOXES.length, count, "every box is in the layout file");
+    }
+
+    private static BoxSpec box(String name) {
+        for (BoxSpec b : RevolverProfile.BOXES) {
+            if (b.name()
+                .equals(name)) {
+                return b;
+            }
+        }
+        throw new AssertionError("missing box " + name);
+    }
+
+    /** World-space bounding box {minX, minY, minZ, maxX, maxY, maxZ} of a box, with its X tilt applied. */
+    private static double[] extent(BoxSpec b) {
+        double[] r = { Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE,
+            -Double.MAX_VALUE };
+        double a = Math.toRadians(b.tiltXDegrees());
+        for (int i = 0; i < 8; i++) {
+            double x = b.x() + ((i & 1) == 0 ? 0 : b.w());
+            double y = b.y() + ((i & 2) == 0 ? 0 : b.h());
+            double z = b.z() + ((i & 4) == 0 ? 0 : b.d());
+            if (a != 0) {
+                double dy = y - b.pivotY();
+                double dz = z - b.pivotZ();
+                y = b.pivotY() + dy * Math.cos(a) - dz * Math.sin(a);
+                z = b.pivotZ() + dy * Math.sin(a) + dz * Math.cos(a);
+            }
+            double[] p = { x, y, z };
+            for (int k = 0; k < 3; k++) {
+                r[k] = Math.min(r[k], p[k]);
+                r[k + 3] = Math.max(r[k + 3], p[k]);
+            }
+        }
+        return r;
+    }
+
+    private static double[] overall() {
+        double[] all = { Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE,
+            -Double.MAX_VALUE };
+        for (BoxSpec b : RevolverProfile.BOXES) {
+            double[] e = extent(b);
+            for (int k = 0; k < 3; k++) {
+                all[k] = Math.min(all[k], e[k]);
+                all[k + 3] = Math.max(all[k + 3], e[k + 3]);
+            }
+        }
+        return all;
+    }
+
+    @Test
+    void proportionsFollowTheDesignNotes() {
+        double[] o = overall();
+        double length = o[3] - o[0];
+        double height = o[4] - o[1];
+        double thickness = o[5] - o[2];
+        // Notes section 2: length : height : thickness is about 5.6 : 2.9 : 1, within 10 per cent.
+        assertEquals(5.6, length / thickness, 0.56);
+        assertEquals(2.9, height / thickness, 0.29);
+        // The barrel is about half the total length and about 1.5 times the 9-long frame.
+        BoxSpec barrel = box("barrel");
+        assertEquals(14, barrel.w());
+        assertEquals(0.5, barrel.w() / length, 0.03);
+        assertEquals(1.5, barrel.w() / (double) box("frame_upper").w(), 0.1);
+        // The drum is the widest part, about 5 across, and sticks out about a unit past the frame.
+        double drumWidth = extent(box("drum_mid"))[5] - extent(box("drum_mid"))[2];
+        assertEquals(5.0, drumWidth, 1e-6);
+        assertEquals(drumWidth, thickness, 1e-6, "nothing is wider than the drum");
+        assertEquals(1.0, (drumWidth - box("frame_upper").d()) / 2.0, 1e-6);
+    }
+
+    @Test
+    void barrelAndRodAreDiamondBarsWithAHairlineBetweenThem() {
+        BoxSpec barrel = box("barrel");
+        BoxSpec rod = box("rod");
+        assertEquals(45.0f, barrel.tiltXDegrees(), 1e-6);
+        assertEquals(45.0f, rod.tiltXDegrees(), 1e-6);
+        assertEquals(8, rod.w());
+        double[] be = extent(barrel);
+        double[] re = extent(rod);
+        // The barrel's diamond is about 2.8 tall; its top corner is flush with the top strap (y = 0).
+        assertEquals(2.83, be[4] - be[1], 0.02);
+        assertEquals(box("strap").y(), be[1], 0.1);
+        // The rod's top corner and the barrel's bottom corner touch or overlap by at most 0.3.
+        double overlap = be[4] - re[1];
+        assertTrue(overlap > -0.3 && overlap < 0.3, "barrel/rod seam " + overlap);
+        // The rod ends 6 short of the muzzle.
+        assertEquals(6.0, (barrel.x() + barrel.w()) - (rod.x() + rod.w()), 1e-6);
+        // The front sight rises under half a unit above the top line.
+        double rise = be[1] - box("sight").y();
+        assertTrue(rise > 0.2 && rise < 0.5, "sight rise " + rise);
+    }
+
+    @Test
+    void noPartFloats() {
+        for (BoxSpec b : RevolverProfile.BOXES) {
+            double[] e = extent(b);
+            boolean attached = false;
+            for (BoxSpec other : RevolverProfile.BOXES) {
+                if (other == b) {
+                    continue;
+                }
+                double[] f = extent(other);
+                boolean touches = true;
+                for (int k = 0; k < 3; k++) {
+                    touches &= e[k] <= f[k + 3] + 1e-6 && f[k] <= e[k + 3] + 1e-6;
+                }
+                attached |= touches;
+            }
+            assertTrue(attached, b.name() + " touches no other box");
+        }
+        // The hammer overlaps both the shield and the grip crown by at least half a unit.
+        assertTrue(overlapX(box("hammer"), box("shield")) >= 0.5);
+        assertTrue(overlapY(box("hammer"), box("grip_crown")) >= 0.5);
+        assertTrue(box("hammer").y() > box("strap").y() + 1, "the hammer sits below the top strap");
+    }
+
+    private static double overlapX(BoxSpec a, BoxSpec b) {
+        return Math.min(a.x() + a.w(), b.x() + b.w()) - Math.max(a.x(), b.x());
+    }
+
+    private static double overlapY(BoxSpec a, BoxSpec b) {
+        return Math.min(a.y() + a.h(), b.y() + b.h()) - Math.max(a.y(), b.y());
+    }
+
+    @Test
+    void theGripIsFourSteppedSlabsThatLeanBack() {
+        BoxSpec[] slabs = { box("grip_crown"), box("grip_web"), box("grip_neck"), box("grip_butt") };
+        for (BoxSpec g : slabs) {
+            assertEquals(2, g.d(), g.name() + " is 2 wide");
+        }
+        // The butt's back face is a full unit behind the neck's.
+        assertTrue(box("grip_neck").x() - box("grip_butt").x() >= 1.0);
+        // It reaches well below the frame: more than the frame's own height.
+        double gripBottom = box("grip_butt").y() + box("grip_butt").h();
+        double frameBottom = box("belly").y() + box("belly").h();
+        double frameHeight = frameBottom - box("strap").y();
+        assertTrue(gripBottom - frameBottom > frameHeight, "grip taller than the frame");
+    }
+
+    @Test
+    void theTriggerGuardIsTwoPostsAndAFlatFloor() {
+        assertEquals(0, box("guard_floor").h(), "the floor has no thickness, so it is invisible from the side");
+        BoxSpec rear = box("guard_rear");
+        BoxSpec front = box("guard_front");
+        // A 3-long opening between the posts, which the floor spans.
+        assertEquals(3.0, front.x() - (rear.x() + rear.w()), 1e-6);
+        assertEquals(3, box("guard_floor").w());
     }
 
     @Test
@@ -100,6 +260,9 @@ class RevolverProfileTest {
         assertEquals(RevolverProfile.TEXTURE_HEIGHT, img.getHeight());
         for (BoxSpec b : RevolverProfile.BOXES) {
             for (int[] f : b.faces()) {
+                if (f[2] * f[3] == 0) {
+                    continue; // a zero-thickness plane has no side faces
+                }
                 int opaque = 0;
                 for (int y = f[1]; y < f[1] + f[3]; y++) {
                     for (int x = f[0]; x < f[0] + f[2]; x++) {
@@ -115,18 +278,14 @@ class RevolverProfileTest {
     }
 
     @Test
-    void theBarrelPointsAlongPlusXAndTheMuzzleIsAtItsFront() {
-        float barrelFront = 0;
-        float maxX = -Float.MAX_VALUE;
-        for (BoxSpec b : RevolverProfile.BOXES) {
-            maxX = Math.max(maxX, b.x() + b.w());
-            if (b.name()
-                .equals("barrel")) {
-                barrelFront = b.x() + b.w();
-            }
-        }
-        assertEquals(maxX, barrelFront, "the barrel is the frontmost box");
-        assertEquals(barrelFront / 16.0f, RevolverProfile.MUZZLE[0], 1e-6);
+    void theBarrelPointsAlongPlusXAndTheMuzzleIsAtItsTipOnItsAxis() {
+        BoxSpec barrel = box("barrel");
+        double barrelFront = barrel.x() + barrel.w();
+        assertEquals(overall()[3], barrelFront, 1e-6, "the barrel is the frontmost box");
+        assertEquals(barrelFront / 16.0, RevolverProfile.MUZZLE[0], 1e-6);
+        // The muzzle is on the barrel's axis: the pivot of its diamond turn.
+        assertEquals(barrel.pivotY() / 16.0, RevolverProfile.MUZZLE[1], 1e-6);
+        assertEquals(barrel.pivotZ() / 16.0, RevolverProfile.MUZZLE[2], 1e-6);
     }
 
     @Test
@@ -158,15 +317,12 @@ class RevolverProfileTest {
         assertEquals(
             Arrays.asList("R(180.0000;1,0,0)", "R(-45.0000;0,1,0)", String.format("S(%.4f,%.4f,%.4f)", s, s, s)),
             run(t.fpBase(), 0, 0));
-        // The idle offset puts the box centre on the family anchor (FirstPersonFit); for the revolver that is the
-        // sheet's offset times k, which is where the anchor was measured.
+        // The idle offset puts the box centre on the revolver's nudged anchor (FirstPersonFit).
         double[] idle = FirstPersonFit.idleOffset(
-            FirstPersonFit.ANCHOR_X_FAMILY,
+            new double[] { FirstPersonFit.ANCHOR_X_FAMILY[0] + 0.7, FirstPersonFit.ANCHOR_X_FAMILY[1],
+                FirstPersonFit.ANCHOR_X_FAMILY[2] - 0.4 },
             s,
             FirstPersonFit.centerBlocks(RevolverProfile.BOXES, RevolverProfile.MODEL_SCALE));
-        assertEquals(k * 0.2, idle[0], 0.01);
-        assertEquals(k * -0.5, idle[1], 0.01);
-        assertEquals(k * -0.45, idle[2], 0.01);
         assertEquals(
             Arrays.asList(String.format("T(%.4f,%.4f,%.4f)", idle[0], idle[1], idle[2])),
             run(t.fpIdle(), 0, 0));
