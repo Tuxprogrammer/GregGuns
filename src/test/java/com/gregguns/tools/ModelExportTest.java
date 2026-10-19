@@ -20,6 +20,7 @@ import com.gregguns.client.render.profile.ClientGunDefinitions;
 import com.gregguns.client.render.profile.DeatomizerPistolProfile;
 import com.gregguns.client.render.profile.LaserRifleProfile;
 import com.gregguns.client.render.profile.MinigunProfile;
+import com.gregguns.client.render.profile.NukeLauncherProfile;
 import com.gregguns.client.render.profile.PdwProfile;
 import com.gregguns.client.render.profile.ScatterLaserRifleProfile;
 import com.gregguns.client.render.profile.SonicRifleProfile;
@@ -133,12 +134,20 @@ class ModelExportTest {
         Assumptions.assumeTrue(dir != null, "set -Dgregguns.exportModels=<dir> or GREGGUNS_EXPORT_MODELS");
         ModelExporter.exportProfile(dir, PdwProfile.DEFINITION);
         ModelExporter.exportProfile(dir, LaserRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, NukeLauncherProfile.DEFINITION);
         ModelExporter.exportProfile(dir, TeslaRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, SonicRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, BlasterRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.BioGunProfile.DEFINITION);
         ModelExporter.exportProfile(dir, DeatomizerPistolProfile.DEFINITION);
         ModelExporter.exportProfile(dir, ScatterLaserRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, MinigunProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.NetherBlasterProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.GrimReaperProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.AlienBlasterProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.NuclearDeathRayProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.ChainsawProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.PowerHammerProfile.DEFINITION);
     }
 
     /** Every accessory model is exported with one JSON box per model box. */

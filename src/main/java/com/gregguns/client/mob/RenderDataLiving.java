@@ -27,6 +27,7 @@ public final class RenderDataLiving extends RenderLiving {
     private final DataMobModel model;
     private final ResourceLocation texture;
     private final float scale;
+    private final float yOffset;
 
     /**
      * @param model   the model
@@ -35,7 +36,19 @@ public final class RenderDataLiving extends RenderLiving {
      * @param shadow  shadow radius in blocks
      */
     public RenderDataLiving(DataMobModel model, ResourceLocation texture, float scale, float shadow) {
+        this(model, texture, scale, shadow, 0.0F);
+    }
+
+    /**
+     * @param model   the model
+     * @param texture the sheet
+     * @param scale   uniform scale about the feet, 1.0 for normal size
+     * @param shadow  shadow radius in blocks
+     * @param yOffset lift applied after scaling, in blocks: positive moves the model up, negative down; 0 for none
+     */
+    public RenderDataLiving(DataMobModel model, ResourceLocation texture, float scale, float shadow, float yOffset) {
         super(model, shadow);
+        this.yOffset = yOffset;
         this.model = model;
         this.texture = texture;
         this.scale = scale;
@@ -50,6 +63,9 @@ public final class RenderDataLiving extends RenderLiving {
     protected void preRenderCallback(EntityLivingBase living, float partial) {
         if (scale != 1.0F) {
             GL11.glScalef(scale, scale, scale);
+        }
+        if (yOffset != 0.0F) {
+            GL11.glTranslatef(0.0F, MobYOffset.scaledTranslation(yOffset, scale), 0.0F);
         }
         model.aiming = living instanceof MobAnimSource && ((MobAnimSource) living).isAiming();
         model.holding = living.getHeldItem() != null;

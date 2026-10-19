@@ -21,7 +21,7 @@ public final class MobAnimDef {
         IDLE("idle"),
         /** A constant rate about an axis. */
         SPIN("spin"),
-        /** Angles that apply while aiming, attacking or holding an item. */
+        /** Angles that apply while aiming, attacking, holding an item or dying. */
         POSE("pose");
 
         private final String json;
@@ -59,7 +59,9 @@ public final class MobAnimDef {
         /** The mob is in an attack; the weight follows the attack progress and the blend. */
         ATTACKING("attacking"),
         /** The mob holds an item in its right hand. */
-        HOLDING("holding");
+        HOLDING("holding"),
+        /** The mob is dying; the weight is the death progress. */
+        DYING("dying");
 
         private final String json;
 
@@ -84,7 +86,7 @@ public final class MobAnimDef {
                 }
             }
             throw new IllegalArgumentException(
-                "unknown pose condition '" + json + "' (expected aiming, attacking or holding)");
+                "unknown pose condition '" + json + "' (expected aiming, attacking, holding or dying)");
         }
     }
 
@@ -135,6 +137,7 @@ public final class MobAnimDef {
     private final float phase;
     private final float offset;
     private final float rate;
+    private final float deathScale;
     private final float yawFactor;
     private final float pitchFactor;
     private final float maxYaw;
@@ -157,6 +160,7 @@ public final class MobAnimDef {
         this.phase = b.phase;
         this.offset = b.offset;
         this.rate = b.rate;
+        this.deathScale = b.deathScale;
         this.yawFactor = b.yawFactor;
         this.pitchFactor = b.pitchFactor;
         this.maxYaw = b.maxYaw;
@@ -209,6 +213,11 @@ public final class MobAnimDef {
     /** @return spin: degrees per tick */
     public float rate() {
         return rate;
+    }
+
+    /** @return spin: the factor on the rate while the mob is dying (1 = unchanged) */
+    public float deathScale() {
+        return deathScale;
     }
 
     /** @return look: how much of the head yaw is applied (1 = all) */
@@ -282,6 +291,7 @@ public final class MobAnimDef {
         private float phase;
         private float offset;
         private float rate;
+        private float deathScale = 1.0F;
         private float yawFactor = 1.0F;
         private float pitchFactor = 1.0F;
         private float maxYaw = 360.0F;
@@ -360,6 +370,15 @@ public final class MobAnimDef {
          */
         public Builder rate(float v) {
             this.rate = v;
+            return this;
+        }
+
+        /**
+         * @param v factor on the spin rate while dying
+         * @return this
+         */
+        public Builder deathScale(float v) {
+            this.deathScale = v;
             return this;
         }
 

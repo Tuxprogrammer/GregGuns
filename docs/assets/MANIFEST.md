@@ -382,11 +382,6 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `model.entity.bandit` | `textures/entity/bandit.png` | 64x64 | Bandit: dark skin, black dreadlocks, light-gray vest. Keep the Techguns UV layout and size. | #5B514B | `textures/entity/bandit.png` | P3 |
 | `model.entity.dictator` | `textures/entity/dictator.png` | 64x64 | Dictator Dave: bandit base with sunglasses and mustache-beard. Keep the Techguns UV layout and size. | #594F49 | `textures/entity/dictator.png` | P3 |
 | `model.entity.cyberdemon` | `textures/entity/cyberdemon.png` | 128x128 | Cyberdemon: red muscle, gray cybernetic implants, orange cables. Keep the Techguns UV layout and size. | #38120D | `textures/entity/cyberdemon.png` | P3 |
-| `model.entity.supermutant_1` | `textures/entity/supermutant_1.png` | 128x128 | Super Mutant Basic: mustard-yellow mottled skin, bare. Keep the Techguns UV layout and size. | #987A22 | `textures/entity/supermutant_texture_1.png` | P3 |
-| `model.entity.supermutant_2` | `textures/entity/supermutant_2.png` | 128x128 | Super Mutant Heavy: as basic plus leather harness and riveted chest plates. Keep the Techguns UV layout and size. | #907525 | `textures/entity/supermutant_texture_2.png` | P3 |
-| `model.entity.supermutant_3` | `textures/entity/supermutant_3.png` | 128x128 | Super Mutant Elite: as heavy plus steel helmet and pauldrons. Keep the Techguns UV layout and size. | #877130 | `textures/entity/supermutant_texture_3.png` | P3 |
-| `model.entity.alienbug` | `textures/entity/alienbug.png` | 64x64 | Alien Bug: chitinous brown-tan insectoid. Keep the Techguns UV layout and size. | #AF8A56 | `textures/entity/alienbug.png` | P3 |
-| `model.entity.apache` | `textures/entity/apache.png` | 256x256 | Attack Helicopter (OBJ UV atlas): dark olive-gray military helicopter atlas. Keep the Techguns UV layout and size. | #3A402A | `textures/entity/apache.png` | P3 |
 | `model.entity.gore` | `textures/entity/gore.png` | 128x128 | generic gibs: flayed dark-red flesh in biped layout. Keep the Techguns UV layout and size. | #761E18 | `textures/entity/gore.png` | P3 |
 | `model.entity.bullet` | `textures/entity/bullet.png` | 32x32 | Projectile texture, generic bullet tracer sprite (brass capsule, orange twin). | #B45A0A | `textures/entity/bullet.png` | P1 |
 | `model.entity.handgun_bullet` | `textures/entity/handgun_bullet.png` | 16x16 | Projectile texture, Hand Cannon stone ball. | #CDCDCD | `textures/entity/handgunBullet.png` | P2 |
@@ -394,7 +389,6 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `model.entity.laser_beam` | `textures/entity/laser_beam.png` | 32x32 | Projectile texture, red laser bolt gradient, white-hot center. | #C00000 #E06000 | `textures/entity/Laser.png` | P3 |
 | `model.entity.blue_beam` | `textures/entity/blue_beam.png` | 32x32 | Projectile texture, blue energy bolt gradient, white-hot center. | #004080 #2060C0 | `textures/entity/BlueBeam.png` | P3 |
 | `model.entity.bioblob` | `textures/entity/bioblob.png` | 64x64 | Projectile texture, glossy lime-green Bio Gun glob. | #408000 #A0E0A0 | `textures/entity/bioblob.png` | P3 |
-| `model.obj.apache` | `models/entity/apache.obj` | mesh | Attack Helicopter OBJ mesh (new topology to the Techguns UV atlas model.entity.apache). Not an image: modeled, not painted. | n/a | `models/entity/apache.obj` | P3 |
 | `model.obj.launcher_grenade` | `models/entity/launcher_grenade.obj` | mesh | 40 mm grenade projectile OBJ mesh, UV-mapped to the launchergrenade strip map. | n/a | `models/entity/launchergrenade.obj` | P2 |
 
 ### Machine, charge, chest and flag model sheets (16)

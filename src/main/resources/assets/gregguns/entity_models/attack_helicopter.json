@@ -1,0 +1,948 @@
+{
+ "name": "attack_helicopter",
+ "textureWidth": 512,
+ "textureHeight": 512,
+ "parts": [
+  {
+   "name": "airframe",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "cabin",
+     "uv": [
+      0,
+      140
+     ],
+     "offset": [
+      -12,
+      -20,
+      -32
+     ],
+     "size": [
+      24,
+      32,
+      88
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "cabin"
+    },
+    {
+     "name": "deck",
+     "uv": [
+      224,
+      172
+     ],
+     "offset": [
+      -12,
+      -24,
+      -32
+     ],
+     "size": [
+      24,
+      4,
+      60
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "cowling",
+     "uv": [
+      224,
+      236
+     ],
+     "offset": [
+      -8,
+      -28,
+      -32
+     ],
+     "size": [
+      16,
+      4,
+      60
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "sponson"
+    },
+    {
+     "name": "cowling_aft",
+     "uv": [
+      160,
+      358
+     ],
+     "offset": [
+      -8,
+      -26,
+      28
+     ],
+     "size": [
+      16,
+      6,
+      20
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "sponson"
+    },
+    {
+     "name": "sponson_r",
+     "uv": [
+      376,
+      236
+     ],
+     "offset": [
+      -24,
+      -24,
+      0
+     ],
+     "size": [
+      12,
+      12,
+      52
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "sponson"
+    },
+    {
+     "name": "sponson_l",
+     "uv": [
+      376,
+      236
+     ],
+     "offset": [
+      12,
+      -24,
+      0
+     ],
+     "size": [
+      12,
+      12,
+      52
+     ],
+     "inflate": 0,
+     "mirror": true,
+     "material": "sponson"
+    },
+    {
+     "name": "belly",
+     "uv": [
+      384,
+      348
+     ],
+     "offset": [
+      -8,
+      12,
+      8
+     ],
+     "size": [
+      16,
+      4,
+      36
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "tub",
+     "uv": [
+      304,
+      96
+     ],
+     "offset": [
+      -16,
+      4,
+      -64
+     ],
+     "size": [
+      32,
+      12,
+      64
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "tub_aft",
+     "uv": [
+      452,
+      411
+     ],
+     "offset": [
+      -12,
+      4,
+      0
+     ],
+     "size": [
+      24,
+      12,
+      4
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "tub_fore",
+     "uv": [
+      0,
+      414
+     ],
+     "offset": [
+      -12,
+      4,
+      -68
+     ],
+     "size": [
+      24,
+      12,
+      4
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "sill",
+     "uv": [
+      248,
+      300
+     ],
+     "offset": [
+      -12,
+      -4,
+      -72
+     ],
+     "size": [
+      24,
+      8,
+      40
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "nose0",
+     "uv": [
+      444,
+      172
+     ],
+     "offset": [
+      -11,
+      -7,
+      -80
+     ],
+     "size": [
+      22,
+      22,
+      8
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "nose1",
+     "uv": [
+      0,
+      366
+     ],
+     "offset": [
+      -9,
+      -5,
+      -88
+     ],
+     "size": [
+      18,
+      18,
+      8
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "nose2",
+     "uv": [
+      472,
+      300
+     ],
+     "offset": [
+      -6,
+      -2,
+      -96
+     ],
+     "size": [
+      12,
+      12,
+      8
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "nose3",
+     "uv": [
+      472,
+      320
+     ],
+     "offset": [
+      -4,
+      0,
+      -104
+     ],
+     "size": [
+      8,
+      8,
+      8
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "canopy_rear",
+     "uv": [
+      124,
+      260
+     ],
+     "offset": [
+      -10,
+      -22,
+      -52
+     ],
+     "size": [
+      20,
+      18,
+      20
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "glass"
+    },
+    {
+     "name": "canopy_s0",
+     "uv": [
+      284,
+      390
+     ],
+     "offset": [
+      -10,
+      -21,
+      -56
+     ],
+     "size": [
+      20,
+      17,
+      4
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "glass"
+    },
+    {
+     "name": "canopy_s1",
+     "uv": [
+      332,
+      390
+     ],
+     "offset": [
+      -10,
+      -18,
+      -60
+     ],
+     "size": [
+      20,
+      14,
+      4
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "glass"
+    },
+    {
+     "name": "canopy_s2",
+     "uv": [
+      0,
+      392
+     ],
+     "offset": [
+      -10,
+      -15,
+      -64
+     ],
+     "size": [
+      20,
+      11,
+      4
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "glass"
+    },
+    {
+     "name": "canopy_s3",
+     "uv": [
+      56,
+      414
+     ],
+     "offset": [
+      -10,
+      -12,
+      -68
+     ],
+     "size": [
+      20,
+      8,
+      4
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "glass"
+    },
+    {
+     "name": "canopy_s4",
+     "uv": [
+      104,
+      414
+     ],
+     "offset": [
+      -10,
+      -9,
+      -72
+     ],
+     "size": [
+      20,
+      5,
+      4
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "glass"
+    },
+    {
+     "name": "transition",
+     "uv": [
+      376,
+      300
+     ],
+     "offset": [
+      -12,
+      -16,
+      56
+     ],
+     "size": [
+      24,
+      24,
+      24
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "boom_fore",
+     "uv": [
+      0,
+      260
+     ],
+     "offset": [
+      -8,
+      -12,
+      80
+     ],
+     "size": [
+      16,
+      16,
+      46
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "boom_aft",
+     "uv": [
+      124,
+      300
+     ],
+     "offset": [
+      -8,
+      -12,
+      126
+     ],
+     "size": [
+      16,
+      12,
+      46
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "spine",
+     "uv": [
+      304,
+      0
+     ],
+     "offset": [
+      -4,
+      -16,
+      80
+     ],
+     "size": [
+      8,
+      4,
+      92
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "spine"
+    },
+    {
+     "name": "spine_fore",
+     "uv": [
+      224,
+      140
+     ],
+     "offset": [
+      -4,
+      -20,
+      56
+     ],
+     "size": [
+      8,
+      4,
+      28
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "spine"
+    },
+    {
+     "name": "fin_foot",
+     "uv": [
+      88,
+      358
+     ],
+     "offset": [
+      -4,
+      -18,
+      144
+     ],
+     "size": [
+      8,
+      2,
+      28
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "tailplane",
+     "uv": [
+      284,
+      412
+     ],
+     "offset": [
+      -36,
+      -8,
+      164
+     ],
+     "size": [
+      72,
+      4,
+      12
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "wing",
+     "uv": [
+      52,
+      390
+     ],
+     "offset": [
+      -48,
+      -4,
+      -8
+     ],
+     "size": [
+      96,
+      4,
+      20
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "pylon_r",
+     "uv": [
+      88,
+      322
+     ],
+     "offset": [
+      -32,
+      0,
+      -4
+     ],
+     "size": [
+      4,
+      4,
+      12
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hull"
+    },
+    {
+     "name": "pylon_l",
+     "uv": [
+      88,
+      322
+     ],
+     "offset": [
+      28,
+      0,
+      -4
+     ],
+     "size": [
+      4,
+      4,
+      12
+     ],
+     "inflate": 0,
+     "mirror": true,
+     "material": "hull"
+    },
+    {
+     "name": "pod_r",
+     "uv": [
+      0,
+      322
+     ],
+     "offset": [
+      -36,
+      4,
+      -16
+     ],
+     "size": [
+      12,
+      12,
+      32
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "pod"
+    },
+    {
+     "name": "pod_l",
+     "uv": [
+      0,
+      322
+     ],
+     "offset": [
+      24,
+      4,
+      -16
+     ],
+     "size": [
+      12,
+      12,
+      32
+     ],
+     "inflate": 0,
+     "mirror": true,
+     "material": "pod"
+    }
+   ]
+  },
+  {
+   "name": "fin",
+   "parent": "airframe",
+   "pivot": [
+    0,
+    -16,
+    158
+   ],
+   "rotate": [
+    -28.8,
+    0,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "fin",
+     "uv": [
+      392,
+      172
+     ],
+     "offset": [
+      -2,
+      -40,
+      -11
+     ],
+     "size": [
+      4,
+      40,
+      22
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "fin"
+    }
+   ]
+  },
+  {
+   "name": "rotor",
+   "pivot": [
+    0,
+    -40,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "mast",
+     "uv": [
+      432,
+      388
+     ],
+     "offset": [
+      -5.5,
+      0,
+      -5.5
+     ],
+     "size": [
+      11,
+      12,
+      11
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "mast"
+    },
+    {
+     "name": "hub",
+     "uv": [
+      248,
+      348
+     ],
+     "offset": [
+      -17,
+      -8,
+      -17
+     ],
+     "size": [
+      34,
+      8,
+      34
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "hub"
+    },
+    {
+     "name": "blade_fore",
+     "uv": [
+      0,
+      0
+     ],
+     "offset": [
+      -6,
+      0,
+      -148
+     ],
+     "size": [
+      12,
+      0,
+      140
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "blade"
+    },
+    {
+     "name": "blade_aft",
+     "uv": [
+      0,
+      0
+     ],
+     "offset": [
+      -6,
+      0,
+      8
+     ],
+     "size": [
+      12,
+      0,
+      140
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "blade"
+    }
+   ]
+  },
+  {
+   "name": "rotor_side",
+   "parent": "rotor",
+   "pivot": [
+    0,
+    0,
+    0
+   ],
+   "rotate": [
+    0,
+    90,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "blade_left",
+     "uv": [
+      0,
+      0
+     ],
+     "offset": [
+      -6,
+      0,
+      -148
+     ],
+     "size": [
+      12,
+      0,
+      140
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "blade"
+    },
+    {
+     "name": "blade_right",
+     "uv": [
+      0,
+      0
+     ],
+     "offset": [
+      -6,
+      0,
+      8
+     ],
+     "size": [
+      12,
+      0,
+      140
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "blade"
+    }
+   ]
+  },
+  {
+   "name": "chin_gun",
+   "pivot": [
+    0,
+    28,
+    -64
+   ],
+   "rotate": [
+    25,
+    0,
+    0
+   ],
+   "boxes": [
+    {
+     "name": "mount",
+     "uv": [
+      384,
+      388
+     ],
+     "offset": [
+      -4,
+      -12,
+      -8
+     ],
+     "size": [
+      8,
+      8,
+      16
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "gun"
+    },
+    {
+     "name": "barrel",
+     "uv": [
+      444,
+      202
+     ],
+     "offset": [
+      -3,
+      -11,
+      -32
+     ],
+     "size": [
+      6,
+      6,
+      24
+     ],
+     "inflate": 0,
+     "mirror": false,
+     "material": "gun"
+    }
+   ]
+  }
+ ],
+ "animations": [
+  {
+   "type": "spin",
+   "part": "rotor",
+   "axis": "y",
+   "rate": -24,
+   "deathScale": 0.5
+  },
+  {
+   "type": "look",
+   "part": "chin_gun",
+   "pitch": 0,
+   "maxYaw": 30
+  },
+  {
+   "type": "pose",
+   "part": "chin_gun",
+   "when": "dying",
+   "mode": "set",
+   "angles": {
+    "x": 0
+   }
+  }
+ ]
+}

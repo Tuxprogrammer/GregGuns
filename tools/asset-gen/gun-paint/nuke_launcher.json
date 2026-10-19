@@ -1,0 +1,325 @@
+{
+ "gun": "nuke_launcher",
+ "textures": [
+  {
+   "file": "nuke_launcher.png"
+  }
+ ],
+ "roles": {
+  "tube": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.07,
+   "bevel": [
+    1.1,
+    0.62
+   ],
+   "base": "#675C33",
+   "drift": 0.05
+  },
+  "cap": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.06,
+   "bevel": [
+    1.15,
+    0.85
+   ],
+   "base": "#12100D",
+   "drift": 0.03
+  },
+  "ring": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.06,
+   "bevel": [
+    1.15,
+    0.85
+   ],
+   "base": "#12100D",
+   "drift": 0.03
+  },
+  "collar": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.06,
+   "bevel": [
+    1.15,
+    0.85
+   ],
+   "base": "#1D1712",
+   "drift": 0.03
+  },
+  "plate": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.06,
+   "bevel": [
+    1.15,
+    0.85
+   ],
+   "base": "#1D1712",
+   "drift": 0.03
+  },
+  "grip": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.06,
+   "bevel": [
+    1.15,
+    0.85
+   ],
+   "base": "#261D16",
+   "drift": 0.03
+  },
+  "small": {
+   "material": "steel",
+   "scratches": false,
+   "noise": 0.06,
+   "bevel": [
+    1.15,
+    0.85
+   ],
+   "base": "#1D1712",
+   "drift": 0.03
+  },
+  "red": {
+   "material": "flat",
+   "base": "#FB3A0D",
+   "bevel": [
+    1.1,
+    0.8
+   ]
+  },
+  "white": {
+   "material": "flat",
+   "base": "#FFF600",
+   "bevel": [
+    1.03,
+    0.91
+   ]
+  }
+ },
+ "boxes": {
+  "tube_core": {
+   "role": "tube",
+   "painters": [
+    {
+     "type": "diag",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "colors": [
+      "#675C33",
+      "#504539"
+     ],
+     "width": 5,
+     "dir": 1,
+     "phase": 0
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "y": -1,
+     "h": 1,
+     "color": "#1A140E",
+     "alpha": 0.85
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.1
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "bottom"
+     ],
+     "f": 0.6
+    }
+   ]
+  },
+  "tube_vert": {
+   "role": "tube",
+   "painters": [
+    {
+     "type": "diag",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "colors": [
+      "#675C33",
+      "#504539"
+     ],
+     "width": 5,
+     "dir": 1,
+     "phase": 2
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.2
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "bottom"
+     ],
+     "f": 0.7
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "y": -1,
+     "h": 1,
+     "color": "#1A140E",
+     "alpha": 0.85
+    }
+   ]
+  },
+  "tube_wide": {
+   "role": "tube",
+   "painters": [
+    {
+     "type": "diag",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "colors": [
+      "#675C33",
+      "#504539"
+     ],
+     "width": 5,
+     "dir": -1,
+     "phase": 0
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "y": -1,
+     "h": 1,
+     "color": "#1A140E",
+     "alpha": 0.85
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "f": 1.0
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "f": 0.9
+    }
+   ]
+  },
+  "cap_core": {
+   "role": "cap"
+  },
+  "cap_top": {
+   "role": "cap"
+  },
+  "cap_bottom": {
+   "role": "cap"
+  },
+  "cap_left": {
+   "role": "cap"
+  },
+  "cap_right": {
+   "role": "cap"
+  },
+  "ring_core": {
+   "role": "ring"
+  },
+  "ring_top": {
+   "role": "ring"
+  },
+  "ring_bottom": {
+   "role": "ring"
+  },
+  "ring_left": {
+   "role": "ring"
+  },
+  "ring_right": {
+   "role": "ring"
+  },
+  "collar": {
+   "role": "collar"
+  },
+  "plate_left": {
+   "role": "plate"
+  },
+  "plate_right": {
+   "role": "plate"
+  },
+  "bridge": {
+   "role": "collar"
+  },
+  "sight_vane_left": {
+   "role": "small"
+  },
+  "sight_vane_right": {
+   "role": "small"
+  },
+  "sight_top": {
+   "role": "small"
+  },
+  "grip": {
+   "role": "grip"
+  },
+  "trigger": {
+   "role": "small"
+  },
+  "rocket_collar": {
+   "role": "red"
+  },
+  "rocket_step": {
+   "role": "white",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right",
+      "top",
+      "bottom"
+     ],
+     "y": 1,
+     "h": 1,
+     "color": "#585858"
+    }
+   ]
+  },
+  "rocket_nose": {
+   "role": "red"
+  }
+ }
+}
