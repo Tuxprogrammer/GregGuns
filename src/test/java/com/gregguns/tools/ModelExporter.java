@@ -310,7 +310,9 @@ public final class ModelExporter {
                 .append(num((float) Math.toRadians(r[1])))
                 .append(", ")
                 .append(num((float) Math.toRadians(r[2])))
-                .append("], \"mirror\": false}");
+                .append("], \"inflate\": ")
+                .append(num(b.inflate()))
+                .append(", \"mirror\": false}");
             first = false;
         }
         sb.append("\n  ]\n}\n");

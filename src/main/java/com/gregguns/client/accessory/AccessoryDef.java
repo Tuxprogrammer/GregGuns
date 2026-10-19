@@ -117,6 +117,7 @@ public final class AccessoryDef {
         private float[] corner;
         private float[] pivot;
         private float[] rot;
+        private float inflate;
         private int part;
 
         private Builder(String id, Mount mount, int textureWidth, int textureHeight, float scale) {
@@ -139,6 +140,7 @@ public final class AccessoryDef {
             this.corner = new float[] { x, y, z };
             this.pivot = null;
             this.rot = null;
+            this.inflate = 0.0f;
             this.part = 0;
             return this;
         }
@@ -150,6 +152,12 @@ public final class AccessoryDef {
 
         Builder rot(float rx, float ry, float rz) {
             this.rot = new float[] { rx, ry, rz };
+            return this;
+        }
+
+        /** Grows the box just added by {@code g} texels on every side; the unwrap keeps its size. */
+        Builder inflate(float g) {
+            this.inflate = g;
             return this;
         }
 
@@ -179,7 +187,8 @@ public final class AccessoryDef {
                         corner[1],
                         corner[2],
                         pivot,
-                        rot));
+                        rot,
+                        inflate));
                 name = null;
             }
         }

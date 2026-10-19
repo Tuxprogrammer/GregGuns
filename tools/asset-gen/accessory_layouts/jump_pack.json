@@ -7,14 +7,10 @@
   "textures": ["jump_pack"],
   "hinges": {},
   "boxes": [
-    {"name": "frame", "part": 0, "uv": [0, 0], "rotationPoint": [0.000000, 4.500000, 1.500000], "offset": [-1.500000, -2.500000, -1.500000], "size": [3, 5, 3], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "pod_left", "part": 0, "uv": [12, 0], "rotationPoint": [2.500000, 4.000000, 1.500000], "offset": [-1.000000, -3.000000, -1.000000], "size": [2, 6, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "pod_right", "part": 0, "uv": [20, 0], "rotationPoint": [-2.500000, 4.000000, 1.500000], "offset": [-1.000000, -3.000000, -1.000000], "size": [2, 6, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "cap_left", "part": 0, "uv": [52, 0], "rotationPoint": [2.500000, 0.500000, 1.500000], "offset": [-1.000000, -0.500000, -1.000000], "size": [2, 1, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "cap_right", "part": 0, "uv": [0, 8], "rotationPoint": [-2.500000, 0.500000, 1.500000], "offset": [-1.000000, -0.500000, -1.000000], "size": [2, 1, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "nozzle_left", "part": 0, "uv": [8, 8], "rotationPoint": [2.500000, 7.500000, 1.500000], "offset": [-1.000000, -0.500000, -1.000000], "size": [2, 1, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "nozzle_right", "part": 0, "uv": [16, 8], "rotationPoint": [-2.500000, 7.500000, 1.500000], "offset": [-1.000000, -0.500000, -1.000000], "size": [2, 1, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "fin_left", "part": 0, "uv": [28, 0], "rotationPoint": [6.000000, 4.500000, 1.500000], "offset": [-2.500000, -2.500000, -0.500000], "size": [5, 5, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "fin_right", "part": 0, "uv": [40, 0], "rotationPoint": [-6.000000, 4.500000, 1.500000], "offset": [-2.500000, -2.500000, -0.500000], "size": [5, 5, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false}
+    {"name": "spine", "part": 0, "uv": [24, 0], "rotationPoint": [0.000000, 4.500000, 2.000000], "offset": [-2.000000, -3.500000, -2.000000], "size": [4, 7, 4], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "cylinder_right", "part": 0, "uv": [0, 0], "rotationPoint": [-3.500000, 4.500000, 2.000000], "offset": [-1.500000, -4.500000, -1.500000], "size": [3, 9, 3], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "cylinder_left", "part": 0, "uv": [12, 0], "rotationPoint": [3.500000, 4.500000, 2.000000], "offset": [-1.500000, -4.500000, -1.500000], "size": [3, 9, 3], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "cap_right", "part": 0, "uv": [40, 0], "rotationPoint": [-3.500000, -1.000000, 2.000000], "offset": [-1.000000, -1.000000, -1.000000], "size": [2, 2, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "cap_left", "part": 0, "uv": [48, 0], "rotationPoint": [3.500000, -1.000000, 2.000000], "offset": [-1.000000, -1.000000, -1.000000], "size": [2, 2, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false}
   ]
 }

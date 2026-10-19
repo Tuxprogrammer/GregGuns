@@ -7,8 +7,9 @@
   "textures": ["gas_mask"],
   "hinges": {},
   "boxes": [
-    {"name": "shell", "part": 0, "uv": [0, 0], "rotationPoint": [0.000000, -4.000000, 0.000000], "offset": [-4.500000, -4.500000, -4.500000], "size": [9, 9, 9], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "mouthpiece", "part": 0, "uv": [50, 0], "rotationPoint": [0.000000, -1.500000, -5.000000], "offset": [-2.000000, -2.000000, -0.500000], "size": [4, 4, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "filter", "part": 0, "uv": [36, 0], "rotationPoint": [0.000000, -0.800000, -7.300000], "offset": [-2.000000, -2.000000, -1.500000], "size": [4, 4, 3], "rotate": [-0.436332, 0.000000, 0.000000], "mirror": false}
+    {"name": "hood", "part": 0, "uv": [0, 0], "rotationPoint": [0.000000, -4.000000, 0.000000], "offset": [-4.000000, -4.000000, -4.000000], "size": [8, 8, 8], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.060000, "mirror": false},
+    {"name": "mouth_plate", "part": 0, "uv": [32, 0], "rotationPoint": [0.000000, -1.500000, -4.500000], "offset": [-2.000000, -1.500000, -0.500000], "size": [4, 3, 1], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "canister", "part": 0, "uv": [42, 0], "rotationPoint": [0.000000, -1.300000, -6.100000], "offset": [-1.000000, -1.000000, -1.000000], "size": [2, 2, 2], "rotate": [0.407011, -0.076620, 0.729373], "inflate": 0.000000, "mirror": false},
+    {"name": "filter_plate", "part": 0, "uv": [50, 0], "rotationPoint": [0.000000, -1.000000, -7.000000], "offset": [-1.500000, -1.500000, -0.500000], "size": [3, 3, 1], "rotate": [0.331613, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false}
   ]
 }

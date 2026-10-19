@@ -162,4 +162,35 @@ class ArmorModelDefTest {
             }
         }
     }
+
+    /**
+     * The Exo Suit's vanilla-shaped layers carry a different inflation per slot (1.0 helmet, 0.75 chestplate and
+     * boots, 0.5 leggings) while its bolt-on plates stay un-inflated: the per-box inflate field expresses this.
+     */
+    @Test
+    void exoSuitInflationFollowsTheSlot() {
+        ArmorModelDef def = ArmorModels.get("t3_exo");
+        float[] expected = { 1.0F, 0.75F, 0.5F, 0.75F };
+        String[] vanilla = { "shell", "torso", "hips", "shank" };
+        ArmorBoxDef.Slot[] slots = { ArmorBoxDef.Slot.HELMET, ArmorBoxDef.Slot.CHESTPLATE, ArmorBoxDef.Slot.LEGGINGS,
+            ArmorBoxDef.Slot.BOOTS };
+        for (int i = 0; i < slots.length; i++) {
+            boolean found = false;
+            for (ArmorBoxDef b : def.boxesFor(slots[i])) {
+                if (b.name()
+                    .equals(vanilla[i])) {
+                    assertEquals(expected[i], b.inflate(), 0.0F, vanilla[i]);
+                    found = true;
+                }
+            }
+            assertTrue(found, "no " + vanilla[i] + " in " + slots[i]);
+        }
+        for (ArmorBoxDef b : def.boxes()) {
+            boolean layer = java.util.Arrays.asList("shell", "torso", "arm", "hips", "thigh", "shank")
+                .contains(b.name());
+            if (!layer) {
+                assertEquals(0.0F, b.inflate(), 0.0F, b.name() + " is a plate and stays un-inflated");
+            }
+        }
+    }
 }

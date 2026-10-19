@@ -27,6 +27,7 @@ public final class AccessoryBox {
     private final float z;
     private final float[] pivot;
     private final float[] rotationDegrees;
+    private final float inflate;
     private int u;
     private int v;
 
@@ -41,9 +42,11 @@ public final class AccessoryBox {
      * @param z        model-space corner
      * @param pivot    model-space turn pivot, or null for the box center
      * @param rotation Euler angles about X, Y, Z in degrees, or null for none
+     * @param inflate  texels the box grows on every side without changing its unwrap (vanilla's {@code addBox} scale),
+     *                 for a painted skin that must not fight the surface under it
      */
-    AccessoryBox(String name, int part, int w, int h, int d, float x, float y, float z, float[] pivot,
-        float[] rotation) {
+    AccessoryBox(String name, int part, int w, int h, int d, float x, float y, float z, float[] pivot, float[] rotation,
+        float inflate) {
         this.name = name;
         this.part = part;
         this.w = w;
@@ -54,6 +57,7 @@ public final class AccessoryBox {
         this.z = z;
         this.pivot = pivot != null ? pivot.clone() : new float[] { x + w / 2.0f, y + h / 2.0f, z + d / 2.0f };
         this.rotationDegrees = rotation != null ? rotation.clone() : new float[3];
+        this.inflate = inflate;
     }
 
     void place(int texU, int texV) {
@@ -109,6 +113,11 @@ public final class AccessoryBox {
     /** @return the Euler angles about X, Y, Z in degrees */
     public float[] rotationDegrees() {
         return rotationDegrees.clone();
+    }
+
+    /** @return texels the box grows on every side, 0 for none */
+    public float inflate() {
+        return inflate;
     }
 
     /** @return texture U of the unwrap origin */

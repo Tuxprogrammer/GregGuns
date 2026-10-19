@@ -6,6 +6,7 @@ import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
@@ -77,7 +78,9 @@ public final class AccessoryRenderEvents {
         Look head = AccessoryLooks.of(BaublesCompat.first(player, BaubleSlot.HEAD));
         if (head != null && head.def()
             .mount() == AccessoryDef.Mount.HEAD) {
-            drawHead(player, biped, head);
+            // The goggles show their lenses-down pose while the wearer has night vision and are flipped up otherwise.
+            AccessoryDef shown = AccessoryDefs.pose(head.def(), player.isPotionActive(Potion.nightVision));
+            drawHead(player, biped, shown == head.def() ? head : new Look(shown, head.texture()));
         }
     }
 

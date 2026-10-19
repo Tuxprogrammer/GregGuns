@@ -234,7 +234,7 @@ Evidence per box of [ROADMAP § M3](../../ROADMAP.md#m3--armor-and-equipment). T
 
 # M3 armor models: faithful worn shapes (ARM-DEV-24)
 
-> **Interim geometry.** The five box sets below were fitted by eye against Techguns renders, a method the owner retired. They will be replaced by clean-room builders working from `docs/techguns-spec/05-armor/model-notes/<set>.md` (two-agent process). Do not polish them.
+> The five sets and the eight accessories are now clean-room builds from `docs/techguns-spec/05-armor/model-notes/`.
 
 Branch `m3/armor-models`. Replaces the "no 3D models" decision for the five sets whose sheets never fit the vanilla biped: Exo Suit (3 colors), Power Armor (3), Steam Armor (4), Riot Coat (1) and Beret (3).
 

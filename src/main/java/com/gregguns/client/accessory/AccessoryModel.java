@@ -48,7 +48,14 @@ public final class AccessoryModel extends ModelBase {
             r.setTextureSize(textureWidth, textureHeight);
             float[] base = box.part() == 0 ? new float[3] : def.hinge(box.part());
             r.setRotationPoint(pivot[0] - base[0], pivot[1] - base[1], pivot[2] - base[2]);
-            r.addBox(box.x() - pivot[0], box.y() - pivot[1], box.z() - pivot[2], box.w(), box.h(), box.d());
+            r.addBox(
+                box.x() - pivot[0],
+                box.y() - pivot[1],
+                box.z() - pivot[2],
+                box.w(),
+                box.h(),
+                box.d(),
+                box.inflate());
             r.rotateAngleX = (float) Math.toRadians(rot[0]);
             r.rotateAngleY = (float) Math.toRadians(rot[1]);
             r.rotateAngleZ = (float) Math.toRadians(rot[2]);
@@ -79,14 +86,14 @@ public final class AccessoryModel extends ModelBase {
     }
 
     /**
-     * Folds the hinged parts: 0 is deployed (as authored), 1 is stowed (a half turn about the hinge, so the outer wings
-     * lie behind the inner ones).
+     * Stows or deploys the hinged parts. The glider's wings are flat and never turn; they pop in and out, so the folded
+     * pack alone remains when stowed.
      *
-     * @param fold 0 to 1
+     * @param fold 0 is deployed (as authored), 1 is stowed; the wings show while it is under one half
      */
     public void setFold(float fold) {
         for (int p = 1; p < hinges.length; p++) {
-            hinges[p].rotateAngleY = (p == 1 ? 1.0f : -1.0f) * fold * (float) Math.PI;
+            hinges[p].showModel = fold < 0.5f;
         }
     }
 

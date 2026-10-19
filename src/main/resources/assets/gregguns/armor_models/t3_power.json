@@ -4,44 +4,176 @@
  "textureHeight": 64,
  "boxes": [
   {
-   "name": "shell",
+   "name": "dome",
    "part": "head",
    "slot": "helmet",
    "material": "plate",
    "uv": [
-    70,
+    0,
     0
    ],
    "offset": [
-    -4.75,
-    -8.0,
+    -4.5,
+    -8.5,
     -4.5
    ],
    "size": [
     9,
-    7,
+    9,
     9
    ],
    "inflate": 0.0,
    "mirror": false
   },
   {
-   "name": "visor",
+   "name": "respirator",
    "part": "head",
    "slot": "helmet",
-   "material": "glass",
+   "material": "panel",
    "uv": [
-    90,
-    43
+    18,
+    36
    ],
    "offset": [
-    -4.0,
-    -5.0,
+    -2,
+    -3,
+    -6
+   ],
+   "size": [
+    4,
+    4,
+    3
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "collar_front_r",
+   "part": "head",
+   "slot": "helmet",
+   "material": "ring",
+   "uv": [
+    96,
+    36
+   ],
+   "offset": [
+    -5,
+    -2,
     -5.5
    ],
    "size": [
-    8,
+    3,
     2,
+    2
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "collar_front_l",
+   "part": "head",
+   "slot": "helmet",
+   "material": "ring",
+   "uv": [
+    96,
+    36
+   ],
+   "offset": [
+    2,
+    -2,
+    -5.5
+   ],
+   "size": [
+    3,
+    2,
+    2
+   ],
+   "inflate": 0.0,
+   "mirror": true
+  },
+  {
+   "name": "collar_side_r",
+   "part": "head",
+   "slot": "helmet",
+   "material": "ring",
+   "uv": [
+    32,
+    18
+   ],
+   "offset": [
+    -5,
+    -2,
+    -3.5
+   ],
+   "size": [
+    1,
+    2,
+    8
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "collar_side_l",
+   "part": "head",
+   "slot": "helmet",
+   "material": "ring",
+   "uv": [
+    32,
+    18
+   ],
+   "offset": [
+    4,
+    -2,
+    -3.5
+   ],
+   "size": [
+    1,
+    2,
+    8
+   ],
+   "inflate": 0.0,
+   "mirror": true
+  },
+  {
+   "name": "collar_back",
+   "part": "head",
+   "slot": "helmet",
+   "material": "ring",
+   "uv": [
+    0,
+    43
+   ],
+   "offset": [
+    -4.5,
+    -2,
+    4
+   ],
+   "size": [
+    9,
+    2,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "collar_bump",
+   "part": "head",
+   "slot": "helmet",
+   "material": "ring",
+   "uv": [
+    86,
+    36
+   ],
+   "offset": [
+    -2,
+    -2.5,
+    4.5
+   ],
+   "size": [
+    4,
+    3,
     1
    ],
    "inflate": 0.0,
@@ -51,86 +183,74 @@
    "name": "lamp",
    "part": "head",
    "slot": "helmet",
-   "material": "plate2",
+   "material": "mid",
    "uv": [
-    64,
-    43
+    42,
+    36
    ],
    "offset": [
-    -6.0,
-    -5.5,
-    -2.5
-   ],
-   "size": [
-    2,
-    2,
-    3
-   ],
-   "inflate": 0.0,
-   "mirror": false
-  },
-  {
-   "name": "ring",
-   "part": "head",
-   "slot": "helmet",
-   "material": "ring",
-   "uv": [
-    24,
-    18
-   ],
-   "offset": [
-    -5.5,
-    -1.5,
-    -5.0
-   ],
-   "size": [
-    11,
-    2,
-    10
-   ],
-   "inflate": 0.0,
-   "mirror": false
-  },
-  {
-   "name": "filter",
-   "part": "head",
-   "slot": "helmet",
-   "material": "dark",
-   "uv": [
-    52,
-    43
-   ],
-   "offset": [
-    -2.0,
     -1.0,
-    -6.0
+    -1,
+    -2
    ],
    "size": [
-    4,
-    3,
-    2
+    2,
+    2,
+    4
+   ],
+   "inflate": 0.0,
+   "mirror": false,
+   "pivot": [
+    -5.5,
+    -6,
+    -1
+   ],
+   "rotate": [
+    0,
+    0,
+    45
+   ]
+  },
+  {
+   "name": "stud",
+   "part": "head",
+   "slot": "helmet",
+   "material": "mid",
+   "uv": [
+    26,
+    43
+   ],
+   "offset": [
+    1,
+    -8,
+    -5
+   ],
+   "size": [
+    2,
+    2,
+    1
    ],
    "inflate": 0.0,
    "mirror": false
   },
   {
-   "name": "torso",
+   "name": "core",
    "part": "body",
    "slot": "chestplate",
    "material": "plate",
    "uv": [
-    0,
+    56,
     0
    ],
    "offset": [
     -4.5,
-    0,
-    -3
+    -0.5,
+    -2.5
    ],
    "size": [
     9,
     12,
-    6
+    5
    ],
    "inflate": 0.0,
    "mirror": false
@@ -141,265 +261,189 @@
    "slot": "chestplate",
    "material": "plate2",
    "uv": [
-    16,
-    43
+    60,
+    28
    ],
    "offset": [
     -4,
-    2.5,
-    -4
+    2,
+    -5
    ],
    "size": [
     8,
     5,
-    1
+    3
    ],
    "inflate": 0.0,
    "mirror": false
   },
   {
-   "name": "vent",
-   "part": "body",
-   "slot": "chestplate",
-   "material": "vent",
-   "uv": [
-    34,
-    43
-   ],
-   "offset": [
-    -4,
-    7.5,
-    -4
-   ],
-   "size": [
-    8,
-    4,
-    1
-   ],
-   "inflate": 0.0,
-   "mirror": false
-  },
-  {
-   "name": "pack",
+   "name": "abdomen",
    "part": "body",
    "slot": "chestplate",
    "material": "plate2",
    "uv": [
-    22,
-    34
+    0,
+    36
    ],
    "offset": [
-    -2.25,
-    3,
-    3
+    -3.5,
+    0,
+    -1.0
    ],
    "size": [
-    4,
-    6,
-    3
-   ],
-   "inflate": 0.0,
-   "mirror": false
-  },
-  {
-   "name": "pack_gauge",
-   "part": "body",
-   "slot": "chestplate",
-   "material": "gauge",
-   "uv": [
-    74,
-    43
-   ],
-   "offset": [
-    -1.5,
-    4,
-    6
-   ],
-   "size": [
-    3,
-    3,
-    1
-   ],
-   "inflate": 0.0,
-   "mirror": false
-  },
-  {
-   "name": "pauldron",
-   "part": "leftArm",
-   "slot": "chestplate",
-   "material": "plate",
-   "uv": [
-    0,
-    18
-   ],
-   "offset": [
-    0,
-    1.5,
-    -3
-   ],
-   "size": [
-    6,
-    10,
-    6
-   ],
-   "inflate": 0.0,
-   "mirror": false
-  },
-  {
-   "name": "pauldron_band",
-   "part": "leftArm",
-   "slot": "chestplate",
-   "material": "accent",
-   "uv": [
-    78,
-    34
-   ],
-   "offset": [
-    0,
     7,
-    -3.5
-   ],
-   "size": [
-    6,
-    1,
-    7
-   ],
-   "inflate": 0.0,
-   "mirror": false
-  },
-  {
-   "name": "fist",
-   "part": "leftArm",
-   "slot": "leggings",
-   "material": "plate2",
-   "uv": [
-    0,
-    34
-   ],
-   "offset": [
-    0,
-    11.5,
-    -3
-   ],
-   "size": [
-    6,
-    4,
-    5
-   ],
-   "inflate": 0.0,
-   "mirror": false
-  },
-  {
-   "name": "cap",
-   "part": "rightArm",
-   "slot": "chestplate",
-   "material": "plate",
-   "uv": [
-    0,
-    43
-   ],
-   "offset": [
-    -3,
-    -1,
-    -2.5
-   ],
-   "size": [
-    3,
-    3,
-    5
-   ],
-   "inflate": 0.0,
-   "mirror": false
-  },
-  {
-   "name": "slab",
-   "part": "rightArm",
-   "slot": "chestplate",
-   "material": "plate2",
-   "uv": [
-    50,
-    0
-   ],
-   "offset": [
-    0,
-    0.0,
-    0.5
-   ],
-   "size": [
-    1,
-    9,
-    9
-   ],
-   "inflate": 0.0,
-   "mirror": false,
-   "pivot": [
-    -1,
-    1.5,
-    0
-   ],
-   "rotate": [
-    0,
-    0,
-    55
-   ]
-  },
-  {
-   "name": "slab",
-   "part": "leftArm",
-   "slot": "chestplate",
-   "material": "plate2",
-   "uv": [
-    30,
-    0
-   ],
-   "offset": [
-    0,
-    0.0,
-    -4.5
-   ],
-   "size": [
-    1,
-    9,
-    9
-   ],
-   "inflate": 0.0,
-   "mirror": false,
-   "pivot": [
-    0,
-    1.5,
-    0
-   ],
-   "rotate": [
-    0,
-    0,
-    -55
-   ]
-  },
-  {
-   "name": "antenna",
-   "part": "head",
-   "slot": "helmet",
-   "material": "dark",
-   "uv": [
-    82,
-    43
-   ],
-   "offset": [
-    4,
-    6,
-    -1
-   ],
-   "size": [
-    2,
-    2,
+    5,
     2
    ],
    "inflate": 0.0,
    "mirror": false,
    "pivot": [
-    -6,
-    -8,
+    0,
+    7,
+    -3.5
+   ],
+   "rotate": [
+    21,
+    0,
     0
+   ]
+  },
+  {
+   "name": "tank_r",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "panel",
+   "uv": [
+    32,
+    36
+   ],
+   "offset": [
+    -3.5,
+    5,
+    2
+   ],
+   "size": [
+    3,
+    5,
+    2
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "tank_l",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "panel",
+   "uv": [
+    32,
+    36
+   ],
+   "offset": [
+    0.5,
+    5,
+    2
+   ],
+   "size": [
+    3,
+    5,
+    2
+   ],
+   "inflate": 0.0,
+   "mirror": true
+  },
+  {
+   "name": "bridge_bar",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "mid",
+   "uv": [
+    36,
+    43
+   ],
+   "offset": [
+    -2.5,
+    2,
+    2.5
+   ],
+   "size": [
+    5,
+    1,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "bridge_leg_r",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "mid",
+   "uv": [
+    32,
+    43
+   ],
+   "offset": [
+    -2.5,
+    3,
+    2.5
+   ],
+   "size": [
+    1,
+    2,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "bridge_leg_l",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "mid",
+   "uv": [
+    32,
+    43
+   ],
+   "offset": [
+    1.5,
+    3,
+    2.5
+   ],
+   "size": [
+    1,
+    2,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": true
+  },
+  {
+   "name": "diamond",
+   "part": "body",
+   "slot": "chestplate",
+   "material": "mid",
+   "uv": [
+    20,
+    43
+   ],
+   "offset": [
+    -1,
+    -1.0,
+    -0.5
+   ],
+   "size": [
+    2,
+    2,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": false,
+   "pivot": [
+    0,
+    2.5,
+    3.5
    ],
    "rotate": [
     0,
@@ -408,21 +452,369 @@
    ]
   },
   {
-   "name": "belt",
-   "part": "body",
-   "slot": "leggings",
-   "material": "dark",
+   "name": "sleeve",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "plate",
    "uv": [
-    48,
-    34
+    36,
+    0
+   ],
+   "offset": [
+    -3.5,
+    -2.5,
+    -2.5
+   ],
+   "size": [
+    5,
+    13,
+    5
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "sleeve",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "plate",
+   "uv": [
+    36,
+    0
+   ],
+   "offset": [
+    -1.5,
+    -2.5,
+    -2.5
+   ],
+   "size": [
+    5,
+    13,
+    5
+   ],
+   "inflate": 0.0,
+   "mirror": true
+  },
+  {
+   "name": "cap",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "plate2",
+   "uv": [
+    70,
+    18
+   ],
+   "offset": [
+    -3,
+    -2,
+    -3
+   ],
+   "size": [
+    3,
+    3,
+    6
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "cap",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "plate2",
+   "uv": [
+    70,
+    18
+   ],
+   "offset": [
+    0,
+    -2,
+    -3
+   ],
+   "size": [
+    3,
+    3,
+    6
+   ],
+   "inflate": 0.0,
+   "mirror": true
+  },
+  {
+   "name": "wing_low",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "plate2",
+   "uv": [
+    0,
+    18
+   ],
+   "offset": [
+    -8,
+    0,
+    -4
+   ],
+   "size": [
+    8,
+    2,
+    8
+   ],
+   "inflate": 0.0,
+   "mirror": false,
+   "pivot": [
+    0,
+    -4,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    -30
+   ]
+  },
+  {
+   "name": "wing_low",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "plate2",
+   "uv": [
+    0,
+    18
+   ],
+   "offset": [
+    0,
+    0,
+    -4
+   ],
+   "size": [
+    8,
+    2,
+    8
+   ],
+   "inflate": 0.0,
+   "mirror": true,
+   "pivot": [
+    0,
+    -4,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    30
+   ]
+  },
+  {
+   "name": "wing_up",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "plate2",
+   "uv": [
+    100,
+    28
+   ],
+   "offset": [
+    -8,
+    -1,
+    -3
+   ],
+   "size": [
+    8,
+    1,
+    6
+   ],
+   "inflate": 0.0,
+   "mirror": false,
+   "pivot": [
+    0,
+    -4,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    -30
+   ]
+  },
+  {
+   "name": "wing_up",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "plate2",
+   "uv": [
+    100,
+    28
+   ],
+   "offset": [
+    0,
+    -1,
+    -3
+   ],
+   "size": [
+    8,
+    1,
+    6
+   ],
+   "inflate": 0.0,
+   "mirror": true,
+   "pivot": [
+    0,
+    -4,
+    0
+   ],
+   "rotate": [
+    0,
+    0,
+    30
+   ]
+  },
+  {
+   "name": "side_plate",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "plate2",
+   "uv": [
+    88,
+    18
    ],
    "offset": [
     -4.5,
-    10.5,
-    -3
+    4.5,
+    -2
+   ],
+   "size": [
+    1,
+    5,
+    4
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "side_plate",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "plate2",
+   "uv": [
+    88,
+    18
+   ],
+   "offset": [
+    3.5,
+    4.5,
+    -2
+   ],
+   "size": [
+    1,
+    5,
+    4
+   ],
+   "inflate": 0.0,
+   "mirror": true
+  },
+  {
+   "name": "back_plate",
+   "part": "rightArm",
+   "slot": "chestplate",
+   "material": "plate2",
+   "uv": [
+    54,
+    36
+   ],
+   "offset": [
+    -3,
+    2,
+    2
+   ],
+   "size": [
+    3,
+    4,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "back_plate",
+   "part": "leftArm",
+   "slot": "chestplate",
+   "material": "plate2",
+   "uv": [
+    54,
+    36
+   ],
+   "offset": [
+    0,
+    2,
+    2
+   ],
+   "size": [
+    3,
+    4,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": true
+  },
+  {
+   "name": "pelvis",
+   "part": "body",
+   "slot": "leggings",
+   "material": "plate",
+   "uv": [
+    32,
+    28
+   ],
+   "offset": [
+    -4.5,
+    11.5,
+    -2.5
    ],
    "size": [
     9,
+    3,
+    5
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "belt",
+   "part": "body",
+   "slot": "leggings",
+   "material": "plate2",
+   "uv": [
+    0,
+    28
+   ],
+   "offset": [
+    -5,
+    11,
+    -3
+   ],
+   "size": [
+    10,
+    2,
+    6
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "crotch",
+   "part": "body",
+   "slot": "leggings",
+   "material": "plate2",
+   "uv": [
+    82,
+    28
+   ],
+   "offset": [
+    -1.5,
+    13,
+    -3
+   ],
+   "size": [
+    3,
     2,
     6
    ],
@@ -435,18 +827,18 @@
    "slot": "leggings",
    "material": "plate",
    "uv": [
-    88,
-    18
+    84,
+    0
    ],
    "offset": [
     -2.5,
-    0,
-    -3
+    -0.5,
+    -2.5
    ],
    "size": [
     5,
-    6,
-    6
+    9,
+    5
    ],
    "inflate": 0.0,
    "mirror": false
@@ -457,150 +849,322 @@
    "slot": "leggings",
    "material": "plate",
    "uv": [
-    88,
-    18
+    84,
+    0
    ],
    "offset": [
     -2.5,
-    0,
-    -3
+    -0.5,
+    -2.5
    ],
    "size": [
     5,
-    6,
-    6
+    9,
+    5
    ],
    "inflate": 0.0,
    "mirror": true
   },
   {
-   "name": "hip_plate",
+   "name": "knee",
    "part": "rightLeg",
    "slot": "leggings",
-   "material": "plate2",
+   "material": "mid",
    "uv": [
-    36,
-    34
+    106,
+    36
    ],
    "offset": [
-    -4.5,
-    0,
-    -2
+    -1.5,
+    -1.5,
+    -0.5
    ],
    "size": [
+    3,
+    3,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": false,
+   "pivot": [
+    -0.4,
+    4.6,
+    -2.5
+   ],
+   "rotate": [
+    0,
+    0,
+    45
+   ]
+  },
+  {
+   "name": "knee",
+   "part": "leftLeg",
+   "slot": "leggings",
+   "material": "mid",
+   "uv": [
+    106,
+    36
+   ],
+   "offset": [
+    -1.5,
+    -1.5,
+    -0.5
+   ],
+   "size": [
+    3,
+    3,
+    1
+   ],
+   "inflate": 0.0,
+   "mirror": true,
+   "pivot": [
+    0.4,
+    4.6,
+    -2.5
+   ],
+   "rotate": [
+    0,
+    0,
+    -45
+   ]
+  },
+  {
+   "name": "stud",
+   "part": "rightLeg",
+   "slot": "leggings",
+   "material": "mid",
+   "uv": [
+    114,
+    36
+   ],
+   "offset": [
+    -0.5,
+    -1.0,
+    -1
+   ],
+   "size": [
+    1,
     2,
-    5,
-    4
+    2
+   ],
+   "inflate": 0.0,
+   "mirror": false,
+   "pivot": [
+    -2.6,
+    4.5,
+    0
+   ],
+   "rotate": [
+    45,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "stud",
+   "part": "leftLeg",
+   "slot": "leggings",
+   "material": "mid",
+   "uv": [
+    114,
+    36
+   ],
+   "offset": [
+    -0.5,
+    -1.0,
+    -1
+   ],
+   "size": [
+    1,
+    2,
+    2
+   ],
+   "inflate": 0.0,
+   "mirror": true,
+   "pivot": [
+    2.6,
+    4.5,
+    0
+   ],
+   "rotate": [
+    45,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "strut_up",
+   "part": "rightLeg",
+   "slot": "leggings",
+   "material": "mid",
+   "uv": [
+    68,
+    36
+   ],
+   "offset": [
+    -3.1,
+    0.5,
+    -1
+   ],
+   "size": [
+    1,
+    3,
+    2
    ],
    "inflate": 0.0,
    "mirror": false
   },
   {
-   "name": "hip_plate",
+   "name": "strut_up",
    "part": "leftLeg",
    "slot": "leggings",
-   "material": "plate2",
+   "material": "mid",
    "uv": [
-    36,
-    34
+    68,
+    36
    ],
    "offset": [
-    2.5,
-    0,
-    -2
+    2.1,
+    0.5,
+    -1
    ],
    "size": [
-    2,
-    5,
-    4
+    1,
+    3,
+    2
    ],
    "inflate": 0.0,
    "mirror": true
   },
   {
-   "name": "shin",
+   "name": "strut_low",
    "part": "rightLeg",
-   "slot": "boots",
-   "material": "plate2",
+   "slot": "leggings",
+   "material": "mid",
    "uv": [
-    66,
-    18
+    62,
+    36
    ],
    "offset": [
-    -2.5,
-    6,
-    -3
+    -3.1,
+    5.5,
+    -1
    ],
    "size": [
-    5,
-    6,
-    6
+    1,
+    3,
+    2
    ],
    "inflate": 0.0,
    "mirror": false
   },
   {
-   "name": "shin",
+   "name": "strut_low",
    "part": "leftLeg",
-   "slot": "boots",
-   "material": "plate2",
+   "slot": "leggings",
+   "material": "mid",
    "uv": [
-    66,
-    18
+    62,
+    36
    ],
    "offset": [
-    -2.5,
-    6,
-    -3
+    2.1,
+    5.5,
+    -1
    ],
    "size": [
-    5,
-    6,
-    6
+    1,
+    3,
+    2
    ],
    "inflate": 0.0,
    "mirror": true
   },
   {
-   "name": "foot",
+   "name": "shaft",
    "part": "rightLeg",
    "slot": "boots",
    "material": "plate",
    "uv": [
-    104,
-    34
+    50,
+    18
    ],
    "offset": [
     -2.5,
-    10,
-    -3.5
+    8.5,
+    -2.5
    ],
    "size": [
     5,
-    2,
-    6
+    4,
+    5
    ],
    "inflate": 0.0,
    "mirror": false
   },
   {
-   "name": "foot",
+   "name": "shaft",
    "part": "leftLeg",
    "slot": "boots",
    "material": "plate",
    "uv": [
-    104,
-    34
+    50,
+    18
    ],
    "offset": [
     -2.5,
-    10,
-    -3.5
+    8.5,
+    -2.5
    ],
    "size": [
     5,
+    4,
+    5
+   ],
+   "inflate": 0.0,
+   "mirror": true
+  },
+  {
+   "name": "toe",
+   "part": "rightLeg",
+   "slot": "boots",
+   "material": "plate2",
+   "uv": [
+    74,
+    36
+   ],
+   "offset": [
+    -2,
+    10,
+    -4
+   ],
+   "size": [
+    4,
     2,
-    6
+    2
+   ],
+   "inflate": 0.0,
+   "mirror": false
+  },
+  {
+   "name": "toe",
+   "part": "leftLeg",
+   "slot": "boots",
+   "material": "plate2",
+   "uv": [
+    74,
+    36
+   ],
+   "offset": [
+    -2,
+    10,
+    -4
+   ],
+   "size": [
+    4,
+    2,
+    2
    ],
    "inflate": 0.0,
    "mirror": true

@@ -57,7 +57,7 @@ class AccessoryDefsTest {
             assertTrue(ids.add(def.id()), "duplicate id " + def.id());
             assertEquals(def, AccessoryDefs.byId(def.id()));
         }
-        assertEquals(8, AccessoryDefs.ALL.size());
+        assertEquals(9, AccessoryDefs.ALL.size());
     }
 
     @Test
@@ -169,6 +169,82 @@ class AccessoryDefsTest {
                     .size(),
                 textures.getAsJsonArray()
                     .size());
+        }
+    }
+
+    /** The goggles' two poses are drawn from one sheet, so their boxes must unwrap to the same places. */
+    @Test
+    void gogglesPosesShareOneSheetLayout() {
+        List<AccessoryBox> on = AccessoryDefs.NIGHT_VISION_GOGGLES.boxes();
+        List<AccessoryBox> off = AccessoryDefs.NIGHT_VISION_GOGGLES_OFF.boxes();
+        assertEquals(on.size(), off.size());
+        for (int i = 0; i < on.size(); i++) {
+            assertEquals(
+                on.get(i)
+                    .name(),
+                off.get(i)
+                    .name());
+            assertEquals(
+                on.get(i)
+                    .u(),
+                off.get(i)
+                    .u(),
+                on.get(i)
+                    .name());
+            assertEquals(
+                on.get(i)
+                    .v(),
+                off.get(i)
+                    .v(),
+                on.get(i)
+                    .name());
+            assertEquals(
+                on.get(i)
+                    .w(),
+                off.get(i)
+                    .w(),
+                on.get(i)
+                    .name());
+            assertEquals(
+                on.get(i)
+                    .h(),
+                off.get(i)
+                    .h(),
+                on.get(i)
+                    .name());
+            assertEquals(
+                on.get(i)
+                    .d(),
+                off.get(i)
+                    .d(),
+                on.get(i)
+                    .name());
+        }
+        assertEquals(AccessoryDefs.NIGHT_VISION_GOGGLES.textures(), AccessoryDefs.NIGHT_VISION_GOGGLES_OFF.textures());
+    }
+
+    @Test
+    void gogglesPoseFollowsNightVision() {
+        assertEquals(
+            AccessoryDefs.NIGHT_VISION_GOGGLES,
+            AccessoryDefs.pose(AccessoryDefs.NIGHT_VISION_GOGGLES_OFF, true));
+        assertEquals(
+            AccessoryDefs.NIGHT_VISION_GOGGLES_OFF,
+            AccessoryDefs.pose(AccessoryDefs.NIGHT_VISION_GOGGLES, false));
+        assertEquals(AccessoryDefs.GAS_MASK, AccessoryDefs.pose(AccessoryDefs.GAS_MASK, false));
+    }
+
+    /** A painted skin must stand off the skull a hair, or it would fight the head under it. */
+    @Test
+    void paintedHeadSkinsAreInflatedAHair() {
+        for (AccessoryDef def : new AccessoryDef[] { AccessoryDefs.GAS_MASK, AccessoryDefs.OXYGEN_MASK,
+            AccessoryDefs.TACTICAL_MASK, AccessoryDefs.NIGHT_VISION_GOGGLES, AccessoryDefs.NIGHT_VISION_GOGGLES_OFF }) {
+            AccessoryBox skin = def.boxes()
+                .get(0);
+            assertEquals(8, skin.w());
+            assertEquals(8, skin.h());
+            assertEquals(8, skin.d());
+            assertTrue(skin.inflate() > 0.0f && skin.inflate() <= 0.1f, def.id());
         }
     }
 }
