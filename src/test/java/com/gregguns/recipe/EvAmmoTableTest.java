@@ -53,10 +53,10 @@ class EvAmmoTableTest {
                 .get(0)
                 .material());
         assertEquals(
-            "TNT",
+            "mc:tnt",
             row.inputs()
                 .get(2)
-                .material());
+                .special());
     }
 
     @Test

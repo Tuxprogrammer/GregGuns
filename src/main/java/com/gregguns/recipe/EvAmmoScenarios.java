@@ -93,7 +93,7 @@ public final class EvAmmoScenarios {
                 16,
                 gt("foil", "Titanium", 16),
                 gt("round", "Titanium", 16),
-                gt("dust", "TNT", 2));
+                new ItemStack(net.minecraft.init.Blocks.tnt, 1));
             check(
                 out,
                 "RC-42",
@@ -108,7 +108,7 @@ public final class EvAmmoScenarios {
                 "mag_minigun_drum_empty",
                 4,
                 gt("plate", "Titanium", 4),
-                gt("plate", "Polyethylene", 2),
+                gt("plate", "Plastic", 2),
                 mod("part_mechanical_3", 1));
             check(out, "RC-49", "mag_advanced", 4, mod("mag_advanced_empty", 4), mod("ammo_advanced_bullet", 12));
             check(out, "RC-50", "mag_minigun_drum", 4, mod("mag_minigun_drum_empty", 4), mod("ammo_rifle_bullet", 64));

@@ -124,7 +124,10 @@ public final class RifleAmmo {
                 Tier.EV,
                 6,
                 Input.gt("plate", "Titanium", 4),
-                Input.gt("plate", "Polyethylene", 2),
+                // Source:
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L7067
+                // Materials.Polyethylene is registered under the name "Plastic" (platePlastic).
+                Input.gt("plate", "Plastic", 2),
                 Input.mod(ComponentItems.MECHANICAL_3, 1)))
         .row(
             Row.press(

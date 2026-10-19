@@ -45,7 +45,10 @@ public final class AdvancedAmmo {
                 4,
                 Input.gt("foil", "Titanium", 16),
                 Input.gt("round", "Titanium", 16),
-                Input.gt("dust", "TNT", 2)))
+                // Source:
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L5207
+                // Materials.TNT has no dust item (no addDustItems), so there is no dust.TNT: use the vanilla TNT block.
+                Input.vanilla("tnt", 1)))
         // RC-42: the Titanium plates are the gate.
         .row(
             Row.press(
