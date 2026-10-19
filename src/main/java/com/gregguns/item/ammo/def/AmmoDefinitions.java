@@ -24,7 +24,8 @@ public final class AmmoDefinitions {
             ShotgunShellAmmo.DEFINITION,
             RocketAmmo.DEFINITION,
             Grenade40mmAmmo.DEFINITION,
-            HighCaliberAmmo.DEFINITION));
+            HighCaliberAmmo.DEFINITION,
+            AdvancedAmmo.DEFINITION));
 
     private AmmoDefinitions() {}
 
