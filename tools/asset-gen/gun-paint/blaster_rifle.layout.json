@@ -1,0 +1,32 @@
+{
+ "gun": "blaster_rifle",
+ "texture": [64, 64],
+ "scale": 0.0625,
+ "bodyRotationYDegrees": 90,
+ "muzzle": [1.6875, 0, 0],
+ "boxes": [
+  {"name": "rear_cap", "part": 0, "size": [2, 5, 5], "pos": [-23, -3.0, -2.5], "tiltX": 45, "pivot": [-23, -0.5, 0], "uv": [14, 0]},
+  {"name": "receiver", "part": 0, "size": [28, 5, 4], "pos": [-21, -2.5, -2], "uv": [0, 12]},
+  {"name": "top_rail", "part": 0, "size": [27, 1, 2], "pos": [-21, -3.5, -1], "uv": [0, 53]},
+  {"name": "lower_recv", "part": 0, "size": [15, 2, 3], "pos": [-9, 2.5, -1.5], "uv": [0, 48]},
+  {"name": "guard", "part": 0, "size": [19, 4, 4], "pos": [7, -2.0, -2], "tiltX": 45, "pivot": [7, 0.0, 0], "uv": [0, 21]},
+  {"name": "fin_a", "part": 0, "size": [16, 1, 5], "pos": [7, -0.5, -2.5], "tiltX": 45, "pivot": [7, 0.0, 0], "uv": [0, 36]},
+  {"name": "fin_b", "part": 0, "size": [16, 1, 5], "pos": [7, -0.5, -2.5], "tiltX": -45, "pivot": [7, 0.0, 0], "uv": [0, 42]},
+  {"name": "muzzle", "part": 0, "size": [1, 3, 3], "pos": [26, -1.5, -1.5], "tiltX": 45, "pivot": [26, 0.0, 0], "uv": [50, 0]},
+  {"name": "rail_bar", "part": 0, "size": [15, 2, 2], "pos": [6, 2.0, -1], "uv": [28, 8]},
+  {"name": "fairing", "part": 0, "size": [7, 2, 3], "pos": [18, 2.8, -1.5], "tilt": -13, "pivot": [18, 3.8, 0], "uv": [42, 35]},
+  {"name": "scope_rear", "part": 0, "size": [8, 3, 3], "pos": [-15, -7.0, -1.5], "tiltX": 45, "pivot": [-15, -5.5, 0], "uv": [42, 29]},
+  {"name": "scope_mid", "part": 0, "size": [5, 3, 3], "pos": [-7, -6.5, -1.5], "tiltX": 45, "pivot": [-7, -5.0, 0], "uv": [46, 21]},
+  {"name": "scope_front", "part": 0, "size": [2, 2, 2], "pos": [-2, -5.5, -1], "tiltX": 45, "pivot": [-2, -4.5, 0], "uv": [50, 40]},
+  {"name": "side_box", "part": 0, "size": [8, 5, 3], "pos": [-13, -5.5, 2], "uv": [28, 0]},
+  {"name": "socket", "part": 0, "size": [7, 3, 4], "pos": [-2, -1.5, 1.5], "uv": [0, 29]},
+  {"name": "slab", "part": 0, "size": [5, 2, 5], "pos": [-0.5, -1.0, 5.5], "uv": [22, 29]},
+  {"name": "rod_a", "part": 0, "size": [6, 1, 1], "pos": [-1, -2.25, 2.75], "tiltX": 45, "pivot": [-1, -1.75, 3.25], "uv": [14, 10]},
+  {"name": "rod_b", "part": 0, "size": [6, 1, 1], "pos": [-1, -2.25, 4.25], "tiltX": 45, "pivot": [-1, -1.75, 4.75], "uv": [46, 27]},
+  {"name": "cap_plate", "part": 0, "size": [1, 1, 3], "pos": [-2, -2.5, 2.5], "uv": [42, 40]},
+  {"name": "grip", "part": 0, "size": [4, 9, 3], "pos": [-9, 4.5, -1.5], "tilt": 25.6, "pivot": [-5, 4.5, 0], "uv": [0, 0]},
+  {"name": "guard_post", "part": 0, "size": [1, 3, 2], "pos": [-2, 4.5, -1], "uv": [58, 0]},
+  {"name": "guard_floor", "part": 0, "size": [5, 1, 2], "pos": [-7, 6.5, -1], "uv": [42, 44]},
+  {"name": "trigger", "part": 0, "size": [1, 2, 1], "pos": [-5, 4.0, -0.5], "tilt": -15, "pivot": [-4.5, 4.0, 0], "uv": [58, 5]}
+ ]
+}
