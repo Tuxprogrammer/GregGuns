@@ -56,6 +56,8 @@ Extent x −5…23, y −2.8…11.5, z −1.5…3.5: a long-barreled six-shooter
 * **Trigger guard:** 6×1×2 bar and two 1×2×2 posts (y 2.5…5.5). Trigger 3×0×2 (zero-thickness plane).
 * **Grip:** stepped 2×2×2 → 6×2×2 → 4×2×2 → 4×5×2, curving down and back to y 11.5.
 
+Clean-room rebuild notes: [model-notes/revolver.md](model-notes/revolver.md).
+
 ### ModelGoldenRevolver: 64×32, family X, 24 boxes, 1 part
 Identical frame, cylinder, hammer, guard and grip to ModelRevolver, with an ornate barrel:
 * Barrel 15×2×2 rotated 45° about X (x 9…24), top strip 13×1×1, ventilated rib 13×1×1 rot45, and two flared 12×2×1 side fins rotated ±21° about X.

@@ -23,6 +23,7 @@ Out of scope here, see the owning areas:
 | [rendering-framework.md](rendering-framework.md) | Renderer registration table, class hierarchy, client timing state, per-frame algorithm, animation curves, coordinate conventions, muzzle-flash ScreenEffect, textures and camo, zoom and scopes, ammo-dependent geometry, akimbo (including the off-hand renderer), grenades, magazine and rocket item renderers, sound playback mechanics |
 | [gun-sheets.md](gun-sheets.md) | One sheet per weapon: renderer, model, textures, every transform, animation formulas, muzzle FX, scope, sounds |
 | [gun-models.md](gun-models.md) | Part breakdown, box sizes, moving, glow and conditional parts, and texture size of all 55 model classes plus `grenadelauncher.obj` |
+| [model-notes/revolver.md](model-notes/revolver.md) | Clean-room design notes for rebuilding the Revolver model and texture (proportions, parts, palette, motion, checklist) |
 | [textures.md](textures.md) | All 62 `textures/guns/` PNGs: size, what they depict, palette, UV layout, users, model-size mismatches |
 | [sounds.md](sounds.md) | All 185 `sounds/guns/` files, their `sounds.json` events and exactly when each plays |
 | [lang-and-strings.md](lang-and-strings.md) | The 17 gun camo-name keys, the generic camo strings, strings generated in code, missing keys and one correction |
