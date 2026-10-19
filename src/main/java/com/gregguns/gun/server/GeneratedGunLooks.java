@@ -23,30 +23,30 @@ import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.gun.ItemGun;
 
 /**
- * One generated visual scenario per gun in {@link GunDefinitions#ALL}, named {@code mp.visual.<gunId>}, plus the group
- * {@code mp.visual.all} that runs them back to back in one session. Each gives the gun to the first connected player
- * and signals screenshots named {@code gun-<id>-<pose>}: {@code first-person-idle}, {@code first-person-fire} (one
+ * One generated visual scenario per gun in {@link GunDefinitions#ALL}, named {@code mp.look.<gunId>}, plus the group
+ * {@code mp.look.all} that runs them back to back in one session. Each gives the gun to the first connected player
+ * and signals screenshots named {@code look-<id>-<pose>}: {@code first-person-idle}, {@code first-person-fire} (one
  * shot, then a screenshot), {@code first-person-aim} (only when the gun has a scope) and {@code third-person-front}.
  * Akimbo guns and guns that still render as flat icons are included automatically. None is part of {@code test all}
  * because they need a connected client. Dev environment only, server side.
  */
-public final class GeneratedGunVisuals {
+public final class GeneratedGunLooks {
 
     /** Ticks one gun's walkthrough takes, including settling time before the next gun. */
     static final int SEGMENT_TICKS = 140;
 
-    private GeneratedGunVisuals() {}
+    private GeneratedGunLooks() {}
 
     /**
      * @param def a gun
-     * @return the scenario name for the gun, {@code mp.visual.<gunId>}
+     * @return the scenario name for the gun, {@code mp.look.<gunId>}
      */
     public static String scenarioName(GunDefinition def) {
-        return "mp.visual." + def.name();
+        return "mp.look." + def.name();
     }
 
     /**
-     * Registers one scenario per gun in the shared definition list, and {@code mp.visual.all}.
+     * Registers one scenario per gun in the shared definition list, and {@code mp.look.all}.
      *
      * @param registry where to add them
      */
@@ -97,7 +97,7 @@ public final class GeneratedGunVisuals {
 
     /** One gun's timeline step at local tick {@code t} (0 to {@link #SEGMENT_TICKS}). */
     private static void step(int t, EntityPlayerMP a, GunDefinition def) {
-        String p = "gun-" + def.name();
+        String p = "look-" + def.name();
         boolean aims = def.stats()
             .hasScope();
         switch (t) {
@@ -180,7 +180,7 @@ public final class GeneratedGunVisuals {
 
         @Override
         public String name() {
-            return "mp.visual.all";
+            return "mp.look.all";
         }
 
         @Override

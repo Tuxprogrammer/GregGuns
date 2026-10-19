@@ -36,6 +36,7 @@ public final class RevolverScenarios {
         registry.register(new Reload());
         registry.register(new ForcedReload());
         registry.register(new Damage());
+        registry.register(new GunVisualScenario("mp.visual.revolver", "rev", GunItems.revolver(), "ammo_9mm_bullet"));
         registry.register(
             GunRecipeScenarios.assembly(
                 "gun.revolver.recipe",
