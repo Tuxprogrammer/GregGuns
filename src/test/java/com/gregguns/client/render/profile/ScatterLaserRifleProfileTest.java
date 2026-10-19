@@ -101,9 +101,9 @@ class ScatterLaserRifleProfileTest {
         assertEquals(16, box("pipe").w());
         assertEquals(45f, box("pipe").tiltXDegrees(), 1e-6, "diamond pipe");
         assertEquals(-36.5f, box("strut").tiltZDegrees(), 1e-6);
-        assertEquals(5, box("spine_a").h());
-        assertEquals(7, box("spine_b").h());
-        assertEquals(8, box("spine_c").h());
+        assertEquals(3, box("spine_up_1").h(), "uprights frame open gaps in the stock");
+        assertEquals(1, box("spine_up_1").w());
+        assertEquals(10, box("spine_top").w());
     }
 
     @Test
@@ -155,7 +155,7 @@ class ScatterLaserRifleProfileTest {
         assertTrue(near(topMean(img, box("top_plate")), 0x4D4D4D, 14), "receiver gray");
         assertTrue(near(topMean(img, box("stock_block")), 0x393939, 14), "darker stock");
         assertTrue(near(topMean(img, box("pipe")), 0x999999, 14), "light pipe");
-        assertTrue(near(topMean(img, box("spine_c")), 0x9E9E9E, 14), "light spine");
+        assertTrue(near(topMean(img, box("spine_low_c")), 0x9E9E9E, 14), "light spine");
     }
 
     @Test

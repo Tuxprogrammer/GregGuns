@@ -383,84 +383,26 @@
   "stock_cover": {
    "role": "stock"
   },
-  "spine_a": {
-   "role": "spine",
-   "painters": [
-    {
-     "type": "hole",
-     "faces": [
-      "front",
-      "back"
-     ],
-     "x": 1,
-     "y": 2,
-     "w": 1,
-     "h": 1
-    }
-   ]
+  "spine_top": {
+   "role": "spine"
   },
-  "spine_b": {
-   "role": "spine",
-   "painters": [
-    {
-     "type": "hole",
-     "faces": [
-      "front"
-     ],
-     "x": 0,
-     "y": 3,
-     "w": 1,
-     "h": 1
-    },
-    {
-     "type": "hole",
-     "faces": [
-      "back"
-     ],
-     "x": 1,
-     "y": 3,
-     "w": 1,
-     "h": 1
-    }
-   ]
+  "spine_up_1": {
+   "role": "spine"
   },
-  "spine_c": {
-   "role": "spine",
-   "painters": [
-    {
-     "type": "hole",
-     "faces": [
-      "front",
-      "back"
-     ],
-     "x": 1,
-     "y": 2,
-     "w": 1,
-     "h": 1
-    },
-    {
-     "type": "hole",
-     "faces": [
-      "front",
-      "back"
-     ],
-     "x": 3,
-     "y": 2,
-     "w": 1,
-     "h": 1
-    },
-    {
-     "type": "hole",
-     "faces": [
-      "front",
-      "back"
-     ],
-     "x": 2,
-     "y": 5,
-     "w": 1,
-     "h": 1
-    }
-   ]
+  "spine_up_2": {
+   "role": "spine"
+  },
+  "spine_up_3": {
+   "role": "spine"
+  },
+  "spine_low_c": {
+   "role": "spine"
+  },
+  "spine_low_b": {
+   "role": "spine"
+  },
+  "spine_low_a": {
+   "role": "spine"
   },
   "stock_front": {
    "role": "stock"
