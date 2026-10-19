@@ -260,13 +260,18 @@ public final class EvEnergyScenarios {
             target.setHealth((float) TARGET_HEALTH);
             long start = stored(rig);
             rig.press();
+            // The push decays by ground friction every tick, so the scenario keeps the peak it sees, not the value
+            // left when the last projectile expires.
+            double[] peak = { 0.0 };
             for (int i = 0; i < 6; i++) {
                 rig.tick();
+                peak[0] = Math.max(peak[0], target.motionX);
             }
             rig.release();
             int volley = rig.bullets();
             long spent = start - stored(rig);
             return ScenarioResult.pending(name(), 60, ticks -> {
+                peak[0] = Math.max(peak[0], target.motionX);
                 if (!rig.bulletsGone()) {
                     return null;
                 }
@@ -282,8 +287,8 @@ public final class EvEnergyScenarios {
                     near(expected, lost(target)),
                     "the zombie should be hurt exactly once for " + expected + ", lost " + lost(target));
                 out.check(
-                    target.motionX > 0.6,
-                    "the hit should push the zombie east about twice a bullet's 0.4, motionX " + target.motionX);
+                    peak[0] > 0.6,
+                    "the hit should push the zombie east about twice a bullet's 0.4, peak motionX " + peak[0]);
                 out.check(!rig.reloading(), "an energy gun never starts a reload");
                 return out.build();
             });
