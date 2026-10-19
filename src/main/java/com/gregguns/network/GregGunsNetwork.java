@@ -115,6 +115,10 @@ public final class GregGunsNetwork {
     /** Returns one instance of each client-to-server packet, in wire order. Append only. */
     public static List<IPacket> serverboundPackets() {
         return Collections.<IPacket>unmodifiableList(
-            Arrays.<IPacket>asList(new PacketGunTrigger(), new PacketGunZoom(), new PacketCamoCycle()));
+            Arrays.<IPacket>asList(
+                new PacketGunTrigger(),
+                new PacketGunZoom(),
+                new PacketCamoCycle(),
+                new com.gregguns.utility.charge.PacketChargeButton()));
     }
 }

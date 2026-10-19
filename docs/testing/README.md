@@ -183,6 +183,23 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.boltaction.damage` | bolt action rifle (M2) | A zoomed shot hits a zombie 25 blocks away for the drop-off figure (16 falling to 10 between 20 and 30 blocks), below the full 16. |
 | `gun.boltaction.zoom` | bolt action rifle (M2) | A zoom intent is accepted: the server zoom state turns on, the FOV factor is 0.35 and the shot spread is 0.125 of 0.05; a second intent or a reload key turns it off. |
 | `gun.boltaction.recipe` | bolt action rifle (M2) | `RecipeMaps.assemblerRecipes` holds the rifle at `RECIPE_LV` and 20 s; an LV query with the seven sheet inputs (barrel, Iron Receiver, stock, glass lens, plates, screws, spring) and circuit 4 finds it; a voltage below LV does not. |
+| `gun.thompson_smg.auto` | Thompson SMG (M2 B1) | Holding the trigger for 13 ticks fires on the pull and then every interval (3 ticks, Mac10 2), one round and one bullet per shot. |
+| `gun.thompson_smg.reload` | Thompson SMG (M2 B1) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time, the magazine is consumed and an empty one returned. |
+| `gun.thompson_smg.reload.forced` | Thompson SMG (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.thompson_smg.recipe` | Thompson SMG (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
+| `gun.mac10.auto` | Mac10 (M2 B1) | Holding the trigger for 13 ticks fires on the pull and then every interval (3 ticks, Mac10 2), one round and one bullet per shot. |
+| `gun.mac10.reload` | Mac10 (M2 B1) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time, the magazine is consumed and an empty one returned. |
+| `gun.mac10.reload.forced` | Mac10 (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.mac10.recipe` | Mac10 (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
+| `gun.m4.auto` | M4 (M2 B1) | Holding the trigger for 13 ticks fires on the pull and then every interval (3 ticks, Mac10 2), one round and one bullet per shot. |
+| `gun.m4.reload` | M4 (M2 B1) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time, the magazine is consumed and an empty one returned. |
+| `gun.m4.reload.forced` | M4 (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.m4.recipe` | M4 (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
+| `gun.ak47.auto` | AK47 (M2 B1) | Holding the trigger for 13 ticks fires on the pull and then every interval (3 ticks, Mac10 2), one round and one bullet per shot. |
+| `gun.ak47.reload` | AK47 (M2 B1) | An empty gun with one loaded magazine: the dry trigger starts the reload, the clip fills at the end of the reload time, the magazine is consumed and an empty one returned. |
+| `gun.ak47.reload.forced` | AK47 (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
+| `gun.ak47.recipe` | AK47 (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
+| `gun.m4.zoom` | M4 (M2 B1) | A zoom intent turns the server zoom state on with FOV factor 0.75 and 0.75 of the 0.015 spread; a second intent or a reload turns it off. |
 | `mp.visual.boltaction` | bolt action rifle (M2) | The visual walkthrough (first person, third person, inventory, and the zoomed scope view) for the rifle; see the autotest section. |
 | `armor.showcase` | armor (M3) | Dresses a connected client in every armor set and camo in turn and screenshots it in third person (front for all, back for the five custom-model sets), with the HUD hidden; not part of `test all`; see "Armor showcase". |
 | `gun.camo.cycle` | gun definitions | Every gun in `GunDefinitions.ALL` is a `CamoChangeable` with the definition's camo count; the Camo Bench routine (`MTECamoBench.cycleStack`) steps it forward through every skin and around, and back below zero, keeping the loaded rounds (GUN-01); a tag-less gun stays full; an out-of-range index stores 0. |
@@ -199,6 +216,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `armor.slots.back` | armor slots (M3) | A test back device in `wings` ticks while worn, gets the action key, and is told once on removal; the fallback Oxygen Tanks add 20 air and 1 charge only with an Oxygen Mask worn (dev runs have no Galacticraft). |
 | `armor.slots.masks` | armor slots (M3) | Gas Mask in the helmet slot is full GT gas hazmat, never SPACE, loses it with a spent filter and regains it renewed; Tactical Mask is gas hazmat, gives night vision and drains EU while charged, stays hazmat when empty, and is oxygen gear only while charged. |
 | `armor.slots.recipes` | armor slots (M3) | Every special-slot item has an Assembler recipe at its tier voltage (`RECIPE_MV` or `RECIPE_HV`), and the Gas Mask and Oxygen Tanks refill recipes exist. |
+| `armor.showcase.accessories` | visuals (M3) | Needs one connected client with the autotest hooks; not part of `test all`. Puts each worn accessory on Alice (first player if she is offline) and signals third-person front and back screenshots: Gas Mask, the four Tactical Mask camos, Night Vision Goggles, Oxygen Mask, Oxygen Tanks, Jump Pack, the five Anti Gravity camos and the Glider (stowed on the ground, and with wings out while falling). Evidence is the `acc-*` screenshots; read them. Items worn in Galacticraft slots are skipped with a note. |
 | `armor.slots.automation` | armor slots (M3 exit gate) | A worn Ammo Pouch exposes no inventory, sided inventory or fluid handle (item and player classes), and hoppers either side of its wearer's cell neither push into nor pull from it over 60 ticks. |
 | `armor.flight.glider` | armor flight (M3) | Glider in `wings`: with no sneak and no key nothing changes; sneaking or the held back-device key caps the descent near 0.18 blocks per tick (vanilla gravity simulated), pushes forward along the look direction and clears the fall distance every tick; no glide on the ground or while flying through another mod's ability, which it never writes; the fall after a glide is negated while a bare player keeps it; removal stops it and the tracker forgets the player. |
 | `armor.flight.jump_pack` | armor flight (M3) | Jump Pack in `wings`: IC2 tier is the HV index and the transfer limit `GTValues.V[HV]`; a jump adds 0.8 and costs `flight.jumpPackJumpCostEu`; a 12 block fall (relative to the pack's baseline) loses 8 blocks and 20% of the rest for `flight.jumpPackFallCostEu`; a 3 block fall is free; an empty pack boosts and absorbs nothing and reports unpowered; the pack never clears another mod's `allowFlying`. |
@@ -227,6 +245,12 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `grenade.frag` | grenades (M2) | A Frag Grenade at rest explodes: zombies at 1.5 and 5 blocks lose at least the 25 damage / radius 6 blast figure through the damage model, the near one more than the far one, the near one also takes fragment damage on top of the blast, and the floor is intact. |
 | `grenade.flash` | grenades (M2) | A Flashbang at rest goes off: a fake player facing it 4 blocks away would get about 80 ticks of Blindness (40 of Nausea), one with their back to it none (measured with `FlashBlast.intensityAt`: a fake player has no connection for the potion packet); a cow at 2 blocks gets Slowness IV and Weakness, one at 6.5 blocks Slowness II, one behind a stone wall and one past 8 blocks nothing; no cow loses health. |
 | `grenade.flash.noblocks` | grenades (M2) | With `explosions.blockDamage` on, a Flashbang beside a stone pillar, a glass pane and dirt changes no block in the surrounding box, hurts no cow, and still slows it. |
+| `utility.plates_recipes` | turret armor plates (M6) | The four plates are registered with armor values 5, 10, 15 and 20; Iron has a crafting-table recipe and no Assembler recipe; Steel, Aluminum and Carbon each have one Assembler recipe at their tier's EU/t and 10 s, with one input (two for Carbon) and no hand recipe. Needs `GG_MODULES=guns,armor,machines,utility`. |
+| `utility.charge_bores_stone` | explosive charges (M6) | An armed Explosive Charge counts a 60-tick fuse down, removes itself, bores a 3x3x3 tunnel into a stone mass, drops items and leaves the stone around and below. Needs `GG_MODULES=guns,armor,machines,utility`. |
+| `utility.charge_gt_ore_drop` | explosive charges (M6) | A charge bores a GT iron ore block and the drops equal `getDrops` at fortune 0 (GGS-09-13). |
+| `utility.charge_respects_cancel` | explosive charges (M6) | A listener cancels two columns; each stops at its block, nothing past a canceled block breaks, and no break event has a null player (GGS-09-11, MUTL-30). |
+| `utility.charge_offline_owner` | explosive charges (M6) | With the owner offline the events carry a FakePlayer with the owner's UUID; an ownerless charge still gets a real player (GGS-09-10). |
+| `utility.charge_foreign_button` | explosive charges (M6) | `PacketChargeButton` from a non-owner is rejected (fuse and arm), an unknown id is rejected, the owner's press is applied (MUTL-31). |
 
 ## M1 coverage
 
@@ -320,7 +344,7 @@ gregguns test armor.showcase
 say [gregguns-autotest] quit
 ```
 
-Screenshots land in `run/client/screenshots/Alice-armor-<set>-<camo>-<front|back>.png`, for example `Alice-armor-steam-2-back.png` and `Alice-armor-t1_scout-0-front.png`. Read them: the script only proves the files were written. Look for: on the 128 x 64 sets, the helmet on the head, the chest on the torso and the belt line at the waist; on the five custom sets, the silhouette described in ARM-DEV-20.
+Screenshots land in `run/client/screenshots/Alice-armor-<set>-<camo>-<front|back>.png`, for example `Alice-armor-steam-2-back.png` and `Alice-armor-t1_scout-0-front.png`. Read them: the script only proves the files were written. Look for: on the 128 x 64 sets, the helmet on the head, the chest on the torso and the belt line at the waist; on the five custom sets, the silhouette described in ARM-DEV-24.
 
 ### Launching a client that joins a server by itself
 

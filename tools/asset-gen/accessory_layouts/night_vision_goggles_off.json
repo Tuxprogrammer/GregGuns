@@ -1,0 +1,16 @@
+{
+  "name": "night_vision_goggles_off",
+  "mount": "HEAD",
+  "textureWidth": 64,
+  "textureHeight": 64,
+  "scale": 0.062500,
+  "textures": ["night_vision_goggles"],
+  "hinges": {},
+  "boxes": [
+    {"name": "cap", "part": 0, "uv": [0, 0], "rotationPoint": [0.000000, -4.000000, 0.000000], "offset": [-4.000000, -4.000000, -4.000000], "size": [8, 8, 8], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.060000, "mirror": false},
+    {"name": "tube_left", "part": 0, "uv": [32, 0], "rotationPoint": [1.700000, -9.000000, -5.000000], "offset": [-1.000000, -1.000000, -2.000000], "size": [2, 2, 4], "rotate": [-2.385691, 0.601266, -0.540354], "inflate": 0.000000, "mirror": false},
+    {"name": "tube_right", "part": 0, "uv": [44, 0], "rotationPoint": [-1.700000, -9.000000, -5.000000], "offset": [-1.000000, -1.000000, -2.000000], "size": [2, 2, 4], "rotate": [-2.385691, -0.601266, 0.540354], "inflate": 0.000000, "mirror": false},
+    {"name": "bridge", "part": 0, "uv": [12, 16], "rotationPoint": [0.000000, -9.600000, -5.200000], "offset": [-1.500000, -0.500000, -1.000000], "size": [3, 1, 2], "rotate": [0.610865, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "arm", "part": 0, "uv": [0, 16], "rotationPoint": [0.000000, -7.950000, -4.000000], "offset": [-1.000000, -0.500000, -2.000000], "size": [2, 1, 4], "rotate": [-1.317724, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false}
+  ]
+}

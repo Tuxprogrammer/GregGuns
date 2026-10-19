@@ -32,9 +32,19 @@ public final class NineMmAmmo {
         3,
         Tier.LV);
 
+    /** SMG Magazine: 2 rounds per refill (RC-45). The Thompson holds 20 of it, the Mac10 32. MV (0001). */
+    public static final MagazineType SMG_MAGAZINE = new MagazineType(
+        "smg",
+        TYPE,
+        "mag_smg",
+        "mag_smg_empty",
+        2,
+        Tier.MV);
+
     /** The definition. */
     public static final AmmoDefinition DEFINITION = AmmoDefinition.of(TYPE)
         .magazine(PISTOL_MAGAZINE)
+        .magazine(SMG_MAGAZINE)
         // RC-28: no Steel input; the loose-ammo exemption of GGS-06-36 applies.
         .row(
             Row.press(
@@ -65,6 +75,26 @@ public final class NineMmAmmo {
                 2,
                 Input.mod(PISTOL_MAGAZINE.emptyItemName(), LOADED_PER_RUN),
                 Input.mod(TYPE.roundItemName(), LOADED_PER_RUN * PISTOL_MAGAZINE.roundsPerMagazine())))
+        // RC-38: the Aluminium plates are the MV gate (replaces Techguns' R37 Iron). Spec: recipes.md.
+        .row(
+            Row.press(
+                "RC-38",
+                SMG_MAGAZINE.emptyItemName(),
+                8,
+                Tier.MV,
+                4,
+                Input.gt("plate", "Aluminium", 2),
+                Input.gt("springSmall", "Aluminium", 8),
+                Input.mod(PartItems.MECHANICAL_2, 1)))
+        .row(
+            Row.press(
+                "RC-45",
+                SMG_MAGAZINE.loadedItemName(),
+                LOADED_PER_RUN,
+                Tier.MV,
+                2,
+                Input.mod(SMG_MAGAZINE.emptyItemName(), LOADED_PER_RUN),
+                Input.mod(TYPE.roundItemName(), LOADED_PER_RUN * SMG_MAGAZINE.roundsPerMagazine())))
         // RC-51: one empty magazine and the same bullets-per-magazine as RC-44.
         .refill(
             Refill.of(
@@ -72,6 +102,12 @@ public final class NineMmAmmo {
                 PISTOL_MAGAZINE.emptyItemName(),
                 TYPE.roundItemName(),
                 PISTOL_MAGAZINE.roundsPerMagazine()))
+        .refill(
+            Refill.of(
+                SMG_MAGAZINE.loadedItemName(),
+                SMG_MAGAZINE.emptyItemName(),
+                TYPE.roundItemName(),
+                SMG_MAGAZINE.roundsPerMagazine()))
         .recycling(() -> AmmoRecycling.nineMm())
         .build();
 

@@ -1,0 +1,24 @@
+{
+  "name": "glider",
+  "mount": "BACK",
+  "textureWidth": 64,
+  "textureHeight": 64,
+  "scale": 0.062500,
+  "textures": ["glider"],
+  "hinges": {"1": [3.500000, 0.000000, 2.000000], "2": [-3.500000, 0.000000, 2.000000]},
+  "boxes": [
+    {"name": "pack", "part": 0, "uv": [0, 0], "rotationPoint": [0.000000, 5.500000, 2.000000], "offset": [-3.500000, -5.000000, -2.000000], "size": [7, 10, 4], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "inner_rim_left", "part": 1, "uv": [34, 14], "rotationPoint": [6.500000, 1.500000, 3.000000], "offset": [-3.000000, -0.500000, -1.000000], "size": [6, 1, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "inner_rib_left", "part": 1, "uv": [22, 0], "rotationPoint": [9.000000, 5.500000, 3.000000], "offset": [-0.500000, -3.500000, -1.000000], "size": [1, 7, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "inner_sail_left", "part": 1, "uv": [34, 0], "rotationPoint": [6.000000, 5.500000, 3.000000], "offset": [-2.500000, -3.500000, -0.500000], "size": [5, 7, 1], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "outer_rim_left", "part": 1, "uv": [0, 22], "rotationPoint": [13.000000, 2.500000, 3.000000], "offset": [-3.500000, -0.500000, -1.000000], "size": [7, 1, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "outer_rib_left", "part": 1, "uv": [46, 0], "rotationPoint": [16.000000, 6.000000, 3.000000], "offset": [-0.500000, -3.000000, -1.000000], "size": [1, 6, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "outer_sail_left", "part": 1, "uv": [6, 14], "rotationPoint": [12.500000, 6.000000, 3.000000], "offset": [-3.000000, -3.000000, -0.500000], "size": [6, 6, 1], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "inner_rim_right", "part": 2, "uv": [18, 22], "rotationPoint": [-6.500000, 1.500000, 3.000000], "offset": [-3.000000, -0.500000, -1.000000], "size": [6, 1, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "inner_rib_right", "part": 2, "uv": [28, 0], "rotationPoint": [-9.000000, 5.500000, 3.000000], "offset": [-0.500000, -3.500000, -1.000000], "size": [1, 7, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "inner_sail_right", "part": 2, "uv": [52, 0], "rotationPoint": [-6.000000, 5.500000, 3.000000], "offset": [-2.500000, -3.500000, -0.500000], "size": [5, 7, 1], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "outer_rim_right", "part": 2, "uv": [34, 22], "rotationPoint": [-13.000000, 2.500000, 3.000000], "offset": [-3.500000, -0.500000, -1.000000], "size": [7, 1, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "outer_rib_right", "part": 2, "uv": [0, 14], "rotationPoint": [-16.000000, 6.000000, 3.000000], "offset": [-0.500000, -3.000000, -1.000000], "size": [1, 6, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "outer_sail_right", "part": 2, "uv": [20, 14], "rotationPoint": [-12.500000, 6.000000, 3.000000], "offset": [-3.000000, -3.000000, -0.500000], "size": [6, 6, 1], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false}
+  ]
+}

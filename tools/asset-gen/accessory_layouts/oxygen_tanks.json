@@ -1,0 +1,16 @@
+{
+  "name": "oxygen_tanks",
+  "mount": "BACK",
+  "textureWidth": 64,
+  "textureHeight": 64,
+  "scale": 0.062500,
+  "textures": ["oxygen_tanks"],
+  "hinges": {},
+  "boxes": [
+    {"name": "tank_right", "part": 0, "uv": [0, 0], "rotationPoint": [-2.500000, 4.500000, 2.000000], "offset": [-1.500000, -4.500000, -1.500000], "size": [3, 9, 3], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "tank_left", "part": 0, "uv": [12, 0], "rotationPoint": [2.500000, 4.500000, 2.000000], "offset": [-1.500000, -4.500000, -1.500000], "size": [3, 9, 3], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "harness", "part": 0, "uv": [24, 0], "rotationPoint": [0.000000, 4.000000, 1.500000], "offset": [-1.000000, -3.000000, -1.500000], "size": [2, 6, 3], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "valve_right", "part": 0, "uv": [34, 0], "rotationPoint": [-2.500000, -0.500000, 2.000000], "offset": [-1.000000, -0.500000, -1.000000], "size": [2, 1, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false},
+    {"name": "valve_left", "part": 0, "uv": [42, 0], "rotationPoint": [2.500000, -0.500000, 2.000000], "offset": [-1.000000, -0.500000, -1.000000], "size": [2, 1, 2], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false}
+  ]
+}

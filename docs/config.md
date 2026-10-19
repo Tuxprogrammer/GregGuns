@@ -45,6 +45,25 @@ Reaction Chamber and Retort tuning (GGS-08-25). Server-side only, not synced.
 | `machines.explosionLowVoltageIndex` | int | `1` | 0 to 7 | no | GT voltage index whose blast power an `EXPLOSION_LOW` failure uses. |
 | `machines.explosionMediumVoltageIndex` | int | `2` | 0 to 7 | no | Same for `EXPLOSION_MEDIUM`. |
 
+## Utility (`utility`)
+
+Turret, explosive charge, Bio Blob and Camp Flag tuning (M6). Server-side only, not synced.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `utility.turretUpkeepEuPerTick` | int | `4` | 0 to 4096 | no | EU per tick a Turret draws while on guard. |
+| `utility.turretEuPerHealedHp` | int | `120` | 0 to 100000 | no | EU spent per hit point a Turret heals. |
+| `utility.turretRepairEuPerTick` | int | `10` | 0 to 4096 | no | EU per tick during the repair after the entity died. |
+| `utility.turretRepairTicks` | int | `200` | 20 to 24000 | no | Ticks of repair before the entity respawns. |
+| `utility.turretRange` | int | `24` | 4 to 64 | no | Blocks within which a Turret looks for targets. |
+| `utility.chargeMaxHardness` | float | `30.0` | 0 to 100000 | no | Hardest block the Explosive Charge bores (exclusive). |
+| `utility.chargeAdvancedMaxHardness` | float | `100.0` | 0 to 100000 | no | Hardest block the Advanced Explosive Charge bores (inclusive). |
+| `utility.bioBlobSparesPlayers` | boolean | `false` | n/a | no | Bio Blob poison skips players. |
+| `utility.bioBlobDecayTicks` | int | `60` | 1 to 24000 | no | Ticks per Bio Blob decay step. |
+| `utility.campFlagSpawnIntervalTicks` | int | `200` | 20 to 24000 | no | Ticks between Camp Flag spawn attempts. |
+| `utility.campFlagCapFactor` | float | `0.75` | 0 to 10 | no | NPC cap is int(((sizeX + sizeZ) / 2) * factor). |
+| `utility.campFlagBreakHelicopter` | boolean | `true` | n/a | no | Breaking a Camp Flag sends a helicopter (inert until NPCs exist). |
+
 ## Damage factors (`damagefactors`)
 
 Techguns' "Damage Factors" category. All keys are synced from server to client (GGS-01-03). The factor is chosen at the hit from who shoots and who is hit (`DamageFactors`, [damage-interop.md](gregguns-spec/02-guns/damage-interop.md)). Turret and NPC factors take effect with those milestones (M6, M7).

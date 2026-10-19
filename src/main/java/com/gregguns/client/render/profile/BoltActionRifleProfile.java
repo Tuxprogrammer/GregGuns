@@ -10,20 +10,23 @@ import com.gregguns.client.anim.SpriteSheet;
  * The Bolt Action Rifle's model boxes and render transforms, as data.
  *
  * <h2>Where the model comes from (originality record)</h2>
- * The boxes are original GregGuns geometry, built the way {@link RevolverProfile} was: nothing is taken from Techguns
- * code or box lists. The model texture {@code textures/models/guns/bolt_action_rifle.png} (128x32, with two camo
- * variants of the same layout) is a packed atlas painted by {@code tools/asset-gen/models.py}, and
- * {@code tools/asset-gen/model_layouts.md} lists the six boxes it was painted for, each as {@code u v w h d} in texels
- * (receiver, barrel, stock, scope, magazine, bipod). Those sizes and texture origins are used here exactly, so every
- * unwrap rectangle lands on painted pixels (checked by {@code BoltActionRifleProfileTest}, which reads the PNG). The
- * positions are authored from the sizes and the words of the spec: a scoped hunting rifle with a long barrel in front
- * of a receiver, a wooden stock behind it, a scope tube riding on top and a magazine hanging below (gun-models.md,
- * "Bolt-action", in words only).
+ * The boxes are original GregGuns geometry, built clean-room from written design notes only
+ * ({@code docs/techguns-spec/03-gun-visuals-audio/model-notes/bolt-action-rifle.md}: proportions, silhouettes,
+ * palettes), by an agent that never saw the original model or texture. Nothing is taken from Techguns code, box lists
+ * or textures. The look: a slim old-fashioned hunting rifle, 53.5 texels long and 12 tall, with a dark-walnut wooden
+ * body (heeled butt, wrist, cheek plates, stepped underside, receiver, thin fore-end) under a flat top line, a thin
+ * free-floating 2x2 dark barrel that runs 15.5 texels past the wood, a small black dumbbell scope on two steel posts,
+ * and a plain steel bolt lever sticking out of the right side. The layout lives in
+ * {@code tools/asset-gen/gun-paint/bolt_action_rifle.layout.json}; {@code tools/asset-gen/gun_paint.py pack} assigns
+ * the UV origins and writes the generated block below, and {@code gun_paint.py paint} paints the 128x32 default,
+ * Olive and Tactical Black sheets from the role map {@code gun-paint/bolt_action_rifle.json}.
+ * {@code BoltActionRifleProfileTest} checks the boxes against the layout file and the notes' key facts.
  *
  * <h2>Frame of reference</h2>
- * X-family: the boxes are laid out with the muzzle toward +X and Y growing downward, in texels, and drawn as authored
- * (the sheet's X-family rows, first person rotX 180 / rotY -45 and third person rotY 225, expect a muzzle along +X).
- * One texel is a sixteenth of a block, so the rifle is about five blocks long in model space before the rows scale it.
+ * X-family: the boxes are laid out with the muzzle toward +X and Y growing downward, in texels, and drawn as
+ * authored. Y = 0 is the top of the scope bells and X = 0 the back of the butt. One texel is a sixteenth of a block.
+ * The bolt stub and lever are static geometry in the single part (the original has no moving part either; the
+ * rechamber is faked by the whole-gun motion).
  *
  * <h2>Scope</h2>
  * The rifle is scoped: while zoomed the renderer hides the model and draws the overlay {@link #SCOPE_TEXTURE}
@@ -50,39 +53,57 @@ public final class BoltActionRifleProfile {
     public static final int TEXTURE_HEIGHT = 32;
     /** GL units per texel. */
     public static final float MODEL_SCALE = 1.0f / 16.0f;
-    /** The muzzle in the gun frame, blocks: x forward, y down, z. The barrel's front face is at texel 46. */
-    public static final float[] MUZZLE = { 46.0f / 16.0f, -1.5f / 16.0f, 0.0f };
+    /** The muzzle in the gun frame, blocks: x forward, y down, z: the barrel's front face (texel 53.5) on its axis. */
+    public static final float[] MUZZLE = { 53.5f / 16.0f, 4.5f / 16.0f, 0.0f };
     /** Frames of {@code muzzleflash2.png} that are painted: 0 to 6. Cell 7 is empty. */
     public static final int MUZZLE_FLASH_FRAMES = 7;
-
-    // Deviation: the sheet says first-person S(1.5) and T(-0.09, -0.37, 0.07) / idle T(0.1, -0.25, -0.5). It was
-    // recorded for Techguns' 53 texel rifle; this one is 82 texels long and the sheet scale would fill the screen
-    // (the pistol needed half the sheet's scale for the same reason). Scale 0.4 and the offsets below put the rifle
-    // on a diagonal from the lower right of the screen to a muzzle left of centre, found by projecting the model
-    // through the first-person camera and checked against screenshots (m2boltaction visual autotest). The sheet's
-    // fire and reload offsets are multiplied by FP_AMP so they move the rifle the same distance on screen.
-    private static final double FP_SCALE = 0.4;
-    private static final double FP_AMP = 1.5 / FP_SCALE;
-    private static final double FP_X = -0.4;
-    private static final double FP_Y = -3.4;
-    private static final double FP_Z = -0.4;
 
     private static final float[] NO_PIVOT = { 0, 0, 0 };
 
     /** One part: the whole rifle moves as a unit (the bolt is static geometry, as in the spec). */
     public static final BoxSpec[] BOXES = {
-        // receiver: the action, in front of the stock
-        new BoxSpec("receiver", 0, 56, 0, 24, 7, 5, -14f, -4f, -2.5f, NO_PIVOT, 0f),
-        // barrel: out of the front of the receiver, upper half
-        new BoxSpec("barrel", 0, 0, 25, 38, 3, 3, 8f, -3f, -1.5f, NO_PIVOT, 0f),
-        // stock: behind the receiver, wrist flush with its top
-        new BoxSpec("stock", 0, 0, 0, 24, 9, 4, -36f, -1f, -2f, NO_PIVOT, 0f),
-        // scope: a tube resting on the top of the receiver
-        new BoxSpec("scope", 0, 38, 13, 24, 4, 4, -6f, -8f, -2f, NO_PIVOT, 0f),
-        // magazine: hangs under the front of the receiver
-        new BoxSpec("magazine", 0, 0, 13, 5, 9, 3, -2f, 3f, -1.5f, NO_PIVOT, 0f),
-        // bipod: a folded leg plate under the fore-end
-        new BoxSpec("bipod", 0, 16, 13, 9, 9, 2, 24f, 0f, -1f, NO_PIVOT, 0f), };
+        // BEGIN GENERATED BOXES (tools/asset-gen/gun_paint.py pack; edit the layout, not this)
+        new BoxSpec("butt", 0, 0, 0, 3, 7, 3, 0f, 5f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("wrist", 0, 12, 0, 8, 4, 3, 3f, 5f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("cheek_right", 0, 94, 10, 9, 2, 1, 0f, 6f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("cheek_left", 0, 12, 7, 9, 2, 1, 0f, 6f, 1.5f, NO_PIVOT, 0f),
+        new BoxSpec("bump_rear", 0, 114, 4, 3, 1, 3, 3f, 9f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("bump_front", 0, 114, 8, 2, 1, 3, 10f, 9f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("action", 0, 58, 0, 2, 3, 3, 11f, 6f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("receiver", 0, 68, 0, 7, 2, 3, 13f, 6f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("top_plate", 0, 0, 10, 24, 1, 3, 14f, 5f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("fore_plate", 0, 54, 10, 13, 1, 3, 20f, 6f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("barrel", 0, 34, 6, 38, 2, 2, 15.5f, 3.5f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("bolt_stub", 0, 94, 13, 7, 1, 1, 13.5f, 4f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("bolt_lever", 0, 86, 10, 1, 1, 3, 14.5f, 4f, -3.5f, NO_PIVOT, 0f),
+        new BoxSpec("scope_rear", 0, 46, 0, 3, 3, 3, 12f, 0f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("scope_tube", 0, 104, 0, 8, 2, 2, 14f, 0.5f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("scope_front", 0, 34, 0, 3, 3, 3, 22f, 0f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("mount_rear", 0, 96, 0, 1, 2, 3, 16f, 3f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("mount_front", 0, 88, 0, 1, 2, 3, 20f, 3f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("cap_rear", 0, 124, 2, 1, 1, 1, 16f, 2f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("cap_front", 0, 124, 0, 1, 1, 1, 20f, 2f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("turret", 0, 114, 12, 2, 2, 1, 17.5f, 0.5f, 1f, NO_PIVOT, 0f),
+        new BoxSpec("knob", 0, 104, 4, 1, 1, 1, 18f, 1f, -1.5f, NO_PIVOT, 0f),
+        // END GENERATED BOXES
+    };
+
+    // Deviation: the sheet says first-person S(1.5) and T(-0.09, -0.37, 0.07) / idle T(0.1, -0.25, -0.5), measured
+    // from the origin of Techguns' model. The scale follows the FirstPersonFit rule with a rifle target of 2 blocks on
+    // screen (the pistol's target is 15/16; the rifle is a long gun), and the idle position puts this model's box
+    // centre on the family anchor. The sheet's fire and reload offsets are multiplied by K so they move the rifle the
+    // same distance on screen as the sheet intends.
+    private static final double SHEET_FP_SCALE = 1.5;
+    /** On-screen length of the rifle in first person, blocks of the scaled frame. */
+    private static final double RIFLE_LENGTH = 2.0;
+    private static final double FP_SCALE = FirstPersonFit
+        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), RIFLE_LENGTH);
+    private static final double FP_AMP = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
+    private static final double[] IDLE = FirstPersonFit
+        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final double FP_X = IDLE[0];
+    private static final double FP_Y = IDLE[1];
+    private static final double FP_Z = IDLE[2];
 
     /** The sheet's render transforms, timing, scope and muzzle flash for the rifle. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
@@ -135,13 +156,13 @@ public final class BoltActionRifleProfile {
                 (p, part) -> FP_Y - FP_AMP * 0.5 * yR(p),
                 (p, part) -> FP_Z - FP_AMP * 0.25 * yR(p))
             .build();
-        // Third person: rotX180, rotY225, S(0.85), T(-1.0, -0.4, 0). Aimed extra translate (0, 0.2, -0.25).
-        // Deviation: the sheet's S(1.5) and T(-0.65, -0.25, 0) are for Techguns' smaller model.
+        // Third person: rotX180, rotY225, S(1.2), T(-0.65, -0.25, 0). Aimed extra translate (0, 0.2, -0.25).
+        // Row from the sheet and notes: scale 1.5 there; 1.2 here for the 3.3-block model (checked in game).
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.85)
-            .translate(-1.0, -0.4, 0)
+            .scale(1.2)
+            .translate(-0.65, -0.25, 0)
             .build();
         // Recoil about (0, 0.3, -0.9): rotZ(-20 K).
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -152,18 +173,18 @@ public final class BoltActionRifleProfile {
             .rotY((p, part) -> 40.0 * yR(p))
             .build();
         // Ground: rotX180, rotY90, S(0.55), T(0, -0.25, 0). Icon: the sheet's rows with the scale cut to fit the slot
-        // and the offset set to centre this model (centre at texel 5, 2).
+        // and the offset set to centre this model (centre at texel 26.75, 6).
         TransformProgram ground = TransformProgram.builder()
             .rotX(180)
             .rotY(90)
-            .scale(0.55)
+            .scale(0.8)
             .translate(0, -0.25, 0)
             .build();
         TransformProgram icon = TransformProgram.builder()
             .rotX(180)
             .rotY(180)
-            .scale(0.4)
-            .translate(-0.31, -0.125, 0)
+            .scale(0.6)
+            .translate(-1.67, -0.375, 0)
             .build();
         // Deviation: the sheet's flash offset (-0.4, -3.0, 1.15) is where Techguns' muzzle was on screen; this
         // offset puts the fixed-frame first-person flash on this model's muzzle (solved from the same projection).

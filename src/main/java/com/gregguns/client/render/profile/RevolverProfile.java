@@ -11,20 +11,23 @@ import com.gregguns.client.anim.SpriteSheet;
  * The Revolver's model boxes and render transforms, as data.
  *
  * <h2>Where the model comes from (originality record)</h2>
- * The boxes are original GregGuns geometry, built the way {@link Pistol9mmProfile} was: nothing is taken from
- * Techguns code or box lists. The model texture {@code textures/models/guns/revolver.png} (64x32) is a packed atlas
- * painted by {@code tools/asset-gen/models.py}, and {@code tools/asset-gen/model_layouts.md} lists the six boxes it was
- * painted for, each as {@code u v w h d} in texels (frame, barrel, cylinder, grip, hammer, sight). Those sizes and
- * texture origins are used here exactly, so every unwrap rectangle lands on painted pixels (checked by
- * {@code RevolverProfileTest}, which reads the PNG). The positions are authored from the sizes and the one fact the
- * spec records about the shape: a long-barreled six-shooter with a drum cylinder in front of a hammer, a trigger-side
- * frame and a grip that curves down and back (gun-models.md, "Revolver", in words only).
+ * The boxes are original GregGuns geometry, built clean-room from written design notes only
+ * ({@code docs/techguns-spec/03-gun-visuals-audio/model-notes/revolver.md}: proportions, silhouettes, palette), by an
+ * agent that never saw the original model or texture. Nothing is taken from Techguns code, box lists or textures.
+ * The look: a long diamond-section barrel with a short ejector rod under it, a wider-than-the-frame drum made of three
+ * stepped slabs with painted seams, a stepped frame under a thin top strap, a recoil shield, a dark hammer, an open
+ * two-post trigger guard and a four-slab wooden grip that leans back. The layout lives in
+ * {@code tools/asset-gen/gun-paint/revolver.layout.json}; {@code tools/asset-gen/gun_paint.py pack} assigns the UV
+ * origins and writes the generated block below, and {@code gun_paint.py paint} paints {@code revolver.png} (64x32) and
+ * {@code golden_revolver.png} from the role map {@code gun-paint/revolver.json}. {@code RevolverProfileTest} checks the
+ * boxes against the layout file and the notes' key facts.
  *
  * <h2>Frame of reference</h2>
  * X-family: the boxes are laid out with the muzzle toward +X and Y growing downward, in texels, and drawn as authored,
  * because the sheet's X-family transform rows (first-person rotX 180, rotY -45; third-person rotY 225) expect a muzzle
- * along +X. One texel is a sixteenth of a block, so the 31-texel gun is a little under two blocks of model space
- * before the rows scale it.
+ * along +X. Y = 0 is the top of the top strap and X = 0 the frame's back face. One texel is a sixteenth of a block, so
+ * the 28-texel gun is a little under two blocks of model space before the rows scale it. The barrel and rod are
+ * square bars turned 45 degrees about X ({@link BoxSpec#tiltXDegrees()}) so they show as diamonds.
  *
  * <p>
  * Spec: gun-sheets.md "Revolver" (rows and timing); rendering-framework.md section 6.1 (X-family) and section 8.
@@ -40,34 +43,43 @@ public final class RevolverProfile {
     /** GL units per texel. */
     public static final float MODEL_SCALE = 1.0f / 16.0f;
     /**
-     * The muzzle in the gun frame, blocks: x forward, y down, z. The barrel's front face is 24 texels forward of the
-     * model origin and its bore axis sits two texels above it.
+     * The muzzle in the gun frame, blocks: x forward, y down, z. The barrel's front face is 23 texels forward of the
+     * frame's back face and its axis is 1.5 texels below the top of the top strap.
      */
-    public static final float[] MUZZLE = { 24.0f / 16.0f, -2.0f / 16.0f, 0.0f };
+    public static final float[] MUZZLE = { 23.0f / 16.0f, 1.5f / 16.0f, 0.0f };
     /**
      * Frames of {@code muzzleflash4x4.png} that are painted: 0 to 8. Cell 9 and later are empty, so the sheet's
      * "10 frames" in the asset manifest would show nothing for the last tenth of the window.
      */
     public static final int MUZZLE_FLASH_FRAMES = 9;
 
-    private static final float[] GRIP_PIVOT = { -3.5f, 3.5f, 0.0f };
     private static final float[] NO_PIVOT = { 0, 0, 0 };
-    private static final float GRIP_TILT = 12.0f;
 
     /** One part: the whole revolver moves as a unit. */
     public static final BoxSpec[] BOXES = {
-        // frame: the receiver the cylinder sits in, above the grip
-        new BoxSpec("frame", 0, 0, 15, 13, 7, 4, -5f, -3.5f, -2f, NO_PIVOT, 0f),
-        // barrel: out of the front of the frame, top flush with the frame top
-        new BoxSpec("barrel", 0, 0, 26, 16, 3, 3, 8f, -3.5f, -1.5f, NO_PIVOT, 0f),
-        // cylinder: wider than the frame, so it shows on both sides
-        new BoxSpec("cylinder", 0, 18, 0, 7, 7, 7, -2f, -3.5f, -3.5f, NO_PIVOT, 0f),
-        // grip: hangs from the rear of the frame, tilted back about its top edge
-        new BoxSpec("grip", 0, 0, 0, 5, 11, 4, -6f, 3.5f, -2f, GRIP_PIVOT, GRIP_TILT),
-        // hammer: on top of the rear of the frame
-        new BoxSpec("hammer", 0, 38, 26, 3, 3, 2, -7f, -5.5f, -1f, NO_PIVOT, 0f),
-        // front sight: on top of the muzzle end
-        new BoxSpec("sight", 0, 48, 26, 2, 2, 2, 22f, -5.5f, -1f, NO_PIVOT, 0f), };
+        // BEGIN GENERATED BOXES (tools/asset-gen/gun_paint.py pack; edit the layout, not this)
+        new BoxSpec("strap", 0, 0, 18, 9, 1, 2, 0f, 0f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("frame_upper", 0, 38, 0, 9, 2, 3, 0f, 1f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("frame_lower", 0, 0, 14, 9, 2, 2, 0f, 3f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("belly", 0, 44, 14, 6, 1, 2, 2f, 5f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("shield", 0, 32, 0, 1, 4, 2, -1f, 1f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("drum_top", 0, 0, 7, 5, 1, 4, 1.5f, 0.5f, -2f, NO_PIVOT, 0f),
+        new BoxSpec("drum_mid", 0, 0, 0, 5, 2, 5, 1.5f, 1.5f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("drum_bottom", 0, 38, 5, 5, 1, 4, 1.5f, 3.5f, -2f, NO_PIVOT, 0f),
+        new BoxSpec("barrel", 0, 18, 10, 14, 2, 2, 9f, 0.5f, -1f, new float[] { 9f, 1.5f, 0f }, 0f, 45f),
+        new BoxSpec("rod", 0, 0, 12, 8, 1, 1, 9f, 3f, -0.5f, new float[] { 9f, 3.5f, 0f }, 0f, 45f),
+        new BoxSpec("sight", 0, 24, 7, 2, 1, 1, 20.5f, -0.4f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("hammer", 0, 18, 7, 2, 2, 1, -2.5f, 1.5f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("hammer_spur", 0, 60, 14, 1, 1, 1, -3.5f, 1.5f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("guard_rear", 0, 38, 14, 1, 2, 2, 2f, 6f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("guard_front", 0, 32, 6, 1, 2, 2, 6f, 6f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("guard_floor", 0, 44, 17, 3, 0, 2, 3f, 8f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("grip_crown", 0, 56, 5, 2, 2, 2, -3f, 3f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("grip_web", 0, 22, 14, 6, 2, 2, -4f, 5f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("grip_neck", 0, 50, 10, 4, 2, 2, -4f, 7f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("grip_butt", 0, 20, 0, 4, 5, 2, -5f, 9f, -1f, NO_PIVOT, 0f),
+        // END GENERATED BOXES
+    };
 
     /** The sheet's first-person scale, recorded for Techguns' smaller model. */
     private static final double SHEET_FP_SCALE = 1.5;
@@ -79,9 +91,17 @@ public final class RevolverProfile {
         .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
     /** The sheet's fire and reload translation deltas are multiplied by this, because the scale changed. */
     private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
+    /**
+     * Nudge (FirstPersonFit step 4): the revolver's grip hangs 14 texels below the top strap, so its box centre sits
+     * low and the grip ran off the bottom-right of the screen at the family anchor (first-person screenshot). The
+     * anchor is moved up the screen and toward the middle so the whole gun, grip included, is in view, as the design
+     * notes' framing target asks (side plus the back of the frame).
+     */
+    private static final double[] ANCHOR = { FirstPersonFit.ANCHOR_X_FAMILY[0] + 0.7, FirstPersonFit.ANCHOR_X_FAMILY[1],
+        FirstPersonFit.ANCHOR_X_FAMILY[2] - 0.4 };
     /** The idle first-person translation from {@link FirstPersonFit}: this model's box centre on the family anchor. */
     private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+        .idleOffset(ANCHOR, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
 
     /** The sheet's render transforms, timing and muzzle flash for the revolver. */
     public static final GunTransforms TRANSFORMS = buildTransforms();

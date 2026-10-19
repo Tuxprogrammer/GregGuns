@@ -1,0 +1,333 @@
+{
+ "gun": "pistol_9mm",
+ "textures": [
+  {
+   "file": "pistol_9mm.png"
+  }
+ ],
+ "roles": {
+  "slide": {
+   "material": "steel",
+   "base": "#2E2C2C",
+   "scratches": false,
+   "noise": 0.03
+  },
+  "black": {
+   "material": "flat",
+   "base": "#141313"
+  },
+  "sight": {
+   "material": "flat",
+   "base": "#222121"
+  },
+  "barrel": {
+   "material": "steel",
+   "base": "#383838",
+   "scratches": false,
+   "noise": 0.02
+  }
+ },
+ "boxes": {
+  "slide": {
+   "role": "slide",
+   "bevel": [
+    1.0,
+    0.92
+   ],
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "color": "#413A3A",
+     "alpha": 0.92
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 14,
+     "h": 1,
+     "color": "#4A4646"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 14,
+     "h": 1,
+     "color": "#4A4646"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 14,
+     "h": 1,
+     "color": "#383232",
+     "alpha": 0.8
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "left",
+      "back"
+     ],
+     "f": 0.92
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "front"
+     ],
+     "x": 12,
+     "y": 0,
+     "w": 2,
+     "h": 2,
+     "f": 0.93
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 2,
+     "h": 2,
+     "f": 0.93
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#3A3636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 13,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#3A3636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#141313"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 12,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#141313"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#3A3636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 11,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#3A3636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 3,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#141313"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 10,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#141313"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 4,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#3A3636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 9,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#3A3636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 5,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#141313"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 8,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#141313"
+    }
+   ]
+  },
+  "rear_sight": {
+   "role": "sight",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "front_sight": {
+   "role": "sight",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "rail": {
+   "role": "black",
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom"
+     ],
+     "color": "#191717"
+    }
+   ]
+  },
+  "barrel": {
+   "role": "barrel",
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#141313"
+    }
+   ]
+  },
+  "grip": {
+   "role": "black",
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "painters": [
+    {
+     "type": "checker",
+     "faces": [
+      "front",
+      "back",
+      "right",
+      "left"
+     ],
+     "amp": 1.1,
+     "border": 0.7
+    }
+   ]
+  },
+  "guard_post": {
+   "role": "black",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "guard_bar": {
+   "role": "black",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "trigger": {
+   "role": "black",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  }
+ }
+}

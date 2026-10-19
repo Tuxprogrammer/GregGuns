@@ -35,6 +35,14 @@ public final class GunCatalog {
         public static final String NINE_MM_PISTOL_MAGAZINE = "mag_9mm_pistol";
         /** Empty 9mm pistol magazine. */
         public static final String NINE_MM_PISTOL_MAGAZINE_EMPTY = "mag_9mm_pistol_empty";
+        /** Loaded SMG magazine (Thompson 20 rounds, Mac10 32). */
+        public static final String SMG_MAGAZINE = "mag_smg";
+        /** Empty SMG magazine. */
+        public static final String SMG_MAGAZINE_EMPTY = "mag_smg_empty";
+        /** Loaded assault rifle magazine (30 rounds). */
+        public static final String ASSAULT_RIFLE_MAGAZINE = "mag_assault_rifle";
+        /** Empty assault rifle magazine. */
+        public static final String ASSAULT_RIFLE_MAGAZINE_EMPTY = "mag_assault_rifle_empty";
 
         private AmmoIds() {}
     }

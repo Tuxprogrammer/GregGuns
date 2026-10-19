@@ -24,7 +24,7 @@ Covers `com.gregguns.armor` (framework, bonuses, API), `com.gregguns.armor.logic
 | ARM-DEV-09 | Out-of-range camo index crashes rendering (ARM-12); missing camo tooltips (ARM-11, ARM-13) | The camo index is clamped to 0 at read and in `SetDef.layerTexture`; Scout camos have lang names | |
 | ARM-DEV-10 | Spec: Miner gate is `plate.WroughtIron` and `nugget.WroughtIron` | `plate.CastIron` and `nugget.CastIron` | In GT 5.09.54.205 `Materials.WroughtIron` is an alias of Cast Iron (`MaterialsInit`: `Materials.WroughtIron = Materials.CastIron = loadCastIron()`), whose ore name is `CastIron`. The ore names `plateWroughtIron` and `nuggetWroughtIron` have no items; the dev self-check caught it. [recipes.md](recipes.md) still says Wrought Iron and should be read as Cast Iron |
 | ARM-DEV-11 | Heavy Cloth owned by area 06 | `part_heavy_cloth` and its RC-21 recipe are registered by the armor module (`ArmorParts`) | No other branch had it; it is a steam-tier hand recipe. If area 06 adds it to `PartItems`, delete `ArmorParts` and keep the registry name |
-| ARM-DEV-12 | Armor layer textures are Techguns-style 128 x 64 sheets | `getArmorTexture` returns `gregguns:textures/models/armor/<base>_1.png` (`_2` for leggings) for the vanilla-layout sets | **Superseded for the 128 x 64 sets (ARM-DEV-20).** Vanilla `ModelBiped` stores UVs as fractions of the sheet, so a 128 x 64 sheet that is the 64 x 32 layout at x2 maps correctly; the model A/B renders confirm it for the offline unwrap, and `armor.showcase` is the in-game check. The real problem was only the sheets drawn for other models (128 x 128, 256 x 128, 64 x 64), now replaced by ARM-DEV-20 |
+| ARM-DEV-12 | Armor layer textures are Techguns-style 128 x 64 sheets | `getArmorTexture` returns `gregguns:textures/models/armor/<base>_1.png` (`_2` for leggings) for the vanilla-layout sets | **Superseded for the 128 x 64 sets (ARM-DEV-24).** Vanilla `ModelBiped` stores UVs as fractions of the sheet, so a 128 x 64 sheet that is the 64 x 32 layout at x2 maps correctly; the model A/B renders confirm it for the offline unwrap, and `armor.showcase` is the in-game check. The real problem was only the sheets drawn for other models (128 x 128, 256 x 128, 64 x 64), now replaced by ARM-DEV-24 |
 
 ## Stats carried over
 
@@ -78,7 +78,7 @@ Branch `m3/slots-equipment`. Code: `com.gregguns.armor.slots` (items, Baubles ac
 ## Not verified here
 
 - Galacticraft is on the compile classpath but not on the dev runtime classpath, so `OxygenMaskGC` and `OxygenTanksGC` compile but have never run. The scenarios exercise the fallback items. The pack run (orchestrator) must check: both items register, the mask fits the GC mask slot, the tanks fit a tank slot and drain one point per 9 ticks, and `ItemTacticalMask` answers `IBreathableArmor`.
-- The Gas Mask and Tactical Mask `getArmorTexture` returns the Techguns-style model sheet (`textures/models/armor/gas_mask.png`, 128 x 64). The masks are future client work (chunk H); the 128 x 64 layout itself maps fine (see ARM-DEV-12). Goggles, the back devices and the pouch have no worn model.
+- Worn models (model review chunk H). Every accessory except the Ammo Pouch has a client-only box model, `com.gregguns.client.accessory` (`AccessoryDefs`, 64 x 64 sheets, textures by `tools/asset-gen/accessory_models.py`). The Gas Mask and Tactical Mask (helmet slot) are armor models (`ItemHelmetMask.getArmorModel` hangs the boxes on a `ModelBiped` head, so head turn and sneak come for free). Goggles and the fallback Oxygen Mask (Baubles `head`) and the back devices (Baubles `wings`) are drawn by `AccessoryRenderEvents` on `RenderPlayerEvent.Specials.Post`, anchored to the head or torso with `ModelRenderer.postRender`. Proportions were fitted by eye to rendered silhouettes, never copied. The Glider shows its outer wings folded behind the inner ones and opens them while the wearer falls (the local player's held key also opens them). Deviation: Baubles Expanded's `IRenderBauble` hook is not used (it needs a Baubles interface on every item and does not cover Galacticraft slots). Open: with Galacticraft loaded the Oxygen Mask and Tanks are GC items worn in GC slots, which GC draws only for its own items, so they are not visible until a small gear-sync packet is added. The Ammo Pouch has no worn model.
 - `GuiAmmoPouch` (vanilla chest sheet with three slot cells painted over) has not been looked at.
 
 ## Open questions
@@ -115,7 +115,7 @@ Branch `m3/flight-gear`. Code: `com.gregguns.armor.flight` (items, server tracke
 | FLT-DEV-06 | Free height 8 "while not empty" regardless of toggle | Free height 8 and 20% reduction apply together, only to a paid fall longer than 3 blocks | GGS-05-19: no reduction that energy did not pay for |
 | FLT-DEV-07 | Anti Gravity Device vertical speed (none specified) | Rise and sink 0.3 blocks per tick, eased at 0.5 per tick per tick | Creative-like feel; our numbers |
 | FLT-DEV-08 | Back-device key P (the task) | J. P is the Ammo Pouch key (`EquipmentKeybinds`) | Not rebinding a shipped key; both are configurable |
-| FLT-DEV-09 | Camos for all three | Only the Anti Gravity Device has them (5, `anti_gravity_pack*.png`). The Glider and Jump Pack have one texture each (`glider.png`, `jump_pack.png`), so there is nothing to cycle | The spec lists four jetpack camos for the Jump Pack, but those sheets are not in the asset set. There is no worn model yet, so the camo only shows in the tooltip until one exists |
+| FLT-DEV-09 | Camos for all three | Only the Anti Gravity Device has them (5, `anti_gravity_pack*.png`). The Glider and Jump Pack have one texture each (`glider.png`, `jump_pack.png`), so there is nothing to cycle | The spec lists four jetpack camos for the Jump Pack, but those sheets are not in the asset set. The camo shows on the worn model (`anti_gravity_pack*.png`) and in the tooltip |
 | FLT-DEV-10 | Anti Gravity Device recipe needs `part_mechanical_3` | `FlightTable` row FL-05 is added at postload only when every GregGuns input is registered; otherwise an INFO line says it is deferred | `part_mechanical_3` (RC-12) belongs to the M4 component branch and is not registered on master. The recipe appears by itself once it is; no code change is needed. A boot with `guns,armor` only also defers it (the Anti Gravity Core is a machines item) |
 | FLT-DEV-11 | Glider Backpack and Glider Wing | Registered by `ArmorParts` (HV parts, recipes FL-01 and FL-02 as in recipes.md) | Defined by the armor recipes sheet; area 06 links to it. If area 06 registers them, delete the two registrations and keep the names |
 
@@ -124,7 +124,7 @@ Branch `m3/flight-gear`. Code: `com.gregguns.armor.flight` (items, server tracke
 - Flight feel and every client path: `FlightClient` has never run. Needs a client to check: glide on sneak and on the key (fall rate, forward speed); Anti Gravity hover, climb, sink and speed; Jump Pack boost height; the J key; the chat messages; tooltips and the creative tab listing.
 - Server `allow-flight`: vanilla 1.7.10 kicks a survival player for "Flying is not enabled on this server" after about 80 ticks of not falling (the floating counter in `NetHandlerPlayServer`) when `allow-flight` is false. A motion-based hover trips it exactly as GT's Jetpack and Angel Rings do. Listed in [PACK-CHANGES](../PACK-CHANGES.md).
 - Sounds: no `sounds.json` events were added (the glider loop, jump boost and anti gravity start sounds of Techguns 4.2 to 4.5 are not played). The asset agent owns the audio set.
-- No particles or worn model (Techguns draws wings and flames); out of scope here.
+- No particles or flames (Techguns draws wings and flames); the worn models are in `com.gregguns.client.accessory`.
 - Charging a worn device in the slot: still "take it off and use a charger" (powered-flight.md open question), unchanged.
 
 # M3 wave B: T2 and T3 sets and steam armor (implementation notes and deviations)
@@ -165,7 +165,7 @@ Branch `m3/armor-t2-t3`. Sets (all data in `ArmorCatalog`): T2 Combat, T2 Comman
 
 ## Visual gaps and checks for the orchestrator
 
-- Steam, Beret and Riot now have box models and matching sheets (ARM-DEV-20); the in-game look is checked with `armor.showcase`.
+- Steam, Beret and Riot now have box models and matching sheets (ARM-DEV-24); the in-game look is checked with `armor.showcase`.
 - Check the tooltips of a steam chestplate ("Compressed air: n / 3600") and the HEV chestplate (IC2 energy line), and that both appear in creative as empty and full.
 - Check step assist and the HEV water speed with a client run (the step height path is client-only, `StepHeightClient`).
 - Check that the steam jump sound plays once per jump.
@@ -191,7 +191,7 @@ Branch `m3/power-armor`. Both sets are pure `SetDef` data in `ArmorCatalog` (`T3
 | PWR-DEV-02 | Techguns lists no hazards | Power Armor and Exo Suit: partial HEAT, FROST and ELECTRICAL while the chestplate is charged, nothing passive | hazard-protection.md flag table, GGS-05-11 |
 | PWR-DEV-03 | Power Armor repair: power plating / gold wire; Exo repair: carbon plate / carbon fibers (copper wire for the chestplate) | Power Armor: `plate.TungstenSteel` and `part_power_plating`; Exo Suit: `plate.EpoxidFiberReinforced` and Heavy Cloth, as T3 Combat and HEV | ARM-DEV-19: one GT metal plus one GregGuns soft part. The electric chestplates never wear and have no repair ([ARM-DEV-18](#deviations)) |
 | PWR-DEV-04 | Power Armor "hides face slot", Exo "face slot shown", back slot shown | Not carried | The face slot is gone (GGS-05-01); masks are helmet items |
-| PWR-DEV-05 | Power Armor and Exo use Techguns models 2/3 and 4/5/6 | Both are our own box models (ARM-DEV-20): `t3_power` (single sheets `t3_power`, `t3_power_dark`, `t3_power_dark2`) and `t3_exo` (single sheets `t3_exo`, `t3_exo_silver`, `t3_exo_green`; the Exo layout changed from double to single). Camo names: Paladin, Outcast, Outcast 2; White, Silver, Dark Green | Geometry first from rendered reference silhouettes, texture painted to fit; see ARM-DEV-20 |
+| PWR-DEV-05 | Power Armor and Exo use Techguns models 2/3 and 4/5/6 | Both are our own box models (ARM-DEV-24): `t3_power` (single sheets `t3_power`, `t3_power_dark`, `t3_power_dark2`) and `t3_exo` (single sheets `t3_exo`, `t3_exo_silver`, `t3_exo_green`; the Exo layout changed from double to single). Camo names: Paladin, Outcast, Outcast 2; White, Silver, Dark Green | Geometry first from rendered reference silhouettes, texture painted to fit; see ARM-DEV-24 |
 | PWR-DEV-06 | Power armor recipes need Power Plating and Mechanical Parts T3 | Both are M4 components not on master (`m4/components` registers `part_power_plating` and `part_mechanical_3`). The eight IV rows are added at postload only when every GregGuns input is registered; otherwise an INFO line (`Armor recipe AR-nn deferred: ... is not registered in this run`) is logged. They appear without a code change once the component branch merges | The `FlightRecipes` pattern (FLT-DEV-10); the check is shared (`FlightRecipes.missingInput`). Until then the items exist in the creative tab but cannot be crafted |
 | PWR-DEV-07 | Exo upgrade is shapeless and keeps NBT | The Advanced Combat piece is an Assembler input at wildcard damage; the output is a fresh stack (no camo, no wear) | GGS-05-35, ARM-DEV-20 |
 | PWR-DEV-08 | Power Armor chestplate carries 2 extra health, others 1 | Same (1, 2, 1, 1); the Exo Suit has none | armor-catalog 5.9, 5.11 |
@@ -205,7 +205,7 @@ Exo Suit: material row T3_EXO (physical 22, other elements 18, poison 10, radiat
 ## Visual and client checks for the orchestrator
 
 - Power Armor and Exo Suit icons and tooltips (energy line, camo line, hazard lines) in the creative tab, empty and full.
-- Worn layers: the Power Armor and Exo box models and sheets (ARM-DEV-20; run `armor.showcase`); cycle the three camos at a Camo Bench.
+- Worn layers: the Power Armor and Exo box models and sheets (ARM-DEV-24; run `armor.showcase`); cycle the three camos at a Camo Bench.
 - Exo Suit speed +80% and jump +0.6 feel, and step assist, in a client.
 - A charged chestplate in a real GT Battery Buffer GUI of the matching tier (the scenario covers the logic).
 
@@ -232,15 +232,15 @@ Evidence per box of [ROADMAP § M3](../../ROADMAP.md#m3--armor-and-equipment). T
 
 ---
 
-# M3 armor models: faithful worn shapes (ARM-DEV-20)
+# M3 armor models: faithful worn shapes (ARM-DEV-24)
 
-> **Interim geometry.** The five box sets below were fitted by eye against Techguns renders, a method the owner retired. They will be replaced by clean-room builders working from `docs/techguns-spec/05-armor/model-notes/<set>.md` (two-agent process). Do not polish them.
+> The five sets and the eight accessories are now clean-room builds from `docs/techguns-spec/05-armor/model-notes/`.
 
 Branch `m3/armor-models`. Replaces the "no 3D models" decision for the five sets whose sheets never fit the vanilla biped: Exo Suit (3 colors), Power Armor (3), Steam Armor (4), Riot Coat (1) and Beret (3).
 
 | Id | Earlier state | GregGuns | Why |
 |---|---|---|---|
-| ARM-DEV-20 | Sheets drawn for custom models that this repo never had; they rendered as smears on the vanilla biped | Our own boxes, authored by eye from rendered reference images (silhouette, proportion, part breakdown, palette) and checked with a silhouette loop; no Techguns code, coordinates or textures. The boxes live in `assets/gregguns/armor_models/<set>.json`, written by `tools/asset-gen/armor_models.py` together with the sheets painted to fit them. `com.gregguns.armor.model` (pure) reads them; `com.gregguns.client.armor.BoxArmorModel` (client) turns one into a `ModelBiped` per piece, wired through `ItemGregGunsArmor.getArmorModel`. Exo and Riot move to `TextureLayout.SINGLE` | Review findings 1, 4, 6 and 8 of the model A/B review |
+| ARM-DEV-24 | Sheets drawn for custom models that this repo never had; they rendered as smears on the vanilla biped | Our own boxes, authored by eye from rendered reference images (silhouette, proportion, part breakdown, palette) and checked with a silhouette loop; no Techguns code, coordinates or textures. The boxes live in `assets/gregguns/armor_models/<set>.json`, written by `tools/asset-gen/armor_models.py` together with the sheets painted to fit them. `com.gregguns.armor.model` (pure) reads them; `com.gregguns.client.armor.BoxArmorModel` (client) turns one into a `ModelBiped` per piece, wired through `ItemGregGunsArmor.getArmorModel`. Exo and Riot move to `TextureLayout.SINGLE` | Review findings 1, 4, 6 and 8 of the model A/B review |
 
 ## Shape
 

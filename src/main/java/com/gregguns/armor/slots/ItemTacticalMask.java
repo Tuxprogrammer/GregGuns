@@ -85,6 +85,11 @@ public final class ItemTacticalMask extends ItemHelmetMask implements IElectricI
     }
 
     @Override
+    protected String modelId() {
+        return NAME;
+    }
+
+    @Override
     protected String layerTexture(ItemStack stack) {
         return CAMOS.get(getCamo(stack));
     }

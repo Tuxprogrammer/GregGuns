@@ -351,6 +351,11 @@ KEEP = frozenset(n.lower() for n in (
     "powerhammer_impactGround_c powerhammer_impact_a powerhammer_impact_d pulserifle_shot_c sawedoff_shot_a "
     "sawedoff_shot_b sawedoff_shot_c").split())
 
+# round 4: the gate (not the old API review) decides; these nine fail it, so they use the round-2 engines like the rest
+KEEP = KEEP - frozenset(("boltaction_shot_a boltaction_shot_b boltaction_shot_c powerhammer_charge_a "
+                         "powerhammer_impactground_c powerhammer_impact_d sawedoff_shot_a sawedoff_shot_b "
+                         "sawedoff_shot_c").split())
+
 _LEGACY = list(REGISTRY)  # everything registered above this line is the round-1 behavior
 
 
@@ -516,7 +521,7 @@ def blast2(c, N, *, sub=(125.0, 50.0), sub_tau=0.08, sub_gain=1.0, crack_gain=1.
            crack2_gain=0.55, body_hi=7000.0, body_gain=1.0, low_gain=1.0, tail_gain=1.0, rumble_gain=0.5,
            zap=None, zap2=None, crackle=None, churn_rate=0.0, churn_depth=0.0, thunk=0.0, hits=(), puffs=(),
            whoosh=0.0, pulses=None, buzz=None, first_floor=14.0, fit_sub=True, dense=1.8, mono=True,
-           cen_k=2.2, knots=None, rumble_hp=35.0, low_lp=300.0):
+           cen_k=2.2, knots=None, rumble_hp=35.0, low_lp=300.0, ons_gain=0.0, ons_tau=0.03):
     """Round-2 workhorse for shots and impacts.
 
     One coherent event.  A single noise body whose low-pass corner follows the original's centroid per quarter,
@@ -553,6 +558,12 @@ def blast2(c, N, *, sub=(125.0, 50.0), sub_tau=0.08, sub_gain=1.0, crack_gain=1.
         m.add(sfx.waveshape(bz, 2.0) * sfx.exp_env(n, sr, dsc, attack=0.002), 0.0, g0)
     if thunk:
         m.add(_u(sfx.thunk(sr, rng, rng.uniform(55, 80), 0.1, 0.35, grit=0.8)), 0.0, thunk * 0.8)
+    if ons_gain:  # the original's own secondary onsets (reflections, debris): soft dark bumps at its measured times
+        first = tg.onsets[0] if tg.onsets else 0.0
+        for to in [t for t in tg.onsets if t > first + 0.06][:12]:
+            nbp = sfx.n_of(sr, 0.12)
+            bp = sfx.fftfilt(sfx.noise(nbp, rng), sr, hp=200, lp=rng.uniform(1800, 4500), order=1) * sfx.exp_env(nbp, sr, ons_tau, attack=min(0.002, ons_tau * 0.2))
+            m.add(_u(bp), to, ons_gain * float(E[min(int(to * sr), N - 1)]) * 2.0)
     for (th, gh) in hits:  # second transient: 2-8 kHz burst + short 150 Hz knock, softer than the main one
         nb = sfx.n_of(sr, 0.09)
         bh = sfx.fftfilt(sfx.noise(nb, rng), sr, hp=1800, lp=8500, order=1) * sfx.exp_env(nb, sr, 0.014, attack=0.0006)
@@ -736,7 +747,7 @@ def _clusters(ons, gap=0.22):
 
 def events3(c, N, *, bright=1.0, bass=0.35, bed=0.0, bed_floor=-46.0, tau=0.075, tex=1.0, tex_dens=420.0,
             lows=(), glides=(), ons=None, drop=(), add=(), kinds_at=None, big_kind="slam", big_gain=1.0,
-            heavy_top=0.2, floor_db=-36.0, level_pow=0.7, tail=0.12):
+            heavy_top=0.2, floor_db=-36.0, level_pow=0.7, tail=0.12, hit_ts=1.0, amp_floor=0.35):
     """Round-2 handling sequence from noise only.
 
     ``lows``   = ('pulses', t0, t1, rate, gain) or ('rumble', t0, t1, gain), in units of the loudest hit;
@@ -770,8 +781,8 @@ def events3(c, N, *, bright=1.0, bass=0.35, bed=0.0, bed_floor=-46.0, tau=0.075,
             kind = "clack"
         else:
             kind = "click" if rng.random() < 0.6 else "clack"
-        g = (big_gain if t == big else 1.0) * (0.35 + 0.65 * amp)
-        m.add(_hit(sr, rng, kind, bright, bass), t, g)
+        g = (big_gain if t == big else 1.0) * (amp_floor + (1.0 - amp_floor) * amp)
+        m.add(_hit(sr, rng, kind, bright, bass, hit_ts), t, g)
         # grain texture envelope: attack at the onset, decays over ``tau`` (longer for heavy hits)
         tt = np.maximum(ts - t, 0.0)
         e = np.where(ts >= t, np.exp(-tt / (tau * (1.8 if t in heavy else 1.0))), 0.0) * amp
@@ -860,25 +871,25 @@ def _rattle(sr, rng, count=None, span=None, lo=200.0, hi=2500.0, bright=1.0):
     return out / (np.max(np.abs(out)) + 1e-9)
 
 
-def _hit(sr, rng, kind, bright=1.0, bass=0.0):
+def _hit(sr, rng, kind, bright=1.0, bass=0.0, ts=1.0):
     """One handling hit, peak-normalized to 1: transient + damped inharmonic modes + short body."""
     tr = _impulse_click(sr, rng, bright)
     if kind == "click":
         parts = [tr, 0.4 * _u(_modal(sr, rng, 3, (800, 1600), (0.003, 0.006), 0.05)),
-                 0.5 * _body_burst(sr, rng, 250, 1500, rng.uniform(0.012, 0.025))]
+                 0.5 * _body_burst(sr, rng, 250, 1500, rng.uniform(0.012, 0.025) * ts)]
     elif kind == "clack":
         parts = [tr, 0.42 * _u(_modal(sr, rng, 5, (600, 1300), (0.003, 0.006), 0.05)),
-                 0.7 * _body_burst(sr, rng, 200, 1400, rng.uniform(0.02, 0.04)),
+                 0.7 * _body_burst(sr, rng, 200, 1400, rng.uniform(0.02, 0.04) * ts),
                  0.35 * _rattle(sr, rng, count=int(rng.integers(5, 10)), span=0.05, bright=bright)]
     elif kind == "slam":
         parts = [1.1 * tr, 0.35 * _u(_modal(sr, rng, 6, (600, 1200), (0.003, 0.007), 0.06)),
-                 0.9 * _body_burst(sr, rng, 150, 1200, rng.uniform(0.04, 0.06)),
+                 0.9 * _body_burst(sr, rng, 150, 1200, rng.uniform(0.04, 0.06) * ts),
                  0.5 * _rattle(sr, rng, count=int(rng.integers(8, 16)), span=0.12, bright=bright)]
         if bass > 0:
             parts.append(bass * _u(_thump(sr, 120, 45, rng.uniform(0.05, 0.1))))
     elif kind == "thunk":
         parts = [0.6 * _impulse_click(sr, rng, 0.7, 6000), 0.35 * _u(_modal(sr, rng, 3, (400, 800), (0.003, 0.006), 0.05)),
-                 1.0 * _body_burst(sr, rng, 120, 700, rng.uniform(0.03, 0.05))]
+                 1.0 * _body_burst(sr, rng, 120, 700, rng.uniform(0.03, 0.05) * ts)]
         if bass > 0:
             parts.append(0.4 * bass * _u(_thump(sr, 110, 55, 0.05)))
     else:
@@ -971,6 +982,8 @@ for _p in ("boltaction_rechamber", "combatshotgun_pump", "grenade_pin_*", "grena
 # --------------------------------------------------------------------------- shots: per-prefix and per-sound parameters
 ACOUSTIC2 = {
     "ak47_shot_": dict(),
+    "boltaction_shot_": dict(),
+    "sawedoff_shot_": dict(sub=(100.0, 40.0), sub_tau=0.1),
     "scar_shot_": dict(),
     "ar1_shot_": dict(),
     "aug_shot_": dict(),
@@ -1031,6 +1044,15 @@ def _make_shot(c, N, prefix, base):
 
 for _p, _kw in {**ACOUSTIC2, **SCIFI2}.items():
     _reg2(_p + "*", (lambda p, b: (lambda c, N: _make_shot(c, N, p, b)))(_p, _kw))
+
+
+def shot_base(name):
+    """Effective blast2 parameters of a shot/impact sound before the per-sound table (for the tuner)."""
+    for tbl in (ACOUSTIC2, SCIFI2):
+        for p, kw in tbl.items():
+            if name.startswith(p):
+                return dict(kw)
+    return {}
 
 
 # --------------------------------------------------------------------------- sustained textures (round 2)
@@ -1231,6 +1253,7 @@ PER_IMPACT = {
 def _impact_recipe(c, N):
     kw = dict(sub=(100.0, 40.0), sub_tau=0.12, thunk=0.5, churn_rate=14, churn_depth=0.25, crackle=(50, 500, 4000, 0.5, 0.3))
     kw.update(PER_IMPACT.get(c.name, {}))
+    kw.update(PER.get(c.name, {}))
     return blast2(c, N, **kw)
 
 
@@ -1242,3 +1265,99 @@ def _biogun_impact_recipe(c, N):
 _reg2("powerhammer_impactground_*", _impact_recipe)
 _reg2("powerhammer_impact_*", _impact_recipe)
 _reg2("biogun_impact_*", _biogun_impact_recipe)
+
+
+# --------------------------------------------------------------------------- round 4: per-sound parameters
+# Found by a local search against the measured gate (tools/asset-gen/sound_gate.py): each sound's parameters were
+# nudged until the checks tied to its failures passed.  Seeded recipes, so the output is reproducible.
+_TUNED = {
+    ('PER_RELOAD', 'mib_blaster_reload'): {'lows': [['rumble', 1.3, 1.9, 0.12]], 'glides': [[1.9, 2.28, 1000, 2400, 0.6]], 'bed': 0.24, 'tau': 0.15664499999999998, 'tex': 0.6394124999999999, 'tex_dens': 1200.0, 'level_pow': 0.5399999999999998, 'bright': 2.2},
+    ('PER_RELOAD', 'mib_blaster_reload_akimbo'): {'lows': [['rumble', 1.4, 2.5, 0.1]], 'glides': [[2.6, 2.99, 1000, 2400, 0.6]], 'bed': 0.6, 'tau': 0.13274999999999998, 'level_pow': 1.1, 'tex': 1.5},
+    ('PER_RELOAD', 'scar_reload'): {'bright': 0.78, 'tex': 0.75},
+    ('PER_RELOAD', 'ak47_reload'): {'lows': [['pulses', 1.62, 2.65, 9.0, 0.5]], 'bed': 0.54, 'tau': 0.25, 'level_pow': 0.7, 'tex': 1.2322739999999999, 'amp_floor': 0.16999999999999998},
+    ('PER_RELOAD', 'alienblaster_reload'): {'lows': [['rumble', 0.0, 1.5, 0.7], ['rumble', 1.5, 2.4, 0.35]], 'glides': [[1.5, 2.2, 700, 1100, 0.2]], 'bed': 0.2, 'tex': 0.3835, 'tex_dens': 409.5, 'level_pow': 0.5399999999999999, 'tau': 0.04875, 'bright': 1.02},
+    ('PER', 'alienblaster_shot_c'): {'cen_k': 3.3000000000000003},
+    ('PER_RELOAD', 'ar1_reload'): {'tex': 0.325, 'tex_dens': 273.0},
+    ('PER', 'ar1_shot_a'): {'cen_k': 1.4300000000000002},
+    ('PER_RELOAD', 'as50_reload'): {'lows': [['pulses', 0.1, 1.0, 8.0, 0.12], ['pulses', 1.2, 1.9, 7.0, 0.25], ['pulses', 4.2, 4.9, 6.0, 0.25]], 'bed': 0.22, 'bright': 1.7999999999999998, 'tex': 0.75},
+    ('PER', 'as50_shot_a'): {'ons_gain': 0.24, 'dense': 2.5, 'cen_k': 1.4300000000000002, 'body_hi': 13500.0},
+    ('PER', 'as50_shot_b'): {'body_hi': 14000.0, 'low_gain': 0.15934567035156247, 'cen_k': 1.5895000000000001, 'crack_gain': 0.30617201875},
+    ('PER_RELOAD', 'aug_reload'): {'tex_dens': 273.0, 'tau': 0.029499999999999995, 'tex': 0.59},
+    ('PER_SUS', 'beamgun_loop_a'): {'cen_k': 1.3, 'body_hi': 500.0, 'low': [28, 120, 1.0], 'buzz': {'f0': 500, 'f1': 480, 'gain': 0.12, 'lp0': 900, 'lp1': 900, 'nh': 6}, 'hiss': [2000, 7000, 0.03]},
+    ('PER_SUS', 'beamgun_start_a'): {'cen_k': 1.4, 'body_hi': 900.0, 'low': [30, 110, 1.0], 'buzz': {'f0': 200, 'f1': 220, 'gain': 0.3, 'lp0': 1000, 'lp1': 900, 'nh': 8, 'rate': 30, 'depth': 0.5}, 'hiss': [1500, 6000, 0.1], 'crack': [0.5, 6000], 'body_gain': 0.3333333333333333},
+    ('PER_SUS', 'beamgun_start_b'): {'cen_k': 0.9099999999999999, 'body_hi': 900.0, 'low': [30, 110, 0.9], 'buzz': {'f0': 200, 'f1': 210, 'gain': 0.3, 'lp0': 1000, 'lp1': 900, 'nh': 8}, 'hiss': [1000, 6000, 0.15], 'body_gain': 1.5},
+    ('PER_RELOAD', 'biogun_reload'): {'lows': [['rumble', 1.4, 3.0, 0.15]], 'bed': 0.24, 'tau': 0.02, 'level_pow': 1.1, 'tex': 0.4889625, 'hit_ts': 0.4, 'amp_floor': 0.08000000000000002},
+    ('PER', 'biogun_shot_a'): {'ons_gain': 1.5},
+    ('PER', 'biogun_shot_b'): {'ons_gain': 0.30000000000000004},
+    ('PER', 'blasterrifle_shot_a'): {'cen_k': 3.3000000000000003},
+    ('PER', 'blasterrifle_shot_b'): {'cen_k': 3.3000000000000003},
+    ('PER_RELOAD', 'boltaction_rechamber'): {'tex': 0.16666666666666666, 'tex_dens': 357.0},
+    ('PER_RELOAD', 'boltaction_reload'): {'tau': 0.04875, 'hit_ts': 0.85},
+    ('PER_SUS', 'chainsaw_swing_b'): {'cen_k': 1.0, 'body_hi': 2000.0, 'body_gain': 0.2, 'hp': 600.0, 'smooth_s': 0.09, 'buzz': {'f0': 80, 'f1': 84, 'gain': 1.0, 'lp0': 2500, 'lp1': 1500, 'rate': 9, 'depth': 0.0, 'nh': 22}},
+    ('PER', 'combatshotgun_shot_a'): {'tail_gain': 0.65, 'low_gain': 0.65, 'cen_k': 1.6874, 'body_hi': 12390.0, 'crack_gain': 0.5525},
+    ('PER', 'combatshotgun_shot_b'): {'cen_k': 3.3000000000000003, 'body_hi': 3867.5},
+    ('PER_RELOAD', 'flamethrower_reload'): {'tau': 0.11249999999999999, 'level_pow': 0.5399999999999999, 'tex': 1.5},
+    ('PER', 'goldenrevolver_shot_b'): {'cen_k': 1.2155, 'body_hi': 14000.0, 'low_gain': 1.5, 'crack_gain': 0.65},
+    ('PER_RELOAD', 'grenade_pin_b'): {'bright': 1.1, 'bass': 0.0, 'tex': 0.325},
+    ('PER_RELOAD', 'grenadelauncher_reload'): {'lows': [['rumble', 3.5, 4.3, 0.15]], 'bed': 0.6, 'tau': 0.04875, 'level_pow': 0.8599999999999999, 'bright': 0.78, 'amp_floor': 0.53, 'tex': 0.425, 'hit_ts': 0.85},
+    ('PER', 'grenadelauncher_shot_a'): {'ons_gain': 0.24, 'dense': 2.5, 'cen_k': 1.2155, 'body_hi': 2136.7937500000003, 'low_gain': 0.359125, 'crack_gain': 0.7224999999999999},
+    ('PER', 'grenadelauncher_shot_b'): {'cen_k': 6.89238, 'body_hi': 3287.375, 'low_gain': 0.5525, 'crack_gain': 0.85},
+    ('PER', 'grenadelauncher_shot_c'): {'cen_k': 6.89238, 'body_hi': 2136.7937500000003, 'low_gain': 1.77, 'tail_gain': 1.77, 'rumble_gain': 0.425, 'crack_gain': 0.85},
+    ('PER_RELOAD', 'handgun_reload'): {'lows': [['rumble', 0.0, 1.3, 0.5]], 'bed': 0.6, 'tau': 0.022894218750000004, 'level_pow': 1.1, 'tex': 1.3314824999999997},
+    ('PER', 'handgun_shot_b'): {'cen_k': 1.4300000000000002, 'body_hi': 10500.0},
+    ('PER_RELOAD', 'lasergun_reload'): {'glides': [[2.1, 2.9, 1400, 2300, 0.1]], 'bed': 0.12, 'hit_ts': 0.65},
+    ('PER', 'lasergun_shot_b'): {'cen_k': 3.3000000000000003},
+    ('PER', 'lasergun_shot_c'): {'cen_k': 1.4300000000000002, 'body_hi': 5100.0, 'low_gain': 0.5525, 'crack_gain': 0.65},
+    ('PER_RELOAD', 'lmg_reload'): {'lows': [['rumble', 0.0, 0.8, 0.8]], 'bed': 0.06, 'tex': 0.325, 'tex_dens': 232.04999999999998, 'tau': 0.11249999999999999, 'bright': 1.02},
+    ('PER', 'lmg_shot_b'): {'cen_k': 3.3000000000000003},
+    ('PER', 'lmg_shot_c'): {'cen_k': 1.4300000000000002, 'body_hi': 4550.0},
+    ('PER_RELOAD', 'mac10_reload'): {'reseed': 1, 'tex': 0.325, 'level_pow': 0.3},
+    ('PER_RELOAD', 'mac10_reload_akimbo'): {'tau': 0.04875, 'level_pow': 0.86, 'hit_ts': 1.5, 'amp_floor': 0.95, 'tex': 0.16666666666666666},
+    ('PER', 'mac10_shot_b'): {'cen_k': 3.894, 'body_hi': 4550.0, 'low_gain': 0.65},
+    ('PER', 'mac10_shot_c'): {'sub_gain': 1.5, 'low_gain': 0.65, 'cen_k': 3.3000000000000003, 'crack_gain': 1.275},
+    ('PER_RELOAD', 'minigun_reload'): {'lows': [['rumble', 0.2, 1.5, 0.3], ['rumble', 4.6, 5.9, 0.5]], 'bed': 0.020000000000000004, 'tex': 0.75, 'tex_dens': 409.5, 'level_pow': 0.6199999999999999},
+    ('PER_MINIGUN', 'minigun_shot_a'): {'rate': 11.0, 'wash': 0.6265799999999999, 'tail_hi': 5221.5, 'tail_lo': 796.5},
+    ('PER_MINIGUN', 'minigun_shot_b'): {'rate': 20.0, 'wash': 0.52215, 'tail_db': -14.0, 'tail_hi': 3750.0, 'tail_lo': 675.0},
+    ('PER_MINIGUN', 'minigun_shot_c'): {'rate': 20.0, 'wash': 0.6375, 'tail_db': -12.0, 'tail_hi': 6265.799999999999, 'tail_lo': 675.0},
+    ('PER_MINIGUN', 'minigun_shot_d'): {'rate': 37.0, 'wash': 0.21133124999999997, 'jitter': 0.12, 'tail_hi': 7832.25},
+    ('PER_RELOAD', 'pdw_reload'): {'tex': 0.75},
+    ('PER_RELOAD', 'pistol_reload'): {'bed': 0.12, 'tex': 0.75},
+    ('PER_RELOAD', 'pistol_reload_akimbo'): {'bed': 0.6, 'tau': 0.13274999999999998, 'level_pow': 0.6199999999999999, 'tex': 0.59, 'hit_ts': 2.25, 'amp_floor': 0.53},
+    ('PER_SUS', 'powerhammer_charge_b'): {'cen_k': 3.54, 'body_hi': 2500.0, 'low': [25, 200, 1.0], 'hiss': [2000, 6000, 0.1], 'am': [20, 0.3]},
+    ('PER', 'powerhammer_impactground_a'): {'ons_gain': 0.24},
+    ('PER', 'powerhammer_impactground_d'): {'ons_gain': 0.12, 'dense': 1.1, 'low_gain': 0.85},
+    ('PER', 'powerhammer_impact_c'): {'cen_k': 3.3000000000000003},
+    ('PER', 'powerhammer_impact_d'): {'cen_k': 3.3000000000000003},
+    ('PER_RELOAD', 'powerhammer_reload'): {'lows': [['rumble', 2.3, 3.3, 0.6], ['pulses', 1.75, 2.0, 8.0, 0.3]], 'bed': 0.1, 'tex': 0.75},
+    ('PER', 'powerhammer_shot_a'): {'ons_gain': 0.6900000000000001, 'dense': 1.1, 'cen_k': 1.4300000000000002, 'low_gain': 0.65, 'crack_gain': 1.5},
+    ('PER', 'powerhammer_shot_b'): {'dense': 1.1, 'cen_k': 2.5311, 'crack_gain': 1.5, 'low_gain': 0.5525, 'rumble_gain': 0.75, 'body_hi': 5967.849999999999},
+    ('PER', 'powerhammer_shot_c'): {'ons_gain': 0.24},
+    ('PER_SUS', 'powerhammer_swing_a'): {'cen_k': 1.3, 'body_hi': 6000.0, 'low': [25, 200, 0.9], 'hiss': [2000, 8000, 0.08], 'crack': [0.25, 8000], 'smooth_s': 0.025},
+    ('PER_SUS', 'powerhammer_swing_b'): {'cen_k': 1.105, 'body_hi': 5000.0, 'low': [25, 200, 0.7], 'hiss': [2000, 8000, 0.1], 'crack': [0.3, 6000], 'smooth_s': 0.025, 'dense': 1.4, 'body_gain': 1.77},
+    ('PER_SUS', 'powerhammer_swing_c'): {'cen_k': 1.3, 'body_hi': 4000.0, 'low': [25, 200, 0.9], 'hiss': [2000, 6000, 0.05], 'crack': [0.2, 4000], 'smooth_s': 0.025, 'body_gain': 1.5},
+    ('PER_RELOAD', 'pulserifle_reload'): {'bed': 0.1, 'tau': 0.11249999999999999, 'level_pow': 0.5399999999999999, 'tex': 0.75},
+    ('PER', 'pulserifle_shot_b'): {'cen_k': 3.3000000000000003, 'body_hi': 3900.0, 'low_gain': 0.65},
+    ('PER', 'pulserifle_shot_d'): {'cen_k': 3.3000000000000003},
+    ('PER_RELOAD', 'revolver_reload'): {'bed': 0.6, 'tau': 0.19740489743987993, 'tex': 1.4540833199999998, 'tex_dens': 273.0, 'bright': 0.78, 'level_pow': 0.4599999999999998, 'hit_ts': 0.4, 'amp_floor': 0.08000000000000002},
+    ('PER_RELOAD', 'revolver_reload_akimbo'): {'bed': 0.6, 'tau': 0.13314824999999997, 'level_pow': 0.8599999999999999, 'tex': 0.885, 'tex_dens': 322.14, 'hit_ts': 0.4},
+    ('PER', 'revolver_shot_a'): {'cen_k': 1.2155, 'body_hi': 3867.5, 'low_gain': 0.65, 'crack_gain': 0.65},
+    ('PER', 'revolver_shot_b'): {'cen_k': 6.89238, 'body_hi': 3287.375, 'low_gain': 0.46962499999999996, 'crack_gain': 0.5525},
+    ('PER', 'revolver_shot_c'): {'ons_gain': 0.24, 'cen_k': 1.4300000000000002},
+    ('PER_RELOAD', 'rocket_reload'): {'lows': [['rumble', 0.0, 1.5, 0.6], ['rumble', 2.8, 3.5, 0.6]], 'bed': 0.12, 'tau': 0.15664499999999998, 'level_pow': 0.3, 'tex': 1.5},
+    ('PER_RELOAD', 'sawedoff_reload'): {'bed': 0.2},
+    ('PER_RELOAD', 'sonicshotgun_reload'): {'lows': [['rumble', 2.2, 3.8, 0.8]], 'bed': 0.06, 'bright': 0.8453249999999999, 'tex': 0.27625, 'tex_dens': 100.0},
+    ('PER', 'sonicshotgun_shot_c'): {'cen_k': 3.3000000000000003, 'body_hi': 9000.0},
+    ('PER_RELOAD', 'teslagun_reload'): {'lows': [['rumble', 0.0, 1.0, 0.4], ['rumble', 1.2, 2.3, 1.0]], 'bed': 0.5, 'bright': 1.3004999999999998, 'tex': 0.325},
+    ('PER', 'teslagun_shot_a'): {'cen_k': 3.3000000000000003, 'crack_gain': 1.5, 'low_gain': 0.65},
+    ('PER', 'teslagun_shot_c'): {'dense': 2.5, 'ons_gain': 1.5, 'ons_tau': 0.035399999999999994},
+    ('PER_RELOAD', 'thompson_reload'): {'bed': 0.06},
+    ('PER', 'thompson_shot_a'): {'cen_k': 3.3000000000000003},
+    ('PER', 'thompson_shot_b'): {'sub_gain': 1.5, 'low_gain': 1.5, 'cen_k': 3.3000000000000003},
+    ('PER', 'thompson_shot_c'): {'sub_gain': 0.977925, 'low_gain': 0.5525, 'rumble_gain': 0.678795, 'cen_k': 3.3000000000000003, 'body_hi': 4550.0, 'crack_gain': 0.65},
+    ('PER_RELOAD', 'vector_reload'): {'tau': 0.04889625, 'bright': 2.1239999999999997, 'level_pow': 0.3, 'tex': 0.6961999999999999, 'bed': 0.06, 'hit_ts': 1.5, 'amp_floor': 0.16999999999999998},
+    ('PER', 'vector_shot_a'): {'sub_gain': 1.275, 'low_gain': 0.15654166666666666, 'cen_k': 3.894, 'body_hi': 3867.5, 'crack_gain': 0.21666666666666667, 'rumble_gain': 0.10235416666666665},
+    ('PER', 'vector_shot_b'): {'sub_gain': 0.65, 'rumble_gain': 0.75, 'cen_k': 4.59492, 'crack_gain': 0.5525, 'body_hi': 5057.5, 'low_gain': 0.85},
+    ('PER', 'vector_shot_c'): {'sub_gain': 1.5, 'cen_k': 2.805},
+}
+for (_tbl, _nm), _kw in _TUNED.items():
+    globals()[_tbl].setdefault(_nm, {}).update(_kw)

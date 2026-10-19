@@ -1,0 +1,13 @@
+{
+  "name": "oxygen_mask",
+  "mount": "HEAD",
+  "textureWidth": 64,
+  "textureHeight": 64,
+  "scale": 0.062500,
+  "textures": ["oxygen_mask"],
+  "hinges": {},
+  "boxes": [
+    {"name": "strap", "part": 0, "uv": [0, 0], "rotationPoint": [0.000000, -4.000000, 0.000000], "offset": [-4.000000, -4.000000, -4.000000], "size": [8, 8, 8], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.060000, "mirror": false},
+    {"name": "mouthpiece", "part": 0, "uv": [32, 0], "rotationPoint": [0.000000, -1.500000, -4.500000], "offset": [-2.000000, -1.500000, -0.500000], "size": [4, 3, 1], "rotate": [0.000000, 0.000000, 0.000000], "inflate": 0.000000, "mirror": false}
+  ]
+}

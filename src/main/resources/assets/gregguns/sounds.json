@@ -43,6 +43,38 @@
     "category": "player",
     "sounds": ["guns/boltaction_rechamber"]
   },
+  "guns.thompson_smg.fire": {
+    "category": "player",
+    "sounds": ["guns/thompson_shot_a", "guns/thompson_shot_b", "guns/thompson_shot_c"]
+  },
+  "guns.thompson_smg.reload": {
+    "category": "player",
+    "sounds": ["guns/thompson_reload"]
+  },
+  "guns.mac10.fire": {
+    "category": "player",
+    "sounds": ["guns/mac10_shot_a", "guns/mac10_shot_b", "guns/mac10_shot_c"]
+  },
+  "guns.mac10.reload": {
+    "category": "player",
+    "sounds": ["guns/mac10_reload"]
+  },
+  "guns.m4.fire": {
+    "category": "player",
+    "sounds": ["guns/ar1_shot_a", "guns/ar1_shot_b"]
+  },
+  "guns.m4.reload": {
+    "category": "player",
+    "sounds": ["guns/ar1_reload"]
+  },
+  "guns.ak47.fire": {
+    "category": "player",
+    "sounds": ["guns/ak47_shot_a", "guns/ak47_shot_b", "guns/ak47_shot_c"]
+  },
+  "guns.ak47.reload": {
+    "category": "player",
+    "sounds": ["guns/ak47_reload"]
+  },
   "guns.grenade.pin": {
     "category": "player",
     "sounds": ["guns/grenade_pin_a", "guns/grenade_pin_b"]
@@ -83,5 +115,29 @@
       "effects/steamarmor_jump_c",
       "effects/steamarmor_jump_d"
     ]
+  },
+  "effects.tnt_charge_plant": {
+    "category": "block",
+    "sounds": ["effects/DemoCharge_Plant"]
+  },
+  "effects.tnt_charge_init": {
+    "category": "block",
+    "sounds": ["effects/DemoCharge_Init"]
+  },
+  "effects.tnt_charge_tick": {
+    "category": "block",
+    "sounds": ["effects/DemoCharge_Tick"]
+  },
+  "effects.c4_charge_plant": {
+    "category": "block",
+    "sounds": ["effects/C4Charge_Plant"]
+  },
+  "effects.c4_charge_init": {
+    "category": "block",
+    "sounds": ["effects/C4Charge_Init"]
+  },
+  "effects.c4_charge_tick": {
+    "category": "block",
+    "sounds": ["effects/C4Charge_Tick"]
   }
 }

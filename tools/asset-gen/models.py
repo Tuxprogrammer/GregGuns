@@ -26,6 +26,7 @@ from PIL import Image, ImageDraw
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gui  # noqa: E402
+from accessory_models import OWNED as ACCESSORY_OWNED  # noqa: E402  (textures painted by accessory_models.py)
 from modeltex import (DET, Tex, box_uv, hx, material, mul, pack_boxes, paint_box, panelize,  # noqa: E402
                       rect, rng_for, seed_for, vnoise, wear)
 
@@ -1305,6 +1306,8 @@ def main():
     # armor_models.py; skip the old vanilla-unwrap sheets here so a re-run never overwrites them.
     man = [m for m in man if not m["id"].startswith(ARMOR_MODEL_PREFIXES)]
     for m in man:
+        if m["id"].replace("model.armor.", "") in ACCESSORY_OWNED and m["id"].startswith("model.armor."):
+            continue  # worn accessory sheets belong to accessory_models.py (their layouts come from the Java models)
         t = build(m)
         out = os.path.join(RES, m["path"])
         os.makedirs(os.path.dirname(out), exist_ok=True)

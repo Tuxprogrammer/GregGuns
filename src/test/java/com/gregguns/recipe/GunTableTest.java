@@ -232,9 +232,12 @@ class GunTableTest {
 
     @Test
     void everyGunRowUsesADistinctCircuitSoRecipesNeverCollide() {
-        java.util.Set<Integer> seen = new java.util.HashSet<>();
+        // Unique within a tier: the MV table of recipes.md starts its configs at 1 again.
+        java.util.Set<String> seen = new java.util.HashSet<>();
         for (ProductionTable.Row row : GunTable.ROWS) {
-            assertTrue(seen.add(row.circuit()), row.id() + " reuses circuit " + row.circuit());
+            assertTrue(
+                seen.add(row.tier() + "/" + row.circuit()),
+                row.id() + " reuses circuit " + row.circuit() + " at " + row.tier());
         }
     }
 
