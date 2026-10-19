@@ -166,7 +166,7 @@ public final class MpScenarios {
     }
 
     /** Wall-clock limit for B to load A after the scenario teleports. */
-    private static final long SEE_TIMEOUT_MS = 20_000L;
+    private static final long SEE_TIMEOUT_MS = 45_000L;
 
     /** Ticks to wait for a pressed shot to show up as a round drop before pressing again, and between steps. */
     private static final int SHOT_RETRY_TICKS = 8;
@@ -543,6 +543,7 @@ public final class MpScenarios {
     private static final class Give implements Scenario {
 
         private AckInbox inbox;
+        private final Map<String, String> afterGive = new java.util.HashMap<>();
 
         @Override
         public boolean includedInAll() {
@@ -684,6 +685,7 @@ public final class MpScenarios {
                                     MinecraftServer.getServer(),
                                     "give " + p.getCommandSenderName() + " " + arg);
                         }
+                        afterGive.put(p.getCommandSenderName(), dump(p));
                         signal(p, "hold", item);
                     }
                     state[1] = System.currentTimeMillis();
@@ -721,7 +723,9 @@ public final class MpScenarios {
                                 .append(p.inventory.currentItem)
                                 .append(", slot 0 = ")
                                 .append(slot0 == null ? "empty" : slot0.getDisplayName())
-                                .append("; carrying ")
+                                .append("; right after /give: ")
+                                .append(afterGive.get(p.getCommandSenderName()))
+                                .append("; now carrying ")
                                 .append(dump(p))
                                 .append(')');
                         }

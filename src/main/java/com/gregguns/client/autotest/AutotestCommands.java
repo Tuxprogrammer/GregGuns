@@ -118,14 +118,14 @@ final class AutotestCommands {
     }
 
     /**
-     * {@code see <name>}: waits (up to {@link #HOLD_TIMEOUT_TICKS} ticks) until a player of that name is loaded in
+     * {@code see <name>}: waits (up to {@link #SEE_WAIT_MS} ms) until a player of that name is loaded in
      * the client world, then tells the server ({@code ack see <name> ok|fail}). A teleport leaves the other client
      * without the entity for a while, and remote shot events need it.
      */
     static final class SeeWait implements Wait {
 
         private final String name;
-        private int waited;
+        private final long startMs = System.currentTimeMillis();
 
         SeeWait(String name) {
             this.name = name;
@@ -134,7 +134,7 @@ final class AutotestCommands {
         @Override
         public boolean tick(EntityClientPlayerMP player) {
             boolean seen = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(name) != null;
-            if (!seen && ++waited <= HOLD_TIMEOUT_TICKS) {
+            if (!seen && System.currentTimeMillis() - startMs <= SEE_WAIT_MS) {
                 return false;
             }
             ClientAutotest.logLine("see " + name + " -> " + (seen ? "loaded" : "NOT LOADED"));
@@ -232,6 +232,8 @@ final class AutotestCommands {
 
     /** Client ticks to wait for the item to arrive in the hand. */
     private static final int HOLD_TIMEOUT_TICKS = 200;
+    /** Wall-clock wait for another player to load after a teleport (a loaded machine stalls the client). */
+    private static final long SEE_WAIT_MS = 30_000L;
     /** Client ticks the item stays in hand once it arrived, so it is drawn. */
     private static final int HOLD_SETTLE_TICKS = 5;
 
