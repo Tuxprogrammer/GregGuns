@@ -447,7 +447,16 @@ def demo_biped():
     return m
 
 
-MODELS = [demo_biped]
+def biped():
+    """The standard biped: vanilla proportions and vanilla motion on a 64x64 logical sheet, shared by every plain
+    humanoid skin (zombie_soldier, army_soldier, bandit, dictator). It has no sheet of its own: the skins are painted
+    by mob_skins.py, at 64x64 or at an integer multiple, since UVs are fractions."""
+    m = vanilla_biped("biped", 64, 64)
+    m.no_sheet = True
+    return m
+
+
+MODELS = [demo_biped, biped]
 
 
 # ---------------------------------------------------------------------------------------------- main
@@ -465,13 +474,14 @@ def main(argv):
         print("%-12s %d parts, %d boxes, %d animations, %dx%d sheet (%d rows used) -> %s"
               % (m.name, len(m.parts), sum(len(p.boxes) for p in m.parts), len(m.animations), m.W, m.H, used,
                  os.path.relpath(path, ROOT)))
-        for key in m.sheet_keys():
+        for key in ([] if getattr(m, "no_sheet", False) else m.sheet_keys()):
             m.paint(key).save(os.path.join(TEXDIR, key + ".png"))
             rows.append(["entity.model." + key, "src/main/resources/assets/gregguns/textures/entity/%s.png" % key,
                          "tools/asset-gen/entity_models.py", seed_for("entity_models." + key),
                          "Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/%s.json; "
                          "flat material colors, edge bevels, fine noise" % m.name, "MIT", "2026-10-19"])
-        previews.append(preview(m))
+        if not getattr(m, "no_sheet", False):
+            previews.append(preview(m))
     os.makedirs(os.path.dirname(CREDITS), exist_ok=True)
     with open(CREDITS, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, lineterminator="\n")
