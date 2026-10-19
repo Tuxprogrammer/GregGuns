@@ -37,6 +37,7 @@ class ConfigRulesTest {
             "DamageFactorsConfig.armorPenetrationMultiplierPvP",
             "ExplosionsConfig.blockDamage",
             "ExplosionsConfig.selfDamage",
+            "ExplosionsConfig.machineExplosions",
             "EquipmentConfig.nightVisionCapacityEu",
             "EquipmentConfig.nightVisionDrainEuPerTick",
             "EquipmentConfig.tacticalMaskCapacityEu",
@@ -46,7 +47,8 @@ class ConfigRulesTest {
             "FlightConfig.jumpPackJumpCostEu",
             "FlightConfig.jumpPackFallCostEu",
             "FlightConfig.antiGravityCapacityEu",
-            "FlightConfig.antiGravityDriveEuPerTick"));
+            "FlightConfig.antiGravityDriveEuPerTick",
+            "EnergyConfig.capacityScalePercent"));
 
     private static Set<String> tokens(String key) {
         Set<String> result = new HashSet<>();

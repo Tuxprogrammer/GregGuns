@@ -15,6 +15,7 @@ import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ProjectileKind;
 import com.gregguns.gun.logic.ShotContext;
 import com.gregguns.gun.logic.ShotOffset;
+import com.gregguns.gun.logic.ShotPattern;
 import com.gregguns.gun.logic.SpreadModel;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.projectile.GenericProjectile;
@@ -40,6 +41,7 @@ public final class FrameworkScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Kinds());
         registry.register(new Pellets());
+        registry.register(new Patterns());
         registry.register(new KnockbackStrength());
     }
 
@@ -162,6 +164,46 @@ public final class FrameworkScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             out.checkEquals("projectiles from one shot", 8, bullets.size());
             out.check(maxYaw - minYaw > 1.0, "the pellets should fan out, but the yaw range was " + (maxYaw - minYaw));
+            return out.build();
+        }
+    }
+
+    /** Shot patterns: a burst line, a ring volley and a fan make 2, 16 and 5 projectiles through the launcher loop. */
+    private static final class Patterns implements Scenario {
+
+        @Override
+        public String name() {
+            return "gun.pattern";
+        }
+
+        @Override
+        public String description() {
+            return "One round of a burst-line gun (n=1), a ring-volley gun (1+5+10) and a fan gun (5 beams) spawns 2, 16 and 5 projectiles.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            GunRig rig = new GunRig(ctx, GunItems.revolver(), 6);
+            GunStats[] guns = { base("pattern_line").pattern(ShotPattern.burstLine(1))
+                .build(),
+                base("pattern_ring").pattern(ShotPattern.ringVolley(2, 5, 0.075))
+                    .build(),
+                base("pattern_fan").pattern(ShotPattern.fan(5, 0.15))
+                    .build() };
+            int[] counts = new int[guns.length];
+            for (int i = 0; i < guns.length; i++) {
+                Map<GenericProjectile, Boolean> baseline = bulletsIn(ctx, new IdentityHashMap<>());
+                ShotOffset[] offsets = SpreadModel.roll(new Random(31 + i), guns[i], ShotContext.DEFAULT, 0);
+                Projectiles.launcher()
+                    .launchVolley(ctx.world(), rig.shooter, guns[i], offsets, 1.0f);
+                Map<GenericProjectile, Boolean> fresh = bulletsIn(ctx, baseline);
+                counts[i] = fresh.size();
+                endAll(fresh);
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            out.checkEquals("burst-line projectiles", 2, counts[0]);
+            out.checkEquals("ring-volley projectiles", 16, counts[1]);
+            out.checkEquals("fan projectiles", 5, counts[2]);
             return out.build();
         }
     }

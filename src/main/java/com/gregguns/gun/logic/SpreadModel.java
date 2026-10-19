@@ -59,6 +59,11 @@ public final class SpreadModel {
      * @return {@code bulletsPerShot} offsets, plus one for double-shot akimbo
      */
     public static ShotOffset[] roll(Random random, GunStats stats, ShotContext ctx, int attackType) {
+        if (stats.pattern()
+            .isActive()) {
+            return stats.pattern()
+                .roll(random, stats, ctx, attackType);
+        }
         boolean dual = stats.akimbo() && stats.doubleShot();
         int pellets = stats.bulletsPerShot() - 1;
         ShotOffset[] out = new ShotOffset[1 + (dual ? 1 : 0) + pellets];
@@ -76,7 +81,7 @@ public final class SpreadModel {
         return out;
     }
 
-    private static ShotOffset one(Random random, double spread, double forward, boolean left) {
+    static ShotOffset one(Random random, double spread, double forward, boolean left) {
         double max = maxDegrees(spread);
         double yaw = (random.nextDouble() * 2.0 - 1.0) * max;
         double pitch = (random.nextDouble() * 2.0 - 1.0) * max;

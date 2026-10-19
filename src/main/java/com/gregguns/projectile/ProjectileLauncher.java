@@ -25,4 +25,18 @@ public interface ProjectileLauncher {
      *                    are applied at the hit by DamageSources.hit
      */
     void launch(World world, EntityLivingBase shooter, GunStats stats, ShotOffset offset, float damageScale);
+
+    /**
+     * Spawns one projectile per offset of a rolled shot: the launcher loop for pellets and shot patterns. Offsets of
+     * a ring volley share one hit list through {@link ShotOffset#volley()}.
+     *
+     * @param offsets the offsets from {@code SpreadModel.roll}
+     * @see #launch
+     */
+    default void launchVolley(World world, EntityLivingBase shooter, GunStats stats, ShotOffset[] offsets,
+        float damageScale) {
+        for (ShotOffset offset : offsets) {
+            launch(world, shooter, stats, offset, damageScale);
+        }
+    }
 }
