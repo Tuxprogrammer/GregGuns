@@ -54,6 +54,25 @@ public final class GregGunsMTEIDs {
     /** Camo Bench (LV). Built in M4. */
     public static final int CAMO_BENCH = 20115;
 
+    /** Turret, MV. Built in M6. */
+    public static final int TURRET_MV = 20116;
+    /** Turret, HV. Built in M6. */
+    public static final int TURRET_HV = 20117;
+    /** Turret, EV. Built in M6. */
+    public static final int TURRET_EV = 20118;
+    /** Turret, IV. Built in M6. */
+    public static final int TURRET_IV = 20119;
+    /** Rampart multiblock (HV controller). Built in M6. */
+    public static final int RAMPART = 20120;
+    /** Gun Mount Hatch, MV. Built in M6. */
+    public static final int GUN_MOUNT_HATCH_MV = 20121;
+    /** Gun Mount Hatch, HV. Built in M6. */
+    public static final int GUN_MOUNT_HATCH_HV = 20122;
+    /** Gun Mount Hatch, EV. Built in M6. */
+    public static final int GUN_MOUNT_HATCH_EV = 20123;
+    /** Gun Mount Hatch, IV. Built in M6. */
+    public static final int GUN_MOUNT_HATCH_IV = 20124;
+
     private GregGunsMTEIDs() {}
 
     /**
@@ -62,6 +81,7 @@ public final class GregGunsMTEIDs {
     public static int[] all() {
         return new int[] { AMMO_PRESS_STEAM, AMMO_PRESS_LV, AMMO_PRESS_MV, AMMO_PRESS_HV, AMMO_PRESS_EV, AMMO_WORKS,
             REACTION_CHAMBER_EV, REACTION_CHAMBER_IV, RETORT, REPAIR_BENCH_LV, REPAIR_BENCH_MV, REPAIR_BENCH_HV,
-            REPAIR_BENCH_EV, REPAIR_BENCH_IV, ARMORY_GANTRY, CAMO_BENCH };
+            REPAIR_BENCH_EV, REPAIR_BENCH_IV, ARMORY_GANTRY, CAMO_BENCH, TURRET_MV, TURRET_HV, TURRET_EV, TURRET_IV,
+            RAMPART, GUN_MOUNT_HATCH_MV, GUN_MOUNT_HATCH_HV, GUN_MOUNT_HATCH_EV, GUN_MOUNT_HATCH_IV };
     }
 }

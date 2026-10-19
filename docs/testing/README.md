@@ -228,6 +228,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `grenade.frag` | grenades (M2) | A Frag Grenade at rest explodes: zombies at 1.5 and 5 blocks lose at least the 25 damage / radius 6 blast figure through the damage model, the near one more than the far one, the near one also takes fragment damage on top of the blast, and the floor is intact. |
 | `grenade.flash` | grenades (M2) | A Flashbang at rest goes off: a fake player facing it 4 blocks away would get about 80 ticks of Blindness (40 of Nausea), one with their back to it none (measured with `FlashBlast.intensityAt`: a fake player has no connection for the potion packet); a cow at 2 blocks gets Slowness IV and Weakness, one at 6.5 blocks Slowness II, one behind a stone wall and one past 8 blocks nothing; no cow loses health. |
 | `grenade.flash.noblocks` | grenades (M2) | With `explosions.blockDamage` on, a Flashbang beside a stone pillar, a glass pane and dirt changes no block in the surrounding box, hurts no cow, and still slows it. |
+| `utility.plates_recipes` | turret armor plates (M6) | The four plates are registered with armor values 5, 10, 15 and 20; Iron has a crafting-table recipe and no Assembler recipe; Steel, Aluminum and Carbon each have one Assembler recipe at their tier's EU/t and 10 s, with one input (two for Carbon) and no hand recipe. Needs `GG_MODULES=guns,armor,machines,utility`. |
 
 ## M1 coverage
 
