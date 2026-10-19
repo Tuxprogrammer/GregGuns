@@ -37,7 +37,7 @@ class NpcGunProfileTest {
         expect("flamethrower", 12, 20, 5, 5);
         expect("combat_shotgun", 12, 30, 0, 0);
         expect("rocket_launcher", 24, 80, 0, 0);
-        expect("thompson", 18, 45, 3, 3);
+        expect("thompson_smg", 18, 45, 3, 3);
         expect("revolver", 18, 90, 6, 20);
         expect("as50", 36, 30, 0, 0);
         expect("lmg", 24, 40, 6, 3);
