@@ -87,4 +87,20 @@ class GunAnimStateTest {
         assertEquals(0, MuzzleLight.luminance(s.ticksSinceShot(13.5)));
         assertEquals(0, MuzzleLight.luminance(new GunAnimState().ticksSinceShot(5.0)), "never fired: dark");
     }
+
+    @Test
+    void checkRecoilKeepsARunningWindowButAPlainShotRestartsIt() {
+        GunAnimState keep = new GunAnimState();
+        keep.shot(100.0, 5, 5, 0, ShotOrigin.REMOTE, PISTOL, true);
+        keep.shot(101.0, 5, 5, 0, ShotOrigin.REMOTE, PISTOL, true);
+        assertEquals(0.2, keep.recoilProgress(101.0, PISTOL), 1e-9, "the window kept running from tick 100");
+        assertEquals(AnimWindow.NONE, keep.recoilProgress(105.5, PISTOL));
+        keep.shot(105.5, 5, 5, 0, ShotOrigin.REMOTE, PISTOL, true);
+        assertEquals(0.0, keep.recoilProgress(105.5, PISTOL), 1e-9, "an expired window starts again");
+
+        GunAnimState restart = new GunAnimState();
+        restart.shot(100.0, 5, 5, 0, ShotOrigin.REMOTE, PISTOL, false);
+        restart.shot(101.0, 5, 5, 0, ShotOrigin.REMOTE, PISTOL, false);
+        assertEquals(0.0, restart.recoilProgress(101.0, PISTOL), 1e-9);
+    }
 }

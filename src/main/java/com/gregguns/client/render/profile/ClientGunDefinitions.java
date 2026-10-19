@@ -44,6 +44,9 @@ public final class ClientGunDefinitions {
             GoldenRevolverProfile.DEFINITION,
             FlamethrowerProfile.DEFINITION,
             ScarProfile.DEFINITION,
+            PdwProfile.DEFINITION,
+            PulseRifleProfile.DEFINITION,
+            MinigunProfile.DEFINITION,
 
             // The akimbo guns draw their single gun's model once per hand.
             ClientGunDefinition.akimboOf("akimbo_pistols", Pistol9mmProfile.DEFINITION),

@@ -3,6 +3,7 @@ package com.gregguns.client.render.profile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -351,7 +352,7 @@ class PdwProfileTest {
     }
 
     @Test
-    void theGunIsNotRegisteredYet() {
-        assertNull(ClientGunDefinitions.byName("pdw"), "a later gameplay batch registers it");
+    void theGunIsRegistered() {
+        assertSame(PdwProfile.DEFINITION, ClientGunDefinitions.byName("pdw"));
     }
 }
