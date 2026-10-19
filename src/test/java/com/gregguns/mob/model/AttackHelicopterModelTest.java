@@ -118,4 +118,41 @@ class AttackHelicopterModelTest {
     private static void assertArrayEquals(int[] expected, int[] actual) {
         org.junit.jupiter.api.Assertions.assertArrayEquals(expected, actual);
     }
+
+    @Test
+    void committedJsonCarriesTheDeathData() {
+        MobAnimDef spin = null;
+        MobAnimDef dying = null;
+        for (MobAnimDef a : MODEL.animations()) {
+            if (a.type() == MobAnimDef.Type.SPIN) {
+                spin = a;
+            } else if (a.when() == MobAnimDef.When.DYING) {
+                dying = a;
+            }
+        }
+        assertTrue(spin != null && dying != null);
+        assertEquals(-24F, spin.rate(), 0.0F);
+        assertEquals(0.5F, spin.deathScale(), 0.0F);
+        assertEquals("chin_gun", dying.part());
+        assertTrue(dying.isSet());
+        assertEquals(0.0F, dying.angles()[0], 0.0F);
+    }
+
+    @Test
+    void rotorHalvesAndGunLevelsWhileDying() {
+        float[][] out = new float[MODEL.parts()
+            .size()][3];
+        AnimInput in = new AnimInput();
+        in.ageInTicks = 10.0F;
+        MobAnimator.evaluate(MODEL, in, out);
+        assertEquals((float) Math.toRadians(-240), out[MODEL.indexOf("rotor")][1], 1.0e-4F);
+        assertEquals((float) Math.toRadians(25), out[MODEL.indexOf("chin_gun")][0], 1.0e-4F);
+        in.deathProgress = 0.5F;
+        MobAnimator.evaluate(MODEL, in, out);
+        assertEquals((float) Math.toRadians(-120), out[MODEL.indexOf("rotor")][1], 1.0e-4F);
+        assertEquals((float) Math.toRadians(12.5), out[MODEL.indexOf("chin_gun")][0], 1.0e-4F);
+        in.deathProgress = 1.0F;
+        MobAnimator.evaluate(MODEL, in, out);
+        assertEquals(0.0F, out[MODEL.indexOf("chin_gun")][0], 1.0e-4F);
+    }
 }
