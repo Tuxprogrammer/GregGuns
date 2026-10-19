@@ -80,7 +80,7 @@ public final class BoxGunModel extends ModelBase implements GunModel {
     private ModelRenderer build(BoxSpec box, int texWidth, int texHeight) {
         ModelRenderer r = new ModelRenderer(this, box.u(), box.v());
         r.setTextureSize(texWidth, texHeight);
-        boolean tilted = box.tiltZDegrees() != 0.0f || box.tiltXDegrees() != 0.0f;
+        boolean tilted = box.tiltZDegrees() != 0.0f || box.tiltXDegrees() != 0.0f || box.tiltYDegrees() != 0.0f;
         float px = tilted ? box.pivotX() : box.x();
         float py = tilted ? box.pivotY() : box.y();
         float pz = tilted ? box.pivotZ() : box.z();
@@ -88,6 +88,7 @@ public final class BoxGunModel extends ModelBase implements GunModel {
         r.addBox(box.x() - px, box.y() - py, box.z() - pz, box.w(), box.h(), box.d());
         r.rotateAngleZ = (float) Math.toRadians(box.tiltZDegrees());
         r.rotateAngleX = (float) Math.toRadians(box.tiltXDegrees());
+        r.rotateAngleY = (float) Math.toRadians(box.tiltYDegrees());
         return r;
     }
 

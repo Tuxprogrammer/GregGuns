@@ -1,0 +1,490 @@
+{
+ "gun": "mac10",
+ "textures": [
+  {
+   "file": "mac10.png"
+  }
+ ],
+ "roles": {
+  "recv": {
+   "material": "steel",
+   "base": "#565D5B",
+   "scratches": false,
+   "noise": 0.025
+  },
+  "grip": {
+   "material": "steel",
+   "base": "#505755",
+   "scratches": false,
+   "noise": 0.025
+  },
+  "mag": {
+   "material": "steel",
+   "base": "#9D9F9E",
+   "scratches": false,
+   "noise": 0.02
+  },
+  "sight": {
+   "material": "steel",
+   "base": "#9D9F9E",
+   "scratches": false,
+   "noise": 0.02
+  },
+  "wire": {
+   "material": "steel",
+   "base": "#747575",
+   "scratches": false,
+   "noise": 0.02
+  },
+  "plate": {
+   "material": "steel",
+   "base": "#565D5B",
+   "scratches": false,
+   "noise": 0.025
+  },
+  "guard": {
+   "material": "steel",
+   "base": "#505755",
+   "scratches": false,
+   "noise": 0.025
+  },
+  "barrel": {
+   "material": "steel",
+   "base": "#565D5B",
+   "scratches": false,
+   "noise": 0.02
+  }
+ },
+ "boxes": {
+  "receiver": {
+   "role": "recv",
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 34,
+     "h": 1,
+     "color": "#868887",
+     "alpha": 0.5
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "x": 0,
+     "y": 5,
+     "w": 34,
+     "h": 1,
+     "color": "#868887",
+     "alpha": 0.5
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "x": 11,
+     "y": 2,
+     "w": 12,
+     "h": 2,
+     "color": "#373838",
+     "alpha": 0.55
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 6,
+     "y": 1,
+     "w": 22,
+     "h": 1,
+     "color": "#444947"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 4,
+     "y": 2,
+     "w": 26,
+     "h": 1,
+     "color": "#2A2B2B"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 6,
+     "y": 3,
+     "w": 22,
+     "h": 1,
+     "color": "#444947"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 10,
+     "y": 5,
+     "w": 16,
+     "h": 1,
+     "color": "#444947"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 4,
+     "y": 3,
+     "w": 3,
+     "h": 1,
+     "color": "#2A2B2B",
+     "alpha": 0.6
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 16,
+     "y": 3,
+     "w": 8,
+     "h": 2,
+     "color": "#2A2B2B"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 16,
+     "y": 5,
+     "w": 8,
+     "h": 1,
+     "color": "#868887",
+     "alpha": 0.6
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 34,
+     "h": 1,
+     "color": "#868887",
+     "alpha": 0.35
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "x": 1,
+     "y": 2,
+     "w": 4,
+     "h": 4,
+     "color": "#373838",
+     "alpha": 0.7
+    }
+   ]
+  },
+  "barrel": {
+   "role": "barrel",
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 12,
+     "h": 2,
+     "color": "#A6A8A7"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 12,
+     "h": 2,
+     "color": "#7E807F"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#333434"
+    },
+    {
+     "type": "bore",
+     "faces": [
+      "left"
+     ],
+     "size": 2,
+     "color": "#161717"
+    }
+   ]
+  },
+  "sight_post": {
+   "role": "sight",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "front_blade": {
+   "role": "sight",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "ear_l": {
+   "role": "sight",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "ear_r": {
+   "role": "sight",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "guard_post": {
+   "role": "guard",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "guard_bar": {
+   "role": "guard",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "trigger": {
+   "role": "guard",
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "painters": [
+    {
+     "type": "tone",
+     "f": 0.88
+    }
+   ]
+  },
+  "grip": {
+   "role": "grip",
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "right"
+     ],
+     "f": 0.88
+    },
+    {
+     "type": "checker",
+     "faces": [
+      "right"
+     ],
+     "cell": 1,
+     "amp": -0.28
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "front",
+      "back",
+      "left"
+     ],
+     "f": 0.97
+    }
+   ]
+  },
+  "strap_up": {
+   "role": "grip",
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "right"
+     ],
+     "f": 0.88
+    },
+    {
+     "type": "checker",
+     "faces": [
+      "right"
+     ],
+     "cell": 1,
+     "amp": -0.28
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back",
+      "left"
+     ],
+     "f": 0.88
+    }
+   ]
+  },
+  "strap_low": {
+   "role": "grip",
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "right"
+     ],
+     "f": 0.88
+    },
+    {
+     "type": "checker",
+     "faces": [
+      "right"
+     ],
+     "cell": 1,
+     "amp": -0.28
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back",
+      "left"
+     ],
+     "f": 0.88
+    }
+   ]
+  },
+  "magazine": {
+   "role": "mag",
+   "bevel": [
+    1.07,
+    0.93
+   ],
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "bottom"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 5,
+     "h": 3,
+     "color": "#A8AAA9"
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "f": 0.97
+    }
+   ]
+  },
+  "post_l": {
+   "role": "wire",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "post_r": {
+   "role": "wire",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "rod_l": {
+   "role": "wire",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "rod_r": {
+   "role": "wire",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "cross_bar": {
+   "role": "wire",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "butt": {
+   "role": "plate",
+   "bevel": [
+    1.04,
+    0.94
+   ]
+  },
+  "connector": {
+   "role": "plate",
+   "bevel": [
+    1.04,
+    0.94
+   ]
+  }
+ }
+}

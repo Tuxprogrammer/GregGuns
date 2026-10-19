@@ -23,9 +23,9 @@ Role map (`gun-paint/<gun>.json`): {"gun", "textures": [{"file": "handcannon.png
 "roles": {role: {"material", "base", ...}}, "boxes": {name: {"role", "grain", "wear", "painters": [...]}}}.
 Materials: steel (flat, edge highlights, faint scratches), wood (grain streaks along the box's grain axis, dark end
 grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore, bands, gradient, tone, mottle, seam, inset,
-checker. A wood role may set "calm" (0..1, streak contrast scale); a role may set "bevel": [hi, lo] edge shading.
+checker, slots (cross-slot columns), stripes (a color cycle). A wood role may set "calm" (0..1, streak contrast scale); a role may set "bevel": [hi, lo] edge shading.
 A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A box may be tilted about Z ("tilt") or
-about its long axis X ("tiltX", for a diamond bar), both about "pivot"; a size with a 0 is a zero-thickness plane.
+about its long axis X ("tiltX", for a diamond bar) or about the vertical axis Y ("tiltY"), all about "pivot"; a size with a 0 is a zero-thickness plane.
 A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}}} or "camo" with a palette.
 """
 import json
@@ -105,11 +105,14 @@ def export_json(layout):
     for b in layout["boxes"]:
         tilt = b.get("tilt", 0)
         tilt_x = b.get("tiltX", 0)  # a turn about the gun's long axis (X), e.g. a square bar shown as a diamond
+        tilt_y = b.get("tiltY", 0)  # a turn about the vertical axis (Y), e.g. a post shown as a diamond from above
         pos = b["pos"]
-        rp = b["pivot"] if (tilt or tilt_x) else pos
-        off = [pos[i] - rp[i] for i in range(3)] if (tilt or tilt_x) else [0, 0, 0]
+        turned = tilt or tilt_x or tilt_y
+        rp = b["pivot"] if turned else pos
+        off = [pos[i] - rp[i] for i in range(3)] if turned else [0, 0, 0]
         out.append({"name": b["name"], "part": b.get("part", 0), "uv": b["uv"], "rotationPoint": rp, "offset": off,
-                    "size": b["size"], "rotate": [float(np.radians(tilt_x)), 0, float(np.radians(tilt))],
+                    "size": b["size"],
+                    "rotate": [float(np.radians(tilt_x)), float(np.radians(tilt_y)), float(np.radians(tilt))],
                     "mirror": False})
     return {"name": layout["gun"], "kind": "gun", "textureWidth": layout["texture"][0],
             "textureHeight": layout["texture"][1], "scale": layout["scale"],
@@ -129,8 +132,10 @@ def java_rows(layout):
         x, y, z = b["pos"]
         tilt = b.get("tilt", 0)
         tilt_x = b.get("tiltX", 0)
-        piv = "new float[] { %s, %s, %s }" % tuple(fnum(t) for t in b["pivot"]) if (tilt or tilt_x) else "NO_PIVOT"
-        extra = ", " + fnum(tilt_x) if tilt_x else ""
+        tilt_y = b.get("tiltY", 0)
+        turned = tilt or tilt_x or tilt_y
+        piv = "new float[] { %s, %s, %s }" % tuple(fnum(t) for t in b["pivot"]) if turned else "NO_PIVOT"
+        extra = ", " + fnum(tilt_x) + ", " + fnum(tilt_y) if tilt_y else (", " + fnum(tilt_x) if tilt_x else "")
         rows.append("        new BoxSpec(\"%s\", %d, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s%s)," % (
             b["name"], b.get("part", 0), b["uv"][0], b["uv"][1], w, h, d, fnum(x), fnum(y), fnum(z), piv, fnum(tilt),
             extra))
@@ -265,6 +270,19 @@ def apply_painter(rgb, p, face):
         else:
             mul(rgb, 0, p["at"], w, 1, dark)
             mul(rgb, 0, p["at"] + 1, w, 1, light)
+    elif kind == "slots":  # evenly spaced flat-colored columns along x (Picatinny cross-slots); y/h limit the rows
+        y0, ph = p.get("y", 0), p.get("h", h - p.get("y", 0))
+        for x in range(p.get("start", 1), w, p.get("every", 2)):
+            rect(rgb, x, y0, p.get("width", 1), ph, p.get("color", "#000000"))
+    elif kind == "stripes":  # a cycle of flat colors across the face, e.g. a ribbed magazine; axis "x" or "y"
+        cols, step = p["colors"], p.get("step", 1)
+        n = w if p.get("axis", "x") == "x" else h
+        for i in range(0, n, step):
+            c = cols[(i // step) % len(cols)]
+            if p.get("axis", "x") == "x":
+                rect(rgb, i, 0, step, h, c)
+            else:
+                rect(rgb, 0, i, w, step, c)
     elif kind == "checker":  # a soft checkerboard of 1-texel cells (textured polymer); optional darker border
         x, y, pw, ph = face_xywh(p, w, h)
         cell, amp = p.get("cell", 1), p.get("amp", 0.12)
@@ -289,6 +307,19 @@ def camo(r, h, w, pal, pattern="blotch"):
     return np.array(pal)[idx]
 
 
+def patches(r, rgb, palette, density, along_x):
+    """Scatter short runs (2 to 4 texels long, 1 wide) of the palette colors over about `density` of the face."""
+    h, w = rgb.shape[:2]
+    cols = [hx(c) for c in palette]
+    for _ in range(int(round(density * w * h / 3.0))):
+        x, y, n = int(r.integers(0, w)), int(r.integers(0, h)), int(r.integers(2, 5))
+        c = cols[int(r.integers(0, len(cols)))] * (0.9 + 0.2 * r.random())
+        if along_x:
+            rgb[y, x:x + n] = np.clip(c, 0, 255)
+        else:
+            rgb[y:y + n, x] = np.clip(c, 0, 255)
+
+
 def paint_face(box_spec, role_def, name, dims, face, fw, fh, seed_key):
     r = rng_for(seed_key)
     mat = role_def.get("material", "steel")
@@ -308,6 +339,8 @@ def paint_face(box_spec, role_def, name, dims, face, fw, fh, seed_key):
     else:
         rgb = steel(r, fh, fw, base, grain_along_x=box_spec.get("grain", "x") == "x",
                     scratches=role_def.get("scratches", True), noise=role_def.get("noise", 0.0))
+    if role_def.get("patch"):  # worn lighter patches in short runs along the grain (oiled wood, polymer flecks)
+        patches(r, rgb, role_def["patch"], role_def.get("patch_density", 0.2), box_spec.get("grain", "x") == "x")
     for p in box_spec.get("painters", []):
         if face in p.get("faces", FACES):
             apply_painter(rgb, p, face)
