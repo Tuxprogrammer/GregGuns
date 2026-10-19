@@ -25,7 +25,6 @@ Out of scope here, see the owning areas:
 | [gun-models.md](gun-models.md) | Part breakdown, box sizes, moving, glow and conditional parts, and texture size of all 55 model classes plus `grenadelauncher.obj` |
 | [model-notes/revolver.md](model-notes/revolver.md) | Clean-room design notes for rebuilding the Revolver model and texture (proportions, parts, palette, motion, checklist) |
 | [model-notes/bolt-action-rifle.md](model-notes/bolt-action-rifle.md) | Clean-room design notes for rebuilding the Bolt Action Rifle model and textures (proportions, parts, palette, camo, motion, checklist) |
-
 | [model-notes/pistol-9mm.md](model-notes/pistol-9mm.md) | Clean-room design notes for rebuilding the 9mm Pistol model and texture (proportions, parts, palette, slide motion, checklist) |
 | [textures.md](textures.md) | All 62 `textures/guns/` PNGs: size, what they depict, palette, UV layout, users, model-size mismatches |
 | [sounds.md](sounds.md) | All 185 `sounds/guns/` files, their `sounds.json` events and exactly when each plays |
