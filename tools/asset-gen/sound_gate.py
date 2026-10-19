@@ -33,6 +33,18 @@ EMBED_DIFFERENT = 5.5
 SR = 32000  # common analysis rate: most Techguns files are 32 kHz or lower, so compare only what both sides have
 
 
+def clipped_lufs(path):
+    """Integrated loudness of the file hard-clipped at full scale, as the game plays it (16-bit output).
+
+    A few Techguns files decode to float samples far above full scale (apache_burst peaks at +15.5 dBFS), so their
+    measured loudness is not reachable under our -1 dBTP ceiling and is not what a player hears either."""
+    err = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", path, "-af",
+                          "aformat=sample_fmts=s16,ebur128=framelog=quiet", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    vals = [float(l.split()[1]) for l in err.splitlines() if l.strip().startswith("I:")]
+    return vals[-1] if vals else None
+
+
 def band_flatness(path, lo=200.0, hi=8000.0):
     """Spectral flatness inside lo-hi Hz, median over active 32 ms frames (within 40 dB of the loudest frame).
 
@@ -166,7 +178,12 @@ def main():
         ra = os.path.join(args.ref_assets, e["footprint_ref"])
         a_feat["band_flatness"] = band_flatness(ra) if os.path.exists(ra) else None
         b_feat["band_flatness"] = band_flatness(os.path.join(args.assets, p))
-        cs = checks(a_feat, b_feat, e.get("target_lufs"))
+        target = e.get("target_lufs")
+        if (a_feat.get("true_peak_dbtp") or -99) > 0 and os.path.exists(ra):
+            clipped = clipped_lufs(ra)  # A is over full scale: aim at what the game actually plays
+            if clipped is not None and target is not None:
+                target = min(target, clipped)
+        cs = checks(a_feat, b_feat, target)
         if p in tonal:
             sp = tonal[p].get("spurious") or []
             cs.append(("tonality", not sp, "%d spurious tonal lines" % len(sp) if sp else "no spurious tonal lines"))

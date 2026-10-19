@@ -156,6 +156,14 @@ hints; they hallucinate and contradict themselves, so verify against measurement
 Sanity check on live files with the shipped tool: current `guns/ak47_reload.ogg` scores 3.04 (rejected band) and
 `guns/ak47_shot_b.ogg` scores 0.75 (close).
 
+## Fast check during revision
+
+`af_embed_fast.py` computes the same `dist_early_milli` while loading only the audio encoder (487 tensors read
+straight from the checkpoint, no language model). It starts in about 10 s and uses about 1.5 GB of GPU memory, so it
+fits beside other users' jobs, and it caches the A-side embeddings. Checked against `ab_listen.py --modes embed` on 8
+live pairs: identical to the printed precision (for example `guns/ak47_shot_b.ogg` 0.75). The revision loop calls
+it after every candidate render, so a change is kept only if it moves the distance down.
+
 ## Server setup (left in place)
 
 Server `<user>@<audio-server>`, workspace `/var/tmp/gregguns-audio/` (about 28 GB used of the 35 GB budget).
