@@ -82,23 +82,46 @@ public final class ModelExporter {
         return dir == null || dir.isEmpty() ? null : Paths.get(dir);
     }
 
+    /**
+     * @param def a client gun definition, registered or not
+     * @return its export model
+     */
+    public static ExportModel modelOf(ClientGunDefinition def) {
+        String note = (def.parts() > 1 ? "moving parts are exported at rest; " : "")
+            + (def.textures().length > 1 ? "textures[0] is the default, the rest are camo variants" : "");
+        return new ExportModel(
+            def.gunName(),
+            "gun",
+            def.boxes(),
+            def.textureWidth(),
+            def.textureHeight(),
+            def.modelScale(),
+            def.textures(),
+            def.muzzle(),
+            note);
+    }
+
+    /**
+     * Writes one named profile that is not (yet) in {@link ClientGunDefinitions#ALL}, as {@code <name>.json}. Leaves
+     * {@code index.json} and every other file alone.
+     *
+     * @param dir output directory, created if missing
+     * @param def the profile's definition
+     * @throws IOException if the file cannot be written
+     */
+    public static void exportProfile(Path dir, ClientGunDefinition def) throws IOException {
+        Files.createDirectories(dir);
+        ExportModel m = modelOf(def);
+        try (Writer w = Files.newBufferedWriter(dir.resolve(m.name + ".json"), StandardCharsets.UTF_8)) {
+            w.write(toJson(m));
+        }
+    }
+
     /** @return every GregGuns gun box model, one per entry of {@link ClientGunDefinitions#ALL} */
     public static List<ExportModel> models() {
         List<ExportModel> list = new ArrayList<>();
         for (ClientGunDefinition def : ClientGunDefinitions.ALL) {
-            String note = (def.parts() > 1 ? "moving parts are exported at rest; " : "")
-                + (def.textures().length > 1 ? "textures[0] is the default, the rest are camo variants" : "");
-            list.add(
-                new ExportModel(
-                    def.gunName(),
-                    "gun",
-                    def.boxes(),
-                    def.textureWidth(),
-                    def.textureHeight(),
-                    def.modelScale(),
-                    def.textures(),
-                    def.muzzle(),
-                    note));
+            list.add(modelOf(def));
         }
         return list;
     }
