@@ -222,6 +222,23 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.infiltrator.recipe` | Infiltrator (M2 B3) | The HV assembly row is in GT's assembler map at its time and voltage, and a machine below HV is not offered it. |
 | `gun.infiltrator.zoom` | Infiltrator (M2 B3) | A zoom intent turns the server zoom state on with the gun's own FOV factor and spread multiplier; a second intent or a reload turns it off. |
 | `gun.infiltrator.upgrade` | Infiltrator (M2 B3) | The GR-33 recipe is found with a used, camouflaged M4 (3 rounds left, camo 2) in slot 0, so the match ignores NBT, and the output is a fresh Infiltrator without the M4's NBT. |
+| `gun.flamethrower.fire` | Flamethrower (M2 B6) | Holding the trigger for 9 ticks fires every 2 ticks: 5 rounds and 5 `FlamethrowerProjectile` streams; a zombie 4 blocks ahead takes damage and is set alight. |
+| `gun.flamethrower.reload` | Flamethrower (M2 B6) | An empty gun with one full Fuel Tank reloads after 45 ticks to 100 rounds; the full tank is consumed and an empty tank (no fluid) comes back. |
+| `gun.flamethrower.reload.forced` | Flamethrower (M2 B6) | The reload key on a gun with 60 rounds swaps in a full tank for 100 rounds and returns one empty tank, with no refund of the fuel left (GUN-13 as the sheet says). |
+| `gun.flamethrower.emptytank` | Flamethrower (M2 B6) | An empty gun with only empty Fuel Tanks does not start a reload: an empty tank is not a magazine. |
+| `gun.flamethrower.npc` | Flamethrower (M2 B6) | A flame fired by a zombie hurts another zombie but does not ignite it (NPC flamethrowers never ignite). |
+| `gun.flamethrower.tankfill` | Flamethrower (M2 B6) | GT's Fluid Canner map, with no GregGuns recipe, fills an empty Fuel Tank with 1,000 mB of Diesel (RC-56), empties a full one, and refuses Water. |
+| `gun.flamethrower.recipe` | Flamethrower (M2 B6) | The HV assembly row (GR-50) is in GT's assembler map with its sheet inputs and not below HV, and the found recipe's output is ours. |
+| `gun.golden_revolver.fire` | Golden Revolver (M2 B6) | One pull launches a bullet, costs a zombie the DamageModel figure for 14 and one round, and holds the 8 tick cooldown with a remembered click. |
+| `gun.golden_revolver.reload` | Golden Revolver (M2 B6) | An empty gun reloads after 45 ticks to 6 rounds from one 9mm bullet; nothing is returned. |
+| `gun.golden_revolver.reload.forced` | Golden Revolver (M2 B6) | The reload key on 5 rounds tops up to 6, consumes the bullet and refunds none. |
+| `gun.golden_revolver.damage` | Golden Revolver (M2 B6) | A bullet hits a zombie 22 blocks away for the drop-off figure (14 falling to 6 between 12 and 30 blocks), below the full 14. |
+| `gun.golden_revolver.recipe` | Golden Revolver (M2 B6) | The IV assembly row (GR-51) is in GT's assembler map and not below IV, and the found recipe's output is ours. |
+| `gun.golden_revolver.upgrade` | Golden Revolver (M2 B6) | The GR-51 recipe is found with a used, camouflaged Revolver (3 rounds, camo 2) in slot 0 and outputs a fresh Golden Revolver without its NBT. |
+| `gun.akimbo_golden_revolvers.fire` | Akimbo akimbo_golden_revolvers (M2 B6) | Three pulls spend one round and launch one bullet each. |
+| `gun.akimbo_golden_revolvers.reload` | Akimbo akimbo_golden_revolvers (M2 B6) | An empty gun with two 9mm bullets fills the 12-round clip after 70 ticks. |
+| `gun.akimbo_golden_revolvers.reload.forced` | Akimbo akimbo_golden_revolvers (M2 B6) | The reload key on a part-loaded gun swaps both bullets and refunds whole loose bullets at the single gun's rate (6 rounds each). |
+| `gun.akimbo_golden_revolvers.combine` | Akimbo akimbo_golden_revolvers (M2 B6) | Through the real crafting manager and crafted event: two Golden Revolvers craft one pair with the rounds summed, and the pair splits back into two. |
 | `gun.combat_shotgun.fire` | Combat Shotgun (M2 B2) | A loaded gun fired point blank launches 8 pellets for one round; a zombie in front loses nearly 8 times the DamageModel figure for 4 damage at 15% penetration. |
 | `gun.combat_shotgun.reload` | Combat Shotgun (M2 B2) | An empty gun with 10 shells reloads after 50 ticks: 8 rounds, 8 shells used, 2 left, nothing returned. |
 | `gun.combat_shotgun.reload.forced` | Combat Shotgun (M2 B2) | The reload key with 5 rounds and 5 shells tops up to 8 using 3 shells, keeping the loaded rounds. |

@@ -54,7 +54,8 @@ public final class ItemTank extends Item implements Tiered, IFluidContainerItem,
      * @param tier              the D1 tier
      * @param name              the bare registry name, which names the textures {@code <name>} and {@code <name>_empty}
      * @param gas               {@code true} to look the accepted materials up as gases ({@code getGas}) first
-     * @param acceptedMaterials GT {@code Materials} field names whose fluid or gas the tank takes
+     * @param acceptedMaterials GT {@code Materials} names ({@code mName}, as {@code Materials.get} takes them: Diesel
+     *                          is "Fuel") whose fluid or gas the tank takes
      */
     public ItemTank(Tier tier, String name, boolean gas, List<String> acceptedMaterials) {
         this.tier = tier;

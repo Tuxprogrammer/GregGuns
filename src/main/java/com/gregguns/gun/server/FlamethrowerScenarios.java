@@ -120,21 +120,22 @@ public final class FlamethrowerScenarios {
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.checkEquals("rounds spent in " + HELD_TICKS + " held ticks", expected, rig.shots());
                 out.checkEquals("rounds left", STATS.magazineSize() - expected, rig.loaded());
-                out.checkEquals("flame streams launched", expected, flames(ctx.world()));
+                out.checkEquals("flame streams launched", expected, rig.bullets());
+                out.check(flameSeen(ctx.world()), "the streams should be FlamethrowerProjectile entities");
                 out.check(target.getHealth() < target.getMaxHealth(), "the flame should have hurt the target");
                 out.check(target.isBurning(), "a flame fired by a player should set its target alight");
                 return out.build();
             });
         }
 
-        private static int flames(World world) {
-            int n = 0;
+        /** A stream still in flight (those that hit have ended), or one recorded by the rig as a flame. */
+        private static boolean flameSeen(World world) {
             for (Object o : world.loadedEntityList) {
                 if (o instanceof FlamethrowerProjectile) {
-                    n++;
+                    return true;
                 }
             }
-            return n;
+            return false;
         }
     }
 
@@ -276,6 +277,12 @@ public final class FlamethrowerScenarios {
             ShotOffset offset = SpreadModel.roll(new java.util.Random(7L), STATS, ShotContext.player(false, 0.0), 0)[0];
             Projectiles.launcher()
                 .launch(ctx.world(), shooter, STATS, offset, 1.0F);
+            FlamethrowerProjectile[] mine = { null };
+            for (Object o : ctx.world().loadedEntityList) {
+                if (o instanceof FlamethrowerProjectile && ((FlamethrowerProjectile) o).getShooter() == shooter) {
+                    mine[0] = (FlamethrowerProjectile) o;
+                }
+            }
             return ScenarioResult.pending(name(), WAIT + 10, ticks -> {
                 if (ticks < WAIT) {
                     return null;
@@ -283,11 +290,8 @@ public final class FlamethrowerScenarios {
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(target.getHealth() < target.getMaxHealth(), "the NPC's flame should have hurt the target");
                 out.check(!target.isBurning(), "an NPC's flame must not ignite its target");
-                for (Object o : ctx.world().loadedEntityList) {
-                    if (o instanceof FlamethrowerProjectile) {
-                        out.check(!((FlamethrowerProjectile) o).ignites(), "an NPC's flame is not an igniting flame");
-                    }
-                }
+                out.check(mine[0] != null, "the launcher should have spawned the NPC's flame");
+                out.check(mine[0] != null && !mine[0].ignites(), "an NPC's flame is not an igniting flame");
                 return out.build();
             });
         }
