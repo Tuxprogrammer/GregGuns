@@ -16,6 +16,7 @@ import org.junit.jupiter.api.io.TempDir;
 import com.gregguns.armor.model.ArmorModelDef;
 import com.gregguns.armor.model.ArmorModels;
 import com.gregguns.client.render.profile.ClientGunDefinitions;
+import com.gregguns.client.render.profile.MinigunProfile;
 
 class ModelExportTest {
 
@@ -107,6 +108,15 @@ class ModelExportTest {
         assertTrue(ModelExporter.exportAll(dir) > 0);
         assertEquals(ArmorModels.CUSTOM_SETS.size(), ModelExporter.exportArmor(dir));
         assertTrue(ModelExporter.exportAccessories(dir) > 0);
+    }
+
+    /** Runs only when an output directory is configured: writes profiles whose gun is not registered yet. */
+    @Test
+    void exportUnregisteredProfilesToConfiguredDirectory() throws IOException {
+        Path dir = ModelExporter.configuredDirectory();
+        Assumptions.assumeTrue(dir != null, "set -Dgregguns.exportModels=<dir> or GREGGUNS_EXPORT_MODELS");
+        ModelExporter.exportDefinition(dir, MinigunProfile.DEFINITION);
+        assertTrue(Files.exists(dir.resolve("minigun.json")));
     }
 
     /** Every accessory model is exported with one JSON box per model box. */

@@ -86,21 +86,40 @@ public final class ModelExporter {
     public static List<ExportModel> models() {
         List<ExportModel> list = new ArrayList<>();
         for (ClientGunDefinition def : ClientGunDefinitions.ALL) {
-            String note = (def.parts() > 1 ? "moving parts are exported at rest; " : "")
-                + (def.textures().length > 1 ? "textures[0] is the default, the rest are camo variants" : "");
-            list.add(
-                new ExportModel(
-                    def.gunName(),
-                    "gun",
-                    def.boxes(),
-                    def.textureWidth(),
-                    def.textureHeight(),
-                    def.modelScale(),
-                    def.textures(),
-                    def.muzzle(),
-                    note));
+            list.add(modelOf(def));
         }
         return list;
+    }
+
+    private static ExportModel modelOf(ClientGunDefinition def) {
+        String note = (def.parts() > 1 ? "moving parts are exported at rest; " : "")
+            + (def.textures().length > 1 ? "textures[0] is the default, the rest are camo variants" : "");
+        return new ExportModel(
+            def.gunName(),
+            "gun",
+            def.boxes(),
+            def.textureWidth(),
+            def.textureHeight(),
+            def.modelScale(),
+            def.textures(),
+            def.muzzle(),
+            note);
+    }
+
+    /**
+     * Writes one definition that is not in {@link ClientGunDefinitions#ALL} yet (a gun whose profile is built before
+     * the gun is registered), as {@code <name>.json}. Does not touch the index.
+     *
+     * @param dir output directory, created if missing
+     * @param def the definition to export
+     * @throws IOException if the file cannot be written
+     */
+    public static void exportDefinition(Path dir, ClientGunDefinition def) throws IOException {
+        Files.createDirectories(dir);
+        ExportModel m = modelOf(def);
+        try (Writer w = Files.newBufferedWriter(dir.resolve(m.name + ".json"), StandardCharsets.UTF_8)) {
+            w.write(toJson(m));
+        }
     }
 
     /**
