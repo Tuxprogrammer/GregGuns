@@ -1305,6 +1305,8 @@ def main():
     # The five custom-model armor sets (Exo, Power, Steam, Riot, Beret) are painted to fit their box models by
     # armor_models.py; skip the old vanilla-unwrap sheets here so a re-run never overwrites them.
     man = [m for m in man if not m["id"].startswith(ARMOR_MODEL_PREFIXES)]
+    # The Camp Flag sheet is painted to fit its box model by flagpost_paint.py.
+    man = [m for m in man if m["id"] != "model.machine.flagpost"]
     for m in man:
         if m["id"].replace("model.armor.", "") in ACCESSORY_OWNED and m["id"].startswith("model.armor."):
             continue  # worn accessory sheets belong to accessory_models.py (their layouts come from the Java models)

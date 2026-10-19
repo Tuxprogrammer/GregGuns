@@ -290,6 +290,21 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | particle.techscope | src/main/resources/assets/gregguns/textures/fx/techscope.png | tools/asset-gen/blocks.py | 4011541779 | procedural FX sprite sheet (fx.py): analytic radial/noise fields through a color ramp | MIT | 2026-10-18 |
 | particle.teslaflare01 | src/main/resources/assets/gregguns/textures/fx/teslaflare01.png | tools/asset-gen/blocks.py | 653321173 | procedural FX sprite sheet (fx.py): analytic radial/noise fields through a color ramp | MIT | 2026-10-18 |
 
+### charges (4)
+
+| asset | path | generator | seed | method | license | date |
+|---|---|---|---|---|---|---|
+| model.charge.tnt_charge | src/main/resources/assets/gregguns/textures/models/charges/tnt_charge.png | tools/asset-gen/charge_models.py | 4108599144 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
+| model.charge.tnt_charge_armed | src/main/resources/assets/gregguns/textures/models/charges/tnt_charge_armed.png | tools/asset-gen/charge_models.py | 3613146844 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
+| model.charge.exp_charge | src/main/resources/assets/gregguns/textures/models/charges/exp_charge.png | tools/asset-gen/charge_models.py | 4076177377 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
+| model.charge.exp_charge_armed | src/main/resources/assets/gregguns/textures/models/charges/exp_charge_armed.png | tools/asset-gen/charge_models.py | 578581585 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
+
+### flagpost (1)
+
+| asset | path | generator | seed | method | license | date |
+|---|---|---|---|---|---|---|
+| model.machine.flagpost | src/main/resources/assets/gregguns/textures/models/machines/flagpost.png | tools/asset-gen/flagpost_paint.py | 7120416 | Procedural numpy/Pillow: weathered concrete plinth, brushed-metal poles, white/red/blue star flag cloth painted onto the Java box unwrap | MIT | 2026-10-19 |
+
 ### gui (15)
 
 | asset | path | generator | seed | method | license | date |
@@ -492,7 +507,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | icon.turret_armor_aluminum | src/main/resources/assets/gregguns/textures/items/turret_armor_aluminum.png | tools/asset-gen/icons.py | 1546297071 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.turret_armor_carbon | src/main/resources/assets/gregguns/textures/items/turret_armor_carbon.png | tools/asset-gen/icons.py | 3989877665 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 
-### models (134)
+### models (133)
 
 | asset | path | generator | seed | method | license | date |
 |---|---|---|---|---|---|---|
@@ -620,7 +635,6 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | model.machine.bio_blob | src/main/resources/assets/gregguns/textures/blocks/bio_blob.png | tools/asset-gen/models.py | 3597731077 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.explosive_charge | src/main/resources/assets/gregguns/textures/models/machines/explosive_charge.png | tools/asset-gen/models.py | 845241392 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.explosive_charge_armed | src/main/resources/assets/gregguns/textures/models/machines/explosive_charge_armed.png | tools/asset-gen/models.py | 65047630 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
-| model.machine.flagpost | src/main/resources/assets/gregguns/textures/models/machines/flagpost.png | tools/asset-gen/models.py | 250059219 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.reinforced_chest | src/main/resources/assets/gregguns/textures/models/machines/reinforced_chest.png | tools/asset-gen/models.py | 1701200440 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.reinforced_chest_double | src/main/resources/assets/gregguns/textures/models/machines/reinforced_chest_double.png | tools/asset-gen/models.py | 686883248 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.turret_base | src/main/resources/assets/gregguns/textures/models/machines/turret_base.png | tools/asset-gen/models.py | 3065469544 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
@@ -914,5 +928,15 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | snd.npcs.turret_gunequip-02 | src/main/resources/assets/gregguns/sounds/npcs/turret_gunequip-02.ogg | tools/asset-gen/gen_sounds.py + sndlib.py + sndengines.py + sounds_*.py + sfx.py | 1534694810 | Procedural numpy synthesis: per-family noise/transient/foley recipes conformed to the measured band balance, loudness contour and crest of the sound it replaces; true-peak limiter; libvorbis q7 | MIT | 2026-10-18 |
 | snd.npcs.turret_gunequip-03 | src/main/resources/assets/gregguns/sounds/npcs/turret_gunequip-03.ogg | tools/asset-gen/gen_sounds.py + sndlib.py + sndengines.py + sounds_*.py + sfx.py | 746497292 | Procedural numpy synthesis: per-family noise/transient/foley recipes conformed to the measured band balance, loudness contour and crest of the sound it replaces; true-peak limiter; libvorbis q7 | MIT | 2026-10-18 |
 | snd.guns.flashbang_bang | src/main/resources/assets/gregguns/sounds/guns/flashbang_bang.ogg | tools/asset-gen/gen_sounds.py + sfx.py | 1216011398 | Procedural numpy synthesis (noise/FM/modal layers + synthetic-IR reverb) from written profile; libvorbis q5 | MIT | 2026-10-18 |
+
+### turret_models (5)
+
+| asset | path | generator | seed | method | license | date |
+|---|---|---|---|---|---|---|
+| model.machine.turret_sheet | src/main/resources/assets/gregguns/textures/models/machines/turret_sheet.png | tools/asset-gen/turret_models.py | 926337691 | Procedural numpy/Pillow: speckled body steel, flat dark frame, dark port with plug and a painted radial plate top, painted onto the unwrap of the Java turret boxes | MIT | 2026-10-19 |
+| model.machine.turret_sheet_iron | src/main/resources/assets/gregguns/textures/models/machines/turret_sheet_iron.png | tools/asset-gen/turret_models.py | 4159069966 | Procedural numpy/Pillow: speckled body steel, flat dark frame, dark port with plug and a painted radial plate top, painted onto the unwrap of the Java turret boxes | MIT | 2026-10-19 |
+| model.machine.turret_sheet_steel | src/main/resources/assets/gregguns/textures/models/machines/turret_sheet_steel.png | tools/asset-gen/turret_models.py | 2507364334 | Procedural numpy/Pillow: speckled body steel, flat dark frame, dark port with plug and a painted radial plate top, painted onto the unwrap of the Java turret boxes | MIT | 2026-10-19 |
+| model.machine.turret_sheet_aluminum | src/main/resources/assets/gregguns/textures/models/machines/turret_sheet_aluminum.png | tools/asset-gen/turret_models.py | 1398559162 | Procedural numpy/Pillow: speckled body steel, flat dark frame, dark port with plug and a painted radial plate top, painted onto the unwrap of the Java turret boxes | MIT | 2026-10-19 |
+| model.machine.turret_sheet_carbon | src/main/resources/assets/gregguns/textures/models/machines/turret_sheet_carbon.png | tools/asset-gen/turret_models.py | 3571424527 | Procedural numpy/Pillow: speckled body steel, flat dark frame, dark port with plug and a painted radial plate top, painted onto the unwrap of the Java turret boxes | MIT | 2026-10-19 |
 
 <!-- generated-credits:end -->

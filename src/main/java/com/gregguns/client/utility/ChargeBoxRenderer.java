@@ -1,66 +1,60 @@
 package com.gregguns.client.utility;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
 
 import com.gregguns.utility.charge.ChargeModel;
 import com.gregguns.utility.charge.ChargeType;
 
 /**
- * Draws a charge's {@link ChargeModel} boxes with one flat texture. PLACEHOLDER rendering: every face shows the whole
- * texture, and the armed state is a red tint. A clean-room model replaces this, not the callers. Client only.
+ * Draws a charge's {@link ChargeModel} boxes with the charge's own texture: each face samples its unwrap rectangle, and
+ * the armed state swaps to the charge's armed texture (the detonator plate glows red). Client only.
  */
 // Spec: docs/techguns-spec/09-machines-utility/explosive-charges.md (World rendering)
 final class ChargeBoxRenderer {
 
-    /** The closest existing texture (there is no charge texture yet); listed as an asset gap. */
-    static final ResourceLocation TEXTURE = new ResourceLocation(
-        "gregguns",
-        "textures/blocks/casings/works_casing.png");
+    private static final ResourceLocation TNT = texture("tnt_charge");
+    private static final ResourceLocation TNT_ARMED = texture("tnt_charge_armed");
+    private static final ResourceLocation EXP = texture("exp_charge");
+    private static final ResourceLocation EXP_ARMED = texture("exp_charge_armed");
 
     private ChargeBoxRenderer() {}
 
+    private static ResourceLocation texture(String name) {
+        return new ResourceLocation("gregguns", "textures/models/charges/" + name + ".png");
+    }
+
     /**
-     * Draws the boxes of a charge in the cell whose minimum corner is at the current GL origin.
+     * Draws the boxes of a charge in the cell whose minimum corner is at the current GL origin, binding the texture.
      *
      * @param type        which charge
      * @param orientation the placed face
-     * @param armed       true tints the boxes red
+     * @param armed       true draws the armed texture
      */
     static void draw(ChargeType type, int orientation, boolean armed) {
-        GL11.glColor4f(1.0F, armed ? 0.35F : 1.0F, armed ? 0.35F : 1.0F, 1.0F);
+        boolean advanced = type == ChargeType.ADVANCED;
+        Minecraft.getMinecraft()
+            .getTextureManager()
+            .bindTexture(advanced ? (armed ? EXP_ARMED : EXP) : (armed ? TNT_ARMED : TNT));
         Tessellator t = Tessellator.instance;
-        for (ChargeModel.Box box : ChargeModel.boxes(type, orientation)) {
-            float[] b = box.bounds;
-            drawBox(t, b[0] / 16, b[1] / 16, b[2] / 16, b[3] / 16, b[4] / 16, b[5] / 16);
-        }
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-    }
-
-    private static void drawBox(Tessellator t, float x0, float y0, float z0, float x1, float y1, float z1) {
         t.startDrawingQuads();
-        t.setNormal(0, -1, 0);
-        quad(t, x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1);
-        t.setNormal(0, 1, 0);
-        quad(t, x0, y1, z1, x1, y1, z1, x1, y1, z0, x0, y1, z0);
-        t.setNormal(0, 0, -1);
-        quad(t, x1, y0, z0, x0, y0, z0, x0, y1, z0, x1, y1, z0);
-        t.setNormal(0, 0, 1);
-        quad(t, x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1);
-        t.setNormal(-1, 0, 0);
-        quad(t, x0, y0, z0, x0, y0, z1, x0, y1, z1, x0, y1, z0);
-        t.setNormal(1, 0, 0);
-        quad(t, x1, y0, z1, x1, y0, z0, x1, y1, z0, x1, y1, z1);
+        for (ChargeModel.Box box : ChargeModel.boxes(type, orientation)) {
+            for (int face = 0; face < 6; face++) {
+                float[][] q = box.quad(face);
+                float[][] uv = box.uv(face);
+                float[] n = box.normal(face);
+                t.setNormal(n[0], n[1], n[2]);
+                for (int i = 0; i < 4; i++) {
+                    t.addVertexWithUV(
+                        q[i][0] / 16,
+                        q[i][1] / 16,
+                        q[i][2] / 16,
+                        uv[i][0] / ChargeModel.TEX_SIZE,
+                        uv[i][1] / ChargeModel.TEX_SIZE);
+                }
+            }
+        }
         t.draw();
-    }
-
-    private static void quad(Tessellator t, float ax, float ay, float az, float bx, float by, float bz, float cx,
-        float cy, float cz, float dx, float dy, float dz) {
-        t.addVertexWithUV(ax, ay, az, 0, 1);
-        t.addVertexWithUV(bx, by, bz, 1, 1);
-        t.addVertexWithUV(cx, cy, cz, 1, 0);
-        t.addVertexWithUV(dx, dy, dz, 0, 0);
     }
 }

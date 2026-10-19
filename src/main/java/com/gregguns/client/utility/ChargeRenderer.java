@@ -23,7 +23,6 @@ public final class ChargeRenderer extends TileEntitySpecialRenderer implements I
             return;
         }
         TileExplosiveCharge charge = (TileExplosiveCharge) tile;
-        bindTexture(ChargeBoxRenderer.TEXTURE);
         GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         ChargeBoxRenderer.draw(
@@ -48,9 +47,6 @@ public final class ChargeRenderer extends TileEntitySpecialRenderer implements I
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         ChargeType charge = ChargeType.fromMeta(item.getItemDamage());
-        net.minecraft.client.Minecraft.getMinecraft()
-            .getTextureManager()
-            .bindTexture(ChargeBoxRenderer.TEXTURE);
         GL11.glPushMatrix();
         switch (type) {
             case INVENTORY:
@@ -67,7 +63,8 @@ public final class ChargeRenderer extends TileEntitySpecialRenderer implements I
                 GL11.glTranslatef(0.2F, 0.3F, 0.2F);
                 break;
         }
-        ChargeBoxRenderer.draw(charge, 1, false);
+        // Wall pose: upright, plate toward the viewer (+z), the way the model notes show the item.
+        ChargeBoxRenderer.draw(charge, 3, false);
         GL11.glPopMatrix();
     }
 }

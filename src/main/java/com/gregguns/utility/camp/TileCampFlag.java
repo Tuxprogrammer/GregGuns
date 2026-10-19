@@ -189,6 +189,13 @@ public class TileCampFlag extends TileEntity {
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         double top = yCoord + FlagPostGeometry.HEIGHT / 16.0;
-        return AxisAlignedBB.getBoundingBox(xCoord, yCoord, zCoord, xCoord + 1, top, zCoord + 1);
+        double reach = FlagPostGeometry.horizontalReach() / 16.0;
+        return AxisAlignedBB.getBoundingBox(
+            xCoord + 0.5 - reach,
+            yCoord,
+            zCoord + 0.5 - reach,
+            xCoord + 0.5 + reach,
+            top,
+            zCoord + 0.5 + reach);
     }
 }

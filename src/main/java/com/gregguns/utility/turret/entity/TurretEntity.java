@@ -25,7 +25,9 @@ import com.gregguns.projectile.Projectiles;
 import com.gregguns.utility.turret.TurretHost;
 import com.gregguns.utility.turret.TurretLink;
 
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import io.netty.buffer.ByteBuf;
 
 /**
  * The mounted gun turret: a 30 HP creature that stands still, picks the nearest valid target and fires the gun of its
@@ -43,7 +45,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 // docs/gregguns-spec/09-machines-utility/turret.md (GGS-09-01, GGS-09-02), docs/techguns-spec/BUGS.md (NPC-12)
 // Deviation: retaliation against whoever hurt the turret waits for the M7 faction rules; the turret only fires at
 // what the target rules choose.
-public class TurretEntity extends EntityCreature implements IEntityOwnable, TurretAttacker {
+public class TurretEntity extends EntityCreature implements IEntityOwnable, TurretAttacker, IEntityAdditionalSpawnData {
 
     /** Mod-local entity id (the registry id; 11, 24 and 25 are projectiles). */
     public static final int ENTITY_ID = 60;
@@ -63,6 +65,7 @@ public class TurretEntity extends EntityCreature implements IEntityOwnable, Turr
     private static final String KEY_BASE_Y = "baseY";
     private static final String KEY_BASE_Z = "baseZ";
 
+    private int spawnArmor;
     private TurretHost host;
     private boolean hasBase;
     private int baseX;
@@ -281,6 +284,24 @@ public class TurretEntity extends EntityCreature implements IEntityOwnable, Turr
             // NPC-12: a turret with no base dies quietly.
             TurretLink.notifyDeath(lost);
         }
+    }
+
+    /**
+     * @return the plate's armor value for choosing a texture: the live value on the server, the value sent at spawn
+     *         on a client (GGS-01-11 forbids a DataWatcher slot, so a plate changed later shows after a re-track)
+     */
+    public int displayArmorValue() {
+        return worldObj.isRemote ? spawnArmor : getTotalArmorValue();
+    }
+
+    @Override
+    public void writeSpawnData(ByteBuf buffer) {
+        buffer.writeByte(getTotalArmorValue());
+    }
+
+    @Override
+    public void readSpawnData(ByteBuf additionalData) {
+        spawnArmor = additionalData.readByte();
     }
 
     @Override
