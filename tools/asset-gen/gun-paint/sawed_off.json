@@ -1,0 +1,38 @@
+{
+ "gun": "sawed_off",
+ "textures": [{"file": "sawed_off.png"}],
+ "roles": {
+  "bar": {"material": "steel", "base": "#B6B6B6", "scratches": true, "noise": 0.03},
+  "bead": {"material": "steel", "base": "#9A9A9A", "scratches": false, "noise": 0.02},
+  "lev": {"material": "steel", "base": "#A4A4A4", "scratches": false, "noise": 0.02},
+  "wood": {"material": "wood", "base": "#624A2A"}
+ },
+ "boxes": {
+  "tube_l": {"role": "bar", "painters": [
+    {"type": "tone", "faces": ["top"], "f": 1.07},
+    {"type": "tone", "faces": ["bottom", "front", "back"], "f": 0.84},
+    {"type": "rect", "faces": ["left"], "x": 0, "y": 1, "w": 2, "h": 2, "color": "#000000"}]},
+  "tube_r": {"role": "bar", "painters": [
+    {"type": "tone", "faces": ["top"], "f": 1.07},
+    {"type": "tone", "faces": ["bottom", "front", "back"], "f": 0.84},
+    {"type": "rect", "faces": ["left"], "x": 0, "y": 1, "w": 2, "h": 2, "color": "#000000"}]},
+  "rib_c": {"role": "bar", "painters": [{"type": "tone", "faces": ["top", "bottom", "front", "back"], "f": 0.88}]},
+  "rib_l": {"role": "bar", "painters": [{"type": "tone", "faces": ["front"], "f": 0.88}]},
+  "rib_r": {"role": "bar", "painters": [{"type": "tone", "faces": ["back"], "f": 0.88}]},
+  "bead_l": {"role": "bead"},
+  "bead_r": {"role": "bead"},
+  "nub_l": {"role": "bead"},
+  "nub_r": {"role": "bead"},
+  "nubtop_l": {"role": "bead"},
+  "nubtop_r": {"role": "bead"},
+  "lever": {"role": "lev"},
+  "lock": {"role": "wood", "grain": "x"},
+  "hand": {"role": "wood", "grain": "x"},
+  "plate_l": {"role": "wood", "grain": "x"},
+  "plate_r": {"role": "wood", "grain": "x"},
+  "chin": {"role": "wood", "grain": "x"},
+  "butt": {"role": "wood", "grain": "y"},
+  "strip": {"role": "wood", "grain": "x"},
+  "sliver": {"role": "wood", "grain": "x"}
+ }
+}
