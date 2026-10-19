@@ -76,13 +76,15 @@ public final class AkimboScenarios {
             GunStats stats = def.stats();
             GunRig rig = rig(ctx, def, stats.magazineSize());
             int gap = stats.fireRateTicks() + 1;
-            return ScenarioResult.pending(name(), 3 * gap + 10, ticks -> {
-                if (ticks < 3 * gap && ticks % gap == 0) {
+            int[] pulls = { 0 };
+            return ScenarioResult.pending(name(), 3 * gap + 20, ticks -> {
+                if (pulls[0] < 3 && ticks >= pulls[0] * gap) {
                     rig.press();
                     rig.release();
+                    pulls[0]++;
                 }
                 rig.tick();
-                if (ticks < 3 * gap + 2) {
+                if (ticks < 3 * gap + 3) {
                     return null;
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
@@ -219,9 +221,9 @@ public final class AkimboScenarios {
         @Override
         public String description() {
             return "Two " + def.singleGun()
-                + " (12 and 5 rounds, camo 0 and 2) craft into one "
+                + " (two thirds and a third of a clip less one, camo 0 and 2) craft into one "
                 + def.name()
-                + " with 17 rounds and the first camo; crafting that back gives one gun and, once, a second to the player, with 8 and 9 rounds and camos 0 and 2.";
+                + " with the rounds summed and the first camo; crafting that back gives one gun with half the rounds (floored) and camo 0 and, once, a second to the player with the remainder and camo 2.";
         }
 
         private InventoryCrafting grid(ItemStack... stacks) {
@@ -252,8 +254,11 @@ public final class AkimboScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             GunDefinition singleDef = GunDefinitions.byName(def.singleGun());
             GunStats singleStats = singleDef.stats();
-            ItemStack a = single(singleDef, 12, 0);
-            ItemStack b = single(singleDef, 5, 2);
+            int roundsA = singleStats.magazineSize() * 2 / 3;
+            int roundsB = singleStats.magazineSize() / 3 - 1;
+            int total = roundsA + roundsB;
+            ItemStack a = single(singleDef, roundsA, 0);
+            ItemStack b = single(singleDef, roundsB, 2);
 
             ItemStack pair = CraftingManager.getInstance()
                 .findMatchingRecipe(grid(a, null, b), ctx.world());
@@ -266,7 +271,7 @@ public final class AkimboScenarios {
             NBTTagCompound pairTag = pair.getTagCompound();
             out.checkEquals(
                 "combined rounds",
-                17,
+                total,
                 GunNbt.read(pairTag, def.stats())
                     .loaded());
             out.checkEquals(
@@ -289,7 +294,7 @@ public final class AkimboScenarios {
             }
             out.checkEquals(
                 "first gun rounds (floor half)",
-                8,
+                total / 2,
                 GunNbt.read(first.getTagCompound(), singleStats)
                     .loaded());
             out.checkEquals(
@@ -307,7 +312,7 @@ public final class AkimboScenarios {
             if (second != null) {
                 out.checkEquals(
                     "second gun rounds (the remainder)",
-                    9,
+                    total - total / 2,
                     GunNbt.read(second.getTagCompound(), singleStats)
                         .loaded());
                 out.checkEquals(
