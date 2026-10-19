@@ -165,9 +165,9 @@ public final class AccessoryDefs {
                 "anti_gravity_pack_black",
                 "anti_gravity_pack_dark_green",
                 "anti_gravity_pack_silver")
-            .box("slab", 6, 8, 3, -3.0f, 1.0f, 0.0f)
-            .box("pillar_right", 2, 10, 2, -5.0f, 0.0f, 0.5f)
-            .box("pillar_left", 2, 10, 2, 3.0f, 0.0f, 0.5f)
+            .box("slab", 6, 6, 3, -3.0f, 1.0f, 0.0f)
+            .box("pillar_right", 2, 7, 2, -5.0f, 0.5f, 0.5f)
+            .box("pillar_left", 2, 7, 2, 3.0f, 0.5f, 0.5f)
             .box("plate", 5, 4, 1, -2.5f, 2.0f, 3.0f)
             // The core: a 3x3x3 cube turned 45 degrees about the front-to-back axis, centered at x 0, y 4.
             .box("core", 3, 3, 3, -1.5f, 2.5f, 2.5f)
