@@ -7,14 +7,14 @@
   "textures": ["anti_gravity_pack", "anti_gravity_pack_bronze", "anti_gravity_pack_black", "anti_gravity_pack_dark_green", "anti_gravity_pack_silver"],
   "hinges": {},
   "boxes": [
-    {"name": "slab", "part": 0, "uv": [0, 0], "rotationPoint": [0.000000, 4.000000, 1.500000], "offset": [-3.000000, -3.000000, -1.500000], "size": [6, 6, 3], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "pillar_right", "part": 0, "uv": [18, 0], "rotationPoint": [-4.000000, 4.000000, 1.500000], "offset": [-1.000000, -3.500000, -1.000000], "size": [2, 7, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "pillar_left", "part": 0, "uv": [26, 0], "rotationPoint": [4.000000, 4.000000, 1.500000], "offset": [-1.000000, -3.500000, -1.000000], "size": [2, 7, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "slab", "part": 0, "uv": [16, 0], "rotationPoint": [0.000000, 5.000000, 1.500000], "offset": [-3.000000, -4.000000, -1.500000], "size": [6, 8, 3], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "pillar_right", "part": 0, "uv": [0, 0], "rotationPoint": [-4.000000, 5.000000, 1.500000], "offset": [-1.000000, -5.000000, -1.000000], "size": [2, 10, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "pillar_left", "part": 0, "uv": [8, 0], "rotationPoint": [4.000000, 5.000000, 1.500000], "offset": [-1.000000, -5.000000, -1.000000], "size": [2, 10, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
     {"name": "plate", "part": 0, "uv": [46, 0], "rotationPoint": [0.000000, 4.000000, 3.500000], "offset": [-2.500000, -2.000000, -0.500000], "size": [5, 4, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
     {"name": "core", "part": 0, "uv": [34, 0], "rotationPoint": [0.000000, 4.000000, 4.000000], "offset": [-1.500000, -1.500000, -1.500000], "size": [3, 3, 3], "rotate": [0.000000, 0.000000, 0.785398], "mirror": false},
     {"name": "clamp_right_upper", "part": 0, "uv": [58, 0], "rotationPoint": [-3.000000, 3.000000, 3.000000], "offset": [-1.000000, -0.500000, -0.500000], "size": [2, 1, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "clamp_right_lower", "part": 0, "uv": [0, 9], "rotationPoint": [-3.000000, 5.000000, 3.000000], "offset": [-1.000000, -0.500000, -0.500000], "size": [2, 1, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "clamp_left_upper", "part": 0, "uv": [6, 9], "rotationPoint": [3.000000, 3.000000, 3.000000], "offset": [-1.000000, -0.500000, -0.500000], "size": [2, 1, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
-    {"name": "clamp_left_lower", "part": 0, "uv": [12, 9], "rotationPoint": [3.000000, 5.000000, 3.000000], "offset": [-1.000000, -0.500000, -0.500000], "size": [2, 1, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false}
+    {"name": "clamp_right_lower", "part": 0, "uv": [0, 12], "rotationPoint": [-3.000000, 5.000000, 3.000000], "offset": [-1.000000, -0.500000, -0.500000], "size": [2, 1, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "clamp_left_upper", "part": 0, "uv": [6, 12], "rotationPoint": [3.000000, 3.000000, 3.000000], "offset": [-1.000000, -0.500000, -0.500000], "size": [2, 1, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "clamp_left_lower", "part": 0, "uv": [12, 12], "rotationPoint": [3.000000, 5.000000, 3.000000], "offset": [-1.000000, -0.500000, -0.500000], "size": [2, 1, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false}
   ]
 }

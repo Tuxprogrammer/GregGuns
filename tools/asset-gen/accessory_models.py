@@ -304,6 +304,14 @@ ANTIGRAV = {
 }
 
 
+def brushed(sh, b, amp=0.07):
+    """Brushed-metal variation: per-texel light and dark jitter plus faint streaks along the long axis of each face."""
+    for name, (x, y, w, h) in faces(b).items():
+        streak = 1.0 + (sh.rng.random((h, 1)) - 0.5) * amp * 1.2
+        jitter = 1.0 + (sh.rng.random((h, w)) - 0.5) * amp * 2
+        sh.rgb[y:y + h, x:x + w] = np.clip(sh.rgb[y:y + h, x:x + w] * (streak * jitter * 1.14)[..., None], 0, 255)
+
+
 def anti_gravity(layout, rng, p):
     sh = Sheet(layout["textureWidth"], layout["textureHeight"], rng)
     B = by_name(layout)
@@ -318,6 +326,8 @@ def anti_gravity(layout, rng, p):
                 sh.fill(x, y, 1, h, shadow)
             sh.fill(x + w - 1, y, 1, h, shadow)
             sh.fill(x, y + h - 1, w, 1, shadow)
+    for n in ("slab", "pillar_left", "pillar_right"):
+        brushed(sh, B[n])
     pl = B["plate"]
     paint_box(sh, pl, plate_c, seams=False)
     x, y, w, h = faces(pl)["back"]
@@ -327,6 +337,7 @@ def anti_gravity(layout, rng, p):
     if accent is not None:
         sh.px(x, y + h // 2, accent)
         sh.px(x + w - 1, y + h // 2, accent)
+    brushed(sh, pl, 0.09)
     core = B["core"]
     paint_box(sh, core, core_c, seams=False)
     # faceted: light upper-left, dark lower-right on every face
