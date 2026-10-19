@@ -64,6 +64,25 @@ public final class DamageSources {
      */
     public static boolean hit(Entity target, DamageType type, Entity projectile, Entity shooter, float damage,
         double penetration) {
+        return hit(target, type, projectile, shooter, damage, penetration, true);
+    }
+
+    /**
+     * {@link #hit(Entity, DamageType, Entity, Entity, float, double)} with a switch for the damage type's secondary
+     * effect, for a projectile that must deal its damage without the burning, slowing or poisoning that normally comes
+     * with it (a flame fired by an NPC).
+     *
+     * @param target           the entity hit
+     * @param type             the damage type
+     * @param projectile       the projectile entity, may be {@code null}
+     * @param shooter          the shooter, may be {@code null} (counts as an NPC)
+     * @param damage           raw damage before armor, after drop-off
+     * @param penetration      the share of the damage that skips armor, 0..1
+     * @param secondaryEffects false to turn the type's secondary effect off for this hit
+     * @return what {@code attackEntityFrom} returned: true when the target took the hit
+     */
+    public static boolean hit(Entity target, DamageType type, Entity projectile, Entity shooter, float damage,
+        double penetration, boolean secondaryEffects) {
         boolean targetIsPlayer = target instanceof EntityPlayer;
         DamageFactors.Attacker attacker = attackerOf(shooter);
         DamageFactors.Settings settings = settingsFromConfig();
@@ -71,6 +90,9 @@ public final class DamageSources {
         boolean pvp = server != null && server.isPVPEnabled();
         float scaled = (float) (damage * DamageFactors.damageFactor(settings, attacker, targetIsPlayer, pvp));
         RangedDamageSource source = ranged(type, projectile, shooter, penetration);
+        if (!secondaryEffects) {
+            source.withoutSecondaryEffects();
+        }
         source.hit()
             .setPenetrationScale(DamageFactors.penetrationScale(settings, attacker, targetIsPlayer));
         boolean taken = target.attackEntityFrom(source, scaled);

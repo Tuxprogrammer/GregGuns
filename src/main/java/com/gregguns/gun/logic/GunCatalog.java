@@ -60,6 +60,12 @@ public final class GunCatalog {
         /** Loose 40 mm grenade (the Grenade Launcher's round, MV). */
         public static final String GRENADE_40MM = "ammo_40mm_grenade";
 
+        /**
+         * The Fuel Tank (the Flamethrower's ammo, a Forge fluid container, so not an ammo-package item). Only a full
+         * tank counts as ammo; the same id as the emptied container a reload hands back. See {@link FluidAmmo}.
+         */
+        public static final String FUEL_TANK = "tank_fuel";
+
         private AmmoIds() {}
     }
 

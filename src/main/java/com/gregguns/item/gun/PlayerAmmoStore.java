@@ -4,8 +4,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidContainerItem;
 
 import com.gregguns.core.registry.Naming;
+import com.gregguns.gun.logic.FluidAmmo;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -28,6 +31,22 @@ public final class PlayerAmmoStore implements AmmoStore {
         return GameRegistry.findItem(Naming.NAMESPACE, itemId);
     }
 
+    /**
+     * Whether a stack counts as ammo of {@code item}. A fluid tank (the Flamethrower's Fuel Tank) is ammo only while it
+     * is full; an empty one is the container a reload hands back, so it is never counted or taken as a magazine.
+     */
+    private static boolean isAmmo(ItemStack stack, Item item) {
+        if (stack == null || stack.getItem() != item) {
+            return false;
+        }
+        if (item instanceof IFluidContainerItem) {
+            IFluidContainerItem tank = (IFluidContainerItem) item;
+            FluidStack fluid = tank.getFluid(stack);
+            return fluid != null && FluidAmmo.isFullTank(fluid.amount, tank.getCapacity(stack));
+        }
+        return true;
+    }
+
     @Override
     public int count(String itemId) {
         Item item = item(itemId);
@@ -38,13 +57,13 @@ public final class PlayerAmmoStore implements AmmoStore {
         for (IInventory extra : AmmoSources.extra(player)) {
             for (int i = 0; i < extra.getSizeInventory(); i++) {
                 ItemStack stack = extra.getStackInSlot(i);
-                if (stack != null && stack.getItem() == item) {
+                if (isAmmo(stack, item)) {
                     total += stack.stackSize;
                 }
             }
         }
         for (ItemStack stack : player.inventory.mainInventory) {
-            if (stack != null && stack.getItem() == item) {
+            if (isAmmo(stack, item)) {
                 total += stack.stackSize;
             }
         }
@@ -64,7 +83,7 @@ public final class PlayerAmmoStore implements AmmoStore {
         ItemStack[] slots = player.inventory.mainInventory;
         for (int i = 0; i < slots.length && removed < max; i++) {
             ItemStack stack = slots[i];
-            if (stack == null || stack.getItem() != item) {
+            if (!isAmmo(stack, item)) {
                 continue;
             }
             int take = Math.min(stack.stackSize, max - removed);
@@ -81,7 +100,7 @@ public final class PlayerAmmoStore implements AmmoStore {
         int removed = 0;
         for (int i = 0; i < inventory.getSizeInventory() && removed < max; i++) {
             ItemStack stack = inventory.getStackInSlot(i);
-            if (stack == null || stack.getItem() != item) {
+            if (!isAmmo(stack, item)) {
                 continue;
             }
             int take = Math.min(stack.stackSize, max - removed);

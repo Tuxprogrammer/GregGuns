@@ -129,6 +129,10 @@ class GunDefinitionsTest {
                     items.add(m.emptyItemName());
                 });
         }
+        // A fluid tank is a Forge fluid container item, not an ammo-package item: it is ammo while full, and the same
+        // item
+        // empty is what a reload hands back.
+        items.add(com.gregguns.gun.logic.GunCatalog.AmmoIds.FUEL_TANK);
         for (GunDefinition def : GunDefinitions.ALL) {
             GunStats stats = def.stats();
             assertTrue(items.contains(stats.ammoType()), def.name() + " ammoType " + stats.ammoType());
@@ -182,6 +186,12 @@ class GunDefinitionsTest {
             assertEquals("guns." + def.name() + ".reload", def.reloadEvent());
             assertTrue(events.has(def.fireEvent()), def.fireEvent());
             assertTrue(events.has(def.reloadEvent()), def.reloadEvent());
+            if (def.startsLoop()) {
+                assertEquals("guns." + def.name() + ".start", def.startEvent());
+                assertTrue(events.has(def.startEvent()), def.startEvent());
+            } else {
+                assertNull(def.startEvent());
+            }
             if (def.rechambers()) {
                 assertEquals("guns." + def.name() + ".rechamber", def.rechamberEvent());
                 assertTrue(events.has(def.rechamberEvent()), def.rechamberEvent());

@@ -38,7 +38,10 @@ public final class GunDefinitions {
             AugDef.DEFINITION,
             ScarDef.DEFINITION,
             VectorDef.DEFINITION,
-            InfiltratorDef.DEFINITION));
+            InfiltratorDef.DEFINITION,
+            FlamethrowerDef.DEFINITION,
+            GoldenRevolverDef.DEFINITION,
+            AkimboGoldenRevolversDef.DEFINITION));
 
     private GunDefinitions() {}
 

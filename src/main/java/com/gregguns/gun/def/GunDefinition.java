@@ -43,6 +43,7 @@ public final class GunDefinition {
     private final Tier tier;
     private final DamageType damageType;
     private final boolean rechambers;
+    private final boolean startsLoop;
     private final String singleGun;
     private final int camoCount;
     private final List<ProductionTable.Row> rows;
@@ -56,6 +57,7 @@ public final class GunDefinition {
         this.tier = Objects.requireNonNull(b.tier, "tier of " + b.name);
         this.damageType = Objects.requireNonNull(b.damageType, "damageType of " + b.name);
         this.rechambers = b.rechambers;
+        this.startsLoop = b.startsLoop;
         this.singleGun = b.singleGun;
         this.camoCount = b.camoCount;
         this.rows = Collections.unmodifiableList(new ArrayList<>(b.rows));
@@ -97,6 +99,16 @@ public final class GunDefinition {
     /** @return true if the gun plays a second sound, {@link #rechamberEvent()}, with every shot */
     public boolean rechambers() {
         return rechambers;
+    }
+
+    /** @return true if the gun plays {@link #startEvent()} on the first shot after a pause instead of its fire event */
+    public boolean startsLoop() {
+        return startsLoop;
+    }
+
+    /** @return the unprefixed start sound event, {@code guns.<name>.start}, or null if the gun has no start sound */
+    public String startEvent() {
+        return startsLoop ? GunSoundEvents.gun(name, GunSoundEvents.START) : null;
     }
 
     /**
@@ -178,6 +190,7 @@ public final class GunDefinition {
         private Tier tier;
         private DamageType damageType;
         private boolean rechambers;
+        private boolean startsLoop;
         private String singleGun;
         private int camoCount = 1;
         private final List<ProductionTable.Row> rows = new ArrayList<>();
@@ -215,6 +228,17 @@ public final class GunDefinition {
          */
         public Builder rechambers() {
             this.rechambers = true;
+            return this;
+        }
+
+        /**
+         * Marks a continuous-fire gun that plays {@code guns.<name>.start} on the first shot after at least
+         * {@code LoopStart.IDLE_TICKS} idle ticks and its fire event on the shots that follow.
+         *
+         * @return this
+         */
+        public Builder startsLoop() {
+            this.startsLoop = true;
             return this;
         }
 

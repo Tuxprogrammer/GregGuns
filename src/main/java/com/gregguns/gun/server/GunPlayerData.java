@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
 import com.gregguns.gun.logic.GunController;
+import com.gregguns.gun.logic.LoopStart;
 import com.gregguns.item.gun.ItemGun;
 
 /**
@@ -31,6 +32,7 @@ public final class GunPlayerData implements IExtendedEntityProperties {
     private ItemGun activeGun;
     private int activeSlot = -1;
     private boolean zoomSent;
+    private long lastShotTick = LoopStart.NEVER;
 
     /**
      * Returns the player's data, attaching it on first use.
@@ -74,6 +76,15 @@ public final class GunPlayerData implements IExtendedEntityProperties {
 
     void setZoomSent(boolean zoomSent) {
         this.zoomSent = zoomSent;
+    }
+
+    /** @return the world tick of the player's last shot, or {@link LoopStart#NEVER} */
+    long lastShotTick() {
+        return lastShotTick;
+    }
+
+    void setLastShotTick(long tick) {
+        this.lastShotTick = tick;
     }
 
     @Override

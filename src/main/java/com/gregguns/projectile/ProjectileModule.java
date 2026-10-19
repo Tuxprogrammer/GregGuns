@@ -55,6 +55,14 @@ public final class ProjectileModule {
             GrenadeProjectile.TRACKING_RANGE,
             GenericProjectile.UPDATE_FREQUENCY,
             GenericProjectile.SENDS_VELOCITY);
+        registrar.registerEntity(
+            "flamethrower_projectile",
+            FlamethrowerProjectile.class,
+            FlamethrowerProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.FLAME, FlamethrowerProjectile::new);
         BulletLauncher.register(ProjectileKind.ROCKET, RocketProjectile::new);
         BulletLauncher.register(ProjectileKind.GRENADE, GrenadeLauncherProjectile::new);
         Projectiles.install(new BulletLauncher());

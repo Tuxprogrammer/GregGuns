@@ -120,7 +120,11 @@ public final class ComponentItems {
                     tier,
                     name,
                     false,
-                    Arrays.asList("Diesel", "GasolineRegular", "BioDiesel", "Ethanol"));
+                    // Source: GT names these materials "Fuel" (Materials.Diesel) and "Gasoline"
+                    // (Materials.GasolineRegular),
+                    // so Materials.get needs those names; "Diesel" and "GasolineRegular" are only the Java field names.
+                    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L4860-L4868
+                    Arrays.asList("Fuel", "Gasoline", "BioDiesel", "Ethanol"));
             case TANK_BIO:
                 return new ItemTank(tier, name, false, Arrays.asList("Biomass"));
             case TANK_AIR:
