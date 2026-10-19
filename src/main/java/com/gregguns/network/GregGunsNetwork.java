@@ -113,6 +113,7 @@ public final class GregGunsNetwork {
                 new PacketGunEvent(),
                 new PacketFlightStatus(),
                 new PacketFlash(),
+                new com.gregguns.explosion.PacketBlastFx(),
                 new com.gregguns.fx.PacketSpawnParticle(),
                 new com.gregguns.fx.PacketSpawnParticleOnEntity()));
     }

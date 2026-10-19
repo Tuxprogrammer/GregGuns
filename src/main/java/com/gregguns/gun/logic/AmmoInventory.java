@@ -30,7 +30,21 @@ public interface AmmoInventory {
 
         @Override
         public void depositRounds(String ammoType, int rounds) {}
+
+        @Override
+        public ChargeSource charge() {
+            return ChargeSource.INFINITE;
+        }
     };
+
+    /**
+     * The charge an energy gun spends from (GGS-02-12), read by {@link GunController} when the gun's stats are
+     * energy stats. The item glue returns an adapter over the stack's IC2 charge; creative and NPC shooters use
+     * {@link ChargeSource#INFINITE}. A round gun never asks.
+     */
+    default ChargeSource charge() {
+        return ChargeSource.NONE;
+    }
 
     /** Items of {@code ammoType} available. A pure query. */
     int count(String ammoType);

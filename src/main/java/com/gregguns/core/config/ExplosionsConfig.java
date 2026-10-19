@@ -19,4 +19,8 @@ public class ExplosionsConfig {
     @Config.Comment({ "Whether the player who set off an explosion can be hurt by it (Techguns made the shooter",
         "immune, PFX-25). Default: true." })
     public static boolean selfDamage = true;
+
+    @Config.Comment({ "Whether a GregTech machine caught in a GregGuns blast reacts as it does to any explosion",
+        "(charged machines can blow up and chain). When false the machine is left standing. Default: true." })
+    public static boolean machineExplosions = true;
 }
