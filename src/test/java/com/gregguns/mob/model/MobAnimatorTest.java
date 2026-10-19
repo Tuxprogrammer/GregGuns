@@ -200,4 +200,59 @@ class MobAnimatorTest {
         assertEquals(rad(-80), out[def.indexOf("rightArm")][0], EPS);
         assertEquals(rad(-80), out[def.indexOf("leftArm")][0], EPS);
     }
+
+    @Test
+    void spinRateIsUnchangedAtDeathProgressZeroAndScaledAboveIt() {
+        MobModelDef def = model(
+            "[0,0,0]",
+            "{\"type\":\"spin\",\"part\":\"p\",\"axis\":\"y\",\"rate\":-24,\"deathScale\":0.5}");
+        AnimInput in = new AnimInput();
+        in.ageInTicks = 10.0F;
+        assertEquals(rad(-240), eval(def, in)[1], EPS);
+        in.deathProgress = 0.01F;
+        assertEquals(rad(-120), eval(def, in)[1], EPS);
+        in.deathProgress = 1.0F;
+        assertEquals(rad(-120), eval(def, in)[1], EPS);
+    }
+
+    @Test
+    void spinWithoutDeathScaleIgnoresDeath() {
+        MobModelDef def = model("[0,0,0]", "{\"type\":\"spin\",\"part\":\"p\",\"axis\":\"y\",\"rate\":-24}");
+        AnimInput in = new AnimInput();
+        in.ageInTicks = 10.0F;
+        in.deathProgress = 0.7F;
+        assertEquals(rad(-240), eval(def, in)[1], EPS);
+    }
+
+    @Test
+    void dyingSetPoseBlendsTheRestPitchToTheTargetByDeathProgress() {
+        MobModelDef def = model(
+            "[25,0,0]",
+            "{\"type\":\"pose\",\"part\":\"p\",\"when\":\"dying\",\"mode\":\"set\"," + "\"angles\":{\"x\":0}}");
+        AnimInput in = new AnimInput();
+        assertEquals(rad(25), eval(def, in)[0], EPS);
+        in.deathProgress = 0.5F;
+        assertEquals(rad(12.5), eval(def, in)[0], EPS);
+        in.deathProgress = 1.0F;
+        assertEquals(0.0F, eval(def, in)[0], EPS);
+        in.deathProgress = 3.0F; // clamped to 1
+        assertEquals(0.0F, eval(def, in)[0], EPS);
+    }
+
+    @Test
+    void defaultMobAnimSourceHasNoDeathProgress() {
+        MobAnimSource src = new MobAnimSource() {
+
+            @Override
+            public boolean isAiming() {
+                return false;
+            }
+
+            @Override
+            public float attackProgress(float partialTicks) {
+                return -1.0F;
+            }
+        };
+        assertEquals(0.0F, src.deathProgress(0.5F), 0.0F);
+    }
 }

@@ -1029,7 +1029,7 @@ The worn accessory sheets (masks, goggles, tanks, jump pack, anti-gravity pack, 
 ### machine.weapon_chest_double
 - vanilla chest layout scaled x2: lid box u=0 v=0 60x10x28; base box u=0 v=38 60x20x28 (lid latch painted on lid front; the vanilla knob region overlaps the lid and is left to the lid art).
 
-`model.obj.*` entries (apache.obj, launcher_grenade.obj) are meshes, not painted: skipped by this generator.
+`model.obj.*` entries (launcher_grenade.obj) are meshes, not painted: skipped by this generator.
 
 ## GUI sprite sheets (kind gui)
 

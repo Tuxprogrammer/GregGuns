@@ -24,4 +24,6 @@ public final class AnimInput {
     public boolean holding;
     /** Attack progress 0 to 1, or 0 when not attacking. */
     public float attackProgress;
+    /** Death progress 0 to 1, or 0 while alive; see {@link MobAnimSource#deathProgress}. */
+    public float deathProgress;
 }

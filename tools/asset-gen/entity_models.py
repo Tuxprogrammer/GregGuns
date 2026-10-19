@@ -159,13 +159,17 @@ class Mob:
             a["offset"] = _num(offset)
         self.animations.append(a)
 
-    def spin(self, part, axis, rate):
-        """Constant rotation: adds rate degrees per tick about the axis."""
-        self.animations.append({"type": "spin", "part": part, "axis": axis, "rate": _num(rate)})
+    def spin(self, part, axis, rate, death_scale=None):
+        """Constant rotation: adds rate degrees per tick about the axis.
+        death_scale: factor on the rate while the mob is dying (death progress above 0); omit for no change."""
+        a = {"type": "spin", "part": part, "axis": axis, "rate": _num(rate)}
+        if death_scale is not None:
+            a["deathScale"] = _num(death_scale)
+        self.animations.append(a)
 
     def pose(self, part, when, x=None, y=None, z=None, mode="add", follow_yaw=0.0, follow_pitch=0.0, blend=None,
              window=None):
-        """Angles that apply while `when` is aiming, attacking or holding.
+        """Angles that apply while `when` is aiming, attacking, holding or dying (weight = death progress).
         mode='add' adds them, mode='set' replaces the axes given (blended by the weight).
         follow_yaw / follow_pitch add that share of the head yaw / pitch to Y / X.
         blend (attacking only): step, cosine or sine; window: [from, to] attack progress."""
@@ -1115,7 +1119,136 @@ def skeleton_soldier():
     return m
 
 
-MODELS = [demo_biped, biped, cyberdemon, super_mutant, alien_bug, skeleton_soldier]
+def attack_helicopter():
+    """Attack Helicopter boss: olive-drab Apache-style gunship, built at FULL SIZE (render scale 1.0).
+    Notes: docs/techguns-spec/10-entities-npcs/model-notes/attack_helicopter.md (clean room: notes only).
+    Frame: origin at the rotor axis on the ground (f = blocks forward of the axis, h = blocks above the feet,
+    w = blocks sideways): model z = -16 f, y = 24 - 16 h, x = +-16 w. Nose tip at f 6.5, fin tip at f -11.75, h 5.0,
+    rotor 296 units (18.5 blocks) across. Parts: `airframe` (fixed hull, flat-faced boxes; the canopy slope, the
+    nose taper and the boom rise are stepped), `fin` (a swept plate: a box pitched back 28.8 degrees),
+    `rotor` (mast, hub, fore and aft blades; spins -24 deg per tick about the mast, counterclockwise from above)
+    with child `rotor_side` (the left and right blades, yawed 90 degrees so all four share one texture rectangle),
+    and `chin_gun` (pivot f 4.0, h -0.25, rest pitch 25 degrees nose-down). No tail rotor (the notes make it optional).
+    Death sink is entity driven; while dying the rotor spin halves and the gun pitch blends to level (data: deathScale, dying pose)."""
+    m = Mob("attack_helicopter", 512, 512)
+
+    def B(part, name, f0, f1, h0, h1, w0, w1, mat, mirror=False, group=None):
+        part.box(name, 16 * w0, 24 - 16 * h1, -16 * f1, round(16 * (w1 - w0)), round(16 * (h1 - h0)),
+                 round(16 * (f1 - f0)), material=mat, mirror=mirror, group=group)
+
+    def sym(part, name, f0, f1, h0, h1, w0, w1, mat):
+        """A pair of boxes, right (-X) and a mirrored left (+X) sharing one rectangle; w0..w1 is the +X range."""
+        B(part, name + "_r", f0, f1, h0, h1, -w1, -w0, mat, group=name)
+        B(part, name + "_l", f0, f1, h0, h1, w0, w1, mat, mirror=True, group=name)
+
+    a = m.part("airframe")
+    B(a, "cabin", -3.5, 2.0, 0.75, 2.75, -0.75, 0.75, "cabin")
+    B(a, "deck", -1.75, 2.0, 2.75, 3.0, -0.75, 0.75, "hull")
+    B(a, "cowling", -1.75, 2.0, 3.0, 3.25, -0.5, 0.5, "sponson")
+    B(a, "cowling_aft", -3.0, -1.75, 2.75, 3.125, -0.5, 0.5, "sponson")
+    sym(a, "sponson", -3.25, 0.0, 2.25, 3.0, 0.75, 1.5, "sponson")
+    B(a, "belly", -2.75, -0.5, 0.5, 0.75, -0.5, 0.5, "hull")
+    # nose tub: 2.0 wide with quarter-block chamfered ends, sill above its front half
+    B(a, "tub", 0.0, 4.0, 0.5, 1.25, -1.0, 1.0, "hull")
+    B(a, "tub_aft", -0.25, 0.0, 0.5, 1.25, -0.75, 0.75, "hull")
+    B(a, "tub_fore", 4.0, 4.25, 0.5, 1.25, -0.75, 0.75, "hull")
+    B(a, "sill", 2.0, 4.5, 1.25, 1.75, -0.75, 0.75, "hull")
+    # nose cone, 1.5 -> 0.5 square over 2.0 blocks, as four steps, centered at h 1.25
+    for i, side in enumerate((22, 18, 12, 8)):
+        f0 = 4.5 + 0.5 * i
+        B(a, "nose%d" % i, f0, f0 + 0.5, 1.25 - side / 32.0, 1.25 + side / 32.0, -side / 32.0, side / 32.0, "hull")
+    # canopy: flat rear top at h 2.875, sloping to 1.875 at the front (five steps)
+    B(a, "canopy_rear", 2.0, 3.25, 1.75, 2.875, -0.625, 0.625, "glass")
+    for i, top in enumerate((45, 42, 39, 36, 33)):
+        B(a, "canopy_s%d" % i, 3.25 + 0.25 * i, 3.5 + 0.25 * i, 1.75, top / 16.0, -0.625, 0.625, "glass")
+    # tail
+    B(a, "transition", -5.0, -3.5, 1.0, 2.5, -0.75, 0.75, "hull")
+    B(a, "boom_fore", -7.875, -5.0, 1.25, 2.25, -0.5, 0.5, "hull")
+    B(a, "boom_aft", -10.75, -7.875, 1.5, 2.25, -0.5, 0.5, "hull")
+    B(a, "spine", -10.75, -5.0, 2.25, 2.5, -0.25, 0.25, "spine")
+    B(a, "spine_fore", -5.25, -3.5, 2.5, 2.75, -0.25, 0.25, "spine")
+    B(a, "fin_foot", -10.75, -9.0, 2.5, 2.625, -0.25, 0.25, "hull")
+    B(a, "tailplane", -11.0, -10.25, 1.75, 2.0, -2.25, 2.25, "hull")
+    # stub wings, pylons and rocket pods
+    B(a, "wing", -0.75, 0.5, 1.5, 1.75, -3.0, 3.0, "hull")
+    sym(a, "pylon", -0.5, 0.25, 1.25, 1.5, 1.75, 2.0, "hull")
+    sym(a, "pod", -1.0, 1.0, 0.5, 1.25, 1.5, 2.25, "pod")
+    # swept fin: a plate pitched back from its base centre (f -9.875, h 2.5)
+    fin = m.part("fin", parent="airframe", pivot=(0, -16, 158), rotate=(-28.8, 0, 0))
+    fin.box("fin", -2, -40, -11, 4, 40, 22, material="fin")
+    # rotor: mast and hub on the axis (pivot at the hub's underside, h 4.0), blades 0.5..9.25 blocks from the axis
+    r = m.part("rotor", pivot=(0, -40, 0))
+    r.box("mast", -5.5, 0, -5.5, 11, 12, 11, material="mast")
+    r.box("hub", -17, -8, -17, 34, 8, 34, material="hub")
+    r.box("blade_fore", -6, 0, -148, 12, 0, 140, material="blade", group="blade")
+    r.box("blade_aft", -6, 0, 8, 12, 0, 140, material="blade", group="blade")
+    rs = m.part("rotor_side", parent="rotor", rotate=(0, 90, 0))
+    rs.box("blade_left", -6, 0, -148, 12, 0, 140, material="blade", group="blade")
+    rs.box("blade_right", -6, 0, 8, 12, 0, 140, material="blade", group="blade")
+    m.spin("rotor", "y", -24, death_scale=0.5)
+    # chin gun: pivot f 4.0, h -0.25; mount under the nose tub, barrel forward; rest pitch 25 degrees nose-down
+    g = m.part("chin_gun", pivot=(0, 28, -64), rotate=(25, 0, 0))
+    g.box("mount", -4, -12, -8, 8, 8, 16, material="gun")
+    g.box("barrel", -3, -11, -32, 6, 6, 24, material="gun")
+    m.look("chin_gun", yaw=1, pitch=0, max_yaw=30)
+    m.pose("chin_gun", "dying", x=0, mode="set")  # the rest pitch blends to level with the death progress
+
+    # material: (shadow, base, highlight)
+    tone = {"hull": ("#2B2F1C", "#3B4127", "#4A5036"), "cabin": ("#32381E", "#3A4026", "#454B31"),
+            "fin": ("#32381E", "#3B4127", "#454B31"), "spine": ("#373D23", "#40462C", "#4B5137"),
+            "pod": ("#3B4127", "#42482E", "#464C32"), "sponson": ("#2B2F1C", "#363B26", "#3B4127")}
+    pal = {"default": "#3B4127", "glass": "#6B8896", "blade": "#171714", "hub": "#26281F", "mast": "#575757",
+           "gun": "#212121"}
+    pal.update({k: v[1] for k, v in tone.items()})
+    m.palettes["attack_helicopter"] = pal
+    glass_hi, glass_lo, glass_gray = hx("#95BCE7"), hx("#375E89"), hx("#6B8896")
+    dark = {"blade": ("#21221D", "#0A0A09"), "hub": ("#3D4032", "#0B0B09"), "mast": ("#6D6D6D", "#535353"),
+            "gun": ("#242424", "#1E1E1E")}
+    faces = ("top", "bottom", "right", "front", "left", "back")
+
+    def detail(mob, key, put, rect):
+        rng = random.Random(seed_for("attack_helicopter.detail"))
+        boxes = {}
+        for _, bx in mob.all_boxes():
+            boxes.setdefault(bx["group"], bx)
+        panel = hx("#303030")
+        for bx in boxes.values():
+            mat = bx["material"]
+            for face in faces:
+                x, y, w, h = rect(bx, face)
+                if w < 1 or h < 1:
+                    continue
+                if mat in tone:
+                    sh, ba, hi = (hx(c) for c in tone[mat])
+                    steps = [_lerp(sh, ba, 0.5), ba, _lerp(ba, hi, 0.5), hi]
+                    blob = [[rng.random() for _ in range(w // 3 + 2)] for _ in range(h // 3 + 2)]
+                    for yy in range(h):
+                        for xx in range(w):
+                            v = 0.6 * blob[yy // 3][xx // 3] + 0.4 * rng.random()
+                            col = steps[min(3, int(v * 4))]
+                            if face == "bottom":
+                                col = _lerp(col, sh, 0.4)
+                            if w >= 10 and h >= 10 and (xx % 16 == 15 or yy % 16 == 15) and rng.random() < 0.8:
+                                col = _lerp(col, panel, 0.6)
+                            put(x + xx, y + yy, col)
+                elif mat == "glass":
+                    for yy in range(h):
+                        t = 0.0 if face == "top" else (yy + 0.5) / h
+                        col = _lerp(_lerp(glass_hi, glass_lo, t), glass_gray, 0.35)
+                        for xx in range(w):
+                            put(x + xx, y + yy, _lerp(col, (255, 255, 255), 0.06) if rng.random() < 0.08 else col)
+                elif mat in dark:
+                    base = hx(pal[mat])
+                    hi, lo = (hx(c) for c in dark[mat])
+                    for yy in range(h):
+                        for xx in range(w):
+                            v = rng.random()
+                            put(x + xx, y + yy, lo if v < 0.12 else hi if v > 0.8 else base)
+    m.detail = detail
+    return m
+
+
+MODELS = [demo_biped, biped, cyberdemon, super_mutant, alien_bug, skeleton_soldier, attack_helicopter]
 
 
 # ---------------------------------------------------------------------------------------------- main

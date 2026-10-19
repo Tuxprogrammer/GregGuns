@@ -6157,25 +6157,6 @@
   "priority": "P3"
  },
  {
-  "id": "model.entity.apache",
-  "kind": "model",
-  "path": "textures/entity/apache.png",
-  "width": 256,
-  "height": 256,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#3A402A"
-  ],
-  "brief": "Attack Helicopter (OBJ UV atlas): dark olive-gray military helicopter atlas. Keep the Techguns UV layout and size.",
-  "footprint_ref": "textures/entity/apache.png",
-  "priority": "P3"
- },
- {
   "id": "model.entity.gore",
   "kind": "model",
   "path": "textures/entity/gore.png",
@@ -6309,23 +6290,6 @@
   ],
   "brief": "Projectile texture, glossy lime-green Bio Gun glob.",
   "footprint_ref": "textures/entity/bioblob.png",
-  "priority": "P3"
- },
- {
-  "id": "model.obj.apache",
-  "kind": "model",
-  "path": "models/entity/apache.obj",
-  "width": null,
-  "height": null,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [],
-  "brief": "Attack Helicopter OBJ mesh (new topology to the Techguns UV atlas model.entity.apache). Not an image: modeled, not painted.",
-  "footprint_ref": "models/entity/apache.obj",
   "priority": "P3"
  },
  {
