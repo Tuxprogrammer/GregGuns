@@ -7,6 +7,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import com.gregguns.item.gun.ItemGun;
+import com.gregguns.item.gun.ItemToolGun;
 import com.gregguns.recipe.AkimboRecipes;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -64,6 +65,7 @@ public final class GunEvents {
     }
 
     private static boolean holdsGun(ItemStack stack) {
-        return stack != null && stack.getItem() instanceof ItemGun;
+        // A tool gun's left button is melee and mining, so it must keep digging (I11).
+        return stack != null && stack.getItem() instanceof ItemGun && !(stack.getItem() instanceof ItemToolGun);
     }
 }

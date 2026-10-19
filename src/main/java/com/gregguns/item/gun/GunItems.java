@@ -3,7 +3,9 @@ package com.gregguns.item.gun;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.registry.ModuleRegistrar;
+import com.gregguns.core.registry.Naming;
 import com.gregguns.gun.def.BoltActionDef;
 import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
@@ -11,6 +13,7 @@ import com.gregguns.gun.def.HandCannonDef;
 import com.gregguns.gun.def.PistolDef;
 import com.gregguns.gun.def.RevolverDef;
 import com.gregguns.gun.def.SawedOffDef;
+import com.gregguns.gun.def.ToolProbeDef;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.item.ammo.AmmoTypes;
 import com.gregguns.item.ammo.MagazineType;
@@ -46,7 +49,14 @@ public final class GunItems {
                 registrar.registerItem(
                     def.name(),
                     def.stats()
-                        .isEnergy() ? new ItemEnergyGun(def) : new ItemGun(def)));
+                        .isEnergy() ? new ItemEnergyGun(def)
+                            : def.tool() != null ? new ItemToolGun(def) : new ItemGun(def)));
+        }
+        if (DevEnvironment.isActive()) {
+            // The I11 scenario probe: not a content item, so no icon of its own (it borrows the pistol's).
+            ItemGun probe = registrar.registerItem(ToolProbeDef.NAME, new ProbeToolGun());
+            probe.setTextureName(Naming.textureName(PistolDef.NAME));
+            ITEMS.put(ToolProbeDef.NAME, probe);
         }
     }
 

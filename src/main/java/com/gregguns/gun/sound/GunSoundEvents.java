@@ -41,6 +41,11 @@ public final class GunSoundEvents {
     /** Suffix of the sound a charge gun plays when the charge begins: {@code guns.<name>.charge}. */
     public static final String CHARGE = "charge";
 
+    /** Action: a tool gun's swing (throttled), {@code guns.<name>.swing}. */
+    public static final String SWING = "swing";
+    /** Action: a tool gun breaking a block, {@code guns.<name>.hit}. */
+    public static final String HIT = "hit";
+
     /** Action: reload start. */
     public static final String RELOAD = "reload";
 

@@ -22,6 +22,7 @@ import com.gregguns.gun.net.PacketGunEvent;
 import com.gregguns.gun.sound.GunSoundPlayer;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.gun.ItemGun;
+import com.gregguns.item.gun.ItemToolGun;
 import com.gregguns.item.gun.PlayerAmmoStore;
 import com.gregguns.item.gun.StackCharge;
 import com.gregguns.item.gun.StoreAmmoInventory;
@@ -108,7 +109,14 @@ public final class ServerGunHandler {
      * @param down   true for pressed
      */
     public static void onTrigger(EntityPlayerMP player, boolean down) {
-        if (gunOf(player.getHeldItem()) == null || !isAlive(player)) {
+        ItemGun held = gunOf(player.getHeldItem());
+        if (held == null || !isAlive(player)) {
+            return;
+        }
+        if (held instanceof ItemToolGun && held.stats()
+            .isCharge()) {
+            // A charge tool gun (Power Hammer) fires only through the charge release. Techguns' PacketShootGun never
+            // checked shootWithLeftClick, so a modified client could trigger the plain shot (gun-lifecycle.md).
             return;
         }
         GunController controller = GunPlayerData.get(player)
