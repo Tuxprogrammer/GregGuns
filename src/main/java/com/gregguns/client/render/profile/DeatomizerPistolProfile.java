@@ -22,8 +22,10 @@ import com.gregguns.client.anim.SpriteSheet;
  * ({@code prong_*}) that are turned 23 degrees in towards the beam. Behind the cluster is a 9-long ribbed housing (a
  * slab, a bottom bar, two flat side strips and four corner strips at 28 degrees), a rear plate, a black grip raked 12
  * degrees back with one light stripe, a skinny open trigger guard with a small trigger, a thin diamond laser rod on top
- * ({@code laser}, held by two paper-thin plates and a post) with an orange emitter face ({@code laser_tip_glow}), and a
- * single diamond button on the left (-Z) side. The layout lives in
+ * ({@code laser}, held by two paper-thin plates and a post) with an orange front face, and a
+ * single diamond button on the left (-Z) side (a 1x1 cube turned 45 degrees about Z). Round 3 applied the measured
+ * corrections: the laser post and trigger moved, the muzzle fork closed to 1.4 apart, and the ring caps pulled in. The
+ * layout lives in
  * {@code tools/asset-gen/gun-paint/deatomizer_pistol.layout.json}; {@code tools/asset-gen/gun_paint.py pack} assigns
  * the UV origins and writes the generated block below, and {@code gun_paint.py paint} paints the 64x64 sheet from the
  * role map {@code gun-paint/deatomizer_pistol.json}. There are no camo variants.
@@ -34,8 +36,9 @@ import com.gregguns.client.anim.SpriteSheet;
  * mid-plane; the bore axis is at Y 3.5. One texel is a sixteenth of a block.
  *
  * <h2>Glow parts</h2>
- * {@code disc_glow} (the blue emitter, #28A8FF) and {@code laser_tip_glow} (a zero-thickness 1x1 orange plane, #FF5E1E,
- * just in front of the laser rod's tip) are the parts a renderer may draw fullbright. The notes call for no other glow.
+ * {@code disc_glow} (the blue emitter, #28A8FF) is the one part a renderer may draw fullbright. The laser rod's
+ * front face is painted orange (#FF5E1E) on the rod itself; round 3 removed the separate zero-thickness tip plane.
+ * The notes call for no other glow.
  *
  * <h2>Akimbo</h2>
  * The notes say the original does not mirror the geometry: the left gun is a second, identical copy moved sideways, so
@@ -80,82 +83,30 @@ public final class DeatomizerPistolProfile {
         new BoxSpec("disc_glow", 0, 16, 4, 1, 2, 2, 16f, 2.5f, -1f, NO_PIVOT, 0f),
         new BoxSpec("rod_00", 0, 36, 11, 6, 1, 1, 9f, 3f, 0.8f, NO_PIVOT, 0f),
         new BoxSpec("cap_00", 0, 60, 9, 1, 1, 1, 15f, 3f, 0.8f, NO_PIVOT, 0f),
-        new BoxSpec("rod_01", 0, 50, 11, 6, 1, 1, 9f, 2.325f, 0.669f, new float[] { 12f, 2.825f, 1.169f }, 0f, 30f),
-        new BoxSpec("cap_01", 0, 34, 17, 1, 1, 1, 15f, 2.325f, 0.669f, new float[] { 15.5f, 2.825f, 1.169f }, 0f, 30f),
-        new BoxSpec("rod_02", 0, 0, 13, 6, 1, 1, 9f, 1.831f, 0.175f, new float[] { 12f, 2.331f, 0.675f }, 0f, -30f),
-        new BoxSpec("cap_02", 0, 38, 17, 1, 1, 1, 15f, 1.831f, 0.175f, new float[] { 15.5f, 2.331f, 0.675f }, 0f, -30f),
+        new BoxSpec("rod_01", 0, 50, 11, 6, 1, 1, 9f, 2.25f, 0.669f, new float[] { 12f, 2.75f, 1.169f }, 0f, 30f),
+        new BoxSpec("cap_01", 0, 34, 17, 1, 1, 1, 15f, 2.25f, 0.669f, new float[] { 15.5f, 2.75f, 1.169f }, 0f, 30f),
+        new BoxSpec("rod_02", 0, 0, 13, 6, 1, 1, 9f, 1.85f, 0.175f, new float[] { 12f, 2.35f, 0.675f }, 0f, -30f),
+        new BoxSpec("cap_02", 0, 38, 17, 1, 1, 1, 15f, 2.05f, 0.175f, new float[] { 15.5f, 2.55f, 0.675f }, 0f, -30f),
         new BoxSpec("rod_03", 0, 14, 13, 6, 1, 1, 9f, 1.7f, -0.5f, NO_PIVOT, 0f),
-        new BoxSpec("cap_03", 0, 42, 17, 1, 1, 1, 15f, 1.7f, -0.5f, NO_PIVOT, 0f),
-        new BoxSpec("rod_04", 0, 28, 13, 6, 1, 1, 9f, 1.831f, -1.175f, new float[] { 12f, 2.331f, -0.675f }, 0f, 30f),
-        new BoxSpec(
-            "cap_04",
-            0,
-            46,
-            17,
-            1,
-            1,
-            1,
-            15f,
-            1.831f,
-            -1.175f,
-            new float[] { 15.5f, 2.331f, -0.675f },
-            0f,
-            30f),
-        new BoxSpec("rod_05", 0, 42, 13, 6, 1, 1, 9f, 2.325f, -1.669f, new float[] { 12f, 2.825f, -1.169f }, 0f, -30f),
-        new BoxSpec(
-            "cap_05",
-            0,
-            50,
-            17,
-            1,
-            1,
-            1,
-            15f,
-            2.325f,
-            -1.669f,
-            new float[] { 15.5f, 2.825f, -1.169f },
-            0f,
-            -30f),
+        new BoxSpec("cap_03", 0, 42, 17, 1, 1, 1, 15f, 1.9f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("rod_04", 0, 28, 13, 6, 1, 1, 9f, 1.85f, -1.175f, new float[] { 12f, 2.35f, -0.675f }, 0f, 30f),
+        new BoxSpec("cap_04", 0, 46, 17, 1, 1, 1, 15f, 2.05f, -1.175f, new float[] { 15.5f, 2.55f, -0.675f }, 0f, 30f),
+        new BoxSpec("rod_05", 0, 42, 13, 6, 1, 1, 9f, 2.25f, -1.669f, new float[] { 12f, 2.75f, -1.169f }, 0f, -30f),
+        new BoxSpec("cap_05", 0, 50, 17, 1, 1, 1, 15f, 2.25f, -1.669f, new float[] { 15.5f, 2.75f, -1.169f }, 0f, -30f),
         new BoxSpec("rod_06", 0, 0, 15, 6, 1, 1, 9f, 3f, -1.8f, NO_PIVOT, 0f),
         new BoxSpec("cap_06", 0, 54, 17, 1, 1, 1, 15f, 3f, -1.8f, NO_PIVOT, 0f),
-        new BoxSpec("rod_07", 0, 14, 15, 6, 1, 1, 9f, 3.675f, -1.669f, new float[] { 12f, 4.175f, -1.169f }, 0f, 30f),
-        new BoxSpec(
-            "cap_07",
-            0,
-            58,
-            17,
-            1,
-            1,
-            1,
-            15f,
-            3.675f,
-            -1.669f,
-            new float[] { 15.5f, 4.175f, -1.169f },
-            0f,
-            30f),
-        new BoxSpec("rod_08", 0, 28, 15, 6, 1, 1, 9f, 4.169f, -1.175f, new float[] { 12f, 4.669f, -0.675f }, 0f, -30f),
-        new BoxSpec(
-            "cap_08",
-            0,
-            0,
-            19,
-            1,
-            1,
-            1,
-            15f,
-            4.169f,
-            -1.175f,
-            new float[] { 15.5f, 4.669f, -0.675f },
-            0f,
-            -30f),
+        new BoxSpec("rod_07", 0, 14, 15, 6, 1, 1, 9f, 3.8f, -1.669f, new float[] { 12f, 4.3f, -1.169f }, 0f, 30f),
+        new BoxSpec("cap_07", 0, 58, 17, 1, 1, 1, 15f, 3.75f, -1.669f, new float[] { 15.5f, 4.25f, -1.169f }, 0f, 30f),
+        new BoxSpec("rod_08", 0, 28, 15, 6, 1, 1, 9f, 4.15f, -1.175f, new float[] { 12f, 4.65f, -0.675f }, 0f, -30f),
+        new BoxSpec("cap_08", 0, 0, 19, 1, 1, 1, 15f, 3.95f, -1.175f, new float[] { 15.5f, 4.45f, -0.675f }, 0f, -30f),
         new BoxSpec("rod_09", 0, 42, 15, 6, 1, 1, 9f, 4.3f, -0.5f, NO_PIVOT, 0f),
-        new BoxSpec("cap_09", 0, 4, 19, 1, 1, 1, 15f, 4.3f, -0.5f, NO_PIVOT, 0f),
-        new BoxSpec("rod_10", 0, 0, 17, 6, 1, 1, 9f, 4.169f, 0.175f, new float[] { 12f, 4.669f, 0.675f }, 0f, 30f),
-        new BoxSpec("cap_10", 0, 8, 19, 1, 1, 1, 15f, 4.169f, 0.175f, new float[] { 15.5f, 4.669f, 0.675f }, 0f, 30f),
-        new BoxSpec("rod_11", 0, 14, 17, 6, 1, 1, 9f, 3.675f, 0.669f, new float[] { 12f, 4.175f, 1.169f }, 0f, -30f),
-        new BoxSpec("cap_11", 0, 12, 19, 1, 1, 1, 15f, 3.675f, 0.669f, new float[] { 15.5f, 4.175f, 1.169f }, 0f, -30f),
-        new BoxSpec("prong_top", 0, 28, 17, 2, 1, 1, 15.8f, 1.55f, -0.5f, new float[] { 15.8f, 2.05f, 0f }, 23f),
-        new BoxSpec("prong_bot", 0, 10, 5, 2, 1, 1, 15.8f, 4.45f, -0.5f, new float[] { 15.8f, 4.95f, 0f }, -23f),
+        new BoxSpec("cap_09", 0, 4, 19, 1, 1, 1, 15f, 4.1f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("rod_10", 0, 0, 17, 6, 1, 1, 9f, 4.15f, 0.175f, new float[] { 12f, 4.65f, 0.675f }, 0f, 30f),
+        new BoxSpec("cap_10", 0, 8, 19, 1, 1, 1, 15f, 3.95f, 0.175f, new float[] { 15.5f, 4.45f, 0.675f }, 0f, 30f),
+        new BoxSpec("rod_11", 0, 14, 17, 6, 1, 1, 9f, 3.8f, 0.669f, new float[] { 12f, 4.3f, 1.169f }, 0f, -30f),
+        new BoxSpec("cap_11", 0, 12, 19, 1, 1, 1, 15f, 3.75f, 0.669f, new float[] { 15.5f, 4.25f, 1.169f }, 0f, -30f),
+        new BoxSpec("prong_top", 0, 28, 17, 2, 1, 1, 15.8f, 1.9f, -0.5f, new float[] { 15.8f, 2.4f, 0f }, 23f),
+        new BoxSpec("prong_bot", 0, 10, 5, 2, 1, 1, 15.8f, 4.1f, -0.5f, new float[] { 15.8f, 4.6f, 0f }, -23f),
         new BoxSpec("prong_l", 0, 10, 7, 2, 1, 1, 15.8f, 3f, 0.95f, new float[] { 15.8f, 3.5f, 1.45f }, 0f, 0f, 23f),
         new BoxSpec(
             "prong_r",
@@ -185,13 +136,12 @@ public final class DeatomizerPistolProfile {
         new BoxSpec("grip", 0, 0, 0, 3, 7, 2, 2f, 5f, -1f, new float[] { 5f, 5f, 0f }, 12f),
         new BoxSpec("guard_post", 0, 60, 0, 1, 3, 1, 7f, 5f, -0.5f, NO_PIVOT, 0f),
         new BoxSpec("guard_bar", 0, 56, 13, 3, 1, 1, 4f, 7f, -0.5f, NO_PIVOT, 0f),
-        new BoxSpec("trigger", 0, 56, 4, 1, 2, 1, 4.5f, 4.5f, -0.5f, new float[] { 5f, 4.5f, 0f }, -31f),
+        new BoxSpec("trigger", 0, 56, 4, 1, 2, 1, 4.3f, 4.7f, -0.5f, new float[] { 4.8f, 4.7f, 0f }, -31f),
         new BoxSpec("laser", 0, 20, 11, 7, 1, 1, 2f, 0.2f, -0.5f, new float[] { 5.5f, 0.7f, 0f }, 0f, 45f),
-        new BoxSpec("laser_tip_glow", 0, 62, 6, 0, 1, 1, 9.02f, 0.2f, -0.5f, new float[] { 9.02f, 0.7f, 0f }, 0f, 45f),
         new BoxSpec("laser_plate_l", 0, 16, 19, 6, 1, 0, 2f, 1f, 0.3f, NO_PIVOT, 0f),
         new BoxSpec("laser_plate_r", 0, 28, 19, 6, 1, 0, 2f, 1f, -0.3f, NO_PIVOT, 0f),
-        new BoxSpec("laser_post", 0, 52, 4, 1, 2, 1, 2f, 1f, -0.5f, new float[] { 2.5f, 1f, 0f }, -31f),
-        new BoxSpec("button", 0, 60, 4, 1, 1, 1, 5f, 3.7f, -1.6f, new float[] { 5.5f, 4.2f, -1.1f }, 0f, 45f),
+        new BoxSpec("laser_post", 0, 52, 4, 1, 2, 1, 1.4f, 1.1f, -0.5f, new float[] { 1.9f, 2.1f, 0f }, 31f),
+        new BoxSpec("button", 0, 60, 4, 1, 1, 1, 4.8f, 3f, -2.1f, new float[] { 5.3f, 3.5f, -1.6f }, 45f),
         // END GENERATED BOXES
     };
 

@@ -55,6 +55,17 @@ public final class GunCatalog {
         /** Empty LMG magazine. */
         public static final String LMG_MAGAZINE_EMPTY = "mag_lmg_empty";
 
+        /** Loose advanced bullets (the Advanced Magazine's refund item, EV). */
+        public static final String ADVANCED_BULLET = "ammo_advanced_bullet";
+        /** Loaded Advanced Magazine (PDW 20 rounds, Pulse Rifle 12). */
+        public static final String ADVANCED_MAGAZINE = "mag_advanced";
+        /** Empty Advanced Magazine. */
+        public static final String ADVANCED_MAGAZINE_EMPTY = "mag_advanced_empty";
+        /** Loaded Minigun Ammo Drum (200 rounds). */
+        public static final String MINIGUN_DRUM = "mag_minigun_drum";
+        /** Empty Minigun Ammo Drum. */
+        public static final String MINIGUN_DRUM_EMPTY = "mag_minigun_drum_empty";
+
         /** Loose rocket (the Rocket Launcher's round, HV). */
         public static final String ROCKET = "ammo_rocket";
         /** Loose 40 mm grenade (the Grenade Launcher's round, MV). */

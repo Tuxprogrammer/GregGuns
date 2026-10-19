@@ -1,6 +1,7 @@
 package com.gregguns.recipe;
 
 import com.gregguns.item.ammo.MagazineType;
+import com.gregguns.item.ammo.def.AdvancedAmmo;
 import com.gregguns.item.ammo.def.NineMmAmmo;
 import com.gregguns.item.ammo.def.RifleAmmo;
 
@@ -59,6 +60,24 @@ public final class AmmoRecycling {
         ProductionRecipes
             .attach(RifleAmmo.TYPE.roundItemName(), new ItemData(Materials.Brass, foil, Materials.Steel, round));
         attachMvMagazine(RifleAmmo.ASSAULT_RIFLE_MAGAZINE, 3, 8, Materials.Brass, foil, Materials.Steel, round);
+    }
+
+    /**
+     * The advanced bullet, the empty Advanced Magazine and the loaded one (RC-32, RC-42, RC-49). The Titanium plates
+     * and springs are recorded; the Mechanical Parts T3 inside carries its own data.
+     */
+    public static void advanced() {
+        long foil = OrePrefixes.foil.getMaterialAmount();
+        long round = OrePrefixes.round.getMaterialAmount();
+        // Per bullet: one Titanium foil and one Titanium round (RC-32 makes 16 from 16 of each). The TNT burns away.
+        ProductionRecipes.attach(AdvancedAmmo.TYPE.roundItemName(), new ItemData(Materials.Titanium, foil + round));
+        long titanium = AmmoComposition
+            .perItem(3 * OrePrefixes.plate.getMaterialAmount() + 8 * OrePrefixes.springSmall.getMaterialAmount(), 8);
+        int rounds = AdvancedAmmo.MAGAZINE.roundsPerMagazine();
+        ProductionRecipes.attach(AdvancedAmmo.MAGAZINE.emptyItemName(), new ItemData(Materials.Titanium, titanium));
+        ProductionRecipes.attach(
+            AdvancedAmmo.MAGAZINE.loadedItemName(),
+            new ItemData(Materials.Titanium, titanium + (foil + round) * rounds));
     }
 
     /**

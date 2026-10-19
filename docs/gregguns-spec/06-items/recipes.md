@@ -255,7 +255,7 @@ A GT recipe consumes its inputs once, so ammo is made in batches, the way GT tur
 | RC-29<a id="ammo-shotgun-shell"></a> | `ammo_shotgun_shell` ×8 | LV | AP, `c=2` | `foil.Brass` ×8, `round.Lead` ×24, `dust.Gunpowder` ×4 | `RECIPE_LV`, 6 s | Replaces R34 and plan 1 (×16). Three pellets per shell |
 | RC-30<a id="ammo-rifle-bullet"></a> | `ammo_rifle_bullet` ×16 | LV | AP, `c=3` | `foil.Brass` ×16, `round.Steel` ×16, `dust.Gunpowder` ×4 | `RECIPE_LV`, 6 s | `Steel`. Replaces plan 2 (×8). Techguns' crafting recipe was commented out |
 | RC-31<a id="ammo-high-caliber-round"></a> | `ammo_high_caliber_round` ×8 | HV | AP, `c=4` | `itemCasing.Brass` ×8, `round.StainlessSteel` ×16, `dust.Gunpowder` ×4 | `RECIPE_HV`, 8 s | `StainlessSteel`. Replaces plan 3 (×4). Two slugs per round |
-| RC-32<a id="ammo-advanced-bullet"></a> | `ammo_advanced_bullet` ×16 | EV | AP, `c=5` | `foil.Titanium` ×16, `round.Titanium` ×16, `dust.TNT` ×2 | `RECIPE_EV`, 4 s | `Titanium`. Replaces Metal Press recipe 13 (obsidian steel plate + TGX, ×16) |
+| RC-32<a id="ammo-advanced-bullet"></a> | `ammo_advanced_bullet` ×16 | EV | AP, `c=5` | `foil.Titanium` ×16, `round.Titanium` ×16, `mc:tnt` ×1 | `RECIPE_EV`, 4 s | `Titanium`. Materials.TNT has no dust item, so vanilla TNT is the input. Replaces Metal Press recipe 13 (obsidian steel plate + TGX, ×16) |
 | RC-33<a id="ammo-40mm-grenade"></a> | `ammo_40mm_grenade` ×8 | MV | AP, `c=6` | `plate.Aluminium` ×2, `dust.TNT` ×2, `dust.Gunpowder` ×1 | `RECIPE_MV`, 8 s | `Aluminium`. Replaces Metal Press recipe 17 (iron plate + TNT, ×16) |
 | RC-34<a id="ammo-rocket"></a> | `ammo_rocket` ×4 | HV | AP, `c=7` | `plate.StainlessSteel` ×4, `dust.TNT` ×2, `dust.Gunpowder` ×4, `circuit.HV` ×1 | `RECIPE_HV`, 10 s | `StainlessSteel`. Replaces R42 (5 nuggets, TNT, gunpowder, ×4). The circuit is the fuze and guidance |
 
@@ -294,7 +294,7 @@ Replaces [R35 to R49, R51 to R54](../../techguns-spec/06-items/recipes.md#2-ammu
 | RC-40<a id="mag-as50-empty"></a> | `mag_as50_empty` ×8 | HV | AP, `c=11` | `plate.StainlessSteel` ×3, `springSmall.StainlessSteel` ×8, `part_mechanical_2` ×1 | `RECIPE_HV`, 5 s | `StainlessSteel`. Replaces R46 |
 | RC-41<a id="mag-lmg-empty"></a> | `mag_lmg_empty` ×4 | HV | AP, `c=12` | `plate.StainlessSteel` ×4, `springSmall.StainlessSteel` ×4, `part_mechanical_2` ×1 | `RECIPE_HV`, 6 s | `StainlessSteel`. Replaces R43 (seven steel ingots) |
 | RC-42<a id="mag-advanced-empty"></a> | `mag_advanced_empty` ×8 | EV | AP, `c=13` | `plate.Titanium` ×3, `springSmall.Titanium` ×8, `part_mechanical_3` ×1 | `RECIPE_EV`, 5 s | `Titanium`. Replaces R48 |
-| RC-43<a id="mag-minigun-drum-empty"></a> | `mag_minigun_drum_empty` ×4 | EV | AP, `c=14` | `plate.Titanium` ×4, `plate.Polyethylene` ×2, `part_mechanical_3` ×1 | `RECIPE_EV`, 6 s | `Titanium`. Replaces R53 |
+| RC-43<a id="mag-minigun-drum-empty"></a> | `mag_minigun_drum_empty` ×4 | EV | AP, `c=14` | `plate.Titanium` ×4, `plate.Plastic` ×2, `part_mechanical_3` ×1 | `RECIPE_EV`, 6 s | `Titanium`. Replaces R53 |
 
 ### Filled magazines in bulk (Assembler)
 

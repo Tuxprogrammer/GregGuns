@@ -1,0 +1,24 @@
+// GregGuns FX data. Format: see com.gregguns.fx.FxParser. Systems and FXLISTs are added here by the FX catalog (I8).
+// Texture names are files under assets/gregguns/textures/fx. Names are case-insensitive.
+//
+// FXLIST Example {
+//     ExampleFlare
+// }
+//
+// ExampleFlare {
+//     Texture = blasterflare01.png
+//     RenderType = ADDITIVE
+//     Columns = 4
+//     Rows = 4
+//     Frames = 14
+//     Lifetime = 15 25
+//     ParticleCount = 3 4
+//     SystemLifetime = 1
+//     VolumeType = SPHERE
+//     Volume1 = 0.15
+//     VelocityType = SPHERICAL
+//     Velocity1 = 0.5 1.5
+//     Alpha = 0 0
+//     Alpha = 1 0.3
+//     Alpha = 0 1
+// }
