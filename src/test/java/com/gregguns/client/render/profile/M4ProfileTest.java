@@ -147,6 +147,28 @@ class M4ProfileTest {
     }
 
     @Test
+    void roundTwoCorrectionsHold() {
+        // Forward assist: rotated outer rear corner reaches exactly Z -3.0 (flush with the handguard side rails).
+        BoxSpec fa = box("fwd_assist");
+        double rad = Math.toRadians(15);
+        double reach = (fa.z() + fa.d() / 2.0) - (fa.w() / 2.0 * Math.sin(rad) + fa.d() / 2.0 * Math.cos(rad));
+        assertEquals(-3.0, reach, 0.02, "the forward assist reaches Z -3.0, no further");
+        // The lower magazine hinges on its front top edge, so the rear-bottom corner is the lowest point (about 24.9).
+        BoxSpec ml = box("mag_lower");
+        assertEquals(32.4f, ml.pivotX(), 1e-6, "hinged at the front edge");
+        double low = (ml.y() + ml.h() - ml.pivotY()) * Math.cos(Math.toRadians(9))
+            + (ml.pivotX() - ml.x()) * Math.sin(Math.toRadians(9))
+            + ml.pivotY();
+        assertEquals(24.9, low, 0.05, "magazine rear-bottom corner is the lowest point");
+        // Front strut hinged at X 12, Y 13; tip lowest at Y 15.0.
+        BoxSpec sf = box("strut_front");
+        assertEquals(12f, sf.pivotX(), 1e-6);
+        assertEquals(13f, sf.pivotY(), 1e-6);
+        double tipY = sf.pivotY() + sf.h() * Math.cos(Math.toRadians(60));
+        assertEquals(15.0, tipY, 0.01, "front strut tip lowest at Y 15");
+    }
+
+    @Test
     void nothingFloatsExceptTheRedDot() {
         for (BoxSpec a : M4Profile.BOXES) {
             if (a.name()

@@ -17,8 +17,8 @@ import gregtech.common.blocks.ItemCasings;
 import gregtech.common.blocks.MaterialCasings;
 
 /**
- * The Ammunition Works casings: one block with three metas: the Works Casing, the Ram Housing and the Reaction Chamber
- * Casing. It extends GT's casing
+ * The GregGuns multiblock casings: one block with eleven metas (the Works, Gantry and Bastion Plating families; see the
+ * constants). It extends GT's casing
  * base so a broken casing re-checks the multiblock around it, and it claims casing texture page {@value #PAGE} so GT
  * hatches placed in a casing position can copy the casing's look.
  *
@@ -50,14 +50,24 @@ public final class GregGunsCasings extends BlockCasingsAbstract implements Tiere
     public static final int GANTRY_HOIST = 5;
     /** Meta of the Repair Cradle (the pad under each bay; its top differs from its sides). */
     public static final int REPAIR_CRADLE = 6;
+    /** Meta of the Iron Bastion Plating (the Rampart's wall; armor value 5). */
+    public static final int BASTION_IRON = 7;
+    /** Meta of the Steel Bastion Plating (armor value 10). */
+    public static final int BASTION_STEEL = 8;
+    /** Meta of the Aluminum Bastion Plating (armor value 15). */
+    public static final int BASTION_ALUMINUM = 9;
+    /** Meta of the Carbon Bastion Plating (armor value 20). */
+    public static final int BASTION_CARBON = 10;
     /** Number of metas; every meta has one page-50 texture index equal to the meta. */
-    public static final int META_COUNT = 7;
+    public static final int META_COUNT = 11;
     /** The bare content name; the registry id is {@code gregguns:casings}. */
     public static final String NAME = "casings";
 
     private static final String[] TEXTURES = { "gregguns:casings/works_casing", "gregguns:casings/ram_housing",
         "gregguns:casings/reaction_casing", "gregguns:casings/gantry_casing", "gregguns:casings/gantry_beam",
-        "gregguns:casings/gantry_hoist", "gregguns:casings/repair_cradle_side" };
+        "gregguns:casings/gantry_hoist", "gregguns:casings/repair_cradle_side", "gregguns:casings/bastion_plating_iron",
+        "gregguns:casings/bastion_plating_steel", "gregguns:casings/bastion_plating_aluminum",
+        "gregguns:casings/bastion_plating_carbon" };
     private static final String CRADLE_TOP = "gregguns:casings/repair_cradle_top";
 
     /** The block, set by {@link #create}; {@code null} while the guns module is off. */
@@ -105,7 +115,9 @@ public final class GregGunsCasings extends BlockCasingsAbstract implements Tiere
 
     @Override
     public Tier getTier() {
-        return Tier.HV;
+        // The block reports its highest meta (Carbon Bastion Plating, an EV recipe); the self-check reads one tier per
+        // block.
+        return Tier.EV;
     }
 
     @Override

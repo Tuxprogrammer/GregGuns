@@ -225,9 +225,9 @@ One gun, working end to end inside the GTNH dev pack.
 **Scope:** the turret, explosive charges, chests, camp flag and Bio Blob that D2 keeps. The spec is [09-machines-utility](techguns-spec/09-machines-utility/index.md).
 
 **Exit gate:**
-- [ ] Turret targeting respects owners and friends, with no NPEs (NPC-12, MUTL-25).
-- [ ] Charges use permission checks (MUTL-31).
-- [ ] An integration scenario exists for each block.
+- [x] Turret targeting respects owners and friends, with no NPEs (NPC-12, MUTL-25). Evidence: `utility.turret_spares_owner`, `utility.turret_kills_zombie`, `utility.turret_no_npe`, `utility.rampart_mount_fires` and `TurretTargetSelectorTest` ([M6 exit gate](gregguns-spec/09-machines-utility/m6-exit-gate.md#turret-targeting-respects-owners-and-friends-with-no-npes-npc-12-mutl-25)).
+- [x] Charges use permission checks (MUTL-31). Evidence: `utility.charge_foreign_button`, `utility.charge_respects_cancel`, `utility.charge_offline_owner` and `ChargePermissionTest` ([M6 exit gate](gregguns-spec/09-machines-utility/m6-exit-gate.md#charges-use-permission-checks-mutl-31)).
+- [x] An integration scenario exists for each block. Evidence: one or more `utility.*` scenarios per block, 149 of 149 scenarios passing on 2026-10-19 ([M6 exit gate](gregguns-spec/09-machines-utility/m6-exit-gate.md#an-integration-scenario-exists-for-each-block)).
 
 ## M7 · NPCs and spawning
 
