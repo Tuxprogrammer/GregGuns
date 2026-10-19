@@ -37,6 +37,7 @@ class ConfigRulesTest {
             "DamageFactorsConfig.armorPenetrationMultiplierPvP",
             "ExplosionsConfig.blockDamage",
             "ExplosionsConfig.selfDamage",
+            "ExplosionsConfig.machineExplosions",
             "EquipmentConfig.nightVisionCapacityEu",
             "EquipmentConfig.nightVisionDrainEuPerTick",
             "EquipmentConfig.tacticalMaskCapacityEu",

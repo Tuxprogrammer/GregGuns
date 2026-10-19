@@ -30,6 +30,7 @@ import com.gregguns.combat.DamageSources;
 import com.gregguns.combat.DamageType;
 import com.gregguns.core.config.ExplosionsConfig;
 import com.gregguns.gun.sound.GunSoundEvents;
+import com.gregguns.network.GregGunsNetwork;
 
 /**
  * One explosion that hurts entities on a damage ramp and may remove blocks, with the protection hooks the pack needs.
@@ -50,7 +51,8 @@ import com.gregguns.gun.sound.GunSoundEvents;
  * {@code S27PacketExplosion} with no blocks (CORE-19).</li>
  * <li>If blocks may break, each block still in the list is offered to {@link BlockBreakGuard} when a player owns the
  * blast, then dropped and exploded with {@code onBlockExploded}, so a GregTech machine in the blast reacts as it
- * does to any explosion (GGS-04-04).</li>
+ * does to any explosion (GGS-04-04). At most {@link ExplosionRules#BLOCKS_PER_TICK} go in the first tick; the rest
+ * are time-sliced by {@link BlastTicker}. Q4: charged GT machines still explode; the audit line records them.</li>
  * </ol>
  *
  * <pre>
@@ -183,7 +185,7 @@ public final class ProjectileExplosion {
         }
         vanilla.affectedBlockPositions.addAll(rayCast());
 
-        List<Entity> victims = new ArrayList<>(
+        List<Entity> victims = ExplosionRules.victims(
             world.getEntitiesWithinAABBExcludingEntity(
                 exploder,
                 AxisAlignedBB.getBoundingBox(
@@ -192,10 +194,9 @@ public final class ProjectileExplosion {
                     z - outerRadius - 1,
                     x + outerRadius + 1,
                     y + outerRadius + 1,
-                    z + outerRadius + 1)));
-        if (!ExplosionsConfig.selfDamage) {
-            victims.remove(owner);
-        }
+                    z + outerRadius + 1)),
+            (Entity) owner,
+            ExplosionsConfig.selfDamage);
         if (excluded != null) {
             victims.remove(excluded);
         }
@@ -296,8 +297,7 @@ public final class ProjectileExplosion {
         }
         for (Map.Entry<EntityPlayerMP, Vec3> entry : pushed.entrySet()) {
             // No blocks in the packet: it only carries the push, which vanilla's client applies on receipt.
-            entry.getKey().playerNetServerHandler
-                .sendPacket(new S27PacketExplosion(x, y, z, size, new ArrayList<ChunkPosition>(), entry.getValue()));
+            entry.getKey().playerNetServerHandler.sendPacket(pushPacket(x, y, z, size, entry.getValue()));
         }
         return hurt;
     }
@@ -328,35 +328,74 @@ public final class ProjectileExplosion {
         }
     }
 
-    /** Breaks the blocks that are still listed; the list is read after {@code Detonate} (GGS-04-10). */
+    /**
+     * The packet a player gets for a blast's push. It lists no blocks, so the client never removes terrain the server
+     * kept (CORE-19: the push and the block list must not be one packet).
+     *
+     * @param x    centre X
+     * @param y    centre Y
+     * @param z    centre Z
+     * @param size vanilla power
+     * @param push the velocity to add to the player
+     * @return a vanilla explosion packet with an empty block list
+     */
+    static S27PacketExplosion pushPacket(double x, double y, double z, float size, Vec3 push) {
+        return new S27PacketExplosion(x, y, z, size, new ArrayList<ChunkPosition>(), push);
+    }
+
+    /**
+     * Breaks the blocks that are still listed; the list is read after {@code Detonate} (GGS-04-10). The first
+     * {@link ExplosionRules#BLOCKS_PER_TICK} go now, nearest first; the rest go to {@link BlastTicker} so a nuke does
+     * not stall the tick.
+     */
     private int breakBlocks(Explosion vanilla) {
-        int broken = 0;
-        EntityPlayer player = owner instanceof EntityPlayer ? (EntityPlayer) owner : null;
-        for (Object o : new ArrayList<Object>(vanilla.affectedBlockPositions)) {
+        List<int[]> all = new ArrayList<>();
+        for (Object o : vanilla.affectedBlockPositions) {
             ChunkPosition pos = (ChunkPosition) o;
-            Block block = world.getBlock(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
-            if (block.getMaterial() == net.minecraft.block.material.Material.air) {
-                continue;
+            all.add(new int[] { pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ });
+        }
+        BlastSlicer.sortNearestFirst(all, x, y, z);
+        BlastSlicer slicer = new BlastSlicer(all, ExplosionRules.BLOCKS_PER_TICK);
+        EntityPlayer player = owner instanceof EntityPlayer ? (EntityPlayer) owner : null;
+        int broken = 0;
+        for (int[] p : slicer.next()) {
+            if (breakOne(world, vanilla, player, size, p[0], p[1], p[2])) {
+                broken++;
             }
-            int meta = world.getBlockMetadata(pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ);
-            if (player != null
-                && !BlockBreakGuard.mayBreak(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, block, meta, player)) {
-                continue;
-            }
-            if (block.canDropFromExplosion(vanilla)) {
-                block.dropBlockAsItemWithChance(
-                    world,
-                    pos.chunkPosX,
-                    pos.chunkPosY,
-                    pos.chunkPosZ,
-                    meta,
-                    1.0F / size,
-                    0);
-            }
-            block.onBlockExploded(world, pos.chunkPosX, pos.chunkPosY, pos.chunkPosZ, vanilla);
-            broken++;
+        }
+        if (!slicer.done()) {
+            // Counted as broken for the audit line: they are queued and will go unless a listener vetoes them.
+            broken += slicer.remaining();
+            BlastTicker.instance()
+                .enqueue(world, vanilla, player, size, slicer);
         }
         return broken;
+    }
+
+    /**
+     * Breaks one block of a blast: asks {@link BlockBreakGuard} when a player owns it, drops, then calls
+     * {@code onBlockExploded}. Also used by {@link BlastTicker}.
+     *
+     * @return true when the block was removed
+     */
+    static boolean breakOne(World world, Explosion vanilla, EntityPlayer player, float size, int bx, int by, int bz) {
+        Block block = world.getBlock(bx, by, bz);
+        if (block.getMaterial() == net.minecraft.block.material.Material.air) {
+            return false;
+        }
+        int meta = world.getBlockMetadata(bx, by, bz);
+        if (player != null && !BlockBreakGuard.mayBreak(world, bx, by, bz, block, meta, player)) {
+            return false;
+        }
+        if (!ExplosionsConfig.machineExplosions
+            && world.getTileEntity(bx, by, bz) instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity) {
+            return false;
+        }
+        if (block.canDropFromExplosion(vanilla)) {
+            block.dropBlockAsItemWithChance(world, bx, by, bz, meta, 1.0F / size, 0);
+        }
+        block.onBlockExploded(world, bx, by, bz, vanilla);
+        return true;
     }
 
     private void playEffects() {
@@ -364,6 +403,25 @@ public final class ProjectileExplosion {
         world.playSoundEffect(x, y, z, GunSoundEvents.qualified(GunSoundEvents.EXPLOSION), 4.0F, pitch);
         if (world instanceof WorldServer) {
             ((WorldServer) world).func_147487_a("hugeexplosion", x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
+        }
+        if (size >= ExplosionRules.NUKE_FX_MIN_SIZE) {
+            sendNukeFx();
+        }
+    }
+
+    /** A nuke-size blast tells every player within 150 blocks, past vanilla's particle range. */
+    private void sendNukeFx() {
+        for (Object o : world.playerEntities) {
+            if (o instanceof EntityPlayerMP) {
+                EntityPlayerMP p = (EntityPlayerMP) o;
+                double dx = p.posX - x;
+                double dy = p.posY - y;
+                double dz = p.posZ - z;
+                if (p.playerNetServerHandler != null && ExplosionRules.inNukeFxRange(dx * dx + dy * dy + dz * dz)) {
+                    GregGunsNetwork.channel()
+                        .sendTo(new PacketBlastFx(x, y, z, size), p);
+                }
+            }
         }
     }
 }

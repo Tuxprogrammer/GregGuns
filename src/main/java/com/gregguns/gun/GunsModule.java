@@ -95,8 +95,12 @@ public final class GunsModule implements GregGunsModule {
             MeleeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GrenadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MvGrenadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            com.gregguns.explosion.BlastScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
         ProjectileModule.init();
         GunEvents.register();
+        cpw.mods.fml.common.FMLCommonHandler.instance()
+            .bus()
+            .register(com.gregguns.explosion.BlastTicker.instance());
     }
 }

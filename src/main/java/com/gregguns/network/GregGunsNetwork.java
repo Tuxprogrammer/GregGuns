@@ -109,7 +109,11 @@ public final class GregGunsNetwork {
     /** Returns one instance of each server-to-client packet, in wire order. Append only. */
     public static List<IPacket> clientboundPackets() {
         return Collections.<IPacket>unmodifiableList(
-            Arrays.<IPacket>asList(new PacketGunEvent(), new PacketFlightStatus(), new PacketFlash()));
+            Arrays.<IPacket>asList(
+                new PacketGunEvent(),
+                new PacketFlightStatus(),
+                new PacketFlash(),
+                new com.gregguns.explosion.PacketBlastFx()));
     }
 
     /** Returns one instance of each client-to-server packet, in wire order. Append only. */
