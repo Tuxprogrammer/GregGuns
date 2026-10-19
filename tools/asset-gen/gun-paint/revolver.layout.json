@@ -1,0 +1,29 @@
+{
+ "gun": "revolver",
+ "texture": [64, 32],
+ "scale": 0.0625,
+ "bodyRotationYDegrees": 90,
+ "muzzle": [1.4375, 0.09375, 0.0],
+ "boxes": [
+  {"name": "strap", "size": [9, 1, 2], "pos": [0, 0, -1], "uv": [0, 18]},
+  {"name": "frame_upper", "size": [9, 2, 3], "pos": [0, 1, -1.5], "uv": [38, 0]},
+  {"name": "frame_lower", "size": [9, 2, 2], "pos": [0, 3, -1], "uv": [0, 14]},
+  {"name": "belly", "size": [6, 1, 2], "pos": [2, 5, -1], "uv": [44, 14]},
+  {"name": "shield", "size": [1, 4, 2], "pos": [-1, 1, -1], "uv": [32, 0]},
+  {"name": "drum_top", "size": [5, 1, 4], "pos": [1.5, 0.5, -2], "uv": [0, 7]},
+  {"name": "drum_mid", "size": [5, 2, 5], "pos": [1.5, 1.5, -2.5], "uv": [0, 0]},
+  {"name": "drum_bottom", "size": [5, 1, 4], "pos": [1.5, 3.5, -2], "uv": [38, 5]},
+  {"name": "barrel", "size": [14, 2, 2], "pos": [9, 0.5, -1], "pivot": [9, 1.5, 0], "tiltX": 45, "uv": [18, 10]},
+  {"name": "rod", "size": [8, 1, 1], "pos": [9, 3, -0.5], "pivot": [9, 3.5, 0], "tiltX": 45, "uv": [0, 12]},
+  {"name": "sight", "size": [2, 1, 1], "pos": [20.5, -0.4, -0.5], "uv": [24, 7]},
+  {"name": "hammer", "size": [2, 2, 1], "pos": [-2.5, 1.5, -0.5], "uv": [18, 7]},
+  {"name": "hammer_spur", "size": [1, 1, 1], "pos": [-3.5, 1.5, -0.5], "uv": [60, 14]},
+  {"name": "guard_rear", "size": [1, 2, 2], "pos": [2, 6, -1], "uv": [38, 14]},
+  {"name": "guard_front", "size": [1, 2, 2], "pos": [6, 6, -1], "uv": [32, 6]},
+  {"name": "guard_floor", "size": [3, 0, 2], "pos": [3, 8, -1], "uv": [44, 17]},
+  {"name": "grip_crown", "size": [2, 2, 2], "pos": [-3, 3, -1], "uv": [56, 5]},
+  {"name": "grip_web", "size": [6, 2, 2], "pos": [-4, 5, -1], "uv": [22, 14]},
+  {"name": "grip_neck", "size": [4, 2, 2], "pos": [-4, 7, -1], "uv": [50, 10]},
+  {"name": "grip_butt", "size": [4, 5, 2], "pos": [-5, 9, -1], "uv": [20, 0]}
+ ]
+}
