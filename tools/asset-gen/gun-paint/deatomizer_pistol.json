@@ -1,0 +1,411 @@
+{
+ "gun": "deatomizer_pistol",
+ "textures": [
+  {
+   "file": "deatomizer_pistol.png"
+  }
+ ],
+ "roles": {
+  "rod": {
+   "material": "steel",
+   "base": "#BABABA",
+   "scratches": false,
+   "noise": 0.01,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "cap": {
+   "material": "flat",
+   "base": "#B2B2B2",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "core": {
+   "material": "flat",
+   "base": "#C5C5C5",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "prong": {
+   "material": "steel",
+   "base": "#C1C1C1",
+   "scratches": false,
+   "noise": 0.008,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "disc": {
+   "material": "flat",
+   "base": "#28A8FF",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "slab": {
+   "material": "steel",
+   "base": "#AEAEAE",
+   "scratches": false,
+   "noise": 0.006,
+   "bevel": [
+    1.02,
+    0.97
+   ],
+   "drift": 0.02
+  },
+  "bar": {
+   "material": "steel",
+   "base": "#BDBDBD",
+   "scratches": false,
+   "noise": 0.008,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "strip": {
+   "material": "steel",
+   "base": "#BEBEBE",
+   "scratches": false,
+   "noise": 0.008,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "plate": {
+   "material": "steel",
+   "base": "#C3C3C3",
+   "scratches": false,
+   "noise": 0.006,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "wedge": {
+   "material": "steel",
+   "base": "#B5B5B5",
+   "scratches": false,
+   "noise": 0.008,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "grip": {
+   "material": "steel",
+   "base": "#141313",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.12,
+    0.85
+   ],
+   "drift": 0.02
+  },
+  "guard": {
+   "material": "steel",
+   "base": "#C5C5C5",
+   "scratches": false,
+   "noise": 0.004,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "trigger": {
+   "material": "flat",
+   "base": "#C5C5C5",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "laser": {
+   "material": "steel",
+   "base": "#BCBCBC",
+   "scratches": false,
+   "noise": 0.008,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "support": {
+   "material": "steel",
+   "base": "#BFBFBF",
+   "scratches": false,
+   "noise": 0.006,
+   "bevel": [
+    1.03,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "button": {
+   "material": "flat",
+   "base": "#A7A7A7",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "dot": {
+   "material": "flat",
+   "base": "#FF5E1E",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  }
+ },
+ "boxes": {
+  "core": {
+   "role": "core"
+  },
+  "core_cap": {
+   "role": "core"
+  },
+  "disc_glow": {
+   "role": "disc",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#50C5FF"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "color": "#22A2FF"
+    }
+   ]
+  },
+  "prong_top": {
+   "role": "prong"
+  },
+  "prong_bot": {
+   "role": "prong"
+  },
+  "prong_l": {
+   "role": "prong"
+  },
+  "prong_r": {
+   "role": "prong"
+  },
+  "slab": {
+   "role": "slab",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom"
+     ],
+     "color": "#BFBFBF"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "color": "#A7A7A7"
+    }
+   ]
+  },
+  "bar": {
+   "role": "bar"
+  },
+  "strip_l": {
+   "role": "strip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "color": "#A7A7A7"
+    }
+   ]
+  },
+  "strip_r": {
+   "role": "strip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "color": "#A7A7A7"
+    }
+   ]
+  },
+  "rear_plate": {
+   "role": "plate"
+  },
+  "rear_wedge": {
+   "role": "wedge"
+  },
+  "grip": {
+   "role": "grip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "color": "#C5C5C5",
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 7
+    }
+   ]
+  },
+  "guard_post": {
+   "role": "guard"
+  },
+  "guard_bar": {
+   "role": "guard"
+  },
+  "trigger": {
+   "role": "trigger"
+  },
+  "laser": {
+   "role": "laser",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#FF5E1E"
+    }
+   ]
+  },
+  "laser_tip_glow": {
+   "role": "dot"
+  },
+  "laser_plate_l": {
+   "role": "support"
+  },
+  "laser_plate_r": {
+   "role": "support"
+  },
+  "laser_post": {
+   "role": "support"
+  },
+  "button": {
+   "role": "button"
+  },
+  "cs_ul": {
+   "role": "strip"
+  },
+  "cs_ur": {
+   "role": "strip"
+  },
+  "cs_ll": {
+   "role": "strip"
+  },
+  "cs_lr": {
+   "role": "strip"
+  },
+  "rod_00": {
+   "role": "rod"
+  },
+  "cap_00": {
+   "role": "cap"
+  },
+  "rod_01": {
+   "role": "rod"
+  },
+  "cap_01": {
+   "role": "cap"
+  },
+  "rod_02": {
+   "role": "rod"
+  },
+  "cap_02": {
+   "role": "cap"
+  },
+  "rod_03": {
+   "role": "rod"
+  },
+  "cap_03": {
+   "role": "cap"
+  },
+  "rod_04": {
+   "role": "rod"
+  },
+  "cap_04": {
+   "role": "cap"
+  },
+  "rod_05": {
+   "role": "rod"
+  },
+  "cap_05": {
+   "role": "cap"
+  },
+  "rod_06": {
+   "role": "rod"
+  },
+  "cap_06": {
+   "role": "cap"
+  },
+  "rod_07": {
+   "role": "rod"
+  },
+  "cap_07": {
+   "role": "cap"
+  },
+  "rod_08": {
+   "role": "rod"
+  },
+  "cap_08": {
+   "role": "cap"
+  },
+  "rod_09": {
+   "role": "rod"
+  },
+  "cap_09": {
+   "role": "cap"
+  },
+  "rod_10": {
+   "role": "rod"
+  },
+  "cap_10": {
+   "role": "cap"
+  },
+  "rod_11": {
+   "role": "rod"
+  },
+  "cap_11": {
+   "role": "cap"
+  }
+ }
+}

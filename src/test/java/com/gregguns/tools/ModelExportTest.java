@@ -17,6 +17,7 @@ import com.gregguns.armor.model.ArmorModelDef;
 import com.gregguns.armor.model.ArmorModels;
 import com.gregguns.client.render.profile.BlasterRifleProfile;
 import com.gregguns.client.render.profile.ClientGunDefinitions;
+import com.gregguns.client.render.profile.DeatomizerPistolProfile;
 import com.gregguns.client.render.profile.LaserRifleProfile;
 import com.gregguns.client.render.profile.PdwProfile;
 import com.gregguns.client.render.profile.ScatterLaserRifleProfile;
@@ -134,6 +135,7 @@ class ModelExportTest {
         ModelExporter.exportProfile(dir, TeslaRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, SonicRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, BlasterRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, DeatomizerPistolProfile.DEFINITION);
         ModelExporter.exportProfile(dir, ScatterLaserRifleProfile.DEFINITION);
     }
 
