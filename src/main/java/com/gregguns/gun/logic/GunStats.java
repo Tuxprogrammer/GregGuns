@@ -37,6 +37,7 @@ public final class GunStats {
     private final int bulletsPerShot;
     private final double pelletSpread;
     private final boolean pelletsInLine;
+    private final ShotPattern pattern;
     private final double penetration;
     private final boolean akimbo;
     private final boolean doubleShot;
@@ -78,6 +79,7 @@ public final class GunStats {
         bulletsPerShot = b.bulletsPerShot;
         pelletSpread = b.pelletSpread;
         pelletsInLine = b.pelletsInLine;
+        pattern = b.pattern;
         penetration = b.penetration;
         akimbo = b.akimbo;
         doubleShot = b.doubleShot;
@@ -117,6 +119,7 @@ public final class GunStats {
         require(projectileSpeed > 0 && lifetimeTicks >= 1, "projectile speed / lifetime");
         require(bulletsPerShot >= 1, "bulletsPerShot");
         require(penetration >= 0 && penetration <= 1, "penetration");
+        require(pattern != null, "pattern");
         require(projectileKind != null, "projectileKind");
         require(knockback >= 0, "knockback");
         require(blastRadius >= 0 && projectileGravity >= 0, "blast radius / projectile gravity");
@@ -278,6 +281,14 @@ public final class GunStats {
         return pelletsInLine;
     }
 
+    /**
+     * How a round becomes projectiles when it is not the plain main shot plus pellets: a burst line, ring volley or
+     * fan. {@link ShotPattern#NONE} for most guns.
+     */
+    public ShotPattern pattern() {
+        return pattern;
+    }
+
     /** Armor penetration, 0 to 1. */
     public double penetration() {
         return penetration;
@@ -384,6 +395,7 @@ public final class GunStats {
         private int bulletsPerShot = 1;
         private double pelletSpread;
         private boolean pelletsInLine;
+        private ShotPattern pattern = ShotPattern.NONE;
         private double penetration;
         private boolean akimbo;
         private boolean doubleShot;
@@ -501,6 +513,12 @@ public final class GunStats {
             bulletsPerShot = 1 + extraPellets;
             this.pelletSpread = pelletSpread;
             pelletsInLine = inLine;
+            return this;
+        }
+
+        /** Shot pattern (burst line, ring volley or fan); replaces the main shot plus pellets when active. */
+        public Builder pattern(ShotPattern pattern) {
+            this.pattern = pattern;
             return this;
         }
 
