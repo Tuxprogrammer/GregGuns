@@ -43,7 +43,7 @@ Built as `MTECamoBench` (ID 20115, LV) with `PacketCamoCycle`. Decisions, each m
 
 - **No EU.** The sheets give an LV tier and no process; a click needs no time, so the bench draws nothing. The recipe still uses `Hull_LV`.
 - **Targets.** The item in the bench's slot and the four worn armor pieces. The Techguns back and face slots (buttons 11 to 14) do not exist in GregGuns.
-- **Opt-in.** An item is cycled when it implements `CamoChangeable` (camo count, index, name key). Armor does. Guns store a camo index (`GunNbt.KEY_CAMO`) but declare no camo count, so they stay out until a gun definition does; the hook is the interface, with no bench change.
+- **Opt-in.** An item is cycled when it implements `CamoChangeable` (camo count, index, name key). Armor does, and so does every gun: `ItemGun` implements it with the camo count its `GunDefinition` declares (`bolt_action_rifle` has 3 skins, the other guns 1), storing the index in `GunNbt.KEY_CAMO` and leaving the rounds alone. A test pins each count to the `<name>_camoN.png` files.
 - **Packet.** The click is a `ServerboundPacket`: same dimension, within 8 blocks, a known target, a Camo Bench at the position, then `isAuthorized` asks GT's `isUseableByPlayer`. Only the camo index changes; every other tag is kept.
 - **GUI.** GT's frame with the slot, a pair of arrows per target and a text line showing index, count and camo name. Not built: the live player preview.
 - **Automation.** No accessible slots, as in Techguns.

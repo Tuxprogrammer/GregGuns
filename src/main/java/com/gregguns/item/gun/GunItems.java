@@ -1,91 +1,81 @@
 package com.gregguns.item.gun;
 
-import com.gregguns.api.Tier;
-import com.gregguns.combat.DamageType;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.gregguns.core.registry.ModuleRegistrar;
-import com.gregguns.gun.logic.GunCatalog;
+import com.gregguns.gun.def.BoltActionDef;
+import com.gregguns.gun.def.GunDefinition;
+import com.gregguns.gun.def.GunDefinitions;
+import com.gregguns.gun.def.HandCannonDef;
+import com.gregguns.gun.def.PistolDef;
+import com.gregguns.gun.def.RevolverDef;
+import com.gregguns.gun.def.SawedOffDef;
 import com.gregguns.gun.logic.GunStats;
-import com.gregguns.gun.sound.GunSoundEvents;
 import com.gregguns.item.ammo.AmmoTypes;
 import com.gregguns.item.ammo.MagazineType;
 
 /**
- * Registers the gun items and holds them for other code (recipes, the renderer, the HUD).
- *
- * <p>
- * Registered so far: the 9mm Pistol, {@code gregguns:pistol_9mm}, the Revolver, {@code gregguns:revolver}, the
- * Sawed Off, {@code gregguns:sawed_off}, and the Hand Cannon, {@code gregguns:handcannon}. Its
- * recipe is the Assembler row in
- * {@code GunTable}, registered by {@code GunRecipes}. Registry names are what the pack config lists for Backhand (see
+ * Registers the gun items of {@link GunDefinitions#ALL} and holds them for other code (recipes, the renderer, the
+ * HUD). A new gun needs nothing here: look it up with {@link #get(String)}. The named accessors below are
+ * conveniences for the first five guns. Registry names are what the pack config lists for Backhand (see
  * {@code docs/gregguns-spec/PACK-CHANGES.md}).
  *
  * <p>
  * Usage: {@code ItemStack pistol = new ItemStack(GunItems.pistol());} (a tag-less stack reads as a full gun).
  *
  * <p>
- * Spec: docs/techguns-spec/02-guns/sheets-handguns-smgs.md (9mm Pistol). Common side, preInit.
+ * Spec: docs/techguns-spec/02-guns/sheets-handguns-smgs.md. Common side, preInit.
  */
 public final class GunItems {
 
-    private static ItemGun pistol;
-    private static ItemGun revolver;
-    private static ItemGun sawedOff;
-    private static ItemGun handcannon;
-    private static ItemGun boltAction;
+    private static final Map<String, ItemGun> ITEMS = new LinkedHashMap<>();
 
     private GunItems() {}
 
     /**
-     * Registers every gun. Call once from {@code GunsModule.preInit}, after the ammo items.
+     * Registers every gun in {@link GunDefinitions#ALL}. Call once from {@code GunsModule.preInit}, after the ammo
+     * items.
      *
      * @param registrar the guns module's registrar
      */
     public static void register(ModuleRegistrar registrar) {
-        pistol = registrar.registerItem(
-            GunSoundEvents.PISTOL_9MM,
-            new ItemGun(GunSoundEvents.PISTOL_9MM, GunCatalog.PISTOL, Tier.LV, DamageType.PROJECTILE));
-        revolver = registrar.registerItem(
-            GunSoundEvents.REVOLVER,
-            new ItemGun(GunSoundEvents.REVOLVER, GunCatalog.REVOLVER, Tier.LV, DamageType.PROJECTILE));
-        sawedOff = registrar.registerItem(
-            GunSoundEvents.SAWED_OFF,
-            new ItemGun(GunSoundEvents.SAWED_OFF, GunCatalog.SAWED_OFF, Tier.LV, DamageType.PROJECTILE));
-        handcannon = registrar.registerItem(
-            GunSoundEvents.HANDCANNON,
-            new ItemGun(GunSoundEvents.HANDCANNON, GunCatalog.HANDCANNON, Tier.STEAM, DamageType.PROJECTILE));
-        boltAction = registrar.registerItem(
-            GunSoundEvents.BOLT_ACTION_RIFLE,
-            new ItemGun(
-                GunSoundEvents.BOLT_ACTION_RIFLE,
-                GunCatalog.BOLT_ACTION,
-                Tier.LV,
-                DamageType.PROJECTILE,
-                true));
+        for (GunDefinition def : GunDefinitions.ALL) {
+            ITEMS.put(def.name(), registrar.registerItem(def.name(), new ItemGun(def)));
+        }
+    }
+
+    /**
+     * @param name a gun's registry name without the mod id, for example {@code "bolt_action_rifle"}
+     * @return the registered gun; {@code null} before registration, when the guns module is off, or for an unknown name
+     */
+    public static ItemGun get(String name) {
+        return ITEMS.get(name);
     }
 
     /** @return the 9mm Pistol; {@code null} before registration or when the guns module is off */
     public static ItemGun pistol() {
-        return pistol;
+        return get(PistolDef.NAME);
     }
 
     /** @return the Sawed Off; {@code null} before registration or when the guns module is off */
     public static ItemGun sawedOff() {
-        return sawedOff;
+        return get(SawedOffDef.NAME);
     }
 
     /** @return the Revolver; {@code null} before registration or when the guns module is off */
     public static ItemGun revolver() {
-        return revolver;
+        return get(RevolverDef.NAME);
     }
 
     /** @return the Hand Cannon; {@code null} before registration or when the guns module is off */
     public static ItemGun handcannon() {
-        return handcannon;
+        return get(HandCannonDef.NAME);
     }
 
     /** @return the Bolt Action Rifle; {@code null} before registration or when the guns module is off */
     public static ItemGun boltAction() {
-        return boltAction;
+        return get(BoltActionDef.NAME);
     }
 
     /**

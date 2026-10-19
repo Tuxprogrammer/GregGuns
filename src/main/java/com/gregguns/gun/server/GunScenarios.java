@@ -11,10 +11,12 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.gun.def.PistolDef;
 import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.item.ammo.AmmoTypes;
 import com.gregguns.item.gun.GunItems;
+import com.gregguns.recipe.GunRecipeScenarios;
 
 /**
  * The {@code gun.*} in-game scenarios: a {@link FakePlayer} holding a real {@code pistol_9mm} stack is driven through
@@ -43,6 +45,11 @@ public final class GunScenarios {
         registry.register(new DryFire());
         registry.register(new HitsPlayer());
         registry.register(new ZoomNoOp());
+        registry.register(
+            GunRecipeScenarios.assembly(
+                "gun.recipe",
+                "The 9mm Pistol is in GT's assembler map (so NEI lists it) at LV, 15 s, matching its sheet inputs, and not below LV.",
+                PistolDef.DEFINITION.assembly()));
     }
 
     // ----- scenarios -------------------------------------------------------------------------------------------

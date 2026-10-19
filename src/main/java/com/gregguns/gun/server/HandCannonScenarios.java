@@ -16,6 +16,7 @@ import com.gregguns.item.ammo.AmmoTypes;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.projectile.GenericProjectile;
 import com.gregguns.projectile.SimpleProjectile;
+import com.gregguns.recipe.GunRecipeScenarios;
 
 /**
  * The {@code gun.handcannon.*} scenarios: the Hand Cannon fired, measured for damage and for the fall of its stone
@@ -45,6 +46,7 @@ public final class HandCannonScenarios {
                 "hc",
                 GunItems.handcannon(),
                 AmmoTypes.STONE.roundItemName()));
+        registry.register(GunRecipeScenarios.handCannon());
     }
 
     private static GunRig rig(ScenarioContext ctx, int loaded) {

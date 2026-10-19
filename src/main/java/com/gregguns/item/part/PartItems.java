@@ -1,20 +1,18 @@
 package com.gregguns.item.part;
 
-import com.gregguns.api.Tier;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.gregguns.core.registry.ModuleRegistrar;
 
 /**
- * Registers the component items and holds them for recipes and the gun items.
+ * Registers the component items of {@link PartDefinitions#ALL} and holds them for recipes and the gun items. The list
+ * of parts is the definitions' (one entry per part); the name constants and accessors below are conveniences for the
+ * parts that existing code names, and a new part needs none of them: look it up with {@link #get(String)}.
  *
  * <p>
- * Registered so far: {@code part_barrel_hardened} (RC-05) and {@code part_mechanical_2} (RC-11), both LV, plus the
- * Revolver's {@code part_barrel_iron} (RC-04, LV), {@code part_mechanical_1} (RC-03) and {@code part_stock_wooden}
- * (RC-02), both ULV, and the Hand Cannon's {@code part_barrel_stone} (RC-01, ULV). The rest of the component index
- * arrives with the guns that need it. Names match the texture files.
- *
- * <p>
- * Usage: {@code new ItemStack(PartItems.barrelHardened(), 1)}. Spec: docs/gregguns-spec/06-items/recipes.md. Common
- * side, preInit.
+ * Usage: {@code new ItemStack(PartItems.barrelHardened(), 1)} or {@code new ItemStack(PartItems.get("part_x"), 1)}.
+ * Spec: docs/gregguns-spec/06-items/recipes.md. Common side, preInit.
  */
 public final class PartItems {
 
@@ -31,67 +29,65 @@ public final class PartItems {
     public static final String MECHANICAL_1 = "part_mechanical_1";
     /** Registry name of the Wooden Stock. */
     public static final String STOCK_WOODEN = "part_stock_wooden";
-
-    private static ItemPart barrelStone;
     /** Registry name of the Iron Receiver. */
     public static final String RECEIVER_IRON = "part_receiver_iron";
 
-    private static ItemPart receiverIron;
-    private static ItemPart barrelIron;
-    private static ItemPart mechanical1;
-    private static ItemPart stockWooden;
-    private static ItemPart barrelHardened;
-    private static ItemPart mechanical2;
+    private static final Map<String, ItemPart> ITEMS = new LinkedHashMap<>();
 
     private PartItems() {}
 
     /**
-     * Registers every part item. Call once from {@code GunsModule.preInit}.
+     * Registers every part in {@link PartDefinitions#ALL}. Call once from {@code GunsModule.preInit}.
      *
      * @param registrar the guns module's registrar
      */
     public static void register(ModuleRegistrar registrar) {
-        barrelStone = registrar.registerItem(BARREL_STONE, new ItemPart(Tier.STEAM));
-        barrelIron = registrar.registerItem(BARREL_IRON, new ItemPart(Tier.LV));
-        mechanical1 = registrar.registerItem(MECHANICAL_1, new ItemPart(Tier.STEAM));
-        stockWooden = registrar.registerItem(STOCK_WOODEN, new ItemPart(Tier.STEAM));
-        barrelHardened = registrar.registerItem(BARREL_HARDENED, new ItemPart(Tier.LV));
-        mechanical2 = registrar.registerItem(MECHANICAL_2, new ItemPart(Tier.LV));
-        receiverIron = registrar.registerItem(RECEIVER_IRON, new ItemPart(Tier.LV));
+        for (PartDefinition part : PartDefinitions.ALL) {
+            ITEMS.put(part.name(), registrar.registerItem(part.name(), new ItemPart(part.tier())));
+        }
+    }
+
+    /**
+     * @param name a part's registry name without the mod id
+     * @return the registered part; {@code null} before registration, when the guns module is off, or for an unknown
+     *         name
+     */
+    public static ItemPart get(String name) {
+        return ITEMS.get(name);
     }
 
     /** @return the Stone Barrel; {@code null} before registration or when the guns module is off */
     public static ItemPart barrelStone() {
-        return barrelStone;
+        return get(BARREL_STONE);
     }
 
     /** @return the Iron Barrel; {@code null} before registration or when the guns module is off */
     public static ItemPart barrelIron() {
-        return barrelIron;
+        return get(BARREL_IRON);
     }
 
     /** @return Mechanical Parts (T1); {@code null} before registration or when the guns module is off */
     public static ItemPart mechanical1() {
-        return mechanical1;
+        return get(MECHANICAL_1);
     }
 
     /** @return the Wooden Stock; {@code null} before registration or when the guns module is off */
     public static ItemPart stockWooden() {
-        return stockWooden;
+        return get(STOCK_WOODEN);
     }
 
     /** @return the Hardened Steel Barrel; {@code null} before registration or when the guns module is off */
     public static ItemPart barrelHardened() {
-        return barrelHardened;
+        return get(BARREL_HARDENED);
     }
 
     /** @return the Iron Receiver (RC-13); {@code null} before registration or when the guns module is off */
     public static ItemPart receiverIron() {
-        return receiverIron;
+        return get(RECEIVER_IRON);
     }
 
     /** @return Mechanical Parts T2; {@code null} before registration or when the guns module is off */
     public static ItemPart mechanical2() {
-        return mechanical2;
+        return get(MECHANICAL_2);
     }
 }

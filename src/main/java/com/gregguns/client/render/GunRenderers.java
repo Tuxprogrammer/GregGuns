@@ -10,25 +10,22 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.gregguns.GregGuns;
-import com.gregguns.client.render.profile.BoltActionRifleProfile;
+import com.gregguns.client.render.profile.ClientGunDefinition;
 import com.gregguns.client.render.profile.GunTransforms;
-import com.gregguns.client.render.profile.HandCannonProfile;
-import com.gregguns.client.render.profile.Pistol9mmProfile;
-import com.gregguns.client.render.profile.RevolverProfile;
-import com.gregguns.client.render.profile.SawedOffProfile;
 import com.gregguns.client.render.profile.ScopeSpec;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 /**
- * The registry of gun item renderers. The gun item's client side calls {@link #register} once per gun, during client
+ * The registry of gun item renderers. {@code GunClientSetup} calls {@link #register} once per entry of
+ * {@code ClientGunDefinitions.ALL}, during client
  * init (the item must already be registered):
  *
  * <pre>
  * {@code
- * GunRenderers.registerPistol9mm(GunItems.PISTOL_9MM);
- * // or, for any gun:
+ * GunRenderers.register(Pistol9mmProfile.DEFINITION, GunItems.pistol());
+ * // or, with a hand-built model:
  * GunRenderers.register(item, model, transforms);
  * }
  * </pre>
@@ -78,97 +75,25 @@ public final class GunRenderers {
     }
 
     /**
-     * Registers the 9mm Pistol: the original box model built against {@code pistol_9mm.png}, and its sheet
-     * transforms.
+     * Registers the renderer for a gun from its client definition: builds the box model (one texture per camo) and
+     * binds the item renderer.
+     *
+     * @param definition the gun's client definition
+     * @param item       the registered gun item
      */
-    public static void registerPistol9mm(Item pistol) {
+    public static void register(ClientGunDefinition definition, Item item) {
         register(
-            pistol,
+            item,
             new BoxGunModel(
-                Pistol9mmProfile.BOXES,
-                2,
-                Pistol9mmProfile.TEXTURE_WIDTH,
-                Pistol9mmProfile.TEXTURE_HEIGHT,
-                Pistol9mmProfile.MODEL_SCALE,
-                new String[] { Pistol9mmProfile.TEXTURE },
-                Pistol9mmProfile.MUZZLE),
-            Pistol9mmProfile.TRANSFORMS);
-    }
-
-    /**
-     * Registers the Sawed Off: the original X-family box model built against {@code sawed_off.png}, and its sheet
-     * transforms.
-     */
-    public static void registerSawedOff(Item sawedOff) {
-        register(
-            sawedOff,
-            new BoxGunModel(
-                SawedOffProfile.BOXES,
-                1,
-                SawedOffProfile.TEXTURE_WIDTH,
-                SawedOffProfile.TEXTURE_HEIGHT,
-                SawedOffProfile.MODEL_SCALE,
-                new String[] { SawedOffProfile.TEXTURE },
-                SawedOffProfile.MUZZLE,
-                true),
-            SawedOffProfile.TRANSFORMS);
-    }
-
-    /**
-     * Registers the Revolver: the original X-family box model built against {@code revolver.png}, and its sheet
-     * transforms.
-     */
-    public static void registerRevolver(Item revolver) {
-        register(
-            revolver,
-            new BoxGunModel(
-                RevolverProfile.BOXES,
-                1,
-                RevolverProfile.TEXTURE_WIDTH,
-                RevolverProfile.TEXTURE_HEIGHT,
-                RevolverProfile.MODEL_SCALE,
-                new String[] { RevolverProfile.TEXTURE },
-                RevolverProfile.MUZZLE,
-                true),
-            RevolverProfile.TRANSFORMS);
-    }
-
-    /**
-     * Registers the Hand Cannon: the original X-family box model built against {@code handcannon.png}, and its sheet
-     * transforms.
-     */
-    public static void registerHandCannon(Item handcannon) {
-        register(
-            handcannon,
-            new BoxGunModel(
-                HandCannonProfile.BOXES,
-                1,
-                HandCannonProfile.TEXTURE_WIDTH,
-                HandCannonProfile.TEXTURE_HEIGHT,
-                HandCannonProfile.MODEL_SCALE,
-                new String[] { HandCannonProfile.TEXTURE },
-                HandCannonProfile.MUZZLE,
-                true),
-            HandCannonProfile.TRANSFORMS);
-    }
-
-    /**
-     * Registers the Bolt Action Rifle: the original X-family box model built against {@code bolt_action_rifle.png}
-     * (three camo textures, chosen by the stack's camo index), its sheet transforms and its scope overlay.
-     */
-    public static void registerBoltAction(Item rifle) {
-        register(
-            rifle,
-            new BoxGunModel(
-                BoltActionRifleProfile.BOXES,
-                1,
-                BoltActionRifleProfile.TEXTURE_WIDTH,
-                BoltActionRifleProfile.TEXTURE_HEIGHT,
-                BoltActionRifleProfile.MODEL_SCALE,
-                BoltActionRifleProfile.TEXTURES,
-                BoltActionRifleProfile.MUZZLE,
-                true),
-            BoltActionRifleProfile.TRANSFORMS);
+                definition.boxes(),
+                definition.parts(),
+                definition.textureWidth(),
+                definition.textureHeight(),
+                definition.modelScale(),
+                definition.textures(),
+                definition.muzzle(),
+                definition.xFamily()),
+            definition.transforms());
     }
 
     /**

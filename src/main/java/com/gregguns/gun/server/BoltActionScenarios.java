@@ -7,6 +7,7 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.gun.def.BoltActionDef;
 import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ShotContext;
@@ -14,11 +15,12 @@ import com.gregguns.gun.logic.SpreadModel;
 import com.gregguns.gun.sound.GunSoundEvents;
 import com.gregguns.item.ammo.AmmoTypes;
 import com.gregguns.item.gun.GunItems;
+import com.gregguns.recipe.GunRecipeScenarios;
 
 /**
  * The {@code gun.boltaction.*} scenarios: the Bolt Action Rifle fired, rechambered, reloaded, zoomed and measured
  * through the same server handler as the pistol's {@code gun.*} scenarios, using {@link GunRig}. Dev environment only,
- * server side. The rifle's recipe scenario is {@code gun.boltaction.recipe} in {@code GunRecipeScenarios}.
+ * server side. Its recipe scenario, {@code gun.boltaction.recipe}, is registered from here.
  */
 // Spec: docs/techguns-spec/02-guns/sheets-rifles-shotguns.md (Bolt Action Rifle); docs/testing/README.md
 public final class BoltActionScenarios {
@@ -40,6 +42,11 @@ public final class BoltActionScenarios {
         registry.register(new Zoom());
         registry.register(
             new GunVisualScenario("mp.visual.boltaction", "bolt", GunItems.boltAction(), "ammo_rifle_bullet"));
+        registry.register(
+            GunRecipeScenarios.assembly(
+                "gun.boltaction.recipe",
+                "The Bolt Action Rifle is in GT's assembler map (so NEI lists it) at LV, 20 s, matching its sheet inputs (including the glass lens and the Iron Receiver), and not below LV.",
+                BoltActionDef.DEFINITION.assembly()));
     }
 
     private static GunRig rig(ScenarioContext ctx, int loaded) {

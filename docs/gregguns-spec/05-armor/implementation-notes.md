@@ -36,7 +36,7 @@ T1 Combat (A = 15), Scout and Miner (A = 13); other types 75% of A, poison and r
 - **Hazard flags.** T1 sets carry none, as the flag table says. Higher sets add `PieceDef.Builder.partialHazards` and `fullHazards`.
 - **Recycling data.** The armor items have no GT `ItemData` yet (GGS-06-34 style); add when the Repair Bench and recycling pass is done.
 - **Camo switching.** `ItemGregGunsArmor.getCamo` and `setCamo` exist for the Camo Bench (M4); there is no in-hand switch.
-- **Gun accuracy.** `ArmorBonus.GUN_ACCURACY` is readable through `Armor.bonus`; the gun spread code does not read it yet (gun framework is M2's).
+- **Gun accuracy.** `ArmorBonus.GUN_ACCURACY` is readable through `Armor.bonus`; the server's shot context reads it through `GunAccuracy.armorBonus` (0 when `modules.armor` is off, clamped to 0..1), so a worn set that gives it tightens every shot's spread by that fraction. No shipped T1 set gives it; `gun.accuracy.armor` uses a stub set.
 - **Pack fall handlers.** The server has another fall handler that shortens a 5-block fall to 4 before ours, so scenario fall figures are measured against that baseline.
 
 

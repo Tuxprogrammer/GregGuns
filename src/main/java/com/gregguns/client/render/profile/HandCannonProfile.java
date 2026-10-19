@@ -89,6 +89,21 @@ public final class HandCannonProfile {
     /** The sheet's render transforms, timing and muzzle flash for the hand cannon. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
 
+    /**
+     * The client half of the gun's definition: model, textures and transforms, listed in {@link ClientGunDefinitions}.
+     */
+    public static final ClientGunDefinition DEFINITION = new ClientGunDefinition(
+        "handcannon",
+        BOXES,
+        1,
+        TEXTURE_WIDTH,
+        TEXTURE_HEIGHT,
+        MODEL_SCALE,
+        new String[] { TEXTURE },
+        MUZZLE,
+        true,
+        TRANSFORMS);
+
     private HandCannonProfile() {}
 
     private static GunTransforms buildTransforms() {

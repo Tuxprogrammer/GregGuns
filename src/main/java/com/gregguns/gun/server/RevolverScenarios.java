@@ -7,10 +7,12 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.gun.def.RevolverDef;
 import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.item.ammo.AmmoTypes;
 import com.gregguns.item.gun.GunItems;
+import com.gregguns.recipe.GunRecipeScenarios;
 
 /**
  * The {@code gun.revolver.*} scenarios: the Revolver fired, reloaded and measured through the same server handler as
@@ -35,6 +37,12 @@ public final class RevolverScenarios {
         registry.register(new ForcedReload());
         registry.register(new Damage());
         registry.register(new GunVisualScenario("mp.visual.revolver", "rev", GunItems.revolver(), "ammo_9mm_bullet"));
+        registry.register(
+            GunRecipeScenarios.assembly(
+                "gun.revolver.recipe",
+                "The Revolver is in GT's assembler map (so NEI lists it) at LV, 15 s, matching its sheet inputs, and not below LV.",
+                RevolverDef.DEFINITION.assembly()));
+        registry.register(GunRecipeScenarios.revolverParts());
     }
 
     private static GunRig rig(ScenarioContext ctx, int loaded) {

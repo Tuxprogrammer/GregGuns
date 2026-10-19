@@ -9,7 +9,6 @@ import net.minecraft.item.crafting.IRecipe;
 
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
-import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.item.part.PartItems;
 
@@ -24,10 +23,9 @@ import gregtech.api.util.GTRecipeBuilder;
 import gregtech.api.util.GTUtility;
 
 /**
- * In-game scenarios for the guns' final assembly recipes (pistol, revolver) and the revolver's parts: it is in GT's
- * assembler map ({@code
- * RecipeMaps.assemblerRecipes}, which GT's NEI handler lists), matches its sheet inputs at LV, and is refused below
- * LV. Dev environment only, registered from {@code GunsModule}. Server side.
+ * Recipe scenarios for the guns, as factories each gun's own scenario class registers: a gun's final assembly row is in
+ * GT's assembler map ({@code RecipeMaps.assemblerRecipes}, which GT's NEI handler lists), matches its sheet inputs at
+ * its tier, and is refused below it. Dev environment only. Server side.
  */
 // Spec: docs/gregguns-spec/02-guns/recipes.md (LV table, 9mm Pistol)
 public final class GunRecipeScenarios {
@@ -35,34 +33,31 @@ public final class GunRecipeScenarios {
     private GunRecipeScenarios() {}
 
     /**
-     * Registers the scenario.
+     * The scenario every gun with an assembly row registers: the row is in GT's assembler map at its tier and
+     * duration, findable at its voltage and not below it.
      *
-     * @param registry where to add it
+     * @param name        the scenario name, for example {@code gun.revolver.recipe}
+     * @param description what it checks, for the docs
+     * @param row         the gun's assembly row
+     * @return the scenario
      */
-    public static void registerAll(ScenarioRegistry registry) {
-        registry.register(
-            new GunAssemblerRecipe(
-                "gun.recipe",
-                "The 9mm Pistol is in GT's assembler map (so NEI lists it) at LV, 15 s, matching its sheet inputs, and not below LV.",
-                GunTable.PISTOL));
-        registry.register(
-            new GunAssemblerRecipe(
-                "gun.revolver.recipe",
-                "The Revolver is in GT's assembler map (so NEI lists it) at LV, 15 s, matching its sheet inputs, and not below LV.",
-                GunTable.REVOLVER));
-        registry.register(
-            new GunAssemblerRecipe(
-                "gun.sawedoff.recipe",
-                "The Sawed Off is in GT's assembler map (so NEI lists it) at LV, 10 s, matching its sheet inputs, and not below LV.",
-                GunTable.SAWED_OFF));
-        registry.register(new ShellPressRecipe());
-        registry.register(new RevolverPartRecipes());
-        registry.register(new HandCannonRecipeScenario());
-        registry.register(
-            new GunAssemblerRecipe(
-                "gun.boltaction.recipe",
-                "The Bolt Action Rifle is in GT's assembler map (so NEI lists it) at LV, 20 s, matching its sheet inputs (including the glass lens and the Iron Receiver), and not below LV.",
-                GunTable.BOLT_ACTION));
+    public static Scenario assembly(String name, String description, ProductionTable.Row row) {
+        return new GunAssemblerRecipe(name, description, row);
+    }
+
+    /** @return {@code gun.sawedoff.shells.recipe}: the shotgun shell's press recipe (RC-29) */
+    public static Scenario shellPress() {
+        return new ShellPressRecipe();
+    }
+
+    /** @return {@code gun.revolver.parts}: the Revolver's hand-made parts and machine-made barrel */
+    public static Scenario revolverParts() {
+        return new RevolverPartRecipes();
+    }
+
+    /** @return {@code gun.handcannon.recipe}: the Hand Cannon's crafting recipe and the stone bullet chain */
+    public static Scenario handCannon() {
+        return new HandCannonRecipeScenario();
     }
 
     private static ItemStack modStack(String name, int count) {
