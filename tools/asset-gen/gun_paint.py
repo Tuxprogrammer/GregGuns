@@ -248,12 +248,13 @@ def apply_painter(rgb, p, face):
         x, y, pw, ph = face_xywh(p, w, h)
         mul(rgb, x, y, pw, ph, p.get("f", 1.0))
     elif kind == "seam":  # a thin panel line across or along
+        dark, light = p.get("dark", 0.62), p.get("light", 1.1)  # a faint seam: dark 0.78, light 1.0
         if p.get("axis", "v") == "v":
-            mul(rgb, p["at"], 0, 1, h, 0.62)
-            mul(rgb, p["at"] + 1, 0, 1, h, 1.1)
+            mul(rgb, p["at"], 0, 1, h, dark)
+            mul(rgb, p["at"] + 1, 0, 1, h, light)
         else:
-            mul(rgb, 0, p["at"], w, 1, 0.62)
-            mul(rgb, 0, p["at"] + 1, w, 1, 1.1)
+            mul(rgb, 0, p["at"], w, 1, dark)
+            mul(rgb, 0, p["at"] + 1, w, 1, light)
     else:
         raise SystemExit("unknown painter " + kind)
 
