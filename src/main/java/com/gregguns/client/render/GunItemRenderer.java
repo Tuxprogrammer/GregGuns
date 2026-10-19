@@ -16,6 +16,7 @@ import com.gregguns.client.GunsClientModule;
 import com.gregguns.client.anim.AnimWindow;
 import com.gregguns.client.anim.CamoIndex;
 import com.gregguns.client.anim.GunAnimState;
+import com.gregguns.client.render.profile.AkimboLayout;
 import com.gregguns.client.render.profile.GunTransforms;
 import com.gregguns.client.render.profile.MuzzleFlashSpec;
 import com.gregguns.client.render.profile.TransformProgram;
@@ -63,8 +64,10 @@ final class GunItemRenderer implements IItemRenderer {
     private final GunTransforms transforms;
     private final ResourceLocation[] textures;
     private final ModelState state = new ModelState();
+    private final boolean akimbo;
 
-    GunItemRenderer(GunModel model, GunTransforms transforms) {
+    GunItemRenderer(GunModel model, GunTransforms transforms, boolean akimbo) {
+        this.akimbo = akimbo;
         this.model = model;
         this.transforms = transforms;
         this.textures = model.textures();
@@ -106,10 +109,39 @@ final class GunItemRenderer implements IItemRenderer {
         int tag = Item.getIdFromItem(stack.getItem());
         GunAnimState anim = holder == null ? null : anims.peek(holder);
         double reload = anim == null ? AnimWindow.NONE : anim.reloadProgress(now, tag);
-        double recoil = anim == null ? AnimWindow.NONE : anim.recoilProgress(now, tag);
-        double flash = anim == null ? AnimWindow.NONE : anim.flashProgress(now, tag);
+        double shotRecoil = anim == null ? AnimWindow.NONE : anim.recoilProgress(now, tag);
+        double shotFlash = anim == null ? AnimWindow.NONE : anim.flashProgress(now, tag);
+        int attackType = anim == null ? 0 : anim.attackType();
 
-        fillState(stack, type, reload, recoil);
+        // An akimbo gun in first person draws the single model once per hand; only the hand that fired recoils.
+        int hands = AkimboLayout.handsDrawn(akimbo, firstPerson);
+        for (int hand = 0; hand < hands; hand++) {
+            boolean fired = AkimboLayout.animates(akimbo, firstPerson, hand, attackType);
+            double recoil = fired ? shotRecoil : AnimWindow.NONE;
+            double flash = fired ? shotFlash : AnimWindow.NONE;
+            boolean mirrored = hands > 1 && hand > 0;
+            GL11.glPushMatrix();
+            try {
+                if (mirrored) {
+                    // The second gun: a mirror image about the screen centre. Mirroring flips the winding.
+                    GL11.glTranslated(AkimboLayout.mirrorTranslateX(hand), 0.0, 0.0);
+                    GL11.glScaled(AkimboLayout.mirrorScaleX(hand), 1.0, 1.0);
+                    GL11.glFrontFace(GL11.GL_CW);
+                }
+                drawGun(stack, type, holder, hand, reload, recoil, flash, firstPerson);
+            } finally {
+                if (mirrored) {
+                    GL11.glFrontFace(GL11.GL_CCW);
+                }
+                GL11.glPopMatrix();
+            }
+        }
+    }
+
+    private void drawGun(ItemStack stack, ItemRenderType type, EntityLivingBase holder, int hand, double reload,
+        double recoil, double flash, boolean firstPerson) {
+        GunTransforms t = transforms;
+        fillState(stack, type, reload, recoil, hand);
         ResourceLocation texture = textures[CamoIndex.clamp(camoOf(stack), textures.length)];
         int parts = Math.min(t.partCount(), model.parts());
         for (int part = 0; part < parts; part++) {
@@ -180,14 +212,15 @@ final class GunItemRenderer implements IItemRenderer {
         }
     }
 
-    private void fillState(ItemStack stack, ItemRenderType type, double reload, double recoil) {
+    private void fillState(ItemStack stack, ItemRenderType type, double reload, double recoil, int hand) {
         state.renderType = type;
         state.reloadProgress = reload == AnimWindow.NONE ? ModelState.NOT_RELOADING : (float) reload;
         state.fireProgress = recoil == AnimWindow.NONE ? 0.0f : (float) recoil;
         NBTTagCompound tag = stack.getTagCompound();
-        state.ammoLeft = tag != null && tag.hasKey(GunNbt.KEY_AMMO, Constants.NBT.TAG_ANY_NUMERIC)
+        int ammo = tag != null && tag.hasKey(GunNbt.KEY_AMMO, Constants.NBT.TAG_ANY_NUMERIC)
             ? tag.getShort(GunNbt.KEY_AMMO)
             : 100;
+        state.ammoLeft = akimbo && ammo != 100 ? AkimboLayout.handAmmo(ammo, hand) : ammo;
     }
 
     private static int camoOf(ItemStack stack) {
