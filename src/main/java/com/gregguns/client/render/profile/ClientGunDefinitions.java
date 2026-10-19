@@ -55,7 +55,13 @@ public final class ClientGunDefinitions {
             ClientGunDefinition.akimboOf("akimbo_pistols", Pistol9mmProfile.DEFINITION),
             ClientGunDefinition.akimboOf("akimbo_revolvers", RevolverProfile.DEFINITION),
             ClientGunDefinition.akimboOf("akimbo_mac10s", Mac10Profile.DEFINITION),
-            ClientGunDefinition.akimboOf("akimbo_golden_revolvers", GoldenRevolverProfile.DEFINITION)));
+            ClientGunDefinition.akimboOf("akimbo_golden_revolvers", GoldenRevolverProfile.DEFINITION),
+
+            // M5 batch B4 (IV energy guns).
+            BlasterRifleProfile.DEFINITION,
+            DeatomizerPistolProfile.DEFINITION,
+            ClientGunDefinition.akimboOf("akimbo_deatomizer_pistols", DeatomizerPistolProfile.DEFINITION),
+            ScatterLaserRifleProfile.DEFINITION));
 
     /**
      * The guns that have no 3D profile yet and are drawn as their flat item icon in hand, in the world and in the

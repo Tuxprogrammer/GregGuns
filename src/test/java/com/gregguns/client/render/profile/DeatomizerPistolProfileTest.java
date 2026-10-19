@@ -3,6 +3,7 @@ package com.gregguns.client.render.profile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -411,7 +412,10 @@ class DeatomizerPistolProfileTest {
     }
 
     @Test
-    void theGunIsNotRegisteredYet() {
-        assertNull(ClientGunDefinitions.byName("deatomizer_pistol"), "a later gameplay batch registers it");
+    void theGunIsRegistered() {
+        assertSame(
+            DeatomizerPistolProfile.DEFINITION,
+            ClientGunDefinitions.byName("deatomizer_pistol"),
+            "registered by the B4 gameplay batch");
     }
 }

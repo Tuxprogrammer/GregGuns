@@ -47,7 +47,11 @@ public final class GunDefinitions {
             SonicRifleDef.DEFINITION,
             PdwDef.DEFINITION,
             PulseRifleDef.DEFINITION,
-            MinigunDef.DEFINITION));
+            MinigunDef.DEFINITION,
+            BlasterRifleDef.DEFINITION,
+            DeatomizerPistolDef.DEFINITION,
+            AkimboDeatomizerPistolsDef.DEFINITION,
+            ScatterLaserRifleDef.DEFINITION));
 
     private GunDefinitions() {}
 

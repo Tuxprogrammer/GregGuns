@@ -168,6 +168,11 @@ public final class GunRig {
         return seen.size();
     }
 
+    /** @return the projectiles seen since the rig was built, dead or alive (a copy) */
+    public java.util.List<GenericProjectile> seenProjectiles() {
+        return new java.util.ArrayList<>(seen.keySet());
+    }
+
     /** @return true when every projectile seen has ended */
     public boolean bulletsGone() {
         for (GenericProjectile p : seen.keySet()) {

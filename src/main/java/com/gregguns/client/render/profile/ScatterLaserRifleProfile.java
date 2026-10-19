@@ -157,15 +157,13 @@ public final class ScatterLaserRifleProfile {
         // END GENERATED BOXES
     };
 
-    // Deviation: the notes give first-person scale 1.3 on a model measured from its own origin. The scale follows
-    // the FirstPersonFit rule with the 2 blocks on screen of the other long guns, and the idle position puts this
-    // model's box centre on the family anchor.
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    // Deviation: the notes give first-person scale 1.3 on a model measured from its own origin. The scale, idle
+    // position and third-person placement are solved by InHandFit from the per-gun targets of the in-hand notes
+    // (section 7).
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("scatter_laser_rifle", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.2, -0.25 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -211,15 +209,13 @@ public final class ScatterLaserRifleProfile {
             .rotZ((p, part) -> -50.0 * yR(p))
             .translate(FP_X, FP_Y, FP_Z)
             .build();
-        // Third person: rotX180, rotY225, scale 1.0 (the notes' 0.8 is for their own origin; this rifle is 3.9 blocks
-        // long, so it is scaled like the other long guns; unverified in game). The grip (about 1.2 blocks ahead of the
-        // butt, 0.8 down)
-        // lands at the hand.
+        // Third person: rotX180, rotY225, then the scale and translate InHandFit solved so the box centre lands at the
+        // hand and the rifle is the notes' 1.18 world blocks long.
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.0)
-            .translate(-1.16, -0.81, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         TransformProgram tpRecoil = TransformProgram.builder()
             .about(0, 0.3, -0.9, b -> b.rotZ((p, part) -> -12.0 * kick(p)))
@@ -243,14 +239,15 @@ public final class ScatterLaserRifleProfile {
             .translate(-1.97, -0.39, 0)
             .build();
         // Deviation: the notes ask for a laser-style flash; the shared muzzleFlash2 sheet is used, additive (the
-        // sheet is black-backed). The offset is the bolt-action rifle's,
-        // whose muzzle sits at the same place on screen (same 2-block length and anchor). Unverified in game.
+        // sheet is black-backed). The offset follows the solved placement (InHandFit.Placement.flashOffset). Unverified
+        // in game.
+        double[] fo = FIT.flashOffset(MUZZLE, 1.85);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.055,
-            0.005,
-            0.357,
+            fo[0],
+            fo[1],
+            fo[2],
             1.85,
             new double[] { 0, 0, 0 },
             true,

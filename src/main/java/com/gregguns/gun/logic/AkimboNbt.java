@@ -34,7 +34,25 @@ public final class AkimboNbt {
     /** Key of the second gun's tag inside the akimbo gun's tag (compound). */
     public static final String KEY_SECOND = "akimbo_second";
 
+    /**
+     * IC2's stack-NBT key of an electric item's stored EU. The code never reads or writes it (GGS-02-13); it only
+     * clears it from a copied tag so the akimbo recipes can set the summed or halved charge through IC2 instead.
+     */
+    public static final String KEY_CHARGE = "charge";
+
     private AkimboNbt() {}
+
+    /**
+     * The charge of the two guns a split makes: half to the first, the odd EU to the second, so the total is
+     * conserved (the same rule as the rounds).
+     *
+     * @param total the akimbo gun's stored EU, 0 or more
+     * @return {first, second}
+     */
+    public static long[] splitCharge(long total) {
+        long first = Math.max(0L, total) / 2;
+        return new long[] { first, Math.max(0L, total) - first };
+    }
 
     /**
      * Builds the akimbo gun's tag from two single guns' tags.
@@ -51,9 +69,11 @@ public final class AkimboNbt {
         GunState b = GunNbt.read(second, singleStats);
         NBTTagCompound out = first == null ? new NBTTagCompound() : (NBTTagCompound) first.copy();
         out.removeTag(KEY_SECOND);
+        out.removeTag(KEY_CHARGE); // an energy akimbo gun is charged with the sum by the recipe, through IC2
         NBTTagCompound secondCopy = second == null ? new NBTTagCompound() : (NBTTagCompound) second.copy();
         // A gun combined twice (an akimbo gun is never an input, but be safe) must not nest a stale second tag.
         secondCopy.removeTag(KEY_SECOND);
+        secondCopy.removeTag(KEY_CHARGE);
         GunState sum = new GunState(0);
         sum.setLoaded(akimboStats, a.loaded() + b.loaded());
         sum.setCamo(a.camo());
@@ -78,6 +98,7 @@ public final class AkimboNbt {
 
         NBTTagCompound firstTag = akimbo == null ? new NBTTagCompound() : (NBTTagCompound) akimbo.copy();
         firstTag.removeTag(KEY_SECOND);
+        firstTag.removeTag(KEY_CHARGE); // each gun is charged with its half by the recipe, through IC2
         NBTTagCompound secondTag;
         if (akimbo != null && akimbo.hasKey(KEY_SECOND, Constants.NBT.TAG_COMPOUND)) {
             secondTag = (NBTTagCompound) akimbo.getCompoundTag(KEY_SECOND)
@@ -85,6 +106,7 @@ public final class AkimboNbt {
         } else {
             secondTag = (NBTTagCompound) firstTag.copy();
         }
+        secondTag.removeTag(KEY_CHARGE);
         GunState first = new GunState(0);
         first.setLoaded(singleStats, firstRounds);
         first.setCamo(total.camo());
