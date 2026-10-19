@@ -135,6 +135,7 @@ class ModelExportTest {
         ModelExporter.exportProfile(dir, TeslaRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, SonicRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, BlasterRifleProfile.DEFINITION);
+        ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.BioGunProfile.DEFINITION);
         ModelExporter.exportProfile(dir, DeatomizerPistolProfile.DEFINITION);
         ModelExporter.exportProfile(dir, ScatterLaserRifleProfile.DEFINITION);
         ModelExporter.exportProfile(dir, com.gregguns.client.render.profile.NetherBlasterProfile.DEFINITION);

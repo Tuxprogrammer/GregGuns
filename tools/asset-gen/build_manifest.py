@@ -448,10 +448,6 @@ MOBS = [
     ("bandit", "entity/bandit.png", "Bandit", "dark skin, black dreadlocks, light-gray vest"),
     ("dictator", "entity/dictator.png", "Dictator Dave", "bandit base with sunglasses and mustache-beard"),
     ("cyberdemon", "entity/cyberdemon.png", "Cyberdemon", "red muscle, gray cybernetic implants, orange cables"),
-    ("supermutant_1", "entity/supermutant_texture_1.png", "Super Mutant Basic", "mustard-yellow mottled skin, bare"),
-    ("supermutant_2", "entity/supermutant_texture_2.png", "Super Mutant Heavy", "as basic plus leather harness and riveted chest plates"),
-    ("supermutant_3", "entity/supermutant_texture_3.png", "Super Mutant Elite", "as heavy plus steel helmet and pauldrons"),
-    ("alienbug", "entity/alienbug.png", "Alien Bug", "chitinous brown-tan insectoid"),
     ("apache", "entity/apache.png", "Attack Helicopter (OBJ UV atlas)", "dark olive-gray military helicopter atlas"),
     ("gore", "entity/gore.png", "generic gibs", "flayed dark-red flesh in biped layout"),
 ]
