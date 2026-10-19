@@ -77,6 +77,7 @@ public final class ArmorModule implements GregGunsModule {
             SlotSyncScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             FlightScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             PowerArmorScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            ArmorShowcaseScenario.register(ScenarioRegistry.SCENARIOS);
         }
     }
 }

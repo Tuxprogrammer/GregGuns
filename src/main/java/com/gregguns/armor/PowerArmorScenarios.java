@@ -271,7 +271,7 @@ final class PowerArmorScenarios {
                 chest.setCamo(chestOf(p), 2);
                 out.check(
                     chest.getArmorTexture(chestOf(p), p, 1, null)
-                        .endsWith("t3_exo_green_1.png"),
+                        .endsWith("t3_exo_green.png"),
                     "camo 2 is Dark Green");
                 chest.setCamo(chestOf(p), 0);
 
