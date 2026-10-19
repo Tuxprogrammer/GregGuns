@@ -103,14 +103,12 @@ public final class PowerHammerProfile {
         // END GENERATED BOXES
     };
 
-    // Deviation: the notes give first-person scale 1.5 against the original's own units. Here the hammer is framed at
-    // 1.75 blocks on screen: a short tool, between the handguns' 15/16 and the long guns' 2 blocks.
-    /** On-screen length of the hammer in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 1.75;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    // Deviation: the in-hand fit rule places the hammer on the notes' section 7 targets (length, centre, muzzle) with
+    // the X-family hold, instead of the notes' scale 1.5 from the original frame's own origin.
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("power_hammer", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, 0 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -192,8 +190,8 @@ public final class PowerHammerProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.25)
-            .translate(0.28, -0.24, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Reload: about 30 degrees about the long axis and 40 about the vertical, then back (notes).
         TransformProgram tpReload = TransformProgram.builder()

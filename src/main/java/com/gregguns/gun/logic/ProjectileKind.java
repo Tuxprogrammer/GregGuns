@@ -35,6 +35,9 @@ public enum ProjectileKind {
     ENERGY_BLAST,
     /** Sonic shotgun rings, M5. Section 3.13. */
     SONIC,
+    /** Plain bullet that is never drawn (the Chainsaw's cut), M5. Section 3.12. */
+    INVISIBLE,
+
     /** Continuous radiation beam (Nuclear Death Ray), M5. Section 3.14. */
     BEAM
 }

@@ -159,7 +159,7 @@ final class GunItemRenderer implements IItemRenderer {
                 Minecraft.getMinecraft()
                     .getTextureManager()
                     .bindTexture(texture);
-                if (t.partVisible(part, state.ammoLeft, state.reloadProgress)) {
+                if (t.partVisible(part, state.ammoLeft, state.reloadProgress, state.fireProgress)) {
                     model.render(part, state);
                 }
                 if (part == parts - 1 && type == ItemRenderType.EQUIPPED

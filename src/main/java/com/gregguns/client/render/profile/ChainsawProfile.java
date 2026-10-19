@@ -116,15 +116,12 @@ public final class ChainsawProfile {
         // END GENERATED BOXES
     };
 
-    // Deviation: the notes give first-person scale 1.35 and an idle offset measured from the origin of the original
-    // model. The saw is more than four blocks long, so it follows the FirstPersonFit rule with the 2 blocks on screen
-    // of the other long guns, and the idle position puts this model's box centre on the family anchor.
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    // Deviation: the in-hand fit rule places the saw on the notes' section 7 targets (length, centre, muzzle) with the
+    // X-family hold, instead of the notes' scale 1.35 from the original frame's own origin.
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("chainsaw", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, -0.15, 0.3 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -197,8 +194,8 @@ public final class ChainsawProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.6)
-            .translate(-0.375, 0.75, -0.2)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // No recoil on the body in third person (the notes).
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -224,10 +221,28 @@ public final class ChainsawProfile {
             .build();
         return GunTransforms.builder()
             .parts(3)
+            .partVisibility(new ChainFrames())
             .timing(3, 0, 45)
             .firstPerson(fpBase, fpIdle, fpFire, fpReload)
             .thirdPerson(tpBase, new double[] { 0, -0.15, 0.3 }, tpRecoil, tpReload)
             .world(ground, icon)
             .build();
+    }
+
+    /** Draws exactly one of the two chain frames, chosen by the fire animation progress; every other part always. */
+    private static final class ChainFrames implements GunTransforms.PartVisibility {
+
+        @Override
+        public boolean visible(int part, int ammoLeft, float reloadProgress) {
+            return visible(part, ammoLeft, reloadProgress, 0.0f);
+        }
+
+        @Override
+        public boolean visible(int part, int ammoLeft, float reloadProgress, float fireProgress) {
+            if (part != CHAIN_PART_A && part != CHAIN_PART_B) {
+                return true;
+            }
+            return part == chainPart(fireProgress);
+        }
     }
 }

@@ -239,6 +239,14 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.flamethrower.npc` | Flamethrower (M2 B6) | A flame fired by a zombie hurts another zombie but does not ignite it (NPC flamethrowers never ignite). |
 | `gun.flamethrower.tankfill` | Flamethrower (M2 B6) | GT's Fluid Canner map, with no GregGuns recipe, fills an empty Fuel Tank with 1,000 mB of Diesel (RC-56), empties a full one, and refuses Water. |
 | `gun.flamethrower.recipe` | Flamethrower (M2 B6) | The HV assembly row (GR-50) is in GT's assembler map with its sheet inputs and not below HV, and the found recipe's output is ours. |
+| `gun.bio_gun.fire` | Bio Gun (M5 B3a) | Holding the left button for 8 ticks fires every 6 ticks: 2 rounds and 2 level-1 `BiogunProjectile` globs; a villager 4 blocks ahead takes damage and gets Poison IV (amplifier 3, at most 100 ticks). |
+| `gun.bio_gun.charge` | Bio Gun (M5 B3a) | Holding the right button 10, 20 and 35 ticks fires levels 1, 2 and 3 that spend exactly 1, 2 and 3 rounds of the 30 loaded (GUN-02). |
+| `gun.bio_gun.reload` | Bio Gun (M5 B3a) | An empty gun with one full Bio Tank (Biomass) reloads after 45 ticks to 30 rounds; the full tank is consumed and an empty tank comes back. |
+| `gun.bio_gun.blob` | Bio Gun (M5 B3a) | With safe mode off, a level 2 glob from a player at a wall leaves a size 2 Bio Blob on the wall. Needs the utility module. |
+| `gun.bio_gun.blob.safe` | Bio Gun (M5 B3a) | The same glob with safe mode on (`explosions.blockDamage` false) leaves no blob (PFX-28). |
+| `gun.bio_gun.blob.veto` | Bio Gun (M5 B3a) | The same glob with `BlockEvent.PlaceEvent` cancelled by a listener leaves no blob (PFX-28). |
+| `gun.bio_gun.recipe` | Bio Gun (M5 B3a) | The EV assembly row (GR-65) is in GT's assembler map with its sheet inputs and not below EV, and the found recipe's output is ours. |
+| `gun.bio_gun.tiergate` | Bio Gun (M5 B3a) | The row carries titanium, the EV gate material; an EV assembler finds it and an HV assembler does not. |
 | `gun.golden_revolver.fire` | Golden Revolver (M2 B6) | One pull launches a bullet, costs a zombie the DamageModel figure for 14 and one round, and holds the 8 tick cooldown with a remembered click. |
 | `gun.golden_revolver.reload` | Golden Revolver (M2 B6) | An empty gun reloads after 45 ticks to 6 rounds from one 9mm bullet; nothing is returned. |
 | `gun.golden_revolver.reload.forced` | Golden Revolver (M2 B6) | The reload key on 5 rounds tops up to 6, consumes the bullet and refunds none. |
@@ -298,6 +306,15 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.tool.break_denied` | tool-gun block guard (M5 I11) | `breakBlock` goes through `BlockBreakGuard`: a listener cancelling `BreakEvent` leaves the block and the tank alone (DENIED); without it the block breaks and half a round is spent. |
 | `gun.tool.swing_throttle` | tool-gun swing sound (M5 I11) | The swing is never cancelled; its sound plays at most once per 5 ticks per player, and not at all when empty. |
 | `gun.tool.reload` | tool-gun reload (M5 I11) | An empty tool gun reloads from a full Fuel Tank: 300 rounds after 45 ticks, the tank consumed, an empty tank returned. |
+| `gun.power_hammer.shockwave` | Power Hammer (M5 B3b) | A full 20 tick charge spends 10 rounds and the shockwave breaks the 4 x 4 box of stone ahead (one round per block), leaving the back of the wall standing. |
+| `gun.power_hammer.shockwave_denied` | Power Hammer (M5 B3b) | With a listener cancelling `BreakEvent`, a full charge breaks no wall block and spends only the charge's 10 rounds; with the listener gone the next charge breaks blocks. |
+| `gun.power_hammer.shockwave_hit` | Power Hammer (M5 B3b) | A half charge spends 5 rounds and hits a zombie 2 blocks ahead for 5 x 2.5 raw PHYSICAL damage. |
+| `gun.power_hammer.recipe` | Power Hammer (M5 B3b) | The HV assembly row (GR-91) is in GT's assembler map with its sheet inputs and not below HV. |
+| `gun.power_hammer_adv.shockwave` | Power Hammer (Advanced) (M5 B3b) | The same full-charge shockwave on the Advanced hammer. |
+| `gun.power_hammer_adv.upgrade` | Power Hammer (Advanced) (M5 B3b) | The GR-92 upgrade is found with a used, camouflaged Power Hammer in slot 0 (any NBT) at EV and outputs a Power Hammer (Advanced). |
+| `gun.chainsaw.cut` | Chainsaw (M5 B3b) | Right click fires an `InvisibleProjectile` that costs a zombie 10 PHYSICAL damage with 25% armor penetration and one round. |
+| `gun.chainsaw.left_click` | Chainsaw (M5 B3b) | A loaded Chainsaw mines a log (axe 3, speed 14, harvested, one round) and its melee hit deals 1 + 12 with 25% penetration and one round. |
+| `gun.chainsaw.recipe` | Chainsaw (M5 B3b) | The HV assembly row (GR-90) is in GT's assembler map with its sheet inputs and not below HV. |
 | `gun.energy.core` | energy fire core (M5 I1) | A scripted energy gun (1000 EU per shot) on a 3500 EU battery fires three times through `GunController`, clicks dry once with no reload, ignores the reload key, and a creative or NPC charge source fires without draining (GGS-02-12, GGS-02-13). |
 | `gun.recipe` | pistol slice (M1) | `RecipeMaps.assemblerRecipes` (the map GT's NEI handler lists) holds the pistol at `RECIPE_LV` and 15 s; an LV query with the sheet inputs and circuit 1 finds it; a voltage below LV does not. |
 | `armor.equip` | armor (M3) | A fake player wears the Scout set: speed attribute x1.5, full set detected, jump +0.16, vanilla bar 13; boots off gives x1.375 and no full set; naked clears the modifier; sprinting doubles the bonus on top of vanilla's sprint modifier; full Combat gives 0.40 knockback resistance. |

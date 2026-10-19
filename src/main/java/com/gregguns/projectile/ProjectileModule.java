@@ -94,6 +94,23 @@ public final class ProjectileModule {
             GenericProjectile.SENDS_VELOCITY);
         BulletLauncher.register(ProjectileKind.BEAM, BeamProjectile::new);
         registrar.registerEntity(
+            "biogun_projectile",
+            BiogunProjectile.class,
+            BiogunProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.BIO, BiogunProjectile::new);
+        // The Chainsaw's cut: a plain bullet that is never drawn.
+        registrar.registerEntity(
+            "invisible_projectile",
+            InvisibleProjectile.class,
+            InvisibleProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.INVISIBLE, InvisibleProjectile::new);
+        registrar.registerEntity(
             "tesla_projectile",
             TeslaProjectile.class,
             TeslaProjectile.ENTITY_ID,
