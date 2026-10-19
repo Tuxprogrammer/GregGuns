@@ -1,6 +1,7 @@
 package com.gregguns.recipe;
 
 import net.minecraft.item.Item;
+import net.minecraftforge.oredict.RecipeSorter;
 
 import com.gregguns.GregGuns;
 import com.gregguns.armor.ArmorParts;
@@ -34,6 +35,9 @@ public final class EquipmentRecipes {
             GregGuns.LOG.error("Skipping a refill recipe: an item is not registered");
             return;
         }
+        // Source: Forge 1.7.10 RecipeSorter.register; without it FML logs "Unknown recipe class" at load.
+        RecipeSorter
+            .register("gregguns:equipment_refill", EquipmentRefillRecipe.class, RecipeSorter.Category.SHAPELESS, "");
         // Source: Forge 1.7.10 GameRegistry.addRecipe(IRecipe)
         GameRegistry.addRecipe(new EquipmentRefillRecipe(equipment, refill));
     }
