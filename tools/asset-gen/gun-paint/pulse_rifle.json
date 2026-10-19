@@ -9,7 +9,10 @@
    "variant": {
     "roles": {
      "ice": {
-      "base": "#C8C8C8"
+      "base": "#C8C8C8",
+      "colors": {
+       "rear": "#2A2A2A"
+      }
      },
      "ice_rail": {
       "base": "#CDCDCD"
@@ -62,7 +65,10 @@
    "variant": {
     "roles": {
      "ice": {
-      "base": "#10130D"
+      "base": "#10130D",
+      "colors": {
+       "rear": "#12140E"
+      }
      },
      "ice_rail": {
       "base": "#12140E"
@@ -142,7 +148,10 @@
    "bevel": [
     1.07,
     0.9
-   ]
+   ],
+   "colors": {
+    "rear": "#34383F"
+   }
   },
   "ice_rail": {
    "material": "steel",
@@ -358,6 +367,17 @@
       "top"
      ],
      "f": 1.05
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 2,
+     "h": 2,
+     "color": "@rear"
     }
    ]
   },
@@ -377,6 +397,17 @@
       "top"
      ],
      "f": 1.05
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "@rear"
     }
    ]
   },
@@ -396,6 +427,17 @@
       "top"
      ],
      "f": 1.05
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "@rear"
     }
    ]
   },
@@ -491,6 +533,17 @@
       "top"
      ],
      "f": 1.05
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 3,
+     "h": 5,
+     "color": "@rear"
     }
    ]
   },
@@ -510,6 +563,17 @@
       "top"
      ],
      "f": 1.05
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 2,
+     "h": 1,
+     "color": "@rear"
     }
    ]
   },
@@ -529,6 +593,17 @@
       "top"
      ],
      "f": 1.05
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 2,
+     "h": 1,
+     "color": "@rear"
     }
    ]
   },
@@ -1011,6 +1086,21 @@
   },
   "gas_block": {
    "role": "barrel"
+  },
+  "rail_dark2": {
+   "role": "bell"
+  },
+  "trig_block": {
+   "role": "dark"
+  },
+  "trig_block2": {
+   "role": "dark"
+  },
+  "guard_floor": {
+   "role": "trig"
+  },
+  "guard_ramp": {
+   "role": "trig"
   }
  }
 }
