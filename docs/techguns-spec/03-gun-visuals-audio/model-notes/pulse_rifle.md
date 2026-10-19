@@ -230,5 +230,4 @@ Round 1 measured against the Techguns model with equal length normalization: wor
 7. **Grip and magazine well bottom.** At x = 9 to 11 the bottom edge is at 17.5 down. The current model is at 18.4, so raise it about 1 unit.
 8. **Small top slot.** A 1-unit-wide dark slot cuts into the top rail at x = 36 to 38, 3.5 to 4.5 down. It is currently filled.
 9. **Back view palette.** Seen from behind, the stock block and rear receiver face are dark gunmetal, about #34383f, with only thin white rails at the left and right edges (white about #b7d0d1). The current model shows the whole rear face pale (about #8da9ab). Paint the rear-facing and lower stock faces dark, and keep white only on the side rails and top.
-10. **Back view red/cyan.** The cyan sight glow (about #1fd0e0) sits in a black housing at the top. It is already correct, so do not change it.
-11. **Silhouette tolerance.** Front, back and top views are already at 0.97 or better, so leave widths and heights alone and change only the items above.
+10. **Silhouette tolerance.** Front, back and top views are already at 0.97 or better, so leave widths and heights alone and change only the items above.
