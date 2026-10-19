@@ -25,34 +25,42 @@ class AlienBugModelTest {
     void shape() {
         assertFalse(MODEL.biped());
         assertEquals(
-            17,
+            26,
             MODEL.parts()
                 .size());
-        assertArrayEquals(new int[] { 5, 5, 9 }, box("thorax").size());
-        assertArrayEquals(new int[] { 5, 5, 6 }, box("head").size());
-        assertArrayEquals(new int[] { 4, 4, 10 }, box("upper_jaw").size());
-        assertArrayEquals(new int[] { 3, 4, 9 }, box("lower_jaw").size());
-        assertArrayEquals(new int[] { 6, 3, 8 }, box("crest").size());
-        // the frill is a zero-thickness 14x14 plane
-        assertArrayEquals(new int[] { 14, 0, 14 }, box("frill").size());
-        assertArrayEquals(new int[] { 6, 4, 4 }, box("abdomen_1").size());
-        assertArrayEquals(new int[] { 4, 3, 4 }, box("abdomen_2").size());
-        assertArrayEquals(new int[] { 2, 2, 2 }, box("tail_tip").size());
+        assertArrayEquals(new int[] { 6, 5, 9 }, box("thorax").size());
+        // big boxy head and jaws
+        assertArrayEquals(new int[] { 8, 8, 6 }, box("head").size());
+        assertArrayEquals(new int[] { 5, 3, 7 }, box("upper_jaw").size());
+        assertArrayEquals(new int[] { 4, 3, 7 }, box("lower_jaw").size());
+        // abdomen column tapers 6, 5, 3, 2 and is a chain of children
+        assertArrayEquals(new int[] { 6, 6, 5 }, box("abd_1").size());
+        assertArrayEquals(new int[] { 2, 2, 3 }, box("abd_4").size());
+        assertEquals("abd_3", part("abd_4").parent());
         assertArrayEquals(new int[] { 9, 3, 3 }, box("leg_fl").size());
         assertArrayEquals(new int[] { 11, 2, 2 }, box("shin_fl").size());
+        // no slab: ten thin quills, each one unit deep and at most 2 wide
+        int quills = 0;
+        for (MobPartDef p : MODEL.parts()) {
+            if (p.name()
+                .startsWith("quill_")) {
+                quills++;
+                assertEquals("head", p.parent());
+                assertTrue(box(p.name()).size()[0] <= 2 && box(p.name()).size()[2] == 1);
+            }
+        }
+        assertEquals(10, quills);
     }
 
     @Test
     void headGroupAndTilts() {
-        assertArrayEquals(new float[] { 0, 11.5F, -1 }, part("head").pivot());
-        for (String child : new String[] { "upper_jaw", "lower_jaw", "crest", "frill" }) {
+        assertArrayEquals(new float[] { 0, 11, -5 }, part("head").pivot());
+        for (String child : new String[] { "upper_jaw", "lower_jaw", "quill_0l", "quill_4r" }) {
             assertEquals("head", part(child).parent());
         }
-        assertEquals(-10F, part("upper_jaw").rotateDegrees()[0]);
-        assertEquals(26F, part("lower_jaw").rotateDegrees()[0]);
-        assertEquals(20F, part("crest").rotateDegrees()[0]);
-        assertEquals(34F, part("abdomen_1").rotateDegrees()[0]);
-        assertEquals(13F, part("abdomen_2").rotateDegrees()[0]);
+        assertEquals(-15F, part("upper_jaw").rotateDegrees()[0]);
+        assertEquals(20F, part("lower_jaw").rotateDegrees()[0]);
+        assertEquals(35F, part("abd_1").rotateDegrees()[0]);
     }
 
     @Test
