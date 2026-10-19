@@ -1,0 +1,2 @@
+asset,path,generator,seed,method,license,date
+model.machine.flagpost,src/main/resources/assets/gregguns/textures/models/machines/flagpost.png,tools/asset-gen/flagpost_paint.py,7120416,"Procedural numpy/Pillow: weathered concrete plinth, brushed-metal poles, white/red/blue star flag cloth painted onto the Java box unwrap",MIT,2026-10-19

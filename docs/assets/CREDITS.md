@@ -290,6 +290,12 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | particle.techscope | src/main/resources/assets/gregguns/textures/fx/techscope.png | tools/asset-gen/blocks.py | 4011541779 | procedural FX sprite sheet (fx.py): analytic radial/noise fields through a color ramp | MIT | 2026-10-18 |
 | particle.teslaflare01 | src/main/resources/assets/gregguns/textures/fx/teslaflare01.png | tools/asset-gen/blocks.py | 653321173 | procedural FX sprite sheet (fx.py): analytic radial/noise fields through a color ramp | MIT | 2026-10-18 |
 
+### flagpost (1)
+
+| asset | path | generator | seed | method | license | date |
+|---|---|---|---|---|---|---|
+| model.machine.flagpost | src/main/resources/assets/gregguns/textures/models/machines/flagpost.png | tools/asset-gen/flagpost_paint.py | 7120416 | Procedural numpy/Pillow: weathered concrete plinth, brushed-metal poles, white/red/blue star flag cloth painted onto the Java box unwrap | MIT | 2026-10-19 |
+
 ### gui (15)
 
 | asset | path | generator | seed | method | license | date |
@@ -492,7 +498,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | icon.turret_armor_aluminum | src/main/resources/assets/gregguns/textures/items/turret_armor_aluminum.png | tools/asset-gen/icons.py | 1546297071 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.turret_armor_carbon | src/main/resources/assets/gregguns/textures/items/turret_armor_carbon.png | tools/asset-gen/icons.py | 3989877665 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 
-### models (134)
+### models (133)
 
 | asset | path | generator | seed | method | license | date |
 |---|---|---|---|---|---|---|
@@ -620,7 +626,6 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | model.machine.bio_blob | src/main/resources/assets/gregguns/textures/blocks/bio_blob.png | tools/asset-gen/models.py | 3597731077 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.explosive_charge | src/main/resources/assets/gregguns/textures/models/machines/explosive_charge.png | tools/asset-gen/models.py | 845241392 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.explosive_charge_armed | src/main/resources/assets/gregguns/textures/models/machines/explosive_charge_armed.png | tools/asset-gen/models.py | 65047630 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
-| model.machine.flagpost | src/main/resources/assets/gregguns/textures/models/machines/flagpost.png | tools/asset-gen/models.py | 250059219 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.reinforced_chest | src/main/resources/assets/gregguns/textures/models/machines/reinforced_chest.png | tools/asset-gen/models.py | 1701200440 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.reinforced_chest_double | src/main/resources/assets/gregguns/textures/models/machines/reinforced_chest_double.png | tools/asset-gen/models.py | 686883248 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.turret_base | src/main/resources/assets/gregguns/textures/models/machines/turret_base.png | tools/asset-gen/models.py | 3065469544 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |

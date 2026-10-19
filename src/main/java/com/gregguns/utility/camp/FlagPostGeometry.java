@@ -4,23 +4,20 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * PLACEHOLDER GEOMETRY of the Camp Flag post and its waving flag, as data. A clean-room builder replaces the boxes and
- * the animation numbers here and nothing else: the renderer ({@code com.gregguns.client.utility.CampFlagRenderer})
- * reads only this class.
+ * Geometry of the Camp Flag post and its waving flag, as data. The renderer
+ * ({@code com.gregguns.client.utility.CampFlagRenderer}) reads only this class.
  *
  * <p>
  * Format. All lengths are model units of 1/16 block. The origin is the bottom center of the block (x and z centered on
  * the block), +X east, +Y up, +Z south. A {@link Box} is its minimum corner plus its size, and a texture offset (u, v)
  * on a {@value #TEXTURE_SIZE} by {@value #TEXTURE_SIZE} unit sheet. {@link #POST_BOXES} are static. {@link #PANELS} are
- * flag segments chained left to right: panel i hangs at its {@code hingeX}, and swings about its vertical
- * edge by {@code amplitudeDegrees * sin(2 pi (t mod period) / period)}, where t is the world time in ticks. Each
- * panel's swing is relative to the previous one, so the cloth ripples.
- *
- * <p>
- * The values below come from the behavior sheet's footprint table (docs/techguns-spec/09-machines-utility/
- * misc-tile-entities.md section 2); they are measurements, not copied code. Common side, no Minecraft types.
+ * flag segments chained from the pole toward the west (-X): panel i hangs at its {@code hingeX}, measured from the pole
+ * center for the first panel and from the previous panel's hinge after that, and swings about its vertical edge by
+ * {@code amplitudeDegrees * sin(2 pi (t mod period) / period)}, where t is the world time in ticks. Each panel's swing
+ * is relative to the previous one, so the cloth ripples. Common side, no Minecraft types.
  */
-// Spec: docs/gregguns-spec/09-machines-utility/index.md (Camp Flag), misc-tile-entities.md section 2 (Rendering)
+// Spec: docs/gregguns-spec/09-machines-utility/index.md (Camp Flag); built from
+// docs/techguns-spec/09-machines-utility/model-notes/flag_post.md (clean-room notes), not from any Techguns file
 public final class FlagPostGeometry {
 
     /** Side length of the texture sheet in model units. */
@@ -84,31 +81,55 @@ public final class FlagPostGeometry {
         }
     }
 
-    /** The static post: foot plate, lower post, middle pole, top pole, finial. */
+    /**
+     * The static post, stacked and centered on the pole axis (notes sections 2 and 3): base plate 10x2x10, plinth
+     * 5x14x5, lower pole 3x23x3, upper pole 2x23x2 and cap 3x2x3, 64 units tall in all. Texture layout on the 64x64
+     * sheet: the plate unwraps at (0,0), the cap at (40,0), the plinth at (0,12), the lower pole at (20,12) and the
+     * upper pole at (32,12).
+     */
     public static final List<Box> POST_BOXES = Collections.unmodifiableList(
         java.util.Arrays.asList(
             new Box(-5, 0, -5, 10, 2, 10, 0, 0),
-            new Box(-2.5f, 2, -2.5f, 5, 14, 5, 0, 14),
-            new Box(-1.5f, 16, -1.5f, 3, 23, 3, 22, 14),
-            new Box(-1, 39, -1, 2, 23, 2, 34, 15),
-            new Box(-1.5f, 62, -1.5f, 3, 2, 3, 33, 3)));
+            new Box(-2.5f, 2, -2.5f, 5, 14, 5, 0, 12),
+            new Box(-1.5f, 16, -1.5f, 3, 23, 3, 20, 12),
+            new Box(-1, 39, -1, 2, 23, 2, 32, 12),
+            new Box(-1.5f, 62, -1.5f, 3, 2, 3, 40, 0)));
 
-    /** The three flag segments, hanging below the top of the top pole. */
+    /**
+     * The three flag panels (notes section 3 and 7), each 6 wide, 14 tall and flat, hanging from the pole's west face
+     * at Y 47.5 to 61.5 and reaching west (-X): the box spans -6..0 from its own hinge. The first hinge is 1 unit west
+     * of the pole center (the upper pole's west face); the others sit 6 units further west. Each cloth plane has its
+     * two sides at u (north side) and u + 6 (south side) on the sheet, row v = 50.
+     */
     public static final List<Panel> PANELS = Collections.unmodifiableList(
         java.util.Arrays.asList(
-            new Panel(new Box(0, 47.5f, 0, 6, 14, 0, 0, 50), 1, 30f, 60),
-            new Panel(new Box(0, 47.5f, 0, 6, 14, 0, 12, 50), 6, 30f, 50),
-            new Panel(new Box(0, 47.5f, 0, 6, 14, 0, 24, 50), 6, 30f, 40)));
+            new Panel(new Box(-6, 47.5f, 0, 6, 14, 0, 0, 50), -1, 30f, 60),
+            new Panel(new Box(-6, 47.5f, 0, 6, 14, 0, 12, 50), -6, 30f, 50),
+            new Panel(new Box(-6, 47.5f, 0, 6, 14, 0, 24, 50), -6, 30f, 40)));
 
     private FlagPostGeometry() {}
 
     /**
      * @return the swing angle of one panel
      * @param panel     the panel
-     * @param worldTime the world time in ticks, with the fractional partial tick added
+     * @param worldTime the world time in ticks (the model steps once per tick, with no partial-tick smoothing)
      */
     public static float swingDegrees(Panel panel, float worldTime) {
         float phase = (worldTime % panel.periodTicks) / panel.periodTicks;
         return (float) (panel.amplitudeDegrees * Math.sin(2 * Math.PI * phase));
+    }
+
+    /**
+     * @return the farthest horizontal distance, in model units, any part of the model can reach from the pole axis:
+     *         the flag's chained length plus the first hinge's offset, which the swing can turn in any direction
+     */
+    public static float horizontalReach() {
+        float reach = 0;
+        float chain = 0;
+        for (Panel p : PANELS) {
+            chain += Math.abs(p.hingeX);
+            reach = Math.max(reach, chain + Math.abs(p.box.x));
+        }
+        return Math.max(reach, 5.0F);
     }
 }

@@ -17,7 +17,8 @@ import com.gregguns.utility.camp.FlagPostGeometry;
  * Draws the Camp Flag post and its waving flag. It reads every number from {@link FlagPostGeometry}, so replacing that
  * data replaces the model; this class only turns boxes into quads. Client only.
  */
-// Spec: docs/techguns-spec/09-machines-utility/misc-tile-entities.md section 2 (Rendering); placeholder model
+// Spec: docs/techguns-spec/09-machines-utility/misc-tile-entities.md section 2 (Rendering); model notes:
+// docs/techguns-spec/09-machines-utility/model-notes/flag_post.md
 public final class CampFlagRenderer extends TileEntitySpecialRenderer {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(GregGuns.MODID, FlagPostGeometry.TEXTURE);
@@ -60,8 +61,9 @@ public final class CampFlagRenderer extends TileEntitySpecialRenderer {
         for (ModelRenderer r : post) {
             r.render(UNIT);
         }
+        // The wave steps once per world tick; no partial-tick smoothing (model notes section 7).
         float time = Minecraft.getMinecraft().theWorld == null ? 0.0F
-            : Minecraft.getMinecraft().theWorld.getTotalWorldTime() + partial;
+            : (float) Minecraft.getMinecraft().theWorld.getTotalWorldTime();
         // Panels are chained: each hinge sits where the previous panel's hinge plus its own offset lands.
         for (int i = 0; i < panels.length; i++) {
             FlagPostGeometry.Panel panel = FlagPostGeometry.PANELS.get(i);

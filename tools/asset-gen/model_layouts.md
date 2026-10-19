@@ -952,12 +952,10 @@ The worn accessory sheets (masks, goggles, tanks, jump pack, anti-gravity pack, 
 - `detonator` box u=28 v=55 w=5 h=3 d=5
 
 ### machine.flagpost
-- `foot` box u=0 v=69 w=27 h=7 d=27
-- `pole_lower` box u=0 v=0 w=3 h=66 d=3
-- `pole_upper` box u=12 v=0 w=3 h=66 d=3
-- `cloth` box u=0 v=103 w=40 h=23 d=2
-- `cap` box u=84 v=103 w=5 h=3 d=5
-- `rope` box u=24 v=0 w=2 h=50 d=2
+- Painted by `flagpost_paint.py` to the 64x64 box unwrap in `FlagPostGeometry.java`:
+- `base_plate` box u=0 v=0 w=10 h=2 d=10; `plinth` u=0 v=12 w=5 h=14 d=5; `lower_pole` u=20 v=12 w=3 h=23 d=3
+- `upper_pole` u=32 v=12 w=2 h=23 d=2; `cap` u=40 v=0 w=3 h=2 d=3
+- flag panels u=0, 12, 24 at v=50, each flat 6x14 (d=0): north side at u..u+6, south side at u+6..u+12
 
 ### machine.reinforced_chest
 - vanilla chest layout scaled x2: lid box u=0 v=0 28x10x28; base box u=0 v=38 28x20x28 (lid latch painted on lid front; the vanilla knob region overlaps the lid and is left to the lid art).
