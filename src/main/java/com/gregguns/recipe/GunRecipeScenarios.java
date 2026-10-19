@@ -61,6 +61,19 @@ public final class GunRecipeScenarios {
         return new UpgradeRecipe(name, description, row);
     }
 
+    /**
+     * The tier-gate scenario of a gun row: the row carries its tier's gate material (D1), GT finds the recipe at the
+     * row's voltage and does not offer it one tier below, and the output is ours.
+     *
+     * @param name        the scenario name, for example {@code gun.bio_gun.tiergate}
+     * @param description what it checks, for the docs
+     * @param row         the gun's assembly row
+     * @return the scenario
+     */
+    public static Scenario tierGate(String name, String description, ProductionTable.Row row) {
+        return new TierGate(name, description, row);
+    }
+
     /** @return {@code gun.sawedoff.shells.recipe}: the shotgun shell's press recipe (RC-29) */
     public static Scenario shellPress() {
         return new ShellPressRecipe();
@@ -164,6 +177,73 @@ public final class GunRecipeScenarios {
                 && gun != null
                 && tooLow.mOutputs[0].getItem() == gun.getItem();
             out.check(!oursOffered, "a machine below the row's tier should not be offered the recipe");
+            return out.build();
+        }
+    }
+
+    /** A gun row carries its tier's gate material; its machine tier finds it and the tier below does not. */
+    private static final class TierGate implements Scenario {
+
+        private final String name;
+        private final String description;
+        private final ProductionTable.Row row;
+
+        TierGate(String name, String description, ProductionTable.Row row) {
+            this.name = name;
+            this.description = description;
+            this.row = row;
+        }
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+        @Override
+        public String description() {
+            return description;
+        }
+
+        private static boolean ours(GTRecipe recipe, ItemStack gun) {
+            return recipe != null && recipe.mOutputs != null
+                && recipe.mOutputs.length > 0
+                && recipe.mOutputs[0] != null
+                && gun != null
+                && recipe.mOutputs[0].getItem() == gun.getItem();
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            String gate = GateRule.gateMaterial(row.tier());
+            boolean gated = false;
+            List<ItemStack> inputList = new ArrayList<>();
+            for (ProductionTable.Input input : row.inputs()) {
+                gated |= !input.isGregGuns() && gate.equals(input.material());
+                inputList.add(
+                    input.isGregGuns() ? modStack(input.itemName(), input.count())
+                        : gt(input.prefix(), input.material(), input.count()));
+            }
+            inputList.add(GTUtility.getIntegratedCircuit(row.circuit()));
+            out.check(gated, "the row should carry a " + gate + " input, the gate material of " + row.tier());
+            ItemStack[] inputs = inputList.toArray(new ItemStack[0]);
+            ItemStack gun = modStack(row.output(), 1);
+            int tierIndex = row.tier()
+                .voltageIndex();
+            GTRecipe atTier = RecipeMaps.assemblerRecipes.findRecipeQuery()
+                .items(inputs)
+                .voltage(GTValues.V[tierIndex])
+                .find();
+            out.check(
+                ours(atTier, gun),
+                "an assembler of " + row.tier() + " should find the recipe and output the gun");
+            GTRecipe below = RecipeMaps.assemblerRecipes.findRecipeQuery()
+                .items(inputs)
+                .voltage(GTValues.V[tierIndex - 1])
+                .find();
+            out.check(
+                !ours(below, gun),
+                "an assembler one tier below " + row.tier() + " should not be offered the recipe");
             return out.build();
         }
     }

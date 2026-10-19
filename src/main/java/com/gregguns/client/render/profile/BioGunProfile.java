@@ -5,8 +5,8 @@ import static com.gregguns.client.anim.GunCurves.yF;
 import static com.gregguns.client.anim.GunCurves.yR;
 
 /**
- * The Bio Gun's model boxes and render transforms, as data. The gun is not registered yet: it is not in
- * {@link ClientGunDefinitions#ALL} until the gameplay batch adds it, together with its gun definition.
+ * The Bio Gun's model boxes and render transforms, as data. Registered in {@link ClientGunDefinitions}
+ * with its gun definition (M5 B3a).
  *
  * <h2>Where the model comes from (originality record)</h2>
  * The boxes are original GregGuns geometry, built clean-room from written design notes only
@@ -107,13 +107,13 @@ public final class BioGunProfile {
 
     // Deviation: the notes give first-person scale 1.3 and an idle offset measured from the origin of the original
     // model. The scale follows the FirstPersonFit rule with the 2 blocks on screen of the other long guns, and the
-    // idle position puts this model's box centre on the family anchor.
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    // Deviation: the in-hand targets (in-hand-transforms.md, section 7) set the first-person length and the
+    // third-person scale, and the idle position puts this model's box centre on the target centre. The older rule of a
+    // fixed 2-block length is replaced by the fit the M2 guns use.
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("bio_gun", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0, -0.15 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -122,8 +122,7 @@ public final class BioGunProfile {
     public static final GunTransforms TRANSFORMS = buildTransforms();
 
     /**
-     * The client half of the gun's definition: model, textures and transforms; the gameplay batch lists it in
-     * {@link ClientGunDefinitions}.
+     * The client half of the gun's definition: model, textures and transforms; listed in {@link ClientGunDefinitions}.
      */
     public static final ClientGunDefinition DEFINITION = new ClientGunDefinition(
         "bio_gun",
@@ -161,13 +160,13 @@ public final class BioGunProfile {
             .rotY((p, part) -> -10.0 * yR(p))
             .translate(FP_X, FP_Y, FP_Z)
             .build();
-        // Third person: rotX180, rotY225, scale 1.2 like the other long guns (the notes say 1.5; the model is 2.4
+        // Third person: rotX180, rotY225, scaled and shifted by the fit to the in-hand targets (the model is 2.4
         // blocks long). The grip, about 0.1 block behind the origin, lands at the hand. Aimed extra (0, 0, -0.15).
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.2)
-            .translate(-0.4, -0.4, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the gun pitches up about 30 degrees about a point just behind the origin, then settles back.
         TransformProgram tpRecoil = TransformProgram.builder()

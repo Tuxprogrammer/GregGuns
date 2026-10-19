@@ -42,6 +42,7 @@ public final class GunDefinitions {
             FlamethrowerDef.DEFINITION,
             GoldenRevolverDef.DEFINITION,
             AkimboGoldenRevolversDef.DEFINITION,
+            BioGunDef.DEFINITION,
             PowerHammerDef.DEFINITION,
             PowerHammerAdvDef.DEFINITION,
             ChainsawDef.DEFINITION));

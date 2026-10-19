@@ -133,6 +133,7 @@ class GunDefinitionsTest {
         // item
         // empty is what a reload hands back.
         items.add(com.gregguns.gun.logic.GunCatalog.AmmoIds.FUEL_TANK);
+        items.add(com.gregguns.gun.logic.GunCatalog.AmmoIds.BIO_TANK);
         items.add(com.gregguns.gun.logic.GunCatalog.AmmoIds.AIR_TANK);
         for (GunDefinition def : GunDefinitions.ALL) {
             GunStats stats = def.stats();

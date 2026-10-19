@@ -238,6 +238,14 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.flamethrower.npc` | Flamethrower (M2 B6) | A flame fired by a zombie hurts another zombie but does not ignite it (NPC flamethrowers never ignite). |
 | `gun.flamethrower.tankfill` | Flamethrower (M2 B6) | GT's Fluid Canner map, with no GregGuns recipe, fills an empty Fuel Tank with 1,000 mB of Diesel (RC-56), empties a full one, and refuses Water. |
 | `gun.flamethrower.recipe` | Flamethrower (M2 B6) | The HV assembly row (GR-50) is in GT's assembler map with its sheet inputs and not below HV, and the found recipe's output is ours. |
+| `gun.bio_gun.fire` | Bio Gun (M5 B3a) | Holding the left button for 8 ticks fires every 6 ticks: 2 rounds and 2 level-1 `BiogunProjectile` globs; a villager 4 blocks ahead takes damage and gets Poison IV (amplifier 3, at most 100 ticks). |
+| `gun.bio_gun.charge` | Bio Gun (M5 B3a) | Holding the right button 10, 20 and 35 ticks fires levels 1, 2 and 3 that spend exactly 1, 2 and 3 rounds of the 30 loaded (GUN-02). |
+| `gun.bio_gun.reload` | Bio Gun (M5 B3a) | An empty gun with one full Bio Tank (Biomass) reloads after 45 ticks to 30 rounds; the full tank is consumed and an empty tank comes back. |
+| `gun.bio_gun.blob` | Bio Gun (M5 B3a) | With safe mode off, a level 2 glob from a player at a wall leaves a size 2 Bio Blob on the wall. Needs the utility module. |
+| `gun.bio_gun.blob.safe` | Bio Gun (M5 B3a) | The same glob with safe mode on (`explosions.blockDamage` false) leaves no blob (PFX-28). |
+| `gun.bio_gun.blob.veto` | Bio Gun (M5 B3a) | The same glob with `BlockEvent.PlaceEvent` cancelled by a listener leaves no blob (PFX-28). |
+| `gun.bio_gun.recipe` | Bio Gun (M5 B3a) | The EV assembly row (GR-65) is in GT's assembler map with its sheet inputs and not below EV, and the found recipe's output is ours. |
+| `gun.bio_gun.tiergate` | Bio Gun (M5 B3a) | The row carries titanium, the EV gate material; an EV assembler finds it and an HV assembler does not. |
 | `gun.golden_revolver.fire` | Golden Revolver (M2 B6) | One pull launches a bullet, costs a zombie the DamageModel figure for 14 and one round, and holds the 8 tick cooldown with a remembered click. |
 | `gun.golden_revolver.reload` | Golden Revolver (M2 B6) | An empty gun reloads after 45 ticks to 6 rounds from one 9mm bullet; nothing is returned. |
 | `gun.golden_revolver.reload.forced` | Golden Revolver (M2 B6) | The reload key on 5 rounds tops up to 6, consumes the bullet and refunds none. |

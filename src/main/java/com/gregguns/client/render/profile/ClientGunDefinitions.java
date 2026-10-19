@@ -44,6 +44,7 @@ public final class ClientGunDefinitions {
             GoldenRevolverProfile.DEFINITION,
             FlamethrowerProfile.DEFINITION,
             ScarProfile.DEFINITION,
+            BioGunProfile.DEFINITION,
             // One model, two items: each selects its own skin (the profile lists both sheets).
             ClientGunDefinition
                 .variantOf("power_hammer", PowerHammerProfile.DEFINITION, PowerHammerProfile.TEXTURES[0]),

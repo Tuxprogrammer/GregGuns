@@ -6,6 +6,7 @@ import java.util.Map;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.registry.Naming;
+import com.gregguns.gun.def.BioGunDef;
 import com.gregguns.gun.def.BoltActionDef;
 import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
@@ -62,6 +63,9 @@ public final class GunItems {
         if (def.tool() != null) {
             return def.stats()
                 .isCharge() ? new ItemPowerHammer(def) : new ItemToolGun(def);
+        }
+        if (BioGunDef.NAME.equals(def.name())) {
+            return new ItemBioGun(def);
         }
         return new ItemGun(def);
     }

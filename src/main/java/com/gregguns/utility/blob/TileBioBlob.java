@@ -9,6 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 
 import com.gregguns.core.config.UtilityConfig;
 import com.gregguns.explosion.ProjectileExplosion;
+import com.gregguns.fx.FxSender;
 
 /**
  * The Bio Blob's tile entity: its size and decay clock. Only the server changes the size and ticks the clock; clients
@@ -69,6 +70,7 @@ public class TileBioBlob extends TileEntity {
         double cz = zCoord + 0.5;
         net.minecraft.world.World w = worldObj;
         w.setBlockToAir(xCoord, yCoord, zCoord);
+        FxSender.at(w, "bioblobExplosion", cx, cy, cz, FxSender.RANGE_NEAR);
         // No terrain damage: the burst only hurts entities.
         new ProjectileExplosion(w, null, attacker, "bio_blob", cx, cy, cz, 3.0F, 15.0F, 1.5F, 4.5F).explode(false);
     }
