@@ -28,6 +28,7 @@ A painter "color" written "@name" is looked up in the role's "colors" map, so a 
 A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A box may be tilted about Z ("tilt") or
 about its long axis X ("tiltX", for a diamond bar) or about the vertical axis Y ("tiltY"), all about "pivot"; a size with a 0 is a zero-thickness plane.
 A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}}} or "camo" with a palette.
+A texture entry may set "noiseFile" (another sheet's file name) to share that sheet's grain, so two skins differ only where the role map says.
 A variant may also give "boxes": {name: {"role", "painters"}} to replace one box's spec for that sheet.
 Cut-outs: a box may set "clear": true to start fully transparent (alpha 0) on every face; painter "solid" (like "rect",
 but also opaque) puts opaque texels back, e.g. the dot on a holographic sight window; painter "hole" (a rect with
@@ -407,7 +408,7 @@ def paint(gun, model_path=None):
             for face, (x, y, fw, fh) in box_uv(u, v, w, h, d).items():
                 if fw <= 0 or fh <= 0:
                     continue
-                key = "gunpaint:%s:%s:%s:%s" % (gun, entry["file"], b["name"], face)
+                key = "gunpaint:%s:%s:%s:%s" % (gun, entry.get("noiseFile", entry["file"]), b["name"], face)
                 tex.paste(x, y, paint_face(spec, roles[spec["role"]], b["name"], (w, h, d), face, fw, fh, key),
                           face_alpha(spec, face, fw, fh))
         out = os.path.join(TEX_DIR, entry["file"])

@@ -1,0 +1,380 @@
+{
+ "gun": "power_hammer",
+ "textures": [
+  {
+   "file": "power_hammer.png"
+  },
+  {
+   "file": "power_hammer_adv.png",
+   "noiseFile": "power_hammer.png",
+   "variant": {
+    "roles": {
+     "striker": {
+      "base": "#1F252D",
+      "colors": {
+       "front": "#232A33"
+      }
+     }
+    }
+   }
+  }
+ ],
+ "roles": {
+  "brown": {
+   "material": "steel",
+   "base": "#422C26",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015
+  },
+  "shell": {
+   "material": "steel",
+   "base": "#5F5B58",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015
+  },
+  "gray": {
+   "material": "steel",
+   "base": "#5F5B59",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015
+  },
+  "pin": {
+   "material": "steel",
+   "base": "#5E5855",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015
+  },
+  "silver": {
+   "material": "steel",
+   "base": "#B5B5B7",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015
+  },
+  "cap": {
+   "material": "steel",
+   "base": "#312E30",
+   "scratches": false,
+   "noise": 0.01,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015
+  },
+  "fin": {
+   "material": "steel",
+   "base": "#4A3329",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015
+  },
+  "strip": {
+   "material": "steel",
+   "base": "#382720",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015
+  },
+  "cream": {
+   "material": "steel",
+   "base": "#DAC7C3",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.06,
+    0.76
+   ],
+   "drift": 0.015
+  },
+  "headback": {
+   "material": "steel",
+   "base": "#3B2724",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015
+  },
+  "headcap": {
+   "material": "steel",
+   "base": "#402D27",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015
+  },
+  "striker": {
+   "material": "steel",
+   "base": "#64605F",
+   "scratches": false,
+   "noise": 0.03,
+   "bevel": [
+    1.04,
+    0.92
+   ],
+   "drift": 0.015,
+   "colors": {
+    "front": "#7A7573"
+   }
+  }
+ },
+ "boxes": {
+  "butt_main": {
+   "role": "brown"
+  },
+  "butt_step": {
+   "role": "brown"
+  },
+  "butt_top": {
+   "role": "brown"
+  },
+  "butt_bot": {
+   "role": "brown"
+  },
+  "core": {
+   "role": "brown",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 3,
+     "y": 1,
+     "w": 1,
+     "h": 2,
+     "color": "#130E0D"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 9,
+     "y": 1,
+     "w": 1,
+     "h": 2,
+     "color": "#130E0D"
+    }
+   ]
+  },
+  "flange": {
+   "role": "brown"
+  },
+  "jaw_up_b": {
+   "role": "brown"
+  },
+  "jaw_lo_b": {
+   "role": "brown"
+  },
+  "top_rear": {
+   "role": "strip"
+  },
+  "top_front": {
+   "role": "strip"
+  },
+  "jaw_up_a": {
+   "role": "strip"
+  },
+  "jaw_lo_a": {
+   "role": "strip"
+  },
+  "under_strip": {
+   "role": "brown"
+  },
+  "muz_collar": {
+   "role": "brown",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 6,
+     "h": 4,
+     "color": "#17110F"
+    }
+   ]
+  },
+  "shell": {
+   "role": "shell",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 5,
+     "y": 1,
+     "w": 1,
+     "h": 2,
+     "color": "#050404"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 8,
+     "y": 1,
+     "w": 1,
+     "h": 2,
+     "color": "#050404"
+    }
+   ]
+  },
+  "neck_low": {
+   "role": "gray"
+  },
+  "neck_up_a": {
+   "role": "gray"
+  },
+  "neck_up_b": {
+   "role": "gray"
+  },
+  "collar": {
+   "role": "gray"
+  },
+  "bracket_r": {
+   "role": "gray"
+  },
+  "bracket_f": {
+   "role": "gray"
+  },
+  "grip": {
+   "role": "gray"
+  },
+  "boss": {
+   "role": "gray"
+  },
+  "under_rail": {
+   "role": "gray"
+  },
+  "guard_floor": {
+   "role": "gray"
+  },
+  "guard_side": {
+   "role": "gray"
+  },
+  "trigger": {
+   "role": "gray"
+  },
+  "pin": {
+   "role": "pin",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back",
+      "top",
+      "bottom"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 2,
+     "h": 1,
+     "color": "#747170"
+    }
+   ]
+  },
+  "silver": {
+   "role": "silver"
+  },
+  "cap": {
+   "role": "cap"
+  },
+  "fin": {
+   "role": "fin"
+  },
+  "piston_core": {
+   "role": "cream"
+  },
+  "rod_ul": {
+   "role": "cream"
+  },
+  "rod_ur": {
+   "role": "cream"
+  },
+  "rod_ll": {
+   "role": "cream"
+  },
+  "rod_lr": {
+   "role": "cream"
+  },
+  "head_back": {
+   "role": "headback"
+  },
+  "head_top": {
+   "role": "headcap"
+  },
+  "head_bot": {
+   "role": "headcap"
+  },
+  "striker": {
+   "role": "striker",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "@front"
+    },
+    {
+     "type": "mottle",
+     "faces": [
+      "left"
+     ],
+     "amp": 0.1,
+     "cx": 2,
+     "seed": 3
+    }
+   ]
+  }
+ }
+}
