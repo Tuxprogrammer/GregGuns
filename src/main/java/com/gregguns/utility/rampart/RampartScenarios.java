@@ -57,6 +57,9 @@ public final class RampartScenarios {
     private static final int AREA_RADIUS = ScenarioArea.RADIUS;
     private static final String OWNER_NAME = "gregguns-rampart-owner";
 
+    /** Ticks to let GT finish initializing freshly placed tile entities before they are used. */
+    private static final int WARMUP_TICKS = 45;
+
     private RampartScenarios() {}
 
     /**
@@ -175,8 +178,8 @@ public final class RampartScenarios {
         static final int CY = 3;
         final ScenarioContext ctx;
         final int mounts;
-        final IGregTechTileEntity controller;
-        final MTERampart mte;
+        IGregTechTileEntity controller;
+        MTERampart mte;
         final int dir;
         IGregTechTileEntity inputBus;
         IGregTechTileEntity outputBus;
@@ -227,6 +230,31 @@ public final class RampartScenarios {
             }
             mountHatches.set(mount, h);
             return h;
+        }
+
+        private IGregTechTileEntity tileAt(int dx, int dy, int dz, IGregTechTileEntity fallback) {
+            if (fallback == null) {
+                return null;
+            }
+            TileEntity tile = ctx.world()
+                .getTileEntity(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
+            return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : fallback;
+        }
+
+        /**
+         * Re-fetches every tile entity from the world. GT may swap a tile entity's meta tile during its first ticks, so
+         * references taken at placement can go stale under server lag. Call it after the warm-up.
+         */
+        void refresh() {
+            controller = tileAt(0, CY, 0, controller);
+            mte = (MTERampart) controller.getMetaTileEntity();
+            inputBus = tileAt(-1, CY, 0, inputBus);
+            maintenance = tileAt(1, CY, 0, maintenance);
+            energy = tileAt(0, CY - 1, 0, energy);
+            outputBus = tileAt(0, CY - 1, 1, outputBus);
+            for (int i = 0; i < mountHatches.size(); i++) {
+                mountHatches.set(i, tileAt(hatchX(i), hatchY(), 0, mountHatches.get(i)));
+            }
         }
 
         boolean form() {
@@ -482,20 +510,12 @@ public final class RampartScenarios {
             }
             Wall w = new Wall(ctx, 2);
             w.addHatches();
-            if (!w.form()) {
-                w.teardown();
-                return ScenarioResult.fail(name(), "the two-mount Rampart should form");
-            }
-            w.fixMaintenance();
             Item mag = GameRegistry.findItem(GregGuns.MODID, "mag_9mm_pistol");
             Item emptyMag = GameRegistry.findItem(GregGuns.MODID, "mag_9mm_pistol_empty");
             ItemStack gun = new ItemStack(GunItems.get("pistol_9mm"));
             // One round loaded, so the second shot reloads from the bus and hands back an empty magazine.
             gun.setTagCompound(new NBTTagCompound());
             GunNbt.write(gun.getTagCompound(), new GunState(1));
-            w.mountHatches.get(0)
-                .setInventorySlotContents(MTEGunMountHatch.GUN_SLOT, gun);
-            w.inputBus.setInventorySlotContents(0, new ItemStack(mag, 4));
             // A platform in front of the wall at hatch height, and a zombie on it.
             int px = w.hatchX(0);
             for (int dx = -1; dx <= 1; dx++) {
@@ -511,9 +531,30 @@ public final class RampartScenarios {
                 0.0F,
                 0.0F);
             zombie.addPotionEffect(new PotionEffect(Potion.fireResistance.id, 4000));
-            ctx.spawn(zombie);
             long[] drawSeen = { 0 };
-            return ScenarioResult.pending(name(), 900, ticks -> {
+            boolean[] armed = { false };
+            return ScenarioResult.pending(name(), 900 + WARMUP_TICKS, ticks -> {
+                // Wait for GT to settle the new tiles, re-fetch them, form the wall, and only then load and spawn.
+                if (!armed[0]) {
+                    if (ticks < WARMUP_TICKS) {
+                        return null;
+                    }
+                    w.refresh();
+                    if (!w.form()) {
+                        if (ticks < WARMUP_TICKS + 40) {
+                            return null;
+                        }
+                        w.teardown();
+                        return ScenarioResult.fail(name(), "the two-mount Rampart should form");
+                    }
+                    w.fixMaintenance();
+                    w.mountHatches.get(0)
+                        .setInventorySlotContents(MTEGunMountHatch.GUN_SLOT, gun);
+                    w.inputBus.setInventorySlotContents(0, new ItemStack(mag, 4));
+                    ctx.spawn(zombie);
+                    armed[0] = true;
+                    return null;
+                }
                 w.power();
                 if (w.mte.mountsRunning() && drawSeen[0] == 0) {
                     drawSeen[0] = -w.mte.lEUt;
@@ -573,14 +614,27 @@ public final class RampartScenarios {
             }
             Wall w = new Wall(ctx, 2);
             w.addHatches();
-            if (!w.form()) {
-                w.teardown();
-                return ScenarioResult.fail(name(), "the two-mount Rampart should form");
-            }
-            w.fixMaintenance();
             TurretEntity[] turrets = new TurretEntity[2];
-            int[] stage = { 0 };
-            return ScenarioResult.pending(name(), 600, ticks -> {
+            int[] stage = { -1 };
+            int[] brokenAt = { 0 };
+            return ScenarioResult.pending(name(), 600 + WARMUP_TICKS, ticks -> {
+                if (stage[0] < 0) {
+                    // Wait out GT's warm-up, then re-fetch every tile and form the wall.
+                    if (ticks < WARMUP_TICKS) {
+                        return null;
+                    }
+                    w.refresh();
+                    if (!w.form()) {
+                        if (ticks < WARMUP_TICKS + 40) {
+                            return null;
+                        }
+                        w.teardown();
+                        return ScenarioResult.fail(name(), "the two-mount Rampart should form");
+                    }
+                    w.fixMaintenance();
+                    stage[0] = 0;
+                    return null;
+                }
                 w.power();
                 switch (stage[0]) {
                     case 0:
@@ -593,8 +647,14 @@ public final class RampartScenarios {
                         }
                         ctx.setBlock(w.hatchX(0), Wall.CY + 1, 0, Blocks.air, 0);
                         stage[0] = 1;
+                        brokenAt[0] = ticks;
                         return null;
                     case 1:
+                        // Wait on state: the kill follows the hatch's removal, which a lagging server may take
+                        // a few ticks to process.
+                        if (!turrets[0].isDead && ticks < brokenAt[0] + 100) {
+                            return null;
+                        }
                         ScenarioResult.Builder out = ScenarioResult.builder(name());
                         out.check(turrets[0].isDead, "breaking the hatch must kill that mount's turret");
                         out.check(

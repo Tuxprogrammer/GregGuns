@@ -137,6 +137,23 @@ public final class RepairScenarios {
             facing);
     }
 
+    /**
+     * The GT tile entity the world holds at an offset right now, or null. GT may replace a tile entity during its
+     * first ticks, so a scenario must fetch it again after the warm-up instead of keeping the placement-tick handle.
+     */
+    private static IGregTechTileEntity live(ScenarioContext ctx, int dx, int dy, int dz) {
+        TileEntity tile = ctx.world()
+            .getTileEntity(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
+        return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : null;
+    }
+
+    /** Stack size of a slot, failing the check with a clear message (not an NPE) when the slot is empty. */
+    private static int sizeOf(ScenarioResult.Builder out, String label, IGregTechTileEntity tile, int slot) {
+        ItemStack s = tile.getStackInSlot(slot);
+        out.check(s != null, label + ": slot " + slot + " is unexpectedly empty");
+        return s == null ? -1 : s.stackSize;
+    }
+
     private static void empty(IGregTechTileEntity... tiles) {
         // Breaking a machine at cleanup drops its inventory as item entities the context does not track.
         for (IGregTechTileEntity tile : tiles) {
@@ -242,8 +259,7 @@ public final class RepairScenarios {
             if (ArmorItems.get(ArmorCatalog.T1_COMBAT, ArmorSlot.CHESTPLATE) == null || cloth(1) == null) {
                 return ScenarioResult.fail(name(), "needs the armor module (GG_MODULES=guns,armor,machines)");
             }
-            IGregTechTileEntity base = place(ctx, 0, 0, 0, GregGunsMTEIDs.REPAIR_BENCH_LV, ForgeDirection.NORTH);
-            MTERepairBench bench = (MTERepairBench) base.getMetaTileEntity();
+            place(ctx, 0, 0, 0, GregGunsMTEIDs.REPAIR_BENCH_LV, ForgeDirection.NORTH);
             TestPlayer player = new TestPlayer((WorldServer) ctx.world(), "[GGRepairBench]");
             player.setPosition(ctx.originX() + 0.5, ctx.originY() + 1, ctx.originZ() + 3.5);
             ItemStack vest = piece(ArmorCatalog.T1_COMBAT, ArmorSlot.CHESTPLATE, 400);
@@ -256,12 +272,18 @@ public final class RepairScenarios {
                 .repair();
             int max = vest.getMaxDamage();
             RepairSpec.Cost cost = spec.cost(400, max);
-            base.setInventorySlotContents(0, plate("Steel", cost.metal() + 3));
-            base.setInventorySlotContents(1, cloth(cost.cloth() + 3));
             long eu = RepairMath.benchEu(Tier.LV, RepairMath.damageFraction(400, max));
-            base.increaseStoredEnergyUnits(eu + 7, true);
             return afterWarmup(name(), () -> {
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
+                // Fetch and fill the bench only now, after the warm-up, from the world's current tile entity.
+                IGregTechTileEntity base = live(ctx, 0, 0, 0);
+                if (base == null || !(base.getMetaTileEntity() instanceof MTERepairBench)) {
+                    return ScenarioResult.fail(name(), "the repair bench is gone after the warm-up");
+                }
+                MTERepairBench bench = (MTERepairBench) base.getMetaTileEntity();
+                base.setInventorySlotContents(0, plate("Steel", cost.metal() + 3));
+                base.setInventorySlotContents(1, cloth(cost.cloth() + 3));
+                base.increaseStoredEnergyUnits(eu + 7, true);
                 MTERepairBench.Outcome outcome = bench.repair(player, 1);
                 out.checkEquals("outcome", MTERepairBench.Outcome.REPAIRED, outcome);
                 out.checkEquals("damage after repair", 0, vest.getItemDamage());
@@ -311,31 +333,35 @@ public final class RepairScenarios {
                 .repair();
             RepairRecipeSpec.Row[] rows = { RepairRecipeSpec.Row.MV, RepairRecipeSpec.Row.HV, RepairRecipeSpec.Row.EV,
                 RepairRecipeSpec.Row.IV };
-            IGregTechTileEntity[] benches = new IGregTechTileEntity[rows.length];
             ItemStack[] vests = new ItemStack[rows.length];
             long[] prices = new long[rows.length];
             TestPlayer player = new TestPlayer((WorldServer) ctx.world(), "[GGRepairTiers]");
             player.setPosition(ctx.originX() + 3.5, ctx.originY() + 1, ctx.originZ() + 3.5);
             for (int i = 0; i < rows.length; i++) {
-                benches[i] = place(ctx, 2 * i + 1, 0, 8, rows[i].mteId(), ForgeDirection.NORTH);
+                place(ctx, 2 * i + 1, 0, 8, rows[i].mteId(), ForgeDirection.NORTH);
                 vests[i] = piece(ArmorCatalog.T1_COMBAT, ArmorSlot.CHESTPLATE, 400);
-                int max = vests[i].getMaxDamage();
-                RepairSpec.Cost cost = spec.cost(400, max);
-                benches[i].setInventorySlotContents(0, plate("Steel", cost.metal()));
-                benches[i].setInventorySlotContents(1, cloth(cost.cloth()));
-                prices[i] = RepairMath.benchEu(rows[i].tier(), RepairMath.damageFraction(400, max));
-                benches[i].increaseStoredEnergyUnits(prices[i] + 5, true);
+                prices[i] = RepairMath.benchEu(rows[i].tier(), RepairMath.damageFraction(400, vests[i].getMaxDamage()));
             }
             return afterWarmup(name(), () -> {
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 for (int i = 0; i < rows.length; i++) {
                     String label = rows[i].tier() + " bench";
+                    // Fetch and fill each bench only now, after the warm-up, from the world's current tile entity.
+                    IGregTechTileEntity tile = live(ctx, 2 * i + 1, 0, 8);
+                    if (tile == null || !(tile.getMetaTileEntity() instanceof MTERepairBench)) {
+                        out.check(false, label + " is gone after the warm-up");
+                        continue;
+                    }
+                    RepairSpec.Cost cost = spec.cost(400, vests[i].getMaxDamage());
+                    tile.setInventorySlotContents(0, plate("Steel", cost.metal()));
+                    tile.setInventorySlotContents(1, cloth(cost.cloth()));
+                    tile.increaseStoredEnergyUnits(prices[i] + 5, true);
                     player.wear(vests[i]);
-                    MTERepairBench bench = (MTERepairBench) benches[i].getMetaTileEntity();
+                    MTERepairBench bench = (MTERepairBench) tile.getMetaTileEntity();
                     out.checkEquals(label + " outcome", MTERepairBench.Outcome.REPAIRED, bench.repair(player, 1));
                     out.checkEquals(label + " damage after repair", 0, vests[i].getItemDamage());
-                    out.checkEquals(label + " energy left", 5L, benches[i].getStoredEU());
-                    empty(benches[i]);
+                    out.checkEquals(label + " energy left", 5L, tile.getStoredEU());
+                    empty(tile);
                 }
                 out.check(prices[3] > prices[0], "a higher tier should charge more EU for the same job");
                 noStray(ctx, out);
@@ -362,31 +388,33 @@ public final class RepairScenarios {
             if (ArmorItems.get(ArmorCatalog.T1_COMBAT, ArmorSlot.CHESTPLATE) == null || cloth(1) == null) {
                 return ScenarioResult.fail(name(), "needs the armor module (GG_MODULES=guns,armor,machines)");
             }
-            IGregTechTileEntity base = place(ctx, 0, 0, 0, GregGunsMTEIDs.REPAIR_BENCH_LV, ForgeDirection.NORTH);
-            MTERepairBench bench = (MTERepairBench) base.getMetaTileEntity();
+            place(ctx, 0, 0, 0, GregGunsMTEIDs.REPAIR_BENCH_LV, ForgeDirection.NORTH);
             TestPlayer player = new TestPlayer((WorldServer) ctx.world(), "[GGRepairRefuse]");
             player.setPosition(ctx.originX() + 0.5, ctx.originY() + 1, ctx.originZ() + 3.5);
             ItemStack vest = piece(ArmorCatalog.T1_COMBAT, ArmorSlot.CHESTPLATE, 825);
             player.wear(vest);
-            // The full list for a fully worn vest is 2 plates and 2 cloth; offer one cloth short.
-            base.setInventorySlotContents(0, plate("Steel", 2));
-            base.setInventorySlotContents(1, cloth(1));
-            base.increaseStoredEnergyUnits(5, true);
             return afterWarmup(name(), () -> {
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
+                // Fetch and fill the bench only now, after the warm-up, from the world's current tile entity.
+                IGregTechTileEntity base = live(ctx, 0, 0, 0);
+                if (base == null || !(base.getMetaTileEntity() instanceof MTERepairBench)) {
+                    return ScenarioResult.fail(name(), "the repair bench is gone after the warm-up");
+                }
+                MTERepairBench bench = (MTERepairBench) base.getMetaTileEntity();
+                // The full list for a fully worn vest is 2 plates and 2 cloth; offer one cloth short.
+                base.setInventorySlotContents(0, plate("Steel", 2));
+                base.setInventorySlotContents(1, cloth(1));
+                base.increaseStoredEnergyUnits(5, true);
                 out.checkEquals("missing cloth", MTERepairBench.Outcome.MISSING_MATERIALS, bench.repair(player, 1));
                 out.checkEquals("damage with a missing part", 825, vest.getItemDamage());
-                out.checkEquals("plates untouched (all or nothing)", 2, base.getStackInSlot(0).stackSize);
-                out.checkEquals("cloth untouched (all or nothing)", 1, base.getStackInSlot(1).stackSize);
+                out.checkEquals("plates untouched (all or nothing)", 2, sizeOf(out, "plates", base, 0));
+                out.checkEquals("cloth untouched (all or nothing)", 1, sizeOf(out, "cloth", base, 1));
 
                 base.setInventorySlotContents(1, cloth(2));
                 out.checkEquals("no power", MTERepairBench.Outcome.NO_POWER, bench.repair(player, 1));
                 out.checkEquals("damage without power", 825, vest.getItemDamage());
                 out.checkEquals("stored EU before the power check", 5L, base.getStoredEU());
-                out.checkEquals(
-                    "plates untouched without power",
-                    2,
-                    base.getStackInSlot(0) == null ? -1 : base.getStackInSlot(0).stackSize);
+                out.checkEquals("plates untouched without power", 2, sizeOf(out, "plates", base, 0));
                 base.increaseStoredEnergyUnits(100000, true);
 
                 out.checkEquals("empty slot", MTERepairBench.Outcome.NO_ITEM, bench.repair(player, 0));
@@ -513,6 +541,11 @@ public final class RepairScenarios {
             }
             Gantry g = new Gantry(ctx, 4);
             g.addHatches();
+            return afterWarmup(name(), () -> checkForms(ctx, g, out));
+        }
+
+        private ScenarioResult checkForms(ScenarioContext ctx, Gantry g, ScenarioResult.Builder out) {
+            g.refresh();
             out.check(g.form(), "a four-bay Gantry with all hatches should form");
             out.checkEquals("bays found", 4, g.mte.repairBays());
             out.checkEquals("repair tier from the hatches", Tier.HV, g.mte.repairTier());
@@ -592,6 +625,12 @@ public final class RepairScenarios {
                     return null;
                 }
                 g.refresh();
+                if (g.controller == null || g.inputBus == null
+                    || g.outputBus == null
+                    || g.energy == null
+                    || g.energy2 == null) {
+                    return ScenarioResult.fail(name(), "a Gantry tile entity is missing after the warm-up");
+                }
                 if (!loaded[0]) {
                     if (!g.form()) {
                         if (ticks < WARMUP_TICKS + 40) {
@@ -687,8 +726,7 @@ public final class RepairScenarios {
             if (ArmorItems.get(ArmorCatalog.T1_SCOUT, ArmorSlot.CHESTPLATE) == null) {
                 return ScenarioResult.fail(name(), "needs the armor module (GG_MODULES=guns,armor,machines)");
             }
-            IGregTechTileEntity base = place(ctx, 0, 0, 0, GregGunsMTEIDs.CAMO_BENCH, ForgeDirection.NORTH);
-            MTECamoBench bench = (MTECamoBench) base.getMetaTileEntity();
+            place(ctx, 0, 0, 0, GregGunsMTEIDs.CAMO_BENCH, ForgeDirection.NORTH);
             TestPlayer player = new TestPlayer((WorldServer) ctx.world(), "[GGCamo]");
             // The packet pipeline wants a connected sender; a handler with no real connection stands in.
             new net.minecraft.network.NetHandlerPlayServer(
@@ -713,12 +751,10 @@ public final class RepairScenarios {
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 // Look the bench up now and fill it now: under a lagging server the tile entity placed above can be
                 // replaced during the warm-up, and the packet acts on the world's current one, not on the old handle.
-                TileEntity live = ctx.world()
-                    .getTileEntity(x, y, z);
-                if (!(live instanceof IGregTechTileEntity)) {
+                IGregTechTileEntity bench0 = live(ctx, 0, 0, 0);
+                if (bench0 == null) {
                     return ScenarioResult.fail(name(), "the camo bench is gone after the warm-up");
                 }
-                IGregTechTileEntity bench0 = (IGregTechTileEntity) live;
                 bench0.setInventorySlotContents(MTECamoBench.SLOT, benchItem);
                 int chestTarget = CamoCycle.Target.CHESTPLATE.ordinal();
                 PacketOutcome r = new PacketCamoCycle(dim, x, y, z, chestTarget, false).applyAs(player);
@@ -739,7 +775,11 @@ public final class RepairScenarios {
 
                 ItemGregGunsArmor miner = (ItemGregGunsArmor) benchItem.getItem();
                 new PacketCamoCycle(dim, x, y, z, CamoCycle.Target.BENCH_SLOT.ordinal(), false).applyAs(player);
-                out.checkEquals("bench slot item camo", 1, miner.getCamo(bench0.getStackInSlot(MTECamoBench.SLOT)));
+                ItemStack inBench = bench0.getStackInSlot(MTECamoBench.SLOT);
+                out.check(inBench != null, "the bench slot item vanished");
+                if (inBench != null) {
+                    out.checkEquals("bench slot item camo", 1, miner.getCamo(inBench));
+                }
 
                 new PacketCamoCycle(dim, x, y, z, CamoCycle.Target.HELMET.ordinal(), false).applyAs(player);
                 out.checkEquals(
@@ -759,7 +799,7 @@ public final class RepairScenarios {
                 PacketOutcome wrongDim = new PacketCamoCycle(dim + 1, x, y, z, chestTarget, false).applyAs(player);
                 out.check(!wrongDim.isAccepted(), "a click naming another dimension should be rejected");
                 out.checkEquals("camo untouched by the rejected clicks", 0, scout.getCamo(chest));
-                empty(base, bench0);
+                empty(bench0);
                 noStray(ctx, out);
                 return out.build();
             });
