@@ -235,7 +235,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.flamethrower.npc` | Flamethrower (M2 B6) | A flame fired by a zombie hurts another zombie but does not ignite it (NPC flamethrowers never ignite). |
 | `gun.flamethrower.tankfill` | Flamethrower (M2 B6) | GT's Fluid Canner map, with no GregGuns recipe, fills an empty Fuel Tank with 1,000 mB of Diesel (RC-56), empties a full one, and refuses Water. |
 | `gun.flamethrower.recipe` | Flamethrower (M2 B6) | The HV assembly row (GR-50) is in GT's assembler map with its sheet inputs and not below HV, and the found recipe's output is ours. |
-| `gun.bio_gun.fire` | Bio Gun (M5 B3a) | Holding the left button for 8 ticks fires every 6 ticks: 2 rounds and 2 level-1 `BiogunProjectile` globs; a zombie 4 blocks ahead takes damage and gets Poison IV (amplifier 3, at most 100 ticks). |
+| `gun.bio_gun.fire` | Bio Gun (M5 B3a) | Holding the left button for 8 ticks fires every 6 ticks: 2 rounds and 2 level-1 `BiogunProjectile` globs; a villager 4 blocks ahead takes damage and gets Poison IV (amplifier 3, at most 100 ticks). |
 | `gun.bio_gun.charge` | Bio Gun (M5 B3a) | Holding the right button 10, 20 and 35 ticks fires levels 1, 2 and 3 that spend exactly 1, 2 and 3 rounds of the 30 loaded (GUN-02). |
 | `gun.bio_gun.reload` | Bio Gun (M5 B3a) | An empty gun with one full Bio Tank (Biomass) reloads after 45 ticks to 30 rounds; the full tank is consumed and an empty tank comes back. |
 | `gun.bio_gun.blob` | Bio Gun (M5 B3a) | With safe mode off, a level 2 glob from a player at a wall leaves a size 2 Bio Blob on the wall. Needs the utility module. |

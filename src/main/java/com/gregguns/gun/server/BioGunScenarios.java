@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -148,13 +148,17 @@ public final class BioGunScenarios {
 
         @Override
         public String description() {
-            return "Holding the left button on the Bio Gun fires every 6 ticks, one round and one level-1 BiogunProjectile each; a zombie 4 blocks ahead takes damage and gets Poison IV for at most 100 ticks.";
+            return "Holding the left button on the Bio Gun fires every 6 ticks, one round and one level-1 BiogunProjectile each; a villager 4 blocks ahead takes damage and gets Poison IV for at most 100 ticks.";
         }
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             GunRig rig = rig(ctx, STATS.magazineSize());
-            EntityZombie target = GunRig.zombie(ctx, 4);
+            // A villager, not a zombie (vanilla zombies are immune to poison) or a pig (too short for an eye-height
+            // shot).
+            EntityVillager target = new EntityVillager(ctx.world());
+            target.setLocationAndAngles(ctx.originX() + 4.5, ctx.originY(), ctx.originZ() + 0.5, 90.0F, 0.0F);
+            ctx.spawn(target);
             target.getEntityAttribute(SharedMonsterAttributes.maxHealth)
                 .setBaseValue(200.0);
             target.setHealth(200.0F);
