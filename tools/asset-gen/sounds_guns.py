@@ -1442,3 +1442,6 @@ _TUNED5 = {
 }
 for (_tbl, _nm), _kw in _TUNED5.items():
     globals()[_tbl][_nm] = _kw
+
+
+import sounds_guns_shots6  # noqa: E402,F401  (round 6, slice guns-shots: tuned parameter sets)
