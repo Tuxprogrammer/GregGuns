@@ -27,6 +27,7 @@ checker, slots (cross-slot columns), stripes (a color cycle). A wood role may se
 A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A box may be tilted about Z ("tilt") or
 about its long axis X ("tiltX", for a diamond bar) or about the vertical axis Y ("tiltY"), all about "pivot"; a size with a 0 is a zero-thickness plane.
 A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}}} or "camo" with a palette.
+A variant may also give "boxes": {name: {"role", "painters"}} to replace one box's spec for that sheet.
 """
 import json
 import os
@@ -369,6 +370,8 @@ def paint(gun, model_path=None):
         tex = Tex(W, H)
         for b in model["boxes"]:
             spec = rm["boxes"][b["name"]]
+            # A variant may replace a box's role or painters (e.g. stripe colors a role cannot carry).
+            spec = dict(spec, **(entry.get("variant") or {}).get("boxes", {}).get(b["name"], {}))
             w, h, d = b["size"]
             u, v = b["uv"]
             for face, (x, y, fw, fh) in box_uv(u, v, w, h, d).items():

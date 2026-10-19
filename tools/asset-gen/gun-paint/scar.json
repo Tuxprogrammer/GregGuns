@@ -1,0 +1,881 @@
+{
+ "gun": "scar",
+ "textures": [
+  {
+   "file": "scar.png"
+  },
+  {
+   "file": "scar_camo1.png",
+   "variant": {
+    "roles": {
+     "tan": {
+      "base": "#202020"
+     },
+     "rail": {
+      "base": "#383838"
+     },
+     "chin": {
+      "base": "#303030"
+     },
+     "mag": {
+      "base": "#3F3F3F"
+     },
+     "black": {
+      "base": "#3B3B3B"
+     },
+     "sight": {
+      "base": "#343434"
+     },
+     "scope": {
+      "base": "#292929"
+     },
+     "pin": {
+      "base": "#303030"
+     }
+    },
+    "boxes": {
+     "rail": {
+      "role": "rail",
+      "painters": [
+       {
+        "type": "stripes",
+        "faces": [
+         "top",
+         "front",
+         "back"
+        ],
+        "colors": [
+         "#383838",
+         "#262626"
+        ],
+        "step": 1,
+        "axis": "x"
+       }
+      ]
+     },
+     "lower": {
+      "role": "tan",
+      "painters": [
+       {
+        "type": "rect",
+        "faces": [
+         "front"
+        ],
+        "x": 10,
+        "y": 1,
+        "w": 1,
+        "h": 1,
+        "color": "#B4B4B4"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "back"
+        ],
+        "x": 5,
+        "y": 1,
+        "w": 1,
+        "h": 1,
+        "color": "#B4B4B4"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "front"
+        ],
+        "x": 3,
+        "y": 2,
+        "w": 1,
+        "h": 1,
+        "color": "#37372E"
+       },
+       {
+        "type": "rect",
+        "faces": [
+         "back"
+        ],
+        "x": 12,
+        "y": 2,
+        "w": 1,
+        "h": 1,
+        "color": "#37372E"
+       }
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "roles": {
+  "tan": {
+   "material": "steel",
+   "base": "#A2A379",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "rail": {
+   "material": "steel",
+   "base": "#A2A57B",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "chin": {
+   "material": "steel",
+   "base": "#8A8A66",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "mag": {
+   "material": "steel",
+   "base": "#807550",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "black": {
+   "material": "steel",
+   "base": "#282828",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "sight": {
+   "material": "steel",
+   "base": "#232323",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "scope": {
+   "material": "steel",
+   "base": "#1C1C1C",
+   "scratches": false,
+   "noise": 0.008,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "dkgray": {
+   "material": "steel",
+   "base": "#282828",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "turret": {
+   "material": "steel",
+   "base": "#222222",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "gray": {
+   "material": "steel",
+   "base": "#646464",
+   "scratches": false,
+   "noise": 0.01,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "pin": {
+   "material": "steel",
+   "base": "#797B5B",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "latch": {
+   "material": "steel",
+   "base": "#202020",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  }
+ },
+ "boxes": {
+  "receiver": {
+   "role": "tan",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 10,
+     "y": 1,
+     "w": 12,
+     "h": 1,
+     "color": "#1E1E18"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 15,
+     "y": 1,
+     "w": 12,
+     "h": 1,
+     "color": "#1E1E18"
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "front"
+     ],
+     "x": 8,
+     "y": 2,
+     "w": 13,
+     "h": 3,
+     "f": 1.1
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "back"
+     ],
+     "x": 16,
+     "y": 2,
+     "w": 13,
+     "h": 3,
+     "f": 1.1
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 9,
+     "y": 3,
+     "w": 11,
+     "h": 2,
+     "color": "#2A2A21"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 17,
+     "y": 3,
+     "w": 11,
+     "h": 2,
+     "color": "#2A2A21"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 3,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#37372E"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 33,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#37372E"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 33,
+     "y": 3,
+     "w": 1,
+     "h": 1,
+     "color": "#37372E"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 3,
+     "y": 3,
+     "w": 1,
+     "h": 1,
+     "color": "#37372E"
+    },
+    {
+     "type": "seam",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "at": 1,
+     "axis": "v",
+     "dark": 0.85,
+     "light": 1.0
+    }
+   ]
+  },
+  "rail": {
+   "role": "rail",
+   "painters": [
+    {
+     "type": "stripes",
+     "faces": [
+      "top",
+      "front",
+      "back"
+     ],
+     "colors": [
+      "#A2A57B",
+      "#616249"
+     ],
+     "step": 1,
+     "axis": "x"
+    }
+   ]
+  },
+  "lower": {
+   "role": "tan",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 10,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#B4B4B4"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 5,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#B4B4B4"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 3,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#37372E"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 12,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#37372E"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 6,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#3B1D1A"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 9,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#3B1D1A"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 13,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#3B1D1A"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#3B1D1A"
+    }
+   ]
+  },
+  "magwell": {
+   "role": "tan"
+  },
+  "chin_rear": {
+   "role": "tan"
+  },
+  "chin_front": {
+   "role": "chin"
+  },
+  "mag": {
+   "role": "mag",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "front"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 6,
+     "f": 1.07
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "back"
+     ],
+     "x": 5,
+     "y": 0,
+     "w": 1,
+     "h": 6,
+     "f": 1.07
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "front"
+     ],
+     "x": 3,
+     "y": 0,
+     "w": 1,
+     "h": 6,
+     "f": 0.93
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "back"
+     ],
+     "x": 3,
+     "y": 0,
+     "w": 1,
+     "h": 6,
+     "f": 0.93
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "front"
+     ],
+     "x": 5,
+     "y": 0,
+     "w": 1,
+     "h": 6,
+     "f": 1.07
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "back"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 6,
+     "f": 1.07
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 0,
+     "y": 4,
+     "w": 2,
+     "h": 2,
+     "color": "#6A6C49"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 5,
+     "y": 4,
+     "w": 2,
+     "h": 2,
+     "color": "#6A6C49"
+    }
+   ]
+  },
+  "grip": {
+   "role": "tan",
+   "painters": [
+    {
+     "type": "checker",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 2,
+     "h": 7,
+     "cell": 1,
+     "amp": -0.14
+    }
+   ]
+  },
+  "guard": {
+   "role": "tan"
+  },
+  "trigger": {
+   "role": "black"
+  },
+  "stock_hinge": {
+   "role": "tan",
+   "painters": [
+    {
+     "type": "seam",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "at": 0,
+     "axis": "v",
+     "dark": 0.8,
+     "light": 1.0
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#3B1D1A"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#3B1D1A"
+    }
+   ]
+  },
+  "hinge_pin": {
+   "role": "pin"
+  },
+  "cheek": {
+   "role": "tan"
+  },
+  "stock_under": {
+   "role": "tan"
+  },
+  "heel": {
+   "role": "tan",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 0,
+     "y": 7,
+     "w": 1,
+     "h": 1,
+     "color": "#8A8A66"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front"
+     ],
+     "x": 1,
+     "y": 8,
+     "w": 1,
+     "h": 1,
+     "color": "#8A8A66"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 2,
+     "y": 7,
+     "w": 1,
+     "h": 1,
+     "color": "#8A8A66"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "back"
+     ],
+     "x": 1,
+     "y": 8,
+     "w": 1,
+     "h": 1,
+     "color": "#8A8A66"
+    }
+   ]
+  },
+  "column": {
+   "role": "tan"
+  },
+  "buttpad": {
+   "role": "black"
+  },
+  "latch": {
+   "role": "latch"
+  },
+  "scope_rear": {
+   "role": "scope",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#FCFCFC"
+    }
+   ]
+  },
+  "scope_tube": {
+   "role": "scope"
+  },
+  "scope_front": {
+   "role": "scope",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#FCFCFC"
+    }
+   ]
+  },
+  "scope_mount": {
+   "role": "dkgray"
+  },
+  "scope_riser": {
+   "role": "dkgray",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "left"
+     ],
+     "f": 1.25
+    }
+   ]
+  },
+  "turret_top": {
+   "role": "turret"
+  },
+  "turret_side": {
+   "role": "turret"
+  },
+  "rear_base": {
+   "role": "sight"
+  },
+  "rear_pivot": {
+   "role": "sight"
+  },
+  "rear_notch": {
+   "role": "sight",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 0.5
+    }
+   ]
+  },
+  "front_block": {
+   "role": "sight"
+  },
+  "front_post": {
+   "role": "sight"
+  },
+  "guard_left": {
+   "role": "black",
+   "painters": [
+    {
+     "type": "slots",
+     "faces": [
+      "back"
+     ],
+     "start": 1,
+     "every": 2,
+     "width": 1,
+     "color": "#000000"
+    }
+   ]
+  },
+  "guard_right": {
+   "role": "black",
+   "painters": [
+    {
+     "type": "slots",
+     "faces": [
+      "front"
+     ],
+     "start": 1,
+     "every": 2,
+     "width": 1,
+     "color": "#000000"
+    }
+   ]
+  },
+  "bottom_rail": {
+   "role": "black"
+  },
+  "mount_front": {
+   "role": "mag"
+  },
+  "mount_rear": {
+   "role": "mag"
+  },
+  "strut_front": {
+   "role": "mag"
+  },
+  "strut_rear": {
+   "role": "mag"
+  },
+  "nub_front": {
+   "role": "mag"
+  },
+  "nub_strut": {
+   "role": "mag"
+  },
+  "barrel_root": {
+   "role": "black"
+  },
+  "collar": {
+   "role": "gray"
+  },
+  "gas_block": {
+   "role": "gray"
+  },
+  "barrel": {
+   "role": "black"
+  },
+  "muzzle": {
+   "role": "black",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#181818"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 4,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "color": "#181818"
+    }
+   ]
+  },
+  "knob": {
+   "role": "sight"
+  }
+ }
+}
