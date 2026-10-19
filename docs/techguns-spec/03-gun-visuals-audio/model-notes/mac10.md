@@ -193,3 +193,31 @@ The **Akimbo Mac-10 uses exactly the same model and texture**: no second model, 
 - **Magazine floor plate** brightness is estimated from the bottom view; at most it is the brightest value in the texture (#A8AAA9).
 - **First-person framing numbers** come from formulas read, not seen in game; treat the offsets as approximate. The akimbo lateral shift of 1.85 may be 1.85 or twice that in blocks, depending on whether it is applied before or after scaling.
 - **Camo variants:** none. The gun uses one texture; no camo or color-variant textures exist for the Mac-10 or its akimbo form.
+
+## Round 2 corrections (orchestrator review)
+
+These facts come from comparing the first GregGuns build (B1 round 1) against the original, in the same axes as above (X 0 at the butt, Y 0 at the receiver top, Z 0 at the mid-plane). The first build matched the receiver (17 x 4 x 3), barrel stub, guard, wire stock and palette to within 0.1 unit. Silhouette overlap was 0.99 to 1.00 from the front, back, top and bottom, but only 0.87 from the side (0.94 to 0.96 in the two iso views). Most of the side loss comes from the first two items below; the rest is rim noise of 0.2 unit or less.
+
+**Overall size to hit:** 22 long, about 18.6 tall (receiver top to magazine bottom is 17.4; the wire posts and sights add the rest), 3 wide.
+
+### Backstrap plates (the largest side-view error)
+
+Both plates are **hinged on their front edge, and that hinge sits at or inside the grip's back face**. They are thin shells wrapped on the back of the grip, not slabs stuck on behind it. The grip's back face is the plane X 6.
+- **Upper plate:** 3 tall (Y 3.6 to 6.4), 0.8 thick (X 5.1 to 5.9 at its top), 1.8 wide. The hinge is its front-top edge, on the plane X 6. It leans so its lower end swings **forward** by about 0.65 (12.5 degrees). It therefore stands 0.9 proud of the grip at its top, tapering to about 0.25 proud at its bottom.
+- **Lower plate:** 4.8 tall (Y 6.3 to 11.1), 0.8 thick, 1.8 wide. Its hinge is its front-top edge, **0.7 inside the grip** (the plane X 6.7), so the plate runs from X 5.8 to 6.6 at the top and only **0.2 of it shows behind the grip** there. It leans so its lower end swings **back** by about 0.62 (7.4 degrees). It stands 0.2 proud at its top, growing to about 0.85 proud at its bottom, which is its maximum.
+- Round 1 put a full 1.0-thick slab entirely behind the grip with its hinge at mid-thickness, so the lower plate stood 1.0 proud at the top and 1.6 proud at the bottom. That is the dark wedge sticking out behind the grip in the render. Moving the hinges to the planes above, with the same two angles, lifted the full side silhouette from 0.88 to about 0.92 in a test render.
+- Colors: the plates are a shade darker than the grip: base #454A49, stipple shadow #333434.
+
+### Trigger
+
+The trigger is 1 long, 2 tall, 1 wide, tipped 23.4 degrees so its lower end swings **forward** by about 0.8. Its hinge is the front-top edge at X 9.5, Y 3.5. The block runs X 8.5 to 9.5 at the top: **half of it is buried in the grip's front face (X 9) and half of it stands in front of the face**. At its tip (Y 5.5) it spans about X 9.3 to 10.3, leaning into the guard opening. The section above says the top is at X 9 to 9.5; the correct figure is X 8.5 to 9.5. Round 1 put the whole trigger in front of the face (X 9 to 10), a full 0.5 too far forward, so the render shows a pair of offset ghost edges around it.
+
+### Magazine size (the only remaining front and back view loss)
+
+The magazine is a 2 x 7 x 3 block shrunk by 0.3 on every face, so it is **1.4 wide, 6.4 tall and 2.4 long** (Y 11.0 to 17.4, X 6.3 to 8.7). Round 1 built 1.5 x 6.5 x 2.5. That extra 0.05 per face shows up as a thin strip down both sides from the front and back and cost about 0.07 of front-view overlap. If the pipeline cannot do sub-half-unit sizes, keep 1.5 wide and say so in the model's comment; 6.4 tall and 2.4 long are worth matching if a per-face inset is available.
+
+### Paint (from the round 1 sheet)
+
+- The flank with the long slot carries a **three-band slot**, not one black bar. The slot is about 10 long and 1.5 tall, set about 1.5 from the rear end of the flank and 0.5 below its top edge. From top to bottom: a dark line (about #242727, 0.5 tall), a mid-dark line (about #363A39, 0.5), then a dark line (about #272A2A, 0.5). Below it sits a lighter row of about #464B4A. Round 1 used one solid near-black block, which reads too stark.
+- The panel base is the receiver base #565D5B (the panel varies from about #4F5654 to #575F5D) with a darker edge row of about #3D4140 along the bottom. The other flank carries one small dark port about 3 long and 1 tall, about #2D3030, in the front-middle.
+- Round 1 had almost none of the #383838-family darks that make up about 12 percent of the original texture (slots, barrel ring, shadow edges), and its receiver averaged about 4 levels lighter. Add the darks above and the receiver mean should land near #565B59.
