@@ -19,6 +19,8 @@ beeps with click-sharp attacks; everything else is shaped noise.
 """
 from __future__ import annotations
 
+import json
+
 import numpy as np
 
 import sfx
@@ -34,6 +36,20 @@ from sndengines import (fit, blast, events, rumble, churn, tone_burst, click_thu
 # recipe, so the best draw per sound is pinned here; GG_SEEDOFF is only used for local sweeps.
 _SEEDS = {}
 
+# Round 6: per-sound knobs found by the scripted embedding search (``seed`` plus recipe parameters read through ``c.kn``).
+_TUNED6 = {
+    'bullet_impact_a': {"seed": 9, "g_modes": 0.3388, "g_thump": 1.3961, "g_sweep": 0.6375, "g_ring": 1.5113, "g_tail": 1.8913, "g_click": 1.5621, "g_burst": 0.7462},
+    'bullet_impact_b': {"seed": 7, "g_tail": 2.357, "g_click": 0.6839, "g_ring": 1.8686, "g_burst": 0.9761},
+    'bullet_impact_c': {"seed": 18, "g_sweep": 0.6188, "g_modes": 0.4135, "g_burst": 0.6224, "g_deb": 0.8978, "g_thump": 1.3441, "g_ring": 1.3335, "g_click": 0.9997},
+    'bullet_impact_d': {"seed": 0, "g_click": 1.8564, "g_ring": 2.8963, "g_tail": 2.2312, "g_sweep": 1.0457, "g_deb": 1.6597, "g_burst": 1.0472, "g_modes": 0.7778},
+    'bullet_impact_e': {"seed": 53, "g_click": 0.6002, "g_modes": 0.5668, "g_sweep": 0.6369, "g_ring": 1.5638, "g_thump": 0.6182, "g_tail": 1.3667, "g_deb": 1.2789},
+    'explosion1_a': {"seed": 5, "hiss_gain": 0.0245, "body_gain": 2.0773, "t20": 2.4749, "tail_gain": 0.7469, "sub_gain": 0.4361, "body_lp": 868.4966, "t40": 1.275, "rumble_gain": 1.2058, "g_bump": 10},
+    'explosion1_b': {"seed": 1, "rumble_gain": 1.0276, "debris": 0.3657, "t20": 4.268, "body_gain": 0.6275, "churn_depth": 0.3646, "tail_gain": 0.9015, "t40": 1.9451, "sub_gain": 1.1744, "crack": 1.0824},
+    'explosion1_c': {"seed": 25, "sub_gain": 1.0141, "crack": 1.5653, "tail_gain": 0.5143, "body_lp": 917.1113, "t20": 1.5572, "debris": 0.143, "hiss_gain": 0.0644, "body_gain": 1.5819, "rumble_gain": 1.3047, "churn_depth": 0.2487, "g_bump": 6},
+    'gore_a': {"seed": 21, "g_splat": 2.4924, "g_crack": 2.1438, "g_low": 0.6316, "g_mid": 0.9686, "g_wet": 0.783},
+    'gore_b': {"seed": 0, "g_crack": 2.7921, "g_low": 2.2295, "g_mid": 1.4977, "g_wet": 0.9171, "g_splat": 2.0},
+}
+
 
 def recipe(*patterns):
     """``sndlib.recipe`` plus a pinned alternate noise stream for the sounds listed in ``_SEEDS``."""
@@ -41,7 +57,8 @@ def recipe(*patterns):
 
     def deco(fn):
         def run(c, N):
-            k = int(os.environ.get("GG_SEEDOFF", "0") or 0) if c.name in _SWEEP else _SEEDS.get(c.name, 0)
+            c.kn = {**_TUNED6.get(c.name, {}), **json.loads(os.environ.get("GG_FX", "{}")).get(c.name, {})}
+            k = int(os.environ.get("GG_SEEDOFF", "0") or 0) if c.name in _SWEEP else c.kn.get("seed", _SEEDS.get(c.name, 0))
             if k:
                 c.rng = np.random.default_rng([zlib.crc32(c.id.encode()), k])
             return fn(c, N)
@@ -445,32 +462,34 @@ def bullet_impact(c, N):
     t0 = 0.05
     m = Mix(c, N)
     c.fill_tail = False
+    kn = c.kn   # round 6: searched layer gains g_*
+    G = lambda k: kn.get(k, 1.0)
     m.add(_noise_click(sr, rng, dur=0.003, lo=1500, hi=6000), 0.022 if v != 2 else 0.01, 0.04)   # pre-tick
-    m.add(_noise_click(sr, rng, dur=0.008, lo=3000, hi=8000, tau=0.005, attack=0.0004), t0, 1.0)
-    m.add(_modes(sr, rng, 5, 700, 3500, dur=0.09), t0, 0.7)       # damped metal modes (15-35 ms)
-    m.add(_modes(sr, rng, 4, 900, 3000, dur=0.09), t0 + 0.03 + 0.01 * v, 0.35)
+    m.add(_noise_click(sr, rng, dur=0.008, lo=3000, hi=8000, tau=0.005, attack=0.0004), t0, 1.0 * G('g_click'))
+    m.add(_modes(sr, rng, 5, 700, 3500, dur=0.09), t0, 0.7 * G('g_modes'))       # damped metal modes (15-35 ms)
+    m.add(_modes(sr, rng, 4, 900, 3000, dur=0.09), t0 + 0.03 + 0.01 * v, 0.35 * G('g_modes'))
     nb = sfx.n_of(sr, 0.3)
     burst = sfx.band_noise(nb, sr, rng, 300, 6000, order=1) * sfx.decay_env(nb, sr, 0.08, 0.18, attack=0.0015)
     gate = (rng.random(nb // 40 + 2) > 0.35).astype(float)     # gravel: randomly gated 1-3 ms grains
     gate = np.interp(np.linspace(0, len(gate) - 1, nb), np.arange(len(gate)), gate)
     burst = burst * (0.45 + 0.55 * gate) * (0.6 + 0.4 * sfx.rand_mod(nb, sr, rng, 250, 1.0))
-    m.add(burst, t0, 1.35)
+    m.add(burst, t0, 1.35 * G('g_burst'))
     nd = sfx.n_of(sr, 0.25)
     deb = sfx.grain_cloud(nd, sr, rng, np.linspace(600, 80, nd), 0.003, 500, 5500, env=sfx.exp_env(nd, sr, 0.07), amp_var=0.9)
-    m.add(_lp(deb, sr, 6500, order=2), t0, 0.65)
+    m.add(_lp(deb, sr, 6500, order=2), t0, 0.65 * G('g_deb'))
     ns = sfx.n_of(sr, 0.22)
     sweep = np.sin(sfx.sweep(650, 250, ns, sr, k=0.08)) * sfx.exp_env(ns, sr, 0.1, attack=0.004) * np.clip((0.22 - sfx.tvec(ns, sr)) / 0.05, 0, 1)
-    m.add(sweep, t0, 0.14)
+    m.add(sweep, t0, 0.14 * G('g_sweep'))
     sets = [((0.08, 1.0, 120), (0.17, 0.8, 110), (0.27, 0.5, 100)),
             ((0.07, 1.0, 110), (0.17, 0.8, 100), (0.29, 0.4, 90)),
             ((0.07, 1.0, 100), (0.175, 0.8, 90)),
             ((0.08, 1.0, 110), (0.18, 0.8, 100), (0.28, 0.55, 90)),
             ((0.06, 1.0, 100), (0.18, 0.7, 90))][v % 5]
     for tt, g, f0 in sets:
-        m.add(_thump(sr, f0 * rng.uniform(0.95, 1.05), 50, 0.12, 0.022, k=0.02), tt, 0.55 * g)
+        m.add(_thump(sr, f0 * rng.uniform(0.95, 1.05), 50, 0.12, 0.022, k=0.02), tt, 0.55 * g * G('g_thump'))
     ntl = sfx.n_of(sr, 0.7)
     tl = _lp(sfx.noise(ntl, rng), sr, 2200, order=2) * sfx.decay_env(ntl, sr, 0.14, 0.4, attack=0.01)
-    m.add(_hp(tl, sr, 250), t0 + 0.05, 0.12)
+    m.add(_hp(tl, sr, 250), t0 + 0.05, 0.12 * G('g_tail'))
     # faint metallic ring (A's ~780 Hz line): 20-40 ms fade-in, one stable partial, weak 1.25 kHz partial,
     # sag of ~3%, exponential decay, fully gone by ~0.7 s; mixed with its own noisy residue
     nr = sfx.n_of(sr, 0.7)
@@ -480,7 +499,7 @@ def bullet_impact(c, N):
     ring = np.sin(np.cumsum(sfx.TAU * drift / sr)) + 0.3 * np.sin(np.cumsum(sfx.TAU * drift * 1.6 / sr))
     ring *= np.exp(-tr / 0.2) * np.clip(tr / 0.03, 0, 1) * np.clip((0.7 - tr) / 0.15, 0, 1)
     res = sfx.band_noise(nr, sr, rng, 300, 2000, order=2) * np.exp(-tr / 0.25)
-    m.add(ring * 0.25 + res * 0.7, 0.22 if v != 2 else 0.05, 0.016)
+    m.add(ring * 0.25 + res * 0.7, 0.22 if v != 2 else 0.05, 0.016 * G('g_ring'))
     _contour(c, head=[(0.0, -44.0), (0.04, -44.0), (0.048, -30.0), (0.056, -1.0), (0.075, 0.0), (0.12, -2.0), (0.14, -9.0)],
              t_from=0.14, smooth=0.04)
     c.env_smooth = 0.012
@@ -496,6 +515,12 @@ def _boom(c, N, *, att=0.004, crack=1.0, crack_hi=12000, crack_dur=0.02, sub=(90
     noise body whose low-pass closes from ``body_f[0]`` to ``body_f[1]`` (so the tail darkens), surges at
     ``bumps`` = [(t, gain)], and a smooth low-passed tail.  ``conform`` pins the contour afterwards."""
     sr, rng = c.sr, c.rng
+    kn = getattr(c, "kn", {})   # round 6: searched overrides of the engine's own numeric knobs
+    crack, sub_gain, body_gain, rumble_gain, tail_gain = (kn.get(k, v) for k, v in (
+        ("crack", crack), ("sub_gain", sub_gain), ("body_gain", body_gain), ("rumble_gain", rumble_gain), ("tail_gain", tail_gain)))
+    body_lp, t20, t40, churn_depth, debris, grit, hiss_gain = (kn.get(k, v) for k, v in (
+        ("body_lp", body_lp), ("t20", t20), ("t40", t40), ("churn_depth", churn_depth), ("debris", debris), ("grit", grit),
+        ("hiss_gain", hiss_gain)))
     m = Mix(c, N)
     full = N / sr
     if crack:
@@ -595,9 +620,12 @@ def gore(c, N):
     sr, rng = c.sr, c.rng
     v = c.name[-1]
     m = Mix(c, N)
-    mid_k, low_k = {"a": (2.6, 0.12), "b": (1.0, 1.0), "c": (2.0, 0.3)}[v]   # a and c: A is much brighter, less sub-heavy
+    kn = c.kn   # round 6: searched gains
+    mid_k, low_k = {"a": (2.6, 0.12), "b": (1.0, 1.0), "c": (2.0, 0.3)}[v]
+    mid_k *= kn.get('g_mid', 1.0)
+    low_k *= kn.get('g_low', 1.0)   # a and c: A is much brighter, less sub-heavy
     # hard front: crack + crunch
-    cb = {"a": 1.9, "b": 1.6, "c": 2.2}[v]
+    cb = {"a": 1.9, "b": 1.6, "c": 2.2}[v] * kn.get('g_crack', 1.0)
     ctau = {"a": 0.03, "b": 0.006, "c": 0.006}[v]   # a: a longer crack carries the mid energy without a spike for the limiter to flatten
     m.add(crack_burst(sr, rng, tau=ctau, lo=800, hi=12000, dur=0.08 if v != "a" else 0.2), 0.0, cb)
     m.add(_noise_click(sr, rng, dur=0.01, lo=5000, hi=9000, tau=0.004 if v != "a" else 0.02), 0.0, 0.5 * cb)
@@ -616,6 +644,7 @@ def gore(c, N):
         t20, t40, dur_w, wet_g, thump = 0.5, 1.5, 1.7, 1.8, (90.0, 55.0, 0.09, 0.8)
         splats = []
         end_t = 2.2
+    wet_g *= kn.get('g_wet', 1.0)
     # thump: pitched drop that starts at full level and decays
     m.add(_thump(sr, thump[0] * 1.3, thump[1], 0.5, thump[2], k=0.04), 0.0, thump[3] * low_k)
     nb = sfx.n_of(sr, 1.2)
@@ -626,7 +655,7 @@ def gore(c, N):
     m.add(_gore_wet(sr, rng, dur_w, 1500, 8000, 45, t20 * 0.3, t40 * 0.4, depth=0.95), 0.0, 0.35 * wet_g * mid_k)
     # splats: small clicky pops at the original's times (about -25 dB under the opening burst)
     for t in splats:
-        m.add(_splat(sr, rng, 1.0), t, 0.07 * rng.uniform(0.7, 1.0))
+        m.add(_splat(sr, rng, 1.0), t, 0.07 * kn.get('g_splat', 1.0) * rng.uniform(0.7, 1.0))
     # sparse faint drips (gore_c: 8 of them between 1.2 s and the end, one slightly louder blip near 1.89 s)
     drip_lo = 1.2 if v == "c" else end_t * 0.45
     if v == "c":
@@ -696,7 +725,8 @@ def explosion1(c, N):
     on = [t for t in tg.onsets if t > 0.3]
     if v == "b":
         on = [t for t in on if t < 1.4]   # no sharp late burst at 1.5 s
-    bumps = tuple((t - 0.02, 0.5 if v not in "be" else (0.35 if v == "e" else 0.5)) for t in on[:8])
+    gb = c.kn.get('g_bump', 1.0)
+    bumps = tuple((t - 0.02, gb * (0.5 if v not in "be" else (0.35 if v == "e" else 0.5))) for t in on[:8])
     if v == "a":    # slower ramp (roar peaks ~0.08 s), darkening tail, debris at the original's times
         out = _boom(c, N, att=0.06, crack=0.8, crack_dur=0.012, sub=(100.0, 40.0, 0.3), sub_gain=0.8, body_f=(1500.0, 200.0),
                     body_lp=600, t20=1.2, t40=2.0, rumble_gain=0.9, churn_rate=9, churn_depth=0.35, bumps=bumps,
@@ -713,7 +743,7 @@ def explosion1(c, N):
     elif v == "c":
         out = _boom(c, N, att=0.004, crack=1.7, crack_dur=0.05, sub=(70.0, 40.0, 0.25), sub_gain=1.1, body_f=(2000.0, 350.0),
                     body_lp=900, t20=0.65, t40=1.4, rumble_gain=1.0, churn_rate=8, churn_depth=0.4,
-                    bumps=tuple((t - 0.02, 0.9) for t in on[:8]), bump_lp=800, bump_dur=0.05, tail_gain=0.8, debris=0.1, tail_end=1.65, hiss_gain=0.03, hiss_hi=6000, hiss_tau=0.5)
+                    bumps=tuple((t - 0.02, 0.9 * gb) for t in on[:8]), bump_lp=800, bump_dur=0.05, tail_gain=0.8, debris=0.1, tail_end=1.65, hiss_gain=0.03, hiss_hi=6000, hiss_tau=0.5)
         bl = [0.45, 0.53, 0.63, 1.13, 1.44]
         out = _lp(out, c.sr, 550, order=3) * _bumpshape(len(out), c.sr, bl, 6.0, 4.0)
         out = _debris_floor(out, c.sr, c.rng, -53.0)

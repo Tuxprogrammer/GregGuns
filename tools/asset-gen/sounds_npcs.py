@@ -199,6 +199,12 @@ def _target_frames(c, frames, hop):
         i_dec = int(round((tg.peak_t + tg.dec20) / 0.010))
         if i_dec < frames and i_dec not in tenth_idx and T[i_dec] > -20.8:
             T[i_dec] = -20.8
+    K = _knobs(c.name)
+    if K.get("droop"):   # round 6: tail pulled down faster than A's, so the -20 dB time (from a capped peak) holds
+        tt = (np.arange(frames) + 0.5) * hop / c.sr
+        T = T - K["droop"] * np.clip((tt - tg.peak_t) / max(c.dur - tg.peak_t, 0.1), 0.0, 1.0)
+    if K.get("cap") is not None:   # round 6: A is clipped far past full scale; B's loudest frames cannot follow it
+        T = np.minimum(T, K["cap"])
     return np.maximum(T, -60.0)
 
 
@@ -825,27 +831,31 @@ def _thud(c, t, f0=100.0, f1=45.0, dur=0.2, tau=0.05, g=1.0, m=None):
 @recipe("apache_burst")
 @_contour
 def apache_burst(c, N):
-    """Nine or ten rotor-gun pulses at about 11 Hz over 0.85 s, each a 5 ms 1-6 kHz crack on a 60-100 Hz thump
-    with a 40 ms decay (bass-heavy, little 250-500 Hz), a plateau, then a smooth fall into a low-passed rumble
-    (600 -> 200 Hz) with a few faint crackle ticks."""
+    """Round 6: a rotor-gun burst built straight from A's measured band shares (sub 13, bass 50, low-mid 12, mid 10,
+    presence 6, air 4 percent): six band-limited noise layers, the mids and highs chopped by a jittered 11 Hz blade
+    train over the first 0.85 s (the vertical stripes in A), the lows steadier, then hard clipping and the frame fit
+    onto A's contour (a rise to the plateau, then a smooth fall into a dark rumble)."""
     sr, rng = c.sr, c.rng
-    m = Mix(c, N)
-    k = 10
-    per = 0.85 / k
-    for i in range(k):
-        g = rng.uniform(0.8, 1.0)
-        tt = i * per + rng.uniform(-0.006, 0.006)
-        nb = sfx.n_of(sr, 0.03)
-        cr = sfx.fftfilt(sfx.noise(nb, rng), sr, hp=1000, lp=6000, order=1) * sfx.exp_env(nb, sr, 0.005, attack=0.0005)
-        m.add(cr, max(tt, 0.0), 0.5 * g)
-        _thud(c, max(tt, 0.0), rng.uniform(85, 100), 60, 0.12, 0.04, 1.2 * g, m)
-        nl = sfx.n_of(sr, 0.09)
-        m.add(sfx.band_noise(nl, sr, rng, 60, 220, order=2) * sfx.exp_env(nl, sr, 0.03, attack=0.004), max(tt, 0.0), 0.9 * g)
-    nbed = sfx.n_of(sr, 0.95)
-    m.add(sfx.band_noise(nbed, sr, rng, 40, 300, order=2) * (0.5 + 0.5 * churn(nbed, sr, rng, 11, 1.0)) * sfx.smooth_env(nbed, sr, 0.01, 0.15), 0.0, 0.6)
-    nt = N
-    m.add(sfx.dark_noise(nt, sr, rng, 350, 110, steps=6, hp=30) * sfx.decay_env(nt, sr, 0.35, 0.7) * churn(nt, sr, rng, 10, 0.5), 0.8, 0.5)
-    return m.out
+    K = _knobs(c.name)
+    n = N
+    t = sfx.tvec(n, sr)
+    chop = np.zeros(n)
+    tt = 0.0
+    while tt < 0.9:
+        a = int(tt * sr)
+        m = min(int(0.05 * sr), n - a)
+        chop[a:a + m] = np.maximum(chop[a:a + m], rng.uniform(0.7, 1.0) * np.exp(-np.arange(m) / sr / 0.022))
+        tt += 0.09 * (1 + 0.15 * rng.standard_normal())
+    chop = np.convolve(chop, np.hanning(int(sr * 0.004) | 1) / np.hanning(int(sr * 0.004) | 1).sum(), mode="same")
+    rot = 1.0 / (1.0 + np.exp((t - 0.9) / 0.05))   # the chopped phase ends at ~0.9 s; the fall is a smooth rumble
+    shares = [(20, 60, 12.8, 0.15), (60, 250, 49.5, 0.3), (250, 1000, 11.9, 0.6), (1000, 4000, 9.5, 0.85), (4000, 8000, 6.4, 0.9),
+              (8000, 16000, 3.6, 0.9)]
+    y = np.zeros(n)
+    for lo, hi, share, cd in shares:
+        x = _unit(sfx.band_noise(n, sr, rng, lo, hi, order=2))
+        mod = (1.0 - cd * rot) + cd * rot * (0.25 + 0.75 * chop)
+        y += np.sqrt(share) * K.get("w%d" % lo, 1.0) * x * mod
+    return y
 
 
 def _rumble_bed(c, N, t0, t1, lo, hi, rate, db0, db1, g=1.0):
@@ -972,6 +982,129 @@ _BEEP_TUNE = {
 }
 
 
+def _beep04(c, N):
+    """Round 6: a dedicated pulse train.  Fourteen 16.5 ms bursts on a 39.3 ms grid (
+    pulse placement fitted to the eleven loudness samples of A's measured contour, so the same samples land in
+    gaps), the last one faint, all with 1 ms edges over the same fixed line set (A's measured 4.0, 7.9, 9.3 kHz
+    lines, weaker 11.9/14.6 kHz air lines, a narrow ~1.2 kHz body).  No sub, no band conform."""
+    sr, rng = c.sr, c.rng
+    c.conform_bands = False
+    c.conform_env = False
+    c.fill_tail = False
+    c.limit_crest = False
+    K = _knobs(c.name)
+    n = sfx.n_of(sr, 0.555)
+    lines = [(3975, K.get("l4k", -4)), (7925, K.get("l79", -3)), (9275, K.get("l93", -9)), (11925, K.get("air", -30)), (14575, K.get("air", -30) + 3),
+             (6600, -14), (3750, -26), (4225, -30)]
+    y = np.zeros(n)
+    for hz, db in lines:
+        fm = 1 + 0.0015 * (churn(n, sr, rng, 80, 1.0) - 0.5)
+        y += _db(db) * np.sin(sfx.TAU * np.cumsum(hz * fm) / sr + rng.uniform(0, 6.28))
+    y += _db(K.get("haze", -36)) * _unit(sfx.band_noise(n, sr, rng, 5000, 14500, order=1))
+    tt = sfx.tvec(n, sr)
+    for hz in (1160, 1230, 1300):   # the ~1.2 kHz body of A is a narrow cluster, not a noise band
+        y += _db(K.get("body", -22)) * np.sin(sfx.TAU * hz * tt + rng.uniform(0, 6.28))
+    gate = np.full(n, K.get("gap", 0.03))
+    for i in range(14):
+        a = int(sr * (K.get("t0", 0.003) + i * K.get("per", 0.0392)))
+        b = int(sr * (K.get("t0", 0.003) + i * K.get("per", 0.0392) + K.get("on", 0.0155)))
+        gate[max(a, 0):max(b, 0)] = 0.12 if i == 13 else 1.0
+    e = max(2, int(sr * 0.001))
+    ker = np.hanning(2 * e + 1)
+    gate = np.convolve(gate, ker / ker.sum(), mode="same")
+    return y * gate
+
+
+_PURE_DEF = {2: {"floor": -50.0, "bed": -58.0}, 3: {"floor": -45.0, "bed": -60.0}, 5: {"floor": -42.0, "bed": -60.0},
+             7: {"floor": -48.0, "bed": -60.0}}
+
+
+def _beep_pure(c, N, k):
+    """Round 6 beeps (-02, -03, -05, -07): the measured line bank, each line a plain sine with 1.5 ms edges at its
+    measured time and prominence, plus the two things the earlier recipe lacked.  (1) A low-level floor under the
+    events: a ~230 Hz jittered pulse comb with a noise skirt (the chip's buzz, rows of faint harmonics and vertical
+    striping in A, about -35 to -50 dB under the lines).  (2) A faint steady bed of the same lines between events (A's
+    lines ring on at about -46 dB).  No sub thump, no band conform, no tail fill: those added the onset thump A lacks."""
+    sr, rng = c.sr, c.rng
+    c.conform_bands = False
+    c.conform_env = False
+    c.fill_tail = False
+    c.limit_crest = False
+    K = _knobs(c.name)
+    D = _PURE_DEF[k]
+    tune = _BEEP_TUNE.get(k, {})
+    endcap = tune.get("end")
+    lines = _BEEP_LINES[k]
+    if endcap:
+        lines = [(a, b, min(cc, endcap), d) for (a, b, cc, d) in lines if b < endcap]
+    t_end = max(l[2] for l in lines)
+    n = N
+    t = sfx.tvec(n, sr)
+    y = np.zeros(n)
+    mask = np.zeros(n)
+    amax = 10 ** (max(l[3] for l in lines) / 20.0)
+    gate3 = None
+    if k == 3:   # pulses on the original's grid: starts 0, .08, .16, .27, .35, .43, .51 (35 ms), then the loud final .53-.63
+        gate3 = np.full(n, 0.35)
+        for st in (0.0, 0.08, 0.16, 0.27, 0.35, 0.43, 0.51):
+            gate3[int(sr * st):int(sr * (st + 0.035))] = 1.0
+        gate3[int(sr * 0.53):int(sr * 0.64)] = 1.6
+        gate3 = np.convolve(gate3, np.hanning(73) / np.hanning(73).sum(), mode="same")
+    for (hz, t0, t1, prom) in lines:
+        if t1 - t0 <= 0.12:   # the analysis frames (40 ms windows) smear each event; the burst sits inside
+            if t0 > 0.0:
+                t0 += K.get("ins", 0.016)
+            t1 = max(t1 - K.get("ine", 0.008), t0 + 0.012)
+        a, b = int(sr * t0), min(int(sr * max(t1, t0 + 0.012)), n)
+        m = b - a
+        if m < 8:
+            continue
+        fm = 1 + 0.0015 * (churn(m, sr, rng, 60, 1.0) - 0.5)
+        yl = np.sin(sfx.TAU * np.cumsum(hz * fm) / sr + rng.uniform(0, 6.28))
+        e = max(2, int(sr * 0.0015))
+        env = np.ones(m)
+        env[:e] = np.linspace(0, 1, e)
+        env[-e:] = np.minimum(env[-e:], np.linspace(1, 0, e))
+        hf = K.get("hf", 0.5) if (k == 5 and hz >= 10000) else 1.0   # air lines weighted to A's band balance
+        amp = 10 ** (prom / 20.0) / amax * K.get("line", 1.0) * hf
+        y[a:b] += yl * env * amp
+        # pedestal: the gate measures a line's prominence over the median of its +-1/3-octave neighborhood (A's lines
+        # sit only 15-45 dB above it).  Band noise around the line sets that ratio: for a 1920-point Hann frame a sine of
+        # amplitude a reads 0.5a and white noise of std s reads 0.0232 s per bin (median), so s = 21.5 a 10^(-prom/20).
+        sw = 21.5 * amp * 10 ** (-(prom + K.get("pedx", -2.0)) / 20.0)
+        pw = K.get("pw", 0.3)
+        pd = sfx.fftfilt(rng.standard_normal(m) * sw, sr, hp=hz * 2 ** -pw, lp=min(hz * 2 ** pw, sr * 0.45), order=2)
+        y[a:b] += pd * env
+        if t1 - t0 > 0.025:
+            mask[a:b] = 1.0
+    if gate3 is not None:
+        y = y * gate3
+    # steady faint bed of the strongest recurring lines across the whole file (ring-on between events)
+    bed = D["bed"] + K.get("bedx", 0.0)
+    cnt = {}
+    for (hz, t0, t1, prom) in lines:
+        cnt[hz] = cnt.get(hz, 0) + prom
+    if k == 2:   # A's persistent ~1.2 kHz body line (not in the prominence table: it is a wide, low blob)
+        cnt[1200] = 10 ** 6
+        for (t0, t1) in ((0.0, 0.04), (0.38, 0.42)):
+            a, b = int(sr * t0), int(sr * t1)
+            y[a:b] += 10 ** (K.get("body", -4.0) / 20.0) * np.sin(sfx.TAU * 1200 * t[a:b] + rng.uniform(0, 6.28))
+    for hz in sorted(cnt, key=cnt.get, reverse=True)[:5]:
+        y += 10 ** (bed / 20.0) * np.sin(sfx.TAU * hz * t + rng.uniform(0, 6.28))
+    # floor: pulse comb plus noise skirt under the events
+    mask = np.convolve(mask, np.hanning(int(sr * 0.004) | 1) / np.hanning(int(sr * 0.004) | 1).sum(), mode="same")
+    per = 1.0 / K.get("comb", 235.0)
+    comb = np.zeros(n)
+    tt = 0.0
+    while tt < n / sr:
+        comb[int(tt * sr)] += 1.0 + 0.3 * rng.standard_normal()
+        tt += per * (1 + 0.04 * rng.standard_normal())
+    comb = sfx.fftfilt(comb, sr, lp=K.get("combhi", 3500.0), order=2)
+    fl = _unit(comb) + 0.7 * _unit(sfx.band_noise(n, sr, rng, 20, K.get("noisehi", 7000.0), order=1))
+    y += 10 ** ((D["floor"] + K.get("floor", 0.0)) / 20.0) * fl * mask
+    return _fit_contour(c, y, max_gain=K.get("fg", 45.0))   # A's measured loudness contour, frame by frame
+
+
 @recipe("turret_beep-*")
 def turret_beep(c, N):
     """Electronic chirps: a bank of short tone lines placed on the original's measured frequencies, times and
@@ -979,6 +1112,10 @@ def turret_beep(c, N):
     that sets how far the lines stand above their neighborhood.  No sub, thump or click layers."""
     sr, rng = c.sr, c.rng
     k = int(c.name[-2:])
+    if k == 4:
+        return _beep04(c, N)
+    if k in _PURE_DEF and not _knobs(c.name).get("legacy"):
+        return _beep_pure(c, N, k)
     c.limit_crest = False
     K = _knobs(c.name)
     if K.get("nobands"):   # the generic band conform boosts the sub band to A's share and smears an onset thump
@@ -1261,7 +1398,6 @@ _KNOB.update({
     'turret_beep-01': {'hp': 0.49, 'tb': -36.6, 'ped': 1.13, 'nofill': 1},
     'turret_beep-02': {'tb': -40, 'hp': 1.26, 'ped': 0.72},
     'turret_beep-03': {'hp': 0.93, 'nofill': 1, 'noenv': 0, 'ped': 0.81},
-    'turret_beep-04': {'hp': 0.4, 'nofill': 1},
     'turret_beep-05': {'hp': 1.58, 'tb': -40, 'ped': 0.72},
     'turret_beep-06': {'nobands': 1, 'nofill': 0, 'noenv': 0, 'ped': 0.3, 'hp': 0.42, 'hpord': 4},
     'turret_beep-07': {'bed': -2.1, 'res': 0.2, 'voice': 2.3, 'click': 0.8, 'crack': 0.6, 'low': -0.6, 'floor': -0.3, 'hp': 0.44, 'lp': 1.01, 'ped': 0.95, 'nofill': 1},
@@ -1269,3 +1405,52 @@ _KNOB.update({
     'turret_gunequip-02': {'hp': 0.4, 'tb': -4.53, 'fill': -5.35, 'clipk': 1.38},
     'turret_gunequip-03': {'fg': 63.89, 'clipk': 2.5, 'tg': 0.41, 'fill': 4.58, 'hp': 0.61, 'tb': -8.55},
 })
+
+# ===== round-6 baked search results (scripted search on the embedding distance; merges over the round-5 tables)
+_SALT.update({
+    'alienbug_aggro_c': 35,
+    'alienbug_bite_a': 246,
+    'alienbug_hit-04': 250,
+    'alienbug_idle-01': 463,
+    'alienbug_step_a': 165,
+    'alienbug_step_c': 34,
+    'cyberdemon_aggro_a': 510,
+    'cyberdemon_idle_a': 147,
+    'cyberdemon_idle_b': 319,
+    'cyberdemon_step_b': 260,
+    'cyberdemon_step_d': 445,
+})
+_HI_SMOOTH.update({
+    'alienbug_aggro_c': 0.05,
+    'alienbug_idle-01': 0.02,
+    'alienbug_step_a': 0.02,
+    'cyberdemon_idle_b': 0.05,
+    'cyberdemon_step_b': 0.08,
+    'cyberdemon_step_d': 0.2,
+})
+_SPLIT_OF.update({
+    'alienbug_hit-04': 200.0,
+    'alienbug_idle-01': 800.0,
+    'cyberdemon_idle_b': 800.0,
+    'cyberdemon_step_b': 150.0,
+})
+for _n, _k in {
+    'alienbug_aggro_c': {'hp': 0.6, 'voice': 1.76, 'clipk': 0.7, 'floor': 3.77, 'res': -1.42},
+    'alienbug_bite_d': {'click': -0.36, 'tb': -10.52, 'fg': 33.63, 'res': -2.7, 'voice': 6, 'bed': -0.21},
+    'alienbug_death_b': {'clipk': 1.56, 'lp': 1.08},
+    'alienbug_hit-04': {'res': 3.63, 'bed': -0.49, 'lp': 1.04, 'floor': -4.02, 'hp': 1.07},
+    'alienbug_idle-01': {'res': -0.27, 'clipk': 0.73},
+    'alienbug_step_a': {'lp': 0.98, 'bed': 0.14, 'tb': -7.29, 'fg': 53.28, 'click': 6, 'floor': 0.88, 'crack': 5.15},
+    'alienbug_step_c': {'tb': -10.87},
+    'apache_explode': {'droop': 9.33, 'bn': 2.8},
+    'cyberdemon_aggro_a': {'breath': -0.04, 'tb': -21.6, 'grit': 0.93, 'rasp': -4.08},
+    'cyberdemon_hurt_b': {'grit': 1.8},
+    'cyberdemon_idle_a': {'breath': 0.03, 'rasp': 0.05, 'grit': 1.54, 'clipk': 0.84, 'tb': -6.89},
+    'cyberdemon_idle_b': {'amr': 0.94, 'grit': 0.95, 'clipk': 0.7, 'breath': 0.13},
+    'cyberdemon_step_b': {'breath': 0.13, 'fg': 38.32, 'grit': 0.61},
+    'cyberdemon_step_d': {'tb': -40},
+    'turret_beep-04': {'haze': -30.59, 'body': -19.4},
+    'turret_beep-05': {'line': 0.86, 'nofill': 1, 'noisehi': 8083.58},
+    'turret_beep-06': {'tb': -33.58, 'noenv': 1},
+}.items():
+    _KNOB[_n] = dict(_KNOB.get(_n, {}), **_k)
