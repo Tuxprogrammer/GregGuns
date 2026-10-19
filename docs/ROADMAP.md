@@ -201,9 +201,9 @@ One gun, working end to end inside the GTNH dev pack.
 - NEI integration for any non-GT logic.
 
 **Exit gate:**
-- [ ] No GregGuns item duplicates a GT material or part. Unification is checked by the dev self-check.
-- [ ] Every kept machine has a ModularUI2 GUI, EU input, NEI recipes and integration scenarios.
-- [ ] MetaTileEntity IDs are reserved and recorded (see [CONTRIBUTING.md § GTNH integration](../CONTRIBUTING.md#gtnh-integration)).
+- [x] No GregGuns item duplicates a GT material or part. Unification is checked by the dev self-check. Evidence: `UnificationChecks` with its unit tests, passing on every boot ([M4 exit gate](gregguns-spec/08-machines-production/m4-exit-gate.md)).
+- [x] Every kept machine has a ModularUI2 GUI, EU input, NEI recipes and integration scenarios. Evidence: the per-machine table, with recorded exceptions: the Steam press runs on steam, the Camo Bench needs no EU, and the benches and Gantry have no recipe map to show in NEI ([M4 exit gate](gregguns-spec/08-machines-production/m4-exit-gate.md)).
+- [x] MetaTileEntity IDs are reserved and recorded (see [CONTRIBUTING.md § GTNH integration](../CONTRIBUTING.md#gtnh-integration)). Recorded in `GregGunsMTEIDs`, the roster and `GregGunsMTEIDsTest`. The GT5-Unofficial `MetaTileEntityIDs` named-entry reservation is a pack-side PR listed in [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md) and lands with M9 ([M4 exit gate](gregguns-spec/08-machines-production/m4-exit-gate.md)).
 
 ## M5 · Energy and exotic weapons
 
