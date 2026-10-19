@@ -24,6 +24,10 @@ import numpy as np
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MANIFEST = os.path.join(ROOT, "tools", "asset-gen", "manifest.json")
 BANDS = ("sub", "bass", "low_mid", "mid", "presence", "air")
+# Audio Flamingo Next layer-2 embedding distance, 1000 * (1 - cosine), calibrated in tools/audio-describe/CALIBRATION.md:
+# the owner-approved shots reach 1.71 at most and the owner-rejected reloads start at 1.76; mismatched sounds sit near 11.
+EMBED_PASS = 1.75
+EMBED_DIFFERENT = 5.5
 
 
 SR = 32000  # common analysis rate: most Techguns files are 32 kHz or lower, so compare only what both sides have
@@ -134,6 +138,8 @@ def main():
     ap.add_argument("--ref-assets", required=True, help="Techguns assets dir (read for measurement only)")
     ap.add_argument("--only", default="")
     ap.add_argument("--tonality", default="", help="JSON written by sound_tonality.py --json")
+    ap.add_argument("--embed", default="", help="JSONL from tools/audio-describe/ab_listen.py --modes embed (Audio "
+                    "Flamingo Next early-layer distance, see tools/audio-describe/CALIBRATION.md)")
     ap.add_argument("--json", default="")
     ap.add_argument("--report", default="")
     args = ap.parse_args()
@@ -142,6 +148,12 @@ def main():
     entries = {e["path"]: e for e in manifest if str(e.get("path", "")).startswith("sounds/")}
     fa, fb = load_features(args.ref_work), load_features(args.new_work)
     tonal = json.load(open(args.tonality, encoding="utf-8")) if args.tonality else {}
+    embed = {}
+    if args.embed:
+        for line in open(args.embed, encoding="utf-8"):
+            r = json.loads(line)
+            if r.get("dist_early_milli") is not None:
+                embed[r["b"][2:] if r["b"].startswith("b/") else r["b"]] = r["dist_early_milli"]
     paths = sorted(p for p in fb if p in entries and entries[p].get("footprint_ref") in fa)
     if args.only:
         wanted = {l.strip() for l in open(args.only, encoding="utf-8") if l.strip()}
@@ -158,6 +170,12 @@ def main():
         if p in tonal:
             sp = tonal[p].get("spurious") or []
             cs.append(("tonality", not sp, "%d spurious tonal lines" % len(sp) if sp else "no spurious tonal lines"))
+        if p in embed:
+            d = embed[p]
+            band = "close to A" if d <= EMBED_PASS else ("a different sound" if d >= EMBED_DIFFERENT else
+                                                         "same kind of sound but off")
+            cs.append(("embedding", d <= EMBED_PASS, "Audio Flamingo early-layer distance %.2f (pass <= %.2f; %s)"
+                       % (d, EMBED_PASS, band)))
         fails = [c for c in cs if not c[1]]
         tonal_fail = any(c[0] == "tonality" for c in fails)
         verdict = "keep" if not fails else ("tweak" if len(fails) <= 2 and not tonal_fail else "rework")
