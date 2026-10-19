@@ -12,6 +12,7 @@ import com.gregguns.core.selfcheck.SelfCheckRunner;
 import com.gregguns.core.testing.HarnessScenarios;
 import com.gregguns.core.testing.ScenarioChunks;
 import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.entity.NpcModule;
 import com.gregguns.gun.GunsModule;
 import com.gregguns.machine.MachinesModule;
 import com.gregguns.network.GregGunsNetwork;
@@ -76,6 +77,7 @@ public class CommonProxy {
         manager.register(new MachinesModule());
         manager.register(new ArmorModule());
         manager.register(new UtilityModule());
+        manager.register(new NpcModule());
     }
 
     /**
