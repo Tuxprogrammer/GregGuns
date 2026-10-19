@@ -300,7 +300,21 @@ public final class MpScenarios {
                     + " -> "
                     + magazines(a)
                     + ", finished at tick "
-                    + t);
+                    + t
+                    + ", reload started at "
+                    + reloadAt
+                    + ", presses "
+                    + presses
+                    + ", reloading now "
+                    + GunPlayerData.get(a)
+                        .controller()
+                        .reload()
+                        .isReloading()
+                    + ", last cancel "
+                    + GunPlayerData.get(a)
+                        .controller()
+                        .reload()
+                        .lastCancelReason());
             return out.build();
         }
     }
