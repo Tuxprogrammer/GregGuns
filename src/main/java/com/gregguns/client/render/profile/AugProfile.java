@@ -15,7 +15,7 @@ import com.gregguns.client.anim.SpriteSheet;
  * that never saw the original model or texture. Nothing is taken from Techguns code, box lists or textures. The look:
  * a dark-green bullpup rifle 70 texels long and about 25 tall: a 44-long diamond-section receiver running back to a
  * tall butt plate over a deepening, sloped rear body, a long thin black barrel (23 plus a 3-long muzzle cap) with a
- * a black two-stage scope on two thin forward-leaning black struts that leave a skewed open
+ * short gas tube on one side, a black two-stage scope on two forward-leaning green struts that leave a skewed open
  * window, a vertical diamond-section foregrip post in a lighter green, a raked pistol grip with a closed trigger-guard
  * loop and a gray magazine in two segments behind the grip, bowing forward. The layout lives in
  * {@code tools/asset-gen/gun-paint/aug.layout.json}; {@code tools/asset-gen/gun_paint.py pack} assigns the UV origins
@@ -26,7 +26,7 @@ import com.gregguns.client.anim.SpriteSheet;
  * <h2>Frame of reference</h2>
  * X-family: the muzzle is toward +X and Y grows downward, in texels. X = 0 is the back of the butt plate and Y = 0 the
  * top of the scope's rear housing; Z = 0 is the mid-plane. One texel is a sixteenth of a block. Part 1 is the charging
- * handle (on the +Z side), which slides back on a shot; everything else is part 0. Square
+ * handle (on the +Z side, with the gas tube on -Z), which slides back on a shot; everything else is part 0. Square
  * bars shown as diamonds use a 45 degree turn about their long axis ({@code tiltX}); the foregrip post uses one about
  * the vertical ({@code tiltY}).
  *
@@ -65,12 +65,13 @@ public final class AugProfile {
         // BEGIN GENERATED BOXES (tools/asset-gen/gun_paint.py pack; edit the layout, not this)
         new BoxSpec("receiver", 0, 16, 12, 44, 4, 4, 0f, 7.3f, -2f, new float[] { 22f, 9.3f, 0f }, 0f, 45f),
         new BoxSpec("lower_plate", 0, 0, 26, 18, 2, 3, 24f, 10.5f, -2f, NO_PIVOT, 0f),
-        new BoxSpec("barrel", 0, 42, 26, 23, 2, 2, 44f, 7.4f, -1f, NO_PIVOT, 0f),
-        new BoxSpec("muzzle_cap", 0, 118, 0, 3, 2, 2, 67f, 7.4f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("barrel", 0, 42, 26, 23, 2, 2, 44f, 7.4f, -1f, new float[] { 55.5f, 8.4f, 0f }, 0f, 45f),
+        new BoxSpec("muzzle_cap", 0, 118, 0, 3, 2, 2, 67f, 7.4f, -1f, new float[] { 68.5f, 8.4f, 0f }, 0f, 45f),
+        new BoxSpec("gas_tube", 0, 50, 10, 6, 1, 1, 44f, 9f, -2f, new float[] { 47f, 9.5f, -1.5f }, 0f, 45f),
         new BoxSpec("scope_rear", 0, 26, 20, 10, 3, 3, 18f, 0.62f, -1.5f, new float[] { 23f, 2.12f, 0f }, 0f, 45f),
         new BoxSpec("scope_front", 0, 94, 20, 9, 2, 2, 28f, 0.9f, -1f, new float[] { 32.5f, 1.9f, 0f }, 0f, 45f),
-        new BoxSpec("strut_front", 0, 80, 0, 1, 8, 1, 35.5f, 1.5f, -0.5f, new float[] { 36f, 1.5f, 0f }, -35f),
-        new BoxSpec("strut_rear", 0, 86, 0, 1, 7, 1, 26.5f, 1.5f, -0.5f, new float[] { 27f, 1.5f, 0f }, -25f),
+        new BoxSpec("strut_front", 0, 80, 0, 1, 8, 2, 35.5f, 1.5f, -1f, new float[] { 36f, 1.5f, 0f }, -35f),
+        new BoxSpec("strut_rear", 0, 86, 0, 1, 7, 2, 26.5f, 1.5f, -1f, new float[] { 27f, 1.5f, 0f }, -25f),
         new BoxSpec("charge", 1, 86, 9, 2, 2, 1, 40f, 6.55f, 2.05f, new float[] { 41f, 7.55f, 2.55f }, 0f, 45f),
         new BoxSpec("foregrip", 0, 30, 0, 3, 9, 3, 41.5f, 11.5f, -1.9f, new float[] { 43f, 16f, -0.4f }, 0f, 0f, 45f),
         new BoxSpec("grip", 0, 16, 0, 4, 9, 3, 25.4f, 10.8f, -2f, new float[] { 25.4f, 10.8f, 0f }, 25.6f),

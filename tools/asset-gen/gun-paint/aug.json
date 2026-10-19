@@ -158,7 +158,7 @@
   },
   "mag": {
    "material": "flat",
-   "base": "#444444",
+   "base": "#606060",
    "bevel": [
     1.0,
     0.86
@@ -173,10 +173,10 @@
    "role": "body"
   },
   "strut_front": {
-   "role": "black"
+   "role": "body"
   },
   "strut_rear": {
-   "role": "black"
+   "role": "body"
   },
   "grip": {
    "role": "body"
@@ -226,6 +226,9 @@
   "barrel": {
    "role": "black"
   },
+  "gas_tube": {
+   "role": "black"
+  },
   "scope_rear": {
    "role": "black"
   },
@@ -250,7 +253,22 @@
    ]
   },
   "foregrip": {
-   "role": "fgrip"
+   "role": "fgrip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "w": 1,
+     "color": "#000000",
+     "alpha": 0.8
+    }
+   ]
   },
   "mag_upper": {
    "role": "mag",
@@ -265,7 +283,7 @@
      ],
      "axis": "h",
      "at": 4,
-     "dark": 0.85,
+     "dark": 0.69,
      "light": 1.0
     },
     {
@@ -278,7 +296,7 @@
      ],
      "axis": "h",
      "at": 6,
-     "dark": 0.85,
+     "dark": 0.69,
      "light": 1.0
     }
    ]
@@ -296,7 +314,7 @@
      ],
      "axis": "h",
      "at": 1,
-     "dark": 0.85,
+     "dark": 0.69,
      "light": 1.0
     },
     {
@@ -309,7 +327,7 @@
      ],
      "axis": "h",
      "at": 3,
-     "dark": 0.85,
+     "dark": 0.69,
      "light": 1.0
     }
    ]

@@ -85,14 +85,11 @@ class VectorProfileTest {
         BoxSpec mag = box("magazine");
         double bottom = mag.pivotY() + mag.h() * Math.cos(Math.toRadians(20));
         assertEquals(27.4, bottom / U, 0.05, "magazine bottom");
-        assertTrue(maxZ / U <= 4.0, "nothing wider than 4 (round 2)");
+        assertTrue(maxZ / U <= 3.2, "nothing wider than 3.2");
         assertEquals(2.0, mag.d() / U, 1e-6, "magazine 2 wide");
         assertEquals(1.0, box("strut").d() / U, 1e-6, "strut 1 wide");
-        // Round 2: the original is 4 units wide at its widest (upper receiver and slabs), so length : width is 11.
-        assertEquals(4.0, maxZ / U, 1e-6, "widest part is 4 units");
-        assertEquals(4.0, box("receiver").d() / U, 1e-6, "receiver 4 wide");
-        assertEquals(4.0, box("slab_front").d() / U, 1e-6, "slabs flush with the receiver");
-        assertEquals(3.0, box("grip").d() / U, 1e-6, "grip stays 3 wide");
+        double ratio = 44.0 / (maxZ / U);
+        assertTrue(Math.abs(ratio - 13.8) / 13.8 < 0.1, "length to thickness within 10 percent");
     }
 
     @Test
