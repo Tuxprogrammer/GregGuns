@@ -8,6 +8,7 @@ import com.gregguns.gun.GunClientHooks;
 import com.gregguns.gun.GunClientSync;
 import com.gregguns.gun.logic.AmmoInventory;
 import com.gregguns.gun.logic.ChargeSource;
+import com.gregguns.gun.logic.ChargeState;
 import com.gregguns.gun.logic.GunController;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunState;
@@ -53,6 +54,7 @@ public final class ClientGunMirror implements GunClientSync {
 
     private final GunController controller = new GunController();
     private final GunState state = new GunState(0);
+    private final ChargeState charge = new ChargeState();
     private ItemGun activeGun;
     private int activeSlot = -1;
     private int lastServerLoaded = -1;
@@ -73,6 +75,25 @@ public final class ClientGunMirror implements GunClientSync {
     /** @return the gun the mirror is currently following, or null */
     public ItemGun activeGun() {
         return activeGun;
+    }
+
+    /** @return the local charge display state (the server keeps its own) */
+    public ChargeState charge() {
+        return charge;
+    }
+
+    /**
+     * Starts or ends the local charge display for the right button; the server counts its own hold ticks.
+     *
+     * @param down    true when pressed
+     * @param allowed false when the held gun is empty, so the press is ignored
+     */
+    public void chargeButton(boolean down, boolean allowed) {
+        if (down) {
+            charge.begin(allowed);
+        } else {
+            charge.cancel();
+        }
     }
 
     /** The fire button changed on the client. */

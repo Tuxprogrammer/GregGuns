@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
+import com.gregguns.gun.logic.ChargeState;
 import com.gregguns.gun.logic.GunController;
 import com.gregguns.gun.logic.LoopStart;
 import com.gregguns.item.gun.ItemGun;
@@ -29,6 +30,7 @@ public final class GunPlayerData implements IExtendedEntityProperties {
     public static final String ID = "gregguns.gun";
 
     private final GunController controller = new GunController();
+    private final ChargeState charge = new ChargeState();
     private ItemGun activeGun;
     private int activeSlot = -1;
     private boolean zoomSent;
@@ -52,6 +54,11 @@ public final class GunPlayerData implements IExtendedEntityProperties {
     /** @return the player's controller */
     public GunController controller() {
         return controller;
+    }
+
+    /** @return the player's hold-to-charge state (I10); idle unless a charge gun is being charged */
+    public ChargeState charge() {
+        return charge;
     }
 
     /** @return the gun driven on the last tick, or null if none was held */

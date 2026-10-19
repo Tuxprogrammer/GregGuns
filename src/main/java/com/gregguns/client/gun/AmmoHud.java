@@ -49,6 +49,7 @@ public final class AmmoHud {
     private static final int BAR_HEIGHT = 3;
     private static final int BAR_BACK = 0x80000000;
     private static final int BAR_FILL = 0xFF55FF55;
+    private static final int CHARGE_FILL = 0xFFFFAA00;
     private static final int TEXT_COLOR = 0xFFFFFF;
 
     private final ClientGunMirror mirror;
@@ -56,6 +57,20 @@ public final class AmmoHud {
     /** @param mirror the prediction mirror, for the reload progress */
     public AmmoHud(ClientGunMirror mirror) {
         this.mirror = mirror;
+    }
+
+    /** Draws a bar above the crosshair while a charge gun is being charged. */
+    private void drawChargeBar(ScaledResolution res, GunStats stats) {
+        if (!stats.isCharge() || !mirror.charge()
+            .isCharging()) {
+            return;
+        }
+        int left = res.getScaledWidth() / 2 - BAR_WIDTH / 2;
+        int top = res.getScaledHeight() / 2 + 12;
+        double fraction = mirror.charge()
+            .fraction(stats);
+        Gui.drawRect(left, top, left + BAR_WIDTH, top + BAR_HEIGHT, BAR_BACK);
+        Gui.drawRect(left, top, left + HudLayout.filledWidth(fraction, BAR_WIDTH), top + BAR_HEIGHT, CHARGE_FILL);
     }
 
     /** Draws the overlay after the hotbar. */
@@ -106,6 +121,7 @@ public final class AmmoHud {
         }
 
         ScaledResolution res = event.resolution;
+        drawChargeBar(res, stats);
         FontRenderer font = mc.fontRenderer;
         for (int i = 0; i < lines.size(); i++) {
             String text = lines.get(i);
