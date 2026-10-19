@@ -163,10 +163,10 @@ class NuclearDeathRayProfileTest {
             BoxSpec b = box("starburst_glow_" + i);
             assertEquals(NuclearDeathRayProfile.PART_STARBURST, b.part());
             assertEquals(7, b.w());
-            assertEquals(5, b.h());
+            assertEquals(4, b.h());
             assertEquals(1, b.d());
             assertEquals(28f, b.x(), 1e-6);
-            assertEquals(-6f, b.y(), 1e-6, "radius 1 to 6");
+            assertEquals(-5f, b.y(), 1e-6, "radius 1 to 5");
             float a = Math.abs(b.tiltXDegrees());
             assertTrue(a > 0 && a < 180, "none straight up or down");
             if (a == 25f || a == 63f) {

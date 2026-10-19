@@ -23,7 +23,7 @@ import static com.gregguns.client.anim.GunCurves.yR;
  * variants.
  *
  * <h2>Parts</h2>
- * Part 0 is the body, drawn in the gun's own matrix. Part 1 is the firing starburst: eight 7x5x1 blades named
+ * Part 0 is the body, drawn in the gun's own matrix. Part 1 is the firing starburst: eight 7x4x1 blades named
  * {@code starburst_glow_0} to {@code _7}, painted faint translucent yellow (alpha 28) and hidden by
  * {@link #buildTransforms()}'s part rule until the gameplay batch drives it. The pulse (not expressible in a profile)
  * scales the whole fan uniformly about the barrel axis between 0.8 and 1.0 of its size, one sine cycle over the fire
@@ -187,14 +187,14 @@ public final class NuclearDeathRayProfile {
         new BoxSpec("cup_3", 0, 68, 39, 4, 1, 4, 39f, -3.5f, -2f, new float[] { 39f, 0f, 0f }, 0f, 180f),
         new BoxSpec("cup_4", 0, 14, 44, 3, 1, 4, 39f, -3.5f, -2f, new float[] { 39f, 0f, 0f }, 0f, 240f),
         new BoxSpec("cup_5", 0, 84, 40, 4, 1, 4, 39f, -3.5f, -2f, new float[] { 39f, 0f, 0f }, 0f, 300f),
-        new BoxSpec("starburst_glow_0", 1, 16, 33, 7, 5, 1, 28f, -6f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 25f),
-        new BoxSpec("starburst_glow_1", 1, 32, 33, 7, 5, 1, 28f, -6f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -25f),
-        new BoxSpec("starburst_glow_2", 1, 48, 33, 7, 5, 1, 28f, -6f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 63f),
-        new BoxSpec("starburst_glow_3", 1, 64, 33, 7, 5, 1, 28f, -6f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -63f),
-        new BoxSpec("starburst_glow_4", 1, 80, 33, 7, 5, 1, 28f, -6f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 117f),
-        new BoxSpec("starburst_glow_5", 1, 96, 34, 7, 5, 1, 28f, -6f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -117f),
-        new BoxSpec("starburst_glow_6", 1, 112, 34, 7, 5, 1, 28f, -6f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 155f),
-        new BoxSpec("starburst_glow_7", 1, 0, 35, 7, 5, 1, 28f, -6f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -155f),
+        new BoxSpec("starburst_glow_0", 1, 16, 33, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 25f),
+        new BoxSpec("starburst_glow_1", 1, 32, 33, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -25f),
+        new BoxSpec("starburst_glow_2", 1, 48, 33, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 63f),
+        new BoxSpec("starburst_glow_3", 1, 64, 33, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -63f),
+        new BoxSpec("starburst_glow_4", 1, 80, 33, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 117f),
+        new BoxSpec("starburst_glow_5", 1, 96, 34, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -117f),
+        new BoxSpec("starburst_glow_6", 1, 112, 34, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, 155f),
+        new BoxSpec("starburst_glow_7", 1, 0, 35, 7, 4, 1, 28f, -5f, -0.5f, new float[] { 28f, 0f, 0f }, 0f, -155f),
         // END GENERATED BOXES
     };
 
