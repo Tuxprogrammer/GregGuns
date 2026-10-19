@@ -13,7 +13,8 @@ import com.gregguns.client.anim.SpriteSheet;
  * The boxes are original GregGuns geometry, built clean-room from written design notes only
  * ({@code docs/techguns-spec/03-gun-visuals-audio/model-notes/scar.md}: proportions, silhouettes, palettes), by an
  * agent that never saw the original model or texture. Nothing is taken from Techguns code, box lists or textures. The
- * look: a long, lean, desert-tan battle rifle, 71.8 texels long and 23.3 tall but only 4 wide at the receiver. A
+ * look: a long, lean, desert-tan battle rifle, 71.8 texels long and 23.3 tall but only 4 wide at the receiver (7.4
+ * across the handguard rails, a 5-wide cheek slab). A
  * 37-long slab receiver under a smooth top rail (the teeth are painted), a black dumbbell scope on a riser, a hooked
  * stock with a sloped cheek, a flat underside, a raked heel and a tall black buttpad, a stippled pistol grip raked
  * back 25.6 degrees, an open trigger window with a blade in it, a straight 2-wide magazine, an open-triangle angled
@@ -84,7 +85,7 @@ public final class ScarProfile {
         new BoxSpec("trigger", 0, 202, 13, 1, 2, 1, 22.3f, 13.8f, -0.5f, new float[] { 22.8f, 13.8f, 0f }, -15f),
         new BoxSpec("stock_hinge", 0, 50, 0, 2, 7, 4, 14.3f, 5.8f, -2f, NO_PIVOT, 0f),
         new BoxSpec("hinge_pin", 0, 204, 0, 1, 6, 1, 14.8f, 6.3f, -2.5f, new float[] { 15.3f, 9.3f, -2f }, 0f, 0f, 45f),
-        new BoxSpec("cheek", 0, 144, 0, 11, 4, 4, 3.8f, 5.8f, -2f, new float[] { 14.8f, 5.8f, 0f }, -10f),
+        new BoxSpec("cheek", 0, 182, 16, 11, 4, 5, 3.8f, 5.8f, -2.5f, new float[] { 14.8f, 5.8f, 0f }, -10f),
         new BoxSpec("stock_under", 0, 208, 6, 10, 3, 3, 4.8f, 9.8f, -1.5f, NO_PIVOT, 0f),
         new BoxSpec("heel", 0, 24, 0, 3, 10, 3, 3.8f, 8.8f, -1.5f, new float[] { 6.8f, 8.8f, 0f }, 15f),
         new BoxSpec("column", 0, 12, 0, 3, 11, 3, 1f, 7.8f, -1.5f, NO_PIVOT, 0f),
@@ -102,8 +103,8 @@ public final class ScarProfile {
         new BoxSpec("rear_notch", 0, 12, 14, 3, 1, 1, 15.3f, 4.6f, -0.5f, NO_PIVOT, 0f),
         new BoxSpec("front_block", 0, 24, 13, 4, 1, 2, 54.3f, 5.3f, -1f, NO_PIVOT, 0f),
         new BoxSpec("front_post", 0, 244, 12, 1, 2, 2, 53.3f, 5.5f, -1f, NO_PIVOT, 0f),
-        new BoxSpec("guard_left", 0, 176, 13, 12, 2, 1, 40.3f, 8.1f, 2f, NO_PIVOT, 0f),
-        new BoxSpec("guard_right", 0, 0, 16, 12, 2, 1, 40.3f, 8.1f, -3f, NO_PIVOT, 0f),
+        new BoxSpec("guard_left", 0, 144, 0, 12, 2, 2, 40.3f, 8.1f, 1.4f, NO_PIVOT, 0f),
+        new BoxSpec("guard_right", 0, 144, 4, 12, 2, 2, 40.3f, 8.1f, -3.4f, NO_PIVOT, 0f),
         new BoxSpec("bottom_rail", 0, 138, 14, 17, 1, 2, 35.8f, 11.3f, -1f, NO_PIVOT, 0f),
         new BoxSpec("mount_front", 0, 172, 8, 6, 2, 3, 43.3f, 10.8f, -1.5f, NO_PIVOT, 0f),
         new BoxSpec("mount_rear", 0, 94, 9, 5, 1, 3, 38.3f, 11.8f, -1.5f, NO_PIVOT, 0f),
