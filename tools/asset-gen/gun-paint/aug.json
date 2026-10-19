@@ -1,0 +1,336 @@
+{
+ "gun": "aug",
+ "textures": [
+  {
+   "file": "aug.png"
+  },
+  {
+   "file": "aug_camo1.png",
+   "variant": {
+    "roles": {
+     "body": {
+      "base": "#282828",
+      "noise": 0.055
+     },
+     "rear": {
+      "base": "#292929",
+      "noise": 0.055
+     },
+     "charge": {
+      "base": "#282828",
+      "noise": 0.055
+     },
+     "fgrip": {
+      "base": "#444444",
+      "noise": 0.03
+     }
+    }
+   }
+  },
+  {
+   "file": "aug_camo2.png",
+   "variant": {
+    "roles": {
+     "body": {
+      "base": "#1B4A26",
+      "noise": 0.06
+     },
+     "rear": {
+      "base": "#1C4C27",
+      "noise": 0.06
+     },
+     "charge": {
+      "base": "#1B4A26",
+      "noise": 0.06
+     },
+     "fgrip": {
+      "base": "#2E8041",
+      "noise": 0.03
+     }
+    }
+   }
+  },
+  {
+   "file": "aug_camo3.png",
+   "variant": {
+    "roles": {
+     "body": {
+      "base": "#CBCE89",
+      "noise": 0.02
+     },
+     "rear": {
+      "base": "#CCCF8B",
+      "noise": 0.02
+     },
+     "charge": {
+      "base": "#CBCE89",
+      "noise": 0.02
+     },
+     "fgrip": {
+      "base": "#EBECCD",
+      "noise": 0.015
+     }
+    }
+   }
+  },
+  {
+   "file": "aug_camo4.png",
+   "variant": {
+    "roles": {
+     "body": {
+      "base": "#7C0000",
+      "noise": 0.127
+     },
+     "rear": {
+      "base": "#800000",
+      "noise": 0.127
+     },
+     "charge": {
+      "base": "#7C0000",
+      "noise": 0.127
+     },
+     "fgrip": {
+      "base": "#900000",
+      "noise": 0.04,
+      "flecks": {
+       "colors": [
+        "#B00000"
+       ],
+       "density": 0.08
+      }
+     }
+    }
+   }
+  }
+ ],
+ "roles": {
+  "body": {
+   "material": "steel",
+   "base": "#234635",
+   "scratches": false,
+   "noise": 0.065,
+   "drift": 0.0,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "rear": {
+   "material": "steel",
+   "base": "#254B39",
+   "scratches": false,
+   "noise": 0.06,
+   "drift": 0.0,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "charge": {
+   "material": "steel",
+   "base": "#234736",
+   "scratches": false,
+   "noise": 0.06,
+   "drift": 0.0,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "fgrip": {
+   "material": "steel",
+   "base": "#3E7C5E",
+   "scratches": false,
+   "noise": 0.03,
+   "drift": 0.0,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "black": {
+   "material": "flat",
+   "base": "#010101",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "mag": {
+   "material": "flat",
+   "base": "#606060",
+   "bevel": [
+    1.0,
+    0.86
+   ]
+  }
+ },
+ "boxes": {
+  "receiver": {
+   "role": "body"
+  },
+  "lower_plate": {
+   "role": "body"
+  },
+  "strut_front": {
+   "role": "body"
+  },
+  "strut_rear": {
+   "role": "body"
+  },
+  "grip": {
+   "role": "body"
+  },
+  "guard_front": {
+   "role": "body"
+  },
+  "guard_floor": {
+   "role": "body"
+  },
+  "trigger": {
+   "role": "body"
+  },
+  "slope": {
+   "role": "body"
+  },
+  "cheek": {
+   "role": "body"
+  },
+  "socket": {
+   "role": "body"
+  },
+  "neck": {
+   "role": "body"
+  },
+  "ramp": {
+   "role": "body"
+  },
+  "butt": {
+   "role": "rear"
+  },
+  "rear_block": {
+   "role": "rear"
+  },
+  "charge": {
+   "role": "charge",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "front"
+     ],
+     "f": 1.07
+    }
+   ]
+  },
+  "barrel": {
+   "role": "black"
+  },
+  "gas_tube": {
+   "role": "black"
+  },
+  "scope_rear": {
+   "role": "black"
+  },
+  "scope_front": {
+   "role": "black"
+  },
+  "muzzle_cap": {
+   "role": "black",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "w": 1,
+     "color": "#0B0B0B"
+    }
+   ]
+  },
+  "foregrip": {
+   "role": "fgrip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "w": 1,
+     "color": "#000000",
+     "alpha": 0.8
+    }
+   ]
+  },
+  "mag_upper": {
+   "role": "mag",
+   "painters": [
+    {
+     "type": "seam",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "axis": "h",
+     "at": 4,
+     "dark": 0.69,
+     "light": 1.0
+    },
+    {
+     "type": "seam",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "axis": "h",
+     "at": 6,
+     "dark": 0.69,
+     "light": 1.0
+    }
+   ]
+  },
+  "mag_lower": {
+   "role": "mag",
+   "painters": [
+    {
+     "type": "seam",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "axis": "h",
+     "at": 1,
+     "dark": 0.69,
+     "light": 1.0
+    },
+    {
+     "type": "seam",
+     "faces": [
+      "front",
+      "back",
+      "left",
+      "right"
+     ],
+     "axis": "h",
+     "at": 3,
+     "dark": 0.69,
+     "light": 1.0
+    }
+   ]
+  }
+ }
+}
