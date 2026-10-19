@@ -220,9 +220,8 @@ public final class GunRecipeScenarios {
             List<ItemStack> inputList = new ArrayList<>();
             for (ProductionTable.Input input : row.inputs()) {
                 gated |= !input.isGregGuns() && gate.equals(input.material());
-                inputList.add(
-                    input.isGregGuns() ? modStack(input.itemName(), input.count())
-                        : gt(input.prefix(), input.material(), input.count()));
+                // Resolves GregGuns items, GT parts and ItemList machine parts the way the recipe loader does.
+                inputList.add(ProductionRecipes.resolve(input));
             }
             inputList.add(GTUtility.getIntegratedCircuit(row.circuit()));
             out.check(gated, "the row should carry a " + gate + " input, the gate material of " + row.tier());
