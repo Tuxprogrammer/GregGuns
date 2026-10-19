@@ -259,6 +259,8 @@ public final class ClientAutotest {
         String[] args = AutotestSignal.args(parts);
         switch (parts[0]) {
             case "view" -> Minecraft.getMinecraft().gameSettings.thirdPersonView = Integer.parseInt(args[0]);
+            // hud off hides the GUI layer (hotbar, hands, crosshair) for clean worn-model screenshots (F1).
+            case "hud" -> Minecraft.getMinecraft().gameSettings.hideGUI = "off".equals(args[0]);
             case "shot" -> {
                 pendingShot = args[0];
                 shotFrames = 0;

@@ -211,11 +211,12 @@ class PowerArmorTest {
             "gregguns:textures/models/armor/t3_power_dark2.png",
             ArmorCatalog.T3_POWER.layerTexture(ArmorSlot.LEGGINGS, 2));
         assertEquals(3, ArmorCatalog.T3_EXO.camoCount());
+        assertEquals(SetDef.TextureLayout.SINGLE, ArmorCatalog.T3_EXO.layout());
         assertEquals(
-            "gregguns:textures/models/armor/t3_exo_silver_2.png",
+            "gregguns:textures/models/armor/t3_exo_silver.png",
             ArmorCatalog.T3_EXO.layerTexture(ArmorSlot.LEGGINGS, 1));
         assertEquals(
-            "gregguns:textures/models/armor/t3_exo_1.png",
+            "gregguns:textures/models/armor/t3_exo.png",
             ArmorCatalog.T3_EXO.layerTexture(ArmorSlot.HELMET, 99),
             "an out-of-range camo falls back to 0 (ARM-12)");
     }
