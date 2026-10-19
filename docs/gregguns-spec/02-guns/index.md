@@ -33,6 +33,18 @@ All evidence is pinned to GT5-Unofficial `5.09.54.205`, Backhand `1.8.16`, Battl
 
 **No integration point** (see [the Techguns spec](../../techguns-spec/02-guns/index.md) and the [design records](../../design/README.md)): gun stats and catalog, firing algorithm, spread and zoom math, reload rules, NBT layout, tooltips and lang keys, NPC firing, the weapon-stats config, grenade behavior. Their pack-facing parts (keybinds, networking, config library) are in [01-core](../01-core/).
 
+## Pistol, Revolver, Sawed Off and Hand Cannon (M1 and early M2): deviations
+
+9mm Pistol (`pistol_9mm`, LV), Revolver (`revolver`, LV), Sawed Off (`sawed_off`, LV) and Hand Cannon (`handcannon`, Steam tier). Their stats are the Techguns sheets' unchanged (`GunCatalogTest` pins each one). What differs:
+
+- **NPC attack time.** The sheets' attack-time variance (10 and 20 ticks) is dropped; `GunStats` has no such field. Range, base attack time and burst are kept.
+- **GUN-16 not reproduced.** The pistol has one drop-off and one muzzle flash, not two (`GunCatalogTest.doesNotReproduceGUN16_pistolHasOneDropOffAndOneMuzzleFlash`).
+- **Loading.** The Revolver takes one `ammo_9mm_bullet` for all 6 rounds and returns no container; the Sawed Off loads its 2 shells one by one (`ReloadMode.INCREMENTAL`) and keeps the rounds already in it; the Hand Cannon takes one `ammo_stone_bullet` per round with no magazine and no refund.
+- **Sawed Off pellets.** One round spawns 8 projectiles (the centre one at the main spread, 7 at the pellet spread of 0.2) and costs one round.
+- **Hand Cannon tier.** It has no machine row, because no machine exists at ULV, so it is crafted at the crafting table from the Stone Barrel (RC-01, Bronze gate) and stone bullets (RC-27). Its tier is Steam. The ball falls under 0.015 gravity (`SimpleProjectile`).
+- **Recipes.** The Pistol, Revolver and Sawed Off are LV Assembler rows with circuits 1, 2 and 3 (GR-01 to GR-03); the Steel gate and the part chains are in `GunTable`.
+- **Models.** All four have clean-room profiles. The Hand Cannon has no `model-notes` file yet (see [the M2 exit gate audit](m2-exit-gate.md#gap-list), G3).
+
 ## Bolt Action Rifle (M2): deviations
 
 The rifle is the first scoped gun (`gregguns:bolt_action_rifle`, GR-04, LV). Its stats are the Techguns sheet's: 16 damage falling to 10 between 20 and 30 blocks, speed 2.25 blocks per tick, spread 0.05, 15% armor penetration, 6 rounds, a 25 tick rechamber, a 50 tick reload and a zoom of x0.35 FOV and x0.125 spread. What differs:

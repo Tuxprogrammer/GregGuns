@@ -169,10 +169,10 @@ One gun, working end to end inside the GTNH dev pack.
 - Their ammo items, models, textures and sounds.
 
 **Exit gate (per tier batch):**
-- [ ] Every gun in the batch matches its spec sheet, or a deviation is recorded.
-- [ ] Every recipe is gated by tier and visible in NEI.
-- [ ] Unit tests cover each gun's unique behavior, such as shotgun pellets, burst fire and the grenade fuse.
-- [ ] Original textures and sounds are in place, following D6.
+- [x] Every gun in the batch matches its spec sheet, or a deviation is recorded. Evidence: stats pinned by `GunCatalogTest`, `MvGunsLogicTest`, `HvRiflesLogicTest`, `HeavyGunLogicTest` and the launcher, flame and golden revolver tests; deviation sections for every batch in [02-guns](gregguns-spec/02-guns/index.md) ([M2 exit gate](gregguns-spec/02-guns/m2-exit-gate.md#1-every-gun-matches-its-spec-sheet-or-a-deviation-is-recorded)).
+- [ ] Every recipe is gated by tier and visible in NEI. Gating is met (`GunDefinitionsTest` over every row with `GateRule`, a `*.recipe` or `*.combine` scenario per gun); NEI visibility is pending the batched in-game session ([M2 exit gate](gregguns-spec/02-guns/m2-exit-gate.md#2-every-recipe-is-tier-gated-and-visible-in-nei)).
+- [x] Unit tests cover each gun's unique behavior, such as shotgun pellets, burst fire and the grenade fuse. Evidence: `ShotgunAndAkimboLogicTest`, `GrenadeMathTest`, `LauncherMathTest`, `FlamethrowerLogicTest` and the per-gun scenarios ([M2 exit gate](gregguns-spec/02-guns/m2-exit-gate.md#3-unit-tests-cover-each-guns-unique-behavior)).
+- [x] Original textures and sounds are in place, following D6. Evidence: every gun has a generated texture, a clean-room profile and `sounds.json` events whose files exist; 20 sound files are still at the `tweak` verdict and the Hand Cannon has no notes file, both listed as gaps ([M2 exit gate](gregguns-spec/02-guns/m2-exit-gate.md#4-original-textures-and-sounds-are-in-place-following-d6)).
 
 ## M3 · Armor and equipment
 
