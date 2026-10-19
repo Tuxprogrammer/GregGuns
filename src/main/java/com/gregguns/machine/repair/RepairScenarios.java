@@ -655,13 +655,21 @@ public final class RepairScenarios {
             ItemStack soldier = piece(ArmorCatalog.T1_COMBAT, ArmorSlot.HELMET, 0);
             player.wear(soldier);
             ItemStack benchItem = piece(ArmorCatalog.T1_MINER, ArmorSlot.BOOTS, 0);
-            base.setInventorySlotContents(MTECamoBench.SLOT, benchItem);
             int dim = ctx.world().provider.dimensionId;
             int x = ctx.originX();
             int y = ctx.originY();
             int z = ctx.originZ();
             return afterWarmup(name(), () -> {
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
+                // Look the bench up now and fill it now: under a lagging server the tile entity placed above can be
+                // replaced during the warm-up, and the packet acts on the world's current one, not on the old handle.
+                TileEntity live = ctx.world()
+                    .getTileEntity(x, y, z);
+                if (!(live instanceof IGregTechTileEntity)) {
+                    return ScenarioResult.fail(name(), "the camo bench is gone after the warm-up");
+                }
+                IGregTechTileEntity bench0 = (IGregTechTileEntity) live;
+                bench0.setInventorySlotContents(MTECamoBench.SLOT, benchItem);
                 int chestTarget = CamoCycle.Target.CHESTPLATE.ordinal();
                 PacketOutcome r = new PacketCamoCycle(dim, x, y, z, chestTarget, false).applyAs(player);
                 out.check(r.isAccepted(), "a valid forward click should be accepted: " + r);
@@ -681,7 +689,7 @@ public final class RepairScenarios {
 
                 ItemGregGunsArmor miner = (ItemGregGunsArmor) benchItem.getItem();
                 new PacketCamoCycle(dim, x, y, z, CamoCycle.Target.BENCH_SLOT.ordinal(), false).applyAs(player);
-                out.checkEquals("bench slot item camo", 1, miner.getCamo(base.getStackInSlot(MTECamoBench.SLOT)));
+                out.checkEquals("bench slot item camo", 1, miner.getCamo(bench0.getStackInSlot(MTECamoBench.SLOT)));
 
                 new PacketCamoCycle(dim, x, y, z, CamoCycle.Target.HELMET.ordinal(), false).applyAs(player);
                 out.checkEquals(
@@ -701,7 +709,7 @@ public final class RepairScenarios {
                 PacketOutcome wrongDim = new PacketCamoCycle(dim + 1, x, y, z, chestTarget, false).applyAs(player);
                 out.check(!wrongDim.isAccepted(), "a click naming another dimension should be rejected");
                 out.checkEquals("camo untouched by the rejected clicks", 0, scout.getCamo(chest));
-                empty(base);
+                empty(base, bench0);
                 noStray(ctx, out);
                 return out.build();
             });
