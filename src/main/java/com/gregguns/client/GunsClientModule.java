@@ -44,6 +44,7 @@ public final class GunsClientModule implements ClientModule {
         ProjectileRenderers.register();
         GrenadeRenderers.register();
         GunRenderClient.init(ANIMATIONS);
+        com.gregguns.client.fx.FxClient.init();
         // Dev-only and inert unless -Dgregguns.autotest is set: see docs/testing/README.md.
         ClientAutotest.init(GunClientSetup.init());
     }
