@@ -1,0 +1,33 @@
+{
+ "gun": "revolver",
+ "textures": [{"file": "revolver.png"}, {"file": "golden_revolver.png", "variant": {"roles": {"bar": {"base": "#D8B53C"}, "frame": {"base": "#C9A32E"}, "drum": {"base": "#C9A32E"}, "hammer": {"base": "#6B5521"}}}}],
+ "roles": {
+  "bar": {"material": "steel", "base": "#AEABA7", "scratches": false, "noise": 0.025},
+  "frame": {"material": "steel", "base": "#A6A29F", "scratches": false, "noise": 0.03},
+  "drum": {"material": "steel", "base": "#A6A29F", "scratches": false, "noise": 0.05},
+  "hammer": {"material": "steel", "base": "#575553", "scratches": false, "noise": 0.015},
+  "wood": {"material": "wood", "base": "#8B5625"}
+ },
+ "boxes": {
+  "strap": {"role": "frame"},
+  "frame_upper": {"role": "frame"},
+  "frame_lower": {"role": "frame"},
+  "belly": {"role": "frame"},
+  "shield": {"role": "frame"},
+  "drum_top": {"role": "drum", "painters": [{"type": "seam", "faces": ["front", "back"], "at": 1, "dark": 0.78, "light": 1.0}, {"type": "seam", "faces": ["front", "back"], "at": 3, "dark": 0.78, "light": 1.0}]},
+  "drum_mid": {"role": "drum", "painters": [{"type": "seam", "faces": ["front", "back"], "at": 1, "dark": 0.78, "light": 1.0}, {"type": "seam", "faces": ["front", "back"], "at": 3, "dark": 0.78, "light": 1.0}]},
+  "drum_bottom": {"role": "drum", "painters": [{"type": "seam", "faces": ["front", "back"], "at": 1, "dark": 0.78, "light": 1.0}, {"type": "seam", "faces": ["front", "back"], "at": 3, "dark": 0.78, "light": 1.0}]},
+  "barrel": {"role": "bar", "painters": [{"type": "tone", "faces": ["top", "back"], "f": 1.1}, {"type": "tone", "faces": ["front", "bottom"], "f": 0.93}, {"type": "rect", "faces": ["front"], "x": 0, "y": -1, "w": 14, "h": 1, "color": "#6F6D69", "alpha": 0.75}, {"type": "rect", "faces": ["bottom"], "x": 0, "y": 0, "w": 14, "h": 1, "color": "#6F6D69", "alpha": 0.75}]},
+  "rod": {"role": "bar", "painters": [{"type": "tone", "faces": ["top", "back"], "f": 1.0}, {"type": "tone", "faces": ["front", "bottom"], "f": 0.9}]},
+  "sight": {"role": "bar"},
+  "hammer": {"role": "hammer"},
+  "hammer_spur": {"role": "hammer"},
+  "guard_rear": {"role": "frame"},
+  "guard_front": {"role": "frame"},
+  "guard_floor": {"role": "frame"},
+  "grip_crown": {"role": "wood", "grain": "y"},
+  "grip_web": {"role": "wood", "grain": "y", "painters": [{"type": "rect", "faces": ["front", "back"], "x": 1, "y": 0, "w": 1, "h": 1, "color": "#1A0F08"}, {"type": "rect", "faces": ["front", "back"], "x": 4, "y": 0, "w": 1, "h": 1, "color": "#1A0F08"}]},
+  "grip_neck": {"role": "wood", "grain": "y", "painters": [{"type": "rect", "faces": ["front", "back"], "x": 1, "y": 0, "w": 2, "h": 2, "color": "#B7712F", "alpha": 0.7}]},
+  "grip_butt": {"role": "wood", "grain": "y", "painters": [{"type": "rect", "faces": ["front", "back"], "x": 0, "y": 1, "w": 3, "h": 3, "color": "#B7712F", "alpha": 0.7}]}
+ }
+}

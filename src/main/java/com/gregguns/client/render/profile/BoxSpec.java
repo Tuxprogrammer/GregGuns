@@ -26,6 +26,7 @@ public final class BoxSpec {
     private final float pivotY;
     private final float pivotZ;
     private final float tiltZDegrees;
+    private final float tiltXDegrees;
 
     /**
      * @param name         label, matches the layout sheet
@@ -38,11 +39,24 @@ public final class BoxSpec {
      * @param x            model-space corner
      * @param y            model-space corner
      * @param z            model-space corner
-     * @param pivot        model-space tilt pivot (three values); ignored when {@code tiltZDegrees} is 0
+     * @param pivot        model-space tilt pivot (three values); ignored when both tilts are 0
      * @param tiltZDegrees tilt about the model Z axis through the pivot, degrees
      */
     public BoxSpec(String name, int part, int u, int v, int w, int h, int d, float x, float y, float z, float[] pivot,
         float tiltZDegrees) {
+        this(name, part, u, v, w, h, d, x, y, z, pivot, tiltZDegrees, 0.0f);
+    }
+
+    /**
+     * As the main constructor, with a second tilt: a turn about the model X axis through the pivot (the gun's long
+     * axis), used to show a square bar edge-on as a diamond. Use it with one of the two tilts at a time.
+     *
+     * @param tiltXDegrees tilt about the model X axis through the pivot, degrees; the pivot is used when this or
+     *                     {@code tiltZDegrees} is not 0
+     */
+    public BoxSpec(String name, int part, int u, int v, int w, int h, int d, float x, float y, float z, float[] pivot,
+        float tiltZDegrees, float tiltXDegrees) {
+        this.tiltXDegrees = tiltXDegrees;
         this.name = name;
         this.part = part;
         this.u = u;
@@ -135,6 +149,11 @@ public final class BoxSpec {
     /** @return pivot Z */
     public float pivotZ() {
         return pivotZ;
+    }
+
+    /** @return tilt about X in degrees, 0 for none */
+    public float tiltXDegrees() {
+        return tiltXDegrees;
     }
 
     /** @return tilt about Z in degrees, 0 for none */
