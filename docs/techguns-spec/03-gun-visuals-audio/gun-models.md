@@ -87,6 +87,7 @@ Extent x −17…22, y −4…5, z −3…4: a side-by-side double-barrel cut do
 * **Barrels** (x −6…22): two 28×4×2 tubes (z −2…0 and 1…3), with 28×2×1 ribs above, between and outside (z −3, 0, 3). Twin bead sights 1×1×1 at x 21. Under-rib 8×1×1.
 * **Breech face** (x −7): 1×1×1 / 1×2×1 caps closing the barrel ends.
 * **Action and grip** (x −17…−6): 2×3×3 lock block, 4×1×3 top lever, 6×1×3 trigger plate, 7×4×3 grip, two 7×2×1 side plates, 2×1×3, butt 2×6×5.
+Clean-room rebuild notes: [model-notes/sawed-off.md](model-notes/sawed-off.md).
 
 ### ModelCombatShotgun: 64×32, family X, 20 boxes, **2 parts**
 Extent x −23…32, y −3.5…8.5, z −1.5…2.5: a pump shotgun with a folding skeleton stock.
