@@ -24,9 +24,25 @@ import numpy as np
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 MANIFEST = os.path.join(ROOT, "tools", "asset-gen", "manifest.json")
 BANDS = ("sub", "bass", "low_mid", "mid", "presence", "air")
+# Audio Flamingo Next layer-2 embedding distance, 1000 * (1 - cosine), calibrated in tools/audio-describe/CALIBRATION.md:
+# the owner-approved shots reach 1.71 at most and the owner-rejected reloads start at 1.76; mismatched sounds sit near 11.
+EMBED_PASS = 1.75
+EMBED_DIFFERENT = 5.5
 
 
 SR = 32000  # common analysis rate: most Techguns files are 32 kHz or lower, so compare only what both sides have
+
+
+def clipped_lufs(path):
+    """Integrated loudness of the file hard-clipped at full scale, as the game plays it (16-bit output).
+
+    A few Techguns files decode to float samples far above full scale (apache_burst peaks at +15.5 dBFS), so their
+    measured loudness is not reachable under our -1 dBTP ceiling and is not what a player hears either."""
+    err = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", path, "-af",
+                          "aformat=sample_fmts=s16,ebur128=framelog=quiet", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    vals = [float(l.split()[1]) for l in err.splitlines() if l.strip().startswith("I:")]
+    return vals[-1] if vals else None
 
 
 def band_flatness(path, lo=200.0, hi=8000.0):
@@ -134,6 +150,8 @@ def main():
     ap.add_argument("--ref-assets", required=True, help="Techguns assets dir (read for measurement only)")
     ap.add_argument("--only", default="")
     ap.add_argument("--tonality", default="", help="JSON written by sound_tonality.py --json")
+    ap.add_argument("--embed", default="", help="JSONL from tools/audio-describe/ab_listen.py --modes embed (Audio "
+                    "Flamingo Next early-layer distance, see tools/audio-describe/CALIBRATION.md)")
     ap.add_argument("--json", default="")
     ap.add_argument("--report", default="")
     args = ap.parse_args()
@@ -142,6 +160,12 @@ def main():
     entries = {e["path"]: e for e in manifest if str(e.get("path", "")).startswith("sounds/")}
     fa, fb = load_features(args.ref_work), load_features(args.new_work)
     tonal = json.load(open(args.tonality, encoding="utf-8")) if args.tonality else {}
+    embed = {}
+    if args.embed:
+        for line in open(args.embed, encoding="utf-8"):
+            r = json.loads(line)
+            if r.get("dist_early_milli") is not None:
+                embed[r["b"][2:] if r["b"].startswith("b/") else r["b"]] = r["dist_early_milli"]
     paths = sorted(p for p in fb if p in entries and entries[p].get("footprint_ref") in fa)
     if args.only:
         wanted = {l.strip() for l in open(args.only, encoding="utf-8") if l.strip()}
@@ -154,10 +178,21 @@ def main():
         ra = os.path.join(args.ref_assets, e["footprint_ref"])
         a_feat["band_flatness"] = band_flatness(ra) if os.path.exists(ra) else None
         b_feat["band_flatness"] = band_flatness(os.path.join(args.assets, p))
-        cs = checks(a_feat, b_feat, e.get("target_lufs"))
+        target = e.get("target_lufs")
+        if (a_feat.get("true_peak_dbtp") or -99) > 0 and os.path.exists(ra):
+            clipped = clipped_lufs(ra)  # A is over full scale: aim at what the game actually plays
+            if clipped is not None and target is not None:
+                target = min(target, clipped)
+        cs = checks(a_feat, b_feat, target)
         if p in tonal:
             sp = tonal[p].get("spurious") or []
             cs.append(("tonality", not sp, "%d spurious tonal lines" % len(sp) if sp else "no spurious tonal lines"))
+        if p in embed:
+            d = embed[p]
+            band = "close to A" if d <= EMBED_PASS else ("a different sound" if d >= EMBED_DIFFERENT else
+                                                         "same kind of sound but off")
+            cs.append(("embedding", d <= EMBED_PASS, "Audio Flamingo early-layer distance %.2f (pass <= %.2f; %s)"
+                       % (d, EMBED_PASS, band)))
         fails = [c for c in cs if not c[1]]
         tonal_fail = any(c[0] == "tonality" for c in fails)
         verdict = "keep" if not fails else ("tweak" if len(fails) <= 2 and not tonal_fail else "rework")

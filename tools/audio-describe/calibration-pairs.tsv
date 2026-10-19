@@ -1,0 +1,49 @@
+# label	expected	A path	B path   (paths relative to the workspace root)
+identical	highest	ref/sounds/guns/ak47_shot_a.ogg	ref/sounds/guns/ak47_shot_a.ogg
+identical	highest	ref/sounds/guns/pistol_reload.ogg	ref/sounds/guns/pistol_reload.ogg
+identical	highest	ref/sounds/guns/lmg_reload.ogg	ref/sounds/guns/lmg_reload.ogg
+identical	highest	ref/sounds/guns/rocket_shot_a.ogg	ref/sounds/guns/rocket_shot_a.ogg
+identical	highest	ref/sounds/effects/explosion1_a.ogg	ref/sounds/effects/explosion1_a.ogg
+identical	highest	ref/sounds/npcs/turret_beep-01.ogg	ref/sounds/npcs/turret_beep-01.ogg
+identical	highest	ref/sounds/blocks/metaldoor_open_a.ogg	ref/sounds/blocks/metaldoor_open_a.ogg
+identical	highest	ref/sounds/effects/gore_a.ogg	ref/sounds/effects/gore_a.ogg
+mismatched	very low	ref/sounds/guns/ak47_reload.ogg	b/sounds/effects/explosion1_a.ogg
+mismatched	very low	ref/sounds/guns/pistol_shot_a.ogg	b/sounds/npcs/turret_beep-02.ogg
+mismatched	very low	ref/sounds/blocks/metaldoor_open_a.ogg	b/sounds/effects/gore_b.ogg
+mismatched	very low	ref/sounds/effects/explosion1_b.ogg	b/sounds/guns/revolver_reload.ogg
+mismatched	very low	ref/sounds/npcs/turret_beep-03.ogg	b/sounds/guns/lmg_shot_b.ogg
+mismatched	very low	ref/sounds/guns/thompson_reload.ogg	b/sounds/npcs/apache_explode.ogg
+mismatched	very low	ref/sounds/effects/gore_c.ogg	b/sounds/blocks/metaldoor_open_b.ogg
+mismatched	very low	ref/sounds/guns/sawedoff_shot_a.ogg	b/sounds/guns/pdw_reload.ogg
+rejected_tinkly	low-medium	ref/sounds/guns/ak47_reload.ogg	b_r1/sounds/guns/ak47_reload.ogg
+rejected_tinkly	low-medium	ref/sounds/guns/ar1_reload.ogg	b_r1/sounds/guns/ar1_reload.ogg
+rejected_tinkly	low-medium	ref/sounds/guns/as50_reload.ogg	b_r1/sounds/guns/as50_reload.ogg
+rejected_tinkly	low-medium	ref/sounds/guns/aug_reload.ogg	b_r1/sounds/guns/aug_reload.ogg
+rejected_tinkly	low-medium	ref/sounds/guns/lmg_reload.ogg	b_r1/sounds/guns/lmg_reload.ogg
+rejected_tinkly	low-medium	ref/sounds/guns/pistol_reload.ogg	b_r1/sounds/guns/pistol_reload.ogg
+rejected_tinkly	low-medium	ref/sounds/guns/revolver_reload.ogg	b_r1/sounds/guns/revolver_reload.ogg
+rejected_tinkly	low-medium	ref/sounds/guns/thompson_reload.ogg	b_r1/sounds/guns/thompson_reload.ogg
+rejected_static	low-medium	ref/sounds/guns/ak47_reload.ogg	b_r2/sounds/guns/ak47_reload.ogg
+rejected_static	low-medium	ref/sounds/guns/lmg_reload.ogg	b_r2/sounds/guns/lmg_reload.ogg
+rejected_static	low-medium	ref/sounds/guns/mac10_reload.ogg	b_r2/sounds/guns/mac10_reload.ogg
+rejected_static	low-medium	ref/sounds/guns/pdw_reload.ogg	b_r2/sounds/guns/pdw_reload.ogg
+rejected_static	low-medium	ref/sounds/guns/sawedoff_reload.ogg	b_r2/sounds/guns/sawedoff_reload.ogg
+rejected_static	low-medium	ref/sounds/guns/SCAR_reload.ogg	b_r2/sounds/guns/SCAR_reload.ogg
+good_shots	high	ref/sounds/guns/ak47_shot_b.ogg	b/sounds/guns/ak47_shot_b.ogg
+good_shots	high	ref/sounds/guns/ar1_shot_a.ogg	b/sounds/guns/ar1_shot_a.ogg
+good_shots	high	ref/sounds/guns/aug_shot_c.ogg	b/sounds/guns/aug_shot_c.ogg
+good_shots	high	ref/sounds/guns/boltaction_shot_c.ogg	b/sounds/guns/boltaction_shot_c.ogg
+good_shots	high	ref/sounds/guns/goldenrevolver_shot_b.ogg	b/sounds/guns/goldenrevolver_shot_b.ogg
+good_shots	high	ref/sounds/guns/mac10_shot_a.ogg	b/sounds/guns/mac10_shot_a.ogg
+good_shots	high	ref/sounds/guns/pdw_shot_a.ogg	b/sounds/guns/pdw_shot_a.ogg
+good_shots	high	ref/sounds/guns/rocket_shot_a.ogg	b/sounds/guns/rocket_shot_a.ogg
+good_shots	high	ref/sounds/guns/sawedoff_shot_a.ogg	b/sounds/guns/sawedoff_shot_a.ogg
+good_shots	high	ref/sounds/guns/flamethrower_shot_a.ogg	b/sounds/guns/flamethrower_shot_a.ogg
+weak_shots	lower than good_shots (loop verdict rework, not owner-heard)	ref/sounds/guns/combatshotgun_shot_a.ogg	b/sounds/guns/combatshotgun_shot_a.ogg
+weak_shots	lower than good_shots (loop verdict rework, not owner-heard)	ref/sounds/guns/powerhammer_shot_b.ogg	b/sounds/guns/powerhammer_shot_b.ogg
+weak_shots	lower than good_shots (loop verdict rework, not owner-heard)	ref/sounds/guns/teslagun_shot_a.ogg	b/sounds/guns/teslagun_shot_a.ogg
+weak_shots	lower than good_shots (loop verdict rework, not owner-heard)	ref/sounds/guns/vector_shot_a.ogg	b/sounds/guns/vector_shot_a.ogg
+weak_shots	lower than good_shots (loop verdict rework, not owner-heard)	ref/sounds/guns/vector_shot_b.ogg	b/sounds/guns/vector_shot_b.ogg
+weak_shots	lower than good_shots (loop verdict rework, not owner-heard)	ref/sounds/guns/vector_shot_c.ogg	b/sounds/guns/vector_shot_c.ogg
+weak_shots	lower than good_shots (loop verdict rework, not owner-heard)	ref/sounds/guns/pulserifle_shot_stereo.ogg	b/sounds/guns/pulserifle_shot_stereo.ogg
+weak_shots	lower than good_shots (loop verdict rework, not owner-heard)	ref/sounds/guns/alienblaster_shot_b.ogg	b/sounds/guns/alienblaster_shot_b.ogg
