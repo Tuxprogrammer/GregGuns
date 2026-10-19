@@ -10,12 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.gregguns.client.render.profile.BoltActionRifleProfile;
 import com.gregguns.client.render.profile.BoxSpec;
-import com.gregguns.client.render.profile.HandCannonProfile;
-import com.gregguns.client.render.profile.Pistol9mmProfile;
-import com.gregguns.client.render.profile.RevolverProfile;
-import com.gregguns.client.render.profile.SawedOffProfile;
+import com.gregguns.client.render.profile.ClientGunDefinition;
+import com.gregguns.client.render.profile.ClientGunDefinitions;
 
 /**
  * Dev tool: writes the GregGuns box models as JSON so an offline renderer can draw them for visual review. Pure (no
@@ -32,7 +29,7 @@ import com.gregguns.client.render.profile.SawedOffProfile;
  * <p>
  * Run it with {@code -Dgregguns.exportModels=<dir>} (or the environment variable {@code GREGGUNS_EXPORT_MODELS}) under
  * {@code ./gradlew test --tests com.gregguns.tools.ModelExportTest}, or call {@link #main}. Without the setting it does
- * nothing. When {@code ClientGunDefinitions.ALL} lands on master, replace {@link #models()} with a walk of that list.
+ * nothing.
  */
 public final class ModelExporter {
 
@@ -79,64 +76,24 @@ public final class ModelExporter {
         return dir == null || dir.isEmpty() ? null : Paths.get(dir);
     }
 
-    /** @return every GregGuns box model currently registered through a render profile */
+    /** @return every GregGuns gun box model, one per entry of {@link ClientGunDefinitions#ALL} */
     public static List<ExportModel> models() {
         List<ExportModel> list = new ArrayList<>();
-        list.add(
-            new ExportModel(
-                "pistol_9mm",
-                "gun",
-                Pistol9mmProfile.BOXES,
-                Pistol9mmProfile.TEXTURE_WIDTH,
-                Pistol9mmProfile.TEXTURE_HEIGHT,
-                Pistol9mmProfile.MODEL_SCALE,
-                new String[] { Pistol9mmProfile.TEXTURE },
-                Pistol9mmProfile.MUZZLE,
-                "part 1 (slide, sight) slides back when firing; exported at rest"));
-        list.add(
-            new ExportModel(
-                "revolver",
-                "gun",
-                RevolverProfile.BOXES,
-                RevolverProfile.TEXTURE_WIDTH,
-                RevolverProfile.TEXTURE_HEIGHT,
-                RevolverProfile.MODEL_SCALE,
-                new String[] { RevolverProfile.TEXTURE },
-                RevolverProfile.MUZZLE,
-                ""));
-        list.add(
-            new ExportModel(
-                "sawed_off",
-                "gun",
-                SawedOffProfile.BOXES,
-                SawedOffProfile.TEXTURE_WIDTH,
-                SawedOffProfile.TEXTURE_HEIGHT,
-                SawedOffProfile.MODEL_SCALE,
-                new String[] { SawedOffProfile.TEXTURE },
-                SawedOffProfile.MUZZLE,
-                ""));
-        list.add(
-            new ExportModel(
-                "handcannon",
-                "gun",
-                HandCannonProfile.BOXES,
-                HandCannonProfile.TEXTURE_WIDTH,
-                HandCannonProfile.TEXTURE_HEIGHT,
-                HandCannonProfile.MODEL_SCALE,
-                new String[] { HandCannonProfile.TEXTURE },
-                HandCannonProfile.MUZZLE,
-                ""));
-        list.add(
-            new ExportModel(
-                "bolt_action_rifle",
-                "gun",
-                BoltActionRifleProfile.BOXES,
-                BoltActionRifleProfile.TEXTURE_WIDTH,
-                BoltActionRifleProfile.TEXTURE_HEIGHT,
-                BoltActionRifleProfile.MODEL_SCALE,
-                BoltActionRifleProfile.TEXTURES,
-                BoltActionRifleProfile.MUZZLE,
-                "textures[0] is the default, the rest are camo variants"));
+        for (ClientGunDefinition def : ClientGunDefinitions.ALL) {
+            String note = (def.parts() > 1 ? "moving parts are exported at rest; " : "")
+                + (def.textures().length > 1 ? "textures[0] is the default, the rest are camo variants" : "");
+            list.add(
+                new ExportModel(
+                    def.gunName(),
+                    "gun",
+                    def.boxes(),
+                    def.textureWidth(),
+                    def.textureHeight(),
+                    def.modelScale(),
+                    def.textures(),
+                    def.muzzle(),
+                    note));
+        }
         return list;
     }
 

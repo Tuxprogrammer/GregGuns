@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import com.gregguns.client.render.profile.ClientGunDefinitions;
+
 class ModelExportTest {
 
     /** Always runs: the JSON of a model carries every box and the sheet facts. */
@@ -26,6 +28,22 @@ class ModelExportTest {
             String json = new String(Files.readAllBytes(dir.resolve(m.name + ".json")), StandardCharsets.UTF_8);
             assertEquals(m.boxes.length, json.split("\"rotationPoint\"", -1).length - 1, m.name);
             assertTrue(json.contains("\"textureWidth\": " + m.textureWidth), m.name);
+        }
+    }
+
+    /** Every gun with a client definition is exported, under its registry name. */
+    @Test
+    void exportsEveryClientGunDefinition() {
+        assertEquals(
+            ClientGunDefinitions.ALL.size(),
+            ModelExporter.models()
+                .size());
+        for (int i = 0; i < ClientGunDefinitions.ALL.size(); i++) {
+            assertEquals(
+                ClientGunDefinitions.ALL.get(i)
+                    .gunName(),
+                ModelExporter.models()
+                    .get(i).name);
         }
     }
 
