@@ -1,5 +1,6 @@
 package com.gregguns.client.projectile;
 
+import com.gregguns.projectile.BeamProjectile;
 import com.gregguns.projectile.BeamVisual;
 import com.gregguns.projectile.EnergyBlastProjectile;
 import com.gregguns.projectile.FlamethrowerProjectile;
@@ -28,6 +29,8 @@ public final class ProjectileRenderers {
         // The laser is an instant hitscan drawn by its BeamVisual; the carrier entity itself draws nothing.
         RenderingRegistry.registerEntityRenderingHandler(LaserProjectile.class, new RenderInvisible());
         RenderingRegistry.registerEntityRenderingHandler(BeamVisual.class, new RenderBeam());
+        // The Nuclear Death Ray's per-tick carrier draws nothing; its BeamVisual does.
+        RenderingRegistry.registerEntityRenderingHandler(BeamProjectile.class, new RenderInvisible());
         // Impact and trail effects of the energy blast come with the FX core.
         RenderingRegistry.registerEntityRenderingHandler(EnergyBlastProjectile.class, new RenderInvisible());
     }

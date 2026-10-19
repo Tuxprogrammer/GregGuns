@@ -34,5 +34,7 @@ public enum ProjectileKind {
     /** Energy blast (MIB gun), M5. Section 3.10. */
     ENERGY_BLAST,
     /** Sonic shotgun rings, M5. Section 3.13. */
-    SONIC
+    SONIC,
+    /** Continuous radiation beam (Nuclear Death Ray), M5. Section 3.14. */
+    BEAM
 }
