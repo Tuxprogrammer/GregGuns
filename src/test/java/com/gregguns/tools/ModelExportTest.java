@@ -106,5 +106,24 @@ class ModelExportTest {
         Assumptions.assumeTrue(dir != null, "set -Dgregguns.exportModels=<dir> or GREGGUNS_EXPORT_MODELS");
         assertTrue(ModelExporter.exportAll(dir) > 0);
         assertEquals(ArmorModels.CUSTOM_SETS.size(), ModelExporter.exportArmor(dir));
+        assertTrue(ModelExporter.exportAccessories(dir) > 0);
+    }
+
+    /** Every accessory model is exported with one JSON box per model box. */
+    @Test
+    void accessoryJsonCarriesEveryBox(@TempDir Path dir) throws IOException {
+        assertEquals(com.gregguns.client.accessory.AccessoryDefs.ALL.size(), ModelExporter.exportAccessories(dir));
+        for (com.gregguns.client.accessory.AccessoryDef def : com.gregguns.client.accessory.AccessoryDefs.ALL) {
+            String json = new String(
+                Files.readAllBytes(
+                    dir.resolve("accessories")
+                        .resolve(def.id() + ".json")),
+                StandardCharsets.UTF_8);
+            assertEquals(
+                def.boxes()
+                    .size(),
+                json.split("\"rotationPoint\"", -1).length - 1,
+                def.id());
+        }
     }
 }

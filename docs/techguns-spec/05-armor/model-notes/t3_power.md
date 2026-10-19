@@ -2,7 +2,7 @@
 
 Design notes for rebuilding the Techguns **T3 Power Armor** look-alike in GregGuns (`t3_power`, with camo recolors `dark` and `dark2`). Written by the "dirty room" analyst from study of the original's current model class (not the retired "Old" one), its item and renderer wiring and its three textures. They are meant to be complete enough to build from without ever seeing the original. They contain no source, no box lists and no texture coordinates; the builder designs its own UV layout.
 
-Related facts: [armor spec](../index.md), [GregGuns implementation notes (PWR-DEV-05, ARM-DEV-20)](../../../gregguns-spec/05-armor/implementation-notes.md), [revolver notes (template)](../../03-gun-visuals-audio/model-notes/revolver.md).
+Related facts: [armor spec](../index.md), [GregGuns implementation notes (PWR-DEV-05, ARM-DEV-24)](../../../gregguns-spec/05-armor/implementation-notes.md), [revolver notes (template)](../../03-gun-visuals-audio/model-notes/revolver.md).
 
 **Units and frame used in this document.** One unit = one texel of a 64x32 skin = 1/16 block. Minecraft model convention: **Y points down**, the player **faces -Z**, the player's **right side is -X** (so a "right" part has negative X). Every part is given **relative to the vanilla biped part it is attached to**, using that part's rotation point as origin:
 

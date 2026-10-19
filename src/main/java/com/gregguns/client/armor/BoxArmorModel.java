@@ -24,7 +24,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * <p>
  * Client only. Instances are cached per set and piece by {@link #forPiece}.
  */
-// Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-20
+// Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-24
 @SideOnly(Side.CLIENT)
 public final class BoxArmorModel extends ModelBiped {
 

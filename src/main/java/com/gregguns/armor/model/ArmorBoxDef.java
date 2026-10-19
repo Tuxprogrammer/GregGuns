@@ -10,7 +10,7 @@ package com.gregguns.armor.model;
  * Y then X, in degrees) and its {@link #offset()} is then relative to the pivot; a box without one hangs directly off
  * the part.
  */
-// Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-20
+// Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-24
 public final class ArmorBoxDef {
 
     /** The six parts of a vanilla {@code ModelBiped} that armor draws. */

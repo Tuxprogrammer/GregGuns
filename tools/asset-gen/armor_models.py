@@ -3,7 +3,7 @@
 
 Sets: Exo Suit (3 colors), Power Armor (3), Steam Armor (4), Riot Coat (1), Beret (3).
 
-Method (geometry first, see docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-20):
+Method (geometry first, see docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-24):
   1. Boxes are authored here, by eye, in vanilla biped part space (Minecraft units, Y down; head and body
      rotate about (0,0,0), arms about (+-5,2,0), legs about (+-1.9,12,0)). Left limbs are mirrored from the right.
   2. A shelf packer gives every box a UV rectangle on the sheet (mirrored boxes share it).

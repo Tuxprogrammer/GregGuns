@@ -32,7 +32,7 @@ import com.gregguns.core.testing.ScenarioResult;
  * Not part of {@code test all}: it needs a connected client. The player is the first connected one by name, or the one
  * named by the JVM property {@value #PLAYER_PROPERTY} on the server. Dev environment only, server side.
  */
-// Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-12, ARM-DEV-20
+// Spec: docs/gregguns-spec/05-armor/implementation-notes.md ARM-DEV-12, ARM-DEV-24
 final class ArmorShowcaseScenario implements Scenario {
 
     /** Names the player to dress (a server JVM property); without it the first connected player by name is used. */

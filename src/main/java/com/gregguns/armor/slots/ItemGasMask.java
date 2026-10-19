@@ -61,6 +61,11 @@ public final class ItemGasMask extends ItemHelmetMask {
     }
 
     @Override
+    protected String modelId() {
+        return NAME;
+    }
+
+    @Override
     protected String layerTexture(ItemStack stack) {
         return "gas_mask";
     }

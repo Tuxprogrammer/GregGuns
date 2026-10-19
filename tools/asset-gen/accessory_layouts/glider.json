@@ -1,0 +1,16 @@
+{
+  "name": "glider",
+  "mount": "BACK",
+  "textureWidth": 64,
+  "textureHeight": 64,
+  "scale": 0.062500,
+  "textures": ["glider"],
+  "hinges": {"1": [5.000000, 0.000000, 2.000000], "2": [-5.000000, 0.000000, 2.000000]},
+  "boxes": [
+    {"name": "harness", "part": 0, "uv": [0, 0], "rotationPoint": [0.000000, 3.000000, 1.000000], "offset": [-2.000000, -3.000000, -1.000000], "size": [4, 6, 2], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "panel_inner_left", "part": 0, "uv": [12, 0], "rotationPoint": [3.500000, 3.000000, 1.500000], "offset": [-1.500000, -2.500000, -0.500000], "size": [3, 5, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "panel_inner_right", "part": 0, "uv": [20, 0], "rotationPoint": [-3.500000, 3.000000, 1.500000], "offset": [-1.500000, -2.500000, -0.500000], "size": [3, 5, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "panel_outer_left", "part": 1, "uv": [28, 0], "rotationPoint": [7.000000, 3.000000, 1.500000], "offset": [-2.000000, -2.000000, -0.500000], "size": [4, 4, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "panel_outer_right", "part": 2, "uv": [38, 0], "rotationPoint": [-7.000000, 3.000000, 1.500000], "offset": [-2.000000, -2.000000, -0.500000], "size": [4, 4, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false}
+  ]
+}
