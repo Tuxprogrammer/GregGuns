@@ -23,6 +23,11 @@ import com.gregguns.client.anim.SpriteSheet;
  * class turns that into the Z-family convention with a quarter turn about Y.
  *
  * <p>
+ * Round 2: the magazine is 1.5 wide and 2.5 long (the box pipeline has whole-texel sizes, so the notes' 1.4 and 2.4
+ * are not reachable) but 6.4 tall visible: its top is buried 0.1 unit in the grip so the bottom is at Y 17.4. The
+ * backstrap plates and trigger are hinged on the planes the round 2 notes give, with 1.0-thick plates (not 0.8).
+ *
+ * <p>
  * Deviation: the notes' vertical wire posts and the sight post are diamond-section; the box pipeline can only turn a
  * bar about its long axis, so those are plain square sections and only the barrel is a diamond.
  *
@@ -62,11 +67,11 @@ public final class Mac10Profile {
         new BoxSpec("ear_r", 0, 24, 16, 2, 2, 0, -7.4f, -2f, -2f, NO_PIVOT, 0f),
         new BoxSpec("guard_post", 0, 72, 14, 2, 6, 2, -18f, 8f, -1f, NO_PIVOT, 0f),
         new BoxSpec("guard_bar", 0, 112, 14, 6, 2, 2, -24f, 12f, -1f, NO_PIVOT, 0f),
-        new BoxSpec("trigger", 0, 104, 14, 2, 4, 2, -24f, 7f, -1f, new float[] { -23f, 7f, 0f }, -23f),
+        new BoxSpec("trigger", 0, 104, 14, 2, 4, 2, -25f, 7f, -1f, new float[] { -23f, 7f, 0f }, -23.4f),
         new BoxSpec("grip", 0, 0, 0, 6, 14, 4, -30f, 8f, -2f, NO_PIVOT, 0f),
-        new BoxSpec("strap_up", 0, 60, 14, 2, 6, 4, -32f, 7f, -2f, new float[] { -31f, 7f, 0f }, -12f),
-        new BoxSpec("strap_low", 0, 116, 0, 2, 10, 4, -32f, 12.4f, -2f, new float[] { -31f, 12.4f, 0f }, 7f),
-        new BoxSpec("magazine", 0, 20, 0, 5, 13, 3, -29.5f, 22f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("strap_up", 0, 60, 14, 2, 6, 4, -31.8f, 7f, -2f, new float[] { -29.8f, 7f, 0f }, -12.5f),
+        new BoxSpec("strap_low", 0, 116, 0, 2, 10, 4, -30.4f, 12.4f, -2f, new float[] { -28.4f, 12.4f, 0f }, 7.4f),
+        new BoxSpec("magazine", 0, 20, 0, 5, 13, 3, -29.5f, 21.8f, -1.5f, NO_PIVOT, 0f),
         new BoxSpec("post_l", 0, 36, 14, 1, 10, 1, -41.5f, -2f, 1.5f, NO_PIVOT, 0f),
         new BoxSpec("post_r", 0, 40, 14, 1, 10, 1, -41.5f, -2f, -2.5f, NO_PIVOT, 0f),
         new BoxSpec("rod_l", 0, 80, 20, 11, 1, 1, -41f, -1f, 1.5f, NO_PIVOT, 0f),
