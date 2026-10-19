@@ -1,0 +1,564 @@
+{
+ "gun": "bio_gun",
+ "textures": [
+  {
+   "file": "bio_gun.png"
+  }
+ ],
+ "roles": {
+  "rail": {
+   "material": "steel",
+   "base": "#9FA495",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "flange": {
+   "material": "steel",
+   "base": "#A5A99A",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "muz": {
+   "material": "steel",
+   "base": "#0A140C",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "muzplate": {
+   "material": "steel",
+   "base": "#5D6155",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "breech": {
+   "material": "steel",
+   "base": "#3B3E36",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "body": {
+   "material": "steel",
+   "base": "#40433A",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "topplate": {
+   "material": "steel",
+   "base": "#616659",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "capa": {
+   "material": "steel",
+   "base": "#5E6255",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "capb": {
+   "material": "steel",
+   "base": "#43463D",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "tube": {
+   "material": "steel",
+   "base": "#093D13",
+   "scratches": false,
+   "noise": 0.015,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "griproot": {
+   "material": "steel",
+   "base": "#3E4138",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "grip": {
+   "material": "steel",
+   "base": "#5C6154",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "hose": {
+   "material": "steel",
+   "base": "#1B4E25",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "casing": {
+   "material": "steel",
+   "base": "#A0A696",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.06,
+    0.9
+   ],
+   "drift": 0.02
+  },
+  "coreglow": {
+   "material": "flat",
+   "base": "#54FF54",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "discglow": {
+   "material": "flat",
+   "base": "#3CFF3C",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  },
+  "canglow": {
+   "material": "flat",
+   "base": "#67FF67",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  }
+ },
+ "boxes": {
+  "core_glow_a": {
+   "role": "coreglow",
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "top",
+      "bottom",
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "cx": 2,
+     "cy": 2,
+     "amp": 0.22,
+     "seed": 3
+    }
+   ]
+  },
+  "core_glow_b": {
+   "role": "coreglow",
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "top",
+      "bottom",
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "cx": 2,
+     "cy": 2,
+     "amp": 0.22,
+     "seed": 4
+    }
+   ]
+  },
+  "rail_top_l": {
+   "role": "rail"
+  },
+  "rail_top_r": {
+   "role": "rail"
+  },
+  "rail_side_l": {
+   "role": "rail"
+  },
+  "rail_side_r": {
+   "role": "rail"
+  },
+  "rail_bot_l": {
+   "role": "rail"
+  },
+  "rail_bot_r": {
+   "role": "rail"
+  },
+  "flange_main": {
+   "role": "flange"
+  },
+  "flange_top": {
+   "role": "flange"
+  },
+  "flange_bot": {
+   "role": "flange"
+  },
+  "disc_glow": {
+   "role": "discglow",
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "top",
+      "bottom",
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "cx": 2,
+     "cy": 2,
+     "amp": 0.22,
+     "seed": 7
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right",
+      "left"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 99,
+     "color": "#54594E"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right",
+      "left"
+     ],
+     "x": -1,
+     "y": 0,
+     "w": 1,
+     "h": 99,
+     "color": "#54594E"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right",
+      "left"
+     ],
+     "x": 0,
+     "y": 0,
+     "h": 1,
+     "color": "#54594E"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right",
+      "left"
+     ],
+     "x": 0,
+     "y": -1,
+     "h": 1,
+     "color": "#54594E"
+    }
+   ]
+  },
+  "muzzle_main": {
+   "role": "muz",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "f": 1.0
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "h": 1,
+     "color": "#01350B"
+    }
+   ]
+  },
+  "muzzle_top": {
+   "role": "muzplate"
+  },
+  "muzzle_bot": {
+   "role": "muzplate"
+  },
+  "breech_main": {
+   "role": "breech"
+  },
+  "breech_top": {
+   "role": "breech"
+  },
+  "breech_bot": {
+   "role": "breech"
+  },
+  "rear_body": {
+   "role": "body",
+   "painters": [
+    {
+     "type": "seam",
+     "faces": [
+      "right",
+      "left",
+      "front",
+      "back"
+     ],
+     "axis": "v",
+     "at": 2,
+     "dark": 0.78,
+     "light": 1.0
+    }
+   ]
+  },
+  "top_plate": {
+   "role": "topplate",
+   "painters": [
+    {
+     "type": "seam",
+     "faces": [
+      "top"
+     ],
+     "axis": "v",
+     "at": 3
+    },
+    {
+     "type": "seam",
+     "faces": [
+      "top"
+     ],
+     "axis": "v",
+     "at": 9
+    }
+   ]
+  },
+  "cap_a": {
+   "role": "capa"
+  },
+  "cap_b": {
+   "role": "capb"
+  },
+  "handle_rail_l": {
+   "role": "tube"
+  },
+  "post_front_l": {
+   "role": "tube"
+  },
+  "post_rear_l": {
+   "role": "tube"
+  },
+  "handle_rail_r": {
+   "role": "tube"
+  },
+  "post_front_r": {
+   "role": "tube"
+  },
+  "post_rear_r": {
+   "role": "tube"
+  },
+  "butt_plate": {
+   "role": "tube"
+  },
+  "stock_upper": {
+   "role": "tube"
+  },
+  "stock_lower": {
+   "role": "tube"
+  },
+  "stock_strut": {
+   "role": "tube"
+  },
+  "stock_middle": {
+   "role": "tube"
+  },
+  "grip_root": {
+   "role": "griproot"
+  },
+  "grip_slab": {
+   "role": "grip"
+  },
+  "housing": {
+   "role": "griproot",
+   "painters": [
+    {
+     "type": "inset",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 4,
+     "h": 1,
+     "shade": 0.8
+    }
+   ]
+  },
+  "guard_floor": {
+   "role": "tube"
+  },
+  "hose": {
+   "role": "hose"
+  },
+  "can_casing": {
+   "role": "casing"
+  },
+  "can_glow_a": {
+   "role": "canglow",
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "top",
+      "bottom",
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "cx": 2,
+     "cy": 2,
+     "amp": 0.22,
+     "seed": 50
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "h": 1,
+     "color": "#54594E"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "x": 0,
+     "y": -1,
+     "h": 1,
+     "color": "#54594E"
+    }
+   ]
+  },
+  "can_glow_b": {
+   "role": "canglow",
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "top",
+      "bottom",
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "cx": 2,
+     "cy": 2,
+     "amp": 0.22,
+     "seed": 51
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "h": 1,
+     "color": "#54594E"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "x": 0,
+     "y": -1,
+     "h": 1,
+     "color": "#54594E"
+    }
+   ]
+  }
+ }
+}
