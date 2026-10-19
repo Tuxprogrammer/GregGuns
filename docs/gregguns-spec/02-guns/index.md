@@ -56,6 +56,19 @@ Thompson SMG (`thompson_smg`, GR-10), Mac10 (`mac10`, GR-11), M4 (`m4`, GR-12) a
 - **Recipes.** Redstone and iron nuggets of the Techguns grids are dropped; the AK47's foregrip is two wooden sticks. The Assembler circuits 1, 2, 4, 5 repeat the LV table's numbers, so the uniqueness tests are per tier.
 - **Sounds.** Events point at the existing `thompson_*`, `mac10_*`, `ar1_*` (M4) and `ak47_*` files. The M4 has two fire variants, as in Techguns.
 
+## Launchers, batch B5 (M2): deviations
+
+Rocket Launcher (`rocket_launcher`, GR-20) and Grenade Launcher (`grenade_launcher`, GR-21), both HV, with the Rocket (`ammo_rocket`, RC-34, HV press) and the 40 mm Grenade (`ammo_40mm_grenade`, RC-33, MV press, defined here with its first gun). Stats are the Techguns sheets' unchanged. What differs:
+
+- **Projectiles.** `RocketProjectile` (entity 6) and `GrenadeLauncherProjectile` (entity 19) are registered through `BulletLauncher.register` for `ProjectileKind.ROCKET` and `GRENADE`; `GunStats` gains `blast(radius, gravity)`. Both render as their ammo item's sprite and both launchers use the flat-icon fallback, until the model batches land.
+- **Explosions.** Both go through `ProjectileExplosion` (the frag grenade's path): `explosions.blockDamage` (default off), `explosions.selfDamage`, Forge's explosion events, the per-block `BreakEvent` check and the `mobGriefing` rule for NPC shooters all apply. PFX-14 (no checks), PFX-25 (shooter immune) and CORE-19 (no knockback packet) are not reproduced; tests are named `doesNotReproduce<ID>_...`.
+- **Rocket direct hit versus splash.** A rocket that meets an entity deals the gun's full damage to it once (with the x3 knockback) and the target is left out of the splash, so it is not hit twice; everything else within 1.5 radii takes the ramp (full to half the radius). Techguns hit the target directly and then let it take the blast as well. A rocket that runs out of lifetime in the air ends without exploding, as in Techguns. The blast centre stands 0.15 blocks off the wall so it is in open air.
+- **40 mm grenade.** Falls under the gun's 0.01 gravity, two bounces, each costing 20 ticks of fuse (fuse 100); explodes on an entity, on a hard hit with no bounces left, or when the fuse ends. As in the grenade family, the blast alone damages a direct hit (GGS-04 grenades deviation).
+- **GUN-04 not reproduced.** Techguns' launcher ignored the gun's lifetime, accuracy, penetration and damage bonus. The stats here hold the figures it hard-coded (100 ticks, 0.05, 0), so they are honored like any gun's and the NPC damage scale applies.
+- **Reload.** The rocket launcher takes one loose rocket and returns nothing (GUN-13 has nothing to refund); the grenade launcher loads up to 6 grenades, keeping the rounds already in it.
+- **Recipes.** GR-20 (circuit 8) and GR-21 (circuit 7) follow recipes.md. RC-33 and RC-34 use the vanilla TNT block for the TNT, as RC-26 does. No GT recycling data is attached to the two rounds yet.
+- **Sounds.** Events point at the existing `rocket_*` and `grenadelauncher_*` files; the explosion plays the grenade family's `random.explode`.
+
 ## Pack-side changes
 
 These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack) and are collected in [PACK-CHANGES.md](../PACK-CHANGES.md).

@@ -304,8 +304,8 @@ public final class LauncherScenarios {
                 "A rocket into a dirt wall 5 blocks away with block damage off leaves the wall whole, hurts a zombie beside the impact by exactly the splash ramp at its distance from the blast, and does not touch the shooter."),
             BLOCKS("blocks",
                 "With explosions.blockDamage on, the same rocket breaks the dirt at the impact, the zombie still takes the same splash, and the blocks the Forge BreakEvent allows are the ones removed."),
-            SELF("self", "A rocket into a dirt wall 3 blocks ahead hurts the shooter standing in the blast (PFX-25)."),
-            NOSELF("noself", "The same wall 3 blocks ahead with explosions.selfDamage off leaves the shooter unhurt."),
+            SELF("self", "A rocket into a dirt wall 2 blocks ahead hurts the shooter standing in the blast (PFX-25)."),
+            NOSELF("noself", "The same wall 2 blocks ahead with explosions.selfDamage off leaves the shooter unhurt."),
             CANCELLED("cancelled",
                 "A cancelled ExplosionEvent.Start (a protection claim) stops the rocket's blast entirely: the zombie beside the impact loses nothing and the wall stays whole.");
 
@@ -338,7 +338,7 @@ public final class LauncherScenarios {
         public ScenarioResult run(ScenarioContext ctx) {
             boolean savedBlocks = ExplosionsConfig.blockDamage;
             boolean savedSelf = ExplosionsConfig.selfDamage;
-            int wallDx = kind == Kind.SELF || kind == Kind.NOSELF ? 3 : 5;
+            int wallDx = kind == Kind.SELF || kind == Kind.NOSELF ? 2 : 5;
             restore(kind == Kind.BLOCKS, kind != Kind.NOSELF);
             GunRig rig = new GunRig(ctx, GunItems.get(RocketLauncherDef.NAME), 1, CORRIDOR);
             sturdy(rig.shooter);

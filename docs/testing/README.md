@@ -200,6 +200,19 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.ak47.reload.forced` | AK47 (M2 B1) | The reload key on a part-loaded gun swaps the magazine and refunds whole loose bullets only (rounds / rounds-per-bullet, floored). |
 | `gun.ak47.recipe` | AK47 (M2 B1) | The MV assembly row is in GT's assembler map at its time and voltage, and not below MV. |
 | `gun.m4.zoom` | M4 (M2 B1) | A zoom intent turns the server zoom state on with FOV factor 0.75 and 0.75 of the 0.015 spread; a second intent or a reload turns it off. |
+| `gun.rocket_launcher.reload` | Rocket Launcher (M2 B5) | An empty launcher reloads after 40 ticks from one loose rocket: the clip fills, the rocket is consumed and nothing comes back. |
+| `gun.rocket_launcher.recipe` | Rocket Launcher (M2 B5) | The HV assembly row is in GT's assembler map at its time and voltage, and not below HV. |
+| `gun.rocket_launcher.direct` | Rocket Launcher (M2 B5) | A rocket into a zombie 4 blocks away deals the 50 damage once (left out of the splash), a zombie behind it takes the splash ramp, and the floor is intact with block damage off. |
+| `gun.rocket_launcher.wall.splash` | Rocket Launcher (M2 B5) | A rocket into a dirt wall with block damage off leaves the wall whole and hurts a nearby zombie by the exact ramp at its distance from the blast; the far shooter is untouched. |
+| `gun.rocket_launcher.wall.blocks` | Rocket Launcher (M2 B5) | With `explosions.blockDamage` on the same rocket breaks the dirt and the entity damage is unchanged. |
+| `gun.rocket_launcher.wall.self` | Rocket Launcher (M2 B5) | The shooter standing in the blast is hurt (PFX-25). |
+| `gun.rocket_launcher.wall.noself` | Rocket Launcher (M2 B5) | With `explosions.selfDamage` off the shooter is unhurt. |
+| `gun.rocket_launcher.wall.cancelled` | Rocket Launcher (M2 B5) | A cancelled `ExplosionEvent.Start` (a protection claim) stops all damage and keeps the wall. |
+| `gun.grenade_launcher.reload` | Grenade Launcher (M2 B5) | An empty launcher reloads after 100 ticks from 6 loose grenades: all six load and are consumed. |
+| `gun.grenade_launcher.recipe` | Grenade Launcher (M2 B5) | The HV assembly row is in GT's assembler map at its time and voltage, and not below HV. |
+| `gun.grenade_launcher.bounce` | Grenade Launcher (M2 B5) | A 40 mm grenade fired at a wall bounces (bounces left 1), the fuse is about 100 - 20 - ticks flown, and it explodes before its lifetime ends. |
+| `gun.grenade_launcher.direct` | Grenade Launcher (M2 B5) | A 40 mm grenade into a zombie explodes on contact and the zombie loses exactly the 30 damage ramp at its distance from the blast; the dirt wall behind is whole with block damage off. |
+| `gun.grenade_launcher.blocks` | Grenade Launcher (M2 B5) | With `explosions.blockDamage` on the same grenade breaks some of the dirt wall behind the zombie. |
 | `mp.visual.boltaction` | bolt action rifle (M2) | The visual walkthrough (first person, third person, inventory, and the zoomed scope view) for the rifle; see the autotest section. |
 | `armor.showcase` | armor (M3) | Dresses a connected client in every armor set and camo in turn and screenshots it in third person (front for all, back for the five custom-model sets), with the HUD hidden; not part of `test all`; see "Armor showcase". |
 | `gun.camo.cycle` | gun definitions | Every gun in `GunDefinitions.ALL` is a `CamoChangeable` with the definition's camo count; the Camo Bench routine (`MTECamoBench.cycleStack`) steps it forward through every skin and around, and back below zero, keeping the loaded rounds (GUN-01); a tag-less gun stays full; an out-of-range index stores 0. |
