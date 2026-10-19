@@ -32,8 +32,9 @@ import cpw.mods.fml.relauncher.SideOnly;
  *
  * <p>
  * Server owns the EU and the switch; the client applies the motion
- * ({@code com.gregguns.client.flight.FlightClient}). Five camos, cycled by the Camo Bench (no worn model yet, so the
- * camo only shows in the name and tooltip).
+ * ({@code com.gregguns.client.flight.FlightClient}). Five camos, cycled by the Camo Bench; the camo shows on the worn
+ * model
+ * ({@code com.gregguns.client.accessory}), in the name and in the tooltip.
  */
 // Spec: docs/techguns-spec/05-armor/special-equipment.md 4.5; docs/gregguns-spec/05-armor/powered-flight.md
 // (GGS-05-17, GGS-05-18, GGS-05-19); docs/techguns-spec/05-armor/textures.md 10 (five AntiGravPack colors)

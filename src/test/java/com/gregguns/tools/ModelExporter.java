@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.gregguns.client.accessory.AccessoryBox;
+import com.gregguns.client.accessory.AccessoryDef;
+import com.gregguns.client.accessory.AccessoryDefs;
 import com.gregguns.client.render.profile.BoxSpec;
 import com.gregguns.client.render.profile.ClientGunDefinition;
 import com.gregguns.client.render.profile.ClientGunDefinitions;
@@ -202,6 +205,113 @@ public final class ModelExporter {
         return sb.toString();
     }
 
+    /**
+     * Writes every worn accessory model ({@link AccessoryDefs#ALL}) as {@code accessories/<id>.json} under the
+     * directory, in the same box format as the guns plus {@code mount}, {@code hinges} and {@code parts}. Rotations are
+     * radians; {@code scale} is blocks per texel.
+     *
+     * @param dir output directory, created if missing
+     * @return the number of models written
+     * @throws IOException if a file cannot be written
+     */
+    public static int exportAccessories(Path dir) throws IOException {
+        Path out = dir.resolve("accessories");
+        Files.createDirectories(out);
+        for (AccessoryDef def : AccessoryDefs.ALL) {
+            try (Writer w = Files.newBufferedWriter(out.resolve(def.id() + ".json"), StandardCharsets.UTF_8)) {
+                w.write(accessoryJson(def));
+            }
+        }
+        return AccessoryDefs.ALL.size();
+    }
+
+    /**
+     * @param def an accessory model
+     * @return its JSON text
+     */
+    static String accessoryJson(AccessoryDef def) {
+        StringBuilder sb = new StringBuilder(2048);
+        sb.append("{\n  \"name\": ")
+            .append(str(def.id()));
+        sb.append(",\n  \"mount\": ")
+            .append(
+                str(
+                    def.mount()
+                        .name()));
+        sb.append(",\n  \"textureWidth\": ")
+            .append(def.textureWidth());
+        sb.append(",\n  \"textureHeight\": ")
+            .append(def.textureHeight());
+        sb.append(",\n  \"scale\": ")
+            .append(num(def.scale()));
+        sb.append(",\n  \"textures\": [");
+        for (int i = 0; i < def.textures()
+            .size(); i++) {
+            sb.append(i == 0 ? "" : ", ")
+                .append(
+                    str(
+                        def.textures()
+                            .get(i)));
+        }
+        sb.append("],\n  \"hinges\": {");
+        for (int p = 1; p < def.parts(); p++) {
+            float[] h = def.hinge(p);
+            sb.append(p == 1 ? "" : ", ")
+                .append('"')
+                .append(p)
+                .append("\": [")
+                .append(num(h[0]))
+                .append(", ")
+                .append(num(h[1]))
+                .append(", ")
+                .append(num(h[2]))
+                .append(']');
+        }
+        sb.append("},\n  \"boxes\": [");
+        boolean first = true;
+        for (AccessoryBox b : def.boxes()) {
+            float[] pv = b.pivot();
+            float[] r = b.rotationDegrees();
+            sb.append(first ? "\n    " : ",\n    ")
+                .append("{\"name\": ")
+                .append(str(b.name()))
+                .append(", \"part\": ")
+                .append(b.part())
+                .append(", \"uv\": [")
+                .append(b.u())
+                .append(", ")
+                .append(b.v())
+                .append("], \"rotationPoint\": [")
+                .append(num(pv[0]))
+                .append(", ")
+                .append(num(pv[1]))
+                .append(", ")
+                .append(num(pv[2]))
+                .append("], \"offset\": [")
+                .append(num(b.x() - pv[0]))
+                .append(", ")
+                .append(num(b.y() - pv[1]))
+                .append(", ")
+                .append(num(b.z() - pv[2]))
+                .append("], \"size\": [")
+                .append(b.w())
+                .append(", ")
+                .append(b.h())
+                .append(", ")
+                .append(b.d())
+                .append("], \"rotate\": [")
+                .append(num((float) Math.toRadians(r[0])))
+                .append(", ")
+                .append(num((float) Math.toRadians(r[1])))
+                .append(", ")
+                .append(num((float) Math.toRadians(r[2])))
+                .append("], \"mirror\": false}");
+            first = false;
+        }
+        sb.append("\n  ]\n}\n");
+        return sb.toString();
+    }
+
     private static String num(float v) {
         return String.format(Locale.ROOT, "%.6f", v);
     }
@@ -222,5 +332,6 @@ public final class ModelExporter {
             return;
         }
         System.out.println("Exported " + exportAll(dir) + " models to " + dir);
+        System.out.println("Exported " + exportAccessories(dir) + " accessory models to " + dir);
     }
 }

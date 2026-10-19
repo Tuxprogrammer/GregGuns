@@ -1,5 +1,6 @@
 package com.gregguns.armor.slots;
 
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +12,8 @@ import net.minecraftforge.common.util.EnumHelper;
 
 import com.gregguns.api.Tiered;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.hazards.Hazard;
 import gregtech.api.hazards.IHazardProtector;
 
@@ -89,4 +92,17 @@ public abstract class ItemHelmetMask extends ItemArmor implements ISpecialArmor,
      * @return the layer texture base name under {@code textures/models/armor/}
      */
     protected abstract String layerTexture(ItemStack stack);
+
+    /** @return the worn model id, a {@code com.gregguns.client.accessory.AccessoryDefs} id */
+    protected abstract String modelId();
+
+    /**
+     * The mask's own worn model, hung on the head by the vanilla armor renderer (it follows head turn and sneak).
+     * Client only; the method and its client types are stripped on a dedicated server.
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public ModelBiped getArmorModel(EntityLivingBase entity, ItemStack stack, int armorSlot) {
+        return com.gregguns.client.accessory.HelmetModels.forId(modelId());
+    }
 }

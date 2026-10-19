@@ -1,0 +1,20 @@
+{
+  "name": "night_vision_goggles",
+  "mount": "HEAD",
+  "textureWidth": 64,
+  "textureHeight": 64,
+  "scale": 0.062500,
+  "textures": ["night_vision_goggles"],
+  "hinges": {},
+  "boxes": [
+    {"name": "band_front", "part": 0, "uv": [32, 11], "rotationPoint": [0.000000, -6.000000, -4.500000], "offset": [-5.000000, -1.000000, -0.500000], "size": [10, 2, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "band_left", "part": 0, "uv": [0, 0], "rotationPoint": [4.500000, -6.000000, 0.500000], "offset": [-0.500000, -1.000000, -4.500000], "size": [1, 2, 9], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "band_right", "part": 0, "uv": [20, 0], "rotationPoint": [-4.500000, -6.000000, 0.500000], "offset": [-0.500000, -1.000000, -4.500000], "size": [1, 2, 9], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "strap", "part": 0, "uv": [0, 17], "rotationPoint": [0.000000, -6.000000, 4.500000], "offset": [-4.000000, -0.500000, -0.500000], "size": [8, 1, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "bridge", "part": 0, "uv": [40, 0], "rotationPoint": [0.000000, -4.500000, -5.500000], "offset": [-1.000000, -2.500000, -0.500000], "size": [2, 5, 1], "rotate": [0.000000, 0.000000, 0.000000], "mirror": false},
+    {"name": "mount_left", "part": 0, "uv": [12, 11], "rotationPoint": [2.200000, -5.500000, -5.000000], "offset": [-0.500000, -0.500000, -4.000000], "size": [1, 1, 4], "rotate": [0.698132, 0.000000, 0.000000], "mirror": false},
+    {"name": "mount_right", "part": 0, "uv": [22, 11], "rotationPoint": [-2.200000, -5.500000, -5.000000], "offset": [-0.500000, -0.500000, -4.000000], "size": [1, 1, 4], "rotate": [0.698132, 0.000000, 0.000000], "mirror": false},
+    {"name": "lens_left", "part": 0, "uv": [46, 0], "rotationPoint": [2.200000, -3.000000, -7.000000], "offset": [-1.000000, -1.000000, -2.000000], "size": [2, 2, 4], "rotate": [0.000000, 0.000000, 0.785398], "mirror": false},
+    {"name": "lens_right", "part": 0, "uv": [0, 11], "rotationPoint": [-2.200000, -3.000000, -7.000000], "offset": [-1.000000, -1.000000, -2.000000], "size": [2, 2, 4], "rotate": [0.000000, 0.000000, 0.785398], "mirror": false}
+  ]
+}
