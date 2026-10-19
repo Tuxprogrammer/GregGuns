@@ -3,6 +3,7 @@ package com.gregguns.gun.server;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 
+import com.gregguns.gun.GunAccuracy;
 import com.gregguns.gun.logic.AmmoInventory;
 import com.gregguns.gun.logic.GunController;
 import com.gregguns.gun.logic.GunNbt;
@@ -153,12 +154,13 @@ public final class ServerGunHandler {
 
     private static void fire(EntityPlayerMP player, GunPlayerData data, ItemGun gun, ShotResult shot) {
         GunStats stats = gun.stats();
-        // Deviation: no armor accuracy bonus until the armor module (M3) exists; zoom is the server's own state.
-        ShotContext context = ShotContext.player(
+        // Zoom is the server's own state; the armor accuracy bonus is the shooter's worn GUN_ACCURACY (0 with
+        // modules.armor off).
+        ShotContext context = GunAccuracy.shotContext(
+            player,
             data.controller()
                 .zoom()
-                .isZoomed(stats),
-            0.0);
+                .isZoomed(stats));
         ShotOffset[] offsets = SpreadModel.roll(player.getRNG(), stats, context, shot.attackType());
         for (ShotOffset offset : offsets) {
             Projectiles.launcher()

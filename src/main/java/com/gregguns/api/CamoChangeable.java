@@ -7,8 +7,8 @@ import net.minecraft.item.ItemStack;
  * touches any other NBT. Both sides.
  *
  * <p>
- * Armor implements it. Guns store a camo index too ({@code GunNbt.KEY_CAMO}) but their definitions list no camo count
- * yet; a gun that declares one implements this interface and the bench picks it up with no further change.
+ * Armor and guns implement it. A gun stores its camo index next to its rounds ({@code GunNbt.KEY_CAMO}); the count is
+ * the gun definition's {@code camoCount}. The bench picks an item up through this interface with no further change.
  */
 // Spec: docs/techguns-spec/09-machines-utility/camo-bench.md (ICamoChangeable)
 public interface CamoChangeable {

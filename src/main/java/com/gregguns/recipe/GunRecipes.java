@@ -1,20 +1,15 @@
 package com.gregguns.recipe;
 
-import net.minecraft.item.ItemStack;
-
-import com.gregguns.GregGuns;
-import com.gregguns.item.part.PartItems;
+import com.gregguns.gun.def.GunDefinition;
+import com.gregguns.gun.def.GunDefinitions;
 
 import gregtech.api.GregTechAPI;
-import gregtech.api.enums.Materials;
-import gregtech.api.enums.OrePrefixes;
-import gregtech.api.objects.ItemData;
-import gregtech.api.objects.MaterialStack;
-import gregtech.api.util.GTOreDictUnificator;
 
 /**
- * Registers the guns' final-assembly recipes on GT's Assembler (the 9mm Pistol for M1) and the GT recycling data of
- * the guns, from {@link GunTable}. Parts come through the unificator, never as raw ore-dictionary names.
+ * Registers the guns' final-assembly recipes on GT's Assembler, their crafting-table recipes and their GT recycling
+ * data, all from the {@link GunDefinition}s in {@link GunDefinitions#ALL}: each gun's rows go to the Assembler, then
+ * its {@code recipes} and {@code recycling} hooks run. Parts come through the unificator, never as raw ore-dictionary
+ * names.
  *
  * <p>
  * Timing: {@link #register()} queues the work on {@code GregTechAPI.sBeforeGTPostload}, exactly as
@@ -35,121 +30,18 @@ public final class GunRecipes {
     }
 
     private static void addAll() {
-        for (ProductionTable.Row row : GunTable.ROWS) {
-            ProductionRecipes.addMachineRecipe(row);
+        for (GunDefinition gun : GunDefinitions.ALL) {
+            for (ProductionTable.Row row : gun.rows()) {
+                ProductionRecipes.addMachineRecipe(row);
+            }
+            if (gun.recipes() != null) {
+                gun.recipes()
+                    .run();
+            }
+            if (gun.recycling() != null) {
+                gun.recycling()
+                    .run();
+            }
         }
-        PartCraftingRecipes.register();
-        HandCannonRecipes.register();
-        addRecyclingData();
-    }
-
-    /**
-     * What recycling returns for the pistol: the steel and rubber of its direct inputs plus the steel inside its
-     * barrel and mechanical parts. Amounts come from GT's own per-prefix figures.
-     */
-    // Source:
-    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTOreDictUnificator.java#L350-L359
-    private static void addRecyclingData() {
-        long plate = OrePrefixes.plate.getMaterialAmount();
-        long barrel = OrePrefixes.pipeSmall.getMaterialAmount() + 2 * OrePrefixes.ring.getMaterialAmount() + plate;
-        long mechanical2 = AmmoComposition.mechanical2Steel(
-            OrePrefixes.gearGtSmall.getMaterialAmount(),
-            OrePrefixes.springSmall.getMaterialAmount(),
-            OrePrefixes.screw.getMaterialAmount());
-        long steel = barrel + mechanical2
-            + GunComposition.pistolDirectSteel(
-                plate,
-                OrePrefixes.screw.getMaterialAmount(),
-                OrePrefixes.springSmall.getMaterialAmount());
-        ItemStack pistol = ProductionRecipes.modStack(GunTable.PISTOL.output(), 1);
-        if (pistol == null) {
-            GregGuns.LOG.error("Cannot attach ItemData to {}: not registered", GunTable.PISTOL.output());
-            return;
-        }
-        GTOreDictUnificator
-            .addItemData(pistol, new ItemData(Materials.Steel, steel, new MaterialStack(Materials.Rubber, 2 * plate)));
-        addRevolverData(plate);
-        addSawedOffData(plate);
-        addBoltActionData(plate);
-    }
-
-    /**
-     * Recycling data of the Sawed Off: the steel plate, screws and spring of the gun itself plus the iron and steel of
-     * its two Iron Barrels (the barrel part carries its own data from {@link #addRevolverData}).
-     */
-    private static void addSawedOffData(long plate) {
-        long screw = OrePrefixes.screw.getMaterialAmount();
-        long spring = OrePrefixes.springSmall.getMaterialAmount();
-        long barrelIron = GunComposition
-            .ironBarrelIron(OrePrefixes.stickLong.getMaterialAmount(), OrePrefixes.ring.getMaterialAmount());
-        long barrelSteel = GunComposition.ironBarrelSteel(screw);
-        long steel = GunComposition.sawedOffDirectSteel(plate, screw, spring) + 2 * barrelSteel;
-        attach(
-            GunTable.SAWED_OFF.output(),
-            new ItemData(Materials.Steel, steel, new MaterialStack(Materials.Iron, 2 * barrelIron)));
-    }
-
-    /**
-     * Recycling data of the Bolt Action Rifle and its Iron Receiver: iron and steel in the receiver, bronze in the
-     * mechanical parts inside it, the Hardened Steel Barrel's steel, the plates, screws and spring of the gun, and the
-     * glass of the scope lens.
-     */
-    private static void addBoltActionData(long plate) {
-        long screw = OrePrefixes.screw.getMaterialAmount();
-        long spring = OrePrefixes.springSmall.getMaterialAmount();
-        long mechanical1 = GunComposition.mechanical1Bronze(OrePrefixes.gearGtSmall.getMaterialAmount(), spring);
-        long receiverIron = GunComposition.ironReceiverIron(plate);
-        long receiverSteel = GunComposition.ironReceiverSteel(screw);
-        long barrel = OrePrefixes.pipeSmall.getMaterialAmount() + 2 * OrePrefixes.ring.getMaterialAmount() + plate;
-        attach(
-            PartItems.RECEIVER_IRON,
-            new ItemData(
-                Materials.Iron,
-                receiverIron,
-                new MaterialStack(Materials.Steel, receiverSteel),
-                new MaterialStack(Materials.Bronze, mechanical1)));
-        long steel = GunComposition.boltActionDirectSteel(plate, screw, spring) + barrel + receiverSteel;
-        attach(
-            GunTable.BOLT_ACTION.output(),
-            new ItemData(
-                Materials.Steel,
-                steel,
-                new MaterialStack(Materials.Iron, receiverIron),
-                new MaterialStack(Materials.Bronze, mechanical1),
-                new MaterialStack(Materials.Glass, OrePrefixes.lens.getMaterialAmount())));
-    }
-
-    /**
-     * Recycling data of the Revolver and its iron and hand-made parts: iron and steel in the barrel, bronze in the
-     * mechanical parts, and the plates, screws and spring of the gun itself.
-     */
-    private static void addRevolverData(long plate) {
-        long screw = OrePrefixes.screw.getMaterialAmount();
-        long spring = OrePrefixes.springSmall.getMaterialAmount();
-        long barrelIron = GunComposition
-            .ironBarrelIron(OrePrefixes.stickLong.getMaterialAmount(), OrePrefixes.ring.getMaterialAmount());
-        long barrelSteel = GunComposition.ironBarrelSteel(screw);
-        long mechanical1 = GunComposition.mechanical1Bronze(OrePrefixes.gearGtSmall.getMaterialAmount(), spring);
-        attach(
-            PartItems.BARREL_IRON,
-            new ItemData(Materials.Iron, barrelIron, new MaterialStack(Materials.Steel, barrelSteel)));
-        attach(PartItems.MECHANICAL_1, new ItemData(Materials.Bronze, mechanical1));
-        long steel = GunComposition.revolverDirectSteel(plate, screw, spring) + barrelSteel;
-        attach(
-            GunTable.REVOLVER.output(),
-            new ItemData(
-                Materials.Steel,
-                steel,
-                new MaterialStack(Materials.Iron, barrelIron),
-                new MaterialStack(Materials.Bronze, mechanical1)));
-    }
-
-    private static void attach(String registryName, ItemData data) {
-        ItemStack stack = ProductionRecipes.modStack(registryName, 1);
-        if (stack == null) {
-            GregGuns.LOG.error("Cannot attach ItemData to {}: not registered", registryName);
-            return;
-        }
-        GTOreDictUnificator.addItemData(stack, data);
     }
 }

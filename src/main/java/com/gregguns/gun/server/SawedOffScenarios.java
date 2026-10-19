@@ -7,10 +7,12 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.gun.def.SawedOffDef;
 import com.gregguns.gun.logic.GunCatalog;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.item.ammo.AmmoTypes;
 import com.gregguns.item.gun.GunItems;
+import com.gregguns.recipe.GunRecipeScenarios;
 
 /**
  * The {@code gun.sawedoff.*} scenarios: the Sawed Off fired and reloaded through the same server handler as the
@@ -35,6 +37,12 @@ public final class SawedOffScenarios {
         registry.register(new Reload());
         registry.register(new ReloadForced());
         registry.register(new GunVisualScenario("mp.visual.sawedoff", "saw", GunItems.sawedOff(), SHELL));
+        registry.register(
+            GunRecipeScenarios.assembly(
+                "gun.sawedoff.recipe",
+                "The Sawed Off is in GT's assembler map (so NEI lists it) at LV, 10 s, matching its sheet inputs, and not below LV.",
+                SawedOffDef.DEFINITION.assembly()));
+        registry.register(GunRecipeScenarios.shellPress());
     }
 
     private static GunRig rig(ScenarioContext ctx, int loaded) {

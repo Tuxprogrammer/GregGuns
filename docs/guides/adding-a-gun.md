@@ -1,12 +1,28 @@
 # Adding a gun
 
-A checklist of every file and table a new ballistic gun touches, written from the 9mm Pistol (M1) and the Revolver (M2). Do the steps in order. Both guns are worked examples: grep for `revolver` (or `REVOLVER`) to find each place.
+How to add a ballistic gun. Since the gun-definitions restructure, **a gun is one definition class plus one line in each of two lists**; everything else (the item, its recipe, its scenarios, the tests) follows from the definition. Worked examples: `PistolDef` (magazine, machine recipe), `RevolverDef` (loose-round ammo), `SawedOffDef` (pellets), `HandCannonDef` (hand-crafted, gravity projectile), `BoltActionDef` (scope, rechamber, camos).
 
 Read first: the gun's sheet in [techguns-spec/02-guns](../techguns-spec/02-guns/index.md) (`sheets-*.md`, `per-gun-behavior.md`, `gun-lifecycle.md`), its visual sheet in [03-gun-visuals-audio/gun-sheets.md](../techguns-spec/03-gun-visuals-audio/gun-sheets.md), and its row in [gregguns-spec/02-guns/recipes.md](../gregguns-spec/02-guns/recipes.md). Never copy Techguns code or box lists (CLAUDE.md, rule 1).
 
+## What a new gun touches
+
+| What | File | Kind |
+|---|---|---|
+| The definition: stats, tier, damage type, camo count, recipe row, recipe and recycling hooks, scenarios | `gun/def/<Name>Def.java` | new file |
+| The registry line | `gun/def/GunDefinitions.java`, `ALL` | one line |
+| The client definition: model, textures, transform rows (the render profile) | `client/render/profile/<Name>Profile.java` | new file |
+| The client registry line | `client/render/profile/ClientGunDefinitions.java`, `ALL` | one line |
+| Recycling data and any crafting-table recipe (GT-facing code) | `recipe/<Name>Recipes.java` | new file, only if the gun needs it |
+| Scenarios | `gun/server/<Name>Scenarios.java` | new file (copy `RevolverScenarios`) |
+| A new caliber | `item/ammo/def/<Name>Ammo.java` plus one line in `AmmoDefinitions.ALL` | new file and one line |
+| A new part | one `PartDefinition` entry in `item/part/PartDefinitions.java` | one entry |
+| Append-only resources | `en_US.lang`, `sounds.json`, `docs/testing/README.md` scenario rows, the two Backhand rows of `PACK-CHANGES.md` | appended lines |
+
+**Nothing else.** `GunItems`, `GunCatalog`, `GunSoundEvents`, `GunTable`, `GunRecipes`, `GunRenderers`, `GunClientSetup`, `GunsModule`, `AmmoIdsMatchItemsTest`, `GunTableTest`, `MuzzleSheetsTest` and `GunRecipeScenarios` are not edited for a new gun: they read the lists. (`GunCatalog.PISTOL` and friends survive only as aliases of the first five guns' stats.) The table-driven `GunDefinitionsTest` checks each definition against its ammo items, recipe row and gate rule, its sound events in `sounds.json`, its camo count against the texture files on disk, its camo lang names, and its client definition.
+
 ## What the framework already does
 
-You do not write firing, reloading, zoom, spread, sync, sound or animation code. `ItemGun` is driven entirely by `GunStats`; `ServerGunHandler` runs it; the client mirror, HUD, prediction and animation read it. A new gun is **data**: stats, a model profile, sound rows, a recipe row, lang and tests.
+You do not write firing, reloading, zoom, spread, sync, sound or animation code. `ItemGun` is driven entirely by the `GunDefinition`; `ServerGunHandler` runs it; the client mirror, HUD, prediction and animation read it. A new gun is **data**.
 
 | Extension | What it gives a gun | Where |
 |---|---|---|
@@ -14,37 +30,50 @@ You do not write firing, reloading, zoom, spread, sync, sound or animation code.
 | Pellets | Extra projectiles per shot, each with its own spread offset from `SpreadModel`, optionally staggered along the path. | `GunStats.Builder.pellets(extra, pelletSpread, inLine)` |
 | Scope | FOV factor and spread multiplier while zoomed, and an overlay texture. | `GunStats.Builder.zoom(fovFactor, spreadMultiplier)`; `GunTransforms.Builder.scope(new ScopeSpec(texture, kickUp, kickSide))` |
 | Knockback | A per-hit push multiplier that really changes strength (GUN-38). | `GunStats.Builder.knockback(m)` (1 vanilla, 0 none) |
+| Rechamber | A second sound with every shot (bolt, pump). | `GunDefinition.Builder.rechambers()`; add `guns.<name>.rechamber` to `sounds.json` |
+| Camos | The Camo Bench cycles the gun's skins; the item is a `CamoChangeable` and the rounds stay. | `GunDefinition.Builder.camos(n)`; textures `<name>.png`, `<name>_camo1.png`, ...; lang `item.gregguns.<name>.camoname.<i>` |
+| Armor accuracy | A worn set's `GUN_ACCURACY` bonus tightens the spread. The server reads it; it is 0 with `modules.armor` off. | `GunAccuracy` (nothing to do per gun) |
 | Muzzle flash frames | How many painted cells of the FX sheet play. | `new SpriteSheet(4, 4, frames)` in the profile; `MuzzleSheetsTest` checks it against the PNG |
 
 ## Checklist
 
-### 1. Stats: `gun/logic/GunCatalog.java`
+### 1. The definition: `gun/def/<Name>Def.java`
 
-Add a `public static final GunStats NAME = GunStats.builder("id")...build();` with a Javadoc that cites the sheet (`// Spec:`) and lists the numbers. Take every value from section 3 of the gun's sheet: damage and drop-off (`damage`, `damageDrop(start, end, min)`), `spread`, `fire(mode, rateTicks)` or `burst`, `magazine`, `ammoType`, `looseAmmoType`, `emptyContainerType`, `reloadMode`, `reloadTicks`, `projectile(speed, ttl)`, `penetration`, `animation(recoil, flash)`, `ai(...)`. Note the Techguns "later builder call wins" trap (GUN-16): define each value once, with the winning one. Add ammo ids to `GunCatalog.AmmoIds` if needed; `AmmoIdsMatchItemsTest` ties them to the ammo items.
+Copy the nearest existing `*Def`. It holds, in one place:
+
+- `STATS`: `GunStats.builder("id")...build();` with a Javadoc that cites the sheet (`// Spec:`) and lists the numbers. Take every value from section 3 of the gun's sheet: damage and drop-off (`damage`, `damageDrop(start, end, min)`), `spread`, `fire(mode, rateTicks)` or `burst`, `magazine`, `ammoType`, `looseAmmoType`, `emptyContainerType`, `reloadMode`, `reloadTicks`, `projectile(speed, ttl)`, `penetration`, `animation(recoil, flash)`, `ai(...)`. Note the Techguns "later builder call wins" trap (GUN-16): define each value once, with the winning one. Name the ammo with the ammo definition's item names (`NineMmAmmo.TYPE.roundItemName()`), not a new constant.
+- `DEFINITION`: `GunDefinition.of(NAME, STATS).tier(...).damageType(...)`, then as needed `.rechambers()`, `.camos(n)`, `.row(Row.assembler(...))`, `.recipes(() -> ...)`, `.recycling(() -> ...)`, `.scenarios(registry -> ...)`. `NAME` is the registry name (`gregguns:<name>`), the sound prefix and the texture name. Pick the tier from [design 0001](../design/0001-tier-map.md).
 
 Ammo that fills the gun straight from a loose round (Revolver: one 9mm bullet = 6 rounds) uses `ammoType = loose item`, `reloadMode(MAGAZINE, 1)` and no empty container. `GunItems.roundsPerLooseItem` already treats that as `magazineSize` rounds per item, so a forced reload never turns one bullet into several rounds.
 
-Test: add a `...MatchesItsSheet` test to `GunCatalogTest` (every number of section 3).
+The hooks are lambdas (`() -> RevolverRecipes.recycling()`), not method references, so GT and Minecraft classes load only when the hook runs and the definition stays readable by plain unit tests.
 
-### 2. The item: `item/gun/GunItems.java`
+Then add `<Name>Def.DEFINITION` to `GunDefinitions.ALL`. List order is registry order.
 
-Add a field, an accessor and a `registrar.registerItem(GunSoundEvents.NAME, new ItemGun(GunSoundEvents.NAME, GunCatalog.NAME, Tier.LV, DamageType.PROJECTILE))` line in `register`. The registry name is the content name (`revolver`, so `gregguns:revolver`); the same string is the texture name, so `textures/items/<name>.png` must exist. Pick the tier from [design 0001](../design/0001-tier-map.md).
+Test: the common checks need nothing. A test of the sheet's numbers goes next to the definition (see `GunCatalogTest` for the style).
+
+### 2. Recipe row and hooks
+
+The assembly row is `Row.assembler(id, output, count, tier, seconds, circuit, inputs...)` inside the definition: id (`GR-nn`), the gun's `NAME`, `Tier`, seconds, programmed circuit (**unique per gun**, `GunDefinitionsTest` checks), then inputs as `Input.mod("part_...", n)` and `Input.gt("plate", "Steel", 2)`. See [design 0001](../design/0001-tier-map.md) and the gun's table in `gregguns-spec/02-guns/recipes.md`. At least one input must be the tier's gate material (`GateRule`; the dev self-check enforces it over every registered recipe). `GunRecipes` registers the rows of every definition.
+
+A gun that is only crafted by hand (the Hand Cannon) has no row and a `.recipes(() -> ...)` hook calling a public method of its `<Name>Recipes`. GT recycling data goes in `.recycling(() -> <Name>Recipes.recycling())`: copy `RevolverRecipes` and add the composition sums to `GunComposition` (pure and unit-tested). The data of the parts it uses belongs to the parts (`PartRecycling`).
+
+A part the gun needs that does not exist yet: add a `PartDefinition` to `PartDefinitions.ALL` (name, tier, optional `.row(...)` machine recipe, `.handCrafted()` plus a `.recipes(...)` hook for ULV crafting-table parts, optional `.recycling(...)`) and its lang key. Every GT input (`Input.gt`) must resolve through the unificator: a missing one skips the recipe with an error that names it, and the smoke test fails on it (the Iron Barrel's `pipeSmall.Iron` taught us this: GT has no such part). Keep the registry names of parts that already exist: other branches reuse them.
 
 ### 3. Lang: `assets/gregguns/lang/en_US.lang`
 
-`item.gregguns.<name>.name=...` (the display name from the Techguns lang sheet, minus its typos, GUN-46). Every part item you add needs one too. The dev self-check fails the boot on a missing key, texture or creative-tab entry.
+`item.gregguns.<name>.name=...` (the display name from the Techguns lang sheet, minus its typos, GUN-46). Every part item you add needs one too. A gun with camos needs `item.gregguns.<name>.camoname.<i>` for every skin including 0. The dev self-check fails the boot on a missing key, texture or creative-tab entry.
 
-### 4. Sounds: `gun/sound/GunSoundEvents.java` and `assets/gregguns/sounds.json`
+### 4. Sounds: `assets/gregguns/sounds.json`
 
-- Constants: `public static final String NAME = "name";`, `NAME_FIRE = gun(NAME, FIRE)`, `NAME_RELOAD = gun(NAME, RELOAD)`. `ItemGun` derives its two events from the content name, so the constants are for tests and scenarios.
-- `sounds.json`: rows `guns.<name>.fire` (the `_a`, `_b`, `_c` shot files) and `guns.<name>.reload`, category `player`, paths relative to `sounds/` without `.ogg`. The files exist already in `sounds/guns/`; **never edit or add `.ogg` files** (the asset agent owns them). `GunSoundsJsonTest` checks names, mono files and existence.
+`ItemGun` derives its events from the name: `guns.<name>.fire`, `guns.<name>.reload` and, for a rechambering gun, `guns.<name>.rechamber`. You add **no constant** to `GunSoundEvents`; add the rows to `sounds.json` (the `_a`, `_b`, `_c` shot files), category `player`, paths relative to `sounds/` without `.ogg`. The files exist already in `sounds/guns/`; **never edit or add `.ogg` files** (the asset agent owns them). `GunSoundsJsonTest` checks names, mono files and existence, and `GunDefinitionsTest` checks that every definition has its events.
 
 ### 5. Render profile and model: `client/render/profile/<Name>Profile.java`
 
-Copy `RevolverProfile` (X-family) or `Pistol9mmProfile` (Z-family). It holds:
+Copy `RevolverProfile` (X-family) or `Pistol9mmProfile` (Z-family). It holds the boxes, the transforms and a `DEFINITION` (a `ClientGunDefinition`: gun name, boxes, parts, texture size, scale, **textures, one per camo**, muzzle, family, transforms), which you list in `ClientGunDefinitions.ALL`. `GunClientSetup` registers a renderer for each entry.
 
 - **Boxes.** Original geometry only. `tools/asset-gen/model_layouts.md` lists, per gun, each box as `u v w h d` in texels for the painted model sheet `textures/models/guns/<name>.png`. Use those sizes and texture origins exactly and invent only the positions, from the words of the Techguns `gun-models.md` (never its box lists). A box is `new BoxSpec(name, part, u, v, w, h, d, x, y, z, tiltPivot, tiltZ)`; the model is authored muzzle toward +X, Y down. Parts are groups that the transform rows move separately (the pistol's slide).
-- **Family.** The sheet says X or Z family in `rendering-framework.md` section 6.1. Z-family: `new BoxGunModel(..., muzzle)`, the model turns a quarter turn about Y. X-family: pass `true` as the last argument, so boxes draw as authored with the barrel along +X.
+- **Family.** The sheet says X or Z family in `rendering-framework.md` section 6.1. Z-family: `xFamily = false` in the `ClientGunDefinition`, and the model turns a quarter turn about Y. X-family: `xFamily = true`, so boxes draw as authored with the barrel along +X.
 - **First-person size and position (the fit rule).** Never copy the sheet's first-person `S(n)` and `T(...)` unchanged: they were written for Techguns' smaller models and origins. The Revolver at the sheet's `S(1.5)` filled the screen, and the Hand Cannon's sheet offset put it off screen. Use `FirstPersonFit` (the Revolver and Hand Cannon profiles are the worked examples; the 9mm Pistol keeps its hand-tuned numbers, which the rule reproduces):
   1. **Scale.** `FP_SCALE = FirstPersonFit.scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), target)`: the scale that makes the model's length along the barrel (texels x `MODEL_SCALE`, in blocks) come out as `target` on screen. **A handgun's target is `FirstPersonFit.HANDGUN_LENGTH` = 15/16**, the pistol's tuned length, so the pistol gets exactly `S(1.0)`. Today that gives the Revolver `S(0.48)` and the Hand Cannon `S(0.47)`. A longer class (SMG, rifle, LMG) picks its target once, by eye in a first-person screenshot, adds a constant to `FirstPersonFit` and a line here.
   2. **Idle position.** `IDLE = FirstPersonFit.idleOffset(anchor, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE))`, used as the idle `translate(...)`. The translate comes after the scale, in the model's axes, so this puts the model's bounding-box centre at the family's anchor: `ANCHOR_X_FAMILY` (rotX 180, rotY -45; the Revolver's tuned place) or `ANCHOR_Z_FAMILY` (rotX 180, rotY 225; the pistol's). It replaces the sheet's idle `T(...)`, which is measured from Techguns' model origin. A different sheet family needs its own anchor, measured once from a gun you tuned by eye.
@@ -55,27 +84,21 @@ Copy `RevolverProfile` (X-family) or `Pistol9mmProfile` (Z-family). It holds:
 - **Muzzle flash.** `MuzzleFlashSpec(texture, new SpriteSheet(4, 4, frames), x, y, z, scale, rot, additive, thirdPersonLength)`. The frame count is the number of **painted** cells: `muzzleflash2.png` has 7 (cell 7 is empty), `muzzleflash4x4.png` has 9, not the manifest's 10. Add a case to `MuzzleSheetsTest`. `MUZZLE` is the third-person flash origin in the gun frame, blocks.
 - **Scope** (scoped guns only): `ScopeSpec("gregguns:textures/fx/testscope.png", kickUp, kickSide)`. The FOV factor is `GunStats.zoom`. The overlay PNGs are 3072 and 2048 pixels square; `ScopeTextures` shrinks them to at most 1024 when it loads them (`ImageScaler`), and never changes the files. With no `ScopeSpec` a zoom changes the FOV only.
 
-Register it in `client/render/GunRenderers.java` (`registerName(Item)`, a copy of `registerRevolver`) and call it from `client/gun/GunClientSetup.init()`.
+Tests (copy `RevolverProfileTest`): boxes equal the layout sheet; unwraps fit the sheet and do not overlap; every face lands on painted pixels of the PNG; timing and rows follow the sheet. Add your gun's case to `MuzzleSheetsTest` (the flash frame count is per sheet).
 
-Tests (copy `RevolverProfileTest`): boxes equal the layout sheet; unwraps fit the sheet and do not overlap; every face lands on painted pixels of the PNG; timing and rows follow the sheet.
+### 6. Camo skins
 
-### 6. Recipe: `recipe/GunTable.java` (+ `ProductionTable.java` for new parts)
-
-Add a `ProductionTable.Row` to `GunTable` and to `GunTable.ROWS`: id (`GR-nn`), output name, count, `Tier`, `Target.ASSEMBLER` (or the right GT map for the tier, see [design 0001](../design/0001-tier-map.md) and the gun's table in `gregguns-spec/02-guns/recipes.md`), seconds, programmed circuit (**unique per gun**, `GunTableTest` checks), then inputs as `Input.mod("part_...", n)` and `Input.gt("plate", "Steel", 2)`. At least one input must be the tier's gate material (`GateRule`; the dev self-check enforces it over every registered recipe). `GunRecipes` registers the rows and the GT recycling data; add the recycling sums to `GunComposition` and `GunRecipes.addRecyclingData`.
-
-A part the gun needs that does not exist yet: register it in `item/part/PartItems.java` (name, tier), add its lang key, and add its recipe: a machine row in `ProductionTable.ROWS` (spec rows `RC-nn` in `gregguns-spec/06-items/recipes.md`) or, for hand-made ULV parts, a crafting-table recipe in `recipe/PartCraftingRecipes.java` and its name in `ProductionTable.CRAFTED_PARTS`. Every GT input (`Input.gt`) must resolve through the unificator: a missing one skips the recipe with an error that names it, and the smoke test fails on it (the Iron Barrel's `pipeSmall.Iron` taught us this: GT has no such part).
-
-Tests: a `...RowMatchesTheSheet` test in `GunTableTest`; `GunRecipeScenarios` registers an in-game `gun.<name>.recipe` for the assembler map (add one `GunAssemblerRecipe` line).
+`camos(n)` in the definition and the texture list in the profile must agree with the PNGs: `<name>.png` plus `<name>_camo1.png` and so on (`textures/models/guns/`). `GunDefinitionsTest` fails if the count differs from the files on disk or from the client definition's textures. The Camo Bench then cycles the gun with no further code; the camo index is stored in the stack NBT next to the rounds, and cycling never changes the rounds (GUN-01). `gun.camo.cycle` checks every gun.
 
 ### 7. Ammo
 
-Most guns reuse existing ammo (`AmmoTypes`, `AmmoItems`, `ProductionTable` rows RC-28 and up). A new caliber or magazine is one row in `AmmoTypes`, its items in `AmmoItems`, textures (already in `textures/items/`), lang keys, press recipes, and an `AmmoIdsMatchItemsTest` case. See `gregguns-spec/06-items/ammo.md` and `recipes.md`. The Hand Cannon's stone bullet is the worked example for a ULV round: `AmmoTypes.STONE`, a hand recipe in `HandCannonRecipes` (RC-27) and a `Tier.STEAM` press row RC-27b for the Steam Ammo Press (at most 4 inputs; `Input.ore("cobblestone", 3)` takes a plain ore-dictionary name).
+Most guns reuse existing ammo. A new caliber is one `item/ammo/def/<Name>Ammo.java` (`AmmoDefinition.of(TYPE)` with `.magazine(...)`, `.row(Row.press(...))`, `.refill(...)` and hooks) and one line in `AmmoDefinitions.ALL`; the items, the `AmmoTypes` index, the press rows (`ProductionTable.ROWS`), the refills and the recycling hooks follow. Textures (already in `textures/items/`) and lang keys are the usual per-item resources. See `gregguns-spec/06-items/ammo.md` and `recipes.md`. The Hand Cannon's stone bullet (`StoneAmmo`) is the worked example for a ULV round: a hand recipe (RC-27) in `HandCannonRecipes` and a `Tier.STEAM` press row RC-27b for the Steam Ammo Press (at most 4 inputs; `Input.ore("cobblestone", 3)` takes a plain ore-dictionary name).
 
 ### 8. Scenarios and tests
 
-- Build the gun's in-game scenarios on `GunRig` (`gun/server/GunRig.java`): a fake player holding the gun in a cleared corridor, with `press`, `release`, `tick`, `give`, `count`, `loaded`, `bullets`. Copy `RevolverScenarios`: `gun.<name>.fire` (damage per `DamageModel`, rounds, cooldown), `gun.<name>.reload` (timing, ammo consumed, containers returned), `gun.<name>.reload.forced` if ammo is loose, `gun.<name>.damage` for drop-off. Register them from the gun's own `registerAll` and add one line to `GunsModule` if it is a new class.
-- Behavior unique to the gun gets its own scenario or unit test (pellet counts, burst timing, scope FOV). Framework checks already exist: `gun.kind`, `gun.pellets`, `gun.knockback`.
-- A visual walkthrough is one line: `registry.register(new GunVisualScenario("mp.visual.<name>", "<prefix>", GunItems.<name>(), "<ammo item>"))`.
+- Build the gun's in-game scenarios on `GunRig` (`gun/server/GunRig.java`): a fake player holding the gun in a cleared corridor, with `press`, `release`, `tick`, `give`, `count`, `loaded`, `bullets`. Copy `RevolverScenarios`: `gun.<name>.fire` (damage per `DamageModel`, rounds, cooldown), `gun.<name>.reload` (timing, ammo consumed, containers returned), `gun.<name>.reload.forced` if ammo is loose, `gun.<name>.damage` for drop-off. Its `registerAll` also registers the recipe scenario, `GunRecipeScenarios.assembly("gun.<name>.recipe", "...", <Name>Def.DEFINITION.assembly())`, and the visual one below. The definition's `.scenarios(registry -> <Name>Scenarios.registerAll(registry))` is the only hook needed: `GunsModule` registers every definition's scenarios in a loop.
+- Behavior unique to the gun gets its own scenario or unit test (pellet counts, burst timing, scope FOV). Framework checks already exist: `gun.kind`, `gun.pellets`, `gun.knockback`, `gun.camo.cycle`, `gun.accuracy.armor`.
+- A visual walkthrough is one line in the same `registerAll`: `registry.register(new GunVisualScenario("mp.visual.<name>", "<prefix>", GunItems.get("<name>"), "<ammo item>"))`.
 - Bug regressions are named `doesNotReproduce<ID>_...` (CONTRIBUTING, Testing).
 - Add a row per scenario to the scenario table in [../testing/README.md](../testing/README.md).
 
@@ -91,8 +114,8 @@ Add the registry name `gregguns:<name>` to the two Backhand rows: `general.mainh
 ## Verification
 
 ```sh
-./gradlew spotlessApply build                      # format, compile, unit tests
-GG_MODULES=guns python -I run_scenarios.py <worktree> <port>   # in-game scenarios, headless
+./gradlew spotlessApply build                      # format, compile, unit tests (incl. GunDefinitionsTest)
+GG_MODULES=guns,armor,machines python -I run_scenarios.py <worktree> <port>   # in-game scenarios, headless
 GG_MODULES=guns python -I smoke_server.py <worktree> <port>    # boot + dev self-check
 ```
 
@@ -102,5 +125,7 @@ Then a visual check of the first-person and third-person model with the dev auto
 
 - `@SideOnly(CLIENT)` vanilla methods (`Item.getCreativeTab`, `getIconString`) must never be called from common code. Put client work under `com.gregguns.client`.
 - Java 8 API only (no records, no `List.of`).
-- Shared files (`GunItems`, `GunCatalog`, `GunTable`, `GunRenderers`, `GunClientSetup`, `PartItems`, `sounds.json`, `en_US.lang`, `GunsModule`) are touched by every gun: add lines, do not reorder.
+- Definitions must stay free of Minecraft and GT types at class-load time: build rows and stats directly, and reach item, recipe and scenario code only from inside lambda bodies.
+- Do not use `ProductionTable` statics (`BULLET`, `ROWS`, ...) inside a definition: `ProductionTable` reads the definitions, so that would be a class-initialisation cycle. Use `Row.assembler` / `Row.press` and the definition's own names.
+- The two lists (`GunDefinitions.ALL`, `ClientGunDefinitions.ALL`) and the append-only resources (`en_US.lang`, `sounds.json`, scenario table rows, Backhand rows) are touched by every gun: add lines, do not reorder.
 - Do not edit textures or `.ogg` files; ask the asset agent for a missing one.

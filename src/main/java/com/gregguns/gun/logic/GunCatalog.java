@@ -1,7 +1,16 @@
 package com.gregguns.gun.logic;
 
+import com.gregguns.gun.def.BoltActionDef;
+import com.gregguns.gun.def.HandCannonDef;
+import com.gregguns.gun.def.PistolDef;
+import com.gregguns.gun.def.RevolverDef;
+import com.gregguns.gun.def.SawedOffDef;
+
 /**
- * Stat definitions for the guns built so far. Later guns are added here as their milestones land.
+ * Aliases for the stats of the first five guns, and the ammo ids their stats name. The stats themselves live in each
+ * gun's definition ({@code com.gregguns.gun.def}, for example {@code PistolDef}); a new gun adds nothing here, it
+ * adds a definition and one line in {@code GunDefinitions.ALL}. The aliases stay so code and tests that name a
+ * built-in gun's stats keep working.
  */
 public final class GunCatalog {
 
@@ -30,134 +39,20 @@ public final class GunCatalog {
         private AmmoIds() {}
     }
 
-    /**
-     * The 9mm Pistol.
-     *
-     * <p>
-     * Spec: sheets-handguns-smgs.md, "9mm Pistol", section 3: damage 8 falling to 5 between 18 and 25 blocks (the
-     * later builder call wins, GUN-16), lifetime 30 ticks at 1.5 blocks per tick, spread 0.025, no scope, semi-auto
-     * every 4 ticks, 18 rounds, 35 tick reload, AI range 24 / attack time 30 / burst 3 / delay 10, recoil 3 ticks
-     * and muzzle flash 5 ticks.
-     */
-    public static final GunStats PISTOL = GunStats.builder("pistol")
-        .damage(8.0)
-        .damageDrop(18, 25, 5.0)
-        .spread(0.025)
-        .fire(FireMode.SEMI, 4)
-        .magazine(18)
-        .ammoType(AmmoIds.NINE_MM_PISTOL_MAGAZINE)
-        .looseAmmoType(AmmoIds.NINE_MM)
-        .emptyContainerType(AmmoIds.NINE_MM_PISTOL_MAGAZINE_EMPTY)
-        .reloadMode(ReloadMode.MAGAZINE, 1)
-        .reloadTicks(35)
-        .projectile(1.5, 30)
-        .penetration(0)
-        .animation(3, 5)
-        .ai(24, 30, 3, 10)
-        .build();
+    /** The 9mm Pistol's stats. */
+    public static final GunStats PISTOL = PistolDef.STATS;
 
-    /**
-     * The Revolver.
-     *
-     * <p>
-     * Spec: sheets-handguns-smgs.md, "Revolver", section 3: damage 8 falling to 6 between 12 and 20 blocks, lifetime
-     * 25 ticks at 1.5 blocks per tick, spread 0.025, no scope, semi-auto every 6 ticks, 6 rounds loaded straight from
-     * one 9mm bullet item (no magazine, no empty container), 45 tick reload, AI range 18 / attack time 90 / burst 6 /
-     * delay 20, recoil 6 ticks and muzzle flash 5 ticks.
-     */
-    public static final GunStats REVOLVER = GunStats.builder("revolver")
-        .damage(8.0)
-        .damageDrop(12, 20, 6.0)
-        .spread(0.025)
-        .fire(FireMode.SEMI, 6)
-        .magazine(6)
-        .ammoType(AmmoIds.NINE_MM)
-        .reloadMode(ReloadMode.MAGAZINE, 1)
-        .reloadTicks(45)
-        .projectile(1.5, 25)
-        .penetration(0)
-        .animation(6, 5)
-        .ai(18, 90, 6, 20)
-        .build();
+    /** The Revolver's stats. */
+    public static final GunStats REVOLVER = RevolverDef.STATS;
 
-    /**
-     * The Sawed Off, a double-barrel shotgun.
-     *
-     * <p>
-     * Spec: sheets-rifles-shotguns.md, "Sawed Off", section 3: 4 damage per pellet falling to 1.5 between 1 and 4
-     * blocks, lifetime 10 ticks at 1.5 blocks per tick, spread 0.01, 7 extra pellets at spread 0.2 (8 in all, one
-     * round per shot), full-auto every 4 ticks, 2 rounds, 28 tick reload, AI range 12 / attack time 60 / burst 2 /
-     * delay 20, recoil 5 ticks and muzzle flash 5 ticks. It loads shell by shell: up to 2 shells per reload, one
-     * round each, and the rounds already in the gun stay (so a forced reload tops up).
-     */
-    public static final GunStats SAWED_OFF = GunStats.builder("sawed_off")
-        .damage(4.0)
-        .damageDrop(1, 4, 1.5)
-        .spread(0.01)
-        .pellets(7, 0.2, false)
-        .fire(FireMode.AUTO, 4)
-        .magazine(2)
-        .ammoType(AmmoIds.SHOTGUN_SHELL)
-        .reloadMode(ReloadMode.INCREMENTAL, 2)
-        .reloadTicks(28)
-        .projectile(1.5, 10)
-        .penetration(0)
-        .animation(5, 5)
-        .ai(12, 60, 2, 20)
-        .build();
+    /** The Sawed Off's stats. */
+    public static final GunStats SAWED_OFF = SawedOffDef.STATS;
 
-    /**
-     * The Hand Cannon.
-     *
-     * <p>
-     * Spec: sheets-handguns-smgs.md, "Hand Cannon", section 3: damage 8 falling to 5 between 10 and 25 blocks, speed
-     * 1.0 blocks per tick for 25 ticks (gravity 0.015 comes from the SimpleProjectile), spread 0.035, no scope,
-     * full-auto every 12 ticks, one round loaded straight from one stone bullet (no magazine, no empty container),
-     * 30 tick reload, AI range 12 / attack time 60 / burst 0 / delay 0, recoil 5 ticks and muzzle flash 5 ticks.
-     */
-    public static final GunStats HANDCANNON = GunStats.builder("handcannon")
-        .damage(8.0)
-        .damageDrop(10, 25, 5.0)
-        .spread(0.035)
-        .fire(FireMode.AUTO, 12)
-        .magazine(1)
-        .ammoType(AmmoIds.STONE)
-        .reloadMode(ReloadMode.MAGAZINE, 1)
-        .reloadTicks(30)
-        .projectile(1.0, 25)
-        .projectileKind(ProjectileKind.GRAVITY_BULLET)
-        .penetration(0)
-        .animation(5, 5)
-        .ai(12, 60, 0, 0)
-        .build();
+    /** The Hand Cannon's stats. */
+    public static final GunStats HANDCANNON = HandCannonDef.STATS;
 
-    /**
-     * The Bolt Action Rifle, the first scoped gun.
-     *
-     * <p>
-     * Spec: sheets-rifles-shotguns.md, "Bolt Action Rifle", section 3: damage 16 falling to 10 between 20 and 30
-     * blocks, lifetime 40 ticks at 2.25 blocks per tick (the base 1.5 times 1.5), spread 0.05, armor penetration 0.15,
-     * semi-auto every 25 ticks (the rechamber), 6 rounds loaded straight from one rifle bullet item (no magazine, no
-     * empty container), 50 tick reload, scope FOV x0.35 and spread x0.125 while zoomed, AI range 36 / attack time 60 /
-     * no burst, recoil 15 ticks and muzzle flash 5 ticks.
-     */
-    // Deviation: Techguns' AI attack time has a variance of 20 ticks; GunStats has no variance field, so the NPC uses
-    // the plain 60.
-    public static final GunStats BOLT_ACTION = GunStats.builder("bolt_action_rifle")
-        .damage(16.0)
-        .damageDrop(20, 30, 10.0)
-        .spread(0.05)
-        .zoom(0.35, 0.125)
-        .fire(FireMode.SEMI, 25)
-        .magazine(6)
-        .ammoType(AmmoIds.RIFLE)
-        .reloadMode(ReloadMode.MAGAZINE, 1)
-        .reloadTicks(50)
-        .projectile(2.25, 40)
-        .penetration(0.15)
-        .animation(15, 5)
-        .ai(36, 60, 0, 0)
-        .build();
+    /** The Bolt Action Rifle's stats. */
+    public static final GunStats BOLT_ACTION = BoltActionDef.STATS;
 
     private GunCatalog() {}
 }

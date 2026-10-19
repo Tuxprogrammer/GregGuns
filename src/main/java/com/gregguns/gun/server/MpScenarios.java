@@ -165,6 +165,11 @@ public final class MpScenarios {
 
     /** Ticks to wait for a pressed shot to show up as a round drop before pressing again, and between steps. */
     private static final int SHOT_RETRY_TICKS = 8;
+    /**
+     * The same wait in wall-clock time: after a stall (a cold server skips ticks, then bursts) several poll ticks
+     * pass within a few real milliseconds, before the client's input can have reached the server.
+     */
+    private static final long SHOT_RETRY_MS = 1500L;
     /** Most fire presses before giving up (two are needed). */
     private static final int MAX_PRESSES = 6;
     /** Ticks to keep requesting the reload before giving up. */
@@ -186,6 +191,7 @@ public final class MpScenarios {
         private int shotsSeen;
         private int lastStep = -1;
         private int presses;
+        private long lastStepMs;
 
         SyncPoller(ScenarioContext ctx, EntityPlayerMP a, EntityPlayerMP b) {
             this.ctx = ctx;
@@ -218,25 +224,29 @@ public final class MpScenarios {
                 if (shotsSeen == 0 && now >= 0 && now <= roundsStart - 1) {
                     shotsSeen = 1;
                     lastStep = t;
+                    lastStepMs = System.currentTimeMillis();
                 } else if (shotsSeen == 1 && now <= roundsStart - 2) {
                     shotsSeen = 2;
                     roundsAfterShots = now;
                     magsBefore = magazines(a);
                     lastStep = t;
-                } else if (lastStep < 0 || t - lastStep >= SHOT_RETRY_TICKS) {
-                    // First press, or the previous press was lost (cooldown, input race): press again. The gap
-                    // after a seen drop is longer than the 4-tick fire cooldown.
-                    if (presses >= MAX_PRESSES) {
-                        return finish(t);
+                    lastStepMs = System.currentTimeMillis();
+                } else if (lastStep < 0
+                    || (t - lastStep >= SHOT_RETRY_TICKS && System.currentTimeMillis() - lastStepMs >= SHOT_RETRY_MS)) {
+                        // First press, or the previous press was lost (cooldown, input race): press again. The gap
+                        // after a seen drop is longer than the 4-tick fire cooldown.
+                        if (presses >= MAX_PRESSES) {
+                            return finish(t);
+                        }
+                        presses++;
+                        signal(a, "fire", "1");
+                        lastStep = t;
+                        lastStepMs = System.currentTimeMillis();
                     }
-                    presses++;
-                    signal(a, "fire", "1");
-                    lastStep = t;
-                }
                 return null;
             }
             if (reloadAt < 0) {
-                if (t - lastStep < SHOT_RETRY_TICKS) {
+                if (t - lastStep < SHOT_RETRY_TICKS || System.currentTimeMillis() - lastStepMs < SHOT_RETRY_MS) {
                     return null;
                 }
                 // The fire cooldown can still refuse a reload for a few ticks, so keep pressing until it starts.
@@ -433,6 +443,9 @@ public final class MpScenarios {
      */
     private static final long GIVE_CONFIRM_TIMEOUT_MS = 10_000L;
 
+    /** How long a client may take to work off the previous scenario's queued commands (screenshots, GUIs). */
+    private static final long SYNC_TIMEOUT_MS = 90_000L;
+
     /**
      * Chat turns {@code _word_} into formatting in the pack (it ate "_9mm_" from an item name), so item names travel
      * in acks with underscores swapped for dashes.
@@ -526,9 +539,35 @@ public final class MpScenarios {
             List<String> items = giveList();
             int total = items.size();
             // state: [0] step, [1] tick the current step was sent (-1: not yet sent)
-            long[] state = { 0, -1 };
+            long[] state = { -1, -1 };
             return ScenarioResult.pending(name(), 2 * total * 200 + 100, t -> {
                 int step = (int) state[0];
+                if (step < 0) {
+                    // Barrier: the previous scenario (mp.visual) leaves the clients with a backlog of GUI and
+                    // screenshot commands; hold signals queue behind it, so start only once every client is idle.
+                    if (state[1] < 0) {
+                        for (EntityPlayerMP p : players) {
+                            inbox.clear(p.getCommandSenderName());
+                            signal(p, "sync");
+                        }
+                        state[1] = System.currentTimeMillis();
+                        return null;
+                    }
+                    boolean idle = true;
+                    for (EntityPlayerMP p : players) {
+                        idle &= "sync ready ok".equals(inbox.get(p.getCommandSenderName()));
+                    }
+                    if (idle) {
+                        state[0] = 0;
+                        state[1] = -1;
+                    } else if (System.currentTimeMillis() - state[1] > SYNC_TIMEOUT_MS) {
+                        stop();
+                        return ScenarioResult.fail(
+                            name(),
+                            "a client did not drain its command queue within " + SYNC_TIMEOUT_MS / 1000 + " s");
+                    }
+                    return null;
+                }
                 if (step >= 2 * total) {
                     stop();
                     return ScenarioResult.builder(name())
@@ -585,10 +624,25 @@ public final class MpScenarios {
                     state[0]++;
                     state[1] = -1;
                 } else if (System.currentTimeMillis() - state[1] > GIVE_CONFIRM_TIMEOUT_MS) {
+                    StringBuilder silent = new StringBuilder();
+                    for (EntityPlayerMP p : players) {
+                        if (inbox.get(p.getCommandSenderName()) == null) {
+                            ItemStack slot0 = p.inventory.mainInventory[0];
+                            silent.append(' ')
+                                .append(p.getCommandSenderName())
+                                .append(" (server side: selected slot ")
+                                .append(p.inventory.currentItem)
+                                .append(", slot 0 = ")
+                                .append(slot0 == null ? "empty" : slot0.getDisplayName())
+                                .append(')');
+                        }
+                    }
                     stop();
                     return ScenarioResult.fail(
                         name(),
-                        "no client confirmation for " + item
+                        "no client confirmation from" + silent
+                            + " for "
+                            + item
                             + " ("
                             + how
                             + ") within "

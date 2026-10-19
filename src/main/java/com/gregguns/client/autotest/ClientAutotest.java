@@ -274,10 +274,12 @@ public final class ClientAutotest {
                 log("fire x" + args[0] + " (client " + localName() + ")");
             }
             case "gui" -> AutotestCommands.openGui(args);
+            case "sync" -> AutotestCommands.syncAck();
             case "hold" -> holdWait = new AutotestCommands.HoldWait(args[0]);
             case "scope" -> com.gregguns.client.render.GunRenderers
                 .setDebugScope("off".equals(args[0]) ? null : args[0]);
             case "creativegive" -> AutotestCommands.creativeGive(args[0]);
+            case "slots" -> AutotestCommands.reportSlots(args[0]);
             case "quit" -> {
                 log("quit (client " + localName() + ")");
                 Minecraft.getMinecraft()

@@ -8,15 +8,14 @@ import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.explosion.GrenadeScenarios;
 import com.gregguns.explosion.MvGrenadeScenarios;
-import com.gregguns.gun.server.BoltActionScenarios;
+import com.gregguns.gun.def.GunDefinition;
+import com.gregguns.gun.def.GunDefinitions;
 import com.gregguns.gun.server.FrameworkScenarios;
+import com.gregguns.gun.server.GunAccuracyScenarios;
+import com.gregguns.gun.server.GunCamoScenarios;
 import com.gregguns.gun.server.GunEvents;
 import com.gregguns.gun.server.GunKeybinds;
-import com.gregguns.gun.server.GunScenarios;
-import com.gregguns.gun.server.HandCannonScenarios;
 import com.gregguns.gun.server.MpScenarios;
-import com.gregguns.gun.server.RevolverScenarios;
-import com.gregguns.gun.server.SawedOffScenarios;
 import com.gregguns.item.ammo.AmmoItems;
 import com.gregguns.item.grenade.GrenadeItems;
 import com.gregguns.item.gun.GunItems;
@@ -30,7 +29,6 @@ import com.gregguns.recipe.ComponentRecipes;
 import com.gregguns.recipe.ComponentScenarios;
 import com.gregguns.recipe.GregGunsRecipeMaps;
 import com.gregguns.recipe.GrenadeRecipes;
-import com.gregguns.recipe.GunRecipeScenarios;
 import com.gregguns.recipe.GunRecipes;
 import com.gregguns.recipe.MeleeRecipes;
 import com.gregguns.recipe.ProductionRecipes;
@@ -84,13 +82,12 @@ public final class GunsModule implements GregGunsModule {
         GrenadeRecipes.register();
         if (DevEnvironment.isActive()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
-            GunRecipeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            for (GunDefinition gun : GunDefinitions.ALL) {
+                gun.registerScenarios(ScenarioRegistry.SCENARIOS);
+            }
+            GunCamoScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            GunAccuracyScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ComponentScenarios.registerAll(ScenarioRegistry.SCENARIOS);
-            GunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
-            RevolverScenarios.registerAll(ScenarioRegistry.SCENARIOS);
-            SawedOffScenarios.registerAll(ScenarioRegistry.SCENARIOS);
-            HandCannonScenarios.registerAll(ScenarioRegistry.SCENARIOS);
-            BoltActionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             FrameworkScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MeleeScenarios.registerAll(ScenarioRegistry.SCENARIOS);

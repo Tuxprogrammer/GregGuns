@@ -75,6 +75,21 @@ public final class SawedOffProfile {
     /** The sheet's render transforms, timing and muzzle flash for the Sawed Off. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
 
+    /**
+     * The client half of the gun's definition: model, textures and transforms, listed in {@link ClientGunDefinitions}.
+     */
+    public static final ClientGunDefinition DEFINITION = new ClientGunDefinition(
+        "sawed_off",
+        BOXES,
+        1,
+        TEXTURE_WIDTH,
+        TEXTURE_HEIGHT,
+        MODEL_SCALE,
+        new String[] { TEXTURE },
+        MUZZLE,
+        true,
+        TRANSFORMS);
+
     private SawedOffProfile() {}
 
     private static GunTransforms buildTransforms() {

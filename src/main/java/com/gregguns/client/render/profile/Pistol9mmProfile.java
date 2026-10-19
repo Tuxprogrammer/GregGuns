@@ -71,6 +71,21 @@ public final class Pistol9mmProfile {
     /** The sheet's render transforms, timing and muzzle flash for the pistol. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
 
+    /**
+     * The client half of the gun's definition: model, textures and transforms, listed in {@link ClientGunDefinitions}.
+     */
+    public static final ClientGunDefinition DEFINITION = new ClientGunDefinition(
+        "pistol_9mm",
+        BOXES,
+        2,
+        TEXTURE_WIDTH,
+        TEXTURE_HEIGHT,
+        MODEL_SCALE,
+        new String[] { TEXTURE },
+        MUZZLE,
+        false,
+        TRANSFORMS);
+
     private Pistol9mmProfile() {}
 
     private static GunTransforms buildTransforms() {

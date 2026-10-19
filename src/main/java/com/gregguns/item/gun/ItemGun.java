@@ -14,15 +14,16 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import com.gregguns.api.CamoChangeable;
 import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.combat.DamageType;
 import com.gregguns.core.registry.Naming;
+import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunState;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.net.PacketGunZoom;
-import com.gregguns.gun.sound.GunSoundEvents;
 import com.gregguns.network.GregGunsNetwork;
 
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -51,8 +52,9 @@ import cpw.mods.fml.relauncher.SideOnly;
  * Not enchantable and not repairable. Both sides; the tooltip is client only.
  */
 // Spec: docs/techguns-spec/02-guns/gun-lifecycle.md sections 1, 2, 4, 9 and 10; docs/design/0009 row 7.
-public class ItemGun extends Item implements Tiered {
+public class ItemGun extends Item implements Tiered, CamoChangeable {
 
+    private final GunDefinition definition;
     private final String contentName;
     private final GunStats stats;
     private final Tier tier;
@@ -60,36 +62,29 @@ public class ItemGun extends Item implements Tiered {
     private final String fireEvent;
     private final String reloadEvent;
     private final String rechamberEvent;
+    private final int camoCount;
 
     /**
-     * @param contentName the registry name without the mod id, also the sound prefix (for example {@code pistol_9mm})
-     * @param stats       the gun's stats
-     * @param tier        the GregTech tier the gun belongs to
-     * @param damageType  the damage type of its projectiles, for the tooltip
+     * @param definition the gun's definition: its name (the registry name and sound prefix), stats, tier, damage type,
+     *                   sound events and camo count
      */
-    public ItemGun(String contentName, GunStats stats, Tier tier, DamageType damageType) {
-        this(contentName, stats, tier, damageType, false);
-    }
-
-    /**
-     * @param contentName the registry name without the mod id, also the sound prefix (for example
-     *                    {@code bolt_action_rifle})
-     * @param stats       the gun's stats
-     * @param tier        the GregTech tier the gun belongs to
-     * @param damageType  the damage type of its projectiles, for the tooltip
-     * @param rechambers  true if the gun plays a second sound, {@code guns.<name>.rechamber}, with every shot (a bolt
-     *                    or pump worked after the shot)
-     */
-    public ItemGun(String contentName, GunStats stats, Tier tier, DamageType damageType, boolean rechambers) {
-        this.contentName = contentName;
-        this.stats = stats;
-        this.tier = tier;
-        this.damageType = damageType;
-        this.fireEvent = GunSoundEvents.gun(contentName, GunSoundEvents.FIRE);
-        this.reloadEvent = GunSoundEvents.gun(contentName, GunSoundEvents.RELOAD);
-        this.rechamberEvent = rechambers ? GunSoundEvents.gun(contentName, GunSoundEvents.RECHAMBER) : null;
+    public ItemGun(GunDefinition definition) {
+        this.definition = definition;
+        this.contentName = definition.name();
+        this.stats = definition.stats();
+        this.tier = definition.tier();
+        this.damageType = definition.damageType();
+        this.fireEvent = definition.fireEvent();
+        this.reloadEvent = definition.reloadEvent();
+        this.rechamberEvent = definition.rechamberEvent();
+        this.camoCount = definition.camoCount();
         setMaxStackSize(1);
         setNoRepair();
+    }
+
+    /** @return the definition this item was built from */
+    public GunDefinition definition() {
+        return definition;
     }
 
     /** @return the gun's stats */
@@ -120,6 +115,44 @@ public class ItemGun extends Item implements Tiered {
     @Override
     public Tier getTier() {
         return tier;
+    }
+
+    // ----- camo (the Camo Bench) -------------------------------------------------------------------------------
+
+    @Override
+    public int camoCount(ItemStack stack) {
+        return camoCount;
+    }
+
+    /**
+     * @param stack a stack of this gun
+     * @return the stored camo index clamped into {@code [0, camoCount)}; 0 for a tag-less stack
+     */
+    @Override
+    public int getCamo(ItemStack stack) {
+        int stored = stateOf(stack).camo();
+        return stored >= 0 && stored < camoCount ? stored : 0;
+    }
+
+    /**
+     * Stores a camo index and nothing else: the rounds loaded stay as they are, and a tag-less stack keeps the full
+     * magazine it reads as (GUN-01). An out-of-range index stores 0.
+     */
+    @Override
+    public void setCamo(ItemStack stack, int camo) {
+        NBTTagCompound tag = stack.getTagCompound();
+        if (tag == null) {
+            tag = new NBTTagCompound();
+            stack.setTagCompound(tag);
+        }
+        GunState state = GunNbt.read(tag, stats);
+        state.setCamo(camo >= 0 && camo < camoCount ? camo : 0);
+        GunNbt.write(tag, state);
+    }
+
+    @Override
+    public String camoNameKey(ItemStack stack) {
+        return "item.gregguns." + contentName + ".camoname." + getCamo(stack);
     }
 
     // ----- NBT -----------------------------------------------------------------------------------------------
