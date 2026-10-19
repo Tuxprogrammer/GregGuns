@@ -24,9 +24,11 @@ Role map (`gun-paint/<gun>.json`): {"gun", "textures": [{"file": "handcannon.png
 Materials: steel (flat, edge highlights, faint scratches), wood (grain streaks along the box's grain axis, dark end
 grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore, bands, gradient, tone, mottle, seam, inset,
 checker, slots (cross-slot columns), stripes (a color cycle). A wood role may set "calm" (0..1, streak contrast scale); a role may set "bevel": [hi, lo] edge shading.
+A painter "color" written "@name" is looked up in the role's "colors" map, so a variant can recolor painted details.
 A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A box may be tilted about Z ("tilt") or
 about its long axis X ("tiltX", for a diamond bar) or about the vertical axis Y ("tiltY"), all about "pivot"; a size with a 0 is a zero-thickness plane.
 A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}}} or "camo" with a palette.
+A variant may also give "boxes": {name: {"role", "painters"}} to replace one box's spec for that sheet.
 """
 import json
 import os
@@ -321,6 +323,14 @@ def patches(r, rgb, palette, density, along_x):
             rgb[y:y + n, x] = np.clip(c, 0, 255)
 
 
+def resolve_colors(p, role_def):
+    """A painter color written "@name" is looked up in the role's "colors" map, so a variant can recolor details."""
+    c = p.get("color")
+    if isinstance(c, str) and c.startswith("@"):
+        return dict(p, color=role_def["colors"][c[1:]])
+    return p
+
+
 def paint_face(box_spec, role_def, name, dims, face, fw, fh, seed_key):
     r = rng_for(seed_key)
     mat = role_def.get("material", "steel")
@@ -351,7 +361,7 @@ def paint_face(box_spec, role_def, name, dims, face, fw, fh, seed_key):
             rgb[y, x] = cols[int(r.integers(0, len(cols)))]
     for p in box_spec.get("painters", []):
         if face in p.get("faces", FACES):
-            apply_painter(rgb, p, face)
+            apply_painter(rgb, resolve_colors(p, role_def), face)
     bevel(rgb, *box_spec.get("bevel", role_def.get("bevel", (1.12, 0.84))))
     return rgb
 
@@ -369,6 +379,8 @@ def paint(gun, model_path=None):
         tex = Tex(W, H)
         for b in model["boxes"]:
             spec = rm["boxes"][b["name"]]
+            # A variant may replace a box's role or painters (e.g. stripe colors a role cannot carry).
+            spec = dict(spec, **(entry.get("variant") or {}).get("boxes", {}).get(b["name"], {}))
             w, h, d = b["size"]
             u, v = b["uv"]
             for face, (x, y, fw, fh) in box_uv(u, v, w, h, d).items():

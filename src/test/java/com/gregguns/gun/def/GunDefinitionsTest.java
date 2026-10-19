@@ -271,8 +271,11 @@ class GunDefinitionsTest {
             }
         }
         assertEquals(ClientGunDefinitions.FLAT_ICON_FALLBACK, without);
-        assertEquals(java.util.Arrays.asList("aug", "scar", "vector", "infiltrator"), without);
-        assertTrue(ClientGunDefinitions.usesFallback("aug"));
+        assertEquals(java.util.Arrays.asList(), without);
+        assertFalse(ClientGunDefinitions.usesFallback("aug"));
+        assertFalse(ClientGunDefinitions.usesFallback("scar"));
+        assertFalse(ClientGunDefinitions.usesFallback("vector"));
+        assertFalse(ClientGunDefinitions.usesFallback("infiltrator"));
         assertFalse(ClientGunDefinitions.usesFallback("m4"));
         assertFalse(ClientGunDefinitions.usesFallback("pistol_9mm"));
     }
