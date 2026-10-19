@@ -54,6 +54,9 @@ Out of scope here, see the owning areas:
 | [model-notes/grim_reaper.md](model-notes/grim_reaper.md) | Clean-room design notes for rebuilding the Grim Reaper model and texture |
 | [model-notes/nuclear_death_ray.md](model-notes/nuclear_death_ray.md) | Clean-room design notes for rebuilding the Nuclear Death Ray model (child parts, firing starburst) and texture |
 | [model-notes/nuke_launcher.md](model-notes/nuke_launcher.md) | Clean-room skin notes for the Nuke Launcher (Rocket Launcher geometry, new texture) |
+| [model-notes/bio_gun.md](model-notes/bio_gun.md) | Clean-room design notes for rebuilding the Bio Gun model and texture |
+| [model-notes/power_hammer.md](model-notes/power_hammer.md) | Clean-room design notes for rebuilding the Power Hammer and Advanced Power Hammer (sliding piston) model and texture |
+| [model-notes/chainsaw.md](model-notes/chainsaw.md) | Clean-room design notes for rebuilding the Chainsaw (two-frame chain) model and texture |
 | [textures.md](textures.md) | All 62 `textures/guns/` PNGs: size, what they depict, palette, UV layout, users, model-size mismatches |
 | [sounds.md](sounds.md) | All 185 `sounds/guns/` files, their `sounds.json` events and exactly when each plays |
 | [lang-and-strings.md](lang-and-strings.md) | The 17 gun camo-name keys, the generic camo strings, strings generated in code, missing keys and one correction |
