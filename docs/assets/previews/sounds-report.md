@@ -11,7 +11,7 @@ Flagged: `snd.npcs.apache_burst`, `snd.npcs.apache_explode`
 |---|---|---|---|---|---|---|---|---|---|
 | P1 | `effects/bullet_impact_a.ogg` | -19.0 | -19.4 | -1.5 | 0.98 | 0.98 | 1 | 44100 |  |
 | P1 | `effects/bullet_impact_b.ogg` | -19.0 | -19.3 | -1.5 | 0.98 | 0.98 | 1 | 44100 |  |
-| P1 | `effects/bullet_impact_c.ogg` | -19.0 | -19.3 | -1.4 | 0.98 | 0.98 | 1 | 44100 |  |
+| P1 | `effects/bullet_impact_c.ogg` | -19.0 | -19.5 | -1.3 | 0.98 | 0.98 | 1 | 44100 |  |
 | P1 | `effects/bullet_impact_d.ogg` | -19.0 | -19.4 | -1.6 | 0.98 | 0.98 | 1 | 44100 |  |
 | P1 | `effects/bullet_impact_e.ogg` | -19.0 | -19.2 | -1.6 | 0.98 | 0.98 | 1 | 44100 |  |
 | P1 | `guns/pistol_reload.ogg` | -22.1 | -22.2 | -4.5 | 1.81 | 1.81 | 1 | 44100 |  |
@@ -27,11 +27,11 @@ Flagged: `snd.npcs.apache_burst`, `snd.npcs.apache_explode`
 | P2 | `effects/explosion1_a.ogg` | -10.3 | -10.6 | -1.4 | 2.47 | 2.47 | 1 | 44100 |  |
 | P2 | `effects/explosion1_b.ogg` | -9.1 | -11.3 | -1.5 | 1.75 | 1.75 | 1 | 44100 |  |
 | P2 | `effects/explosion1_c.ogg` | -11.0 | -13.2 | -1.5 | 1.68 | 1.68 | 1 | 44100 |  |
-| P2 | `effects/explosion1_d.ogg` | -10.9 | -12.6 | -1.8 | 1.21 | 1.21 | 1 | 44100 |  |
+| P2 | `effects/explosion1_d.ogg` | -10.9 | -13.1 | -1.4 | 1.21 | 1.21 | 1 | 44100 |  |
 | P2 | `effects/explosion1_e.ogg` | -16.2 | -17.7 | -1.2 | 2.85 | 2.85 | 1 | 44100 |  |
 | P2 | `effects/steamarmor_jump_a.ogg` | -16.5 | -17.0 | -1.4 | 1.21 | 1.21 | 1 | 44100 |  |
-| P2 | `effects/steamarmor_jump_b.ogg` | -15.7 | -17.0 | -1.7 | 1.21 | 1.21 | 1 | 44100 |  |
-| P2 | `effects/steamarmor_jump_c.ogg` | -15.9 | -17.3 | -1.3 | 1.21 | 1.21 | 1 | 44100 |  |
+| P2 | `effects/steamarmor_jump_b.ogg` | -15.7 | -17.1 | -1.4 | 1.21 | 1.21 | 1 | 44100 |  |
+| P2 | `effects/steamarmor_jump_c.ogg` | -15.9 | -17.7 | -1.3 | 1.21 | 1.21 | 1 | 44100 |  |
 | P2 | `effects/steamarmor_jump_d.ogg` | -16.9 | -17.8 | -1.6 | 1.21 | 1.21 | 1 | 44100 |  |
 | P2 | `guns/SCAR_reload.ogg` | -16.4 | -18.6 | -1.3 | 3.53 | 3.53 | 1 | 48000 |  |
 | P2 | `guns/SCAR_shot_a.ogg` | -16.6 | -16.9 | -1.1 | 1.60 | 1.60 | 1 | 44100 |  |
@@ -68,7 +68,7 @@ Flagged: `snd.npcs.apache_burst`, `snd.npcs.apache_explode`
 | P2 | `guns/flamethrower_shot_d.ogg` | -17.4 | -17.6 | -3.6 | 1.10 | 1.10 | 1 | 44100 |  |
 | P2 | `guns/flamethrower_shot_e.ogg` | -16.6 | -16.8 | -3.7 | 1.10 | 1.10 | 1 | 44100 |  |
 | P2 | `guns/flamethrower_start_a.ogg` | -17.1 | -17.0 | -2.5 | 1.00 | 1.00 | 1 | 44100 |  |
-| P2 | `guns/flashbang_bang.ogg` | -12.0 | -13.0 | -2.1 | 1.40 | 1.40 | 1 | 44100 |  |
+| P2 | `guns/flashbang_bang.ogg` | -12.0 | -14.6 | -1.2 | 1.40 | 1.40 | 1 | 44100 |  |
 | P2 | `guns/goldenrevolver_shot_a.ogg` | -15.9 | -16.4 | -1.2 | 3.49 | 3.49 | 1 | 44100 |  |
 | P2 | `guns/goldenrevolver_shot_b.ogg` | -14.5 | -14.7 | -1.3 | 3.02 | 3.02 | 1 | 44100 |  |
 | P2 | `guns/goldenrevolver_shot_c.ogg` | -15.0 | -15.4 | -1.0 | 3.02 | 3.02 | 1 | 44100 |  |
@@ -122,7 +122,7 @@ Flagged: `snd.npcs.apache_burst`, `snd.npcs.apache_explode`
 | P2 | `items/antigrav_start_b.ogg` | -11.9 | -14.2 | -1.3 | 1.81 | 1.81 | 1 | 48000 |  |
 | P2 | `items/nightvision_off.ogg` | -10.4 | -12.7 | -1.2 | 0.44 | 0.44 | 1 | 44100 |  |
 | P2 | `items/nightvision_on.ogg` | -17.9 | -20.1 | -1.9 | 1.60 | 1.60 | 1 | 44100 |  |
-| P2 | `machines/rc_beep.ogg` | -70.0 | -70.0 | -2.9 | 0.11 | 0.11 | 1 | 44100 | note: too short for integrated LUFS (or -70 sentinel target): peak-normalized to about -3 dBFS, true peak checked |
+| P2 | `machines/rc_beep.ogg` | -70.0 | -70.0 | -2.9 | 0.11 | 0.11 | 1 | 44100 | note: too short for integrated LUFS (or -70 sentinel target): peak-normalized to the original's measured peak (at most -3 dBFS), true peak checked |
 | P2 | `machines/rc_heatray_work.ogg` | -17.2 | -17.4 | -1.6 | 4.00 | 4.00 | 1 | 44100 |  |
 | P2 | `machines/rc_warning.ogg` | -10.5 | -10.6 | -1.5 | 1.35 | 1.35 | 1 | 44100 |  |
 | P3 | `blocks/metaldoor_open_a.ogg` | -17.9 | -18.2 | -1.6 | 0.96 | 0.96 | 1 | 44100 |  |
@@ -195,7 +195,7 @@ Flagged: `snd.npcs.apache_burst`, `snd.npcs.apache_explode`
 | P3 | `guns/minigun_shot_b.ogg` | -12.8 | -13.2 | -1.3 | 1.00 | 1.00 | 1 | 44100 |  |
 | P3 | `guns/minigun_shot_c.ogg` | -12.9 | -13.3 | -1.0 | 1.00 | 1.00 | 1 | 44100 |  |
 | P3 | `guns/minigun_shot_d.ogg` | -12.8 | -13.2 | -1.1 | 1.00 | 1.00 | 1 | 44100 |  |
-| P3 | `guns/minigun_start_a.ogg` | -70.0 | -70.0 | -2.9 | 0.30 | 0.30 | 1 | 44100 | note: too short for integrated LUFS (or -70 sentinel target): peak-normalized to about -3 dBFS, true peak checked |
+| P3 | `guns/minigun_start_a.ogg` | -70.0 | -70.0 | -2.9 | 0.30 | 0.30 | 1 | 44100 | note: too short for integrated LUFS (or -70 sentinel target): peak-normalized to the original's measured peak (at most -3 dBFS), true peak checked |
 | P3 | `guns/pdw_reload.ogg` | -17.0 | -19.1 | -1.6 | 2.57 | 2.57 | 1 | 44100 |  |
 | P3 | `guns/pdw_shot_a.ogg` | -14.4 | -14.7 | -1.0 | 1.26 | 1.26 | 1 | 44100 |  |
 | P3 | `guns/pdw_shot_b.ogg` | -14.1 | -14.4 | -1.3 | 1.26 | 1.26 | 1 | 44100 |  |
@@ -236,9 +236,9 @@ Flagged: `snd.npcs.apache_burst`, `snd.npcs.apache_explode`
 | P3 | `items/glider_loop_stereo.ogg` | -19.2 | -18.8 | -6.1 | 9.41 | 9.41 | 2 | 48000 | seamless loop |
 | P3 | `npcs/alienbug_aggro_a.ogg` | -15.1 | -15.5 | -1.5 | 1.12 | 1.12 | 1 | 44100 |  |
 | P3 | `npcs/alienbug_aggro_b.ogg` | -14.0 | -14.3 | -2.6 | 1.41 | 1.41 | 1 | 44100 |  |
-| P3 | `npcs/alienbug_aggro_c.ogg` | -15.3 | -15.6 | -2.1 | 1.28 | 1.28 | 1 | 44100 |  |
+| P3 | `npcs/alienbug_aggro_c.ogg` | -15.3 | -15.6 | -2.8 | 1.28 | 1.28 | 1 | 44100 |  |
 | P3 | `npcs/alienbug_aggro_d.ogg` | -16.5 | -16.8 | -1.5 | 1.12 | 1.12 | 1 | 44100 |  |
-| P3 | `npcs/alienbug_bite_a.ogg` | -20.8 | -21.1 | -1.8 | 0.78 | 0.78 | 1 | 44100 |  |
+| P3 | `npcs/alienbug_bite_a.ogg` | -20.8 | -21.0 | -3.5 | 0.78 | 0.78 | 1 | 44100 |  |
 | P3 | `npcs/alienbug_bite_b.ogg` | -20.3 | -20.8 | -1.4 | 0.73 | 0.73 | 1 | 44100 |  |
 | P3 | `npcs/alienbug_bite_c.ogg` | -18.9 | -19.1 | -5.0 | 0.72 | 0.72 | 1 | 44100 |  |
 | P3 | `npcs/alienbug_bite_d.ogg` | -19.7 | -19.9 | -1.9 | 0.73 | 0.73 | 1 | 44100 |  |
@@ -247,44 +247,44 @@ Flagged: `snd.npcs.apache_burst`, `snd.npcs.apache_explode`
 | P3 | `npcs/alienbug_hit-01.ogg` | -18.2 | -18.5 | -1.8 | 1.03 | 1.03 | 1 | 44100 |  |
 | P3 | `npcs/alienbug_hit-02.ogg` | -18.5 | -18.8 | -2.1 | 1.21 | 1.21 | 1 | 44100 |  |
 | P3 | `npcs/alienbug_hit-03.ogg` | -21.1 | -21.3 | -3.3 | 0.86 | 0.86 | 1 | 44100 |  |
-| P3 | `npcs/alienbug_hit-04.ogg` | -17.1 | -17.4 | -1.3 | 0.82 | 0.82 | 1 | 44100 |  |
-| P3 | `npcs/alienbug_idle-01.ogg` | -20.8 | -21.1 | -2.3 | 0.59 | 0.59 | 1 | 44100 |  |
-| P3 | `npcs/alienbug_idle-02.ogg` | -13.5 | -15.7 | -1.4 | 0.80 | 0.80 | 1 | 44100 |  |
+| P3 | `npcs/alienbug_hit-04.ogg` | -17.1 | -17.3 | -2.8 | 0.82 | 0.82 | 1 | 44100 |  |
+| P3 | `npcs/alienbug_idle-01.ogg` | -20.8 | -21.1 | -5.4 | 0.59 | 0.59 | 1 | 44100 |  |
+| P3 | `npcs/alienbug_idle-02.ogg` | -13.5 | -15.7 | -1.3 | 0.80 | 0.80 | 1 | 44100 |  |
 | P3 | `npcs/alienbug_idle-03.ogg` | -17.1 | -17.4 | -5.1 | 0.56 | 0.56 | 1 | 44100 |  |
 | P3 | `npcs/alienbug_idle-04.ogg` | -14.8 | -15.1 | -2.7 | 0.54 | 0.54 | 1 | 44100 |  |
 | P3 | `npcs/alienbug_idle-05.ogg` | -14.6 | -14.9 | -3.1 | 0.71 | 0.71 | 1 | 44100 |  |
-| P3 | `npcs/alienbug_idle-06.ogg` | -13.3 | -14.6 | -1.8 | 0.48 | 0.48 | 1 | 44100 |  |
-| P3 | `npcs/alienbug_step_a.ogg` | -17.7 | -19.9 | -1.4 | 0.93 | 0.93 | 1 | 48000 |  |
+| P3 | `npcs/alienbug_idle-06.ogg` | -13.3 | -13.6 | -2.5 | 0.48 | 0.48 | 1 | 44100 |  |
+| P3 | `npcs/alienbug_step_a.ogg` | -17.7 | -17.9 | -1.7 | 0.93 | 0.93 | 1 | 48000 |  |
 | P3 | `npcs/alienbug_step_b.ogg` | -18.0 | -18.4 | -1.6 | 0.83 | 0.83 | 1 | 48000 |  |
 | P3 | `npcs/alienbug_step_c.ogg` | -19.6 | -19.8 | -3.7 | 0.87 | 0.87 | 1 | 48000 |  |
 | P3 | `npcs/apache_burst.ogg` | 2.0 | -6.2 | -1.1 | 2.22 | 2.22 | 1 | 44100 | LUFS off by -8.2; note: target 2.0 LUFS is unreachable under -1 dBTP; aimed at -3.5 |
-| P3 | `npcs/apache_die.ogg` | -12.8 | -15.2 | -1.1 | 5.99 | 5.99 | 1 | 48000 |  |
+| P3 | `npcs/apache_die.ogg` | -12.8 | -15.0 | -1.1 | 5.99 | 5.99 | 1 | 48000 |  |
 | P3 | `npcs/apache_explode.ogg` | -4.7 | -9.2 | -1.1 | 6.79 | 6.79 | 1 | 44100 | LUFS off by -4.5 |
 | P3 | `npcs/apache_hit_a.ogg` | -16.1 | -16.6 | -1.2 | 3.25 | 3.25 | 1 | 44100 |  |
 | P3 | `npcs/apache_hit_b.ogg` | -15.9 | -16.4 | -1.6 | 3.05 | 3.05 | 1 | 44100 |  |
 | P3 | `npcs/apache_rotor.ogg` | -10.3 | -11.6 | -1.2 | 3.07 | 3.07 | 1 | 44100 | seamless loop |
-| P3 | `npcs/cyberdemon_aggro_a.ogg` | -23.4 | -23.6 | -6.8 | 3.31 | 3.31 | 1 | 44100 |  |
+| P3 | `npcs/cyberdemon_aggro_a.ogg` | -23.4 | -23.6 | -8.4 | 3.31 | 3.31 | 1 | 44100 |  |
 | P3 | `npcs/cyberdemon_aggro_b.ogg` | -25.0 | -25.3 | -4.1 | 3.89 | 3.89 | 1 | 44100 |  |
-| P3 | `npcs/cyberdemon_aggro_c.ogg` | -23.1 | -23.4 | -3.3 | 3.93 | 3.93 | 1 | 44100 |  |
+| P3 | `npcs/cyberdemon_aggro_c.ogg` | -23.1 | -23.4 | -4.9 | 3.93 | 3.93 | 1 | 44100 |  |
 | P3 | `npcs/cyberdemon_death_a.ogg` | -15.9 | -16.1 | -3.0 | 2.18 | 2.18 | 1 | 48000 |  |
 | P3 | `npcs/cyberdemon_death_b.ogg` | -16.5 | -16.7 | -3.3 | 2.65 | 2.65 | 1 | 48000 |  |
 | P3 | `npcs/cyberdemon_hurt_a.ogg` | -15.0 | -15.3 | -3.5 | 1.46 | 1.46 | 1 | 44100 |  |
-| P3 | `npcs/cyberdemon_hurt_b.ogg` | -15.1 | -15.4 | -1.4 | 1.70 | 1.70 | 1 | 44100 |  |
+| P3 | `npcs/cyberdemon_hurt_b.ogg` | -15.1 | -15.4 | -3.4 | 1.70 | 1.70 | 1 | 44100 |  |
 | P3 | `npcs/cyberdemon_hurt_c.ogg` | -16.2 | -16.5 | -2.3 | 1.46 | 1.46 | 1 | 44100 |  |
-| P3 | `npcs/cyberdemon_idle_a.ogg` | -22.4 | -22.6 | -6.3 | 1.89 | 1.89 | 1 | 44100 |  |
-| P3 | `npcs/cyberdemon_idle_b.ogg` | -22.9 | -23.1 | -6.7 | 2.13 | 2.13 | 1 | 44100 |  |
+| P3 | `npcs/cyberdemon_idle_a.ogg` | -22.4 | -22.6 | -8.1 | 1.89 | 1.89 | 1 | 44100 |  |
+| P3 | `npcs/cyberdemon_idle_b.ogg` | -22.9 | -23.0 | -1.6 | 2.13 | 2.13 | 1 | 44100 |  |
 | P3 | `npcs/cyberdemon_idle_c.ogg` | -23.7 | -23.8 | -7.7 | 1.98 | 1.98 | 1 | 44100 |  |
 | P3 | `npcs/cyberdemon_step_a.ogg` | -23.6 | -23.9 | -7.0 | 0.53 | 0.53 | 1 | 44100 |  |
-| P3 | `npcs/cyberdemon_step_b.ogg` | -24.0 | -24.2 | -1.6 | 0.53 | 0.53 | 1 | 44100 |  |
-| P3 | `npcs/cyberdemon_step_c.ogg` | -21.4 | -21.8 | -1.4 | 0.53 | 0.53 | 1 | 44100 |  |
-| P3 | `npcs/cyberdemon_step_d.ogg` | -22.7 | -23.0 | -3.3 | 0.53 | 0.53 | 1 | 44100 |  |
+| P3 | `npcs/cyberdemon_step_b.ogg` | -24.0 | -24.2 | -2.2 | 0.53 | 0.53 | 1 | 44100 |  |
+| P3 | `npcs/cyberdemon_step_c.ogg` | -21.4 | -21.8 | -1.5 | 0.53 | 0.53 | 1 | 44100 |  |
+| P3 | `npcs/cyberdemon_step_d.ogg` | -22.7 | -23.0 | -1.7 | 0.53 | 0.53 | 1 | 44100 |  |
 | P3 | `npcs/turret_beep-01.ogg` | -26.8 | -27.0 | -8.8 | 2.24 | 2.24 | 1 | 48000 |  |
 | P3 | `npcs/turret_beep-02.ogg` | -31.3 | -31.3 | -9.8 | 0.62 | 0.62 | 1 | 48000 |  |
 | P3 | `npcs/turret_beep-03.ogg` | -25.3 | -25.3 | -5.1 | 0.84 | 0.84 | 1 | 48000 |  |
 | P3 | `npcs/turret_beep-04.ogg` | -24.5 | -24.5 | -10.5 | 0.55 | 0.55 | 1 | 48000 |  |
-| P3 | `npcs/turret_beep-05.ogg` | -70.0 | -70.0 | -3.3 | 0.32 | 0.32 | 1 | 48000 | note: too short for integrated LUFS (or -70 sentinel target): peak-normalized to about -3 dBFS, true peak checked |
-| P3 | `npcs/turret_beep-06.ogg` | -70.0 | -70.0 | -2.9 | 0.31 | 0.31 | 1 | 48000 | note: too short for integrated LUFS (or -70 sentinel target): peak-normalized to about -3 dBFS, true peak checked |
-| P3 | `npcs/turret_beep-07.ogg` | -70.0 | -70.0 | -3.4 | 0.26 | 0.26 | 1 | 48000 | note: too short for integrated LUFS (or -70 sentinel target): peak-normalized to about -3 dBFS, true peak checked |
+| P3 | `npcs/turret_beep-05.ogg` | -70.0 | -70.0 | -17.1 | 0.32 | 0.32 | 1 | 48000 | note: too short for integrated LUFS (or -70 sentinel target): peak-normalized to the original's measured peak (at most -3 dBFS), true peak checked |
+| P3 | `npcs/turret_beep-06.ogg` | -70.0 | -70.0 | -9.6 | 0.31 | 0.31 | 1 | 48000 | note: too short for integrated LUFS (or -70 sentinel target): peak-normalized to the original's measured peak (at most -3 dBFS), true peak checked |
+| P3 | `npcs/turret_beep-07.ogg` | -70.0 | -70.0 | -13.4 | 0.26 | 0.26 | 1 | 48000 | note: too short for integrated LUFS (or -70 sentinel target): peak-normalized to the original's measured peak (at most -3 dBFS), true peak checked |
 | P3 | `npcs/turret_gunequip-01.ogg` | -14.8 | -15.1 | -3.6 | 0.81 | 0.81 | 1 | 48000 |  |
 | P3 | `npcs/turret_gunequip-02.ogg` | -16.6 | -16.9 | -4.3 | 0.88 | 0.88 | 1 | 48000 |  |
 | P3 | `npcs/turret_gunequip-03.ogg` | -15.0 | -14.6 | -1.3 | 0.50 | 0.50 | 1 | 48000 |  |
