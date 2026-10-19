@@ -1,24 +1,17 @@
 {
  "sounds/blocks/metaldoor_open_a.ogg": {
-  "round": 4,
-  "verdict": "rework",
-  "score": 7.3,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "brightness",
-   "noisiness",
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/blocks/metaldoor_open_b.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 8.2,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "noisiness",
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/blocks/metaldoor_open_c.ogg": {
   "round": 4,
@@ -28,7 +21,7 @@
   "failing": []
  },
  "sounds/effects/C4Charge_Init.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.0,
   "source": "gate",
@@ -37,7 +30,7 @@
   ]
  },
  "sounds/effects/C4Charge_Plant.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -46,7 +39,7 @@
   ]
  },
  "sounds/effects/C4Charge_Tick.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -55,7 +48,7 @@
   ]
  },
  "sounds/effects/DemoCharge_Init.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -64,7 +57,7 @@
   ]
  },
  "sounds/effects/DemoCharge_Plant.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -73,7 +66,7 @@
   ]
  },
  "sounds/effects/DemoCharge_Tick.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -82,7 +75,7 @@
   ]
  },
  "sounds/effects/biodeath.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -91,7 +84,7 @@
   ]
  },
  "sounds/effects/bullet_impact_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -100,7 +93,7 @@
   ]
  },
  "sounds/effects/bullet_impact_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -116,7 +109,7 @@
   "failing": []
  },
  "sounds/effects/bullet_impact_d.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -125,7 +118,7 @@
   ]
  },
  "sounds/effects/bullet_impact_e.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -148,7 +141,7 @@
   "failing": []
  },
  "sounds/effects/explosion1_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -157,7 +150,7 @@
   ]
  },
  "sounds/effects/explosion1_c.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -173,7 +166,7 @@
   "failing": []
  },
  "sounds/effects/explosion1_e.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -182,7 +175,7 @@
   ]
  },
  "sounds/effects/gore_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -198,7 +191,7 @@
   "failing": []
  },
  "sounds/effects/gore_c.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -242,7 +235,7 @@
   "failing": []
  },
  "sounds/guns/MIB_blaster_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -251,7 +244,7 @@
   ]
  },
  "sounds/guns/MIB_blaster_reload_akimbo.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -282,7 +275,7 @@
   "failing": []
  },
  "sounds/guns/SCAR_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -312,7 +305,7 @@
   "failing": []
  },
  "sounds/guns/ak47_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -343,7 +336,7 @@
   "failing": []
  },
  "sounds/guns/alienblaster_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -374,7 +367,7 @@
   "failing": []
  },
  "sounds/guns/ar1_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -383,13 +376,11 @@
   ]
  },
  "sounds/guns/ar1_shot_a.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/guns/ar1_shot_b.ogg": {
   "round": 3,
@@ -399,7 +390,7 @@
   "failing": []
  },
  "sounds/guns/as50_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -415,7 +406,7 @@
   "failing": []
  },
  "sounds/guns/as50_shot_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -424,7 +415,7 @@
   ]
  },
  "sounds/guns/aug_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -454,13 +445,11 @@
   "failing": []
  },
  "sounds/guns/beamgun_loop_a.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "onsets"
-  ]
+  "failing": []
  },
  "sounds/guns/beamgun_loop_b.ogg": {
   "round": 3,
@@ -498,13 +487,11 @@
   "failing": []
  },
  "sounds/guns/beamgun_start_a.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/guns/beamgun_start_b.ogg": {
   "round": 4,
@@ -521,7 +508,7 @@
   "failing": []
  },
  "sounds/guns/biogun_impact_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -531,7 +518,7 @@
   ]
  },
  "sounds/guns/biogun_impact_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -548,7 +535,7 @@
   "failing": []
  },
  "sounds/guns/biogun_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "rework",
   "score": 7.3,
   "source": "gate",
@@ -559,16 +546,14 @@
   ]
  },
  "sounds/guns/biogun_shot_a.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/guns/biogun_shot_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -584,22 +569,18 @@
   "failing": []
  },
  "sounds/guns/blasterrifle_shot_a.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/guns/blasterrifle_shot_b.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/guns/blasterrifle_shot_c.ogg": {
   "round": 3,
@@ -609,7 +590,7 @@
   "failing": []
  },
  "sounds/guns/boltaction_rechamber.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -618,7 +599,7 @@
   ]
  },
  "sounds/guns/boltaction_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -761,12 +742,11 @@
   "failing": []
  },
  "sounds/guns/chainsaw_swing_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
-  "score": 8.2,
+  "score": 9.1,
   "source": "gate",
   "failing": [
-   "decay",
    "embedding"
   ]
  },
@@ -792,7 +772,7 @@
   "failing": []
  },
  "sounds/guns/combatshotgun_shot_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -801,7 +781,7 @@
   ]
  },
  "sounds/guns/combatshotgun_shot_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -817,7 +797,7 @@
   "failing": []
  },
  "sounds/guns/flamethrower_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -896,7 +876,7 @@
   "failing": []
  },
  "sounds/guns/grenade_pin_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -926,7 +906,7 @@
   "failing": []
  },
  "sounds/guns/grenadelauncher_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -936,7 +916,7 @@
   ]
  },
  "sounds/guns/grenadelauncher_shot_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -959,7 +939,7 @@
   "failing": []
  },
  "sounds/guns/handgun_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -976,7 +956,7 @@
   "failing": []
  },
  "sounds/guns/handgun_shot_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -992,7 +972,7 @@
   "failing": []
  },
  "sounds/guns/lasergun_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1022,7 +1002,7 @@
   "failing": []
  },
  "sounds/guns/lmg_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -1039,7 +1019,7 @@
   "failing": []
  },
  "sounds/guns/lmg_shot_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1048,16 +1028,14 @@
   ]
  },
  "sounds/guns/lmg_shot_c.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/guns/mac10_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -1067,7 +1045,7 @@
   ]
  },
  "sounds/guns/mac10_reload_akimbo.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -1084,26 +1062,23 @@
   "failing": []
  },
  "sounds/guns/mac10_shot_b.ogg": {
-  "round": 4,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
+  "source": "gate",
+  "failing": []
+ },
+ "sounds/guns/mac10_shot_c.ogg": {
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
   "failing": [
-   "embedding"
-  ]
- },
- "sounds/guns/mac10_shot_c.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 8.2,
-  "source": "gate",
-  "failing": [
-   "brightness",
-   "embedding"
+   "brightness"
   ]
  },
  "sounds/guns/minigun_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1140,7 +1115,7 @@
   "failing": []
  },
  "sounds/guns/minigun_start_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 7.8,
   "source": "gate",
@@ -1150,7 +1125,7 @@
   ]
  },
  "sounds/guns/pdw_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1180,7 +1155,7 @@
   "failing": []
  },
  "sounds/guns/pistol_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1189,7 +1164,7 @@
   ]
  },
  "sounds/guns/pistol_reload_akimbo.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "rework",
   "score": 7.3,
   "source": "gate",
@@ -1242,7 +1217,7 @@
   "failing": []
  },
  "sounds/guns/powerhammer_impactGround_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1286,7 +1261,7 @@
   "failing": []
  },
  "sounds/guns/powerhammer_impact_c.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1302,7 +1277,7 @@
   "failing": []
  },
  "sounds/guns/powerhammer_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -1312,16 +1287,14 @@
   ]
  },
  "sounds/guns/powerhammer_shot_a.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/guns/powerhammer_shot_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "rework",
   "score": 7.3,
   "source": "gate",
@@ -1346,12 +1319,11 @@
   "failing": []
  },
  "sounds/guns/powerhammer_swing_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
-  "score": 8.2,
+  "score": 9.1,
   "source": "gate",
   "failing": [
-   "noisiness",
    "embedding"
   ]
  },
@@ -1405,7 +1377,7 @@
   "failing": []
  },
  "sounds/guns/revolver_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -1415,7 +1387,7 @@
   ]
  },
  "sounds/guns/revolver_reload_akimbo.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1438,13 +1410,11 @@
   "failing": []
  },
  "sounds/guns/revolver_shot_c.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/guns/rocket_reload.ogg": {
   "round": 4,
@@ -1475,7 +1445,7 @@
   "failing": []
  },
  "sounds/guns/sawedoff_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1519,7 +1489,7 @@
   "failing": []
  },
  "sounds/guns/sonicshotgun_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "rework",
   "score": 8.2,
   "source": "gate",
@@ -1557,7 +1527,7 @@
   "failing": []
  },
  "sounds/guns/teslagun_shot_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1573,13 +1543,11 @@
   "failing": []
  },
  "sounds/guns/teslagun_shot_c.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/guns/teslagun_shot_d.ogg": {
   "round": 3,
@@ -1589,7 +1557,7 @@
   "failing": []
  },
  "sounds/guns/thompson_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -1599,7 +1567,7 @@
   ]
  },
  "sounds/guns/thompson_shot_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1608,16 +1576,14 @@
   ]
  },
  "sounds/guns/thompson_shot_b.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/guns/thompson_shot_c.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1626,7 +1592,7 @@
   ]
  },
  "sounds/guns/vector_reload.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1635,43 +1601,37 @@
   ]
  },
  "sounds/guns/vector_shot_a.ogg": {
-  "round": 4,
-  "verdict": "rework",
-  "score": 7.3,
-  "source": "gate",
-  "failing": [
-   "band_balance",
-   "brightness",
-   "embedding"
-  ]
- },
- "sounds/guns/vector_shot_b.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
-  "source": "gate",
-  "failing": [
-   "embedding"
-  ]
- },
- "sounds/guns/vector_shot_c.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
   "failing": [
-   "brightness",
-   "embedding"
+   "band_balance",
+   "brightness"
   ]
  },
- "sounds/items/antigrav_start_a.ogg": {
-  "round": 4,
+ "sounds/guns/vector_shot_b.ogg": {
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
+  "source": "gate",
+  "failing": []
+ },
+ "sounds/guns/vector_shot_c.ogg": {
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
   "failing": [
-   "noisiness"
+   "brightness"
   ]
+ },
+ "sounds/items/antigrav_start_a.ogg": {
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
+  "source": "gate",
+  "failing": []
  },
  "sounds/items/antigrav_start_b.ogg": {
   "round": 4,
@@ -1688,7 +1648,7 @@
   "failing": []
  },
  "sounds/items/nightvision_off.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -1698,7 +1658,7 @@
   ]
  },
  "sounds/items/nightvision_on.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "rework",
   "score": 6.4,
   "source": "gate",
@@ -1717,16 +1677,14 @@
   "failing": []
  },
  "sounds/machines/ammopress_work1_b.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/machines/ammopress_work1_c.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1756,7 +1714,7 @@
   "failing": []
  },
  "sounds/machines/rc_beep.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.9,
   "source": "gate",
@@ -1772,7 +1730,7 @@
   "failing": []
  },
  "sounds/machines/rc_warning.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.0,
   "source": "gate",
@@ -1781,22 +1739,18 @@
   ]
  },
  "sounds/npcs/alienbug_aggro_a.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/npcs/alienbug_aggro_b.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/npcs/alienbug_aggro_c.ogg": {
   "round": 3,
@@ -1806,7 +1760,7 @@
   "failing": []
  },
  "sounds/npcs/alienbug_aggro_d.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1822,7 +1776,7 @@
   "failing": []
  },
  "sounds/npcs/alienbug_bite_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1831,7 +1785,7 @@
   ]
  },
  "sounds/npcs/alienbug_bite_c.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1840,7 +1794,7 @@
   ]
  },
  "sounds/npcs/alienbug_bite_d.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1849,16 +1803,14 @@
   ]
  },
  "sounds/npcs/alienbug_death_a.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/npcs/alienbug_death_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1867,25 +1819,21 @@
   ]
  },
  "sounds/npcs/alienbug_hit-01.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/npcs/alienbug_hit-02.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/npcs/alienbug_hit-03.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1908,7 +1856,7 @@
   "failing": []
  },
  "sounds/npcs/alienbug_idle-02.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1917,7 +1865,7 @@
   ]
  },
  "sounds/npcs/alienbug_idle-03.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1926,7 +1874,7 @@
   ]
  },
  "sounds/npcs/alienbug_idle-04.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1935,13 +1883,12 @@
   ]
  },
  "sounds/npcs/alienbug_idle-05.ogg": {
-  "round": 4,
-  "verdict": "rework",
-  "score": 7.3,
+  "round": 5,
+  "verdict": "tweak",
+  "score": 8.2,
   "source": "gate",
   "failing": [
    "noisiness",
-   "tonality",
    "embedding"
   ]
  },
@@ -1960,16 +1907,14 @@
   "failing": []
  },
  "sounds/npcs/alienbug_step_b.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/npcs/alienbug_step_c.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -1978,7 +1923,7 @@
   ]
  },
  "sounds/npcs/apache_burst.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "rework",
   "score": 5.5,
   "source": "gate",
@@ -1998,29 +1943,25 @@
   "failing": []
  },
  "sounds/npcs/apache_explode.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "rework",
-  "score": 5.5,
+  "score": 7.3,
   "source": "gate",
   "failing": [
    "envelope",
-   "onsets",
-   "brightness",
    "decay",
    "embedding"
   ]
  },
  "sounds/npcs/apache_hit_a.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/npcs/apache_hit_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -2029,7 +1970,7 @@
   ]
  },
  "sounds/npcs/apache_rotor.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.0,
   "source": "gate",
@@ -2045,7 +1986,7 @@
   "failing": []
  },
  "sounds/npcs/cyberdemon_aggro_b.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -2061,7 +2002,7 @@
   "failing": []
  },
  "sounds/npcs/cyberdemon_death_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.2,
   "source": "gate",
@@ -2071,13 +2012,11 @@
   ]
  },
  "sounds/npcs/cyberdemon_death_b.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/npcs/cyberdemon_hurt_a.ogg": {
   "round": 4,
@@ -2094,7 +2033,7 @@
   "failing": []
  },
  "sounds/npcs/cyberdemon_hurt_c.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -2117,23 +2056,20 @@
   "failing": []
  },
  "sounds/npcs/cyberdemon_idle_c.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 8.2,
-  "source": "gate",
-  "failing": [
-   "noisiness",
-   "embedding"
-  ]
- },
- "sounds/npcs/cyberdemon_step_a.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
   "failing": [
    "embedding"
   ]
+ },
+ "sounds/npcs/cyberdemon_step_a.ogg": {
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
+  "source": "gate",
+  "failing": []
  },
  "sounds/npcs/cyberdemon_step_b.ogg": {
   "round": 3,
@@ -2157,7 +2093,7 @@
   "failing": []
  },
  "sounds/npcs/turret_beep-01.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -2166,7 +2102,7 @@
   ]
  },
  "sounds/npcs/turret_beep-02.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.0,
   "source": "gate",
@@ -2175,7 +2111,7 @@
   ]
  },
  "sounds/npcs/turret_beep-03.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
@@ -2184,7 +2120,7 @@
   ]
  },
  "sounds/npcs/turret_beep-04.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.0,
   "source": "gate",
@@ -2193,7 +2129,7 @@
   ]
  },
  "sounds/npcs/turret_beep-05.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 8.0,
   "source": "gate",
@@ -2203,18 +2139,17 @@
   ]
  },
  "sounds/npcs/turret_beep-06.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "rework",
-  "score": 7.0,
+  "score": 8.0,
   "source": "gate",
   "failing": [
-   "noisiness",
    "tonality",
    "embedding"
   ]
  },
  "sounds/npcs/turret_beep-07.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.0,
   "source": "gate",
@@ -2223,25 +2158,21 @@
   ]
  },
  "sounds/npcs/turret_gunequip-01.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/npcs/turret_gunequip-02.ogg": {
-  "round": 4,
-  "verdict": "tweak",
-  "score": 9.1,
+  "round": 5,
+  "verdict": "keep",
+  "score": 10.0,
   "source": "gate",
-  "failing": [
-   "embedding"
-  ]
+  "failing": []
  },
  "sounds/npcs/turret_gunequip-03.ogg": {
-  "round": 4,
+  "round": 5,
   "verdict": "tweak",
   "score": 9.1,
   "source": "gate",
