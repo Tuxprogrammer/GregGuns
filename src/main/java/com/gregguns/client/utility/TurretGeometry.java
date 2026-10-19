@@ -17,8 +17,8 @@ import java.util.List;
  *
  * <ul>
  * <li>{@link Part#BASE} boxes are in the <em>block frame</em>: origin at the center of the base block's bottom face,
- * so they fill y 0 to 16. They never move. Nothing draws them yet, because GT draws the block; they are the data a
- * future block or item renderer uses.
+ * so they fill y 0 to 16. They never move. {@link TurretBaseRenderer} draws them from the base block's tile
+ * entity render hook.
  * <li>All other boxes are in the <em>entity frame</em>: origin at the turret's feet, which stand on the top face of the
  * base block, centered on it.
  * <li>{@link Part#FIXED} boxes stay with the body. {@link Part#YAW} boxes turn with the head (they are the yoke).
@@ -36,7 +36,7 @@ public final class TurretGeometry {
 
     /** Which part of the turret a box belongs to. */
     public enum Part {
-        /** Block frame, never moves, not drawn yet. The only boxes that may carry a {@link Box#rotY}. */
+        /** Block frame, never moves. The only boxes that may carry a {@link Box#rotY}. */
         BASE,
         /** Entity frame, stays with the body. */
         FIXED,
