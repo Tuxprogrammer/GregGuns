@@ -97,7 +97,7 @@ public final class GunItems {
             .values()) {
             if (magazine.loadedItemName()
                 .equals(stats.ammoType())) {
-                return Math.max(1, stats.magazineSize() / magazine.roundsPerMagazine());
+                return Math.max(1, stats.roundsPerItem() / magazine.roundsPerMagazine());
             }
         }
         return 1;

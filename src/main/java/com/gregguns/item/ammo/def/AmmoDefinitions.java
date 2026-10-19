@@ -17,7 +17,13 @@ public final class AmmoDefinitions {
 
     /** Every ammo type, in registration order. */
     public static final List<AmmoDefinition> ALL = Collections.unmodifiableList(
-        Arrays.asList(RifleAmmo.DEFINITION, NineMmAmmo.DEFINITION, StoneAmmo.DEFINITION, ShotgunShellAmmo.DEFINITION));
+        Arrays.asList(
+            RifleAmmo.DEFINITION,
+            NineMmAmmo.DEFINITION,
+            StoneAmmo.DEFINITION,
+            ShotgunShellAmmo.DEFINITION,
+            RocketAmmo.DEFINITION,
+            Grenade40mmAmmo.DEFINITION));
 
     private AmmoDefinitions() {}
 

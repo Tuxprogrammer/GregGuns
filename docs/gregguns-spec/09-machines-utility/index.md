@@ -82,6 +82,19 @@ One block `gregguns:explosive_charge` with two metas (0 TNT at MV, 1 Advanced at
 - **Bio Blob.** `bio_blob`, size 1 to 3, burst past 3 with no terrain damage, one decay step per `bioBlobDecayTicks`, Poison III for 100 ticks on any living entity (players too unless `bioBlobSparesPlayers`). Only the server ticks; clients get the size in the description packet. The Biogun projectile calls `BlockBioBlob.onProjectileImpact(world, x, y, z, side, level, shooter)`.
 - **Camp Flag.** `camp_flag`, hidden from the creative tab. World generation calls `TileCampFlag.init(...)`. Spawning and counting go through `CampSpawnPorts.get()`, which counts and spawns nothing until the NPC module installs its port. The cap (`maxNPCs`) is saved (MUTL-38); an uninitialized flag is inert (MUTL-39); breaking drops one iron ingot (MUTL-48). Placeholder geometry and animation numbers live in `FlagPostGeometry`.
 
+## Rampart built notes (M6 chunk 5)
+
+`MTERampart` (MTE 20120, `com.gregguns.utility.rampart`) and `MTEGunMountHatch` (MTE 20121 to 20124, MV to IV) implement the sheet's Rampart. The pure rules are `RampartShape` (pieces, counts, offsets, non-convexity), `BastionPlating` (metas 7 to 10 of `gregguns:casings`, armor and recipe data), `RampartPower` (draw and all-or-nothing payment) and `RampartRecipeSpec` (hatch rows). The hatch is the `TurretHost` of its mount, so `TurretEntity` is the one the single Turret uses and needed no change. Decisions, each marked `// Deviation:` in code:
+
+- **Gun in and out.** Right-click a Gun Mount Hatch with a gun to mount it and with an empty hand to take it back; there is no hatch GUI. Pipes can insert a gun, never pull one. The controller's security level decides who may.
+- **Settings.** Security and Target Animals live on the controller and are changed with a Screwdriver (sneak for the animal switch), owner only; there is no controller GUI. The Turret's redstone mode is replaced by the controller's own on/off.
+- **Power.** The controller has no recipe. `checkProcessing` sets a rolling 20-tick cycle and `lEUt` to 4 EU/t per mount; healing and repair are paid per mount from the same Energy Hatches, all or nothing. When GT stops the machine for lack of power every mount goes inactive.
+- **Ammo.** A mount reload takes magazines from every Input Bus and puts the empties on an Output Bus (the rest dropped only on a real overflow, MUTL-24). An ME Input Bus is not proven.
+- **Structure.** The wall extends to the right of the controller. A failed bay probe discards the hatch and plating it saw. A structure check that fails, or breaking the controller, kills every mount's turret; breaking one hatch kills that mount's turret at once.
+- **Gun tier gate.** A hatch refuses a gun above its tier. No gun above MV exists yet, so the refusal is proven by `RampartRecipeSpecTest` through the shared `TurretLogic.gunAllowed`, not in the world.
+- **Placeholder rendering.** The controller and hatches use the existing `rampart` and `gun_mount_hatch` overlays on the Iron Bastion Plating texture. Bastion Plating blocks have their own textures. Visual check owed. Asset gaps: none beyond the Turret's.
+- **Concrete.** The plating and controller recipes use GT's concrete block until GregGuns Concrete exists, as the Turret does.
+
 ## Pack-side changes
 
 None.
