@@ -9,9 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
@@ -48,28 +53,88 @@ class Pistol9mmProfileTest {
         return r.ops;
     }
 
-    @Test
-    void boxesMatchTheLayoutSheetExactly() {
-        // tools/asset-gen/model_layouts.md, gun.pistol_9mm: name u v w h d
-        Object[][] layout = { { "slide", 0, 27, 35, 9, 7 }, { "frame", 0, 43, 29, 6, 6 },
-            { "barrel", 70, 43, 15, 5, 5 }, { "grip", 0, 0, 9, 20, 7 }, { "magazine", 32, 0, 8, 18, 6 },
-            { "sight", 30, 55, 9, 3, 3 }, { "guard", 0, 55, 12, 6, 3 } };
-        assertEquals(layout.length, Pistol9mmProfile.BOXES.length);
-        for (Object[] row : layout) {
-            BoxSpec found = null;
-            for (BoxSpec b : Pistol9mmProfile.BOXES) {
-                if (b.name()
-                    .equals(row[0])) {
-                    found = b;
-                }
+    private static BoxSpec box(String name) {
+        for (BoxSpec b : Pistol9mmProfile.BOXES) {
+            if (b.name()
+                .equals(name)) {
+                return b;
             }
-            assertNotNull(found, "missing box " + row[0]);
-            assertEquals(row[1], found.u(), row[0] + " u");
-            assertEquals(row[2], found.v(), row[0] + " v");
-            assertEquals(row[3], found.w(), row[0] + " w");
-            assertEquals(row[4], found.h(), row[0] + " h");
-            assertEquals(row[5], found.d(), row[0] + " d");
         }
+        throw new AssertionError("missing box " + name);
+    }
+
+    @Test
+    void boxesMatchTheCommittedLayoutFile() throws IOException {
+        // tools/asset-gen/gun-paint/pistol_9mm.layout.json is the design source; the BoxSpec rows are generated from
+        // it by gun_paint.py pack, so a hand edit of either side shows up here.
+        String json = new String(
+            Files.readAllBytes(Paths.get("tools/asset-gen/gun-paint/pistol_9mm.layout.json")),
+            StandardCharsets.UTF_8);
+        Pattern row = Pattern.compile(
+            "\"name\": \"(\\w+)\"(.*?)\"size\": \\[(\\d+), (\\d+), (\\d+)\\], \"pos\": \\[([-\\d.]+), ([-\\d.]+), ([-\\d.]+)\\](.*?)\"uv\": \\[(\\d+), (\\d+)\\]");
+        Matcher m = row.matcher(json);
+        int count = 0;
+        while (m.find()) {
+            BoxSpec found = box(m.group(1));
+            assertEquals(Integer.parseInt(m.group(3)), found.w(), m.group(1) + " w");
+            assertEquals(Integer.parseInt(m.group(4)), found.h(), m.group(1) + " h");
+            assertEquals(Integer.parseInt(m.group(5)), found.d(), m.group(1) + " d");
+            assertEquals(Float.parseFloat(m.group(6)), found.x(), 1e-6, m.group(1) + " x");
+            assertEquals(Float.parseFloat(m.group(7)), found.y(), 1e-6, m.group(1) + " y");
+            assertEquals(Float.parseFloat(m.group(8)), found.z(), 1e-6, m.group(1) + " z");
+            assertEquals(Integer.parseInt(m.group(10)), found.u(), m.group(1) + " u");
+            assertEquals(Integer.parseInt(m.group(11)), found.v(), m.group(1) + " v");
+            assertEquals(
+                m.group(2)
+                    .contains("\"part\": 1") ? 1 : 0,
+                found.part(),
+                m.group(1) + " part");
+            count++;
+        }
+        assertEquals(Pistol9mmProfile.BOXES.length, count);
+    }
+
+    @Test
+    void keyFactsFromTheModelNotes() {
+        // No magazine part and no solid guard slab: the grip is one slab, the guard a post plus a bar.
+        for (BoxSpec b : Pistol9mmProfile.BOXES) {
+            assertFalse(
+                b.name()
+                    .contains("magazine"),
+                "no separate magazine");
+        }
+        assertEquals(9, Pistol9mmProfile.BOXES.length);
+        // The slide is 14 x 2 x 3 over a 14 x 1 x 3 rail, flush at both ends.
+        BoxSpec slide = box("slide");
+        BoxSpec rail = box("rail");
+        assertEquals(14, slide.w());
+        assertEquals(2, slide.h());
+        assertEquals(3, slide.d());
+        assertEquals(14, rail.w());
+        assertEquals(1, rail.h());
+        assertEquals(slide.x(), rail.x(), 1e-6);
+        assertEquals(slide.y() + 2, rail.y(), 1e-6);
+        // Two sight cubes, one near each end of the slide.
+        assertEquals(1, box("rear_sight").w());
+        assertEquals(1, box("front_sight").w());
+        assertEquals(1.5f, box("rear_sight").x() - slide.x(), 1e-6);
+        assertEquals(1.5f, slide.x() + 14 - (box("front_sight").x() + 1), 1e-6);
+        // The grip is a 2-wide slab raked 12.5 degrees back.
+        assertEquals(2, box("grip").d());
+        assertEquals(12.5f, box("grip").tiltZDegrees(), 1e-6);
+        // The barrel is a 1 x 1 bar turned 45 degrees (a diamond stub) that pokes 1 texel past the slide.
+        assertEquals(45.0f, box("barrel").tiltXDegrees(), 1e-6);
+        assertEquals(1.0f, box("barrel").x() + box("barrel").w() - (slide.x() + 14), 1e-6);
+        // The trigger leans with its bottom forward.
+        assertTrue(box("trigger").tiltZDegrees() < 0);
+        assertEquals(1, box("guard_post").w());
+        assertEquals(1, box("guard_bar").h());
+    }
+
+    @Test
+    void muzzleSitsAtTheBarrelTip() {
+        BoxSpec barrel = box("barrel");
+        assertEquals((barrel.x() + barrel.w()) * Pistol9mmProfile.MODEL_SCALE, -Pistol9mmProfile.MUZZLE[2], 1e-6);
     }
 
     @Test
@@ -116,23 +181,14 @@ class Pistol9mmProfileTest {
     }
 
     @Test
-    void frameAndSlideAreSeparateParts() {
-        int part0 = 0;
-        int part1 = 0;
+    void slideAndBothSightsAreOnePartAndTheBarrelStaysWithTheFrame() {
         for (BoxSpec b : Pistol9mmProfile.BOXES) {
-            if (b.part() == 0) {
-                part0++;
-            } else {
-                part1++;
-                assertTrue(
-                    b.name()
-                        .equals("slide")
-                        || b.name()
-                            .equals("sight"));
-            }
+            boolean slideGroup = b.name()
+                .equals("slide")
+                || b.name()
+                    .endsWith("_sight");
+            assertEquals(slideGroup ? 1 : 0, b.part(), b.name());
         }
-        assertEquals(5, part0);
-        assertEquals(2, part1);
         assertEquals(2, Pistol9mmProfile.TRANSFORMS.partCount());
     }
 
@@ -162,12 +218,12 @@ class Pistol9mmProfileTest {
         assertEquals(
             Arrays.asList("R(180.0000;1,0,0)", "R(225.0000;0,1,0)", "S(1.0000,1.0000,1.0000)"),
             run(t.fpBase(), 0, 0));
-        assertEquals(Arrays.asList("T(-1.2000,-1.0000,-1.7000)"), run(t.fpIdle(), 0, 0));
+        assertEquals(Arrays.asList("T(-1.2000,-0.9809,-1.7713)"), run(t.fpIdle(), 0, 0));
         // At the dip yF = -0.5: the frame pushes back 0.15, the slide 0.25; the muzzle climbs -5 degrees about X.
-        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", "T(-1.2000,-1.0000,-1.5500)"), run(t.fpFire(), 0.5, 0));
-        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", "T(-1.2000,-1.0000,-1.4500)"), run(t.fpFire(), 0.5, 1));
-        assertEquals(Arrays.asList("R(50.0000;1,0,0)", "T(-1.2000,-1.0000,-1.7000)"), run(t.fpReload(), 0.5, 0));
-        assertEquals(Arrays.asList("R(0.0000;1,0,0)", "T(-1.2000,-1.0000,-1.7000)"), run(t.fpFire(), 0.0, 0));
+        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", "T(-1.2000,-0.9809,-1.6213)"), run(t.fpFire(), 0.5, 0));
+        assertEquals(Arrays.asList("R(-5.0000;1,0,0)", "T(-1.2000,-0.9809,-1.5213)"), run(t.fpFire(), 0.5, 1));
+        assertEquals(Arrays.asList("R(50.0000;1,0,0)", "T(-1.2000,-0.9809,-1.7713)"), run(t.fpReload(), 0.5, 0));
+        assertEquals(Arrays.asList("R(0.0000;1,0,0)", "T(-1.2000,-0.9809,-1.7713)"), run(t.fpFire(), 0.0, 0));
     }
 
     @Test
@@ -222,7 +278,11 @@ class Pistol9mmProfileTest {
 
     @Test
     void modelLengthMatchesTheSheetsFifteenUnits() {
-        // 43 texels from rear to the muzzle tip, scaled, must be 15/16 of a block.
-        assertEquals(15.0 / 16.0, 43.0 * Pistol9mmProfile.MODEL_SCALE, 1e-4);
+        // 15 texels from the slide's rear face to the barrel tip, at 1/16 block each.
+        assertEquals(
+            15.0 / 16.0,
+            FirstPersonFit.lengthBlocks(Pistol9mmProfile.BOXES, Pistol9mmProfile.MODEL_SCALE),
+            1e-6);
+        assertEquals(1.0, Pistol9mmProfile.FP_SCALE, 1e-6);
     }
 }

@@ -33,18 +33,16 @@ public final class Pistol9mmProfile {
     /** Texture resource path of the model sheet. */
     public static final String TEXTURE = "gregguns:textures/models/guns/pistol_9mm.png";
     /** Model sheet width in texels. */
-    public static final int TEXTURE_WIDTH = 128;
+    public static final int TEXTURE_WIDTH = 64;
     /** Model sheet height in texels. */
-    public static final int TEXTURE_HEIGHT = 64;
-    /** GL units per texel: the 43-texel pistol is 15 sixteenths of a block long, as the sheet's pistol. */
-    public static final float MODEL_SCALE = 15.0f / 43.0f / 16.0f;
-    /** The muzzle in the gun frame (after the model's own orientation), blocks: x, y down, z. */
-    public static final float[] MUZZLE = { 0.0f, 0.1f, -0.2f };
-
-    private static final double FP_SCALE = 1.0;
-    private static final double FP_X = -1.2;
-    private static final double FP_Y = -1.0;
-    private static final double FP_Z = -1.7;
+    public static final int TEXTURE_HEIGHT = 32;
+    /** GL units per texel: the 15-texel pistol is 15 sixteenths of a block long, as the sheet's pistol. */
+    public static final float MODEL_SCALE = 1.0f / 16.0f;
+    /**
+     * The muzzle in the gun frame (after the model's own quarter turn), blocks: x, y down, z. The barrel tip is 2
+     * texels ahead of the model origin and its axis 1 texel below the top of the slide.
+     */
+    public static final float[] MUZZLE = { 0.0f, 1.0f / 16.0f, -2.0f / 16.0f };
     /**
      * Frames of {@code muzzleflash2.png} that are painted: 0 to 6. Frame 7 is empty (the sheet's cell 7 is fully
      * transparent), so playing eight frames made the flash vanish for the last eighth of its window.
@@ -52,21 +50,34 @@ public final class Pistol9mmProfile {
     public static final int MUZZLE_FLASH_FRAMES = 7;
 
     private static final float[] NO_PIVOT = { 0, 0, 0 };
-    // The grip tilts back about its top edge, and the magazine tilts with it.
-    private static final float[] GRIP_PIVOT = { -29.5f, 9.0f, 0.0f };
-    private static final float GRIP_TILT = 12.0f;
 
-    /** Part 0 is the frame group, part 1 the slide group, which the firing transform moves further. */
+    /**
+     * Part 0 is the frame group (rail, barrel stub, grip, guard, trigger); part 1 is the slide group (the slide and
+     * both sights), which the firing transform moves further.
+     */
     public static final BoxSpec[] BOXES = {
-        // part 0: frame, barrel, grip, magazine, trigger guard
-        new BoxSpec("frame", 0, 0, 43, 29, 6, 6, -32f, 9f, -3f, NO_PIVOT, 0f),
-        new BoxSpec("barrel", 0, 70, 43, 15, 5, 5, -6f, 2f, -2.5f, NO_PIVOT, 0f),
-        new BoxSpec("grip", 0, 0, 0, 9, 20, 7, -34f, 9f, -3.5f, GRIP_PIVOT, GRIP_TILT),
-        new BoxSpec("magazine", 0, 32, 0, 8, 18, 6, -33.5f, 14f, -3f, GRIP_PIVOT, GRIP_TILT),
-        new BoxSpec("guard", 0, 0, 55, 12, 6, 3, -22f, 15f, -1.5f, NO_PIVOT, 0f),
-        // part 1: slide and sight
-        new BoxSpec("slide", 1, 0, 27, 35, 9, 7, -34f, 0f, -3.5f, NO_PIVOT, 0f),
-        new BoxSpec("sight", 1, 30, 55, 9, 3, 3, -9f, -3f, -1.5f, NO_PIVOT, 0f), };
+        // BEGIN GENERATED BOXES (tools/asset-gen/gun_paint.py pack; edit the layout, not this)
+        new BoxSpec("slide", 1, 10, 0, 14, 2, 3, -13f, 0f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("rear_sight", 1, 48, 5, 1, 1, 1, -11.5f, -0.5f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("front_sight", 1, 44, 4, 1, 1, 1, -1.5f, -0.5f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("rail", 0, 10, 5, 14, 1, 3, -13f, 2f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("barrel", 0, 48, 3, 6, 1, 1, -4f, 0.5f, -0.5f, new float[] { -4f, 1f, 0f }, 0f, 45f),
+        new BoxSpec("grip", 0, 0, 0, 3, 7, 2, -11f, 3f, -1f, new float[] { -8f, 3f, 0f }, 12.5f),
+        new BoxSpec("guard_post", 0, 44, 0, 1, 3, 1, -6f, 3f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("guard_bar", 0, 52, 0, 4, 1, 1, -9f, 5f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("trigger", 0, 48, 0, 1, 2, 1, -8f, 2.6f, -0.5f, new float[] { -7.5f, 2.6f, 0f }, -23f),
+        // END GENERATED BOXES
+    };
+
+    /**
+     * Where the box centre of a Z-family handgun sits in the scaled gun frame, blocks: the place the previous pistol
+     * was tuned to ({@code S(1.0)}, {@code T(-1.2, -1.0, -1.7)}), so the new model is framed the same way.
+     */
+    private static final double[] ANCHOR = { -1.2, -0.684, -1.4275 };
+    /** First-person scale from {@link FirstPersonFit}: the model drawn 15/16 of a block long. */
+    public static final double FP_SCALE = FirstPersonFit
+        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
+    private static final double[] IDLE = FirstPersonFit.idleOffset(ANCHOR, FP_SCALE, gunFrameCentre());
 
     /** The sheet's render transforms, timing and muzzle flash for the pistol. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
@@ -88,32 +99,38 @@ public final class Pistol9mmProfile {
 
     private Pistol9mmProfile() {}
 
+    /** The box centre in the gun frame: the model's quarter turn about Y sends (x, y, z) to (z, y, -x). */
+    private static double[] gunFrameCentre() {
+        double[] c = FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE);
+        return new double[] { c[2], c[1], -c[0] };
+    }
+
     private static GunTransforms buildTransforms() {
         // First person (Z-family): rotX180, rotY225, S(FP_SCALE), then the state row.
-        // Deviation: the sheet says S(2.0) and T(-0.55, -0.45, -0.8). With the GregGuns model (a 15/16 block long
-        // pistol) that drew a rifle-sized gun running off the screen (M1 visual autotest). Halving the scale and
-        // moving the offset to (-1.2, -1.0, -1.7) gives a compact pistol in the lower right, muzzle forward; the
-        // fixed-frame muzzle flash (section 6.2) still lands on the muzzle.
+        // Deviation: the notes say S(2.0) and T(-0.55, -0.45, -0.8). A 15/16 block long pistol at that scale ran off
+        // the screen (M1 visual autotest), so the scale and idle position follow FirstPersonFit (S about 1.0, box
+        // centre on the pistol's tuned anchor). The slide group travels 0.1 block behind the frame, which is the
+        // notes' 1.6 texels, and the frame kicks back 0.15 block.
         TransformProgram fpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
             .scale(FP_SCALE)
             .build();
         TransformProgram fpIdle = TransformProgram.builder()
-            .translate(FP_X, FP_Y, FP_Z)
+            .translate(IDLE[0], IDLE[1], IDLE[2])
             .build();
-        // Firing: muzzle climbs 10 degrees at the dip, the whole gun pushes back, the slide (part 1) further.
+        // Firing: the gun pitches 5 degrees at the dip and pushes back 0.15; the slide (part 1) goes 0.1 further.
         TransformProgram fpFire = TransformProgram.builder()
             .rotX((p, part) -> 10.0 * yF(p))
             .translate(
-                TransformProgram.c(FP_X),
-                TransformProgram.c(FP_Y),
-                (p, part) -> FP_Z - yF(p) * (0.3 + 0.2 * part))
+                TransformProgram.c(IDLE[0]),
+                TransformProgram.c(IDLE[1]),
+                (p, part) -> IDLE[2] - yF(p) * (0.3 + 0.2 * part))
             .build();
         // Reload: tilt the muzzle up to 50 degrees and back.
         TransformProgram fpReload = TransformProgram.builder()
             .rotX((p, part) -> -50.0 * yR(p))
-            .translate(FP_X, FP_Y, FP_Z)
+            .translate(IDLE[0], IDLE[1], IDLE[2])
             .build();
         // Third person: rotX180, rotY135, S(1.5), T(0.05, -0.55, 0.2). Aimed extra translate (0, 0, 0.2).
         TransformProgram tpBase = TransformProgram.builder()
