@@ -13,18 +13,18 @@ import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
 
 /** Every gun in the shared definition list gets exactly one generated visual scenario. */
-class GeneratedGunVisualsTest {
+class GeneratedGunLooksTest {
 
     @Test
     void oneScenarioPerGunPlusGroup() {
         ScenarioRegistry registry = new ScenarioRegistry();
-        GeneratedGunVisuals.registerAll(registry);
+        GeneratedGunLooks.registerAll(registry);
         for (GunDefinition def : GunDefinitions.ALL) {
-            Scenario s = registry.get("mp.visual." + def.name());
+            Scenario s = registry.get("mp.look." + def.name());
             assertNotNull(s, def.name());
             assertFalse(s.includedInAll(), def.name() + " needs a client");
         }
-        Scenario group = registry.get("mp.visual.all");
+        Scenario group = registry.get("mp.look.all");
         assertNotNull(group);
         assertFalse(group.includedInAll());
         assertEquals(GunDefinitions.ALL.size() + 1, registry.size());

@@ -40,6 +40,12 @@ public final class HandCannonScenarios {
         registry.register(new Fall());
         registry.register(new Reload());
         registry.register(new Damage());
+        registry.register(
+            new GunVisualScenario(
+                "mp.visual.handcannon",
+                "hc",
+                GunItems.handcannon(),
+                AmmoTypes.STONE.roundItemName()));
         registry.register(GunRecipeScenarios.handCannon());
     }
 
