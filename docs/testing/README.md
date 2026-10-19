@@ -150,6 +150,8 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `projectile.falloff` | projectile framework | The same shot at a zombie 21 blocks away (past the 18 block drop-off start): health lost equals `DamageFalloff` at the measured distance run through `DamageModel`, strictly between the maximum and the minimum. Waits for ticks. |
 | `projectile.blocks` | projectile framework | A bullet flies through tall grass (PFX-27), ends at a stone wall without leaving an entity behind, and the zombie behind the wall is unhurt (PFX-23). Waits for ticks. |
 | `projectile.shooter` | projectile framework | A pig fires from inside its own box: the shooter is unhurt (grace period) and a pig three blocks away takes the full damage. Waits for ticks. |
+| `projectile.laser.hit` | hitscan carrier (M5 I3) | A `LaserProjectile` shot (flat 12 damage, 7.5 b/t for 5 ticks) at a zombie 20 blocks away hurts it at once, in the launch call, by the ENERGY figure from `DamageModel`; exactly one `BeamVisual` about 20 blocks long is spawned and no laser bolt is left flying. |
+| `projectile.laser.blocks` | hitscan carrier (M5 I3) | The beam passes tall grass and hurts the zombie behind it (PFX-27); the next shot is stopped by a stone wall 8 blocks out, the beam is about 7.5 blocks long, and the zombie beyond the wall is unhurt (PFX-23). |
 | `gun.fire` | pistol slice (M1) | A fake player holding a real `pistol_9mm` presses the trigger through `ServerGunHandler`: one bullet is launched, a zombie 6 blocks away loses what `DamageModel` gives for 8 damage, the NBT `ammo` goes 18 to 17, a second click 1 tick later is swallowed, and a click made 3 ticks later fires on tick 4 (4 tick cooldown, GUN-29 buffer). Waits for ticks. |
 | `gun.reload` | pistol slice (M1) | An empty pistol with a `mag_9mm_pistol` in the inventory: the dry trigger starts a reload, ammo stays 0 until the 35th tick, then 18; the magazine is consumed and a `mag_9mm_pistol_empty` comes back. Waits for ticks. |
 | `gun.reload.forced` | pistol slice (M1) | The reload key on a pistol holding 7 rounds: after 35 ticks it holds 18, the loaded rounds come back as `floor(7/6)=1` loose bullet (GUN-13; the 1 leftover round is the documented whole-bullet rounding) and the empty magazine is returned. Waits for ticks. |
@@ -382,8 +384,9 @@ Maps each M1 exit-gate item and each relevant `BUGS.md` row to the tests that co
 | GUN-45 vanilla armor blocks all types | U: `DamageModelTest.doesNotReproduceGUN45_*`; S: `combat.penetration` | |
 | GUN-47 unscoped zoom flag | U: `SpreadAndZoomTest.doesNotReproduceGUN47_*`, `GunKeybindsTest.doesNotReproduceGUN47_*`; S: `gun.zoom` | |
 | PFX-01 projectile entity not registered | S: `projectile.hit` | |
-| PFX-23, PFX-27 wall and plant hits | S: `projectile.blocks` | |
+| PFX-23, PFX-27 wall and plant hits | S: `projectile.blocks`, `projectile.laser.blocks`; U: `HitscanTest.doesNotReproducePFX23_*` | |
 | PFX-34 gravity not sent to client | U: `BulletSpawnDataTest.doesNotReproducePFX34_*` | |
+| PFX-03 beam miss uses the direction as a point | U: `HitscanTest.doesNotReproducePFX03_*` | |
 | GUN-36 converted sources absolute | Not applicable: GregGuns builds its own sources and has no Techguns-source conversion; only UNRESISTABLE is absolute (`DamageSourceTest.onlyUnresistableIsUnblockable`) | |
 | GUN-38 knockback ignores strength | U: `KnockbackTest.doesNotReproduceGUN38_theMultiplierChangesTheStrength`; S: `gun.knockback` | Fixed in M2: the per-gun `GunStats.knockback()` multiplier scales the velocity change vanilla gave the target |
 
