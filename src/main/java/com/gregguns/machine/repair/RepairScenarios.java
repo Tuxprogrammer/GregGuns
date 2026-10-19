@@ -68,10 +68,10 @@ public final class RepairScenarios {
         registry.register(new RegisteredScenario());
         registry.register(new BenchRepairScenario());
         registry.register(new BenchRefusalScenario());
+        registry.register(new BenchTiersScenario());
         registry.register(new GantryFormsScenario());
         registry.register(new GantryRunScenario());
         registry.register(new CamoScenario());
-        registry.register(new SweepScenario());
     }
 
     // --- helpers ----------------------------------------------------------------------------------------------------
@@ -281,6 +281,64 @@ public final class RepairScenarios {
                     "the other tags should be unchanged");
                 out.note("cost was " + cost.metal() + " plates and " + cost.cloth() + " cloth, " + eu + " EU");
                 empty(base);
+                noStray(ctx, out);
+                return out.build();
+            });
+        }
+    }
+
+    /** The MV, HV, EV and IV benches each repair a worn vest for exactly their tier's energy price. */
+    private static final class BenchTiersScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "machines.repair.bench.tiers";
+        }
+
+        @Override
+        public String description() {
+            return "The MV, HV, EV and IV Repair Benches each repair a worn Soldier's Vest for exactly RepairMath.benchEu of their own tier, with the listed parts.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder fail = ScenarioResult.builder(name());
+            if (ArmorItems.get(ArmorCatalog.T1_COMBAT, ArmorSlot.CHESTPLATE) == null || cloth(1) == null) {
+                return ScenarioResult.fail(name(), "needs the armor module (GG_MODULES=guns,armor,machines)");
+            }
+            RepairSpec spec = ArmorItems.get(ArmorCatalog.T1_COMBAT, ArmorSlot.CHESTPLATE)
+                .piece()
+                .repair();
+            RepairRecipeSpec.Row[] rows = { RepairRecipeSpec.Row.MV, RepairRecipeSpec.Row.HV, RepairRecipeSpec.Row.EV,
+                RepairRecipeSpec.Row.IV };
+            IGregTechTileEntity[] benches = new IGregTechTileEntity[rows.length];
+            ItemStack[] vests = new ItemStack[rows.length];
+            long[] prices = new long[rows.length];
+            TestPlayer player = new TestPlayer((WorldServer) ctx.world(), "[GGRepairTiers]");
+            player.setPosition(ctx.originX() + 3.5, ctx.originY() + 1, ctx.originZ() + 3.5);
+            for (int i = 0; i < rows.length; i++) {
+                benches[i] = place(ctx, 2 * i + 1, 0, 8, rows[i].mteId(), ForgeDirection.NORTH);
+                vests[i] = piece(ArmorCatalog.T1_COMBAT, ArmorSlot.CHESTPLATE, 400);
+                int max = vests[i].getMaxDamage();
+                RepairSpec.Cost cost = spec.cost(400, max);
+                benches[i].setInventorySlotContents(0, plate("Steel", cost.metal()));
+                benches[i].setInventorySlotContents(1, cloth(cost.cloth()));
+                prices[i] = RepairMath.benchEu(rows[i].tier(), RepairMath.damageFraction(400, max));
+                benches[i].increaseStoredEnergyUnits(prices[i] + 5, true);
+            }
+            return afterWarmup(name(), () -> {
+                ScenarioResult.Builder out = ScenarioResult.builder(name());
+                for (int i = 0; i < rows.length; i++) {
+                    String label = rows[i].tier() + " bench";
+                    player.wear(vests[i]);
+                    MTERepairBench bench = (MTERepairBench) benches[i].getMetaTileEntity();
+                    out.checkEquals(label + " outcome", MTERepairBench.Outcome.REPAIRED, bench.repair(player, 1));
+                    out.checkEquals(label + " damage after repair", 0, vests[i].getItemDamage());
+                    out.checkEquals(label + " energy left", 5L, benches[i].getStoredEU());
+                    empty(benches[i]);
+                }
+                out.check(prices[3] > prices[0], "a higher tier should charge more EU for the same job");
+                noStray(ctx, out);
                 return out.build();
             });
         }
@@ -346,6 +404,7 @@ public final class RepairScenarios {
                 out.checkEquals("too far away", MTERepairBench.Outcome.OUT_OF_REACH, bench.repair(player, 1));
                 out.checkEquals("damage when out of reach", 825, vest.getItemDamage());
                 empty(base);
+                noStray(ctx, out);
                 return out.build();
             });
         }
@@ -451,6 +510,7 @@ public final class RepairScenarios {
                 GregGunsCasings.GANTRY_CASING);
             out.check(!g.form(), "a Gantry without an output bus should not form");
             g.empty();
+            noStray(ctx, out);
             return out.build();
         }
     }
@@ -484,6 +544,7 @@ public final class RepairScenarios {
             if (!g.form()) {
                 fail.check(false, "the three-bay Gantry with all hatches should form");
                 g.empty();
+                noStray(ctx, fail);
                 return fail.build();
             }
             g.fixMaintenance();
@@ -552,6 +613,7 @@ public final class RepairScenarios {
                 out.note(
                     "finished after " + ticks + " ticks; used " + expectPlates + " plates, " + expectCloth + " cloth");
                 g.empty();
+                noStray(ctx, out);
                 return out.build();
             });
         }
@@ -640,6 +702,7 @@ public final class RepairScenarios {
                 out.check(!wrongDim.isAccepted(), "a click naming another dimension should be rejected");
                 out.checkEquals("camo untouched by the rejected clicks", 0, scout.getCamo(chest));
                 empty(base);
+                noStray(ctx, out);
                 return out.build();
             });
         }
@@ -651,33 +714,19 @@ public final class RepairScenarios {
         }
     }
 
-    /** Runs last (names sort that way): no dropped item survives the machine scenarios' cleanup. */
-    private static final class SweepScenario implements Scenario {
-
-        @Override
-        public String name() {
-            return "machines.repair.sweep";
-        }
-
-        @Override
-        public String description() {
-            return "No item entity is left in the area after the repair and camo scenarios cleaned up.";
-        }
-
-        @Override
-        public ScenarioResult run(ScenarioContext ctx) {
-            ScenarioResult.Builder out = ScenarioResult.builder(name());
-            int stray = 0;
-            for (Object o : ctx.world().loadedEntityList) {
-                Entity e = (Entity) o;
-                if (e instanceof EntityItem && Math.abs(e.posX - ctx.originX()) <= AREA_RADIUS
-                    && Math.abs(e.posZ - ctx.originZ()) <= AREA_RADIUS) {
-                    stray++;
-                    e.setDead();
-                }
+    /**
+     * Fails the scenario if a dropped item survived inside its own arena, and removes it so later scenarios are clean.
+     */
+    private static void noStray(ScenarioContext ctx, ScenarioResult.Builder out) {
+        int stray = 0;
+        for (Object o : new java.util.ArrayList<>(ctx.world().loadedEntityList)) {
+            Entity e = (Entity) o;
+            if (e instanceof EntityItem && Math.abs(e.posX - ctx.originX()) <= AREA_RADIUS
+                && Math.abs(e.posZ - ctx.originZ()) <= AREA_RADIUS) {
+                stray++;
+                e.setDead();
             }
-            out.checkEquals("item entities left in the area", 0, stray);
-            return out.build();
         }
+        out.checkEquals("item entities left in the scenario's own area", 0, stray);
     }
 }

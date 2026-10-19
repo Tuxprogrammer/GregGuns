@@ -58,4 +58,17 @@ class GregGunsMTEIDsTest {
         assertTrue(all.contains(GregGunsMTEIDs.REACTION_CHAMBER_IV));
         assertTrue(all.contains(GregGunsMTEIDs.RETORT));
     }
+
+    @Test
+    void theSixteenBuiltMachinesAreTheContiguousRunFromTheBlockStart() {
+        // M4 exit gate: every built machine is recorded, 20100 to 20115, so the pack-side MetaTileEntityIDs rows
+        // (PACK-CHANGES.md) cover exactly these ids.
+        int[] ids = GregGunsMTEIDs.all()
+            .clone();
+        java.util.Arrays.sort(ids);
+        assertEquals(16, ids.length);
+        for (int i = 0; i < ids.length; i++) {
+            assertEquals(GregGunsMTEIDs.BLOCK_FIRST + i, ids[i]);
+        }
+    }
 }

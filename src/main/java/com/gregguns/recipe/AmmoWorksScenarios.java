@@ -63,7 +63,6 @@ public final class AmmoWorksScenarios {
         registry.register(new RegisteredScenario());
         registry.register(new RunScenario());
         registry.register(new BrokenScenario());
-        registry.register(new SweepScenario());
     }
 
     private static ItemStack mod(String name, int count) {
@@ -275,6 +274,7 @@ public final class AmmoWorksScenarios {
             if (!hall.form()) {
                 fail.check(false, "the three-bay hall with all hatches should form");
                 hall.empty();
+                noStray(ctx, fail);
                 return fail.build();
             }
             hall.fixMaintenance();
@@ -294,6 +294,7 @@ public final class AmmoWorksScenarios {
             if (single == null) {
                 fail.check(false, "RC-28 should be found at HV voltage");
                 hall.empty();
+                noStray(ctx, fail);
                 return fail.build();
             }
             for (int i = 0; i < inputs.length; i++) {
@@ -332,6 +333,7 @@ public final class AmmoWorksScenarios {
                         + " ticks)");
                 out.note("finished after " + ticks + " ticks; batch duration " + firstDuration[0]);
                 hall.empty();
+                noStray(ctx, out);
                 return out.build();
             });
         }
@@ -358,6 +360,7 @@ public final class AmmoWorksScenarios {
             if (!hall.form()) {
                 out.check(false, "the control hall (two bays, all hatches) should form");
                 hall.empty();
+                noStray(ctx, out);
                 return out.build();
             }
             out.checkEquals("press bays of the control hall", AmmoWorksShape.MIN_BAYS, hall.mte.pressBays());
@@ -396,40 +399,24 @@ public final class AmmoWorksScenarios {
             ctx.setBlock(0, Hall.CY, last, casing, GregGunsCasings.WORKS_CASING);
             out.check(!hall.form(), "a hall without an output bus should not form");
             hall.empty();
+            noStray(ctx, out);
             return out.build();
         }
     }
 
     /**
-     * Runs after the hall scenarios (names sort that way) and fails if any dropped item survived their cleanup, which
-     * would otherwise corrupt the scenarios that follow (a stray item in a bullet's path).
+     * Fails the scenario if a dropped item survived inside its own arena, and removes it so later scenarios are clean.
      */
-    private static final class SweepScenario implements Scenario {
-
-        @Override
-        public String name() {
-            return "production.ammoworks.sweep";
-        }
-
-        @Override
-        public String description() {
-            return "No item entity is left in the hall area after the Ammunition Works scenarios cleaned up.";
-        }
-
-        @Override
-        public ScenarioResult run(ScenarioContext ctx) {
-            ScenarioResult.Builder out = ScenarioResult.builder(name());
-            int stray = 0;
-            for (Object o : ctx.world().loadedEntityList) {
-                Entity e = (Entity) o;
-                if (e instanceof EntityItem && Math.abs(e.posX - ctx.originX()) <= AREA_RADIUS
-                    && Math.abs(e.posZ - ctx.originZ()) <= AREA_RADIUS) {
-                    stray++;
-                    e.setDead();
-                }
+    private static void noStray(ScenarioContext ctx, ScenarioResult.Builder out) {
+        int stray = 0;
+        for (Object o : new java.util.ArrayList<>(ctx.world().loadedEntityList)) {
+            Entity e = (Entity) o;
+            if (e instanceof EntityItem && Math.abs(e.posX - ctx.originX()) <= AREA_RADIUS
+                && Math.abs(e.posZ - ctx.originZ()) <= AREA_RADIUS) {
+                stray++;
+                e.setDead();
             }
-            out.checkEquals("item entities left in the hall area", 0, stray);
-            return out.build();
         }
+        out.checkEquals("item entities left in the scenario's own area", 0, stray);
     }
 }
