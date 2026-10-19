@@ -61,6 +61,19 @@ public final class GunRecipeScenarios {
         return new UpgradeRecipe(name, description, row);
     }
 
+    /**
+     * The tier-gate scenario of a gun's assembly row: the row meets the D1 gate rule, the assembler of its own tier
+     * finds it with the sheet inputs, and the assembler one tier below does not.
+     *
+     * @param name        the scenario name, for example {@code gun.pdw.gate}
+     * @param description what it checks, for the docs
+     * @param row         the gun's assembly row
+     * @return the scenario
+     */
+    public static Scenario tierGate(String name, String description, ProductionTable.Row row) {
+        return new TierGate(name, description, row);
+    }
+
     /** @return {@code gun.sawedoff.shells.recipe}: the shotgun shell's press recipe (RC-29) */
     public static Scenario shellPress() {
         return new ShellPressRecipe();
@@ -112,9 +125,7 @@ public final class GunRecipeScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             List<ItemStack> inputList = new ArrayList<>();
             for (ProductionTable.Input input : row.inputs()) {
-                inputList.add(
-                    input.isGregGuns() ? modStack(input.itemName(), input.count())
-                        : gt(input.prefix(), input.material(), input.count()));
+                inputList.add(ProductionRecipes.resolve(input));
             }
             inputList.add(GTUtility.getIntegratedCircuit(row.circuit()));
             for (ItemStack input : inputList) {
@@ -166,6 +177,74 @@ public final class GunRecipeScenarios {
                 && tooLow.mOutputs[0].getItem() == gun.getItem();
             out.check(!oursOffered, "a machine below the row's tier should not be offered the recipe");
             return out.build();
+        }
+    }
+
+    /** The tier gate: the row is gated by its tier's material, found by that tier's assembler and not the one below. */
+    private static final class TierGate implements Scenario {
+
+        private final String name;
+        private final String description;
+        private final ProductionTable.Row row;
+
+        TierGate(String name, String description, ProductionTable.Row row) {
+            this.name = name;
+            this.description = description;
+            this.row = row;
+        }
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+        @Override
+        public String description() {
+            return description;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            out.check(
+                GateRule.satisfied(row, ProductionTable.byOutput(), ProductionTable.GATE_EXEMPT),
+                "the row should meet the D1 gate rule");
+            List<ItemStack> inputList = new ArrayList<>();
+            for (ProductionTable.Input input : row.inputs()) {
+                ItemStack stack = ProductionRecipes.resolve(input);
+                out.check(stack != null, "every sheet input should resolve");
+                inputList.add(stack);
+            }
+            inputList.add(GTUtility.getIntegratedCircuit(row.circuit()));
+            ItemStack[] inputs = inputList.toArray(new ItemStack[0]);
+            ItemStack gun = modStack(row.output(), 1);
+            int idx = row.tier()
+                .voltageIndex();
+            out.check(
+                offers(
+                    RecipeMaps.assemblerRecipes.findRecipeQuery()
+                        .items(inputs)
+                        .voltage(GTValues.V[idx])
+                        .find(),
+                    gun),
+                "the assembler of the row's tier should find the recipe");
+            out.check(
+                !offers(
+                    RecipeMaps.assemblerRecipes.findRecipeQuery()
+                        .items(inputs)
+                        .voltage(GTValues.V[idx - 1])
+                        .find(),
+                    gun),
+                "the assembler one tier below should not be offered the recipe");
+            return out.build();
+        }
+
+        private static boolean offers(GTRecipe recipe, ItemStack gun) {
+            return recipe != null && gun != null
+                && recipe.mOutputs != null
+                && recipe.mOutputs.length > 0
+                && recipe.mOutputs[0] != null
+                && recipe.mOutputs[0].getItem() == gun.getItem();
         }
     }
 

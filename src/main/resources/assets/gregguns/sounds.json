@@ -151,6 +151,14 @@
     "category": "player",
     "sounds": ["guns/flamethrower_reload"]
   },
+  "guns.laser_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/lasergun_shot_a", "guns/lasergun_shot_b", "guns/lasergun_shot_c"]
+  },
+  "guns.laser_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/lasergun_reload"]
+  },
   "guns.rocket_launcher.fire": {
     "category": "player",
     "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b", "guns/rocket_shot_c"]

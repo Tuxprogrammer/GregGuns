@@ -135,6 +135,9 @@ class GunDefinitionsTest {
         items.add(com.gregguns.gun.logic.GunCatalog.AmmoIds.FUEL_TANK);
         for (GunDefinition def : GunDefinitions.ALL) {
             GunStats stats = def.stats();
+            if (stats.isEnergy()) {
+                continue; // the gun is its own battery: its ammo type is a marker, no item exists
+            }
             assertTrue(items.contains(stats.ammoType()), def.name() + " ammoType " + stats.ammoType());
             assertTrue(items.contains(stats.looseAmmoType()), def.name() + " looseAmmoType " + stats.looseAmmoType());
             if (stats.emptyContainerType() != null) {
