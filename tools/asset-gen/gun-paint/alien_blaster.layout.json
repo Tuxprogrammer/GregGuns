@@ -1,0 +1,33 @@
+{
+ "gun": "alien_blaster",
+ "texture": [128, 64],
+ "scale": 0.0625,
+ "bodyRotationYDegrees": 90,
+ "muzzle": [1.125, 0, 0],
+ "boxes": [
+  {"name": "body", "part": 0, "size": [12, 6, 6], "pos": [-13, -3.0, -3.0], "pivot": [0, 0, 0], "tiltX": 45, "uv": [0, 0]},
+  {"name": "step1", "part": 0, "size": [2, 5, 5], "pos": [-1, -2.5, -2.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [64, 0]},
+  {"name": "step2", "part": 0, "size": [2, 4, 4], "pos": [1, -2.0, -2.0], "pivot": [0, 0, 0], "tiltX": 45, "uv": [78, 0]},
+  {"name": "step3", "part": 0, "size": [1, 3, 3], "pos": [3, -1.5, -1.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [90, 6]},
+  {"name": "step4", "part": 0, "size": [1, 2, 2], "pos": [4, -1.0, -1.0], "pivot": [0, 0, 0], "tiltX": 45, "uv": [122, 0]},
+  {"name": "barrel", "part": 0, "size": [12, 1, 1], "pos": [5, -0.5, -0.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [0, 12]},
+  {"name": "collar_a", "part": 0, "size": [1, 3, 3], "pos": [12, -1.5, -1.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [106, 0]},
+  {"name": "collar_b", "part": 0, "size": [1, 3, 3], "pos": [14, -1.5, -1.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [114, 0]},
+  {"name": "muzzle", "part": 0, "size": [2, 2, 2], "pos": [16, -1.0, -1.0], "pivot": [0, 0, 0], "tiltX": 45, "uv": [98, 10]},
+  {"name": "rear_ring", "part": 0, "size": [2, 5, 5], "pos": [-15, -2.5, -2.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [50, 0]},
+  {"name": "cell_glow", "part": 0, "size": [2, 2, 2], "pos": [-17, -1.0, -1.0], "pivot": [0, 0, 0], "tiltX": 45, "uv": [118, 6]},
+  {"name": "nub", "part": 0, "size": [1, 1, 1], "pos": [-18, -0.5, -0.5], "uv": [122, 4]},
+  {"name": "stud_glow_a1", "part": 0, "size": [1, 1, 1], "pos": [-5, -3.5, -0.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [78, 8]},
+  {"name": "stud_glow_b1", "part": 0, "size": [1, 1, 1], "pos": [-5, -0.5, 2.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [86, 10]},
+  {"name": "stud_glow_a2", "part": 0, "size": [1, 1, 1], "pos": [-7, -3.5, -0.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [82, 8]},
+  {"name": "stud_glow_b2", "part": 0, "size": [1, 1, 1], "pos": [-7, -0.5, 2.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [112, 10]},
+  {"name": "stud_glow_a3", "part": 0, "size": [1, 1, 1], "pos": [-9, -3.5, -0.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [86, 8]},
+  {"name": "stud_glow_b3", "part": 0, "size": [1, 1, 1], "pos": [-9, -0.5, 2.5], "pivot": [0, 0, 0], "tiltX": 45, "uv": [116, 10]},
+  {"name": "wing_l", "part": 0, "size": [7, 1, 3], "pos": [-11, -0.5, -3.5], "pivot": [-4, 0, -3.5], "tiltY": -25, "uv": [98, 6]},
+  {"name": "wing_r", "part": 0, "size": [7, 1, 3], "pos": [-11, -0.5, 0.5], "pivot": [-4, 0, 3.5], "tiltY": 25, "uv": [50, 10]},
+  {"name": "fin", "part": 0, "size": [7, 3, 1], "pos": [-11, -3.5, -0.5], "pivot": [-4, -3.5, 0], "tilt": 25, "uv": [70, 10]},
+  {"name": "tang", "part": 0, "size": [5, 3, 3], "pos": [-10, 3, -1.5], "uv": [90, 0]},
+  {"name": "grip", "part": 0, "size": [4, 9, 3], "pos": [-10, 5.5, -1.5], "pivot": [-6, 5.5, 0], "tilt": 25.6, "uv": [36, 0]},
+  {"name": "trigger", "part": 0, "size": [2, 3, 1], "pos": [-6, 4, -0.5], "pivot": [-4, 4, 0], "tilt": 15, "uv": [106, 10]}
+ ]
+}
