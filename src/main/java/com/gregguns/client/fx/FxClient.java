@@ -92,6 +92,7 @@ public final class FxClient implements FxHooks.Sink {
     /** Installs the spawner and the tick handler. Call once from the client module's init. */
     public static void init() {
         FxHooks.install(INSTANCE);
+        BlastFxClient.install();
         FMLCommonHandler.instance()
             .bus()
             .register(INSTANCE);
