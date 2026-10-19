@@ -7,8 +7,12 @@ import java.util.UUID;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityPig;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
@@ -126,10 +130,15 @@ final class NpcEntityScenarios {
         return ctx.spawn(npc);
     }
 
-    private static FakePlayer player(ScenarioContext ctx, String name, double dx, double dz) {
+    /**
+     * A fake player the entity tracker can serve: a {@code FakePlayer} has no connection, and the tracker crashes
+     * sending its metadata, so it gets a handler on a channel-less network manager whose packets just queue up.
+     */
+    private static EntityPlayer player(ScenarioContext ctx, String name, double dx, double dz) {
         FakePlayer p = new FakePlayer(
             (WorldServer) ctx.world(),
             new GameProfile(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), name));
+        new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p);
         p.setLocationAndAngles(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5 + dz, 0.0F, 0.0F);
         return ctx.spawn(p);
     }
@@ -140,6 +149,7 @@ final class NpcEntityScenarios {
     private static final class FactionNoInfightScenario implements Scenario {
 
         private static final int TICKS = 60;
+        private static final int STRIKE_TICK = 5;
 
         @Override
         public String name() {
@@ -161,21 +171,25 @@ final class NpcEntityScenarios {
             EntityPig pig = ctx.spawn(new EntityPig(ctx.world()));
             pig.setLocationAndAngles(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5 + 8, 0.0F, 0.0F);
             ShotLog log = ShotLog.start();
-            // The shooter faces the victim and fires one real, unspread bullet.
             ItemGun gun = (ItemGun) shooter.getHeldItem()
                 .getItem();
-            float yaw = AimAngles.yaw(6, 0, 0);
-            shooter.rotationYaw = yaw;
-            shooter.rotationYawHead = yaw;
-            shooter.rotationPitch = 0.0F;
-            ShotOffset straight = SpreadModel.roll(ctx.random(), gun.stats(), ShotContext.npc(0.0), 0)[0];
-            Projectiles.launcher()
-                .launch(ctx.world(), shooter, gun.stats(), straight, 1.0F);
-            bitten.attackEntityFrom(DamageSource.causeMobDamage(pig), 1.0F);
+            boolean[] hurt = { false };
             boolean[] infight = { false };
             boolean[] revenged = { false };
             boolean[] bittenRetaliated = { false };
             return ScenarioResult.pending(name(), TICKS + 20, ticks -> {
+                if (ticks == STRIKE_TICK) {
+                    // Vanilla's hurt-by task ignores a revenge target stamped on the entity's first tick, so strike
+                    // a few ticks in. The shooter faces the victim and fires one real, unspread bullet.
+                    float yaw = AimAngles.yaw(6, 0, 0);
+                    shooter.rotationYaw = yaw;
+                    shooter.rotationYawHead = yaw;
+                    shooter.rotationPitch = 0.0F;
+                    ShotOffset straight = SpreadModel.roll(ctx.random(), gun.stats(), ShotContext.npc(0.0), 0)[0];
+                    Projectiles.launcher()
+                        .launch(ctx.world(), shooter, gun.stats(), straight, 1.0F);
+                    hurt[0] = bitten.attackEntityFrom(DamageSource.causeMobDamage(pig), 1.0F);
+                }
                 if (victim.getAttackTarget() == shooter || shooter.getAttackTarget() == victim) {
                     infight[0] = true;
                 }
@@ -195,7 +209,20 @@ final class NpcEntityScenarios {
                     revenged[0] || victim.getHealth() < victim.getMaxHealth(),
                     "the bullet should have reached the victim (control)");
                 out.check(!infight[0], "same-faction NPCs must not target each other");
-                out.check(bittenRetaliated[0], "an NPC hurt by a pig should retaliate against it");
+                out.check(
+                    bittenRetaliated[0],
+                    "an NPC hurt by a pig should retaliate against it (hurt=" + hurt[0]
+                        + ", health="
+                        + bitten.getHealth()
+                        + ", revenge="
+                        + bitten.getAITarget()
+                        + ", target="
+                        + bitten.getAttackTarget()
+                        + ", dead="
+                        + bitten.isDead
+                        + ", age="
+                        + bitten.ticksExisted
+                        + ")");
                 return out.build();
             });
         }
@@ -222,7 +249,7 @@ final class NpcEntityScenarios {
             allowMobs(ctx.world());
             ctx.clearArea(14, 4);
             NpcEntity gunner = npc(ctx, 0, 0, PISTOL);
-            FakePlayer victim = player(ctx, "npc_protected", 6, 0);
+            EntityPlayer victim = player(ctx, "npc_protected", 6, 0);
             victim.capabilities.disableDamage = true;
             ShotLog log = ShotLog.start();
             return ScenarioResult.pending(name(), PROTECTED_TICKS + 200, ticks -> {
