@@ -62,13 +62,25 @@ public final class GunRenderers {
      * @param transforms its timing, transform rows, muzzle flash and optional scope
      */
     public static void register(Item item, GunModel model, GunTransforms transforms) {
+        register(item, model, transforms, false);
+    }
+
+    /**
+     * As {@link #register(Item, GunModel, GunTransforms)}, for an akimbo gun that draws the model once per hand.
+     *
+     * @param item       the gun item
+     * @param model      the single gun's model
+     * @param transforms the single gun's transforms
+     * @param akimbo     true to draw two copies in first person (see {@code AkimboLayout})
+     */
+    public static void register(Item item, GunModel model, GunTransforms transforms, boolean akimbo) {
         if (item == null || model == null || transforms == null) {
             throw new IllegalArgumentException("item, model and transforms are required");
         }
         if (REGISTRY.put(item, new Entry(transforms)) != null) {
             GregGuns.LOG.warn("Gun renderer for {} registered twice; the later one wins", item.getUnlocalizedName());
         }
-        MinecraftForgeClient.registerItemRenderer(item, new GunItemRenderer(model, transforms));
+        MinecraftForgeClient.registerItemRenderer(item, new GunItemRenderer(model, transforms, akimbo));
         if (transforms.scope() != null) {
             ScopeTextures.install();
         }
@@ -93,7 +105,8 @@ public final class GunRenderers {
                 definition.textures(),
                 definition.muzzle(),
                 definition.xFamily()),
-            definition.transforms());
+            definition.transforms(),
+            definition.akimbo());
     }
 
     /**

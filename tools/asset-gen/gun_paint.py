@@ -237,7 +237,7 @@ def apply_painter(rgb, p, face):
         mul(rgb, x + pw - 1, y, 1, ph, 1.15)
     elif kind == "bore":  # a round-ish dark opening with a lit rim
         pw = p.get("size", max(2, min(w, h) - 2 * p.get("inset", 1)))
-        cx, cy = w / 2.0, h / 2.0
+        cx, cy = p.get("cx", w / 2.0), p.get("cy", h / 2.0)  # optional centre, in texels
         yy, xx = np.mgrid[0:h, 0:w]
         dist = np.maximum(abs(xx + .5 - cx), abs(yy + .5 - cy))
         circ = np.hypot(xx + .5 - cx, yy + .5 - cy)

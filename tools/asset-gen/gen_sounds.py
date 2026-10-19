@@ -29,6 +29,7 @@ from __future__ import annotations
 import csv
 import json
 import os
+import time
 import re
 import subprocess
 import sys
@@ -760,8 +761,14 @@ def synth_family(c, fam, N):
     else:
         x = sndlib.conform(c, x)
         # where the original ends while still audible (cut, not faded) only de-click the end
+        # a quiet tail (end_rel <= -42 dB) needs no long fade either: the conformed envelope already ends there
         end_rel = (c.tg.env10[-1] - max(c.tg.env10)) if c.tg.env10 else -99
         fout = 0.004 if end_rel > -42 else min(0.05, c.dur * 0.15)
+        # a tail that is already quiet (last 10 ms at or under -50 dB of the peak) only needs a 4 ms de-click:
+        # a long fade on top of it leaves the last frames silent
+        n10 = max(1, sfx.n_of(sr, 0.010))
+        if np.sqrt(np.mean(x[-n10:] ** 2)) <= 10 ** (-50 / 20) * (np.max(np.abs(x)) + 1e-12):
+            fout = 0.004
         x = sfx.fade(x, sr, 0.0005, fout)
     if c.stereo is not None and c.e["channels"] == 2:
         L, R = c.stereo
@@ -834,7 +841,7 @@ def synth_legacy(c, N):
 FF = ["ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "error"]
 
 
-def encode_ogg(x, sr, ch, path):
+def _encode_ogg_once(x, sr, ch, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     data = np.ascontiguousarray((x.T if ch == 2 else x).astype("<f4")).tobytes()
     cmd = FF + ["-y", "-f", "f32le", "-ar", str(sr), "-ac", str(ch), "-i", "-", "-map_metadata", "-1",
@@ -844,18 +851,56 @@ def encode_ogg(x, sr, ch, path):
         raise RuntimeError(r.stderr.decode(errors="replace"))
 
 
-def measure(path):
-    r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-nostats", "-i", path, "-af", "ebur128=peak=true",
-                        "-f", "null", "-"], capture_output=True)
-    s = r.stderr.decode(errors="replace")
-    s = s[s.rfind("Summary:"):]
-    I = re.search(r"I:\s+(-?[\d.]+|-inf) LUFS", s)
-    P = re.search(r"Peak:\s+(-?[\d.]+|-inf) dBFS", s)
-    f = lambda m: (-70.0 if (not m or m.group(1) == "-inf") else float(m.group(1)))
-    pr = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "stream=duration,channels,sample_rate",
-                         "-of", "json", path], capture_output=True)
-    j = json.loads(pr.stdout.decode())["streams"][0]
-    return {"lufs": f(I), "tp": f(P), "dur": float(j["duration"]), "ch": int(j["channels"]), "sr": int(j["sample_rate"])}
+def _decoded_len(path, ch):
+    r = subprocess.run(FF + ["-i", path, "-f", "f32le", "-"], capture_output=True)
+    if r.returncode:
+        raise RuntimeError(r.stderr.decode(errors="replace"))
+    return len(r.stdout) // (4 * ch)
+
+
+def encode_ogg(x, sr, ch, path):
+    """Encode to Ogg Vorbis. For some lengths the encoder's last packet(s) are not trimmed by the end granule,
+    so the file decodes with up to ~1000 extra (silent or tail) samples (about 22 ms). Normal block rounding is
+    -128..+127 samples. If the decoded length is outside that, retry with 1..255 zero samples appended, which
+    moves the end onto a well-formed block boundary; the added silence is under 6 ms."""
+    n = x.shape[-1]
+    _encode_ogg_once(x, sr, ch, path)
+    d = _decoded_len(path, ch)
+    if -128 <= d - n <= 127:
+        return
+    for k in range(1, 256):
+        xp = np.pad(x, [(0, 0)] * (x.ndim - 1) + [(0, k)])
+        _encode_ogg_once(xp, sr, ch, path)
+        d = _decoded_len(path, ch)
+        if -128 <= d - (n + k) <= 127 and d >= n:
+            return
+    _encode_ogg_once(x, sr, ch, path)  # no good padding found: keep the unpadded encode
+
+
+def measure(path, tries=3):
+    """EBU R128 loudness + true peak + stream facts. ffmpeg/ffprobe occasionally fail transiently on Windows
+    when many workers run at once, so retry instead of crashing the pool."""
+    last = None
+    for attempt in range(tries):
+        try:
+            r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-nostats", "-i", path, "-af",
+                                "ebur128=peak=true", "-f", "null", "-"], capture_output=True)
+            s = r.stderr.decode(errors="replace")
+            if r.returncode or "Summary:" not in s:
+                raise RuntimeError("ffmpeg measure failed: " + s[-200:])
+            s = s[s.rfind("Summary:"):]
+            I = re.search(r"I:\s+(-?[\d.]+|-inf) LUFS", s)
+            P = re.search(r"Peak:\s+(-?[\d.]+|-inf) dBFS", s)
+            f = lambda m: (-70.0 if (not m or m.group(1) == "-inf") else float(m.group(1)))
+            pr = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "stream=duration,channels,sample_rate",
+                                 "-of", "json", path], capture_output=True)
+            j = json.loads(pr.stdout.decode())["streams"][0]
+            return {"lufs": f(I), "tp": f(P), "dur": float(j["duration"]), "ch": int(j["channels"]),
+                    "sr": int(j["sample_rate"])}
+        except (RuntimeError, ValueError, KeyError, IndexError) as ex:
+            last = ex
+            time.sleep(0.2 * (attempt + 1))
+    raise last
 
 
 def limit_tp(y, ceil, sr):
@@ -873,7 +918,13 @@ def finalize(x, c, outpath):
     short = target <= -60 or c.dur < 0.41
     if short:
         # integrated loudness is not measurable under 0.4 s: peak-normalize
+        # the manifest loudness of these files is the -70 sentinel (original shorter than one R128 block), so use
+        # the original's own measured peak instead of a fixed -3 dBFS (a quiet original stays quiet)
         gdb = -3.0
+        tg = getattr(c, "tg", None)
+        opk = tg.d.get("peak_dbfs") if tg is not None and getattr(tg, "d", None) else None
+        if opk is not None and target <= -60:
+            gdb = float(np.clip(opk, -30.0, -3.0))
         for _ in range(5):
             y = limit_tp(x * 10 ** (gdb / 20), 10 ** (-1.6 / 20), sr)
             encode_ogg(y, sr, ch, outpath)
@@ -881,7 +932,7 @@ def finalize(x, c, outpath):
             if m["tp"] <= -1.0:
                 break
             gdb -= (m["tp"] + 1.4)
-        m["note"] = "too short for integrated LUFS (or -70 sentinel target): peak-normalized to about -3 dBFS, true peak checked"
+        m["note"] = "too short for integrated LUFS (or -70 sentinel target): peak-normalized to the original's measured peak (at most -3 dBFS), true peak checked"
         m["target"] = target
         m["limited"] = False
         return m

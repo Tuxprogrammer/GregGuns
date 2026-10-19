@@ -9,7 +9,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 
 import com.gregguns.api.Tier;
@@ -66,9 +65,7 @@ public final class ItemTacticalMask extends ItemHelmetMask implements IElectricI
      * @return the stored camo index, clamped to the valid range; 0 when none
      */
     public int getCamo(ItemStack stack) {
-        NBTTagCompound tag = stack.getTagCompound();
-        int camo = tag == null ? 0 : tag.getInteger(CAMO_TAG);
-        return camo >= 0 && camo < CAMOS.size() ? camo : 0;
+        return com.gregguns.api.CamoNbt.get(stack, CAMO_TAG, CAMOS.size());
     }
 
     /**
@@ -76,12 +73,7 @@ public final class ItemTacticalMask extends ItemHelmetMask implements IElectricI
      * @param camo  the index; out-of-range values store 0
      */
     public void setCamo(ItemStack stack, int camo) {
-        NBTTagCompound tag = stack.getTagCompound();
-        if (tag == null) {
-            tag = new NBTTagCompound();
-            stack.setTagCompound(tag);
-        }
-        tag.setInteger(CAMO_TAG, camo >= 0 && camo < CAMOS.size() ? camo : 0);
+        com.gregguns.api.CamoNbt.set(stack, CAMO_TAG, CAMOS.size(), camo);
     }
 
     @Override

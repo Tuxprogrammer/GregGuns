@@ -147,19 +147,12 @@ public final class ItemAntiGravityDevice extends ItemElectricBackDevice implemen
 
     @Override
     public int getCamo(ItemStack stack) {
-        NBTTagCompound tag = stack.getTagCompound();
-        int camo = tag == null ? 0 : tag.getInteger(CAMO_TAG);
-        return camo < 0 || camo >= CAMOS ? 0 : camo;
+        return com.gregguns.api.CamoNbt.get(stack, CAMO_TAG, CAMOS);
     }
 
     @Override
     public void setCamo(ItemStack stack, int camo) {
-        NBTTagCompound tag = stack.getTagCompound();
-        if (tag == null) {
-            tag = new NBTTagCompound();
-            stack.setTagCompound(tag);
-        }
-        tag.setInteger(CAMO_TAG, camo < 0 || camo >= CAMOS ? 0 : camo);
+        com.gregguns.api.CamoNbt.set(stack, CAMO_TAG, CAMOS, camo);
     }
 
     @Override
