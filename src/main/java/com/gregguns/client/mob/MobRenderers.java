@@ -47,6 +47,28 @@ public final class MobRenderers {
      */
     public static RenderDataBiped biped(Class<? extends EntityLiving> entity, String model, ResourceLocation texture,
         float scale, float shadow, float gunX, float gunY, float gunZ) {
+        return biped(entity, model, texture, scale, shadow, gunX, gunY, gunZ, 0.0F);
+    }
+
+    /**
+     * Same as {@link #biped(Class, String, ResourceLocation, float, float, float, float, float)} with a vertical
+     * offset, in blocks, applied after the scale. Positive lifts the model, negative sinks it. A scaled mob whose feet
+     * sink into the ground uses this, for example the Super Mutant Basic at scale 1.35 with a yOffset of 0.55.
+     *
+     * @param entity  the entity class
+     * @param model   the model name
+     * @param texture the skin location
+     * @param scale   uniform scale about the feet
+     * @param shadow  shadow radius in blocks
+     * @param gunX    held-gun offset in blocks
+     * @param gunY    held-gun offset in blocks
+     * @param gunZ    held-gun offset in blocks
+     * @param yOffset lift after scaling, in blocks: positive raises the model, negative lowers it (for example a
+     *                1.35 scale with a 0.55 offset); 0 for none
+     * @return the renderer, already registered
+     */
+    public static RenderDataBiped biped(Class<? extends EntityLiving> entity, String model, ResourceLocation texture,
+        float scale, float shadow, float gunX, float gunY, float gunZ, float yOffset) {
         RenderDataBiped r = new RenderDataBiped(
             new DataBipedModel(MobModels.load(model)),
             texture,
@@ -54,7 +76,8 @@ public final class MobRenderers {
             shadow,
             gunX,
             gunY,
-            gunZ);
+            gunZ,
+            yOffset);
         RenderingRegistry.registerEntityRenderingHandler(entity, r);
         return r;
     }
@@ -75,7 +98,28 @@ public final class MobRenderers {
      */
     public static RenderDataBiped biped(Class<? extends EntityLiving> entity, String model, String texture, float scale,
         float shadow, float gunX, float gunY, float gunZ) {
-        return biped(entity, model, texture(texture), scale, shadow, gunX, gunY, gunZ);
+        return biped(entity, model, texture(texture), scale, shadow, gunX, gunY, gunZ, 0.0F);
+    }
+
+    /**
+     * Same as {@link #biped(Class, String, ResourceLocation, float, float, float, float, float, float)} with a mod skin
+     * named by file.
+     *
+     * @param entity  the entity class
+     * @param model   the model name
+     * @param texture the skin name under {@code textures/entity}
+     * @param scale   uniform scale about the feet
+     * @param shadow  shadow radius in blocks
+     * @param gunX    held-gun offset in blocks
+     * @param gunY    held-gun offset in blocks
+     * @param gunZ    held-gun offset in blocks
+     * @param yOffset lift after scaling, in blocks: positive raises the model, negative lowers it (for example a
+     *                1.35 scale with a 0.55 offset); 0 for none
+     * @return the renderer, already registered
+     */
+    public static RenderDataBiped biped(Class<? extends EntityLiving> entity, String model, String texture, float scale,
+        float shadow, float gunX, float gunY, float gunZ, float yOffset) {
+        return biped(entity, model, texture(texture), scale, shadow, gunX, gunY, gunZ, yOffset);
     }
 
     /**
@@ -90,7 +134,30 @@ public final class MobRenderers {
      */
     public static RenderDataLiving living(Class<? extends EntityLiving> entity, String model, ResourceLocation texture,
         float scale, float shadow) {
-        RenderDataLiving r = new RenderDataLiving(new DataMobModel(MobModels.load(model)), texture, scale, shadow);
+        return living(entity, model, texture, scale, shadow, 0.0F);
+    }
+
+    /**
+     * Same as {@link #living(Class, String, ResourceLocation, float, float)} with a vertical offset, in blocks, applied
+     * after the scale. Positive lifts the model, negative sinks it.
+     *
+     * @param entity  the entity class
+     * @param model   the model name
+     * @param texture the sheet location
+     * @param scale   uniform scale about the feet
+     * @param shadow  shadow radius in blocks
+     * @param yOffset lift after scaling, in blocks: positive raises the model, negative lowers it (for example a
+     *                1.35 scale with a 0.55 offset); 0 for none
+     * @return the renderer, already registered
+     */
+    public static RenderDataLiving living(Class<? extends EntityLiving> entity, String model, ResourceLocation texture,
+        float scale, float shadow, float yOffset) {
+        RenderDataLiving r = new RenderDataLiving(
+            new DataMobModel(MobModels.load(model)),
+            texture,
+            scale,
+            shadow,
+            yOffset);
         RenderingRegistry.registerEntityRenderingHandler(entity, r);
         return r;
     }
@@ -108,5 +175,22 @@ public final class MobRenderers {
     public static RenderDataLiving living(Class<? extends EntityLiving> entity, String model, String texture,
         float scale, float shadow) {
         return living(entity, model, texture(texture), scale, shadow);
+    }
+
+    /**
+     * Same as {@link #living(Class, String, ResourceLocation, float, float, float)} with a mod sheet named by file.
+     *
+     * @param entity  the entity class
+     * @param model   the model name
+     * @param texture the sheet name under {@code textures/entity}
+     * @param scale   uniform scale about the feet
+     * @param shadow  shadow radius in blocks
+     * @param yOffset lift after scaling, in blocks: positive raises the model, negative lowers it (for example a
+     *                1.35 scale with a 0.55 offset); 0 for none
+     * @return the renderer, already registered
+     */
+    public static RenderDataLiving living(Class<? extends EntityLiving> entity, String model, String texture,
+        float scale, float shadow, float yOffset) {
+        return living(entity, model, texture(texture), scale, shadow, yOffset);
     }
 }

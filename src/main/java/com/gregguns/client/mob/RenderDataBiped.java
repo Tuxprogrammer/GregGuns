@@ -35,6 +35,7 @@ public final class RenderDataBiped extends RenderBiped {
     private final DataBipedModel model;
     private final ResourceLocation texture;
     private final float scale;
+    private final float yOffset;
     private final float gunX;
     private final float gunY;
     private final float gunZ;
@@ -50,7 +51,23 @@ public final class RenderDataBiped extends RenderBiped {
      */
     public RenderDataBiped(DataBipedModel model, ResourceLocation texture, float scale, float shadow, float gunX,
         float gunY, float gunZ) {
+        this(model, texture, scale, shadow, gunX, gunY, gunZ, 0.0F);
+    }
+
+    /**
+     * @param model   the biped model
+     * @param texture the skin sheet
+     * @param scale   uniform scale about the feet, 1.0 for normal size
+     * @param shadow  shadow radius in blocks
+     * @param gunX    held-gun offset in blocks, in the right arm's frame
+     * @param gunY    held-gun offset in blocks
+     * @param gunZ    held-gun offset in blocks
+     * @param yOffset lift applied after scaling, in blocks: positive moves the model up, negative down; 0 for none
+     */
+    public RenderDataBiped(DataBipedModel model, ResourceLocation texture, float scale, float shadow, float gunX,
+        float gunY, float gunZ, float yOffset) {
         super(model, shadow);
+        this.yOffset = yOffset;
         this.model = model;
         this.texture = texture;
         this.scale = scale;
@@ -68,6 +85,9 @@ public final class RenderDataBiped extends RenderBiped {
     protected void preRenderCallback(EntityLivingBase living, float partial) {
         if (scale != 1.0F) {
             GL11.glScalef(scale, scale, scale);
+        }
+        if (yOffset != 0.0F) {
+            GL11.glTranslatef(0.0F, MobYOffset.scaledTranslation(yOffset, scale), 0.0F);
         }
         boolean aiming = isAiming(living);
         model.aimedBow = aiming;
