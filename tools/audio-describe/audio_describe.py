@@ -203,6 +203,9 @@ def cmd_extract(args):
     work.mkdir(parents=True, exist_ok=True)
     events = load_events(assets)
     files = sorted((assets / "sounds").rglob("*.ogg")) if (assets / "sounds").exists() else sorted(assets.rglob("*.ogg"))
+    if getattr(args, "only", None):
+        wanted = {line.strip() for line in Path(args.only).read_text(encoding="utf-8").splitlines() if line.strip()}
+        files = [f for f in files if f.relative_to(assets).as_posix() in wanted]
     manifest = []
     for i, f in enumerate(files[: args.limit or None], 1):
         rel = f.relative_to(assets).as_posix()
@@ -736,6 +739,7 @@ def main():
     e.add_argument("--assets", required=True, help="assets/<modid> folder containing sounds/ and sounds.json")
     e.add_argument("--work", required=True, help="working folder for images and JSON (keep outside the repo)")
     e.add_argument("--limit", type=int, default=0)
+    e.add_argument("--only", help="text file of sound paths (sounds/...) to measure; others are skipped")
     d = sub.add_parser("describe", help="describe extracted sounds with Claude")
     d.add_argument("--work", required=True)
     d.add_argument("--model", default=DEFAULT_MODEL)
