@@ -146,6 +146,9 @@ final class GunItemRenderer implements IItemRenderer {
         }
     }
 
+    /** Texels with alpha at or below this are not drawn. */
+    private static final float CUTOUT_ALPHA = 0.01f;
+
     private void drawGun(ItemStack stack, ItemRenderType type, EntityLivingBase holder, int hand, double reload,
         double recoil, double flash, boolean firstPerson) {
         GunTransforms t = transforms;
@@ -160,7 +163,17 @@ final class GunItemRenderer implements IItemRenderer {
                     .getTextureManager()
                     .bindTexture(texture);
                 if (t.partVisible(part, state.ammoLeft, state.reloadProgress, state.fireProgress)) {
-                    model.render(part, state);
+                    // Alpha test: sheets with cut-out windows (Grim Reaper cage, Scatter Laser window) have fully
+                    // transparent texels that must not draw. The threshold only drops alpha 0, so translucent parts
+                    // (the Death Ray blades) keep their blending. The attribute bit restores the caller's state.
+                    GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT);
+                    try {
+                        GL11.glEnable(GL11.GL_ALPHA_TEST);
+                        GL11.glAlphaFunc(GL11.GL_GREATER, CUTOUT_ALPHA);
+                        model.render(part, state);
+                    } finally {
+                        GL11.glPopAttrib();
+                    }
                 }
                 if (part == parts - 1 && type == ItemRenderType.EQUIPPED
                     && flash != AnimWindow.NONE

@@ -2,7 +2,7 @@ package com.gregguns.client.render.profile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -224,10 +224,10 @@ class GrimReaperProfileTest {
     }
 
     @Test
-    void noCamoAndNotRegistered() {
+    void noCamoAndRegistered() {
         assertEquals(1, GrimReaperProfile.TEXTURES.length);
         assertEquals("grim_reaper", GrimReaperProfile.DEFINITION.gunName());
         assertEquals(1, GrimReaperProfile.TRANSFORMS.partCount());
-        assertNull(ClientGunDefinitions.byName("grim_reaper"));
+        assertSame(GrimReaperProfile.DEFINITION, ClientGunDefinitions.byName("grim_reaper"));
     }
 }
