@@ -34,4 +34,4 @@ Evidence for the three M6 exit-gate boxes in [ROADMAP.md](../../ROADMAP.md#m6--u
 
 ## Gate run
 
-All scenarios named above exist and passed in the final gate run (see the roadmap boxes for the date). Each scenario run boots with the self-check on.
+All scenarios named above exist and passed in the final gate run (149 of 149 on 2026-10-19). Each scenario run boots with the self-check on.
