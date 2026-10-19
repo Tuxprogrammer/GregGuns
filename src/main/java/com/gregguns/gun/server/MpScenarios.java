@@ -54,7 +54,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
  * <li>{@code mp.visual}: walks player A through the visual checks (first and third person, dropped item, inventory,
  * creative tab, Ammo Press GUI, NEI recipes) by signalling screenshots.</li>
  * <li>{@code mp.give}: gives every connected player every registered GregGuns item (and the LV Ammo Press) one at a
- * time with the real {@code /give} command, selects it, and has the client hold it for a few ticks and build its
+ * time by direct server-side insert, selects it, and has the client hold it for a few ticks and build its
  * tooltip; then repeats through the client-side creative slot packet. Exceptions show up in the logs.</li>
  * </ul>
  *
@@ -78,6 +78,7 @@ public final class MpScenarios {
         registry.register(new Sync());
         registry.register(new Visual());
         registry.register(new Give());
+        registry.register(new GrantLocal());
     }
 
     @SuppressWarnings("unchecked")
@@ -476,6 +477,46 @@ public final class MpScenarios {
         }
     }
 
+    // ----- guns.inventory_grant ---------------------------------------------------------------------------
+
+    /** Headless check of {@link InventoryGrant}: a fake player gets each stack and carries it the same tick. */
+    private static final class GrantLocal implements Scenario {
+
+        @Override
+        public String name() {
+            return "guns.inventory_grant";
+        }
+
+        @Override
+        public String description() {
+            return "InventoryGrant puts every give-list stack into a fake player's inventory, verified the same tick.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            EntityPlayerMP p = new net.minecraftforge.common.util.FakePlayer(
+                (net.minecraft.world.WorldServer) ctx.world(),
+                new com.mojang.authlib.GameProfile(
+                    java.util.UUID.nameUUIDFromBytes("[GGGrant]".getBytes()),
+                    "[GGGrant]"));
+            List<String> items = giveList();
+            for (String item : items) {
+                p.inventory.clearInventory(null, -1);
+                out.checkEquals(item, null, InventoryGrant.grant(p, Give.stackFor(item)));
+                out.check(p.inventory.mainInventory[0] != null, item + " lands in the selected slot 0");
+            }
+            // Fallback: a full inventory fails with a message instead of silently losing the stack.
+            for (int i = 0; i < p.inventory.mainInventory.length; i++) {
+                p.inventory.mainInventory[i] = new ItemStack(net.minecraft.init.Blocks.dirt, 64);
+            }
+            out.check(InventoryGrant.grant(p, Give.stackFor(items.get(0))) != null, "a full inventory reports failure");
+            p.inventory.clearInventory(null, -1);
+            out.note("granted " + items.size() + " stacks");
+            return out.build();
+        }
+    }
+
     // ----- mp.give ------------------------------------------------------------------------------------------
 
     private static final String PRESS = "gregtech:gt.blockmachines:" + GregGunsMTEIDs.AMMO_PRESS_LV;
@@ -501,9 +542,9 @@ public final class MpScenarios {
     private static final long GIVE_CONFIRM_TIMEOUT_MS = 10_000L;
 
     /** How long a client may take to work off the previous scenario's queued commands (screenshots, GUIs). */
-    /** A /give whose stack is not in the inventory after this long is repeated. */
+    /** An insert whose stack is not in the inventory after this long is repeated. */
     private static final long GIVE_RETRY_MS = 1_500L;
-    /** Most /give attempts per player and item. */
+    /** Most insert attempts per player and item. */
     private static final int GIVE_ATTEMPTS = 3;
 
     private static final long SYNC_TIMEOUT_MS = 90_000L;
@@ -573,7 +614,7 @@ public final class MpScenarios {
 
         @Override
         public String description() {
-            return "Gives every connected player every GregGuns item via /give, then via the creative slot packet.";
+            return "Gives every connected player every GregGuns item by direct server-side insert, then via the creative slot packet.";
         }
 
         private void stop() {
@@ -621,18 +662,29 @@ public final class MpScenarios {
                     .trim();
         }
 
-        /**
-         * The real {@code /give}. Vanilla 1.7.10 drops the stack as an item entity at the player and the player
-         * collects it on a later tick, so the stack is not in the inventory when the command returns.
-         */
-        private static void give(EntityPlayerMP p, String item) {
-            String arg = item.equals(PRESS) ? "gregtech:gt.blockmachines 1 " + GregGunsMTEIDs.AMMO_PRESS_LV : item;
-            MinecraftServer.getServer()
-                .getCommandManager()
-                .executeCommand(MinecraftServer.getServer(), "give " + p.getCommandSenderName() + " " + arg);
+        /** The stack for a give-list entry: a registry name, or the Ammo Press machine item with its meta id. */
+        static ItemStack stackFor(String item) {
+            if (item.equals(PRESS)) {
+                return new ItemStack(
+                    (Item) Item.itemRegistry.getObject("gregtech:gt.blockmachines"),
+                    1,
+                    GregGunsMTEIDs.AMMO_PRESS_LV);
+            }
+            return new ItemStack((Item) Item.itemRegistry.getObject(item), 1, 0);
         }
 
-        /** Removes the item entities near the player (stacks that /give dropped and nobody picked up). */
+        /**
+         * Direct server-side insert (see {@link InventoryGrant}) instead of vanilla {@code /give}, whose dropped item
+         * entity is picked up on a later tick and can be swept or delayed. Fails the scenario if the stack is not in
+         * the inventory afterwards.
+         *
+         * @return null on success, else the failure reason
+         */
+        private static String give(EntityPlayerMP p, String item) {
+            return InventoryGrant.grant(p, stackFor(item));
+        }
+
+        /** Removes the item entities near the player (stray drops, e.g. a dead player's items). */
         private static void sweepDrops(EntityPlayerMP p) {
             for (Object o : p.worldObj.getEntitiesWithinAABB(EntityItem.class, p.boundingBox.expand(8.0, 8.0, 8.0))) {
                 ((EntityItem) o).setDead();
@@ -698,16 +750,16 @@ public final class MpScenarios {
                     return ScenarioResult.builder(name())
                         .note(
                             "gave and held " + total
-                                + " items twice (command, then creative packet) for "
+                                + " items twice (server insert, then creative packet) for "
                                 + players.size()
-                                + " player(s); /give repeated "
+                                + " player(s); insert repeated "
                                 + retries
-                                + " time(s) because the dropped stack was not picked up")
+                                + " time(s) because the stack vanished from the inventory")
                         .build();
                 }
                 String item = items.get(step % total);
                 boolean creative = step >= total;
-                String how = creative ? "creative packet" : "/give";
+                String how = creative ? "creative packet" : "server insert";
                 if (state[1] < 0) {
                     for (EntityPlayerMP p : players) {
                         inbox.clear(p.getCommandSenderName());
@@ -715,7 +767,13 @@ public final class MpScenarios {
                         if (creative) {
                             signal(p, "creativegive", item);
                         } else {
-                            give(p, item);
+                            String error = give(p, item);
+                            if (error != null) {
+                                stop();
+                                return ScenarioResult.fail(
+                                    name(),
+                                    "server-side insert for " + p.getCommandSenderName() + " failed: " + error);
+                            }
                             attempts.put(p.getCommandSenderName(), 1);
                         }
                         lastGiveMs.put(p.getCommandSenderName(), System.currentTimeMillis());
@@ -733,11 +791,10 @@ public final class MpScenarios {
                         if (!creative && "nothing".equals(dump(p))
                             && System.currentTimeMillis() - lastGiveMs.get(p.getCommandSenderName()) > GIVE_RETRY_MS
                             && attempts.get(p.getCommandSenderName()) < GIVE_ATTEMPTS) {
-                            // In 1.7.10 /give drops the stack as an item entity that the player picks up by
-                            // collision, so a stack that was not picked up yet is still on the ground: clear the
-                            // strays and give again.
+                            // The insert is synchronous, so an empty inventory here means something removed the
+                            // stack afterwards: clear any strays and insert again.
                             com.gregguns.GregGuns.LOG.warn(
-                                "[mp.give] retrying /give {} for {}: attempt {}, selected slot {}, slot 0 {}, carrying {}, health {}, dead {}, {} dropped item entities nearby",
+                                "[mp.give] retrying insert of {} for {}: attempt {}, selected slot {}, slot 0 {}, carrying {}, health {}, dead {}, {} dropped item entities nearby",
                                 item,
                                 p.getCommandSenderName(),
                                 attempts.get(p.getCommandSenderName()) + 1,
@@ -749,7 +806,13 @@ public final class MpScenarios {
                                 p.worldObj.getEntitiesWithinAABB(EntityItem.class, p.boundingBox.expand(8.0, 8.0, 8.0))
                                     .size());
                             sweepDrops(p);
-                            give(p, item);
+                            String error = give(p, item);
+                            if (error != null) {
+                                stop();
+                                return ScenarioResult.fail(
+                                    name(),
+                                    "server-side insert for " + p.getCommandSenderName() + " failed: " + error);
+                            }
                             attempts.merge(p.getCommandSenderName(), 1, Integer::sum);
                             lastGiveMs.put(p.getCommandSenderName(), System.currentTimeMillis());
                             retries++;
@@ -781,7 +844,7 @@ public final class MpScenarios {
                                 .append(p.inventory.currentItem)
                                 .append(", slot 0 = ")
                                 .append(slot0 == null ? "empty" : slot0.getDisplayName())
-                                .append("; right after /give: ")
+                                .append("; right after insert: ")
                                 .append(afterGive.get(p.getCommandSenderName()))
                                 .append("; now carrying ")
                                 .append(dump(p))
