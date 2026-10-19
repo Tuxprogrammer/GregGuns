@@ -92,11 +92,11 @@ def vocal(c, dur, f_a, f_b, vowels=("a", "o"), breath=0.4, grit=1.0, am=(25, 40)
     y = y * churn(n, sr, rng, float(rng.uniform(*am)), am_depth)
     g = _unit(sfx.band_noise(n, sr, rng, 1000, 3500, order=2))
     g = np.tanh(g * 2.0) * churn(n, sr, rng, float(rng.uniform(40, 70)), 0.9)
-    y = _unit(y) + _db(rasp_db) * 1.0 * g
-    return sfx.fftfilt(y, sr, hp=50, order=2)
+    y = _unit(y) + _db(rasp_db - 4.0) * 1.0 * g
+    return sfx.fftfilt(y, sr, hp=50, lp=5000, order=2)   # round 3: nothing above ~5 kHz (A is dark)
 
 
-def _phrases(tg, floor_db=-14.0):
+def _phrases(tg, floor_db=-22.0):
     """(t0, t1) spans where the original's loudness contour is above floor_db: one growl phrase per span."""
     e = np.array(tg.env10, dtype=float) if tg.env10 else None
     d = tg.end_t
@@ -158,17 +158,17 @@ def cyberdemon_voice(c, N):
     sr, rng, nm = c.sr, c.rng, c.name
     m = Mix(c, N)
     heavy = "idle" in nm or "death" in nm
-    f_a = rng.uniform(70, 95) if heavy else rng.uniform(95, 135)
+    f_a = rng.uniform(65, 90) if heavy else rng.uniform(80, 115)
     f_b = f_a * (0.5 if "death" in nm else 0.8)
     vow = ("o", "a") if "idle" in nm else ("a", "u") if "death" in nm else ("ae", "o")
     for (t0, t1) in _phrases(tg):
         dd = max(t1 - t0, 0.25)
         g = vocal(c, dd, f_a * rng.uniform(0.92, 1.08), f_b * rng.uniform(0.92, 1.08), vowels=vow,
                   breath=0.55 if ("aggro" in nm or "hurt" in nm) else 0.4, grit=1.0, am=(25, 40), am_depth=0.5)
-        m.add(g * sfx.smooth_env(len(g), sr, min(0.06, dd * 0.2), min(0.3, dd * 0.4)), t0, 1.0)
+        m.add(g * sfx.smooth_env(len(g), sr, min(0.06, dd * 0.2), min(0.5, dd * 0.5)), t0, 1.0)
     for t in tg.onsets[:5]:
         n = sfx.n_of(sr, 0.14)
-        m.add(sfx.band_noise(n, sr, rng, 800, 8000, order=1) * sfx.exp_env(n, sr, 0.04, attack=0.004), t, 0.18)
+        m.add(sfx.band_noise(n, sr, rng, 800, 4000, order=1) * sfx.exp_env(n, sr, 0.04, attack=0.004), t, 0.18)
     nb = sfx.n_of(sr, tg.end_t)
     m.add(sfx.band_noise(nb, sr, rng, 100, 450, order=2) * churn(nb, sr, rng, 8, 0.7), 0.0, 0.3)
     return m.out
@@ -302,9 +302,10 @@ def _build_bug(c, N, spec):
     lv = np.array([rel_env_at(tg, t) for t in ts[::256]])
     gate = np.where(ts <= tg.end_t, 10 ** (np.interp(ts, ts[::256], np.maximum(lv, -50)) / 20.0), 0.0)
     fl_lo, fl_hi = spec.get("floor", (2000, 9000))
-    dens = np.interp(ts, ts[::256], 20 + 60 * 10 ** (np.maximum(lv, -45) / 20.0))
-    fl = sfx.grain_cloud(N, sr, rng, dens, 0.002, fl_lo, fl_hi, amp_var=0.9)
-    m.add(_unit(fl) * gate, 0.0, _db(spec.get("floor_db", 2)))
+    # round 3: a CONTINUOUS irregularly modulated bed (not sparse grains), so the gaps never go empty
+    fl = _unit(sfx.band_noise(N, sr, rng, fl_lo, min(fl_hi, sr * 0.45), order=2))
+    fl = fl * churn(N, sr, rng, 45.0, 0.5) * churn(N, sr, rng, 17.0, 0.3)
+    m.add(fl * gate, 0.0, _db(spec.get("floor_db", 0)))
     y = sfx.fftfilt(m.out, sr, hp=spec.get("hp", 400), order=4)   # steep: A has essentially nothing below it
     y = sfx.fftfilt(y, sr, lp=spec.get("lp", 14000), order=2)
     k = 2.4 * (np.std(y[y != 0]) + 1e-9)   # memoryless soft clip: tames click peaks (crest) without the
@@ -571,9 +572,6 @@ def apache_burst(c, N):
     m.add(sfx.band_noise(nbed, sr, rng, 40, 300, order=2) * (0.5 + 0.5 * churn(nbed, sr, rng, 11, 1.0)) * sfx.smooth_env(nbed, sr, 0.01, 0.15), 0.0, 0.6)
     nt = N
     m.add(sfx.dark_noise(nt, sr, rng, 350, 110, steps=6, hp=30) * sfx.decay_env(nt, sr, 0.35, 0.7) * churn(nt, sr, rng, 10, 0.5), 0.8, 0.5)
-    for tc in (1.05, 1.33, 1.72):
-        nc = sfx.n_of(sr, 0.05)
-        m.add(sfx.band_noise(nc, sr, rng, 500, 2500, order=1) * sfx.exp_env(nc, sr, 0.012, attack=0.001), tc, 0.1)
     return m.out
 
 
@@ -695,7 +693,6 @@ def turret_beep(c, N):
     c.conform_bands = False
     c.limit_crest = False
     m = Mix(c, N)
-    floor = np.zeros(N)
     for (hz, t0, t1, prom) in _BEEP_LINES[k]:
         dur = max(t1 - t0 - (0.016 if t1 - t0 > 0.05 and k == 1 else 0.0), 0.012)   # keep A's short gaps between runs
         n = sfx.n_of(sr, dur)
@@ -711,36 +708,52 @@ def turret_beep(c, N):
         env[:e] = np.linspace(0, 1, e)
         env[-e:] = np.minimum(env[-e:], np.linspace(1, 0, e))
         m.add(y * env, t0, 10 ** ((prom - 10.0) / 20.0) / 15.7)
-        i0 = sfx.n_of(sr, t0)
-        floor[i0:i0 + n] = 1.0
-    # gated white noise floor (std 1) across the spans where lines exist, 3 ms smoothed edges
-    if k == 1:   # the original's floor is continuous across the short gaps between runs
-        floor = (np.convolve(floor, np.ones(int(sr * 0.04)), mode="same") > 0).astype(float)
-    k3 = max(3, int(sr * 0.003))
-    floor = np.convolve(floor, np.hanning(2 * k3 + 1) / np.hanning(2 * k3 + 1).sum(), mode="same")
-    rng.uniform()   # decorrelate the noise realization from the tone phases
-    m.out += sfx.noise(N, rng) * floor * 1.0
+        # round 3: the noise floor is a narrow pedestal around each line (about +-0.3 octave) instead of broadband
+        # hiss, so the lines keep A's prominence while the spectrum stays tonal (low flatness, no air-band haze)
+        ped = sfx.noise(n, rng)
+        ped = sfx.fftfilt(ped, sr, hp=hz * 2 ** -0.3, lp=min(hz * 2 ** 0.3, sr * 0.45), order=2)
+        pe = np.minimum(np.minimum(np.arange(n) / (sr * 0.003), 1.0), np.minimum((n - 1 - np.arange(n)) / (sr * 0.003), 1.0))
+        m.add(ped * np.clip(pe, 0, 1), t0 + 0.0, 1.0)
     return sfx.fftfilt(m.out, sr, hp=800, order=2)
+
+
+def _metal_click(c, level=1.0, big=False):
+    """One metal click: a 1-3 ms broadband transient plus 3-6 damped inharmonic modes (mostly 600-3500 Hz, each
+    decaying in about 15-35 ms; modes above 5 kHz under 10 ms), a different mode set every time so repeated
+    clicks never share a pitch.  Short enough that no tonal line is ever seen, resonant enough to read as metal."""
+    sr, rng = c.sr, c.rng
+    n = sfx.n_of(sr, 0.12)
+    t = sfx.tvec(n, sr)
+    tr = sfx.fftfilt(sfx.noise(n, rng), sr, hp=900, lp=11000, order=1) * sfx.exp_env(n, sr, rng.uniform(0.001, 0.003), attack=0.0002)
+    y = _unit(tr) * 0.7
+    for _ in range(int(rng.integers(3, 7))):
+        f = float(np.exp(rng.uniform(np.log(600), np.log(3500))))
+        tau = rng.uniform(0.004, 0.008) if f < 5000 else rng.uniform(0.002, 0.004)
+        y = y + rng.uniform(0.35, 1.0) * np.sin(sfx.TAU * f * t + rng.uniform(0, 6.28)) * np.exp(-t / tau) * (1 + 0.004 * rng.standard_normal())
+    if big:   # heavier hit: more body noise and a short 100-250 Hz thud
+        bd = sfx.band_noise(n, sr, rng, 250, 1200, order=2) * sfx.exp_env(n, sr, 0.02, attack=0.001)
+        y = y + 0.8 * _unit(bd)
+        y = y + 1.2 * fit(sub_drop(sr, 230, 150, 0.1, 0.03, k=0.03, attack=0.001), n)
+    return y * level
 
 
 @recipe("turret_gunequip-*")
 def turret_gunequip(c, N):
-    """Ratchet of broadband metallic clacks (noise with a 30-60 ms decaying body, no bell ring or sine), a louder
-    second cluster, a heavy bolt-slam at the end with a short 100-250 Hz thud; dry and bright."""
+    """Ratchet of dense metal clicks at every onset of the original (levels follow its contour), each built by
+    _metal_click, with the heaviest hits getting body and a short thud.  Quiet filler ticks between events so
+    nothing is silent where the original is busy; no sustained noise block, no steady sine."""
     tg = get_tg(c)
     sr, rng = c.sr, c.rng
     m = Mix(c, N)
-    ons = [t for t in tg.onsets] or [0.1]
-    big = int(np.argmax([rel_env_at(tg, t) for t in ons]))
+    ons = list(tg.onsets) or [0.05]
+    lv = [rel_env_at(tg, t) for t in ons]
+    top = sorted(range(len(ons)), key=lambda i: -lv[i])[:3]
     for i, t in enumerate(ons):
-        lvl = 10 ** (max(rel_env_at(tg, t), -30) * 0.5 / 20)
-        n = sfx.n_of(sr, 0.12)
-        # broadband snap + resonant-noise body (wide bands, not pings)
-        sn = sfx.fftfilt(sfx.noise(n, rng), sr, hp=1500, lp=9000, order=1) * sfx.exp_env(n, sr, 0.004, attack=0.0003)
-        bd = sfx.formant_filter(sfx.noise(n, rng), sr, [(rng.uniform(900, 1700), 500), (rng.uniform(2500, 4200), 900)], floor=0.05) * sfx.exp_env(n, sr, 0.03, attack=0.0005)
-        sn = _unit(sn) + 0.8 * _unit(bd)
-        m.add(sn, t, (0.4 + 0.6 * lvl) * (1.6 if i == big else 1.0))
-        if i == big or i == len(ons) - 1:
-            th = sub_drop(sr, 250, 150, 0.1, 0.03, k=0.03, attack=0.001)
-            m.add(th, t, 0.8)
-    return sfx.fftfilt(m.out, sr, hp=300, order=2)
+        m.add(_metal_click(c, 1.0, big=i in top), t, 10 ** (max(lv[i], -30) * 0.6 / 20) + 0.15)
+    # filler: small ticks every 15-40 ms across the audible span, 10-18 dB under the main clicks
+    t = 0.0
+    while t < tg.end_t:
+        if rel_env_at(tg, t) > -26 and all(abs(t - o) > 0.012 for o in ons):
+            m.add(_metal_click(c, 0.5), t, 0.05 + 0.1 * 10 ** (rel_env_at(tg, t) / 20))
+        t += rng.uniform(0.015, 0.04)
+    return sfx.fftfilt(m.out, sr, hp=120, order=2)

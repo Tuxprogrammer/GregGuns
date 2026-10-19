@@ -794,7 +794,10 @@ def events3(c, N, *, bright=1.0, bass=0.35, bed=0.0, bed_floor=-46.0, tau=0.075,
             m.add(low_rumble(sr, rng, lw[1], lw[2], N), 0.0, lw[3])
     for (t0, t1, f0, f1, g) in glides:
         m.add(noise_glide(sr, rng, t0, t1, min(f0, 2400.0), min(f1, 2400.0)), t0, g)
-    return m.out
+    # the originals are hard band-limited near 11 kHz (and carry nothing below 100 Hz unless they have a low bed):
+    # a steep filter keeps the long-term spectrum as peaky as theirs (flatness near 0, not 0.5)
+    out = sfx.fftfilt(m.out, sr, hp=None if lows else 90.0, lp=17500.0, order=6)
+    return out
 
 
 def _reload3(**kw):
@@ -806,6 +809,120 @@ def _reload3(**kw):
 
 
 PER_RELOAD = {}
+
+
+# --------------------------------------------------------------------------- round 3: modal metal clicks
+# Round 2 removed the tones but overcorrected: noise-only clicks and a white grain texture measured flatness
+# 0.45-0.63 (A's metal clicks: 0.004-0.01) and read as "static".  Each click is now a 1-3 ms broadband transient
+# plus 3-6 damped inharmonic modes (mostly 600-3500 Hz, 15-35 ms decays, modes above 5 kHz under 10 ms) and a
+# short 150-1000 Hz body.  The mode set is drawn per click, so no two clicks share a pitch, and the texture between
+# hits is a train of such clicks instead of white noise.  These definitions replace the round-2 ones above.
+_RATIOS = np.array([1.0, 1.47, 1.93, 2.52, 3.17, 3.9, 4.7])
+
+
+def _modal(sr, rng, n_modes=4, base=(600.0, 1400.0), tau=(0.0025, 0.006), dur=0.05, top=3500.0):
+    """Damped inharmonic modes.  The tonality gate sees any mode that rings 40 ms or longer as a line, so each mode
+    decays in 4-9 ms and its phase is jittered (random walk) so it is a narrow noise band (about 8-15 % wide), not a
+    pure sinusoid.  The metal character comes from several overlapping short modes and from click density."""
+    n = sfx.n_of(sr, dur)
+    t = np.arange(n) / sr
+    b = rng.uniform(*base)
+    out = np.zeros(n)
+    for i in range(n_modes):
+        if i == n_modes - 1 and n_modes >= 4 and rng.random() < 0.5:
+            f, ti = rng.uniform(5200.0, 8000.0), rng.uniform(0.001, 0.003)   # air mode: very short
+        else:
+            f, ti = min(b * _RATIOS[i] * rng.uniform(0.93, 1.07), top), rng.uniform(*tau) / (1.0 + 0.15 * i)
+        wob = np.cumsum(rng.standard_normal(n)) * (0.4 * 2 * np.pi * f / sr) * 0.5
+        out += np.sin(2 * np.pi * f * t + rng.uniform(0, 2 * np.pi) + wob) * np.exp(-t / ti) / (1.0 + 0.35 * i)
+    return out
+
+
+def _impulse_click(sr, rng, bright=1.0, lp=10500.0):
+    n = sfx.n_of(sr, 0.02)
+    x = sfx.noise(n, rng) * sfx.exp_env(n, sr, rng.uniform(0.001, 0.0025), attack=0.0001)
+    return _u(_band(x, sr, 500, lp * bright, 2))
+
+
+def _rattle(sr, rng, count=None, span=None, lo=200.0, hi=2500.0, bright=1.0):
+    """Dense train of 5-20 small modal clicks over 30-150 ms, jittered, decaying."""
+    count = count or int(rng.integers(6, 18))
+    span = span or rng.uniform(0.04, 0.14)
+    out = np.zeros(sfx.n_of(sr, span + 0.1))
+    ts = np.sort(rng.uniform(0, span, count))
+    for i, t in enumerate(ts):
+        g = _modal(sr, rng, int(rng.integers(2, 4)), (700.0, 1800.0), (0.003, 0.006), 0.03)
+        ic = _impulse_click(sr, rng, 0.9 * bright)
+        k = min(len(g), len(ic))
+        g = _u(g)
+        g[:k] += 0.8 * ic[:k]
+        sfx.place(out, g, t, sr, (1 - i / (count + 1.0)) ** 1.2 * rng.uniform(0.4, 1.0))
+    return out / (np.max(np.abs(out)) + 1e-9)
+
+
+def _hit(sr, rng, kind, bright=1.0, bass=0.0):
+    """One handling hit, peak-normalized to 1: transient + damped inharmonic modes + short body."""
+    tr = _impulse_click(sr, rng, bright)
+    if kind == "click":
+        parts = [tr, 0.4 * _u(_modal(sr, rng, 3, (800, 1600), (0.003, 0.006), 0.05)),
+                 0.5 * _body_burst(sr, rng, 250, 1500, rng.uniform(0.012, 0.025))]
+    elif kind == "clack":
+        parts = [tr, 0.42 * _u(_modal(sr, rng, 5, (600, 1300), (0.003, 0.006), 0.05)),
+                 0.7 * _body_burst(sr, rng, 200, 1400, rng.uniform(0.02, 0.04)),
+                 0.35 * _rattle(sr, rng, count=int(rng.integers(5, 10)), span=0.05, bright=bright)]
+    elif kind == "slam":
+        parts = [1.1 * tr, 0.35 * _u(_modal(sr, rng, 6, (600, 1200), (0.003, 0.007), 0.06)),
+                 0.9 * _body_burst(sr, rng, 150, 1200, rng.uniform(0.04, 0.06)),
+                 0.5 * _rattle(sr, rng, count=int(rng.integers(8, 16)), span=0.12, bright=bright)]
+        if bass > 0:
+            parts.append(bass * _u(_thump(sr, 120, 45, rng.uniform(0.05, 0.1))))
+    elif kind == "thunk":
+        parts = [0.6 * _impulse_click(sr, rng, 0.7, 6000), 0.35 * _u(_modal(sr, rng, 3, (400, 800), (0.003, 0.006), 0.05)),
+                 1.0 * _body_burst(sr, rng, 120, 700, rng.uniform(0.03, 0.05))]
+        if bass > 0:
+            parts.append(0.4 * bass * _u(_thump(sr, 110, 55, 0.05)))
+    else:
+        raise ValueError(kind)
+    out = _sumn(parts)
+    out = out / (np.max(np.abs(out)) + 1e-9)
+    # the originals' hits are dense (peak only ~10 dB over their own RMS); the soft saturation keeps the crest low so
+    # the finishing crest limiter has nothing tall to flatten (it would splatter low-frequency energy)
+    return np.tanh(4.0 * out) / np.tanh(4.0)
+
+
+def _grain_texture(N, sr, rng, dens, bands=None):
+    """Dense train of small modal clicks (Poisson times), unit RMS: the handling bed between and around the hits,
+    peaky like rattling metal instead of white."""
+    d = np.broadcast_to(np.asarray(dens, dtype=float), (N,))
+    out = np.zeros(N)
+    i = int(rng.exponential(sr / max(d[0], 1.0)))
+    while i < N:
+        g = _modal(sr, rng, int(rng.integers(2, 4)), (600.0, 2200.0), (0.003, 0.006), 0.03)
+        ic = _impulse_click(sr, rng, 0.9)
+        k = min(len(g), len(ic))
+        g = _u(g)
+        g[:k] += 0.9 * ic[:k]
+        seg = min(len(g), N - i)
+        out[i:i + seg] += g[:seg] * rng.uniform(0.25, 1.0)
+        i += int(rng.exponential(sr / max(d[min(i, N - 1)], 1.0))) + 1
+    return _u(out)
+
+
+def _reload3(**kw):
+    def f(c, N):
+        k = dict(kw)
+        k.setdefault("tex", 0.5)
+        k.setdefault("bright", 1.2)
+        k.setdefault("bass", 0.0)  # low end only where A has it (``lows``)
+        k.update(PER_RELOAD.get(c.name, {}))
+        c.rng.random(int(k.pop('reseed', 0)) + 1)  # alternate draw when a seed leaves a stray line
+        return events3(c, N, **k)
+    return f
+
+PER_RELOAD.setdefault("mib_blaster_reload_akimbo", {}).update(reseed=1)
+PER_RELOAD.setdefault("alienblaster_reload", {}).update(reseed=1)
+PER_RELOAD.setdefault("revolver_reload_akimbo", {}).update(reseed=1)
+PER_RELOAD.setdefault("mac10_reload", {}).update(reseed=1)
 
 
 # --------------------------------------------------------------------------- reload registrations (round 2)

@@ -18,7 +18,7 @@
  },
  "snd.machines.ammopress_work2_a": {
   "lufs": -20.0,
-  "tp": -2.3,
+  "tp": -2.0,
   "dur": 1.06,
   "ch": 1,
   "sr": 44100,
@@ -35,7 +35,7 @@
  },
  "snd.machines.ammopress_work2_b": {
   "lufs": -20.8,
-  "tp": -3.8,
+  "tp": -3.6,
   "dur": 1.35,
   "ch": 1,
   "sr": 44100,
@@ -51,8 +51,8 @@
   "loop": false
  },
  "snd.effects.bullet_impact_d": {
-  "lufs": -19.1,
-  "tp": -1.4,
+  "lufs": -19.3,
+  "tp": -1.5,
   "dur": 0.98,
   "ch": 1,
   "sr": 44100,
@@ -69,7 +69,7 @@
  },
  "snd.effects.bullet_impact_b": {
   "lufs": -19.3,
-  "tp": -1.4,
+  "tp": -1.5,
   "dur": 0.98,
   "ch": 1,
   "sr": 44100,
@@ -85,8 +85,8 @@
   "loop": false
  },
  "snd.guns.pistol_reload": {
-  "lufs": -22.3,
-  "tp": -3.8,
+  "lufs": -22.2,
+  "tp": -2.9,
   "dur": 1.81,
   "ch": 1,
   "sr": 44100,
@@ -120,7 +120,7 @@
  },
  "snd.effects.bullet_impact_c": {
   "lufs": -19.3,
-  "tp": -1.7,
+  "tp": -1.4,
   "dur": 0.98,
   "ch": 1,
   "sr": 44100,
@@ -136,7 +136,7 @@
   "loop": false
  },
  "snd.effects.bullet_impact_a": {
-  "lufs": -19.2,
+  "lufs": -19.4,
   "tp": -1.5,
   "dur": 0.98,
   "ch": 1,
@@ -153,8 +153,8 @@
   "loop": false
  },
  "snd.machines.ammopress_work1_c": {
-  "lufs": -14.5,
-  "tp": -1.5,
+  "lufs": -14.4,
+  "tp": -1.1,
   "dur": 2.06,
   "ch": 1,
   "sr": 44100,
@@ -170,8 +170,8 @@
   "loop": false
  },
  "snd.machines.ammopress_work1_a": {
-  "lufs": -17.8,
-  "tp": -1.2,
+  "lufs": -17.7,
+  "tp": -1.5,
   "dur": 2.57,
   "ch": 1,
   "sr": 44100,
@@ -221,8 +221,8 @@
   "loop": false
  },
  "snd.machines.ammopress_work1_b": {
-  "lufs": -14.0,
-  "tp": -1.3,
+  "lufs": -14.1,
+  "tp": -1.2,
   "dur": 2.77,
   "ch": 1,
   "sr": 44100,
@@ -255,8 +255,8 @@
   "loop": false
  },
  "snd.blocks.metaldoor_open_c": {
-  "lufs": -22.6,
-  "tp": -1.4,
+  "lufs": -22.4,
+  "tp": -1.5,
   "dur": 0.83,
   "ch": 1,
   "sr": 44100,
@@ -273,7 +273,7 @@
  },
  "snd.guns.MIB_blaster_reload_akimbo": {
   "lufs": -20.5,
-  "tp": -1.1,
+  "tp": -1.8,
   "dur": 2.99,
   "ch": 1,
   "sr": 44100,
@@ -289,7 +289,7 @@
   "loop": false
  },
  "snd.blocks.metaldoor_open_a": {
-  "lufs": -18.3,
+  "lufs": -18.4,
   "tp": -1.5,
   "dur": 0.96,
   "ch": 1,
@@ -306,7 +306,7 @@
   "loop": false
  },
  "snd.blocks.metaldoor_open_b": {
-  "lufs": -20.6,
+  "lufs": -21.2,
   "tp": -1.6,
   "dur": 0.96,
   "ch": 1,
@@ -323,8 +323,8 @@
   "loop": false
  },
  "snd.effects.steamarmor_jump_b": {
-  "lufs": -17.3,
-  "tp": -1.5,
+  "lufs": -17.0,
+  "tp": -1.7,
   "dur": 1.21,
   "ch": 1,
   "sr": 44100,
@@ -340,8 +340,8 @@
   "loop": false
  },
  "snd.effects.steamarmor_jump_c": {
-  "lufs": -17.6,
-  "tp": -1.2,
+  "lufs": -17.3,
+  "tp": -1.3,
   "dur": 1.21,
   "ch": 1,
   "sr": 44100,
@@ -374,7 +374,7 @@
   "loop": false
  },
  "snd.effects.steamarmor_jump_d": {
-  "lufs": -17.7,
+  "lufs": -19.1,
   "tp": -1.3,
   "dur": 1.21,
   "ch": 1,
@@ -391,8 +391,8 @@
   "loop": false
  },
  "snd.guns.MIB_blaster_reload": {
-  "lufs": -23.5,
-  "tp": -1.4,
+  "lufs": -23.3,
+  "tp": -1.5,
   "dur": 2.29,
   "ch": 1,
   "sr": 44100,
@@ -408,7 +408,7 @@
   "loop": false
  },
  "snd.effects.explosion1_e": {
-  "lufs": -17.1,
+  "lufs": -16.7,
   "tp": -1.3,
   "dur": 2.85,
   "ch": 1,
@@ -425,8 +425,8 @@
   "loop": false
  },
  "snd.effects.C4Charge_Tick": {
-  "lufs": -14.9,
-  "tp": -2.0,
+  "lufs": -15.4,
+  "tp": -3.7,
   "dur": 0.7,
   "ch": 1,
   "sr": 44100,
@@ -442,8 +442,8 @@
   "loop": false
  },
  "snd.effects.C4Charge_Plant": {
-  "lufs": -16.0,
-  "tp": -1.6,
+  "lufs": -15.3,
+  "tp": -1.4,
   "dur": 1.5,
   "ch": 1,
   "sr": 44100,
@@ -459,8 +459,8 @@
   "loop": false
  },
  "snd.effects.DemoCharge_Plant": {
-  "lufs": -10.6,
-  "tp": -1.0,
+  "lufs": -11.8,
+  "tp": -1.6,
   "dur": 0.76,
   "ch": 1,
   "sr": 44100,
@@ -476,8 +476,8 @@
   "loop": false
  },
  "snd.effects.biodeath": {
-  "lufs": -16.7,
-  "tp": -1.4,
+  "lufs": -16.2,
+  "tp": -1.2,
   "dur": 3.99,
   "ch": 1,
   "sr": 44100,
@@ -493,8 +493,8 @@
   "loop": false
  },
  "snd.guns.alienblaster_reload": {
-  "lufs": -25.7,
-  "tp": -5.8,
+  "lufs": -25.6,
+  "tp": -2.0,
   "dur": 2.97,
   "ch": 1,
   "sr": 44100,
@@ -562,7 +562,7 @@
  },
  "snd.guns.ak47_reload": {
   "lufs": -21.3,
-  "tp": -2.1,
+  "tp": -1.6,
   "dur": 2.78,
   "ch": 1,
   "sr": 48000,
@@ -629,8 +629,8 @@
   "loop": false
  },
  "snd.guns.ar1_reload": {
-  "lufs": -22.6,
-  "tp": -3.3,
+  "lufs": -22.4,
+  "tp": -2.2,
   "dur": 2.09,
   "ch": 1,
   "sr": 44100,
@@ -680,7 +680,7 @@
   "loop": false
  },
  "snd.guns.SCAR_reload": {
-  "lufs": -18.6,
+  "lufs": -18.0,
   "tp": -1.4,
   "dur": 3.53,
   "ch": 1,
@@ -715,7 +715,7 @@
  },
  "snd.effects.nukeexplosion": {
   "lufs": -15.0,
-  "tp": -1.2,
+  "tp": -1.1,
   "dur": 13.77,
   "ch": 1,
   "sr": 44100,
@@ -731,8 +731,8 @@
   "loop": false
  },
  "snd.effects.gore_a": {
-  "lufs": -15.5,
-  "tp": -1.0,
+  "lufs": -15.6,
+  "tp": -1.2,
   "dur": 2.99,
   "ch": 1,
   "sr": 44100,
@@ -748,8 +748,8 @@
   "loop": false
  },
  "snd.effects.explosion1_b": {
-  "lufs": -9.2,
-  "tp": -1.5,
+  "lufs": -11.3,
+  "tp": -1.4,
   "dur": 1.75,
   "ch": 1,
   "sr": 44100,
@@ -834,7 +834,7 @@
  },
  "snd.guns.as50_reload": {
   "lufs": -21.7,
-  "tp": -1.6,
+  "tp": -1.7,
   "dur": 5.0,
   "ch": 1,
   "sr": 48000,
@@ -884,8 +884,8 @@
   "loop": false
  },
  "snd.effects.explosion1_c": {
-  "lufs": -11.5,
-  "tp": -1.2,
+  "lufs": -11.3,
+  "tp": -1.0,
   "dur": 1.68,
   "ch": 1,
   "sr": 44100,
@@ -935,8 +935,8 @@
   "loop": false
  },
  "snd.guns.aug_reload": {
-  "lufs": -21.9,
-  "tp": -1.5,
+  "lufs": -22.1,
+  "tp": -1.6,
   "dur": 4.03,
   "ch": 1,
   "sr": 48000,
@@ -1123,7 +1123,7 @@
  },
  "snd.guns.biogun_reload": {
   "lufs": -26.1,
-  "tp": -7.5,
+  "tp": -5.6,
   "dur": 3.42,
   "ch": 1,
   "sr": 48000,
@@ -1156,7 +1156,7 @@
   "loop": false
  },
  "snd.effects.DemoCharge_Init": {
-  "lufs": -19.5,
+  "lufs": -20.3,
   "tp": -1.5,
   "dur": 1.91,
   "ch": 1,
@@ -1224,8 +1224,8 @@
   "loop": false
  },
  "snd.guns.boltaction_reload": {
-  "lufs": -20.9,
-  "tp": -1.2,
+  "lufs": -20.8,
+  "tp": -1.5,
   "dur": 1.94,
   "ch": 1,
   "sr": 44100,
@@ -1276,7 +1276,7 @@
  },
  "snd.effects.gore_b": {
   "lufs": -14.7,
-  "tp": -1.0,
+  "tp": -1.1,
   "dur": 2.99,
   "ch": 1,
   "sr": 44100,
@@ -1598,7 +1598,7 @@
   "loop": false
  },
  "snd.effects.disintegrate": {
-  "lufs": -11.5,
+  "lufs": -11.3,
   "tp": -1.3,
   "dur": 5.29,
   "ch": 1,
@@ -1649,8 +1649,8 @@
   "loop": false
  },
  "snd.guns.flamethrower_reload": {
-  "lufs": -24.0,
-  "tp": -4.7,
+  "lufs": -23.9,
+  "tp": -2.8,
   "dur": 2.21,
   "ch": 1,
   "sr": 44100,
@@ -1718,7 +1718,7 @@
  },
  "snd.guns.boltaction_rechamber": {
   "lufs": -20.8,
-  "tp": -2.1,
+  "tp": -1.7,
   "dur": 1.03,
   "ch": 1,
   "sr": 44100,
@@ -1751,8 +1751,8 @@
   "loop": false
  },
  "snd.guns.grenade_throw_a": {
-  "lufs": -20.4,
-  "tp": -1.6,
+  "lufs": -20.6,
+  "tp": -1.5,
   "dur": 0.79,
   "ch": 1,
   "sr": 48000,
@@ -1785,8 +1785,8 @@
   "loop": false
  },
  "snd.guns.grenade_throw_b": {
-  "lufs": -19.8,
-  "tp": -1.1,
+  "lufs": -20.0,
+  "tp": -1.5,
   "dur": 0.77,
   "ch": 1,
   "sr": 48000,
@@ -1836,8 +1836,8 @@
   "loop": false
  },
  "snd.guns.grenadelauncher_reload": {
-  "lufs": -28.9,
-  "tp": -8.0,
+  "lufs": -28.7,
+  "tp": -6.7,
   "dur": 4.32,
   "ch": 1,
   "sr": 48000,
@@ -1921,8 +1921,8 @@
   "loop": false
  },
  "snd.guns.grenade_throw_c": {
-  "lufs": -18.4,
-  "tp": -1.5,
+  "lufs": -18.3,
+  "tp": -1.9,
   "dur": 0.88,
   "ch": 1,
   "sr": 48000,
@@ -1955,8 +1955,8 @@
   "loop": false
  },
  "snd.guns.lasergun_reload": {
-  "lufs": -25.9,
-  "tp": -5.7,
+  "lufs": -25.8,
+  "tp": -4.2,
   "dur": 3.05,
   "ch": 1,
   "sr": 44100,
@@ -2007,7 +2007,7 @@
  },
  "snd.guns.handgun_reload": {
   "lufs": -21.4,
-  "tp": -3.1,
+  "tp": -3.0,
   "dur": 1.32,
   "ch": 1,
   "sr": 44100,
@@ -2142,7 +2142,7 @@
   "loop": false
  },
  "snd.guns.combatshotgun_reload": {
-  "lufs": -20.1,
+  "lufs": -20.0,
   "tp": -1.4,
   "dur": 2.95,
   "ch": 1,
@@ -2176,8 +2176,8 @@
   "loop": false
  },
  "snd.guns.grenade_pin_b": {
-  "lufs": -19.4,
-  "tp": -1.6,
+  "lufs": -18.9,
+  "tp": -1.4,
   "dur": 0.77,
   "ch": 1,
   "sr": 48000,
@@ -2227,8 +2227,8 @@
   "loop": false
  },
  "snd.guns.lmg_reload": {
-  "lufs": -18.2,
-  "tp": -1.3,
+  "lufs": -18.1,
+  "tp": -1.4,
   "dur": 5.72,
   "ch": 1,
   "sr": 44100,
@@ -2244,8 +2244,8 @@
   "loop": false
  },
  "snd.guns.minigun_reload": {
-  "lufs": -24.0,
-  "tp": -2.0,
+  "lufs": -23.8,
+  "tp": -1.7,
   "dur": 6.24,
   "ch": 1,
   "sr": 44100,
@@ -2278,8 +2278,8 @@
   "loop": false
  },
  "snd.guns.grenade_pin_a": {
-  "lufs": -17.7,
-  "tp": -1.3,
+  "lufs": -18.7,
+  "tp": -1.5,
   "dur": 0.77,
   "ch": 1,
   "sr": 48000,
@@ -2312,8 +2312,8 @@
   "loop": false
  },
  "snd.guns.mac10_reload": {
-  "lufs": -19.8,
-  "tp": -2.9,
+  "lufs": -20.2,
+  "tp": -1.6,
   "dur": 2.64,
   "ch": 1,
   "sr": 44100,
@@ -2380,8 +2380,8 @@
   "loop": false
  },
  "snd.guns.mac10_reload_akimbo": {
-  "lufs": -19.3,
-  "tp": -2.1,
+  "lufs": -19.2,
+  "tp": -1.6,
   "dur": 3.41,
   "ch": 1,
   "sr": 44100,
@@ -2533,8 +2533,8 @@
   "loop": false
  },
  "snd.guns.pdw_reload": {
-  "lufs": -19.2,
-  "tp": -1.5,
+  "lufs": -17.2,
+  "tp": -1.3,
   "dur": 2.57,
   "ch": 1,
   "sr": 44100,
@@ -2584,8 +2584,8 @@
   "loop": false
  },
  "snd.guns.combatshotgun_pump": {
-  "lufs": -16.8,
-  "tp": -2.0,
+  "lufs": -16.3,
+  "tp": -1.6,
   "dur": 0.89,
   "ch": 1,
   "sr": 44100,
@@ -2720,8 +2720,8 @@
   "loop": false
  },
  "snd.guns.powerhammer_reload": {
-  "lufs": -24.3,
-  "tp": -1.6,
+  "lufs": -24.4,
+  "tp": -1.3,
   "dur": 3.43,
   "ch": 1,
   "sr": 44100,
@@ -2738,7 +2738,7 @@
  },
  "snd.guns.pulserifle_reload": {
   "lufs": -22.0,
-  "tp": -1.8,
+  "tp": -2.1,
   "dur": 2.22,
   "ch": 1,
   "sr": 44100,
@@ -2890,8 +2890,8 @@
   "loop": false
  },
  "snd.guns.revolver_reload": {
-  "lufs": -26.8,
-  "tp": -6.3,
+  "lufs": -26.7,
+  "tp": -4.5,
   "dur": 2.72,
   "ch": 1,
   "sr": 44100,
@@ -2924,7 +2924,7 @@
   "loop": false
  },
  "snd.guns.pistol_reload_akimbo": {
-  "lufs": -21.0,
+  "lufs": -20.8,
   "tp": -2.1,
   "dur": 2.6,
   "ch": 1,
@@ -2941,8 +2941,8 @@
   "loop": false
  },
  "snd.guns.rocket_reload": {
-  "lufs": -24.9,
-  "tp": -4.8,
+  "lufs": -25.1,
+  "tp": -5.3,
   "dur": 3.53,
   "ch": 1,
   "sr": 44100,
@@ -3010,7 +3010,7 @@
  },
  "snd.guns.sawedoff_reload": {
   "lufs": -25.0,
-  "tp": -5.1,
+  "tp": -3.6,
   "dur": 1.54,
   "ch": 1,
   "sr": 44100,
@@ -3094,8 +3094,8 @@
   "loop": false
  },
  "snd.guns.sonicshotgun_reload": {
-  "lufs": -21.3,
-  "tp": -2.4,
+  "lufs": -21.1,
+  "tp": -1.6,
   "dur": 3.95,
   "ch": 1,
   "sr": 48000,
@@ -3281,8 +3281,8 @@
   "loop": false
  },
  "snd.guns.teslagun_reload": {
-  "lufs": -17.4,
-  "tp": -1.1,
+  "lufs": -17.6,
+  "tp": -1.5,
   "dur": 2.35,
   "ch": 1,
   "sr": 44100,
@@ -3298,8 +3298,8 @@
   "loop": false
  },
  "snd.guns.thompson_reload": {
-  "lufs": -23.8,
-  "tp": -3.6,
+  "lufs": -23.6,
+  "tp": -2.6,
   "dur": 1.76,
   "ch": 1,
   "sr": 48000,
@@ -3315,8 +3315,8 @@
   "loop": false
  },
  "snd.items.nightvision_off": {
-  "lufs": -12.7,
-  "tp": -1.8,
+  "lufs": -12.6,
+  "tp": -1.3,
   "dur": 0.44,
   "ch": 1,
   "sr": 44100,
@@ -3332,8 +3332,8 @@
   "loop": false
  },
  "snd.guns.revolver_reload_akimbo": {
-  "lufs": -25.0,
-  "tp": -4.5,
+  "lufs": -24.9,
+  "tp": -1.8,
   "dur": 3.51,
   "ch": 1,
   "sr": 44100,
@@ -3350,7 +3350,7 @@
  },
  "snd.items.antigrav_start_a": {
   "lufs": -14.7,
-  "tp": -1.3,
+  "tp": -1.1,
   "dur": 1.81,
   "ch": 1,
   "sr": 48000,
@@ -3434,8 +3434,8 @@
   "loop": false
  },
  "snd.items.antigrav_start_b": {
-  "lufs": -14.1,
-  "tp": -1.2,
+  "lufs": -14.2,
+  "tp": -1.3,
   "dur": 1.81,
   "ch": 1,
   "sr": 48000,
@@ -3486,7 +3486,7 @@
  },
  "snd.guns.vector_reload": {
   "lufs": -18.1,
-  "tp": -1.4,
+  "tp": -1.6,
   "dur": 1.54,
   "ch": 1,
   "sr": 48000,
@@ -3503,7 +3503,7 @@
  },
  "snd.machines.rc_beep": {
   "lufs": -70.0,
-  "tp": -2.7,
+  "tp": -3.0,
   "dur": 0.11,
   "ch": 1,
   "sr": 44100,
@@ -3519,8 +3519,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_aggro_b": {
-  "lufs": -16.2,
-  "tp": -1.3,
+  "lufs": -16.1,
+  "tp": -1.0,
   "dur": 1.41,
   "ch": 1,
   "sr": 44100,
@@ -3536,8 +3536,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_aggro_c": {
-  "lufs": -15.8,
-  "tp": -1.6,
+  "lufs": -15.6,
+  "tp": -2.1,
   "dur": 1.28,
   "ch": 1,
   "sr": 44100,
@@ -3570,7 +3570,7 @@
   "loop": false
  },
  "snd.npcs.alienbug_aggro_d": {
-  "lufs": -18.7,
+  "lufs": -16.7,
   "tp": -1.5,
   "dur": 1.12,
   "ch": 1,
@@ -3621,8 +3621,8 @@
   "loop": false
  },
  "snd.items.nightvision_on": {
-  "lufs": -20.1,
-  "tp": -1.4,
+  "lufs": -20.2,
+  "tp": -1.3,
   "dur": 1.6,
   "ch": 1,
   "sr": 44100,
@@ -3655,8 +3655,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_hit-03": {
-  "lufs": -21.3,
-  "tp": -1.8,
+  "lufs": -21.6,
+  "tp": -2.2,
   "dur": 0.86,
   "ch": 1,
   "sr": 44100,
@@ -3673,7 +3673,7 @@
  },
  "snd.npcs.alienbug_idle-01": {
   "lufs": -21.1,
-  "tp": -1.9,
+  "tp": -2.3,
   "dur": 0.59,
   "ch": 1,
   "sr": 44100,
@@ -3689,8 +3689,8 @@
   "loop": false
  },
  "snd.machines.rc_warning": {
-  "lufs": -10.7,
-  "tp": -1.4,
+  "lufs": -10.8,
+  "tp": -1.2,
   "dur": 1.35,
   "ch": 1,
   "sr": 44100,
@@ -3723,8 +3723,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_bite_b": {
-  "lufs": -20.5,
-  "tp": -2.4,
+  "lufs": -20.6,
+  "tp": -2.2,
   "dur": 0.73,
   "ch": 1,
   "sr": 44100,
@@ -3740,8 +3740,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_bite_a": {
-  "lufs": -21.2,
-  "tp": -1.5,
+  "lufs": -21.1,
+  "tp": -1.8,
   "dur": 0.78,
   "ch": 1,
   "sr": 44100,
@@ -3791,8 +3791,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_bite_c": {
-  "lufs": -19.2,
-  "tp": -1.9,
+  "lufs": -19.1,
+  "tp": -2.0,
   "dur": 0.72,
   "ch": 1,
   "sr": 44100,
@@ -3808,8 +3808,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_bite_d": {
-  "lufs": -21.4,
-  "tp": -1.8,
+  "lufs": -20.1,
+  "tp": -2.4,
   "dur": 0.73,
   "ch": 1,
   "sr": 44100,
@@ -3843,7 +3843,7 @@
  },
  "snd.npcs.alienbug_hit-04": {
   "lufs": -17.4,
-  "tp": -1.4,
+  "tp": -1.3,
   "dur": 0.82,
   "ch": 1,
   "sr": 44100,
@@ -3859,8 +3859,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_hit-01": {
-  "lufs": -19.0,
-  "tp": -1.9,
+  "lufs": -18.6,
+  "tp": -1.3,
   "dur": 1.03,
   "ch": 1,
   "sr": 44100,
@@ -3876,8 +3876,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_idle-03": {
-  "lufs": -17.4,
-  "tp": -1.9,
+  "lufs": -17.3,
+  "tp": -3.1,
   "dur": 0.56,
   "ch": 1,
   "sr": 44100,
@@ -3910,7 +3910,7 @@
   "loop": false
  },
  "snd.items.glider_loop_stereo": {
-  "lufs": -18.7,
+  "lufs": -18.8,
   "tp": -4.7,
   "dur": 9.41,
   "ch": 2,
@@ -3928,7 +3928,7 @@
  },
  "snd.npcs.cyberdemon_aggro_a": {
   "lufs": -23.6,
-  "tp": -7.5,
+  "tp": -6.8,
   "dur": 3.31,
   "ch": 1,
   "sr": 44100,
@@ -3944,8 +3944,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_hit-02": {
-  "lufs": -20.7,
-  "tp": -1.6,
+  "lufs": -18.7,
+  "tp": -1.4,
   "dur": 1.21,
   "ch": 1,
   "sr": 44100,
@@ -3961,8 +3961,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_idle-04": {
-  "lufs": -17.0,
-  "tp": -2.1,
+  "lufs": -16.1,
+  "tp": -1.8,
   "dur": 0.54,
   "ch": 1,
   "sr": 44100,
@@ -3979,7 +3979,7 @@
  },
  "snd.npcs.cyberdemon_hurt_b": {
   "lufs": -15.4,
-  "tp": -2.4,
+  "tp": -1.4,
   "dur": 1.7,
   "ch": 1,
   "sr": 44100,
@@ -4013,7 +4013,7 @@
  },
  "snd.npcs.cyberdemon_aggro_b": {
   "lufs": -25.3,
-  "tp": -3.0,
+  "tp": -2.7,
   "dur": 3.89,
   "ch": 1,
   "sr": 44100,
@@ -4029,8 +4029,8 @@
   "loop": false
  },
  "snd.npcs.cyberdemon_hurt_a": {
-  "lufs": -15.3,
-  "tp": -1.5,
+  "lufs": -15.4,
+  "tp": -1.0,
   "dur": 1.46,
   "ch": 1,
   "sr": 44100,
@@ -4046,8 +4046,8 @@
   "loop": false
  },
  "snd.npcs.cyberdemon_death_a": {
-  "lufs": -16.1,
-  "tp": -2.1,
+  "lufs": -16.0,
+  "tp": -2.2,
   "dur": 2.18,
   "ch": 1,
   "sr": 48000,
@@ -4064,7 +4064,7 @@
  },
  "snd.npcs.cyberdemon_aggro_c": {
   "lufs": -23.4,
-  "tp": -4.0,
+  "tp": -3.3,
   "dur": 3.93,
   "ch": 1,
   "sr": 44100,
@@ -4081,7 +4081,7 @@
  },
  "snd.npcs.cyberdemon_death_b": {
   "lufs": -16.7,
-  "tp": -2.5,
+  "tp": -1.5,
   "dur": 2.65,
   "ch": 1,
   "sr": 48000,
@@ -4097,7 +4097,7 @@
   "loop": false
  },
  "snd.npcs.cyberdemon_hurt_c": {
-  "lufs": -16.6,
+  "lufs": -16.4,
   "tp": -1.2,
   "dur": 1.46,
   "ch": 1,
@@ -4115,7 +4115,7 @@
  },
  "snd.npcs.cyberdemon_idle_a": {
   "lufs": -22.6,
-  "tp": -6.1,
+  "tp": -6.3,
   "dur": 1.89,
   "ch": 1,
   "sr": 44100,
@@ -4131,8 +4131,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_idle-06": {
-  "lufs": -15.6,
-  "tp": -1.2,
+  "lufs": -14.6,
+  "tp": -1.8,
   "dur": 0.48,
   "ch": 1,
   "sr": 44100,
@@ -4148,8 +4148,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_idle-05": {
-  "lufs": -16.8,
-  "tp": -1.5,
+  "lufs": -16.1,
+  "tp": -1.8,
   "dur": 0.71,
   "ch": 1,
   "sr": 44100,
@@ -4200,7 +4200,7 @@
  },
  "snd.npcs.cyberdemon_idle_b": {
   "lufs": -23.1,
-  "tp": -6.5,
+  "tp": -6.7,
   "dur": 2.13,
   "ch": 1,
   "sr": 44100,
@@ -4216,8 +4216,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_step_c": {
-  "lufs": -21.8,
-  "tp": -1.4,
+  "lufs": -21.0,
+  "tp": -1.9,
   "dur": 0.87,
   "ch": 1,
   "sr": 48000,
@@ -4234,7 +4234,7 @@
  },
  "snd.npcs.alienbug_death_a": {
   "lufs": -18.4,
-  "tp": -1.4,
+  "tp": -1.2,
   "dur": 2.85,
   "ch": 1,
   "sr": 44100,
@@ -4302,7 +4302,7 @@
  },
  "snd.npcs.cyberdemon_idle_c": {
   "lufs": -23.8,
-  "tp": -3.1,
+  "tp": -3.3,
   "dur": 1.98,
   "ch": 1,
   "sr": 44100,
@@ -4319,7 +4319,7 @@
  },
  "snd.npcs.turret_beep-02": {
   "lufs": -31.3,
-  "tp": -17.2,
+  "tp": -16.3,
   "dur": 0.62,
   "ch": 1,
   "sr": 48000,
@@ -4335,8 +4335,8 @@
   "loop": false
  },
  "snd.npcs.turret_beep-01": {
-  "lufs": -26.9,
-  "tp": -16.7,
+  "lufs": -26.8,
+  "tp": -16.6,
   "dur": 2.24,
   "ch": 1,
   "sr": 48000,
@@ -4370,7 +4370,7 @@
  },
  "snd.npcs.turret_beep-04": {
   "lufs": -24.5,
-  "tp": -18.2,
+  "tp": -18.1,
   "dur": 0.55,
   "ch": 1,
   "sr": 48000,
@@ -4386,8 +4386,8 @@
   "loop": false
  },
  "snd.npcs.alienbug_idle-02": {
-  "lufs": -15.8,
-  "tp": -1.4,
+  "lufs": -14.8,
+  "tp": -1.5,
   "dur": 0.8,
   "ch": 1,
   "sr": 44100,
@@ -4404,7 +4404,7 @@
  },
  "snd.npcs.turret_beep-05": {
   "lufs": -70.0,
-  "tp": -2.8,
+  "tp": -2.7,
   "dur": 0.32,
   "ch": 1,
   "sr": 48000,
@@ -4421,7 +4421,7 @@
  },
  "snd.npcs.turret_beep-06": {
   "lufs": -70.0,
-  "tp": -3.7,
+  "tp": -2.7,
   "dur": 0.31,
   "ch": 1,
   "sr": 48000,
@@ -4438,7 +4438,7 @@
  },
  "snd.npcs.turret_beep-07": {
   "lufs": -70.0,
-  "tp": -3.6,
+  "tp": -3.4,
   "dur": 0.26,
   "ch": 1,
   "sr": 48000,
@@ -4454,7 +4454,7 @@
   "loop": false
  },
  "snd.npcs.turret_gunequip-03": {
-  "lufs": -14.7,
+  "lufs": -16.6,
   "tp": -1.7,
   "dur": 0.5,
   "ch": 1,
@@ -4523,7 +4523,7 @@
  },
  "snd.npcs.alienbug_death_b": {
   "lufs": -16.7,
-  "tp": -1.5,
+  "tp": -1.3,
   "dur": 1.78,
   "ch": 1,
   "sr": 44100,
@@ -4590,7 +4590,7 @@
   "loop": false
  },
  "snd.npcs.alienbug_step_b": {
-  "lufs": -20.3,
+  "lufs": -18.5,
   "tp": -1.4,
   "dur": 0.83,
   "ch": 1,
@@ -4625,7 +4625,7 @@
  },
  "snd.npcs.turret_gunequip-01": {
   "lufs": -15.0,
-  "tp": -1.5,
+  "tp": -1.7,
   "dur": 0.81,
   "ch": 1,
   "sr": 48000,
@@ -4641,8 +4641,8 @@
   "loop": false
  },
  "snd.npcs.turret_gunequip-02": {
-  "lufs": -17.0,
-  "tp": -1.1,
+  "lufs": -16.9,
+  "tp": -1.5,
   "dur": 0.88,
   "ch": 1,
   "sr": 48000,
@@ -4659,7 +4659,7 @@
  },
  "snd.npcs.alienbug_step_a": {
   "lufs": -19.9,
-  "tp": -1.5,
+  "tp": -1.4,
   "dur": 0.93,
   "ch": 1,
   "sr": 48000,
@@ -4675,8 +4675,8 @@
   "loop": false
  },
  "snd.npcs.apache_burst": {
-  "lufs": -9.7,
-  "tp": -1.1,
+  "lufs": -7.7,
+  "tp": -1.0,
   "dur": 2.22,
   "ch": 1,
   "sr": 44100,
