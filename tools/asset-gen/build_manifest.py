@@ -19,6 +19,8 @@ import os
 import re
 import sys
 
+from PIL import Image
+
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 FACTS = os.path.join(ROOT, "docs", "techguns-spec", "ASSET-FACTS.md")
 AUDIO = os.path.join(ROOT, "docs", "techguns-spec", "AUDIO-PROFILES.md")
@@ -819,20 +821,25 @@ asset_doc("brand.social_preview_svg", "branding", B + "social_preview.svg", None
 asset_doc("brand.social_preview", "branding", B + "social_preview.png", 1280, 640, "GitHub social preview (1280x640), keep key content inside the central 1000x500.", "P3")
 I = "docs/assets/infographics/"
 INFO = [
-    ("tier_progression", "tier-progression", "Tier progression chart: weapons, armor and ammo per GT tier with gate materials (design 0001, 0009, 0010).", "P3"),
-    ("machine_roster", "machine-roster", "Machine roster explainer: single block to multiblock, usage class, tier range; includes isometric sketches of the four multiblocks.", "P3"),
-    ("ammo_production_flow", "ammo-production-flow", "Ammo production flow: GT materials to parts to Ammo Press or Ammunition Works to ammo, magazines and guns.", "P3"),
-    ("questbook_overview", "questbook-overview", "Questbook overview: 118 quests in 14 chapters and their pack gates.", "P3"),
-    ("multiblock_ammunition_works", "multiblock-ammunition-works", "Optional detail explainer: Ammunition Works layers, casing legend and hatch positions (the roster sheet only sketches it).", "P3"),
-    ("multiblock_retort", "multiblock-retort", "Optional detail explainer: Retort bulb-and-neck vessel, glass tier = pressure rating, hatch positions.", "P3"),
-    ("multiblock_armory_gantry", "multiblock-armory-gantry", "Optional detail explainer: Armory Gantry head, bays and tail, cradle per bay.", "P3"),
-    ("multiblock_rampart", "multiblock-rampart", "Optional detail explainer: Rampart crenellated wall, mounts, Bastion Plating tiers.", "P3"),
+    ("hero", "hero", "README hero banner: armored players across the tiers facing a Super Mutant.", "P2"),
+    ("getting_started", "getting-started", "Player guide: the first six steps, from the Hand Cannon to a magazine-fed pistol, plus default keys.", "P2"),
+    ("arsenal_steam_to_hv", "arsenal-steam-to-hv", "Player guide: every weapon from Steam to HV, rendered, with role and ammo.", "P2"),
+    ("arsenal_ev_to_zpm", "arsenal-ev-to-zpm", "Player guide: every weapon from EV to ZPM, rendered, with role and ammo or charge.", "P2"),
+    ("ammo_and_magazines", "ammo-and-magazines", "Player guide: GT materials to parts to the Ammo Press to magazines; magazine sizes; ammo per tier.", "P2"),
+    ("armor_and_gear", "armor-and-gear", "Player guide: the twelve armor sets on figures, masks and back gear, damage types.", "P2"),
+    ("machines", "machines", "Player guide: each single block machine beside its multiblock, rendered.", "P2"),
+    ("multiblock_ammunition_works", "multiblock-ammunition-works", "Build guide: Ammunition Works, with block counts, sections, hatches and scaling.", "P3"),
+    ("multiblock_retort", "multiblock-retort", "Build guide: Retort, with block counts, sections, hatches and scaling.", "P3"),
+    ("multiblock_armory_gantry", "multiblock-armory-gantry", "Build guide: Armory Gantry, with block counts, sections, hatches and scaling.", "P3"),
+    ("multiblock_rampart", "multiblock-rampart", "Build guide: Rampart, with block counts, sections, hatches and scaling.", "P3"),
+    ("enemies", "enemies", "Player guide: mobs by danger, rendered, plus structures and loot.", "P2"),
+    ("questbook", "questbook", "Player guide: the GregGuns questbook chapters, side branches and rewards.", "P2"),
 ]
 for iid, fn, brief, pri in INFO:
-    asset_doc("info." + iid, "infographic", I + fn + ".png", 1600, 900, brief + " Ship the source SVG beside the PNG.", pri)
-    # sources
-    if os.path.exists(os.path.join(ROOT, I + fn + ".svg")):
-        asset_doc("info." + iid + "_svg", "infographic", I + fn + ".svg", None, None, "Vector source of " + fn + ".png.", pri)
+    path = os.path.join(ROOT, I + fn + ".png")
+    w, h = Image.open(path).size if os.path.exists(path) else (1600, None)
+    asset_doc("info." + iid, "infographic", I + fn + ".png", w, h,
+              brief + " Built by tools/asset-gen/infographics/build.py; no vector source.", pri)
 
 # ----------------------------------------------------------------------------------------------
 # Output
