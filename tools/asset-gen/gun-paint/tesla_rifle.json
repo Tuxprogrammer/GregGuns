@@ -1,0 +1,793 @@
+{
+ "gun": "tesla_rifle",
+ "textures": [
+  {
+   "file": "tesla_rifle.png"
+  }
+ ],
+ "roles": {
+  "bladeV": {
+   "material": "steel",
+   "base": "#9C9C9C",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "bladeH": {
+   "material": "steel",
+   "base": "#9A9A9A",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "rail": {
+   "material": "steel",
+   "base": "#646464",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "bush": {
+   "material": "steel",
+   "base": "#404056",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "tip": {
+   "material": "steel",
+   "base": "#969696",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "cube": {
+   "material": "steel",
+   "base": "#898989",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "glow": {
+   "material": "flat",
+   "base": "#0000FF",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "drift": 0.02
+  },
+  "red": {
+   "material": "flat",
+   "base": "#FF0000",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "drift": 0.02
+  },
+  "block": {
+   "material": "steel",
+   "base": "#6B6B6B",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "wdark": {
+   "material": "steel",
+   "base": "#595959",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "wlight": {
+   "material": "steel",
+   "base": "#969696",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "navy": {
+   "material": "steel",
+   "base": "#181944",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "navy2": {
+   "material": "steel",
+   "base": "#161840",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "rib": {
+   "material": "steel",
+   "base": "#272727",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "post": {
+   "material": "steel",
+   "base": "#4E4E4D",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "sight": {
+   "material": "steel",
+   "base": "#3A3A3A",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "strut": {
+   "material": "steel",
+   "base": "#3E3E3E",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "lower": {
+   "material": "steel",
+   "base": "#9F9F9F",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "belly": {
+   "material": "steel",
+   "base": "#5A5A5A",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "spine": {
+   "material": "steel",
+   "base": "#A3A3A3",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "cap": {
+   "material": "steel",
+   "base": "#6E6E8A",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "cheek": {
+   "material": "steel",
+   "base": "#3C3C3C",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "rearA": {
+   "material": "steel",
+   "base": "#5E5E5E",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "rearB": {
+   "material": "steel",
+   "base": "#666666",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "rearC": {
+   "material": "steel",
+   "base": "#595959",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "grip": {
+   "material": "steel",
+   "base": "#4E4E4E",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "heel": {
+   "material": "steel",
+   "base": "#595959",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "trig": {
+   "material": "steel",
+   "base": "#525252",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "rod": {
+   "material": "steel",
+   "base": "#949494",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "stockrail": {
+   "material": "steel",
+   "base": "#999999",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "butt": {
+   "material": "steel",
+   "base": "#414141",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  },
+  "backing": {
+   "material": "steel",
+   "base": "#3B3B3B",
+   "scratches": false,
+   "noise": 0.012,
+   "bevel": [
+    1.04,
+    0.95
+   ],
+   "drift": 0.02
+  }
+ },
+ "boxes": {
+  "bar_v": {
+   "role": "bladeV"
+  },
+  "bar_h": {
+   "role": "bladeH"
+  },
+  "rail_tl": {
+   "role": "rail",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "color": "#8F8F8F"
+    }
+   ]
+  },
+  "rail_tr": {
+   "role": "rail",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "color": "#8F8F8F"
+    }
+   ]
+  },
+  "rail_bl": {
+   "role": "rail",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "color": "#8F8F8F"
+    }
+   ]
+  },
+  "rail_br": {
+   "role": "rail",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "right"
+     ],
+     "color": "#8F8F8F"
+    }
+   ]
+  },
+  "bushing": {
+   "role": "bush"
+  },
+  "tip": {
+   "role": "tip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "color": "#000000"
+    }
+   ]
+  },
+  "s11_top": {
+   "role": "cube",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#989898"
+    }
+   ]
+  },
+  "s11_bot": {
+   "role": "cube",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#989898"
+    }
+   ]
+  },
+  "s11_side_l": {
+   "role": "cube",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#989898"
+    }
+   ]
+  },
+  "s11_side_r": {
+   "role": "cube",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#989898"
+    }
+   ]
+  },
+  "s11_glow_top": {
+   "role": "glow"
+  },
+  "s11_glow_bot": {
+   "role": "glow"
+  },
+  "s11_glow_l": {
+   "role": "glow"
+  },
+  "s11_glow_r": {
+   "role": "glow"
+  },
+  "s15_top": {
+   "role": "cube",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#989898"
+    }
+   ]
+  },
+  "s15_bot": {
+   "role": "cube",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#989898"
+    }
+   ]
+  },
+  "s15_side_l": {
+   "role": "cube",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#989898"
+    }
+   ]
+  },
+  "s15_side_r": {
+   "role": "cube",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#989898"
+    }
+   ]
+  },
+  "s15_glow_top": {
+   "role": "glow"
+  },
+  "s15_glow_bot": {
+   "role": "glow"
+  },
+  "s15_glow_l": {
+   "role": "glow"
+  },
+  "s15_glow_r": {
+   "role": "glow"
+  },
+  "navy_plate": {
+   "role": "navy",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "color": "#686868"
+    }
+   ]
+  },
+  "washer_light": {
+   "role": "wlight"
+  },
+  "washer_dark": {
+   "role": "wdark"
+  },
+  "front_block": {
+   "role": "block",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "color": "#5F5F5F"
+    }
+   ]
+  },
+  "top_rib": {
+   "role": "rib"
+  },
+  "belly_block": {
+   "role": "navy2"
+  },
+  "foregrip": {
+   "role": "post",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "color": "#3D3D3D"
+    }
+   ]
+  },
+  "lower_body": {
+   "role": "lower",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "color": "#474747"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "bottom"
+     ],
+     "color": "#969696"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "color": "#888888"
+    }
+   ]
+  },
+  "belly_plate": {
+   "role": "belly"
+  },
+  "spine": {
+   "role": "spine",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "color": "#A6A6A6"
+    }
+   ]
+  },
+  "cap1": {
+   "role": "cap",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "color": "#65658F"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "color": "#727272"
+    }
+   ]
+  },
+  "cap2": {
+   "role": "cap",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "color": "#65658F"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "color": "#727272"
+    }
+   ]
+  },
+  "rear_cheek": {
+   "role": "cheek"
+  },
+  "rear_rib": {
+   "role": "rib"
+  },
+  "rear_a": {
+   "role": "rearA"
+  },
+  "rear_b": {
+   "role": "rearB"
+  },
+  "rear_c": {
+   "role": "rearC"
+  },
+  "navy_under": {
+   "role": "navy2"
+  },
+  "post_l": {
+   "role": "sight"
+  },
+  "post_r": {
+   "role": "sight"
+  },
+  "strut_l": {
+   "role": "strut"
+  },
+  "strut_r": {
+   "role": "strut"
+  },
+  "red_dot": {
+   "role": "red"
+  },
+  "grip": {
+   "role": "grip",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "top"
+     ],
+     "color": "#3E3E3E"
+    }
+   ]
+  },
+  "heel": {
+   "role": "heel"
+  },
+  "trigger": {
+   "role": "trig"
+  },
+  "rod_l": {
+   "role": "rod",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#9C9C9C"
+    }
+   ]
+  },
+  "rod_r": {
+   "role": "rod",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#9C9C9C"
+    }
+   ]
+  },
+  "conn_rear_l": {
+   "role": "rod"
+  },
+  "conn_front_l": {
+   "role": "rod"
+  },
+  "conn_rear_r": {
+   "role": "rod"
+  },
+  "conn_front_r": {
+   "role": "rod"
+  },
+  "butt": {
+   "role": "butt"
+  },
+  "butt_tab": {
+   "role": "butt"
+  },
+  "butt_back": {
+   "role": "backing"
+  },
+  "stock_rail_l": {
+   "role": "stockrail"
+  },
+  "gusset_l": {
+   "role": "stockrail"
+  },
+  "stock_rail_r": {
+   "role": "stockrail"
+  },
+  "gusset_r": {
+   "role": "stockrail"
+  }
+ }
+}

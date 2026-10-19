@@ -49,6 +49,9 @@ Out of scope here, see the owning areas:
 | [model-notes/laser_rifle.md](model-notes/laser_rifle.md) | Clean-room design notes for rebuilding the Laser Rifle model and texture |
 | [model-notes/tesla_rifle.md](model-notes/tesla_rifle.md) | Clean-room design notes for rebuilding the Tesla Rifle model and texture |
 | [model-notes/sonic_rifle.md](model-notes/sonic_rifle.md) | Clean-room design notes for rebuilding the Sonic Rifle (glow core) model and texture |
+| [model-notes/nether_blaster.md](model-notes/nether_blaster.md) | Clean-room design notes for rebuilding the Nether Blaster model and texture |
+| [model-notes/alien_blaster.md](model-notes/alien_blaster.md) | Clean-room design notes for rebuilding the Alien Blaster model and texture |
+| [model-notes/grim_reaper.md](model-notes/grim_reaper.md) | Clean-room design notes for rebuilding the Grim Reaper model and texture |
 | [textures.md](textures.md) | All 62 `textures/guns/` PNGs: size, what they depict, palette, UV layout, users, model-size mismatches |
 | [sounds.md](sounds.md) | All 185 `sounds/guns/` files, their `sounds.json` events and exactly when each plays |
 | [lang-and-strings.md](lang-and-strings.md) | The 17 gun camo-name keys, the generic camo strings, strings generated in code, missing keys and one correction |
