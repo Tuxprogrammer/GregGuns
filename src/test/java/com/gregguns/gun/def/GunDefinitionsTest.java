@@ -259,8 +259,7 @@ class GunDefinitionsTest {
         }
         assertEquals(ClientGunDefinitions.FLAT_ICON_FALLBACK, without);
         assertEquals(
-            java.util.Arrays
-                .asList("combat_shotgun", "akimbo_pistols", "akimbo_revolvers", "rocket_launcher", "grenade_launcher"),
+            java.util.Arrays.asList("combat_shotgun", "akimbo_pistols", "akimbo_revolvers", "rocket_launcher"),
             without);
         assertFalse(ClientGunDefinitions.usesFallback("m4"));
         assertFalse(ClientGunDefinitions.usesFallback("pistol_9mm"));

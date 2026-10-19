@@ -1,0 +1,1722 @@
+{
+ "gun": "grenade_launcher",
+ "textures": [
+  {
+   "file": "grenade_launcher.png"
+  }
+ ],
+ "roles": {
+  "body": {
+   "material": "steel",
+   "base": "#1E1E1E",
+   "scratches": false,
+   "noise": 0.12
+  },
+  "rail": {
+   "material": "steel",
+   "base": "#2A2A2A",
+   "scratches": false,
+   "noise": 0.08
+  },
+  "mid": {
+   "material": "steel",
+   "base": "#5A6666",
+   "scratches": false,
+   "noise": 0.06
+  },
+  "tube": {
+   "material": "steel",
+   "base": "#969696",
+   "scratches": false,
+   "noise": 0.04
+  },
+  "sleeve": {
+   "material": "steel",
+   "base": "#A2A2A2",
+   "scratches": false,
+   "noise": 0.03,
+   "bevel": [
+    1.06,
+    0.9
+   ]
+  },
+  "rim": {
+   "material": "steel",
+   "base": "#C8C8C8",
+   "scratches": false,
+   "noise": 0.03
+  },
+  "bump": {
+   "material": "steel",
+   "base": "#5A6666",
+   "scratches": false,
+   "noise": 0.04
+  },
+  "drum": {
+   "material": "steel",
+   "base": "#2E3636",
+   "scratches": false,
+   "noise": 0.05,
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  }
+ },
+ "boxes": {
+  "stock_plate": {
+   "role": "body"
+  },
+  "stock_buffer": {
+   "role": "body"
+  },
+  "stock_rod": {
+   "role": "mid",
+   "grain": "x"
+  },
+  "collar": {
+   "role": "body"
+  },
+  "rec_main": {
+   "role": "body",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 7,
+     "h": 3,
+     "color": "#4E5A5A"
+    },
+    {
+     "type": "inset",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 7,
+     "h": 3,
+     "shade": 1.0
+    }
+   ]
+  },
+  "hous_rear": {
+   "role": "body"
+  },
+  "hous_front": {
+   "role": "body"
+  },
+  "top_plate": {
+   "role": "body"
+  },
+  "underplate": {
+   "role": "body"
+  },
+  "shield": {
+   "role": "body",
+   "painters": [
+    {
+     "type": "bore",
+     "faces": [
+      "right"
+     ],
+     "size": 3,
+     "cy": 4.8,
+     "color": "#060606"
+    }
+   ]
+  },
+  "bridge": {
+   "role": "body"
+  },
+  "cover": {
+   "role": "body"
+  },
+  "front_block": {
+   "role": "body"
+  },
+  "rail": {
+   "role": "rail",
+   "painters": [
+    {
+     "type": "slots",
+     "faces": [
+      "top"
+     ],
+     "start": 1,
+     "every": 2,
+     "width": 1,
+     "color": "#060606"
+    }
+   ]
+  },
+  "sight_rear": {
+   "role": "rail"
+  },
+  "fork_l": {
+   "role": "rail"
+  },
+  "fork_r": {
+   "role": "rail"
+  },
+  "plate_r0": {
+   "role": "rim"
+  },
+  "plate_r1": {
+   "role": "rim"
+  },
+  "plate_r2": {
+   "role": "rim"
+  },
+  "plate_f0": {
+   "role": "rim"
+  },
+  "plate_f1": {
+   "role": "rim"
+  },
+  "plate_f2": {
+   "role": "rim"
+  },
+  "drum0": {
+   "role": "drum",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 8,
+     "h": 1,
+     "color": "#C8C8C8"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 6,
+     "w": 8,
+     "h": 1,
+     "color": "#8A8A8A"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 6,
+     "h": 5,
+     "color": "#481808"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 1,
+     "w": 4,
+     "h": 1,
+     "color": "#782818"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 4,
+     "h": 1,
+     "color": "#C84434"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 3,
+     "w": 4,
+     "h": 1,
+     "color": "#E85838"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 4,
+     "w": 4,
+     "h": 1,
+     "color": "#C84434"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 5,
+     "w": 4,
+     "h": 1,
+     "color": "#782818"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#D8C8A8"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 6,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#D8C8A8"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#A09357"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 6,
+     "y": 5,
+     "w": 1,
+     "h": 1,
+     "color": "#A09357"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 7,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#363636"
+    }
+   ]
+  },
+  "drum1": {
+   "role": "drum",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 8,
+     "h": 1,
+     "color": "#C8C8C8"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 6,
+     "w": 8,
+     "h": 1,
+     "color": "#8A8A8A"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 6,
+     "h": 5,
+     "color": "#481808"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 1,
+     "w": 4,
+     "h": 1,
+     "color": "#782818"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 4,
+     "h": 1,
+     "color": "#C84434"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 3,
+     "w": 4,
+     "h": 1,
+     "color": "#E85838"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 4,
+     "w": 4,
+     "h": 1,
+     "color": "#C84434"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 5,
+     "w": 4,
+     "h": 1,
+     "color": "#782818"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#D8C8A8"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 6,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#D8C8A8"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#A09357"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 6,
+     "y": 5,
+     "w": 1,
+     "h": 1,
+     "color": "#A09357"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 7,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#363636"
+    }
+   ]
+  },
+  "drum2": {
+   "role": "drum",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 8,
+     "h": 1,
+     "color": "#C8C8C8"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 6,
+     "w": 8,
+     "h": 1,
+     "color": "#8A8A8A"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 6,
+     "h": 5,
+     "color": "#481808"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 1,
+     "w": 4,
+     "h": 1,
+     "color": "#782818"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 4,
+     "h": 1,
+     "color": "#C84434"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 3,
+     "w": 4,
+     "h": 1,
+     "color": "#E85838"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 4,
+     "w": 4,
+     "h": 1,
+     "color": "#C84434"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 5,
+     "w": 4,
+     "h": 1,
+     "color": "#782818"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#D8C8A8"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 6,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#D8C8A8"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#A09357"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 6,
+     "y": 5,
+     "w": 1,
+     "h": 1,
+     "color": "#A09357"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 7,
+     "y": 1,
+     "w": 1,
+     "h": 5,
+     "color": "#363636"
+    }
+   ]
+  },
+  "bf0": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "bf1": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "bf2": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "bf3": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "bf4": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "bf5": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "bfc": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "br0": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "br1": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "br2": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "br3": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "br4": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "br5": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "brc": {
+   "role": "bump",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 2,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#363636"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "left",
+      "right"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#727272"
+    }
+   ]
+  },
+  "front_plate": {
+   "role": "body"
+  },
+  "tube0": {
+   "role": "tube"
+  },
+  "tube1": {
+   "role": "tube"
+  },
+  "tube2": {
+   "role": "tube"
+  },
+  "sleeve0": {
+   "role": "sleeve",
+   "painters": [
+    {
+     "type": "stripes",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "colors": [
+      "#A2A2A2",
+      "#AAAAAA",
+      "#9A9A9A",
+      "#A8A8A8"
+     ],
+     "axis": "y",
+     "step": 1
+    }
+   ]
+  },
+  "sleeve1": {
+   "role": "sleeve",
+   "painters": [
+    {
+     "type": "stripes",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "colors": [
+      "#A2A2A2",
+      "#AAAAAA",
+      "#9A9A9A",
+      "#A8A8A8"
+     ],
+     "axis": "y",
+     "step": 1
+    }
+   ]
+  },
+  "sleeve2": {
+   "role": "sleeve",
+   "painters": [
+    {
+     "type": "stripes",
+     "faces": [
+      "top",
+      "bottom",
+      "front",
+      "back"
+     ],
+     "colors": [
+      "#A2A2A2",
+      "#AAAAAA",
+      "#9A9A9A",
+      "#A8A8A8"
+     ],
+     "axis": "y",
+     "step": 1
+    }
+   ]
+  },
+  "muzzle_plate": {
+   "role": "tube",
+   "painters": [
+    {
+     "type": "bore",
+     "faces": [
+      "left"
+     ],
+     "size": 2.5,
+     "color": "#060606"
+    }
+   ]
+  },
+  "handguard": {
+   "role": "mid"
+  },
+  "hg_collar": {
+   "role": "mid"
+  },
+  "grip": {
+   "role": "body"
+  },
+  "trigger": {
+   "role": "mid"
+  },
+  "guard": {
+   "role": "mid"
+  }
+ }
+}
