@@ -417,8 +417,8 @@ public final class RepairScenarios {
         static final int CY = 3;
         final ScenarioContext ctx;
         final int bays;
-        final IGregTechTileEntity controller;
-        final MTEArmoryGantry mte;
+        IGregTechTileEntity controller;
+        MTEArmoryGantry mte;
         IGregTechTileEntity inputBus;
         IGregTechTileEntity outputBus;
         IGregTechTileEntity energy;
@@ -444,6 +444,28 @@ public final class RepairScenarios {
                 GantryShape.totalLength(bays) - 1,
                 ItemList.Hatch_Output_Bus_HV,
                 ForgeDirection.SOUTH);
+        }
+
+        /**
+         * Re-fetches every tile entity from the world. GT may swap a tile entity's meta tile during its first ticks, so
+         * references taken at placement can go stale under server lag.
+         */
+        void refresh() {
+            controller = tileAt(0, CY, 0, controller);
+            mte = (MTEArmoryGantry) controller.getMetaTileEntity();
+            inputBus = tileAt(-1, CY, 0, inputBus);
+            outputBus = tileAt(0, CY, GantryShape.totalLength(bays) - 1, outputBus);
+            energy = tileAt(0, CY - 1, 0, energy);
+            energy2 = tileAt(1, CY - 1, 0, energy2);
+        }
+
+        private IGregTechTileEntity tileAt(int dx, int dy, int dz, IGregTechTileEntity fallback) {
+            if (fallback == null) {
+                return null;
+            }
+            TileEntity tile = ctx.world()
+                .getTileEntity(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
+            return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : fallback;
         }
 
         boolean form() {
@@ -541,13 +563,6 @@ public final class RepairScenarios {
             }
             Gantry g = new Gantry(ctx, 3);
             g.addHatches();
-            if (!g.form()) {
-                fail.check(false, "the three-bay Gantry with all hatches should form");
-                g.empty();
-                noStray(ctx, fail);
-                return fail.build();
-            }
-            g.fixMaintenance();
             ItemStack[] worn = { piece(ArmorCatalog.T1_COMBAT, ArmorSlot.HELMET, 825),
                 piece(ArmorCatalog.T1_COMBAT, ArmorSlot.CHESTPLATE, 825),
                 piece(ArmorCatalog.T1_COMBAT, ArmorSlot.LEGGINGS, 825) };
@@ -555,9 +570,7 @@ public final class RepairScenarios {
                 NBTTagCompound tag = new NBTTagCompound();
                 tag.setString("marker", "kept" + i);
                 worn[i].setTagCompound(tag);
-                g.inputBus.setInventorySlotContents(i, worn[i]);
             }
-            // Helmet 2 + 2, vest 4 + 4 (2 plates + 2 cloth... counts come from each piece's own list), leggings 3.
             int plates = 0;
             int clothCount = 0;
             for (ItemStack s : worn) {
@@ -567,12 +580,44 @@ public final class RepairScenarios {
                 plates += c.metal();
                 clothCount += c.cloth();
             }
-            g.inputBus.setInventorySlotContents(3, plate("Steel", plates));
-            g.inputBus.setInventorySlotContents(4, cloth(clothCount));
-            final int expectPlates = plates;
-            final int expectCloth = clothCount;
+            final int platesNeeded = plates;
+            final int clothNeeded = clothCount;
             final int[] firstDuration = { 0 };
-            return ScenarioResult.pending(name(), RUN_TIMEOUT_TICKS, ticks -> {
+            final boolean[] loaded = { false };
+            final int[] loadedAt = { 0 };
+            return ScenarioResult.pending(name(), WARMUP_TICKS + RUN_TIMEOUT_TICKS, ticks -> {
+                // Wait on state, not a tick budget: let GT finish warming the new tiles, then re-fetch them, form the
+                // structure and only then load the buses, so nothing is read from a stale tile entity.
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
+                g.refresh();
+                if (!loaded[0]) {
+                    if (!g.form()) {
+                        if (ticks < WARMUP_TICKS + 40) {
+                            return null;
+                        }
+                        ScenarioResult.Builder bad = ScenarioResult.builder(name());
+                        bad.check(false, "the three-bay Gantry with all hatches should form");
+                        g.empty();
+                        noStray(ctx, bad);
+                        return bad.build();
+                    }
+                    g.fixMaintenance();
+                    for (int i = 0; i < worn.length; i++) {
+                        g.inputBus.setInventorySlotContents(i, worn[i]);
+                    }
+                    g.inputBus.setInventorySlotContents(3, plate("Steel", platesNeeded));
+                    g.inputBus.setInventorySlotContents(4, cloth(clothNeeded));
+                    loaded[0] = true;
+                    loadedAt[0] = ticks;
+                    return null;
+                }
+                // The structure can be dropped by GT's periodic recheck; put it back rather than fail.
+                if (!g.mte.mMachine) {
+                    g.form();
+                }
+                g.fixMaintenance();
                 // No cable network feeds the hatches, so keep their buffers full.
                 g.energy.increaseStoredEnergyUnits(Tier.HV.voltage() * 20, true);
                 g.energy2.increaseStoredEnergyUnits(Tier.HV.voltage() * 20, true);
@@ -586,7 +631,7 @@ public final class RepairScenarios {
                         done++;
                     }
                 }
-                if (done < worn.length && ticks < RUN_TIMEOUT_TICKS - 1) {
+                if (done < worn.length && ticks < WARMUP_TICKS + RUN_TIMEOUT_TICKS - 1) {
                     return null;
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
@@ -611,7 +656,12 @@ public final class RepairScenarios {
                     firstDuration[0] > 0 && firstDuration[0] <= RepairMath.durationTicks(1.0),
                     "the cycle's duration " + firstDuration[0] + " should be at most the worst-case job");
                 out.note(
-                    "finished after " + ticks + " ticks; used " + expectPlates + " plates, " + expectCloth + " cloth");
+                    "finished after " + (ticks - loadedAt[0])
+                        + " ticks; used "
+                        + platesNeeded
+                        + " plates, "
+                        + clothNeeded
+                        + " cloth");
                 g.empty();
                 noStray(ctx, out);
                 return out.build();
