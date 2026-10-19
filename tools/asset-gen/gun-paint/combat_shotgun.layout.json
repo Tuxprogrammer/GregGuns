@@ -1,0 +1,29 @@
+{
+ "gun": "combat_shotgun",
+ "texture": [128, 32],
+ "scale": 0.0625,
+ "bodyRotationYDegrees": 0,
+ "muzzle": [3.4375, 0.15625, 0.0],
+ "boxes": [
+  {"name": "butt_plate", "size": [2, 5, 3], "pos": [0, 3.5, -1.5], "uv": [68, 0]},
+  {"name": "toe", "size": [2, 3, 2], "pos": [0, 8.5, -1], "uv": [110, 0]},
+  {"name": "hinge", "size": [2, 5, 3], "pos": [2, 3, -1.5], "uv": [78, 0]},
+  {"name": "brace", "size": [1, 2, 2], "pos": [2, 8, -1], "uv": [118, 0]},
+  {"name": "strut_lower", "size": [12, 2, 2], "pos": [3, 6, -1], "pivot": [3, 6, 0], "tilt": -15, "uv": [92, 7]},
+  {"name": "strut_upper", "size": [10, 1, 1], "pos": [3.6, 3.8, -0.5], "pivot": [3.6, 3.8, 0], "tilt": -8, "uv": [98, 11]},
+  {"name": "recv_rear", "size": [8, 4, 3], "pos": [13, 2, -1.5], "uv": [88, 0]},
+  {"name": "plate_rear", "size": [7, 1, 2], "pos": [14, 1, -1], "uv": [24, 9]},
+  {"name": "rear_sight", "size": [2, 1, 1], "pos": [15.5, 0, -0.5], "uv": [120, 6]},
+  {"name": "grip", "size": [3, 7, 2], "pos": [14, 5, -1], "pivot": [14, 5, 0], "tilt": 19, "uv": [32, 0]},
+  {"name": "trigger", "size": [2, 1, 1], "pos": [16, 6, -0.5], "uv": [120, 8]},
+  {"name": "recv_main", "size": [10, 5, 3], "pos": [21, 1.5, -1.5], "uv": [42, 0]},
+  {"name": "plate_main", "size": [10, 1, 2], "pos": [21, 0.5, -1], "uv": [0, 9]},
+  {"name": "barrel_slab", "size": [24, 3, 1], "pos": [31, 1, -0.5], "uv": [42, 8]},
+  {"name": "rail_right", "size": [24, 1, 1], "pos": [31, 2, -1.5], "uv": [48, 14]},
+  {"name": "rail_left", "size": [24, 1, 1], "pos": [31, 2, 0.5], "uv": [48, 12]},
+  {"name": "tube", "size": [22, 2, 2], "pos": [31, 4.5, -1], "uv": [0, 12]},
+  {"name": "clamp", "size": [2, 1, 1], "pos": [50, 4, -0.5], "uv": [118, 4]},
+  {"name": "front_sight", "size": [2, 1, 1], "pos": [52, 0, -0.5], "uv": [110, 5]},
+  {"name": "pump", "size": [12, 5, 4], "pos": [30, 2.5, -2], "part": 1, "uv": [0, 0]}
+ ]
+}
