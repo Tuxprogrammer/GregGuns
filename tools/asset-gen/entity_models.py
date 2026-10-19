@@ -1091,7 +1091,31 @@ def biped():
     return m
 
 
-MODELS = [demo_biped, biped, cyberdemon, super_mutant, alien_bug]
+def skeleton_soldier():
+    """Skeleton Soldier: a vanilla-skeleton look on the shared biped conventions.
+    Notes: docs/techguns-spec/10-entities-npcs/model-notes/skeleton_soldier.md. Head and torso are the biped's;
+    arms and legs are 2x12x2 sticks (arm pivots stay at +-5 so each arm sits flush against the torso; legs at +-2,
+    a 2-unit gap). It wears the vanilla skeleton skin (minecraft:textures/entity/skeleton/skeleton.png, 64x32), so
+    the UVs below are the vanilla skeleton layout and no sheet is painted. The hat layer is omitted (it is empty in
+    that skin). Motion is the vanilla biped's, as the notes ask. The held-gun offset for MobRenderers.biped is
+    (0.1, 0, 0.05) blocks, shadow 0.5, scale 1."""
+    m = vanilla_biped("skeleton_soldier", 64, 32)
+    m.no_sheet = True
+    m.get("head").boxes[0]["material"] = "bone"
+    m.get("body").boxes[0]["material"] = "bone"
+    for name, ox in (("rightArm", -5), ("leftArm", 5)):
+        part = m.get(name)
+        part.boxes = []
+        part.box("arm", -1, -2, -1, 2, 12, 2, uv=(40, 16), mirror=(name == "leftArm"), material="bone", group="arm")
+    for name, px in (("rightLeg", -2), ("leftLeg", 2)):
+        part = m.get(name)
+        part.pivot = (px, 12, 0)
+        part.boxes = []
+        part.box("leg", -1, 0, -1, 2, 12, 2, uv=(0, 16), mirror=(name == "leftLeg"), material="bone", group="leg")
+    return m
+
+
+MODELS = [demo_biped, biped, cyberdemon, super_mutant, alien_bug, skeleton_soldier]
 
 
 # ---------------------------------------------------------------------------------------------- main
