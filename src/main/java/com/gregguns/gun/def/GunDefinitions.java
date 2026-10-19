@@ -42,7 +42,8 @@ public final class GunDefinitions {
             FlamethrowerDef.DEFINITION,
             GoldenRevolverDef.DEFINITION,
             AkimboGoldenRevolversDef.DEFINITION,
-            LaserRifleDef.DEFINITION));
+            LaserRifleDef.DEFINITION,
+            TeslaRifleDef.DEFINITION));
 
     private GunDefinitions() {}
 

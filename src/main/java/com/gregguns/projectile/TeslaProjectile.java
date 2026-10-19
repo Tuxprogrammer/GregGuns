@@ -38,6 +38,9 @@ public class TeslaProjectile extends GenericProjectile {
     public static final double CHAIN_RANGE = 5.0;
     /** Damage removed per jump. */
     public static final double CHAIN_DROP = 0.0;
+    // Spec: sheets-energy-special.md (Tesla Rifle): the damage source is tg_lightning / LIGHTNING, so electrical
+    // armor resists it and a hit shocks. The first cut of this class used ENERGY; the sheet says LIGHTNING.
+    private static final DamageType DAMAGE_TYPE = DamageType.LIGHTNING;
     /** FX list played on every struck target (the FX catalog owns it; an unknown name is only logged). */
     public static final String FLARE_FX = "TeslaFlare";
     private static final double FX_RANGE = FxSender.RANGE_NEAR;
@@ -142,7 +145,7 @@ public class TeslaProjectile extends GenericProjectile {
                 BeamVisual.STYLE_BLUE);
             float dealt = (float) ChainSelect.damageAt(damage, CHAIN_DROP, i);
             if (dealt > 0) {
-                DamageSources.hit(target, DamageType.ENERGY, this, shooter, dealt, penetration, secondaryEffects());
+                DamageSources.hit(target, DAMAGE_TYPE, this, shooter, dealt, penetration, secondaryEffects());
             }
             FxSender.at(worldObj, FLARE_FX, tx, ty, tz, FX_RANGE);
             fromX = tx;
@@ -174,6 +177,6 @@ public class TeslaProjectile extends GenericProjectile {
 
     @Override
     protected DamageType getDamageType() {
-        return DamageType.ENERGY;
+        return DAMAGE_TYPE;
     }
 }

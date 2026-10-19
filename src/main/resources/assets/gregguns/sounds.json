@@ -159,6 +159,14 @@
     "category": "player",
     "sounds": ["guns/lasergun_reload"]
   },
+  "guns.tesla_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/teslagun_shot_a", "guns/teslagun_shot_b", "guns/teslagun_shot_c", "guns/teslagun_shot_d"]
+  },
+  "guns.tesla_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/teslagun_reload"]
+  },
   "guns.rocket_launcher.fire": {
     "category": "player",
     "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b", "guns/rocket_shot_c"]

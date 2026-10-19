@@ -63,6 +63,9 @@ public final class EvEnergyScenarios {
             case LASER:
                 registry.register(new LaserFire(def));
                 break;
+            case TESLA:
+                registry.register(new TeslaChain(def));
+                break;
             default:
                 break;
         }
@@ -71,10 +74,10 @@ public final class EvEnergyScenarios {
     // ----- shared helpers ----------------------------------------------------------------------------------------
 
     /** A rig holding the gun with a charge of {@code shots} pulls' worth of EU. */
-    static GunRig charged(ScenarioContext ctx, GunDefinition def, double shots) {
+    static GunRig charged(ScenarioContext ctx, GunDefinition def, double shots, int corridor) {
         GunStats stats = def.stats();
         ItemEnergyGun item = (ItemEnergyGun) GunItems.get(def.name());
-        GunRig rig = new GunRig(ctx, item, stats.magazineSize());
+        GunRig rig = new GunRig(ctx, item, stats.magazineSize(), corridor);
         ElectricGear.charge(rig.gun, shots * stats.euPerShot(), def.tier());
         return rig;
     }
@@ -142,7 +145,7 @@ public final class EvEnergyScenarios {
         public ScenarioResult run(ScenarioContext ctx) {
             GunStats stats = def.stats();
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            GunRig rig = charged(ctx, def, 2.5);
+            GunRig rig = charged(ctx, def, 2.5, 12);
             EntityZombie target = GunRig.zombie(ctx, 8);
             long start = stored(rig);
             out.checkEquals("charge before firing", (long) (2.5 * stats.euPerShot()), start);
@@ -161,6 +164,59 @@ public final class EvEnergyScenarios {
             rig.release();
             out.checkEquals("EU spent by two pulls and a dry click", 2 * stats.euPerShot(), start - stored(rig));
             out.checkEquals("beams of two pulls", 2, beamCount(ctx) - beams);
+            out.check(!rig.reloading(), "an energy gun never starts a reload");
+            return out.build();
+        }
+    }
+
+    // ----- Tesla Rifle -------------------------------------------------------------------------------------------
+
+    /** One pull strikes the first zombie and exactly three jumps more, each for the full figure; EU is exact. */
+    private static final class TeslaChain implements Scenario {
+
+        private static final int FIRST = 8;
+        private static final int GAP = 3;
+        private static final int ROW = 5;
+
+        private final GunDefinition def;
+
+        TeslaChain(GunDefinition def) {
+            this.def = def;
+        }
+
+        @Override
+        public String name() {
+            return "gun." + def.name() + ".fire";
+        }
+
+        @Override
+        public String description() {
+            return "One Tesla Rifle pull on a row of five zombies 3 blocks apart hurts the first and the next three by the full 12 LIGHTNING damage (no drop per jump), leaves the fifth unhurt, shows four beams, and spends exactly its EU per pull.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            GunStats stats = def.stats();
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            GunRig rig = charged(ctx, def, 1.5, FIRST + GAP * ROW + 2);
+            EntityZombie[] row = new EntityZombie[ROW];
+            for (int i = 0; i < ROW; i++) {
+                row[i] = GunRig.zombie(ctx, FIRST + GAP * i);
+            }
+            long start = stored(rig);
+            int beams = beamCount(ctx);
+            rig.press();
+            rig.tick();
+            rig.release();
+            float expected = expectedLoss(row[0], DamageType.LIGHTNING, stats.damage(), 0.0);
+            for (int i = 0; i < 4; i++) {
+                out.check(
+                    near(expected, lost(row[i])),
+                    "zombie " + i + " should lose the full " + expected + ", lost " + lost(row[i]));
+            }
+            out.check(lost(row[4]) == 0.0F, "the fifth zombie is past three jumps and must be unhurt");
+            out.checkEquals("beams shown (one to the primary, one per jump)", 4, beamCount(ctx) - beams);
+            out.checkEquals("EU spent by one pull", stats.euPerShot(), start - stored(rig));
             out.check(!rig.reloading(), "an energy gun never starts a reload");
             return out.build();
         }

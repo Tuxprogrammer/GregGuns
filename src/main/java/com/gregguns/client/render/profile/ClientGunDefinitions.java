@@ -45,6 +45,7 @@ public final class ClientGunDefinitions {
             FlamethrowerProfile.DEFINITION,
             ScarProfile.DEFINITION,
             LaserRifleProfile.DEFINITION,
+            TeslaRifleProfile.DEFINITION,
 
             // The akimbo guns draw their single gun's model once per hand.
             ClientGunDefinition.akimboOf("akimbo_pistols", Pistol9mmProfile.DEFINITION),

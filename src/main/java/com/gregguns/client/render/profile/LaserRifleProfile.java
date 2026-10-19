@@ -209,7 +209,7 @@ public final class LaserRifleProfile {
             0.7);
         return GunTransforms.builder()
             .parts(1)
-            .timing(4, 5, 45)
+            .timing(5, 5, 45)
             .firstPerson(fpBase, fpIdle, fpFire, fpReload)
             .thirdPerson(tpBase, new double[] { 0, 0.1, -0.2 }, tpRecoil, tpReload)
             .world(ground, icon)
