@@ -30,7 +30,7 @@ about its long axis X ("tiltX", for a diamond bar) or about the vertical axis Y 
 A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}}} or "camo" with a palette.
 A variant may also give "boxes": {name: {"role", "painters"}} to replace one box's spec for that sheet.
 Cut-outs: a box may set "clear": true to start fully transparent (alpha 0) on every face; painter "solid" (like "rect",
-but also opaque) puts opaque texels back, e.g. the dot on a holographic sight window; painter "hole" (a rect with
+but also opaque, or translucent with an "alpha" of 0..255) puts those texels back, e.g. the dot on a holographic sight window; painter "hole" (a rect with
 "faces", "x", "y", "w", "h") makes texels transparent, e.g. a window cut in a thin panel. Boxes without these keep an
 opaque sheet, byte for byte.
 """
@@ -317,7 +317,7 @@ def face_alpha(box_spec, face, fw, fh):
     for p in box_spec.get("painters", []):
         if p.get("type") in ("hole", "solid") and face in p.get("faces", FACES):
             x, y, pw, ph = face_xywh(p, fw, fh)
-            a[max(0, y):max(0, y + ph), max(0, x):max(0, x + pw)] = 0.0 if p["type"] == "hole" else 255.0
+            a[max(0, y):max(0, y + ph), max(0, x):max(0, x + pw)] = 0.0 if p["type"] == "hole" else float(p.get("alpha", 255.0))
     return a
 
 
