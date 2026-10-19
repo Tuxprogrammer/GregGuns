@@ -232,3 +232,14 @@ All transforms apply to the whole model, in block units after the 1/16 scale. Th
 - **Cheek plate and neck block** are small filler pieces under the receiver; their exact outline is hard to separate from the diamond in renders. The overall underside slope (Y 12.5 at X 24 to Y 21.5 at the butt) matters, not the exact box breaks.
 - **Texture noise** was sampled by region, not by pixel; the black parts have noise at the 1-in-256 level that is not worth reproducing.
 - **Muzzle flash offset** (in the renderer's own units) cannot be turned into a model-space point with certainty; the barrel tip is the safe choice.
+
+## Round 2 corrections (orchestrator review)
+
+Round 1 comparison (side-view IoU 0.961, front 0.857, back 0.867, worst view below the 0.93 bar). Facts the builder must fix, in words:
+
+- **Overall width.** The original's widest part across Z is 6.5 units (0.408 block); ours is 6.4. Width is right, so the front and back error comes from the *shape* of the front and back faces, not the total.
+- **Front face.** The original's receiver front reads as one solid green slab with a single black diamond (the scope tube) above it and a small black block for the front sight. Ours shows two black vertical stripes running down the receiver front and a second small diamond overlapping the receiver. Remove the stripes: the front face of the receiver and of the light-green foregrip post below it are plain, unbroken green. The post is a solid lighter-green slab with no dark bands on any face.
+- **Carry handle and scope.** In the side view the original has an open frame: a flat black rail along the top, with two thin black struts forming a hollow triangle under the scope, so the gap between the rail and the receiver top is see-through. Ours fills this with a solid green riser under the scope. Make it open again, and make the scope and its mount black, not green.
+- **Magazine.** The original's magazine is a dark gray, mostly plain slab with only faint ribbing; ours is a light gray with strong stripes. Darken it and cut the contrast of the ribs by about half.
+- **Muzzle end.** The original barrel is thinner and longer past the foregrip; it reads as a thin black needle. Ours is slightly thick near the muzzle.
+- Keep the 0.402 to 0.408 width, the 4.375-block length, and the camo set.

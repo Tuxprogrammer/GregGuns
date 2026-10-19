@@ -281,3 +281,13 @@ All transforms apply to the model as a whole, in block units, in this order for 
 - **The gray gas block versus the collar overlap.** The two gray diamonds overlap and both read as "gray steel"; the exact split (one box or two) is less important than the stepped two-tier look.
 - **The 11 maroon dots** are an in-joke detail (safety, rivets) of unknown intent. Optional.
 - **The 0.99 and 0.8 and 0.9 shrinks** in the original (a few boxes are 1 percent to 20 percent narrower than their nominal size) are not worth copying except where stated: the scope bells (3.8 across), the collar (2.8), the gas block (2.3) and the barrel (2).
+
+## Round 2 corrections (orchestrator review)
+
+Round 1 comparison (side 0.975, iso 0.98, top 0.945, front 0.878, back 0.877, below the 0.93 bar on front and back).
+
+- **Width.** The original is 7.4 units wide (0.463 block) at its widest; ours is 7.0 (0.438). Widen by 0.4 unit. The extra width belongs to the handguard side rails and stock slabs (the front half and rear half), not the middle.
+- **Back view.** The original's buttpad is a black plate ribbed with many fine horizontal stripes (about 12 dark and light bands over its height). Ours is a flat black plate. Paint the horizontal ribs. Above the buttpad the original shows a cheek slab with a visible step down; ours is a smooth block.
+- **Front view.** The original's receiver face shows a distinct wide step (the handguard rails sticking out on both sides of the barrel root, about 1 unit each side), with the foregrip and magazine visible below as tan. Ours is a narrow column; the rails are too thin.
+- **Black camo (checked against the original's black texture).** The original's black variant is purely neutral gray: there are no olive or green-tinted pixels anywhere on it. Ours is wrong in two places: the **magazine's lower rear olive patch (#6A6C49)** must become a neutral gray (use #2F2F2F to #404040, matching the table above), and the **diagonal hatch marks under the stock heel** must be the neutral dark gray of that region (#202020 with #181818 grooves), not the tan-era dark olive (#616249). The Picatinny stripes in this variant also must be neutral: alternate #383838 and #202020, no olive.
+- Keep the tan variant as is.
