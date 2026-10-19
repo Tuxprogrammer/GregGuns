@@ -20,7 +20,7 @@ import cpw.mods.fml.common.gameevent.TickEvent;
  * from a clean state. Client only.
  */
 // Spec: docs/techguns-spec/01-core/index.md CORE-14; docs/techguns-spec/05-armor/set-bonuses.md section 3.1 step 5
-final class StepHeightClient {
+public final class StepHeightClient {
 
     private StepHeightPolicy.State state = StepHeightPolicy.State.UNTOUCHED;
     private EntityClientPlayerMP lastPlayer;
