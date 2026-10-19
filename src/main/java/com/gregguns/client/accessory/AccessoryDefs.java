@@ -130,72 +130,89 @@ public final class AccessoryDefs {
 
     private static AccessoryDef oxygenTanks() {
         return AccessoryDef.builder("oxygen_tanks", Mount.BACK, 64, 64, 1.0f / 16.0f)
-            // BEGIN BOXES (placeholder)
+            // BEGIN BOXES
+            // Source: docs/techguns-spec/05-armor/model-notes/oxygen_tanks.md (notes z minus 2: z = 0 is the back).
             .textures("oxygen_tanks")
-            .box("tank_left", 4, 10, 4, 1.0f, 2.0f, 0.5f)
-            .box("shoulder_left", 3, 1, 3, 1.5f, 1.0f, 1.0f)
-            .box("neck_left", 2, 1, 2, 2.0f, 0.0f, 1.5f)
-            .box("tank_right", 4, 10, 4, -5.0f, 2.0f, 0.5f)
-            .box("shoulder_right", 3, 1, 3, -4.5f, 1.0f, 1.0f)
-            .box("neck_right", 2, 1, 2, -4.0f, 0.0f, 1.5f)
-            .box("bracket", 2, 7, 2, -1.0f, 2.5f, 0.0f)
-            // END BOXES
+            .box("tank_right", 3, 9, 3, -4.0f, 0.0f, 0.5f)
+            .box("tank_left", 3, 9, 3, 1.0f, 0.0f, 0.5f)
+            .box("harness", 2, 6, 3, -1.0f, 1.0f, 0.0f)
+            .box("valve_right", 2, 1, 2, -3.5f, -1.0f, 1.0f)
+            .box("valve_left", 2, 1, 2, 1.5f, -1.0f, 1.0f)
             .build();
     }
 
     private static AccessoryDef jumpPack() {
         return AccessoryDef.builder("jump_pack", Mount.BACK, 64, 64, 1.0f / 16.0f)
-            // BEGIN BOXES (placeholder)
+            // BEGIN BOXES
+            // Source: docs/techguns-spec/05-armor/model-notes/jump_pack.md (notes z minus 2: z = 0 is the back).
             .textures("jump_pack")
-            .box("frame", 3, 5, 3, -1.5f, 2.0f, 0.0f)
-            .box("pod_left", 2, 6, 2, 1.5f, 1.0f, 0.5f)
-            .box("pod_right", 2, 6, 2, -3.5f, 1.0f, 0.5f)
-            .box("cap_left", 2, 1, 2, 1.5f, 0.0f, 0.5f)
-            .box("cap_right", 2, 1, 2, -3.5f, 0.0f, 0.5f)
-            .box("nozzle_left", 2, 1, 2, 1.5f, 7.0f, 0.5f)
-            .box("nozzle_right", 2, 1, 2, -3.5f, 7.0f, 0.5f)
-            .box("fin_left", 5, 5, 1, 3.5f, 2.0f, 1.0f)
-            .box("fin_right", 5, 5, 1, -8.5f, 2.0f, 1.0f)
-            // END BOXES
+            .box("spine", 4, 7, 4, -2.0f, 1.0f, 0.0f)
+            .box("cylinder_right", 3, 9, 3, -5.0f, 0.0f, 0.5f)
+            .box("cylinder_left", 3, 9, 3, 2.0f, 0.0f, 0.5f)
+            .box("cap_right", 2, 2, 2, -4.5f, -2.0f, 1.0f)
+            .box("cap_left", 2, 2, 2, 2.5f, -2.0f, 1.0f)
             .build();
     }
 
     private static AccessoryDef antiGravityPack() {
         return AccessoryDef.builder("anti_gravity_pack", Mount.BACK, 64, 64, 1.0f / 16.0f)
-            // BEGIN BOXES (placeholder)
+            // BEGIN BOXES
+            // Source: docs/techguns-spec/05-armor/model-notes/anti_gravity_pack.md (notes z minus 2: z = 0 is the
+            // back).
             .textures(
                 "anti_gravity_pack",
                 "anti_gravity_pack_bronze",
                 "anti_gravity_pack_black",
                 "anti_gravity_pack_dark_green",
                 "anti_gravity_pack_silver")
-            .box("ring_left", 3, 11, 4, 5.0f, 0.0f, 0.0f)
-            .box("ring_right", 3, 11, 4, -8.0f, 0.0f, 0.0f)
-            .box("plate", 10, 8, 3, -5.0f, 1.5f, 2.5f)
-            .box("core", 5, 5, 3, -2.5f, 3.0f, 5.5f)
+            .box("slab", 6, 6, 3, -3.0f, 1.0f, 0.0f)
+            .box("pillar_right", 2, 7, 2, -5.0f, 0.5f, 0.5f)
+            .box("pillar_left", 2, 7, 2, 3.0f, 0.5f, 0.5f)
+            .box("plate", 5, 4, 1, -2.5f, 2.0f, 3.0f)
+            // The core: a 3x3x3 cube turned 45 degrees about the front-to-back axis, centered at x 0, y 4.
+            .box("core", 3, 3, 3, -1.5f, 2.5f, 2.5f)
             .rot(0.0f, 0.0f, 45.0f)
-            .box("emitter_top_left", 2, 2, 2, 5.0f, 2.0f, 4.0f)
-            .box("emitter_bottom_left", 2, 2, 2, 5.0f, 7.0f, 4.0f)
-            .box("emitter_top_right", 2, 2, 2, -7.0f, 2.0f, 4.0f)
-            .box("emitter_bottom_right", 2, 2, 2, -7.0f, 7.0f, 4.0f)
-            // END BOXES
+            .box("clamp_right_upper", 2, 1, 1, -4.0f, 2.5f, 2.5f)
+            .box("clamp_right_lower", 2, 1, 1, -4.0f, 4.5f, 2.5f)
+            .box("clamp_left_upper", 2, 1, 1, 2.0f, 2.5f, 2.5f)
+            .box("clamp_left_lower", 2, 1, 1, 2.0f, 4.5f, 2.5f)
             .build();
     }
 
     private static AccessoryDef glider() {
         return AccessoryDef.builder("glider", Mount.BACK, 64, 64, 1.0f / 16.0f)
-            // BEGIN BOXES (placeholder)
+            // BEGIN BOXES
+            // Source: docs/techguns-spec/05-armor/model-notes/glider.md (notes z minus 2: z = 0 is the back).
+            // Part 0 is the folded pack (always worn); parts 1 (left) and 2 (right) are the flat wings, drawn only
+            // while deployed. They do not rotate: the hinges just group them.
             .textures("glider")
-            .hinge(1, 5.0f, 0.0f, 2.0f)
-            .hinge(2, -5.0f, 0.0f, 2.0f)
-            .box("harness", 4, 6, 2, -2.0f, 0.0f, 0.0f)
-            .box("panel_inner_left", 3, 5, 1, 2.0f, 0.5f, 1.0f)
-            .box("panel_inner_right", 3, 5, 1, -5.0f, 0.5f, 1.0f)
-            .box("panel_outer_left", 4, 4, 1, 5.0f, 1.0f, 1.0f)
+            .hinge(1, 3.5f, 0.0f, 2.0f)
+            .hinge(2, -3.5f, 0.0f, 2.0f)
+            .box("pack", 7, 10, 4, -3.5f, 0.5f, 0.0f)
+            .box("inner_rim_left", 6, 1, 2, 3.5f, 1.0f, 2.0f)
             .part(1)
-            .box("panel_outer_right", 4, 4, 1, -9.0f, 1.0f, 1.0f)
+            .box("inner_rib_left", 1, 7, 2, 8.5f, 2.0f, 2.0f)
+            .part(1)
+            .box("inner_sail_left", 5, 7, 1, 3.5f, 2.0f, 2.5f)
+            .part(1)
+            .box("outer_rim_left", 7, 1, 2, 9.5f, 2.0f, 2.0f)
+            .part(1)
+            .box("outer_rib_left", 1, 6, 2, 15.5f, 3.0f, 2.0f)
+            .part(1)
+            .box("outer_sail_left", 6, 6, 1, 9.5f, 3.0f, 2.5f)
+            .part(1)
+            .box("inner_rim_right", 6, 1, 2, -9.5f, 1.0f, 2.0f)
             .part(2)
-            // END BOXES
+            .box("inner_rib_right", 1, 7, 2, -9.5f, 2.0f, 2.0f)
+            .part(2)
+            .box("inner_sail_right", 5, 7, 1, -8.5f, 2.0f, 2.5f)
+            .part(2)
+            .box("outer_rim_right", 7, 1, 2, -16.5f, 2.0f, 2.0f)
+            .part(2)
+            .box("outer_rib_right", 1, 6, 2, -16.5f, 3.0f, 2.0f)
+            .part(2)
+            .box("outer_sail_right", 6, 6, 1, -15.5f, 3.0f, 2.5f)
+            .part(2)
             .build();
     }
 }

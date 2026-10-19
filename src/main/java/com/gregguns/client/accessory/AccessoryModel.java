@@ -79,14 +79,14 @@ public final class AccessoryModel extends ModelBase {
     }
 
     /**
-     * Folds the hinged parts: 0 is deployed (as authored), 1 is stowed (a half turn about the hinge, so the outer wings
-     * lie behind the inner ones).
+     * Stows or deploys the hinged parts. The glider's wings are flat and never turn; they pop in and out, so the folded
+     * pack alone remains when stowed.
      *
-     * @param fold 0 to 1
+     * @param fold 0 is deployed (as authored), 1 is stowed; the wings show while it is under one half
      */
     public void setFold(float fold) {
         for (int p = 1; p < hinges.length; p++) {
-            hinges[p].rotateAngleY = (p == 1 ? 1.0f : -1.0f) * fold * (float) Math.PI;
+            hinges[p].showModel = fold < 0.5f;
         }
     }
 

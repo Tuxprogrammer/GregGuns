@@ -220,134 +220,166 @@ def goggles(layout, rng, p):
     return sh
 
 
+def cylinder(sh, b, body, hi, shadow, ends):
+    """A square-section box painted round: a lighter vertical center stripe, darker edge columns, darker ends."""
+    paint_box(sh, b, body, {"top": ends, "bottom": ends * 0.8}, seams=False)
+    for face in ("front", "back", "left", "right"):
+        x, y, w, h = faces(b)[face]
+        sh.fill(x, y, w, h, body)
+        sh.fill(x + w // 2, y, 1 if w % 2 else 2, h, hi)
+        sh.fill(x, y, 1, h, shadow)
+        sh.fill(x + w - 1, y, 1, h, shadow)
+        sh.fill(x, y + h - 1, w, 1, ends)
+
+
+def band(sh, b, rows, color, hi=None):
+    """A strap ring: full-width rows across the four side faces."""
+    for face in ("front", "back", "left", "right"):
+        x, y, w, h = faces(b)[face]
+        for r in rows:
+            sh.fill(x, y + r, w, 1, color)
+            if hi is not None:
+                sh.px(x + w // 2, y + r, hi)
+
+
+# Source: docs/techguns-spec/05-armor/model-notes/oxygen_tanks.md, section 5 (palette).
 def oxygen_tanks(layout, rng, p):
     sh = Sheet(layout["textureWidth"], layout["textureHeight"], rng)
     B = by_name(layout)
-    steel = hexc("#8e9398")
-    black = hexc("#141517")
     for n in ("tank_left", "tank_right"):
-        t = B[n]
-        paint_box(sh, t, steel, {"top": hexc("#a4a9ae"), "bottom": hexc("#5d6165")})
-        # a soft vertical highlight and two thin dark straps wrapping all four sides
-        for face in ("front", "back", "left", "right"):
-            x, y, w, h = faces(t)[face]
-            sh.mul(x + 1, y + 1, 1, h - 2, 1.12)
-            sh.fill(x, y + 3, w, 1, black)
-            sh.fill(x, y + h - 3, w, 1, black)
-            sh.mul(x, y + 2, w, 1, 1.2)
-    for n in ("shoulder_left", "shoulder_right"):
-        paint_box(sh, B[n], hexc("#a0a5aa"))
-    for n in ("neck_left", "neck_right"):
-        paint_box(sh, B[n], hexc("#6c7176"), {"top": hexc("#3d4044")})
-    paint_box(sh, B["bracket"], hexc("#17181a"))
-    rect_on(sh, B["bracket"], "back", 0, 1, 2, 1, hexc("#2b2d31"))
-    rect_on(sh, B["bracket"], "back", 0, 5, 2, 1, hexc("#2b2d31"))
+        cylinder(sh, B[n], hexc("#888888"), hexc("#989898"), hexc("#585858"), hexc("#686868"))
+        band(sh, B[n], (2, 6), hexc("#181818"), hexc("#282828"))
+    paint_box(sh, B["harness"], hexc("#080808"), seams=False)
+    for face, (x, y, w, h) in faces(B["harness"]).items():
+        sh.fill(x, y, w, 1, hexc("#181818"))
+    for n in ("valve_left", "valve_right"):
+        paint_box(sh, B[n], hexc("#989898"), {"top": hexc("#A8A8A8"), "bottom": hexc("#686868")}, seams=False)
     return sh
 
 
+# Source: docs/techguns-spec/05-armor/model-notes/jump_pack.md, section 5 (palette).
 def jump_pack(layout, rng, p):
     sh = Sheet(layout["textureWidth"], layout["textureHeight"], rng)
     B = by_name(layout)
-    gray = hexc("#aeb2b7")
-    black = hexc("#1e2022")
-    brown = hexc("#4f3b2c")
-    for n in ("pod_left", "pod_right"):
-        paint_box(sh, B[n], gray, {"top": hexc("#c0c4c8")})
+    for n in ("cylinder_left", "cylinder_right"):
+        cylinder(sh, B[n], hexc("#A8A8A8"), hexc("#B8B8B8"), hexc("#686868"), hexc("#A8A8A8"))
+        # dark nozzle ends: the lowest two rows of every side face and the bottom
         for face in ("front", "back", "left", "right"):
             x, y, w, h = faces(B[n])[face]
-            sh.fill(x, y + 2, w, 1, hexc("#4b4f54"))
-            sh.fill(x, y + h - 2, w, 1, hexc("#4b4f54"))
+            sh.fill(x, y + h - 2, w, 2, hexc("#282828"))
+            sh.fill(x, y + h - 2, w, 1, hexc("#383838"))
+        x, y, w, h = faces(B[n])["bottom"]
+        sh.fill(x, y, w, h, hexc("#181818"))
     for n in ("cap_left", "cap_right"):
-        paint_box(sh, B[n], hexc("#e8c81c"))
-        for face in ("top", "front", "back", "left", "right"):
-            stripes_on(sh, B[n], face, hexc("#e8c81c"), black)
-    for n in ("nozzle_left", "nozzle_right"):
-        paint_box(sh, B[n], hexc("#26282a"), {"bottom": hexc("#ff8a2a")})
-    paint_box(sh, B["frame"], brown)
+        for face, (x, y, w, h) in faces(B[n]).items():
+            for j in range(h):
+                for i in range(w):
+                    sh.px(x + i, y + j, hexc("#F0D818") if (i + j) % 2 == 0 else hexc("#181818"))
+        x, y, w, h = faces(B[n])["bottom"]
+        sh.fill(x, y, w, h, hexc("#787878"))
+    sp = B["spine"]
+    paint_box(sh, sp, hexc("#382828"), {"top": hexc("#484038")}, seams=False)
     for face in ("front", "back", "left", "right"):
-        x, y, w, h = faces(B["frame"])[face]
-        sh.fill(x, y + 1, w, 1, hexc("#7a7e83"))
-        sh.fill(x, y + h - 2, w, 1, hexc("#7a7e83"))
-    for n in ("fin_left", "fin_right"):
-        fin = B[n]
-        paint_box(sh, fin, black, seams=False)
-        for face in ("front", "back"):
-            x, y, w, h = faces(fin)[face]
-            sh.fill(x + 1, y + 1, w - 2, h - 2, hexc("#c4c7cb"))
-            sh.mul(x + 1, y + 1, w - 2, 1, 1.1)
-            sh.mul(x + 1, y + h - 2, w - 2, 1, 0.82)
+        x, y, w, h = faces(sp)[face]
+        sh.fill(x, y, w, 1, hexc("#484038"))
+        sh.fill(x, y + h - 1, w, 1, hexc("#282018"))
+    # three lighter strap bands (rows 1, 3 and 5 of the 7 tall spine) around the sides
+    band(sh, sp, (1, 3, 5), hexc("#888888"), hexc("#A8A8A8"))
     return sh
 
 
+# Source: docs/techguns-spec/05-armor/model-notes/anti_gravity_pack.md, section 5 (palette and camos).
+# body, highlight, shadow, plate, plate highlight, core base, core light, core dark, clamp, accent
 ANTIGRAV = {
-    "anti_gravity_pack": "#9a9ea5",
-    "anti_gravity_pack_bronze": "#a47a47",
-    "anti_gravity_pack_black": "#2f3136",
-    "anti_gravity_pack_dark_green": "#3b5b3d",
-    "anti_gravity_pack_silver": "#c9cdd3",
+    "anti_gravity_pack": ("#A8A8A8", "#C8C8C8", "#686868", "#787878", "#989898", "#10B0D8", "#50D8F0", "#0C6A80",
+                          "#282828", None),
+    "anti_gravity_pack_bronze": ("#C8A858", "#D8B858", "#887838", "#685828", "#887838", "#10B0D8", "#50D8F0",
+                                 "#0C6A80", "#282818", None),
+    "anti_gravity_pack_black": ("#181818", "#383838", "#080808", "#282828", "#484848", "#C81818", "#F05848",
+                                "#881808", "#282828", "#981818"),
+    "anti_gravity_pack_dark_green": ("#182818", "#183818", "#081808", "#183818", "#284828", "#10B0D8", "#50D8F0",
+                                     "#0C6A80", "#081808", "#D8D8C8"),
+    "anti_gravity_pack_silver": ("#D8D8D8", "#F8F8F8", "#989898", "#B8B8B8", "#E8E8E8", "#10B0D8", "#50D8F0",
+                                 "#0C6A80", "#383838", None),
 }
 
 
 def anti_gravity(layout, rng, p):
     sh = Sheet(layout["textureWidth"], layout["textureHeight"], rng)
     B = by_name(layout)
-    base = hexc(ANTIGRAV[p])
-    dark = base * 0.62
-    for n in ("ring_left", "ring_right"):
-        paint_box(sh, B[n], base * 0.94)
-        for face in ("left", "right", "front", "back"):
+    body, hi, shadow, plate_c, plate_hi, core_c, core_hi, core_lo, clamp_c, accent = (
+        hexc(c) if c else None for c in ANTIGRAV[p])
+    for n in ("slab", "pillar_left", "pillar_right"):
+        paint_box(sh, B[n], body, seams=False)
+        for face in ("front", "back", "left", "right"):
             x, y, w, h = faces(B[n])[face]
-            sh.fill(x, y, w, 1, base * 0.7)
-            sh.fill(x, y + h - 1, w, 1, base * 0.7)
-            sh.mul(x + w // 2, y + 1, 1, h - 2, 1.1)
-    plate = B["plate"]
-    paint_box(sh, plate, base)
-    x, y, w, h = faces(plate)["back"]
-    sh.fill(x + 1, y + 1, w - 2, h - 2, dark)
-    sh.fill(x + 2, y + 2, w - 4, h - 4, base * 1.04)
-    x, y, w, h = faces(plate)["front"]
-    sh.fill(x + 1, y + 1, w - 2, h - 2, base * 1.04)
+            sh.fill(x, y, w, 1, hi)
+            if n != "slab":
+                sh.fill(x, y, 1, h, shadow)
+            sh.fill(x + w - 1, y, 1, h, shadow)
+            sh.fill(x, y + h - 1, w, 1, shadow)
+    pl = B["plate"]
+    paint_box(sh, pl, plate_c, seams=False)
+    x, y, w, h = faces(pl)["back"]
+    sh.fill(x, y, w, h, plate_c)
+    sh.fill(x, y, w, 1, plate_hi)
+    sh.fill(x, y + h - 1, w, 1, shadow)
+    if accent is not None:
+        sh.px(x, y + h // 2, accent)
+        sh.px(x + w - 1, y + h // 2, accent)
     core = B["core"]
-    paint_box(sh, core, hexc("#0e9fcf"), seams=False)
-    for face in ("front", "back"):
-        x, y, w, h = faces(core)[face]
+    paint_box(sh, core, core_c, seams=False)
+    # faceted: light upper-left, dark lower-right on every face
+    for face, (x, y, w, h) in faces(core).items():
         for j in range(h):
             for i in range(w):
                 t = (i + j) / max(1, w + h - 2)
-                sh.px(x + i, y + j, hexc("#52dcff") * (1 - t) + hexc("#0a6f93") * t)
-        edge = hexc("#0a6f93")
-        sh.fill(x, y, w, 1, edge)
-        sh.fill(x, y + h - 1, w, 1, edge)
-        sh.fill(x, y, 1, h, edge)
-        sh.fill(x + w - 1, y, 1, h, edge)
-    for n in ("emitter_top_left", "emitter_bottom_left", "emitter_top_right", "emitter_bottom_right"):
-        paint_box(sh, B[n], hexc("#1a1b1d"))
-        rect_on(sh, B[n], "back", 0, 0, 2, 1, hexc("#3a3d42"))
+                sh.px(x + i, y + j, core_hi * (1 - t) + core_lo * t)
+        sh.px(x + w // 2, y + h // 2, core_c)
+    for n in ("clamp_left_upper", "clamp_left_lower", "clamp_right_upper", "clamp_right_lower"):
+        paint_box(sh, B[n], clamp_c, seams=False)
+        rect_on(sh, B[n], "back", 0, 0, 2, 1, clamp_c * 1.4)
     return sh
 
 
+# Source: docs/techguns-spec/05-armor/model-notes/glider.md, section 5 (palette).
 def glider(layout, rng, p):
     sh = Sheet(layout["textureWidth"], layout["textureHeight"], rng)
     B = by_name(layout)
-    brown = hexc("#4d3827")
-    frame = hexc("#868a8e")
-    sail = hexc("#c7c996")
-    paint_box(sh, B["harness"], brown)
-    x, y, w, h = faces(B["harness"])["back"]
-    sh.fill(x, y + 1, w, 1, hexc("#2e2118"))
-    sh.fill(x, y + h - 2, w, 1, hexc("#2e2118"))
-    sh.fill(x + w // 2 - 1, y + 2, 2, 2, hexc("#9a9ea2"))
-    for n in ("panel_inner_left", "panel_inner_right", "panel_outer_left", "panel_outer_right"):
-        pn = B[n]
-        paint_box(sh, pn, frame, seams=False)
-        for face in ("front", "back"):
-            x, y, w, h = faces(pn)[face]
-            # a thin rim on top and bottom only; the sail runs the full width so neighbors read as one sheet
-            sh.fill(x, y + 1, w, h - 2, sail)
-            sh.mul(x, y + 1, w, 1, 1.08)
-            sh.mul(x, y + h - 2, w, 1, 0.84)
-            if w >= 4:
-                sh.mul(x + w // 2, y + 1, 1, h - 2, 0.93)
+    brown, brown_hi, brown_lo = hexc("#584838"), hexc("#685838"), hexc("#382828")
+    frame, frame_hi, frame_lo = hexc("#787878"), hexc("#989898"), hexc("#585858")
+    sail, sail_hi, sail_lo = hexc("#C8C8A0"), hexc("#D8D8B0"), hexc("#A0A080")
+    pk = B["pack"]
+    paint_box(sh, pk, brown, {"top": brown_hi, "bottom": brown_lo}, seams=False)
+    for face in ("front", "back", "left", "right"):
+        x, y, w, h = faces(pk)[face]
+        sh.fill(x, y, w, h, brown)
+        sh.fill(x, y, w, 1, brown_hi)
+        sh.fill(x, y + h - 1, w, 1, brown_lo)
+        sh.fill(x + w - 1, y, 1, h, brown_lo)
+        sh.fill(x, y + h // 2, w, 1, brown_lo)  # canvas seam row
+    for face in ("left", "right"):
+        # the lighter gray strip inset on each side face
+        x, y, w, h = faces(pk)[face]
+        sh.fill(x + 1, y + 1, w - 2, h - 2, frame)
+        sh.fill(x + 1, y + 1, w - 2, 1, frame_hi)
+        sh.fill(x + 1, y + h - 2, w - 2, 1, frame_lo)
+    for n, b in B.items():
+        if n == "pack":
+            continue
+        if "sail" in n:
+            paint_box(sh, b, frame, seams=False)
+            for face in ("front", "back"):
+                x, y, w, h = faces(b)[face]
+                sh.fill(x, y, w, h, sail)
+                sh.fill(x, y, w, 1, sail_hi)
+                sh.fill(x, y + h - 1, w, 1, sail_lo)
+                sh.fill(x + w // 2, y, 1, h, sail_lo)
+        else:
+            paint_box(sh, b, frame, seams=False)
+            for face, (x, y, w, h) in faces(b).items():
+                sh.fill(x, y, w, 1, frame_hi)
+                sh.fill(x, y + h - 1, w, 1, frame_lo)
     return sh
 
 
