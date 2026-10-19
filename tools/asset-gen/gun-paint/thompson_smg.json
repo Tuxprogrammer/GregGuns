@@ -1,0 +1,297 @@
+{
+ "gun": "thompson_smg",
+ "textures": [
+  {
+   "file": "thompson_smg.png"
+  }
+ ],
+ "roles": {
+  "receiver": {
+   "material": "steel",
+   "base": "#55524C",
+   "scratches": false,
+   "noise": 0.035,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  },
+  "barrel": {
+   "material": "steel",
+   "base": "#57534E",
+   "scratches": false,
+   "noise": 0.025,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  },
+  "steel": {
+   "material": "steel",
+   "base": "#57534E",
+   "scratches": false,
+   "noise": 0.035,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  },
+  "rail": {
+   "material": "steel",
+   "base": "#5B5753",
+   "scratches": false,
+   "noise": 0.035,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  },
+  "dark": {
+   "material": "steel",
+   "base": "#43403C",
+   "scratches": false,
+   "noise": 0.03,
+   "bevel": [
+    1.04,
+    0.95
+   ]
+  },
+  "sight": {
+   "material": "flat",
+   "base": "#57534E"
+  },
+  "stock": {
+   "material": "wood",
+   "base": "#7A4A1F",
+   "calm": 0.3,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "butt": {
+   "material": "wood",
+   "base": "#72451D",
+   "calm": 0.3,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "forend": {
+   "material": "wood",
+   "base": "#7C4B1F",
+   "calm": 0.3,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  },
+  "grip": {
+   "material": "wood",
+   "base": "#74471F",
+   "calm": 0.3,
+   "bevel": [
+    1.03,
+    0.96
+   ]
+  }
+ },
+ "boxes": {
+  "receiver": {
+   "role": "receiver",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.04
+    },
+    {
+     "type": "seam",
+     "faces": [
+      "top",
+      "front",
+      "back"
+     ],
+     "axis": "v",
+     "at": 3,
+     "dark": 0.9,
+     "light": 1.0
+    }
+   ]
+  },
+  "barrel": {
+   "role": "barrel",
+   "bevel": [
+    1.0,
+    1.0
+   ],
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "left"
+     ],
+     "color": "#0A0A0B"
+    },
+    {
+     "type": "tone",
+     "faces": [
+      "top"
+     ],
+     "f": 1.05
+    }
+   ]
+  },
+  "front_sight": {
+   "role": "sight",
+   "bevel": [
+    1,
+    1
+   ]
+  },
+  "rear_leaf_a": {
+   "role": "sight",
+   "bevel": [
+    1,
+    1
+   ]
+  },
+  "rear_leaf_b": {
+   "role": "sight",
+   "bevel": [
+    1,
+    1
+   ]
+  },
+  "rear_cross": {
+   "role": "sight",
+   "bevel": [
+    1,
+    1
+   ]
+  },
+  "ledge": {
+   "role": "dark"
+  },
+  "front_plate": {
+   "role": "dark"
+  },
+  "forend": {
+   "role": "forend",
+   "painters": [
+    {
+     "type": "inset",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 0,
+     "w": 9,
+     "h": 2,
+     "shade": 0.72
+    }
+   ]
+  },
+  "slab": {
+   "role": "steel",
+   "painters": [
+    {
+     "type": "tone",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "f": 1.03
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 2,
+     "w": 1,
+     "h": 1,
+     "color": "#625B57"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 2,
+     "y": 6,
+     "w": 1,
+     "h": 1,
+     "color": "#625B57"
+    }
+   ]
+  },
+  "rail": {
+   "role": "rail"
+  },
+  "grip_top": {
+   "role": "steel"
+  },
+  "guard_post": {
+   "role": "steel"
+  },
+  "guard_floor": {
+   "role": "steel",
+   "bevel": [
+    1,
+    1
+   ]
+  },
+  "grip": {
+   "role": "grip"
+  },
+  "butt": {
+   "role": "butt"
+  },
+  "stock_body": {
+   "role": "stock",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 9,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "color": "#1A120A"
+    }
+   ]
+  },
+  "comb": {
+   "role": "stock"
+  },
+  "foot": {
+   "role": "stock"
+  },
+  "bridge_a": {
+   "role": "stock"
+  },
+  "bridge_b": {
+   "role": "stock"
+  },
+  "bridge_c": {
+   "role": "stock"
+  },
+  "notch_a": {
+   "role": "stock"
+  },
+  "notch_b": {
+   "role": "stock"
+  }
+ }
+}
