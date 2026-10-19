@@ -2,6 +2,7 @@ package com.gregguns.projectile;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.Random;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -25,6 +26,9 @@ import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.def.GunDefinitions;
 import com.gregguns.gun.def.RocketLauncherDef;
 import com.gregguns.gun.logic.GunStats;
+import com.gregguns.gun.logic.ShotContext;
+import com.gregguns.gun.logic.ShotOffset;
+import com.gregguns.gun.logic.SpreadModel;
 import com.gregguns.gun.server.GunRig;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.recipe.GunRecipeScenarios;
@@ -341,17 +345,31 @@ public final class LauncherScenarios {
             int wallDx = kind == Kind.SELF || kind == Kind.NOSELF ? 2 : 5;
             restore(kind == Kind.BLOCKS, kind != Kind.NOSELF);
             GunRig rig = new GunRig(ctx, GunItems.get(RocketLauncherDef.NAME), 1, CORRIDOR);
-            sturdy(rig.shooter);
             dirtWall(ctx, wallDx);
             // Beside the impact, off the rocket's line: one block to the side, in front of the wall.
             EntityZombie witness = sturdy(ctx, wallDx - 0.8, 1.0);
+            // A FakePlayer is not in the world's entity list, so a blast never finds it: the self-damage kinds fire
+            // from
+            // a zombie standing where the shooter would, which the blast does find.
+            boolean selfKind = kind == Kind.SELF || kind == Kind.NOSELF;
+            EntityZombie owner = selfKind ? sturdy(ctx, 0.0, 0.0) : null;
             Tracker<RocketProjectile> rocket = new Tracker<>(ctx, RocketProjectile.class);
             GrenadeScenarios.CancelStart cancel = kind == Kind.CANCELLED ? new GrenadeScenarios.CancelStart() : null;
             if (cancel != null) {
                 MinecraftForge.EVENT_BUS.register(cancel);
             }
-            float healthBefore = rig.shooter.getHealth();
-            pull(rig);
+            float healthBefore = selfKind ? owner.getHealth() : 0.0F;
+            if (selfKind) {
+                owner.rotationYaw = -90.0F;
+                owner.rotationYawHead = -90.0F;
+                owner.rotationPitch = 0.0F;
+                ShotOffset offset = SpreadModel
+                    .roll(new Random(5L), RocketLauncherDef.STATS, ShotContext.DEFAULT, 0)[0];
+                Projectiles.launcher()
+                    .launch(ctx.world(), owner, RocketLauncherDef.STATS, offset, 1.0F);
+            } else {
+                pull(rig);
+            }
             Runnable done = () -> {
                 restore(savedBlocks, savedSelf);
                 if (cancel != null) {
@@ -386,9 +404,6 @@ public final class LauncherScenarios {
                                 + splash
                                 + " but lost "
                                 + lost(witness));
-                        out.check(
-                            rig.shooter.getHealth() == healthBefore,
-                            "the shooter 5 blocks away should be untouched");
                         break;
                     case BLOCKS:
                         out.check(air > 0, "block damage on: the rocket should break dirt at the impact");
@@ -400,13 +415,13 @@ public final class LauncherScenarios {
                         break;
                     case SELF:
                         out.check(
-                            rig.shooter.getHealth() < healthBefore,
-                            "the shooter in the blast should be hurt (PFX-25), health " + rig.shooter.getHealth());
+                            owner.getHealth() < healthBefore,
+                            "the shooter in the blast should be hurt (PFX-25), health " + owner.getHealth());
                         break;
                     case NOSELF:
                         out.check(
-                            rig.shooter.getHealth() == healthBefore,
-                            "with selfDamage off the shooter should be unhurt, health " + rig.shooter.getHealth());
+                            owner.getHealth() == healthBefore,
+                            "with selfDamage off the shooter should be unhurt, health " + owner.getHealth());
                         break;
                     default:
                         out.checkEquals("wall blocks broken", 0, air);
