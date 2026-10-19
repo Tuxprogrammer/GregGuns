@@ -28,7 +28,8 @@ public final class GregGunsConfig {
             EquipmentConfig.class,
             FlightConfig.class,
             MachinesConfig.class,
-            UtilityConfig.class));
+            UtilityConfig.class,
+            NpcConfig.class));
 
     private GregGunsConfig() {}
 
