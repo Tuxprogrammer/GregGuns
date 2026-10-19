@@ -22,7 +22,9 @@ Layout file: {"gun", "texture": [w, h], "scale", "bodyRotationYDegrees", "boxes"
 Role map (`gun-paint/<gun>.json`): {"gun", "textures": [{"file": "handcannon.png", "variant": null | {...}}],
 "roles": {role: {"material", "base", ...}}, "boxes": {name: {"role", "grain", "wear", "painters": [...]}}}.
 Materials: steel (flat, edge highlights, faint scratches), wood (grain streaks along the box's grain axis, dark end
-grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore, bands, gradient, seam, inset.
+grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore, bands, gradient, tone, seam, inset.
+A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A box may be tilted about Z ("tilt") or
+about its long axis X ("tiltX", for a diamond bar), both about "pivot"; a size with a 0 is a zero-thickness plane.
 A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}}} or "camo" with a palette.
 """
 import json
@@ -101,11 +103,13 @@ def export_json(layout):
     out = []
     for b in layout["boxes"]:
         tilt = b.get("tilt", 0)
+        tilt_x = b.get("tiltX", 0)  # a turn about the gun's long axis (X), e.g. a square bar shown as a diamond
         pos = b["pos"]
-        rp = b["pivot"] if tilt else pos
-        off = [pos[i] - rp[i] for i in range(3)] if tilt else [0, 0, 0]
+        rp = b["pivot"] if (tilt or tilt_x) else pos
+        off = [pos[i] - rp[i] for i in range(3)] if (tilt or tilt_x) else [0, 0, 0]
         out.append({"name": b["name"], "part": b.get("part", 0), "uv": b["uv"], "rotationPoint": rp, "offset": off,
-                    "size": b["size"], "rotate": [0, 0, float(np.radians(tilt))], "mirror": False})
+                    "size": b["size"], "rotate": [float(np.radians(tilt_x)), 0, float(np.radians(tilt))],
+                    "mirror": False})
     return {"name": layout["gun"], "kind": "gun", "textureWidth": layout["texture"][0],
             "textureHeight": layout["texture"][1], "scale": layout["scale"],
             "bodyRotationYDegrees": layout.get("bodyRotationYDegrees", 90), "muzzle": layout.get("muzzle", [0, 0, 0]),
@@ -123,9 +127,12 @@ def java_rows(layout):
         w, h, d = b["size"]
         x, y, z = b["pos"]
         tilt = b.get("tilt", 0)
-        piv = "new float[] { %s, %s, %s }" % tuple(fnum(t) for t in b["pivot"]) if tilt else "NO_PIVOT"
-        rows.append("        new BoxSpec(\"%s\", %d, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s)," % (
-            b["name"], b.get("part", 0), b["uv"][0], b["uv"][1], w, h, d, fnum(x), fnum(y), fnum(z), piv, fnum(tilt)))
+        tilt_x = b.get("tiltX", 0)
+        piv = "new float[] { %s, %s, %s }" % tuple(fnum(t) for t in b["pivot"]) if (tilt or tilt_x) else "NO_PIVOT"
+        extra = ", " + fnum(tilt_x) if tilt_x else ""
+        rows.append("        new BoxSpec(\"%s\", %d, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s%s)," % (
+            b["name"], b.get("part", 0), b["uv"][0], b["uv"][1], w, h, d, fnum(x), fnum(y), fnum(z), piv, fnum(tilt),
+            extra))
     return "\n".join(rows)
 
 
@@ -140,17 +147,22 @@ def splice_java(path, rows):
 
 
 # ------------------------------------------------------------------ painting
-def steel(r, h, w, base, grain_along_x=True):
-    """Flat steel: a gentle large-scale tonal drift, faint hairline scratches, no speckle."""
+def steel(r, h, w, base, grain_along_x=True, scratches=True, noise=0.0):
+    """Flat steel: a gentle large-scale tonal drift, faint hairline scratches, no speckle.
+
+    `scratches` false skips the hairlines (a satin finish); `noise` adds per-pixel grain of that relative amplitude.
+    """
     b = hx(base) if isinstance(base, str) else np.asarray(base, float)
     drift = vnoise(r, h, w, max(3, w // 2), max(3, h // 2))
     rgb = np.tile(b, (h, w, 1)) * (0.96 + 0.07 * (drift - .5) * 2)[..., None]
-    for _ in range(max(1, (w * h) // 40)):
+    for _ in range(max(1, (w * h) // 40) if scratches else 0):
         x, y, n = int(r.integers(0, w)), int(r.integers(0, h)), int(r.integers(3, 7))
         if grain_along_x:
             mul(rgb, x, y, n, 1, 1.06 if r.random() < .5 else 0.94)
         else:
             mul(rgb, x, y, 1, n, 1.06 if r.random() < .5 else 0.94)
+    if noise:
+        rgb = np.clip(rgb * (1.0 + noise * (r.random((h, w)) - .5) * 2)[..., None], 0, 255)
     return rgb
 
 
@@ -232,6 +244,9 @@ def apply_painter(rgb, p, face):
         for y in range(h):
             f = top + (bot - top) * (y / max(1, h - 1))
             mul(rgb, 0, y, w, 1, f)
+    elif kind == "tone":  # lighten (f > 1) or darken (f < 1) a rectangle, default the whole face
+        x, y, pw, ph = face_xywh(p, w, h)
+        mul(rgb, x, y, pw, ph, p.get("f", 1.0))
     elif kind == "seam":  # a thin panel line across or along
         if p.get("axis", "v") == "v":
             mul(rgb, p["at"], 0, 1, h, 0.62)
@@ -270,7 +285,8 @@ def paint_face(box_spec, role_def, name, dims, face, fw, fh, seed_key):
     elif mat == "flat":
         rgb = np.tile(hx(base), (fh, fw, 1))
     else:
-        rgb = steel(r, fh, fw, base, grain_along_x=box_spec.get("grain", "x") == "x")
+        rgb = steel(r, fh, fw, base, grain_along_x=box_spec.get("grain", "x") == "x",
+                    scratches=role_def.get("scratches", True), noise=role_def.get("noise", 0.0))
     for p in box_spec.get("painters", []):
         if face in p.get("faces", FACES):
             apply_painter(rgb, p, face)
