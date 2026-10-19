@@ -127,8 +127,10 @@ class ScarProfileTest {
         assertEquals(2, box("strut_front").d());
         assertEquals(12, box("guard_left").w());
         assertEquals(12, box("guard_right").w());
-        assertEquals(2.0f, box("guard_left").z(), 1e-6);
-        assertEquals(-3.0f, box("guard_right").z(), 1e-6);
+        // Round 2: the handguard rails reach 3.4 out each side (7.4 wide with the knob), overlapping the receiver.
+        assertEquals(3.4f, box("guard_left").z() + box("guard_left").d(), 1e-6);
+        assertEquals(-3.4f, box("guard_right").z(), 1e-6);
+        assertEquals(5, box("cheek").d(), "the cheek slab is wider than the buttpad: a step down seen from behind");
         assertEquals(4, box("collar").w());
         assertEquals(45f, box("collar").tiltXDegrees(), 1e-6);
         assertEquals(45f, box("gas_block").tiltXDegrees(), 1e-6);
