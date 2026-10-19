@@ -42,6 +42,8 @@ public final class GunStats {
     private final boolean doubleShot;
     private final ProjectileKind projectileKind;
     private final double knockback;
+    private final double blastRadius;
+    private final double projectileGravity;
     private final int recoilTicks;
     private final int muzzleFlashTicks;
     private final double aiRange;
@@ -80,6 +82,8 @@ public final class GunStats {
         doubleShot = b.doubleShot;
         projectileKind = b.projectileKind;
         knockback = b.knockback;
+        blastRadius = b.blastRadius;
+        projectileGravity = b.projectileGravity;
         recoilTicks = b.recoilTicks;
         muzzleFlashTicks = b.muzzleFlashTicks;
         aiRange = b.aiRange;
@@ -113,6 +117,7 @@ public final class GunStats {
         require(penetration >= 0 && penetration <= 1, "penetration");
         require(projectileKind != null, "projectileKind");
         require(knockback >= 0, "knockback");
+        require(blastRadius >= 0 && projectileGravity >= 0, "blast radius / projectile gravity");
     }
 
     private static void require(boolean ok, String what) {
@@ -294,6 +299,16 @@ public final class GunStats {
         return knockback;
     }
 
+    /** Blast radius in blocks of a rocket or launcher grenade; 0 for a gun whose projectile does not explode. */
+    public double blastRadius() {
+        return blastRadius;
+    }
+
+    /** Blocks per tick squared a rocket or launcher grenade falls; 0 for a straight bullet. */
+    public double projectileGravity() {
+        return projectileGravity;
+    }
+
     /** Client recoil animation length in ticks. */
     public int recoilTicks() {
         return recoilTicks;
@@ -358,6 +373,8 @@ public final class GunStats {
         private boolean doubleShot;
         private ProjectileKind projectileKind = ProjectileKind.BULLET;
         private double knockback = 1.0;
+        private double blastRadius;
+        private double projectileGravity;
         private int recoilTicks = 5;
         private int muzzleFlashTicks = 5;
         private double aiRange = 15;
@@ -492,6 +509,16 @@ public final class GunStats {
         /** Knockback multiplier of a hit: 1 vanilla, 0 none, above 1 stronger (GUN-38). */
         public Builder knockback(double multiplier) {
             knockback = multiplier;
+            return this;
+        }
+
+        /**
+         * Blast radius (blocks) and gravity (blocks per tick squared) of an exploding projectile (rocket, launcher
+         * grenade).
+         */
+        public Builder blast(double radius, double gravity) {
+            blastRadius = radius;
+            projectileGravity = gravity;
             return this;
         }
 

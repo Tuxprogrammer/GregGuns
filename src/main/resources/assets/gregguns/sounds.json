@@ -75,6 +75,22 @@
     "category": "player",
     "sounds": ["guns/ak47_reload"]
   },
+  "guns.rocket_launcher.fire": {
+    "category": "player",
+    "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b", "guns/rocket_shot_c"]
+  },
+  "guns.rocket_launcher.reload": {
+    "category": "player",
+    "sounds": ["guns/rocket_reload"]
+  },
+  "guns.grenade_launcher.fire": {
+    "category": "player",
+    "sounds": ["guns/grenadelauncher_shot_a", "guns/grenadelauncher_shot_b", "guns/grenadelauncher_shot_c"]
+  },
+  "guns.grenade_launcher.reload": {
+    "category": "player",
+    "sounds": ["guns/grenadelauncher_reload"]
+  },
   "guns.grenade.pin": {
     "category": "player",
     "sounds": ["guns/grenade_pin_a", "guns/grenade_pin_b"]
