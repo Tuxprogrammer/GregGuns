@@ -31,6 +31,8 @@ public final class ClientGunDefinitions {
 
             Ak47Profile.DEFINITION,
 
+            VectorProfile.DEFINITION,
+
             CombatShotgunProfile.DEFINITION,
             RocketLauncherProfile.DEFINITION,
             GrenadeLauncherProfile.DEFINITION,
@@ -50,7 +52,7 @@ public final class ClientGunDefinitions {
      * giving a gun its clean-room profile means removing its name here.
      */
     public static final List<String> FLAT_ICON_FALLBACK = Collections
-        .unmodifiableList(Arrays.asList("aug", "scar", "vector", "infiltrator"));
+        .unmodifiableList(Arrays.asList("aug", "scar", "infiltrator"));
 
     private ClientGunDefinitions() {}
 
