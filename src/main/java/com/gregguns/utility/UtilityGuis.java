@@ -45,8 +45,7 @@ public final class UtilityGuis {
     public static Object serverElement(int id, EntityPlayer player, World world, int x, int y, int z) {
         switch (id) {
             case CHARGE:
-                // Filled by m6/charges.
-                return null;
+                return new com.gregguns.utility.charge.ChargeContainer(world, x, y, z);
             case CHEST:
                 // Filled by m6/world-blocks.
                 return null;
@@ -70,8 +69,8 @@ public final class UtilityGuis {
     public static Object clientElement(int id, EntityPlayer player, World world, int x, int y, int z) {
         switch (id) {
             case CHARGE:
-                // Filled by m6/charges.
-                return null;
+                return new com.gregguns.client.utility.ChargeGui(
+                    new com.gregguns.utility.charge.ChargeContainer(world, x, y, z));
             case CHEST:
                 // Filled by m6/world-blocks.
                 return null;

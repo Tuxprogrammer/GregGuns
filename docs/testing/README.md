@@ -229,6 +229,11 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `grenade.flash` | grenades (M2) | A Flashbang at rest goes off: a fake player facing it 4 blocks away would get about 80 ticks of Blindness (40 of Nausea), one with their back to it none (measured with `FlashBlast.intensityAt`: a fake player has no connection for the potion packet); a cow at 2 blocks gets Slowness IV and Weakness, one at 6.5 blocks Slowness II, one behind a stone wall and one past 8 blocks nothing; no cow loses health. |
 | `grenade.flash.noblocks` | grenades (M2) | With `explosions.blockDamage` on, a Flashbang beside a stone pillar, a glass pane and dirt changes no block in the surrounding box, hurts no cow, and still slows it. |
 | `utility.plates_recipes` | turret armor plates (M6) | The four plates are registered with armor values 5, 10, 15 and 20; Iron has a crafting-table recipe and no Assembler recipe; Steel, Aluminum and Carbon each have one Assembler recipe at their tier's EU/t and 10 s, with one input (two for Carbon) and no hand recipe. Needs `GG_MODULES=guns,armor,machines,utility`. |
+| `utility.charge_bores_stone` | explosive charges (M6) | An armed Explosive Charge counts a 60-tick fuse down, removes itself, bores a 3x3x3 tunnel into a stone mass, drops items and leaves the stone around and below. Needs `GG_MODULES=guns,armor,machines,utility`. |
+| `utility.charge_gt_ore_drop` | explosive charges (M6) | A charge bores a GT iron ore block and the drops equal `getDrops` at fortune 0 (GGS-09-13). |
+| `utility.charge_respects_cancel` | explosive charges (M6) | A listener cancels two columns; each stops at its block, nothing past a canceled block breaks, and no break event has a null player (GGS-09-11, MUTL-30). |
+| `utility.charge_offline_owner` | explosive charges (M6) | With the owner offline the events carry a FakePlayer with the owner's UUID; an ownerless charge still gets a real player (GGS-09-10). |
+| `utility.charge_foreign_button` | explosive charges (M6) | `PacketChargeButton` from a non-owner is rejected (fuse and arm), an unknown id is rejected, the owner's press is applied (MUTL-31). |
 
 ## M1 coverage
 
