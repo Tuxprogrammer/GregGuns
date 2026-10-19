@@ -9,8 +9,15 @@ public final class ShotOffset {
     private final double pitchDegrees;
     private final double forwardTickFraction;
     private final boolean leftHand;
+    private final VolleyHits volley;
 
     ShotOffset(double yawDegrees, double pitchDegrees, double forwardTickFraction, boolean leftHand) {
+        this(yawDegrees, pitchDegrees, forwardTickFraction, leftHand, null);
+    }
+
+    ShotOffset(double yawDegrees, double pitchDegrees, double forwardTickFraction, boolean leftHand,
+        VolleyHits volley) {
+        this.volley = volley;
         this.yawDegrees = yawDegrees;
         this.pitchDegrees = pitchDegrees;
         this.forwardTickFraction = forwardTickFraction;
@@ -37,5 +44,13 @@ public final class ShotOffset {
     /** True if the projectile spawns from the left hand (akimbo). */
     public boolean leftHand() {
         return leftHand;
+    }
+
+    /**
+     * The hit list shared by every projectile of a ring volley, or null for a shot whose projectiles hit
+     * independently. A projectile that has one must call {@link VolleyHits#firstHit} before damaging an entity.
+     */
+    public VolleyHits volley() {
+        return volley;
     }
 }

@@ -162,10 +162,8 @@ public final class ServerGunHandler {
                 .zoom()
                 .isZoomed(stats));
         ShotOffset[] offsets = SpreadModel.roll(player.getRNG(), stats, context, shot.attackType());
-        for (ShotOffset offset : offsets) {
-            Projectiles.launcher()
-                .launch(player.worldObj, player, stats, offset, 1.0f);
-        }
+        Projectiles.launcher()
+            .launchVolley(player.worldObj, player, stats, offsets, 1.0f);
         long now = player.worldObj.getTotalWorldTime();
         GunSoundPlayer.playFire(player, gun.shotEvent(now, data.lastShotTick()), player);
         data.setLastShotTick(now);

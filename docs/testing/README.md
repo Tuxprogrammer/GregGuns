@@ -157,6 +157,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.player` | pistol slice (M1) | A shot from one fake player hits a second fake player 6 blocks away and costs them the `DamageModel` figure (the victim sits in its chunk only, because a fake player has no network handler for the entity tracker). Waits for ticks. |
 | `gun.zoom` | pistol slice (M1) | A zoom intent on the unscoped pistol through `ServerGunHandler.onZoomToggle`: accepted, zoom state stays off, FOV factor stays 1, rounds untouched. |
 | `gun.kind` | gun framework (M2) | Guns with `ProjectileKind.BULLET` and `GRAVITY_BULLET` fired through the launcher spawn a plain bullet and a `SimpleProjectile`; a kind with no registered factory spawns nothing and logs one error (expected in the log). |
+| `gun.pattern` | shot patterns (M5 I6) | One round of a burst-line gun (n=1), a ring-volley gun (1+5+10) and a fan gun (5 beams) spawns 2, 16 and 5 projectiles through `launchVolley`. |
 | `gun.pellets` | gun framework (M2) | A gun with 7 extra pellets fires 8 projectiles from one shot, and their yaws fan out. |
 | `gun.knockback` | gun framework (M2) | Three bullets with knockback 0, 1 and 3 hit fresh AI-less zombies: the push is none, vanilla's, and three times vanilla's (GUN-38). |
 | `gun.revolver.fire` | revolver (M2) | A real `revolver` fired through `ServerGunHandler`: one bullet, a zombie 6 blocks away loses the `DamageModel` figure for 8, rounds 6 to 5, an early click is dropped and a click one tick before the 6 tick cooldown ends fires at tick 6. |
