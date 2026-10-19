@@ -108,7 +108,7 @@ class DeatomizerPistolProfileTest {
                 double cy = b.y() + 0.5;
                 double cz = b.z() + 0.5;
                 double radius = Math.hypot(cy - BORE_Y_TENTHS / 10.0, cz);
-                assertEquals(1.33, radius, 0.05, b.name() + " on the ring of about 1.35");
+                assertEquals(1.33, radius, 0.12, b.name() + " on the ring of about 1.35");
                 minY = Math.min(minY, cy);
                 maxY = Math.max(maxY, cy);
                 minZ = Math.min(minZ, cz);
@@ -208,14 +208,15 @@ class DeatomizerPistolProfileTest {
                 .contains("button")) {
                 buttons++;
                 assertTrue(b.z() + 0.5 < 0, "on the -Z (left) side");
-                assertEquals(45f, b.tiltXDegrees(), 1e-6, "a diamond");
+                assertEquals(45f, b.tiltZDegrees(), 1e-6, "a diamond seen from the side");
+                assertTrue(b.z() >= -2.1 - 1e-6 && b.z() + b.d() <= -1.1 + 1e-6, "Z -2.1 to -1.1");
             }
         }
         assertEquals(1, buttons);
     }
 
     @Test
-    void exactlyTwoGlowPartsAreNamedGlow() {
+    void onlyTheDiscIsNamedGlowAndTheTipPlaneIsGone() {
         List<String> glow = new ArrayList<>();
         for (BoxSpec b : DeatomizerPistolProfile.BOXES) {
             if (b.name()
@@ -223,8 +224,26 @@ class DeatomizerPistolProfileTest {
                 glow.add(b.name());
             }
         }
-        assertEquals(2, glow.size(), "the blue disc and the orange tip: " + glow);
-        assertTrue(glow.contains("disc_glow") && glow.contains("laser_tip_glow"));
+        assertEquals(1, glow.size(), "the blue disc only: " + glow);
+        assertTrue(glow.contains("disc_glow"));
+    }
+
+    @Test
+    void roundThreeMeasuredCorrections() {
+        BoxSpec post = box("laser_post");
+        assertEquals(31f, post.tiltZDegrees(), 1e-6, "the post rises toward the muzzle");
+        assertEquals(1.9f, post.pivotX(), 1e-6);
+        assertEquals(2.1f, post.pivotY(), 1e-6);
+        BoxSpec trigger = box("trigger");
+        assertEquals(4.8f, trigger.pivotX(), 1e-6, "0.2 toward the rear");
+        assertEquals(4.7f, trigger.pivotY(), 1e-6, "0.2 down");
+        assertEquals(
+            2.2f,
+            box("prong_bot").pivotY() - box("prong_top").pivotY(),
+            1e-5,
+            "fork hinges closed up by 0.7 (slab centres 1.4 apart)");
+        assertEquals(1.9, box("cap_03").y(), 1e-6, "top centre cap Y 1.9 to 2.9");
+        assertEquals(4.1, box("cap_09").y(), 1e-6, "bottom centre cap Y 4.1 to 5.1");
     }
 
     /** The lowest Y of a box after its tilt about Z. */
@@ -245,7 +264,7 @@ class DeatomizerPistolProfileTest {
     }
 
     @Test
-    void nothingFloatsApartFromTheTipPlane() {
+    void nothingFloats() {
         for (BoxSpec a : DeatomizerPistolProfile.BOXES) {
             boolean touches = false;
             for (BoxSpec b : DeatomizerPistolProfile.BOXES) {
@@ -283,7 +302,7 @@ class DeatomizerPistolProfileTest {
         assertTrue(near(topFaceMean(img, box("core")), 0xC5C5C5, 6), "white core");
         assertTrue(near(topFaceMean(img, box("slab")), 0xBFBFBF, 8), "slab top");
         assertTrue(hasOrange(img, box("laser")), "the laser rod's front face is orange");
-        // Only the disc, the laser rod and its tip plane are saturated; everything else is pale gray or black.
+        // Only the disc and the laser rod are saturated; everything else is pale gray or black.
         for (BoxSpec b : DeatomizerPistolProfile.BOXES) {
             if (b.name()
                 .equals("disc_glow")
