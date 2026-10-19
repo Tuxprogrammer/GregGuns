@@ -66,6 +66,7 @@ class Quad:
     uv: np.ndarray  # (4, 2) normalized
     tex: int
     shade: float | None = None  # fixed brightness (voxel faces); None = lit by normal
+    tag: int = 0  # nonzero marks faces to outline (see render's marks)
 
 
 @dataclass
@@ -230,7 +231,7 @@ def custom_armor(scene: Scene, mats: dict, set_id: str, texture: Path | None = N
 # ---------------------------------------------------------------- voxels
 
 
-def voxel_scene(blocks: dict, textures: dict) -> Scene:
+def voxel_scene(blocks: dict, textures: dict, tags: dict | None = None) -> Scene:
     """blocks: {(x, y, z): key}; textures: key -> path or (top, side[, front]) paths. Hidden faces are culled.
 
     Faces get fixed Minecraft-style brightness (top 1.0, north/south 0.8, east/west 0.6, bottom 0.5)."""
@@ -261,7 +262,7 @@ def voxel_scene(blocks: dict, textures: dict) -> Scene:
                 continue
             tex = front if facing == n else (top if n[1] != 0 else side)
             v = np.array([(x + a, y + b, z + c) for a, b, c in corners], float)
-            s.quads.append(Quad(v, UV, tex, bright))
+            s.quads.append(Quad(v, UV, tex, bright, (tags or {}).get(key[0] if isinstance(key, tuple) else key, 0)))
     return s
 
 
@@ -282,10 +283,12 @@ LIGHT = np.array([-0.45, 0.8, -0.55])
 LIGHT /= np.linalg.norm(LIGHT)
 
 
-def render(scene: Scene, yaw=30.0, pitch=25.0, ppu=None, fit=None, ss=3, pad=8, outline=None, ambient=0.6) -> Image.Image:
+def render(scene: Scene, yaw=30.0, pitch=25.0, ppu=None, fit=None, ss=3, pad=8, outline=None, ambient=0.6,
+           marks: dict | None = None) -> Image.Image:
     """Render to RGBA. ppu = pixels per block; or fit=(w, h) to scale the model into that box.
 
-    outline: optional (r, g, b, a) drawn one pixel around the silhouette, which keeps renders legible on dark art."""
+    outline: optional (r, g, b, a, width) drawn around the silhouette, which keeps dark models legible on dark art.
+    marks: {tag: (r, g, b)} rings drawn around the visible faces carrying that tag, e.g. a multiblock's hatches."""
     right, up, f = camera(yaw, pitch)
     V = np.vstack([q.v for q in scene.quads])
     sx, sy = V @ right, V @ up
@@ -298,6 +301,7 @@ def render(scene: Scene, yaw=30.0, pitch=25.0, ppu=None, fit=None, ss=3, pad=8, 
     Ws, Hs, S = W * ss, H * ss, ppu * ss
     ox, oy = sx.min() - pad / ppu, sy.max() + pad / ppu
     img = np.zeros((Hs, Ws, 4), np.float32)
+    tagbuf = np.zeros((Hs, Ws), np.uint8)
     zb = np.full((Hs, Ws), -1e18, np.float64)
     # Opaque faces first; then translucent ones (glass) far to near, blended and without depth writes.
     see_through = [bool(((t[..., 3] > 25) & (t[..., 3] < 235)).mean() > 0.2) for t in scene.textures]
@@ -361,15 +365,28 @@ def render(scene: Scene, yaw=30.0, pitch=25.0, ppu=None, fit=None, ss=3, pad=8, 
                 dst[m, 3] = np.maximum(dst[m, 3], texel[..., 3][m])
                 continue
             sub[m] = z[m]
+            tagbuf[y0:y1 + 1, x0:x1 + 1][m] = q.tag
             dst[m, :3] = texel[..., :3][m] * k
             dst[m, 3] = 255
     out = Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGBA")
     if ss != 1:
         out = out.resize((W, H), Image.LANCZOS)
+    if marks:
+        for tag, rgb in marks.items():
+            mask = Image.fromarray(((tagbuf == tag) * 255).astype(np.uint8)).resize((W, H), Image.BILINEAR)
+            mask = mask.point(lambda v: 255 if v > 90 else 0)
+            if not mask.getbbox():
+                continue
+            ring = np.array(mask.filter(ImageFilter.MaxFilter(7))).astype(int) - np.array(mask.filter(ImageFilter.MinFilter(3)))
+            ring = Image.fromarray(np.clip(ring, 0, 255).astype(np.uint8))
+            layer = Image.new("RGBA", out.size, (*rgb, 255))
+            layer.putalpha(ring)
+            out.alpha_composite(layer)
     if outline:
+        r_, g_, b_, alpha, width = outline
         a = out.getchannel("A").point(lambda v: 255 if v > 40 else 0)
-        grown = a.filter(ImageFilter.MaxFilter(3))
-        ring = Image.new("RGBA", out.size, outline)
+        grown = a.filter(ImageFilter.MaxFilter(2 * width + 1)).point(lambda v: v * alpha // 255)
+        ring = Image.new("RGBA", out.size, (r_, g_, b_, 255))
         ring.putalpha(grown)
         ring.alpha_composite(out)
         out = ring

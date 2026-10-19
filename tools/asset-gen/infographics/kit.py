@@ -59,6 +59,10 @@ def _cached(tag: str, params: dict, make) -> Path:
     return p
 
 
+# A light rim baked around every model, so dark guns and armor stay legible on the dark sheets. Renders are made at
+# about twice their display size, so two pixels here show as about one on the page.
+RIM = (214, 224, 238, 150, 2)
+
 AIM = {"rightArm": (-90, -5.73, 0), "leftArm": (-90, 28.65, 0)}
 HOLD = {"rightArm": (-28, 0, 0), "leftArm": (-50, 40, 0)}
 
@@ -92,11 +96,11 @@ def _held(mats, gun: str, length: float | None = None, grip=(0.3, 0.45)):
     return g, R.tr(*hand) @ Bm @ R.sc(k) @ R.tr(*(-gp))
 
 
-def gun(name: str, yaw=18, pitch=16, w=420, h=200, outline=None) -> Path:
+def gun(name: str, yaw=18, pitch=16, w=420, h=200, outline=RIM) -> Path:
     def make():
         s = R.gun_scene(export_dir() / f"{name}.json")
         return R.trim(R.render(s, yaw=yaw, pitch=pitch, fit=(w * 2, h * 2), ss=2, outline=outline), 2)
-    return _cached(f"gun-{name}", dict(n=name, y=yaw, p=pitch, w=w, h=h, o=outline, v=3), make)
+    return _cached(f"gun-{name}", dict(n=name, y=yaw, p=pitch, w=w, h=h, o=outline, v=4), make)
 
 
 def mob(model: str, skin: str, pose=None, gun_name=None, yaw=-30, pitch=10, h=420, armor=None, accessories=(),
@@ -115,11 +119,11 @@ def mob(model: str, skin: str, pose=None, gun_name=None, yaw=-30, pitch=10, h=42
         if gun_name:
             g, T = _held(mats, gun_name)
             s.extend(g, T)
-        im = R.trim(R.render(s, yaw=yaw, pitch=pitch, ppu=h / 2.2, ss=2), 2)
+        im = R.trim(R.render(s, yaw=yaw, pitch=pitch, ppu=h / 2.2, ss=2, outline=RIM), 3)
         return im.transpose(Image.FLIP_LEFT_RIGHT) if flip else im
     return _cached(f"mob-{model}-{Path(str(skin)).stem}",
                    dict(m=model, s=str(skin), p=pose, g=gun_name, y=yaw, pi=pitch, h=h, a=str(armor),
-                        acc=list(accessories), f=flip, v=4), make)
+                        acc=list(accessories), f=flip, v=5), make)
 
 
 def accessory(scene, mats, name: str):
@@ -161,10 +165,16 @@ def fx_frame(sheet: str, col: int, row: int, grid: int, px: int, black_to_alpha=
     return _cached(f"fx-{sheet}", dict(s=sheet, c=col, r=row, g=grid, px=px, b=black_to_alpha, v=1), make)
 
 
-def voxels(tag: str, blocks_: dict, textures: dict, yaw=-35, pitch=30, ppu=36, key=None) -> Path:
+MARK_HATCH, MARK_CONTROLLER = (255, 138, 31), (56, 198, 217)
+
+
+def voxels(tag: str, blocks_: dict, textures: dict, yaw=-35, pitch=30, ppu=36, key=None, tags=None) -> Path:
+    """tags: {block key: 1 for a hatch, 2 for the controller}; those faces get colored rings where they show."""
     def make():
-        return R.trim(R.render(R.voxel_scene(blocks_, textures), yaw=yaw, pitch=pitch, ppu=ppu, ss=2), 2)
-    params = dict(k=key or sorted(map(str, blocks_.items())), t=sorted(map(str, textures.items())), y=yaw, p=pitch, u=ppu, v=3)
+        marks = {1: MARK_HATCH, 2: MARK_CONTROLLER} if tags else None
+        return R.trim(R.render(R.voxel_scene(blocks_, textures, tags), yaw=yaw, pitch=pitch, ppu=ppu, ss=2, outline=RIM,
+                               marks=marks), 3)
+    params = dict(k=key or sorted(map(str, blocks_.items())), t=sorted(map(str, textures.items())), g=str(tags), y=yaw, p=pitch, u=ppu, v=5)
     return _cached(f"vox-{tag}", params, make)
 
 
@@ -173,7 +183,7 @@ def voxels(tag: str, blocks_: dict, textures: dict, yaw=-35, pitch=30, ppu=36, k
 CSS = """
 :root {
   --ink: #0e1217; --ink2: #141a21; --card: #19212b; --card2: #1f2833; --line: #2b3542;
-  --txt: #e9edf2; --muted: #a9b4c1; --dim: #8693a2; --orange: #ff8a1f; --blue: #3d8bff; --cyan: #38c6d9;
+  --txt: #e9edf2; --muted: #b4bfcb; --dim: #97a3b1; --orange: #ff8a1f; --blue: #3d8bff; --cyan: #38c6d9;
   --steam: #b07a3a; --ulv: #8a8f98; --lv: #d0d4da; --mv: #38c6d9; --hv: #ffb020; --ev: #b04fdc; --iv: #4b5bff;
   --luv: #ff6fcf; --zpm: #ff5555;
 }
@@ -206,10 +216,13 @@ h3 { font-size: 23px; font-weight: 700; line-height: 1.15; }
 .t-Steam { background: var(--steam); } .t-ULV { background: var(--ulv); } .t-LV { background: var(--lv); }
 .t-MV { background: var(--mv); } .t-HV { background: var(--hv); } .t-EV { background: var(--ev); color: #fff; }
 .t-IV { background: var(--iv); color: #fff; } .t-LuV { background: var(--luv); } .t-ZPM { background: var(--zpm); }
-img.r { display: block; filter: drop-shadow(0 0 1px rgba(236,242,250,.85)) drop-shadow(0 0 7px rgba(150,185,235,.30)) drop-shadow(0 10px 14px rgba(0,0,0,.55)); }
+img.r { display: block; filter: drop-shadow(0 0 9px rgba(165,195,240,.34)) drop-shadow(0 10px 14px rgba(0,0,0,.5)); }
 img.px { image-rendering: pixelated; }
-.spot { background: radial-gradient(ellipse 58% 60% at 50% 55%, rgba(185,205,230,.30), rgba(185,205,230,.08) 60%, transparent 76%); border-radius: 12px; }
-.foot { display: flex; align-items: center; gap: 12px; margin-top: 26px; color: var(--dim); font-size: 15px; }
+/* Item icons sit in a light inventory slot, as players see them in-game, so dark items stay legible. */
+.slot { display: inline-flex; align-items: center; justify-content: center; flex: none; vertical-align: middle;
+  background: #8b8b8b; box-shadow: inset 2px 2px 0 #373737, inset -2px -2px 0 #ffffff; }
+.spot { background: radial-gradient(ellipse 58% 60% at 50% 55%, rgba(190,210,235,.38), rgba(190,210,235,.10) 60%, transparent 76%); border-radius: 12px; }
+.foot { display: flex; align-items: center; gap: 12px; margin-top: 26px; color: var(--muted); font-size: 15px; }
 .foot img { width: 26px; height: 26px; image-rendering: pixelated; }
 .foot .hex { display: flex; gap: 4px; margin-left: auto; }
 .foot .hex i { width: 14px; height: 16px; clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); }

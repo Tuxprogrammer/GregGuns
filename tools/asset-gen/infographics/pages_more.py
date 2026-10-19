@@ -6,7 +6,7 @@ import data as D
 import kit as K
 import scenes as S
 from kit import chip, esc, url
-from pages import PAGE_CSS, POINT, arsenal, bubble, getting_started, gti, ico, img, page_doc, tier_var
+from pages import PAGE_CSS, POINT, arsenal, bubble, getting_started, gti, ico, img, page_doc, slot, tier_var
 
 ARMOR = K.ASSETS / "textures/models/armor"
 
@@ -19,13 +19,13 @@ def figure(skin="army_soldier", model="biped", **kw):
     return K.mob(model, skin, **kw)
 
 
-def tex_swatch(path, px=40):
-    return f'<img class="ico" src="{url(K.icon(path, 64))}" style="width:{px}px;height:{px}px;border-radius:4px">'
+def tex_swatch(path, px=34):
+    return slot(K.icon(path, 64), px)
 
 
 def guide_row(text, pose=None, gun=None, armor=None, flip=False, yaw=30, h=300, speaker="Sergeant"):
     g = figure(pose=pose if pose is not None else K.AIM, gun_name=gun, armor=armor, yaw=yaw, pitch=8, h=h, flip=flip)
-    return f"""<div style="display:flex;align-items:flex-end;gap:26px;margin-top:22px">{img(g, h=int(h * .85))}
+    return f"""<div style="display:flex;align-items:flex-end;gap:26px;margin-top:22px"><div class="guide">{img(g, h=int(h * .85))}</div>
 {bubble(speaker, text, side="left", tail=50, style="max-width:1000px;margin-bottom:70px")}</div>"""
 
 
@@ -52,10 +52,10 @@ def ammo():
 <div><div class="label">1 &middot; GregTech materials</div><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;font-size:17px">{mats}</div></div>{arrow}
 <div><div class="label">2 &middot; GregTech parts</div><div style="margin-top:10px;font-size:17px;display:flex;flex-direction:column;gap:6px">{parts}
 <div style="display:flex;align-items:center;gap:10px">{ico("part_mechanical_2", 30)}Mechanical Parts</div></div>
-<div class="dim" style="font-size:15px;margin-top:8px">Lathe, Bending Machine, Extruder, Assembler</div></div>{arrow}
+<div class="muted" style="font-size:15px;margin-top:8px">Lathe, Bending Machine, Extruder, Assembler</div></div>{arrow}
 <div style="text-align:center"><div class="label">3 &middot; Ammo Press</div>
 <div style="display:flex;align-items:flex-end;justify-content:center;gap:10px;margin-top:8px">{img(S.machine_block("ammo_press", "LV"), h=120)}{img(S.ammo_works(4).render(ppu=14), h=110)}</div>
-<div class="dim" style="font-size:15px">or the Ammunition Works, for bulk</div></div>{arrow}
+<div class="muted" style="font-size:15px">or the Ammunition Works, for bulk</div></div>{arrow}
 <div style="text-align:center"><div class="label">4 &middot; Rounds and magazines</div>
 <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px">
 <div class="stack">{ico("ammo_9mm_bullet", 54)}<small>bullets</small></div><span class="plus">+</span>
@@ -64,13 +64,13 @@ def ammo():
 <div style="text-align:center"><div class="label">5 &middot; Reload</div>{img(K.gun("pistol_9mm", w=200, h=120), h=90, style="margin:12px auto 0")}
 <div style="margin-top:10px"><span class="key">R</span></div></div></div>"""
     mags = "".join(f"""<div class="wcard" style="align-items:center;text-align:center">
-<div style="display:flex;align-items:center;height:84px">{ico(stem, 70)}</div><h3 style="font-size:19px">{esc(name)}</h3>
+<div style="display:flex;align-items:center;height:100px">{ico(stem, 70)}</div><h3 style="font-size:19px">{esc(name)}</h3>
 <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin:6px 0;color:#c9d1da;font-size:15px"><b style="font-size:18px">{n}</b>&times;{ico(r, 28)}<span>fills it</span></div>
 <div class="o cond" style="font-size:24px;font-weight:700">{held}<span class="muted" style="font-size:15px;font-weight:400"> rounds</span></div>
 <div class="role" style="font-size:14px">{esc(used)}</div></div>""" for stem, name, n, r, held, used in D.MAGAZINES)
     tiers = "".join(f"""<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">{chip(t)}
 <div style="display:flex;flex-wrap:wrap;gap:4px">{''.join(ico(i, 46, n) for i, n in items)}</div>
-<div class="dim" style="font-size:14px;line-height:1.25">{esc(', '.join(n for _, n in items))}</div></div>""" for t, items in D.AMMO_BY_TIER)
+<div class="muted" style="font-size:15px;line-height:1.25">{esc(', '.join(n for _, n in items))}</div></div>""" for t, items in D.AMMO_BY_TIER)
     side = f"""<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:18px">
 <div class="card"><h2>Energy weapons</h2><div style="display:flex;align-items:center;gap:12px;margin:10px 0">{img(K.gun("laser_rifle", w=260, h=110), h=80)}{chip("EV")}</div>
 {muted("No cells to craft: the gun is the battery. Charge it in a GT <b style='color:var(--txt)'>Charger</b> or <b style='color:var(--txt)'>Battery Buffer</b> of exactly the gun's tier. A wrong-tier charger won't touch it.")}</div>
@@ -138,7 +138,7 @@ def armor():
 <div class="card" style="display:flex;gap:16px;align-items:center">{ico("ammo_pouch", 72)}<div><h3>Ammo Pouch</h3>{muted("Quiver slot. Holds six stacks of ammo; open it with " + key_p)}</div></div>
 <div class="card" style="display:flex;gap:16px;align-items:center">{ico("bandages", 64)}{ico("medkit", 64)}<div><h3>Bandages and Medkit</h3>{muted("Heal on the spot, with Regeneration. Bandages at LV, the Medkit at MV.")}</div></div>
 <div class="card" style="display:flex;gap:16px;align-items:center">{img(S.machine_block("camo_bench", "LV"), h=90)}<div><h3>Camo Bench</h3>{muted("Cycles the camo on your gun and all four armor pieces. No power needed.")}</div></div></div>"""
-    dmg = "".join(f'<div><b style="font-size:17px">{esc(n)}</b><div class="dim" style="font-size:14px">{esc(d)}</div></div>'
+    dmg = "".join(f'<div><b style="font-size:17px">{esc(n)}</b><div class="muted" style="font-size:15px">{esc(d)}</div></div>'
                   for n, d in DAMAGE)
     body = f"""<div class="grid" style="grid-template-columns:repeat(6,minmax(0,1fr))">{sets}</div>
 <h2 style="margin:26px 0 12px">Masks, goggles and back gear</h2>
@@ -179,10 +179,10 @@ def machines():
     for name, single, tiers, does, mname, multi, ctier, mdoes in MACHINE_ROWS:
         chips = " ".join(chip(t) for t in tiers)
         rows.append(f"""<div class="card" style="display:grid;grid-template-columns:200px 1fr 60px 380px 1fr;gap:20px;align-items:center">
-<div style="display:flex;justify-content:center">{img(single(), h=170, w=190)}</div>
+<div class="spot" style="display:flex;justify-content:center;padding:8px 0">{img(single(), h=170, w=190)}</div>
 <div><h2>{esc(name)}</h2><div style="margin:8px 0">{chips}</div>{muted(esc(does), top=0)}</div>
 <div class="arrow" style="text-align:center;font-size:44px">&rarr;</div>
-<div style="display:flex;justify-content:center">{img(multi(), h=190, w=370)}</div>
+<div class="spot" style="display:flex;justify-content:center;padding:8px 0">{img(multi(), h=190, w=370)}</div>
 <div><h2>{esc(mname)} <span class="label" style="color:var(--orange)">multiblock</span></h2><div style="margin:8px 0">Controller {chip(ctier)}</div>
 {muted(esc(mdoes), top=0)}</div></div>""")
     others = f"""<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:18px">
@@ -269,9 +269,9 @@ MB = {
 def multiblock(key):
     m = MB[key]
     b = m["build"]()
-    hero = b.render(**m["view"], tag="hero")
-    legend = "".join(f"""<div style="display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)">
-{tex_swatch(t)}<div><b>{esc(label)}</b>{f'<div class="dim" style="font-size:14px">{esc(note)}</div>' if note else ''}</div>
+    hero = b.render(**m["view"], tag="hero", marks=True)
+    legend = "".join(f"""<div style="display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)">
+{tex_swatch(t)}<div><b>{esc(label)}</b>{f'<div class="muted" style="font-size:15px">{esc(note)}</div>' if note else ''}</div>
 <div class="cond o" style="font-size:24px;font-weight:700">{n}</div></div>""" for _, label, t, n, note in b.legend())
     hatches = "".join(f'<div style="margin:8px 0"><b>{esc(h)}</b>{muted(esc(w), 16, 0)}</div>' for h, w in m["hatches"])
     pieces = "".join(f"""<div class="wcard" style="align-items:center;text-align:center">
@@ -282,13 +282,14 @@ def multiblock(key):
     back = ""
     if m["back"]:
         back = (f'<div style="position:absolute;right:16px;bottom:12px;text-align:center">'
-                f'{img(b.render(**m["back"], tag="back"), h=150)}<div class="dim" style="font-size:14px">rear: the packing station</div></div>')
+                f'{img(b.render(**m["back"], tag="back", marks=True), h=150)}<div class="muted" style="font-size:15px">rear: the packing station</div></div>')
     body = f"""<div style="display:grid;grid-template-columns:1fr 470px;gap:20px">
 <div class="card" style="position:relative;display:flex;flex-direction:column;min-height:620px">
-<div style="display:flex;gap:28px;align-items:baseline"><span class="label">Default size shown</span><span style="font-size:18px">{m["size"]}</span><span>Controller {chip(m["ctier"])}</span></div>
-<div style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px 0">{img(hero, h=500, style="max-width:100%")}</div>{back}</div>
+<div style="display:flex;gap:28px;align-items:baseline;flex-wrap:wrap"><span class="label">Default size shown</span><span style="font-size:18px">{m["size"]}</span><span>Controller {chip(m["ctier"])}</span>
+<span style="font-size:16px;margin-left:auto"><b style="color:#38c6d9">&#9632;</b> controller &nbsp; <b style="color:var(--orange)">&#9632;</b> hatches</span></div>
+<div class="spot" style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px 0;margin-top:8px">{img(hero, h=500, style="max-width:100%")}</div>{back}</div>
 <div class="card"><div class="label" style="margin-bottom:6px">Blocks for the size shown</div>{legend}
-<div class="dim" style="font-size:14px;margin-top:8px">Hatches can go on any casing spot that allows them. The picture shows one layout.</div></div></div>
+<div class="muted" style="font-size:15px;margin-top:8px">Hatches can go on any casing spot that allows them. The picture shows one layout.</div></div></div>
 <h2 style="margin:24px 0 12px">Build it in sections</h2>
 <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">{pieces}</div>
 <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:18px">
@@ -310,7 +311,7 @@ def battle_scene(height=460):
     boom = K.fx_frame("explosion", 3, 1, 5, 360, black_to_alpha=True)
     boom2 = K.fx_frame("explosion", 1, 1, 5, 220, black_to_alpha=True)
     return f"""<div style="position:relative;height:{height}px;border-radius:16px;overflow:hidden;border:1px solid var(--line);
-background:radial-gradient(ellipse 70% 80% at 50% 45%,rgba(255,170,90,.28),transparent 70%),linear-gradient(180deg,#3b3048 0%,#8a5a3c 52%,#4a3f33 53%,#2c2822 100%)">
+background:radial-gradient(ellipse 70% 80% at 50% 45%,rgba(255,170,90,.28),transparent 70%),linear-gradient(180deg,#3d3350 0%,#93613f 52%,#7a6a55 53%,#5a4d3e 100%)">
 <div style="position:absolute;inset:auto 0 0 0;height:48%;background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 32px,transparent 32px 64px)"></div>
 <img src="{url(heli)}" style="position:absolute;right:300px;top:18px;height:120px;filter:brightness(.8)">
 <img src="{url(boom)}" style="position:absolute;left:640px;top:70px;height:330px;mix-blend-mode:screen">
@@ -412,7 +413,7 @@ def questbook():
         color = tier_var(tier) if tier else "var(--orange)"
         nodes.append(f"""<div style="display:grid;grid-template-columns:70px 220px 1fr;gap:18px;align-items:center;padding:10px 18px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-left:6px solid {color}">
 <div class="cond" style="font-size:40px;font-weight:700;color:{color};text-align:center">{i + 1}</div>
-<div style="display:flex;justify-content:center">{img(K.gun(gun, w=240, h=90), h=62, style="max-width:100%") if gun else img(K.REPO / "docs/assets/branding/logo_pixel_128.png", h=64, cls="px")}</div>
+<div class="spot" style="display:flex;justify-content:center;padding:6px 0">{img(K.gun(gun, w=240, h=90), h=62, style="max-width:100%") if gun else img(K.REPO / "docs/assets/branding/logo_pixel_128.png", h=64, cls="px")}</div>
 <div><h3>{esc(name)} {chip(tier) if tier else ''}</h3>{muted(esc(what), 17, 2)}</div></div>""")
     branches = ""
     for name, what, (kind, ref) in BRANCHES:
@@ -423,7 +424,7 @@ def questbook():
         else:
             pic = ico(ref, 80)
         branches += f"""<div class="card" style="display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:center">
-<div style="display:flex;justify-content:center">{pic}</div><div><h3>{esc(name)}</h3>{muted(esc(what), 16, 2)}</div></div>"""
+<div class="spot" style="display:flex;justify-content:center;padding:6px 0">{pic}</div><div><h3>{esc(name)}</h3>{muted(esc(what), 16, 2)}</div></div>"""
     body = f"""<div style="display:grid;grid-template-columns:1fr 520px;gap:22px">
 <div><div class="label" style="margin-bottom:10px">The main path</div><div style="display:flex;flex-direction:column;gap:10px">{''.join(nodes)}</div></div>
 <div><div class="label" style="margin-bottom:10px">Side branches, open whenever you are</div><div style="display:flex;flex-direction:column;gap:12px">{branches}</div>
@@ -450,6 +451,8 @@ def hero():
     boom = K.fx_frame("explosion", 3, 1, 5, 420, black_to_alpha=True)
     mutant = K.mob("super_mutant", "super_mutant_1", pose=K.AIM, gun_name="lmg", yaw=-45, pitch=6, h=300)
     body = f"""<div style="position:relative;height:430px">
+<div style="position:absolute;left:-20px;bottom:-30px;width:640px;height:330px;background:radial-gradient(ellipse 50% 50% at 50% 60%,rgba(185,205,230,.26),transparent 75%)"></div>
+<div style="position:absolute;right:-20px;bottom:-30px;width:300px;height:330px;background:radial-gradient(ellipse 50% 50% at 50% 60%,rgba(185,205,230,.22),transparent 75%)"></div>
 <img src="{url(boom)}" style="position:absolute;right:120px;top:-10px;height:420px;mix-blend-mode:screen;opacity:.9">
 <img class="r" src="{url(mutant)}" style="position:absolute;right:20px;bottom:0;height:300px">
 <div style="position:absolute;left:0;top:10px;display:flex;align-items:center;gap:24px">

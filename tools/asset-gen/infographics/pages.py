@@ -16,14 +16,18 @@ PAGE_CSS = """
 .ctrl { display: flex; align-items: center; gap: 14px; }
 .ctrl > span:not(.key) { color: var(--muted); font-size: 18px; }
 .ico { image-rendering: pixelated; vertical-align: middle; }
-.flow { display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 170px; }
+.flow { display: flex; align-items: center; justify-content: center; gap: 14px; min-height: 170px; border-radius: 12px;
+  background: radial-gradient(ellipse 62% 64% at 50% 52%, rgba(190,210,235,.30), rgba(190,210,235,.08) 62%, transparent 78%); }
+.flow .flow { background: none; }
+.guide { display: flex; align-items: flex-end; justify-content: center; padding: 0 18px; border-radius: 50%;
+  background: radial-gradient(ellipse 50% 52% at 50% 56%, rgba(190,210,235,.36), rgba(190,210,235,.10) 62%, transparent 78%); }
 .stack { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .stack small { color: var(--muted); font-size: 15px; text-align: center; line-height: 1.2; }
 .plus { color: var(--muted); font-size: 30px; font-weight: 300; }
 .wcard { background: rgba(255,255,255,.03); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px 12px;
   display: flex; flex-direction: column; }
 .wcard .pic img { max-width: 100%; }
-.wcard .pic { background: radial-gradient(ellipse 60% 62% at 50% 52%, rgba(185,205,230,.28), rgba(185,205,230,.07) 62%, transparent 75%); border-radius: 10px; height: 118px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; position: relative; }
+.wcard .pic { background: radial-gradient(ellipse 60% 62% at 50% 52%, rgba(190,210,235,.36), rgba(190,210,235,.09) 62%, transparent 75%); border-radius: 10px; height: 118px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; position: relative; }
 .wcard h3 { font-size: 22px; }
 .wcard .role { color: var(--muted); font-size: 16px; line-height: 1.25; margin-top: 2px; }
 .wcard .ammo { margin-top: auto; padding-top: 8px; font-size: 15px; color: #c9d1da; display: flex; align-items: center; gap: 7px; }
@@ -44,14 +48,20 @@ def img(path, h=None, w=None, cls="r", style=""):
     return f'<img class="{cls}" src="{url(path)}" style="{dims}object-fit:contain;{style}">'
 
 
+def slot(src, px, title=""):
+    """An icon in an inventory slot; px is the icon size, the slot adds a bevelled border around it."""
+    pad = max(3, px // 9)
+    return (f'<span class="slot" style="padding:{pad}px" title="{esc(title)}"><img class="ico" src="{url(src)}" '
+            f'style="width:{px}px;height:{px}px;display:block"></span>')
+
+
 def ico(stem, px=40, title=""):
-    return f'<img class="ico" src="{url(K.item(stem, 64))}" style="width:{px}px;height:{px}px" title="{esc(title)}">'
+    return slot(K.item(stem, 64), px, title)
 
 
 def gti(kind, material, px=40, title=""):
     """A GregTech material item icon (foil, round, plate, springSmall, ingot, dust...)."""
-    return (f'<img class="ico" src="{url(K.icon(gt.item(kind, material), 64))}" style="width:{px}px;height:{px}px" '
-            f'title="{esc(title)}">')
+    return slot(K.icon(gt.item(kind, material), 64), px, title)
 
 
 def bubble(speaker, text, side="left", tail=40, style=""):
@@ -68,7 +78,7 @@ def tier_var(t):
 
 def weapon_pic(stem: str, h=104, w=270):
     if stem.startswith("item:"):
-        return img(K.item(stem[5:], 64), h=84, cls="ico px")
+        return slot(K.item(stem[5:], 64), 76)
     if stem.startswith("akimbo:"):
         g = K.gun(stem[7:], w=w, h=h)
         return (f'<div style="position:relative;width:{w}px;height:{h}px">'
@@ -76,7 +86,7 @@ def weapon_pic(stem: str, h=104, w=270):
                 f'{img(g, h=int(h * .72), style="position:absolute;right:4px;bottom:0")}</div>')
     if ":" in stem:  # model:texture variant
         model, tex = stem.split(":")
-        return img(K._cached(f"gun-{tex}", dict(m=model, t=tex, v=3), lambda: _gun_with_tex(model, tex, w, h)),
+        return img(K._cached(f"gun-{tex}", dict(m=model, t=tex, v=4), lambda: _gun_with_tex(model, tex, w, h)),
                    h=h, w=w)
     return img(K.gun(stem, w=w, h=h), h=h, w=w)
 
@@ -84,7 +94,7 @@ def weapon_pic(stem: str, h=104, w=270):
 def _gun_with_tex(model, tex, w, h):
     import render3d as R
     s = R.gun_scene(K.export_dir() / f"{model}.json", K.ASSETS / f"textures/models/guns/{tex}.png")
-    return R.trim(R.render(s, yaw=18, pitch=16, fit=(w * 2, h * 2), ss=2), 2)
+    return R.trim(R.render(s, yaw=18, pitch=16, fit=(w * 2, h * 2), ss=2, outline=K.RIM), 3)
 
 
 def weapon_card(stem, name, role, ammo, ammo_label):
@@ -103,7 +113,7 @@ def tier_band(tier, cols=4):
     cards = "".join(weapon_card(*w) for w in D.WEAPONS[tier])
     return f"""<div class="band" style="--tc:{tier_var(tier)}">
 <div class="rail"><div class="tn">{esc(tier)}</div><div class="gate">Gate material<b>{esc(D.GATES[tier])}</b></div>
-<div class="gate">{len(D.WEAPONS[tier])} weapons</div></div>
+<div class="gate">{len(D.WEAPONS[tier])} weapon{'s' if len(D.WEAPONS[tier]) != 1 else ''}</div></div>
 <div class="grid" style="grid-template-columns:repeat({cols},minmax(0,1fr))">{cards}</div></div>"""
 
 
@@ -127,7 +137,7 @@ def arsenal(part: int):
     body = f"""
 <div style="display:flex;flex-direction:column;gap:18px">{bands}</div>
 <div style="display:flex;align-items:flex-end;gap:26px;margin-top:22px">
-  {img(guide, h=300)}
+  <div class="guide">{img(guide, h=300)}</div>
   {bubble("Sergeant", tip, side="left", tail=60, style="max-width:880px;margin-bottom:90px")}
 </div>"""
     return page_doc(title, sub, body)
@@ -150,7 +160,7 @@ def getting_started():
     A = K.ASSETS / "textures/models/armor"
     guide = K.mob("biped", "army_soldier", pose=POINT, yaw=-20, pitch=6, h=460, flip=True)
     journey = "".join(
-        f'<div class="stack" style="flex:1;min-width:0">{img(K.gun(g, w=250, h=100), h=70, style="max-width:100%")}{chip(t)}</div>'
+        f'<div class="stack spot" style="flex:1;min-width:0;padding:6px 2px">{img(K.gun(g, w=250, h=100), h=70, style="max-width:100%")}{chip(t)}</div>'
         for g, t in (("handcannon", "Steam"), ("pistol_9mm", "LV"), ("m4", "MV"), ("as50", "HV"),
                      ("laser_rifle", "EV"), ("blaster_rifle", "IV"), ("nuclear_death_ray", "ZPM")))
     arrow = '<span class="arrow">&rarr;</span>'
@@ -198,7 +208,7 @@ def getting_started():
                      ("N", "Night vision"), ("P", "Ammo pouch"), ("J", "Glider or anti-grav")))
     body = f"""
 <div style="display:grid;grid-template-columns:380px 1fr;gap:28px;align-items:end;margin-bottom:24px">
-  {img(guide, h=440)}
+  <div class="guide">{img(guide, h=440)}</div>
   <div style="display:flex;flex-direction:column;gap:26px;padding-bottom:20px">
     {bubble("Sergeant", "Welcome, recruit. Everything in GregGuns is made from <b>GregTech</b> parts on <b>GregTech</b> machines, and it unlocks with <b>GregTech</b> tiers. If you can make Steel, you can make a pistol. Here's how.", side="left", tail=70, style="font-size:22px;max-width:980px")}
     <div class="card" style="padding:16px 20px"><div class="label" style="margin-bottom:8px">The road ahead</div>

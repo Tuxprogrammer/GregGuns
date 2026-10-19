@@ -78,8 +78,8 @@ def turret_scene(plate="steel", gun=None, pitch_deg=0.0) -> R.Scene:
 
 def turret(plate="steel", gun="m4", yaw=-140, pitch=20, h=320):
     def make():
-        return R.trim(R.render(turret_scene(plate, gun), yaw=yaw, pitch=pitch, ppu=h / 1.9, ss=2), 2)
-    return K._cached("turret", dict(p=plate, g=gun, y=yaw, pi=pitch, h=h, v=2), make)
+        return R.trim(R.render(turret_scene(plate, gun), yaw=yaw, pitch=pitch, ppu=h / 1.9, ss=2, outline=K.RIM), 3)
+    return K._cached("turret", dict(p=plate, g=gun, y=yaw, pi=pitch, h=h, v=3), make)
 
 
 # ---------------------------------------------------------------- multiblocks
@@ -137,8 +137,10 @@ class Build:
         return [(k, self.labels[k], self.tex[k][-1] if isinstance(self.tex[k], tuple) else self.tex[k], c[k],
                  self.notes.get(k, "")) for k in self.tex if c[k]]
 
-    def render(self, yaw=-35, pitch=30, ppu=36, tag=""):
-        return K.voxels(f"{self.name}{tag}", self.blocks, self.tex, yaw=yaw, pitch=pitch, ppu=ppu)
+    def render(self, yaw=-35, pitch=30, ppu=36, tag="", marks=False):
+        """marks: ring the hatches (orange) and the controller (blue) so a builder can find them."""
+        tags = {k: (2 if k == "ctrl" else 1) for k in self.tex if k.startswith("h_") or k in ("ctrl", "mount")} if marks else None
+        return K.voxels(f"{self.name}{tag}", self.blocks, self.tex, yaw=yaw, pitch=pitch, ppu=ppu, tags=tags)
 
 
 def ammo_works(bays=4, only=None) -> Build:
