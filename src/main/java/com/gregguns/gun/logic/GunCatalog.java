@@ -66,6 +66,15 @@ public final class GunCatalog {
         /** Empty Minigun Ammo Drum. */
         public static final String MINIGUN_DRUM_EMPTY = "mag_minigun_drum_empty";
 
+        /** Loose Nether Charge (the Nether Blaster's round, LuV; 10 shots, no empty item). */
+        public static final String NETHER_CHARGE = "ammo_nether_charge";
+        /** Loose Tactical Nuke Rocket (the Nuke Launcher's round, ZPM). */
+        public static final String ROCKET_NUKE = "ammo_rocket_nuke";
+        /** Nuclear Power Cell (a component, the Nuclear Death Ray's consumable, ZPM). */
+        public static final String CELL_NUCLEAR = "cell_nuclear";
+        /** Depleted Nuclear Power Cell (returned on use). */
+        public static final String CELL_NUCLEAR_DEPLETED = "cell_nuclear_depleted";
+
         /** Loose rocket (the Rocket Launcher's round, HV). */
         public static final String ROCKET = "ammo_rocket";
         /** Loose 40 mm grenade (the Grenade Launcher's round, MV). */

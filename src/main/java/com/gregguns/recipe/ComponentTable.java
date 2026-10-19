@@ -39,7 +39,9 @@ public final class ComponentTable {
         /** {@code Materials.X.getFluid(n)}. */
         FLUID,
         /** {@code Materials.X.getMolten(n)}. */
-        MOLTEN
+        MOLTEN,
+        /** {@code FluidRegistry.getFluidStack(name, n)}: the material field holds a Forge fluid registry name. */
+        REGISTRY
     }
 
     /** One fluid input. */

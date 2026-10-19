@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.gregguns.GregGuns;
@@ -46,7 +47,9 @@ public final class ComponentRecipes {
     }
 
     private static void addAll() {
-        for (ComponentTable.Spec spec : ComponentTable.SPECS) {
+        List<ComponentTable.Spec> specs = new ArrayList<>(ComponentTable.SPECS);
+        specs.addAll(AmmoLineTable.SPECS);
+        for (ComponentTable.Spec spec : specs) {
             if (spec.requiresModule() != null && !ModuleFlags.isEnabled(spec.requiresModule())) {
                 GregGuns.LOG.info(
                     "Skipping recipe {}: module {} is off",
@@ -84,9 +87,7 @@ public final class ComponentRecipes {
         }
         List<FluidStack> fluids = new ArrayList<>();
         for (ComponentTable.FluidInput fluid : spec.fluids()) {
-            Materials material = Materials.get(fluid.material());
-            FluidStack stack = fluid.kind() == ComponentTable.FluidKind.MOLTEN ? material.getMolten(fluid.amount())
-                : material.getFluid(fluid.amount());
+            FluidStack stack = fluidStack(fluid);
             if (stack == null) {
                 GregGuns.LOG
                     .error("Skipping recipe {}: GT has no {} fluid for {}", row.id(), fluid.kind(), fluid.material());
@@ -122,6 +123,16 @@ public final class ComponentRecipes {
             default:
                 GregGuns.LOG.error("Recipe {} has a target ComponentRecipes does not register", row.id());
         }
+    }
+
+    private static FluidStack fluidStack(ComponentTable.FluidInput fluid) {
+        if (fluid.kind() == ComponentTable.FluidKind.REGISTRY) {
+            // Source: Forge 1.7.10 net.minecraftforge.fluids.FluidRegistry.getFluidStack(String, int)
+            return FluidRegistry.getFluidStack(fluid.material(), fluid.amount());
+        }
+        Materials material = Materials.get(fluid.material());
+        return fluid.kind() == ComponentTable.FluidKind.MOLTEN ? material.getMolten(fluid.amount())
+            : material.getFluid(fluid.amount());
     }
 
     private static void addAssemblyLine(GTRecipeBuilder builder, ComponentTable.Spec spec) {
