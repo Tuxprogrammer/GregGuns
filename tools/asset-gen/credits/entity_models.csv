@@ -1,2 +1,3 @@
 asset,path,generator,seed,method,license,date
 entity.model.demo_biped,src/main/resources/assets/gregguns/textures/entity/demo_biped.png,tools/asset-gen/entity_models.py,1392499027,"Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/demo_biped.json; flat material colors, edge bevels, fine noise",MIT,2026-10-19
+entity.model.cyberdemon,src/main/resources/assets/gregguns/textures/entity/cyberdemon.png,tools/asset-gen/entity_models.py,3866399985,"Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/cyberdemon.json; flat material colors, edge bevels, fine noise",MIT,2026-10-19
