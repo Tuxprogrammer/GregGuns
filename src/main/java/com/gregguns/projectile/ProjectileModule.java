@@ -84,6 +84,14 @@ public final class ProjectileModule {
             GenericProjectile.TRACKING_RANGE,
             GenericProjectile.UPDATE_FREQUENCY,
             GenericProjectile.SENDS_VELOCITY);
+        registrar.registerEntity(
+            "tesla_projectile",
+            TeslaProjectile.class,
+            TeslaProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.TESLA, TeslaProjectile::new);
         BulletLauncher.register(ProjectileKind.LASER, LaserProjectile::new);
         BulletLauncher.register(ProjectileKind.ENERGY_BLAST, EnergyBlastProjectile::new);
         BulletLauncher.register(ProjectileKind.FLAME, FlamethrowerProjectile::new);
