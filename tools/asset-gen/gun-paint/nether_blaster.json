@@ -1,0 +1,395 @@
+{
+ "gun": "nether_blaster",
+ "textures": [
+  {
+   "file": "nether_blaster.png"
+  }
+ ],
+ "roles": {
+  "blk": {
+   "material": "steel",
+   "base": "#7F7F7F",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "ctr": {
+   "material": "steel",
+   "base": "#787878",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "plate": {
+   "material": "steel",
+   "base": "#797979",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "spine": {
+   "material": "steel",
+   "base": "#777777",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "top": {
+   "material": "steel",
+   "base": "#7A7A7A",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "rail": {
+   "material": "steel",
+   "base": "#424242",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "fin": {
+   "material": "steel",
+   "base": "#484848",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "hous": {
+   "material": "steel",
+   "base": "#757575",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "collar": {
+   "material": "steel",
+   "base": "#7B7B7B",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "srail": {
+   "material": "steel",
+   "base": "#787878",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "ridge": {
+   "material": "steel",
+   "base": "#777777",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "muz": {
+   "material": "steel",
+   "base": "#787878",
+   "scratches": false,
+   "noise": 0.02,
+   "bevel": [
+    1.05,
+    0.92
+   ],
+   "drift": 0.02
+  },
+  "glow": {
+   "material": "flat",
+   "base": "#FF4500",
+   "bevel": [
+    1.0,
+    1.0
+   ]
+  }
+ },
+ "boxes": {
+  "blk_front": {
+   "role": "blk"
+  },
+  "blk_rear": {
+   "role": "blk"
+  },
+  "blk_center": {
+   "role": "ctr"
+  },
+  "plate_l": {
+   "role": "plate",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 6,
+     "h": 1,
+     "color": "#AAAAAA"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 6,
+     "h": 1,
+     "color": "#252525"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 6,
+     "h": 1,
+     "color": "#555555"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 3,
+     "w": 6,
+     "h": 1,
+     "color": "#AAAAAA"
+    }
+   ]
+  },
+  "plate_r": {
+   "role": "plate",
+   "painters": [
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 0,
+     "w": 6,
+     "h": 1,
+     "color": "#AAAAAA"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 1,
+     "w": 6,
+     "h": 1,
+     "color": "#252525"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 2,
+     "w": 6,
+     "h": 1,
+     "color": "#555555"
+    },
+    {
+     "type": "rect",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 0,
+     "y": 3,
+     "w": 6,
+     "h": 1,
+     "color": "#AAAAAA"
+    }
+   ]
+  },
+  "muzzle_plate": {
+   "role": "muz"
+  },
+  "top_plate": {
+   "role": "top"
+  },
+  "rail_top_l": {
+   "role": "rail"
+  },
+  "rail_top_r": {
+   "role": "rail"
+  },
+  "rail_low_l": {
+   "role": "rail"
+  },
+  "rail_low_r": {
+   "role": "rail"
+  },
+  "fin_l": {
+   "role": "fin"
+  },
+  "fin_r": {
+   "role": "fin"
+  },
+  "spine": {
+   "role": "spine"
+  },
+  "tail": {
+   "role": "spine"
+  },
+  "housing": {
+   "role": "hous",
+   "painters": [
+    {
+     "type": "inset",
+     "faces": [
+      "front",
+      "back"
+     ],
+     "x": 1,
+     "y": 1,
+     "w": 4,
+     "h": 5,
+     "shade": 0.8
+    }
+   ]
+  },
+  "collar": {
+   "role": "collar"
+  },
+  "cage_tl": {
+   "role": "srail"
+  },
+  "cage_tr": {
+   "role": "srail"
+  },
+  "cage_bl": {
+   "role": "srail"
+  },
+  "cage_br": {
+   "role": "srail"
+  },
+  "ridge_top": {
+   "role": "ridge"
+  },
+  "ridge_bot": {
+   "role": "ridge"
+  },
+  "slot_glow_f": {
+   "role": "glow",
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "top",
+      "bottom",
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "cx": 2,
+     "cy": 2,
+     "amp": 0.25,
+     "seed": 3
+    }
+   ]
+  },
+  "slot_glow_r": {
+   "role": "glow",
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "top",
+      "bottom",
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "cx": 2,
+     "cy": 2,
+     "amp": 0.25,
+     "seed": 3
+    }
+   ]
+  },
+  "eye_glow": {
+   "role": "glow",
+   "painters": [
+    {
+     "type": "mottle",
+     "faces": [
+      "top",
+      "bottom",
+      "right",
+      "front",
+      "left",
+      "back"
+     ],
+     "cx": 2,
+     "cy": 2,
+     "amp": 0.25,
+     "seed": 3
+    }
+   ]
+  }
+ }
+}
