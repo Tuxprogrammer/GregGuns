@@ -14,8 +14,10 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import com.gregguns.core.config.ClientConfig;
+import com.gregguns.gun.logic.EnergyMath;
 import com.gregguns.gun.logic.GunState;
 import com.gregguns.gun.logic.GunStats;
+import com.gregguns.item.gun.ItemEnergyGun;
 import com.gregguns.item.gun.ItemGun;
 import com.gregguns.item.gun.PlayerAmmoStore;
 
@@ -77,14 +79,26 @@ public final class AmmoHud {
         boolean reloading = mirror.isReloading();
 
         List<String> lines = new ArrayList<>();
-        EnumChatFormatting roundColor = state.canFire(stats) ? EnumChatFormatting.WHITE : EnumChatFormatting.RED;
-        lines.add(
-            StatCollector.translateToLocalFormatted(
-                "gregguns.hud.rounds",
-                roundColor.toString() + state.loaded() + EnumChatFormatting.RESET,
-                stats.magazineSize()));
-        int magazines = new PlayerAmmoStore(player).count(stats.ammoType());
-        lines.add(StatCollector.translateToLocalFormatted("gregguns.hud.magazines", magazines));
+        if (gun instanceof ItemEnergyGun) {
+            // Q5: an energy gun has no clip; the HUD shows its charge percent (GGS-02-13).
+            ItemEnergyGun energy = (ItemEnergyGun) gun;
+            long charge = energy.chargeOf(held);
+            EnumChatFormatting color = EnergyMath.canFire(charge, stats.euPerShot()) ? EnumChatFormatting.WHITE
+                : EnumChatFormatting.RED;
+            lines.add(
+                StatCollector.translateToLocalFormatted(
+                    "gregguns.hud.charge",
+                    color.toString() + EnergyMath.percent(charge, energy.capacityEu()) + EnumChatFormatting.RESET));
+        } else {
+            EnumChatFormatting roundColor = state.canFire(stats) ? EnumChatFormatting.WHITE : EnumChatFormatting.RED;
+            lines.add(
+                StatCollector.translateToLocalFormatted(
+                    "gregguns.hud.rounds",
+                    roundColor.toString() + state.loaded() + EnumChatFormatting.RESET,
+                    stats.magazineSize()));
+            int magazines = new PlayerAmmoStore(player).count(stats.ammoType());
+            lines.add(StatCollector.translateToLocalFormatted("gregguns.hud.magazines", magazines));
+        }
         if (reloading) {
             lines.add(
                 StatCollector

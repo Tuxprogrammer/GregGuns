@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 
 import com.gregguns.gun.GunAccuracy;
 import com.gregguns.gun.logic.AmmoInventory;
+import com.gregguns.gun.logic.ChargeSource;
 import com.gregguns.gun.logic.GunController;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunState;
@@ -21,6 +22,7 @@ import com.gregguns.gun.sound.GunSoundPlayer;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.item.gun.ItemGun;
 import com.gregguns.item.gun.PlayerAmmoStore;
+import com.gregguns.item.gun.StackCharge;
 import com.gregguns.item.gun.StoreAmmoInventory;
 import com.gregguns.network.GregGunsNetwork;
 import com.gregguns.projectile.Projectiles;
@@ -73,7 +75,7 @@ public final class ServerGunHandler {
         GunState state = GunNbt.read(held.getTagCompound(), stats);
         int before = state.loaded();
         GunTickResult result = data.controller()
-            .tick(stats, state, ammoOf(player, stats), true, player.capabilities.isCreativeMode);
+            .tick(stats, state, ammoOf(player, stats, held), true, player.capabilities.isCreativeMode);
         if (state.loaded() != before) {
             GunNbt.write(held.getTagCompound(), state);
         }
@@ -140,7 +142,7 @@ public final class ServerGunHandler {
         ItemGun.ensureTag(held, stats);
         GunState state = GunNbt.read(held.getTagCompound(), stats);
         ReloadStateMachine.Event event = data.controller()
-            .forceReload(stats, state, ammoOf(player, stats));
+            .forceReload(stats, state, ammoOf(player, stats, held));
         if (event == ReloadStateMachine.Event.STARTED) {
             announceReload(player, gun, event);
             syncZoom(player, data, stats);
@@ -235,8 +237,12 @@ public final class ServerGunHandler {
         }
     }
 
-    private static AmmoInventory ammoOf(EntityPlayerMP player, GunStats stats) {
-        return new StoreAmmoInventory(new PlayerAmmoStore(player), GunItems.roundsPerLooseItem(stats));
+    private static AmmoInventory ammoOf(EntityPlayerMP player, GunStats stats, ItemStack held) {
+        // An energy gun spends from its own stack's IC2 charge; a round gun's charge source is never asked.
+        return new StoreAmmoInventory(
+            new PlayerAmmoStore(player),
+            GunItems.roundsPerLooseItem(stats),
+            stats.isEnergy() ? StackCharge.spending(held, player) : ChargeSource.NONE);
     }
 
     private static ItemGun gunOf(ItemStack stack) {

@@ -176,6 +176,8 @@ item.gregguns.ammo_rocket.name=Rocket
 item.gregguns.ammo_40mm_grenade.name=40mm Grenade
 gregguns.gun.tooltip.ammo=Ammo: %s
 gregguns.gun.tooltip.loaded=Loaded: %s / %s
+gregguns.gun.tooltip.shots_left=Shots left: %s (%s EU each)
+gregguns.gun.tooltip.charger=Charges in a %s charger or battery buffer (%s EU/t)
 gregguns.gun.tooltip.damage=Damage: %s
 gregguns.gun.tooltip.shift=Press [SHIFT] for detailed tooltip
 gregguns.gun.tooltip.damage_type=Damage type: %s
@@ -191,6 +193,7 @@ key.gregguns.reload=Reload gun
 gregguns.hud.rounds=Rounds: %s / %s
 gregguns.hud.magazines=Magazines: %s
 gregguns.hud.reloading=Reloading %s%%
+gregguns.hud.charge=Charge: %s%%
 
 # Reaction Chamber and Retort (M4)
 item.gregguns.part_heat_ray_focus.name=Heat Ray Focus

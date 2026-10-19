@@ -90,6 +90,7 @@ public final class GunsModule implements GregGunsModule {
             GunCamoScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GunAccuracyScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             EnergyCoreScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            com.gregguns.gun.server.EnergyGunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ComponentScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             FrameworkScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             MpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
