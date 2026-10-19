@@ -130,7 +130,7 @@ class SonicRifleProfileTest {
         assertEquals(18f, box("grip").tiltZDegrees(), 1e-6, "grip leans back 18 degrees");
         assertEquals(-66f, box("strut").tiltZDegrees(), 1e-6);
         assertEquals(8, box("magazine").w());
-        assertEquals(7, box("magazine").h());
+        assertEquals(8, box("magazine").h());
         assertEquals(4, box("magazine").d());
     }
 
