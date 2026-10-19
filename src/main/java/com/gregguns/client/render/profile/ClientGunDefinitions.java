@@ -28,6 +28,7 @@ public final class ClientGunDefinitions {
             Mac10Profile.DEFINITION,
 
             M4Profile.DEFINITION,
+            InfiltratorProfile.DEFINITION,
 
             AugProfile.DEFINITION,
 
@@ -55,7 +56,7 @@ public final class ClientGunDefinitions {
      * giving a gun its clean-room profile means removing its name here.
      */
     public static final List<String> FLAT_ICON_FALLBACK = Collections
-        .unmodifiableList(Arrays.asList("infiltrator"));
+        .unmodifiableList(Arrays.asList());
 
     private ClientGunDefinitions() {}
 

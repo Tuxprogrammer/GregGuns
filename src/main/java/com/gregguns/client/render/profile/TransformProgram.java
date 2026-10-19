@@ -169,6 +169,12 @@ public final class TransformProgram {
             return this;
         }
 
+        /** Uniform scale by a term, which may depend on the part (a part scaled to 0 is not drawn). */
+        public Builder scale(Term s) {
+            list.add(new Step(Kind.SCALE, null, s, s, s));
+            return this;
+        }
+
         /** "About pivot P": translate to the pivot, run {@code body}, translate back. */
         public Builder about(double px, double py, double pz, Consumer<Builder> body) {
             translate(px, py, pz);
