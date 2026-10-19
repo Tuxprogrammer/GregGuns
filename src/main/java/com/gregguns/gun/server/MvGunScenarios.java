@@ -120,7 +120,11 @@ public final class MvGunScenarios {
                 out.checkEquals("shots on the second interval", 2, shotsAt[stats.fireRateTicks() + 1]);
                 out.checkEquals("shots over " + HELD_TICKS + " held ticks", expected, rig.shots());
                 out.checkEquals("rounds left", stats.magazineSize() - expected, rig.loaded());
-                out.checkEquals("bullets launched", expected, rig.bullets());
+                out.checkEquals(
+                    "bullets launched",
+                    expected * stats.pattern()
+                        .projectileCount(),
+                    rig.bullets());
                 return out.build();
             });
         }

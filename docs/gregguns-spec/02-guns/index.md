@@ -133,6 +133,17 @@ Flamethrower (`flamethrower`, GR-50, HV), Golden Revolver (`golden_revolver`, GR
 - **Akimbo pair damage.** The pair does 16 against the single gun's 14, as the catalog lists (a Techguns quirk kept on purpose and pinned by `GoldenRevolversLogicTest`). The akimbo item is a crafting-table combine and carries its inputs' tier (IV, GGS-02-07); its forced-reload refund uses the single gun's 6 rounds per bullet (GUN-14 not repeated).
 - **Sounds.** `guns.golden_revolver.fire` uses the `goldenrevolver_shot_*` files, its reload and the pair's reload the Revolver's; the Akimbo Golden Revolvers fire the single gun's event. `guns.flamethrower.start`, `.fire` and `.reload` use the `flamethrower_*` files.
 
+## PDW, Pulse Rifle and Minigun, batch B1 (M5): deviations
+
+PDW (`pdw`, GR-60), Pulse Rifle (`pulse_rifle`, GR-61) and Minigun (`minigun`, GR-62), all EV with the titanium gate. Stats are the Techguns sheets' unchanged. They load the Advanced Magazine (PDW 20 rounds, Pulse Rifle 12) and the Minigun Ammo Drum (200 rounds); a forced reload refunds Advanced Bullets (6 and 4 rounds each) or Rifle Bullets (12 per drum) at the gun's own rate. What differs:
+
+- **Burst lines.** The PDW and Pulse Rifle use `ShotPattern.burstLine(1)` and `burstLine(2)`: one pull spends one round and launches 2 or 3 projectiles in a line, which share one spread roll (a train rather than a cloud).
+- **Minigun.** One round per tick (20 per second), with the `guns.minigun.start` spin-up sound on the first shot after at least 10 idle ticks (a feature that is commented out in Techguns). The spin-down ramp of the rotor is not built: it needs a persistent spin phase in the model state.
+- **`checkRecoil`.** `GunTransforms.checkRecoil()` and `GunAnimState.shot(..., checkRecoil)` keep a running recoil window instead of restarting it on every shot, so the PDW kick and the Minigun rotor turn play out (the rotor makes one turn per 250 ms window).
+- **Camos.** PDW: Silver (1) and Dark Green (2). Pulse Rifle: Gray (1) and Dark Green (2). The Minigun has one skin.
+- **Pulse Rifle recipe.** recipes.md adds 144 L of soldering alloy; the production table has no fluid input yet, so the row omits it. The gate material (titanium plate) and the EV circuit are unchanged.
+- **In hand.** Each gun's first-person and third-person placement comes from `InHandTargets` through `InHandFit`.
+
 ## Pack-side changes
 
 These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack) and are collected in [PACK-CHANGES.md](../PACK-CHANGES.md).

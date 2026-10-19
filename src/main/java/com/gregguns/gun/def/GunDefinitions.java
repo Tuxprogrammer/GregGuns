@@ -44,7 +44,10 @@ public final class GunDefinitions {
             AkimboGoldenRevolversDef.DEFINITION,
             LaserRifleDef.DEFINITION,
             TeslaRifleDef.DEFINITION,
-            SonicRifleDef.DEFINITION));
+            SonicRifleDef.DEFINITION,
+            PdwDef.DEFINITION,
+            PulseRifleDef.DEFINITION,
+            MinigunDef.DEFINITION));
 
     private GunDefinitions() {}
 

@@ -207,6 +207,34 @@
     "category": "player",
     "sounds": ["guns/lmg_reload"]
   },
+  "guns.pdw.fire": {
+    "category": "player",
+    "sounds": ["guns/pdw_shot_a", "guns/pdw_shot_b", "guns/pdw_shot_c"]
+  },
+  "guns.pdw.reload": {
+    "category": "player",
+    "sounds": ["guns/pdw_reload"]
+  },
+  "guns.pulse_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/pulserifle_shot_a", "guns/pulserifle_shot_b", "guns/pulserifle_shot_c", "guns/pulserifle_shot_d"]
+  },
+  "guns.pulse_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/pulserifle_reload"]
+  },
+  "guns.minigun.fire": {
+    "category": "player",
+    "sounds": ["guns/minigun_shot_a", "guns/minigun_shot_b", "guns/minigun_shot_c", "guns/minigun_shot_d"]
+  },
+  "guns.minigun.start": {
+    "category": "player",
+    "sounds": ["guns/minigun_start_a"]
+  },
+  "guns.minigun.reload": {
+    "category": "player",
+    "sounds": ["guns/minigun_reload"]
+  },
   "guns.akimbo_mac10s.reload": {
     "category": "player",
     "sounds": ["guns/mac10_reload_akimbo"]

@@ -31,6 +31,7 @@ public final class GunTransforms {
     private final MuzzleFlashSpec muzzleFlash;
     private final ScopeSpec scope;
     private final PartVisibility partVisibility;
+    private final boolean checkRecoil;
 
     /**
      * Decides whether a model part is drawn this frame, from the state a model may see. Used for parts that appear
@@ -68,6 +69,7 @@ public final class GunTransforms {
         icon = b.icon;
         muzzleFlash = b.muzzleFlash;
         scope = b.scope;
+        checkRecoil = b.checkRecoil;
         partVisibility = b.partVisibility;
     }
 
@@ -98,6 +100,14 @@ public final class GunTransforms {
     /** @return how many model parts are drawn per frame, each in its own matrix */
     public int partCount() {
         return partCount;
+    }
+
+    /**
+     * @return true if a shot fired while the recoil window is still running does not restart it (Techguns'
+     *         {@code checkRecoil}, for the PDW and the Minigun, whose shots come faster than their window)
+     */
+    public boolean checkRecoil() {
+        return checkRecoil;
     }
 
     /** @return recoil length in ticks */
@@ -197,12 +207,19 @@ public final class GunTransforms {
         private MuzzleFlashSpec muzzleFlash;
         private ScopeSpec scope;
         private PartVisibility partVisibility = PartVisibility.ALWAYS;
+        private boolean checkRecoil;
 
         private Builder() {}
 
         /** A rule that hides parts by ammo and reload state; the default draws every part. */
         public Builder partVisibility(PartVisibility rule) {
             partVisibility = rule;
+            return this;
+        }
+
+        /** A shot during a running recoil window does not restart the window (default: it does). */
+        public Builder checkRecoil() {
+            checkRecoil = true;
             return this;
         }
 
