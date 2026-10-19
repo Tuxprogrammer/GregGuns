@@ -48,12 +48,12 @@ class CyberdemonModelTest {
         assertArrayEquals(new int[] { 8, 8, 7 }, box("head", "skull").size());
         assertEquals(-3F, box("head", "skull").offset()[2]);
         assertArrayEquals(new int[] { 6, 5, 2 }, box("head", "snout").size());
-        assertArrayEquals(new int[] { 12, 7, 6 }, box("body", "chest").size());
+        assertArrayEquals(new int[] { 12, 7, 7 }, box("body", "chest").size());
         assertArrayEquals(new int[] { 9, 5, 5 }, box("body", "pelvis").size());
         assertArrayEquals(new int[] { 5, 3, 5 }, box("rightLeg", "hoof_r").size());
         assertArrayEquals(new int[] { 5, 7, 5 }, box("rightArm", "upper_arm_r").size());
-        assertArrayEquals(new int[] { 4, 8, 4 }, box("forearm_r", "forearm_r").size());
-        assertArrayEquals(new int[] { 5, 7, 5 }, box("thigh_r", "thigh_r").size());
+        assertArrayEquals(new int[] { 4, 9, 4 }, box("forearm_r", "forearm_r").size());
+        assertArrayEquals(new int[] { 5, 7, 6 }, box("thigh_r", "thigh_r").size());
         assertArrayEquals(new int[] { 4, 7, 4 }, box("shin_r", "shin_r").size());
     }
 
@@ -63,7 +63,7 @@ class CyberdemonModelTest {
         assertEquals(-40F, part("horn_base_r").rotateDegrees()[1]);
         assertEquals(-25F, part("horn_tip_l").rotateDegrees()[0]);
         assertArrayEquals(new float[] { 6, -5, 1.5F }, part("horn_base_l").pivot());
-        assertArrayEquals(new float[] { -7.5F, -4.9F, -1 }, part("horn_tip_r").pivot());
+        assertArrayEquals(new float[] { -7.5F, -4.9F, -1.5F }, part("horn_tip_r").pivot());
     }
 
     @Test
