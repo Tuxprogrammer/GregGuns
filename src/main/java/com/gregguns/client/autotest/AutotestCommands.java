@@ -107,13 +107,49 @@ final class AutotestCommands {
         }
     }
 
+    /** A command that spans several client ticks; the command queue blocks while one is open. */
+    interface Wait {
+
+        /**
+         * @param player the local player
+         * @return true when the wait is over
+         */
+        boolean tick(EntityClientPlayerMP player);
+    }
+
+    /**
+     * {@code see <name>}: waits (up to {@link #HOLD_TIMEOUT_TICKS} ticks) until a player of that name is loaded in
+     * the client world, then tells the server ({@code ack see <name> ok|fail}). A teleport leaves the other client
+     * without the entity for a while, and remote shot events need it.
+     */
+    static final class SeeWait implements Wait {
+
+        private final String name;
+        private int waited;
+
+        SeeWait(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public boolean tick(EntityClientPlayerMP player) {
+            boolean seen = Minecraft.getMinecraft().theWorld.getPlayerEntityByName(name) != null;
+            if (!seen && ++waited <= HOLD_TIMEOUT_TICKS) {
+                return false;
+            }
+            ClientAutotest.logLine("see " + name + " -> " + (seen ? "loaded" : "NOT LOADED"));
+            player.sendChatMessage(AutotestSignal.format("ack", "see", name, seen ? "ok" : "fail"));
+            return true;
+        }
+    }
+
     /**
      * {@code hold <name>}: waits (up to {@link #HOLD_TIMEOUT_TICKS} client ticks) until the selected hotbar slot holds
      * the item, keeps it in hand for {@link #HOLD_SETTLE_TICKS} ticks so the renderer and HUD draw it, then logs what
      * is held with its tooltip (plain and advanced, which runs the item's tooltip code) and tells the server
      * ({@code ack hold <name> ok|fail}) so it can move on. The client command queue blocks while a wait is open.
      */
-    static final class HoldWait {
+    static final class HoldWait implements Wait {
 
         private final String expected;
         private int waited;
@@ -127,7 +163,8 @@ final class AutotestCommands {
          * @param player the local player
          * @return true when the wait is over (reported either way)
          */
-        boolean tick(EntityClientPlayerMP player) {
+        @Override
+        public boolean tick(EntityClientPlayerMP player) {
             if (settled < 0) {
                 if (matches(player.getHeldItem(), expected)) {
                     settled = 0;

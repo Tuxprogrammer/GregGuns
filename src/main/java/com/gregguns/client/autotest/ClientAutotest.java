@@ -75,7 +75,7 @@ public final class ClientAutotest {
     private final Map<String, Armed> armed = new HashMap<>();
     private final java.util.ArrayDeque<String[]> queue = new java.util.ArrayDeque<>();
     private String pendingShot;
-    private AutotestCommands.HoldWait holdWait;
+    private AutotestCommands.Wait holdWait;
     private int shotFrames;
     private boolean joinLogged;
     private int fireClock = -1;
@@ -274,6 +274,7 @@ public final class ClientAutotest {
                 log("fire x" + args[0] + " (client " + localName() + ")");
             }
             case "gui" -> AutotestCommands.openGui(args);
+            case "see" -> holdWait = new AutotestCommands.SeeWait(args[0]);
             case "sync" -> AutotestCommands.syncAck();
             case "hold" -> holdWait = new AutotestCommands.HoldWait(args[0]);
             case "scope" -> com.gregguns.client.render.GunRenderers

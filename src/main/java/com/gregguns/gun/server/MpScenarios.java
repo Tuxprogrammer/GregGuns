@@ -159,9 +159,14 @@ public final class MpScenarios {
             // MC yaw: -90 faces +X, 90 faces -X.
             prepare(a, ox, oy, oz, -90.0f, 0.0f);
             prepare(b, ox + SEPARATION, oy, oz, 90.0f, 0.0f);
-            return ScenarioResult.pending(name(), 700, new SyncPoller(ctx, a, b));
+            AckInbox inbox = new AckInbox();
+            MinecraftForge.EVENT_BUS.register(inbox);
+            return ScenarioResult.pending(name(), 700, new SyncPoller(ctx, a, b, inbox));
         }
     }
+
+    /** Wall-clock limit for B to load A after the scenario teleports. */
+    private static final long SEE_TIMEOUT_MS = 20_000L;
 
     /** Ticks to wait for a pressed shot to show up as a round drop before pressing again, and between steps. */
     private static final int SHOT_RETRY_TICKS = 8;
@@ -189,11 +194,15 @@ public final class MpScenarios {
         private int magsBefore;
         private int reloadAt = -1;
         private int shotsSeen;
+        private boolean bReady;
         private int lastStep = -1;
         private int presses;
         private long lastStepMs;
+        private final AckInbox inbox;
+        private long seeSentMs = -1;
 
-        SyncPoller(ScenarioContext ctx, EntityPlayerMP a, EntityPlayerMP b) {
+        SyncPoller(ScenarioContext ctx, EntityPlayerMP a, EntityPlayerMP b, AckInbox inbox) {
+            this.inbox = inbox;
             this.ctx = ctx;
             this.a = a;
             this.b = b;
@@ -208,13 +217,33 @@ public final class MpScenarios {
                 }
             }
             lowestBHealth = Math.min(lowestBHealth, b.getHealth());
-            if (t == 40) {
+            if (t < 40) {
+                return null;
+            }
+            if (!bReady) {
+                // B must have A loaded before A shoots, or the remote shot and reload events find no entity to
+                // animate (the teleport at the start leaves it unloaded for a while).
+                if (seeSentMs < 0) {
+                    inbox.clear(b.getCommandSenderName());
+                    signal(b, "see", a.getCommandSenderName());
+                    seeSentMs = System.currentTimeMillis();
+                    return null;
+                }
+                String ack = inbox.get(b.getCommandSenderName());
+                if (ack == null) {
+                    if (System.currentTimeMillis() - seeSentMs > SEE_TIMEOUT_MS) {
+                        return abort("B did not answer whether it sees A within " + SEE_TIMEOUT_MS / 1000 + " s");
+                    }
+                    return null;
+                }
+                if (!ack.equals("see " + a.getCommandSenderName() + " ok")) {
+                    return abort("B never loaded A (" + ack + ")");
+                }
+                bReady = true;
                 roundsStart = loaded(a);
                 signal(b, "shot", "b-sees-a-idle");
                 signal(b, "arm", "shot", "b-sees-a-shot", "1");
                 signal(b, "arm", "reload", "b-sees-a-reload", "12");
-            }
-            if (t < 60) {
                 return null;
             }
             // Server-confirmed sequence: each step starts only when the server saw the previous one happen.
@@ -268,7 +297,13 @@ public final class MpScenarios {
             return null;
         }
 
+        private ScenarioResult abort(String why) {
+            MinecraftForge.EVENT_BUS.unregister(inbox);
+            return ScenarioResult.fail("mp.sync", why);
+        }
+
         private ScenarioResult finish(int t) {
+            MinecraftForge.EVENT_BUS.unregister(inbox);
             ScenarioResult.Builder out = ScenarioResult.builder("mp.sync");
             out.check(bulletSeen, "no bullet fired by " + a.getCommandSenderName() + " was seen in the world");
             out.check(
@@ -531,6 +566,44 @@ public final class MpScenarios {
             }
         }
 
+        /** Every stack the player carries, in the main inventory, armor slots and Baubles slots. */
+        private static String dump(EntityPlayerMP p) {
+            StringBuilder out = new StringBuilder();
+            for (int i = 0; i < p.inventory.mainInventory.length; i++) {
+                ItemStack stack = p.inventory.mainInventory[i];
+                if (stack != null) {
+                    out.append("main")
+                        .append(i)
+                        .append('=')
+                        .append(stack.getDisplayName())
+                        .append(' ');
+                }
+            }
+            for (int i = 0; i < p.inventory.armorInventory.length; i++) {
+                ItemStack stack = p.inventory.armorInventory[i];
+                if (stack != null) {
+                    out.append("armor")
+                        .append(i)
+                        .append('=')
+                        .append(stack.getDisplayName())
+                        .append(' ');
+                }
+            }
+            for (BaubleSlot slot : BaubleSlot.values()) {
+                for (ItemStack stack : BaublesCompat.worn(p, slot)) {
+                    if (stack != null) {
+                        out.append(slot)
+                            .append('=')
+                            .append(stack.getDisplayName())
+                            .append(' ');
+                    }
+                }
+            }
+            return out.length() == 0 ? "nothing"
+                : out.toString()
+                    .trim();
+        }
+
         private static void reset(EntityPlayerMP p, boolean creative) {
             p.inventory.clearInventory(null, -1);
             for (BaubleSlot slot : BaubleSlot.values()) {
@@ -648,6 +721,8 @@ public final class MpScenarios {
                                 .append(p.inventory.currentItem)
                                 .append(", slot 0 = ")
                                 .append(slot0 == null ? "empty" : slot0.getDisplayName())
+                                .append("; carrying ")
+                                .append(dump(p))
                                 .append(')');
                         }
                     }
