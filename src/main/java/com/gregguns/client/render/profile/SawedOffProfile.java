@@ -11,19 +11,22 @@ import com.gregguns.client.anim.SpriteSheet;
  * The Sawed Off's model boxes and render transforms, as data.
  *
  * <h2>Where the model comes from (originality record)</h2>
- * The boxes are original GregGuns geometry, built the way {@link RevolverProfile} was: nothing is taken from
- * Techguns code or box lists. The model texture {@code textures/models/guns/sawed_off.png} (64x32) is a packed atlas
- * painted by {@code tools/asset-gen/models.py}, and {@code tools/asset-gen/model_layouts.md} lists the six boxes it was
- * painted for, each as {@code u v w h d} in texels (receiver, barrel, pump, stock, grip, tube). Those sizes and
- * texture origins are used here exactly, so every unwrap rectangle lands on painted pixels (checked by
- * {@code SawedOffProfileTest}, which reads the PNG). The positions are authored from the sizes and the one fact the
- * spec records about the shape: a side-by-side double barrel cut down to a pistol grip (gun-models.md, "Sawed Off", in
- * words only). The "barrel" box is the pair of barrels as one block four texels wide, the "tube" a rib along its top,
- * and the "pump" the forend hung under the barrels.
+ * The boxes are original GregGuns geometry, built clean-room from written design notes only
+ * ({@code docs/techguns-spec/03-gun-visuals-audio/model-notes/sawed-off.md}: proportions, silhouettes, palette), by an
+ * agent that never saw the original model or texture. Nothing is taken from Techguns code, box lists or textures.
+ * The look: a cut-down side-by-side double barrel. Two square-section tubes (28 long) joined by three ribs, so the
+ * block is 7 wide with a groove down the middle and a half-height ridge on each flank, two bead sights at the muzzle,
+ * a small flat lever where the barrels meet the wood, and a stepped dark wooden stub (11 long) that ends in a taller,
+ * wider butt plate. No pump, no grip, no trigger guard, no hammer. The layout lives in
+ * {@code tools/asset-gen/gun-paint/sawed_off.layout.json}; {@code tools/asset-gen/gun_paint.py pack} assigns the UV
+ * origins and writes the generated block below, and {@code gun_paint.py paint} paints {@code sawed_off.png} (64x64,
+ * the bores are painted faces) from the role map {@code gun-paint/sawed_off.json}. {@code SawedOffProfileTest} checks
+ * the boxes against the notes' key facts.
  *
  * <h2>Frame of reference</h2>
  * X-family: the boxes are laid out with the muzzle toward +X and Y growing downward, in texels, and drawn as authored.
- * One texel is a sixteenth of a block.
+ * X = 0 is the barrels' rear face, Y = 0 their top face and Z = 0 the gun's mid-plane. One texel is a sixteenth of a
+ * block.
  *
  * <p>
  * Spec: gun-sheets.md "Sawed-off" (rows and timing); rendering-framework.md section 6.1 (X-family) and section 8.
@@ -35,42 +38,60 @@ public final class SawedOffProfile {
     /** Model sheet width in texels. */
     public static final int TEXTURE_WIDTH = 64;
     /** Model sheet height in texels. */
-    public static final int TEXTURE_HEIGHT = 32;
+    public static final int TEXTURE_HEIGHT = 64;
     /** GL units per texel. */
     public static final float MODEL_SCALE = 1.0f / 16.0f;
     /**
-     * The muzzle in the gun frame, blocks: x forward, y down, z. The barrels' front face is 37 texels forward of the
-     * model origin and the bore axis sits 2.5 texels above it.
+     * The muzzle in the gun frame, blocks: x forward, y down, z. The centre of the barrels' front face, between the
+     * two bores: 28 texels forward of the rear face, 2 below the top, on the mid-plane.
      */
-    public static final float[] MUZZLE = { 37.0f / 16.0f, -2.5f / 16.0f, 0.0f };
+    public static final float[] MUZZLE = { 28.0f / 16.0f, 2.0f / 16.0f, 0.0f };
     /**
      * Frames of {@code muzzleflash4x4.png} that are painted: 0 to 8 (see {@link RevolverProfile#MUZZLE_FLASH_FRAMES}).
      */
     public static final int MUZZLE_FLASH_FRAMES = 9;
 
-    private static final double FP_SCALE = 0.9;
-    private static final double FP_X = 0.33;
-    private static final double FP_Y = -0.83;
-    private static final double FP_Z = -0.75;
-
-    private static final float[] GRIP_PIVOT = { 3.0f, 2.0f, 0.0f };
     private static final float[] NO_PIVOT = { 0, 0, 0 };
-    private static final float GRIP_TILT = 12.0f;
 
     /** One part: the whole gun moves as a unit. */
     public static final BoxSpec[] BOXES = {
-        // receiver: the breech block behind the barrels
-        new BoxSpec("receiver", 0, 0, 0, 14, 6, 4, 0f, -4f, -2f, NO_PIVOT, 0f),
-        // barrel: both tubes as one block, top flush with the receiver
-        new BoxSpec("barrel", 0, 0, 19, 23, 3, 4, 14f, -4f, -2f, NO_PIVOT, 0f),
-        // pump: the forend, under the barrels
-        new BoxSpec("pump", 0, 34, 10, 11, 4, 4, 15f, -1f, -2f, NO_PIVOT, 0f),
-        // stock: the short butt behind the receiver
-        new BoxSpec("stock", 0, 0, 10, 14, 6, 3, -14f, -3f, -1.5f, NO_PIVOT, 0f),
-        // grip: hangs from the rear of the receiver, tilted about its top edge
-        new BoxSpec("grip", 0, 36, 0, 4, 7, 3, 1f, 2f, -1.5f, GRIP_PIVOT, GRIP_TILT),
-        // tube: the rib along the top of the barrels
-        new BoxSpec("tube", 0, 0, 26, 20, 2, 2, 16f, -6f, -1f, NO_PIVOT, 0f), };
+        // BEGIN GENERATED BOXES (tools/asset-gen/gun_paint.py pack; edit the layout, not this)
+        new BoxSpec("tube_l", 0, 0, 11, 28, 4, 2, 0f, 0f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("tube_r", 0, 0, 17, 28, 4, 2, 0f, 0f, 0.5f, NO_PIVOT, 0f),
+        new BoxSpec("rib_c", 0, 0, 23, 28, 2, 1, 0f, 1f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("rib_l", 0, 0, 26, 28, 2, 1, 0f, 1f, -3.5f, NO_PIVOT, 0f),
+        new BoxSpec("rib_r", 0, 0, 29, 28, 2, 1, 0f, 1f, 2.5f, NO_PIVOT, 0f),
+        new BoxSpec("bead_l", 0, 60, 7, 1, 1, 1, 27f, -1f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("bead_r", 0, 60, 9, 1, 1, 1, 27f, -1f, 0f, NO_PIVOT, 0f),
+        new BoxSpec("nub_l", 0, 58, 4, 1, 2, 1, -1f, 1f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("nub_r", 0, 30, 7, 1, 2, 1, -1f, 1f, 1.5f, NO_PIVOT, 0f),
+        new BoxSpec("nubtop_l", 0, 60, 11, 1, 1, 1, -1f, 0f, -1f, NO_PIVOT, 0f),
+        new BoxSpec("nubtop_r", 0, 60, 13, 1, 1, 1, -1f, 0f, 0f, NO_PIVOT, 0f),
+        new BoxSpec("lever", 0, 44, 4, 4, 1, 3, -4f, 1f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("lock", 0, 34, 0, 2, 3, 3, -2f, 2f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("hand", 0, 14, 0, 7, 4, 3, -9f, 2f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("plate_l", 0, 14, 7, 7, 2, 1, -9f, 3f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("plate_r", 0, 44, 8, 7, 2, 1, -9f, 3f, 1.5f, NO_PIVOT, 0f),
+        new BoxSpec("chin", 0, 34, 6, 2, 1, 3, -9f, 6f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("butt", 0, 0, 0, 2, 6, 5, -11f, 2f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("strip", 0, 44, 0, 6, 1, 3, 0f, 4f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("sliver", 0, 0, 32, 8, 1, 1, 0f, 3f, -0.5f, NO_PIVOT, 0f),
+        // END GENERATED BOXES
+    };
+
+    /** The sheet's first-person scale, recorded for Techguns' smaller model. */
+    private static final double SHEET_FP_SCALE = 2.2;
+    /**
+     * The first-person scale from {@link FirstPersonFit}: the 39-texel gun is drawn 15/16 of a block long on screen.
+     * The sheet's S(2.2) runs the gun off the frame.
+     */
+    public static final double FP_SCALE = FirstPersonFit
+        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
+    /** The sheet's fire and reload translation deltas are multiplied by this, because the scale changed. */
+    private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
+    /** The idle first-person translation from {@link FirstPersonFit}: this model's box centre on the family anchor. */
+    private static final double[] IDLE = FirstPersonFit
+        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
 
     /** The sheet's render transforms, timing and muzzle flash for the Sawed Off. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
@@ -94,36 +115,37 @@ public final class SawedOffProfile {
 
     private static GunTransforms buildTransforms() {
         // First person (X-family): rotX180, rotY-45, S(FP_SCALE), then the state row.
-        // Deviation: the sheet says S(2.2) with idle T(0.1, -0.1, -0.5), recorded for Techguns' much smaller model.
-        // The GregGuns model is about 3 blocks long (51 texels), so the scale is 0.9 and the offset is
-        // (0.33, -0.83, -0.75): the Revolver's world shift (its 1.5 scale times (0.2, -0.5, -0.45)) divided by 0.9.
-        // Tuned against client screenshots (mp.visual.sawedoff): the muzzle sits left of centre, the grip in the
-        // lower right, and the fixed-frame muzzle flash lands on the barrels. The first try, S(0.6) with
-        // (-0.3, -0.5, -0.9), left only a corner of the gun on screen.
+        // Deviation: the sheet says S(2.2) with idle T(0.1, -0.1, -0.5), recorded for Techguns' model, which ran off
+        // the frame. The scale and idle position follow the FirstPersonFit rule; the sheet's fire and reload deltas
+        // are multiplied by K so the gun moves as far on screen as the sheet intends.
+        double x0 = IDLE[0];
+        double y0 = IDLE[1];
+        double z0 = IDLE[2];
         TransformProgram fpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(-45)
             .scale(FP_SCALE)
             .build();
         TransformProgram fpIdle = TransformProgram.builder()
-            .translate(FP_X, FP_Y, FP_Z)
+            .translate(x0, y0, z0)
             .build();
-        // Firing: rotZ(30 yF), the gun jumping up and back.
+        // Firing: one quick kick, rotZ(30 yF), the gun jumping up and back.
         TransformProgram fpFire = TransformProgram.builder()
             .rotZ((p, part) -> 30.0 * yF(p))
-            .translate((p, part) -> FP_X + 0.5 * yF(p), (p, part) -> FP_Y + 0.3 * yF(p), TransformProgram.c(FP_Z))
+            .translate((p, part) -> x0 + K * 0.5 * yF(p), (p, part) -> y0 + K * 0.3 * yF(p), TransformProgram.c(z0))
             .build();
-        // Reload: s = sin(p); the gun breaks open: tips up 70 degrees and swings out.
+        // Reload: s = sin(p); the gun tips up 70 degrees and swings out, then comes back (no hinge in the model).
         TransformProgram fpReload = TransformProgram.builder()
             .rotZ((p, part) -> 70.0 * sin(p))
-            .translate((p, part) -> FP_X + sin(p), (p, part) -> FP_Y - sin(p) / 2.0, TransformProgram.c(FP_Z))
+            .translate((p, part) -> x0 + K * sin(p), (p, part) -> y0 - K * sin(p) / 2.0, TransformProgram.c(z0))
             .build();
-        // Third person: rotX180, rotY225, S(1.5), T(-0.5, -0.25, 0). Aimed extra translate (0, 0.15, 0).
+        // Third person: rotX180, rotY225, S(0.7), T(-1.4, -0.8, 0) (sheet: S(1.5), for a larger gun frame). Aimed extra
+        // translate (0, 0.15, 0).
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.5)
-            .translate(-0.5, -0.25, 0)
+            .scale(0.7)
+            .translate(-1.4, -0.8, 0)
             .build();
         // Recoil about (-0.2, -0.1, 0): rotZ(-40 K).
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -132,8 +154,8 @@ public final class SawedOffProfile {
         TransformProgram tpReload = TransformProgram.builder()
             .about(-0.2, -0.1, 0, b -> b.rotZ((p, part) -> -40.0 * yR(p)))
             .build();
-        // Deviation: the sheet has no scale for the ground row; the 3 block long model is drawn at 0.6 so a dropped
-        // Sawed Off is about as long as a block and a half.
+        // Deviation: the sheet has no scale for the ground row; the 2.4 block long model is drawn at 0.6 so a dropped
+        // Sawed Off is about a block and a half long.
         TransformProgram ground = TransformProgram.builder()
             .rotX(180)
             .rotY(90)

@@ -22,7 +22,7 @@ Layout file: {"gun", "texture": [w, h], "scale", "bodyRotationYDegrees", "boxes"
 Role map (`gun-paint/<gun>.json`): {"gun", "textures": [{"file": "handcannon.png", "variant": null | {...}}],
 "roles": {role: {"material", "base", ...}}, "boxes": {name: {"role", "grain", "wear", "painters": [...]}}}.
 Materials: steel (flat, edge highlights, faint scratches), wood (grain streaks along the box's grain axis, dark end
-grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore, bands, gradient, tone, seam, inset.
+grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore, bands, gradient, tone, mottle, seam, inset.
 A wood role may set "calm" (0..1, streak contrast scale); a role may set "bevel": [hi, lo] edge shading.
 A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A box may be tilted about Z ("tilt") or
 about its long axis X ("tiltX", for a diamond bar), both about "pivot"; a size with a 0 is a zero-thickness plane.
@@ -253,6 +253,10 @@ def apply_painter(rgb, p, face):
     elif kind == "tone":  # lighten (f > 1) or darken (f < 1) a rectangle, default the whole face
         x, y, pw, ph = face_xywh(p, w, h)
         mul(rgb, x, y, pw, ph, p.get("f", 1.0))
+    elif kind == "mottle":  # blotchy light/dark patches (wood): cells cx x cy texels, +-amp brightness
+        r = np.random.default_rng([p.get("seed", 1), w, h])
+        n = vnoise(r, h, w, p.get("cx", 3), p.get("cy", p.get("cx", 3)))
+        rgb *= (1.0 + p.get("amp", 0.2) * (n - 0.5) * 2)[..., None]
     elif kind == "seam":  # a thin panel line across or along
         dark, light = p.get("dark", 0.62), p.get("light", 1.1)  # a faint seam: dark 0.78, light 1.0
         if p.get("axis", "v") == "v":
