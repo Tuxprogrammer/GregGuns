@@ -232,12 +232,12 @@ public final class MpScenarios {
                 String ack = inbox.get(b.getCommandSenderName());
                 if (ack == null) {
                     if (System.currentTimeMillis() - seeSentMs > SEE_TIMEOUT_MS) {
-                        return abort("B did not answer whether it sees A within " + SEE_TIMEOUT_MS / 1000 + " s");
+                        return abort("B never tracked A: no answer from B within " + SEE_TIMEOUT_MS / 1000 + " s");
                     }
                     return null;
                 }
                 if (!ack.equals("see " + a.getCommandSenderName() + " ok")) {
-                    return abort("B never loaded A (" + ack + ")");
+                    return abort("B never tracked A (client said: " + ack + ")");
                 }
                 bReady = true;
                 roundsStart = loaded(a);
