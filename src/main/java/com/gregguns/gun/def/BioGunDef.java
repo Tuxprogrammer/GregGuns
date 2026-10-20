@@ -26,8 +26,9 @@ import com.gregguns.recipe.ProductionTable.Row;
  * Sounds {@code guns.bio_gun.fire}, {@code .reload} and the glob's {@code .impact}.
  *
  * <p>
- * Deviations (docs/gregguns-spec/02-guns/index.md, batch M5 B3a): the Bio Tank is filled with GT Biomass by the Fluid
- * Canner and a full tank is always 30 rounds (GGS-02-32 scaling deferred, as for the Flamethrower); the gun has no
+ * Deviations (docs/gregguns-spec/02-guns/index.md, batch M5 B3a): the Bio Tank is filled with BartWorks' E. coli culture
+ * fluid by the Fluid Canner (a GregGuns Bacterial Vat recipe makes it from Biomass; Biomass itself only behind
+ * {@code bioGun.acceptBiomass} or without BartWorks) and a full tank is always 30 rounds (GGS-02-32 scaling deferred, as for the Flamethrower); the gun has no
  * charge sound, because the original has none, so the definition does not call {@code charges()}; blob placement and
  * growth obey safe mode and {@code BlockEvent.PlaceEvent} (PFX-28); the charge fixes GUN-02, GUN-10 and GUN-31.
  *

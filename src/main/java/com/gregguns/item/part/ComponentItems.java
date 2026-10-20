@@ -112,8 +112,11 @@ public final class ComponentItems {
      */
     public static ItemTank tank(String name, Tier tier) {
         // Spec: docs/gregguns-spec/06-items/fluids.md, default accepted set; RC-56 to RC-58 for the fills.
-        // Deviation: the Bio Tank takes Biomass only (RC-57); the fluid table also names BioDiesel for the bio gun,
-        // which the Fuel Tank already takes. M2 can widen the list when the Bio Gun lands.
+        // Deviation: the Bio Tank takes BartWorks' E. coli culture fluid (RC-57), made from Biomass in the Bacterial
+        // Vat,
+        // and Biomass only behind bioGun.acceptBiomass or when the culture cannot be resolved (BioTankFluids). The
+        // fluid
+        // table's BioDiesel is the Fuel Tank's.
         switch (name) {
             case TANK_FUEL:
                 return new ItemTank(
@@ -126,7 +129,7 @@ public final class ComponentItems {
                     // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L4860-L4868
                     Arrays.asList("Fuel", "Gasoline", "BioDiesel", "Ethanol"));
             case TANK_BIO:
-                return new ItemTank(tier, name, false, Arrays.asList("Biomass"));
+                return new ItemTank(tier, name, false, Arrays.asList("Biomass"), BioTankFluids::accepts);
             case TANK_AIR:
                 return new ItemTank(tier, name, true, Arrays.asList("Air"));
             default:

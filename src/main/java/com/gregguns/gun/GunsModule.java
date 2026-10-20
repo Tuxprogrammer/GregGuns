@@ -81,6 +81,7 @@ public final class GunsModule implements GregGunsModule {
         ProductionRecipes.register();
         GunRecipes.register();
         ComponentRecipes.register();
+        com.gregguns.recipe.BioCultureRecipes.register();
         MeleeRecipes.register();
         GrenadeRecipes.register();
         if (DevEnvironment.isActive()) {
