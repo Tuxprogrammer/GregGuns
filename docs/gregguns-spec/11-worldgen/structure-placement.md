@@ -86,6 +86,13 @@
 - **GGS-11-14** A footprint that contains village-style blocks not placed by GregGuns is skipped.
 - **GGS-11-15** Each structure has its own `enabled` flag, default `true`, except the Alien Bug Nest, which defaults to `false` (0005: gated content).
 
+### Generator wiring (M8 G9)
+
+- **Code:** `StructureGenerator` (the `IWorldGenerator`), `StructurePopulator` (the pure pipeline), `StructureCatalog` (size classes, pools), `StructureHooks` (spawner and flag no-ops for G11 and G10). Registered in `WorldgenModule.postInit` after the layouts load, only when `generatorWanted()`.
+- **Order per populate:** gate on dimension and world type, `plansForWindow`, `StructureState.decideOnce` (biome, then land or water check on the rotated footprint from this window's columns, then the village scan), flatten to the recorded Y, stamp at anchor Y = recorded Y + 1 (the layout's `ground` layer sits on top of the ground), then marks. All inside a `PopulateGuard` scope and a `ClippingSink`.
+- **Mark tags:** `chest.vanilla` (the layout places a vanilla chest; the generator fills it now), `chest.weapon` and `chest.reinforced` (the layout places the GregGuns chest block; the generator attaches a `LootPending`, filled on first access), `spawner*` and `flag` (hooks). Chest category is `weaponchest_t<ceiling>` or `reinforcedchest_t<ceiling>` (Q11), seeded by `StructurePlan.chestSeed(index)` where the index is the chest's place among the layout's chest marks.
+- **Deviation:** a window that sees only a sliver of a multi-window footprint decides from that sliver (after the coarse sample grid finds nothing it samples every column it has), so a slope visible only to other windows is not seen (PLAN-M8 Q3, accepted). Pool weights are equal per structure.
+
 ## Tests
 
 - GGS-11-07, 12, 15: unit tests of the config and the registration call.
