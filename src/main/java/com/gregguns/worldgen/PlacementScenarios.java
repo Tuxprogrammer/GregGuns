@@ -240,6 +240,17 @@ public final class PlacementScenarios {
                 mc.chests(),
                 p.chestTiles()
                     .size());
+            java.util.Set<String> markSpots = new java.util.HashSet<>();
+            for (Layout.Mark m : l.marks()) {
+                if (m.tag.startsWith("chest.")) {
+                    int[] q = PlacementHarness.markPos(p.plan, l, m, p.anchorY);
+                    markSpots.add(q[0] + "," + q[1] + "," + q[2]);
+                }
+            }
+            for (TileEntity t : p.chestTiles()) {
+                String spot = t.xCoord + "," + t.yCoord + "," + t.zCoord;
+                out.check(markSpots.contains(spot), "chest tile with no layout mark at " + spot + ": " + t);
+            }
             out.checkEquals("weapon/reinforced marks that are not on a GregGuns chest block", 0, wrongBlock);
         }
 

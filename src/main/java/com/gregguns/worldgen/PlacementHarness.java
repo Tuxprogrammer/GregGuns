@@ -22,6 +22,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
+import com.gregguns.utility.storage.BlockGregChest;
 import com.gregguns.utility.storage.TileGregChest;
 import com.gregguns.worldgen.layout.Layout;
 import com.gregguns.worldgen.layout.LayoutRegistry;
@@ -219,7 +220,8 @@ public final class PlacementHarness {
             for (Map.Entry<Long, Block> e : expected.entrySet()) {
                 long k = e.getKey();
                 Block got = world.getBlock(xOf(k), yOf(k), zOf(k));
-                if (got != e.getValue()) {
+                boolean swapped = e.getValue() == Blocks.chest && got instanceof BlockGregChest;
+                if (got != e.getValue() && !swapped) {
                     if (bad == 0) {
                         why.append(xOf(k))
                             .append(',')
@@ -258,7 +260,11 @@ public final class PlacementHarness {
             AxisAlignedBB bb = AxisAlignedBB
                 .getBoundingBox(plan.anchorX() - 8, 0, plan.anchorZ() - 8, plan.maxX() + 9, 256, plan.maxZ() + 9);
             List<?> items = world.getEntitiesWithinAABB(EntityItem.class, bb);
-            return items.size();
+            int live = 0;
+            for (Object o : items) {
+                if (!((Entity) o).isDead) live++;
+            }
+            return live;
         }
 
         /** Chest-class tiles (vanilla or GregGuns) inside the box, from the chunk tile maps (no tile is created). */
@@ -420,6 +426,23 @@ public final class PlacementHarness {
             for (int cz = Math.floorDiv(z0, 16) - 1; cz <= Math.floorDiv(z1, 16) + 1; cz++) {
                 cps.loadChunk(cx, cz);
             }
+        }
+        // Leftovers of an earlier aborted run: a GregGuns tile on a vanilla chest block crashes the vanilla break
+        // code, and dropped items would be counted as this run's.
+        for (int cx = Math.floorDiv(x0, 16); cx <= Math.floorDiv(x1, 16); cx++) {
+            for (int cz = Math.floorDiv(z0, 16); cz <= Math.floorDiv(z1, 16); cz++) {
+                Chunk c = world.getChunkFromChunkCoords(cx, cz);
+                for (Object o : new ArrayList<Object>(c.chunkTileEntityMap.values())) {
+                    TileEntity t = (TileEntity) o;
+                    if (t instanceof TileGregChest && !(world.getBlock(t.xCoord, t.yCoord, t.zCoord) instanceof BlockGregChest)) {
+                        world.removeTileEntity(t.xCoord, t.yCoord, t.zCoord);
+                    }
+                }
+            }
+        }
+        AxisAlignedBB sweep = AxisAlignedBB.getBoundingBox(x0 - 8, 0, z0 - 8, x1 + 9, 256, z1 + 9);
+        for (Object o : world.getEntitiesWithinAABB(EntityItem.class, sweep)) {
+            ((Entity) o).setDead();
         }
         int depth = Math.max(14, l.ground() + 2);
         for (int x = x0; x <= x1; x++) {
