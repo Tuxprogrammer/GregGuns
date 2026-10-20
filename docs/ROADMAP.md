@@ -274,6 +274,11 @@ One gun, working end to end inside the GTNH dev pack.
   - NEI and ore-dictionary overlaps.
 
   A clash means identical inputs, or an input set that shadows another recipe, which either steals or hides an existing GTNH recipe. Do the check mechanically: dump the recipes from a real GTNH server with our jar loaded, then diff the dump. Fix every clash or list it in [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md).
+- **Pack-integration pass: retire the Reaction Chamber and the Retort.** Both machines have weak justification in a pack this rich. Remap every recipe they run onto an existing GTNH method, from any pack mod, not only GregTech. For example, the bio-ammo raw material comes from the GTNH Bio Lab. GregGuns keeps final ammo production; tight pack integration is the mod's main pitch to the pack maintainers.
+  - The mapping table and the reasoning go in a design record.
+  - The removed MTE meta IDs are retired and stay reserved; they are never reused.
+  - Before removal, the complete Retort, including its interior parts, is preserved on branch `archive/retort-multiblock` and tag `archive/retort-v1`, and neither is ever deleted. The owner may pitch it to the GTNH community as a standalone bulk-reaction multiblock for the wider pack.
+- **Recon: NewGunrizons** ([vegeta1k95/NewGunrizons](https://github.com/vegeta1k95/NewGunrizons)), another GTNH gun mod. Find out what it implements, how it integrates with GT, how active it is, its license, its pack status and its overlap with GregGuns. Weigh two options: merge with it, or take its place as the GTNH gun mod at release. The findings feed the M9 outreach package. Nobody contacts its author without the owner.
 - **Client pass.** A batched in-game session covers every gun, armor set, machine, multiblock, NPC and structure. It records screenshots, and checks that the game runs with and without shaders.
 - **Release.** Tag `0.3.0-beta`, cut it as a GitHub pre-release, and write release notes aimed at server owners.
 - **Owner playthrough.** The owner plays the beta on a local multiplayer server. Bugs found there are fixed in `0.3.x-beta` builds.
@@ -281,6 +286,8 @@ One gun, working end to end inside the GTNH dev pack.
 **Exit gate:**
 - [ ] Every milestone M0–M8 has a completeness audit, with each exit box met or deferred with the owner's sign-off.
 - [ ] The recipe-clash review found no unresolved clashes with GTNH 2.9 recipes. Each clash it found was fixed, or recorded in PACK-CHANGES with the owner's sign-off.
+- [ ] The Reaction Chamber and the Retort are removed. Their recipes are remapped to GTNH methods per the design record, and their MTE IDs are retired and reserved. The Retort is archived on `archive/retort-multiblock` and `archive/retort-v1`.
+- [ ] The NewGunrizons recon note is written, and the owner has picked a direction: merge, or take its place.
 - [ ] The batched client pass is clean, including with shaders on, and has no crash-severity or invisible-render bugs.
 - [ ] `0.3.0-beta` is published.
 - [ ] The owner's beta playthrough on a local server is done, and its blocking bugs are fixed.

@@ -82,9 +82,19 @@ public final class ComponentItems {
     public static void register(ModuleRegistrar registrar) {
         for (PartCatalog.Entry entry : PartCatalog.entries()) {
             if (entry.owner() == PartCatalog.Owner.COMPONENT_ITEMS) {
-                REGISTERED.put(entry.name(), registrar.registerItem(entry.name(), create(entry)));
+                registerOne(registrar, entry.name());
             }
         }
+    }
+
+    /**
+     * Registers one component by name, so the caller picks the registration order (see {@code GunsItemOrder}).
+     *
+     * @param registrar the guns module's registrar
+     * @param name      a component name the catalog assigns to this class
+     */
+    public static void registerOne(ModuleRegistrar registrar, String name) {
+        REGISTERED.put(name, registrar.registerItem(name, create(PartCatalog.get(name))));
     }
 
     private static Item create(PartCatalog.Entry entry) {
