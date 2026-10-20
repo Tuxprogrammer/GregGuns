@@ -88,6 +88,11 @@ public class ItemToolGun extends ItemGun {
         if (tool == null) {
             throw new IllegalArgumentException(definition.name() + " is not a tool gun");
         }
+        // Register the classes the standard Forge way, so the item's own table holds them and a pack mod that
+        // retunes a level through setHarvestLevel (IguanaTweaks) is read back by getHarvestLevel below.
+        for (String toolClass : tool.toolClasses()) {
+            super.setHarvestLevel(toolClass, tool.harvestLevel(toolClass));
+        }
     }
 
     /** @return the melee, mining and drain data */
@@ -281,14 +286,17 @@ public class ItemToolGun extends ItemGun {
         return (float) tool.digSpeed(hasFuel(stack), block.getHarvestTool(meta));
     }
 
+    // Source (probes the level with setHarvestLevel, then reads it back with getHarvestLevel(new ItemStack(item), ..)
+    // and logs "Could not set harvestlevel" when the two differ):
+    // https://github.com/GTNewHorizons/IguanaTweaksTConstruct/blob/2.7.12/src/main/java/iguanaman/iguanatweakstconstruct/harvestlevels/HarvestLevelTweaks.java#L168-L193
     @Override
     public Set<String> getToolClasses(ItemStack stack) {
-        return hasFuel(stack) ? tool.toolClasses() : java.util.Collections.<String>emptySet();
+        return hasFuel(stack) ? super.getToolClasses(stack) : java.util.Collections.<String>emptySet();
     }
 
     @Override
     public int getHarvestLevel(ItemStack stack, String toolClass) {
-        return hasFuel(stack) ? tool.harvestLevel(toolClass) : -1;
+        return hasFuel(stack) ? super.getHarvestLevel(stack, toolClass) : -1;
     }
 
     /** The full melee damage as the attack attribute; the empty-tank weakening is applied by the hit itself. */
