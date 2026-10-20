@@ -1,0 +1,34 @@
+# camp_helipad_1
+# Helipad: 7 x 7 pad one block above ground, hazard border, dark fill, glowing H. The H strokes are one block wide (the notes ask for three-wide strokes, which do not fit a 7 x 7 pad with a border).
+gregguns-layout 1
+id: camp_helipad_1
+size: 7 3 7
+ground: 1
+
+palette:
+B = brick
+F = factory_floor
+H = hazard
+L = lantern
+
+marks:
+spawn.npc 3 2 1
+spawn.npc 3 2 5
+
+layers:
+layer 0
+FFFFFFF
+FFFFFFF
+FFFFFFF
+FFFFFFF
+FFFFFFF
+FFFFFFF
+FFFFFFF
+layer 1
+HHHHHHH
+HLBBBLH
+HLBBBLH
+HLLLLLH
+HLBBBLH
+HLBBBLH
+HHHHHHH

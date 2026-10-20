@@ -1,0 +1,73 @@
+# camp_closed_bunker_2
+# Closed bunker: 7 x 9, plain roof. The interior chests carry the reinforced and weapon marks; the camp host picks the MV (_t2) categories.
+gregguns-layout 1
+id: camp_closed_bunker_2
+size: 7 5 9
+ground: 2
+
+palette:
+C = concrete
+I = minecraft:iron_door#3@door
+L = lantern
+R = minecraft:planks#1
+Y = minecraft:stone_slab#5
+a = air
+i = minecraft:iron_door#8
+k = minecraft:chest#3@facing
+u = minecraft:stone_brick_stairs#2@stairs
+
+marks:
+chest.reinforced 2 1 2
+chest.weapon 4 1 2
+
+layers:
+layer 0
+CCCCCCC
+CCCCCCC
+CCCCCCC
+CCCCCCC
+CCCCCCC
+CCCCCCC
+CCCCCCC
+..CCC..
+..CCC..
+layer 1
+CCCCCCC
+CaaaaaC
+CakakaC
+CaRRRaC
+CaaaaaC
+CaaaaaC
+CCCICCC
+..CaC..
+..CuC..
+layer 2
+CCCCCCC
+CaaaaaC
+CaaaaaC
+CaRRaaC
+CaaaaaC
+CaaaLaC
+CCCiCCC
+..CaC..
+..CaC..
+layer 3
+CCCCCCC
+CaaaaaC
+CaaaaaC
+CaaaaaC
+CaaaaaC
+CaaaaaC
+CCCCCCC
+..CaC..
+..CaC..
+layer 4
+CCCCCCC
+CYYYYYC
+CYYYYYC
+CYYYYYC
+CYYYYYC
+CYYYYYC
+CCCCCCC
+..LaL..
+...a...

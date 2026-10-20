@@ -1,0 +1,21 @@
+# camp_props_1
+# Lone crate stack (1 x 1), the smallest prop.
+gregguns-layout 1
+id: camp_props_1
+size: 1 4 1
+ground: 1
+
+palette:
+G = minecraft:gravel
+R = minecraft:planks#1
+
+marks:
+spawn.npc 0 3 0
+
+layers:
+layer 0
+G
+layer 1
+R
+layer 2
+R

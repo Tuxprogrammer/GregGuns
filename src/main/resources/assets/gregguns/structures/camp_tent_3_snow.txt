@@ -1,0 +1,68 @@
+# camp_tent_3_snow
+# Large camo tent 8 x 8: net walls, doorway on the south, stepped net roof.
+gregguns-layout 1
+id: camp_tent_3_snow
+size: 8 6 8
+ground: 1
+
+palette:
+G = minecraft:gravel
+N = minecraft:snow
+R = minecraft:planks#1
+a = air
+
+layers:
+layer 0
+GGGGGGGG
+GGGGGGGG
+GGGGGGGG
+GGGGGGGG
+GGGGGGGG
+GGGGGGGG
+GGGGGGGG
+GGGGGGGG
+layer 1
+NNNNNNNN
+NRaaaaRN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NNNaaNNN
+layer 2
+NNNNNNNN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NNNaaNNN
+layer 3
+NNNNNNNN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NaaaaaaN
+NNNaaNNN
+layer 4
+NNNNNNNN
+NNNNNNNN
+NNNNNNNN
+NNNNNNNN
+NNNNNNNN
+NNNNNNNN
+NNNNNNNN
+NNNNNNNN
+layer 5
+........
+........
+..NNNN..
+..NNNN..
+..NNNN..
+..NNNN..
+........
+........

@@ -1,0 +1,114 @@
+# camp_factory_3: the Small Factory Building (factory_small) turned half a turn so the front faces south.
+# Camp layouts are authored with the entrance on +z. Chest marks are the standalone ones.
+gregguns-layout 1
+id: camp_factory_3
+size: 9 7 11
+ground: 1
+
+palette:
+F = factory_floor
+C = concrete
+W = factory_wall*3 | concrete*1
+A = concrete*3 | factory_wall*1
+B = minecraft:iron_bars
+G = glass_pane
+L = lantern
+a = air
+D = minecraft:iron_door#3@door
+E = minecraft:iron_door#1@door
+d = minecraft:iron_door#8
+n = minecraft:ladder#2@facing
+m = minecraft:ladder#4@facing
+k = minecraft:chest#3@facing
+T = minecraft:crafting_table
+N = minecraft:furnace#5@facing
+
+marks:
+chest.vanilla 5 1 6
+chest.vanilla 4 1 6
+
+layers:
+layer 0
+CCC......
+CCCCCCCCC
+CCCCCFFFC
+CCCCCFFFC
+...CCFFFC
+CCCCFFFFC
+CFFFFFFFC
+CFFFFFFFC
+CFFFFFFFC
+CCCCCCCCC
+....CCC..
+layer 1
+BBB......
+B...AAEAA
+B...AaaaA
+BBB.AaaaA
+...nAaaaA
+AAAAAAaAA
+ANaakkaaA
+ATaaaaaaA
+ANnaaaamA
+AAAAADAAA
+.........
+layer 2
+.........
+....ALdAA
+....AaaaA
+....GaaaA
+...nAaaaA
+WGGWAAaAA
+WaaaaaaaW
+GaaaaaaaG
+WanaaaamW
+WGWGLdWGW
+.........
+layer 3
+.........
+....AAAAA
+....AaaaA
+....AaaaA
+...nAaaaA
+WWWWCCCCC
+WaLaCCCCC
+WLaaCCLCC
+WanaCCCmC
+WWWWCCCCC
+.........
+layer 4
+.........
+....CCCCC
+....CCCCC
+....CCCCC
+...nCCCCC
+CCCCWWWWW
+CCCCWaaaW
+CCCCWaaaW
+CCnCWaamW
+CCCCWWWWW
+.........
+layer 5
+.........
+.........
+.........
+.........
+.........
+BBB.WWWWW
+B...WaaaW
+B...WaaaG
+B...WaaaW
+BBBBWWGWW
+.........
+layer 6
+.........
+.........
+.........
+.........
+.........
+....CCCCC
+....CCCCC
+....CCLCC
+....CCCCC
+....CCCCC
+.........

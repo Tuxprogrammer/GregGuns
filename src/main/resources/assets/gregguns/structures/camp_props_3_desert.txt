@@ -1,0 +1,73 @@
+# camp_props_3_desert
+# Sandbag ring (9 x 9) with a gap on the south side and a crate pile inside; the pile is under a camo-net roof on four fence posts. Chests follow the per-column rule at about one in ten.
+gregguns-layout 1
+id: camp_props_3_desert
+size: 9 5 9
+ground: 1
+
+palette:
+G = minecraft:gravel
+N = minecraft:sandstone
+R = minecraft:planks#1
+S = minecraft:stained_hardened_clay#12
+a = air
+f = minecraft:fence
+k = minecraft:chest#3@facing
+
+marks:
+chest.reinforced 3 1 3
+chest.weapon 5 1 3
+chest.weapon 3 1 5
+spawn.npc 4 2 7
+
+layers:
+layer 0
+GGGGGGGGG
+GGGGGGGGG
+GGGGGGGGG
+GGGGGGGGG
+GGGGGGGGG
+GGGGGGGGG
+GGGGGGGGG
+GGGGGGGGG
+GGGGGGGGG
+layer 1
+SSSSSSSSS
+S.......S
+S.f...f.S
+S..kRk..S
+S..RRR..S
+S..kRR..S
+S.f...f.S
+S.......S
+SSSSaSSSS
+layer 2
+.........
+.........
+..f...f..
+....R....
+.........
+.........
+..f...f..
+.........
+.........
+layer 3
+.........
+.........
+..f...f..
+.........
+.........
+.........
+..f...f..
+.........
+.........
+layer 4
+.........
+.........
+..NNNNN..
+..NNNNN..
+..NNNNN..
+..NNNNN..
+..NNNNN..
+.........
+.........

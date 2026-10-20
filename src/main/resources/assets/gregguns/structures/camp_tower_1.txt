@@ -1,0 +1,51 @@
+# camp_tower_1
+# Watch tower 3 x 3, 8 high: corner posts, plank core, platform with a fence rail, woodland camo-net roof, ladder on the south side with a gate at the top.
+gregguns-layout 1
+id: camp_tower_1
+size: 3 8 3
+ground: 1
+
+palette:
+G = minecraft:gravel
+N = minecraft:leaves#4
+P = minecraft:planks
+T = minecraft:fence_gate#0@door
+f = minecraft:fence
+l = minecraft:ladder#3@facing
+
+marks:
+spawn.npc 1 5 1
+
+layers:
+layer 0
+GGG
+GGG
+GGG
+layer 1
+f.f
+.P.
+flf
+layer 2
+f.f
+.P.
+flf
+layer 3
+f.f
+.P.
+flf
+layer 4
+PPP
+PPP
+PlP
+layer 5
+fff
+f.f
+fTf
+layer 6
+f.f
+...
+f.f
+layer 7
+NNN
+NNN
+NNN

@@ -1,0 +1,29 @@
+# camp_tent_1
+# Camo tent 3 x 3: net walls, doorway on the south, net roof. No loot.
+gregguns-layout 1
+id: camp_tent_1
+size: 3 4 3
+ground: 1
+
+palette:
+G = minecraft:gravel
+N = minecraft:leaves#4
+a = air
+
+layers:
+layer 0
+GGG
+GGG
+GGG
+layer 1
+NNN
+NaN
+NaN
+layer 2
+NNN
+NaN
+NaN
+layer 3
+NNN
+NNN
+NNN
