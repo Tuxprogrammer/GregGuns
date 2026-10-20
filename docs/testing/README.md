@@ -281,6 +281,11 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.alien_blaster.trail` | Alien Blaster (M5 B5) | The `AlienBlasterTrail` FX is sent on the bolt's second tick while it is alive (PFX-01): the bolt is a registered, tracked entity and the FX list resolves to its three systems. |
 | `gun.alien_blaster.recipe` | Alien Blaster (M5 B5) | The LuV assembly row (GR-95) is in GT's assembler map with its sheet inputs and not below LuV; the found recipe's output is ours. |
 | `gun.alien_blaster.tiergate` | Alien Blaster (M5 B5) | The row carries HSS-G, the LuV gate material; a LuV assembler finds it and an IV assembler does not. |
+| `gun.nether_blaster.fire` | Nether Blaster (M5 G) | Holding the trigger for 17 ticks fires 3 `NetherBlasterProjectile` bolts (every 8 ticks), spending 3 of the 10 rounds; a villager 4 blocks ahead is hurt and burning. |
+| `gun.nether_blaster.reload` | Nether Blaster (M5 G) | An empty gun with two Nether Charges reloads after 35 ticks to `NetherChargeAmmo.SHOTS_PER_CHARGE` (10) rounds, consuming one charge and returning no empty item. |
+| `gun.nether_blaster.fire.block` | Nether Blaster (M5 G) | With safe mode off, ten bolts at a wall ledge place fire in front of the wall at least once. |
+| `gun.nether_blaster.fire.safe` | Nether Blaster (M5 G) | With safe mode on, the same ten bolts place no fire (GUN-05). |
+| `gun.nether_blaster.recipe` | Nether Blaster (M5 G) | The LuV Assembly Line recipe (GR-100) is on GT's line list with 45 s, the LuV EU/t, its research item and scan, and the output is ours. |
 | `gun.golden_revolver.fire` | Golden Revolver (M2 B6) | One pull launches a bullet, costs a zombie the DamageModel figure for 14 and one round, and holds the 8 tick cooldown with a remembered click. |
 | `gun.golden_revolver.reload` | Golden Revolver (M2 B6) | An empty gun reloads after 45 ticks to 6 rounds from one 9mm bullet; nothing is returned. |
 | `gun.golden_revolver.reload.forced` | Golden Revolver (M2 B6) | The reload key on 5 rounds tops up to 6, consumes the bullet and refunds none. |

@@ -101,6 +101,14 @@ public final class ProjectileModule {
             GenericProjectile.UPDATE_FREQUENCY,
             GenericProjectile.SENDS_VELOCITY);
         BulletLauncher.register(ProjectileKind.BIO, BiogunProjectile::new);
+        registrar.registerEntity(
+            "nether_blaster_projectile",
+            NetherBlasterProjectile.class,
+            NetherBlasterProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.NETHER, NetherBlasterProjectile::new);
         // The Chainsaw's cut: a plain bullet that is never drawn.
         registrar.registerEntity(
             "invisible_projectile",

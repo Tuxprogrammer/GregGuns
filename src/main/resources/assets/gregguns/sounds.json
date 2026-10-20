@@ -231,6 +231,14 @@
     "category": "player",
     "sounds": ["guns/biogun_impact_a", "guns/biogun_impact_b", "guns/biogun_impact_c"]
   },
+  "guns.nether_blaster.fire": {
+    "category": "player",
+    "sounds": ["guns/cdb_shot_a", "guns/cdb_shot_b", "guns/cdb_shot_c", "guns/cdb_shot_d"]
+  },
+  "guns.nether_blaster.reload": {
+    "category": "player",
+    "sounds": ["guns/teslagun_reload"]
+  },
   "guns.rocket_launcher.fire": {
     "category": "player",
     "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b"]

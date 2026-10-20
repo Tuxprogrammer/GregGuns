@@ -64,7 +64,7 @@ public final class ComponentRecipes {
         addRecyclingData();
     }
 
-    private static void addSpec(ComponentTable.Spec spec) {
+    static void addSpec(ComponentTable.Spec spec) {
         ProductionTable.Row row = spec.row();
         ItemStack output = ProductionRecipes.modStack(row.output(), row.outputCount());
         if (output == null) {
