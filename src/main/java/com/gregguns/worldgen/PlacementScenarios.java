@@ -162,7 +162,7 @@ public final class PlacementScenarios {
             int differing = p.mismatches(why);
             out.checkEquals("cells that differ from the stamper output (" + why + ")", 0, differing);
             out.checkEquals("stray blocks in the margin around the box", 0, p.strayBlocks());
-            out.checkEquals("item entities near the box", 0, p.itemEntities());
+            out.checkEquals("new item entities near the box (" + p.describeNewItems() + ")", 0, p.itemEntities());
 
             chests(out, p);
 
@@ -278,7 +278,7 @@ public final class PlacementScenarios {
                 0,
                 p.chestTiles()
                     .size());
-            out.checkEquals("cleanup: item entities left", 0, p.itemEntities());
+            out.checkEquals("cleanup: new item entities left (" + p.describeNewItems() + ")", 0, p.itemEntities());
         }
     }
 
