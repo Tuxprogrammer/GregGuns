@@ -79,6 +79,7 @@ public final class MpScenarios {
         registry.register(new Visual());
         registry.register(new Give());
         registry.register(new GrantLocal());
+        registry.register(new NeiAddedBy());
     }
 
     @SuppressWarnings("unchecked")
@@ -472,6 +473,53 @@ public final class MpScenarios {
                 }
                 return ScenarioResult.builder(name())
                     .note("signals sent to " + a.getCommandSenderName() + "; check the client log and screenshots")
+                    .build();
+            });
+        }
+    }
+
+    // ----- mp.nei_addedby ----------------------------------------------------------------------------------
+
+    /** Opens the inventory with NEI, types "gregguns" into its search and takes a screenshot of the matches. */
+    private static final class NeiAddedBy implements Scenario {
+
+        @Override
+        public boolean includedInAll() {
+            return false; // needs a connected client
+        }
+
+        @Override
+        public String name() {
+            return "mp.nei_addedby";
+        }
+
+        @Override
+        public String description() {
+            return "Searches NEI for the mod name and signals a screenshot of the GregGuns machines it lists. Needs 1 client.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            List<EntityPlayerMP> players = players();
+            if (players.isEmpty()) {
+                return ScenarioResult.fail(name(), "needs a connected player");
+            }
+            EntityPlayerMP a = players.get(0);
+            return ScenarioResult.pending(name(), 400, t -> {
+                switch (t) {
+                    case 10 -> signal(a, "gui", "inventory");
+                    case 60 -> signal(a, "gui", "neisearch", "gregguns");
+                    case 120 -> signal(a, "shot", "a-nei-gregguns");
+                    case 130 -> signal(a, "gui", "neisearch", "@gregguns");
+                    case 190 -> signal(a, "shot", "a-nei-at-gregguns");
+                    case 200 -> signal(a, "close");
+                    default -> {}
+                }
+                if (t < 210) {
+                    return null;
+                }
+                return ScenarioResult.builder(name())
+                    .note("signals sent; check the screenshots")
                     .build();
             });
         }
