@@ -124,15 +124,15 @@ def gun(name: str, yaw=18, pitch=16, w=420, h=200, outline=RIM) -> Path:
 
 def mob(model: str, skin: str, pose=None, gun_name=None, yaw=-30, pitch=10, h=420, armor=None, accessories=(),
         flip=False) -> Path:
-    """A mob or armored figure. armor: ("vanilla", layer1, layer2[, pieces]) or ("custom", set_id[, texture])."""
+    """A mob or armored figure. armor: ("vanilla", layer1, layer2[, pieces]) or ("custom", set_id[, texture]), or a list of them."""
     def make():
         s, mats = R.mob_scene(model, ENTITY / f"{skin}.png" if not str(skin).endswith(".png") else Path(skin),
                               pose or {})
-        if armor:
-            if armor[0] == "vanilla":
-                R.vanilla_armor(s, mats, armor[1], armor[2], *armor[3:])
+        for a in (armor if isinstance(armor, list) else [armor] if armor else []):
+            if a[0] == "vanilla":
+                R.vanilla_armor(s, mats, a[1], a[2], *a[3:])
             else:
-                R.custom_armor(s, mats, armor[1], armor[2] if len(armor) > 2 else None)
+                R.custom_armor(s, mats, a[1], a[2] if len(a) > 2 else None)
         for acc in accessories:
             accessory(s, mats, acc)
         if gun_name:
@@ -158,6 +158,27 @@ def bone_skin() -> Path:
         a[..., 3] = 255
         a[12:14, 9:11, :3] = a[12:14, 13:15, :3] = (40, 36, 34)  # eye sockets on the face (u 8..16, v 8..16)
         a[14:15, 11:13, :3] = (90, 84, 76)
+        Image.fromarray(a, "RGBA").save(p)
+    return p
+
+
+def pigman_skin() -> Path:
+    """A rotting pig-faced skin for the Zombie Pigman Soldier, which wears the vanilla pigman texture in game. Our own
+    flat drawing on the 64x64 biped layout: pink flesh with green rot, a snout and eyes on the face (u 8..16,
+    v 8..16)."""
+    p = TEXCACHE / "pigman_soldier.png"
+    if not p.exists():
+        TEXCACHE.mkdir(parents=True, exist_ok=True)
+        rng = np.random.default_rng(11)
+        a = np.empty((64, 64, 4), np.uint8)
+        a[..., :3] = np.array([226, 148, 150]) + rng.integers(-12, 12, (64, 64, 1))
+        rot = rng.random((64, 64)) < 0.18
+        a[rot, :3] = (122, 152, 96)
+        a[..., 3] = 255
+        a[8:16, 8:16, :3] = (230, 160, 160)
+        a[11:13, 9:11, :3] = a[11:13, 13:15, :3] = (40, 30, 30)  # eyes
+        a[13:16, 10:14, :3] = (205, 120, 125)  # snout
+        a[14, 11, :3] = a[14, 12, :3] = (90, 50, 55)
         Image.fromarray(a, "RGBA").save(p)
     return p
 
