@@ -5,7 +5,9 @@ import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.entity.npc.NpcCampPort;
 import com.gregguns.entity.npc.NpcRegistry;
+import com.gregguns.utility.camp.CampSpawnPorts;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -31,6 +33,8 @@ public final class NpcModule implements GregGunsModule {
 
     @Override
     public void init(FMLInitializationEvent event) {
+        // N8: the real camp port replaces CampSpawnPort.NONE (M8 contract: counts never load chunks).
+        CampSpawnPorts.install(new NpcCampPort());
         if (DevEnvironment.isActive()) {
             NpcScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
