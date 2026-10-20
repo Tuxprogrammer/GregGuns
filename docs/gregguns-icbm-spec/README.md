@@ -6,7 +6,7 @@ Status: **planning**. Nothing here is on the roadmap yet. The build happens afte
 
 ## Decisions and open questions
 
-All of them are in **[DECISIONS.md](DECISIONS.md)**: what has been decided (D1–D22) and any open questions. Each open question gives its context, the options and a recommendation.
+All of them are in **[DECISIONS.md](DECISIONS.md)**: what has been decided (D1–D22) and the open questions (Q11–Q15). Each open question gives its context, the options and a recommendation.
 
 In short:
 - Clean room, with MIT hard-math ports allowed.

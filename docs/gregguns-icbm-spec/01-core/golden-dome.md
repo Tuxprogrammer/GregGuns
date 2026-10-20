@@ -2,7 +2,7 @@
 
 - **ICBM baseline:**
   - ICBM-Classic 1.12 has no computer integration. Its `IMachineInfo` interface was meant for it.
-  - The 1.6.4 ComputerCraft peripherals `ICBMLauncher` and `ICBMRadar`, and the `emptower` OC component, are recorded in the 1.7.10 lineage appendix (A2, planned).
+  - The 1.6.4 ComputerCraft peripherals `ICBMLauncher` and `ICBMRadar`, and the `emptower` OC component, are in [A2-lineage/computer-integration.md](../../icbm-spec/A2-lineage/computer-integration.md): 7 launcher methods, 2 radar methods, 13 EMP callbacks, and no events.
   - Behavior links: [launch sequence](../../icbm-spec/04-launch-control/launch-sequence.md), [radar station](../../icbm-spec/05-detection-defense/radar-station.md), [EMP tower](../../icbm-spec/05-detection-defense/emp-tower.md).
 - **Decisions:** [D13, D14, D15, D16 and D18](../DECISIONS.md#decided)
 - **Pack mods:**

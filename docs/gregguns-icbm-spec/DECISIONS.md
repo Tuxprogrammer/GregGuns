@@ -25,7 +25,7 @@ The owner decided all of these on 2026-10-20.
 | D13 | Launch control (was Q5) | **OpenComputers first.** The ComputerCraft methods that ICBM 1.6.4 gave its launcher, cruise launcher, radar and EMP tower are ported as OC components. GregGuns ships ready-made programs on **craftable floppies**, so computer launches need no Lua from players. Also available: a ModularUI2 targeting GUI, data-stick target copying, and firing by redstone or the GT machine-controller cover. The floppy and its programs are D18 |
 | D14 | Radar form (was Q7a) | **Short-range single-block radars in HV and EV hulls**, none below HV, because missiles start at HV just as GTNH moon rockets do. **A multiblock radar tower from IV up**, with range scaling by voltage tier. Both scan the missile tracker's list of missiles in flight rather than chunks, and treat a missile as "incoming" only if its predicted impact point falls inside the protected radius. Outputs: redstone, a GT cover, an OC component, and a data-stick link to SAM batteries |
 | D15 | Where SAMs fire from (was Q7b) | **A separate air-defense battery**: a single-block machine that holds SAMs and fires when a linked radar reports a threat. It is independent of the silo |
-| D16 | What an EMP does (was Q7c) | It **drains stored EU** in GT machines, cables and batteries, and gives **each multiblock one random maintenance issue**. Missiles use ICBM's kill-chance table. It loops over loaded tile entities, not block positions. **Each pulse affects at most N devices** (config, default 64), nearest first, so a dense base can't stall the server |
+| D16 | What an EMP does (was Q7c) | It **drains stored EU** in GT machines, cables and batteries, and gives **each multiblock one random maintenance issue**. Missiles use ICBM's kill-chance table. It loops over loaded tile entities, not block positions. **Each pulse affects at most N devices** (config, default 64), nearest first, so a dense base can't stall the server. **EU cost grows continuously with radius.** 1.6.4 and 1.7 divided the radius as integers, so every radius below the maximum cost the minimum ([A2-lineage](../icbm-spec/A2-lineage/index.md)) |
 | D17 | Worldgen (was Q8) | **Abandoned Missile Silos**, on the M8 placement system. They are rare, Overworld-only and config-gated. See [D17 in detail](#d17-in-detail). Silos on Galacticraft planets are **approved but deferred** until after the MVP |
 | D18 | OpenComputers programs (was Q10) | **One floppy, "Golden Dome"**, holding every program and the shared library. It is crafted in the GT Assembler from a blank OC floppy plus an MV circuit. The spec is [01-core/golden-dome.md](01-core/golden-dome.md) |
 | D19 | Which fuel each missile needs (was Q6a) | **Keyed to the missile's GT voltage, matching GTNH rockets:** HV needs RP-1 (or Cetane-Boosted Diesel); EV–IV Dense Hydrazine; LuV Purple (CN3H7O3); ZPM and up Green (H8N4C2O4). Each tier accepts "this fuel or better". Missile classes register these lists in GC's `RocketFuels`, so the GC pad and loader enforce them |
@@ -151,4 +151,66 @@ Context: how GTNH fuels rockets. The evidence is the SpaceRace quest line, Galac
 
 ## Open
 
-None right now. New questions are added here as the spec pass and the GregGuns-side sheets raise them.
+These come from the ICBM 2 appendix ([A1, "Ideas worth borrowing"](../icbm-spec/A1-icbm2-modular/index.md)). They fill in what D8's workbench slots actually do.
+
+### Q11 · Warhead size: fixed or a quantity knob?
+
+Context:
+- ICBM 2 fills the warhead with 1, 5, 20, 64 or 128 explosive items, capped by casing size, and the blast scales with the count.
+- GT recipes and NEI favor fixed inputs and outputs.
+- D20 already gives a continuous knob: leftover fuel adds to the blast radius.
+
+**Options:**
+- **A (recommended).** **Fixed warhead items**, one per blast type and tier, each made by a fixed GT recipe. Blast size comes from the tier and the D20 fuel bonus. Clear in NEI.
+- **B.** ICBM 2's quantity knob: the warhead holds N units of explosive material up to a tier cap, and the blast scales with N.
+
+### Q12 · What fins and the guidance computer do
+
+Context:
+- ICBM 2's guidance is two numbers, a scatter radius and a failure chance. They run from 100 blocks / 50% (wood gears) down to 20 blocks / 3% (best chip).
+- Its scatter is triangular per axis (the difference of two uniform rolls, MIT-portable), so hits cluster near the aim point. Its failure chance is never actually rolled.
+- ICBM-Classic 1.12 has the launcher inaccuracy `2 + 10·(d/range)² + (launchers − 1)` ([launch sequence](../icbm-spec/04-launch-control/launch-sequence.md)).
+- Galacticraft fins are plain structural parts.
+
+**Options:**
+- **A (recommended).**
+  - The **guidance computer's circuit tier sets scatter**: a triangular distribution whose radius shrinks with each tier above the missile's own tier.
+  - Distance adds ICBM-Classic's quadratic term, with **no failure roll** (no duds).
+  - **Fins are structural**, a tier-material gate like GC's fins.
+- **B.** As A, plus a small failure chance (the missile falls short as a dud) when the guidance tier is below the missile's tier.
+- **C.** Fins matter too: a better fin tier trims scatter further, or raises flight speed.
+
+### Q13 · Flight model and chunk loading
+
+Context:
+- **ICBM-Classic** flies a real entity on an arc. Its tracker simulates missiles in unloaded chunks and hands off at y = 500. That tracker is buggy ([targeting-and-tracking](../icbm-spec/03-missiles/targeting-and-tracking.md)): only explosive missiles and the deprecated flight logic are handled, and all landings share one chunk ticket.
+- **ICBM 2** "falls from orbit": the missile leaves the world at y = 400 and re-enters over the target after a travel time computed from speed and distance.
+- D11 allows one chunk ticket per missile in flight, and D14's radar reads the missile tracker's list.
+
+**Options:**
+- **A (recommended).** **Three phases.**
+  1. A visible launch and ascent to about y = 300.
+  2. A **simulated mid-course** with no entity: a server-side record holding position, ETA and predicted impact, which radar can track.
+  3. A **re-entry entity** spawned above the target, with one chunk ticket on the target area for the descent and impact.
+
+  SAMs engage in the terminal phase only, as real terminal defense does. Chunk loading stays bounded, and the cost doesn't grow with distance.
+- **B.** A real entity for the whole flight, ICBM-Classic style, with a chunk ticket that follows it. The most faithful option, and the heaviest; long flights load a corridor of chunks.
+- **C.** A instead without a visible ascent: the missile despawns at the pad and only re-enters.
+
+### Q14 · Fusing (airburst and bunker-buster variants)
+
+Context: ICBM 2 puts a trigger inside the warhead with an impact kinetic-energy window, which could give "bunker buster" (high minimum) and "airburst" (low maximum) variants. ICBM never filled in the numbers.
+
+**Options:**
+- **A (recommended).** **Defer.** Impact fusing only for the first build.
+- **B.** An optional fuse slot on the workbench page, with airburst and penetrator fuses.
+
+### Q15 · Automating missile assembly
+
+Context:
+- The NASA Workbench is manual. GTNH players automate everything, and silos need feeding (ICBM 2 used a magazine that moves 1 missile per 2 seconds).
+- GT recipes can take non-consumed items, the way a programmed circuit or a mold is not used up.
+
+**Options:**
+- **A (recommended).** The workbench page for hand building, **plus a GT Assembler recipe for every missile** that uses the missile schematic as a non-consumed input, so missiles can be mass-produced. Silos accept missiles through a GT input bus.
+- **B.** Workbench only.
