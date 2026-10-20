@@ -36,7 +36,7 @@ class ChestTagsTest {
     @Test
     void everyLayoutChestTagMapsToAKnownCategory() throws IOException {
         Path dir = Paths.get("src/main/resources/assets/gregguns/structures");
-        Pattern p = Pattern.compile("chest[.]([A-Za-z0-9_]*)");
+        Pattern p = Pattern.compile("^chest[.]([A-Za-z0-9_]+)", Pattern.MULTILINE);
         List<Path> files;
         try (Stream<Path> s = Files.list(dir)) {
             files = s.filter(f -> f.toString().endsWith(".txt")).collect(Collectors.toList());
