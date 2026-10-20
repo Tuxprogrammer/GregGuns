@@ -17,7 +17,8 @@ import com.gregguns.api.Tier;
  * oxygen gear and the gas-mask line are not in the barracks table (HV in 0001, or not built yet). The tier 3 tables
  * are HV: no default structure uses them (GGS-11-22), they exist for an admin who raises a ceiling.
  */
-// Spec: docs/gregguns-spec/11-worldgen/structure-loot.md (GGS-11-21, GGS-11-22); docs/gregguns-spec/06-items/pack-loot.md
+// Spec: docs/gregguns-spec/11-worldgen/structure-loot.md (GGS-11-21, GGS-11-22);
+// docs/gregguns-spec/06-items/pack-loot.md
 public final class LootCategoryDefs {
 
     private static final String G = "gregguns:";
@@ -38,14 +39,7 @@ public final class LootCategoryDefs {
     public static final String BARRACKS = "gregguns:barracks";
 
     private static final List<LootCategory> ALL = Collections.unmodifiableList(
-        Arrays.asList(
-            weaponT1(),
-            weaponT2(),
-            weaponT3(),
-            reinforcedT1(),
-            reinforcedT2(),
-            reinforcedT3(),
-            barracks()));
+        Arrays.asList(weaponT1(), weaponT2(), weaponT3(), reinforcedT1(), reinforcedT2(), reinforcedT3(), barracks()));
 
     private LootCategoryDefs() {}
 

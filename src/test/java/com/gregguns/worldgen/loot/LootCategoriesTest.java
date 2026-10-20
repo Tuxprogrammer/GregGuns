@@ -20,14 +20,38 @@ class LootCategoriesTest {
 
     @Test
     void sevenCategoriesWithTheSpecCeilings() {
-        assertEquals(7, LootCategoryDefs.all().size());
-        assertEquals(Tier.LV, LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T1).ceiling());
-        assertEquals(Tier.MV, LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T2).ceiling());
-        assertEquals(Tier.HV, LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T3).ceiling());
-        assertEquals(Tier.LV, LootCategoryDefs.get(LootCategoryDefs.REINFORCEDCHEST_T1).ceiling());
-        assertEquals(Tier.MV, LootCategoryDefs.get(LootCategoryDefs.REINFORCEDCHEST_T2).ceiling());
-        assertEquals(Tier.HV, LootCategoryDefs.get(LootCategoryDefs.REINFORCEDCHEST_T3).ceiling());
-        assertEquals(Tier.MV, LootCategoryDefs.get(LootCategoryDefs.BARRACKS).ceiling());
+        assertEquals(
+            7,
+            LootCategoryDefs.all()
+                .size());
+        assertEquals(
+            Tier.LV,
+            LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T1)
+                .ceiling());
+        assertEquals(
+            Tier.MV,
+            LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T2)
+                .ceiling());
+        assertEquals(
+            Tier.HV,
+            LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T3)
+                .ceiling());
+        assertEquals(
+            Tier.LV,
+            LootCategoryDefs.get(LootCategoryDefs.REINFORCEDCHEST_T1)
+                .ceiling());
+        assertEquals(
+            Tier.MV,
+            LootCategoryDefs.get(LootCategoryDefs.REINFORCEDCHEST_T2)
+                .ceiling());
+        assertEquals(
+            Tier.HV,
+            LootCategoryDefs.get(LootCategoryDefs.REINFORCEDCHEST_T3)
+                .ceiling());
+        assertEquals(
+            Tier.MV,
+            LootCategoryDefs.get(LootCategoryDefs.BARRACKS)
+                .ceiling());
     }
 
     @Test
@@ -55,7 +79,10 @@ class LootCategoriesTest {
                 .endsWith("_t3")) {
                 continue;
             }
-            assertTrue(c.ceiling().ordinal() <= Tier.MV.ordinal(), c.name());
+            assertTrue(
+                c.ceiling()
+                    .ordinal() <= Tier.MV.ordinal(),
+                c.name());
         }
     }
 
@@ -71,8 +98,7 @@ class LootCategoriesTest {
         Set<String> refs = refs(LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T1));
         assertFalse(refs.contains("gregguns:thompson_smg"));
         assertFalse(refs.contains("gregguns:mag_smg"));
-        assertTrue(
-            refs(LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T2)).contains("gregguns:thompson_smg"));
+        assertTrue(refs(LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T2)).contains("gregguns:thompson_smg"));
     }
 
     @Test
@@ -91,10 +117,14 @@ class LootCategoriesTest {
     void materialsAreGtPartsNotRawMetals() {
         for (LootCategory c : LootCategoryDefs.all()) {
             for (LootEntry e : c.entries()) {
-                assertFalse(e.ref()
-                    .startsWith("ore:"), e.ref());
-                assertFalse(e.ref()
-                    .contains("ingot_"), e.ref());
+                assertFalse(
+                    e.ref()
+                        .startsWith("ore:"),
+                    e.ref());
+                assertFalse(
+                    e.ref()
+                        .contains("ingot_"),
+                    e.ref());
             }
         }
         assertTrue(refs(LootCategoryDefs.get(LootCategoryDefs.REINFORCEDCHEST_T2)).contains("gt:ingot.Steel"));
@@ -106,8 +136,10 @@ class LootCategoriesTest {
         for (LootCategory c : LootCategoryDefs.all()) {
             Set<String> seen = new HashSet<>();
             for (LootEntry e : c.entries()) {
-                assertFalse(e.ref()
-                    .contains("-"), e.ref());
+                assertFalse(
+                    e.ref()
+                        .contains("-"),
+                    e.ref());
                 assertTrue(seen.add(e.ref()), c.name() + " repeats " + e.ref());
             }
         }
@@ -118,7 +150,10 @@ class LootCategoriesTest {
         LootCategory bad = LootCategory.builder("gregguns:bad", Tier.LV, 1, 2)
             .add("gregguns:ak47", 1, 1, 1, Tier.MV)
             .build();
-        assertEquals(1, LootTierCheck.violations(bad, null).size());
+        assertEquals(
+            1,
+            LootTierCheck.violations(bad, null)
+                .size());
         assertFalse(
             LootTierCheck.drawViolations(bad, 0, 50, 1L)
                 .isEmpty());
@@ -152,8 +187,7 @@ class LootCategoriesTest {
     void sameSeedSameChest() {
         LootCategory c = LootCategoryDefs.get(LootCategoryDefs.WEAPONCHEST_T2);
         assertEquals(describe(c, 1, 77L), describe(c, 1, 77L));
-        assertFalse(
-            describe(c, 1, 77L).equals(describe(c, 1, 78L)));
+        assertFalse(describe(c, 1, 77L).equals(describe(c, 1, 78L)));
     }
 
     @Test
@@ -185,14 +219,17 @@ class LootCategoriesTest {
         Random rand = new Random(3);
         for (int i = 0; i < 200; i++) {
             for (LootDraw.Roll r : LootDraw.draw(c, 2, rand)) {
-                assertTrue(allowed.contains(r.entry()
-                    .ref()));
-                assertTrue(r.count() >= r.entry()
-                    .drop()
-                    .min()
-                    && r.count() <= r.entry()
+                assertTrue(
+                    allowed.contains(
+                        r.entry()
+                            .ref()));
+                assertTrue(
+                    r.count() >= r.entry()
                         .drop()
-                        .max());
+                        .min() && r.count()
+                            <= r.entry()
+                                .drop()
+                                .max());
             }
         }
     }
@@ -244,9 +281,10 @@ class LootCategoriesTest {
         Random rand = new Random(seed);
         for (int i = 0; i < 20; i++) {
             for (LootDraw.Roll r : LootDraw.draw(c, richness, rand)) {
-                out.add(r.entry()
-                    .ref() + "x"
-                    + r.count());
+                out.add(
+                    r.entry()
+                        .ref() + "x"
+                        + r.count());
             }
         }
         return out;

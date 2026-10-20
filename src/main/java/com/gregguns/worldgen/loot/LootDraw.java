@@ -119,7 +119,11 @@ public final class LootDraw {
                 break;
             }
             LootEntry e = entries.get(idx);
-            out.add(new Roll(e, e.drop().count(rand)));
+            out.add(
+                new Roll(
+                    e,
+                    e.drop()
+                        .count(rand)));
         }
         return out;
     }

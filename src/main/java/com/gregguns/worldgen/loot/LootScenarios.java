@@ -61,7 +61,11 @@ public final class LootScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            out.checkEquals("category count", 7, LootCategoryDefs.all().size());
+            out.checkEquals(
+                "category count",
+                7,
+                LootCategoryDefs.all()
+                    .size());
             for (LootCategory cat : LootCategoryDefs.all()) {
                 ChestGenHooks info = ChestGenHooks.getInfo(cat.name());
                 WeightedRandomChestContent[] items = info.getItems(ctx.random());
@@ -118,10 +122,11 @@ public final class LootScenarios {
                             if (line == null) {
                                 unknown++;
                             } else if (line.tier()
-                                .ordinal() > cat.ceiling()
+                                .ordinal()
+                                > cat.ceiling()
                                     .ordinal()) {
-                                above++;
-                            }
+                                        above++;
+                                    }
                         }
                     }
                     String where = cat.name() + " richness " + richness;
