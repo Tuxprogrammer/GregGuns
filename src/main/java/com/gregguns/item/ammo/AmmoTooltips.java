@@ -18,7 +18,8 @@ public final class AmmoTooltips {
     private AmmoTooltips() {}
 
     /**
-     * Adds "Fills magazines" and "Loaded directly by" lines for a loose round.
+     * Adds "Fills magazines" (with the loose items each takes) and "Loaded directly by" (with the rounds one round
+     * gives each gun) lines for a loose round.
      *
      * @param tooltip   the tooltip list to append to
      * @param roundName the round's registry name
@@ -26,8 +27,18 @@ public final class AmmoTooltips {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void forRound(List tooltip, String roundName) {
         AmmoCompatibility c = AmmoCompatibility.DEFAULT;
-        tooltip.addAll(lines("gregguns.tooltip.ammo.fills", c.magazinesFilledWith(roundName)));
-        tooltip.addAll(lines("gregguns.tooltip.ammo.direct", c.gunsTaking(roundName)));
+        List<String> costs = new ArrayList<>();
+        for (AmmoCompatibility.Use use : c.magazineCosts(roundName)) {
+            costs.add(
+                StatCollector.translateToLocalFormatted("gregguns.tooltip.ammo.cost", name(use.name()), use.count()));
+        }
+        tooltip.addAll(
+            AmmoTooltipFormat.block(
+                StatCollector.translateToLocal("gregguns.tooltip.ammo.fills"),
+                costs,
+                GuiScreen.isShiftKeyDown(),
+                StatCollector.translateToLocal("gregguns.tooltip.ammo.more")));
+        tooltip.addAll(gunBlock("gregguns.tooltip.ammo.direct", roundName));
     }
 
     /**
@@ -38,28 +49,41 @@ public final class AmmoTooltips {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void forDirectAmmo(List tooltip, String itemName) {
-        tooltip.addAll(lines("gregguns.tooltip.ammo.direct", AmmoCompatibility.DEFAULT.gunsTaking(itemName)));
+        tooltip.addAll(gunBlock("gregguns.tooltip.ammo.direct", itemName));
     }
 
     /**
-     * Adds "Used by" for a magazine, empty or loaded.
+     * Adds "Used by" for a magazine, empty or loaded: each gun with the rounds one magazine gives it.
      *
      * @param tooltip  the tooltip list to append to
      * @param magazine the magazine family
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void forMagazine(List tooltip, MagazineType magazine) {
-        tooltip.addAll(lines("gregguns.tooltip.magazine.guns", AmmoCompatibility.DEFAULT.gunsForMagazine(magazine)));
+        tooltip.addAll(gunBlock("gregguns.tooltip.magazine.guns", magazine.loadedItemName()));
     }
 
-    private static List<String> lines(String labelKey, List<String> itemNames) {
-        List<String> names = new ArrayList<>(itemNames.size());
-        for (String name : itemNames) {
-            names.add(StatCollector.translateToLocal(Naming.itemLangKey(name)));
+    /**
+     * @param itemName a registry name
+     * @return its localized display name
+     */
+    public static String name(String itemName) {
+        return StatCollector.translateToLocal(Naming.itemLangKey(itemName));
+    }
+
+    private static List<String> gunBlock(String labelKey, String itemName) {
+        List<String> entries = new ArrayList<>();
+        for (AmmoCompatibility.Use use : AmmoCompatibility.DEFAULT.roundsPerGun(itemName)) {
+            entries.add(
+                AmmoTooltipFormat.roundsEntry(
+                    name(use.name()),
+                    use.count(),
+                    StatCollector.translateToLocal("gregguns.tooltip.ammo.rounds_one"),
+                    StatCollector.translateToLocal("gregguns.tooltip.ammo.rounds_many")));
         }
-        return AmmoTooltipFormat.lines(
+        return AmmoTooltipFormat.block(
             StatCollector.translateToLocal(labelKey),
-            names,
+            entries,
             GuiScreen.isShiftKeyDown(),
             StatCollector.translateToLocal("gregguns.tooltip.ammo.more"));
     }

@@ -40,12 +40,14 @@ item.gregguns.mag_minigun_drum_empty.name=Minigun Ammo Drum (Empty)
 item.gregguns.ammo_nether_charge.name=Nether Charge
 item.gregguns.ammo_rocket_nuke.name=Rocket (Tactical Nuke)
 gregguns.tooltip.ammo.round=Loose ammunition
-gregguns.tooltip.magazine.loaded=Holds %s rounds
-gregguns.tooltip.magazine.empty=Fill with %s rounds
-gregguns.tooltip.magazine.sneak=Sneak + Right click to empty
-gregguns.tooltip.magazine.guns=Used by:
-gregguns.tooltip.ammo.fills=Fills magazines:
-gregguns.tooltip.ammo.direct=Loaded directly by:
+gregguns.tooltip.magazine.empty=Refill with %s x %s (loose items, not rounds)
+gregguns.tooltip.magazine.sneak=Sneak + Right click to unload: gives back an empty magazine and %s x %s
+gregguns.tooltip.magazine.guns=Used by (rounds per magazine):
+gregguns.tooltip.ammo.fills=Fills magazines (loose items per magazine):
+gregguns.tooltip.ammo.cost=%s: %s
+gregguns.tooltip.ammo.rounds_one=%s: 1 round
+gregguns.tooltip.ammo.rounds_many=%s: %s rounds
+gregguns.tooltip.ammo.direct=Loaded directly by (rounds per item):
 gregguns.tooltip.ammo.more=Hold Shift for all
 
 # Damage types (combat): tooltip names and death messages (death.attack.<damageType>[.item|.player])

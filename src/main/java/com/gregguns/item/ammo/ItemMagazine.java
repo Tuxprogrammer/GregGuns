@@ -75,9 +75,13 @@ public final class ItemMagazine extends Item implements Tiered {
     @SideOnly(Side.CLIENT)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
-        tooltip
-            .add(StatCollector.translateToLocalFormatted("gregguns.tooltip.magazine.loaded", type.roundsPerMagazine()));
-        tooltip.add(StatCollector.translateToLocal("gregguns.tooltip.magazine.sneak"));
+        tooltip.add(
+            StatCollector.translateToLocalFormatted(
+                "gregguns.tooltip.magazine.sneak",
+                MagazineLogic.roundsReturned(type, 1),
+                AmmoTooltips.name(
+                    type.ammo()
+                        .roundItemName())));
         AmmoTooltips.forMagazine(tooltip, type);
     }
 }

@@ -30,6 +30,30 @@ public final class AmmoCompatibility {
 
     private final Map<String, List<String>> magazinesByRound = new LinkedHashMap<>();
     private final Map<String, List<String>> gunsByItem = new LinkedHashMap<>();
+    private final Map<String, List<Use>> usesByItem = new LinkedHashMap<>();
+    private final Map<String, List<Use>> costsByRound = new LinkedHashMap<>();
+
+    /** One name with a count: a gun and the rounds an item gives it, or a magazine and the loose items it takes. */
+    public static final class Use {
+
+        private final String name;
+        private final int count;
+
+        Use(String name, int count) {
+            this.name = name;
+            this.count = count;
+        }
+
+        /** @return the item registry name (a gun, or a magazine) */
+        public String name() {
+            return name;
+        }
+
+        /** @return the rounds a gun gets per item, or the loose items a magazine takes */
+        public int count() {
+            return count;
+        }
+    }
 
     /**
      * @param ammo the ammo definitions
@@ -38,9 +62,15 @@ public final class AmmoCompatibility {
     public AmmoCompatibility(List<AmmoDefinition> ammo, List<GunDefinition> guns) {
         for (AmmoDefinition def : ammo) {
             List<String> mags = new ArrayList<>();
+            List<Use> costs = new ArrayList<>();
             for (MagazineType magazine : def.magazines()) {
                 mags.add(magazine.loadedItemName());
+                costs.add(new Use(magazine.loadedItemName(), magazine.roundsPerMagazine()));
             }
+            costsByRound.put(
+                def.type()
+                    .roundItemName(),
+                costs);
             magazinesByRound.put(
                 def.type()
                     .roundItemName(),
@@ -51,6 +81,15 @@ public final class AmmoCompatibility {
                 .isEnergy()) {
                 continue;
             }
+            usesByItem.computeIfAbsent(
+                gun.stats()
+                    .ammoType(),
+                k -> new ArrayList<>())
+                .add(
+                    new Use(
+                        gun.name(),
+                        gun.stats()
+                            .roundsPerItem()));
             gunsByItem.computeIfAbsent(
                 gun.stats()
                     .ammoType(),
@@ -81,6 +120,25 @@ public final class AmmoCompatibility {
      */
     public List<String> gunsForMagazine(MagazineType magazine) {
         return gunsTaking(magazine.loadedItemName());
+    }
+
+    /**
+     * @param itemName a loaded magazine, tank, charge or loose round registry name
+     * @return each gun that consumes it with the rounds one item gives that gun (its clip divided by the items one
+     *         reload takes), in gun order
+     */
+    public List<Use> roundsPerGun(String itemName) {
+        List<Use> found = usesByItem.get(itemName);
+        return found == null ? Collections.<Use>emptyList() : Collections.unmodifiableList(found);
+    }
+
+    /**
+     * @param roundName a loose round's registry name
+     * @return each loaded magazine it fills with the loose items one magazine takes, in definition order
+     */
+    public List<Use> magazineCosts(String roundName) {
+        List<Use> found = costsByRound.get(roundName);
+        return found == null ? Collections.<Use>emptyList() : Collections.unmodifiableList(found);
     }
 
     private static List<String> get(Map<String, List<String>> map, String key) {

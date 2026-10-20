@@ -36,6 +36,46 @@ public final class AmmoTooltipFormat {
         return out;
     }
 
+    /**
+     * One "name: N rounds" entry.
+     *
+     * @param name       the localized name
+     * @param count      the rounds
+     * @param oneFormat  the localized template for exactly one round, for example "%s: 1 round"
+     * @param manyFormat the localized template for any other count, for example "%s: %s rounds"
+     * @return the entry text
+     */
+    public static String roundsEntry(String name, int count, String oneFormat, String manyFormat) {
+        return count == 1 ? String.format(oneFormat, name) : String.format(manyFormat, name, count);
+    }
+
+    /**
+     * A label followed by one indented line per entry; cut to the first few and a hint unless Shift is held.
+     *
+     * @param label    the localized label, for example "Used by:"
+     * @param entries  localized entries, for example "PDW: 20 rounds"
+     * @param shift    whether Shift is held
+     * @param moreHint the localized hint added when the list is cut
+     * @return the tooltip lines; empty when there are no entries
+     */
+    public static List<String> block(String label, List<String> entries, boolean shift, String moreHint) {
+        List<String> out = new ArrayList<>();
+        if (entries.isEmpty()) {
+            return out;
+        }
+        out.add(label);
+        boolean cut = !shift && entries.size() > COMPACT_LIMIT;
+        int shown = cut ? COMPACT_LIMIT - 1 : entries.size();
+        for (int i = 0; i < shown; i++) {
+            out.add("  " + entries.get(i));
+        }
+        if (cut) {
+            out.add("  ...");
+            out.add(moreHint);
+        }
+        return out;
+    }
+
     private static String join(List<String> names) {
         StringBuilder sb = new StringBuilder();
         for (String name : names) {
