@@ -119,6 +119,18 @@ public final class GeneratorScenarios {
         return null;
     }
 
+    /** Loads fresh squares until one stamps a structure (a square may be all ocean); null when none does. */
+    private static int[] loadUntilStamped(World world, int salt) {
+        for (int i = 0; i < 6; i++) {
+            int[] sq = freshSquare(world, salt * 100 + i);
+            if (sq == null) return null;
+            long stampedBefore = StructureGenerator.stampedCount();
+            loadSquare(world, sq[0], sq[1]);
+            if (StructureGenerator.stampedCount() > stampedBefore) return sq;
+        }
+        return null;
+    }
+
     private static void loadSquare(World world, int bx, int bz) {
         ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
         for (int dx = 0; dx < SIDE; dx++) {
@@ -156,8 +168,6 @@ public final class GeneratorScenarios {
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             World world = ctx.world();
-            int[] sq = freshSquare(world, 1);
-            if (sq == null) return ScenarioResult.fail(name(), "no fresh chunk square found");
             PaletteKeys keys = PaletteKeys.resolveForPack(s -> {});
             StructurePopulator populator = testPopulator(keys);
             LayoutRegistry reg = testRegistry(keys);
@@ -165,7 +175,8 @@ public final class GeneratorScenarios {
             StructureGenerator.setOverride(populator);
             try {
                 long[] before = counters();
-                loadSquare(world, sq[0], sq[1]);
+                int[] sq = loadUntilStamped(world, 1);
+                if (sq == null) return ScenarioResult.fail(name(), "no square of 6 stamped a structure");
                 long[] after = counters();
                 out.check(after[0] - before[0] > 0, "the generator ran on populated chunks");
                 out.check(after[1] - before[1] > 0, "at least one structure was stamped");
@@ -337,17 +348,19 @@ public final class GeneratorScenarios {
 
         private static void runSquare(World world, int salt, ScenarioResult.Builder out, String label,
             boolean expectStructures) {
-            int[] sq = freshSquare(world, salt);
-            if (sq == null) {
-                out.check(false, label + ": no fresh chunk square found");
-                return;
-            }
             long[] before = counters();
-            loadSquare(world, sq[0], sq[1]);
-            long[] after = counters();
             if (expectStructures) {
-                out.check(after[1] - before[1] > 0, label + ": structures were placed");
+                out.check(loadUntilStamped(world, salt) != null, label + ": structures were placed");
             } else {
+                int[] sq = freshSquare(world, salt);
+                if (sq == null) {
+                    out.check(false, label + ": no fresh chunk square found");
+                    return;
+                }
+                loadSquare(world, sq[0], sq[1]);
+            }
+            long[] after = counters();
+            if (!expectStructures) {
                 out.checkEquals(label + ": populate calls that ran", 0L, after[0] - before[0]);
                 out.checkEquals(label + ": structures stamped", 0L, after[1] - before[1]);
                 out.checkEquals(label + ": writes", 0L, after[2] - before[2]);
