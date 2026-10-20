@@ -26,9 +26,11 @@ import com.gregguns.recipe.ProductionTable.Row;
  *
  * <p>
  * Recipe (recipes.md, IV table): Laser Barrel, Carbon Receiver, Carbon Gunstock, an IV Emitter, a Lapotronic Orb (the
- * battery, consumed), 2 Elite circuits, 2 tungsten steel plates and 4 screws. Deviation: the sheet's glass lens is
- * dropped, because the assembler map has nine input slots and the circuit selector takes one; the emitter stands for
- * the optic. The gate is the tungsten steel plate.
+ * battery, consumed), 2 Elite circuits, 2 tungsten steel plates and 4 screws, plus 288 L of soldering alloy. Deviation:
+ * the sheet's
+ * glass lens is dropped, because the assembler map has nine input slots, the eight item inputs and the circuit selector
+ * fill them, and the solder is a fluid input that never used a slot, so adding the fluid frees none; the emitter stands
+ * for the optic. The gate is the tungsten steel plate.
  */
 // Spec: docs/gregguns-spec/02-guns/recipes.md (IV table, Blaster Rifle); energy-electric-items.md
 public final class BlasterRifleDef {
@@ -76,7 +78,8 @@ public final class BlasterRifleDef {
                 Input.itemList("Energy_LapotronicOrb", 1),
                 Input.gt("circuit", "Elite", 2),
                 Input.gt("plate", "TungstenSteel", 2),
-                Input.gt("screw", "TungstenSteel", 4)))
+                Input.gt("screw", "TungstenSteel", 4))
+                .molten("SolderingAlloy", 288))
         .scenarios(registry -> EnergyBatchScenarios.registerBlaster(registry, NAME))
         .build();
 

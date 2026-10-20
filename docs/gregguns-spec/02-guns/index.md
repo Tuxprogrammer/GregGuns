@@ -141,18 +141,19 @@ PDW (`pdw`, GR-60), Pulse Rifle (`pulse_rifle`, GR-61) and Minigun (`minigun`, G
 - **Minigun.** One round per tick (20 per second), with the `guns.minigun.start` spin-up sound on the first shot after at least 10 idle ticks (a feature that is commented out in Techguns). The spin-down ramp of the rotor is not built: it needs a persistent spin phase in the model state.
 - **`checkRecoil`.** `GunTransforms.checkRecoil()` and `GunAnimState.shot(..., checkRecoil)` keep a running recoil window instead of restarting it on every shot, so the PDW kick and the Minigun rotor turn play out (the rotor makes one turn per 250 ms window).
 - **Camos.** PDW: Silver (1) and Dark Green (2). Pulse Rifle: Gray (1) and Dark Green (2). The Minigun has one skin.
-- **Pulse Rifle recipe.** recipes.md adds 144 L of soldering alloy; the production table has no fluid input yet, so the row omits it. The gate material (titanium plate) and the EV circuit are unchanged.
+- **Pulse Rifle recipe.** recipes.md adds 144 L of soldering alloy, carried by the row's fluid input (`Row.molten`).
 - **In hand.** Each gun's first-person and third-person placement comes from `InHandTargets` through `InHandFit`.
 ## IV energy guns, batch B4 (M5): deviations
 
 Blaster Rifle (`blaster_rifle`, GR-80), De-Atomizer Pistol (`deatomizer_pistol`, GR-81), Akimbo De-Atomizer Pistols (`akimbo_deatomizer_pistols`, crafting table only) and Scatter Laser Rifle (`scatter_laser_rifle`, GR-82), all IV. They are IC2 tier 5 electric items (`ItemEnergyGun`) charged by a GT charger or battery buffer of exactly that tier.
 
 - **Shots of charge.** The IV baseline is a 100,000,000 EU Lapotronic Orb. A shot costs that over the sheet's clip: Blaster Rifle 50 shots (2,000,000 EU), De-Atomizer 20 (5,000,000), Scatter Laser 40 (2,500,000). The Akimbo holds twice the pistol's capacity (40 shots). There is no reload; the reload key does nothing (plan Q5). The `reload` sound events exist only because the sound table requires one per gun and reuse the Techguns clip sounds.
-- **Blaster Rifle.** `ENERGY_BLAST` bolt, 10 damage falling to 8 between 25 and 35 blocks, 20 percent penetration, scope x0.5. The recipe drops the sheet's glass lens: the assembler map has nine input slots and the circuit selector takes one.
+- **Blaster Rifle.** `ENERGY_BLAST` bolt, 10 damage falling to 8 between 25 and 35 blocks, 20 percent penetration, scope x0.5. The recipe still drops the sheet's glass lens: the assembler map has nine input slots, the eight item inputs and the circuit selector fill them, and the solder fluid never used a slot, so it frees none.
 - **De-Atomizer.** Semi-auto, blue blast with impact FX only (`BlueBlasterTrail` on the bolt, `BlueBlasterExplosion` where it hits). No area explosion: Techguns commented it out. The Blaster Rifle shares the same bolt entity and so the same blue FX, where Techguns gave it only a smoke puff.
 - **Akimbo.** `AkimboRecipes` combines two pistols into the pair and splits it back. The pair's charge is the sum of the two guns', and a split gives each gun half (the second takes the odd EU), so no EU is lost. The pair draws the single pistol's model twice; `AkimboLayout` mirrors the left copy.
 - **Scatter Laser Rifle.** Techguns has no recipe, loot or user for it (creative tab only); GregGuns gives it the `recipes.md` IV row. Five `LASER` hitscan beams per pull in a fan of 0.15 (`ShotPattern.fan`), 6 damage each, no drop-off, scope x0.75. The fan ignores the main spread of 0.1 (Techguns rolled one beam at 0.1 and four at 0.15). The gun model's sight window is an alpha cut-out, so the gun renderer now turns the alpha test on while it draws a part.
-- **Not built.** The EV battery's Solder fluid input (the production rows carry items only), and a tint for the De-Atomizer muzzle flash (the blue flash sheet stands in).
+- **Solder.** The EV rows (Laser, Pulse, Tesla, Sonic) take 144 L and the IV energy rows (Blaster, De-Atomizer, Scatter) 288 L of soldering alloy through `ProductionTable.Row.molten`, as the sheet lists. PDW, Minigun, Bio Gun and the upgrades list none.
+- **Not built.** A tint for the De-Atomizer muzzle flash (the blue flash sheet stands in).
 ## Bio Gun, batch B3a (M5): deviations
 
 Bio Gun (`bio_gun`, GR-65, EV). Ammo is the Bio Tank (`tank_bio`, a Forge fluid container that takes GT Biomass), the same fluid-tank rules as the Flamethrower: a full tank is 30 rounds, a reload swaps a full tank in and hands an empty one back, and GT's Fluid Canner fills it (no GregGuns recipe).

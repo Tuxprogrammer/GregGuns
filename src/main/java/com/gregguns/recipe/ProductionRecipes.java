@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.gregguns.GregGuns;
@@ -105,6 +106,16 @@ public final class ProductionRecipes {
                 .error("Skipping recipe {}: target {} is registered by ComponentRecipes", row.id(), row.target());
             return;
         }
+        List<FluidStack> fluids = new ArrayList<>();
+        for (ComponentTable.FluidInput fluid : row.fluids()) {
+            FluidStack stack = ComponentRecipes.fluidStack(fluid);
+            if (stack == null) {
+                GregGuns.LOG
+                    .error("Skipping recipe {}: GT has no {} fluid for {}", row.id(), fluid.kind(), fluid.material());
+                return;
+            }
+            fluids.add(stack);
+        }
         RecipeMap<?> map = row.target() == ProductionTable.Target.AMMO_PRESS ? GregGunsRecipeMaps.AMMO_PRESS
             : RecipeMaps.assemblerRecipes;
         // Source:
@@ -117,8 +128,15 @@ public final class ProductionRecipes {
         builder.itemInputs(inputs.toArray(new ItemStack[0]))
             .itemOutputs(output)
             .duration(row.seconds() * GTRecipeBuilder.SECONDS)
-            .eut(eutFor(row.tier()))
-            .addTo(map);
+            .eut(eutFor(row.tier()));
+        if (!fluids.isEmpty()) {
+            // Source:
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipeBuilder.java#L469
+            // (fluidInputs(FluidStack...)); a molten fluid comes from Materials#getMolten, as GT's own assembler rows
+            // do.
+            builder.fluidInputs(fluids.toArray(new FluidStack[0]));
+        }
+        builder.addTo(map);
     }
 
     /**
