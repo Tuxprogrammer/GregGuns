@@ -177,6 +177,29 @@ final class NpcTurretScenarios {
         }
     }
 
+    /** Why a turret has not targeted an enemy: liveness, distance, target, rules, sight and the faction pair. */
+    private static String explain(NpcTurret t, NpcEntity enemy, NpcEntity ally) {
+        return "the turret never targeted the neutral NPC: enemyAlive=" + !enemy.isDead
+            + ", enemyHealth="
+            + enemy.getHealth()
+            + ", distance="
+            + t.getDistanceToEntity(enemy)
+            + ", turretTarget="
+            + t.currentTarget()
+            + ", wouldTarget="
+            + t.wouldTarget(enemy)
+            + ", lineOfSight="
+            + t.canEntityBeSeen(enemy)
+            + ", factions="
+            + t.npcFaction()
+            + " vs "
+            + enemy.npcFaction()
+            + ", turretDead="
+            + t.isDead
+            + ", allyAlive="
+            + !ally.isDead;
+    }
+
     // --- scenarios --------------------------------------------------------------------------------------------
 
     /** The turret spawns by its registry name with its stats. */
@@ -335,16 +358,29 @@ final class NpcTurretScenarios {
             EnumDifficulty prior = allowDamage(ctx.world());
             ctx.clearArea(14, 4);
             NpcTurret t = turret(ctx);
-            NpcEntity ally = ctx.spawn(new NpcEntity(ctx.world()));
-            ally.setLocationAndAngles(ctx.originX() + 6.5, ctx.originY(), ctx.originZ() + 0.5, 0.0F, 0.0F);
-            NeutralNpc enemy = ctx.spawn(new NeutralNpc(ctx.world()));
-            enemy.setLocationAndAngles(ctx.originX() - 5.5, ctx.originY(), ctx.originZ() + 0.5, 0.0F, 0.0F);
+            NpcEntity ally = ctx.spawnAt(
+                new NpcEntity(ctx.world()),
+                ctx.originX() + 6.5,
+                ctx.originY(),
+                ctx.originZ() + 0.5,
+                0.0F,
+                0.0F);
+            NeutralNpc enemy = ctx.spawnAt(
+                new NeutralNpc(ctx.world()),
+                ctx.originX() - 5.5,
+                ctx.originY(),
+                ctx.originZ() + 0.5,
+                0.0F,
+                0.0F);
             Watch watch = Watch.start();
             boolean[] targetedAlly = { false };
             boolean[] targetedEnemy = { false };
             return guarded(name(), ctx.world(), prior, watch, TIMEOUT, ticks -> {
                 targetedAlly[0] |= t.currentTarget() == ally;
                 targetedEnemy[0] |= t.currentTarget() == enemy;
+                if (ticks == TIMEOUT - 2 && !targetedEnemy[0]) {
+                    return ScenarioResult.fail(name(), explain(t, enemy, ally));
+                }
                 if (ticks < MIN_TICKS || !targetedEnemy[0]) {
                     return null;
                 }

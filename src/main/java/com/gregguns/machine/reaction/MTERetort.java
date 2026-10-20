@@ -515,7 +515,7 @@ public final class MTERetort extends MTEExtendedPowerMultiBlockBase<MTERetort>
             .addMufflerHatch("1", StatCollector.translateToLocal("gregguns.retort.tt.cap"), 2)
             .addSubChannel(GTStructureChannels.BOROGLASS)
             .addSubChannel(GTStructureChannels.HEATING_COIL)
-            .toolTipFinisher();
+            .toolTipFinisher(com.gregguns.core.text.AddedBy.NAME);
         return tt;
     }
 

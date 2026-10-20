@@ -41,7 +41,7 @@ public final class MTEPlaceholder extends MTEHatch {
     @Override
     public String[] getDescription() {
         // The lang file is not loaded at construction, so the key is translated here.
-        return new String[] { StatCollector.translateToLocal(LANG_KEY) };
+        return com.gregguns.core.text.AddedBy.append(new String[] { StatCollector.translateToLocal(LANG_KEY) });
     }
 
     @Override

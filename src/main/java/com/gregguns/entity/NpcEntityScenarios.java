@@ -191,8 +191,13 @@ final class NpcEntityScenarios {
             NpcEntity shooter = npc(ctx, 0, 0, PISTOL);
             NpcEntity victim = npc(ctx, 6, 0, null);
             NpcEntity bitten = npc(ctx, 0, 10, null);
-            EntityPig pig = ctx.spawn(new EntityPig(ctx.world()));
-            pig.setLocationAndAngles(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5 + 8, 0.0F, 0.0F);
+            EntityPig pig = ctx.spawnAt(
+                new EntityPig(ctx.world()),
+                ctx.originX() + 0.5,
+                ctx.originY(),
+                ctx.originZ() + 0.5 + 8,
+                0.0F,
+                0.0F);
             ShotLog log = ShotLog.start();
             ItemGun gun = (ItemGun) shooter.getHeldItem()
                 .getItem();

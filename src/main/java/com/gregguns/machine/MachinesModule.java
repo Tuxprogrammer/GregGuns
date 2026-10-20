@@ -51,6 +51,7 @@ public final class MachinesModule implements GregGunsModule {
         if (DevEnvironment.isActive()) {
             ReactionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             RepairScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            ScenarioRegistry.SCENARIOS.register(new com.gregguns.core.text.AddedByScenario());
         }
     }
 }

@@ -37,6 +37,16 @@ The summary line is printed only after every scenario has finished, including th
 
 A failed scenario prints `[GregGuns] FAIL <name>` followed by indented messages. The orchestrator script waits for `Scenarios: N passed, M failed` and treats `M > 0` as failure.
 
+### Opt-in (slow) scenarios
+
+A scenario whose `includedInAll()` returns false is skipped by `gregguns test all` and runs only by name. `npc.soak` is one: it needs about 2 minutes of game time (2640 ticks) and is for the box run before an exit gate, not for every branch.
+
+```
+gregguns test npc.soak    # needs modules.npcs on, e.g. GG_MODULES=guns,armor,machines,utility,npcs
+```
+
+The result lists the baseline and load tick statistics as notes, and the same lines go to the server log with the prefix `npc.soak:`.
+
 ## Writing a scenario
 
 Implement `com.gregguns.core.testing.Scenario` and register it on `ScenarioRegistry.SCENARIOS`. Register from a place that runs on the server before `FMLServerStartingEvent` finishes; the feature's own server-starting hook is fine.
@@ -272,7 +282,9 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.flamethrower.recipe` | Flamethrower (M2 B6) | The HV assembly row (GR-50) is in GT's assembler map with its sheet inputs and not below HV, and the found recipe's output is ours. |
 | `gun.bio_gun.fire` | Bio Gun (M5 B3a) | Holding the left button for 8 ticks fires every 6 ticks: 2 rounds and 2 level-1 `BiogunProjectile` globs; a villager 4 blocks ahead takes damage and gets Poison IV (amplifier 3, at most 100 ticks). |
 | `gun.bio_gun.charge` | Bio Gun (M5 B3a) | Holding the right button 10, 20 and 35 ticks fires levels 1, 2 and 3 that spend exactly 1, 2 and 3 rounds of the 30 loaded (GUN-02). |
-| `gun.bio_gun.reload` | Bio Gun (M5 B3a) | An empty gun with one full Bio Tank (Biomass) reloads after 45 ticks to 30 rounds; the full tank is consumed and an empty tank comes back. |
+| `gun.bio_gun.reload` | Bio Gun (M5 B3a) | An empty gun with one full Bio Tank (E. coli culture fluid) reloads after 45 ticks to 30 rounds; the full tank is consumed and an empty tank comes back. |
+| `gun.bio_gun.culture_recipe` | Bio Gun ammo chain | `bacterialVatRecipes` holds the Biomass to E. coli culture fluid recipe: the petri dish as its special item, 1,000 mB Biomass and 100 mB distilled water in, 1,000 mB out, EV, glass 4. |
+| `gun.bio_gun.tank_rejects_biomass` | Bio Gun ammo chain | With `bioGun.acceptBiomass` false a Bio Tank takes the culture fluid and rejects Biomass; with it true it takes Biomass too. |
 | `gun.bio_gun.blob` | Bio Gun (M5 B3a) | With safe mode off, a level 2 glob from a player at a wall leaves a size 2 Bio Blob on the wall. Needs the utility module. |
 | `gun.bio_gun.blob.safe` | Bio Gun (M5 B3a) | The same glob with safe mode on (`explosions.blockDamage` false) leaves no blob (PFX-28). |
 | `gun.bio_gun.blob.veto` | Bio Gun (M5 B3a) | The same glob with `BlockEvent.PlaceEvent` cancelled by a listener leaves no blob (PFX-28). |
@@ -442,6 +454,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `npc.bosses_persist` | Bosses (M7 B3) | With a player 140 blocks away both bosses survive a despawn check while an ordinary NPC is removed, and both keep health and weapon through a save and load (NPC-28). |
 | `npc.equipment_roll` | NPC equipment (M7 N5) | The vanilla no-argument `addRandomArmor()` equips 100 NPCs per profile at danger 0 to 5: a weapon whenever one exists, GregGuns armor with the camo in range, nothing enchanted, danger kept across a save. Needs `GG_MODULES=guns,armor,machines,utility,npcs`. |
 | `npc.egg_spawns` | NPC registry and egg (M7 N7) | The test NPC egg (item damage 80) spawns its mob at the neighbor block center (+0.5 on X and Z, resting on the block) and the stack shrinks by one; an egg of an unregistered mob does nothing, is not consumed and leaves no entity behind (NPC-18/19/20). Removes what it spawned. |
+| `npc.all_eggs` | NPC registry and egg (M7) | `NpcRegistry.eggAudit(true)`: every `NpcMob` except the egg-exempt `SIMPLE_TURRET` has a bound class, a registered entity `EntityList` can build and an egg subtype; failures name the mobs. Headless half: `NpcEggCoverageTest`. |
 | `npc.alien_bug.spawn` | Alien Bug (M7 B4) | The Alien Bug egg (item damage 66) spawns an `AlienBug` at the neighbor block center, consumes one egg, leaves no jockey and no stale entity. Removes what it spawns. |
 | `npc.alien_bug.stats` | Alien Bug (M7 B4) | Base attributes are 20 HP, 4 attack, 1.0 speed, 16 follow range at every difficulty; 60 simulated kills (drop events canceled) yield only string and spider eyes. |
 | `npc.alien_bug.hitbox_faction` | Alien Bug (M7 B4) | The bug is a HOSTILE-faction `IMob` `EntitySpider` with a 1.1 x 1.2 hitbox, never aims, and has an idle attack clock. |
@@ -475,10 +488,14 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `npc.attack_helicopter.crash` | Attack Helicopter (M7 B4) | Killed, it stays a dying entity for about 100 ticks while `deathProgress` rises 0 to 1 and it sinks, is then removed, and its drops (cancelled) roll exactly once with 4 to 7 iron blocks. |
 | `npc.army_soldier_egg_stats` / `npc.commando_egg_stats` | Army Soldier, Commando (M7 B2) | The mob from its egg has health 30, melee 4 / 5, speed 0.30 / 0.35, follow range 75, holds a GregGuns gun with the gun task and is hostile; removed afterwards. |
 | `npc.army_soldier_fires` / `npc.commando_fires` | Army Soldier, Commando (M7 B2) | An M4 soldier 6 blocks from a player fires projectiles with itself as shooter within 400 ticks; difficulty restored, entities removed. |
+| `npc.outcast_egg_equipment` / `npc.stormtrooper_egg_equipment` | Outcast, Stormtrooper (M7 B5) | The mob from its egg has health 30 / 35, melee 8 / 4, speed 0.20 / 0.30, follow range 60 / 75, a gun from its pool (Outcast: laser, Grim Reaper, minigun, bio, flamethrower, tesla, LMG; Stormtrooper: blaster rifle or laser), the gun task, all four T3 Power Armor / T3 HEV pieces and the hostile faction; removed afterwards. |
+| `npc.outcast_fires` / `npc.stormtrooper_fires` | Outcast, Stormtrooper (M7 B5) | With a Laser Rifle / Blaster Rifle the soldier fires at a fake player 6 blocks away within 400 ticks, its gun stack is unchanged (infinite NPC charge source) and the player's inventory is untouched; difficulty restored, entities removed. |
+| `npc.outcast_stormtrooper_despawn` | Outcast, Stormtrooper (M7 B5) | Neither is persistent (`DespawnRules`), both follow vanilla distance despawning, egg-spawned ones are removed. Loot for both is covered by `npc.loot_simulation` (all profiles). |
 | `npc.bandit_egg_stats` | Bandit (M7 B1) | A Bandit from its egg has health 20, melee 5, speed 0.30, follow range 40, holds a GregGuns gun with the gun task and is hostile faction; removed afterwards. |
 | `npc.bandit_fires` | Bandit (M7 B1) | A pistol Bandit 6 blocks from a player fires projectiles with itself as shooter within 400 ticks; difficulty restored, entities removed. |
 | `npc.undead2_egg` | Undead NPCs (M7 B2) | The Skeleton Soldier and Zombie Pigman Soldier eggs spawn their class with max health 25/25, base melee 4/5, a held weapon, the hostile faction and the undead attribute; only the Pigman is fire immune; neither burns. Removes what it spawned. |
 | `npc.skeleton_soldier_fires` | Undead NPCs (M7 B2) | A Skeleton Soldier with a revolver 8 blocks from a player targets it and fires real projectiles it shoots. Removes what it spawned. |
+| `npc.soak` | NPC soak (M7 exit) | **Opt-in, not in `test all`.** Samples `MinecraftServer.tickTimeArray` for 200 ticks with a fake player and no NPCs, then spawns 100 mixed NPCs (no bosses) near it and samples 2400 ticks more. Passes when the load mean is under 50 ms and within 10 ms of the baseline (`-Dgregguns.soak.regressionMs` overrides the margin). Logs baseline and load mean, p95 and max, and the live NPC count every 200 ticks. Cancels drops and removes everything with `World.removeEntity`. |
 | `utility.charge_foreign_button` | explosive charges (M6) | `PacketChargeButton` from a non-owner is rejected (fuse and arm), an unknown id is rejected, the owner's press is applied (MUTL-31). |
 | `utility.charge_gui_controls` | explosive charges (M6) | The settings screen's server path `TileExplosiveCharge.pressBy`: depth steps and clamps at the maximum, a stranger's presses (depth, disarm) change nothing, the fuse burns while armed, settings freeze while armed, only the owner can disarm, and a disarm restores the set fuse. |
 | `utility.charge_gui_shots` | explosive charges (M6) | Needs one connected client with the autotest hooks; not part of `test all`. Opens each charge screen with a real right-click (Advanced unarmed, armed and as a non-owner on a wall; TNT unarmed and armed) and signals `charge-gui-<case>` screenshots. Evidence is the images; read them. |
