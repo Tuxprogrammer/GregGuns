@@ -43,8 +43,24 @@ public final class PartItems {
      */
     public static void register(ModuleRegistrar registrar) {
         for (PartDefinition part : PartDefinitions.ALL) {
-            ITEMS.put(part.name(), registrar.registerItem(part.name(), new ItemPart(part.tier())));
+            registerOne(registrar, part.name());
         }
+    }
+
+    /**
+     * Registers one part by name, so the caller picks the registration order (see {@code GunsItemOrder}).
+     *
+     * @param registrar the guns module's registrar
+     * @param name      a part's registry name from {@link PartDefinitions#ALL}
+     */
+    public static void registerOne(ModuleRegistrar registrar, String name) {
+        ITEMS.put(
+            name,
+            registrar.registerItem(
+                name,
+                new ItemPart(
+                    PartDefinitions.byName(name)
+                        .tier())));
     }
 
     /**

@@ -9,6 +9,7 @@ import net.minecraft.util.StatCollector;
 
 import com.gregguns.armor.slots.ElectricGear;
 import com.gregguns.core.config.EnergyConfig;
+import com.gregguns.core.text.TierText;
 import com.gregguns.gun.def.GunDefinition;
 import com.gregguns.gun.logic.EnergyCapacity;
 import com.gregguns.gun.logic.EnergyMath;
@@ -125,7 +126,9 @@ public class ItemEnergyGun extends ItemGun implements IElectricItem {
                 EnergyMath.shotsLeft(charge, stats().euPerShot()),
                 stats().euPerShot()));
         tooltip.add(
-            StatCollector
-                .translateToLocalFormatted("gregguns.gun.tooltip.charger", getTier().gtName(), getTier().voltage()));
+            StatCollector.translateToLocalFormatted(
+                "gregguns.gun.tooltip.charger",
+                TierText.colored(getTier()),
+                getTier().voltage()));
     }
 }
