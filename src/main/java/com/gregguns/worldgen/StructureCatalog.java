@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import com.gregguns.worldgen.camp.CampFootprint;
 import com.gregguns.worldgen.layout.Layout;
 import com.gregguns.worldgen.layout.LayoutRegistry;
+import com.gregguns.worldgen.nest.NestPlan;
 
 /**
  * Which size class each natural structure belongs to, whether it floats, and how the pools are built from the loaded
@@ -74,7 +75,7 @@ public final class StructureCatalog {
      * @return the pools by size class
      */
     public static Map<SizeClass, List<PoolEntry>> pools(LayoutRegistry layouts, Predicate<StructureId> enabled) {
-        return pools(layouts, enabled, false);
+        return pools(layouts, enabled, false, false);
     }
 
     /**
@@ -83,12 +84,33 @@ public final class StructureCatalog {
      */
     public static Map<SizeClass, List<PoolEntry>> pools(LayoutRegistry layouts, Predicate<StructureId> enabled,
         boolean camps) {
+        return pools(layouts, enabled, camps, false);
+    }
+
+    /**
+     * As above; with {@code nests} the Alien Bug Nest joins the MEDIUM pool (when enabled), a fixed procedural box with
+     * no layout file. Without a placer behind it the generator must not pass true.
+     */
+    public static Map<SizeClass, List<PoolEntry>> pools(LayoutRegistry layouts, Predicate<StructureId> enabled,
+        boolean camps, boolean nests) {
         Map<SizeClass, List<PoolEntry>> out = new EnumMap<SizeClass, List<PoolEntry>>(SizeClass.class);
         for (SizeClass c : SizeClass.values()) {
             out.put(c, new ArrayList<PoolEntry>());
         }
         for (StructureId s : StructureId.values()) {
             if (!enabled.test(s)) continue;
+            if (s == StructureId.ALIEN_BUG_NEST) {
+                if (nests) {
+                    out.get(SizeClass.MEDIUM)
+                        .add(
+                            new PoolEntry(
+                                s.id(),
+                                1,
+                                VARIANTS,
+                                new Footprint(NestPlan.SIZE, NestPlan.HEIGHT, NestPlan.SIZE)));
+                }
+                continue;
+            }
             if (s == StructureId.MILITARY_BASE) {
                 if (camps) {
                     out.get(SizeClass.BIG)
@@ -104,11 +126,11 @@ public final class StructureCatalog {
         return Collections.unmodifiableMap(out);
     }
 
-    /** The layout ids worth loading: every enabled structure with a layout file (the base is planned, not stamped). */
+    /** The layout ids worth loading: every enabled structure with a layout file (the base and the nest are planned, not stamped). */
     public static List<String> idsToLoad(Predicate<StructureId> enabled) {
         List<String> ids = new ArrayList<String>();
         for (StructureId s : StructureId.values()) {
-            if (enabled.test(s) && s != StructureId.MILITARY_BASE) ids.add(s.id());
+            if (enabled.test(s) && s != StructureId.MILITARY_BASE && s != StructureId.ALIEN_BUG_NEST) ids.add(s.id());
         }
         return ids;
     }

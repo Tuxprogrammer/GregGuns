@@ -70,6 +70,17 @@ public final class PaletteKeys {
         // Vanilla-only roles.
         { "air", null, "0", "minecraft:air", "0" }, };
 
+    /**
+     * GregGuns' own blocks as roles: key, own block registry name, own meta, vanilla fallback name and meta. The
+     * fallback stands in when the worldgen module is off (the blocks are not registered), so a nest still builds and
+     * stays climbable. Spec: docs/techguns-spec/11-worldgen/structure-notes/alien_bug_nest.md (block roles).
+     */
+    private static final String[][] OWN_TABLE = {
+        // key, ownName, ownMeta, vanillaName, vanillaMeta
+        { "bugnest_wall", "gregguns:bug_nest", "0", "minecraft:sandstone", "2" },
+        { "bugnest_egg", "gregguns:bug_nest", "1", "minecraft:stained_hardened_clay", "13" },
+        { "bugnest_slime", "gregguns:bug_nest_slime", "0", "minecraft:vine", "0" }, };
+
     private final Map<String, ResolvedBlock> roles;
     private final BlockLookup vanilla;
     private final Map<String, ResolvedBlock> direct = new ConcurrentHashMap<>();
@@ -109,6 +120,19 @@ public final class PaletteKeys {
                 continue;
             }
             out.put(key, new ResolvedBlock(block, meta, fallback));
+        }
+        for (String[] row : OWN_TABLE) {
+            Block own = vanilla.byName(row[1]);
+            if (own != null) {
+                out.put(row[0], new ResolvedBlock(own, Integer.parseInt(row[2]), false));
+                continue;
+            }
+            Block fallback = vanilla.byName(row[3]);
+            if (fallback == null) {
+                warn.accept("Palette key '" + row[0] + "': fallback block " + row[3] + " not found; key unavailable");
+                continue;
+            }
+            out.put(row[0], new ResolvedBlock(fallback, Integer.parseInt(row[4]), true));
         }
         return new PaletteKeys(out, vanilla, warn);
     }

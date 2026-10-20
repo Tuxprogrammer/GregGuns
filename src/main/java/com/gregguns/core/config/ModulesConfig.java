@@ -6,10 +6,8 @@ import com.gtnewhorizon.gtnhlib.config.Config;
  * Module switches, the {@code modules} category of {@code config/gregguns.cfg}. One flag per roadmap content area.
  *
  * <p>
- * A flag defaults to {@code true} once its milestone's exit gate is met, as the roadmap says. The gates for M2 to M6
- * are met, so {@code guns}, {@code armor}, {@code machines}, {@code energyWeapons} and {@code utility} default to on.
- * {@code npcs} (M7) and {@code worldgen} (M8) stay off until their gates are met. The pull request that completes a
- * milestone flips that milestone's default (here and in {@code docs/config.md}).
+ * A flag defaults to {@code true} once its milestone's exit gate is met, as the roadmap says. The gates for M2 to M8
+ * are met, so every module flag defaults to on. The pull request that completes a milestone flips that milestone's default (here and in {@code docs/config.md}).
  *
  * <p>
  * Fields only, no logic, and no Minecraft types, so the class loads in a plain unit test. Names must match
@@ -50,7 +48,7 @@ public class ModulesConfig {
     @Config.RequiresMcRestart
     public static boolean npcs = true;
 
-    @Config.Comment({ "Worldgen and structures (M8). Needs 'npcs'.", "Default: false until the M8 exit gate is met." })
+    @Config.Comment({ "Worldgen and structures (M8). Needs 'npcs'.", "Default: true (M8 exit gate met)." })
     @Config.RequiresMcRestart
-    public static boolean worldgen = false;
+    public static boolean worldgen = true;
 }

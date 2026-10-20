@@ -118,4 +118,24 @@ class PaletteKeysTest {
         }
         assertTrue(offenders.isEmpty(), "Chisel is named outside PaletteKeys: " + offenders);
     }
+
+    @Test
+    void bugNestKeysUseTheirOwnBlocksOrAVanillaFallback() {
+        TestKeys.Blocks vanilla = new TestKeys.Blocks();
+        PaletteKeys own = TestKeys.chiselAbsent(vanilla);
+        assertSame(vanilla.byName("gregguns:bug_nest"), own.get("bugnest_wall").block);
+        assertEquals(0, own.get("bugnest_wall").meta);
+        assertEquals(1, own.get("bugnest_egg").meta);
+        assertSame(vanilla.byName("gregguns:bug_nest_slime"), own.get("bugnest_slime").block);
+        assertFalse(own.get("bugnest_slime").fallback);
+        // worldgen module off: the blocks are not registered, vanilla stands in
+        TestKeys.Blocks v2 = new TestKeys.Blocks();
+        PaletteKeys fb = PaletteKeys.resolve(null, n -> n.startsWith("gregguns:") ? null : v2.byName(n), s -> {});
+        assertSame(v2.byName("minecraft:sandstone"), fb.get("bugnest_wall").block);
+        assertEquals(2, fb.get("bugnest_wall").meta);
+        assertTrue(fb.get("bugnest_wall").fallback);
+        assertSame(v2.byName("minecraft:stained_hardened_clay"), fb.get("bugnest_egg").block);
+        assertEquals(13, fb.get("bugnest_egg").meta);
+        assertSame(v2.byName("minecraft:vine"), fb.get("bugnest_slime").block);
+    }
 }
