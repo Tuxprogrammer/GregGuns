@@ -56,6 +56,13 @@ The shared GT plumbing every GregGuns machine uses: MTE IDs, the registration wi
 - **GregGuns does:** in `preInit`, adds a `Runnable` to `GregTechAPI.sAfterGTPreload` that constructs every GregGuns MTE. The `@Mod` dependency string includes `required-after:gregtech` plus whatever ordering the precedent needs (see Open questions). Recipes are registered in `sBeforeGTPostload` or later, never in the constructor.
 - **Pack-side change:** none.
 
+### GT5-Unofficial: an id with no MTE crashes the item render
+- **Source:**
+  - GT's block renderer looks the machine up by item damage and reads its textures ([GTRendererBlock#L207-L209](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/render/GTRendererBlock.java#L207-L209), [#L267-L337](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/render/GTRendererBlock.java#L267-L337)). A client with no MTE at the id, or one whose overlay icons are null, throws a NullPointerException in the hotbar.
+  - An icon container fetches its sprite in a `run()` that GT queues only when the container is first created and drains at texture stitch ([GTCustomOptionalBlockIconContainer#L25-L40](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/client/iconContainers/blocks/GTCustomOptionalBlockIconContainer.java#L25-L40)). A container first created inside `getTexture` therefore keeps a null icon.
+- **GregGuns does:** controllers request their overlay icons at registration (`OverlayIcons.preload`; the Retort built them lazily and crashed the client). After every module's `init`, `MtePlaceholders` registers an inert `MTEPlaceholder` at each GregGuns id that no module filled, on both sides, so a client whose `modules.*` differ from the server's renders the stacks. The server sends its module mask at login (`PacketModuleSync`); a client that differs logs an error and shows a chat line naming the switches. It is not disconnected, because the placeholder keeps it safe and the switches are startup-only.
+- **Pack-side change:** none.
+
 ### GT5-Unofficial: base classes to extend
 - **Source:**
   - Single block, no recipe: [`MTETieredMachineBlock`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTETieredMachineBlock.java#L22) (`mTier` 0-9, textures array, description array). Subclass of `MetaTileEntity`.
