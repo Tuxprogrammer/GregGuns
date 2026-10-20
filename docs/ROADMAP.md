@@ -287,13 +287,22 @@ One gun, working end to end inside the GTNH dev pack.
 - Translation readiness: every string is a lang key.
 - Multiplayer and performance soak tests.
 - Handing quest-line content to the GTNH modpack maintainers, since quests live in the pack, not in this repo.
-- One PR to the GTNH modpack repository with every row of [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md), using the final registry names; and the GT5-Unofficial MTE ID and texture-page reservations.
+- Drafting, but not opening, the PR to the GTNH modpack repository. The draft carries every row of [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md), using the final registry names, plus the GT5-Unofficial MTE ID and texture-page reservations. The owner decides when to open it.
+- An outreach package for the GTNH pack maintainers, to give the mod the best chance of being accepted into GTNH. It covers:
+  - a short pitch: what the mod adds and why it fits GT progression;
+  - how it respects GTNH's conventions (GT materials, recipe maps, tiers, no ore generation, config-gated content);
+  - performance and compatibility evidence (soak tests, TPS, FX budget, shader check);
+  - license and originality (MIT, a clean-room rewrite, no Techguns code or assets);
+  - the maintenance commitment;
+  - the quest-line handoff;
+  - links to the release, the docs and the infographics.
 - Release tagging.
 
 **Exit gate:**
 - [ ] A full playthrough of every tier gate in a GTNH dev pack.
 - [ ] No unresolved crash-severity bugs.
-- [ ] The PACK-CHANGES modpack PR is open, with no placeholder names left.
+- [ ] The GTNH modpack PR text is drafted (not opened), with every PACK-CHANGES row and no placeholder names left. The owner reviews it and decides when to open it.
+- [ ] The outreach package for the GTNH pack maintainers is drafted and reviewed by the owner.
 - [ ] Release notes, a tagged version and published jars (CI `release-tags` workflow).
 
 ## Later
