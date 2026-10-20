@@ -506,10 +506,12 @@ def _helmet(c, kind, M, T, A, V, G):
         c.ellipse(7.5, 6.5, 4, 3, V)
         c.hline(5, 9, 4, V[HL])
         c.vline(4, 5, 7, V[LT])
-        c.rect(5, 12, 10, 14, T)
-        c.hline(6, 9, 13, T[DK])
-        c.pix(2, 8, T[HL])
-        c.pix(13, 8, T[HL])
+        c.hline(4, 11, 2, T[BS])                 # headband across the brow (worn: blue band, black glass)
+        c.hline(3, 12, 3, T[SH])
+        c.rect(5, 12, 10, 14, M[SH])
+        c.hline(6, 9, 13, M[DK])
+        c.pix(2, 8, M[HL])
+        c.pix(13, 8, M[HL])
     elif kind == "steam":      # bronze pot helm, round porthole, steam pipe
         _dome(c, M)
         c.disc(7.5, 6.5, 2, V or ramp((250, 200, 80)))
@@ -633,12 +635,12 @@ def _chest(c, kind, M, T, A, V, G):
         _torso(c, M, 3, 12, 13)
         _sleeve_l(c, M, 11)
         _sleeve_r(c, M, 11)
-        c.rect(5, 2, 10, 3, T)
-        c.rect(5, 5, 10, 9, T)
-        c.rect(6, 6, 9, 8, V or glow((255, 190, 60)), bevel=False)
-        c.hline(3, 12, 11, M[DK])
-        c.hline(1, 3, 7, M[DK])
-        c.hline(12, 14, 7, M[DK])
+        c.rect(4, 2, 11, 3, T)                   # chest band (worn: orange across the collar)
+        c.rect(5, 5, 10, 9, A)                   # vest panel, no hatch
+        c.hline(5, 10, 5, A[HL])
+        c.hline(3, 12, 11, T[BS])                # belt band
+        c.hline(1, 3, 7, T[BS])                  # arm bands
+        c.hline(12, 14, 7, T[BS])
     elif kind == "steam":      # bronze cuirass, shoulder pipes venting, gauge
         _torso(c, M)
         _sleeve_l(c, M, 9)
@@ -740,10 +742,10 @@ def _legs(c, kind, M, T, A, V, G):
     elif kind == "hev":        # baggy sealed trousers with strap bands
         c.rect(3, 2, 12, 4, M)
         _leg_pair(c, M, 3, 7, 8, 12)
-        for y in (7, 11):
+        for y in (7, 11):               # two orange bands (worn: charcoal legs, orange bands)
             c.hline(3, 7, y, T[BS])
             c.hline(8, 12, y, T[BS])
-        c.hline(3, 12, 3, M[DK])
+        c.hline(3, 12, 3, T[SH])
     elif kind == "steam":      # bronze greaves with piping
         c.rect(4, 2, 11, 4, M)
         _leg_pair(c, M, 4, 7, 8, 11)

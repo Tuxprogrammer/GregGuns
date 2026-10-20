@@ -188,7 +188,7 @@ Techguns: "T3 Hazardous Environment" (`p` `plateCarbon`, `l` `plateTitanium`, `c
 | Hazardous Environment Helmet | `plate.EpoxidFiberReinforced` ×2, `plate.Titanium` ×2, `circuit.EV` ×1, glass pane ×1 | 1 | 12 s |
 | Hazardous Environment Chestplate | `plate.EpoxidFiberReinforced` ×3, `plate.Titanium` ×4, `circuit.EV` ×1 | 2 | 16 s |
 | Hazardous Environment Leggings | `plate.EpoxidFiberReinforced` ×3, `plate.Titanium` ×2, `circuit.EV` ×2 | 3 | 14 s |
-| Hazardous Environment Boots | `plate.EpoxidFiberReinforced` ×2, `plate.Titanium` ×2 | 4 | 10 s |
+| Hazardous Environment Boots | `plate.EpoxidFiberReinforced` ×2, `plate.Titanium` ×2, `circuit.EV` ×1 (so they differ from the Combat boots) | 4 | 10 s |
 
 ### Steam armor (4 recipes)
 

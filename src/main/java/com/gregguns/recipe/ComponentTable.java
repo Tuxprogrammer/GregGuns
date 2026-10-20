@@ -315,7 +315,7 @@ public final class ComponentTable {
                 1,
                 Tier.ZPM,
                 30,
-                new Research(Input.itemList("Emitter_LuV", 1), 120, Tier.IV),
+                new Research(Input.mod(ComponentItems.SONIC_EMITTER, 1), 120, Tier.IV),
                 solder(144),
                 Input.itemList("Emitter_ZPM", 1),
                 Input.gt("plate", "Lead", 2),

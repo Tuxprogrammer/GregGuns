@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import com.gregguns.GregGuns;
+import com.gregguns.client.render.GlStateGuard;
 import com.gregguns.utility.camp.FlagPostGeometry;
 
 /**
@@ -51,28 +52,28 @@ public final class CampFlagRenderer extends TileEntitySpecialRenderer {
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partial) {
         bindTexture(TEXTURE);
-        GL11.glPushMatrix();
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glTranslatef((float) x + 0.5F, (float) y, (float) z + 0.5F);
-        // The parts are built with +Y down; flip so the post stands up.
-        GL11.glScalef(1.0F, -1.0F, 1.0F);
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        for (ModelRenderer r : post) {
-            r.render(UNIT);
+        // Cull face, rescale normal and color change below; the guard restores them and the matrix on every exit.
+        try (GlStateGuard g = GlStateGuard.matrixAndAttrib(GL11.GL_ENABLE_BIT | GL11.GL_CURRENT_BIT)) {
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glTranslatef((float) x + 0.5F, (float) y, (float) z + 0.5F);
+            // The parts are built with +Y down; flip so the post stands up.
+            GL11.glScalef(1.0F, -1.0F, 1.0F);
+            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+            GL11.glDisable(GL11.GL_CULL_FACE);
+            for (ModelRenderer r : post) {
+                r.render(UNIT);
+            }
+            // The wave steps once per world tick; no partial-tick smoothing (model notes section 7).
+            float time = Minecraft.getMinecraft().theWorld == null ? 0.0F
+                : (float) Minecraft.getMinecraft().theWorld.getTotalWorldTime();
+            // Panels are chained: each hinge sits where the previous panel's hinge plus its own offset lands.
+            for (int i = 0; i < panels.length; i++) {
+                FlagPostGeometry.Panel panel = FlagPostGeometry.PANELS.get(i);
+                GL11.glTranslatef(panel.hingeX * UNIT, 0.0F, 0.0F);
+                GL11.glRotatef(FlagPostGeometry.swingDegrees(panel, time), 0.0F, 1.0F, 0.0F);
+                panels[i].render(UNIT);
+            }
         }
-        // The wave steps once per world tick; no partial-tick smoothing (model notes section 7).
-        float time = Minecraft.getMinecraft().theWorld == null ? 0.0F
-            : (float) Minecraft.getMinecraft().theWorld.getTotalWorldTime();
-        // Panels are chained: each hinge sits where the previous panel's hinge plus its own offset lands.
-        for (int i = 0; i < panels.length; i++) {
-            FlagPostGeometry.Panel panel = FlagPostGeometry.PANELS.get(i);
-            GL11.glTranslatef(panel.hingeX * UNIT, 0.0F, 0.0F);
-            GL11.glRotatef(FlagPostGeometry.swingDegrees(panel, time), 0.0F, 1.0F, 0.0F);
-            panels[i].render(UNIT);
-        }
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-        GL11.glPopMatrix();
+        GlStateGuard.rebindBlockAtlas();
     }
 }

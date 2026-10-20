@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import com.gregguns.GregGuns;
+import com.gregguns.client.render.GlStateGuard;
 import com.gregguns.utility.storage.BlockGregChest;
 import com.gregguns.utility.storage.TileGregChest;
 
@@ -42,22 +43,21 @@ public final class ChestRenderer extends TileEntitySpecialRenderer {
         int meta = chest.getWorldObj() == null ? 3 : chest.getBlockMetadata();
         float yaw = meta == 2 ? 180.0F : meta == 4 ? 90.0F : meta == 5 ? -90.0F : 0.0F;
         bindTexture(weapon ? WEAPON : REINFORCED);
-        GL11.glPushMatrix();
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glTranslatef((float) x, (float) y + 1.0F, (float) z + 1.0F);
-        GL11.glScalef(1.0F, -1.0F, -1.0F);
-        GL11.glTranslatef(0.5F, 0.5F, 0.5F);
-        GL11.glRotatef(yaw, 0.0F, 1.0F, 0.0F);
-        GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-        float lid = chest.prevLidAngle + (chest.lidAngle - chest.prevLidAngle) * partial;
-        lid = 1.0F - lid;
-        lid = 1.0F - lid * lid * lid;
-        model.chestLid.rotateAngleX = -(lid * (float) Math.PI / 2.0F);
-        model.renderAll();
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-        GL11.glPopMatrix();
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        try (GlStateGuard g = GlStateGuard.matrixAndAttrib(GL11.GL_ENABLE_BIT | GL11.GL_CURRENT_BIT)) {
+            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glTranslatef((float) x, (float) y + 1.0F, (float) z + 1.0F);
+            GL11.glScalef(1.0F, -1.0F, -1.0F);
+            GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+            GL11.glRotatef(yaw, 0.0F, 1.0F, 0.0F);
+            GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+            float lid = chest.prevLidAngle + (chest.lidAngle - chest.prevLidAngle) * partial;
+            lid = 1.0F - lid;
+            lid = 1.0F - lid * lid * lid;
+            model.chestLid.rotateAngleX = -(lid * (float) Math.PI / 2.0F);
+            model.renderAll();
+        }
+        GlStateGuard.rebindBlockAtlas();
     }
 
     /** Item form: the same model, closed, on one texture. Placeholder transforms; visual check owed. */
@@ -84,28 +84,29 @@ public final class ChestRenderer extends TileEntitySpecialRenderer {
         @Override
         public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
             Minecraft.getMinecraft().renderEngine.bindTexture(texture);
-            GL11.glPushMatrix();
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            switch (type) {
-                case INVENTORY:
-                    GL11.glTranslatef(0.0F, -0.1F, 0.0F);
-                    GL11.glScalef(1.0F, -1.0F, -1.0F);
-                    GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-                    GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-                    break;
-                case EQUIPPED:
-                case EQUIPPED_FIRST_PERSON:
-                    GL11.glTranslatef(0.5F, 0.6F, 0.5F);
-                    GL11.glScalef(1.0F, -1.0F, -1.0F);
-                    GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-                    break;
-                default:
-                    GL11.glScalef(1.0F, -1.0F, -1.0F);
-                    GL11.glTranslatef(0.0F, -1.0F, 0.0F);
-                    break;
+            try (GlStateGuard g = GlStateGuard.matrixAndAttrib(GL11.GL_CURRENT_BIT)) {
+                GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                switch (type) {
+                    case INVENTORY:
+                        GL11.glTranslatef(0.0F, -0.1F, 0.0F);
+                        GL11.glScalef(1.0F, -1.0F, -1.0F);
+                        GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+                        GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+                        break;
+                    case EQUIPPED:
+                    case EQUIPPED_FIRST_PERSON:
+                        GL11.glTranslatef(0.5F, 0.6F, 0.5F);
+                        GL11.glScalef(1.0F, -1.0F, -1.0F);
+                        GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+                        break;
+                    default:
+                        GL11.glScalef(1.0F, -1.0F, -1.0F);
+                        GL11.glTranslatef(0.0F, -1.0F, 0.0F);
+                        break;
+                }
+                model.renderAll();
             }
-            model.renderAll();
-            GL11.glPopMatrix();
+            GlStateGuard.rebindBlockAtlas();
         }
     }
 }

@@ -125,7 +125,7 @@ class ArmorTierTableTest {
         assertSheetRows(ArmorTable.T3_HEV, ArmorCatalog.T3_HEV, Tier.EV, new int[] { 12, 16, 14, 10 });
         int[] epoxy = { 2, 3, 3, 2 };
         int[] ti = { 2, 4, 2, 2 };
-        int[] circuits = { 1, 1, 2, 0 };
+        int[] circuits = { 1, 1, 2, 1 }; // boots: one circuit so they differ from the Combat boots
         for (int i = 0; i < 4; i++) {
             ProductionTable.Row row = ArmorTable.T3_HEV.get(i);
             assertEquals(epoxy[i], count(row, "plate", "EpoxidFiberReinforced"));
