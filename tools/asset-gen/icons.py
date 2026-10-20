@@ -1466,6 +1466,7 @@ _VIS_REGIONS = ["visor", "glasses", "lamp"]
 # the few slots whose worn look is not described by the region table above
 _SLOT_FIX = {
     ("t3_hev", "boots"): dict(trim="#E08A12"),
+    ("t3_hev", "leggings"): dict(main="#2A2C30", trim="#E08A12"),  # worn: charcoal with two orange bands
     ("t1_miner", "chestplate"): dict(trim="#E6C81E"),
 }
 
@@ -1486,6 +1487,10 @@ def biped_colorway(set_id, kind, **extra):
         acc = _pick(cfg, roles["acc"]) or trim
         fix = _SLOT_FIX.get((set_id, slot), {})
         trim = fix.get("trim", trim)
+        main = fix.get("main", main)
+        if slot == "boots" and set_id != "t3_hev" and "pants" in cfg:
+            # the worn boots show the set's leg color above the boot band: main is the leg color, the boot band trims
+            trim, main = main, _pick(cfg, ["pants"])
         d = dict(main=_rp(main), trim=_rp(trim), acc=_rp(acc))
         if slot == "helmet":
             v = _pick(cfg, _VIS_REGIONS)

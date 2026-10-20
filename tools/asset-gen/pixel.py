@@ -742,10 +742,10 @@ def _legs(c, kind, M, T, A, V, G):
     elif kind == "hev":        # baggy sealed trousers with strap bands
         c.rect(3, 2, 12, 4, M)
         _leg_pair(c, M, 3, 7, 8, 12)
-        for y in (7, 11):
+        for y in (7, 11):               # two orange bands (worn: charcoal legs, orange bands)
             c.hline(3, 7, y, T[BS])
             c.hline(8, 12, y, T[BS])
-        c.hline(3, 12, 3, M[DK])
+        c.hline(3, 12, 3, T[SH])
     elif kind == "steam":      # bronze greaves with piping
         c.rect(4, 2, 11, 4, M)
         _leg_pair(c, M, 4, 7, 8, 11)
