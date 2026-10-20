@@ -33,7 +33,29 @@ public final class ChestRenderer extends TileEntitySpecialRenderer {
         GregGuns.MODID,
         "textures/models/machines/weapon_chest.png");
 
-    private final ModelChest model = new ModelChest();
+    /**
+     * How far the lid is pulled in on every face, in model pixels (1/16 block): 0.03 px is 0.002 blocks. The vanilla
+     * lid (y 2 to 7) and body (y 6 to 16) overlap by one pixel, so their four side faces lie in the same planes. The
+     * vanilla sheet paints that band the same on both, but ours paints lid and body differently, so the two textures
+     * flickered against each other (z-fighting). With the lid inset the body face always wins the band.
+     */
+    static final float LID_INSET = 0.03F;
+
+    private final ModelChest model = newModel();
+
+    /**
+     * @return the vanilla chest model with the lid inset by {@link #LID_INSET}; geometry and texture layout are
+     *         otherwise untouched
+     */
+    @SuppressWarnings("unchecked")
+    static ModelChest newModel() {
+        ModelChest m = new ModelChest();
+        // The lid box is the vanilla one, 14 x 5 x 14 at (0, -5, -14), sheet offset (0, 0), only smaller by the inset.
+        m.chestLid.cubeList.clear();
+        m.chestLid.setTextureOffset(0, 0);
+        m.chestLid.addBox(0.0F, -5.0F, -14.0F, 14, 5, 14, -LID_INSET);
+        return m;
+    }
 
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float partial) {
@@ -63,7 +85,7 @@ public final class ChestRenderer extends TileEntitySpecialRenderer {
     /** Item form: the same model, closed, on one texture. Placeholder transforms; visual check owed. */
     public static final class ItemForm implements IItemRenderer {
 
-        private final ModelChest model = new ModelChest();
+        private final ModelChest model = newModel();
         private final ResourceLocation texture;
 
         /** @param texture the chest's texture sheet */
