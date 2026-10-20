@@ -11,6 +11,7 @@ import hashlib
 import html
 import json
 import os
+import re
 from pathlib import Path
 
 import numpy as np
@@ -66,8 +67,17 @@ RIM = (214, 224, 238, 150, 2)
 AIM = {"rightArm": (-90, -5.73, 0), "leftArm": (-90, 28.65, 0)}
 HOLD = {"rightArm": (-28, 0, 0), "leftArm": (-50, 40, 0)}
 
-# How long each gun looks in a mob's hands, in blocks (the exported models are not to a common scale).
-HELD_LENGTH = {
+def _third_person_lengths() -> dict:
+    """Each gun's third-person length in world blocks, read from the mod's in-hand sizing table."""
+    src = REPO / "src/main/java/com/gregguns/client/render/profile/InHandTargets.java"
+    num = r"\s*(-?[\d.]+)"
+    rows = re.findall(r'put\("(\w+)",' + ",".join([num] * 8) + r"\)", src.read_text(encoding="utf-8"))
+    return {r[0]: float(r[8]) for r in rows}
+
+
+# How long each gun looks in a mob's hands, in blocks: the mod's own third-person sizes, with a fallback for any gun
+# not on its table (the exported models are not to a common scale).
+HELD_LENGTH_FALLBACK = {
     "pistol_9mm": 0.55, "revolver": 0.6, "golden_revolver": 0.6, "deatomizer_pistol": 0.6, "mac10": 0.6,
     "handcannon": 0.9, "sawed_off": 0.8, "thompson_smg": 1.05, "pdw": 0.8, "vector": 0.85, "alien_blaster": 0.75,
     "nether_blaster": 0.9, "power_hammer": 1.0, "chainsaw": 1.2, "combat_shotgun": 1.15, "bolt_action_rifle": 1.35,
@@ -76,14 +86,23 @@ HELD_LENGTH = {
     "pulse_rifle": 1.3, "blaster_rifle": 1.25, "tesla_rifle": 1.3, "sonic_rifle": 1.3, "scatter_laser_rifle": 1.35,
     "bio_gun": 1.0, "grim_reaper": 1.3, "nuclear_death_ray": 1.35,
 }
+HELD_LENGTH = {**HELD_LENGTH_FALLBACK, **_third_person_lengths()}
+
+
+def export_sig(name: str) -> str:
+    """A short hash of an exported model, so renders are redone whenever the model changes."""
+    return hashlib.sha1((export_dir() / f"{name}.json").read_bytes()).hexdigest()[:10]
 
 
 def _held(mats, gun: str, length: float | None = None, grip=(0.3, 0.45)):
+    """The gun in the right hand. grip: where the hand holds it, as fractions of its length from the rear and of its
+    height from the bottom. The world flip in gun_scene puts the muzzle at -X, so -X runs along the arm."""
     g = R.gun_scene(export_dir() / f"{gun}.json")
-    mn, mx = g.bounds()
+    # Measure without a laser sight's beam, which the mod's length table leaves out too.
+    mn, mx = R.gun_scene(export_dir() / f"{gun}.json", skip=("beam",)).bounds()
     L = mx[0] - mn[0]
     k = (length or HELD_LENGTH.get(gun, 1.2)) / L
-    gp = np.array([mn[0] + grip[0] * L, mn[1] + grip[1] * (mx[1] - mn[1]), (mn[2] + mx[2]) / 2])
+    gp = np.array([mx[0] - grip[0] * L, mn[1] + grip[1] * (mx[1] - mn[1]), (mn[2] + mx[2]) / 2])
     M = mats["rightArm"]
     Rm = M[:3, :3]
     hand = (M @ np.array([-1, 10, 0, 1.0]))[:3]
@@ -92,7 +111,7 @@ def _held(mats, gun: str, length: float | None = None, grip=(0.3, 0.45)):
     uy = Rm @ np.array([0, 0, -1.0])
     uy /= np.linalg.norm(uy)
     Bm = np.eye(4)
-    Bm[:3, 0], Bm[:3, 1], Bm[:3, 2] = bx, uy, np.cross(bx, uy)
+    Bm[:3, 0], Bm[:3, 1], Bm[:3, 2] = -bx, uy, np.cross(-bx, uy)
     return g, R.tr(*hand) @ Bm @ R.sc(k) @ R.tr(*(-gp))
 
 
@@ -100,18 +119,18 @@ def gun(name: str, yaw=18, pitch=16, w=420, h=200, outline=RIM) -> Path:
     def make():
         s = R.gun_scene(export_dir() / f"{name}.json")
         return R.trim(R.render(s, yaw=yaw, pitch=pitch, fit=(w * 2, h * 2), ss=2, outline=outline), 2)
-    return _cached(f"gun-{name}", dict(n=name, y=yaw, p=pitch, w=w, h=h, o=outline, v=4), make)
+    return _cached(f"gun-{name}", dict(n=name, y=yaw, p=pitch, w=w, h=h, o=outline, m=export_sig(name), v=4), make)
 
 
 def mob(model: str, skin: str, pose=None, gun_name=None, yaw=-30, pitch=10, h=420, armor=None, accessories=(),
         flip=False) -> Path:
-    """A mob or armored figure. armor: ("vanilla", layer1, layer2) or ("custom", set_id[, texture])."""
+    """A mob or armored figure. armor: ("vanilla", layer1, layer2[, pieces]) or ("custom", set_id[, texture])."""
     def make():
         s, mats = R.mob_scene(model, ENTITY / f"{skin}.png" if not str(skin).endswith(".png") else Path(skin),
                               pose or {})
         if armor:
             if armor[0] == "vanilla":
-                R.vanilla_armor(s, mats, armor[1], armor[2])
+                R.vanilla_armor(s, mats, armor[1], armor[2], *armor[3:])
             else:
                 R.custom_armor(s, mats, armor[1], armor[2] if len(armor) > 2 else None)
         for acc in accessories:
@@ -123,7 +142,24 @@ def mob(model: str, skin: str, pose=None, gun_name=None, yaw=-30, pitch=10, h=42
         return im.transpose(Image.FLIP_LEFT_RIGHT) if flip else im
     return _cached(f"mob-{model}-{Path(str(skin)).stem}",
                    dict(m=model, s=str(skin), p=pose, g=gun_name, y=yaw, pi=pitch, h=h, a=str(armor),
-                        acc=list(accessories), f=flip, v=5), make)
+                        acc=list(accessories), f=flip, gm=export_sig(gun_name) if gun_name else None,
+                        gl=HELD_LENGTH.get(gun_name), v=8), make)
+
+
+def bone_skin() -> Path:
+    """A plain bone skin for the Skeleton Soldier, which wears the vanilla skeleton texture in game. We don't render
+    Mojang's art, so this is a flat bone color with simple eye sockets on the 64x32 biped layout."""
+    p = TEXCACHE / "skeleton_bone.png"
+    if not p.exists():
+        TEXCACHE.mkdir(parents=True, exist_ok=True)
+        rng = np.random.default_rng(7)
+        a = np.empty((32, 64, 4), np.uint8)
+        a[..., :3] = np.array([214, 208, 192]) + rng.integers(-10, 10, (32, 64, 1))
+        a[..., 3] = 255
+        a[12:14, 9:11, :3] = a[12:14, 13:15, :3] = (40, 36, 34)  # eye sockets on the face (u 8..16, v 8..16)
+        a[14:15, 11:13, :3] = (90, 84, 76)
+        Image.fromarray(a, "RGBA").save(p)
+    return p
 
 
 def accessory(scene, mats, name: str):

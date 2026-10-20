@@ -69,17 +69,17 @@ def turret_scene(plate="steel", gun=None, pitch_deg=0.0) -> R.Scene:
         k = K.HELD_LENGTH.get(gun, 1.2) * 0.9 / L
         c = (mn + mx) / 2
         pivot = (mount @ np.array([0, 0, 0, 1.0]))[:3]
-        # barrel along the turret's facing (-Z), sitting on the mount plate
+        # muzzle (the gun's -X) along the turret's facing (-Z), sitting on the mount plate
         Bm = np.eye(4)
-        Bm[:3, 0], Bm[:3, 1], Bm[:3, 2] = (0, 0, -1), (0, 1, 0), (1, 0, 0)
+        Bm[:3, 0], Bm[:3, 1], Bm[:3, 2] = (0, 0, 1), (0, 1, 0), (-1, 0, 0)
         s.extend(g, R.tr(pivot[0], pivot[1] + 0.12, pivot[2] - 0.1) @ Bm @ R.sc(k) @ R.tr(-c[0], -mn[1], -c[2]))
     return s
 
 
-def turret(plate="steel", gun="m4", yaw=-140, pitch=20, h=320):
+def turret(plate="steel", gun="m4", yaw=-40, pitch=20, h=320):
     def make():
         return R.trim(R.render(turret_scene(plate, gun), yaw=yaw, pitch=pitch, ppu=h / 1.9, ss=2, outline=K.RIM), 3)
-    return K._cached("turret", dict(p=plate, g=gun, y=yaw, pi=pitch, h=h, v=3), make)
+    return K._cached("turret", dict(p=plate, g=gun, y=yaw, pi=pitch, h=h, gm=K.export_sig(gun), gl=K.HELD_LENGTH.get(gun), v=4), make)
 
 
 # ---------------------------------------------------------------- multiblocks
