@@ -37,6 +37,7 @@ public final class NpcScenarios {
         ZombieScenarios.registerAll(registry);
         BanditScenarios.registerAll(registry);
         UndeadScenarios.registerAll(registry);
+        NpcSoakScenarios.registerAll(registry);
     }
 
     /** The module is enabled and the config carries the documented defaults. */

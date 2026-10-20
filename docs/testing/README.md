@@ -34,6 +34,16 @@ The summary line is printed only after every scenario has finished, including th
 
 A failed scenario prints `[GregGuns] FAIL <name>` followed by indented messages. The orchestrator script waits for `Scenarios: N passed, M failed` and treats `M > 0` as failure.
 
+### Opt-in (slow) scenarios
+
+A scenario whose `includedInAll()` returns false is skipped by `gregguns test all` and runs only by name. `npc.soak` is one: it needs about 2 minutes of game time (2640 ticks) and is for the box run before an exit gate, not for every branch.
+
+```
+gregguns test npc.soak    # needs modules.npcs on, e.g. GG_MODULES=guns,armor,machines,utility,npcs
+```
+
+The result lists the baseline and load tick statistics as notes, and the same lines go to the server log with the prefix `npc.soak:`.
+
 ## Writing a scenario
 
 Implement `com.gregguns.core.testing.Scenario` and register it on `ScenarioRegistry.SCENARIOS`. Register from a place that runs on the server before `FMLServerStartingEvent` finishes; the feature's own server-starting hook is fine.
@@ -470,6 +480,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `npc.bandit_fires` | Bandit (M7 B1) | A pistol Bandit 6 blocks from a player fires projectiles with itself as shooter within 400 ticks; difficulty restored, entities removed. |
 | `npc.undead2_egg` | Undead NPCs (M7 B2) | The Skeleton Soldier and Zombie Pigman Soldier eggs spawn their class with max health 25/25, base melee 4/5, a held weapon, the hostile faction and the undead attribute; only the Pigman is fire immune; neither burns. Removes what it spawned. |
 | `npc.skeleton_soldier_fires` | Undead NPCs (M7 B2) | A Skeleton Soldier with a revolver 8 blocks from a player targets it and fires real projectiles it shoots. Removes what it spawned. |
+| `npc.soak` | NPC soak (M7 exit) | **Opt-in, not in `test all`.** Samples `MinecraftServer.tickTimeArray` for 200 ticks with a fake player and no NPCs, then spawns 100 mixed NPCs (no bosses) near it and samples 2400 ticks more. Passes when the load mean is under 50 ms and within 10 ms of the baseline (`-Dgregguns.soak.regressionMs` overrides the margin). Logs baseline and load mean, p95 and max, and the live NPC count every 200 ticks. Cancels drops and removes everything with `World.removeEntity`. |
 | `utility.charge_foreign_button` | explosive charges (M6) | `PacketChargeButton` from a non-owner is rejected (fuse and arm), an unknown id is rejected, the owner's press is applied (MUTL-31). |
 | `utility.turret_registered` | Turret (M6) | The four Turrets are `MTETurret` at 20116 to 20119 with the right tiers; the entity is registered as `gregguns.turret`, is not `IMob`, is `IEntityOwnable` and has 30 max health. |
 | `utility.turret_kills_zombie` | Turret (M6) | A powered MV Turret with a 9mm Pistol (one round loaded) and four magazines shoots a fire-resistant zombie dead; exactly one empty magazine is handed back and three remain. |
