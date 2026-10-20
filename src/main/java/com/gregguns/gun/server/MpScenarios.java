@@ -539,16 +539,20 @@ public final class MpScenarios {
             String px = Integer.toString(ctx.originX() + 3);
             String py = Integer.toString(ctx.originY());
             String pz = Integer.toString(ctx.originZ());
-            return ScenarioResult.pending(name(), 400, t -> {
+            return ScenarioResult.pending(name(), 600, t -> {
+                // Keep the gauge part full while the recipe (30 EU/t for 40 s) runs.
+                if (base.getStoredSteam() < 8000) {
+                    base.increaseStoredSteam(2000, true);
+                }
                 switch (t) {
                     case 10 -> signal(a, "gui", "press", px, py, pz);
-                    case 120 -> signal(a, "shot", "steam-press-gui");
-                    case 130 -> signal(a, "close");
+                    case 400 -> signal(a, "shot", "steam-press-gui");
+                    case 410 -> signal(a, "close");
                     // The scenario clears its blocks when it ends; close the server-side container first.
-                    case 135 -> a.closeContainer();
+                    case 415 -> a.closeContainer();
                     default -> {}
                 }
-                if (t < 140) {
+                if (t < 420) {
                     return null;
                 }
                 return ScenarioResult.builder(name())
