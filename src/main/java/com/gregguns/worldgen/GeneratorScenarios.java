@@ -220,12 +220,29 @@ public final class GeneratorScenarios {
                         "marker block at " + m[0] + "," + m[2]);
                     int[] v = at(p, VANILLA, anchorY, layout);
                     TileEntity vt = world.getTileEntity(v[0], v[1], v[2]);
-                    out.check(vt instanceof TileEntityChest && nonEmpty((IInventory) vt), "vanilla chest is filled at " + v[0] + "," + v[1] + "," + v[2] + " of plan " + e.getKey() + " (chunk claimed by " + ScenarioRegions.lastToucherOfBlock(v[0], v[2]) + ")");
+                    out.check(
+                        vt instanceof TileEntityChest && nonEmpty((IInventory) vt),
+                        "vanilla chest is filled at " + v[0]
+                            + ","
+                            + v[1]
+                            + ","
+                            + v[2]
+                            + " of plan "
+                            + e.getKey()
+                            + " (chunk claimed by "
+                            + ScenarioRegions.lastToucherOfBlock(v[0], v[2])
+                            + ")");
                     int[] w = at(p, WEAPON, anchorY, layout);
                     TileEntity wt = world.getTileEntity(w[0], w[1], w[2]);
                     out.check(
                         wt instanceof TileGregChest && ((TileGregChest) wt).pending() != null,
-                        "GregGuns chest holds an unfilled order at " + w[0] + "," + w[1] + "," + w[2] + " of plan " + e.getKey());
+                        "GregGuns chest holds an unfilled order at " + w[0]
+                            + ","
+                            + w[1]
+                            + ","
+                            + w[2]
+                            + " of plan "
+                            + e.getKey());
                     snap1.put(e.getKey(), snapshot(world, p, anchorY, layout));
                 }
                 out.check(placed > 0, "a plan was placed; rejections were " + reasons);
@@ -319,7 +336,12 @@ public final class GeneratorScenarios {
             return sb.toString();
         }
 
-/** The scenario that last claimed the chunk of a snapshot cell ("x,y,z=id:meta"). */        private static String toucherOf(String cell) {            String[] c = cell.split("=")[0].split(",");            return ScenarioRegions.lastToucherOfBlock(Integer.parseInt(c[0]), Integer.parseInt(c[2]));        }
+        /** The scenario that last claimed the chunk of a snapshot cell ("x,y,z=id:meta"). */
+        private static String toucherOf(String cell) {
+            String[] c = cell.split("=")[0].split(",");
+            return ScenarioRegions.lastToucherOfBlock(Integer.parseInt(c[0]), Integer.parseInt(c[2]));
+        }
+
         /** The first differing cell of the first differing plan, for the failure message. */
         private static String firstDiff(Map<String, String> a, Map<String, String> b) {
             for (Map.Entry<String, String> e : a.entrySet()) {
@@ -331,7 +353,14 @@ public final class GeneratorScenarios {
                     .split(";");
                 String[] y = other.split(";");
                 for (int i = 0; i < Math.min(x.length, y.length); i++) {
-                    if (!x[i].equals(y[i])) return " (plan " + e.getKey() + ": " + x[i] + " became " + y[i] + "; chunk last claimed by " + toucherOf(x[i]) + ")";
+                    if (!x[i].equals(y[i])) return " (plan " + e.getKey()
+                        + ": "
+                        + x[i]
+                        + " became "
+                        + y[i]
+                        + "; chunk last claimed by "
+                        + toucherOf(x[i])
+                        + ")";
                 }
             }
             return "";
@@ -385,7 +414,9 @@ public final class GeneratorScenarios {
             boolean expectStructures) {
             long[] before = counters();
             if (expectStructures) {
-                out.check(loadUntilStamped(world, "worldgen.dimension_gate") != null, label + ": structures were placed");
+                out.check(
+                    loadUntilStamped(world, "worldgen.dimension_gate") != null,
+                    label + ": structures were placed");
             } else {
                 int[] sq = freshSquare(world, "worldgen.dimension_gate");
                 if (sq == null) {

@@ -636,7 +636,8 @@ public final class PlacementHarness {
         try {
             prepare(world, plan, water, layout);
             Set<Integer> baseline = new java.util.HashSet<>();
-            AxisAlignedBB boxBb = AxisAlignedBB.getBoundingBox(plan.anchorX() - 8, 0, plan.anchorZ() - 8, plan.maxX() + 9, 256, plan.maxZ() + 9);
+            AxisAlignedBB boxBb = AxisAlignedBB
+                .getBoundingBox(plan.anchorX() - 8, 0, plan.anchorZ() - 8, plan.maxX() + 9, 256, plan.maxZ() + 9);
             for (Object o : world.getEntitiesWithinAABB(EntityItem.class, boxBb)) {
                 if (!((Entity) o).isDead) baseline.add(((Entity) o).getEntityId());
             }
