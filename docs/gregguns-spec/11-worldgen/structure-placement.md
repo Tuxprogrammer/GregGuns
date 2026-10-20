@@ -93,6 +93,8 @@
 - **Mark tags:** `chest.vanilla` (the layout places a vanilla chest; the generator fills it now), `chest.weapon` and `chest.reinforced` (the layout places the GregGuns chest block; the generator attaches a `LootPending`, filled on first access), `spawner*` and `flag` (hooks). Chest category is `weaponchest_t<ceiling>` or `reinforcedchest_t<ceiling>` (Q11), seeded by `StructurePlan.chestSeed(index)` where the index is the chest's place among the layout's chest marks.
 - **Deviation:** a window that sees only a sliver of a multi-window footprint decides from that sliver (after the coarse sample grid finds nothing it samples every column it has), so a slope visible only to other windows is not seen (PLAN-M8 Q3, accepted). Pool weights are equal per structure.
 
+- **RWG worlds do get structures (checked in the pack, 2026-10-20).** The pack's RWG world type goes through the normal `ChunkProviderServer.populate`, which calls `GameRegistry.generateWorld`, so `StructureGenerator` runs there. `worldgen.no_cascade` reported 0 populated chunks in the pack only because its far-away squares are repeatable and a reused test world had already saved them: loaded from disk, they are never populated again. `ScenarioRegions.allocate` now also skips squares whose chunks are saved on disk (`AnvilChunkLoader.chunkExists`). After a restart on a world that already ran the scenario it fails without that check and passes with it, stamping structures on fresh RWG terrain.
+
 ## Tests
 
 - GGS-11-07, 12, 15: unit tests of the config and the registration call.

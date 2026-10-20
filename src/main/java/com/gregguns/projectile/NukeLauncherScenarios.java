@@ -301,6 +301,17 @@ public final class NukeLauncherScenarios {
             if (!headless.passed()) {
                 return headless;
             }
+            if (!com.gregguns.explosion.PackExplosionProbe
+                .blocksSurvive(ctx.world(), ctx.originX(), ctx.originY(), ctx.originZ())) {
+                // The FX half stands on its own; the block half needs a pack that lets explosions break blocks.
+                ScenarioResult.Builder partial = ScenarioResult.builder(name());
+                for (String m : headless.messages()) {
+                    partial.note(m);
+                }
+                return partial
+                    .note("block-breaking half skipped: " + com.gregguns.explosion.PackExplosionProbe.SKIP_REASON)
+                    .build();
+            }
             return worldPart(ctx);
         }
 

@@ -156,7 +156,9 @@ public final class WorldScenarioContext implements ScenarioContext {
 
     @Override
     public <T extends Entity> T spawn(T entity) {
+        PackMobGuard.protect(entity);
         world.spawnEntityInWorld(entity);
+        PackMobGuard.afterJoin(entity);
         spawned.add(entity);
         return entity;
     }

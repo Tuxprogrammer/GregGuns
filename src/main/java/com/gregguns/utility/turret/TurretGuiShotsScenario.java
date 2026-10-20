@@ -142,8 +142,7 @@ final class TurretGuiShotsScenario implements Scenario {
                             zombie[0].setLocationAndAngles(ox + dx + 2.5, oy, oz - 7.5, 0.0F, 0.0F);
                             zombie[0].addPotionEffect(new PotionEffect(Potion.fireResistance.id, 4000));
                             zombie[0].addPotionEffect(new PotionEffect(Potion.resistance.id, 4000, 4));
-                            ctx.world()
-                                .spawnEntityInWorld(zombie[0]);
+                            ctx.spawn(zombie[0]);
                         }
                         if (i == 1) {
                             // A public turret of a stranger: Alice may open it but is not the owner.

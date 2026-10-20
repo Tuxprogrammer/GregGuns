@@ -21,13 +21,13 @@ import com.gregguns.armor.slots.ItemTacticalMask;
 /**
  * The one registration order of the armor module's items, derived from {@link ArmorCatalog}. Item ids follow
  * registration order in 1.7.10, and NEI's default sort and the creative tab follow the ids, so this is what a player
- * scrolls through: tier by tier (Steam to ZPM), and inside a tier first every armor set in catalog order (helmet,
- * chestplate, leggings, boots, contiguous), then the tier's accessories (special-slot gear and flight devices), then
- * the crafting parts of the armor.
+ * scrolls through in three blocks, each tier by tier (Steam to ZPM): every armor set in catalog order (helmet,
+ * chestplate, leggings, boots, contiguous); then the accessories (special-slot gear and flight devices); then the
+ * crafting parts of the armor.
  *
  * <p>
- * Accessories sit with their tier, not directly beside one set: a gas mask, goggles or a glider belong to no single
- * set, and a tier-by-tier walk keeps armor and everything worn with it at the same power level together. A new catalog
+ * Accessories get their own block, not a place beside one set: a gas mask, goggles or a glider belong to no single
+ * set. A new catalog
  * set slots itself in; a new accessory or part is one line in the lists below. FML remaps ids by registry name, so
  * reordering never breaks an existing world. Pure data, no Minecraft types, both sides.
  */
@@ -134,6 +134,7 @@ public final class ArmorItemOrder {
     /** @return every item the armor module registers, in registration order; the tier never decreases down the list */
     public static List<Slot> build() {
         List<Slot> all = new ArrayList<>();
+        // Block 1: every armor set, tier by tier.
         for (Tier tier : Tier.values()) {
             for (SetDef set : ArmorCatalog.ALL) {
                 if (set.tier() != tier) {
@@ -146,7 +147,12 @@ public final class ArmorItemOrder {
                     }
                 }
             }
+        }
+        // Block 2: accessories, then block 3: crafting parts, each tier by tier.
+        for (Tier tier : Tier.values()) {
             addExtras(all, ACCESSORIES, tier);
+        }
+        for (Tier tier : Tier.values()) {
             addExtras(all, PARTS, tier);
         }
         return Collections.unmodifiableList(all);

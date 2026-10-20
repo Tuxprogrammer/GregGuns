@@ -10,8 +10,9 @@ gregguns.test.list.header=Scenarios (%s):
 gregguns.test.list.entry=  %s - %s
 gregguns.test.result.pass=PASS %s
 gregguns.test.result.fail=FAIL %s
+gregguns.test.result.skip=SKIP %s
 gregguns.test.message=    %s
-gregguns.test.summary=[GregGuns] Scenarios: %s passed, %s failed
+gregguns.test.summary=[GregGuns] Scenarios: %s passed, %s failed%s
 
 # Creative tab (placeholder icon: vanilla arrow until the first GregGuns item exists)
 itemGroup.gregguns=GregGuns

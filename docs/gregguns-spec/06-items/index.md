@@ -21,6 +21,7 @@ Techguns topics with no integration point have no sheet here. Their behavior is 
 | [ammo.md](ammo.md) | GT recipe maps for ammo; GT's `round` and bullet prefixes |
 | [hazards-and-tooltips.md](hazards-and-tooltips.md) | dreamcraft hazards, tooltips and fuels; GT radiation for nuclear items |
 | [nei-visibility.md](nei-visibility.md) | NEI hiding and collapsing of ammo variants, spawn eggs and technical items |
+| [nei-order.md](nei-order.md) | The one NEI and creative-tab order of every GregGuns item and block, and how NEI applies it in existing worlds |
 | [thaumcraft-aspects.md](thaumcraft-aspects.md) | Aspects for items through GT's Thaumcraft bridge; mob aspects contract |
 
 ## Integration map

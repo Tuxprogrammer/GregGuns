@@ -23,8 +23,9 @@ import com.gregguns.item.part.PartCatalog;
  * The one registration order of the guns module's items, derived by sorting the definitions. Item ids follow
  * registration order in 1.7.10, and NEI's default sort and the creative tab follow the ids, so this order is what a
  * player scrolls through: tier by tier (Steam to ZPM), and inside a tier each gun, then its akimbo variant, then the
- * magazines it uses (empty, then full), then the loose ammo it uses; then the tier's melee tools, grenades and gun
- * components. A magazine or round shared by several guns appears once, at the first (lowest-tier, earliest) gun that
+ * magazines it uses (empty, then full), then the loose ammo it uses, then the tier's melee tools and grenades. After
+ * the last weapon tier come the gun parts and components, again tier by tier. A magazine or round shared by several
+ * guns appears once, at the first (lowest-tier, earliest) gun that
  * uses it. Ammo no gun uses lands at the end of its own tier's gun block.
  *
  * <p>
@@ -151,21 +152,29 @@ public final class GunsItemOrder {
             .add(new Slot("frag_grenade", Tier.MV, Kind.GRENADE, null));
         byTier.get(Tier.MV)
             .add(new Slot("flashbang", Tier.MV, Kind.GRENADE, null));
+        // Parts and components form their own block after every weapon tier, again tier by tier.
+        Map<Tier, List<Slot>> partsByTier = new EnumMap<>(Tier.class);
+        for (Tier tier : Tier.values()) {
+            partsByTier.put(tier, new ArrayList<Slot>());
+        }
         for (PartCatalog.Entry entry : PartCatalog.entries()) {
             if (entry.owner() == PartCatalog.Owner.PART_ITEMS) {
-                byTier.get(entry.tier())
+                partsByTier.get(entry.tier())
                     .add(new Slot(entry.name(), entry.tier(), Kind.PART, null));
             }
         }
         for (PartCatalog.Entry entry : PartCatalog.entries()) {
             if (entry.owner() == PartCatalog.Owner.COMPONENT_ITEMS) {
-                byTier.get(entry.tier())
+                partsByTier.get(entry.tier())
                     .add(new Slot(entry.name(), entry.tier(), Kind.COMPONENT, null));
             }
         }
         List<Slot> all = new ArrayList<>();
         for (Tier tier : Tier.values()) {
             all.addAll(byTier.get(tier));
+        }
+        for (Tier tier : Tier.values()) {
+            all.addAll(partsByTier.get(tier));
         }
         return Collections.unmodifiableList(all);
     }

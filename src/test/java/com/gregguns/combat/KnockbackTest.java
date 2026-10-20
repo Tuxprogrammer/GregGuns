@@ -47,4 +47,12 @@ class KnockbackTest {
         assertTrue(Knockback.needsAdjustment(0.0));
         assertTrue(Knockback.needsAdjustment(1.5));
     }
+
+    @Test
+    void neverReturnsNaNOrInfinity() {
+        assertEquals(0.4, Knockback.scale(Double.NaN, 0.4, 2.0), 1.0E-12);
+        assertEquals(0.0, Knockback.scale(Double.NaN, Double.NaN, 1.0), 1.0E-12);
+        assertEquals(0.0, Knockback.scale(0.0, Double.POSITIVE_INFINITY, 0.0), 1.0E-12);
+        assertEquals(0.4, Knockback.scale(0.0, 0.4, Double.NaN), 1.0E-12);
+    }
 }

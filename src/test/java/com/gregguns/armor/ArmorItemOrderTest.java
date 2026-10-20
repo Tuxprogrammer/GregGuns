@@ -20,10 +20,20 @@ class ArmorItemOrderTest {
 
     private final List<Slot> order = ArmorItemOrder.build();
 
+    private static int block(Slot slot) {
+        return slot.kind() == Kind.ARMOR_PIECE ? 0 : slot.kind() == Kind.PART ? 2 : 1;
+    }
+
     @Test
-    void tierNeverDecreasesDownTheList() {
+    void tierNeverDecreasesWithinABlock() {
         Tier previous = Tier.STEAM;
+        int block = 0;
         for (Slot slot : order) {
+            if (block(slot) != block) {
+                assertTrue(block(slot) > block, slot.name() + " is out of block order");
+                block = block(slot);
+                previous = Tier.STEAM;
+            }
             assertTrue(
                 slot.tier()
                     .ordinal() >= previous.ordinal(),
@@ -82,21 +92,6 @@ class ArmorItemOrderTest {
             }
             tier = slot.tier();
             last = index;
-        }
-    }
-
-    @Test
-    void armorThenAccessoriesThenPartsInsideATier() {
-        for (Tier tier : Tier.values()) {
-            int rank = 0;
-            for (Slot slot : order) {
-                if (slot.tier() != tier) {
-                    continue;
-                }
-                int r = slot.kind() == Kind.ARMOR_PIECE ? 0 : slot.kind() == Kind.PART ? 2 : 1;
-                assertTrue(r >= rank, slot.name() + " is out of group order in " + tier);
-                rank = r;
-            }
         }
     }
 
