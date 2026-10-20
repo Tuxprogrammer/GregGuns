@@ -23,6 +23,7 @@ import com.gregguns.gun.logic.ShotOffset;
 import com.gregguns.gun.sound.GunSoundPlayer;
 import com.gregguns.item.gun.ItemGun;
 import com.gregguns.projectile.Projectiles;
+import com.gregguns.utility.turret.TurretGuiModel;
 import com.gregguns.utility.turret.TurretHost;
 import com.gregguns.utility.turret.TurretLink;
 
@@ -293,6 +294,22 @@ public class TurretEntity extends EntityCreature
      * @return the plate's armor value for choosing a texture: the live value on the server, the value sent at spawn
      *         on a client (GGS-01-11 forbids a DataWatcher slot, so a plate changed later shows after a re-track)
      */
+    /**
+     * @return what the turret is aiming at, for the Turret screen: empty when idle, {@code @name} for a player, else
+     *         the entity's lang key; server side only (the target is not sent to clients)
+     */
+    public String targetForGui() {
+        EntityLivingBase t = target;
+        if (t == null || t.isDead) {
+            return "";
+        }
+        if (t instanceof net.minecraft.entity.player.EntityPlayer) {
+            return TurretGuiModel.PLAYER_PREFIX + t.getCommandSenderName();
+        }
+        String name = net.minecraft.entity.EntityList.getEntityString(t);
+        return name == null ? "" : "entity." + name + ".name";
+    }
+
     @Override
     public int displayArmorValue() {
         return worldObj.isRemote ? spawnArmor : getTotalArmorValue();
