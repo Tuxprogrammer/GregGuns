@@ -34,11 +34,8 @@ class StructureLayoutsS1Test {
     private final TestKeys.Blocks blocks = new TestKeys.Blocks();
     private final PaletteKeys keys = TestKeys.chiselAbsent(blocks);
     private final List<String> errors = new ArrayList<>();
-    private final LayoutRegistry registry = LayoutRegistry.load(
-        new LayoutRegistry.ClasspathSource(LayoutRegistry.ClasspathSource.STRUCTURES),
-        IDS,
-        keys,
-        errors::add);
+    private final LayoutRegistry registry = LayoutRegistry
+        .load(new LayoutRegistry.ClasspathSource(LayoutRegistry.ClasspathSource.STRUCTURES), IDS, keys, errors::add);
 
     /** Collects every write across windows, keyed by world position. */
     private static final class Cells implements WindowedSink.Target {
@@ -147,9 +144,15 @@ class StructureLayoutsS1Test {
         assertChests(layout("gas_station"), new int[][] { { 9, 1, 4 }, { 10, 1, 4 } });
     }
 
-    /** Every mark is a chest.vanilla (the generator takes the category from the structure ceiling) and sits on a chest. */
+    /**
+     * Every mark is a chest.vanilla (the generator takes the category from the structure ceiling) and sits on a chest.
+     */
     private void assertChests(Layout l, int[][] expected) {
-        assertEquals(expected.length, l.marks().size(), l.id());
+        assertEquals(
+            expected.length,
+            l.marks()
+                .size(),
+            l.id());
         for (Layout.Mark m : l.marks()) {
             assertEquals("chest.vanilla", m.tag, l.id());
             boolean listed = false;
@@ -186,7 +189,11 @@ class StructureLayoutsS1Test {
                     assertTrue(x >= 10 && x < 10 + fx && z >= 12 && z < 12 + fz, where + " write outside footprint");
                 }
                 // chest marks land on chests with a rotated facing
-                assertEquals(l.marks().size(), s.marks.size(), where);
+                assertEquals(
+                    l.marks()
+                        .size(),
+                    s.marks.size(),
+                    where);
                 for (Layout.Mark m : l.marks()) {
                     Object[] got = s.cells.get(wx(s.plan, m.x, m.z), wy(s.plan, m.y), wz(s.plan, m.x, m.z));
                     assertNotNull(got, where);
@@ -288,7 +295,9 @@ class StructureLayoutsS1Test {
                     }
                     assertTrue(ax != x || az != z, where + " attachment direction for meta " + meta);
                     Object[] wall = s.cells.get(ax, y, az);
-                    assertNotNull(wall, where + " " + c.key + " at " + lx + "," + ly + "," + lz + " has no wall behind");
+                    assertNotNull(
+                        wall,
+                        where + " " + c.key + " at " + lx + "," + ly + "," + lz + " has no wall behind");
                     assertNotSame(air, wall[0], where + " " + c.key + " hangs on air");
                     assertTrue(
                         !((Block) wall[0] == blocks.byName("minecraft:ladder")),
