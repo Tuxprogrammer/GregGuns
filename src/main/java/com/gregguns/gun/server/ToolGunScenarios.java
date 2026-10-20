@@ -16,6 +16,7 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.core.testing.SkipUnless;
 import com.gregguns.gun.def.ToolProbeDef;
 import com.gregguns.gun.logic.GunCatalog.AmmoIds;
 import com.gregguns.gun.logic.LoopStart;
@@ -46,11 +47,19 @@ public final class ToolGunScenarios {
      * @param registry where to add them
      */
     public static void registerAll(ScenarioRegistry registry) {
-        registry.register(new Melee());
-        registry.register(new Mining());
-        registry.register(new BreakDenied());
-        registry.register(new Swing());
-        registry.register(new Reload());
+        registry.register(guarded(new Melee()));
+        registry.register(guarded(new Mining()));
+        registry.register(guarded(new BreakDenied()));
+        registry.register(guarded(new Swing()));
+        registry.register(guarded(new Reload()));
+    }
+
+    /** The probe tool gun exists only in the dev workspace; in the pack these scenarios skip. */
+    private static Scenario guarded(Scenario s) {
+        return SkipUnless.of(
+            s,
+            () -> GunItems.get(ToolProbeDef.NAME) != null,
+            "needs the dev-only probe tool gun (" + ToolProbeDef.NAME + "), which the pack does not register");
     }
 
     private static ItemToolGun probe() {

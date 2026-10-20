@@ -63,7 +63,8 @@ public final class LauncherScenarios {
                 def.assembly()));
         registry.register(new RocketDirect());
         registry.register(new RocketWall(RocketWall.Kind.SPLASH));
-        registry.register(new RocketWall(RocketWall.Kind.BLOCKS));
+        registry.register(
+            com.gregguns.explosion.PackExplosionProbe.skipIfProtected(new RocketWall(RocketWall.Kind.BLOCKS)));
         registry.register(new RocketWall(RocketWall.Kind.SELF));
         registry.register(new RocketWall(RocketWall.Kind.NOSELF));
         registry.register(new RocketWall(RocketWall.Kind.CANCELLED));
@@ -84,7 +85,7 @@ public final class LauncherScenarios {
                 def.assembly()));
         registry.register(new GrenadeBounce());
         registry.register(new GrenadeDirect(false));
-        registry.register(new GrenadeDirect(true));
+        registry.register(com.gregguns.explosion.PackExplosionProbe.skipIfProtected(new GrenadeDirect(true)));
     }
 
     // ----- helpers -----------------------------------------------------------------------------------------------

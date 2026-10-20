@@ -51,7 +51,7 @@ public final class MvGrenadeScenarios {
      * @param registry the registry to add to
      */
     public static void registerAll(ScenarioRegistry registry) {
-        registry.register(new Frag());
+        registry.register(GrenadeScenarios.blockDamageOff(new Frag()));
         registry.register(new Flash());
         registry.register(new FlashNoBlocks());
         registry.register(new FlashbangVisual());

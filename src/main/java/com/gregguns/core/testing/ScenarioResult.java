@@ -12,6 +12,7 @@ public final class ScenarioResult {
 
     private final String scenario;
     private final boolean passed;
+    private final boolean skipped;
     private final List<String> messages;
     private final ScenarioPoller poller;
     private final int timeoutTicks;
@@ -22,8 +23,14 @@ public final class ScenarioResult {
 
     private ScenarioResult(String scenario, boolean passed, List<String> messages, ScenarioPoller poller,
         int timeoutTicks) {
+        this(scenario, passed, false, messages, poller, timeoutTicks);
+    }
+
+    private ScenarioResult(String scenario, boolean passed, boolean skipped, List<String> messages,
+        ScenarioPoller poller, int timeoutTicks) {
         this.scenario = scenario;
         this.passed = passed;
+        this.skipped = skipped;
         this.messages = Collections.unmodifiableList(new ArrayList<>(messages));
         this.poller = poller;
         this.timeoutTicks = timeoutTicks;
@@ -76,6 +83,18 @@ public final class ScenarioResult {
         return new ScenarioResult(scenario, true, Collections.<String>emptyList());
     }
 
+    /**
+     * A scenario that cannot apply in this environment, for example one that needs dev-only content the pack does not
+     * register. It neither passes nor fails: the summary counts it separately and a run with only skips is a success.
+     *
+     * @param scenario the scenario name
+     * @param reason   why it does not apply
+     * @return a skipped result with one message
+     */
+    public static ScenarioResult skip(String scenario, String reason) {
+        return new ScenarioResult(scenario, false, true, Collections.singletonList(reason), null, 0);
+    }
+
     /** @return {@code true} if this is not a final result: poll {@link #poller()} each tick */
     public boolean isPending() {
         return poller != null;
@@ -94,6 +113,11 @@ public final class ScenarioResult {
     /** @return the scenario name */
     public String scenario() {
         return scenario;
+    }
+
+    /** @return {@code true} when the scenario did not apply here (see {@link #skip}); never also passed */
+    public boolean skipped() {
+        return skipped;
     }
 
     /** @return {@code true} when every check passed */

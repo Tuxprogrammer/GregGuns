@@ -261,6 +261,25 @@ class ScenarioFrameworkTest {
     }
 
     @Test
+    void skippedScenariosAreCountedSeparatelyAndDoNotFailTheRun() {
+        ScenarioRunner runner = new ScenarioRunner(s -> new StubContext());
+        Scenario missing = SkipUnless.of(failing("dev.only"), () -> false, "needs dev content");
+        Scenario present = SkipUnless.of(passing("dev.here"), () -> true, "unused");
+        ScenarioSummary summary = runner.run(Arrays.asList(passing("a"), missing, present));
+        assertEquals(2, summary.passed());
+        assertEquals(0, summary.failed());
+        assertEquals(1, summary.skipped());
+        assertTrue(summary.allPassed());
+        assertEquals("[GregGuns] Scenarios: 2 passed, 0 failed, 1 skipped", summary.summaryLine());
+        assertTrue(
+            summary.reportLines()
+                .contains("[GregGuns] SKIP dev.only"));
+        assertTrue(
+            summary.reportLines()
+                .contains("[GregGuns]   needs dev content"));
+    }
+
+    @Test
     void emptyRunPassesWithZeroCounts() {
         ScenarioSummary summary = new ScenarioRunner(s -> new StubContext()).run(new ArrayList<Scenario>());
         assertTrue(summary.allPassed());

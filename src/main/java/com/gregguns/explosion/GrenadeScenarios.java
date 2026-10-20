@@ -56,9 +56,9 @@ public final class GrenadeScenarios {
      * @param registry the registry to add to
      */
     public static void registerAll(ScenarioRegistry registry) {
-        registry.register(new Fuse());
+        registry.register(blockDamageOff(new Fuse()));
         registry.register(new Bounce());
-        registry.register(new Protected());
+        registry.register(PackExplosionProbe.skipIfProtected(new Protected()));
         registry.register(new Visual());
     }
 
@@ -114,6 +114,70 @@ public final class GrenadeScenarios {
         g.motionY = 0.0;
         g.motionZ = 0.0;
         return ctx.spawn(g);
+    }
+
+    /**
+     * Runs a scenario that expects the shipped default (explosions leave blocks alone) with
+     * {@code explosions.blockDamage} forced off, whatever the config under test says, and restores it when the
+     * scenario is done.
+     *
+     * @param inner the scenario to guard
+     * @return the same scenario with the switch off while it runs
+     */
+    static Scenario blockDamageOff(Scenario inner) {
+        return new Scenario() {
+
+            @Override
+            public String name() {
+                return inner.name();
+            }
+
+            @Override
+            public String description() {
+                return inner.description();
+            }
+
+            @Override
+            public boolean includedInAll() {
+                return inner.includedInAll();
+            }
+
+            @Override
+            public int areaRadius() {
+                return inner.areaRadius();
+            }
+
+            @Override
+            public ScenarioResult run(ScenarioContext ctx) {
+                boolean saved = ExplosionsConfig.blockDamage;
+                ExplosionsConfig.blockDamage = false;
+                ScenarioResult result;
+                try {
+                    result = inner.run(ctx);
+                } catch (RuntimeException | Error e) {
+                    ExplosionsConfig.blockDamage = saved;
+                    throw e;
+                }
+                if (!result.isPending()) {
+                    ExplosionsConfig.blockDamage = saved;
+                    return result;
+                }
+                return ScenarioResult.pending(result.scenario(), result.timeoutTicks(), ticks -> {
+                    ScenarioResult answer;
+                    try {
+                        answer = result.poller()
+                            .poll(ticks);
+                    } catch (RuntimeException | Error e) {
+                        ExplosionsConfig.blockDamage = saved;
+                        throw e;
+                    }
+                    if (answer != null || ticks >= result.timeoutTicks()) {
+                        ExplosionsConfig.blockDamage = saved;
+                    }
+                    return answer;
+                });
+            }
+        };
     }
 
     /** The grenade explodes when its fuse runs out, and damage falls off with distance. */

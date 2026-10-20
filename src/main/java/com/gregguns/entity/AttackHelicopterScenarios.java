@@ -234,7 +234,12 @@ final class AttackHelicopterScenarios {
                 out.check(
                     low[0] > ctx.originY() + HelicopterRules.MIN_ALTITUDE - 2,
                     "it should hold altitude, lowest was " + (low[0] - ctx.originY()) + " above the origin");
-                out.check(heli.getHealth() == 100.0F, "no fall damage, health was " + heli.getHealth());
+                // Full health, not a literal 100: EnderZoo rescales a joining hostile's max health by the difficulty
+                // (0.9 on
+                // easy, which these scenarios set) and heals it to the new maximum.
+                out.check(
+                    heli.getHealth() == heli.getMaxHealth(),
+                    "no fall damage, health was " + heli.getHealth() + " of " + heli.getMaxHealth());
                 out.check(travelled[0] > 0.5, "it should fly toward its waypoints, moved " + travelled[0]);
                 out.check(heli.attackCounter() == 0, "with no target the attack counter stays 0");
                 ctx.despawn(heli);
