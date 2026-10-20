@@ -70,18 +70,49 @@ public final class WorldBlockRegistration {
     }
 
     /**
-     * Config-dependent registration: items, blocks, entities and tile entities.
+     * Registers the four blocks (in {@code UtilityItemOrder} order, via {@link #registerOne}) and their tile
+     * entities. Kept for callers that do not care about the creative and NEI order.
      *
      * @param registrar the utility module's registrar
      */
     public static void preInit(ModuleRegistrar registrar) {
-        reinforcedChest = registrar.registerBlock(REINFORCED_CHEST, new BlockGregChest(false));
-        weaponChest = registrar.registerBlock(WEAPON_CHEST, new BlockGregChest(true));
-        bioBlob = registrar.registerBlock(BIO_BLOB, new BlockBioBlob());
-        campFlag = registrar.registerBlock(CAMP_FLAG, new BlockCampFlag());
-        reinforcedChest.setBlockTextureName(PARTICLE_CHEST);
-        weaponChest.setBlockTextureName(PARTICLE_CHEST);
-        campFlag.setBlockTextureName(PARTICLE_FLAG);
+        registerOne(registrar, REINFORCED_CHEST);
+        registerOne(registrar, WEAPON_CHEST);
+        registerOne(registrar, CAMP_FLAG);
+        registerOne(registrar, BIO_BLOB);
+        registerTileEntities(registrar);
+    }
+
+    /**
+     * Registers one world block by registry name, so the caller picks the registration order.
+     *
+     * @param registrar the utility module's registrar
+     * @param name      one of the four block names above
+     */
+    public static void registerOne(ModuleRegistrar registrar, String name) {
+        switch (name) {
+            case REINFORCED_CHEST:
+                reinforcedChest = registrar.registerBlock(name, new BlockGregChest(false));
+                reinforcedChest.setBlockTextureName(PARTICLE_CHEST);
+                break;
+            case WEAPON_CHEST:
+                weaponChest = registrar.registerBlock(name, new BlockGregChest(true));
+                weaponChest.setBlockTextureName(PARTICLE_CHEST);
+                break;
+            case CAMP_FLAG:
+                campFlag = registrar.registerBlock(name, new BlockCampFlag());
+                campFlag.setBlockTextureName(PARTICLE_FLAG);
+                break;
+            case BIO_BLOB:
+                bioBlob = registrar.registerBlock(name, new BlockBioBlob());
+                break;
+            default:
+                throw new IllegalArgumentException("not a world block: " + name);
+        }
+    }
+
+    /** Registers the tile entities of the four blocks; independent of the block order. */
+    public static void registerTileEntities(ModuleRegistrar registrar) {
         registrar.registerTileEntity("chest", TileGregChest.class);
         registrar.registerTileEntity(BIO_BLOB, TileBioBlob.class);
         registrar.registerTileEntity(CAMP_FLAG, TileCampFlag.class);

@@ -41,25 +41,59 @@ public final class EquipmentItems {
     private EquipmentItems() {}
 
     /**
-     * Registers every item. Call once from {@code ArmorModule.preInit}.
+     * Registers every item in declaration order. The armor module registers through {@code ArmorItemRegistry}
+     * instead, which picks the order.
      *
      * @param registrar the armor module's registrar
      */
     public static void register(ModuleRegistrar registrar) {
+        prepare();
+        registerOne(registrar, ItemNightVisionGoggles.NAME);
+        registerOne(registrar, ItemAmmoPouch.NAME);
+        registerOne(registrar, ItemGasMask.NAME);
+        registerOne(registrar, ItemTacticalMask.NAME);
+        registerOne(registrar, OXYGEN_MASK);
+        registerOne(registrar, OXYGEN_TANKS);
+    }
+
+    /** Baubles setup that must run once before any equipment item is registered. */
+    public static void prepare() {
         BaublesCompat.warnIfAbsent();
         BaublesCompat.requestSlots();
-        goggles = registrar.registerItem(ItemNightVisionGoggles.NAME, new ItemNightVisionGoggles());
-        pouch = registrar.registerItem(ItemAmmoPouch.NAME, new ItemAmmoPouch());
-        gasMask = registrar.registerItem(ItemGasMask.NAME, new ItemGasMask());
-        tacticalMask = registrar.registerItem(ItemTacticalMask.NAME, new ItemTacticalMask());
-        if (Loader.isModLoaded(GC_MODID)) {
-            // The GC subclasses are only linked on this branch (GGS-05-23).
-            Item[] gc = GcOxygen.register(registrar, OXYGEN_MASK, OXYGEN_TANKS);
-            oxygenMask = gc[0];
-            oxygenTanks = gc[1];
-        } else {
-            oxygenMask = registrar.registerItem(OXYGEN_MASK, new FallbackOxygenMask());
-            oxygenTanks = registrar.registerItem(OXYGEN_TANKS, new FallbackOxygenTanks());
+    }
+
+    /**
+     * Registers one equipment item by registry name. The oxygen items are Galacticraft subclasses when
+     * GalacticraftCore is loaded (GGS-05-23, only linked on that branch) and fallback items otherwise.
+     *
+     * @param registrar the armor module's registrar
+     * @param name      one of the equipment registry names
+     */
+    public static void registerOne(ModuleRegistrar registrar, String name) {
+        boolean gc = Loader.isModLoaded(GC_MODID);
+        switch (name) {
+            case ItemNightVisionGoggles.NAME:
+                goggles = registrar.registerItem(name, new ItemNightVisionGoggles());
+                break;
+            case ItemAmmoPouch.NAME:
+                pouch = registrar.registerItem(name, new ItemAmmoPouch());
+                break;
+            case ItemGasMask.NAME:
+                gasMask = registrar.registerItem(name, new ItemGasMask());
+                break;
+            case ItemTacticalMask.NAME:
+                tacticalMask = registrar.registerItem(name, new ItemTacticalMask());
+                break;
+            case OXYGEN_MASK:
+                oxygenMask = gc ? GcOxygen.registerMask(registrar, name)
+                    : registrar.registerItem(name, new FallbackOxygenMask());
+                break;
+            case OXYGEN_TANKS:
+                oxygenTanks = gc ? GcOxygen.registerTanks(registrar, name)
+                    : registrar.registerItem(name, new FallbackOxygenTanks());
+                break;
+            default:
+                throw new IllegalArgumentException("not an equipment item: " + name);
         }
     }
 
