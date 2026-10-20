@@ -60,6 +60,24 @@ public final class ComponentTable {
             this.amount = amount;
         }
 
+        /**
+         * @param material a GT {@code Materials} name, for example {@code "SolderingAlloy"}
+         * @param amount   millibuckets
+         * @return {@code Materials.X.getMolten(amount)}
+         */
+        public static FluidInput molten(String material, int amount) {
+            return new FluidInput(material, FluidKind.MOLTEN, amount);
+        }
+
+        /**
+         * @param material a GT {@code Materials} name, for example {@code "Lubricant"}
+         * @param amount   millibuckets
+         * @return {@code Materials.X.getFluid(amount)}
+         */
+        public static FluidInput fluid(String material, int amount) {
+            return new FluidInput(material, FluidKind.FLUID, amount);
+        }
+
         /** @return the GT {@code Materials} name */
         public String material() {
             return material;

@@ -28,8 +28,6 @@ import com.gregguns.recipe.ProductionTable.Row;
  * EV (Data) circuit, 2 titanium plates and 4 titanium screws; Assembler, EV, 30 s.
  */
 // Spec: docs/techguns-spec/02-guns/sheets-energy-special.md (Sonic Rifle); per-gun-behavior.md (Sonic Rifle)
-// Deviation: recipes.md adds 144 L of soldering alloy. ProductionTable rows carry no fluid input yet, so the row omits
-// it; the gate material and the circuit are unchanged.
 // Deviation: the AI attack time variance (13 ticks) is dropped, as for the other guns.
 public final class SonicRifleDef {
 
@@ -81,7 +79,8 @@ public final class SonicRifleDef {
                 Input.itemList("BatteryHull_EV_Full", 1),
                 Input.gt("circuit", "Data", 1),
                 Input.gt("plate", "Titanium", 2),
-                Input.gt("screw", "Titanium", 4)))
+                Input.gt("screw", "Titanium", 4))
+                .molten("SolderingAlloy", 144))
         .scenarios(registry -> EvEnergyScenarios.register(registry, NAME))
         .build();
 
