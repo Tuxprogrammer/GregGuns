@@ -49,22 +49,40 @@ class StateNbtTest {
                 .toString());
         Decision big = out.get("BIG:-3:0");
         assertEquals(70, big.groundY());
-        assertEquals(new FlagPos(-100, 71, 5), big.flags().get(0));
-        assertEquals(new FlagPos(-90, 71, 9), big.flags().get(1));
-        assertEquals("water", out.get("SMALL:0:9").reason());
+        assertEquals(
+            new FlagPos(-100, 71, 5),
+            big.flags()
+                .get(0));
+        assertEquals(
+            new FlagPos(-90, 71, 9),
+            big.flags()
+                .get(1));
+        assertEquals(
+            "water",
+            out.get("SMALL:0:9")
+                .reason());
     }
 
     @Test
     void aRestoredLedgerIsNotMarkedChanged() {
         NBTTagCompound tag = new NBTTagCompound();
         StateNbt.write(sample(), tag);
-        assertEquals(0, StateNbt.read(tag).revision());
+        assertEquals(
+            0,
+            StateNbt.read(tag)
+                .revision());
     }
 
     @Test
     void emptyAndNullInputsGiveAnEmptyLedger() {
-        assertEquals(0, StateNbt.read(new NBTTagCompound()).size());
-        assertEquals(0, StateNbt.read(null).size());
+        assertEquals(
+            0,
+            StateNbt.read(new NBTTagCompound())
+                .size());
+        assertEquals(
+            0,
+            StateNbt.read(null)
+                .size());
     }
 
     @Test
@@ -79,7 +97,10 @@ class StateNbtTest {
 
         PlanLedger out = StateNbt.read(tag);
         assertEquals(3, out.size());
-        assertEquals(64, out.get("MEDIUM:1:2").groundY());
+        assertEquals(
+            64,
+            out.get("MEDIUM:1:2")
+                .groundY());
     }
 
     @Test
@@ -155,7 +176,10 @@ class StateNbtTest {
     void wrongTypedPlansTagIsIgnored() {
         NBTTagCompound tag = new NBTTagCompound();
         tag.setString(StateNbt.PLANS, "oops");
-        assertEquals(0, StateNbt.read(tag).size());
+        assertEquals(
+            0,
+            StateNbt.read(tag)
+                .size());
     }
 
     @Test
@@ -177,8 +201,17 @@ class StateNbtTest {
 
         StructureState b = new StructureState(StructureState.NAME);
         b.readFromNBT(tag);
-        assertEquals(65, b.get("SMALL:1:1").groundY());
-        assertEquals(66, b.decideOnce("SMALL:2:2", () -> Decision.placed(66)).groundY());
-        assertEquals(65, b.decideOnce("SMALL:1:1", () -> Decision.placed(1)).groundY());
+        assertEquals(
+            65,
+            b.get("SMALL:1:1")
+                .groundY());
+        assertEquals(
+            66,
+            b.decideOnce("SMALL:2:2", () -> Decision.placed(66))
+                .groundY());
+        assertEquals(
+            65,
+            b.decideOnce("SMALL:1:1", () -> Decision.placed(1))
+                .groundY());
     }
 }

@@ -53,19 +53,25 @@ class PlanLedgerTest {
         ledger.decideOnce(PlanKey.of(SizeClass.MEDIUM, 1, 1), () -> Decision.placed(61));
         ledger.decideOnce(PlanKey.of(SizeClass.SMALL, 1, 2), () -> Decision.placed(62));
         assertEquals(3, ledger.size());
-        assertEquals(61, ledger.get(PlanKey.of(SizeClass.MEDIUM, 1, 1)).groundY());
+        assertEquals(
+            61,
+            ledger.get(PlanKey.of(SizeClass.MEDIUM, 1, 1))
+                .groundY());
     }
 
     @Test
     void aThrowingDeciderRecordsNothingSoTheNextWindowCanTry() {
         PlanLedger ledger = new PlanLedger();
         String key = PlanKey.of(SizeClass.SMALL, 0, 0);
-        assertThrows(IllegalArgumentException.class, () -> ledger.decideOnce(key, () -> {
-            throw new IllegalArgumentException("boom");
-        }));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> ledger.decideOnce(key, () -> { throw new IllegalArgumentException("boom"); }));
         assertNull(ledger.get(key));
         assertEquals(0, ledger.revision());
-        assertEquals(70, ledger.decideOnce(key, () -> Decision.placed(70)).groundY());
+        assertEquals(
+            70,
+            ledger.decideOnce(key, () -> Decision.placed(70))
+                .groundY());
     }
 
     @Test
@@ -110,8 +116,14 @@ class PlanLedgerTest {
 
     @Test
     void blankRejectionReasonBecomesUnknown() {
-        assertEquals("unknown", Decision.rejected("  ").reason());
-        assertEquals("unknown", Decision.rejected(null).reason());
+        assertEquals(
+            "unknown",
+            Decision.rejected("  ")
+                .reason());
+        assertEquals(
+            "unknown",
+            Decision.rejected(null)
+                .reason());
     }
 
     @Test

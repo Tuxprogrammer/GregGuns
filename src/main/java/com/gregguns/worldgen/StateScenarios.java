@@ -88,7 +88,11 @@ public final class StateScenarios {
                 out.check(p != null && p.isPlaced(), "the placed decision should survive");
                 if (p != null) {
                     out.checkEquals("ground Y", 67, p.groundY());
-                    out.checkEquals("flags", 1, p.flags().size());
+                    out.checkEquals(
+                        "flags",
+                        1,
+                        p.flags()
+                            .size());
                     out.check(
                         p.flags()
                             .contains(new FlagPos(10, 68, -20)),
@@ -98,7 +102,11 @@ public final class StateScenarios {
                 if (r != null) {
                     out.checkEquals("reason", "water", r.reason());
                 }
-                out.checkEquals("record count", 2, back.ledger().size());
+                out.checkEquals(
+                    "record count",
+                    2,
+                    back.ledger()
+                        .size());
 
                 // The record, not a new measurement, decides after a reload.
                 Decision again = back.decideOnce(placed, () -> {
