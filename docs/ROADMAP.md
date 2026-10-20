@@ -245,7 +245,7 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 - [x] Spawning is config-gated, respects dimension and biome rules, and stays within caps (NPC-14, NPC-15, NPC-17). Evidence: `SpawnCoreTest`, `NpcCapTest`, `npc.spawn_config_gate`, `npc.spawn_dimension_gate`, `npc.cap_enforced` ([M7 exit gate](gregguns-spec/10-entities-npcs/m7-exit-gate.md#1-spawning-is-config-gated-respects-dimension-and-biome-rules-and-stays-within-caps)).
 - [x] NPC difficulty scaling is applied once (GUN-06). Evidence: `NpcFiringTest.doesNotReproduceGUN06_accuracyFactorIsAppliedOnce` and the mob stat tests ([M7 exit gate](gregguns-spec/10-entities-npcs/m7-exit-gate.md#2-npc-difficulty-scaling-is-applied-once-gun-06)).
 - [x] Mobs despawn correctly (NPC-28). Evidence: `NpcCapTest.doesNotReproduceNpc28_*`, `npc.persistence_hook`, `npc.bosses_persist` ([M7 exit gate](gregguns-spec/10-entities-npcs/m7-exit-gate.md#3-mobs-despawn-correctly-npc-28)).
-- [ ] A soak test with spawning enabled shows no TPS regression in the dev pack. No soak has been run, and Outcast and Stormtrooper have no entity class yet ([M7 exit gate](gregguns-spec/10-entities-npcs/m7-exit-gate.md#4-a-soak-test-with-spawning-enabled-shows-no-tps-regression)).
+- [x] A soak test with spawning enabled shows no TPS regression in the dev pack. `npc.soak`, with 100 NPCs: load mean 2.78 ms, p95 4.45 ms ([M7 exit gate](gregguns-spec/10-entities-npcs/m7-exit-gate.md#4-a-soak-test-with-spawning-enabled-shows-no-tps-regression)).
 
 ## M8 · Worldgen and structures
 
