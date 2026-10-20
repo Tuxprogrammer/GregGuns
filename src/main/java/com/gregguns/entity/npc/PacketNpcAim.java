@@ -2,6 +2,7 @@ package com.gregguns.entity.npc;
 
 import java.io.IOException;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
@@ -37,6 +38,15 @@ public final class PacketNpcAim extends ClientboundPacket {
         this.aiming = aiming ? 1 : 0;
     }
 
+    /**
+     * @param helicopter the Attack Helicopter, which syncs its engaged flag the same way
+     * @param aiming     whether it is engaging a target
+     */
+    public PacketNpcAim(AttackHelicopter helicopter, boolean aiming) {
+        this.entityId = helicopter.getEntityId();
+        this.aiming = aiming ? 1 : 0;
+    }
+
     @Override
     public void encode(PacketBuffer buf) throws IOException {
         buf.writeInt(entityId);
@@ -52,11 +62,19 @@ public final class PacketNpcAim extends ClientboundPacket {
     @Override
     protected void validate(ClientRules rules, World world) {
         rules.inRange("aiming", aiming, 0, 1)
-            .targetOfType("npc", () -> WorldTargets.entity(world, entityId), NpcEntity.class);
+            .targetOfType("npc", () -> {
+                Entity e = WorldTargets.entity(world, entityId);
+                return e instanceof NpcEntity || e instanceof AttackHelicopter ? e : null;
+            }, Entity.class);
     }
 
     @Override
     protected void handle(World world, EntityPlayer localPlayer) {
-        ((NpcEntity) world.getEntityByID(entityId)).setAiming(aiming != 0); // safe: validated
+        Entity e = world.getEntityByID(entityId); // safe: validated
+        if (e instanceof AttackHelicopter) {
+            ((AttackHelicopter) e).setAiming(aiming != 0);
+        } else {
+            ((NpcEntity) e).setAiming(aiming != 0);
+        }
     }
 }
