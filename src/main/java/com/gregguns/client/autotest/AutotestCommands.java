@@ -104,6 +104,11 @@ final class AutotestCommands {
                 boolean opened = GuiCraftingRecipe.openRecipeGui("item", new ItemStack(item));
                 ClientAutotest.logLine("gui nei " + args[1] + " opened=" + opened);
             }
+            case "neisearch" -> {
+                // Types into NEI's item-panel search field, like a player would; the inventory GUI must be open.
+                codechicken.nei.LayoutManager.searchField.setText(args[1]);
+                ClientAutotest.logLine("gui neisearch '" + args[1] + "'");
+            }
             default -> ClientAutotest.logLine("unknown gui " + args[0]);
         }
     }

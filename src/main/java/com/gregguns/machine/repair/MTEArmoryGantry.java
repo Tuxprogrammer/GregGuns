@@ -371,7 +371,7 @@ public final class MTEArmoryGantry extends MTEExtendedPowerMultiBlockBase<MTEArm
             .addAir(lang("structure.air"))
             .addStructureInfo(lang("structure.footer"))
             .addSubChannel(GTStructureChannels.STRUCTURE_LENGTH)
-            .toolTipFinisher();
+            .toolTipFinisher(com.gregguns.core.text.AddedBy.NAME);
         return tt;
     }
 

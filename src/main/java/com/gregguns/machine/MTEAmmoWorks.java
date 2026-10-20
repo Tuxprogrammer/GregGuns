@@ -321,7 +321,7 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
             .addSubChannel(GTStructureChannels.STRUCTURE_LENGTH)
             .addSubChannel(GTStructureChannels.ITEM_PIPE_CASING)
             .addSubChannel(GTStructureChannels.BOROGLASS)
-            .toolTipFinisher();
+            .toolTipFinisher(com.gregguns.core.text.AddedBy.NAME);
         return tt;
     }
 
