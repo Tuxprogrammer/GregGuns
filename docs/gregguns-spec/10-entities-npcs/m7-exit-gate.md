@@ -11,7 +11,7 @@ The audit follows [the M2 audit](../02-guns/m2-exit-gate.md) and [the M5 audit](
 | 1. Spawning is config-gated, respects dimension and biome rules, and stays within caps (NPC-14, NPC-15, NPC-17) | Met headless |
 | 2. NPC difficulty scaling is applied once (GUN-06) | Met headless |
 | 3. Mobs despawn correctly (NPC-28) | Met headless |
-| 4. A soak test with spawning enabled shows no TPS regression in the dev pack | Not met: no soak has been run |
+| 4. A soak test with spawning enabled shows no TPS regression in the dev pack | Scenario `npc.soak` built; evidence pending the box run |
 
 `modules.npcs` therefore stays `false` ([config.md](../../config.md)).
 
@@ -52,9 +52,11 @@ Commits: `c07cb586`, `1b2998b3`, `85f7ba3a`. Verdict: met headless.
 
 ## 4. A soak test with spawning enabled shows no TPS regression
 
-None. No scenario or script measures tick time with natural spawning on, and the ROADMAP box is explicit about the dev pack. Per-tick spawn cost is bounded by design (`NpcCap` counts loaded entities only; the handler is a `CheckSpawn` gate), but that is reasoning, not a measurement. The check is a long `runServer` or dev-pack session with `modules.npcs=true`, reading TPS before and after, together with GGS-10-25 (NPCs count toward the monster cap after a long soak).
+The opt-in scenario `npc.soak` (run `gregguns test npc.soak` with `modules.npcs` on; it is not part of `test all`) measures this. It samples `MinecraftServer.tickTimeArray` for 200 ticks with a fake player and no NPCs, then spawns 100 mixed NPCs (zombies, skeleton, army, commando, bandit, alien bug, super mutants; no bosses) around the player and samples 2400 ticks while they target, shoot and fight, with natural spawning left as configured. It passes when the load mean is under 50 ms (20 TPS) and rises less than 10 ms over the baseline (`-Dgregguns.soak.regressionMs` overrides the margin), logs mean, p95, max and the live NPC count every 200 ticks, cancels drops and removes everything it made with `World.removeEntity`. Per-tick spawn cost is also bounded by design (`NpcCap` counts loaded entities only; the handler is a `CheckSpawn` gate). GGS-10-25 (NPCs count toward the monster cap after a long soak) is still a manual check.
 
-Verdict: not met.
+Evidence pending the box run. Numbers to fill in: baseline mean, load mean, p95, max, peak NPCs alive.
+
+Verdict: pending the box run.
 
 ## Registered mobs and the all-eggs check
 
