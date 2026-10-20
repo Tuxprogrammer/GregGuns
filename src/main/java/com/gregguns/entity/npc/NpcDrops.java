@@ -2,6 +2,7 @@ package com.gregguns.entity.npc;
 
 import java.util.Random;
 
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.item.ItemStack;
 
 import com.gregguns.entity.npc.loot.LootDrop;
@@ -31,7 +32,7 @@ public final class NpcDrops {
      * @param profile its profile
      * @param looting looting level of the kill
      */
-    public static void dropFewItems(NpcEntity npc, NpcProfile profile, int looting) {
+    public static void dropFewItems(EntityLiving npc, NpcProfile profile, int looting) {
         Random rand = npc.getRNG();
         for (LootDrop fixed : profile.fixedDrops()) {
             drop(npc, NpcItems.stack(fixed, rand));
@@ -55,14 +56,14 @@ public final class NpcDrops {
      * @param npc     the dying NPC
      * @param profile its profile
      */
-    public static void dropRareDrop(NpcEntity npc, NpcProfile profile) {
+    public static void dropRareDrop(EntityLiving npc, NpcProfile profile) {
         ItemStack held = npc.getHeldItem();
         if (profile.rareDrop() && held != null) {
             drop(npc, new ItemStack(held.getItem(), 1));
         }
     }
 
-    private static void drop(NpcEntity npc, ItemStack stack) {
+    private static void drop(EntityLiving npc, ItemStack stack) {
         if (stack != null && stack.stackSize > 0) {
             npc.entityDropItem(stack, 0.0F);
         }

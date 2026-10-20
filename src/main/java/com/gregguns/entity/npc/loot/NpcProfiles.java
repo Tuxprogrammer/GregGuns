@@ -11,7 +11,8 @@ import com.gregguns.api.Tier;
 /**
  * The loot and equipment data of every M7 mob that can be built before the M5 energy guns: Zombie Farmer, Miner and
  * Soldier, Skeleton Soldier, Bandit, Army Soldier, Commando, Zombie Pigman Soldier, Psycho Steve, Dictator Dave and the
- * three Super Mutants. Outcast, Stormtrooper and Cyberdemon wait for their guns (PLAN-M7 section 5, answer 5). Keys
+ * three Super Mutants and the Cyberdemon (Nether Blaster only, no armor). Outcast and Stormtrooper wait for their guns
+ * (PLAN-M7 section 5, answer 5). Keys
  * are the registry names without the mod id.
  *
  * <p>
@@ -275,6 +276,17 @@ public final class NpcProfiles {
                         .armor(3, 100, 0, "t1_combat")
                         .build())
                 .build());
+        // Attack Helicopter: fixed drops only (per-mob.md section 16), no gear. Ranges are the spec's 16 + nextInt(16)
+        // rifle bullets, 8 + nextInt(8) rockets, 2 + nextInt(2) cybernetic parts and 4 + nextInt(4) iron blocks.
+        add(
+            m,
+            NpcProfile.builder("AttackHelicopter", Tier.HV)
+                .fixed(LootDrop.range(G + "ammo_rifle_bullet", 16, 31))
+                .fixed(LootDrop.range(G + "ammo_rocket", 8, 15))
+                .fixed(LootDrop.range(G + "part_cybernetic", 2, 3))
+                .fixed(LootDrop.range("minecraft:iron_block", 4, 7))
+                .rareDrop(false)
+                .build());
         for (String mutant : new String[] { "SuperMutantBasic", "SuperMutantHeavy", "SuperMutantElite" }) {
             add(
                 m,
@@ -290,10 +302,36 @@ public final class NpcProfiles {
                             .weapon("rocket_launcher", 1)
                             .weapon("ak47", 1)
                             .weapon("combat_shotgun", 1)
-                            .weapon("laser_gun", 2)
+                            .weapon("laser_rifle", 2)
                             .build())
                     .build());
         }
+        add(
+            m,
+            NpcProfile.builder("CyberDemon", Tier.LUV)
+                .table(
+                    LootTable.builder()
+                        .slot(LootDrop.one("minecraft:ghast_tear"))
+                        .slots(LootDrop.one("minecraft:blaze_rod"), 4)
+                        .slots(CYBERNETIC, 15)
+                        .build())
+                .equipment(
+                    EquipmentProfile.builder()
+                        .weapon("nether_blaster", 1)
+                        .build())
+                .build());
+        // Alien Bug: no equipment; spider-like drops (string, spider eye), nothing else.
+        add(
+            m,
+            NpcProfile.builder("AlienBug", Tier.LV)
+                .table(
+                    LootTable.builder()
+                        .slot(LootDrop.range("minecraft:string", 1, 2))
+                        .slot(LootDrop.range("minecraft:string", 1, 2))
+                        .slot(LootDrop.one("minecraft:spider_eye"))
+                        .build())
+                .rareDrop(false)
+                .build());
         return Collections.unmodifiableMap(m);
     }
 
