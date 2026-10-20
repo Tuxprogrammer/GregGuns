@@ -103,7 +103,7 @@ public final class LootCategories {
             LootEntry line = SOURCE.get(c);
             int weight = line == null || top == null ? c.itemWeight
                 : LootDraw.weight(c.itemWeight, line.tier(), top, richness);
-            scaled[i] = new WeightedRandomChestContent(c.theItemId, c.minStackSize, c.maxStackSize, weight);
+            scaled[i] = new WeightedRandomChestContent(c.theItemId, c.theMinimumChanceToGenerateItem, c.theMaximumChanceToGenerateItem, weight);
         }
         int n = LootDraw.pickCount(info.getMin(), info.getMax(), richness, rand);
         WeightedRandomChestContent.generateChestContents(rand, scaled, inv, n);
