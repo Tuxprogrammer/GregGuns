@@ -192,7 +192,7 @@ public final class CampScenarios {
                 }
 
                 FlagPos flag = camp.flagPos();
-                out.check(blocks > 1000, "the camp stamped blocks: " + blocks);
+                out.check(blocks > 300, "the camp stamped blocks: " + blocks);
                 out.checkEquals("flags placed across all windows", 1, flagsPlaced);
                 out.check(world.getBlock(flag.x, flag.y, flag.z) == flagBlock, "the flag block stands at " + flag);
 

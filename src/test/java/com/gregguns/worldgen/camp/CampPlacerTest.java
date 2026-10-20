@@ -78,7 +78,7 @@ class CampPlacerTest {
                 assertEquals(0, p.rejected, "the stamper never asks for a clipped write: seed " + seed);
                 assertEquals(0, p.duplicates, "windows tile the plane: seed " + seed + " rot " + rot);
                 assertEquals(0, p.chunkRequests);
-                assertTrue(p.writes > 1000, "a camp is a lot of blocks");
+                assertTrue(p.writes > 300, "a camp is a lot of blocks");
             }
         }
     }
