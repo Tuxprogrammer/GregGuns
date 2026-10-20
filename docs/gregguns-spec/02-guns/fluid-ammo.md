@@ -55,7 +55,7 @@
 ### Bio and air tanks
 
 - **Source:** the GT materials are `Materials.Biomass` ([Materials.java#L353](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/Materials.java#L353)) and `Materials.Air` ([Materials.java#L417](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/Materials.java#L417)). Fluids are fetched with `getFluid(n)` or `getGas(n)`; GT does this for Air at [CentrifugeRecipes.java#L80](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/CentrifugeRecipes.java#L80).
-- **GregGuns does:** the Bio Gun's tank accepts `Materials.Biomass`; the Power Hammer's accepts `Materials.Air`. Both lists are config options. Neither is a "fuel" in GT's sense, so there is no value scaling.
+- **GregGuns does:** the Bio Gun's tank accepts BartWorks' E. coli culture fluid, which a GregGuns Bacterial Vat recipe makes from Biomass (RC-57b), with `Materials.Biomass` behind `bioGun.acceptBiomass` and as the fallback when BartWorks is absent; the Power Hammer's accepts `Materials.Air`. Neither is a "fuel" in GT's sense, so there is no value scaling.
 - **Pack-side change:** none.
 
 ## Requirements
@@ -64,7 +64,7 @@
 - **GGS-02-30.** A GT Fluid Canner with no GregGuns recipe can fill an empty tank and empty a filled tank.
 - **GGS-02-31.** The Flamethrower and Chainsaw tanks accept a fluid exactly when `FuelBackend.findFuel` finds it in one of the configured fuel maps.
 - **GGS-02-32.** Rounds per tank scale with the fluid's `mSpecialValue` against a configured reference. A fluid with no fuel entry is rejected, not treated as a default fuel.
-- **GGS-02-33.** The Bio Gun's tank accepts only `Materials.Biomass`. The Power Hammer's accepts only `Materials.Air`.
+- **GGS-02-33.** The Bio Gun's tank accepts the E. coli culture fluid, and `Materials.Biomass` only when `bioGun.acceptBiomass` is on or the culture fluid cannot be resolved. The Power Hammer's accepts only `Materials.Air`.
 - **GGS-02-34.** GregGuns registers no fluid of its own for ammo. Techguns' `fuel`, acid and oil fluids are not recreated.
 
 ## Tests

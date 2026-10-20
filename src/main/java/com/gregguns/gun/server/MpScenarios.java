@@ -35,11 +35,16 @@ import com.gregguns.item.gun.ItemGun;
 import com.gregguns.item.gun.PlayerAmmoStore;
 import com.gregguns.machine.GregGunsMTEIDs;
 import com.gregguns.machine.MTEAmmoPress;
+import com.gregguns.machine.MTEAmmoPressSteam;
 import com.gregguns.projectile.GenericProjectile;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import gregtech.api.GregTechAPI;
+import gregtech.api.enums.Materials;
+import gregtech.api.enums.OrePrefixes;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.util.GTOreDictUnificator;
 
 /**
  * Dev-only multiplayer scenarios that need real clients connected to the server (they report a failure on a console
@@ -77,9 +82,11 @@ public final class MpScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Sync());
         registry.register(new Visual());
-        registry.register(new Give());
-        registry.register(new GrantLocal());
+        registry.register(new SteamPress());
         registry.register(new NeiAddedBy());
+        registry.register(new Give());
+        registry.register(new MteItems());
+        registry.register(new GrantLocal());
     }
 
     @SuppressWarnings("unchecked")
@@ -525,6 +532,87 @@ public final class MpScenarios {
         }
     }
 
+    // ----- mp.steam_press -----------------------------------------------------------------------------------
+
+    /** Opens the Steam Ammo Press GUI mid-craft and signals a screenshot (needs 1 client). */
+    private static final class SteamPress implements Scenario {
+
+        @Override
+        public boolean includedInAll() {
+            return false; // needs a connected client
+        }
+
+        @Override
+        public String name() {
+            return "mp.steam_press";
+        }
+
+        @Override
+        public String description() {
+            return "Places a Steam Ammo Press running an LV recipe on steam, opens its GUI and signals a screenshot. Needs 1 client.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            List<EntityPlayerMP> players = players();
+            if (players.isEmpty()) {
+                return ScenarioResult.fail(name(), "needs a connected player");
+            }
+            EntityPlayerMP a = players.get(0);
+            double ox = ctx.originX() + 0.5;
+            double oy = ctx.originY();
+            double oz = ctx.originZ() + 0.5;
+            ctx.clearArea(6, 3);
+            prepare(a, ox, oy, oz, -90.0f, 0.0f);
+            Object prototype = GregTechAPI.METATILEENTITIES[GregGunsMTEIDs.AMMO_PRESS_STEAM];
+            if (!(prototype instanceof MTEAmmoPressSteam)) {
+                return ScenarioResult.fail(name(), "the Steam Ammo Press is not registered");
+            }
+            MTEAmmoPressSteam proto = (MTEAmmoPressSteam) prototype;
+            ctx.setBlock(3, 0, 0, GregTechAPI.sBlockMachines, proto.getTileEntityBaseType());
+            Object tile = ctx.world()
+                .getTileEntity(ctx.originX() + 3, ctx.originY(), ctx.originZ());
+            if (!(tile instanceof IGregTechTileEntity)) {
+                return ScenarioResult.fail(name(), "could not place the Steam Ammo Press");
+            }
+            IGregTechTileEntity base = (IGregTechTileEntity) tile;
+            base.setInitialValuesAsNBT(null, (short) GregGunsMTEIDs.AMMO_PRESS_STEAM);
+            MTEAmmoPressSteam press = (MTEAmmoPressSteam) base.getMetaTileEntity();
+            // RC-28 (an LV recipe, not steam-tagged): 16 foil, 16 lead rounds, 2 gunpowder.
+            ItemStack[] inputs = { GTOreDictUnificator.get(OrePrefixes.foil, Materials.Brass, 16),
+                GTOreDictUnificator.get(OrePrefixes.round, Materials.Lead, 16),
+                GTOreDictUnificator.get(OrePrefixes.dust, Materials.Gunpowder, 2) };
+            for (int i = 0; i < inputs.length; i++) {
+                base.setInventorySlotContents(press.getInputSlot() + i, inputs[i]);
+            }
+            base.increaseStoredSteam(10000, true);
+            String px = Integer.toString(ctx.originX() + 3);
+            String py = Integer.toString(ctx.originY());
+            String pz = Integer.toString(ctx.originZ());
+            return ScenarioResult.pending(name(), 600, t -> {
+                // Keep the gauge part full while the recipe (30 EU/t for 40 s) runs.
+                if (base.getStoredSteam() < 8000) {
+                    base.increaseStoredSteam(2000, true);
+                }
+                switch (t) {
+                    case 10 -> signal(a, "gui", "press", px, py, pz);
+                    case 400 -> signal(a, "shot", "steam-press-gui");
+                    case 410 -> signal(a, "close");
+                    // The scenario clears its blocks when it ends; close the server-side container first.
+                    case 415 -> a.closeContainer();
+                    default -> {}
+                }
+                if (t < 420) {
+                    return null;
+                }
+                return ScenarioResult.builder(name())
+                    .note(
+                        "GUI signalled to " + a.getCommandSenderName() + "; the press was running: " + base.isActive())
+                    .build();
+            });
+        }
+    }
+
     // ----- guns.inventory_grant ---------------------------------------------------------------------------
 
     /** Headless check of {@link InventoryGrant}: a fake player gets each stack and carries it the same tick. */
@@ -562,6 +650,80 @@ public final class MpScenarios {
             p.inventory.clearInventory(null, -1);
             out.note("granted " + items.size() + " stacks");
             return out.build();
+        }
+    }
+
+    // ----- mp.mte_items ---------------------------------------------------------------------------------------
+
+    /**
+     * Puts every GregGuns machine item in the hotbar and inventory (the Retort first, then the Reaction Chambers) and
+     * signals shots of the hotbar and the inventory screen: the client renders each GT machine item. This is the proof
+     * for the Retort item render crash (an unregistered or icon-less MTE throws in GT's item renderer).
+     */
+    private static final class MteItems implements Scenario {
+
+        @Override
+        public boolean includedInAll() {
+            return false; // needs a connected client
+        }
+
+        @Override
+        public String name() {
+            return "mp.mte_items";
+        }
+
+        @Override
+        public String description() {
+            return "Gives the first player every GregGuns machine item (Retort first) and signals hotbar and inventory shots.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            List<EntityPlayerMP> players = players();
+            if (players.isEmpty()) {
+                return ScenarioResult.fail(name(), "needs a connected player");
+            }
+            EntityPlayerMP a = players.get(0);
+            prepare(a, ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, -90.0f, 0.0f);
+            a.inventory.clearInventory(null, -1);
+            int[] first = { GregGunsMTEIDs.RETORT, GregGunsMTEIDs.REACTION_CHAMBER_EV,
+                GregGunsMTEIDs.REACTION_CHAMBER_IV };
+            int slot = 0;
+
+            for (int id : first) {
+                slot = give(a, id, slot);
+            }
+            for (int id : GregGunsMTEIDs.all()) {
+                if (id != first[0] && id != first[1] && id != first[2]) {
+                    slot = give(a, id, slot);
+                }
+            }
+            final int given = slot;
+            a.inventoryContainer.detectAndSendChanges();
+            return ScenarioResult.pending(name(), 200, t -> {
+                switch (t) {
+                    case 10 -> signal(a, "shot", "mte-hotbar");
+                    case 20 -> signal(a, "gui", "inventory");
+                    case 40 -> signal(a, "shot", "mte-inventory");
+                    case 45 -> signal(a, "close");
+                    default -> {}
+                }
+                if (t < 60) {
+                    return null;
+                }
+                return ScenarioResult.builder(name())
+                    .note("gave " + given + " machine items, Retort in slot 0")
+                    .build();
+            });
+        }
+
+        private static int give(EntityPlayerMP player, int id, int slot) {
+            IMetaTileEntity mte = GregTechAPI.METATILEENTITIES[id];
+            if (mte == null || slot >= player.inventory.mainInventory.length) {
+                return slot;
+            }
+            player.inventory.mainInventory[slot] = mte.getStackForm(1);
+            return slot + 1;
         }
     }
 

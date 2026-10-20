@@ -17,6 +17,7 @@ All evidence is pinned to GT5-Unofficial `5.09.54.205`, Backhand `1.8.16`, Battl
 | [damage-interop.md](damage-interop.md) | Damage sources, GT hazmat, other mods' armor, `LivingAttackEvent` listeners | GGS-02-17 to 23 |
 | [offhand-backhand.md](offhand-backhand.md) | Right-click fallback, offhand blacklist, Battlegear2, enchantments | GGS-02-24 to 28 |
 | [fluid-ammo.md](fluid-ammo.md) | Fuel, bio and air tanks on GT fluids and the Fluid Canner | GGS-02-29 to 34 |
+| [m1-exit-gate.md](m1-exit-gate.md) | The M1 exit-gate audit: evidence per box, deviations, polish items and owner decisions |
 
 ## Integration map
 
@@ -166,7 +167,7 @@ Nuclear Death Ray (`nuclear_death_ray`, GR-103), ZPM. An IC2 tier 7 electric ite
 
 ## Bio Gun, batch B3a (M5): deviations
 
-Bio Gun (`bio_gun`, GR-65, EV). Ammo is the Bio Tank (`tank_bio`, a Forge fluid container that takes GT Biomass), the same fluid-tank rules as the Flamethrower: a full tank is 30 rounds, a reload swaps a full tank in and hands an empty one back, and GT's Fluid Canner fills it (no GregGuns recipe).
+Bio Gun (`bio_gun`, GR-65, EV). Ammo is the Bio Tank (`tank_bio`, a Forge fluid container that takes BartWorks' E. coli culture fluid, made from Biomass in the Bacterial Vat; Biomass only behind `bioGun.acceptBiomass`), the same fluid-tank rules as the Flamethrower: a full tank is 30 rounds, a reload swaps a full tank in and hands an empty one back, and GT's Fluid Canner fills it (no GregGuns recipe).
 
 - **Charge (I10).** The left button fires one round at level 1 every 6 ticks; the right button charges for up to 30 ticks and fires on release at level 1 to 3 (`ChargeMath`: up to 0.45 is 1, up to 0.95 is 2, else 3), spending one round per level and never more than are loaded (fixes GUN-02). The release is broadcast to nearby players (GUN-31) and plays the normal fire sound; there is no reload-sound quirk on the right-click path (GUN-10).
 - **No charge sound.** The original plays none, so the definition does not call `charges()` and `guns.bio_gun.charge` does not exist.

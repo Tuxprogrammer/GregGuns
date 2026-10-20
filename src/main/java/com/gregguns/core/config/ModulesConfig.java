@@ -6,9 +6,10 @@ import com.gtnewhorizon.gtnhlib.config.Config;
  * Module switches, the {@code modules} category of {@code config/gregguns.cfg}. One flag per roadmap content area.
  *
  * <p>
- * Every flag defaults to {@code false} for now: the roadmap says a flag defaults to on once its milestone's exit gate
- * is met, and no content milestone is met yet. The pull request that completes a milestone flips that milestone's
- * default (here and in {@code docs/config.md}).
+ * A flag defaults to {@code true} once its milestone's exit gate is met, as the roadmap says. The gates for M2 to M6
+ * are met, so {@code guns}, {@code armor}, {@code machines}, {@code energyWeapons} and {@code utility} default to on.
+ * {@code npcs} (M7) and {@code worldgen} (M8) stay off until their gates are met. The pull request that completes a
+ * milestone flips that milestone's default (here and in {@code docs/config.md}).
  *
  * <p>
  * Fields only, no logic, and no Minecraft types, so the class loads in a plain unit test. Names must match
@@ -23,33 +24,31 @@ import com.gtnewhorizon.gtnhlib.config.Config;
 public class ModulesConfig {
 
     @Config.Comment({ "Combat core and ballistic arsenal: damage system, guns, projectiles and ammo (M1, M2).",
-        "Default: false until the M2 exit gate is met." })
+        "Default: true (M2 exit gate met)." })
     @Config.RequiresMcRestart
-    public static boolean guns = false;
+    public static boolean guns = true;
 
-    @Config.Comment({ "Armor, set bonuses and special slots (M3). Needs 'guns'.",
-        "Default: false until the M3 exit gate is met." })
+    @Config.Comment({ "Armor, set bonuses and special slots (M3). Needs 'guns'.", "Default: true (M3 exit gate met)." })
     @Config.RequiresMcRestart
-    public static boolean armor = false;
+    public static boolean armor = true;
 
     @Config.Comment({ "Production chain and GregTech machines (M4). Needs 'guns'.",
-        "Default: false until the M4 exit gate is met." })
+        "Default: true (M4 exit gate met)." })
     @Config.RequiresMcRestart
-    public static boolean machines = false;
+    public static boolean machines = true;
 
     @Config.Comment({ "Energy and exotic weapons (M5). Needs 'guns' and 'machines'.",
-        "Default: false until the M5 exit gate is met." })
+        "Default: true (M5 exit gate met)." })
     @Config.RequiresMcRestart
-    public static boolean energyWeapons = false;
+    public static boolean energyWeapons = true;
 
-    @Config.Comment({ "Utility and defense machines (M6). Needs 'machines'.",
-        "Default: false until the M6 exit gate is met." })
+    @Config.Comment({ "Utility and defense machines (M6). Needs 'machines'.", "Default: true (M6 exit gate met)." })
     @Config.RequiresMcRestart
-    public static boolean utility = false;
+    public static boolean utility = true;
 
-    @Config.Comment({ "NPCs and spawning (M7). Needs 'guns'.", "Default: false until the M7 exit gate is met." })
+    @Config.Comment({ "NPCs and spawning (M7). Needs 'guns'.", "Default: true (M7 exit gate met)." })
     @Config.RequiresMcRestart
-    public static boolean npcs = false;
+    public static boolean npcs = true;
 
     @Config.Comment({ "Worldgen and structures (M8). Needs 'npcs'.", "Default: false until the M8 exit gate is met." })
     @Config.RequiresMcRestart

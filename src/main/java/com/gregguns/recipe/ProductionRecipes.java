@@ -127,7 +127,7 @@ public final class ProductionRecipes {
         }
         builder.itemInputs(inputs.toArray(new ItemStack[0]))
             .itemOutputs(output)
-            .duration(row.seconds() * GTRecipeBuilder.SECONDS)
+            .duration(row.ticks())
             .eut(eutFor(row.tier()));
         if (!fluids.isEmpty()) {
             // Source:
