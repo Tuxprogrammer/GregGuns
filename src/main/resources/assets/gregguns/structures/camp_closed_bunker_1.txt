@@ -1,0 +1,51 @@
+# camp_closed_bunker_1
+# Closed bunker, smallest: 3 x 5 with a one-block entrance. The interior chests carry the reinforced and weapon marks; the camp host picks the MV (_t2) categories.
+gregguns-layout 1
+id: camp_closed_bunker_1
+size: 3 5 5
+ground: 2
+
+palette:
+C = concrete
+I = minecraft:iron_door#3@door
+L = lantern
+Y = minecraft:stone_slab#5
+a = air
+i = minecraft:iron_door#8
+k = minecraft:chest#3@facing
+u = minecraft:stone_brick_stairs#2@stairs
+
+marks:
+chest.weapon 1 1 1
+
+layers:
+layer 0
+CCC
+CCC
+CCC
+CCC
+CCC
+layer 1
+CCC
+CkC
+CaC
+CIC
+CuC
+layer 2
+CCC
+CaC
+CaC
+CiC
+CaC
+layer 3
+CCC
+CaC
+CLC
+CCC
+CaC
+layer 4
+CCC
+CYC
+CYC
+CCC
+LaL

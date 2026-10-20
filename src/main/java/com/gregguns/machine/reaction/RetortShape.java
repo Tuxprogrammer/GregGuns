@@ -8,8 +8,10 @@ package com.gregguns.machine.reaction;
  * Layers run top to bottom inside a piece; rows run front to back; characters run left to right. All of {@code B},
  * {@code S} and {@code C} are Reaction Casing: {@code B} (floor and low ring) takes the input, output, energy and
  * maintenance hatches, {@code C} (the cap) takes the Muffler, {@code S} (the shoulder) takes none. {@code G}
- * borosilicate glass, {@code F} steel frame, {@code ~} the controller, {@code -} must be air,
- * {@code .} anything.
+ * borosilicate glass, {@code F} steel frame, {@code P} steel pipe casing, {@code U} pump casing, {@code H} heating coil
+ * (any tier), {@code ~} the controller, {@code -} must be air, {@code .} anything. The plumbing inside is required: a
+ * pump on the floor at the center feeds a pipe column that rises through every bulb (a dip tube), two pipe runs join
+ * it to the four coils in the low ring's corners.
  */
 // Spec: docs/gregguns-spec/08-machines-production/multiblocks.md (Retort: Layers, Tier and parallel mechanic)
 public final class RetortShape {
@@ -26,9 +28,9 @@ public final class RetortShape {
         { ".....", ".GGG.", ".G-G.", ".GGG.", "....." }, { ".....", ".GGG.", ".G-G.", ".GGG.", "....." },
         { ".SSS.", "SSSSS", "SS-SS", "SSSSS", ".SSS." } };
     /** One bulb layer, repeated. */
-    public static final String[][] BULB = { { ".GGG.", "G---G", "G---G", "G---G", ".GGG." } };
+    public static final String[][] BULB = { { ".GGG.", "G---G", "G-P-G", "G---G", ".GGG." } };
     /** Low ring, floor with the controller, and the feet. */
-    public static final String[][] BASE = { { ".BBB.", "B---B", "B---B", "B---B", ".BBB." },
+    public static final String[][] BASE = { { ".BBB.", "BHPHB", "B-U-B", "BHPHB", ".BBB." },
         { ".B~B.", "BBBBB", "BBBBB", "BBBBB", ".BBB." }, { ".....", ".F.F.", ".....", ".F.F.", "....." } };
 
     /** Controller column in the base piece. */

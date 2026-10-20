@@ -1,0 +1,63 @@
+# camp_tank_farm_2
+# Fuel tank farm: 2 horizontal tank(s), 4 wide, running the full length along z, pitch 5. The lava core is sealed on every side by plating. No loot, no soldiers.
+gregguns-layout 1
+id: camp_tank_farm_2
+size: 9 6 7
+ground: 1
+
+palette:
+F = factory_floor
+H = hazard
+U = plating
+V = minecraft:lava
+f = minecraft:fence
+
+layers:
+layer 0
+FFFFFFFFF
+FFFFFFFFF
+FFFFFFFFF
+FFFFFFFFF
+FFFFFFFFF
+FFFFFFFFF
+FFFFFFFFF
+layer 1
+f..f.f..f
+.........
+.........
+.........
+.........
+.........
+f..f.f..f
+layer 2
+HHHH.HHHH
+UUUU.UUUU
+UUUU.UUUU
+UUUU.UUUU
+UUUU.UUUU
+UUUU.UUUU
+HHHH.HHHH
+layer 3
+HUUH.HUUH
+UVVU.UVVU
+UVVU.UVVU
+UVVU.UVVU
+UVVU.UVVU
+UVVU.UVVU
+HUUH.HUUH
+layer 4
+HUUH.HUUH
+UVVU.UVVU
+UVVU.UVVU
+UVVU.UVVU
+UVVU.UVVU
+UVVU.UVVU
+HUUH.HUUH
+layer 5
+HHHH.HHHH
+UUUU.UUUU
+UUUU.UUUU
+UUUU.UUUU
+UUUU.UUUU
+UUUU.UUUU
+HHHH.HHHH

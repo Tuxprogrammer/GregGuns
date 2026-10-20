@@ -1,0 +1,43 @@
+# camp_tent_2_snow
+# Open camo pavilion 5 x 5: four fence posts and a net roof.
+gregguns-layout 1
+id: camp_tent_2_snow
+size: 5 5 5
+ground: 1
+
+palette:
+G = minecraft:gravel
+N = minecraft:snow
+f = minecraft:fence
+
+layers:
+layer 0
+GGGGG
+GGGGG
+GGGGG
+GGGGG
+GGGGG
+layer 1
+f...f
+.....
+.....
+.....
+f...f
+layer 2
+f...f
+.....
+.....
+.....
+f...f
+layer 3
+f...f
+.....
+.....
+.....
+f...f
+layer 4
+NNNNN
+NNNNN
+NNNNN
+NNNNN
+NNNNN

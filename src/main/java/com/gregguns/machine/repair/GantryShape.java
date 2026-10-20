@@ -8,7 +8,9 @@ package com.gregguns.machine.repair;
  * Shape layout is StructureLib's: {@code piece[aisle][row][column]}, aisles running front to back (the controller's
  * face first), rows top to bottom, columns left to right as seen from the front. Characters: {@code R} gantry casing
  * (hatches allowed), {@code B} gantry beam, {@code H} gantry hoist, {@code L} Titanium frame leg, {@code G} glass,
- * {@code T} repair cradle, {@code ~} controller, {@code -} must be air, space means anything.
+ * {@code T} repair cradle, {@code F} steel frame box (floor rails and the hoist hook), {@code X} steel gearbox casing
+ * (the hoist drive), {@code N} motor casing (hoist motors), {@code P} steel pipe casing (hydraulic runs), {@code ~}
+ * controller, {@code -} must be air, space means anything.
  *
  * <p>
  * Usage: {@code GantryShape.totalLength(4)} is 11. Both sides.
@@ -39,7 +41,10 @@ public final class GantryShape {
     /** The controller's row in the front aisle, counted from the top (y2 of 0..6). */
     public static final int CONTROLLER_ROW = 4;
 
-    /** The booth: glass windows, the controller in the front wall, a hoist on the roof. */
+    /**
+     * The booth: glass windows, the controller in the front wall, a hoist on the roof, a hydraulic pipe run under the
+     * roof beam and the start of the floor rails.
+     */
     // spotless:off
     public static final String[][] HEAD = {
         { "   H   ",
@@ -51,27 +56,31 @@ public final class GantryShape {
           "LRRRRRL" },
         { "       ",
           "BBBBBBB",
+          "LP---PL",
           "L-----L",
           "L-----L",
-          "L-----L",
-          "L-----L",
+          "LF---FL",
           "LRRRRRL" } };
 
-    /** One bay: a portal frame, then an open gap, with a cradle pad on the floor. */
+    /**
+     * One bay: a portal frame, then an open gap, with a cradle pad on the floor. The frame carries the hoist (a gearbox
+     * between two motors under the beam, a frame-box hook hanging from it); frame-box rails run along the floor and a
+     * pipe run hangs under the beam.
+     */
     public static final String[][] BAY = {
         { "   H   ",
           "BBBBBBB",
+          "L-NXN-L",
+          "L--F--L",
           "L-----L",
-          "L-----L",
-          "L-----L",
-          "L-----L",
+          "LF---FL",
           "LRTTTRL" },
         { "       ",
           "BBBBBBB",
+          "-P---P-",
           "-------",
           "-------",
-          "-------",
-          "-------",
+          "-F---F-",
           "RRTTTRR" } };
 
     /** The tail: a closed end wall. */

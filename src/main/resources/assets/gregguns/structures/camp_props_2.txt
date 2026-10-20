@@ -1,0 +1,44 @@
+# camp_props_2
+# Sandbag ring (5 x 5) with a gap on the south side and a crate pile inside. Chests follow the per-column rule at about one in ten.
+gregguns-layout 1
+id: camp_props_2
+size: 5 4 5
+ground: 1
+
+palette:
+G = minecraft:gravel
+L = lantern
+R = minecraft:planks#1
+S = minecraft:stained_hardened_clay#12
+a = air
+k = minecraft:chest#3@facing
+
+marks:
+chest.reinforced 2 1 2
+spawn.npc 2 2 3
+
+layers:
+layer 0
+GGGGG
+GGGGG
+GGGGG
+GGGGG
+GGGGG
+layer 1
+SSSSS
+S...S
+S.k.S
+S..RS
+SSaSS
+layer 2
+.....
+.....
+.....
+...R.
+.....
+layer 3
+.....
+.....
+.....
+...L.
+.....
