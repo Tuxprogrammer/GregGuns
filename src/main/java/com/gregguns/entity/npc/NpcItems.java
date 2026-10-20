@@ -33,7 +33,7 @@ public final class NpcItems {
     public static @Nullable ItemStack stack(String ref, int count) {
         Item item = item(ref);
         if (item != null) {
-            return new ItemStack(item, count);
+            return new ItemStack(item, count, metaOf(ref));
         }
         if (ref.startsWith(ORE)) {
             java.util.List<ItemStack> ores = OreDictionary.getOres(ref.substring(ORE.length()));
@@ -48,6 +48,16 @@ public final class NpcItems {
             }
         }
         return null;
+    }
+
+    /**
+     * @param ref an item reference, optionally {@code mod:name#meta} (for example the advanced charge is
+     *            {@code gregguns:explosive_charge#1})
+     * @return the damage value after the {@code #}, or 0
+     */
+    static int metaOf(String ref) {
+        int hash = ref.indexOf('#');
+        return hash < 0 ? 0 : Integer.parseInt(ref.substring(hash + 1));
     }
 
     /**
@@ -67,11 +77,13 @@ public final class NpcItems {
         if (ref.startsWith(ORE)) {
             return null;
         }
-        int colon = ref.indexOf(':');
+        int hash = ref.indexOf('#');
+        String bare = hash < 0 ? ref : ref.substring(0, hash);
+        int colon = bare.indexOf(':');
         if (colon < 0) {
-            return GunItems.get(ref);
+            return GunItems.get(bare);
         }
-        Item item = GameRegistry.findItem(ref.substring(0, colon), ref.substring(colon + 1));
+        Item item = GameRegistry.findItem(bare.substring(0, colon), bare.substring(colon + 1));
         if (item == null) {
             GregGuns.LOG.debug("NPC item reference {} is not registered", ref);
         }

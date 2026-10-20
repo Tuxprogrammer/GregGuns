@@ -234,7 +234,7 @@ public final class NpcProfiles {
                         .slots(GUNPOWDER, 2)
                         .slots(RIFLE, 2)
                         .slot(LootDrop.one(G + "explosive_charge"))
-                        .slot(LootDrop.one(G + "advanced_explosive_charge"))
+                        .slot(LootDrop.one(G + "explosive_charge#1"))
                         .build())
                 .equipment(
                     EquipmentProfile.builder()
