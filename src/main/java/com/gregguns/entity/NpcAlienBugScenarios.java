@@ -8,13 +8,10 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
@@ -79,15 +76,6 @@ final class NpcAlienBugScenarios {
                 }
             }
         }
-    }
-
-    private static EntityPlayer player(ScenarioContext ctx, String name, double dx, double dz) {
-        FakePlayer p = new FakePlayer(
-            (WorldServer) ctx.world(),
-            new GameProfile(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), name));
-        new NetHandlerPlayServer(MinecraftServer.getServer(), new NetworkManager(false), p);
-        p.setLocationAndAngles(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5 + dz, 0.0F, 0.0F);
-        return ctx.spawn(p);
     }
 
     /** The egg spawns the bug at the block center with no rider, and it is registered under its catalog name. */
@@ -245,7 +233,7 @@ final class NpcAlienBugScenarios {
         }
     }
 
-    /** The bug walks up to a player and bites: damage lands and the bite clock runs. */
+    /** The bug walks up to a target and bites: damage lands and the bite clock runs. */
     private static final class MeleeScenario implements Scenario {
 
         private static final int TIMEOUT = 300;
@@ -257,7 +245,7 @@ final class NpcAlienBugScenarios {
 
         @Override
         public String description() {
-            return "An Alien Bug targeting a player 5 blocks away closes in and bites for its 4 attack damage; the bite"
+            return "An Alien Bug hunting a pig 5 blocks away closes in and bites for its 4 attack damage; the bite"
                 + " clock starts and drives attackProgress within 0 to 1.";
         }
 
@@ -269,10 +257,17 @@ final class NpcAlienBugScenarios {
                 world.difficultySetting = EnumDifficulty.NORMAL;
             }
             ctx.clearArea(14, 4);
+            for (int fx = -2; fx <= 8; fx++) {
+                for (int fz = -3; fz <= 3; fz++) {
+                    ctx.setBlock(fx, -1, fz, Blocks.stone, 0);
+                }
+            }
             AlienBug bug = new AlienBug(world);
             bug.setLocationAndAngles(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, 0.0F, 0.0F);
             ctx.spawn(bug);
-            EntityPlayer victim = player(ctx, "alien_bug_victim", 5, 0);
+            EntityPig victim = new EntityPig(world);
+            victim.setLocationAndAngles(ctx.originX() + 5.5, ctx.originY(), ctx.originZ() + 0.5, 0.0F, 0.0F);
+            ctx.spawn(victim);
             float start = victim.getHealth();
             boolean[] sawClock = { false };
             float[] progress = { -1.0F };
@@ -283,6 +278,9 @@ final class NpcAlienBugScenarios {
                         return null;
                     }
                     if (ticks == SETTLE_TICKS) {
+                        // A pig, not a fake player: Forge FakePlayers are invulnerable. The melee task only fights back
+                        // against a revenge target or a player, so the pig is the revenge target.
+                        bug.setRevengeTarget(victim);
                         bug.setAttackTarget(victim);
                         return null;
                     }
@@ -293,7 +291,18 @@ final class NpcAlienBugScenarios {
                     if (victim.getHealth() >= start) {
                         if (ticks >= TIMEOUT - 1) {
                             finished = true;
-                            return ScenarioResult.fail(name(), "the bug never hurt the player");
+                            return ScenarioResult.fail(
+                                name(),
+                                "the bug never hurt the target: target=" + bug.getAttackTarget()
+                                    + " dist="
+                                    + bug.getDistanceToEntity(victim)
+                                    + " timer="
+                                    + bug.attackTimer()
+                                    + " path="
+                                    + !bug.getNavigator()
+                                        .noPath()
+                                    + " dead="
+                                    + bug.isDead);
                         }
                         return null;
                     }
