@@ -18,7 +18,19 @@ public final class GunTooltipFormat {
     /** Seconds per game tick. */
     private static final double SECONDS_PER_TICK = 0.05;
 
+    /** Lang key of the Bio Gun tooltip line shown while blobs are disabled. */
+    public static final String BLOB_DISABLED_KEY = "gregguns.gun.tooltip.bio_blob_disabled";
+
     private GunTooltipFormat() {}
+
+    /**
+     * @param blockDamage the {@code explosions.blockDamage} setting
+     * @return the lang key of the "blobs disabled" tooltip line, or {@code null} when blobs are placed (PFX-28: the
+     *         Bio Gun leaves its blob only when block damage is on)
+     */
+    public static String blobGateKey(boolean blockDamage) {
+        return blockDamage ? null : BLOB_DISABLED_KEY;
+    }
 
     /** @return damage as {@code max-min}, or just {@code max} when there is no drop-off (GUN-19) */
     public static String damage(GunStats stats) {

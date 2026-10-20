@@ -28,6 +28,7 @@ import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
 import com.gregguns.armor.logic.RepairSpec;
 import com.gregguns.block.GregGunsCasings;
+import com.gregguns.machine.InteriorLamp;
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -168,6 +169,7 @@ public final class MTEArmoryGantry extends MTEExtendedPowerMultiBlockBase<MTEArm
                 .addElement('X', gtCasing(GEARBOX_STEEL_META))
                 .addElement('N', gtCasing(MOTOR_META))
                 .addElement('P', gtCasing(PIPE_STEEL_META))
+                .addElement(InteriorLamp.SYMBOL, InteriorLamp.element())
                 .build();
         }
     }
@@ -397,6 +399,7 @@ public final class MTEArmoryGantry extends MTEExtendedPowerMultiBlockBase<MTEArm
             .addCasing("1 per bay", lang("structure.gearbox"), false)
             .addCasing("2 per bay", lang("structure.motors"), false)
             .addCasing("2 + 2 per bay", lang("structure.pipes"), false)
+            .addCasing("1 + 1 per bay", lang("structure.lamp"), false)
             .addAir(lang("structure.air"))
             .addStructureInfo(lang("structure.footer"))
             .addSubChannel(GTStructureChannels.STRUCTURE_LENGTH)

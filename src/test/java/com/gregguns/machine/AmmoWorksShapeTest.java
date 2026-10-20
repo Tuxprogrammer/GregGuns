@@ -93,8 +93,27 @@ class AmmoWorksShapeTest {
     }
 
     @Test
+    void oneLampHangsUnderTheCeilingOfTheFeederEveryBayAndTheStation() {
+        // Interior lighting: one 'S' per section, in the open air above the belt, never on a wall.
+        assertEquals(1, AmmoWorksShape.count(AmmoWorksShape.FEEDER, "S"));
+        assertEquals(1, AmmoWorksShape.count(AmmoWorksShape.BAY, "S"));
+        assertEquals(1, AmmoWorksShape.count(AmmoWorksShape.STATION, "S"));
+        for (String[][] piece : PIECES) {
+            for (String[] aisle : piece) {
+                for (String row : aisle) {
+                    int at = row.indexOf('S');
+                    if (at >= 0) {
+                        assertEquals(AmmoWorksShape.CONTROLLER_COLUMN, at, "lamp is on the center line: " + row);
+                        assertEquals("APSPA", row);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     void onlyTheDocumentedCharactersAppear() {
-        String allowed = "FAOMIGRPBNY~- ";
+        String allowed = "FAOMIGRPBNYS~- ";
         for (String[][] piece : PIECES) {
             for (String[] aisle : piece) {
                 for (String row : aisle) {

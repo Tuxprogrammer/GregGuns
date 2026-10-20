@@ -349,7 +349,7 @@ public final class AmmoWorksScenarios {
 
         @Override
         public String description() {
-            return "A two-bay hall forms; with a wall casing, a window, a press rod, a ceiling pipe, the muffler, the output bus or a bay removed, or a second belt tier, it does not; any glass tier fills a window.";
+            return "A two-bay hall forms; with a wall casing, a window, a press rod, a ceiling pipe, a lamp, the muffler, the output bus or a bay removed, or a second belt tier, it does not; any glass tier fills a window.";
         }
 
         @Override
@@ -401,6 +401,29 @@ public final class AmmoWorksScenarios {
             expectForm(hall, out, false, "a missing ceiling pipe should break the hall");
             ctx.setBlock(1, Hall.CY + 2, windowZ, GregTechAPI.sBlockCasings2, 13);
             expectForm(hall, out, true, "the ceiling pipe back should form the hall again");
+
+            // Interior lamps (one under the ceiling of the feeder, each bay and the station): required, and any block
+            // that gives light fills one; stone gives none and does not.
+            int bayLampZ = AmmoWorksShape.FEEDER_LENGTH;
+            ctx.setBlock(0, Hall.CY + 2, bayLampZ, Blocks.air, 0);
+            expectForm(hall, out, false, "a bay without its lamp should break the hall");
+            ctx.setBlock(0, Hall.CY + 2, bayLampZ, Blocks.stone, 0);
+            expectForm(hall, out, false, "a stone block where the lamp goes should break the hall");
+            ctx.setBlock(0, Hall.CY + 2, bayLampZ, Blocks.glowstone, 0);
+            expectForm(hall, out, true, "glowstone should fill the bay lamp position");
+            ctx.setBlock(0, Hall.CY + 2, bayLampZ, Blocks.lit_redstone_lamp, 0);
+            expectForm(hall, out, true, "a lit redstone lamp should fill the bay lamp position");
+            ctx.setBlock(0, Hall.CY + 2, bayLampZ, Blocks.glowstone, 0);
+            ctx.setBlock(0, Hall.CY + 2, 1, Blocks.air, 0);
+            expectForm(hall, out, false, "a feeder without its lamp should break the hall");
+            ctx.setBlock(0, Hall.CY + 2, 1, Blocks.redstone_lamp, 0);
+            expectForm(hall, out, true, "an unlit redstone lamp should fill the feeder lamp position");
+            ctx.setBlock(0, Hall.CY + 2, 1, Blocks.glowstone, 0);
+            int stationLampZ = AmmoWorksShape.stationDepth(hall.bays);
+            ctx.setBlock(0, Hall.CY + 3, stationLampZ, Blocks.air, 0);
+            expectForm(hall, out, false, "a packing station without its lamp should break the hall");
+            ctx.setBlock(0, Hall.CY + 3, stationLampZ, Blocks.glowstone, 0);
+            expectForm(hall, out, true, "the station lamp back should form the hall again");
 
             // A second belt tier on the floor line.
             Block pipeCasings = GregTechAPI.sBlockCasings11;

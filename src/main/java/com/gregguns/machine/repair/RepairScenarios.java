@@ -525,7 +525,7 @@ public final class RepairScenarios {
 
         @Override
         public String description() {
-            return "A Gantry built by the controller's hologram routine forms at 4 bays with all hatches, reports its bay count, and does not form without the output bus, a beam, a hoist gearbox, a hoist motor, a floor rail, a pipe run or a booth window; any glass tier fills a window.";
+            return "A Gantry built by the controller's hologram routine forms at 4 bays with all hatches, reports its bay count, and does not form without the output bus, a beam, a hoist gearbox, a hoist motor, a floor rail, a pipe run, a lamp or a booth window; any glass tier fills a window and any light block fills a lamp position.";
         }
 
         @Override
@@ -591,6 +591,20 @@ public final class RepairScenarios {
             out.check(!g.form(), "a missing pipe run should break the Gantry");
             ctx.setBlock(2, Gantry.CY + 2, gapZ, GregTechAPI.sBlockCasings2, 13);
             out.check(g.form(), "the pipe run back should form the Gantry again");
+
+            // Interior lamps (one under the beam of the booth and of each bay): required, any light block fills one.
+            ctx.setBlock(0, Gantry.CY + 2, 1, net.minecraft.init.Blocks.air, 0);
+            out.check(!g.form(), "a booth without its lamp should break the Gantry");
+            ctx.setBlock(0, Gantry.CY + 2, 1, net.minecraft.init.Blocks.stone, 0);
+            out.check(!g.form(), "a stone block where the booth lamp goes should break the Gantry");
+            ctx.setBlock(0, Gantry.CY + 2, 1, net.minecraft.init.Blocks.glowstone, 0);
+            out.check(g.form(), "glowstone should fill the booth lamp position");
+            ctx.setBlock(0, Gantry.CY + 2, gapZ, net.minecraft.init.Blocks.air, 0);
+            out.check(!g.form(), "a bay without its lamp should break the Gantry");
+            ctx.setBlock(0, Gantry.CY + 2, gapZ, net.minecraft.init.Blocks.redstone_lamp, 0);
+            out.check(g.form(), "a redstone lamp should fill the bay lamp position");
+            ctx.setBlock(0, Gantry.CY + 2, gapZ, net.minecraft.init.Blocks.glowstone, 0);
+            out.check(g.form(), "glowstone back in the bay should form the Gantry again");
 
             // The output bus replaced by a casing.
             ctx.setBlock(

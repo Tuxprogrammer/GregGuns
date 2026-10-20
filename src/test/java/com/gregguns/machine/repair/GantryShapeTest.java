@@ -82,8 +82,19 @@ class GantryShapeTest {
     }
 
     @Test
+    void oneLampHangsUnderTheBeamOfTheBoothAndEveryBay() {
+        assertEquals(1, GantryShape.count(GantryShape.HEAD, "S"));
+        assertEquals(1, GantryShape.count(GantryShape.BAY, "S"));
+        assertEquals(0, GantryShape.count(GantryShape.TAIL, "S"));
+        // On the center line, directly under the beam row and never on a hatch face (the front aisle).
+        assertEquals(0, GantryShape.count(new String[][] { GantryShape.HEAD[0] }, "S"));
+        assertEquals('S', GantryShape.HEAD[1][2].charAt(GantryShape.CONTROLLER_COLUMN));
+        assertEquals('S', GantryShape.BAY[1][2].charAt(GantryShape.CONTROLLER_COLUMN));
+    }
+
+    @Test
     void onlyTheDocumentedCharactersAppear() {
-        String allowed = "RBHLGTFXNP~- ";
+        String allowed = "RBHLGTFXNPS~- ";
         for (String[][] piece : PIECES) {
             for (String[] aisle : piece) {
                 for (String row : aisle) {

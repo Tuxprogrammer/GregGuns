@@ -111,7 +111,7 @@ Both keys are synced from server to client (GGS-01-03). Block removal always pas
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `explosions.blockDamage` | boolean | `false` | n/a | yes | Whether GregGuns explosions remove blocks. Off: they still hurt entities. An NPC-caused blast also needs the `mobGriefing` gamerule. |
+| `explosions.blockDamage` | boolean | `false` | n/a | yes | Whether GregGuns explosions remove blocks. Off: they still hurt entities. An NPC-caused blast also needs the `mobGriefing` gamerule. Also gates Bio Gun blobs and block fire from the Flamethrower, Nether Blaster and Alien Blaster: with it off the Bio Gun places no blob and its tooltip says "Blobs disabled: explosions.blockDamage is off". |
 | `explosions.selfDamage` | boolean | `true` | n/a | yes | Whether the player who set off an explosion can be hurt by it (fixes PFX-25). |
 | `explosions.machineExplosions` | boolean | `true` | n/a | yes | Whether GregTech machines in a GregGuns blast react to it (can chain). False leaves them standing (Q4). |
 
