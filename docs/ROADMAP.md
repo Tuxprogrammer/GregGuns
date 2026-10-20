@@ -214,9 +214,9 @@ One gun, working end to end inside the GTNH dev pack.
 - Their beams, chaining and explosions (see [04-projectiles-fx](techguns-spec/04-projectiles-fx/index.md)).
 
 **Exit gate:**
-- [ ] Each weapon is tier-gated with EU or fluid ammo per D3.
-- [ ] Explosions respect config and protection (fixing PFX-14, PFX-25 and CORE-19), with tests.
-- [ ] The particle and FX system carries the spec's FX catalog, and performance is checked with many emitters on screen.
+- [x] Each weapon is tier-gated with EU or fluid ammo per D3. Evidence: `GunDefinitionsTest` over every row with `GateRule`, a `*.recipe` or `*.tiergate` scenario per gun, and the per-gun fire scenarios asserting EU or fluid spend ([M5 exit gate](gregguns-spec/04-projectiles-fx/m5-exit-gate.md#1-each-weapon-is-tier-gated-with-eu-or-fluid-ammo-per-d3)).
+- [x] Explosions respect config and protection (fixing PFX-14, PFX-25 and CORE-19), with tests. Evidence: `ExplosionGateTest` (`doesNotReproducePFX25_*`, `CORE19_*`, `PFX14_*`), `grenade.protected`, `explosion.nuke.sliced` ([M5 exit gate](gregguns-spec/04-projectiles-fx/m5-exit-gate.md#2-explosions-respect-config-and-protection-pfx-14-pfx-25-core-19-with-tests)).
+- [ ] The particle and FX system carries the spec's FX catalog, and performance is checked with many emitters on screen. The catalog and the 500-emitter budget are proven headless (`FxCatalogTest`, `ParticleBudgetTest`, `fx.stress`, `fx.stress.nuke`); real frame cost, the FX visuals, the NDR pulse and the alpha cut-outs wait for the batched client session ([M5 exit gate](gregguns-spec/04-projectiles-fx/m5-exit-gate.md#3-the-particle-and-fx-system-carries-the-fx-catalog-and-performance-is-checked)).
 
 ## M6 · Utility and defense
 
