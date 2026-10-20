@@ -304,6 +304,7 @@ One gun, working end to end inside the GTNH dev pack.
   - the maintenance commitment;
   - the quest-line handoff;
   - links to the release, the docs and the infographics.
+- GuideNH pages: an in-game wiki for the mod, covering getting started, the arsenal by tier, ammo and magazines, armor, machines and multiblocks, NPCs, and structures. Build them from the docs and infographics. This work may start during the beta, before the rest of M9.
 - Release tagging.
 
 **Exit gate:**
@@ -311,6 +312,7 @@ One gun, working end to end inside the GTNH dev pack.
 - [ ] No unresolved crash-severity bugs.
 - [ ] The GTNH modpack PR text is drafted (not opened), with every PACK-CHANGES row and no placeholder names left. The owner reviews it and decides when to open it.
 - [ ] The outreach package for the GTNH pack maintainers is drafted and reviewed by the owner.
+- [ ] The GuideNH in-game wiki pages ship in the mod, cover every content area, and pass the owner's review in game.
 - [ ] Release notes, a tagged version and published jars (CI `release-tags` workflow).
 
 ## Later
