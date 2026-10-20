@@ -36,7 +36,7 @@ public final class ChargePanel {
     /** Panel width. */
     public static final int WIDTH = 176;
     /** Panel height. */
-    public static final int HEIGHT = 200;
+    public static final int HEIGHT = 212;
 
     private static final int PAD = 7;
     private static final int CONTENT = WIDTH - 2 * PAD;
@@ -44,7 +44,7 @@ public final class ChargePanel {
 
     private static final int TEXT_DARK = 0xFF404040;
     private static final int GLYPH_ON = 0xFF202020;
-    private static final int GLYPH_OFF = 0xFF8B8B8B;
+    private static final int GLYPH_OFF = 0xFF707070;
     private static final int SCREEN_BG = 0xFF1A1A1A;
     private static final int SCREEN_EDGE = 0xFF000000;
     private static final int AMBER = 0xFFFFB000;
@@ -197,7 +197,7 @@ public final class ChargePanel {
                 .background(diagram(st)));
 
         // Owner and access.
-        y = boreTop + 62;
+        y = boreTop + 66;
         final String owner = tile.ownerName()
             .isEmpty() ? StatCollector.translateToLocal("gregguns.charge.gui.owner_none") : tile.ownerName();
         panel.child(
@@ -320,8 +320,19 @@ public final class ChargePanel {
                     .color(() -> ChargeGuiModel.enabled(st, type, button) ? GLYPH_ON : GLYPH_OFF))
             .tooltipDynamic(
                 tip -> tip.addLine(
-                    IKey.lang(
-                        ChargeGuiModel.enabled(st, type, button) ? tooltipKey(button) : "gregguns.charge.gui.locked")));
+                    IKey.lang(ChargeGuiModel.enabled(st, type, button) ? tooltipKey(button) : lockedKey(st, button))));
+    }
+
+    /** Why a button is dead: not yours, armed, or already at the end of its range. */
+    private static String lockedKey(ChargeGuiModel.State st, int button) {
+        if (!st.canEdit) {
+            return "gregguns.charge.gui.locked_owner";
+        }
+        if (st.armed) {
+            return "gregguns.charge.gui.locked_armed";
+        }
+        return button == ChargeParams.BTN_DISARM ? "gregguns.charge.gui.locked_idle"
+            : "gregguns.charge.gui.locked_limit";
     }
 
     private static String tooltipKey(int button) {
@@ -356,7 +367,7 @@ public final class ChargePanel {
                             ChargeGuiModel.enabled(st, type, button)
                                 ? (button == ChargeParams.BTN_ARM ? "gregguns.charge.gui.tip.arm"
                                     : "gregguns.charge.gui.tip.disarm")
-                                : "gregguns.charge.gui.locked")));
+                                : lockedKey(st, button))));
     }
 
     /** A solid rectangle whose color is read each frame; unless plain, with a thin black edge. */
