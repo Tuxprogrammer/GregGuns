@@ -43,4 +43,45 @@ class VillageScanTest {
         // 16 x 16 window columns, every second x and z: 64 columns, one cell each.
         assertEquals(64, c.reads.size());
     }
+
+    /**
+     * PLAN-M8 Q5: a plains footprint with grass, flowers, leaves, trunks and snow, and no village, is never skipped.
+     * Foliage and wood are not village blocks, so no pattern of them may trip the scan.
+     */
+    @Test
+    void plainsWithoutVillagesIsNotSkipped() {
+        GridColumns c = GridColumns.flat(64);
+        for (int x = 10; x <= 17; x++) {
+            for (int z = 10; z <= 17; z++) {
+                c.put(x, 65, z, (x + z) % 3 == 0 ? BlockKind.FOLIAGE : BlockKind.AIR);
+            }
+        }
+        // A tree: a trunk and a leaf crown over the footprint.
+        for (int y = 65; y <= 69; y++) {
+            c.put(12, y, 12, BlockKind.WOOD);
+        }
+        for (int x = 10; x <= 14; x++) {
+            for (int z = 10; z <= 14; z++) {
+                c.put(x, 70, z, BlockKind.FOLIAGE);
+            }
+        }
+        assertFalse(VillageScan.containsVillageBlocks(w, c, fp, 64, 8));
+    }
+
+    /** The one-in-four sampling still catches a house: no 2x2 patch of footprint columns is entirely unsampled. */
+    @Test
+    void aHouseWallIsFoundWhereverItStands() {
+        for (int ox = 0; ox < 2; ox++) {
+            for (int oz = 0; oz < 2; oz++) {
+                GridColumns c = GridColumns.flat(64)
+                    .put(12 + ox, 66, 12 + oz, BlockKind.VILLAGE)
+                    .put(13 + ox, 66, 12 + oz, BlockKind.VILLAGE)
+                    .put(12 + ox, 66, 13 + oz, BlockKind.VILLAGE)
+                    .put(13 + ox, 66, 13 + oz, BlockKind.VILLAGE);
+                assertTrue(
+                    VillageScan.containsVillageBlocks(w, c, fp, 64, 8),
+                    "2x2 patch at offset " + ox + "," + oz + " was missed");
+            }
+        }
+    }
 }
