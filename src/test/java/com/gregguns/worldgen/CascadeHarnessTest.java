@@ -212,7 +212,10 @@ class CascadeHarnessTest {
                     assertEquals(0, p.rejected, what + ": the stamper never offers a write the sink must drop");
                     assertEquals(0, p.foreign, what + ": GGS-11-09 no foreign chunk requested");
                     assertEquals(0, p.duplicates, what + ": windows tile, so no cell is written twice");
-                    assertEquals(expectedCells(l, plan), p.cells.keySet(), what + ": union of windows is one full stamp");
+                    assertEquals(
+                        expectedCells(l, plan),
+                        p.cells.keySet(),
+                        what + ": union of windows is one full stamp");
                     Map<String, Integer> once = new HashMap<>();
                     for (String m : expectedMarks(l, plan)) once.put(m, 1);
                     assertEquals(once, p.marks, what + ": every mark reported by exactly one window");
@@ -253,7 +256,9 @@ class CascadeHarnessTest {
         StructureId sid = StructureCatalog.byId(id);
         SizeClass cls = sid == null ? SizeClass.SMALL : StructureCatalog.sizeClass(sid);
         Map<SizeClass, List<PoolEntry>> pools = new EnumMap<>(SizeClass.class);
-        pools.put(cls, Collections.singletonList(new PoolEntry(id, 1, 8, new Footprint(l.sizeX(), l.sizeY(), l.sizeZ()))));
+        pools.put(
+            cls,
+            Collections.singletonList(new PoolEntry(id, 1, 8, new Footprint(l.sizeX(), l.sizeY(), l.sizeZ()))));
         StructurePopulator populator = new StructurePopulator(
             new StructureGrid(2, 2, 2, pools),
             loadShipped(),
@@ -361,7 +366,9 @@ class CascadeHarnessTest {
                 for (Layout.Mark m : l.marks()) {
                     int[] w = plan.toWorld(m.x, m.z);
                     String key = m.tag + "@" + w[0] + "," + (ANCHOR_Y + m.y - l.ground()) + "," + w[1];
-                    assertTrue(p.marks.containsKey(key), id + " rot " + rot + ": mark " + key + " is where toWorld says");
+                    assertTrue(
+                        p.marks.containsKey(key),
+                        id + " rot " + rot + ": mark " + key + " is where toWorld says");
                 }
             }
         }
@@ -370,6 +377,8 @@ class CascadeHarnessTest {
     @Test
     void listedDirectoryIsReadable() {
         // Guards the harness itself: an empty or missing directory would make every loop above vacuous.
-        assertFalse(Arrays.asList(new File(STRUCTURES_DIR).list()).isEmpty());
+        assertFalse(
+            Arrays.asList(new File(STRUCTURES_DIR).list())
+                .isEmpty());
     }
 }

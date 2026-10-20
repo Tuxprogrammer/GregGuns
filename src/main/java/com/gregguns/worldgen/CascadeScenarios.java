@@ -148,7 +148,8 @@ public final class CascadeScenarios {
             Random rnd = new Random(System.nanoTime());
             try {
                 PopulateGuard.register();
-                // Structures on. A square can be all ocean for a land-only pool; retry on a new square until one stamps.
+                // Structures on. A square can be all ocean for a land-only pool; retry on a new square until one
+                // stamps.
                 Set<String> withStructures = null;
                 int[] sq = null;
                 long stamped = 0;

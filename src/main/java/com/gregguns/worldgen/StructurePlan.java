@@ -7,7 +7,8 @@ import com.gregguns.worldgen.layout.Rotations;
  * world access, so biome and terrain checks happen later, at populate time.
  *
  * <p>
- * The anchor is the minimum corner of the <em>rotated</em> footprint box. Rotation is in quarter turns clockwise seen from
+ * The anchor is the minimum corner of the <em>rotated</em> footprint box. Rotation is in quarter turns clockwise seen
+ * from
  * above (+X east, +Z south), so each turn maps +X to +Z; {@link Rotations} owns the convention.
  */
 // Spec: docs/gregguns-spec/11-worldgen/structure-placement.md (GGS-11-10, GGS-11-11); fixes WGEN-30
@@ -123,7 +124,6 @@ public final class StructurePlan {
         int z0 = cz * 16 + 8;
         return anchorX <= x0 + 15 && maxX() >= x0 && anchorZ <= z0 + 15 && maxZ() >= z0;
     }
-
 
     /**
      * Maps a layout-local column to its world column. Local coordinates run 0..sizeX-1 and 0..sizeZ-1 of the
