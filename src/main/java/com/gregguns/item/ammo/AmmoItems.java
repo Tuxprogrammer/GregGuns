@@ -23,6 +23,7 @@ import com.gregguns.item.ammo.def.AmmoDefinitions;
 public final class AmmoItems {
 
     private static final Map<String, Item> ITEMS = new LinkedHashMap<>();
+    private static final Map<String, Item> PENDING = new LinkedHashMap<>();
 
     private AmmoItems() {}
 
@@ -33,18 +34,43 @@ public final class AmmoItems {
      */
     public static void register(ModuleRegistrar registrar) {
         for (AmmoDefinition def : AmmoDefinitions.ALL) {
-            AmmoType type = def.type();
-            ItemAmmoRound round = registrar.registerItem(type.roundItemName(), new ItemAmmoRound(type));
-            ITEMS.put(type.roundItemName(), round);
+            registerOne(
+                registrar,
+                def.type()
+                    .roundItemName());
             for (MagazineType magazine : def.magazines()) {
-                ItemMagazineEmpty empty = registrar
-                    .registerItem(magazine.emptyItemName(), new ItemMagazineEmpty(magazine));
-                ITEMS.put(magazine.emptyItemName(), empty);
-                ITEMS.put(
-                    magazine.loadedItemName(),
-                    registrar.registerItem(magazine.loadedItemName(), new ItemMagazine(magazine, empty, round)));
+                registerOne(registrar, magazine.emptyItemName());
+                registerOne(registrar, magazine.loadedItemName());
             }
         }
+    }
+
+    /**
+     * Registers one ammo, empty magazine or loaded magazine item by registry name, so the caller picks the
+     * registration order (see {@code GunsItemOrder}). The items are built together on first use, which lets a loaded
+     * magazine hold its empty magazine and round before they are registered.
+     *
+     * @param registrar the guns module's registrar
+     * @param name      the registry name of a round or a magazine from {@link AmmoDefinitions#ALL}
+     */
+    public static void registerOne(ModuleRegistrar registrar, String name) {
+        if (PENDING.isEmpty() && ITEMS.isEmpty()) {
+            for (AmmoDefinition def : AmmoDefinitions.ALL) {
+                AmmoType type = def.type();
+                ItemAmmoRound round = new ItemAmmoRound(type);
+                PENDING.put(type.roundItemName(), round);
+                for (MagazineType magazine : def.magazines()) {
+                    ItemMagazineEmpty empty = new ItemMagazineEmpty(magazine);
+                    PENDING.put(magazine.emptyItemName(), empty);
+                    PENDING.put(magazine.loadedItemName(), new ItemMagazine(magazine, empty, round));
+                }
+            }
+        }
+        Item item = PENDING.remove(name);
+        if (item == null) {
+            throw new IllegalArgumentException("not an ammo or magazine item: " + name);
+        }
+        ITEMS.put(name, registrar.registerItem(name, item));
     }
 
     /**

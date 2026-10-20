@@ -32,8 +32,11 @@ public final class NpcScenarios {
         NpcAlienBugScenarios.registerAll(registry);
         NpcTurretScenarios.registerAll(registry);
         NpcInfernalScenarios.registerAll(registry);
+        SoldierScenarios.registerAll(registry);
         NpcSpawnScenarios.registerAll(registry);
         ZombieScenarios.registerAll(registry);
+        BanditScenarios.registerAll(registry);
+        UndeadScenarios.registerAll(registry);
     }
 
     /** The module is enabled and the config carries the documented defaults. */
