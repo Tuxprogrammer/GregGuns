@@ -85,6 +85,9 @@ final class NpcLootScenarios {
                     stacks.add(e.getEntityItem());
                 }
                 kills.add(stacks);
+                // Cancelled so Forge never spawns the item entities: thousands of them left in the shared test world
+                // absorbed a later scenario's shot (gun.handcannon.damage).
+                event.setCanceled(true);
             }
         }
 
