@@ -33,6 +33,41 @@ final class NpcEggScenarios {
 
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new EggSpawnsScenario());
+        registry.register(new AllEggsScenario());
+    }
+
+    /** Every catalog mob except the exempt turret has a class, a registered entity and an egg subtype. */
+    private static final class AllEggsScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "npc.all_eggs";
+        }
+
+        @Override
+        public String description() {
+            return "Every NpcMob except the egg-exempt camp turret (and the recorded not-yet-implemented Outcast and"
+                + " Stormtrooper) has a bound class, a registered entity that EntityList can build, and an egg"
+                + " subtype in the creative listing; failures name the mobs.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            for (String problem : NpcRegistry.eggAudit(true)) {
+                out.check(false, problem);
+            }
+            for (NpcMob mob : NpcRegistry.registered()) {
+                out.check(
+                    EntityList.createEntityByName(mob.fullName(), ctx.world()) != null,
+                    "EntityList cannot build " + mob.fullName());
+            }
+            out.check(
+                !NpcRegistry.eggMobs()
+                    .contains(NpcMob.SIMPLE_TURRET),
+                "the exempt turret must not be offered as an egg");
+            return out.build();
+        }
     }
 
     /** The egg puts the mob at a block center and consumes itself; an unregistered subtype spawns nothing. */

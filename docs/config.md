@@ -8,7 +8,7 @@ Keep this file in step with the code: a PR that adds or changes an option update
 
 Each roadmap content area is a module. A module's flag decides whether its code runs at all: when it is `false`, the module registers no items, blocks, entities, recipes or event handlers, so nothing is left behind to crash or to orphan a recipe.
 
-**A flag defaults to `true` once its milestone's exit gate is met.** The gates for M2 to M6 are met, so `guns`, `armor`, `machines`, `energyWeapons` and `utility` default to `true`. `npcs` (M7) and `worldgen` (M8) default to `false` until their gates are met. The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
+**A flag defaults to `true` once its milestone's exit gate is met.** The gates for M2 to M7 are met, so `guns`, `armor`, `machines`, `energyWeapons`, `utility` and `npcs` default to `true`. `worldgen` (M8) defaults to `false` until its gate is met. The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
 
 A module also needs the modules listed in "Needs". If a flag is on but a needed module is off, the module is skipped and a warning is logged.
 
@@ -19,7 +19,7 @@ A module also needs the modules listed in "Needs". If a flag is on but a needed 
 | `modules.machines` | boolean | `true` | n/a | no | `guns` | M4 | Production chain and GregTech machines |
 | `modules.energyWeapons` | boolean | `true` | n/a | no | `guns`, `machines` | M5 | Energy and exotic weapons |
 | `modules.utility` | boolean | `true` | n/a | no | `machines` | M6 | Utility and defense machines |
-| `modules.npcs` | boolean | `false` | n/a | no | `guns` | M7 | NPCs and spawning |
+| `modules.npcs` | boolean | `true` | n/a | no | `guns` | M7 | NPCs and spawning |
 | `modules.worldgen` | boolean | `false` | n/a | no | `npcs` | M8 | Structures and worldgen loot |
 
 All module flags need a game restart. They are not synced from server to client (GGS-01-03): content is registered once at startup, so a value that arrived after joining could not add or remove it. Start the client and the server with the same flags.
@@ -32,6 +32,12 @@ The "Needs" column is the module order in `ModuleId`, taken from the roadmap's e
 |---|---|---|---|---|---|
 | `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Registers the numpad debug keybinds. Nothing reads it until the M1 keybinds exist. Kept from Techguns' `enableDebugKeybinds`. |
 | `debug.recipeDump` | boolean | `false` | n/a | no | Enables the op-only `/gregguns dumprecipes <file>` command (recipe-clash review). Leave off in play. |
+
+## Bio Gun (`bioGun`)
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `bioGun.acceptBiomass` | boolean | `false` | n/a | yes | Also lets the Bio Tank take plain GT Biomass, besides BartWorks' E. coli culture fluid (made from Biomass in the Bacterial Vat). Biomass is accepted regardless when the culture fluid cannot be resolved (BartWorks missing). |
 
 ## Machines (`machines`)
 

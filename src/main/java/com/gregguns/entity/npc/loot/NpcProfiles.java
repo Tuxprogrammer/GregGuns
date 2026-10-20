@@ -11,9 +11,8 @@ import com.gregguns.api.Tier;
 /**
  * The loot and equipment data of every M7 mob that can be built before the M5 energy guns: Zombie Farmer, Miner and
  * Soldier, Skeleton Soldier, Bandit, Army Soldier, Commando, Zombie Pigman Soldier, Psycho Steve, Dictator Dave and the
- * three Super Mutants and the Cyberdemon (Nether Blaster only, no armor). Outcast and Stormtrooper wait for their guns
- * (PLAN-M7 section 5, answer 5). Keys
- * are the registry names without the mod id.
+ * three Super Mutants, the Cyberdemon (Nether Blaster only, no armor), the Outcast and the Stormtrooper. Keys are the
+ * registry names without the mod id.
  *
  * <p>
  * Item references: {@code mod:name} for a registered item, {@code ore:Name} for an ore dictionary entry (GT first, so
@@ -21,8 +20,8 @@ import com.gregguns.api.Tier;
  * pick); a bare name is a GregGuns gun.
  *
  * <p>
- * Deviations from Techguns, all by design: counts are uniform integer draws and never zero (NPC-04, NPC-05; the
- * Stormtrooper redstone is not built yet); the {@code RestrictedLoottables} variant is not carried; the Commando's
+ * Deviations from Techguns, all by design: counts are uniform integer draws and never zero (NPC-04, NPC-05); the
+ * {@code RestrictedLoottables} variant is not carried; the Commando's
  * silenced M4 is the M4 until a silenced variant exists; "obsidian steel ingot" is a GT steel ingot; Psycho Steve's
  * HV Chainsaw is accepted as his ceiling (design 0005 amendment, mob-drops-nei.md open question 1).
  */
@@ -244,6 +243,48 @@ public final class NpcProfiles {
                         .armor(1, 100, 0, "t2_commando")
                         .armor(2, 100, 0, "t2_commando")
                         .armor(3, 100, 0, "t2_commando")
+                        .build())
+                .build());
+        // Outcast: no loot table (Techguns gives none); equipment can still drop. Power Armor camo 1 or 2 per piece.
+        add(
+            m,
+            NpcProfile.builder("Outcast", Tier.LUV)
+                .equipment(
+                    EquipmentProfile.builder()
+                        .weapon("laser_rifle", 1)
+                        .weapon("grim_reaper", 1)
+                        .weapon("minigun", 1)
+                        .weapon("bio_gun", 1)
+                        .weapon("flamethrower", 1)
+                        .weapon("tesla_rifle", 1)
+                        .weapon("lmg", 1)
+                        .randomCamo(0, 100, 2, "t3_power")
+                        .randomCamo(1, 100, 2, "t3_power")
+                        .randomCamo(2, 100, 2, "t3_power")
+                        .randomCamo(3, 100, 2, "t3_power")
+                        .build())
+                .build());
+        // Stormtrooper: nextInt(9) table; plastic sheet is GT rubber plate, circuit board and energy cell are GT
+        // ore-dictionary stand-ins (the redstone count is never zero, NPC-05).
+        add(
+            m,
+            NpcProfile.builder("Stormtrooper", Tier.IV)
+                .table(
+                    LootTable.builder()
+                        .slots(LootDrop.one("ore:plateRubber"), 2)
+                        .slots(STEEL_INGOT, 2)
+                        .slots(LootDrop.one("minecraft:redstone"), 3)
+                        .slot(LootDrop.one("ore:circuitBasic"))
+                        .slot(LootDrop.one("ore:batteryBasic"))
+                        .build())
+                .equipment(
+                    EquipmentProfile.builder()
+                        .weapon("blaster_rifle", 1)
+                        .weapon("laser_rifle", 1)
+                        .armor(0, 100, 1, "t3_hev")
+                        .armor(1, 100, 1, "t3_hev")
+                        .armor(2, 100, 1, "t3_hev")
+                        .armor(3, 100, 1, "t3_hev")
                         .build())
                 .build());
         add(

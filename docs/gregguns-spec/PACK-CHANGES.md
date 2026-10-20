@@ -58,6 +58,8 @@ All paths are under `config/betterquesting/DefaultQuests/`. The full design is 1
 | `QuestSettings.json` | Raise `pack_version` in the release that adds the tab | Flags the questbook update to existing worlds | [index.md](12-questbook/index.md) |
 | `QuestLines/KillAlltheThings-AAAAAAAAAAAAAAAAAAAAJQ==/` | Optional: a position file for `gg.npc.intro` | A transition entry from the pack's combat line | [quest-line.md](12-questbook/quest-line.md) |
 
+**Bio Gun ammo chain.** No pack file changes: the Bio Tank reads BartWorks' E. coli culture fluid and GregGuns adds one Bacterial Vat recipe in code. The questbook should teach the path: Brewery makes Biomass, the Bio Lab (HV) makes the E. coli dish, the Bacterial Vat (EV glass) turns Biomass into culture fluid, a Fluid Canner fills the Bio Tank. The pack must not remove or override `bacterialVatRecipes` or `bioLabRecipes`; confirm with `/gregguns dumprecipes`.
+
 `config/Baubles.cfg` needs no change, because [0009](../design/0009-gtnh-integration-defaults.md) reuses the existing `head`, `wings` and `quiver` slot types.
 
 ## GT5-Unofficial (needs agreement with the GTNH team)

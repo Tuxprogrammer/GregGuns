@@ -22,7 +22,9 @@ import com.gregguns.entity.npc.SuperMutantHeavy;
 import com.gregguns.entity.npc.mob.ArmySoldier;
 import com.gregguns.entity.npc.mob.Commando;
 import com.gregguns.entity.npc.mob.CyberDemon;
+import com.gregguns.entity.npc.mob.Outcast;
 import com.gregguns.entity.npc.mob.SkeletonSoldier;
+import com.gregguns.entity.npc.mob.StormTrooper;
 import com.gregguns.entity.npc.mob.ZombieFarmer;
 import com.gregguns.entity.npc.mob.ZombieMiner;
 import com.gregguns.entity.npc.mob.ZombiePigmanSoldier;
@@ -74,6 +76,9 @@ public final class NpcClientModule implements ClientModule {
         MobRenderers
             .biped(ArmySoldier.class, "biped", "textures/entity/army_soldier.png", 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);
         MobRenderers.biped(Commando.class, "biped", "textures/entity/army_soldier.png", 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);
+        MobRenderers.biped(Outcast.class, "biped", "textures/entity/army_soldier.png", 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);
+        MobRenderers
+            .biped(StormTrooper.class, "biped", "textures/entity/army_soldier.png", 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);
         // Zombies: the biped model with the zombie skin (M7-ASSETS), vanilla scale and shadow.
         zombie(ZombieSoldier.class);
         zombie(ZombieFarmer.class);
