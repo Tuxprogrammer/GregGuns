@@ -1,5 +1,7 @@
 package com.gregguns.entity;
 
+import net.minecraftforge.common.MinecraftForge;
+
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
@@ -7,9 +9,11 @@ import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.entity.npc.NpcCampPort;
 import com.gregguns.entity.npc.NpcRegistry;
+import com.gregguns.entity.npc.spawn.NpcSpawnHandler;
 import com.gregguns.utility.camp.CampSpawnPorts;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -35,8 +39,16 @@ public final class NpcModule implements GregGunsModule {
     public void init(FMLInitializationEvent event) {
         // N8: the real camp port replaces CampSpawnPort.NONE (M8 contract: counts never load chunks).
         CampSpawnPorts.install(new NpcCampPort());
+        // N6: the CheckSpawn gate and the SpecialSpawn danger carrier.
+        MinecraftForge.EVENT_BUS.register(new NpcSpawnHandler());
         if (DevEnvironment.isActive()) {
             NpcScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
+    }
+
+    @Override
+    public void postInit(FMLPostInitializationEvent event) {
+        // N6: after every mod registered its biomes, and before EnderZoo's postInit (before:EnderZoo).
+        NpcSpawnHandler.registerSpawns();
     }
 }

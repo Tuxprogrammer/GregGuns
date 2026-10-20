@@ -90,6 +90,14 @@ public final class NpcRegistry {
     }
 
     /**
+     * @param mob a kind
+     * @return its bound class, or null if no batch has bound it yet
+     */
+    public static Class<? extends EntityLiving> boundClass(NpcMob mob) {
+        return BOUND.get(mob);
+    }
+
+    /**
      * @return the registered kinds that have a spawn egg, in ID order
      */
     public static List<NpcMob> eggMobs() {
