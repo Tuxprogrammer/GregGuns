@@ -78,6 +78,42 @@ class RecipeClashGuardTest {
     }
 
     @Test
+    void theHevBootsAreOnTheirOwnCircuitSoTheCombatBootsAreNotASubset() {
+        // S2 of the recipe-clash review: the Combat boots (epoxy and titanium, circuit 4) are a subset of the HEV
+        // boots.
+        assertEquals(
+            4,
+            ArmorTable.T3_COMBAT.get(3)
+                .circuit());
+        assertEquals(
+            5,
+            ArmorTable.T3_HEV.get(3)
+                .circuit());
+    }
+
+    @Test
+    void theTurretPlatesAndCarbonBastionAvoidSubsetCircuits() {
+        // S6/S7/S8: circuit 0 matched about 25 pack Assembler rows; Carbon Bastion on 4 sat under GT's Concrete row.
+        assertEquals(12, com.gregguns.utility.TurretPlate.CARBON.circuit());
+        assertEquals(14, com.gregguns.utility.TurretPlate.STEEL.circuit());
+        assertEquals(15, com.gregguns.utility.TurretPlate.ALUMINUM.circuit());
+        assertEquals(10, com.gregguns.utility.rampart.BastionPlating.CARBON.circuit());
+    }
+
+    @Test
+    void theLaserFocusTakesNoDiamondSoGtsWhiteLensRowDoesNotMatchIt() {
+        // S4: GT's engraver row (white lens plus 3 diamonds) is a subset of a recipe that holds diamonds and the lens.
+        for (ProductionTable.Row row : ComponentTable.rows()) {
+            if (row.id()
+                .equals("RC-64")) {
+                for (ProductionTable.Input input : row.inputs()) {
+                    assertNotEquals("Diamond", input.material());
+                }
+            }
+        }
+    }
+
+    @Test
     void casingCircuitsAvoidGtsStainlessCasingAndEachOther() {
         assertEquals(1, CasingCircuits.GT_STAINLESS_CASING);
         assertNotEquals(CasingCircuits.GT_STAINLESS_CASING, CasingCircuits.WORKS_CASING);

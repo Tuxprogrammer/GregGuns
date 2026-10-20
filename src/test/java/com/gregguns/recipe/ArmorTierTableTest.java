@@ -45,7 +45,9 @@ class ArmorTierTableTest {
             assertEquals(set.pieceName(ArmorSlot.values()[i]), row.output());
             assertEquals(tier, row.tier());
             assertEquals(ProductionTable.Target.ASSEMBLER, row.target());
-            assertEquals(i + 1, row.circuit(), "circuit helmet 1 to boots 4");
+            // The HEV boots use circuit 5: the Combat boots (circuit 4) are a subset of their inputs.
+            int circuit = rows == ArmorTable.T3_HEV && i == 3 ? 5 : i + 1;
+            assertEquals(circuit, row.circuit(), "circuit helmet 1 to boots 4 (HEV boots 5)");
             assertEquals(seconds[i], row.seconds());
         }
     }
