@@ -7662,6 +7662,46 @@
   "priority": "P3"
  },
  {
+  "id": "block.decor.zombie_hole",
+  "kind": "block",
+  "path": "textures/blocks/zombie_hole.png",
+  "width": 16,
+  "height": 16,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#46361F",
+   "#2F5A2A"
+  ],
+  "brief": "Zombie Hole spawner block (GregGuns M8 G11). Original: ragged pit in churned brown earth, green glow at the bottom.",
+  "footprint_ref": "(new, original 16x16 spawner block top)",
+  "priority": "P3"
+ },
+ {
+  "id": "block.decor.bug_hole",
+  "kind": "block",
+  "path": "textures/blocks/bug_hole.png",
+  "width": 16,
+  "height": 16,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#B0A070",
+   "#8BC24E"
+  ],
+  "brief": "Bug Hole spawner block (GregGuns M8 G11). Original: chitin-ringed burrow in nest sand, green ichor on the rim.",
+  "footprint_ref": "(new, original 16x16 spawner block top)",
+  "priority": "P3"
+ },
+ {
   "id": "block.decor.air_marker",
   "kind": "block",
   "path": "textures/blocks/air_marker.png",

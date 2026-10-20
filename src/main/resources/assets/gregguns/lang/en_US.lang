@@ -525,6 +525,8 @@ tile.gregguns.reinforced_chest.name=Reinforced Chest
 tile.gregguns.weapon_chest.name=Weapon Chest
 tile.gregguns.bio_blob.name=Bio Blob
 tile.gregguns.camp_flag.name=Camp Flag
+tile.gregguns.zombie_hole.name=Zombie Hole
+tile.gregguns.bug_hole.name=Bug Hole
 container.gregguns.reinforced_chest=Reinforced Chest
 container.gregguns.weapon_chest=Weapon Chest
 

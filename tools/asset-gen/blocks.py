@@ -59,6 +59,7 @@ DECOR = {
     "concrete03": ba.concrete_numbered(3), "concrete04": ba.concrete_numbered(4),
     "concrete_hole": ba.concrete_hole, "concrete_old2_top": ba.concrete_old2_top,
     "concrete_old2_ctmv": ba.concrete_old2_ctmv,
+    "zombie_hole": ba.zombie_hole, "bug_hole": ba.bug_hole,
     "controlpanel_front": ba.controlpanel_front, "controlpanel_overlay_front": ba.controlpanel_overlay,
     "controlpanel_side": ba.controlpanel_side, "controlpanel_top": ba.controlpanel_top,
     "door01": ba.door01, "door01_lower": ba.door01_lower, "door01_upper": ba.door01_upper,
