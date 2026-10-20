@@ -1232,3 +1232,40 @@ def controlpanel_overlay(rng):
             c.rect(25, 5, 27, 7, hx("#d03030"))
         frames.append(c)
     return frames
+
+
+def _earth(rng, n=16):
+    """Dark packed-earth base for the zombie hole: value noise between two browns."""
+    c = Canvas(n, fill=hx("#5a4630"))
+    f = fbm(n, n, rng, 4, 2)
+    for y in range(n):
+        for x in range(n):
+            c.px(x, y, mix(hx("#46361f"), hx("#6c553a"), float(f[y, x])))
+    return c
+
+
+def zombie_hole(rng):
+    """Spawner top for the Zombie Hole: a ragged pit in churned earth with a sickly green glow at the bottom."""
+    c = _earth(rng)
+    c.disc(8, 8, 6.0, hx("#34281a"))                 # churned rim
+    c.disc(8, 8, 4.8, hx("#1c140c"))
+    c.disc(8, 8, 3.2, hx("#0c0a06"))
+    c.disc(8, 8, 1.4, hx("#2f5a2a"))                 # faint green glow
+    for _ in range(7):                               # clods around the lip
+        a = rng.random() * 6.28
+        r = 5.6 + rng.random() * 1.6
+        c.px(int(8 + r * np.cos(a)), int(8 + r * np.sin(a)), hx("#7a6244"))
+    return [c]
+
+
+def bug_hole(rng):
+    """Spawner top for the Bug Hole: a chitin-ringed burrow in nest sand with green ichor on the rim."""
+    c = _sand(rng)
+    c.disc(8, 8, 6.2, hx("#5c5230"))
+    c.disc(8, 8, 5.0, hx("#8bc24e"))                 # ichor ring
+    c.disc(8, 8, 4.0, hx("#25301a"))
+    c.disc(8, 8, 2.6, hx("#0c0e08"))
+    c.px(4, 5, hx("#b3e571"))
+    c.px(11, 11, hx("#b3e571"))
+    c.px(12, 4, hx("#50482c"))
+    return [c]

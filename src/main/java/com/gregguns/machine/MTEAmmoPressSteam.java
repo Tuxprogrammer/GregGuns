@@ -1,5 +1,6 @@
 package com.gregguns.machine;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
 import com.gregguns.GregGuns;
@@ -9,19 +10,20 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
-import gregtech.api.enums.TierEU;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEBasicMachineBronze;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.render.TextureFactory;
-import gregtech.api.util.GTRecipe;
+import gregtech.common.gui.modularui.singleblock.MTEBasicMachineBronzeGui;
 
 /**
  * The Steam (Bronze) Ammo Press: a GT bronze steam machine on the {@code gregguns.ammoPress} map. It follows GT's
  * Bronze Compressor: steam in through any side but the front, and after each recipe it must vent steam through the
- * front face (the base class handles both). It runs ULV recipes only.
+ * front face (the base class handles both). It runs every ammo recipe up to LV, as GT's steam machines do: the
+ * inherited
+ * recipe check queries at LV voltage, 2 L of steam pay 1 EU, and Bronze takes twice as long as the EU recipe.
  *
  * <p>
  * It has no TESR: the animation is the vanilla animated overlay strips in {@code textures/blocks/machines/
@@ -67,20 +69,26 @@ public final class MTEAmmoPressSteam extends MTEBasicMachineBronze {
         return GregGunsRecipeMaps.AMMO_PRESS;
     }
 
+    /**
+     * Builds the steam GUI model the way GT's {@code buildUI} does, without opening a window. The dev scenario uses it
+     * to prove that the map's steam textures resolve; the constructor is where a missing texture used to throw.
+     *
+     * @return GT's bronze steam GUI for this machine
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEBasicMachineBronze.java#L363-L365
+    public MTEBasicMachineBronzeGui newGui() {
+        return new MTEBasicMachineBronzeGui(this, getUIProperties());
+    }
+
+    // Source: MTEBasicMachine#canOutput compares output i with slot i only; see OutputFit.
     @Override
-    public int checkRecipe() {
-        // Deviation: GT's bronze check accepts recipes up to LV voltage. This press runs ULV recipes only (spec), so a
-        // 30 EU/t LV recipe, the 9mm bullet for one, is not available to it.
-        GTRecipe recipe = getRecipeMap().findRecipeQuery()
-            .items(getAllInputs())
-            .voltage(TierEU.ULV)
-            .find();
-        if (recipe != null && canOutput(recipe.mOutputs) && recipe.isRecipeInputEqual(true, null, getAllInputs())) {
-            mOutputItems[0] = recipe.rollOutput(getBaseMetaTileEntity(), 0);
-            calculateCustomOverclock(recipe);
-            return FOUND_AND_SUCCESSFULLY_USED_RECIPE;
+    protected boolean canOutput(ItemStack... outputs) {
+        if (OutputFit.fits(getAllOutputs(), outputs)) {
+            return true;
         }
-        return DID_NOT_FIND_RECIPE;
+        mOutputBlocked++;
+        return false;
     }
 
     @Override
@@ -88,7 +96,7 @@ public final class MTEAmmoPressSteam extends MTEBasicMachineBronze {
         // The lang file is not loaded at construction, so the tooltip key is translated here.
         String[] lines = super.getDescription();
         lines[0] = StatCollector.translateToLocal(mDescriptionArray[0]);
-        return lines;
+        return com.gregguns.core.text.AddedBy.append(lines);
     }
 
     @SideOnly(Side.CLIENT)

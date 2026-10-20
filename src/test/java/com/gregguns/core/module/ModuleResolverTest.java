@@ -32,6 +32,25 @@ class ModuleResolverTest {
     }
 
     @Test
+    void shippedDefaultsResolveCleanly() {
+        ModuleResolution result = ModuleResolver
+            .resolve(Arrays.asList(ModuleId.values()), com.gregguns.core.config.ModuleFlags::isEnabled);
+        assertEquals(
+            Arrays.asList(
+                ModuleId.GUNS,
+                ModuleId.ARMOR,
+                ModuleId.MACHINES,
+                ModuleId.ENERGY_WEAPONS,
+                ModuleId.UTILITY,
+                ModuleId.NPCS,
+                ModuleId.WORLDGEN),
+            result.enabled());
+        assertTrue(
+            result.skipped()
+                .isEmpty());
+    }
+
+    @Test
     void disabledModuleIsSkippedByConfig() {
         ModuleResolution result = ModuleResolver.resolve(Arrays.asList(ModuleId.GUNS), id -> false);
         assertTrue(

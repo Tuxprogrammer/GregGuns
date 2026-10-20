@@ -18,9 +18,9 @@ import com.gtnewhorizon.gtnhlib.config.Config;
 class ConfigDefaultsTest {
 
     @Test
-    void everyModuleFlagDefaultsToOffUntilItsMilestoneIsMet() {
+    void everyModuleFlagHasItsExpectedDefault() {
         for (ModuleId id : ModuleId.values()) {
-            assertFalse(ModuleFlags.isEnabled(id), "modules." + id.configKey());
+            assertEquals(true, ModuleFlags.isEnabled(id), "modules." + id.configKey());
         }
     }
 
@@ -44,11 +44,12 @@ class ConfigDefaultsTest {
 
     @Test
     void flagsReflectFieldChanges() {
+        boolean original = ModulesConfig.guns;
         try {
-            ModulesConfig.guns = true;
-            assertTrue(ModuleFlags.isEnabled(ModuleId.GUNS));
+            ModulesConfig.guns = !original;
+            assertEquals(!original, ModuleFlags.isEnabled(ModuleId.GUNS));
         } finally {
-            ModulesConfig.guns = false;
+            ModulesConfig.guns = original;
         }
     }
 

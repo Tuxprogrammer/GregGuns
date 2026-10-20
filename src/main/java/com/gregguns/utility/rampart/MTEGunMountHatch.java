@@ -109,7 +109,7 @@ public final class MTEGunMountHatch extends MTEHatch implements TurretHost {
         for (int i = 0; i < lines.length; i++) {
             lines[i] = StatCollector.translateToLocal(mDescriptionArray[i]);
         }
-        return lines;
+        return com.gregguns.core.text.AddedBy.append(lines);
     }
 
     /** @return the GT voltage index of this hatch, which is the highest gun tier it mounts */

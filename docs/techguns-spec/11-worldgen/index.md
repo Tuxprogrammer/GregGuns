@@ -40,6 +40,16 @@ Natural structures (all Overworld only):
 | [loot.md](loot.md) | Which chest uses which table, chest counts per structure, and the full contents of all TG loot tables plus additions to vanilla pools |
 | [village.md](village.md) | The (unregistered) village bunker piece. There are no professions or trades. |
 | [assets.md](assets.md) | Structure data files, the 25 related textures, sounds (none), and lang keys and hard-coded strings |
+| [structure-notes/factory_small.md](structure-notes/factory_small.md) | Word-only builder notes: Small Factory Building (L-shaped shed, 2 chests) |
+| [structure-notes/train_station.md](structure-notes/train_station.md) | Word-only builder notes: Small Train Station (broken rails, gabled house, loft chest) |
+| [structure-notes/gas_station.md](structure-notes/gas_station.md) | Design brief for the new Gas Station (shop, pump canopy, fixed doors) |
+| [structure-notes/house_medium.md](structure-notes/house_medium.md) | Word-only builder notes: Medium House (two wings, attic, 18 chests) |
+| [structure-notes/big_bunker.md](structure-notes/big_bunker.md) | Word-only builder notes: Big Bunker (buried levels, 2 Zombie Holes, 14 chests) |
+
+| [structure-notes/aircraft_carrier.md](structure-notes/aircraft_carrier.md) | Word-only builder notes: Aircraft Carrier (deck, island, hangar, flag, 26 chests) |
+| [structure-notes/submarine.md](structure-notes/submarine.md) | Word-only builder notes: Submarine (7 wide, sea floor, conning tower, 9 chests) |
+| [structure-notes/camp_parts.md](structure-notes/camp_parts.md) | Word-only builder notes: Military Base rules and its nine parts |
+| [structure-notes/alien_bug_nest.md](structure-notes/alien_bug_nest.md) | Procedural rules for the Alien Bug Nest (chambers, tunnels, eggs, Bug Holes) |
 
 ## Config keys that gate worldgen
 

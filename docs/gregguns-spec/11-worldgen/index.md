@@ -19,6 +19,7 @@ The pack makes four things matter: it forces the RWG world generator, it ships A
 | [structure-placement.md](structure-placement.md) | Generator order against GT, the populate window (no cascading worldgen), seeded grid, dimension allow-list, Roguelike-Dungeons and villages |
 | [structure-loot.md](structure-loot.md) | Which loot category each structure draws from, and its tier ceiling. Table contents are in [06-items/pack-loot.md](../06-items/pack-loot.md) |
 | [chisel-palette.md](chisel-palette.md) | Palette keys with Chisel resolved at `postInit` and a fallback (fixes WGEN-24) |
+| [layout-format.md](layout-format.md) | The GregGuns layout text format, rotation tables, weighted palette entries, validation and the window-clipped stamper |
 | [ore-and-oil.md](ore-and-oil.md) | What replaces Techguns' ores, clusters and oil holes: GT and dreamcraft |
 
 ## Integration map

@@ -42,6 +42,24 @@ public interface ScenarioContext {
     <T extends Entity> T spawn(T entity);
 
     /**
+     * Positions an entity, then adds it to the world. Moving an entity after it joined leaves it filed in the chunk of
+     * its first position (the origin), where area queries such as the turret scan cannot find it.
+     *
+     * @param entity the entity
+     * @param x      X
+     * @param y      Y
+     * @param z      Z
+     * @param yaw    yaw in degrees
+     * @param pitch  pitch in degrees
+     * @param <T>    the entity type
+     * @return the same entity
+     */
+    default <T extends Entity> T spawnAt(T entity, double x, double y, double z, float yaw, float pitch) {
+        entity.setLocationAndAngles(x, y, z, yaw, pitch);
+        return spawn(entity);
+    }
+
+    /**
      * Removes an entity now (not at cleanup).
      *
      * @param entity an entity previously spawned through {@link #spawn}

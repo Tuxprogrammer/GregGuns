@@ -16,6 +16,7 @@ import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.item.gun.AmmoSources;
 import com.gregguns.recipe.ArmorRecipes;
+import com.gregguns.recipe.ArmorRecyclingScenario;
 import com.gregguns.recipe.EquipmentRecipes;
 import com.gregguns.recipe.FlightRecipes;
 
@@ -78,6 +79,7 @@ public final class ArmorModule implements GregGunsModule {
             FlightScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             PowerArmorScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ArmorShowcaseScenario.register(ScenarioRegistry.SCENARIOS);
+            ArmorRecyclingScenario.register(ScenarioRegistry.SCENARIOS);
             AccessoryShowcaseScenario.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }

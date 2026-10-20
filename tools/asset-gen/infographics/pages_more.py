@@ -79,7 +79,7 @@ def ammo():
 <div class="card"><h2>Energy weapons</h2><div style="display:flex;align-items:center;gap:12px;margin:10px 0">{img(K.gun("laser_rifle", w=260, h=110), h=80)}{chip("EV")}</div>
 {muted("No cells to craft: the gun is the battery. Charge it in a GT <b style='color:var(--txt)'>Charger</b> or <b style='color:var(--txt)'>Battery Buffer</b> of exactly the gun's tier. A wrong-tier charger won't touch it.")}</div>
 <div class="card"><h2>Fluid tanks</h2><div style="display:flex;align-items:center;gap:12px;margin:10px 0">{ico("tank_fuel", 58)}{ico("tank_bio", 58)}{ico("tank_air", 58)}</div>
-{muted("Fill <b style='color:var(--txt)'>Fuel</b> (diesel, gasoline, ethanol), <b style='color:var(--txt)'>Bio</b> (biomass) and <b style='color:var(--txt)'>Compressed Air</b> tanks in a GT Fluid Canner. Empties come back to you.")}</div>
+{muted("Fill <b style='color:var(--txt)'>Fuel</b> (diesel, gasoline, ethanol), <b style='color:var(--txt)'>Compressed Air</b> and <b style='color:var(--txt)'>Bio</b> tanks in a GT Fluid Canner. Bio takes E. coli culture: Biomass from a Brewery, grown in an EV Bacterial Vat. Empties come back to you.")}</div>
 <div class="card"><h2>Loose-round guns</h2><div style="display:flex;align-items:center;gap:10px;margin:10px 0">{img(K.gun("revolver", w=200, h=100), h=70)}{img(K.gun("combat_shotgun", w=260, h=100), h=64)}</div>
 {muted("Revolvers, shotguns, the Bolt Action Rifle and the launchers take rounds straight from your inventory. No magazines needed.")}</div>
 <div class="card"><h2>Endgame ammo</h2><div style="display:flex;align-items:center;gap:12px;margin:10px 0">{ico("ammo_nether_charge", 58)}{chip("LuV")}{ico("ammo_rocket_nuke", 58)}{chip("ZPM")}</div>
@@ -216,7 +216,9 @@ MB = {
         hatches=[("Input Bus and Input Hatch", "on the feeder; the two towers on its roof are a handy spot"),
                  ("Energy, Maintenance and Muffler Hatches", "anywhere on the feeder. It does need a Muffler"),
                  ("Output Bus and Output Hatch", "on the packing station's back wall"),
-                 ("The belt", "Item Pipe Casings down the middle of the floor, all of one tier")],
+                 ("The belt", "Item Pipe Casings down the middle of the floor, all of one tier"),
+                 ("The insides", "part of the build: pipe runs under the roof, a press rod and gearboxes in every bay, "
+                                 "feed motors and an assembler arch. The glass windows show it running")],
         grow=[("More press bays", "Parallels = 4 &times; bays &times; voltage tier. At HV, 4 bays run 48 at once and 8 bays run 96."),
               ("A faster belt", "A higher-tier Item Pipe Casing belt shortens every run."),
               ("Bigger hatches", "Power is the real limit. Feed a long hall with more amps or a higher-tier Energy Hatch.")],
@@ -330,69 +332,145 @@ background:radial-gradient(ellipse 70% 80% at 50% 45%,rgba(255,170,90,.28),trans
 </div>"""
 
 
-MOBS = [
-    ("Low", [
-        ("Zombie Soldier", "Armored zombie with a revolver or Thompson. Its Farmer and Miner cousins carry tools or a Hand Cannon.",
-         dict(model="biped", skin="zombie_soldier", pose={"rightArm": (-90, 0, 0), "leftArm": (-90, 0, 0)})),
-        ("Skeleton Soldier", "A skeleton in a scout or combat helmet, with a revolver, Thompson or Hand Cannon.",
-         dict(model="skeleton_soldier", skin=str(K.bone_skin()), pose=K.AIM, gun_name="thompson_smg",
-              armor=("vanilla", ARMOR / "t1_scout_1.png", ARMOR / "t1_scout_2.png", ("helmet", "boots")))),
-        ("Bandit", "Quick gunman with pistols, rifles and shotguns. Roams the overworld.",
-         dict(model="biped", skin="bandit", pose=K.AIM, gun_name="sawed_off"))]),
-    ("Medium", [
-        ("Army Soldier", "Guards camps and bases with an M4, a shotgun or a rifle.",
-         dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="m4")),
-        ("Commando", "Fast, with a silenced M4 and commando armor.",
-         dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="infiltrator", armor=vset("t2_commando"))),
-        ("Alien Bug", "Very fast, climbs walls, bites. Swarms out of bug nests.", dict(model="alien_bug", skin="alien_bug"))]),
-    ("High", [
-        ("Stormtrooper", "HEV suit and a Blaster or Laser Rifle.",
-         dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="blaster_rifle", armor=vset("t3_hev"))),
-        ("Super Mutant", "Tall brutes in three ranks, with rockets, rifles and lasers.",
-         dict(model="super_mutant", skin="super_mutant_3", pose=K.AIM, gun_name="rocket_launcher")),
-        ("Outcast", "Power armor and the heavy guns: Minigun, Tesla Rifle, Grim Reaper.",
-         dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="tesla_rifle", armor=("custom", "t3_power")))]),
-    ("Boss", [
-        ("Psycho Steve", "Very fast, very angry, and carrying a chainsaw.",
-         dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="chainsaw",
-              armor=("vanilla", ARMOR / "t1_miner_red_1.png", ARMOR / "t1_miner_red_2.png"))),
-        ("Dictator Dave", "A golden revolver and a hundred hit points.",
-         dict(model="biped", skin="dictator", pose=K.AIM, gun_name="golden_revolver")),
-        ("Cyberdemon", "Fireproof brute with a nether blaster. Drops Cybernetic Parts.", dict(model="cyberdemon", skin="cyberdemon")),
-        ("Attack Helicopter", "Machine-gun bursts and rockets. Comes when you break a camp flag.",
-         dict(model="attack_helicopter", skin="attack_helicopter", yaw=-120, pitch=14))]),
+def _armor(set_id, *pieces, camo=""):
+    """A vanilla-layout armor set (or only some pieces) in an optional camo."""
+    name = f"{set_id}_{camo}" if camo else set_id
+    return ("vanilla", ARMOR / f"{name}_1.png", ARMOR / f"{name}_2.png", pieces or ("helmet", "chest", "legs", "boots"))
+
+
+ZOMBIE_ARMS = {"rightArm": (-90, 0, 0), "leftArm": (-90, 0, 0)}
+
+# Where you meet them, then each mob: name, badge, what it carries, what it drops, render arguments. Gear and drops
+# follow the mod's NPC profiles; the badge is the spawn danger it needs (wild) or where it comes from.
+ENCOUNTERS = [
+    ("In the wild", "#7bd88f",
+     "Natural spawns, Overworld only. The danger level rises the farther you travel from world spawn, and in harsh "
+     "biomes: deserts, wastelands, frozen lands and swamps. Higher danger opens tougher spawns.", 3, [
+         ("Zombie Farmer", "Danger 0+", "A hoe or a Hand Cannon, in Miner's clothes.",
+          "Wheat, seeds, leather, bread, apples, Heavy Cloth.",
+          dict(model="biped", skin="zombie_soldier", pose=ZOMBIE_ARMS, armor=None)),
+         ("Zombie Miner", "Danger 0+", "A pickaxe or a Hand Cannon, and a Miner's Helmet.",
+          "Coal, redstone, iron, gunpowder, Heavy Cloth.",
+          dict(model="biped", skin="zombie_soldier", pose=K.AIM, gun_name="handcannon", armor=None)),
+         ("Zombie Soldier", "Danger 1+", "A revolver, a Thompson or a shovel, in Soldier armor.",
+          "Shotgun shells, 9mm bullets, iron, gunpowder, Heavy Cloth.",
+          dict(model="biped", skin="zombie_soldier", pose=K.AIM, gun_name="thompson_smg", armor=None)),
+         ("Skeleton Soldier", "Danger 1+", "A revolver, Thompson or Hand Cannon; a helmet and boots.",
+          "Bones, coal, gunpowder.",
+          dict(model="skeleton_soldier", skin=None, pose=K.AIM, gun_name="revolver", armor=None)),
+         ("Psycho Steve", "Danger 1+, rare boss", "A Chainsaw and red Miner armor. Very fast, very angry.",
+          "Always his Chainsaw and 4 to 8 Fuel Tanks.",
+          dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="chainsaw", armor=None)),
+         ("Bandit", "Danger 2+", "A pistol, revolver, Sawed Off, Thompson, AK47 or Bolt Action Rifle, in Bandit armor.",
+          "Ammo, iron, gunpowder, Heavy Cloth.",
+          dict(model="biped", skin="bandit", pose=K.AIM, gun_name="sawed_off", armor=None)),
+     ]),
+    ("At camps and nests", "#ffd24a",
+     "Military Camps and Aircraft Carriers fly a camp flag that keeps calling in soldiers until you break it. "
+     "Breaking it brings the helicopter.", 5, [
+         ("Army Soldier", "Camps", "An M4, Combat Shotgun or Bolt Action Rifle; Combat armor or a beret.",
+          "Shotgun shells, rifle bullets, iron, Heavy Cloth.",
+          dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="m4", armor=None)),
+         ("Commando", "Aircraft Carriers", "An M4 and full Commando armor.",
+          "Steel, rubber, rifle bullets, Explosive Charges.",
+          dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="m4", armor=None)),
+         ("Camp Turret", "Camps", "An AK47 behind iron plating. Shoots you and your turrets.", "Nothing; just break it.",
+          dict(turret=("iron", "ak47"))),
+         ("Attack Helicopter", "Boss: break a camp flag", "Machine-gun bursts and rockets from the air.",
+          "16 to 31 rifle bullets, 8 to 15 rockets, 2 or 3 Cybernetic Parts, 4 to 7 iron blocks.",
+          dict(model="attack_helicopter", skin="attack_helicopter", yaw=-120, pitch=14)),
+         ("Alien Bug", "Bug nests", "Fast, climbs walls, bites. Pours out of the Bug Holes in desert and wasteland nests.",
+          "String and spider eyes.", dict(model="alien_bug", skin="alien_bug")),
+     ]),
+    ("Heavy hitters", "#ff5555",
+     "These never spawn on their own. Your pack or server brings them in with spawn eggs, spawners or commands, for "
+     "arenas, events and boss fights.", 3, [
+         ("Super Mutants", "Basic, Heavy, Elite",
+          "Each rank is bigger. A Rocket Launcher, AK47, Combat Shotgun or Laser Rifle.",
+          "Cybernetic Parts, blaze rods, ghast tears.", dict(mutants=True)),
+         ("Stormtrooper", "Egg or spawner", "A silver HEV suit and a Blaster or Laser Rifle.",
+          "Steel, rubber, redstone, circuits, batteries.",
+          dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="blaster_rifle", armor=None)),
+         ("Outcast", "Egg or spawner", "Dark Power Armor and the heavy guns: Minigun, Tesla Rifle, Grim Reaper, Laser "
+          "Rifle, Bio Gun, Flamethrower or LMG.", "No loot of its own, but its gun and armor can drop.",
+          dict(model="biped", skin="army_soldier", pose=K.AIM, gun_name="minigun", armor=None)),
+         ("Dictator Dave", "Egg or spawner, boss", "A Golden Revolver, a beret and a hundred hit points.",
+          "Always the Golden Revolver and 8 to 16 9mm bullets.",
+          dict(model="biped", skin="dictator", pose=K.AIM, gun_name="golden_revolver", armor=None)),
+         ("Cyberdemon", "Egg or spawner", "Fireproof, with a Nether Blaster.",
+          "Cybernetic Parts, blaze rods, ghast tears.",
+          dict(model="cyberdemon", skin="cyberdemon", pose=K.AIM, gun_name="nether_blaster")),
+         ("Zombie Pigman Soldier", "Egg or spawner", "Combat armor and a Thompson, AK47, Flamethrower, LMG, Rocket "
+          "Launcher or more.", "Steel, gold, gunpowder, shotgun shells, rifle bullets.",
+          dict(model="biped", skin=None, pose=K.AIM, gun_name="ak47", armor=None)),
+     ]),
 ]
-DANGER = {"Low": "#7bd88f", "Medium": "#ffd24a", "High": "#ff8a1f", "Boss": "#ff5555"}
+
+# Armor and the painted skins are filled in here, so building the table never touches the disk.
+_GEAR = {
+    "Zombie Farmer": dict(armor=lambda: _armor("t1_miner", "chest", "legs")),
+    "Zombie Miner": dict(armor=lambda: _armor("t1_miner", "helmet", "chest")),
+    "Zombie Soldier": dict(armor=lambda: _armor("t1_combat", "helmet", "chest")),
+    "Skeleton Soldier": dict(armor=lambda: _armor("t1_scout", "helmet", "boots"), skin=lambda: str(K.bone_skin())),
+    "Psycho Steve": dict(armor=lambda: _armor("t1_miner", camo="red")),
+    "Bandit": dict(armor=lambda: _armor("t1_scout", "chest", "legs", "boots")),
+    "Army Soldier": dict(armor=lambda: _armor("t2_combat", "chest", "legs")),
+    "Commando": dict(armor=lambda: _armor("t2_commando")),
+    "Stormtrooper": dict(armor=lambda: _armor("t3_hev", camo="silver")),
+    "Outcast": dict(armor=lambda: ("custom", "t3_power", ARMOR / "t3_power_dark.png")),
+    "Dictator Dave": dict(armor=lambda: [("custom", "t2_beret"), _armor("t1_combat", "chest", "boots"),
+                                         _armor("t1_scout", "legs", camo="snow")]),
+    "Zombie Pigman Soldier": dict(armor=lambda: _armor("t2_combat", "helmet", "chest"), skin=lambda: str(K.pigman_skin())),
+}
+
+
+def _enemy_pic(name, kw):
+    kw = dict(kw)
+    for k, make in _GEAR.get(name, {}).items():
+        kw[k] = make()
+    if "turret" in kw:
+        return img(S.turret(*kw["turret"]), h=200, style="max-width:100%")
+    if kw.pop("mutants", False):
+        # The three ranks side by side, drawn at their in-game scales (1.35, 1.5 and 1.65).
+        ranks = (("super_mutant_1", "rocket_launcher", 1.35), ("super_mutant_2", "ak47", 1.5),
+                 ("super_mutant_3", "laser_rifle", 1.65))
+        figs = "".join(
+            img(K.mob("super_mutant", skin, pose=K.AIM, gun_name=g, yaw=50, flip=True, pitch=8, h=320),
+                h=int(126 * s), style="margin-left:-34px")
+            for skin, g, s in ranks)
+        return f'<div style="display:flex;align-items:flex-end;padding-left:34px">{figs}</div>'
+    # A gun is held in the right hand, so a gunman is turned to show that side and mirrored to face left.
+    armed = bool(kw.get("gun_name"))
+    p = K.mob(kw.pop("model"), kw.pop("skin"), yaw=kw.pop("yaw", 50 if armed else -30), flip=armed,
+              pitch=kw.pop("pitch", 8), h=320, **kw)
+    return img(p, h=210, style="max-width:100%")
 
 
 def enemies():
     groups = []
-    for level, mobs in MOBS:
-        cards = ""
-        for n, d, kw in mobs:
-            kw = dict(kw)
-            # A gun is held in the right hand, so a gunman is turned to show that side and mirrored to face left.
-            armed = bool(kw.get("gun_name"))
-            p = K.mob(kw.pop("model"), kw.pop("skin"), yaw=kw.pop("yaw", 50 if armed else -30), flip=armed, pitch=kw.pop("pitch", 8), h=320, **kw)
-            cards += f"""<div class="wcard" style="align-items:center;text-align:center">
-<div class="spot" style="height:230px;width:100%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px">{img(p, h=210, style="max-width:100%")}</div>
-<h3 style="margin-top:8px">{esc(n)}</h3><div class="role">{esc(d)}</div></div>"""
-        groups.append(f"""<div style="display:grid;grid-template-columns:130px 1fr;gap:16px;align-items:stretch">
-<div style="border-left:6px solid {DANGER[level]};padding-left:14px;display:flex;flex-direction:column;justify-content:center">
-<div class="label">Danger</div><div class="cond" style="font-size:38px;font-weight:700;color:{DANGER[level]}">{level}</div></div>
-<div class="grid" style="grid-template-columns:repeat(4,minmax(0,1fr))">{cards}</div></div>""")
+    for title, color, blurb, cols, mobs in ENCOUNTERS:
+        cards = "".join(f"""<div class="wcard" style="align-items:center;text-align:center">
+<div class="spot" style="height:230px;width:100%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px">{_enemy_pic(n, kw)}</div>
+<h3 style="margin-top:8px">{esc(n)}</h3><div class="cond" style="color:{color};font-size:17px;font-weight:700">{esc(badge)}</div>
+<div class="role" style="margin-top:4px">{esc(carries)}</div>
+<div class="role" style="margin-top:6px;color:var(--txt)"><b style="color:{color}">Drops</b> {esc(drops)}</div></div>"""
+                        for n, badge, carries, drops, kw in mobs)
+        groups.append(f"""<div style="border-left:6px solid {color};padding-left:18px;margin-top:22px">
+<div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap"><h2 style="color:{color}">{esc(title)}</h2>{muted(esc(blurb), 17, 0)}</div>
+<div class="grid" style="grid-template-columns:repeat({cols},minmax(0,1fr));margin-top:12px">{cards}</div></div>""")
     structs = "".join(f'<div style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--line)"><span>{esc(n)}</span>{chip(t)}</div>'
                       for n, t in (("Small Factory, Train Station, House, Gas Station", "LV"), ("Big Bunker", "MV"),
                                    ("Military Base and camps", "MV"), ("Aircraft Carrier, Submarine", "MV")))
-    info = f"""<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:18px">
-<div class="card"><h2>Ruins and bases</h2>{muted("Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only bug holes.", 16, 4)}<div style="margin-top:8px">{structs}</div></div>
-<div class="card"><h2>Elite, Ultra, Infernal</h2>{muted("Any soldier or mutant can spawn with an Infernal Mobs rank and better loot: LV for Elite, MV for Ultra, and a rare HV drop from Infernal. Loot never goes above HV.")}</div>
-<div class="card"><h2>What they drop</h2>{muted("Ammo for their guns, and sometimes the armor they wear. A player kill has a small chance to drop the gun itself, and Looting helps.")}</div></div>"""
+    info = f"""<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:22px">
+<div class="card"><h2>Ruins and bases</h2>{muted("Chests hold loot up to the tier shown. Alien Bug Nests have no chests, only Bug Holes.", 16, 4)}<div style="margin-top:8px">{structs}</div></div>
+<div class="card"><h2>Elite, Ultra, Infernal</h2>{muted("Any of them can spawn with an Infernal Mobs rank and better loot: LV for Elite, MV for Ultra, and a rare HV drop from Infernal. The helicopter and camp turrets never do.")}</div>
+<div class="card"><h2>What they drop</h2>{muted("Up to two picks from their loot list, plus one more per level of Looting. A player kill has a small chance to drop the gun they hold, and sometimes the armor they wear.")}</div></div>"""
     body = f"""{battle_scene()}
-<div style="display:flex;flex-direction:column;gap:16px;margin-top:22px">{''.join(groups)}</div>{info}
+{''.join(groups)}{info}
 {guide_row("They don't fight each other, but they will shoot your turrets. Their guns hit for about a third of what yours do, which is little comfort against a Super Mutant with a rocket launcher.", gun="as50")}"""
     return page_doc("Enemies and <b>loot</b>",
-                    "Soldiers, mutants, monsters and a helicopter. Overworld only, and every faction can be switched off in the config.",
+                    "Who shoots back, where you'll meet them, and what they carry and drop. Every faction can be "
+                    "switched off in the config.",
                     body)
 
 

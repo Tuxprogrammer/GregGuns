@@ -1,0 +1,80 @@
+# camp_factory_2
+# Factory hall, 9 x 8: two vanilla chests (LV loot ceiling).
+gregguns-layout 1
+id: camp_factory_2
+size: 9 6 8
+ground: 1
+
+palette:
+C = concrete
+F = factory_floor
+H = hazard
+I = minecraft:iron_door#3@door
+L = lantern
+M = factory_wall
+U = plating
+a = air
+g = glass_pane
+i = minecraft:iron_door#8
+m = minecraft:crafting_table
+n = minecraft:chest#2@facing
+
+marks:
+chest.vanilla 7 1 1
+chest.vanilla 1 1 6
+
+layers:
+layer 0
+CCCCCCCCC
+CFFFFFFFC
+CFFFFFFFC
+CFFFFFFFC
+CFFFFFFFC
+CFFFFFFFC
+CFFFFFFFC
+CCCCCCCCC
+layer 1
+MMMMMMMMM
+MmaaaaanM
+MaaaUaaaM
+MaaaaaaaM
+MaaaaaaaM
+MaaaaaaaM
+MnaaaaaaM
+MMMMIMMMM
+layer 2
+MMMMMMMMM
+MaaaaaaaM
+MaaaUaaaM
+MaaaaaaaM
+MaaaaaaaM
+MaaaaaaaM
+MaaaaaaaM
+MMMMiMMMM
+layer 3
+MMgMMgMMM
+MaaaaaaaM
+gaaaaaaag
+MaaaaaaaM
+MaaaaaaaM
+gaaaaaaag
+MaaaaaaaM
+MMgMMgMMM
+layer 4
+MMMMMMMMM
+MaaaaaaaM
+MaLaaLaaM
+MaaaaaaaM
+MaaaaaaaM
+MaLaaLaaM
+MaaaaaaaM
+MMMMHMMMM
+layer 5
+CCCCCCCCC
+CCCCCCCCC
+CCCCCCCCC
+CCCCCCCCC
+CCCCCCCCC
+CCCCCCCCC
+CCCCCCCCC
+CCCCCCCCC

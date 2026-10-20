@@ -50,7 +50,7 @@ public final class AmmoWorksScenarios {
 
     private static final int AREA_RADIUS = 18;
     private static final int AREA_HEIGHT = 9;
-    private static final int RUN_TIMEOUT_TICKS = 1200;
+    private static final int RUN_TIMEOUT_TICKS = 4800;
 
     private AmmoWorksScenarios() {}
 
@@ -349,7 +349,7 @@ public final class AmmoWorksScenarios {
 
         @Override
         public String description() {
-            return "A two-bay hall forms; with a wall casing, the muffler, the output bus or a bay removed, or a second belt tier, it does not.";
+            return "A two-bay hall forms; with a wall casing, a window, a press rod, a ceiling pipe, the muffler, the output bus or a bay removed, or a second belt tier, it does not; any glass tier fills a window.";
         }
 
         @Override
@@ -371,6 +371,36 @@ public final class AmmoWorksScenarios {
             out.check(!hall.form(), "a missing wall casing should break the hall");
             ctx.setBlock(-2, Hall.CY, 1, casing, GregGunsCasings.WORKS_CASING);
             out.check(hall.form(), "putting the casing back should form the hall again");
+
+            // Windows: the first bay's side window (left wall, middle row of the interior, first bay aisle) is
+            // required,
+            // and any glass tier fills it, vanilla glass and a GT tier-4 glass alike (mixed tiers pass).
+            int windowY = Hall.CY + 1;
+            int windowZ = AmmoWorksShape.FEEDER_LENGTH;
+            ctx.setBlock(-2, windowY, windowZ, Blocks.air, 0);
+            out.check(!hall.form(), "a missing window should break the hall");
+            ctx.setBlock(-2, windowY, windowZ, Blocks.glass, 0);
+            out.check(hall.form(), "vanilla glass in a window should form the hall");
+            ctx.setBlock(-2, windowY, windowZ, GregTechAPI.sBlockGlass1, 0);
+            out.check(hall.form(), "a different glass tier in another window should still form the hall");
+            ctx.setBlock(-2, windowY, windowZ, casing, GregGunsCasings.WORKS_CASING);
+            out.check(!hall.form(), "a plain casing in a window position should break the hall");
+            ctx.setBlock(-2, windowY, windowZ, Blocks.glass, 0);
+            out.check(hall.form(), "glass back in the window should form the hall again");
+
+            // Interior: the first bay's press rod (steel frame, below the roof ram housing) and the ceiling pipe run.
+            ItemStack frame = GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Steel, 1);
+            Block frameBlock = Block.getBlockFromItem(frame.getItem());
+            int frameMeta = frame.getItemDamage();
+            int rodZ = AmmoWorksShape.FEEDER_LENGTH + 1;
+            ctx.setBlock(0, Hall.CY + 2, rodZ, Blocks.air, 0);
+            out.check(!hall.form(), "a bay without its press rod should break the hall");
+            ctx.setBlock(0, Hall.CY + 2, rodZ, frameBlock, frameMeta);
+            out.check(hall.form(), "the press rod back should form the hall again");
+            ctx.setBlock(1, Hall.CY + 2, windowZ, Blocks.air, 0);
+            out.check(!hall.form(), "a missing ceiling pipe should break the hall");
+            ctx.setBlock(1, Hall.CY + 2, windowZ, GregTechAPI.sBlockCasings2, 13);
+            out.check(hall.form(), "the ceiling pipe back should form the hall again");
 
             // A second belt tier on the floor line.
             Block pipeCasings = GregTechAPI.sBlockCasings11;

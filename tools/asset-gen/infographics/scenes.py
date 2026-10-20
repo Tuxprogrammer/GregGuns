@@ -154,13 +154,20 @@ def ammo_works(bays=4, only=None) -> Build:
     b.define("ram", "Ram Housing", B.first_frame(_casing("ram_housing"), K.TEXCACHE, "ram_housing"),
              "one on top of every press bay")
     b.define("belt", "Item Pipe Casing", gt.iconset("MACHINE_CASING_ITEM_PIPE_TIN"), "the belt: one tier along the whole floor line")
+    b.define("glass", "Glass", gt.bartworks("BoronSilicateGlassBlock"), "the side windows; any tier works")
+    b.define("frame", "Steel Frame Box", gt.frame("Steel"), "the press rods")
+    b.define("pipe", "Steel Pipe Casing", gt.iconset("MACHINE_CASING_PIPE_STEEL"), "pipe runs under the roof")
+    b.define("gearbox", "Steel Gear Box Casing", gt.iconset("MACHINE_CASING_GEARBOX_STEEL"))
+    b.define("motor", "Motor Casing", gt.iconset("MACHINE_CASING_MOTOR"), "the feed motors")
+    b.define("assembler", "Assembler Casing", gt.iconset("MACHINE_CASING_ASSEMBLER"), "the packing arch")
     b.define("ctrl", "Ammunition Works", (wc, wc, _ctrl("works_casing", "ammunition_works")), "controller, HV")
     pieces = ([B.java_shape("AmmoWorksShape", "FEEDER")] + [B.java_shape("AmmoWorksShape", "BAY")] * bays
               + [B.java_shape("AmmoWorksShape", "STATION")])
     if only:
         pieces = [B.java_shape("AmmoWorksShape", only)]
     cells = B.stack_aisles(pieces)
-    b.put(cells, {"F": "works", "A": "works", "O": "works", "M": "ram", "I": "belt", "~": ("ctrl", FRONT)})
+    b.put(cells, {"F": "works", "A": "works", "O": "works", "M": "ram", "I": "belt", "G": "glass", "R": "frame",
+                  "P": "pipe", "B": "gearbox", "N": "motor", "Y": "assembler", "~": ("ctrl", FRONT)})
     if only:
         return b
     last = max(p[2] for p in cells)

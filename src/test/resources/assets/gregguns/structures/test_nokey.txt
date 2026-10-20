@@ -1,0 +1,8 @@
+gregguns-layout 1
+id: test_nokey
+size: 1 1 1
+palette:
+X = no_such_key
+layers:
+layer 0
+X

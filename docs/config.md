@@ -8,19 +8,19 @@ Keep this file in step with the code: a PR that adds or changes an option update
 
 Each roadmap content area is a module. A module's flag decides whether its code runs at all: when it is `false`, the module registers no items, blocks, entities, recipes or event handlers, so nothing is left behind to crash or to orphan a recipe.
 
-**All flags default to `false` for now.** The roadmap says a flag defaults to on once its milestone's exit gate is met, and no content milestone is met yet. The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
+**A flag defaults to `true` once its milestone's exit gate is met.** The gates for M2 to M8 are met, so every module flag defaults to `true`, `worldgen` (M8) included. The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
 
 A module also needs the modules listed in "Needs". If a flag is on but a needed module is off, the module is skipped and a warning is logged.
 
 | Key | Type | Default | Range | Synced | Needs | Milestone | What it enables |
 |---|---|---|---|---|---|---|---|
-| `modules.guns` | boolean | `false` | n/a | no | none | M1, M2 | Damage system, guns, projectiles, ammo |
-| `modules.armor` | boolean | `false` | n/a | no | `guns` | M3 | Armor, set bonuses, special slots |
-| `modules.machines` | boolean | `false` | n/a | no | `guns` | M4 | Production chain and GregTech machines |
-| `modules.energyWeapons` | boolean | `false` | n/a | no | `guns`, `machines` | M5 | Energy and exotic weapons |
-| `modules.utility` | boolean | `false` | n/a | no | `machines` | M6 | Utility and defense machines |
-| `modules.npcs` | boolean | `false` | n/a | no | `guns` | M7 | NPCs and spawning |
-| `modules.worldgen` | boolean | `false` | n/a | no | `npcs` | M8 | Structures and worldgen loot |
+| `modules.guns` | boolean | `true` | n/a | no | none | M1, M2 | Damage system, guns, projectiles, ammo |
+| `modules.armor` | boolean | `true` | n/a | no | `guns` | M3 | Armor, set bonuses, special slots |
+| `modules.machines` | boolean | `true` | n/a | no | `guns` | M4 | Production chain and GregTech machines |
+| `modules.energyWeapons` | boolean | `true` | n/a | no | `guns`, `machines` | M5 | Energy and exotic weapons |
+| `modules.utility` | boolean | `true` | n/a | no | `machines` | M6 | Utility and defense machines |
+| `modules.npcs` | boolean | `true` | n/a | no | `guns` | M7 | NPCs and spawning |
+| `modules.worldgen` | boolean | `true` | n/a | no | `npcs` | M8 | Structures and worldgen loot |
 
 All module flags need a game restart. They are not synced from server to client (GGS-01-03): content is registered once at startup, so a value that arrived after joining could not add or remove it. Start the client and the server with the same flags.
 
@@ -32,6 +32,12 @@ The "Needs" column is the module order in `ModuleId`, taken from the roadmap's e
 |---|---|---|---|---|---|
 | `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Registers the numpad debug keybinds. Nothing reads it until the M1 keybinds exist. Kept from Techguns' `enableDebugKeybinds`. |
 | `debug.recipeDump` | boolean | `false` | n/a | no | Enables the op-only `/gregguns dumprecipes <file>` command (recipe-clash review). Leave off in play. |
+
+## Bio Gun (`bioGun`)
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `bioGun.acceptBiomass` | boolean | `false` | n/a | yes | Also lets the Bio Tank take plain GT Biomass, besides BartWorks' E. coli culture fluid (made from Biomass in the Bacterial Vat). Biomass is accepted regardless when the culture fluid cannot be resolved (BartWorks missing). |
 
 ## Machines (`machines`)
 
@@ -84,6 +90,21 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 | `npcs.gunDamageEnabled` | boolean | `true` | n/a | no | NPC bullets deal damage. |
 | `npcs.infernalTieredLoot` | boolean | `true` | n/a | no | Elite, ultra and infernal GregGuns NPCs add tiered GregGuns drops (needs Infernal Mobs). |
 | `npcs.infernalAllowSpawnerNpcs` | boolean | `false` | n/a | no | NPCs from spawner blocks may roll as infernal mobs. |
+
+## Worldgen (`worldgen`)
+
+Structure placement, gating and loot tuning (M8). Read only while `modules.worldgen` is on. Server-side only, not synced. Structure ids: `FactorySmall`, `TrainStation`, `GasStation`, `HouseMedium`, `BigBunker`, `AlienBugNest`, `MilitaryBase`, `AircraftCarrier`, `Submarine`.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `worldgen.spawnStructures` | boolean | `true` | n/a | no | When false the structure generator is not registered. |
+| `worldgen.spacingSmall` / `spacingMedium` / `spacingBig` | int | `16` / `32` / `64` | 2 to 1024 | no | Grid cell size in chunks per size class. |
+| `worldgen.structureDimensions` | int list | `[0]` | any | no | Dimension ids where structures are placed. |
+| `worldgen.structureWorldTypes` | string list | `default`, `RWG`, `largeBiomes`, `amplified` | any | no | World type names that allow structures (case-insensitive). Flat and unknown types are out. |
+| `worldgen.enabled<Id>` | boolean | `true` (`false` for `AlienBugNest`) | n/a | no | Place that structure. |
+| `worldgen.biomeBlacklist<Id>` | string list | none | any | no | BiomeDictionary type names in which that structure is never placed. |
+| `worldgen.lootTierCeiling<Id>` | int | `1` (LV); `2` (MV) for `BigBunker`, `MilitaryBase`, `AircraftCarrier`, `Submarine` | 1 to 3 | no | Highest loot tier; picks the loot category. |
+| `worldgen.lootTier<Id>` | int | `1` | 0 to 2 | no | Loot richness; scales counts and weights only. |
 
 ## Damage factors (`damagefactors`)
 

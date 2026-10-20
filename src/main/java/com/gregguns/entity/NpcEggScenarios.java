@@ -33,6 +33,41 @@ final class NpcEggScenarios {
 
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new EggSpawnsScenario());
+        registry.register(new AllEggsScenario());
+    }
+
+    /** Every catalog mob except the exempt turret has a class, a registered entity and an egg subtype. */
+    private static final class AllEggsScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "npc.all_eggs";
+        }
+
+        @Override
+        public String description() {
+            return "Every NpcMob except the egg-exempt camp turret (and the recorded not-yet-implemented Outcast and"
+                + " Stormtrooper) has a bound class, a registered entity that EntityList can build, and an egg"
+                + " subtype in the creative listing; failures name the mobs.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            for (String problem : NpcRegistry.eggAudit(true)) {
+                out.check(false, problem);
+            }
+            for (NpcMob mob : NpcRegistry.registered()) {
+                out.check(
+                    EntityList.createEntityByName(mob.fullName(), ctx.world()) != null,
+                    "EntityList cannot build " + mob.fullName());
+            }
+            out.check(
+                !NpcRegistry.eggMobs()
+                    .contains(NpcMob.SIMPLE_TURRET),
+                "the exempt turret must not be offered as an egg");
+            return out.build();
+        }
     }
 
     /** The egg puts the mob at a block center and consumes itself; an unregistered subtype spawns nothing. */
@@ -69,6 +104,7 @@ final class NpcEggScenarios {
             ItemNpcEgg egg = NpcRegistry.egg();
             out.check(egg != null, "the npc_egg item should be registered");
             out.check(NpcRegistry.isRegistered(NpcMob.NPC_TEST), "the test NPC should be registered in dev");
+            out.check(!NpcMob.SIMPLE_TURRET.hasEgg(), "the camp turret has no egg");
             out.check(NpcMob.byId(UNKNOWN_EGG_META) == null, "the unknown egg meta should map to no mob");
             out.check(
                 EntityList.createEntityByName(NpcMob.NPC_TEST.fullName(), world) instanceof NpcEntity,
@@ -95,7 +131,7 @@ final class NpcEggScenarios {
 
             ItemStack stale = new ItemStack(egg, 1, UNKNOWN_EGG_META);
             boolean staleUsed = egg.onItemUse(stale, player, world, x, y, z, 1, 0.5F, 1.0F, 0.5F);
-            out.check(!staleUsed, "an unregistered egg should do nothing");
+            out.check(!staleUsed, "an egg for a mob without one should do nothing");
             out.checkEquals("unregistered egg stack", 1, stale.stackSize);
             out.checkEquals("NPCs after the unregistered egg (no stale entity)", 1, ours(world, baseline).size());
 

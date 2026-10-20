@@ -1,5 +1,6 @@
 package com.gregguns.machine;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.StatCollector;
 
@@ -158,6 +159,16 @@ public final class MTEAmmoPress extends MTEBasicMachineWithRecipe implements IMT
         return AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 1, z + 1);
     }
 
+    // Source: MTEBasicMachine#canOutput compares output i with slot i only; see OutputFit.
+    @Override
+    protected boolean canOutput(ItemStack... outputs) {
+        if (OutputFit.fits(getAllOutputs(), outputs)) {
+            return true;
+        }
+        mOutputBlocked++;
+        return false;
+    }
+
     @Override
     public String[] getDescription() {
         // The lang file is not loaded when the machine is constructed, so the keys are translated per tooltip.
@@ -165,7 +176,7 @@ public final class MTEAmmoPress extends MTEBasicMachineWithRecipe implements IMT
         for (int i = 0; i < lines.length; i++) {
             lines[i] = StatCollector.translateToLocal(mDescriptionArray[i]);
         }
-        return lines;
+        return com.gregguns.core.text.AddedBy.append(lines);
     }
 
     /**

@@ -1,0 +1,25 @@
+# camp_containers_1
+# Shipping containers: solid rows 2 wide and 2 tall on skids, one-block lanes between, running the full length along z. No door, no interior, no loot.
+gregguns-layout 1
+id: camp_containers_1
+size: 2 4 2
+ground: 1
+
+palette:
+C = concrete
+G = minecraft:gravel
+X = minecraft:stained_hardened_clay#14
+
+layers:
+layer 0
+GG
+GG
+layer 1
+CC
+CC
+layer 2
+XX
+XX
+layer 3
+XX
+XX

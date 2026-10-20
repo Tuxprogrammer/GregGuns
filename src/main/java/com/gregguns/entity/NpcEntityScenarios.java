@@ -117,7 +117,7 @@ final class NpcEntityScenarios {
     }
 
     /** Lifts a Peaceful world to Normal (Peaceful removes hostile mobs) and returns the difficulty to restore. */
-    private static EnumDifficulty allowMobs(World world) {
+    static EnumDifficulty allowMobs(World world) {
         EnumDifficulty prior = world.difficultySetting;
         if (prior == EnumDifficulty.PEACEFUL) {
             world.difficultySetting = EnumDifficulty.NORMAL;
@@ -129,8 +129,7 @@ final class NpcEntityScenarios {
      * Wraps a poller so the world difficulty from {@link #allowMobs} is restored when the scenario answers, throws or
      * runs out of ticks. Later scenarios on the same world must see the difficulty they were written for.
      */
-    private static ScenarioResult guarded(String name, World world, EnumDifficulty prior, int timeout,
-        ScenarioPoller poller) {
+    static ScenarioResult guarded(String name, World world, EnumDifficulty prior, int timeout, ScenarioPoller poller) {
         return ScenarioResult.pending(name, timeout, ticks -> {
             boolean done = true;
             try {
@@ -158,7 +157,7 @@ final class NpcEntityScenarios {
      * A fake player the entity tracker can serve: a {@code FakePlayer} has no connection, and the tracker crashes
      * sending its metadata, so it gets a handler on a channel-less network manager whose packets just queue up.
      */
-    private static EntityPlayer player(ScenarioContext ctx, String name, double dx, double dz) {
+    static EntityPlayer player(ScenarioContext ctx, String name, double dx, double dz) {
         FakePlayer p = new FakePlayer(
             (WorldServer) ctx.world(),
             new GameProfile(UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8)), name));
@@ -192,8 +191,13 @@ final class NpcEntityScenarios {
             NpcEntity shooter = npc(ctx, 0, 0, PISTOL);
             NpcEntity victim = npc(ctx, 6, 0, null);
             NpcEntity bitten = npc(ctx, 0, 10, null);
-            EntityPig pig = ctx.spawn(new EntityPig(ctx.world()));
-            pig.setLocationAndAngles(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5 + 8, 0.0F, 0.0F);
+            EntityPig pig = ctx.spawnAt(
+                new EntityPig(ctx.world()),
+                ctx.originX() + 0.5,
+                ctx.originY(),
+                ctx.originZ() + 0.5 + 8,
+                0.0F,
+                0.0F);
             ShotLog log = ShotLog.start();
             ItemGun gun = (ItemGun) shooter.getHeldItem()
                 .getItem();

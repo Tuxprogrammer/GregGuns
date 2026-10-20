@@ -24,13 +24,21 @@ public final class NpcScenarios {
         NpcEntityScenarios.registerAll(registry);
         NpcLootScenarios.registerAll(registry);
         NpcEggScenarios.registerAll(registry);
+        NpcSuperMutantScenarios.registerAll(registry);
         NpcCapScenarios.registerAll(registry);
+        NpcBossScenarios.registerAll(registry);
+        CyberDemonScenarios.registerAll(registry);
+        AttackHelicopterScenarios.registerAll(registry);
+        NpcAlienBugScenarios.registerAll(registry);
+        NpcTurretScenarios.registerAll(registry);
         NpcInfernalScenarios.registerAll(registry);
         SoldierScenarios.registerAll(registry);
+        EnergySoldierScenarios.registerAll(registry);
         NpcSpawnScenarios.registerAll(registry);
         ZombieScenarios.registerAll(registry);
         BanditScenarios.registerAll(registry);
         UndeadScenarios.registerAll(registry);
+        NpcSoakScenarios.registerAll(registry);
     }
 
     /** The module is enabled and the config carries the documented defaults. */

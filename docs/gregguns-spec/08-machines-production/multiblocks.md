@@ -72,7 +72,13 @@ All of these are GregGuns blocks on page 50 unless a GT name is given.
 | `F` | Works Casing, feeder | Input Bus, Input Hatch, Energy Hatch, Maintenance Hatch, Muffler Hatch |
 | `A` | Works Casing, plain | none |
 | `O` | Works Casing, packing | Output Bus, Output Hatch, Energy Hatch |
-| `M` | Ram Housing | none |
+| `M` | Ram Housing (roof tooth, and the press head over the belt) | none |
+| `G` | Any glass: every tier GT lists, mixed is fine (the channel is Borosilicate Glass) | none |
+| `R` | Steel Frame Box (press rods, crane rod) | none |
+| `P` | Steel Pipe Casing (ceiling pipe runs) | none |
+| `B` | Steel Gear Box Casing (press drives, packing arch legs) | none |
+| `N` | Motor Machine Casing (feeder belt drive) | none |
+| `Y` | Assembler Machine Casing (packing arch over the belt) | none |
 | `I` | GT item pipe casing, any tier | none. Tier is read |
 | `~` | Controller | n/a |
 
@@ -81,36 +87,38 @@ All of these are GregGuns blocks on page 50 unless a GT name is given.
 **Feeder** (3 long; the controller is at the front, middle, second layer from the bottom):
 
 ```
-y5 (top)      y4          y3          y2          y1          y0 (bottom)
-F...F         AAAAA       FFFFF       FFFFF       FF~FF       AAAAA
-.....         AAAAA       A---A       A---A       A---A       AAIAA
-F...F         AAAAA       A---A       A---A       A---A       AAIAA
+y6      y5      y4      y3      y2      y1      y0
+.....   F...F   AAAAA   FFFFF   FFFFF   FF~FF   AAAAA
+.....   .....   AAAAA   AP-PA   G---G   AN-NA   AAIAA
+.....   F...F   AAAAA   AP-PA   G---G   A---A   AAIAA
 ```
 
-(Each column is one layer. Within a column, rows run front to back.)
+(Each column is one layer, `.` is anything. Within a column, rows run front to back.)
 
 **Press bay** (3 long, repeated `n` times):
 
 ```
-y5            y4          y3          y2          y1          y0
-.....         AAAAA       A---A       A---A       A---A       AAIAA
-..M..         AAMAA       A---A       A---A       A---A       AAIAA
-.....         AAAAA       A---A       A---A       A---A       AAIAA
+y6      y5      y4      y3      y2      y1      y0
+.....   .....   AAAAA   AP-PA   G---G   A---A   AAIAA
+.....   ..M..   AAMAA   APRPA   G-R-G   ABMBA   AAIAA
+.....   .....   AAAAA   AP-PA   G---G   A---A   AAIAA
 ```
 
 **Packing station** (4 long, once, at the far end):
 
 ```
 y6      y5      y4      y3      y2      y1      y0
-.....   AAAAA   A---A   A---A   A---A   A---A   AAIAA
-..O..   AAOAA   A---A   A---A   A---A   A---A   AAIAA
-..O..   AAOAA   A---A   A---A   A---A   A---A   AAIAA
+.....   AAAAA   AP-PA   G---G   G---G   A---A   AAIAA
+..O..   AAOAA   AP-PA   GYYYG   GB-BG   AB-BA   AAIAA
+..O..   AAOAA   APRPA   G-R-G   G---G   A---A   AAIAA
 .....   AAAAA   AOOOA   AOOOA   AOOOA   AOOOA   AAAAA
 ```
 
 The belt `I` runs down the middle of the floor, feeder to station. The hall between the walls is a 3-wide, 3-high open tunnel (4 high in the station), which is where the animated rounds travel.
 
-**Block counts** (for `checkCasingMin`): feeder 18 `F`, 40 `A`, 2 `I`; each bay 44 `A`, 2 `M`, 3 `I`; station 16 `O`, 67 `A`, 3 `I`. The casing minimum is the sum of `F`, `A`, `O` and `M` positions minus a fixed allowance of 12 hatches. For `n` = 4 that is 18 + 40 + 4 x 46 + 16 + 67 = 325 casing positions, so the check is 313.
+**Windows and interior.** The side walls have glass windows (`G`) so the line can be seen from outside: one row in the feeder and the bays, two rows in the station. The front wall, the roof and the output wall carry no glass, so every hatch face stays a casing. Glass is the shared GT glass element, which accepts every registered tier (vanilla glass up to the top borosilicate) and does not require one tier: it is a look, not a progression wall. Inside, a pipe run (`P`) follows the ceiling on both sides end to end, each bay's ram housing drives a press: two steel frame boxes (`R`) down to a Ram Housing press head (`M`) one block above the belt, with a steel gearbox (`B`) on each side of the head; the feeder has a motor casing (`N`) on each side of the belt as its drive; the station has an assembler casing arch (`Y`) on gearbox legs that spans the belt (the packing core) and a frame rod hanging from the crane. The interior parts are required but are not casings: they are not counted toward the casing minimum and never sit on a hatch face.
+
+**Block counts** (for `checkCasingMin`): feeder 18 `F`, 36 `A`, 2 `I`, 4 `G`, 4 `P`, 2 `N`; each bay 38 `A`, 3 `M`, 3 `I`, 6 `G`, 2 `R`, 6 `P`, 2 `B`; station 16 `O`, 55 `A`, 3 `I`, 12 `G`, 2 `R`, 6 `P`, 4 `B`, 3 `Y`. The casing minimum is the sum of `F`, `A`, `O` and `M` positions minus a fixed allowance of 12 hatches. For `n` = 4 that is 54 + 4 x 41 + 71 = 289 casing positions, so the check is 277. The interior totals are glass 16 + 6n, pipes 10 + 6n, gearboxes 4 + 2n, frame boxes 2 + 2n, 2 motor casings and 3 assembler casings.
 
 ### Hatches, controller, special rules
 
@@ -138,7 +146,7 @@ The belt `I` runs down the middle of the floor, feeder to station. The hall betw
 | Parallels | 1 | `4 x n x tier` |
 | EU/t | Recipe `eut` | Parallels x recipe `eut` |
 | Speed | Tier overclock | Tier overclock x belt multiplier |
-| Needs | One MTE | Hatches, maintenance, a muffler, about 300 casings |
+| Needs | One MTE | Hatches, maintenance, a muffler, about 290 casings plus glass and interior parts |
 
 ### Special mechanics
 
@@ -175,6 +183,9 @@ The belt `I` runs down the middle of the floor, feeder to station. The hall betw
 | `R` | Reaction Casing | Input Bus, Output Bus, Input Hatch, Energy, Maintenance on the **floor and low ring**; Muffler on the **cap** |
 | `G` | GT borosilicate glass, any tier (`chainAllGlasses`) | none. **Lowest tier found** is the pressure rating |
 | `F` | `frameGt` Steel | none |
+| `P` | Steel Pipe Casing (the dip tube and the floor pipe runs) | none |
+| `U` | Pump Machine Casing (the foot of the dip tube) | none |
+| `H` | Heating coil, **any tier**, mixed is fine (`ofCoil` with a getter that never records a level) | none |
 | `~` | Controller | n/a |
 
 ### Layers (top to bottom; `n` = 3 shown, the mid layer repeats `n` times)
@@ -182,15 +193,17 @@ The belt `I` runs down the middle of the floor, feeder to station. The hall betw
 ```
 cap       neck      neck      shoulder   mid (x n)  low ring   floor      feet
 .....     .....     .....     .RRR.      .GGG.      .RRR.      .R~R.      .....
-.RRR.     .GGG.     .GGG.     RRRRR      G---G      R---R      RRRRR      .F.F.
-.RRR.     .G-G.     .G-G.     RR-RR      G---G      R---R      RRRRR      .....
-.RRR.     .GGG.     .GGG.     RRRRR      G---G      R---R      RRRRR      .F.F.
+.RRR.     .GGG.     .GGG.     RRRRR      G---G      RHPHR      RRRRR      .F.F.
+.RRR.     .G-G.     .G-G.     RR-RR      G-P-G      R-U-R      RRRRR      .....
+.RRR.     .GGG.     .GGG.     RRRRR      G---G      RHPHR      RRRRR      .F.F.
 .....     .....     .....     .RRR.      .GGG.      .RRR.      .RRR.      .....
 ```
 
 The controller `~` is in the front, middle of the **floor** layer. The shoulder has a one-block hole in the middle, which joins the 3 x 3 x `n` bulb interior to the neck.
 
-**Block counts.** `R` 61 (cap 9, shoulder 20, low ring 12, floor 20), `G` = 16 + 12 x `n`, `F` 4. Casing minimum 51 (61 minus 10 for hatches); it does not change with `n`.
+**Plumbing.** The inside of the flask is not empty: a pump casing (`U`) sits on the floor at the center, and a steel pipe column (`P`) rises from it through every bulb layer, a dip tube that stops under the shoulder hole so the neck stays an open air column. Two pipe runs on the floor join the pump to the four heating coils (`H`) in the low ring's corners. All of it is required, none of it is a Reaction Casing, so it is not counted toward the casing minimum and never sits where a hatch goes. The coils are tier-free: any coil tier, mixed, because the recipes do not gate on coils (the pressure rating is the glass). The hologram builds the cheapest coil whatever the bulb count.
+
+**Block counts.** `R` 61 (cap 9, shoulder 20, low ring 12, floor 20), `G` = 16 + 12 x `n`, `F` 4, `H` 4, `U` 1, `P` = 2 + `n`. Casing minimum 51 (61 minus 10 for hatches); it does not change with `n`.
 
 ### Hatch rules
 
@@ -237,7 +250,8 @@ Focus (non-consumed input), intensity with drift, 3-second reaction ticks, compl
 - **Run rules.** `ProcessingLogic` is anonymous: `validateRecipe` gates on intensity and glass tier, `createOverclockCalculator` sets no-overclock, `onRecipeStart` starts the shared `ReactionState`. `onRunningTick` steps the state after GT draws power; success sets `mProgresstime = mMaxProgresstime - 1`; failure calls `stopMachine` with the shutdown reason `gregguns_rc_failed` (outputs dropped), then `ReactionEffects.applyFailure` once. Parallels are `2 x n`, power-limited by `ParallelHelper`.
 - **Pollution.** `machines.retortPollutionPerSecond` (default 100) through `getPollutionPerSecond`, plus a one-off `machines.reactionFailurePollution` (default 500) burst on failure.
 - **Casing block.** The Reaction Chamber Casing is meta 2 of the shared `gregguns:casings` block (`GregGunsCasings`, formerly `BlockWorksCasing`), page-50 index 2; the Works Casing and Ram Housing are metas 0 and 1. The meta table is in [metatileentity-framework.md](metatileentity-framework.md#gt5-unofficial-casing-texture-pages).
-- **Not covered by a scenario.** A full Retort production run (it needs hatch inventories filled by a test) and the hologram look; `machines.reaction.retort` builds the structure with `construct`, adds hatches and checks it forms and un-forms.
+- **Interior plumbing.** Added on the owner's request (see inside, more character). `P` and `U` are fixed `gt.blockcasings2` blocks (metas 13 and 10, [Casings.java L80-L113](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/casing/Casings.java#L80-L113)). `H` is GT's `ofCoil` ([L638-L682](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L638-L682)) with a getter that answers null, so every coil level passes; it sits on the Heating Coil channel, and the trigger stack is pinned to size 1 because the stack size is the bulb count here and `ofCoil` would read it as a coil tier. The glass element is on the Borosilicate Glass channel.
+- **Not covered by a scenario.** A full Retort production run (it needs hatch inventories filled by a test) and the hologram look; `machines.reaction.retort` builds the structure with `construct`, adds hatches and checks it forms and un-forms, and also removes and restores the pump, the dip tube, a floor pipe run and a coil (mixed coil tiers pass).
 
 ## Armory Gantry
 
@@ -259,6 +273,10 @@ Focus (non-consumed input), intensity with drift, 3-second reaction ticks, compl
 | `L` | `frameGt` Titanium (legs) | none |
 | `G` | GT borosilicate glass, any tier | none |
 | `T` | Repair Cradle | none. One per floor pad |
+| `F` | Steel Frame Box (floor rails, the hoist hook) | none |
+| `X` | Steel Gear Box Casing (the hoist drive) | none |
+| `N` | Motor Machine Casing (hoist motors) | none |
+| `P` | Steel Pipe Casing (hydraulic runs under the beam) | none |
 | `~` | Controller | n/a |
 
 ### Pieces and layers
@@ -268,16 +286,18 @@ Focus (non-consumed input), intensity with drift, 3-second reaction ticks, compl
 ```
 y6        y5        y4        y3        y2        y1        y0
 ...H...   BBBBBBB   LGGGGGL   LGGGGGL   LRR~RRL   LRRRRRL   LRRRRRL
-.......   BBBBBBB   L-----L   L-----L   L-----L   L-----L   LRRRRRL
+.......   BBBBBBB   LP---PL   L-----L   L-----L   LF---FL   LRRRRRL
 ```
 
 **Bay** (2 long, repeated `n` times; the front row is the portal frame, the back row is the open gap):
 
 ```
 y6        y5        y4        y3        y2        y1        y0
-...H...   BBBBBBB   L-----L   L-----L   L-----L   L-----L   LRTTTRL
-.......   BBBBBBB   -------   -------   -------   -------   RRTTTRR
+...H...   BBBBBBB   L-NXN-L   L--F--L   L-----L   LF---FL   LRTTTRL
+.......   BBBBBBB   -P---P-   -------   -------   -F---F-   RRTTTRR
 ```
+
+The hoist is real: under each portal beam a steel gearbox (`X`) sits between two motor casings (`N`) with a frame-box hook (`F`) hanging from it, below the Gantry Hoist on the roof. The floor rails (`F`) run along both sides of the whole row, from the booth through every bay, and a steel pipe run (`P`) hangs under the beam in the gap aisle.
 
 **Tail** (1 long):
 
@@ -286,7 +306,7 @@ y6        y5        y4        y3        y2        y1        y0
 .......   BBBBBBB   LRRRRRL   LRRRRRL   LRRRRRL   LRRRRRL   LRRRRRL
 ```
 
-**Block counts.** Head `B` 14, `L` 20, `G` 10, `R` 19, `H` 1. Bay `B` 14, `L` 10, `R` 6, `T` 6, `H` 1. Tail `B` 7, `L` 10, `R` 25.
+**Block counts.** Head `B` 14, `L` 20, `G` 10, `R` 19, `H` 1, `P` 2, `F` 2. Bay `B` 14, `L` 10, `R` 6, `T` 6, `H` 1, `X` 1, `N` 2, `F` 5, `P` 2. Tail `B` 7, `L` 10, `R` 25. The interior parts (`F`, `X`, `N`, `P`) are required, are not Gantry Casings, and never sit on a hatch face. `G` is any glass tier, mixed is fine.
 
 ### Hatches and tier mechanic
 
@@ -331,6 +351,8 @@ Built as `MTEArmoryGantry` (ID 20114) with pure data in `GantryShape`, the repai
 - **Items per cycle** is the bay count capped by the power the hatches supply: each item draws half the recipe voltage of the lowest Energy Hatch tier, and GT shuts a machine down that over-draws. One HV hatch therefore repairs two items per cycle; more hatches (or multi-amp hatches) raise it. The sheet says "up to n" without a cap.
 - **Tier gate.** The weakest Energy Hatch. When every damaged item in the buses is above it, the controller shows GT's insufficient-machine-tier message with the tier needed.
 - **No NEI tab and no NEI code** ([GGS-08-31](nei-handlers.md#requirements)). The controller tooltip states the rules. The open "Gantry NEI" question stays open.
+- **Glass.** Any glass tier, mixed. The getter passed to `chainAllGlasses` returned the stored tier, which forced one tier for the whole booth; it now always answers "not set", as the Retort's does. The Borosilicate Glass channel is on the tooltip.
+- **Interior.** Added on the owner's request (see inside, more character). Fixed GT blocks: `gt.blockcasings2` metas 3 (steel gearbox), 11 (motor) and 13 (steel pipe), and `ofFrame(Materials.Steel)`; the GregGuns accent is the existing Gantry Beam, Hoist and Repair Cradle.
 - **Not built:** the cradle's active texture, the hoist animation, a screwdriver mode.
 
 ## Rampart
@@ -461,6 +483,7 @@ Built as `MTEAmmoWorks` (ID 20105) with pure data in `AmmoWorksShape` and `AmmoW
 - **Belt tier** is GT's item pipe casing value (1 to 8, as the Mixer numbers it), so "belt tier 2" is the second pipe casing. Mixed tiers fail inside GT's tiered element.
 - **No energy hatch tier limit.** The sheet says LV to IV; parallels are already power-limited, so higher hatches are allowed, as are multi-amp hatches.
 - **Animation not built.** No ram, belt-round or crane drawing and no screwdriver toggle; the screwdriver toggles input separation. The Ram Housing active texture is not wired (GT casings have no active state), and casings render as plain cubes without GT's machine-metal tint.
+- **Windows and interior.** Added on the owner's request (see-inside and more character). Glass uses `GTStructureUtility.chainAllGlasses()` ([L891-L925](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L891-L925)) on the Borosilicate Glass channel, so the projector's glass channel picks the tier it previews. The interior is fixed GT blocks (`gt.blockcasings2` metas 3, 9, 11, 13 and `ofFrame(Materials.Steel)`); the Ram Housing is the GregGuns accent. No active texture while running (the overlay system has no per-casing state).
 - **Hologram** takes the bay count from the length channel if present, else the stack size (2 to 8).
 - **Voiding** uses GT's void protection mode (item modes only), on by default; a full Output Bus pauses the hall.
 

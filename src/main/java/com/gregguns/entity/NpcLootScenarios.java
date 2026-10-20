@@ -194,7 +194,7 @@ final class NpcLootScenarios {
                         }
                     }
                 }
-                if (!profile.rareDrop()) {
+                if (!profile.rareDrop() && profile.equipment() != null) {
                     // A boss's only held-item drop is the 8.5% equipment one: never a bare copy at the rare rate.
                     int guns = 0;
                     for (List<ItemStack> kill : log.kills) {

@@ -69,7 +69,10 @@ final class HandCannonRecipeScenario implements Scenario {
                 && recipe.mOutputs[0].getItem() == bullet.getItem()) {
                 found++;
                 out.checkEquals("press EU/t (ULV)", (int) TierEU.RECIPE_ULV, recipe.mEUt);
-                out.checkEquals("press duration", 5 * GTRecipeBuilder.SECONDS, recipe.mDuration);
+                out.checkEquals(
+                    "press duration",
+                    5 * GTRecipeBuilder.SECONDS * ProductionTable.AMMO_DURATION_MULTIPLIER,
+                    recipe.mDuration);
                 out.checkEquals("press outputs", 1, recipe.mOutputs.length);
                 out.checkEquals(
                     "stone bullets per press run",

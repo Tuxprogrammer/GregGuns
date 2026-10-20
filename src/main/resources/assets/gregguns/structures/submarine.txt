@@ -1,0 +1,384 @@
+# Submarine, 7 x 10 x 33. Long axis is z, bow at high z, stern at low z. ground: 0, so layer 0 (the hull's
+# lowest row) replaces the sea-floor surface. Interiors are sealed with air so they stay dry.
+# Beds use @door: a bed's low two bits cycle south, west, north, east exactly like a door's, and the head bit
+# (8) is kept, so foot and head turn together. Door upper halves (meta 8) carry no direction bits.
+# The ladder at the tower centre rests on a pillar (command room) and the tower wall; the trapdoor tops it.
+gregguns-layout 1
+id: submarine
+size: 7 10 33
+ground: 0
+
+palette:
+a = air
+P = plating
+W = factory_wall
+F = factory_floor
+K = brick
+Z = hazard
+L = lantern
+B = minecraft:iron_bars
+M = minecraft:planks
+2 = minecraft:ladder#2@facing
+3 = minecraft:ladder#3@facing
+n = minecraft:chest#2@facing
+s = minecraft:chest#3@facing
+w = minecraft:chest#4@facing
+e = minecraft:chest#5@facing
+d = minecraft:iron_door#1@door
+U = minecraft:iron_door#8
+b = minecraft:bed#0@door
+h = minecraft:bed#8@door
+X = minecraft:trapdoor#8@trapdoor
+
+marks:
+chest.reinforced 2 1 3
+chest.reinforced 4 1 3
+chest.weapon 2 1 15
+chest.weapon 4 1 24
+chest.vanilla 5 4 14
+chest.vanilla 5 4 15
+chest.vanilla 1 4 13
+chest.weapon 1 4 26
+chest.weapon 5 4 26
+
+layers:
+layer 0
+.......
+.......
+..PPP..
+..PPP..
+..PPP..
+..WWW..
+..WWW..
+..WWW..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+.......
+.......
+.......
+.......
+layer 1
+.......
+..PPP..
+.PaaaP.
+.PsasP.
+.PaaaP.
+.WaaaW.
+.WWWaW.
+.WWWaW.
+.PaaaP.
+.PZFdP.
+.Pa3aP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PeaaP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PFdFP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PaawP.
+.PaaaP.
+.PaaaP.
+.PBZBP.
+.PPPPP.
+.PPPPP.
+..PPP..
+.......
+.......
+layer 2
+...P...
+.PPPPP.
+PaaaaaP
+PaaaaaP
+PaaaaaP
+WaaaaaW
+WaaaaaW
+WaaaaaW
+PaaaaaP
+PFZFUFP
+Paa3aaP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PFFUFFP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PaaaaaP
+PaBaBaP
+PPPPPPP
+PPPPPPP
+.PPPPP.
+...P...
+.......
+layer 3
+PPPZPPP
+.PPPPP.
+PKKKKKP
+PKKKKKP
+PKKKKKP
+WKKLKKW
+WKKKKKW
+WKKKKKW
+PKKKKKP
+PKKKKKP
+PKK3KKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKKKKP
+PKKLKKP
+PKKKKKP
+PPPPPPP
+PPPPPPP
+.PPPPP.
+..PPP..
+...P...
+layer 4
+...P...
+.PPPPP.
+PaaaaaP
+PaaaaaP
+PaaaaaP
+WaaaaaW
+WaaaaaW
+WaaaaaW
+PaaaaaP
+PWWWdWP
+Paa3aaP
+PbaaabP
+PhaaahP
+PeaaaaP
+PbaaawP
+PhaaawP
+PWWdWWP
+PaaaaaP
+PaaMaaP
+PMaMaMP
+PaaMaaP
+PMaaaaP
+PWWdWWP
+PaaaaaP
+Paa2aaP
+PaaPaaP
+PeaaawP
+PaaaaaP
+PPPPPPP
+PPPPPPP
+.PPPPP.
+...P...
+.......
+layer 5
+...P...
+..PPP..
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.WaaaW.
+.WaaaW.
+.WaaaW.
+.PaaaP.
+.PWWUP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PWUWP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PaaaP.
+.PWUWP.
+.PaaaP.
+.Pa2aP.
+.PaPaP.
+.PaaaP.
+.PaaaP.
+.PPPPP.
+.PPPPP.
+..PPP..
+.......
+.......
+layer 6
+...P...
+...P...
+..PPP..
+..PPP..
+..PPP..
+..WWW..
+..WWW..
+..WWW..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..PPP..
+..P2P..
+..PPP..
+..LPL..
+..PPP..
+..PPP..
+.......
+.......
+.......
+.......
+layer 7
+...P...
+...P...
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+..PPP..
+..PaP..
+..PPP..
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+layer 8
+.......
+...P...
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+..PPP..
+..PaP..
+..PPP..
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+layer 9
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+.......
+..PPP..
+..PXP..
+..PPP..
+.......
+.......
+.......
+.......
+.......
+.......
+.......

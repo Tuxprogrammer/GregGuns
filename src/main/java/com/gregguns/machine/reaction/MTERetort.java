@@ -1,5 +1,6 @@
 package com.gregguns.machine.reaction;
 
+import static com.gtnewhorizon.structurelib.structure.StructureUtility.lazy;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
@@ -11,7 +12,9 @@ import static gregtech.api.enums.HatchElement.Muffler;
 import static gregtech.api.enums.HatchElement.OutputBus;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.chainAllGlasses;
+import static gregtech.api.util.GTStructureUtility.ofCoil;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
+import static gregtech.api.util.GTStructureUtility.triggerItemTransform;
 
 import java.util.List;
 import java.util.Random;
@@ -33,9 +36,11 @@ import com.gregguns.block.GregGunsCasings;
 import com.gregguns.core.config.MachinesConfig;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
+import com.gtnewhorizon.structurelib.structure.IStructureElement;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 
+import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -59,6 +64,7 @@ import gregtech.api.util.OverclockCalculator;
 import gregtech.api.util.shutdown.ShutDownReason;
 import gregtech.api.util.shutdown.SimpleShutDownReason;
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
+import gregtech.common.misc.GTStructureChannels;
 
 /**
  * The Retort (MTE 20108): the Reaction Chamber as a flask-shaped StructureLib multiblock. A 5 x (7 + n) x 5 vessel of
@@ -89,6 +95,11 @@ public final class MTERetort extends MTEExtendedPowerMultiBlockBase<MTERetort>
     private static final String NBT_INTENSITY = "gregguns.rc.intensity";
     private static final String NBT_BULBS = "gregguns.rc.bulbs";
     private static final int EV = 4;
+    // Metas of gt.blockcasings2 (GregTechAPI.sBlockCasings2).
+    // Source (casing metas):
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/casing/Casings.java#L80-L113
+    private static final int PUMP_META = 10;
+    private static final int PIPE_STEEL_META = 13;
 
     private static final CheckRecipeResult WRONG_INTENSITY = SimpleCheckRecipeResult.ofFailure("gregguns_rc_intensity");
     private static final ShutDownReason REACTION_FAILED = SimpleShutDownReason.ofNormal("gregguns_rc_failed");
@@ -119,6 +130,20 @@ public final class MTERetort extends MTEExtendedPowerMultiBlockBase<MTERetort>
             'S',
             onElementPass(MTERetort::countCasing, ofBlock(GregGunsCasings.INSTANCE, GregGunsCasings.REACTION_CASING)))
         .addElement('F', ofFrame(Materials.Steel))
+        // Interior plumbing, required fixed GT blocks that are not counted as casings: the pump at the floor, the
+        // pipe column (dip tube) and the pipe runs, read lazily because GT sets the block late.
+        .addElement('P', gtCasing(PIPE_STEEL_META))
+        .addElement('U', gtCasing(PUMP_META))
+        // The heater coils: any coil tier, mixed is fine. The getter always answers "no coil recorded yet", so GT's
+        // element never compares one coil with another, and the recipes do not gate on coils. The trigger stack size
+        // is the bulb count here, which ofCoil would read as a coil tier, so it is pinned to 1 (the cheapest coil).
+        // Source:
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L638-L682
+        .addElement(
+            'H',
+            triggerItemTransform(
+                MTERetort::singleStack,
+                GTStructureChannels.HEATING_COIL.use(ofCoil((retort, level) -> true, retort -> null))))
         // Deviation: GT's own ofBlocksTiered insists every glass block is the same tier. The getter always answers
         // "not set", so mixed tiers pass and the setter keeps the lowest, which is the pressure rating (spec).
         .addElement('G', chainAllGlasses(-1, MTERetort::noteGlass, retort -> -1))
@@ -149,6 +174,18 @@ public final class MTERetort extends MTEExtendedPowerMultiBlockBase<MTERetort>
     @Override
     public IMetaTileEntity newMetaEntity(IGregTechTileEntity tileEntity) {
         return new MTERetort(mName);
+    }
+
+    /** A fixed GT machine casing from {@code gt.blockcasings2}; the block is read lazily because GT sets it late. */
+    private static IStructureElement<MTERetort> gtCasing(int meta) {
+        return lazy(() -> ofBlock(GregTechAPI.sBlockCasings2, meta));
+    }
+
+    /** The trigger stack with its size set to 1, so a coil hint is the cheapest coil whatever the bulb count. */
+    private static ItemStack singleStack(ItemStack stack) {
+        ItemStack copy = new ItemStack(stack.getItem(), 1, stack.getItemDamage());
+        copy.setTagCompound(stack.getTagCompound());
+        return copy;
     }
 
     /** Shapes are written with {@code .} for "anything"; StructureLib's blank is a space. */
@@ -461,13 +498,24 @@ public final class MTERetort extends MTEExtendedPowerMultiBlockBase<MTERetort>
             .addOtherStructurePart(
                 StatCollector.translateToLocal("gregguns.retort.tt.frame"),
                 StatCollector.translateToLocal("gregguns.retort.tt.frame.info"))
+            .addOtherStructurePart(
+                StatCollector.translateToLocal("gregguns.retort.tt.pipes"),
+                StatCollector.translateToLocal("gregguns.retort.tt.pipes.info"))
+            .addOtherStructurePart(
+                StatCollector.translateToLocal("gregguns.retort.tt.pump"),
+                StatCollector.translateToLocal("gregguns.retort.tt.pump.info"))
+            .addOtherStructurePart(
+                StatCollector.translateToLocal("gregguns.retort.tt.coil"),
+                StatCollector.translateToLocal("gregguns.retort.tt.coil.info"))
             .addEnergyHatch("1+", StatCollector.translateToLocal("gregguns.retort.tt.low_ring"), 1)
             .addMaintenanceHatch("1", StatCollector.translateToLocal("gregguns.retort.tt.low_ring"), 1)
             .addInputBus("1+", StatCollector.translateToLocal("gregguns.retort.tt.low_ring"), 1)
             .addOutputBus("1+", StatCollector.translateToLocal("gregguns.retort.tt.low_ring"), 1)
             .addInputHatch("1+", StatCollector.translateToLocal("gregguns.retort.tt.low_ring"), 1)
             .addMufflerHatch("1", StatCollector.translateToLocal("gregguns.retort.tt.cap"), 2)
-            .toolTipFinisher();
+            .addSubChannel(GTStructureChannels.BOROGLASS)
+            .addSubChannel(GTStructureChannels.HEATING_COIL)
+            .toolTipFinisher(com.gregguns.core.text.AddedBy.NAME);
         return tt;
     }
 

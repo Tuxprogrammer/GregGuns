@@ -22,6 +22,7 @@ public final class GregGunsConfig {
         Arrays.<Class<?>>asList(
             ModulesConfig.class,
             DebugConfig.class,
+            BioGunConfig.class,
             ClientConfig.class,
             DamageFactorsConfig.class,
             ExplosionsConfig.class,
@@ -30,7 +31,8 @@ public final class GregGunsConfig {
             EnergyConfig.class,
             MachinesConfig.class,
             UtilityConfig.class,
-            NpcConfig.class));
+            NpcConfig.class,
+            WorldgenConfig.class));
 
     private GregGunsConfig() {}
 

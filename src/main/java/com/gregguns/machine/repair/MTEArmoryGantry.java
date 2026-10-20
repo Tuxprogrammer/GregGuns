@@ -37,6 +37,7 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
@@ -89,6 +90,13 @@ public final class MTEArmoryGantry extends MTEExtendedPowerMultiBlockBase<MTEArm
 
     private static final String OVERLAY_DIR = "machines/armory_gantry/";
 
+    // Metas of gt.blockcasings2 (GregTechAPI.sBlockCasings2).
+    // Source (casing metas):
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/casing/Casings.java#L80-L113
+    private static final int GEARBOX_STEEL_META = 3;
+    private static final int MOTOR_META = 11;
+    private static final int PIPE_STEEL_META = 13;
+
     private int bays;
     private int glassTier = -1;
 
@@ -124,6 +132,11 @@ public final class MTEArmoryGantry extends MTEExtendedPowerMultiBlockBase<MTEArm
             return lazy(() -> ofBlock(GregGunsCasings.INSTANCE, meta));
         }
 
+        /** A fixed GT machine casing from {@code gt.blockcasings2}; read lazily because GT sets the block late. */
+        private static IStructureElement<MTEArmoryGantry> gtCasing(int meta) {
+            return lazy(() -> ofBlock(GregTechAPI.sBlockCasings2, meta));
+        }
+
         private static IStructureDefinition<MTEArmoryGantry> build() {
             int casingIndex = GregGunsCasings.textureIndex(GregGunsCasings.GANTRY_CASING);
             return StructureDefinition.<MTEArmoryGantry>builder()
@@ -142,8 +155,19 @@ public final class MTEArmoryGantry extends MTEExtendedPowerMultiBlockBase<MTEArm
                 .addElement('H', casing(GregGunsCasings.GANTRY_HOIST))
                 .addElement('T', casing(GregGunsCasings.REPAIR_CRADLE))
                 .addElement('L', ofFrame(Materials.Titanium))
-                // Any borosilicate glass; the tier is read but not limited.
-                .addElement('G', chainAllGlasses(-1, (t, tier) -> t.glassTier = tier, t -> t.glassTier))
+                // Any glass tier, mixed is fine: the setter records the tier, but the getter always answers "not set",
+                // so GT's tiered element never compares one glass block with another (a getter that returned the
+                // stored tier would force a single tier). The Retort does the same.
+                // Source:
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L891-L925
+                .addElement('G', chainAllGlasses(-1, (t, tier) -> t.glassTier = tier, t -> -1))
+                // Interior set dressing, required fixed GT blocks that are not casings (they never trade off against
+                // hatches): the floor rails and hoist hook (steel frame boxes), the hoist drive and motors, and the
+                // hydraulic pipe runs under the beam.
+                .addElement('F', ofFrame(Materials.Steel))
+                .addElement('X', gtCasing(GEARBOX_STEEL_META))
+                .addElement('N', gtCasing(MOTOR_META))
+                .addElement('P', gtCasing(PIPE_STEEL_META))
                 .build();
         }
     }
@@ -368,10 +392,16 @@ public final class MTEArmoryGantry extends MTEExtendedPowerMultiBlockBase<MTEArm
             .addOutputBus(lang("structure.casing"), 1)
             .addEnergyHatch(lang("structure.casing"), 1)
             .addMaintenanceHatch(lang("structure.casing"), 1)
+            .addCasing("10", lang("structure.glass"), false)
+            .addCasing("2 + 5 per bay", lang("structure.rails"), false)
+            .addCasing("1 per bay", lang("structure.gearbox"), false)
+            .addCasing("2 per bay", lang("structure.motors"), false)
+            .addCasing("2 + 2 per bay", lang("structure.pipes"), false)
             .addAir(lang("structure.air"))
             .addStructureInfo(lang("structure.footer"))
             .addSubChannel(GTStructureChannels.STRUCTURE_LENGTH)
-            .toolTipFinisher();
+            .addSubChannel(GTStructureChannels.BOROGLASS)
+            .toolTipFinisher(com.gregguns.core.text.AddedBy.NAME);
         return tt;
     }
 

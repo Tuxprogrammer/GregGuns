@@ -75,7 +75,7 @@ public final class AmmoLineTable {
     private static Spec line(String id, String output, int count, Tier tier, int seconds, Research research,
         FluidInput fluid, Input... inputs) {
         return new Spec(
-            new Row(id, output, count, tier, Target.ASSEMBLY_LINE, seconds, 0, inputs),
+            new Row(id, output, count, tier, Target.ASSEMBLY_LINE, seconds, 0, inputs).ammoRow(),
             Arrays.asList(fluid),
             research,
             null);

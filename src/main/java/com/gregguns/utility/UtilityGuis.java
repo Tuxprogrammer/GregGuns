@@ -11,7 +11,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * The FML GUI dispatcher for the utility blocks. FML keeps one handler per mod, so {@code EquipmentGuiHandler}
- * forwards every id from {@link #FIRST_ID} up to here. The charge and chest chunks each fill their own case and touch
+ * forwards every id from {@link #FIRST_ID} up to here. The chest fills its own case (the charge GUI is ModularUI2 now)
+ * and touch
  * nothing else.
  */
 // Spec: docs/gregguns-spec/09-machines-utility/explosive-charges.md, docs/gregguns-spec/07-blocks/storage-chests.md
@@ -19,8 +20,6 @@ public final class UtilityGuis {
 
     /** First GUI id owned by the utility module; lower ids belong to the armor module. */
     public static final int FIRST_ID = 30;
-    /** The explosive charge settings GUI; x, y, z are the block position. */
-    public static final int CHARGE = 30;
     /** The Reinforced Chest and Weapon Chest GUI; x, y, z are the block position. */
     public static final int CHEST = 31;
 
@@ -47,8 +46,6 @@ public final class UtilityGuis {
      */
     public static Object serverElement(int id, EntityPlayer player, World world, int x, int y, int z) {
         switch (id) {
-            case CHARGE:
-                return new com.gregguns.utility.charge.ChargeContainer(world, x, y, z);
             case CHEST:
                 return world.getTileEntity(x, y, z) instanceof TileGregChest
                     ? new ContainerGregChest(player, (TileGregChest) world.getTileEntity(x, y, z))
@@ -72,9 +69,6 @@ public final class UtilityGuis {
     @SideOnly(Side.CLIENT)
     public static Object clientElement(int id, EntityPlayer player, World world, int x, int y, int z) {
         switch (id) {
-            case CHARGE:
-                return new com.gregguns.client.utility.ChargeGui(
-                    new com.gregguns.utility.charge.ChargeContainer(world, x, y, z));
             case CHEST:
                 return world.getTileEntity(x, y, z) instanceof TileGregChest
                     ? new com.gregguns.client.utility.GuiGregChest(

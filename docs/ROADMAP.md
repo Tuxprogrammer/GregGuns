@@ -49,6 +49,8 @@ No gameplay. This milestone builds everything later milestones need.
 - [x] Config module flags load, save and are documented.
 - [x] Every packet base class rejects out-of-range, wrong-dimension and unauthorized requests, with unit tests.
 
+Beta-gate audit: [M0 exit gate](gregguns-spec/01-core/m0-exit-gate.md). It finds 3 boxes met and 2 partly met (the CI smoke wording, and module flags that still default to off), with owner decisions listed.
+
 ---
 
 ## Decision gates
@@ -160,6 +162,8 @@ One gun, working end to end inside the GTNH dev pack.
 - [x] A dedicated server with two clients shows correct sync: shots, reloads, other players' animations and sounds. *(`mp_check`: `mp.sync`, `mp.visual`, `mp.give` and client log evidence.)*
 - [x] Each relevant inherited bug from [BUGS.md](techguns-spec/BUGS.md) has a test showing it isn't reproduced. These include GUN-13, GUN-29, GUN-32, GUN-33 and GUN-34.
 
+Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds all 5 boxes met, with the NEI view and the two-client run to repeat in the batched client pass.
+
 ## M2 · Ballistic arsenal
 
 **Entry gate:** M1 is done.
@@ -190,6 +194,7 @@ One gun, working end to end inside the GTNH dev pack.
 - [x] Bonuses apply and are removed cleanly, with no step-height or potion interference (CORE-14, CORE-15). Evidence: `Core14And15RegressionTest`, `BonusLifecycleTest`, `armor.lifecycle` and `armor.compat` ([M3 exit gate](gregguns-spec/05-armor/implementation-notes.md#m3-exit-gate)).
 - [x] The special-slot inventory syncs, persists and works with automation where the spec says it should. Evidence: `mp.slots` and `mp.slots.after_relog` through `mp_check` with a relog (both clients match the server, 2026-10-18), plus `armor.slots.pouch`, `armor.power.slot_gate` and `armor.slots.automation` ([M3 exit gate](gregguns-spec/05-armor/implementation-notes.md#m3-exit-gate)).
 - [x] Powered items run on EU through GT chargers. Evidence: `armor.power.charger` (exact-tier GT Battery Buffers, 0008) ([M3 exit gate](gregguns-spec/05-armor/implementation-notes.md#m3-exit-gate)).
+- [x] Armor and accessories carry GT recycling data. Evidence: `ArmorCompositionTest` and `armor.recycling` ([M3 exit gate](gregguns-spec/05-armor/implementation-notes.md#m3-exit-gate)).
 
 ## M4 · Production chain and machines
 
@@ -238,10 +243,10 @@ One gun, working end to end inside the GTNH dev pack.
 - The spawn system. The spec is [10-entities-npcs](techguns-spec/10-entities-npcs/index.md).
 
 **Exit gate:**
-- [ ] Spawning is config-gated, respects dimension and biome rules, and stays within caps (NPC-14, NPC-15, NPC-17).
-- [ ] NPC difficulty scaling is applied once (GUN-06).
-- [ ] Mobs despawn correctly (NPC-28).
-- [ ] A soak test with spawning enabled shows no TPS regression in the dev pack.
+- [x] Spawning is config-gated, respects dimension and biome rules, and stays within caps (NPC-14, NPC-15, NPC-17). Evidence: `SpawnCoreTest`, `NpcCapTest`, `npc.spawn_config_gate`, `npc.spawn_dimension_gate`, `npc.cap_enforced` ([M7 exit gate](gregguns-spec/10-entities-npcs/m7-exit-gate.md#1-spawning-is-config-gated-respects-dimension-and-biome-rules-and-stays-within-caps)).
+- [x] NPC difficulty scaling is applied once (GUN-06). Evidence: `NpcFiringTest.doesNotReproduceGUN06_accuracyFactorIsAppliedOnce` and the mob stat tests ([M7 exit gate](gregguns-spec/10-entities-npcs/m7-exit-gate.md#2-npc-difficulty-scaling-is-applied-once-gun-06)).
+- [x] Mobs despawn correctly (NPC-28). Evidence: `NpcCapTest.doesNotReproduceNpc28_*`, `npc.persistence_hook`, `npc.bosses_persist` ([M7 exit gate](gregguns-spec/10-entities-npcs/m7-exit-gate.md#3-mobs-despawn-correctly-npc-28)).
+- [x] A soak test with spawning enabled shows no TPS regression in the dev pack. `npc.soak`, with 100 NPCs: load mean 2.78 ms, p95 4.45 ms ([M7 exit gate](gregguns-spec/10-entities-npcs/m7-exit-gate.md#4-a-soak-test-with-spawning-enabled-shows-no-tps-regression)).
 
 ## M8 · Worldgen and structures
 
@@ -250,9 +255,9 @@ One gun, working end to end inside the GTNH dev pack.
 **Scope:** the structures D5 selects, their loot and their NPC camps. There is **no** ore generation. The spec is [11-worldgen](techguns-spec/11-worldgen/index.md).
 
 **Exit gate:**
-- [ ] No cascading worldgen (WGEN-04), verified by the chunk-load test.
-- [ ] Structures respect the dimension whitelist and GTNH's world types.
-- [ ] Loot is tier-appropriate for where the structure spawns.
+- [x] No cascading worldgen (WGEN-04), verified by the chunk-load test. Evidence: `CascadeHarnessTest`, `worldgen.no_cascade` (shipped structures and the Alien Bug Nest) ([M8 exit gate](gregguns-spec/11-worldgen/m8-exit-gate.md#no-cascading-worldgen-wgen-04)). The ArchaicFix log check is a beta-gate client item.
+- [x] Structures respect the dimension whitelist and GTNH's world types. Evidence: `WorldgenGateTest`, `worldgen.dimension_gate` ([M8 exit gate](gregguns-spec/11-worldgen/m8-exit-gate.md#structures-respect-the-dimension-whitelist-and-gthns-world-types)). A live RWG world is a beta-gate client item.
+- [x] Loot is tier-appropriate for where the structure spawns. Evidence: `LootCategoriesTest`, `worldgen.loot_ceiling` ([M8 exit gate](gregguns-spec/11-worldgen/m8-exit-gate.md#loot-is-tier-appropriate-for-where-the-structure-spawns)). Structure screenshots, the Chisel palette and the GT ore pass are beta-gate client checks.
 
 ## Beta review gate · 0.3.0-beta
 

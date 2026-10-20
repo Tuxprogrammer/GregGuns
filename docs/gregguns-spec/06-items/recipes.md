@@ -243,6 +243,10 @@ Replaces R32 to R34, R42, R57 and the Ammo Press plans ([ammo-press.md](../../te
 - **Powder.** `dust.Gunpowder` is the vanilla gunpowder item: GT removes its own dust prefix for the material ([MaterialsInit#L4951-L4966](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L4951-L4966)). GT's own recipes fetch it as `GTOreDictUnificator.get(OrePrefixes.dust, Materials.Gunpowder, 1)` ([MixerRecipes#L1618](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/MixerRecipes.java#L1618)).
 - **No casing item and no Extruder or Forming Press recipe for ammo.** GT already makes every case shape. This answers the "extruder shape" question in [ammo.md](ammo.md#open-questions): none is needed.
 
+### Ammo duration multiplier
+
+Every ammo production row runs **4 times longer** than the time in the tables (owner decision, "nerf ammo production time 4 times"). This covers the Ammo Press at every tier including the Steam press, the Ammunition Works (same map) and the Assembly Line ammo rows. The tables keep the base time; `ProductionTable.AMMO_DURATION_MULTIPLIER` (4) is applied to the registered duration through `Row.ticks()`. EU/t is unchanged, so the EU per round rises 4 times; the Steam press pays steam by the same ratio (2 L per EU, Bronze at half speed on top). RC-28, for example, registers 5 s x 4 = 20 s at `RECIPE_LV`.
+
 ### Batch sizes
 
 A GT recipe consumes its inputs once, so ammo is made in batches, the way GT turns one ingot into several screws or rounds. Each batch is sized so that the inputs fill whole stacks (16 foil, 16 rounds) and a run takes 4 to 10 seconds.
@@ -348,7 +352,8 @@ The Fluid Canner fills any `IFluidContainerItem` on the fly: `FluidCannerBackend
 | ID | Method | Input | Fluid in | Output |
 |---|---|---|---|---|
 | RC-56<a id="tank-fill-fuel"></a> | `cannerRecipes` (dynamic), `eut(1)`, 16 ticks | `tank_fuel` (empty) | 1,000 mB of `Materials.Diesel`, `GasolineRegular`, `BioDiesel` or `Ethanol` (config; `NitroFuel`, `GasolinePremium` optional) | `tank_fuel` holding that fluid |
-| RC-57<a id="tank-fill-bio"></a> | same | `tank_bio` (empty) | 1,000 mB of `Materials.Biomass` | `tank_bio` holding `Biomass` |
+| RC-57<a id="tank-fill-bio"></a> | same | `tank_bio` (empty) | 1,000 mB of BartWorks' E. coli culture fluid (`Materials.Biomass` only with `bioGun.acceptBiomass`, or if BartWorks is absent) | `tank_bio` holding the culture fluid |
+| RC-57b<a id="bio-culture-vat"></a> | BartWorks `bacterialVatRecipes`, EV (`TierEU.RECIPE_EV`), 30 s, `GLASS` metadata 4, circuit 2 | E. coli petri dish in the controller (special item, not consumed) | 1,000 mB `Materials.Biomass` and 100 mB distilled water | 1,000 mB E. coli culture fluid. Registered by `BioCultureRecipes` on `sBeforeGTPostload`; skipped with a log line if BartWorks, the dish or the fluid does not resolve. The dish comes from the Bio Lab (HV): an empty petri dish, a fermented spider eye and water, 45% to take ([BioRecipeLoader.java#L45-L121](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/common/loaders/BioRecipeLoader.java#L45-L121)) |
 | RC-58<a id="tank-fill-air"></a> | same | `tank_air` (empty) | 1,000 mB of `Materials.Air.getGas` | `tank_air` holding `Air` |
 
 RC-55 is withdrawn (see below). RC-56 to RC-58 are the three dynamic fills, which GregGuns does not register.
@@ -470,7 +475,7 @@ Implemented in `ComponentTable`, `ComponentRecipes` and `PartCatalog`. Where the
 - **Gate rule.** `GateRule` now defines LuV (`HSSG`) and ZPM (`NaquadahAlloy`), and accepts a GT part of the row's own tier as carrying the gate: `circuit.<tier>` (RC-20 "Titanium via circuit.EV") and `ItemList.*_<tier>` (RC-19 "through the ZPM emitter").
 - **Material names.** GT names Polyethylene `Plastic` and the circuit materials `Basic`, `Good`, `Advanced`, `Data`, `Elite`, `Master`, `Ultimate` (LV to ZPM); the table uses those `mName`s.
 - **RC-61 Bandages.** The slimeball is the ore name `slimeball`; string and leather are vanilla items.
-- **Tanks (GGS-06-16, GGS-06-40).** `ItemTank` has a fixed 1,000 mB capacity (not config) and a fixed accepted-fluid list per tank. The Bio Tank takes `Biomass` only (RC-57), not `BioDiesel`. No `FluidContainerRegistry` entries: the Fluid Canner's dynamic `IFluidContainerItem` path fills and drains them. `tank_air` stays registered by the armor module (`ArmorParts`) so armor works without the guns module; it uses the same `ItemTank`.
+- **Tanks (GGS-06-16, GGS-06-40).** `ItemTank` has a fixed 1,000 mB capacity (not config) and a fixed accepted-fluid list per tank. The Bio Tank takes BartWorks' E. coli culture fluid (RC-57, made from Biomass by RC-57b), not `BioDiesel`; Biomass is accepted only behind `bioGun.acceptBiomass` or when BartWorks is absent. No `FluidContainerRegistry` entries: the Fluid Canner's dynamic `IFluidContainerItem` path fills and drains them. `tank_air` stays registered by the armor module (`ArmorParts`) so armor works without the guns module; it uses the same `ItemTank`.
 - **RC-63 Camo Net Placer.** Not built here: the Camo Net block (area 07) does not exist yet. Textures `camo_net_placer_0..2` are ready.
 - **Ore names (GGS-06-10).** GregGuns registers no ore-dictionary name for its components; every recipe uses exact stacks. The self-check fails the boot if one ever collides with a GT prefix.
 - **Recycling data (GGS-06-12, GGS-06-46).** Computed from each recipe row by `ComponentComposition`: metal and plastic part forms only. Dusts (uranium, redstone, TNT) are left out, which also leaves the nuclear-recycling open question closed in favor of "no uranium back from recycling".

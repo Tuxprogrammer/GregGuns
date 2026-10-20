@@ -53,21 +53,74 @@ class ChargeParamsTest {
     }
 
     @Test
-    void anArmedChargeIgnoresEveryButton() {
+    void anArmedChargeIgnoresEveryButtonButDisarm() {
         ChargeParams p = new ChargeParams(ChargeType.ADVANCED);
         assertTrue(p.press(ChargeParams.BTN_ARM));
         for (int b = 0; b < ChargeParams.BUTTON_COUNT; b++) {
-            assertFalse(p.press(b), "button " + b);
+            if (b != ChargeParams.BTN_DISARM) {
+                assertFalse(p.press(b), "button " + b);
+            }
         }
         assertEquals(5, p.radius());
         assertEquals(100, p.fuse());
     }
 
     @Test
+    void disarmStopsTheFuseAndRestoresTheSetDelay() {
+        ChargeParams p = new ChargeParams(ChargeType.ADVANCED);
+        assertTrue(p.press(ChargeParams.BTN_FUSE_UP));
+        assertEquals(120, p.fuseSet());
+        assertTrue(p.press(ChargeParams.BTN_ARM));
+        p.tickFuse();
+        p.tickFuse();
+        assertEquals(118, p.fuse());
+        assertTrue(p.press(ChargeParams.BTN_DISARM));
+        assertFalse(p.armed());
+        assertEquals(120, p.fuse());
+        assertTrue(p.press(ChargeParams.BTN_FUSE_DOWN), "settings work again after a disarm");
+    }
+
+    @Test
+    void disarmOnAnUnarmedChargeChangesNothing() {
+        ChargeParams p = new ChargeParams(ChargeType.TNT);
+        assertFalse(p.press(ChargeParams.BTN_DISARM));
+        assertFalse(p.armed());
+    }
+
+    @Test
+    void depthAndFuseStayInTheirRangesAtTheEnds() {
+        ChargeParams p = new ChargeParams(ChargeType.ADVANCED);
+        for (int i = 0; i < 40; i++) {
+            p.press(ChargeParams.BTN_LENGTH_UP);
+            p.press(ChargeParams.BTN_FUSE_UP);
+        }
+        assertEquals(ChargeType.ADVANCED.lengthMax(), p.length());
+        assertEquals(ChargeType.FUSE_MAX, p.fuse());
+        assertFalse(p.press(ChargeParams.BTN_LENGTH_UP));
+        for (int i = 0; i < 40; i++) {
+            p.press(ChargeParams.BTN_LENGTH_DOWN);
+            p.press(ChargeParams.BTN_FUSE_DOWN);
+        }
+        assertEquals(ChargeType.ADVANCED.lengthMin(), p.length());
+        assertEquals(ChargeType.FUSE_MIN, p.fuse());
+        assertFalse(p.press(ChargeParams.BTN_FUSE_DOWN));
+    }
+
+    @Test
+    void anArmedSaveKeepsItsSetDelay() {
+        ChargeParams p = new ChargeParams(ChargeType.TNT);
+        p.restore(3, 3, 40, 160, true);
+        assertEquals(40, p.fuse());
+        assertEquals(160, p.fuseSet());
+        assertTrue(p.press(ChargeParams.BTN_DISARM));
+        assertEquals(160, p.fuse());
+    }
+
+    @Test
     void unknownButtonIdsChangeNothing() {
         ChargeParams p = new ChargeParams(ChargeType.ADVANCED);
         assertFalse(p.press(-1));
-        assertFalse(p.press(7));
+        assertFalse(p.press(ChargeParams.BUTTON_COUNT));
         assertFalse(p.press(127));
         assertFalse(p.armed());
     }
