@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.gregguns.GregGuns;
 import com.gregguns.client.render.GlStateGuard;
+import com.gregguns.utility.turret.entity.TurretDisplay;
 import com.gregguns.utility.turret.entity.TurretEntity;
 
 import cpw.mods.fml.relauncher.Side;
@@ -62,10 +63,10 @@ public final class TurretRenderer extends RenderLiving {
     @Override
     protected void renderEquippedItems(EntityLivingBase living, float partial) {
         super.renderEquippedItems(living, partial);
-        if (!(living instanceof TurretEntity)) {
+        if (!(living instanceof TurretDisplay)) {
             return;
         }
-        ItemStack gun = ((TurretEntity) living).displayGun();
+        ItemStack gun = ((TurretDisplay) living).displayGun();
         if (gun == null) {
             return;
         }
@@ -99,6 +100,6 @@ public final class TurretRenderer extends RenderLiving {
 
     @Override
     protected ResourceLocation getEntityTexture(Entity entity) {
-        return textureFor(entity instanceof TurretEntity ? ((TurretEntity) entity).displayArmorValue() : 0);
+        return textureFor(entity instanceof TurretDisplay ? ((TurretDisplay) entity).displayArmorValue() : 0);
     }
 }

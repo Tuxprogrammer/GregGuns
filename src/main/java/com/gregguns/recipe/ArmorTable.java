@@ -301,7 +301,9 @@ public final class ArmorTable {
         in(epoxy(2), ti(2), evCircuit(1), Input.vanilla("glass_pane", 1)),
         in(epoxy(3), ti(4), evCircuit(1)),
         in(epoxy(3), ti(2), evCircuit(2)),
-        in(epoxy(2), ti(2)));
+        // The sealed boots take an EV circuit (the shock-absorber control) so they differ from the Combat boots,
+        // which are the same epoxy and titanium on the same circuit 4.
+        in(epoxy(2), ti(2), evCircuit(1)));
 
     /** Treated Leather (RC-22): LV Chemical Bath; gate-exempt (GGS-06-36). The acid fluid input is added in code. */
     public static final ProductionTable.Row TREATED_LEATHER = new ProductionTable.Row(

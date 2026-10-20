@@ -143,6 +143,9 @@ public class ItemNpcEgg extends Item implements Tiered {
     }
 
     private static boolean spawnAndConsume(ItemStack stack, EntityPlayer player, World world, NpcMob mob, double[] at) {
+        if (mob != null && !mob.hasEgg()) {
+            return false; // the camp turret is placed by camps only
+        }
         String tag = stack.hasDisplayName() ? stack.getDisplayName() : null;
         Entity spawned = spawn(world, mob, at[0], at[1], at[2], tag);
         if (spawned != null && !player.capabilities.isCreativeMode) {

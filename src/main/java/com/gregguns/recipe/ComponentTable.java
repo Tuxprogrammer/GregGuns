@@ -315,7 +315,7 @@ public final class ComponentTable {
                 1,
                 Tier.ZPM,
                 30,
-                new Research(Input.itemList("Emitter_LuV", 1), 120, Tier.IV),
+                new Research(Input.mod(ComponentItems.SONIC_EMITTER, 1), 120, Tier.IV),
                 solder(144),
                 Input.itemList("Emitter_ZPM", 1),
                 Input.gt("plate", "Lead", 2),
@@ -390,7 +390,9 @@ public final class ComponentTable {
                 Input.gt("plate", TI, 4),
                 Input.gt("ring", TI, 4),
                 Input.gt("plate", PLASTIC, 2)));
-        // RC-59: Assembly Line, research item is the Lapotronic Orb that stood in for the withdrawn cell_energy.
+        // RC-59: Assembly Line. Deviation: the research item is our own Power Plating (IV), not the Lapotronic Orb
+        // that stood in for the withdrawn cell_energy: GT already scans the orb for its own research, and one scanned
+        // item unlocks only one recipe (found by tools/recipe-clash).
         list.add(
             line(
                 "RC-59",
@@ -398,7 +400,7 @@ public final class ComponentTable {
                 2,
                 Tier.ZPM,
                 30,
-                new Research(Input.itemList("Energy_LapotronicOrb", 1), 60, Tier.EV),
+                new Research(Input.mod(ComponentItems.POWER_PLATING, 1), 60, Tier.EV),
                 solder(288),
                 Input.gt("plate", "NaquadahAlloy", 4),
                 Input.gt("plate", "Lead", 4),

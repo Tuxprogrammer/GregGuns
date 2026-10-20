@@ -43,6 +43,15 @@ public final class ItemTank extends Item implements Tiered, IFluidContainerItem,
 
     private static final String FLUID_TAG = "Fluid";
 
+    @Override
+    @SideOnly(Side.CLIENT)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void addInformation(ItemStack stack, net.minecraft.entity.player.EntityPlayer player, List tooltip,
+        boolean advanced) {
+        // Spec: docs/gregguns-spec/06-items/ammo.md (tooltip compatibility notes)
+        com.gregguns.item.ammo.AmmoTooltips.forDirectAmmo(tooltip, name);
+    }
+
     private final Tier tier;
     private final List<String> acceptedMaterials;
     private final boolean gas;

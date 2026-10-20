@@ -56,12 +56,19 @@ public class CommonProxy {
      */
     public void serverStarting(FMLServerStartingEvent event) {
         if (!DevEnvironment.isActive()) {
+            if (com.gregguns.core.config.DebugConfig.recipeDump) {
+                GregGunsCommand dump = new GregGunsCommand();
+                dump.register(new com.gregguns.core.command.DumpRecipesSubCommand());
+                event.registerServerCommand(dump);
+                GregGuns.LOG.warn("debug.recipeDump is on: /gregguns dumprecipes is available to ops");
+            }
             return;
         }
         HarnessScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.fx.FxScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         GregGunsCommand command = new GregGunsCommand();
         command.register(new TestSubCommand(ScenarioRegistry.SCENARIOS));
+        command.register(new com.gregguns.core.command.DumpRecipesSubCommand());
         event.registerServerCommand(command);
         GregGuns.LOG.info("Registered /gregguns (dev environment), {} scenarios", ScenarioRegistry.SCENARIOS.size());
     }
