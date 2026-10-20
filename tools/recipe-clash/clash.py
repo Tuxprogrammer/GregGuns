@@ -8,9 +8,11 @@ Reads the JSON written by `/gregguns dumprecipes <file>` (config debug.recipeDum
 Rows with source "gregguns" are ours (the mod id of the first output; GT maps whose name starts with "gregguns" are
 ours too). Everything else is the pack. Categories:
 
-  exact      machine rows with the same inputs (item/ore keys, stack sizes, fluids, circuit) and a different output,
-             in the same map or in another map (a cross-map match means two machines compete for the same input stack)
-  shadow     machine rows whose inputs match when ore names are expanded or stack sizes are ignored
+  exact      machine rows of the SAME recipe map with the same inputs (item/ore keys, stack sizes, fluids, circuit)
+             and a different output. Different maps never clash: each machine only runs its own map. For the
+             scanner and assembly-line research this is still right: two research recipes scanning one item
+             collide, because the scanned data unlocks only one recipe.
+  shadow     same-map machine rows whose inputs match when ore names are expanded or stack sizes are ignored
   grid       crafting-table rows: shaped grids that match cell for cell (mirror included) with a different output
   shapeless  our shapeless/ore rows whose ingredient multiset also matches a pack shaped or shapeless row, or the
              reverse (our shaped grid vs a pack shapeless row)
@@ -21,6 +23,7 @@ be matched by name equality against our items, not expanded.
 """
 import argparse
 import collections
+import gzip
 import json
 import sys
 
@@ -123,13 +126,14 @@ def fmt_row(r):
     return "`%s` (%s, %s): %s -> %s%s" % (r["map"], r["source"], r["kind"], ins, outs, tail)
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("dump")
     ap.add_argument("report")
     ap.add_argument("--limit", type=int, default=40, help="max listed findings per category")
-    args = ap.parse_args()
-    with open(args.dump, encoding="utf-8") as f:
+    args = ap.parse_args(argv)
+    opener = gzip.open if args.dump.endswith(".gz") else open
+    with opener(args.dump, "rt", encoding="utf-8") as f:
         data = json.load(f)
     rows = data["rows"]
     m = Matcher(data.get("oredict", {}))
@@ -140,7 +144,7 @@ def main():
 
     # --- machine rows -----------------------------------------------------------------------------------------
     def msig(r):
-        return (tuple((i["k"], i["n"]) for i in r["inputs"]), tuple((i["k"], i["n"]) for i in r["fluids"]), r["circuit"])
+        return (r["map"], tuple((i["k"], i["n"]) for i in r["inputs"]), tuple((i["k"], i["n"]) for i in r["fluids"]), r["circuit"])
 
     mach_pack = [r for r in pack if r["kind"] == "machine" and r["inputs"] + r["fluids"]]
     by_sig = collections.defaultdict(list)
@@ -148,7 +152,7 @@ def main():
     for r in mach_pack:
         by_sig[msig(r)].append(r)
         for k in set(map(base_id, keys(r))):
-            index[k].append(r)
+            index[(r["map"], k)].append(r)
     mach_ours = [r for r in ours if r["kind"] == "machine"]
     own_sig = collections.defaultdict(list)
     for r in mach_ours:
@@ -160,7 +164,7 @@ def main():
             exact_ids.add(id(o))
             same_out = o["outputs"] == r["outputs"]
             cat = "duplicate" if same_out else "exact"
-            findings[cat].append((o["map"] if o["map"] == r["map"] else r["map"] + " vs " + o["map"], r, o))
+            findings[cat].append((r["map"], r, o))
         for o in own_sig[sig]:
             if o is not r and id(o) > id(r) and o["map"] == r["map"] and o["outputs"] != r["outputs"]:
                 findings["exact"].append((r["map"] + " (own)", r, o))
@@ -173,7 +177,7 @@ def main():
         if probe.startswith("ore:"):
             ids |= m.member_ids.get(probe, set())
         for i in ids:
-            for o in index.get(i, []):
+            for o in index.get((r["map"], i), []):
                 cand[id(o)] = o
         for o in cand.values():
             if id(o) in exact_ids or o["circuit"] != r["circuit"]:
@@ -182,7 +186,7 @@ def main():
                 continue
             if m.multiset(keys(r), keys(o)):
                 cat = "duplicate" if o["outputs"] == r["outputs"] else "shadow"
-                findings[cat].append((o["map"] if o["map"] == r["map"] else r["map"] + " vs " + o["map"], r, o))
+                findings[cat].append((r["map"], r, o))
 
     # --- crafting rows ----------------------------------------------------------------------------------------
     craft_pack = [r for r in pack if r["map"] == "crafting" and r["kind"] in ("shaped", "shapeless")]
