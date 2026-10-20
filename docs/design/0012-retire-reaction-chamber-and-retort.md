@@ -1,6 +1,6 @@
 # 0012 · Retire the Reaction Chamber and the Retort
 
-- Status: Accepted (owner, 2026-10-20)
+- Status: Accepted (owner, 2026-10-20); implemented on `fix/retire-reaction-retort`
 - Gate: D2 (amends [0002](0002-machine-deconfliction.md) and [0011](0011-machine-policy.md); confirms [0001](0001-tier-map.md) is unchanged)
 - Date: 2026-10-20
 
@@ -30,7 +30,7 @@ Consumers of the outputs: the **Laser Focus** is an input of the Laser Barrel (`
 4. **Heat Ray Focus is deleted.** Its only job was to be the reaction's non-consumed input. The Emitter it was built around now goes straight into the recipes.
 5. **Uranium enrichment is dropped.** GT supplies Uranium-235 (`dust.Uranium235`) and the ZPM nuclear cell recipes (RC-59, RC-60) already use it.
 6. **The risk gameplay is gone.** No intensity buttons, no breakage, no small explosions, no radiation burst, no Retort pollution. This is an intentional gameplay loss and it is the point of the decision.
-7. **The Retort is preserved, not lost.** The full Retort, including its interior parts, is archived before removal on branch `archive/retort-multiblock` and tag `archive/retort-v1`. The owner may pitch it to the GTNH community as a standalone bulk-reaction multiblock. (The orchestrator creates both refs; they do not exist when this record is written.)
+7. **The Retort is preserved, not lost.** The full Retort, including its interior parts, is archived before removal on branch `archive/retort-multiblock` and tag `archive/retort-v1`. The owner may pitch it to the GTNH community as a standalone bulk-reaction multiblock.
 
 ## Mapping table
 
@@ -153,7 +153,20 @@ The full Retort, including its interior parts (the `RetortShape` structure defin
 - branch `archive/retort-multiblock`
 - tag `archive/retort-v1`
 
-Neither ref exists when this record is written; the orchestrator creates them from the last commit that still contains the Retort. The removal PR must not merge until both refs exist.
+Both refs were cut from `fa818412`, the last master commit that still contains the Retort, and exist in the repository.
+
+**Why it is archived rather than deleted.** The owner loves the Retort concept, but it does not fit this mod: a bespoke bulk-reaction multiblock for two recipes is weak justification inside GTNH, and GregGuns is pitched on tight integration with the pack's own machines. The multiblock itself is sound work, so it is kept whole. It may be pitched to the GTNH community as a standalone bulk-reaction multiblock, and anyone can check out the tag to read or reuse it.
+
+## Implementation notes (landed on `fix/retire-reaction-retort`)
+
+Where the landed change differs from, or adds to, the plan above:
+
+- **Row ids.** The two recipes are `RC-64` (Laser Focus, `ComponentTable`, `Target.LASER_ENGRAVER`) and `RC-65` (Anti Gravity Core, `ComponentTable`, `Target.ASSEMBLER`). The non-consumed white lens is `Input.lens("craftingLensWhite")` and is registered as GT's own `OreDictItemStack(name, 0)` idiom. The Laser Barrel row (RC-07) no longer needs the machines module, because the Laser Focus now ships with the guns module.
+- **Retired MTE ids keep inert placeholders.** The plan said GT drops the unknown MTE at load. That is true of the tile entity, but an *item stack* of a machine at an id with no MTE crashes GT's item renderer in the hotbar (the Retort crash that `fix/mte-client-register` fixed). So `MtePlaceholders` also registers an inert placeholder at 20106 to 20108 (tooltip: retired, does nothing, break it). `GregGunsMTEIDs.retired()` lists them; `all()` and the constants do not, and a unit test fails if any source names them as a number or any constant takes one. Placed Retorts therefore become an inert hatch-like block instead of a blank tile, and the player can break it.
+- **Config.** Every key in `MachinesConfig` (not only the three listed) served the reaction risk system, so the whole class and the `machines` config section are deleted.
+- **Missing mappings.** `RetiredContent` ignores `gregguns:part_heat_ray_focus`.
+- **Reaction Casing (meta 2)** stays registered as an inert decorative block, with no recipe; it is removed after one alpha.
+- **Tests.** The engraver boot test is the scenario `components.laser_focus` (and `components.anti_gravity_core` for the Assembler row); see [docs/testing/README.md](../testing/README.md).
 
 ## Open risks
 

@@ -9,7 +9,7 @@
 
 1. **GTNH is a large-scale production pack.** GregGuns keeps Techguns-style single blocks. It also gives a multiblock to every machine players will use regularly, and at minimum to every machine that becomes a bottleneck.
 2. **Multiblocks must have distinctive shapes.** No plain 3×3×3 cubes.
-3. **Ammo is the exception to "use GT machines everywhere".** Ammo is central to a gun mod, so GregGuns has its own animated single-block Ammo Press and an ammunition manufacturing multiblock.
+3. **Ammo is the exception to "use GT machines everywhere".** Ammo is central to a gun mod, so GregGuns has its own animated single-block Ammo Press and an ammunition manufacturing multiblock.. Amended by [0012](0012-retire-reaction-chamber-and-retort.md): the Reaction Chamber and Retort are retired
 
 ## Decision
 - **The roster.** [machine-roster.md](../gregguns-spec/08-machines-production/machine-roster.md) is the single authoritative list of the machines GregGuns implements. For each one it gives the single block, the multiblock (or why there is none), the usage class (bottleneck, regular, or occasional and cosmetic), the tier range and the MTE IDs. The multiblock designs are linked from it.

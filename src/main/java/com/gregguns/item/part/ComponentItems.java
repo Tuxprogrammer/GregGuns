@@ -17,7 +17,7 @@ import com.gregguns.core.registry.ModuleRegistrar;
  * <p>
  * Items registered elsewhere keep their registrars ({@link PartItems} for the M1 and M2 parts, {@code ArmorParts}:
  * Heavy Cloth, Gas Mask Filter and the
- * Compressed Air Tank; {@code ReactionParts}: the three Reaction Chamber foci). Names match the texture files.
+ * Compressed Air Tank). Names match the texture files.
  *
  * <p>
  * Usage: {@code ComponentItems.get(ComponentItems.RECEIVER_STEEL)}.
@@ -43,6 +43,10 @@ public final class ComponentItems {
     public static final String RECEIVER_HARDENED = "part_receiver_hardened";
     /** Registry name of the Carbon Receiver. */
     public static final String RECEIVER_CARBON = "part_receiver_carbon";
+    /** Registry name of the Laser Focus (made on GT's Laser Engraver, RC-64). */
+    public static final String LASER_FOCUS = "part_laser_focus";
+    /** Registry name of the Anti Gravity Core (made on GT's Assembler, RC-65). */
+    public static final String ANTI_GRAVITY_CORE = "part_anti_gravity_core";
     /** Registry name of the UV Emitter. */
     public static final String UV_EMITTER = "part_uv_emitter";
     /** Registry name of the Sonic Emitter. */

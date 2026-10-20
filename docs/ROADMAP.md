@@ -91,7 +91,7 @@ The rule: GT already has machines for most Techguns processes, so GregGuns uses 
 | Metal Press | **Drop** | GT Bending Machine and Forming Press |
 | Chem Lab | **Drop** | GT Chemical Reactor and Mixer |
 | Fabricator (multiblock) | **Replace** | GT Assembler and Circuit Assembler recipes |
-| Reaction Chamber (multiblock) | **Keep, candidate** | Unique focus, intensity and radiation gameplay. Rebuild as a GT multiblock running on EU |
+| Reaction Chamber (multiblock) | **Retired** ([0012](design/0012-retire-reaction-chamber-and-retort.md)) | Recipes moved to the GT Laser Engraver and Assembler. The Retort is archived on `archive/retort-multiblock` / `archive/retort-v1` |
 | Charging Station | **Drop** | GT battery buffers and chargers. Items use the IC2 electric-item API |
 | Repair Bench | **Keep** | Armor repair using GT materials |
 | Camo Bench | **Keep** | Cosmetic, tasteful, no GT equivalent |
@@ -280,6 +280,7 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 
   A clash means identical inputs, or an input set that shadows another recipe, which either steals or hides an existing GTNH recipe. Do the check mechanically: dump the recipes from a real GTNH server with our jar loaded, then diff the dump. Fix every clash or list it in [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md).
 - **Pack-integration pass: retire the Reaction Chamber and the Retort.** Both machines have weak justification in a pack this rich. Remap every recipe they run onto an existing GTNH method, from any pack mod, not only GregTech. For example, the bio-ammo raw material comes from the GTNH Bio Lab. GregGuns keeps final ammo production; tight pack integration is the mod's main pitch to the pack maintainers.
+  - Done: [0012](design/0012-retire-reaction-chamber-and-retort.md) holds the mapping table, the Laser Focus now uses the GT Laser Engraver and the Anti Gravity Core the GT Assembler. Wording below is the original brief.
   - The mapping table and the reasoning go in a design record.
   - The removed MTE meta IDs are retired and stay reserved; they are never reused.
   - Before removal, the complete Retort, including its interior parts, is preserved on branch `archive/retort-multiblock` and tag `archive/retort-v1`, and neither is ever deleted. The owner may pitch it to the GTNH community as a standalone bulk-reaction multiblock for the wider pack.
@@ -291,7 +292,7 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 **Exit gate:**
 - [ ] Every milestone M0–M8 has a completeness audit, with each exit box met or deferred with the owner's sign-off.
 - [ ] The recipe-clash review found no unresolved clashes with GTNH 2.9 recipes. Each clash it found was fixed, or recorded in PACK-CHANGES with the owner's sign-off.
-- [ ] The Reaction Chamber and the Retort are removed. Their recipes are remapped to GTNH methods per the design record, and their MTE IDs are retired and reserved. The Retort is archived on `archive/retort-multiblock` and `archive/retort-v1`.
+- [x] The Reaction Chamber and the Retort are removed (design record 0012, branch `fix/retire-reaction-retort`). Their recipes are remapped to GTNH methods per the design record, and their MTE IDs are retired and reserved. The Retort is archived on `archive/retort-multiblock` and `archive/retort-v1`.
 - [ ] The NewGunrizons recon note is written, and the owner has picked a direction: merge, or take its place.
 - [ ] The batched client pass is clean, including with shaders on, and has no crash-severity or invisible-render bugs.
 - [ ] `0.3.0-beta` is published.

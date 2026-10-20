@@ -21,7 +21,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Guards the "every GregGuns machine exists on both sides" rule by reading the registration sources: a client that
- * lacks a machine at an id crashes GT's item render (the Retort crash).
+ * lacks a machine at an id crashes GT's item render (the Retort crash, which is why retired ids keep inert
+ * placeholders).
  */
 class MteRegistrationTest {
 
@@ -110,11 +111,11 @@ class MteRegistrationTest {
     @Test
     void thePlaceholderPassFillsExactlyTheFreeIds() {
         Set<Integer> taken = new HashSet<>();
-        taken.add(GregGunsMTEIDs.RETORT);
+        taken.add(GregGunsMTEIDs.REPAIR_BENCH_LV);
         taken.add(GregGunsMTEIDs.AMMO_WORKS);
         List<Integer> missing = MtePlaceholders.missing(taken::contains);
         assertEquals(GregGunsMTEIDs.all().length - 2, missing.size());
-        assertFalse(missing.contains(GregGunsMTEIDs.RETORT));
+        assertFalse(missing.contains(GregGunsMTEIDs.REPAIR_BENCH_LV));
         assertTrue(missing.contains(GregGunsMTEIDs.RAMPART));
         assertTrue(
             MtePlaceholders.missing(i -> true)

@@ -5,12 +5,6 @@ import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
-import com.gregguns.machine.reaction.ReactionCraftingRecipes;
-import com.gregguns.machine.reaction.ReactionMachines;
-import com.gregguns.machine.reaction.ReactionParts;
-import com.gregguns.machine.reaction.ReactionRecipeMaps;
-import com.gregguns.machine.reaction.ReactionRecipes;
-import com.gregguns.machine.reaction.ReactionScenarios;
 import com.gregguns.machine.repair.RepairMachines;
 import com.gregguns.machine.repair.RepairScenarios;
 
@@ -33,23 +27,17 @@ public final class MachinesModule implements GregGunsModule {
 
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
-        // Reaction Chamber and Retort. The map is built here so GT records GregGuns as its owner mod (NEI badge).
-        ReactionRecipeMaps.init();
-        ReactionParts.register(registrar);
-        // The Reaction Chamber Casing is meta 2 of the shared casings block, registered by the guns module.
+        // Nothing to register before GT's MTE window. The Reaction Chamber and Retort were retired by design record
+        // 0012;
+        // their MTE ids (20106 to 20108) stay reserved, and Reaction Casing meta 2 stays as an inert block.
     }
 
     @Override
     public void init(FMLInitializationEvent event) {
-        // Inside GT's MTE registration window (after its preload, before its postload).
-        ReactionMachines.register();
-        ReactionRecipes.register();
-        ReactionCraftingRecipes.register();
         // Repair Bench, Armory Gantry and Camo Bench.
         RepairMachines.register();
         RepairMachines.registerRecipes();
         if (DevEnvironment.isActive()) {
-            ReactionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             RepairScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ScenarioRegistry.SCENARIOS.register(new com.gregguns.core.text.AddedByScenario());
         }
