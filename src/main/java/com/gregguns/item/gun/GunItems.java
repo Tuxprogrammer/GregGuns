@@ -45,8 +45,27 @@ public final class GunItems {
      */
     public static void register(ModuleRegistrar registrar) {
         for (GunDefinition def : GunDefinitions.ALL) {
-            ITEMS.put(def.name(), registrar.registerItem(def.name(), create(def)));
+            registerOne(registrar, def.name());
         }
+        registerProbe(registrar);
+    }
+
+    /**
+     * Registers one gun by name, so the caller picks the registration order (see {@code GunsItemOrder}).
+     *
+     * @param registrar the guns module's registrar
+     * @param name      a gun's registry name from {@link GunDefinitions#ALL}
+     */
+    public static void registerOne(ModuleRegistrar registrar, String name) {
+        ITEMS.put(name, registrar.registerItem(name, create(GunDefinitions.byName(name))));
+    }
+
+    /**
+     * Registers the dev-only scenario probe; call after every content item.
+     *
+     * @param registrar the guns module's registrar
+     */
+    public static void registerProbe(ModuleRegistrar registrar) {
         if (DevEnvironment.isActive()) {
             // The I11 scenario probe: not a content item, so no icon of its own (it borrows the pistol's).
             ItemGun probe = registrar.registerItem(ToolProbeDef.NAME, new ProbeToolGun());

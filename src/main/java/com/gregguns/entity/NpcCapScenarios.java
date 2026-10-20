@@ -59,6 +59,9 @@ final class NpcCapScenarios {
     /** The installed port counts by short and full name, spawns, and never loads or spawns into an unloaded chunk. */
     private static final class CampPortCountsScenario implements Scenario {
 
+        /** A kind name no mob will ever be registered under, however many real mobs land. */
+        private static final String UNBOUND_KIND = "NoSuchGregGunsKind";
+
         @Override
         public String name() {
             return "npc.camp_port_counts";
@@ -82,13 +85,15 @@ final class NpcCapScenarios {
             NpcMob test = NpcMob.NPC_TEST;
             List<NpcEntity> spawned = new ArrayList<>();
             int before = port.countNpcs(world, null, x - 8, y - 2, z - 8, x + 8, y + 6, z + 8);
+            // Ambient NPCs (natural spawns, other scenarios) are not ours: remember them to tell ours apart.
+            List<Object> baseline = new ArrayList<>(world.loadedEntityList);
 
             out.check(port.spawn(world, test.registryName(), x + 0.5, y, z + 0.5), "short-name spawn should work");
             out.check(port.spawn(world, test.fullName(), x + 2.5, y, z + 0.5), "full-name spawn should work");
-            out.check(!port.spawn(world, "ArmySoldier", x + 0.5, y, z + 0.5), "an unregistered kind spawns nothing");
+            out.check(!port.spawn(world, UNBOUND_KIND, x + 0.5, y, z + 0.5), "an unregistered kind spawns nothing");
             out.check(!port.spawn(world, "Zombie", x + 0.5, y, z + 0.5), "a vanilla name spawns nothing");
             for (Object o : world.loadedEntityList) {
-                if (o instanceof NpcEntity && !((NpcEntity) o).isDead) {
+                if (o instanceof NpcEntity && !((NpcEntity) o).isDead && !baseline.contains(o)) {
                     spawned.add((NpcEntity) o);
                 }
             }
@@ -97,7 +102,7 @@ final class NpcCapScenarios {
             int fullCount = count(port, world, x, y, z, test.fullName());
             out.checkEquals("count by short name", before + 2, shortCount);
             out.checkEquals("count by full name", before + 2, fullCount);
-            out.checkEquals("count of another kind", 0, count(port, world, x, y, z, "ArmySoldier"));
+            out.checkEquals("count of another kind", 0, count(port, world, x, y, z, UNBOUND_KIND));
             out.checkEquals(
                 "count of a box beside the NPCs",
                 0,

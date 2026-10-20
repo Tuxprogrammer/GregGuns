@@ -35,7 +35,36 @@ public final class GrenadeItems {
      * @param registrar the guns module's registrar
      */
     public static void register(ModuleRegistrar registrar) {
-        stielgranate = registrar.registerItem(STIELGRANATE, new ItemStielgranate());
+        registerOne(registrar, STIELGRANATE);
+        registerOne(registrar, FRAG_GRENADE);
+        registerOne(registrar, FLASHBANG);
+        registerEntities(registrar);
+    }
+
+    /**
+     * Registers one grenade item by name, so the caller picks the registration order (see {@code GunsItemOrder}).
+     *
+     * @param registrar the guns module's registrar
+     * @param name      {@link #STIELGRANATE}, {@link #FRAG_GRENADE} or {@link #FLASHBANG}
+     */
+    public static void registerOne(ModuleRegistrar registrar, String name) {
+        if (STIELGRANATE.equals(name)) {
+            stielgranate = registrar.registerItem(STIELGRANATE, new ItemStielgranate());
+        } else if (FRAG_GRENADE.equals(name)) {
+            fragGrenade = registrar.registerItem(FRAG_GRENADE, new ItemFragGrenade());
+        } else if (FLASHBANG.equals(name)) {
+            flashbang = registrar.registerItem(FLASHBANG, new ItemFlashbang());
+        } else {
+            throw new IllegalArgumentException("not a grenade item: " + name);
+        }
+    }
+
+    /**
+     * Registers the three grenade projectile entities (no item ids involved).
+     *
+     * @param registrar the guns module's registrar
+     */
+    public static void registerEntities(ModuleRegistrar registrar) {
         registrar.registerEntity(
             "grenade_projectile",
             GrenadeProjectile.class,
@@ -43,7 +72,6 @@ public final class GrenadeItems {
             GrenadeProjectile.TRACKING_RANGE,
             GrenadeProjectile.UPDATE_FREQUENCY,
             GrenadeProjectile.SENDS_VELOCITY);
-        fragGrenade = registrar.registerItem(FRAG_GRENADE, new ItemFragGrenade());
         registrar.registerEntity(
             "frag_grenade_projectile",
             FragGrenadeProjectile.class,
@@ -51,7 +79,6 @@ public final class GrenadeItems {
             GrenadeProjectile.TRACKING_RANGE,
             GrenadeProjectile.UPDATE_FREQUENCY,
             GrenadeProjectile.SENDS_VELOCITY);
-        flashbang = registrar.registerItem(FLASHBANG, new ItemFlashbang());
         registrar.registerEntity(
             "flashbang_projectile",
             FlashbangProjectile.class,

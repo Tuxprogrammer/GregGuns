@@ -9,7 +9,9 @@ package com.gregguns.machine;
  * Shape layout is StructureLib's: {@code piece[aisle][row][column]}, aisles running front to back (the controller's
  * face first), rows top to bottom, columns left to right as seen from the front. Characters: {@code F} feeder casing,
  * {@code A} plain casing, {@code O} packing casing, {@code M} ram housing, {@code I} belt (GT item pipe casing),
- * {@code ~} controller, {@code -} must be air, space means anything.
+ * {@code G} glass (any tier), {@code R} steel frame box, {@code P} steel pipe casing, {@code B} steel gearbox casing,
+ * {@code N} motor casing, {@code Y} assembler casing, {@code ~} controller, {@code -} must be air, space means
+ * anything.
  *
  * <p>
  * Usage: {@code AmmoWorksShape.parallels(4, 3)} is 48 (four bays, HV). Both sides.
@@ -48,7 +50,7 @@ public final class AmmoWorksShape {
     /** Base speed gained per belt tier; the duration multiplier is {@code 1 / (1 + 0.25 x (beltTier + 1))}. */
     public static final double BELT_STEP = 0.25;
 
-    /** The feeder: hopper corners on top, the controller in the front wall. */
+    /** The feeder: hopper corners on top, the controller in the front wall, a feed motor pair and pipe runs inside. */
     // spotless:off
     public static final String[][] FEEDER = {
         { "     ",
@@ -61,63 +63,70 @@ public final class AmmoWorksShape {
         { "     ",
           "     ",
           "AAAAA",
-          "A---A",
-          "A---A",
-          "A---A",
+          "AP-PA",
+          "G---G",
+          "AN-NA",
           "AAIAA" },
         { "     ",
           "F   F",
           "AAAAA",
-          "A---A",
-          "A---A",
+          "AP-PA",
+          "G---G",
           "A---A",
           "AAIAA" } };
 
-    /** One press bay: a ram housing stands in the roof at its middle aisle. */
+    /**
+     * One press bay: a ram housing stands in the roof at its middle aisle, a steel frame rod runs down from it to a
+     * press head over the belt, gearboxes flank the head, and pipe runs follow the ceiling. The side walls have a
+     * window.
+     */
     public static final String[][] BAY = {
         { "     ",
           "     ",
           "AAAAA",
-          "A---A",
-          "A---A",
+          "AP-PA",
+          "G---G",
           "A---A",
           "AAIAA" },
         { "     ",
           "  M  ",
           "AAMAA",
-          "A---A",
-          "A---A",
-          "A---A",
+          "APRPA",
+          "G-R-G",
+          "ABMBA",
           "AAIAA" },
         { "     ",
           "     ",
           "AAAAA",
-          "A---A",
-          "A---A",
+          "AP-PA",
+          "G---G",
           "A---A",
           "AAIAA" } };
 
-    /** The packing station: a taller hall, a crane column and the output wall. */
+    /**
+     * The packing station: a taller hall, a crane column and the output wall. An assembler casing arch on gearbox legs
+     * spans the belt (the packing core) and a frame rod hangs from the crane; windows run two blocks high.
+     */
     public static final String[][] STATION = {
         { "     ",
           "AAAAA",
-          "A---A",
-          "A---A",
-          "A---A",
-          "A---A",
-          "AAIAA" },
-        { "  O  ",
-          "AAOAA",
-          "A---A",
-          "A---A",
-          "A---A",
+          "AP-PA",
+          "G---G",
+          "G---G",
           "A---A",
           "AAIAA" },
         { "  O  ",
           "AAOAA",
-          "A---A",
-          "A---A",
-          "A---A",
+          "AP-PA",
+          "GYYYG",
+          "GB-BG",
+          "AB-BA",
+          "AAIAA" },
+        { "  O  ",
+          "AAOAA",
+          "APRPA",
+          "G-R-G",
+          "G---G",
           "A---A",
           "AAIAA" },
         { "     ",

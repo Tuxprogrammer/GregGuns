@@ -31,6 +31,7 @@ The "Needs" column is the module order in `ModuleId`, taken from the roadmap's e
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
 | `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Registers the numpad debug keybinds. Nothing reads it until the M1 keybinds exist. Kept from Techguns' `enableDebugKeybinds`. |
+| `debug.recipeDump` | boolean | `false` | n/a | no | Enables the op-only `/gregguns dumprecipes <file>` command (recipe-clash review). Leave off in play. |
 
 ## Machines (`machines`)
 
@@ -81,6 +82,8 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 | `npcs.perChunkCap` | int | `4` | 0 to 256 | no | Most NPCs per chunk before natural spawning stops. |
 | `npcs.perPlayerCap` | int | `8` | 0 to 1024 | no | Most NPCs around one player before natural spawning stops. |
 | `npcs.gunDamageEnabled` | boolean | `true` | n/a | no | NPC bullets deal damage. |
+| `npcs.infernalTieredLoot` | boolean | `true` | n/a | no | Elite, ultra and infernal GregGuns NPCs add tiered GregGuns drops (needs Infernal Mobs). |
+| `npcs.infernalAllowSpawnerNpcs` | boolean | `false` | n/a | no | NPCs from spawner blocks may roll as infernal mobs. |
 
 ## Worldgen (`worldgen`)
 

@@ -25,10 +25,18 @@ public final class MobRenderers {
     private MobRenderers() {}
 
     /**
-     * @param texture a texture name
-     * @return its location, {@code gregguns:textures/entity/<texture>.png}
+     * @param texture a bare texture name, a gregguns path ({@code textures/...} or ending in {@code .png}), or a full
+     *                {@code domain:path} location
+     * @return its location: a bare name gives {@code gregguns:textures/entity/<texture>.png}, a path is used as-is
+     *         under gregguns, and a string with a colon is parsed as a full location
      */
     public static ResourceLocation texture(String texture) {
+        if (texture.indexOf(':') >= 0) {
+            return new ResourceLocation(texture);
+        }
+        if (texture.startsWith("textures/") || texture.endsWith(".png")) {
+            return new ResourceLocation("gregguns", texture);
+        }
         return new ResourceLocation("gregguns", "textures/entity/" + texture + ".png");
     }
 

@@ -264,3 +264,5 @@ The models were fitted against the reference silhouettes in the review's pair re
 ## Visual checks owed to a client run
 
 Run `armor.showcase` (see [docs/testing/README.md](../../testing/README.md), "Armor showcase") and read `armor-<set>-<camo>-front|back.png`: the five box models on a moving player (does the Power Armor slab clip the ground, do the Steam chimneys swing with the arm), and the vanilla-layout 128 x 64 sets, which settle ARM-DEV-12.
+
+- **Recipe clash fix (T3 boots):** the T3 Combat and T3 HEV boots were the same Assembler recipe (2 epoxy sheet, 2 titanium plate, circuit 4). The HEV boots now also take one EV circuit (the shock-absorber control), like the other HEV pieces; `RecipeClashGuardTest` pins that no two GregGuns machine rows match.

@@ -182,7 +182,7 @@ Controller tier HV (Stainless Steel), hatches LV to IV ([multiblocks.md](multibl
 
 | Output | Tier | Method | Inputs | Circuit | EU/t, time | Notes |
 |---|---|---|---|---|---|---|
-| Works Casing x2 | HV | `assemblerRecipes` | `plate.StainlessSteel` x6, `frameGt.StainlessSteel` x1 | 1 | `TierEU.RECIPE_LV / 2`, 2 s 10 ticks | The default hall needs 313 or more casings; one per craft would cost about 1,900 plates, so this yields two. A proposal |
+| Works Casing x2 | HV | `assemblerRecipes` | `plate.StainlessSteel` x6, `frameGt.StainlessSteel` x1 | 6 | `TierEU.RECIPE_LV / 2`, 2 s 10 ticks | The default hall needs 277 or more casings (interior parts and glass are GT blocks, not Works Casings); one per craft would cost about 1,740 plates, so this yields two. A proposal. Circuit 6, not 1: GT's own Stainless Steel casing is this mix on circuit 1 (recipe-clash fix) |
 | Ram Housing x1 | HV | `assemblerRecipes` | Works Casing x1, `Electric_Piston_HV` x1, `gearGt.StainlessSteel` x1 | 2 | `TierEU.RECIPE_HV`, 10 s | Active texture is animated |
 
 Ammunition Works controller (MTE 20105), hand-crafted at HV, shaped as GT's Assembly Line controller. Gate: `Hull_HV` and the Stainless Steel casings.
@@ -320,7 +320,7 @@ The recipes in this sheet **produce** components that other areas consume: Laser
 
 ## Open questions
 
-- **Works Casing yield.** Two per craft is a proposal; 1:1 would match GT but costs about 1,900 Stainless Steel plates for a default hall. Balance pass.
+- **Works Casing yield.** Two per craft is a proposal; 1:1 would match GT but costs about 1,740 Stainless Steel plates for a default hall. Balance pass.
 - **Ammo Press and Reaction Chamber single-block grids.** These are the recipes' shapes, not tuned costs. The press adds a conveyor and motor to GT's Forming Press, which can be dropped if the cost proves too high.
 - **Controller tier.** EV is chosen because the cheapest processing recipe is EV. If a later recipe needs a larger machine, a second controller tier needs a record.
 - **Fluid amounts.** 1 152 L of molten redstone or Enderium is a proposal. Tune in M4 balance.

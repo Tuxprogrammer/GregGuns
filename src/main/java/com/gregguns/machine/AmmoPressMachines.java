@@ -133,7 +133,7 @@ public final class AmmoPressMachines {
 
         GTValues.RA.stdBuilder()
             .itemInputs(stainlessPlates, stainlessFrame)
-            .circuit(1)
+            .circuit(com.gregguns.recipe.CasingCircuits.WORKS_CASING)
             .itemOutputs(casingOut)
             .duration(2 * GTRecipeBuilder.SECONDS + 10 * GTRecipeBuilder.TICKS)
             .eut(TierEU.RECIPE_LV / 2)

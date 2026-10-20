@@ -167,7 +167,7 @@ Multiblock, controller HV (MTE 20114, [multiblocks.md](../08-machines-production
 
 | Output | Method | Inputs | Circuit | EU/t, time | Notes |
 |---|---|---|---|---|---|
-| Gantry Casing x1 | `assemblerRecipes` | `plate.StainlessSteel` x6, `frameGt.StainlessSteel` x1 | 1 | `TierEU.RECIPE_LV / 2`, 2 s 10 ticks | The GT casing recipe. Used by `R` |
+| Gantry Casing x1 | `assemblerRecipes` | `plate.StainlessSteel` x6, `frameGt.StainlessSteel` x1 | 7 | `TierEU.RECIPE_LV / 2`, 2 s 10 ticks | The GT casing recipe on circuit 7, since GT's own Stainless Steel casing takes circuit 1. Used by `R` |
 | Gantry Beam x2 | `assemblerRecipes` | `stickLong.StainlessSteel` x3, `plate.StainlessSteel` x3 | 2 | `TierEU.RECIPE_HV`, 10 s | The rail across the top. Used by `B` |
 | Gantry Hoist x1 | `assemblerRecipes` | Gantry Casing x1, `Electric_Motor_HV` x1, `gearGt.StainlessSteel` x2 | 2 | `TierEU.RECIPE_HV`, 15 s | The crane head on the beam. Used by `H` |
 | Repair Cradle x2 | `assemblerRecipes` | Gantry Casing x1, `Electric_Piston_HV` x1, `plate.Rubber` x2 | 3 | `TierEU.RECIPE_HV`, 10 s | The pad under each bay. Used by `T` |
