@@ -159,7 +159,7 @@ All of these registries and events are *1.12-only mechanisms*; the behavior they
 
 ## Lang leftovers with no registration
 
-These `en_US.lang` keys describe things that no longer exist in 1.12. They are catalog entries for [07-visuals-audio](../README.md#areas) and the 1.7.10 lineage appendix (A2).
+These `en_US.lang` keys describe things that no longer exist in 1.12. They are catalog entries for [07-visuals-audio](../README.md#areas) and the 1.7.10 lineage appendix (A2), and bug ICBM-06-19.
 
 | Key | English | Note |
 |---|---|---|

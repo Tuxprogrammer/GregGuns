@@ -110,7 +110,7 @@ The only built-in fuse tick effect is on the **block** form of `incendiary` and 
 
 All block recipes live in `recipes/explosives/` (the full recipe catalog is `06-blocks-items`). Type `icbmclassic:explosive` is a shaped recipe whose ingredients can be explosives by registry name. Unless a row says otherwise, an explosive ingredient is the **block item** of that explosive.
 
-| Explosive | Result count | Grid and ingredients |
+| Explosive | Result count (JSON; **in game always 1**, see `ICBM-06-02`) | Grid and ingredients |
 |---|---|---|
 | condensed | 3 | `trt/rtr/trt`: t = TNT, r = redstone |
 | shrapnel | 1 | `aaa/ara/aaa`: a = arrow, r = condensed |

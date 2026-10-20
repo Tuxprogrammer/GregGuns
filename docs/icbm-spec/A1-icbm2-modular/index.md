@@ -71,8 +71,8 @@ IDs `ICBM-A1-01` to `ICBM-A1-23` are used; `24` to `39` are unused. All are "log
 
 | ID | Where | What | Severity |
 |---|---|---|---|
-| ICBM-A1-01 | `missile/data/flight/FlightDataDirect.java:11-15` | `doOnce` starts true and the test is `!doOnce`, so motion is never computed (stays 0). `updatePath` also never calls the parent, so `ticks` and distances stay -1. The class is dead anyway | logic, dead code |
-| ICBM-A1-02 | `missile/entity/EntityMissile.java:136-152` | The `ark` / `track` flag of all `setTarget` methods is ignored; no arc or direct choice exists. The 1000-block apex in `FlightDataArk.java:18` is above the build limit | logic, dead code |
+| ICBM-A1-01 | `missile/data/flight/FlightDataDirect.java:11-15` | `doOnce` starts true and the test is `!doOnce`, so motion is never computed (stays 0). `updatePath` also never calls the parent, so `ticks` and distances stay -1. The class is dead anyway | gameplay; logic, dead code |
+| ICBM-A1-02 | `missile/entity/EntityMissile.java:136-152` | The `ark` / `track` flag of all `setTarget` methods is ignored; no arc or direct choice exists. The 1000-block apex in `FlightDataArk.java:18` is above the build limit | gameplay; logic, dead code |
 | ICBM-A1-03 | `missile/data/missile/MissileSize.java:90` with `missile/large.json:6` | Default casing id is built as `icbm:<size>Missile`; the large casing is `icbm:large`, so `getDefaultMissileCasing` returns null for LARGE and `Missile.createMissile(LARGE, ...)` fails | logic, crash |
 | ICBM-A1-04 | `missile/entity/EntityMissile.java:75-93` | Health switch uses cases 0, 1, 2, 4, 5 against ordinals 0-4: MEDIUM (3) falls through to 2 HP, LARGE gets 100, and case 5 never exists | logic, gameplay |
 | ICBM-A1-05 | `missile/parts/guidance/*` (`Guidance.java:26`) | `getChanceToFail` is defined for every guidance and called nowhere | logic, gameplay |

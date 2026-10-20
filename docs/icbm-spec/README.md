@@ -2,7 +2,7 @@
 
 A description of **ICBM-Classic for Minecraft 1.12.2**, branch `prod/1.12` at commit [`9c1d985a`](https://github.com/BuiltBrokenModding/ICBM-Classic/tree/9c1d985a375adc2868ff47707b3a636452d0b63a). It records what ICBM does, bugs included, so GregGuns can rebuild the parts it wants on GTNH. [docs/gregguns-icbm-spec/](../gregguns-icbm-spec/README.md) records how GregGuns differs and how it plugs into the pack. Read the two side by side.
 
-Status: **scaffold**. The areas below are planned. Each one gets an `index.md` when its sheets are written.
+Status: **first pass complete** (2026-10-20). All seven areas and both appendices are written, with 365 suspected bugs in [BUGS.md](BUGS.md).
 
 ## Which sources this spec covers
 
@@ -25,22 +25,29 @@ The policy is owner-approved (2026-10-20).
 
 | Area | Covers |
 |---|---|
-| 01-core | Lifecycle and registration, all config groups (~35 classes), the radio bus, packets, commands, the public `api/` package, datafixers, the energy model (FE buffers, `use_energy`) |
-| 02-explosives | Explosive registry and tiers, every blast type (26 IDs), the blast engine (threaded blasts, ray-casting, block updates), fuse times, explosive block, grenade, bomb cart, flying blocks and fragments, gas, potions and protective armor, radioactive blocks, red matter |
-| 03-missiles | Missile entities and health, flight logic (direct, arc, warmup, follow-target), targeting, missile tracker and chunk loading, cluster missiles and bomblets, SAM, held-item missiles, parachute and balloon cargo, rocket launcher |
-| 04-launch-control | Launcher base, frame, connector and screen, launcher network (shared energy and inventory), cruise launcher, inaccuracy model, cargo hook |
-| 05-detection-defense | Radar station and the radar map, EMP tower and EMP action and capability, radar gun, remote detonator, laser detonator, defuser |
-| 06-blocks-items | Concrete, reinforced glass, glass button and pressure plate, spikes, crafting items, powders, antidote, battery, recipes |
-| 07-visuals-audio | Renderers and models, a catalog of every texture, sound and lang key (one line per asset; full entries only for assets GregGuns keeps) |
+| [01-core](01-core/index.md) | Lifecycle and registration, all config groups (~35 classes), the radio bus, packets, commands, the public `api/` package, datafixers, the energy model (FE buffers, `use_energy`) |
+| [02-explosives](02-explosives/index.md) | Explosive registry and tiers, every blast type (26 IDs), the blast engine (threaded blasts, ray-casting, block updates), fuse times, explosive block, grenade, bomb cart, flying blocks and fragments, gas, potions and protective armor, radioactive blocks, red matter |
+| [03-missiles](03-missiles/index.md) | Missile entities and health, flight logic (direct, arc, warmup, follow-target), targeting, missile tracker and chunk loading, cluster missiles and bomblets, SAM, held-item missiles, parachute and balloon cargo, rocket launcher |
+| [04-launch-control](04-launch-control/index.md) | Launcher base, frame, connector and screen, launcher network (shared energy and inventory), cruise launcher, inaccuracy model, cargo hook |
+| [05-detection-defense](05-detection-defense/index.md) | Radar station and the radar map, EMP tower and EMP action and capability, radar gun, remote detonator, laser detonator, defuser |
+| [06-blocks-items](06-blocks-items/index.md) | Concrete, reinforced glass, glass button and pressure plate, spikes, crafting items, powders, antidote, battery, recipes |
+| [07-visuals-audio](07-visuals-audio/index.md) | Renderers and models, a catalog of every texture, sound and lang key (one line per asset; full entries only for assets GregGuns keeps) |
 
 ## Appendices
 
 | Appendix | Covers |
 |---|---|
-| A1-icbm2-modular | ICBM 2's modular missiles: sizes, casings, engines and fuels, guidance, triggers, workstation, silos and doors, antenna command network |
-| A2-lineage | Features that ICBM-Classic 1.7.10 had and 1.12 dropped or changed: camouflage block, signal disrupter, S-Mine, rejuvenation, reinforced rail, proximity detector, Nightmare |
+| [A1-icbm2-modular](A1-icbm2-modular/index.md) | ICBM 2's modular missiles: sizes, casings, engines and fuels, guidance, triggers, workstation, silos and doors, antenna command network |
+| [A2-lineage](A2-lineage/index.md) | Features that ICBM-Classic 1.7.10 had and 1.12 dropped or changed: camouflage block, signal disrupter, S-Mine, rejuvenation, reinforced rail, proximity detector, Nightmare |
 
-## Reference files (when written)
+## Reference files
 
 - [CONVENTIONS.md](CONVENTIONS.md): how this spec differs from the Techguns conventions.
-- `BUGS.md`: every suspected ICBM bug, merged across areas. IDs are `ICBM-<area>-<nn>`, for example `ICBM-02-07`.
+- [BUGS.md](BUGS.md): every suspected ICBM bug, merged across areas and grouped by severity. IDs are `ICBM-<area>-<nn>`, for example `ICBM-02-07`.
+
+## How this was produced
+
+- **Agents.** One Sonnet agent per area part (14 in all), each reading every in-scope class in full, working from a shared brief, and modeled on a pilot area ([05](05-detection-defense/index.md)) that was reviewed first.
+- **Checks.** The orchestrator spot-checked at least one headline claim per area against the source before accepting it; every claim checked held up. Two pilot recipe readings were later corrected by area 06.
+- **Not run.** No ICBM code was run. Every number comes from reading source and config defaults. Each area index lists its known limits.
+- **Assets** are catalog depth (D3). Sizes and durations come from file headers; no image was viewed and no sound was played.

@@ -11,7 +11,7 @@ Shared facts:
 ## Radar Gun (Laser Range Finder)
 
 **1. Identity.** `ItemRadarGun`, registry `icbmclassic:radargun` (registered as `radarGun`), "Laser Range Finder" (`item.icbmclassic:radarGun.name`).
-**2. Obtaining.** Shaped: `g c i` / `b w .`; g = glass, c = `circuitBasic`, i = `ingotSteel`, b = stone button, w = `plankWood` (`recipes/tools/radargun.json`).
+**2. Obtaining.** Shaped: `g c i` / `. b w` (the button and planks sit in the right two columns of row 2); g = glass, c = `circuitBasic`, i = `ingotSteel`, b = stone button, w = `plankWood` (`recipes/tools/radargun.json`).
 **3. Numbers.** Max range 200 (constant `MAX_RANGE`, a TODO to make it config; used for the tooltip and the client ray length). Stack size 1.
 **4. Behavior.**
 - Right-click in the air: sneaking clears the stored target (server: wipes the stack tag, resets damage to 0, chat `gps.cleared.name`). Not sneaking: the client ray-traces up to 200 blocks; on a hit that is not a launcher tile, it sends the hit position to the server (hand flag plus 3 doubles). The server schedules `onTrace` on the main thread.
@@ -41,7 +41,7 @@ Shared facts:
 ## Laser Detonator (Laser Designator)
 
 **1. Identity.** `ItemLaserDetonator`, registry `icbmclassic:laserdetonator` (`laserDetonator`), "Laser Designator" (`item.icbmclassic:laserDetonator.name`). Implements the packet receiver for its own packet.
-**2. Obtaining.** Shaped, one column: radar gun over `circuitElite` over remote detonator (`recipes/tools/laser.json`).
+**2. Obtaining.** Shaped, on the diagonal: `r . .` / `. c .` / `. . h`; r = radar gun, c = `circuitElite`, h = remote detonator (`recipes/tools/laser.json`). Corrected from an earlier "one column" reading, per [06 recipes](../06-blocks-items/recipes.md).
 **3. Numbers.** `RANGE` 200 blocks; `COOLDOWN` 20 ticks (client only).
 **4. Behavior.**
 - Client right-click: if the cooldown field is 0, set it to 20, ray-trace 200 blocks. On a hit that is not a launcher tile, send the hit position (3 doubles) in a player-item packet. On a miss, show an action-bar message `laserDetonator.laser.missed` with the range. The cooldown field lives on the shared item instance, is decremented once per inventory-stack update (so two detonators halve it; ICBM-05-15) and is reset when a use finishes.
