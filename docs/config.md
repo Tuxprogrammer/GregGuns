@@ -8,17 +8,17 @@ Keep this file in step with the code: a PR that adds or changes an option update
 
 Each roadmap content area is a module. A module's flag decides whether its code runs at all: when it is `false`, the module registers no items, blocks, entities, recipes or event handlers, so nothing is left behind to crash or to orphan a recipe.
 
-**All flags default to `false` for now.** The roadmap says a flag defaults to on once its milestone's exit gate is met, and no content milestone is met yet. The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
+**A flag defaults to `true` once its milestone's exit gate is met.** The gates for M2 to M6 are met, so `guns`, `armor`, `machines`, `energyWeapons` and `utility` default to `true`. `npcs` (M7) and `worldgen` (M8) default to `false` until their gates are met. The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
 
 A module also needs the modules listed in "Needs". If a flag is on but a needed module is off, the module is skipped and a warning is logged.
 
 | Key | Type | Default | Range | Synced | Needs | Milestone | What it enables |
 |---|---|---|---|---|---|---|---|
-| `modules.guns` | boolean | `false` | n/a | no | none | M1, M2 | Damage system, guns, projectiles, ammo |
-| `modules.armor` | boolean | `false` | n/a | no | `guns` | M3 | Armor, set bonuses, special slots |
-| `modules.machines` | boolean | `false` | n/a | no | `guns` | M4 | Production chain and GregTech machines |
-| `modules.energyWeapons` | boolean | `false` | n/a | no | `guns`, `machines` | M5 | Energy and exotic weapons |
-| `modules.utility` | boolean | `false` | n/a | no | `machines` | M6 | Utility and defense machines |
+| `modules.guns` | boolean | `true` | n/a | no | none | M1, M2 | Damage system, guns, projectiles, ammo |
+| `modules.armor` | boolean | `true` | n/a | no | `guns` | M3 | Armor, set bonuses, special slots |
+| `modules.machines` | boolean | `true` | n/a | no | `guns` | M4 | Production chain and GregTech machines |
+| `modules.energyWeapons` | boolean | `true` | n/a | no | `guns`, `machines` | M5 | Energy and exotic weapons |
+| `modules.utility` | boolean | `true` | n/a | no | `machines` | M6 | Utility and defense machines |
 | `modules.npcs` | boolean | `false` | n/a | no | `guns` | M7 | NPCs and spawning |
 | `modules.worldgen` | boolean | `false` | n/a | no | `npcs` | M8 | Structures and worldgen loot |
 

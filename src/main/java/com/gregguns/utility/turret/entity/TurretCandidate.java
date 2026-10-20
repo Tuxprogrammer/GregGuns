@@ -10,6 +10,7 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 
+import com.gregguns.entity.npc.NpcTurret;
 import com.gregguns.utility.turret.TurretHost;
 import com.gregguns.utility.turret.TurretTargetSelector;
 
@@ -41,7 +42,7 @@ final class TurretCandidate implements TurretTargetSelector.Candidate {
 
     @Override
     public boolean isHostileMob() {
-        return entity instanceof IMob;
+        return entity instanceof IMob || entity instanceof NpcTurret;
     }
 
     @Override

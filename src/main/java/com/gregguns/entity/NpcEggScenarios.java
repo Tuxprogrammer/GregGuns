@@ -69,6 +69,7 @@ final class NpcEggScenarios {
             ItemNpcEgg egg = NpcRegistry.egg();
             out.check(egg != null, "the npc_egg item should be registered");
             out.check(NpcRegistry.isRegistered(NpcMob.NPC_TEST), "the test NPC should be registered in dev");
+            out.check(!NpcMob.SIMPLE_TURRET.hasEgg(), "the camp turret has no egg");
             out.check(NpcMob.byId(UNKNOWN_EGG_META) == null, "the unknown egg meta should map to no mob");
             out.check(
                 EntityList.createEntityByName(NpcMob.NPC_TEST.fullName(), world) instanceof NpcEntity,
@@ -95,7 +96,7 @@ final class NpcEggScenarios {
 
             ItemStack stale = new ItemStack(egg, 1, UNKNOWN_EGG_META);
             boolean staleUsed = egg.onItemUse(stale, player, world, x, y, z, 1, 0.5F, 1.0F, 0.5F);
-            out.check(!staleUsed, "an unregistered egg should do nothing");
+            out.check(!staleUsed, "an egg for a mob without one should do nothing");
             out.checkEquals("unregistered egg stack", 1, stale.stackSize);
             out.checkEquals("NPCs after the unregistered egg (no stale entity)", 1, ours(world, baseline).size());
 
