@@ -181,6 +181,7 @@ public final class ProductionTable {
         private final int seconds;
         private final int circuit;
         private final List<Input> inputs;
+        private final List<ComponentTable.FluidInput> fluids;
 
         /**
          * An Assembler row (a part or a gun). Public so definitions in other packages can contribute rows without
@@ -244,6 +245,20 @@ public final class ProductionTable {
 
         Row(String id, String output, int outputCount, Tier tier, Target target, int seconds, int circuit,
             Input... inputs) {
+            this(
+                id,
+                output,
+                outputCount,
+                tier,
+                target,
+                seconds,
+                circuit,
+                Arrays.asList(inputs),
+                Collections.<ComponentTable.FluidInput>emptyList());
+        }
+
+        private Row(String id, String output, int outputCount, Tier tier, Target target, int seconds, int circuit,
+            List<Input> inputs, List<ComponentTable.FluidInput> fluids) {
             this.id = id;
             this.output = output;
             this.outputCount = outputCount;
@@ -251,7 +266,44 @@ public final class ProductionTable {
             this.target = target;
             this.seconds = seconds;
             this.circuit = circuit;
-            this.inputs = Collections.unmodifiableList(new ArrayList<>(Arrays.asList(inputs)));
+            this.inputs = Collections.unmodifiableList(new ArrayList<>(inputs));
+            this.fluids = Collections.unmodifiableList(new ArrayList<>(fluids));
+        }
+
+        /**
+         * Adds a fluid input resolved through GT's material at registration. Rows are immutable, so this returns a
+         * copy; a row without a fluid behaves exactly as before.
+         *
+         * @param fluid the fluid, for example {@code ComponentTable.FluidInput.molten("SolderingAlloy", 144)}
+         * @return a copy of this row that also takes the fluid
+         */
+        public Row withFluid(ComponentTable.FluidInput fluid) {
+            List<ComponentTable.FluidInput> all = new ArrayList<>(fluids);
+            all.add(fluid);
+            return new Row(id, output, outputCount, tier, target, seconds, circuit, inputs, all);
+        }
+
+        /**
+         * @param material a GT {@code Materials} name, for example {@code "SolderingAlloy"}
+         * @param amount   millibuckets
+         * @return a copy of this row that also takes {@code Materials.<material>.getMolten(amount)}
+         */
+        public Row molten(String material, int amount) {
+            return withFluid(ComponentTable.FluidInput.molten(material, amount));
+        }
+
+        /**
+         * @param material a GT {@code Materials} name, for example {@code "Lubricant"}
+         * @param amount   millibuckets
+         * @return a copy of this row that also takes {@code Materials.<material>.getFluid(amount)}
+         */
+        public Row fluid(String material, int amount) {
+            return withFluid(ComponentTable.FluidInput.fluid(material, amount));
+        }
+
+        /** @return the fluid inputs, empty for most rows */
+        public List<ComponentTable.FluidInput> fluids() {
+            return fluids;
         }
 
         /** @return the sheet id, for example {@code "RC-28"} */

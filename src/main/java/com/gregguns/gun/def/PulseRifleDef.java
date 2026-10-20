@@ -27,8 +27,6 @@ import com.gregguns.recipe.ProductionTable.Row;
  * Recipe (recipes.md, EV table): Carbon Barrel, Carbon Receiver, Carbon Gunstock, a diamond lens, an EV (Data) circuit,
  * 2 titanium plates and 4 titanium screws; Assembler, EV, 35 s, circuit 3.
  */
-// Deviation: recipes.md adds 144 L of soldering alloy to the Pulse Rifle's recipe. ProductionTable rows carry no fluid
-// input yet (the M2 guns have none), so the row omits it; the gate material and the circuit are unchanged.
 public final class PulseRifleDef {
 
     /** The registry name and sound prefix. */
@@ -74,7 +72,8 @@ public final class PulseRifleDef {
                 Input.gt("lens", "Diamond", 1),
                 Input.gt("circuit", "Data", 1),
                 Input.gt("plate", "Titanium", 2),
-                Input.gt("screw", "Titanium", 4)))
+                Input.gt("screw", "Titanium", 4))
+                .molten("SolderingAlloy", 144))
         .scenarios(registry -> EvBallisticScenarios.register(registry, NAME))
         .build();
 
