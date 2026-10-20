@@ -15,7 +15,7 @@ Evidence for the three M6 exit-gate boxes in [ROADMAP.md](../../ROADMAP.md#m6--u
 
 | Rule | Scenario | Unit tests |
 |---|---|---|
-| Only the owner or a team member may press any of the seven buttons | `utility.charge_foreign_button` | `ChargePermissionTest` |
+| Only the owner or a team member may press any of the eight buttons | `utility.charge_foreign_button` | `ChargePermissionTest` |
 | Block breaks go through the break event, so protection mods can cancel them | `utility.charge_respects_cancel` | `ChargeBlastRulesTest` |
 | Offline owner: events carry a fake player, not null | `utility.charge_offline_owner` | `ChargePermissionTest` |
 | The charge still works: bores stone, drops GT ore correctly | `utility.charge_bores_stone`, `utility.charge_gt_ore_drop` | `ChargeFuseTest`, `ChargeGeometryTest`, `ChargeParamsTest` |

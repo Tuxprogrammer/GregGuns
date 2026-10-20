@@ -41,32 +41,35 @@ public final class ChargeRenderer extends TileEntitySpecialRenderer implements I
         return true;
     }
 
+    /**
+     * Asks Forge for the vanilla block pose in every type: the inventory slot's isometric cube, the in-hand block grip
+     * (first and third person) and the dropped block's bobbing and spin. Each puts the origin at the middle of a
+     * block-sized cube, which {@link ChargeItemPose} centers the model on. {@code BLOCK_3D} is what the hand
+     * renderers read to pick the block grip (smaller, tilted) over the flat-item grip.
+     */
     @Override
     public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
-        return helper == ItemRendererHelper.ENTITY_BOBBING || helper == ItemRendererHelper.ENTITY_ROTATION;
+        switch (helper) {
+            case BLOCK_3D:
+            case ENTITY_BOBBING:
+            case ENTITY_ROTATION:
+            case EQUIPPED_BLOCK:
+            case INVENTORY_BLOCK:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         ChargeType charge = ChargeType.fromMeta(item.getItemDamage());
+        boolean inHand = type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON;
+        float[] move = ChargeItemPose.translation(charge, inHand);
         try (GlStateGuard g = GlStateGuard.matrixAndAttrib(GL11.GL_CURRENT_BIT)) {
-            switch (type) {
-                case INVENTORY:
-                    GL11.glScalef(16, 16, 16);
-                    GL11.glTranslatef(0.0F, 0.2F, 0.0F);
-                    GL11.glRotatef(30, 1, 0, 0);
-                    GL11.glRotatef(45, 0, 1, 0);
-                    GL11.glTranslatef(-0.5F, -0.2F, -0.5F);
-                    break;
-                case ENTITY:
-                    GL11.glTranslatef(-0.5F, -0.25F, -0.5F);
-                    break;
-                default:
-                    GL11.glTranslatef(0.2F, 0.3F, 0.2F);
-                    break;
-            }
+            GL11.glTranslatef(move[0], move[1], move[2]);
             // Wall pose: upright, plate toward the viewer (+z), the way the model notes show the item.
-            ChargeBoxRenderer.draw(charge, 3, false);
+            ChargeBoxRenderer.draw(charge, ChargeItemPose.ITEM_ORIENTATION, false);
         }
         GlStateGuard.rebindBlockAtlas();
     }
