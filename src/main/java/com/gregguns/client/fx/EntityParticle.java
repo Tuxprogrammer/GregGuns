@@ -102,10 +102,12 @@ final class EntityParticle extends EntityFX {
             // layer's state back and reopen the batch. Angelica's capture tessellator instances the quad; plain
             // vanilla draws it (and any batch already open) right here.
             Minecraft.getMinecraft().renderEngine.bindTexture(texture);
+            boolean depthTest = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
+            boolean depthMask = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK);
             setState(mode);
             ParticleQuad.emit(t, corners, uv, s.rgb(partial), s.alpha(partial), brightness);
             t.draw();
-            restoreState(mode);
+            restoreState(depthTest, depthMask);
             Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationItemsTexture);
             t.startDrawingQuads();
         }
@@ -134,13 +136,20 @@ final class EntityParticle extends EntityFX {
             }
         }
 
-        /** Puts back what vanilla's particle pass expects: alpha blend on, depth test on. */
-        private static void restoreState(RenderMode mode) {
+        /**
+         * Puts back what vanilla's particle pass expects (alpha blend on) and the depth test and mask exactly as they
+         * were before {@link #setState}: NO_Z_TEST switches both off, and a depth mask left off hides what draws after
+         * (water under shaders).
+         */
+        private static void restoreState(boolean depthTest, boolean depthMask) {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            if (mode == RenderMode.NO_Z_TEST) {
+            if (depthTest) {
                 GL11.glEnable(GL11.GL_DEPTH_TEST);
+            } else {
+                GL11.glDisable(GL11.GL_DEPTH_TEST);
             }
+            GL11.glDepthMask(depthMask);
         }
     }
 }
