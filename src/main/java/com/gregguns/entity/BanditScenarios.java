@@ -1,6 +1,8 @@
 package com.gregguns.entity;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.entity.Entity;
@@ -84,12 +86,13 @@ final class BanditScenarios {
             int x = ctx.originX();
             int y = ctx.originY() - 1;
             int z = ctx.originZ();
+            List<Object> baseline = new ArrayList<>(world.loadedEntityList);
             ItemStack stack = new ItemStack(egg, 1, NpcMob.BANDIT.entityId());
             boolean used = egg.onItemUse(stack, player, world, x, y, z, 1, 0.5F, 1.0F, 0.5F);
             out.check(used, "using the Bandit egg should succeed");
             Bandit bandit = null;
             for (Object o : world.loadedEntityList) {
-                if (o instanceof Bandit && !((Bandit) o).isDead) {
+                if (o instanceof Bandit && !((Bandit) o).isDead && !baseline.contains(o)) {
                     bandit = (Bandit) o;
                 }
             }
