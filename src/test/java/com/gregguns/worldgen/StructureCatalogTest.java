@@ -104,6 +104,41 @@ class StructureCatalogTest {
     }
 
     @Test
+    void bugNestJoinsTheMediumPoolOnlyWhenEnabledAndWanted() {
+        LayoutRegistry none = registry();
+        // default: the nest is disabled, so no entry even with the placer present (Q2, GGS-11-15)
+        assertTrue(
+            StructureCatalog.pools(none, s -> s.enabledByDefault(), false, true)
+                .get(SizeClass.MEDIUM)
+                .isEmpty());
+        // enabled, placer present: one MEDIUM entry with the fixed nest box
+        List<PoolEntry> on = StructureCatalog.pools(none, s -> s == StructureId.ALIEN_BUG_NEST, false, true)
+            .get(SizeClass.MEDIUM);
+        assertEquals(1, on.size());
+        assertEquals(
+            "alien_bug_nest",
+            on.get(0)
+                .id());
+        assertEquals(
+            com.gregguns.worldgen.nest.NestPlan.SIZE,
+            on.get(0)
+                .footprint()
+                .sizeX());
+        // enabled, no placer: nothing
+        assertTrue(
+            StructureCatalog.pools(none, s -> s == StructureId.ALIEN_BUG_NEST, false, false)
+                .get(SizeClass.MEDIUM)
+                .isEmpty());
+    }
+
+    @Test
+    void idsToLoadNeverAsksForANestLayout() {
+        assertFalse(
+            StructureCatalog.idsToLoad(s -> true)
+                .contains("alien_bug_nest"));
+    }
+
+    @Test
     void idsToLoadSkipsDisabled() {
         List<String> ids = StructureCatalog.idsToLoad(s -> s.enabledByDefault());
         assertFalse(ids.contains("alien_bug_nest"));

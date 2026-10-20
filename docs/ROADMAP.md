@@ -255,9 +255,9 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 **Scope:** the structures D5 selects, their loot and their NPC camps. There is **no** ore generation. The spec is [11-worldgen](techguns-spec/11-worldgen/index.md).
 
 **Exit gate:**
-- [ ] No cascading worldgen (WGEN-04), verified by the chunk-load test.
-- [ ] Structures respect the dimension whitelist and GTNH's world types.
-- [ ] Loot is tier-appropriate for where the structure spawns.
+- [x] No cascading worldgen (WGEN-04), verified by the chunk-load test. Evidence: `CascadeHarnessTest`, `worldgen.no_cascade` (shipped structures and the Alien Bug Nest) ([M8 exit gate](gregguns-spec/11-worldgen/m8-exit-gate.md#no-cascading-worldgen-wgen-04)). The ArchaicFix log check is a beta-gate client item.
+- [x] Structures respect the dimension whitelist and GTNH's world types. Evidence: `WorldgenGateTest`, `worldgen.dimension_gate` ([M8 exit gate](gregguns-spec/11-worldgen/m8-exit-gate.md#structures-respect-the-dimension-whitelist-and-gthns-world-types)). A live RWG world is a beta-gate client item.
+- [x] Loot is tier-appropriate for where the structure spawns. Evidence: `LootCategoriesTest`, `worldgen.loot_ceiling` ([M8 exit gate](gregguns-spec/11-worldgen/m8-exit-gate.md#loot-is-tier-appropriate-for-where-the-structure-spawns)). Structure screenshots, the Chisel palette and the GT ore pass are beta-gate client checks.
 
 ## Beta review gate · 0.3.0-beta
 

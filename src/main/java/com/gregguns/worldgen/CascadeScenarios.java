@@ -69,6 +69,19 @@ public final class CascadeScenarios {
         return ids;
     }
 
+    /** A populator holding only the Alien Bug Nest, one attempt per 6x6 chunk cell. */
+    static StructurePopulator nestPopulator(PaletteKeys keys) {
+        LayoutRegistry none = LayoutRegistry
+            .load(id -> { throw new java.io.IOException("none"); }, Collections.<String>emptyList(), keys, s -> {});
+        return new StructurePopulator(
+            new StructureGrid(2, 6, 2, StructureCatalog.pools(none, s -> s == StructureId.ALIEN_BUG_NEST, false, true)),
+            none,
+            new Stamper(keys),
+            Blocks.dirt,
+            Blocks.air,
+            StructurePopulator.CONFIG_RULES).withNests(new com.gregguns.worldgen.nest.NestPlacer(keys, Blocks.air));
+    }
+
     /** A populator whose pools are empty: it places nothing, but still runs inside the same guard. */
     static StructurePopulator emptyPopulator(PaletteKeys keys) {
         LayoutRegistry none = LayoutRegistry
@@ -206,7 +219,42 @@ public final class CascadeScenarios {
                         + " vs "
                         + control.size()
                         + diff(withStructures, control));
+
+                // Phase 2, the Alien Bug Nest (procedural, 61 wide, many windows): a nest-only grid on a square where
+                // every biome reads as sandy, so the nests actually place. Same guard, same control set.
+                Set<String> withNests = null;
+                long nestStamped = 0;
+                long nestRejected = 0;
+                for (int i = 0; i < 4 && nestStamped == 0; i++) {
+                    int[] nsq = freshSquare(world, rnd);
+                    if (nsq == null) return ScenarioResult.fail(name(), "no fresh nest square found");
+                    StructureGenerator.setOverride(nestPopulator(keys));
+                    StructureGenerator.setBiomeOverride(
+                        (x, z) -> java.util.Collections
+                            .singleton(net.minecraftforge.common.BiomeDictionary.Type.SANDY));
+                    PopulateGuard.clearViolations();
+                    long s0 = StructureGenerator.stampedCount();
+                    long r0 = StructureGenerator.rejectedWrites();
+                    withNests = runSquare(world, nsq[0], nsq[1]);
+                    nestStamped = StructureGenerator.stampedCount() - s0;
+                    nestRejected = StructureGenerator.rejectedWrites() - r0;
+                }
+                out.check(
+                    nestStamped > 0,
+                    "bug nests were stamped, so the nest phase is not vacuous (" + nestStamped + ")");
+                out.checkEquals(
+                    "nest phase PopulateGuard violations " + PopulateGuard.violations(),
+                    0,
+                    PopulateGuard.violationCount());
+                out.checkEquals("nest phase writes dropped outside a window", 0L, nestRejected);
+                out.check(
+                    control.equals(withNests),
+                    "nest phase loaded-chunk set equals the structures-off run: "
+                        + (withNests == null ? -1 : withNests.size())
+                        + " vs "
+                        + control.size());
             } finally {
+                StructureGenerator.setBiomeOverride(null);
                 StructureGenerator.setOverride(null);
                 PopulateGuard.clearViolations();
             }

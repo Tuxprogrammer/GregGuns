@@ -31,6 +31,8 @@ import com.gregguns.worldgen.layout.Rotations;
 import com.gregguns.worldgen.layout.StampPlan;
 import com.gregguns.worldgen.layout.Stamper;
 import com.gregguns.worldgen.loot.LootPending;
+import com.gregguns.worldgen.nest.NestPlacer;
+import com.gregguns.worldgen.nest.NestPlan;
 
 /**
  * The cascade harness (M8 G12, WGEN-04): every shipped layout, at all four rotations, is run through the stamper and
@@ -319,6 +321,71 @@ class CascadeHarnessTest {
             assertEquals(0, p.readsOutside, id + ": terrain reads stay in the window (GGS-11-09)");
             assertEquals(violationsBefore, PopulateGuard.violationCount(), id + ": guard recorded nothing");
         }
+    }
+
+    /** The Alien Bug Nest has no layout file, so it gets its own pipeline run (M8 S5, WGEN-04). */
+    @Test
+    void bugNestThroughThePopulatePipelineStaysInItsWindows() {
+        Map<SizeClass, List<PoolEntry>> pools = new EnumMap<>(SizeClass.class);
+        pools.put(
+            SizeClass.MEDIUM,
+            Collections.singletonList(
+                new PoolEntry("alien_bug_nest", 1, 8, new Footprint(NestPlan.SIZE, NestPlan.HEIGHT, NestPlan.SIZE))));
+        StructurePopulator populator = new StructurePopulator(
+            new StructureGrid(2, 2, 2, pools),
+            loadShipped(),
+            new Stamper(keys),
+            new Block(Material.ground) {},
+            new Block(Material.air) {},
+            StructurePopulator.CONFIG_RULES).withNests(new NestPlacer(keys, new Block(Material.air) {}));
+        StructureState state = new StructureState("t");
+        int[] counts = new int[2];
+        StructurePopulator.Marks marks = new StructurePopulator.Marks() {
+
+            @Override
+            public void chest(StructurePlan plan, String kind, int x, int y, int z, LootPending order) {
+                counts[1]++;
+            }
+
+            @Override
+            public void spawner(StructurePlan plan, String tag, int x, int y, int z) {
+                if (tag.equals("spawner.bug_hole")) counts[0]++;
+            }
+
+            @Override
+            public void flag(StructurePlan plan, String planKey, int x, int y, int z) {}
+        };
+        StructurePopulator.BiomeSource desert = (x, z) -> Collections.<Type>singleton(Type.SANDY);
+        int violationsBefore = PopulateGuard.violationCount();
+        int stamped = 0;
+        int outside = 0;
+        int rejected = 0;
+        int foreign = 0;
+        int readsOutside = 0;
+        for (int cx = 600; cx < 616; cx++) {
+            for (int cz = 600; cz < 616; cz++) {
+                RecordingWorld world = new RecordingWorld(cx, cz);
+                ClippingSink sink = new ClippingSink(world.window(), world);
+                GridColumns reader = GridColumns.flat(64);
+                try (PopulateGuard.Scope ignored = PopulateGuard.enter(cx, cz)) {
+                    stamped += populator.populate(7654321L, 0, world.window(), sink, reader, desert, state, marks);
+                }
+                outside += world.writesOutsideWindow()
+                    .size();
+                rejected += sink.rejectedWrites();
+                foreign += world.foreignChunkRequests()
+                    .size();
+                readsOutside += reader.readsOutside(world.window());
+            }
+        }
+        assertTrue(stamped > 0, "the pipeline stamped nest slices");
+        assertTrue(counts[0] >= 5, "Bug Hole marks reached the spawner step: " + counts[0]);
+        assertEquals(0, counts[1], "the nest places zero chests (GGS-11-24)");
+        assertEquals(0, outside, "GGS-11-08");
+        assertEquals(0, rejected, "nothing for the sink to drop");
+        assertEquals(0, foreign, "GGS-11-09");
+        assertEquals(0, readsOutside, "terrain reads stay in the window");
+        assertEquals(violationsBefore, PopulateGuard.violationCount(), "guard recorded nothing");
     }
 
     // ---- G5 / G2 rotation convention (task: toWorld delegates to Rotations) ----
