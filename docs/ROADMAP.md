@@ -49,6 +49,8 @@ No gameplay. This milestone builds everything later milestones need.
 - [x] Config module flags load, save and are documented.
 - [x] Every packet base class rejects out-of-range, wrong-dimension and unauthorized requests, with unit tests.
 
+Beta-gate audit: [M0 exit gate](gregguns-spec/01-core/m0-exit-gate.md). It finds 3 boxes met and 2 partly met (the CI smoke wording, and module flags that still default to off), with owner decisions listed.
+
 ---
 
 ## Decision gates
@@ -159,6 +161,8 @@ One gun, working end to end inside the GTNH dev pack.
 - [x] Unit tests cover the damage formulas, drop-off, spread, ammo accounting and the reload state machine. *(See the M1 coverage table in docs/testing/README.md.)*
 - [x] A dedicated server with two clients shows correct sync: shots, reloads, other players' animations and sounds. *(`mp_check`: `mp.sync`, `mp.visual`, `mp.give` and client log evidence.)*
 - [x] Each relevant inherited bug from [BUGS.md](techguns-spec/BUGS.md) has a test showing it isn't reproduced. These include GUN-13, GUN-29, GUN-32, GUN-33 and GUN-34.
+
+Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds all 5 boxes met, with the NEI view and the two-client run to repeat in the batched client pass.
 
 ## M2 · Ballistic arsenal
 
