@@ -146,12 +146,14 @@ public final class DeatomizerPistolProfile {
     };
 
     // Deviation: the notes give first-person scale 2.5 and an idle shift measured from the origin of the original
-    // model. The scale follows the FirstPersonFit rule for a handgun, and the idle position puts this model's box
-    // centre on the X-family handgun anchor.
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), FirstPersonFit.HANDGUN_LENGTH);
+    // model. The scale, idle position and third-person placement are solved by InHandFit from the per-gun targets of
+    // the in-hand notes (section 7). The akimbo item draws this same definition twice (AkimboLayout mirrors the left
+    // gun about the screen centre, so it sits at the notes' -1.02 right at equal depth).
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("deatomizer_pistol", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.05, 0.1 });
+    private static final double FP_SCALE = FIT.fpScale;
     private static final double[] CENTER = FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE);
-    private static final double[] IDLE = FirstPersonFit.idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, CENTER);
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -197,13 +199,14 @@ public final class DeatomizerPistolProfile {
             .rotZ((p, part) -> 35.0 * yR(p))
             .translate(FP_X, FP_Y, FP_Z)
             .build();
-        // Third person: rotX180, rotY225 (the notes' yaw 135 in the Z-family, turned to the X-family). The grip
-        // (texel 3.5, 8.5) is moved to the origin, which is the hand. Aimed extra (0, 0.05, 0.1).
+        // Third person: rotX180, rotY225 (the notes' yaw 135 in the Z-family, turned to the X-family), then the scale
+        // and translate InHandFit solved so the box centre lands at the hand and the pistol is the notes' 0.63 world
+        // blocks long. Aimed extra (0, 0.05, 0.1).
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.0)
-            .translate(-3.5 / 16.0, -8.5 / 16.0, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: about -15 degrees of pitch in the first quarter of the first half, about the hand.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -228,16 +231,16 @@ public final class DeatomizerPistolProfile {
             .translate(-CENTER[0], -CENTER[1], 0)
             .build();
         // Deviation: the notes call for the alien-blaster flash tinted cyan-green (0.2, 1.0, 0.7). A flash spec has
-        // no tint, so the blue energy flash sheet stands in until the gameplay batch tints it. The first-person
-        // offset is the Revolver's, whose muzzle sits at the same place on screen (same handgun length and anchor).
-        // Headless work cannot look at the screen, so this is unverified in game. Additive because the GregGuns sheet
-        // is black-backed (docs/assets/MANIFEST.md).
+        // no tint, so the blue energy flash sheet stands in (it is already blue). The first-person offset follows the
+        // solved placement (InHandFit.Placement.flashOffset). Headless work cannot look at the screen, so this is
+        // unverified in game. Additive because the GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.0);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash_blue.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -1.25,
-            -2.5,
-            2.0,
+            fo[0],
+            fo[1],
+            fo[2],
             1.0,
             new double[] { 0, 0, 0 },
             true,

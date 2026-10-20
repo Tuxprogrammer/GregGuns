@@ -43,6 +43,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 final class GunItemRenderer implements IItemRenderer {
 
+    /** Texels at or below this alpha are discarded (vanilla's own cut-out threshold). */
+    private static final float ALPHA_CUTOFF = 0.1F;
+
     private static final TransformProgram.OpSink GL_SINK = new TransformProgram.OpSink() {
 
         @Override
@@ -160,7 +163,15 @@ final class GunItemRenderer implements IItemRenderer {
                     .getTextureManager()
                     .bindTexture(texture);
                 if (t.partVisible(part, state.ammoLeft, state.reloadProgress, state.fireProgress)) {
+                    // Alpha cut-out textures (the scatter laser's sight window, the grim reaper's cage) need the alpha
+                    // test: without it their transparent texels draw as solid. Restored right after.
+                    boolean alphaWas = GL11.glIsEnabled(GL11.GL_ALPHA_TEST);
+                    GL11.glEnable(GL11.GL_ALPHA_TEST);
+                    GL11.glAlphaFunc(GL11.GL_GREATER, ALPHA_CUTOFF);
                     model.render(part, state);
+                    if (!alphaWas) {
+                        GL11.glDisable(GL11.GL_ALPHA_TEST);
+                    }
                 }
                 if (part == parts - 1 && type == ItemRenderType.EQUIPPED
                     && flash != AnimWindow.NONE

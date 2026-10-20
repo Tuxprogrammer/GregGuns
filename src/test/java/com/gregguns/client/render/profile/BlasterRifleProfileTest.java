@@ -2,7 +2,7 @@ package com.gregguns.client.render.profile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -199,11 +199,14 @@ class BlasterRifleProfileTest {
     }
 
     @Test
-    void timingScopeAndNotRegistered() {
+    void timingScopeAndIsRegistered() {
         GunTransforms t = BlasterRifleProfile.TRANSFORMS;
         assertEquals(1, t.partCount(), "no moving parts");
         assertNotNull(t.scope(), "the gun is scoped");
         assertEquals("blaster_rifle", BlasterRifleProfile.DEFINITION.gunName());
-        assertNull(ClientGunDefinitions.byName("blaster_rifle"), "a later gameplay batch registers it");
+        assertSame(
+            BlasterRifleProfile.DEFINITION,
+            ClientGunDefinitions.byName("blaster_rifle"),
+            "registered by the B4 gameplay batch");
     }
 }

@@ -232,8 +232,10 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
             if (target != null) {
                 double t = lastEntityFraction;
                 onEntityHit(target, posX + motionX * t, posY + motionY * t, posZ + motionZ * t);
-                setDead();
-                return false;
+                if (endsOnEntityHit()) {
+                    setDead();
+                    return false;
+                }
             }
         }
         if (blockHit != null) {
@@ -370,6 +372,16 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
         target.motionZ = Knockback.scale(beforeZ, target.motionZ, knockback);
         // A player's velocity only reaches their client when flagged.
         target.velocityChanged = true;
+    }
+
+    /**
+     * Whether the projectile ends when it meets an entity. True for every bullet; the Sonic Rifle's wave flies on
+     * through creatures (and keeps a hit list so each is hurt once).
+     *
+     * @return true to end on an entity hit
+     */
+    protected boolean endsOnEntityHit() {
+        return true;
     }
 
     /**
