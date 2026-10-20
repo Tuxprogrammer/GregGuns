@@ -243,6 +243,10 @@ Replaces R32 to R34, R42, R57 and the Ammo Press plans ([ammo-press.md](../../te
 - **Powder.** `dust.Gunpowder` is the vanilla gunpowder item: GT removes its own dust prefix for the material ([MaterialsInit#L4951-L4966](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L4951-L4966)). GT's own recipes fetch it as `GTOreDictUnificator.get(OrePrefixes.dust, Materials.Gunpowder, 1)` ([MixerRecipes#L1618](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/MixerRecipes.java#L1618)).
 - **No casing item and no Extruder or Forming Press recipe for ammo.** GT already makes every case shape. This answers the "extruder shape" question in [ammo.md](ammo.md#open-questions): none is needed.
 
+### Ammo duration multiplier
+
+Every ammo production row runs **4 times longer** than the time in the tables (owner decision, "nerf ammo production time 4 times"). This covers the Ammo Press at every tier including the Steam press, the Ammunition Works (same map) and the Assembly Line ammo rows. The tables keep the base time; `ProductionTable.AMMO_DURATION_MULTIPLIER` (4) is applied to the registered duration through `Row.ticks()`. EU/t is unchanged, so the EU per round rises 4 times; the Steam press pays steam by the same ratio (2 L per EU, Bronze at half speed on top). RC-28, for example, registers 5 s x 4 = 20 s at `RECIPE_LV`.
+
 ### Batch sizes
 
 A GT recipe consumes its inputs once, so ammo is made in batches, the way GT turns one ingot into several screws or rounds. Each batch is sized so that the inputs fill whole stacks (16 foil, 16 rounds) and a run takes 4 to 10 seconds.
