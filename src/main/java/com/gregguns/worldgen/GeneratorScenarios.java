@@ -263,7 +263,8 @@ public final class GeneratorScenarios {
                     if (!en.getValue()
                         .equals(snap2.get(en.getKey()))) repaired++;
                 }
-                if (repaired > 0) out.note("second pass repaired " + repaired + " plan(s) carved by neighboring terrain");
+                if (repaired > 0)
+                    out.note("second pass repaired " + repaired + " plan(s) carved by neighboring terrain");
                 out.checkEquals("second pass drops no write", 0L, StructureGenerator.rejectedWrites() - rejectedBefore);
                 out.checkEquals("guard still clean", 0L, (long) PopulateGuard.violationCount() - before[4]);
             } finally {
