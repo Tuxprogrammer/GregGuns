@@ -137,7 +137,10 @@ public final class ProductionScenarios {
             out.check(bullets != null, "RC-28: 16 foil, 16 round and 2 gunpowder should match a bullet recipe");
             if (bullets != null) {
                 out.checkEquals("RC-28 EU/t", (int) TierEU.RECIPE_LV, bullets.mEUt);
-                out.checkEquals("RC-28 duration (ticks)", 5 * GTRecipeBuilder.SECONDS * ProductionTable.AMMO_DURATION_MULTIPLIER, bullets.mDuration);
+                out.checkEquals(
+                    "RC-28 duration (ticks)",
+                    5 * GTRecipeBuilder.SECONDS * ProductionTable.AMMO_DURATION_MULTIPLIER,
+                    bullets.mDuration);
                 out.checkEquals("RC-28 output count", 16, bullets.mOutputs[0].stackSize);
                 out.check(
                     bullets.mOutputs[0].getItem() == GameRegistry.findItem(GregGuns.MODID, ProductionTable.BULLET),
