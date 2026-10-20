@@ -117,6 +117,8 @@ public final class InHandTargets {
         // Grim Reaper: the far tip is the muzzle (the notes' section 8); the row uses the turned geometry.
         put("grim_reaper", 2.57, 0.66, -0.41, 0.59, 0.66, -0.20, 1.88, 1.72);
         put("chainsaw", 2.36, 1.06, -0.58, 1.75, 1.26, -0.74, 2.93, 2.13);
+        // Section 7 as written: the double idle step of the Nuclear Death Ray (section 2) is already in these figures.
+        put("nuclear_death_ray", 1.18, 0.45, -0.30, 0.61, 0.45, -0.28, 1.20, 1.26);
     }
 
     private InHandTargets() {}

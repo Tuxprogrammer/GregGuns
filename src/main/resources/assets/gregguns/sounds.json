@@ -167,6 +167,14 @@
     "category": "player",
     "sounds": ["guns/lasergun_reload"]
   },
+  "guns.nuclear_death_ray.fire": {
+    "category": "player",
+    "sounds": ["guns/beamgun_start_a", "guns/beamgun_start_b", "guns/beamgun_start_c"]
+  },
+  "guns.nuclear_death_ray.reload": {
+    "category": "player",
+    "sounds": ["guns/beamgun_start_a"]
+  },
   "guns.nuclear_death_ray.start": {
     "category": "player",
     "sounds": ["guns/beamgun_start_a", "guns/beamgun_start_b", "guns/beamgun_start_c"]

@@ -153,6 +153,15 @@ Blaster Rifle (`blaster_rifle`, GR-80), De-Atomizer Pistol (`deatomizer_pistol`,
 - **Akimbo.** `AkimboRecipes` combines two pistols into the pair and splits it back. The pair's charge is the sum of the two guns', and a split gives each gun half (the second takes the odd EU), so no EU is lost. The pair draws the single pistol's model twice; `AkimboLayout` mirrors the left copy.
 - **Scatter Laser Rifle.** Techguns has no recipe, loot or user for it (creative tab only); GregGuns gives it the `recipes.md` IV row. Five `LASER` hitscan beams per pull in a fan of 0.15 (`ShotPattern.fan`), 6 damage each, no drop-off, scope x0.75. The fan ignores the main spread of 0.1 (Techguns rolled one beam at 0.1 and four at 0.15). The gun model's sight window is an alpha cut-out, so the gun renderer now turns the alpha test on while it draws a part.
 - **Not built.** The EV battery's Solder fluid input (the production rows carry items only), and a tint for the De-Atomizer muzzle flash (the blue flash sheet stands in).
+## Nuclear Death Ray, batch B6 (M5): deviations
+
+Nuclear Death Ray (`nuclear_death_ray`, GR-103), ZPM. An IC2 tier 7 electric item (`ItemEnergyGun`) that fires `BeamProjectile` (kind `BEAM`, entity id 22) every tick while the trigger is held.
+
+- **Energy, not cells (plan Q2).** A full charge is the ZPM baseline, 10,000,000,000 EU. Techguns' 100 rounds at one per 5 ticks are 500 ticks of beam, so a tick of beam costs 20,000,000 EU, charged as one shot per tick. There is no reload (plan Q5). The Nuclear Power Cell stays a ZPM component and a radiation item; it is not ammo and no recipe takes it (GGS-02-36).
+- **Sounds.** The beam plays its own start and loop sounds, so the gun sets no `startsLoop`, and `ItemGun.shotEvent` is null for a `BEAM` gun: the per-shot fire sound would otherwise play twenty times a second. The `fire` and `reload` events exist in `sounds.json` (the sound table requires both) and reuse the beam start files; neither plays.
+- **Recipe.** An Assembly Line spec (`NdrLineTable`), not an Assembler row: its 8 item inputs do not fit. The sheet's research item is the Alien Blaster; until that gun is registered the scan item is the Bio Gun, and it switches itself.
+- **Model.** `NuclearDeathRayProfile` is registered and fitted to the in-hand targets (section 7 as written; the original's double idle step at rest is already in those figures). The firing starburst blade is drawn only while the fire progress is above 0 and pulses with a uniform scale of 0.8 to 1.0 about the barrel axis, one sine cycle per fire starting at 0.9. A shot every tick restarts the recoil window each tick, so the pulse may never get past its first quarter in a held burst; to be checked in game.
+
 ## Bio Gun, batch B3a (M5): deviations
 
 Bio Gun (`bio_gun`, GR-65, EV). Ammo is the Bio Tank (`tank_bio`, a Forge fluid container that takes GT Biomass), the same fluid-tank rules as the Flamethrower: a full tank is 30 rounds, a reload swaps a full tank in and hands an empty one back, and GT's Fluid Canner fills it (no GregGuns recipe).

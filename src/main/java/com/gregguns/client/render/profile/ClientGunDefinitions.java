@@ -53,6 +53,7 @@ public final class ClientGunDefinitions {
             BioGunProfile.DEFINITION,
             AlienBlasterProfile.DEFINITION,
             NetherBlasterProfile.DEFINITION,
+            NuclearDeathRayProfile.DEFINITION,
             // One model, two items: each selects its own skin (the profile lists both sheets).
             ClientGunDefinition
                 .variantOf("power_hammer", PowerHammerProfile.DEFINITION, PowerHammerProfile.TEXTURES[0]),

@@ -286,6 +286,10 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.nether_blaster.fire.block` | Nether Blaster (M5 G) | With safe mode off, ten bolts at a wall ledge place fire in front of the wall at least once. |
 | `gun.nether_blaster.fire.safe` | Nether Blaster (M5 G) | With safe mode on, the same ten bolts place no fire (GUN-05). |
 | `gun.nether_blaster.recipe` | Nether Blaster (M5 G) | The LuV Assembly Line recipe (GR-100) is on GT's line list with 45 s, the LuV EU/t, its research item and scan, and the output is ours. |
+| `gun.nuclear_death_ray.fire` | Nuclear Death Ray (M5 B6) | Holding the trigger on a charged ZPM gun fires a beam tick every tick: each spends exactly 20,000,000 EU, burns a zombie 6 blocks away for the 6 RADIATION damage after the damage model with 35 percent penetration (one damage tick per world tick), keeps one live beam, and never reloads. |
+| `gun.nuclear_death_ray.drain` | Nuclear Death Ray (M5 B6) | A gun charged for exactly 3 ticks of beam spends all of it over 3 held ticks, burns the zombie for exactly 3 beam ticks, and deals nothing once the charge is gone. |
+| `gun.nuclear_death_ray.recipe` | Nuclear Death Ray (M5 B6) | GT's Assembly Line list holds GR-103 with the sheet's EU/t, time, research item, scan time and voltage, both fluids and all 8 item inputs; the output is ours. |
+| `gun.nuclear_death_ray.tiergate` | Nuclear Death Ray (M5 B6) | The row is ZPM, carries a Naquadah alloy plate (the ZPM gate material) and meets the gate rule. |
 | `gun.golden_revolver.fire` | Golden Revolver (M2 B6) | One pull launches a bullet, costs a zombie the DamageModel figure for 14 and one round, and holds the 8 tick cooldown with a remembered click. |
 | `gun.golden_revolver.reload` | Golden Revolver (M2 B6) | An empty gun reloads after 45 ticks to 6 rounds from one 9mm bullet; nothing is returned. |
 | `gun.golden_revolver.reload.forced` | Golden Revolver (M2 B6) | The reload key on 5 rounds tops up to 6, consumes the bullet and refunds none. |

@@ -58,7 +58,8 @@ public final class GunDefinitions {
             ChainsawDef.DEFINITION,
             AlienBlasterDef.DEFINITION,
             GrimReaperDef.DEFINITION,
-            NetherBlasterDef.DEFINITION));
+            NetherBlasterDef.DEFINITION,
+            NuclearDeathRayDef.DEFINITION));
 
     private GunDefinitions() {}
 

@@ -1,6 +1,7 @@
 package com.gregguns.client.render.profile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -206,11 +207,74 @@ class NuclearDeathRayProfileTest {
     }
 
     @Test
-    void noCamoStarburstHiddenAndNotRegistered() {
+    void noCamoAndRegistered() {
         assertEquals(1, NuclearDeathRayProfile.TEXTURES.length);
         assertEquals("nuclear_death_ray", NuclearDeathRayProfile.DEFINITION.gunName());
         assertEquals(4, NuclearDeathRayProfile.TRANSFORMS.partCount());
         assertNull(NuclearDeathRayProfile.TRANSFORMS.muzzleFlash());
-        assertNull(ClientGunDefinitions.byName("nuclear_death_ray"));
+        assertNotNull(ClientGunDefinitions.byName("nuclear_death_ray"), "registered with the gameplay batch");
+    }
+
+    @Test
+    void starburstIsDrawnOnlyWhileFiring() {
+        GunTransforms t = NuclearDeathRayProfile.TRANSFORMS;
+        int star = NuclearDeathRayProfile.PART_STARBURST;
+        assertFalse(t.partVisible(star, 100, 5.0f, 0.0f), "hidden at rest");
+        assertFalse(t.partVisible(star, 100, 5.0f), "hidden without a fire progress");
+        assertTrue(t.partVisible(star, 100, 5.0f, 0.3f), "drawn while firing");
+        assertTrue(t.partVisible(star, 100, 5.0f, 1.0f), "drawn to the end of the shot");
+        for (int part : new int[] { 0, 2, 3 }) {
+            assertTrue(t.partVisible(part, 100, 5.0f, 0.0f), "part " + part + " always drawn");
+        }
+    }
+
+    @Test
+    void starburstPulsesOneSineCycleBetweenEightyAndOneHundredPercentStartingAtNinety() {
+        assertEquals(0.9, NuclearDeathRayProfile.starburstScale(0.0), 1e-9, "starts at 0.9");
+        assertEquals(1.0, NuclearDeathRayProfile.starburstScale(0.25), 1e-9, "peaks at a quarter");
+        assertEquals(0.9, NuclearDeathRayProfile.starburstScale(0.5), 1e-9, "back to 0.9 at half");
+        assertEquals(0.8, NuclearDeathRayProfile.starburstScale(0.75), 1e-9, "trough at three quarters");
+        assertEquals(0.9, NuclearDeathRayProfile.starburstScale(1.0), 1e-9, "one cycle per fire");
+        for (int i = 0; i <= 100; i++) {
+            double v = NuclearDeathRayProfile.starburstScale(i / 100.0);
+            assertTrue(v >= 0.8 - 1e-9 && v <= 1.0 + 1e-9, "within 0.8 to 1.0 at " + i);
+        }
+    }
+
+    @Test
+    void theFiringRowsScaleOnlyTheStarburstUniformlyAboutTheBarrelAxis() {
+        int star = NuclearDeathRayProfile.PART_STARBURST;
+        for (TransformProgram program : new TransformProgram[] { NuclearDeathRayProfile.TRANSFORMS.fpFire(),
+            NuclearDeathRayProfile.TRANSFORMS.tpRecoil() }) {
+            double[] starScale = lastScale(program, 0.25, star);
+            assertEquals(1.0, starScale[0], 1e-9, "peak scale of the starburst");
+            double[] trough = lastScale(program, 0.75, star);
+            assertEquals(0.8, trough[0], 1e-9);
+            assertEquals(trough[0], trough[1], 1e-12, "uniform");
+            assertEquals(trough[0], trough[2], 1e-12, "uniform");
+            for (int part : new int[] { 0, 2, 3 }) {
+                assertEquals(1.0, lastScale(program, 0.75, part)[0], 1e-12, "other parts are not scaled");
+            }
+        }
+    }
+
+    private static double[] lastScale(TransformProgram program, double p, int part) {
+        double[] out = { 1, 1, 1 };
+        program.apply(p, part, new TransformProgram.OpSink() {
+
+            @Override
+            public void translate(double x, double y, double z) {}
+
+            @Override
+            public void rotate(double degrees, double x, double y, double z) {}
+
+            @Override
+            public void scale(double x, double y, double z) {
+                out[0] = x;
+                out[1] = y;
+                out[2] = z;
+            }
+        });
+        return out;
     }
 }
