@@ -81,6 +81,24 @@ class NpcLootTest {
     }
 
     @Test
+    void stormtrooperTableIsNineSlotsAndOutcastHasNone() {
+        LootTable t = NpcProfiles.get("Stormtrooper")
+            .table();
+        assertNotNull(t);
+        assertEquals(
+            9,
+            t.slots()
+                .size());
+        assertNull(
+            NpcProfiles.get("Outcast")
+                .table());
+        Random rand = new Random(9);
+        for (int i = 0; i < 2000; i++) {
+            assertNotNull(t.pick(rand), "every Stormtrooper slot drops something");
+        }
+    }
+
+    @Test
     void sameSeedSameDrops() {
         LootTable t = NpcProfiles.get("Bandit")
             .table();

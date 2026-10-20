@@ -15,7 +15,9 @@ import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.entity.npc.mob.ArmySoldier;
 import com.gregguns.entity.npc.mob.Commando;
 import com.gregguns.entity.npc.mob.CyberDemon;
+import com.gregguns.entity.npc.mob.Outcast;
 import com.gregguns.entity.npc.mob.SkeletonSoldier;
+import com.gregguns.entity.npc.mob.StormTrooper;
 import com.gregguns.entity.npc.mob.ZombieFarmer;
 import com.gregguns.entity.npc.mob.ZombieMiner;
 import com.gregguns.entity.npc.mob.ZombiePigmanSoldier;
@@ -57,8 +59,7 @@ public final class NpcRegistry {
      * gate page), not an exemption: {@link #eggAudit(boolean)} fails when a mob listed here becomes bound, so the entry
      * must be removed in the same change.
      */
-    public static final Set<NpcMob> NOT_YET_IMPLEMENTED = Collections
-        .unmodifiableSet(EnumSet.of(NpcMob.OUTCAST, NpcMob.STORMTROOPER));
+    public static final Set<NpcMob> NOT_YET_IMPLEMENTED = Collections.unmodifiableSet(EnumSet.noneOf(NpcMob.class));
 
     /**
      * Checks that every catalog mob has a bound class, egg colors and (when {@code live}) a registered entity and an
@@ -119,6 +120,8 @@ public final class NpcRegistry {
         bind(NpcMob.SIMPLE_TURRET, NpcTurret.class);
         bind(NpcMob.ARMY_SOLDIER, ArmySoldier.class);
         bind(NpcMob.COMMANDO, Commando.class);
+        bind(NpcMob.OUTCAST, Outcast.class);
+        bind(NpcMob.STORMTROOPER, StormTrooper.class);
         bind(NpcMob.ZOMBIE_SOLDIER, ZombieSoldier.class);
         bind(NpcMob.ZOMBIE_FARMER, ZombieFarmer.class);
         bind(NpcMob.ZOMBIE_MINER, ZombieMiner.class);

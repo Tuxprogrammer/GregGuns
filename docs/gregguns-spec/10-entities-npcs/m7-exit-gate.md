@@ -63,10 +63,10 @@ The catalog has 19 mobs plus the dev-only test NPC. `NpcRegistry.eggAudit` check
 | Check | Result |
 |---|---|
 | `SIMPLE_TURRET` | Exempt on purpose: the hostile camp turret is placed by the turret base and camps; it is bound and registered but has no egg |
-| `OUTCAST`, `STORMTROOPER` | No entity class. Recorded in `NpcRegistry.NOT_YET_IMPLEMENTED`; the audit fails if either becomes bound without leaving that list |
+| `OUTCAST`, `STORMTROOPER` | Implemented (M7 B5). Bound to `Outcast` and `StormTrooper` (entity IDs 70 and 76), registered with an egg; `NpcRegistry.NOT_YET_IMPLEMENTED` is empty |
 | The 16 other mobs | Bound, registered, with an egg |
 
-The two missing mobs are egg-only in the plan ([mob-drops-nei.md](mob-drops-nei.md), tiers LuV and IV). They are not an exit box, but the M7 scope says "the mobs D5 selects", so they are a decision below.
+The last two mobs, Outcast and Stormtrooper, are egg-only ([mob-drops-nei.md](mob-drops-nei.md), tiers LuV and IV) and now exist.
 
 ## Deviations recorded in the area pages
 
@@ -79,7 +79,6 @@ The two missing mobs are egg-only in the plan ([mob-drops-nei.md](mob-drops-nei.
 
 ## Open polish items
 
-- Outcast and Stormtrooper entity classes, renderers and loot profiles (see the decision below).
 - The biome spawn list, Moon visit and long-soak monster-cap checks (GGS-10-23, GGS-10-25, GGS-10-26, GGS-10-27) and the AngerMod spawn-protection manual check (GGS-10-28).
 - Pack-side changes in [PACK-CHANGES.md](../PACK-CHANGES.md) (Infernal Mobs config, Mobs Info blacklist, AngerMod, ThaumcraftMobAspects) land with M9.
 - Final spawn weights come from the M9 balance pass.
@@ -90,4 +89,4 @@ The two missing mobs are egg-only in the plan ([mob-drops-nei.md](mob-drops-nei.
 | Gap | Question |
 |---|---|
 | Soak test | Run a dev-pack soak with `modules.npcs=true` before the flag flips, or accept the headless evidence and defer the soak to the beta review gate? |
-| Outcast and Stormtrooper | Ship them in M7, or defer them (egg-only, high-tier) with the owner's sign-off? |
+| Outcast and Stormtrooper | Implemented (M7 B5), no decision needed. Evidence: `SoldierStatsTest`, `NpcEggCoverageTest`, `NpcLootTest.stormtrooperTableIsNineSlotsAndOutcastHasNone`; scenarios `npc.outcast_egg_equipment`, `npc.stormtrooper_egg_equipment`, `npc.outcast_fires`, `npc.stormtrooper_fires`, `npc.outcast_stormtrooper_despawn`, `npc.loot_simulation` and `npc.all_eggs`. Outcast: T3 Power Armor (camo 1 or 2 per piece) and one of seven guns; Stormtrooper: T3 HEV suit (silver camo) and a Blaster Rifle or Laser Rifle. Both render as `biped` with the Army Soldier skin (no new texture) |
