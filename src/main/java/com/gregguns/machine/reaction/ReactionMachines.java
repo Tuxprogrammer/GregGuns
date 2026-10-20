@@ -3,6 +3,7 @@ package com.gregguns.machine.reaction;
 import net.minecraft.item.ItemStack;
 
 import com.gregguns.machine.GregGunsMTEIDs;
+import com.gregguns.machine.OverlayIcons;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.VoltageIndex;
@@ -46,6 +47,14 @@ public final class ReactionMachines {
             chamberRecipe());
         // Source: the controller grid is the same three tier parts (recipes.md, Retort controller); the casing in the
         // centre is the Reaction Casing, added with the other crafting recipes by ReactionCraftingRecipes.
+        // The controller builds its textures lazily, so its overlay icons are requested here, before GT stitches (a
+        // container created later keeps a null icon and the item render throws). See OverlayIcons.
+        OverlayIcons.preload(
+            "machines/retort/",
+            "OVERLAY_FRONT",
+            "OVERLAY_FRONT_GLOW",
+            "OVERLAY_FRONT_ACTIVE",
+            "OVERLAY_FRONT_ACTIVE_GLOW");
         new MTERetort(GregGunsMTEIDs.RETORT, "gregguns.retort", "Retort");
     }
 

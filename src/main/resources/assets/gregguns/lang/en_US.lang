@@ -560,3 +560,4 @@ entity.gregguns.SuperMutantBasic.name=Super Mutant (Basic)
 entity.gregguns.SuperMutantHeavy.name=Super Mutant (Heavy)
 entity.gregguns.SuperMutantElite.name=Super Mutant (Elite)
 entity.gregguns.npc_test.name=Test NPC (dev)
+gregguns.machine.placeholder.tooltip=A GregGuns machine whose module is off on this client. Match modules.* with the server.
