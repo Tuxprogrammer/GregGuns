@@ -108,7 +108,7 @@ From the [02-guns index](../02-guns/index.md) sections for batches B1, B3a, B4, 
 | NDR sounds | The beam plays its own start and loop sounds, so the per-shot fire sound is suppressed; the `fire` and `reload` events exist only to satisfy the sound table | index, B6 |
 | Akimbo De-Atomizer | Combine and split conserve EU (the second gun takes the odd EU); no machine row, so the tier is the input gun's | index, B4 |
 | Chained GT machine explosions (Q4) | GT behavior kept; `explosions.machineExplosions=false` leaves machines standing | Explosion detail below |
-| De-Atomizer flash tint | Not built; the blue flash sheet stands in | index, B4 |
+| De-Atomizer flash tint | Built: the blue flash sheet is tinted (0.2, 1.0, 0.7) through `MuzzleFlashSpec.tint`; visual check pending the client pass | index, B4 |
 | Models | AUG stays at 0.914 worst view (below the 0.93 bar), accepted for the MVP. The other M5 models passed after round 3 (row 69) | OPEN-ITEMS 63, 65, 69 |
 | Landing overrides | N4 and I5 landed with a recorded manual override for the `gun.kind` and `gun.bio_gun.fire` pair; fixed in `975d71f4` (rows 74, 75). Closed | OPEN-ITEMS 74, 75 |
 
@@ -134,7 +134,7 @@ These need a running client and stay open. They are the reason box 3 is unticked
 | G1 | Box 3: frame cost with many emitters on screen | pending client | Pending the batched client session |
 | G2 | In-hand fit, FX visuals, NDR pulse, alpha cut-outs | pending client | Pending the batched client session |
 | G3 | NEI display of the M5 recipes | pending client | Pending the batched client session |
-| G4 | Minigun spin-down, Bio Gun charge shift, De-Atomizer flash tint | not built | Deferred polish |
+| G4 | Minigun spin-down, Bio Gun charge shift, De-Atomizer flash tint | De-Atomizer tint built (client check pending); others not built | Deferred polish |
 | G5 | AUG model at 0.914 | assets | Accepted for the MVP |
 | G6 | GGS-02-32 fuel-value scaling for the Chainsaw | deferred (Q7) | Revisit after M5 |
 

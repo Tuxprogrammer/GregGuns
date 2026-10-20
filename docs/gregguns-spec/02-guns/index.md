@@ -154,7 +154,7 @@ Blaster Rifle (`blaster_rifle`, GR-80), De-Atomizer Pistol (`deatomizer_pistol`,
 - **Akimbo.** `AkimboRecipes` combines two pistols into the pair and splits it back. The pair's charge is the sum of the two guns', and a split gives each gun half (the second takes the odd EU), so no EU is lost. The pair draws the single pistol's model twice; `AkimboLayout` mirrors the left copy.
 - **Scatter Laser Rifle.** Techguns has no recipe, loot or user for it (creative tab only); GregGuns gives it the `recipes.md` IV row. Five `LASER` hitscan beams per pull in a fan of 0.15 (`ShotPattern.fan`), 6 damage each, no drop-off, scope x0.75. The fan ignores the main spread of 0.1 (Techguns rolled one beam at 0.1 and four at 0.15). The gun model's sight window is an alpha cut-out, so the gun renderer now turns the alpha test on while it draws a part.
 - **Solder.** The EV rows (Laser, Pulse, Tesla, Sonic) take 144 L and the IV energy rows (Blaster, De-Atomizer, Scatter) 288 L of soldering alloy through `ProductionTable.Row.molten`, as the sheet lists. PDW, Minigun, Bio Gun and the upgrades list none.
-- **Not built.** A tint for the De-Atomizer muzzle flash (the blue flash sheet stands in).
+- **De-Atomizer flash tint.** `MuzzleFlashSpec` carries an RGB tint (default white). The De-Atomizer (and its Akimbo item, which shares the profile) draws the Alien Blaster's blue flash sheet tinted (0.2, 1.0, 0.7), additive, scale 1.0; the tint goes on the vertices and GL color is reset to white. Visual check pending the client pass.
 
 ## Nuclear Death Ray, batch B6 (M5): deviations
 
