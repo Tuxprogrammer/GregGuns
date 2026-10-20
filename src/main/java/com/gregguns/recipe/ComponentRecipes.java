@@ -49,6 +49,7 @@ public final class ComponentRecipes {
     private static void addAll() {
         List<ComponentTable.Spec> specs = new ArrayList<>(ComponentTable.SPECS);
         specs.addAll(AmmoLineTable.SPECS);
+        specs.addAll(NdrLineTable.SPECS);
         for (ComponentTable.Spec spec : specs) {
             if (spec.requiresModule() != null && !ModuleFlags.isEnabled(spec.requiresModule())) {
                 GregGuns.LOG.info(

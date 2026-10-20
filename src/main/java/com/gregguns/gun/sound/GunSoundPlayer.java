@@ -53,6 +53,9 @@ public final class GunSoundPlayer {
     // Deviation: Techguns offsets by (cos, sin) of the head yaw, which points to the shooter's left (CORE-21). This
     // uses the forward vector.
     public static void playFire(Entity shooter, String event, EntityPlayer predictedBy) {
+        if (event == null) {
+            return; // a gun with no per-shot sound (the continuous beam plays its own)
+        }
         float yaw = shooter.getRotationYawHead();
         play(
             shooter.worldObj,

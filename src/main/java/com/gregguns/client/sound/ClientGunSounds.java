@@ -41,6 +41,9 @@ public final class ClientGunSounds {
      * @param event   an unprefixed event name such as {@code GunSoundEvents.PISTOL_9MM_FIRE}
      */
     public void playFire(EntityPlayer shooter, String event) {
+        if (event == null) {
+            return; // a gun with no per-shot sound (the continuous beam plays its own)
+        }
         float yaw = shooter.getRotationYawHead();
         playOneShot(
             GunSoundEvents.qualified(event),
