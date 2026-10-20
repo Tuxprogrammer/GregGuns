@@ -14,6 +14,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,18 @@ class LazyChestTest {
                 inv.setInventorySlotContents(rand.nextInt(inv.getSizeInventory()), new ItemStack(FAKE, 1 + rand.nextInt(9)));
             }
         });
+    }
+
+    /** Vanilla's tile registry is private and unbooted here; writeToNBT needs the class mapped. */
+    @SuppressWarnings("unchecked")
+    private static void mapTile() {
+        try {
+            java.lang.reflect.Field f = TileEntity.class.getDeclaredField("classToNameMap");
+            f.setAccessible(true);
+            ((java.util.Map<Class<?>, String>) f.get(null)).put(TileGregChest.class, "gregguns_test_chest");
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @AfterEach
@@ -134,6 +147,7 @@ class LazyChestTest {
 
     @Test
     void pendingRoundTripsThroughNbtUnfilled() {
+        mapTile();
         TileGregChest chest = pendingChest(555L);
         NBTTagCompound tag = new NBTTagCompound();
         chest.writeToNBT(tag);
@@ -146,6 +160,9 @@ class LazyChestTest {
 
     @Test
     void filledChestWritesNoPendingTag() {
+        mapTile();
+        // Fake items cannot be written without the item registry, so this draw leaves the chest empty.
+        LazyChests.setFiller((inv, category, richness, rand) -> draws++);
         TileGregChest chest = pendingChest(8L);
         snapshot(chest);
         NBTTagCompound tag = new NBTTagCompound();
