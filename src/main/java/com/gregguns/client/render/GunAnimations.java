@@ -177,7 +177,8 @@ public final class GunAnimations {
         GunTransforms t = heldTransforms(shooter);
         int recoil = recoilTicks >= 0 ? recoilTicks : t != null ? t.recoilTicks() : FALLBACK_RECOIL_TICKS;
         int flash = flashTicks >= 0 ? flashTicks : t != null ? t.flashTicks() : FALLBACK_FLASH_TICKS;
-        stateFor(shooter).shot(now(), recoil, flash, attackType, origin, heldTag(shooter));
+        stateFor(shooter)
+            .shot(now(), recoil, flash, attackType, origin, heldTag(shooter), t != null && t.checkRecoil());
     }
 
     private GunAnimState stateFor(EntityLivingBase shooter) {

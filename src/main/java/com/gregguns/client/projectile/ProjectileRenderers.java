@@ -9,6 +9,7 @@ import com.gregguns.projectile.GenericProjectile;
 import com.gregguns.projectile.InvisibleProjectile;
 import com.gregguns.projectile.LaserProjectile;
 import com.gregguns.projectile.SimpleProjectile;
+import com.gregguns.projectile.SonicProjectile;
 import com.gregguns.projectile.TeslaProjectile;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -34,6 +35,8 @@ public final class ProjectileRenderers {
         // The Chainsaw's cut draws nothing; the saw itself and the hit sound are the feedback.
         RenderingRegistry.registerEntityRenderingHandler(InvisibleProjectile.class, new RenderInvisible());
         RenderingRegistry.registerEntityRenderingHandler(TeslaProjectile.class, new RenderInvisible());
+        // The sonic wave is drawn by the trail effect attached to its main projectile; no entity draws anything.
+        RenderingRegistry.registerEntityRenderingHandler(SonicProjectile.class, new RenderInvisible());
         RenderingRegistry.registerEntityRenderingHandler(BeamVisual.class, new RenderBeam());
         // The Nuclear Death Ray's per-tick carrier draws nothing; its BeamVisual does.
         RenderingRegistry.registerEntityRenderingHandler(BeamProjectile.class, new RenderInvisible());

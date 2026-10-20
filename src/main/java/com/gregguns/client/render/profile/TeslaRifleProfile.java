@@ -7,8 +7,8 @@ import static com.gregguns.client.anim.GunCurves.yR;
 import com.gregguns.client.anim.SpriteSheet;
 
 /**
- * The Tesla Rifle's model boxes and render transforms, as data. The gun is not registered yet: it is not in
- * {@link ClientGunDefinitions#ALL} until the gameplay batch adds it, together with its gun definition.
+ * The Tesla Rifle's model boxes and render transforms, as data. Listed in
+ * {@link ClientGunDefinitions#ALL}; the gun definition is {@code TeslaRifleDef}.
  *
  * <h2>Where the model comes from (originality record)</h2>
  * The boxes are original GregGuns geometry, built clean-room from written design notes only
@@ -191,15 +191,13 @@ public final class TeslaRifleProfile {
         // END GENERATED BOXES
     };
 
-    // Deviation: the notes give first-person scale 1.3 on a model measured from its own origin. The scale follows
-    // the FirstPersonFit rule with the 2 blocks on screen of the other long guns, and the idle position puts this
-    // model's box centre on the family anchor.
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    // Deviation: the notes give first-person scale and an idle offset measured from the origin of Techguns' model.
+    // InHandFit solves the scale and the idle offset from the per-gun targets in InHandTargets (the in-hand notes,
+    // section 7), so this model's length, centre and muzzle land where the original's do on screen.
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("tesla_rifle", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.2, -0.25 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -253,8 +251,8 @@ public final class TeslaRifleProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.25)
-            .translate(0.75, -0.5, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         TransformProgram tpRecoil = TransformProgram.builder()
             .about(0, 0.3, -0.9, b -> b.rotZ((p, part) -> -12.0 * kick(p)))
@@ -277,22 +275,23 @@ public final class TeslaRifleProfile {
             .scale(0.55)
             .translate(0.17, -0.21, 0)
             .build();
-        // Deviation: the notes ask for a lightning-style blue flash; until a lightning sheet exists the shared
-        // muzzleFlash2 sheet is used, additive (the sheet is black-backed). The offset is the bolt-action rifle's,
-        // whose muzzle sits at the same place on screen (same 2-block length and anchor). Unverified in game.
+        // Deviation: the notes ask for a lightning-style blue flash; the flash offset is solved from this model's
+        // muzzle in the
+        // fitted frame. Unverified in game.
+        double[] fo = FIT.flashOffset(MUZZLE, 1.85);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.055,
-            0.005,
-            0.357,
+            fo[0],
+            fo[1],
+            fo[2],
             1.85,
             new double[] { 0, 0, 0 },
             true,
             0.7);
         return GunTransforms.builder()
             .parts(1)
-            .timing(4, 5, 45)
+            .timing(5, 10, 45)
             .firstPerson(fpBase, fpIdle, fpFire, fpReload)
             .thirdPerson(tpBase, new double[] { 0, 0.2, -0.25 }, tpRecoil, tpReload)
             .world(ground, icon)

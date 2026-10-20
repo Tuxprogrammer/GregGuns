@@ -139,6 +139,34 @@
     "category": "player",
     "sounds": ["guns/revolver_reload_akimbo"]
   },
+  "guns.blaster_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/blasterrifle_shot_a", "guns/blasterrifle_shot_b", "guns/blasterrifle_shot_c"]
+  },
+  "guns.blaster_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/lasergun_reload"]
+  },
+  "guns.deatomizer_pistol.fire": {
+    "category": "player",
+    "sounds": ["guns/MIB_blaster_shot_a", "guns/MIB_blaster_shot_b", "guns/MIB_blaster_shot_c"]
+  },
+  "guns.deatomizer_pistol.reload": {
+    "category": "player",
+    "sounds": ["guns/MIB_blaster_reload"]
+  },
+  "guns.akimbo_deatomizer_pistols.reload": {
+    "category": "player",
+    "sounds": ["guns/MIB_blaster_reload_akimbo"]
+  },
+  "guns.scatter_laser_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/lasergun_shot_a", "guns/lasergun_shot_b", "guns/lasergun_shot_c"]
+  },
+  "guns.scatter_laser_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/lasergun_reload"]
+  },
   "guns.nuclear_death_ray.start": {
     "category": "player",
     "sounds": ["guns/beamgun_start_a", "guns/beamgun_start_b", "guns/beamgun_start_c"]
@@ -158,6 +186,30 @@
   "guns.flamethrower.reload": {
     "category": "player",
     "sounds": ["guns/flamethrower_reload"]
+  },
+  "guns.laser_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/lasergun_shot_a", "guns/lasergun_shot_b", "guns/lasergun_shot_c"]
+  },
+  "guns.laser_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/lasergun_reload"]
+  },
+  "guns.tesla_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/teslagun_shot_a", "guns/teslagun_shot_b", "guns/teslagun_shot_c", "guns/teslagun_shot_d"]
+  },
+  "guns.tesla_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/teslagun_reload"]
+  },
+  "guns.sonic_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/sonicshotgun_shot_a", "guns/sonicshotgun_shot_b", "guns/sonicshotgun_shot_c"]
+  },
+  "guns.sonic_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/sonicshotgun_reload"]
   },
   "guns.bio_gun.fire": {
     "category": "player",
@@ -214,6 +266,34 @@
   "guns.lmg.reload": {
     "category": "player",
     "sounds": ["guns/lmg_reload"]
+  },
+  "guns.pdw.fire": {
+    "category": "player",
+    "sounds": ["guns/pdw_shot_a", "guns/pdw_shot_b", "guns/pdw_shot_c"]
+  },
+  "guns.pdw.reload": {
+    "category": "player",
+    "sounds": ["guns/pdw_reload"]
+  },
+  "guns.pulse_rifle.fire": {
+    "category": "player",
+    "sounds": ["guns/pulserifle_shot_a", "guns/pulserifle_shot_b", "guns/pulserifle_shot_c", "guns/pulserifle_shot_d"]
+  },
+  "guns.pulse_rifle.reload": {
+    "category": "player",
+    "sounds": ["guns/pulserifle_reload"]
+  },
+  "guns.minigun.fire": {
+    "category": "player",
+    "sounds": ["guns/minigun_shot_a", "guns/minigun_shot_b", "guns/minigun_shot_c", "guns/minigun_shot_d"]
+  },
+  "guns.minigun.start": {
+    "category": "player",
+    "sounds": ["guns/minigun_start_a"]
+  },
+  "guns.minigun.reload": {
+    "category": "player",
+    "sounds": ["guns/minigun_reload"]
   },
   "guns.akimbo_mac10s.reload": {
     "category": "player",
