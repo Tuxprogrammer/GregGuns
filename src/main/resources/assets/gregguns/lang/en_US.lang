@@ -494,10 +494,41 @@ gregguns.turret.gui.animals=Target animals: Y yes, N no
 # Utility: Explosive charges (m6/charges)
 tile.gregguns.explosive_charge.name=Explosive Charge
 tile.gregguns.advanced_explosive_charge.name=Advanced Explosive Charge
-gui.gregguns.charge.radius=Radius: %s
-gui.gregguns.charge.length=Length: %s
-gui.gregguns.charge.delay=Delay: %ss
-gui.gregguns.charge.detonate=Detonate
+gregguns.charge.gui.safe=NOT ARMED
+gregguns.charge.gui.armed=ARMED: detonates in %s s
+gregguns.charge.gui.fuse=Fuse delay
+gregguns.charge.gui.fuse_range=%s to %s s
+gregguns.charge.gui.seconds=%s s
+gregguns.charge.gui.bore=Bore
+gregguns.charge.gui.depth=Depth: %s
+gregguns.charge.gui.width=Width: %sx%s
+gregguns.charge.gui.width_fixed=Width is fixed
+gregguns.charge.gui.direction=Bores %s
+gregguns.charge.gui.dir.up=up
+gregguns.charge.gui.dir.down=down
+gregguns.charge.gui.dir.north=north
+gregguns.charge.gui.dir.south=south
+gregguns.charge.gui.dir.east=east
+gregguns.charge.gui.dir.west=west
+gregguns.charge.gui.owner=Owner: %s
+gregguns.charge.gui.owner_none=nobody
+gregguns.charge.gui.access_edit=You can change this charge
+gregguns.charge.gui.access_armed=Armed: disarm to change it
+gregguns.charge.gui.access_view=View only: not your charge
+gregguns.charge.gui.arm=Arm
+gregguns.charge.gui.disarm=Disarm
+gregguns.charge.gui.locked_owner=Only the owner or their team can use this
+gregguns.charge.gui.locked_armed=Locked while armed: disarm first
+gregguns.charge.gui.locked_limit=Already at the limit
+gregguns.charge.gui.locked_idle=Not armed
+gregguns.charge.gui.tip.fuse_up=Longer fuse (1 s)
+gregguns.charge.gui.tip.fuse_down=Shorter fuse (1 s)
+gregguns.charge.gui.tip.depth_up=Bore one block deeper
+gregguns.charge.gui.tip.depth_down=Bore one block less
+gregguns.charge.gui.tip.width_up=Wider tunnel
+gregguns.charge.gui.tip.width_down=Narrower tunnel
+gregguns.charge.gui.tip.arm=Start the fuse
+gregguns.charge.gui.tip.disarm=Stop the fuse and reset it
 
 
 
