@@ -37,7 +37,7 @@ No integration point (see the Techguns sheet and the [design records](../../desi
 | DataWatcher IDs 23 and 24 | No DataWatcher slots | NEID (`ExtendDataWatcher=false`) | [networking-gtnhlib.md](networking-gtnhlib.md) |
 | Custom potion IDs | None needed | Hodgepodge (`enlargePotionArray`) | [networking-gtnhlib.md](networking-gtnhlib.md) |
 | Five `KeyBinding`s plus `PacketTGKeybindPress` | `SyncedKeybind` with server listeners | GTNHLib 0.11.52; NEI keys checked | [keybinds.md](keybinds.md) |
-| FTBU `FriendsAPI` | `PlayerRelations` over GTNHLib teams and ServerUtilities allies | GTNHLib, ServerUtilities 2.4.14 | [team-relations.md](team-relations.md) |
+| FTBU `FriendsAPI` | `FriendProviders` over ServerUtilities allies, plus a per-block security level (GTNHLib teams not yet consulted) | GTNHLib, ServerUtilities 2.4.14 | [team-relations.md](team-relations.md) |
 | TConstruct materials by IMC | None; Tinkers-Gregworks covers GT materials | TinkersConstruct 1.14.118-GTNH, TGregworks | [mod-compat-tinkers-scripting.md](mod-compat-tinkers-scripting.md) |
 | TConstruct inventory tab | One `AbstractTab`, soft dependency | TinkersConstruct | [mod-compat-tinkers-scripting.md](mod-compat-tinkers-scripting.md) |
 | Thermal Expansion stub | Dropped | Not in the pack | [mod-compat-tinkers-scripting.md](mod-compat-tinkers-scripting.md) |
@@ -66,7 +66,7 @@ No other pack-side change is needed for this area.
 
 ## Open questions
 
-- Default `playerRelationMode`: `TEAMS` or `EVERYONE_FRIENDLY`? See [team-relations.md](team-relations.md). Needs a short design record.
+- ~~Default `playerRelationMode`: `TEAMS` or `EVERYONE_FRIENDLY`?~~ Resolved by the owner on 2026-10-20: team-based friends, with no everyone-friendly mode. See [team-relations.md § Decision](team-relations.md#decision-owner-2026-10-20).
 - Do Techguns' default keys (N, B, V, R, J) clash in the full pack? Only a running client can show it. See [keybinds.md](keybinds.md).
 - Do face and back cosmetics need their own sync, or should they use Baubles Expanded or TravellersGear slots? See [networking-gtnhlib.md](networking-gtnhlib.md). Needs a record with the 05-armor sheets.
 - Can GTTweaker add recipes to an arbitrary GT recipe map by name? See [mod-compat-tinkers-scripting.md](mod-compat-tinkers-scripting.md).

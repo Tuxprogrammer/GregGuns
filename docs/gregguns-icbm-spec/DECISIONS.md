@@ -32,6 +32,12 @@ The owner decided all of these on 2026-10-20.
 | D20 | How much fuel (was Q6b) | **A fixed amount per missile tier**, shown in NEI and on the tooltip, times one config factor. **Unburned fuel strengthens the blast:** a missile that hits a closer target arrives with fuel left, and that fuel adds to its blast radius, as leftover propellant does in real life. The bonus is capped (config). See [D20 in detail](#d20-in-detail) |
 | D21 | Fallout (was Q9) | Option A, with owner amendments: hard server-safety caps, protection from any hazmat-capable armor, damaging rubble, and radiation kept within 2 blocks of the surface. See [D21 in detail](#d21-in-detail) |
 | D22 | How the silo is fueled (was Q6c) | **A GT fluid input hatch** on the silo, checking the same `RocketFuels` lists as the GC pad, so fuel rules match exactly |
+| D23 | Warhead size (was Q11) | **A quantity knob, stored in NBT.** A warhead is one item that records its explosive type and fill count (up to a cap set by the casing tier, after ICBM 2's 1/5/20/64/128). The blast is computed from that NBT at detonation, together with the D20 fuel bonus. NEI shows the warhead's recipes once, not one entry per fill level. See [D23 in detail](#d23-in-detail) |
+| D24 | Guidance and fins (was Q12) | **The guidance computer's circuit tier sets scatter; there are no duds; fins are structural.** Scatter is triangular per axis (the difference of two uniform rolls, after ICBM 2), and its radius shrinks for each guidance tier above the missile's tier. ICBM-Classic's distance term `10·(d/range)²` is added on top. There is no failure roll. Fins are a tier-material gate, like GC fins |
+| D25 | Flight model (was Q13) | **A real entity for the whole flight, with a sliding chunk window.** The missile keeps loaded only the chunk it is in and the next chunk on its path, and releases chunks behind it, so it never accumulates loaded chunks. See [D25 in detail](#d25-in-detail) |
+| D26 | Fusing (was Q14) | **Deferred.** Impact fusing only in the first build. Airburst and penetrator fuses can be revisited after missiles ship |
+| D27 | Automating assembly (was Q15) | **The NASA Workbench for hand building, plus GT Assembly Line recipes for automation.** The Assembly Line needs a research data stick, so early players build by hand and automation opens once they have an Assembly Line. The warhead's NBT (D23) carries through to the missile, which needs custom recipe handling. Silos load missiles through a GT input bus |
+| D28 | Art and audio (was Q16) | **Licensed tiers first; generate only the gaps.** For ICBM content this is an exception to [0006](../design/0006-art-direction.md). See [D28 in detail](#d28-in-detail) |
 
 ### D8 in detail
 
@@ -129,6 +135,35 @@ Evidence: the GTNH rocket recon (Galacticraft `3.4.34-GTNH`, NewHorizonsCoreMod 
   - Exposure is checked per player about once a second in a small radius, not per block.
   - A cap on goo blocks per blast.
 
+### D23 in detail
+
+- **Item:** one warhead item per casing tier, with NBT `{explosive, fill}`. The tooltip shows the explosive, the fill and the cap, plus the expected radius at that fill.
+- **Filling:** how charges are added (a crafting recipe that adds one charge per craft up to the cap, or a GT machine step) is settled in the missiles sheet. Either way, NEI shows one example per warhead, not one per fill level.
+- **Blast:** radius grows with fill up to the tier cap. The exact curve goes in the explosives sheet, and it may be sub-linear so that a full casing doesn't dwarf the next tier up. The D20 fuel bonus multiplies the result.
+
+### D25 in detail
+
+- **Chunks:** the missile holds a ticket for at most two chunks: the one it is in, and the next one along its path. On crossing a chunk boundary it loads the next and releases the one behind it.
+- **Caps:** D11's limit on missiles in flight is set so that two chunks per missile stay within Forge's per-mod budget (`forgeChunkLoading.cfg`; 25 chunks per ticket by default).
+- **Radar:** radar reads the live entity list, and the missile tracker keeps flight records for prediction (D14).
+- **Not inherited:** ICBM-Classic's tracker bugs from [targeting-and-tracking](../icbm-spec/03-missiles/targeting-and-tracking.md), notably the shared landing ticket and the broken "unloaded chunk ahead" test.
+
+### D28 in detail
+
+- **Source order:**
+  1. The 2021 MIT snapshot of ICBM-Classic (`2f807bf8`).
+  2. Calclavia's LGPL 1.6.4 set.
+  3. HBM (LGPL) and CC0 libraries, plus pack textures referenced at runtime.
+  4. Our own generated assets.
+- **Exceptions:**
+  - The current ICBM 1.12 assets are never used ([07-visuals-audio](../icbm-spec/07-visuals-audio/index.md)).
+  - Sounds of unknown origin must be re-sourced from freesound under their own license, or replaced with CC0 sounds.
+- **Provenance:** every copied asset gets its author, source, commit and license in `docs/assets/CREDITS.md`, as 0006 already requires.
+  - LGPL files live in a carve-out folder with their license text.
+  - MIT files keep their notice in the third-party notices file.
+- **Style:** copied assets are restyled to GT conventions only where 0006 needs it (for example, item icons in GT material colors). Keep restyling light, so the licensed-first approach stays fast.
+- **Repo rules to amend when the first ICBM asset lands:** the "assets are original" rule in [CONTRIBUTING](../../CONTRIBUTING.md) and the 0006 record each need a line naming this exception. The licensing research itself stays out of the repo (owner, 2026-10-20).
+
 ### Fuel context (D19, D20, D22)
 
 Context: how GTNH fuels rockets. The evidence is the SpaceRace quest line, Galacticraft `3.4.34-GTNH` `RecipeManagerGC.addUniversalRecipes`, and GT++ `RecipeLoaderRocketFuels`.
@@ -151,83 +186,4 @@ Context: how GTNH fuels rockets. The evidence is the SpaceRace quest line, Galac
 
 ## Open
 
-Q11–Q15 come from the ICBM 2 appendix ([A1, "Ideas worth borrowing"](../icbm-spec/A1-icbm2-modular/index.md)). They fill in what D8's workbench slots actually do.
-
-### Q11 · Warhead size: fixed or a quantity knob?
-
-Context:
-- ICBM 2 fills the warhead with 1, 5, 20, 64 or 128 explosive items, capped by casing size, and the blast scales with the count.
-- GT recipes and NEI favor fixed inputs and outputs.
-- D20 already gives a continuous knob: leftover fuel adds to the blast radius.
-
-**Options:**
-- **A (recommended).** **Fixed warhead items**, one per blast type and tier, each made by a fixed GT recipe. Blast size comes from the tier and the D20 fuel bonus. Clear in NEI.
-- **B.** ICBM 2's quantity knob: the warhead holds N units of explosive material up to a tier cap, and the blast scales with N.
-
-### Q12 · What fins and the guidance computer do
-
-Context:
-- ICBM 2's guidance is two numbers, a scatter radius and a failure chance. They run from 100 blocks / 50% (wood gears) down to 20 blocks / 3% (best chip).
-- Its scatter is triangular per axis (the difference of two uniform rolls, MIT-portable), so hits cluster near the aim point. Its failure chance is never actually rolled.
-- ICBM-Classic 1.12 has the launcher inaccuracy `2 + 10·(d/range)² + (launchers − 1)` ([launch sequence](../icbm-spec/04-launch-control/launch-sequence.md)).
-- Galacticraft fins are plain structural parts.
-
-**Options:**
-- **A (recommended).**
-  - The **guidance computer's circuit tier sets scatter**: a triangular distribution whose radius shrinks with each tier above the missile's own tier.
-  - Distance adds ICBM-Classic's quadratic term, with **no failure roll** (no duds).
-  - **Fins are structural**, a tier-material gate like GC's fins.
-- **B.** As A, plus a small failure chance (the missile falls short as a dud) when the guidance tier is below the missile's tier.
-- **C.** Fins matter too: a better fin tier trims scatter further, or raises flight speed.
-
-### Q13 · Flight model and chunk loading
-
-Context:
-- **ICBM-Classic** flies a real entity on an arc. Its tracker simulates missiles in unloaded chunks and hands off at y = 500. That tracker is buggy ([targeting-and-tracking](../icbm-spec/03-missiles/targeting-and-tracking.md)): only explosive missiles and the deprecated flight logic are handled, and all landings share one chunk ticket.
-- **ICBM 2** "falls from orbit": the missile leaves the world at y = 400 and re-enters over the target after a travel time computed from speed and distance.
-- D11 allows one chunk ticket per missile in flight, and D14's radar reads the missile tracker's list.
-
-**Options:**
-- **A (recommended).** **Three phases.**
-  1. A visible launch and ascent to about y = 300.
-  2. A **simulated mid-course** with no entity: a server-side record holding position, ETA and predicted impact, which radar can track.
-  3. A **re-entry entity** spawned above the target, with one chunk ticket on the target area for the descent and impact.
-
-  SAMs engage in the terminal phase only, as real terminal defense does. Chunk loading stays bounded, and the cost doesn't grow with distance.
-- **B.** A real entity for the whole flight, ICBM-Classic style, with a chunk ticket that follows it. The most faithful option, and the heaviest; long flights load a corridor of chunks.
-- **C.** A instead without a visible ascent: the missile despawns at the pad and only re-enters.
-
-### Q14 · Fusing (airburst and bunker-buster variants)
-
-Context: ICBM 2 puts a trigger inside the warhead with an impact kinetic-energy window, which could give "bunker buster" (high minimum) and "airburst" (low maximum) variants. ICBM never filled in the numbers.
-
-**Options:**
-- **A (recommended).** **Defer.** Impact fusing only for the first build.
-- **B.** An optional fuse slot on the workbench page, with airburst and penetrator fuses.
-
-### Q15 · Automating missile assembly
-
-Context:
-- The NASA Workbench is manual. GTNH players automate everything, and silos need feeding (ICBM 2 used a magazine that moves 1 missile per 2 seconds).
-- GT recipes can take non-consumed items, the way a programmed circuit or a mold is not used up.
-
-**Options:**
-- **A (recommended).** The workbench page for hand building, **plus a GT Assembler recipe for every missile** that uses the missile schematic as a non-consumed input, so missiles can be mass-produced. Silos accept missiles through a GT input bus.
-- **B.** Workbench only.
-
-### Q16 · Where ICBM art and audio come from
-
-Context:
-- **ICBM 1.12's current assets can't be reused** ([07-visuals-audio](../icbm-spec/07-visuals-audio/index.md)). Of 140 textures, 55 are CC BY-NC-SA 4.0, 75 are licensed only to the ICBM team, and 7 have no credit. Of 24 sounds, 21 are of unknown origin.
-- **The owner's licensing research** (kept outside this repo) lists what may legally be copied, in tiers:
-  1. the frozen MIT snapshot at `2f807bf8`: 235 PNGs, 35 OBJ models, 31 sounds;
-  2. Calclavia's LGPL 1.6.4 set;
-  3. HBM (LGPL), CC0 libraries and pack textures referenced at runtime;
-  4. our own generated art.
-- **[0006](../design/0006-art-direction.md)** sets the GregGuns art style: 16×16 GT-style icons in GT material colors, the original footprints kept, and sounds matched to role, length and loudness within ±3 LU, all recorded in `docs/assets/CREDITS.md`.
-- **The rebuild needs few models.** ICBM's 27 hand-built missile models are really one table of (hull, warhead) texture choices. The radar is a static cube with four screen textures; only the EMP coil animates.
-
-**Options:**
-- **A (recommended).** **Our own art and audio, under 0006**, made by the existing asset pipeline and the clean-room model process. ICBM assets serve only as footprint and role references, as Techguns assets did. One art style across the mod, no LGPL carve-out folder, no notices to maintain. The 3 permissively licensed ICBM sounds and CC0 sources may still be used where they fit.
-- **B.** Follow those tiers: copy MIT-snapshot and LGPL assets first, and generate only the gaps. Faster, but the result mixes ICBM's look with GregGuns' GT style and adds an LGPL carve-out.
-- **C.** A for textures and models, B for sounds only. Sounds are the hardest assets to generate. The snapshot's sounds are MIT-licensed, but about 20 of them came from freesound with no recorded source, and each would have to be re-sourced from freesound under its own license.
+None right now. New questions are added here as the GregGuns-side sheets raise them.
