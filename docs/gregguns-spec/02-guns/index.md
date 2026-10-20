@@ -154,6 +154,16 @@ Blaster Rifle (`blaster_rifle`, GR-80), De-Atomizer Pistol (`deatomizer_pistol`,
 - **Scatter Laser Rifle.** Techguns has no recipe, loot or user for it (creative tab only); GregGuns gives it the `recipes.md` IV row. Five `LASER` hitscan beams per pull in a fan of 0.15 (`ShotPattern.fan`), 6 damage each, no drop-off, scope x0.75. The fan ignores the main spread of 0.1 (Techguns rolled one beam at 0.1 and four at 0.15). The gun model's sight window is an alpha cut-out, so the gun renderer now turns the alpha test on while it draws a part.
 - **Solder.** The EV rows (Laser, Pulse, Tesla, Sonic) take 144 L and the IV energy rows (Blaster, De-Atomizer, Scatter) 288 L of soldering alloy through `ProductionTable.Row.molten`, as the sheet lists. PDW, Minigun, Bio Gun and the upgrades list none.
 - **Not built.** A tint for the De-Atomizer muzzle flash (the blue flash sheet stands in).
+
+## Nuclear Death Ray, batch B6 (M5): deviations
+
+Nuclear Death Ray (`nuclear_death_ray`, GR-103), ZPM. An IC2 tier 7 electric item (`ItemEnergyGun`) that fires `BeamProjectile` (kind `BEAM`, entity id 22) every tick while the trigger is held.
+
+- **Energy, not cells (plan Q2).** A full charge is the ZPM baseline, 10,000,000,000 EU. Techguns' 100 rounds at one per 5 ticks are 500 ticks of beam, so a tick of beam costs 20,000,000 EU, charged as one shot per tick. There is no reload (plan Q5). The Nuclear Power Cell stays a ZPM component and a radiation item; it is not ammo and no recipe takes it (GGS-02-36).
+- **Sounds.** The beam plays its own start and loop sounds, so the gun sets no `startsLoop`, and `ItemGun.shotEvent` is null for a `BEAM` gun: the per-shot fire sound would otherwise play twenty times a second. The `fire` and `reload` events exist in `sounds.json` (the sound table requires both) and reuse the beam start files; neither plays.
+- **Recipe.** An Assembly Line spec (`GunLineTable`), not an Assembler row: its 8 item inputs do not fit. The sheet's research item is the Alien Blaster.
+- **Model.** `NuclearDeathRayProfile` is registered and fitted to the in-hand targets (section 7 as written; the original's double idle step at rest is already in those figures). The firing starburst blade is drawn only while the fire progress is above 0 and pulses with a uniform scale of 0.8 to 1.0 about the barrel axis, one sine cycle per fire starting at 0.9. A shot every tick restarts the recoil window each tick, so the pulse may never get past its first quarter in a held burst; to be checked in game.
+
 ## Bio Gun, batch B3a (M5): deviations
 
 Bio Gun (`bio_gun`, GR-65, EV). Ammo is the Bio Tank (`tank_bio`, a Forge fluid container that takes GT Biomass), the same fluid-tank rules as the Flamethrower: a full tank is 30 rounds, a reload swaps a full tank in and hands an empty one back, and GT's Fluid Canner fills it (no GregGuns recipe).
@@ -165,6 +175,16 @@ Bio Gun (`bio_gun`, GR-65, EV). Ammo is the Bio Tank (`tank_bio`, a Forge fluid 
 - **FX and sounds.** The server sends `BioGunTrail` on the glob once; the entity renders nothing itself (`RenderInvisible`). `guns.bio_gun.fire`, `.reload` and `.impact` use the `biogun_shot_*`, `biogun_reload` and `biogun_impact_*` files.
 - **Recipe (GR-65).** Pump Mechanism, Steel Receiver, Plastic Gun Stock, a small titanium pipe, 2 titanium plates and 4 titanium screws; Assembler, EV, 30 s, circuit 7. Made empty.
 - **Model.** `BioGunProfile` is registered; the glow parts stay painted (no fullbright pass). The first-person charge shift (up to 0.25 block toward the camera while charging) is not drawn yet; the resting pose is fitted to the in-hand targets.
+
+## Alien Blaster, batch B5 (M5): deviations
+
+Alien Blaster (`alien_blaster`, GR-95), LuV. An IC2 tier 6 electric item (`ItemEnergyGun`) charged by a GT charger or battery buffer of exactly that tier.
+
+- **Shots of charge.** The LuV baseline is a 1,000,000,000 EU Lapotronic Orb II. The sheet's 10 round clip is 10 shots at 100,000,000 EU. There is no reload (plan Q5); the `reload` sound event exists because the sound table requires one per gun.
+- **Recipe.** Techguns gives the gun no recipe. The sheet's Assembly Line chain (research: the De-Atomizer Pistol; solder and lubricant) is not built for guns, so it is a plain LuV Assembler row with the sheet's item inputs, gated by the HSS-G plate.
+- **Trail (PFX-01).** `AlienBlasterProjectile` is a registered, tracked entity (id 27; Techguns never registered it, so its trail packet found no entity). The trail is sent on the bolt's second tick, after the tracker lists watchers; the client also waits for an entity that arrives late.
+- **Blast.** Power 0.5, full damage within 0.25 blocks, none beyond 0.75, never breaks blocks, server side only (PFX-15 ran it on both sides). The entity the bolt hit is left out of the blast so a hit is not counted twice.
+- **Fire.** Only a player's bolt ignites its target (the FIRE type's burn: 5 s, blocked by full heat hazmat, not Techguns' fixed 3 s) and, with `explosions.blockDamage` on and the break check passing, sets the face it hits alight. An NPC's or turret's bolt never ignites.
 
 ## Pack-side changes
 

@@ -51,12 +51,16 @@ public final class ClientGunDefinitions {
             PulseRifleProfile.DEFINITION,
             MinigunProfile.DEFINITION,
             BioGunProfile.DEFINITION,
+            AlienBlasterProfile.DEFINITION,
+            NetherBlasterProfile.DEFINITION,
+            NuclearDeathRayProfile.DEFINITION,
             // One model, two items: each selects its own skin (the profile lists both sheets).
             ClientGunDefinition
                 .variantOf("power_hammer", PowerHammerProfile.DEFINITION, PowerHammerProfile.TEXTURES[0]),
             ClientGunDefinition
                 .variantOf("power_hammer_adv", PowerHammerProfile.DEFINITION, PowerHammerProfile.TEXTURES[1]),
             ChainsawProfile.DEFINITION,
+            GrimReaperProfile.DEFINITION,
             NukeLauncherProfile.DEFINITION,
 
             // The akimbo guns draw their single gun's model once per hand.

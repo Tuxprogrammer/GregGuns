@@ -167,6 +167,14 @@
     "category": "player",
     "sounds": ["guns/lasergun_reload"]
   },
+  "guns.nuclear_death_ray.fire": {
+    "category": "player",
+    "sounds": ["guns/beamgun_start_a", "guns/beamgun_start_b", "guns/beamgun_start_c"]
+  },
+  "guns.nuclear_death_ray.reload": {
+    "category": "player",
+    "sounds": ["guns/beamgun_start_a"]
+  },
   "guns.nuclear_death_ray.start": {
     "category": "player",
     "sounds": ["guns/beamgun_start_a", "guns/beamgun_start_b", "guns/beamgun_start_c"]
@@ -174,6 +182,14 @@
   "guns.nuclear_death_ray.loop": {
     "category": "player",
     "sounds": ["guns/beamgun_loop_a", "guns/beamgun_loop_b", "guns/beamgun_loop_c", "guns/beamgun_loop_d", "guns/beamgun_loop_e", "guns/beamgun_loop_f"]
+  },
+  "guns.alien_blaster.fire": {
+    "category": "player",
+    "sounds": ["guns/alienblaster_shot_a", "guns/alienblaster_shot_b", "guns/alienblaster_shot_c"]
+  },
+  "guns.alien_blaster.reload": {
+    "category": "player",
+    "sounds": ["guns/alienblaster_reload"]
   },
   "guns.flamethrower.fire": {
     "category": "player",
@@ -223,11 +239,27 @@
     "category": "player",
     "sounds": ["guns/biogun_impact_a", "guns/biogun_impact_b", "guns/biogun_impact_c"]
   },
+  "guns.nether_blaster.fire": {
+    "category": "player",
+    "sounds": ["guns/cdb_shot_a", "guns/cdb_shot_b", "guns/cdb_shot_c", "guns/cdb_shot_d"]
+  },
+  "guns.nether_blaster.reload": {
+    "category": "player",
+    "sounds": ["guns/teslagun_reload"]
+  },
   "guns.rocket_launcher.fire": {
     "category": "player",
-    "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b", "guns/rocket_shot_c"]
+    "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b"]
   },
   "guns.rocket_launcher.reload": {
+    "category": "player",
+    "sounds": ["guns/rocket_reload"]
+  },
+  "guns.grim_reaper.fire": {
+    "category": "player",
+    "sounds": ["guns/rocket_shot_c"]
+  },
+  "guns.grim_reaper.reload": {
     "category": "player",
     "sounds": ["guns/rocket_reload"]
   },

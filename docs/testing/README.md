@@ -275,6 +275,21 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.bio_gun.blob.veto` | Bio Gun (M5 B3a) | The same glob with `BlockEvent.PlaceEvent` cancelled by a listener leaves no blob (PFX-28). |
 | `gun.bio_gun.recipe` | Bio Gun (M5 B3a) | The EV assembly row (GR-65) is in GT's assembler map with its sheet inputs and not below EV, and the found recipe's output is ours. |
 | `gun.bio_gun.tiergate` | Bio Gun (M5 B3a) | The row carries titanium, the EV gate material; an EV assembler finds it and an HV assembler does not. |
+| `gun.alien_blaster.fire` | Alien Blaster (M5 B5) | Holding the trigger on a charged LuV Alien Blaster fires every 8 ticks: each shot launches one `AlienBlasterProjectile` and spends exactly 100,000,000 EU; no reload, no round change. |
+| `gun.alien_blaster.hit` | Alien Blaster (M5 B5) | A bolt from a player hits a zombie 6 blocks away for 16 FIRE damage after the damage model with 20 percent penetration (no drop-off) and sets it alight. |
+| `gun.alien_blaster.blast` | Alien Blaster (M5 B5) | A bolt into a wooden wall ends in a power 0.5 explosion with block breaking off; the wall stands, and fire is on the hit face exactly when `explosions.blockDamage` is on. |
+| `gun.alien_blaster.trail` | Alien Blaster (M5 B5) | The `AlienBlasterTrail` FX is sent on the bolt's second tick while it is alive (PFX-01): the bolt is a registered, tracked entity and the FX list resolves to its three systems. |
+| `gun.alien_blaster.recipe` | Alien Blaster (M5 B5) | The LuV assembly row (GR-95) is in GT's assembler map with its sheet inputs and not below LuV; the found recipe's output is ours. |
+| `gun.alien_blaster.tiergate` | Alien Blaster (M5 B5) | The row carries HSS-G, the LuV gate material; a LuV assembler finds it and an IV assembler does not. |
+| `gun.nether_blaster.fire` | Nether Blaster (M5 G) | Holding the trigger for 17 ticks fires 3 `NetherBlasterProjectile` bolts (every 8 ticks), spending 3 of the 10 rounds; a villager 4 blocks ahead is hurt and burning. |
+| `gun.nether_blaster.reload` | Nether Blaster (M5 G) | An empty gun with two Nether Charges reloads after 35 ticks to `NetherChargeAmmo.SHOTS_PER_CHARGE` (10) rounds, consuming one charge and returning no empty item. |
+| `gun.nether_blaster.fire.block` | Nether Blaster (M5 G) | With safe mode off, ten bolts at a wall ledge place fire in front of the wall at least once. |
+| `gun.nether_blaster.fire.safe` | Nether Blaster (M5 G) | With safe mode on, the same ten bolts place no fire (GUN-05). |
+| `gun.nether_blaster.recipe` | Nether Blaster (M5 G) | The LuV Assembly Line recipe (GR-100) is on GT's line list with 45 s, the LuV EU/t, its research item and scan, and the output is ours. |
+| `gun.nuclear_death_ray.fire` | Nuclear Death Ray (M5 B6) | Holding the trigger on a charged ZPM gun fires a beam tick every tick: each spends exactly 20,000,000 EU, burns a zombie 6 blocks away for the 6 RADIATION damage after the damage model with 35 percent penetration (one damage tick per world tick), keeps one live beam, and never reloads. |
+| `gun.nuclear_death_ray.drain` | Nuclear Death Ray (M5 B6) | A gun charged for exactly 3 ticks of beam spends all of it over 3 held ticks, burns the zombie for exactly 3 beam ticks, and deals nothing once the charge is gone. |
+| `gun.nuclear_death_ray.recipe` | Nuclear Death Ray (M5 B6) | GT's Assembly Line list holds GR-103 with the sheet's EU/t, time, research item, scan time and voltage, both fluids and all 8 item inputs; the output is ours. |
+| `gun.nuclear_death_ray.tiergate` | Nuclear Death Ray (M5 B6) | The row is ZPM, carries a Naquadah alloy plate (the ZPM gate material) and meets the gate rule. |
 | `gun.golden_revolver.fire` | Golden Revolver (M2 B6) | One pull launches a bullet, costs a zombie the DamageModel figure for 14 and one round, and holds the 8 tick cooldown with a remembered click. |
 | `gun.golden_revolver.reload` | Golden Revolver (M2 B6) | An empty gun reloads after 45 ticks to 6 rounds from one 9mm bullet; nothing is returned. |
 | `gun.golden_revolver.reload.forced` | Golden Revolver (M2 B6) | The reload key on 5 rounds tops up to 6, consumes the bullet and refunds none. |
@@ -305,8 +320,15 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.rocket_launcher.wall.self` | Rocket Launcher (M2 B5) | The shooter standing in the blast is hurt (PFX-25). |
 | `gun.rocket_launcher.wall.noself` | Rocket Launcher (M2 B5) | With `explosions.selfDamage` off the shooter is unhurt. |
 | `gun.rocket_launcher.wall.cancelled` | Rocket Launcher (M2 B5) | A cancelled `ExplosionEvent.Start` (a protection claim) stops all damage and keeps the wall. |
+| `gun.grim_reaper.reload` | Grim Reaper (M5 B5) | An empty Grim Reaper reloads after 40 ticks from 4 loose rockets: all four load and are consumed. |
+| `gun.grim_reaper.volley` | Grim Reaper (M5 B5) | One trigger pull launches one rocket (3 rounds left); held, two more follow six ticks apart and a zombie in the line takes the 50 damage. |
+| `gun.grim_reaper.direct` | Grim Reaper (M5 B5) | A rocket into a zombie carries the 1.75 radius, deals 50 once and leaves the floor whole with block damage off. |
+| `gun.grim_reaper.blocks` | Grim Reaper (M5 B5) | With `explosions.blockDamage` on, a rocket into a dirt wall breaks dirt. |
+| `gun.grim_reaper.recipe` | Grim Reaper (M5 B5) | The LuV row (GR-97) is in GT's assembler map at 45 s with its sheet inputs and not below LuV. |
+| `gun.grim_reaper.upgrade` | Grim Reaper (M5 B5) | The upgrade is found with a used, camouflaged Rocket Launcher in slot 0 and outputs a fresh Grim Reaper. |
+| `gun.grim_reaper.tiergate` | Grim Reaper (M5 B5) | The row carries the LuV gate material and GT offers it at LuV and not one tier below. |
 | `gun.nuke_launcher.reload` | Nuke Launcher (M5 B6) | An empty launcher reloads after 40 ticks from one loose Tactical Nuke Rocket: the clip fills, the rocket is consumed and nothing comes back. |
-| `gun.nuke_launcher.recipe` | Nuke Launcher (M5 B6) | GR-102 is on GT's Assembly Line list at ZPM (60 s) with its seven item inputs and two fluids, its research item (the Grim Reaper once registered, the Rocket Launcher before), scan time and voltage; the output is ours. |
+| `gun.nuke_launcher.recipe` | Nuke Launcher (M5 B6) | GR-102 is on GT's Assembly Line list at ZPM (60 s) with its seven item inputs and two fluids, its research item (the Grim Reaper), scan time and voltage; the output is ours. |
 | `gun.nuke_launcher.fire` | Nuke Launcher (M5 B6) | A round into a zombie 4 blocks away: radius 10, the zombie hit loses the full 250 once and is thrown hard (knockback x10), a zombie inside 5 blocks takes the full splash, one at about 10 blocks takes the ramp's reduced share, the round is spent, the floor is intact. |
 | `gun.nuke_launcher.safe` | Nuke Launcher (M5 B6) | With `explosions.blockDamage` off a nuke into a 7-deep dirt mass breaks no block and queues none for `BlastTicker`, yet a zombie beside the impact still takes the splash. |
 | `fx.stress.nuke` | FX catalog perf, nuke case (M5 B6) | One `NukeExplosion` list and a salvo of three run 300 ticks under the 2000-particle ceiling: live never passes it, spilled is 0. Then a real nuke into a dirt mass with block damage on never breaks more than the 1500-block per-tick cap in a tick (twice in the blast tick: the blast's first batch plus the ticker's), and `BlastTicker` drains the rest. |

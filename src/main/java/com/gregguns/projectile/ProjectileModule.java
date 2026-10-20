@@ -101,6 +101,14 @@ public final class ProjectileModule {
             GenericProjectile.UPDATE_FREQUENCY,
             GenericProjectile.SENDS_VELOCITY);
         BulletLauncher.register(ProjectileKind.BIO, BiogunProjectile::new);
+        registrar.registerEntity(
+            "nether_blaster_projectile",
+            NetherBlasterProjectile.class,
+            NetherBlasterProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.NETHER, NetherBlasterProjectile::new);
         // The Chainsaw's cut: a plain bullet that is never drawn.
         registrar.registerEntity(
             "invisible_projectile",
@@ -126,6 +134,15 @@ public final class ProjectileModule {
             GenericProjectile.SENDS_VELOCITY);
         BulletLauncher.register(ProjectileKind.SONIC, SonicProjectile::new);
         BulletLauncher.register(ProjectileKind.TESLA, TeslaProjectile::new);
+        // The Alien Blaster's bolt. Registered so the server tracks it to clients (PFX-01: Techguns never did).
+        registrar.registerEntity(
+            "alien_blaster_projectile",
+            AlienBlasterProjectile.class,
+            AlienBlasterProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.ALIEN_BLAST, AlienBlasterProjectile::new);
         BulletLauncher.register(ProjectileKind.LASER, LaserProjectile::new);
         BulletLauncher.register(ProjectileKind.ENERGY_BLAST, EnergyBlastProjectile::new);
         BulletLauncher.register(ProjectileKind.FLAME, FlamethrowerProjectile::new);

@@ -65,7 +65,7 @@ class NukeLauncherDefTest {
 
     @Test
     void theAssemblyLineRowMatchesTheSheet() {
-        ComponentTable.Spec spec = GunLineTable.SPECS.get(0);
+        ComponentTable.Spec spec = GunLineTable.byOutput(GunLineTable.NUKE_LAUNCHER);
         ProductionTable.Row row = spec.row();
         assertEquals("nuke_launcher", row.output());
         assertEquals(ProductionTable.Target.ASSEMBLY_LINE, row.target());
@@ -114,12 +114,10 @@ class NukeLauncherDefTest {
     }
 
     @Test
-    void theResearchItemIsTheGrimReaperOnceItExistsAndTheRocketLauncherBefore() {
-        String expected = GunDefinitions.byName(GunLineTable.GRIM_REAPER) != null ? GunLineTable.GRIM_REAPER
-            : "rocket_launcher";
+    void theResearchItemIsTheGrimReaper() {
         assertEquals(
-            expected,
-            GunLineTable.SPECS.get(0)
+            GunLineTable.GRIM_REAPER,
+            GunLineTable.byOutput(GunLineTable.NUKE_LAUNCHER)
                 .research()
                 .item()
                 .itemName());
@@ -130,7 +128,7 @@ class NukeLauncherDefTest {
         Map<String, ProductionTable.Row> all = new LinkedHashMap<>(ProductionTable.byOutput());
         assertTrue(
             GateRule.satisfied(
-                GunLineTable.SPECS.get(0)
+                GunLineTable.byOutput(GunLineTable.NUKE_LAUNCHER)
                     .row(),
                 all,
                 ProductionTable.GATE_EXEMPT));

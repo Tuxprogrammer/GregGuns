@@ -104,18 +104,24 @@ public final class InHandTargets {
         put("pulse_rifle", 2.52, 0.78, -0.66, 1.41, 0.78, -0.55, 2.67, 1.41);
         put("minigun", 2.33, 0.71, -0.53, 1.40, 0.71, -0.54, 2.57, 1.82);
         put("bio_gun", 1.90, 0.57, -0.78, 0.52, 0.57, -0.54, 1.47, 1.34);
+        put("alien_blaster", 1.26, 0.60, -0.53, 1.08, 0.60, -0.40, 1.71, 0.68);
         put("bolt_action_rifle", 2.01, 0.54, -0.35, 1.02, 0.52, -0.29, 2.02, 1.88);
         // M5 batch B4 (IV energy guns); the akimbo item draws the pistol twice and has no row of its own.
         put("blaster_rifle", 1.75, 0.41, -0.49, 1.12, 0.41, -0.38, 1.99, 1.11);
         put("deatomizer_pistol", 1.12, 1.03, -0.76, 1.65, 1.03, -0.61, 2.21, 0.63);
         put("scatter_laser_rifle", 2.20, 0.59, -0.50, 1.21, 0.59, -0.33, 2.31, 1.18);
+        put("nether_blaster", 1.61, 0.96, -0.49, 0.96, 0.96, -0.61, 1.77, 1.02);
         // M5 tool guns (section 7; third-person length from section 3). The Advanced hammer has the same geometry.
         put("power_hammer", 1.16, 0.34, -0.40, 0.70, 0.34, -0.33, 1.28, 1.05);
         put("power_hammer_adv", 1.16, 0.34, -0.40, 0.70, 0.34, -0.33, 1.28, 1.05);
         // Deviation: the bar is 5.5 texels off the box centre's side, so with the centre on 1.06 the bar tip lands at
         // 1.26
         // right (the notes put the tip on the centre line); the centre, length and depth keep the notes' figures.
+        // Grim Reaper: the far tip is the muzzle (the notes' section 8); the row uses the turned geometry.
+        put("grim_reaper", 2.57, 0.66, -0.41, 0.59, 0.66, -0.20, 1.88, 1.72);
         put("chainsaw", 2.36, 1.06, -0.58, 1.75, 1.26, -0.74, 2.93, 2.13);
+        // Section 7 as written: the double idle step of the Nuclear Death Ray (section 2) is already in these figures.
+        put("nuclear_death_ray", 1.18, 0.45, -0.30, 0.61, 0.45, -0.28, 1.20, 1.26);
     }
 
     private InHandTargets() {}

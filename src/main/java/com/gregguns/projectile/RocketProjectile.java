@@ -11,8 +11,10 @@ import com.gregguns.combat.DamageSources;
 import com.gregguns.combat.DamageType;
 import com.gregguns.combat.Knockback;
 import com.gregguns.core.config.ExplosionsConfig;
+import com.gregguns.explosion.BlastFxSelector;
 import com.gregguns.explosion.ExplosionRules;
 import com.gregguns.explosion.ProjectileExplosion;
+import com.gregguns.fx.FxSender;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ShotOffset;
 import com.gregguns.gun.sound.GunSoundEvents;
@@ -137,6 +139,10 @@ public class RocketProjectile extends GenericProjectile {
             return;
         }
         exploded = true;
+        if (blastRadius < ExplosionRules.NUKE_FX_MIN_SIZE) {
+            // Below power 8 the explosion sends no effect of its own, so the rocket asks for its blast FX here.
+            FxSender.at(worldObj, BlastFxSelector.ROCKET, posX, posY, posZ, FxSender.RANGE_NEAR);
+        }
         ProjectileExplosion.Result result = new ProjectileExplosion(
             worldObj,
             this,

@@ -5,8 +5,8 @@ import static com.gregguns.client.anim.GunCurves.yF;
 import static com.gregguns.client.anim.GunCurves.yR;
 
 /**
- * The Nuclear Death Ray's model boxes and render transforms, as data. The gun is not registered yet: it is not in
- * {@link ClientGunDefinitions#ALL} until the gameplay batch adds it, together with its gun definition.
+ * The Nuclear Death Ray's model boxes and render transforms, as data. Registered in
+ * {@link ClientGunDefinitions#ALL} with the gun definition.
  *
  * <h2>Where the model comes from (originality record)</h2>
  * The boxes are original GregGuns geometry, built clean-room from written design notes only
@@ -26,7 +26,8 @@ import static com.gregguns.client.anim.GunCurves.yR;
  * Part 0 is the body, drawn in the gun's own matrix. Part 1 is the firing starburst: one 7x5x1 blade named
  * {@code starburst_glow_0}, rolled 25 degrees about the barrel axis (round-3 measurement: the original has exactly one
  * such plate in the reactor region), painted faint translucent yellow (alpha 28) and hidden by
- * {@link #buildTransforms()}'s part rule until the gameplay batch drives it. Part 2 is the fin and part 3 is the mast
+ * {@link #buildTransforms()}'s part rule until the gun fires, then pulsed by {@link #starburstScale(double)}. Part 2 is
+ * the fin and part 3 is the mast
  * with its connector cube, so later code can animate them; both rest at the notes' pose.
  *
  * <h2>Glow parts</h2>
@@ -187,17 +188,18 @@ public final class NuclearDeathRayProfile {
     };
 
     // Deviation: the notes give first-person scale 1.1 and an idle offset measured from the origin of the original
-    // model. The scale follows the FirstPersonFit rule with the 2 blocks on screen of the other long guns, and the
-    // idle position puts this model's box centre on the family anchor.
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    // model. The scale, idle position and third-person placement are solved by InHandFit from the per-gun targets of
+    // the in-hand notes (section 7), which already count the original's double idle step at rest, so the gun lands
+    // where Techguns' sits on screen. Aimed extra (0, 0, -0.15) as in the notes.
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("nuclear_death_ray", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0, -0.15 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
+    /** The starburst pulse pivots on the barrel axis at the blade's centre along the barrel, blocks. */
+    private static final double STARBURST_PIVOT_X = 31.5 / 16.0;
 
     /**
      * The notes' render transforms, timing for the Nuclear Death Ray (the muzzle flash sprite is the beam effect, not
@@ -206,7 +208,7 @@ public final class NuclearDeathRayProfile {
     public static final GunTransforms TRANSFORMS = buildTransforms();
 
     /**
-     * The client half of the gun's definition: model, textures and transforms; the gameplay batch lists it in
+     * The client half of the gun's definition: model, textures and transforms; it is listed in
      * {@link ClientGunDefinitions}.
      */
     public static final ClientGunDefinition DEFINITION = new ClientGunDefinition(
@@ -240,6 +242,7 @@ public final class NuclearDeathRayProfile {
                 (p, part) -> FP_X + 0.05 / FP_SCALE * yF(p),
                 (p, part) -> FP_Y + 0.025 / FP_SCALE * yF(p),
                 (p, part) -> FP_Z)
+            .about(STARBURST_PIVOT_X, 0, 0, pulse -> pulse.scale((p, part) -> starburstScale(p, part)))
             .build();
         // Reload: roll 20 degrees about Z, yaw -10 degrees and a small shift at mid-reload, then back (the notes).
         TransformProgram fpReload = TransformProgram.builder()
@@ -247,17 +250,18 @@ public final class NuclearDeathRayProfile {
             .rotY((p, part) -> -10.0 * yR(p))
             .translate(FP_X, FP_Y, FP_Z)
             .build();
-        // Third person: rotX180, rotY225, scale 1.1 (the notes say 1.25; the model is 2.7 blocks long). The grip, 25
-        // texels from the bracket tip and 2 texels right of the mid-plane, lands at the hand.
+        // Third person: rotX180, rotY225, then the scale and translate InHandFit solved so the box centre lands at the
+        // hand and the gun is the notes' 1.26 world blocks long.
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.1)
-            .translate(-1.62, -0.4, 0.125)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the notes say a slide of up to 0.25 block along the barrel in the first eighth, no rotation.
         TransformProgram tpRecoil = TransformProgram.builder()
             .translate((p, part) -> -0.25 * kick(p), (p, part) -> 0.0, (p, part) -> 0.0)
+            .about(STARBURST_PIVOT_X, 0, 0, pulse -> pulse.scale((p, part) -> starburstScale(p, part)))
             .build();
         // Reload: 40 degrees about the long axis and 50 degrees about the vertical at mid-animation, then back.
         TransformProgram tpReload = TransformProgram.builder()
@@ -278,15 +282,53 @@ public final class NuclearDeathRayProfile {
             .scale(0.7)
             .translate(-1.34, -0.25, 0)
             .build();
-        // No muzzle flash geometry: the notes' beam flash is a sprite effect. The starburst part stays hidden until
-        // the gameplay batch drives it from the fire progress.
+        // No muzzle flash geometry: the notes' beam flash is a sprite effect. The starburst part is drawn only while
+        // the gun is firing (fire progress above 0) and pulses with it.
         return GunTransforms.builder()
             .parts(4)
-            .partVisibility((part, ammoLeft, reloadProgress) -> part != PART_STARBURST)
+            .partVisibility(new StarburstWhileFiring())
             .timing(4, 5, 45)
             .firstPerson(fpBase, fpIdle, fpFire, fpReload)
             .thirdPerson(tpBase, new double[] { 0, 0, -0.15 }, tpRecoil, tpReload)
             .world(ground, icon)
             .build();
+    }
+
+    /** Lowest scale of the starburst pulse. */
+    public static final double STARBURST_MIN_SCALE = 0.8;
+    /** Highest scale of the starburst pulse. */
+    public static final double STARBURST_MAX_SCALE = 1.0;
+
+    /**
+     * The starburst's pulse: a uniform scale from 0.8 to 1.0, one sine cycle over the fire animation, starting at 0.9
+     * (it first rises to 1.0, then falls to 0.8 and returns to 0.9).
+     *
+     * @param progress fire animation progress, 0 to 1
+     * @return the scale
+     */
+    // Spec: docs/techguns-spec/03-gun-visuals-audio/model-notes/nuclear_death_ray.md (starburst pulse)
+    public static double starburstScale(double progress) {
+        double mid = (STARBURST_MIN_SCALE + STARBURST_MAX_SCALE) / 2.0;
+        double amplitude = (STARBURST_MAX_SCALE - STARBURST_MIN_SCALE) / 2.0;
+        return mid + amplitude * Math.sin(2.0 * Math.PI * progress);
+    }
+
+    /** The scale term of a part: the starburst pulses, every other part is unchanged. */
+    private static double starburstScale(double progress, int part) {
+        return part == PART_STARBURST ? starburstScale(progress) : 1.0;
+    }
+
+    /** Draws the starburst only while the gun fires; every other part always. */
+    private static final class StarburstWhileFiring implements GunTransforms.PartVisibility {
+
+        @Override
+        public boolean visible(int part, int ammoLeft, float reloadProgress) {
+            return part != PART_STARBURST;
+        }
+
+        @Override
+        public boolean visible(int part, int ammoLeft, float reloadProgress, float fireProgress) {
+            return part != PART_STARBURST || fireProgress > 0.0f;
+        }
     }
 }

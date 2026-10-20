@@ -3,6 +3,7 @@ package com.gregguns.client.render.profile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -156,11 +157,11 @@ class AlienBlasterProfileTest {
     }
 
     @Test
-    void noCamoAndNotRegistered() {
+    void noCamoAndRegistered() {
         assertEquals(1, AlienBlasterProfile.TEXTURES.length);
         assertEquals("alien_blaster", AlienBlasterProfile.DEFINITION.gunName());
         assertEquals(1, AlienBlasterProfile.TRANSFORMS.partCount());
         assertNull(AlienBlasterProfile.TRANSFORMS.scope());
-        assertNull(ClientGunDefinitions.byName("alien_blaster"));
+        assertSame(AlienBlasterProfile.DEFINITION, ClientGunDefinitions.byName("alien_blaster"));
     }
 }

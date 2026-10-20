@@ -140,9 +140,14 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
      * @param nowTick      the world tick of a shot
      * @param lastShotTick the world tick of the shooter's previous shot, or {@code LoopStart.NEVER}
      * @return the sound event this shot plays: the start event after a pause for a gun that has one, else the fire
-     *         event
+     *         event; null for a continuous beam gun, whose beam plays its own start and loop sounds
      */
+    // Deviation: a BEAM gun fires every tick, so a per-shot sound would play twenty times a second on top of the
+    // beam's own sounds (Techguns plays its start sound only after a pause).
     public String shotEvent(long nowTick, long lastShotTick) {
+        if (stats.projectileKind() == com.gregguns.gun.logic.ProjectileKind.BEAM) {
+            return null;
+        }
         return startEvent != null && com.gregguns.gun.logic.LoopStart.isStart(nowTick, lastShotTick) ? startEvent
             : fireEvent;
     }

@@ -56,6 +56,10 @@ public final class GunDefinitions {
             PowerHammerDef.DEFINITION,
             PowerHammerAdvDef.DEFINITION,
             ChainsawDef.DEFINITION,
+            AlienBlasterDef.DEFINITION,
+            GrimReaperDef.DEFINITION,
+            NetherBlasterDef.DEFINITION,
+            NuclearDeathRayDef.DEFINITION,
             NukeLauncherDef.DEFINITION));
 
     private GunDefinitions() {}

@@ -29,6 +29,8 @@ class RowIdsAndFluidsTest {
         all.addAll(GrenadeTable.ROWS);
         all.addAll(MeleeTable.ROWS);
         all.addAll(ArmorTable.COMBAT);
+        // Gun Assembly Line rows (specs, not GunDefinition rows): Nether Blaster, Nuke Launcher, Nuclear Death Ray.
+        all.addAll(GunLineTable.rows());
         return all;
     }
 
@@ -142,5 +144,46 @@ class RowIdsAndFluidsTest {
                 .get(0)
                 .amount(),
             gun);
+    }
+
+    @Test
+    void m5SheetFluidsCarryTheirAmounts() {
+        ProductionTable.Row alien = GunDefinitions.byName("alien_blaster")
+            .assembly();
+        assertEquals(
+            2,
+            alien.fluids()
+                .size());
+        assertEquals(
+            576,
+            alien.fluids()
+                .get(0)
+                .amount());
+        assertEquals(
+            "Lubricant",
+            alien.fluids()
+                .get(1)
+                .material());
+        assertEquals(
+            250,
+            alien.fluids()
+                .get(1)
+                .amount());
+        ProductionTable.Row grim = GunDefinitions.byName("grim_reaper")
+            .assembly();
+        assertEquals(
+            1,
+            grim.fluids()
+                .size());
+        assertEquals(
+            "Lubricant",
+            grim.fluids()
+                .get(0)
+                .material());
+        assertEquals(
+            250,
+            grim.fluids()
+                .get(0)
+                .amount());
     }
 }
