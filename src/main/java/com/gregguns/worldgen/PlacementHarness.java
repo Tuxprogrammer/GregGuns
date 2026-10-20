@@ -140,8 +140,7 @@ public final class PlacementHarness {
     /** World position of a layout mark under the plan, by the stamper's own rotation tables. */
     static int[] markPos(StructurePlan p, Layout l, Layout.Mark m, int anchorY) {
         return new int[] { p.anchorX() + Rotations.offsetX(p.rotation(), m.x, m.z, l.sizeX(), l.sizeZ()),
-            anchorY + m.y - l.ground(),
-            p.anchorZ() + Rotations.offsetZ(p.rotation(), m.x, m.z, l.sizeX(), l.sizeZ()) };
+            anchorY + m.y - l.ground(), p.anchorZ() + Rotations.offsetZ(p.rotation(), m.x, m.z, l.sizeX(), l.sizeZ()) };
     }
 
     /** What one run left behind, and everything needed to judge and undo it. */
@@ -211,7 +210,9 @@ public final class PlacementHarness {
             return n;
         }
 
-        /** Number of expected cells (any layer) whose world block differs; the first one is described in {@code why}. */
+        /**
+         * Number of expected cells (any layer) whose world block differs; the first one is described in {@code why}.
+         */
         int mismatches(StringBuilder why) {
             int bad = 0;
             for (Map.Entry<Long, Block> e : expected.entrySet()) {
@@ -253,13 +254,8 @@ public final class PlacementHarness {
 
         /** Item entities around the box. */
         int itemEntities() {
-            AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(
-                plan.anchorX() - 8,
-                0,
-                plan.anchorZ() - 8,
-                plan.maxX() + 9,
-                256,
-                plan.maxZ() + 9);
+            AxisAlignedBB bb = AxisAlignedBB
+                .getBoundingBox(plan.anchorX() - 8, 0, plan.anchorZ() - 8, plan.maxX() + 9, 256, plan.maxZ() + 9);
             List<?> items = world.getEntitiesWithinAABB(EntityItem.class, bb);
             return items.size();
         }
@@ -343,13 +339,8 @@ public final class PlacementHarness {
         void cleanup() {
             prepare(world, plan, water, layout);
             // Rebuilding the terrain replaces every block, which also removes its tile; any item entity is swept.
-            AxisAlignedBB bb = AxisAlignedBB.getBoundingBox(
-                plan.anchorX() - 8,
-                0,
-                plan.anchorZ() - 8,
-                plan.maxX() + 9,
-                256,
-                plan.maxZ() + 9);
+            AxisAlignedBB bb = AxisAlignedBB
+                .getBoundingBox(plan.anchorX() - 8, 0, plan.anchorZ() - 8, plan.maxX() + 9, 256, plan.maxZ() + 9);
             for (Object o : world.getEntitiesWithinAABB(Entity.class, bb)) {
                 Entity e = (Entity) o;
                 if (e instanceof EntityItem) e.setDead();
@@ -373,7 +364,11 @@ public final class PlacementHarness {
             if (cells.length != other.cells.length) return "size " + cells.length + " vs " + other.cells.length;
             for (int i = 0; i < cells.length; i++) {
                 if (cells[i] != other.cells[i]) {
-                    return "cell " + i + ": " + Integer.toHexString(cells[i]) + " vs " + Integer.toHexString(other.cells[i]);
+                    return "cell " + i
+                        + ": "
+                        + Integer.toHexString(cells[i])
+                        + " vs "
+                        + Integer.toHexString(other.cells[i]);
                 }
             }
             if (!chests.equals(other.chests)) {

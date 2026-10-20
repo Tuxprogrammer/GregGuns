@@ -117,7 +117,8 @@ public final class PlacementScenarios {
                 }
                 judgeCleanup(out, second);
                 out.note(
-                    id.id() + ": " + first.windows
+                    id.id() + ": "
+                        + first.windows
                         + " windows, "
                         + first.expectedNonAir()
                         + " non-air above the anchor, "
@@ -135,7 +136,10 @@ public final class PlacementScenarios {
             Layout l = p.layout;
             out.check(p.decision.isPlaced(), "plan was placed, got " + p.decision.reason());
             if (!p.decision.isPlaced()) return;
-            out.checkEquals("ground Y", water ? PlacementHarness.WATER_SURFACE_Y : PlacementHarness.LAND_Y, p.decision.groundY());
+            out.checkEquals(
+                "ground Y",
+                water ? PlacementHarness.WATER_SURFACE_Y : PlacementHarness.LAND_Y,
+                p.decision.groundY());
             out.check(p.stamped > 0, "a structure was stamped");
             out.checkEquals("writes dropped outside their window", 0, p.rejectedWrites);
             out.checkEquals("PopulateGuard violations", 0, p.guardViolations);
@@ -143,7 +147,10 @@ public final class PlacementScenarios {
             // Footprint: the rotated box holds the stamper's expected non-air total, and every written cell matches.
             int expected = p.expectedNonAir();
             out.check(expected > 0 && expected <= l.solidCells(), "expected total is plausible: " + expected);
-            out.checkEquals("non-air blocks in the rotated box (at or above the anchor)", expected, p.footprintNonAir());
+            out.checkEquals(
+                "non-air blocks in the rotated box (at or above the anchor)",
+                expected,
+                p.footprintNonAir());
             StringBuilder why = new StringBuilder();
             int differing = p.mismatches(why);
             out.checkEquals("cells that differ from the stamper output (" + why + ")", 0, differing);
@@ -218,11 +225,16 @@ public final class PlacementScenarios {
             out.checkEquals("chest marks in the layout", mc.chests(), index);
             out.checkEquals("vanilla chests filled at placement", mc.vanilla, vanillaFilled);
             out.checkEquals("GregGuns chest tiles by loot category", wantCategories, gotCategories);
-            out.checkEquals("chest tiles in the box", mc.chests(), p.chestTiles().size());
+            out.checkEquals(
+                "chest tiles in the box",
+                mc.chests(),
+                p.chestTiles()
+                    .size());
             if (wrongBlock > 0) {
                 // A lazy order rides on a TileGregChest, but the layout put a vanilla chest block under it.
                 out.note(
-                    id.id() + " LAYOUT: " + wrongBlock
+                    id.id() + " LAYOUT: "
+                        + wrongBlock
                         + " weapon/reinforced chest marks sit on minecraft:chest blocks, not on"
                         + " gregguns:weapon_chest / gregguns:reinforced_chest");
             }
@@ -246,7 +258,11 @@ public final class PlacementScenarios {
                 }
             }
             out.checkEquals("cleanup: blocks left above the terrain", 0, blocks);
-            out.checkEquals("cleanup: chest tiles left", 0, p.chestTiles().size());
+            out.checkEquals(
+                "cleanup: chest tiles left",
+                0,
+                p.chestTiles()
+                    .size());
             out.checkEquals("cleanup: item entities left", 0, p.itemEntities());
         }
     }
@@ -281,11 +297,8 @@ public final class PlacementScenarios {
             List<String> categories = new ArrayList<>();
             for (int i = 0; i < MV.length; i++) {
                 StructureId id = MV[i];
-                Placement p = PlacementHarness.place(
-                    world,
-                    PlacementHarness.plan(world, id, ROTATION[i]),
-                    StructureCatalog.isWater(id),
-                    false);
+                Placement p = PlacementHarness
+                    .place(world, PlacementHarness.plan(world, id, ROTATION[i]), StructureCatalog.isWater(id), false);
                 try {
                     out.check(p.decision.isPlaced(), id.id() + " placed, got " + p.decision.reason());
                     if (!p.decision.isPlaced()) continue;
@@ -302,7 +315,10 @@ public final class PlacementScenarios {
                         }
                         if (!categories.contains(cat.name())) categories.add(cat.name());
                         out.checkEquals(id.id() + " " + cat.name() + " ceiling", Tier.MV, cat.ceiling());
-                        out.check(cat.name().endsWith("_t2"), id.id() + " uses the _t2 tables, got " + cat.name());
+                        out.check(
+                            cat.name()
+                                .endsWith("_t2"),
+                            id.id() + " uses the _t2 tables, got " + cat.name());
                         chest.ensureFilled(); // what opening it does
                         out.check(chest.pending() == null, id.id() + " chest still pending after opening");
                         int stacks = 0;
@@ -316,13 +332,29 @@ public final class PlacementScenarios {
                                 continue;
                             }
                             out.check(
-                                line.tier().ordinal() <= cat.ceiling().ordinal(),
-                                id.id() + " " + cat.name() + ": " + line.ref() + " is " + line.tier() + ", above "
+                                line.tier()
+                                    .ordinal()
+                                    <= cat.ceiling()
+                                        .ordinal(),
+                                id.id() + " "
+                                    + cat.name()
+                                    + ": "
+                                    + line.ref()
+                                    + " is "
+                                    + line.tier()
+                                    + ", above "
                                     + cat.ceiling());
                             Tier real = LootCategories.itemTier(line.ref());
                             out.check(
-                                real == null || real.ordinal() <= cat.ceiling().ordinal(),
-                                id.id() + " " + cat.name() + ": " + line.ref() + " is really " + real + ", above "
+                                real == null || real.ordinal() <= cat.ceiling()
+                                    .ordinal(),
+                                id.id() + " "
+                                    + cat.name()
+                                    + ": "
+                                    + line.ref()
+                                    + " is really "
+                                    + real
+                                    + ", above "
                                     + cat.ceiling());
                         }
                         out.check(stacks > 0, id.id() + " " + cat.name() + " chest opened empty");
