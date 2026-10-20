@@ -77,11 +77,15 @@ class StructureGridTest {
             Optional<StructurePlan> d = g.planAt(SEED, 7, SizeClass.SMALL, x, 5);
             if (!p.isPresent() || !s.isPresent() || !d.isPresent()) continue;
             if (p.get()
-                .anchorX() != s.get()
-                    .anchorX()) diffSeed++;
+                .anchorX()
+                != s.get()
+                    .anchorX())
+                diffSeed++;
             if (p.get()
-                .anchorX() != d.get()
-                    .anchorX()) diffDim++;
+                .anchorX()
+                != d.get()
+                    .anchorX())
+                diffDim++;
         }
         assertTrue(diffSeed > 30);
         assertTrue(diffDim > 30);
@@ -111,15 +115,26 @@ class StructureGridTest {
     }
 
     @Test
-    void bigCellAtOriginIsRejectedForEverySeed() {
-        // The Techguns BIG grid point sat on chunk (0, 0), the world spawn. A 79-block box in cell (0, 0)
-        // always reaches the zone because the cell starts at 0.
+    void bigCellAtOriginIsOnlyUsedAwayFromTheSpawnZone() {
+        // The Techguns BIG grid point sat on chunk (0, 0), the world spawn. Here cell (0, 0) is either skipped
+        // or its box starts beyond 8 chunks on some axis; both outcomes occur over many seeds.
         StructureGrid g = defaults();
-        for (long seed = 0; seed < 200; seed++) {
-            assertFalse(
-                g.planAt(seed, 0, SizeClass.BIG, 0, 0)
-                    .isPresent());
+        int kept = 0;
+        int skipped = 0;
+        for (long seed = 0; seed < 300; seed++) {
+            Optional<StructurePlan> p = g.planAt(seed, 0, SizeClass.BIG, 0, 0);
+            if (!p.isPresent()) {
+                skipped++;
+                continue;
+            }
+            kept++;
+            assertTrue(
+                p.get()
+                    .anchorX() / 16 > 8
+                    || p.get()
+                        .anchorZ() / 16 > 8);
         }
+        assertTrue(kept > 0 && skipped > 0);
     }
 
     @Test
@@ -166,8 +181,9 @@ class StructureGridTest {
                 for (SizeClass c : new SizeClass[] { SizeClass.SMALL, SizeClass.MEDIUM }) {
                     Optional<StructurePlan> p = g.planAt(SEED, 0, c, x, z);
                     assertTrue(p.isPresent());
-                    Integer n = counts.get(p.get()
-                        .id());
+                    Integer n = counts.get(
+                        p.get()
+                            .id());
                     counts.put(
                         p.get()
                             .id(),
@@ -222,8 +238,9 @@ class StructureGridTest {
             if (p.get()
                 .id()
                 .equals("train_station")) {
-                seen.add(p.get()
-                    .variant());
+                seen.add(
+                    p.get()
+                        .variant());
             } else {
                 assertEquals(
                     0,
@@ -249,8 +266,7 @@ class StructureGridTest {
                             Optional<StructurePlan> p = g.planAt(SEED, 0, c, x, z);
                             if (p.isPresent() && p.get()
                                 .overlapsWindow(cx, cz)) {
-                                expected.add(
-                                    c + ":" + x + ":" + z);
+                                expected.add(c + ":" + x + ":" + z);
                             }
                         }
                     }

@@ -47,7 +47,13 @@ public final class StructureGrid {
             int extent = 1;
             for (PoolEntry e : list) {
                 total += e.weight();
-                extent = Math.max(extent, Math.max(e.footprint().sizeX(), e.footprint().sizeZ()));
+                extent = Math.max(
+                    extent,
+                    Math.max(
+                        e.footprint()
+                            .sizeX(),
+                        e.footprint()
+                            .sizeZ()));
             }
             totalWeight.put(c, total);
             maxExtent.put(c, extent);
