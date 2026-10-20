@@ -123,6 +123,19 @@ All in our own words; none requires any of their code.
 5. **Fork activity.** The danglol240 fork is reviving the mod for 2.9.0-RC-2. Watch it, or ignore it? If it gains traction it could become a competing "maintained" option and change the verdict.
 6. **Pack route.** Neither mod is in the pack. Do we plan to propose GregGuns to GTNH ourselves (after the beta gate), and when?
 
+## Owner decisions (2026-10-20)
+
+**Direction: take its place.** NewGunrizons runs parallel to GregGuns but isn't what we're building. There is no merge, and no code is borrowed.
+
+1. **Positioning.** GregGuns is proposed to the GTNH dev team, and the pitch shows that it is further along and more mature. There is no README coexistence note.
+2. **Outreach.** The no-contact rule stands; no external developers are involved.
+3. **Discord.** The owner runs a limited playtest group and posts the teasers personally. Agents don't post anywhere.
+4. **Real-world arsenal.** Not planned. If it ever happens, it fills tier gaps, and some sci-fi guns move up a tier to make room for a spread of historical weapons.
+5. **Fork activity.** Ignore the danglol240 fork; GregGuns is on track to reach the MVP before that port finishes.
+6. **Pack route.** The proposal to the GTNH dev team happens after the beta, which is the point of the M9 gate.
+
+**Feature taken: aim down sights.** The owner likes NewGunrizons' ADS. Some GregGuns models carry red dots or iron sights that can't be aimed down today. ADS is now in M9 scope (see the [roadmap](../ROADMAP.md#m9--pack-integration-and-release)). It is cosmetic only, accuracy doesn't change, and it gets a hold or toggle option (idea 4 above).
+
 ## Sources
 
 - Repo: https://github.com/vegeta1k95/NewGunrizons (tags [1.0.0](https://github.com/vegeta1k95/NewGunrizons/releases/tag/1.0.0) and [1.0.1](https://github.com/vegeta1k95/NewGunrizons/releases/tag/1.0.1))
