@@ -248,31 +248,82 @@ public final class GeneratorScenarios {
                 out.check(placed > 0, "a plan was placed; rejections were " + reasons);
                 out.check(checked > 0, "a fully populated structure was checked");
 
-                // Second pass: same chunks, same record. Nothing may change and nothing may be dropped.
-                StructureGenerator gen = new StructureGenerator();
-                ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
+                // Second pass: same chunks, same record. Nothing may be dropped. A cell the first pass left carved
+                // out (air or liquid: a lake or ravine of a later neighbor window spilled over the finished hut,
+                // which vanilla terrain features do, depending on the terrain) may be repaired; every other cell
+                // must stay as it was, and a third pass must change nothing at all.
                 long rejectedBefore = StructureGenerator.rejectedWrites();
-                for (int cx = sq[0]; cx < sq[0] + SIDE; cx++) {
-                    for (int cz = sq[1]; cz < sq[1] + SIDE; cz++) {
-                        if (populated(world, cx, cz)) {
-                            gen.generate(new Random(0), cx, cz, world, cps, cps);
-                        }
-                    }
+                Map<String, String> snap2 = rerun(world, sq, plans, state, layout);
+                String bad = unexplainedDiff(snap1, snap2);
+                out.check(bad.isEmpty(), "second pass leaves the structures unchanged" + bad);
+                Map<String, String> snap3 = rerun(world, sq, plans, state, layout);
+                out.check(snap2.equals(snap3), "third pass leaves the structures unchanged" + firstDiff(snap2, snap3));
+                int repaired = 0;
+                for (Map.Entry<String, String> en : snap1.entrySet()) {
+                    if (!en.getValue()
+                        .equals(snap2.get(en.getKey()))) repaired++;
                 }
-                Map<String, String> snap2 = new HashMap<>();
-                for (Map.Entry<String, StructurePlan> e : plans.entrySet()) {
-                    Decision d = state.get(e.getKey());
-                    if (d != null && d.isPlaced() && wholeBoxPopulated(world, e.getValue())) {
-                        snap2.put(e.getKey(), snapshot(world, e.getValue(), d.groundY() + 1, layout));
-                    }
-                }
-                out.check(snap1.equals(snap2), "second pass leaves the structures unchanged" + firstDiff(snap1, snap2));
+                if (repaired > 0) out.note("second pass repaired " + repaired + " plan(s) carved by neighboring terrain");
                 out.checkEquals("second pass drops no write", 0L, StructureGenerator.rejectedWrites() - rejectedBefore);
                 out.checkEquals("guard still clean", 0L, (long) PopulateGuard.violationCount() - before[4]);
             } finally {
                 StructureGenerator.setOverride(null);
             }
             return out.build();
+        }
+
+        /** Runs the generator again over every populated chunk of the square and snapshots the placed plans. */
+        private static Map<String, String> rerun(World world, int[] sq, Map<String, StructurePlan> plans,
+            StructureState state, Layout layout) {
+            StructureGenerator gen = new StructureGenerator();
+            ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
+            for (int cx = sq[0]; cx < sq[0] + SIDE; cx++) {
+                for (int cz = sq[1]; cz < sq[1] + SIDE; cz++) {
+                    if (populated(world, cx, cz)) {
+                        gen.generate(new Random(0), cx, cz, world, cps, cps);
+                    }
+                }
+            }
+            Map<String, String> snap = new HashMap<>();
+            for (Map.Entry<String, StructurePlan> e : plans.entrySet()) {
+                Decision d = state.get(e.getKey());
+                if (d != null && d.isPlaced() && wholeBoxPopulated(world, e.getValue())) {
+                    snap.put(e.getKey(), snapshot(world, e.getValue(), d.groundY() + 1, layout));
+                }
+            }
+            return snap;
+        }
+
+        /**
+         * The first cell that changed between the passes other than a carved-out one (air, water or lava before)
+         * being repaired, named with before, after and the scenario that last claimed its chunk; empty when none.
+         */
+        private static String unexplainedDiff(Map<String, String> a, Map<String, String> b) {
+            if (!a.keySet()
+                .equals(b.keySet())) return " (placed plans differ: " + a.keySet() + " vs " + b.keySet() + ")";
+            for (Map.Entry<String, String> e : a.entrySet()) {
+                String[] x = e.getValue()
+                    .split(";");
+                String[] y = b.get(e.getKey())
+                    .split(";");
+                if (x.length != y.length) return " (plan " + e.getKey() + ": cell count changed)";
+                for (int i = 0; i < x.length; i++) {
+                    if (x[i].equals(y[i])) continue;
+                    int id = Integer.parseInt(x[i].split("=")[1].split(":")[0]);
+                    boolean carved = id == 0 || (id >= 8 && id <= 11);
+                    if (!carved) {
+                        return " (plan " + e.getKey()
+                            + ": "
+                            + x[i]
+                            + " became "
+                            + y[i]
+                            + "; chunk last claimed by "
+                            + toucherOf(x[i])
+                            + ")";
+                    }
+                }
+            }
+            return "";
         }
 
         private static Map<SizeClass, List<PoolEntry>> poolsOf(Layout l) {
