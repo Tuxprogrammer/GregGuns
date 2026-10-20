@@ -44,6 +44,7 @@ public final class WorldgenModule implements GregGunsModule {
             LootScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ChestScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GeneratorScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            CascadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }
 
