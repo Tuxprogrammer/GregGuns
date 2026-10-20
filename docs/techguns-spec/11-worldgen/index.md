@@ -46,6 +46,11 @@ Natural structures (all Overworld only):
 | [structure-notes/house_medium.md](structure-notes/house_medium.md) | Word-only builder notes: Medium House (two wings, attic, 18 chests) |
 | [structure-notes/big_bunker.md](structure-notes/big_bunker.md) | Word-only builder notes: Big Bunker (buried levels, 2 Zombie Holes, 14 chests) |
 
+| [structure-notes/aircraft_carrier.md](structure-notes/aircraft_carrier.md) | Word-only builder notes: Aircraft Carrier (deck, island, hangar, flag, 26 chests) |
+| [structure-notes/submarine.md](structure-notes/submarine.md) | Word-only builder notes: Submarine (7 wide, sea floor, conning tower, 9 chests) |
+| [structure-notes/camp_parts.md](structure-notes/camp_parts.md) | Word-only builder notes: Military Base rules and its nine parts |
+| [structure-notes/alien_bug_nest.md](structure-notes/alien_bug_nest.md) | Procedural rules for the Alien Bug Nest (chambers, tunnels, eggs, Bug Holes) |
+
 ## Config keys that gate worldgen
 
 The keys are defined in [`TGConfig`](../01-core/config.md); see **[01-core](../01-core/index.md) / config.md** for the full config file. This table lists what each key gates.
