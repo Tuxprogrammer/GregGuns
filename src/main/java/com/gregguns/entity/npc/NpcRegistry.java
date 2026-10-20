@@ -10,9 +10,9 @@ import net.minecraft.entity.EntityLiving;
 
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.registry.ModuleRegistrar;
-import com.gregguns.entity.npc.mob.CyberDemon;
 import com.gregguns.entity.npc.mob.ArmySoldier;
 import com.gregguns.entity.npc.mob.Commando;
+import com.gregguns.entity.npc.mob.CyberDemon;
 import com.gregguns.entity.npc.mob.SkeletonSoldier;
 import com.gregguns.entity.npc.mob.ZombieFarmer;
 import com.gregguns.entity.npc.mob.ZombieMiner;

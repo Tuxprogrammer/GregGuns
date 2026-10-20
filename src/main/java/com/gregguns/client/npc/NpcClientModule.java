@@ -1,8 +1,8 @@
 package com.gregguns.client.npc;
 
 import net.minecraft.entity.EntityLiving;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 
 import com.gregguns.client.mob.MobRenderers;
 import com.gregguns.client.utility.TurretRenderer;
@@ -11,6 +11,7 @@ import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.entity.npc.AlienBug;
 import com.gregguns.entity.npc.AttackHelicopter;
+import com.gregguns.entity.npc.Bandit;
 import com.gregguns.entity.npc.DictatorDave;
 import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.entity.npc.NpcTurret;
@@ -18,11 +19,9 @@ import com.gregguns.entity.npc.PsychoSteve;
 import com.gregguns.entity.npc.SuperMutantBasic;
 import com.gregguns.entity.npc.SuperMutantElite;
 import com.gregguns.entity.npc.SuperMutantHeavy;
-import com.gregguns.entity.npc.mob.CyberDemon;
-import com.gregguns.entity.npc.Bandit;
-import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.entity.npc.mob.ArmySoldier;
 import com.gregguns.entity.npc.mob.Commando;
+import com.gregguns.entity.npc.mob.CyberDemon;
 import com.gregguns.entity.npc.mob.SkeletonSoldier;
 import com.gregguns.entity.npc.mob.ZombieFarmer;
 import com.gregguns.entity.npc.mob.ZombieMiner;
