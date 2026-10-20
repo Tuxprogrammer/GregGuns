@@ -28,7 +28,7 @@ import com.gregguns.core.testing.ScenarioResult;
 final class ChargeLookScenario implements Scenario {
 
     static final String NAME = "mp.look.charge";
-    private static final int TICKS = 460;
+    private static final int TICKS = 600;
 
     static void register(ScenarioRegistry registry) {
         registry.register(new ChargeLookScenario());
@@ -71,6 +71,7 @@ final class ChargeLookScenario implements Scenario {
         Item item = Item.getItemFromBlock(BlockExplosiveCharge.instance);
         a.inventory.mainInventory[0] = new ItemStack(item, 1, ChargeType.TNT.meta());
         a.inventory.mainInventory[1] = new ItemStack(item, 1, ChargeType.ADVANCED.meta());
+        a.inventory.mainInventory[2] = new ItemStack(Blocks.stone, 1, 0);
         select(a, 0);
         a.playerNetServerHandler.setPlayerLocation(ox, oy, oz, -90.0f, 10.0f);
         a.inventoryContainer.detectAndSendChanges();
@@ -156,6 +157,15 @@ final class ChargeLookScenario implements Scenario {
                 drop(ctx, ChargeType.ADVANCED, ox - 3.5, oy + 0.3, oz + 0.6);
             }
             case 450 -> signal(a, "shot", "charge-dropped");
+            case 460 -> {
+                // Vanilla reference: a stone block in the same grips.
+                select(a, 2);
+                a.playerNetServerHandler.setPlayerLocation(ox, oy, oz, -90.0f, 10.0f);
+                signal(a, "view", "0");
+            }
+            case 500 -> signal(a, "shot", "vanilla-stone-hand-first-person");
+            case 510 -> signal(a, "view", "2");
+            case 560 -> signal(a, "shot", "vanilla-stone-hand-third-person-front");
             default -> {}
         }
     }

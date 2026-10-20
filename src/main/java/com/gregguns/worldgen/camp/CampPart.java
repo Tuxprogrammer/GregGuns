@@ -58,6 +58,11 @@ public enum CampPart {
         this.corner = corner;
     }
 
+    /** How many size tiers the part ships: towers come in two (3 and 4 square), everything else in {@link #TIERS}. */
+    public int shippedTiers() {
+        return this == TOWER ? 2 : TIERS;
+    }
+
     public int minW() {
         return minW;
     }

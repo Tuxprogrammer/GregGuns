@@ -1,6 +1,7 @@
 package com.gregguns.worldgen.camp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -160,7 +161,8 @@ class CampPlacerTest {
         List<String> ids = PartLayouts.FromRegistry.allIds();
         assertTrue(ids.contains("camp_barracks_1"));
         assertTrue(ids.contains("camp_tent_2_snow"));
-        assertTrue(ids.contains("camp_tower_3_desert"));
-        assertEquals(CampPart.values().length * CampPart.TIERS * (1 + CampColor.values().length), ids.size());
+        assertTrue(ids.contains("camp_tower_2_desert"));
+        assertFalse(ids.contains("camp_tower_3"), "towers ship two tiers");
+        assertEquals((CampPart.values().length * CampPart.TIERS - 1) * (1 + CampColor.values().length), ids.size());
     }
 }
