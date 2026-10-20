@@ -61,7 +61,8 @@ public final class UtilityScenarios {
                     if (recipe != null) {
                         out.checkEquals(plate.registryName() + " EU/t", (int) plate.recipeEut(), recipe.mEUt);
                         out.checkEquals(plate.registryName() + " ticks", plate.durationTicks(), recipe.mDuration);
-                        // The plates plus the programmed circuit item (a circuit of its own avoids the pack rows holding the same plates).
+                        // The plates plus the programmed circuit item (a circuit of its own avoids the pack rows
+                        // holding the same plates).
                         int expectedInputs = (plate.extraMaterial() == null ? 1 : 2) + 1;
                         out.checkEquals(plate.registryName() + " inputs", expectedInputs, recipe.mInputs.length);
                     }
