@@ -177,6 +177,29 @@ final class NpcTurretScenarios {
         }
     }
 
+    /** Why a turret has not targeted an enemy: liveness, distance, target, rules, sight and the faction pair. */
+    private static String explain(NpcTurret t, NpcEntity enemy, NpcEntity ally) {
+        return "the turret never targeted the neutral NPC: enemyAlive=" + !enemy.isDead
+            + ", enemyHealth="
+            + enemy.getHealth()
+            + ", distance="
+            + t.getDistanceToEntity(enemy)
+            + ", turretTarget="
+            + t.currentTarget()
+            + ", wouldTarget="
+            + t.wouldTarget(enemy)
+            + ", lineOfSight="
+            + t.canEntityBeSeen(enemy)
+            + ", factions="
+            + t.npcFaction()
+            + " vs "
+            + enemy.npcFaction()
+            + ", turretDead="
+            + t.isDead
+            + ", allyAlive="
+            + !ally.isDead;
+    }
+
     // --- scenarios --------------------------------------------------------------------------------------------
 
     /** The turret spawns by its registry name with its stats. */
@@ -345,6 +368,9 @@ final class NpcTurretScenarios {
             return guarded(name(), ctx.world(), prior, watch, TIMEOUT, ticks -> {
                 targetedAlly[0] |= t.currentTarget() == ally;
                 targetedEnemy[0] |= t.currentTarget() == enemy;
+                if (ticks == TIMEOUT - 2 && !targetedEnemy[0]) {
+                    return ScenarioResult.fail(name(), explain(t, enemy, ally));
+                }
                 if (ticks < MIN_TICKS || !targetedEnemy[0]) {
                     return null;
                 }
