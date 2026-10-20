@@ -30,6 +30,7 @@ import gregtech.api.enums.TierEU;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.interfaces.tileentity.RecipeMapWorkable;
 import gregtech.api.metatileentity.implementations.MTEBasicMachine;
+import gregtech.api.recipe.BasicUIProperties;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipeBuilder;
 
@@ -50,6 +51,8 @@ public final class AmmoPressScenarios {
      */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new TiersScenario());
+        registry.register(new SteamLvScenario());
+        registry.register(new SteamGuiScenario());
         for (AmmoPressTier tier : AmmoPressTier.values()) {
             registry.register(new PressRunScenario(tier));
         }
@@ -231,6 +234,102 @@ public final class AmmoPressScenarios {
                 out.checkEquals("output count", want.stackSize, found);
                 out.note("finished after " + ticks + " ticks");
                 return out.build();
+            });
+        }
+    }
+
+    /** Places a Steam press, fills it with steam only, and builds the GUI model GT opens for it. */
+    private static final class SteamGuiScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "production.ammo_press_steam_gui";
+        }
+
+        @Override
+        public String description() {
+            return "The Steam Ammo Press builds GT's bronze steam GUI without error: the map's steam textures resolve.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Object prototype = GregTechAPI.METATILEENTITIES[AmmoPressTier.STEAM.mteId()];
+            out.check(prototype instanceof MTEAmmoPressSteam, "the Steam press is registered");
+            if (!(prototype instanceof MTEAmmoPressSteam)) {
+                return out.build();
+            }
+            MTEAmmoPressSteam press = (MTEAmmoPressSteam) prototype;
+            out.check(press.hasMui2Gui(), "the Steam press has a MUI2 GUI");
+            BasicUIProperties props = GregGunsRecipeMaps.AMMO_PRESS.getFrontend()
+                .getUIProperties();
+            out.check(props.progressBarTextureSteamMUI2 != null, "the map has a steam progress bar texture");
+            out.check(
+                props.progressBarTextureSteamMUI2 != null
+                    && props.progressBarTextureSteamMUI2.get(press.getTieredVariant()) != null,
+                "the steam progress bar has a Bronze texture");
+            try {
+                out.check(press.newGui() != null, "the bronze GUI model is built");
+            } catch (RuntimeException e) {
+                out.check(false, "building the GUI threw " + e);
+            }
+            return out.build();
+        }
+    }
+
+    /** An LV recipe, which is not steam-tagged, runs on a Steam press and consumes steam. */
+    private static final class SteamLvScenario implements Scenario {
+
+        private static final int TIMEOUT_TICKS = 900;
+        private static final int STEAM_FILL = 8000;
+
+        @Override
+        public String name() {
+            return "production.ammo_press_steam_lv";
+        }
+
+        @Override
+        public String description() {
+            return "The Steam Ammo Press, given steam, runs RC-28 (an LV recipe), outputs 16 9mm bullets and uses steam.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder fail = ScenarioResult.builder(name());
+            Object prototype = GregTechAPI.METATILEENTITIES[AmmoPressTier.STEAM.mteId()];
+            if (!(prototype instanceof MTEAmmoPressSteam)) {
+                return ScenarioResult.fail(name(), "the Steam press is not registered");
+            }
+            MTEAmmoPressSteam press = (MTEAmmoPressSteam) prototype;
+            ctx.setBlock(0, 0, 0, GregTechAPI.sBlockMachines, press.getTileEntityBaseType());
+            TileEntity tile = ctx.world()
+                .getTileEntity(ctx.originX(), ctx.originY(), ctx.originZ());
+            if (!(tile instanceof IGregTechTileEntity)) {
+                return ScenarioResult.fail(name(), "the placed block should have a GT tile entity");
+            }
+            IGregTechTileEntity base = (IGregTechTileEntity) tile;
+            base.setInitialValuesAsNBT(null, (short) AmmoPressTier.STEAM.mteId());
+            MTEAmmoPressSteam placed = (MTEAmmoPressSteam) base.getMetaTileEntity();
+            ItemStack[] inputs = { gt("foil", "Brass", 16), gt("round", "Lead", 16), gt("dust", "Gunpowder", 2) };
+            for (int i = 0; i < inputs.length; i++) {
+                base.setInventorySlotContents(placed.getInputSlot() + i, inputs[i]);
+            }
+            base.increaseStoredSteam(STEAM_FILL, true);
+            long before = base.getStoredSteam();
+            return ScenarioResult.pending(name(), TIMEOUT_TICKS, ticks -> {
+                int found = 0;
+                ItemStack out = base.getStackInSlot(placed.getOutputSlot());
+                if (out != null && out.getItem() == mod(ProductionTable.BULLET, 1).getItem()) {
+                    found = out.stackSize;
+                }
+                if (found < 16 && ticks < TIMEOUT_TICKS - 1) {
+                    return null;
+                }
+                ScenarioResult.Builder result = ScenarioResult.builder(name());
+                result.checkEquals("9mm bullets made by the LV recipe on steam", 16, found);
+                result.check(base.getStoredSteam() < before, "steam was consumed");
+                result.note("finished after " + ticks + " ticks; steam " + before + " -> " + base.getStoredSteam());
+                return result.build();
             });
         }
     }

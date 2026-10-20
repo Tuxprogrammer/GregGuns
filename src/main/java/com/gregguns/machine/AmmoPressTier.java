@@ -14,7 +14,7 @@ import com.gregguns.api.Tier;
 // machine-roster.md (IDs 20100 to 20104)
 public enum AmmoPressTier {
 
-    /** Steam (Bronze) press: runs on steam, ULV recipes only. */
+    /** Steam (Bronze) press: runs on steam, and like every GT steam machine every recipe up to LV. */
     STEAM(GregGunsMTEIDs.AMMO_PRESS_STEAM, Tier.STEAM),
     /** LV press. */
     LV(GregGunsMTEIDs.AMMO_PRESS_LV, Tier.LV),
@@ -49,18 +49,32 @@ public enum AmmoPressTier {
     }
 
     /**
-     * A machine runs every recipe at or below its own tier ({@code docs/design/0001-tier-map.md}).
+     * The highest recipe tier this press runs. It is the press's own tier, except for the Steam press: GT's steam
+     * machines run recipes up to LV and pay in steam instead of EU.
+     *
+     * @return the highest recipe tier
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEBasicMachineBronze.java#L222-L225
+    // (checkRecipe queries at TierEU.LV) and SteamOverclockDescriber#L25 ("recipe tier is always LV")
+    public Tier recipeCeiling() {
+        return isSteam() ? Tier.LV : tier;
+    }
+
+    /**
+     * A machine runs every recipe at or below its own tier ({@code docs/design/0001-tier-map.md}); the Steam press
+     * runs up to LV ({@link #recipeCeiling()}).
      *
      * @param recipeTier the D1 tier of a {@code ProductionTable} row
      * @return whether this press can run a recipe of that tier
      */
     public boolean canRun(Tier recipeTier) {
-        return recipeTier.ordinal() <= tier.ordinal();
+        return recipeTier.ordinal() <= recipeCeiling().ordinal();
     }
 
     /**
      * @param recipeTier the D1 tier of a recipe
-     * @return the lowest press that runs it, or {@code null} above EV (the Assembly Line makes those items)
+     * @return the lowest press that runs it (the Steam press for ULV and LV rows), or {@code null} above EV (the Assembly Line makes those items)
      */
     public static AmmoPressTier lowestFor(Tier recipeTier) {
         for (AmmoPressTier press : values()) {

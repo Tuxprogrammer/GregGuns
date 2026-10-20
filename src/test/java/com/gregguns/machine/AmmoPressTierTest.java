@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,11 @@ class AmmoPressTierTest {
     @Test
     void aPressRunsRecipesAtOrBelowItsTierOnly() {
         assertTrue(AmmoPressTier.STEAM.canRun(Tier.STEAM));
-        assertFalse(AmmoPressTier.STEAM.canRun(Tier.LV));
+        // GT steam machines run recipes up to LV (MTEBasicMachineBronze#checkRecipe), no higher.
+        assertTrue(AmmoPressTier.STEAM.canRun(Tier.LV));
+        assertFalse(AmmoPressTier.STEAM.canRun(Tier.MV));
+        assertEquals(Tier.LV, AmmoPressTier.STEAM.recipeCeiling());
+        assertEquals(Tier.HV, AmmoPressTier.HV.recipeCeiling());
         assertTrue(AmmoPressTier.HV.canRun(Tier.LV));
         assertTrue(AmmoPressTier.HV.canRun(Tier.HV));
         assertFalse(AmmoPressTier.MV.canRun(Tier.HV));
@@ -95,15 +100,19 @@ class AmmoPressTierTest {
     }
 
     @Test
-    void steamRunsOnlyTheUlvRowsAndEveryElectricPressRunsTheLvRows() {
-        // The Steam press runs ULV rows only: today that is the stone bullet (RC-27b), and no LV row.
-        for (ProductionTable.Row row : ProductionTable.pressRowsFor(AmmoPressTier.STEAM)) {
-            assertEquals(com.gregguns.api.Tier.STEAM, row.tier(), row.id());
+    void steamRunsEveryRowUpToLvAndEveryElectricPressRunsTheLvRows() {
+        // The Steam press runs every ammo row at or below LV, steam-tagged or not (GT's steam machines do).
+        List<ProductionTable.Row> steam = ProductionTable.pressRowsFor(AmmoPressTier.STEAM);
+        List<ProductionTable.Row> expected = new java.util.ArrayList<>();
+        for (ProductionTable.Row row : ProductionTable.ROWS) {
+            if (row.target() == ProductionTable.Target.AMMO_PRESS && row.tier().ordinal() <= Tier.LV.ordinal()) {
+                expected.add(row);
+            }
         }
-        assertEquals(
-            1,
-            ProductionTable.pressRowsFor(AmmoPressTier.STEAM)
-                .size());
+        assertEquals(expected, steam);
+        assertTrue(steam.stream().anyMatch(r -> r.tier() == Tier.LV), "an LV row, which is not steam-tagged");
+        assertTrue(steam.stream().anyMatch(r -> r.tier() == Tier.STEAM), "the ULV stone bullet");
+        assertTrue(steam.stream().noneMatch(r -> r.tier().ordinal() > Tier.LV.ordinal()));
         int lvRows = ProductionTable.pressRowsFor(AmmoPressTier.LV)
             .size();
         assertTrue(lvRows >= 3);
