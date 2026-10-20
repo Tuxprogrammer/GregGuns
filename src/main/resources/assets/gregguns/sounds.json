@@ -233,9 +233,17 @@
   },
   "guns.rocket_launcher.fire": {
     "category": "player",
-    "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b", "guns/rocket_shot_c"]
+    "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b"]
   },
   "guns.rocket_launcher.reload": {
+    "category": "player",
+    "sounds": ["guns/rocket_reload"]
+  },
+  "guns.grim_reaper.fire": {
+    "category": "player",
+    "sounds": ["guns/rocket_shot_c"]
+  },
+  "guns.grim_reaper.reload": {
     "category": "player",
     "sounds": ["guns/rocket_reload"]
   },

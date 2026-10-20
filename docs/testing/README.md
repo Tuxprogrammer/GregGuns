@@ -311,6 +311,13 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.rocket_launcher.wall.self` | Rocket Launcher (M2 B5) | The shooter standing in the blast is hurt (PFX-25). |
 | `gun.rocket_launcher.wall.noself` | Rocket Launcher (M2 B5) | With `explosions.selfDamage` off the shooter is unhurt. |
 | `gun.rocket_launcher.wall.cancelled` | Rocket Launcher (M2 B5) | A cancelled `ExplosionEvent.Start` (a protection claim) stops all damage and keeps the wall. |
+| `gun.grim_reaper.reload` | Grim Reaper (M5 B5) | An empty Grim Reaper reloads after 40 ticks from 4 loose rockets: all four load and are consumed. |
+| `gun.grim_reaper.volley` | Grim Reaper (M5 B5) | One trigger pull launches one rocket (3 rounds left); held, two more follow six ticks apart and a zombie in the line takes the 50 damage. |
+| `gun.grim_reaper.direct` | Grim Reaper (M5 B5) | A rocket into a zombie carries the 1.75 radius, deals 50 once and leaves the floor whole with block damage off. |
+| `gun.grim_reaper.blocks` | Grim Reaper (M5 B5) | With `explosions.blockDamage` on, a rocket into a dirt wall breaks dirt. |
+| `gun.grim_reaper.recipe` | Grim Reaper (M5 B5) | The LuV row (GR-97) is in GT's assembler map at 45 s with its sheet inputs and not below LuV. |
+| `gun.grim_reaper.upgrade` | Grim Reaper (M5 B5) | The upgrade is found with a used, camouflaged Rocket Launcher in slot 0 and outputs a fresh Grim Reaper. |
+| `gun.grim_reaper.tiergate` | Grim Reaper (M5 B5) | The row carries the LuV gate material and GT offers it at LuV and not one tier below. |
 | `gun.grenade_launcher.reload` | Grenade Launcher (M2 B5) | An empty launcher reloads after 100 ticks from 6 loose grenades: all six load and are consumed. |
 | `gun.grenade_launcher.recipe` | Grenade Launcher (M2 B5) | The HV assembly row is in GT's assembler map at its time and voltage, and not below HV. |
 | `gun.grenade_launcher.bounce` | Grenade Launcher (M2 B5) | A 40 mm grenade fired at a wall bounces (bounces left 1), the fuse is about 100 - 20 - ticks flown, and it explodes before its lifetime ends. |

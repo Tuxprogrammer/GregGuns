@@ -113,6 +113,8 @@ public final class InHandTargets {
         // Deviation: the bar is 5.5 texels off the box centre's side, so with the centre on 1.06 the bar tip lands at
         // 1.26
         // right (the notes put the tip on the centre line); the centre, length and depth keep the notes' figures.
+        // Grim Reaper: the far tip is the muzzle (the notes' section 8); the row uses the turned geometry.
+        put("grim_reaper", 2.57, 0.66, -0.41, 0.59, 0.66, -0.20, 1.88, 1.72);
         put("chainsaw", 2.36, 1.06, -0.58, 1.75, 1.26, -0.74, 2.93, 2.13);
     }
 
