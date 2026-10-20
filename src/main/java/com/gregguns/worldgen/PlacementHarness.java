@@ -589,6 +589,15 @@ public final class PlacementHarness {
      * @param reverse visit the windows in the opposite order (stamping must not depend on it)
      */
     static Placement place(World world, StructurePlan plan, boolean water, boolean reverse) {
+        return place(world, plan, water, reverse, null);
+    }
+
+    /**
+     * As {@link #place(World, StructurePlan, boolean, boolean)}, and every spawner mark is also handed to
+     * {@code spawnerStep} (G11 passes the real hole spawner hook).
+     */
+    static Placement place(World world, StructurePlan plan, boolean water, boolean reverse,
+        StructureHooks.SpawnerHook spawnerStep) {
         long t0 = System.nanoTime();
         Layout layout = layouts().get(plan.id());
         StructureGenerator.setOverride(populator());
@@ -606,6 +615,7 @@ public final class PlacementHarness {
             StructureHooks.setSpawnerHook((w, s, pl, tag, x, y, z) -> {
                 spawnerTags.add(tag);
                 spawnerPos.add(new int[] { x, y, z });
+                if (spawnerStep != null) spawnerStep.spawnerMarked(w, s, pl, tag, x, y, z);
             });
             StructureHooks.setFlagHook((w, s, pl, k, x, y, z) -> flagPos.add(new int[] { x, y, z }));
 

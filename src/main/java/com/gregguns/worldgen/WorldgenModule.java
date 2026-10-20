@@ -15,6 +15,7 @@ import com.gregguns.worldgen.layout.PaletteKeys;
 import com.gregguns.worldgen.loot.ChestScenarios;
 import com.gregguns.worldgen.loot.LootCategories;
 import com.gregguns.worldgen.loot.LootScenarios;
+import com.gregguns.worldgen.spawner.HoleSpawnerRegistration;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -36,7 +37,7 @@ public final class WorldgenModule implements GregGunsModule {
 
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
-        // Nothing to register yet; later pieces add their calls here.
+        HoleSpawnerRegistration.preInit(registrar);
     }
 
     @Override
@@ -50,6 +51,7 @@ public final class WorldgenModule implements GregGunsModule {
             GeneratorScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             CascadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             PlacementScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            SpawnerScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }
 
