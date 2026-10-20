@@ -93,6 +93,17 @@ public final class PopulateWindow {
 
     @Override
     public String toString() {
-        return "PopulateWindow[chunk " + chunkX + "," + chunkZ + " blocks x " + minX() + ".." + maxX() + " z " + minZ() + ".." + maxZ() + "]";
+        return "PopulateWindow[chunk " + chunkX
+            + ","
+            + chunkZ
+            + " blocks x "
+            + minX()
+            + ".."
+            + maxX()
+            + " z "
+            + minZ()
+            + ".."
+            + maxZ()
+            + "]";
     }
 }
