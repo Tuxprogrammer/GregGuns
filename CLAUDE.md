@@ -17,6 +17,7 @@ A from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 1.7.10, Forg
 | What to build next, and its entry and exit gates | [docs/ROADMAP.md](docs/ROADMAP.md) |
 | Accepted design decisions (tiers, machines, energy, damage) | [docs/design/](docs/design/README.md) |
 | Coding, testing, GTNH and asset rules | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| ICBM features: which third-party code and assets may be copied, and the notices they need | [docs/icbm/sources-and-licensing.md](docs/icbm/sources-and-licensing.md) |
 | How a Techguns feature behaves | [docs/techguns-spec/README.md](docs/techguns-spec/README.md), then the area's `index.md` |
 | How spec sheets are laid out | [docs/techguns-spec/CONVENTIONS.md](docs/techguns-spec/CONVENTIONS.md) |
 | Techguns bugs not to reproduce | [docs/techguns-spec/BUGS.md](docs/techguns-spec/BUGS.md) |
