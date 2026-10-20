@@ -584,6 +584,19 @@ Maps each M1 exit-gate item and each relevant `BUGS.md` row to the tests that co
 | `gun.scatter_laser_rifle.recipe` | Scatter Laser Rifle (M5 B4) | The GR-82 row (two Laser Barrels, two IV Emitters) is in GT's assembler map at IV, 45 s, found with its sheet inputs and not below IV. |
 | `gun.energy_iv.tier_gate` | IV energy guns (M5 B4) | The four IV energy guns are IC2 tier 5 electric items with an 8192 EU/t transfer limit that never give energy back; the three machine rows are IV rows gated by a tungsten steel plate; the Akimbo has no row. |
 
+## Testing in a real pack
+
+The scenarios, `/gregguns test`, `/gregguns build` and the client autotest signals normally need the deobfuscated dev workspace. To use them with a production (reobfuscated) jar inside the real GTNH pack, add one explicit opt-in to the JVM arguments:
+
+```
+-Dgregguns.testHooks=true
+```
+
+- It switches on exactly the hooks that the dev workspace has: the scenario registrations, the op-only `/gregguns` command (level 2) with `test` and `build`, the scenario chunk tickets and the AUTOTEST log lines. It does not add items or entities (the probe tool gun and the test NPC stay dev-only, so the `gun.tool.*` and test-NPC scenarios do not run in a pack) and it does not run the self-check, which needs deobfuscated names.
+- For the client chat signals (screenshots, camera, fire button) also set `-Dgregguns.autotest=<label>` on the client, as in the section below. Set `-Dgregguns.testHooks=true` on **both** the server and the client JVM, for example in the Prism instance's Java arguments and the server's start script.
+- Opt-in and for testers only. Never set it on a public server or a player's everyday client.
+- A released jar still requires an exact GregGuns version match between client and server (`RemoteVersionCheck`); the flag does not relax it.
+
 ## Multiplayer and visual autotest
 
 M1's exit gate ("a dedicated server with two clients shows correct sync") and the visual checks (creative tab, pistol in four views, ammo HUD, Ammo Press GUI, NEI tab) need real clients. This section is a repeatable, scripted way to collect that evidence with nobody at the screen. Dev environment only.

@@ -102,31 +102,33 @@ class MinigunProfileTest {
     }
 
     @Test
-    void onlyTheRotorSpinsOneTurnPerWindow() {
+    void onlyTheRotorSpinsAndHalfATurnIs180Degrees() {
         Recorder rotor = new Recorder();
-        MinigunProfile.TRANSFORMS.fpFire()
+        MinigunProfile.TRANSFORMS.rotor()
             .apply(0.5, 1, rotor);
         Recorder housing = new Recorder();
-        MinigunProfile.TRANSFORMS.fpFire()
+        MinigunProfile.TRANSFORMS.rotor()
             .apply(0.5, 0, housing);
         assertEquals(180.0, Math.abs(rotor.rotations.get(rotor.rotations.size() - 1)[0]), 1e-6);
         assertEquals(0.0, housing.rotations.get(housing.rotations.size() - 1)[0], 1e-6);
         assertEquals(5, MinigunProfile.TRANSFORMS.recoilTicks());
+        assertEquals(1.0, MinigunProfile.RECOIL_TICKS * MinigunProfile.FULL_TURNS_PER_TICK, 1e-12);
+        assertEquals(0.0, MinigunProfile.rotorTurnDegrees(0.0), 0.0);
         assertEquals(360.0, MinigunProfile.rotorTurnDegrees(1.0), 1e-9);
     }
 
     @Test
     void rotorSpinsAboutTheBarrelAxisThroughTheClusterCentre() {
-        // Spin step: last rotation of the fire row, about model X (the barrel axis), nothing else turning with it.
+        // Spin step: last rotation of the rotor row, about model X (the barrel axis), nothing else turning with it.
         Recorder rotor = new Recorder();
-        MinigunProfile.TRANSFORMS.fpFire()
+        MinigunProfile.TRANSFORMS.rotor()
             .apply(0.25, 1, rotor);
         double[] spin = rotor.rotations.get(rotor.rotations.size() - 1);
         assertEquals(1.0, Math.abs(spin[1]), 1e-9, "axis is model X");
         assertEquals(0.0, spin[2], 1e-9);
         assertEquals(0.0, spin[3], 1e-9);
         Recorder third = new Recorder();
-        MinigunProfile.TRANSFORMS.tpRecoil()
+        MinigunProfile.TRANSFORMS.rotor()
             .apply(0.25, 1, third);
         double[] tspin = third.rotations.get(third.rotations.size() - 1);
         assertEquals(1.0, Math.abs(tspin[1]), 1e-9);

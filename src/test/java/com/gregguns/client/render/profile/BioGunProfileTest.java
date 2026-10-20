@@ -162,4 +162,44 @@ class BioGunProfileTest {
         assertEquals(BioGunProfile.DEFINITION, ClientGunDefinitions.byName("bio_gun"));
         assertFalse(ClientGunDefinitions.usesFallback("bio_gun"));
     }
+
+    /** Records the translations a row emits. */
+    private static double[] translation(TransformProgram row, double p) {
+        double[] t = new double[3];
+        row.apply(p, 0, new TransformProgram.OpSink() {
+
+            @Override
+            public void translate(double x, double y, double z) {
+                t[0] += x;
+                t[1] += y;
+                t[2] += z;
+            }
+
+            @Override
+            public void rotate(double degrees, double x, double y, double z) {}
+
+            @Override
+            public void scale(double x, double y, double z) {}
+        });
+        return t;
+    }
+
+    @Test
+    void chargeRowIsTheIdlePoseAtRestAndSlidesUpToAQuarterBlock() {
+        GunTransforms t = BioGunProfile.TRANSFORMS;
+        assertTrue(t.hasFpCharge());
+        double[] idle = translation(t.fpIdle(), 0.0);
+        double[] rest = translation(t.fpCharge(), 0.0);
+        for (int i = 0; i < 3; i++) {
+            assertEquals(idle[i], rest[i], 1e-12, "resting pose unchanged");
+        }
+        double[] full = translation(t.fpCharge(), 1.0);
+        double[] half = translation(t.fpCharge(), 0.5);
+        assertEquals(idle[1], full[1], 1e-12);
+        assertEquals(idle[2], full[2], 1e-12);
+        // Along the gun's axis, toward the camera, in screen blocks (the row sits inside the first-person scale).
+        double scale = InHandTestSupport.placement(BioGunProfile.DEFINITION).fpScale;
+        assertEquals(-0.25, (full[0] - idle[0]) * scale, 1e-9);
+        assertEquals(-0.125, (half[0] - idle[0]) * scale, 1e-9);
+    }
 }

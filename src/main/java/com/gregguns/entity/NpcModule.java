@@ -48,7 +48,7 @@ public final class NpcModule implements GregGunsModule {
         }
         // N6: the CheckSpawn gate and the SpecialSpawn danger carrier.
         MinecraftForge.EVENT_BUS.register(new NpcSpawnHandler());
-        if (DevEnvironment.isActive()) {
+        if (DevEnvironment.testHooksEnabled()) {
             NpcScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }

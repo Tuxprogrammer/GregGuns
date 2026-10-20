@@ -15,6 +15,8 @@ public final class GunAnimState {
 
     /** A server echo within this many ticks of a predicted shot is ignored (GVA-03). Latency is far below it. */
     public static final double ECHO_GRACE_TICKS = 40.0;
+    /** The rotor is driven while a shot arrived within this many ticks. */
+    public static final int SPIN_DRIVE_TICKS = 2;
 
     private final AnimWindow recoil = new AnimWindow();
     private final AnimWindow flash = new AnimWindow();
@@ -23,6 +25,11 @@ public final class GunAnimState {
     private int tag = -1;
     private double lastPredictedShot = Double.NEGATIVE_INFINITY;
     private double lastShot = Double.NEGATIVE_INFINITY;
+    /** The rotor's spin, only for a gun that has one; null otherwise. */
+    private RotorSpin spin;
+    private int spinTag = -1;
+    private boolean shotSinceSpinTick;
+    private int ticksSinceSpinShot;
 
     /**
      * Records a shot.
@@ -66,6 +73,67 @@ public final class GunAnimState {
         return true;
     }
 
+    /**
+     * Notes that this shooter fired a gun with a spinning rotor, so the rotor keeps spinning up. Switching to another
+     * spinning gun starts that gun's rotor from rest (spin never carries between guns).
+     *
+     * @param spec   the gun's rotor numbers
+     * @param gunTag the registry id of the gun that fired
+     */
+    public void spinDriven(RotorSpin.Spec spec, int gunTag) {
+        if (spin == null || spinTag != gunTag) {
+            spin = spec.create();
+            spinTag = gunTag;
+        }
+        shotSinceSpinTick = true;
+    }
+
+    /**
+     * Advances the rotor one client tick. The rotor is driven while a shot arrived within the last
+     * {@link #SPIN_DRIVE_TICKS} ticks (a shot per tick, with one tick of slack for a late packet).
+     *
+     * @param holdsSpinGun false if the shooter no longer holds the gun that spins: the rotor stops at once
+     */
+    public void spinTick(boolean holdsSpinGun) {
+        if (spin == null) {
+            return;
+        }
+        if (!holdsSpinGun) {
+            spinReset();
+            return;
+        }
+        if (shotSinceSpinTick) {
+            ticksSinceSpinShot = 0;
+            shotSinceSpinTick = false;
+        } else if (ticksSinceSpinShot < SPIN_DRIVE_TICKS) {
+            ticksSinceSpinShot++;
+        }
+        spin.tick(ticksSinceSpinShot < SPIN_DRIVE_TICKS);
+    }
+
+    /** Stops the rotor at angle 0 (a reload began, or the gun was put away). */
+    public void spinReset() {
+        if (spin != null) {
+            spin.reset();
+        }
+        shotSinceSpinTick = false;
+        ticksSinceSpinShot = SPIN_DRIVE_TICKS;
+    }
+
+    /** @return the gun tag whose rotor this record spins, or -1 */
+    public int spinTag() {
+        return spin == null ? -1 : spinTag;
+    }
+
+    /**
+     * @param gunTag  the registry id of the gun being drawn
+     * @param partial the partial tick of the frame
+     * @return the rotor angle in turns (0 to below 1); 0 at rest, and for another gun than the one that spins
+     */
+    public double rotorTurns(int gunTag, double partial) {
+        return spin == null || spinTag != gunTag ? 0.0 : spin.turns(partial);
+    }
+
     /** Starts a reload. Replaces a running one. */
     public void reloadStarted(double now, int durationTicks, int gunTag) {
         tag = gunTag;
@@ -106,6 +174,7 @@ public final class GunAnimState {
     public boolean isIdle(double now) {
         return !recoil.isActive(now) && !flash.isActive(now)
             && !reload.isActive(now)
-            && now - lastPredictedShot >= ECHO_GRACE_TICKS;
+            && now - lastPredictedShot >= ECHO_GRACE_TICKS
+            && (spin == null || spin.atRest());
     }
 }

@@ -3,6 +3,7 @@ package com.gregguns.client.render.profile;
 import static com.gregguns.client.anim.GunCurves.sin;
 import static com.gregguns.client.anim.GunCurves.yR;
 
+import com.gregguns.client.anim.RotorSpin;
 import com.gregguns.client.anim.SpriteSheet;
 
 /**
@@ -26,11 +27,13 @@ import com.gregguns.client.anim.SpriteSheet;
  *
  * <h2>Rotor spin</h2>
  * The rotor is part {@value #ROTOR_PART}. The fire rows turn it one full turn per recoil window (5 ticks, 250 ms) as
- * the notes describe the original. Deviation not built: the notes' optional spin-up and spin-down ramp (about 0.5 s)
- * needs the renderer to hand the model a persistent spin phase that outlives the fire window; the renderer only gives
- * a part the window progress, so the rotor stops at angle 0 when the window ends. The hook needed is a per-item
- * "spin phase" in {@code ModelState}, advanced by the client each frame while firing and eased out afterward, that
- * a fire and idle row can read through {@link #rotorTurnDegrees}.
+ * the notes describe the original, and that is the full-speed look. Deviation, built: the notes' optional ramp. The
+ * original has none (the rotor is at full speed on the first shot and stops dead at angle 0), but GregGuns spins up
+ * in {@value #SPIN_UP_TICKS} ticks and coasts down in about {@value #SPIN_DOWN_TICKS}. The per-shooter phase lives in
+ * {@link com.gregguns.client.anim.RotorSpin} (in the shooter's {@code GunAnimState}); the rotor row below turns the
+ * rotor part by that angle in first and third person, and the ground and icon views stay at rest. The rotor repeats
+ * every half turn (six barrels every 60 degrees, but the clamp discs every 180), so a coast comes to rest on a half
+ * turn multiple and is exactly angle 0 at rest.
  *
  * <p>
  * Spec: gun-sheets.md "Minigun"; rendering-framework.md section 6.1 (X-family) and section 8.
@@ -49,6 +52,20 @@ public final class MinigunProfile {
     public static final int ROTOR_PART = 1;
     /** Recoil window and turn length of the rotor, ticks (250 ms). */
     public static final int RECOIL_TICKS = 5;
+    /** Full rotor speed: one turn per recoil window, in turns per tick. */
+    public static final double FULL_TURNS_PER_TICK = 1.0 / RECOIL_TICKS;
+    /** Ticks from rest to full speed (the notes' suggestion: about 10). */
+    public static final int SPIN_UP_TICKS = 10;
+    /** Ticks to coast from full speed to rest (the notes' suggestion: about 20; the real coast is within 3 ticks). */
+    public static final int SPIN_DOWN_TICKS = 20;
+    /** The rotor looks the same after this many turns: the clamp discs repeat every 180 degrees. */
+    public static final double SYMMETRY_TURNS = 0.5;
+    /** The rotor's ramp numbers, for {@code GunAnimState}. */
+    public static final RotorSpin.Spec SPIN = new RotorSpin.Spec(
+        FULL_TURNS_PER_TICK,
+        SPIN_UP_TICKS,
+        SPIN_DOWN_TICKS,
+        SYMMETRY_TURNS);
     /** The muzzle in the gun frame, blocks: the front of the cluster, 38 texels forward of the origin, on the axis. */
     public static final float[] MUZZLE = { 38.0f / 16.0f, 0.0f, 0.0f };
     /** Frames of {@code muzzleflash2.png} that are painted. */
@@ -172,18 +189,19 @@ public final class MinigunProfile {
     private MinigunProfile() {}
 
     /**
-     * @param p progress through the recoil window, 0 to 1
-     * @return the rotor's turn about the barrel axis in degrees: one full turn per window, a straight line in time
+     * @param p the rotor angle in turns, 0 to 1
+     * @return the rotor's turn about the barrel axis in degrees
      */
     public static double rotorTurnDegrees(double p) {
         return 360.0 * p;
     }
 
     /**
-     * The rotor's term for a fire row: a turn about the barrel axis for the rotor part only. This is an X-family model
-     * (muzzle
+     * The rotor's term: a turn about the barrel axis for the rotor part only. This is an X-family model (muzzle
      * toward +X, no quarter turn in the model), so the barrel axis is the program's X. The pivot is the origin, which
      * the notes put on the axis at the cluster centre (Y 0, Z 0). Turning about Z was the bug: that is the roll axis.
+     *
+     * @param p the rotor angle in turns, 0 to below 1 (0 is the rest pose)
      */
     private static double spin(double p, int part) {
         return part == ROTOR_PART ? -rotorTurnDegrees(p) : 0.0;
@@ -210,7 +228,6 @@ public final class MinigunProfile {
                 (p, part) -> x0 + K * 0.05 * Math.sin(p * 2.0 * Math.PI),
                 TransformProgram.c(y0),
                 TransformProgram.c(z0))
-            .rotX(MinigunProfile::spin)
             .build();
         // Reload (100 ticks): the gun tips 25 degrees and slides up and aside; the rotor does not move.
         TransformProgram fpReload = TransformProgram.builder()
@@ -228,8 +245,10 @@ public final class MinigunProfile {
             .scale(FIT.tpScale)
             .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
-        // No whole-gun recoil in third person; only the rotor turns.
-        TransformProgram tpRecoil = TransformProgram.builder()
+        // No whole-gun recoil in third person; only the rotor turns (the rotor row).
+        TransformProgram tpRecoil = TransformProgram.EMPTY;
+        // The rotor row: the spin about the barrel axis, last so it turns the part about its own axis.
+        TransformProgram rotorRow = TransformProgram.builder()
             .rotX(MinigunProfile::spin)
             .build();
         TransformProgram tpReload = TransformProgram.builder()
@@ -265,6 +284,7 @@ public final class MinigunProfile {
             .parts(2)
             .timing(RECOIL_TICKS, 5, 100)
             .checkRecoil()
+            .rotorSpin(SPIN, rotorRow)
             .firstPerson(fpBase, fpIdle, fpFire, fpReload)
             .thirdPerson(tpBase, new double[] { -0.05, -0.8, 0.95 }, tpRecoil, tpReload)
             .world(ground, icon)

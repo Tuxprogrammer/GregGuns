@@ -194,7 +194,8 @@ final class GlFx {
             Tessellator t = Tessellator.instance;
             t.startDrawingQuads();
             t.setBrightness(FULL_BRIGHT);
-            t.setColorRGBA_F(1.0f, 1.0f, 1.0f, 1.0f);
+            float[] tint = spec.tint();
+            t.setColorRGBA_F(tint[0], tint[1], tint[2], 1.0f);
             t.addVertexWithUV(x1, y1, z1, u0, v0);
             t.addVertexWithUV(x2, y2, z2, u0, v1);
             t.addVertexWithUV(x3, y3, z3, u1, v1);
@@ -202,6 +203,8 @@ final class GlFx {
             t.draw();
         } finally {
             GL11.glPopAttrib();
+            // The tint rides on the vertices, but make sure no tint can leak into later drawing.
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
 }
