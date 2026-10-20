@@ -77,7 +77,8 @@ public final class ScatterLaserRifleDef {
                 Input.itemList("Energy_LapotronicOrb", 1),
                 Input.gt("circuit", "Elite", 2),
                 Input.gt("plate", "TungstenSteel", 3),
-                Input.gt("screw", "TungstenSteel", 6)))
+                Input.gt("screw", "TungstenSteel", 6))
+                .molten("SolderingAlloy", 288))
         .scenarios(registry -> EnergyBatchScenarios.registerScatter(registry, NAME))
         .build();
 

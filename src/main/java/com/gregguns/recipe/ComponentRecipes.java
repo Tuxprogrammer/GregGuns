@@ -125,7 +125,7 @@ public final class ComponentRecipes {
         }
     }
 
-    private static FluidStack fluidStack(ComponentTable.FluidInput fluid) {
+    static FluidStack fluidStack(ComponentTable.FluidInput fluid) {
         if (fluid.kind() == ComponentTable.FluidKind.REGISTRY) {
             // Source: Forge 1.7.10 net.minecraftforge.fluids.FluidRegistry.getFluidStack(String, int)
             return FluidRegistry.getFluidStack(fluid.material(), fluid.amount());
