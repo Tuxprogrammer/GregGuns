@@ -124,4 +124,14 @@ class EquipmentTableTest {
             ProductionTable.Input.vanilla("glass", 2)
                 .special());
     }
+
+    @Test
+    void compressedAirTankIsBuiltFromAnAluminiumLargeFluidCell() {
+        boolean cell = false;
+        for (ProductionTable.Input input : row("tank_air").inputs()) {
+            cell |= "gt:Large_Fluid_Cell_Aluminium".equals(input.special());
+            assertFalse("gt:Cell_Empty".equals(input.special()));
+        }
+        assertTrue(cell);
+    }
 }

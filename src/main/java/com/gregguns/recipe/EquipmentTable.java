@@ -107,9 +107,12 @@ public final class EquipmentTable {
                 Target.ASSEMBLER,
                 10,
                 2,
-                Input.itemList("Cell_Empty", 4),
-                Input.gt("plateDouble", "StainlessSteel", 4),
-                Input.gt("ring", "StainlessSteel", 4)),
+                // Source: the aluminium Large Fluid Cell (32,000 mB, MV/2 Assembler recipe) is the body, the cheapest
+                // cell below the Fuel Tank's stainless one; double stainless plates are the pressure shell.
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/items/MetaGeneratedItem01.java#L4154
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L122-L131
+                Input.itemList("Large_Fluid_Cell_Aluminium", 1),
+                Input.gt("plateDouble", "StainlessSteel", 2)),
             new Row(
                 "EQ-05",
                 OXYGEN_TANKS,
