@@ -254,9 +254,32 @@ One gun, working end to end inside the GTNH dev pack.
 - [ ] Structures respect the dimension whitelist and GTNH's world types.
 - [ ] Loot is tier-appropriate for where the structure spawns.
 
+## Beta review gate · 0.3.0-beta
+
+**Entry gate:** M8 is done.
+
+**Scope:** a completeness review of every milestone from M0 to M8 before the first beta. The owner then plays the beta on their own local server. This gate replaces the alpha pre-releases. M9 work doesn't start until it closes.
+
+**Process:**
+- **Per-milestone audit.** For each milestone, an audit doc like the `m2-exit-gate.md` and `m5-exit-gate.md` pages records:
+  - every exit-gate box, with the evidence for it;
+  - every deviation recorded against the spec;
+  - every open polish item.
+
+  Any box that isn't met is either fixed or explicitly deferred, with the owner's sign-off.
+- **Client pass.** A batched in-game session covers every gun, armor set, machine, multiblock, NPC and structure. It records screenshots, and checks that the game runs with and without shaders.
+- **Release.** Tag `0.3.0-beta`, cut it as a GitHub pre-release, and write release notes aimed at server owners.
+- **Owner playthrough.** The owner plays the beta on a local multiplayer server. Bugs found there are fixed in `0.3.x-beta` builds.
+
+**Exit gate:**
+- [ ] Every milestone M0–M8 has a completeness audit, with each exit box met or deferred with the owner's sign-off.
+- [ ] The batched client pass is clean, including with shaders on, and has no crash-severity or invisible-render bugs.
+- [ ] `0.3.0-beta` is published.
+- [ ] The owner's beta playthrough on a local server is done, and its blocking bugs are fixed.
+
 ## M9 · Pack integration and release
 
-**Entry gate:** every milestone selected for 1.0 is done.
+**Entry gate:** the beta review gate is closed, including the owner's beta playthrough, and every milestone selected for 1.0 is done.
 
 **Scope:**
 - A balance pass with the GTNH tier progression.
