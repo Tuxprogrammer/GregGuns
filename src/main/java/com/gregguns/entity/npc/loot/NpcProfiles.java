@@ -290,7 +290,7 @@ public final class NpcProfiles {
                             .weapon("rocket_launcher", 1)
                             .weapon("ak47", 1)
                             .weapon("combat_shotgun", 1)
-                            .weapon("laser_gun", 2)
+                            .weapon("laser_rifle", 2)
                             .build())
                     .build());
         }

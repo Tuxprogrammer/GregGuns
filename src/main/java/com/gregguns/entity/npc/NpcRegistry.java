@@ -44,6 +44,9 @@ public final class NpcRegistry {
         // Batches B1 onward add lines here, for example: bind(NpcMob.BANDIT, Bandit.class);
         bind(NpcMob.PSYCHO_STEVE, PsychoSteve.class);
         bind(NpcMob.DICTATOR_DAVE, DictatorDave.class);
+        bind(NpcMob.SUPER_MUTANT_BASIC, SuperMutantBasic.class);
+        bind(NpcMob.SUPER_MUTANT_HEAVY, SuperMutantHeavy.class);
+        bind(NpcMob.SUPER_MUTANT_ELITE, SuperMutantElite.class);
         if (DevEnvironment.isActive()) {
             // The base NPC, for scenarios and the test renderer only.
             bind(NpcMob.NPC_TEST, NpcEntity.class);
