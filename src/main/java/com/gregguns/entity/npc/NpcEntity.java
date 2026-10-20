@@ -1,5 +1,6 @@
 package com.gregguns.entity.npc;
 
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -119,10 +120,10 @@ public class NpcEntity extends EntityMob implements IRangedAttackMob, HasNpcFact
     /**
      * Hook for despawn rules: a persistent NPC (a mini-boss) never despawns.
      *
-     * @return true to keep this NPC loaded; false by default
+     * @return true to keep this NPC loaded; by default true for the kinds {@link DespawnRules} lists
      */
     protected boolean isPersistentNpc() {
-        return false;
+        return DespawnRules.isPersistent(NpcMob.byName(EntityList.getEntityString(this)));
     }
 
     @Override

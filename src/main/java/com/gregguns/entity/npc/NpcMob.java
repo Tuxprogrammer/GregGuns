@@ -122,4 +122,24 @@ public enum NpcMob {
         }
         return null;
     }
+
+    /**
+     * Resolves a name the way camp lists and spawners write it: the full {@code gregguns.<Name>} or the short
+     * {@code <Name>} (NPC-17: Techguns compared short names with full ones and never matched).
+     *
+     * @param name a full or short entity name; may be null
+     * @return the mob, or null if the name is not a GregGuns NPC
+     */
+    public static NpcMob byName(String name) {
+        if (name == null) {
+            return null;
+        }
+        for (NpcMob mob : values()) {
+            if (mob.name.equals(name) || mob.fullName()
+                .equals(name)) {
+                return mob;
+            }
+        }
+        return null;
+    }
 }
