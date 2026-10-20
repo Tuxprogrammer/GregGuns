@@ -163,7 +163,7 @@ public final class WorldScenarioContext implements ScenarioContext {
 
     @Override
     public void despawn(Entity entity) {
-        entity.setDead();
+        remove(entity);
         spawned.remove(entity);
     }
 
@@ -198,10 +198,22 @@ public final class WorldScenarioContext implements ScenarioContext {
         world.setBlock(bx, by, bz, block, meta, 2);
     }
 
+    /**
+     * Kills an entity. A fake player must also leave the world's player list: {@code setDead} alone leaves it there,
+     * where it stays in the arena and soaks up projectiles aimed at later scenarios' targets.
+     */
+    private void remove(Entity entity) {
+        if (entity instanceof EntityPlayer) {
+            world.removeEntity(entity);
+        } else {
+            entity.setDead();
+        }
+    }
+
     @Override
     public void cleanup() {
         for (Entity e : spawned) {
-            e.setDead();
+            remove(e);
         }
         spawned.clear();
         for (int i = changedPositions.size() - 1; i >= 0; i--) {
