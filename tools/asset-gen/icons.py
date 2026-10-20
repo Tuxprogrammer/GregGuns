@@ -1555,7 +1555,10 @@ def render(entry):
 
 def main():
     manifest = json.loads((ROOT / "tools/asset-gen/manifest.json").read_text(encoding="utf-8"))
-    icons = [e for e in manifest if e["kind"] == "icon"]
+    # Gun icons are derived from the 3D models by gun_icons.py, not drawn here.
+    import gun_icons
+    gun_done = gun_icons.gun_icon_names()
+    icons = [e for e in manifest if e["kind"] == "icon" and e["id"][5:] not in gun_done]
     order = {"P1": 0, "P2": 1, "P3": 2}
     icons.sort(key=lambda e: order.get(e["priority"], 9))
     rows, made, missing, sheet = [], 0, [], []
