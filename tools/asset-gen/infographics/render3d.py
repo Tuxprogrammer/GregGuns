@@ -142,8 +142,8 @@ def box_quads(M, off, size, uv0, tw, th, mirror, inflate, tex, uscale=1.0, vscal
 # ---------------------------------------------------------------- loaders
 
 
-def gun_scene(export_json: Path, texture: Path | None = None) -> Scene:
-    """A gun from ModelExporter JSON; the barrel ends up along world -Z... callers orient with gun_frame()."""
+def gun_scene(export_json: Path, texture: Path | None = None, skip=()) -> Scene:
+    """A gun from ModelExporter JSON, muzzle toward world -X. skip: box name prefixes to leave out."""
     m = json.loads(Path(export_json).read_text())
     sc_ = Scene()
     if texture is None:
@@ -151,6 +151,8 @@ def gun_scene(export_json: Path, texture: Path | None = None) -> Scene:
     t = sc_.texture(texture)
     tw, th = m["textureWidth"], m["textureHeight"]
     for b in m["boxes"]:
+        if skip and str(b.get("name", "")).startswith(tuple(skip)):
+            continue
         M = MODEL_TO_WORLD @ tr(*b["rotationPoint"]) @ rot_zyx(b["rotate"])
         sc_.quads += box_quads(M, b["offset"], b["size"], b["uv"], tw, th, b["mirror"], b.get("inflate", 0.0), t)
     return sc_

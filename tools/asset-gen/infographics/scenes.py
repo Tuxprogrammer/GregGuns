@@ -25,18 +25,22 @@ def _ov(machine, face):
     return p if p.exists() else None
 
 
-def machine_block(machine: str, tier: str, active=False) -> K.Path:
-    """A single block GT machine: a tier hull with the GregGuns overlays."""
+def machine_block(machine: str, tier: str, active=False, greg=False) -> K.Path:
+    """A single block GT machine: a tier hull with the GregGuns overlays, or with GregTech's own basic machine
+    overlays when greg is set (machine is then GT's folder name: lathe, bender, extruder, assembler...)."""
     sfx = "_ACTIVE" if active else ""
+    ov_of = gt.machine_overlay if greg else _ov
     faces = {}
     for face in ("FRONT", "SIDE", "TOP"):
         hull = gt.hull(tier, "TOP" if face == "TOP" else "SIDE")
-        ov = _ov(machine, face + sfx) or _ov(machine, face)
-        glow = _ov(machine, face + "_ACTIVE_GLOW") if active else None
-        faces[face] = B.composite(hull, ov, glow, cache=K.TEXCACHE, name=f"{machine}_{tier}_{face}{sfx}")
+        ov = ov_of(machine, face + sfx) or ov_of(machine, face)
+        # GT draws a face's glow layer at full brightness, so the idle glow shows on an idle machine too.
+        glow = ov_of(machine, face + ("_ACTIVE_GLOW" if active else "_GLOW"))
+        faces[face] = B.composite(hull, ov, glow, cache=K.TEXCACHE,
+                                  name=f"{'gt-' if greg else ''}{machine}_{tier}_{face}{sfx}")
     blocks_ = {(0, 0, 0): ("m", FRONT)}
     tex = {"m": (faces["TOP"], faces["SIDE"], faces["FRONT"])}
-    return K.voxels(f"machine-{machine}-{tier}{sfx}", blocks_, tex, yaw=-38, pitch=28, ppu=150)
+    return K.voxels(f"machine-{'gt-' if greg else ''}{machine}-{tier}{sfx}", blocks_, tex, yaw=-38, pitch=28, ppu=150)
 
 
 # ---------------------------------------------------------------- turret
@@ -69,17 +73,17 @@ def turret_scene(plate="steel", gun=None, pitch_deg=0.0) -> R.Scene:
         k = K.HELD_LENGTH.get(gun, 1.2) * 0.9 / L
         c = (mn + mx) / 2
         pivot = (mount @ np.array([0, 0, 0, 1.0]))[:3]
-        # barrel along the turret's facing (-Z), sitting on the mount plate
+        # muzzle (the gun's -X) along the turret's facing (-Z), sitting on the mount plate
         Bm = np.eye(4)
-        Bm[:3, 0], Bm[:3, 1], Bm[:3, 2] = (0, 0, -1), (0, 1, 0), (1, 0, 0)
+        Bm[:3, 0], Bm[:3, 1], Bm[:3, 2] = (0, 0, 1), (0, 1, 0), (-1, 0, 0)
         s.extend(g, R.tr(pivot[0], pivot[1] + 0.12, pivot[2] - 0.1) @ Bm @ R.sc(k) @ R.tr(-c[0], -mn[1], -c[2]))
     return s
 
 
-def turret(plate="steel", gun="m4", yaw=-140, pitch=20, h=320):
+def turret(plate="steel", gun="m4", yaw=-40, pitch=20, h=320):
     def make():
         return R.trim(R.render(turret_scene(plate, gun), yaw=yaw, pitch=pitch, ppu=h / 1.9, ss=2, outline=K.RIM), 3)
-    return K._cached("turret", dict(p=plate, g=gun, y=yaw, pi=pitch, h=h, v=3), make)
+    return K._cached("turret", dict(p=plate, g=gun, y=yaw, pi=pitch, h=h, gm=K.export_sig(gun), gl=K.HELD_LENGTH.get(gun), v=4), make)
 
 
 # ---------------------------------------------------------------- multiblocks

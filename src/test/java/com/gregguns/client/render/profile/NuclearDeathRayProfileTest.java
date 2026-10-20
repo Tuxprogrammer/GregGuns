@@ -229,15 +229,18 @@ class NuclearDeathRayProfileTest {
     }
 
     @Test
-    void starburstPulsesOneSineCycleBetweenEightyAndOneHundredPercentStartingAtNinety() {
-        assertEquals(0.9, NuclearDeathRayProfile.starburstScale(0.0), 1e-9, "starts at 0.9");
-        assertEquals(1.0, NuclearDeathRayProfile.starburstScale(0.25), 1e-9, "peaks at a quarter");
-        assertEquals(0.9, NuclearDeathRayProfile.starburstScale(0.5), 1e-9, "back to 0.9 at half");
-        assertEquals(0.8, NuclearDeathRayProfile.starburstScale(0.75), 1e-9, "trough at three quarters");
-        assertEquals(0.9, NuclearDeathRayProfile.starburstScale(1.0), 1e-9, "one cycle per fire");
-        for (int i = 0; i <= 100; i++) {
-            double v = NuclearDeathRayProfile.starburstScale(i / 100.0);
-            assertTrue(v >= 0.8 - 1e-9 && v <= 1.0 + 1e-9, "within 0.8 to 1.0 at " + i);
+    void starburstPulsesOneSineCycleEveryHalfSecondBetweenEightyAndOneHundredPercentStartingAtNinety() {
+        double period = NuclearDeathRayProfile.STARBURST_PERIOD_SECONDS;
+        assertEquals(0.5, period, 1e-12);
+        assertEquals(0.9, NuclearDeathRayProfile.starburstScaleAt(0.0), 1e-9, "starts at 0.9");
+        assertEquals(1.0, NuclearDeathRayProfile.starburstScaleAt(period / 4), 1e-9, "peaks at a quarter");
+        assertEquals(0.9, NuclearDeathRayProfile.starburstScaleAt(period / 2), 1e-9, "back to 0.9 at half");
+        assertEquals(0.8, NuclearDeathRayProfile.starburstScaleAt(period * 0.75), 1e-9, "trough at three quarters");
+        for (int i = 0; i <= 400; i++) {
+            double t = i * 0.013;
+            double v = NuclearDeathRayProfile.starburstScaleAt(t);
+            assertTrue(v >= 0.8 - 1e-9 && v <= 1.0 + 1e-9, "within 0.8 to 1.0 at " + t);
+            assertEquals(v, NuclearDeathRayProfile.starburstScaleAt(t + period), 1e-9, "periodic at " + t);
         }
     }
 
@@ -246,14 +249,14 @@ class NuclearDeathRayProfileTest {
         int star = NuclearDeathRayProfile.PART_STARBURST;
         for (TransformProgram program : new TransformProgram[] { NuclearDeathRayProfile.TRANSFORMS.fpFire(),
             NuclearDeathRayProfile.TRANSFORMS.tpRecoil() }) {
-            double[] starScale = lastScale(program, 0.25, star);
-            assertEquals(1.0, starScale[0], 1e-9, "peak scale of the starburst");
-            double[] trough = lastScale(program, 0.75, star);
-            assertEquals(0.8, trough[0], 1e-9);
-            assertEquals(trough[0], trough[1], 1e-12, "uniform");
-            assertEquals(trough[0], trough[2], 1e-12, "uniform");
-            for (int part : new int[] { 0, 2, 3 }) {
-                assertEquals(1.0, lastScale(program, 0.75, part)[0], 1e-12, "other parts are not scaled");
+            for (double p : new double[] { 0.0, 0.25, 0.75 }) {
+                double[] s = lastScale(program, p, star);
+                assertTrue(s[0] >= 0.8 - 1e-9 && s[0] <= 1.0 + 1e-9, "pulse range");
+                assertEquals(s[0], s[1], 1e-3, "uniform (the clock is read once per axis)");
+                assertEquals(s[0], s[2], 1e-3, "uniform (the clock is read once per axis)");
+                for (int part : new int[] { 0, 2, 3 }) {
+                    assertEquals(1.0, lastScale(program, p, part)[0], 1e-12, "other parts are not scaled");
+                }
             }
         }
     }

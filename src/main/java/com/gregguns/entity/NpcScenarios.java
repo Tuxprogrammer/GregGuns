@@ -26,6 +26,7 @@ public final class NpcScenarios {
         NpcEggScenarios.registerAll(registry);
         NpcCapScenarios.registerAll(registry);
         NpcSpawnScenarios.registerAll(registry);
+        ZombieScenarios.registerAll(registry);
     }
 
     /** The module is enabled and the config carries the documented defaults. */
