@@ -17,6 +17,7 @@ Two Techguns integrations do not exist in the pack. FTB Utilities is not install
 | [networking-gtnhlib.md](networking-gtnhlib.md) | `IPacket` and `NetworkChannel`, thread safety, DataWatcher limit, potion array |
 | [keybinds.md](keybinds.md) | `SyncedKeybind`, server-side key state, pack key facts |
 | [team-relations.md](team-relations.md) | GTNHLib teams and ServerUtilities allies instead of FTBU friends |
+| [m0-exit-gate.md](m0-exit-gate.md) | The M0 exit-gate audit: evidence per box, deviations, polish items and owner decisions |
 | [mod-compat-tinkers-scripting.md](mod-compat-tinkers-scripting.md) | Tinkers' materials and tab, Thermal Expansion, CraftTweaker and GTTweaker |
 | [hud-overlays.md](hud-overlays.md) | OverloadedArmorBar, Angelica HUD caching, InGame-Info-XML, Waila, HoloInventory, sound muffler |
 
