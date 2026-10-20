@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import com.gregguns.entity.npc.ai.EntityAIGunAttack;
 import com.gregguns.entity.npc.ai.EntityAIHurtByFaction;
 import com.gregguns.entity.npc.ai.EntityAINpcMelee;
+import com.gregguns.entity.npc.loot.NpcProfile;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.NpcFiring;
 import com.gregguns.gun.logic.ShotOffset;
@@ -131,6 +132,84 @@ public class NpcEntity extends EntityMob implements IRangedAttackMob, HasNpcFact
         return !isPersistentNpc();
     }
 
+    // --- equipment and loot (N5) ---------------------------------------------------------------------------------
+
+    /** Spawn danger when none was set: an egg or command spawn, which rolls 0 to 3 uniformly. */
+    public static final int DANGER_UNSET = -1;
+
+    private static final String DANGER_TAG = "GGDanger";
+    private static final int EGG_DANGER_RANGE = 4;
+
+    private int danger = DANGER_UNSET;
+
+    /**
+     * Hook: the loot and equipment data of this mob. Concrete mobs return their {@code NpcProfiles} entry; the base
+     * returns null, so it drops nothing and carries nothing.
+     *
+     * @return the profile, or null
+     */
+    protected NpcProfile npcProfile() {
+        return null;
+    }
+
+    /** @return the spawn danger 0 to 5 the equipment was rolled with, or {@link #DANGER_UNSET} */
+    public int danger() {
+        return danger;
+    }
+
+    /**
+     * Sets the spawn danger. The spawn handler (N6) calls it before {@link #rollEquipment()}.
+     *
+     * @param value danger 0 to 5
+     */
+    public void setDanger(int value) {
+        danger = value;
+    }
+
+    /** Rolls and applies the mob's equipment with its current danger. Server side. */
+    public final void rollEquipment() {
+        addRandomArmor();
+    }
+
+    /**
+     * The single equipment entry point (GGS-10-17): vanilla's no-argument roll, so spawn eggs call it and Mobs Info can
+     * see it. Uses the danger set by the spawner, or 0 to 3 from the entity's own random source when none was set.
+     */
+    @Override
+    protected void addRandomArmor() {
+        NpcProfile profile = npcProfile();
+        if (profile != null && !worldObj.isRemote) {
+            int level = danger >= 0 ? danger : getRNG().nextInt(EGG_DANGER_RANGE);
+            NpcEquipment.apply(this, profile.equipment(), level);
+        }
+    }
+
+    /** NPC gear is never enchanted. */
+    @Override
+    protected void enchantEquipment() {}
+
+    @Override
+    protected void dropFewItems(boolean recentlyHit, int looting) {
+        NpcProfile profile = npcProfile();
+        if (profile != null) {
+            NpcDrops.dropFewItems(this, profile, looting);
+        }
+    }
+
+    @Override
+    protected void dropRareDrop(int stage) {
+        NpcProfile profile = npcProfile();
+        if (profile != null) {
+            NpcDrops.dropRareDrop(this, profile);
+        }
+    }
+
+    @Override
+    public void writeEntityToNBT(NBTTagCompound tag) {
+        super.writeEntityToNBT(tag);
+        tag.setInteger(DANGER_TAG, danger);
+    }
+
     // --- combat task ---------------------------------------------------------------------------------------------
 
     /**
@@ -176,6 +255,7 @@ public class NpcEntity extends EntityMob implements IRangedAttackMob, HasNpcFact
     @Override
     public void readEntityFromNBT(NBTTagCompound tag) {
         super.readEntityFromNBT(tag);
+        danger = tag.hasKey(DANGER_TAG) ? tag.getInteger(DANGER_TAG) : DANGER_UNSET;
         setCombatTask();
     }
 
