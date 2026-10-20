@@ -131,6 +131,7 @@ class PlanLedgerTest {
         assertEquals("test:MEDIUM:-3:4", PlanKey.of("test", SizeClass.MEDIUM, -3, 4));
         StructurePlan plan = new StructurePlan("x", SizeClass.BIG, 0, 7, -8, 0, 0, 0, 0, new Footprint(1, 1, 1), 1L);
         assertEquals("x:BIG:7:-8", PlanKey.of(plan));
-        org.junit.jupiter.api.Assertions.assertNotEquals(PlanKey.of("a", SizeClass.BIG, 1, 1), PlanKey.of("b", SizeClass.BIG, 1, 1));
+        org.junit.jupiter.api.Assertions
+            .assertNotEquals(PlanKey.of("a", SizeClass.BIG, 1, 1), PlanKey.of("b", SizeClass.BIG, 1, 1));
     }
 }

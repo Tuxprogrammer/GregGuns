@@ -39,7 +39,10 @@ class ChestTagsTest {
         Pattern p = Pattern.compile("^chest[.]([A-Za-z0-9_]+)", Pattern.MULTILINE);
         List<Path> files;
         try (Stream<Path> s = Files.list(dir)) {
-            files = s.filter(f -> f.toString().endsWith(".txt")).collect(Collectors.toList());
+            files = s.filter(
+                f -> f.toString()
+                    .endsWith(".txt"))
+                .collect(Collectors.toList());
         }
         assertTrue(files.size() > 10, "layout files found");
         int seen = 0;
