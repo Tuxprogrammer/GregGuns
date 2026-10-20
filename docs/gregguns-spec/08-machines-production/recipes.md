@@ -122,7 +122,7 @@ The Laser Focus and the Anti Gravity Core used to run in the Reaction Chamber. B
 
 | Recipe | Output | Map | Tier | Inputs | EU/t | Ticks |
 |---|---|---|---|---|---|---|
-| RC-64 | `part_laser_focus` | `RecipeMaps.laserEngraverRecipes` | EV | `gem.Diamond` x1, `Emitter_EV` x1, `craftingLensWhite` (non-consumed) | 1,920 (`TierEU.RECIPE_EV`) | 600 |
+| RC-64 | `part_laser_focus` | `RecipeMaps.laserEngraverRecipes` | EV | `gem.Ruby` x1, `Emitter_EV` x1, `craftingLensWhite` (non-consumed) | 1,920 (`TierEU.RECIPE_EV`) | 600 |
 | RC-65 | `part_anti_gravity_core` | `RecipeMaps.assemblerRecipes` | IV | `gem.NetherStar` x1, `Emitter_IV` x1, `circuit.IV` (Elite) x2, 1,152 mB molten Enderium | 7,680 (`TierEU.RECIPE_IV`) | 600 |
 
 ## Requirements
