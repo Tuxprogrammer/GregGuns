@@ -17,6 +17,7 @@ import com.gregguns.gun.GunsModule;
 import com.gregguns.machine.MachinesModule;
 import com.gregguns.network.GregGunsNetwork;
 import com.gregguns.utility.UtilityModule;
+import com.gregguns.worldgen.WorldgenModule;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
@@ -79,6 +80,7 @@ public class CommonProxy {
         manager.register(new ArmorModule());
         manager.register(new UtilityModule());
         manager.register(new NpcModule());
+        manager.register(new WorldgenModule());
     }
 
     /**

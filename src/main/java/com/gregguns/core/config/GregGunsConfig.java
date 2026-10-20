@@ -30,7 +30,8 @@ public final class GregGunsConfig {
             EnergyConfig.class,
             MachinesConfig.class,
             UtilityConfig.class,
-            NpcConfig.class));
+            NpcConfig.class,
+            WorldgenConfig.class));
 
     private GregGunsConfig() {}
 

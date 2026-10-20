@@ -82,6 +82,21 @@ NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side
 | `npcs.perPlayerCap` | int | `8` | 0 to 1024 | no | Most NPCs around one player before natural spawning stops. |
 | `npcs.gunDamageEnabled` | boolean | `true` | n/a | no | NPC bullets deal damage. |
 
+## Worldgen (`worldgen`)
+
+Structure placement, gating and loot tuning (M8). Read only while `modules.worldgen` is on. Server-side only, not synced. Structure ids: `FactorySmall`, `TrainStation`, `GasStation`, `HouseMedium`, `BigBunker`, `AlienBugNest`, `MilitaryBase`, `AircraftCarrier`, `Submarine`.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `worldgen.spawnStructures` | boolean | `true` | n/a | no | When false the structure generator is not registered. |
+| `worldgen.spacingSmall` / `spacingMedium` / `spacingBig` | int | `16` / `32` / `64` | 2 to 1024 | no | Grid cell size in chunks per size class. |
+| `worldgen.structureDimensions` | int list | `[0]` | any | no | Dimension ids where structures are placed. |
+| `worldgen.structureWorldTypes` | string list | `default`, `RWG`, `largeBiomes`, `amplified` | any | no | World type names that allow structures (case-insensitive). Flat and unknown types are out. |
+| `worldgen.enabled<Id>` | boolean | `true` (`false` for `AlienBugNest`) | n/a | no | Place that structure. |
+| `worldgen.biomeBlacklist<Id>` | string list | none | any | no | BiomeDictionary type names in which that structure is never placed. |
+| `worldgen.lootTierCeiling<Id>` | int | `1` (LV); `2` (MV) for `BigBunker`, `MilitaryBase`, `AircraftCarrier`, `Submarine` | 1 to 3 | no | Highest loot tier; picks the loot category. |
+| `worldgen.lootTier<Id>` | int | `1` | 0 to 2 | no | Loot richness; scales counts and weights only. |
+
 ## Damage factors (`damagefactors`)
 
 Techguns' "Damage Factors" category. All keys are synced from server to client (GGS-01-03). The factor is chosen at the hit from who shoots and who is hit (`DamageFactors`, [damage-interop.md](gregguns-spec/02-guns/damage-interop.md)). Turret and NPC factors take effect with those milestones (M6, M7).
