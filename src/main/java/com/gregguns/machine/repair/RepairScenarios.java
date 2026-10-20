@@ -525,7 +525,7 @@ public final class RepairScenarios {
 
         @Override
         public String description() {
-            return "A Gantry built by the controller's hologram routine forms at 2 and 4 bays with all hatches, reports its bay count, and does not form without the output bus or with a missing beam.";
+            return "A Gantry built by the controller's hologram routine forms at 4 bays with all hatches, reports its bay count, and does not form without the output bus, a beam, a hoist gearbox, a hoist motor, a floor rail, a pipe run or a booth window; any glass tier fills a window.";
         }
 
         @Override
@@ -555,6 +555,42 @@ public final class RepairScenarios {
             out.check(!g.form(), "a missing roof beam should break the Gantry");
             ctx.setBlock(0, Gantry.CY + 3, 0, GregGunsCasings.INSTANCE, GregGunsCasings.GANTRY_BEAM);
             out.check(g.form(), "putting the beam back should form the Gantry again");
+
+            // Booth windows: any glass tier fills one, vanilla and a GT tier alike, mixed.
+            int windowY = Gantry.CY + 2;
+            ctx.setBlock(-2, windowY, 0, net.minecraft.init.Blocks.air, 0);
+            out.check(!g.form(), "a missing booth window should break the Gantry");
+            ctx.setBlock(-2, windowY, 0, net.minecraft.init.Blocks.glass, 0);
+            ctx.setBlock(2, windowY, 0, GregTechAPI.sBlockGlass1, 0);
+            out.check(g.form(), "mixed glass tiers in the windows should form the Gantry");
+            ctx.setBlock(-2, windowY, 0, GregGunsCasings.INSTANCE, GregGunsCasings.GANTRY_CASING);
+            out.check(!g.form(), "a casing in a window position should break the Gantry");
+            ctx.setBlock(-2, windowY, 0, net.minecraft.init.Blocks.glass, 0);
+            out.check(g.form(), "glass back in the window should form the Gantry again");
+
+            // Interior of the first bay (portal aisle at depth 2, gap aisle at depth 3): hoist gearbox, hoist motor,
+            // floor rail and pipe run, each required.
+            int portalZ = GantryShape.bayDepth(0);
+            int gapZ = portalZ + 1;
+            ctx.setBlock(0, Gantry.CY + 2, portalZ, net.minecraft.init.Blocks.air, 0);
+            out.check(!g.form(), "a bay without its hoist gearbox should break the Gantry");
+            ctx.setBlock(0, Gantry.CY + 2, portalZ, GregTechAPI.sBlockCasings2, 3);
+            out.check(g.form(), "the hoist gearbox back should form the Gantry again");
+            ctx.setBlock(-1, Gantry.CY + 2, portalZ, net.minecraft.init.Blocks.air, 0);
+            out.check(!g.form(), "a bay without a hoist motor should break the Gantry");
+            ctx.setBlock(-1, Gantry.CY + 2, portalZ, GregTechAPI.sBlockCasings2, 11);
+            out.check(g.form(), "the hoist motor back should form the Gantry again");
+            ItemStack frame = GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Steel, 1);
+            net.minecraft.block.Block frameBlock = net.minecraft.block.Block.getBlockFromItem(frame.getItem());
+            int frameMeta = frame.getItemDamage();
+            ctx.setBlock(-2, Gantry.CY - 1, gapZ, net.minecraft.init.Blocks.air, 0);
+            out.check(!g.form(), "a gap in the floor rail should break the Gantry");
+            ctx.setBlock(-2, Gantry.CY - 1, gapZ, frameBlock, frameMeta);
+            out.check(g.form(), "the rail back should form the Gantry again");
+            ctx.setBlock(2, Gantry.CY + 2, gapZ, net.minecraft.init.Blocks.air, 0);
+            out.check(!g.form(), "a missing pipe run should break the Gantry");
+            ctx.setBlock(2, Gantry.CY + 2, gapZ, GregTechAPI.sBlockCasings2, 13);
+            out.check(g.form(), "the pipe run back should form the Gantry again");
 
             // The output bus replaced by a casing.
             ctx.setBlock(

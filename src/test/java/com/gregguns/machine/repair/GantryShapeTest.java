@@ -61,6 +61,9 @@ class GantryShapeTest {
         assertEquals(10, GantryShape.count(GantryShape.HEAD, "G"));
         assertEquals(19, GantryShape.count(GantryShape.HEAD, "R"));
         assertEquals(1, GantryShape.count(GantryShape.HEAD, "H"));
+        // Interior: two booth pipe runs and the first two floor rails.
+        assertEquals(2, GantryShape.count(GantryShape.HEAD, "P"));
+        assertEquals(2, GantryShape.count(GantryShape.HEAD, "F"));
     }
 
     @Test
@@ -71,6 +74,54 @@ class GantryShapeTest {
         assertEquals(6, GantryShape.count(GantryShape.BAY, "R"));
         assertEquals(6, GantryShape.count(GantryShape.BAY, "T"));
         assertEquals(1, GantryShape.count(GantryShape.BAY, "H"));
+        // Interior: gearbox and two motors for the hoist, four rail blocks plus the hook, two pipes.
+        assertEquals(1, GantryShape.count(GantryShape.BAY, "X"));
+        assertEquals(2, GantryShape.count(GantryShape.BAY, "N"));
+        assertEquals(5, GantryShape.count(GantryShape.BAY, "F"));
+        assertEquals(2, GantryShape.count(GantryShape.BAY, "P"));
+    }
+
+    @Test
+    void onlyTheDocumentedCharactersAppear() {
+        String allowed = "RBHLGTFXNP~- ";
+        for (String[][] piece : PIECES) {
+            for (String[] aisle : piece) {
+                for (String row : aisle) {
+                    for (char c : row.toCharArray()) {
+                        assertTrue(allowed.indexOf(c) >= 0, "unexpected '" + c + "' in " + row);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    void interiorPartsNeverSitOnAHatchFaceOrReplaceACasing() {
+        // The head's front aisle and the tail keep their casings; the bay floor keeps its casing and cradle row.
+        assertEquals(0, GantryShape.count(new String[][] { GantryShape.HEAD[0] }, "FXNP"));
+        assertEquals(0, GantryShape.count(GantryShape.TAIL, "FXNP"));
+        assertEquals(6, GantryShape.count(GantryShape.BAY, "R"));
+        assertEquals(19, GantryShape.count(GantryShape.HEAD, "R"));
+    }
+
+    @Test
+    void theHoistHangsInOneUnbrokenColumnUnderTheBeam() {
+        // Roof hoist, beam, gearbox, frame hook: the middle column of the portal frame.
+        String[][] bay = GantryShape.BAY;
+        StringBuilder column = new StringBuilder();
+        for (int row = 0; row <= 3; row++) {
+            column.append(bay[0][row].charAt(3));
+        }
+        assertEquals("HBXF", column.toString());
+    }
+
+    @Test
+    void theRailsRunUnbrokenAlongTheFloorOfEveryBay() {
+        // Both rails sit one above the floor, in both aisles of the bay, so they join bay to bay.
+        for (String[] aisle : GantryShape.BAY) {
+            assertEquals('F', aisle[5].charAt(1));
+            assertEquals('F', aisle[5].charAt(5));
+        }
     }
 
     @Test
