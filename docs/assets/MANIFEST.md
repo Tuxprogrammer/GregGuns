@@ -4,7 +4,7 @@ Every non-code asset GregGuns needs, derived from the design records ([0001](../
 
 The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-gen/manifest.json), built by `python -I tools/asset-gen/build_manifest.py`. Edit the script, not the generated files.
 
-**Totals:** 836 assets. By kind: icon 177, model 171, block 138, gui 15, particle 31, sound 279, branding 11, infographic 14. By priority: P1 34, P2 317, P3 485.
+**Totals:** 823 assets. By kind: icon 176, model 171, block 128, gui 14, particle 31, sound 279, branding 11, infographic 13. By priority: P1 34, P2 309, P3 480.
 
 ## Conventions
 
@@ -13,10 +13,10 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 - **Item icons** are 16x16 GT-style ([0006](../design/0006-art-direction.md)). Palettes come from the GT material color (`MaterialsInit.java`, 5.09.54.205); items made of a material use that color. Rubber is `#000000` in GT: paint it as a lifted dark gray (`#2A2A2E`) so it reads.
 - **Model textures** keep the Techguns size and UV layout. **Decorative block textures** keep the Techguns footprint (32 px, connected-texture sheets 64 px). **Machine overlays and multiblock casings** are GT-native 16 px; animated ones are vertical strips with a `.png.mcmeta` (`frametime` in ticks).
 - **Sounds** match role, length and loudness: integrated loudness within +/-3 LU of the measured original (`target_lufs`), peak at or below -1 dBFS, positional sounds mono (GVA-23). Delivery rate is 44.1 kHz, or 48 kHz where the original was 48 kHz. Stereo only for the glider loop (player-bound ambience).
-- **Priority:** **P1** is the M1 vertical slice (9mm Pistol, its ammo and magazine, its sounds, the LV Ammo Press and its HUD/GUI). **P2** is M2 to M4 content (ballistic arsenal, armor, production chain, Reaction Chamber, branding basics). **P3** is M5 onwards (energy and exotic weapons, utility and defense, NPCs, worldgen), camo and color variants, social and infographic art.
+- **Priority:** **P1** is the M1 vertical slice (9mm Pistol, its ammo and magazine, its sounds, the LV Ammo Press and its HUD/GUI). **P2** is M2 to M4 content (ballistic arsenal, armor, production chain, branding basics). **P3** is M5 onwards (energy and exotic weapons, utility and defense, NPCs, worldgen), camo and color variants, social and infographic art.
 - Provenance for every delivered asset goes in [CREDITS.md](CREDITS.md).
 
-## 2. Item icons (177)
+## 2. Item icons (176)
 
 ### Guns, melee and grenades (48)
 
@@ -71,7 +71,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.nuclear_death_ray` | `textures/items/nuclear_death_ray.png` | 16x16 | Nuclear Death Ray (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. bulky ray projector, golden plasma core. Metal parts take the NaquadahAlloy gate color. | #282828 | textures/guns/NDR.png (model sheet, silhouette reference only) | P3 |
 | `icon.nuke_launcher` | `textures/items/nuke_launcher.png` | 16x16 | Nuke Launcher (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. olive launcher with hazard trefoil. Metal parts take the NaquadahAlloy gate color. | #282828 | textures/guns/nukerocketlauncher.png (model sheet, silhouette reference only) | P3 |
 
-### Gun parts, emitters, plating and cloth (31)
+### Gun parts, emitters, plating and cloth (30)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
@@ -94,7 +94,6 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.part_laser_focus` | `textures/items/part_laser_focus.png` | 16x16 | Laser Focus (EV): GT-style 16x16 item icon, soft top-left light, dark outline. faceted focus crystal in a titanium cradle. | #DCA0F0 #C8FFFF | `textures/items/laserFocus.png` | P3 |
 | `icon.part_uv_emitter` | `textures/items/part_uv_emitter.png` | 16x16 | UV Emitter (EV): GT-style 16x16 item icon, soft top-left light, dark outline. violet emitter lens on a titanium plate. | #DCA0F0 #C8FFFF | `textures/items/uvemitter.png` | P3 |
 | `icon.part_sonic_emitter` | `textures/items/part_sonic_emitter.png` | 16x16 | Sonic Emitter (EV): GT-style 16x16 item icon, soft top-left light, dark outline. ringed oscillator disc. | #DCA0F0 | `textures/items/sonicEmitter.png` | P3 |
-| `icon.part_heat_ray_focus` | `textures/items/part_heat_ray_focus.png` | 16x16 | Heat Ray Focus (EV): GT-style 16x16 item icon, soft top-left light, dark outline. teardrop orange-red focus lens. | #DCA0F0 | `textures/items/rcHeatRay.png` | P3 |
 | `icon.part_rad_emitter` | `textures/items/part_rad_emitter.png` | 16x16 | Rad Emitter (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. lead-shielded emitter with green glow. | #282828 #46FA46 | `textures/items/radEmitter.png` | P3 |
 | `icon.part_anti_gravity_core` | `textures/items/part_anti_gravity_core.png` | 16x16 | Anti Gravity Core (IV): GT-style 16x16 item icon, soft top-left light, dark outline. cyan core sphere in a steel cage. | #6464A0 | `textures/items/antiGravityCore.png` | P3 |
 | `icon.part_cybernetic` | `textures/items/part_cybernetic.png` | 16x16 | Cybernetic Parts (EV): GT-style 16x16 item icon, soft top-left light, dark outline. wires and plates, warm gray. | #FFFF64 #DCA0F0 | `textures/items/cyberneticParts.png` | P3 |
@@ -412,9 +411,9 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `model.machine.flagpost` | `textures/models/machines/flagpost.png` | 128x128 | Camp flag post model sheet: gray concrete foot, pale poles, cloth strip with red/white/navy flag. | #D0D0D0 #C03030 #203060 | `textures/blocks/flagpost.png` | P3 |
 | `model.machine.bio_blob` | `textures/blocks/bio_blob.png` | 16x16 | Bio Blob block, all faces: saturated slime green, mottled. | #33A40C | `textures/blocks/bio.png` | P3 |
 
-## 4. Block textures: machine overlays, multiblock casings, decorative blocks (138)
+## 4. Block textures: machine overlays, multiblock casings, decorative blocks (128)
 
-### Machine overlays (GT eight-slot layout plus glow) (49)
+### Machine overlays (GT eight-slot layout plus glow) (39)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
@@ -433,13 +432,6 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `block.machine.ammo_press_steam.overlay_top` | `textures/blocks/machines/ammo_press_steam/OVERLAY_TOP.png` | 16x16 | Ammo Press (Steam/Bronze) overlay, top inactive: hopper with steam puffs, 6 frames. 16 px wide; per-tier tint comes from the GT hull casing, not this overlay. | #FF8000 #808080 | textures/blocks/AmmoPress.png (model sheet, silhouette reference only) | P2 |
 | `block.machine.ammo_press_steam.overlay_top_active` | `textures/blocks/machines/ammo_press_steam/OVERLAY_TOP_ACTIVE.png` | 16x96, 6 frames @3t | Ammo Press (Steam/Bronze) overlay, top active: hopper with steam puffs, 6 frames. 16 px wide, vertical strip of 6 frames at 3 ticks per frame (loops with the stroke); per-tier tint comes from the GT hull casing, not this overlay. | #FF8000 #808080 | textures/blocks/AmmoPress.png (model sheet, silhouette reference only) | P2 |
 | `block.machine.ammo_press_steam.overlay_bottom` | `textures/blocks/machines/ammo_press_steam/OVERLAY_BOTTOM.png` | 16x16 | Ammo Press (Steam/Bronze) overlay, bottom inactive: bare plate. 16 px wide; per-tier tint comes from the GT hull casing, not this overlay. | #FF8000 #808080 | textures/blocks/AmmoPress.png (model sheet, silhouette reference only) | P2 |
-| `block.machine.reaction_chamber.overlay_front` | `textures/blocks/machines/reaction_chamber/OVERLAY_FRONT.png` | 16x16 | Reaction Chamber (single block, EV/IV) overlay, front inactive: round viewing port, dark lens. | #808080 #FF6020 #40C0FF | textures/blocks/reactionChamber.png (legacy placeholder, role reference only) | P2 |
-| `block.machine.reaction_chamber.overlay_front_active` | `textures/blocks/machines/reaction_chamber/OVERLAY_FRONT_ACTIVE.png` | 16x96, 6 frames @2t | Reaction Chamber (single block, EV/IV) overlay, front active: round viewing port onto a small chamber, heat-ray lens glowing, 6-frame vertical strip at 2 ticks per frame. | #808080 #FF6020 #40C0FF | textures/blocks/reactionChamber.png (legacy placeholder, role reference only) | P2 |
-| `block.machine.reaction_chamber.overlay_side` | `textures/blocks/machines/reaction_chamber/OVERLAY_SIDE.png` | 16x16 | Reaction Chamber (single block, EV/IV) overlay, side inactive: pipe manifold, still gauge. | #808080 #FF6020 #40C0FF | textures/blocks/reactionChamber.png (legacy placeholder, role reference only) | P2 |
-| `block.machine.reaction_chamber.overlay_side_active` | `textures/blocks/machines/reaction_chamber/OVERLAY_SIDE_ACTIVE.png` | 16x64, 4 frames @3t | Reaction Chamber (single block, EV/IV) overlay, side active: pipe manifold with pulsing gauge, 4-frame vertical strip at 3 ticks per frame. | #808080 #FF6020 #40C0FF | textures/blocks/reactionChamber.png (legacy placeholder, role reference only) | P2 |
-| `block.machine.reaction_chamber.overlay_top` | `textures/blocks/machines/reaction_chamber/OVERLAY_TOP.png` | 16x16 | Reaction Chamber (single block, EV/IV) overlay, top inactive: vent grille. | #808080 #FF6020 #40C0FF | textures/blocks/reactionChamber.png (legacy placeholder, role reference only) | P2 |
-| `block.machine.reaction_chamber.overlay_top_active` | `textures/blocks/machines/reaction_chamber/OVERLAY_TOP_ACTIVE.png` | 16x64, 4 frames @3t | Reaction Chamber (single block, EV/IV) overlay, top active: vent grille with heat shimmer, 4-frame vertical strip at 3 ticks per frame. | #808080 #FF6020 #40C0FF | textures/blocks/reactionChamber.png (legacy placeholder, role reference only) | P2 |
-| `block.machine.reaction_chamber.overlay_bottom` | `textures/blocks/machines/reaction_chamber/OVERLAY_BOTTOM.png` | 16x16 | Reaction Chamber (single block, EV/IV) overlay, bottom inactive: bare plate. | #808080 #FF6020 #40C0FF | textures/blocks/reactionChamber.png (legacy placeholder, role reference only) | P2 |
 | `block.machine.repair_bench.overlay_front` | `textures/blocks/machines/repair_bench/OVERLAY_FRONT.png` | 16x16 | Repair Bench overlay, front inactive: shelf with jars, saw blade and screwdriver. | #505050 #705030 #909090 | textures/blocks/repairbench_textures.png (cube atlas, role reference only) | P3 |
 | `block.machine.repair_bench.overlay_front_active` | `textures/blocks/machines/repair_bench/OVERLAY_FRONT_ACTIVE.png` | 16x64, 4 frames @4t | Repair Bench overlay, front active: shelf with jars, saw blade and screwdriver; a spark flickers at the bench vice (4 frames). | #505050 #705030 #909090 | textures/blocks/repairbench_textures.png (cube atlas, role reference only) | P3 |
 | `block.machine.repair_bench.overlay_side` | `textures/blocks/machines/repair_bench/OVERLAY_SIDE.png` | 16x16 | Repair Bench overlay, side inactive: plain scratched metal. | #505050 #705030 #909090 | textures/blocks/repairbench_textures.png (cube atlas, role reference only) | P3 |
@@ -456,9 +448,6 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `block.machine.ammunition_works.overlay_front` | `textures/blocks/machines/ammunition_works/OVERLAY_FRONT.png` | 16x16 | Ammunition Works controller front overlay, inactive: ammo crate and press-ram emblem. Controller tier HV. | #C8C8DC #FFB400 | (new, GT controller overlay pattern) | P3 |
 | `block.machine.ammunition_works.overlay_front_active` | `textures/blocks/machines/ammunition_works/OVERLAY_FRONT_ACTIVE.png` | 16x64, 4 frames @3t | Ammunition Works controller front overlay, active: active: indicator row runs. 4-frame strip, 3 ticks per frame. | #C8C8DC #FFB400 | (new, GT controller overlay pattern) | P3 |
 | `block.machine.ammunition_works.overlay_front_active_glow` | `textures/blocks/machines/ammunition_works/OVERLAY_FRONT_ACTIVE_GLOW.png` | 16x64, 4 frames @3t | Ammunition Works controller active glow layer, same 4-frame strip. | #C8C8DC #FFB400 | (new) | P3 |
-| `block.machine.retort.overlay_front` | `textures/blocks/machines/retort/OVERLAY_FRONT.png` | 16x16 | Retort controller front overlay, inactive: round glass port with violet-white fluid. Controller tier EV. | #DCA0F0 #FAFAFA | (new, GT controller overlay pattern) | P3 |
-| `block.machine.retort.overlay_front_active` | `textures/blocks/machines/retort/OVERLAY_FRONT_ACTIVE.png` | 16x64, 4 frames @3t | Retort controller front overlay, active: active: swirl. 4-frame strip, 3 ticks per frame. | #DCA0F0 #FAFAFA | (new, GT controller overlay pattern) | P3 |
-| `block.machine.retort.overlay_front_active_glow` | `textures/blocks/machines/retort/OVERLAY_FRONT_ACTIVE_GLOW.png` | 16x64, 4 frames @3t | Retort controller active glow layer, same 4-frame strip. | #DCA0F0 #FAFAFA | (new) | P3 |
 | `block.machine.armory_gantry.overlay_front` | `textures/blocks/machines/armory_gantry/OVERLAY_FRONT.png` | 16x16 | Armory Gantry controller front overlay, inactive: hoist hook and cradle emblem. Controller tier HV. | #DCA0F0 #C8C8DC | (new, GT controller overlay pattern) | P3 |
 | `block.machine.armory_gantry.overlay_front_active` | `textures/blocks/machines/armory_gantry/OVERLAY_FRONT_ACTIVE.png` | 16x64, 4 frames @3t | Armory Gantry controller front overlay, active: active: hook lowers. 4-frame strip, 3 ticks per frame. | #DCA0F0 #C8C8DC | (new, GT controller overlay pattern) | P3 |
 | `block.machine.armory_gantry.overlay_front_active_glow` | `textures/blocks/machines/armory_gantry/OVERLAY_FRONT_ACTIVE_GLOW.png` | 16x64, 4 frames @3t | Armory Gantry controller active glow layer, same 4-frame strip. | #DCA0F0 #C8C8DC | (new) | P3 |
@@ -475,7 +464,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `block.casing.works_casing` | `textures/blocks/casings/works_casing.png` | 16x16 | Works Casing - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Ammunition Works hull. Ribbed gray-steel panel with rivet lines; plain, hatches allowed on feeder/packing positions. | #C8C8DC | (new, GT casing 16x16) | P3 |
 | `block.casing.ram_housing` | `textures/blocks/casings/ram_housing.png` | 16x16 | Ram Housing - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Ammunition Works press column. Dark steel box with a slotted top hood, inactive. | #C8C8DC #808080 | (new, GT casing 16x16) | P3 |
 | `block.casing.ram_housing_active` | `textures/blocks/casings/ram_housing_active.png` | 16x64, 4 frames @4t | Ram Housing (active) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Ram Housing active state: the same box with a piston rod stroking behind the hood slot, glow strip on the downstroke. 4-frame strip. | #C8C8DC #FF8000 | (new, GT casing 16x16) | P3 |
-| `block.casing.reaction_casing` | `textures/blocks/casings/reaction_casing.png` | 16x16 | Reaction Casing (Reaction Chamber Casing) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Retort and Reaction Chamber hull. Smooth white-gray beveled panels with hazard-striped corner marks. | #DCA0F0 #FAFAFA | (new, GT casing 16x16) | P3 |
+| `block.casing.reaction_casing` | `textures/blocks/casings/reaction_casing.png` | 16x16 | Reaction Casing - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Retired inert decorative block (formerly the Retort hull). Smooth white-gray beveled panels with hazard-striped corner marks. | #DCA0F0 #FAFAFA | (new, GT casing 16x16) | P3 |
 | `block.casing.gantry_casing` | `textures/blocks/casings/gantry_casing.png` | 16x16 | Gantry Casing - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armory Gantry hull. Painted blue-gray steel panel with yellow edge stripe. | #DCA0F0 #C8C8DC | (new, GT casing 16x16) | P3 |
 | `block.casing.gantry_beam` | `textures/blocks/casings/gantry_beam.png` | 16x16 | Gantry Beam - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armory Gantry roof beam. I-beam end and side, yellow-black safety stripe. | #DCA0F0 | (new, GT casing 16x16) | P3 |
 | `block.casing.gantry_hoist` | `textures/blocks/casings/gantry_hoist.png` | 16x16 | Gantry Hoist - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Armory Gantry hoist. Motor housing with cable drum; one face shows the hook block. | #DCA0F0 #808080 | (new, GT casing 16x16) | P3 |
@@ -567,13 +556,12 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `block.decor.steelframe_scaffold_ctm` | `textures/blocks/steelframe_scaffold_ctm.png` | 32x32 | Steel frame (Chisel CTM group), 'steelframe_scaffold-ctm'. Open steel scaffold/frame block, stated finish. Footprint kept (32x32). | #808080 | `textures/blocks/steelframe_scaffold-ctm.png` | P3 |
 | `block.decor.steelframe_scaffold` | `textures/blocks/steelframe_scaffold.png` | 16x16 | Steel frame (Chisel CTM group), 'steelframe_scaffold'. Open steel scaffold/frame block, stated finish. Footprint kept (16x16). | #808080 | `textures/blocks/steelframe_scaffold.png` | P3 |
 
-## 5. GUI textures (12)
+## 5. GUI textures (11)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
 | `gui.hud` | `textures/gui/hud.png` | 256x256 | HUD sprite sheet: ammo-type icons, magazine/clip pips, armor pips (full/half/empty), hit-marker, sprint/charge bar caps. Transparent background, 256x256 sheet; only the used regions are painted. | #FFFFFF #C80000 #FFB400 | textures/gui/TGPlayerInventory.png (layout reference only) | P1 |
 | `gui.ammo_press` | `textures/gui/ammo_press.png` | 256x256 | Ammo Press panel sprites: progress arrow, ram-stroke gauge (8 pips), input slot overlays (bullet, casing, powder, magazine) and output slot frame. Uses GT panel background; only sprites are painted. | #808080 #E8A040 | textures/gui/ammoPress_GUI.png (layout reference only) | P1 |
-| `gui.reaction_chamber` | `textures/gui/reaction_chamber.png` | 256x256 | Reaction Chamber panel sprites: intensity gauge 0-10 with marker, plus/minus buttons (normal, hover, pressed), completion bar, risk indicator. | #FF6020 #40C0FF #808080 | textures/gui/ReactionChamber_Gui.png (layout reference only) | P2 |
 | `gui.ammo_pouch` | `textures/gui/ammo_pouch.png` | 256x256 | Ammo Pouch 6-slot GUI sprites: pouch frame, slot overlays. | #6B4A2B | textures/gui/TGPlayerInventory.png (layout reference only) | P2 |
 | `gui.repair_bench` | `textures/gui/repair_bench.png` | 256x256 | Repair Bench panel sprites: damage bar, tier badge, input/output frames. | #909090 #705030 | textures/gui/repairBench_GUI.png (layout reference only) | P3 |
 | `gui.camo_bench` | `textures/gui/camo_bench.png` | 256x256 | Camo Bench panel sprites: camo index arrows, preview frame. | #515150 | textures/gui/camoBench_GUI.png (layout reference only) | P3 |
@@ -581,7 +569,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `gui.explosive_charge` | `textures/gui/explosive_charge.png` | 256x256 | Explosive Charge panel sprites: timer digits, arm button, owner lock icon. | #303030 #C80000 | textures/gui/expChargeGui.png (layout reference only) | P3 |
 | `gui.advanced_explosive_charge` | `textures/gui/advanced_explosive_charge.png` | 256x256 | Advanced Explosive Charge panel sprites: timer digits, arm button, remote-link icon. | #901010 | textures/gui/tntChargeGui.png (layout reference only) | P3 |
 | `gui.storage_chest` | `textures/gui/storage_chest.png` | 256x256 | Reinforced / Weapon Chest GUI sprites: slot grid frame and sort-button art. | #989898 | textures/gui/tgchest_gui.png (layout reference only) | P3 |
-| `gui.multiblock_widgets` | `textures/gui/multiblock_widgets.png` | 256x256 | Shared multiblock panel sprites for Ammunition Works, Retort, Armory Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs. | #DCA0F0 | (new, no Techguns GUI) | P3 |
+| `gui.multiblock_widgets` | `textures/gui/multiblock_widgets.png` | 256x256 | Shared multiblock panel sprites for Ammunition Works, Armory Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs. | #DCA0F0 | (new, no Techguns GUI) | P3 |
 | `gui.gun_mount_hatch` | `textures/gui/gun_mount_hatch.png` | 256x256 | Gun Mount Hatch panel sprites: single gun slot, lock icon. | #505050 | (new, no Techguns GUI) | P3 |
 | `gui.scope_sniper` | `textures/gui/scopes/sniper.png` | 512x512 | Sniper scope overlay (sniper rifles, bolt-action and AS50 style): 512x512 RGBA, transparent circular lens with fine crosshair and mil-dots, black surround with soft vignette ring. Stretched to the screen height. | #000000 #303030 | Sniper overlay (ScreenEffect.sniperScope), size/shape not copied | P2 |
 | `gui.scope_assault` | `textures/gui/scopes/assault.png` | 512x512 | Assault / reflex scope overlay (rifles with a zoom toggle): 512x512 RGBA, smaller transparent view circle in a thick dark housing, red chevron reticle with drop ticks. | #080A0A #FF281E | (new, no Techguns GUI) | P2 |
@@ -620,7 +608,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `particle.laser_blue` | `textures/fx/laser_blue.png` | 128x64 | FX sprite (single image): blue tesla beam band, white-cyan core. Painted from scratch; additive sheets are black-background, alpha sheets transparent. | #2060FF #E0FFFF | `textures/fx/laser_blue.png` | P3 |
 | `particle.laser_deathfx` | `textures/fx/laser_deathfx.png` | 64x64 | FX sprite (tileable): laser death overlay: molten cracks, orange on dark red-black. Painted from scratch; additive sheets are black-background, alpha sheets transparent. | #FF6020 #300808 | `textures/fx/laserDeathfx.png` | P3 |
 | `particle.bio` | `textures/fx/bio.png` | 64x64 | FX sprite (tileable): bio death overlay: mottled slime green. Painted from scratch; additive sheets are black-background, alpha sheets transparent. | #5DB049 | `textures/fx/bio.png` | P3 |
-| `particle.heatray` | `textures/fx/heatray.png` | 128x128 | FX sprite (single image): Reaction Chamber heat-ray teardrop flame, black background. Painted from scratch; additive sheets are black-background, alpha sheets transparent. | #FFE070 #808030 | `textures/fx/heatray.png` | P3 |
+| `particle.heatray` | `textures/fx/heatray.png` | 128x128 | FX sprite (single image): heat-ray teardrop flame, retained but unused since 0012, black background. Painted from scratch; additive sheets are black-background, alpha sheets transparent. | #FFE070 #808030 | `textures/fx/heatray.png` | P3 |
 | `particle.techscope` | `textures/fx/techscope.png` | 2048x2048 | FX sprite (single full-screen image): sci-fi scope overlay: black border, cyan hex reticle and brackets. Painted from scratch; additive sheets are black-background, alpha sheets transparent. Footprint size is huge; a power-of-two of at least 1024 px is acceptable if the window ratio is kept. | #00E0E0 #021616 | `textures/fx/techscope.png` | P3 |
 
 ## 7. Sounds (279)
@@ -940,7 +928,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `brand.social_preview_svg` | `docs/assets/branding/social_preview.svg` | vector | GitHub social preview source (vector). [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
 | `brand.social_preview` | `docs/assets/branding/social_preview.png` | 1280x640 | GitHub social preview (1280x640), keep key content inside the central 1000x500. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
 
-## 9. Infographics (14)
+## 9. Infographics (13)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
@@ -950,9 +938,8 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `info.arsenal_ev_to_zpm` | `docs/assets/infographics/arsenal-ev-to-zpm.png` | 1600x2294 | Player guide: every weapon from EV to ZPM, rendered, with role and ammo or charge. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
 | `info.ammo_and_magazines` | `docs/assets/infographics/ammo-and-magazines.png` | 1600x2037 | Player guide: GT materials to parts to the Ammo Press to magazines; magazine sizes; ammo per tier. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
 | `info.armor_and_gear` | `docs/assets/infographics/armor-and-gear.png` | 1600x2101 | Player guide: the twelve armor sets on figures, masks and back gear, damage types. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
-| `info.machines` | `docs/assets/infographics/machines.png` | 1600x1721 | Player guide: each single block machine beside its multiblock, rendered. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.machines` | `docs/assets/infographics/machines.png` | 1600x1457 | Player guide: each single block machine beside its multiblock, rendered. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
 | `info.multiblock_ammunition_works` | `docs/assets/infographics/multiblock-ammunition-works.png` | 1600x2406 | Build guide: Ammunition Works, with block counts, sections, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
-| `info.multiblock_retort` | `docs/assets/infographics/multiblock-retort.png` | 1600x1909 | Build guide: Retort, with block counts, sections, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
 | `info.multiblock_armory_gantry` | `docs/assets/infographics/multiblock-armory-gantry.png` | 1600x1986 | Build guide: Armory Gantry, with block counts, sections, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
 | `info.multiblock_rampart` | `docs/assets/infographics/multiblock-rampart.png` | 1600x1841 | Build guide: Rampart, with block counts, sections, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
 | `info.enemies` | `docs/assets/infographics/enemies.png` | 1600x3573 | Player guide: mobs by danger, rendered, plus structures and loot. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
@@ -975,7 +962,7 @@ Not in the manifest because GregGuns dropped them or GT supplies them.
 ## 11. Notes and non-image data
 
 - **Structures (11-worldgen)** need no textures. Structure templates, loot tables and `sounds.json`/lang files are data, written alongside the code (structure files are written fresh, never copied).
-- **Sounds not in this list:** Rampart, Gantry, Retort and Ammunition Works have no sound brief yet ([ammo-press.md § Sound](../gregguns-spec/08-machines-production/ammo-press.md#sound) asks only for the stroke hook). The Ammo Press stroke reuses the `ammopress_work2` role.
+- **Sounds not in this list:** Rampart, Gantry and Ammunition Works have no sound brief yet ([ammo-press.md § Sound](../gregguns-spec/08-machines-production/ammo-press.md#sound) asks only for the stroke hook). The Ammo Press stroke reuses the `ammopress_work2` role.
 - **Armored-turret variants** use the five Techguns turret sheets; the obsidian-steel variant becomes aluminum (0010).
 - **Recolor rule:** one gun sheet serves its akimbo form; the Flashbang recolors the Frag Grenade sheet.
 

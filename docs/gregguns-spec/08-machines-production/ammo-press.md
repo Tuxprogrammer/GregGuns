@@ -40,7 +40,7 @@ public static final RecipeMap<RecipeMapBackend> ammoPressRecipes = RecipeMapBuil
     .build();
 ```
 
-`RecipeMapBuilder` and the "name must be unique" rule are the same ones used for the Reaction Chamber ([reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#recipe-map-and-the-7-techguns-recipes)). The map is registered once and read by both the single blocks and the Ammunition Works. NEI makes one tab per map with catalysts from `MTE#getRecipeMap` ([nei-handlers.md](nei-handlers.md)).
+`RecipeMapBuilder` and the "name must be unique" rule are the standard GT pattern. The map is registered once and read by both the single blocks and the Ammunition Works. NEI makes one tab per map with catalysts from `MTE#getRecipeMap` ([nei-handlers.md](nei-handlers.md)).
 
 ### Recipe move (applied)
 

@@ -68,7 +68,7 @@ These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHori
 
 - [02-guns](../../techguns-spec/02-guns/index.md): guns that consume this ammo; gun recipes use the parts in [components-and-materials.md](components-and-materials.md).
 - [05-armor](../05-armor/baubles-slots.md): hazmat protection for radiation ([hazards-and-tooltips.md](hazards-and-tooltips.md)), jetpack stance.
-- [08-machines-production](../../techguns-spec/08-machines-production/index.md): GT recipe maps for components and the kept Reaction Chamber.
+- [08-machines-production](../../techguns-spec/08-machines-production/index.md): GT recipe maps for components (the Reaction Chamber is retired, [0012](../../design/0012-retire-reaction-chamber-and-retort.md)).
 - [10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md): NPC drops and class naming; see [pack-loot.md](pack-loot.md#infernal-mobs).
 - [11-worldgen](../11-worldgen/structure-placement.md): structure chests; see [pack-loot.md](pack-loot.md#gregguns-loot-categories).
 

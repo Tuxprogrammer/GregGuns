@@ -19,7 +19,7 @@ Techguns' block recipes are crafting-table grids over Techguns plates and nugget
 | Bulk grids (ladder x16, lamp x16, panel x32 and x64, roof x16) | Assembler at `RECIPE_LV / 2` | Matches GT's casing and cover recipes; keeps a 9-slot grid from producing 64 blocks |
 | Concrete from the Chem Lab (sand, gravel, 250 mB water gives 2) | Mixer, same inputs and output | [0002](../../design/0002-machine-deconfliction.md) drops the Chem Lab |
 | Reinforced and Weapon Chest from iron nuggets and plates | Assembler at `RECIPE_LV` with `plate.Steel` | Steel makes them LV items, which fits "reinforced" |
-| Machine-block recipes (Charging Station, Ore Drill, Fabricator and Reaction Chamber housings, Turret, benches, charges) | Not here | Dropped, or owned by [08](../08-machines-production/recipes.md) and [09](../09-machines-utility/recipes.md) |
+| Machine-block recipes (Charging Station, Ore Drill, Fabricator housings, Turret, benches, charges) | Not here | Dropped, or owned by [08](../08-machines-production/recipes.md) and [09](../09-machines-utility/recipes.md) |
 
 ## Integration points
 
@@ -90,7 +90,7 @@ Techguns recipes B21 to B24, B31, B32.
 | B04 to B09 (Turret, Camo Bench, Repair Bench, Explosive Charge, Advanced Explosive Charge) | Kept machines, now in [09 recipes](../09-machines-utility/recipes.md) |
 | B10 Charging Station | Dropped ([0002](../../design/0002-machine-deconfliction.md)) |
 | B16 to B20 Ore Drill parts | Dropped ([0002](../../design/0002-machine-deconfliction.md)) |
-| B25 to B27 Reaction Chamber Housing, Controller, Glass | Replaced by real casings and a GT controller in [08 recipes](../08-machines-production/recipes.md); the chamber glass is GT's |
+| B25 to B27 Reaction Chamber Housing, Controller, Glass | Dropped with the Reaction Chamber ([0012](../../design/0012-retire-reaction-chamber-and-retort.md)) |
 | B28 to B30 Fabricator Housing, Controller, Glass | Dropped ([0002](../../design/0002-machine-deconfliction.md)) |
 | Camo Net Placer items (R84 to R86) | Items, not blocks. Area 06 |
 | Screen, Control Panel, steel-frame variants, bug blocks, Monster Spawner, Air Marker, Bio Blob | No Techguns recipe ([block-catalog.md](../../techguns-spec/07-blocks/block-catalog.md#recipes)) |

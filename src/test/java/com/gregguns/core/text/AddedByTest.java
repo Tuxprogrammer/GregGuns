@@ -55,6 +55,6 @@ class AddedByTest {
             machines++;
             assertTrue(src.contains("AddedBy."), p + " does not add the 'Added by: GregGuns' line");
         }
-        assertTrue(machines >= 11, "expected at least 11 machine classes, found " + machines);
+        assertTrue(machines >= 9, "expected at least 9 machine classes, found " + machines);
     }
 }

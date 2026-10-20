@@ -1,19 +1,19 @@
 # GregGuns multiblocks
 
-The four multiblocks of the [machine roster](machine-roster.md): the Ammunition Works, the Retort, the Armory Gantry and the Rampart. Each has a distinctive silhouette, a length or size that players choose, and a tier mechanic that is not just "more hatches".
+The three multiblocks of the [machine roster](machine-roster.md): the Ammunition Works, the Armory Gantry and the Rampart. (The Retort was retired by [0012](../../design/0012-retire-reaction-chamber-and-retort.md) and is archived.) Each has a distinctive silhouette, a length or size that players choose, and a tier mechanic that is not just "more hatches".
 
 - **Techguns baseline:** [reaction-chamber.md](../../techguns-spec/08-machines-production/reaction-chamber.md), [ammo-press.md](../../techguns-spec/08-machines-production/ammo-press.md), [repair-bench.md](../../techguns-spec/09-machines-utility/repair-bench.md), [turret.md](../../techguns-spec/09-machines-utility/turret.md), [framework.md § multiblock](../../techguns-spec/08-machines-production/framework.md#9-multiblock-framework)
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0002 machine deconfliction](../../design/0002-machine-deconfliction.md) (amended: see [machine-roster.md](machine-roster.md#what-changes-from-techguns-and-from-0002)), [0003 energy model](../../design/0003-energy-model.md), [0006 art direction](../../design/0006-art-direction.md)
 - **Pack mods:** GT5-Unofficial (`gregtech`, 5.09.54.205), StructureLib (`structurelib`, 1.4.45), ModularUI2 (`modularui2`, 2.3.92-1.7.10)
-- **Roadmap:** M4 (Ammunition Works, Retort), M6 (Gantry, Rampart)
+- **Roadmap:** M4 (Ammunition Works), M6 (Gantry, Rampart)
 
 ## What changes from Techguns
 
 | Techguns | GregGuns | Why |
 |---|---|---|
-| One multiblock, the Reaction Chamber, a hidden-block 3 x 4 x 3 | Four multiblocks, each a real StructureLib structure with visible casings and none a cube | Owner policy: a multiblock for every machine used regularly, with interesting shapes |
+| One multiblock, the Reaction Chamber, a hidden-block 3 x 4 x 3 | Three multiblocks, each a real StructureLib structure with visible casings and none a cube | Owner policy: a multiblock for every machine used regularly, with interesting shapes |
 | Ammo Press, Repair Bench and Turret were single blocks with no scaling | Each keeps its single block and gains a multiblock for scale | Same |
-| Fixed size | Three of the four grow or shrink by repeating a segment; the Retort changes height | Players size the machine to their need, as GT's Distillation Tower and Neutron Activator do |
+| Fixed size | All three grow or shrink by repeating a segment or a bay | Players size the machine to their need, as GT's Distillation Tower and Neutron Activator do |
 
 ## Conventions for the diagrams
 
@@ -40,7 +40,7 @@ Six GT multiblocks carry the shapes and mechanics. Permalinks pin the 5.09.54.20
 | **Industrial Cutting Machine**: client tick, `IMTERenderer`, blade drawn in `renderTESR`, render toggle | The animated parts of the Ammunition Works | [ammo-press.md § Animation](ammo-press.md#animation) |
 | **Large Scale Auto-Assembler** (`MTEAutoCrafter`): 3 x 3 x 3, `2 x tier` parallels | The plain cube we **avoid**, and the parallel formula we are measured against | [MTEAutoCrafter#L161-L169](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gtPlusPlus/xmod/gregtech/common/tileentities/machines/multi/production/MTEAutoCrafter.java#L161-L169) |
 
-## Casings used by the four multiblocks
+## Casings used by the three multiblocks
 
 All of these are GregGuns blocks on page 50 unless a GT name is given.
 
@@ -49,11 +49,11 @@ All of these are GregGuns blocks on page 50 unless a GT name is given.
 | **Works Casing** | Ammunition Works hull | Hatches allowed on its `F` and `O` positions only |
 | **Ram Housing** | Ammunition Works press columns | Active texture is animated (frame strip) |
 | **Item pipe casing** (GT, any tier) | Ammunition Works belt | Tier sets speed, as in the Industrial Mixer |
-| **Reaction Casing** (the Reaction Chamber Casing of [recipes.md](recipes.md#reaction-chamber-casing-1-recipe)) | Retort | Reused, not renamed |
-| **Borosilicate glass** (GT, any tier, read with `chainAllGlasses`) | Retort vessel, Gantry windows | Retort glass tier is the vessel's pressure rating |
+| ~~Reaction Casing~~ (meta 2) | Retired; formerly the Retort | Kept as an inert decorative block for one alpha so placed Retorts leave no holes, then removed. Meta 2 is reserved forever |
+| **Borosilicate glass** (GT, any tier, read with `chainAllGlasses`) | Gantry windows | GT glass |
 | **Gantry Casing**, **Gantry Beam**, **Gantry Hoist**, **Repair Cradle** | Armory Gantry | Cradle is one per bay floor pad |
 | **Bastion Plating** | Rampart, four metas: Iron, Steel, Aluminum, Carbon | The meta sets the armor value of every mount |
-| `frameGt` Steel / Titanium | Retort feet, Gantry legs | GT frame boxes |
+| `frameGt` Steel / Titanium | Gantry legs | GT frame boxes |
 
 ## Ammunition Works
 
@@ -166,92 +166,11 @@ The belt `I` runs down the middle of the floor, feeder to station. The hall betw
 - **GGS-08-62** It requires an Energy Hatch, a Maintenance Hatch, a Muffler Hatch, an Input Bus and an Output Bus.
 - **GGS-08-63** Its animation is client only and has a screwdriver toggle.
 
-## Retort
+## Retort (retired)
 
-**Concept.** The Reaction Chamber's multiblock form: a lab **retort** (a round-bottom flask) of glass on a three-legged stand, with a narrow neck and a stopper. You raise the flask by adding bulb layers. Glass tier is the vessel's pressure rating.
+The Retort, the Reaction Chamber's multiblock form, was **removed** by design record [0012](../../design/0012-retire-reaction-chamber-and-retort.md). Its shape, bulb-layer pieces, hatch rules, reaction state machine, risks and textures are not described here any more, and MTE ID 20108 is reserved forever.
 
-**Silhouette.** A bulb and neck: a 3-wide neck and cap over a 5-wide rounded body (corners cut), on four stilt feet. Never a cube.
-
-**Dimensions.** 5 wide x (7 + n) tall x 5 deep, where `n` is the number of bulb layers, 2 to 6. Default `n` = 3 is 5 x 10 x 5. The old 3 x 4 x 3 chamber ([reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#structure)) is superseded.
-
-**Class and tiers.** Bottleneck. Controller EV. Energy Hatches EV to ZPM. Reads `gregguns.recipe.reactionchamber`.
-
-### Legend
-
-| Char | Block | Hatches allowed |
-|---|---|---|
-| `R` | Reaction Casing | Input Bus, Output Bus, Input Hatch, Energy, Maintenance on the **floor and low ring**; Muffler on the **cap** |
-| `G` | GT borosilicate glass, any tier (`chainAllGlasses`) | none. **Lowest tier found** is the pressure rating |
-| `F` | `frameGt` Steel | none |
-| `P` | Steel Pipe Casing (the dip tube and the floor pipe runs) | none |
-| `U` | Pump Machine Casing (the foot of the dip tube) | none |
-| `H` | Heating coil, **any tier**, mixed is fine (`ofCoil` with a getter that never records a level) | none |
-| `~` | Controller | n/a |
-
-### Layers (top to bottom; `n` = 3 shown, the mid layer repeats `n` times)
-
-```
-cap       neck      neck      shoulder   mid (x n)  low ring   floor      feet
-.....     .....     .....     .RRR.      .GGG.      .RRR.      .R~R.      .....
-.RRR.     .GGG.     .GGG.     RRRRR      G---G      RHPHR      RRRRR      .F.F.
-.RRR.     .G-G.     .G-G.     RR-RR      G-P-G      R-U-R      RRRRR      .....
-.RRR.     .GGG.     .GGG.     RRRRR      G---G      RHPHR      RRRRR      .F.F.
-.....     .....     .....     .RRR.      .GGG.      .RRR.      .RRR.      .....
-```
-
-The controller `~` is in the front, middle of the **floor** layer. The shoulder has a one-block hole in the middle, which joins the 3 x 3 x `n` bulb interior to the neck.
-
-**Plumbing.** The inside of the flask is not empty: a pump casing (`U`) sits on the floor at the center, and a steel pipe column (`P`) rises from it through every bulb layer, a dip tube that stops under the shoulder hole so the neck stays an open air column. Two pipe runs on the floor join the pump to the four heating coils (`H`) in the low ring's corners. All of it is required, none of it is a Reaction Casing, so it is not counted toward the casing minimum and never sits where a hatch goes. The coils are tier-free: any coil tier, mixed, because the recipes do not gate on coils (the pressure rating is the glass). The hologram builds the cheapest coil whatever the bulb count.
-
-**Block counts.** `R` 61 (cap 9, shoulder 20, low ring 12, floor 20), `G` = 16 + 12 x `n`, `F` 4, `H` 4, `U` 1, `P` = 2 + `n`. Casing minimum 51 (61 minus 10 for hatches); it does not change with `n`.
-
-### Hatch rules
-
-Input Bus (holds the non-consumed Heat Ray Focus and inputs), Output Bus, Input Hatch, Energy Hatch and Maintenance Hatch go on `R` in the floor and low ring. The Muffler Hatch goes on the cap. All hatches are GT's ([GGS-08-44](recipes.md#requirements)).
-
-### Tier and parallel mechanic
-
-- **Parallels** = `2 x n` (4 to 12). Power-limited like every parallel multiblock: a Laser Focus run is 1,920 EU/t, so six parallels need 11,520 EU/t, which means an IV hatch plus another, or multi-amp hatches.
-- **Pressure rating.** A recipe has a voltage tier (the Laser Focus EV, the Anti Gravity Core IV). The vessel runs it only if the lowest glass tier is at least that, with `insufficientMachineTier` otherwise, the same shape as the Component Assembly Line's casing gate ([L294](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/goodgenerator/blocks/tileEntity/MTEComponentAssemblyLine.java#L294)). Glass tier numbering is assumed to follow GT voltage indices; confirm against `BorosilicateGlass` in M4. The single block has no glass and no such gate.
-- **Shared intensity.** The controller has one intensity setting. All parallel runs in a batch share it, so they succeed or fail together. A failed batch applies the risk **once**, not once per parallel run. The batch still loses all of its inputs. That is the gamble: a bigger batch is a bigger loss.
-- **Early finish.** The batch finishes when `completion >= required` ([reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#integration-points)).
-
-### Single block versus multiblock
-
-| | Reaction Chamber (single, EV and IV) | Retort |
-|---|---|---|
-| Recipes | `gregguns.recipe.reactionchamber` | Same map |
-| Parallels | 1 | `2 x n` |
-| Glass | none | rating gate |
-| Intensity, focus, risks | as [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md#integration-points) | identical rules, applied to the batch |
-| EU/t | recipe `eut` | parallels x `eut` |
-
-### Special mechanics (carried from Techguns)
-
-Focus (non-consumed input), intensity with drift, 3-second reaction ticks, completion count, risks (breakage, small explosion, radiation) are exactly the rules in [reaction-chamber-multiblock.md](reaction-chamber-multiblock.md). One change: explosion strength is unchanged by parallel count (the risk is applied once), so a large Retort is not more explosive.
-
-- **Muffler and pollution.** As the Reaction Chamber sheet: required Muffler Hatch, 100 per second proposal, a one-off burst on failure.
-- **StructureLib build.** Pieces `top` (cap, neck, shoulder), `bulb` (repeated `n` times), `base` (low ring, floor, feet). The hologram stack size is `n`. Survival build places `base`, then bulbs, then `top`. This is a vertical version of the Neutron Activator's `bottom`/`mid`/`top`.
-
-### Requirements
-
-- **GGS-08-64** The Retort is one MTE, ID 20108, built from pieces `base`, two to six `bulb` and `top`, with the shape above.
-- **GGS-08-65** Parallels are `2 x n`, capped by power. Every run in a batch shares the controller's intensity.
-- **GGS-08-66** A recipe whose voltage tier exceeds the lowest glass tier does not start and names the missing glass tier.
-- **GGS-08-67** A failed batch applies its risk once.
-- **GGS-08-68** The Retort accepts only GT hatches. It requires an Energy, a Maintenance, a Muffler, an Input Bus, an Output Bus and an Input Hatch.
-
-### Retort implementation notes (M4)
-
-- **Pieces and offsets.** `base` (low ring, floor, feet; controller offset x 2, y 1), `bulb` (one layer, probed upward from y offset 2) and `top` (shoulder, two neck layers, cap; y offset `n + 5`). The shape strings are in `RetortShape`, with `B` (floor and low ring casing, takes the five non-muffler hatches), `S` (shoulder casing, no hatches) and `C` (cap casing, takes the Muffler Hatch); all three are the Reaction Casing. The spec's `.` is written as StructureLib's blank (space) at build time. The block counts in the sheet (61 casings, 16 + 12 n glass, 4 frames) are unit-tested.
-- **Counting bulbs.** Like the Neutron Activator: `checkMachine` probes `bulb` upward (at most 6) with the error list, clears the errors, then checks the top. Fewer than 2 bulbs gives GT's `TOO_SHORT_HEIGHT`.
-- **Glass tier.** The sheet says "lowest tier found", which GT's `ofBlocksTiered` does not allow (it demands one tier). `chainAllGlasses` is given a getter that always answers "not set" and a setter that keeps the minimum, so mixed tiers pass and the minimum is the pressure rating. The tier numbers are GT voltage indices (GT `GlassTier`), so a recipe `eut` maps to the smallest index whose voltage covers it (Laser Focus 4, Anti Gravity Core 5). A recipe above the rating fails with GT `insufficientMachineTier`.
-- **Energy hatch tier.** The sheet says EV to ZPM. Anything below EV is a structure error (`gregguns.retort.error.energy_tier`); the upper bound is not enforced, as GT's hatch element would not either.
-- **Run rules.** `ProcessingLogic` is anonymous: `validateRecipe` gates on intensity and glass tier, `createOverclockCalculator` sets no-overclock, `onRecipeStart` starts the shared `ReactionState`. `onRunningTick` steps the state after GT draws power; success sets `mProgresstime = mMaxProgresstime - 1`; failure calls `stopMachine` with the shutdown reason `gregguns_rc_failed` (outputs dropped), then `ReactionEffects.applyFailure` once. Parallels are `2 x n`, power-limited by `ParallelHelper`.
-- **Pollution.** `machines.retortPollutionPerSecond` (default 100) through `getPollutionPerSecond`, plus a one-off `machines.reactionFailurePollution` (default 500) burst on failure.
-- **Casing block.** The Reaction Chamber Casing is meta 2 of the shared `gregguns:casings` block (`GregGunsCasings`, formerly `BlockWorksCasing`), page-50 index 2; the Works Casing and Ram Housing are metas 0 and 1. The meta table is in [metatileentity-framework.md](metatileentity-framework.md#gt5-unofficial-casing-texture-pages).
-- **Interior plumbing.** Added on the owner's request (see inside, more character). `P` and `U` are fixed `gt.blockcasings2` blocks (metas 13 and 10, [Casings.java L80-L113](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/casing/Casings.java#L80-L113)). `H` is GT's `ofCoil` ([L638-L682](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L638-L682)) with a getter that answers null, so every coil level passes; it sits on the Heating Coil channel, and the trigger stack is pinned to size 1 because the stack size is the bulb count here and `ofCoil` would read it as a coil tier. The glass element is on the Borosilicate Glass channel.
-- **Not covered by a scenario.** A full Retort production run (it needs hatch inventories filled by a test) and the hologram look; `machines.reaction.retort` builds the structure with `construct`, adds hatches and checks it forms and un-forms, and also removes and restores the pump, the dip tube, a floor pipe run and a coil (mixed coil tiers pass).
+The owner loves the concept, but a bulk-reaction multiblock for two recipes does not fit this mod. The whole design is archived, interior parts included, on branch `archive/retort-multiblock` and tag `archive/retort-v1` (cut from `fa818412`), and may be pitched to the GTNH community as a standalone multiblock. Read it there. The Laser Focus is now made on GT's Laser Engraver and the Anti Gravity Core on GT's Assembler.
 
 ## Armory Gantry
 
@@ -351,7 +270,7 @@ Built as `MTEArmoryGantry` (ID 20114) with pure data in `GantryShape`, the repai
 - **Items per cycle** is the bay count capped by the power the hatches supply: each item draws half the recipe voltage of the lowest Energy Hatch tier, and GT shuts a machine down that over-draws. One HV hatch therefore repairs two items per cycle; more hatches (or multi-amp hatches) raise it. The sheet says "up to n" without a cap.
 - **Tier gate.** The weakest Energy Hatch. When every damaged item in the buses is above it, the controller shows GT's insufficient-machine-tier message with the tier needed.
 - **No NEI tab and no NEI code** ([GGS-08-31](nei-handlers.md#requirements)). The controller tooltip states the rules. The open "Gantry NEI" question stays open.
-- **Glass.** Any glass tier, mixed. The getter passed to `chainAllGlasses` returned the stored tier, which forced one tier for the whole booth; it now always answers "not set", as the Retort's does. The Borosilicate Glass channel is on the tooltip.
+- **Glass.** Any glass tier, mixed. The getter passed to `chainAllGlasses` returned the stored tier, which forced one tier for the whole booth; it now always answers "not set",. The Borosilicate Glass channel is on the tooltip.
 - **Interior.** Added on the owner's request (see inside, more character). Fixed GT blocks: `gt.blockcasings2` metas 3 (steel gearbox), 11 (motor) and 13 (steel pipe), and `ofFrame(Materials.Steel)`; the GregGuns accent is the existing Gantry Beam, Hoist and Repair Cradle.
 - **Not built:** the cradle's active texture, the hoist animation, a screwdriver mode.
 
@@ -459,14 +378,13 @@ Pieces `gate`, `bay` and `cap`. The check places `gate`, loops `bay` while it ma
 | Req | Verification |
 |---|---|
 | 57, 64, 69, 74 | `runServer` with a test world: build each at its minimum, default and maximum size with the hologram projector; add or remove one segment and check the error text |
-| 58 | Unit test: an Ammo Press recipe runs in the Works; the Retort map is the Reaction Chamber map |
+| 58 | Unit test: an Ammo Press recipe runs in the Works |
 | 59, 65 | Unit test of the parallel formula for each size and tier, including the power cap |
 | 60 | Unit test of the speed multiplier for belt tiers 0 to 7; `/gregguns test` with a mixed-tier belt fails |
 | 61 | `/gregguns test` with an ME Output Bus and a full normal bus |
 | 62, 68 | Remove each required hatch in turn; check the error text |
 | 63, 81 | Manual client check of the animation and its toggle; dedicated server boot with no client class loaded |
 | 66 | Unit test: a recipe at tier EV with IV and EV glass |
-| 67 | Seeded unit test of the risk state machine (shares code with [GGS-08-19](reaction-chamber-multiblock.md#requirements) to 21): one application per batch |
 | 70, 71 | Unit test over the repair routine: all or nothing per item; NBT other than damage is identical before and after, including charge and camo |
 | 72, 73 | Unit test: tier gate and tool rejection |
 | 75-77 | `/gregguns test`: remove a hatch; shoot until reload; check the ammo and the empty magazines |
@@ -489,7 +407,7 @@ Built as `MTEAmmoWorks` (ID 20105) with pure data in `AmmoWorksShape` and `AmmoW
 
 ## Open questions
 
-- **Glass tier numbering.** Does `BorosilicateGlass` tier map to GT voltage indices, and is there glass up to IV? The Retort's rating gate needs it. Confirm in M4.
+- **Glass tier numbering.** Does `BorosilicateGlass` tier map to GT voltage indices, and is there glass up to IV? Withdrawn with the Retort (0012); it only mattered for the Retort rating.
 - **Parallel and belt numbers.** `4 x n x tier` and the 0.25 belt step are proposals. A balance pass fixes them.
 - **Gantry NEI.** A page showing repair materials per item, or none.
 - **Gun Mount Hatch contents.** Does the hatch also hold a camo-changeable gun's camo? It is gun NBT, so yes by default.

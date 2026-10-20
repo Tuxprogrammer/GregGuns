@@ -48,7 +48,9 @@ public final class ProductionTable {
         /** GT's Chemical Bath ({@code chemicalBathRecipes}), registered by {@link ComponentRecipes}. */
         CHEMICAL_BATH,
         /** GT's Assembly Line, for LuV and ZPM components, registered by {@link ComponentRecipes}. */
-        ASSEMBLY_LINE
+        ASSEMBLY_LINE,
+        /** GT's Laser Engraver ({@code laserEngraverRecipes}), registered by {@link ComponentRecipes}. */
+        LASER_ENGRAVER
     }
 
     /** One input of a row: a GT part or a GregGuns item, and how many. */
@@ -61,6 +63,7 @@ public final class ProductionTable {
         private final String oreName;
         private final int count;
         private boolean anyDamage;
+        private boolean nonConsumed;
 
         private Input(String prefix, String material, String itemName, String special, String oreName, int count) {
             if (count < 1) {
@@ -147,6 +150,24 @@ public final class ProductionTable {
             return new Input(null, null, null, null, oreName, count);
         }
 
+        /**
+         * A non-consumed lens for GT's Laser Engraver: GT's own idiom is an ore-dictionary stack of size 0, which the
+         * recipe needs in the machine but never uses up.
+         *
+         * @param oreName the lens ore name, for example {@code "craftingLensWhite"}
+         * @return an ore-name input whose {@link #count()} is 0 and whose {@link #nonConsumed()} is true
+         */
+        public static Input lens(String oreName) {
+            Input in = new Input(null, null, null, null, oreName, 1);
+            in.nonConsumed = true;
+            return in;
+        }
+
+        /** @return whether the input is needed in the machine but never consumed (a lens) */
+        public boolean nonConsumed() {
+            return nonConsumed;
+        }
+
         /** @return the ore-dictionary name for an {@link #ore} input, or {@code null} */
         public String oreName() {
             return oreName;
@@ -174,7 +195,7 @@ public final class ProductionTable {
 
         /** @return stack size */
         public int count() {
-            return count;
+            return nonConsumed ? 0 : count;
         }
     }
 

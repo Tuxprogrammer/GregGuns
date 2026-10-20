@@ -188,12 +188,107 @@ class ComponentTableTest {
     }
 
     @Test
-    void machinesRowsAreDeferredWhenTheModuleIsOff() {
-        Set<String> deferred = ComponentTable.outputsDeferredBy(id -> id != com.gregguns.core.module.ModuleId.MACHINES);
-        assertEquals(new HashSet<>(java.util.Arrays.asList("part_barrel_laser")), deferred);
+    void noRowNeedsAModuleThatIsOff() {
+        // The Laser Focus is now a guns-module component (design record 0012), so the Laser Barrel row needs no module.
+        assertTrue(
+            ComponentTable.outputsDeferredBy(id -> id != com.gregguns.core.module.ModuleId.MACHINES)
+                .isEmpty());
         assertTrue(
             ComponentTable.outputsDeferredBy(id -> true)
                 .isEmpty());
+    }
+
+    @Test
+    void theLaserFocusIsAnEvLaserEngraverRowWithANonConsumedWhiteLens() {
+        // Design record 0012, mapping row 1.
+        ComponentTable.Spec focus = spec("RC-64");
+        ProductionTable.Row row = focus.row();
+        assertEquals("part_laser_focus", row.output());
+        assertEquals(ProductionTable.Target.LASER_ENGRAVER, row.target());
+        assertEquals(Tier.EV, row.tier());
+        assertEquals(30, row.seconds());
+        assertEquals(0, row.circuit());
+        assertEquals(
+            3,
+            row.inputs()
+                .size());
+        assertEquals(
+            "gem",
+            row.inputs()
+                .get(0)
+                .prefix());
+        assertEquals(
+            "gt:Emitter_EV",
+            row.inputs()
+                .get(1)
+                .special());
+        ProductionTable.Input lens = row.inputs()
+            .get(2);
+        assertEquals("craftingLensWhite", lens.oreName());
+        assertTrue(lens.nonConsumed());
+        assertEquals(0, lens.count());
+        assertTrue(
+            focus.fluids()
+                .isEmpty());
+    }
+
+    @Test
+    void theAntiGravityCoreIsAnIvAssemblerRowWithEnderium() {
+        // Design record 0012, mapping row 2.
+        ComponentTable.Spec core = spec("RC-65");
+        ProductionTable.Row row = core.row();
+        assertEquals("part_anti_gravity_core", row.output());
+        assertEquals(ProductionTable.Target.ASSEMBLER, row.target());
+        assertEquals(Tier.IV, row.tier());
+        assertEquals(30, row.seconds());
+        assertEquals(
+            "NetherStar",
+            row.inputs()
+                .get(0)
+                .material());
+        assertEquals(
+            "gt:Emitter_IV",
+            row.inputs()
+                .get(1)
+                .special());
+        assertEquals(
+            "Elite",
+            row.inputs()
+                .get(2)
+                .material());
+        assertEquals(
+            2,
+            row.inputs()
+                .get(2)
+                .count());
+        assertEquals(
+            1,
+            core.fluids()
+                .size());
+        assertEquals(
+            "Enderium",
+            core.fluids()
+                .get(0)
+                .material());
+        assertEquals(
+            ComponentTable.FluidKind.MOLTEN,
+            core.fluids()
+                .get(0)
+                .kind());
+        assertEquals(
+            1152,
+            core.fluids()
+                .get(0)
+                .amount());
+    }
+
+    @Test
+    void theConsumersOfTheTwoMovedPartsStillNameThem() {
+        assertTrue(
+            spec("RC-07").row()
+                .inputs()
+                .stream()
+                .anyMatch(in -> "part_laser_focus".equals(in.itemName())));
     }
 
     @Test
@@ -225,5 +320,28 @@ class ComponentTableTest {
         assertEquals(20L, (long) got.get("EpoxidFiberReinforced"));
         // The T3 part is 2 gears + 2 springs + 4 screws of Titanium (80 units) for 2 parts: 40 each, 40 per 2 plates.
         assertEquals(20L, (long) got.get("Titanium"));
+    }
+
+    private static boolean takesSpecial(ProductionTable.Row row, String special) {
+        for (ProductionTable.Input input : row.inputs()) {
+            if (special.equals(input.special())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Test
+    void tanksAreBuiltFromThePacksLargeFluidCells() {
+        assertTrue(takesSpecial(spec("RC-52").row(), "gt:Large_Fluid_Cell_StainlessSteel"));
+        assertTrue(takesSpecial(spec("RC-53").row(), "gt:Large_Fluid_Cell_Titanium"));
+        // The old Empty Cell body is gone.
+        assertFalse(takesSpecial(spec("RC-52").row(), "gt:Cell_Empty"));
+        assertFalse(takesSpecial(spec("RC-53").row(), "gt:Cell_Empty"));
+    }
+
+    @Test
+    void cyberneticPartsTakeTheBioLabPlasmaMembrane() {
+        assertTrue(takesSpecial(spec("RC-20").row(), "gt:PlasmaMembrane"));
     }
 }

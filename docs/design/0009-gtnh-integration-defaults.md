@@ -25,7 +25,6 @@ These remain in the area indexes:
 - the MTE ID block and texture page, which need GTNH team agreement;
 - the material remap for obsidian steel and carbon;
 - LuV and ZPM recipe voltage;
-- the Reaction Chamber recipe set;
 - explosive balance;
 - whether the keybinds clash, which needs a running client.
 

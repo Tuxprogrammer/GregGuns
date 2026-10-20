@@ -1,7 +1,7 @@
 # 0002 · Machine deconfliction
 
 - Status: Accepted (by default during the MVP push; revisit after MVP). Machine roster, multiblocks and the Ammo Press reinstated by [0011](0011-machine-policy.md); the authoritative machine list is [machine-roster.md](../gregguns-spec/08-machines-production/machine-roster.md)
-- Gate: D2
+- Gate: D2. Amended by [0012](0012-retire-reaction-chamber-and-retort.md): the Reaction Chamber and Retort are retired
 - Date: 2026-10-17
 
 ## Context

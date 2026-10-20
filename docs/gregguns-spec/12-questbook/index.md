@@ -4,7 +4,7 @@
 
 This area has **no Techguns counterpart**. Techguns has no questbook, so there is no baseline to compare against and no matching folder in the [Techguns spec](../../techguns-spec/README.md). The area exists because the GTNH pack hands progression to players through BetterQuesting, and the owner wants a GregGuns tab that steers a player into the mod.
 
-The quests live in the pack repository ([GT-New-Horizons-Modpack](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack)), not in this repo. This area is therefore a **spec for pack data**: 118 quests in 14 chapters, how they unlock, and how a pack maintainer writes the files. [M9](../../ROADMAP.md#m9--pack-integration-and-release) hands it over.
+The quests live in the pack repository ([GT-New-Horizons-Modpack](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack)), not in this repo. This area is therefore a **spec for pack data**: 115 quests in 14 chapters, how they unlock, and how a pack maintainer writes the files. [M9](../../ROADMAP.md#m9--pack-integration-and-release) hands it over.
 
 Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquesting/`) and BetterQuesting 3.8.89-GTNH source:
 
@@ -21,7 +21,7 @@ Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquest
 
 | File | Covers |
 |---|---|
-| [quest-line.md](quest-line.md) | All 118 quests: key, title, tier, hint, tasks, rewards, prerequisites, layout, per chapter. Design rules, reward budget, coverage matrix |
+| [quest-line.md](quest-line.md) | All 115 quests: key, title, tier, hint, tasks, rewards, prerequisites, layout, per chapter. Design rules, reward budget, coverage matrix |
 | [authoring.md](authoring.md) | The pack's file format, ID derivation, one fully worked quest, reference builder and validator scripts, how to import and test, checklist |
 
 No further sheets are needed: there is no code in this repo for this area.
@@ -99,14 +99,14 @@ Thirty existing quests are prerequisites. All have `questIDHigh:4` = 0 in the sh
 
 | Techguns feature | GregGuns approach | Pack mod or system | Evidence |
 |---|---|---|---|
-| (none: Techguns has no quests) | One BetterQuesting line of 118 quests | BetterQuesting 3.8.89-GTNH | [authoring.md](authoring.md) |
+| (none: Techguns has no quests) | One BetterQuesting line of 115 quests | BetterQuesting 3.8.89-GTNH | [authoring.md](authoring.md) |
 | Hostile NPC factions, bosses ([10](../10-entities-npcs/index.md)) | `bq_standard:hunt` on `gregguns.<Name>` | BetterQuesting | [quest-line.md](quest-line.md#npcs-and-bosses) |
 | Infernal variants ([infernal-mobs.md](../10-entities-npcs/infernal-mobs.md)) | Checkbox quests; a hunt cannot match "any infernal" | Infernal Mobs 1.10.7-GTNH | [quest-line.md](quest-line.md#npcs-and-bosses) |
 | Structures and their chests ([11](../11-worldgen/index.md)) | Checkbox quests, one per structure group | TooMuchLoot, EnhancedLootBags | [quest-line.md](quest-line.md#structures) |
 | Tier bag rewards ([pack-loot.md](../06-items/pack-loot.md#enhancedlootbags)) | `enhancedlootbags:lootbag` with the tier group's id as damage | EnhancedLootBags 1.3.5 | [quest-line.md](quest-line.md#reward-budget) |
 | Tier map ([0001](../../design/0001-tier-map.md)) | One chapter per tier, gated on the pack's tier and material quests | GT progression quests | [Unlock design](#unlock-design) |
 | Exact-tier charging ([0008](../../design/0008-exact-tier-charging.md)) | Taught in the HV, EV and ammo quests | GT battery buffers | [quest-line.md](quest-line.md#coverage-matrix) |
-| Reaction Chamber, Repair Bench, Turret ([08](../08-machines-production/index.md), [09](../09-machines-utility/index.md)) | A machines branch | GT multiblock framework | [quest-line.md](quest-line.md#machines) |
+| Repair Bench, Turret ([08](../08-machines-production/index.md), [09](../09-machines-utility/index.md)) | A machines branch | GT multiblock framework | [quest-line.md](quest-line.md#machines) |
 | Kill All the Things line | Same hunt pattern, separate tab, optional cross-link | BetterQuesting | [quest-line.md](quest-line.md#relation-to-the-packs-lines) |
 
 ## Pack-side changes
@@ -116,8 +116,8 @@ All paths are relative to `config/betterquesting/DefaultQuests/` in GT-New-Horiz
 | File | Change | Why | Sheet |
 |---|---|---|---|
 | `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/QuestLine.json` (new) | Line properties: name `GregGuns`, icon, `visibility` `UNLOCKED` | Defines the tab | [authoring.md](authoring.md#line-files) |
-| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (118 new) | One position file per quest: `x`, `y`, `sizeX`, `sizeY` | Places each quest on the canvas | [quest-line.md](quest-line.md) |
-| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (118 new) | One file per quest: properties, prerequisites, tasks, rewards | The quest content | [authoring.md](authoring.md#quest-files) |
+| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (115 new) | One position file per quest: `x`, `y`, `sizeX`, `sizeY` | Places each quest on the canvas | [quest-line.md](quest-line.md) |
+| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (115 new) | One file per quest: properties, prerequisites, tasks, rewards | The quest content | [authoring.md](authoring.md#quest-files) |
 | `QuestLinesOrder.txt` | Append `D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns` | Adds the tab after Kill All the Things | [Tab placement](#tab-placement) |
 | `QuestSettings.json` | Raise `pack_version:3` (2171 in the reference pack) in the release that adds the tab | Existing worlds keep their saved quests. A higher default version flags an update ([SaveLoadHandler#L236-L248](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/handlers/SaveLoadHandler.java#L236-L248)); players then run `/bq_admin default load`, which keeps their progress ([QuestCommandDefaults#L353-L365](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L353-L365)) | [authoring.md](authoring.md#import-and-test) |
 | `QuestLines/KillAlltheThings-AAAAAAAAAAAAAAAAAAAAJQ==/` | Optional: one position file for `gg.npc.intro` at 744, 72, size 24 | A transition entry. The pack Readme allows quests in more than one line for transitions. Column 744 is empty in that line | [quest-line.md](quest-line.md#relation-to-the-packs-lines) |

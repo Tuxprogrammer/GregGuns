@@ -54,6 +54,11 @@ public class GregGuns {
     }
 
     @Mod.EventHandler
+    public void missingMappings(cpw.mods.fml.common.event.FMLMissingMappingsEvent event) {
+        com.gregguns.core.registry.RetiredContent.handle(event);
+    }
+
+    @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
         proxy.serverStarting(event);
     }

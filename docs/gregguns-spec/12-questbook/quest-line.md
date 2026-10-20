@@ -1,6 +1,6 @@
 # The GregGuns quest line
 
-The full quest list for the GregGuns tab: 118 quests in 14 chapters. Nine chapters are the main path (a start chapter, then Steam/ULV up to ZPM). Five are side branches (NPCs, structures, machines, equipment, ammo logistics).
+The full quest list for the GregGuns tab: 115 quests in 14 chapters. Nine chapters are the main path (a start chapter, then Steam/ULV up to ZPM). Five are side branches (NPCs, structures, machines, equipment, ammo logistics).
 
 - **Techguns baseline:** none. Techguns has no questbook. The content comes from [02-guns](../../techguns-spec/02-guns/index.md), [05-armor](../../techguns-spec/05-armor/index.md), [06-items](../../techguns-spec/06-items/index.md), [08-machines-production](../../techguns-spec/08-machines-production/index.md), [09-machines-utility](../../techguns-spec/09-machines-utility/index.md), [10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md) and [11-worldgen](../../techguns-spec/11-worldgen/index.md).
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0005 world presence](../../design/0005-world-presence.md), [0007 pack loot and Infernal Mobs](../../design/0007-pack-loot-and-infernal-mobs.md), [0008 exact-tier charging](../../design/0008-exact-tier-charging.md), [0009 GTNH integration defaults](../../design/0009-gtnh-integration-defaults.md)
@@ -41,7 +41,7 @@ Item names are placeholders (`gregguns:<name>`), as everywhere else in this spec
 
 ### Reward budget
 
-26 quests pay a bag. The counts below are the starting point for the M9 balance pass.
+25 quests pay a bag. The counts below are the starting point for the M9 balance pass.
 
 | Tier | Group id (`Damage`) | Bags | Quests |
 |---|---|---|---|
@@ -49,7 +49,7 @@ Item names are placeholders (`gregguns:<name>`), as everywhere else in this spec
 | LV | 4 | 6 | `gg.lv.summary`, `gg.npc.bandits`, `gg.npc.steve`, `gg.npc.elite`, `gg.site.surface`, `gg.site.dungeon` |
 | MV | 5 | 7 | `gg.mv.summary`, `gg.npc.army`, `gg.npc.commandos`, `gg.npc.ultra`, `gg.site.bunker`, `gg.site.camp`, `gg.site.ships` |
 | HV | 6 | 3 | `gg.hv.summary`, `gg.npc.helicopter`, `gg.npc.infernal` |
-| EV | 7 | 4 | `gg.ev.summary`, `gg.npc.cyberdemon`, `gg.npc.alien_bug`, `gg.mach.rc_risk` |
+| EV | 7 | 3 | `gg.ev.summary`, `gg.npc.cyberdemon`, `gg.npc.alien_bug` |
 | IV | 8 | 2 | `gg.iv.summary`, `gg.npc.dave` |
 | LuV | 41 | 1 | `gg.luv.summary` |
 | ZPM | 42 | 1 | `gg.zpm.summary` |
@@ -165,10 +165,12 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | `gg.ev.laser` | Laser Rifle | EV | Electric, so it charges at an EV battery buffer. An HV buffer will not accept it. | retrieval `gregguns:laser_rifle` | `gregguns:energy_cell` x2 | `gg.ev.cell`, pack 1262 | 192, 876 (24) |
 | `gg.ev.pulse` | Pulse Rifle or PDW | EV | Advanced magazines are the EV ammo step up. | retrieval `gregguns:pulse_rifle` or `gregguns:pdw` | `gregguns:mag_advanced` x2 | `gg.ev.intro` | 276, 876 (24) |
 | `gg.ev.minigun` | Minigun | EV | Drum-fed, very high fire rate. Heavy on ammo. | retrieval `gregguns:minigun` | `gregguns:minigun_drum` x1 | `gg.ev.pulse` | 360, 876 (24) |
-| `gg.ev.exotics` | Tesla, Sonic or Bio Gun | EV | Specialist weapons. Pick one. | retrieval `gregguns:tesla_rifle` or `gregguns:sonic_rifle` or `gregguns:bio_gun` | - | `gg.ev.intro` | 444, 876 (24) |
+| `gg.ev.exotics` | Tesla, Sonic or Bio Gun | EV | Specialist weapons. Pick one. The Bio Gun needs a Bio Tank of E. coli culture fluid; see the pack-intermediates note below. | retrieval `gregguns:tesla_rifle` or `gregguns:sonic_rifle` or `gregguns:bio_gun` | - | `gg.ev.intro` | 444, 876 (24) |
 | `gg.ev.t3_armor` | T3 Combat Armor | EV | Titanium plate in the EV Assembler. | retrieval `gregguns:armor_t3_combat_chestplate` | - | `gg.ev.intro` | 528, 876 (24) |
 | `gg.ev.steam_armor` | Steam Armor | EV | Self-contained powered suit. | retrieval `gregguns:armor_steam_chestplate` | - | `gg.ev.intro` | 612, 876 (24) |
 | `gg.ev.summary` | Energy Weapons Done | EV | IV brings blasters and power armor. | checkbox | bag `enhancedlootbags:lootbag:7` (EV) | `gg.ev.laser`, `gg.ev.minigun`, `gg.ev.t3_armor` | 24, 960 (48) |
+
+**Pack intermediates in the EV tier.** Hint text only, no new quests (the 118-quest count and the layout stay as they are). The Fuel, Bio and Compressed Air Tanks are built from the pack's Large Fluid Cells (stainless, titanium and aluminium), so the quests that retrieve a tank or the guns that use one can point the player at the pack's Large Fluid Cell quests (Tier 3 to 4 fluid storage). Cybernetic Parts need a Plasma Membrane from the pack's Bio Lab line: Bio Lab (HV) makes the E. coli dish, the Bacterial Vat makes culture fluid, and an HV Centrifuge turns 1,000 mB of it into a Plasma Membrane (circuit 17). The same culture fluid fills the Bio Tank, so `gg.ev.exotics` and the Nether Blaster line (`gg.luv.nether_charge`) share one bio chain. Quest authors should add a hint, not a prerequisite on a pack quest id, until the ids are confirmed in the pinned quest files. Recipe detail: [recipes.md](../06-items/recipes.md) RC-20, RC-52 to RC-54; pack requirements: [PACK-CHANGES](../PACK-CHANGES.md).
 
 ### IV
 
@@ -256,20 +258,17 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 ### Machines
 
 - **Gate:** pack 97 (the LV assembler) and `gg.start.welcome`, then a tier quest per machine.
-- **Teaches:** the three GregGuns-owned machines. The Repair Bench and Turret tiers are not settled ([09 open questions](../09-machines-utility/index.md#open-questions)), so their rows carry a provisional tier that must be revisited.
-- **Reaction Chamber** is EV for the UV emitter and Laser Focus ([reaction-chamber-multiblock.md](../08-machines-production/reaction-chamber-multiblock.md)).
+- **Teaches:** the two GregGuns-owned machines. The Repair Bench and Turret tiers are not settled ([09 open questions](../09-machines-utility/index.md#open-questions)), so their rows carry a provisional tier that must be revisited.
+- The **Laser Focus** (EV) is made in a plain GT Laser Engraver and the **Anti Gravity Core** (IV) in a plain GT Assembler ([design record 0012](../../design/0012-retire-reaction-chamber-and-retort.md)); the Reaction Chamber quests were removed with the machine.
 
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
-| `gg.mach.intro` | GregGuns Machines | LV | Most machines are plain GT. Only the Repair Bench, the Reaction Chamber and the Turret are GregGuns' own. | checkbox | - | `gg.start.welcome`, pack 97 | 840, 348 (72) |
+| `gg.mach.intro` | GregGuns Machines | LV | Most machines are plain GT. Only the Repair Bench and the Turret are GregGuns' own. | checkbox | - | `gg.start.welcome`, pack 97 | 840, 348 (72) |
 | `gg.mach.repair_bench` | Repair Bench | MV | Mends guns and armor using the item's gate material. Tier is provisional (MV) until area 09 settles it. | retrieval `gregguns:repair_bench` | - | `gg.mach.intro`, pack 1148 | 924, 348 (24) |
 | `gg.mach.repair` | Mending a Weapon | MV | Put a damaged gun and its gate material in the bench. | checkbox | - | `gg.mach.repair_bench` | 1008, 348 (24) |
 | `gg.mach.turret` | Turret | HV | Automatic defense. Tier is provisional (HV) until area 09 settles it. | retrieval `gregguns:turret` | - | `gg.mach.intro`, pack 160 | 1092, 348 (24) |
 | `gg.mach.turret_team` | Friend or Foe | HV | Turrets spare you and your allies on a GTNHLib team, and shoot hostiles. | checkbox | - | `gg.mach.turret` | 1176, 348 (24) |
 | `gg.mach.turret_power` | Powering the Turret | HV | The turret takes EU at its tier. Overvoltage damages it. | checkbox | - | `gg.mach.turret` | 1260, 348 (24) |
-| `gg.mach.rc_build` | Reaction Chamber | EV | A GT multiblock. Build it with a hologram projector or by hand. | retrieval `gregguns:reaction_chamber` | - | `gg.mach.intro`, pack 176 | 1344, 348 (24) |
-| `gg.mach.rc_run` | First Reaction | EV | Place the focus in an Input Bus as a non-consumed input and start a recipe. | checkbox | - | `gg.mach.rc_build` | 1428, 348 (24) |
-| `gg.mach.rc_risk` | Reactions Bite Back | EV | Wrong intensity risks the chamber. Watch the intensity buttons. | checkbox | bag `enhancedlootbags:lootbag:7` (EV) | `gg.mach.rc_run` | 840, 432 (24) |
 
 ### Armor and equipment
 
@@ -324,7 +323,6 @@ Where each mechanic is taught.
 | Hostile factions and bosses | `gg.npc.zombies`, `gg.npc.bandits`, `gg.npc.army`, `gg.npc.steve`, `gg.npc.helicopter` |
 | Infernal ranks | `gg.npc.elite`, `gg.npc.ultra`, `gg.npc.infernal` |
 | Structures and their loot | `gg.site.surface`, `gg.site.bunker`, `gg.site.camp`, `gg.site.ships`, `gg.site.dungeon` |
-| Reaction Chamber | `gg.mach.rc_build`, `gg.mach.rc_run`, `gg.mach.rc_risk` |
 | Turret | `gg.mach.turret`, `gg.mach.turret_team`, `gg.mach.turret_power` |
 | Assembly Line recipes | `gg.luv.intro` |
 
@@ -343,7 +341,7 @@ Where each mechanic is taught.
 | ZPM | 5 | 2 | 3 | 0 | 0 | 1 |
 | NPCs and bosses | 14 | 4 | 0 | 0 | 14 | 12 |
 | Structures | 6 | 6 | 0 | 0 | 0 | 5 |
-| Machines | 9 | 6 | 3 | 0 | 0 | 1 |
+| Machines | 6 | 4 | 2 | 0 | 0 | 0 |
 | Armor and equipment | 9 | 2 | 8 | 0 | 0 | 0 |
 | Ammo logistics | 9 | 6 | 3 | 0 | 0 | 0 |
-| **Total** | **118** | **45** | **60** | **4** | **15** | **26** |
+| **Total** | **115** | **43** | **59** | **4** | **15** | **25** |

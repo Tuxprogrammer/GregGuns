@@ -289,28 +289,6 @@ def sheet_ammo_press():
     return pack_sheet("ammo_press", s)
 
 
-def risk_icon(level):
-    c = [GREEN, AMBER, RED][level]
-    rows = ["...##...", "..####..", "..#..#..", ".##..##.", ".##..##.", "########", "########"] if level else \
-           ["..####..", ".######.", "########", "########", "########", ".######.", "..####.."]
-    return icon(rows, {"#": c}, 8)
-
-
-def sheet_reaction():
-    tk, d = sprite(112, 4)
-    for i in range(11):
-        d.line([(1 + i * 10, 0), (1 + i * 10, 3 if i % 5 == 0 else 1)], fill=(30, 30, 34, 255))
-    marker = icon(["..##..", ".####.", "######", "######", ".####.", "..##.."], {"#": (255, 255, 255, 255)})
-    s = [("gauge_bg", bar_well(112, 14)), ("gauge_marker", marker), ("gauge_ticks", tk),
-         ("gauge_fill", bar_fill(110, 12, ORANGE))]
-    for n, st in (("normal", 0), ("hover", 1), ("pressed", 2)):
-        s.append(("btn_plus_" + n, icon_button(14, 14, st, PLUS)))
-        s.append(("btn_minus_" + n, icon_button(14, 14, st, MINUS)))
-    s += [("complete_empty", bar_well(62, 8)), ("complete_full", bar_fill(60, 6, BLUE)),
-          ("risk_low", risk_icon(0)), ("risk_mid", risk_icon(1)), ("risk_high", risk_icon(2))]
-    return pack_sheet("reaction_chamber", s)
-
-
 def sheet_pouch():
     fr, d = sprite(62, 44)
     bevel(d, 0, 0, 61, 43, (107, 74, 43, 255), (160, 120, 80, 255), (55, 36, 20, 255), edge=OUT)
@@ -476,7 +454,7 @@ def sheet_hatch():
 
 
 SHEETS = {
-    "hud": sheet_hud, "ammo_press": sheet_ammo_press, "reaction_chamber": sheet_reaction, "ammo_pouch": sheet_pouch,
+    "hud": sheet_hud, "ammo_press": sheet_ammo_press, "ammo_pouch": sheet_pouch,
     "repair_bench": sheet_repair, "camo_bench": sheet_camo, "turret": sheet_turret,
     "explosive_charge": lambda: sheet_charge(False), "advanced_explosive_charge": lambda: sheet_charge(True),
     "storage_chest": sheet_chest, "multiblock_widgets": sheet_multiblock, "gun_mount_hatch": sheet_hatch,

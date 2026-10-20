@@ -656,9 +656,11 @@ public final class MpScenarios {
     // ----- mp.mte_items ---------------------------------------------------------------------------------------
 
     /**
-     * Puts every GregGuns machine item in the hotbar and inventory (the Retort first, then the Reaction Chambers) and
+     * Puts every GregGuns machine item in the hotbar and inventory (the retired Retort and Reaction Chamber
+     * placeholders first) and
      * signals shots of the hotbar and the inventory screen: the client renders each GT machine item. This is the proof
-     * for the Retort item render crash (an unregistered or icon-less MTE throws in GT's item renderer).
+     * for the Retort item render crash, which the retired-id placeholders (design record 0012) must still prevent (an
+     * unregistered or icon-less MTE throws in GT's item renderer).
      */
     private static final class MteItems implements Scenario {
 
@@ -674,7 +676,7 @@ public final class MpScenarios {
 
         @Override
         public String description() {
-            return "Gives the first player every GregGuns machine item (Retort first) and signals hotbar and inventory shots.";
+            return "Gives the first player every GregGuns machine item (retired-id placeholders first) and signals hotbar and inventory shots.";
         }
 
         @Override
@@ -686,17 +688,14 @@ public final class MpScenarios {
             EntityPlayerMP a = players.get(0);
             prepare(a, ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, -90.0f, 0.0f);
             a.inventory.clearInventory(null, -1);
-            int[] first = { GregGunsMTEIDs.RETORT, GregGunsMTEIDs.REACTION_CHAMBER_EV,
-                GregGunsMTEIDs.REACTION_CHAMBER_IV };
+            int[] first = GregGunsMTEIDs.retired();
             int slot = 0;
 
             for (int id : first) {
                 slot = give(a, id, slot);
             }
             for (int id : GregGunsMTEIDs.all()) {
-                if (id != first[0] && id != first[1] && id != first[2]) {
-                    slot = give(a, id, slot);
-                }
+                slot = give(a, id, slot);
             }
             final int given = slot;
             a.inventoryContainer.detectAndSendChanges();
@@ -712,7 +711,7 @@ public final class MpScenarios {
                     return null;
                 }
                 return ScenarioResult.builder(name())
-                    .note("gave " + given + " machine items, Retort in slot 0")
+                    .note("gave " + given + " machine items, retired placeholders in slots 0 to 2")
                     .build();
             });
         }

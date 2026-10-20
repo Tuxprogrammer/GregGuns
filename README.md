@@ -61,11 +61,9 @@ Each single block and its multiblock.
 
 #### Multiblock build guides
 
-Ammunition Works, Retort, Armory Gantry, Rampart.
+Ammunition Works, Armory Gantry, Rampart.
 
 ![Ammunition Works](docs/assets/infographics/multiblock-ammunition-works.png)
-
-![Retort](docs/assets/infographics/multiblock-retort.png)
 
 ![Armory Gantry](docs/assets/infographics/multiblock-armory-gantry.png)
 

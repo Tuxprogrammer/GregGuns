@@ -15,7 +15,7 @@ How pack makers edit GregGuns recipes in GT New Horizons, in place of Techguns' 
 | Techguns ZenClass | GregGuns |
 |---|---|
 | `mods.techguns.AmmoPress`, `MetalPress`, `ChemLab`, `Fabricator`, `CharginStation` | None. These recipes are in GT recipe maps, scripted with GTTweaker (`mods.gregtech.Assembler`, `FormingPress`, `ChemicalReactor`, `Canner`, ...) |
-| `mods.techguns.ReactionChamber` | New `mods.gregguns.ReactionChamber` for adding recipes. Removal uses GTTweaker's generic remover |
+| `mods.techguns.ReactionChamber` | None. The Reaction Chamber is retired ([0012](../../design/0012-retire-reaction-chamber-and-retort.md)); its two recipes are in GT's Laser Engraver and Assembler maps, scripted with GTTweaker |
 | `mods.techguns.OreCluster` | Out of scope here; worldgen area 11 |
 | Registered in Techguns' init when `MineTweaker3` is loaded, via `@Optional.Interface` | Same soft-dependency guard on `MineTweaker3` |
 | Removals shift list indices and corrupt running reactions ([MPRD-04](../../techguns-spec/08-machines-production/index.md#suspected-bugs)); null-ingredient crashes ([MPRD-05](../../techguns-spec/08-machines-production/index.md#suspected-bugs), [MPRD-06](../../techguns-spec/08-machines-production/index.md#suspected-bugs), [MPRD-25](../../techguns-spec/08-machines-production/index.md#suspected-bugs)) | Not reproduced. GT stores recipes by content, and our adder validates its arguments |
@@ -32,8 +32,8 @@ How pack makers edit GregGuns recipes in GT New Horizons, in place of Techguns' 
 - **Consequences for GregGuns:**
   - Every GregGuns recipe in an existing GT map (Assembler, Forming Press, Canner, ...) is already scriptable with GTTweaker, with no GregGuns code.
   - A script that removes a GregGuns Assembler recipe works, because it matches by inputs.
-  - Our own map `gregguns.recipe.reactionchamber` can be **removed from** with `RecipeRemover.remove("gregguns.recipe.reactionchamber", ...)` but not **added to**, unless GregGuns ships its own ZenClass.
-- **GregGuns does:** ships `mods.gregguns.ReactionChamber.addRecipe(...)` as a ZenClass registered with `MineTweakerAPI.registerClass` from its `init`, only if `Loader.isModLoaded("MineTweaker3")`. Its arguments are: input `IIngredient`, focus `IItemStack`, fluid `ILiquidStack`, output stacks, ticks, required completion, preferred intensity, margin, risk name, `eut`. Adds are `OneWayAction`s to match GTTweaker's behavior. The class validates every argument and logs a MineTweaker error instead of throwing, which avoids [MPRD-05/06/25](../../techguns-spec/08-machines-production/index.md#suspected-bugs).
+  - Our own map `gregguns.ammoPress` can be **removed from** with `RecipeRemover.remove("gregguns.ammoPress", ...)` but not **added to**, unless GregGuns ships its own ZenClass.
+- **GregGuns does:** ships no ZenClass. The one it planned (`mods.gregguns.ReactionChamber`) went with the Reaction Chamber ([0012](../../design/0012-retire-reaction-chamber-and-retort.md)). If a pack maker asks to add Ammo Press recipes from scripts, a small ZenClass for `gregguns.ammoPress` is the way, registered only if `Loader.isModLoaded("MineTweaker3")`, validating every argument and logging a MineTweaker error instead of throwing ([MPRD-05/06/25](../../techguns-spec/08-machines-production/index.md#suspected-bugs)).
 - **Pack-side change:** none.
 
 ### ModTweaker
@@ -44,19 +44,17 @@ How pack makers edit GregGuns recipes in GT New Horizons, in place of Techguns' 
 ## Requirements
 
 - **GGS-08-35** GregGuns registers no ZenClass for machines whose recipes are in GT maps.
-- **GGS-08-36** `mods.gregguns.ReactionChamber.addRecipe` is registered only when `MineTweaker3` is loaded. With it absent, GregGuns starts and no MineTweaker class is loaded.
-- **GGS-08-37** `addRecipe` rejects null, empty or out-of-range arguments (intensity outside 0-10, required completion above the tick count, unknown risk name) with a MineTweaker error, never an exception.
-- **GGS-08-38** `RecipeRemover.remove("gregguns.recipe.reactionchamber", ...)` removes a recipe, and a Reaction Chamber that is mid-run is not corrupted (the run holds its own copy of the numbers).
+- **GGS-08-36** Withdrawn by 0012 (no GregGuns ZenClass exists).
+- **GGS-08-37** Withdrawn by 0012 (no `addRecipe` exists).
+- **GGS-08-38** `RecipeRemover.remove("gregguns.ammoPress", ...)` removes a recipe, and a machine that is mid-run is not corrupted (the run holds its own copy of the numbers).
 
 ## Tests
 
 | Req | Verification |
 |---|---|
-| 35 | Code search for `@ZenClass` in `src/main`: only `ReactionChamber` |
-| 36 | `runServer` with and without CraftTweaker on the classpath |
-| 37 | Unit test of the argument validator (pure Java, no MineTweaker types) |
-| 38 | `/gregguns test` scenario: start a run, remove its recipe, check the run finishes with its stored numbers |
+| 35 | Code search for `@ZenClass` in `src/main`: none |
+| 38 | `/gregguns test` scenario: start an Ammo Press run, remove its recipe, check the run finishes with its stored numbers |
 
 ## Open questions
 
-- **Is a script API worth it at all?** The pack ships no scripts, so nobody is using MineTweaker for GT yet. If no pack maker asks for `addRecipe`, drop `mods.gregguns.ReactionChamber` and keep only the removal path. Low priority; it can wait until M4 closes.
+- **Is a script API worth it at all?** The pack ships no scripts, so nobody is using MineTweaker for GT yet. No ZenClass until a pack maker asks.

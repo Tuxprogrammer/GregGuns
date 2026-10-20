@@ -40,7 +40,10 @@ public final class GregGunsCasings extends BlockCasingsAbstract implements Tiere
     public static final int WORKS_CASING = 0;
     /** Meta of the Ram Housing. */
     public static final int RAM_HOUSING = 1;
-    /** Meta of the Reaction Chamber Casing (the Retort's wall). */
+    /**
+     * Meta of the retired Reaction Casing: inert and decorative, kept so placed Retorts leave no holes. Meta 2 is
+     * reserved forever (design record 0012).
+     */
     public static final int REACTION_CASING = 2;
     /** Meta of the Gantry Casing (the Armory Gantry's walls and floors; hatches go here). */
     public static final int GANTRY_CASING = 3;
