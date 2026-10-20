@@ -58,6 +58,23 @@ Each `worldgen.<id>_places` scenario (fixed seed and cell: footprint block count
 | Alien Bug Nest (default off) | not yet | pending | `worldgen.alien_bug_nest_places` | Pending |
 
 
+## Spawner blocks (G11)
+
+Status: done. `BlockHoleSpawner` and `TileHoleSpawner` in `com.gregguns.worldgen.spawner`, registered as `zombie_hole` and `bug_hole` by the worldgen module and wired through `StructureHooks.setSpawnerHook` (installed by `StructureGenerator.configure`).
+
+| Rule | Evidence | Status |
+|---|---|---|
+| At most 5 NPCs near a hole, at most 3 per attempt (`HoleCaps`) | `HoleCapsTest`; scenario `worldgen.hole_spawner_caps` (3, 2, 0, 0, 0 over five attempts, 5 near at the end) | PASS |
+| Only with a player within 24 blocks | scenario `worldgen.hole_spawner_idle` (nothing at 25 blocks, by attempt and over 150 ticks; wakes at 23) | PASS |
+| Reuses the M7 spawn path: `NpcRegistry`, `NpcCounter` (no chunk load, NPC-17), `NpcSpawnHandler.dangerAt`, config `alienBug` through the registry | `HoleSpawning`; `HoleKindTest` | PASS |
+| Ticks only in loaded chunks and never loads one: a tile never ticks unloaded, and a spawn spot in an unloaded chunk is skipped before any block read | `HoleSpawning.positionAt`, `countNearby` (loaded-chunk counting) | PASS (by construction) |
+| `InfernalHooks.markSpawnerNpc` runs before each NPC joins the world; `infernalAllowSpawnerNpcs` is the opt-out flag | scenario `worldgen.hole_spawner_infernal_marker` (called once per NPC, not yet in the world; marker present when Infernal Mobs is loaded) | PASS |
+| Zombie Hole places `ZOMBIE_SOLDIER`, `ZOMBIE_FARMER`, `ZOMBIE_MINER`; Bug Hole places `ALIEN_BUG` | `HoleKindTest` | PASS |
+| The Big Bunker's `spawner.zombie_hole` marks become two Zombie Holes | scenario `worldgen.big_bunker_spawners` | PASS |
+| Textures are original | `zombie_hole.png`, `bug_hole.png`, painted by `tools/asset-gen/blocks.py` (`blockart.zombie_hole`, `blockart.bug_hole`), credited in `credits/blocks.csv` | PASS |
+
+Notes. Scenarios run without Infernal Mobs: the marker is verified through the call seam only, and the persistent-data check runs when the mod is present. The Bug Hole is not exercised by a scenario because Alien Bugs are off by default (`alienBug=false`); its kind table is unit-tested and the Alien Bug Nest scenario (S5) will place it. Layouts carry the mark only, so no `PaletteKeys` entry was needed.
+
 ## Beta review gate
 
 Client checks still owed for M8. None can be judged headless.
