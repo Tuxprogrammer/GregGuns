@@ -309,9 +309,10 @@ Replaces "Pack integration and release" ([0014](design/0014-end-goal-beta-handof
   - the state of every area, linking the M0–M8 audits;
   - how to build, test and run the scenario harness, including the real-pack test with `-Dgregguns.testHooks=true`;
   - how the mod was made, and what stands between it and GTNH's AI policy (media, commit history, PR text), stated plainly;
+  - an open-ended path to inclusion. The policy is vague, and its application is up to the pack's reviewers, so the guide prescribes no single fix and no heavy rework. It suggests starting with light edits and working out the actual requirements with the dev team;
   - the pack-side changes it needs ([PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md));
   - the adopter list below.
-- **Solicitation message.** We draft it and the owner posts it. It announces that the mod is out there, nearly fully integrated with the pack, MIT licensed and free to adopt. It asks for a developer willing to sponsor it: review it, bring it into compliance and carry it into the pack. It also invites the pack team to consider an exception. It is open about how the mod was made.
+- **Solicitation message.** We draft it and the owner posts it. It announces that the mod is out there, nearly fully integrated with the pack, MIT licensed and free to adopt. It asks for a developer willing to sponsor it: review it, work out with the pack's reviewers what they need, and carry it into the pack. It also invites the pack team to consider an exception. It is open about how the mod was made.
 - **README.** A banner saying the project is complete and archived, and looking for an adopter, with links to the handoff guide and the latest release.
 - **Archive.** Archive the GitHub repository on the owner's go-ahead, after the release, the handoff guide and the README are published.
 
