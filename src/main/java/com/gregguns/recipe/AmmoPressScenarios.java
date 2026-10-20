@@ -336,7 +336,14 @@ public final class AmmoPressScenarios {
                 ScenarioResult.Builder result = ScenarioResult.builder(name());
                 result.checkEquals("9mm bullets made by the LV recipe on steam", 16, found);
                 result.check(before + added[0] - base.getStoredSteam() >= 30L * 100, "steam was consumed");
-                result.note("finished after " + ticks + " ticks; steam " + before + " + " + added[0] + " topped up -> " + base.getStoredSteam());
+                result.note(
+                    "finished after " + ticks
+                        + " ticks; steam "
+                        + before
+                        + " + "
+                        + added[0]
+                        + " topped up -> "
+                        + base.getStoredSteam());
                 return result.build();
             });
         }
