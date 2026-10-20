@@ -12,8 +12,10 @@ import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.entity.npc.mob.ArmySoldier;
 import com.gregguns.entity.npc.mob.Commando;
+import com.gregguns.entity.npc.mob.SkeletonSoldier;
 import com.gregguns.entity.npc.mob.ZombieFarmer;
 import com.gregguns.entity.npc.mob.ZombieMiner;
+import com.gregguns.entity.npc.mob.ZombiePigmanSoldier;
 import com.gregguns.entity.npc.mob.ZombieSoldier;
 
 /**
@@ -53,6 +55,8 @@ public final class NpcRegistry {
         bind(NpcMob.ZOMBIE_FARMER, ZombieFarmer.class);
         bind(NpcMob.ZOMBIE_MINER, ZombieMiner.class);
         bind(NpcMob.BANDIT, Bandit.class);
+        bind(NpcMob.SKELETON_SOLDIER, SkeletonSoldier.class);
+        bind(NpcMob.ZOMBIE_PIGMAN_SOLDIER, ZombiePigmanSoldier.class);
         if (DevEnvironment.isActive()) {
             // The base NPC, for scenarios and the test renderer only.
             bind(NpcMob.NPC_TEST, NpcEntity.class);
