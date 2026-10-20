@@ -84,6 +84,15 @@ public final class ProjectileModule {
             GenericProjectile.TRACKING_RANGE,
             GenericProjectile.UPDATE_FREQUENCY,
             GenericProjectile.SENDS_VELOCITY);
+        // The continuous beam: one carrier per held tick (Nuclear Death Ray).
+        registrar.registerEntity(
+            "beam_projectile",
+            BeamProjectile.class,
+            BeamProjectile.ENTITY_ID,
+            GenericProjectile.TRACKING_RANGE,
+            GenericProjectile.UPDATE_FREQUENCY,
+            GenericProjectile.SENDS_VELOCITY);
+        BulletLauncher.register(ProjectileKind.BEAM, BeamProjectile::new);
         registrar.registerEntity(
             "biogun_projectile",
             BiogunProjectile.class,

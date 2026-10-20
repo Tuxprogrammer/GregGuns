@@ -1,5 +1,6 @@
 package com.gregguns.client.projectile;
 
+import com.gregguns.projectile.BeamProjectile;
 import com.gregguns.projectile.BeamVisual;
 import com.gregguns.projectile.BiogunProjectile;
 import com.gregguns.projectile.EnergyBlastProjectile;
@@ -37,6 +38,8 @@ public final class ProjectileRenderers {
         // The sonic wave is drawn by the trail effect attached to its main projectile; no entity draws anything.
         RenderingRegistry.registerEntityRenderingHandler(SonicProjectile.class, new RenderInvisible());
         RenderingRegistry.registerEntityRenderingHandler(BeamVisual.class, new RenderBeam());
+        // The Nuclear Death Ray's per-tick carrier draws nothing; its BeamVisual does.
+        RenderingRegistry.registerEntityRenderingHandler(BeamProjectile.class, new RenderInvisible());
         // The bio glob is drawn by its BioGunTrail FX; the entity itself draws nothing.
         RenderingRegistry.registerEntityRenderingHandler(BiogunProjectile.class, new RenderInvisible());
         // Impact and trail effects of the energy blast come with the FX core.

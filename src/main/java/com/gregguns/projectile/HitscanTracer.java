@@ -117,7 +117,7 @@ public final class HitscanTracer {
     }
 
     /** The distance up to which every chunk under the ray is already loaded, in whole steps of the chunk check. */
-    private static double loadedReach(World world, double ox, double oz, double ux, double uz, double range) {
+    static double loadedReach(World world, double ox, double oz, double ux, double uz, double range) {
         double from = 0.0;
         while (from < range) {
             double to = Math.min(range, from + CHUNK_STEP);
@@ -137,7 +137,7 @@ public final class HitscanTracer {
     }
 
     /** Distance to the first block that stops a ray, skipping passable ones, or {@link HitRules#NO_BLOCK}. */
-    private static double blockDistance(World world, double ox, double oy, double oz, double ux, double uy, double uz,
+    static double blockDistance(World world, double ox, double oy, double oz, double ux, double uy, double uz,
         double reach) {
         if (reach <= 0) {
             return HitRules.NO_BLOCK;
@@ -164,7 +164,7 @@ public final class HitscanTracer {
         return HitRules.NO_BLOCK;
     }
 
-    private static boolean canHit(Entity e, EntityLivingBase shooter) {
+    static boolean canHit(Entity e, EntityLivingBase shooter) {
         if (!e.canBeCollidedWith() || !e.isEntityAlive()
             || e instanceof EntityItem
             || e instanceof EntityXPOrb

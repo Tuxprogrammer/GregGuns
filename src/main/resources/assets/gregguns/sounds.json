@@ -167,6 +167,14 @@
     "category": "player",
     "sounds": ["guns/lasergun_reload"]
   },
+  "guns.nuclear_death_ray.start": {
+    "category": "player",
+    "sounds": ["guns/beamgun_start_a", "guns/beamgun_start_b", "guns/beamgun_start_c"]
+  },
+  "guns.nuclear_death_ray.loop": {
+    "category": "player",
+    "sounds": ["guns/beamgun_loop_a", "guns/beamgun_loop_b", "guns/beamgun_loop_c", "guns/beamgun_loop_d", "guns/beamgun_loop_e", "guns/beamgun_loop_f"]
+  },
   "guns.flamethrower.fire": {
     "category": "player",
     "sounds": ["guns/flamethrower_shot_a", "guns/flamethrower_shot_b", "guns/flamethrower_shot_c", "guns/flamethrower_shot_d", "guns/flamethrower_shot_e"]
