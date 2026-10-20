@@ -200,6 +200,7 @@ item.gregguns.power_hammer_adv.name=Power Hammer (Advanced)
 item.gregguns.chainsaw.name=Chainsaw
 item.gregguns.rocket_launcher.name=Rocket Launcher
 item.gregguns.grenade_launcher.name=Grenade Launcher
+item.gregguns.nuke_launcher.name=Nuke Launcher
 item.gregguns.ammo_rocket.name=Rocket
 item.gregguns.ammo_40mm_grenade.name=40mm Grenade
 gregguns.gun.tooltip.ammo=Ammo: %s

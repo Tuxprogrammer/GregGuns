@@ -90,7 +90,7 @@ public final class LauncherScenarios {
     // ----- helpers -----------------------------------------------------------------------------------------------
 
     /** A zombie that cannot move and has 200 health, so a 50 damage hit never kills it. */
-    private static EntityZombie sturdy(ScenarioContext ctx, double dx, double dz) {
+    static EntityZombie sturdy(ScenarioContext ctx, double dx, double dz) {
         EntityZombie z = GunRig.zombie(ctx, 0);
         z.setPosition(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5 + dz);
         z.getEntityAttribute(SharedMonsterAttributes.maxHealth)
@@ -100,25 +100,25 @@ public final class LauncherScenarios {
         return z;
     }
 
-    private static void sturdy(FakePlayer shooter) {
+    static void sturdy(FakePlayer shooter) {
         shooter.getEntityAttribute(SharedMonsterAttributes.maxHealth)
             .setBaseValue(200.0);
         shooter.setHealth(200.0F);
     }
 
-    private static float lost(EntityLivingBase e) {
+    static float lost(EntityLivingBase e) {
         return e.getMaxHealth() - e.getHealth();
     }
 
     /** Health a target loses to {@code raw} damage of explosion type. */
-    private static float lossFor(EntityLivingBase target, double raw) {
+    static float lossFor(EntityLivingBase target, double raw) {
         double armor = target.getTotalArmorValue();
         return (float) DamageModel
             .resolve(DamageType.EXPLOSION, raw, 0.0, share -> share * DamageModel.vanillaArmorFactor(armor));
     }
 
     /** A wall of dirt (weak enough for a launcher blast to break) three wide and three high at {@code dx}. */
-    private static void dirtWall(ScenarioContext ctx, int dx) {
+    static void dirtWall(ScenarioContext ctx, int dx) {
         for (int dz = -1; dz <= 1; dz++) {
             for (int dy = 0; dy <= 2; dy++) {
                 ctx.setBlock(dx, dy, dz, Blocks.dirt, 0);
@@ -126,7 +126,7 @@ public final class LauncherScenarios {
         }
     }
 
-    private static int airInWall(ScenarioContext ctx, int dx) {
+    static int airInWall(ScenarioContext ctx, int dx) {
         int air = 0;
         for (int dz = -1; dz <= 1; dz++) {
             for (int dy = 0; dy <= 2; dy++) {
@@ -141,7 +141,7 @@ public final class LauncherScenarios {
     }
 
     /** Finds the one projectile of a class that appears after construction. */
-    private static final class Tracker<T extends GenericProjectile> {
+    static final class Tracker<T extends GenericProjectile> {
 
         private final Class<T> type;
         private final Set<Object> before = Collections.newSetFromMap(new IdentityHashMap<>());
@@ -166,12 +166,12 @@ public final class LauncherScenarios {
     }
 
     /** Fires the rig's gun once: press, release, and the shot happens on the next rig tick. */
-    private static void pull(GunRig rig) {
+    static void pull(GunRig rig) {
         rig.press();
         rig.release();
     }
 
-    private static void restore(boolean blocks, boolean self) {
+    static void restore(boolean blocks, boolean self) {
         ExplosionsConfig.blockDamage = blocks;
         ExplosionsConfig.selfDamage = self;
     }
@@ -179,7 +179,7 @@ public final class LauncherScenarios {
     // ----- reload ------------------------------------------------------------------------------------------------
 
     /** An empty launcher reloads from loose rounds and returns nothing (GUN-13 does not apply). */
-    private static final class Reload implements Scenario {
+    static final class Reload implements Scenario {
 
         private final GunDefinition def;
         private final int rounds;

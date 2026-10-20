@@ -112,6 +112,9 @@ public final class GunSoundEvents {
     /** Event: an explosion, five variants. */
     public static final String EXPLOSION = effect("explosion1");
 
+    /** Event: the Tactical Nuke's blast, one long file, played at volume 8. */
+    public static final String NUKE_EXPLOSION = effect("nukeexplosion");
+
     /**
      * Vanilla sound played when a gun is pulled on an empty magazine and has no registered {@code dry_fire} event.
      */

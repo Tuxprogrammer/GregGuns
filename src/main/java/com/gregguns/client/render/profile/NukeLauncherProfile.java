@@ -8,8 +8,9 @@ package com.gregguns.client.render.profile;
  * which asks for the existing launcher layout with a new palette only: olive and brown 45 degree hazard stripes on
  * the tube, warm brown-black hardware, and a yellow rocket with orange-red bands and dark-gray seams. The sheet is
  * painted by {@code tools/asset-gen/gun_paint.py paint nuke_launcher} from {@code gun-paint/nuke_launcher.json}, on the
- * UV layout copied from {@code rocket_launcher.layout.json}. The gun is not registered yet; the gameplay batch wires it
- * into {@link ClientGunDefinitions}.
+ * UV layout copied from {@code rocket_launcher.layout.json}. It is listed in {@link ClientGunDefinitions}, and shares
+ * the Rocket Launcher's
+ * fitted in-hand transforms (the notes give both guns the same targets, which {@link InHandTargets} holds).
  *
  * <p>
  * Spec: model-notes/nuke_launcher.md sections 1 and 3.

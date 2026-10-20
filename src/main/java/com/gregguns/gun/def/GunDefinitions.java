@@ -55,7 +55,8 @@ public final class GunDefinitions {
             BioGunDef.DEFINITION,
             PowerHammerDef.DEFINITION,
             PowerHammerAdvDef.DEFINITION,
-            ChainsawDef.DEFINITION));
+            ChainsawDef.DEFINITION,
+            NukeLauncherDef.DEFINITION));
 
     private GunDefinitions() {}
 

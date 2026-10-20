@@ -231,6 +231,18 @@
     "category": "player",
     "sounds": ["guns/rocket_reload"]
   },
+  "guns.nuke_launcher.fire": {
+    "category": "player",
+    "sounds": ["guns/rocket_shot_a", "guns/rocket_shot_b", "guns/rocket_shot_c"]
+  },
+  "guns.nuke_launcher.reload": {
+    "category": "player",
+    "sounds": ["guns/rocket_reload"]
+  },
+  "effects.nukeexplosion": {
+    "category": "player",
+    "sounds": ["effects/nukeexplosion"]
+  },
   "guns.grenade_launcher.fire": {
     "category": "player",
     "sounds": ["guns/grenadelauncher_shot_a", "guns/grenadelauncher_shot_b", "guns/grenadelauncher_shot_c"]
