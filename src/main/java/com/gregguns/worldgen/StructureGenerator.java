@@ -21,6 +21,7 @@ import com.gregguns.worldgen.layout.PaletteKeys;
 import com.gregguns.worldgen.layout.Stamper;
 import com.gregguns.worldgen.loot.LazyChests;
 import com.gregguns.worldgen.loot.LootPending;
+import com.gregguns.worldgen.nest.NestPlacer;
 import com.gregguns.worldgen.spawner.HoleSpawnerHook;
 
 import cpw.mods.fml.common.IWorldGenerator;
@@ -46,6 +47,8 @@ public final class StructureGenerator implements IWorldGenerator {
     private static volatile StructurePopulator real;
     /** Replaces {@link #real} while a scenario runs (forced spacing, a test layout). Tests only. */
     private static volatile StructurePopulator override;
+    /** Replaces the world biome lookup while a scenario runs (a desert square for the nest). Tests only. */
+    private static volatile StructurePopulator.BiomeSource biomeOverride;
 
     private static final AtomicLong STAMPED = new AtomicLong();
     private static final AtomicLong ACCEPTED = new AtomicLong();
@@ -66,7 +69,7 @@ public final class StructureGenerator implements IWorldGenerator {
             com.gregguns.core.config.WorldgenConfig.spacingSmall,
             com.gregguns.core.config.WorldgenConfig.spacingMedium,
             com.gregguns.core.config.WorldgenConfig.spacingBig,
-            StructureCatalog.pools(layouts, WorldgenSettings::enabled, camps));
+            StructureCatalog.pools(layouts, WorldgenSettings::enabled, camps, true));
         real = new StructurePopulator(
             grid,
             layouts,
@@ -76,16 +79,31 @@ public final class StructureGenerator implements IWorldGenerator {
             StructurePopulator.CONFIG_RULES,
             new CampPlacer(keys, new PartLayouts.FromRegistry(layouts)),
             flagBlock,
-            UtilityConfig.campFlagCapFactor);
+            UtilityConfig.campFlagCapFactor).withNests(nestPlacer(keys));
         // Layout structures that carry a camp (the carrier) place their own flag from the layout marks.
         StructureHooks.setFlagHook(new CarrierFlag(layouts, flagBlock));
         // Spawner marks (the Big Bunker's zombie holes, the Bug Nest's bug holes) become hole spawner blocks (G11).
         StructureHooks.setSpawnerHook(new HoleSpawnerHook());
     }
 
+    private static NestPlacer nestPlacer(PaletteKeys keys) {
+        try {
+            return new NestPlacer(keys, Blocks.air);
+        } catch (IllegalStateException e) {
+            // A nest key did not resolve: no nest, the rest of worldgen is unaffected.
+            GregGuns.LOG.error("Alien Bug Nest disabled: " + e.getMessage());
+            return null;
+        }
+    }
+
     /** @param populator replaces the real one until cleared with null; scenarios only */
     public static void setOverride(StructurePopulator populator) {
         override = populator;
+    }
+
+    /** @param source replaces the biome lookup until cleared with null; scenarios only */
+    public static void setBiomeOverride(StructurePopulator.BiomeSource source) {
+        biomeOverride = source;
     }
 
     /** @return structures that wrote at least one block, since boot */
@@ -125,7 +143,8 @@ public final class StructureGenerator implements IWorldGenerator {
                 window,
                 sink,
                 new WorldColumnReader(world),
-                (x, z) -> StructureBiomes.typesAt(world.getWorldChunkManager(), x, z),
+                biomeOverride != null ? biomeOverride
+                    : (x, z) -> StructureBiomes.typesAt(world.getWorldChunkManager(), x, z),
                 StructureState.forWorld(world),
                 new WorldMarks(world, sink));
             STAMPED.addAndGet(n);

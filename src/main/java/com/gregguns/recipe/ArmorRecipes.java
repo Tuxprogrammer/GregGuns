@@ -51,6 +51,8 @@ public final class ArmorRecipes {
         }
         addTreatedLeather();
         addDeferredRows();
+        // Recycling data (GGS-06-34): armor, equipment and flight gear, from the same tables as the recipes.
+        ArmorRecycling.register();
     }
 
     /**

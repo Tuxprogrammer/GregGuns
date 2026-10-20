@@ -527,6 +527,9 @@ tile.gregguns.bio_blob.name=Bio Blob
 tile.gregguns.camp_flag.name=Camp Flag
 tile.gregguns.zombie_hole.name=Zombie Hole
 tile.gregguns.bug_hole.name=Bug Hole
+tile.gregguns.bug_nest.name=Bug Nest Resin
+tile.gregguns.bug_nest_eggs.name=Bug Nest Eggs
+tile.gregguns.bug_nest_slime.name=Bug Nest Slime
 container.gregguns.reinforced_chest=Reinforced Chest
 container.gregguns.weapon_chest=Weapon Chest
 
