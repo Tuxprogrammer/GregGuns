@@ -182,7 +182,7 @@ Controller tier HV (Stainless Steel), hatches LV to IV ([multiblocks.md](multibl
 
 | Output | Tier | Method | Inputs | Circuit | EU/t, time | Notes |
 |---|---|---|---|---|---|---|
-| Works Casing x2 | HV | `assemblerRecipes` | `plate.StainlessSteel` x6, `frameGt.StainlessSteel` x1 | 1 | `TierEU.RECIPE_LV / 2`, 2 s 10 ticks | The default hall needs 277 or more casings (interior parts and glass are GT blocks, not Works Casings); one per craft would cost about 1,740 plates, so this yields two. A proposal |
+| Works Casing x2 | HV | `assemblerRecipes` | `plate.StainlessSteel` x6, `frameGt.StainlessSteel` x1 | 6 | `TierEU.RECIPE_LV / 2`, 2 s 10 ticks | The default hall needs 277 or more casings (interior parts and glass are GT blocks, not Works Casings); one per craft would cost about 1,740 plates, so this yields two. A proposal. Circuit 6, not 1: GT's own Stainless Steel casing is this mix on circuit 1 (recipe-clash fix) |
 | Ram Housing x1 | HV | `assemblerRecipes` | Works Casing x1, `Electric_Piston_HV` x1, `gearGt.StainlessSteel` x1 | 2 | `TierEU.RECIPE_HV`, 10 s | Active texture is animated |
 
 Ammunition Works controller (MTE 20105), hand-crafted at HV, shaped as GT's Assembly Line controller. Gate: `Hull_HV` and the Stainless Steel casings.

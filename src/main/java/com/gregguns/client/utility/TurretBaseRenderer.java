@@ -5,6 +5,8 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import com.gregguns.client.render.GlStateGuard;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -35,13 +37,13 @@ public final class TurretBaseRenderer {
             model = new TurretBaseModel();
         }
         Minecraft.getMinecraft().renderEngine.bindTexture(TurretRenderer.textureFor(plateArmor));
-        GL11.glPushMatrix();
-        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glTranslated(x + 0.5, y, z + 0.5);
-        GL11.glScalef(1.0F, -1.0F, -1.0F);
-        model.render(PIXEL);
-        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-        GL11.glPopMatrix();
+        try (GlStateGuard g = GlStateGuard.matrixAndAttrib(GL11.GL_ENABLE_BIT | GL11.GL_CURRENT_BIT)) {
+            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glTranslated(x + 0.5, y, z + 0.5);
+            GL11.glScalef(1.0F, -1.0F, -1.0F);
+            model.render(PIXEL);
+        }
+        GlStateGuard.rebindBlockAtlas();
     }
 }

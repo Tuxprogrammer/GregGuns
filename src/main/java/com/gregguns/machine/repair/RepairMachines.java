@@ -170,7 +170,7 @@ public final class RepairMachines {
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.plate, ss, 6),
                 GTOreDictUnificator.get(OrePrefixes.frameGt, ss, 1))
-            .circuit(1)
+            .circuit(com.gregguns.recipe.CasingCircuits.GANTRY_CASING)
             .itemOutputs(new ItemStack(GregGunsCasings.INSTANCE, 1, GregGunsCasings.GANTRY_CASING))
             .duration(2 * GTRecipeBuilder.SECONDS + 10 * GTRecipeBuilder.TICKS)
             .eut(TierEU.RECIPE_LV / 2)

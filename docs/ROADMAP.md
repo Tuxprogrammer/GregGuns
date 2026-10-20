@@ -254,9 +254,40 @@ One gun, working end to end inside the GTNH dev pack.
 - [ ] Structures respect the dimension whitelist and GTNH's world types.
 - [ ] Loot is tier-appropriate for where the structure spawns.
 
+## Beta review gate · 0.3.0-beta
+
+**Entry gate:** M8 is done.
+
+**Scope:** a completeness review of every milestone from M0 to M8 before the first beta. The owner then plays the beta on their own local server. This gate replaces the alpha pre-releases. M9 work doesn't start until it closes.
+
+**Process:**
+- **Per-milestone audit.** For each milestone, an audit doc like the `m2-exit-gate.md` and `m5-exit-gate.md` pages records:
+  - every exit-gate box, with the evidence for it;
+  - every deviation recorded against the spec;
+  - every open polish item.
+
+  Any box that isn't met is either fixed or explicitly deferred, with the owner's sign-off.
+- **Recipe-clash review.** Check every GregGuns recipe against the full GTNH 2.9 pack's recipes. That means:
+  - crafting-table shapes (shaped and shapeless);
+  - every GT recipe map we add to (assembler, ammo press, assembly line and others);
+  - our own machines' maps;
+  - NEI and ore-dictionary overlaps.
+
+  A clash means identical inputs, or an input set that shadows another recipe, which either steals or hides an existing GTNH recipe. Do the check mechanically: dump the recipes from a real GTNH server with our jar loaded, then diff the dump. Fix every clash or list it in [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md).
+- **Client pass.** A batched in-game session covers every gun, armor set, machine, multiblock, NPC and structure. It records screenshots, and checks that the game runs with and without shaders.
+- **Release.** Tag `0.3.0-beta`, cut it as a GitHub pre-release, and write release notes aimed at server owners.
+- **Owner playthrough.** The owner plays the beta on a local multiplayer server. Bugs found there are fixed in `0.3.x-beta` builds.
+
+**Exit gate:**
+- [ ] Every milestone M0–M8 has a completeness audit, with each exit box met or deferred with the owner's sign-off.
+- [ ] The recipe-clash review found no unresolved clashes with GTNH 2.9 recipes. Each clash it found was fixed, or recorded in PACK-CHANGES with the owner's sign-off.
+- [ ] The batched client pass is clean, including with shaders on, and has no crash-severity or invisible-render bugs.
+- [ ] `0.3.0-beta` is published.
+- [ ] The owner's beta playthrough on a local server is done, and its blocking bugs are fixed.
+
 ## M9 · Pack integration and release
 
-**Entry gate:** every milestone selected for 1.0 is done.
+**Entry gate:** the beta review gate is closed, including the owner's beta playthrough, and every milestone selected for 1.0 is done.
 
 **Scope:**
 - A balance pass with the GTNH tier progression.
@@ -264,13 +295,26 @@ One gun, working end to end inside the GTNH dev pack.
 - Translation readiness: every string is a lang key.
 - Multiplayer and performance soak tests.
 - Handing quest-line content to the GTNH modpack maintainers, since quests live in the pack, not in this repo.
-- One PR to the GTNH modpack repository with every row of [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md), using the final registry names; and the GT5-Unofficial MTE ID and texture-page reservations.
+- Drafting, but not opening, the PR to the GTNH modpack repository. The draft carries every row of [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md), using the final registry names, plus the GT5-Unofficial MTE ID and texture-page reservations. The owner decides when to open it.
+- An outreach package for the GTNH pack maintainers, to give the mod the best chance of being accepted into GTNH. It covers:
+  - a short pitch: what the mod adds and why it fits GT progression;
+  - how it respects GTNH's conventions (GT materials, recipe maps, tiers, no ore generation, config-gated content);
+  - performance and compatibility evidence (soak tests, TPS, FX budget, shader check);
+  - license and originality (MIT, a clean-room rewrite, no Techguns code or assets);
+  - the maintenance commitment;
+  - the quest-line handoff;
+  - links to the release, the docs and the infographics.
+- GuideNH pages: an in-game wiki for the mod, covering getting started, the arsenal by tier, ammo and magazines, armor, machines and multiblocks, NPCs, and structures. Build them from the docs and infographics. This work may start during the beta, before the rest of M9.
+- **Turret compatibility with OpenModularTurrets** (in the GTNH pack, 2.4.8). Investigate how GregGuns turrets overlap with it, and move as much single-block turret function as makes sense to OMT. Options include our ammo as OMT ammo, our guns as OMT weapons, or dropping duplicate single-block turrets. Keep the GregGuns turret multiblock, the Rampart, as our signature piece. Record the decision in a design record and in [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md).
 - Release tagging.
 
 **Exit gate:**
 - [ ] A full playthrough of every tier gate in a GTNH dev pack.
 - [ ] No unresolved crash-severity bugs.
-- [ ] The PACK-CHANGES modpack PR is open, with no placeholder names left.
+- [ ] The GTNH modpack PR text is drafted (not opened), with every PACK-CHANGES row and no placeholder names left. The owner reviews it and decides when to open it.
+- [ ] The outreach package for the GTNH pack maintainers is drafted and reviewed by the owner.
+- [ ] The GuideNH in-game wiki pages ship in the mod, cover every content area, and pass the owner's review in game.
+- [ ] The OpenModularTurrets compatibility investigation is done and the offload is implemented or recorded. The Rampart multiblock stays, and the owner signs off on the turret split.
 - [ ] Release notes, a tagged version and published jars (CI `release-tags` workflow).
 
 ## Later

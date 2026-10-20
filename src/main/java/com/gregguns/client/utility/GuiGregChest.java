@@ -1,7 +1,6 @@
 package com.gregguns.client.utility;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.StatCollector;
 
@@ -57,6 +56,5 @@ public final class GuiGregChest extends GuiContainer {
             drawRect(sx, sy, sx + 18, sy + 18, LIGHT);
             drawRect(sx, sy, sx + 17, sy + 17, WELL);
         }
-        RenderHelper.enableGUIStandardItemLighting();
     }
 }

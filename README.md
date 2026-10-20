@@ -27,49 +27,61 @@ GregGuns adds guns, ammo, armor, turrets, enemy soldiers and ruins to GTNH. It a
 
 Each guide is a single image you can share on its own.
 
-<details><summary><b>The arsenal</b>: every weapon, Steam to ZPM</summary>
+#### The arsenal
+
+Every weapon, Steam to ZPM.
 
 ![Arsenal, Steam to HV](docs/assets/infographics/arsenal-steam-to-hv.png)
-![Arsenal, EV to ZPM](docs/assets/infographics/arsenal-ev-to-zpm.png)
-</details>
 
-<details><summary><b>Recipes</b>: the Steam and LV crafting chains</summary>
+![Arsenal, EV to ZPM](docs/assets/infographics/arsenal-ev-to-zpm.png)
+
+#### Recipes
+
+The Steam and LV crafting chains.
 
 ![Recipes, Steam and LV](docs/assets/infographics/recipes-steam-and-lv.png)
-</details>
 
-<details><summary><b>Ammo and magazines</b>: from GT materials to a loaded gun</summary>
+#### Ammo and magazines
+
+From GT materials to a loaded gun.
 
 ![Ammo and magazines](docs/assets/infographics/ammo-and-magazines.png)
-</details>
 
-<details><summary><b>Armor and gear</b>: twelve armor sets, masks and back gear</summary>
+#### Armor and gear
+
+Twelve armor sets, masks and back gear.
 
 ![Armor and gear](docs/assets/infographics/armor-and-gear.png)
-</details>
 
-<details><summary><b>Machines</b>: each single block and its multiblock</summary>
+#### Machines
+
+Each single block and its multiblock.
 
 ![Machines](docs/assets/infographics/machines.png)
-</details>
 
-<details><summary><b>Multiblock build guides</b>: Ammunition Works, Retort, Armory Gantry, Rampart</summary>
+#### Multiblock build guides
+
+Ammunition Works, Retort, Armory Gantry, Rampart.
 
 ![Ammunition Works](docs/assets/infographics/multiblock-ammunition-works.png)
-![Retort](docs/assets/infographics/multiblock-retort.png)
-![Armory Gantry](docs/assets/infographics/multiblock-armory-gantry.png)
-![Rampart](docs/assets/infographics/multiblock-rampart.png)
-</details>
 
-<details><summary><b>Enemies and loot</b>: who shoots back, and what they drop</summary>
+![Retort](docs/assets/infographics/multiblock-retort.png)
+
+![Armory Gantry](docs/assets/infographics/multiblock-armory-gantry.png)
+
+![Rampart](docs/assets/infographics/multiblock-rampart.png)
+
+#### Enemies and loot
+
+Who shoots back, and what they drop.
 
 ![Enemies and loot](docs/assets/infographics/enemies.png)
-</details>
 
-<details><summary><b>The questbook</b>: chapters, side branches and rewards</summary>
+#### The questbook
+
+Chapters, side branches and rewards.
 
 ![Questbook](docs/assets/infographics/questbook.png)
-</details>
 
 ## Building
 
