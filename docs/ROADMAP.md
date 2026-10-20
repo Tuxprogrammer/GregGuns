@@ -305,6 +305,7 @@ One gun, working end to end inside the GTNH dev pack.
   - the quest-line handoff;
   - links to the release, the docs and the infographics.
 - GuideNH pages: an in-game wiki for the mod, covering getting started, the arsenal by tier, ammo and magazines, armor, machines and multiblocks, NPCs, and structures. Build them from the docs and infographics. This work may start during the beta, before the rest of M9.
+- **Turret compatibility with OpenModularTurrets** (in the GTNH pack, 2.4.8). Investigate how GregGuns turrets overlap with it, and move as much single-block turret function as makes sense to OMT. Options include our ammo as OMT ammo, our guns as OMT weapons, or dropping duplicate single-block turrets. Keep the GregGuns turret multiblock, the Rampart, as our signature piece. Record the decision in a design record and in [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md).
 - Release tagging.
 
 **Exit gate:**
@@ -313,6 +314,7 @@ One gun, working end to end inside the GTNH dev pack.
 - [ ] The GTNH modpack PR text is drafted (not opened), with every PACK-CHANGES row and no placeholder names left. The owner reviews it and decides when to open it.
 - [ ] The outreach package for the GTNH pack maintainers is drafted and reviewed by the owner.
 - [ ] The GuideNH in-game wiki pages ship in the mod, cover every content area, and pass the owner's review in game.
+- [ ] The OpenModularTurrets compatibility investigation is done and the offload is implemented or recorded. The Rampart multiblock stays, and the owner signs off on the turret split.
 - [ ] Release notes, a tagged version and published jars (CI `release-tags` workflow).
 
 ## Later
