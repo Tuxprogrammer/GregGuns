@@ -8,6 +8,22 @@
   - GT5-Unofficial (`gregtech`, 5.09.54.205): precedent only
 - **Roadmap:** the first milestone that ships turrets or owner-based security
 
+## Decision (owner, 2026-10-20)
+
+**Team-based friends (`TEAMS`) is the choice. There is no everyone-friendly mode.** This closes the open question below and M0 audit item D-4. What shipped differs from the original plan on this page:
+
+- **No `playerRelationMode` config switch and no `PlayerRelations` class.** The code is [`FriendProviders`](../../../src/main/java/com/gregguns/utility/security/FriendProviders.java), [`OwnerAccess`](../../../src/main/java/com/gregguns/utility/security/OwnerAccess.java) and [`SecurityLevel`](../../../src/main/java/com/gregguns/utility/security/SecurityLevel.java).
+- **Each Turret and Rampart carries its own security level**, which the owner sets:
+  - **Public** is the default when placed: anyone may use it, and it shoots mobs only.
+  - **Friends:** the owner and friends may use it, and it shoots every other player.
+  - **Owner:** only the owner may use it, and it still spares friends.
+  
+  Strangers on a public server are therefore safe unless an owner opts in.
+- **A friend is** a member or ally of the owner's ServerUtilities team, and a team enemy never is. Without ServerUtilities, only the owner is a friend (GGS-09-04).
+- **GTNHLib teams are not consulted yet.** That is a possible follow-up, if playtesters ask for it.
+
+The sections below are the original plan, kept for the integration research.
+
 ## What changes from Techguns
 
 Techguns asks one question: are player A and player B friends? It answers through FTB Utilities' `FriendsAPI`, and without FTBU it answers "yes" for everyone, so turrets never target players.
@@ -66,5 +82,5 @@ FTB Utilities is **not in the pack**. Neither is any `FriendsAPI`. The pack has 
 
 ## Open questions
 
-- Is `TEAMS` the right default? It makes turrets shoot strangers on a public server and in singleplayer-with-friends over LAN. It also differs from Techguns. A short design record should confirm the default and name who gets a bypass (ops?).
+- *Resolved (owner, 2026-10-20): team-based friends; see Decision above.* Is `TEAMS` the right default? It makes turrets shoot strangers on a public server and in singleplayer-with-friends over LAN. It also differs from Techguns. A short design record should confirm the default and name who gets a bypass (ops?).
 - Should GregGuns ever write to a team (for example, create a solo GTNHLib team for an unregistered owner)? `getOrCreateTeam` does this as a side effect. If that is unwanted, use `getTeamByPlayer` and treat `null` as "no team".
