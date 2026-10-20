@@ -100,7 +100,7 @@ From the [02-guns index](../02-guns/index.md) sections for batches B1, B3a, B4, 
 | Solder (rows 71 and 76) | First omitted, then restored by `Row.molten` and `Row.fluid` (merge `fc6b5f05`): 144 L on GR-61 and GR-70 to GR-72, 288 L on GR-80 to GR-82. PDW, Minigun, Bio Gun and the upgrades list none | index, B1, B4 |
 | Blaster Rifle lens | The glass lens stays dropped, because solder freed no input slot | index, `BlasterRifleDef` |
 | Burst lines | PDW and Pulse Rifle spend one round for a 2 or 3 projectile line with one shared spread roll | index, B1 |
-| Minigun | The start sound is implemented (commented out in Techguns); the spin-down ramp is not built, as it needs a persistent spin phase in the model state | index, B1; row 65 |
+| Minigun | The start sound is implemented (commented out in Techguns); the spin-up and spin-down ramp is built (`RotorSpin`, `RotorSpinTest`; about 10 ticks up and 20 down, a deviation from the original, which has none), pending the client look | index, B1; row 65 |
 | Bio Gun | Poison IV is raised only through the POISON type's own effect, so full hazmat blocks it; blobs obey `explosions.blockDamage` and `PlaceEvent` (PFX-28); no charge sound (the original plays none); the first-person charge shift is drawn (client pass to confirm) | index, B3a |
 | Charge fixes | GUN-02 (ammo less than level), GUN-10 and GUN-31 do not reproduce | index, `ChargeLogicTest` |
 | Scatter Laser Rifle | The fan ignores the main spread of 0.1 (Techguns rolled one beam at 0.1 and four at 0.15) | index, B4 |
@@ -123,7 +123,7 @@ These need a running client and stay open. They are the reason box 3 is unticked
 | NDR starburst pulse | The firing blade pulses 0.8 to 1.0, one cycle per fire. A shot every tick may restart the recoil window each tick, so the pulse may never pass its first quarter in a held burst (see the B6 deviation) |
 | Alpha cut-outs | The Scatter Laser Rifle sight window (the renderer turns alpha test on for a part) and the Grim Reaper cage |
 | Frame cost | Real frame time with many emitters on screen, at the default 2000-particle ceiling, including a nuke |
-| Minigun rotor | Rotor turn under `checkRecoil` and the missing spin-down |
+| Minigun rotor | Rotor turn under `checkRecoil` and the spin-up and spin-down ramp |
 | Energy tuning | EU per shot feel (Q9) and the HUD charge line |
 | NEI | The M5 recipes listed in NEI (M2 gap G1) |
 
@@ -134,7 +134,7 @@ These need a running client and stay open. They are the reason box 3 is unticked
 | G1 | Box 3: frame cost with many emitters on screen | pending client | Pending the batched client session |
 | G2 | In-hand fit, FX visuals, NDR pulse, alpha cut-outs | pending client | Pending the batched client session |
 | G3 | NEI display of the M5 recipes | pending client | Pending the batched client session |
-| G4 | Minigun spin-down, Bio Gun charge shift, De-Atomizer flash tint | Bio Gun shift and De-Atomizer tint built (client check pending); Minigun ramp not built | Owner (2026-10-20): build all three before the beta |
+| G4 | Minigun spin ramp, Bio Gun charge shift, De-Atomizer flash tint | all three built (client check pending) | Owner (2026-10-20): build all three before the beta |
 | G5 | AUG model at 0.914 | assets | Accepted for the MVP by the owner (2026-10-20) |
 | G6 | GGS-02-32 fuel-value scaling for the Chainsaw | deferred (Q7) | Revisit after M5 |
 
