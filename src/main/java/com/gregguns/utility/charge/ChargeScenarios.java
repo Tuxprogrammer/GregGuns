@@ -51,6 +51,7 @@ public final class ChargeScenarios {
         registry.register(new RespectsCancel());
         registry.register(new OfflineOwner());
         registry.register(new ForeignButton());
+        ChargeLookScenario.register(registry);
     }
 
     /** A fake player with a stand-in connection, so the packet pipeline accepts it as a sender. */
