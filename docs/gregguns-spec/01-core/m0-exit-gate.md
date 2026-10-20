@@ -89,7 +89,7 @@ The structural differences from Techguns (one `@Config` file set instead of `Tec
 | ID | Item | Kind |
 |---|---|---|
 | P1 | No `TODO` or `FIXME` in `src/main/java` or `src/test/java` | clean |
-| P2 | Key-conflict check still open: [keybinds.md](keybinds.md) says to run `runClient` against the full pack in M0 and record any rebinding. No design record exists for it | open, needs a client |
+| P2 | Key-conflict check still open: [keybinds.md](keybinds.md) says to run `runClient` against the full pack in M0 and record any rebinding. No design record exists for it | closed, see [design record 0013](../../design/0013-default-key-map.md) |
 | P3 | Open questions on the 01-core index: default `playerRelationMode` (`TEAMS` or `EVERYONE_FRIENDLY`, [team-relations.md](team-relations.md)), face and back cosmetics sync ([networking-gtnhlib.md](networking-gtnhlib.md)), GTTweaker generic recipe add ([mod-compat-tinkers-scripting.md](mod-compat-tinkers-scripting.md)), single or split config file ([config-gtnhlib.md](config-gtnhlib.md)) | open, docs |
 | P4 | The Angelica HUD-caching trace in [hud-overlays.md](hud-overlays.md) was due when M1 built the HUD | open, docs |
 
@@ -97,5 +97,5 @@ The structural differences from Techguns (one `@Config` file set instead of `Tec
 
 | ID | Box | Proposed resolution |
 |---|---|---|
-| D-3 | Polish P2 | Run the key-conflict check in the batched client pass of the beta gate, and write a design record only if a clash is found |
+| D-3 | Polish P2 | **Closed.** The check ran against the full pack and found three in-world clashes (J, N, P); defaults moved. See [design record 0013](../../design/0013-default-key-map.md) |
 | D-4 | Polish P3 | **Decided (owner, 2026-10-20):** team-based friends (`TEAMS`), with no everyone-friendly mode, as shipped: per-block security, Public by default, with ServerUtilities allies as friends ([team-relations.md § Decision](team-relations.md#decision-owner-2026-10-20)). One config file and no cosmetics packet are accepted for the beta. Closed |

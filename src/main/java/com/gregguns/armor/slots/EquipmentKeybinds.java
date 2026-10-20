@@ -29,18 +29,20 @@ public final class EquipmentKeybinds {
     public static final String AMMO_POUCH_NAME_KEY = "key.gregguns.ammo_pouch";
     /** Lang key of the back device key's name (Glider glide, Anti Gravity Device switch). */
     public static final String BACK_DEVICE_NAME_KEY = "key.gregguns.back_device";
-    /** LWJGL key code of N (Keyboard.KEY_N); inlined because LWJGL is absent on a server. */
-    public static final int DEFAULT_NIGHT_VISION_KEY = 49;
-    /** LWJGL key code of P (Keyboard.KEY_P). */
-    public static final int DEFAULT_AMMO_POUCH_KEY = 25;
+    /**
+     * LWJGL key code of M (Keyboard.KEY_M); inlined because LWJGL is absent on a server. Not N: see design record 0013.
+     */
+    public static final int DEFAULT_NIGHT_VISION_KEY = 50;
+    /** LWJGL key code of the right bracket (Keyboard.KEY_RBRACKET). Not P: see design record 0013. */
+    public static final int DEFAULT_AMMO_POUCH_KEY = 27;
 
     private static final IKeyPressedListener NIGHT_VISION_LISTENER = (player, key, isDown) -> {
         if (isDown) {
             SlotEquipment.toggleNightVision(player);
         }
     };
-    /** LWJGL key code of J (Keyboard.KEY_J), the Techguns jetpack key. */
-    public static final int DEFAULT_BACK_DEVICE_KEY = 36;
+    /** LWJGL key code of the semicolon (Keyboard.KEY_SEMICOLON). Not J: see design record 0013. */
+    public static final int DEFAULT_BACK_DEVICE_KEY = 39;
 
     private static final IKeyPressedListener BACK_DEVICE_LISTENER = (player, key, isDown) -> SlotEquipment
         .backKey(player, isDown);
@@ -73,7 +75,7 @@ public final class EquipmentKeybinds {
         GregGuns.LOG.debug("Registered equipment keybinds");
     }
 
-    /** @return the back device key (J by default); null before {@link #register()} */
+    /** @return the back device key (semicolon by default); null before {@link #register()} */
     public static SyncedKeybind backDevice() {
         return backDevice;
     }
