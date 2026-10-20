@@ -85,7 +85,7 @@ All default `true`; all require a game restart (items are registered once). Effe
 | `enable_ingots` | Register `ingot` (steel, copper) and `clump` (steel) and the clump smelting |
 | `enable_plates` | Register `plate` (steel, iron) and the iron-plate smelting |
 | `enable_wires` | Register `wire` (copper, gold) |
-| `enable_battery` | Register the battery item. Its recipe JSON is not conditioned on this flag (ICBM-01-34) |
+| `enable_battery` | Register the battery item. Its recipe JSON is not conditioned on this flag (ICBM-01-31) |
 | `enable_sulfur_drops` | Add sulfur dust to creeper and blaze loot |
 | `enable_loot_drops` | Add crafting items to dungeon and mineshaft chest loot |
 
