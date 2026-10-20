@@ -95,24 +95,9 @@ public final class CascadeScenarios {
             StructurePopulator.CONFIG_RULES);
     }
 
-    private static boolean freeAround(ChunkProviderServer cps, int bx, int bz) {
-        for (int dx = -MARGIN; dx < SIDE + MARGIN; dx++) {
-            for (int dz = -MARGIN; dz < SIDE + MARGIN; dz++) {
-                if (cps.chunkExists(bx + dx, bz + dz)) return false;
-            }
-        }
-        return true;
-    }
-
     /** The minimum chunk of a never-generated square plus margin, far from spawn, or null. */
     private static int[] freshSquare(World world, Random rnd) {
-        ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
-        for (int attempt = 0; attempt < 12; attempt++) {
-            int bx = 3000 + rnd.nextInt(9000);
-            int bz = 3000 + rnd.nextInt(9000);
-            if (freeAround(cps, bx, bz)) return new int[] { bx, bz };
-        }
-        return null;
+        return ScenarioRegions.allocate(world, "worldgen.no_cascade", SIDE, MARGIN, null);
     }
 
     /** Chunks loaded by a run, relative to the square's minimum chunk. */

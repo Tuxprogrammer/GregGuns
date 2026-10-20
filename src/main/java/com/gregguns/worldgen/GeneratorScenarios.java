@@ -101,28 +101,30 @@ public final class GeneratorScenarios {
             StructurePopulator.CONFIG_RULES);
     }
 
-    /** Loads a SIDE x SIDE chunk square that has never been generated; returns its minimum chunk or null. */
-    private static int[] freshSquare(World world, int salt) {
-        ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
-        Random rnd = new Random(System.nanoTime() + salt);
-        for (int attempt = 0; attempt < 8; attempt++) {
-            int bx = 2000 + rnd.nextInt(8000);
-            int bz = 2000 + rnd.nextInt(8000);
-            boolean fresh = true;
-            for (int dx = -1; dx <= SIDE && fresh; dx++) {
-                for (int dz = -1; dz <= SIDE && fresh; dz++) {
-                    if (cps.chunkExists(bx + dx, bz + dz)) fresh = false;
+    /**
+     * A SIDE x SIDE chunk square of the scenario's own lane (see {@link ScenarioRegions}) that was never loaded and
+     * has no recorded structure decision for any plan reaching into it; returns its minimum chunk or null.
+     */
+    private static int[] freshSquare(World world, String owner) {
+        StructureState state = StructureState.forWorld(world);
+        Layout l = testRegistry(PaletteKeys.resolveForPack(s -> {})).get(TEST_HUT_ID);
+        StructureGrid grid = new StructureGrid(2, 2, 2, TestLayout.poolsOf(l));
+        return ScenarioRegions.allocate(world, owner, SIDE, 1, (bx, bz) -> {
+            for (int cx = bx - 2; cx < bx + SIDE + 2; cx++) {
+                for (int cz = bz - 2; cz < bz + SIDE + 2; cz++) {
+                    for (StructurePlan p : grid.plansForWindow(world.getSeed(), 0, cx, cz)) {
+                        if (state.get(PlanKey.of(p)) != null) return false;
+                    }
                 }
             }
-            if (fresh) return new int[] { bx, bz };
-        }
-        return null;
+            return true;
+        });
     }
 
     /** Loads fresh squares until one stamps a structure (a square may be all ocean); null when none does. */
-    private static int[] loadUntilStamped(World world, int salt) {
+    private static int[] loadUntilStamped(World world, String owner) {
         for (int i = 0; i < 6; i++) {
-            int[] sq = freshSquare(world, salt * 100 + i);
+            int[] sq = freshSquare(world, owner);
             if (sq == null) return null;
             long stampedBefore = StructureGenerator.stampedCount();
             loadSquare(world, sq[0], sq[1]);
@@ -175,7 +177,7 @@ public final class GeneratorScenarios {
             StructureGenerator.setOverride(populator);
             try {
                 long[] before = counters();
-                int[] sq = loadUntilStamped(world, 1);
+                int[] sq = loadUntilStamped(world, name());
                 if (sq == null) return ScenarioResult.fail(name(), "no square of 6 stamped a structure");
                 long[] after = counters();
                 out.check(after[0] - before[0] > 0, "the generator ran on populated chunks");
@@ -218,12 +220,12 @@ public final class GeneratorScenarios {
                         "marker block at " + m[0] + "," + m[2]);
                     int[] v = at(p, VANILLA, anchorY, layout);
                     TileEntity vt = world.getTileEntity(v[0], v[1], v[2]);
-                    out.check(vt instanceof TileEntityChest && nonEmpty((IInventory) vt), "vanilla chest is filled");
+                    out.check(vt instanceof TileEntityChest && nonEmpty((IInventory) vt), "vanilla chest is filled at " + v[0] + "," + v[1] + "," + v[2] + " of plan " + e.getKey() + " (chunk claimed by " + ScenarioRegions.lastToucherOfBlock(v[0], v[2]) + ")");
                     int[] w = at(p, WEAPON, anchorY, layout);
                     TileEntity wt = world.getTileEntity(w[0], w[1], w[2]);
                     out.check(
                         wt instanceof TileGregChest && ((TileGregChest) wt).pending() != null,
-                        "GregGuns chest holds an unfilled order");
+                        "GregGuns chest holds an unfilled order at " + w[0] + "," + w[1] + "," + w[2] + " of plan " + e.getKey());
                     snap1.put(e.getKey(), snapshot(world, p, anchorY, layout));
                 }
                 out.check(placed > 0, "a plan was placed; rejections were " + reasons);
@@ -317,6 +319,7 @@ public final class GeneratorScenarios {
             return sb.toString();
         }
 
+/** The scenario that last claimed the chunk of a snapshot cell ("x,y,z=id:meta"). */        private static String toucherOf(String cell) {            String[] c = cell.split("=")[0].split(",");            return ScenarioRegions.lastToucherOfBlock(Integer.parseInt(c[0]), Integer.parseInt(c[2]));        }
         /** The first differing cell of the first differing plan, for the failure message. */
         private static String firstDiff(Map<String, String> a, Map<String, String> b) {
             for (Map.Entry<String, String> e : a.entrySet()) {
@@ -328,7 +331,7 @@ public final class GeneratorScenarios {
                     .split(";");
                 String[] y = other.split(";");
                 for (int i = 0; i < Math.min(x.length, y.length); i++) {
-                    if (!x[i].equals(y[i])) return " (plan " + e.getKey() + ": " + x[i] + " became " + y[i] + ")";
+                    if (!x[i].equals(y[i])) return " (plan " + e.getKey() + ": " + x[i] + " became " + y[i] + "; chunk last claimed by " + toucherOf(x[i]) + ")";
                 }
             }
             return "";
@@ -382,9 +385,9 @@ public final class GeneratorScenarios {
             boolean expectStructures) {
             long[] before = counters();
             if (expectStructures) {
-                out.check(loadUntilStamped(world, salt) != null, label + ": structures were placed");
+                out.check(loadUntilStamped(world, "worldgen.dimension_gate") != null, label + ": structures were placed");
             } else {
-                int[] sq = freshSquare(world, salt);
+                int[] sq = freshSquare(world, "worldgen.dimension_gate");
                 if (sq == null) {
                     out.check(false, label + ": no fresh chunk square found");
                     return;
