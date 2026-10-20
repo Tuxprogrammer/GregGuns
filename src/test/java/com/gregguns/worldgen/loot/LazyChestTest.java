@@ -39,7 +39,9 @@ class LazyChestTest {
             draws++;
             int n = 3 + richness + rand.nextInt(4);
             for (int i = 0; i < n; i++) {
-                inv.setInventorySlotContents(rand.nextInt(inv.getSizeInventory()), new ItemStack(FAKE, 1 + rand.nextInt(9)));
+                inv.setInventorySlotContents(
+                    rand.nextInt(inv.getSizeInventory()),
+                    new ItemStack(FAKE, 1 + rand.nextInt(9)));
             }
         });
     }
@@ -87,7 +89,9 @@ class LazyChestTest {
         chest.openInventory();
         chest.ensureFilled();
         assertEquals(1, draws, "later accessors must not draw again");
-        assertTrue(first.stream().anyMatch(s -> !s.equals("-")));
+        assertTrue(
+            first.stream()
+                .anyMatch(s -> !s.equals("-")));
     }
 
     @Test
@@ -97,7 +101,10 @@ class LazyChestTest {
             chest.setInventorySlotContents(i, null);
         }
         assertEquals(1, draws);
-        assertTrue(snapshot(chest).stream().allMatch(s -> s.equals("-")), "a looted chest is not refilled");
+        assertTrue(
+            snapshot(chest).stream()
+                .allMatch(s -> s.equals("-")),
+            "a looted chest is not refilled");
     }
 
     @Test
@@ -183,6 +190,9 @@ class LazyChestTest {
         TileGregChest eager = new TileGregChest();
         LazyChests.fillEagerly(eager, new LootPending("gregguns:test", 1, 31L));
         assertEquals(snapshot(lazy), snapshot(eager));
-        assertEquals(new Random(5L).nextInt(), new LootPending("c", 0, 5L).random().nextInt());
+        assertEquals(
+            new Random(5L).nextInt(),
+            new LootPending("c", 0, 5L).random()
+                .nextInt());
     }
 }
