@@ -25,6 +25,7 @@ public final class NpcScenarios {
         NpcLootScenarios.registerAll(registry);
         NpcEggScenarios.registerAll(registry);
         NpcCapScenarios.registerAll(registry);
+        NpcSpawnScenarios.registerAll(registry);
         ZombieScenarios.registerAll(registry);
     }
 
