@@ -17,6 +17,7 @@ All evidence is pinned to GT5-Unofficial `5.09.54.205`, Backhand `1.8.16`, Battl
 | [damage-interop.md](damage-interop.md) | Damage sources, GT hazmat, other mods' armor, `LivingAttackEvent` listeners | GGS-02-17 to 23 |
 | [offhand-backhand.md](offhand-backhand.md) | Right-click fallback, offhand blacklist, Battlegear2, enchantments | GGS-02-24 to 28 |
 | [fluid-ammo.md](fluid-ammo.md) | Fuel, bio and air tanks on GT fluids and the Fluid Canner | GGS-02-29 to 34 |
+| [m1-exit-gate.md](m1-exit-gate.md) | The M1 exit-gate audit: evidence per box, deviations, polish items and owner decisions |
 
 ## Integration map
 
