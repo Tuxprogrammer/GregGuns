@@ -567,7 +567,7 @@ public final class MTERampart extends MTEExtendedPowerMultiBlockBase<MTERampart>
             .addAir(lang("structure.air"))
             .addStructureInfo(lang("structure.footer"))
             .addSubChannel(GTStructureChannels.STRUCTURE_LENGTH)
-            .toolTipFinisher();
+            .toolTipFinisher(com.gregguns.core.text.AddedBy.NAME);
         return tt;
     }
 

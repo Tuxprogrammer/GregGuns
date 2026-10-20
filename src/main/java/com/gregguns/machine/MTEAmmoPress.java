@@ -165,7 +165,7 @@ public final class MTEAmmoPress extends MTEBasicMachineWithRecipe implements IMT
         for (int i = 0; i < lines.length; i++) {
             lines[i] = StatCollector.translateToLocal(mDescriptionArray[i]);
         }
-        return lines;
+        return com.gregguns.core.text.AddedBy.append(lines);
     }
 
     /**

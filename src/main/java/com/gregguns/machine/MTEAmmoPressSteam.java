@@ -88,7 +88,7 @@ public final class MTEAmmoPressSteam extends MTEBasicMachineBronze {
         // The lang file is not loaded at construction, so the tooltip key is translated here.
         String[] lines = super.getDescription();
         lines[0] = StatCollector.translateToLocal(mDescriptionArray[0]);
-        return lines;
+        return com.gregguns.core.text.AddedBy.append(lines);
     }
 
     @SideOnly(Side.CLIENT)

@@ -467,7 +467,7 @@ public final class MTERetort extends MTEExtendedPowerMultiBlockBase<MTERetort>
             .addOutputBus("1+", StatCollector.translateToLocal("gregguns.retort.tt.low_ring"), 1)
             .addInputHatch("1+", StatCollector.translateToLocal("gregguns.retort.tt.low_ring"), 1)
             .addMufflerHatch("1", StatCollector.translateToLocal("gregguns.retort.tt.cap"), 2)
-            .toolTipFinisher();
+            .toolTipFinisher(com.gregguns.core.text.AddedBy.NAME);
         return tt;
     }
 
