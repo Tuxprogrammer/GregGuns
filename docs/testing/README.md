@@ -275,6 +275,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.bio_gun.blob.veto` | Bio Gun (M5 B3a) | The same glob with `BlockEvent.PlaceEvent` cancelled by a listener leaves no blob (PFX-28). |
 | `gun.bio_gun.recipe` | Bio Gun (M5 B3a) | The EV assembly row (GR-65) is in GT's assembler map with its sheet inputs and not below EV, and the found recipe's output is ours. |
 | `gun.bio_gun.tiergate` | Bio Gun (M5 B3a) | The row carries titanium, the EV gate material; an EV assembler finds it and an HV assembler does not. |
+| `gun.all.spends_ammo` | Guns (regression) | For every registered gun a survival fake player pulls once and the ammo drops by one pull's cost: rounds per shot (one per burst pull), EU per shot, or the tool hit cost. |
 | `gun.alien_blaster.fire` | Alien Blaster (M5 B5) | Holding the trigger on a charged LuV Alien Blaster fires every 8 ticks: each shot launches one `AlienBlasterProjectile` and spends exactly 100,000,000 EU; no reload, no round change. |
 | `gun.alien_blaster.hit` | Alien Blaster (M5 B5) | A bolt from a player hits a zombie 6 blocks away for 16 FIRE damage after the damage model with 20 percent penetration (no drop-off) and sets it alight. |
 | `gun.alien_blaster.blast` | Alien Blaster (M5 B5) | A bolt into a wooden wall ends in a power 0.5 explosion with block breaking off; the wall stands, and fire is on the hit face exactly when `explosions.blockDamage` is on. |
