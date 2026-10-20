@@ -13,8 +13,8 @@ public final class VillageScan {
 
     private VillageScan() {}
 
-    public static boolean containsVillageBlocks(PopulateWindow window, ColumnReader reader, PlacedFootprint fp, int surfaceY,
-        int height) {
+    public static boolean containsVillageBlocks(PopulateWindow window, ColumnReader reader, PlacedFootprint fp,
+        int surfaceY, int height) {
         for (int x = fp.minX(); x <= fp.maxX(); x += 2) {
             for (int z = fp.minZ(); z <= fp.maxZ(); z += 2) {
                 if (!window.contains(x, z)) {
