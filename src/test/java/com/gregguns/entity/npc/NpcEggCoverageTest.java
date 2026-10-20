@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Every catalog mob has an entity class and a spawn-egg subtype. SIMPLE_TURRET is exempt on purpose: the hostile camp
- * turret is placed by the turret base only and has no egg. OUTCAST and STORMTROOPER are a recorded gap (no entity class
- * yet), listed in {@link NpcRegistry#NOT_YET_IMPLEMENTED}. The live half (registration, creative listing) is the
+ * turret is placed by the turret base only and has no egg. OUTCAST and STORMTROOPER are implemented (M7 B5), so
+ * {@link NpcRegistry#NOT_YET_IMPLEMENTED} is empty. The live half (registration, creative listing) is the
  * scenario {@code npc.all_eggs}.
  */
 class NpcEggCoverageTest {
@@ -25,9 +25,10 @@ class NpcEggCoverageTest {
     @Test
     void theExemptionAndGapListsAreExactlyWhatIsRecorded() {
         assertEquals(java.util.Collections.singleton(NpcMob.SIMPLE_TURRET), NpcRegistry.EGG_EXEMPT);
-        assertTrue(NpcRegistry.NOT_YET_IMPLEMENTED.contains(NpcMob.OUTCAST));
-        assertTrue(NpcRegistry.NOT_YET_IMPLEMENTED.contains(NpcMob.STORMTROOPER));
-        assertEquals(2, NpcRegistry.NOT_YET_IMPLEMENTED.size());
+        assertTrue(NpcRegistry.NOT_YET_IMPLEMENTED.isEmpty());
+        NpcRegistry.declareMobs();
+        assertEquals(com.gregguns.entity.npc.mob.Outcast.class, NpcRegistry.boundClass(NpcMob.OUTCAST));
+        assertEquals(com.gregguns.entity.npc.mob.StormTrooper.class, NpcRegistry.boundClass(NpcMob.STORMTROOPER));
         assertTrue(!NpcMob.SIMPLE_TURRET.hasEgg());
     }
 }
