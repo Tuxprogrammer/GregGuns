@@ -1,7 +1,7 @@
 package com.gregguns.client.projectile;
 
-import com.gregguns.projectile.BeamProjectile;
 import com.gregguns.projectile.AlienBlasterProjectile;
+import com.gregguns.projectile.BeamProjectile;
 import com.gregguns.projectile.BeamVisual;
 import com.gregguns.projectile.BiogunProjectile;
 import com.gregguns.projectile.EnergyBlastProjectile;

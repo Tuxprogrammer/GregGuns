@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.gregguns.api.Tier;
-import com.gregguns.gun.def.GunDefinitions;
 import com.gregguns.item.part.ComponentItems;
 import com.gregguns.recipe.ComponentTable.FluidInput;
 import com.gregguns.recipe.ComponentTable.FluidKind;
@@ -27,21 +26,15 @@ public final class NdrLineTable {
     /** The gun's registry name. */
     public static final String NUCLEAR_DEATH_RAY = "nuclear_death_ray";
 
-    /** The Alien Blaster's registry name: the sheet's research item once that gun exists. */
+    /** The Alien Blaster's registry name: the sheet's research item. */
     public static final String ALIEN_BLASTER = "alien_blaster";
-
-    /** The Bio Gun's registry name: the research item until the Alien Blaster is registered. */
-    private static final String FALLBACK_RESEARCH = "bio_gun";
 
     /** The specs, in sheet order. */
     public static final List<Spec> SPECS;
 
     static {
         List<Spec> list = new ArrayList<>();
-        // GR-103 (Nuclear Death Ray, ZPM). Deviation: the sheet scans the Alien Blaster; until that gun is registered
-        // the scan item is the Bio Gun, so the recipe still registers. The switch is automatic once the Alien Blaster
-        // is in GunDefinitions.
-        String research = GunDefinitions.byName(ALIEN_BLASTER) != null ? ALIEN_BLASTER : FALLBACK_RESEARCH;
+        // GR-103 (Nuclear Death Ray, ZPM). The sheet scans the Alien Blaster.
         list.add(
             new Spec(
                 new Row(
@@ -63,7 +56,7 @@ public final class NdrLineTable {
                 Arrays.asList(
                     new FluidInput("SolderingAlloy", FluidKind.MOLTEN, 1152),
                     new FluidInput("Lubricant", FluidKind.FLUID, 500)),
-                new Research(Input.mod(research, 1), 60, Tier.LUV),
+                new Research(Input.mod(ALIEN_BLASTER, 1), 60, Tier.LUV),
                 null));
         SPECS = Collections.unmodifiableList(list);
     }

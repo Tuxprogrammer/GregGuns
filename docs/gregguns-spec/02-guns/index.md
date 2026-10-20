@@ -159,7 +159,7 @@ Nuclear Death Ray (`nuclear_death_ray`, GR-103), ZPM. An IC2 tier 7 electric ite
 
 - **Energy, not cells (plan Q2).** A full charge is the ZPM baseline, 10,000,000,000 EU. Techguns' 100 rounds at one per 5 ticks are 500 ticks of beam, so a tick of beam costs 20,000,000 EU, charged as one shot per tick. There is no reload (plan Q5). The Nuclear Power Cell stays a ZPM component and a radiation item; it is not ammo and no recipe takes it (GGS-02-36).
 - **Sounds.** The beam plays its own start and loop sounds, so the gun sets no `startsLoop`, and `ItemGun.shotEvent` is null for a `BEAM` gun: the per-shot fire sound would otherwise play twenty times a second. The `fire` and `reload` events exist in `sounds.json` (the sound table requires both) and reuse the beam start files; neither plays.
-- **Recipe.** An Assembly Line spec (`NdrLineTable`), not an Assembler row: its 8 item inputs do not fit. The sheet's research item is the Alien Blaster; until that gun is registered the scan item is the Bio Gun, and it switches itself.
+- **Recipe.** An Assembly Line spec (`NdrLineTable`), not an Assembler row: its 8 item inputs do not fit. The sheet's research item is the Alien Blaster.
 - **Model.** `NuclearDeathRayProfile` is registered and fitted to the in-hand targets (section 7 as written; the original's double idle step at rest is already in those figures). The firing starburst blade is drawn only while the fire progress is above 0 and pulses with a uniform scale of 0.8 to 1.0 about the barrel axis, one sine cycle per fire starting at 0.9. A shot every tick restarts the recoil window each tick, so the pulse may never get past its first quarter in a held burst; to be checked in game.
 
 ## Bio Gun, batch B3a (M5): deviations

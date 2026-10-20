@@ -63,9 +63,6 @@ public final class NetherBlasterDef {
 
     /** The research gun the sheet names: the Blaster Rifle (IV), one tier below. */
     private static final String RESEARCH = "blaster_rifle";
-    // Deviation (until the IV energy guns land): the Blaster Rifle is registered by batch B4. Before it is, the line
-    // scans the Bio Gun (the newest gun) so the recipe still registers and the boot is clean. Remove with B4's merge.
-    private static final String RESEARCH_FALLBACK = "bio_gun";
 
     private static Spec line;
 
@@ -87,13 +84,12 @@ public final class NetherBlasterDef {
      */
     public static synchronized Spec line() {
         if (line == null) {
-            String research = GunDefinitions.byName(RESEARCH) != null ? RESEARCH : RESEARCH_FALLBACK;
             line = GunLineRecipes.spec(
                 "GR-100",
                 NAME,
                 Tier.LUV,
                 45,
-                Input.mod(research, 1),
+                Input.mod(RESEARCH, 1),
                 60,
                 Tier.IV,
                 new FluidInput[] { GunLineRecipes.molten("SolderingAlloy", 576),
