@@ -275,6 +275,17 @@ public final class NpcProfiles {
                         .armor(3, 100, 0, "t1_combat")
                         .build())
                 .build());
+        // Attack Helicopter: fixed drops only (per-mob.md section 16), no gear. Ranges are the spec's 16 + nextInt(16)
+        // rifle bullets, 8 + nextInt(8) rockets, 2 + nextInt(2) cybernetic parts and 4 + nextInt(4) iron blocks.
+        add(
+            m,
+            NpcProfile.builder("AttackHelicopter", Tier.HV)
+                .fixed(LootDrop.range(G + "ammo_rifle_bullet", 16, 31))
+                .fixed(LootDrop.range(G + "ammo_rocket", 8, 15))
+                .fixed(LootDrop.range(G + "part_cybernetic", 2, 3))
+                .fixed(LootDrop.range("minecraft:iron_block", 4, 7))
+                .rareDrop(false)
+                .build());
         for (String mutant : new String[] { "SuperMutantBasic", "SuperMutantHeavy", "SuperMutantElite" }) {
             add(
                 m,
