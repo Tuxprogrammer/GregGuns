@@ -12,6 +12,9 @@ import com.gregguns.client.anim.SpriteSheet;
  */
 public final class MuzzleFlashSpec {
 
+    /** No tint: the sheet's own colors. */
+    private static final float[] WHITE = { 1.0f, 1.0f, 1.0f };
+
     private final String texture;
     private final SpriteSheet sheet;
     private final double offX;
@@ -23,6 +26,7 @@ public final class MuzzleFlashSpec {
     private final double rotZ;
     private final boolean additive;
     private final double thirdPersonLength;
+    private final float[] tint;
 
     /**
      * @param texture           resource path such as {@code gregguns:textures/fx/muzzleflash2.png}
@@ -37,6 +41,18 @@ public final class MuzzleFlashSpec {
      */
     public MuzzleFlashSpec(String texture, SpriteSheet sheet, double offX, double offY, double offZ, double scale,
         double[] rot, boolean additive, double thirdPersonLength) {
+        this(texture, sheet, offX, offY, offZ, scale, rot, additive, thirdPersonLength, WHITE);
+    }
+
+    /**
+     * As above, with a vertex tint. Spec: gun-sheets.md (Alien Blaster muzzle FX row: tinted RGB, color reset to white
+     * after); the renderer applies the tint to the sprite's vertices and leaves GL color white.
+     *
+     * @param tint red, green, blue multipliers, 0 to 1 (three values); {@code {1, 1, 1}} is untinted
+     */
+    public MuzzleFlashSpec(String texture, SpriteSheet sheet, double offX, double offY, double offZ, double scale,
+        double[] rot, boolean additive, double thirdPersonLength, float[] tint) {
+        this.tint = tint.clone();
         this.texture = texture;
         this.sheet = sheet;
         this.offX = offX;
@@ -103,5 +119,10 @@ public final class MuzzleFlashSpec {
     /** @return length of the third-person flash planes, blocks */
     public double thirdPersonLength() {
         return thirdPersonLength;
+    }
+
+    /** @return a copy of the red, green, blue tint multipliers; all 1 means untinted */
+    public float[] tint() {
+        return tint.clone();
     }
 }

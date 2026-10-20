@@ -73,6 +73,9 @@ public final class DeatomizerPistolProfile {
     /** Frames of {@code muzzleflash_blue.png} that are painted: 0 to 7. */
     public static final int MUZZLE_FLASH_FRAMES = 8;
 
+    /** The flash tint, cyan-green RGB (0.2, 1.0, 0.7). */
+    public static final float[] FLASH_TINT = { 0.2f, 1.0f, 0.7f };
+
     private static final float[] NO_PIVOT = { 0, 0, 0 };
 
     /** One part: the whole gun moves as a unit. */
@@ -230,10 +233,11 @@ public final class DeatomizerPistolProfile {
             .scale(0.85)
             .translate(-CENTER[0], -CENTER[1], 0)
             .build();
-        // Deviation: the notes call for the alien-blaster flash tinted cyan-green (0.2, 1.0, 0.7). A flash spec has
-        // no tint, so the blue energy flash sheet stands in (it is already blue). The first-person offset follows the
-        // solved placement (InHandFit.Placement.flashOffset). Headless work cannot look at the screen, so this is
-        // unverified in game. Additive because the GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        // Spec: the notes call for the alien-blaster flash sprite tinted cyan-green (0.2, 1.0, 0.7), additive, scale
+        // 1.0.
+        // The sheet is the GregGuns blue flash (the Alien Blaster's); the tint is a MuzzleFlashSpec field that the
+        // renderer applies to the vertices and resets to white. The first-person offset follows the solved placement
+        // (InHandFit.Placement.flashOffset). Additive because the sheet is black-backed (docs/assets/MANIFEST.md).
         double[] fo = FIT.flashOffset(MUZZLE, 1.0);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash_blue.png",
@@ -244,7 +248,8 @@ public final class DeatomizerPistolProfile {
             1.0,
             new double[] { 0, 0, 0 },
             true,
-            0.7);
+            0.7,
+            FLASH_TINT);
         return GunTransforms.builder()
             .parts(1)
             .timing(5, 5, 45)

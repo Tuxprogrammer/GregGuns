@@ -412,6 +412,25 @@ class DeatomizerPistolProfileTest {
     }
 
     @Test
+    void flashIsAlienBlasterSpriteTintedCyanGreenAndAdditive() {
+        MuzzleFlashSpec flash = DeatomizerPistolProfile.TRANSFORMS.muzzleFlash();
+        assertEquals(
+            AlienBlasterProfile.TRANSFORMS.muzzleFlash()
+                .texture(),
+            flash.texture(),
+            "same sprite sheet as the Alien Blaster");
+        org.junit.jupiter.api.Assertions.assertArrayEquals(new float[] { 0.2f, 1.0f, 0.7f }, flash.tint(), 0.0f);
+        assertTrue(flash.additive());
+        assertEquals(1.0, flash.scale(), 0.0);
+        org.junit.jupiter.api.Assertions.assertArrayEquals(
+            new float[] { 1f, 1f, 1f },
+            AlienBlasterProfile.TRANSFORMS.muzzleFlash()
+                .tint(),
+            0.0f,
+            "other flashes stay untinted");
+    }
+
+    @Test
     void theGunIsRegistered() {
         assertSame(
             DeatomizerPistolProfile.DEFINITION,
