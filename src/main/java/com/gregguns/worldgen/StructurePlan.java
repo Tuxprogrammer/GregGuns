@@ -1,12 +1,15 @@
 package com.gregguns.worldgen;
 
+import com.gregguns.worldgen.layout.Rotations;
+
 /**
  * Where, how and what one grid cell builds. Derived from the world seed, dimension and cell only (GGS-11-10); no
  * world access, so biome and terrain checks happen later, at populate time.
  *
  * <p>
- * The anchor is the minimum corner of the <em>rotated</em> footprint box. Rotation is in quarter turns and follows the
- * Techguns convention that each turn maps +X to -Z.
+ * The anchor is the minimum corner of the <em>rotated</em> footprint box. Rotation is in quarter turns clockwise seen
+ * from
+ * above (+X east, +Z south), so each turn maps +X to +Z; {@link Rotations} owns the convention.
  */
 // Spec: docs/gregguns-spec/11-worldgen/structure-placement.md (GGS-11-10, GGS-11-11); fixes WGEN-30
 public final class StructurePlan {
@@ -156,32 +159,15 @@ public final class StructurePlan {
 
     /**
      * Maps a layout-local column to its world column. Local coordinates run 0..sizeX-1 and 0..sizeZ-1 of the
-     * unrotated footprint; the result always lies in the box.
+     * unrotated footprint; the result always lies in the box. Delegates to {@link Rotations}, the one rotation
+     * convention (the stamper's), so a column computed here is the column the stamper writes.
      *
      * @return {worldX, worldZ}
      */
     public int[] toWorld(int localX, int localZ) {
         int sx = footprint.sizeX();
         int sz = footprint.sizeZ();
-        int rx;
-        int rz;
-        switch (rotation) {
-            case 1:
-                rx = localZ;
-                rz = sx - 1 - localX;
-                break;
-            case 2:
-                rx = sx - 1 - localX;
-                rz = sz - 1 - localZ;
-                break;
-            case 3:
-                rx = sz - 1 - localZ;
-                rz = localX;
-                break;
-            default:
-                rx = localX;
-                rz = localZ;
-        }
-        return new int[] { anchorX + rx, anchorZ + rz };
+        return new int[] { anchorX + Rotations.offsetX(rotation, localX, localZ, sx, sz),
+            anchorZ + Rotations.offsetZ(rotation, localX, localZ, sx, sz) };
     }
 }

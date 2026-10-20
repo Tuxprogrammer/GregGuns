@@ -324,13 +324,13 @@ class StructureGridTest {
     }
 
     @Test
-    void rotationFollowsPlusXToMinusZ() {
-        // One quarter turn: local +X ends up toward -Z in the world.
+    void rotationFollowsPlusXToPlusZ() {
+        // One quarter turn clockwise from above: local +X ends up toward +Z, the stamper's convention (Rotations).
         StructurePlan p = new StructurePlan("t", SizeClass.SMALL, 0, 0, 0, 0, 0, 1, 0, new Footprint(4, 1, 6), 0L);
         int[] a = p.toWorld(0, 0);
         int[] b = p.toWorld(1, 0);
         assertEquals(a[0], b[0]);
-        assertEquals(a[1] - 1, b[1]);
+        assertEquals(a[1] + 1, b[1]);
     }
 
     @Test

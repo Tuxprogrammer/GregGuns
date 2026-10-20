@@ -274,7 +274,7 @@ public final class GeneratorScenarios {
         }
 
         private static int[] at(StructurePlan p, int[] local, int anchorY, Layout layout) {
-            // The stamper's rotation (G5), not StructurePlan.toWorld: the two quarter-turn conventions differ.
+            // StructurePlan.toWorld delegates to the same Rotations table (G12); kept explicit for the marker math.
             int sx = layout.sizeX();
             int sz = layout.sizeZ();
             return new int[] { p.anchorX() + Rotations.offsetX(p.rotation(), local[0], local[2], sx, sz),
