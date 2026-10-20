@@ -26,7 +26,8 @@ import static com.gregguns.client.anim.GunCurves.yR;
  * Part 0 is the body, drawn in the gun's own matrix. Part 1 is the firing starburst: one 7x5x1 blade named
  * {@code starburst_glow_0}, rolled 25 degrees about the barrel axis (round-3 measurement: the original has exactly one
  * such plate in the reactor region), painted faint translucent yellow (alpha 28) and hidden by
- * {@link #buildTransforms()}'s part rule until the gun fires, then pulsed by {@link #starburstScale(double)}. Part 2 is
+ * {@link #buildTransforms()}'s part rule until the gun fires, then pulsed by {@link #starburstScaleAt(double)} on a
+ * render clock. Part 2 is
  * the fin and part 3 is the mast
  * with its connector cube, so later code can animate them; both rest at the notes' pose.
  *
@@ -242,7 +243,7 @@ public final class NuclearDeathRayProfile {
                 (p, part) -> FP_X + 0.05 / FP_SCALE * yF(p),
                 (p, part) -> FP_Y + 0.025 / FP_SCALE * yF(p),
                 (p, part) -> FP_Z)
-            .about(STARBURST_PIVOT_X, 0, 0, pulse -> pulse.scale((p, part) -> starburstScale(p, part)))
+            .about(STARBURST_PIVOT_X, 0, 0, pulse -> pulse.scale((p, part) -> starburstScale(part)))
             .build();
         // Reload: roll 20 degrees about Z, yaw -10 degrees and a small shift at mid-reload, then back (the notes).
         TransformProgram fpReload = TransformProgram.builder()
@@ -261,7 +262,7 @@ public final class NuclearDeathRayProfile {
         // Recoil: the notes say a slide of up to 0.25 block along the barrel in the first eighth, no rotation.
         TransformProgram tpRecoil = TransformProgram.builder()
             .translate((p, part) -> -0.25 * kick(p), (p, part) -> 0.0, (p, part) -> 0.0)
-            .about(STARBURST_PIVOT_X, 0, 0, pulse -> pulse.scale((p, part) -> starburstScale(p, part)))
+            .about(STARBURST_PIVOT_X, 0, 0, pulse -> pulse.scale((p, part) -> starburstScale(part)))
             .build();
         // Reload: 40 degrees about the long axis and 50 degrees about the vertical at mid-animation, then back.
         TransformProgram tpReload = TransformProgram.builder()
@@ -299,23 +300,38 @@ public final class NuclearDeathRayProfile {
     /** Highest scale of the starburst pulse. */
     public static final double STARBURST_MAX_SCALE = 1.0;
 
+    /** Seconds per starburst pulse cycle (ten ticks). */
+    public static final double STARBURST_PERIOD_SECONDS = 0.5;
+
     /**
-     * The starburst's pulse: a uniform scale from 0.8 to 1.0, one sine cycle over the fire animation, starting at 0.9
-     * (it first rises to 1.0, then falls to 0.8 and returns to 0.9).
+     * The starburst's pulse: a uniform scale from 0.8 to 1.0, one sine cycle per {@link #STARBURST_PERIOD_SECONDS},
+     * starting at 0.9 (it first rises to 1.0, then falls to 0.8 and returns to 0.9). Pure.
      *
-     * @param progress fire animation progress, 0 to 1
+     * @param seconds time on a continuous clock, seconds
      * @return the scale
      */
     // Spec: docs/techguns-spec/03-gun-visuals-audio/model-notes/nuclear_death_ray.md (starburst pulse)
-    public static double starburstScale(double progress) {
-        double mid = (STARBURST_MIN_SCALE + STARBURST_MAX_SCALE) / 2.0;
-        double amplitude = (STARBURST_MAX_SCALE - STARBURST_MIN_SCALE) / 2.0;
-        return mid + amplitude * Math.sin(2.0 * Math.PI * progress);
+    // Deviation: the beam fires every tick, so the per-shot fire progress never leaves its first quarter; the pulse
+    // runs on a render clock instead and only the visibility rule uses the fire window.
+    public static double starburstScaleAt(double seconds) {
+        return starburstScale(seconds / STARBURST_PERIOD_SECONDS);
     }
 
-    /** The scale term of a part: the starburst pulses, every other part is unchanged. */
-    private static double starburstScale(double progress, int part) {
-        return part == PART_STARBURST ? starburstScale(progress) : 1.0;
+    /**
+     * One sine cycle of the pulse per unit of {@code cycles}.
+     *
+     * @param cycles elapsed cycles (fractional)
+     * @return the scale, 0.8 to 1.0
+     */
+    public static double starburstScale(double cycles) {
+        double mid = (STARBURST_MIN_SCALE + STARBURST_MAX_SCALE) / 2.0;
+        double amplitude = (STARBURST_MAX_SCALE - STARBURST_MIN_SCALE) / 2.0;
+        return mid + amplitude * Math.sin(2.0 * Math.PI * cycles);
+    }
+
+    /** The scale term of a part: the starburst pulses on the render clock, every other part is unchanged. */
+    private static double starburstScale(int part) {
+        return part == PART_STARBURST ? starburstScaleAt(System.nanoTime() * 1e-9) : 1.0;
     }
 
     /** Draws the starburst only while the gun fires; every other part always. */
