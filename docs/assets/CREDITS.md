@@ -297,11 +297,17 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | model.charge.exp_charge | src/main/resources/assets/gregguns/textures/models/charges/exp_charge.png | tools/asset-gen/charge_models.py | 4076177377 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
 | model.charge.exp_charge_armed | src/main/resources/assets/gregguns/textures/models/charges/exp_charge_armed.png | tools/asset-gen/charge_models.py | 578581585 | Procedural numpy/Pillow: 32x32 box unwrap painted from the clean-room model notes palette; armed variant recolors the detonator plate | MIT | 2026-10-19 |
 
-### entity_models (1)
+### entity_models (7)
 
 | asset | path | generator | seed | method | license | date |
 |---|---|---|---|---|---|---|
 | entity.model.demo_biped | src/main/resources/assets/gregguns/textures/entity/demo_biped.png | tools/asset-gen/entity_models.py | 1392499027 | Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/demo_biped.json; flat material colors, edge bevels, fine noise | MIT | 2026-10-19 |
+| entity.model.cyberdemon | src/main/resources/assets/gregguns/textures/entity/cyberdemon.png | tools/asset-gen/entity_models.py | 3866399985 | Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/cyberdemon.json; flat material colors, edge bevels, fine noise | MIT | 2026-10-19 |
+| entity.model.super_mutant_1 | src/main/resources/assets/gregguns/textures/entity/super_mutant_1.png | tools/asset-gen/entity_models.py | 1033629778 | Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/super_mutant.json; flat material colors, edge bevels, fine noise | MIT | 2026-10-19 |
+| entity.model.super_mutant_2 | src/main/resources/assets/gregguns/textures/entity/super_mutant_2.png | tools/asset-gen/entity_models.py | 1155641136 | Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/super_mutant.json; flat material colors, edge bevels, fine noise | MIT | 2026-10-19 |
+| entity.model.super_mutant_3 | src/main/resources/assets/gregguns/textures/entity/super_mutant_3.png | tools/asset-gen/entity_models.py | 901876503 | Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/super_mutant.json; flat material colors, edge bevels, fine noise | MIT | 2026-10-19 |
+| entity.model.alien_bug | src/main/resources/assets/gregguns/textures/entity/alien_bug.png | tools/asset-gen/entity_models.py | 977841407 | Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/alien_bug.json; flat material colors, edge bevels, fine noise | MIT | 2026-10-19 |
+| entity.model.attack_helicopter | src/main/resources/assets/gregguns/textures/entity/attack_helicopter.png | tools/asset-gen/entity_models.py | 1736898221 | Procedural Pillow: sheet painted to fit the box model assets/gregguns/entity_models/attack_helicopter.json; flat material colors, edge bevels, fine noise | MIT | 2026-10-19 |
 
 ### flagpost (1)
 
@@ -329,44 +335,68 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | gui.scope_assault | src/main/resources/assets/gregguns/textures/gui/scopes/assault.png | tools/asset-gen/gui.py | none | Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle | MIT | 2026-10-18 |
 | gui.scope_energy | src/main/resources/assets/gregguns/textures/gui/scopes/energy.png | tools/asset-gen/gui.py | none | Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle | MIT | 2026-10-18 |
 
-### icons (177)
+### gun_icons (43)
 
 | asset | path | generator | seed | method | license | date |
 |---|---|---|---|---|---|---|
-| icon.pistol_9mm | src/main/resources/assets/gregguns/textures/items/pistol_9mm.png | tools/asset-gen/icons.py | 3988574526 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
+| icon.pistol_9mm | src/main/resources/assets/gregguns/textures/items/pistol_9mm.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.revolver | src/main/resources/assets/gregguns/textures/items/revolver.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.sawed_off | src/main/resources/assets/gregguns/textures/items/sawed_off.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.handcannon | src/main/resources/assets/gregguns/textures/items/handcannon.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.bolt_action_rifle | src/main/resources/assets/gregguns/textures/items/bolt_action_rifle.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.thompson_smg | src/main/resources/assets/gregguns/textures/items/thompson_smg.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.mac10 | src/main/resources/assets/gregguns/textures/items/mac10.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.m4 | src/main/resources/assets/gregguns/textures/items/m4.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.infiltrator | src/main/resources/assets/gregguns/textures/items/infiltrator.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.aug | src/main/resources/assets/gregguns/textures/items/aug.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.ak47 | src/main/resources/assets/gregguns/textures/items/ak47.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.vector | src/main/resources/assets/gregguns/textures/items/vector.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.combat_shotgun | src/main/resources/assets/gregguns/textures/items/combat_shotgun.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.rocket_launcher | src/main/resources/assets/gregguns/textures/items/rocket_launcher.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.grenade_launcher | src/main/resources/assets/gregguns/textures/items/grenade_launcher.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.as50 | src/main/resources/assets/gregguns/textures/items/as50.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.lmg | src/main/resources/assets/gregguns/textures/items/lmg.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.golden_revolver | src/main/resources/assets/gregguns/textures/items/golden_revolver.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.flamethrower | src/main/resources/assets/gregguns/textures/items/flamethrower.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.scar | src/main/resources/assets/gregguns/textures/items/scar.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.laser_rifle | src/main/resources/assets/gregguns/textures/items/laser_rifle.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.tesla_rifle | src/main/resources/assets/gregguns/textures/items/tesla_rifle.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.sonic_rifle | src/main/resources/assets/gregguns/textures/items/sonic_rifle.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.pdw | src/main/resources/assets/gregguns/textures/items/pdw.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.pulse_rifle | src/main/resources/assets/gregguns/textures/items/pulse_rifle.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.minigun | src/main/resources/assets/gregguns/textures/items/minigun.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.bio_gun | src/main/resources/assets/gregguns/textures/items/bio_gun.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.alien_blaster | src/main/resources/assets/gregguns/textures/items/alien_blaster.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.nether_blaster | src/main/resources/assets/gregguns/textures/items/nether_blaster.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.nuclear_death_ray | src/main/resources/assets/gregguns/textures/items/nuclear_death_ray.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.power_hammer | src/main/resources/assets/gregguns/textures/items/power_hammer.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.power_hammer_adv | src/main/resources/assets/gregguns/textures/items/power_hammer_adv.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.chainsaw | src/main/resources/assets/gregguns/textures/items/chainsaw.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.grim_reaper | src/main/resources/assets/gregguns/textures/items/grim_reaper.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.nuke_launcher | src/main/resources/assets/gregguns/textures/items/nuke_launcher.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.akimbo_pistols | src/main/resources/assets/gregguns/textures/items/akimbo_pistols.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.akimbo_revolvers | src/main/resources/assets/gregguns/textures/items/akimbo_revolvers.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.akimbo_mac10s | src/main/resources/assets/gregguns/textures/items/akimbo_mac10s.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.akimbo_golden_revolvers | src/main/resources/assets/gregguns/textures/items/akimbo_golden_revolvers.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.blaster_rifle | src/main/resources/assets/gregguns/textures/items/blaster_rifle.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.deatomizer_pistol | src/main/resources/assets/gregguns/textures/items/deatomizer_pistol.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.akimbo_deatomizer_pistols | src/main/resources/assets/gregguns/textures/items/akimbo_deatomizer_pistols.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.scatter_laser_rifle | src/main/resources/assets/gregguns/textures/items/scatter_laser_rifle.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+
+### icons (134)
+
+| asset | path | generator | seed | method | license | date |
+|---|---|---|---|---|---|---|
 | icon.part_barrel_hardened | src/main/resources/assets/gregguns/textures/items/part_barrel_hardened.png | tools/asset-gen/icons.py | 260038983 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.part_mechanical_2 | src/main/resources/assets/gregguns/textures/items/part_mechanical_2.png | tools/asset-gen/icons.py | 2144130171 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.ammo_9mm_bullet | src/main/resources/assets/gregguns/textures/items/ammo_9mm_bullet.png | tools/asset-gen/icons.py | 2427103142 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.mag_9mm_pistol | src/main/resources/assets/gregguns/textures/items/mag_9mm_pistol.png | tools/asset-gen/icons.py | 1090313281 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.mag_9mm_pistol_empty | src/main/resources/assets/gregguns/textures/items/mag_9mm_pistol_empty.png | tools/asset-gen/icons.py | 3604266518 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.handcannon | src/main/resources/assets/gregguns/textures/items/handcannon.png | tools/asset-gen/icons.py | 3883178509 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.revolver | src/main/resources/assets/gregguns/textures/items/revolver.png | tools/asset-gen/icons.py | 3909095300 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.sawed_off | src/main/resources/assets/gregguns/textures/items/sawed_off.png | tools/asset-gen/icons.py | 3326191435 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.bolt_action_rifle | src/main/resources/assets/gregguns/textures/items/bolt_action_rifle.png | tools/asset-gen/icons.py | 1508565422 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.combat_knife | src/main/resources/assets/gregguns/textures/items/combat_knife.png | tools/asset-gen/icons.py | 2632809319 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.crowbar | src/main/resources/assets/gregguns/textures/items/crowbar.png | tools/asset-gen/icons.py | 3341402835 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.stielgranate | src/main/resources/assets/gregguns/textures/items/stielgranate.png | tools/asset-gen/icons.py | 989766663 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.thompson_smg | src/main/resources/assets/gregguns/textures/items/thompson_smg.png | tools/asset-gen/icons.py | 4226478872 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.mac10 | src/main/resources/assets/gregguns/textures/items/mac10.png | tools/asset-gen/icons.py | 207583929 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.combat_shotgun | src/main/resources/assets/gregguns/textures/items/combat_shotgun.png | tools/asset-gen/icons.py | 2689373508 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.m4 | src/main/resources/assets/gregguns/textures/items/m4.png | tools/asset-gen/icons.py | 244138405 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.ak47 | src/main/resources/assets/gregguns/textures/items/ak47.png | tools/asset-gen/icons.py | 3184764181 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.frag_grenade | src/main/resources/assets/gregguns/textures/items/frag_grenade.png | tools/asset-gen/icons.py | 3486612693 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.flashbang | src/main/resources/assets/gregguns/textures/items/flashbang.png | tools/asset-gen/icons.py | 409184063 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.akimbo_pistols | src/main/resources/assets/gregguns/textures/items/akimbo_pistols.png | tools/asset-gen/icons.py | 2104931499 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.akimbo_revolvers | src/main/resources/assets/gregguns/textures/items/akimbo_revolvers.png | tools/asset-gen/icons.py | 922530835 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.aug | src/main/resources/assets/gregguns/textures/items/aug.png | tools/asset-gen/icons.py | 1193166448 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.scar | src/main/resources/assets/gregguns/textures/items/scar.png | tools/asset-gen/icons.py | 2292873143 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.vector | src/main/resources/assets/gregguns/textures/items/vector.png | tools/asset-gen/icons.py | 157020647 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.infiltrator | src/main/resources/assets/gregguns/textures/items/infiltrator.png | tools/asset-gen/icons.py | 1397698810 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.as50 | src/main/resources/assets/gregguns/textures/items/as50.png | tools/asset-gen/icons.py | 681177919 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.lmg | src/main/resources/assets/gregguns/textures/items/lmg.png | tools/asset-gen/icons.py | 3453832570 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.grenade_launcher | src/main/resources/assets/gregguns/textures/items/grenade_launcher.png | tools/asset-gen/icons.py | 3769811341 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.rocket_launcher | src/main/resources/assets/gregguns/textures/items/rocket_launcher.png | tools/asset-gen/icons.py | 4150362544 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.flamethrower | src/main/resources/assets/gregguns/textures/items/flamethrower.png | tools/asset-gen/icons.py | 2920724014 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.akimbo_mac10s | src/main/resources/assets/gregguns/textures/items/akimbo_mac10s.png | tools/asset-gen/icons.py | 1729848452 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.golden_revolver | src/main/resources/assets/gregguns/textures/items/golden_revolver.png | tools/asset-gen/icons.py | 2377988393 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.akimbo_golden_revolvers | src/main/resources/assets/gregguns/textures/items/akimbo_golden_revolvers.png | tools/asset-gen/icons.py | 146075468 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.part_barrel_stone | src/main/resources/assets/gregguns/textures/items/part_barrel_stone.png | tools/asset-gen/icons.py | 3150359617 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.part_barrel_iron | src/main/resources/assets/gregguns/textures/items/part_barrel_iron.png | tools/asset-gen/icons.py | 4188600767 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.part_stock_wooden | src/main/resources/assets/gregguns/textures/items/part_stock_wooden.png | tools/asset-gen/icons.py | 2813613608 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
@@ -457,25 +487,6 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | icon.jump_pack | src/main/resources/assets/gregguns/textures/items/jump_pack.png | tools/asset-gen/icons.py | 2308878101 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.tactical_mask | src/main/resources/assets/gregguns/textures/items/tactical_mask.png | tools/asset-gen/icons.py | 2711631430 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.anti_gravity_device | src/main/resources/assets/gregguns/textures/items/anti_gravity_device.png | tools/asset-gen/icons.py | 3616869887 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.chainsaw | src/main/resources/assets/gregguns/textures/items/chainsaw.png | tools/asset-gen/icons.py | 294757273 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.power_hammer | src/main/resources/assets/gregguns/textures/items/power_hammer.png | tools/asset-gen/icons.py | 1652923823 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.laser_rifle | src/main/resources/assets/gregguns/textures/items/laser_rifle.png | tools/asset-gen/icons.py | 1250512599 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.pdw | src/main/resources/assets/gregguns/textures/items/pdw.png | tools/asset-gen/icons.py | 345291843 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.pulse_rifle | src/main/resources/assets/gregguns/textures/items/pulse_rifle.png | tools/asset-gen/icons.py | 2884906501 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.minigun | src/main/resources/assets/gregguns/textures/items/minigun.png | tools/asset-gen/icons.py | 1338313531 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.tesla_rifle | src/main/resources/assets/gregguns/textures/items/tesla_rifle.png | tools/asset-gen/icons.py | 506353243 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.sonic_rifle | src/main/resources/assets/gregguns/textures/items/sonic_rifle.png | tools/asset-gen/icons.py | 2730977658 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.bio_gun | src/main/resources/assets/gregguns/textures/items/bio_gun.png | tools/asset-gen/icons.py | 1370354975 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.power_hammer_adv | src/main/resources/assets/gregguns/textures/items/power_hammer_adv.png | tools/asset-gen/icons.py | 1178818015 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.blaster_rifle | src/main/resources/assets/gregguns/textures/items/blaster_rifle.png | tools/asset-gen/icons.py | 1207695896 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.deatomizer_pistol | src/main/resources/assets/gregguns/textures/items/deatomizer_pistol.png | tools/asset-gen/icons.py | 2496992741 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.scatter_laser_rifle | src/main/resources/assets/gregguns/textures/items/scatter_laser_rifle.png | tools/asset-gen/icons.py | 2203001475 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.akimbo_deatomizer_pistols | src/main/resources/assets/gregguns/textures/items/akimbo_deatomizer_pistols.png | tools/asset-gen/icons.py | 3278166320 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.nether_blaster | src/main/resources/assets/gregguns/textures/items/nether_blaster.png | tools/asset-gen/icons.py | 477812131 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.alien_blaster | src/main/resources/assets/gregguns/textures/items/alien_blaster.png | tools/asset-gen/icons.py | 4157012882 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.grim_reaper | src/main/resources/assets/gregguns/textures/items/grim_reaper.png | tools/asset-gen/icons.py | 128773287 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.nuclear_death_ray | src/main/resources/assets/gregguns/textures/items/nuclear_death_ray.png | tools/asset-gen/icons.py | 2228943836 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
-| icon.nuke_launcher | src/main/resources/assets/gregguns/textures/items/nuke_launcher.png | tools/asset-gen/icons.py | 4180087696 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.part_barrel_carbon | src/main/resources/assets/gregguns/textures/items/part_barrel_carbon.png | tools/asset-gen/icons.py | 2201522365 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.part_barrel_laser | src/main/resources/assets/gregguns/textures/items/part_barrel_laser.png | tools/asset-gen/icons.py | 1269435815 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.part_stock_carbon | src/main/resources/assets/gregguns/textures/items/part_stock_carbon.png | tools/asset-gen/icons.py | 3704796094 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
@@ -511,7 +522,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | icon.turret_armor_aluminum | src/main/resources/assets/gregguns/textures/items/turret_armor_aluminum.png | tools/asset-gen/icons.py | 1546297071 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.turret_armor_carbon | src/main/resources/assets/gregguns/textures/items/turret_armor_carbon.png | tools/asset-gen/icons.py | 3989877665 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 
-### models (133)
+### models (128)
 
 | asset | path | generator | seed | method | license | date |
 |---|---|---|---|---|---|---|

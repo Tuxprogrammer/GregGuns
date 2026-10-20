@@ -92,4 +92,12 @@ public class NpcConfig {
     @Config.Comment({ "NPC gunfire hurts its targets when true. When false NPC bullets deal no damage.",
         "Default: true." })
     public static boolean gunDamageEnabled = true;
+
+    @Config.Comment({ "Adds tiered GregGuns drops to elite, ultra and infernal GregGuns NPCs (needs Infernal Mobs).",
+        "Leave Infernal Mobs' own drop lists unchanged when this is on, or an NPC may drop twice.", "Default: true." })
+    public static boolean infernalTieredLoot = true;
+
+    @Config.Comment({ "NPCs placed by spawner blocks may roll as infernal mobs. Off, they never do (farm guard).",
+        "Default: false." })
+    public static boolean infernalAllowSpawnerNpcs = false;
 }

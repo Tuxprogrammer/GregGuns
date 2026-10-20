@@ -31,6 +31,7 @@ public final class NpcScenarios {
         AttackHelicopterScenarios.registerAll(registry);
         NpcAlienBugScenarios.registerAll(registry);
         NpcTurretScenarios.registerAll(registry);
+        NpcInfernalScenarios.registerAll(registry);
         NpcSpawnScenarios.registerAll(registry);
         ZombieScenarios.registerAll(registry);
     }

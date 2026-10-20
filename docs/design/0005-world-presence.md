@@ -9,7 +9,9 @@ Techguns adds hostile NPC factions, natural spawning, structures and ore generat
 
 ## Decision
 - **No ore generation of any kind.** That includes Techguns ores, ore clusters and oil holes. The GTNH ore system owns ores.
-- **NPCs:** ship every registered Techguns mob. The Alien Bug and the Cyberdemon are boss or late-game content and are gated by config. Natural spawning is in the **Overworld only**, config-gated per faction, with Techguns' spawn weights halved as a starting point. Caps are enforced (NPC-14, NPC-15, NPC-17), and mini-bosses persist (NPC-28). The Nether-only mobs (Zombie Pigman Soldier, Cyberdemon) have no natural spawn: they come from eggs, commands and camps only, and the Cyberdemon is also behind its `cyberdemon` config flag.
+- **NPCs:** ship every registered Techguns mob. The Alien Bug and the Cyberdemon are boss or late-game content and are gated by config. Natural spawning is in the **Overworld only**, config-gated per faction, with Techguns' spawn weights halved as a starting point. Caps are enforced (NPC-14, NPC-15, NPC-17), and mini-bosses persist (NPC-28). The Cyberdemon is also behind its `cyberdemon` config flag.
+- **Nether-only mobs (Pigman Soldier, Cyberdemon): egg, command or camp only; no natural spawn.**
+- **Spawn architecture (amended, M7 N6):** there is no placeholder entity. The real NPC classes are registered as monster spawns, and a `CheckSpawn` handler gates dimension, faction switch, danger and caps (GGS-10-26). The danger level travels from the `CheckSpawn` position to the NPC for its equipment roll. This removes the Techguns placeholder and its side effects on Infernal Mobs, Mobs Info and EnderZoo, and gives Mobs Info real spawn data.
 - **Structures:** the natural structures (bunkers, military camp, houses, the gas station, ships) generate in the Overworld only. Each is config-gated, uses whitelisted biomes, and never cascades worldgen (WGEN-04). The village bunker is not built.
 - **Loot:** tier-appropriate. Loot never contains items above the tier the structure's location implies. By default that means LV–MV gear for surface structures.
 

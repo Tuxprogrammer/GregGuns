@@ -390,7 +390,9 @@ public final class ComponentTable {
                 Input.gt("plate", TI, 4),
                 Input.gt("ring", TI, 4),
                 Input.gt("plate", PLASTIC, 2)));
-        // RC-59: Assembly Line, research item is the Lapotronic Orb that stood in for the withdrawn cell_energy.
+        // RC-59: Assembly Line. Deviation: the research item is our own Power Plating (IV), not the Lapotronic Orb
+        // that stood in for the withdrawn cell_energy: GT already scans the orb for its own research, and one scanned
+        // item unlocks only one recipe (found by tools/recipe-clash).
         list.add(
             line(
                 "RC-59",
