@@ -345,7 +345,7 @@ final class NpcTurretScenarios {
             return guarded(name(), ctx.world(), prior, watch, TIMEOUT, ticks -> {
                 if (ticks % 20 == 0) {
                     com.gregguns.GregGuns.LOG.info("DBGF t={} turretDead={} gunNull={} tgt={} enemyDead={} hp={} pos={},{},{} seen={} would={} ally={} ",
-                        ticks, t.isDead, com.gregguns.gun.GunItems.get("ak47") == null, t.currentTarget(), enemy.isDead, enemy.getHealth(), enemy.posX - t.posX, enemy.posY - t.posY, enemy.posZ - t.posZ, t.canEntityBeSeen(enemy), t.wouldTarget(enemy), ally.getHealth());
+                        ticks, t.isDead, com.gregguns.item.gun.GunItems.get("ak47") == null, t.currentTarget(), enemy.isDead, enemy.getHealth(), enemy.posX - t.posX, enemy.posY - t.posY, enemy.posZ - t.posZ, t.canEntityBeSeen(enemy), t.wouldTarget(enemy), ally.getHealth());
                 }
                 targetedAlly[0] |= t.currentTarget() == ally;
                 targetedEnemy[0] |= t.currentTarget() == enemy;
