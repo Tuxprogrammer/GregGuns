@@ -148,7 +148,24 @@ public final class StructurePopulator {
      */
     public int populate(long worldSeed, int dimension, PopulateWindow window, WindowedSink sink, ColumnReader reader,
         BiomeSource biomes, StructureState state, Marks marks) {
-        List<StructurePlan> plans = grid.plansForWindow(worldSeed, dimension, window.chunkX(), window.chunkZ());
+        return populatePlans(
+            grid.plansForWindow(worldSeed, dimension, window.chunkX(), window.chunkZ()),
+            window,
+            sink,
+            reader,
+            biomes,
+            state,
+            marks);
+    }
+
+    /**
+     * As {@link #populate} for plans the caller already chose: the seam the per-structure placement scenarios use to
+     * force a plan at a prepared test area. Same decision, shaping, stamping and marks.
+     *
+     * @return the number of structures that wrote at least one block in this window
+     */
+    public int populatePlans(List<StructurePlan> plans, PopulateWindow window, WindowedSink sink, ColumnReader reader,
+        BiomeSource biomes, StructureState state, Marks marks) {
         int stamped = 0;
         for (StructurePlan plan : plans) {
             StructureId id = StructureCatalog.byId(plan.id());

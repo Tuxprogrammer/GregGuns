@@ -49,6 +49,7 @@ public final class WorldgenModule implements GregGunsModule {
             ChestScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GeneratorScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             CascadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            PlacementScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }
 

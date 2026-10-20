@@ -144,7 +144,7 @@ public final class StructureGenerator implements IWorldGenerator {
     }
 
     /** The world-touching mark steps. */
-    private static final class WorldMarks implements StructurePopulator.Marks {
+    static final class WorldMarks implements StructurePopulator.Marks {
 
         private final World world;
         private final WindowedSink sink;
