@@ -24,6 +24,7 @@ public final class NpcScenarios {
         NpcEntityScenarios.registerAll(registry);
         NpcLootScenarios.registerAll(registry);
         NpcEggScenarios.registerAll(registry);
+        NpcSuperMutantScenarios.registerAll(registry);
         NpcCapScenarios.registerAll(registry);
     }
 
