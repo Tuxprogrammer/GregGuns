@@ -219,4 +219,4 @@ Sound files and lengths: 07-visuals-audio.
 
 ## 10. Bugs
 
-Numbered list in [index-a.md](index-a.md#suspected-bugs). Entity-related: 01 to 09 and 12 to 16.
+Numbered list in [index.md](index.md#suspected-bugs). Entity-related: 01 to 09 and 12 to 16.

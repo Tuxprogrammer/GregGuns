@@ -152,4 +152,4 @@ None.
 
 ## 10. Bugs
 
-Item-related: 16 (recipe), and the item side of 07 (ender missile cannot be set). See [index-a.md](index-a.md#suspected-bugs).
+Item-related: 16 (recipe), and the item side of 07 (ender missile cannot be set). See [index.md](index.md#suspected-bugs).

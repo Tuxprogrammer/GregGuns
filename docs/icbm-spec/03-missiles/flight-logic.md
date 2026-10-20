@@ -219,4 +219,4 @@ Engine smoke every tick while effects are on, pad smoke during warmup; colors fr
 
 ## 10. Bugs
 
-Flight-related: 17 to 25, plus 29 to 30. Full list: [index-a.md](index-a.md#suspected-bugs).
+Flight-related: 17 to 25, plus 29 to 30. Full list: [index.md](index.md#suspected-bugs).

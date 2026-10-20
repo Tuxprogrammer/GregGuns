@@ -1,6 +1,12 @@
-# 03-missiles (part a: missile core)
+# 03-missiles: missiles and carriers
 
-This file holds the Contents, Key facts, Coverage, Known limits and Suspected bugs sections for part a. The orchestrator merges it with part b (cluster missiles and bomblets, cargo holders, grenades, bomb cart, rocket launcher) into `index.md`. Source: ICBM-Classic `prod/1.12` @ `9c1d985a`; cite classes relative to `src/main/java/icbm/classic/`.
+## Overview
+
+Everything that carries an explosive to its target in ICBM-Classic `prod/1.12` @ `9c1d985a`:
+- **Part a:** the missile entities (explosive, generic, SAM, held-item), every flight logic (the key hard-math sheet), targeting, the missile tracker and its chunk loading, and the missile item.
+- **Part b:** cluster missiles and bomblets, the bomb cart, the shared projectile base, and compact sheets for content GregGuns drops or defers: the grenade, the rocket launcher, cargo and the player seat ([D10](../../gregguns-icbm-spec/DECISIONS.md#d10-in-detail)).
+
+Launchers are in [04-launch-control](../04-launch-control/index.md), radar and SAM triggering in [05-detection-defense](../05-detection-defense/index.md), and warheads in [02-explosives](../02-explosives/index.md).
 
 ## Contents
 
@@ -8,8 +14,15 @@ This file holds the Contents, Key facts, Coverage, Known limits and Suspected bu
 - [flight-logic.md](flight-logic.md): every flight logic (warmup, move steps, arc with its full math (MIT-portable), direct, follow, dead, the old ballistic one), speeds, heights and chains.
 - [targeting-and-tracking.md](targeting-and-tracking.md): target data types, the air-burst fuse, SAM target selection and interception, the missile tracker (simulation, chunk loading, re-entry; MIT-portable) and GTNH server notes.
 - [missile-item.md](missile-item.md): the missile item, the meta-to-explosive map, recipes, tooltips; also the SAM item and the held-item missile item with its two dynamic recipes.
+- [cluster-missile.md](cluster-missile.md): the cluster missile item, load recipe and size budget, the burst action (MIT-portable), bomblet items and entity, config, recipes, tooltip.
+- [bomb-cart.md](bomb-cart.md): the bomb cart item and entity, rail and dispenser placement, fuse times, breaking and exploding.
+- [thrown-and-handheld.md](thrown-and-handheld.md): compact sheets for the grenade (item, entity, dispenser) and the two rocket launchers.
+- [cargo.md](cargo.md): compact sheets for the parachute and balloon cargo holders (items, entities, recipes, cargo modes), the dead cargo hook block, and the player seat entity.
+- [projectile-base.md](projectile-base.md): the shared projectile entity base (collision pass MIT-portable, in-ground state, motion, aiming) and the projectile data registry.
 
 ## Key facts
+
+### # 03-missiles (part a: missile core)
 
 - One entity class per missile kind, all on a projectile base. Motion is applied only on the server. A missile flies by a **chain of flight logics**; the silo builds `Warmup(40 ticks)` -> climb steps -> `Arc`.
 - The arc is closed-form: constant horizontal speed 0.5 block/tick (`D / ceil(2D)`), constant downward acceleration `g = H * T * (1 - 1/D) / D^3` with `T = ceil(2D)` ticks and apex `H = min(1000, base + D * scale)` above the launch altitude (`base` 160 when D > 100). It lands at the launch altitude after `T + 1` ticks; the target's height is ignored.
@@ -21,7 +34,21 @@ This file holds the Contents, Key facts, Coverage, Known limits and Suspected bu
 - The held-item missile is a reusable item projectile: it uses the held item through a fake player on impact and drops itself.
 - Capabilities, data parameters, the entity and item registries, `WorldSavedData`, `ForgeChunkManager` and the event bus are *1.12-only mechanisms*; the sheets describe the behavior.
 
+### Cargo, thrown and carted)
+
+- A **cluster missile** is a generic missile holding up to 200 size points of item stacks (default size 1 each; bomblets 2; parachutes and balloons 2; another missile 10 to 20). It is armed to burst when within **3 blocks** of the target and ignores impacts. The burst throws the list from the end, in rings of 10, each ring 22.5 degrees rotated, slightly behind the last and 0.1 faster (0.3 base). The burst geometry is portable.
+- **Bomblets** are projectiles carrying one tier-1 explosive (conventional, shrapnel, incendiary, debilitation, chemical, anvil, repulsive, attractive, colors, smoke). They explode on any impact, cannot be damaged, ignore each other, and hit for `ceil(speed * 3)`. Only the conventional one has a crafting recipe (16 empty droplets per craft from steel, a basic circuit and a button).
+- The **load recipe** has no unload; it counts the cluster item's own size against the budget (so 180 usable), and with two clusters in the grid it matches and returns null.
+- The **ban/allow list** only gates crafting and the tooltip; the burst spawns whatever is in the list.
+- **Bomb cart**: vanilla TNT cart subclass holding one ICBM explosive, 23 recipes (explosive block above a minecart), fuse 100 ticks (120 repulsive and attractive, 300 antimatter, 0 breaching). Breaking a moving or burning cart both drops the item and explodes. Rail and dispenser placement are the only custom hooks.
+- The **projectile base** is arrow-like: server-side motion, block ray one block ahead, entity boxes grown 0.3, in-ground state, 1,200-tick lifetimes, drag 0.99 and gravity 0.05. Its **data registry** maps stacks to entities and is how bomblets, arrows and cargo are thrown; snowball and egg conversions never work.
+- **Cargo**: parachutes fall at a terminal 0.2 block/tick; balloons rise at 0.2 for 600 ticks, then drift down at 0.05 and pop at 5% per tick. Crafting always produces ITEM-mode holders. All holders are released after 60 seconds, even in mid-air.
+- The **grenade** is a fuse bomb thrown at up to 1.8 blocks/tick (hold up to 3 s, but holding the full time loses the throw), 100-tick fuse. The **rocket launcher** takes the first missile in the inventory; its click delay is client-side only and its energy cost is a stub.
+- Capabilities, entity and recipe registration, the config annotation system and renderers are *1.12-only mechanisms*. The sheets describe the behavior they produce.
+
 ## Related areas
+
+### # 03-missiles (part a: missile core)
 
 | Area | Why |
 |---|---|
@@ -33,7 +60,21 @@ This file holds the Contents, Key facts, Coverage, Known limits and Suspected bu
 | `07-visuals-audio` | `RenderMissile`, models, textures, sounds, lang |
 | part b of `03-missiles` | Cluster missile (the only user of the generic entity), rocket launcher, cargo, grenades, bomb cart, bomblets |
 
+### Cargo, thrown and carted)
+
+| Area | Why |
+|---|---|
+| `01-core` | `ICBMClassicAPI` registries, `NbtSaveHandler`, `RotationHelper`, the config list parsers (`ItemStackConfigList`) used for the ban and size lists |
+| `02-explosives` | The explosive registry and its per-content registries (carts, grenades), explosive item/entity capabilities, flying blocks (used by cargo), the blasts that bomblets, carts and grenades fire |
+| part a of `03-missiles` | The generic missile entity that carries a cluster, flight logic, target data, the held-item missile (reuses the cargo ban list) |
+| `04-launch-control` | Launchers that spawn the player seat and fire cluster missiles |
+| `05-detection-defense` | The defuser (`onDefuse` for grenades and carts), the EMP cart and bomblet, the stubbed electrical item base (ICBM-05-09) |
+| `06-blocks-items` | Explosive blocks used as ingredients, the launcher screen, crafting items |
+| `07-visuals-audio` | Renderers and the full texture, model, sound and lang catalog |
+
 ## Coverage
+
+### # 03-missiles (part a: missile core)
 
 Source files read in full: 58 of 61 in scope.
 - `content/missile/` 41 of 41: `entity/` (16: `EntityMissile`, `CapabilityMissile`, `CapabilityEmpMissile`, `explosive/` 2, `anti/` 4 including `SAMTargetData`, `itemstack/` 7), `logic/` (20: `flight/` 12 including `move/` 3 and `prefab/` 3, `targeting/` 2, `source/` 5, `TargetRangeDet`), `tracker/` 4, `MissileEventHandler`.
@@ -45,7 +86,25 @@ Also read, to resolve references (out of scope, so only the lines that matter): 
 
 Assets at catalog depth: 27 item models in `models/item/missiles/` and the textures in `textures/items/missiles/` (names only, sizes not measured); 29 recipe files under `recipes/missile/` (listed in missile-item.md); lang keys `missile.*.name`, `item.icbmclassic:surface_to_air_missile.*`, `item.icbmclassic:held_item_missile.*`, `projectile.icbmclassic:holder.*`, `tier.icbmclassic.*`, `info.misc.tier`. Not covered: sound durations and sample rates, texture pixel data, `RenderMissile` internals, the NBT-node implementation (`NbtSaveHandler`) behind the exact byte layout of buildable objects.
 
+### Cargo, thrown and carted)
+
+Source files read in full: **49 of 49** in scope.
+- `content/cluster/` 11 of 11 (`action/` 2, `bomblet/` 5, `missile/` 4).
+- `content/cargo/` 14 of 14 (`balloon/` 2, `parachute/` 3, `placer/` 3, and 6 at the top level).
+- `lib/projectile/` 13 of 13 (7 top-level classes, `vanilla/` 5, and `readme.md`).
+- `content/items/` `ItemGrenade`, `ItemBombCart`, `ItemRocketLauncher`, and `behavior/` 2: 5 of 5.
+- `content/entity/` `EntityGrenade`, `EntityBombCart`, `EntityPlayerSeat`: 3 of 3.
+- `config/missile/` `ConfigClusterMissile`, `ConfigBomblet`, `ConfigCargoItem`: 3 of 3 (plus `ConfigMissile` in full for the group structure).
+
+Also read, to resolve references: `prefab/entity/EntityICBM` and `prefab/item/ItemICBMElectrical` (full); `lib/capability/ex/CapabilityExplosiveEntity` (full); `lib/explosive/reg/ExMinecartContentReg` and `ExGrenadeContentReg` (full), `ExplosiveContentRegistry` (first half); `content/reg/ExplosiveInit` (registration and fuse lines only, and the `newEx` helper); `content/actions/conditionals/ConditionTargetDistance` (full); `config/blast/ConfigFuseTimes` (full); `RotationHelper` (`rotateX`, `rotateY` only); registration lines in `ICBMClassic`, `ItemReg`, `EntityReg`, `ICBMEntities`; the recipe JSON files (one bomb cart, one grenade, both bomblet, cluster, parachute, balloon, rpg and rpgBallistic read in full; the other cart and grenade files checked by name), 10 item models, the lang entries for every key named in the sheets, and PNG sizes via the file type.
+
+Assets at catalog depth: textures `items/bomblet.png` (16 x 16), `items/missiles/cluster.png` (32 x 32), `items/grenade/*.png` (10 x 16 x 16), `items/rpg.png` (32 x 32), `items/parachute.png`, `items/balloon.png`, `items/balloon_craft.png`, `blocks/parachute.png` (16 x 16 each), `entity/fragments/fragment.png` (32 x 32); item models for cluster, bomblets (2), grenades (11), bomb carts (23, all on the vanilla TNT-cart texture), launchers (2), parachute and balloon; the balloon item blockstate. No sound belongs to this part.
+
+Not covered: `RenderAsItem`, `RenderSeat`, `RenderEntityItem2` and the vanilla minecart renderer; `ItemBase` (tooltip gating); `ProjectileBlockInteraction`; the config list parsers; the JEI wrappers; the datafixers; PNG pixel palettes and model geometry; the held-item missile recipes (part a).
+
 ## Known limits
+
+### # 03-missiles (part a: missile core)
 
 - No code was run. Arc numbers come from algebra plus a scratch stepping of the discrete update (not from the game); timings, probabilities and counts come from reading the source and default config values.
 - Forge chunk-ticket limits quoted in the GTNH notes (200 tickets, 25 chunks per ticket) are from memory of stock Forge, not read from source here.
@@ -56,9 +115,18 @@ Assets at catalog depth: 27 item models in `models/item/missiles/` and the textu
 - `ExMissileContentReg` and the launcher were read only where they touch missiles; the full launcher behavior is 04.
 - The tracker only handles `EntityExplosiveMissile`; nothing else was checked for an equivalent path.
 
-## Suspected bugs
+### Cargo, thrown and carted)
 
-"Logic" means we could inherit it in a rebuild. "1.12-only" means it does not matter to a 1.7.10 rebuild.
+- No code was run. Every timing, probability and count comes from reading the source. The physics numbers (terminal speeds, balloon climb) come from the stated constants with the standard drag-then-gravity step.
+- Behavior inherited from vanilla (the TNT minecart's wall, fall and fire triggers, the item-use flow that cancels a throw after the full charge, `Entity.move` stopping on walls, ticksExisted not being saved) is stated from the vanilla 1.12.2 classes, which are not in this repository and were not re-read. Treat those lines as unverified.
+- Forge's handling of the cluster health config (default 100, declared maximum 10) was not checked (ICBM-03-52).
+- Whether the cluster ring is tilted for non-vertical approaches (ICBM-03-55) and whether a cluster can miss its 3-block trigger on a target well below the launcher (ICBM-03-56) were reasoned from the code, not seen in play.
+- How a grenade behaves when the dispenser spawns it inside its own block (ICBM-03-63) was not checked.
+- The cart's `ConfigFuseTimes` keys are the raw field names; whether Forge writes them upper or lower case in the file was not checked.
+- The cluster recipe's JEI wrapper and the creative tab's behavior with the BLOCK-mode cargo were not read.
+- Sounds and textures were not seen or heard; descriptions come from names and use.
+
+## Suspected bugs
 
 | ID | Title | Location | What looks wrong | Severity |
 |---|---|---|---|---|
@@ -100,5 +168,49 @@ Assets at catalog depth: 27 item models in `models/item/missiles/` and the textu
 | ICBM-03-36 | `CapabilityMissile` equals and hashCode disagree (logic) | `content/missile/entity/CapabilityMissile.java:215-228` | `equals` compares logic, target and flag; `hashCode` uses the entity. Equal capabilities of different entities hash differently | cosmetic |
 | ICBM-03-37 | Re-entry sets position fields directly (1.12-only) | `.../MissileTrackerWorld.java:211-213` | `posX/posY/posZ` are written without `setPosition`, so the bounding box is stale for the first tick. Impact detection uses ray traces, so the effect is small; unverified | cosmetic |
 | ICBM-03-38 | Pre-load timer is not saved and the spawn result is ignored (logic; unverified) | `content/missile/tracker/MissileTrackerData.java:33-59`, `.../MissileTrackerWorld.java:189-196,228` | After a restart a waiting entry loads with timer 0 and spawns on the next step, before its chunk has been re-forced (the forced list is not saved). `spawnEntity`'s false result for an unloaded chunk is not checked, so the missile is lost without a message. The same happens when no ticket was available | gameplay |
+| ICBM-03-40 | Cached data builder never builds | `lib/projectile/CachedProjectileData.java:18` | Inverted null check; snowball and egg conversions return null and become inert items | gameplay |
+| ICBM-03-41 | Impact nudge uses X for Y | `lib/projectile/EntityProjectile.java:422` | `vecY` is derived from `deltaX` | cosmetic |
+| ICBM-03-42 | Lifetime counters not saved; saved keys are limits | `lib/projectile/EntityProjectile.java:738-747` | `ticks.air` and `ticks.ground` hold the kill limits; a reload restarts the clock | cosmetic |
+| ICBM-03-43 | Shooter lost on reload; never set by throws | `lib/projectile/EntityProjectile.java:64-75,749-754` | Shooter, UUID and source position are not saved (commented out); `throwProjectile` never sets the shooter | cosmetic |
+| ICBM-03-44 | Spectral arrow data spawns a plain arrow | `lib/projectile/vanilla/SpectralArrowProjectileData.java:22` | Builds a tipped arrow with no effect | gameplay |
+| ICBM-03-45 | Impact event may get a null hit (unverified) | `lib/projectile/EntityProjectile.java:284-289` | The entity intercept can be null and is passed to Forge listeners | crash |
+| ICBM-03-46 | Empty holder data short-circuits `find` | `lib/projectile/ProjectileDataRegistry.java:56-61` | Returns null rather than the item fallback | cosmetic |
+| ICBM-03-47 | Load recipe counts the cluster's own size | `content/cluster/missile/RecipeCluster.java:55-62` | Capacity is 180, not 200 | gameplay |
+| ICBM-03-48 | Nested cluster passes `matches`, returns null | `content/cluster/missile/RecipeCluster.java:55-62,91` | A second cluster matches then yields a null result | crash |
+| ICBM-03-49 | Ban/allow list not enforced at run time | `content/cluster/action/ActionCluster.java:154`, `RecipeCluster.java:58`, `ItemClusterMissile.java:100-103` | Only crafting and the tooltip use it | gameplay |
+| ICBM-03-50 | Random jitter uses the layer constant | `content/cluster/action/ActionCluster.java:140-143` | `motionRandomScale` only switches the jitter on | cosmetic |
+| ICBM-03-51 | Tilt vector not rotated with the missile | `content/cluster/action/ActionCluster.java:128-137` | World-space bias of about 0.11 block/tick toward -Z at any non-vertical heading | visual |
+| ICBM-03-52 | Cluster health default outside its range | `config/missile/ConfigClusterMissile.java:12-13` | Default 100, declared max 10 | gameplay |
+| ICBM-03-53 | Bomblets blame the bomblet, not the player | `content/cluster/bomblet/EntityBombDroplet.java:57,85` | Cause is the bomblet entity | gameplay |
+| ICBM-03-54 | Bomblet entity name keys missing | `content/cluster/bomblet/EntityBombDroplet.java:111-113` | `bomb.droplet.*` not in the lang file | cosmetic |
+| ICBM-03-55 | Pitch sign convention mismatch (unverified) | `content/cluster/action/ActionCluster.java:125,147`, `ActionDataCluster.java:43-44`, `lib/projectile/EntityProjectile.java:588,678` | Ring assumes Minecraft pitch; the projectile base uses the opposite sign | visual |
+| ICBM-03-56 | Cluster that misses its 3-block trigger is lost (unverified) | `content/cluster/missile/CapabilityClusterMissileStack.java:45-48` | Impact disabled, so a miss leaves the missile in the ground until it is silently removed | gameplay |
+| ICBM-03-57 | Bomblet health config and hit-detonate code dead | `content/cluster/bomblet/EntityBombDroplet.java:41,74-86`, `config/missile/ConfigBomblet.java:10-15` | `hasHealth` false, so `bomblet.health` and the explode-on-damage code never run | gameplay |
+| ICBM-03-58 | Breaking a moving cart drops the item and explodes | `content/entity/EntityBombCart.java:68-84` | Item dropped unless the damage is an explosion, even when the cart also explodes | gameplay |
+| ICBM-03-59 | Dead and missing cart fuse entries | `config/blast/ConfigFuseTimes.java:82`, `content/entity/EntityBombCart.java:93`, `content/reg/ExplosiveInit.java:301-308` | Hypersonic cart key does nothing; colors and smoke have none; cart tick callback unused | cosmetic |
+| ICBM-03-60 | Grenade forgets its fuse and thrower on reload | `content/entity/EntityGrenade.java:282,324-336` | `ticksExisted` and the thrower are not saved | gameplay |
+| ICBM-03-61 | Over-charging loses the throw; a tap throws at zero speed | `content/items/ItemGrenade.java:68-90` | Only release throws; energy not clamped | gameplay |
+| ICBM-03-62 | Missing fuse config for colors and smoke grenades | `config/blast/ConfigFuseTimes.java` (`Grenades` class) | Eight keys for ten grenades | cosmetic |
+| ICBM-03-63 | Dispenser grenade has no forward offset | `content/items/behavior/GrenadeDispenseBehavior.java:35-37` | Spawns at the dispenser center; vertical dispensers lob upward | gameplay |
+| ICBM-03-64 | Rocket launcher click delay is client-only | `content/items/ItemRocketLauncher.java:221,235-240` | Timestamp stored after the server `return` | gameplay |
+| ICBM-03-65 | Rocket launcher energy is a stub | `content/items/ItemRocketLauncher.java:97,203`, `prefab/item/ItemICBMElectrical.java:12-18` | Same root cause as ICBM-05-09 | gameplay |
+| ICBM-03-66 | Launcher fires the first missile in the whole inventory | `content/items/ItemRocketLauncher.java:100-103,213-218` | No ammo choice; gives up when the first one cannot be aimed | gameplay |
+| ICBM-03-67 | Wrong or unused launcher strings | lang `rocketLauncher.error.IMissileAiming`, `.info.creative`, `ballisticLauncher.info` | `%1` never substitutes; creative line unused; "20m y+ offset" is cluster-only | cosmetic |
+| ICBM-03-68 | Throw item consumption has an operator-precedence error | `content/cargo/ItemThrowableProjectile.java:88` | Survival stacks are used up on failure and on both sides; a failed non-player throw casts wrongly | gameplay |
+| ICBM-03-69 | Cargo recipe depends on slot order and allows nesting | `content/cargo/RecipeCargoData.java:46-67` | Overwritten `hasCargoItem`; missile refusal is order-dependent | gameplay |
+| ICBM-03-70 | Only ITEM mode craftable; PROJECTILE tooltip key missing | `content/cargo/CargoProjectileData.java:58,74`, `RecipeCargoData.java` | Other modes only from creative, NBT or API | cosmetic |
+| ICBM-03-71 | Spawn-egg mode names the holder, not the mob | `content/cargo/CargoProjectileData.java:125-129` | `setCustomNameTag` called on the holder | cosmetic |
+| ICBM-03-72 | 60-second timer releases cargo mid-air | `lib/projectile/EntityProjectile.java:81-85,353`, `content/cargo/parachute/EntityParachute.java:83` | Falls over about 240 blocks release early | gameplay |
+| ICBM-03-73 | Cargo hook block is unregistered dead code | `content/cargo/placer/BlockCargoHook.java:40-45` | No registration, behavior or valid meta mapping | cosmetic |
+| ICBM-03-74 | Seat dismount check compares Y with Z | `content/entity/EntityPlayerSeat.java:91` | `prevY - posZ` instead of `posY` | gameplay |
+| ICBM-03-75 | Decraft returns the held stack itself and matches empty holders | `content/cargo/RecipeCargoDataDecraft.java:30-48,99` | Result is the input's object, not a copy | cosmetic |
 
+**# 03-missiles (part a: missile core):**
+
+"Logic" means we could inherit it in a rebuild. "1.12-only" means it does not matter to a 1.7.10 rebuild.
 Minor, not given IDs: `EntityMissile.logImpact` logs every impact at INFO (TODOs to make it configurable); the engine sound is played every tick on whichever side runs `updateMotion` (possible duplicate on the client; not traced); `BallisticFlightLogicOld` hard-codes the 200-block arc threshold; `ItemMissile` has no `.info` lang keys so the generic tooltip line is empty; the entity-name lang keys for the SAM and held-item missiles are missing; `EntityMissile.shouldCollideWith` tests `shootingEntity`, which missiles never set; the red-matter taunt branch in the block-explosive tooltip is unreachable for missiles.
+
+**Cargo, thrown and carted):**
+
+"Logic" means we could inherit it in a rebuild. "1.12-only" means it does not matter to a 1.7.10 rebuild. Every bug in this part is a logic bug unless marked.
+Minor, not given IDs: the cluster size defaults for tiers 2 to 4 are dead (no such bomblet exists); the lang file carries names for 13 bomblet types and a hypersonic and a nightmare cart that cannot exist; `ConfigCargoItem`'s comment mentions the cluster; the cart ignores its speed argument; the render class for bomblets binds a texture it never uses; `ProjectileItemConversion.sortStack` is unused.

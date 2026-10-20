@@ -194,4 +194,4 @@ Re-entry replays `MISSILE_LAUNCH` at the spawn point (bug 34).
 
 ## 10. Bugs
 
-Targeting and tracking: 10, 11, 13, 25 to 35, 37, 38. See [index-a.md](index-a.md#suspected-bugs).
+Targeting and tracking: 10, 11, 13, 25 to 35, 37, 38. See [index.md](index.md#suspected-bugs).
