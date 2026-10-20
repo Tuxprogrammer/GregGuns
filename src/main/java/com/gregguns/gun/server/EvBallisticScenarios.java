@@ -126,12 +126,12 @@ public final class EvBallisticScenarios {
             GunStats stats = def.stats();
             GunRig rig = new GunRig(ctx, GunItems.get(def.name()), stats.magazineSize());
             rig.press();
-            for (int i = 0; i <= HELD; i++) {
+            for (int i = 0; i < HELD; i++) {
                 rig.tick();
             }
             rig.release();
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            // The pull is latched and fires on the next tick, so ticks 1..HELD each fire once.
+            // The pull fires on the first tick after the press, so HELD ticks fire HELD rounds (one per tick).
             out.checkEquals("rounds spent in " + HELD + " ticks", HELD, rig.shots());
             out.checkEquals("bullets launched", HELD, rig.bullets());
             out.checkEquals("rounds left", stats.magazineSize() - HELD, rig.loaded());
