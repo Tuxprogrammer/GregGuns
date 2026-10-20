@@ -98,6 +98,8 @@ public final class CascadeScenarios {
         for (int dx = 0; dx < SIDE; dx++) {
             for (int dz = 0; dz < SIDE; dz++) {
                 cps.provideChunk(bx + dx, bz + dz);
+                // provideChunk hands back the shared empty chunk when the provider is set not to load on request.
+                if (!cps.chunkExists(bx + dx, bz + dz)) cps.loadChunk(bx + dx, bz + dz);
             }
         }
         Set<String> after = loadedKeys(cps);
@@ -174,7 +176,9 @@ public final class CascadeScenarios {
                 out.check(stamped > 0, "structures were stamped, so the run is not vacuous (" + stamped + ")");
                 out.checkEquals("PopulateGuard violations " + PopulateGuard.violations(), 0L, violations);
                 out.checkEquals("writes dropped outside a window", 0L, rejected);
-                out.check(withStructures != null && withStructures.size() >= SIDE * SIDE, "the whole square loaded");
+                out.check(
+                    withStructures != null && withStructures.size() >= SIDE * SIDE,
+                    "the whole square loaded: " + (withStructures == null ? -1 : withStructures.size()));
 
                 // Control: a fresh square, same size and path, a generator that places nothing.
                 int[] ctl = freshSquare(world, rnd);
