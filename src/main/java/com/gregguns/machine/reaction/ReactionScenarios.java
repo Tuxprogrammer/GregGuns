@@ -346,7 +346,7 @@ public final class ReactionScenarios {
 
         @Override
         public String description() {
-            return "The Retort is built, forms with 2 bulb layers, reports 4 parallels, and fails without its muffler.";
+            return "The Retort is built, forms with its bulb layers, reports the parallels, and fails without its muffler, pump, dip tube, floor pipe or heating coil; any coil tier fills a coil position.";
         }
 
         private static int mteId(ItemStack hatch) {
@@ -404,6 +404,27 @@ public final class ReactionScenarios {
                 "glass tier read: " + retort.getGlassTier()
                     + ", top glass tier: "
                     + GlassTier.getGlassBlockTier(top.getLeft(), top.getRight()));
+
+            // Interior plumbing: the pump on the floor, the dip tube, a floor pipe run and the corner coils.
+            int ringY = cy + 1;
+            ctx.setBlock(0, ringY, cz - 2, net.minecraft.init.Blocks.air, 0);
+            out.check(!retort.checkStructure(true, base), "the Retort should not form without its pump");
+            ctx.setBlock(0, ringY, cz - 2, GregTechAPI.sBlockCasings2, 10);
+            out.check(retort.checkStructure(true, base), "the pump back should form the Retort again");
+            ctx.setBlock(0, ringY + 1, cz - 2, net.minecraft.init.Blocks.air, 0);
+            out.check(!retort.checkStructure(true, base), "the Retort should not form without its dip tube");
+            ctx.setBlock(0, ringY + 1, cz - 2, GregTechAPI.sBlockCasings2, 13);
+            out.check(retort.checkStructure(true, base), "the dip tube back should form the Retort again");
+            ctx.setBlock(0, ringY, cz - 1, net.minecraft.init.Blocks.air, 0);
+            out.check(!retort.checkStructure(true, base), "the Retort should not form without a floor pipe run");
+            ctx.setBlock(0, ringY, cz - 1, GregTechAPI.sBlockCasings2, 13);
+            out.check(retort.checkStructure(true, base), "the pipe run back should form the Retort again");
+            ctx.setBlock(-1, ringY, cz - 1, net.minecraft.init.Blocks.air, 0);
+            out.check(!retort.checkStructure(true, base), "the Retort should not form without a heating coil");
+            // Any coil tier, mixed: a cupronickel coil in one corner, an EV-tier coil in another.
+            ctx.setBlock(-1, ringY, cz - 1, GregTechAPI.sBlockCasings5, 0);
+            ctx.setBlock(1, ringY, cz - 1, GregTechAPI.sBlockCasings5, 3);
+            out.check(retort.checkStructure(true, base), "mixed coil tiers should form the Retort");
 
             // Remove the muffler: the structure must drop with an error.
             ctx.setBlock(0, capY, cz - 2, net.minecraft.init.Blocks.glass, 0);

@@ -32,6 +32,38 @@ class RetortShapeTest {
     }
 
     @Test
+    void thePlumbingCountsMatchTheSpec() {
+        // multiblocks.md: pump 1, coils 4, pipes 2 on the floor plus 1 per bulb layer.
+        assertEquals(1, RetortShape.count(RetortShape.BASE, 'U'));
+        assertEquals(4, RetortShape.count(RetortShape.BASE, 'H'));
+        assertEquals(2, RetortShape.count(RetortShape.BASE, 'P'));
+        assertEquals(1, RetortShape.count(RetortShape.BULB, 'P'));
+        assertEquals(0, RetortShape.count(RetortShape.TOP, 'P'));
+    }
+
+    @Test
+    void onlyTheDocumentedCharactersAppear() {
+        String allowed = "BSCGFPUH~-.";
+        for (String[][] piece : new String[][][] { RetortShape.BASE, RetortShape.BULB, RetortShape.TOP }) {
+            for (String[] layer : piece) {
+                for (String row : layer) {
+                    for (char c : row.toCharArray()) {
+                        assertTrue(allowed.indexOf(c) >= 0, "unexpected '" + c + "' in " + row);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    void theDipTubeRisesFromThePumpThroughEveryBulbAndStopsUnderTheNeck() {
+        // The pump at the floor center, the pipe in the middle of the bulb, then air in the shoulder hole.
+        assertEquals('U', RetortShape.BASE[0][2].charAt(2));
+        assertEquals('P', RetortShape.BULB[0][2].charAt(2));
+        assertEquals('-', RetortShape.TOP[3][2].charAt(2));
+    }
+
+    @Test
     void thereIsExactlyOneControllerInTheFloorLayerFrontMiddle() {
         assertEquals(1, RetortShape.count(RetortShape.BASE, '~'));
         assertEquals(0, RetortShape.count(RetortShape.TOP, '~'));
