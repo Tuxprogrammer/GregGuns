@@ -178,11 +178,11 @@ public final class NpcRegistry {
     }
 
     /**
-     * @return the registered kinds that have a spawn egg, in ID order
+     * @return the registered kinds that have a spawn egg, in {@link NpcEggOrder} (the creative tab and NEI order)
      */
     public static List<NpcMob> eggMobs() {
         List<NpcMob> out = new ArrayList<>();
-        for (NpcMob mob : NpcMob.values()) {
+        for (NpcMob mob : NpcEggOrder.all()) {
             if (mob.hasEgg() && isRegistered(mob)) {
                 out.add(mob);
             }

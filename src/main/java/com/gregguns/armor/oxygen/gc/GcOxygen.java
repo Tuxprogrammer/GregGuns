@@ -17,11 +17,18 @@ public final class GcOxygen {
     /**
      * @param registrar the armor module's registrar
      * @param maskName  registry name of the mask
-     * @param tanksName registry name of the tanks
-     * @return the registered mask and tanks, in that order
+     * @return the registered Galacticraft oxygen mask
      */
-    public static Item[] register(ModuleRegistrar registrar, String maskName, String tanksName) {
-        return new Item[] { registrar.registerItem(maskName, new OxygenMaskGC()),
-            registrar.registerItem(tanksName, new OxygenTanksGC()) };
+    public static Item registerMask(ModuleRegistrar registrar, String maskName) {
+        return registrar.registerItem(maskName, new OxygenMaskGC());
+    }
+
+    /**
+     * @param registrar the armor module's registrar
+     * @param tanksName registry name of the tanks
+     * @return the registered Galacticraft oxygen tanks
+     */
+    public static Item registerTanks(ModuleRegistrar registrar, String tanksName) {
+        return registrar.registerItem(tanksName, new OxygenTanksGC());
     }
 }

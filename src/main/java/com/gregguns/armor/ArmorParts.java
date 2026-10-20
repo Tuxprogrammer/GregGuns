@@ -1,5 +1,9 @@
 package com.gregguns.armor;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -32,6 +36,17 @@ public final class ArmorParts {
     /** Registry name of the Glider Wing (flight recipes). */
     public static final String GLIDER_WING = "part_glider_wing";
 
+    /** The armor module's own parts, in declaration order ({@code ArmorItemOrder} sorts them into tiers). */
+    public static final List<String> NAMES = Collections.unmodifiableList(
+        Arrays.asList(
+            ArmorCatalog.HEAVY_CLOTH,
+            ArmorCatalog.TREATED_LEATHER,
+            GAS_MASK_FILTER,
+            TANK_AIR,
+            GLIDER_BACKPACK,
+            GLIDER_WING,
+            ArmorCatalog.STEAM_ARMOR_PLATING));
+
     private static ItemPart heavyCloth;
     private static ItemPart gliderBackpack;
     private static ItemPart gliderWing;
@@ -43,25 +58,52 @@ public final class ArmorParts {
     private ArmorParts() {}
 
     /**
-     * Registers the parts. Call from {@code ArmorModule.preInit}.
+     * Registers the parts in declaration order. The armor module registers through {@code ArmorItemRegistry}
+     * instead, which picks the order.
      *
      * @param registrar the armor module's registrar
      */
     public static void register(ModuleRegistrar registrar) {
-        heavyCloth = registrar.registerItem(ArmorCatalog.HEAVY_CLOTH, new ItemPart(Tier.STEAM));
-        // Area 06 owns both items; they stay registered here because the armor module can run without the guns
-        // module's ComponentItems. The filter is a plain part (RC-25); the Compressed Air Tank is the 1,000 mB
-        // IFluidContainerItem of GGS-06-40.
-        gasMaskFilter = registrar.registerItem(GAS_MASK_FILTER, new ItemPart(Tier.MV));
-        tankAir = registrar.registerItem(TANK_AIR, ComponentItems.tank(TANK_AIR, Tier.HV));
-        // Glider parts are defined by the armor recipes sheet (recipes.md, HV), which area 06 links to.
-        gliderBackpack = registrar.registerItem(GLIDER_BACKPACK, new ItemPart(Tier.HV));
-        gliderWing = registrar.registerItem(GLIDER_WING, new ItemPart(Tier.HV));
-        // Deviation: area 06 owns these two as well (RC-22, RC-23). The Ranger Veteran set and the steam armor need
-        // them
-        // now; delete these lines and keep the registry names when area 06 adds them.
-        treatedLeather = registrar.registerItem(ArmorCatalog.TREATED_LEATHER, new ItemPart(Tier.LV));
-        steamArmorPlating = registrar.registerItem(ArmorCatalog.STEAM_ARMOR_PLATING, new ItemPart(Tier.EV));
+        for (String name : NAMES) {
+            registerOne(registrar, name);
+        }
+    }
+
+    /**
+     * Registers one part by registry name. Area 06 owns these items; they stay registered here because the armor
+     * module can run without the guns module's ComponentItems. The filter is a plain part (RC-25); the Compressed Air
+     * Tank is the 1,000 mB IFluidContainerItem of GGS-06-40; the glider parts come from the armor recipes sheet
+     * (recipes.md, HV); Treated Leather and Steam Armor Plating are RC-22 and RC-23.
+     *
+     * @param registrar the armor module's registrar
+     * @param name      one of {@link #NAMES}
+     */
+    public static void registerOne(ModuleRegistrar registrar, String name) {
+        switch (name) {
+            case ArmorCatalog.HEAVY_CLOTH:
+                heavyCloth = registrar.registerItem(name, new ItemPart(Tier.STEAM));
+                break;
+            case ArmorCatalog.TREATED_LEATHER:
+                treatedLeather = registrar.registerItem(name, new ItemPart(Tier.LV));
+                break;
+            case GAS_MASK_FILTER:
+                gasMaskFilter = registrar.registerItem(name, new ItemPart(Tier.MV));
+                break;
+            case TANK_AIR:
+                tankAir = registrar.registerItem(name, ComponentItems.tank(TANK_AIR, Tier.HV));
+                break;
+            case GLIDER_BACKPACK:
+                gliderBackpack = registrar.registerItem(name, new ItemPart(Tier.HV));
+                break;
+            case GLIDER_WING:
+                gliderWing = registrar.registerItem(name, new ItemPart(Tier.HV));
+                break;
+            case ArmorCatalog.STEAM_ARMOR_PLATING:
+                steamArmorPlating = registrar.registerItem(name, new ItemPart(Tier.EV));
+                break;
+            default:
+                throw new IllegalArgumentException("not an armor part: " + name);
+        }
     }
 
     /** @return Treated Leather; null before registration or with the armor module off */

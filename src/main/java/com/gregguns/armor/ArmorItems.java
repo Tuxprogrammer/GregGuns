@@ -31,23 +31,36 @@ public final class ArmorItems {
     private ArmorItems() {}
 
     /**
-     * Registers every piece of every catalog set. Call once from {@code ArmorModule.preInit}.
+     * Registers every piece of every catalog set in catalog order. Kept for callers that do not care about the
+     * creative and NEI order; the armor module registers through {@code ArmorItemRegistry} instead.
      *
      * @param registrar the armor module's registrar
      */
     public static void register(ModuleRegistrar registrar) {
         for (SetDef set : ArmorCatalog.ALL) {
-            EnumMap<ArmorSlot, ItemGregGunsArmor> pieces = new EnumMap<>(ArmorSlot.class);
             for (PieceDef piece : set.pieces()
                 .values()) {
-                ItemGregGunsArmor item = set.power()
-                    .kind() == com.gregguns.armor.logic.PowerSpec.PowerKind.ELECTRIC
-                    && piece.slot() == ArmorSlot.CHESTPLATE ? new ItemElectricArmor(set, piece)
-                        : new ItemGregGunsArmor(set, piece);
-                pieces.put(piece.slot(), registrar.registerItem(set.pieceName(piece.slot()), item));
+                registerPiece(registrar, set, piece.slot());
             }
-            BY_SET.put(set.id(), pieces);
         }
+    }
+
+    /**
+     * Registers one piece of a catalog set, so the caller picks the registration order (see {@code ArmorItemOrder}).
+     *
+     * @param registrar the armor module's registrar
+     * @param set       a catalog set
+     * @param slot      the slot of one of its pieces
+     */
+    public static void registerPiece(ModuleRegistrar registrar, SetDef set, ArmorSlot slot) {
+        PieceDef piece = set.pieces()
+            .get(slot);
+        ItemGregGunsArmor item = set.power()
+            .kind() == com.gregguns.armor.logic.PowerSpec.PowerKind.ELECTRIC && slot == ArmorSlot.CHESTPLATE
+                ? new ItemElectricArmor(set, piece)
+                : new ItemGregGunsArmor(set, piece);
+        BY_SET.computeIfAbsent(set.id(), k -> new EnumMap<>(ArmorSlot.class))
+            .put(slot, registrar.registerItem(set.pieceName(slot), item));
     }
 
     /**
