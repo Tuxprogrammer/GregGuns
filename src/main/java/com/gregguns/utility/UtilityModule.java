@@ -42,7 +42,7 @@ public final class UtilityModule implements GregGunsModule {
         ChargeRegistration.init();
         WorldBlockRegistration.init();
         RampartRegistration.init();
-        if (DevEnvironment.isActive()) {
+        if (DevEnvironment.testHooksEnabled()) {
             ScenarioRegistry registry = ScenarioRegistry.SCENARIOS;
             UtilityScenarios.registerAll(registry);
             TurretRegistration.registerScenarios(registry);

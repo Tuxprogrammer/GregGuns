@@ -74,7 +74,7 @@ public final class GunsModule implements GregGunsModule {
         com.gregguns.recipe.BioCultureRecipes.register();
         MeleeRecipes.register();
         GrenadeRecipes.register();
-        if (DevEnvironment.isActive()) {
+        if (DevEnvironment.testHooksEnabled()) {
             ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             for (GunDefinition gun : GunDefinitions.ALL) {
                 gun.registerScenarios(ScenarioRegistry.SCENARIOS);
