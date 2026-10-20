@@ -25,8 +25,13 @@ MATERIALS = {
     "Steel": ((128, 128, 128), "METALLIC"), "Aluminium": ((128, 200, 240), "DULL"),
     "StainlessSteel": ((200, 200, 220), "SHINY"), "Titanium": ((220, 160, 240), "METALLIC"),
     "Gunpowder": ((128, 128, 128), "DULL"), "WroughtIron": ((200, 180, 180), "METALLIC"),
-    "Tungstensteel": ((100, 100, 160), "METALLIC"),
+    "Tungstensteel": ((100, 100, 160), "METALLIC"), "Iron": ((200, 200, 200), "METALLIC"),
+    "Rubber": ((0, 0, 0), "SHINY"), "Glass": ((250, 250, 250), "GLASS"), "Wood": ((100, 50, 0), "WOOD"),
+    "Tin": ((220, 220, 220), "METALLIC"),
 }
+
+# GregTech items by their gt.metaitem.01 texture number (the item id less 32000).
+METAITEMS = {"motor_lv": 600, "conveyor_lv": 630, "piston_lv": 640, "robot_arm_lv": 650, "circuit_lv": 701}
 
 
 def _reference_dirs():
@@ -92,12 +97,48 @@ def item(kind: str, material: str) -> Path:
     return _material_icon(kind, material, "items")
 
 
+def metaitem(name: str) -> Path:
+    """A GregTech component item from METAITEMS, e.g. metaitem("motor_lv")."""
+    n = METAITEMS[name]
+    return _save(_read(f"assets/gregtech/textures/items/gt.metaitem.01/{n}.png"), f"meta-{name}")
+
+
+def tool(kind: str, head: str = "Iron", handle_material: str = "Wood") -> Path:
+    """A GregTech hand tool as its item icon: the head icon over the handle, e.g. tool("File"), tool("Hammer")."""
+    handle = {"File": "handleFile", "Saw": "handleSaw"}.get(kind, "stick")
+    im = Image.open(item(handle, handle_material)).convert("RGBA")
+    im.alpha_composite(Image.open(item(f"toolHead{kind}", head)).convert("RGBA").resize(im.size, Image.NEAREST))
+    return _save(im, f"tool-{kind}-{head}")
+
+
+def pipe(size: str, material: str) -> Path:
+    """A GregTech pipe's face (pipeTiny, pipeSmall...), which is what its item shows."""
+    return _material_icon(size, material, "blocks")
+
+
+def cable(material: str) -> Path:
+    """A 1x cable: the wire tinted by its metal under GregTech's insulation overlay."""
+    im = Image.open(_material_icon("wire", material, "blocks")).convert("RGBA")
+    for ins in ("INSULATION_TINY", "INSULATION_SMALL", "INSULATION_MEDIUM"):
+        if _has(f"assets/gregtech/textures/blocks/iconsets/{ins}.png"):
+            ring = _read(f"assets/gregtech/textures/blocks/iconsets/{ins}.png").resize(im.size, Image.NEAREST)
+            im.alpha_composite(_tint(ring, (64, 64, 64)))  # GregTech's rubber insulation color
+            break
+    return _save(im, f"cable-{material}")
+
+
 def frame(material: str) -> Path:
     return _material_icon("frameGt", material, "blocks")
 
 
 def iconset(name: str) -> Path:
     return _save(_read(f"assets/gregtech/textures/blocks/iconsets/{name}.png"), name)
+
+
+def machine_overlay(machine: str, face: str) -> Path | None:
+    """A GregTech basic machine's face overlay (basicmachines/<machine>/OVERLAY_<face>), or None if it has none."""
+    name = f"assets/gregtech/textures/blocks/basicmachines/{machine}/OVERLAY_{face}.png"
+    return _save(_read(name), f"bm-{machine}-{face}") if _has(name) else None
 
 
 def bartworks(name: str) -> Path:

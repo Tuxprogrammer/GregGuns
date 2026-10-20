@@ -47,18 +47,18 @@ WEAPONS = {
         ("power_hammer", "Power Hammer", "Air-powered smash", "tank_air", "Compressed Air Tank"),
     ],
     "EV": [
-        ("laser_rifle", "Laser Rifle", "Fast energy beam", None, "EV charge"),
+        ("laser_rifle", "Laser Rifle", "Instant beam, four shots a second", None, "EV charge"),
         ("pdw", "PDW", "Armor-piercing bursts", "mag_advanced", "Advanced Magazine"),
         ("pulse_rifle", "Pulse Rifle", "Long-range three-round bursts", "mag_advanced", "Advanced Magazine"),
-        ("item:minigun", "Minigun", "200 rounds of sustained fire", "mag_minigun_drum", "Minigun Ammo Drum"),
-        ("tesla_rifle", "Tesla Rifle", "Lightning chains between targets", None, "EV charge"),
-        ("sonic_rifle", "Sonic Rifle", "Knockback shockwave", None, "EV charge"),
+        ("minigun", "Minigun", "200 rounds, 20 shots a second", "mag_minigun_drum", "Minigun Ammo Drum"),
+        ("tesla_rifle", "Tesla Rifle", "Lightning jumps to three more targets", None, "EV charge"),
+        ("sonic_rifle", "Sonic Rifle", "Ring-shaped shockwave volley", None, "EV charge"),
         ("bio_gun", "Bio Gun", "Poison blobs, charge to grow", "tank_bio", "Bio Tank"),
-        ("power_hammer:power_hammer_adv", "Power Hammer (Advanced)", "Harder, faster smash", "tank_air",
+        ("power_hammer_adv", "Power Hammer (Advanced)", "Harder, faster smash", "tank_air",
          "Compressed Air Tank"),
     ],
     "IV": [
-        ("blaster_rifle", "Blaster Rifle", "Heavy energy rifle", None, "IV charge"),
+        ("blaster_rifle", "Blaster Rifle", "Scoped energy rifle", None, "IV charge"),
         ("deatomizer_pistol", "De-Atomizer Pistol", "Armor-piercing energy sidearm", None, "IV charge"),
         ("akimbo:deatomizer_pistol", "Akimbo De-Atomizers", "Two of them, twice the charge", None, "IV charge"),
         ("scatter_laser_rifle", "Scatter Laser Rifle", "Five-beam spread", None, "IV charge"),
@@ -66,13 +66,13 @@ WEAPONS = {
         ("akimbo:golden_revolver", "Akimbo Golden Revolvers", "A matched pair", "ammo_9mm_bullet", "9mm Bullets"),
     ],
     "LuV": [
-        ("nether_blaster", "Nether Blaster", "Pump-action fire bolts", "ammo_nether_charge", "Nether Charge"),
-        ("alien_blaster", "Alien Blaster", "Self-powered fire blasts", None, "LuV charge"),
+        ("nether_blaster", "Nether Blaster", "Slow bolts that set targets alight", "ammo_nether_charge", "Nether Charge"),
+        ("alien_blaster", "Alien Blaster", "Full-auto energy pistol", None, "LuV charge"),
         ("grim_reaper", "Grim Reaper", "Four rockets per load", "ammo_rocket", "Rockets"),
     ],
     "ZPM": [
-        ("nuclear_death_ray", "Nuclear Death Ray", "Radiation beam that ignores armor", "cell_nuclear",
-         "Nuclear Power Cell"),
+        ("nuclear_death_ray", "Nuclear Death Ray", "Held radiation beam, 48 blocks", None,
+         "ZPM charge"),
         ("nuke_launcher", "Nuke Launcher", "One tactical nuke", "ammo_rocket_nuke", "Tactical Nuke Rocket"),
     ],
 }
@@ -88,7 +88,7 @@ AMMO_BY_TIER = [
     ("EV", [("ammo_advanced_bullet", "Advanced Bullets"), ("mag_advanced", "Advanced Magazine"),
             ("mag_minigun_drum", "Minigun Ammo Drum"), ("tank_bio", "Bio Tank")]),
     ("LuV", [("ammo_nether_charge", "Nether Charge")]),
-    ("ZPM", [("ammo_rocket_nuke", "Tactical Nuke Rocket"), ("cell_nuclear", "Nuclear Power Cell")]),
+    ("ZPM", [("ammo_rocket_nuke", "Tactical Nuke Rocket")]),
 ]
 
 MAGAZINES = [

@@ -33,6 +33,11 @@ Each guide is a single image you can share on its own.
 ![Arsenal, EV to ZPM](docs/assets/infographics/arsenal-ev-to-zpm.png)
 </details>
 
+<details><summary><b>Recipes</b>: the Steam and LV crafting chains</summary>
+
+![Recipes, Steam and LV](docs/assets/infographics/recipes-steam-and-lv.png)
+</details>
+
 <details><summary><b>Ammo and magazines</b>: from GT materials to a loaded gun</summary>
 
 ![Ammo and magazines](docs/assets/infographics/ammo-and-magazines.png)

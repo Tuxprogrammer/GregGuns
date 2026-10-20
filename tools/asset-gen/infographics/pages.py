@@ -123,17 +123,17 @@ def arsenal(part: int):
     if part == 1:
         title = "The <b>arsenal</b> &middot; Steam to HV"
         sub = "Ballistic weapons. Each one is built from GregTech parts and needs its tier's gate material, so a gun arrives exactly when you can make it."
-        guide = K.mob("biped", "army_soldier", pose=K.AIM, gun_name="m4", yaw=30, pitch=8, h=330)
+        guide = K.mob("biped", "army_soldier", pose=K.AIM, gun_name="m4", yaw=60, pitch=8, h=330)
         tip = ("Hold <b>Shift</b> over any gun to see its damage type, range, spread, magazine size and armor "
                "penetration. Guns can't go in the offhand, and they don't take enchantments.")
     else:
         title = "The <b>arsenal</b> &middot; EV to ZPM"
         sub = "Energy weapons, heavy ordnance and the endgame. Energy guns are their own batteries: charge them in a GT Charger or Battery Buffer of exactly their tier."
-        guide = K.mob("biped", "army_soldier", pose=K.AIM, gun_name="laser_rifle", yaw=30, pitch=8, h=330,
+        guide = K.mob("biped", "army_soldier", pose=K.AIM, gun_name="laser_rifle", yaw=60, pitch=8, h=330,
                       armor=("vanilla", K.ASSETS / "textures/models/armor/t3_hev_1.png",
                              K.ASSETS / "textures/models/armor/t3_hev_2.png"))
         tip = ("An EV gun charges only in an <b>EV</b> charger or buffer. Plan your power before you plan your "
-               "loadout. The Nuclear Death Ray doesn't use EU: it burns Nuclear Power Cells.")
+               "loadout. Fuel, Bio and Air tank guns refill in a GT Fluid Canner instead.")
     body = f"""
 <div style="display:flex;flex-direction:column;gap:18px">{bands}</div>
 <div style="display:flex;align-items:flex-end;gap:26px;margin-top:22px">
@@ -143,8 +143,8 @@ def arsenal(part: int):
     return page_doc(title, sub, body)
 
 
-def page_doc(title, sub, body, width=1600):
-    return K.page(title, sub, body, width=width, extra_css=PAGE_CSS)
+def page_doc(title, sub, body, width=1600, extra=""):
+    return K.page(title, sub, body, width=width, extra_css=PAGE_CSS + extra)
 
 
 # ---------------------------------------------------------------- getting started
@@ -162,7 +162,8 @@ def getting_started():
     journey = "".join(
         f'<div class="stack spot" style="flex:1;min-width:0;padding:6px 2px">{img(K.gun(g, w=250, h=100), h=70, style="max-width:100%")}{chip(t)}</div>'
         for g, t in (("handcannon", "Steam"), ("pistol_9mm", "LV"), ("m4", "MV"), ("as50", "HV"),
-                     ("laser_rifle", "EV"), ("blaster_rifle", "IV"), ("nuclear_death_ray", "ZPM")))
+                     ("laser_rifle", "EV"), ("blaster_rifle", "IV"), ("nether_blaster", "LuV"),
+                     ("nuclear_death_ray", "ZPM")))
     arrow = '<span class="arrow">&rarr;</span>'
     s1 = step(1, "Steam age: the Hand Cannon",
               f'{img(K.gun("handcannon", w=300, h=110), h=96)}<span class="plus">+</span>'

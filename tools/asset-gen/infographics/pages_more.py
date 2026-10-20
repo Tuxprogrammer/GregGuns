@@ -23,7 +23,7 @@ def tex_swatch(path, px=34):
     return slot(K.icon(path, 64), px)
 
 
-def guide_row(text, pose=None, gun=None, armor=None, flip=False, yaw=30, h=300, speaker="Sergeant"):
+def guide_row(text, pose=None, gun=None, armor=None, flip=False, yaw=55, h=300, speaker="Sergeant"):
     g = figure(pose=pose if pose is not None else K.AIM, gun_name=gun, armor=armor, yaw=yaw, pitch=8, h=h, flip=flip)
     return f"""<div style="display:flex;align-items:flex-end;gap:26px;margin-top:22px"><div class="guide">{img(g, h=int(h * .85))}</div>
 {bubble(speaker, text, side="left", tail=50, style="max-width:1000px;margin-bottom:70px")}</div>"""
@@ -48,11 +48,15 @@ def ammo():
         for k, m, n in (("foil", "Brass", "Brass Foil (small cases)"), ("casingSmall", "Brass", "Brass Casing (large cases)"),
                         ("round", "Lead", "Rounds (the slugs)"), ("plate", "Steel", "Plates"),
                         ("springSmall", "Steel", "Small Springs")))
+    gt_machines = "".join(
+        f'<div class="stack">{img(S.machine_block(m, "LV", greg=True), h=80)}<small>{n}</small></div>'
+        for m, n in (("lathe", "Lathe"), ("bender", "Bending Machine"), ("extruder", "Extruder"),
+                     ("assembler", "Assembler")))
     flow = f"""<div class="card" style="display:grid;grid-template-columns:1fr auto 1.15fr auto 1.3fr auto 1.25fr auto .8fr;align-items:center;gap:14px">
 <div><div class="label">1 &middot; GregTech materials</div><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;font-size:17px">{mats}</div></div>{arrow}
 <div><div class="label">2 &middot; GregTech parts</div><div style="margin-top:10px;font-size:17px;display:flex;flex-direction:column;gap:6px">{parts}
 <div style="display:flex;align-items:center;gap:10px">{ico("part_mechanical_2", 30)}Mechanical Parts</div></div>
-<div class="muted" style="font-size:15px;margin-top:8px">Lathe, Bending Machine, Extruder, Assembler</div></div>{arrow}
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;margin-top:12px">{gt_machines}</div></div>{arrow}
 <div style="text-align:center"><div class="label">3 &middot; Ammo Press</div>
 <div style="display:flex;align-items:flex-end;justify-content:center;gap:10px;margin-top:8px">{img(S.machine_block("ammo_press", "LV"), h=120)}{img(S.ammo_works(4).render(ppu=14), h=110)}</div>
 <div class="muted" style="font-size:15px">or the Ammunition Works, for bulk</div></div>{arrow}
@@ -71,13 +75,15 @@ def ammo():
     tiers = "".join(f"""<div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">{chip(t)}
 <div style="display:flex;flex-wrap:wrap;gap:4px">{''.join(ico(i, 46, n) for i, n in items)}</div>
 <div class="muted" style="font-size:15px;line-height:1.25">{esc(', '.join(n for _, n in items))}</div></div>""" for t, items in D.AMMO_BY_TIER)
-    side = f"""<div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:18px">
+    side = f"""<div class="grid" style="grid-template-columns:repeat(4,minmax(0,1fr));margin-top:18px">
 <div class="card"><h2>Energy weapons</h2><div style="display:flex;align-items:center;gap:12px;margin:10px 0">{img(K.gun("laser_rifle", w=260, h=110), h=80)}{chip("EV")}</div>
 {muted("No cells to craft: the gun is the battery. Charge it in a GT <b style='color:var(--txt)'>Charger</b> or <b style='color:var(--txt)'>Battery Buffer</b> of exactly the gun's tier. A wrong-tier charger won't touch it.")}</div>
 <div class="card"><h2>Fluid tanks</h2><div style="display:flex;align-items:center;gap:12px;margin:10px 0">{ico("tank_fuel", 58)}{ico("tank_bio", 58)}{ico("tank_air", 58)}</div>
 {muted("Fill <b style='color:var(--txt)'>Fuel</b> (diesel, gasoline, ethanol), <b style='color:var(--txt)'>Bio</b> (biomass) and <b style='color:var(--txt)'>Compressed Air</b> tanks in a GT Fluid Canner. Empties come back to you.")}</div>
 <div class="card"><h2>Loose-round guns</h2><div style="display:flex;align-items:center;gap:10px;margin:10px 0">{img(K.gun("revolver", w=200, h=100), h=70)}{img(K.gun("combat_shotgun", w=260, h=100), h=64)}</div>
-{muted("Revolvers, shotguns, the Bolt Action Rifle and the launchers take rounds straight from your inventory. No magazines needed.")}</div></div>"""
+{muted("Revolvers, shotguns, the Bolt Action Rifle and the launchers take rounds straight from your inventory. No magazines needed.")}</div>
+<div class="card"><h2>Endgame ammo</h2><div style="display:flex;align-items:center;gap:12px;margin:10px 0">{ico("ammo_nether_charge", 58)}{chip("LuV")}{ico("ammo_rocket_nuke", 58)}{chip("ZPM")}</div>
+{muted("Nether Charges and Tactical Nuke Rockets are too big for the press. Build them on the GT <b style='color:var(--txt)'>Assembly Line</b>.")}</div></div>"""
     body = f"""{flow}
 <h2 style="margin:26px 0 12px">Magazines</h2>
 <div class="grid" style="grid-template-columns:repeat(7,minmax(0,1fr))">{mags}</div>
@@ -328,6 +334,9 @@ MOBS = [
     ("Low", [
         ("Zombie Soldier", "Armored zombie with a revolver or Thompson. Its Farmer and Miner cousins carry tools or a Hand Cannon.",
          dict(model="biped", skin="zombie_soldier", pose={"rightArm": (-90, 0, 0), "leftArm": (-90, 0, 0)})),
+        ("Skeleton Soldier", "A skeleton in a scout or combat helmet, with a revolver, Thompson or Hand Cannon.",
+         dict(model="skeleton_soldier", skin=str(K.bone_skin()), pose=K.AIM, gun_name="thompson_smg",
+              armor=("vanilla", ARMOR / "t1_scout_1.png", ARMOR / "t1_scout_2.png", ("helmet", "boots")))),
         ("Bandit", "Quick gunman with pistols, rifles and shotguns. Roams the overworld.",
          dict(model="biped", skin="bandit", pose=K.AIM, gun_name="sawed_off"))]),
     ("Medium", [
@@ -362,7 +371,9 @@ def enemies():
         cards = ""
         for n, d, kw in mobs:
             kw = dict(kw)
-            p = K.mob(kw.pop("model"), kw.pop("skin"), yaw=kw.pop("yaw", -30), pitch=kw.pop("pitch", 8), h=320, **kw)
+            # A gun is held in the right hand, so a gunman is turned to show that side and mirrored to face left.
+            armed = bool(kw.get("gun_name"))
+            p = K.mob(kw.pop("model"), kw.pop("skin"), yaw=kw.pop("yaw", 50 if armed else -30), flip=armed, pitch=kw.pop("pitch", 8), h=320, **kw)
             cards += f"""<div class="wcard" style="align-items:center;text-align:center">
 <div class="spot" style="height:230px;width:100%;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px">{img(p, h=210, style="max-width:100%")}</div>
 <h3 style="margin-top:8px">{esc(n)}</h3><div class="role">{esc(d)}</div></div>"""
@@ -396,7 +407,7 @@ CHAPTERS = [
     ("Extreme Voltage", "EV", "laser_rifle", "Charging at the right tier, lasers, Pulse Rifle, Minigun, T3 and Steam armor."),
     ("Insane Voltage", "IV", "blaster_rifle", "Blasters, the De-Atomizer, Power Armor, the Exo Suit, anti-gravity flight."),
     ("Ludicrous Voltage", "LuV", "nether_blaster", "Nether Charges, the Nether and Alien Blasters, the Grim Reaper."),
-    ("Zero Point Module", "ZPM", "nuclear_death_ray", "Nuclear Power Cells, the Nuclear Death Ray and the Nuke Launcher."),
+    ("Zero Point Module", "ZPM", "nuclear_death_ray", "Tactical Nuke Rockets, the Nuclear Death Ray and the Nuke Launcher."),
 ]
 BRANCHES = [
     ("NPCs and bosses", "Hunt each faction, Psycho Steve and the helicopter. A few quests are secret.", ("mob", "cyberdemon")),
@@ -441,15 +452,15 @@ def questbook():
 def hero():
     logo = url(K.REPO / "docs/assets/branding/logo_pixel_256.png")
     lineup = [
-        figure(pose=K.AIM, gun_name="handcannon", yaw=40, pitch=6, h=300, armor=vset("t1_scout")),
-        figure(pose=K.AIM, gun_name="m4", yaw=35, pitch=6, h=300, armor=vset("t2_combat")),
-        figure(pose=K.AIM, gun_name="laser_rifle", yaw=30, pitch=6, h=300, armor=vset("t3_hev")),
-        figure(pose=K.AIM, gun_name="nuclear_death_ray", yaw=25, pitch=6, h=300, armor=("custom", "t3_power")),
+        figure(pose=K.AIM, gun_name="handcannon", yaw=60, pitch=6, h=300, armor=vset("t1_scout")),
+        figure(pose=K.AIM, gun_name="m4", yaw=60, pitch=6, h=300, armor=vset("t2_combat")),
+        figure(pose=K.AIM, gun_name="laser_rifle", yaw=60, pitch=6, h=300, armor=vset("t3_hev")),
+        figure(pose=K.AIM, gun_name="nuclear_death_ray", yaw=60, pitch=6, h=300, armor=("custom", "t3_power")),
     ]
     figs = "".join(f'<img class="r" src="{url(p)}" style="height:{196 + i * 16}px;margin-left:-18px">'
                    for i, p in enumerate(lineup))
     boom = K.fx_frame("explosion", 3, 1, 5, 420, black_to_alpha=True)
-    mutant = K.mob("super_mutant", "super_mutant_1", pose=K.AIM, gun_name="lmg", yaw=-45, pitch=6, h=300)
+    mutant = K.mob("super_mutant", "super_mutant_1", pose=K.AIM, gun_name="lmg", yaw=-60, pitch=6, h=300)
     body = f"""<div style="position:relative;height:430px">
 <div style="position:absolute;left:-20px;bottom:-30px;width:640px;height:330px;background:radial-gradient(ellipse 50% 50% at 50% 60%,rgba(185,205,230,.26),transparent 75%)"></div>
 <div style="position:absolute;right:-20px;bottom:-30px;width:300px;height:330px;background:radial-gradient(ellipse 50% 50% at 50% 60%,rgba(185,205,230,.22),transparent 75%)"></div>
@@ -480,4 +491,5 @@ PAGES = {
     "multiblock-rampart": lambda: multiblock("rampart"),
     "enemies": enemies,
     "questbook": questbook,
+    "recipes-steam-and-lv": lambda: __import__("pages_recipes").recipes(),
 }

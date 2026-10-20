@@ -12,6 +12,9 @@ import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.entity.npc.mob.ArmySoldier;
 import com.gregguns.entity.npc.mob.Commando;
+import com.gregguns.entity.npc.mob.ZombieFarmer;
+import com.gregguns.entity.npc.mob.ZombieMiner;
+import com.gregguns.entity.npc.mob.ZombieSoldier;
 
 /**
  * The one place NPC entities and their spawn egg are registered. Each mob batch adds one line to
@@ -46,6 +49,9 @@ public final class NpcRegistry {
         // Batches B1 onward add lines here, for example: bind(NpcMob.BANDIT, Bandit.class);
         bind(NpcMob.ARMY_SOLDIER, ArmySoldier.class);
         bind(NpcMob.COMMANDO, Commando.class);
+        bind(NpcMob.ZOMBIE_SOLDIER, ZombieSoldier.class);
+        bind(NpcMob.ZOMBIE_FARMER, ZombieFarmer.class);
+        bind(NpcMob.ZOMBIE_MINER, ZombieMiner.class);
         if (DevEnvironment.isActive()) {
             // The base NPC, for scenarios and the test renderer only.
             bind(NpcMob.NPC_TEST, NpcEntity.class);
@@ -85,6 +91,14 @@ public final class NpcRegistry {
      */
     public static boolean isRegistered(NpcMob mob) {
         return REGISTERED.contains(mob);
+    }
+
+    /**
+     * @param mob a kind
+     * @return its bound class, or null if no batch has bound it yet
+     */
+    public static Class<? extends EntityLiving> boundClass(NpcMob mob) {
+        return BOUND.get(mob);
     }
 
     /**
