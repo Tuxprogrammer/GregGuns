@@ -204,7 +204,7 @@ MB = {
     "ammunition-works": dict(
         title="Ammunition <b>Works</b>",
         sub="The Ammo Press, built as a production hall. It runs every Ammo Press recipe, many at once.",
-        build=lambda: S.ammo_works(4, bench=True), view=dict(yaw=-38, pitch=28, ppu=28), back=dict(yaw=148, pitch=28, ppu=24),
+        build=lambda: S.ammo_works(4, bench=True), view=dict(yaw=-38, pitch=28, ppu=28), back=dict(yaw=150, pitch=30, ppu=30),
         cut=dict(build=lambda: S.ammo_works(2), cut=lambda x, y, z: x <= 1, view=dict(yaw=-52, pitch=24, ppu=24)),
         lamp_text="Every feeder, press bay and the packing station needs <b>one lamp</b> under its roof (6 in the 4-bay hall). "
                   "Use glowstone, a redstone lamp or any block with light level 12 or more. Without them the hall will not form, "
@@ -264,12 +264,19 @@ MB = {
 
 
 def bench_card():
-    img_ = S.ammo_works(2, only="STATION", bench=True).render(yaw=148, pitch=42, ppu=38, tag="benchpiece", marks=True,
-                                                                     cut=lambda x, y, z: z >= 4 and y >= 2)
+    b = S.ammo_works(2, only="STATION", bench=True)
+    zb = 4  # the bench starts right behind the four-aisle station
+    img_ = b.render(yaw=160, pitch=36, ppu=56, tag="benchpiece3", marks=True,
+                    cut=lambda x, y, z: z >= zb and (y >= 2 or (x == 4 and y >= 1)))
     return f"""<div class="card"><h2 style="margin-bottom:8px">Magazine Filling Bench <span class="label" style="color:var(--cyan)">optional</span></h2>
-<div style="display:flex;gap:16px;align-items:center">
-<div class="spot" style="flex:0 0 250px;display:flex;align-items:center;justify-content:center;padding:8px 0">{img(img_, h=230, style="max-width:100%")}</div>
-<div style="font-size:17px">{muted("A 5 &times; 3 &times; 3 annex built against the packing station's lower back wall: Works Casing around <b style='color:var(--txt)'>6 tables</b> in two rows of three (roof opened up here so you can see them). Natura's Workbench is the pick; a crafting table or Dire Crafting Table also works.", 17, 0)}</div></div>
+<div class="spot" style="display:flex;align-items:center;justify-content:center;padding:8px 0;margin-bottom:6px">
+<div style="position:relative;display:inline-block;line-height:0">{img(img_, h=400)}
+<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+<defs><marker id="ah" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 6 3 0 6z" fill="#38c6d9"/></marker></defs>
+<path d="M 41 49 C 28 52 28 64 41 69" fill="none" stroke="#38c6d9" stroke-width="2.2" vector-effect="non-scaling-stroke" marker-end="url(#ah)"/></svg>
+<div style="position:absolute;left:-12px;top:44%;transform:translateX(-100%);font-size:15px;line-height:1.3;color:#38c6d9;text-align:right;width:190px">plain Output Bus on the station's upper wall: rounds come from here</div></div></div>
+<div class="muted" style="display:flex;justify-content:space-between;gap:16px;font-size:15px;margin-bottom:8px"><span><b style="color:var(--orange)">&#9632;</b> buses: Input Bus (empties) and Output Bus (loaded) on the bench's back wall</span><span>roof and near wall cut away; 6 tables on a casing floor</span></div>
+{muted("A 5 &times; 3 &times; 3 annex built against the packing station's lower back wall: Works Casing around <b style='color:var(--txt)'>6 tables</b> in two rows of three (roof opened up here so you can see them). Natura's Workbench is the pick; a crafting table or Dire Crafting Table also works.", 17, 0)}
 <ul style="margin:10px 0 0 20px;font-size:17px;color:var(--muted);display:flex;flex-direction:column;gap:5px">
 <li>Its own <b style="color:var(--txt)">Input Bus</b> takes empty magazines, its own <b style="color:var(--txt)">Output Bus</b> gives loaded ones. Rounds come from the station's Output Bus, which must be a plain bus (ME buses push away).</li>
 <li>Uses the existing loaded-magazine recipes, the Works' parallels, power and belt.</li>
@@ -295,7 +302,7 @@ def multiblock(key):
     back = ""
     if m["back"]:
         back = (f'<div style="position:absolute;right:16px;bottom:12px;text-align:center">'
-                f'{img(b.render(**m["back"], tag="back", marks=True), h=210)}<div class="muted" style="font-size:15px">rear: the packing station and the filling bench</div></div>')
+                f'{img(b.render(**m["back"], tag="back", marks=True), h=260)}<div class="muted" style="font-size:15px">rear: the packing station and the filling bench</div></div>')
     extra = ""
     if m.get("cut"):
         c = m["cut"]

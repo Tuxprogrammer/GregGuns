@@ -209,6 +209,13 @@ def ammo_works(bays=4, only=None, bench=False) -> Build:
     cells = B.stack_aisles(pieces)
     b.put(cells, {"S": "lamp", "T": "table", "K": "works", "F": "works", "A": "works", "O": "works", "M": "ram", "I": "belt", "G": "glass", "R": "frame",
                   "P": "pipe", "B": "gearbox", "N": "motor", "Y": "assembler", "~": ("ctrl", FRONT)})
+    if only == "STATION" and bench:
+        # the close-up of the annex: the station's plain Output Bus and the bench's two buses
+        last = max(p[2] for p in cells)
+        b.hatch((2, 3, 3), "output_bus", BACK, wc)
+        b.hatch((1, 1, last), "input_bus", BACK, wc)
+        b.hatch((3, 1, last), "output_bus", BACK, wc)
+        return b
     if only:
         return b
     last = max(p[2] for p in cells)
@@ -223,8 +230,8 @@ def ammo_works(bays=4, only=None, bench=False) -> Build:
         sl = max(p[2] for p in sl)
         b.hatch((2, 3, sl), "output_bus", BACK, wc)
         b.hatch((1, 4, sl), "output_hatch", BACK, wc)
-        b.hatch((0, 1, last), "input_bus", LEFT, wc)
-        b.hatch((4, 1, last), "output_bus", RIGHT, wc)
+        b.hatch((1, 1, last), "input_bus", BACK, wc)
+        b.hatch((3, 1, last), "output_bus", BACK, wc)
     else:
         b.hatch((2, 2, last), "output_bus", BACK, wc)
         b.hatch((1, 3, last), "output_hatch", BACK, wc)
