@@ -11,6 +11,8 @@
 |---|---|---|
 | `BlockEvent.BreakEvent` is posted with the owner looked up by UUID, which can be null ([MUTL-30](../../techguns-spec/BUGS.md)) | The event always carries a real `EntityPlayerMP`: the owner if online, otherwise a Forge `FakePlayer` built from the owner's profile | ServerUtilities skips claim protection for a null player (see below) |
 | Anyone who opens the GUI can change the settings ([MUTL-31](../../techguns-spec/BUGS.md)) | Only the owner, or a ServerUtilities team member, may change them | Same ownership rules as the Turret |
+| A 176 x 166 texture screen (`explosive_charge.png`, `advanced_explosive_charge.png`) with a Detonate button, plus and minus pairs for radius, length and delay, and no state display. Right-clicking an armed charge does nothing | A ModularUI2 panel in GT's standard theme, the same family as the Turret and benches. It shows a status banner (green NOT ARMED, red ARMED with a live countdown), a fuse stepper and burn bar, depth and width steppers, the world direction the tunnel runs, a side diagram of the bore, the owner, and Arm and Disarm buttons. An armed charge opens the screen too, so the owner can watch the countdown or disarm | Owner request after an in-game look: the old screen "looked wrong" and gave no feedback. Diverging from Techguns is allowed |
+| No way to stop a fuse once armed | New button 7, Disarm: stops the fuse and restores the delay the owner set. Owner or team only, like every button | Arming is otherwise a commitment; with a live GUI a disarm is the obvious control |
 | Hardness caps 30 (TNT) and 100 (C4) | Same defaults, config-driven, and tied to the tier gate in [0001](../../design/0001-tier-map.md) | GT blocks span a very wide hardness range |
 | No statement about GT explosives | Kept as distinct; see below | [0002](../../design/0002-machine-deconfliction.md) asked for a check |
 
@@ -28,6 +30,16 @@ GT's own explosives are radial and destructive. Ours is a directional bore with 
 - **Source:** [BlockReinforced.java#L87-L92](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/blocks/BlockReinforced.java#L87-L92) (Powder Barrel), [EntityPowderBarrelPrimed.java#L7-L12](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/entity/EntityPowderBarrelPrimed.java#L7-L12), [BlockMiningExplosives.java#L22](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gtPlusPlus/core/block/general/BlockMiningExplosives.java#L22), [EntityPrimedMiningExplosive.java#L342-L346](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gtPlusPlus/core/entity/EntityPrimedMiningExplosive.java#L342-L346).
 - **Not verified:** IC2's Industrial TNT (ITNT) is an IC2 block, not a GT one. This sheet did not read it. Check it before the balance pass.
 - **Verdict:** the mechanics do not overlap, so the "keep" in [0002](../../design/0002-machine-deconfliction.md) stands. They overlap in role (mining), so the tier gate matters. See Open questions.
+
+## The settings screen
+
+- **Framework.** `TileExplosiveCharge` is its own ModularUI2 GUI holder (`IGuiHolder<PosGuiData>`), opened with `GuiFactories.tileEntity()` from the block's right-click. The panel is `ChargePanel`; the pure rules (labels, which button looks live, direction names) are `ChargeGuiModel`. The old FML GUI id 30, `ChargeContainer`, `ChargeGui` and the two Techguns-style screen PNGs are no longer used. The charge holds no items, so there are no inventory slots and no shift-click; the inventory key closes the screen like any container GUI.
+- **Layout.** Title; banner; Fuse delay (3.0 to 10.0 s, one-second steps, amber readout, burn bar); Bore (Depth, Width, "Bores down/up/north/south/east/west", side diagram); Owner; an access line in plain words; Arm and Disarm.
+- **TNT versus Advanced.** Both screens have the same layout. The TNT charge's width readout is fixed (3 x 3) with no buttons (MUTL-33 stays fixed); its depth stepper keeps its 2 to 5 range. The Advanced charge adds the width stepper (3 to 7) and a deeper depth range (2 to 10).
+- **Direction.** The tunnel always runs into the block the charge is stuck to, so "relative to the face" is by construction. The screen names the world direction (a floor charge bores down, a ceiling charge up) and draws the charge on the surface with the bore going straight into the rock, one tick mark per block of depth.
+- **Non-owners.** Anyone within reach may open the screen and read the state. For a non-owner every control reads as locked and the access line says "View only". The server still refuses: every press is a sync handler that calls `TileExplosiveCharge.pressBy`, which re-checks the owner (MUTL-31), and `PacketChargeButton` keeps the same check for packet-level callers.
+- **Live values.** Fuse ticks, armed, depth, width, set fuse and the viewer's edit right are sync values the server pushes, so the countdown moves while the screen is open.
+- **NEI.** The panel is centered and 176 wide; NEI's item list sits at the screen edge and does not overlap.
 
 ## Integration points
 
@@ -58,6 +70,11 @@ GT's own explosives are radial and destructive. Ours is a directional bore with 
 - **GGS-09-13** Drops use fortune 0 and are gathered before the block is removed.
 - **GGS-09-14** Both hardness caps are config options. Negative hardness is never broken.
 - **GGS-09-15** Only the owner, or a ServerUtilities team member when that mod is loaded, can change a charge's settings.
+- **GGS-09-40** The charge screen is a ModularUI2 panel opened from the tile; GregGuns registers no FML GUI id for it.
+- **GGS-09-41** The screen shows the armed state and a live fuse countdown, the set fuse, the depth, the width and the world direction of the tunnel.
+- **GGS-09-42** Button 7 (Disarm) stops an armed fuse and restores the set delay. It does nothing on an unarmed charge. While armed, every other button is ignored.
+- **GGS-09-43** The screen opens for an armed charge. A non-owner sees the state with all controls locked, and the server rejects their presses.
+- **GGS-09-44** Fuse, depth and width stay in their ranges at both ends; the screen greys the button that would go past an end.
 
 ## Tests
 
@@ -68,6 +85,9 @@ GT's own explosives are radial and destructive. Ours is a directional bore with 
 | 13 | `/gregguns test` scenario that bores through a GT ore block and checks the drop |
 | 14 | Unit test on the config bounds |
 | 15 | Unit test with a stub friend provider (shared with the Turret) |
+| 40, 41 | `ChargeGuiModelTest`; screenshots from `utility.charge_gui_shots` (armed, unarmed, not owner) |
+| 42, 44 | `ChargeParamsTest` (disarm, ends of the ranges); scenario `utility.charge_gui_controls` |
+| 43 | `ChargeGuiModelTest.aNonOwnerSeesNoLiveButton`; scenarios `utility.charge_gui_controls` and `utility.charge_foreign_button` |
 
 ## Open questions
 

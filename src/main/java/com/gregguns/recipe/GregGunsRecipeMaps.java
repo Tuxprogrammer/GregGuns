@@ -1,5 +1,6 @@
 package com.gregguns.recipe;
 
+import gregtech.api.modularui2.GTGuiTextures;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMapBackend;
 import gregtech.api.recipe.RecipeMapBuilder;
@@ -32,8 +33,18 @@ public final class GregGunsRecipeMaps {
     // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMapBuilder.java#L83-L85
     // (of(name)) and #L186 (maxIO(itemIn, itemOut, fluidIn, fluidOut)); the name must be unique across all maps.
     // Deviation: the sheet's own stroke-shaped progress bar is M4 work; the map keeps GT's default arrow until then.
+    // Steam GUI: GT's bronze and steel steam machines read the map's steam GUI textures when their screen is built
+    // (MTEBasicMachineBaseGui's constructor calls progressBarTextureSteamMUI2.get(variant), and every slot overlay
+    // getter's result is read the same way). BasicUIPropertiesBuilder leaves progressBarTextureSteamMUI2 null and the
+    // steam slot overlay getter returning null, so a map that sets neither throws a NullPointerException when the Steam
+    // Ammo Press is opened, and no GUI appears. GT's own maps set both (RecipeMaps.java#L204-L207 for the compressor).
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/gui/modularui/singleblock/base/MTEBasicMachineBaseGui.java#L77-L82
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/BasicUIPropertiesBuilder.java#L79-L83
     public static final RecipeMap<RecipeMapBackend> AMMO_PRESS = RecipeMapBuilder.of(AMMO_PRESS_NAME)
         .maxIO(6, 3, 1, 0)
+        .progressBarTextureSteamMUI2(GTGuiTextures.PROGRESSBAR_ARROW_STEAM)
+        .slotOverlaysSteamMUI2((index, isFluid, isOutput, isSpecial) -> null)
         .build();
 
     private GregGunsRecipeMaps() {}

@@ -103,7 +103,7 @@ public final class ComponentScenarios {
                 return;
             }
             out.checkEquals(row.id() + " EU/t", (int) ProductionRecipes.eutFor(row.tier()), found.mEUt);
-            out.checkEquals(row.id() + " duration (ticks)", row.seconds() * GTRecipeBuilder.SECONDS, found.mDuration);
+            out.checkEquals(row.id() + " duration (ticks)", row.ticks(), found.mDuration);
             out.checkEquals(row.id() + " output count", row.outputCount(), found.mOutputs[0].stackSize);
             out.check(
                 Tier.lowestForEut(found.mEUt) == row.tier(),
@@ -133,7 +133,7 @@ public final class ComponentScenarios {
                 return;
             }
             out.checkEquals(row.id() + " EU/t", (int) ProductionRecipes.eutFor(row.tier()), line.mEUt);
-            out.checkEquals(row.id() + " duration (ticks)", row.seconds() * GTRecipeBuilder.SECONDS, line.mDuration);
+            out.checkEquals(row.id() + " duration (ticks)", row.ticks(), line.mDuration);
             out.checkEquals(row.id() + " output count", row.outputCount(), line.mOutput.stackSize);
             ItemStack research = ProductionRecipes.resolve(
                 spec.research()

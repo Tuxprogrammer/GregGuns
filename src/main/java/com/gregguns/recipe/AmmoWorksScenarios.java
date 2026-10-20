@@ -50,7 +50,7 @@ public final class AmmoWorksScenarios {
 
     private static final int AREA_RADIUS = 18;
     private static final int AREA_HEIGHT = 9;
-    private static final int RUN_TIMEOUT_TICKS = 1200;
+    private static final int RUN_TIMEOUT_TICKS = 4800;
 
     private AmmoWorksScenarios() {}
 

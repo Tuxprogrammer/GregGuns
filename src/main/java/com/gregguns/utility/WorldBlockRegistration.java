@@ -125,6 +125,7 @@ public final class WorldBlockRegistration {
      */
     public static void registerScenarios(ScenarioRegistry registry) {
         WorldBlockScenarios.registerAll(registry);
+        registry.register(new ChestLookScenario());
     }
 
     /** @return the four blocks, for tests and the self-check */
