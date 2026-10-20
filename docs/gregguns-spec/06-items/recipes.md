@@ -72,12 +72,11 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 
 | Registry name | Display name | Techguns (meta) | Tier | Gate | Recipe | Consumed by |
 |---|---|---|---|---|---|---|
-| `part_laser_focus` | Laser Focus | Laser Focus (36) | EV | Titanium | Reaction Chamber, owned by [08 recipes](../08-machines-production/recipes.md#laser-focus-ev) | 02 Laser Barrel (RC-07) |
-| `part_uv_emitter` | UV Emitter | UV Emitter (92) | EV | Titanium | [RC-17](#part-uv-emitter) | 08 Reaction Chamber focus |
+| `part_laser_focus` | Laser Focus | Laser Focus (36) | EV | Titanium | [RC-64](#part-laser-focus), GT Laser Engraver | 02 Laser Barrel (RC-07) |
+| `part_uv_emitter` | UV Emitter | UV Emitter (92) | EV | Titanium | [RC-17](#part-uv-emitter) | none yet (gun use only) |
 | `part_sonic_emitter` | Sonic Emitter | Sonic Emitter (97) | EV | Titanium | [RC-18](#part-sonic-emitter) | 02 Sonic Rifle, De-Atomizer |
-| `part_heat_ray_focus` | Heat Ray Focus | Reaction Chamber Heat Ray Focus (98) | per 08 | per 08 | Owned by [08 recipes](../08-machines-production/recipes.md#heat-ray-focus-1-recipe) | 08 Reaction Chamber (non-consumed input) |
 | `part_rad_emitter` | Rad Emitter | Rad Emitter (108) | ZPM | Naquadah alloy | [RC-19](#part-rad-emitter) | 02 Nuclear Death Ray |
-| `part_anti_gravity_core` | Anti Gravity Core | Anti Gravity Core (100) | IV | Tungstensteel | Reaction Chamber, owned by [08 recipes](../08-machines-production/recipes.md#anti-gravity-core-iv) | 05 Anti Gravity Device |
+| `part_anti_gravity_core` | Anti Gravity Core | Anti Gravity Core (100) | IV | Tungstensteel | [RC-65](#part-anti-gravity-core), GT Assembler | 05 Anti Gravity Device |
 | `part_cybernetic` | Cybernetic Parts | Cybernetic Parts (91) | EV | Titanium | [RC-20](#part-cybernetic) | 02 Nether Blaster |
 
 ### Plating, cloth and filters
@@ -205,8 +204,10 @@ Replaces the Fabricator plans ([fabricator.md](../../techguns-spec/08-machines-p
 | RC-18<a id="part-sonic-emitter"></a> | `part_sonic_emitter` ×1 | EV | Asm | `ItemList.Emitter_EV` ×1, `ItemList.Electric_Piston_EV` ×1, `part_mechanical_3` ×1, `plate.Titanium` ×1 | `RECIPE_EV`, 10 s | `Titanium`. Replaces Fabricator plan 4 (coil, 2 elite circuits, T3 parts, titanium plate). The piston is the oscillator |
 | RC-19<a id="part-rad-emitter"></a> | `part_rad_emitter` ×1 | ZPM | AL | `ItemList.Emitter_ZPM` ×1, `plate.Lead` ×2, `dust.Uranium235` ×1, `part_mechanical_3` ×2, `circuit.ZPM` ×2; fluid `Materials.SolderingAlloy.getMolten(144)` | `RECIPE_ZPM`, 30 s | `NaquadahAlloy` through the ZPM emitter. Research item `part_sonic_emitter` (GregGuns' own; GT's scanner already takes `Emitter_LuV` for its own line research), `Scanning(2 * MINUTES, RECIPE_IV)`. Replaces Fabricator plan 5. The radiation comes from the dust through GT ([hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items)) |
 | RC-20<a id="part-cybernetic"></a> | `part_cybernetic` ×2 | EV | Asm | `wireFine.Electrum` ×4, `circuit.EV` ×2, `plate.Polyethylene` ×2, `dust.Redstone` ×1, `dust.SoulSand` ×1 | `RECIPE_EV`, 8 s | `Titanium` via `circuit.EV`. Replaces Fabricator plan 2 (soul sand, gold wire, redstone, plastic). Hits [0001](../../design/0001-tier-map.md)'s EV tier even though its only gun user, the Nether Blaster, is LuV |
+| RC-64<a id="part-laser-focus"></a> | `part_laser_focus` ×1 | EV | Laser Engraver (`laserEngraverRecipes`) | `gem.Diamond` ×1, `ItemList.Emitter_EV` ×1; lens `craftingLensWhite` ×1 (non-consumed) | `RECIPE_EV` (1,920 EU/t), 600 ticks (30 s) | `Titanium` via the Emitter. Replaces the Reaction Chamber recipe ([0012](../../design/0012-retire-reaction-chamber-and-retort.md)); the white lens replaces the non-consumed Heat Ray Focus. The Emitter is now consumed per focus |
+| RC-65<a id="part-anti-gravity-core"></a> | `part_anti_gravity_core` ×1 | IV | Asm (`assemblerRecipes`) | `gem.NetherStar` ×1, `ItemList.Emitter_IV` ×1, `circuit.IV` ×2 (Elite); fluid `Materials.Enderium.getMolten(1152)` | `RECIPE_IV` (7,680 EU/t), 600 ticks (30 s) | `Tungstensteel` via the IV Emitter and circuits. Replaces the Reaction Chamber recipe ([0012](../../design/0012-retire-reaction-chamber-and-retort.md)). `Materials.Ender` has no fluid in the pinned GT, so molten Enderium stands in |
 
-**Owned by area 08.** The Heat Ray Focus (Techguns R30), the Laser Focus (Reaction Chamber recipe 2, EV) and the Anti Gravity Core (Reaction Chamber recipe 6, IV) are written in [08 recipes](../08-machines-production/recipes.md). This sheet reserves their registry names and does not restate their recipes. The Quartz Rod (Techguns R27/R28) is dropped: the Reaction Chamber row that used it is dropped.
+**Retired machine.** The Laser Focus (RC-64) and the Anti Gravity Core (RC-65) used to be Reaction Chamber recipes and now run in GT's own maps ([0012](../../design/0012-retire-reaction-chamber-and-retort.md)). The Heat Ray Focus (Techguns R30) is deleted, and the Quartz Rod (Techguns R27/R28) is dropped with the Reaction Chamber row that used it.
 
 ## Plating, cloth and filters
 
@@ -414,7 +415,7 @@ For completeness: every Techguns meta not covered above, and where it went. See 
 | Electric Engine (64) | Not registered | `ItemList.Electric_Motor_<tier>` |
 | Coil (69) | Not registered | Folded into emitter and motor recipes |
 | TGX (60) | Not registered | `Materials.TNT` |
-| Quartz Rod (99) | Dropped | Vanilla blaze rods; the Reaction Chamber row is dropped |
+| Quartz Rod (99) | Dropped | Vanilla blaze rods; the Reaction Chamber row is gone with the machine ([0012](../../design/0012-retire-reaction-chamber-and-retort.md)) |
 | Yellowcake, Enriched Uranium (101, 102) | Not registered | GT `dust.Uranium235` |
 | Bio Mass (38) | Dropped | GT `Materials.Biomass` fluid |
 | Rifle Bullets Stack (88) | Dropped | Loose bullets in the Assembler |

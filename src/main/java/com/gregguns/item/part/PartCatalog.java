@@ -45,9 +45,7 @@ public final class PartCatalog {
         /** {@link ComponentItems} (the rest of the component index), in the guns module. */
         COMPONENT_ITEMS,
         /** {@code com.gregguns.armor.ArmorParts}, in the armor module. */
-        ARMOR_PARTS,
-        /** {@code com.gregguns.machine.reaction.ReactionParts}, in the machines module. */
-        REACTION_PARTS
+        ARMOR_PARTS
     }
 
     /** One component. */
@@ -197,27 +195,19 @@ public final class PartCatalog {
             new Entry("part_glider_wing", Tier.HV, Kind.PART, Owner.ARMOR_PARTS, "flight-gear Assembler (m3)", null));
         list.add(
             new Entry(
-                "part_heat_ray_focus",
-                Tier.EV,
-                Kind.PART,
-                Owner.REACTION_PARTS,
-                "Heat Ray Focus, ReactionCraftingRecipes",
-                null));
-        list.add(
-            new Entry(
                 "part_laser_focus",
                 Tier.EV,
                 Kind.PART,
-                Owner.REACTION_PARTS,
-                "Laser Focus, ReactionRecipes (Reaction Chamber)",
+                Owner.COMPONENT_ITEMS,
+                "RC-64 ComponentTable (Laser Engraver)",
                 null));
         list.add(
             new Entry(
                 "part_anti_gravity_core",
                 Tier.IV,
                 Kind.PART,
-                Owner.REACTION_PARTS,
-                "Anti Gravity Core, ReactionRecipes (Reaction Chamber)",
+                Owner.COMPONENT_ITEMS,
+                "RC-65 ComponentTable (Assembler)",
                 null));
         ENTRIES = Collections.unmodifiableList(list);
         Map<String, Entry> byName = new LinkedHashMap<>();

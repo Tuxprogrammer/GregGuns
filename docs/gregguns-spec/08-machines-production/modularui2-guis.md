@@ -8,7 +8,7 @@ How kept GregGuns machines open and build their GUIs, in place of Techguns' `IGu
   - ModularUI2 (`modularui2`, 2.3.92-1.7.10)
   - GT5-Unofficial (`gregtech`, 5.09.54.205), which wraps ModularUI2 for its machines
   - ModularUI (`modularui`, 1.3.4), the old API that GT still ships next to MUI2
-- **Roadmap:** M4 (Reaction Chamber), M6 (benches, turret)
+- **Roadmap:** M4, M6 (benches, turret)
 
 ## What changes from Techguns
 
@@ -18,7 +18,7 @@ How kept GregGuns machines open and build their GUIs, in place of Techguns' `IGu
 | One `Container` plus one `GuiContainer` class per machine, slots as `SlotOutput` and similar | One `buildUI` returning a `ModularPanel`; slots are widgets bound to the MTE's inventory | MUI2 model |
 | Buttons send `GUIButtonClick` and the server switches on a button ID | Widgets bind to `IntSyncValue` / `BooleanSyncValue` objects with `allowC2S()`; no GregGuns packet | Removes a custom packet |
 | `isUseableByPlayer` with a 12-block range | GT's `MAX_INTERACTION_DISTANCE = 64` as a squared distance, so 8 blocks | Inherited. Not configurable from our side |
-| Hand-drawn GUI PNGs with region maps | Panel from GT's builder plus GregGuns textures through `UITexture.fullImage(modid, path)` | Only the Reaction Chamber and the area 09 benches need art ([0002](../../design/0002-machine-deconfliction.md)); the Techguns GUI PNGs of dropped machines are not needed |
+| Hand-drawn GUI PNGs with region maps | Panel from GT's builder plus GregGuns textures through `UITexture.fullImage(modid, path)` | Only the area 09 benches need custom art ([0002](../../design/0002-machine-deconfliction.md)); the Techguns GUI PNGs of dropped machines are not needed |
 | English strings hard-coded ([MPRD-31](../../techguns-spec/08-machines-production/index.md#suspected-bugs)) | Every string through `StatCollector` / lang keys | Fixes MPRD-31 |
 | Inventory-tab and player-inventory GUI ID ([MPRD-29](../../techguns-spec/08-machines-production/index.md#suspected-bugs)) | Not needed in machine GUIs | |
 
@@ -40,12 +40,7 @@ How kept GregGuns machines open and build their GUIs, in place of Techguns' `IGu
 
 ### GT5-Unofficial: extending the multiblock panel
 - **Source:** `MTEMultiBlockBaseGui` has overridable builders for each region: `registerSyncValues` ([L1175](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/gui/modularui/multiblock/base/MTEMultiBlockBaseGui.java#L1175)), `createTerminalTextWidget`, `createLeftPanelGapRow` / `createRightPanelGapRow` ([L704-L725](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/gui/modularui/multiblock/base/MTEMultiBlockBaseGui.java#L704-L725)), `initPanelMap` and the panel size getters. Precedent for a subclass: [`AntimatterForgeGui`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/gui/modularui/multiblock/AntimatterForgeGui.java#L21-L50) adds sync values and text lines. The MTE side is a `getGui()` override, as in [`MTEPreciseAssembler#L435`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/goodgenerator/blocks/tileEntity/MTEPreciseAssembler.java#L435).
-- **GregGuns does:** `ReactionChamberGui extends MTEMultiBlockBaseGui<MTEReactionChamber>`:
-  - `registerSyncValues`: an `IntSyncValue` for `intensity` with `allowC2S()` (the GUI writes it), and read-only sync values for the preferred intensity, completion, required completion and elapsed fraction.
-  - `createLeftPanelGapRow`: adds the intensity + and - buttons and a 0-10 gauge with a marker for the current preferred intensity, drawn from GregGuns textures. This replaces Techguns buttons 5 and 6 and the intensity bar.
-  - `createTerminalTextWidget`: lines for "Preferred intensity", "Completion x/y" and the risk name.
-  - The server validates the written intensity (0-10) in the sync value's setter.
-  - GT's standard terminal already shows structure errors, maintenance issues and shutdown reasons; GregGuns writes no replacement.
+- **GregGuns does:** nothing yet. The only GregGuns GUI that extended this panel was the Reaction Chamber's, which was retired by [0012](../../design/0012-retire-reaction-chamber-and-retort.md); the Ammunition Works, Armory Gantry and Rampart use the default multiblock panel. Override these builders only when a multiblock needs a custom control.
 - **Pack-side change:** none.
 
 ### ModularUI2: textures and widgets
@@ -57,7 +52,7 @@ How kept GregGuns machines open and build their GUIs, in place of Techguns' `IGu
 
 - **GGS-08-26** GregGuns registers no `IGuiHandler` and no `NetworkRegistry.registerGuiHandler`. Every machine GUI opens through GT's MTE handler.
 - **GGS-08-27** Every GregGuns MTE with a GUI returns `true` from `useMui2()` (multiblocks inherit this) and implements its panel in `buildUI` or `getGui()`.
-- **GGS-08-28** GUI input from the client (intensity buttons, toggles) goes only through `allowC2S()` sync values, and the server clamps or rejects out-of-range values.
+- **GGS-08-28** GUI input from the client (toggles, buttons) goes only through `allowC2S()` sync values, and the server clamps or rejects out-of-range values.
 - **GGS-08-29** Every visible GUI string is a lang key. There is no hard-coded English.
 - **GGS-08-30** GregGuns GUI sprites live in one `GregGunsGuiTextures` class and are not taken from Techguns assets.
 
@@ -67,7 +62,7 @@ How kept GregGuns machines open and build their GUIs, in place of Techguns' `IGu
 |---|---|
 | 26 | Code search for `IGuiHandler` and `registerGuiHandler` in `src/main` |
 | 27 | Unit test: for each registered MTE class, `useMui2()` is true (reflection) |
-| 28 | Unit test on the sync value setters: values below 0 and above 10 are rejected |
+| 28 | Unit test on the sync value setters: out-of-range values are rejected |
 | 29 | Lang test: every key used in the GUI classes exists in `en_US.lang`; code search for string literals passed to `IKey.str` |
 | 30 | Review checklist against [CONTRIBUTING originality](../../../CONTRIBUTING.md#originality-the-techguns-boundary) |
 

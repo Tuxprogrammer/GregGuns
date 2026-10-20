@@ -183,33 +183,6 @@ def ammo_works(bays=4, only=None) -> Build:
     return b
 
 
-def retort(bulbs=3, only=None) -> Build:
-    b = Build(f"retort{bulbs}{only or ''}")
-    rc = _casing("reaction_casing")
-    b.define("casing", "Reaction Chamber Casing", rc)
-    b.define("glass", "Borosilicate Glass", gt.bartworks("BoronSilicateGlassBlock"), "any tier; the lowest glass sets the pressure rating")
-    b.define("frame", "Steel Frame Box", gt.frame("Steel"), "the four feet")
-    b.define("ctrl", "Retort", (rc, rc, _ctrl("reaction_casing", "retort")), "controller, EV")
-    layers = (B.java_shape("RetortShape", "TOP") + B.java_shape("RetortShape", "BULB") * bulbs
-              + B.java_shape("RetortShape", "BASE"))
-    if only:
-        layers = B.java_shape("RetortShape", only)
-    cells = B.stack_layers(layers)
-    b.put(cells, {"B": "casing", "C": "casing", "S": "casing", "G": "glass", "F": "frame", "~": ("ctrl", FRONT)})
-    if only:
-        return b
-    # floor layer is y=1 (feet at y=0); the controller sits in the front row of the floor layer
-    b.hatch((1, 1, 0), "input_bus", FRONT, rc)
-    b.hatch((3, 1, 0), "energy_hatch", FRONT, rc)
-    b.hatch((0, 1, 1), "maintenance_hatch", LEFT, rc)
-    b.hatch((4, 1, 1), "output_bus", RIGHT, rc)
-    b.hatch((0, 1, 2), "input_hatch", LEFT, rc)
-    top = max(p[1] for p in cells)
-    b.hatch((2, top, 2), "muffler_hatch", UP, rc)
-    b.size = (5, top + 1, 5)
-    return b
-
-
 def gantry(bays=4, only=None) -> Build:
     b = Build(f"gantry{bays}{only or ''}")
     gc = _casing("gantry_casing")

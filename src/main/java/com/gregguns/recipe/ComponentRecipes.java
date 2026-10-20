@@ -8,6 +8,7 @@ import java.util.Map;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import com.gregguns.GregGuns;
 import com.gregguns.core.config.ModuleFlags;
@@ -18,6 +19,7 @@ import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.objects.ItemData;
 import gregtech.api.objects.MaterialStack;
+import gregtech.api.objects.OreDictItemStack;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipeBuilder;
@@ -73,7 +75,24 @@ public final class ComponentRecipes {
             return;
         }
         List<ItemStack> inputs = new ArrayList<>();
+        List<Object> gtInputs = new ArrayList<>();
+        boolean hasLens = false;
         for (ProductionTable.Input input : row.inputs()) {
+            if (input.nonConsumed()) {
+                // Risk 3 of design record 0012: a renamed lens ore name logs and skips the recipe, like any unresolved
+                // input.
+                if (OreDictionary.getOres(input.oreName())
+                    .isEmpty()) {
+                    GregGuns.LOG
+                        .error("Skipping recipe {}: lens ore {} is empty in this pack", row.id(), input.oreName());
+                    return;
+                }
+                // Source (the stack-size-0 OreDictItemStack idiom for a non-consumed lens):
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/LaserEngraverRecipes.java#L83-L91
+                gtInputs.add(new OreDictItemStack(input.oreName(), 0));
+                hasLens = true;
+                continue;
+            }
             ItemStack stack = ProductionRecipes.resolve(input);
             if (stack == null) {
                 GregGuns.LOG.error(
@@ -85,6 +104,7 @@ public final class ComponentRecipes {
                 return;
             }
             inputs.add(stack);
+            gtInputs.add(stack);
         }
         List<FluidStack> fluids = new ArrayList<>();
         for (ComponentTable.FluidInput fluid : spec.fluids()) {
@@ -104,8 +124,12 @@ public final class ComponentRecipes {
         if (row.circuit() > 0) {
             builder.circuit(row.circuit());
         }
-        builder.itemInputs(inputs.toArray(new ItemStack[0]))
-            .itemOutputs(output)
+        if (hasLens) {
+            builder.itemInputs(gtInputs.toArray(new Object[0]));
+        } else {
+            builder.itemInputs(inputs.toArray(new ItemStack[0]));
+        }
+        builder.itemOutputs(output)
             .duration(row.ticks())
             .eut(ProductionRecipes.eutFor(row.tier()));
         if (!fluids.isEmpty()) {
@@ -117,6 +141,11 @@ public final class ComponentRecipes {
                 break;
             case CHEMICAL_BATH:
                 builder.addTo(RecipeMaps.chemicalBathRecipes);
+                break;
+            case LASER_ENGRAVER:
+                // Source:
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L514
+                builder.addTo(RecipeMaps.laserEngraverRecipes);
                 break;
             case ASSEMBLY_LINE:
                 addAssemblyLine(builder, spec);

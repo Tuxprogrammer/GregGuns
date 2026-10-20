@@ -273,7 +273,7 @@ What the example shows: one prerequisite (`gg.lv.ammo_9mm`, whose ID the builder
 
 ## Builder script
 
-This script builds the exact file shapes above. It was used to generate the worked example and a full 118-quest line that the validator accepts. Keep a copy in the pack tooling; it is not part of this repo.
+This script builds the exact file shapes above. It was used to generate the worked example and a full 115-quest line (the generator output predates 0012 and still includes the three removed Reaction Chamber quests) that the validator accepts. Keep a copy in the pack tooling; it is not part of this repo.
 
 ```python
 """Reference builder for GregGuns BetterQuesting files (BQ 3.8.89-GTNH format)."""

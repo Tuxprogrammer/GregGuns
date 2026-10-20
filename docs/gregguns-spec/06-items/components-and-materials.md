@@ -53,13 +53,13 @@ Legend: **GT** means GregGuns registers nothing and recipes use the GT part. **K
 | Wooden Stock, Plastic Gun Stock, Carbon Gunstock (26, 31, 84) | **Keep** | Wooden from planks; plastic from `Materials.Polyethylene` plates |
 | Pump Mechanism (32) | **Keep** | Built from GT `springSmall`, `ItemList.Electric_Piston_LV`-class parts if needed |
 | Laser Focus (36), UV Emitter (92), Sonic Emitter (97), Rad Emitter (108) | **Keep** | The emitters wrap `ItemList.Emitter_<tier>`, chosen by the consumer's tier. D1 keeps the UV Emitter as an EV component |
-| Reaction Chamber Heat Ray Focus (98) | **Keep** | Component of the kept multiblock ([0002](../../design/0002-machine-deconfliction.md)) |
+| Reaction Chamber Heat Ray Focus (98) | **Drop** | Deleted with the Reaction Chamber ([0012](../../design/0012-retire-reaction-chamber-and-retort.md)); its Emitter now goes straight into the Laser Focus recipe (RC-64) |
 | Carbon Fibers, Carbon Plate (61, 62; `fiberCarbon`, `plateCarbon`) | **Drop as a material** | GT core has no carbon-fiber item. Carbon is `plate.EpoxidFiberReinforced` plus the tier material ([0010](../../design/0010-material-remap-and-tier-additions.md) decision 2) |
 | Gas Mask Filter (74) | **Keep** | Built from `ItemList.ActivatedCarbonFilterMesh` |
 | Heavy Cloth (39), Treated Leather (109), Bio Mass (38) | **Keep** | Vanilla wool/leather and GT `Materials.Leather`, `Materials.Biomass`; the Chem Lab path is dropped, so recipes use the GT Chemical Reactor, Mixer or the crafting grid |
 | Cybernetic Parts (91), Power Plating (89), Anti Gravity Core (100) | **Keep** | GregGuns components, built from GT circuits, plates and `NetherStar` dust (`Materials.NetherStar`) |
 | Small Nuclear Warhead (103), Nuclear Power Cell, Depleted (106, 107) | **Keep** | GregGuns items; their radiation comes from GT ([hazards-and-tooltips.md](hazards-and-tooltips.md#gt-radiation-for-nuclear-items)) |
-| Nether Charge (63), Quartz Rod (99) | **Keep** / **Drop** | Nether Charge is ammo ([ammo.md](ammo.md)). Quartz Rod is a Reaction Chamber intermediate for blaze rods, which vanilla already gives; drop unless the chamber recipe needs it |
+| Nether Charge (63), Quartz Rod (99) | **Keep** / **Drop** | Nether Charge is ammo ([ammo.md](ammo.md)). Quartz Rod was a Reaction Chamber intermediate for blaze rods, which vanilla already gives; dropped |
 | Glider parts, Oxygen Mask, turret armor, ore drill heads | Other areas | Armor: 05. Turret armor: 09. Ore drill heads: dropped with the Ore Drill ([0002](../../design/0002-machine-deconfliction.md)) |
 
 ### Ore-dictionary names
@@ -96,4 +96,3 @@ The part-by-part table is implemented: `PartCatalog` lists every kept component 
 
 - **Obsidian Steel and Carbon tiers (closed).** Settled by [0010](../../design/0010-material-remap-and-tier-additions.md): the material follows the tier of the consuming item, and carbon is `plate.EpoxidFiberReinforced` plus the tier material.
 - **Carbon fiber (closed).** Not needed: [0010](../../design/0010-material-remap-and-tier-additions.md) decision 2 uses `plate.EpoxidFiberReinforced`.
-- **Quartz Rod and the Reaction Chamber's intermediates.** Depends on the Reaction Chamber's recipe design in area 08.

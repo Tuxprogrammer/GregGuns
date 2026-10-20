@@ -212,7 +212,6 @@ PARTS = [
     ("part_laser_focus", "Laser Focus", "EV", ["Titanium", "Diamond"], "laserFocus", "P3", "faceted focus crystal in a titanium cradle"),
     ("part_uv_emitter", "UV Emitter", "EV", ["Titanium", "Diamond"], "uvemitter", "P3", "violet emitter lens on a titanium plate"),
     ("part_sonic_emitter", "Sonic Emitter", "EV", ["Titanium"], "sonicEmitter", "P3", "ringed oscillator disc"),
-    ("part_heat_ray_focus", "Heat Ray Focus", "EV", ["Titanium"], "rcHeatRay", "P3", "teardrop orange-red focus lens"),
     ("part_rad_emitter", "Rad Emitter", "ZPM", ["NaquadahAlloy", "Uranium235"], "radEmitter", "P3", "lead-shielded emitter with green glow"),
     ("part_anti_gravity_core", "Anti Gravity Core", "IV", ["TungstenSteel"], "antiGravityCore", "P3", "cyan core sphere in a steel cage"),
     ("part_cybernetic", "Cybernetic Parts", "EV", ["Electrum", "Titanium"], "cyberneticParts", "P3", "wires and plates, warm gray"),
@@ -544,22 +543,6 @@ for tag, steam, pri_active in (("ammo_press", False, "P1"), ("ammo_press_steam",
                 "Ammo Press glow layer for the active front: the ram head heats orange on the strike frames, transparent elsewhere. Same 8-frame strip as the front active overlay.",
                 "P1", pal=["#FF8000", "#FFD060"], glow=True, fp=PRESS_FP)
 
-# Reaction Chamber single block (EV, IV)
-RC_FP = ttex("blocks/reactionChamber.png") + " (legacy placeholder, role reference only)"
-for slot in ("front", "side", "top", "bottom"):
-    for active in (False, True):
-        if active and slot == "bottom":
-            continue
-        fr, ft = ((6, 2) if slot == "front" else (4, 3) if slot == "side" else (4, 3)) if active else (1, None)
-        d = {"front": "round viewing port onto a small chamber, heat-ray lens glowing" if active else "round viewing port, dark lens",
-             "side": "pipe manifold with pulsing gauge" if active else "pipe manifold, still gauge",
-             "top": "vent grille with heat shimmer" if active else "vent grille",
-             "bottom": "bare plate"}[slot]
-        overlay("reaction_chamber", "Reaction Chamber", slot, active, fr, ft,
-                "Reaction Chamber (single block, EV/IV) overlay, %s %s: %s%s." % (
-                    slot, "active" if active else "inactive", d,
-                    (", %d-frame vertical strip at %d ticks per frame" % (fr, ft)) if fr > 1 else ""),
-                "P2", pal=["#808080", "#FF6020", "#40C0FF"], fp=RC_FP)
 # Repair Bench (LV-IV)
 for slot in ("front", "side", "top", "bottom"):
     for active in (False, True):
@@ -586,7 +569,6 @@ for slot in ("front", "side", "top", "bottom"):
 # Multiblock controllers
 for mid, disp, tier, desc, pal in (
         ("ammunition_works", "Ammunition Works", "HV", "ammo crate and press-ram emblem; active: indicator row runs", mc("StainlessSteel", "Brass")),
-        ("retort", "Retort", "EV", "round glass port with violet-white fluid; active: swirl", mc("Titanium", "Glass")),
         ("armory_gantry", "Armory Gantry", "HV", "hoist hook and cradle emblem; active: hook lowers", mc("Titanium", "StainlessSteel")),
         ("rampart", "Rampart", "HV", "crenellation emblem with a gun silhouette; active: red status light", mc("Steel", "Aluminium"))):
     overlay(mid, disp, "front", False, 1, None, "%s controller front overlay, inactive: %s. Controller tier %s." % (disp, desc.split(";")[0], tier), "P3", pal=pal, fp="(new, GT controller overlay pattern)")
@@ -603,7 +585,7 @@ CASINGS = [
     ("works_casing", "Works Casing", "Ammunition Works hull. Ribbed gray-steel panel with rivet lines; plain, hatches allowed on feeder/packing positions.", mc("StainlessSteel"), 1, None),
     ("ram_housing", "Ram Housing", "Ammunition Works press column. Dark steel box with a slotted top hood, inactive.", mc("StainlessSteel", "Steel"), 1, None),
     ("ram_housing_active", "Ram Housing (active)", "Ram Housing active state: the same box with a piston rod stroking behind the hood slot, glow strip on the downstroke. 4-frame strip.", mc("StainlessSteel") + ["#FF8000"], 4, 4),
-    ("reaction_casing", "Reaction Casing (Reaction Chamber Casing)", "Retort and Reaction Chamber hull. Smooth white-gray beveled panels with hazard-striped corner marks.", mc("Titanium", "Glass"), 1, None),
+    ("reaction_casing", "Reaction Casing", "Retired inert decorative block (formerly the Retort hull). Smooth white-gray beveled panels with hazard-striped corner marks.", mc("Titanium", "Glass"), 1, None),
     ("gantry_casing", "Gantry Casing", "Armory Gantry hull. Painted blue-gray steel panel with yellow edge stripe.", mc("Titanium", "StainlessSteel"), 1, None),
     ("gantry_beam", "Gantry Beam", "Armory Gantry roof beam. I-beam end and side, yellow-black safety stripe.", mc("Titanium"), 1, None),
     ("gantry_hoist", "Gantry Hoist", "Armory Gantry hoist. Motor housing with cable drum; one face shows the hook block.", mc("Titanium", "Steel"), 1, None),
@@ -658,7 +640,6 @@ for p, f in sorted(TEX.items()):
 GUIS = [
     ("hud", "HUD sprite sheet: ammo-type icons, magazine/clip pips, armor pips (full/half/empty), hit-marker, sprint/charge bar caps. Transparent background, 256x256 sheet; only the used regions are painted.", "gui/TGPlayerInventory.png", "P1", ["#FFFFFF", "#C80000", "#FFB400"]),
     ("ammo_press", "Ammo Press panel sprites: progress arrow, ram-stroke gauge (8 pips), input slot overlays (bullet, casing, powder, magazine) and output slot frame. Uses GT panel background; only sprites are painted.", "gui/ammoPress_GUI.png", "P1", mc("Steel") + ["#E8A040"]),
-    ("reaction_chamber", "Reaction Chamber panel sprites: intensity gauge 0-10 with marker, plus/minus buttons (normal, hover, pressed), completion bar, risk indicator.", "gui/ReactionChamber_Gui.png", "P2", ["#FF6020", "#40C0FF", "#808080"]),
     ("ammo_pouch", "Ammo Pouch 6-slot GUI sprites: pouch frame, slot overlays.", "gui/TGPlayerInventory.png", "P2", ["#6B4A2B"]),
     ("repair_bench", "Repair Bench panel sprites: damage bar, tier badge, input/output frames.", "gui/repairBench_GUI.png", "P3", ["#909090", "#705030"]),
     ("camo_bench", "Camo Bench panel sprites: camo index arrows, preview frame.", "gui/camoBench_GUI.png", "P3", ["#515150"]),
@@ -666,7 +647,7 @@ GUIS = [
     ("explosive_charge", "Explosive Charge panel sprites: timer digits, arm button, owner lock icon.", "gui/expChargeGui.png", "P3", ["#303030", "#C80000"]),
     ("advanced_explosive_charge", "Advanced Explosive Charge panel sprites: timer digits, arm button, remote-link icon.", "gui/tntChargeGui.png", "P3", ["#901010"]),
     ("storage_chest", "Reinforced / Weapon Chest GUI sprites: slot grid frame and sort-button art.", "gui/tgchest_gui.png", "P3", ["#989898"]),
-    ("multiblock_widgets", "Shared multiblock panel sprites for Ammunition Works, Retort, Armory Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs.", None, "P3", mc("Titanium")),
+    ("multiblock_widgets", "Shared multiblock panel sprites for Ammunition Works, Armory Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs.", None, "P3", mc("Titanium")),
     ("gun_mount_hatch", "Gun Mount Hatch panel sprites: single gun slot, lock icon.", None, "P3", ["#505050"]),
 ]
 for gid, brief, ref, pri, pal in GUIS:
@@ -714,7 +695,7 @@ FX = [  # name, frames, grid note, pri, role, palette
     ("laser_blue", 1, "single image", "P3", "blue tesla beam band, white-cyan core", ["#2060FF", "#E0FFFF"]),
     ("laserDeathfx", 1, "tileable", "P3", "laser death overlay: molten cracks, orange on dark red-black", ["#FF6020", "#300808"]),
     ("bio", 1, "tileable", "P3", "bio death overlay: mottled slime green", ["#5DB049"]),
-    ("heatray", 1, "single image", "P3", "Reaction Chamber heat-ray teardrop flame, black background", ["#FFE070", "#808030"]),
+    ("heatray", 1, "single image", "P3", "heat-ray teardrop flame, retained but unused since 0012, black background", ["#FFE070", "#808030"]),
     ("techscope", 1, "single full-screen image", "P3", "sci-fi scope overlay: black border, cyan hex reticle and brackets", ["#00E0E0", "#021616"]),
 ]
 for name, fr, grid, pri, role, pal in FX:
@@ -829,7 +810,6 @@ INFO = [
     ("armor_and_gear", "armor-and-gear", "Player guide: the twelve armor sets on figures, masks and back gear, damage types.", "P2"),
     ("machines", "machines", "Player guide: each single block machine beside its multiblock, rendered.", "P2"),
     ("multiblock_ammunition_works", "multiblock-ammunition-works", "Build guide: Ammunition Works, with block counts, sections, hatches and scaling.", "P3"),
-    ("multiblock_retort", "multiblock-retort", "Build guide: Retort, with block counts, sections, hatches and scaling.", "P3"),
     ("multiblock_armory_gantry", "multiblock-armory-gantry", "Build guide: Armory Gantry, with block counts, sections, hatches and scaling.", "P3"),
     ("multiblock_rampart", "multiblock-rampart", "Build guide: Rampart, with block counts, sections, hatches and scaling.", "P3"),
     ("enemies", "enemies", "Player guide: mobs by danger, rendered, plus structures and loot.", "P2"),
@@ -889,7 +869,7 @@ def build_md():
     A("- **Item icons** are 16x16 GT-style ([0006](../design/0006-art-direction.md)). Palettes come from the GT material color (`MaterialsInit.java`, 5.09.54.205); items made of a material use that color. Rubber is `#000000` in GT: paint it as a lifted dark gray (`#2A2A2E`) so it reads.")
     A("- **Model textures** keep the Techguns size and UV layout. **Decorative block textures** keep the Techguns footprint (32 px, connected-texture sheets 64 px). **Machine overlays and multiblock casings** are GT-native 16 px; animated ones are vertical strips with a `.png.mcmeta` (`frametime` in ticks).")
     A("- **Sounds** match role, length and loudness: integrated loudness within +/-3 LU of the measured original (`target_lufs`), peak at or below -1 dBFS, positional sounds mono (GVA-23). Delivery rate is 44.1 kHz, or 48 kHz where the original was 48 kHz. Stereo only for the glider loop (player-bound ambience).")
-    A("- **Priority:** **P1** is the M1 vertical slice (9mm Pistol, its ammo and magazine, its sounds, the LV Ammo Press and its HUD/GUI). **P2** is M2 to M4 content (ballistic arsenal, armor, production chain, Reaction Chamber, branding basics). **P3** is M5 onwards (energy and exotic weapons, utility and defense, NPCs, worldgen), camo and color variants, social and infographic art.")
+    A("- **Priority:** **P1** is the M1 vertical slice (9mm Pistol, its ammo and magazine, its sounds, the LV Ammo Press and its HUD/GUI). **P2** is M2 to M4 content (ballistic arsenal, armor, production chain, branding basics). **P3** is M5 onwards (energy and exotic weapons, utility and defense, NPCs, worldgen), camo and color variants, social and infographic art.")
     A("- Provenance for every delivered asset goes in [CREDITS.md](CREDITS.md).\n")
     groups = [
         ("Item icons", "icon", None),
@@ -947,7 +927,7 @@ def build_md():
     A("- **Vanilla-textured mobs:** Skeleton Soldier and Pigman Soldier use vanilla skins and need no art.\n")
     A("## 11. Notes and non-image data\n")
     A("- **Structures (11-worldgen)** need no textures. Structure templates, loot tables and `sounds.json`/lang files are data, written alongside the code (structure files are written fresh, never copied).")
-    A("- **Sounds not in this list:** Rampart, Gantry, Retort and Ammunition Works have no sound brief yet ([ammo-press.md § Sound](../gregguns-spec/08-machines-production/ammo-press.md#sound) asks only for the stroke hook). The Ammo Press stroke reuses the `ammopress_work2` role.")
+    A("- **Sounds not in this list:** Rampart, Gantry and Ammunition Works have no sound brief yet ([ammo-press.md § Sound](../gregguns-spec/08-machines-production/ammo-press.md#sound) asks only for the stroke hook). The Ammo Press stroke reuses the `ammopress_work2` role.")
     A("- **Armored-turret variants** use the five Techguns turret sheets; the obsidian-steel variant becomes aluminum (0010).")
     A("- **Recolor rule:** one gun sheet serves its akimbo form; the Flashbang recolors the Frag Grenade sheet.\n")
     return "\n".join(L)

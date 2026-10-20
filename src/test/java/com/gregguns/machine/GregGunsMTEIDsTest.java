@@ -1,6 +1,8 @@
 package com.gregguns.machine;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -45,18 +47,60 @@ class GregGunsMTEIDsTest {
     }
 
     @Test
-    void theReactionMachinesUseTheRostersIds() {
-        // machine-roster.md: 20106 EV chamber, 20107 IV chamber, 20108 Retort.
-        assertEquals(20106, GregGunsMTEIDs.REACTION_CHAMBER_EV);
-        assertEquals(20107, GregGunsMTEIDs.REACTION_CHAMBER_IV);
-        assertEquals(20108, GregGunsMTEIDs.RETORT);
-        java.util.List<Integer> all = new java.util.ArrayList<>();
-        for (int id : GregGunsMTEIDs.all()) {
-            all.add(id);
+    void theRetiredIdsAreReservedForeverAndAbsentFromEveryRegistration() throws java.io.IOException {
+        // Design record 0012: 20106 and 20107 were the Reaction Chamber (EV, IV), 20108 the Retort. Worlds may still
+        // hold
+        // them, so they are never reused, never renumbered, and no registration may take one.
+        assertArrayEquals(new int[] { 20106, 20107, 20108 }, GregGunsMTEIDs.retired());
+        java.util.Set<Integer> retired = new HashSet<>();
+        for (int id : GregGunsMTEIDs.retired()) {
+            retired.add(id);
+            assertTrue(id >= GregGunsMTEIDs.BLOCK_FIRST && id <= GregGunsMTEIDs.BLOCK_LAST, "id " + id);
         }
-        assertTrue(all.contains(GregGunsMTEIDs.REACTION_CHAMBER_EV));
-        assertTrue(all.contains(GregGunsMTEIDs.REACTION_CHAMBER_IV));
-        assertTrue(all.contains(GregGunsMTEIDs.RETORT));
+        for (int id : GregGunsMTEIDs.all()) {
+            assertFalse(retired.contains(id), "all() lists the retired id " + id);
+        }
+        for (java.lang.reflect.Field f : GregGunsMTEIDs.class.getFields()) {
+            if (f.getType() == int.class && !f.getName()
+                .startsWith("BLOCK_")) {
+                try {
+                    assertFalse(retired.contains(f.getInt(null)), f.getName() + " takes a retired id");
+                } catch (IllegalAccessException e) {
+                    throw new AssertionError(e);
+                }
+            }
+        }
+        // No source file may name a retired id as a number; only GregGunsMTEIDs holds them, and MtePlaceholders reads
+        // them through retired() to register inert stand-ins (the only registration allowed to use them).
+        java.util.regex.Pattern literal = java.util.regex.Pattern.compile("\b2010[678]\b");
+        try (java.util.stream.Stream<java.nio.file.Path> files = java.nio.file.Files
+            .walk(java.nio.file.Paths.get("src", "main", "java"))) {
+            for (java.nio.file.Path p : (Iterable<java.nio.file.Path>) files.filter(
+                x -> x.toString()
+                    .endsWith(".java"))::iterator) {
+                if (p.getFileName()
+                    .toString()
+                    .equals("GregGunsMTEIDs.java")) {
+                    continue;
+                }
+                String text = new String(java.nio.file.Files.readAllBytes(p), java.nio.charset.StandardCharsets.UTF_8);
+                assertFalse(
+                    literal.matcher(text)
+                        .find(),
+                    p.getFileName() + " names a retired MTE id");
+            }
+        }
+    }
+
+    @Test
+    void theRetiredIdsGetInertPlaceholdersAndNothingElse() {
+        assertEquals(java.util.Arrays.asList(20106, 20107, 20108), MtePlaceholders.retiredMissing(i -> false));
+        assertTrue(
+            MtePlaceholders.retiredMissing(i -> true)
+                .isEmpty());
+        assertFalse(
+            MtePlaceholders.missing(i -> false)
+                .contains(20106));
     }
 
     @Test
@@ -66,9 +110,14 @@ class GregGunsMTEIDsTest {
         int[] ids = GregGunsMTEIDs.all()
             .clone();
         java.util.Arrays.sort(ids);
-        assertEquals(25, ids.length);
-        for (int i = 0; i < ids.length; i++) {
-            assertEquals(GregGunsMTEIDs.BLOCK_FIRST + i, ids[i]);
+        assertEquals(22, ids.length);
+        int next = GregGunsMTEIDs.BLOCK_FIRST;
+        for (int id : ids) {
+            if (next >= 20106 && next <= 20108) {
+                next = 20109;
+            }
+            assertEquals(next, id);
+            next++;
         }
     }
 

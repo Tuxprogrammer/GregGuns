@@ -229,7 +229,7 @@ Techguns: "T3 Exo Suit", a shapeless upgrade of Advanced Combat. Here the Advanc
 
 ### Anti Gravity Device (1 recipe)
 
-Techguns: `tet` / `cac` / `mbm`. Gate: `plate.TungstenSteel`, `Field_Generator_IV`, and the Anti Gravity Core, which only the Reaction Chamber at IV makes ([08 recipes](../08-machines-production/recipes.md#anti-gravity-core-iv)).
+Techguns: `tet` / `cac` / `mbm`. Gate: `plate.TungstenSteel`, `Field_Generator_IV`, and the Anti Gravity Core, which only the GT Assembler makes at IV ([RC-65](../06-items/recipes.md#part-anti-gravity-core)).
 
 | Output | Inputs | Circuit | Time | Notes |
 |---|---|---|---|---|
@@ -286,7 +286,7 @@ GregGuns components that these recipes consume. All except where noted are defin
 | Gas Mask Filter (`part_gas_mask_filter`) | Gas Mask, refilter | "Gas Mask Filter ... Keep" |
 | Compressed Air Tank (`CAT`, `tank_air`) | Oxygen Tanks, Jump Pack | [fluids.md](../06-items/fluids.md) (a 1 000 mB `IFluidContainerItem`) |
 | Steam Armor Plating (`SAP`, `part_steam_armor_plating`) | Steam armor | [06 recipes](../06-items/recipes.md#part-steam-armor-plating) (RC-23): Assembler, EV, `plate.Titanium` ×2, `plate.Bronze` ×1, `plate.Steel` ×1 gives 1 SAP, `circuit(1)`, 6 s, `RECIPE_EV`. Techguns shared item 67. EV matches the steam armor row in [0001](../../design/0001-tier-map.md) |
-| Anti Gravity Core (`part_anti_gravity_core`) | Anti Gravity Device | Made by the Reaction Chamber, [08 recipes](../08-machines-production/recipes.md#anti-gravity-core-iv) |
+| Anti Gravity Core (`part_anti_gravity_core`) | Anti Gravity Device | Made on the GT Assembler at IV, [RC-65](../06-items/recipes.md#part-anti-gravity-core) |
 
 Defined in this sheet and consumed by it: Glider Backpack, Glider Wing, Oxygen Mask. Area 06 should link here rather than repeat them ("Glider parts, Oxygen Mask ... Other areas" in components-and-materials.md).
 

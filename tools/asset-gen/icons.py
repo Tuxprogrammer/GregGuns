@@ -908,14 +908,6 @@ def _(c, x):
     c.pix(3, 3, x.m[HL]); c.pix(12, 12, x.m[DK])
 
 
-@icon("part_heat_ray_focus")
-def _(c, x):
-    c.poly([(8, 1), (10, 4), (12, 8), (11, 11), (8, 13), (5, 11), (4, 8), (6, 4)], glow((255, 90, 40)))
-    c.poly([(8, 5), (10, 8), (9, 11), (7, 11), (6, 8)], glow((255, 190, 70)), bevel=False)
-    c.pix(8, 9, (255, 245, 180)); c.pix(7, 6, (255, 245, 200))
-    c.rect(5, 13, 10, 14, x.m)
-
-
 @icon("part_rad_emitter")
 def _(c, x):
     c.rect(2, 3, 13, 12, LEAD)
