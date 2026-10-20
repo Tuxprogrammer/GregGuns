@@ -467,6 +467,8 @@ public final class ChargeScenarios {
             TileExplosiveCharge tile = placeCharge(ctx, ChargeType.ADVANCED, owner.getUniqueID(), "[GGGuiOwner]");
             ChargeParams p = tile.params();
             ScenarioResult.Builder out = ScenarioResult.builder(name());
+            // The advanced charge starts at its maximum depth, so step down first to leave room to deepen.
+            out.check(tile.pressBy(owner, ChargeParams.BTN_LENGTH_DOWN), "the owner shortens the bore");
             int depth = p.length();
             out.check(tile.pressBy(owner, ChargeParams.BTN_LENGTH_UP), "the owner deepens the bore");
             out.checkEquals("depth after one step", depth + 1, p.length());
