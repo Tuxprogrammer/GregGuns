@@ -6,4 +6,4 @@ F = brick
 layers:
 layer 0
 FFFF
-FF
+FFFF
