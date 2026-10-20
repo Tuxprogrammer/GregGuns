@@ -368,9 +368,9 @@ public final class AmmoWorksScenarios {
             // A wall casing removed (the left wall of the second aisle at the controller's height).
             Block casing = GregGunsCasings.INSTANCE;
             ctx.setBlock(-2, Hall.CY, 1, Blocks.air, 0);
-            out.check(!hall.form(), "a missing wall casing should break the hall");
+            expectForm(hall, out, false, "a missing wall casing should break the hall");
             ctx.setBlock(-2, Hall.CY, 1, casing, GregGunsCasings.WORKS_CASING);
-            out.check(hall.form(), "putting the casing back should form the hall again");
+            expectForm(hall, out, true, "putting the casing back should form the hall again");
 
             // Windows: the first bay's side window (left wall, middle row of the interior, first bay aisle) is
             // required,
@@ -378,15 +378,15 @@ public final class AmmoWorksScenarios {
             int windowY = Hall.CY + 1;
             int windowZ = AmmoWorksShape.FEEDER_LENGTH;
             ctx.setBlock(-2, windowY, windowZ, Blocks.air, 0);
-            out.check(!hall.form(), "a missing window should break the hall");
+            expectForm(hall, out, false, "a missing window should break the hall");
             ctx.setBlock(-2, windowY, windowZ, Blocks.glass, 0);
-            out.check(hall.form(), "vanilla glass in a window should form the hall");
+            expectForm(hall, out, true, "vanilla glass in a window should form the hall");
             ctx.setBlock(-2, windowY, windowZ, GregTechAPI.sBlockGlass1, 0);
-            out.check(hall.form(), "a different glass tier in another window should still form the hall");
+            expectForm(hall, out, true, "a different glass tier in another window should still form the hall");
             ctx.setBlock(-2, windowY, windowZ, casing, GregGunsCasings.WORKS_CASING);
-            out.check(!hall.form(), "a plain casing in a window position should break the hall");
+            expectForm(hall, out, false, "a plain casing in a window position should break the hall");
             ctx.setBlock(-2, windowY, windowZ, Blocks.glass, 0);
-            out.check(hall.form(), "glass back in the window should form the hall again");
+            expectForm(hall, out, true, "glass back in the window should form the hall again");
 
             // Interior: the first bay's press rod (steel frame, below the roof ram housing) and the ceiling pipe run.
             ItemStack frame = GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Steel, 1);
@@ -394,44 +394,75 @@ public final class AmmoWorksScenarios {
             int frameMeta = frame.getItemDamage();
             int rodZ = AmmoWorksShape.FEEDER_LENGTH + 1;
             ctx.setBlock(0, Hall.CY + 2, rodZ, Blocks.air, 0);
-            out.check(!hall.form(), "a bay without its press rod should break the hall");
+            expectForm(hall, out, false, "a bay without its press rod should break the hall");
             ctx.setBlock(0, Hall.CY + 2, rodZ, frameBlock, frameMeta);
-            out.check(hall.form(), "the press rod back should form the hall again");
+            expectForm(hall, out, true, "the press rod back should form the hall again");
             ctx.setBlock(1, Hall.CY + 2, windowZ, Blocks.air, 0);
-            out.check(!hall.form(), "a missing ceiling pipe should break the hall");
+            expectForm(hall, out, false, "a missing ceiling pipe should break the hall");
             ctx.setBlock(1, Hall.CY + 2, windowZ, GregTechAPI.sBlockCasings2, 13);
-            out.check(hall.form(), "the ceiling pipe back should form the hall again");
+            expectForm(hall, out, true, "the ceiling pipe back should form the hall again");
 
             // A second belt tier on the floor line.
             Block pipeCasings = GregTechAPI.sBlockCasings11;
             int beltMeta = ctx.world()
                 .getBlockMetadata(ctx.originX(), ctx.originY(), ctx.originZ() + 4);
             ctx.setBlock(0, 0, 4, pipeCasings, beltMeta == 3 ? 4 : 3);
-            out.check(!hall.form(), "a second item pipe casing tier on the belt should break the hall");
+            expectForm(hall, out, false, "a second item pipe casing tier on the belt should break the hall");
             ctx.setBlock(0, 0, 4, pipeCasings, beltMeta);
-            out.check(hall.form(), "restoring the first belt tier should form the hall again");
+            expectForm(hall, out, true, "restoring the first belt tier should form the hall again");
 
             // The ram housing replaced by a plain casing: the bay no longer matches, so the hall has one bay fewer
             // than needed and cannot form.
             ctx.setBlock(0, 5, AmmoWorksShape.FEEDER_LENGTH + 1, casing, GregGunsCasings.WORKS_CASING);
-            out.check(!hall.form(), "a bay without its ram housing should break the hall");
+            expectForm(hall, out, false, "a bay without its ram housing should break the hall");
             ctx.setBlock(0, 5, AmmoWorksShape.FEEDER_LENGTH + 1, casing, GregGunsCasings.RAM_HOUSING);
-            out.check(hall.form(), "restoring the ram housing should form the hall again");
+            expectForm(hall, out, true, "restoring the ram housing should form the hall again");
 
             // The muffler removed.
             ctx.setBlock(-1, Hall.CY, 0, casing, GregGunsCasings.WORKS_CASING);
-            out.check(!hall.form(), "a hall without a muffler hatch should not form");
+            expectForm(hall, out, false, "a hall without a muffler hatch should not form");
             hall.muffler = hall.hatch(-1, Hall.CY, 0, ItemList.Hatch_Muffler_HV, ForgeDirection.NORTH);
-            out.check(hall.form(), "adding the muffler should form the hall again");
+            expectForm(hall, out, true, "adding the muffler should form the hall again");
 
             // The output bus removed.
             int last = AmmoWorksShape.totalLength(hall.bays) - 1;
             ctx.setBlock(0, Hall.CY, last, casing, GregGunsCasings.WORKS_CASING);
-            out.check(!hall.form(), "a hall without an output bus should not form");
+            expectForm(hall, out, false, "a hall without an output bus should not form");
             hall.empty();
             noStray(ctx, out);
             return out.build();
         }
+    }
+
+    /**
+     * Checks that the hall forms (or not). On a mismatch it also records whether the controller's chunk is loaded,
+     * whether the tile entity is still the controller, and what a second structure check says (a different answer
+     * means a timing problem, the same one a real structure fault).
+     */
+    private static void expectForm(Hall hall, ScenarioResult.Builder out, boolean want, String label) {
+        boolean got = hall.form();
+        if (got != want) {
+            net.minecraft.world.World w = hall.ctx.world();
+            int cx = hall.ctx.originX();
+            int cz = hall.ctx.originZ();
+            boolean loaded = w.getChunkProvider()
+                .chunkExists(cx >> 4, cz >> 4);
+            boolean same = w.getTileEntity(cx, hall.ctx.originY() + Hall.CY, cz) == hall.controller;
+            boolean again = hall.form();
+            out.note(
+                "form mismatch [" + label
+                    + "]: wanted "
+                    + want
+                    + ", got "
+                    + got
+                    + "; chunk loaded "
+                    + loaded
+                    + "; controller tile unchanged "
+                    + same
+                    + "; second check "
+                    + again);
+        }
+        out.check(got == want, label);
     }
 
     /**
