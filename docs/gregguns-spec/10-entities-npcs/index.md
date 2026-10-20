@@ -20,6 +20,7 @@ The main findings:
 | [mob-drops-nei.md](mob-drops-nei.md) | How Mobs Info discovers drops, dreamcraft Custom Drops as a pack hook, NPC equipment against the tier map |
 | [spawning.md](spawning.md) | The placeholder against the pack, SpecialMobs, EnderZoo spawn config, AngerMod, dimensions |
 | [registry-and-pack-hooks.md](registry-and-pack-hooks.md) | Entity names as each pack mod sees them, ThaumcraftMobAspects values |
+| [m7-exit-gate.md](m7-exit-gate.md) | The M7 exit-gate audit: evidence per box, the all-eggs check, deviations, polish and open decisions |
 
 **No integration point, so no sheet.** See the Techguns spec and the [design records](../../design/README.md):
 
