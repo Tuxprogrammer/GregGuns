@@ -41,6 +41,11 @@ Natural structures (all Overworld only):
 | [village.md](village.md) | The (unregistered) village bunker piece. There are no professions or trades. |
 | [assets.md](assets.md) | Structure data files, the 25 related textures, sounds (none), and lang keys and hard-coded strings |
 
+| [structure-notes/aircraft_carrier.md](structure-notes/aircraft_carrier.md) | Word-only builder notes: Aircraft Carrier (deck, island, hangar, flag, 26 chests) |
+| [structure-notes/submarine.md](structure-notes/submarine.md) | Word-only builder notes: Submarine (7 wide, sea floor, conning tower, 9 chests) |
+| [structure-notes/camp_parts.md](structure-notes/camp_parts.md) | Word-only builder notes: Military Base rules and its nine parts |
+| [structure-notes/alien_bug_nest.md](structure-notes/alien_bug_nest.md) | Procedural rules for the Alien Bug Nest (chambers, tunnels, eggs, Bug Holes) |
+
 ## Config keys that gate worldgen
 
 The keys are defined in [`TGConfig`](../01-core/config.md); see **[01-core](../01-core/index.md) / config.md** for the full config file. This table lists what each key gates.
