@@ -20,6 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import com.gregguns.GregGuns;
 import com.gregguns.client.gun.GunInputHandler;
 import com.gregguns.core.DevEnvironment;
+import com.gregguns.core.testing.AutotestArgs;
 import com.gregguns.core.testing.AutotestSignal;
 import com.gregguns.gun.GunClientEvents;
 import com.gregguns.gun.GunClientHooks;
@@ -276,6 +277,15 @@ public final class ClientAutotest {
                 log("fire x" + args[0] + " (client " + localName() + ")");
             }
             case "gui" -> AutotestCommands.openGui(args);
+            case "look" -> AutotestCommands.look(args);
+            case "use" -> {
+                AutotestArgs.requireNone(args);
+                AutotestCommands.use();
+            }
+            case "usesneak" -> {
+                AutotestArgs.requireNone(args);
+                holdWait = new AutotestCommands.SneakUseWait();
+            }
             case "see" -> holdWait = new AutotestCommands.SeeWait(args[0]);
             case "sync" -> AutotestCommands.syncAck();
             case "hold" -> holdWait = new AutotestCommands.HoldWait(args[0]);
