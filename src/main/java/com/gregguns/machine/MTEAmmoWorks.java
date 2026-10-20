@@ -12,7 +12,9 @@ import static gregtech.api.enums.HatchElement.MultiAmpEnergy;
 import static gregtech.api.enums.HatchElement.OutputBus;
 import static gregtech.api.enums.HatchElement.OutputHatch;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
+import static gregtech.api.util.GTStructureUtility.chainAllGlasses;
 import static gregtech.api.util.GTStructureUtility.chainItemPipeCasings;
+import static gregtech.api.util.GTStructureUtility.ofFrame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,8 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import gregtech.api.GregTechAPI;
+import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
 import gregtech.api.enums.VoidingMode;
@@ -88,6 +92,12 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
     /** Pollution per second the running hall adds, the sheet's proposal. */
     private static final int POLLUTION_PER_SECOND = 40;
 
+    // Metas of gt.blockcasings2 (GregTechAPI.sBlockCasings2).
+    private static final int GEARBOX_STEEL_META = 3;
+    private static final int ASSEMBLER_META = 9;
+    private static final int MOTOR_META = 11;
+    private static final int PIPE_STEEL_META = 13;
+
     private static final String OVERLAY_DIR = "machines/ammunition_works/";
 
     // Per-check scratch, reset at the start of every checkMachine.
@@ -128,6 +138,13 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
             return onElementPass(MTEAmmoWorks::onCasingAdded, lazy(() -> ofBlock(GregGunsCasings.INSTANCE, meta)));
         }
 
+        /**
+         * A fixed GT machine casing from {@code gt.blockcasings2}; the block is read lazily because GT sets it late.
+         */
+        private static IStructureElement<MTEAmmoWorks> gtCasing(int meta) {
+            return lazy(() -> ofBlock(GregTechAPI.sBlockCasings2, meta));
+        }
+
         private static IStructureDefinition<MTEAmmoWorks> build() {
             int casingIndex = GregGunsCasings.textureIndex(GregGunsCasings.WORKS_CASING);
             return StructureDefinition.<MTEAmmoWorks>builder()
@@ -151,6 +168,23 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
                         .buildAndChain(casing(GregGunsCasings.WORKS_CASING)))
                 .addElement('A', casing(GregGunsCasings.WORKS_CASING))
                 .addElement('M', casing(GregGunsCasings.RAM_HOUSING))
+                // Windows: any GT glass tier (and the other glasses GT lists). The tier getter always answers "not
+                // set", so mixed glass passes and the hall has no glass progression wall.
+                // Source:
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L891-L925
+                // (vanilla glass is tier 3 in GlassTier, so even it is accepted:
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GlassTier.java)
+                .addElement('G', chainAllGlasses())
+                // Interior set dressing. These are required, fixed GT blocks that are not counted as casings, so
+                // they never trade off against hatches: press rods, ceiling pipe runs, drive gearboxes, the feed
+                // motors and the packing station's assembler arch.
+                // Source (casing metas):
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/casing/Casings.java#L80-L113
+                .addElement('R', ofFrame(Materials.Steel))
+                .addElement('P', gtCasing(PIPE_STEEL_META))
+                .addElement('B', gtCasing(GEARBOX_STEEL_META))
+                .addElement('N', gtCasing(MOTOR_META))
+                .addElement('Y', gtCasing(ASSEMBLER_META))
                 // Source:
                 // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L993-L1011
                 // (one tier for every block of the line: a second tier fails the check)
@@ -267,8 +301,14 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
                 AmmoWorksShape.casingMinimum(AmmoWorksShape.MIN_BAYS) + "+",
                 StatCollector.translateToLocal("gregguns.casings.0.name"),
                 false)
-            .addCasing("2 per bay", StatCollector.translateToLocal("gregguns.casings.1.name"), false)
+            .addCasing("3 per bay", StatCollector.translateToLocal("gregguns.casings.1.name"), false)
             .addCasing("2 + 3 per bay + 3", lang("structure.belt"), true)
+            .addCasing("16 + 6 per bay", lang("structure.glass"), true)
+            .addCasing("10 + 6 per bay", lang("structure.pipes"), false)
+            .addCasing("4 + 2 per bay", lang("structure.gearboxes"), false)
+            .addCasing("2", lang("structure.motors"), false)
+            .addCasing("3", lang("structure.assembler"), false)
+            .addCasing("2 + 2 per bay", lang("structure.frames"), false)
             .addInputBus("1+", lang("structure.feeder"), 1)
             .addInputHatch("0+", lang("structure.feeder"), 1)
             .addEnergyHatch("1+", lang("structure.feeder_or_packing"), 1, 2)
@@ -280,6 +320,7 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
             .addStructureInfo(lang("structure.footer"))
             .addSubChannel(GTStructureChannels.STRUCTURE_LENGTH)
             .addSubChannel(GTStructureChannels.ITEM_PIPE_CASING)
+            .addSubChannel(GTStructureChannels.BOROGLASS)
             .toolTipFinisher();
         return tt;
     }
