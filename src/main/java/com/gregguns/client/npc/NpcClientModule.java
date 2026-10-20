@@ -4,6 +4,7 @@ import com.gregguns.client.mob.MobRenderers;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
+import com.gregguns.entity.npc.AlienBug;
 import com.gregguns.entity.npc.NpcEntity;
 
 /**
@@ -20,6 +21,7 @@ public final class NpcClientModule implements ClientModule {
 
     @Override
     public void init() {
+        MobRenderers.living(AlienBug.class, "alien_bug", "alien_bug", 1.0F, 1.0F);
         if (DevEnvironment.isActive()) {
             MobRenderers
                 .biped(NpcEntity.class, "biped", "textures/entity/army_soldier.png", 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);

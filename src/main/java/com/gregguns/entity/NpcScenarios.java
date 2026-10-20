@@ -25,6 +25,7 @@ public final class NpcScenarios {
         NpcLootScenarios.registerAll(registry);
         NpcEggScenarios.registerAll(registry);
         NpcCapScenarios.registerAll(registry);
+        NpcAlienBugScenarios.registerAll(registry);
     }
 
     /** The module is enabled and the config carries the documented defaults. */
