@@ -64,7 +64,7 @@ public final class ChargePanel {
         final ChargeType type = tile.params()
             .type();
         final ChargeGuiModel.State st = new ChargeGuiModel.State();
-        final EntityPlayer player = sync.getPlayer();
+        final EntityPlayer player = data.getPlayer();
         st.load(tile.params(), !tile.getWorldObj().isRemote && tile.mayConfigure(player));
 
         settings.canInteractWith(
