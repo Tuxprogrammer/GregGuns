@@ -133,7 +133,9 @@ def arsenal(part: int):
                       armor=("vanilla", K.ASSETS / "textures/models/armor/t3_hev_1.png",
                              K.ASSETS / "textures/models/armor/t3_hev_2.png"))
         tip = ("An EV gun charges only in an <b>EV</b> charger or buffer. Plan your power before you plan your "
-               "loadout. Fuel, Bio and Air tank guns refill in a GT Fluid Canner instead.")
+               "loadout. Fuel, Bio and Air tank guns refill in a GT Fluid Canner instead. "
+               "*Bio Gun blobs only appear when <b>explosions.blockDamage</b> is true (default false). With it off the gun still poisons but leaves no blob, and its tooltip says "
+               "\"Blobs disabled: explosions.blockDamage is off\".")
     body = f"""
 <div style="display:flex;flex-direction:column;gap:18px">{bands}</div>
 <div style="display:flex;align-items:flex-end;gap:26px;margin-top:22px">

@@ -4,7 +4,7 @@ Every non-code asset GregGuns needs, derived from the design records ([0001](../
 
 The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-gen/manifest.json), built by `python -I tools/asset-gen/build_manifest.py`. Edit the script, not the generated files.
 
-**Totals:** 823 assets. By kind: icon 176, model 171, block 128, gui 14, particle 31, sound 279, branding 11, infographic 13. By priority: P1 34, P2 309, P3 480.
+**Totals:** 817 assets. By kind: icon 176, model 165, block 128, gui 14, particle 31, sound 279, branding 11, infographic 13. By priority: P1 34, P2 309, P3 474.
 
 ## Conventions
 
@@ -224,7 +224,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.tactical_mask` | `textures/items/tactical_mask.png` | 16x16 | Tactical Mask (HV): GT-style 16x16 item icon, soft top-left light, dark outline. black full-face mask with green lens. | #C8C8C8 #C8C8DC | `textures/items/tacticalMask.png` | P2 |
 | `icon.anti_gravity_device` | `textures/items/anti_gravity_device.png` | 16x16 | Anti Gravity Device (IV): GT-style 16x16 item icon, soft top-left light, dark outline. gray pack with glowing cyan core. | #6464A0 | `textures/items/antiGravPack.png` | P2 |
 
-## 3. Model, armor and entity textures (171)
+## 3. Model, armor and entity textures (165)
 
 ### Gun model sheets (57)
 
@@ -372,7 +372,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `model.armor.tactical_mask_lightgreen` | `textures/models/armor/tactical_mask_lightgreen.png` | 64x64 | Tactical Mask worn-model texture (camo/color variant of the base set): full-face mask. Keep the Techguns UV layout (64x64). | #C8C8C8 | `textures/armor/tacticalmask_lightgreen.png` | P3 |
 | `model.armor.jump_pack` | `textures/models/armor/jump_pack.png` | 64x64 | Jump Pack worn-model texture (new; Techguns had no back-pack sheet for it): steel boxy pack, twin thruster cones, strap harness. Same 64x64 layout as the other back gear. | #C8C8DC | textures/armor/glider.png (layout reference only) | P2 |
 
-### Mobs, gibs and projectiles (19)
+### Mobs, gibs and projectiles (13)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
@@ -556,7 +556,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `block.decor.steelframe_scaffold_ctm` | `textures/blocks/steelframe_scaffold_ctm.png` | 32x32 | Steel frame (Chisel CTM group), 'steelframe_scaffold-ctm'. Open steel scaffold/frame block, stated finish. Footprint kept (32x32). | #808080 | `textures/blocks/steelframe_scaffold-ctm.png` | P3 |
 | `block.decor.steelframe_scaffold` | `textures/blocks/steelframe_scaffold.png` | 16x16 | Steel frame (Chisel CTM group), 'steelframe_scaffold'. Open steel scaffold/frame block, stated finish. Footprint kept (16x16). | #808080 | `textures/blocks/steelframe_scaffold.png` | P3 |
 
-## 5. GUI textures (11)
+## 5. GUI textures (14)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
@@ -571,9 +571,9 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `gui.storage_chest` | `textures/gui/storage_chest.png` | 256x256 | Reinforced / Weapon Chest GUI sprites: slot grid frame and sort-button art. | #989898 | textures/gui/tgchest_gui.png (layout reference only) | P3 |
 | `gui.multiblock_widgets` | `textures/gui/multiblock_widgets.png` | 256x256 | Shared multiblock panel sprites for Ammunition Works, Armory Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs. | #DCA0F0 | (new, no Techguns GUI) | P3 |
 | `gui.gun_mount_hatch` | `textures/gui/gun_mount_hatch.png` | 256x256 | Gun Mount Hatch panel sprites: single gun slot, lock icon. | #505050 | (new, no Techguns GUI) | P3 |
-| `gui.scope_sniper` | `textures/gui/scopes/sniper.png` | 512x512 | Sniper scope overlay (sniper rifles, bolt-action and AS50 style): 512x512 RGBA, transparent circular lens with fine crosshair and mil-dots, black surround with soft vignette ring. Stretched to the screen height. | #000000 #303030 | Sniper overlay (ScreenEffect.sniperScope), size/shape not copied | P2 |
+| `gui.scope_sniper` | `textures/gui/scopes/sniper.png` | 512x512 | Sniper scope overlay (sniper rifles, bolt-action and AS50 style): 512x512 RGBA, transparent circular lens with fine crosshair and mil-dots, black surround with soft vignette ring. Stretched to the screen height. | #000000 #303030 | (new, no Techguns GUI) | P2 |
 | `gui.scope_assault` | `textures/gui/scopes/assault.png` | 512x512 | Assault / reflex scope overlay (rifles with a zoom toggle): 512x512 RGBA, smaller transparent view circle in a thick dark housing, red chevron reticle with drop ticks. | #080A0A #FF281E | (new, no Techguns GUI) | P2 |
-| `gui.scope_energy` | `textures/gui/scopes/energy.png` | 512x512 | Energy / tech scope overlay (laser, pulse and plasma weapons): 512x512 RGBA, alpha-blended cyan HUD brackets, ring reticle with ticks, scanline vignette, transparent center. | #40E0FF #000A10 | techScope overlay (alpha-blended), design only | P2 |
+| `gui.scope_energy` | `textures/gui/scopes/energy.png` | 512x512 | Energy / tech scope overlay (laser, pulse and plasma weapons): 512x512 RGBA, alpha-blended cyan HUD brackets, ring reticle with ticks, scanline vignette, transparent center. | #40E0FF #000A10 | (new, no Techguns GUI) | P2 |
 
 ## 6. Particles and FX (31)
 
@@ -932,19 +932,19 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
-| `info.hero` | `docs/assets/infographics/hero.png` | 1600x460 | README hero banner: armored players across the tiers facing a Super Mutant. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
-| `info.getting_started` | `docs/assets/infographics/getting-started.png` | 1600x1602 | Player guide: the first six steps, from the Hand Cannon to a magazine-fed pistol, plus default keys. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
-| `info.arsenal_steam_to_hv` | `docs/assets/infographics/arsenal-steam-to-hv.png` | 1600x3052 | Player guide: every weapon from Steam to HV, rendered, with role and ammo. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
-| `info.arsenal_ev_to_zpm` | `docs/assets/infographics/arsenal-ev-to-zpm.png` | 1600x2294 | Player guide: every weapon from EV to ZPM, rendered, with role and ammo or charge. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
-| `info.ammo_and_magazines` | `docs/assets/infographics/ammo-and-magazines.png` | 1600x2037 | Player guide: GT materials to parts to the Ammo Press to magazines; magazine sizes; ammo per tier. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
-| `info.armor_and_gear` | `docs/assets/infographics/armor-and-gear.png` | 1600x2101 | Player guide: the twelve armor sets on figures, masks and back gear, damage types. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
-| `info.machines` | `docs/assets/infographics/machines.png` | 1600x1457 | Player guide: each single block machine beside its multiblock, rendered. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
-| `info.multiblock_ammunition_works` | `docs/assets/infographics/multiblock-ammunition-works.png` | 1600x2406 | Build guide: Ammunition Works, with block counts, sections, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
-| `info.multiblock_armory_gantry` | `docs/assets/infographics/multiblock-armory-gantry.png` | 1600x1986 | Build guide: Armory Gantry, with block counts, sections, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
-| `info.multiblock_rampart` | `docs/assets/infographics/multiblock-rampart.png` | 1600x1841 | Build guide: Rampart, with block counts, sections, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
-| `info.enemies` | `docs/assets/infographics/enemies.png` | 1600x3573 | Player guide: mobs by danger, rendered, plus structures and loot. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
-| `info.questbook` | `docs/assets/infographics/questbook.png` | 1600x1525 | Player guide: the GregGuns questbook chapters, side branches and rewards. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
-| `info.recipes_steam_and_lv` | `docs/assets/infographics/recipes-steam-and-lv.png` | 1600x2943 | Player guide: the Steam and LV crafting chains, crafting-table grids and Assembler and Ammo Press rows, read from the mod's recipe tables. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.hero` | `docs/assets/infographics/hero.png` | 1600x460 | README hero banner: armored players across the tiers facing a Super Mutant. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.getting_started` | `docs/assets/infographics/getting-started.png` | 1600x1602 | Player guide: the first six steps, from the Hand Cannon to a magazine-fed pistol, plus default keys. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.arsenal_steam_to_hv` | `docs/assets/infographics/arsenal-steam-to-hv.png` | 1600x3052 | Player guide: every weapon from Steam to HV, rendered, with role and ammo. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.arsenal_ev_to_zpm` | `docs/assets/infographics/arsenal-ev-to-zpm.png` | 1600x2294 | Player guide: every weapon from EV to ZPM, rendered, with role and ammo or charge; notes that Bio Gun blobs need explosions.blockDamage. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.ammo_and_magazines` | `docs/assets/infographics/ammo-and-magazines.png` | 1600x2037 | Player guide: GT materials to parts to the Ammo Press to magazines; magazine sizes; ammo per tier. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.armor_and_gear` | `docs/assets/infographics/armor-and-gear.png` | 1600x2101 | Player guide: the twelve armor sets on figures, masks and back gear, damage types. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.machines` | `docs/assets/infographics/machines.png` | 1600x1457 | Player guide: each single block machine beside its multiblock, rendered; notes the Works' optional filling bench. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.multiblock_ammunition_works` | `docs/assets/infographics/multiblock-ammunition-works.png` | 1600x3174 | Build guide: Ammunition Works, with block counts, sections, the required interior lamp, the optional Magazine Filling Bench, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
+| `info.multiblock_armory_gantry` | `docs/assets/infographics/multiblock-armory-gantry.png` | 1600x2787 | Build guide: Armory Gantry, with block counts, sections, the required interior lamp, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
+| `info.multiblock_rampart` | `docs/assets/infographics/multiblock-rampart.png` | 1600x1841 | Build guide: Rampart, with block counts, sections, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P3 |
+| `info.enemies` | `docs/assets/infographics/enemies.png` | 1600x3573 | Player guide: mobs by danger, rendered, plus structures and loot. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.questbook` | `docs/assets/infographics/questbook.png` | 1600x1525 | Player guide: the GregGuns questbook chapters, side branches and rewards. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
+| `info.recipes_steam_and_lv` | `docs/assets/infographics/recipes-steam-and-lv.png` | 1600x2943 | Player guide: the Steam and LV crafting chains, crafting-table grids and Assembler and Ammo Press rows, read from the mod's recipe tables. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/branding.py.] | #808080 #FF8000 #101418 #F2F2F2 | (new) | P2 |
 
 ## 10. Excluded on purpose
 

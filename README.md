@@ -61,7 +61,7 @@ Each single block and its multiblock.
 
 #### Multiblock build guides
 
-Ammunition Works, Armory Gantry, Rampart.
+Ammunition Works (with the optional Magazine Filling Bench), Armory Gantry, Rampart. Both halls need an interior lamp.
 
 ![Ammunition Works](docs/assets/infographics/multiblock-ammunition-works.png)
 

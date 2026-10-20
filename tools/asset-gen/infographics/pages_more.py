@@ -164,7 +164,7 @@ MACHINE_ROWS = [
     ("Ammo Press", lambda: S.machine_block("ammo_press", "LV"), ["Steam", "LV", "MV", "HV", "EV"],
      "Presses bullets, shells, rockets and magazines from GT parts. Its own recipe tab in NEI.",
      "Ammunition Works", lambda: S.ammo_works(4).render(ppu=16), "HV",
-     "A production hall. Every press bay you add multiplies how much it makes at once."),
+     "A production hall. Every press bay you add multiplies how much it makes at once. An optional filling bench on the back loads magazines too."),
     ("Repair Bench", lambda: S.machine_block("repair_bench", "LV"), ["LV", "MV", "HV", "EV", "IV"],
      "Restores worn armor and guns with GT plates and cloth. Its tier must be at least the item's.",
      "Armory Gantry", lambda: S.gantry(4).render(ppu=18), "HV",
@@ -204,25 +204,33 @@ MB = {
     "ammunition-works": dict(
         title="Ammunition <b>Works</b>",
         sub="The Ammo Press, built as a production hall. It runs every Ammo Press recipe, many at once.",
-        build=lambda: S.ammo_works(4), view=dict(yaw=-38, pitch=28, ppu=30), back=dict(yaw=148, pitch=28, ppu=16),
+        build=lambda: S.ammo_works(4, bench=True), view=dict(yaw=-38, pitch=28, ppu=28), back=dict(yaw=148, pitch=28, ppu=24),
+        cut=dict(build=lambda: S.ammo_works(2), cut=lambda x, y, z: x <= 1, view=dict(yaw=-52, pitch=24, ppu=24)),
+        lamp_text="Every feeder, press bay and the packing station needs <b>one lamp</b> under its roof (6 in the 4-bay hall). "
+                  "Use glowstone, a redstone lamp or any block with light level 12 or more. Without them the hall will not form, "
+                  "so add lamps to halls you built earlier.",
         pieces=[("FEEDER", "Feeder", "once, at the front"), ("BAY", "Press bay", "2 to 8 in a row"),
                 ("STATION", "Packing station", "once, at the back")],
         piece=lambda f: S.ammo_works(only=f), piece_view=dict(yaw=-38, pitch=28, ppu=18),
         size="5 wide &times; 7 tall &times; 13 to 31 long", ctier="HV",
         hatches=[("Input Bus and Input Hatch", "on the feeder; the two towers on its roof are a handy spot"),
                  ("Energy, Maintenance and Muffler Hatches", "anywhere on the feeder. It does need a Muffler"),
-                 ("Output Bus and Output Hatch", "on the packing station's back wall"),
+                 ("Output Bus and Output Hatch", "on the packing station's back wall. If you add the filling bench, keep a plain Output Bus on its upper rows: an ME bus pushes its rounds away"),
                  ("The belt", "Item Pipe Casings down the middle of the floor, all of one tier"),
                  ("The insides", "part of the build: pipe runs under the roof, a press rod and gearboxes in every bay, "
-                                 "feed motors and an assembler arch. The glass windows show it running")],
+                                 "feed motors, an assembler arch and a lamp in every section. The glass windows show it running")],
         grow=[("More press bays", "Parallels = 4 &times; bays &times; voltage tier. At HV, 4 bays run 48 at once and 8 bays run 96."),
               ("A faster belt", "A higher-tier Item Pipe Casing belt shortens every run."),
               ("Bigger hatches", "Power is the real limit. Feed a long hall with more amps or a higher-tier Energy Hatch.")],
-        tip="Hold a hologram projector with a stack of 2 to 8 to preview the hall at that many bays. A screwdriver toggles the ram animation."),
+        tip="Hold a hologram projector with a stack of 2 to 8 to preview the hall at that many bays; set its height channel to 1 to include the filling bench. A screwdriver toggles the ram animation."),
     "armory-gantry": dict(
         title="Armory <b>Gantry</b>",
         sub="The Repair Bench, built as a row of repair arches. It mends armor and guns from buses, ready for automation.",
         build=lambda: S.gantry(4), view=dict(yaw=-38, pitch=26, ppu=34), back=None,
+        cut=dict(build=lambda: S.gantry(2), cut=lambda x, y, z: x <= 2, view=dict(yaw=-52, pitch=24, ppu=34)),
+        lamp_text="The booth and every repair bay need <b>one lamp</b> under the beam (5 in the 4-bay gantry). "
+                  "Use glowstone, a redstone lamp or any block with light level 12 or more. Without them the gantry will not form, "
+                  "so add lamps to gantries you built earlier.",
         pieces=[("HEAD", "Booth", "once, at the front"), ("BAY", "Repair bay", "2 to 8 in a row"),
                 ("TAIL", "Back wall", "once, at the back")],
         piece=lambda f: S.gantry(only=f), piece_view=dict(yaw=-38, pitch=26, ppu=22),
@@ -230,7 +238,8 @@ MB = {
         hatches=[("Input Bus", "damaged items and repair parts go in"),
                  ("Output Bus", "repaired items come out"),
                  ("Energy and Maintenance Hatches", "on any Gantry Casing of the booth or the back wall"),
-                 ("No Muffler", "it makes no pollution")],
+                 ("No Muffler", "it makes no pollution"),
+                 ("The insides", "part of the build: a lamp in the booth and every bay, hoist motors and gearbox, hooks, floor rails and a pipe run")],
         grow=[("More bays", "One item per bay per cycle. A cycle takes about 2 seconds, plus up to 8 for badly damaged items."),
               ("A higher Energy Hatch", "The weakest Energy Hatch sets the highest item tier it repairs. LuV and ZPM gear needs a LuV or ZPM hatch."),
               ("Nothing lost", "Repaired items keep their camo, charge, enchantments and names.")],
@@ -254,8 +263,24 @@ MB = {
 }
 
 
+def bench_card():
+    img_ = S.ammo_works(2, only="STATION", bench=True).render(yaw=148, pitch=42, ppu=38, tag="benchpiece", marks=True,
+                                                                     cut=lambda x, y, z: z >= 4 and y >= 2)
+    return f"""<div class="card"><h2 style="margin-bottom:8px">Magazine Filling Bench <span class="label" style="color:var(--cyan)">optional</span></h2>
+<div style="display:flex;gap:16px;align-items:center">
+<div class="spot" style="flex:0 0 250px;display:flex;align-items:center;justify-content:center;padding:8px 0">{img(img_, h=230, style="max-width:100%")}</div>
+<div style="font-size:17px">{muted("A 5 &times; 3 &times; 3 annex built against the packing station's lower back wall: Works Casing around <b style='color:var(--txt)'>6 tables</b> in two rows of three (roof opened up here so you can see them). Natura's Workbench is the pick; a crafting table or Dire Crafting Table also works.", 17, 0)}</div></div>
+<ul style="margin:10px 0 0 20px;font-size:17px;color:var(--muted);display:flex;flex-direction:column;gap:5px">
+<li>Its own <b style="color:var(--txt)">Input Bus</b> takes empty magazines, its own <b style="color:var(--txt)">Output Bus</b> gives loaded ones. Rounds come from the station's Output Bus, which must be a plain bus (ME buses push away).</li>
+<li>Uses the existing loaded-magazine recipes, the Works' parallels, power and belt.</li>
+<li>Example: 10 empty pistol magazines + 30 rounds make 8 loaded, leaving 2 empties and 6 rounds.</li>
+<li>The hall works without it, and a broken bench just goes inactive. A hologram projector with height channel 1 shows it.</li></ul></div>"""
+
+
 def multiblock(key):
     m = MB[key]
+    if key == "ammunition-works":
+        m = dict(m, bench_card=bench_card())
     b = m["build"]()
     hero = b.render(**m["view"], tag="hero", marks=True)
     legend = "".join(f"""<div style="display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)">
@@ -270,7 +295,18 @@ def multiblock(key):
     back = ""
     if m["back"]:
         back = (f'<div style="position:absolute;right:16px;bottom:12px;text-align:center">'
-                f'{img(b.render(**m["back"], tag="back", marks=True), h=150)}<div class="muted" style="font-size:15px">rear: the packing station</div></div>')
+                f'{img(b.render(**m["back"], tag="back", marks=True), h=210)}<div class="muted" style="font-size:15px">rear: the packing station and the filling bench</div></div>')
+    extra = ""
+    if m.get("cut"):
+        c = m["cut"]
+        cimg = c["build"]().render(**c["view"], tag="cut", marks=True, cut=c["cut"])
+        solo = not m.get("bench_card")
+        lamp = f"""<div class="card"><h2 style="margin-bottom:8px">Interior lamp <span class="label" style="color:var(--orange)">required</span></h2>
+<div style="display:flex;gap:{24 if solo else 0}px;align-items:center;flex-direction:{'row' if solo else 'column'}">
+<div class="spot" style="display:flex;align-items:center;justify-content:center;padding:10px {30 if solo else 0}px;flex:0 0 auto">{img(cimg, h=280, style="max-width:100%")}</div>
+<div>{muted(m["lamp_text"], 17, 8)}
+<div class="muted" style="font-size:15px;margin-top:6px"><b style="color:#ffeb3c">&#9632;</b> lamp positions (side wall cut away so you can see in)</div></div></div></div>"""
+        extra += f"""<div class="grid" style="grid-template-columns:{'1fr' if solo else '1fr 1fr'};margin-top:18px">{lamp}{m.get("bench_card", "")}</div>"""
     body = f"""<div style="display:grid;grid-template-columns:1fr 470px;gap:20px">
 <div class="card" style="position:relative;display:flex;flex-direction:column;min-height:620px">
 <div style="display:flex;gap:28px;align-items:baseline;flex-wrap:wrap"><span class="label">Default size shown</span><span style="font-size:18px">{m["size"]}</span><span>Controller {chip(m["ctier"])}</span>
@@ -280,6 +316,7 @@ def multiblock(key):
 <div class="muted" style="font-size:15px;margin-top:8px">Hatches can go on any casing spot that allows them. The picture shows one layout.</div></div></div>
 <h2 style="margin:24px 0 12px">Build it in sections</h2>
 <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">{pieces}</div>
+{extra}
 <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:18px">
 <div class="card"><h2 style="margin-bottom:6px">Hatches</h2>{hatches}</div>
 <div class="card"><h2 style="margin-bottom:10px">Make it bigger</h2>{grow}</div></div>
