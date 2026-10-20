@@ -1419,29 +1419,144 @@ def _(c, x):
 
 
 # ======================================================== armor
-COLORWAYS = {
-    "t1_scout": dict(kind="bandit", main=ramp((150, 120, 84)), trim=BRONZE, acc=ramp((235, 150, 60))),
-    "t1_miner": dict(kind="miner", main=ramp((228, 188, 38)), trim=ramp((200, 180, 180)), acc=ramp((220, 200, 200))),
-    "t1_combat": dict(kind="steel", main=ramp((122, 100, 76)), trim=ramp((140, 144, 152)), acc=ramp((150, 154, 162))),
-    "t2_combat": dict(kind="olive", main=ramp((72, 86, 52)), trim=ramp((120, 190, 235)), acc=ramp((128, 200, 240))),
-    "t2_commando": dict(kind="commando", main=ramp((38, 38, 44), 0.6), trim=ramp((60, 62, 70), 0.6), acc=ramp((52, 54, 62), 0.6), vis=ramp((110, 200, 255))),
-    "t2_riot": dict(kind="riot", main=ramp((116, 78, 46)), trim=ramp((128, 200, 240)), acc=ramp((130, 200, 240)), vis=ramp((70, 90, 100))),
-    "t3_combat": dict(kind="fiber", main=ramp((78, 94, 116)), trim=ramp((214, 160, 236)), acc=ramp((214, 160, 236)), vis=CYAN),
-    "t3_hev": dict(kind="hev", main=ramp((196, 104, 30)), trim=ramp((150, 80, 28)), acc=ramp((160, 84, 28)), vis=ramp((110, 220, 230))),
-    "steam": dict(kind="steam", main=ramp((190, 190, 196)), trim=BRONZE, acc=ramp((176, 108, 44)), vis=ramp((250, 200, 80))),
-    "t3_power": dict(kind="power", main=ramp((82, 92, 108)), trim=ramp((100, 100, 160)), acc=ramp((100, 100, 160)), vis=CYAN, glow=CYAN),
-    "t3_exo": dict(kind="exo", main=ramp((58, 62, 72)), trim=ramp((112, 112, 176)), acc=ramp((176, 130, 214)), vis=VIOLET_G),
+# Armor icons take their colors from the worn textures' own sources, so a repaint of a worn sheet flows through to
+# the inventory icon on the next run: the region colors in armor_repaint.SETS (biped sets) and the palettes in
+# armor_models / armor_exo_paint (custom-model sets). Silhouettes are the per-kind drawers in pixel.py.
+import armor_exo_paint as _EXO  # noqa: E402
+import armor_models as _AM  # noqa: E402
+import armor_repaint as _AR  # noqa: E402
+
+LIFT_FLOOR = 68  # luma floor so near-black worn colors stay readable on a dark inventory slot
+
+
+def _luma(rgb):
+    return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
+
+
+def lift(h, floor=LIFT_FLOOR):
+    """Hex or rgb -> rgb, scaled up (hue kept) until its luma reaches ``floor``."""
+    rgb = hexrgb(h) if isinstance(h, str) else tuple(h)
+    lu = _luma(rgb)
+    if lu >= floor:
+        return tuple(rgb)
+    if lu < 1:
+        return (floor, floor, floor)
+    k = floor / lu
+    return tuple(min(255, int(round(ch * k))) for ch in rgb)
+
+
+def _rp(h, floor=LIFT_FLOOR):
+    return ramp(lift(h, floor))
+
+
+def _spec_hex(spec):
+    h = spec[1]
+    return h[0] if isinstance(h, list) else h
+
+
+# slot -> worn region names, in priority order, for each icon color role
+_ROLES = {
+    "helmet": dict(main=["helmet"], trim=["headband", "strap", "glasses", "lamp", "visor"],
+                   acc=["headband", "strap", "lamp", "visor"]),
+    "chestplate": dict(main=["torso"], trim=["chestband", "vest", "shoulder"], acc=["vest", "belt", "band", "emblem"]),
+    "leggings": dict(main=["pants"], trim=["thigh", "knee", "pouch"], acc=["belt", "knee", "pouch"]),
+    "boots": dict(main=["boot"], trim=["knee", "trim", "glove"], acc=["glove", "knee"]),
 }
+_VIS_REGIONS = ["visor", "glasses", "lamp"]
+# the few slots whose worn look is not described by the region table above
+_SLOT_FIX = {
+    ("t3_hev", "boots"): dict(trim="#E08A12"),
+    ("t3_hev", "leggings"): dict(main="#2A2C30", trim="#E08A12"),  # worn: charcoal with two orange bands
+    ("t1_miner", "chestplate"): dict(trim="#E6C81E"),
+}
+
+
+def _pick(cfg, names):
+    for n in names:
+        if n in cfg:
+            return _spec_hex(cfg[n])
+    return None
+
+
+def biped_colorway(set_id, kind, **extra):
+    cfg = _AR.SETS[set_id]
+    cw = dict(kind=kind, slots={})
+    for slot, roles in _ROLES.items():
+        main = _pick(cfg, roles["main"])
+        trim = _pick(cfg, roles["trim"]) or main
+        acc = _pick(cfg, roles["acc"]) or trim
+        fix = _SLOT_FIX.get((set_id, slot), {})
+        trim = fix.get("trim", trim)
+        main = fix.get("main", main)
+        if slot == "boots" and set_id != "t3_hev" and "pants" in cfg:
+            # the worn boots show the set's leg color above the boot band: main is the leg color, the boot band trims
+            trim, main = main, _pick(cfg, ["pants"])
+        d = dict(main=_rp(main), trim=_rp(trim), acc=_rp(acc))
+        if slot == "helmet":
+            v = _pick(cfg, _VIS_REGIONS)
+            if v:
+                d["vis"] = ramp(hexrgb(v))  # glass keeps its true tone (black stays black)
+        cw["slots"][slot] = d
+    cw.update(main=cw["slots"]["chestplate"]["main"], trim=cw["slots"]["chestplate"]["trim"],
+              acc=cw["slots"]["chestplate"]["acc"])
+    cw.update(extra)
+    return cw
+
+
+def _x(key, name):
+    return _EXO.PALETTES[key][name]
+
+
+_EX = "t3_exo"
+_PW = _AM.PAL["t3_power"]
+_RT = _AM.PAL["t2_riot"]
+_SP = _AM.STEAM_PAL["steam"]
+COLORWAYS = {
+    "t1_scout": biped_colorway("t1_scout", "bandit"),
+    "t1_miner": biped_colorway("t1_miner", "miner"),
+    "t1_combat": biped_colorway("t1_combat", "steel"),
+    "t2_combat": biped_colorway("t2_combat", "olive"),
+    "t2_commando": biped_colorway("t2_commando", "commando"),
+    "t3_combat": biped_colorway("t3_combat", "fiber"),
+    "t3_hev": biped_colorway("t3_hev", "hev"),
+    "t2_riot": dict(kind="riot", slots={
+        "helmet": dict(main=_rp(_RT["helm"]), trim=_rp(_RT["trim"]), acc=_rp(_RT["stud"]), vis=ramp((70, 90, 100))),
+        "chestplate": dict(main=_rp(_RT["leather"]), trim=_rp(_RT["helm"]), acc=_rp(_RT["stud"])),
+        "leggings": dict(main=_rp(_RT["leather"]), trim=_rp(_RT["helm"]), acc=_rp(_RT["stud"])),
+        "boots": dict(main=_rp(_RT["boot"]), trim=_rp(_RT["helm"]), acc=_rp(_RT["stud"]))}),
+    "steam": dict(kind="steam", main=_rp(_SP["torso"][0]), trim=_rp(_SP["brass"][0]), acc=_rp(_SP["gray"][0]),
+                  vis=ramp(lift(_SP["dark"][1], 30))),
+    "t3_power": dict(kind="power", main=_rp(_PW["plate"]), trim=_rp(_PW["panel"]), acc=_rp(_PW["ring"]),
+                     vis=ramp((24, 26, 30)), glow=_rp(_PW["ring"])),
+    "t3_exo": dict(kind="exo", slots={
+        "helmet": dict(main=_rp(_x(_EX, "helmet")), trim=_rp(_x(_EX, "arms")), acc=_rp(_x(_EX, "pauldron")),
+                       vis=_rp(_x(_EX, "visor")[1], 90)),
+        "chestplate": dict(main=_rp(_x(_EX, "torso")), trim=_rp(_x(_EX, "pauldron")), acc=_rp(_x(_EX, "arms")),
+                           vis=_rp(_x(_EX, "mark")[0], 90)),
+        "leggings": dict(main=_rp(_x(_EX, "legs")), trim=_rp(_x(_EX, "knee")), acc=_rp(_x(_EX, "legrod")),
+                         vis=_rp(_x(_EX, "visor")[1], 90)),
+        "boots": dict(main=_rp(_x(_EX, "shin")), trim=_rp(_x(_EX, "ankle")), acc=_rp(_x(_EX, "legrod")),
+                      vis=_rp(_x(_EX, "visor")[1], 90))}),
+}
+
+
+def _slot_cw(cw, slot):
+    out = {k: v for k, v in cw.items() if k != "slots"}
+    out.update(cw.get("slots", {}).get(slot, {}))
+    return out
+
+
 for _set, _cw in COLORWAYS.items():
     for _slot in ("helmet", "chestplate", "leggings", "boots"):
-        REG[f"{_set}_{_slot}"] = (lambda s, cw: (lambda c, x: armor_piece(c, s, cw)))(_slot, _cw)
+        REG[f"{_set}_{_slot}"] = (lambda s, cw: (lambda c, x: armor_piece(c, s, _slot_cw(cw, s))))(_slot, _cw)
 
 
 @icon("t2_beret")
 def _(c, x):
-    red = ramp((190, 34, 38))
+    cloth = _AM.PAL["t2_beret"]  # worn: deep maroon cloth over a near-black band
+    red = _rp(cloth["cloth"], 50)
     c.ellipse(7.5, 8, 6, 3.5, red)
-    c.rect(2, 10, 13, 11, ramp((150, 24, 28)))
+    c.rect(2, 10, 13, 11, _rp(cloth["dark"], 30))
     c.hline(2, 13, 10, red[DK])
     c.pix(7, 4, red[DK]); c.pix(8, 4, red[SH])
     c.rect(5, 7, 6, 8, x.m, bevel=False)                      # badge
@@ -1450,12 +1565,13 @@ def _(c, x):
 
 @icon("gas_mask")
 def _(c, x):
-    rub = ramp((50, 58, 52), 0.8)
+    rub = _rp("#263124", 52)                                  # worn: dark olive-black rubber hood
+    lens = ramp((30, 40, 44))                                 # worn: near-black lenses
     c.poly([(3, 2), (12, 2), (13, 8), (11, 13), (8, 14), (4, 13), (2, 8)], rub)
-    c.rect(3, 5, 6, 7, GLASS)                                 # lenses
-    c.rect(9, 5, 12, 7, GLASS)
-    c.pix(3, 5, (230, 245, 250)); c.pix(9, 5, (230, 245, 250))
-    c.disc(7.5, 11, 2, x.m)                                   # filter
+    c.rect(3, 5, 6, 7, lens)
+    c.rect(9, 5, 12, 7, lens)
+    c.pix(3, 5, (120, 140, 146)); c.pix(9, 5, (120, 140, 146))
+    c.disc(7.5, 11, 2, ramp((84, 84, 88)))                    # filter (worn: gunmetal)
     c.pix(7, 10, x.m[HL]); c.hline(5, 10, 9, rub[DK])
     c.hline(4, 11, 3, rub[LT])
 
@@ -1465,11 +1581,12 @@ def _(c, x):
     c.rect(1, 6, 14, 7, BLACK)                                # strap
     c.rect(2, 4, 6, 10, BLACK)
     c.rect(9, 4, 13, 10, BLACK)
-    c.rect(3, 6, 5, 8, GREEN_G, bevel=False)
-    c.rect(10, 6, 12, 8, GREEN_G, bevel=False)
-    c.pix(3, 6, (220, 255, 220)); c.pix(10, 6, (220, 255, 220))
+    lens = ramp((47, 123, 21))                                # worn: dark green lenses, no glow
+    c.rect(3, 6, 5, 8, lens, bevel=False)
+    c.rect(10, 6, 12, 8, lens, bevel=False)
+    c.pix(3, 6, (150, 220, 130)); c.pix(10, 6, (150, 220, 130))
     c.rect(7, 5, 8, 6, BLACK[SH])
-    c.hline(2, 6, 4, x.m[BS]); c.hline(9, 13, 4, x.m[BS])
+    c.hline(2, 6, 4, BLACK[HL]); c.hline(9, 13, 4, BLACK[HL])
     c.hline(2, 6, 10, BLACK[DK]); c.hline(9, 13, 10, BLACK[DK])
 
 
@@ -1486,11 +1603,13 @@ def _(c, x):
 
 @icon("oxygen_tanks")
 def _(c, x):
+    tank = ramp((88, 88, 92))                                 # worn: dark steel shells, light end caps
+    cap = ramp((151, 151, 151))
     for ox in (2, 8):
-        c.rect(ox, 4, ox + 4, 14, x.m)
-        c.rect(ox + 1, 1, ox + 3, 3, x.m[LT], bevel=False)
-        c.rect(ox, 3, ox + 4, 4, x.m[SH], bevel=False)
-        c.hline(ox, ox + 4, 7, x.m[DK])
+        c.rect(ox, 4, ox + 4, 14, tank)
+        c.rect(ox + 1, 1, ox + 3, 3, cap, bevel=False)
+        c.rect(ox, 3, ox + 4, 4, cap[SH], bevel=False)
+        c.hline(ox, ox + 4, 7, tank[DK])
     c.hline(2, 12, 10, BLACK[BS])
     c.hline(2, 12, 11, BLACK[DK])
     c.pix(5, 2, RED[BS]); c.pix(11, 2, RED[BS])
@@ -1500,30 +1619,36 @@ def _(c, x):
 def _(c, x):
     c.poly([(1, 5), (14, 5), (13, 10), (2, 10)], CANVAS)
     c.hline(1, 14, 7, CANVAS[SH]); c.hline(2, 13, 8, CANVAS[LT])
-    c.rect(2, 11, 13, 13, x.m)
-    c.vline(5, 5, 13, x.m[DK]); c.vline(10, 5, 13, x.m[DK])
-    c.hline(2, 13, 13, x.m[DK])
+    fr = ramp((86, 86, 86))                                   # worn: gray frame
+    c.rect(2, 11, 13, 13, fr)
+    c.vline(5, 5, 13, ramp((88, 72, 56))[BS]); c.vline(10, 5, 13, ramp((88, 72, 56))[BS])
+    c.hline(2, 13, 13, fr[DK])
     c.pix(7, 12, BRASS[BS]); c.pix(8, 12, BRASS[BS])
-    c.vline(3, 3, 5, x.m[BS]); c.vline(12, 3, 5, x.m[BS])
+    c.vline(3, 3, 5, fr[BS]); c.vline(12, 3, 5, fr[BS])
 
 
 @icon("jump_pack")
 def _(c, x):
-    c.rect(3, 1, 12, 9, x.m)
-    c.rect(4, 3, 11, 5, ramp(tint(x.pal[0], 0.6)))
-    c.hline(5, 10, 4, x.m[HL])
+    steel = ramp((104, 104, 108))                             # worn: gray steel body, dark panel, hazard-marked tops
+    dark = _rp("#332a28", 50)
+    c.rect(3, 1, 12, 9, steel)
+    c.rect(4, 3, 11, 5, dark)
+    c.hline(5, 10, 4, dark[HL])
     c.rect(2, 3, 2, 8, BLACK[BS], bevel=False); c.rect(13, 3, 13, 8, BLACK[BS], bevel=False)
     for ox in (3, 9):
-        c.poly([(ox, 10), (ox + 4, 10), (ox + 3, 14), (ox + 1, 14)], ramp(tint(x.pal[0], 0.7)))
+        c.poly([(ox, 10), (ox + 4, 10), (ox + 3, 14), (ox + 1, 14)], ramp((88, 88, 92)))
         c.pix(ox + 1, 13, ORANGE_G[BS]); c.pix(ox + 2, 13, ORANGE_G[SH])
+    for px_, col in ((3, (230, 200, 20)), (4, BLACK[DK]), (11, (230, 200, 20)), (12, BLACK[DK])):
+        c.pix(px_, 1, col)                                    # caution squares on the tank tops
     c.pix(5, 7, RED[BS]); c.pix(10, 7, GREEN_G[BS])
 
 
 @icon("tactical_mask")
 def _(c, x):
     c.poly([(3, 1), (12, 1), (13, 8), (11, 13), (8, 14), (4, 13), (2, 8)], BLACK)
-    c.rect(4, 4, 11, 6, GREEN_G, bevel=False)
-    c.hline(4, 11, 4, (200, 255, 200)); c.pix(4, 5, (160, 255, 170))
+    band = _rp("#6A1A1A", 70)                                # worn default: black mask, dark-red band
+    c.rect(4, 4, 11, 6, band, bevel=False)
+    c.hline(4, 11, 4, band[HL]); c.pix(4, 5, band[LT])
     c.hline(4, 11, 7, BLACK[DK])
     c.stripes([(a, b) for a in range(5, 11) for b in range(9, 13)], BLACK[HL], 2, 0, False)
     c.pix(3, 2, BLACK[HL])
