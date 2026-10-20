@@ -158,11 +158,9 @@ public final class CampScenarios {
             int c1z = Math.floorDiv(camp.boundsMaxZ() - 8, 16);
             for (int cx = c0x; cx <= c1x + 1; cx++) {
                 for (int cz = c0z; cz <= c1z + 1; cz++) {
-                    if (!world.getChunkProvider()
-                        .chunkExists(cx, cz)) {
-                        return ScenarioResult
-                            .fail(name(), "chunk " + cx + "," + cz + " is not loaded; run this near the spawn");
-                    }
+                    // Dev scenario only: load the test area first (worldgen itself never does).
+                    world.getChunkProvider()
+                        .loadChunk(cx, cz);
                 }
             }
 
