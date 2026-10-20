@@ -95,8 +95,10 @@ public class CommonProxy {
         }
         HarnessScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         com.gregguns.fx.FxScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+        com.gregguns.machine.BuildScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         GregGunsCommand command = new GregGunsCommand();
         command.register(new TestSubCommand(ScenarioRegistry.SCENARIOS));
+        command.register(new com.gregguns.core.command.BuildSubCommand());
         command.register(new com.gregguns.core.command.DumpRecipesSubCommand());
         event.registerServerCommand(command);
         GregGuns.LOG.info("Registered /gregguns (dev environment), {} scenarios", ScenarioRegistry.SCENARIOS.size());

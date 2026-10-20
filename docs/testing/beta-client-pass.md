@@ -256,6 +256,49 @@ Existing scenarios `worldgen.*_places`, `worldgen.generator_test_layout`, `world
 | SH-10 | `Scope overlay and HUD caching` | Scoped guns with enableHudCaching on: overlay moves at full frame rate; the Angelica zoom key stacks | `sh-scope-<gun>` | N | Y |
 | SH-11 | `Shader toggle in world` | Toggle the pack with a gun in hand and armor on, then toggle back: no crash, nothing stays invisible | `sh-toggle` | N | Y |
 
+## L. Area-owner rows, dev client (M3, M4, M6, M7, M8)
+
+Added from the area owner's client-check list. Fixes for these areas use transform or offset changes only; never change the clean-room boxes. The owner reruns screenshots for their own areas. Capture is **N** unless noted; a scenario is needed or a console script. Detail lives in the area exit gates (`05-armor/m3-exit-gate.md`, `11-worldgen/m8-exit-gate.md`).
+
+| Row | Subject | What to check | Screenshot ids | Capture | Live eyes |
+|---|---|---|---|---|---|
+| L-01 | `M3 armor, every set` | Every set worn, front and back, plus camo variants (overlaps group D) | `m3-armor-<set>-<camo>-front/back` | S | Y |
+| L-02 | `M3 accessories` | Masks on the head, goggles on the face, back items flush, glider deploy shot | `m3-acc-<name>-front/back, m3-acc-glider-deploy` | S | Y |
+| L-03 | `M3 icons and GUIs` | New icons in a dark slot; NEI and tooltips; Ammo Pouch GUI | `m3-icons-dark, m3-nei, m3-tooltip, m3-ammo-pouch-gui` | N | Y |
+| L-04 | `Ammunition Works running` | Formed and running: three-quarter view, a view through the glass at the interior, NEI preview | `m4-ammo_works-three-quarter, -interior, -nei` | N | Y |
+| L-05 | `Armory Gantry formed` | Booth windows, hoist, gearbox, rails and pipes | `m4-armory_gantry-formed-outside, -booth, -hoist` | N | Y |
+| L-06 | `Steam Ammo Press GUI` | Mid-craft, with the gauge showing steam | `m4-ammo_press_steam-gui-midcraft` | N | N |
+| L-07 | `Single-block Ammo Press outputs` | Fills all three output slots | `m4-ammo_press-three-outputs` | N | N |
+| L-08 | `NEI search "gregguns"` | Machines listed, with the Added-by line | `m4-nei-gregguns-search` | N | N |
+| L-09 | `Turret on base` | Yaw and pitch tracking, tier recolor, its GUI; one gun with a model, one icon-only | `m6-turret-<tier>-<gun>, m6-turret-gui` | N | Y |
+| L-10 | `Charges` | On a wall and the floor, armed and unarmed; both GUIs, including as a non-owner; the charge item in first person (the last shot had it low and right, mostly off-screen: compare against a vanilla block held the same way) | `m6-charge-wall-armed, -wall-unarmed, -floor-*, -gui-*, -nonowner, -fp-held, -fp-vanilla` | S/N | Y |
+| L-11 | `Chests` | Weapon and storage chests with their GUIs, plus a glancing-angle shot for z-fighting | `m6-chest-weapon, m6-chest-storage, -gui, -glancing` | S | Y |
+| L-12 | `Camp flag waving` | Two shots about 1 s apart show the cloth in different poses | `m6-camp_flag-a, m6-camp_flag-b` | N | Y |
+| L-13 | `Rampart with a mounted gun` | Formed, with a gun in the Gun Mount Hatch | `m6-rampart-formed-mounted` | N | Y |
+| L-14 | `Turret-base sheet refresh` | The sheet updates within about 5 s of a plate change, and still after a relog | `m6-turret_base-sheet-before, -after, -relog` | N | Y |
+| L-15 | `Psycho Steve and Dave` | Each beside an `npc_test` reference; Steve with the boss bar | `m7-psycho_steve-bossbar, m7-dave` | N | Y |
+| L-16 | `Super Mutants` | All three: scale and held gun, beside an `npc_test` | `m7-mutant-basic, -heavy, -elite` | N | Y |
+| L-17 | `Cyberdemon` | Beside an `npc_test` | `m7-cyberdemon` | N | Y |
+| L-18 | `Alien Bug poses` | Bite pose and wall climb | `m7-alien_bug-bite, -wallclimb` | N | Y |
+| L-19 | `Attack Helicopter` | Rotor, boss bar, spin-down crash | `m7-helicopter-rotor, -bossbar, -crash` | N | Y |
+| L-20 | `NpcTurret` | Render and target tracking | `m7-npc_turret` | N | Y |
+| L-21 | `M8 structures, all 7` | A screenshot of each of the 7 main structures (overlaps group J) | `m8-struct-<id>` | N | Y |
+| L-22 | `Military Base and carrier flag` | Military Base overview; the aircraft carrier with its flag | `m8-military_base, m8-carrier-flag` | N | Y |
+| L-23 | `Bug Nest` | Enable `enabledAlienBugNest` in the worldgen config first | `m8-bug_nest` | N | Y |
+
+The Reaction Chamber and Retort rows (M-16, M-17, MB-04) are dropped from this pass.
+
+## M. Pack client rows (deferred to the full-pack run)
+
+These need the full GTNH pack client, not the dev client. They are not run in the dev-client pass; run them with the pack run (runbook "Fallback that matches what players run").
+
+| Row | Subject | What to check | Screenshot ids | Capture | Live eyes |
+|---|---|---|---|---|---|
+| P-01 | `Galacticraft oxygen mask and tanks` | Worn in the Galacticraft slots: mask and tanks render and the oxygen state shows (groups D/E skip these slots in the dev client) | `pack-gc-oxygen-mask, pack-gc-oxygen-tanks` | N | Y |
+| P-02 | `Chisel palette` | The GregGuns structure blocks' Chisel palette | `pack-chisel-palette` | N | Y |
+| P-03 | `GT ore pass over structure stone (Q4)` | GT ore generation over structure stone | `pack-gt-ore-structure-stone` | N | Y |
+| P-04 | `ArchaicFix cascading-worldgen log (optional)` | With `logCascadingWorldgen` on, the pack log shows no cascading worldgen from structures | `pack-archaicfix-log (log only)` | N | N |
+
 ## Summary
 
 | Category | Rows |
@@ -271,7 +314,9 @@ Existing scenarios `worldgen.*_places`, `worldgen.generator_test_layout`, `world
 | I. NPCs (NpcMob) | 19 |
 | J. Structures (M8 worldgen) | 9 |
 | K. Shader-only checks (pass 2 only) | 11 |
-| **Total** | **143** |
+| L. Area-owner rows, dev client | 23 |
+| M. Pack client rows (deferred) | 4 |
+| **Total** | **170** |
 
 Capture split by row: **S (scripted today) 78**, **N (commands or a small new scenario) 65**, **E (eyes only) 0**. Rows that also need live eyes beyond reading the PNG: 136 of 143.
 

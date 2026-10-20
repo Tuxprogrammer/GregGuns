@@ -514,6 +514,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `utility.rampart_assembles` | Rampart, Bastion Plating (M6) | A hologram-built Rampart forms at 2, 6 and 10 mounts, counts its mounts, ends in the cap and keeps its crenels open; a missing Gun Mount Hatch, a block in a crenel or a missing Energy Hatch each stop it forming (GGS-08-75); the armor is that of the lowest Bastion Plating (5 with one Iron block in a Steel wall, GGS-08-78); the security level and Target Animals set on the controller reach every mount, and a stranger cannot change them (GGS-08-79). |
 | `utility.rampart_mount_fires` | Rampart, Gun Mount Hatch (M6) | A two-mount Rampart with a 9mm Pistol in a hatch and four magazines in the Input Bus shoots a zombie dead; the empty magazine lands in the Output Bus, three magazines remain, the turret has armor value 5 and its host is the hatch, and the controller draws 8 EU/t (GGS-08-77, GGS-08-81). |
 | `utility.rampart_break_hatch` | Rampart (M6) | In a running two-mount Rampart breaking one Gun Mount Hatch kills only its turret at once; the next structure check, which fails, kills the other (GGS-08-80). |
+| `testing.build_multiblocks` | dev tooling | Places a bare Ammunition Works, Armory Gantry and Rampart controller in turn, runs `DevStructureBuilder.build` (the command `/gregguns build`), and checks each reports a formed structure (`mMachine`) after GT's warm-up; a floor block must not build. Needs `GG_MODULES` with guns, machines and utility. |
 
 ## M1 coverage
 
@@ -606,6 +607,18 @@ AUTOTEST screenshot b-sees-a-shot <path>
 ```
 
 Signals run strictly in order on the client, and a `shot` waits for four rendered frames before the next command, so a GUI that stalls the client is still drawn and photographed before `close`. Signal commands: `view <0|1|2>` (first, third back, third front), `shot <label>` (screenshot at the end of the next frame), `arm <shot|reload> <label> <delayTicks>` (screenshot that many ticks after the next shot or reload event the client sees), `fire <n>` (hold the fire button for two ticks, n times, six ticks apart, through `GunInputHandler`, which also works without window focus), `gui inventory | creative <tab> | press <x> <y> <z> | nei <item>`, `hold <item>` (log the held stack and build its tooltip), `hud <on|off>` (off hides the GUI layer for clean worn-model shots), `creativegive <modid:name[:meta]>` (client-side creative slot packet), `close`, `quit`. Screenshots use vanilla `ScreenShotHelper` into `run/client/screenshots/<player>-<label>.png`.
+
+### Look, use and build signals
+
+Three signals frame a shot and set up a scene from a script. All are client autotest commands (dev environment with `-Dgregguns.autotest`), so a released pack never runs them; a malformed one logs `AUTOTEST command failed` and the queue carries on. Argument parsing is in `AutotestArgs` (unit-tested).
+
+| Signal | What it does |
+|---|---|
+| `look <yaw> <pitch>` | Sets the client player's `rotationYaw`, `rotationPitch` and their previous-tick values (also the head and body yaw), so the camera does not swing. Yaw is any number of degrees (0 is south, -90 is east, +x); pitch is -90 to 90. The server `tp` cannot set yaw in 1.7.10. The crosshair target updates on the next rendered frame, so follow a `look` with a `shot` or another command before a `use`. |
+| `use` | A real right-click with the held item, in the order of vanilla `rightClickMouse`: the entity under the crosshair (interact packet), else the block (`onPlayerRightClick` on the hit block, side and hit vector), else `sendUseItem` (also when the block ignored the click). Because it goes through the item's real use path, a spawn egg runs `onSpawnWithEgg` and NPCs get their equipment, which `/summon` skips. |
+| `usesneak` | `use` while sneaking: the sneak key is held for 5 ticks first, so the server has the sneak flag, then clicked, then held 5 more ticks (queue blocked meanwhile). StructureLib builds a multiblock from a sneaking click of a trigger item on a controller (server side, `ConstructableUtility.handle0`); a creative player builds all casings, a survival player spends what they carry. A non-sneaking click only shows the hologram on the client. |
+
+The trigger item builds casings only: it never places hatches. To get a formed machine, use the dev command `/gregguns build <x> <y> <z> [count]` (server console or op): for the controller at that block it runs the controller's `construct(trigger stack, false)` (the stack size is the bay or mount count, default 3 bays or 6 mounts), places the required hatches (input and output bus, HV energy hatch, maintenance, muffler or gun mount hatches) with the controller facing north, forces the six maintenance flags and checks the structure. It answers `build: <machine> formed` or `built but NOT formed`; GT may need a few ticks to initialize new hatches, so run it again if the first answer is "NOT formed". Covers the Ammunition Works, the Armory Gantry and the Rampart (`DevStructureBuilder`, scenario `testing.build_multiblocks`).
 
 ### Armor showcase
 
