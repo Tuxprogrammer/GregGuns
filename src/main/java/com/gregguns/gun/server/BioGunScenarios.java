@@ -44,6 +44,7 @@ import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTRecipeBuilder;
 import gregtech.api.util.GTRecipeConstants;
+import gregtech.api.util.GTUtility;
 
 /**
  * The {@code gun.bio_gun.*} scenarios: the left button's level-1 glob that hurts and poisons (Poison IV), the right
@@ -73,6 +74,7 @@ public final class BioGunScenarios {
         registry.register(new Charge());
         registry.register(new Reload());
         registry.register(new CultureRecipe());
+        registry.register(new VatRecipeSelected());
         registry.register(new TankRejectsBiomass());
         registry.register(
             new Blob(
@@ -382,6 +384,73 @@ public final class BioGunScenarios {
             }
             out.check(biomass, "the recipe should take 1,000 mB Biomass");
             out.check(water, "the recipe should take 100 mB distilled water");
+            return out.build();
+        }
+    }
+
+    /**
+     * The vat picks our recipe, not BartWorks' "Biomass 100 mB to Fermented Biomass" row, when the E. coli dish is in
+     * the controller. The map is special-slot sensitive, so a recipe whose special item differs from the controller's
+     * is never a match, even when its inputs are a subset of ours.
+     */
+    // Source (the map is built with useSpecialSlot and specialSlotSensitive):
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/API/recipe/BartWorksRecipeMaps.java#L46-L54
+    // Source (the filter that drops a recipe whose special item is not the slot's):
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMapBackend.java#L562-L570
+    // Source (the Fermenter's rows are copied into the vat with another culture's dish as the special item):
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L716-L725
+    // Source (the query API: items, fluids, specialSlot, find):
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/FindRecipeQuery.java#L116-L139
+    // Source (the vat controller feeds its slot item to the same query):
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/common/tileentities/multis/MTEBioVat.java#L328-L332
+    private static final class VatRecipeSelected implements Scenario {
+
+        @Override
+        public String name() {
+            return "gun.bio_gun.vat_recipe_selected";
+        }
+
+        @Override
+        public String description() {
+            return "findRecipeQuery on bacterialVatRecipes with circuit 2, 1,000 mB Biomass, 100 mB distilled water and the E. coli dish as the special item returns the GregGuns culture recipe; with no dish it does not.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Fluid culture = cultureFluid();
+            ItemStack dish = BartWorksCulture.eColiPetriDish();
+            out.check(culture != null, "BartWorks' E. coli culture fluid should resolve");
+            out.check(dish != null, "BartWorks' E. coli petri dish should resolve");
+            if (culture == null || dish == null) {
+                return out.build();
+            }
+            ItemStack[] items = { GTUtility.getIntegratedCircuit(BioCultureRecipes.CIRCUIT) };
+            FluidStack[] fluids = { Materials.Biomass.getFluid(BioCultureRecipes.AMOUNT),
+                GTModHandler.getDistilledWater(BioCultureRecipes.WATER) };
+            GTRecipe withDish = BartWorksRecipeMaps.bacterialVatRecipes.findRecipeQuery()
+                .items(items)
+                .fluids(fluids)
+                .specialSlot(dish)
+                .find();
+            out.check(withDish != null, "the vat should find a recipe for the dish, Biomass and water");
+            out.check(
+                withDish != null && withDish.mFluidOutputs != null
+                    && withDish.mFluidOutputs.length > 0
+                    && withDish.mFluidOutputs[0] != null
+                    && withDish.mFluidOutputs[0].getFluid() == culture,
+                "the recipe found with the E. coli dish should make the culture fluid, not Fermented Biomass");
+            GTRecipe noDish = BartWorksRecipeMaps.bacterialVatRecipes.findRecipeQuery()
+                .items(items)
+                .fluids(fluids)
+                .specialSlot(null)
+                .find();
+            out.check(
+                noDish == null || noDish.mFluidOutputs == null
+                    || noDish.mFluidOutputs.length == 0
+                    || noDish.mFluidOutputs[0] == null
+                    || noDish.mFluidOutputs[0].getFluid() != culture,
+                "without the dish the vat should not make the culture fluid");
             return out.build();
         }
     }
