@@ -255,16 +255,48 @@ public final class PlacementHarness {
             return n;
         }
 
-        /** Item entities around the box. */
-        int itemEntities() {
+        /** Item entities already around the box when the run started (left by an earlier scenario), by entity id. */
+        final Set<Integer> baselineItems = new java.util.HashSet<>();
+
+        private List<EntityItem> liveItems() {
             AxisAlignedBB bb = AxisAlignedBB
                 .getBoundingBox(plan.anchorX() - 8, 0, plan.anchorZ() - 8, plan.maxX() + 9, 256, plan.maxZ() + 9);
-            List<?> items = world.getEntitiesWithinAABB(EntityItem.class, bb);
-            int live = 0;
-            for (Object o : items) {
-                if (!((Entity) o).isDead) live++;
+            List<EntityItem> live = new ArrayList<>();
+            for (Object o : world.getEntitiesWithinAABB(EntityItem.class, bb)) {
+                if (!((Entity) o).isDead) live.add((EntityItem) o);
             }
             return live;
+        }
+
+        /** Item entities around the box that were not there when the run started. */
+        List<EntityItem> newItems() {
+            List<EntityItem> out = new ArrayList<>();
+            for (EntityItem e : liveItems()) {
+                if (!baselineItems.contains(e.getEntityId())) out.add(e);
+            }
+            return out;
+        }
+
+        /** Names each new item entity (name, count, position), or "none". */
+        String describeNewItems() {
+            List<EntityItem> items = newItems();
+            if (items.isEmpty()) return "none";
+            StringBuilder sb = new StringBuilder();
+            for (EntityItem e : items) {
+                ItemStack st = e.getEntityItem();
+                if (sb.length() > 0) sb.append("; ");
+                sb.append(st == null ? "null" : st.getDisplayName() + " x" + st.stackSize)
+                    .append(" at ")
+                    .append(String.format("%.1f,%.1f,%.1f", e.posX, e.posY, e.posZ))
+                    .append(" age ")
+                    .append(e.age);
+            }
+            return sb.toString();
+        }
+
+        /** Count of new item entities around the box (see {@link #newItems()}). */
+        int itemEntities() {
+            return newItems().size();
         }
 
         /** Chest-class tiles (vanilla or GregGuns) inside the box, from the chunk tile maps (no tile is created). */
@@ -603,6 +635,11 @@ public final class PlacementHarness {
         StructureGenerator.setOverride(populator());
         try {
             prepare(world, plan, water, layout);
+            Set<Integer> baseline = new java.util.HashSet<>();
+            AxisAlignedBB boxBb = AxisAlignedBB.getBoundingBox(plan.anchorX() - 8, 0, plan.anchorZ() - 8, plan.maxX() + 9, 256, plan.maxZ() + 9);
+            for (Object o : world.getEntitiesWithinAABB(EntityItem.class, boxBb)) {
+                if (!((Entity) o).isDead) baseline.add(((Entity) o).getEntityId());
+            }
             StructurePopulator populator = populator();
             StructureState state = new StructureState("gregguns_places_test");
             Set<Type> biome = Collections.singleton(water ? Type.OCEAN : Type.PLAINS);
@@ -657,6 +694,7 @@ public final class PlacementHarness {
                 accepted,
                 PopulateGuard.violationCount() - violationsBefore,
                 (System.nanoTime() - t0) / 1_000_000L);
+            out.baselineItems.addAll(baseline);
             out.spawnerTags.addAll(spawnerTags);
             out.spawnerPos.addAll(spawnerPos);
             out.flagPos.addAll(flagPos);
