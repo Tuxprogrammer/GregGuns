@@ -290,8 +290,7 @@ public final class WorldBlockScenarios {
                 out.check(Math.abs(box.maxX - box.minX - BlobState.width(3)) < 1e-6, "collision width follows size 3");
             }
 
-            EntityCreeper creeper = ctx.spawn(new EntityCreeper(world));
-            creeper.setPosition(ox + 0.5, oy, oz + 0.5);
+            EntityCreeper creeper = ctx.spawnAt(new EntityCreeper(world), ox + 0.5, oy, oz + 0.5, 0.0F, 0.0F);
             blob.onEntityCollidedWithBlock(world, ox, oy, oz, creeper);
             PotionEffect creeperEffect = creeper.getActivePotionEffect(Potion.poison);
             out.check(creeperEffect != null, "the creeper is poisoned");
