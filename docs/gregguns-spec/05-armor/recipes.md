@@ -53,7 +53,7 @@ Techguns builds every piece in the crafting table from Techguns plates, cloth an
 - **Method.** "Hand" is shaped crafting. "Assembler" is `RecipeMaps.assemblerRecipes`.
 - **EU/t.** `TierEU.RECIPE_<tier>` of the set. No recipe in this sheet uses a lower voltage.
 - **Time.** 2 seconds per input item, at least 10 seconds. The programmed circuit is not counted.
-- **Programmed circuit** (`.circuit(n)`): helmet 1, chestplate 2, leggings 3, boots 4 in every set. Single items say their own number. The number keeps the four pieces of one set apart when a player loads a bus.
+- **Programmed circuit** (`.circuit(n)`): helmet 1, chestplate 2, leggings 3, boots 4 in every set, except the Hazardous Environment boots, which use 5 (the Combat boots on circuit 4 are a subset of their inputs). Single items say their own number. The number keeps the four pieces of one set apart when a player loads a bus.
 - **Notation.** `HC` is Heavy Cloth, `TL` is Treated Leather, `PP` is Power Plating, `MP3` is Mechanical Parts T3, `CAT` is Compressed Air Tank, `SAP` is Steam Armor Plating. All are [assumed components](#assumed-components). `glass pane` is vanilla `Blocks.glass_pane`; `leather` is vanilla leather.
 - **Fresh output.** Every output of this sheet has camo index 0 and no stored charge, as Techguns' `onCreated` does for crafted multi-camo and powered armor.
 - **Gate.** The input that cannot be had below the tier, plus the machine voltage.
@@ -188,7 +188,7 @@ Techguns: "T3 Hazardous Environment" (`p` `plateCarbon`, `l` `plateTitanium`, `c
 | Hazardous Environment Helmet | `plate.EpoxidFiberReinforced` ×2, `plate.Titanium` ×2, `circuit.EV` ×1, glass pane ×1 | 1 | 12 s |
 | Hazardous Environment Chestplate | `plate.EpoxidFiberReinforced` ×3, `plate.Titanium` ×4, `circuit.EV` ×1 | 2 | 16 s |
 | Hazardous Environment Leggings | `plate.EpoxidFiberReinforced` ×3, `plate.Titanium` ×2, `circuit.EV` ×2 | 3 | 14 s |
-| Hazardous Environment Boots | `plate.EpoxidFiberReinforced` ×2, `plate.Titanium` ×2, `circuit.EV` ×1 (so they differ from the Combat boots) | 4 | 10 s |
+| Hazardous Environment Boots | `plate.EpoxidFiberReinforced` ×2, `plate.Titanium` ×2, `circuit.EV` ×1 (so they differ from the Combat boots) | 5 | 10 s |
 
 ### Steam armor (4 recipes)
 

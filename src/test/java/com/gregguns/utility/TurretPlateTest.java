@@ -25,6 +25,15 @@ class TurretPlateTest {
     }
 
     @Test
+    void assemblerPlatesHaveTheirOwnCircuits() {
+        // S6/S7 of the recipe-clash review: circuit 0 matched about 25 pack Assembler rows holding the same plates.
+        assertEquals(0, TurretPlate.IRON.circuit());
+        assertEquals(14, TurretPlate.STEEL.circuit());
+        assertEquals(15, TurretPlate.ALUMINUM.circuit());
+        assertEquals(12, TurretPlate.CARBON.circuit());
+    }
+
+    @Test
     void onlyTheIronPlateIsMadeByHand() {
         // GGS-09-29
         for (TurretPlate p : TurretPlate.values()) {

@@ -204,7 +204,7 @@ One block with four metas. Each consumes the matching **turret armor plate** fro
 | Bastion Plating, Iron x4 | Steam / ULV item, made at LV | `assemblerRecipes` | Iron Turret Armor x1, Concrete x2 | 1 | `TierEU.RECIPE_LV`, 10 s | 5 |
 | Bastion Plating, Steel x4 | LV | `assemblerRecipes` | Steel Turret Armor x1, Concrete x2 | 2 | `TierEU.RECIPE_LV`, 10 s | 10 |
 | Bastion Plating, Aluminum x4 | MV | `assemblerRecipes` | Aluminum Turret Armor x1, Concrete x2 | 3 | `TierEU.RECIPE_MV`, 10 s | 15 |
-| Bastion Plating, Carbon x4 | EV | `assemblerRecipes` | Carbon Turret Armor x1, Concrete x2 | 4 | `TierEU.RECIPE_EV`, 10 s | 20 |
+| Bastion Plating, Carbon x4 | EV | `assemblerRecipes` | Carbon Turret Armor x1, Concrete x2 | 10 | `TierEU.RECIPE_EV`, 10 s | 20 |
 
 The armor values are the Techguns ones ([turret.md](../../techguns-spec/09-machines-utility/turret.md#armor)). The Iron meta needs an Assembler, so its recipe runs at LV even though the plate is a Steam item; the Rampart itself needs an HV controller, so this does not let a Steam player build one. The plate's own recipe carries the tier material (wrought iron, steel, aluminum, titanium with fiber-reinforced epoxy), so the plating recipes do not name a plate again.
 
@@ -255,9 +255,9 @@ The slot-19 item of the turret ([turret.md](../../techguns-spec/09-machines-util
 | Output (armor value) | Techguns | Tier | Method | Inputs | Circuit | EU/t, time |
 |---|---|---|---|---|---|---|
 | Iron Turret Armor (5) | R58, `plateIron` | Steam / ULV | Hand, shaped `PPP` / `_P_` / `_P_` | `plate.WroughtIron` x5 | n/a | n/a |
-| Steel Turret Armor (10) | R59, `plateSteel` | LV | Assembler | `plate.Steel` x5 | 1 | `TierEU.RECIPE_LV`, 10 s |
-| Aluminum Turret Armor (15) | R60, `plateObsidianSteel` | MV | Assembler | `plate.Aluminium` x5 | 1 | `TierEU.RECIPE_MV`, 10 s |
-| Carbon Turret Armor (20) | R61, `plateCarbon` | EV | Assembler | `plate.EpoxidFiberReinforced` x3, `plate.Titanium` x2 | 1 | `TierEU.RECIPE_EV`, 10 s |
+| Steel Turret Armor (10) | R59, `plateSteel` | LV | Assembler | `plate.Steel` x5 | 14 | `TierEU.RECIPE_LV`, 10 s |
+| Aluminum Turret Armor (15) | R60, `plateObsidianSteel` | MV | Assembler | `plate.Aluminium` x5 | 15 | `TierEU.RECIPE_MV`, 10 s |
+| Carbon Turret Armor (20) | R61, `plateCarbon` | EV | Assembler | `plate.EpoxidFiberReinforced` x3, `plate.Titanium` x2 | 12 | `TierEU.RECIPE_EV`, 10 s |
 
 Notes:
 - Built deviation (M6 utility core): in GT 5.09.54.205 `Materials.WroughtIron` is an alias of Cast Iron and `plateWroughtIron` has no items, so the Iron plate takes `plate.CastIron` x5 (the same substitution the Miner armor uses). Everything else on this row is unchanged.
