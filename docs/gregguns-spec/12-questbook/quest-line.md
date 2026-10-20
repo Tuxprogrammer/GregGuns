@@ -165,10 +165,12 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | `gg.ev.laser` | Laser Rifle | EV | Electric, so it charges at an EV battery buffer. An HV buffer will not accept it. | retrieval `gregguns:laser_rifle` | `gregguns:energy_cell` x2 | `gg.ev.cell`, pack 1262 | 192, 876 (24) |
 | `gg.ev.pulse` | Pulse Rifle or PDW | EV | Advanced magazines are the EV ammo step up. | retrieval `gregguns:pulse_rifle` or `gregguns:pdw` | `gregguns:mag_advanced` x2 | `gg.ev.intro` | 276, 876 (24) |
 | `gg.ev.minigun` | Minigun | EV | Drum-fed, very high fire rate. Heavy on ammo. | retrieval `gregguns:minigun` | `gregguns:minigun_drum` x1 | `gg.ev.pulse` | 360, 876 (24) |
-| `gg.ev.exotics` | Tesla, Sonic or Bio Gun | EV | Specialist weapons. Pick one. | retrieval `gregguns:tesla_rifle` or `gregguns:sonic_rifle` or `gregguns:bio_gun` | - | `gg.ev.intro` | 444, 876 (24) |
+| `gg.ev.exotics` | Tesla, Sonic or Bio Gun | EV | Specialist weapons. Pick one. The Bio Gun needs a Bio Tank of E. coli culture fluid; see the pack-intermediates note below. | retrieval `gregguns:tesla_rifle` or `gregguns:sonic_rifle` or `gregguns:bio_gun` | - | `gg.ev.intro` | 444, 876 (24) |
 | `gg.ev.t3_armor` | T3 Combat Armor | EV | Titanium plate in the EV Assembler. | retrieval `gregguns:armor_t3_combat_chestplate` | - | `gg.ev.intro` | 528, 876 (24) |
 | `gg.ev.steam_armor` | Steam Armor | EV | Self-contained powered suit. | retrieval `gregguns:armor_steam_chestplate` | - | `gg.ev.intro` | 612, 876 (24) |
 | `gg.ev.summary` | Energy Weapons Done | EV | IV brings blasters and power armor. | checkbox | bag `enhancedlootbags:lootbag:7` (EV) | `gg.ev.laser`, `gg.ev.minigun`, `gg.ev.t3_armor` | 24, 960 (48) |
+
+**Pack intermediates in the EV tier.** Hint text only, no new quests (the 118-quest count and the layout stay as they are). The Fuel, Bio and Compressed Air Tanks are built from the pack's Large Fluid Cells (stainless, titanium and aluminium), so the quests that retrieve a tank or the guns that use one can point the player at the pack's Large Fluid Cell quests (Tier 3 to 4 fluid storage). Cybernetic Parts need a Plasma Membrane from the pack's Bio Lab line: Bio Lab (HV) makes the E. coli dish, the Bacterial Vat makes culture fluid, and an HV Centrifuge turns 1,000 mB of it into a Plasma Membrane (circuit 17). The same culture fluid fills the Bio Tank, so `gg.ev.exotics` and the Nether Blaster line (`gg.luv.nether_charge`) share one bio chain. Quest authors should add a hint, not a prerequisite on a pack quest id, until the ids are confirmed in the pinned quest files. Recipe detail: [recipes.md](../06-items/recipes.md) RC-20, RC-52 to RC-54; pack requirements: [PACK-CHANGES](../PACK-CHANGES.md).
 
 ### IV
 

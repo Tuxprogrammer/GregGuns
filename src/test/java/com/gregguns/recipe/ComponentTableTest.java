@@ -226,4 +226,27 @@ class ComponentTableTest {
         // The T3 part is 2 gears + 2 springs + 4 screws of Titanium (80 units) for 2 parts: 40 each, 40 per 2 plates.
         assertEquals(20L, (long) got.get("Titanium"));
     }
+
+    private static boolean takesSpecial(ProductionTable.Row row, String special) {
+        for (ProductionTable.Input input : row.inputs()) {
+            if (special.equals(input.special())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Test
+    void tanksAreBuiltFromThePacksLargeFluidCells() {
+        assertTrue(takesSpecial(spec("RC-52").row(), "gt:Large_Fluid_Cell_StainlessSteel"));
+        assertTrue(takesSpecial(spec("RC-53").row(), "gt:Large_Fluid_Cell_Titanium"));
+        // The old Empty Cell body is gone.
+        assertFalse(takesSpecial(spec("RC-52").row(), "gt:Cell_Empty"));
+        assertFalse(takesSpecial(spec("RC-53").row(), "gt:Cell_Empty"));
+    }
+
+    @Test
+    void cyberneticPartsTakeTheBioLabPlasmaMembrane() {
+        assertTrue(takesSpecial(spec("RC-20").row(), "gt:PlasmaMembrane"));
+    }
 }

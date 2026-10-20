@@ -60,6 +60,8 @@ All paths are under `config/betterquesting/DefaultQuests/`. The full design is 1
 
 **Bio Gun ammo chain.** No pack file changes: the Bio Tank reads BartWorks' E. coli culture fluid and GregGuns adds one Bacterial Vat recipe in code. The questbook should teach the path: Brewery makes Biomass, the Bio Lab (HV) makes the E. coli dish, the Bacterial Vat (EV glass) turns Biomass into culture fluid, a Fluid Canner fills the Bio Tank. The pack must not remove or override `bacterialVatRecipes` or `bioLabRecipes`; confirm with `/gregguns dumprecipes`.
 
+**Plasma Membrane and Large Fluid Cell inputs.** No pack file changes either. Cybernetic Parts (RC-20) consume BartWorks' Plasma Membrane (`ItemList.PlasmaMembrane`), which the HV Centrifuge makes from 1,000 mB of the same E. coli culture fluid (circuit 17, 60 s), so the pack must keep that Centrifuge recipe (and the LuV Extractor alternative from stem cells). The Fuel, Bio and Compressed Air Tanks (RC-52 to RC-54) consume GT's stainless, titanium and aluminium Large Fluid Cells; the pack must keep their Assembler recipes. A pack script that removes any of these makes the GregGuns row uncraftable, not wrong, so `/gregguns dumprecipes` is the check.
+
 `config/Baubles.cfg` needs no change, because [0009](../design/0009-gtnh-integration-defaults.md) reuses the existing `head`, `wings` and `quiver` slot types.
 
 ## GT5-Unofficial (needs agreement with the GTNH team)
