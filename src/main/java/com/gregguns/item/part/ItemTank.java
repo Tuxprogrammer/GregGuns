@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
@@ -56,6 +57,7 @@ public final class ItemTank extends Item implements Tiered, IFluidContainerItem,
     private final List<String> acceptedMaterials;
     private final boolean gas;
     private final String name;
+    private final Predicate<String> fluidFilter;
     private Set<String> acceptedFluidNames;
     private IIcon emptyIcon;
 
@@ -67,6 +69,20 @@ public final class ItemTank extends Item implements Tiered, IFluidContainerItem,
      *                          is "Fuel") whose fluid or gas the tank takes
      */
     public ItemTank(Tier tier, String name, boolean gas, List<String> acceptedMaterials) {
+        this(tier, name, gas, acceptedMaterials, null);
+    }
+
+    /**
+     * @param tier              the D1 tier
+     * @param name              the bare registry name
+     * @param gas               {@code true} to look the accepted materials up as gases first
+     * @param acceptedMaterials GT {@code Materials} names whose fluid the tank takes
+     * @param fluidFilter       when not {@code null}, decides by Forge fluid name instead of {@code acceptedMaterials}
+     *                          (the Bio Tank, whose culture fluid comes from BartWorks, not from a GT material)
+     */
+    public ItemTank(Tier tier, String name, boolean gas, List<String> acceptedMaterials,
+        Predicate<String> fluidFilter) {
+        this.fluidFilter = fluidFilter;
         this.tier = tier;
         this.name = name;
         this.gas = gas;
@@ -144,6 +160,9 @@ public final class ItemTank extends Item implements Tiered, IFluidContainerItem,
     }
 
     private boolean accepts(Fluid fluid) {
+        if (fluidFilter != null) {
+            return fluidFilter.test(fluid.getName());
+        }
         if (acceptedFluidNames == null) {
             Set<String> names = new HashSet<>();
             for (String material : acceptedMaterials) {

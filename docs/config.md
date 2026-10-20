@@ -33,6 +33,12 @@ The "Needs" column is the module order in `ModuleId`, taken from the roadmap's e
 | `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Registers the numpad debug keybinds. Nothing reads it until the M1 keybinds exist. Kept from Techguns' `enableDebugKeybinds`. |
 | `debug.recipeDump` | boolean | `false` | n/a | no | Enables the op-only `/gregguns dumprecipes <file>` command (recipe-clash review). Leave off in play. |
 
+## Bio Gun (`bioGun`)
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `bioGun.acceptBiomass` | boolean | `false` | n/a | yes | Also lets the Bio Tank take plain GT Biomass, besides BartWorks' E. coli culture fluid (made from Biomass in the Bacterial Vat). Biomass is accepted regardless when the culture fluid cannot be resolved (BartWorks missing). |
+
 ## Machines (`machines`)
 
 Reaction Chamber and Retort tuning (GGS-08-25). Server-side only, not synced.
