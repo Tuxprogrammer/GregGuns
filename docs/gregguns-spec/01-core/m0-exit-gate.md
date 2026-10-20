@@ -98,4 +98,4 @@ The structural differences from Techguns (one `@Config` file set instead of `Tec
 | ID | Box | Proposed resolution |
 |---|---|---|
 | D-3 | Polish P2 | Run the key-conflict check in the batched client pass of the beta gate, and write a design record only if a clash is found |
-| D-4 | Polish P3 | Accept the current defaults (`TEAMS`, one config file, no cosmetic packet) as the beta's recorded decision, and close the open questions after the owner playthrough |
+| D-4 | Polish P3 | **Decided (owner, 2026-10-20):** team-based friends (`TEAMS`), with no everyone-friendly mode, as shipped: per-block security, Public by default, with ServerUtilities allies as friends ([team-relations.md § Decision](team-relations.md#decision-owner-2026-10-20)). One config file and no cosmetics packet are accepted for the beta. Closed |
