@@ -320,6 +320,18 @@ public final class NpcProfiles {
                         .weapon("nether_blaster", 1)
                         .build())
                 .build());
+        // Alien Bug: no equipment; spider-like drops (string, spider eye), nothing else.
+        add(
+            m,
+            NpcProfile.builder("AlienBug", Tier.LV)
+                .table(
+                    LootTable.builder()
+                        .slot(LootDrop.range("minecraft:string", 1, 2))
+                        .slot(LootDrop.range("minecraft:string", 1, 2))
+                        .slot(LootDrop.one("minecraft:spider_eye"))
+                        .build())
+                .rareDrop(false)
+                .build());
         return Collections.unmodifiableMap(m);
     }
 
