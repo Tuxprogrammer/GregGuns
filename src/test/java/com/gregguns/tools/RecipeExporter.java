@@ -98,7 +98,7 @@ public final class RecipeExporter {
                         r.target()
                             .name()))
                 .append(", \"seconds\": ")
-                .append(r.seconds())
+                .append(r.ticks() / 20)
                 .append(", \"circuit\": ")
                 .append(r.circuit())
                 .append(", \"inputs\": [");
