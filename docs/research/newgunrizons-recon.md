@@ -132,7 +132,7 @@ All in our own words; none requires any of their code.
 3. **Discord.** The owner runs a limited playtest group and posts the teasers personally. Agents don't post anywhere.
 4. **Real-world arsenal.** Not planned. If it ever happens, it fills tier gaps, and some sci-fi guns move up a tier to make room for a spread of historical weapons.
 5. **Fork activity.** Ignore the danglol240 fork; GregGuns is on track to reach the MVP before that port finishes.
-6. **Pack route.** The proposal to the GTNH dev team happens after the beta, which is the point of the M9 gate.
+6. **Pack route.** The proposal to the GTNH dev team happens after the beta, which is the point of the M9 gate. *Superseded the same day by [0014](../design/0014-end-goal-beta-handoff-archive.md): no submission to GTNH; the beta is handed off to an adopter and the repo archived.*
 
 **Feature taken: aim down sights.** The owner likes NewGunrizons' ADS. Some GregGuns models carry red dots or iron sights that can't be aimed down today. ADS is now in M9 scope (see the [roadmap](../ROADMAP.md#m9--pack-integration-and-release)). It is cosmetic only, accuracy doesn't change, and it gets a hold or toggle option (idea 4 above).
 

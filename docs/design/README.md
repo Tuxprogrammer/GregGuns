@@ -42,3 +42,4 @@ The other options, and why each was not chosen.
 | [0010](0010-material-remap-and-tier-additions.md) | Material remap and tier additions (extends 0001) | D1 | Accepted (by default) |
 | [0011](0011-machine-policy.md) | Machine policy: single blocks, multiblocks, Ammo Press (amends 0002) | D2 | Accepted (by default) |
 | [0012](0012-retire-reaction-chamber-and-retort.md) | Retire the Reaction Chamber and the Retort (amends 0002, 0011) | D2 | Accepted |
+| [0014](0014-end-goal-beta-handoff-archive.md) | End goal: a working beta, a handoff, then archive (replaces M9) | — | Accepted |
