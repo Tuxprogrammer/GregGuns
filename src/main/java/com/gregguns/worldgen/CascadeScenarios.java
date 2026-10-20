@@ -229,8 +229,9 @@ public final class CascadeScenarios {
                     int[] nsq = freshSquare(world, rnd);
                     if (nsq == null) return ScenarioResult.fail(name(), "no fresh nest square found");
                     StructureGenerator.setOverride(nestPopulator(keys));
-                    StructureGenerator.setBiomeOverride((x, z) -> java.util.Collections.singleton(
-                        net.minecraftforge.common.BiomeDictionary.Type.SANDY));
+                    StructureGenerator.setBiomeOverride(
+                        (x, z) -> java.util.Collections
+                            .singleton(net.minecraftforge.common.BiomeDictionary.Type.SANDY));
                     PopulateGuard.clearViolations();
                     long s0 = StructureGenerator.stampedCount();
                     long r0 = StructureGenerator.rejectedWrites();
@@ -238,12 +239,18 @@ public final class CascadeScenarios {
                     nestStamped = StructureGenerator.stampedCount() - s0;
                     nestRejected = StructureGenerator.rejectedWrites() - r0;
                 }
-                out.check(nestStamped > 0, "bug nests were stamped, so the nest phase is not vacuous (" + nestStamped + ")");
-                out.checkEquals("nest phase PopulateGuard violations " + PopulateGuard.violations(), 0, PopulateGuard.violationCount());
+                out.check(
+                    nestStamped > 0,
+                    "bug nests were stamped, so the nest phase is not vacuous (" + nestStamped + ")");
+                out.checkEquals(
+                    "nest phase PopulateGuard violations " + PopulateGuard.violations(),
+                    0,
+                    PopulateGuard.violationCount());
                 out.checkEquals("nest phase writes dropped outside a window", 0L, nestRejected);
                 out.check(
                     control.equals(withNests),
-                    "nest phase loaded-chunk set equals the structures-off run: " + (withNests == null ? -1 : withNests.size())
+                    "nest phase loaded-chunk set equals the structures-off run: "
+                        + (withNests == null ? -1 : withNests.size())
                         + " vs "
                         + control.size());
             } finally {

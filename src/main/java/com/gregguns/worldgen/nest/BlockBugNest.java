@@ -59,8 +59,7 @@ public final class BlockBugNest extends Block implements Tiered {
     public void registerBlockIcons(IIconRegister register) {
         // Two textures for two metas; the block's own texture name is the resin (the self-check looks for that one).
         resin = register.registerIcon(getTextureName());
-        eggs = register.registerIcon(getTextureName()
-            .replace("bugnestblock", "bugnesteggs"));
+        eggs = register.registerIcon(getTextureName().replace("bugnestblock", "bugnesteggs"));
     }
 
     @Override

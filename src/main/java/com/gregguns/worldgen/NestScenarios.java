@@ -215,7 +215,9 @@ public final class NestScenarios {
             Block nest = NestBlockRegistration.nest();
             Block slime = NestBlockRegistration.slime();
             Block bug = HoleSpawnerRegistration.block(HoleKind.BUG);
-            out.check(nest != null && slime != null && bug != null, "the nest and Bug Hole blocks should be registered");
+            out.check(
+                nest != null && slime != null && bug != null,
+                "the nest and Bug Hole blocks should be registered");
             if (nest == null || slime == null || bug == null) return out.build();
             StructurePlan plan = plan(world);
             try {
@@ -271,10 +273,18 @@ public final class NestScenarios {
                 out.checkEquals("egg blocks", expect[NestPlan.EGG], eggs);
                 out.checkEquals("slime trail blocks", expect[NestPlan.TRAIL], trails);
                 out.checkEquals("sandstone flecks", expect[NestPlan.PLAIN], plain);
-                out.checkEquals("Bug Hole blocks", model.spawners().size(), holes);
+                out.checkEquals(
+                    "Bug Hole blocks",
+                    model.spawners()
+                        .size(),
+                    holes);
                 out.check(holes >= 5 && holes <= 10, "5 to 10 Bug Holes, got " + holes);
                 out.checkEquals("hole blocks without a Bug tile", 0, badTiles);
-                out.checkEquals("spawner marks reported", model.spawners().size(), a.spawnerPos.size());
+                out.checkEquals(
+                    "spawner marks reported",
+                    model.spawners()
+                        .size(),
+                    a.spawnerPos.size());
                 for (int[] h : model.spawners()) {
                     out.check(
                         world.getBlock(h[0], h[1], h[2]) == bug,

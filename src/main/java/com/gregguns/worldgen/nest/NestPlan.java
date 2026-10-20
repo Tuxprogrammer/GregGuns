@@ -14,9 +14,11 @@ import java.util.Random;
  * <p>
  * Rules (structure-notes/alien_bug_nest.md): a main chamber of radius 5, 10 to 16 under the surface and up to 2 blocks
  * off the shaft axis; five satellites every 72 degrees at 15 to 25 blocks; each satellite has an even chance of one
- * child 15 to 25 further out within 45 degrees of its own direction. Every chamber is a shell ball of radius r around an
+ * child 15 to 25 further out within 45 degrees of its own direction. Every chamber is a shell ball of radius r around
+ * an
  * air ball of radius r - 1. Tunnels join linked chambers (shell radius 2 or 3, never wider than either end); a vertical
- * shaft of air radius 2 reaches the surface and is lined with climbable slime; the main chamber has a slime pillar. Each
+ * shaft of air radius 2 reaches the surface and is lined with climbable slime; the main chamber has a slime pillar.
+ * Each
  * satellite and child holds one Bug Hole and piles of eggs on its floor. Air always wins over shells (the "re-carve"
  * step of the notes), so no tunnel wall sticks into a room.
  *

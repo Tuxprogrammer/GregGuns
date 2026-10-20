@@ -95,11 +95,8 @@ class NestPlacerTest {
             RecordingWorld world = new RecordingWorld(c[0], c[1]);
             Capture cap = new Capture(world, r.cells);
             ClippingSink sink = new ClippingSink(world.window(), cap);
-            int n = placer.write(
-                sink,
-                plan,
-                world.window(),
-                (tag, x, y, z) -> r.marks.add(tag + "@" + x + "," + y + "," + z));
+            int n = placer
+                .write(sink, plan, world.window(), (tag, x, y, z) -> r.marks.add(tag + "@" + x + "," + y + "," + z));
             if (n > 0) r.windowsWithWrites++;
             r.outside += world.writesOutsideWindow()
                 .size();

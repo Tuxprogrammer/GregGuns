@@ -115,8 +115,15 @@ class StructureCatalogTest {
         List<PoolEntry> on = StructureCatalog.pools(none, s -> s == StructureId.ALIEN_BUG_NEST, false, true)
             .get(SizeClass.MEDIUM);
         assertEquals(1, on.size());
-        assertEquals("alien_bug_nest", on.get(0).id());
-        assertEquals(com.gregguns.worldgen.nest.NestPlan.SIZE, on.get(0).footprint().sizeX());
+        assertEquals(
+            "alien_bug_nest",
+            on.get(0)
+                .id());
+        assertEquals(
+            com.gregguns.worldgen.nest.NestPlan.SIZE,
+            on.get(0)
+                .footprint()
+                .sizeX());
         // enabled, no placer: nothing
         assertTrue(
             StructureCatalog.pools(none, s -> s == StructureId.ALIEN_BUG_NEST, false, false)
@@ -126,7 +133,9 @@ class StructureCatalogTest {
 
     @Test
     void idsToLoadNeverAsksForANestLayout() {
-        assertFalse(StructureCatalog.idsToLoad(s -> true).contains("alien_bug_nest"));
+        assertFalse(
+            StructureCatalog.idsToLoad(s -> true)
+                .contains("alien_bug_nest"));
     }
 
     @Test

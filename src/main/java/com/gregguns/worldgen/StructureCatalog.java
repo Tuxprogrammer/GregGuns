@@ -126,7 +126,10 @@ public final class StructureCatalog {
         return Collections.unmodifiableMap(out);
     }
 
-    /** The layout ids worth loading: every enabled structure with a layout file (the base and the nest are planned, not stamped). */
+    /**
+     * The layout ids worth loading: every enabled structure with a layout file (the base and the nest are planned, not
+     * stamped).
+     */
     public static List<String> idsToLoad(Predicate<StructureId> enabled) {
         List<String> ids = new ArrayList<String>();
         for (StructureId s : StructureId.values()) {

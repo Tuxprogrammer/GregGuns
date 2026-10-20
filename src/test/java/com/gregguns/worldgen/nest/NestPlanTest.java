@@ -150,8 +150,10 @@ class NestPlanTest {
         assertTrue(count[NestPlan.PLAIN] > 20, "sandstone flecks: " + count[NestPlan.PLAIN]);
         assertTrue(count[NestPlan.PILLAR] > 3, "pillar: " + count[NestPlan.PILLAR]);
         assertTrue(count[NestPlan.WALL] > 8 * count[NestPlan.PLAIN], "resin dominates");
-        assertEquals(p.spawners()
-            .size(), count[NestPlan.SPAWNER]);
+        assertEquals(
+            p.spawners()
+                .size(),
+            count[NestPlan.SPAWNER]);
     }
 
     @Test
