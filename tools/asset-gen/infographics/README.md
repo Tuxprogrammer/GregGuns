@@ -16,7 +16,7 @@ Give the export directory as a Windows path (`C:/...`). Java reads `/c/...` as `
 
 Needs Pillow, numpy and Playwright (it drives the Edge that ships with Windows). GregTech textures come from the GT jar in the extracted reference pack (`reference/gtnh/`, or the main checkout's copy when you're in a worktree). If it's missing, run `python -I tools/gtnh-reference/gtnh_ref.py fetch`.
 
-Renders are cached in `build/infographics/r/` by their parameters. Delete that folder after you change a texture.
+Renders are cached in `build/infographics/r/` by their parameters and a hash of each exported model, so a model change redraws on its own. Delete that folder after you change a texture.
 
 ## Files
 
@@ -36,4 +36,6 @@ Renders are cached in `build/infographics/r/` by their parameters. Delete that f
 - Describe the mod as finished.
 - Use in-game display names and American spelling.
 - Give every dark model a spotlight (`.spot`, `.wcard .pic`). Every render (`img.r`) gets a light rim so it stands off the dark cards.
+- Guns in a figure's hands use the mod's own third-person lengths, read from `InHandTargets.java`, with the muzzle forward. Turn a gunman side-on so the gun shows; a left-facing one is rendered facing right and mirrored.
+- Render only our own textures and GregTech's. The Skeleton Soldier wears the vanilla skeleton texture in game, so it is drawn with a plain bone skin (`kit.bone_skin()`).
 - License: our art is MIT. The GregTech textures shown are GT5 Unofficial's (LGPL-3.0), credited in `docs/assets/CREDITS.md`.
