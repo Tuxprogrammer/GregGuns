@@ -7,6 +7,7 @@ import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
+import com.gregguns.client.render.GlStateGuard;
 import com.gregguns.utility.charge.ChargeType;
 import com.gregguns.utility.charge.TileExplosiveCharge;
 
@@ -23,15 +24,16 @@ public final class ChargeRenderer extends TileEntitySpecialRenderer implements I
             return;
         }
         TileExplosiveCharge charge = (TileExplosiveCharge) tile;
-        GL11.glPushMatrix();
-        GL11.glTranslated(x, y, z);
-        ChargeBoxRenderer.draw(
-            charge.params()
-                .type(),
-            charge.orientation(),
-            charge.params()
-                .armed());
-        GL11.glPopMatrix();
+        try (GlStateGuard g = GlStateGuard.matrixAndAttrib(GL11.GL_CURRENT_BIT)) {
+            GL11.glTranslated(x, y, z);
+            ChargeBoxRenderer.draw(
+                charge.params()
+                    .type(),
+                charge.orientation(),
+                charge.params()
+                    .armed());
+        }
+        GlStateGuard.rebindBlockAtlas();
     }
 
     @Override
@@ -47,24 +49,25 @@ public final class ChargeRenderer extends TileEntitySpecialRenderer implements I
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         ChargeType charge = ChargeType.fromMeta(item.getItemDamage());
-        GL11.glPushMatrix();
-        switch (type) {
-            case INVENTORY:
-                GL11.glScalef(16, 16, 16);
-                GL11.glTranslatef(0.0F, 0.2F, 0.0F);
-                GL11.glRotatef(30, 1, 0, 0);
-                GL11.glRotatef(45, 0, 1, 0);
-                GL11.glTranslatef(-0.5F, -0.2F, -0.5F);
-                break;
-            case ENTITY:
-                GL11.glTranslatef(-0.5F, -0.25F, -0.5F);
-                break;
-            default:
-                GL11.glTranslatef(0.2F, 0.3F, 0.2F);
-                break;
+        try (GlStateGuard g = GlStateGuard.matrixAndAttrib(GL11.GL_CURRENT_BIT)) {
+            switch (type) {
+                case INVENTORY:
+                    GL11.glScalef(16, 16, 16);
+                    GL11.glTranslatef(0.0F, 0.2F, 0.0F);
+                    GL11.glRotatef(30, 1, 0, 0);
+                    GL11.glRotatef(45, 0, 1, 0);
+                    GL11.glTranslatef(-0.5F, -0.2F, -0.5F);
+                    break;
+                case ENTITY:
+                    GL11.glTranslatef(-0.5F, -0.25F, -0.5F);
+                    break;
+                default:
+                    GL11.glTranslatef(0.2F, 0.3F, 0.2F);
+                    break;
+            }
+            // Wall pose: upright, plate toward the viewer (+z), the way the model notes show the item.
+            ChargeBoxRenderer.draw(charge, 3, false);
         }
-        // Wall pose: upright, plate toward the viewer (+z), the way the model notes show the item.
-        ChargeBoxRenderer.draw(charge, 3, false);
-        GL11.glPopMatrix();
+        GlStateGuard.rebindBlockAtlas();
     }
 }

@@ -4,6 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.opengl.GL11;
+
 import com.gregguns.utility.charge.ChargeModel;
 import com.gregguns.utility.charge.ChargeType;
 
@@ -37,6 +39,8 @@ final class ChargeBoxRenderer {
         Minecraft.getMinecraft()
             .getTextureManager()
             .bindTexture(advanced ? (armed ? EXP_ARMED : EXP) : (armed ? TNT_ARMED : TNT));
+        // The tessellator takes the current GL color when none is set; a stale tint would stain the box.
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         Tessellator t = Tessellator.instance;
         t.startDrawingQuads();
         for (ChargeModel.Box box : ChargeModel.boxes(type, orientation)) {
