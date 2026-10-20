@@ -15,6 +15,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import com.gregguns.api.Tier;
 import com.gregguns.combat.DamageSources;
 import com.gregguns.combat.DamageType;
+import com.gregguns.core.testing.PackMobGuard;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -126,6 +127,8 @@ final class NpcInfernalScenarios {
             }
             victim.setPosition(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5);
             shooter.setPosition(ctx.originX() + 8.5, ctx.originY(), ctx.originZ() + 0.5);
+            PackMobGuard.protect(victim);
+            PackMobGuard.protect(shooter);
             world.spawnEntityInWorld(victim);
             world.spawnEntityInWorld(shooter);
             Counter counter = new Counter(victim);

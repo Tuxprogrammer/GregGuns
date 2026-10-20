@@ -116,6 +116,21 @@ The factors are applied **at the hit** inside `DamageSources.hit`, because they 
 - **For M7 (NPCs):** nothing extra for the factors; any non-player `EntityLivingBase` shooter is classed as an NPC. NPC-versus-NPC fire uses the NPC factor.
 - Hits that do not go through `DamageSources.hit` (explosions built with `DamageSources.direct`) are not scaled yet; whoever adds area damage calls `DamageFactors` itself.
 
+## Pack mods that change mobs and players (found in the real pack, 2026-10-20)
+
+The `lost NaN` reports in the first pack scenario run were not NaN in the damage path. Scenarios start from `Float.NaN` and keep it until the target's health drops, so NaN meant "the zombie never lost health": the test held a mob the pack had replaced, healed or protected. The damage math is guarded against NaN already (`DamageModel`, `Knockback`); nothing there changed except that `Knockback.scale` now never returns NaN or infinity.
+
+| Mod (pack tag) | What it does | Effect on GregGuns | Source |
+|---|---|---|---|
+| SpecialMobs 3.7.8 | Queues each joining `IMob` and, at the end of the next server tick, removes it and spawns a random variant (Plague Zombie ...). Skips mobs with `isNoDespawnRequired()` or a non-zero `smi` tag. | A spawned zombie is a different entity a tick later; a held reference is dead and never loses health. | [MobHelper.canReplace](https://github.com/GTNewHorizons/SpecialMobs/blob/3.7.8/src/main/java/toast/specialMobs/MobHelper.java#L338-L348), [TickHandler](https://github.com/GTNewHorizons/SpecialMobs/blob/3.7.8/src/main/java/toast/specialMobs/TickHandler.java#L29-L40) |
+| EnderZoo 1.3.6 | At the end of the next tick after a mob joins, multiplies its base max health and attack damage by the difficulty modifier (0.9 on easy, 1.1 on hard; the pack enables the global modifier) and sets health to full. Skips mobs with the `ezModsApp` boolean. | Mob health and NPC attack damage depend on difficulty (alien bug 4.0 becomes 3.6 on easy); a mob emptied or given custom max health right after spawn is reset (a corpse comes back to life). | [MobSpawnEventHandler](https://github.com/GTNewHorizons/EnderZoo/blob/1.3.6/src/main/java/crazypants/enderzoo/spawn/MobSpawnEventHandler.java#L96-L185) |
+| AngerMod 1.0.7 | Every player that joins a world (fake players too) gets `disableDamage = true` for up to 90 s while within 5 blocks (pack config). | Monsters ignore such a player and `attackEntityFrom` rejects hits ([FrameRules](../../../src/main/java/com/gregguns/combat/FrameRules.java) already treats it as creative). Real players are safe for their first 90 s by design. | [PlayerSpawnProtection](https://github.com/GTNewHorizons/AngerMod/blob/1.0.7/src/main/java/com/github/namikon/angermod/events/PlayerSpawnProtection.java#L89-L97) |
+| Infernal Mobs 1.10.7-GTNH | Rolls modifiers for joining `IMob`s unless the entity data holds a non-empty `InfernalMobsMod` string. | Elite modifiers (health, abilities) change what a hit does; GregGuns damage is still plain `attackEntityFrom`, so a modifier that blocks damage gives 0, never NaN. See [0007](../../design/0007-pack-loot-and-infernal-mobs.md). | [EntityEventHandler](https://github.com/GTNewHorizons/Infernal-Mobs/blob/1.10.7-GTNH/src/main/java/atomicstryker/infernalmobs/common/events/EntityEventHandler.java#L69-L82) |
+
+Scenario harness: `PackMobGuard` (`com.gregguns.core.testing`) opts every mob spawned through `ScenarioContext.spawn` out of the first three (persistence, `ezModsApp`, the Infernal opt-out marker) and clears AngerMod's protection on spawned players. Scenario `harness.pack_mobs` checks it. Infernal Mobs was ruled out as the cause of the NaN reports: the zombie in the failing run was a Plague Zombie (SpecialMobs).
+
+Scenarios that read tool levels accept pack-retuned values: IguanaTweaks renumbers harvest levels (our axe level 3 reads back 5), a deliberate pack tweak that `ItemToolGun` reads through `setHarvestLevel`.
+
 ## Open questions
 
 - **Hazmat mapping.** The mapping in GGS-02-22 is a proposed default. M9 balance may narrow it.

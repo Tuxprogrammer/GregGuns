@@ -23,10 +23,16 @@ public final class Knockback {
      * @param before     the component before the hit, blocks per tick
      * @param after      the component after vanilla's push
      * @param multiplier the gun's knockback multiplier, at least 0
-     * @return the component to set: {@code before + (after - before) x multiplier}
+     * @return the component to set: {@code before + (after - before) x multiplier}; never NaN or infinite. If the
+     *         scaled value is not finite (a mod left NaN in a velocity), the vanilla result {@code after} stands, or 0
+     *         when that is not finite either
      */
     public static double scale(double before, double after, double multiplier) {
-        return before + (after - before) * Math.max(0.0, multiplier);
+        double scaled = before + (after - before) * Math.max(0.0, multiplier);
+        if (Double.isNaN(scaled) || Double.isInfinite(scaled)) {
+            return Double.isNaN(after) || Double.isInfinite(after) ? 0.0 : after;
+        }
+        return scaled;
     }
 
     /**

@@ -46,3 +46,7 @@ The research is in [06-items/pack-loot.md](../gregguns-spec/06-items/pack-loot.m
 - **Add to vanilla categories in code, as Techguns does:** rejected, because TooMuchLoot wipes it.
 - **Guns in the global infernal lists:** rejected, because vanilla zombies would drop HV weapons with no location gate.
 - **Ship config files from the mod into other mods' config folders:** rejected. That is the pack's job, and it breaks pack updates.
+
+## Addendum: test victims (2026-10-20)
+
+Scenario mobs opt out of Infernal Mobs with the same marker as spawner NPCs (`InfernalOptOut.MARKER`), written by the test harness (`PackMobGuard`). Infernal Mobs was not the cause of the pack-only `lost NaN` scenario failures; see [damage-interop.md](../gregguns-spec/02-guns/damage-interop.md#pack-mods-that-change-mobs-and-players-found-in-the-real-pack-2026-10-20).

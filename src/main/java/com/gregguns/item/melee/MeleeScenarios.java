@@ -141,7 +141,9 @@ public final class MeleeScenarios {
             int wear = stack.getItemDamage();
             out.check(wear >= 1 && wear <= 2, "the tool should lose 1 or 2 durability, lost " + wear);
             if (item instanceof ItemCrowbar) {
-                out.check(item.getHarvestLevel(stack, "pickaxe") == 2, "the crowbar should mine at level 2");
+                // IguanaTweaks renumbers harvest levels in the pack (our axe level 3 reads back 5), so only a floor is
+                // checked.
+                out.check(item.getHarvestLevel(stack, "pickaxe") >= 2, "the crowbar should mine at level 2 or more");
                 out.check(
                     item.getToolClasses(stack)
                         .contains("pickaxe"),
