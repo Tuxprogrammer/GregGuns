@@ -21,6 +21,8 @@ public final class StateScenarios {
 
     /** A name of its own, so the scenario never touches the real structure record. */
     private static final String SCENARIO_DATA = "gregguns_structures_scenario";
+    private static final String PLACED = PlanKey.of(SizeClass.MEDIUM, 3, -4);
+    private static final String REJECTED = PlanKey.of(SizeClass.BIG, -1, 2);
 
     private StateScenarios() {}
 
@@ -47,79 +49,91 @@ public final class StateScenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
-            ScenarioResult.Builder out = ScenarioResult.builder(name());
             World world = ctx.world();
             ISaveHandler handler = world.getSaveHandler();
             File file = handler.getMapFileFromName(SCENARIO_DATA);
             if (file == null) {
                 return ScenarioResult.fail(name(), "this world has no save file for map data");
             }
-            try {
-                MapStorage writer = new MapStorage(handler);
-                StructureState state = new StructureState(SCENARIO_DATA);
-                writer.setData(SCENARIO_DATA, state);
-
-                String placed = PlanKey.of(SizeClass.MEDIUM, 3, -4);
-                String rejected = PlanKey.of(SizeClass.BIG, -1, 2);
-                AtomicInteger calls = new AtomicInteger();
-                state.decideOnce(placed, () -> {
-                    calls.incrementAndGet();
-                    return Decision.placed(67);
-                });
-                state.decideOnce(rejected, () -> {
-                    calls.incrementAndGet();
-                    return Decision.rejected("water");
-                });
-                state.addFlag(placed, new FlagPos(10, 68, -20));
-                out.check(state.isDirty(), "recording a decision should mark the data dirty");
-
-                writer.saveAllData();
-                out.check(file.isFile(), "the data file should exist after saveAllData");
-
-                // A fresh storage has an empty cache, so this really reads the file.
-                MapStorage reader = new MapStorage(handler);
-                StructureState back = (StructureState) reader.loadData(StructureState.class, SCENARIO_DATA);
-                if (back == null) {
-                    out.check(false, "the saved data should load back");
-                    return out.build();
-                }
-                Decision p = back.get(placed);
-                Decision r = back.get(rejected);
-                out.check(p != null && p.isPlaced(), "the placed decision should survive");
-                if (p != null) {
-                    out.checkEquals("ground Y", 67, p.groundY());
-                    out.checkEquals(
-                        "flags",
-                        1,
-                        p.flags()
-                            .size());
-                    out.check(
-                        p.flags()
-                            .contains(new FlagPos(10, 68, -20)),
-                        "the flag position should survive");
-                }
-                out.check(r != null && !r.isPlaced(), "the rejected decision should survive");
-                if (r != null) {
-                    out.checkEquals("reason", "water", r.reason());
-                }
-                out.checkEquals(
-                    "record count",
-                    2,
-                    back.ledger()
-                        .size());
-
-                // The record, not a new measurement, decides after a reload.
-                Decision again = back.decideOnce(placed, () -> {
-                    calls.incrementAndGet();
-                    return Decision.rejected("later");
-                });
-                out.check(again.isPlaced(), "a later window should obey the saved record");
-                out.checkEquals("decider calls", 2, calls.get());
-            } finally {
-                if (file.isFile() && !file.delete()) {
-                    out.note("could not delete the scenario data file " + file.getName());
-                }
+            if (file.isFile() && !file.delete()) {
+                return ScenarioResult.fail(name(), "could not clear a stale " + file.getName());
             }
+
+            MapStorage writer = new MapStorage(handler);
+            StructureState state = new StructureState(SCENARIO_DATA);
+            writer.setData(SCENARIO_DATA, state);
+            state.decideOnce(PLACED, () -> Decision.placed(67));
+            state.decideOnce(REJECTED, () -> Decision.rejected("water"));
+            state.addFlag(PLACED, new FlagPos(10, 68, -20));
+            if (!state.isDirty()) {
+                return ScenarioResult.fail(name(), "recording a decision should mark the data dirty");
+            }
+            writer.saveAllData();
+
+            // The pack writes map data on another thread (the file appears a moment later), so wait for it, then
+            // give the writer a few more ticks to finish before reading.
+            final int[] seenAt = { -1 };
+            return ScenarioResult.pending(name(), 100, ticks -> {
+                if (!file.isFile()) {
+                    return null;
+                }
+                if (seenAt[0] < 0) {
+                    seenAt[0] = ticks;
+                }
+                if (ticks - seenAt[0] < 5) {
+                    return null;
+                }
+                try {
+                    return verify(handler, file);
+                } finally {
+                    if (file.isFile() && !file.delete()) {
+                        file.deleteOnExit();
+                    }
+                }
+            });
+        }
+
+        /** Loads through a fresh {@link MapStorage}, whose empty cache forces a real read of the file. */
+        private ScenarioResult verify(ISaveHandler handler, File file) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            StructureState back = (StructureState) new MapStorage(handler)
+                .loadData(StructureState.class, SCENARIO_DATA);
+            if (back == null) {
+                return ScenarioResult.fail(name(), "the saved data should load back from " + file.getName());
+            }
+            Decision p = back.get(PLACED);
+            Decision r = back.get(REJECTED);
+            out.check(p != null && p.isPlaced(), "the placed decision should survive");
+            if (p != null) {
+                out.checkEquals("ground Y", 67, p.groundY());
+                out.checkEquals(
+                    "flags",
+                    1,
+                    p.flags()
+                        .size());
+                out.check(
+                    p.flags()
+                        .contains(new FlagPos(10, 68, -20)),
+                    "the flag position should survive");
+            }
+            out.check(r != null && !r.isPlaced(), "the rejected decision should survive");
+            if (r != null) {
+                out.checkEquals("reason", "water", r.reason());
+            }
+            out.checkEquals(
+                "record count",
+                2,
+                back.ledger()
+                    .size());
+
+            // The record, not a new measurement, decides after a reload.
+            AtomicInteger calls = new AtomicInteger();
+            Decision again = back.decideOnce(PLACED, () -> {
+                calls.incrementAndGet();
+                return Decision.rejected("later");
+            });
+            out.check(again.isPlaced(), "a later window should obey the saved record");
+            out.checkEquals("decider calls after reload", 0, calls.get());
             return out.build();
         }
     }
