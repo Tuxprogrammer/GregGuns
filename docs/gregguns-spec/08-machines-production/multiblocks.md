@@ -72,7 +72,13 @@ All of these are GregGuns blocks on page 50 unless a GT name is given.
 | `F` | Works Casing, feeder | Input Bus, Input Hatch, Energy Hatch, Maintenance Hatch, Muffler Hatch |
 | `A` | Works Casing, plain | none |
 | `O` | Works Casing, packing | Output Bus, Output Hatch, Energy Hatch |
-| `M` | Ram Housing | none |
+| `M` | Ram Housing (roof tooth, and the press head over the belt) | none |
+| `G` | Any glass: every tier GT lists, mixed is fine (the channel is Borosilicate Glass) | none |
+| `R` | Steel Frame Box (press rods, crane rod) | none |
+| `P` | Steel Pipe Casing (ceiling pipe runs) | none |
+| `B` | Steel Gear Box Casing (press drives, packing arch legs) | none |
+| `N` | Motor Machine Casing (feeder belt drive) | none |
+| `Y` | Assembler Machine Casing (packing arch over the belt) | none |
 | `I` | GT item pipe casing, any tier | none. Tier is read |
 | `~` | Controller | n/a |
 
@@ -81,36 +87,38 @@ All of these are GregGuns blocks on page 50 unless a GT name is given.
 **Feeder** (3 long; the controller is at the front, middle, second layer from the bottom):
 
 ```
-y5 (top)      y4          y3          y2          y1          y0 (bottom)
-F...F         AAAAA       FFFFF       FFFFF       FF~FF       AAAAA
-.....         AAAAA       A---A       A---A       A---A       AAIAA
-F...F         AAAAA       A---A       A---A       A---A       AAIAA
+y6      y5      y4      y3      y2      y1      y0
+.....   F...F   AAAAA   FFFFF   FFFFF   FF~FF   AAAAA
+.....   .....   AAAAA   AP-PA   G---G   AN-NA   AAIAA
+.....   F...F   AAAAA   AP-PA   G---G   A---A   AAIAA
 ```
 
-(Each column is one layer. Within a column, rows run front to back.)
+(Each column is one layer, `.` is anything. Within a column, rows run front to back.)
 
 **Press bay** (3 long, repeated `n` times):
 
 ```
-y5            y4          y3          y2          y1          y0
-.....         AAAAA       A---A       A---A       A---A       AAIAA
-..M..         AAMAA       A---A       A---A       A---A       AAIAA
-.....         AAAAA       A---A       A---A       A---A       AAIAA
+y6      y5      y4      y3      y2      y1      y0
+.....   .....   AAAAA   AP-PA   G---G   A---A   AAIAA
+.....   ..M..   AAMAA   APRPA   G-R-G   ABMBA   AAIAA
+.....   .....   AAAAA   AP-PA   G---G   A---A   AAIAA
 ```
 
 **Packing station** (4 long, once, at the far end):
 
 ```
 y6      y5      y4      y3      y2      y1      y0
-.....   AAAAA   A---A   A---A   A---A   A---A   AAIAA
-..O..   AAOAA   A---A   A---A   A---A   A---A   AAIAA
-..O..   AAOAA   A---A   A---A   A---A   A---A   AAIAA
+.....   AAAAA   AP-PA   G---G   G---G   A---A   AAIAA
+..O..   AAOAA   AP-PA   GYYYG   GB-BG   AB-BA   AAIAA
+..O..   AAOAA   APRPA   G-R-G   G---G   A---A   AAIAA
 .....   AAAAA   AOOOA   AOOOA   AOOOA   AOOOA   AAAAA
 ```
 
 The belt `I` runs down the middle of the floor, feeder to station. The hall between the walls is a 3-wide, 3-high open tunnel (4 high in the station), which is where the animated rounds travel.
 
-**Block counts** (for `checkCasingMin`): feeder 18 `F`, 40 `A`, 2 `I`; each bay 44 `A`, 2 `M`, 3 `I`; station 16 `O`, 67 `A`, 3 `I`. The casing minimum is the sum of `F`, `A`, `O` and `M` positions minus a fixed allowance of 12 hatches. For `n` = 4 that is 18 + 40 + 4 x 46 + 16 + 67 = 325 casing positions, so the check is 313.
+**Windows and interior.** The side walls have glass windows (`G`) so the line can be seen from outside: one row in the feeder and the bays, two rows in the station. The front wall, the roof and the output wall carry no glass, so every hatch face stays a casing. Glass is the shared GT glass element, which accepts every registered tier (vanilla glass up to the top borosilicate) and does not require one tier: it is a look, not a progression wall. Inside, a pipe run (`P`) follows the ceiling on both sides end to end, each bay's ram housing drives a press: two steel frame boxes (`R`) down to a Ram Housing press head (`M`) one block above the belt, with a steel gearbox (`B`) on each side of the head; the feeder has a motor casing (`N`) on each side of the belt as its drive; the station has an assembler casing arch (`Y`) on gearbox legs that spans the belt (the packing core) and a frame rod hanging from the crane. The interior parts are required but are not casings: they are not counted toward the casing minimum and never sit on a hatch face.
+
+**Block counts** (for `checkCasingMin`): feeder 18 `F`, 36 `A`, 2 `I`, 4 `G`, 4 `P`, 2 `N`; each bay 38 `A`, 3 `M`, 3 `I`, 6 `G`, 2 `R`, 6 `P`, 2 `B`; station 16 `O`, 55 `A`, 3 `I`, 12 `G`, 2 `R`, 6 `P`, 4 `B`, 3 `Y`. The casing minimum is the sum of `F`, `A`, `O` and `M` positions minus a fixed allowance of 12 hatches. For `n` = 4 that is 54 + 4 x 41 + 71 = 289 casing positions, so the check is 277. The interior totals are glass 16 + 6n, pipes 10 + 6n, gearboxes 4 + 2n, frame boxes 2 + 2n, 2 motor casings and 3 assembler casings.
 
 ### Hatches, controller, special rules
 
@@ -138,7 +146,7 @@ The belt `I` runs down the middle of the floor, feeder to station. The hall betw
 | Parallels | 1 | `4 x n x tier` |
 | EU/t | Recipe `eut` | Parallels x recipe `eut` |
 | Speed | Tier overclock | Tier overclock x belt multiplier |
-| Needs | One MTE | Hatches, maintenance, a muffler, about 300 casings |
+| Needs | One MTE | Hatches, maintenance, a muffler, about 290 casings plus glass and interior parts |
 
 ### Special mechanics
 
@@ -461,6 +469,7 @@ Built as `MTEAmmoWorks` (ID 20105) with pure data in `AmmoWorksShape` and `AmmoW
 - **Belt tier** is GT's item pipe casing value (1 to 8, as the Mixer numbers it), so "belt tier 2" is the second pipe casing. Mixed tiers fail inside GT's tiered element.
 - **No energy hatch tier limit.** The sheet says LV to IV; parallels are already power-limited, so higher hatches are allowed, as are multi-amp hatches.
 - **Animation not built.** No ram, belt-round or crane drawing and no screwdriver toggle; the screwdriver toggles input separation. The Ram Housing active texture is not wired (GT casings have no active state), and casings render as plain cubes without GT's machine-metal tint.
+- **Windows and interior.** Added on the owner's request (see-inside and more character). Glass uses `GTStructureUtility.chainAllGlasses()` ([L891-L925](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L891-L925)) on the Borosilicate Glass channel, so the projector's glass channel picks the tier it previews. The interior is fixed GT blocks (`gt.blockcasings2` metas 3, 9, 11, 13 and `ofFrame(Materials.Steel)`); the Ram Housing is the GregGuns accent. No active texture while running (the overlay system has no per-casing state).
 - **Hologram** takes the bay count from the length channel if present, else the stack size (2 to 8).
 - **Voiding** uses GT's void protection mode (item modes only), on by default; a full Output Bus pauses the hall.
 

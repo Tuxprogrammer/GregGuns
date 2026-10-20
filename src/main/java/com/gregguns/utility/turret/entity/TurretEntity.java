@@ -46,7 +46,8 @@ import io.netty.buffer.ByteBuf;
 // docs/gregguns-spec/09-machines-utility/turret.md (GGS-09-01, GGS-09-02), docs/techguns-spec/BUGS.md (NPC-12)
 // Deviation: retaliation against whoever hurt the turret waits for the M7 faction rules; the turret only fires at
 // what the target rules choose.
-public class TurretEntity extends EntityCreature implements IEntityOwnable, TurretAttacker, IEntityAdditionalSpawnData {
+public class TurretEntity extends EntityCreature
+    implements IEntityOwnable, TurretAttacker, TurretDisplay, IEntityAdditionalSpawnData {
 
     /** Mod-local entity id (the registry id; 11, 24 and 25 are projectiles). */
     public static final int ENTITY_ID = 60;
@@ -292,6 +293,7 @@ public class TurretEntity extends EntityCreature implements IEntityOwnable, Turr
      * @return the plate's armor value for choosing a texture: the live value on the server, the value sent at spawn
      *         on a client (GGS-01-11 forbids a DataWatcher slot, so a plate changed later shows after a re-track)
      */
+    @Override
     public int displayArmorValue() {
         return worldObj.isRemote ? spawnArmor : getTotalArmorValue();
     }
@@ -300,6 +302,7 @@ public class TurretEntity extends EntityCreature implements IEntityOwnable, Turr
      * @return the gun the head shows: the live gun on the server, the gun sent at spawn on a client (same limit as
      *         {@link #displayArmorValue()}: a gun swapped later shows after a re-track); null for none
      */
+    @Override
     public ItemStack displayGun() {
         if (!worldObj.isRemote) {
             return host == null ? null : host.mountedGun();

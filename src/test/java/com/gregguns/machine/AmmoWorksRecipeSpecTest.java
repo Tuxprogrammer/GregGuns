@@ -33,7 +33,7 @@ class AmmoWorksRecipeSpecTest {
     void yieldingTwoHalvesTheDefaultHallsPlateBill() {
         // recipes.md: one casing per craft would cost about 1,900 plates; two per craft halves it.
         int plates = AmmoWorksRecipeSpec.platesForHall(4);
-        assertTrue(plates >= 900 && plates <= 1000, "plates " + plates);
+        assertTrue(plates >= 800 && plates <= 1000, "plates " + plates);
         assertTrue(
             2 * plates >= AmmoWorksShape.casingPositions(4) * AmmoWorksRecipeSpec.CASING_PLATES,
             "the doubled bill is the 1:1 bill");

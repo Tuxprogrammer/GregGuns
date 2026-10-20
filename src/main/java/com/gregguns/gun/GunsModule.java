@@ -19,13 +19,8 @@ import com.gregguns.gun.server.GunCamoScenarios;
 import com.gregguns.gun.server.GunEvents;
 import com.gregguns.gun.server.GunKeybinds;
 import com.gregguns.gun.server.MpScenarios;
-import com.gregguns.item.ammo.AmmoItems;
-import com.gregguns.item.grenade.GrenadeItems;
-import com.gregguns.item.gun.GunItems;
-import com.gregguns.item.melee.MeleeItems;
+import com.gregguns.item.GunsItemRegistry;
 import com.gregguns.item.melee.MeleeScenarios;
-import com.gregguns.item.part.ComponentItems;
-import com.gregguns.item.part.PartItems;
 import com.gregguns.machine.AmmoPressMachines;
 import com.gregguns.projectile.ProjectileModule;
 import com.gregguns.recipe.ComponentRecipes;
@@ -59,17 +54,12 @@ public final class GunsModule implements GregGunsModule {
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
         // Items, entities and other content: one call per area, e.g. AmmoItems.register(registrar).
-        AmmoItems.register(registrar);
-        PartItems.register(registrar);
-        ComponentItems.register(registrar);
+        GunsItemRegistry.registerAll(registrar);
         // Built here so GT records GregGuns as the map's owner mod (NEI badge), see GregGunsRecipeMaps.
         GregGunsRecipeMaps.init();
         AmmoPressMachines.registerBlocks(registrar);
         ProjectileModule.preInit(registrar);
-        GunItems.register(registrar);
         GunKeybinds.register();
-        MeleeItems.register(registrar);
-        GrenadeItems.register(registrar);
     }
 
     @Override
@@ -92,6 +82,7 @@ public final class GunsModule implements GregGunsModule {
             GunAccuracyScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             EnergyCoreScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ChargeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            com.gregguns.gun.server.AmmoSpendScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.gun.server.ToolGunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.gun.server.EnergyGunScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ComponentScenarios.registerAll(ScenarioRegistry.SCENARIOS);

@@ -40,6 +40,9 @@ final class NpcEggScenarios {
 
         private static final double EPS = 1e-6;
 
+        /** An egg damage value no mob will ever use, however many real mobs land. */
+        private static final int UNKNOWN_EGG_META = 30_000;
+
         @Override
         public String name() {
             return "npc.egg_spawns";
@@ -66,20 +69,23 @@ final class NpcEggScenarios {
             ItemNpcEgg egg = NpcRegistry.egg();
             out.check(egg != null, "the npc_egg item should be registered");
             out.check(NpcRegistry.isRegistered(NpcMob.NPC_TEST), "the test NPC should be registered in dev");
-            out.check(!NpcRegistry.isRegistered(NpcMob.SIMPLE_TURRET), "the turret has no class yet");
+            out.check(!NpcMob.SIMPLE_TURRET.hasEgg(), "the camp turret has no egg");
+            out.check(NpcMob.byId(UNKNOWN_EGG_META) == null, "the unknown egg meta should map to no mob");
             out.check(
                 EntityList.createEntityByName(NpcMob.NPC_TEST.fullName(), world) instanceof NpcEntity,
                 "EntityList should know " + NpcMob.NPC_TEST.fullName());
             if (egg == null) {
                 return out.build();
             }
-            int before = npcs(world).size();
+            // Ambient NPCs (natural spawns) come and go: count and clean up only what this scenario spawned.
+            List<NpcEntity> baseline = npcs(world);
+            int before = baseline.size();
 
             ItemStack good = new ItemStack(egg, 2, NpcMob.NPC_TEST.entityId());
             boolean used = egg.onItemUse(good, player, world, x, y, z, 1, 0.5F, 1.0F, 0.5F);
-            List<NpcEntity> found = npcs(world);
+            List<NpcEntity> found = ours(world, baseline);
             out.check(used, "using a registered egg should succeed");
-            out.checkEquals("NPCs after the first egg", before + 1, found.size());
+            out.checkEquals("NPCs after the first egg", 1, found.size());
             out.checkEquals("egg stack after one use", 1, good.stackSize);
             if (!found.isEmpty()) {
                 Entity spawned = found.get(found.size() - 1);
@@ -88,17 +94,23 @@ final class NpcEggScenarios {
                 out.check(Math.abs(spawned.posY - (y + 1)) < EPS, "Y should rest on the block: " + spawned.posY);
             }
 
-            ItemStack stale = new ItemStack(egg, 1, NpcMob.SIMPLE_TURRET.entityId());
+            ItemStack stale = new ItemStack(egg, 1, UNKNOWN_EGG_META);
             boolean staleUsed = egg.onItemUse(stale, player, world, x, y, z, 1, 0.5F, 1.0F, 0.5F);
-            out.check(!staleUsed, "an unregistered egg should do nothing");
+            out.check(!staleUsed, "an egg for a mob without one should do nothing");
             out.checkEquals("unregistered egg stack", 1, stale.stackSize);
-            out.checkEquals("NPCs after the unregistered egg (no stale entity)", before + 1, npcs(world).size());
+            out.checkEquals("NPCs after the unregistered egg (no stale entity)", 1, ours(world, baseline).size());
 
-            for (NpcEntity e : npcs(world)) {
+            for (NpcEntity e : ours(world, baseline)) {
                 world.removeEntity(e);
             }
-            out.checkEquals("NPCs after cleanup", before, npcs(world).size());
+            out.checkEquals("NPCs of ours after cleanup", 0, ours(world, baseline).size());
             return out.build();
+        }
+
+        private static List<NpcEntity> ours(World world, List<NpcEntity> baseline) {
+            List<NpcEntity> list = npcs(world);
+            list.removeAll(baseline);
+            return list;
         }
 
         private static List<NpcEntity> npcs(World world) {
