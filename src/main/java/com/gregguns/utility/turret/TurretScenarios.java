@@ -334,6 +334,12 @@ public final class TurretScenarios {
             return "The turret dies and respawns after the repair, a link to a zombie respawns it, a turret with no base dies quietly, and breaking the base kills the turret: no exception.";
         }
 
+        /** The far zombie stands 40 blocks out; the default 32-block hold could leave its chunk unloaded. */
+        @Override
+        public int areaRadius() {
+            return 44;
+        }
+
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ctx.clearArea(AREA_RADIUS, 6);
