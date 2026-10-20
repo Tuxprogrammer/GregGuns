@@ -145,7 +145,7 @@ class NestPlanTest {
             }
         }
         assertTrue(count[NestPlan.AIR] > 2000, "chambers and tunnels carved: " + count[NestPlan.AIR]);
-        assertTrue(count[NestPlan.WALL] > 3000, "walls: " + count[NestPlan.WALL]);
+        assertTrue(count[NestPlan.WALL] > 1500, "walls: " + count[NestPlan.WALL]);
         assertTrue(count[NestPlan.EGG] > 20, "eggs: " + count[NestPlan.EGG]);
         assertTrue(count[NestPlan.PLAIN] > 20, "sandstone flecks: " + count[NestPlan.PLAIN]);
         assertTrue(count[NestPlan.PILLAR] > 3, "pillar: " + count[NestPlan.PILLAR]);

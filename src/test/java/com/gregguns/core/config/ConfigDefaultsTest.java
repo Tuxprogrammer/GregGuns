@@ -20,8 +20,7 @@ class ConfigDefaultsTest {
     @Test
     void everyModuleFlagHasItsExpectedDefault() {
         for (ModuleId id : ModuleId.values()) {
-            boolean expected = id != ModuleId.WORLDGEN;
-            assertEquals(expected, ModuleFlags.isEnabled(id), "modules." + id.configKey());
+            assertEquals(true, ModuleFlags.isEnabled(id), "modules." + id.configKey());
         }
     }
 

@@ -42,16 +42,12 @@ class ModuleResolverTest {
                 ModuleId.MACHINES,
                 ModuleId.ENERGY_WEAPONS,
                 ModuleId.UTILITY,
-                ModuleId.NPCS),
+                ModuleId.NPCS,
+                ModuleId.WORLDGEN),
             result.enabled());
-        assertEquals(
-            1,
+        assertTrue(
             result.skipped()
-                .size());
-        assertEquals(
-            ModuleResolution.SkipReason.DISABLED_BY_CONFIG,
-            result.skipped()
-                .get(ModuleId.WORLDGEN));
+                .isEmpty());
     }
 
     @Test
