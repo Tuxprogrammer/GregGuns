@@ -50,7 +50,7 @@ public final class NukeLauncherScenarios {
         registry.register(
             GunLineScenarios.recipe(
                 "gun.nuke_launcher.recipe",
-                "The Nuke Launcher (GR-70) is on GT's Assembly Line list at ZPM with its sheet inputs, both fluids, its research item, scan time and voltage, and its output is ours.",
+                "The Nuke Launcher (GR-102) is on GT's Assembly Line list at ZPM with its sheet inputs, both fluids, its research item, scan time and voltage, and its output is ours.",
                 GunLineTable.NUKE_LAUNCHER));
         registry.register(new Fire());
         registry.register(new Safe());

@@ -40,13 +40,13 @@ public final class GunLineTable {
 
     static {
         List<Spec> list = new ArrayList<>();
-        // GR-70 (Nuke Launcher, ZPM). Deviation: the sheet scans the Grim Reaper; until that gun is registered the
+        // GR-102 (Nuke Launcher, ZPM). Deviation: the sheet scans the Grim Reaper; until that gun is registered the
         // scan item is the Rocket Launcher, so the recipe still registers. The switch is automatic once the Grim
         // Reaper is in GunDefinitions.
         String research = GunDefinitions.byName(GRIM_REAPER) != null ? GRIM_REAPER : ROCKET_LAUNCHER;
         list.add(
             line(
-                "GR-70",
+                "GR-102",
                 NUKE_LAUNCHER,
                 Tier.ZPM,
                 60,

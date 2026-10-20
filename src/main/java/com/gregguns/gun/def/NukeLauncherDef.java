@@ -21,7 +21,7 @@ import com.gregguns.projectile.NukeLauncherScenarios;
  *
  * <p>
  * Recipe: not an Assembler row (the sheet's inputs do not fit the Assembler's six slots); it is built on the Assembly
- * Line, see {@code GunLineTable} (GR-70). The gun is made unloaded: the nuke rocket is ammo.
+ * Line, see {@code GunLineTable} (GR-102). The gun is made unloaded: the nuke rocket is ammo.
  */
 // Spec: docs/techguns-spec/02-guns/sheets-launchers-tools-grenades.md (Nuke Launcher);
 // docs/gregguns-spec/02-guns/recipes.md (LuV and ZPM table)
