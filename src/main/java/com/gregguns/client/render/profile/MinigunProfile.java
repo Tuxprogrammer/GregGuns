@@ -180,8 +180,10 @@ public final class MinigunProfile {
     }
 
     /**
-     * The rotor's term for a fire row: a turn about the barrel axis (the program's Z, because the model's quarter turn
-     * about Y sends model X to program -Z), for the rotor part only.
+     * The rotor's term for a fire row: a turn about the barrel axis for the rotor part only. This is an X-family model
+     * (muzzle
+     * toward +X, no quarter turn in the model), so the barrel axis is the program's X. The pivot is the origin, which
+     * the notes put on the axis at the cluster centre (Y 0, Z 0). Turning about Z was the bug: that is the roll axis.
      */
     private static double spin(double p, int part) {
         return part == ROTOR_PART ? -rotorTurnDegrees(p) : 0.0;
@@ -208,7 +210,7 @@ public final class MinigunProfile {
                 (p, part) -> x0 + K * 0.05 * Math.sin(p * 2.0 * Math.PI),
                 TransformProgram.c(y0),
                 TransformProgram.c(z0))
-            .rotZ(MinigunProfile::spin)
+            .rotX(MinigunProfile::spin)
             .build();
         // Reload (100 ticks): the gun tips 25 degrees and slides up and aside; the rotor does not move.
         TransformProgram fpReload = TransformProgram.builder()
@@ -228,7 +230,7 @@ public final class MinigunProfile {
             .build();
         // No whole-gun recoil in third person; only the rotor turns.
         TransformProgram tpRecoil = TransformProgram.builder()
-            .rotZ(MinigunProfile::spin)
+            .rotX(MinigunProfile::spin)
             .build();
         TransformProgram tpReload = TransformProgram.builder()
             .rotX((p, part) -> 30.0 * yR(p))
