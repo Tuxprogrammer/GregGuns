@@ -28,8 +28,8 @@ import com.gregguns.recipe.ProductionTable.Row;
  * tubes), a Carbon Receiver, an LuV electric piston and 4 HSSG plates; Assembler, LuV, 45 s, circuit 9. The gate is
  * the HSSG plate and the LuV piston. Deviation (GGS-02-40): the sheet consumes four Rocket Launchers and adds an
  * Assembly Line research scan; a gun stacks to 1, so a four-launcher input cannot be met by an Assembler slot, and the
- * Assembly Line path for guns is not built. The barrels stand for the three extra tubes, and the lubricant and the
- * separate LuV circuit are dropped (the Assembler map has no fluid input here and the piston carries the tier).
+ * Assembly Line path for guns is not built. The barrels stand for the three extra tubes, and the separate LuV
+ * circuit is dropped (the piston carries the tier). The 250 L of lubricant is kept as a row fluid.
  */
 // Spec: docs/techguns-spec/02-guns/sheets-launchers-tools-grenades.md (Grim Reaper);
 // docs/gregguns-spec/02-guns/index.md
@@ -72,7 +72,8 @@ public final class GrimReaperDef {
                 Input.mod(PartItems.BARREL_HARDENED, 3),
                 Input.mod(ComponentItems.RECEIVER_CARBON, 1),
                 Input.itemList("Electric_Piston_LuV", 1),
-                Input.gt("plate", "HSSG", 4)))
+                Input.gt("plate", "HSSG", 4))
+                .fluid("Lubricant", 250))
         .scenarios(registry -> GrimReaperScenarios.registerAll(registry))
         .build();
 

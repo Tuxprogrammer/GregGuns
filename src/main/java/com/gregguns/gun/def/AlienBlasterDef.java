@@ -78,7 +78,9 @@ public final class AlienBlasterDef {
                 Input.itemList("Energy_LapotronicOrb2", 1),
                 Input.gt("circuit", "Master", 2),
                 Input.gt("plate", "HSSG", 4),
-                Input.gt("screw", "HSSG", 8)))
+                Input.gt("screw", "HSSG", 8))
+                .molten("SolderingAlloy", 576)
+                .fluid("Lubricant", 250))
         .scenarios(registry -> AlienBlasterScenarios.registerAll(registry))
         .build();
 
