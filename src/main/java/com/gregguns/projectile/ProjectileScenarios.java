@@ -50,6 +50,7 @@ final class ProjectileScenarios {
         registry.register(new WallStop());
         registry.register(new OwnShooter());
         HitscanScenarios.registerAll(registry);
+        BeamScenarios.registerAll(registry);
         TeslaScenarios.registerAll(registry);
     }
 
