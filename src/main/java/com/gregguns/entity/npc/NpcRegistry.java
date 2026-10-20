@@ -42,6 +42,7 @@ public final class NpcRegistry {
     /** The mobs implemented so far; each batch appends one {@link #bind} line. */
     private static void declareMobs() {
         // Batches B1 onward add lines here, for example: bind(NpcMob.BANDIT, Bandit.class);
+        bind(NpcMob.SIMPLE_TURRET, NpcTurret.class);
         if (DevEnvironment.isActive()) {
             // The base NPC, for scenarios and the test renderer only.
             bind(NpcMob.NPC_TEST, NpcEntity.class);
