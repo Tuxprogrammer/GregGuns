@@ -197,6 +197,10 @@ final class GunItemRenderer implements IItemRenderer {
     private void applyTransforms(ItemRenderType type, EntityLivingBase holder, int part, double reload, double recoil) {
         GunTransforms t = transforms;
         double fire = recoil == AnimWindow.NONE ? 0.0 : recoil;
+        // The charge shift is first person only: the local player's eased charge fraction (0 at rest).
+        GunAnimations anims = GunsClientModule.animations();
+        double chargeShift = type == ItemRenderType.EQUIPPED_FIRST_PERSON ? anims.chargeShift()
+            .value(anims.partial()) : 0.0;
         switch (type) {
             case EQUIPPED_FIRST_PERSON:
                 t.fpBase()
@@ -207,6 +211,9 @@ final class GunItemRenderer implements IItemRenderer {
                 } else if (recoil != AnimWindow.NONE) {
                     t.fpFire()
                         .apply(recoil, part, GL_SINK);
+                } else if (t.hasFpCharge() && chargeShift > 0.0) {
+                    t.fpCharge()
+                        .apply(chargeShift, part, GL_SINK);
                 } else {
                     t.fpIdle()
                         .apply(0.0, part, GL_SINK);

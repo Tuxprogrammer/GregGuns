@@ -22,6 +22,7 @@ public final class GunTransforms {
     private final TransformProgram fpIdle;
     private final TransformProgram fpFire;
     private final TransformProgram fpReload;
+    private final TransformProgram fpCharge;
     private final TransformProgram tpBase;
     private final double[] tpAim;
     private final TransformProgram tpRecoil;
@@ -75,6 +76,7 @@ public final class GunTransforms {
         fpIdle = b.fpIdle;
         fpFire = b.fpFire;
         fpReload = b.fpReload;
+        fpCharge = b.fpCharge;
         tpBase = b.tpBase;
         tpAim = b.tpAim.clone();
         tpRecoil = b.tpRecoil;
@@ -159,6 +161,19 @@ public final class GunTransforms {
         return fpReload;
     }
 
+    /**
+     * @return first-person charge row (progress = the eased charge fraction 0 to 1), which replaces the idle row while
+     *         the gun is being charged; empty for a gun that does not shift
+     */
+    public TransformProgram fpCharge() {
+        return fpCharge;
+    }
+
+    /** @return whether the gun has a first-person charge row */
+    public boolean hasFpCharge() {
+        return fpCharge.size() > 0;
+    }
+
     /** @return third-person base row */
     public TransformProgram tpBase() {
         return tpBase;
@@ -217,6 +232,7 @@ public final class GunTransforms {
         private TransformProgram fpIdle = TransformProgram.EMPTY;
         private TransformProgram fpFire = TransformProgram.EMPTY;
         private TransformProgram fpReload = TransformProgram.EMPTY;
+        private TransformProgram fpCharge = TransformProgram.EMPTY;
         private TransformProgram tpBase = TransformProgram.EMPTY;
         private double[] tpAim = { 0, 0, 0 };
         private TransformProgram tpRecoil = TransformProgram.EMPTY;
@@ -263,6 +279,12 @@ public final class GunTransforms {
             fpIdle = idle;
             fpFire = fire;
             fpReload = reload;
+            return this;
+        }
+
+        /** The optional first-person charge row (the Bio Gun's slide toward the camera). */
+        public Builder fpCharge(TransformProgram charge) {
+            fpCharge = charge;
             return this;
         }
 
