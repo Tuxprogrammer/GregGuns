@@ -142,9 +142,8 @@ public final class StructurePopulator {
             StructureId id = StructureCatalog.byId(plan.id());
             boolean water = id != null && StructureCatalog.isWater(id);
             HeightProbe probe = new WindowedHeightProbe(window, reader);
-            Decision d = state.decideOnce(
-                PlanKey.of(plan),
-                () -> decide(layout, id, water, fp, window, reader, probe, biomes));
+            Decision d = state
+                .decideOnce(PlanKey.of(plan), () -> decide(layout, id, water, fp, window, reader, probe, biomes));
             if (!d.isPlaced()) continue;
             if (!water) {
                 shapeLand(sink, probe, reader, window, fp, d.groundY());

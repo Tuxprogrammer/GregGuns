@@ -201,7 +201,9 @@ public final class GeneratorScenarios {
                     checked++;
                     int anchorY = d.groundY() + 1;
                     int[] m = at(p, MARKER, anchorY, layout);
-                    out.check(world.getBlock(m[0], m[1], m[2]) == Blocks.gold_block, "marker block at " + m[0] + "," + m[2]);
+                    out.check(
+                        world.getBlock(m[0], m[1], m[2]) == Blocks.gold_block,
+                        "marker block at " + m[0] + "," + m[2]);
                     int[] v = at(p, VANILLA, anchorY, layout);
                     TileEntity vt = world.getTileEntity(v[0], v[1], v[2]);
                     out.check(vt instanceof TileEntityChest && nonEmpty((IInventory) vt), "vanilla chest is filled");

@@ -79,9 +79,7 @@ class StructurePopulatorTest {
 
     private final PaletteKeys keys = PaletteKeys.resolve(null, new Blocks(), s -> {});
     private final LayoutRegistry layouts = LayoutRegistry
-        .load(id -> HUT, Collections.singletonList("test_hut"), keys, s -> {
-            throw new IllegalStateException(s);
-        });
+        .load(id -> HUT, Collections.singletonList("test_hut"), keys, s -> { throw new IllegalStateException(s); });
     private final StructurePopulator populator = new StructurePopulator(
         new StructureGrid(2, 2, 2, pools()),
         layouts,
@@ -118,8 +116,7 @@ class StructurePopulatorTest {
                 RecordingWorld world = new RecordingWorld(cx, cz);
                 ClippingSink sink = new ClippingSink(world.window(), world);
                 try (PopulateGuard.Scope ignored = PopulateGuard.enter(cx, cz)) {
-                    r.stamped += populator
-                        .populate(SEED, 0, world.window(), sink, reader, biomes, st, r.marks);
+                    r.stamped += populator.populate(SEED, 0, world.window(), sink, reader, biomes, st, r.marks);
                 }
                 r.outside += world.writesOutsideWindow()
                     .size();

@@ -38,7 +38,10 @@ class StructureCatalogTest {
     void noLayoutsMeansEmptyPools() {
         Map<SizeClass, List<PoolEntry>> pools = StructureCatalog.pools(registry(), s -> true);
         for (SizeClass c : SizeClass.values()) {
-            assertTrue(pools.get(c).isEmpty(), c.name());
+            assertTrue(
+                pools.get(c)
+                    .isEmpty(),
+                c.name());
         }
     }
 
@@ -46,11 +49,28 @@ class StructureCatalogTest {
     void loadedAndEnabledStructuresLandInTheirClass() {
         Map<SizeClass, List<PoolEntry>> pools = StructureCatalog
             .pools(registry("factory_small", "big_bunker", "submarine"), s -> true);
-        assertEquals(1, pools.get(SizeClass.SMALL).size());
-        assertEquals("factory_small", pools.get(SizeClass.SMALL).get(0).id());
-        assertEquals("big_bunker", pools.get(SizeClass.MEDIUM).get(0).id());
-        assertEquals("submarine", pools.get(SizeClass.BIG).get(0).id());
-        Footprint f = pools.get(SizeClass.SMALL).get(0).footprint();
+        assertEquals(
+            1,
+            pools.get(SizeClass.SMALL)
+                .size());
+        assertEquals(
+            "factory_small",
+            pools.get(SizeClass.SMALL)
+                .get(0)
+                .id());
+        assertEquals(
+            "big_bunker",
+            pools.get(SizeClass.MEDIUM)
+                .get(0)
+                .id());
+        assertEquals(
+            "submarine",
+            pools.get(SizeClass.BIG)
+                .get(0)
+                .id());
+        Footprint f = pools.get(SizeClass.SMALL)
+            .get(0)
+            .footprint();
         assertEquals(3, f.sizeX());
         assertEquals(2, f.sizeY());
         assertEquals(4, f.sizeZ());
@@ -60,8 +80,15 @@ class StructureCatalogTest {
     void disabledStructuresAreLeftOut() {
         Map<SizeClass, List<PoolEntry>> pools = StructureCatalog
             .pools(registry("factory_small", "gas_station"), s -> s != StructureId.GAS_STATION);
-        assertEquals(1, pools.get(SizeClass.SMALL).size());
-        assertEquals("factory_small", pools.get(SizeClass.SMALL).get(0).id());
+        assertEquals(
+            1,
+            pools.get(SizeClass.SMALL)
+                .size());
+        assertEquals(
+            "factory_small",
+            pools.get(SizeClass.SMALL)
+                .get(0)
+                .id());
     }
 
     @Test

@@ -121,8 +121,11 @@ public final class StructureGenerator implements IWorldGenerator {
 
     /** Dimension allow-list and world type gate (GGS-11-12). */
     static boolean allowed(World world) {
-        return WorldgenSettings
-            .placementAllowed(world.provider.dimensionId, world.getWorldInfo().getTerrainType().getWorldTypeName());
+        return WorldgenSettings.placementAllowed(
+            world.provider.dimensionId,
+            world.getWorldInfo()
+                .getTerrainType()
+                .getWorldTypeName());
     }
 
     /** The world-touching mark steps. */
