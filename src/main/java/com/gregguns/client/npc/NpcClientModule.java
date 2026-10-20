@@ -1,7 +1,7 @@
 package com.gregguns.client.npc;
 
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.entity.EntityLiving;
+import net.minecraftforge.common.MinecraftForge;
 
 import com.gregguns.client.mob.MobRenderers;
 import com.gregguns.client.utility.TurretRenderer;
@@ -12,17 +12,17 @@ import com.gregguns.entity.npc.AlienBug;
 import com.gregguns.entity.npc.AttackHelicopter;
 import com.gregguns.entity.npc.DictatorDave;
 import com.gregguns.entity.npc.NpcEntity;
+import com.gregguns.entity.npc.NpcTurret;
 import com.gregguns.entity.npc.PsychoSteve;
 import com.gregguns.entity.npc.SuperMutantBasic;
 import com.gregguns.entity.npc.SuperMutantElite;
 import com.gregguns.entity.npc.SuperMutantHeavy;
 import com.gregguns.entity.npc.mob.CyberDemon;
-import com.gregguns.entity.npc.NpcTurret;
-
-import cpw.mods.fml.client.registry.RenderingRegistry;
 import com.gregguns.entity.npc.mob.ZombieFarmer;
 import com.gregguns.entity.npc.mob.ZombieMiner;
 import com.gregguns.entity.npc.mob.ZombieSoldier;
+
+import cpw.mods.fml.client.registry.RenderingRegistry;
 
 /**
  * Client half of the {@code modules.npcs} module. For now it registers only the dev-only test NPC with the shared
