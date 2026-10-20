@@ -207,7 +207,7 @@ STEAM_CRAFTS = [
     # AmmoPressMachines.addCraftingRecipes (the Steam Ammo Press)
     dict(title="Steam Ammo Press", pattern=["XXX", "PMP", "BBB"],
          keys={"X": "gt:pipeSmall:Bronze", "P": "v:craftingPiston", "M": "hull:Steam", "B": "gt:plate:Bronze"},
-         out="machine:ammo_press:Steam", note="Runs on steam from your boilers."),
+         out="machine:ammo_press:Steam", note="Runs on steam from your boilers, and runs every LV ammo recipe below too."),
     # ArmorParts.addRecipes (RC-21)
     dict(title="Heavy Cloth", pattern=[" W ", "WLW", " W "], keys={"W": "v:blockWool", "L": "v:leather"},
          out="mod:part_heavy_cloth", n=3, note="Any color of wool."),
@@ -290,7 +290,7 @@ def recipes():
 <div class="grid" style="grid-template-columns:1fr 1fr;gap:18px">
 <div>{sec("Parts in the Assembler", "LV")}<div style="display:flex;flex-direction:column;gap:8px;--inw:140px">{parts}</div></div>
 <div>{sec("Guns in the Assembler", "LV")}<div style="display:flex;flex-direction:column;gap:8px">{guns}</div></div>
-<div>{sec("Ammo in the Ammo Press", "LV")}<div style="display:flex;flex-direction:column;gap:8px;--inw:140px">{ammo}</div></div>
+<div>{sec("Ammo in the Ammo Press", "Steam", "LV")}<div style="display:flex;flex-direction:column;gap:8px;--inw:140px">{ammo}</div></div>
 <div>{sec("Gear in the Assembler", "LV")}<div style="display:flex;flex-direction:column;gap:8px;--inw:140px">{gear}</div></div></div>
 {_guide()}"""
     return page_doc("Recipes &middot; <b>Steam and LV</b>",
