@@ -49,6 +49,7 @@ public final class NpcRegistry {
         bind(NpcMob.SUPER_MUTANT_HEAVY, SuperMutantHeavy.class);
         bind(NpcMob.SUPER_MUTANT_ELITE, SuperMutantElite.class);
         bind(NpcMob.CYBER_DEMON, CyberDemon.class);
+        bind(NpcMob.ATTACK_HELICOPTER, AttackHelicopter.class);
         if (DevEnvironment.isActive()) {
             // The base NPC, for scenarios and the test renderer only.
             bind(NpcMob.NPC_TEST, NpcEntity.class);

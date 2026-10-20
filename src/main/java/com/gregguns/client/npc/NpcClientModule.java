@@ -7,6 +7,7 @@ import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.entity.npc.DictatorDave;
+import com.gregguns.entity.npc.AttackHelicopter;
 import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.entity.npc.PsychoSteve;
 import com.gregguns.entity.npc.SuperMutantBasic;
@@ -49,6 +50,9 @@ public final class NpcClientModule implements ClientModule {
             -0.11F,
             0.15F,
             -0.18F);
+        // Attack Helicopter: 18.3 blocks long, so a 5-block shadow (M7-ASSETS).
+        MobRenderers.living(AttackHelicopter.class, "attack_helicopter", "attack_helicopter", 1.0F, 5.0F);
+        HelicopterBossBar.register();
         if (DevEnvironment.isActive()) {
             MobRenderers
                 .biped(NpcEntity.class, "biped", "textures/entity/army_soldier.png", 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);

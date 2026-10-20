@@ -28,6 +28,7 @@ public final class NpcScenarios {
         NpcCapScenarios.registerAll(registry);
         NpcBossScenarios.registerAll(registry);
         CyberDemonScenarios.registerAll(registry);
+        AttackHelicopterScenarios.registerAll(registry);
     }
 
     /** The module is enabled and the config carries the documented defaults. */
