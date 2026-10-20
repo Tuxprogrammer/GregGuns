@@ -163,6 +163,8 @@ public final class BioGunScenarios {
                 .setBaseValue(200.0);
             target.setHealth(200.0F);
             List<BiogunProjectile> seen = new ArrayList<>();
+            // Globs left alive by earlier scenarios (other charge levels) must not count as this run's.
+            newGlobs(ctx.world(), seen);
             int[] maxLevel = { 0 };
             int[] tick = { 0 };
             rig.press();
@@ -217,6 +219,8 @@ public final class BioGunScenarios {
         public ScenarioResult run(ScenarioContext ctx) {
             GunRig rig = rig(ctx, STATS.magazineSize());
             List<BiogunProjectile> seen = new ArrayList<>();
+            // Globs left alive by earlier scenarios (other charge levels) must not count as this run's.
+            newGlobs(ctx.world(), seen);
             int[] levels = new int[HOLDS.length];
             int[] spent = new int[HOLDS.length];
             // phase, ticks in the phase, whether the button is down

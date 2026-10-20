@@ -52,6 +52,17 @@ public final class BulletLauncher implements ProjectileLauncher {
     }
 
     /**
+     * Removes the factory of a kind, so its shots are dropped again. Meant for scenarios that need a kind without a
+     * factory; the caller restores the returned factory with {@link #register} in a finally block.
+     *
+     * @param kind the kind
+     * @return the removed factory, or null if the kind had none
+     */
+    public static Function<World, GenericProjectile> unregister(ProjectileKind kind) {
+        return FACTORIES.remove(kind);
+    }
+
+    /**
      * @param kind a kind
      * @return true if shots of this kind can be spawned
      */
