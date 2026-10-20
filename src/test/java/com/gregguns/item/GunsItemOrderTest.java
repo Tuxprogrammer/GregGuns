@@ -34,8 +34,15 @@ class GunsItemOrderTest {
 
     @Test
     void tierNeverDecreasesDownTheList() {
+        // Two blocks: weapons (guns, ammo, melee, grenades), then parts and components; each runs tier by tier.
         Tier previous = Tier.STEAM;
+        boolean inParts = false;
         for (Slot slot : order) {
+            if (!inParts && (slot.kind() == Kind.PART || slot.kind() == Kind.COMPONENT)) {
+                inParts = true;
+                previous = Tier.STEAM;
+            }
+            assertTrue(!inParts || slot.kind() == Kind.PART || slot.kind() == Kind.COMPONENT, slot.name());
             assertTrue(
                 slot.tier()
                     .compareTo(previous) >= 0,

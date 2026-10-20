@@ -13,6 +13,11 @@ public final class NestBlockRegistration {
     private static BlockBugNest nest;
     private static BlockBugNestSlime slime;
 
+    /** Registry name of the resin-and-eggs block. */
+    public static final String NEST_NAME = "bug_nest";
+    /** Registry name of the slime trail block. */
+    public static final String SLIME_NAME = "bug_nest_slime";
+
     private NestBlockRegistration() {}
 
     /** @return the resin-and-eggs block; null before preInit */
@@ -27,9 +32,9 @@ public final class NestBlockRegistration {
 
     /** @param registrar the worldgen module's registrar */
     public static void preInit(ModuleRegistrar registrar) {
-        nest = registrar.registerBlock("bug_nest", new BlockBugNest(), ItemBlockBugNest.class);
+        nest = registrar.registerBlock(NEST_NAME, new BlockBugNest(), ItemBlockBugNest.class);
         nest.setBlockTextureName("gregguns:bugnestblock");
-        slime = registrar.registerBlock("bug_nest_slime", new BlockBugNestSlime());
+        slime = registrar.registerBlock(SLIME_NAME, new BlockBugNestSlime());
         slime.setBlockTextureName("gregguns:bugnestslimy");
     }
 }
