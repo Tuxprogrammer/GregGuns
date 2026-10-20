@@ -51,6 +51,8 @@ public final class ChargeScenarios {
         registry.register(new RespectsCancel());
         registry.register(new OfflineOwner());
         registry.register(new ForeignButton());
+        registry.register(new GuiControls());
+        registry.register(new ChargeGuiShotsScenario());
     }
 
     /** A fake player with a stand-in connection, so the packet pipeline accepts it as a sender. */
@@ -433,6 +435,57 @@ public final class ChargeScenarios {
                 fuse + ChargeType.FUSE_STEP,
                 tile.params()
                     .fuse());
+            return out.build();
+        }
+    }
+
+    /**
+     * The settings screen's server path ({@link TileExplosiveCharge#pressBy}): depth steps and clamps, a stranger is
+     * refused, and an armed charge can be disarmed by its owner only, which restores the set fuse.
+     */
+    private static final class GuiControls extends Base {
+
+        @Override
+        public String name() {
+            return "utility.charge_gui_controls";
+        }
+
+        @Override
+        public String description() {
+            return "The charge screen's controls: depth steps and clamps, a stranger is refused, disarm is owner-only and restores the set fuse.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (needsModule() != null) {
+                return needsModule();
+            }
+            ctx.clearArea(3, 3);
+            FakePlayer owner = player(ctx, "[GGGuiOwner]");
+            FakePlayer stranger = player(ctx, "[GGGuiStranger]");
+            TileExplosiveCharge tile = placeCharge(ctx, ChargeType.ADVANCED, owner.getUniqueID(), "[GGGuiOwner]");
+            ChargeParams p = tile.params();
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            int depth = p.length();
+            out.check(tile.pressBy(owner, ChargeParams.BTN_LENGTH_UP), "the owner deepens the bore");
+            out.checkEquals("depth after one step", depth + 1, p.length());
+            for (int i = 0; i < 20; i++) {
+                tile.pressBy(owner, ChargeParams.BTN_LENGTH_UP);
+            }
+            out.checkEquals("depth clamps at the maximum", ChargeType.ADVANCED.lengthMax(), p.length());
+            out.check(!tile.pressBy(stranger, ChargeParams.BTN_LENGTH_DOWN), "a stranger cannot shorten the bore");
+            out.checkEquals("depth unchanged by the stranger", ChargeType.ADVANCED.lengthMax(), p.length());
+            out.check(tile.pressBy(owner, ChargeParams.BTN_FUSE_UP), "the owner lengthens the fuse");
+            int set = p.fuse();
+            out.check(!tile.pressBy(stranger, ChargeParams.BTN_DISARM), "a stranger's disarm does nothing");
+            out.check(tile.pressBy(owner, ChargeParams.BTN_ARM) && p.armed(), "the owner arms");
+            tile.updateEntity();
+            tile.updateEntity();
+            out.check(p.fuse() < set, "the fuse burns while armed");
+            out.check(!tile.pressBy(stranger, ChargeParams.BTN_DISARM) && p.armed(), "a stranger cannot disarm");
+            out.check(!tile.pressBy(owner, ChargeParams.BTN_LENGTH_DOWN), "settings are frozen while armed");
+            out.check(tile.pressBy(owner, ChargeParams.BTN_DISARM) && !p.armed(), "the owner disarms");
+            out.checkEquals("the set fuse is restored", set, p.fuse());
             return out.build();
         }
     }

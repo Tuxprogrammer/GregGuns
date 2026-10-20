@@ -10,23 +10,35 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.WorldServer;
 
+import com.cleanroommc.modularui.api.IGuiHolder;
+import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.ModularScreen;
+import com.cleanroommc.modularui.screen.UISettings;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gregguns.core.registry.Naming;
 import com.gregguns.utility.security.OwnerProfiles;
 import com.mojang.authlib.GameProfile;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 /**
  * The tile of an Explosive Charge: its settings, owner, orientation and fuse. The server ticks the fuse and, at zero,
  * calls {@link ChargeBlast}; the client only mirrors the state (through the description packet) for the GUI and the
- * armed texture. Both sides.
+ * armed texture. It is its own ModularUI2 GUI holder: the settings screen is built by {@link ChargePanel} on both
+ * sides.
+ * Both sides.
  */
 // Spec: docs/techguns-spec/09-machines-utility/explosive-charges.md (NBT, Arming and fuse),
 // docs/gregguns-spec/09-machines-utility/explosive-charges.md
-public final class TileExplosiveCharge extends TileEntity {
+public final class TileExplosiveCharge extends TileEntity implements IGuiHolder<PosGuiData> {
 
     private static final String K_ORIENTATION = "orientation";
     private static final String K_RADIUS = "blastradius";
     private static final String K_LENGTH = "blastlength";
     private static final String K_FUSE = "fusetime";
+    private static final String K_FUSE_SET = "fusetimeset";
     private static final String K_ARMED = "armed";
     private static final String K_OWNER = "ownerId";
     private static final String K_OWNER_NAME = "ownerName";
@@ -91,15 +103,37 @@ public final class TileExplosiveCharge extends TileEntity {
         markDirty();
     }
 
+    /** @return the owner name stored with the charge, for the GUI's owner line; empty when ownerless */
+    public String ownerName() {
+        return ownerName;
+    }
+
+    /**
+     * Applies a GUI button for a player. This is the one server entry the settings screen uses: it re-checks that the
+     * player is the owner or on the owner's team (MUTL-31) and ignores the press otherwise, so a modified client cannot
+     * change a charge it may not.
+     *
+     * @param player the pressing player
+     * @param button a {@code ChargeParams.BTN_*} id
+     * @return true when the press changed the charge
+     */
+    public boolean pressBy(EntityPlayer player, int button) {
+        if (worldObj == null || worldObj.isRemote || player == null || !mayConfigure(player)) {
+            return false;
+        }
+        return press(button);
+    }
+
     /**
      * Applies a GUI button. The caller has already checked permission (MUTL-31); this only enforces the rules of the
      * settings.
      *
      * @param button a {@code ChargeParams.BTN_*} id
+     * @return true when the press changed the charge
      */
-    public void press(int button) {
+    public boolean press(int button) {
         if (worldObj == null || worldObj.isRemote) {
-            return;
+            return false;
         }
         boolean wasArmed = params.armed();
         if (params.press(button)) {
@@ -110,7 +144,9 @@ public final class TileExplosiveCharge extends TileEntity {
             }
             markDirty();
             sync();
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -158,6 +194,17 @@ public final class TileExplosiveCharge extends TileEntity {
     }
 
     @Override
+    public ModularPanel buildUI(PosGuiData data, PanelSyncManager syncManager, UISettings settings) {
+        return ChargePanel.build(this, data, syncManager, settings);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public ModularScreen createScreen(PosGuiData data, ModularPanel mainPanel) {
+        return com.gregguns.client.utility.ChargeScreens.create(mainPanel);
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         tag.setByte(
@@ -168,6 +215,7 @@ public final class TileExplosiveCharge extends TileEntity {
         tag.setShort(K_RADIUS, (short) params.radius());
         tag.setShort(K_LENGTH, (short) params.length());
         tag.setShort(K_FUSE, (short) params.fuse());
+        tag.setShort(K_FUSE_SET, (short) params.fuseSet());
         tag.setBoolean(K_ARMED, params.armed());
         if (ownerId != null) {
             tag.setString(K_OWNER, ownerId.toString());
@@ -184,6 +232,7 @@ public final class TileExplosiveCharge extends TileEntity {
             tag.hasKey(K_RADIUS) ? tag.getShort(K_RADIUS) : params.radius(),
             tag.hasKey(K_LENGTH) ? tag.getShort(K_LENGTH) : params.length(),
             tag.hasKey(K_FUSE) ? tag.getShort(K_FUSE) : params.fuse(),
+            tag.hasKey(K_FUSE_SET) ? tag.getShort(K_FUSE_SET) : params.fuseSet(),
             tag.getBoolean(K_ARMED));
         ownerId = null;
         ownerName = tag.getString(K_OWNER_NAME);
