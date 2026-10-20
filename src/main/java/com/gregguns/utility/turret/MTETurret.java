@@ -546,7 +546,12 @@ public final class MTETurret extends MTETieredMachineBlock implements TurretHost
             player.addChatMessage(new ChatComponentTranslation("gregguns.turret.locked"));
             return true;
         }
-        return super.onRightclick(base, player, side, x, y, z);
+        if (base.isClientSide()) {
+            return true;
+        }
+        // GT's tiered-machine base returns false from onRightclick, so open the ModularUI2 panel here.
+        openGui(player);
+        return true;
     }
 
     // --- settings (server) ------------------------------------------------------------------------------------
