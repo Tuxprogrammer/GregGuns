@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityLiving;
 
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.registry.ModuleRegistrar;
+import com.gregguns.entity.npc.mob.CyberDemon;
 
 /**
  * The one place NPC entities and their spawn egg are registered. Each mob batch adds one line to
@@ -42,6 +43,7 @@ public final class NpcRegistry {
     /** The mobs implemented so far; each batch appends one {@link #bind} line. */
     private static void declareMobs() {
         // Batches B1 onward add lines here, for example: bind(NpcMob.BANDIT, Bandit.class);
+        bind(NpcMob.CYBER_DEMON, CyberDemon.class);
         if (DevEnvironment.isActive()) {
             // The base NPC, for scenarios and the test renderer only.
             bind(NpcMob.NPC_TEST, NpcEntity.class);
