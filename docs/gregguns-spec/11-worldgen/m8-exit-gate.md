@@ -1,6 +1,6 @@
 # M8 exit gate audit
 
-Evidence for the three M8 exit-gate boxes in [ROADMAP.md](../../ROADMAP.md#m8--worldgen-and-structures), plus the per-structure checks the plan adds. Scenario names and what each asserts are in [docs/testing/README.md](../../testing/README.md). Unit tests are under `com.gregguns.worldgen`. Scenarios ran headless with `GG_MODULES=guns,armor,machines,utility,npcs,worldgen` on 2026-10-19; the unit suite ran 2196 tests with 0 failures.
+Evidence for the three M8 exit-gate boxes in [ROADMAP.md](../../ROADMAP.md#m8--worldgen-and-structures), plus the per-structure checks the plan adds. Scenario names and what each asserts are in [docs/testing/README.md](../../testing/README.md). Unit tests are under `com.gregguns.worldgen`. Final run (2026-10-20, S5 gate, fresh worktree): unit suite 2418 tests, 0 failures; `gregguns test all` with `GG_MODULES=guns,armor,machines,utility,npcs,worldgen` 419 passed, 1 failed (`grenade.flash`, a timing-sensitive flash-effect check that passed on two reruns alone; it does not touch worldgen). A plain `runServer` boot with default config (`modules.worldgen` now true) generated the spawn area with the structure generator registered: no GregGuns error and no cascade warning. Status for every row below: PASS unless marked Pending; the Pending rows are client checks listed in the beta review gate.
 
 Status words: PASS means the named test or scenario ran green. Pending means it does not exist yet or needs a client.
 
@@ -120,4 +120,4 @@ Status: done. Default off (Q2, GGS-11-15): enabled only by `worldgen.enabledAlie
 | Blocks: `bug_nest` (meta 0 resin, meta 1 eggs) and `bug_nest_slime` (climbable vine, never spreads); palette keys `bugnest_wall`, `bugnest_egg`, `bugnest_slime` each fall back to vanilla | `PaletteKeysTest.bugNestKeysUseTheirOwnBlocksOrAVanillaFallback` | PASS |
 | Textures are original (`bugnestblock`, `bugnesteggs`, `bugnestslimy`, generated in `tools/asset-gen`) | `tools/asset-gen/credits/blocks.csv` | PASS |
 
-The default flip: `modules.worldgen` is now `true` (Q10). One plain `runServer` boot with default config was run for this gate (see Verification below).
+The default flip: `modules.worldgen` is now `true` (Q10). The default-config boot is recorded at the top of this page.
