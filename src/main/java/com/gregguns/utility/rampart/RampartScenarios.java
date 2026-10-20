@@ -131,8 +131,9 @@ public final class RampartScenarios {
         return total;
     }
 
-    private static void noStray(ScenarioContext ctx, ScenarioResult.Builder out) {
-        int stray = 0;
+    /** The item entities inside the scenario's arena box right now (compared by identity). */
+    private static List<EntityItem> arenaItems(ScenarioContext ctx) {
+        List<EntityItem> found = new ArrayList<>();
         for (Object o : new ArrayList<>(ctx.world().loadedEntityList)) {
             if (!(o instanceof EntityItem)) {
                 continue;
@@ -141,11 +142,64 @@ public final class RampartScenarios {
             if (Math.abs(e.posX - ctx.originX()) <= AREA_RADIUS && Math.abs(e.posZ - ctx.originZ()) <= AREA_RADIUS
                 && e.posY >= ctx.originY() - 1
                 && e.posY < ctx.originY() + ScenarioArea.CLEAR_HEIGHT) {
-                stray++;
-                e.setDead();
+                found.add(e);
             }
         }
-        out.checkEquals("stray item entities in the arena", 0, stray);
+        return found;
+    }
+
+    /**
+     * Logs the items a scenario ignores because they were there first, so a leak in an earlier scenario is findable.
+     */
+    private static void logPreexisting(ScenarioContext ctx, List<EntityItem> before) {
+        for (EntityItem e : before) {
+            ItemStack stack = e.getEntityItem();
+            GregGuns.LOG.warn(
+                "Rampart scenario: pre-existing item in the arena: {} at {}, {}, {} (origin {}, {}, {}), age {}",
+                stack == null ? "null" : stack.getDisplayName() + " x" + stack.stackSize,
+                e.posX,
+                e.posY,
+                e.posZ,
+                ctx.originX(),
+                ctx.originY(),
+                ctx.originZ(),
+                e.age);
+        }
+    }
+
+    /**
+     * Fails if an item entity appeared in the arena since {@code before} was taken. Items already there (left by an
+     * earlier scenario in the shared world) are not this scenario's and are left alone. New ones are named in the
+     * failure message and removed.
+     */
+    private static void noStray(ScenarioContext ctx, ScenarioResult.Builder out, List<EntityItem> before) {
+        StringBuilder names = new StringBuilder();
+        int stray = 0;
+        for (EntityItem e : arenaItems(ctx)) {
+            if (before.contains(e)) {
+                continue;
+            }
+            stray++;
+            ItemStack stack = e.getEntityItem();
+            String what = stack == null ? "null stack"
+                : stack.getDisplayName() + " x" + stack.stackSize + " (" + stack.getItem() + ")";
+            names.append(
+                String.format(
+                    "%s at %.1f,%.1f,%.1f (offset %.1f,%.1f,%.1f, age %d); ",
+                    what,
+                    e.posX,
+                    e.posY,
+                    e.posZ,
+                    e.posX - ctx.originX(),
+                    e.posY - ctx.originY(),
+                    e.posZ - ctx.originZ(),
+                    e.age));
+            e.setDead();
+        }
+        if (stray > 0) {
+            GregGuns.LOG.warn("Rampart scenario stray items: {}", names);
+        }
+        out.checkEquals("new stray item entities in the arena: " + names, 0, stray);
     }
 
     private static boolean hasCraftingRecipe(ItemStack result) {
@@ -383,6 +437,8 @@ public final class RampartScenarios {
             }
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             int[] sizes = { RampartShape.MIN_MOUNTS, RampartShape.DEFAULT_MOUNTS, RampartShape.MAX_MOUNTS };
+            List<EntityItem> itemsBefore = arenaItems(ctx);
+            logPreexisting(ctx, itemsBefore);
             // Phases 0 to 2 are the sizes, phase 3 the two-mount shape rules. Each phase builds a wall, waits out
             // GT's warm-up, re-fetches the tiles, then forms with a retry window (the pattern of the other Rampart
             // scenarios): forming synchronously at placement flaked under server lag.
@@ -436,11 +492,12 @@ public final class RampartScenarios {
                 out.check(
                     RampartShape.isNonConvex(RampartShape.DEFAULT_MOUNTS),
                     "the wall's shape should be non-convex");
-                return finishShapeRules(ctx, out, w);
+                return finishShapeRules(ctx, out, w, itemsBefore);
             });
         }
 
-        private static ScenarioResult finishShapeRules(ScenarioContext ctx, ScenarioResult.Builder out, Wall w) {
+        private static ScenarioResult finishShapeRules(ScenarioContext ctx, ScenarioResult.Builder out, Wall w,
+            List<EntityItem> itemsBefore) {
             // GGS-08-75: a missing mount hatch is a structure error.
             int hx = w.hatchX(1);
             ctx.setBlock(hx, Wall.CY + 1, 0, Blocks.air, 0);
@@ -498,7 +555,7 @@ public final class RampartScenarios {
                         .targetsAnimals(),
                 "Target Animals should apply to every mount");
             w.teardown();
-            noStray(ctx, out);
+            noStray(ctx, out, itemsBefore);
             return out.build();
         }
 
@@ -647,6 +704,8 @@ public final class RampartScenarios {
                 || !(GregTechAPI.METATILEENTITIES[GregGunsMTEIDs.RAMPART] instanceof MTERampart)) {
                 return ScenarioResult.fail(name(), "needs GG_MODULES=guns,...,utility");
             }
+            List<EntityItem> itemsBefore = arenaItems(ctx);
+            logPreexisting(ctx, itemsBefore);
             Wall w = new Wall(ctx, 2);
             w.addHatches();
             TurretEntity[] turrets = new TurretEntity[2];
@@ -699,7 +758,7 @@ public final class RampartScenarios {
                         out.check(turrets[1].isDead, "a failed structure check must kill the remaining turret");
                         out.checkEquals("mounts of a broken Rampart", 0, w.mte.mountCount());
                         w.teardown();
-                        noStray(ctx, out);
+                        noStray(ctx, out, itemsBefore);
                         return out.build();
                     default:
                         return null;
