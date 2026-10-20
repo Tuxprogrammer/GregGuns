@@ -46,7 +46,7 @@ public final class CascadeScenarios {
     static StructurePopulator denseShippedPopulator(PaletteKeys keys, List<String> errors) {
         LayoutRegistry layouts = LayoutRegistry.load(
             new LayoutRegistry.ClasspathSource(LayoutRegistry.ClasspathSource.STRUCTURES),
-            StructureCatalog.idsToLoad(s -> true),
+            shippedIds(),
             keys,
             errors::add);
         return new StructurePopulator(
@@ -56,6 +56,17 @@ public final class CascadeScenarios {
             Blocks.dirt,
             Blocks.air,
             StructurePopulator.CONFIG_RULES);
+    }
+
+    /** The catalog ids whose layout file ships today; the rest (not yet authored) are not an error here. */
+    private static List<String> shippedIds() {
+        List<String> ids = new ArrayList<>();
+        for (String id : StructureCatalog.idsToLoad(s -> true)) {
+            if (CascadeScenarios.class.getResource(LayoutRegistry.ClasspathSource.STRUCTURES + id + ".txt") != null) {
+                ids.add(id);
+            }
+        }
+        return ids;
     }
 
     /** A populator whose pools are empty: it places nothing, but still runs inside the same guard. */
