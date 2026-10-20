@@ -47,5 +47,6 @@ public final class ItemMagazineEmpty extends Item implements Tiered {
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
         tooltip
             .add(StatCollector.translateToLocalFormatted("gregguns.tooltip.magazine.empty", type.roundsPerMagazine()));
+        AmmoTooltips.forMagazine(tooltip, type);
     }
 }

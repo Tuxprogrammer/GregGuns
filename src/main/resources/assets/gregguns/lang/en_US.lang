@@ -43,6 +43,10 @@ gregguns.tooltip.ammo.round=Loose ammunition
 gregguns.tooltip.magazine.loaded=Holds %s rounds
 gregguns.tooltip.magazine.empty=Fill with %s rounds
 gregguns.tooltip.magazine.sneak=Sneak + Right click to empty
+gregguns.tooltip.magazine.guns=Used by:
+gregguns.tooltip.ammo.fills=Fills magazines:
+gregguns.tooltip.ammo.direct=Loaded directly by:
+gregguns.tooltip.ammo.more=Hold Shift for all
 
 # Damage types (combat): tooltip names and death messages (death.attack.<damageType>[.item|.player])
 gregguns.damage_type.physical=Physical

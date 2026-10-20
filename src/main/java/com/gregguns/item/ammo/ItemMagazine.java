@@ -78,5 +78,6 @@ public final class ItemMagazine extends Item implements Tiered {
         tooltip
             .add(StatCollector.translateToLocalFormatted("gregguns.tooltip.magazine.loaded", type.roundsPerMagazine()));
         tooltip.add(StatCollector.translateToLocal("gregguns.tooltip.magazine.sneak"));
+        AmmoTooltips.forMagazine(tooltip, type);
     }
 }
