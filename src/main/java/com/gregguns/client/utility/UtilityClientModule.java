@@ -1,9 +1,15 @@
 package com.gregguns.client.utility;
 
+import net.minecraft.item.Item;
+import net.minecraftforge.client.MinecraftForgeClient;
+
 import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
+import com.gregguns.utility.charge.BlockExplosiveCharge;
+import com.gregguns.utility.charge.TileExplosiveCharge;
 import com.gregguns.utility.turret.entity.TurretEntity;
 
+import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 
 /**
@@ -21,5 +27,16 @@ public final class UtilityClientModule implements ClientModule {
     @Override
     public void init() {
         RenderingRegistry.registerEntityRenderingHandler(TurretEntity.class, new TurretRenderer());
+        initCharges();
+    }
+
+    /** Placeholder tile and item renderers of the explosive charges; skipped when the block is not registered. */
+    private static void initCharges() {
+        if (BlockExplosiveCharge.instance == null) {
+            return;
+        }
+        ChargeRenderer renderer = new ChargeRenderer();
+        ClientRegistry.bindTileEntitySpecialRenderer(TileExplosiveCharge.class, renderer);
+        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(BlockExplosiveCharge.instance), renderer);
     }
 }

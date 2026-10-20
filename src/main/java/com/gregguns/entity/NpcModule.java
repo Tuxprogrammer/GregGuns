@@ -11,10 +11,12 @@ import com.gregguns.entity.npc.InfernalDropsHandler;
 import com.gregguns.entity.npc.InfernalHooks;
 import com.gregguns.entity.npc.NpcCampPort;
 import com.gregguns.entity.npc.NpcRegistry;
+import com.gregguns.entity.npc.spawn.NpcSpawnHandler;
 import com.gregguns.utility.camp.CampSpawnPorts;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -44,8 +46,16 @@ public final class NpcModule implements GregGunsModule {
         if (Loader.isModLoaded(InfernalHooks.MOD_ID)) {
             MinecraftForge.EVENT_BUS.register(new InfernalDropsHandler());
         }
+        // N6: the CheckSpawn gate and the SpecialSpawn danger carrier.
+        MinecraftForge.EVENT_BUS.register(new NpcSpawnHandler());
         if (DevEnvironment.isActive()) {
             NpcScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
+    }
+
+    @Override
+    public void postInit(FMLPostInitializationEvent event) {
+        // N6: after every mod registered its biomes, and before EnderZoo's postInit (before:EnderZoo).
+        NpcSpawnHandler.registerSpawns();
     }
 }
