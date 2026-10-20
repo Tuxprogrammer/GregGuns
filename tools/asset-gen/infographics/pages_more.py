@@ -48,11 +48,15 @@ def ammo():
         for k, m, n in (("foil", "Brass", "Brass Foil (small cases)"), ("casingSmall", "Brass", "Brass Casing (large cases)"),
                         ("round", "Lead", "Rounds (the slugs)"), ("plate", "Steel", "Plates"),
                         ("springSmall", "Steel", "Small Springs")))
+    gt_machines = "".join(
+        f'<div class="stack">{img(S.machine_block(m, "LV", greg=True), h=80)}<small>{n}</small></div>'
+        for m, n in (("lathe", "Lathe"), ("bender", "Bending Machine"), ("extruder", "Extruder"),
+                     ("assembler", "Assembler")))
     flow = f"""<div class="card" style="display:grid;grid-template-columns:1fr auto 1.15fr auto 1.3fr auto 1.25fr auto .8fr;align-items:center;gap:14px">
 <div><div class="label">1 &middot; GregTech materials</div><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;font-size:17px">{mats}</div></div>{arrow}
 <div><div class="label">2 &middot; GregTech parts</div><div style="margin-top:10px;font-size:17px;display:flex;flex-direction:column;gap:6px">{parts}
 <div style="display:flex;align-items:center;gap:10px">{ico("part_mechanical_2", 30)}Mechanical Parts</div></div>
-<div class="muted" style="font-size:15px;margin-top:8px">Lathe, Bending Machine, Extruder, Assembler</div></div>{arrow}
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;margin-top:12px">{gt_machines}</div></div>{arrow}
 <div style="text-align:center"><div class="label">3 &middot; Ammo Press</div>
 <div style="display:flex;align-items:flex-end;justify-content:center;gap:10px;margin-top:8px">{img(S.machine_block("ammo_press", "LV"), h=120)}{img(S.ammo_works(4).render(ppu=14), h=110)}</div>
 <div class="muted" style="font-size:15px">or the Ammunition Works, for bulk</div></div>{arrow}
