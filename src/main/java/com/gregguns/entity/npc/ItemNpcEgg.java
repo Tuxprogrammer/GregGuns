@@ -18,6 +18,8 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.gregguns.GregGuns;
+import com.gregguns.api.Tier;
+import com.gregguns.api.Tiered;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -30,7 +32,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * use is never reused by the next (fixes NPC-18, NPC-19, NPC-20). Both sides; spawning is server only.
  */
 // Spec: docs/techguns-spec/10-entities-npcs/spawning.md (2. Spawn eggs), mob-catalog.md (Spawn eggs)
-public class ItemNpcEgg extends Item {
+public class ItemNpcEgg extends Item implements Tiered {
 
     /** Texture of the egg body (tinted by the base color). */
     public static final String ICON_BASE = "gregguns:spawn_egg";
@@ -45,6 +47,14 @@ public class ItemNpcEgg extends Item {
     public ItemNpcEgg() {
         setHasSubtypes(true);
         setMaxDamage(0);
+    }
+
+    /**
+     * @return the lowest tier: the egg has no recipe and is a creative item
+     */
+    @Override
+    public Tier getTier() {
+        return Tier.STEAM;
     }
 
     // --- naming and look ----------------------------------------------------------------------------------------
