@@ -1,7 +1,7 @@
 # Keybinds
 
 - **Techguns baseline:** [input-and-hud.md § Keybinds](../../techguns-spec/01-core/input-and-hud.md#keybinds-tgkeybinds-client-only), [packet 7 `PacketTGKeybindPress`](../../techguns-spec/01-core/networking.md#7--packettgkeybindpress-cs), [CORE-15](../../techguns-spec/01-core/index.md#suspected-bugs), [CORE-29](../../techguns-spec/01-core/index.md#suspected-bugs), [CORE-41](../../techguns-spec/01-core/index.md#suspected-bugs)
-- **Design records:** none
+- **Design records:** [0013 default key map](../../design/0013-default-key-map.md)
 - **Pack mods:**
   - GTNHLib (`gtnhlib`, 0.11.52)
   - NotEnoughItems (`NotEnoughItems`, 2.8.155-GTNH)
@@ -39,7 +39,7 @@ Fire and reload stay as they are: firing uses the vanilla attack key (the spec's
 ### NEI: in-GUI keys
 - **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/NEI/client.cfg`. The keys are all under `keys.gui.*` and `keys.world.*`. Values that fall on a Techguns letter: `keys.gui.recipe` = 19 (R), `keys.gui.hide_bookmarks` = 48 (B), `keys.gui.bookmark_pull_items` = 47 (V), `keys.gui.xu_ping` = 20 (T). The `keys.world.*` entries are `0` (unbound) except `chunkoverlay` = 67 (F9) and `moboverlay` = 65 (F7).
 - **Source:** the config file only. NEI's `keys.gui.*` entries apply to NEI screens, so they do not meet our in-world keys. Nothing here is read from NEI source.
-- **GregGuns does:** keeps the default letters N, B, V, R. The Controls screen shows any overlap in red, and Controlling lists them.
+- **GregGuns does:** NEI's GUI keys act only inside screens, so they do not clash with our in-world keys; reload stays on R. The Controls screen shows any overlap in red, and Controlling lists them.
 - **Pack-side change:** none.
 
 ### Hodgepodge: IC2 key fixes
@@ -55,6 +55,7 @@ Fire and reload stay as they are: firing uses the vanilla attack key (the spec's
 - **GGS-01-15** Removing a Night Vision toggle only removes the effect that GregGuns added (fixes CORE-15).
 - **GGS-01-16** Key handling reads `KeyBinding` state, so a GUI or another mod can block it.
 - **GGS-01-17** The class holding the `SyncedKeybind` objects loads on a dedicated server without error.
+- **GGS-01-18** No GregGuns default key shares a code with a pack key that acts in the same context (in-world). A new key is checked against the pack's `options.txt` first ([record 0013](../../design/0013-default-key-map.md)).
 
 ## Tests
 
@@ -62,7 +63,8 @@ Fire and reload stay as they are: firing uses the vanilla attack key (the spec's
 - GGS-01-14, GGS-01-15: unit tests on the pure decision methods (worn item present or not, fuel empty, own effect versus potion effect).
 - GGS-01-16: manual check with `runClient`: open a chest GUI and press N.
 - GGS-01-17: the `runServer` boot smoke test.
+- GGS-01-18: `DefaultKeyMapTest` checks the defaults are distinct and absent from the pack's in-world key list.
 
 ## Open questions
 
-- **Default key conflicts are not verified.** The pack has no `options.txt`, so only a running client can show them. JourneyMap has no source and its jar is the `fairplay` build; its default keys must be read in-game. Techguns' jetpack toggle defaults to J. Do this check in M0 with `runClient` against the full pack, and record any rebinding in a short design record.
+- **Default key conflicts: closed** (M0 audit D-3). A real GTNH 2.9.0-RC-2 client run showed J, N and P clashing with in-world pack keys, so the defaults moved: night vision M, ammo pouch right bracket, back device semicolon; reload stays R. See [design record 0013](../../design/0013-default-key-map.md). Players with a saved `options.txt` keep their old bindings.
