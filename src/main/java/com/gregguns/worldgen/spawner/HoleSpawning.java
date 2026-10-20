@@ -73,7 +73,8 @@ public final class HoleSpawning {
     }
 
     /**
-     * Runs one attempt. Does nothing unless a player is within {@link HoleCaps#PLAYER_RANGE} and the hole's own chunk is
+     * Runs one attempt. Does nothing unless a player is within {@link HoleCaps#PLAYER_RANGE} and the hole's own chunk
+     * is
      * loaded; never loads a chunk: a candidate spot in an unloaded chunk is skipped.
      *
      * @param world  the world

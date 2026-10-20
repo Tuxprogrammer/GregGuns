@@ -10,8 +10,8 @@ import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -39,14 +39,14 @@ import com.gregguns.worldgen.spawner.HoleSpawnerHook;
 import com.gregguns.worldgen.spawner.HoleSpawnerRegistration;
 import com.gregguns.worldgen.spawner.HoleSpawning;
 import com.gregguns.worldgen.spawner.TileHoleSpawner;
-
 import com.mojang.authlib.GameProfile;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * The hole spawner scenarios (M8 G11): the caps, the player gate, the Infernal marker and the Big Bunker's two holes.
- * Every NPC is placed through {@link ScenarioContext#spawn} so cleanup finds it, and every one is killed at the end with
+ * Every NPC is placed through {@link ScenarioContext#spawn} so cleanup finds it, and every one is killed at the end
+ * with
  * its drops cancelled. Dev environment only; needs {@code worldgen} (and so {@code npcs}) in {@code GG_MODULES}.
  * Server side.
  */
@@ -179,7 +179,9 @@ public final class SpawnerScenarios {
             Rig rig = new Rig(ctx);
             try {
                 TileHoleSpawner tile = rig.hole(HoleKind.ZOMBIE);
-                out.check(tile != null && tile.kind() == HoleKind.ZOMBIE, "the Zombie Hole block should carry its tile");
+                out.check(
+                    tile != null && tile.kind() == HoleKind.ZOMBIE,
+                    "the Zombie Hole block should carry its tile");
                 if (tile == null) {
                     return out.build();
                 }
@@ -198,7 +200,10 @@ public final class SpawnerScenarios {
                 out.checkEquals("NPCs placed in all", HoleCaps.MAX_NEARBY, total);
                 for (EntityLiving e : rig.npcs) {
                     NpcMob mob = NpcMob.byName(net.minecraft.entity.EntityList.getEntityString(e));
-                    out.check(mob != null && HoleKind.ZOMBIE.mobs().contains(mob), "a zombie hole placed " + mob);
+                    out.check(
+                        mob != null && HoleKind.ZOMBIE.mobs()
+                            .contains(mob),
+                        "a zombie hole placed " + mob);
                 }
             } finally {
                 rig.finish();
@@ -301,7 +306,9 @@ public final class SpawnerScenarios {
                 out.check(!placed.isEmpty(), "the hole should place NPCs");
                 out.checkEquals("NPCs handed to the marker", placed.size(), marked.size());
                 for (int i = 0; i < marked.size(); i++) {
-                    out.check(marked.get(i) == placed.get(i), "marker " + i + " saw a different entity than the one placed");
+                    out.check(
+                        marked.get(i) == placed.get(i),
+                        "marker " + i + " saw a different entity than the one placed");
                     out.check(!alreadyInWorld.get(i), "NPC " + i + " was already in the world when marked");
                     out.checkEquals("marker " + i + " wrote", InfernalHooks.available(), written.get(i));
                 }
@@ -318,7 +325,8 @@ public final class SpawnerScenarios {
                     }
                     out.note("Infernal Mobs present: marker found in each NPC's persistent data");
                 } else {
-                    out.note("Infernal Mobs absent: hook called once per NPC before spawn; it writes nothing without the mod");
+                    out.note(
+                        "Infernal Mobs absent: hook called once per NPC before spawn; it writes nothing without the mod");
                 }
             } finally {
                 NpcConfig.infernalAllowSpawnerNpcs = allow;
@@ -371,7 +379,8 @@ public final class SpawnerScenarios {
                                 zombies++;
                                 seen.add(x + "," + y + "," + z);
                                 TileEntity t = world.getTileEntity(x, y, z);
-                                if (!(t instanceof TileHoleSpawner) || ((TileHoleSpawner) t).kind() != HoleKind.ZOMBIE) {
+                                if (!(t instanceof TileHoleSpawner)
+                                    || ((TileHoleSpawner) t).kind() != HoleKind.ZOMBIE) {
                                     badTiles++;
                                 }
                             } else if (world.getBlock(x, y, z) == bug) {
