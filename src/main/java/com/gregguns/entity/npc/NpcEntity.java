@@ -2,6 +2,7 @@ package com.gregguns.entity.npc;
 
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -182,6 +183,17 @@ public class NpcEntity extends EntityMob implements IRangedAttackMob, HasNpcFact
             int level = danger >= 0 ? danger : getRNG().nextInt(EGG_DANGER_RANGE);
             NpcEquipment.apply(this, profile.equipment(), level);
         }
+    }
+
+    /**
+     * Egg and command spawns roll gear here: vanilla's {@code EntityLiving} version does not call
+     * {@code addRandomArmor} (only zombies and skeletons override it), so without this an egg NPC is unarmed.
+     */
+    @Override
+    public IEntityLivingData onSpawnWithEgg(IEntityLivingData data) {
+        IEntityLivingData out = super.onSpawnWithEgg(data);
+        addRandomArmor();
+        return out;
     }
 
     /** NPC gear is never enchanted. */

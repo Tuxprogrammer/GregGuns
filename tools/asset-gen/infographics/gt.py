@@ -100,6 +100,12 @@ def iconset(name: str) -> Path:
     return _save(_read(f"assets/gregtech/textures/blocks/iconsets/{name}.png"), name)
 
 
+def machine_overlay(machine: str, face: str) -> Path | None:
+    """A GregTech basic machine's face overlay (basicmachines/<machine>/OVERLAY_<face>), or None if it has none."""
+    name = f"assets/gregtech/textures/blocks/basicmachines/{machine}/OVERLAY_{face}.png"
+    return _save(_read(name), f"bm-{machine}-{face}") if _has(name) else None
+
+
 def bartworks(name: str) -> Path:
     return _save(_read(f"assets/bartworks/textures/blocks/{name}.png"), f"bw-{name}")
 

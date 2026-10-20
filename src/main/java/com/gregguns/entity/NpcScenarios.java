@@ -31,6 +31,7 @@ public final class NpcScenarios {
         AttackHelicopterScenarios.registerAll(registry);
         NpcAlienBugScenarios.registerAll(registry);
         NpcTurretScenarios.registerAll(registry);
+        ZombieScenarios.registerAll(registry);
     }
 
     /** The module is enabled and the config carries the documented defaults. */

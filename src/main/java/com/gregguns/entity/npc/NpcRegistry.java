@@ -11,6 +11,9 @@ import net.minecraft.entity.EntityLiving;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.entity.npc.mob.CyberDemon;
+import com.gregguns.entity.npc.mob.ZombieFarmer;
+import com.gregguns.entity.npc.mob.ZombieMiner;
+import com.gregguns.entity.npc.mob.ZombieSoldier;
 
 /**
  * The one place NPC entities and their spawn egg are registered. Each mob batch adds one line to
@@ -52,6 +55,9 @@ public final class NpcRegistry {
         bind(NpcMob.ATTACK_HELICOPTER, AttackHelicopter.class);
         bind(NpcMob.ALIEN_BUG, AlienBug.class);
         bind(NpcMob.SIMPLE_TURRET, NpcTurret.class);
+        bind(NpcMob.ZOMBIE_SOLDIER, ZombieSoldier.class);
+        bind(NpcMob.ZOMBIE_FARMER, ZombieFarmer.class);
+        bind(NpcMob.ZOMBIE_MINER, ZombieMiner.class);
         if (DevEnvironment.isActive()) {
             // The base NPC, for scenarios and the test renderer only.
             bind(NpcMob.NPC_TEST, NpcEntity.class);
