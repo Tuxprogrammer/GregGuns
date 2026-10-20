@@ -1,6 +1,6 @@
 # 0012 · Retire the Reaction Chamber and the Retort
 
-- Status: Proposed
+- Status: Accepted (owner, 2026-10-20)
 - Gate: D2 (amends [0002](0002-machine-deconfliction.md) and [0011](0011-machine-policy.md); confirms [0001](0001-tier-map.md) is unchanged)
 - Date: 2026-10-20
 
@@ -156,6 +156,9 @@ The full Retort, including its interior parts (the `RetortShape` structure defin
 Neither ref exists when this record is written; the orchestrator creates them from the last commit that still contains the Retort. The removal PR must not merge until both refs exist.
 
 ## Open risks
+
+The owner accepted these on 2026-10-20 under the alpha caveat on the release page: lost Retorts and Heat Ray Focus stacks are acceptable, and the Emitter cost is tuned after playtests. Item 2 is still a required boot test.
+
 1. The Emitter is consumed per Laser Focus (see the tier check). Tune after playtesting.
 2. The engraver is a workpiece-plus-lens map. A boot test must confirm the three-input recipe (diamond, Emitter, non-consumed lens) is accepted; if slot rules require otherwise, reorder the inputs.
 3. `craftingLensWhite` could be renamed in a later pack. It is verified against 2.9.0-RC-2 only. A boot-time resolution check logs and skips the recipe, like the other GregGuns recipes.
