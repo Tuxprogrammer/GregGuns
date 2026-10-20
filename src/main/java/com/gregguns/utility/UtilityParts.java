@@ -38,8 +38,18 @@ public final class UtilityParts {
      */
     public static void register(ModuleRegistrar registrar) {
         for (TurretPlate plate : TurretPlate.values()) {
-            PLATES.put(plate, registrar.registerItem(plate.registryName(), new ItemTurretArmor(plate)));
+            registerOne(registrar, plate);
         }
+    }
+
+    /**
+     * Registers one plate, so the caller picks the registration order (see {@code UtilityItemOrder}).
+     *
+     * @param registrar the utility module's registrar
+     * @param plate     which plate
+     */
+    public static void registerOne(ModuleRegistrar registrar, TurretPlate plate) {
+        PLATES.put(plate, registrar.registerItem(plate.registryName(), new ItemTurretArmor(plate)));
     }
 
     /**

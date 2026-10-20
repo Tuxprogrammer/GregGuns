@@ -330,7 +330,12 @@ public final class ComponentTable {
                 Input.gt("circuit", "Data", 2),
                 Input.gt("plate", PLASTIC, 2),
                 Input.gt("dust", "Redstone", 1),
-                Input.vanilla("soul_sand", 1)));
+                Input.vanilla("soul_sand", 1),
+                // Source: BartWorks' Plasma Membrane (the Bio Lab chain's second product), made by the HV Centrifuge
+                // from 1,000 mB of E. coli culture fluid (circuit 17, 60 s), or by the LuV Extractor from a stem cell.
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/common/loaders/recipes/Centrifuge.java#L91-L98
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java#L3206
+                Input.itemList("PlasmaMembrane", 1)));
         list.add(
             asm(
                 "RC-24",
@@ -369,9 +374,12 @@ public final class ComponentTable {
                 Tier.HV,
                 10,
                 1,
-                Input.itemList("Cell_Empty", 4),
-                Input.gt("plate", SS, 4),
-                Input.gt("ring", SS, 4),
+                // Source: the pack's Large Fluid Cell (stainless steel, 64,000 mB, MV Assembler recipe) is the tank
+                // body, far above the tank's 1,000 mB. The cell is cut into four tanks and lined with rubber.
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/items/MetaGeneratedItem01.java#L4155
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L132-L141
+                Input.itemList("Large_Fluid_Cell_StainlessSteel", 1),
+                Input.gt("plate", SS, 2),
                 Input.gt("plate", "Rubber", 2)));
         list.add(
             asm(
@@ -381,9 +389,12 @@ public final class ComponentTable {
                 Tier.EV,
                 8,
                 1,
-                Input.itemList("Cell_Empty", 4),
-                Input.gt("plate", TI, 4),
-                Input.gt("ring", TI, 4),
+                // Source: the titanium Large Fluid Cell (128,000 mB, HV/2 Assembler recipe), one tier above the
+                // Fuel Tank's stainless cell.
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/items/MetaGeneratedItem01.java#L4156
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L142-L151
+                Input.itemList("Large_Fluid_Cell_Titanium", 1),
+                Input.gt("plate", TI, 2),
                 Input.gt("plate", PLASTIC, 2)));
         // RC-59: Assembly Line. Deviation: the research item is our own Power Plating (IV), not the Lapotronic Orb
         // that stood in for the withdrawn cell_energy: GT already scans the orb for its own research, and one scanned

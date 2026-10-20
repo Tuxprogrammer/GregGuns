@@ -4,10 +4,8 @@ import net.minecraftforge.common.MinecraftForge;
 
 import com.gregguns.GregGuns;
 import com.gregguns.armor.flight.FlightEvents;
-import com.gregguns.armor.flight.FlightItems;
 import com.gregguns.armor.slots.AmmoPouch;
 import com.gregguns.armor.slots.EquipmentGuiHandler;
-import com.gregguns.armor.slots.EquipmentItems;
 import com.gregguns.armor.slots.EquipmentKeybinds;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.module.GregGunsModule;
@@ -51,10 +49,7 @@ public final class ArmorModule implements GregGunsModule {
 
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
-        ArmorParts.register(registrar);
-        ArmorItems.register(registrar);
-        EquipmentItems.register(registrar);
-        FlightItems.register(registrar);
+        ArmorItemRegistry.registerAll(registrar);
         EquipmentKeybinds.register();
     }
 

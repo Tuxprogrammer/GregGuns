@@ -53,7 +53,7 @@ Techguns fluids become GT materials' fluids, and Techguns' tanks become fluid co
 - **GregGuns does:**
   - The Fuel Tank, Bio Tank, Compressed Air Tank and Oxygen Tank are GregGuns items that implement Forge `IFluidContainerItem` (capacity 1000 mB each, config) and are also registered with `FluidContainerRegistry` for the empty-to-full pair of each accepted fluid. GT machines then fill and drain them.
   - A gun reads and drains the tank's stored fluid directly. The per-shot cost is a gun stat, not a tank property.
-  - The tank's recipe uses GT plates and `Cell_Empty`-class parts ([components-and-materials.md](components-and-materials.md)).
+  - The tank's recipe uses GT plates and the pack's Large Fluid Cell as the body (stainless for the Fuel Tank, titanium for the Bio Tank, aluminium for the Compressed Air Tank; [recipes.md](recipes.md) RC-52 to RC-54).
   - Tanks are not stackable once they hold fluid (NBT), and they carry no radiation or heat tag.
 - **Pack-side change:** none.
 

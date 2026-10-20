@@ -35,6 +35,15 @@ public final class ChargeRegistration {
      * @param registrar the utility module's registrar
      */
     public static void preInit(ModuleRegistrar registrar) {
+        registerBlock(registrar);
+    }
+
+    /**
+     * Registers the charge block and its tile entity; the caller picks when (see {@code UtilityItemOrder}).
+     *
+     * @param registrar the utility module's registrar
+     */
+    public static void registerBlock(ModuleRegistrar registrar) {
         BlockExplosiveCharge block = registrar
             .registerBlock(BlockExplosiveCharge.NAME, new BlockExplosiveCharge(), ItemBlockCharge.class);
         // Placeholder: no charge texture exists yet, so the particle/icon uses the closest block texture (asset gap).
