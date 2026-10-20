@@ -88,8 +88,8 @@ public final class PlacementScenarios {
                 + expectSpawners
                 + " spawner and "
                 + expectFlags
-                + " flag marks reach the hooks, no write falls outside its window, a second run in reverse window order"
-                + " is identical, and cleanup leaves no block, chest tile or item entity (GGS-11-08 to GGS-11-10,"
+                + " flag marks reach the hooks, no write falls outside its window, two more runs (same and reverse window order)"
+                + " are identical (reverse: apart from chest facing), and cleanup leaves no block, chest tile or item entity (GGS-11-08 to GGS-11-10,"
                 + " GGS-11-20).";
         }
 
@@ -105,18 +105,24 @@ public final class PlacementScenarios {
                 first.cleanup();
                 judgeCleanup(out, first);
 
-                Placement second = PlacementHarness.place(world, plan, water, true);
-                try {
-                    out.check(second.decision.isPlaced(), "second run placed (" + second.decision.reason() + ")");
-                    String diff = snap1.diff(second.snapshot());
-                    out.check(diff == null, "second run (reverse window order) differs: " + diff);
-                    out.checkEquals("second run stamped count", first.stamped, second.stamped);
-                    out.checkEquals("second run rejected writes", 0, second.rejectedWrites);
-                    out.checkEquals("second run guard violations", 0, second.guardViolations);
-                } finally {
-                    second.cleanup();
+                // Run 2: same seed, same window order, must be identical. Run 3: reverse order, identical apart from
+                // vanilla chest facing, which follows the stamping order across a window border.
+                for (int run = 2; run <= 3; run++) {
+                    boolean reverse = run == 3;
+                    Placement again = PlacementHarness.place(world, plan, water, reverse);
+                    try {
+                        String label = "run " + run + (reverse ? " (reverse window order)" : "");
+                        out.check(again.decision.isPlaced(), label + " placed (" + again.decision.reason() + ")");
+                        String diff = snap1.diff(again.snapshot(), reverse);
+                        out.check(diff == null, label + " differs: " + diff);
+                        out.checkEquals(label + " stamped count", first.stamped, again.stamped);
+                        out.checkEquals(label + " rejected writes", 0, again.rejectedWrites);
+                        out.checkEquals(label + " guard violations", 0, again.guardViolations);
+                    } finally {
+                        again.cleanup();
+                    }
+                    judgeCleanup(out, again);
                 }
-                judgeCleanup(out, second);
                 out.note(
                     id.id() + ": "
                         + first.windows

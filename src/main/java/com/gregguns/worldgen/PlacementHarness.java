@@ -368,11 +368,21 @@ public final class PlacementHarness {
             this.chests = chests;
         }
 
-        /** @return null when equal, else a description of the first difference */
-        String diff(Snapshot other) {
+        /**
+         * @param ignoreChestFacing a vanilla chest turns toward its neighbors as it is placed, so across a window border its
+         *                          facing depends on which window was stamped first; compare only its presence then
+         * @return null when equal, else a description of the first difference
+         */
+        String diff(Snapshot other, boolean ignoreChestFacing) {
             if (cells.length != other.cells.length) return "size " + cells.length + " vs " + other.cells.length;
             for (int i = 0; i < cells.length; i++) {
-                if (cells[i] != other.cells[i]) {
+                int a = cells[i];
+                int b = other.cells[i];
+                if (ignoreChestFacing && a >> 4 == Block.getIdFromBlock(Blocks.chest)) {
+                    a &= ~0xF;
+                    b &= ~0xF;
+                }
+                if (a != b) {
                     return "cell " + i
                         + ": "
                         + Integer.toHexString(cells[i])
@@ -440,6 +450,9 @@ public final class PlacementHarness {
     }
 
     private static void put(World world, int x, int y, int z, Block b) {
+        if (world.getBlock(x, y, z) == Blocks.chest && world.getTileEntity(x, y, z) instanceof TileGregChest) {
+            world.removeTileEntity(x, y, z); // left by an earlier aborted run; the vanilla break code cannot take it
+        }
         if (world.getBlock(x, y, z) != b || world.getBlockMetadata(x, y, z) != 0) {
             world.setBlock(x, y, z, b, 0, 2);
         }
