@@ -15,7 +15,7 @@ Source root for all paths: `src/main/java/icbm/classic/` at `9c1d985a`. The engi
 | Cancel hooks | `ExplosionEvent.Start` (cancelable, fired once in `doAction`). `ExplosionEvent.Detonate` is fired by `BlastTNT` only, with an empty list (ICBM-02-59) |
 | Entity damage helper | `Blast.doDamageEntities(radius, power, destroyItem)` is shared by the TNT family. Entities within `radius` of the center take `(int)(((s*s + s) / 2) * 8 * power + 1)` where `s = (1 - distance / radius) * blockDensity` (vanilla exposure) and get knocked back by `s` along the outward unit vector. Items are skipped unless `destroyItem` is true. The search box is `2 * radius` plus 1 |
 | Block damage | `block.onBlockExploded` after `dropBlockAsItemWithChance(chance 1 / radius)` when `canDropFromExplosion` allows it |
-| World reads | Rays read `getBlockState` without a loaded-chunk check, so a large blast can load or generate chunks at its edge (vanilla does the same; see Known limits in [index-b.md](index-b.md)) |
+| World reads | Rays read `getBlockState` without a loaded-chunk check, so a large blast can load or generate chunks at its edge (vanilla does the same; see Known limits in [index.md](index.md)) |
 
 ## 1. Condensed, repulsive, attractive (`content/blast/BlastTNT.java`)
 

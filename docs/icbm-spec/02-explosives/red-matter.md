@@ -2,7 +2,7 @@
 
 Source root for all paths: `src/main/java/icbm/classic/` at `9c1d985a`. Red matter is the one explosive that is not a blast: it spawns a long-lived **entity** that pulls everything toward itself, eats blocks in a growing ball, and has no built-in end. This sheet is written for a performance test, so section 4 (Lifecycle) and section 5 (Performance budget) carry numbers. Everything is derived from reading the source and arithmetic on the config defaults; **nothing was run or measured**, and estimates are labeled as such.
 
-Related: the registry row (ID 23, tier 4, fuse 100) is in [explosive-registry.md](explosive-registry.md); the shared blast machinery, the `IBlastVelocity` capability and the entity-damage routine in [blast-engine.md](blast-engine.md); the flying-block entity this sheet spawns in [effect-entities.md](effect-entities.md); antimatter (which kills red matter) in [threaded-blasts.md](threaded-blasts.md). Index: [index-c.md](index-c.md).
+Related: the registry row (ID 23, tier 4, fuse 100) is in [explosive-registry.md](explosive-registry.md); the shared blast machinery, the `IBlastVelocity` capability and the entity-damage routine in [blast-engine.md](blast-engine.md); the flying-block entity this sheet spawns in [effect-entities.md](effect-entities.md); antimatter (which kills red matter) in [threaded-blasts.md](threaded-blasts.md). Index: [index.md](index.md).
 
 ## 1. Identity
 
@@ -314,7 +314,7 @@ Credits (`Credits.md`): the entity texture is "ARR, licensed to BBM", `redmatter
 
 ## 13. Bugs
 
-Full list with locations is in [index-c.md](index-c.md); IDs for this sheet are ICBM-02-80 to ICBM-02-98 (and ICBM-02-10, 02-19, 02-26 from part a).
+Full list with locations is in [index.md](index.md); IDs for this sheet are ICBM-02-80 to ICBM-02-98 (and ICBM-02-10, 02-19, 02-26 from part a).
 
 | ID | Short title | Kind |
 |---|---|---|

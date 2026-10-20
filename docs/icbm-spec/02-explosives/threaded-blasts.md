@@ -209,7 +209,7 @@ Durations and sample rates were not measured. `sounds.json` registers both with 
 
 ## 13. Bugs
 
-ICBM-02-04, 02-05, 02-10, 02-11, 02-13, 02-14, 02-21, 02-26. The table is in `index-a.md`.
+ICBM-02-04, 02-05, 02-10, 02-11, 02-13, 02-14, 02-21, 02-26. The table is in `index.md`.
 
 ## 14. For a GTNH rebuild (notes, not part of the spec)
 

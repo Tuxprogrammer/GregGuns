@@ -296,4 +296,4 @@ There are no keys for `colors` or `smoke` in any group; they use the hard-coded 
 
 ## 9. Bugs
 
-ICBM-02-10 (antimatter and red matter config), ICBM-02-12 (block-update flag), ICBM-02-17 (ender listeners dead), ICBM-02-18 (dynamic IDs recycle old slots), ICBM-02-19 (tooltip key mismatch), ICBM-02-20 (fuse stored as a byte). The table is in `index-a.md`.
+ICBM-02-10 (antimatter and red matter config), ICBM-02-12 (block-update flag), ICBM-02-17 (ender listeners dead), ICBM-02-18 (dynamic IDs recycle old slots), ICBM-02-19 (tooltip key mismatch), ICBM-02-20 (fuse stored as a byte). The table is in `index.md`.

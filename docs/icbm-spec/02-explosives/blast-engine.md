@@ -247,4 +247,4 @@ No event is posted when a blast completes. Mods cannot observe or veto individua
 
 ## 13. Bugs
 
-ICBM-02-01 to ICBM-02-09, 02-11, 02-12, 02-15, 02-16. The table is in `index-a.md`.
+ICBM-02-01 to ICBM-02-09, 02-11, 02-12, 02-15, 02-16. The table is in `index.md`.

@@ -148,4 +148,4 @@ The `explosive` variant key in each blockstate file is `icbmclassic_<name>` (the
 
 ## 10. Bugs
 
-ICBM-02-17 (ender activation listener never called), 02-20 (fuse saved as a byte), 02-22 (drop uses raw state), 02-23 (tile customizations lost), 02-27 (detonation center shifted). The table is in `index-a.md`.
+ICBM-02-17 (ender activation listener never called), 02-20 (fuse saved as a byte), 02-22 (drop uses raw state), 02-23 (tile customizations lost), 02-27 (detonation center shifted). The table is in `index.md`.
