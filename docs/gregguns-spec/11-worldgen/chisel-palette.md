@@ -21,7 +21,7 @@ Techguns' scanned structures name Chisel blocks (`team.chisel.init.ChiselBlocks.
 
 - **Pack config:** none.
 - **Source:** [`ChiselBlocks`](https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/init/ChiselBlocks.java) declares the fields Techguns' aliases use, as null placeholders filled at registration: `concrete` ([L57](https://github.com/GTNewHorizons/Chisel/blob/2.17.34-GTNH/src/main/java/team/chisel/init/ChiselBlocks.java#L57)), `stonebricksmooth` (L70), `factoryblock` (L95), `technical` (L112), `leadblock` (L126), `glass_pane` (L54), `limestoneStairs[]` (L150), `planks[]` (L157). `copperblock`, `tinblock`, `iron_block` and `gold_block` are also present.
-- **GregGuns does:** reads each field by name at `postInit`, after Chisel has registered, and checks it for null. The soft dependency is guarded with `Loader.isModLoaded("chisel")`, and no GregGuns class that is loaded without Chisel references `team.chisel.*` directly (the resolver class does, and is loaded only inside the guard).
+- **GregGuns does:** (`PaletteKeys`, reflection by class and field name, so Chisel is never on the compile classpath) reads each field by name at `postInit`, after Chisel has registered, and checks it for null. The soft dependency is guarded with `Loader.isModLoaded("chisel")`, and no GregGuns class that is loaded without Chisel references `team.chisel.*` directly (the resolver class does, and is loaded only inside the guard).
 - **Pack-side change:** none.
 
 ## Requirements
