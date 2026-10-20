@@ -114,4 +114,32 @@ class MinigunProfileTest {
         assertEquals(5, MinigunProfile.TRANSFORMS.recoilTicks());
         assertEquals(360.0, MinigunProfile.rotorTurnDegrees(1.0), 1e-9);
     }
+
+    @Test
+    void rotorSpinsAboutTheBarrelAxisThroughTheClusterCentre() {
+        // Spin step: last rotation of the fire row, about model X (the barrel axis), nothing else turning with it.
+        Recorder rotor = new Recorder();
+        MinigunProfile.TRANSFORMS.fpFire()
+            .apply(0.25, 1, rotor);
+        double[] spin = rotor.rotations.get(rotor.rotations.size() - 1);
+        assertEquals(1.0, Math.abs(spin[1]), 1e-9, "axis is model X");
+        assertEquals(0.0, spin[2], 1e-9);
+        assertEquals(0.0, spin[3], 1e-9);
+        Recorder third = new Recorder();
+        MinigunProfile.TRANSFORMS.tpRecoil()
+            .apply(0.25, 1, third);
+        double[] tspin = third.rotations.get(third.rotations.size() - 1);
+        assertEquals(1.0, Math.abs(tspin[1]), 1e-9);
+        // Pivot: every rotor barrel box is centred on the axis ring (radius 2.5) about the origin, which is the pivot.
+        for (BoxSpec b : MinigunProfile.BOXES) {
+            if (b.part() == 1 && b.name()
+                .startsWith("barrel_r")) {
+                assertEquals(0f, b.pivotX(), 1e-6);
+                assertEquals(0f, b.pivotY(), 1e-6);
+                assertEquals(0f, b.pivotZ(), 1e-6);
+                assertEquals(-2.5f, b.y() + b.h() / 2f, 1e-6);
+                assertEquals(0f, b.z() + b.d() / 2f, 1e-6);
+            }
+        }
+    }
 }
