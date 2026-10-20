@@ -66,7 +66,7 @@ public final class ArmorModule implements GregGunsModule {
         EquipmentRecipes.register();
         ArmorRecipes.register();
         FlightRecipes.register();
-        if (DevEnvironment.isActive()) {
+        if (DevEnvironment.testHooksEnabled()) {
             ArmorScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ArmorTierScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             SlotScenarios.registerAll(ScenarioRegistry.SCENARIOS);

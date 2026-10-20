@@ -37,7 +37,7 @@ public final class MachinesModule implements GregGunsModule {
         // Repair Bench, Armory Gantry and Camo Bench.
         RepairMachines.register();
         RepairMachines.registerRecipes();
-        if (DevEnvironment.isActive()) {
+        if (DevEnvironment.testHooksEnabled()) {
             RepairScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ScenarioRegistry.SCENARIOS.register(new com.gregguns.core.text.AddedByScenario());
         }

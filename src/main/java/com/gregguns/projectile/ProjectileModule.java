@@ -153,7 +153,7 @@ public final class ProjectileModule {
 
     /** Registers the dev scenarios. Call from {@code GunsModule.init}. */
     public static void init() {
-        if (DevEnvironment.isActive()) {
+        if (DevEnvironment.testHooksEnabled()) {
             ProjectileScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }

@@ -18,7 +18,7 @@ public final class CombatModule {
     /** Registers the event handlers and the dev scenarios. */
     public static void init() {
         MinecraftForge.EVENT_BUS.register(new CombatEvents());
-        if (DevEnvironment.isActive()) {
+        if (DevEnvironment.testHooksEnabled()) {
             CombatScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }

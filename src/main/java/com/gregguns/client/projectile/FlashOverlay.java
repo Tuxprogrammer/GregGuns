@@ -35,7 +35,7 @@ public final class FlashOverlay implements FlashHooks.Sink {
         }
         startTime = mc.theWorld.getTotalWorldTime();
         total = ticks;
-        if (DevEnvironment.isActive()) {
+        if (DevEnvironment.testHooksEnabled()) {
             GregGuns.LOG.info("[gregguns] AUTOTEST flash white-out {} ticks", ticks);
         }
     }
