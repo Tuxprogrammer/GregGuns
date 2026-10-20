@@ -74,7 +74,8 @@ public enum AmmoPressTier {
 
     /**
      * @param recipeTier the D1 tier of a recipe
-     * @return the lowest press that runs it (the Steam press for ULV and LV rows), or {@code null} above EV (the Assembly Line makes those items)
+     * @return the lowest press that runs it (the Steam press for ULV and LV rows), or {@code null} above EV (the
+     *         Assembly Line makes those items)
      */
     public static AmmoPressTier lowestFor(Tier recipeTier) {
         for (AmmoPressTier press : values()) {

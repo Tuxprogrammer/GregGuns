@@ -529,8 +529,7 @@ public final class MpScenarios {
             base.setInitialValuesAsNBT(null, (short) GregGunsMTEIDs.AMMO_PRESS_STEAM);
             MTEAmmoPressSteam press = (MTEAmmoPressSteam) base.getMetaTileEntity();
             // RC-28 (an LV recipe, not steam-tagged): 16 foil, 16 lead rounds, 2 gunpowder.
-            ItemStack[] inputs = {
-                GTOreDictUnificator.get(OrePrefixes.foil, Materials.Brass, 16),
+            ItemStack[] inputs = { GTOreDictUnificator.get(OrePrefixes.foil, Materials.Brass, 16),
                 GTOreDictUnificator.get(OrePrefixes.round, Materials.Lead, 16),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Gunpowder, 2) };
             for (int i = 0; i < inputs.length; i++) {
@@ -551,7 +550,8 @@ public final class MpScenarios {
                     return null;
                 }
                 return ScenarioResult.builder(name())
-                    .note("GUI signalled to " + a.getCommandSenderName() + "; the press was running: " + base.isActive())
+                    .note(
+                        "GUI signalled to " + a.getCommandSenderName() + "; the press was running: " + base.isActive())
                     .build();
             });
         }

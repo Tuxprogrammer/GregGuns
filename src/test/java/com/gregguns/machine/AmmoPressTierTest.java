@@ -105,14 +105,25 @@ class AmmoPressTierTest {
         List<ProductionTable.Row> steam = ProductionTable.pressRowsFor(AmmoPressTier.STEAM);
         List<ProductionTable.Row> expected = new java.util.ArrayList<>();
         for (ProductionTable.Row row : ProductionTable.ROWS) {
-            if (row.target() == ProductionTable.Target.AMMO_PRESS && row.tier().ordinal() <= Tier.LV.ordinal()) {
+            if (row.target() == ProductionTable.Target.AMMO_PRESS && row.tier()
+                .ordinal() <= Tier.LV.ordinal()) {
                 expected.add(row);
             }
         }
         assertEquals(expected, steam);
-        assertTrue(steam.stream().anyMatch(r -> r.tier() == Tier.LV), "an LV row, which is not steam-tagged");
-        assertTrue(steam.stream().anyMatch(r -> r.tier() == Tier.STEAM), "the ULV stone bullet");
-        assertTrue(steam.stream().noneMatch(r -> r.tier().ordinal() > Tier.LV.ordinal()));
+        assertTrue(
+            steam.stream()
+                .anyMatch(r -> r.tier() == Tier.LV),
+            "an LV row, which is not steam-tagged");
+        assertTrue(
+            steam.stream()
+                .anyMatch(r -> r.tier() == Tier.STEAM),
+            "the ULV stone bullet");
+        assertTrue(
+            steam.stream()
+                .noneMatch(
+                    r -> r.tier()
+                        .ordinal() > Tier.LV.ordinal()));
         int lvRows = ProductionTable.pressRowsFor(AmmoPressTier.LV)
             .size();
         assertTrue(lvRows >= 3);

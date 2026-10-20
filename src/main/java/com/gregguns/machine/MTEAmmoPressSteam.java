@@ -20,7 +20,8 @@ import gregtech.common.gui.modularui.singleblock.MTEBasicMachineBronzeGui;
 /**
  * The Steam (Bronze) Ammo Press: a GT bronze steam machine on the {@code gregguns.ammoPress} map. It follows GT's
  * Bronze Compressor: steam in through any side but the front, and after each recipe it must vent steam through the
- * front face (the base class handles both). It runs every ammo recipe up to LV, as GT's steam machines do: the inherited
+ * front face (the base class handles both). It runs every ammo recipe up to LV, as GT's steam machines do: the
+ * inherited
  * recipe check queries at LV voltage, 2 L of steam pay 1 EU, and Bronze takes twice as long as the EU recipe.
  *
  * <p>
