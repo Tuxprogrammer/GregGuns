@@ -56,6 +56,7 @@ public final class TurretScenarios {
      */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new RegisteredScenario());
+        registry.register(new TurretGuiShotsScenario());
         registry.register(new KillsZombieScenario());
         registry.register(new SparesOwnerScenario());
         registry.register(new NoNpeScenario());

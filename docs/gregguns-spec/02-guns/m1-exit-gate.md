@@ -99,4 +99,4 @@ No M1 box is unmet. Items to sign off:
 | D-1 | Box 1: NEI visibility rests on a commit message, with screenshots not kept in the repo | Re-prove it in the batched client pass of the beta gate (the `mp.visual` NEI shots for the pistol and the bullet), and keep the shot list in the pass report. Same session as M2 G1 |
 | D-2 | Box 4: two-client sync was last run at M1 | Repeat `mp.sync`, `mp.visual` and `mp.give` in the batched client pass, now that M2 to M8 content is in |
 | D-3 | Module flag default (P6) | Decided under D-2 of the M0 audit |
-| D-4 | Box 2: the pistol's own zoom | Accept as met through the scoped guns, since the pistol has no scope in the spec |
+| D-4 | Box 2: the pistol's own zoom | **Decided (owner, 2026-10-20):** the box's wording was wrong; the pistol has no scope in the spec. Met through the zoom framework and the scoped guns. Aiming down the pistol's iron sights is post-beta work: aim down sights in [M9](../../ROADMAP.md#m9--pack-integration-and-release). Closed |

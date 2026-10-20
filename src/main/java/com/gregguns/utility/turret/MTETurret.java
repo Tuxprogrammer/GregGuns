@@ -684,6 +684,29 @@ public final class MTETurret extends MTETieredMachineBlock implements TurretHost
         }
     }
 
+    /** @return the {@code TurretGuiModel.F_*} flags for the GUI sync */
+    public int guiFlags() {
+        return TurretGuiModel.flags(logic.isDead(), enabled, logic.isActive(), turret != null && !turret.isDead);
+    }
+
+    /** @return what the turret aims at, as {@link TurretEntity#targetForGui()}; empty when idle or unlinked */
+    public String guiTarget() {
+        return turret == null ? "" : turret.targetForGui();
+    }
+
+    /** @return the owner's name for the GUI sync; empty when ownerless */
+    public String guiOwnerName() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        String name = base == null ? null : base.getOwnerName();
+        return name == null ? "" : name;
+    }
+
+    /** @return the EU in the buffer for the GUI sync */
+    public long guiStoredEu() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        return base == null ? 0L : base.getStoredEU();
+    }
+
     /** @return ticks of repair left, for the GUI sync */
     public int repairTicksForSync() {
         return logic.repairLeft();

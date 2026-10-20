@@ -516,6 +516,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `utility.rampart_mount_fires` | Rampart, Gun Mount Hatch (M6) | A two-mount Rampart with a 9mm Pistol in a hatch and four magazines in the Input Bus shoots a zombie dead; the empty magazine lands in the Output Bus, three magazines remain, the turret has armor value 5 and its host is the hatch, and the controller draws 8 EU/t (GGS-08-77, GGS-08-81). |
 | `utility.rampart_break_hatch` | Rampart (M6) | In a running two-mount Rampart breaking one Gun Mount Hatch kills only its turret at once; the next structure check, which fails, kills the other (GGS-08-80). |
 | `testing.build_multiblocks` | dev tooling | Places a bare Ammunition Works, Armory Gantry and Rampart controller in turn, runs `DevStructureBuilder.build` (the command `/gregguns build`), and checks each reports a formed structure (`mMachine`) after GT's warm-up; a floor block must not build. Needs `GG_MODULES` with guns, machines and utility. |
+| `testing.interior_shots` | dev tooling | By name only (needs a client, `client_shot.py`): builds an Ammunition Works and an Armory Gantry, moves the first player outside a window and signals screenshots of the lit interiors through the glass. |
 
 ## M1 coverage
 
