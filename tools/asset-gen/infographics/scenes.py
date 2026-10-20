@@ -25,18 +25,22 @@ def _ov(machine, face):
     return p if p.exists() else None
 
 
-def machine_block(machine: str, tier: str, active=False) -> K.Path:
-    """A single block GT machine: a tier hull with the GregGuns overlays."""
+def machine_block(machine: str, tier: str, active=False, greg=False) -> K.Path:
+    """A single block GT machine: a tier hull with the GregGuns overlays, or with GregTech's own basic machine
+    overlays when greg is set (machine is then GT's folder name: lathe, bender, extruder, assembler...)."""
     sfx = "_ACTIVE" if active else ""
+    ov_of = gt.machine_overlay if greg else _ov
     faces = {}
     for face in ("FRONT", "SIDE", "TOP"):
         hull = gt.hull(tier, "TOP" if face == "TOP" else "SIDE")
-        ov = _ov(machine, face + sfx) or _ov(machine, face)
-        glow = _ov(machine, face + "_ACTIVE_GLOW") if active else None
-        faces[face] = B.composite(hull, ov, glow, cache=K.TEXCACHE, name=f"{machine}_{tier}_{face}{sfx}")
+        ov = ov_of(machine, face + sfx) or ov_of(machine, face)
+        # GT draws a face's glow layer at full brightness, so the idle glow shows on an idle machine too.
+        glow = ov_of(machine, face + ("_ACTIVE_GLOW" if active else "_GLOW"))
+        faces[face] = B.composite(hull, ov, glow, cache=K.TEXCACHE,
+                                  name=f"{'gt-' if greg else ''}{machine}_{tier}_{face}{sfx}")
     blocks_ = {(0, 0, 0): ("m", FRONT)}
     tex = {"m": (faces["TOP"], faces["SIDE"], faces["FRONT"])}
-    return K.voxels(f"machine-{machine}-{tier}{sfx}", blocks_, tex, yaw=-38, pitch=28, ppu=150)
+    return K.voxels(f"machine-{'gt-' if greg else ''}{machine}-{tier}{sfx}", blocks_, tex, yaw=-38, pitch=28, ppu=150)
 
 
 # ---------------------------------------------------------------- turret
