@@ -263,4 +263,142 @@ class AmmoWorksShapeTest {
         // multiblocks.md worked example: HV, 8 bays, 16 LV runs at once is below the 96 parallel cap.
         assertTrue(16 <= AmmoWorksShape.parallels(8, Tier.HV.voltageIndex()));
     }
+
+    private static final String[][][] WITH_BENCH = { AmmoWorksShape.FEEDER, AmmoWorksShape.BAY, AmmoWorksShape.STATION,
+        AmmoWorksShape.BENCH };
+
+    @Test
+    void theBenchIsFiveWideSevenRowsAndThreeLong() {
+        assertEquals(AmmoWorksShape.BENCH_LENGTH, AmmoWorksShape.BENCH.length);
+        for (String[] aisle : AmmoWorksShape.BENCH) {
+            assertEquals(AmmoWorksShape.HEIGHT, aisle.length);
+            for (String row : aisle) {
+                assertEquals(AmmoWorksShape.WIDTH, row.length(), row);
+                assertEquals(
+                    row,
+                    new StringBuilder(row).reverse()
+                        .toString(),
+                    row);
+            }
+        }
+    }
+
+    @Test
+    void theBenchUsesOnlyItsOwnCharactersAndSitsInTheBottomThreeLayers() {
+        for (String[] aisle : AmmoWorksShape.BENCH) {
+            for (int r = 0; r < AmmoWorksShape.HEIGHT; r++) {
+                for (char c : aisle[r].toCharArray()) {
+                    assertTrue("KT- ".indexOf(c) >= 0, "unexpected '" + c + "' in " + aisle[r]);
+                    if (r < AmmoWorksShape.HEIGHT - 3) {
+                        assertEquals(' ', c, "the bench stays below the output bus faces, row " + r);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    void theBenchBlockCountsMatchTheSheet() {
+        // multiblocks.md "Filling bench": 36 K, 6 T, 3 air.
+        assertEquals(36, AmmoWorksShape.count(AmmoWorksShape.BENCH, "K"));
+        assertEquals(6, AmmoWorksShape.count(AmmoWorksShape.BENCH, "T"));
+        assertEquals(3, AmmoWorksShape.count(AmmoWorksShape.BENCH, "-"));
+    }
+
+    @Test
+    void everyTableStandsOnABenchCasingAndAirSitsOverTheSecondRow() {
+        for (String[] aisle : AmmoWorksShape.BENCH) {
+            int floor = AmmoWorksShape.HEIGHT - 1;
+            for (int c = 0; c < AmmoWorksShape.WIDTH; c++) {
+                assertEquals('K', aisle[floor].charAt(c), "floor");
+            }
+        }
+        assertEquals("K---K", AmmoWorksShape.BENCH[1][AmmoWorksShape.HEIGHT - 3]);
+    }
+
+    @Test
+    void theBenchStartsWhereTheHallEndsAndAddsNoHallCasings() {
+        for (int n = AmmoWorksShape.MIN_BAYS; n <= AmmoWorksShape.MAX_BAYS; n++) {
+            assertEquals(AmmoWorksShape.totalLength(n), AmmoWorksShape.benchDepth(n));
+        }
+        // K and T are not hall casings: the default hall still needs 277 of 289.
+        assertEquals(289, AmmoWorksShape.casingPositions(4));
+        assertEquals(0, AmmoWorksShape.count(AmmoWorksShape.BENCH, "FAOM"));
+    }
+
+    @Test
+    void theBenchLeavesTheUpperBackWallFreeForOutputBuses() {
+        // The station's back wall has O at the four rows y4 to y1 (rows 2 to 5); the bench covers y2 and below only.
+        String[] backWall = AmmoWorksShape.STATION[AmmoWorksShape.STATION_LENGTH - 1];
+        assertEquals("AOOOA", backWall[2]);
+        assertEquals("AOOOA", backWall[3]);
+        assertEquals("     ", AmmoWorksShape.BENCH[0][2]);
+        assertEquals("     ", AmmoWorksShape.BENCH[0][3]);
+    }
+
+    /** Assembles the hall: one cell per block, ' ' for "anything", as the pieces lay out. */
+    private static char[][][] assemble(int bays, boolean bench) {
+        int length = AmmoWorksShape.totalLength(bays) + (bench ? AmmoWorksShape.BENCH_LENGTH : 0);
+        char[][][] grid = new char[length][AmmoWorksShape.HEIGHT][AmmoWorksShape.WIDTH];
+        stamp(grid, AmmoWorksShape.FEEDER, 0);
+        for (int i = 0; i < bays; i++) {
+            stamp(grid, AmmoWorksShape.BAY, AmmoWorksShape.bayDepth(i));
+        }
+        stamp(grid, AmmoWorksShape.STATION, AmmoWorksShape.stationDepth(bays));
+        if (bench) {
+            stamp(grid, AmmoWorksShape.BENCH, AmmoWorksShape.benchDepth(bays));
+        }
+        return grid;
+    }
+
+    private static void stamp(char[][][] grid, String[][] piece, int depth) {
+        for (int a = 0; a < piece.length; a++) {
+            for (int r = 0; r < AmmoWorksShape.HEIGHT; r++) {
+                grid[depth + a][r] = piece[a][r].toCharArray();
+            }
+        }
+    }
+
+    @Test
+    void theHallNeverFormsAConvexCuboidWithOrWithoutTheBench() {
+        // GGS-08-82: some cell inside the bounding box is empty, and the solid cells do not fill the box.
+        for (int n = AmmoWorksShape.MIN_BAYS; n <= AmmoWorksShape.MAX_BAYS; n++) {
+            for (boolean bench : new boolean[] { false, true }) {
+                char[][][] grid = assemble(n, bench);
+                int solid = 0;
+                int volume = 0;
+                for (char[][] aisle : grid) {
+                    for (char[] row : aisle) {
+                        for (char c : row) {
+                            volume++;
+                            if (c != ' ' && c != '-') {
+                                solid++;
+                            }
+                        }
+                    }
+                }
+                assertTrue(solid < volume, n + " bays, bench " + bench);
+                // The roof layer (the top row) is empty everywhere, and the layer under it is not full: the
+                // silhouette has teeth and a stepped end, never a flat box.
+                int roofSolid = 0;
+                for (char[][] aisle : grid) {
+                    for (char c : aisle[1]) {
+                        if (c != ' ' && c != '-') {
+                            roofSolid++;
+                        }
+                    }
+                }
+                assertTrue(roofSolid < grid.length * AmmoWorksShape.WIDTH, n + " bays, bench " + bench);
+            }
+        }
+    }
+
+    @Test
+    void theBenchPieceFitsTheCommonRowGrid() {
+        for (String[][] piece : WITH_BENCH) {
+            for (String[] aisle : piece) {
+                assertEquals(AmmoWorksShape.HEIGHT, aisle.length);
+            }
+        }
+    }
 }

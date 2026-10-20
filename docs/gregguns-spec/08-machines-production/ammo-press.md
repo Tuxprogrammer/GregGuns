@@ -1,6 +1,6 @@
 # Ammo Press (reinstated, animated single block)
 
-The Techguns Ammo Press comes back as a GregGuns machine with its own recipe map. It overrides the "Replace" row for the Ammo Press in [0002](../../design/0002-machine-deconfliction.md) (owner decision: ammo is the exception to "use GT machines everywhere"). The multiblock that scales it is the [Ammunition Works](multiblocks.md#ammunition-works).
+The Techguns Ammo Press comes back as a GregGuns machine with its own recipe map. It overrides the "Replace" row for the Ammo Press in [0002](../../design/0002-machine-deconfliction.md) (owner decision: ammo is the exception to "use GT machines everywhere"). The multiblock that scales it is the [Ammunition Works](multiblocks.md#ammunition-works), which can also carry an optional [filling bench](multiblocks.md#filling-bench-optional) that loads magazines from the packing station's finished rounds using the loaded-magazine rows of this map (RC-44, RC-45 and their siblings); the single presses are unchanged.
 
 - **Techguns baseline:** [ammo-press.md](../../techguns-spec/08-machines-production/ammo-press.md), [rendering.md](../../techguns-spec/08-machines-production/rendering.md), [sounds.md](../../techguns-spec/08-machines-production/sounds.md)
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0002](../../design/0002-machine-deconfliction.md) (to be amended, see Open questions), [0003 energy model](../../design/0003-energy-model.md), [0006 art direction](../../design/0006-art-direction.md)

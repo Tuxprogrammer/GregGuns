@@ -10,8 +10,8 @@ package com.gregguns.machine;
  * face first), rows top to bottom, columns left to right as seen from the front. Characters: {@code F} feeder casing,
  * {@code A} plain casing, {@code O} packing casing, {@code M} ram housing, {@code I} belt (GT item pipe casing),
  * {@code G} glass (any tier), {@code R} steel frame box, {@code P} steel pipe casing, {@code B} steel gearbox casing,
- * {@code N} motor casing, {@code Y} assembler casing, {@code ~} controller, {@code -} must be air, space means
- * anything.
+ * {@code N} motor casing, {@code Y} assembler casing, {@code S} interior lamp, {@code K} bench casing, {@code T}
+ * bench table, {@code ~} controller, {@code -} must be air, space means anything.
  *
  * <p>
  * Usage: {@code AmmoWorksShape.parallels(4, 3)} is 48 (four bays, HV). Both sides.
@@ -34,6 +34,8 @@ public final class AmmoWorksShape {
     public static final int BAY_LENGTH = 3;
     /** Aisles in the packing station. */
     public static final int STATION_LENGTH = 4;
+    /** Aisles in the optional filling bench. */
+    public static final int BENCH_LENGTH = 3;
     /** Width of every piece. */
     public static final int WIDTH = 5;
     /** Height of every piece. */
@@ -138,6 +140,38 @@ public final class AmmoWorksShape {
           "AAAAA" } };
     // spotless:on
 
+    /**
+     * The optional filling bench, built against the outside of the station's back wall: a low annex three blocks tall
+     * (the bottom three layers of the shared seven-row grid, so it sits level with the hall's floor). Bench casings
+     * {@code K} carry the bench's own buses, six tables {@code T} stand on the floor in two rows, and a hood leaves an
+     * air pocket over the second row. The rows above the annex stay open, so the station's upper back wall keeps its
+     * Output Bus faces.
+     */
+    // spotless:off
+    public static final String[][] BENCH = {
+        { "     ",
+          "     ",
+          "     ",
+          "     ",
+          "KKKKK",
+          "KTTTK",
+          "KKKKK" },
+        { "     ",
+          "     ",
+          "     ",
+          "     ",
+          "K---K",
+          "KTTTK",
+          "KKKKK" },
+        { "     ",
+          "     ",
+          "     ",
+          "     ",
+          "KKKKK",
+          "KKKKK",
+          "KKKKK" } };
+    // spotless:on
+
     private AmmoWorksShape() {}
 
     /**
@@ -170,6 +204,14 @@ public final class AmmoWorksShape {
      */
     public static int stationDepth(int bays) {
         return FEEDER_LENGTH + bays * BAY_LENGTH;
+    }
+
+    /**
+     * @param bays the number of press bays
+     * @return how many blocks behind the controller's aisle the optional bench starts: the hall's length
+     */
+    public static int benchDepth(int bays) {
+        return totalLength(bays);
     }
 
     /**

@@ -144,7 +144,7 @@ public final class ProductionRecipes {
      */
     // Source:
     // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/TierEU.java#L25-L39
-    static long eutFor(Tier tier) {
+    public static long eutFor(Tier tier) {
         switch (tier) {
             case STEAM:
                 return TierEU.RECIPE_ULV;

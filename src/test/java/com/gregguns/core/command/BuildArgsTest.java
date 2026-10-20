@@ -30,4 +30,20 @@ class BuildArgsTest {
         assertThrows(IllegalArgumentException.class, () -> BuildArgs.parse(new String[] { "1", "2", "3", "65" }));
         assertThrows(IllegalArgumentException.class, () -> BuildArgs.parse(new String[] { "1", "2", "3", "4", "5" }));
     }
+
+    @Test
+    void parsesTheOptionalBenchWord() {
+        BuildArgs plain = BuildArgs.parse(new String[] { "1", "2", "3" });
+        assertEquals(false, plain.bench);
+        BuildArgs a = BuildArgs.parse(new String[] { "1", "2", "3", "bench" });
+        assertEquals(true, a.bench);
+        assertEquals(0, a.count);
+        BuildArgs b = BuildArgs.parse(new String[] { "1", "2", "3", "5", "BENCH" });
+        assertEquals(true, b.bench);
+        assertEquals(5, b.count);
+        assertThrows(IllegalArgumentException.class, () -> BuildArgs.parse(new String[] { "1", "2", "3", "x" }));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> BuildArgs.parse(new String[] { "1", "2", "3", "5", "6", "bench" }));
+    }
 }
