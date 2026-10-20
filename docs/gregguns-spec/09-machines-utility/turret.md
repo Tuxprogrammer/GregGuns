@@ -61,6 +61,12 @@ Both are EU-powered, owner-aware defense blocks. They must not read as duplicate
 - **GGS-09-06** The ServerUtilities classes are not loaded when the mod is absent.
 - **GGS-09-07** The turret's EU intake follows GT overvoltage rules. There is no free over-voltage like OMT's `injectEnergyUnits`.
 
+## GUI (m6/turret-gui-polish)
+
+The screen replaces the Techguns power bar and one-character buttons with text. Top to bottom: the title with a one-word state (On guard, No gun, No power, Off by redstone, No turret, Repairing: Ns left); a dark status screen (EU stored / capacity, target or idle, rounds loaded / magazine, plate tier and armor, owner); the slot groups labeled Ammo, Gun, Armor plate and Empties (each label has a tooltip); a Redstone button reading Ignore signal, Active on signal or Active without signal, which are the real `RedstoneMode` values; and a Security (Public, Friends, Owner only) and an Animals (Yes, No) button.
+
+The Security button is the owner's: for anyone else it reads gray and its tooltip says why first, the same pattern as the Explosive Charge screen. The server re-checks every press. Synced for the screen: the state flags, stored EU, target (a player name or an entity lang key), owner name, and per-viewer use and security rights. Logic lives in `TurretGuiModel` (unit tested); `utility.turret_gui_shots` photographs idle, loaded and non-owner cases.
+
 ## Tests
 
 | Req | Check |
