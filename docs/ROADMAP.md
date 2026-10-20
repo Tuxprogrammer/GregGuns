@@ -157,7 +157,7 @@ One gun, working end to end inside the GTNH dev pack.
 
 **Exit gate:**
 - [x] The pistol is craftable in the dev pack only through its D1 tier gate, and the recipe shows in NEI. *(`gun.recipe`; NEI screenshot from the visual autotest.)*
-- [x] Fire, reload and zoom work, and the pistol hits and damages mobs and players. *(`gun.*` scenarios.)*
+- [x] Fire, reload and zoom work, and the pistol hits and damages mobs and players. *(`gun.*` scenarios.)* The pistol has no scope, so zoom is proven on the scoped guns; aiming down its iron sights comes post-beta with M9's aim down sights ([M1 audit D-4](gregguns-spec/02-guns/m1-exit-gate.md#needs-owner-decision)).
 - [x] Unit tests cover the damage formulas, drop-off, spread, ammo accounting and the reload state machine. *(See the M1 coverage table in docs/testing/README.md.)*
 - [x] A dedicated server with two clients shows correct sync: shots, reloads, other players' animations and sounds. *(`mp_check`: `mp.sync`, `mp.visual`, `mp.give` and client log evidence.)*
 - [x] Each relevant inherited bug from [BUGS.md](techguns-spec/BUGS.md) has a test showing it isn't reproduced. These include GUN-13, GUN-29, GUN-32, GUN-33 and GUN-34.
