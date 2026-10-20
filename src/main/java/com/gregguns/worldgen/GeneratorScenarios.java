@@ -28,6 +28,7 @@ import com.gregguns.utility.storage.TileGregChest;
 import com.gregguns.worldgen.layout.Layout;
 import com.gregguns.worldgen.layout.LayoutRegistry;
 import com.gregguns.worldgen.layout.PaletteKeys;
+import com.gregguns.worldgen.layout.Rotations;
 import com.gregguns.worldgen.layout.Stamper;
 
 /**
@@ -262,8 +263,12 @@ public final class GeneratorScenarios {
         }
 
         private static int[] at(StructurePlan p, int[] local, int anchorY, Layout layout) {
-            int[] xz = p.toWorld(local[0], local[2]);
-            return new int[] { xz[0], anchorY + local[1] - layout.ground(), xz[1] };
+            // The stamper's rotation (G5), not StructurePlan.toWorld: the two quarter-turn conventions differ.
+            int sx = layout.sizeX();
+            int sz = layout.sizeZ();
+            return new int[] { p.anchorX() + Rotations.offsetX(p.rotation(), local[0], local[2], sx, sz),
+                anchorY + local[1] - layout.ground(),
+                p.anchorZ() + Rotations.offsetZ(p.rotation(), local[0], local[2], sx, sz) };
         }
 
         private static boolean nonEmpty(IInventory inv) {
