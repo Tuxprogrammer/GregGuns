@@ -6,6 +6,7 @@ import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.machine.GregGunsMTEIDs;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.interfaces.ISecondaryDescribable;
 import gregtech.api.metatileentity.MetaTileEntity;
 
 /**
@@ -35,7 +36,12 @@ public final class AddedByScenario implements Scenario {
                 : null;
             if (mte == null) continue;
             checked++;
-            String[] lines = mte.getDescription();
+            // Multiblocks' getDescription() asks LWJGL whether Shift is held, which does not exist on a dedicated
+            // server,
+            // so read their primary (always shown) tooltip, which is where toolTipFinisher puts the line.
+            String[] lines = mte instanceof ISecondaryDescribable
+                ? ((ISecondaryDescribable) mte).getPrimaryDescription()
+                : mte.getDescription();
             boolean found = false;
             for (String line : lines) {
                 if (line != null && line.toLowerCase(java.util.Locale.ROOT)
