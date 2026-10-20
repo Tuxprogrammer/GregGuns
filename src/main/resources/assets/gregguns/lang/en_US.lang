@@ -138,6 +138,7 @@ gregguns.machine.ammo_works.type=Ammo Press, Ammunition Works
 gregguns.machine.ammo_works.info.map=Runs every Ammo Press recipe, many at once
 gregguns.machine.ammo_works.info.parallel=Parallels: 4 x press bays x voltage tier
 gregguns.machine.ammo_works.info.bays=Add press bays (2 to 8) to lengthen the hall
+gregguns.machine.ammo_works.info.bench=Optional filling bench behind the packing end: loads magazines from the packing Output Bus's rounds
 gregguns.machine.ammo_works.structure.controller=Front, middle, second layer from the bottom
 gregguns.machine.ammo_works.structure.belt=Item Pipe Casing (one tier along the whole floor line)
 gregguns.machine.ammo_works.structure.glass=Any glass (any tier, mixed is fine): the side windows
@@ -151,8 +152,13 @@ gregguns.machine.ammo_works.structure.feeder=Any feeder casing (front end)
 gregguns.machine.ammo_works.structure.packing=Any packing casing (back end)
 gregguns.machine.ammo_works.structure.feeder_or_packing=Any feeder or packing casing
 gregguns.machine.ammo_works.structure.air=Interior of the hall
-gregguns.machine.ammo_works.structure.footer=Use the hologram projector with a stack size of 2 to 8 to choose the bay count
+gregguns.machine.ammo_works.structure.bench=Optional filling bench, 5 x 3 x 3, built outside the packing end wall: Works Casing around six workbench tables
+gregguns.machine.ammo_works.structure.bench_hatches=Bench: 1+ Input Bus (empty magazines) and 1+ Output Bus (loaded magazines) on its casing; both are needed for it to work. It uses the hall's Energy Hatches
+gregguns.machine.ammo_works.structure.bench_table=Bench table: Natura wooden Workbench (any wood), a Crafting Table or an Avaritia Dire Crafting Table. The packing Output Bus must be a plain bus, not an ME bus
+gregguns.machine.ammo_works.structure.footer=Use the hologram projector with a stack size of 2 to 8 to choose the bay count; set its height channel to 1 to add the filling bench
 gregguns.machine.ammo_works.error.too_few_bays=The hall needs at least 2 press bays
+gregguns.machine.ammo_works.info.bench_status.active=Filling bench: active
+gregguns.machine.ammo_works.info.bench_status.inactive=Filling bench: not active (absent, incomplete, or missing an Input Bus or Output Bus)
 
 # Guns: items, tooltips, keys and HUD
 item.gregguns.pistol_9mm.name=9mm Pistol

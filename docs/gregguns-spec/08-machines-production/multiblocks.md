@@ -65,6 +65,8 @@ All of these are GregGuns blocks on page 50 unless a GT name is given.
 
 **Class and tiers.** Bottleneck. Controller tier HV (hull and parts at HV). Energy Hatches LV to IV. It runs the same map as the Ammo Press, `gregguns.ammoPress` ([ammo-press.md](ammo-press.md#the-recipe-map)).
 
+**Optional filling bench.** A short annex on the outside of the packing end wall, built from Works Casing around six workbench tables. When it is complete the Works also loads magazines: it pulls finished rounds out of the packing station's Output Bus and empty magazines out of the bench's own Input Bus, and puts loaded magazines into the bench's own Output Bus. See [Filling bench](#filling-bench-optional).
+
 ### Legend
 
 | Char | Block | Hatches allowed |
@@ -81,6 +83,8 @@ All of these are GregGuns blocks on page 50 unless a GT name is given.
 | `N` | Motor Machine Casing (feeder belt drive) | none |
 | `Y` | Assembler Machine Casing (packing arch over the belt) | none |
 | `I` | GT item pipe casing, any tier | none. Tier is read |
+| `K` | Works Casing, bench (the filling bench only; not counted toward the casing minimum) | Bench Input Bus, Bench Output Bus |
+| `T` | Bench table: Natura wooden Workbench (any wood), else the vanilla Crafting Table or an Avaritia Dire Crafting Table | none |
 | `~` | Controller | n/a |
 
 ### Pieces and layers
@@ -121,6 +125,42 @@ The belt `I` runs down the middle of the floor, feeder to station. The hall betw
 
 **Block counts** (for `checkCasingMin`): feeder 18 `F`, 36 `A`, 2 `I`, 4 `G`, 4 `P`, 2 `N`; each bay 38 `A`, 3 `M`, 3 `I`, 6 `G`, 2 `R`, 6 `P`, 2 `B`; station 16 `O`, 55 `A`, 3 `I`, 12 `G`, 2 `R`, 6 `P`, 4 `B`, 3 `Y`. The casing minimum is the sum of `F`, `A`, `O` and `M` positions minus a fixed allowance of 12 hatches. For `n` = 4 that is 54 + 4 x 41 + 71 = 289 casing positions, so the check is 277. The interior totals are glass 16 + 6n, lamps 2 + n, pipes 10 + 6n, gearboxes 4 + 2n, frame boxes 2 + 2n, 2 motor casings and 3 assembler casings.
 
+### Filling bench (optional)
+
+**What it is.** A 5 x 3 x 3 annex built against the outside of the station's back wall, in the bottom three layers, so the upper rows of the back wall (`O` at `y4` and `y3`) stay free for the station's Output Buses. Works Casing `K` forms the floor, the outer ring and a hood; six tables `T` stand in two rows of three on the floor; one air pocket sits over the second row. Seen from the side it is a low shed tucked against the tall end building, which adds to the stepped silhouette and keeps the hall non-convex.
+
+**Piece.** `bench` (3 long). The offset is the hall's full length, `7 + 3n` blocks behind the controller's aisle. The rows above the annex are `.` (anything).
+
+```
+y6..y3  .....  (all four layers: anything)
+y2      y1      y0
+KKKKK   KTTTK   KKKKK     aisle 0, against the station's back wall
+K---K   KTTTK   KKKKK     aisle 1
+KKKKK   KKKKK   KKKKK     aisle 2
+```
+
+(Each aisle is one line; columns are the layers `y2`, `y1`, `y0`, and within a column the characters run left to right as seen from the front.)
+
+**Block counts.** 36 `K`, 6 `T`, 3 air. The bench adds no `F`, `A`, `O` or `M`, so the casing minimum is unchanged (for `n` = 4 it is still 277). The roof layers above the annex stay open and the station stays taller than the shed, so the whole Works still never forms a convex cuboid (GGS-08-82, checked by a unit test with and without the bench).
+
+**Optional, and never a reason to unform.** `checkMachine` checks `feeder`, the bays and `station` as before and then probes `bench` with its errors thrown away. If the probe matches and the bench has at least one Bench Input Bus and one Bench Output Bus, the bench is **active**. In every other case (no bench, a half-built bench, a wrong block where a table goes, a missing bus) the probe leaves no trace: its hatches are dropped again, the Works stays formed, runs as it always did, and the bench is simply not active. The controller tooltip says the bench is optional, and the scanner (`getInfoData`) ends with "Filling bench: active" or "Filling bench: not active".
+
+**Hatches.** The bench has its own buses, on any `K`: at least 1 Bench Input Bus (empty magazines in) and at least 1 Bench Output Bus (loaded magazines out). They live in separate lists from the hall's buses, so the normal recipe never reads or fills them. A bench Input Bus must be a normal bus (an ME Input Bus is not accepted there); a bench Output Bus may be a normal bus or the ME Output Bus. The bench uses the controller's Energy Hatches and needs none of its own. The station's Output Bus has to be a plain bus for the bench to use it (see below).
+
+**The table block.** Chisel (`chisel:*` in the pack) has no table or workbench: its carving groups are stone, metal, glass, planks and decor. Searching every jar's textures in the GTNH 2.9.0-RC-2 pack found these full-size cubes that read as a work table: **Natura's wooden Workbench** (`Natura:Natura.workbench`, metas 0 to 12, one per wood, a plain `BlockWorkbench` with no tile entity; a wicker-style round grid top in the wood's color and tool-covered sides, the closest to a chisel-and-bench look), the **vanilla Crafting Table** (`minecraft:crafting_table`; the familiar grid and tools) and **Avaritia's Dire Crafting Table** (`Avaritia:Dire_Crafting`; a cyan lattice top on blue sides, a late-game look). The bench accepts all three, matched by registry name and meta. The hologram and the survival build place Natura's redwood workbench when Natura is loaded and the vanilla table otherwise. The Forestry Worktable, Galacticraft NASA Workbench, ProjectRed IC Workbench and BiblioCraft tables were passed over: they are machines or non-cubic models with tile entities. If none of the three is registered (not possible with vanilla present) a Works Casing is accepted at those six positions instead, so the structure still builds.
+
+**Mechanic.** While the bench is active the controller also runs a fill step on its own timer, next to the normal recipe and never blocking it. It reads the existing loaded-magazine rows of `gregguns.ammoPress` (RC-44 for the 9mm pistol magazine, RC-45 for the SMG magazine, and so on: every row whose output is a loaded magazine and whose inputs are exactly that magazine's empty item and its loose round) and registers **no new recipes**.
+
+- **Ratio.** One run is one such row: `N` empty magazines plus `N x r` rounds make `N` loaded magazines (RC-44: 4 empties and 12 rounds make 4 loaded). The rounds come from the station's Output Bus(es), the empties from the bench Input Bus(es), and the loaded magazines go to the bench Output Bus(es).
+- **Runs per cycle** = the least of: the parallel cap (`4 x n x tier`, the Works' own), `empties / N`, `rounds / (N x r)`, the runs the Energy Hatches can power (`maxEU/t / (eut x 4^oc)`), and the runs whose output fits the bench Output Bus.
+- **Time and power.** `base = row duration x belt multiplier`. Overclocks `oc` = voltage tier of the hatches minus the row's tier (at least 0, never so many that a cycle is under one tick), each halving the time and quadrupling the power: cycle time `ceil(base / 2^oc)` ticks, draw `eut x 4^oc x runs` EU/t while the cycle runs. The same overclock rule as the Works' normal recipes. A cycle whose hatches run dry pauses and resumes. RC-44 at an HV hall with a tier 2 belt: 160 ticks x 0.571 = 92, `oc` = 2, a 23 tick cycle at 480 EU/t per run.
+- **Simulate, then commit.** A cycle is planned at its start from counts and a simulated store into the bench Output Bus (GT's `storePartial` with its simulate flag). The items move at the end of the cycle, once: the run count is worked out again against the buses as they are then, the output fit is checked again, and only then are empties and rounds removed and loaded magazines stored. A full or missing Output Bus therefore stops the bench with every input untouched, and nothing is duplicated or lost. A store that cannot give what it counted gets everything put back.
+- **Fairness.** One magazine kind runs per cycle, starting from a rotating cursor, so every kind gets its turn. An idle bench looks again every 20 ticks.
+- **ME note.** The bench takes only rounds that sit in a plain station Output Bus. An ME Output Bus pushes straight to the network, so there is nothing in it to pull; with only ME Output Buses on the station the bench has no source and idles. Keep one plain Output Bus on the back wall if the bench is built.
+- **Not saved.** A cycle in progress is not written to disk: nothing leaves any bus until a cycle ends, so a restart loses at most the progress of one cycle.
+
+**Hologram and survival build.** By default the projector and the survival tool build the Works without the bench. To include it, set the projector's **height** channel (StructureLib's `height` sub-channel, which the Works has no other use for) to 1 or more. The NEI structure preview cannot show an optional piece and stays without it; the bench is documented in the controller tooltip. `/gregguns build <x> <y> <z> [count] [bench]` places the bench and its two buses.
+
 ### Hatches, controller, special rules
 
 | Rule | Value |
@@ -130,6 +170,7 @@ The belt `I` runs down the middle of the floor, feeder to station. The hall betw
 | Output Bus | At least 1, on the back wall `O` |
 | Energy, Maintenance, Muffler | One of each on any `F` (Muffler required) |
 | Input Hatch | 0 or more, any `F` (some recipes need a fluid) |
+| Bench Input Bus, Bench Output Bus (optional bench) | At least 1 of each on any bench `K`, or the bench is not active. See [Filling bench](#filling-bench-optional) |
 | Belt | One tier for the whole `I` line. Mixed tiers fail the check, as in the Mixer ([chainItemPipeCasings](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/tileentities/machines/multi/MTEIndustrialMixer.java#L136)) |
 
 ### Tier and parallel mechanic
@@ -166,6 +207,14 @@ The belt `I` runs down the middle of the floor, feeder to station. The hall betw
 - **GGS-08-61** It accepts GT's ME Input Bus and ME Output Bus and any normal bus. A full Output Bus pauses it without voiding.
 - **GGS-08-62** It requires an Energy Hatch, a Maintenance Hatch, a Muffler Hatch, an Input Bus and an Output Bus.
 - **GGS-08-63** Its animation is client only and has a screwdriver toggle.
+- **GGS-08-90** The Ammunition Works has an optional `bench` piece (36 `K` Works Casing, 6 `T` tables, 3 air) built outside the station's back wall. Without it, or with it half built, the Works forms and runs exactly as without a bench; the bench is just not active.
+- **GGS-08-91** The bench is active only when its piece matches and it has at least one Bench Input Bus and one Bench Output Bus. Those buses are separate from the hall's buses and use the controller's Energy Hatches. The controller tooltip and the scanner say whether the bench is active.
+- **GGS-08-92** The table `T` is Natura's wooden Workbench (any wood), the vanilla Crafting Table or an Avaritia Dire Crafting Table, matched by registry name and meta; a Works Casing is accepted instead only when none of these is registered.
+- **GGS-08-93** The bench's fill recipes are the existing loaded-magazine rows of `gregguns.ammoPress` and no others; it registers no recipes. A run is the row's empties plus rounds into its loaded magazines.
+- **GGS-08-94** Runs per cycle are capped by the Works' parallels, the inputs on hand, the power the Energy Hatches supply and the room in the Bench Output Bus. Time and EU/t are the row's, with the belt multiplier and the Works' overclock rule.
+- **GGS-08-95** A fill cycle plans by simulation and moves items once, at its end, after re-checking the output fit. It never loses or duplicates an item, and a full Bench Output Bus stops it with its inputs untouched.
+- **GGS-08-96** The bench takes rounds only from plain Output Buses of the station; an ME Output Bus there supplies none. It never blocks or delays the normal recipe.
+- **GGS-08-97** The projector and the survival build leave the bench out unless the `height` channel of the trigger stack is 1 or more.
 
 ## Retort (retired)
 
@@ -407,6 +456,7 @@ Built as `MTEAmmoWorks` (ID 20105) with pure data in `AmmoWorksShape` and `AmmoW
 - **Interior lamps.** The interiors were dark behind the glass, so every feeder, bay and station (Ammunition Works) and the booth and every bay (Armory Gantry) has one required lamp position `S` under the ceiling (`InteriorLamp`, shared by both). It accepts any block whose light value is 12 or more (glowstone, a lit redstone lamp, any pack mod's lamp) and the unlit redstone lamp. The pack ships no GT lamp block (GT++'s redstone lamp is a machine tile entity), so there is no GT element to chain; the light-value test stays tier-free and lets other mods' lamps through. The hologram and creative build show glowstone, so `/gregguns build` needs no change. The projector has no lamp channel in GT 5.09.54.205 (the channels are length, item pipe casing and borosilicate glass), so the lamp is listed as a structure line in the controller tooltip instead. Chosen over a casing that glows while active because a lit casing variant would be a new block and texture per casing and could not light an idle hall.
 - **Hologram** takes the bay count from the length channel if present, else the stack size (2 to 8).
 - **Voiding** uses GT's void protection mode (item modes only), on by default; a full Output Bus pauses the hall.
+- **Filling bench** (GGS-08-90 to GGS-08-97). `AmmoWorksShape.BENCH` and `benchDepth`, the pure fill logic in `AmmoWorksFill` (recipes read from the ammo definitions, plan and commit over three item stores, overclock and cycle time), the table matcher `BenchTable` and the controller glue in `MTEAmmoWorks` (`checkBench`, `fillTick`, the two bench hatch elements, the scanner line). The bench rides on the trigger stack's `height` channel because the pack's channel list has no generic toggle and a second stack size does not exist; the channel is otherwise unused by the Works. No NEI preview of the optional piece. Decisions: one magazine kind runs per cycle, the cycle pays per tick and moves items at its end, an ME Input Bus is not accepted as a bench input.
 
 ## Open questions
 

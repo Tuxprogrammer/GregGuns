@@ -25,6 +25,7 @@ import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.machine.AmmoWorksShape;
 import com.gregguns.machine.GregGunsMTEIDs;
 import com.gregguns.machine.MTEAmmoWorks;
+import com.gtnewhorizon.structurelib.alignment.constructable.ChannelDataAccessor;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.GregTechAPI;
@@ -38,6 +39,7 @@ import gregtech.api.interfaces.tileentity.RecipeMapWorkable;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
+import gregtech.common.misc.GTStructureChannels;
 
 /**
  * In-game scenarios for the Ammunition Works: registration facts, a hall built by the controller's own hologram
@@ -63,6 +65,8 @@ public final class AmmoWorksScenarios {
         registry.register(new RegisteredScenario());
         registry.register(new RunScenario());
         registry.register(new BrokenScenario());
+        registry.register(new BenchFormsScenario());
+        registry.register(new BenchFillsScenario());
     }
 
     private static ItemStack mod(String name, int count) {
@@ -87,8 +91,15 @@ public final class AmmoWorksScenarios {
         IGregTechTileEntity inputBus;
         IGregTechTileEntity outputBus;
         IGregTechTileEntity muffler;
+        IGregTechTileEntity benchIn;
+        IGregTechTileEntity benchOut;
 
         Hall(ScenarioContext ctx, int bays) {
+            this(ctx, bays, false);
+        }
+
+        /** @param bench whether the hologram routine also builds the optional filling bench (its "height" channel) */
+        Hall(ScenarioContext ctx, int bays, boolean bench) {
             this.ctx = ctx;
             this.bays = bays;
             ctx.clearArea(AREA_RADIUS, AREA_HEIGHT);
@@ -99,7 +110,22 @@ public final class AmmoWorksScenarios {
             controller.setOwnerUuid(UUID.nameUUIDFromBytes("gregguns-test".getBytes(StandardCharsets.UTF_8)));
             mte = (MTEAmmoWorks) controller.getMetaTileEntity();
             // The controller's own hologram routine builds the casings; a stack size picks the bay count.
-            mte.construct(new ItemStack(Items.stick, bays), false);
+            ItemStack trigger = new ItemStack(Items.stick, bays);
+            if (bench) {
+                ChannelDataAccessor.setChannelData(trigger, GTStructureChannels.STRUCTURE_HEIGHT.get(), 1);
+            }
+            mte.construct(trigger, false);
+        }
+
+        /** The first bench aisle's offset from the origin, right behind the station's back wall. */
+        int benchZ() {
+            return AmmoWorksShape.benchDepth(bays);
+        }
+
+        /** Adds the bench's two buses: input on the left, output on the right of the second bench aisle. */
+        void addBenchHatches() {
+            benchIn = hatch(-2, CY, benchZ() + 1, ItemList.Hatch_Input_Bus_HV, ForgeDirection.WEST);
+            benchOut = hatch(2, CY, benchZ() + 1, ItemList.Hatch_Output_Bus_HV, ForgeDirection.EAST);
         }
 
         /** Places a GT machine block at an offset from the origin and gives it the MTE. Replaces what is there. */
@@ -143,7 +169,7 @@ public final class AmmoWorksScenarios {
          * context does not track and which would sit in the next scenario's way.
          */
         void empty() {
-            for (IGregTechTileEntity bus : new IGregTechTileEntity[] { inputBus, outputBus }) {
+            for (IGregTechTileEntity bus : new IGregTechTileEntity[] { inputBus, outputBus, benchIn, benchOut }) {
                 if (bus != null) {
                     for (int i = 0; i < bus.getSizeInventory(); i++) {
                         bus.setInventorySlotContents(i, null);
@@ -454,6 +480,187 @@ public final class AmmoWorksScenarios {
             hall.empty();
             noStray(ctx, out);
             return out.build();
+        }
+    }
+
+    /**
+     * The optional filling bench: it forms or not without ever unforming the hall, and reports whether it is active.
+     */
+    private static final class BenchFormsScenario implements Scenario {
+
+        @Override
+        public String name() {
+            return "production.ammoworks.bench.forms";
+        }
+
+        @Override
+        public String description() {
+            return "A two-bay hall forms without the filling bench and reports it inactive; with the bench and its two buses it forms and reports it active; a missing table, a stone block, or a missing bus leaves the hall formed with the bench inactive; Natura and vanilla workbenches both count as tables.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            // Without the bench.
+            Hall plain = new Hall(ctx, AmmoWorksShape.MIN_BAYS);
+            plain.addHatches();
+            expectForm(plain, out, true, "a two-bay hall without the bench should form");
+            out.check(!plain.mte.isBenchActive(), "a hall without the bench should report it inactive");
+            plain.empty();
+
+            // With the bench built but no buses on it.
+            Hall hall = new Hall(ctx, AmmoWorksShape.MIN_BAYS, true);
+            hall.addHatches();
+            expectForm(hall, out, true, "a hall with bench casings but no bench buses should still form");
+            out.check(!hall.mte.isBenchActive(), "a bench without buses should be inactive");
+            hall.addBenchHatches();
+            expectForm(hall, out, true, "the hall with a complete bench should form");
+            out.check(hall.mte.isBenchActive(), "the complete bench should be active");
+
+            // A table removed or replaced: the hall stays formed, the bench goes inactive.
+            int tableZ = hall.benchZ();
+            int tableY = Hall.CY;
+            ctx.setBlock(0, tableY, tableZ, Blocks.air, 0);
+            expectForm(hall, out, true, "a bench missing a table should leave the hall formed");
+            out.check(!hall.mte.isBenchActive(), "a bench missing a table should be inactive");
+            ctx.setBlock(0, tableY, tableZ, Blocks.stone, 0);
+            expectForm(hall, out, true, "a stone block where a table goes should leave the hall formed");
+            out.check(!hall.mte.isBenchActive(), "a stone block in place of a table should leave the bench inactive");
+            ctx.setBlock(0, tableY, tableZ, Blocks.crafting_table, 0);
+            expectForm(hall, out, true, "the hall should stay formed with a vanilla crafting table");
+            out.check(hall.mte.isBenchActive(), "a vanilla crafting table should count as a bench table");
+            Block natura = Block.getBlockFromName("Natura:Natura.workbench");
+            if (natura != null) {
+                ctx.setBlock(1, tableY, tableZ, natura, 5);
+                expectForm(hall, out, true, "the hall should stay formed with a Natura workbench");
+                out.check(hall.mte.isBenchActive(), "a Natura workbench of any wood should count as a bench table");
+            } else {
+                out.note("Natura is not loaded: the Natura workbench case was skipped");
+            }
+
+            // A missing bench bus.
+            ctx.setBlock(-2, Hall.CY, hall.benchZ() + 1, GregGunsCasings.INSTANCE, GregGunsCasings.WORKS_CASING);
+            expectForm(hall, out, true, "a bench without its input bus should leave the hall formed");
+            out.check(!hall.mte.isBenchActive(), "a bench without its input bus should be inactive");
+            hall.benchIn = hall.hatch(-2, Hall.CY, hall.benchZ() + 1, ItemList.Hatch_Input_Bus_HV, ForgeDirection.WEST);
+            expectForm(hall, out, true, "the bench input bus back should keep the hall formed");
+            out.check(hall.mte.isBenchActive(), "the bench input bus back should make the bench active again");
+
+            // A missing hall part with the bench complete still unforms the hall (the bench never replaces a part).
+            ctx.setBlock(-2, Hall.CY, 1, Blocks.air, 0);
+            expectForm(hall, out, false, "a missing wall casing should still break a hall that has a bench");
+            out.check(!hall.mte.isBenchActive(), "an unformed hall has no active bench");
+            hall.empty();
+            noStray(ctx, out);
+            return out.build();
+        }
+    }
+
+    /** Rounds in the station's Output Bus and empty magazines in the bench become loaded magazines in the bench. */
+    private static final class BenchFillsScenario implements Scenario {
+
+        private static final int EMPTIES = 10;
+        private static final int ROUNDS = 30;
+        private static final int TIMEOUT = 1200;
+
+        @Override
+        public String name() {
+            return "production.ammoworks.bench.fills";
+        }
+
+        @Override
+        public String description() {
+            return "10 empty pistol magazines in the bench Input Bus and 30 9mm rounds in the station Output Bus become 8 loaded magazines in the bench Output Bus (RC-44: 4 empties + 12 rounds make 4), leaving 2 empties and 6 rounds with nothing lost; a full bench Output Bus then stops it with the inputs untouched.";
+        }
+
+        private static int count(IGregTechTileEntity bus, Item item) {
+            int found = 0;
+            for (int i = 0; i < bus.getSizeInventory(); i++) {
+                ItemStack stack = bus.getStackInSlot(i);
+                if (stack != null && stack.getItem() == item) {
+                    found += stack.stackSize;
+                }
+            }
+            return found;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder fail = ScenarioResult.builder(name());
+            Hall hall = new Hall(ctx, AmmoWorksShape.MIN_BAYS, true);
+            hall.addHatches();
+            hall.addBenchHatches();
+            if (!hall.form() || !hall.mte.isBenchActive()) {
+                fail.check(false, "the hall with a complete bench should form and report the bench active");
+                hall.empty();
+                noStray(ctx, fail);
+                return fail.build();
+            }
+            hall.fixMaintenance();
+            final ItemStack empty = mod("mag_9mm_pistol_empty", EMPTIES);
+            final ItemStack round = mod(ProductionTable.BULLET, ROUNDS);
+            final Item loaded = mod("mag_9mm_pistol", 1) == null ? null : mod("mag_9mm_pistol", 1).getItem();
+            if (empty == null || round == null || loaded == null) {
+                fail.check(false, "the pistol magazines and the 9mm round should be registered");
+                hall.empty();
+                noStray(ctx, fail);
+                return fail.build();
+            }
+            hall.benchIn.setInventorySlotContents(0, empty.copy());
+            hall.outputBus.setInventorySlotContents(0, round.copy());
+            final int[] phase = { 0 };
+            final int[] startedAt = { 0 };
+            final ScenarioResult.Builder[] held = { null };
+            return ScenarioResult.pending(name(), TIMEOUT, ticks -> {
+                hall.energy.increaseStoredEnergyUnits(Tier.HV.voltage() * 20, true);
+                int made = count(hall.benchOut, loaded);
+                if (phase[0] == 0) {
+                    if (made < 8 && ticks < TIMEOUT / 2) {
+                        return null;
+                    }
+                    ScenarioResult.Builder out = ScenarioResult.builder(name());
+                    out.checkEquals("loaded magazines in the bench output bus", 8, made);
+                    out.checkEquals(
+                        "empty magazines left in the bench input bus",
+                        2,
+                        count(hall.benchIn, empty.getItem()));
+                    out.checkEquals("rounds left in the station output bus", 6, count(hall.outputBus, round.getItem()));
+                    out.checkEquals(
+                        "empties used equal magazines made",
+                        EMPTIES - count(hall.benchIn, empty.getItem()),
+                        made);
+                    out.check(
+                        hall.mte.maxProgresstime() == 0,
+                        "the bench must not start a normal recipe (the hall has no recipe inputs)");
+                    // Phase two: fill the bench output bus with stone, add inputs, and expect the inputs untouched.
+                    for (int i = 0; i < hall.benchOut.getSizeInventory(); i++) {
+                        hall.benchOut.setInventorySlotContents(i, new ItemStack(Blocks.stone, 64));
+                    }
+                    hall.benchIn.setInventorySlotContents(1, empty.copy());
+                    hall.outputBus.setInventorySlotContents(1, round.copy());
+                    phase[0] = 1;
+                    startedAt[0] = ticks;
+                    held[0] = out;
+                    return null;
+                }
+                if (ticks - startedAt[0] < 200) {
+                    return null;
+                }
+                ScenarioResult.Builder out = held[0];
+                out.checkEquals("loaded magazines made with a full output", 0, count(hall.benchOut, loaded));
+                out.checkEquals(
+                    "empties untouched by a full output",
+                    2 + EMPTIES,
+                    count(hall.benchIn, empty.getItem()));
+                out.checkEquals(
+                    "rounds untouched by a full output",
+                    6 + ROUNDS,
+                    count(hall.outputBus, round.getItem()));
+                out.note("first batch done by tick " + startedAt[0]);
+                hall.empty();
+                noStray(ctx, out);
+                return out.build();
+            });
         }
     }
 

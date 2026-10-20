@@ -15,12 +15,14 @@ import com.gregguns.machine.repair.GantryShape;
 import com.gregguns.machine.repair.MTEArmoryGantry;
 import com.gregguns.utility.rampart.MTERampart;
 import com.gregguns.utility.rampart.RampartShape;
+import com.gtnewhorizon.structurelib.alignment.constructable.ChannelDataAccessor;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.ItemList;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.implementations.MTEMultiBlockBase;
+import gregtech.common.misc.GTStructureChannels;
 
 /**
  * Dev tooling: forms a GregGuns multiblock around a controller that already stands in the world. Used by
@@ -71,6 +73,22 @@ public final class DevStructureBuilder {
      * @return the outcome; {@code formed} is false with an explanation when there is no controller or it did not form
      */
     public static Outcome build(World world, int x, int y, int z, int count) {
+        return build(world, x, y, z, count, false);
+    }
+
+    /**
+     * Builds and forms the multiblock whose controller is at the position, with the Ammunition Works' optional
+     * filling bench when asked.
+     *
+     * @param world the world
+     * @param x     controller x
+     * @param y     controller y
+     * @param z     controller z
+     * @param count bays or mounts, or 0 for the default; the machine clamps it
+     * @param bench whether to add the filling bench (only the Ammunition Works has one; others ignore it)
+     * @return the outcome; {@code formed} is false with an explanation when there is no controller or it did not form
+     */
+    public static Outcome build(World world, int x, int y, int z, int count, boolean bench) {
         TileEntity tile = world.getTileEntity(x, y, z);
         if (!(tile instanceof IGregTechTileEntity)) {
             return new Outcome(false, "build: no GregTech machine at " + x + " " + y + " " + z);
@@ -82,7 +100,12 @@ public final class DevStructureBuilder {
         controller.setOwnerUuid(UUID.nameUUIDFromBytes(OWNER.getBytes(StandardCharsets.UTF_8)));
         if (mte instanceof MTEAmmoWorks) {
             int bays = count == 0 ? 3 : AmmoWorksShape.clampBays(count);
-            ((MTEAmmoWorks) mte).construct(new ItemStack(Items.stick, bays), false);
+            ItemStack trigger = new ItemStack(Items.stick, bays);
+            if (bench) {
+                // The bench rides on the "height" channel of the trigger stack (MTEAmmoWorks#benchFor).
+                ChannelDataAccessor.setChannelData(trigger, GTStructureChannels.STRUCTURE_HEIGHT.get(), 1);
+            }
+            ((MTEAmmoWorks) mte).construct(trigger, false);
             hatch(world, x, y + 1, z, ItemList.Hatch_Input_Bus_HV, ForgeDirection.NORTH);
             hatch(world, x, y + 2, z, ItemList.Hatch_Energy_HV, ForgeDirection.NORTH);
             hatch(world, x + 1, y, z, ItemList.Hatch_Maintenance, ForgeDirection.NORTH);
@@ -94,7 +117,14 @@ public final class DevStructureBuilder {
                 z + AmmoWorksShape.totalLength(bays) - 1,
                 ItemList.Hatch_Output_Bus_HV,
                 ForgeDirection.SOUTH);
-            return finish(world, x, y, z, "Ammunition Works, " + bays + " bays");
+            if (bench) {
+                // Bench casings on the second aisle's side columns at the controller's height: the input bus on the
+                // left, the output bus on the right (the bench starts right behind the station's back wall).
+                int benchZ = z + AmmoWorksShape.benchDepth(bays) + 1;
+                hatch(world, x - 2, y, benchZ, ItemList.Hatch_Input_Bus_HV, ForgeDirection.WEST);
+                hatch(world, x + 2, y, benchZ, ItemList.Hatch_Output_Bus_HV, ForgeDirection.EAST);
+            }
+            return finish(world, x, y, z, "Ammunition Works, " + bays + " bays" + (bench ? " with bench" : ""));
         }
         if (mte instanceof MTEArmoryGantry) {
             int bays = count == 0 ? 3 : GantryShape.clampBays(count);
