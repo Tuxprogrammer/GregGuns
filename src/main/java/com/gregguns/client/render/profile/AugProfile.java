@@ -111,7 +111,7 @@ public final class AugProfile {
     public static final ClientGunDefinition DEFINITION = new ClientGunDefinition(
         "aug",
         BOXES,
-        1,
+        2,
         TEXTURE_WIDTH,
         TEXTURE_HEIGHT,
         MODEL_SCALE,
