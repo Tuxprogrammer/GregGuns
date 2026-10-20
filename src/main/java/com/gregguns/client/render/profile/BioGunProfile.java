@@ -4,6 +4,8 @@ import static com.gregguns.client.anim.GunCurves.kick;
 import static com.gregguns.client.anim.GunCurves.yF;
 import static com.gregguns.client.anim.GunCurves.yR;
 
+import com.gregguns.client.anim.ChargeShift;
+
 /**
  * The Bio Gun's model boxes and render transforms, as data. Registered in {@link ClientGunDefinitions}
  * with its gun definition (M5 B3a).
@@ -154,6 +156,11 @@ public final class BioGunProfile {
             .rotZ((p, part) -> -7.5 * yF(p))
             .translate((p, part) -> FP_X + 0.25 / FP_SCALE * yF(p), (p, part) -> FP_Y, (p, part) -> FP_Z)
             .build();
+        // Charge: the gun slides back along its axis toward the camera, up to 0.25 block at full charge (p is the
+        // eased charge fraction). The same direction as the firing slide; at p = 0 it is the idle pose exactly.
+        TransformProgram fpCharge = TransformProgram.builder()
+            .translate((p, part) -> FP_X - ChargeShift.offsetBlocks(p) / FP_SCALE, (p, part) -> FP_Y, (p, part) -> FP_Z)
+            .build();
         // Reload: roll 20 degrees about Z, yaw -10 degrees and a small shift at mid-reload, then back (the notes).
         TransformProgram fpReload = TransformProgram.builder()
             .rotZ((p, part) -> -20.0 * yR(p))
@@ -196,6 +203,7 @@ public final class BioGunProfile {
             .parts(1)
             .timing(4, 5, 45)
             .firstPerson(fpBase, fpIdle, fpFire, fpReload)
+            .fpCharge(fpCharge)
             .thirdPerson(tpBase, new double[] { 0, 0, -0.15 }, tpRecoil, tpReload)
             .world(ground, icon)
             .build();

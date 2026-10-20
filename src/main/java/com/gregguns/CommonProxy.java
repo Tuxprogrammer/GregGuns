@@ -55,7 +55,7 @@ public class CommonProxy {
         FMLCommonHandler.instance()
             .bus()
             .register(this);
-        if (DevEnvironment.isActive()) {
+        if (DevEnvironment.testHooksEnabled()) {
             // Dev scenario runs force-load their area; the ticket callback must exist before any world loads.
             ScenarioChunks.registerCallback();
         }
@@ -81,10 +81,10 @@ public class CommonProxy {
 
     /**
      * Registers the dev-only {@code /gregguns} command (with its {@code test} subcommand) and the built-in scenarios.
-     * Does nothing outside the dev environment.
+     * Does nothing outside the dev environment unless {@code -Dgregguns.testHooks=true} is set.
      */
     public void serverStarting(FMLServerStartingEvent event) {
-        if (!DevEnvironment.isActive()) {
+        if (!DevEnvironment.testHooksEnabled()) {
             if (com.gregguns.core.config.DebugConfig.recipeDump) {
                 GregGunsCommand dump = new GregGunsCommand();
                 dump.register(new com.gregguns.core.command.DumpRecipesSubCommand());
@@ -101,7 +101,9 @@ public class CommonProxy {
         command.register(new com.gregguns.core.command.BuildSubCommand());
         command.register(new com.gregguns.core.command.DumpRecipesSubCommand());
         event.registerServerCommand(command);
-        GregGuns.LOG.info("Registered /gregguns (dev environment), {} scenarios", ScenarioRegistry.SCENARIOS.size());
+        GregGuns.LOG.info(
+            "Registered /gregguns (dev environment or -Dgregguns.testHooks), {} scenarios",
+            ScenarioRegistry.SCENARIOS.size());
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.gregguns.client.render.profile;
 
+import com.gregguns.client.anim.RotorSpin;
+
 /**
  * Everything the renderer needs to know about one gun's look that is data rather than code: timings, the transform
  * rows of the gun sheet, the muzzle flash and the optional scope. Pure and immutable.
@@ -22,6 +24,7 @@ public final class GunTransforms {
     private final TransformProgram fpIdle;
     private final TransformProgram fpFire;
     private final TransformProgram fpReload;
+    private final TransformProgram fpCharge;
     private final TransformProgram tpBase;
     private final double[] tpAim;
     private final TransformProgram tpRecoil;
@@ -32,6 +35,8 @@ public final class GunTransforms {
     private final ScopeSpec scope;
     private final PartVisibility partVisibility;
     private final boolean checkRecoil;
+    private final RotorSpin.Spec rotorSpin;
+    private final TransformProgram rotor;
 
     /**
      * Decides whether a model part is drawn this frame, from the state a model may see. Used for parts that appear
@@ -75,6 +80,7 @@ public final class GunTransforms {
         fpIdle = b.fpIdle;
         fpFire = b.fpFire;
         fpReload = b.fpReload;
+        fpCharge = b.fpCharge;
         tpBase = b.tpBase;
         tpAim = b.tpAim.clone();
         tpRecoil = b.tpRecoil;
@@ -85,6 +91,8 @@ public final class GunTransforms {
         scope = b.scope;
         checkRecoil = b.checkRecoil;
         partVisibility = b.partVisibility;
+        rotorSpin = b.rotorSpin;
+        rotor = b.rotor;
     }
 
     /** @return a new builder; every row defaults to no steps */
@@ -124,6 +132,19 @@ public final class GunTransforms {
         return checkRecoil;
     }
 
+    /** @return the rotor's spin numbers, or null for a gun with no spinning rotor */
+    public RotorSpin.Spec rotorSpin() {
+        return rotorSpin;
+    }
+
+    /**
+     * @return the rotor row, applied after the first- and third-person rows (not during a reload) with the rotor's
+     *         angle in turns, 0 to below 1, as the progress; empty for a gun with no spinning rotor
+     */
+    public TransformProgram rotor() {
+        return rotor;
+    }
+
     /** @return recoil length in ticks */
     public int recoilTicks() {
         return recoilTicks;
@@ -157,6 +178,19 @@ public final class GunTransforms {
     /** @return first-person reload row (progress = reload) */
     public TransformProgram fpReload() {
         return fpReload;
+    }
+
+    /**
+     * @return first-person charge row (progress = the eased charge fraction 0 to 1), which replaces the idle row while
+     *         the gun is being charged; empty for a gun that does not shift
+     */
+    public TransformProgram fpCharge() {
+        return fpCharge;
+    }
+
+    /** @return whether the gun has a first-person charge row */
+    public boolean hasFpCharge() {
+        return fpCharge.size() > 0;
     }
 
     /** @return third-person base row */
@@ -217,6 +251,7 @@ public final class GunTransforms {
         private TransformProgram fpIdle = TransformProgram.EMPTY;
         private TransformProgram fpFire = TransformProgram.EMPTY;
         private TransformProgram fpReload = TransformProgram.EMPTY;
+        private TransformProgram fpCharge = TransformProgram.EMPTY;
         private TransformProgram tpBase = TransformProgram.EMPTY;
         private double[] tpAim = { 0, 0, 0 };
         private TransformProgram tpRecoil = TransformProgram.EMPTY;
@@ -227,8 +262,20 @@ public final class GunTransforms {
         private ScopeSpec scope;
         private PartVisibility partVisibility = PartVisibility.ALWAYS;
         private boolean checkRecoil;
+        private RotorSpin.Spec rotorSpin;
+        private TransformProgram rotor = TransformProgram.EMPTY;
 
         private Builder() {}
+
+        /**
+         * A rotor that ramps up while firing and coasts to rest. The row is applied with the rotor angle in turns
+         * as its progress, in first and third person; the ground and icon views never apply it.
+         */
+        public Builder rotorSpin(RotorSpin.Spec spec, TransformProgram row) {
+            rotorSpin = spec;
+            rotor = row;
+            return this;
+        }
 
         /** A rule that hides parts by ammo and reload state; the default draws every part. */
         public Builder partVisibility(PartVisibility rule) {
@@ -263,6 +310,12 @@ public final class GunTransforms {
             fpIdle = idle;
             fpFire = fire;
             fpReload = reload;
+            return this;
+        }
+
+        /** The optional first-person charge row (the Bio Gun's slide toward the camera). */
+        public Builder fpCharge(TransformProgram charge) {
+            fpCharge = charge;
             return this;
         }
 

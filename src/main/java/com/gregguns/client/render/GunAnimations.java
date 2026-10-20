@@ -5,10 +5,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
+import com.gregguns.client.anim.ChargeShift;
 import com.gregguns.client.anim.GunAnimState;
 import com.gregguns.client.anim.MuzzleLight;
 import com.gregguns.client.anim.ShotOrigin;
@@ -44,6 +47,7 @@ public final class GunAnimations {
 
     private final Map<Integer, GunAnimState> states = new HashMap<>();
     private final ZoomController zoom = new ZoomController();
+    private final ChargeShift chargeShift = new ChargeShift();
     private long tick;
     private float partial;
 
@@ -55,6 +59,11 @@ public final class GunAnimations {
     /** @return the partial tick of the frame being rendered */
     double partial() {
         return partial;
+    }
+
+    /** @return the first-person charge shift of the local player's charge gun */
+    public ChargeShift chargeShift() {
+        return chargeShift;
     }
 
     /** @return the zoom controller (FOV and scope overlay state) */
@@ -96,7 +105,9 @@ public final class GunAnimations {
         if (shooter == null) {
             return;
         }
-        stateFor(shooter).reloadStarted(now(), durationTicks, heldTag(shooter));
+        GunAnimState s = stateFor(shooter);
+        s.reloadStarted(now(), durationTicks, heldTag(shooter));
+        s.spinReset(); // the rotor does not move in a reload
         if (isLocal(shooter)) {
             zoom.reset();
         }
@@ -146,6 +157,7 @@ public final class GunAnimations {
     void clientTick() {
         tick++;
         zoom.tick(Minecraft.getMinecraft().thePlayer);
+        tickSpins();
         if (tick % PRUNE_PERIOD_TICKS == 0) {
             double now = now();
             Iterator<GunAnimState> it = states.values()
@@ -159,6 +171,26 @@ public final class GunAnimations {
         }
     }
 
+    /** The angle of this holder's rotor for the frame being rendered, in turns; 0 at rest and without a record. */
+    double rotorTurns(EntityLivingBase holder, int gunTag) {
+        GunAnimState s = holder == null ? null : states.get(holder.getEntityId());
+        return s == null ? 0.0 : s.rotorTurns(gunTag, partial);
+    }
+
+    /** Advances every spinning rotor one tick; a holder who put the gun away (or left) loses the spin at once. */
+    private void tickSpins() {
+        World world = Minecraft.getMinecraft().theWorld;
+        for (Map.Entry<Integer, GunAnimState> e : states.entrySet()) {
+            GunAnimState s = e.getValue();
+            int tag = s.spinTag();
+            if (tag < 0) {
+                continue;
+            }
+            Entity holder = world == null ? null : world.getEntityByID(e.getKey());
+            s.spinTick(holder instanceof EntityLivingBase && heldTag((EntityLivingBase) holder) == tag);
+        }
+    }
+
     /** Called at the start of every rendered frame with the partial tick. */
     void setPartial(float partialTicks) {
         partial = partialTicks;
@@ -168,6 +200,7 @@ public final class GunAnimations {
     void clear() {
         states.clear();
         zoom.reset();
+        chargeShift.reset();
     }
 
     private void shot(EntityLivingBase shooter, int attackType, int recoilTicks, int flashTicks, ShotOrigin origin) {
@@ -177,8 +210,11 @@ public final class GunAnimations {
         GunTransforms t = heldTransforms(shooter);
         int recoil = recoilTicks >= 0 ? recoilTicks : t != null ? t.recoilTicks() : FALLBACK_RECOIL_TICKS;
         int flash = flashTicks >= 0 ? flashTicks : t != null ? t.flashTicks() : FALLBACK_FLASH_TICKS;
-        stateFor(shooter)
-            .shot(now(), recoil, flash, attackType, origin, heldTag(shooter), t != null && t.checkRecoil());
+        GunAnimState s = stateFor(shooter);
+        s.shot(now(), recoil, flash, attackType, origin, heldTag(shooter), t != null && t.checkRecoil());
+        if (t != null && t.rotorSpin() != null) {
+            s.spinDriven(t.rotorSpin(), heldTag(shooter));
+        }
     }
 
     private GunAnimState stateFor(EntityLivingBase shooter) {

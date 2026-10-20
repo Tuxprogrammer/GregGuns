@@ -36,8 +36,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Dev-only client hooks that let a script collect multiplayer and visual evidence without a human at the screen.
- * Active only when {@link DevEnvironment#isActive()} and the JVM property {@code -Dgregguns.autotest=<label>} is set;
- * otherwise {@link #init} returns without registering anything, so a released pack never runs any of it.
+ * Active only when {@link DevEnvironment#testHooksEnabled()} (a dev workspace, or {@code -Dgregguns.testHooks=true})
+ * and the JVM property {@code -Dgregguns.autotest=<label>} is set;
+ * otherwise {@link #init} returns without registering anything, so a released pack never runs any of it unless
+ * {@code -Dgregguns.testHooks=true} is also set.
  *
  * <h2>What it does</h2>
  * <ul>
@@ -90,9 +92,9 @@ public final class ClientAutotest {
         this.input = input;
     }
 
-    /** @return true if the dev environment is running with {@code -Dgregguns.autotest} set */
+    /** @return true if the test hooks are enabled and the JVM runs with {@code -Dgregguns.autotest} set */
     public static boolean enabled() {
-        return DevEnvironment.isActive() && System.getProperty(PROPERTY) != null;
+        return DevEnvironment.testHooksEnabled() && System.getProperty(PROPERTY) != null;
     }
 
     /**

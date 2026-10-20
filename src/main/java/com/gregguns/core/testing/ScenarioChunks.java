@@ -12,7 +12,7 @@ import com.gregguns.GregGuns;
 /**
  * Keeps a scenario's area loaded with Forge chunk tickets, so projectiles (which end at an unloaded chunk) and
  * multi-tick scenarios behave. <b>Dev environment only:</b> nothing in gameplay code calls this, and
- * {@link #registerCallback()} is reached only when {@code DevEnvironment.isActive()}. Server side.
+ * {@link #registerCallback()} is reached only when {@code DevEnvironment.testHooksEnabled()}. Server side.
  *
  * <p>
  * Source: Forge 1.7.10-10.13.4.1614 {@code net.minecraftforge.common.ForgeChunkManager}.

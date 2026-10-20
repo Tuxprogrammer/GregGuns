@@ -116,6 +116,7 @@ final class GunItemRenderer implements IItemRenderer {
         double shotRecoil = anim == null ? AnimWindow.NONE : anim.recoilProgress(now, tag);
         double shotFlash = anim == null ? AnimWindow.NONE : anim.flashProgress(now, tag);
         int attackType = anim == null ? 0 : anim.attackType();
+        double rotorTurns = held && t.rotorSpin() != null ? anims.rotorTurns(holder, tag) : 0.0;
 
         // An akimbo gun in first person draws the single model once per hand; only the hand that fired recoils.
         // A double-shot akimbo gun (2 rounds per pull) fires both hands at once, so both recoil.
@@ -139,7 +140,7 @@ final class GunItemRenderer implements IItemRenderer {
                     GL11.glRotated(AkimboLayout.MIRROR_YAW, 0.0, 1.0, 0.0);
                     GL11.glFrontFace(GL11.GL_CW);
                 }
-                drawGun(stack, type, holder, hand, reload, recoil, flash, firstPerson);
+                drawGun(stack, type, holder, hand, reload, recoil, flash, firstPerson, rotorTurns);
             } finally {
                 if (mirrored) {
                     GL11.glFrontFace(GL11.GL_CCW);
@@ -150,7 +151,7 @@ final class GunItemRenderer implements IItemRenderer {
     }
 
     private void drawGun(ItemStack stack, ItemRenderType type, EntityLivingBase holder, int hand, double reload,
-        double recoil, double flash, boolean firstPerson) {
+        double recoil, double flash, boolean firstPerson, double rotorTurns) {
         GunTransforms t = transforms;
         fillState(stack, type, reload, recoil, hand);
         ResourceLocation texture = textures[CamoIndex.clamp(camoOf(stack), textures.length)];
@@ -158,7 +159,7 @@ final class GunItemRenderer implements IItemRenderer {
         for (int part = 0; part < parts; part++) {
             GL11.glPushMatrix();
             try {
-                applyTransforms(type, holder, part, reload, recoil);
+                applyTransforms(type, holder, part, reload, recoil, rotorTurns);
                 Minecraft.getMinecraft()
                     .getTextureManager()
                     .bindTexture(texture);
@@ -194,9 +195,14 @@ final class GunItemRenderer implements IItemRenderer {
         }
     }
 
-    private void applyTransforms(ItemRenderType type, EntityLivingBase holder, int part, double reload, double recoil) {
+    private void applyTransforms(ItemRenderType type, EntityLivingBase holder, int part, double reload, double recoil,
+        double rotorTurns) {
         GunTransforms t = transforms;
         double fire = recoil == AnimWindow.NONE ? 0.0 : recoil;
+        // The charge shift is first person only: the local player's eased charge fraction (0 at rest).
+        GunAnimations anims = GunsClientModule.animations();
+        double chargeShift = type == ItemRenderType.EQUIPPED_FIRST_PERSON ? anims.chargeShift()
+            .value(anims.partial()) : 0.0;
         switch (type) {
             case EQUIPPED_FIRST_PERSON:
                 t.fpBase()
@@ -207,9 +213,16 @@ final class GunItemRenderer implements IItemRenderer {
                 } else if (recoil != AnimWindow.NONE) {
                     t.fpFire()
                         .apply(recoil, part, GL_SINK);
+                } else if (t.hasFpCharge() && chargeShift > 0.0) {
+                    t.fpCharge()
+                        .apply(chargeShift, part, GL_SINK);
                 } else {
                     t.fpIdle()
                         .apply(0.0, part, GL_SINK);
+                }
+                if (reload == AnimWindow.NONE) {
+                    t.rotor()
+                        .apply(rotorTurns, part, GL_SINK);
                 }
                 break;
             case EQUIPPED:
@@ -224,6 +237,8 @@ final class GunItemRenderer implements IItemRenderer {
                 } else {
                     t.tpRecoil()
                         .apply(fire, part, GL_SINK);
+                    t.rotor()
+                        .apply(rotorTurns, part, GL_SINK);
                 }
                 break;
             case ENTITY:

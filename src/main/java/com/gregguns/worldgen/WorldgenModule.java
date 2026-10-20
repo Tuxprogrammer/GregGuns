@@ -48,7 +48,7 @@ public final class WorldgenModule implements GregGunsModule {
     public void init(FMLInitializationEvent event) {
         // The cascade guard records any chunk loaded while a structure populates (GGS-11-09); safe to call twice.
         PopulateGuard.register();
-        if (DevEnvironment.isActive()) {
+        if (DevEnvironment.testHooksEnabled()) {
             WorldgenScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             LootScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             ChestScenarios.registerAll(ScenarioRegistry.SCENARIOS);
