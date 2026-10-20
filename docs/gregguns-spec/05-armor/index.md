@@ -21,6 +21,7 @@ The main findings:
 | [oxygen-gear.md](oxygen-gear.md) | Oxygen mask and tanks in Galacticraft dimensions |
 | [recipes.md](recipes.md) | Every armor and equipment recipe on GT recipe maps (absorbs the old [armor-recipes.md](armor-recipes.md), now a pointer) |
 | [implementation-notes.md](implementation-notes.md) | M3 waves A to C: armor framework, T1, T2, T3 and steam sets, powered armor, bonus lifecycle, deviations and open questions |
+| [m3-exit-gate.md](m3-exit-gate.md) | Beta-gate completeness audit of the M3 exit gate: evidence, status and the client checks still owed |
 
 **No integration point, so no sheet.** See the Techguns spec and the [design records](../../design/README.md):
 
