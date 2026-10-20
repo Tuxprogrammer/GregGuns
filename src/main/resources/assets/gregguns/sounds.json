@@ -175,6 +175,14 @@
     "category": "player",
     "sounds": ["guns/beamgun_loop_a", "guns/beamgun_loop_b", "guns/beamgun_loop_c", "guns/beamgun_loop_d", "guns/beamgun_loop_e", "guns/beamgun_loop_f"]
   },
+  "guns.alien_blaster.fire": {
+    "category": "player",
+    "sounds": ["guns/alienblaster_shot_a", "guns/alienblaster_shot_b", "guns/alienblaster_shot_c"]
+  },
+  "guns.alien_blaster.reload": {
+    "category": "player",
+    "sounds": ["guns/alienblaster_reload"]
+  },
   "guns.flamethrower.fire": {
     "category": "player",
     "sounds": ["guns/flamethrower_shot_a", "guns/flamethrower_shot_b", "guns/flamethrower_shot_c", "guns/flamethrower_shot_d", "guns/flamethrower_shot_e"]

@@ -39,5 +39,7 @@ public enum ProjectileKind {
     INVISIBLE,
 
     /** Continuous radiation beam (Nuclear Death Ray), M5. Section 3.14. */
-    BEAM
+    BEAM,
+    /** Alien Blaster bolt: fire damage, trail and a tiny non-breaking blast, M5. Section 3.9. */
+    ALIEN_BLAST
 }

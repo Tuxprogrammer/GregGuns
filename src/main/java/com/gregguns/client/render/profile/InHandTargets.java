@@ -101,6 +101,7 @@ public final class InHandTargets {
         put("pulse_rifle", 2.52, 0.78, -0.66, 1.41, 0.78, -0.55, 2.67, 1.41);
         put("minigun", 2.33, 0.71, -0.53, 1.40, 0.71, -0.54, 2.57, 1.82);
         put("bio_gun", 1.90, 0.57, -0.78, 0.52, 0.57, -0.54, 1.47, 1.34);
+        put("alien_blaster", 1.26, 0.60, -0.53, 1.08, 0.60, -0.40, 1.71, 0.68);
         put("bolt_action_rifle", 2.01, 0.54, -0.35, 1.02, 0.52, -0.29, 2.02, 1.88);
         // M5 batch B4 (IV energy guns); the akimbo item draws the pistol twice and has no row of its own.
         put("blaster_rifle", 1.75, 0.41, -0.49, 1.12, 0.41, -0.38, 1.99, 1.11);

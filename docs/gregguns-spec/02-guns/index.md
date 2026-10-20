@@ -165,6 +165,16 @@ Bio Gun (`bio_gun`, GR-65, EV). Ammo is the Bio Tank (`tank_bio`, a Forge fluid 
 - **Recipe (GR-65).** Pump Mechanism, Steel Receiver, Plastic Gun Stock, a small titanium pipe, 2 titanium plates and 4 titanium screws; Assembler, EV, 30 s, circuit 7. Made empty.
 - **Model.** `BioGunProfile` is registered; the glow parts stay painted (no fullbright pass). The first-person charge shift (up to 0.25 block toward the camera while charging) is not drawn yet; the resting pose is fitted to the in-hand targets.
 
+## Alien Blaster, batch B5 (M5): deviations
+
+Alien Blaster (`alien_blaster`, GR-95), LuV. An IC2 tier 6 electric item (`ItemEnergyGun`) charged by a GT charger or battery buffer of exactly that tier.
+
+- **Shots of charge.** The LuV baseline is a 1,000,000,000 EU Lapotronic Orb II. The sheet's 10 round clip is 10 shots at 100,000,000 EU. There is no reload (plan Q5); the `reload` sound event exists because the sound table requires one per gun.
+- **Recipe.** Techguns gives the gun no recipe. The sheet's Assembly Line chain (research: the De-Atomizer Pistol; solder and lubricant) is not built for guns, so it is a plain LuV Assembler row with the sheet's item inputs, gated by the HSS-G plate.
+- **Trail (PFX-01).** `AlienBlasterProjectile` is a registered, tracked entity (id 27; Techguns never registered it, so its trail packet found no entity). The trail is sent on the bolt's second tick, after the tracker lists watchers; the client also waits for an entity that arrives late.
+- **Blast.** Power 0.5, full damage within 0.25 blocks, none beyond 0.75, never breaks blocks, server side only (PFX-15 ran it on both sides). The entity the bolt hit is left out of the blast so a hit is not counted twice.
+- **Fire.** Only a player's bolt ignites its target (the FIRE type's burn: 5 s, blocked by full heat hazmat, not Techguns' fixed 3 s) and, with `explosions.blockDamage` on and the break check passing, sets the face it hits alight. An NPC's or turret's bolt never ignites.
+
 ## Pack-side changes
 
 These land as a PR to the [GTNH modpack repository](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack) and are collected in [PACK-CHANGES.md](../PACK-CHANGES.md).

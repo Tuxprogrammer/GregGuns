@@ -1,6 +1,7 @@
 package com.gregguns.client.projectile;
 
 import com.gregguns.projectile.BeamProjectile;
+import com.gregguns.projectile.AlienBlasterProjectile;
 import com.gregguns.projectile.BeamVisual;
 import com.gregguns.projectile.BiogunProjectile;
 import com.gregguns.projectile.EnergyBlastProjectile;
@@ -44,5 +45,7 @@ public final class ProjectileRenderers {
         RenderingRegistry.registerEntityRenderingHandler(BiogunProjectile.class, new RenderInvisible());
         // Impact and trail effects of the energy blast come with the FX core.
         RenderingRegistry.registerEntityRenderingHandler(EnergyBlastProjectile.class, new RenderInvisible());
+        // The alien bolt is drawn by its AlienBlasterTrail FX; the entity itself draws nothing.
+        RenderingRegistry.registerEntityRenderingHandler(AlienBlasterProjectile.class, new RenderInvisible());
     }
 }

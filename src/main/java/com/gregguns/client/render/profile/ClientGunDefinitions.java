@@ -51,6 +51,7 @@ public final class ClientGunDefinitions {
             PulseRifleProfile.DEFINITION,
             MinigunProfile.DEFINITION,
             BioGunProfile.DEFINITION,
+            AlienBlasterProfile.DEFINITION,
             // One model, two items: each selects its own skin (the profile lists both sheets).
             ClientGunDefinition
                 .variantOf("power_hammer", PowerHammerProfile.DEFINITION, PowerHammerProfile.TEXTURES[0]),
