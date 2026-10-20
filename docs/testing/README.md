@@ -439,6 +439,8 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `npc.army_soldier_fires` / `npc.commando_fires` | Army Soldier, Commando (M7 B2) | An M4 soldier 6 blocks from a player fires projectiles with itself as shooter within 400 ticks; difficulty restored, entities removed. |
 | `npc.zombies_egg` | Zombie NPCs (M7 B1) | The Zombie Soldier, Farmer and Miner eggs spawn their class with max health 25/18/20, base melee 4/3/4, a held weapon, the hostile faction and the undead attribute; none burns. Removes what it spawned. |
 | `npc.zombie_soldier_fires` | Zombie NPCs (M7 B1) | A Zombie Soldier with a revolver 8 blocks from a player targets it and fires real projectiles it shoots. Removes what it spawned. |
+| `npc.bandit_egg_stats` | Bandit (M7 B1) | A Bandit from its egg has health 20, melee 5, speed 0.30, follow range 40, holds a GregGuns gun with the gun task and is hostile faction; removed afterwards. |
+| `npc.bandit_fires` | Bandit (M7 B1) | A pistol Bandit 6 blocks from a player fires projectiles with itself as shooter within 400 ticks; difficulty restored, entities removed. |
 | `utility.charge_foreign_button` | explosive charges (M6) | `PacketChargeButton` from a non-owner is rejected (fuse and arm), an unknown id is rejected, the owner's press is applied (MUTL-31). |
 | `utility.turret_registered` | Turret (M6) | The four Turrets are `MTETurret` at 20116 to 20119 with the right tiers; the entity is registered as `gregguns.turret`, is not `IMob`, is `IEntityOwnable` and has 30 max health. |
 | `utility.turret_kills_zombie` | Turret (M6) | A powered MV Turret with a 9mm Pistol (one round loaded) and four magazines shoots a fire-resistant zombie dead; exactly one empty magazine is handed back and three remain. |

@@ -6,6 +6,7 @@ import com.gregguns.client.mob.MobRenderers;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
+import com.gregguns.entity.npc.Bandit;
 import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.entity.npc.mob.ArmySoldier;
 import com.gregguns.entity.npc.mob.Commando;
@@ -34,6 +35,7 @@ public final class NpcClientModule implements ClientModule {
         zombie(ZombieSoldier.class);
         zombie(ZombieFarmer.class);
         zombie(ZombieMiner.class);
+        MobRenderers.biped(Bandit.class, "biped", "textures/entity/bandit.png", 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);
         if (DevEnvironment.isActive()) {
             MobRenderers
                 .biped(NpcEntity.class, "biped", "textures/entity/army_soldier.png", 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);

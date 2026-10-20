@@ -52,6 +52,7 @@ public final class NpcRegistry {
         bind(NpcMob.ZOMBIE_SOLDIER, ZombieSoldier.class);
         bind(NpcMob.ZOMBIE_FARMER, ZombieFarmer.class);
         bind(NpcMob.ZOMBIE_MINER, ZombieMiner.class);
+        bind(NpcMob.BANDIT, Bandit.class);
         if (DevEnvironment.isActive()) {
             // The base NPC, for scenarios and the test renderer only.
             bind(NpcMob.NPC_TEST, NpcEntity.class);
