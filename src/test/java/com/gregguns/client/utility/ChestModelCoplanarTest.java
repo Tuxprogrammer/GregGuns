@@ -9,6 +9,8 @@ import java.util.List;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelChest;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.model.PositionTextureVertex;
+import net.minecraft.client.model.TexturedQuad;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,11 +23,33 @@ class ChestModelCoplanarTest {
 
     private static final float EPS = 1.0e-4F;
 
-    /** Absolute min and max corners of a box, closed lid (rotation zero), in model pixels. */
+    /** The drawn quads; the field is private, so reach it by reflection. */
+    private static TexturedQuad[] quads(ModelBox box) {
+        try {
+            java.lang.reflect.Field f = ModelBox.class.getDeclaredField("quadList");
+            f.setAccessible(true);
+            return (TexturedQuad[]) f.get(box);
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    /** Min then max corner of a box in model pixels, closed lid, from the drawn vertices so a scale shows. */
+    @SuppressWarnings("unchecked")
     private static float[] bounds(ModelRenderer part, ModelBox box) {
-        return new float[] { part.rotationPointX + box.posX1, part.rotationPointY + box.posY1,
-            part.rotationPointZ + box.posZ1, part.rotationPointX + box.posX2, part.rotationPointY + box.posY2,
-            part.rotationPointZ + box.posZ2 };
+        float[] b = { Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE,
+            -Float.MAX_VALUE };
+        for (TexturedQuad q : quads(box)) {
+            for (PositionTextureVertex v : q.vertexPositions) {
+                float[] p = { (float) v.vector3D.xCoord + part.rotationPointX,
+                    (float) v.vector3D.yCoord + part.rotationPointY, (float) v.vector3D.zCoord + part.rotationPointZ };
+                for (int i = 0; i < 3; i++) {
+                    b[i] = Math.min(b[i], p[i]);
+                    b[i + 3] = Math.max(b[i + 3], p[i]);
+                }
+            }
+        }
+        return b;
     }
 
     @SuppressWarnings("unchecked")
@@ -33,13 +57,7 @@ class ChestModelCoplanarTest {
         List<float[]> list = new ArrayList<>();
         for (ModelRenderer part : new ModelRenderer[] { m.chestLid, m.chestBelow, m.chestKnob }) {
             for (ModelBox b : (List<ModelBox>) part.cubeList) {
-                float[] raw = bounds(part, b);
-                float[] ordered = new float[6];
-                for (int i = 0; i < 3; i++) {
-                    ordered[i] = Math.min(raw[i], raw[i + 3]);
-                    ordered[i + 3] = Math.max(raw[i], raw[i + 3]);
-                }
-                list.add(ordered);
+                list.add(bounds(part, b));
             }
         }
         return list;
