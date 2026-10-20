@@ -1,7 +1,9 @@
 package com.gregguns.worldgen;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.gregguns.GregGuns;
 import com.gregguns.core.DevEnvironment;
@@ -80,6 +82,11 @@ public final class WorldgenModule implements GregGunsModule {
         return ids;
     }
 
+    /** The ids in {@link #layoutIds()} that are allowed to be absent: the camp color variants. */
+    static Set<String> optionalLayoutIds() {
+        return new HashSet<>(PartLayouts.FromRegistry.variantIds());
+    }
+
     private static void registerGenerator() {
         if (!WorldgenSettings.generatorWanted()) {
             return;
@@ -88,8 +95,10 @@ public final class WorldgenModule implements GregGunsModule {
         LayoutRegistry layouts = LayoutRegistry.load(
             new LayoutRegistry.ClasspathSource(LayoutRegistry.ClasspathSource.STRUCTURES),
             layoutIds(),
+            optionalLayoutIds(),
             keys,
-            GregGuns.LOG::info);
+            GregGuns.LOG::warn,
+            GregGuns.LOG::debug);
         StructureGenerator.configure(layouts, keys);
         GameRegistry.registerWorldGenerator(new StructureGenerator(), StructureGenerator.WEIGHT);
     }
