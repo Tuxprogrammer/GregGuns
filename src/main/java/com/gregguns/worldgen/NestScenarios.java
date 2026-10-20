@@ -114,6 +114,11 @@ public final class NestScenarios {
         }
     }
 
+    /** Air, or the slime trail that may line the shaft axis beside the pillar. */
+    private static boolean open(Block b, Block slime) {
+        return b == Blocks.air || b == slime;
+    }
+
     private static void put(World world, int x, int y, int z, Block b) {
         if (world.getBlock(x, y, z) != b || world.getBlockMetadata(x, y, z) != 0) {
             world.setBlock(x, y, z, b, 0, 2);
@@ -293,7 +298,7 @@ public final class NestScenarios {
                 out.check(
                     world.getBlock(model.shaftX(), GROUND, model.shaftZ()) == Blocks.air
                         && world.getBlock(model.shaftX(), GROUND + 1, model.shaftZ()) == Blocks.air
-                        && world.getBlock(model.shaftX(), GROUND - 6, model.shaftZ()) == Blocks.air,
+                        && open(world.getBlock(model.shaftX(), GROUND - 6, model.shaftZ()), slime),
                     "the shaft should be open from the surface down");
 
                 int chests = 0;
