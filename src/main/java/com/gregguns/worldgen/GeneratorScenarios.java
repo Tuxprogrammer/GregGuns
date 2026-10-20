@@ -295,8 +295,16 @@ public final class GeneratorScenarios {
                 for (int z = p.anchorZ(); z <= p.maxZ(); z++) {
                     for (int y = anchorY - layout.ground(); y < anchorY - layout.ground() + layout.sizeY(); y++) {
                         Block b = world.getBlock(x, y, z);
-                        sb.append(x).append(',').append(y).append(',').append(z).append('=')
-                            .append(Block.getIdFromBlock(b)).append(':').append(world.getBlockMetadata(x, y, z)).append(';');
+                        sb.append(x)
+                            .append(',')
+                            .append(y)
+                            .append(',')
+                            .append(z)
+                            .append('=')
+                            .append(Block.getIdFromBlock(b))
+                            .append(':')
+                            .append(world.getBlockMetadata(x, y, z))
+                            .append(';');
                     }
                 }
             }
@@ -307,9 +315,11 @@ public final class GeneratorScenarios {
         private static String firstDiff(Map<String, String> a, Map<String, String> b) {
             for (Map.Entry<String, String> e : a.entrySet()) {
                 String other = b.get(e.getKey());
-                if (e.getValue().equals(other)) continue;
+                if (e.getValue()
+                    .equals(other)) continue;
                 if (other == null) return " (plan " + e.getKey() + " missing in pass 2)";
-                String[] x = e.getValue().split(";");
+                String[] x = e.getValue()
+                    .split(";");
                 String[] y = other.split(";");
                 for (int i = 0; i < Math.min(x.length, y.length); i++) {
                     if (!x[i].equals(y[i])) return " (plan " + e.getKey() + ": " + x[i] + " became " + y[i] + ")";
