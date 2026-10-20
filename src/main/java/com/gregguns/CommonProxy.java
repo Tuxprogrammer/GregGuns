@@ -1,5 +1,7 @@
 package com.gregguns;
 
+import net.minecraft.entity.player.EntityPlayerMP;
+
 import com.gregguns.armor.ArmorModule;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.GregGunsTab;
@@ -8,6 +10,8 @@ import com.gregguns.core.command.TestSubCommand;
 import com.gregguns.core.config.GregGunsConfig;
 import com.gregguns.core.config.ModuleFlags;
 import com.gregguns.core.module.ModuleManager;
+import com.gregguns.core.module.ModuleMismatch;
+import com.gregguns.core.module.PacketModuleSync;
 import com.gregguns.core.selfcheck.SelfCheckRunner;
 import com.gregguns.core.testing.HarnessScenarios;
 import com.gregguns.core.testing.ScenarioChunks;
@@ -15,15 +19,19 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.entity.NpcModule;
 import com.gregguns.gun.GunsModule;
 import com.gregguns.machine.MachinesModule;
+import com.gregguns.machine.MtePlaceholders;
 import com.gregguns.network.GregGunsNetwork;
 import com.gregguns.utility.UtilityModule;
 import com.gregguns.worldgen.WorldgenModule;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 
 public class CommonProxy {
 
@@ -41,9 +49,29 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         modules.init(event);
+        // Every id of the reserved block gets a machine on both sides, so a module that is off here cannot leave a hole
+        // that crashes GT's item render (see MtePlaceholders). Still inside GT's registration window.
+        MtePlaceholders.registerMissing();
+        FMLCommonHandler.instance()
+            .bus()
+            .register(this);
         if (DevEnvironment.isActive()) {
             // Dev scenario runs force-load their area; the ticket callback must exist before any world loads.
             ScenarioChunks.registerCallback();
+        }
+    }
+
+    /** @return the bit mask of the modules this side runs, see ModuleMismatch */
+    public int enabledModuleMask() {
+        return ModuleMismatch.mask(modules.enabledIds());
+    }
+
+    /** @param event a player logging in; tells their client which modules the server runs */
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.player instanceof EntityPlayerMP) {
+            GregGunsNetwork.channel()
+                .sendTo(new PacketModuleSync(enabledModuleMask()), (EntityPlayerMP) event.player);
         }
     }
 

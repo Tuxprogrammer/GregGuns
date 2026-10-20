@@ -54,12 +54,12 @@ Built as `MTECamoBench` (ID 20115, LV) with `PacketCamoCycle`. Decisions, each m
 
 ## Explosive charges built notes (M6 chunk 3)
 
-One block `gregguns:explosive_charge` with two metas (0 TNT at MV, 1 Advanced at HV) and `TileExplosiveCharge`, in `com.gregguns.utility.charge`. Pure rules: `ChargeType`, `ChargeParams` (buttons 0 to 6), `ChargeFuse`, `ChargeGeometry`, `ChargeRecipeSpec`. Server work: `ChargeBlast` (break event for a real player from `OwnerProfiles`, fortune 0 drops before removal, no `Explosion`). The settings screen is GUI id 30 (`ChargeContainer`, `client.utility.ChargeGui`) and every button is a `PacketChargeButton`. Decisions, each marked in code:
+One block `gregguns:explosive_charge` with two metas (0 TNT at MV, 1 Advanced at HV) and `TileExplosiveCharge`, in `com.gregguns.utility.charge`. Pure rules: `ChargeType`, `ChargeParams` (buttons 0 to 7, 7 being Disarm), `ChargeGuiModel`, `ChargeFuse`, `ChargeGeometry`, `ChargeRecipeSpec`. Server work: `ChargeBlast` (break event for a real player from `OwnerProfiles`, fortune 0 drops before removal, no `Explosion`). The settings screen is a ModularUI2 panel (`ChargePanel`, opened by the tile as its own GUI holder; see "The settings screen" in the charges sheet), and its buttons are sync handlers that call `TileExplosiveCharge.pressBy`; `PacketChargeButton` is kept with the same owner check. Decisions, each marked in code:
 
-- **Permissions (MUTL-31).** All seven buttons, arm included, need the owner or a ServerUtilities team member. An ownerless charge cannot be configured.
+- **Permissions (MUTL-31).** All eight buttons, arm and disarm included, need the owner or a ServerUtilities team member. An ownerless charge cannot be configured.
 - **Tier.** The block reports HV (its highest meta) because the self-check reads one tier per block; `ChargeType.tier()` holds the per-meta MV/HV.
 - **Liquids.** Liquid blocks in the tunnel are skipped, not removed (the baseline cleared them).
-- **Armed and GUI.** A right-click on an armed charge does nothing, and the open GUI closes when the charge arms.
+- **Armed and GUI.** A right-click on an armed charge opens the screen with the live countdown (the owner can disarm); wrenches still ignore it.
 - **Falling off.** A charge whose mounting block disappears drops as an unarmed item.
 - **Placeholder look.** `ChargeModel` holds the box list (1/16 block units, floor pose, rotated to the six faces); `client.utility.ChargeRenderer` draws it with a casing texture. Particles on detonation are not built. Visual check owed. Asset gaps: charge model textures (block icon uses `casings/gantry_casing`, the world render `casings/works_casing`).
 - **Sounds.** Six events `effects.tnt_charge_*` and `effects.c4_charge_*` in `sounds.json`.

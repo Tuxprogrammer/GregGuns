@@ -32,6 +32,14 @@ import com.gregguns.machine.AmmoPressTier;
 public final class ProductionTable {
 
     /** The GT recipe map a row is registered on. */
+    /**
+     * How many times longer every ammo production row runs than its sheet duration (the owner's "nerf ammo production
+     * time 4 times"). It scales the registered duration only, never EU/t, so the EU per round rises by the same factor.
+     * The one place to change it; every ammo row, the Ammo Press, the Ammunition Works (same map) and the Assembly Line
+     * ammo rows, reads it through {@link Row#ticks()}. Sheet seconds, {@link Row#seconds()}, stay the base values.
+     */
+    public static final int AMMO_DURATION_MULTIPLIER = 4;
+
     public enum Target {
         /** GT's Assembler, for the parts. */
         ASSEMBLER,
@@ -180,6 +188,7 @@ public final class ProductionTable {
         private final Target target;
         private final int seconds;
         private final int circuit;
+        private final boolean ammo;
         private final List<Input> inputs;
         private final List<ComponentTable.FluidInput> fluids;
 
@@ -253,12 +262,14 @@ public final class ProductionTable {
                 target,
                 seconds,
                 circuit,
+                target == Target.AMMO_PRESS,
                 Arrays.asList(inputs),
                 Collections.<ComponentTable.FluidInput>emptyList());
         }
 
         private Row(String id, String output, int outputCount, Tier tier, Target target, int seconds, int circuit,
-            List<Input> inputs, List<ComponentTable.FluidInput> fluids) {
+            boolean ammo, List<Input> inputs, List<ComponentTable.FluidInput> fluids) {
+            this.ammo = ammo;
             this.id = id;
             this.output = output;
             this.outputCount = outputCount;
@@ -280,7 +291,28 @@ public final class ProductionTable {
         public Row withFluid(ComponentTable.FluidInput fluid) {
             List<ComponentTable.FluidInput> all = new ArrayList<>(fluids);
             all.add(fluid);
-            return new Row(id, output, outputCount, tier, target, seconds, circuit, inputs, all);
+            return new Row(id, output, outputCount, tier, target, seconds, circuit, ammo, inputs, all);
+        }
+
+        /**
+         * @return a copy of this row marked as an ammo production row, so {@link #ticks()} applies
+         *         {@link ProductionTable#AMMO_DURATION_MULTIPLIER}; Ammo Press rows are marked already
+         */
+        Row ammoRow() {
+            return new Row(id, output, outputCount, tier, target, seconds, circuit, true, inputs, fluids);
+        }
+
+        /** @return whether this row is an ammo production row (Ammo Press, Ammunition Works, Assembly Line ammo) */
+        public boolean isAmmo() {
+            return ammo;
+        }
+
+        /**
+         * @return the duration GT registers, in ticks: the sheet's seconds, times
+         *         {@link ProductionTable#AMMO_DURATION_MULTIPLIER} for an ammo row. EU/t is not scaled.
+         */
+        public int ticks() {
+            return seconds * 20 * (ammo ? AMMO_DURATION_MULTIPLIER : 1);
         }
 
         /**

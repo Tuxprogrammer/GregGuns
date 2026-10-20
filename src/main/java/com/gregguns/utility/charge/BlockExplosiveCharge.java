@@ -13,10 +13,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import com.gregguns.GregGuns;
+import com.cleanroommc.modularui.factory.GuiFactories;
 import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
-import com.gregguns.utility.UtilityGuis;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -108,10 +107,10 @@ public final class BlockExplosiveCharge extends BlockContainer implements Tiered
         if (!(tile instanceof TileExplosiveCharge)) {
             return false;
         }
-        // An armed charge ignores right-clicks, and so do wrenches (the baseline).
-        if (!world.isRemote && !((TileExplosiveCharge) tile).params()
-            .armed()) {
-            player.openGui(GregGuns.instance, UtilityGuis.CHARGE, world, x, y, z);
+        // GregGuns opens the screen for an armed charge too: it shows the live countdown, and the owner can disarm.
+        if (!world.isRemote) {
+            GuiFactories.tileEntity()
+                .open(player, (TileExplosiveCharge) tile);
         }
         return true;
     }

@@ -2,7 +2,9 @@ package com.gregguns.utility.charge;
 
 /**
  * The settings of one charge and the button rules that change them. Pure logic, so the rules are unit tested without a
- * world. The GUI buttons are numbered as in the baseline: 0 arm, 1/2 radius +/-, 3/4 length +/-, 5/6 fuse +/-.
+ * world. The buttons are numbered as in the baseline: 0 arm, 1/2 radius +/-, 3/4 length +/-, 5/6 fuse +/-. GregGuns
+ * adds
+ * 7, disarm (the only button that works while armed).
  */
 // Spec: docs/techguns-spec/09-machines-utility/explosive-charges.md (Parameters, Arming and fuse),
 // docs/techguns-spec/BUGS.md (MUTL-33: the TNT radius buttons are no-ops, so they are hidden and ignored)
@@ -22,13 +24,16 @@ public final class ChargeParams {
     public static final int BTN_FUSE_UP = 5;
     /** Button id: fuse -20 ticks. */
     public static final int BTN_FUSE_DOWN = 6;
+    /** Button id: disarm an armed charge and restore its set fuse (GregGuns addition). */
+    public static final int BTN_DISARM = 7;
     /** Number of button ids, for range checks. */
-    public static final int BUTTON_COUNT = 7;
+    public static final int BUTTON_COUNT = 8;
 
     private final ChargeType type;
     private int radius;
     private int length;
     private int fuse;
+    private int fuseSet;
     private boolean armed;
 
     /**
@@ -39,6 +44,7 @@ public final class ChargeParams {
         this.radius = type.radiusDefault();
         this.length = type.lengthDefault();
         this.fuse = ChargeType.FUSE_DEFAULT;
+        this.fuseSet = ChargeType.FUSE_DEFAULT;
     }
 
     /** @return the type */
@@ -61,6 +67,11 @@ public final class ChargeParams {
         return fuse;
     }
 
+    /** @return the fuse the owner set, which a disarm restores; equals {@link #fuse()} while not armed */
+    public int fuseSet() {
+        return fuseSet;
+    }
+
     /** @return true once armed; settings are then frozen */
     public boolean armed() {
         return armed;
@@ -79,18 +90,38 @@ public final class ChargeParams {
         radius = clamp(savedRadius, type.radiusMin(), type.radiusMax());
         length = clamp(savedLength, type.lengthMin(), type.lengthMax());
         fuse = clamp(savedFuse, 0, ChargeType.FUSE_MAX);
+        fuseSet = savedArmed ? ChargeType.FUSE_DEFAULT : fuse;
         armed = savedArmed;
     }
 
     /**
-     * Applies one GUI button. Everything is ignored once armed; unknown ids and the hidden TNT radius buttons change
-     * nothing.
+     * Restores saved values including the set fuse of an armed charge.
+     *
+     * @param savedRadius  saved radius
+     * @param savedLength  saved length
+     * @param savedFuse    saved remaining fuse ticks
+     * @param savedFuseSet saved set fuse ticks; clamped into the fuse range
+     * @param savedArmed   saved armed flag
+     */
+    public void restore(int savedRadius, int savedLength, int savedFuse, int savedFuseSet, boolean savedArmed) {
+        restore(savedRadius, savedLength, savedFuse, savedArmed);
+        fuseSet = clamp(savedFuseSet, ChargeType.FUSE_MIN, ChargeType.FUSE_MAX);
+    }
+
+    /**
+     * Applies one GUI button. Once armed only {@link #BTN_DISARM} does anything; unknown ids and the hidden TNT radius
+     * buttons change nothing. Disarm does nothing on a charge that is not armed.
      *
      * @param button a button id
      * @return true when something changed (so the tile should sync)
      */
     public boolean press(int button) {
         if (armed) {
+            if (button == BTN_DISARM) {
+                armed = false;
+                fuse = fuseSet;
+                return true;
+            }
             return false;
         }
         switch (button) {
@@ -146,6 +177,7 @@ public final class ChargeParams {
         int v = clamp(value, ChargeType.FUSE_MIN, ChargeType.FUSE_MAX);
         boolean changed = v != fuse;
         fuse = v;
+        fuseSet = v;
         return changed;
     }
 
