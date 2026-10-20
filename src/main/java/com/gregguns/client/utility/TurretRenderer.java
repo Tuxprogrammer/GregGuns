@@ -12,6 +12,8 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 
 import com.gregguns.GregGuns;
+import com.gregguns.client.render.GlStateGuard;
+import com.gregguns.utility.turret.entity.TurretDisplay;
 import com.gregguns.utility.turret.entity.TurretEntity;
 
 import cpw.mods.fml.relauncher.Side;
@@ -61,41 +63,43 @@ public final class TurretRenderer extends RenderLiving {
     @Override
     protected void renderEquippedItems(EntityLivingBase living, float partial) {
         super.renderEquippedItems(living, partial);
-        if (!(living instanceof TurretEntity)) {
+        if (!(living instanceof TurretDisplay)) {
             return;
         }
-        ItemStack gun = ((TurretEntity) living).displayGun();
+        ItemStack gun = ((TurretDisplay) living).displayGun();
         if (gun == null) {
             return;
         }
         float pitch = living.prevRotationPitch + (living.rotationPitch - living.prevRotationPitch) * partial;
         boolean custom = MinecraftForgeClient.getItemRenderer(gun, ItemRenderType.EQUIPPED) != null;
-        GL11.glPushMatrix();
-        // Model frame: origin 24 px above the feet, y down. The pivot is PITCH_PIVOT_Y above the feet.
-        GL11.glTranslatef(0.0F, (24.0F - TurretGeometry.PITCH_PIVOT_Y) / TurretGeometry.PIXELS_PER_BLOCK, 0.0F);
-        GL11.glRotatef(pitch, 1.0F, 0.0F, 0.0F);
-        GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-        GL11.glTranslatef(0.0F, HAND_REACH, 0.0F);
-        if (custom) {
-            float f = 0.375F;
-            GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
-            GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
-            GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-            GL11.glScalef(-f, -f, f);
-        } else {
-            float f = 0.375F;
-            GL11.glTranslatef(0.25F, 0.1875F, -0.1875F);
-            GL11.glScalef(f, f, f);
-            GL11.glRotatef(60.0F, 0.0F, 0.0F, 1.0F);
+        // The gun's own renderer may throw or leave attributes changed; the guard keeps both stacks balanced.
+        try (GlStateGuard g = GlStateGuard.matrixAndAttrib(
+            GL11.GL_ENABLE_BIT | GL11.GL_CURRENT_BIT | GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT)) {
+            // Model frame: origin 24 px above the feet, y down. The pivot is PITCH_PIVOT_Y above the feet.
+            GL11.glTranslatef(0.0F, (24.0F - TurretGeometry.PITCH_PIVOT_Y) / TurretGeometry.PIXELS_PER_BLOCK, 0.0F);
+            GL11.glRotatef(pitch, 1.0F, 0.0F, 0.0F);
             GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
-            GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
+            GL11.glTranslatef(0.0F, HAND_REACH, 0.0F);
+            if (custom) {
+                float f = 0.375F;
+                GL11.glTranslatef(0.0F, 0.1875F, -0.3125F);
+                GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
+                GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+                GL11.glScalef(-f, -f, f);
+            } else {
+                float f = 0.375F;
+                GL11.glTranslatef(0.25F, 0.1875F, -0.1875F);
+                GL11.glScalef(f, f, f);
+                GL11.glRotatef(60.0F, 0.0F, 0.0F, 1.0F);
+                GL11.glRotatef(-90.0F, 1.0F, 0.0F, 0.0F);
+                GL11.glRotatef(20.0F, 0.0F, 0.0F, 1.0F);
+            }
+            RenderManager.instance.itemRenderer.renderItem(living, gun, 0);
         }
-        RenderManager.instance.itemRenderer.renderItem(living, gun, 0);
-        GL11.glPopMatrix();
     }
 
     @Override
     protected ResourceLocation getEntityTexture(Entity entity) {
-        return textureFor(entity instanceof TurretEntity ? ((TurretEntity) entity).displayArmorValue() : 0);
+        return textureFor(entity instanceof TurretDisplay ? ((TurretDisplay) entity).displayArmorValue() : 0);
     }
 }

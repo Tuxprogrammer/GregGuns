@@ -58,26 +58,94 @@ class AmmoWorksShapeTest {
 
     @Test
     void feederBlockCountsMatchTheSheet() {
-        // multiblocks.md "Block counts": feeder 18 F, 40 A, 2 I.
+        // multiblocks.md "Block counts": feeder 18 F, 36 A, 2 I, 4 G, 4 P, 2 N.
         assertEquals(18, AmmoWorksShape.count(AmmoWorksShape.FEEDER, "F"));
-        assertEquals(40, AmmoWorksShape.count(AmmoWorksShape.FEEDER, "A"));
+        assertEquals(36, AmmoWorksShape.count(AmmoWorksShape.FEEDER, "A"));
         assertEquals(2, AmmoWorksShape.count(AmmoWorksShape.FEEDER, "I"));
+        assertEquals(4, AmmoWorksShape.count(AmmoWorksShape.FEEDER, "G"));
+        assertEquals(4, AmmoWorksShape.count(AmmoWorksShape.FEEDER, "P"));
+        assertEquals(2, AmmoWorksShape.count(AmmoWorksShape.FEEDER, "N"));
     }
 
     @Test
     void bayBlockCountsMatchTheSheet() {
-        // Each bay: 44 A, 2 M, 3 I.
-        assertEquals(44, AmmoWorksShape.count(AmmoWorksShape.BAY, "A"));
-        assertEquals(2, AmmoWorksShape.count(AmmoWorksShape.BAY, "M"));
+        // Each bay: 38 A, 3 M, 3 I, 6 G, 2 R, 6 P, 2 B.
+        assertEquals(38, AmmoWorksShape.count(AmmoWorksShape.BAY, "A"));
+        assertEquals(3, AmmoWorksShape.count(AmmoWorksShape.BAY, "M"));
         assertEquals(3, AmmoWorksShape.count(AmmoWorksShape.BAY, "I"));
+        assertEquals(6, AmmoWorksShape.count(AmmoWorksShape.BAY, "G"));
+        assertEquals(2, AmmoWorksShape.count(AmmoWorksShape.BAY, "R"));
+        assertEquals(6, AmmoWorksShape.count(AmmoWorksShape.BAY, "P"));
+        assertEquals(2, AmmoWorksShape.count(AmmoWorksShape.BAY, "B"));
     }
 
     @Test
     void stationBlockCountsMatchTheSheet() {
-        // Station: 16 O, 67 A, 3 I.
+        // Station: 16 O, 55 A, 3 I, 12 G, 2 R, 6 P, 4 B, 3 Y.
         assertEquals(16, AmmoWorksShape.count(AmmoWorksShape.STATION, "O"));
-        assertEquals(67, AmmoWorksShape.count(AmmoWorksShape.STATION, "A"));
+        assertEquals(55, AmmoWorksShape.count(AmmoWorksShape.STATION, "A"));
         assertEquals(3, AmmoWorksShape.count(AmmoWorksShape.STATION, "I"));
+        assertEquals(12, AmmoWorksShape.count(AmmoWorksShape.STATION, "G"));
+        assertEquals(2, AmmoWorksShape.count(AmmoWorksShape.STATION, "R"));
+        assertEquals(6, AmmoWorksShape.count(AmmoWorksShape.STATION, "P"));
+        assertEquals(4, AmmoWorksShape.count(AmmoWorksShape.STATION, "B"));
+        assertEquals(3, AmmoWorksShape.count(AmmoWorksShape.STATION, "Y"));
+    }
+
+    @Test
+    void onlyTheDocumentedCharactersAppear() {
+        String allowed = "FAOMIGRPBNY~- ";
+        for (String[][] piece : PIECES) {
+            for (String[] aisle : piece) {
+                for (String row : aisle) {
+                    for (char c : row.toCharArray()) {
+                        assertTrue(allowed.indexOf(c) >= 0, "unexpected '" + c + "' in " + row);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    void windowsSitInTheSideWallsAndNeverInTheFrontOrBackWall() {
+        for (String[][] piece : PIECES) {
+            for (int i = 0; i < piece.length; i++) {
+                for (int r = 0; r < AmmoWorksShape.HEIGHT; r++) {
+                    String row = piece[i][r];
+                    for (int c = 1; c < AmmoWorksShape.WIDTH - 1; c++) {
+                        assertTrue(row.charAt(c) != 'G', "glass inside the hall at " + r + "," + c);
+                    }
+                }
+            }
+        }
+        // The controller's aisle and the output wall stay hatch faces: no glass there.
+        assertEquals(0, AmmoWorksShape.count(new String[][] { AmmoWorksShape.FEEDER[0] }, "G"));
+        assertEquals(0, AmmoWorksShape.count(new String[][] { AmmoWorksShape.STATION[3] }, "G"));
+    }
+
+    @Test
+    void hatchFacesKeepOnlyHatchCapableCasings() {
+        // Hatches may only replace F (feeder) and O (packing) cells: the interior parts never sit in those.
+        assertEquals(18, AmmoWorksShape.count(AmmoWorksShape.FEEDER, "F"));
+        assertEquals(16, AmmoWorksShape.count(AmmoWorksShape.STATION, "O"));
+        assertEquals(0, AmmoWorksShape.count(AmmoWorksShape.BAY, "FO"));
+    }
+
+    @Test
+    void theBayPressHangsFromTheRamHousingOverTheBelt() {
+        // Roof ram housing, then a steel rod, then the press head, then the belt: one unbroken column at the middle.
+        String[][] bay = AmmoWorksShape.BAY;
+        assertEquals(
+            "MMRRMI",
+            column(bay[1], 1, 2) + column(bay[1], 2, 2)
+                + column(bay[1], 3, 2)
+                + column(bay[1], 4, 2)
+                + column(bay[1], 5, 2)
+                + column(bay[1], 6, 2));
+    }
+
+    private static String column(String[] aisle, int row, int col) {
+        return String.valueOf(aisle[row].charAt(col));
     }
 
     @Test
@@ -97,11 +165,11 @@ class AmmoWorksShapeTest {
     }
 
     @Test
-    void theDefaultHallIs19LongAndNeeds313Casings() {
-        // multiblocks.md: n = 4 is 5 x 7 x 19; 325 casing positions, check is 313.
+    void theDefaultHallIs19LongAndNeeds277Casings() {
+        // multiblocks.md: n = 4 is 5 x 7 x 19; 289 casing positions, check is 277.
         assertEquals(19, AmmoWorksShape.totalLength(4));
-        assertEquals(325, AmmoWorksShape.casingPositions(4));
-        assertEquals(313, AmmoWorksShape.casingMinimum(4));
+        assertEquals(289, AmmoWorksShape.casingPositions(4));
+        assertEquals(277, AmmoWorksShape.casingMinimum(4));
     }
 
     @Test
@@ -113,7 +181,7 @@ class AmmoWorksShapeTest {
     @Test
     void casingPositionsGrowByOneBayEach() {
         for (int n = AmmoWorksShape.MIN_BAYS; n < AmmoWorksShape.MAX_BAYS; n++) {
-            assertEquals(46, AmmoWorksShape.casingPositions(n + 1) - AmmoWorksShape.casingPositions(n));
+            assertEquals(41, AmmoWorksShape.casingPositions(n + 1) - AmmoWorksShape.casingPositions(n));
         }
     }
 

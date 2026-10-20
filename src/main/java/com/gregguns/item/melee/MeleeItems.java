@@ -26,8 +26,24 @@ public final class MeleeItems {
      * @param registrar the guns module's registrar
      */
     public static void register(ModuleRegistrar registrar) {
-        combatKnife = registrar.registerItem(COMBAT_KNIFE, new ItemCombatKnife());
-        crowbar = registrar.registerItem(CROWBAR, new ItemCrowbar());
+        registerOne(registrar, COMBAT_KNIFE);
+        registerOne(registrar, CROWBAR);
+    }
+
+    /**
+     * Registers one melee tool by name, so the caller picks the registration order (see {@code GunsItemOrder}).
+     *
+     * @param registrar the guns module's registrar
+     * @param name      {@link #COMBAT_KNIFE} or {@link #CROWBAR}
+     */
+    public static void registerOne(ModuleRegistrar registrar, String name) {
+        if (COMBAT_KNIFE.equals(name)) {
+            combatKnife = registrar.registerItem(COMBAT_KNIFE, new ItemCombatKnife());
+        } else if (CROWBAR.equals(name)) {
+            crowbar = registrar.registerItem(CROWBAR, new ItemCrowbar());
+        } else {
+            throw new IllegalArgumentException("not a melee item: " + name);
+        }
     }
 
     /** @return the Combat Knife; {@code null} before registration or when the guns module is off */

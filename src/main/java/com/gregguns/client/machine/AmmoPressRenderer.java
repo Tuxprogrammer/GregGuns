@@ -69,6 +69,13 @@ public final class AmmoPressRenderer {
         double v0 = frame / (double) FRAMES;
         double v1 = (frame + 1) / (double) FRAMES;
 
+        // Save and restore the whole translucent state, not just what is guessed to have been set before.
+        GL11.glPushAttrib(
+            GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT
+                | GL11.GL_DEPTH_BUFFER_BIT
+                | GL11.GL_LIGHTING_BIT
+                | GL11.GL_POLYGON_BIT
+                | GL11.GL_CURRENT_BIT);
         GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
         GL11.glEnable(GL11.GL_BLEND);
@@ -88,11 +95,8 @@ public final class AmmoPressRenderer {
         // Glow layer: full brightness regardless of the world light.
         quad(GLOW, facing, v0, v1, 15 << 20 | 15 << 4);
 
-        GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
-        GL11.glDepthMask(true);
-        GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
+        GL11.glPopAttrib();
     }
 
     private static void quad(ResourceLocation texture, ForgeDirection facing, double v0, double v1, int light) {
