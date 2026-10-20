@@ -27,10 +27,8 @@ public final class UtilityModule implements GregGunsModule {
 
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
-        UtilityParts.register(registrar);
+        UtilityItemOrder.registerAll(registrar);
         TurretRegistration.preInit(registrar);
-        ChargeRegistration.preInit(registrar);
-        WorldBlockRegistration.preInit(registrar);
         RampartRegistration.preInit(registrar);
     }
 

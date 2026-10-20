@@ -22,14 +22,37 @@ public final class FlightItems {
     private FlightItems() {}
 
     /**
-     * Registers every item. Call once from {@code ArmorModule.preInit}.
+     * Registers every item in declaration order. The armor module registers through {@code ArmorItemRegistry}
+     * instead, which picks the order.
      *
      * @param registrar the armor module's registrar
      */
     public static void register(ModuleRegistrar registrar) {
-        glider = registrar.registerItem(ItemGlider.NAME, new ItemGlider());
-        jumpPack = registrar.registerItem(ItemJumpPack.NAME, new ItemJumpPack());
-        antiGravityDevice = registrar.registerItem(ItemAntiGravityDevice.NAME, new ItemAntiGravityDevice());
+        registerOne(registrar, ItemGlider.NAME);
+        registerOne(registrar, ItemJumpPack.NAME);
+        registerOne(registrar, ItemAntiGravityDevice.NAME);
+    }
+
+    /**
+     * Registers one flight device by registry name.
+     *
+     * @param registrar the armor module's registrar
+     * @param name      one of the flight device registry names
+     */
+    public static void registerOne(ModuleRegistrar registrar, String name) {
+        switch (name) {
+            case ItemGlider.NAME:
+                glider = registrar.registerItem(name, new ItemGlider());
+                break;
+            case ItemJumpPack.NAME:
+                jumpPack = registrar.registerItem(name, new ItemJumpPack());
+                break;
+            case ItemAntiGravityDevice.NAME:
+                antiGravityDevice = registrar.registerItem(name, new ItemAntiGravityDevice());
+                break;
+            default:
+                throw new IllegalArgumentException("not a flight item: " + name);
+        }
     }
 
     /** @return the Glider; null with the armor module off */
