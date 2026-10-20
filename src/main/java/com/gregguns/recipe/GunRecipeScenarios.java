@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
@@ -89,6 +90,18 @@ public final class GunRecipeScenarios {
         return new HandCannonRecipeScenario();
     }
 
+    /**
+     * The row's fluid inputs as GT stacks, resolved the way registration does; GT's lookup needs the fluid present, so
+     * every query for a fluid row passes them. Empty for a row without fluid.
+     */
+    static FluidStack[] fluidsOf(ProductionTable.Row row) {
+        List<FluidStack> out = new ArrayList<>();
+        for (ComponentTable.FluidInput fluid : row.fluids()) {
+            out.add(ComponentRecipes.fluidStack(fluid));
+        }
+        return out.toArray(new FluidStack[0]);
+    }
+
     private static ItemStack modStack(String name, int count) {
         return ProductionRecipes.modStack(name, count);
     }
@@ -151,6 +164,7 @@ public final class GunRecipeScenarios {
 
             GTRecipe found = RecipeMaps.assemblerRecipes.findRecipeQuery()
                 .items(inputs)
+                .fluids(fluidsOf(row))
                 .voltage(
                     GTValues.V[row.tier()
                         .voltageIndex()])
@@ -165,8 +179,25 @@ public final class GunRecipeScenarios {
                     && gun != null
                     && found.mOutputs[0].getItem() == gun.getItem(),
                 "the recipe found for the sheet inputs should output " + row.output() + ", not another recipe's item");
+            if (!row.fluids()
+                .isEmpty()) {
+                GTRecipe noFluid = RecipeMaps.assemblerRecipes.findRecipeQuery()
+                    .items(inputs)
+                    .voltage(
+                        GTValues.V[row.tier()
+                            .voltageIndex()])
+                    .find();
+                out.check(
+                    !(noFluid != null && noFluid.mOutputs != null
+                        && noFluid.mOutputs.length > 0
+                        && noFluid.mOutputs[0] != null
+                        && gun != null
+                        && noFluid.mOutputs[0].getItem() == gun.getItem()),
+                    "without the fluid the recipe should not be offered");
+            }
             GTRecipe tooLow = RecipeMaps.assemblerRecipes.findRecipeQuery()
                 .items(inputs)
+                .fluids(fluidsOf(row))
                 .voltage(
                     GTValues.V[row.tier()
                         .voltageIndex() - 1] / 2)
@@ -226,6 +257,7 @@ public final class GunRecipeScenarios {
                 offers(
                     RecipeMaps.assemblerRecipes.findRecipeQuery()
                         .items(inputs)
+                        .fluids(fluidsOf(row))
                         .voltage(GTValues.V[idx])
                         .find(),
                     gun),
@@ -234,6 +266,7 @@ public final class GunRecipeScenarios {
                 !offers(
                     RecipeMaps.assemblerRecipes.findRecipeQuery()
                         .items(inputs)
+                        .fluids(fluidsOf(row))
                         .voltage(GTValues.V[idx - 1])
                         .find(),
                     gun),
@@ -301,6 +334,7 @@ public final class GunRecipeScenarios {
 
             GTRecipe found = RecipeMaps.assemblerRecipes.findRecipeQuery()
                 .items(inputList.toArray(new ItemStack[0]))
+                .fluids(fluidsOf(row))
                 .voltage(
                     GTValues.V[row.tier()
                         .voltageIndex()])

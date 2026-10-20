@@ -76,7 +76,8 @@ public final class DeatomizerPistolDef {
                 Input.gt("circuit", "Elite", 1),
                 Input.gt("plate", "Titanium", 2),
                 Input.gt("plate", "TungstenSteel", 2),
-                Input.gt("screw", "TungstenSteel", 4)))
+                Input.gt("screw", "TungstenSteel", 4))
+                .molten("SolderingAlloy", 288))
         .scenarios(registry -> EnergyBatchScenarios.registerDeatomizer(registry, NAME))
         .build();
 

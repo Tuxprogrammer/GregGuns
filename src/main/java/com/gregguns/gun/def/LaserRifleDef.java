@@ -25,8 +25,6 @@ import com.gregguns.recipe.ProductionTable.Row;
  * EV battery hull (full), an EV (Data) circuit, 2 titanium plates and 4 titanium screws; Assembler, EV, 30 s.
  */
 // Spec: docs/techguns-spec/02-guns/sheets-energy-special.md (Laser Rifle); docs/gregguns-spec/02-guns/recipes.md (EV)
-// Deviation: recipes.md adds 144 L of soldering alloy. ProductionTable rows carry no fluid input yet, so the row omits
-// it; the gate material and the circuit are unchanged.
 // Deviation: the shot is an instant hitscan (plan M5 Q1), not Techguns' 7.5 block per tick bolt; the reach is the same.
 // Deviation: the AI attack time variance (10 ticks) is dropped, as for the other guns.
 public final class LaserRifleDef {
@@ -76,7 +74,8 @@ public final class LaserRifleDef {
                 Input.itemList("BatteryHull_EV_Full", 1),
                 Input.gt("circuit", "Data", 1),
                 Input.gt("plate", "Titanium", 2),
-                Input.gt("screw", "Titanium", 4)))
+                Input.gt("screw", "Titanium", 4))
+                .molten("SolderingAlloy", 144))
         .scenarios(registry -> EvEnergyScenarios.register(registry, NAME))
         .build();
 
