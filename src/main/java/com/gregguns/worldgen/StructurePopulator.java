@@ -19,6 +19,8 @@ import com.gregguns.worldgen.layout.Rotations;
 import com.gregguns.worldgen.layout.StampPlan;
 import com.gregguns.worldgen.layout.Stamper;
 import com.gregguns.worldgen.loot.LootPending;
+import com.gregguns.worldgen.nest.NestPlacer;
+import com.gregguns.worldgen.nest.NestPlan;
 
 /**
  * The populate pipeline of one window, with every world touch behind an interface so it runs in unit tests. For each
@@ -104,6 +106,7 @@ public final class StructurePopulator {
     private final CampWriter camps;
     private final Block flagBlock;
     private final float capFactor;
+    private NestPlacer nests;
 
     /**
      * @param grid    the seeded plans
@@ -136,6 +139,16 @@ public final class StructurePopulator {
     }
 
     /**
+     * Adds the Alien Bug Nest: plans of that id are written by {@code placer} (procedural, no layout file).
+     *
+     * @return this
+     */
+    public StructurePopulator withNests(NestPlacer placer) {
+        this.nests = placer;
+        return this;
+    }
+
+    /**
      * Builds the part of every overlapping structure that lies in the window.
      *
      * @return the number of structures that wrote at least one block in this window
@@ -165,6 +178,10 @@ public final class StructurePopulator {
             StructureId id = StructureCatalog.byId(plan.id());
             if (camps != null && id == StructureId.MILITARY_BASE) {
                 stamped += populateCamp(plan, window, sink, reader, biomes, state, marks);
+                continue;
+            }
+            if (id == StructureId.ALIEN_BUG_NEST) {
+                if (nests != null) stamped += populateNest(plan, id, window, sink, reader, biomes, state, marks);
                 continue;
             }
             Layout layout = layouts.get(plan.id());
@@ -265,13 +282,37 @@ public final class StructurePopulator {
         return written > 0 || flagged ? 1 : 0;
     }
 
+    /**
+     * The Alien Bug Nest slice of one window: decide once (biome, terrain, village scan, and ground high enough for the
+     * deepest chamber; a failed check skips the nest, WGEN-09), then write the cells of the window. The terrain is not
+     * flattened: the nest is underground and only its shaft mouth reaches the surface.
+     *
+     * @return 1 when the nest wrote anything in this window, else 0
+     */
+    private int populateNest(StructurePlan plan, StructureId id, PopulateWindow window, WindowedSink sink,
+        ColumnReader reader, BiomeSource biomes, StructureState state, Marks marks) {
+        String key = PlanKey.of(plan);
+        PlacedFootprint fp = new PlacedFootprint(plan.anchorX(), plan.anchorZ(), NestPlan.SIZE, NestPlan.SIZE, 0);
+        HeightProbe probe = new WindowedHeightProbe(window, reader);
+        Decision d = state.decideOnce(key, () -> {
+            Decision r = decide(NestPlan.ABOVE, id, false, fp, window, reader, probe, biomes);
+            if (r.isPlaced() && r.groundY() < NestPlan.MIN_GROUND_Y) return Decision.rejected("low");
+            return r;
+        });
+        if (!d.isPlaced()) return 0;
+        NestPlan np = NestPlan.generate(plan.chestSeedBase(), plan.anchorX(), plan.anchorZ(), d.groundY());
+        int written = nests.write(sink, np, window, (tag, x, y, z) -> mark(plan, id, key, tag, x, y, z, 0, marks));
+        return written > 0 ? 1 : 0;
+    }
+
     private Decision decide(int height, StructureId id, boolean water, PlacedFootprint fp, PopulateWindow window,
         ColumnReader reader, HeightProbe probe, BiomeSource biomes) {
         Set<Type> types = biomes.typesAt((fp.minX() + fp.maxX()) / 2, (fp.minZ() + fp.maxZ()) / 2);
         Set<Type> blacklist = id == null ? Collections.<Type>emptySet() : rules.biomeBlacklist(id);
         boolean biomeOk;
         if (id == StructureId.ALIEN_BUG_NEST) {
-            biomeOk = StructureBiomes.allowsBugNest(types, StructureBiomes.BUG_NEST_DEFAULT);
+            biomeOk = StructureBiomes.allowsBugNest(types, StructureBiomes.BUG_NEST_DEFAULT)
+                && StructureBiomes.allowsLand(types, blacklist);
         } else if (water) {
             biomeOk = StructureBiomes.allowsWater(types, blacklist);
         } else {
