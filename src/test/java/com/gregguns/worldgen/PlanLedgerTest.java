@@ -17,7 +17,7 @@ class PlanLedgerTest {
     @Test
     void firstCallerDecidesAndLaterCallersObeyWithoutRunningTheirDecider() {
         PlanLedger ledger = new PlanLedger();
-        String key = PlanKey.of(SizeClass.MEDIUM, 2, 5);
+        String key = PlanKey.of("test", SizeClass.MEDIUM, 2, 5);
         AtomicInteger runs = new AtomicInteger();
 
         Decision first = ledger.decideOnce(key, () -> {
@@ -38,7 +38,7 @@ class PlanLedgerTest {
     @Test
     void aRejectionIsRecordedToo() {
         PlanLedger ledger = new PlanLedger();
-        String key = PlanKey.of(SizeClass.BIG, 0, 1);
+        String key = PlanKey.of("test", SizeClass.BIG, 0, 1);
         ledger.decideOnce(key, () -> Decision.rejected("biome"));
         Decision again = ledger.decideOnce(key, () -> Decision.placed(70));
         assertFalse(again.isPlaced());
@@ -49,20 +49,20 @@ class PlanLedgerTest {
     @Test
     void differentKeysAreIndependent() {
         PlanLedger ledger = new PlanLedger();
-        ledger.decideOnce(PlanKey.of(SizeClass.SMALL, 1, 1), () -> Decision.placed(60));
-        ledger.decideOnce(PlanKey.of(SizeClass.MEDIUM, 1, 1), () -> Decision.placed(61));
-        ledger.decideOnce(PlanKey.of(SizeClass.SMALL, 1, 2), () -> Decision.placed(62));
+        ledger.decideOnce(PlanKey.of("test", SizeClass.SMALL, 1, 1), () -> Decision.placed(60));
+        ledger.decideOnce(PlanKey.of("test", SizeClass.MEDIUM, 1, 1), () -> Decision.placed(61));
+        ledger.decideOnce(PlanKey.of("test", SizeClass.SMALL, 1, 2), () -> Decision.placed(62));
         assertEquals(3, ledger.size());
         assertEquals(
             61,
-            ledger.get(PlanKey.of(SizeClass.MEDIUM, 1, 1))
+            ledger.get(PlanKey.of("test", SizeClass.MEDIUM, 1, 1))
                 .groundY());
     }
 
     @Test
     void aThrowingDeciderRecordsNothingSoTheNextWindowCanTry() {
         PlanLedger ledger = new PlanLedger();
-        String key = PlanKey.of(SizeClass.SMALL, 0, 0);
+        String key = PlanKey.of("test", SizeClass.SMALL, 0, 0);
         assertThrows(
             IllegalArgumentException.class,
             () -> ledger.decideOnce(key, () -> { throw new IllegalArgumentException("boom"); }));
@@ -128,8 +128,10 @@ class PlanLedgerTest {
 
     @Test
     void planKeyFollowsClassAndCell() {
-        assertEquals("MEDIUM:-3:4", PlanKey.of(SizeClass.MEDIUM, -3, 4));
+        assertEquals("test:MEDIUM:-3:4", PlanKey.of("test", SizeClass.MEDIUM, -3, 4));
         StructurePlan plan = new StructurePlan("x", SizeClass.BIG, 0, 7, -8, 0, 0, 0, 0, new Footprint(1, 1, 1), 1L);
-        assertEquals("BIG:7:-8", PlanKey.of(plan));
+        assertEquals("x:BIG:7:-8", PlanKey.of(plan));
+        org.junit.jupiter.api.Assertions
+            .assertNotEquals(PlanKey.of("a", SizeClass.BIG, 1, 1), PlanKey.of("b", SizeClass.BIG, 1, 1));
     }
 }

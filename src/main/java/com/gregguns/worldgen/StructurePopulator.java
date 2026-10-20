@@ -18,7 +18,6 @@ import com.gregguns.worldgen.layout.LayoutRegistry;
 import com.gregguns.worldgen.layout.Rotations;
 import com.gregguns.worldgen.layout.StampPlan;
 import com.gregguns.worldgen.layout.Stamper;
-import com.gregguns.worldgen.loot.LootCategoryDefs;
 import com.gregguns.worldgen.loot.LootPending;
 
 /**
@@ -95,11 +94,6 @@ public final class StructurePopulator {
             return WorldgenSettings.lootTier(s);
         }
     };
-
-    private static final String[] WEAPON = { LootCategoryDefs.WEAPONCHEST_T1, LootCategoryDefs.WEAPONCHEST_T2,
-        LootCategoryDefs.WEAPONCHEST_T3 };
-    private static final String[] REINFORCED = { LootCategoryDefs.REINFORCEDCHEST_T1,
-        LootCategoryDefs.REINFORCEDCHEST_T2, LootCategoryDefs.REINFORCEDCHEST_T3 };
 
     private final StructureGrid grid;
     private final LayoutRegistry layouts;
@@ -321,10 +315,9 @@ public final class StructurePopulator {
         int chestIndex, Marks marks) {
         if (tag.startsWith("chest.")) {
             String kind = tag.substring("chest.".length());
-            boolean reinforced = kind.equals("reinforced");
-            if (!reinforced && !kind.equals("weapon") && !kind.equals("vanilla")) return;
             int tier = Math.max(1, Math.min(3, id == null ? 1 : rules.lootCeiling(id)));
-            String category = (reinforced ? REINFORCED : WEAPON)[tier - 1];
+            String category = ChestTags.category(kind, id == StructureId.MILITARY_BASE, tier);
+            if (category == null) return;
             int richness = id == null ? 1 : rules.richness(id);
             long seed = plan.chestSeed(chestIndex);
             marks.chest(plan, kind, x, y, z, new LootPending(category, richness, seed));
