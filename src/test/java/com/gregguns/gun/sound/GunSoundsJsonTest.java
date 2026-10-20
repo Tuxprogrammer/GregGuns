@@ -185,6 +185,11 @@ class GunSoundsJsonTest {
                 .endsWith("." + GunSoundEvents.FIRE)) {
                 continue;
             }
+            // Deviation: the Scatter Laser Rifle fires the Laser Rifle's clips, as in Techguns, until it gets its own.
+            if (e.getKey()
+                .equals("guns.scatter_laser_rifle." + GunSoundEvents.FIRE)) {
+                continue;
+            }
             for (String file : files(e.getValue())) {
                 assertFalse(seen.contains(file), file + " is shared between fire events");
                 seen.add(file);

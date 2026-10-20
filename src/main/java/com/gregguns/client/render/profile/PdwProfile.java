@@ -7,8 +7,8 @@ import static com.gregguns.client.anim.GunCurves.yR;
 import com.gregguns.client.anim.SpriteSheet;
 
 /**
- * The PDW's model boxes and render transforms, as data. The gun is not registered yet: it is not in
- * {@link ClientGunDefinitions#ALL} until the gameplay batch adds it, together with its gun definition.
+ * The PDW's model boxes and render transforms, as data. Listed in {@link ClientGunDefinitions#ALL}; the gun
+ * definition is {@code PdwDef}.
  *
  * <h2>Where the model comes from (originality record)</h2>
  * The boxes are original GregGuns geometry, built clean-room from written design notes only
@@ -96,15 +96,12 @@ public final class PdwProfile {
     };
 
     // Deviation: the notes give first-person scale 2.1 and an idle offset measured from the origin of the original
-    // model. The scale follows the FirstPersonFit rule with the 2 blocks on screen of the other submachine guns (the
-    // model is already 2 blocks long, so the scale is 1), and the idle position puts this model's box centre on the
-    // family anchor.
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    // model. InHandFit solves the scale and the idle offset from the per-gun targets in InHandTargets (the in-hand
+    // notes, section 7), so this model's length, centre and muzzle land where the original's do on screen.
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("pdw", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, 0 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -113,8 +110,7 @@ public final class PdwProfile {
     public static final GunTransforms TRANSFORMS = buildTransforms();
 
     /**
-     * The client half of the gun's definition: model, textures and transforms; the gameplay batch lists it in
-     * {@link ClientGunDefinitions}.
+     * The client half of the gun's definition: model, textures and transforms, listed in {@link ClientGunDefinitions}.
      */
     public static final ClientGunDefinition DEFINITION = new ClientGunDefinition(
         "pdw",
@@ -156,8 +152,8 @@ public final class PdwProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.25)
-            .translate(-0.1, -0.3, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the gun pitches up 20 degrees about the hand, in the first quarter of the first half.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -182,23 +178,25 @@ public final class PdwProfile {
             .scale(0.75)
             .translate(-0.0625, -0.275, 0)
             .build();
-        // Deviation: the first-person flash is a fixed-frame screen effect. Its offset is the Vector's, whose muzzle
-        // sits at the same place on screen (same 2-block length and anchor). Headless work cannot look at the screen,
-        // so this is unverified in game. muzzleFlash2 sheet, additive because the GregGuns sheet is black-backed
-        // (docs/assets/MANIFEST.md).
+        // Deviation: the first-person flash is a fixed-frame screen effect, solved from this model's muzzle in the
+        // fitted
+        // frame. Headless work cannot look at the screen, so this is unverified in game. muzzleFlash2 sheet, additive
+        // because the GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.024,
-            0.006,
-            0.453,
+            fo[0],
+            fo[1],
+            fo[2],
             1.5,
             new double[] { 0, 0, 0 },
             true,
             0.7);
         return GunTransforms.builder()
             .parts(1)
-            .timing(2, 5, 40)
+            .timing(5, 5, 40)
+            .checkRecoil()
             .firstPerson(fpBase, fpIdle, fpFire, fpReload)
             .thirdPerson(tpBase, new double[] { 0, 0.1, 0 }, tpRecoil, tpReload)
             .world(ground, icon)

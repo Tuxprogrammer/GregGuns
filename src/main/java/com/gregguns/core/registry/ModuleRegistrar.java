@@ -163,6 +163,31 @@ public final class ModuleRegistrar {
     public void registerEntity(String name, Class<? extends Entity> clazz, int id, int trackingRange,
         int updateFrequency, boolean sendsVelocityUpdates) {
         Naming.requireContentName(name);
+        registerEntityUnchecked(name, clazz, id, trackingRange, updateFrequency, sendsVelocityUpdates);
+    }
+
+    /**
+     * Registers a living entity whose Forge name keeps its capitals ({@code gregguns.ZombieSoldier}), as the NPC
+     * names do (spec: docs/gregguns-spec/10-entities-npcs, class simple names matter to Infernal Mobs). Otherwise it is
+     * {@link #registerEntity}: same ID ledger, same duplicate check.
+     *
+     * @param name                 the CamelCase name, letters and digits only
+     * @param clazz                the entity class
+     * @param id                   the mod-local ID, unique across GregGuns
+     * @param trackingRange        blocks within which clients track it
+     * @param updateFrequency      ticks between position updates
+     * @param sendsVelocityUpdates whether velocity is sent
+     */
+    public void registerMob(String name, Class<? extends Entity> clazz, int id, int trackingRange, int updateFrequency,
+        boolean sendsVelocityUpdates) {
+        if (name == null || !name.matches("[A-Za-z][A-Za-z0-9_]*")) {
+            throw new IllegalArgumentException("Mob name must match [A-Za-z][A-Za-z0-9_]*: " + name);
+        }
+        registerEntityUnchecked(name, clazz, id, trackingRange, updateFrequency, sendsVelocityUpdates);
+    }
+
+    private void registerEntityUnchecked(String name, Class<? extends Entity> clazz, int id, int trackingRange,
+        int updateFrequency, boolean sendsVelocityUpdates) {
         ledger.claimName(RegistrationLedger.Kind.ENTITY, name);
         ledger.claimEntityId(id, name);
         // Source:

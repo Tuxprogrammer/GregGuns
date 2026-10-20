@@ -3,8 +3,10 @@ package com.gregguns.gun.server;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 
 import com.gregguns.core.testing.Scenario;
@@ -18,6 +20,7 @@ import com.gregguns.gun.logic.ShotOffset;
 import com.gregguns.gun.logic.ShotPattern;
 import com.gregguns.gun.logic.SpreadModel;
 import com.gregguns.item.gun.GunItems;
+import com.gregguns.projectile.BulletLauncher;
 import com.gregguns.projectile.GenericProjectile;
 import com.gregguns.projectile.Projectiles;
 import com.gregguns.projectile.SimpleProjectile;
@@ -109,8 +112,18 @@ public final class FrameworkScenarios {
             int plainSimple = countSimple(afterPlain);
             launch(ctx, rig.shooter, drop, 2);
             Map<GenericProjectile, Boolean> afterDrop = bulletsIn(ctx, baseline);
-            launch(ctx, rig.shooter, missing, 3);
-            int afterMissing = bulletsIn(ctx, baseline).size();
+            // Remove the factory for the duration of the launch, so the scenario does not depend on which kinds
+            // happen to be unregistered; restore it afterwards.
+            Function<World, GenericProjectile> removed = BulletLauncher.unregister(ProjectileKind.BIO);
+            int afterMissing;
+            try {
+                launch(ctx, rig.shooter, missing, 3);
+                afterMissing = bulletsIn(ctx, baseline).size();
+            } finally {
+                if (removed != null) {
+                    BulletLauncher.register(ProjectileKind.BIO, removed);
+                }
+            }
             endAll(afterDrop);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             out.checkEquals("projectiles after the BULLET gun", 1, afterPlain.size());

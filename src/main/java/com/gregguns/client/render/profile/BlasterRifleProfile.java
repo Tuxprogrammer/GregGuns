@@ -86,14 +86,12 @@ public final class BlasterRifleProfile {
     };
 
     // Deviation: the notes give first-person scale 1.4 and an idle offset measured from the origin of the original
-    // model. The scale follows the FirstPersonFit rule with the 2 blocks on screen of the other long guns, and the
-    // idle position puts this model's box centre on the family anchor.
-    /** On-screen length of the gun in first person, blocks of the scaled frame. */
-    private static final double GUN_LENGTH = 2.0;
-    private static final double FP_SCALE = FirstPersonFit
-        .scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), GUN_LENGTH);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    // model. The scale, idle position and third-person placement are solved by InHandFit from the per-gun targets of
+    // the in-hand notes (section 7), so the gun lands where Techguns' sits on screen.
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("blaster_rifle", BOXES, MODEL_SCALE, true, -45, 225, new double[] { 0, 0.1, -0.2 });
+    private static final double FP_SCALE = FIT.fpScale;
+    private static final double[] IDLE = FIT.fpIdle;
     private static final double FP_X = IDLE[0];
     private static final double FP_Y = IDLE[1];
     private static final double FP_Z = IDLE[2];
@@ -140,12 +138,13 @@ public final class BlasterRifleProfile {
             .rotZ((p, part) -> -50.0 * yR(p))
             .translate(FP_X, FP_Y, FP_Z)
             .build();
-        // Third person: rotX180, rotY225, scale 1.2 like the other 3 block long guns. The grip lands at the hand.
+        // Third person: rotX180, rotY225, then the scale and translate InHandFit solved so the box centre lands at the
+        // hand and the gun is the notes' 1.11 world blocks long.
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(1.2)
-            .translate(-0.55, -0.4, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // Recoil: the gun pitches 15 degrees about the hand in the first quarter of the first half (the notes).
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -170,16 +169,16 @@ public final class BlasterRifleProfile {
             .scale(0.6)
             .translate(-0.125, -0.155, 0)
             .build();
-        // Deviation: the first-person flash is a fixed-frame screen effect. Its offset is the bolt-action rifle's,
-        // whose muzzle sits at the same place on screen (same 2-block length and anchor). Headless work cannot look at
-        // the screen, so this is unverified in game. muzzleFlash2 sheet, additive because the GregGuns sheet is
-        // black-backed (docs/assets/MANIFEST.md).
+        // Deviation: the first-person flash is a fixed-frame screen effect, so its offset follows the gun's solved
+        // placement (InHandFit.Placement.flashOffset). Headless work cannot look at the screen, so this is unverified
+        // in game. muzzleFlash2 sheet, additive because the GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.055,
-            0.005,
-            0.357,
+            fo[0],
+            fo[1],
+            fo[2],
             1.5,
             new double[] { 0, 0, 0 },
             true,

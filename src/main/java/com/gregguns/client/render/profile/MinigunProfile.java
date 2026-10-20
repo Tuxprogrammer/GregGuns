@@ -142,23 +142,21 @@ public final class MinigunProfile {
 
     /** The sheet's first-person scale, recorded for Techguns' model. */
     private static final double SHEET_FP_SCALE = 1.5;
-    /** On-screen length in first person, blocks of the scaled frame (a long gun, as the bolt-action rifle). */
-    private static final double LENGTH = 2.0;
-    /** The first-person scale from {@link FirstPersonFit}. */
-    public static final double FP_SCALE = FirstPersonFit.scale(FirstPersonFit.lengthBlocks(BOXES, MODEL_SCALE), LENGTH);
+    // InHandFit solves the scale and the idle offset from the per-gun targets in InHandTargets (the in-hand notes,
+    // section 7). The body-and-rotor union is the fitted length, as in the notes' Minigun row.
+    private static final InHandFit.Placement FIT = InHandFit
+        .fit("minigun", BOXES, MODEL_SCALE, true, -45, 225, new double[] { -0.05, -0.8, 0.95 });
+    /** The first-person scale from {@link InHandFit}. */
+    public static final double FP_SCALE = FIT.fpScale;
     private static final double K = FirstPersonFit.translationFactor(SHEET_FP_SCALE, FP_SCALE);
-    private static final double[] IDLE = FirstPersonFit
-        .idleOffset(FirstPersonFit.ANCHOR_X_FAMILY, FP_SCALE, FirstPersonFit.centerBlocks(BOXES, MODEL_SCALE));
+    private static final double[] IDLE = FIT.fpIdle;
     /** Blocks from the origin to the middle of the gun's length: centres the model for the world rows. */
     private static final double CENTRE_X = 7.0 / 16.0;
 
     /** The render transforms, timing and muzzle flash for the Minigun. */
     public static final GunTransforms TRANSFORMS = buildTransforms();
 
-    /**
-     * The client half of the gun's definition. It is not listed in {@link ClientGunDefinitions} yet: a later gameplay
-     * batch registers the gun.
-     */
+    /** The client half of the gun's definition, listed in {@link ClientGunDefinitions}. */
     public static final ClientGunDefinition DEFINITION = new ClientGunDefinition(
         "minigun",
         BOXES,
@@ -225,8 +223,8 @@ public final class MinigunProfile {
         TransformProgram tpBase = TransformProgram.builder()
             .rotX(180)
             .rotY(225)
-            .scale(0.5)
-            .translate(-0.6, -0.1, 0)
+            .scale(FIT.tpScale)
+            .translate(FIT.tpTranslate[0], FIT.tpTranslate[1], FIT.tpTranslate[2])
             .build();
         // No whole-gun recoil in third person; only the rotor turns.
         TransformProgram tpRecoil = TransformProgram.builder()
@@ -248,14 +246,15 @@ public final class MinigunProfile {
             .scale(0.5)
             .translate(-CENTRE_X, 0, 0)
             .build();
-        // Deviation: the flash offset is solved for this model's muzzle in the fixed first-person frame; additive
+        // Deviation: the flash offset is solved for this model's muzzle in the fitted first-person frame; additive
         // because the GregGuns sheet is black-backed (docs/assets/MANIFEST.md). Drawn at 1.65 times scale.
+        double[] fo = FIT.flashOffset(MUZZLE, 1.65);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
             "gregguns:textures/fx/muzzleflash2.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
-            -0.055,
-            0.005,
-            0.357,
+            fo[0],
+            fo[1],
+            fo[2],
             1.65,
             new double[] { 0, 0, 0 },
             true,
@@ -263,6 +262,7 @@ public final class MinigunProfile {
         return GunTransforms.builder()
             .parts(2)
             .timing(RECOIL_TICKS, 5, 100)
+            .checkRecoil()
             .firstPerson(fpBase, fpIdle, fpFire, fpReload)
             .thirdPerson(tpBase, new double[] { -0.05, -0.8, 0.95 }, tpRecoil, tpReload)
             .world(ground, icon)

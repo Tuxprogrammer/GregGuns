@@ -36,6 +36,19 @@ public final class GunAnimState {
      * @return false if the shot was an ignorable server echo
      */
     public boolean shot(double now, int recoilTicks, int flashTicks, int attackType, ShotOrigin origin, int gunTag) {
+        return shot(now, recoilTicks, flashTicks, attackType, origin, gunTag, false);
+    }
+
+    /**
+     * Records a shot, optionally keeping a recoil window that is still running (Techguns' {@code checkRecoil}: the
+     * PDW and Minigun fire faster than their recoil, and restarting every shot would freeze the animation at its
+     * start; the Minigun's rotor would never turn).
+     *
+     * @param checkRecoil true to leave a running recoil window of the same gun alone
+     * @return false if the shot was an ignorable server echo
+     */
+    public boolean shot(double now, int recoilTicks, int flashTicks, int attackType, ShotOrigin origin, int gunTag,
+        boolean checkRecoil) {
         if (origin == ShotOrigin.SERVER_ECHO && now - lastPredictedShot < ECHO_GRACE_TICKS) {
             return false;
         }
@@ -43,9 +56,12 @@ public final class GunAnimState {
             lastPredictedShot = now;
         }
         lastShot = now;
+        boolean keepRecoil = checkRecoil && tag == gunTag && recoil.isActive(now);
         tag = gunTag;
         this.attackType = attackType;
-        recoil.begin(now, recoilTicks);
+        if (!keepRecoil) {
+            recoil.begin(now, recoilTicks);
+        }
         flash.begin(now, flashTicks);
         return true;
     }

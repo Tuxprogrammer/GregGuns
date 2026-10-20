@@ -23,6 +23,7 @@ public final class NpcScenarios {
         registry.register(new ModuleConfigScenario());
         NpcEntityScenarios.registerAll(registry);
         NpcLootScenarios.registerAll(registry);
+        NpcEggScenarios.registerAll(registry);
     }
 
     /** The module is enabled and the config carries the documented defaults. */
