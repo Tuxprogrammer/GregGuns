@@ -198,7 +198,7 @@ public final class GeneratorScenarios {
                 }
                 int checked = 0;
                 int placed = 0;
-                long fingerprint = 17;
+                Map<String, String> snap1 = new HashMap<>();
                 Set<String> reasons = new HashSet<>();
                 for (Map.Entry<String, StructurePlan> e : plans.entrySet()) {
                     StructurePlan p = e.getValue();
@@ -224,7 +224,7 @@ public final class GeneratorScenarios {
                     out.check(
                         wt instanceof TileGregChest && ((TileGregChest) wt).pending() != null,
                         "GregGuns chest holds an unfilled order");
-                    fingerprint = fingerprint * 31 + footprintHash(world, p, anchorY, layout);
+                    snap1.put(e.getKey(), snapshot(world, p, anchorY, layout));
                 }
                 out.check(placed > 0, "a plan was placed; rejections were " + reasons);
                 out.check(checked > 0, "a fully populated structure was checked");
@@ -240,14 +240,14 @@ public final class GeneratorScenarios {
                         }
                     }
                 }
-                long again = 17;
+                Map<String, String> snap2 = new HashMap<>();
                 for (Map.Entry<String, StructurePlan> e : plans.entrySet()) {
                     Decision d = state.get(e.getKey());
                     if (d != null && d.isPlaced() && wholeBoxPopulated(world, e.getValue())) {
-                        again = again * 31 + footprintHash(world, e.getValue(), d.groundY() + 1, layout);
+                        snap2.put(e.getKey(), snapshot(world, e.getValue(), d.groundY() + 1, layout));
                     }
                 }
-                out.checkEquals("second pass leaves the structures unchanged", fingerprint, again);
+                out.check(snap1.equals(snap2), "second pass leaves the structures unchanged" + firstDiff(snap1, snap2));
                 out.checkEquals("second pass drops no write", 0L, StructureGenerator.rejectedWrites() - rejectedBefore);
                 out.checkEquals("guard still clean", 0L, (long) PopulateGuard.violationCount() - before[4]);
             } finally {
@@ -289,17 +289,33 @@ public final class GeneratorScenarios {
             return false;
         }
 
-        private static long footprintHash(World world, StructurePlan p, int anchorY, Layout layout) {
-            long h = 7;
+        private static String snapshot(World world, StructurePlan p, int anchorY, Layout layout) {
+            StringBuilder sb = new StringBuilder();
             for (int x = p.anchorX(); x <= p.maxX(); x++) {
                 for (int z = p.anchorZ(); z <= p.maxZ(); z++) {
                     for (int y = anchorY - layout.ground(); y < anchorY - layout.ground() + layout.sizeY(); y++) {
                         Block b = world.getBlock(x, y, z);
-                        h = h * 31 + Block.getIdFromBlock(b) * 16 + world.getBlockMetadata(x, y, z);
+                        sb.append(x).append(',').append(y).append(',').append(z).append('=')
+                            .append(Block.getIdFromBlock(b)).append(':').append(world.getBlockMetadata(x, y, z)).append(';');
                     }
                 }
             }
-            return h;
+            return sb.toString();
+        }
+
+        /** The first differing cell of the first differing plan, for the failure message. */
+        private static String firstDiff(Map<String, String> a, Map<String, String> b) {
+            for (Map.Entry<String, String> e : a.entrySet()) {
+                String other = b.get(e.getKey());
+                if (e.getValue().equals(other)) continue;
+                if (other == null) return " (plan " + e.getKey() + " missing in pass 2)";
+                String[] x = e.getValue().split(";");
+                String[] y = other.split(";");
+                for (int i = 0; i < Math.min(x.length, y.length); i++) {
+                    if (!x[i].equals(y[i])) return " (plan " + e.getKey() + ": " + x[i] + " became " + y[i] + ")";
+                }
+            }
+            return "";
         }
     }
 
