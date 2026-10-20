@@ -291,7 +291,7 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 
 **Exit gate:**
 - [ ] Every milestone M0–M8 has a completeness audit, with each exit box met or deferred with the owner's sign-off.
-- [ ] The recipe-clash review found no unresolved clashes with GTNH 2.9 recipes. Each clash it found was fixed, or recorded in PACK-CHANGES with the owner's sign-off.
+- [x] The recipe-clash review found no unresolved clashes with GTNH 2.9 recipes. Each clash it found was fixed, or recorded in PACK-CHANGES with the owner's sign-off. Evidence: v4 on master `b19ae575` found 0 exact clashes and 0 superset clashes. The one subset hit, the Bacterial Vat culture recipe, is verified in game by `gun.bio_gun.vat_recipe_selected`. All 8 v3 shadows are fixed ([review](testing/recipe-clash-beta.md)).
 - [x] The Reaction Chamber and the Retort are removed (design record 0012, branch `fix/retire-reaction-retort`). Their recipes are remapped to GTNH methods per the design record, and their MTE IDs are retired and reserved. The Retort is archived on `archive/retort-multiblock` and `archive/retort-v1`.
 - [ ] The NewGunrizons recon note is written, and the owner has picked a direction: merge, or take its place.
 - [ ] The batched client pass is clean, including with shaders on, and has no crash-severity or invisible-render bugs.
