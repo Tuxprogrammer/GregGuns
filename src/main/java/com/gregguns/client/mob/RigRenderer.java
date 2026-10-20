@@ -64,14 +64,18 @@ final class RigRenderer extends ModelRenderer {
         float bx = OpenGlHelper.lastBrightnessX;
         float by = OpenGlHelper.lastBrightnessY;
         boolean lit = GL11.glIsEnabled(GL11.GL_LIGHTING);
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-        if (lit) {
-            GL11.glDisable(GL11.GL_LIGHTING);
+        try {
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+            if (lit) {
+                GL11.glDisable(GL11.GL_LIGHTING);
+            }
+            super.render(scale);
+        } finally {
+            // Restored even if the draw throws, or the next mob would render fullbright with lighting off.
+            if (lit) {
+                GL11.glEnable(GL11.GL_LIGHTING);
+            }
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, bx, by);
         }
-        super.render(scale);
-        if (lit) {
-            GL11.glEnable(GL11.GL_LIGHTING);
-        }
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, bx, by);
     }
 }

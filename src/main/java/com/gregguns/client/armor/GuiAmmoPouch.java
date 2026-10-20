@@ -1,7 +1,6 @@
 package com.gregguns.client.armor;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
@@ -45,6 +44,5 @@ public final class GuiAmmoPouch extends GuiContainer {
         drawTexturedModalRect(left, top, 0, 0, xSize, 18 + 17);
         drawTexturedModalRect(left, top + 18 + 17, 0, 126, xSize, 96);
         drawRect(left + 7 + 18 * 6, top + 17, left + 7 + 18 * 9, top + 17 + 18, PANEL);
-        RenderHelper.enableGUIStandardItemLighting();
     }
 }
