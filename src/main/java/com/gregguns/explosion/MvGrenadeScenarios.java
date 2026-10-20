@@ -60,7 +60,28 @@ public final class MvGrenadeScenarios {
     private static EntityCow cow(ScenarioContext ctx, double dx, double dz) {
         EntityCow cow = new EntityCow(ctx.world());
         cow.setLocationAndAngles(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5 + dz, 0.0F, 0.0F);
+        // Pin the cow: a wandering or panicking cow can drift across a distance threshold before the fuse runs out.
+        cow.tasks.taskEntries.clear();
+        cow.targetTasks.taskEntries.clear();
         return ctx.spawn(cow);
+    }
+
+    /** A cow's state for a failure message: its distance to the blast and what it was given. */
+    private static String describe(EntityCow c, FlashbangProjectile g) {
+        double dx = c.posX - g.posX;
+        double dy = c.posY + c.getEyeHeight() - g.posY;
+        double dz = c.posZ - g.posZ;
+        PotionEffect s = c.getActivePotionEffect(Potion.moveSlowdown);
+        return " [distance " + String.format("%.2f", Math.sqrt(dx * dx + dy * dy + dz * dz))
+            + ", slowness "
+            + (s == null ? "none" : "level " + s.getAmplifier() + " for " + s.getDuration())
+            + ", weakness "
+            + (c.getActivePotionEffect(Potion.weakness) == null ? "none" : "yes")
+            + ", blast at "
+            + String.format("%.2f,%.2f,%.2f", g.posX, g.posY, g.posZ)
+            + ", cow at "
+            + String.format("%.2f,%.2f,%.2f", c.posX, c.posY, c.posZ)
+            + "]";
     }
 
     /**
@@ -72,6 +93,23 @@ public final class MvGrenadeScenarios {
             new GameProfile(UUID.nameUUIDFromBytes(name.getBytes()), name));
         p.setLocationAndAngles(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5, (float) yaw, 0.0F);
         return p;
+    }
+
+    private static String playerNote(FakePlayer p, FlashbangProjectile g) {
+        net.minecraft.util.Vec3 look = p.getLook(1.0F);
+        return String.format(
+            " [player at %.2f,%.2f,%.2f eye %.2f yaw %.1f look %.2f,%.2f,%.2f; blast at %.2f,%.2f,%.2f]",
+            p.posX,
+            p.posY,
+            p.posZ,
+            p.posY + p.getEyeHeight(),
+            p.rotationYaw,
+            look.xCoord,
+            look.yCoord,
+            look.zCoord,
+            g.posX,
+            g.posY,
+            g.posZ);
     }
 
     private static PotionEffect effect(EntityLivingBase e, Potion potion) {
@@ -203,30 +241,33 @@ public final class MvGrenadeScenarios {
                 // durations the blast would apply; the potions themselves are vanilla's and the mobs below show them.
                 result.check(
                     frontTicks >= 70 && frontTicks <= 90,
-                    "a player facing the flash at 4 blocks should get about 80 ticks, got " + frontTicks);
+                    "a player facing the flash at 4 blocks should get about 80 ticks, got " + frontTicks
+                        + playerNote(facing, grenade));
                 result.check(
                     FlashMath.nauseaTicks(frontTicks) >= 35 && FlashMath.nauseaTicks(frontTicks) <= 45,
                     "nausea should be about 40 ticks");
                 result.check(
                     backTicks == 0,
-                    "a player with their back to the flash at 4 blocks should get none, got " + backTicks);
+                    "a player with their back to the flash at 4 blocks should get none, got " + backTicks
+                        + playerNote(away, grenade));
                 PotionEffect slow = effect(close, Potion.moveSlowdown);
                 result.check(
                     slow != null && slow.getAmplifier() == 3 && effect(close, Potion.weakness) != null,
-                    "a cow at 2 blocks should have heavy Slowness and Weakness");
+                    "a cow at 2 blocks should have heavy Slowness and Weakness" + describe(close, grenade));
                 PotionEffect slowEdge = effect(edge, Potion.moveSlowdown);
                 result.check(
                     slowEdge != null && slowEdge.getAmplifier() == 1,
-                    "a cow at 6.5 blocks should have light Slowness, was "
-                        + (slowEdge == null ? "none" : slowEdge.getAmplifier()));
+                    "a cow at 6.5 blocks should have light Slowness" + describe(edge, grenade));
                 result.check(
                     effect(walled, Potion.moveSlowdown) == null,
-                    "a cow behind the stone wall should be unaffected");
-                result.check(effect(out, Potion.moveSlowdown) == null, "a cow past 8 blocks should be unaffected");
+                    "a cow behind the stone wall should be unaffected" + describe(walled, grenade));
+                result.check(
+                    effect(out, Potion.moveSlowdown) == null,
+                    "a cow past 8 blocks should be unaffected" + describe(out, grenade));
                 for (EntityCow c : new EntityCow[] { close, edge, walled, out }) {
                     result.check(
                         c.getHealth() == c.getMaxHealth(),
-                        "a flash must not hurt a cow, health " + c.getHealth());
+                        "a flash must not hurt a cow, health " + c.getHealth() + describe(c, grenade));
                 }
                 return result.build();
             });
