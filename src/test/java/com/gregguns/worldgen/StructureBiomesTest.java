@@ -88,7 +88,9 @@ class StructureBiomesTest {
         assertFalse(StructureBiomes.isWater(NONE));
         assertTrue(StructureBiomes.allowsLand(NONE, t(Type.MUSHROOM)));
         assertEquals(CampColor.WOODLAND, StructureBiomes.campColor(NONE));
-        assertTrue(StructureBiomes.typesOf(null).isEmpty());
+        assertTrue(
+            StructureBiomes.typesOf(null)
+                .isEmpty());
     }
 
     @Test
@@ -106,7 +108,9 @@ class StructureBiomesTest {
     void noBiomeIdInWorldgenSources() throws IOException {
         Path dir = Paths.get("src/main/java/com/gregguns/worldgen");
         try (Stream<Path> files = Files.list(dir)) {
-            for (Path p : (Iterable<Path>) files.filter(f -> f.toString().endsWith(".java"))::iterator) {
+            for (Path p : (Iterable<Path>) files.filter(
+                f -> f.toString()
+                    .endsWith(".java"))::iterator) {
                 String src = new String(Files.readAllBytes(p), StandardCharsets.UTF_8).toLowerCase();
                 assertFalse(src.contains("biomeid"), p + " mentions a biome id");
                 assertFalse(src.contains("biomegenbase.ocean"), p + " compares biome identity");

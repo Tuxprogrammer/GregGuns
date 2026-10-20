@@ -88,8 +88,10 @@ public final class StructureBiomes {
         for (String n : names) {
             if (n != null && !n.trim()
                 .isEmpty()) {
-                out.add(Type.getType(n.trim()
-                    .toUpperCase(Locale.ROOT)));
+                out.add(
+                    Type.getType(
+                        n.trim()
+                            .toUpperCase(Locale.ROOT)));
             }
         }
         return out;

@@ -59,7 +59,10 @@ public final class WorldColumnReader implements ColumnReader {
         if (m == Material.wood || block.isWood(world, x, y, z)) {
             return BlockKind.WOOD;
         }
-        if (m == Material.ground || m == Material.grass || m == Material.rock || m == Material.sand || m == Material.clay) {
+        if (m == Material.ground || m == Material.grass
+            || m == Material.rock
+            || m == Material.sand
+            || m == Material.clay) {
             return BlockKind.GROUND;
         }
         return BlockKind.SOLID;
