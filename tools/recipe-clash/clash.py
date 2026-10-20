@@ -203,6 +203,8 @@ def main():
                     findings["duplicate" if outs_same(o) else "grid"].append(("crafting", r, o))
         # shapeless overlap (ours shapeless vs theirs shaped/shapeless, or ours shaped vs theirs shapeless)
         ks = [k for i in r["inputs"] for k in [i["k"]] * i["n"]]
+        if not ks:
+            continue  # special recipes (dye, refill) have no listable ingredients
         for o in shapeless_by_n.get(len(ks), []):
             if r["kind"] == "shaped" and o["kind"] != "shapeless":
                 continue

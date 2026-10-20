@@ -71,13 +71,13 @@ public final class DumpRow {
     }
 
     /**
-     * Adds an item or ore input; the integrated circuit becomes {@link #circuit} instead.
+     * Adds an item or ore input; in a machine row the integrated circuit becomes {@link #circuit} instead.
      *
      * @param key   an item or ore key
      * @param count stack size
      */
     public void addInput(String key, int count) {
-        if (key.startsWith(CIRCUIT_ITEM + ":")) {
+        if ("machine".equals(kind) && key.startsWith(CIRCUIT_ITEM + ":")) {
             String meta = key.substring(CIRCUIT_ITEM.length() + 1);
             circuit = "*".equals(meta) ? -1 : Integer.parseInt(meta);
             return;
