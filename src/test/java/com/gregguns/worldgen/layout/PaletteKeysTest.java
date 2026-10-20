@@ -36,8 +36,7 @@ class PaletteKeysTest {
         assertTrue(keys.fallbackCount() > 5);
         assertTrue(warnings.isEmpty(), "absent Chisel is normal, not a warning");
         for (String k : keys.roleKeys()) {
-            assertNotNull(keys.get(k)
-                .block, k);
+            assertNotNull(keys.get(k).block, k);
         }
     }
 
@@ -67,8 +66,8 @@ class PaletteKeysTest {
     @Test
     void aFallbackThatDoesNotResolveDropsTheKeyWithAWarning() {
         List<String> warnings = new ArrayList<>();
-        PaletteKeys keys = PaletteKeys.resolve(null, n -> n.equals("minecraft:glowstone") ? null : new Block(Material.rock) {},
-            warnings::add);
+        PaletteKeys keys = PaletteKeys
+            .resolve(null, n -> n.equals("minecraft:glowstone") ? null : new Block(Material.rock) {}, warnings::add);
         assertNull(keys.get("lantern"));
         assertFalse(keys.has("lantern"));
         assertEquals(1, count(warnings, "'lantern'"));
@@ -103,8 +102,9 @@ class PaletteKeysTest {
         String needle = "team." + "chisel";
         List<String> offenders = new ArrayList<>();
         try (Stream<Path> files = Files.walk(root)) {
-            for (Path p : (Iterable<Path>) files.filter(f -> f.toString()
-                .endsWith(".java"))::iterator) {
+            for (Path p : (Iterable<Path>) files.filter(
+                f -> f.toString()
+                    .endsWith(".java"))::iterator) {
                 if (p.getFileName()
                     .toString()
                     .equals("PaletteKeys.java")) {

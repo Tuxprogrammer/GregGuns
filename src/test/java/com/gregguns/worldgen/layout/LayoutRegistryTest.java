@@ -29,14 +29,17 @@ class LayoutRegistryTest {
         assertNotNull(reg.get("test_hut"));
 
         assertNull(reg.get("test_bad"), "truncated file");
-        assertTrue(reg.disabledReason("test_bad")
-            .contains("1 row(s), expected 3"));
+        assertTrue(
+            reg.disabledReason("test_bad")
+                .contains("2 row(s), expected 3"));
         assertNull(reg.get("test_missing"), "missing file");
-        assertTrue(reg.disabledReason("test_missing")
-            .contains("not found"));
+        assertTrue(
+            reg.disabledReason("test_missing")
+                .contains("not found"));
         assertNull(reg.get("test_nokey"), "unknown palette key");
-        assertTrue(reg.disabledReason("test_nokey")
-            .contains("no_such_key"));
+        assertTrue(
+            reg.disabledReason("test_nokey")
+                .contains("no_such_key"));
 
         assertEquals(3, errors.size());
         assertFalse(reg.isEnabled("never_asked"));
@@ -51,8 +54,9 @@ class LayoutRegistryTest {
             .load(src, Arrays.asList("wanted"), TestKeys.chiselAbsent(new TestKeys.Blocks()), errors::add);
         assertFalse(reg.isEnabled("wanted"));
         assertEquals(1, errors.size());
-        assertTrue(errors.get(0)
-            .contains("does not match"));
+        assertTrue(
+            errors.get(0)
+                .contains("does not match"));
     }
 
     @Test

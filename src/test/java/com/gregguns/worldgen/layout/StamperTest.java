@@ -18,7 +18,6 @@ import net.minecraft.tileentity.TileEntity;
 import org.junit.jupiter.api.Test;
 
 import com.gregguns.worldgen.ClippingSink;
-import com.gregguns.worldgen.PopulateWindow;
 import com.gregguns.worldgen.RecordingWorld;
 import com.gregguns.worldgen.WindowedSink;
 
@@ -77,14 +76,17 @@ class StamperTest {
             ClippingSink sink = new ClippingSink(world.window(), cap);
             List<String> marks = new ArrayList<>();
             StampPlan plan = new StampPlan(l, 10, 64, 12, r, 99L);
-            int n = stamper.write(sink, plan, world.window(), (tag, x, y, z) -> marks.add(tag + "@" + x + "," + y + "," + z));
+            int n = stamper
+                .write(sink, plan, world.window(), (tag, x, y, z) -> marks.add(tag + "@" + x + "," + y + "," + z));
 
             assertEquals(l.solidCells(), n, "rotation " + r);
             assertEquals(0, sink.rejectedWrites(), "stamper must clip before the sink does (rotation " + r + ")");
-            assertTrue(world.writesOutsideWindow()
-                .isEmpty());
-            assertTrue(world.foreignChunkRequests()
-                .isEmpty());
+            assertTrue(
+                world.writesOutsideWindow()
+                    .isEmpty());
+            assertTrue(
+                world.foreignChunkRequests()
+                    .isEmpty());
             assertEquals(0, cap.duplicates);
 
             // footprint is exactly the rotated box, anchored at its minimum corner
@@ -141,9 +143,7 @@ class StamperTest {
                 .append('\n');
             for (int z = 0; z < 20; z++) {
                 for (int x = 0; x < 24; x++) {
-                    sb.append(
-                        y == 0 ? 'A'
-                            : ((x + z) % 3 == 0 ? '.' : (x == 0 ? 'S' : 'W')));
+                    sb.append(y == 0 ? 'A' : ((x + z) % 3 == 0 ? '.' : (x == 0 ? 'S' : 'W')));
                 }
                 sb.append('\n');
             }
@@ -174,18 +174,24 @@ class StamperTest {
                     RecordingWorld world = new RecordingWorld(cx, cz);
                     Capture cap = new Capture(world);
                     ClippingSink sink = new ClippingSink(world.window(), cap);
-                    int n = stamper
-                        .write(sink, plan, world.window(), (tag, x, y, z) -> marks.add(tag + "@" + x + "," + y + "," + z));
+                    int n = stamper.write(
+                        sink,
+                        plan,
+                        world.window(),
+                        (tag, x, y, z) -> marks.add(tag + "@" + x + "," + y + "," + z));
                     assertEquals(0, sink.rejectedWrites(), "window " + cx + "," + cz + " rotation " + r);
-                    assertTrue(world.writesOutsideWindow()
-                        .isEmpty());
+                    assertTrue(
+                        world.writesOutsideWindow()
+                            .isEmpty());
                     assertEquals(n, world.writes.size());
                     total += n;
                     if (n > 0) {
                         windowsWithWrites++;
                     }
                     for (Map.Entry<String, Object[]> e : cap.at.entrySet()) {
-                        assertTrue(union.put(e.getKey(), e.getValue()) == null, "written by two windows: " + e.getKey());
+                        assertTrue(
+                            union.put(e.getKey(), e.getValue()) == null,
+                            "written by two windows: " + e.getKey());
                     }
                 }
             }

@@ -53,10 +53,8 @@ public final class Stamper {
                 for (int wz = minZ; wz <= maxZ; wz++) {
                     int dx = wx - plan.anchorX;
                     int dz = wz - plan.anchorZ;
-                    int idx = layout.cell(
-                        Rotations.layoutX(rot, dx, dz, sx, sz),
-                        ly,
-                        Rotations.layoutZ(rot, dx, dz, sx, sz));
+                    int idx = layout
+                        .cell(Rotations.layoutX(rot, dx, dz, sx, sz), ly, Rotations.layoutZ(rot, dx, dz, sx, sz));
                     if (idx == Layout.SKIP) {
                         continue;
                     }

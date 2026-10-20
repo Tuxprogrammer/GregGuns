@@ -25,8 +25,10 @@ class LayoutParserTest {
 
     private static void bad(String text, String expectInMessage) {
         LayoutFormatException e = assertThrows(LayoutFormatException.class, () -> LayoutParser.parse("x.txt", text));
-        assertTrue(e.getMessage()
-            .contains(expectInMessage), "message was: " + e.getMessage());
+        assertTrue(
+            e.getMessage()
+                .contains(expectInMessage),
+            "message was: " + e.getMessage());
         assertTrue(
             e.getMessage()
                 .startsWith("x.txt:"),
@@ -44,10 +46,14 @@ class LayoutParserTest {
         assertEquals(1, l.ground());
         // layer 0 and 2 are 12 cells each; layer 1 has 4 + 2 + 4 minus the two '.' = 10
         assertEquals(12 + 10 + 12, l.solidCells());
-        assertEquals(1, l.marks()
-            .size());
-        assertEquals("chest.weapon", l.marks()
-            .get(0).tag);
+        assertEquals(
+            1,
+            l.marks()
+                .size());
+        assertEquals(
+            "chest.weapon",
+            l.marks()
+                .get(0).tag);
     }
 
     @Test
@@ -56,13 +62,19 @@ class LayoutParserTest {
         assertEquals(3, l.solidCells());
         assertEquals(Layout.SKIP, l.cell(0, 0, 1));
         PaletteEntry b = l.entry(l.cell(1, 0, 0));
-        assertEquals(2, b.choices()
-            .size());
+        assertEquals(
+            2,
+            b.choices()
+                .size());
         assertEquals(4, b.totalWeight());
-        assertEquals("concrete", b.choices()
-            .get(0).key);
-        assertEquals(3, b.choices()
-            .get(0).weight);
+        assertEquals(
+            "concrete",
+            b.choices()
+                .get(0).key);
+        assertEquals(
+            3,
+            b.choices()
+                .get(0).weight);
     }
 
     @Test
@@ -81,7 +93,10 @@ class LayoutParserTest {
     @Test
     void commentsBlankLinesAndCrlfAreIgnored() throws LayoutFormatException {
         String t = ("# header comment\n\n" + GOOD).replace("\n", "\r\n");
-        assertEquals(3, LayoutParser.parse("x.txt", t).solidCells());
+        assertEquals(
+            3,
+            LayoutParser.parse("x.txt", t)
+                .solidCells());
     }
 
     @Test
