@@ -5,6 +5,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import com.gregguns.client.GunsClientModule;
 import com.gregguns.gun.net.PacketGunCharge;
 import com.gregguns.gun.net.PacketGunTrigger;
 import com.gregguns.gun.server.GunKeybinds;
@@ -118,6 +119,13 @@ public final class GunInputHandler {
             mirror.charge()
                 .tick(gun.stats());
         }
+        // The first-person charge shift follows the local charge fraction; 0 with no charge gun in hand.
+        GunsClientModule.animations()
+            .chargeShift()
+            .tick(
+                gun == null ? 0.0
+                    : mirror.charge()
+                        .fraction(gun.stats()));
 
         SyncedKeybind reload = GunKeybinds.reload();
         KeyBinding reloadBinding = reload == null ? null : reload.getKeybinding();

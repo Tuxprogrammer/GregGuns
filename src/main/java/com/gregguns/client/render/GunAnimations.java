@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.gregguns.client.anim.ChargeShift;
 import com.gregguns.client.anim.GunAnimState;
 import com.gregguns.client.anim.MuzzleLight;
 import com.gregguns.client.anim.ShotOrigin;
@@ -44,6 +45,7 @@ public final class GunAnimations {
 
     private final Map<Integer, GunAnimState> states = new HashMap<>();
     private final ZoomController zoom = new ZoomController();
+    private final ChargeShift chargeShift = new ChargeShift();
     private long tick;
     private float partial;
 
@@ -55,6 +57,11 @@ public final class GunAnimations {
     /** @return the partial tick of the frame being rendered */
     double partial() {
         return partial;
+    }
+
+    /** @return the first-person charge shift of the local player's charge gun */
+    public ChargeShift chargeShift() {
+        return chargeShift;
     }
 
     /** @return the zoom controller (FOV and scope overlay state) */
@@ -168,6 +175,7 @@ public final class GunAnimations {
     void clear() {
         states.clear();
         zoom.reset();
+        chargeShift.reset();
     }
 
     private void shot(EntityLivingBase shooter, int attackType, int recoilTicks, int flashTicks, ShotOrigin origin) {
