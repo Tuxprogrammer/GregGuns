@@ -491,4 +491,5 @@ PAGES = {
     "multiblock-rampart": lambda: multiblock("rampart"),
     "enemies": enemies,
     "questbook": questbook,
+    "recipes-steam-and-lv": lambda: __import__("pages_recipes").recipes(),
 }

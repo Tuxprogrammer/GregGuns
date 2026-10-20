@@ -8,7 +8,9 @@ Builds the PNGs in [`docs/assets/infographics/`](../../../docs/assets/infographi
 # 1. Export the gun, armor and accessory models (once, and again after model changes)
 GREGGUNS_EXPORT_MODELS="$(cygpath -m "$PWD")/build/infographics/export" ./gradlew test --rerun \
     --tests com.gregguns.tools.ModelExportTest --tests com.gregguns.tools.PulseRifleExportTest
-# 2. Build every page, or name some
+# 2. Export the recipe tables (once, and again after recipe changes); the recipes sheet reads them
+GREGGUNS_EXPORT_RECIPES="$(cygpath -m "$PWD")/build/infographics/recipes.json" ./gradlew test --rerun     --tests com.gregguns.tools.RecipeExportTest
+# 3. Build every page, or name some
 python tools/asset-gen/infographics/build.py [getting-started arsenal-steam-to-hv ...]
 ```
 
@@ -29,6 +31,8 @@ Renders are cached in `build/infographics/r/` by their parameters and a hash of 
 | `kit.py` | Render cache, page shell and CSS, and rasterizing through Playwright |
 | `data.py` | Player-facing facts: weapons per tier, ammo, magazines |
 | `pages.py`, `pages_more.py` | One function per infographic; `pages_more.PAGES` lists them all |
+| `pages_recipes.py` | The recipes sheet: crafting grids for the hand recipes, machine rows from the exported recipe tables |
+| `vanilla.py` | Our own simple icons for the vanilla items recipes use; Mojang's textures are never shown |
 
 ## Writing rules
 
