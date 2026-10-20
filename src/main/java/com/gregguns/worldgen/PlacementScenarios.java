@@ -226,7 +226,8 @@ public final class PlacementScenarios {
                         }
                     }
                     Block b = world.getBlock(pos[0], pos[1], pos[2]);
-                    if (!(b instanceof BlockGregChest) || ((BlockGregChest) b).isWeaponChest() != kind.equals("weapon")) {
+                    if (!(b instanceof BlockGregChest)
+                        || ((BlockGregChest) b).isWeaponChest() != kind.equals("weapon")) {
                         wrongBlock++;
                     }
                 }

@@ -388,7 +388,8 @@ public final class PlacementHarness {
         }
 
         /**
-         * @param ignoreChestFacing a vanilla chest turns toward its neighbors as it is placed, so across a window border its
+         * @param ignoreChestFacing a vanilla chest turns toward its neighbors as it is placed, so across a window
+         *                          border its
          *                          facing depends on which window was stamped first; compare only its presence then
          * @return null when equal, else a description of the first difference
          */
@@ -406,9 +407,17 @@ public final class PlacementHarness {
                     int y = i % sy;
                     int z = i / sy % sz;
                     int x = i / sy / sz;
-                    return "at " + (ax + x) + "," + (minY + y) + "," + (az + z) + ": "
-                        + Block.blockRegistry.getNameForObject(Block.getBlockById(a >> 4)) + " meta " + (a & 15)
-                        + " vs meta " + (b & 15);
+                    return "at " + (ax + x)
+                        + ","
+                        + (minY + y)
+                        + ","
+                        + (az + z)
+                        + ": "
+                        + Block.blockRegistry.getNameForObject(Block.getBlockById(a >> 4))
+                        + " meta "
+                        + (a & 15)
+                        + " vs meta "
+                        + (b & 15);
                 }
             }
             if (!chests.equals(other.chests)) {
@@ -449,7 +458,8 @@ public final class PlacementHarness {
                 Chunk c = world.getChunkFromChunkCoords(cx, cz);
                 for (Object o : new ArrayList<Object>(c.chunkTileEntityMap.values())) {
                     TileEntity t = (TileEntity) o;
-                    if (t instanceof TileGregChest && !(world.getBlock(t.xCoord, t.yCoord, t.zCoord) instanceof BlockGregChest)) {
+                    if (t instanceof TileGregChest
+                        && !(world.getBlock(t.xCoord, t.yCoord, t.zCoord) instanceof BlockGregChest)) {
                         world.removeTileEntity(t.xCoord, t.yCoord, t.zCoord);
                     }
                 }
