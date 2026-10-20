@@ -29,8 +29,8 @@ public final class FlightTable {
 
     /** Mechanical Parts T3 registry name (RC-12, area 06). */
     public static final String MECHANICAL_3 = "part_mechanical_3";
-    /** Anti Gravity Core registry name (Reaction Chamber, IV). */
-    public static final String ANTI_GRAVITY_CORE = "part_anti_gravity_core";
+    /** Anti Gravity Core registry name (GT Assembler, IV: ComponentTable RC-65). */
+    public static final String ANTI_GRAVITY_CORE = com.gregguns.item.part.ComponentItems.ANTI_GRAVITY_CORE;
 
     private static final String CLOTH = ArmorCatalog.HEAVY_CLOTH;
 

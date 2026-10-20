@@ -30,12 +30,12 @@ public final class GregGunsMTEIDs {
     /** Ammo Press, EV. Built in M4. */
     public static final int AMMO_PRESS_EV = 20104;
 
-    /** Reaction Chamber, EV single block. */
-    public static final int REACTION_CHAMBER_EV = 20106;
-    /** Reaction Chamber, IV single block. */
-    public static final int REACTION_CHAMBER_IV = 20107;
-    /** Retort, the Reaction Chamber multiblock. */
-    public static final int RETORT = 20108;
+    /*
+     * RETIRED, RESERVED FOREVER (design record 0012): 20106 Reaction Chamber EV, 20107 Reaction Chamber IV, 20108
+     * Retort. These IDs are never reused and never renumbered. The full Retort is kept on branch
+     * archive/retort-multiblock and tag archive/retort-v1. See RETIRED below.
+     */
+
     /** Ammunition Works multiblock (HV controller). Built in M4. */
     public static final int AMMO_WORKS = 20105;
 
@@ -73,15 +73,30 @@ public final class GregGunsMTEIDs {
     /** Gun Mount Hatch, IV. Built in M6. */
     public static final int GUN_MOUNT_HATCH_IV = 20124;
 
+    /**
+     * MTE IDs that were registered by a shipped alpha and are retired. Worlds may still hold tile entities saved under
+     * them, so no registration may ever take one of these numbers again. Not a constant per ID on purpose: nothing may
+     * refer to a retired machine.
+     */
+    private static final int[] RETIRED = { 20106, 20107, 20108 };
+
     private GregGunsMTEIDs() {}
+
+    /**
+     * @return the retired, permanently reserved IDs (20106 to 20108: the Reaction Chamber EV and IV and the Retort); a
+     *         copy, ascending
+     */
+    public static int[] retired() {
+        return RETIRED.clone();
+    }
 
     /**
      * @return every ID defined above, in ascending order, for the uniqueness and range checks
      */
     public static int[] all() {
         return new int[] { AMMO_PRESS_STEAM, AMMO_PRESS_LV, AMMO_PRESS_MV, AMMO_PRESS_HV, AMMO_PRESS_EV, AMMO_WORKS,
-            REACTION_CHAMBER_EV, REACTION_CHAMBER_IV, RETORT, REPAIR_BENCH_LV, REPAIR_BENCH_MV, REPAIR_BENCH_HV,
-            REPAIR_BENCH_EV, REPAIR_BENCH_IV, ARMORY_GANTRY, CAMO_BENCH, TURRET_MV, TURRET_HV, TURRET_EV, TURRET_IV,
-            RAMPART, GUN_MOUNT_HATCH_MV, GUN_MOUNT_HATCH_HV, GUN_MOUNT_HATCH_EV, GUN_MOUNT_HATCH_IV };
+            REPAIR_BENCH_LV, REPAIR_BENCH_MV, REPAIR_BENCH_HV, REPAIR_BENCH_EV, REPAIR_BENCH_IV, ARMORY_GANTRY,
+            CAMO_BENCH, TURRET_MV, TURRET_HV, TURRET_EV, TURRET_IV, RAMPART, GUN_MOUNT_HATCH_MV, GUN_MOUNT_HATCH_HV,
+            GUN_MOUNT_HATCH_EV, GUN_MOUNT_HATCH_IV };
     }
 }

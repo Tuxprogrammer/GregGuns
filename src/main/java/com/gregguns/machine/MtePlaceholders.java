@@ -39,11 +39,31 @@ public final class MtePlaceholders {
         return out;
     }
 
+    /**
+     * @param registered whether an id already holds a machine
+     * @return the retired ids (design record 0012) that hold nothing yet
+     */
+    public static List<Integer> retiredMissing(IntPredicate registered) {
+        List<Integer> out = new ArrayList<>();
+        for (int id : GregGunsMTEIDs.retired()) {
+            if (!registered.test(id)) {
+                out.add(id);
+            }
+        }
+        return out;
+    }
+
     /** Registers a placeholder at every free GregGuns id. Call once, after all modules' init. */
     public static void registerMissing() {
         for (int id : missing(i -> GregTechAPI.METATILEENTITIES[i] != null)) {
             new MTEPlaceholder(id, "gregguns.placeholder." + id);
             GregGuns.LOG.info("MTE {} has no machine (its module is off here); registered an inert placeholder", id);
+        }
+        // Retired ids (20106 to 20108): a world may still hold the tile entity or an item stack of the removed machine,
+        // and GT's item renderer throws on an id with no machine (the Retort crash). The placeholder is inert.
+        for (int id : retiredMissing(i -> GregTechAPI.METATILEENTITIES[i] != null)) {
+            new MTEPlaceholder(id, "gregguns.retired." + id, true);
+            GregGuns.LOG.info("MTE {} is retired; registered an inert placeholder for old worlds", id);
         }
     }
 }

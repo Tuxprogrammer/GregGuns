@@ -1043,10 +1043,6 @@ Each sheet is 256x256 RGBA; only the listed rectangles are painted (x, y, w, h i
 
 `output_frame` (0,0,26,26), `slot` (27,0,18,18), `progress_arrow_empty` (46,0,24,16), `progress_arrow_full` (71,0,24,16), `ghost_bullet` (96,0,16,16), `ghost_casing` (113,0,16,16), `ghost_powder` (130,0,16,16), `ghost_magazine` (147,0,16,16), `ram_pip_off` (164,0,6,10), `ram_pip_on` (171,0,6,10)
 
-### gui/reaction_chamber.png
-
-`gauge_bg` (0,0,112,14), `btn_plus_normal` (113,0,14,14), `btn_minus_normal` (128,0,14,14), `btn_plus_hover` (143,0,14,14), `btn_minus_hover` (158,0,14,14), `btn_plus_pressed` (173,0,14,14), `btn_minus_pressed` (188,0,14,14), `gauge_fill` (0,15,110,12), `complete_empty` (111,15,62,8), `risk_low` (174,15,8,7), `risk_mid` (183,15,8,7), `risk_high` (192,15,8,7), `complete_full` (0,28,60,6), `gauge_marker` (61,28,6,6), `gauge_ticks` (68,28,112,4)
-
 ### gui/ammo_pouch.png
 
 `pouch_frame` (0,0,62,44), `slot` (63,0,18,18), `slot_hover` (82,0,18,18), `slot_overlay_leather` (101,0,18,18), `pouch_flap` (120,0,62,8)

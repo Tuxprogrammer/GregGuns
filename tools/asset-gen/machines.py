@@ -258,128 +258,6 @@ def hopper_top(f: int | None, steam: bool = False) -> Canvas:
     return c
 
 
-# ================================================================ REACTION CHAMBER
-HEAT_RED = hx("#8a1c08")
-HEAT_OR = hx("#ff6020")
-HEAT_YL = hx("#ffc050")
-HEAT_WH = hx("#fff2c0")
-GLASS = hx("#0e1620")
-
-
-def reaction_front(f: int | None) -> Canvas:
-    c = Canvas(16)
-    c.disc(8, 8, 7.0, OUT)
-    c.disc(8, 8, 6.3, LT)
-    c.ring(8, 8, 5.3, 6.3, MD)
-    # bevel the bezel top-left
-    for (x, y) in ((4, 3), (5, 2), (6, 2), (3, 4), (3, 5), (2, 6)):
-        c.px(x, y, HI)
-    c.disc(8, 8, 4.8, OUT)
-    c.disc(8, 8, 4.2, GLASS)
-    for a in range(4):               # four bezel bolts
-        x = 8 + round(5.6 * np.cos(a * np.pi / 2 + np.pi / 4))
-        y = 8 + round(5.6 * np.sin(a * np.pi / 2 + np.pi / 4))
-        c.px(x, y, OUT)
-    if f is None:
-        c.px(6, 6, hx("#4a6a88"))     # lens glint
-        c.px(7, 5, hx("#2a4258"))
-        return c
-    # active: heat-ray flame in the viewing port
-    hts = [4, 5, 6, 5, 6, 4]
-    wid = [1.7, 2.1, 2.5, 2.2, 2.6, 1.8]
-    ht, w = hts[f % 6], wid[f % 6]
-    sway = [0, 0, 1, 0, -1, 0][f % 6]
-    yy, xx = np.mgrid[0:16, 0:16]
-    for y in range(4, 13):
-        for x in range(4, 13):
-            dx, dy = x + 0.5 - 8, y + 0.5 - 8
-            if dx * dx + dy * dy > 4.2 * 4.2:
-                continue
-            t = (11.5 - (y + 0.5)) / ht          # 0 at the base, 1 at the tip
-            amb = max(0.0, 1 - (dx * dx + dy * dy) / 18.0)
-            col = mix(GLASS, HEAT_RED, 0.35 + 0.45 * amb)
-            if 0 <= t <= 1:
-                half = w * (1 - t) ** 0.8
-                d = abs(dx - sway * t)
-                if d < half:
-                    k = d / max(half, 0.01)
-                    if k < 0.35 and t < 0.6:
-                        col = HEAT_WH
-                    elif k < 0.6:
-                        col = HEAT_YL
-                    elif k < 0.85:
-                        col = HEAT_OR
-                    else:
-                        col = HEAT_RED
-            c.px(x, y, col)
-    c.px(6, 6, hx("#7a9ab8"))             # glass glint stays
-    return c
-
-
-def pipe_h(c: Canvas, y: int, x0: int, x1: int, f: int | None) -> None:
-    c.rect(x0, y, x1, y + 4, OUT)
-    c.hline(x0, x1, y + 1, HI)
-    c.hline(x0, x1, y + 2, LT)
-    c.hline(x0, x1, y + 3 - 1 + 0, MD)
-    c.hline(x0, x1, y + 3, DK)
-    if f is not None:                    # bright dashes of flow
-        for k in range(0, 16, 8):
-            sx = (k + 2 * f) % 16
-            if x0 <= sx < x1:
-                c.px(sx, y + 2, HEAT_YL)
-            if x0 <= (sx + 1) % 16 < x1:
-                c.px((sx + 1) % 16, y + 2, HEAT_OR)
-
-
-def reaction_side(f: int | None) -> Canvas:
-    c = Canvas(16)
-    pipe_h(c, 2, 0, 16, f)
-    pipe_h(c, 11, 0, 16, f)
-    # riser joining the pipes and flange rings
-    c.rect(11, 5, 14, 11, OUT)
-    c.rect(12, 5, 13, 11, LT)
-    c.vline(11, 5, 11, MD)
-    for y in (2, 11):
-        c.rect(10, y - 1, 12, y + 5, OUT)
-        c.vline(10, y, y + 4, HI)
-    # gauge
-    c.disc(5.5, 8.0, 3.2, OUT)
-    c.disc(5.5, 8.0, 2.5, hx("#dad4c0"))
-    pulse = [0.2, 0.55, 0.9, 0.55][f % 4] if f is not None else 0.25
-    ang = np.pi * (1.0 + pulse)
-    for r in (1, 2):
-        c.px(5 + round(r * np.cos(ang)), 8 + round(r * np.sin(ang)), hx("#b01010"))
-    c.px(5, 8, OUT)
-    if f is not None:                    # rim lamp pulses with the gauge
-        glow = [90, 160, 255, 160][f % 4]
-        for (x, y) in ((3, 5), (7, 5), (3, 10), (7, 10)):
-            pass
-        c.blend(5, 5, HEAT_OR, glow)
-        c.blend(5, 11, HEAT_OR, glow)
-    return c
-
-
-def reaction_top(f: int | None) -> Canvas:
-    c = Canvas(16)
-    c.rect(1, 1, 15, 15, OUT)
-    c.rect(2, 2, 14, 14, DK)
-    c.bevel(2, 2, 14, 14, LT, OUT)
-    for i, y in enumerate(range(3, 13, 2)):      # slats
-        c.hline(3, 13, y, MD)
-        c.hline(3, 13, y + 1, BLK)
-        if f is not None:
-            hot = [60, 110, 160, 110][(f + i) % 4]
-            for x in range(3, 13):
-                c.blend(x, y + 1, HEAT_OR, hot)
-    if f is not None:                             # shimmer: pale wavy cells rising
-        for k in range(3):
-            y = 12 - ((f * 3 + k * 4) % 12)
-            x = 4 + k * 3 + (1 if (y // 2) % 2 else 0)
-            c.blend(x, y, hx("#ffd8a8"), 110)
-            c.blend(x + 1, y - 1, hx("#ffd8a8"), 70)
-    return c
-
-
 # ================================================================ BENCHES
 WOOD = hx("#705030")
 WOOD_D = hx("#463018")
@@ -579,48 +457,6 @@ def works_front(f: int | None, glow: bool = False) -> Canvas:
     return c
 
 
-def retort_front(f: int | None, glow: bool = False) -> Canvas:
-    c = Canvas(16)
-    viol = hx("#c070e8")
-    # round-bottom flask: neck, shoulders, belly
-    liquid_y = 9
-    if not glow:
-        c.rect(6, 1, 10, 4, OUT)
-        c.rect(7, 1, 9, 4, hx("#c8d4e0"))
-        c.disc(8, 10, 5.6, OUT)
-        c.disc(8, 10, 4.8, hx("#aebccc"))
-        c.rect(5, 4, 11, 6, OUT)
-        c.rect(6, 4, 10, 6, hx("#aebccc"))
-        # liquid
-        for y in range(liquid_y, 15):
-            for x in range(3, 14):
-                if (x + 0.5 - 8) ** 2 + (y + 0.5 - 10) ** 2 <= 4.8 ** 2:
-                    c.px(x, y, viol if y > liquid_y else mix(viol, WHITE, 0.4))
-        c.px(5, 7, WHITE)
-        c.px(5, 8, WHITE)
-        c.px(6, 6, WHITE)
-        c.rect(7, 0, 10, 1, hx("#7a5634"))              # cork
-    if f is not None:
-        # bubbles rise (period 4 frames)
-        bubs = [(7, 13), (10, 12), (8, 11)]
-        for i, (bx, by) in enumerate(bubs):
-            y = by - ((f + i) % 4) * 2
-            if y < liquid_y - 4 or y > 14:
-                continue
-            if glow:
-                c.blend(bx, y, hx("#f0c8ff"), 230)
-                c.blend(bx + 1, y, hx("#c070e8"), 120)
-                c.blend(bx, y + 1, hx("#c070e8"), 120)
-            else:
-                c.px(bx, y, hx("#f6e6ff"))
-        if glow:
-            for x in range(4, 13):
-                for y in range(liquid_y + 1, 15):
-                    if (x + 0.5 - 8) ** 2 + (y + 0.5 - 10) ** 2 <= 4.4 ** 2:
-                        c.blend(x, y, viol, 80 + 30 * ((f + x) % 2))
-    return c
-
-
 def gantry_front(f: int | None, glow: bool = False) -> Canvas:
     c = Canvas(16)
     tx = 4 if f is None else [3, 6, 9, 6][f % 4]          # trolley position
@@ -734,11 +570,6 @@ def frames_for(machine: str, part: str, n: int) -> list:
             return [hopper_top(i if active else None, steam) for i in fr]
         if base == "bottom":
             return [bottom_plate()]
-    if machine == "reaction_chamber":
-        fn = {"front": reaction_front, "side": reaction_side, "top": reaction_top}.get(base)
-        if fn:
-            return [fn(i if active else None) for i in fr]
-        return [bottom_plate()]
     if machine == "repair_bench":
         if base == "front":
             return [repair_front(i if active else None) for i in fr]
@@ -754,8 +585,6 @@ def frames_for(machine: str, part: str, n: int) -> list:
         return [fn()]
     if machine == "ammunition_works":
         return [works_front(i if active else None, glow) for i in fr]
-    if machine == "retort":
-        return [retort_front(i if active else None, glow) for i in fr]
     if machine == "armory_gantry":
         return [gantry_front(i if active else None, glow) for i in fr]
     if machine == "rampart":

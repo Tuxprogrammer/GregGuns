@@ -36,8 +36,7 @@ Techguns fluids become GT materials' fluids, and Techguns' tanks become fluid co
 | `OIL` | `Materials.Oil` (also `OilLight`, `OilMedium`, `OilHeavy`) | Not used by GregGuns. Oil is a GT process input; the Techguns oil-hole and Chem Lab uses are dropped ([0002](../../design/0002-machine-deconfliction.md), [0005](../../design/0005-world-presence.md)) |
 | `FUEL` | `Materials.Diesel`, `GasolineRegular`, `GasolinePremium`, `NitroFuel`, `BioDiesel`, `Ethanol` | Fuel Tank contents. Default accepted set: `Diesel`, `GasolineRegular`, `BioDiesel`, `Ethanol`; `NitroFuel` and `GasolinePremium` give a damage bonus, a balance choice for M2 |
 | `BIOFUEL` | BartWorks' **E. coli culture fluid** (`BioCultureLoader.eColi.getFluid()`, resolved after init and null-checked, never by name; [BioCultureLoader.java#L25](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/common/loaders/BioCultureLoader.java#L25), [BioCulture.java#L135-L151](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/util/BioCulture.java#L135-L151)). `Materials.Biomass` is accepted only with `bioGun.acceptBiomass` on, or when the culture cannot be resolved | Bio Tank: accepted fluid for the Bio Gun. Not `BioDiesel`: that is the Fuel Tank's. A GregGuns Bacterial Vat recipe makes the culture fluid from Biomass (RC-57) |
-| `LIQUID_REDSTONE` | `Materials.Redstone.getMolten(...)` | Reaction Chamber laser-focus recipe (area 08) |
-| `LIQUID_ENDER` | `Materials.Enderium.getMolten(1_152)`. `Materials.Ender` has no fluid in the pinned GT ([MaterialsInit.java#L2502-L2507](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L2502-L2507)) | Reaction Chamber anti-gravity-core recipe (area 08), [which uses the same fluid](../08-machines-production/recipes.md#anti-gravity-core-iv) |
+| `LIQUID_ENDER` | `Materials.Enderium.getMolten(1_152)`. `Materials.Ender` has no fluid in the pinned GT ([MaterialsInit.java#L2502-L2507](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/materials/MaterialsInit.java#L2502-L2507)) | Anti Gravity Core recipe on the GT Assembler (RC-65, [06 recipes](recipes.md#part-anti-gravity-core)) |
 | `LIQUID_COAL` | Dropped | Unused in Techguns outside `TGFluids` |
 | `MILK` | `Materials.Milk` | Only if a GregGuns recipe needs it; GregGuns creates nothing |
 | `ACID` (`creeper_acid`) | Dropped. Acid steps use `Materials.SulfuricAcid` or `NitricAcid` | Only the yellowcake and treated-leather recipes used it, and both move to GT recipe maps ([components-and-materials.md](components-and-materials.md)) |
@@ -54,7 +53,7 @@ Techguns fluids become GT materials' fluids, and Techguns' tanks become fluid co
 - **GregGuns does:**
   - The Fuel Tank, Bio Tank, Compressed Air Tank and Oxygen Tank are GregGuns items that implement Forge `IFluidContainerItem` (capacity 1000 mB each, config) and are also registered with `FluidContainerRegistry` for the empty-to-full pair of each accepted fluid. GT machines then fill and drain them.
   - A gun reads and drains the tank's stored fluid directly. The per-shot cost is a gun stat, not a tank property.
-  - The tank's recipe uses GT plates and `Cell_Empty`-class parts ([components-and-materials.md](components-and-materials.md)).
+  - The tank's recipe uses GT plates and the pack's Large Fluid Cell as the body (stainless for the Fuel Tank, titanium for the Bio Tank, aluminium for the Compressed Air Tank; [recipes.md](recipes.md) RC-52 to RC-54).
   - Tanks are not stackable once they hold fluid (NBT), and they carry no radiation or heat tag.
 - **Pack-side change:** none.
 
@@ -80,6 +79,6 @@ Per [0003](../../design/0003-energy-model.md), the Energy Cell and Nuclear Power
 
 ## Open questions
 
-- **`Materials.Ender` (closed).** It has no fluid in GT 5.09.54.205; the Anti Gravity Core uses molten Enderium, as [08 recipes](../08-machines-production/recipes.md#anti-gravity-core-iv) already does. Fluid amounts are tuned in M4 balance.
+- **`Materials.Ender` (closed).** It has no fluid in GT 5.09.54.205; the Anti Gravity Core uses molten Enderium, in RC-65 ([06 recipes](recipes.md#part-anti-gravity-core)). Fluid amounts are tuned in M4 balance.
 - **Fuel set and bonuses.** Which fuels the Fuel Tank accepts, and whether better fuel increases flamethrower damage, is an M2 balance decision.
 - **Acid.** Dropping creeper acid removes a Techguns hazard fluid. If a hazard fluid is wanted in the world, use a GT fluid and record the choice in a design record.

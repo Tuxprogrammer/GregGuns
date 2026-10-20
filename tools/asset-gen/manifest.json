@@ -1283,25 +1283,6 @@
   "priority": "P3"
  },
  {
-  "id": "icon.part_heat_ray_focus",
-  "kind": "icon",
-  "path": "textures/items/part_heat_ray_focus.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#DCA0F0"
-  ],
-  "brief": "Heat Ray Focus (EV): GT-style 16x16 item icon, soft top-left light, dark outline. teardrop orange-red focus lens.",
-  "footprint_ref": "textures/items/rcHeatRay.png",
-  "priority": "P3"
- },
- {
   "id": "icon.part_rad_emitter",
   "kind": "icon",
   "path": "textures/items/part_rad_emitter.png",
@@ -6928,153 +6909,6 @@
   "priority": "P2"
  },
  {
-  "id": "block.machine.reaction_chamber.overlay_front",
-  "kind": "block",
-  "path": "textures/blocks/machines/reaction_chamber/OVERLAY_FRONT.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#808080",
-   "#FF6020",
-   "#40C0FF"
-  ],
-  "brief": "Reaction Chamber (single block, EV/IV) overlay, front inactive: round viewing port, dark lens.",
-  "footprint_ref": "textures/blocks/reactionChamber.png (legacy placeholder, role reference only)",
-  "priority": "P2"
- },
- {
-  "id": "block.machine.reaction_chamber.overlay_front_active",
-  "kind": "block",
-  "path": "textures/blocks/machines/reaction_chamber/OVERLAY_FRONT_ACTIVE.png",
-  "width": 16,
-  "height": 96,
-  "frames": 6,
-  "frametime": 2,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#808080",
-   "#FF6020",
-   "#40C0FF"
-  ],
-  "brief": "Reaction Chamber (single block, EV/IV) overlay, front active: round viewing port onto a small chamber, heat-ray lens glowing, 6-frame vertical strip at 2 ticks per frame.",
-  "footprint_ref": "textures/blocks/reactionChamber.png (legacy placeholder, role reference only)",
-  "priority": "P2"
- },
- {
-  "id": "block.machine.reaction_chamber.overlay_side",
-  "kind": "block",
-  "path": "textures/blocks/machines/reaction_chamber/OVERLAY_SIDE.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#808080",
-   "#FF6020",
-   "#40C0FF"
-  ],
-  "brief": "Reaction Chamber (single block, EV/IV) overlay, side inactive: pipe manifold, still gauge.",
-  "footprint_ref": "textures/blocks/reactionChamber.png (legacy placeholder, role reference only)",
-  "priority": "P2"
- },
- {
-  "id": "block.machine.reaction_chamber.overlay_side_active",
-  "kind": "block",
-  "path": "textures/blocks/machines/reaction_chamber/OVERLAY_SIDE_ACTIVE.png",
-  "width": 16,
-  "height": 64,
-  "frames": 4,
-  "frametime": 3,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#808080",
-   "#FF6020",
-   "#40C0FF"
-  ],
-  "brief": "Reaction Chamber (single block, EV/IV) overlay, side active: pipe manifold with pulsing gauge, 4-frame vertical strip at 3 ticks per frame.",
-  "footprint_ref": "textures/blocks/reactionChamber.png (legacy placeholder, role reference only)",
-  "priority": "P2"
- },
- {
-  "id": "block.machine.reaction_chamber.overlay_top",
-  "kind": "block",
-  "path": "textures/blocks/machines/reaction_chamber/OVERLAY_TOP.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#808080",
-   "#FF6020",
-   "#40C0FF"
-  ],
-  "brief": "Reaction Chamber (single block, EV/IV) overlay, top inactive: vent grille.",
-  "footprint_ref": "textures/blocks/reactionChamber.png (legacy placeholder, role reference only)",
-  "priority": "P2"
- },
- {
-  "id": "block.machine.reaction_chamber.overlay_top_active",
-  "kind": "block",
-  "path": "textures/blocks/machines/reaction_chamber/OVERLAY_TOP_ACTIVE.png",
-  "width": 16,
-  "height": 64,
-  "frames": 4,
-  "frametime": 3,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#808080",
-   "#FF6020",
-   "#40C0FF"
-  ],
-  "brief": "Reaction Chamber (single block, EV/IV) overlay, top active: vent grille with heat shimmer, 4-frame vertical strip at 3 ticks per frame.",
-  "footprint_ref": "textures/blocks/reactionChamber.png (legacy placeholder, role reference only)",
-  "priority": "P2"
- },
- {
-  "id": "block.machine.reaction_chamber.overlay_bottom",
-  "kind": "block",
-  "path": "textures/blocks/machines/reaction_chamber/OVERLAY_BOTTOM.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#808080",
-   "#FF6020",
-   "#40C0FF"
-  ],
-  "brief": "Reaction Chamber (single block, EV/IV) overlay, bottom inactive: bare plate.",
-  "footprint_ref": "textures/blocks/reactionChamber.png (legacy placeholder, role reference only)",
-  "priority": "P2"
- },
- {
   "id": "block.machine.repair_bench.overlay_front",
   "kind": "block",
   "path": "textures/blocks/machines/repair_bench/OVERLAY_FRONT.png",
@@ -7414,66 +7248,6 @@
   "priority": "P3"
  },
  {
-  "id": "block.machine.retort.overlay_front",
-  "kind": "block",
-  "path": "textures/blocks/machines/retort/OVERLAY_FRONT.png",
-  "width": 16,
-  "height": 16,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#DCA0F0",
-   "#FAFAFA"
-  ],
-  "brief": "Retort controller front overlay, inactive: round glass port with violet-white fluid. Controller tier EV.",
-  "footprint_ref": "(new, GT controller overlay pattern)",
-  "priority": "P3"
- },
- {
-  "id": "block.machine.retort.overlay_front_active",
-  "kind": "block",
-  "path": "textures/blocks/machines/retort/OVERLAY_FRONT_ACTIVE.png",
-  "width": 16,
-  "height": 64,
-  "frames": 4,
-  "frametime": 3,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#DCA0F0",
-   "#FAFAFA"
-  ],
-  "brief": "Retort controller front overlay, active: active: swirl. 4-frame strip, 3 ticks per frame.",
-  "footprint_ref": "(new, GT controller overlay pattern)",
-  "priority": "P3"
- },
- {
-  "id": "block.machine.retort.overlay_front_active_glow",
-  "kind": "block",
-  "path": "textures/blocks/machines/retort/OVERLAY_FRONT_ACTIVE_GLOW.png",
-  "width": 16,
-  "height": 64,
-  "frames": 4,
-  "frametime": 3,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#DCA0F0",
-   "#FAFAFA"
-  ],
-  "brief": "Retort controller active glow layer, same 4-frame strip.",
-  "footprint_ref": "(new)",
-  "priority": "P3"
- },
- {
   "id": "block.machine.armory_gantry.overlay_front",
   "kind": "block",
   "path": "textures/blocks/machines/armory_gantry/OVERLAY_FRONT.png",
@@ -7708,7 +7482,7 @@
    "#DCA0F0",
    "#FAFAFA"
   ],
-  "brief": "Reaction Casing (Reaction Chamber Casing) - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Retort and Reaction Chamber hull. Smooth white-gray beveled panels with hazard-striped corner marks.",
+  "brief": "Reaction Casing - GT casing, texture page 50 (GregGuns casings, see metatileentity-framework.md). Retired inert decorative block (formerly the Retort hull). Smooth white-gray beveled panels with hazard-striped corner marks.",
   "footprint_ref": "(new, GT casing 16x16)",
   "priority": "P3"
  },
@@ -9437,27 +9211,6 @@
   "priority": "P1"
  },
  {
-  "id": "gui.reaction_chamber",
-  "kind": "gui",
-  "path": "textures/gui/reaction_chamber.png",
-  "width": 256,
-  "height": 256,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#FF6020",
-   "#40C0FF",
-   "#808080"
-  ],
-  "brief": "Reaction Chamber panel sprites: intensity gauge 0-10 with marker, plus/minus buttons (normal, hover, pressed), completion bar, risk indicator.",
-  "footprint_ref": "textures/gui/ReactionChamber_Gui.png (layout reference only)",
-  "priority": "P2"
- },
- {
   "id": "gui.ammo_pouch",
   "kind": "gui",
   "path": "textures/gui/ammo_pouch.png",
@@ -9607,7 +9360,7 @@
   "palette": [
    "#DCA0F0"
   ],
-  "brief": "Shared multiblock panel sprites for Ammunition Works, Retort, Armory Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs.",
+  "brief": "Shared multiblock panel sprites for Ammunition Works, Armory Gantry and Rampart: tier-belt indicator, pressure gauge, bay indicators, mount status LEDs.",
   "footprint_ref": "(new, no Techguns GUI)",
   "priority": "P3"
  },
@@ -10277,7 +10030,7 @@
    "#FFE070",
    "#808030"
   ],
-  "brief": "FX sprite (single image): Reaction Chamber heat-ray teardrop flame, black background. Painted from scratch; additive sheets are black-background, alpha sheets transparent.",
+  "brief": "FX sprite (single image): heat-ray teardrop flame, retained but unused since 0012, black background. Painted from scratch; additive sheets are black-background, alpha sheets transparent.",
   "footprint_ref": "textures/fx/heatray.png",
   "priority": "P3"
  },
@@ -15459,28 +15212,6 @@
    "#F2F2F2"
   ],
   "brief": "Build guide: Ammunition Works, with block counts, sections, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.]",
-  "footprint_ref": "(new)",
-  "priority": "P3"
- },
- {
-  "id": "info.multiblock_retort",
-  "kind": "infographic",
-  "path": "docs/assets/infographics/multiblock-retort.png",
-  "width": 1600,
-  "height": 1909,
-  "frames": 1,
-  "frametime": null,
-  "duration_s": null,
-  "channels": null,
-  "sample_rate": null,
-  "target_lufs": null,
-  "palette": [
-   "#808080",
-   "#FF8000",
-   "#101418",
-   "#F2F2F2"
-  ],
-  "brief": "Build guide: Retort, with block counts, sections, hatches and scaling. Built by tools/asset-gen/infographics/build.py; no vector source. [Delivered: generated by tools/asset-gen/infographics/build.py.]",
   "footprint_ref": "(new)",
   "priority": "P3"
  },

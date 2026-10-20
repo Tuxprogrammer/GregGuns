@@ -39,19 +39,6 @@ The "Needs" column is the module order in `ModuleId`, taken from the roadmap's e
 |---|---|---|---|---|---|
 | `bioGun.acceptBiomass` | boolean | `false` | n/a | yes | Also lets the Bio Tank take plain GT Biomass, besides BartWorks' E. coli culture fluid (made from Biomass in the Bacterial Vat). Biomass is accepted regardless when the culture fluid cannot be resolved (BartWorks missing). |
 
-## Machines (`machines`)
-
-Reaction Chamber and Retort tuning (GGS-08-25). Server-side only, not synced.
-
-| Key | Type | Default | Range | Synced | What it does |
-|---|---|---|---|---|---|
-| `machines.retortPollutionPerSecond` | int | `100` | 0 to 100000 | no | Pollution the Retort adds per second while running. The single-block chamber pollutes nothing. |
-| `machines.reactionFailurePollution` | int | `500` | 0 to 100000 | no | One-off pollution burst when a reaction fails. |
-| `machines.reactionRadiationRadius` | int | `8` | 1 to 64 | no | Blocks around a failed reaction in which players are irradiated. |
-| `machines.radiationLevelLow` / `Medium` / `High` | int | `1` / `3` / `5` | 0 to 10 | no | GT `applyRadioactivity` level for `RAD_LOW` / `RAD_MEDIUM` / `RAD_HIGH`. |
-| `machines.explosionLowVoltageIndex` | int | `1` | 0 to 7 | no | GT voltage index whose blast power an `EXPLOSION_LOW` failure uses. |
-| `machines.explosionMediumVoltageIndex` | int | `2` | 0 to 7 | no | Same for `EXPLOSION_MEDIUM`. |
-
 ## Utility (`utility`)
 
 Turret, explosive charge, Bio Blob and Camp Flag tuning (M6). Server-side only, not synced.

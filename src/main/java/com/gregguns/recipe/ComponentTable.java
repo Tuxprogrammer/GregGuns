@@ -185,24 +185,19 @@ public final class ComponentTable {
                 Input.gt("pipeSmall", TI, 1),
                 Input.gt("ring", TI, 2),
                 Input.gt("plate", EPOXY, 2)));
-        // RC-07: needs the Laser Focus, which the machines module registers.
+        // RC-07: the Laser Focus is made by RC-64 below (design record 0012).
         list.add(
-            new Spec(
-                new Row(
-                    "RC-07",
-                    ComponentItems.BARREL_LASER,
-                    1,
-                    Tier.EV,
-                    Target.ASSEMBLER,
-                    10,
-                    1,
-                    Input.mod("part_laser_focus", 1),
-                    Input.gt("lens", "Glass", 1),
-                    Input.gt("pipeTiny", TI, 2),
-                    Input.gt("foil", "Electrum", 4)),
-                Collections.<FluidInput>emptyList(),
-                null,
-                ModuleId.MACHINES));
+            asm(
+                "RC-07",
+                ComponentItems.BARREL_LASER,
+                1,
+                Tier.EV,
+                10,
+                1,
+                Input.mod(ComponentItems.LASER_FOCUS, 1),
+                Input.gt("lens", "Glass", 1),
+                Input.gt("pipeTiny", TI, 2),
+                Input.gt("foil", "Electrum", 4)));
         list.add(
             asm(
                 "RC-08",
@@ -335,7 +330,12 @@ public final class ComponentTable {
                 Input.gt("circuit", "Data", 2),
                 Input.gt("plate", PLASTIC, 2),
                 Input.gt("dust", "Redstone", 1),
-                Input.vanilla("soul_sand", 1)));
+                Input.vanilla("soul_sand", 1),
+                // Source: BartWorks' Plasma Membrane (the Bio Lab chain's second product), made by the HV Centrifuge
+                // from 1,000 mB of E. coli culture fluid (circuit 17, 60 s), or by the LuV Extractor from a stem cell.
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/common/loaders/recipes/Centrifuge.java#L91-L98
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/enums/ItemList.java#L3206
+                Input.itemList("PlasmaMembrane", 1)));
         list.add(
             asm(
                 "RC-24",
@@ -374,9 +374,12 @@ public final class ComponentTable {
                 Tier.HV,
                 10,
                 1,
-                Input.itemList("Cell_Empty", 4),
-                Input.gt("plate", SS, 4),
-                Input.gt("ring", SS, 4),
+                // Source: the pack's Large Fluid Cell (stainless steel, 64,000 mB, MV Assembler recipe) is the tank
+                // body, far above the tank's 1,000 mB. The cell is cut into four tanks and lined with rubber.
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/items/MetaGeneratedItem01.java#L4155
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L132-L141
+                Input.itemList("Large_Fluid_Cell_StainlessSteel", 1),
+                Input.gt("plate", SS, 2),
                 Input.gt("plate", "Rubber", 2)));
         list.add(
             asm(
@@ -386,9 +389,12 @@ public final class ComponentTable {
                 Tier.EV,
                 8,
                 1,
-                Input.itemList("Cell_Empty", 4),
-                Input.gt("plate", TI, 4),
-                Input.gt("ring", TI, 4),
+                // Source: the titanium Large Fluid Cell (128,000 mB, HV/2 Assembler recipe), one tier above the
+                // Fuel Tank's stainless cell.
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/items/MetaGeneratedItem01.java#L4156
+                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/AssemblerRecipes.java#L142-L151
+                Input.itemList("Large_Fluid_Cell_Titanium", 1),
+                Input.gt("plate", TI, 2),
                 Input.gt("plate", PLASTIC, 2)));
         // RC-59: Assembly Line. Deviation: the research item is our own Power Plating (IV), not the Lapotronic Orb
         // that stood in for the withdrawn cell_energy: GT already scans the orb for its own research, and one scanned
@@ -445,6 +451,47 @@ public final class ComponentTable {
                     Input.mod(ComponentItems.BANDAGES, 4),
                     Input.gt("dust", "Redstone", 1)),
                 Arrays.asList(new FluidInput("Ethanol", FluidKind.FLUID, 250)),
+                null,
+                null));
+        // RC-64: the Laser Focus, moved from the retired Reaction Chamber to GT's Laser Engraver (design record 0012).
+        // Slot 0 is the workpiece, the Emitter is the second input, and the white lens is non-consumed (stack size 0).
+        // Source (map, lens idiom, white lens):
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L514
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/LaserEngraverRecipes.java#L400-L404
+        list.add(
+            new Spec(
+                new Row(
+                    "RC-64",
+                    ComponentItems.LASER_FOCUS,
+                    1,
+                    Tier.EV,
+                    Target.LASER_ENGRAVER,
+                    30,
+                    0,
+                    Input.gt("gem", "Diamond", 1),
+                    Input.itemList("Emitter_EV", 1),
+                    Input.lens("craftingLensWhite")),
+                Collections.<FluidInput>emptyList(),
+                null,
+                null));
+        // RC-65: the Anti Gravity Core, moved from the retired Reaction Chamber (IV) to GT's Assembler (design record
+        // 0012). Enderium stays as the molten input because Materials.Ender has no fluid in the pinned GT.
+        // Source: Assembler map
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L1266
+        list.add(
+            new Spec(
+                new Row(
+                    "RC-65",
+                    ComponentItems.ANTI_GRAVITY_CORE,
+                    1,
+                    Tier.IV,
+                    Target.ASSEMBLER,
+                    30,
+                    1,
+                    Input.gt("gem", "NetherStar", 1),
+                    Input.itemList("Emitter_IV", 1),
+                    Input.gt("circuit", "Elite", 2)),
+                Arrays.asList(FluidInput.molten("Enderium", 1152)),
                 null,
                 null));
         SPECS = Collections.unmodifiableList(list);
