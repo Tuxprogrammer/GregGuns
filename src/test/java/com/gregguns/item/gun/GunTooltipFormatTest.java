@@ -1,6 +1,7 @@
 package com.gregguns.item.gun;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +36,12 @@ class GunTooltipFormatTest {
         String range = GunTooltipFormat.dropOffRange(GunCatalog.PISTOL) + "/"
             + GunTooltipFormat.reach(GunCatalog.PISTOL);
         assertEquals("18.0-25.0/45", range);
+    }
+
+    @Test
+    void blobDisabledLineAppearsExactlyWhenBlockDamageIsOff() {
+        assertEquals(GunTooltipFormat.BLOB_DISABLED_KEY, GunTooltipFormat.blobGateKey(false));
+        assertNull(GunTooltipFormat.blobGateKey(true));
     }
 
     @Test

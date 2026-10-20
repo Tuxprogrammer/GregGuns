@@ -188,6 +188,7 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
                 // Source:
                 // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L993-L1011
                 // (one tier for every block of the line: a second tier fails the check)
+                .addElement(InteriorLamp.SYMBOL, InteriorLamp.element())
                 .addElement('I', chainItemPipeCasings(-1, (t, tier) -> t.beltTier = tier, t -> t.beltTier))
                 .build();
         }
@@ -309,6 +310,7 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
             .addCasing("2", lang("structure.motors"), false)
             .addCasing("3", lang("structure.assembler"), false)
             .addCasing("2 + 2 per bay", lang("structure.frames"), false)
+            .addCasing("2 + 1 per bay", lang("structure.lamp"), false)
             .addInputBus("1+", lang("structure.feeder"), 1)
             .addInputHatch("0+", lang("structure.feeder"), 1)
             .addEnergyHatch("1+", lang("structure.feeder_or_packing"), 1, 2)
