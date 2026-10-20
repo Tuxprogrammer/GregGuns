@@ -1,9 +1,7 @@
 package com.gregguns.gun.def;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -16,6 +14,7 @@ import com.gregguns.gun.logic.ProjectileKind;
 import com.gregguns.gun.logic.ReloadMode;
 import com.gregguns.item.ammo.def.NetherChargeAmmo;
 import com.gregguns.recipe.ComponentTable.Spec;
+import com.gregguns.recipe.GunLineTable;
 import com.gregguns.recipe.ProductionTable.Target;
 
 /** The Nether Blaster against the Techguns sheet and the recipe sheet. */
@@ -61,9 +60,7 @@ class NetherBlasterDefinitionTest {
             NetherBlasterDef.DEFINITION.rows()
                 .isEmpty(),
             "no Assembler row: the LuV recipe is an Assembly Line spec");
-        assertNotNull(NetherBlasterDef.DEFINITION.recipes());
-        Spec spec = NetherBlasterDef.line();
-        assertSame(spec, NetherBlasterDef.line(), "built once");
+        Spec spec = GunLineTable.byOutput(NetherBlasterDef.NAME);
         assertEquals(
             Target.ASSEMBLY_LINE,
             spec.row()

@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.gregguns.api.Tier;
-import com.gregguns.gun.def.GunDefinitions;
 import com.gregguns.item.part.ComponentItems;
 import com.gregguns.item.part.PartItems;
 import com.gregguns.recipe.ComponentTable.FluidInput;
@@ -29,34 +28,79 @@ public final class GunLineTable {
     /** The Nuke Launcher's registry name. */
     public static final String NUKE_LAUNCHER = "nuke_launcher";
 
-    /** The Grim Reaper's registry name: the Nuke Launcher's research item once that gun exists. */
-    public static final String GRIM_REAPER = "grim_reaper";
+    /** The Nether Blaster's registry name. */
+    public static final String NETHER_BLASTER = "nether_blaster";
 
-    /** The rocket launcher's registry name: the research item until the Grim Reaper is registered. */
-    private static final String ROCKET_LAUNCHER = "rocket_launcher";
+    /** The Nuclear Death Ray's registry name. */
+    public static final String NUCLEAR_DEATH_RAY = "nuclear_death_ray";
+
+    /** The Alien Blaster's registry name: the Nuclear Death Ray's research item. */
+    public static final String ALIEN_BLASTER = "alien_blaster";
+
+    /** The Blaster Rifle's registry name: the Nether Blaster's research item. */
+    public static final String BLASTER_RIFLE = "blaster_rifle";
+
+    /** The Grim Reaper's registry name: the Nuke Launcher's research item. */
+    public static final String GRIM_REAPER = "grim_reaper";
 
     /** The specs, in sheet order. */
     public static final List<Spec> SPECS;
 
     static {
         List<Spec> list = new ArrayList<>();
-        // GR-102 (Nuke Launcher, ZPM). Deviation: the sheet scans the Grim Reaper; until that gun is registered the
-        // scan item is the Rocket Launcher, so the recipe still registers. The switch is automatic once the Grim
-        // Reaper is in GunDefinitions.
-        String research = GunDefinitions.byName(GRIM_REAPER) != null ? GRIM_REAPER : ROCKET_LAUNCHER;
+        // GR-102 (Nuke Launcher, ZPM). The sheet scans the Grim Reaper.
         list.add(
             line(
                 "GR-102",
                 NUKE_LAUNCHER,
                 Tier.ZPM,
                 60,
-                new Research(Input.mod(research, 1), 60, Tier.LUV),
+                new Research(Input.mod(GRIM_REAPER, 1), 60, Tier.LUV),
                 Arrays.asList(
                     new FluidInput("SolderingAlloy", FluidKind.MOLTEN, 1152),
                     new FluidInput("Lubricant", FluidKind.FLUID, 500)),
                 Input.mod(PartItems.BARREL_HARDENED, 2),
                 Input.mod(ComponentItems.RECEIVER_CARBON, 1),
                 Input.itemList("Electric_Motor_ZPM", 1),
+                Input.gt("circuit", GateRule.circuitMaterial(Tier.ZPM), 2),
+                Input.gt("plate", "Lead", 4),
+                Input.gt("plate", "NaquadahAlloy", 4),
+                Input.gt("screw", "NaquadahAlloy", 8)));
+        // GR-100 (Nether Blaster, LuV). The sheet scans the Blaster Rifle, one tier down.
+        list.add(
+            line(
+                "GR-100",
+                NETHER_BLASTER,
+                Tier.LUV,
+                45,
+                new Research(Input.mod(BLASTER_RIFLE, 1), 60, Tier.IV),
+                Arrays.asList(
+                    new FluidInput("SolderingAlloy", FluidKind.MOLTEN, 576),
+                    new FluidInput("Lubricant", FluidKind.FLUID, 250)),
+                Input.mod(ComponentItems.CYBERNETIC, 4),
+                Input.mod(PartItems.BARREL_HARDENED, 1),
+                Input.mod(ComponentItems.PUMP_MECHANISM, 1),
+                Input.mod(ComponentItems.RECEIVER_CARBON, 1),
+                Input.itemList("Electric_Piston_LuV", 1),
+                Input.gt("circuit", GateRule.circuitMaterial(Tier.LUV), 2),
+                Input.gt("plate", "HSSG", 4),
+                Input.gt("screw", "HSSG", 8)));
+        // GR-103 (Nuclear Death Ray, ZPM). The sheet scans the Alien Blaster. Eight item inputs: an Assembler cannot
+        // take them.
+        list.add(
+            line(
+                "GR-103",
+                NUCLEAR_DEATH_RAY,
+                Tier.ZPM,
+                60,
+                new Research(Input.mod(ALIEN_BLASTER, 1), 60, Tier.LUV),
+                Arrays.asList(
+                    new FluidInput("SolderingAlloy", FluidKind.MOLTEN, 1152),
+                    new FluidInput("Lubricant", FluidKind.FLUID, 500)),
+                Input.mod(ComponentItems.RAD_EMITTER, 1),
+                Input.mod(ComponentItems.RECEIVER_CARBON, 1),
+                Input.mod(ComponentItems.STOCK_CARBON, 1),
+                Input.itemList("Field_Generator_LuV", 1),
                 Input.gt("circuit", GateRule.circuitMaterial(Tier.ZPM), 2),
                 Input.gt("plate", "Lead", 4),
                 Input.gt("plate", "NaquadahAlloy", 4),
@@ -69,6 +113,22 @@ public final class GunLineTable {
     private static Spec line(String id, String output, Tier tier, int seconds, Research research,
         List<FluidInput> fluids, Input... inputs) {
         return new Spec(new Row(id, output, 1, tier, Target.ASSEMBLY_LINE, seconds, 0, inputs), fluids, research, null);
+    }
+
+    /**
+     * @param output a gun's registry name
+     * @return its Assembly Line spec
+     * @throws IllegalArgumentException if no line builds that gun
+     */
+    public static Spec byOutput(String output) {
+        for (Spec spec : SPECS) {
+            if (spec.row()
+                .output()
+                .equals(output)) {
+                return spec;
+            }
+        }
+        throw new IllegalArgumentException("no Assembly Line gun: " + output);
     }
 
     /** @return just the rows, in sheet order */

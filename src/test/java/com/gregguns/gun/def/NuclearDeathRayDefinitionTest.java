@@ -13,7 +13,7 @@ import com.gregguns.gun.logic.FireMode;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ProjectileKind;
 import com.gregguns.recipe.GateRule;
-import com.gregguns.recipe.NdrLineTable;
+import com.gregguns.recipe.GunLineTable;
 import com.gregguns.recipe.ProductionTable;
 
 /** The Nuclear Death Ray against the Techguns sheet and the recipe sheet. */
@@ -84,13 +84,13 @@ class NuclearDeathRayDefinitionTest {
             "carries the ZPM gate");
         assertEquals(
             2,
-            NdrLineTable.SPECS.get(0)
+            GunLineTable.byOutput(GunLineTable.NUCLEAR_DEATH_RAY)
                 .fluids()
                 .size(),
             "solder and lubricant");
         assertEquals(
             Tier.LUV,
-            NdrLineTable.SPECS.get(0)
+            GunLineTable.byOutput(GunLineTable.NUCLEAR_DEATH_RAY)
                 .research()
                 .scanTier(),
             "scanned one tier below");
@@ -99,7 +99,7 @@ class NuclearDeathRayDefinitionTest {
     /** Reads the single spec of the NDR line table. */
     private static final class ComponentSpecs {
 
-        final ProductionTable.Row row = NdrLineTable.SPECS.get(0)
+        final ProductionTable.Row row = GunLineTable.byOutput(GunLineTable.NUCLEAR_DEATH_RAY)
             .row();
     }
 }

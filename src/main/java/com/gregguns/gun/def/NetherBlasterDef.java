@@ -9,13 +9,6 @@ import com.gregguns.gun.logic.ProjectileKind;
 import com.gregguns.gun.logic.ReloadMode;
 import com.gregguns.gun.server.NetherBlasterScenarios;
 import com.gregguns.item.ammo.def.NetherChargeAmmo;
-import com.gregguns.item.part.ComponentItems;
-import com.gregguns.item.part.PartItems;
-import com.gregguns.recipe.ComponentTable.FluidInput;
-import com.gregguns.recipe.ComponentTable.Spec;
-import com.gregguns.recipe.GateRule;
-import com.gregguns.recipe.GunLineRecipes;
-import com.gregguns.recipe.ProductionTable.Input;
 
 /**
  * The Nether Blaster: LuV, a slow burning bolt fed by Nether Charges. One charge reloads the gun to
@@ -61,48 +54,12 @@ public final class NetherBlasterDef {
         .ai(24, 40, 0, 0)
         .build();
 
-    /** The research gun the sheet names: the Blaster Rifle (IV), one tier below. */
-    private static final String RESEARCH = "blaster_rifle";
-
-    private static Spec line;
-
     /** The definition. */
     public static final GunDefinition DEFINITION = GunDefinition.of(NAME, STATS)
         .tier(Tier.LUV)
         .damageType(DamageType.FIRE)
-        .recipes(() -> GunLineRecipes.register(line()))
         .scenarios(registry -> NetherBlasterScenarios.registerAll(registry))
         .build();
 
     private NetherBlasterDef() {}
-
-    /**
-     * The Assembly Line spec (GR-100). Built on first use, after every gun definition exists, because the research item
-     * depends on which guns are registered.
-     *
-     * @return the spec
-     */
-    public static synchronized Spec line() {
-        if (line == null) {
-            line = GunLineRecipes.spec(
-                "GR-100",
-                NAME,
-                Tier.LUV,
-                45,
-                Input.mod(RESEARCH, 1),
-                60,
-                Tier.IV,
-                new FluidInput[] { GunLineRecipes.molten("SolderingAlloy", 576),
-                    GunLineRecipes.fluid("Lubricant", 250) },
-                Input.mod(ComponentItems.CYBERNETIC, 4),
-                Input.mod(PartItems.BARREL_HARDENED, 1),
-                Input.mod(ComponentItems.PUMP_MECHANISM, 1),
-                Input.mod(ComponentItems.RECEIVER_CARBON, 1),
-                Input.itemList("Electric_Piston_LuV", 1),
-                Input.gt("circuit", GateRule.circuitMaterial(Tier.LUV), 2),
-                Input.gt("plate", "HSSG", 4),
-                Input.gt("screw", "HSSG", 8));
-        }
-        return line;
-    }
 }

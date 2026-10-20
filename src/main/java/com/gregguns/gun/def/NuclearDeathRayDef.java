@@ -24,7 +24,7 @@ import com.gregguns.gun.server.NuclearDeathRayScenarios;
  * accepted): a full ZPM charge (10,000,000,000 EU, the GT {@code Energy_Module} baseline) is those 100 rounds at the
  * old rate, 500 ticks of beam, so one tick of beam costs 20,000,000 EU, charged as one shot per tick. There is no
  * reload (plan Q5). The Nuclear Power Cell stays a ZPM component and a radiation hazard item; it is not ammo. The
- * recipe is an Assembly Line spec ({@code NdrLineTable}, GR-103), not an Assembler row, because its inputs do not fit
+ * recipe is an Assembly Line spec ({@code GunLineTable}, GR-103), not an Assembler row, because its inputs do not fit
  * the Assembler.
  */
 // Spec: docs/techguns-spec/02-guns/sheets-energy-special.md (Nuclear Death Ray);

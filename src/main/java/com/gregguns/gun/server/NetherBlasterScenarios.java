@@ -16,7 +16,8 @@ import com.gregguns.gun.logic.GunStats;
 import com.gregguns.item.ammo.def.NetherChargeAmmo;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.projectile.NetherBlasterProjectile;
-import com.gregguns.recipe.GunLineRecipes;
+import com.gregguns.recipe.GunLineScenarios;
+import com.gregguns.recipe.GunLineTable;
 
 /**
  * The {@code gun.nether_blaster.*} scenarios: a held trigger fires burning bolts that hurt and set a villager alight,
@@ -43,10 +44,10 @@ public final class NetherBlasterScenarios {
         registry.register(new BlockFire("gun.nether_blaster.fire.block", true));
         registry.register(new BlockFire("gun.nether_blaster.fire.safe", false));
         registry.register(
-            GunLineRecipes.scenario(
+            GunLineScenarios.recipe(
                 "gun.nether_blaster.recipe",
                 "The LuV Assembly Line recipe (GR-100) is on GT's line list with 45 s, the LuV EU/t, its research item and a scan at the tier below, and the output is ours; the line's EU/t fits LuV.",
-                NetherBlasterDef::line));
+                GunLineTable.NETHER_BLASTER));
     }
 
     private static GunRig rig(ScenarioContext ctx, int loaded) {

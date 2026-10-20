@@ -29,13 +29,8 @@ class RowIdsAndFluidsTest {
         all.addAll(GrenadeTable.ROWS);
         all.addAll(MeleeTable.ROWS);
         all.addAll(ArmorTable.COMBAT);
-        // Gun Assembly Line rows (specs, not GunDefinition rows): Nether Blaster and Nuclear Death Ray.
-        all.add(
-            com.gregguns.gun.def.NetherBlasterDef.line()
-                .row());
-        for (ComponentTable.Spec spec : NdrLineTable.SPECS) {
-            all.add(spec.row());
-        }
+        // Gun Assembly Line rows (specs, not GunDefinition rows): Nether Blaster, Nuke Launcher, Nuclear Death Ray.
+        all.addAll(GunLineTable.rows());
         return all;
     }
 

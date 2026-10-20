@@ -12,7 +12,7 @@ import com.gregguns.core.testing.ScenarioResult;
 import gregtech.api.util.GTRecipe;
 
 /**
- * The Nuclear Death Ray's recipe scenarios ({@link NdrLineTable}): GT's Assembly Line list holds it, and it carries the
+ * The Nuclear Death Ray's recipe scenarios ({@link GunLineTable}): GT's Assembly Line list holds it, and it carries the
  * ZPM gate. Dev environment only. Server side.
  */
 // Spec: docs/gregguns-spec/02-guns/recipes.md (LuV and ZPM table, Nuclear Death Ray)
@@ -48,9 +48,9 @@ public final class NdrLineScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            ComponentTable.Spec spec = NdrLineTable.SPECS.get(0);
+            ComponentTable.Spec spec = GunLineTable.byOutput(GunLineTable.NUCLEAR_DEATH_RAY);
             ComponentScenarios.ComponentRecipesScenario.checkAssemblyLine(out, spec);
-            ItemStack made = ProductionRecipes.modStack(NdrLineTable.NUCLEAR_DEATH_RAY, 1);
+            ItemStack made = ProductionRecipes.modStack(GunLineTable.NUCLEAR_DEATH_RAY, 1);
             out.check(made != null, "nuclear_death_ray should be registered");
             for (GTRecipe.RecipeAssemblyLine candidate : GTRecipe.RecipeAssemblyLine.sAssemblylineRecipes) {
                 if (made != null && candidate.mOutput != null && candidate.mOutput.getItem() == made.getItem()) {
@@ -87,7 +87,7 @@ public final class NdrLineScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            ProductionTable.Row row = NdrLineTable.SPECS.get(0)
+            ProductionTable.Row row = GunLineTable.byOutput(GunLineTable.NUCLEAR_DEATH_RAY)
                 .row();
             out.checkEquals("tier", com.gregguns.api.Tier.ZPM, row.tier());
             boolean carries = false;
