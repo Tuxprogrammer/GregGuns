@@ -1,0 +1,9 @@
+gregguns-layout 1
+id: test_bad
+size: 4 3 3
+palette:
+F = brick
+layers:
+layer 0
+FFFF
+FF

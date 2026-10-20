@@ -1,0 +1,29 @@
+# Tiny fixture for the layout tests: 4 x 3 x 3, layer 0 is buried (ground: 1).
+gregguns-layout 1
+id: test_hut
+size: 4 3 3
+ground: 1
+
+palette:
+W = concrete*2 | minecraft:iron_bars*1
+F = brick
+S = minecraft:stone_stairs#0@stairs
+D = minecraft:wooden_door#1@door
+T = minecraft:torch#1@torch
+
+marks:
+chest.weapon 1 1 1
+
+layers:
+layer 0
+FFFF
+FFFF
+FFFF
+layer 1
+WDWW
+S..T
+WWWW
+layer 2
+FFFF
+FFFF
+FFFF
