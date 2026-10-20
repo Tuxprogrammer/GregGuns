@@ -15,6 +15,8 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.network.NetworkManager;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 
@@ -201,6 +203,8 @@ final class NpcSoakScenarios {
                 (WorldServer) world,
                 new GameProfile(UUID.nameUUIDFromBytes("npc_soak".getBytes(StandardCharsets.UTF_8)), "npc_soak"));
             player.capabilities.disableDamage = true;
+            // The entity tracker crashes sending a connectionless fake player's metadata.
+            new NetHandlerPlayServer(server, new NetworkManager(false), player);
             player.setLocationAndAngles(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, 0.0F, 0.0F);
             ctx.spawn(player);
 
