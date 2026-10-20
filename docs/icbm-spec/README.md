@@ -6,7 +6,7 @@ Status: **first pass complete** (2026-10-20). All seven areas and both appendice
 
 ## Which sources this spec covers
 
-| Source | Role | License (see [sources-and-licensing](../icbm/sources-and-licensing.md)) |
+| Source | Role | License (see the licensing survey in [PR #1](https://github.com/Tuxprogrammer/GregGuns/pull/1); it becomes `docs/icbm/sources-and-licensing.md` when merged) |
 |---|---|---|
 | ICBM-Classic `prod/1.12` @ `9c1d985a` | **Baseline.** Every area describes this. | Code MIT; assets ARR |
 | BuiltBrokenModding/ICBM ("ICBM 2", 1.7.10) | Appendix [A1](#appendices): its modular missile system, as a design option | Code MIT; assets excluded |

@@ -219,7 +219,7 @@ Context:
 
 Context:
 - **ICBM 1.12's current assets can't be reused** ([07-visuals-audio](../icbm-spec/07-visuals-audio/index.md)). Of 140 textures, 55 are CC BY-NC-SA 4.0, 75 are licensed only to the ICBM team, and 7 have no credit. Of 24 sounds, 21 are of unknown origin.
-- **[PR #1's licensing survey](../icbm/sources-and-licensing.md) lists what may legally be copied**, in tiers:
+- **[PR #1's licensing survey](https://github.com/Tuxprogrammer/GregGuns/pull/1) (`docs/icbm/sources-and-licensing.md` once merged) lists what may legally be copied**, in tiers:
   1. the frozen MIT snapshot at `2f807bf8`: 235 PNGs, 35 OBJ models, 31 sounds;
   2. Calclavia's LGPL 1.6.4 set;
   3. HBM (LGPL), CC0 libraries and pack textures referenced at runtime;
