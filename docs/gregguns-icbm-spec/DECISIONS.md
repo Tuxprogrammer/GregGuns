@@ -151,7 +151,7 @@ Context: how GTNH fuels rockets. The evidence is the SpaceRace quest line, Galac
 
 ## Open
 
-These come from the ICBM 2 appendix ([A1, "Ideas worth borrowing"](../icbm-spec/A1-icbm2-modular/index.md)). They fill in what D8's workbench slots actually do.
+Q11–Q15 come from the ICBM 2 appendix ([A1, "Ideas worth borrowing"](../icbm-spec/A1-icbm2-modular/index.md)). They fill in what D8's workbench slots actually do.
 
 ### Q11 · Warhead size: fixed or a quantity knob?
 
@@ -214,3 +214,20 @@ Context:
 **Options:**
 - **A (recommended).** The workbench page for hand building, **plus a GT Assembler recipe for every missile** that uses the missile schematic as a non-consumed input, so missiles can be mass-produced. Silos accept missiles through a GT input bus.
 - **B.** Workbench only.
+
+### Q16 · Where ICBM art and audio come from
+
+Context:
+- **ICBM 1.12's current assets can't be reused** ([07-visuals-audio](../icbm-spec/07-visuals-audio/index.md)). Of 140 textures, 55 are CC BY-NC-SA 4.0, 75 are licensed only to the ICBM team, and 7 have no credit. Of 24 sounds, 21 are of unknown origin.
+- **[PR #1's licensing survey](../icbm/sources-and-licensing.md) lists what may legally be copied**, in tiers:
+  1. the frozen MIT snapshot at `2f807bf8`: 235 PNGs, 35 OBJ models, 31 sounds;
+  2. Calclavia's LGPL 1.6.4 set;
+  3. HBM (LGPL), CC0 libraries and pack textures referenced at runtime;
+  4. our own generated art.
+- **[0006](../design/0006-art-direction.md)** sets the GregGuns art style: 16×16 GT-style icons in GT material colors, the original footprints kept, and sounds matched to role, length and loudness within ±3 LU, all recorded in `docs/assets/CREDITS.md`.
+- **The rebuild needs few models.** ICBM's 27 hand-built missile models are really one table of (hull, warhead) texture choices. The radar is a static cube with four screen textures; only the EMP coil animates.
+
+**Options:**
+- **A (recommended).** **Our own art and audio, under 0006**, made by the existing asset pipeline and the clean-room model process. ICBM assets serve only as footprint and role references, as Techguns assets did. One art style across the mod, no LGPL carve-out folder, no notices to maintain. The 3 permissively licensed ICBM sounds and CC0 sources may still be used where they fit.
+- **B.** PR #1's tiers: copy MIT-snapshot and LGPL assets first, and generate only the gaps. Faster, but the result mixes ICBM's look with GregGuns' GT style and adds an LGPL carve-out.
+- **C.** A for textures and models, B for sounds only. Sounds are the hardest assets to generate. The snapshot's sounds are MIT-licensed, but about 20 of them came from freesound with no recorded source, and PR #1 step 6 says each must be re-sourced from freesound under its own license.

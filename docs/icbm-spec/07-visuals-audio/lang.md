@@ -2,9 +2,9 @@
 
 `lang/en_US.lang` has 425 keys in 42 groups (the group names are the `##` and `###` headers of the file). Keys are `key=value`; `\n` and `\t` in values are literal escapes shown as written, `%1$s`-style tokens are Java format arguments, and `§` codes are Minecraft color/format codes. Other language files exist (de_DE 427 lines, es_ES 134, ko_KR 575, pt_BR 286, ru_RU 427, zh_cn 419); this sheet records English only. The 1.12 `.lang` format and the use of `:` inside keys (`item.icbmclassic:battery.name`) are *1.12-only mechanisms*: the key is the registry name with the domain and a colon.
 
-See [Stale and broken keys](#stale-keys) after the tables for keys the code asks for that do not exist, and for keys nothing asks for.
+The groups follow the file's own headers, so a few are loosely named (the last two groups hold keys that have no header of their own, and the `# SubTitles` block sits inside the radio group). After the tables, [Missing keys](#missing-keys), [Broken values](#broken-values) and [Stale keys](#stale-keys) list the problems found.
 
-## Master language file https://htmlcolorcodes.com/minecraft-color-codes/ (1)
+## Master header (1)
 
 | Key | English text |
 |---|---|
@@ -379,7 +379,7 @@ See [Stale and broken keys](#stale-keys) after the tables for keys the code asks
 | `explosive.icbmclassic:hypersonic.info` | I feel bad for your ears |
 | `explosive.icbmclassic:antimatter.info` | Matter + antimatter = No matter |
 
-## Some extra messages just to honor the great Yogscast https://www.youtube.com/watch?v=F2ohslGivm8 (12)
+## Red matter tooltip taunts, a Yogscast reference (12)
 
 | Key | English text |
 |---|---|
@@ -560,7 +560,7 @@ See [Stale and broken keys](#stale-keys) after the tables for keys the code asks
 |---|---|
 | `gui.launcher.cruise.name` | Cruise Launcher |
 
-## IGPSData usage (13)
+## GPS data, chat, coordinator and tooltips, ungrouped in the file (13)
 
 | Key | English text |
 |---|---|
@@ -613,7 +613,7 @@ See [Stale and broken keys](#stale-keys) after the tables for keys the code asks
 | `gps.data.transferred.name` | Data transferred |
 | `gps.cleared.name` | GPS data cleared |
 
-## Radio (21)
+## Radio messages and subtitles (21)
 
 | Key | English text |
 |---|---|
@@ -639,3 +639,51 @@ See [Stale and broken keys](#stale-keys) after the tables for keys the code asks
 | `subtitle.icbmclassic:meep` | Meep Meep |
 | `subtitle.icbmclassic:radioactive_tick` | Radioactive Tick |
 
+## Missing keys
+
+Keys the code asks for that `en_US.lang` does not define. The game then shows the raw key. Each is a bug entry in [index.md](index.md#suspected-bugs).
+
+| Key requested | Where | Nearest key that exists | Bug |
+|---|---|---|---|
+| `info.icbmclassic:launcher.errornetwork.launchers` | `LauncherLangs.ERROR_NO_LAUNCHER` (missing `.` before `network`) | `info.icbmclassic:launcher.error.network.launchers` | ICBM-07-19 |
+| `info.icbmclassic:launcher.error.missile.invalid`, `.missile.queued`, `.group.empty` | `LauncherLangs` | none | ICBM-07-20 |
+| `command.icbmclassic:icbm.blast.threading` | `CommandBlastTrigger.TRANSLATION_THREADING` | `command.icbmclassic:icbm.blast.threaded` | ICBM-07-21 |
+| `gui.icbmclassic:empTower.range` | `GuiEMPTower.TRANSLATION_TOOLTIP_RANGE` | none | ICBM-07-22 |
+| `bomb.droplet.<explosive key>.name`, `bomb.droplet.icbmclassic:generic.name` | `EntityBombDroplet.getName` | `bomblet.icbmclassic:<name>.name` | ICBM-07-23 |
+| `icbm.explosive.redMatter.info.count`, `icbm.explosive.redMatter.info.<n>` | `ItemBlockExplosive` | `explosive.icbmclassic:redMatter.info.count` and `.0` to `.10` | ICBM-07-24 |
+| `chat.launcher.toolTargetSet`, `chat.launcher.noTargetInTool` | `ExplosiveInit:346,350`, `GPSDataHelpers:35` | none | ICBM-07-25 |
+| `item.icbmclassic:laserDetonator.info` | `ItemBase` appends `.info` to the item name for the tooltip | `item.icbmclassic:laserDetonator.info.info` (doubled) | ICBM-07-28 |
+
+## Broken values
+
+| Key | Problem | Bug |
+|---|---|---|
+| `info.icbmclassic:gps.set.all` | Reads `%3$s` twice. The fourth argument (world name) is never printed, so the line ends with the Z coordinate instead of the world. `item.icbmclassic:radarGun.data.all` uses `%4$s` correctly. | ICBM-07-26 |
+| `command.icbmclassic:icbm.remove` | Contains `%1%d`, an invalid format token. It prints a literal `%d` or falls back to the raw key. | ICBM-07-27 |
+| Text typos | "Debilition Gas" (`subtitle.icbmclassic:explosion.debilitation`), "Unexpect error" (`command.icbmclassic:icbm.blast.error`), "targetted" (`item.icbmclassic:radarGun.info`), "Transfered data" (`info.icbmclassic:gps.set.*`), "aswell" (`info.tracker.tooltip`), "Parchute" in a comment. | ICBM-07-29 |
+
+## Stale keys
+
+Keys whose stem appears nowhere in the Java source (a plain text search). Most are left over from ICBM 1.7.10 features that 1.12 dropped (see appendix A2-lineage). Keys built at runtime from registry names (`item.*`, `tile.*`, `explosive.*`, `missile.*`, `bombcart.*`, `grenade.*`, `bomblet.*`, `tier.*`, `death.attack.*`, `potion.*`) can not be checked this way and are not listed.
+
+| Group | Keys |
+|---|---|
+| Laser designator and tool chat | `message.designator.*` (7), `message.radarGun.*` (4), `message.detonator.*` (2), `message.launcher.protected`, `info.designator.noFreq`, `info.detonator.linked`, `info.detonator.noLink`, `info.misc.freq`, `info.tracker.tracking`, `info.tracker.tooltip` |
+| Missile coordinator | `gui.coordinator.*` (9), `tile.icbmclassic:missilecoordinator.*` |
+| Dropped blocks | `tile.icbmclassic:camouflage.name`, `tile.icbmclassic:proximityDetector.name`, `tile.icbmclassic:batterybox.0.name` |
+| Dropped missiles | `missile.icbmclassic:antiBallistic.name`, `missile.icbmclassic:nuclearCluster.name`, `missile.icbmclassic:homing.name` |
+| Dropped explosives | `nightmare` in `explosive.*` and `bombcart.*`. `hypersonic` in `explosive.*`, `missile.*`, `bomblet.*`, `bombcart.*` and `.info`: the explosive still exists as ID 21 with tier NONE but datafixers move it to sonic (removed in 4.3.0). |
+| Laser | `item.icbmclassic:laserDetonator.target` |
+
+## Other language files
+
+| File | Lines | Notes |
+|---|---|---|
+| `en_US.lang` | 584 | master |
+| `ko_KR.lang` | 575 | nearly complete |
+| `de_DE.lang`, `ru_RU.lang` | 427 | partial |
+| `zh_cn.lang` | 419 | partial |
+| `pt_BR.lang` | 286 | partial |
+| `es_ES.lang` | 134 | minimal |
+
+Translations were not read; they are community contributions and carry the same missing-key problems.
