@@ -24,8 +24,11 @@ public enum BastionPlating {
     STEEL(GregGunsCasings.BASTION_STEEL, TurretPlate.STEEL, 2, Tier.LV, TierEU.RECIPE_LV),
     /** Aluminum: armor 15, MV. */
     ALUMINUM(GregGunsCasings.BASTION_ALUMINUM, TurretPlate.ALUMINUM, 3, Tier.MV, TierEU.RECIPE_MV),
-    /** Carbon: armor 20, EV. */
-    CARBON(GregGunsCasings.BASTION_CARBON, TurretPlate.CARBON, 4, Tier.EV, TierEU.RECIPE_EV);
+    /**
+     * Carbon: armor 20, EV. Circuit 10, not 4: GT's Concrete row (one concrete block, circuit 4) has inputs that are a
+     * subset of this recipe's, so GT could run it instead. A dump of GTNH 2.9.0-RC-2 shows no match on circuit 10.
+     */
+    CARBON(GregGunsCasings.BASTION_CARBON, TurretPlate.CARBON, 10, Tier.EV, TierEU.RECIPE_EV);
 
     /** Blocks one Assembler run makes from one plate. */
     public static final int YIELD = 4;

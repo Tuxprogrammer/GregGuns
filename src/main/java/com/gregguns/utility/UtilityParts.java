@@ -89,6 +89,7 @@ public final class UtilityParts {
                 ItemStack[] inputs = extra == null ? new ItemStack[] { main } : new ItemStack[] { main, extra };
                 GTValues.RA.stdBuilder()
                     .itemInputs(inputs)
+                    .circuit(plate.circuit())
                     .itemOutputs(out)
                     .duration(plate.durationTicks())
                     .eut(plate.recipeEut())

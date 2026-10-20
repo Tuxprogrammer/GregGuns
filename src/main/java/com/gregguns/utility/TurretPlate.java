@@ -17,13 +17,13 @@ public enum TurretPlate {
      * {@code plate.WroughtIron}, but in GT 5.09.54.205 {@code Materials.WroughtIron} is an alias of Cast Iron
      * ({@code plateWroughtIron} has no items), so the recipe takes {@code plate.CastIron}, as the Miner armor does.
      */
-    IRON("turret_armor_iron", 5, Tier.STEAM, "CastIron", 5, null, 0, 0L, 0),
+    IRON("turret_armor_iron", 5, Tier.STEAM, "CastIron", 5, null, 0, 0L, 0, 0),
     /** Steel Turret Armor (10): LV Assembler. */
-    STEEL("turret_armor_steel", 10, Tier.LV, "Steel", 5, null, 0, TierEU.RECIPE_LV, 200),
+    STEEL("turret_armor_steel", 10, Tier.LV, "Steel", 5, null, 0, TierEU.RECIPE_LV, 200, 14),
     /** Aluminum Turret Armor (15): MV Assembler. */
-    ALUMINUM("turret_armor_aluminum", 15, Tier.MV, "Aluminium", 5, null, 0, TierEU.RECIPE_MV, 200),
+    ALUMINUM("turret_armor_aluminum", 15, Tier.MV, "Aluminium", 5, null, 0, TierEU.RECIPE_MV, 200, 15),
     /** Carbon Turret Armor (20): EV Assembler, fiber-reinforced epoxy plus the EV gate material. */
-    CARBON("turret_armor_carbon", 20, Tier.EV, "EpoxidFiberReinforced", 3, "Titanium", 2, TierEU.RECIPE_EV, 200);
+    CARBON("turret_armor_carbon", 20, Tier.EV, "EpoxidFiberReinforced", 3, "Titanium", 2, TierEU.RECIPE_EV, 200, 12);
 
     private final String registryName;
     private final int armorValue;
@@ -34,9 +34,10 @@ public enum TurretPlate {
     private final int extraCount;
     private final long recipeEut;
     private final int durationTicks;
+    private final int circuit;
 
     TurretPlate(String registryName, int armorValue, Tier tier, String mainMaterial, int mainCount,
-        String extraMaterial, int extraCount, long recipeEut, int durationTicks) {
+        String extraMaterial, int extraCount, long recipeEut, int durationTicks, int circuit) {
         this.registryName = registryName;
         this.armorValue = armorValue;
         this.tier = tier;
@@ -46,6 +47,7 @@ public enum TurretPlate {
         this.extraCount = extraCount;
         this.recipeEut = recipeEut;
         this.durationTicks = durationTicks;
+        this.circuit = circuit;
     }
 
     /** @return the item registry name, for example {@code turret_armor_iron} */
@@ -96,6 +98,16 @@ public enum TurretPlate {
     /** @return the Assembler's duration in ticks; 0 for the hand-made plate */
     public int durationTicks() {
         return durationTicks;
+    }
+
+    /**
+     * @return the programmed circuit of the Assembler recipe; 0 for the hand-made plate. Steel, Aluminum and Carbon use
+     *         14, 15 and 12: with no circuit the recipe would also run on the inputs of about 25 pack Assembler recipes
+     *         that hold the same plates, and the Carbon plate's inputs were a subset of other GregGuns armor rows.
+     *         A dump of GTNH 2.9.0-RC-2 shows no Assembler recipe on these circuits whose inputs match.
+     */
+    public int circuit() {
+        return circuit;
     }
 
     /**
