@@ -26,6 +26,7 @@ public final class UtilityScenarios {
      */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new PlatesRecipesScenario());
+        GuiOpensScenario.registerAll(registry);
     }
 
     /** The four plates exist and each has the recipe the sheet gives. */

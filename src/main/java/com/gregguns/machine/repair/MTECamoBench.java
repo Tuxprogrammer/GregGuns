@@ -133,6 +133,21 @@ public final class MTECamoBench extends MTETieredMachineBlock {
         return next != current;
     }
 
+    /**
+     * Opens the ModularUI2 panel on a vanilla right-click. GT's tiered-machine base returns false from onRightclick
+     * (only
+     * the basic-machine family opens its GUI there), so without this the click did nothing.
+     */
+    @Override
+    public boolean onRightclick(IGregTechTileEntity base, EntityPlayer player, ForgeDirection side, float x, float y,
+        float z) {
+        if (base.isClientSide()) {
+            return true;
+        }
+        openGui(player);
+        return true;
+    }
+
     // --- GUI ------------------------------------------------------------------------------------------------------
 
     @Override
