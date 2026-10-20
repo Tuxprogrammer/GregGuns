@@ -542,11 +542,13 @@ public final class MpScenarios {
             return ScenarioResult.pending(name(), 400, t -> {
                 switch (t) {
                     case 10 -> signal(a, "gui", "press", px, py, pz);
-                    case 80 -> signal(a, "shot", "steam-press-gui");
-                    case 84 -> signal(a, "close");
+                    case 120 -> signal(a, "shot", "steam-press-gui");
+                    case 130 -> signal(a, "close");
+                    // The scenario clears its blocks when it ends; close the server-side container first.
+                    case 135 -> a.closeContainer();
                     default -> {}
                 }
-                if (t < 90) {
+                if (t < 140) {
                     return null;
                 }
                 return ScenarioResult.builder(name())

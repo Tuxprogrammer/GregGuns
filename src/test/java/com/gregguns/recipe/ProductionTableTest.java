@@ -244,4 +244,30 @@ class ProductionTableTest {
         }
         return false;
     }
+
+    @Test
+    void everyAmmoRowRunsTheMultiplierTimesLongerAndOtherRowsDoNot() {
+        assertEquals(4, ProductionTable.AMMO_DURATION_MULTIPLIER, "the owner asked for 4 times");
+        int ammoRows = 0;
+        for (ProductionTable.Row row : ProductionTable.ROWS) {
+            if (row.target() == ProductionTable.Target.AMMO_PRESS) {
+                assertTrue(row.isAmmo(), row.id());
+                assertEquals(row.seconds() * 20 * ProductionTable.AMMO_DURATION_MULTIPLIER, row.ticks(), row.id());
+                ammoRows++;
+            } else {
+                assertEquals(row.seconds() * 20, row.ticks(), row.id() + " is not an ammo row");
+            }
+        }
+        assertTrue(ammoRows > 0);
+        // The Assembly Line ammo rows (AmmoLineTable) take the same multiplier; the sheet seconds stay the base value.
+        for (ProductionTable.Row row : AmmoLineTable.rows()) {
+            assertTrue(row.isAmmo(), row.id());
+            assertEquals(row.seconds() * 20 * ProductionTable.AMMO_DURATION_MULTIPLIER, row.ticks(), row.id());
+        }
+        // A fluid copy of a row keeps the flag.
+        ProductionTable.Row bath = AmmoLineTable.rows()
+            .get(0)
+            .withFluid(ComponentTable.FluidInput.molten("Lead", 144));
+        assertTrue(bath.isAmmo());
+    }
 }

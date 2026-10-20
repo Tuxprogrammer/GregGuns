@@ -429,7 +429,7 @@ public final class GunRecipeScenarios {
             out.check(found != null, "RC-29 should be found with the sheet inputs at LV");
             if (found != null) {
                 out.checkEquals("RC-29 EU/t", (int) TierEU.RECIPE_LV, found.mEUt);
-                out.checkEquals("RC-29 duration (ticks)", 6 * GTRecipeBuilder.SECONDS, found.mDuration);
+                out.checkEquals("RC-29 duration (ticks)", 6 * GTRecipeBuilder.SECONDS * ProductionTable.AMMO_DURATION_MULTIPLIER, found.mDuration);
                 out.checkEquals("RC-29 output count", 8, found.mOutputs[0].stackSize);
                 ItemStack shell = modStack(ProductionTable.SHELL, 1);
                 out.check(

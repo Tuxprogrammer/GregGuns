@@ -1,5 +1,6 @@
 package com.gregguns.machine;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
 import com.gregguns.GregGuns;
@@ -78,6 +79,16 @@ public final class MTEAmmoPressSteam extends MTEBasicMachineBronze {
     // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEBasicMachineBronze.java#L363-L365
     public MTEBasicMachineBronzeGui newGui() {
         return new MTEBasicMachineBronzeGui(this, getUIProperties());
+    }
+
+    // Source: MTEBasicMachine#canOutput compares output i with slot i only; see OutputFit.
+    @Override
+    protected boolean canOutput(ItemStack... outputs) {
+        if (OutputFit.fits(getAllOutputs(), outputs)) {
+            return true;
+        }
+        mOutputBlocked++;
+        return false;
     }
 
     @Override

@@ -53,6 +53,7 @@ public final class AmmoPressScenarios {
         registry.register(new TiersScenario());
         registry.register(new SteamLvScenario());
         registry.register(new SteamGuiScenario());
+        registry.register(new MultiOutputScenario());
         for (AmmoPressTier tier : AmmoPressTier.values()) {
             registry.register(new PressRunScenario(tier));
         }
@@ -144,7 +145,7 @@ public final class AmmoPressScenarios {
     /** Places one press, powers it, and runs a recipe to completion. */
     private static final class PressRunScenario implements Scenario {
 
-        private static final int TIMEOUT_TICKS = 600;
+        private static final int TIMEOUT_TICKS = 1200;
         private final AmmoPressTier tier;
 
         PressRunScenario(AmmoPressTier tier) {
@@ -280,7 +281,7 @@ public final class AmmoPressScenarios {
     /** An LV recipe, which is not steam-tagged, runs on a Steam press and consumes steam. */
     private static final class SteamLvScenario implements Scenario {
 
-        private static final int TIMEOUT_TICKS = 900;
+        private static final int TIMEOUT_TICKS = 1500;
         private static final int STEAM_FILL = 8000;
 
         @Override
@@ -331,6 +332,80 @@ public final class AmmoPressScenarios {
                 result.note("finished after " + ticks + " ticks; steam " + before + " -> " + base.getStoredSteam());
                 return result.build();
             });
+        }
+    }
+
+    /**
+     * A press whose first output slots are full keeps working into the one that has room, and stalls only when none has
+     * room. RC-28 (16 bullets a run, stack limit 64) stands in for the owner's stone bullet example.
+     */
+    private static final class MultiOutputScenario implements Scenario {
+
+        private static final int TIMEOUT_TICKS = 6000;
+        private static final int SETTLE_TICKS = 80;
+
+        @Override
+        public String name() {
+            return "production.ammo_press_multi_output";
+        }
+
+        @Override
+        public String description() {
+            return "An LV Ammo Press with full first output slots keeps filling the next slot, and stalls only when all are full.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            Object prototype = GregTechAPI.METATILEENTITIES[AmmoPressTier.LV.mteId()];
+            if (!(prototype instanceof MTEAmmoPress)) {
+                return ScenarioResult.fail(name(), "the LV press is not registered");
+            }
+            MTEAmmoPress press = (MTEAmmoPress) prototype;
+            ctx.setBlock(0, 0, 0, GregTechAPI.sBlockMachines, press.getTileEntityBaseType());
+            TileEntity tile = ctx.world()
+                .getTileEntity(ctx.originX(), ctx.originY(), ctx.originZ());
+            if (!(tile instanceof IGregTechTileEntity)) {
+                return ScenarioResult.fail(name(), "the placed block should have a GT tile entity");
+            }
+            IGregTechTileEntity base = (IGregTechTileEntity) tile;
+            base.setInitialValuesAsNBT(null, (short) AmmoPressTier.LV.mteId());
+            MTEAmmoPress placed = (MTEAmmoPress) base.getMetaTileEntity();
+            final int out0 = placed.getOutputSlot();
+            final int in0 = placed.getInputSlot();
+            // Output slots 0 and 1 start full of bullets; slot 2 is empty and has room for four runs of 16.
+            base.setInventorySlotContents(out0, mod(ProductionTable.BULLET, 64));
+            base.setInventorySlotContents(out0 + 1, mod(ProductionTable.BULLET, 64));
+            // Five runs of inputs (RC-28 takes 16 foil, 16 rounds, 2 gunpowder): the fifth has nowhere to go.
+            base.setInventorySlotContents(in0, gt("foil", "Brass", 64));
+            base.setInventorySlotContents(in0 + 1, gt("foil", "Brass", 16));
+            base.setInventorySlotContents(in0 + 2, gt("round", "Lead", 64));
+            base.setInventorySlotContents(in0 + 3, gt("round", "Lead", 16));
+            base.setInventorySlotContents(in0 + 4, gt("dust", "Gunpowder", 10));
+            base.increaseStoredEnergyUnits(Tier.LV.voltage() * 20000L, true);
+            final int[] fullAt = { -1 };
+            return ScenarioResult.pending(name(), TIMEOUT_TICKS, ticks -> {
+                ItemStack third = base.getStackInSlot(out0 + 2);
+                if (fullAt[0] < 0 && third != null && third.stackSize >= 64) {
+                    fullAt[0] = ticks;
+                }
+                boolean settled = fullAt[0] >= 0 && ticks >= fullAt[0] + SETTLE_TICKS;
+                if (!settled && ticks < TIMEOUT_TICKS - 1) {
+                    return null;
+                }
+                ScenarioResult.Builder out = ScenarioResult.builder(name());
+                out.checkEquals("slot 0 stays full", 64, size(base.getStackInSlot(out0)));
+                out.checkEquals("slot 1 stays full", 64, size(base.getStackInSlot(out0 + 1)));
+                out.checkEquals("slot 2 filled by four runs", 64, size(base.getStackInSlot(out0 + 2)));
+                out.check(!base.isActive(), "the press stalls once every output slot is full");
+                int foilLeft = size(base.getStackInSlot(in0)) + size(base.getStackInSlot(in0 + 1));
+                out.checkEquals("the fifth run's foil is not consumed", 16, foilLeft);
+                out.note("settled after " + ticks + " ticks");
+                return out.build();
+            });
+        }
+
+        private static int size(ItemStack stack) {
+            return stack == null ? 0 : stack.stackSize;
         }
     }
 }
