@@ -285,7 +285,9 @@ public final class PlacementHarness {
                         TileEntity t = (TileEntity) o;
                         if (t.xCoord >= plan.anchorX() && t.xCoord <= plan.maxX()
                             && t.zCoord >= plan.anchorZ()
-                            && t.zCoord <= plan.maxZ()) {
+                            && t.zCoord <= plan.maxZ()
+                            && t.yCoord >= minY()
+                            && t.yCoord <= maxY()) {
                             out.add(t);
                         }
                     }
@@ -314,7 +316,13 @@ public final class PlacementHarness {
                 TileEntity t = world.getTileEntity(p[0], p[1], p[2]);
                 chests.add(m.tag + "@" + p[0] + "," + p[1] + "," + p[2] + "=" + describe(t));
             }
-            return new Snapshot(cells, chests);
+            Snapshot s = new Snapshot(cells, chests);
+            s.ax = plan.anchorX();
+            s.az = plan.anchorZ();
+            s.sz = plan.sizeZ();
+            s.sy = sy;
+            s.minY = minY();
+            return s;
         }
 
         private static String describe(TileEntity t) {
@@ -366,6 +374,11 @@ public final class PlacementHarness {
     /** Block cells and chest descriptions of one run, for the same-seed comparison. */
     static final class Snapshot {
 
+        int ax;
+        int az;
+        int sz;
+        int sy;
+        int minY;
         final int[] cells;
         final List<String> chests;
 
@@ -389,11 +402,12 @@ public final class PlacementHarness {
                     b &= ~0xF;
                 }
                 if (a != b) {
-                    return "cell " + i
-                        + ": "
-                        + Integer.toHexString(cells[i])
-                        + " vs "
-                        + Integer.toHexString(other.cells[i]);
+                    int y = i % sy;
+                    int z = i / sy % sz;
+                    int x = i / sy / sz;
+                    return "at " + (ax + x) + "," + (minY + y) + "," + (az + z) + ": "
+                        + Block.blockRegistry.getNameForObject(Block.getBlockById(a >> 4)) + " meta " + (a & 15)
+                        + " vs meta " + (b & 15);
                 }
             }
             if (!chests.equals(other.chests)) {
