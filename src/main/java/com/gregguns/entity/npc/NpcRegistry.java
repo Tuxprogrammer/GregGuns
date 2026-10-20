@@ -51,6 +51,7 @@ public final class NpcRegistry {
         bind(NpcMob.CYBER_DEMON, CyberDemon.class);
         bind(NpcMob.ATTACK_HELICOPTER, AttackHelicopter.class);
         bind(NpcMob.ALIEN_BUG, AlienBug.class);
+        bind(NpcMob.SIMPLE_TURRET, NpcTurret.class);
         if (DevEnvironment.isActive()) {
             // The base NPC, for scenarios and the test renderer only.
             bind(NpcMob.NPC_TEST, NpcEntity.class);

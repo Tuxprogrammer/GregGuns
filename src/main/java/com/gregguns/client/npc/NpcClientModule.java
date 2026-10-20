@@ -3,6 +3,7 @@ package com.gregguns.client.npc;
 import net.minecraftforge.common.MinecraftForge;
 
 import com.gregguns.client.mob.MobRenderers;
+import com.gregguns.client.utility.TurretRenderer;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
@@ -15,6 +16,9 @@ import com.gregguns.entity.npc.SuperMutantBasic;
 import com.gregguns.entity.npc.SuperMutantElite;
 import com.gregguns.entity.npc.SuperMutantHeavy;
 import com.gregguns.entity.npc.mob.CyberDemon;
+import com.gregguns.entity.npc.NpcTurret;
+
+import cpw.mods.fml.client.registry.RenderingRegistry;
 
 /**
  * Client half of the {@code modules.npcs} module. For now it registers only the dev-only test NPC with the shared
@@ -55,6 +59,8 @@ public final class NpcClientModule implements ClientModule {
         MobRenderers.living(AttackHelicopter.class, "attack_helicopter", "attack_helicopter", 1.0F, 5.0F);
         HelicopterBossBar.register();
         MobRenderers.living(AlienBug.class, "alien_bug", "alien_bug", 1.0F, 1.0F);
+        // The hostile camp turret draws with the player turret's head model and the iron plate sheet.
+        RenderingRegistry.registerEntityRenderingHandler(NpcTurret.class, new TurretRenderer());
         if (DevEnvironment.isActive()) {
             MobRenderers
                 .biped(NpcEntity.class, "biped", "textures/entity/army_soldier.png", 1.0F, 0.5F, 0.0F, 0.0F, 0.0F);
