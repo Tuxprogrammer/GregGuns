@@ -104,6 +104,6 @@
 
 ## Open questions
 
-- Does GT's ore pass replace only natural stone, or also a structure's stone-type blocks? Test in a dev instance and record the answer here. If it replaces them, structure walls must use blocks GT ignores.
+- **Answered by the G9 headless run (PLAN-M8 Q4):** GT's ore pass runs after ours and DOES replace a structure's `minecraft:stone` (a stamped slab came back as a GT ore block with huge metadata). Structure layouts must not use raw stone; use bricks, Chisel or concrete palette keys. Original question: does GT's ore pass replace only natural stone, or also a structure's stone-type blocks? If it replaces them, structure walls must use blocks GT ignores.
 - A multi-chunk structure needs one ground height. The default above is the owner-column height. The alternative is one Y per structure derived from the seed, which fails on RWG's hills. Needs a design record before M8 starts if the default proves too bumpy.
 - Villages cannot be detected through the chunk provider (RWG answers only for strongholds). Is the block-scan skip (GGS-11-14) enough, or do we drop the check?

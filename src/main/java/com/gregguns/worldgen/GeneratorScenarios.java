@@ -39,13 +39,13 @@ import com.gregguns.worldgen.layout.Stamper;
 // Spec: docs/gregguns-spec/11-worldgen/structure-placement.md (GGS-11-07 to GGS-11-12)
 public final class GeneratorScenarios {
 
-    /** The one test layout: a 5x4x5 slab hut with a vanilla chest, a weapon chest and a gold block marker. */
+    /** The one test layout: a 5x4x5 brick slab hut with a vanilla chest, a weapon chest and a gold block marker. */
     public static final String TEST_HUT_ID = "test_hut";
     private static final String TEST_HUT = "gregguns-layout 1\n" + "id: test_hut\n"
         + "size: 5 4 5\n"
         + "ground: 1\n"
         + "palette:\n"
-        + "S = minecraft:stone\n"
+        + "S = minecraft:brick_block\n"
         + "G = minecraft:gold_block\n"
         + "C = minecraft:chest#3@facing\n"
         + "W = gregguns:weapon_chest#3@facing\n"
