@@ -61,6 +61,7 @@ public final class ClientGunDefinitions {
                 .variantOf("power_hammer_adv", PowerHammerProfile.DEFINITION, PowerHammerProfile.TEXTURES[1]),
             ChainsawProfile.DEFINITION,
             GrimReaperProfile.DEFINITION,
+            NukeLauncherProfile.DEFINITION,
 
             // The akimbo guns draw their single gun's model once per hand.
             ClientGunDefinition.akimboOf("akimbo_pistols", Pistol9mmProfile.DEFINITION),
