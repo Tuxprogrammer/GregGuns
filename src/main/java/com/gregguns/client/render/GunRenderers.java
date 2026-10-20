@@ -150,6 +150,26 @@ public final class GunRenderers {
         return stack != null && REGISTRY.containsKey(stack.getItem());
     }
 
+    /**
+     * The muzzle of a held gun in first-person eye space (x right, y up, negative z forward, blocks), for effects that
+     * must start at the barrel and not at the camera.
+     *
+     * @param stack the held stack
+     * @return {@code {x, y, z}}, or null if it is not a gun with a first-person muzzle flash spec
+     */
+    public static double[] firstPersonMuzzle(ItemStack stack) {
+        if (stack == null) {
+            return null;
+        }
+        GunTransforms t = transformsOf(stack.getItem());
+        if (t == null || t.muzzleFlash() == null) {
+            return null;
+        }
+        com.gregguns.client.render.profile.MuzzleFlashSpec f = t.muzzleFlash();
+        return com.gregguns.client.render.profile.InHandFit.flashFrame(f.scale())
+            .apply(new double[] { f.offX(), f.offY(), f.offZ() });
+    }
+
     /** @return the transform data of a registered gun, or null */
     static GunTransforms transformsOf(Item item) {
         Entry e = REGISTRY.get(item);

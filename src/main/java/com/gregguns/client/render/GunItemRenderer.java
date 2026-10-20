@@ -166,11 +166,17 @@ final class GunItemRenderer implements IItemRenderer {
                     // Alpha cut-out textures (the scatter laser's sight window, the grim reaper's cage) need the alpha
                     // test: without it their transparent texels draw as solid. Restored right after.
                     boolean alphaWas = GL11.glIsEnabled(GL11.GL_ALPHA_TEST);
+                    int funcWas = GL11.glGetInteger(GL11.GL_ALPHA_TEST_FUNC);
+                    float refWas = GL11.glGetFloat(GL11.GL_ALPHA_TEST_REF);
                     GL11.glEnable(GL11.GL_ALPHA_TEST);
                     GL11.glAlphaFunc(GL11.GL_GREATER, ALPHA_CUTOFF);
-                    model.render(part, state);
-                    if (!alphaWas) {
-                        GL11.glDisable(GL11.GL_ALPHA_TEST);
+                    try {
+                        model.render(part, state);
+                    } finally {
+                        GL11.glAlphaFunc(funcWas, refWas);
+                        if (!alphaWas) {
+                            GL11.glDisable(GL11.GL_ALPHA_TEST);
+                        }
                     }
                 }
                 if (part == parts - 1 && type == ItemRenderType.EQUIPPED
