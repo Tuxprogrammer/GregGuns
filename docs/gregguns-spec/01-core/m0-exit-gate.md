@@ -2,7 +2,7 @@
 
 Evidence for the five M0 exit-gate boxes in [ROADMAP.md](../../ROADMAP.md#m0--foundation), for the beta review gate. Audited on master at `354236f4`, by reading `src/`, `src/test`, `docs/`, `.github/` and the git history. Gradle was not run for this audit, so test results are taken from the commit records named below; the test classes and methods named here were confirmed to exist. Scenario names and what each asserts are in [docs/testing/README.md](../../testing/README.md).
 
-Result: 4 met, 1 partially met, 0 unmet.
+Result: 5 met, 0 partially met, 0 unmet.
 
 ## 1. `./gradlew spotlessApply build` passes, with at least one real unit test
 
@@ -38,15 +38,15 @@ Result: 4 met, 1 partially met, 0 unmet.
 
 ## 4. Config module flags load, save and are documented
 
-**Partially met.** Load, save and documentation are met. The flag defaults do not follow the ROADMAP's feature-flag rule.
+**Met.** Load, save and documentation are met, and the flag defaults now follow the ROADMAP's feature-flag rule (fixed on `fix/module-defaults`, formerly gap D-2).
 
 | Check | Evidence |
 |---|---|
 | Flags | `ModulesConfig` (`@Config(modid = "gregguns", category = "modules")`), one boolean per `ModuleId`; `ModuleFlags` reads them |
-| Load and save | `ConfigDefaultsTest.everyModuleFlagDefaultsToOffUntilItsMilestoneIsMet`, `moduleFlagsAreExactlyTheModuleIds`, `flagsReflectFieldChanges`; `ConfigRulesTest.everyConfigClassTargetsTheSharedGregGunsFile`, `configFieldsArePublicStaticNonFinal` |
-| Module wiring | `ModuleResolverTest`: `disabledModuleIsSkippedByConfig`, `moduleWithDisabledRequirementIsSkipped`, `requirementChainsPropagate`, `everyModuleIsDeclaredAfterItsRequirements`, `configKeysAreUnique` |
+| Load and save | `ConfigDefaultsTest.everyModuleFlagHasItsExpectedDefault`, `moduleFlagsAreExactlyTheModuleIds`, `flagsReflectFieldChanges`; `ConfigRulesTest.everyConfigClassTargetsTheSharedGregGunsFile`, `configFieldsArePublicStaticNonFinal` |
+| Module wiring | `ModuleResolverTest`: `shippedDefaultsResolveCleanly`, `disabledModuleIsSkippedByConfig`, `moduleWithDisabledRequirementIsSkipped`, `requirementChainsPropagate`, `everyModuleIsDeclaredAfterItsRequirements`, `configKeysAreUnique` |
 | Documented | [docs/config.md](../../config.md) lists every module flag with default, range, sync and requirements; each field carries an `@Config.Comment` |
-| Gap | The ROADMAP says each module defaults to on once its exit gate is met. Every flag still defaults to `false` (`ModulesConfig.guns` and the rest, and the test is pinned to that), although M1 to M6 are ticked. Already noted as gap G6 in the [M2 exit gate](../02-guns/m2-exit-gate.md#gap-list) |
+| Defaults | `guns`, `armor`, `machines`, `energyWeapons` and `utility` default to `true` (the M2 to M6 gates are met); `npcs` (M7) and `worldgen` (M8) stay `false` until their gates are ticked. Closes gap G6 in the [M2 exit gate](../02-guns/m2-exit-gate.md#gap-list) |
 
 ## 5. Every packet base class rejects out-of-range, wrong-dimension and unauthorized requests, with unit tests
 
@@ -97,6 +97,5 @@ The structural differences from Techguns (one `@Config` file set instead of `Tec
 
 | ID | Box | Proposed resolution |
 |---|---|---|
-| D-2 | Box 4, flag defaults | Flip `modules.guns`, `armor`, `machines`, `energyWeapons` and `utility` (and `npcs` and `worldgen` once their gates are ticked) to `true` for the beta, and update `ConfigDefaultsTest.everyModuleFlagDefaultsToOffUntilItsMilestoneIsMet`, `docs/config.md` and the pack notes. A default install cannot play the beta otherwise |
 | D-3 | Polish P2 | Run the key-conflict check in the batched client pass of the beta gate, and write a design record only if a clash is found |
 | D-4 | Polish P3 | Accept the current defaults (`TEAMS`, one config file, no cosmetic packet) as the beta's recorded decision, and close the open questions after the owner playthrough |
