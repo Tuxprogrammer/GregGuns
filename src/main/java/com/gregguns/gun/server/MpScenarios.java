@@ -42,6 +42,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.util.GTOreDictUnificator;
 
@@ -83,6 +84,7 @@ public final class MpScenarios {
         registry.register(new Visual());
         registry.register(new SteamPress());
         registry.register(new Give());
+        registry.register(new MteItems());
         registry.register(new GrantLocal());
     }
 
@@ -600,6 +602,80 @@ public final class MpScenarios {
             p.inventory.clearInventory(null, -1);
             out.note("granted " + items.size() + " stacks");
             return out.build();
+        }
+    }
+
+    // ----- mp.mte_items ---------------------------------------------------------------------------------------
+
+    /**
+     * Puts every GregGuns machine item in the hotbar and inventory (the Retort first, then the Reaction Chambers) and
+     * signals shots of the hotbar and the inventory screen: the client renders each GT machine item. This is the proof
+     * for the Retort item render crash (an unregistered or icon-less MTE throws in GT's item renderer).
+     */
+    private static final class MteItems implements Scenario {
+
+        @Override
+        public boolean includedInAll() {
+            return false; // needs a connected client
+        }
+
+        @Override
+        public String name() {
+            return "mp.mte_items";
+        }
+
+        @Override
+        public String description() {
+            return "Gives the first player every GregGuns machine item (Retort first) and signals hotbar and inventory shots.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            List<EntityPlayerMP> players = players();
+            if (players.isEmpty()) {
+                return ScenarioResult.fail(name(), "needs a connected player");
+            }
+            EntityPlayerMP a = players.get(0);
+            prepare(a, ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, -90.0f, 0.0f);
+            a.inventory.clearInventory(null, -1);
+            int[] first = { GregGunsMTEIDs.RETORT, GregGunsMTEIDs.REACTION_CHAMBER_EV,
+                GregGunsMTEIDs.REACTION_CHAMBER_IV };
+            int slot = 0;
+
+            for (int id : first) {
+                slot = give(a, id, slot);
+            }
+            for (int id : GregGunsMTEIDs.all()) {
+                if (id != first[0] && id != first[1] && id != first[2]) {
+                    slot = give(a, id, slot);
+                }
+            }
+            final int given = slot;
+            a.inventoryContainer.detectAndSendChanges();
+            return ScenarioResult.pending(name(), 200, t -> {
+                switch (t) {
+                    case 10 -> signal(a, "shot", "mte-hotbar");
+                    case 20 -> signal(a, "gui", "inventory");
+                    case 40 -> signal(a, "shot", "mte-inventory");
+                    case 45 -> signal(a, "close");
+                    default -> {}
+                }
+                if (t < 60) {
+                    return null;
+                }
+                return ScenarioResult.builder(name())
+                    .note("gave " + given + " machine items, Retort in slot 0")
+                    .build();
+            });
+        }
+
+        private static int give(EntityPlayerMP player, int id, int slot) {
+            IMetaTileEntity mte = GregTechAPI.METATILEENTITIES[id];
+            if (mte == null || slot >= player.inventory.mainInventory.length) {
+                return slot;
+            }
+            player.inventory.mainInventory[slot] = mte.getStackForm(1);
+            return slot + 1;
         }
     }
 
