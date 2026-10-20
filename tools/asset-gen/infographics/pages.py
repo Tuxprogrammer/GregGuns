@@ -178,8 +178,8 @@ def getting_started():
               "material: <b>Steel</b> for LV, Aluminum for MV, Stainless Steel for HV.")
     s3 = step(3, "Build an Ammo Press",
               img(S.machine_block("ammo_press", "LV"), h=160),
-              "The press has its own recipe tab in NEI. A press runs every recipe at or below its tier, and "
-              "higher tiers overclock as usual.")
+              "The press has its own recipe tab in NEI. A press runs every recipe at or below its tier, the "
+              "Steam press runs LV recipes too, and higher tiers overclock as usual.")
     s4 = step(4, "Press rounds and magazines",
               f'<div style="display:flex;flex-direction:column;gap:10px;align-items:center">'
               f'<div class="flow" style="min-height:0;gap:8px"><div class="stack">{gti("foil", "Brass", 46)}<small>Brass Foil</small></div>'
