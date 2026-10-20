@@ -4,9 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -17,7 +19,17 @@ import java.util.function.Consumer;
  */
 public final class LayoutRegistry {
 
-    /** Where layout text comes from; throws IOException when the id has no file. */
+    /** An id that has no file: an IOException the registry can tell apart from a read failure. */
+    public static final class MissingLayoutException extends IOException {
+
+        private static final long serialVersionUID = 1L;
+
+        public MissingLayoutException(String message) {
+            super(message);
+        }
+    }
+
+    /** Where layout text comes from; throws IOException when the id has no file (MissingLayoutException ideally). */
     public interface Source {
 
         String read(String id) throws IOException;
@@ -40,7 +52,7 @@ public final class LayoutRegistry {
             String path = prefix + id + ".txt";
             try (InputStream in = LayoutRegistry.class.getResourceAsStream(path)) {
                 if (in == null) {
-                    throw new IOException("layout resource not found: " + path);
+                    throw new MissingLayoutException("layout resource not found: " + path);
                 }
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 byte[] buf = new byte[4096];
@@ -60,6 +72,17 @@ public final class LayoutRegistry {
 
     /** Loads and validates every id; failures are passed to {@code error} and disable that structure only. */
     public static LayoutRegistry load(Source source, Iterable<String> ids, PaletteKeys keys, Consumer<String> error) {
+        return load(source, ids, Collections.emptySet(), keys, error, error);
+    }
+
+    /**
+     * As {@link #load(Source, Iterable, PaletteKeys, Consumer)}, but an id in {@code optional} whose file does not
+     * exist is reported to {@code quiet} instead of {@code error}: optional ids (the camp color variants) are asked for
+     * speculatively and are expected to be mostly absent. A present but broken optional file still goes to
+     * {@code error}.
+     */
+    public static LayoutRegistry load(Source source, Iterable<String> ids, Set<String> optional, PaletteKeys keys,
+        Consumer<String> error, Consumer<String> quiet) {
         LayoutRegistry reg = new LayoutRegistry();
         for (String id : ids) {
             try {
@@ -71,6 +94,10 @@ public final class LayoutRegistry {
                 }
                 checkKeys(id, layout, keys);
                 reg.layouts.put(id, layout);
+            } catch (MissingLayoutException e) {
+                String msg = "Structure '" + id + "' disabled: " + e.getMessage();
+                reg.disabled.put(id, msg);
+                (optional.contains(id) ? quiet : error).accept(msg);
             } catch (IOException | LayoutFormatException | RuntimeException e) {
                 String msg = "Structure '" + id + "' disabled: " + e.getMessage();
                 reg.disabled.put(id, msg);

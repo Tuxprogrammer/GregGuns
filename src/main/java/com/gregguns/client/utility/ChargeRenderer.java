@@ -67,7 +67,17 @@ public final class ChargeRenderer extends TileEntitySpecialRenderer implements I
         boolean inHand = type == ItemRenderType.EQUIPPED || type == ItemRenderType.EQUIPPED_FIRST_PERSON;
         float[] move = ChargeItemPose.translation(charge, inHand);
         try (GlStateGuard g = GlStateGuard.matrixAndAttrib(GL11.GL_CURRENT_BIT)) {
-            GL11.glTranslatef(move[0], move[1], move[2]);
+            if (type == ItemRenderType.EQUIPPED_FIRST_PERSON) {
+                // Grow the model about the middle of the grip's cell: a charge is a slim plate, so at a block's size it
+                // reads small and off to the side next to the vanilla block held in the same hand. First person only:
+                // the third-person grip is already right.
+                float s = ChargeItemPose.HAND_SCALE;
+                GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+                GL11.glScalef(s, s, s);
+                GL11.glTranslatef(move[0] - 0.5F, move[1] - 0.5F, move[2] - 0.5F);
+            } else {
+                GL11.glTranslatef(move[0], move[1], move[2]);
+            }
             // Wall pose: upright, plate toward the viewer (+z), the way the model notes show the item.
             ChargeBoxRenderer.draw(charge, ChargeItemPose.ITEM_ORIENTATION, false);
         }
