@@ -1,8 +1,10 @@
 package com.gregguns.core.testing;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 
 /**
  * Built-in scenarios that exercise the harness itself end to end in a real world. They prove the context helpers work,
@@ -20,6 +22,45 @@ public final class HarnessScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new EntityLifecycle());
         registry.register(new AreaRestore());
+        registry.register(new SpawnedMobsStay());
+    }
+
+    /**
+     * A spawned zombie is still the same live entity after the ticks in which pack mods (SpecialMobs, Infernal Mobs)
+     * would replace or modify it. In the dev workspace there is nothing to replace it, so this only fails in the pack.
+     */
+    private static final class SpawnedMobsStay implements Scenario {
+
+        private static final int WAIT_TICKS = 5;
+
+        @Override
+        public String name() {
+            return "harness.pack_mobs";
+        }
+
+        @Override
+        public String description() {
+            return "A zombie spawned through the context is not replaced by a SpecialMobs variant and gets no Infernal Mobs"
+                + " modifier: same entity, alive and in the world a few ticks later.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            EntityZombie zombie = new EntityZombie(ctx.world());
+            zombie.setLocationAndAngles(ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, 0, 0);
+            zombie.setCurrentItemOrArmor(4, new ItemStack(Blocks.pumpkin));
+            ctx.spawn(zombie);
+            return ScenarioResult.pending(name(), WAIT_TICKS + 5, ticks -> {
+                if (ticks < WAIT_TICKS) {
+                    return null;
+                }
+                ScenarioResult.Builder out = ScenarioResult.builder(name());
+                out.check(!zombie.isDead, "the zombie should still be alive and not replaced by a variant");
+                out.check(ctx.world().loadedEntityList.contains(zombie), "the zombie should still be in the world");
+                out.checkEquals("class of the zombie's mob", EntityZombie.class, zombie.getClass());
+                return out.build();
+            });
+        }
     }
 
     /** Spawns a pig at the origin, checks it and its health, removes it, and checks it is gone. */
