@@ -22,9 +22,9 @@ Status: PASS means proven by a test or scenario that runs headless. PARTIAL mean
 | 12 | Icon consistency pass (`6faa3669`, `53468cfb`) | PARTIAL, needs beta client pass |
 | 13 | HEV boots recipe change (`20533ebf`) | PASS |
 | 14 | NEI visibility, tooltips and the Ammo Pouch GUI | PARTIAL, needs beta client pass |
-| 15 | GT recycling data (`ItemData`) on armor items | MISSING |
+| 15 | GT recycling data (`ItemData`) on armor items (`8514e6ef`) | PASS |
 
-Totals: 9 PASS, 5 PARTIAL, 1 MISSING. The four roadmap boxes are all PASS and stay ticked.
+Totals: 10 PASS, 5 PARTIAL, 0 MISSING. The four roadmap boxes are all PASS and stay ticked.
 
 ## 1. Protection and penetration follow the D4 model, with unit tests
 
@@ -169,7 +169,7 @@ Verdict: PARTIAL.
 
 ## 15. GT recycling data on armor items
 
-The open question "armor items have no GT `ItemData`" in implementation-notes is still true: a grep of `src/main/java/com/gregguns/armor` finds no `ItemData`, while guns, ammo and parts have it. No roadmap box requires it and the Repair Bench path does not depend on it, but a player cannot macerate or arc-furnace armor for its metals. Decide before 1.0 whether that is wanted. Verdict: MISSING.
+Fixed in `8514e6ef`. `ArmorRecycling` registers `ItemData` through `GTOreDictUnificator.addItemData` for every armor piece, Steam Armor Plating and the metal accessories. `ArmorComposition` derives the amounts from the armor recipe tables, so they stay in sync. `ArmorCompositionTest` and the `armor.recycling` scenario cover it; the scenario checks each item's `ItemData` and five pieces' Macerator dusts. Verdict: PASS.
 
 ## Other gaps carried from the notes
 
