@@ -317,7 +317,14 @@ public final class AmmoPressScenarios {
             }
             base.increaseStoredSteam(STEAM_FILL, true);
             long before = base.getStoredSteam();
+            final long[] added = { 0 };
             return ScenarioResult.pending(name(), TIMEOUT_TICKS, ticks -> {
+                // 30 EU/t for 20 s at Bronze speed (40 s) needs more than the 16000-unit tank holds: top it up, and
+                // count what was added so the consumption can still be measured.
+                if (base.getStoredSteam() < 4000) {
+                    base.increaseStoredSteam(4000, true);
+                    added[0] += 4000;
+                }
                 int found = 0;
                 ItemStack out = base.getStackInSlot(placed.getOutputSlot());
                 if (out != null && out.getItem() == mod(ProductionTable.BULLET, 1).getItem()) {
@@ -328,8 +335,8 @@ public final class AmmoPressScenarios {
                 }
                 ScenarioResult.Builder result = ScenarioResult.builder(name());
                 result.checkEquals("9mm bullets made by the LV recipe on steam", 16, found);
-                result.check(base.getStoredSteam() < before, "steam was consumed");
-                result.note("finished after " + ticks + " ticks; steam " + before + " -> " + base.getStoredSteam());
+                result.check(before + added[0] - base.getStoredSteam() >= 30L * 100, "steam was consumed");
+                result.note("finished after " + ticks + " ticks; steam " + before + " + " + added[0] + " topped up -> " + base.getStoredSteam());
                 return result.build();
             });
         }
