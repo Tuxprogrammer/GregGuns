@@ -39,25 +39,24 @@ Notes on the scenario. A world cannot un-generate terrain, so the control is a s
 | Chests fill lazily, once, from a per-chest seed, on any access and on break | `LazyChestTest`; scenarios `worldgen.lazy_chest_fill`, `worldgen.lazy_chest_break` | PASS |
 | A placed structure's chests carry the category for the structure's ceiling | `StructurePopulatorTest.chestSeedsDifferPerChestAndUseTheWeaponCategory` | PASS |
 | Weapon and reinforced chest marks end up as the GregGuns chest block with an order, not a vanilla chest | fixed in `StructureGenerator` (this branch); exercised by `worldgen.no_cascade` and the per-structure scenarios | PASS (no dedicated assertion yet) |
-| A chest placed by the real generator is opened and each stack checked against the 0001 table (the plan's `worldgen.loot_ceiling`) | not written | Pending |
+| A chest placed by the real generator is opened and each stack checked against the 0001 table | scenario `worldgen.loot_ceiling` | PASS |
 
 ## Per-structure scenarios
 
-Each `worldgen.<id>_places` scenario (fixed seed and cell: footprint block counts, chest count and category, spawner or flag count, writes in window, same seed twice gives the same result) is written by the structure batches.
+Each `worldgen.<id>_places` scenario (fixed seed and cell: footprint block counts, chest count and category, spawner or flag count, writes in window, same seed twice gives the same result) ran green: all seven structure scenarios passed, plus `worldgen.loot_ceiling`.
 
 | Structure | Layout | Rotation and footprint unit test | Scenario | Status |
 |---|---|---|---|---|
-| Small Factory | shipped | `StructureLayoutsS1Test`, `CascadeHarnessTest` | `worldgen.factory_small_places` | Scenario pending |
-| Train Station | shipped | same | `worldgen.train_station_places` | Scenario pending |
-| Gas Station | shipped | same | `worldgen.gas_station_places` | Scenario pending |
-| Medium House | shipped | `StructureLayoutsS2Test`, `CascadeHarnessTest` | `worldgen.house_medium_places` | Scenario pending |
-| Big Bunker | shipped | same | `worldgen.big_bunker_places` | Scenario pending |
-| Aircraft Carrier | shipped | `StructureLayoutsS3Test`, `CascadeHarnessTest` | `worldgen.aircraft_carrier_places` | Scenario pending |
-| Submarine | shipped | same | `worldgen.submarine_places` | Scenario pending |
-| Military Base | not yet | pending | `worldgen.military_base_places` | Pending |
+| Small Factory | shipped | `StructureLayoutsS1Test`, `CascadeHarnessTest` | `worldgen.factory_small_places` | PASS |
+| Train Station | shipped | same | `worldgen.train_station_places` | PASS |
+| Gas Station | shipped | same | `worldgen.gas_station_places` | PASS |
+| Medium House | shipped | `StructureLayoutsS2Test`, `CascadeHarnessTest` | `worldgen.house_medium_places` | PASS |
+| Big Bunker | shipped | same | `worldgen.big_bunker_places` | PASS |
+| Aircraft Carrier | shipped | `StructureLayoutsS3Test`, `CascadeHarnessTest` | `worldgen.aircraft_carrier_places` | PASS |
+| Submarine | shipped | same | `worldgen.submarine_places` | PASS |
+| Military Base | shipped (9 parts) | `CampPartLayoutsTest`, `CascadeHarnessTest` | `worldgen.military_base_places`, `worldgen.carrier_flag`, `worldgen.camp_flag_init` | PASS |
 | Alien Bug Nest (default off) | not yet | pending | `worldgen.alien_bug_nest_places` | Pending |
 
-The G9 scenario `worldgen.generator_test_layout` is not a gate item. It is flaky: it failed in 4 of 5 runs of this audit because a vanilla tree in a neighboring chunk grows leaves into the hut's box after the first pass and the second pass clears them. See the open items below.
 
 ## Beta review gate
 
@@ -72,5 +71,17 @@ Client checks still owed for M8. None can be judged headless.
 ## Open items found while building the harness
 
 - Layouts mark `chest.weapon` and `chest.reinforced` on vanilla `minecraft:chest` blocks, while the generator attached a `TileGregChest` assuming a GregGuns chest block. That crashed the server in `TileEntityChest.checkForAdjacentChests` on the first tick after generation. Fixed by making the generator place the GregGuns chest block with the layout's facing before attaching the order. The layout spec should say chest marks of those kinds are placed over a vanilla chest block.
-- `worldgen.generator_test_layout` compares a snapshot of the structure box before and after a second pass; vanilla decoration of a later-populated neighbor can legitimately change that box. It should compare only cells the layout writes. Owned by G9.
-- Plan records are keyed by size class and cell, not by structure id, so two runs with different pools in the same world reuse each other's decisions. Harmless in a real world (one pool), but scenarios must use fresh squares.
+
+Fixed on `m8/polish`: `worldgen.generator_test_layout` now compares only the cells the layout writes (it was flaky because neighboring-chunk trees grew into the hut's box); plan keys now include the structure id (NBT version 2); camp chest tags map to loot categories (`ChestTags`, with a unit test over every layout file).
+
+## Known limits
+
+- A road-tail-only window populated before the footprint's own windows skips its tail blocks (it waits for a decision record, so those few road blocks are never written).
+- A sliver window that decides first samples only a narrow strip of the footprint (Q3), so its verdict can differ from a full-footprint sample.
+- `modules.worldgen` stays default false until the gate is closed (Q10).
+
+## Still to come
+
+- G11 hole spawners (Zombie Hole, Bug Hole): wait on the Infernal hook.
+- The Alien Bug Nest (S5, `worldgen.alien_bug_nest_places`).
+- Decorative blocks and textures (Q9): layouts use palette fallbacks until they land.

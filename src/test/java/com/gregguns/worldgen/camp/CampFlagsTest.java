@@ -67,7 +67,7 @@ class CampFlagsTest {
             PopulateWindow w = windowOf(camp);
             Capture cap = new Capture();
             PlanLedger ledger = new PlanLedger();
-            String key = PlanKey.of(SizeClass.BIG, 1, 2);
+            String key = PlanKey.of("test", SizeClass.BIG, 1, 2);
             ledger.decideOnce(key, () -> Decision.placed(70));
 
             boolean placed = CampFlags.place(

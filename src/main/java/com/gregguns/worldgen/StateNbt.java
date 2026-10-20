@@ -23,7 +23,9 @@ public final class StateNbt {
     static final String GROUND_Y = "GroundY";
     static final String FLAGS = "Flags";
 
-    static final int CURRENT_VERSION = 1;
+    static final int CURRENT_VERSION = 2;
+    // Version 1 keys had no structure id ("SIZE:x:z"). None shipped; they still load as opaque strings and never
+    // match a v2 key, so those plans are decided afresh.
 
     private static final int TAG_BYTE = 1;
     private static final int TAG_INT = 3;

@@ -289,21 +289,27 @@ public final class GeneratorScenarios {
             return false;
         }
 
+        /**
+         * The blocks of the cells the layout itself writes (not SKIP). Cells it leaves alone are not compared: trees
+         * from neighboring chunks may grow into the box between the two passes, and that is not this layout's doing.
+         */
         private static String snapshot(World world, StructurePlan p, int anchorY, Layout layout) {
             StringBuilder sb = new StringBuilder();
-            for (int x = p.anchorX(); x <= p.maxX(); x++) {
-                for (int z = p.anchorZ(); z <= p.maxZ(); z++) {
-                    for (int y = anchorY - layout.ground(); y < anchorY - layout.ground() + layout.sizeY(); y++) {
-                        Block b = world.getBlock(x, y, z);
-                        sb.append(x)
+            for (int ly = 0; ly < layout.sizeY(); ly++) {
+                for (int lz = 0; lz < layout.sizeZ(); lz++) {
+                    for (int lx = 0; lx < layout.sizeX(); lx++) {
+                        if (layout.cell(lx, ly, lz) == Layout.SKIP) continue;
+                        int[] w = at(p, new int[] { lx, ly, lz }, anchorY, layout);
+                        Block b = world.getBlock(w[0], w[1], w[2]);
+                        sb.append(w[0])
                             .append(',')
-                            .append(y)
+                            .append(w[1])
                             .append(',')
-                            .append(z)
+                            .append(w[2])
                             .append('=')
                             .append(Block.getIdFromBlock(b))
                             .append(':')
-                            .append(world.getBlockMetadata(x, y, z))
+                            .append(world.getBlockMetadata(w[0], w[1], w[2]))
                             .append(';');
                     }
                 }

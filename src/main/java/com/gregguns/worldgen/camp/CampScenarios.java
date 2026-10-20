@@ -41,7 +41,7 @@ public final class CampScenarios {
 
     private static final long SEED = 0x6A6D5EL;
     private static final int ROTATION = 1;
-    private static final String PLAN_KEY = PlanKey.of(SizeClass.BIG, 777, -777);
+    private static final String PLAN_KEY = PlanKey.of("military_base", SizeClass.BIG, 777, -777);
 
     private CampScenarios() {}
 

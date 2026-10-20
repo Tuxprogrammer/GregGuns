@@ -156,8 +156,8 @@ public final class StructureGenerator implements IWorldGenerator {
 
         @Override
         public void chest(StructurePlan plan, String kind, int x, int y, int z, LootPending order) {
-            if (kind.equals("vanilla")) {
-                // The layout placed a vanilla chest here; the sink wrote it straight to the world, so its tile exists.
+            if (kind.equals("vanilla") || kind.equals("barracks")) {
+                // The layout placed a vanilla chest here (camp barracks chests are vanilla too); the sink wrote it straight to the world, so its tile exists.
                 LazyChests.fillVanillaChest(world, x, y, z, order);
                 return;
             }

@@ -21,8 +21,8 @@ public final class StateScenarios {
 
     /** A name of its own, so the scenario never touches the real structure record. */
     private static final String SCENARIO_DATA = "gregguns_structures_scenario";
-    private static final String PLACED = PlanKey.of(SizeClass.MEDIUM, 3, -4);
-    private static final String REJECTED = PlanKey.of(SizeClass.BIG, -1, 2);
+    private static final String PLACED = PlanKey.of("test", SizeClass.MEDIUM, 3, -4);
+    private static final String REJECTED = PlanKey.of("test", SizeClass.BIG, -1, 2);
 
     private StateScenarios() {}
 
