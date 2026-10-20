@@ -2,7 +2,7 @@
 
 Evidence for the five M0 exit-gate boxes in [ROADMAP.md](../../ROADMAP.md#m0--foundation), for the beta review gate. Audited on master at `354236f4`, by reading `src/`, `src/test`, `docs/`, `.github/` and the git history. Gradle was not run for this audit, so test results are taken from the commit records named below; the test classes and methods named here were confirmed to exist. Scenario names and what each asserts are in [docs/testing/README.md](../../testing/README.md).
 
-Result: 3 met, 2 partially met, 0 unmet.
+Result: 4 met, 1 partially met, 0 unmet.
 
 ## 1. `./gradlew spotlessApply build` passes, with at least one real unit test
 
@@ -17,14 +17,14 @@ Result: 3 met, 2 partially met, 0 unmet.
 
 ## 2. `./gradlew runServer` boots with GT5-Unofficial loaded and no errors from GregGuns
 
-**Partially met.** The boot is proven repeatedly, but the repo does not show CI running `runServer`.
+**Met.** The boot is proven locally, on the real pack, and in CI on every push.
 
 | Check | Evidence |
 |---|---|
 | Local dev boot | The ROADMAP note (2026-10-18), and `cec4da4f` (22 headless scenarios and the dev self-check, 6 items and 28 recipes); every later milestone's scenario run boots `runServer` with `gregguns test all` |
 | Real pack boot | The ROADMAP note: the release jar booted clean on the GTNH 2.9.0-RC-2 dedicated server pack, with default config and with guns, armor and machines enabled. The bug it found is fixed in `7ba3036a` (register `EquipmentRefillRecipe` with `RecipeSorter`) |
 | Side safety | `ClientProxyModulesTest` and `EventHandlerVisibilityTest` guard against client classes leaking into common code |
-| CI smoke | **Gap.** `CONTRIBUTING.md` (Testing) says "CI runs this on every push", but `.github/workflows/build-and-test.yml` only calls the shared GTNH build workflow, and no script or workflow in the repo invokes `runServer`. The ROADMAP wording "The CI smoke test passes" rests on the green build, not on a booted server in CI |
+| CI smoke | `.github/workflows/build-and-test.yml` calls the shared GTNH workflow ([GTNH-Actions-Workflows build-and-test.yml](https://github.com/GTNewHorizons/GTNH-Actions-Workflows/blob/master/.github/workflows/build-and-test.yml)), which runs `runServer` by default: `client-only: false`, a 90 s `timeout`, and an automatic `stop` written to stdin. This repo sets neither override, so `CONTRIBUTING.md`'s "CI runs this on every push" holds. It doesn't run the GregGuns scenarios; those run on the test box before every land |
 
 ## 3. `./gradlew runClient` reaches the main menu, and the GregGuns creative tab exists
 
@@ -97,7 +97,6 @@ The structural differences from Techguns (one `@Config` file set instead of `Tec
 
 | ID | Box | Proposed resolution |
 |---|---|---|
-| D-1 | Box 2, CI smoke | Either add a `runServer` boot step to a workflow (run headless, grep for the `Scenarios: N passed` line), or reword the ROADMAP box and the CONTRIBUTING line to say the boot smoke test is run by the orchestrator before each release. Recommended: reword now, add the job in M9 |
 | D-2 | Box 4, flag defaults | Flip `modules.guns`, `armor`, `machines`, `energyWeapons` and `utility` (and `npcs` and `worldgen` once their gates are ticked) to `true` for the beta, and update `ConfigDefaultsTest.everyModuleFlagDefaultsToOffUntilItsMilestoneIsMet`, `docs/config.md` and the pack notes. A default install cannot play the beta otherwise |
 | D-3 | Polish P2 | Run the key-conflict check in the batched client pass of the beta gate, and write a design record only if a clash is found |
 | D-4 | Polish P3 | Accept the current defaults (`TEAMS`, one config file, no cosmetic packet) as the beta's recorded decision, and close the open questions after the owner playthrough |
