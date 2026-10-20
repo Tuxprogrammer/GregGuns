@@ -1,0 +1,244 @@
+package com.gregguns.worldgen;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import net.minecraft.block.Block;
+import net.minecraftforge.common.BiomeDictionary.Type;
+
+import com.gregguns.worldgen.layout.Layout;
+import com.gregguns.worldgen.layout.LayoutRegistry;
+import com.gregguns.worldgen.layout.Rotations;
+import com.gregguns.worldgen.layout.StampPlan;
+import com.gregguns.worldgen.layout.Stamper;
+import com.gregguns.worldgen.loot.LootCategoryDefs;
+import com.gregguns.worldgen.loot.LootPending;
+
+/**
+ * The populate pipeline of one window, with every world touch behind an interface so it runs in unit tests. For each
+ * plan that overlaps the window: look up (or make) the placement decision, shape the terrain, stamp, and report marks.
+ *
+ * <p>
+ * Every write goes through the {@link WindowedSink} and every read through a {@link ColumnReader} wrapped in a
+ * {@link WindowedHeightProbe}, so nothing here can reach outside the window (GGS-11-08, GGS-11-09). The first window to
+ * see a plan decides it from its own columns and records the verdict; later windows obey the record (PLAN-M8 Q3).
+ */
+// Spec: docs/gregguns-spec/11-worldgen/structure-placement.md (GGS-11-08 to GGS-11-15); fixes WGEN-04, 05, 06, 15, 26
+public final class StructurePopulator {
+
+    /** Largest land height spread a footprint may have before it is rejected (also the flatten band). */
+    public static final int LAND_MAX_DIFF = 8;
+    /** Sample spacing for the terrain checks; the far edge is always sampled (WGEN-15). */
+    public static final int SAMPLE_STEP = 4;
+    /** Water a ship's hull needs under its keel, in blocks. */
+    public static final int SHIP_MIN_DEPTH = 6;
+
+    /** Biome types of a block column, read without loading a chunk. */
+    public interface BiomeSource {
+
+        Set<Type> typesAt(int x, int z);
+    }
+
+    /** What the generator does with the layout marks that fall in the window. */
+    public interface Marks {
+
+        /**
+         * @param kind  {@code vanilla}, {@code weapon} or {@code reinforced}
+         * @param order the loot order for this chest, seeded per chest (GGS-11-20)
+         */
+        void chest(StructurePlan plan, String kind, int x, int y, int z, LootPending order);
+
+        void spawner(StructurePlan plan, String tag, int x, int y, int z);
+
+        void flag(StructurePlan plan, String planKey, int x, int y, int z);
+    }
+
+    /** Per-structure settings, so tests need no config. */
+    public interface Rules {
+
+        boolean enabled(StructureId s);
+
+        Set<Type> biomeBlacklist(StructureId s);
+
+        int lootCeiling(StructureId s);
+
+        int richness(StructureId s);
+    }
+
+    /** The settings from {@link WorldgenSettings}. */
+    public static final Rules CONFIG_RULES = new Rules() {
+
+        @Override
+        public boolean enabled(StructureId s) {
+            return WorldgenSettings.enabled(s);
+        }
+
+        @Override
+        public Set<Type> biomeBlacklist(StructureId s) {
+            return StructureBiomes.parseTypes(WorldgenSettings.biomeBlacklist(s));
+        }
+
+        @Override
+        public int lootCeiling(StructureId s) {
+            return WorldgenSettings.lootTierCeiling(s);
+        }
+
+        @Override
+        public int richness(StructureId s) {
+            return WorldgenSettings.lootTier(s);
+        }
+    };
+
+    private static final String[] WEAPON = { LootCategoryDefs.WEAPONCHEST_T1, LootCategoryDefs.WEAPONCHEST_T2,
+        LootCategoryDefs.WEAPONCHEST_T3 };
+    private static final String[] REINFORCED = { LootCategoryDefs.REINFORCEDCHEST_T1,
+        LootCategoryDefs.REINFORCEDCHEST_T2, LootCategoryDefs.REINFORCEDCHEST_T3 };
+
+    private final StructureGrid grid;
+    private final LayoutRegistry layouts;
+    private final Stamper stamper;
+    private final Block fill;
+    private final Block air;
+    private final Rules rules;
+
+    /**
+     * @param grid    the seeded plans
+     * @param layouts the loaded layouts
+     * @param stamper writes a layout into a window
+     * @param fill    the block that raises low columns (dirt)
+     * @param air     the block that cuts high columns
+     * @param rules   per-structure settings
+     */
+    public StructurePopulator(StructureGrid grid, LayoutRegistry layouts, Stamper stamper, Block fill, Block air,
+        Rules rules) {
+        this.grid = grid;
+        this.layouts = layouts;
+        this.stamper = stamper;
+        this.fill = fill;
+        this.air = air;
+        this.rules = rules;
+    }
+
+    /**
+     * Builds the part of every overlapping structure that lies in the window.
+     *
+     * @return the number of structures that wrote at least one block in this window
+     */
+    public int populate(long worldSeed, int dimension, PopulateWindow window, WindowedSink sink, ColumnReader reader,
+        BiomeSource biomes, StructureState state, Marks marks) {
+        List<StructurePlan> plans = grid.plansForWindow(worldSeed, dimension, window.chunkX(), window.chunkZ());
+        int stamped = 0;
+        for (StructurePlan plan : plans) {
+            Layout layout = layouts.get(plan.id());
+            if (layout == null) continue;
+            PlacedFootprint fp = new PlacedFootprint(
+                plan.anchorX(),
+                plan.anchorZ(),
+                layout.sizeX(),
+                layout.sizeZ(),
+                plan.rotation());
+            StructureId id = StructureCatalog.byId(plan.id());
+            boolean water = id != null && StructureCatalog.isWater(id);
+            HeightProbe probe = new WindowedHeightProbe(window, reader);
+            Decision d = state
+                .decideOnce(PlanKey.of(plan), () -> decide(layout, id, water, fp, window, reader, probe, biomes));
+            if (!d.isPlaced()) continue;
+            if (!water) {
+                shapeLand(sink, probe, reader, window, fp, d.groundY());
+            }
+            StampPlan sp = new StampPlan(
+                layout,
+                plan.anchorX(),
+                d.groundY() + 1,
+                plan.anchorZ(),
+                plan.rotation(),
+                plan.variant());
+            String key = PlanKey.of(plan);
+            int written = stamper
+                .write(sink, sp, window, (tag, x, y, z) -> mark(plan, sp, id, key, tag, x, y, z, marks));
+            if (written > 0) stamped++;
+        }
+        return stamped;
+    }
+
+    private Decision decide(Layout layout, StructureId id, boolean water, PlacedFootprint fp, PopulateWindow window,
+        ColumnReader reader, HeightProbe probe, BiomeSource biomes) {
+        Set<Type> types = biomes.typesAt((fp.minX() + fp.maxX()) / 2, (fp.minZ() + fp.maxZ()) / 2);
+        Set<Type> blacklist = id == null ? Collections.<Type>emptySet() : rules.biomeBlacklist(id);
+        boolean biomeOk;
+        if (id == StructureId.ALIEN_BUG_NEST) {
+            biomeOk = StructureBiomes.allowsBugNest(types, StructureBiomes.BUG_NEST_DEFAULT);
+        } else if (water) {
+            biomeOk = StructureBiomes.allowsWater(types, blacklist);
+        } else {
+            biomeOk = StructureBiomes.allowsLand(types, blacklist);
+        }
+        if (!biomeOk) return Decision.rejected("biome");
+
+        TerrainCheck.Result r = water ? TerrainCheck.checkWater(probe, fp, SHIP_MIN_DEPTH, SAMPLE_STEP)
+            : TerrainCheck.checkLand(probe, fp, LAND_MAX_DIFF, SAMPLE_STEP);
+        if (r.reason == TerrainCheck.Reason.NO_SAMPLES) {
+            // The coarse sample grid missed this window's sliver of the footprint; sample every column of it. The
+            // plan overlaps the window, so at least one column exists.
+            r = water ? TerrainCheck.checkWater(probe, fp, SHIP_MIN_DEPTH, 1)
+                : TerrainCheck.checkLand(probe, fp, LAND_MAX_DIFF, 1);
+        }
+        if (!r.ok) {
+            return Decision.rejected(
+                r.reason.name()
+                    .toLowerCase(Locale.ROOT));
+        }
+        if (!water && VillageScan.containsVillageBlocks(window, reader, fp, r.y, layout.sizeY() - layout.ground())) {
+            return Decision.rejected("village");
+        }
+        return Decision.placed(r.y);
+    }
+
+    /** Flattens the footprint columns of this window to the recorded height and clears trees above them. */
+    private void shapeLand(WindowedSink sink, HeightProbe probe, ColumnReader reader, PopulateWindow window,
+        PlacedFootprint fp, int groundY) {
+        TerrainShaper.apply(sink, Flatten.planToBand(probe, fp, groundY, LAND_MAX_DIFF), fill, 0, air);
+        for (int x = Math.max(fp.minX(), window.minX()); x <= Math.min(fp.maxX(), window.maxX()); x++) {
+            for (int z = Math.max(fp.minZ(), window.minZ()); z <= Math.min(fp.maxZ(), window.maxZ()); z++) {
+                for (int y : TerrainShaper.junkY(window, reader, x, z)) {
+                    sink.setBlock(x, y, z, air, 0);
+                }
+            }
+        }
+    }
+
+    private void mark(StructurePlan plan, StampPlan sp, StructureId id, String planKey, String tag, int x, int y, int z,
+        Marks marks) {
+        if (tag.startsWith("chest.")) {
+            String kind = tag.substring("chest.".length());
+            boolean reinforced = kind.equals("reinforced");
+            if (!reinforced && !kind.equals("weapon") && !kind.equals("vanilla")) return;
+            int tier = Math.max(1, Math.min(3, id == null ? 1 : rules.lootCeiling(id)));
+            String category = (reinforced ? REINFORCED : WEAPON)[tier - 1];
+            int richness = id == null ? 1 : rules.richness(id);
+            long seed = plan.chestSeed(chestIndex(sp, x, y, z));
+            marks.chest(plan, kind, x, y, z, new LootPending(category, richness, seed));
+        } else if (tag.startsWith("spawner")) {
+            marks.spawner(plan, tag, x, y, z);
+        } else if (tag.equals("flag")) {
+            marks.flag(plan, planKey, x, y, z);
+        }
+    }
+
+    /** The chest's index among the layout's chest marks: the same whichever window reports it (GGS-11-20). */
+    static int chestIndex(StampPlan sp, int wx, int wy, int wz) {
+        Layout l = sp.layout;
+        int n = 0;
+        for (Layout.Mark m : l.marks()) {
+            if (!m.tag.startsWith("chest.")) continue;
+            int mx = sp.anchorX + Rotations.offsetX(sp.rotation, m.x, m.z, l.sizeX(), l.sizeZ());
+            int mz = sp.anchorZ + Rotations.offsetZ(sp.rotation, m.x, m.z, l.sizeX(), l.sizeZ());
+            int my = sp.anchorY + m.y - l.ground();
+            if (mx == wx && my == wy && mz == wz) return n;
+            n++;
+        }
+        return 0;
+    }
+}
