@@ -84,7 +84,10 @@ public final class NineMmAmmo {
                 Tier.MV,
                 4,
                 Input.gt("plate", "Aluminium", 2),
-                Input.gt("springSmall", "Aluminium", 8),
+                // 9 springs, not 8: with 2 plates and 8 springs this row's inputs were a subset of RC-39's (3 plates,
+                // 8 springs), so the press could pick the SMG row on the Assault Rifle's inputs. 9 springs against 8
+                // makes neither row a subset of the other.
+                Input.gt("springSmall", "Aluminium", 9),
                 Input.mod(PartItems.MECHANICAL_2, 1)))
         .row(
             Row.press(

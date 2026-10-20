@@ -285,6 +285,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `gun.bio_gun.charge` | Bio Gun (M5 B3a) | Holding the right button 10, 20 and 35 ticks fires levels 1, 2 and 3 that spend exactly 1, 2 and 3 rounds of the 30 loaded (GUN-02). |
 | `gun.bio_gun.reload` | Bio Gun (M5 B3a) | An empty gun with one full Bio Tank (E. coli culture fluid) reloads after 45 ticks to 30 rounds; the full tank is consumed and an empty tank comes back. |
 | `gun.bio_gun.culture_recipe` | Bio Gun ammo chain | `bacterialVatRecipes` holds the Biomass to E. coli culture fluid recipe: the petri dish as its special item, 1,000 mB Biomass and 100 mB distilled water in, 1,000 mB out, EV, glass 4. |
+| `gun.bio_gun.vat_recipe_selected` | Bio Gun ammo chain | `findRecipeQuery` on `bacterialVatRecipes` with circuit 2, 1,000 mB Biomass, 100 mB distilled water and the E. coli dish as the special item returns our culture recipe, not BartWorks' Biomass to Fermented Biomass row (the map is special-slot sensitive); with no dish it does not make the culture fluid. |
 | `gun.bio_gun.tank_rejects_biomass` | Bio Gun ammo chain | With `bioGun.acceptBiomass` false a Bio Tank takes the culture fluid and rejects Biomass; with it true it takes Biomass too. |
 | `gun.bio_gun.blob` | Bio Gun (M5 B3a) | With safe mode off, a level 2 glob from a player at a wall leaves a size 2 Bio Blob on the wall. Needs the utility module. |
 | `gun.bio_gun.blob.safe` | Bio Gun (M5 B3a) | The same glob with safe mode on (`explosions.blockDamage` false) leaves no blob (PFX-28). |
