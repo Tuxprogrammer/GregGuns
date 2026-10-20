@@ -14,9 +14,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
+import com.gregguns.compat.BartWorksCulture;
+import com.gregguns.core.config.BioGunConfig;
 import com.gregguns.core.config.ExplosionsConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
@@ -27,13 +30,20 @@ import com.gregguns.gun.logic.GunCatalog.AmmoIds;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.item.gun.GunItems;
 import com.gregguns.projectile.BiogunProjectile;
+import com.gregguns.recipe.BioCultureRecipes;
 import com.gregguns.recipe.GunRecipeScenarios;
 import com.gregguns.utility.WorldBlockRegistration;
 import com.gregguns.utility.blob.TileBioBlob;
 
+import bartworks.API.recipe.BartWorksRecipeMaps;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.TierEU;
+import gregtech.api.util.GTModHandler;
+import gregtech.api.util.GTRecipe;
+import gregtech.api.util.GTRecipeBuilder;
+import gregtech.api.util.GTRecipeConstants;
 
 /**
  * The {@code gun.bio_gun.*} scenarios: the left button's level-1 glob that hurts and poisons (Poison IV), the right
@@ -62,6 +72,8 @@ public final class BioGunScenarios {
         registry.register(new Fire());
         registry.register(new Charge());
         registry.register(new Reload());
+        registry.register(new CultureRecipe());
+        registry.register(new TankRejectsBiomass());
         registry.register(
             new Blob(
                 "gun.bio_gun.blob",
@@ -103,10 +115,17 @@ public final class BioGunScenarios {
         return GameRegistry.findItem("gregguns", AmmoIds.BIO_TANK);
     }
 
-    /** @return a Bio Tank holding 1,000 mB of Biomass */
+    /** @return the Bio Tank's real ammo: BartWorks' E. coli culture fluid, or {@code null} if it cannot be resolved */
+    private static Fluid cultureFluid() {
+        return BartWorksCulture.eColiFluid();
+    }
+
+    /** @return a Bio Tank holding 1,000 mB of the E. coli culture fluid (Biomass when the culture cannot resolve) */
     private static ItemStack fullTank() {
         ItemStack tank = new ItemStack(tankItem());
-        ((IFluidContainerItem) tankItem()).fill(tank, Materials.Biomass.getFluid(1000), true);
+        Fluid culture = cultureFluid();
+        FluidStack fluid = culture != null ? new FluidStack(culture, 1000) : Materials.Biomass.getFluid(1000);
+        ((IFluidContainerItem) tankItem()).fill(tank, fluid, true);
         return tank;
     }
 
@@ -271,7 +290,7 @@ public final class BioGunScenarios {
 
         @Override
         public String description() {
-            return "An empty Bio Gun reloads 45 ticks after the trigger: 30 rounds from one full Bio Tank (Biomass), which is consumed, and an empty Bio Tank comes back.";
+            return "An empty Bio Gun reloads 45 ticks after the trigger: 30 rounds from one full Bio Tank (E. coli culture fluid), which is consumed, and an empty Bio Tank comes back.";
         }
 
         @Override
@@ -293,6 +312,7 @@ public final class BioGunScenarios {
                     return null;
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
+                out.check(cultureFluid() != null, "the tank should be filled with the E. coli culture fluid");
                 out.check(started, "the dry trigger should have started a reload");
                 out.checkEquals("rounds one tick before the end", 0, loadedAt[reloadTicks - 1]);
                 out.checkEquals("rounds at the end of the reload", 30, loadedAt[reloadTicks]);
@@ -300,6 +320,114 @@ public final class BioGunScenarios {
                 out.checkEquals("empty tanks returned", 1, emptyTanks(rig));
                 return out.build();
             });
+        }
+    }
+
+    /**
+     * The vat recipe that makes the Bio Tank's culture fluid is in BartWorks' map, with the dish as its special item.
+     */
+    private static final class CultureRecipe implements Scenario {
+
+        @Override
+        public String name() {
+            return "gun.bio_gun.culture_recipe";
+        }
+
+        @Override
+        public String description() {
+            return "bacterialVatRecipes holds the Biomass to E. coli culture fluid recipe: the E. coli petri dish as its special item, 1,000 mB Biomass and 100 mB distilled water in, 1,000 mB culture fluid out, EV, glass tier 4.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Fluid culture = cultureFluid();
+            ItemStack dish = BartWorksCulture.eColiPetriDish();
+            out.check(culture != null, "BartWorks' E. coli culture fluid should resolve");
+            out.check(dish != null, "BartWorks' E. coli petri dish should resolve");
+            if (culture == null || dish == null) {
+                return out.build();
+            }
+            GTRecipe found = null;
+            for (GTRecipe recipe : BartWorksRecipeMaps.bacterialVatRecipes.getAllRecipes()) {
+                if (recipe.mFluidOutputs != null && recipe.mFluidOutputs.length > 0
+                    && recipe.mFluidOutputs[0] != null
+                    && recipe.mFluidOutputs[0].getFluid() == culture) {
+                    found = recipe;
+                }
+            }
+            out.check(found != null, "bacterialVatRecipes should hold a recipe whose output is the culture fluid");
+            if (found == null) {
+                return out.build();
+            }
+            out.check(
+                found.mSpecialItems instanceof ItemStack
+                    && ItemStack.areItemStacksEqual(dish, (ItemStack) found.mSpecialItems),
+                "the E. coli petri dish should be the recipe's special item");
+            out.checkEquals("output mB", BioCultureRecipes.AMOUNT, found.mFluidOutputs[0].amount);
+            out.checkEquals("EU/t", (int) TierEU.RECIPE_EV, found.mEUt);
+            out.checkEquals("duration", BioCultureRecipes.SECONDS_TAKEN * GTRecipeBuilder.SECONDS, found.mDuration);
+            out.checkEquals(
+                "glass tier",
+                BioCultureRecipes.GLASS_TIER,
+                found.getMetadataOrDefault(GTRecipeConstants.GLASS, 0));
+            boolean biomass = false;
+            boolean water = false;
+            for (FluidStack in : found.mFluidInputs) {
+                if (in == null) {
+                    continue;
+                }
+                biomass |= in.isFluidEqual(Materials.Biomass.getFluid(1)) && in.amount == BioCultureRecipes.AMOUNT;
+                water |= in.isFluidEqual(GTModHandler.getDistilledWater(1)) && in.amount == BioCultureRecipes.WATER;
+            }
+            out.check(biomass, "the recipe should take 1,000 mB Biomass");
+            out.check(water, "the recipe should take 100 mB distilled water");
+            return out.build();
+        }
+    }
+
+    /** With bioGun.acceptBiomass off a Bio Tank takes the culture fluid but not Biomass. */
+    private static final class TankRejectsBiomass implements Scenario {
+
+        @Override
+        public String name() {
+            return "gun.bio_gun.tank_rejects_biomass";
+        }
+
+        @Override
+        public String description() {
+            return "With bioGun.acceptBiomass false an empty Bio Tank takes 1,000 mB of the E. coli culture fluid and 0 mB of Biomass; with it true the tank takes Biomass too.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Fluid culture = cultureFluid();
+            out.check(culture != null, "BartWorks' E. coli culture fluid should resolve");
+            if (culture == null) {
+                return out.build();
+            }
+            IFluidContainerItem tank = (IFluidContainerItem) tankItem();
+            boolean saved = BioGunConfig.acceptBiomass;
+            try {
+                BioGunConfig.acceptBiomass = false;
+                out.checkEquals(
+                    "culture fluid accepted",
+                    1000,
+                    tank.fill(new ItemStack(tankItem()), new FluidStack(culture, 1000), false));
+                out.checkEquals(
+                    "Biomass accepted with the switch off",
+                    0,
+                    tank.fill(new ItemStack(tankItem()), Materials.Biomass.getFluid(1000), false));
+                BioGunConfig.acceptBiomass = true;
+                out.checkEquals(
+                    "Biomass accepted with the switch on",
+                    1000,
+                    tank.fill(new ItemStack(tankItem()), Materials.Biomass.getFluid(1000), false));
+            } finally {
+                BioGunConfig.acceptBiomass = saved;
+            }
+            return out.build();
         }
     }
 

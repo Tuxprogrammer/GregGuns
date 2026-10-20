@@ -30,6 +30,7 @@ class ConfigRulesTest {
     /** Fields expected to carry Config.Sync, as "Class.field". Update this with every synced field you add. */
     private static final Set<String> EXPECTED_SYNCED = new TreeSet<>(
         Arrays.asList(
+            "BioGunConfig.acceptBiomass",
             "DamageFactorsConfig.damagePvP",
             "DamageFactorsConfig.damageTurretToPlayer",
             "DamageFactorsConfig.damageFactorNPC",

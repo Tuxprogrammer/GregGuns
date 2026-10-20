@@ -46,9 +46,9 @@ public class ModulesConfig {
     @Config.RequiresMcRestart
     public static boolean utility = true;
 
-    @Config.Comment({ "NPCs and spawning (M7). Needs 'guns'.", "Default: false until the M7 exit gate is met." })
+    @Config.Comment({ "NPCs and spawning (M7). Needs 'guns'.", "Default: true (M7 exit gate met)." })
     @Config.RequiresMcRestart
-    public static boolean npcs = false;
+    public static boolean npcs = true;
 
     @Config.Comment({ "Worldgen and structures (M8). Needs 'npcs'.", "Default: false until the M8 exit gate is met." })
     @Config.RequiresMcRestart
