@@ -126,7 +126,10 @@ class StructureLayoutsS3Test {
                 String chest = l.entry(l.cell(m.x, m.y, m.z))
                     .choices()
                     .get(0).key;
-                assertEquals("minecraft:chest", chest, "chest block under " + m.tag + " at " + m.x + "," + m.y + "," + m.z);
+                assertEquals(
+                    "minecraft:chest",
+                    chest,
+                    "chest block under " + m.tag + " at " + m.x + "," + m.y + "," + m.z);
                 assertTrue(isSolidCell(l, m.x, m.y - 1, m.z), "chest needs a floor");
             } else if (m.tag.equals("flag")) {
                 assertTrue(isOpenCell(l, m.x, m.y, m.z), "the flag point places no block");
@@ -152,9 +155,11 @@ class StructureLayoutsS3Test {
         assertEquals(4, (int) c.get("chest.weapon"));
         assertEquals(3, c.size(), "no flag, no spawner, no NPC marks: " + c);
         for (Layout.Mark m : l.marks()) {
-            assertEquals("minecraft:chest", l.entry(l.cell(m.x, m.y, m.z))
-                .choices()
-                .get(0).key);
+            assertEquals(
+                "minecraft:chest",
+                l.entry(l.cell(m.x, m.y, m.z))
+                    .choices()
+                    .get(0).key);
             assertTrue(isSolidCell(l, m.x, m.y - 1, m.z), "chest needs a floor");
         }
     }
@@ -188,11 +193,8 @@ class StructureLayoutsS3Test {
                 RecordingWorld world = new RecordingWorld(cx, cz);
                 Capture cap = new Capture(world);
                 ClippingSink sink = new ClippingSink(world.window(), cap);
-                int n = stamper.write(
-                    sink,
-                    plan,
-                    world.window(),
-                    (tag, x, y, z) -> marks.add(tag + "@" + x + "," + y + "," + z));
+                int n = stamper
+                    .write(sink, plan, world.window(), (tag, x, y, z) -> marks.add(tag + "@" + x + "," + y + "," + z));
                 assertEquals(0, sink.rejectedWrites());
                 assertTrue(
                     world.writesOutsideWindow()
@@ -218,8 +220,11 @@ class StructureLayoutsS3Test {
         for (int r = 0; r < 4; r++) {
             List<String> marks = new ArrayList<>();
             stampAll(l, new StampPlan(l, 3, 70, -5, r, 12345L), marks);
-            assertEquals(l.marks()
-                .size(), marks.size(), "each mark reported by exactly one window, rotation " + r);
+            assertEquals(
+                l.marks()
+                    .size(),
+                marks.size(),
+                "each mark reported by exactly one window, rotation " + r);
         }
     }
 
@@ -270,7 +275,10 @@ class StructureLayoutsS3Test {
                         ResolvedBlock rb = keys.get(c.key);
                         assertSame(rb.block, got[0]);
                         int base = c.meta == PaletteChoice.KEY_META ? rb.meta : c.meta;
-                        assertEquals(c.kind.rotate(base, r), (int) (Integer) got[1], "meta at " + x + "," + y + "," + z);
+                        assertEquals(
+                            c.kind.rotate(base, r),
+                            (int) (Integer) got[1],
+                            "meta at " + x + "," + y + "," + z);
                         if (c.kind != RotationKind.NONE) {
                             directional++;
                         }
@@ -326,7 +334,9 @@ class StructureLayoutsS3Test {
                     int fz = z + (meta == 2 ? -1 : meta == 3 ? 1 : 0);
                     Object[] front = cap.at.get(key(fx, y, fz));
                     assertTrue(meta >= 2 && meta <= 5);
-                    assertTrue(front == null || front[0] == air, "chest at " + e.getKey() + " faces a wall, rotation " + r);
+                    assertTrue(
+                        front == null || front[0] == air,
+                        "chest at " + e.getKey() + " faces a wall, rotation " + r);
                 }
             }
 
