@@ -53,7 +53,7 @@ WEAPONS = {
         ("minigun", "Minigun", "200 rounds, 20 shots a second", "mag_minigun_drum", "Minigun Ammo Drum"),
         ("tesla_rifle", "Tesla Rifle", "Lightning jumps to three more targets", None, "EV charge"),
         ("sonic_rifle", "Sonic Rifle", "Ring-shaped shockwave volley", None, "EV charge"),
-        ("bio_gun", "Bio Gun", "Poison blobs, charge to grow", "tank_bio", "Bio Tank"),
+        ("bio_gun", "Bio Gun", "Poison blobs*, charge to grow", "tank_bio", "Bio Tank"),
         ("power_hammer_adv", "Power Hammer (Advanced)", "Harder, faster smash", "tank_air",
          "Compressed Air Tank"),
     ],

@@ -108,6 +108,40 @@ HATCH_LABEL = {
 }
 
 
+def lamp_tex():
+    """Our own interior lamp icon (the build accepts glowstone, a redstone lamp or any light level 12+ block, so the
+    picture is a plain lit lamp block, not any game's art)."""
+    from PIL import Image, ImageDraw
+    p = K.TEXCACHE / "interior_lamp.png"
+    if not p.exists():
+        K.TEXCACHE.mkdir(parents=True, exist_ok=True)
+        im = Image.new("RGBA", (16, 16), (214, 150, 40, 255))
+        d = ImageDraw.Draw(im)
+        for cy in range(4):
+            for cx in range(4):
+                c = (255, 236, 150, 255) if (cx + cy) % 2 == 0 else (255, 212, 96, 255)
+                d.rectangle([cx * 4 + 1, cy * 4 + 1, cx * 4 + 3, cy * 4 + 3], fill=c)
+        im.save(p)
+    return p
+
+
+def natura_tex():
+    """Natura's redwood workbench (top, side, face), read from the Natura jar in the reference pack into the
+    git-ignored build cache. Natura workbench textures are CC BY 3.0 (credited in docs/assets/CREDITS.md)."""
+    import zipfile
+    out = K.TEXCACHE / "natura"
+    names = ("top", "side", "face")
+    if not all((out / f"{n}.png").exists() for n in names):
+        jars = [j for d in gt._reference_dirs() for j in sorted(d.glob("*/.minecraft/mods/Natura-*.jar"))]
+        if not jars:
+            raise SystemExit("Natura jar not found under reference/gtnh/")
+        out.mkdir(parents=True, exist_ok=True)
+        z = zipfile.ZipFile(jars[0])
+        for n in names:
+            (out / f"{n}.png").write_bytes(z.read(f"assets/natura/textures/blocks/redwood_workbench_{n}.png"))
+    return tuple(out / f"{n}.png" for n in names)
+
+
 class Build:
     """Voxels plus a legend: [(key, label, texture, count, note)]."""
 
@@ -141,14 +175,17 @@ class Build:
         return [(k, self.labels[k], self.tex[k][-1] if isinstance(self.tex[k], tuple) else self.tex[k], c[k],
                  self.notes.get(k, "")) for k in self.tex if c[k]]
 
-    def render(self, yaw=-35, pitch=30, ppu=36, tag="", marks=False):
-        """marks: ring the hatches (orange) and the controller (blue) so a builder can find them."""
-        tags = {k: (2 if k == "ctrl" else 1) for k in self.tex if k.startswith("h_") or k in ("ctrl", "mount")} if marks else None
-        return K.voxels(f"{self.name}{tag}", self.blocks, self.tex, yaw=yaw, pitch=pitch, ppu=ppu, tags=tags)
+    def render(self, yaw=-35, pitch=30, ppu=36, tag="", marks=False, cut=None):
+        """marks: ring the hatches (orange), the controller (blue) and the lamps (yellow) so a builder can find them.
+        cut: a function (x, y, z) -> bool; blocks it returns True for are left out, to open the hall up."""
+        tags = {k: (2 if k == "ctrl" else 3 if k == "lamp" else 1)
+                for k in self.tex if k.startswith("h_") or k in ("ctrl", "mount", "lamp")} if marks else None
+        bl = self.blocks if cut is None else {p: v for p, v in self.blocks.items() if not cut(*p)}
+        return K.voxels(f"{self.name}{tag}", bl, self.tex, yaw=yaw, pitch=pitch, ppu=ppu, tags=tags)
 
 
-def ammo_works(bays=4, only=None) -> Build:
-    b = Build(f"ammo_works{bays}{only or ''}")
+def ammo_works(bays=4, only=None, bench=False) -> Build:
+    b = Build(f"ammo_works{bays}{only or ''}{'-bench' if bench else ''}")
     wc = _casing("works_casing")
     b.define("works", "Works Casing", wc)
     b.define("ram", "Ram Housing", B.first_frame(_casing("ram_housing"), K.TEXCACHE, "ram_housing"),
@@ -161,13 +198,24 @@ def ammo_works(bays=4, only=None) -> Build:
     b.define("motor", "Motor Casing", gt.iconset("MACHINE_CASING_MOTOR"), "the feed motors")
     b.define("assembler", "Assembler Casing", gt.iconset("MACHINE_CASING_ASSEMBLER"), "the packing arch")
     b.define("ctrl", "Ammunition Works", (wc, wc, _ctrl("works_casing", "ammunition_works")), "controller, HV")
+    b.define("lamp", "Interior Lamp", lamp_tex(), "glowstone, a redstone lamp or any light 12+ block; one under the roof of the feeder, every bay and the station")
     pieces = ([B.java_shape("AmmoWorksShape", "FEEDER")] + [B.java_shape("AmmoWorksShape", "BAY")] * bays
               + [B.java_shape("AmmoWorksShape", "STATION")])
+    if bench:
+        b.define("table", "Bench Table", natura_tex(), "Natura Workbench; a crafting table or Dire Crafting Table also works")
+        pieces = pieces + [B.java_shape("AmmoWorksShape", "BENCH")]
     if only:
-        pieces = [B.java_shape("AmmoWorksShape", only)]
+        pieces = [B.java_shape("AmmoWorksShape", only)] + ([B.java_shape("AmmoWorksShape", "BENCH")] if bench else [])
     cells = B.stack_aisles(pieces)
-    b.put(cells, {"F": "works", "A": "works", "O": "works", "M": "ram", "I": "belt", "G": "glass", "R": "frame",
+    b.put(cells, {"S": "lamp", "T": "table", "K": "works", "F": "works", "A": "works", "O": "works", "M": "ram", "I": "belt", "G": "glass", "R": "frame",
                   "P": "pipe", "B": "gearbox", "N": "motor", "Y": "assembler", "~": ("ctrl", FRONT)})
+    if only == "STATION" and bench:
+        # the close-up of the annex: the station's plain Output Bus and the bench's two buses
+        last = max(p[2] for p in cells)
+        b.hatch((2, 3, 3), "output_bus", BACK, wc)
+        b.hatch((1, 1, last), "input_bus", BACK, wc)
+        b.hatch((3, 1, last), "output_bus", BACK, wc)
+        return b
     if only:
         return b
     last = max(p[2] for p in cells)
@@ -176,8 +224,17 @@ def ammo_works(bays=4, only=None) -> Build:
     b.hatch((4, 5, 2), "muffler_hatch", UP, wc)
     b.hatch((0, 2, 0), "energy_hatch", FRONT, wc)
     b.hatch((4, 2, 0), "maintenance_hatch", FRONT, wc)
-    b.hatch((2, 2, last), "output_bus", BACK, wc)
-    b.hatch((1, 3, last), "output_hatch", BACK, wc)
+    if bench:
+        # the station's back wall ends where the bench starts; the bench's own buses sit on its side walls
+        sl = B.stack_aisles(pieces[:-1])
+        sl = max(p[2] for p in sl)
+        b.hatch((2, 3, sl), "output_bus", BACK, wc)
+        b.hatch((1, 4, sl), "output_hatch", BACK, wc)
+        b.hatch((1, 1, last), "input_bus", BACK, wc)
+        b.hatch((3, 1, last), "output_bus", BACK, wc)
+    else:
+        b.hatch((2, 2, last), "output_bus", BACK, wc)
+        b.hatch((1, 3, last), "output_hatch", BACK, wc)
     b.bays = bays
     b.size = (5, 7, last + 1)
     return b
@@ -194,13 +251,18 @@ def gantry(bays=4, only=None) -> Build:
     b.define("frame", "Titanium Frame Box", gt.frame("Titanium"), "the legs")
     b.define("glass", "Borosilicate Glass", gt.bartworks("BoronSilicateGlassBlock"), "booth windows")
     b.define("ctrl", "Armory Gantry", (gc, gc, _ctrl("gantry_casing", "armory_gantry")), "controller, HV")
+    b.define("lamp", "Interior Lamp", lamp_tex(), "glowstone, a redstone lamp or any light 12+ block; one in the booth and one in every bay")
+    b.define("rail", "Steel Frame Box", gt.frame("Steel"), "floor rails and the hoist hooks")
+    b.define("gearbox", "Steel Gear Box Casing", gt.iconset("MACHINE_CASING_GEARBOX_STEEL"), "the hoist drive")
+    b.define("motor", "Motor Casing", gt.iconset("MACHINE_CASING_MOTOR"), "the hoist motors")
+    b.define("pipe", "Steel Pipe Casing", gt.iconset("MACHINE_CASING_PIPE_STEEL"), "hydraulic runs under the beam")
     pieces = ([B.java_shape("GantryShape", "HEAD")] + [B.java_shape("GantryShape", "BAY")] * bays
               + [B.java_shape("GantryShape", "TAIL")])
     if only:
         pieces = [B.java_shape("GantryShape", only)]
     cells = B.stack_aisles(pieces)
     b.put(cells, {"R": "casing", "B": "beam", "H": "hoist", "T": "cradle", "L": "frame", "G": "glass",
-                  "~": ("ctrl", FRONT)})
+                  "S": "lamp", "F": "rail", "X": "gearbox", "N": "motor", "P": "pipe", "~": ("ctrl", FRONT)})
     if only:
         return b
     last = max(p[2] for p in cells)

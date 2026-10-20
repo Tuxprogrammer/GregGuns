@@ -222,13 +222,13 @@ def fx_frame(sheet: str, col: int, row: int, grid: int, px: int, black_to_alpha=
     return _cached(f"fx-{sheet}", dict(s=sheet, c=col, r=row, g=grid, px=px, b=black_to_alpha, v=1), make)
 
 
-MARK_HATCH, MARK_CONTROLLER = (255, 138, 31), (56, 198, 217)
+MARK_HATCH, MARK_CONTROLLER, MARK_LAMP = (255, 138, 31), (56, 198, 217), (255, 235, 60)
 
 
 def voxels(tag: str, blocks_: dict, textures: dict, yaw=-35, pitch=30, ppu=36, key=None, tags=None) -> Path:
     """tags: {block key: 1 for a hatch, 2 for the controller}; those faces get colored rings where they show."""
     def make():
-        marks = {1: MARK_HATCH, 2: MARK_CONTROLLER} if tags else None
+        marks = {1: MARK_HATCH, 2: MARK_CONTROLLER, 3: MARK_LAMP} if tags else None
         return R.trim(R.render(R.voxel_scene(blocks_, textures, tags), yaw=yaw, pitch=pitch, ppu=ppu, ss=2, outline=RIM,
                                marks=marks), 3)
     params = dict(k=key or sorted(map(str, blocks_.items())), t=sorted(map(str, textures.items())), g=str(tags), y=yaw, p=pitch, u=ppu, v=5)
