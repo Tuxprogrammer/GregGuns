@@ -132,7 +132,7 @@ public final class NestScenarios {
         final List<int[]> spawnerPos = new ArrayList<>();
     }
 
-    private static Run run(World world, StructurePlan plan, boolean reverse) {
+    private static Run runPlan(World world, StructurePlan plan, boolean reverse) {
         Run r = new Run();
         StructureGenerator.setOverride(populator());
         try {
@@ -219,7 +219,7 @@ public final class NestScenarios {
             if (nest == null || slime == null || bug == null) return out.build();
             StructurePlan plan = plan(world);
             try {
-                Run a = run(world, plan, false);
+                Run a = runPlan(world, plan, false);
                 out.check(a.decision.isPlaced(), "the nest should be placed, got " + a.decision.reason());
                 if (!a.decision.isPlaced()) return out.build();
                 out.checkEquals("ground Y decided", GROUND, a.decision.groundY());
@@ -307,7 +307,7 @@ public final class NestScenarios {
                 out.checkEquals("tiles other than the holes", 0, otherTiles);
 
                 long first = snapshot(world, plan, model);
-                Run b = run(world, plan, true);
+                Run b = runPlan(world, plan, true);
                 out.check(b.decision.isPlaced(), "the second run should place too");
                 out.checkEquals("second run writes dropped", 0, b.rejected);
                 out.checkEquals("second run guard violations", 0, b.violations);
