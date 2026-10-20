@@ -3,11 +3,13 @@ package com.gregguns.worldgen;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 
 import com.gregguns.GregGuns;
+import com.gregguns.utility.WorldBlockRegistration;
 import com.gregguns.utility.storage.TileGregChest;
 import com.gregguns.worldgen.layout.LayoutRegistry;
 import com.gregguns.worldgen.layout.PaletteKeys;
@@ -146,7 +148,15 @@ public final class StructureGenerator implements IWorldGenerator {
                 LazyChests.fillVanillaChest(world, x, y, z, order);
                 return;
             }
-            // The layout placed the GregGuns chest block; this attaches the unfilled order (lazy fill, Q8).
+            // The shipped layouts put a vanilla chest block at weapon and reinforced marks. A GregGuns tile on a
+            // vanilla chest block crashes the vanilla chest code (it casts a neighbor's tile to TileEntityChest, and
+            // again on break), so swap in the real GregGuns chest block first, keeping the facing meta.
+            Block want = kind.equals("reinforced") ? WorldBlockRegistration.reinforcedChest()
+                : WorldBlockRegistration.weaponChest();
+            if (want != null && world.getBlock(x, y, z) != want) {
+                sink.setBlock(x, y, z, want, world.getBlockMetadata(x, y, z));
+            }
+            // This attaches the unfilled order (lazy fill, Q8).
             TileGregChest tile = new TileGregChest();
             tile.setPending(order);
             sink.setTile(x, y, z, tile);

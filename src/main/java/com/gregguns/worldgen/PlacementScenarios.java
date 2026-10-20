@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -218,7 +219,10 @@ public final class PlacementScenarios {
                             out.checkEquals(at + " seed", p.plan.chestSeed(index), lp.seed());
                         }
                     }
-                    if (!(world.getBlock(pos[0], pos[1], pos[2]) instanceof BlockGregChest)) wrongBlock++;
+                    Block b = world.getBlock(pos[0], pos[1], pos[2]);
+                    if (!(b instanceof BlockGregChest) || ((BlockGregChest) b).isWeaponChest() != kind.equals("weapon")) {
+                        wrongBlock++;
+                    }
                 }
                 index++;
             }
@@ -230,14 +234,7 @@ public final class PlacementScenarios {
                 mc.chests(),
                 p.chestTiles()
                     .size());
-            if (wrongBlock > 0) {
-                // A lazy order rides on a TileGregChest, but the layout put a vanilla chest block under it.
-                out.note(
-                    id.id() + " LAYOUT: "
-                        + wrongBlock
-                        + " weapon/reinforced chest marks sit on minecraft:chest blocks, not on"
-                        + " gregguns:weapon_chest / gregguns:reinforced_chest");
-            }
+            out.checkEquals("weapon/reinforced marks that are not on a GregGuns chest block", 0, wrongBlock);
         }
 
         private static boolean nonEmpty(IInventory inv) {

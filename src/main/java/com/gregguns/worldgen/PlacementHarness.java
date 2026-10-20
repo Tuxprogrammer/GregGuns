@@ -12,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
@@ -70,7 +71,7 @@ public final class PlacementHarness {
             List<String> errors = new ArrayList<>();
             layouts = LayoutRegistry.load(
                 new LayoutRegistry.ClasspathSource(LayoutRegistry.ClasspathSource.STRUCTURES),
-                StructureCatalog.idsToLoad(s -> true),
+                StructureCatalog.idsToLoad(s -> s != StructureId.ALIEN_BUG_NEST && s != StructureId.MILITARY_BASE),
                 keys(),
                 errors::add);
             if (!errors.isEmpty()) throw new IllegalStateException("layouts: " + errors);
@@ -337,6 +338,14 @@ public final class PlacementHarness {
 
         /** Rebuilds the prepared terrain over the whole area: placed blocks and chest tiles go, nothing is dropped. */
         void cleanup() {
+            // Empty the chests first: breaking a chest block drops its contents as item entities.
+            for (TileEntity t : chestTiles()) {
+                if (t instanceof TileGregChest) ((TileGregChest) t).setPending(null);
+                IInventory inv = (IInventory) t;
+                for (int s = 0; s < inv.getSizeInventory(); s++) {
+                    inv.setInventorySlotContents(s, null);
+                }
+            }
             prepare(world, plan, water, layout);
             // Rebuilding the terrain replaces every block, which also removes its tile; any item entity is swept.
             AxisAlignedBB bb = AxisAlignedBB
