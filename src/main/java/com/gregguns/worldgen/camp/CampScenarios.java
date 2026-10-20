@@ -196,6 +196,9 @@ public final class CampScenarios {
                 for (Object o : world.loadedTileEntityList) {
                     if (o instanceof TileCampFlag) {
                         TileCampFlag t = (TileCampFlag) o;
+                        if (t.isInvalid()) {
+                            continue; // the block made its own tile; setTile replaced and invalidated it
+                        }
                         if (t.xCoord >= ax && t.xCoord < ax + camp.footprintX()
                             && t.zCoord >= az
                             && t.zCoord < az + camp.footprintZ()) {
