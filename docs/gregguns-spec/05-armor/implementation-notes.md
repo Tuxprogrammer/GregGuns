@@ -34,7 +34,7 @@ T1 Combat (A = 15), Scout and Miner (A = 13); other types 75% of A, poison and r
 
 - **Armor layer model.** The existing layer sheets are 128 x 64. Either a small `ModelBiped` subclass with 128 x 64 UVs is needed in the client module, or the sheets must be redrawn at 64 x 32. Needs a visual check; not done (no client run allowed in this wave).
 - **Hazard flags.** T1 sets carry none, as the flag table says. Higher sets add `PieceDef.Builder.partialHazards` and `fullHazards`.
-- **Recycling data.** The armor items have no GT `ItemData` yet (GGS-06-34 style); add when the Repair Bench and recycling pass is done.
+- **Recycling data.** Done: see [M3 exit gate](#m3-exit-gate), box 5 (`ArmorRecycling`, `armor.recycling`).
 - **Camo switching.** `ItemGregGunsArmor.getCamo` and `setCamo` exist for the Camo Bench (M4); there is no in-hand switch.
 - **Gun accuracy.** `ArmorBonus.GUN_ACCURACY` is readable through `Armor.bonus`; the server's shot context reads it through `GunAccuracy.armorBonus` (0 when `modules.armor` is off, clamped to 0..1), so a worn set that gives it tightens every shot's spread by that fraction. No shipped T1 set gives it; `gun.accuracy.armor` uses a stub set.
 - **Pack fall handlers.** The server has another fall handler that shortens a 5-block fall to 4 before ours, so scenario fall figures are measured against that baseline.
@@ -174,7 +174,7 @@ Branch `m3/armor-t2-t3`. Sets (all data in `ArmorCatalog`): T2 Combat, T2 Comman
 ## Not done
 
 - Power armor and the Exo Suit (EU-powered, later branch): reuse `PowerSpec.electric`, `ItemElectricArmor` and `PieceDef.poweredBonuses`.
-- Recycling data for the new pieces (same open item as wave A).
+- (Recycling data: done, M3 exit gate box 5.)
 
 
 ---
@@ -229,6 +229,12 @@ Evidence per box of [ROADMAP § M3](../../ROADMAP.md#m3--armor-and-equipment). T
    - `armor.power.charger`: the HEV (EV), Power Armor (IV) and Exo Suit (IV) chestplates are put in real GT Battery Buffer MTEs filled to capacity. The buffer of the matching tier accepts the stack (`allowPutStack`) and, after 60 ticks, the item holds EU. The buffers one tier below and one above refuse it, and a copy forced into them with `setInventorySlotContents` stays at 0 EU, which is exact-tier charging (0008).
    - Unit: `PowerArmorTest.ivSetsCostTenEuPerTickPerWalkingPieceAndFitAnIvCharger`; `ArmorTiersTest.electricUnitsRoundDownAndMatchTheMechArmorRate`.
    - The Jump Pack (HV), Anti Gravity Device (IV) and Night Vision Goggles (MV) are IC2 electric items on the same `ElectricGear` path (`armor.flight.jump_pack`, `armor.flight.anti_gravity` and `armor.slots.goggles` check tier and transfer limit); only the armor chestplates are put in a real buffer here.
+5. **Armor and accessories carry GT recycling data (GGS-06-34). PASS** (was MISSING: the pieces had no `ItemData`, so the Macerator and Arc Furnace could not recycle them).
+   - Pattern: `ArmorRecycling` calls `GTOreDictUnificator.addItemData` on GT's before-postload hook, as `ComponentRecipes` does for components; GT then derives the Macerator, smelting and Arc Furnace recipes in `GTRecipeRegistrator.registerMaterialRecycling`. The amounts come from `ArmorComposition`, which folds the recipe tables themselves (`ArmorTable.HAND`, `MACHINE`, `IV_DEFERRED`, `EquipmentTable.ROWS`, `FlightTable.ROWS`) through `ComponentComposition` with `OrePrefixes.getMaterialAmount()` (units of `M`), so nothing is typed twice. A GregGuns input with its own row (an upgrade's base piece, Steam Armor Plating, Power Plating, Mechanical Parts T3) contributes its own composition. Hand rows count the plate and nugget ore names in the grid.
+   - Covered: all 29 pieces of the T1 to T3 sets, steam armor and the Beret, Steam Armor Plating, and the accessories made from GT metal (gas mask, oxygen mask and tanks, tactical mask, goggles, ammo pouch, jump pack, glider, anti gravity device where their recipes hold a plate, ring, stick or screw). Cloth, leather, glass, circuits and GT machine parts return nothing, as in `ComponentComposition`.
+   - No-recycling rules are GT's: `setItemData` blacklists a stack whose recyclable material is under one `M` and skips `SubTag.NO_RECYCLING` materials; we do not override either.
+   - Unit: `ArmorCompositionTest` (`everyArmorPieceHasRecyclingData`, `everyAccessoryMadeOfGtMaterialsHasRecyclingData`, `everyMaterialOfARecipeComesBack`, `amountsAreTheRecipeInputsTimesGtsPrefixAmounts`, `handCraftedPiecesReturnTheirPlatesAndNuggets`, `anUpgradeReturnsItsBasePieceAndItsOwnPlates`, `steamArmorReturnsThePlatingInsideIt`).
+   - Scenario: `armor.recycling` reads each item's real `ItemData` and finds the Macerator recipe of five pieces (a Soldier's helmet, Scout vest, Miner boots, Riot helmet and Steam chestplate) and checks its dusts.
 
 ---
 
