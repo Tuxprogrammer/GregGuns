@@ -9,6 +9,7 @@ import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -178,8 +179,36 @@ final class NpcBossScenarios {
             EnumDifficulty prior = NpcEntityScenarios.allowMobs(ctx.world());
             ctx.clearArea(14, 4);
             PsychoSteve steve = spawnBoss(ctx, NpcMob.PSYCHO_STEVE, PsychoSteve.class, 0, 0);
+            // The pathfinder builds a chunk cache of followRange + 8 blocks and returns no path when it reaches an
+            // unloaded chunk (GTNH). Alone, only the arena is loaded, so Steve (follow range 60) never walked. Keep the
+            // cache inside the held arena; the victim is 6 blocks away.
+            steve.getEntityAttribute(SharedMonsterAttributes.followRange)
+                .setBaseValue(8.0);
             Victim victim = victim(ctx, "boss_steve_victim", 6, 0);
             return NpcEntityScenarios.guarded(name(), ctx.world(), prior, TIMEOUT, ticks -> {
+                if (ticks == TIMEOUT - 2 && victim.hits == 0) {
+                    return ScenarioResult.fail(
+                        name(),
+                        "steve never hit the victim: alive=" + !steve.isDead
+                            + ", distance="
+                            + steve.getDistanceToEntity(victim)
+                            + ", target="
+                            + steve.getAttackTarget()
+                            + ", sees="
+                            + steve.canEntityBeSeen(victim)
+                            + ", noPath="
+                            + steve.getNavigator()
+                                .noPath()
+                            + ", pathNow="
+                            + steve.getNavigator()
+                                .getPathToEntityLiving(victim)
+                            + ", pos="
+                            + steve.posX
+                            + ","
+                            + steve.posY
+                            + ","
+                            + steve.posZ);
+                }
                 if (victim.hits == 0) {
                     return null;
                 }
