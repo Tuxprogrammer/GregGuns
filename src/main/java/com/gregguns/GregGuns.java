@@ -28,7 +28,7 @@ public class GregGuns {
     public static final String MODID = "gregguns";
     public static final String NAME = "GregGuns";
     /** Hard dependencies: GregGuns is built on GT5-Unofficial and GTNHLib and cannot load without them. */
-    public static final String DEPENDENCIES = "required-after:gregtech;required-after:gtnhlib";
+    public static final String DEPENDENCIES = "required-after:gregtech;required-after:gtnhlib;before:EnderZoo";
     public static final Logger LOG = LogManager.getLogger(MODID);
 
     /** The mod instance, needed by Forge's entity registry. */
