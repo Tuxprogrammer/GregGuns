@@ -40,7 +40,7 @@ public final class CarrierFlag implements StructureHooks.FlagHook {
     private final Block flagBlock;
 
     /**
-     * @param layouts  the loaded layouts, for the spawn marks
+     * @param layouts   the loaded layouts, for the spawn marks
      * @param flagBlock the Camp Flag block; null when the utility module is off (nothing is placed)
      */
     public CarrierFlag(LayoutRegistry layouts, Block flagBlock) {
@@ -65,8 +65,15 @@ public final class CarrierFlag implements StructureHooks.FlagHook {
         }
         int anchorY = groundY + 1;
         int originY = anchorY - layout.ground();
-        int[] spawns = SpawnMarks
-            .offsets(layout, plan.anchorX(), anchorY, plan.anchorZ(), plan.rotation(), plan.anchorX(), originY, plan.anchorZ());
+        int[] spawns = SpawnMarks.offsets(
+            layout,
+            plan.anchorX(),
+            anchorY,
+            plan.anchorZ(),
+            plan.rotation(),
+            plan.anchorX(),
+            originY,
+            plan.anchorZ());
         return FlagSpec.ofCap(
             x,
             y,
@@ -87,7 +94,8 @@ public final class CarrierFlag implements StructureHooks.FlagHook {
     }
 
     /** The hook body over an explicit state, so a scenario can use a scratch state. */
-    public void place(StructureState state, WindowedSink sink, StructurePlan plan, String planKey, int x, int y, int z) {
+    public void place(StructureState state, WindowedSink sink, StructurePlan plan, String planKey, int x, int y,
+        int z) {
         Decision d = state.get(planKey);
         if (d == null || !d.isPlaced()) {
             return; // the record comes first, or addFlag is ignored

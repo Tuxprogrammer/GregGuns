@@ -27,7 +27,20 @@ public final class StructurePlan {
 
     StructurePlan(String id, SizeClass sizeClass, int dimension, int cellX, int cellZ, int anchorX, int anchorZ,
         int rotation, int variant, Footprint footprint, long chestSeedBase) {
-        this(id, sizeClass, dimension, cellX, cellZ, anchorX, anchorZ, rotation, variant, footprint, chestSeedBase, 0L, 0);
+        this(
+            id,
+            sizeClass,
+            dimension,
+            cellX,
+            cellZ,
+            anchorX,
+            anchorZ,
+            rotation,
+            variant,
+            footprint,
+            chestSeedBase,
+            0L,
+            0);
     }
 
     StructurePlan(String id, SizeClass sizeClass, int dimension, int cellX, int cellZ, int anchorX, int anchorZ,
@@ -138,8 +151,7 @@ public final class StructurePlan {
     public boolean overlapsWindow(int cx, int cz) {
         int x0 = cx * 16 + 8;
         int z0 = cz * 16 + 8;
-        return anchorX - apron <= x0 + 15 && maxX() + apron >= x0 && anchorZ - apron <= z0 + 15
-            && maxZ() + apron >= z0;
+        return anchorX - apron <= x0 + 15 && maxX() + apron >= x0 && anchorZ - apron <= z0 + 15 && maxZ() + apron >= z0;
     }
 
     /**

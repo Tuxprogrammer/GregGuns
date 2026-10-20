@@ -120,9 +120,8 @@ class StructurePopulatorCampTest {
     }
 
     private final PaletteKeys keys = PaletteKeys.resolve(null, new Blocks(), s -> {});
-    private final LayoutRegistry empty = LayoutRegistry.load(id -> {
-        throw new IOException("none");
-    }, Collections.<String>emptyList(), keys, s -> {});
+    private final LayoutRegistry empty = LayoutRegistry
+        .load(id -> { throw new IOException("none"); }, Collections.<String>emptyList(), keys, s -> {});
 
     private StructureGrid grid() {
         return new StructureGrid(16, 16, 8, StructureCatalog.pools(empty, s -> s == StructureId.MILITARY_BASE, true));
@@ -240,7 +239,11 @@ class StructurePopulatorCampTest {
         Decision d = pass.state.get(PlanKey.of(plan));
         assertNotNull(d);
         assertTrue(d.isPlaced());
-        assertEquals(1, d.flags().size(), "StructureState recorded the flag");
+        assertEquals(
+            1,
+            d.flags()
+                .size(),
+            "StructureState recorded the flag");
         TileCampFlag tile = null;
         for (TileEntity t : pass.capture.tiles) {
             if (t instanceof TileCampFlag) tile = (TileCampFlag) t;

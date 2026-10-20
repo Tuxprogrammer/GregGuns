@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -244,9 +243,8 @@ public final class BaseScenarios {
                 return ScenarioResult.fail(name(), "needs the utility module (the Camp Flag block is not registered)");
             }
             PaletteKeys keys = PaletteKeys.resolveForPack(s -> {});
-            LayoutRegistry none = LayoutRegistry.load(id -> {
-                throw new IOException("none");
-            }, Collections.<String>emptyList(), keys, s -> {});
+            LayoutRegistry none = LayoutRegistry
+                .load(id -> { throw new IOException("none"); }, Collections.<String>emptyList(), keys, s -> {});
             Map<SizeClass, List<com.gregguns.worldgen.PoolEntry>> pools = StructureCatalog
                 .pools(none, s -> s == StructureId.MILITARY_BASE, true);
             StructureGrid grid = new StructureGrid(16, 16, 8, pools);
@@ -266,13 +264,34 @@ public final class BaseScenarios {
             CountingPort port = new CountingPort();
             CampSpawnPort old = CampSpawnPorts.install(port);
             try {
-                Pass a = runPlan("gregguns_scn_base_a", plan, populator, columns(false), Collections.<Type>emptySet(), null);
-                Pass b = runPlan("gregguns_scn_base_b", plan, populator, columns(false), Collections.<Type>emptySet(), null);
+                Pass a = runPlan(
+                    "gregguns_scn_base_a",
+                    plan,
+                    populator,
+                    columns(false),
+                    Collections.<Type>emptySet(),
+                    null);
+                Pass b = runPlan(
+                    "gregguns_scn_base_b",
+                    plan,
+                    populator,
+                    columns(false),
+                    Collections.<Type>emptySet(),
+                    null);
 
-                CampPlan cp = CampPlan.generate(plan.shapeSeed(), plan.footprint().sizeX(), plan.footprint().sizeZ());
+                CampPlan cp = CampPlan.generate(
+                    plan.shapeSeed(),
+                    plan.footprint()
+                        .sizeX(),
+                    plan.footprint()
+                        .sizeZ());
                 out.check(cp != null, "the plan size is accepted by CampPlan");
                 if (cp == null) return out.build();
-                out.checkEquals("footprint X is CampPlan.sizeFor", CampPlan.sizeFor(plan.shapeSeed())[0], plan.footprint().sizeX());
+                out.checkEquals(
+                    "footprint X is CampPlan.sizeFor",
+                    CampPlan.sizeFor(plan.shapeSeed())[0],
+                    plan.footprint()
+                        .sizeX());
                 PlacedCamp camp = cp.place(plan.anchorX(), GROUND + 1, plan.anchorZ(), plan.rotation());
 
                 int leaves = 0;
@@ -297,7 +316,12 @@ public final class BaseScenarios {
 
                 Decision d = a.state.get(PlanKey.of(plan));
                 out.check(d != null && d.isPlaced(), "the plan was recorded as placed");
-                out.checkEquals("flags recorded in StructureState", 1, d == null ? -1 : d.flags().size());
+                out.checkEquals(
+                    "flags recorded in StructureState",
+                    1,
+                    d == null ? -1
+                        : d.flags()
+                            .size());
                 for (TileEntity t : a.memory.tiles) {
                     if (t instanceof TileCampFlag) {
                         TileCampFlag tile = (TileCampFlag) t;
@@ -390,10 +414,23 @@ public final class BaseScenarios {
                 out.check(d != null && d.isPlaced(), "the carrier was placed on water: " + d);
                 if (d == null || !d.isPlaced()) return out.build();
                 out.checkEquals("flag tiles", 1, a.tiles(TileCampFlag.class));
-                out.checkEquals("flags recorded", 1, d.flags().size());
+                out.checkEquals(
+                    "flags recorded",
+                    1,
+                    d.flags()
+                        .size());
                 out.checkEquals("writes dropped outside their window", 0, a.rejected);
                 FlagSpecView expected = new FlagSpecView(
-                    CarrierFlag.specFor(reg, plan, d.groundY(), d.flags().get(0).x, d.flags().get(0).y, d.flags().get(0).z));
+                    CarrierFlag.specFor(
+                        reg,
+                        plan,
+                        d.groundY(),
+                        d.flags()
+                            .get(0).x,
+                        d.flags()
+                            .get(0).y,
+                        d.flags()
+                            .get(0).z));
                 for (TileEntity t : a.memory.tiles) {
                     if (t instanceof TileCampFlag) {
                         TileCampFlag tile = (TileCampFlag) t;

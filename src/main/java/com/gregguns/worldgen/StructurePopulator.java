@@ -166,8 +166,9 @@ public final class StructurePopulator {
                 plan.rotation());
             boolean water = id != null && StructureCatalog.isWater(id);
             HeightProbe probe = new WindowedHeightProbe(window, reader);
-            Decision d = state
-                .decideOnce(PlanKey.of(plan), () -> decide(layout.sizeY() - layout.ground(), id, water, fp, window, reader, probe, biomes));
+            Decision d = state.decideOnce(
+                PlanKey.of(plan),
+                () -> decide(layout.sizeY() - layout.ground(), id, water, fp, window, reader, probe, biomes));
             if (!d.isPlaced()) continue;
             if (!water) {
                 shapeLand(sink, probe, reader, window, fp, d.groundY());
@@ -180,8 +181,11 @@ public final class StructurePopulator {
                 plan.rotation(),
                 plan.variant());
             String key = PlanKey.of(plan);
-            int written = stamper
-                .write(sink, sp, window, (tag, x, y, z) -> mark(plan, id, key, tag, x, y, z, chestIndex(sp, x, y, z), marks));
+            int written = stamper.write(
+                sink,
+                sp,
+                window,
+                (tag, x, y, z) -> mark(plan, id, key, tag, x, y, z, chestIndex(sp, x, y, z), marks));
             if (written > 0) stamped++;
         }
         return stamped;
@@ -225,21 +229,23 @@ public final class StructurePopulator {
         if (!camp.overlaps(window)) return 0;
         shapeLand(sink, probe, reader, window, fp, d.groundY());
         // Camo comes from the biome at the base center (WGEN-32), read without loading a chunk.
-        StructureBiomes.CampColor color = StructureBiomes.campColor(
-            biomes.typesAt(
-                (fp.minX() + fp.maxX()) / 2,
-                (fp.minZ() + fp.maxZ()) / 2));
-        int written = camps.write(
-            sink,
-            camp,
-            window,
-            color,
-            (tag, x, y, z) -> {
-                // The flag is the post-step's; camp parts carry only chest and spawner marks. The chest index is
-                // the position hash, so a chest's seed does not depend on which window reports it (GGS-11-20).
-                if (tag.equals("flag")) return;
-                mark(plan, StructureId.MILITARY_BASE, key, tag, x, y, z, (x * 73856093) ^ (y * 19349663) ^ (z * 83492791), marks);
-            });
+        StructureBiomes.CampColor color = StructureBiomes
+            .campColor(biomes.typesAt((fp.minX() + fp.maxX()) / 2, (fp.minZ() + fp.maxZ()) / 2));
+        int written = camps.write(sink, camp, window, color, (tag, x, y, z) -> {
+            // The flag is the post-step's; camp parts carry only chest and spawner marks. The chest index is
+            // the position hash, so a chest's seed does not depend on which window reports it (GGS-11-20).
+            if (tag.equals("flag")) return;
+            mark(
+                plan,
+                StructureId.MILITARY_BASE,
+                key,
+                tag,
+                x,
+                y,
+                z,
+                (x * 73856093) ^ (y * 19349663) ^ (z * 83492791),
+                marks);
+        });
         boolean flagged = false;
         if (window.contains(camp.flagPos().x, camp.flagPos().z)) {
             flagged = camps.flagStep(camp, flagBlock, capFactor, CampFlags.into(state, key))
