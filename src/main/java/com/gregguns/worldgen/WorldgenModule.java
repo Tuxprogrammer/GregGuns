@@ -5,6 +5,7 @@ import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.worldgen.loot.ChestScenarios;
 import com.gregguns.worldgen.loot.LootCategories;
 import com.gregguns.worldgen.loot.LootScenarios;
 
@@ -37,6 +38,7 @@ public final class WorldgenModule implements GregGunsModule {
         if (DevEnvironment.isActive()) {
             WorldgenScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             LootScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            ChestScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }
 

@@ -9,6 +9,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 
+import com.gregguns.worldgen.loot.LazyChests;
+import com.gregguns.worldgen.loot.LootPending;
+
 /**
  * The tile entity of the Reinforced Chest and the Weapon Chest: 36 slots (3 rows of 12), open to every side. The
  * Weapon Chest refuses everything {@link WeaponChestFilter} refuses, for hoppers and players alike. The viewer count is
@@ -29,6 +32,8 @@ public class TileGregChest extends TileEntity implements IInventory {
 
     private final ItemStack[] items = new ItemStack[SLOTS];
     private String customName;
+    /** Unfilled loot order from a structure, or null once filled (or never set). GGS-11-20. */
+    private LootPending pending;
     private int viewers;
     /** Lid angle in 0..1, client only. */
     public float lidAngle;
@@ -38,6 +43,37 @@ public class TileGregChest extends TileEntity implements IInventory {
     private boolean weapon() {
         return worldObj != null && getBlockType() instanceof BlockGregChest
             && ((BlockGregChest) getBlockType()).isWeaponChest();
+    }
+
+    /**
+     * Marks the chest unfilled: its contents are drawn from the order on first access. Server side.
+     *
+     * @param order the loot order, or null to clear it
+     */
+    public void setPending(LootPending order) {
+        pending = order;
+        markDirty();
+    }
+
+    /** @return the unfilled loot order, or null when the chest is filled */
+    public LootPending pending() {
+        return pending;
+    }
+
+    /**
+     * Fills the chest from its loot order, exactly once. Called by every inventory accessor, on open and on break, so
+     * a hopper or GT extraction sees the same items a player would. The order is cleared before the draw because the
+     * draw writes through the accessors. A client copy never fills (it has no order anyway). Contents depend only on
+     * the order's seed, never on who asked first (WGEN-25).
+     */
+    public void ensureFilled() {
+        LootPending order = pending;
+        if (order == null || worldObj != null && worldObj.isRemote) {
+            return;
+        }
+        pending = null;
+        LazyChests.fillEagerly(this, order);
+        markDirty();
     }
 
     /** @return the number of players looking in the chest */
@@ -52,6 +88,7 @@ public class TileGregChest extends TileEntity implements IInventory {
      * @return true when at least one item went in
      */
     public boolean insert(ItemStack stack) {
+        ensureFilled();
         if (stack == null || !isItemValidForSlot(0, stack)) {
             return false;
         }
@@ -84,11 +121,13 @@ public class TileGregChest extends TileEntity implements IInventory {
 
     @Override
     public ItemStack getStackInSlot(int slot) {
+        ensureFilled();
         return items[slot];
     }
 
     @Override
     public ItemStack decrStackSize(int slot, int amount) {
+        ensureFilled();
         ItemStack in = items[slot];
         if (in == null) {
             return null;
@@ -109,6 +148,7 @@ public class TileGregChest extends TileEntity implements IInventory {
 
     @Override
     public ItemStack getStackInSlotOnClosing(int slot) {
+        ensureFilled();
         ItemStack in = items[slot];
         items[slot] = null;
         return in;
@@ -116,6 +156,7 @@ public class TileGregChest extends TileEntity implements IInventory {
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack stack) {
+        ensureFilled();
         items[slot] = stack;
         if (stack != null && stack.stackSize > getInventoryStackLimit()) {
             stack.stackSize = getInventoryStackLimit();
@@ -161,6 +202,7 @@ public class TileGregChest extends TileEntity implements IInventory {
 
     @Override
     public void openInventory() {
+        ensureFilled();
         if (worldObj != null && !worldObj.isRemote) {
             setViewers(viewers + 1);
         }
@@ -237,6 +279,9 @@ public class TileGregChest extends TileEntity implements IInventory {
             }
         }
         tag.setTag("Items", list);
+        if (pending != null) {
+            pending.writeTo(tag);
+        }
         if (hasCustomInventoryName()) {
             tag.setString("CustomName", customName);
         }
@@ -255,10 +300,12 @@ public class TileGregChest extends TileEntity implements IInventory {
             }
         }
         customName = tag.hasKey("CustomName") ? tag.getString("CustomName") : null;
+        pending = LootPending.readFrom(tag);
     }
 
     /** @return the items, for the block to spill; slots may be null */
     ItemStack[] rawItems() {
+        ensureFilled();
         return items;
     }
 }
