@@ -13,7 +13,6 @@ public class ClientProxy extends CommonProxy {
         // Only this class names com.gregguns.client types, so a dedicated server never loads them.
         manager.registerClient(new GunsClientModule());
         manager.registerClient(new ArmorClientModule());
-        manager.registerClient(new com.gregguns.client.utility.ChargeClientModule());
         manager.registerClient(new UtilityClientModule());
         manager.registerClient(new com.gregguns.client.npc.NpcClientModule());
     }
