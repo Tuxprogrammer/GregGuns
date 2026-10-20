@@ -52,7 +52,7 @@ public final class AmmoRecycling {
 
         // The SMG magazine (RC-38, RC-45): Aluminium plates and springs, the steel of one Mechanical Parts T2.
         MagazineType smg = NineMmAmmo.SMG_MAGAZINE;
-        attachMvMagazine(smg, 2, 8, Materials.Brass, foil, Materials.Lead, round);
+        attachMvMagazine(smg, 2, 9, Materials.Brass, foil, Materials.Lead, round);
     }
 
     /** The rifle bullet, the empty Assault Rifle Magazine and the loaded one (RC-30, RC-39, RC-46). */

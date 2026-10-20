@@ -70,7 +70,9 @@ public final class BlasterRifleDef {
                 1,
                 Tier.IV,
                 40,
-                1,
+                // Circuit 5: the pack's Assembler row with circuit 1, a Circuit IV and 32597 would shadow circuit 1.
+                // Circuits 2 to 4 are the other IV guns.
+                5,
                 Input.mod(ComponentItems.BARREL_LASER, 1),
                 Input.mod(ComponentItems.RECEIVER_CARBON, 1),
                 Input.mod(ComponentItems.STOCK_CARBON, 1),

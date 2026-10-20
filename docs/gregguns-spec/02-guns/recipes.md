@@ -153,7 +153,7 @@ Method: `Asm`, `eut(TierEU.RECIPE_IV)` (7,680 EU/t). Gate: `plate.TungstenSteel`
 
 | Output | Inputs | Time | cfg | Notes and replaces |
 |---|---|---|---|---|
-| Blaster Rifle | Laser Barrel x1, Carbon Receiver x1, Carbon Gunstock x1, `ItemList.Emitter_IV` x1, `Energy_LapotronicOrb` x1, `circuit.IV` x2, `lens.Glass` x1, `plate.TungstenSteel` x2, `screw.TungstenSteel` x4 | 40 | 1 | Electric. [#12](../../techguns-spec/02-guns/recipes.md#shaped-gun-recipes) |
+| Blaster Rifle | Laser Barrel x1, Carbon Receiver x1, Carbon Gunstock x1, `ItemList.Emitter_IV` x1, `Energy_LapotronicOrb` x1, `circuit.IV` x2, `lens.Glass` x1, `plate.TungstenSteel` x2, `screw.TungstenSteel` x4 | 40 | 5 | Electric. Circuit 5, not 1: a pack Assembler row (circuit 1, one Circuit IV and one other item) took our inputs as a superset. [#12](../../techguns-spec/02-guns/recipes.md#shaped-gun-recipes) |
 | De-Atomizer Pistol | Laser Barrel x1, Sonic Emitter x1, Mechanical Parts T3 x1, `Energy_LapotronicOrb` x1, `circuit.IV` x1, `plate.Titanium` x2, `plate.TungstenSteel` x2, `screw.TungstenSteel` x4 | 40 | 2 | Electric. [#35](../../techguns-spec/02-guns/recipes.md#shaped-gun-recipes) |
 | Scatter Laser Rifle | Laser Barrel x2, Carbon Receiver x1, Carbon Gunstock x1, `Emitter_IV` x2, `Energy_LapotronicOrb` x1, `circuit.IV` x2, `plate.TungstenSteel` x3, `screw.TungstenSteel` x6 | 45 | 3 | **New design.** The five-beam gun is "[WIP]" in Techguns ([catalog](../../techguns-spec/02-guns/gun-catalog.md)); two barrels and two emitters pay for the extra beams. |
 | Golden Revolver | **Revolver x1** (any NBT), `plate.Gold` x8, `plate.TungstenSteel` x2, `screw.TungstenSteel` x4 | 30 | 4 | Upgrade; camo not kept. [#22](../../techguns-spec/02-guns/recipes.md#shaped-gun-recipes) |
