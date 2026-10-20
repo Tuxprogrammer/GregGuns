@@ -22,6 +22,7 @@ public final class WorldgenScenarios {
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new ConfigDefaultsScenario());
         StateScenarios.registerAll(registry);
+        com.gregguns.worldgen.camp.CampScenarios.registerAll(registry);
     }
 
     /** The module is enabled and the config carries the documented defaults. */
