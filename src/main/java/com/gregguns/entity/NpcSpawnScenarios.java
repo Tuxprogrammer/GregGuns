@@ -229,7 +229,9 @@ final class NpcSpawnScenarios {
                         SpawnGate.Decision.ALLOW,
                         NpcSpawnHandler.decide(table, NpcMob.ZOMBIE_FARMER, world, x, ctx.originY(), z));
                     npcs[i] = new NpcEntity(world);
-                    npcs[i].setLocationAndAngles(x + 0.5 + i, ctx.originY(), z + 0.5, 0, 0);
+                    // Pin all three inside the origin's chunk: origin + i can cross the chunk's east edge when the
+                    // scenario origin lands near it, and then the count below sees only the ones left behind.
+                    npcs[i].setLocationAndAngles((cx << 4) + 4.5 + 2 * i, ctx.originY(), z + 0.5, 0, 0);
                     ctx.spawn(npcs[i]);
                 }
                 out.checkEquals("count in chunk", baseline + 3, NpcCounter.countInChunk(world, cx, cz));
