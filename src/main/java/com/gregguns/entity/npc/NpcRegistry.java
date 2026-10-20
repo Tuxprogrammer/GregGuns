@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityLiving;
 
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.registry.ModuleRegistrar;
+import com.gregguns.entity.npc.mob.CyberDemon;
 
 /**
  * The one place NPC entities and their spawn egg are registered. Each mob batch adds one line to
@@ -47,6 +48,7 @@ public final class NpcRegistry {
         bind(NpcMob.SUPER_MUTANT_BASIC, SuperMutantBasic.class);
         bind(NpcMob.SUPER_MUTANT_HEAVY, SuperMutantHeavy.class);
         bind(NpcMob.SUPER_MUTANT_ELITE, SuperMutantElite.class);
+        bind(NpcMob.CYBER_DEMON, CyberDemon.class);
         if (DevEnvironment.isActive()) {
             // The base NPC, for scenarios and the test renderer only.
             bind(NpcMob.NPC_TEST, NpcEntity.class);

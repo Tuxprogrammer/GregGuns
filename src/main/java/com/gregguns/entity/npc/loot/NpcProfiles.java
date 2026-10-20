@@ -11,7 +11,8 @@ import com.gregguns.api.Tier;
 /**
  * The loot and equipment data of every M7 mob that can be built before the M5 energy guns: Zombie Farmer, Miner and
  * Soldier, Skeleton Soldier, Bandit, Army Soldier, Commando, Zombie Pigman Soldier, Psycho Steve, Dictator Dave and the
- * three Super Mutants. Outcast, Stormtrooper and Cyberdemon wait for their guns (PLAN-M7 section 5, answer 5). Keys
+ * three Super Mutants and the Cyberdemon (Nether Blaster only, no armor). Outcast and Stormtrooper wait for their guns
+ * (PLAN-M7 section 5, answer 5). Keys
  * are the registry names without the mod id.
  *
  * <p>
@@ -294,6 +295,20 @@ public final class NpcProfiles {
                             .build())
                     .build());
         }
+        add(
+            m,
+            NpcProfile.builder("CyberDemon", Tier.LUV)
+                .table(
+                    LootTable.builder()
+                        .slot(LootDrop.one("minecraft:ghast_tear"))
+                        .slots(LootDrop.one("minecraft:blaze_rod"), 4)
+                        .slots(CYBERNETIC, 15)
+                        .build())
+                .equipment(
+                    EquipmentProfile.builder()
+                        .weapon("nether_blaster", 1)
+                        .build())
+                .build());
         return Collections.unmodifiableMap(m);
     }
 
