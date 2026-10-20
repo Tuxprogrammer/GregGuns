@@ -40,16 +40,19 @@ public class WorldgenConfig {
     @Config.Comment({ "Place the Small Factory Building. Default: true." })
     public static boolean enabledFactorySmall = true;
 
-    @Config.Comment({ "BiomeDictionary type names (for example SNOWY) in which the Small Factory Building is never placed.",
+    @Config.Comment({
+        "BiomeDictionary type names (for example SNOWY) in which the Small Factory Building is never placed.",
         "Default: none." })
     public static String[] biomeBlacklistFactorySmall = {};
 
-    @Config.Comment({ "Loot tier ceiling of the Small Factory Building: 1 is LV, 2 is MV, 3 is HV. Picks the loot category.",
+    @Config.Comment({
+        "Loot tier ceiling of the Small Factory Building: 1 is LV, 2 is MV, 3 is HV. Picks the loot category.",
         "Default: 1." })
     @Config.RangeInt(min = 1, max = 3)
     public static int lootTierCeilingFactorySmall = 1;
 
-    @Config.Comment({ "Loot richness of the Small Factory Building, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
+    @Config.Comment({
+        "Loot richness of the Small Factory Building, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
         "Default: 1." })
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierFactorySmall = 1;
@@ -57,16 +60,19 @@ public class WorldgenConfig {
     @Config.Comment({ "Place the Small Train Station. Default: true." })
     public static boolean enabledTrainStation = true;
 
-    @Config.Comment({ "BiomeDictionary type names (for example SNOWY) in which the Small Train Station is never placed.",
+    @Config.Comment({
+        "BiomeDictionary type names (for example SNOWY) in which the Small Train Station is never placed.",
         "Default: none." })
     public static String[] biomeBlacklistTrainStation = {};
 
-    @Config.Comment({ "Loot tier ceiling of the Small Train Station: 1 is LV, 2 is MV, 3 is HV. Picks the loot category.",
+    @Config.Comment({
+        "Loot tier ceiling of the Small Train Station: 1 is LV, 2 is MV, 3 is HV. Picks the loot category.",
         "Default: 1." })
     @Config.RangeInt(min = 1, max = 3)
     public static int lootTierCeilingTrainStation = 1;
 
-    @Config.Comment({ "Loot richness of the Small Train Station, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
+    @Config.Comment({
+        "Loot richness of the Small Train Station, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
         "Default: 1." })
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierTrainStation = 1;
@@ -83,7 +89,8 @@ public class WorldgenConfig {
     @Config.RangeInt(min = 1, max = 3)
     public static int lootTierCeilingGasStation = 1;
 
-    @Config.Comment({ "Loot richness of the Gas Station, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
+    @Config.Comment({
+        "Loot richness of the Gas Station, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
         "Default: 1." })
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierGasStation = 1;
@@ -100,7 +107,8 @@ public class WorldgenConfig {
     @Config.RangeInt(min = 1, max = 3)
     public static int lootTierCeilingHouseMedium = 1;
 
-    @Config.Comment({ "Loot richness of the Medium House, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
+    @Config.Comment({
+        "Loot richness of the Medium House, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
         "Default: 1." })
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierHouseMedium = 1;
@@ -117,7 +125,8 @@ public class WorldgenConfig {
     @Config.RangeInt(min = 1, max = 3)
     public static int lootTierCeilingBigBunker = 2;
 
-    @Config.Comment({ "Loot richness of the Big Bunker, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
+    @Config.Comment({
+        "Loot richness of the Big Bunker, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
         "Default: 1." })
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierBigBunker = 1;
@@ -134,7 +143,8 @@ public class WorldgenConfig {
     @Config.RangeInt(min = 1, max = 3)
     public static int lootTierCeilingAlienBugNest = 1;
 
-    @Config.Comment({ "Loot richness of the Alien Bug Nest, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
+    @Config.Comment({
+        "Loot richness of the Alien Bug Nest, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
         "Default: 1." })
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierAlienBugNest = 1;
@@ -151,7 +161,8 @@ public class WorldgenConfig {
     @Config.RangeInt(min = 1, max = 3)
     public static int lootTierCeilingMilitaryBase = 2;
 
-    @Config.Comment({ "Loot richness of the Military Base, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
+    @Config.Comment({
+        "Loot richness of the Military Base, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
         "Default: 1." })
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierMilitaryBase = 1;
@@ -168,7 +179,8 @@ public class WorldgenConfig {
     @Config.RangeInt(min = 1, max = 3)
     public static int lootTierCeilingAircraftCarrier = 2;
 
-    @Config.Comment({ "Loot richness of the Aircraft Carrier, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
+    @Config.Comment({
+        "Loot richness of the Aircraft Carrier, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
         "Default: 1." })
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierAircraftCarrier = 1;
@@ -185,7 +197,8 @@ public class WorldgenConfig {
     @Config.RangeInt(min = 1, max = 3)
     public static int lootTierCeilingSubmarine = 2;
 
-    @Config.Comment({ "Loot richness of the Submarine, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
+    @Config.Comment({
+        "Loot richness of the Submarine, 0 poor to 2 rich. Scales counts and weights only, never the tier.",
         "Default: 1." })
     @Config.RangeInt(min = 0, max = 2)
     public static int lootTierSubmarine = 1;

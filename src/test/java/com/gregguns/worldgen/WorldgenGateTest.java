@@ -104,8 +104,10 @@ class WorldgenGateTest {
         for (StructureId s : StructureId.values()) {
             assertEquals(s.defaultCeiling(), WorldgenSettings.lootTierCeiling(s), s.id());
             assertEquals(1, WorldgenSettings.lootTier(s), s.id());
-            assertTrue(WorldgenSettings.biomeBlacklist(s)
-                .isEmpty(), s.id());
+            assertTrue(
+                WorldgenSettings.biomeBlacklist(s)
+                    .isEmpty(),
+                s.id());
         }
         assertEquals(2, StructureId.AIRCRAFT_CARRIER.defaultCeiling());
         assertEquals(2, StructureId.SUBMARINE.defaultCeiling());
@@ -119,8 +121,10 @@ class WorldgenGateTest {
         Set<String> ids = new HashSet<>();
         for (StructureId s : StructureId.values()) {
             assertTrue(ids.add(s.id()), s.id());
-            assertTrue(s.id()
-                .matches("[a-z_]+"), s.id());
+            assertTrue(
+                s.id()
+                    .matches("[a-z_]+"),
+                s.id());
         }
         assertEquals(9, ids.size());
     }
@@ -133,7 +137,8 @@ class WorldgenGateTest {
         assertFalse(WorldgenGate.biomeBlocked(list, Arrays.asList("FOREST", "HILLS")));
         assertFalse(WorldgenGate.biomeBlocked(list, Collections.<String>emptyList()));
         assertFalse(WorldgenGate.biomeBlocked(Collections.<String>emptySet(), Arrays.asList("SNOWY")));
-        assertTrue(WorldgenGate.normalizeNames(null)
-            .isEmpty());
+        assertTrue(
+            WorldgenGate.normalizeNames(null)
+                .isEmpty());
     }
 }

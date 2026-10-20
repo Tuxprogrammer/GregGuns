@@ -157,9 +157,8 @@ public final class WorldgenSettings {
      * @return whether the structure generator should be registered now (GGS-11-07)
      */
     public static boolean generatorWanted() {
-        return WorldgenGate
-            .shouldRegisterGenerator(
-                com.gregguns.core.config.ModuleFlags.isEnabled(com.gregguns.core.module.ModuleId.WORLDGEN),
-                WorldgenConfig.spawnStructures);
+        return WorldgenGate.shouldRegisterGenerator(
+            com.gregguns.core.config.ModuleFlags.isEnabled(com.gregguns.core.module.ModuleId.WORLDGEN),
+            WorldgenConfig.spawnStructures);
     }
 }
