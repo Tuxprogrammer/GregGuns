@@ -1,0 +1,47 @@
+# camp_small_bunker_1
+# Open small bunker: firing slits, empty interior, no loot.
+gregguns-layout 1
+id: camp_small_bunker_1
+size: 5 5 5
+ground: 2
+
+palette:
+C = concrete
+I = minecraft:iron_door#3@door
+L = lantern
+Y = minecraft:stone_slab#5
+a = air
+i = minecraft:iron_door#8
+u = minecraft:stone_brick_stairs#2@stairs
+
+layers:
+layer 0
+CCCCC
+CCCCC
+CCCCC
+CCCCC
+.CCC.
+layer 1
+CCCCC
+CaaaC
+CaaaC
+CCICC
+.CuC.
+layer 2
+CCCCC
+CaaaC
+CaaaC
+CCiCC
+.CaC.
+layer 3
+CaaCC
+aaLaa
+aaaaa
+CaCCC
+.CaC.
+layer 4
+CCCCC
+CYYYC
+CYYYC
+CCCCC
+.LaL.

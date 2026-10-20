@@ -1,0 +1,73 @@
+# camp_small_bunker_3
+# Open small bunker: firing slits, empty interior, no loot. Border version: roof parapet and ladder.
+gregguns-layout 1
+id: camp_small_bunker_3
+size: 8 6 8
+ground: 2
+
+palette:
+C = concrete
+I = minecraft:iron_door#3@door
+L = lantern
+S = minecraft:stained_hardened_clay#12
+Y = minecraft:stone_slab#5
+a = air
+i = minecraft:iron_door#8
+l = minecraft:ladder#3@facing
+u = minecraft:stone_brick_stairs#2@stairs
+
+layers:
+layer 0
+CCCCCCCC
+CCCCCCCC
+CCCCCCCC
+CCCCCCCC
+CCCCCCCC
+CCCCCCCC
+...CCC..
+...CCC..
+layer 1
+CCCCCCCC
+ClaaaaaC
+CaaaaaaC
+CaaaaaaC
+CaaaaaaC
+CCCCICCC
+...CaC..
+...CuC..
+layer 2
+CCCCCCCC
+ClaaaaaC
+CaaaaaaC
+CaaaaaaC
+CaaaaaaC
+CCCCiCCC
+...CaC..
+...CaC..
+layer 3
+CaaCaaCC
+alaaaaaa
+aaaaLaaa
+CaaaaaaC
+aaaaaaaa
+CaaCCaCC
+...CaC..
+...CaC..
+layer 4
+CCCCCCCC
+ClYYYYYC
+CYYYYYYC
+CYYYYYYC
+CYYYYYYC
+CCCCCCCC
+...LaL..
+....a...
+layer 5
+SSSSSSSS
+S......S
+S......S
+S......S
+S......S
+SSSSSSSS
+........
+........

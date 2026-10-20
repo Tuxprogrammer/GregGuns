@@ -1,0 +1,113 @@
+# camp_closed_bunker_3
+# Closed bunker with a sandbag parapet and roof ladder: 11 x 13. The interior chests carry the reinforced and weapon marks; the camp host picks the MV (_t2) categories.
+gregguns-layout 1
+id: camp_closed_bunker_3
+size: 11 6 13
+ground: 2
+
+palette:
+C = concrete
+I = minecraft:iron_door#3@door
+L = lantern
+R = minecraft:planks#1
+S = minecraft:stained_hardened_clay#12
+Y = minecraft:stone_slab#5
+a = air
+i = minecraft:iron_door#8
+k = minecraft:chest#3@facing
+l = minecraft:ladder#3@facing
+u = minecraft:stone_brick_stairs#2@stairs
+
+marks:
+chest.reinforced 2 1 2
+chest.weapon 8 1 2
+chest.reinforced 5 1 5
+chest.weapon 6 1 7
+chest.weapon 2 1 8
+chest.reinforced 8 1 8
+
+layers:
+layer 0
+CCCCCCCCCCC
+CCCCCCCCCCC
+CCCCCCCCCCC
+CCCCCCCCCCC
+CCCCCCCCCCC
+CCCCCCCCCCC
+CCCCCCCCCCC
+CCCCCCCCCCC
+CCCCCCCCCCC
+CCCCCCCCCCC
+CCCCCCCCCCC
+....CCC....
+....CCC....
+layer 1
+CCCCCCCCCCC
+ClaaaaaaaaC
+CakaaaRRkaC
+CaaaaRRaaaC
+CaaaaaRaRaC
+CaaRakaaaaC
+CaaRRaaaaaC
+CaaaaRkRRaC
+CakaaRaakaC
+CaaaaaaaaaC
+CCCCCICCCCC
+....CaC....
+....CuC....
+layer 2
+CCCCCCCCCCC
+ClaaaaaaaaC
+CaaaaaRRaaC
+CaaaaaaaaaC
+CaaaaaRaaaC
+CaaaaaaaaaC
+CaaaRaaaaaC
+CaaaaRaaaaC
+CaaaaaaaaaC
+CaaaaaLaaaC
+CCCCCiCCCCC
+....CaC....
+....CaC....
+layer 3
+CCCCCCCCCCC
+ClaaaaaaaaC
+CaaaaaaaaaC
+CaaaaaaaaaC
+CaaaaaaaaaC
+CaaaaaaaaaC
+CaaaaaaaaaC
+CaaaaaaaaaC
+CaaaaaaaaaC
+CaaaaaaaaaC
+CCCCCCCCCCC
+....CaC....
+....CaC....
+layer 4
+CCCCCCCCCCC
+ClYYYYYYYYC
+CYYYYYYYYYC
+CYYYYYYYYYC
+CYYYYYYYYYC
+CYYYYYYYYYC
+CYYYYYYYYYC
+CYYYYYYYYYC
+CYYYYYYYYYC
+CYYYYYYYYYC
+CCCCCCCCCCC
+....LaL....
+.....a.....
+layer 5
+SSSSSSSSSSS
+S.........S
+S.........S
+S.........S
+S.........S
+S.........S
+S.........S
+S.........S
+S.........S
+S.........S
+SSSSSSSSSSS
+...........
+...........
