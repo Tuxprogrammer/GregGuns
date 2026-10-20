@@ -66,9 +66,16 @@ class CampPlanTest {
     @Test
     void smallestBaseIsOneLeafWithTheFlag() {
         CampPlan p = CampPlan.generate(3, 5, 5);
-        assertEquals(1, p.leaves().size());
-        assertTrue(p.leaves().get(0).flagLeaf);
-        assertTrue(p.roads().isEmpty());
+        assertEquals(
+            1,
+            p.leaves()
+                .size());
+        assertTrue(
+            p.leaves()
+                .get(0).flagLeaf);
+        assertTrue(
+            p.roads()
+                .isEmpty());
         assertEquals(3, p.spawnPoints().length, "an unsplit base spawns at the flag");
     }
 
@@ -183,8 +190,12 @@ class CampPlanTest {
     void siblingsFaceTheRoadBetweenThem() {
         // A 40 x 40 base splits once at the root; the two halves must face each other across the road.
         CampPlan p = CampPlan.generate(5, 40, 36);
-        CampLeaf first = p.leaves().get(0);
-        CampLeaf last = p.leaves().get(p.leaves().size() - 1);
+        CampLeaf first = p.leaves()
+            .get(0);
+        CampLeaf last = p.leaves()
+            .get(
+                p.leaves()
+                    .size() - 1);
         assertTrue(first.x < last.x || first.z < last.z);
         assertNotEquals(first.facing, last.facing);
     }
@@ -194,7 +205,10 @@ class CampPlanTest {
         for (long seed = 0; seed < 60; seed++) {
             CampPlan p = CampPlan.generate(seed);
             int[] sp = p.spawnPoints();
-            assertEquals(p.roads().size() * 3, sp.length);
+            assertEquals(
+                p.roads()
+                    .size() * 3,
+                sp.length);
             for (int i = 0; i < sp.length; i += 3) {
                 assertTrue(sp[i] >= 0 && sp[i] < p.sizeX() && sp[i + 2] >= 0 && sp[i + 2] < p.sizeZ());
                 assertEquals(0, sp[i + 1]);

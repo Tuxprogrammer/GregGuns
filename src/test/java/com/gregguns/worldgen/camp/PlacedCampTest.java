@@ -52,11 +52,26 @@ class PlacedCampTest {
     @Test
     void footprintSwapsForOddRotations() {
         CampPlan plan = CampPlan.generate(7, 40, 60);
-        assertEquals(40, plan.place(0, 0, 0, 0).footprintX());
-        assertEquals(60, plan.place(0, 0, 0, 1).footprintX());
-        assertEquals(40, plan.place(0, 0, 0, 2).footprintX());
-        assertEquals(40, plan.place(0, 0, 0, 3).footprintZ());
-        assertEquals(60, plan.place(0, 0, 0, 3).footprintX());
+        assertEquals(
+            40,
+            plan.place(0, 0, 0, 0)
+                .footprintX());
+        assertEquals(
+            60,
+            plan.place(0, 0, 0, 1)
+                .footprintX());
+        assertEquals(
+            40,
+            plan.place(0, 0, 0, 2)
+                .footprintX());
+        assertEquals(
+            40,
+            plan.place(0, 0, 0, 3)
+                .footprintZ());
+        assertEquals(
+            60,
+            plan.place(0, 0, 0, 3)
+                .footprintX());
     }
 
     @Test
@@ -124,6 +139,9 @@ class PlacedCampTest {
         assertEquals(24, CampCap.cap(33, 32, 0.75F), "floor(32.5 * 0.75) = 24");
         assertEquals(30, CampCap.cap(50, 50, 0.6F));
         assertEquals(0, CampCap.cap(50, 50, 0F));
-        assertEquals(24, CampPlan.generate(1, 32, 32).cap(0.75F));
+        assertEquals(
+            24,
+            CampPlan.generate(1, 32, 32)
+                .cap(0.75F));
     }
 }

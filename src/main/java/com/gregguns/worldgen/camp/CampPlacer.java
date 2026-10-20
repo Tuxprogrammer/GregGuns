@@ -57,7 +57,9 @@ public final class CampPlacer implements CampWriter {
         return write(sink, camp, window, color, (x, z) -> y, marks);
     }
 
-    /** As {@link #write(WindowedSink, PlacedCamp, PopulateWindow, CampColor, MarkListener)} with a per-column ground. */
+    /**
+     * As {@link #write(WindowedSink, PlacedCamp, PopulateWindow, CampColor, MarkListener)} with a per-column ground.
+     */
     public int write(WindowedSink sink, PlacedCamp camp, PopulateWindow window, CampColor color, GroundAt ground,
         MarkListener marks) {
         if (!camp.overlaps(window)) {

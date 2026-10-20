@@ -20,16 +20,10 @@ class SpawnMarksTest {
     @Test
     void onlySpawnMarksBecomePointsAndRotateWithTheStamp() throws Exception {
         Layout l = layout();
-        assertArrayEquals(
-            new int[] { 3, 0, 0, 0, 0, 2 },
-            SpawnMarks.offsets(l, 10, 70, 20, 0, 10, 70, 20));
+        assertArrayEquals(new int[] { 3, 0, 0, 0, 0, 2 }, SpawnMarks.offsets(l, 10, 70, 20, 0, 10, 70, 20));
         // Rotation 1: offsetX = sz-1-z, offsetZ = x.
-        assertArrayEquals(
-            new int[] { 2, 0, 3, 0, 0, 0 },
-            SpawnMarks.offsets(l, 10, 70, 20, 1, 10, 70, 20));
-        assertEquals(
-            0,
-            SpawnMarks.offsets(layoutNone(), 0, 0, 0, 0, 0, 0, 0).length);
+        assertArrayEquals(new int[] { 2, 0, 3, 0, 0, 0 }, SpawnMarks.offsets(l, 10, 70, 20, 1, 10, 70, 20));
+        assertEquals(0, SpawnMarks.offsets(layoutNone(), 0, 0, 0, 0, 0, 0, 0).length);
     }
 
     private static Layout layoutNone() throws Exception {

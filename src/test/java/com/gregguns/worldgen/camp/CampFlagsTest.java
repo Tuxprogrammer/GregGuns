@@ -105,10 +105,13 @@ class CampFlagsTest {
             .place(300, 70, -200, 0);
         PopulateWindow elsewhere = new PopulateWindow(windowOf(camp).chunkX() + 3, windowOf(camp).chunkZ());
         Capture cap = new Capture();
-        boolean placed = CampFlags
-            .place(new ClippingSink(elsewhere, cap), elsewhere, FLAG, camp.flagSpec(0.75F), TileCampFlag::new, p -> {
-                throw new AssertionError("must not record");
-            });
+        boolean placed = CampFlags.place(
+            new ClippingSink(elsewhere, cap),
+            elsewhere,
+            FLAG,
+            camp.flagSpec(0.75F),
+            TileCampFlag::new,
+            p -> { throw new AssertionError("must not record"); });
         assertFalse(placed);
         assertTrue(cap.blocks.isEmpty() && cap.tiles.isEmpty());
     }
@@ -119,9 +122,7 @@ class CampFlagsTest {
             .place(300, 70, -200, 0);
         PopulateWindow w = windowOf(camp);
         Capture cap = new Capture();
-        CampFlags.Recorder never = p -> {
-            throw new AssertionError("must not record");
-        };
+        CampFlags.Recorder never = p -> { throw new AssertionError("must not record"); };
         assertFalse(CampFlags.place(new ClippingSink(w, cap), w, null, camp.flagSpec(0.75F), TileCampFlag::new, never));
         assertFalse(CampFlags.place(new ClippingSink(w, cap), w, FLAG, camp.flagSpec(0.75F), () -> null, never));
         assertTrue(cap.tiles.isEmpty(), "WGEN-12: no tile setup without a tile");

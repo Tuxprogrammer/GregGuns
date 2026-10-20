@@ -123,7 +123,9 @@ public final class CampScenarios {
         public void onFlagBroken(World world, int x, int y, int z) {}
     }
 
-    /** Places a fixed-seed camp and checks the flag, its saved cap and names, the state record and the absence of NPCs. */
+    /**
+     * Places a fixed-seed camp and checks the flag, its saved cap and names, the state record and the absence of NPCs.
+     */
     private static final class CampFlagInitScenario implements Scenario {
 
         @Override
@@ -180,11 +182,7 @@ public final class CampScenarios {
                         WindowedSink sink = new ClippingSink(window, target);
                         blocks += placer.write(sink, camp, window, CampColor.WOODLAND, (t, x, y, z) -> {});
                         if (placer
-                            .flagStep(
-                                camp,
-                                flagBlock,
-                                UtilityConfig.campFlagCapFactor,
-                                CampFlags.into(state, PLAN_KEY))
+                            .flagStep(camp, flagBlock, UtilityConfig.campFlagCapFactor, CampFlags.into(state, PLAN_KEY))
                             .run(sink, window)) {
                             flagsPlaced++;
                         }
@@ -219,10 +217,7 @@ public final class CampScenarios {
                         CampCap.cap(camp.footprintX(), camp.footprintZ(), UtilityConfig.campFlagCapFactor),
                         tile.maxNpcs());
                     out.checkEquals("npc names", Arrays.asList("ArmySoldier"), tile.npcNames());
-                    out.checkEquals(
-                        "spawn points",
-                        plan.spawnPoints().length / 3,
-                        tile.spawnPointCount());
+                    out.checkEquals("spawn points", plan.spawnPoints().length / 3, tile.spawnPointCount());
                 }
 
                 Decision d = state.get(PLAN_KEY);

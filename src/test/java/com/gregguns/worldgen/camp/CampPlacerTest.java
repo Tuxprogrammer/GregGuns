@@ -51,11 +51,17 @@ class CampPlacerTest {
                 RecordingWorld world = new RecordingWorld(cx, cz);
                 ClippingSink sink = new ClippingSink(world.window(), world);
                 placer.write(sink, camp, world.window(), color, (tag, x, y, z) -> {
-                    assertTrue(world.window().contains(x, z), "mark outside its window");
+                    assertTrue(
+                        world.window()
+                            .contains(x, z),
+                        "mark outside its window");
                     pass.marks.add(tag + "@" + x + "," + y + "," + z);
                 });
                 for (RecordingWorld.Write w : world.writes) {
-                    assertTrue(world.window().contains(w.x, w.z), "write outside the window");
+                    assertTrue(
+                        world.window()
+                            .contains(w.x, w.z),
+                        "write outside the window");
                     if (!pass.columns.add(w.x + "," + w.y + "," + w.z)) {
                         pass.duplicates++;
                     }
@@ -140,9 +146,12 @@ class CampPlacerTest {
         PlacedCamp camp = CampPlan.generate(6)
             .place(0, 70, 0, 0);
         RecordingWorld world = new RecordingWorld(40, 40);
-        new CampPlacer(keys, CampPlaceholders.all())
-            .write(new ClippingSink(world.window(), world), camp, new PopulateWindow(40, 40), CampColor.WOODLAND, (
-                t, x, y, z) -> {});
+        new CampPlacer(keys, CampPlaceholders.all()).write(
+            new ClippingSink(world.window(), world),
+            camp,
+            new PopulateWindow(40, 40),
+            CampColor.WOODLAND,
+            (t, x, y, z) -> {});
         assertTrue(world.writes.isEmpty());
     }
 
