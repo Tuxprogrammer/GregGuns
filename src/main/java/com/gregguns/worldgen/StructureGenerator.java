@@ -3,12 +3,18 @@ package com.gregguns.worldgen;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
 
 import com.gregguns.GregGuns;
+import com.gregguns.core.config.UtilityConfig;
+import com.gregguns.utility.WorldBlockRegistration;
 import com.gregguns.utility.storage.TileGregChest;
+import com.gregguns.worldgen.camp.CampPlacer;
+import com.gregguns.worldgen.camp.CarrierFlag;
+import com.gregguns.worldgen.camp.PartLayouts;
 import com.gregguns.worldgen.layout.LayoutRegistry;
 import com.gregguns.worldgen.layout.PaletteKeys;
 import com.gregguns.worldgen.layout.Stamper;
@@ -51,18 +57,26 @@ public final class StructureGenerator implements IWorldGenerator {
      * @param keys    the resolved palette keys
      */
     public static void configure(LayoutRegistry layouts, PaletteKeys keys) {
+        // The base needs the Camp Flag block (utility module); without it the BIG land pool stays empty.
+        Block flagBlock = WorldBlockRegistration.campFlag();
+        boolean camps = flagBlock != null;
         StructureGrid grid = new StructureGrid(
             com.gregguns.core.config.WorldgenConfig.spacingSmall,
             com.gregguns.core.config.WorldgenConfig.spacingMedium,
             com.gregguns.core.config.WorldgenConfig.spacingBig,
-            StructureCatalog.pools(layouts, WorldgenSettings::enabled));
+            StructureCatalog.pools(layouts, WorldgenSettings::enabled, camps));
         real = new StructurePopulator(
             grid,
             layouts,
             new Stamper(keys),
             Blocks.dirt,
             Blocks.air,
-            StructurePopulator.CONFIG_RULES);
+            StructurePopulator.CONFIG_RULES,
+            new CampPlacer(keys, new PartLayouts.FromRegistry(layouts)),
+            flagBlock,
+            UtilityConfig.campFlagCapFactor);
+        // Layout structures that carry a camp (the carrier) place their own flag from the layout marks.
+        StructureHooks.setFlagHook(new CarrierFlag(layouts, flagBlock));
     }
 
     /** @param populator replaces the real one until cleared with null; scenarios only */

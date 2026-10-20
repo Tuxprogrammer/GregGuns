@@ -59,6 +59,15 @@ public final class FlagSpec {
             CampCap.cap(sizeX, sizeZ, capFactor));
     }
 
+    /**
+     * As {@link #of} with a fixed cap instead of one computed from the footprint (the carrier holds nine whatever its
+     * size).
+     */
+    public static FlagSpec ofCap(int x, int y, int z, int originX, int originY, int originZ, int sizeX, int sizeZ,
+        int[] spawnOffsets, List<String> names, int cap) {
+        return new FlagSpec(x, y, z, sizeX, sizeZ, x - originX, y - originY, z - originZ, spawnOffsets, names, cap);
+    }
+
     public int[] spawnPoints() {
         return spawnPoints.clone();
     }

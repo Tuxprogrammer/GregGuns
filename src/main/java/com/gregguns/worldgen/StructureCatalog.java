@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import com.gregguns.worldgen.camp.CampFootprint;
 import com.gregguns.worldgen.layout.Layout;
 import com.gregguns.worldgen.layout.LayoutRegistry;
 
@@ -73,12 +74,28 @@ public final class StructureCatalog {
      * @return the pools by size class
      */
     public static Map<SizeClass, List<PoolEntry>> pools(LayoutRegistry layouts, Predicate<StructureId> enabled) {
+        return pools(layouts, enabled, false);
+    }
+
+    /**
+     * As {@link #pools(LayoutRegistry, Predicate)}; with {@code camps} the Military Base joins the BIG pool, sized by
+     * its own plan (G10) instead of a layout file.
+     */
+    public static Map<SizeClass, List<PoolEntry>> pools(LayoutRegistry layouts, Predicate<StructureId> enabled,
+        boolean camps) {
         Map<SizeClass, List<PoolEntry>> out = new EnumMap<SizeClass, List<PoolEntry>>(SizeClass.class);
         for (SizeClass c : SizeClass.values()) {
             out.put(c, new ArrayList<PoolEntry>());
         }
         for (StructureId s : StructureId.values()) {
             if (!enabled.test(s)) continue;
+            if (s == StructureId.MILITARY_BASE) {
+                if (camps) {
+                    out.get(SizeClass.BIG)
+                        .add(new PoolEntry(s.id(), 1, 1, CampFootprint.MAX, CampFootprint::of));
+                }
+                continue;
+            }
             Layout l = layouts.get(s.id());
             if (l == null) continue;
             out.get(sizeClass(s))
@@ -87,11 +104,11 @@ public final class StructureCatalog {
         return Collections.unmodifiableMap(out);
     }
 
-    /** The layout ids worth loading: every enabled structure. */
+    /** The layout ids worth loading: every enabled structure with a layout file (the base is planned, not stamped). */
     public static List<String> idsToLoad(Predicate<StructureId> enabled) {
         List<String> ids = new ArrayList<String>();
         for (StructureId s : StructureId.values()) {
-            if (enabled.test(s)) ids.add(s.id());
+            if (enabled.test(s) && s != StructureId.MILITARY_BASE) ids.add(s.id());
         }
         return ids;
     }

@@ -22,9 +22,18 @@ public final class StructurePlan {
     private final int variant;
     private final Footprint footprint;
     private final long chestSeedBase;
+    private final long shapeSeed;
+    private final int apron;
 
     StructurePlan(String id, SizeClass sizeClass, int dimension, int cellX, int cellZ, int anchorX, int anchorZ,
         int rotation, int variant, Footprint footprint, long chestSeedBase) {
+        this(id, sizeClass, dimension, cellX, cellZ, anchorX, anchorZ, rotation, variant, footprint, chestSeedBase, 0L, 0);
+    }
+
+    StructurePlan(String id, SizeClass sizeClass, int dimension, int cellX, int cellZ, int anchorX, int anchorZ,
+        int rotation, int variant, Footprint footprint, long chestSeedBase, long shapeSeed, int apron) {
+        this.shapeSeed = shapeSeed;
+        this.apron = apron;
         this.id = id;
         this.sizeClass = sizeClass;
         this.dimension = dimension;
@@ -82,6 +91,16 @@ public final class StructurePlan {
         return footprint;
     }
 
+    /** Seed of the plan own shape; non-zero only for a sized entry such as the Military Base. */
+    public long shapeSeed() {
+        return shapeSeed;
+    }
+
+    /** Blocks past the box that the structure may write (the camp road tails); 0 for layouts. */
+    public int apron() {
+        return apron;
+    }
+
     public long chestSeedBase() {
         return chestSeedBase;
     }
@@ -119,7 +138,8 @@ public final class StructurePlan {
     public boolean overlapsWindow(int cx, int cz) {
         int x0 = cx * 16 + 8;
         int z0 = cz * 16 + 8;
-        return anchorX <= x0 + 15 && maxX() >= x0 && anchorZ <= z0 + 15 && maxZ() >= z0;
+        return anchorX - apron <= x0 + 15 && maxX() + apron >= x0 && anchorZ - apron <= z0 + 15
+            && maxZ() + apron >= z0;
     }
 
     /**

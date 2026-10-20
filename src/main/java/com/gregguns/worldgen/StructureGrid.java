@@ -23,6 +23,9 @@ public final class StructureGrid {
     /** No attempt is made when the box touches a chunk within this many chunks of (0, 0) (GGS-11-11). */
     public static final int SPAWN_EXCLUSION_CHUNKS = 8;
 
+    /** The most any entry writes past its box; widens the cell search so an apron-only window finds its plan. */
+    private static final int APRON_MAX = 3;
+
     private final Map<SizeClass, Integer> cellBlocks = new EnumMap<SizeClass, Integer>(SizeClass.class);
     private final Map<SizeClass, List<PoolEntry>> pools = new EnumMap<SizeClass, List<PoolEntry>>(SizeClass.class);
     private final Map<SizeClass, Integer> totalWeight = new EnumMap<SizeClass, Integer>(SizeClass.class);
@@ -53,7 +56,8 @@ public final class StructureGrid {
                         e.footprint()
                             .sizeX(),
                         e.footprint()
-                            .sizeZ()));
+                            .sizeZ())
+                        + e.apron());
             }
             totalWeight.put(c, total);
             maxExtent.put(c, extent);
@@ -85,7 +89,10 @@ public final class StructureGrid {
         PoolEntry entry = pick(pools.get(sizeClass), rnd.nextInt(total));
         int rotation = rnd.nextInt(4);
         int variant = rnd.nextInt(entry.variants());
-        Footprint f = entry.footprint();
+        // A sized entry (Military Base) draws its shape seed here, after every pre-existing draw, so fixed-size
+        // entries keep their sequence. The footprint then comes from that seed (G10 CampPlan.sizeFor).
+        long shapeSeed = entry.sized() ? rnd.nextLong() : 0L;
+        Footprint f = entry.footprintFor(shapeSeed);
         int sx = (rotation & 1) == 0 ? f.sizeX() : f.sizeZ();
         int sz = (rotation & 1) == 0 ? f.sizeZ() : f.sizeX();
 
@@ -109,7 +116,9 @@ public final class StructureGrid {
                 rotation,
                 variant,
                 f,
-                chestBase));
+                chestBase,
+                shapeSeed,
+                entry.apron()));
     }
 
     /**
@@ -125,9 +134,9 @@ public final class StructureGrid {
             int reach = maxExtent.get(c) - 1;
             // A box starts inside its cell and extends at most `reach` blocks toward +X/+Z.
             int x0 = Math.floorDiv(wx - reach, cell);
-            int x1 = Math.floorDiv(wx + 15, cell);
+            int x1 = Math.floorDiv(wx + 15 + APRON_MAX, cell);
             int z0 = Math.floorDiv(wz - reach, cell);
-            int z1 = Math.floorDiv(wz + 15, cell);
+            int z1 = Math.floorDiv(wz + 15 + APRON_MAX, cell);
             for (int x = x0; x <= x1; x++) {
                 for (int z = z0; z <= z1; z++) {
                     Optional<StructurePlan> p = planAt(worldSeed, dimension, c, x, z);

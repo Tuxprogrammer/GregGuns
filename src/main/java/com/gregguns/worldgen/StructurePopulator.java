@@ -8,6 +8,11 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.BiomeDictionary.Type;
 
+import com.gregguns.worldgen.camp.CampFlags;
+import com.gregguns.worldgen.camp.CampFootprint;
+import com.gregguns.worldgen.camp.CampPlan;
+import com.gregguns.worldgen.camp.CampWriter;
+import com.gregguns.worldgen.camp.PlacedCamp;
 import com.gregguns.worldgen.layout.Layout;
 import com.gregguns.worldgen.layout.LayoutRegistry;
 import com.gregguns.worldgen.layout.Rotations;
@@ -102,6 +107,9 @@ public final class StructurePopulator {
     private final Block fill;
     private final Block air;
     private final Rules rules;
+    private final CampWriter camps;
+    private final Block flagBlock;
+    private final float capFactor;
 
     /**
      * @param grid    the seeded plans
@@ -113,6 +121,18 @@ public final class StructurePopulator {
      */
     public StructurePopulator(StructureGrid grid, LayoutRegistry layouts, Stamper stamper, Block fill, Block air,
         Rules rules) {
+        this(grid, layouts, stamper, fill, air, rules, null, null, 0f);
+    }
+
+    /**
+     * As above, plus the Military Base: plans of that id are written by {@code camps} (no layout file), and the flag
+     * step places {@code flagBlock} with the cap from {@code capFactor}.
+     */
+    public StructurePopulator(StructureGrid grid, LayoutRegistry layouts, Stamper stamper, Block fill, Block air,
+        Rules rules, CampWriter camps, Block flagBlock, float capFactor) {
+        this.camps = camps;
+        this.flagBlock = flagBlock;
+        this.capFactor = capFactor;
         this.grid = grid;
         this.layouts = layouts;
         this.stamper = stamper;
@@ -131,6 +151,11 @@ public final class StructurePopulator {
         List<StructurePlan> plans = grid.plansForWindow(worldSeed, dimension, window.chunkX(), window.chunkZ());
         int stamped = 0;
         for (StructurePlan plan : plans) {
+            StructureId id = StructureCatalog.byId(plan.id());
+            if (camps != null && id == StructureId.MILITARY_BASE) {
+                stamped += populateCamp(plan, window, sink, reader, biomes, state, marks);
+                continue;
+            }
             Layout layout = layouts.get(plan.id());
             if (layout == null) continue;
             PlacedFootprint fp = new PlacedFootprint(
@@ -139,11 +164,10 @@ public final class StructurePopulator {
                 layout.sizeX(),
                 layout.sizeZ(),
                 plan.rotation());
-            StructureId id = StructureCatalog.byId(plan.id());
             boolean water = id != null && StructureCatalog.isWater(id);
             HeightProbe probe = new WindowedHeightProbe(window, reader);
             Decision d = state
-                .decideOnce(PlanKey.of(plan), () -> decide(layout, id, water, fp, window, reader, probe, biomes));
+                .decideOnce(PlanKey.of(plan), () -> decide(layout.sizeY() - layout.ground(), id, water, fp, window, reader, probe, biomes));
             if (!d.isPlaced()) continue;
             if (!water) {
                 shapeLand(sink, probe, reader, window, fp, d.groundY());
@@ -157,13 +181,74 @@ public final class StructurePopulator {
                 plan.variant());
             String key = PlanKey.of(plan);
             int written = stamper
-                .write(sink, sp, window, (tag, x, y, z) -> mark(plan, sp, id, key, tag, x, y, z, marks));
+                .write(sink, sp, window, (tag, x, y, z) -> mark(plan, id, key, tag, x, y, z, chestIndex(sp, x, y, z), marks));
             if (written > 0) stamped++;
         }
         return stamped;
     }
 
-    private Decision decide(Layout layout, StructureId id, boolean water, PlacedFootprint fp, PopulateWindow window,
+    /**
+     * The Military Base slice of one window (G10 contract): plan, decide once, shape the land, write every window the
+     * camp's own {@code overlaps} accepts (the road tails reach past the box), then run the flag step once in the
+     * window that holds the flag. The decision is recorded before the flag step, or {@code addFlag} is ignored.
+     *
+     * @return 1 when the camp wrote anything in this window, else 0
+     */
+    private int populateCamp(StructurePlan plan, PopulateWindow window, WindowedSink sink, ColumnReader reader,
+        BiomeSource biomes, StructureState state, Marks marks) {
+        String key = PlanKey.of(plan);
+        // Below the abort size the plan is null: reject (cannot happen with sizeFor, which is 32 or more).
+        CampPlan cp = CampPlan.generate(
+            plan.shapeSeed(),
+            plan.footprint()
+                .sizeX(),
+            plan.footprint()
+                .sizeZ());
+        PlacedFootprint fp = new PlacedFootprint(
+            plan.anchorX(),
+            plan.anchorZ(),
+            plan.footprint()
+                .sizeX(),
+            plan.footprint()
+                .sizeZ(),
+            plan.rotation());
+        // A window that only touches the road tails cannot sample the footprint, so it must not decide: it waits for
+        // a record (a tail-only window populated first misses its 3 blocks of road; accepted, see structure-placement).
+        if (state.get(key) == null && !window.overlapsBox(fp.minX(), fp.minZ(), fp.maxX(), fp.maxZ())) return 0;
+        HeightProbe probe = new WindowedHeightProbe(window, reader);
+        Decision d = state.decideOnce(
+            key,
+            () -> cp == null ? Decision.rejected("size")
+                : decide(CampFootprint.HEIGHT, StructureId.MILITARY_BASE, false, fp, window, reader, probe, biomes));
+        if (!d.isPlaced() || cp == null) return 0;
+        PlacedCamp camp = cp.place(plan.anchorX(), d.groundY() + 1, plan.anchorZ(), plan.rotation());
+        if (!camp.overlaps(window)) return 0;
+        shapeLand(sink, probe, reader, window, fp, d.groundY());
+        // Camo comes from the biome at the base center (WGEN-32), read without loading a chunk.
+        StructureBiomes.CampColor color = StructureBiomes.campColor(
+            biomes.typesAt(
+                (fp.minX() + fp.maxX()) / 2,
+                (fp.minZ() + fp.maxZ()) / 2));
+        int written = camps.write(
+            sink,
+            camp,
+            window,
+            color,
+            (tag, x, y, z) -> {
+                // The flag is the post-step's; camp parts carry only chest and spawner marks. The chest index is
+                // the position hash, so a chest's seed does not depend on which window reports it (GGS-11-20).
+                if (tag.equals("flag")) return;
+                mark(plan, StructureId.MILITARY_BASE, key, tag, x, y, z, (x * 73856093) ^ (y * 19349663) ^ (z * 83492791), marks);
+            });
+        boolean flagged = false;
+        if (window.contains(camp.flagPos().x, camp.flagPos().z)) {
+            flagged = camps.flagStep(camp, flagBlock, capFactor, CampFlags.into(state, key))
+                .run(sink, window);
+        }
+        return written > 0 || flagged ? 1 : 0;
+    }
+
+    private Decision decide(int height, StructureId id, boolean water, PlacedFootprint fp, PopulateWindow window,
         ColumnReader reader, HeightProbe probe, BiomeSource biomes) {
         Set<Type> types = biomes.typesAt((fp.minX() + fp.maxX()) / 2, (fp.minZ() + fp.maxZ()) / 2);
         Set<Type> blacklist = id == null ? Collections.<Type>emptySet() : rules.biomeBlacklist(id);
@@ -190,7 +275,7 @@ public final class StructurePopulator {
                 r.reason.name()
                     .toLowerCase(Locale.ROOT));
         }
-        if (!water && VillageScan.containsVillageBlocks(window, reader, fp, r.y, layout.sizeY() - layout.ground())) {
+        if (!water && VillageScan.containsVillageBlocks(window, reader, fp, r.y, height)) {
             return Decision.rejected("village");
         }
         return Decision.placed(r.y);
@@ -209,8 +294,8 @@ public final class StructurePopulator {
         }
     }
 
-    private void mark(StructurePlan plan, StampPlan sp, StructureId id, String planKey, String tag, int x, int y, int z,
-        Marks marks) {
+    private void mark(StructurePlan plan, StructureId id, String planKey, String tag, int x, int y, int z,
+        int chestIndex, Marks marks) {
         if (tag.startsWith("chest.")) {
             String kind = tag.substring("chest.".length());
             boolean reinforced = kind.equals("reinforced");
@@ -218,7 +303,7 @@ public final class StructurePopulator {
             int tier = Math.max(1, Math.min(3, id == null ? 1 : rules.lootCeiling(id)));
             String category = (reinforced ? REINFORCED : WEAPON)[tier - 1];
             int richness = id == null ? 1 : rules.richness(id);
-            long seed = plan.chestSeed(chestIndex(sp, x, y, z));
+            long seed = plan.chestSeed(chestIndex);
             marks.chest(plan, kind, x, y, z, new LootPending(category, richness, seed));
         } else if (tag.startsWith("spawner")) {
             marks.spawner(plan, tag, x, y, z);

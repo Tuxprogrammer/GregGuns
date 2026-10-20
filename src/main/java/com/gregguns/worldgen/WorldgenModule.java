@@ -1,11 +1,15 @@
 package com.gregguns.worldgen;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.gregguns.GregGuns;
 import com.gregguns.core.DevEnvironment;
 import com.gregguns.core.module.GregGunsModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.core.testing.ScenarioRegistry;
+import com.gregguns.worldgen.camp.PartLayouts;
 import com.gregguns.worldgen.layout.LayoutRegistry;
 import com.gregguns.worldgen.layout.PaletteKeys;
 import com.gregguns.worldgen.loot.ChestScenarios;
@@ -60,6 +64,15 @@ public final class WorldgenModule implements GregGunsModule {
      * is missing or broken is left out and reported once (GGS-11-28); with no layouts the pools are empty and the
      * generator does nothing.
      */
+    /** Structure layouts plus every camp part layout the placer may ask for (most do not exist yet; that is fine). */
+    static List<String> layoutIds() {
+        List<String> ids = new ArrayList<>(StructureCatalog.idsToLoad(WorldgenSettings::enabled));
+        if (WorldgenSettings.enabled(StructureId.MILITARY_BASE)) {
+            ids.addAll(PartLayouts.FromRegistry.allIds());
+        }
+        return ids;
+    }
+
     private static void registerGenerator() {
         if (!WorldgenSettings.generatorWanted()) {
             return;
@@ -67,7 +80,7 @@ public final class WorldgenModule implements GregGunsModule {
         PaletteKeys keys = PaletteKeys.resolveForPack(GregGuns.LOG::warn);
         LayoutRegistry layouts = LayoutRegistry.load(
             new LayoutRegistry.ClasspathSource(LayoutRegistry.ClasspathSource.STRUCTURES),
-            StructureCatalog.idsToLoad(WorldgenSettings::enabled),
+            layoutIds(),
             keys,
             GregGuns.LOG::info);
         StructureGenerator.configure(layouts, keys);
