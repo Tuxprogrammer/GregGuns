@@ -106,13 +106,18 @@ public final class TestSubCommand implements GregGunsSubCommand {
         for (ScenarioResult r : summary.results()) {
             sender.addChatMessage(
                 new ChatComponentTranslation(
-                    r.passed() ? "gregguns.test.result.pass" : "gregguns.test.result.fail",
+                    r.passed() ? "gregguns.test.result.pass"
+                        : r.skipped() ? "gregguns.test.result.skip" : "gregguns.test.result.fail",
                     r.scenario()));
             for (String m : r.messages()) {
                 sender.addChatMessage(new ChatComponentTranslation("gregguns.test.message", m));
             }
         }
-        sender
-            .addChatMessage(new ChatComponentTranslation("gregguns.test.summary", summary.passed(), summary.failed()));
+        sender.addChatMessage(
+            new ChatComponentTranslation(
+                "gregguns.test.summary",
+                summary.passed(),
+                summary.failed(),
+                summary.skippedSuffix()));
     }
 }

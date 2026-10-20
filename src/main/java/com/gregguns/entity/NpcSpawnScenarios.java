@@ -11,6 +11,7 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.core.testing.SkipUnless;
 import com.gregguns.entity.npc.NpcCounter;
 import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.entity.npc.NpcMob;
@@ -34,7 +35,11 @@ final class NpcSpawnScenarios {
         registry.register(new DimensionGateScenario());
         registry.register(new ConfigGateScenario());
         registry.register(new WeightedPickScenario());
-        registry.register(new CapEnforcedScenario());
+        registry.register(
+            SkipUnless.of(
+                new CapEnforcedScenario(),
+                () -> com.gregguns.entity.npc.NpcRegistry.isRegistered(NpcMob.NPC_TEST),
+                "needs the dev-only test NPC (NpcMob.NPC_TEST), which the pack does not register"));
         registry.register(new DangerLevelsScenario());
     }
 

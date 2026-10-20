@@ -22,7 +22,7 @@ public final class BlastScenarios {
      * @param registry where to register
      */
     public static void registerAll(ScenarioRegistry registry) {
-        registry.register(new Sliced());
+        registry.register(com.gregguns.explosion.PackExplosionProbe.skipIfProtected(new Sliced()));
     }
 
     private static int fillAndCount(ScenarioContext ctx, Block block, boolean fill) {

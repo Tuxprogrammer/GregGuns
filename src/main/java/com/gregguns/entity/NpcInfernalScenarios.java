@@ -20,6 +20,7 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
+import com.gregguns.core.testing.SkipUnless;
 import com.gregguns.entity.npc.InfernalHooks;
 import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.entity.npc.NpcItems;
@@ -38,8 +39,16 @@ final class NpcInfernalScenarios {
     private NpcInfernalScenarios() {}
 
     static void registerAll(ScenarioRegistry registry) {
-        registry.register(new HooksScenario());
-        registry.register(new HurtPipelineScenario());
+        registry.register(
+            SkipUnless.of(
+                new HooksScenario(),
+                () -> com.gregguns.entity.npc.NpcRegistry.isRegistered(NpcMob.NPC_TEST),
+                "needs the dev-only test NPC (NpcMob.NPC_TEST), which the pack does not register"));
+        registry.register(
+            SkipUnless.of(
+                new HurtPipelineScenario(),
+                () -> com.gregguns.entity.npc.NpcRegistry.isRegistered(NpcMob.NPC_TEST),
+                "needs the dev-only test NPC (NpcMob.NPC_TEST), which the pack does not register"));
     }
 
     /** Every table reference resolves; the soft link is inert without Infernal Mobs; the spawner marker is gated. */

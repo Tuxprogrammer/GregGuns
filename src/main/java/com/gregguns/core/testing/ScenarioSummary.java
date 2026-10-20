@@ -34,9 +34,20 @@ public final class ScenarioSummary {
         return n;
     }
 
+    /** @return how many scenarios were skipped (they did not apply here; neither passed nor failed) */
+    public int skipped() {
+        int n = 0;
+        for (ScenarioResult r : results) {
+            if (r.skipped()) {
+                n++;
+            }
+        }
+        return n;
+    }
+
     /** @return how many scenarios failed */
     public int failed() {
-        return results.size() - passed();
+        return results.size() - passed() - skipped();
     }
 
     /** @return {@code true} when nothing failed (an empty run counts as success) */
@@ -44,13 +55,23 @@ public final class ScenarioSummary {
         return failed() == 0;
     }
 
-    /** @return the final line, for example {@code [GregGuns] Scenarios: 2 passed, 0 failed} */
+    /**
+     * @return the final line, for example {@code [GregGuns] Scenarios: 2 passed, 0 failed}; {@code , N skipped} is
+     *         appended only when something was skipped, so the shape scripts grep for does not change
+     */
     public String summaryLine() {
-        return "[GregGuns] Scenarios: " + passed() + " passed, " + failed() + " failed";
+        return "[GregGuns] Scenarios: " + passed() + " passed, " + failed() + " failed" + skippedSuffix();
+    }
+
+    /** @return {@code ", N skipped"}, or the empty string when nothing was skipped */
+    public String skippedSuffix() {
+        int n = skipped();
+        return n == 0 ? "" : ", " + n + " skipped";
     }
 
     /**
-     * Formats the whole report: one {@code PASS name} / {@code FAIL name} line per scenario, each message indented
+     * Formats the whole report: one {@code PASS name} / {@code FAIL name} / {@code SKIP name} line per scenario, each
+     * message indented
      * under it, and {@link #summaryLine()} last.
      *
      * @return the lines
@@ -58,7 +79,7 @@ public final class ScenarioSummary {
     public List<String> reportLines() {
         List<String> lines = new ArrayList<>();
         for (ScenarioResult r : results) {
-            lines.add("[GregGuns] " + (r.passed() ? "PASS " : "FAIL ") + r.scenario());
+            lines.add("[GregGuns] " + (r.passed() ? "PASS " : r.skipped() ? "SKIP " : "FAIL ") + r.scenario());
             for (String m : r.messages()) {
                 lines.add("[GregGuns]   " + m);
             }

@@ -48,7 +48,7 @@ public final class GrimReaperScenarios {
         registry.register(new Reload());
         registry.register(new Volley());
         registry.register(new Blast(false));
-        registry.register(new Blast(true));
+        registry.register(com.gregguns.explosion.PackExplosionProbe.skipIfProtected(new Blast(true)));
         registry.register(
             GunRecipeScenarios.assembly(
                 "gun.grim_reaper.recipe",

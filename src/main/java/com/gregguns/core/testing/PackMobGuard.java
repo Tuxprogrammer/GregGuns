@@ -14,7 +14,8 @@ import com.gregguns.entity.npc.loot.InfernalOptOut;
  * <ul>
  * <li><b>SpecialMobs</b> queues each replaceable {@code IMob} for replacement at the end of the next server tick, then
  * removes the original and spawns a random variant (Plague Zombie, ...). It skips mobs that
- * {@code isNoDespawnRequired()} or carry a non-zero {@code smi} tag. Source:
+ * {@code isNoDespawnRequired()} or carry a non-zero {@code smi} tag; the guard uses the tag so mobs still despawn.
+ * Source:
  * {@code MobHelper.canReplace} and {@code TickHandler.onServerTick} at
  * https://github.com/GTNewHorizons/SpecialMobs/blob/3.7.8/src/main/java/toast/specialMobs/MobHelper.java and
  * https://github.com/GTNewHorizons/SpecialMobs/blob/3.7.8/src/main/java/toast/specialMobs/TickHandler.java</li>
@@ -48,6 +49,9 @@ public final class PackMobGuard {
     /** Value written to {@link #INFERNAL_TAG}: names no ability. */
     static final String INFERNAL_NONE = InfernalOptOut.MARKER;
 
+    /** SpecialMobs' "do not replace" byte; {@code MobHelper.canReplace} requires it to be 0. */
+    static final String SPECIAL_MOBS_SKIP = "smi";
+
     /** EnderZoo's "difficulty modifiers already applied" tag. */
     static final String ENDER_ZOO_APPLIED = "ezModsApp";
 
@@ -60,8 +64,10 @@ public final class PackMobGuard {
      */
     public static void protect(Entity entity) {
         if (entity instanceof EntityLiving) {
-            // SpecialMobs does not replace a mob that must not despawn.
-            ((EntityLiving) entity).func_110163_bv();
+            // SpecialMobs does not replace a mob with a non-zero smi byte. Not persistenceRequired: that would also
+            // stop the mob despawning, which scenarios such as npc.bosses_persist must still observe.
+            entity.getEntityData()
+                .setByte(SPECIAL_MOBS_SKIP, (byte) 1);
             entity.getEntityData()
                 .setString(INFERNAL_TAG, INFERNAL_NONE);
             entity.getEntityData()
