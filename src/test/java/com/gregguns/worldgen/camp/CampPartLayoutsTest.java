@@ -292,4 +292,44 @@ class CampPartLayoutsTest {
                 + noPart);
         assertEquals(0, fallback, "a leaf given a part must fit one of its layouts");
     }
+
+    @Test
+    void everyPlainCampIdExists() {
+        for (String id : PartLayouts.FromRegistry.plainIds()) {
+            assertTrue(SHIPPED.contains(id), "plain camp layout missing: " + id);
+        }
+    }
+
+    @Test
+    void absentOptionalVariantsDoNotLogAboveDebug() {
+        List<String> loud = new ArrayList<>();
+        List<String> quiet = new ArrayList<>();
+        Set<String> optional = new HashSet<>(PartLayouts.FromRegistry.variantIds());
+        List<String> ids = new ArrayList<>(PartLayouts.FromRegistry.plainIds());
+        ids.addAll(optional);
+        LayoutRegistry.load(
+            new LayoutRegistry.ClasspathSource(LayoutRegistry.ClasspathSource.STRUCTURES),
+            ids,
+            optional,
+            KEYS,
+            loud::add,
+            quiet::add);
+        assertTrue(loud.isEmpty(), loud.toString());
+        assertTrue(!quiet.isEmpty(), "some variants are absent by design");
+    }
+
+    @Test
+    void aMissingPlainIdStillLogsLoudly() {
+        List<String> loud = new ArrayList<>();
+        List<String> quiet = new ArrayList<>();
+        LayoutRegistry.load(
+            new LayoutRegistry.ClasspathSource(LayoutRegistry.ClasspathSource.STRUCTURES),
+            java.util.Collections.singletonList("camp_tent_9"),
+            new HashSet<>(PartLayouts.FromRegistry.variantIds()),
+            KEYS,
+            loud::add,
+            quiet::add);
+        assertEquals(1, loud.size());
+        assertTrue(quiet.isEmpty());
+    }
 }

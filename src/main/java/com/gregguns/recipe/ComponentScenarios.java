@@ -232,7 +232,7 @@ public final class ComponentScenarios {
     }
 
     /**
-     * The engraver boot test of design record 0012 (open risk 2): the Laser Focus recipe, a diamond plus an EV Emitter
+     * The engraver boot test of design record 0012 (open risk 2): the Laser Focus recipe, a ruby plus an EV Emitter
      * and a non-consumed white lens, is accepted by GT's Laser Engraver map. It is found by the three inputs at EV, the
      * lens is stored at stack size 0, and the recipe is not found without the lens. Server side.
      */
@@ -245,7 +245,7 @@ public final class ComponentScenarios {
 
         @Override
         public String description() {
-            return "An EV Laser Engraver with a diamond, an EV Emitter and the white lens makes one Laser Focus; the lens is non-consumed and required.";
+            return "An EV Laser Engraver with a ruby, an EV Emitter and the white lens makes one Laser Focus; the lens is non-consumed and required.";
         }
 
         @Override

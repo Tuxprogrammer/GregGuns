@@ -30,11 +30,35 @@ public interface PartLayouts {
             this.registry = registry;
         }
 
+        /** The plain layout id of every part and tier: the ones that must exist. */
+        public static List<String> plainIds() {
+            List<String> ids = new ArrayList<>();
+            for (CampPart p : CampPart.values()) {
+                for (int tier = 1; tier <= p.shippedTiers(); tier++) {
+                    ids.add(p.layoutId(tier));
+                }
+            }
+            return ids;
+        }
+
+        /** The per-color variant ids: optional, most do not exist, and the plain id is the fallback. */
+        public static List<String> variantIds() {
+            List<String> ids = new ArrayList<>();
+            for (CampPart p : CampPart.values()) {
+                for (int tier = 1; tier <= p.shippedTiers(); tier++) {
+                    for (CampColor c : CampColor.values()) {
+                        ids.add(p.layoutId(tier, suffix(c)));
+                    }
+                }
+            }
+            return ids;
+        }
+
         /** Every layout id the registry should be asked to load for the camp: plain and per-color, all tiers. */
         public static List<String> allIds() {
             List<String> ids = new ArrayList<>();
             for (CampPart p : CampPart.values()) {
-                for (int tier = 1; tier <= CampPart.TIERS; tier++) {
+                for (int tier = 1; tier <= p.shippedTiers(); tier++) {
                     ids.add(p.layoutId(tier));
                     for (CampColor c : CampColor.values()) {
                         ids.add(p.layoutId(tier, suffix(c)));

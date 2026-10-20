@@ -291,9 +291,9 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 
 **Exit gate:**
 - [ ] Every milestone M0–M8 has a completeness audit, with each exit box met or deferred with the owner's sign-off.
-- [ ] The recipe-clash review found no unresolved clashes with GTNH 2.9 recipes. Each clash it found was fixed, or recorded in PACK-CHANGES with the owner's sign-off.
+- [x] The recipe-clash review found no unresolved clashes with GTNH 2.9 recipes. Each clash it found was fixed, or recorded in PACK-CHANGES with the owner's sign-off. Evidence: v4 on master `b19ae575` found 0 exact clashes and 0 superset clashes. The one subset hit, the Bacterial Vat culture recipe, is verified in game by `gun.bio_gun.vat_recipe_selected`. All 8 v3 shadows are fixed ([review](testing/recipe-clash-beta.md)).
 - [x] The Reaction Chamber and the Retort are removed (design record 0012, branch `fix/retire-reaction-retort`). Their recipes are remapped to GTNH methods per the design record, and their MTE IDs are retired and reserved. The Retort is archived on `archive/retort-multiblock` and `archive/retort-v1`.
-- [ ] The NewGunrizons recon note is written, and the owner has picked a direction: merge, or take its place.
+- [x] The NewGunrizons recon note is written, and the owner has picked a direction: merge, or take its place. Owner, 2026-10-20: take its place, with no merge and no contact; GregGuns is proposed to the GTNH dev team at M9. See the [recon note](research/newgunrizons-recon.md#owner-decisions-2026-10-20).
 - [ ] The batched client pass is clean, including with shaders on, and has no crash-severity or invisible-render bugs.
 - [ ] `0.3.0-beta` is published.
 - [ ] The owner's beta playthrough on a local server is done, and its blocking bugs are fixed.
@@ -319,6 +319,7 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
   - links to the release, the docs and the infographics.
 - GuideNH pages: an in-game wiki for the mod, covering getting started, the arsenal by tier, ammo and magazines, armor, machines and multiblocks, NPCs, and structures. Build them from the docs and infographics. This work may start during the beta, before the rest of M9.
 - **Turret compatibility with OpenModularTurrets** (in the GTNH pack, 2.4.8). Investigate how GregGuns turrets overlap with it, and move as much single-block turret function as makes sense to OMT. Options include our ammo as OMT ammo, our guns as OMT weapons, or dropping duplicate single-block turrets. Keep the GregGuns turret multiblock, the Rampart, as our signature piece. Record the decision in a design record and in [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md).
+- **Aim down sights (ADS)** for guns whose models carry iron sights or a red dot: aiming brings the gun up to the eye so the sights line up. It is purely cosmetic, and accuracy and spread do not change. ADS gets a hold or toggle config option. Scoped guns keep their scope overlay. The owner picked this from the NewGunrizons recon.
 - Release tagging.
 
 **Exit gate:**
@@ -328,6 +329,7 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 - [ ] The outreach package for the GTNH pack maintainers is drafted and reviewed by the owner.
 - [ ] The GuideNH in-game wiki pages ship in the mod, cover every content area, and pass the owner's review in game.
 - [ ] The OpenModularTurrets compatibility investigation is done and the offload is implemented or recorded. The Rampart multiblock stays, and the owner signs off on the turret split.
+- [ ] Aim down sights works on every gun with iron sights or a red dot, in first person, with shaders on and off. Accuracy is unchanged, and the hold or toggle option works.
 - [ ] Release notes, a tagged version and published jars (CI `release-tags` workflow).
 
 ## Later

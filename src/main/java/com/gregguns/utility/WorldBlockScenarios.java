@@ -346,17 +346,45 @@ public final class WorldBlockScenarios {
 
         final List<int[]> spawns = new ArrayList<>();
         final List<Integer> spawnTicks = new ArrayList<>();
+        /** Spawns by flags outside the scenario's own square (other scenarios', worldgen camps'), passed on. */
+        final List<int[]> foreign = new ArrayList<>();
         int broken;
         int tick;
+        /** Where other flags' calls go, or null to count every call. */
+        CampSpawnPort passTo;
+        int ownX;
+        int ownZ;
+        int ownRadius;
+
+        CountingPort() {}
+
+        /** Counts only spawns inside {@code radius} blocks of (x, z); every other flag's calls go to passTo. */
+        CountingPort(CampSpawnPort passTo, int x, int z, int radius) {
+            this.passTo = passTo;
+            this.ownX = x;
+            this.ownZ = z;
+            this.ownRadius = radius;
+        }
+
+        private boolean own(double x, double z) {
+            return passTo == null || Math.abs(x - ownX) <= ownRadius && Math.abs(z - ownZ) <= ownRadius;
+        }
 
         @Override
         public int countNpcs(World world, List<String> names, int minX, int minY, int minZ, int maxX, int maxY,
             int maxZ) {
+            if (passTo != null && !(minX <= ownX && ownX <= maxX && minZ <= ownZ && ownZ <= maxZ)) {
+                return passTo.countNpcs(world, names, minX, minY, minZ, maxX, maxY, maxZ);
+            }
             return spawns.size();
         }
 
         @Override
         public boolean spawn(World world, String npcName, double x, double y, double z) {
+            if (!own(x, z)) {
+                foreign.add(new int[] { (int) Math.floor(x), (int) y, (int) Math.floor(z) });
+                return passTo.spawn(world, npcName, x, y, z);
+            }
             spawns.add(new int[] { (int) Math.floor(x), (int) y, (int) Math.floor(z) });
             spawnTicks.add(tick);
             return true;
@@ -427,13 +455,18 @@ public final class WorldBlockScenarios {
                 return first;
             }
 
-            CountingPort port = new CountingPort();
+            // Only flags within 8 blocks of the origin count; any other flag in the world (another scenario's,
+            // a generated camp) keeps the real port.
+            CountingPort port = new CountingPort(CampSpawnPorts.get(), ox, oz, 8);
             CampSpawnPort old = CampSpawnPorts.install(port);
             int interval = UtilityConfig.campFlagSpawnIntervalTicks;
-            int wait = interval * 2 + 100;
-            return ScenarioResult.pending(name(), wait + 120, ticks -> {
+            // Done 100 ticks after the cap is reached (a third spawn would take a whole interval), or at the limit.
+            int limit = interval * 4 + 200;
+            return ScenarioResult.pending(name(), limit + 120, ticks -> {
                 port.tick = ticks;
-                if (ticks < wait) {
+                int last = port.spawnTicks.isEmpty() ? -1 : port.spawnTicks.get(port.spawnTicks.size() - 1);
+                boolean capped = port.spawns.size() >= 2 && ticks >= last + 100;
+                if (!capped && ticks < limit) {
                     return null;
                 }
                 CampSpawnPorts.install(old);
@@ -441,6 +474,25 @@ public final class WorldBlockScenarios {
                 for (String line : first.messages()) {
                     res.note(line);
                 }
+                res.note(
+                    "campflag diagnostics: ticks " + ticks
+                        + ", own spawns "
+                        + port.spawns.size()
+                        + " at ticks "
+                        + port.spawnTicks
+                        + ", foreign spawns "
+                        + port.foreign.size()
+                        + ", flag chunk loaded "
+                        + world.getChunkProvider()
+                            .chunkExists(ox >> 4, oz >> 4)
+                        + ", flag tile still there "
+                        + (world.getTileEntity(ox, oy, oz) == flag)
+                        + ", origin "
+                        + ox
+                        + ","
+                        + oy
+                        + ","
+                        + oz);
                 res.checkEquals("spawns until the cap, none from the uninitialized flag", 2, port.spawns.size());
                 if (port.spawnTicks.size() == 2) {
                     res.check(

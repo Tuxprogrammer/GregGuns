@@ -17,6 +17,17 @@ ours too). Everything else is the pack. Categories:
   shapeless  our shapeless/ore rows whose ingredient multiset also matches a pack shaped or shapeless row, or the
              reverse (our shaped grid vs a pack shapeless row)
   duplicate  same match, same output (harmless but redundant)
+  subset     same-map machine rows whose item and fluid inputs (and circuit: 0 or ours) are all contained in ours,
+             with stack sizes at or below ours. GT takes the first matching recipe and ignores extra items, so the
+             pack row can fire when a player loads OUR inputs and win. Rows from the pack and our own rows both
+             count as the shadowing side. On a special-slot map (see SPECIAL_SLOT_MAPS) the dump does not carry the
+             special item, so a subset there is a candidate only: confirm with an in-game findRecipe scenario.
+  superset   the reverse: our row's inputs are contained in a PACK row's, so ours can fire on the pack's inputs.
+             Informational; it steals a pack recipe rather than losing ours.
+
+What counts as ours: source "gregguns", a map named "gregguns...", any output item from the gregguns mod, or a
+row matching OUR_FLUID_OUTPUTS / --ours-fluid (our fluid-only recipes, such as the Bio Tank's culture vat recipe,
+have no item output to give them a source).
 
 Limitation: the dump lists ore dictionary members only for ore names our recipes use, so a pack-side ore name can only
 be matched by name equality against our items, not expanded.
@@ -29,9 +40,26 @@ import sys
 
 OURS = "gregguns"
 
+# Fluid-only recipes of ours. A fluid-only recipe has no item output, so the dump gives it the source "unknown";
+# this table identifies it: first fluid output key -> a fluid input key the row must also take (None: any row making
+# the fluid). The pack makes E. coli culture fluid from sugar and water too, so the Bio Tank's vat recipe is told
+# apart by its Biomass input. Extend it with --ours-fluid OUT[=IN].
+OUR_FLUID_OUTPUTS = {"fluid:escherichiakolifluid": "fluid:biomass"}
+
+# Maps keyed on a special item the dump does not record (a controller-slot culture dish): subsets here are only
+# candidates and are labeled so in the report.
+SPECIAL_SLOT_MAPS = {"bw.recipe.BacteriaVat"}
+
 
 def is_ours(row):
-    return row["source"] == OURS or row["map"].startswith(OURS)
+    if row["source"] == OURS or row["map"].startswith(OURS):
+        return True
+    if any(o["k"].startswith(OURS + ":") for o in row["outputs"]):
+        return True
+    if not row["outputs"] or row["outputs"][0]["k"] not in OUR_FLUID_OUTPUTS:
+        return False
+    need = OUR_FLUID_OUTPUTS[row["outputs"][0]["k"]]
+    return need is None or any(f["k"] == need for f in row["fluids"])
 
 
 def keys(row):
@@ -113,6 +141,87 @@ def mirror(grid):
     return [list(reversed(r)) for r in grid]
 
 
+def counts(r):
+    """(item counts, fluid counts) of a row as dicts, cached on the row."""
+    c = r.get("_counts")
+    if c is None:
+        c = ({i["k"]: i["n"] for i in r["inputs"]}, {f["k"]: f["n"] for f in r["fluids"]})
+        r["_counts"] = c
+    return c
+
+
+# Set by --ignore-counts: compare which inputs are present, not how many (finds near-misses such as a pack row that
+# wants 3 diamonds against our 1, which a player can still trigger by loading more).
+IGNORE_COUNTS = False
+
+
+def fits(small, big):
+    """Every (key -> count) of small is in big with at least that count (just the key with IGNORE_COUNTS)."""
+    return all(k in big and (IGNORE_COUNTS or big[k] >= n) for k, n in small.items())
+
+
+def can_fire_on(p, r):
+    """True if recipe p could start from exactly recipe r's inputs (p's inputs are a subset of r's).
+
+    p needs items and/or fluids (an empty row would match anything), a circuit of 0 or r's, and every item and
+    fluid key present in r with at least p's count.
+    """
+    if not (p["inputs"] or p["fluids"]):
+        return False
+    if p["circuit"] not in (0, r["circuit"]):
+        return False
+    pi, pf = counts(p)
+    ri, rf = counts(r)
+    return fits(pi, ri) and fits(pf, rf)
+
+
+def input_sig(r):
+    return (
+        tuple(sorted((i["k"], i["n"]) for i in r["inputs"])),
+        tuple(sorted((f["k"], f["n"]) for f in r["fluids"])),
+        r["circuit"],
+    )
+
+
+def row_keys(r):
+    return {i["k"] for i in r["inputs"]} | {f["k"] for f in r["fluids"]}
+
+
+def find_subsets(rows):
+    """Yield (category, ours_row, other_row) over same-map machine rows.
+
+    "subset": other (pack or ours, not the row itself) can fire on our row's inputs.
+    "superset": our row can fire on a pack row's inputs.
+    Rows with identical inputs are the exact/duplicate categories, so they are skipped here.
+    """
+    by_map = collections.defaultdict(list)
+    for row in rows:
+        if row["kind"] == "machine" and (row["inputs"] or row["fluids"]):
+            by_map[row["map"]].append(row)
+    for rows_in_map in by_map.values():
+        ours_rows = [x for x in rows_in_map if is_ours(x)]
+        if not ours_rows:
+            continue
+        # key -> rows that list the key as an input; a subset row has all its keys in ours, a superset row holds all
+        # of ours, so both searches walk the posting list of one key instead of the whole map.
+        posting = collections.defaultdict(list)
+        for p in rows_in_map:
+            for k in row_keys(p):
+                posting[k].append(p)
+        for r in ours_rows:
+            sig = input_sig(r)
+            seen = set()
+            for k in row_keys(r):
+                for p in posting[k]:
+                    if p is not r and id(p) not in seen and input_sig(p) != sig and can_fire_on(p, r):
+                        seen.add(id(p))
+                        yield "subset", r, p
+            rarest = min(row_keys(r), key=lambda k: len(posting[k]))
+            for p in posting[rarest]:
+                if not is_ours(p) and input_sig(p) != sig and can_fire_on(r, p):
+                    yield "superset", r, p
+
+
 def fmt_row(r):
     ins = ", ".join("%dx %s" % (i["n"], i["k"]) for i in r["inputs"])
     if r["fluids"]:
@@ -131,7 +240,16 @@ def main(argv=None):
     ap.add_argument("dump")
     ap.add_argument("report")
     ap.add_argument("--limit", type=int, default=40, help="max listed findings per category")
+    ap.add_argument("--ours-fluid", action="append", default=[], metavar="OUT[=IN]",
+                    help="mark rows whose first output is fluid key OUT (and that take fluid key IN, if given) as ours")
+    ap.add_argument("--ignore-counts", action="store_true",
+                    help="subset/superset compare input keys only, not stack sizes")
     args = ap.parse_args(argv)
+    global IGNORE_COUNTS
+    IGNORE_COUNTS = args.ignore_counts
+    for spec in args.ours_fluid:
+        out_key, _, in_key = spec.partition("=")
+        OUR_FLUID_OUTPUTS[out_key] = in_key or None
     opener = gzip.open if args.dump.endswith(".gz") else open
     with opener(args.dump, "rt", encoding="utf-8") as f:
         data = json.load(f)
@@ -219,7 +337,13 @@ def main(argv=None):
             pass
     # reverse: pack shapeless vs our shaped is covered above; pack shaped vs our shapeless is covered by n-bucket.
 
-    order = ["exact", "shadow", "grid", "shapeless", "duplicate"]
+    for cat, r, p in find_subsets(rows):
+        tag = " (special slot: verify in game)" if r["map"] in SPECIAL_SLOT_MAPS else ""
+        if cat == "subset" and is_ours(p):
+            tag += " (own)"
+        findings[cat].append((r["map"] + tag, r, p))
+
+    order = ["exact", "shadow", "grid", "shapeless", "duplicate", "subset", "superset"]
     maps_ours = collections.Counter(r["map"] for r in ours)
     out = []
     out.append("# Recipe-clash report\n")
@@ -243,7 +367,8 @@ def main(argv=None):
     for c in order:
         out.append("## %s (%d)\n" % (c, len(findings[c])))
         for mp, a, b in findings[c][: args.limit]:
-            out.append("- **%s**\n  - ours: %s\n  - other: %s" % (mp, fmt_row(a), fmt_row(b)))
+            label = {"subset": "shadowed by", "superset": "fires on"}.get(c, "other")
+            out.append("- **%s**\n  - ours: %s\n  - %s: %s" % (mp, fmt_row(a), label, fmt_row(b)))
         if len(findings[c]) > args.limit:
             out.append("- ... %d more" % (len(findings[c]) - args.limit))
         out.append("")

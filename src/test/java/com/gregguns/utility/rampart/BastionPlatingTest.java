@@ -91,10 +91,11 @@ class BastionPlatingTest {
     }
 
     @Test
-    void theCircuitsAreOneToFour() {
-        int circuit = 1;
-        for (BastionPlating p : BastionPlating.values()) {
-            assertEquals(circuit++, p.circuit(), p.name());
-        }
+    void theCircuitsAreOneToThreeAndTenForCarbon() {
+        // Carbon is on 10, not 4: GT's Concrete row (one concrete, circuit 4) is a subset of its inputs.
+        assertEquals(1, BastionPlating.IRON.circuit());
+        assertEquals(2, BastionPlating.STEEL.circuit());
+        assertEquals(3, BastionPlating.ALUMINUM.circuit());
+        assertEquals(10, BastionPlating.CARBON.circuit());
     }
 }

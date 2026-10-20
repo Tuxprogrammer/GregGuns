@@ -26,6 +26,7 @@ public final class UtilityScenarios {
      */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new PlatesRecipesScenario());
+        GuiOpensScenario.registerAll(registry);
     }
 
     /** The four plates exist and each has the recipe the sheet gives. */
@@ -61,7 +62,9 @@ public final class UtilityScenarios {
                     if (recipe != null) {
                         out.checkEquals(plate.registryName() + " EU/t", (int) plate.recipeEut(), recipe.mEUt);
                         out.checkEquals(plate.registryName() + " ticks", plate.durationTicks(), recipe.mDuration);
-                        int expectedInputs = plate.extraMaterial() == null ? 1 : 2;
+                        // The plates plus the programmed circuit item (a circuit of its own avoids the pack rows
+                        // holding the same plates).
+                        int expectedInputs = (plate.extraMaterial() == null ? 1 : 2) + 1;
                         out.checkEquals(plate.registryName() + " inputs", expectedInputs, recipe.mInputs.length);
                     }
                 }

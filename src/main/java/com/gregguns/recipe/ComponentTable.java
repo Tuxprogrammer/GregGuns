@@ -455,6 +455,8 @@ public final class ComponentTable {
                 null));
         // RC-64: the Laser Focus, moved from the retired Reaction Chamber to GT's Laser Engraver (design record 0012).
         // Slot 0 is the workpiece, the Emitter is the second input, and the white lens is non-consumed (stack size 0).
+        // The workpiece is a Ruby, not a Diamond: GT's own white-lens row (lens plus 3 diamonds) would otherwise match
+        // a machine that holds a diamond stack, an Emitter and the lens. No engraver row takes a Ruby and the lens.
         // Source (map, lens idiom, white lens):
         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L514
         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/postload/recipes/LaserEngraverRecipes.java#L400-L404
@@ -468,7 +470,7 @@ public final class ComponentTable {
                     Target.LASER_ENGRAVER,
                     30,
                     0,
-                    Input.gt("gem", "Diamond", 1),
+                    Input.gt("gem", "Ruby", 1),
                     Input.itemList("Emitter_EV", 1),
                     Input.lens("craftingLensWhite")),
                 Collections.<FluidInput>emptyList(),

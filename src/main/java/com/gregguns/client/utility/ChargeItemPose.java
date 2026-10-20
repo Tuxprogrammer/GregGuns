@@ -16,6 +16,9 @@ final class ChargeItemPose {
     /** The wall pose the item draws in: plate toward the viewer. */
     static final int ITEM_ORIENTATION = 3;
 
+    /** How much the model grows in the first-person hand, about the middle of the grip's cell. */
+    static final float HAND_SCALE = 1.7F;
+
     private ChargeItemPose() {}
 
     /**

@@ -7,14 +7,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 
 import com.gregguns.GregGuns;
 import com.gregguns.armor.slots.SlotSyncProbe;
 import com.gregguns.armor.slots.logic.BaubleSlot;
+import com.gregguns.core.testing.AutotestArgs;
 import com.gregguns.core.testing.AutotestReport;
 import com.gregguns.core.testing.AutotestSignal;
 
@@ -37,6 +40,8 @@ import cpw.mods.fml.relauncher.SideOnly;
  * layer, as F1 does, for clean third-person shots of worn armor: used by {@code armor.showcase}), {@code shot <label>},
  * {@code arm <shot|reload> <label> <delayTicks>}, {@code fire <count>}, {@code slots <owner>} (reports this client's
  * copy of a player's Baubles slots back to the server as chat lines, see {@code AutotestReport}),
+ * {@code look <yaw> <pitch>} (sets the player's rotation, which a server {@code tp} cannot), {@code use} (a real
+ * right-click with the held item), {@code usesneak} (the same while sneaking, which StructureLib needs to build),
  * {@code scope <texturePath|off>} (draws a scope
  * overlay on the HUD, loaded at the bounded size), {@code close}, {@code quit}. Dev autotest only.
  * Client only.
@@ -112,6 +117,110 @@ final class AutotestCommands {
             default -> ClientAutotest.logLine("unknown gui " + args[0]);
         }
     }
+
+    /**
+     * {@code look <yaw> <pitch>}: sets the local player's rotation, including the previous-tick values so the camera
+     * does not interpolate from the old angle.
+     *
+     * @param args the arguments after {@code look}
+     * @throws IllegalArgumentException on malformed arguments (see {@link AutotestArgs#parseLook})
+     */
+    static void look(String[] args) {
+        float[] angles = AutotestArgs.parseLook(args);
+        EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        player.rotationYaw = angles[0];
+        player.prevRotationYaw = angles[0];
+        player.rotationYawHead = angles[0];
+        player.prevRotationYawHead = angles[0];
+        player.renderYawOffset = angles[0];
+        player.prevRenderYawOffset = angles[0];
+        player.rotationPitch = angles[1];
+        player.prevRotationPitch = angles[1];
+        ClientAutotest.logLine("look yaw " + angles[0] + " pitch " + angles[1]);
+    }
+
+    /**
+     * {@code use}: a right-click with the held item, as vanilla's {@code Minecraft.rightClickMouse} does: on the entity
+     * under the crosshair through its interact packet, on the block through {@code onPlayerRightClick}, and otherwise
+     * (or when nothing took the click) {@code sendUseItem}. The crosshair target is the one the last rendered frame
+     * found, so a {@code look} needs a frame before it takes effect.
+     */
+    // Source: Minecraft 1.7.10 net.minecraft.client.Minecraft.func_147121_ag (MCP rightClickMouse).
+    // Decompiled: the vanilla order is entity, then block, then the item.
+    static void use() {
+        Minecraft mc = Minecraft.getMinecraft();
+        EntityClientPlayerMP player = mc.thePlayer;
+        ItemStack held = player.getHeldItem();
+        MovingObjectPosition target = mc.objectMouseOver;
+        boolean useItem = true;
+        String what = "air";
+        if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
+            what = "entity " + target.entityHit.getCommandSenderName();
+            if (mc.playerController.interactWithEntitySendPacket(player, target.entityHit)) {
+                useItem = false;
+            }
+        } else if (target != null && target.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            what = "block " + target.blockX + " " + target.blockY + " " + target.blockZ + " side " + target.sideHit;
+            if (mc.playerController.onPlayerRightClick(
+                player,
+                mc.theWorld,
+                held,
+                target.blockX,
+                target.blockY,
+                target.blockZ,
+                target.sideHit,
+                target.hitVec)) {
+                useItem = false;
+                player.swingItem();
+            }
+        }
+        if (useItem && held != null && mc.playerController.sendUseItem(player, mc.theWorld, held)) {
+            mc.entityRenderer.itemRenderer.resetEquippedProgress2();
+        }
+        ClientAutotest.logLine(
+            "use " + (held == null ? "(empty hand)" : Item.itemRegistry.getNameForObject(held.getItem()))
+                + " on "
+                + what);
+    }
+
+    /**
+     * {@code usesneak}: holds the sneak key for {@link #SNEAK_LEAD_TICKS} ticks, so the sneak state reaches the server
+     * with the client's movement packets (the place packet carries no sneak flag; the server reads its own copy), then
+     * does {@link #use()}, then holds on a few more ticks and lets go. StructureLib builds a multiblock from a
+     * sneaking click of a trigger item on the controller (creative players build everything, survival players spend
+     * what they carry).
+     */
+    // Source: StructureLib 1.4.45 ConstructableUtility.handle0 (server side: "if (!aPlayer.isSneaking()) return true;",
+    // then construct in creative):
+    // https://github.com/GTNewHorizons/StructureLib/blob/1.4.45/src/main/java/com/gtnewhorizon/structurelib/alignment/constructable/ConstructableUtility.java#L43-L66
+    static final class SneakUseWait implements Wait {
+
+        private int ticks;
+
+        @Override
+        public boolean tick(EntityClientPlayerMP player) {
+            KeyBinding sneak = Minecraft.getMinecraft().gameSettings.keyBindSneak;
+            if (ticks < SNEAK_LEAD_TICKS + SNEAK_TAIL_TICKS) {
+                KeyBinding.setKeyBindState(sneak.getKeyCode(), true);
+                player.setSneaking(true);
+            }
+            ticks++;
+            if (ticks == SNEAK_LEAD_TICKS) {
+                use();
+            }
+            if (ticks >= SNEAK_LEAD_TICKS + SNEAK_TAIL_TICKS) {
+                KeyBinding.setKeyBindState(sneak.getKeyCode(), false);
+                player.setSneaking(false);
+                return true;
+            }
+            return false;
+        }
+    }
+
+    /** Ticks of sneaking before the click, so the server has seen the sneak start. */
+    private static final int SNEAK_LEAD_TICKS = 5;
+    /** Ticks of sneaking after the click, so the server handles the click while the player still sneaks. */
+    private static final int SNEAK_TAIL_TICKS = 5;
 
     /** A command that spans several client ticks; the command queue blocks while one is open. */
     interface Wait {

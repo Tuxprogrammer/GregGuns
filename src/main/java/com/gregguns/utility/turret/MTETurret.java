@@ -546,7 +546,12 @@ public final class MTETurret extends MTETieredMachineBlock implements TurretHost
             player.addChatMessage(new ChatComponentTranslation("gregguns.turret.locked"));
             return true;
         }
-        return super.onRightclick(base, player, side, x, y, z);
+        if (base.isClientSide()) {
+            return true;
+        }
+        // GT's tiered-machine base returns false from onRightclick, so open the ModularUI2 panel here.
+        openGui(player);
+        return true;
     }
 
     // --- settings (server) ------------------------------------------------------------------------------------
@@ -677,6 +682,29 @@ public final class MTETurret extends MTETieredMachineBlock implements TurretHost
         if (isClientCopy()) {
             syncedRepairLeft = ticks;
         }
+    }
+
+    /** @return the {@code TurretGuiModel.F_*} flags for the GUI sync */
+    public int guiFlags() {
+        return TurretGuiModel.flags(logic.isDead(), enabled, logic.isActive(), turret != null && !turret.isDead);
+    }
+
+    /** @return what the turret aims at, as {@link TurretEntity#targetForGui()}; empty when idle or unlinked */
+    public String guiTarget() {
+        return turret == null ? "" : turret.targetForGui();
+    }
+
+    /** @return the owner's name for the GUI sync; empty when ownerless */
+    public String guiOwnerName() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        String name = base == null ? null : base.getOwnerName();
+        return name == null ? "" : name;
+    }
+
+    /** @return the EU in the buffer for the GUI sync */
+    public long guiStoredEu() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        return base == null ? 0L : base.getStoredEU();
     }
 
     /** @return ticks of repair left, for the GUI sync */
