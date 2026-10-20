@@ -397,7 +397,8 @@ public final class PlacementHarness {
             for (int i = 0; i < cells.length; i++) {
                 int a = cells[i];
                 int b = other.cells[i];
-                if (ignoreChestFacing && a >> 4 == Block.getIdFromBlock(Blocks.chest)) {
+                if (ignoreChestFacing && (a >> 4 == Block.getIdFromBlock(Blocks.chest)
+                    || Block.getBlockById(a >> 4) instanceof BlockGregChest)) {
                     a &= ~0xF;
                     b &= ~0xF;
                 }
