@@ -324,8 +324,12 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
                 StatCollector
                     .translateToLocalFormatted("gregguns.gun.tooltip.loaded", state.loaded(), stats.magazineSize()));
         }
-        tooltip.add(
-            StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.damage", GunTooltipFormat.damage(stats)));
+        if (stats.annihilates()) {
+            tooltip.add(StatCollector.translateToLocal("gregguns.gun.tooltip.annihilates"));
+        } else {
+            tooltip.add(
+                StatCollector.translateToLocalFormatted("gregguns.gun.tooltip.damage", GunTooltipFormat.damage(stats)));
+        }
         if (!GuiScreen.isShiftKeyDown()) {
             tooltip.add(StatCollector.translateToLocal("gregguns.gun.tooltip.shift"));
             return;

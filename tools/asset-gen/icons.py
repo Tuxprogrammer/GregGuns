@@ -1042,6 +1042,12 @@ def _(c, x):
         bullet(c, xx, y0, 13, BRASS, ramp((150, 150, 156)), tip=3, w=2)
 
 
+@icon("golden_round")
+def _(c, x):
+    # One fat gold-cased round with a bright gold tip: the Golden Gun's single shot.
+    bullet(c, 6, 2, 13, GOLD, ramp((255, 236, 150)), tip=4, w=4)
+
+
 @icon("ammo_shotgun_shell")
 def _(c, x):
     shell(c, 2, 4, 13, RED, BRASS, w=4, base_h=3)

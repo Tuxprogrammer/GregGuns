@@ -47,6 +47,10 @@ public final class ItemAmmoRound extends Item implements Tiered {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
         tooltip.add(StatCollector.translateToLocal("gregguns.tooltip.ammo.round"));
+        String flavor = "gregguns.tooltip.ammo.flavor." + type.id();
+        if (StatCollector.canTranslate(flavor)) {
+            tooltip.add(StatCollector.translateToLocal(flavor));
+        }
         AmmoTooltips.forRound(tooltip, type.roundItemName());
     }
 }

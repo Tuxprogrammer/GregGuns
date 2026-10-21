@@ -62,6 +62,9 @@ public final class ClientGunDefinitions {
             ChainsawProfile.DEFINITION,
             GrimReaperProfile.DEFINITION,
             NukeLauncherProfile.DEFINITION,
+            // The Golden Gun wears the 9mm Pistol's model in gold.
+            ClientGunDefinition
+                .variantOf("golden_gun", Pistol9mmProfile.DEFINITION, "gregguns:textures/models/guns/golden_gun.png"),
 
             // The akimbo guns draw their single gun's model once per hand.
             ClientGunDefinition.akimboOf("akimbo_pistols", Pistol9mmProfile.DEFINITION),

@@ -119,6 +119,14 @@
     "category": "player",
     "sounds": ["guns/combatshotgun_pump"]
   },
+  "guns.golden_gun.fire": {
+    "category": "player",
+    "sounds": ["guns/pistol_shot_a", "guns/pistol_shot_b", "guns/pistol_shot_c"]
+  },
+  "guns.golden_gun.reload": {
+    "category": "player",
+    "sounds": ["guns/pistol_reload"]
+  },
   "guns.akimbo_pistols.reload": {
     "category": "player",
     "sounds": ["guns/pistol_reload_akimbo"]

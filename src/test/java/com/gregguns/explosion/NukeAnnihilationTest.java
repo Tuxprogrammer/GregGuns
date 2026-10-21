@@ -32,6 +32,17 @@ class NukeAnnihilationTest {
     }
 
     @Test
+    void theSharedDecisionIsWhatBothCallersDeal() {
+        // The Golden Gun deals NukeAnnihilation.lethal directly; the kill zone's amount() must agree with it.
+        assertEquals(
+            NukeAnnihilation.lethal(false, 40.0, 4.0, 40.0),
+            NukeAnnihilation.amount(1.0, RADIUS, 1.0, false, 40.0, 4.0, 40.0),
+            1e-9);
+        assertEquals(45.0, NukeAnnihilation.lethal(false, 40.0, 4.0, 40.0), 1e-9);
+        assertEquals(150.0, NukeAnnihilation.lethal(true, 40.0, 4.0, 300.0), 1e-9);
+    }
+
+    @Test
     void outsideTheZoneTheRampApplies() {
         double ramp = BlastFalloff.damage(400.0, 5.0, 15.0, 10.0);
         assertEquals(200.0, ramp, 1e-9);

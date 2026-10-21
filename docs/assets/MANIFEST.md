@@ -4,7 +4,7 @@ Every non-code asset GregGuns needs, derived from the design records ([0001](../
 
 The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-gen/manifest.json), built by `python -I tools/asset-gen/build_manifest.py`. Edit the script, not the generated files.
 
-**Totals:** 817 assets. By kind: icon 176, model 165, block 128, gui 14, particle 31, sound 279, branding 11, infographic 13. By priority: P1 34, P2 309, P3 474.
+**Totals:** 819 assets. By kind: icon 178, model 165, block 128, gui 14, particle 31, sound 279, branding 11, infographic 13. By priority: P1 34, P2 311, P3 474.
 
 ## Conventions
 
@@ -16,9 +16,9 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 - **Priority:** **P1** is the M1 vertical slice (9mm Pistol, its ammo and magazine, its sounds, the LV Ammo Press and its HUD/GUI). **P2** is M2 to M4 content (ballistic arsenal, armor, production chain, branding basics). **P3** is M5 onwards (energy and exotic weapons, utility and defense, NPCs, worldgen), camo and color variants, social and infographic art.
 - Provenance for every delivered asset goes in [CREDITS.md](CREDITS.md).
 
-## 2. Item icons (176)
+## 2. Item icons (178)
 
-### Guns, melee and grenades (48)
+### Guns, melee and grenades (49)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
@@ -70,6 +70,7 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.grim_reaper` | `textures/items/grim_reaper.png` | 16x16 | Grim Reaper (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. quad-tube rocket battery. Metal parts take the HSSG gate color. | #999900 | textures/guns/grimreaper.png (model sheet, silhouette reference only) | P3 |
 | `icon.nuclear_death_ray` | `textures/items/nuclear_death_ray.png` | 16x16 | Nuclear Death Ray (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. bulky ray projector, golden plasma core. Metal parts take the NaquadahAlloy gate color. | #282828 | textures/guns/NDR.png (model sheet, silhouette reference only) | P3 |
 | `icon.nuke_launcher` | `textures/items/nuke_launcher.png` | 16x16 | Nuke Launcher (ZPM): GT-style 16x16 item icon, soft top-left light, dark outline. olive launcher with hazard trefoil. Metal parts take the NaquadahAlloy gate color. | #282828 | textures/guns/nukerocketlauncher.png (model sheet, silhouette reference only) | P3 |
+| `icon.golden_gun` | `textures/items/golden_gun.png` | 16x16 | Golden Gun (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. polished gold 9mm pistol (the pistol's model in gold; GregGuns original). Metal parts take the HSSG gate color. | #999900 | textures/guns/pistol3.png (model sheet, silhouette reference only) | P2 |
 
 ### Gun parts, emitters, plating and cloth (30)
 
@@ -197,10 +198,11 @@ The machine-readable twin is [tools/asset-gen/manifest.json](../../tools/asset-g
 | `icon.t3_exo_leggings` | `textures/items/t3_exo_leggings.png` | 16x16 | Exo Suit Leggings (IV): GT-style 16x16 item icon, soft top-left light, dark outline. light exoskeleton frame over combat gear. Slot: leggings. | #6464A0 #DCA0F0 | `textures/items/t3_exo_leggings.png` | P2 |
 | `icon.t3_exo_boots` | `textures/items/t3_exo_boots.png` | 16x16 | Exo Suit Boots (IV): GT-style 16x16 item icon, soft top-left light, dark outline. light exoskeleton frame over combat gear. Slot: boots. | #6464A0 #DCA0F0 | `textures/items/t3_exo_boots.png` | P2 |
 
-### Equipment, consumables, placers and misc (22)
+### Equipment, consumables, placers and misc (23)
 
 | ID | Target path | Size / frames / audio | Brief | Palette | Techguns footprint | Pri |
 |---|---|---|---|---|---|---|
+| `icon.golden_round` | `textures/items/golden_round.png` | 16x16 | Golden Round (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. single fat gold-cased round with a bright gold tip (GregGuns original). | #FFFF1E | n/a | P2 |
 | `icon.bandages` | `textures/items/bandages.png` | 16x16 | Bandages (LV): GT-style 16x16 item icon, soft top-left light, dark outline. rolled white bandage with a small red mark. | #FFFFFF #C80000 | `textures/items/medkit_0.png` | P2 |
 | `icon.medkit` | `textures/items/medkit.png` | 16x16 | Medkit (MV): GT-style 16x16 item icon, soft top-left light, dark outline. white case with red cross. | #FAFAFA #C80000 | `textures/items/medkit_1.png` | P2 |
 | `icon.camo_net_placer_0` | `textures/items/camo_net_placer_0.png` | 16x16 | Camo Net Placer: Woodland: GT-style 16x16 item icon, soft top-left light, dark outline. folded net roll, woodland camouflage pattern. | #3C5A28 #6E7A3C | `textures/items/camoNetPlacer0.png` | P3 |

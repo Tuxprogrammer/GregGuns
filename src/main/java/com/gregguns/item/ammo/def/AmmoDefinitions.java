@@ -27,7 +27,8 @@ public final class AmmoDefinitions {
             HighCaliberAmmo.DEFINITION,
             AdvancedAmmo.DEFINITION,
             NetherChargeAmmo.DEFINITION,
-            NukeRocketAmmo.DEFINITION));
+            NukeRocketAmmo.DEFINITION,
+            GoldenRoundAmmo.DEFINITION));
 
     private AmmoDefinitions() {}
 

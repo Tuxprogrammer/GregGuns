@@ -74,6 +74,8 @@ public final class InHandTargets {
         // name, fp length, centre (R, U, D), muzzle (R, U, D), tp length. Section 7 of the in-hand notes.
         put("handcannon", 2.44, 0.75, -0.78, 0.98, 0.75, -0.72, 2.20, 1.37);
         put("pistol_9mm", 0.75, 0.74, -0.59, 1.14, 0.74, -0.44, 1.51, 0.53);
+        // The Golden Gun wears the 9mm Pistol's model and shares its fitted transforms.
+        put("golden_gun", 0.75, 0.74, -0.59, 1.14, 0.74, -0.44, 1.51, 0.53);
         put("revolver", 1.05, 0.51, -0.58, 1.18, 0.51, -0.38, 1.70, 0.56);
         put("golden_revolver", 1.09, 0.51, -0.58, 1.20, 0.51, -0.37, 1.74, 0.58);
         put("sawed_off", 2.15, 0.69, -0.66, 0.95, 0.69, -0.55, 2.02, 1.37);

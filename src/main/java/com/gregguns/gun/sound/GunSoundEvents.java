@@ -106,6 +106,9 @@ public final class GunSoundEvents {
     /** Event: the Bolt Action Rifle's bolt, played with every shot. */
     public static final String BOLT_ACTION_RIFLE_RECHAMBER = gun(BOLT_ACTION_RIFLE, RECHAMBER);
 
+    /** Event: the Golden Gun's shot (the pistol's samples). */
+    public static final String GOLDEN_GUN_FIRE = gun("golden_gun", FIRE);
+
     /** Event: a bullet hitting a block or entity, five variants. */
     public static final String BULLET_IMPACT = effect("bullet_impact");
 

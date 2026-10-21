@@ -113,7 +113,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | armor.t3_hev_silver_1 | src/main/resources/assets/gregguns/textures/models/armor/t3_hev_silver_1.png | tools/asset-gen/armor_repaint.py | 4193966930 | Procedural numpy/Pillow: region-based repaint of the vanilla armor unwrap, flat materials with edge highlights, panel seams, smooth camo blotches | MIT | 2026-10-18 |
 | armor.t3_hev_silver_2 | src/main/resources/assets/gregguns/textures/models/armor/t3_hev_silver_2.png | tools/asset-gen/armor_repaint.py | 1626573544 | Procedural numpy/Pillow: region-based repaint of the vanilla armor unwrap, flat materials with edge highlights, panel seams, smooth camo blotches | MIT | 2026-10-18 |
 
-### blocks (169)
+### blocks (161)
 
 | asset | path | generator | seed | method | license | date |
 |---|---|---|---|---|---|---|
@@ -157,6 +157,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | block.casing.repair_cradle_top | src/main/resources/assets/gregguns/textures/blocks/casings/repair_cradle_top.png | tools/asset-gen/blocks.py | 3982144250 | procedural 16x16 casing panel (blockart.py): tone-noise fill, bevel, rivets, per-machine motif | MIT | 2026-10-18 |
 | block.casing.works_casing | src/main/resources/assets/gregguns/textures/blocks/casings/works_casing.png | tools/asset-gen/blocks.py | 1298013103 | procedural 16x16 casing panel (blockart.py): tone-noise fill, bevel, rivets, per-machine motif | MIT | 2026-10-18 |
 | block.decor.air_marker | src/main/resources/assets/gregguns/textures/blocks/air_marker.png | tools/asset-gen/blocks.py | 3778917231 | procedural decorative block texture (blockart.py): value-noise tone fill with hand-coded motifs | MIT | 2026-10-18 |
+| block.decor.bug_hole | src/main/resources/assets/gregguns/textures/blocks/bug_hole.png | tools/asset-gen/blocks.py | 1054479350 | procedural decorative block texture (blockart.py): value-noise tone fill with hand-coded motifs | MIT | 2026-10-18 |
 | block.decor.bugnestblock | src/main/resources/assets/gregguns/textures/blocks/bugnestblock.png | tools/asset-gen/blocks.py | 3753940094 | procedural decorative block texture (blockart.py): value-noise tone fill with hand-coded motifs | MIT | 2026-10-18 |
 | block.decor.bugnestblock_hole | src/main/resources/assets/gregguns/textures/blocks/bugnestblock_hole.png | tools/asset-gen/blocks.py | 3592890951 | procedural decorative block texture (blockart.py): value-noise tone fill with hand-coded motifs | MIT | 2026-10-18 |
 | block.decor.bugnesteggs | src/main/resources/assets/gregguns/textures/blocks/bugnesteggs.png | tools/asset-gen/blocks.py | 3959259349 | procedural decorative block texture (blockart.py): value-noise tone fill with hand-coded motifs | MIT | 2026-10-18 |
@@ -232,6 +233,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | block.decor.steelframe_dark_ctm | src/main/resources/assets/gregguns/textures/blocks/steelframe_dark_ctm.png | tools/asset-gen/blocks.py | 890017789 | procedural connected-texture tile set (blockart.py): base tile plus 2x2 CTM sheet from one interior painter | MIT | 2026-10-18 |
 | block.decor.steelframe_scaffold | src/main/resources/assets/gregguns/textures/blocks/steelframe_scaffold.png | tools/asset-gen/blocks.py | 3602998480 | procedural connected-texture tile set (blockart.py): base tile plus 2x2 CTM sheet from one interior painter | MIT | 2026-10-18 |
 | block.decor.steelframe_scaffold_ctm | src/main/resources/assets/gregguns/textures/blocks/steelframe_scaffold_ctm.png | tools/asset-gen/blocks.py | 1412456205 | procedural connected-texture tile set (blockart.py): base tile plus 2x2 CTM sheet from one interior painter | MIT | 2026-10-18 |
+| block.decor.zombie_hole | src/main/resources/assets/gregguns/textures/blocks/zombie_hole.png | tools/asset-gen/blocks.py | 1117936563 | procedural decorative block texture (blockart.py): value-noise tone fill with hand-coded motifs | MIT | 2026-10-18 |
 | block.machine.ammunition_works.overlay_front | src/main/resources/assets/gregguns/textures/blocks/machines/ammunition_works/OVERLAY_FRONT.png | tools/asset-gen/blocks.py | 2996997889 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
 | block.machine.ammunition_works.overlay_front_active | src/main/resources/assets/gregguns/textures/blocks/machines/ammunition_works/OVERLAY_FRONT_ACTIVE.png | tools/asset-gen/blocks.py | 1176567007 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
 | block.machine.ammunition_works.overlay_front_active_glow | src/main/resources/assets/gregguns/textures/blocks/machines/ammunition_works/OVERLAY_FRONT_ACTIVE_GLOW.png | tools/asset-gen/blocks.py | 3995217658 | procedural GT-style transparent overlay (numpy/Pillow pixel painter, machines.py); hull shows through | MIT | 2026-10-18 |
@@ -304,7 +306,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 |---|---|---|---|---|---|---|
 | model.machine.flagpost | src/main/resources/assets/gregguns/textures/models/machines/flagpost.png | tools/asset-gen/flagpost_paint.py | 7120416 | Procedural numpy/Pillow: weathered concrete plinth, brushed-metal poles, white/red/blue star flag cloth painted onto the Java box unwrap | MIT | 2026-10-19 |
 
-### gui (15)
+### gui (14)
 
 | asset | path | generator | seed | method | license | date |
 |---|---|---|---|---|---|---|
@@ -323,7 +325,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | gui.scope_assault | src/main/resources/assets/gregguns/textures/gui/scopes/assault.png | tools/asset-gen/gui.py | none | Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle | MIT | 2026-10-18 |
 | gui.scope_energy | src/main/resources/assets/gregguns/textures/gui/scopes/energy.png | tools/asset-gen/gui.py | none | Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle | MIT | 2026-10-18 |
 
-### gun_icons (43)
+### gun_icons (44)
 
 | asset | path | generator | seed | method | license | date |
 |---|---|---|---|---|---|---|
@@ -370,6 +372,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | icon.deatomizer_pistol | src/main/resources/assets/gregguns/textures/items/deatomizer_pistol.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
 | icon.akimbo_deatomizer_pistols | src/main/resources/assets/gregguns/textures/items/akimbo_deatomizer_pistols.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
 | icon.scatter_laser_rifle | src/main/resources/assets/gregguns/textures/items/scatter_laser_rifle.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
+| icon.golden_gun | src/main/resources/assets/gregguns/textures/items/golden_gun.png | tools/asset-gen/gun_icons.py | 0 | Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline | MIT | 2026-10-19 |
 
 ### icons (134)
 
@@ -508,8 +511,9 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | icon.turret_armor_steel | src/main/resources/assets/gregguns/textures/items/turret_armor_steel.png | tools/asset-gen/icons.py | 2942088047 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.turret_armor_aluminum | src/main/resources/assets/gregguns/textures/items/turret_armor_aluminum.png | tools/asset-gen/icons.py | 1546297071 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 | icon.turret_armor_carbon | src/main/resources/assets/gregguns/textures/items/turret_armor_carbon.png | tools/asset-gen/icons.py | 3989877665 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
+| icon.golden_round | src/main/resources/assets/gregguns/textures/items/golden_round.png | tools/asset-gen/icons.py | 997846474 | Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass) | MIT | 2026-10-18 |
 
-### models (128)
+### models (129)
 
 | asset | path | generator | seed | method | license | date |
 |---|---|---|---|---|---|---|
@@ -641,6 +645,7 @@ Every asset below was generated procedurally by Claude (Anthropic) with the name
 | model.machine.turret_base_steel | src/main/resources/assets/gregguns/textures/models/machines/turret_base_steel.png | tools/asset-gen/models.py | 28408507 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.weapon_chest | src/main/resources/assets/gregguns/textures/models/machines/weapon_chest.png | tools/asset-gen/models.py | 2266136321 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
 | model.machine.weapon_chest_double | src/main/resources/assets/gregguns/textures/models/machines/weapon_chest_double.png | tools/asset-gen/models.py | 2878267855 | Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips | MIT | 2026-10-18 |
+| model.gun.golden_gun | src/main/resources/assets/gregguns/textures/models/guns/golden_gun.png | tools/asset-gen/golden_gun_texture.py | 0 | Pistol sheet luminance remapped onto a polished gold ramp, grip panels gold-brown | MIT | 2026-10-21 |
 
 ### sounds (279)
 
