@@ -100,6 +100,12 @@ public final class AmmoSpendScenarios {
 
         private static String magazine(GunRig rig, GunStats stats) {
             rig.press();
+            if (stats.hasSpinUp()) {
+                // A spin-up gun fires on the tick its barrels reach full spin; release on that very tick.
+                for (int i = 0; i < stats.spinUpTicks(); i++) {
+                    rig.tick();
+                }
+            }
             rig.release();
             // One tick fires the buffered pull; a wind-up gun gets a few more. Released, so nothing repeats.
             for (int i = 0; i < SETTLE_TICKS && rig.loaded() == stats.magazineSize(); i++) {
