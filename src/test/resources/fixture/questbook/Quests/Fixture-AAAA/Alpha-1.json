@@ -1,0 +1,18 @@
+{
+  "questIDHigh:4": 7,
+  "questIDLow:4": 1,
+  "preRequisites:9": {},
+  "properties:10": {
+    "betterquesting:10": {
+      "name:8": "Alpha",
+      "desc:8": "fixture"
+    }
+  },
+  "tasks:9": {
+    "0:10": {
+      "index:3": 0,
+      "taskID:8": "bq_standard:checkbox"
+    }
+  },
+  "rewards:9": {}
+}

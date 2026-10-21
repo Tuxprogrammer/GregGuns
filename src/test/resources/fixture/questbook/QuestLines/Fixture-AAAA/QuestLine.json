@@ -1,0 +1,11 @@
+{
+  "properties:10": {
+    "betterquesting:10": {
+      "name:8": "Fixture",
+      "desc:8": "",
+      "visibility:8": "UNLOCKED"
+    }
+  },
+  "questLineIDHigh:4": 1,
+  "questLineIDLow:4": 2
+}
