@@ -90,7 +90,7 @@ public final class LauncherScenarios {
 
     // ----- helpers -----------------------------------------------------------------------------------------------
 
-    /** A zombie that cannot move and has 200 health, so a 50 damage hit never kills it. */
+    /** A zombie that cannot move and has 200 health, so a launcher hit never kills it. */
     static EntityZombie sturdy(ScenarioContext ctx, double dx, double dz) {
         EntityZombie z = GunRig.zombie(ctx, 0);
         z.setPosition(ctx.originX() + 0.5 + dx, ctx.originY(), ctx.originZ() + 0.5 + dz);
@@ -247,7 +247,7 @@ public final class LauncherScenarios {
 
         @Override
         public String description() {
-            return "A rocket fired into a zombie 4 blocks away deals the gun's 50 damage to it once (the direct hit, left out of the splash), a zombie 1 block behind takes the splash ramp, and the floor is intact with explosions.blockDamage off.";
+            return "A rocket fired into a zombie 4 blocks away deals the gun's full damage to it once (the direct hit, left out of the splash), a zombie 1 block behind takes the splash ramp, and the floor is intact with explosions.blockDamage off.";
         }
 
         @Override
@@ -275,15 +275,19 @@ public final class LauncherScenarios {
                 double dy = behind.posY - r.posY;
                 double dz = behind.posZ - r.posZ;
                 double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                float splash = lossFor(behind, LauncherMath.splashDamage(50.0, 1.75, distance));
+                float splash = lossFor(
+                    behind,
+                    LauncherMath.splashDamage(RocketLauncherDef.STATS.damage(), 1.75, distance));
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(
-                    Math.abs(lost(front) - lossFor(front, 50.0)) < EPS,
-                    "the zombie hit should lose the full 50 once, " + lossFor(front, 50.0)
+                    Math.abs(lost(front) - lossFor(front, RocketLauncherDef.STATS.damage())) < EPS,
+                    "the zombie hit should lose the full rocket damage once, "
+                        + lossFor(front, RocketLauncherDef.STATS.damage())
                         + " but lost "
                         + lost(front));
                 out.check(
-                    Math.abs(lost(behind) - splash) < EPS && splash > 0.0F && splash < lossFor(behind, 50.0),
+                    Math.abs(lost(behind) - splash) < EPS && splash > 0.0F
+                        && splash < lossFor(behind, RocketLauncherDef.STATS.damage()),
                     "the zombie behind (distance " + distance
                         + ") should lose the splash "
                         + splash
@@ -393,7 +397,9 @@ public final class LauncherScenarios {
                 double dy = witness.posY - r.posY;
                 double dz = witness.posZ - r.posZ;
                 double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                float splash = lossFor(witness, LauncherMath.splashDamage(50.0, 1.75, distance));
+                float splash = lossFor(
+                    witness,
+                    LauncherMath.splashDamage(RocketLauncherDef.STATS.damage(), 1.75, distance));
                 int air = airInWall(ctx, wallDx);
                 switch (kind) {
                     case SPLASH:
@@ -521,7 +527,7 @@ public final class LauncherScenarios {
         public String description() {
             return blocks
                 ? "With explosions.blockDamage on, a 40 mm grenade that hits a zombie in front of a dirt wall breaks some of the wall."
-                : "A 40 mm grenade fired into a zombie 4 blocks away explodes on contact and the zombie loses exactly the 30 damage ramp at its distance from the blast (no separate direct hit); the dirt wall behind it stays whole with explosions.blockDamage off.";
+                : "A 40 mm grenade fired into a zombie 4 blocks away explodes on contact and the zombie loses exactly the damage ramp at its distance from the blast (no separate direct hit); the dirt wall behind it stays whole with explosions.blockDamage off.";
         }
 
         @Override
@@ -550,7 +556,9 @@ public final class LauncherScenarios {
                 double dy = target.posY - g.posY;
                 double dz = target.posZ - g.posZ;
                 double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                float expected = lossFor(target, LauncherMath.splashDamage(30.0, 1.5, distance));
+                float expected = lossFor(
+                    target,
+                    LauncherMath.splashDamage(GrenadeLauncherDef.STATS.damage(), 1.5, distance));
                 int air = airInWall(ctx, 5);
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 if (blocks) {
