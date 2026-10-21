@@ -24,12 +24,19 @@ public final class RampartRegistration {
         // Nothing to register here: the entity is the Turret's, and the machines wait for GT's MTE window.
     }
 
-    /** Machines (inside GT's MTE window), recipes and event handlers. */
+    /** Machines (inside GT's MTE window); always built, see {@code GregGunsModule.initContent}. */
+    public static void initContent() {
+        built = RampartMachines.register();
+    }
+
+    /** Recipes. */
     public static void init() {
-        if (RampartMachines.register()) {
+        if (built) {
             RampartMachines.registerRecipes();
         }
     }
+
+    private static boolean built;
 
     /**
      * Dev-only scenarios.

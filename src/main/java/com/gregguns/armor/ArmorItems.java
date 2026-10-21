@@ -66,7 +66,7 @@ public final class ArmorItems {
     /**
      * @param set  a catalog set
      * @param slot a slot
-     * @return the item, or null before registration, when the armor module is off, or when the set has no such piece
+     * @return the item, or null before registration, or when the set has no such piece
      */
     public static @Nullable ItemGregGunsArmor get(SetDef set, ArmorSlot slot) {
         EnumMap<ArmorSlot, ItemGregGunsArmor> pieces = BY_SET.get(set.id());

@@ -6,23 +6,32 @@ Keep this file in step with the code: a PR that adds or changes an option update
 
 ## Module flags (`modules`)
 
-Each roadmap content area is a module. A module's flag decides whether its code runs at all: when it is `false`, the module registers no items, blocks, entities, recipes or event handlers, so nothing is left behind to crash or to orphan a recipe.
+Each roadmap content area is a module. **A flag never changes what GregGuns registers.** Every block, item, entity, tile entity, machine and network packet exists whatever the flags say, so a client and a server with different flags can join each other, and turning a module off never makes Forge treat its items as missing or delete them from a world. A flag only switches behavior. When a module is `false`:
+
+- it registers no recipes and no event handlers (so no crafting, no natural spawning, no structure generation);
+- its machines do nothing, its guns do not fire and its other items and blocks cannot be used (a right click or swing is cancelled with a chat line);
+- its items and blocks are hidden from NEI and the GregGuns creative tab;
+- items that already exist stay intact, with a tooltip line "Disabled by the server's GregGuns config (modules.X)".
 
 **A flag defaults to `true` once its milestone's exit gate is met.** The gates for M2 to M8 are met, so every module flag defaults to `true`, `worldgen` (M8) included. The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
 
-A module also needs the modules listed in "Needs". If a flag is on but a needed module is off, the module is skipped and a warning is logged.
+A module also needs the modules listed in "Needs". If a flag is on but a needed module is off, the module behaves as off and a warning is logged. This is a behavior rule only; it never gates registration.
 
 | Key | Type | Default | Range | Synced | Needs | Milestone | What it enables |
 |---|---|---|---|---|---|---|---|
-| `modules.guns` | boolean | `true` | n/a | no | none | M1, M2 | Damage system, guns, projectiles, ammo |
-| `modules.armor` | boolean | `true` | n/a | no | `guns` | M3 | Armor, set bonuses, special slots |
-| `modules.machines` | boolean | `true` | n/a | no | `guns` | M4 | Production chain and GregTech machines |
-| `modules.energyWeapons` | boolean | `true` | n/a | no | `guns`, `machines` | M5 | Energy and exotic weapons |
-| `modules.utility` | boolean | `true` | n/a | no | `machines` | M6 | Utility and defense machines |
-| `modules.npcs` | boolean | `true` | n/a | no | `guns` | M7 | NPCs and spawning |
-| `modules.worldgen` | boolean | `true` | n/a | no | `npcs` | M8 | Structures and worldgen loot |
+| `modules.guns` | boolean | `true` | n/a | login packet | none | M1, M2 | Damage system, guns, projectiles, ammo |
+| `modules.armor` | boolean | `true` | n/a | login packet | `guns` | M3 | Armor, set bonuses, special slots |
+| `modules.machines` | boolean | `true` | n/a | login packet | `guns` | M4 | Production chain and GregTech machines |
+| `modules.energyWeapons` | boolean | `true` | n/a | login packet | `guns`, `machines` | M5 | Energy and exotic weapons |
+| `modules.utility` | boolean | `true` | n/a | login packet | `machines` | M6 | Utility and defense machines |
+| `modules.npcs` | boolean | `true` | n/a | login packet | `guns` | M7 | NPCs and spawning |
+| `modules.worldgen` | boolean | `true` | n/a | login packet | `npcs` | M8 | Structures and worldgen loot |
 
-All module flags need a game restart. They are not synced from server to client (GGS-01-03): content is registered once at startup, so a value that arrived after joining could not add or remove it. Start the client and the server with the same flags.
+All module flags need a game restart. **The server's flags win on a multiplayer client.** At login the server sends which modules are active on it (`PacketModuleSync`, on the `gregguns` channel); the client uses those for behavior and visibility (tooltips, NEI, the creative tab, accuracy and gating) until it disconnects, and its own flags in single player. One exception: recipes are registered at startup from each side's own config, so a client whose module is off shows no recipes for it in its crafting grid and NEI.
+
+### Server-authoritative keys
+
+The module flags (login packet) and every key marked `Synced: yes` in the tables below (GTNHLib `@Config.Sync`: the server value overrides the client's while connected and is restored on disconnect) are server-authoritative. Everything else is either server-side only (NPC, worldgen and utility tuning, which the client never reads) or a client-only preference (`client.*`: HUD, animations, sounds, key binds), and stays local.
 
 The "Needs" column is the module order in `ModuleId`, taken from the roadmap's entry gates.
 
@@ -60,7 +69,7 @@ Turret, explosive charge, Bio Blob and Camp Flag tuning (M6). Server-side only, 
 
 ## NPCs (`npcs`)
 
-NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side only, not synced. A weight of 0 means the mob is never registered or selected.
+NPC spawn gate, weights, danger distances, caps and gun damage (M7). Server-side only, not synced. A weight of 0 means the mob is never selected (it is still registered, like every other mob).
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|

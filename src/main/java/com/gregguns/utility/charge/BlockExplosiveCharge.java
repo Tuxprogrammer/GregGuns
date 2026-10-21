@@ -37,7 +37,7 @@ public final class BlockExplosiveCharge extends BlockContainer implements Tiered
     /** Hardness of both charges; harvestable by hand, so breaking one defuses it. */
     private static final float HARDNESS = 0.1F;
 
-    /** The block, set by {@link ChargeRegistration}; null while the utility module is off. */
+    /** The block, set by {@link ChargeRegistration}; null before registration. */
     public static BlockExplosiveCharge instance;
 
     /** Creates the block; registration is in {@link ChargeRegistration}. */

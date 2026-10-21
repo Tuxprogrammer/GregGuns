@@ -30,6 +30,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gregguns.GregGuns;
 import com.gregguns.block.GregGunsCasings;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.recipe.GregGunsRecipeMaps;
 import com.gregguns.recipe.ProductionRecipes;
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
@@ -590,6 +592,9 @@ public final class MTEAmmoWorks extends MTEExtendedPowerMultiBlockBase<MTEAmmoWo
 
     @Override
     public void onPostTick(IGregTechTileEntity baseMetaTileEntity, long tick) {
+        if (!ModuleState.isActive(ModuleId.GUNS)) {
+            return; // the module is off: the machine stays registered but inert
+        }
         super.onPostTick(baseMetaTileEntity, tick);
         if (baseMetaTileEntity.isServerSide()) {
             fillTick(baseMetaTileEntity);

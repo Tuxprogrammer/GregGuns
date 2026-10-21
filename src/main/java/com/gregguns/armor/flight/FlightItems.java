@@ -55,17 +55,17 @@ public final class FlightItems {
         }
     }
 
-    /** @return the Glider; null with the armor module off */
+    /** @return the Glider; null before registration */
     public static @Nullable ItemGlider glider() {
         return glider;
     }
 
-    /** @return the Jump Pack; null with the armor module off */
+    /** @return the Jump Pack; null before registration */
     public static @Nullable ItemJumpPack jumpPack() {
         return jumpPack;
     }
 
-    /** @return the Anti Gravity Device; null with the armor module off */
+    /** @return the Anti Gravity Device; null before registration */
     public static @Nullable ItemAntiGravityDevice antiGravityDevice() {
         return antiGravityDevice;
     }

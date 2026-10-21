@@ -63,7 +63,9 @@ No RF key survives. The Techguns spec has RF only in `Ore Drills` and in the mac
 
 - **GGS-01-01** All GregGuns config is declared with GTNHLib `@Config` classes registered in `preInit`. No hand-written `Configuration` reads.
 - **GGS-01-02** No config key exists for ore generation, ingots, nuggets, ore drills, oil holes, DataWatcher IDs, GUI tab IDs or the version checker.
-- **GGS-01-03** Every field the client reads (damage factors, and toggles that gate server behavior) is `@Config.Sync`, so a server value overrides a client value while connected.
+- **GGS-01-03** Every field the client reads (damage factors, and toggles that gate server behavior) is `@Config.Sync`, so a server value overrides a client value while connected. The module flags are the exception that uses the login packet instead (GGS-01-08), because they are read before GTNHLib's sync applies and need dependency resolution.
+- **GGS-01-07** No config value changes what GregGuns registers. Module flags and every other key only switch behavior: recipes, spawning, worldgen, machine operation, NEI and creative visibility, and the use of existing items. A client and a server with different flags can join each other, and turning a module off never deletes its items from a world.
+- **GGS-01-08** The server sends its active modules to each client at login (`PacketModuleSync`); the client uses them for behavior and visibility while connected and its own flags in single player. The module dependency rules (`worldgen` needs `npcs`, `npcs` needs `guns`, and so on) are behavior rules only.
 - **GGS-01-04** Every numeric field carries a `@Config.Comment` with its default, and a `@Config.Range*` where Techguns had a range.
 - **GGS-01-05** `FixedSprintFovMultiplier` changes the sprint FOV (fixes CORE-12).
 - **GGS-01-06** Config classes have no dependency on Minecraft classes, so they load in a plain unit test.
@@ -73,6 +75,8 @@ No RF key survives. The Techguns spec has RF only in `Ore Drills` and in the mac
 - GGS-01-01, GGS-01-06: a unit test loads each config class with no Forge on the classpath and reads the defaults.
 - GGS-01-02: a unit test reflects over the config classes and fails on a banned field name.
 - GGS-01-03: manual check in a two-player `runServer` plus `runClient` session. Change a synced value on the server, join, and read it on the client.
+- GGS-01-07: `ModuleRegistrationIndependenceTest` runs the module manager under all 128 flag combinations and requires the same content hooks in the same order; `ModuleStateTest` covers the dependency rule.
+- GGS-01-08: `ModuleSyncTest` (packet round trip, client applying and dropping the server's values).
 - GGS-01-04: a unit test checks that every field has a comment.
 - GGS-01-05: manual check with `runClient`.
 

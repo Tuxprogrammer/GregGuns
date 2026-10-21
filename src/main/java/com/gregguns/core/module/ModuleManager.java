@@ -18,8 +18,10 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 /**
- * Holds the module classes and dispatches the FML lifecycle to the enabled ones. Which modules are enabled is decided
- * by {@link ModuleResolver}; this class is the thin Minecraft glue around that decision.
+ * Holds the module classes and dispatches the FML lifecycle. Content (preInit registration and
+ * {@link GregGunsModule#initContent}) runs for every module; behavior (init and postInit: recipes, event handlers,
+ * spawning, worldgen) runs for the enabled ones. Which modules are enabled is decided by {@link ModuleResolver}; this
+ * class is the thin Minecraft glue around that decision.
  */
 // Spec: docs/ROADMAP.md (M0 scope); CONTRIBUTING.md (Modules, Registration order)
 public final class ModuleManager {
@@ -78,20 +80,25 @@ public final class ModuleManager {
         resolution = ModuleResolver.resolve(modules.keySet(), flag);
         resolution.skipped()
             .forEach(this::logSkipped);
-        for (ModuleId id : resolution.enabled()) {
-            GregGuns.LOG.info("Module {} enabled", id.configKey());
-            modules.get(id)
-                .preInit(event, new ModuleRegistrar(id, ledger, tab));
+        // Every module registers its content, whatever its flag says: a flag must never change what exists, or a client
+        // and a server with different flags disagree on block and item ids and Forge refuses the join. The map iterates
+        // in ModuleId declaration order, which is the registration order the NEI order table depends on.
+        for (Map.Entry<ModuleId, GregGunsModule> entry : modules.entrySet()) {
+            entry.getValue()
+                .preInit(event, new ModuleRegistrar(entry.getKey(), ledger, tab));
         }
         dispatchClient(ClientModule::preInit);
     }
 
     /**
-     * Runs init on enabled modules.
+     * Runs {@link GregGunsModule#initContent} on every module, then init on the enabled ones.
      *
      * @param event the FML event
      */
     public void init(FMLInitializationEvent event) {
+        for (GregGunsModule module : modules.values()) {
+            module.initContent(event);
+        }
         for (GregGunsModule module : enabledModules()) {
             module.init(event);
         }
@@ -126,20 +133,23 @@ public final class ModuleManager {
         return result;
     }
 
+    /** Client halves register renderers and models for all content, so they run for every module, flags aside. */
     private void dispatchClient(Consumer<ClientModule> phase) {
-        for (ModuleId id : resolution.enabled()) {
-            ClientModule client = clientModules.get(id);
-            if (client != null) {
-                phase.accept(client);
-            }
+        for (ClientModule client : clientModules.values()) {
+            phase.accept(client);
         }
     }
 
     private void logSkipped(ModuleId id, ModuleResolution.SkipReason reason) {
         if (reason == ModuleResolution.SkipReason.DISABLED_BY_CONFIG) {
-            GregGuns.LOG.info("Module {} disabled by modules.{}", id.configKey(), id.configKey());
+            GregGuns.LOG.info(
+                "Module {} is off (modules.{}): its content is still registered, but it has no recipes and does nothing",
+                id.configKey(),
+                id.configKey());
         } else {
-            GregGuns.LOG.warn("Module {} is on but a module it requires is off; skipping it", id.configKey());
+            GregGuns.LOG.warn(
+                "Module {} is on but a module it requires is off; it behaves as off (content stays registered)",
+                id.configKey());
         }
     }
 }

@@ -63,11 +63,15 @@ public final class GunsModule implements GregGunsModule {
     }
 
     @Override
+    public void initContent(FMLInitializationEvent event) {
+        // Pulled into M1 from M4 for the pistol slice: the Ammo Press family and the Ammunition Works. Always built.
+        AmmoPressMachines.register();
+    }
+
+    @Override
     public void init(FMLInitializationEvent event) {
         // Recipes and event handlers: one call per area.
         CombatModule.init();
-        // Pulled into M1 from M4 for the pistol slice: the LV Ammo Press and the 9mm chain's recipes.
-        AmmoPressMachines.register();
         ProductionRecipes.register();
         GunRecipes.register();
         ComponentRecipes.register();

@@ -66,7 +66,7 @@ public class NpcTurret extends EntityCreature implements HasNpcFaction, TurretAt
         return NpcTurretRules.FACTION;
     }
 
-    /** @return the fixed gun item, or null when the guns module is off */
+    /** @return the fixed gun item, or null before registration */
     private static ItemGun gunItem() {
         return GunItems.get(NpcTurretRules.GUN);
     }

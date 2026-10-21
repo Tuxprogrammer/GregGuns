@@ -21,6 +21,8 @@ import com.google.common.io.ByteArrayDataInput;
 import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
 import com.gregguns.core.config.UtilityConfig;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.registry.Naming;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunState;
@@ -452,6 +454,9 @@ public final class MTETurret extends MTETieredMachineBlock implements TurretHost
 
     @Override
     public void onPostTick(IGregTechTileEntity base, long tick) {
+        if (!ModuleState.isActive(ModuleId.UTILITY)) {
+            return; // the module is off: the machine stays registered but inert
+        }
         super.onPostTick(base, tick);
         if (base.isClientSide()) {
             return;

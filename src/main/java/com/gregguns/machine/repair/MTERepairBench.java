@@ -16,6 +16,8 @@ import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
 import com.gregguns.armor.logic.RepairSpec;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Textures;
@@ -274,6 +276,9 @@ public final class MTERepairBench extends MTETieredMachineBlock {
 
     @Override
     public void onPostTick(IGregTechTileEntity baseMetaTileEntity, long tick) {
+        if (!ModuleState.isActive(ModuleId.MACHINES)) {
+            return; // the module is off: the machine stays registered but inert
+        }
         super.onPostTick(baseMetaTileEntity, tick);
         if (baseMetaTileEntity.isServerSide() && activeTicks > 0 && --activeTicks == 0) {
             baseMetaTileEntity.setActive(false);

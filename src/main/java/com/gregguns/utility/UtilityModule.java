@@ -33,10 +33,17 @@ public final class UtilityModule implements GregGunsModule {
     }
 
     @Override
-    public void init(FMLInitializationEvent event) {
+    public void initContent(FMLInitializationEvent event) {
         // FML has one GUI handler per mod. The armor module registers it too; registering the same handler class again
-        // is harmless and keeps the utility GUIs working when the armor module is off.
+        // is harmless and keeps the utility GUIs working whatever the flags say.
         NetworkRegistry.INSTANCE.registerGuiHandler(GregGuns.instance, new EquipmentGuiHandler());
+        TurretRegistration.initContent();
+        RampartRegistration.initContent();
+        WorldBlockRegistration.initContent();
+    }
+
+    @Override
+    public void init(FMLInitializationEvent event) {
         UtilityParts.registerRecipes();
         TurretRegistration.init();
         ChargeRegistration.init();

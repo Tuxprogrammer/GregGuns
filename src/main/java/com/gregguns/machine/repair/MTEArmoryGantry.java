@@ -28,6 +28,8 @@ import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
 import com.gregguns.armor.logic.RepairSpec;
 import com.gregguns.block.GregGunsCasings;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.machine.InteriorLamp;
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -296,6 +298,9 @@ public final class MTEArmoryGantry extends MTEExtendedPowerMultiBlockBase<MTEArm
 
     @Override
     public @Nonnull CheckRecipeResult checkProcessing() {
+        if (!ModuleState.isActive(ModuleId.MACHINES)) {
+            return CheckRecipeResultRegistry.NO_RECIPE; // the module is off: registered but inert
+        }
         Tier tier = repairTier();
         if (tier == null || bays < GantryShape.MIN_BAYS) {
             return CheckRecipeResultRegistry.NO_RECIPE;

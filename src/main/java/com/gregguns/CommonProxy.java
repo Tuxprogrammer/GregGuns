@@ -9,8 +9,9 @@ import com.gregguns.core.command.GregGunsCommand;
 import com.gregguns.core.command.TestSubCommand;
 import com.gregguns.core.config.GregGunsConfig;
 import com.gregguns.core.config.ModuleFlags;
+import com.gregguns.core.module.ModuleGate;
 import com.gregguns.core.module.ModuleManager;
-import com.gregguns.core.module.ModuleMismatch;
+import com.gregguns.core.module.ModuleSyncLogic;
 import com.gregguns.core.module.PacketModuleSync;
 import com.gregguns.core.selfcheck.SelfCheckRunner;
 import com.gregguns.core.testing.HarnessScenarios;
@@ -49,24 +50,29 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event) {
         modules.init(event);
-        // Every id of the reserved block gets a machine on both sides, so a module that is off here cannot leave a hole
-        // that crashes GT's item render (see MtePlaceholders). Still inside GT's registration window.
+        // Retired ids get an inert machine so old worlds cannot crash GT's item render (see MtePlaceholders). Still
+        // inside GT's registration window.
         MtePlaceholders.registerMissing();
         FMLCommonHandler.instance()
             .bus()
             .register(this);
+        // Existing items of a module that is off do nothing; also on a client whose server has other flags.
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(ModuleGate.INSTANCE);
         if (DevEnvironment.testHooksEnabled()) {
             // Dev scenario runs force-load their area; the ticket callback must exist before any world loads.
             ScenarioChunks.registerCallback();
         }
     }
 
-    /** @return the bit mask of the modules this side runs, see ModuleMismatch */
+    /** @return the bit mask of the modules active on this side's own config, see ModuleState */
     public int enabledModuleMask() {
-        return ModuleMismatch.mask(modules.enabledIds());
+        return ModuleSyncLogic.serverMask();
     }
 
-    /** @param event a player logging in; tells their client which modules the server runs */
+    /** Called on the client when the server's module flags arrive or are dropped; refreshes what depends on them. */
+    public void moduleStateChanged() {}
+
+    /** @param event a player logging in; tells their client which modules are active on the server */
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.player instanceof EntityPlayerMP) {

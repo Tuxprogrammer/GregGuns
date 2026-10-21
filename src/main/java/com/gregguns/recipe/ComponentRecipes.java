@@ -11,7 +11,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.gregguns.GregGuns;
-import com.gregguns.core.config.ModuleFlags;
+import com.gregguns.core.module.ModuleState;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.GTValues;
@@ -53,9 +53,9 @@ public final class ComponentRecipes {
         specs.addAll(AmmoLineTable.SPECS);
         specs.addAll(GunLineTable.SPECS);
         for (ComponentTable.Spec spec : specs) {
-            if (spec.requiresModule() != null && !ModuleFlags.isEnabled(spec.requiresModule())) {
+            if (spec.requiresModule() != null && !ModuleState.isActive(spec.requiresModule())) {
                 GregGuns.LOG.info(
-                    "Skipping recipe {}: module {} is off",
+                    "Skipping recipe {}: module {} is off (no recipes for a disabled module)",
                     spec.row()
                         .id(),
                     spec.requiresModule()

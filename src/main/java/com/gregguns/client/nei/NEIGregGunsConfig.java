@@ -9,11 +9,15 @@ import net.minecraft.item.ItemStack;
 
 import com.gregguns.GregGuns;
 import com.gregguns.Tags;
+import com.gregguns.core.module.ModuleContent;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.registry.Naming;
 import com.gregguns.item.NeiOrder;
 import com.gregguns.item.NeiOrderRemap;
 
 import codechicken.nei.ItemSorter;
+import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 
 /**
@@ -41,6 +45,15 @@ public class NEIGregGunsConfig implements IConfigureNEI {
 
     @Override
     public void loadConfig() {
+        // Content of a module that is off stays registered but is hidden from NEI. A filter provider (not a one-shot
+        // API.hideItem list) because the flags in force change when the server's flags arrive at login.
+        API.addItemFilter(() -> {
+            int mask = ModuleState.currentMask();
+            return stack -> {
+                ModuleId owner = ModuleContent.moduleOf(stack);
+                return owner == null || (mask & (1 << owner.ordinal())) != 0;
+            };
+        });
         Map<String, Integer> effective = NeiOrderRemap.effectiveIds(qualifiedNames(), NEIGregGunsConfig::realId);
         if (effective.isEmpty()) {
             return;

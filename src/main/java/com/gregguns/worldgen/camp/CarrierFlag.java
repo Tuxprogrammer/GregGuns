@@ -41,7 +41,7 @@ public final class CarrierFlag implements StructureHooks.FlagHook {
 
     /**
      * @param layouts   the loaded layouts, for the spawn marks
-     * @param flagBlock the Camp Flag block; null when the utility module is off (nothing is placed)
+     * @param flagBlock the Camp Flag block; null before registration (nothing is placed)
      */
     public CarrierFlag(LayoutRegistry layouts, Block flagBlock) {
         this.layouts = layouts;

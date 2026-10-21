@@ -635,5 +635,5 @@ entity.gregguns.SuperMutantBasic.name=Super Mutant (Basic)
 entity.gregguns.SuperMutantHeavy.name=Super Mutant (Heavy)
 entity.gregguns.SuperMutantElite.name=Super Mutant (Elite)
 entity.gregguns.npc_test.name=Test NPC (dev)
-gregguns.machine.placeholder.tooltip=A GregGuns machine whose module is off on this client. Match modules.* with the server.
+gregguns.machine.placeholder.tooltip=An inert GregGuns placeholder machine (a retired id of an old world).
 gregguns.machine.retired.tooltip=A retired GregGuns machine. It was removed in 0.1.0-alpha and does nothing. Break it to get rid of it.

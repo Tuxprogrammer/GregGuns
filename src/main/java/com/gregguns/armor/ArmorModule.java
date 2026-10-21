@@ -54,6 +54,11 @@ public final class ArmorModule implements GregGunsModule {
     }
 
     @Override
+    public void initContent(FMLInitializationEvent event) {
+        NetworkRegistry.INSTANCE.registerGuiHandler(GregGuns.instance, new EquipmentGuiHandler());
+    }
+
+    @Override
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(EVENTS);
         MinecraftForge.EVENT_BUS.register(new FlightEvents());
@@ -62,7 +67,6 @@ public final class ArmorModule implements GregGunsModule {
             .register(EVENTS);
         ArmorParts.addRecipes();
         AmmoSources.register(AmmoPouch.SOURCE);
-        NetworkRegistry.INSTANCE.registerGuiHandler(GregGuns.instance, new EquipmentGuiHandler());
         EquipmentRecipes.register();
         ArmorRecipes.register();
         FlightRecipes.register();

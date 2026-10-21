@@ -6,6 +6,9 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
+
 /**
  * The tile of a hole spawner. It ticks only while its chunk is loaded (a tile never ticks otherwise), waits
  * {@link HoleCaps#INTERVAL_TICKS} between attempts and leaves everything to {@link HoleSpawning}. Server logic only;
@@ -34,6 +37,9 @@ public class TileHoleSpawner extends TileEntity {
     public void updateEntity() {
         if (worldObj == null || worldObj.isRemote) {
             return;
+        }
+        if (!ModuleState.isActive(ModuleId.NPCS)) {
+            return; // the npcs module is off: no spawning, the spawner block stays as it is
         }
         if (--countdown > 0) {
             return;
