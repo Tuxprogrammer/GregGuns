@@ -4,7 +4,7 @@
 
 This area has **no Techguns counterpart**. Techguns has no questbook, so there is no baseline to compare against and no matching folder in the [Techguns spec](../../techguns-spec/README.md). The area exists because the GTNH pack hands progression to players through BetterQuesting, and the owner wants a GregGuns tab that steers a player into the mod.
 
-The quests live in the pack repository ([GT-New-Horizons-Modpack](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack)), not in this repo. This area is therefore a **spec for pack data**: 115 quests in 14 chapters, how they unlock, and how a pack maintainer writes the files. [M9](../../ROADMAP.md#m9--pack-integration-and-release) hands it over.
+The quest line **ships inside the GregGuns jar** ([design record 0015](../../design/0015-m9-self-contained-polish.md)), not in the pack repository ([GT-New-Horizons-Modpack](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack)). The jar carries 121 quests in 14 chapters as resource files in BetterQuesting's own format, and a hidden config key installs them into the server's BetterQuesting database. This area specifies the quest data, how the quests unlock, and how the resources are built and checked.
 
 Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquesting/`) and BetterQuesting 3.8.89-GTNH source:
 
@@ -21,18 +21,18 @@ Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquest
 
 | File | Covers |
 |---|---|
-| [quest-line.md](quest-line.md) | All 115 quests: key, title, tier, hint, tasks, rewards, prerequisites, layout, per chapter. Design rules, reward budget, coverage matrix |
-| [authoring.md](authoring.md) | The pack's file format, ID derivation, one fully worked quest, reference builder and validator scripts, how to import and test, checklist |
+| [quest-line.md](quest-line.md) | All 121 quests: key, title, tier, hint, tasks, rewards, prerequisites, layout, per chapter. Design rules, reward budget, coverage matrix |
+| [authoring.md](authoring.md) | The pack's file format, ID derivation, one fully worked quest, the builder and validator in `tools/questbook/`, how to rebuild and test, checklist |
 
-No further sheets are needed: there is no code in this repo for this area.
+The code for this area is the quest data and tools in `tools/questbook/` (`quests.json`, `build_quests.py`, `validate_quests.py`), the generated resources in `src/main/resources/assets/gregguns/questbook/`, and `QuestbookResourcesTest`. The installer is a separate piece, built behind the hidden config key.
 
 ## Tab placement
 
-- **Position:** one new line at the end of `DefaultQuests/QuestLinesOrder.txt`, after `AAAAAAAAAAAAAAAAAAAAJQ==: Kill All the Things`. The file is 46 lines, one per tab, and the order of lines is the order of tabs ([QuestCommandDefaults#L420-L440](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L420-L440)). The text after the colon is only a label.
-- **Why last:** appending touches one line and shifts no other tab. The pack's last tab is already the combat tab, so GregGuns sits next to its closest relative. The other candidate, directly after "Tier 7 - ZPM", would split the tier tabs from their branches.
+- **Position:** the installer adds the line last in the tab order, which is what one new line at the end of `DefaultQuests/QuestLinesOrder.txt` would do, after `AAAAAAAAAAAAAAAAAAAAJQ==: Kill All the Things`. That file is 46 lines, one per tab, and the order of lines is the order of tabs ([QuestCommandDefaults#L420-L440](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L420-L440)). The text after the colon is only a label.
+- **Why last:** appending shifts no other tab. The pack's last tab is already the combat tab, so GregGuns sits next to its closest relative. The other candidate, directly after "Tier 7 - ZPM", would split the tier tabs from their branches.
 - **Line ID:** `D4B4PFfzWT2Q4DUgPjN9oQ==`, derived from the key `line:gregguns` ([authoring.md](authoring.md#ids)). The folders are `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/` and `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/`.
 - **Visibility:** `UNLOCKED`, as every tier line and Kill All the Things use.
-- **Icon:** `gregguns:pistol_9mm` (placeholder).
+- **Icon:** `gregguns:pistol_9mm`.
 
 ## Unlock design
 
@@ -60,7 +60,7 @@ Rules that keep the gates honest:
 
 ## Referenced pack quests
 
-Thirty existing quests are prerequisites. All have `questIDHigh:4` = 0 in the shipped pack. `Tab` is the quest line the quest is drawn in.
+Twenty-nine existing quests are prerequisites. All have `questIDHigh:4` = 0 in the shipped pack. `Tab` is the quest line the quest is drawn in.
 
 | ID | Name | Tab | Tier | Used by chapters |
 |---|---|---|---|---|
@@ -68,8 +68,7 @@ Thirty existing quests are prerequisites. All have `questIDHigh:4` = 0 in the sh
 | 44 | Welcome to Tier 0.5, Steam! | Tier 0.5 - Steam | Steam | start, steam |
 | 76 | Time to Get Some Steel | Multiblock Goals | LV | lv |
 | 88 | Welcome to Tier 1, LV | Tier 1 - LV | LV | lv, npc, site, gear, ammo |
-| 97 | Avengers, Assemble! | Tier 1 - LV | LV | lv, mach, ammo |
-| 100 | Press All the Things | Tier 1 - LV | LV | lv, ammo |
+| 97 | Avengers, Assemble! | Tier 1 - LV | LV | mach |
 | 114 | Basic Transport: Items | Tier 1 - LV | LV | ammo |
 | 160 | Tier 3 (HV) | Tier 3 - HV | HV | hv, npc, mach, gear, ammo |
 | 176 | Tier 4 (EV) | Tier 4 - EV | EV | ev, npc, mach, ammo |
@@ -99,7 +98,7 @@ Thirty existing quests are prerequisites. All have `questIDHigh:4` = 0 in the sh
 
 | Techguns feature | GregGuns approach | Pack mod or system | Evidence |
 |---|---|---|---|
-| (none: Techguns has no quests) | One BetterQuesting line of 115 quests | BetterQuesting 3.8.89-GTNH | [authoring.md](authoring.md) |
+| (none: Techguns has no quests) | One BetterQuesting line of 121 quests | BetterQuesting 3.8.89-GTNH | [authoring.md](authoring.md) |
 | Hostile NPC factions, bosses ([10](../10-entities-npcs/index.md)) | `bq_standard:hunt` on `gregguns.<Name>` | BetterQuesting | [quest-line.md](quest-line.md#npcs-and-bosses) |
 | Infernal variants ([infernal-mobs.md](../10-entities-npcs/infernal-mobs.md)) | Checkbox quests; a hunt cannot match "any infernal" | Infernal Mobs 1.10.7-GTNH | [quest-line.md](quest-line.md#npcs-and-bosses) |
 | Structures and their chests ([11](../11-worldgen/index.md)) | Checkbox quests, one per structure group | TooMuchLoot, EnhancedLootBags | [quest-line.md](quest-line.md#structures) |
@@ -109,25 +108,29 @@ Thirty existing quests are prerequisites. All have `questIDHigh:4` = 0 in the sh
 | Repair Bench, Turret ([08](../08-machines-production/index.md), [09](../09-machines-utility/index.md)) | A machines branch | GT multiblock framework | [quest-line.md](quest-line.md#machines) |
 | Kill All the Things line | Same hunt pattern, separate tab, optional cross-link | BetterQuesting | [quest-line.md](quest-line.md#relation-to-the-packs-lines) |
 
-## Pack-side changes
+## Delivered from the jar
 
-All paths are relative to `config/betterquesting/DefaultQuests/` in GT-New-Horizons-Modpack. They join the M9 pull request listed in [PACK-CHANGES.md](../PACK-CHANGES.md).
+Per [0015](../../design/0015-m9-self-contained-polish.md) nothing here is a change to the pack's repository. All paths are under `assets/gregguns/questbook/` in the jar, mirroring BetterQuesting 3.8.89-GTNH `DefaultQuests`. A jar cannot list a directory, so `index.json` names every file and the installer reads only those paths.
 
-| File | Change | Why | Sheet |
-|---|---|---|---|
-| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/QuestLine.json` (new) | Line properties: name `GregGuns`, icon, `visibility` `UNLOCKED` | Defines the tab | [authoring.md](authoring.md#line-files) |
-| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (115 new) | One position file per quest: `x`, `y`, `sizeX`, `sizeY` | Places each quest on the canvas | [quest-line.md](quest-line.md) |
-| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (115 new) | One file per quest: properties, prerequisites, tasks, rewards | The quest content | [authoring.md](authoring.md#quest-files) |
-| `QuestLinesOrder.txt` | Append `D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns` | Adds the tab after Kill All the Things | [Tab placement](#tab-placement) |
-| `QuestSettings.json` | Raise `pack_version:3` (2171 in the reference pack) in the release that adds the tab | Existing worlds keep their saved quests. A higher default version flags an update ([SaveLoadHandler#L236-L248](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/handlers/SaveLoadHandler.java#L236-L248)); players then run `/bq_admin default load`, which keeps their progress ([QuestCommandDefaults#L353-L365](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L353-L365)) | [authoring.md](authoring.md#import-and-test) |
-| `QuestLines/KillAlltheThings-AAAAAAAAAAAAAAAAAAAAJQ==/` | Optional: one position file for `gg.npc.intro` at 744, 72, size 24 | A transition entry. The pack Readme allows quests in more than one line for transitions. Column 744 is empty in that line | [quest-line.md](quest-line.md#relation-to-the-packs-lines) |
-| `config/EnhancedLootBags/LootBags.xml` | None for this area. The bag contents are already a row in PACK-CHANGES | Quests only hand out existing bags | [pack-loot.md](../06-items/pack-loot.md#enhancedlootbags) |
+| Resource | Content | Sheet |
+|---|---|---|
+| `index.json` | `format`, the `line` path, `linePositions` (121 paths), `quests` (121 paths) and `orderEntry` (`D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns`, the entry the installer adds to the tab order) | [authoring.md](authoring.md#file-layout) |
+| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/QuestLine.json` | Line properties: name `GregGuns`, icon, `visibility` `UNLOCKED` | [authoring.md](authoring.md#line-files) |
+| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (121) | One position file per quest: `x`, `y`, `sizeX`, `sizeY` | [quest-line.md](quest-line.md) |
+| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (121) | One file per quest: properties, prerequisites, tasks, rewards | [authoring.md](authoring.md#quest-files) |
 
-[PACK-CHANGES.md](../PACK-CHANGES.md) and [01-core](../01-core/index.md) each have a one-line quest row. They should point here once this area is accepted.
+How the install behaves:
+
+- **Hidden config key.** The installer, `compat/BetterQuestingInstall`, is built behind a hidden config key that is off by default and absent from the in-game config GUI. With it off nothing is installed and BetterQuesting is never touched.
+- **Repeatable.** Quest and line IDs are stable UUIDs derived from the keys ([GGS-12-02](#requirements)), so installing twice, or after an update, replaces the same quests rather than adding copies.
+- **No pack edits.** No `QuestSettings.json` bump, no `QuestLinesOrder.txt` edit, no `LootBags.xml` change. Quests only hand out existing bags ([pack-loot.md](../06-items/pack-loot.md#enhancedlootbags)).
+- **Optional transition.** A one-quest cross link from the Kill All the Things line is left to a pack maintainer who wants it ([quest-line.md](quest-line.md#relation-to-the-packs-lines)).
+
+[PACK-CHANGES.md](../PACK-CHANGES.md) and [01-core](../01-core/index.md) each have a one-line quest row; they point here.
 
 ## Requirements
 
-- **GGS-12-01** The tab is one quest line named `GregGuns`, `visibility` `UNLOCKED`, listed in `QuestLinesOrder.txt` after Kill All the Things.
+- **GGS-12-01** The tab is one quest line named `GregGuns`, `visibility` `UNLOCKED`, added to the tab order after Kill All the Things (the `orderEntry` in `index.json`).
 - **GGS-12-02** Every GregGuns quest and line ID is `uuid5(namespace 6f1f3c52-9d0a-4b6e-8a53-2c7e0f4b91d8, key)`, with the high and low halves written as signed longs and the file suffix as URL-safe Base64 of the 16 bytes. A key is never renamed after release; a retired quest is removed and its key is not reused.
 - **GGS-12-03** `gg.start.welcome` unlocks when either pack quest 11 or pack quest 44 is complete (`questLogic` `OR`). Every other quest uses `AND`.
 - **GGS-12-04** Every chapter intro lists the pack quests in the [Unlock design](#unlock-design) table, plus `gg.start.welcome`.
@@ -142,22 +145,22 @@ All paths are relative to `config/betterquesting/DefaultQuests/` in GT-New-Horiz
 - **GGS-12-13** Only the three config-gated boss quests (Dictator Dave, Cyberdemon, Alien Bug) are `SECRET`.
 - **GGS-12-14** Quest text is inline (`name:8`, `desc:8`), uses only the pack's `[warn]`, `[note]` and `[url]` tags, and teaches one mechanic per quest.
 - **GGS-12-15** No two position boxes in the line overlap. Chapter intros are 72 px, summaries 48 px, others 24 px.
-- **GGS-12-16** Every `gregguns:` item id in the files exists in the final registry. The placeholder names are replaced in M9.
+- **GGS-12-16** Every `gregguns:` item id and `gregguns.<Name>` entity name in the files is a name the mod registers, and every GregGuns machine is a `gregtech:gt.blockmachines` stack with one of the reserved MTE ids. `QuestbookResourcesTest` checks them against `NeiOrder`, `NpcMob` and `GregGunsMTEIDs`. No placeholder name is left.
 - **GGS-12-17** The Repair Bench and Turret quests carry a provisional tier and are revisited when [09](../09-machines-utility/index.md) settles them.
-- **GGS-12-18** The tab ships only in a pack that ships GregGuns. It is one folder pair plus one order line, so removing it is a delete and an unappend.
+- **GGS-12-18** The quest line ships in the GregGuns jar and is installed only when the hidden config key is on, so a pack without GregGuns, or with the key off, has no GregGuns tab and no dangling quests. The line and its quests have fixed IDs, so a later installer step can remove exactly them.
 
 ## Tests
 
 | Requirement | Verified by |
 |---|---|
-| GGS-12-01, 03, 04, 05, 06, 15 | The validator in [authoring.md](authoring.md#validator), run with `--only GregGuns-` on the pack checkout. Run against the reference pack with the full generated line merged in, it reports 0 errors; with one quest file removed it reports the three expected errors |
-| GGS-12-02 | Rebuild the files from the builder script and diff: the output must be byte-identical |
-| GGS-12-07, 08, 09, 10, 11, 12, 13 | Build-time checks in the builder (tier closure, bag ids, task kinds). A pack-side review confirms the table in [quest-line.md](quest-line.md) matches the files |
+| GGS-12-01, 03, 04, 05, 06, 15 | `QuestbookResourcesTest` (index lists every file, prerequisites resolve to a GregGuns quest or a pack id in the [Referenced pack quests](#referenced-pack-quests) table, no cycle, no overlapping boxes). `tools/questbook/validate_quests.py` runs the same checks on the files, and on a full `DefaultQuests` folder with `--only GregGuns-` |
+| GGS-12-02 | `QuestbookResourcesTest` recomputes uuid5 of every key in `tools/questbook/quests.json` and compares it to the resources. Rebuilding with `build_quests.py` gives byte-identical files |
+| GGS-12-07, 08, 09, 11, 12, 13 | Build-time checks in `build_quests.py` (bag tier at most the quest tier, crafting only in the Steam chapter, SECRET only on the three bosses, OR only on the welcome quest). A review confirms the table in [quest-line.md](quest-line.md) matches the data |
+| GGS-12-10, 16 | `QuestbookResourcesTest` against `NeiOrder.names()`, `NpcMob` and `GregGunsMTEIDs` |
 | GGS-12-14 | Manual review against the checklist in [authoring.md](authoring.md#checklist) |
-| GGS-12-16 | Validator with `--registry` (names dumped from a client with GregGuns) and `--entities` |
 | GGS-12-17 | Review when the 09 open questions close |
-| GGS-12-18 | Boot a dev pack without GregGuns and check the log for missing-item warnings only; the quests load |
-| All | The M9 exit gate: a full playthrough of every tier gate in a GTNH dev pack, with `/bq_admin default load` on a fresh world and on an old one |
+| GGS-12-18 | Installer tests (key off installs nothing) and a boot of a dev pack without BetterQuesting |
+| All | A full playthrough of every tier gate in a GTNH dev pack with the key on, on a fresh world and on an old one |
 
 ## Related areas
 
@@ -173,9 +176,8 @@ All paths are relative to `config/betterquesting/DefaultQuests/` in GT-New-Horiz
 1. **Infernal hunts.** A hunt cannot match "any infernal mob", so the three rank quests are honor-system checkboxes. A small GregGuns-registered BetterQuesting task (soft dependency on Infernal Mobs, reading `getIsRareEntity` and `getModSize`) would make them real. Needs a decision before M7.
 2. **Structure visits.** Checkbox quests stand in for a visit check. If GregGuns registers its structures with a map-gen structure id, `location` tasks could name them. Needs the M8 structure design.
 3. **Repair Bench and Turret tier.** The quests assume MV and HV. Settled by area 09 and a record on machines.
-4. **Reward balance.** 26 bags may be too many or too few. The M9 balance pass decides, with the pack team.
-5. **Bag content.** Bags draw random items from the whole tier group. Whether the pack wants a GregGuns-only bag group is a pack decision; it needs a new `LootBags.xml` group.
+4. **Reward balance.** 26 bags may be too many or too few. The M9 balance pass decides.
+5. **Bag content.** Bags draw random items from the whole tier group. Whether to add a GregGuns-only bag group is a server-owner step; it needs a new `LootBags.xml` group.
 6. **Hunting with GregGuns damage.** `damageType` can require a damage source name. Whether GregGuns kills should be required (for example "kill with a bullet") depends on the names fixed in [0004](../../design/0004-damage-model.md).
-7. **Translation.** The pack ships English inline. Whether GregGuns lang files should carry `betterquesting.quest.<id>.name` keys is for the pack team.
-8. **Registry dump.** How the item and entity name lists for the validator are produced (a dev command or a client dump) is not decided.
-9. **Aluminum gate.** No pack quest is solely about aluminum. The MV gate relies on 1148 depending on 103. A direct prerequisite on 103 is optional.
+7. **Translation.** The pack ships English inline. Whether GregGuns lang files should carry `betterquesting.quest.<id>.name` keys is a translation-readiness question for M9.
+8. **Aluminum gate.** No pack quest is solely about aluminum. The MV gate relies on 1148 depending on 103. A direct prerequisite on 103 is optional.

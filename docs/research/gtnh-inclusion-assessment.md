@@ -53,7 +53,7 @@ The facts about GregGuns come from this repo: [ROADMAP](../ROADMAP.md), [CONTRIB
 
 The vision document's section "What is the place of combat in the pack?" is an empty heading. One recorded suggestion asks for "tougher mobs on every tier, to give a use to your ever more powerful offensive capabilities." GregGuns adds tiered weapons, tiered mobs and NPC factions. It is the most concrete answer to that open question that anyone has built for the pack.
 
-Delivery to the pack is also planned in its native formats. There are 115 quests in BetterQuesting format, NEI recipe maps and structure previews, and module toggles that need a restart. A [pack change list](../gregguns-spec/PACK-CHANGES.md) records every config edit the pack would need.
+Delivery to the pack is also planned in its native formats. There are 121 quests in BetterQuesting format, NEI recipe maps and structure previews, and module toggles that need a restart. A [pack change list](../gregguns-spec/PACK-CHANGES.md) records every config edit the pack would need.
 
 ## Where GregGuns misses
 
