@@ -59,20 +59,20 @@ class HvRiflesLogicTest {
 
     @Test
     void theSheetsFiguresAreKept() {
-        assertEquals(8.0, AugDef.STATS.damage());
-        assertEquals(7.0, AugDef.STATS.damageMin());
+        assertEquals(11.0, AugDef.STATS.damage());
+        assertEquals(9.5, AugDef.STATS.damageMin());
         assertEquals(25, AugDef.STATS.dropStart());
         assertEquals(40, AugDef.STATS.dropEnd());
         assertEquals(0.01, AugDef.STATS.spread());
-        assertEquals(12.0, ScarDef.STATS.damage());
-        assertEquals(10.0, ScarDef.STATS.damageMin());
+        assertEquals(14.0, ScarDef.STATS.damage());
+        assertEquals(11.5, ScarDef.STATS.damageMin());
         assertEquals(30, ScarDef.STATS.dropStart());
         assertEquals(40, ScarDef.STATS.dropEnd());
         assertEquals(50, ScarDef.STATS.lifetimeTicks());
         assertEquals(0.25, ScarDef.STATS.penetration());
         assertEquals(0.015, ScarDef.STATS.spread());
-        assertEquals(6.0, VectorDef.STATS.damage());
-        assertEquals(4.0, VectorDef.STATS.damageMin());
+        assertEquals(8.0, VectorDef.STATS.damage());
+        assertEquals(5.5, VectorDef.STATS.damageMin());
         assertEquals(17, VectorDef.STATS.dropStart());
         assertEquals(25, VectorDef.STATS.dropEnd());
         assertEquals(30, VectorDef.STATS.lifetimeTicks());

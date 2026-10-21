@@ -32,8 +32,9 @@ public final class Mac10Def {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("mac10")
-        .damage(5.0)
-        .damageDrop(15, 24, 3.0)
+        .damage(6.0)
+        .damageDrop(15, 24, 3.5)
+        .npcDamage(5.0, 3.0)
         .spread(0.05)
         .fire(FireMode.AUTO, 2)
         .magazine(32)

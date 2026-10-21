@@ -44,7 +44,8 @@ public final class TeslaRifleDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("tesla_rifle")
-        .damage(12.0)
+        .damage(20.0)
+        .npcDamage(12.0)
         .spread(0.0)
         .zoom(0.75, 1.0)
         .fire(FireMode.AUTO, 8)

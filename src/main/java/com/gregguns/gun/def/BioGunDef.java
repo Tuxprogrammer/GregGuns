@@ -46,8 +46,9 @@ public final class BioGunDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("bio_gun")
-        .damage(10.0)
-        .damageDrop(8, 15, 8.0)
+        .damage(16.0)
+        .damageDrop(8, 15, 13.0)
+        .npcDamage(10.0, 8.0)
         .spread(0.015)
         .fire(FireMode.AUTO, 6)
         .magazine(30)

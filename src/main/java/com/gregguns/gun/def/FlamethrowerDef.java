@@ -43,8 +43,9 @@ public final class FlamethrowerDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("flamethrower")
-        .damage(5.0)
-        .damageDrop(4, 16, 2.0)
+        .damage(6.0)
+        .damageDrop(4, 16, 2.5)
+        .npcDamage(5.0, 2.0)
         .spread(0.05)
         .fire(FireMode.AUTO, 2)
         .magazine(100)

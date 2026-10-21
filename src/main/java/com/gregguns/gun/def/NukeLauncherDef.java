@@ -32,7 +32,8 @@ public final class NukeLauncherDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("nuke_launcher")
-        .damage(250.0)
+        .damage(400.0)
+        .npcDamage(250.0)
         .spread(0.05)
         .fire(FireMode.AUTO, 10)
         .magazine(1)

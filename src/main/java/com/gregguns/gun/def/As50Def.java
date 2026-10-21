@@ -36,8 +36,9 @@ public final class As50Def {
     // Deviation: Techguns' AI attack time has a variance of 10 ticks; GunStats has no variance field, so the NPC uses
     // the plain 30.
     public static final GunStats STATS = GunStats.builder("as50")
-        .damage(32.0)
-        .damageDrop(30, 40, 24.0)
+        .damage(42.0)
+        .damageDrop(30, 40, 31.5)
+        .npcDamage(32.0, 24.0)
         .spread(0.0625)
         .zoom(0.35, 0.125)
         .fire(FireMode.SEMI, 10)

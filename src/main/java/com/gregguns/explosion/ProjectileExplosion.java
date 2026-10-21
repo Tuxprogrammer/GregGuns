@@ -11,6 +11,9 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S27PacketExplosion;
@@ -119,6 +122,7 @@ public final class ProjectileExplosion {
     private final float damage;
     private final float innerRadius;
     private final float outerRadius;
+    private float annihilationRadius;
     private Entity excluded;
 
     /**
@@ -147,6 +151,17 @@ public final class ProjectileExplosion {
         this.damage = damage;
         this.innerRadius = innerRadius;
         this.outerRadius = outerRadius;
+    }
+
+    /**
+     * Turns on the nuke's total-annihilation rule ({@link NukeAnnihilation}) for living victims inside its kill zone.
+     *
+     * @param blastRadius the gun's blast radius, blocks (the kill zone is a share of it)
+     * @return this
+     */
+    public ProjectileExplosion annihilating(float blastRadius) {
+        this.annihilationRadius = blastRadius;
+        return this;
     }
 
     /**
@@ -290,6 +305,25 @@ public final class ProjectileExplosion {
                 continue;
             }
             Entity attacker = owner != null ? owner : exploder;
+            if (annihilationRadius > 0.0F && victim instanceof EntityLivingBase
+                && NukeAnnihilation.inKillZone(distance, annihilationRadius)) {
+                EntityLivingBase living = (EntityLivingBase) victim;
+                boolean boss = living instanceof IBossDisplayData || living instanceof EntityWither
+                    || living instanceof EntityDragon;
+                double lethal = NukeAnnihilation.amount(
+                    distance,
+                    annihilationRadius,
+                    amount,
+                    boss,
+                    living.getHealth(),
+                    living.getAbsorptionAmount(),
+                    living.getMaxHealth());
+                if (DamageSources.annihilate(victim, attacker, (float) lethal)) {
+                    hurt++;
+                }
+                push(victim, centre, distance, pushed);
+                continue;
+            }
             if (DamageSources.strike(victim, DamageType.EXPLOSION, attacker, (float) amount, 0.0)) {
                 hurt++;
             }

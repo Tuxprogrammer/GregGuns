@@ -131,6 +131,32 @@ public final class DamageSources {
     }
 
     /**
+     * The nuke's kill-zone hit: an {@link DamageType#UNRESISTABLE} source (bypasses armor, absolute) that ignores
+     * invulnerability frames. The configured damage factor only gates the hit (a factor of zero, for example PvP off,
+     * blocks it); the amount itself is not scaled, so a lethal amount stays lethal.
+     *
+     * @param target   the entity hit
+     * @param attacker the attacker, may be {@code null} (counts as an NPC)
+     * @param amount   the damage to deal
+     * @return what {@code attackEntityFrom} returned
+     */
+    public static boolean annihilate(Entity target, Entity attacker, float amount) {
+        if (attacker != target) {
+            MinecraftServer server = MinecraftServer.getServer();
+            boolean pvp = server != null && server.isPVPEnabled();
+            double factor = DamageFactors
+                .damageFactor(settingsFromConfig(), attackerOf(attacker), target instanceof EntityPlayer, pvp);
+            if (factor <= 0.0) {
+                return false;
+            }
+        }
+        DirectDamageSource source = direct(DamageType.UNRESISTABLE, attacker, 1.0).ignoringInvulnerabilityFrames(true);
+        boolean taken = target.attackEntityFrom(source, amount);
+        restoreFramesIfRejected(target, source.hit());
+        return taken;
+    }
+
+    /**
      * Classifies a shooter for the damage factors: players, turrets ({@link TurretAttacker}) and everything else.
      *
      * @param shooter the shooter, may be {@code null}

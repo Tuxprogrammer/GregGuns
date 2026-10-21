@@ -35,8 +35,9 @@ public final class CombatShotgunDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("combat_shotgun")
-        .damage(4.0)
-        .damageDrop(2, 5, 1.5)
+        .damage(5.0)
+        .damageDrop(2, 5, 2.0)
+        .npcDamage(4.0, 1.5)
         .spread(0.01)
         .pellets(7, 0.15, false)
         .fire(FireMode.AUTO, 14)

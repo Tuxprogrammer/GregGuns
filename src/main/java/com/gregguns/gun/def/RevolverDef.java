@@ -33,8 +33,9 @@ public final class RevolverDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("revolver")
-        .damage(8.0)
-        .damageDrop(12, 20, 6.0)
+        .damage(10.0)
+        .damageDrop(12, 20, 7.5)
+        .npcDamage(8.0, 6.0)
         .spread(0.025)
         .fire(FireMode.SEMI, 6)
         .magazine(6)

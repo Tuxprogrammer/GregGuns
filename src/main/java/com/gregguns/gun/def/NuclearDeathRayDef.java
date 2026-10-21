@@ -10,7 +10,7 @@ import com.gregguns.gun.server.NuclearDeathRayScenarios;
 /**
  * The Nuclear Death Ray: a ZPM energy gun that holds a continuous radiation beam. While the trigger is held it fires
  * every tick; each tick's {@code BeamProjectile} refreshes the shooter's beam, traces 48 blocks and burns every entity
- * on the line once with RADIATION damage (6 down to 1 between 20 and 40 blocks, 35 percent armor penetration). The beam
+ * on the line once with RADIATION damage (30 down to 5 between 20 and 40 blocks, ignoring armor: design 0016). The beam
  * plays its own start and loop sounds, so the gun does not set {@code startsLoop} and its per-shot fire sound is
  * silent.
  *
@@ -45,14 +45,15 @@ public final class NuclearDeathRayDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder(NAME)
-        .damage(6.0)
-        .damageDrop(20.0, 40.0, 1.0)
+        .damage(30.0)
+        .damageDrop(20.0, 40.0, 5.0)
+        .npcDamage(6.0, 1.0)
         .spread(0.0)
         .fire(FireMode.AUTO, 1)
         .energy(EU_PER_SHOT, CAPACITY_EU)
         .projectile(7.5, 5)
         .projectileKind(ProjectileKind.BEAM)
-        .penetration(0.35)
+        .penetration(1.0)
         .animation(5, 5)
         .ai(24, 40, 5, 5)
         .build();

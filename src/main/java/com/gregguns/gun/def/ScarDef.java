@@ -38,8 +38,9 @@ public final class ScarDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("scar")
-        .damage(12.0)
-        .damageDrop(30, 40, 10.0)
+        .damage(14.0)
+        .damageDrop(30, 40, 11.5)
+        .npcDamage(12.0, 10.0)
         .spread(0.015)
         .zoom(0.65, 0.5)
         .fire(FireMode.AUTO, 4)

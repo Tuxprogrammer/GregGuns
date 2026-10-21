@@ -46,8 +46,9 @@ public final class BlasterRifleDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder(NAME)
-        .damage(10.0)
-        .damageDrop(25, 35, 8.0)
+        .damage(24.0)
+        .damageDrop(25, 35, 19.0)
+        .npcDamage(10.0, 8.0)
         .spread(0.025)
         .zoom(0.5, 0.75)
         .fire(FireMode.AUTO, 5)

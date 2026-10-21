@@ -45,8 +45,9 @@ public final class MinigunDef {
     /** The stats. */
     // Deviation: the AI attack time variance (13 ticks) is dropped, as for the other guns.
     public static final GunStats STATS = GunStats.builder("minigun")
-        .damage(5.0)
-        .damageDrop(20, 40, 3.0)
+        .damage(7.0)
+        .damageDrop(20, 40, 4.0)
+        .npcDamage(5.0, 3.0)
         .spread(0.025)
         .fire(FireMode.AUTO, 1)
         .magazine(200)

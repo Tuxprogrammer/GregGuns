@@ -288,7 +288,8 @@ public class NpcEntity extends EntityMob implements IRangedAttackMob, HasNpcFact
         }
         lastShotFactor = factor;
         ItemGun gun = (ItemGun) held.getItem();
-        GunStats stats = gun.stats();
+        GunStats stats = gun.stats()
+            .forNpc();
         aimAt(target);
         NpcFiring.Scaling scaling = NpcFiring
             .scaling(NpcFiring.Difficulty.fromVanillaId(worldObj.difficultySetting.getDifficultyId()), false);

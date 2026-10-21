@@ -47,8 +47,9 @@ public final class AlienBlasterDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder(NAME)
-        .damage(16.0)
-        .damageDrop(50, 50, 16.0)
+        .damage(44.0)
+        .damageDrop(50, 50, 44.0)
+        .npcDamage(16.0, 16.0)
         .spread(0.0)
         .fire(FireMode.AUTO, 8)
         .energy(EU_PER_SHOT, CAPACITY_EU)

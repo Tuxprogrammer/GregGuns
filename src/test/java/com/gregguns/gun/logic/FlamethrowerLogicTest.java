@@ -33,8 +33,8 @@ class FlamethrowerLogicTest {
 
     @Test
     void theSheetsFiguresAreKept() {
-        assertEquals(5.0, STATS.damage());
-        assertEquals(2.0, STATS.damageMin());
+        assertEquals(6.0, STATS.damage());
+        assertEquals(2.5, STATS.damageMin());
         assertEquals(4, STATS.dropStart());
         assertEquals(16, STATS.dropEnd());
         assertEquals(16, STATS.lifetimeTicks());
@@ -55,10 +55,10 @@ class FlamethrowerLogicTest {
     @Test
     void theRangeIsSixteenBlocksAndDamageFallsFromFourToSixteen() {
         assertEquals(16.0, STATS.reachBlocks(), 1e-9);
-        assertEquals(5.0, falloff(4), 1e-9);
-        assertEquals(3.5, falloff(10), 1e-9);
-        assertEquals(2.0, falloff(16), 1e-9);
-        assertEquals(2.0, falloff(40), 1e-9);
+        assertEquals(6.0, falloff(4), 1e-9);
+        assertEquals(4.25, falloff(10), 1e-9);
+        assertEquals(2.5, falloff(16), 1e-9);
+        assertEquals(2.5, falloff(40), 1e-9);
     }
 
     @Test

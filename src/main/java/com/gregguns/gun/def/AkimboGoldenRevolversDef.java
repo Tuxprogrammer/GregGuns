@@ -32,8 +32,9 @@ public final class AkimboGoldenRevolversDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("akimbo_golden_revolvers")
-        .damage(16.0)
-        .damageDrop(15, 30, 6.0)
+        .damage(28.0)
+        .damageDrop(15, 30, 10.5)
+        .npcDamage(16.0, 6.0)
         .spread(0.035)
         .fire(FireMode.SEMI, 6)
         .magazine(12)

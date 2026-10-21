@@ -35,8 +35,9 @@ public final class BoltActionDef {
     // Deviation: Techguns' AI attack time has a variance of 20 ticks; GunStats has no variance field, so the NPC uses
     // the plain 60.
     public static final GunStats STATS = GunStats.builder("bolt_action_rifle")
-        .damage(16.0)
-        .damageDrop(20, 30, 10.0)
+        .damage(20.0)
+        .damageDrop(20, 30, 12.5)
+        .npcDamage(16.0, 10.0)
         .spread(0.05)
         .zoom(0.35, 0.125)
         .fire(FireMode.SEMI, 25)

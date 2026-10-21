@@ -25,8 +25,8 @@ class GunCatalogTest {
     void revolverMatchesItsSheet() {
         // docs/techguns-spec/02-guns/sheets-handguns-smgs.md, Revolver, section 3.
         GunStats r = GunCatalog.REVOLVER;
-        assertEquals(8.0, r.damage());
-        assertEquals(6.0, r.damageMin());
+        assertEquals(10.0, r.damage());
+        assertEquals(7.5, r.damageMin());
         assertEquals(12.0, r.dropStart());
         assertEquals(20.0, r.dropEnd());
         assertEquals(25, r.lifetimeTicks());
@@ -49,8 +49,8 @@ class GunCatalogTest {
     void boltActionMatchesItsSheet() {
         // docs/techguns-spec/02-guns/sheets-rifles-shotguns.md, Bolt Action Rifle, section 3.
         GunStats r = GunCatalog.BOLT_ACTION;
-        assertEquals(16.0, r.damage());
-        assertEquals(10.0, r.damageMin());
+        assertEquals(20.0, r.damage());
+        assertEquals(12.5, r.damageMin());
         assertEquals(20.0, r.dropStart());
         assertEquals(30.0, r.dropEnd());
         assertEquals(40, r.lifetimeTicks());

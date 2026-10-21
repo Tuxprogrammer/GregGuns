@@ -33,8 +33,9 @@ public final class GoldenRevolverDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("golden_revolver")
-        .damage(14.0)
-        .damageDrop(12, 30, 6.0)
+        .damage(28.0)
+        .damageDrop(12, 30, 12.0)
+        .npcDamage(14.0, 6.0)
         .spread(0.015)
         .fire(FireMode.SEMI, 8)
         .magazine(6)

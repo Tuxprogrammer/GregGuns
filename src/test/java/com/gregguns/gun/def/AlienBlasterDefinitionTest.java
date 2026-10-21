@@ -25,8 +25,8 @@ class AlienBlasterDefinitionTest {
     @Test
     void carriesTheSheetNumbers() {
         GunStats s = AlienBlasterDef.STATS;
-        assertEquals(16.0, s.damage());
-        assertEquals(16.0, s.damageMin(), "no drop-off: start and end are both 50");
+        assertEquals(44.0, s.damage());
+        assertEquals(44.0, s.damageMin(), "no drop-off: start and end are both 50");
         assertEquals(1.5, s.projectileSpeed());
         assertEquals(50, s.lifetimeTicks());
         assertEquals(0.0, s.spread());

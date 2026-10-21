@@ -23,12 +23,12 @@ class NuclearDeathRayDefinitionTest {
     @Test
     void carriesTheSheetNumbers() {
         GunStats s = NuclearDeathRayDef.STATS;
-        assertEquals(6.0, s.damage());
-        assertEquals(1.0, s.damageMin());
+        assertEquals(30.0, s.damage());
+        assertEquals(5.0, s.damageMin());
         assertEquals(20.0, s.dropStart());
         assertEquals(40.0, s.dropEnd());
         assertEquals(0.0, s.spread());
-        assertEquals(0.35, s.penetration());
+        assertEquals(1.0, s.penetration());
         assertEquals(5, s.recoilTicks());
         assertEquals(5, s.muzzleFlashTicks());
         assertEquals(24.0, s.aiRange());

@@ -25,8 +25,8 @@ class NetherBlasterDefinitionTest {
 
     @Test
     void carriesTheSheetNumbers() {
-        assertEquals(14.0, S.damage());
-        assertEquals(8.0, S.damageMin());
+        assertEquals(40.0, S.damage());
+        assertEquals(23.0, S.damageMin());
         assertEquals(15.0, S.dropStart());
         assertEquals(30.0, S.dropEnd());
         assertEquals(0.0, S.spread());

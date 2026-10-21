@@ -33,8 +33,8 @@ class ShotgunAndAkimboLogicTest {
 
     @Test
     void theShotgunSheetFiguresAreKept() {
-        assertEquals(4.0, SHOTGUN.damage());
-        assertEquals(1.5, SHOTGUN.damageMin());
+        assertEquals(5.0, SHOTGUN.damage());
+        assertEquals(2.0, SHOTGUN.damageMin());
         assertEquals(2, SHOTGUN.dropStart());
         assertEquals(5, SHOTGUN.dropEnd());
         assertEquals(15, SHOTGUN.lifetimeTicks());
@@ -153,7 +153,7 @@ class ShotgunAndAkimboLogicTest {
         assertEquals(12, REVOLVERS.magazineSize());
         assertEquals(70, REVOLVERS.reloadTicks());
         assertEquals(0.035, REVOLVERS.spread());
-        assertEquals(6.0, REVOLVERS.damageMin());
+        assertEquals(7.5, REVOLVERS.damageMin());
         assertEquals(FireMode.SEMI, REVOLVERS.fireMode());
         assertEquals(RevolverDef.STATS.damage(), REVOLVERS.damage());
         assertEquals(PistolDef.STATS.damage(), PISTOLS.damage());

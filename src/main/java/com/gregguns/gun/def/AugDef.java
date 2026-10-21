@@ -34,8 +34,9 @@ public final class AugDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("aug")
-        .damage(8.0)
-        .damageDrop(25, 40, 7.0)
+        .damage(11.0)
+        .damageDrop(25, 40, 9.5)
+        .npcDamage(8.0, 7.0)
         .spread(0.01)
         .zoom(0.5, 0.5)
         .fire(FireMode.AUTO, 3)

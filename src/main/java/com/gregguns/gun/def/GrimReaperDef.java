@@ -41,7 +41,8 @@ public final class GrimReaperDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder(NAME)
-        .damage(50.0)
+        .damage(90.0)
+        .npcDamage(50.0)
         .spread(0.05)
         .fire(FireMode.AUTO, 6)
         .magazine(4)

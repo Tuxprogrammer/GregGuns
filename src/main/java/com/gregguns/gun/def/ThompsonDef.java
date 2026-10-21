@@ -31,8 +31,9 @@ public final class ThompsonDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("thompson_smg")
-        .damage(5.0)
-        .damageDrop(15, 24, 3.0)
+        .damage(6.0)
+        .damageDrop(15, 24, 3.5)
+        .npcDamage(5.0, 3.0)
         .spread(0.05)
         .fire(FireMode.AUTO, 3)
         .magazine(20)

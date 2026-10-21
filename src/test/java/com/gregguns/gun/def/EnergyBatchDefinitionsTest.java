@@ -38,8 +38,8 @@ class EnergyBatchDefinitionsTest {
         assertEquals(5, s.fireRateTicks());
         assertEquals(0.5, s.zoomFactor());
         assertTrue(s.hasScope());
-        assertEquals(10.0, s.damage());
-        assertEquals(8.0, s.damageMin());
+        assertEquals(24.0, s.damage());
+        assertEquals(19.0, s.damageMin());
         assertEquals(0.2, s.penetration());
         assertEquals(Tier.IV, BlasterRifleDef.DEFINITION.tier());
         assertEquals(DamageType.ENERGY, BlasterRifleDef.DEFINITION.damageType());
@@ -56,7 +56,7 @@ class EnergyBatchDefinitionsTest {
         assertEquals(0.0, s.blastRadius(), "Techguns commented the area explosion out");
         assertFalse(s.hasScope());
         assertFalse(s.akimbo());
-        assertEquals(16.0, s.damage());
+        assertEquals(32.0, s.damage());
         assertEquals(Tier.IV, DeatomizerPistolDef.DEFINITION.tier());
     }
 
@@ -96,8 +96,8 @@ class EnergyBatchDefinitionsTest {
             s.pattern()
                 .projectileCount());
         assertEquals(0.1, s.spread());
-        assertEquals(6.0, s.damage());
-        assertEquals(6.0, s.damageMin(), "no drop-off");
+        assertEquals(12.0, s.damage());
+        assertEquals(12.0, s.damageMin(), "no drop-off");
         assertEquals(37.5, s.reachBlocks(), 1e-9);
         assertTrue(s.hasScope());
         assertEquals(0.75, s.zoomFactor());

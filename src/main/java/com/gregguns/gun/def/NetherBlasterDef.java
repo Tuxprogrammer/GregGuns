@@ -38,8 +38,9 @@ public final class NetherBlasterDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("nether_blaster")
-        .damage(14.0)
-        .damageDrop(15, 30, 8.0)
+        .damage(40.0)
+        .damageDrop(15, 30, 23.0)
+        .npcDamage(14.0, 8.0)
         .spread(0.0)
         .fire(FireMode.AUTO, 8)
         .magazine(NetherChargeAmmo.SHOTS_PER_CHARGE)

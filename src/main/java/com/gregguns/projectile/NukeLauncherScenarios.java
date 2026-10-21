@@ -2,8 +2,13 @@ package com.gregguns.projectile;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 
 import com.gregguns.core.config.ExplosionsConfig;
 import com.gregguns.core.testing.Scenario;
@@ -12,6 +17,7 @@ import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.explosion.BlastTicker;
 import com.gregguns.explosion.ExplosionRules;
+import com.gregguns.explosion.NukeAnnihilation;
 import com.gregguns.fx.FxResources;
 import com.gregguns.fx.FxStress;
 import com.gregguns.gun.def.GunDefinition;
@@ -53,6 +59,7 @@ public final class NukeLauncherScenarios {
                 "The Nuke Launcher (GR-102) is on GT's Assembly Line list at ZPM with its sheet inputs, both fluids, its research item, scan time and voltage, and its output is ours.",
                 GunLineTable.NUKE_LAUNCHER));
         registry.register(new Fire());
+        registry.register(new KillZone());
         registry.register(new Safe());
         registry.register(new Stress());
     }
@@ -68,7 +75,7 @@ public final class NukeLauncherScenarios {
         }
     }
 
-    /** A zombie that cannot move and has 2000 health, so a 250 damage hit never kills it. */
+    /** A zombie that cannot move and has 2000 health, so only the kill zone kills it. */
     private static EntityZombie tough(ScenarioContext ctx, double dx, double dz) {
         EntityZombie z = LauncherScenarios.sturdy(ctx, dx, dz);
         z.getEntityAttribute(SharedMonsterAttributes.maxHealth)
@@ -112,7 +119,7 @@ public final class NukeLauncherScenarios {
 
     // ----- fire --------------------------------------------------------------------------------------------------
 
-    /** A nuke into a zombie: the direct hit lands once and hard, the splash ramp spans radius 10. */
+    /** A nuke into a zombie: the kill zone annihilates, the splash ramp spans radius 10. */
     private static final class Fire implements Scenario {
 
         @Override
@@ -122,7 +129,7 @@ public final class NukeLauncherScenarios {
 
         @Override
         public String description() {
-            return "A Nuke Launcher round fired into a zombie 4 blocks away is a rocket with blast radius 10 and damage 250: the zombie hit loses the full 250 once and is thrown far harder than a rocket would, a zombie 3 blocks beside the impact takes the full splash, one 10 blocks away takes the ramp's reduced share, and the round is spent.";
+            return "A Nuke Launcher round fired into a zombie 4 blocks away is a rocket with blast radius 10 and damage 400 (design 0016): the zombie hit dies outright, is thrown far harder than a rocket would, a zombie 3 blocks beside the impact (inside the 6-block kill zone) dies too, one 10 blocks away takes the ramp's reduced share, and the round is spent.";
         }
 
         @Override
@@ -152,29 +159,19 @@ public final class NukeLauncherScenarios {
                 LauncherScenarios.restore(savedBlocks, savedSelf);
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.checkEquals("blast radius", 10.0F, r.getBlastRadius());
-                float direct = LauncherScenarios.lossFor(front, 250.0);
-                out.check(
-                    Math.abs(LauncherScenarios.lost(front) - direct) < EPS,
-                    "the zombie hit should lose the full 250 once, " + direct
-                        + " but lost "
-                        + LauncherScenarios.lost(front));
+                out.check(front.isDead || front.getHealth() <= 0.0F, "the zombie hit should be annihilated");
                 double push = Math.abs(front.motionX) + Math.abs(front.motionZ);
                 out.check(push > 1.0, "knockback x10 should throw the zombie hard, motion " + push);
                 double dNear = distance(near, r);
-                float expectNear = LauncherScenarios.lossFor(near, LauncherMath.splashDamage(250.0, 10.0, dNear));
                 out.check(
-                    dNear < LauncherMath.innerRadius(10.0) && Math.abs(LauncherScenarios.lost(near) - expectNear) < EPS
-                        && Math.abs(expectNear - LauncherScenarios.lossFor(near, 250.0)) < EPS,
-                    "inside the inner radius (distance " + dNear
-                        + ") the splash is the full 250: expected "
-                        + expectNear
-                        + " lost "
-                        + LauncherScenarios.lost(near));
+                    dNear < NukeAnnihilation.killRadius(10.0) && (near.isDead || near.getHealth() <= 0.0F),
+                    "inside the kill zone (distance " + dNear + ") the zombie should be annihilated");
                 double dFar = distance(far, r);
-                float expectFar = LauncherScenarios.lossFor(far, LauncherMath.splashDamage(250.0, 10.0, dFar));
+                float expectFar = LauncherScenarios
+                    .lossFor(far, LauncherMath.splashDamage(NukeLauncherDef.STATS.damage(), 10.0, dFar));
                 out.check(
                     dFar > LauncherMath.innerRadius(10.0) && expectFar > 0.0F
-                        && expectFar < LauncherScenarios.lossFor(far, 250.0)
+                        && expectFar < LauncherScenarios.lossFor(far, NukeLauncherDef.STATS.damage())
                         && Math.abs(LauncherScenarios.lost(far) - expectFar) < EPS,
                     "on the ramp (distance " + dFar
                         + ") the zombie should lose "
@@ -187,6 +184,81 @@ public final class NukeLauncherScenarios {
                     Blocks.stone,
                     ctx.world()
                         .getBlock(ctx.originX() + 4, ctx.originY() - 1, ctx.originZ()));
+                return out.build();
+            });
+        }
+    }
+
+    // ----- kill zone ---------------------------------------------------------------------------------------------
+
+    /** A boss stand-in: a zombie that carries the vanilla boss marker. */
+    private static final class BossZombie extends EntityZombie implements IBossDisplayData {
+
+        BossZombie(net.minecraft.world.World world) {
+            super(world);
+        }
+    }
+
+    /** The kill zone: an armored zombie dies outright, a boss stand-in loses half its maximum health. */
+    private static final class KillZone implements Scenario {
+
+        @Override
+        public String name() {
+            return "gun.nuke_launcher.killzone";
+        }
+
+        @Override
+        public String description() {
+            return "A Nuke Launcher round fired at a zombie in full diamond-grade armor kills it outright (the kill zone ignores armor), and a boss-marked zombie 3 blocks from the impact, inside the 6-block kill zone, loses exactly half its maximum health instead of dying.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            boolean savedBlocks = ExplosionsConfig.blockDamage;
+            boolean savedSelf = ExplosionsConfig.selfDamage;
+            LauncherScenarios.restore(false, true);
+            GunRig rig = new GunRig(ctx, GunItems.get(NukeLauncherDef.NAME), 1, CORRIDOR);
+            floor(ctx);
+            EntityZombie armored = tough(ctx, 4.0, 0.0);
+            armored.setCurrentItemOrArmor(4, new ItemStack(Items.diamond_helmet));
+            armored.setCurrentItemOrArmor(3, new ItemStack(Items.diamond_chestplate));
+            armored.setCurrentItemOrArmor(2, new ItemStack(Items.diamond_leggings));
+            armored.setCurrentItemOrArmor(1, new ItemStack(Items.diamond_boots));
+            EntityZombie boss = new BossZombie(ctx.world());
+            boss.setPosition(ctx.originX() + 4.5, ctx.originY(), ctx.originZ() + 3.5);
+            boss.getEntityAttribute(SharedMonsterAttributes.maxHealth)
+                .setBaseValue(2000.0);
+            boss.setHealth(2000.0F);
+            boss.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 2000, 10));
+            ctx.world()
+                .spawnEntityInWorld(boss);
+            LauncherScenarios.Tracker<RocketProjectile> rocket = new LauncherScenarios.Tracker<>(
+                ctx,
+                RocketProjectile.class);
+            LauncherScenarios.pull(rig);
+            return ScenarioResult.pending(name(), 60, ticks -> {
+                rig.tick();
+                RocketProjectile r = rocket.poll(ctx);
+                if (r == null || !r.isDead) {
+                    if (ticks >= 55) {
+                        LauncherScenarios.restore(savedBlocks, savedSelf);
+                        return ScenarioResult.fail(name(), "the nuke never exploded");
+                    }
+                    return null;
+                }
+                LauncherScenarios.restore(savedBlocks, savedSelf);
+                ScenarioResult.Builder out = ScenarioResult.builder(name());
+                out.check(
+                    armored.getTotalArmorValue() > 10 && (armored.isDead || armored.getHealth() <= 0.0F),
+                    "the armored zombie should be annihilated despite its armor");
+                double dBoss = distance(boss, r);
+                out.check(
+                    dBoss < NukeAnnihilation.killRadius(10.0),
+                    "the boss stand-in should be inside the kill zone, distance " + dBoss);
+                out.check(!boss.isDead, "a boss must survive the kill zone");
+                out.check(
+                    Math.abs(boss.getHealth() - 1000.0F) < EPS,
+                    "the boss should lose exactly half its 2000 health, but has " + boss.getHealth());
                 return out.build();
             });
         }

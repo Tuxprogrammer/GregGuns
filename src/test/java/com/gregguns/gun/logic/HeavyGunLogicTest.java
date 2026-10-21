@@ -33,8 +33,8 @@ class HeavyGunLogicTest {
 
     @Test
     void theAs50SheetFiguresAreKept() {
-        assertEquals(32.0, AS50.damage());
-        assertEquals(24.0, AS50.damageMin());
+        assertEquals(42.0, AS50.damage());
+        assertEquals(31.5, AS50.damageMin());
         assertEquals(30, AS50.dropStart());
         assertEquals(40, AS50.dropEnd());
         assertEquals(50, AS50.lifetimeTicks());
@@ -63,10 +63,10 @@ class HeavyGunLogicTest {
 
     @Test
     void theAs50DamageHoldsToThirtyBlocksThenFallsToTwentyFourAtForty() {
-        assertEquals(32.0, DamageFalloff.damageAt(AS50.damage(), AS50.damageMin(), 30, 40, 30.0), 1e-9);
-        assertEquals(28.0, DamageFalloff.damageAt(AS50.damage(), AS50.damageMin(), 30, 40, 35.0), 1e-9);
-        assertEquals(24.0, DamageFalloff.damageAt(AS50.damage(), AS50.damageMin(), 30, 40, 40.0), 1e-9);
-        assertEquals(24.0, DamageFalloff.damageAt(AS50.damage(), AS50.damageMin(), 30, 40, 100.0), 1e-9);
+        assertEquals(42.0, DamageFalloff.damageAt(AS50.damage(), AS50.damageMin(), 30, 40, 30.0), 1e-9);
+        assertEquals(36.75, DamageFalloff.damageAt(AS50.damage(), AS50.damageMin(), 30, 40, 35.0), 1e-9);
+        assertEquals(31.5, DamageFalloff.damageAt(AS50.damage(), AS50.damageMin(), 30, 40, 40.0), 1e-9);
+        assertEquals(31.5, DamageFalloff.damageAt(AS50.damage(), AS50.damageMin(), 30, 40, 100.0), 1e-9);
     }
 
     @Test
@@ -107,8 +107,8 @@ class HeavyGunLogicTest {
 
     @Test
     void theLmgSheetFiguresAreKept() {
-        assertEquals(8.0, LMG.damage());
-        assertEquals(6.0, LMG.damageMin());
+        assertEquals(10.0, LMG.damage());
+        assertEquals(7.5, LMG.damageMin());
         assertEquals(30, LMG.dropStart());
         assertEquals(40, LMG.dropEnd());
         assertEquals(50, LMG.lifetimeTicks());
