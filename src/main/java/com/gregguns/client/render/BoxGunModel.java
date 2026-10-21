@@ -85,7 +85,7 @@ public final class BoxGunModel extends ModelBase implements GunModel {
         float py = tilted ? box.pivotY() : box.y();
         float pz = tilted ? box.pivotZ() : box.z();
         r.setRotationPoint(px, py, pz);
-        r.addBox(box.x() - px, box.y() - py, box.z() - pz, box.w(), box.h(), box.d());
+        r.addBox(box.x() - px, box.y() - py, box.z() - pz, box.w(), box.h(), box.d(), box.inflate());
         r.rotateAngleZ = (float) Math.toRadians(box.tiltZDegrees());
         r.rotateAngleX = (float) Math.toRadians(box.tiltXDegrees());
         r.rotateAngleY = (float) Math.toRadians(box.tiltYDegrees());

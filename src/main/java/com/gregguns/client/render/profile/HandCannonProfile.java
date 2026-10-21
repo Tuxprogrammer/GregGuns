@@ -54,7 +54,7 @@ public final class HandCannonProfile {
         new BoxSpec("vent_rear", 0, 14, 11, 2, 2, 5, -12f, -4f, -2.5f, NO_PIVOT, 0f),
         new BoxSpec("vent_front", 0, 0, 11, 2, 2, 5, -6f, -4f, -2.5f, NO_PIVOT, 0f),
         new BoxSpec("barrel_core", 0, 0, 27, 22, 5, 3, -4f, -3f, -1.5f, NO_PIVOT, 0f),
-        new BoxSpec("barrel_flank", 0, 0, 19, 22, 3, 5, -4f, -2f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("barrel_flank", 0, 0, 19, 22, 3, 5, -4f, -2f, -2.5f, NO_PIVOT, 0f, 0f, 0f, -0.01f),
         new BoxSpec("muzzle", 0, 16, 0, 2, 6, 5, 18f, -3.5f, -2.5f, NO_PIVOT, 0f),
         // END GENERATED BOXES
     };

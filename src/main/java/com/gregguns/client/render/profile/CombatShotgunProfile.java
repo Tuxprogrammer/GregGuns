@@ -66,7 +66,7 @@ public final class CombatShotgunProfile {
         new BoxSpec("recv_rear", 0, 88, 0, 8, 4, 3, 13f, 2f, -1.5f, NO_PIVOT, 0f),
         new BoxSpec("plate_rear", 0, 24, 9, 7, 1, 2, 14f, 1f, -1f, NO_PIVOT, 0f),
         new BoxSpec("rear_sight", 0, 120, 6, 2, 1, 1, 15.5f, 0f, -0.5f, NO_PIVOT, 0f),
-        new BoxSpec("grip", 0, 32, 0, 3, 7, 2, 14f, 5f, -1f, new float[] { 14f, 5f, 0f }, 19f),
+        new BoxSpec("grip", 0, 32, 0, 3, 7, 2, 14f, 5f, -1f, new float[] { 14f, 5f, 0f }, 19f, 0f, 0f, -0.01f),
         new BoxSpec("trigger", 0, 120, 8, 2, 1, 1, 16f, 6f, -0.5f, NO_PIVOT, 0f),
         new BoxSpec("recv_main", 0, 42, 0, 10, 5, 3, 21f, 1.5f, -1.5f, NO_PIVOT, 0f),
         new BoxSpec("plate_main", 0, 0, 9, 10, 1, 2, 21f, 0.5f, -1f, NO_PIVOT, 0f),

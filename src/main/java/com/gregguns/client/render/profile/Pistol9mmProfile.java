@@ -63,7 +63,7 @@ public final class Pistol9mmProfile {
         new BoxSpec("rail", 0, 10, 5, 14, 1, 3, -13f, 2f, -1.5f, NO_PIVOT, 0f),
         new BoxSpec("barrel", 0, 48, 3, 6, 1, 1, -4f, 0.5f, -0.5f, new float[] { -4f, 1f, 0f }, 0f, 45f),
         new BoxSpec("grip", 0, 0, 0, 3, 7, 2, -11f, 3f, -1f, new float[] { -8f, 3f, 0f }, 12.5f),
-        new BoxSpec("guard_post", 0, 44, 0, 1, 3, 1, -6f, 3f, -0.5f, NO_PIVOT, 0f),
+        new BoxSpec("guard_post", 0, 44, 0, 1, 3, 1, -6f, 3f, -0.5f, NO_PIVOT, 0f, 0f, 0f, -0.01f),
         new BoxSpec("guard_bar", 0, 52, 0, 4, 1, 1, -9f, 5f, -0.5f, NO_PIVOT, 0f),
         new BoxSpec("trigger", 0, 48, 0, 1, 2, 1, -8f, 2.6f, -0.5f, new float[] { -7.5f, 2.6f, 0f }, -23f),
         // END GENERATED BOXES

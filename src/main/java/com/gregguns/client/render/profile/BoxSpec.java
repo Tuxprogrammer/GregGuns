@@ -28,6 +28,7 @@ public final class BoxSpec {
     private final float tiltZDegrees;
     private final float tiltXDegrees;
     private final float tiltYDegrees;
+    private final float inflate;
 
     /**
      * @param name         label, matches the layout sheet
@@ -69,6 +70,19 @@ public final class BoxSpec {
      */
     public BoxSpec(String name, int part, int u, int v, int w, int h, int d, float x, float y, float z, float[] pivot,
         float tiltZDegrees, float tiltXDegrees, float tiltYDegrees) {
+        this(name, part, u, v, w, h, d, x, y, z, pivot, tiltZDegrees, tiltXDegrees, tiltYDegrees, 0.0f);
+    }
+
+    /**
+     * As the three-tilt constructor, with a size adjustment in texels (vanilla {@code addBox}'s last argument): every
+     * side moves out by this much, so a small negative value (about -0.01 to -0.03) pulls a box's faces just inside
+     * a neighbor's coplanar face and ends the z-fighting there, without a visible change in size.
+     *
+     * @param inflate texels added to every side of the box; negative shrinks it
+     */
+    public BoxSpec(String name, int part, int u, int v, int w, int h, int d, float x, float y, float z, float[] pivot,
+        float tiltZDegrees, float tiltXDegrees, float tiltYDegrees, float inflate) {
+        this.inflate = inflate;
         this.tiltXDegrees = tiltXDegrees;
         this.tiltYDegrees = tiltYDegrees;
         this.name = name;
@@ -98,6 +112,11 @@ public final class BoxSpec {
     /** @return the bounding rectangle of the whole unwrap as {u, v, width, height} */
     public int[] unwrapBounds() {
         return new int[] { u, v, 2 * d + 2 * w, d + h };
+    }
+
+    /** @return texels added to every side of the box, 0 for none */
+    public float inflate() {
+        return inflate;
     }
 
     /** @return label */

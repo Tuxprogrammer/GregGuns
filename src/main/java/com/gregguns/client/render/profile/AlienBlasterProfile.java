@@ -79,7 +79,7 @@ public final class AlienBlasterProfile {
         new BoxSpec("wing_l", 0, 98, 6, 7, 1, 3, -11f, -0.5f, -3.5f, new float[] { -4f, 0f, -3.5f }, 0f, 0f, -25f),
         new BoxSpec("wing_r", 0, 50, 10, 7, 1, 3, -11f, -0.5f, 0.5f, new float[] { -4f, 0f, 3.5f }, 0f, 0f, 25f),
         new BoxSpec("fin", 0, 70, 10, 7, 3, 1, -11f, -3.5f, -0.5f, new float[] { -4f, -3.5f, 0f }, 25f),
-        new BoxSpec("tang", 0, 90, 0, 5, 3, 3, -10f, 3f, -1.5f, NO_PIVOT, 0f),
+        new BoxSpec("tang", 0, 90, 0, 5, 3, 3, -10f, 3f, -1.5f, NO_PIVOT, 0f, 0f, 0f, -0.01f),
         new BoxSpec("grip", 0, 36, 0, 4, 9, 3, -10f, 5.5f, -1.5f, new float[] { -6f, 5.5f, 0f }, 25.6f),
         new BoxSpec("trigger", 0, 106, 10, 2, 3, 1, -6f, 4f, -0.5f, new float[] { -4f, 4f, 0f }, 15f),
         // END GENERATED BOXES
