@@ -1,8 +1,9 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 3849761338665030451,
-      "questIDLow:4": -8373020060428661314
+      "questIDHigh:4": -8825614663546020301,
+      "questIDLow:4": -6338466507862233500,
+      "type:1": 1
     },
     "1:10": {
       "questIDHigh:4": 0,
@@ -30,7 +31,7 @@
         "id:8": "gregguns:gas_mask"
       },
       "isGlobal:1": 0,
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "Equipment Slots",

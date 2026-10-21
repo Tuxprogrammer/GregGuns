@@ -1,12 +1,13 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -1731850489548483738,
-      "questIDLow:4": -6717662094995753723
-    },
-    "1:10": {
       "questIDHigh:4": 1978121859357299656,
       "questIDLow:4": -4626955924831022287
+    },
+    "1:10": {
+      "questIDHigh:4": -1731850489548483738,
+      "questIDLow:4": -6717662094995753723,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -30,7 +31,7 @@
         "id:8": "gregguns:blaster_rifle"
       },
       "isGlobal:1": 0,
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "Power Armor Era Done",

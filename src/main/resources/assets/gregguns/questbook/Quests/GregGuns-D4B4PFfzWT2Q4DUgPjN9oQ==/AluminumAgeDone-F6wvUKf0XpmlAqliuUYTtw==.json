@@ -1,16 +1,13 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -3868161045475664142,
-      "questIDLow:4": -8425909997733185232
-    },
-    "1:10": {
-      "questIDHigh:4": -9155091264545991745,
-      "questIDLow:4": -7247369939883627491
-    },
-    "2:10": {
       "questIDHigh:4": 8746655411135533738,
       "questIDLow:4": -5073945424422504426
+    },
+    "1:10": {
+      "questIDHigh:4": -3868161045475664142,
+      "questIDLow:4": -8425909997733185232,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -34,7 +31,7 @@
         "id:8": "gregguns:thompson_smg"
       },
       "isGlobal:1": 0,
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "Aluminum Age Done",

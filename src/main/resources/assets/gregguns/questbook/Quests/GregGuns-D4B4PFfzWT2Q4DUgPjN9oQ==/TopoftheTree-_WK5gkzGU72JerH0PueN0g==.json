@@ -1,12 +1,13 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -8025378057983798317,
-      "questIDLow:4": -6608752736374342201
-    },
-    "1:10": {
       "questIDHigh:4": -5385458252730903274,
       "questIDLow:4": -6082655852122389683
+    },
+    "1:10": {
+      "questIDHigh:4": -8025378057983798317,
+      "questIDLow:4": -6608752736374342201,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -30,7 +31,7 @@
         "id:8": "gregguns:nuclear_death_ray"
       },
       "isGlobal:1": 0,
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "Top of the Tree",

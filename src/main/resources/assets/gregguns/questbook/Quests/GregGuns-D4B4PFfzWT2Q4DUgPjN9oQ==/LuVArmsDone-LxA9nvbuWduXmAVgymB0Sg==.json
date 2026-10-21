@@ -1,16 +1,13 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 5323368566832648908,
-      "questIDLow:4": -6048962205943536984
-    },
-    "1:10": {
-      "questIDHigh:4": -4476560848245338102,
-      "questIDLow:4": -6901912054190943186
-    },
-    "2:10": {
       "questIDHigh:4": -136691143113879462,
       "questIDLow:4": -4920031919402685321
+    },
+    "1:10": {
+      "questIDHigh:4": 5323368566832648908,
+      "questIDLow:4": -6048962205943536984,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -34,7 +31,7 @@
         "id:8": "gregguns:alien_blaster"
       },
       "isGlobal:1": 0,
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "LuV Arms Done",

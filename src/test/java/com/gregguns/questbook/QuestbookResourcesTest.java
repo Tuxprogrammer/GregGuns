@@ -48,6 +48,9 @@ class QuestbookResourcesTest {
     private static final String ROOT = "assets/gregguns/questbook/";
     private static final UUID NAMESPACE = UUID.fromString("6f1f3c52-9d0a-4b6e-8a53-2c7e0f4b91d8");
     private static final String GT_MACHINES = "gregtech:gt.blockmachines";
+    /** Hidden tier-skip triggers (LV to ZPM): in no line, so they have no position file. */
+    private static final int SKIP_TRIGGERS = 7;
+    private static final String GT_ITEMS = "gregtech:gt.metaitem.01";
     private static final Set<String> BAGS = new HashSet<>(java.util.Arrays.asList("enhancedlootbags:lootbag"));
 
     /** A quest as the test needs it. */
@@ -160,12 +163,18 @@ class QuestbookResourcesTest {
                     assertTrue(listed.contains(rel), "file not listed in index.json: " + rel);
                 });
         }
-        assertEquals(QUESTS.size(), POSITIONS.size(), "one position file per quest");
+        assertEquals(
+            QUESTS.size() - SKIP_TRIGGERS,
+            POSITIONS.size(),
+            "one position file per quest, except the skip triggers");
     }
 
     @Test
     void questCountMatchesTheSpec() {
-        assertEquals(121, QUESTS.size(), "update docs/gregguns-spec/12-questbook when the count changes");
+        assertEquals(
+            121 + SKIP_TRIGGERS,
+            QUESTS.size(),
+            "update docs/gregguns-spec/12-questbook when the count changes");
     }
 
     @Test
@@ -349,7 +358,10 @@ class QuestbookResourcesTest {
                         .getAsInt();
                     assertTrue(machines.contains(meta), q.title + ": not a GregGuns machine id: " + meta);
                 } else {
-                    assertTrue(id.equals("minecraft:stick") || BAGS.contains(id), q.title + ": unexpected item " + id);
+                    assertTrue(
+                        id.equals("minecraft:stick") || BAGS.contains(id)
+                            || (id.equals(GT_ITEMS) && q.title.startsWith("Trigger:")),
+                        q.title + ": unexpected item " + id);
                 }
             }
             for (Map.Entry<String, JsonElement> t : q.json.getAsJsonObject("tasks:9")

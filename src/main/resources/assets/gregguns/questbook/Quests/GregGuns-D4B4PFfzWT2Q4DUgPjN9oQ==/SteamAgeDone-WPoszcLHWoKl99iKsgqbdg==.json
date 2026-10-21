@@ -1,16 +1,13 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -598853394217020722,
-      "questIDLow:4": -7826901459046611425
-    },
-    "1:10": {
-      "questIDHigh:4": 1013776215800043663,
-      "questIDLow:4": -7755872620052902935
-    },
-    "2:10": {
       "questIDHigh:4": 5488429543148508294,
       "questIDLow:4": -9014047691935834661
+    },
+    "1:10": {
+      "questIDHigh:4": -598853394217020722,
+      "questIDLow:4": -7826901459046611425,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -34,7 +31,7 @@
         "id:8": "gregguns:handcannon"
       },
       "isGlobal:1": 0,
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "Steam Age Done",
