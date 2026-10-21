@@ -6,20 +6,29 @@ Guns, armor and military tech for [GT New Horizons](https://github.com/GTNewHori
 
 GregGuns is a from-scratch rewrite inspired by [Techguns](https://github.com/pWn3d1337/Techguns). It is not a port. GTNH has changed 1.7.10 so much that the original code would not carry over cleanly. GregGuns is written against GTNH's own APIs instead, and its weapons, components and recipes are gated by GregTech tiers rather than vanilla-style crafting.
 
-> [!WARNING]
-> Early alpha and very much a work in progress. An [alpha pre-release](https://github.com/Tuxprogrammer/GregGuns/releases) for GTNH 2.9.0-RC-2 is out for testing. Expect bugs and changes that break worlds, and back up your saves. Its content is switched off by default; the release notes say how to turn it on. See [docs/ROADMAP.md](docs/ROADMAP.md) for where it's headed.
+> [!IMPORTANT]
+> **Beta.** [**GregGuns 0.3.0-beta**](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.0-beta) is out for **GTNH 2.9.0-RC-2**. Everything planned for the first full version is in: weapons Steam to ZPM, ammo lines, armor, turrets, NPCs and ruins. It has been tested inside the real pack, with and without shaders. Expect some rough edges, and back up your world before you add it. The [release notes](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.0-beta) list the known issues, and [docs/ROADMAP.md](docs/ROADMAP.md) shows what comes next.
 
 ## For players
 
 GregGuns adds guns, ammo, armor, turrets, enemy soldiers and ruins to GTNH. It adds no tech tree of its own. Every weapon is assembled from GregTech parts on GregTech machines and unlocks at a GregTech tier: a Hand Cannon in the Steam age, a 9mm Pistol once you have Steel, assault rifles at MV, and so on up to the Nuclear Death Ray at ZPM. Ammo is a production line. You press rounds and magazines in the **Ammo Press**, or in bulk in the **Ammunition Works** multiblock.
 
+### Install
+
+1. Download `gregguns-0.3.0-beta.jar` from the [release page](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.0-beta).
+2. Put it in the `mods` folder of your **GTNH 2.9.0-RC-2** instance. For multiplayer, the server **and** every player need the same jar.
+3. Start the game. Every module is on by default. You can switch modules off in `config/gregguns.cfg`, and that never stops anyone joining: the server's settings apply to everyone connected.
+4. **Coming from 0.2.0-alpha?** Read "Upgrading" in the release notes first. Your old config may still have modules switched off.
+
+The keys are **R** to reload, **;** for the back device (glider, anti-gravity), **M** for night vision and **]** for the ammo pouch. All of them can be rebound in Controls.
+
 ### Getting started
 
-1. **Install.** Drop the jar into your GTNH instance's `mods` folder. It's built for GTNH 2.9.
+1. **Install** as above.
 2. **Steam age.** Craft the Hand Cannon and some Stone Bullets.
 3. **LV.** Assemble a 9mm Pistol from GT parts, and build an LV Ammo Press.
 4. **Ammo.** Press bullets and magazines, then reload with **R**.
-5. **Upkeep.** Mend worn gear on a Repair Bench, and follow the **GregGuns** questbook tab up the tiers.
+5. **Upkeep.** Mend worn gear on a Repair Bench or in the Armory Gantry. A **GregGuns** questbook tab that leads you up the tiers is coming in 0.3.1.
 
 ![Getting started](docs/assets/infographics/getting-started.png)
 
@@ -77,7 +86,7 @@ Who shoots back, and what they drop.
 
 #### The questbook
 
-Chapters, side branches and rewards.
+Chapters, side branches and rewards. The tab ships inside the mod from 0.3.1-beta; a server owner switches it on.
 
 ![Questbook](docs/assets/infographics/questbook.png)
 
