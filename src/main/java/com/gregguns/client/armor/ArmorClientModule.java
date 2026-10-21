@@ -26,6 +26,9 @@ public final class ArmorClientModule implements ClientModule {
             .register(new StepHeightClient());
         FMLCommonHandler.instance()
             .bus()
+            .register(new SwimBoostClient());
+        FMLCommonHandler.instance()
+            .bus()
             .register(new com.gregguns.client.flight.FlightClient());
         net.minecraftforge.common.MinecraftForge.EVENT_BUS
             .register(new com.gregguns.client.accessory.AccessoryRenderEvents());

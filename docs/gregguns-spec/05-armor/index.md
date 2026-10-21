@@ -73,3 +73,7 @@ Each needs a new design record.
 6. **GalaxySpace spacesuit behavior** is unverified because its source is not readable. Needs a source or a decompile.
 7. **Tiers for the Beret, HEV and Tactical Mask (closed by [0010](../../design/0010-material-remap-and-tier-additions.md): MV, EV, HV).** [recipes.md](recipes.md) uses MV, EV and HV because [0001](../../design/0001-tier-map.md) lists none of them. The hazard flag table in [hazard-protection.md](hazard-protection.md) lists the Tactical Mask at MV, which its HV Oxygen Mask input rules out.
 8. **Jump Pack power source.** Electric ([powered-flight.md](powered-flight.md)) or compressed air (06 fluids)? The recipe carries both until a record picks one.
+
+## Deviations
+
+- ARM-05: the HEV water speed is a real swim boost (client side, x2.0, capped), not a speed attribute bonus, and the FOV is clamped to vanilla Speed II plus sprint. See [implementation-notes.md](implementation-notes.md).

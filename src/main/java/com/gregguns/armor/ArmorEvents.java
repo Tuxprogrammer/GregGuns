@@ -61,7 +61,7 @@ import cpw.mods.fml.relauncher.Side;
 public final class ArmorEvents {
 
     // Fixed ids so the modifiers are found again after a reload. Random, generated once for GregGuns.
-    private static final UUID SPEED_ID = UUID.fromString("7f4c2a10-3b6e-4d51-9a28-5c0e1d9b6a01");
+    public static final UUID SPEED_ID = UUID.fromString("7f4c2a10-3b6e-4d51-9a28-5c0e1d9b6a01");
     private static final UUID HEALTH_ID = UUID.fromString("7f4c2a10-3b6e-4d51-9a28-5c0e1d9b6a02");
     private static final UUID KNOCKBACK_ID = UUID.fromString("7f4c2a10-3b6e-4d51-9a28-5c0e1d9b6a03");
 
@@ -105,9 +105,8 @@ public final class ArmorEvents {
         ArmorPower.tick(player, moving, player.worldObj.getTotalWorldTime());
         BonusMap worn = Armor.bonuses(player);
         double speed = worn.get(ArmorBonus.SPEED);
-        if (worn.get(ArmorBonus.SPEED_WATER) > 0.0 && inWaterOrLava(player)) {
-            speed += worn.get(ArmorBonus.SPEED_WATER);
-        }
+        // SPEED_WATER is not added to the attribute: vanilla swimming ignores it and the client FOV reads it (ARM-05).
+        // The swim boost is SwimBoostClient's job.
         if (worn.get(ArmorBonus.COOLING_SYSTEM) >= 1.0 && player.isBurning()) {
             // Cooling system: puts the wearer out without a charge cost (Techguns rule).
             player.extinguish();
@@ -309,10 +308,6 @@ public final class ArmorEvents {
                 }
             }
         }
-    }
-
-    private static boolean inWaterOrLava(EntityPlayer player) {
-        return player.isInWater() || player.isInsideOfMaterial(net.minecraft.block.material.Material.lava);
     }
 
     /** @param event a block-break speed query; multiplies the speed by the break bonuses */
