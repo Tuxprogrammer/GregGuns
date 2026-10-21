@@ -1,12 +1,13 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -7452196324363907060,
-      "questIDLow:4": -6634400740834056797
-    },
-    "1:10": {
       "questIDHigh:4": 7681057860102346788,
       "questIDLow:4": -7213723250758394415
+    },
+    "1:10": {
+      "questIDHigh:4": -7452196324363907060,
+      "questIDLow:4": -6634400740834056797,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -30,7 +31,7 @@
         "id:8": "gregguns:pistol_9mm"
       },
       "isGlobal:1": 0,
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "Steel Age Done",

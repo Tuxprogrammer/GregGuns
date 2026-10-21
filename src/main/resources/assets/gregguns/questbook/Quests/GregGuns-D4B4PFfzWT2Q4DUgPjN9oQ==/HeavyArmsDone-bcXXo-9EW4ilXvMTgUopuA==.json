@@ -1,16 +1,13 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": -8227110340971701215,
-      "questIDLow:4": -7798227361211909983
-    },
-    "1:10": {
-      "questIDHigh:4": -2658745303664009983,
-      "questIDLow:4": -5070622337581301700
-    },
-    "2:10": {
       "questIDHigh:4": 2322548269772791129,
       "questIDLow:4": -7908820928685152072
+    },
+    "1:10": {
+      "questIDHigh:4": -8227110340971701215,
+      "questIDLow:4": -7798227361211909983,
+      "type:1": 1
     }
   },
   "properties:10": {
@@ -34,7 +31,7 @@
         "id:8": "gregguns:lmg"
       },
       "isGlobal:1": 0,
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "Heavy Arms Done",

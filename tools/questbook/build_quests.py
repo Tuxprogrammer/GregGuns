@@ -78,13 +78,16 @@ def quest_json(ns, q):
         if isinstance(ref, int):  # pack quest: high 0, low = number
             return {'questIDHigh:4': 0, 'questIDLow:4': ref}
         h, l, _ = qid(ns, ref)
-        return {'questIDHigh:4': h, 'questIDLow:4': l}
+        out = {'questIDHigh:4': h, 'questIDLow:4': l}
+        if ref in q.get('implicit', ()):  # BQ RequirementType.IMPLICIT (1): still gates, line drawn on hover only
+            out['type:1'] = 1
+        return out
 
     props = {  # every key the exporter writes, with the pack's defaults
         'autoClaim:1': 0, 'completion_animation:8': 'default', 'completion_particle:8': 'default',
         'confetti_icon:10': {'Count:3': 0, 'Damage:2': 0, 'OreDict:8': '', 'id:8': 'minecraft:stick'},
         'countAsQuest:1': 1, 'desc:8': q['desc'], 'globalShare:1': 1, 'icon:10': stack(q['icon']),
-        'isGlobal:1': 0, 'isMain:1': int(q['size'] > 24), 'isSilent:1': 0, 'lockedProgress:1': 0,
+        'isGlobal:1': 0, 'isMain:1': int(q.get('main', q['size'] > 24)), 'isSilent:1': 0, 'lockedProgress:1': 0,
         'name:8': q['title'], 'notification_duration:5': -1.0, 'notification_effect:3': -1,
         'notification_fade_in:5': -1.0, 'notification_fade_out:5': -1.0,
         'notification_icon_offset_y:3': -2147483648, 'notification_icon_scale:5': -1.0,

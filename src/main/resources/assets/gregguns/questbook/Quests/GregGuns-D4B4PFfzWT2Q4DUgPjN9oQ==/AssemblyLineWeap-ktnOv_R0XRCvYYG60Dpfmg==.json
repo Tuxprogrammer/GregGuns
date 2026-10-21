@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 3849761338665030451,
-      "questIDLow:4": -8373020060428661314
+      "questIDHigh:4": -3932084639685190522,
+      "questIDLow:4": -8621084850355824541
     },
     "1:10": {
       "questIDHigh:4": 0,
@@ -38,7 +38,7 @@
         "id:8": "gregguns:alien_blaster"
       },
       "isGlobal:1": 0,
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "Assembly-Line Weapons",

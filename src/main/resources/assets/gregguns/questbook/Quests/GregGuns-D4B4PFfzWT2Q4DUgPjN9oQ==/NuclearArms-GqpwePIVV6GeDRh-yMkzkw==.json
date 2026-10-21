@@ -1,8 +1,8 @@
 {
   "preRequisites:9": {
     "0:10": {
-      "questIDHigh:4": 3849761338665030451,
-      "questIDLow:4": -8373020060428661314
+      "questIDHigh:4": -7865027950390518512,
+      "questIDLow:4": -5809219404973842534
     },
     "1:10": {
       "questIDHigh:4": 0,
@@ -34,7 +34,7 @@
         "id:8": "gregguns:nuclear_death_ray"
       },
       "isGlobal:1": 0,
-      "isMain:1": 1,
+      "isMain:1": 0,
       "isSilent:1": 0,
       "lockedProgress:1": 0,
       "name:8": "Nuclear Arms",

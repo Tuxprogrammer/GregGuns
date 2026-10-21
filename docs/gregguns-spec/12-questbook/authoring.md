@@ -85,7 +85,7 @@ Properties that matter (the exporter writes about forty; the builder writes all 
 |---|---|
 | `name:8`, `desc:8` | Title and text. Inline, with `\n` for line breaks |
 | `icon:10` | An item stack (`id:8`, `Damage:2`, `Count:3`, `OreDict:8`) |
-| `isMain:1` | 1 for chapter intros and summaries |
+| `isMain:1` | 0 for every quest: a main quest draws its incoming lines 8 units thick instead of 4 |
 | `questLogic:8` | Prerequisite logic. `OR` only on `gg.start.welcome` |
 | `taskLogic:8` | Task logic, `AND` everywhere (alternatives use one retrieval with `requireOnlyOneItem`) |
 | `visibility:8` | `NORMAL`; `SECRET` for the three boss quests. The other values are `HIDDEN`, `UNLOCKED`, `COMPLETED`, `CHAIN`, `ALWAYS` ([EnumQuestVisibility](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/api/enums/EnumQuestVisibility.java#L3-L11)) |

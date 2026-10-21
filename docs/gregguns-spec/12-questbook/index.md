@@ -144,7 +144,7 @@ How the install behaves:
 - **GGS-12-12** Structure quests use a checkbox. No `location` task names a GregGuns structure.
 - **GGS-12-13** Only the three config-gated boss quests (Dictator Dave, Cyberdemon, Alien Bug) are `SECRET`.
 - **GGS-12-14** Quest text is inline (`name:8`, `desc:8`), uses only the pack's `[warn]`, `[note]` and `[url]` tags, and teaches one mechanic per quest.
-- **GGS-12-15** No two position boxes in the line overlap. Chapter intros are 72 px, summaries 48 px, others 24 px.
+- **GGS-12-15** No two position boxes in the line overlap. Chapter heads are 28 units, others 24.
 - **GGS-12-16** Every `gregguns:` item id and `gregguns.<Name>` entity name in the files is a name the mod registers, and every GregGuns machine is a `gregtech:gt.blockmachines` stack with one of the reserved MTE ids. `QuestbookResourcesTest` checks them against `NeiOrder`, `NpcMob` and `GregGunsMTEIDs`. No placeholder name is left.
 - **GGS-12-17** The Repair Bench and Turret quests carry a provisional tier and are revisited when [09](../09-machines-utility/index.md) settles them.
 - **GGS-12-18** The quest line ships in the GregGuns jar and is installed only when the hidden config key is on, so a pack without GregGuns, or with the key off, has no GregGuns tab and no dangling quests. The line and its quests have fixed IDs, so a later installer step can remove exactly them.
