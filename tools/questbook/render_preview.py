@@ -34,7 +34,7 @@ def short(q):
 
 
 def render(data, out, zoom=None, implicit=False, view=(1650, 940)):
-    qs = data['quests']
+    qs = [q for q in data['quests'] if not q.get('skip')]  # triggers are in no line, so BQ never draws them
     by = {q['key']: q for q in qs}
     x0 = min(q['x'] for q in qs) - MARGIN
     y0 = min(q['y'] for q in qs) - MARGIN

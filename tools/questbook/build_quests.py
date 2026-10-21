@@ -40,7 +40,7 @@ def file_name(title, b64):
 
 
 def stack(s):
-    return {'Count:3': s.get('count', 1), 'Damage:2': s.get('damage', 0), 'OreDict:8': '', 'id:8': s['id']}
+    return {'Count:3': s.get('count', 1), 'Damage:2': s.get('damage', 0), 'OreDict:8': s.get('ore', ''), 'id:8': s['id']}
 
 
 def stacks(items):
@@ -71,8 +71,15 @@ def reward(r):
     raise ValueError('unknown reward type ' + r['type'])
 
 
+def complete_reward(ns, i, key):
+    """bq_standard:questcompletion, the reward GTNH's tier-skip triggers use to complete the quests they skip."""
+    return {'ignoreDisabled:1': 1, 'index:3': i, 'isSilent:1': 0, 'questID:8': qid(ns, key)[2],
+            'rewardID:8': 'bq_standard:questcompletion'}
+
+
 def quest_json(ns, q):
     hi, lo, _ = qid(ns, q['key'])
+    skip = bool(q.get('skip'))
 
     def pre(ref):
         if isinstance(ref, int):  # pack quest: high 0, low = number
@@ -84,10 +91,10 @@ def quest_json(ns, q):
         return out
 
     props = {  # every key the exporter writes, with the pack's defaults
-        'autoClaim:1': 0, 'completion_animation:8': 'default', 'completion_particle:8': 'default',
+        'autoClaim:1': int(skip), 'completion_animation:8': 'default', 'completion_particle:8': 'default',
         'confetti_icon:10': {'Count:3': 0, 'Damage:2': 0, 'OreDict:8': '', 'id:8': 'minecraft:stick'},
-        'countAsQuest:1': 1, 'desc:8': q['desc'], 'globalShare:1': 1, 'icon:10': stack(q['icon']),
-        'isGlobal:1': 0, 'isMain:1': int(q.get('main', q['size'] > 24)), 'isSilent:1': 0, 'lockedProgress:1': 0,
+        'countAsQuest:1': 1, 'desc:8': q['desc'], 'globalShare:1': int(not skip), 'icon:10': stack(q['icon']),
+        'isGlobal:1': 0, 'isMain:1': int(q.get('main', q.get('size', 24) > 24)), 'isSilent:1': int(skip), 'lockedProgress:1': 0,
         'name:8': q['title'], 'notification_duration:5': -1.0, 'notification_effect:3': -1,
         'notification_fade_in:5': -1.0, 'notification_fade_out:5': -1.0,
         'notification_icon_offset_y:3': -2147483648, 'notification_icon_scale:5': -1.0,
@@ -105,6 +112,8 @@ def quest_json(ns, q):
         out['tasks:9']['%d:10' % i] = dict(task(t), **{'index:3': i})
     for i, r in enumerate(q['rewards']):
         out['rewards:9']['%d:10' % i] = dict(reward(r), **{'index:3': i})
+    for i, key in enumerate(q.get('completes', [])):
+        out['rewards:9']['%d:10' % i] = complete_reward(ns, i, key)
     return out
 
 
@@ -138,6 +147,9 @@ def check(data):
         if q['tier'] not in TIERS:
             problems.append('%s: unknown tier %s' % (k, q['tier']))
             continue
+        for c in q.get('completes', []):
+            if c not in keys:
+                problems.append('%s: completes unknown quest %s' % (k, c))
         for p in q['pre']:
             if isinstance(p, str) and p not in keys:
                 problems.append('%s: unknown prerequisite %s' % (k, p))
@@ -183,6 +195,11 @@ def build(data_path, out_dir):
     for q in sorted(data['quests'], key=lambda q: q['key']):
         _, _, b64 = qid(ns, q['key'])
         name = file_name(q['title'], b64)
+        if q.get('skip'):  # a trigger: not in any line, like GTNH's Quests/NoQuestLine
+            qp = 'Quests/NoQuestLine/%s' % name
+            files[qp] = dump(quest_json(ns, q))
+            quests.append(qp)
+            continue
         pp = 'QuestLines/%s/%s' % (folder, name)
         qp = 'Quests/%s/%s' % (folder, name)
         files[pp] = dump(position_json(ns, q))

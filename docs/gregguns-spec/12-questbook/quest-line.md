@@ -349,3 +349,25 @@ Where each mechanic is taught.
 | Armor and equipment | 9 | 2 | 7 | 0 | 0 | 0 |
 | Ammo logistics | 11 | 7 | 4 | 0 | 0 | 0 |
 | **Total** | **121** | **45** | **61** | **4** | **11** | **25** |
+
+## Hidden tier-skip triggers
+
+GTNH lets a player who already has a late item skip the quests before it, for example `Trigger: Titanium Moon Skip` and the `Trigger: Rocket Tier N Skip` family (`reference/.../DefaultQuests/Quests/NoQuestLine/TriggerTitaniumM-…`, `TriggerRocketTie-…`). GregGuns mirrors that structure exactly, one trigger per tier from LV to ZPM:
+
+- The trigger is in **no quest line** (its file lives under `Quests/NoQuestLine/` and it has no position file), so it never shows in the tab and does not count toward the line's completion.
+- `isSilent` 1, `autoClaim` 1, `globalShare` 0, visibility NORMAL, AND logic, not repeatable.
+- Prerequisites: the tier head's pack gate quests (as GTNH uses the gate quest, 160 for Titanium), so it can only fire once the player is at that tier.
+- Task: `bq_standard:retrieval` with `consume` 0 and `autoConsume` 0 (detects, never takes), `ignoreNBT` 1, one item matched by ore dictionary: the tier's gate plate.
+- Rewards: one `bq_standard:questcompletion` per tier head from Steam up to this tier. The cascade is that list, as in GTNH's multi-quest triggers. Finishing a head this way unlocks its tree like any other completion.
+
+No prerequisite or logic of the heads changes: the heads keep chaining from the previous head, and a trigger completes them from outside. The icon damage values of Stainless Steel, Tungstensteel, HSS-G and Naquadah Alloy plates are best guesses; the ore dictionary name is what matches.
+
+| Key | Tier | Detects (not consumed) | Prerequisites | Completes |
+|---|---|---|---|---|
+| `gg.skip.lv` | LV | `plateSteel` (any ore dictionary match) | pack 88, pack 76 | `gg.steam.intro`, `gg.lv.intro` |
+| `gg.skip.mv` | MV | `plateAluminium` (any ore dictionary match) | pack 1148, pack 1598 | `gg.steam.intro`, `gg.lv.intro`, `gg.mv.intro` |
+| `gg.skip.hv` | HV | `plateStainlessSteel` (any ore dictionary match) | pack 160, pack 753 | `gg.steam.intro`, `gg.lv.intro`, `gg.mv.intro`, `gg.hv.intro` |
+| `gg.skip.ev` | EV | `plateTitanium` (any ore dictionary match) | pack 176, pack 860 | `gg.steam.intro`, `gg.lv.intro`, `gg.mv.intro`, `gg.hv.intro`, `gg.ev.intro` |
+| `gg.skip.iv` | IV | `plateTungstenSteel` (any ore dictionary match) | pack 213, pack 861 | `gg.steam.intro`, `gg.lv.intro`, `gg.mv.intro`, `gg.hv.intro`, `gg.ev.intro`, `gg.iv.intro` |
+| `gg.skip.luv` | LuV | `plateHSSG` (any ore dictionary match) | pack 1493, pack 1491, pack 1412 | `gg.steam.intro`, `gg.lv.intro`, `gg.mv.intro`, `gg.hv.intro`, `gg.ev.intro`, `gg.iv.intro`, `gg.luv.intro` |
+| `gg.skip.zpm` | ZPM | `plateNaquadahAlloy` (any ore dictionary match) | pack 2610, pack 1667 | `gg.steam.intro`, `gg.lv.intro`, `gg.mv.intro`, `gg.hv.intro`, `gg.ev.intro`, `gg.iv.intro`, `gg.luv.intro`, `gg.zpm.intro` |

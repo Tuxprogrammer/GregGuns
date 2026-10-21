@@ -4,7 +4,7 @@
 
 This area has **no Techguns counterpart**. Techguns has no questbook, so there is no baseline to compare against and no matching folder in the [Techguns spec](../../techguns-spec/README.md). The area exists because the GTNH pack hands progression to players through BetterQuesting, and the owner wants a GregGuns tab that steers a player into the mod.
 
-The quest line **ships inside the GregGuns jar** ([design record 0015](../../design/0015-m9-self-contained-polish.md)), not in the pack repository ([GT-New-Horizons-Modpack](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack)). The jar carries 121 quests in 14 chapters as resource files in BetterQuesting's own format, and a hidden config key installs them into the server's BetterQuesting database. This area specifies the quest data, how the quests unlock, and how the resources are built and checked.
+The quest line **ships inside the GregGuns jar** ([design record 0015](../../design/0015-m9-self-contained-polish.md)), not in the pack repository ([GT-New-Horizons-Modpack](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack)). The jar carries 121 quests in 14 chapters, plus 7 hidden tier-skip triggers (see [quest-line.md](quest-line.md#hidden-tier-skip-triggers)) as resource files in BetterQuesting's own format, and a hidden config key installs them into the server's BetterQuesting database. This area specifies the quest data, how the quests unlock, and how the resources are built and checked.
 
 Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquesting/`) and BetterQuesting 3.8.89-GTNH source:
 
@@ -114,10 +114,10 @@ Per [0015](../../design/0015-m9-self-contained-polish.md) nothing here is a chan
 
 | Resource | Content | Sheet |
 |---|---|---|
-| `index.json` | `format`, the `line` path, `linePositions` (121 paths), `quests` (121 paths) and `orderEntry` (`D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns`, the entry the installer adds to the tab order) | [authoring.md](authoring.md#file-layout) |
+| `index.json` | `format`, the `line` path, `linePositions` (121 paths), `quests` (128 paths: 121 plus the 7 triggers) and `orderEntry` (`D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns`, the entry the installer adds to the tab order) | [authoring.md](authoring.md#file-layout) |
 | `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/QuestLine.json` | Line properties: name `GregGuns`, icon, `visibility` `UNLOCKED` | [authoring.md](authoring.md#line-files) |
 | `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (121) | One position file per quest: `x`, `y`, `sizeX`, `sizeY` | [quest-line.md](quest-line.md) |
-| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (121) | One file per quest: properties, prerequisites, tasks, rewards | [authoring.md](authoring.md#quest-files) |
+| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (121) and `Quests/NoQuestLine/<Name>-<id>.json` (7 triggers) | One file per quest: properties, prerequisites, tasks, rewards | [authoring.md](authoring.md#quest-files) |
 
 How the install behaves:
 
