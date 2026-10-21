@@ -39,6 +39,7 @@ public final class RenderBullet extends Render {
         float heading = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks;
         float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
         boolean lighting = GL11.glIsEnabled(GL11.GL_LIGHTING);
+        boolean cull = GL11.glIsEnabled(GL11.GL_CULL_FACE);
         GL11.glPushMatrix();
         try {
             GL11.glTranslated(x, y, z);
@@ -50,6 +51,7 @@ public final class RenderBullet extends Render {
             Tessellator t = Tessellator.instance;
             t.startDrawingQuads();
             t.setBrightness(entity.getBrightnessForRender(partialTicks));
+            t.setNormal(0.0F, 1.0F, 0.0F); // shader packs read the vertex normal; never reuse a stale one
             t.setColorOpaque_F(1.0F, 1.0F, 1.0F);
             // Quad in the XY plane.
             quad(t, 0.0, HALF_WIDTH, 0.0);
@@ -57,7 +59,9 @@ public final class RenderBullet extends Render {
             quad(t, 0.0, 0.0, HALF_WIDTH);
             t.draw();
         } finally {
-            GL11.glEnable(GL11.GL_CULL_FACE);
+            if (cull) {
+                GL11.glEnable(GL11.GL_CULL_FACE);
+            }
             if (lighting) {
                 GL11.glEnable(GL11.GL_LIGHTING);
             }

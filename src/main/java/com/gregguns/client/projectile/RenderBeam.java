@@ -73,12 +73,17 @@ public final class RenderBeam extends Render {
             GL11.glRotatef(pitch, 0.0F, 0.0F, 1.0F);
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_CULL_FACE);
+            // The beam samples its texture; make sure unit 0 draws it whatever the previous renderer left.
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
             GL11.glDepthMask(false);
             Tessellator t = Tessellator.instance;
             t.startDrawingQuads();
             t.setBrightness(240);
+            // Shader packs read the vertex normal; unset, a stale one from the previous draw streaks the beam into
+            // pillars of wrong light.
+            t.setNormal(0.0F, 1.0F, 0.0F);
             t.setColorRGBA_F(1.0F, 1.0F, 1.0F, alpha);
             quad(t, length, half, 0.0);
             quad(t, length, 0.0, half);
@@ -86,6 +91,8 @@ public final class RenderBeam extends Render {
         } finally {
             GL11.glPopMatrix();
             GL11.glPopAttrib();
+            // GL_CURRENT_BIT restores the color; the tint also rode on the vertices, so nothing can leak either way.
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
