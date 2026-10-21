@@ -12,10 +12,13 @@ import java.util.Set;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import com.gregguns.GregGuns;
+import com.gregguns.client.projectile.BeamOrigin;
+import com.gregguns.client.render.GunRenderers;
 import com.gregguns.core.config.ClientConfig;
 import com.gregguns.fx.EmitterSim;
 import com.gregguns.fx.FxHooks;
@@ -115,6 +118,15 @@ public final class FxClient implements FxHooks.Sink {
 
     @Override
     public void spawnAt(String name, double x, double y, double z, double mx, double my, double mz) {
+        double[] at = ownShotPosition(x, y, z);
+        if (at == BeamOrigin.SKIP) {
+            return;
+        }
+        if (at != null) {
+            x = at[0];
+            y = at[1];
+            z = at[2];
+        }
         for (ParticleSystemDef def : resolve(name)) {
             add(new Active(EmitterSim.free(def, rng, x, y, z, mx, my, mz), -1));
         }
@@ -187,7 +199,11 @@ public final class FxClient implements FxHooks.Sink {
             if (a.entityId < 0) {
                 a.sim.tickFree(budget, scratch);
             } else {
-                fill(owner, world.getEntityByID(a.entityId));
+                Entity e = world.getEntityByID(a.entityId);
+                fill(owner, e);
+                if (!owner.dead && e != null && relocateOwner(e, owner)) {
+                    continue; // no muzzle known: skip this emitter for the shooter only
+                }
                 a.sim.tickAttached(owner, budget, scratch);
             }
             for (ParticleSpec spec : scratch) {
@@ -198,6 +214,43 @@ public final class FxClient implements FxHooks.Sink {
             }
         }
         prune();
+    }
+
+    /**
+     * Own-shot rule: the server spawns shot FX at the shooter's eye, which is inside the local camera. In first person
+     * they move to the muzzle (BeamOrigin math, as RenderBeam does); other viewers keep the true origin.
+     *
+     * @return null to keep the position, {@link BeamOrigin#SKIP} to drop it, else the muzzle position
+     */
+    private static double[] ownShotPosition(double x, double y, double z) {
+        Minecraft mc = Minecraft.getMinecraft();
+        EntityPlayer p = mc.thePlayer;
+        if (p == null || mc.gameSettings.thirdPersonView != 0 || mc.renderViewEntity != p) {
+            return null;
+        }
+        double[] cam = { p.posX, p.posY, p.posZ };
+        double[] pos = { x, y, z };
+        if (!BeamOrigin.isOwnShot(pos, cam)) {
+            return null;
+        }
+        double[] eye = GunRenderers.firstPersonMuzzle(p.getHeldItem());
+        double[] off = eye == null ? null : BeamOrigin.eyeToWorld(eye, p.rotationYaw, p.rotationPitch);
+        return BeamOrigin.relocate(pos, cam, true, off);
+    }
+
+    /** Moves an attached owner at the eye to the muzzle; @return true if the emitter must be skipped this tick. */
+    private static boolean relocateOwner(Entity e, EmitterSim.Owner o) {
+        double[] at = ownShotPosition(e.posX, e.posY, e.posZ);
+        if (at == null) {
+            return false;
+        }
+        if (at == BeamOrigin.SKIP) {
+            return true;
+        }
+        o.x = at[0];
+        o.y = at[1];
+        o.z = at[2];
+        return false;
     }
 
     private static boolean paused(Minecraft mc) {

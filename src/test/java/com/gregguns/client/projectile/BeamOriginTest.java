@@ -61,4 +61,30 @@ class BeamOriginTest {
         assertTrue(BeamOrigin.isOwnShot(new double[] { 0.2, -0.1, 0.3 }, new double[] { 0, 0, 0 }));
         assertFalse(BeamOrigin.isOwnShot(new double[] { 5, 0, 0 }, new double[] { 0, 0, 0 }));
     }
+
+    @Test
+    void ownShotInFirstPersonMovesToTheMuzzle() {
+        double[] r = BeamOrigin.relocate(
+            new double[] { 10, 64, 10 },
+            new double[] { 10, 64, 10.2 },
+            true,
+            new double[] { 0.3, -0.2, 0.9 });
+        assertEquals(10.3, r[0], 1.0E-9);
+        assertEquals(63.8, r[1], 1.0E-9);
+        assertEquals(11.1, r[2], 1.0E-9);
+    }
+
+    @Test
+    void ownShotWithoutAMuzzleIsSkippedForTheShooter() {
+        assertTrue(
+            BeamOrigin.relocate(new double[] { 0, 0, 0 }, new double[] { 0, 0, 0 }, true, null) == BeamOrigin.SKIP);
+    }
+
+    @Test
+    void otherViewersAndThirdPersonKeepTheTrueOrigin() {
+        assertNull(
+            BeamOrigin.relocate(new double[] { 0, 0, 0 }, new double[] { 0, 0, 0 }, false, new double[] { 1, 1, 1 }));
+        assertNull(
+            BeamOrigin.relocate(new double[] { 9, 0, 0 }, new double[] { 0, 0, 0 }, true, new double[] { 1, 1, 1 }));
+    }
 }

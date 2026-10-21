@@ -137,7 +137,8 @@ public final class GunClientForgeEvents {
             t.addVertexWithUV(x1, y0, -90.0, 1.0, 0.0);
             t.addVertexWithUV(x0, y0, -90.0, 0.0, 0.0);
             t.draw();
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            // Black bars sample a white texel rather than switching textures off: shader gbuffers always sample.
+            WhiteTexture.bind();
             t.startDrawingQuads();
             t.setColorOpaque_I(0);
             bar(t, 0.0, 0.0, x0, h); // left

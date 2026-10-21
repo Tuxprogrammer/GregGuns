@@ -48,6 +48,30 @@ public final class BeamOrigin {
         return dx * dx + dy * dy + dz * dz <= OWN_SHOT_RADIUS * OWN_SHOT_RADIUS;
     }
 
+    /** Returned by {@link #relocate} to say the effect must not be drawn for the shooter at all. */
+    public static final double[] SKIP = new double[0];
+
+    /**
+     * Decides where an effect spawned at {@code pos} should appear for the local viewer. An effect that starts inside
+     * the camera (the shot origin is the shooter's eye) is a huge quad over the screen, so in first person it moves to
+     * the muzzle; with no muzzle known it is skipped for the shooter only. Everything else is left alone.
+     *
+     * @param pos          where the server spawned it, world
+     * @param cam          the camera, world
+     * @param firstPerson  true if the viewer is the local player in first person
+     * @param muzzleOffset the muzzle relative to the camera, world axes, or null if unknown
+     * @return null to keep {@code pos}, {@link #SKIP} to drop it, else the new position
+     */
+    public static double[] relocate(double[] pos, double[] cam, boolean firstPerson, double[] muzzleOffset) {
+        if (!firstPerson || !isOwnShot(pos, cam)) {
+            return null;
+        }
+        if (muzzleOffset == null) {
+            return SKIP;
+        }
+        return new double[] { cam[0] + muzzleOffset[0], cam[1] + muzzleOffset[1], cam[2] + muzzleOffset[2] };
+    }
+
     /**
      * Re-aims a beam so it starts at the muzzle and still ends at its original end point.
      *

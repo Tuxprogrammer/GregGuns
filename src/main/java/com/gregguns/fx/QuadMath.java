@@ -56,6 +56,22 @@ public final class QuadMath {
      * @param rxy  camera basis (rotationXY)
      * @return {x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3}
      */
+    /** A quad whose center is nearer the camera than this (blocks) is never drawn. */
+    public static final double NEAR_CULL = 0.5;
+
+    /**
+     * Near-camera safety cull: a particle quad at or behind the near plane, or closer than its own half-size, covers
+     * the screen and (under shader packs) fouls the depth buffer for everything drawn after it.
+     *
+     * @param cx   quad center relative to the camera
+     * @param half half the quad size, blocks
+     * @return true if the quad must be skipped
+     */
+    public static boolean nearCull(double cx, double cy, double cz, double half) {
+        double limit = Math.max(half, NEAR_CULL);
+        return cx * cx + cy * cy + cz * cz < limit * limit;
+    }
+
     public static double[] corners(double cx, double cy, double cz, float half, float rx, float rxz, float rz,
         float ryz, float rxy) {
         return new double[] { cx - rx * half - ryz * half, cy - rxz * half, cz - rz * half - rxy * half,

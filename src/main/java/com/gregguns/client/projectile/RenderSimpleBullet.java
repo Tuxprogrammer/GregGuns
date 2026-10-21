@@ -40,6 +40,7 @@ public final class RenderSimpleBullet extends Render {
             Tessellator t = Tessellator.instance;
             t.startDrawingQuads();
             t.setBrightness(entity.getBrightnessForRender(partialTicks));
+            t.setNormal(0.0F, 0.0F, 1.0F); // shader packs read the vertex normal; never reuse a stale one
             t.setColorOpaque_F(1.0F, 1.0F, 1.0F);
             t.addVertexWithUV(-HALF_SIZE, -HALF_SIZE, 0.0, 0.0, 1.0);
             t.addVertexWithUV(HALF_SIZE, -HALF_SIZE, 0.0, 1.0, 1.0);

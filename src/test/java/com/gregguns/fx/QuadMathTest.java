@@ -48,4 +48,13 @@ class QuadMathTest {
         assertEquals(2 * 2.0, c[1] + c[7], 1.0E-6);
         assertEquals(2 * 3.0, c[2] + c[8], 1.0E-6);
     }
+
+    @Test
+    void nearCullSkipsQuadsInsideTheCameraOrTheirOwnHalfSize() {
+        assertEquals(true, QuadMath.nearCull(0.0, 0.0, 0.0, 0.1));
+        assertEquals(true, QuadMath.nearCull(0.0, 0.0, 0.4, 0.1));
+        assertEquals(false, QuadMath.nearCull(0.0, 0.0, 0.6, 0.1));
+        // A big quad is culled out to its own half-size.
+        assertEquals(true, QuadMath.nearCull(0.0, 0.0, 1.5, 2.0));
+    }
 }

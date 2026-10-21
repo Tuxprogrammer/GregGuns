@@ -184,16 +184,25 @@ final class GlFx {
         try {
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_CULL_FACE);
+            // Translucent FX must not write depth: a transparent texel that does hides the water behind it
+            // (shader packs draw water after entities), leaving a see-through rectangle.
             GL11.glDepthMask(false);
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.004f);
             GL11.glEnable(GL11.GL_BLEND);
             if (spec.additive()) {
-                GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
+                // Scale by the texture alpha (as the beam and particles do). Plain ONE, ONE adds the RGB of fully
+                // transparent
+                // texels too, which under a shader pack shows as a solid rectangle or a white-out blob.
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
             } else {
                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             }
             Tessellator t = Tessellator.instance;
             t.startDrawingQuads();
             t.setBrightness(FULL_BRIGHT);
+            // Shader gbuffers read a per-vertex normal; without one they reuse whatever glNormal3f was last set.
+            t.setNormal(0.0f, 1.0f, 0.0f);
             float[] tint = spec.tint();
             t.setColorRGBA_F(tint[0], tint[1], tint[2], 1.0f);
             t.addVertexWithUV(x1, y1, z1, u0, v0);
