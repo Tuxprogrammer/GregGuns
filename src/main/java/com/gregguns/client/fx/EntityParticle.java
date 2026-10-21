@@ -93,11 +93,22 @@ final class EntityParticle extends EntityFX {
             double cx = s.x(partial) - interpPosX;
             double cy = s.y(partial) - interpPosY;
             double cz = s.z(partial) - interpPosZ;
+            if (QuadMath.nearCull(cx, cy, cz, 0.1F * size)) {
+                return;
+            }
             double[] corners = QuadMath.corners(cx, cy, cz, 0.1F * size, rx, rxz, rz, ryz, rxy);
             RenderMode mode = s.def()
                 .renderMode();
             int brightness = mode == RenderMode.ALPHA_SHADED ? p.getBrightnessForRender(partial) : FULL_BRIGHT;
 
+            // Angelica 2.2.28 (shaders on) captures this quad instead of drawing it: it samples the bound texture,
+            // blend function and depth mask at the first addVertex (so the state set below is the state the instanced
+            // draw uses), and ignores alphaFunc, which comes from the layer's own state. So depth mask must be off
+            // before the quad is emitted, and our alpha test would not help there.
+            // Source:
+            // https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/rendering/particles/ParticleCaptureTessellator.java
+            // Source:
+            // https://github.com/GTNewHorizons/Angelica/blob/2.2.28/src/main/java/com/gtnewhorizons/angelica/rendering/particles/ParticleRenderState.java
             // The Techguns pattern the spec describes: set this particle's state, write the quad, draw it, put the
             // layer's state back and reopen the batch. Angelica's capture tessellator instances the quad; plain
             // vanilla draws it (and any batch already open) right here.
