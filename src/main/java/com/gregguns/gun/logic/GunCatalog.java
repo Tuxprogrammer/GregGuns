@@ -75,6 +75,9 @@ public final class GunCatalog {
         /** Depleted Nuclear Power Cell (returned on use). */
         public static final String CELL_NUCLEAR_DEPLETED = "cell_nuclear_depleted";
 
+        /** Loose Golden Round (the Golden Gun's round, LuV; one per shot, no empty item). */
+        public static final String GOLDEN_ROUND = "golden_round";
+
         /** Loose rocket (the Rocket Launcher's round, HV). */
         public static final String ROCKET = "ammo_rocket";
         /** Loose 40 mm grenade (the Grenade Launcher's round, MV). */

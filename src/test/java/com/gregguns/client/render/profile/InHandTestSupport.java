@@ -23,6 +23,9 @@ final class InHandTestSupport {
     static boolean zFamily(ClientGunDefinition d) {
         return d.gunName()
             .equals("pistol_9mm")
+            // The Golden Gun wears the pistol's model and transforms.
+            || d.gunName()
+                .equals("golden_gun")
             || d.gunName()
                 .equals("mac10");
     }

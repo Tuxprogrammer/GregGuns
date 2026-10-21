@@ -912,6 +912,25 @@
   "priority": "P3"
  },
  {
+  "id": "icon.golden_gun",
+  "kind": "icon",
+  "path": "textures/items/golden_gun.png",
+  "width": 16,
+  "height": 16,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#999900"
+  ],
+  "brief": "Golden Gun (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. polished gold 9mm pistol (the pistol's model in gold; GregGuns original). Metal parts take the HSSG gate color.",
+  "footprint_ref": "textures/guns/pistol3.png (model sheet, silhouette reference only)",
+  "priority": "P2"
+ },
+ {
   "id": "icon.part_barrel_stone",
   "kind": "icon",
   "path": "textures/items/part_barrel_stone.png",
@@ -1690,6 +1709,25 @@
   "brief": "Nether Charge (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. tan charge pack with orange glow.",
   "footprint_ref": "textures/items/nethercharge.png",
   "priority": "P3"
+ },
+ {
+  "id": "icon.golden_round",
+  "kind": "icon",
+  "path": "textures/items/golden_round.png",
+  "width": 16,
+  "height": 16,
+  "frames": 1,
+  "frametime": null,
+  "duration_s": null,
+  "channels": null,
+  "sample_rate": null,
+  "target_lufs": null,
+  "palette": [
+   "#FFFF1E"
+  ],
+  "brief": "Golden Round (LuV): GT-style 16x16 item icon, soft top-left light, dark outline. single fat gold-cased round with a bright gold tip (GregGuns original).",
+  "footprint_ref": "",
+  "priority": "P2"
  },
  {
   "id": "icon.mag_9mm_pistol",

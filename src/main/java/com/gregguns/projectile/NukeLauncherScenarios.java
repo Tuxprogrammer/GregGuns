@@ -196,6 +196,7 @@ public final class NukeLauncherScenarios {
 
         BossZombie(net.minecraft.world.World world) {
             super(world);
+            isImmuneToFire = true;
         }
     }
 
@@ -229,6 +230,9 @@ public final class NukeLauncherScenarios {
             boss.getEntityAttribute(SharedMonsterAttributes.maxHealth)
                 .setBaseValue(2000.0);
             boss.setHealth(2000.0F);
+            // Daylight burn is 1 damage a second: a bare zombie ends at 999, not half. The pumpkin and fire immunity
+            // stop it.
+            boss.setCurrentItemOrArmor(4, new ItemStack(net.minecraft.init.Blocks.pumpkin));
             boss.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 2000, 10));
             ctx.world()
                 .spawnEntityInWorld(boss);

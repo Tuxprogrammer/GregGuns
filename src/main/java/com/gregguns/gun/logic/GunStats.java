@@ -49,6 +49,7 @@ public final class GunStats {
     private final boolean silenced;
     private final ProjectileKind projectileKind;
     private final double knockback;
+    private final boolean annihilates;
     private final double blastRadius;
     private final double projectileGravity;
     private final int recoilTicks;
@@ -98,6 +99,7 @@ public final class GunStats {
         silenced = b.silenced;
         projectileKind = b.projectileKind;
         knockback = b.knockback;
+        annihilates = b.annihilates;
         blastRadius = b.blastRadius;
         projectileGravity = b.projectileGravity;
         recoilTicks = b.recoilTicks;
@@ -394,6 +396,14 @@ public final class GunStats {
         return knockback;
     }
 
+    /**
+     * @return true when a hit on a living entity kills it outright (a boss loses half its health) instead of dealing
+     *         the gun's damage: the Golden Gun's rule, the same decision as the Nuke Launcher's kill zone
+     */
+    public boolean annihilates() {
+        return annihilates;
+    }
+
     /** Blast radius in blocks of a rocket or launcher grenade; 0 for a gun whose projectile does not explode. */
     public double blastRadius() {
         return blastRadius;
@@ -487,6 +497,7 @@ public final class GunStats {
         private boolean silenced;
         private ProjectileKind projectileKind = ProjectileKind.BULLET;
         private double knockback = 1.0;
+        private boolean annihilates;
         private double blastRadius;
         private double projectileGravity;
         private int recoilTicks = 5;
@@ -670,6 +681,12 @@ public final class GunStats {
         /** The projectile entity to fire (default {@link ProjectileKind#BULLET}). */
         public Builder projectileKind(ProjectileKind kind) {
             projectileKind = kind;
+            return this;
+        }
+
+        /** Makes every hit on a living entity annihilate it (see {@link #annihilates()}). */
+        public Builder annihilating() {
+            annihilates = true;
             return this;
         }
 

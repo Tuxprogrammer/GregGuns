@@ -1,7 +1,7 @@
 """Gun inventory icons derived from the gun's own 3D model, so icon and model always agree.
 
     GREGGUNS_EXPORT_MODELS=<dir> ./gradlew test --tests '*ModelExportTest'
-    python -X utf8 tools/asset-gen/gun_icons.py <dir> [--sheet out.png]
+    python -X utf8 tools/asset-gen/gun_icons.py <dir> [--only name ...]
 
 Side view of the default skin (own renderer, model_render.py), true proportions.
 Long guns (length/height >= 2.2) are tilted 45 degrees, muzzle up-right; pistols stay
@@ -150,7 +150,12 @@ def gun_icon_names():
 def main():
     global EXPORT
     export = EXPORT = Path(sys.argv[1])
-    names = [n for n in json.loads((export / "index.json").read_text())["models"] if (ITEMS / (n + ".png")).exists()]
+    only = sys.argv[sys.argv.index("--only") + 1:] if "--only" in sys.argv else []
+    if only:
+        # New gun: draw just these icons and upsert their credit rows; every other icon stays untouched.
+        names = [n for n in only if (export / (n + ".json")).exists()]
+    else:
+        names = [n for n in json.loads((export / "index.json").read_text())["models"] if (ITEMS / (n + ".png")).exists()]
     rows = []
     for n in names:
         model = json.loads((export / (n + ".json")).read_text())
@@ -160,6 +165,11 @@ def main():
                      "Side render of the 3D model + default skin (model_render.py), 14x14 box average, bevel, outline",
                      "MIT", "2026-10-19"])
     cdir = ROOT / "tools/asset-gen/credits"
+    if only:
+        with open(cdir / "gun_icons.csv", encoding="utf-8", newline="") as f:
+            old = list(csv.reader(f))
+        keep = [r for r in old[1:] if r[0] not in {x[0] for x in rows}]
+        rows = keep + rows
     with open(cdir / "gun_icons.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["asset", "path", "generator", "seed", "method", "license", "date"])

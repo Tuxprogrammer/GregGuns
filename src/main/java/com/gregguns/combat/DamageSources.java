@@ -2,10 +2,14 @@ package com.gregguns.combat;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 
 import com.gregguns.core.config.DamageFactorsConfig;
+import com.gregguns.explosion.NukeAnnihilation;
 
 /**
  * The factory for GregGuns damage. Projectiles, melee and explosions build their sources here and deal damage through
@@ -154,6 +158,23 @@ public final class DamageSources {
         boolean taken = target.attackEntityFrom(source, amount);
         restoreFramesIfRejected(target, source.hit());
         return taken;
+    }
+
+    /**
+     * The shared annihilation decision of the Nuke Launcher's kill zone and the Golden Gun: a non-boss dies outright
+     * and a boss loses half its maximum health ({@link NukeAnnihilation#lethal}), dealt through
+     * {@link #annihilate}, so the damage factors still gate it.
+     *
+     * @param target   the living entity hit
+     * @param attacker the attacker, may be {@code null}
+     * @return what {@link #annihilate} returned
+     */
+    public static boolean annihilateLiving(EntityLivingBase target, Entity attacker) {
+        boolean boss = target instanceof IBossDisplayData || target instanceof EntityWither
+            || target instanceof EntityDragon;
+        double amount = NukeAnnihilation
+            .lethal(boss, target.getHealth(), target.getAbsorptionAmount(), target.getMaxHealth());
+        return annihilate(target, attacker, (float) amount);
     }
 
     /**

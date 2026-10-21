@@ -83,6 +83,8 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
     protected float penetration;
     /** Knockback multiplier of a hit, 1 for vanilla's push (GUN-38). */
     protected float knockback = 1.0F;
+    /** Whether a hit on a living entity annihilates it (the Golden Gun), see {@code GunStats.annihilates()}. */
+    protected boolean annihilates;
     /** Blocks per tick squared pulled downwards. */
     protected float gravity;
     /** Ticks of flight left. */
@@ -131,6 +133,7 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
         dropEnd = (float) stats.dropEnd();
         penetration = (float) stats.penetration();
         knockback = (float) stats.knockback();
+        annihilates = stats.annihilates();
         ticksToLive = stats.lifetimeTicks();
         lifetime = stats.lifetimeTicks();
         // Players keep their look in rotationYaw on the server; other living entities turn their head.
@@ -342,6 +345,12 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
      * @param hitZ   impact Z
      */
     protected void onEntityHit(Entity target, double hitX, double hitY, double hitZ) {
+        if (annihilates && target instanceof EntityLivingBase) {
+            // The Golden Gun: the shared kill decision, not a damage number (see DamageSources.annihilateLiving).
+            DamageSources.annihilateLiving((EntityLivingBase) target, shooter);
+            onHitEffect(target);
+            return;
+        }
         double dealt = DamageFalloff.damageAt(
             damage,
             minDamage,
@@ -454,6 +463,7 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
         tag.setFloat("damageDropStart", dropStart);
         tag.setFloat("damageDropEnd", dropEnd);
         tag.setFloat("penetration", penetration);
+        tag.setBoolean("annihilates", annihilates);
         tag.setFloat("gravity", gravity);
         tag.setInteger("ticksToLive", ticksToLive);
         tag.setInteger("lifetime", lifetime);
@@ -471,6 +481,7 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
         dropStart = tag.getFloat("damageDropStart");
         dropEnd = tag.getFloat("damageDropEnd");
         penetration = tag.getFloat("penetration");
+        annihilates = tag.getBoolean("annihilates");
         gravity = tag.getFloat("gravity");
         ticksToLive = tag.getInteger("ticksToLive");
         lifetime = tag.getInteger("lifetime");

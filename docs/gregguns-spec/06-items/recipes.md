@@ -104,6 +104,7 @@ Stable placeholder registry names, all in the `gregguns:` namespace. Areas 02, 0
 | `ammo_rocket` | Rocket | (14) | HV | Stainless steel | [RC-34](#ammo-rocket) | Rocket Launcher, Grim Reaper |
 | `ammo_rocket_nuke` | Rocket (Tactical Nuke) | (105) | ZPM | Naquadah alloy | [RC-35](#ammo-rocket-nuke) | Nuke Launcher |
 | `ammo_nether_charge` | Nether Charge | (63) | LuV | HSS-G | [RC-36](#ammo-nether-charge) | Nether Blaster |
+| `golden_round` | Golden Round | none (GregGuns original) | LuV | 9mm bullet (gated) | [RC-66](#ammo-golden-round) | Golden Gun |
 
 ### Magazines, drums, tanks and cells
 
@@ -274,6 +275,14 @@ A GT recipe consumes its inputs once, so ammo is made in batches, the way GT tur
 |---|---|---|---|---|---|---|---|
 | RC-35<a id="ammo-rocket-nuke"></a> | `ammo_rocket_nuke` ×1 | ZPM | AL | `ammo_rocket` ×1, `part_nuclear_warhead` ×1, `plate.NaquadahAlloy` ×2, `plate.Lead` ×2, `circuit.ZPM` ×1; fluid `Materials.SolderingAlloy.getMolten(288)` | `RECIPE_ZPM`, 30 s | `ammo_rocket`, `Scanning(1 * MINUTES, RECIPE_EV)` | `NaquadahAlloy`. Replaces R57 (rocket + warhead, shapeless) |
 | RC-36<a id="ammo-nether-charge"></a> | `ammo_nether_charge` ×16 | LuV | AL | `dust.Netherrack` ×16, `mc:soul_sand` ×8, `plate.HSSG` ×2, `circuit.LuV` ×1, `dust.Gunpowder` ×4; fluid `FluidRegistry.LAVA` ×4000 mB | `RECIPE_LuV`, 20 s | `ammo_advanced_bullet`, `Scanning(1 * MINUTES, RECIPE_EV)` | `HSSG`. The soul sand is the vanilla block (`dust.SoulSand` did not resolve on a real boot). Replaces Chem Lab recipe 11 (netherrack, soul sand, lava, ×4) |
+
+### Golden Round (Assembler)
+
+The Golden Round is made in GT's Assembler, not on an Ammo Press (the press stops at EV) and not on the Assembly Line. The row is `GoldenRoundAmmo.ROW`, registered by that definition's recipes hook (`GoldenRoundRecipes`), because `ProductionTable.ROWS` holds Ammo Press rows only.
+
+| ID | Output | Tier | Method | Inputs | EU/t, time | Gate, notes |
+|---|---|---|---|---|---|---|
+| RC-66<a id="ammo-golden-round"></a> | `golden_round` x1 | LuV | Assembler | `ammo_9mm_bullet` x1, `foil.Gold` x2, `plate.Gold` x1; circuit selector 8 | `RECIPE_LuV`, 10 s | The 9mm bullet, which is itself gated. One round per Golden Gun shot. |
 
 ## Magazines and drums
 

@@ -60,7 +60,8 @@ public final class GunDefinitions {
             GrimReaperDef.DEFINITION,
             NetherBlasterDef.DEFINITION,
             NuclearDeathRayDef.DEFINITION,
-            NukeLauncherDef.DEFINITION));
+            NukeLauncherDef.DEFINITION,
+            GoldenGunDef.DEFINITION));
 
     private GunDefinitions() {}
 

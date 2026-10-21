@@ -130,6 +130,10 @@ Damage 400 (NPC peak 250). The blast keeps its radius of 10 and its block destru
 - A rocket that meets an entity directly explodes on it: the target takes the kill-zone rule, not a separate direct hit.
 - The pure decision is `NukeAnnihilation` (unit tested); the scenarios `gun.nuke_launcher.fire` and `gun.nuke_launcher.killzone` cover it in game.
 
+## Golden Gun: one shot, one kill
+
+The Golden Gun (LuV, a GregGuns original) applies the same decision as the Nuke Launcher's kill zone to a bullet hit: a living non-boss takes health plus absorption plus 1 from an `UNRESISTABLE` source that ignores hurt-resistance frames, a boss takes 50% of its maximum health, and the `damagefactors` gate still applies. Both callers use one implementation, `NukeAnnihilation.lethal` through `DamageSources.annihilateLiving`. Its per-shot damage (1000) is nominal and the gun is exempt from the curve and floor tests (`DamageCurveTest.KILL_RULE`). The scenarios `gun.golden_gun.kill`, `gun.golden_gun.boss` and `gun.golden_gun.reload` cover it in game.
+
 ## Nuclear Death Ray
 
 Damage 30 per tick (drop-off minimum 5) and penetration 1.0, so the radiation beam ignores armor. Its identity stays `RADIATION`.

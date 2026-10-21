@@ -132,3 +132,4 @@ icon.turret_armor_iron,src/main/resources/assets/gregguns/textures/items/turret_
 icon.turret_armor_steel,src/main/resources/assets/gregguns/textures/items/turret_armor_steel.png,tools/asset-gen/icons.py,2942088047,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
 icon.turret_armor_aluminum,src/main/resources/assets/gregguns/textures/items/turret_armor_aluminum.png,tools/asset-gen/icons.py,1546297071,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
 icon.turret_armor_carbon,src/main/resources/assets/gregguns/textures/items/turret_armor_carbon.png,tools/asset-gen/icons.py,3989877665,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18
+icon.golden_round,src/main/resources/assets/gregguns/textures/items/golden_round.png,tools/asset-gen/icons.py,997846474,"Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",MIT,2026-10-18

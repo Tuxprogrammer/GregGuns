@@ -178,6 +178,14 @@ Fluid column: `Sol n` is `Materials.SolderingAlloy.getMolten(n)`, `Lub n` is `Ma
 
 The research items follow "scan the weapon one tier below": the Blaster Rifle (IV) for the Nether Blaster, the De-Atomizer Pistol (IV) for the Alien Blaster, the Rocket Launcher (HV, the base gun the Grim Reaper is made from) for the Grim Reaper, the Alien Blaster (LuV) for the Death Ray and the Grim Reaper (LuV) for the Nuke Launcher. A scanned weapon is matched ignoring its NBT, so a used or charged gun works.
 
+### Golden Gun (LuV, Assembler)
+
+A GregGuns original with no Techguns counterpart, so it has no Techguns recipe. It is an Assembler upgrade (GR-104, `ProductionTable.Row.upgrade`), not an Assembly Line recipe: LuV, 30 s, circuit selector 7.
+
+| Output | Base gun | Inputs | Gate | Notes |
+|---|---|---|---|---|
+| Golden Gun (LuV) | 9mm Pistol (any NBT, consumed) | `plate.Gold` x8, `circuit.LuV` x2, `plate.HSSG` x1 | `plate.HSSG` (LuV gate) | Comes out unloaded; its round is the Golden Round, [RC-66](../06-items/recipes.md#ammo-golden-round) (Assembler, LuV, 10 s). |
+
 ## Akimbo combine and split
 
 Akimbo recipes stay in the crafting table and keep Techguns' behavior ([RecipeAkimboGun and RecipeAkimboSplit](../../techguns-spec/02-guns/recipes.md#shapeless--custom-recipes)), with the camo and ammo bug GUN-26 in [index.md](../../techguns-spec/02-guns/index.md#suspected-bugs) fixed. A GT recipe consumes its inputs and cannot copy their NBT, so a machine cannot do this job.

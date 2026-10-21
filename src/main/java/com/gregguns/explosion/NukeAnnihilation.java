@@ -58,6 +58,19 @@ public final class NukeAnnihilation {
         if (!inKillZone(distance, blastRadius)) {
             return ramp;
         }
+        return lethal(boss, health, absorption, maxHealth);
+    }
+
+    /**
+     * The annihilation decision itself, shared by the Nuke Launcher's kill zone and the Golden Gun.
+     *
+     * @param boss       whether the victim is a boss
+     * @param health     the victim's current health
+     * @param absorption the victim's current absorption
+     * @param maxHealth  the victim's maximum health
+     * @return the damage to deal: health plus absorption plus a margin, or for a boss half its maximum health
+     */
+    public static double lethal(boolean boss, double health, double absorption, double maxHealth) {
         if (boss) {
             return maxHealth * BOSS_SHARE;
         }

@@ -177,6 +177,7 @@ GUNS = [
     ("grim_reaper", "Grim Reaper", "LuV", "grimreaper", "P3", "quad-tube rocket battery"),
     ("nuclear_death_ray", "Nuclear Death Ray", "ZPM", "NDR", "P3", "bulky ray projector, golden plasma core"),
     ("nuke_launcher", "Nuke Launcher", "ZPM", "nukerocketlauncher", "P3", "olive launcher with hazard trefoil"),
+    ("golden_gun", "Golden Gun", "LuV", "pistol3", "P2", "polished gold 9mm pistol (the pistol's model in gold; GregGuns original)"),
 ]
 
 for reg, disp, tier, tex, pri, desc in GUNS:
@@ -240,6 +241,7 @@ AMMO = [
     ("ammo_rocket", "Rocket", "HV", ["StainlessSteel"], None, "P2", "finned rocket with red nose"),
     ("ammo_rocket_nuke", "Rocket (Tactical Nuke)", "ZPM", ["NaquadahAlloy"], None, "P3", "olive finned rocket with hazard trefoil"),
     ("ammo_nether_charge", "Nether Charge", "LuV", ["HSSG"], "nethercharge", "P3", "tan charge pack with orange glow"),
+    ("golden_round", "Golden Round", "LuV", ["Gold"], None, "P2", "single fat gold-cased round with a bright gold tip (GregGuns original)"),
 ]
 for reg, disp, tier, mats, fpn, pri, desc in AMMO:
     icon(reg, "%s (%s)" % (disp, tier), G + desc + ".", mats=mats, pri=pri,

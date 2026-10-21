@@ -18,7 +18,7 @@ How GregGuns ammo plugs into GT recipe maps and GT's own ammo-like parts.
 | Energy Cell and Nuclear Power Cell are consumables filled in the Charging Station | Rechargeable electric items ([0003](../../design/0003-energy-model.md)); fluid ammo uses GT fluids ([fluids.md](fluids.md)) | Charging Station dropped |
 | Ammo comes out of a Techguns-specific slot in the extra inventory | Unchanged here; the slot is area 05's | n/a |
 
-Ammo tiers are in [0001](../../design/0001-tier-map.md): stone bullets at Steam/ULV; 9mm rounds, pistol magazines, shotgun shells and rifle bullets at LV; SMG and assault-rifle magazines and 40 mm grenades at MV; LMG and AS50 magazines, rockets, fuel and compressed-air tanks at HV; energy cells, advanced magazines, minigun drums and bio tanks at EV; Nether charges at LuV; nuclear power cells and tactical nuke rockets at ZPM.
+Ammo tiers are in [0001](../../design/0001-tier-map.md): stone bullets at Steam/ULV; 9mm rounds, pistol magazines, shotgun shells and rifle bullets at LV; SMG and assault-rifle magazines and 40 mm grenades at MV; LMG and AS50 magazines, rockets, fuel and compressed-air tanks at HV; energy cells, advanced magazines, minigun drums and bio tanks at EV; Nether charges at LuV; nuclear power cells and tactical nuke rockets at ZPM. The Golden Round (LuV) is a GregGuns original: see [Golden Round](#golden-round).
 
 ## Integration points
 
@@ -71,3 +71,7 @@ Rockets, 40 mm grenades and tactical nuke rockets are fired by dispensers in Tec
 
 - **`bulletGt*` ore names.** Register GregGuns bullets under GT's unused bullet prefixes, or keep them private? A record is needed only if we choose to register.
 - **Extruder shape (answered).** No casing recipe is needed: GT's `itemCasing` already has Extruder, Cutting Machine and Alloy Smelter recipes ([recipes.md](recipes.md#where-the-parts-come-from)).
+
+## Golden Round
+
+A GregGuns original with no Techguns counterpart. `golden_round` (LuV) is a loose round with no magazine and no empty item: one round fills the Golden Gun's one-round chamber, and each shot spends it. Recipe: [RC-66](recipes.md#ammo-golden-round). Tooltip: "One golden round. One kill."

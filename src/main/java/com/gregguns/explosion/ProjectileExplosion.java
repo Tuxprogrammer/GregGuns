@@ -11,9 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.boss.EntityWither;
-import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S27PacketExplosion;
@@ -307,18 +304,7 @@ public final class ProjectileExplosion {
             Entity attacker = owner != null ? owner : exploder;
             if (annihilationRadius > 0.0F && victim instanceof EntityLivingBase
                 && NukeAnnihilation.inKillZone(distance, annihilationRadius)) {
-                EntityLivingBase living = (EntityLivingBase) victim;
-                boolean boss = living instanceof IBossDisplayData || living instanceof EntityWither
-                    || living instanceof EntityDragon;
-                double lethal = NukeAnnihilation.amount(
-                    distance,
-                    annihilationRadius,
-                    amount,
-                    boss,
-                    living.getHealth(),
-                    living.getAbsorptionAmount(),
-                    living.getMaxHealth());
-                if (DamageSources.annihilate(victim, attacker, (float) lethal)) {
+                if (DamageSources.annihilateLiving((EntityLivingBase) victim, attacker)) {
                     hurt++;
                 }
                 push(victim, centre, distance, pushed);

@@ -187,9 +187,12 @@ class GunSoundsJsonTest {
             }
             // The Nuke Launcher keeps its own event (mutable on its own) but plays the Rocket Launcher's recordings,
             // as Techguns' nukelauncher does (guns.rocketFire); it takes its own files if the asset agent makes them.
+            // The Golden Gun keeps its own event but plays the 9mm Pistol's recordings (no new assets).
             // Deviation: the Scatter Laser Rifle fires the Laser Rifle's clips, as in Techguns, until it gets its own.
             if (e.getKey()
                 .equals("guns.nuke_launcher.fire")
+                || e.getKey()
+                    .equals("guns.golden_gun.fire")
                 || e.getKey()
                     .equals("guns.scatter_laser_rifle." + GunSoundEvents.FIRE)) {
                 continue;
