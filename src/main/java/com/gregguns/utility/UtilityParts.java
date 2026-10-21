@@ -54,7 +54,7 @@ public final class UtilityParts {
 
     /**
      * @param plate which plate
-     * @return its item; null before registration or with the utility module off
+     * @return its item; null before registration
      */
     public static ItemTurretArmor plate(TurretPlate plate) {
         return PLATES.get(plate);

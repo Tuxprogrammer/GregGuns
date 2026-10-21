@@ -33,9 +33,13 @@ public final class MachinesModule implements GregGunsModule {
     }
 
     @Override
-    public void init(FMLInitializationEvent event) {
-        // Repair Bench, Armory Gantry and Camo Bench.
+    public void initContent(FMLInitializationEvent event) {
+        // Repair Bench, Armory Gantry and Camo Bench: always built, so their MTE ids exist on every client and server.
         RepairMachines.register();
+    }
+
+    @Override
+    public void init(FMLInitializationEvent event) {
         RepairMachines.registerRecipes();
         if (DevEnvironment.testHooksEnabled()) {
             RepairScenarios.registerAll(ScenarioRegistry.SCENARIOS);

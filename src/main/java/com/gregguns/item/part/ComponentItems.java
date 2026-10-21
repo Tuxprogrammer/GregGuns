@@ -153,7 +153,7 @@ public final class ComponentItems {
 
     /**
      * @param registryName a bare registry name owned by this class
-     * @return the item, or {@code null} before registration or when the guns module is off
+     * @return the item, or {@code null} before registration
      */
     public static Item get(String registryName) {
         return REGISTERED.get(registryName);

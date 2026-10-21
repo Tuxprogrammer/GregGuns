@@ -56,7 +56,7 @@ public final class GunKeybinds {
         GregGuns.LOG.debug("Registered gun keybinds");
     }
 
-    /** @return the reload key; null when the guns module is off */
+    /** @return the reload key; null before registration */
     public static SyncedKeybind reload() {
         return reload;
     }

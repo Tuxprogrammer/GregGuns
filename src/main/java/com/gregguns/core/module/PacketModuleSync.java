@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 
 import com.gregguns.GregGuns;
@@ -13,10 +12,11 @@ import com.gregguns.network.ClientboundPacket;
 import com.gregguns.network.validation.ClientRules;
 
 /**
- * Server to client, once at login: which modules the server runs. A client whose {@code modules.*} switches differ
- * cannot register the server's content; this logs and shows the difference instead of leaving the player to find a
- * broken item. It does not disconnect: the client stays safe through inert MTE placeholders, and the modules are
- * startup-only, so the fix is the config file.
+ * Server to client, once at login: which modules are active on the server. The client uses these values for behavior
+ * and visibility (recipes aside) while connected, and its own flags again after it leaves ({@link ModuleState}).
+ * Nothing
+ * is registered conditionally, so a client with other flags joins without trouble; the difference is only logged. The
+ * rest of the gameplay config is synced by GTNHLib ({@code @Config.Sync}, see docs/config.md).
  *
  * <p>
  * Wire: mask (int, bit per {@link ModuleId} ordinal). Append-only list position: see {@code GregGunsNetwork}. Side:
@@ -30,9 +30,14 @@ public final class PacketModuleSync extends ClientboundPacket {
     /** Required by the channel. */
     public PacketModuleSync() {}
 
-    /** @param mask the server's enabled modules, see {@link ModuleMismatch#mask} */
+    /** @param mask the server's active modules, see {@link ModuleState#localMask} */
     public PacketModuleSync(int mask) {
         this.mask = mask;
+    }
+
+    /** @return the mask this packet carries (for tests) */
+    public int mask() {
+        return mask;
     }
 
     @Override
@@ -47,22 +52,15 @@ public final class PacketModuleSync extends ClientboundPacket {
 
     @Override
     protected void validate(ClientRules rules, World world) {
-        rules.inRange("mask", mask, 0, ModuleMismatch.maxMask());
+        rules.inRange("mask", mask, 0, ModuleState.maxMask());
     }
 
     @Override
     protected void handle(World world, EntityPlayer localPlayer) {
-        List<String> diffs = ModuleMismatch.differences(mask, GregGuns.proxy.enabledModuleMask());
-        if (diffs.isEmpty()) {
-            return;
+        List<String> diffs = ModuleSyncLogic.apply(mask, ModuleState.localMask());
+        if (!diffs.isEmpty()) {
+            GregGuns.LOG.info("The server's GregGuns module flags apply here, not this client's: {}", diffs);
         }
-        GregGuns.LOG.error(
-            "GregGuns module mismatch with the server: {}. Machines of the missing modules show as inert placeholders;"
-                + " set the same modules.* values in config/gregguns.cfg and restart.",
-            diffs);
-        localPlayer.addChatMessage(
-            new ChatComponentText(
-                "[GregGuns] This client's modules.* differ from the server's (" + String.join("; ", diffs)
-                    + "). Match config/gregguns.cfg and restart."));
+        GregGuns.proxy.moduleStateChanged();
     }
 }

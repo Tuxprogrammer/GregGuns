@@ -46,12 +46,12 @@ public final class MeleeItems {
         }
     }
 
-    /** @return the Combat Knife; {@code null} before registration or when the guns module is off */
+    /** @return the Combat Knife; {@code null} before registration */
     public static ItemCombatKnife combatKnife() {
         return combatKnife;
     }
 
-    /** @return the Crowbar; {@code null} before registration or when the guns module is off */
+    /** @return the Crowbar; {@code null} before registration */
     public static ItemCrowbar crowbar() {
         return crowbar;
     }

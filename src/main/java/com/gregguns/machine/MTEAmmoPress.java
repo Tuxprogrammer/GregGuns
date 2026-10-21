@@ -6,6 +6,8 @@ import net.minecraft.util.StatCollector;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.gregguns.GregGuns;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.recipe.GregGunsRecipeMaps;
 
 import gregtech.api.enums.SoundResource;
@@ -117,6 +119,9 @@ public final class MTEAmmoPress extends MTEBasicMachineWithRecipe implements IMT
 
     @Override
     public void onPostTick(IGregTechTileEntity baseMetaTileEntity, long tick) {
+        if (!ModuleState.isActive(ModuleId.GUNS)) {
+            return; // the module is off: the machine stays registered but inert
+        }
         super.onPostTick(baseMetaTileEntity, tick);
         if (!baseMetaTileEntity.isServerSide()) {
             return;

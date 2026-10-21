@@ -14,8 +14,8 @@ import com.gregguns.armor.logic.ArmorSlot;
 import com.gregguns.armor.logic.BonusMap;
 import com.gregguns.armor.logic.PieceDef;
 import com.gregguns.armor.logic.SetDef;
-import com.gregguns.core.config.ModuleFlags;
 import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -112,7 +112,7 @@ public final class GunAccuracyScenarios {
             // Vanilla armor slots: 1 boots, 2 leggings, 3 chestplate, 4 helmet.
             armored.setCurrentItemOrArmor(3, new ItemStack(Stub.CHEST));
 
-            boolean armorOn = ModuleFlags.isEnabled(ModuleId.ARMOR);
+            boolean armorOn = ModuleState.isActive(ModuleId.ARMOR);
             double bonusBare = GunAccuracy.armorBonus(bare);
             double bonusArmored = GunAccuracy.armorBonus(armored);
             out.check(bonusBare == 0.0, "a player in no armor has no accuracy bonus but read " + bonusBare);

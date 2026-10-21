@@ -65,44 +65,44 @@ public final class PartItems {
 
     /**
      * @param name a part's registry name without the mod id
-     * @return the registered part; {@code null} before registration, when the guns module is off, or for an unknown
+     * @return the registered part; {@code null} before registration, or for an unknown
      *         name
      */
     public static ItemPart get(String name) {
         return ITEMS.get(name);
     }
 
-    /** @return the Stone Barrel; {@code null} before registration or when the guns module is off */
+    /** @return the Stone Barrel; {@code null} before registration */
     public static ItemPart barrelStone() {
         return get(BARREL_STONE);
     }
 
-    /** @return the Iron Barrel; {@code null} before registration or when the guns module is off */
+    /** @return the Iron Barrel; {@code null} before registration */
     public static ItemPart barrelIron() {
         return get(BARREL_IRON);
     }
 
-    /** @return Mechanical Parts (T1); {@code null} before registration or when the guns module is off */
+    /** @return Mechanical Parts (T1); {@code null} before registration */
     public static ItemPart mechanical1() {
         return get(MECHANICAL_1);
     }
 
-    /** @return the Wooden Stock; {@code null} before registration or when the guns module is off */
+    /** @return the Wooden Stock; {@code null} before registration */
     public static ItemPart stockWooden() {
         return get(STOCK_WOODEN);
     }
 
-    /** @return the Hardened Steel Barrel; {@code null} before registration or when the guns module is off */
+    /** @return the Hardened Steel Barrel; {@code null} before registration */
     public static ItemPart barrelHardened() {
         return get(BARREL_HARDENED);
     }
 
-    /** @return the Iron Receiver (RC-13); {@code null} before registration or when the guns module is off */
+    /** @return the Iron Receiver (RC-13); {@code null} before registration */
     public static ItemPart receiverIron() {
         return get(RECEIVER_IRON);
     }
 
-    /** @return Mechanical Parts T2; {@code null} before registration or when the guns module is off */
+    /** @return Mechanical Parts T2; {@code null} before registration */
     public static ItemPart mechanical2() {
         return get(MECHANICAL_2);
     }

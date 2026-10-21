@@ -91,33 +91,33 @@ public final class GunItems {
 
     /**
      * @param name a gun's registry name without the mod id, for example {@code "bolt_action_rifle"}
-     * @return the registered gun; {@code null} before registration, when the guns module is off, or for an unknown name
+     * @return the registered gun; {@code null} before registration, or for an unknown name
      */
     public static ItemGun get(String name) {
         return ITEMS.get(name);
     }
 
-    /** @return the 9mm Pistol; {@code null} before registration or when the guns module is off */
+    /** @return the 9mm Pistol; {@code null} before registration */
     public static ItemGun pistol() {
         return get(PistolDef.NAME);
     }
 
-    /** @return the Sawed Off; {@code null} before registration or when the guns module is off */
+    /** @return the Sawed Off; {@code null} before registration */
     public static ItemGun sawedOff() {
         return get(SawedOffDef.NAME);
     }
 
-    /** @return the Revolver; {@code null} before registration or when the guns module is off */
+    /** @return the Revolver; {@code null} before registration */
     public static ItemGun revolver() {
         return get(RevolverDef.NAME);
     }
 
-    /** @return the Hand Cannon; {@code null} before registration or when the guns module is off */
+    /** @return the Hand Cannon; {@code null} before registration */
     public static ItemGun handcannon() {
         return get(HandCannonDef.NAME);
     }
 
-    /** @return the Bolt Action Rifle; {@code null} before registration or when the guns module is off */
+    /** @return the Bolt Action Rifle; {@code null} before registration */
     public static ItemGun boltAction() {
         return get(BoltActionDef.NAME);
     }

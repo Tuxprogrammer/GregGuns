@@ -3,6 +3,8 @@ package com.gregguns.machine;
 import net.minecraft.item.ItemStack;
 
 import com.gregguns.block.GregGunsCasings;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.registry.ModuleRegistrar;
 
 import gregtech.api.GregTechAPI;
@@ -86,10 +88,12 @@ public final class AmmoPressMachines {
             regional,
             voltageIndex,
             new String[] { TOOLTIP_KEY, TYPE_KEY },
-            new Object[] { "VPV", "CMC", "WEW", 'V', MTEBasicMachineWithRecipe.X.CONVEYOR, 'P',
-                MTEBasicMachineWithRecipe.X.PISTON, 'C', MTEBasicMachineWithRecipe.X.CIRCUIT, 'M',
-                MTEBasicMachineWithRecipe.X.HULL, 'W', MTEBasicMachineWithRecipe.X.WIRE, 'E',
-                MTEBasicMachineWithRecipe.X.MOTOR });
+            // GT accepts a null recipe (no hand recipe): the guns module being off means no recipes for its content.
+            !ModuleState.isActive(ModuleId.GUNS) ? null
+                : new Object[] { "VPV", "CMC", "WEW", 'V', MTEBasicMachineWithRecipe.X.CONVEYOR, 'P',
+                    MTEBasicMachineWithRecipe.X.PISTON, 'C', MTEBasicMachineWithRecipe.X.CIRCUIT, 'M',
+                    MTEBasicMachineWithRecipe.X.HULL, 'W', MTEBasicMachineWithRecipe.X.WIRE, 'E',
+                    MTEBasicMachineWithRecipe.X.MOTOR });
     }
 
     /**

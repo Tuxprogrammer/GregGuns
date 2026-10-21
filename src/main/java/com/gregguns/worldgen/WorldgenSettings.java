@@ -158,7 +158,7 @@ public final class WorldgenSettings {
      */
     public static boolean generatorWanted() {
         return WorldgenGate.shouldRegisterGenerator(
-            com.gregguns.core.config.ModuleFlags.isEnabled(com.gregguns.core.module.ModuleId.WORLDGEN),
+            com.gregguns.core.module.ModuleState.isActive(com.gregguns.core.module.ModuleId.WORLDGEN),
             WorldgenConfig.spawnStructures);
     }
 }

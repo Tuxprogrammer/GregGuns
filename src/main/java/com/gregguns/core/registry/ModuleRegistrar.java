@@ -9,6 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 
 import com.gregguns.GregGuns;
 import com.gregguns.api.HiddenFromCreativeTab;
+import com.gregguns.core.module.ModuleContent;
 import com.gregguns.core.module.ModuleId;
 
 import cpw.mods.fml.common.registry.EntityRegistry;
@@ -16,8 +17,10 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
  * Registers one module's items, blocks, entities and tile entities under the GregGuns naming rules in {@link Naming}.
- * The {@code ModuleManager} hands each enabled module its own instance during preInit; a disabled module never gets
- * one, which is how disabling removes its content.
+ * The {@code ModuleManager} hands every module its own instance during preInit, whatever the module flags say: flags
+ * never change what is registered (they only switch behavior, see {@code ModuleState}), so a client and a server with
+ * different flags still agree on every block, item and entity id. Each item and block is remembered under its module
+ * ({@code ModuleContent}) so a module that is off can hide and disable it.
  *
  * <p>
  * Sounds have no registration call in 1.7.10: declare them in {@code assets/gregguns/sounds.json} and refer to them
@@ -101,6 +104,7 @@ public final class ModuleRegistrar {
         item.setUnlocalizedName(Naming.unlocalizedName(name));
         item.setTextureName(Naming.textureName(name));
         GameRegistry.registerItem(item, Naming.registryName(name));
+        ModuleContent.assign(item, module);
         return item;
     }
 
@@ -135,6 +139,7 @@ public final class ModuleRegistrar {
         block.setBlockName(Naming.unlocalizedName(name));
         block.setBlockTextureName(Naming.textureName(name));
         GameRegistry.registerBlock(block, itemBlock, Naming.registryName(name));
+        ModuleContent.assign(block, module);
         return block;
     }
 

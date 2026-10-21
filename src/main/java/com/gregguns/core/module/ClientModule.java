@@ -5,8 +5,8 @@ package com.gregguns.core.module;
  *
  * <p>
  * Implementations live under {@code com.gregguns.client}, and {@code ClientProxy} is the only code that names them.
- * This interface has no Minecraft types so common code can hold it without loading client classes. The manager runs a
- * hook only when its module is enabled.
+ * This interface has no Minecraft types so common code can hold it without loading client classes. The manager runs the
+ * hooks whatever the module flag says: the content they draw is always registered.
  */
 public interface ClientModule {
 

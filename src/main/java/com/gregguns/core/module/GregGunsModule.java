@@ -10,9 +10,12 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
  * A feature area (guns, armor, machines, ...) that registers its content through the module system.
  *
  * <p>
- * The {@link ModuleManager} calls these hooks only when {@code modules.<name>} is on, so a disabled module registers
- * nothing: no items, no recipes, no event handlers. Anything a module adds must therefore be added from inside these
- * hooks, never from a static initializer or from {@code GregGuns} directly. Both sides; client-only work goes in a
+ * The {@link ModuleManager} calls {@link #preInit} and {@link #initContent} for every module, whatever its
+ * {@code modules.<name>} flag says, so a flag never changes what is registered (items, blocks, entities, tile entities,
+ * machines, packets). It calls {@link #init} and {@link #postInit} only for enabled modules, so a disabled module has
+ * no
+ * recipes, event handlers, spawning or worldgen. Anything a module adds must be added from inside these hooks, never
+ * from a static initializer or from {@code GregGuns} directly. Both sides; client-only work goes in a
  * {@link ClientModule} registered by {@code ClientProxy}.
  */
 // Spec: docs/ROADMAP.md (M0 scope: registries); CONTRIBUTING.md (Registration order)
@@ -31,7 +34,17 @@ public interface GregGunsModule {
     default void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {}
 
     /**
-     * Recipes, event handlers and anything that needs every mod's items registered.
+     * Content that must exist whatever the flags say but cannot be registered in preInit: GregTech machines (legal only
+     * between GT's preload and postload), GUI handlers, client renderers of the module's blocks. No recipes and no
+     * event
+     * handlers here: those belong in {@link #init}.
+     *
+     * @param event the FML event
+     */
+    default void initContent(FMLInitializationEvent event) {}
+
+    /**
+     * Behavior of an enabled module: recipes, event handlers and anything that needs every mod's items registered.
      *
      * @param event the FML event
      */

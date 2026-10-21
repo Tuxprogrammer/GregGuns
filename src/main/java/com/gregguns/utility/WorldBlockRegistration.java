@@ -49,22 +49,22 @@ public final class WorldBlockRegistration {
 
     private WorldBlockRegistration() {}
 
-    /** @return the Reinforced Chest; null with the module off */
+    /** @return the Reinforced Chest; null before registration */
     public static BlockGregChest reinforcedChest() {
         return reinforcedChest;
     }
 
-    /** @return the Weapon Chest; null with the module off */
+    /** @return the Weapon Chest; null before registration */
     public static BlockGregChest weaponChest() {
         return weaponChest;
     }
 
-    /** @return the Bio Blob block; null with the module off */
+    /** @return the Bio Blob block; null before registration */
     public static BlockBioBlob bioBlob() {
         return bioBlob;
     }
 
-    /** @return the Camp Flag block; null with the module off */
+    /** @return the Camp Flag block; null before registration */
     public static BlockCampFlag campFlag() {
         return campFlag;
     }
@@ -118,6 +118,15 @@ public final class WorldBlockRegistration {
         registrar.registerTileEntity(CAMP_FLAG, TileCampFlag.class);
     }
 
+    /** Client renderers of the world blocks; always registered, see {@code GregGunsModule.initContent}. */
+    public static void initContent() {
+        if (FMLCommonHandler.instance()
+            .getSide()
+            .isClient()) {
+            registerClient();
+        }
+    }
+
     /** Recipes and event handlers. */
     @SuppressWarnings("unchecked")
     public static void init() {
@@ -138,11 +147,6 @@ public final class WorldBlockRegistration {
         CraftingManager.getInstance()
             .getRecipeList()
             .add(new ShapedOreRecipe(new ItemStack(weaponChest), "pcp", 'p', "plateIron", 'c', Blocks.chest));
-        if (FMLCommonHandler.instance()
-            .getSide()
-            .isClient()) {
-            registerClient();
-        }
     }
 
     private static void registerClient() {

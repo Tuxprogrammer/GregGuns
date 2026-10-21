@@ -52,7 +52,7 @@ public final class CampFlags {
     /**
      * @param sink      the window-clipped sink
      * @param window    the populating window
-     * @param flagBlock the Camp Flag block; null when the utility module is off (nothing is placed)
+     * @param flagBlock the Camp Flag block; null before registration (nothing is placed)
      * @param spec      where and with what to initialize it
      * @param tiles     makes a fresh tile; tests pass a stand-in
      * @param recorder  told the position after a successful placement

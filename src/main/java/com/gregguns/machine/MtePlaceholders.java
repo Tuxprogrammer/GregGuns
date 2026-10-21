@@ -12,10 +12,12 @@ import gregtech.api.GregTechAPI;
  * Fills every GregGuns MTE id that no module registered with an inert {@link MTEPlaceholder}.
  *
  * <p>
- * Why: all GregGuns machines share GT's one machine block. A client whose {@code modules.*} switches differ from the
- * server's passes Forge's registry check (the block and item are GT's), yet has no machine at the id, and GT's item
- * renderer then throws a NullPointerException in the hotbar. GT registers MTEs by id only, so a placeholder is the
- * only way to keep that stack renderable. Common code, no side check: it behaves the same on both sides and runs
+ * Why: all GregGuns machines share GT's one machine block, and GT's item renderer throws a NullPointerException in the
+ * hotbar for an id with no machine. Module flags no longer skip any machine, so the live case is the retired ids of old
+ * worlds (design record 0012); a machine that failed to construct is covered the same way. GT registers MTEs by id
+ * only,
+ * so a placeholder is the only way to keep such a stack renderable. Common code, no side check: it behaves the same on
+ * both sides and runs
  * inside GT's registration window ({@code CommonProxy.init}, after the modules).
  */
 // Source (the unregistered-id read that throws):
@@ -56,8 +58,10 @@ public final class MtePlaceholders {
     /** Registers a placeholder at every free GregGuns id. Call once, after all modules' init. */
     public static void registerMissing() {
         for (int id : missing(i -> GregTechAPI.METATILEENTITIES[i] != null)) {
+            // Every module always builds its machines (flags only switch behavior), so this is a safety net for a
+            // machine that failed to construct, not a normal path.
             new MTEPlaceholder(id, "gregguns.placeholder." + id);
-            GregGuns.LOG.info("MTE {} has no machine (its module is off here); registered an inert placeholder", id);
+            GregGuns.LOG.warn("MTE {} has no machine; registered an inert placeholder", id);
         }
         // Retired ids (20106 to 20108): a world may still hold the tile entity or an item stack of the removed machine,
         // and GT's item renderer throws on an id with no machine (the Retort crash). The placeholder is inert.
