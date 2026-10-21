@@ -115,6 +115,7 @@ final class EntityParticle extends EntityFX {
         private static void setState(RenderMode mode) {
             switch (mode) {
                 case ADDITIVE:
+                    GL11.glDepthMask(false);
                     GL11.glEnable(GL11.GL_BLEND);
                     GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
                     break;
@@ -130,6 +131,8 @@ final class EntityParticle extends EntityFX {
                 case ALPHA:
                 case ALPHA_SHADED:
                 default:
+                    // Blended quads must not write depth, or their transparent texels hide the water drawn later.
+                    GL11.glDepthMask(false);
                     GL11.glEnable(GL11.GL_BLEND);
                     GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                     break;

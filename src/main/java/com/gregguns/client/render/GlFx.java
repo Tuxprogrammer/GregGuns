@@ -184,7 +184,11 @@ final class GlFx {
         try {
             GL11.glDisable(GL11.GL_LIGHTING);
             GL11.glDisable(GL11.GL_CULL_FACE);
+            // Translucent FX must not write depth: a transparent texel that does hides the water behind it
+            // (shader packs draw water after entities), leaving a see-through rectangle.
             GL11.glDepthMask(false);
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+            GL11.glAlphaFunc(GL11.GL_GREATER, 0.004f);
             GL11.glEnable(GL11.GL_BLEND);
             if (spec.additive()) {
                 // Scale by the texture alpha (as the beam and particles do). Plain ONE, ONE adds the RGB of fully
