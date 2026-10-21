@@ -448,7 +448,7 @@ final class ArmorTierScenarios {
 
         @Override
         public String description() {
-            return "HEV: empty gives no bonus and only the passive GAS cover; charged gives speed x1.4 (x6.4 in water), cooling cancels lava and costs 1 unit, jump and fall cost 5, walking 4 per second; HEAT cover follows the charge.";
+            return "HEV: empty gives no bonus and only the passive GAS cover; charged gives speed x1.4 (still x1.4 in water: the swim boost is client side), cooling cancels lava and costs 1 unit, jump and fall cost 5, walking 4 per second; HEAT cover follows the charge.";
         }
 
         @Override
@@ -497,9 +497,15 @@ final class ArmorTierScenarios {
 
                 p.setInWater(true);
                 events.update(p);
-                out.check(near(6.4, speedFactor(p)), "in water: speed x(1+0.4+5.0)=6.4, got " + speedFactor(p));
+                out.check(
+                    near(1.4, speedFactor(p)),
+                    "in water: the attribute stays at the land value x1.4 (the swim boost is SwimBoost, client side), got "
+                        + speedFactor(p));
                 BreakSpeed wet = new BreakSpeed(p, Blocks.stone, 0, 4.0F, 0, 0, 0);
                 MinecraftForge.EVENT_BUS.post(wet);
+                out.check(
+                    near(2.0, com.gregguns.armor.logic.SwimBoost.multiplier(Armor.bonus(p, ArmorBonus.SPEED_WATER))),
+                    "swim boost x2.0");
                 p.setInWater(false);
                 events.update(p);
                 out.check(near(1.4, speedFactor(p)), "out of water: speed back to x1.4, got " + speedFactor(p));

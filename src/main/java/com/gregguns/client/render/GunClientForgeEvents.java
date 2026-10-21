@@ -48,6 +48,15 @@ public final class GunClientForgeEvents {
 
     @SubscribeEvent
     public void onFov(FOVUpdateEvent event) {
+        // Clamp only our armor speed modifier's share of the FOV to vanilla's Speed II + sprint (ARM-05).
+        net.minecraft.entity.ai.attributes.IAttributeInstance speed = event.entity
+            .getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.movementSpeed);
+        net.minecraft.entity.ai.attributes.AttributeModifier ours = speed == null ? null
+            : speed.getModifier(com.gregguns.armor.ArmorEvents.SPEED_ID);
+        if (ours != null) {
+            double ratio = speed.getAttributeValue() / event.entity.capabilities.getWalkSpeed();
+            event.newfov *= (float) com.gregguns.armor.logic.FovClamp.fovFactor(ratio, 1.0 + ours.getAmount());
+        }
         event.newfov *= (float) animations.zoom()
             .fovMultiplier(animations.partial());
     }
