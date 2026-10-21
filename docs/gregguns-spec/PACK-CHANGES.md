@@ -47,16 +47,7 @@ Every change GregGuns needs outside this repo, collected from the area indexes. 
 
 ### Questbook ([12-questbook](12-questbook/index.md))
 
-All paths are under `config/betterquesting/DefaultQuests/`. The full design is 115 quests in 14 chapters, gated on existing GTNH tier quests.
-
-| File | Change | Why | Sheet |
-|---|---|---|---|
-| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/QuestLine.json` (new) | Tab properties: name `GregGuns`, icon, visibility `UNLOCKED` | Defines the tab | [authoring.md](12-questbook/authoring.md#line-files) |
-| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (118 new) | One position file per quest | Places each quest on the canvas | [quest-line.md](12-questbook/quest-line.md) |
-| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (118 new) | One file per quest: properties, prerequisites, tasks, rewards | The quest content | [authoring.md](12-questbook/authoring.md#quest-files) |
-| `QuestLinesOrder.txt` | Append `D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns` | Adds the tab after Kill All the Things | [index.md](12-questbook/index.md#tab-placement) |
-| `QuestSettings.json` | Raise `pack_version` in the release that adds the tab | Flags the questbook update to existing worlds | [index.md](12-questbook/index.md) |
-| `QuestLines/KillAlltheThings-AAAAAAAAAAAAAAAAAAAAJQ==/` | Optional: a position file for `gg.npc.intro` | A transition entry from the pack's combat line | [quest-line.md](12-questbook/quest-line.md) |
+No pack change. The 121 quests ship inside the GregGuns jar and a hidden config key installs them into the server's BetterQuesting database ([design record 0015](../design/0015-m9-self-contained-polish.md), [index.md](12-questbook/index.md#delivered-from-the-jar)). The only optional step for a pack maintainer is a position file that cross-links `gg.npc.intro` into `QuestLines/KillAlltheThings-AAAAAAAAAAAAAAAAAAAAJQ==/` ([quest-line.md](12-questbook/quest-line.md#relation-to-the-packs-lines)).
 
 **Bio Gun ammo chain.** No pack file changes: the Bio Tank reads BartWorks' E. coli culture fluid and GregGuns adds one Bacterial Vat recipe in code. The questbook should teach the path: Brewery makes Biomass, the Bio Lab (HV) makes the E. coli dish, the Bacterial Vat (EV glass) turns Biomass into culture fluid, a Fluid Canner fills the Bio Tank. The pack must not remove or override `bacterialVatRecipes` or `bioLabRecipes`; confirm with `/gregguns dumprecipes`.
 
