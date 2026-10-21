@@ -1,17 +1,22 @@
 # Authoring the GregGuns quest line
 
-How a pack maintainer turns the tables in [quest-line.md](quest-line.md) into files for GT-New-Horizons-Modpack, and how to test them.
+How the tables in [quest-line.md](quest-line.md) become the resource files in the GregGuns jar, and how to rebuild and test them. The files are in BetterQuesting's own format, so a pack maintainer could also copy them into `DefaultQuests`, but the supported route is the in-jar install ([0015](../../design/0015-m9-self-contained-polish.md)).
 
 - **Techguns baseline:** none (see [index.md](index.md)).
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0007](../../design/0007-pack-loot-and-infernal-mobs.md)
 - **Pack mods:** BetterQuesting (`betterquesting`, `bq_standard`, 3.8.89-GTNH), EnhancedLootBags (`enhancedlootbags`, 1.3.5)
 - **Roadmap:** M9
+- **Code:** `tools/questbook/` (data, builder, validator), `src/main/resources/assets/gregguns/questbook/` (the generated files), `QuestbookResourcesTest`
 
-Evidence: the pack's files in `reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquesting/DefaultQuests/`, and BetterQuesting source at tag `3.8.89-GTNH`. The file format is the pack's real one; both scripts below were run against it.
+Evidence: the pack's files in `reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquesting/DefaultQuests/`, and BetterQuesting source at tag `3.8.89-GTNH`. The file format is the pack's real one; both scripts in `tools/questbook/` were run against it.
 
 ## File layout
 
-All paths are under `config/betterquesting/DefaultQuests/`.
+All paths are under `config/betterquesting/DefaultQuests/` in the pack. In the jar the same tree sits under `assets/gregguns/questbook/`, without `QuestLinesOrder.txt` and `QuestSettings.json`, plus an `index.json` that lists every file because a jar cannot list a directory:
+
+```json
+{"format": 1, "line": "QuestLines/GregGuns-<b64>/QuestLine.json", "linePositions": ["QuestLines/GregGuns-<b64>/<Name>-<id>.json"], "quests": ["Quests/GregGuns-<b64>/<Name>-<id>.json"], "orderEntry": "<b64>: GregGuns"}
+```
 
 ```
 QuestLinesOrder.txt                        one line per tab: <line id>: <label>
@@ -26,7 +31,7 @@ Quests/<LineName>-<line id>/
 - The exporter puts quests that belong to one line in that line's folder, quests in several lines in `MultipleQuestLine/` and quests in none in `NoQuestLine/`. The loader reads every file under `Quests/` and takes the ID from the file body, so the folder is for humans ([QuestCommandDefaults#L69-L82](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L69-L82), [#L444-L456](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L444-L456)).
 - **File name** is the name with color codes and non-alphanumerics removed, cut to 16 characters, then `-`, then the ID in Base64 ([#L168-L177](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L168-L177)). `Underground Geodes` becomes `UndergroundGeode-w00gbWZ4QG60V0neazNERw==.json`. The line entry and the quest file of one quest have the same file name.
 - **Tab order** is the order of lines in `QuestLinesOrder.txt`. Only the text before the first colon is read ([#L429](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L429)).
-- The GregGuns files are the only new files; the sole edits to existing files are one appended line in `QuestLinesOrder.txt` and the `pack_version:3` bump in `QuestSettings.json` ([index.md](index.md#pack-side-changes)).
+- The jar carries only GregGuns files and edits nothing in the pack. The installer adds `orderEntry` to the tab order itself ([index.md](index.md#delivered-from-the-jar)).
 
 ## IDs
 
@@ -38,7 +43,7 @@ GregGuns derives every ID from its key, so the tables stay the single source of 
 id = uuid5(6f1f3c52-9d0a-4b6e-8a53-2c7e0f4b91d8, key)
 ```
 
-The line's key is `line:gregguns`; a quest's key is its `gg.<chapter>.<name>` key. `qid()` in the [builder](#builder-script) does this.
+The line's key is `line:gregguns`; a quest's key is its `gg.<chapter>.<name>` key. `qid()` in the [builder](#builder-and-validator) does this.
 
 | Key | High | Low | Base64 |
 |---|---|---|---|
@@ -268,270 +273,61 @@ What the example shows: one prerequisite (`gg.lv.ammo_9mm`, whose ID the builder
 - **Inline.** Write `name:8` and `desc:8` in the quest file, as the pack does. The pack Readme asks for information first; GregGuns quests say what to do, which machine or slot is involved, and what the reward is for.
 - **Tags.** `[warn]…[/warn]` (red), `[note]…[/note]` (aqua, for a postscript) and `[url]…[/url]` (blue link). Use `[warn]` for explosives and nuclear items. Color codes (`§`) are used by some pack titles; GregGuns avoids them except on the chapter intros.
 - **Length.** Two to four short paragraphs. The Hint column in [quest-line.md](quest-line.md) is the first paragraph.
-- **Icon.** The first task item. A checkbox-only quest uses the chapter icon: `gregguns:pistol_9mm` (Start, LV), `hand_cannon` (Steam), `thompson` (MV), `lmg` (HV), `laser_rifle` (EV), `blaster_rifle` (IV), `alien_blaster` (LuV), `nuclear_death_ray` (ZPM), `spawn_egg` (NPCs), `weaponchest_t1` (Structures), `repair_bench` (Machines), `gas_mask` (Equipment), `ammo_9mm_bullet` (Ammo).
+- **Icon.** The first task item. A checkbox-only quest uses the chapter icon: `gregguns:pistol_9mm` (Start, LV), `handcannon` (Steam), `thompson_smg` (MV), `lmg` (HV), `laser_rifle` (EV), `blaster_rifle` (IV), `alien_blaster` (LuV), `nuclear_death_ray` (ZPM), `npc_egg` (NPCs), `weapon_chest` (Structures), the Repair Bench machine stack (Machines), `gas_mask` (Equipment), `ammo_9mm_bullet` (Ammo). A GregGuns machine is `gregtech:gt.blockmachines` with its MTE id as `Damage:2`.
 - **Translations.** BetterQuesting looks for `betterquesting.quest.<id>.name` and `.desc` before the inline text. `<id>` is the Base64 ID with the trailing `=` removed. `/bq_admin default exportlang` writes a `template.lang` with every key, escaping `%` as `%%` and newlines as `%n` ([QuestCommandDefaults#L570-L612](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L570-L612)). The pack ships none today, so GregGuns ships none.
 
-## Builder script
+## Builder and validator
 
-This script builds the exact file shapes above. It was used to generate the worked example and a full 115-quest line (the generator output predates 0012 and still includes the three removed Reaction Chamber quests) that the validator accepts. Keep a copy in the pack tooling; it is not part of this repo.
+All in `tools/questbook/`, Python 3, standard library only. Run them with `python -I` so no stray module on the path is picked up.
 
-```python
-"""Reference builder for GregGuns BetterQuesting files (BQ 3.8.89-GTNH format)."""
-import base64, json, re, struct, uuid
+| File | Role |
+|---|---|
+| `quests.json` | The quest data, the single source of truth. A header (`format`, the uuid5 `namespace`, the `line`) and one object per quest |
+| `build_quests.py` | Reads the data and writes the resource tree, `index.json` included |
+| `validate_quests.py` | Checks a quest folder: the in-jar tree or a pack `DefaultQuests` |
 
-NS = uuid.UUID('6f1f3c52-9d0a-4b6e-8a53-2c7e0f4b91d8')  # fixed GregGuns namespace
+A quest in `quests.json`:
 
-
-def qid(key):
-    """Quest or line key -> (high, low, base64) the way BetterQuesting stores a UUID."""
-    b = uuid.uuid5(NS, key).bytes
-    hi, lo = struct.unpack('>qq', b)
-    return hi, lo, base64.urlsafe_b64encode(b).decode()
-
-
-def file_name(title, b64):
-    plain = re.sub('§.', '', title)
-    return re.sub('[^a-zA-Z0-9]', '', plain)[:16] + '-' + b64 + '.json'
-
-
-def stack(item, count=1, damage=0):
-    return {'Count:3': count, 'Damage:2': damage, 'OreDict:8': '', 'id:8': item}
-
-
-def pre(ref):
-    if isinstance(ref, int):                 # pack quest: high 0, low = number
-        return {'questIDHigh:4': 0, 'questIDLow:4': ref}
-    hi, lo, _ = qid(ref)                     # GregGuns quest key
-    return {'questIDHigh:4': hi, 'questIDLow:4': lo}
-
-
-def retrieval(items, any_one=False, consume=False):
-    return {'autoConsume:1': 0, 'consume:1': int(consume), 'groupDetect:1': 0, 'ignoreNBT:1': 1,
-            'partialMatch:1': 1, 'requireOnlyOneItem:1': int(any_one),
-            'requiredItems:9': {'%d:10' % i: s for i, s in enumerate(items)},
-            'taskID:8': 'bq_standard:retrieval'}
-
-
-def crafting(items):
-    return {'allowAnvil:1': 0, 'allowCraft:1': 1, 'allowCraftedFromStatistics:1': 0,
-            'allowSmelt:1': 1, 'ignoreNBT:1': 0, 'partialMatch:1': 1,
-            'requiredItems:9': {'%d:10' % i: s for i, s in enumerate(items)},
-            'taskID:8': 'bq_standard:crafting'}
-
-
-def checkbox():
-    return {'taskID:8': 'bq_standard:checkbox'}
-
-
-def hunt(entity, n):
-    return {'damageType:8': '', 'ignoreNBT:1': 1, 'required:3': n, 'subtypes:1': 0,
-            'target:8': entity, 'targetNBT:10': {}, 'taskID:8': 'bq_standard:hunt'}
-
-
-def reward_item(stacks):
-    return {'ignoreDisabled:1': 0, 'rewardID:8': 'bq_standard:item',
-            'rewards:9': {'%d:10' % i: s for i, s in enumerate(stacks)}}
-
-
-def quest(key, title, desc, icon, prereqs, tasks, rewards, main=False, vis='NORMAL',
-          logic='AND', task_logic='AND'):
-    hi, lo, _ = qid(key)
-    props = {  # every key the exporter writes, with the pack's defaults
-        'autoClaim:1': 0, 'completion_animation:8': 'default', 'completion_particle:8': 'default',
-        'confetti_icon:10': stack('minecraft:stick', 0), 'countAsQuest:1': 1, 'desc:8': desc,
-        'globalShare:1': 1, 'icon:10': icon, 'isGlobal:1': 0, 'isMain:1': int(main),
-        'isSilent:1': 0, 'lockedProgress:1': 0, 'name:8': title,
-        'notification_duration:5': -1.0, 'notification_effect:3': -1, 'notification_fade_in:5': -1.0,
-        'notification_fade_out:5': -1.0, 'notification_icon_offset_y:3': -2147483648,
-        'notification_icon_scale:5': -1.0, 'notification_pos_x:3': -2147483648,
-        'notification_pos_y:3': -2147483648, 'notification_show_icon:8': 'default',
-        'notification_style:8': 'default', 'notification_subtitle:8': '',
-        'notification_subtitle_scale:5': -1.0, 'notification_title:8': '',
-        'notification_title_scale:5': -1.0, 'particle_count:3': -1, 'partySingleReward:1': 0,
-        'questLogic:8': logic, 'repeatTime:3': -1, 'repeat_relative:1': 1, 'simultaneous:1': 0,
-        'snd_complete:8': 'random.levelup', 'snd_update:8': 'random.levelup',
-        'taskLogic:8': task_logic, 'visibility:8': vis}
-    out = {'preRequisites:9': {'%d:10' % i: pre(p) for i, p in enumerate(prereqs)},
-           'properties:10': {'betterquesting:10': props},
-           'questIDHigh:4': hi, 'questIDLow:4': lo,
-           'rewards:9': {}, 'tasks:9': {}}
-    for i, t in enumerate(tasks):
-        out['tasks:9']['%d:10' % i] = dict(t, **{'index:3': i})
-    for i, r in enumerate(rewards):
-        out['rewards:9']['%d:10' % i] = dict(r, **{'index:3': i})
-    return out
-
-
-def line_entry(key, x, y, size=24):
-    hi, lo, _ = qid(key)
-    return {'questIDHigh:4': hi, 'questIDLow:4': lo, 'sizeX:3': size, 'sizeY:3': size,
-            'x:3': x, 'y:3': y}
-
-
-def dump(obj):
-    """Two-space JSON with sorted keys, like the exporter (which also escapes ' and =)."""
-    text = json.dumps(obj, indent=2, sort_keys=True, ensure_ascii=False)
-    return text.replace("'", '\\u0027').replace('=', '\\u003d')
+```json
+{"key": "gg.lv.pistol", "chapter": "lv", "title": "9mm Pistol", "tier": "LV", "desc": "...", "pre": ["gg.lv.ammo_9mm", 97],
+ "tasks": [{"type": "retrieval", "items": [{"id": "gregguns:pistol_9mm", "count": 1, "damage": 0}]}],
+ "rewards": [{"type": "item", "items": [{"id": "gregguns:mag_9mm_pistol", "count": 1, "damage": 0}]}],
+ "x": 276, "y": 264, "size": 24, "main": false, "icon": {"id": "gregguns:pistol_9mm", "count": 1, "damage": 0}}
 ```
 
-A driver reads the tables in [quest-line.md](quest-line.md) (key, title, hint, tasks, rewards, prerequisites, layout) and writes, per quest, one file under `Quests/` and one under `QuestLines/`. Task text maps to builders: `checkbox` to `checkbox()`, `retrieval` to `retrieval(items, any_one=…)`, `crafting` to `crafting(items)`, `hunt` to `hunt(name, n)`. A `bag` reward is `reward_item([stack('enhancedlootbags:lootbag', 1, <meta>)])`. A prerequisite written `pack N` is the int `N`; a `gg.` key is passed as the string.
+- `pre` holds GregGuns keys (strings) and pack quest numbers (integers, written with `High = 0`). `logic` is `OR` only on the welcome quest. `visibility` is `SECRET` only on the three bosses.
+- Task types are `checkbox`, `retrieval` (`any` true means any one of the items), `crafting` and `hunt` (`target`, `count`). A reward is `item` with a list of stacks. A bag is the `enhancedlootbags:lootbag` stack with the tier group as `damage`.
+- Everything else (the forty exporter properties, the position files, the line file) comes from the builder's defaults.
 
-## Validator
-
-`validate_quests.py` checks a `DefaultQuests` folder:
-
-- every quest file name matches the ID inside it;
-- every prerequisite exists and there is no cycle;
-- every line-entry file points at a quest, and boxes in a line do not overlap;
-- every line in `QuestLinesOrder.txt` exists;
-- with `--registry` (one item name per line) every `gregguns:` item resolves;
-- with `--entities` (one `EntityList` name per line) every hunt target resolves.
+Rebuild after any change to the data, then run the test:
 
 ```
-python -I validate_quests.py <DefaultQuests dir> --only GregGuns- [--registry items.txt] [--entities entities.txt]
+python -I tools/questbook/build_quests.py --out src/main/resources/assets/gregguns/questbook
+python -I tools/questbook/validate_quests.py src/main/resources/assets/gregguns/questbook
 ```
 
-`--only GregGuns-` limits the report to the GregGuns folders. Without it the unmodified reference pack reports 20 findings of its own (3 missing prerequisites in the `Oh Magic Armor` quests and 17 cycle reports, mostly the `The Choice` quests), so a whole-pack run is only a baseline. With the generated GregGuns line merged into a copy of the reference pack the validator reports 3931 quests, 47 lines and 0 GregGuns findings.
+The builder deletes `QuestLines/` and `Quests/` under `--out` and rewrites them, so a removed quest leaves no stale file. The output is a pure function of the data: ids are uuid5 of the keys, keys are sorted, no timestamps, `\n` line endings. Two builds are byte-identical (GGS-12-02). Before it writes anything the builder checks the rules the file shape cannot show: a bag never above its quest's tier, `crafting` only in the Steam chapter, `SECRET` only on the three bosses, `OR` only on the welcome quest, and every GregGuns prerequisite key existing.
 
-```python
-"""Validate a BetterQuesting DefaultQuests folder.
+The validator checks that every file name matches the ID inside it, every prerequisite exists (pack quests have `High = 0` and are accepted), there is no cycle, every line-entry file points at a quest, boxes do not overlap, `index.json` lists exactly the files on disk, and every line in `QuestLinesOrder.txt` exists when that file is present. With `--registry` (one item name per line) every `gregguns:` item resolves; with `--entities` (one `EntityList` name per line) every hunt target resolves. `--only GregGuns-` limits the report to the GregGuns folders, which matters on a whole pack: the unmodified reference pack reports 20 findings of its own (3 missing prerequisites in the `Oh Magic Armor` quests and 17 cycle reports, mostly the `The Choice` quests).
 
-usage: python -I validate_quests.py <DefaultQuests dir> [--only GregGuns-] [--registry registry.txt] [--entities entities.txt]
+## Rebuild and test
 
-registry.txt: one item registry name per line (modid:name), dumped from a running client.
-entities.txt: one EntityList string name per line.
---only: report only errors whose message contains this text (the shipped pack has older findings of its own).
-Exit code 1 if any check fails.
-"""
-import base64, glob, json, os, re, struct, sys
-
-
-def uid(hi, lo):
-    return (hi, lo)
-
-
-def decode(b64):
-    hi, lo = struct.unpack('>qq', base64.urlsafe_b64decode(b64))
-    return hi, lo
-
-
-def load(path):
-    with open(path, encoding='utf8') as fh:
-        return json.load(fh)
-
-
-def main(root, registry=None, entities=None, only=None):
-    errors = []
-    quests = {}
-    rel = lambda p: os.path.relpath(p, root).replace(os.sep, '/')
-    for path in glob.glob(os.path.join(root, 'Quests', '**', '*.json'), recursive=True):
-        d = load(path)
-        qid = (d['questIDHigh:4'], d['questIDLow:4'])
-        if qid in quests:
-            errors.append('duplicate quest id in %s' % rel(path))
-        quests[qid] = (path, d)
-        m = re.search(r'-([A-Za-z0-9_-]{22}==)\.json$', path)
-        if not m or decode(m.group(1)) != qid:
-            errors.append('file name does not match quest id: %s' % rel(path))
-    # prerequisites exist, no cycles
-    graph = {}
-    for qid, (path, d) in quests.items():
-        deps = [(p['questIDHigh:4'], p['questIDLow:4']) for p in d.get('preRequisites:9', {}).values()]
-        for dep in deps:
-            if dep not in quests:
-                errors.append('missing prerequisite %s in %s' % (dep, rel(path)))
-        graph[qid] = [x for x in deps if x in quests]
-    state = {}
-    def visit(n, stack):
-        state[n] = 1
-        for m in graph[n]:
-            if state.get(m) == 1:
-                errors.append('prerequisite cycle through %s' % rel(quests[m][0]))
-            elif m not in state:
-                visit(m, stack)
-        state[n] = 2
-    sys.setrecursionlimit(10000)
-    for n in graph:
-        if n not in state:
-            visit(n, [])
-    # lines
-    lines = {}
-    for qlpath in glob.glob(os.path.join(root, 'QuestLines', '*', 'QuestLine.json')):
-        d = load(qlpath)
-        lines[(d['questLineIDHigh:4'], d['questLineIDLow:4'])] = os.path.dirname(qlpath)
-    order = [l.split(':')[0] for l in open(os.path.join(root, 'QuestLinesOrder.txt'), encoding='utf8').read().splitlines() if l]
-    for b64 in order:
-        if decode(b64) not in lines:
-            errors.append('QuestLinesOrder.txt entry without a line: %s' % b64)
-    for lid, folder in lines.items():
-        boxes = []
-        for path in glob.glob(os.path.join(folder, '*.json')):
-            if path.endswith('QuestLine.json'):
-                continue
-            d = load(path)
-            qid = (d['questIDHigh:4'], d['questIDLow:4'])
-            if qid not in quests:
-                errors.append('line entry for unknown quest: %s' % rel(path))
-            boxes.append((d['x:3'], d['y:3'], d['sizeX:3'], d['sizeY:3'], rel(path)))
-        for i, a in enumerate(boxes):
-            for b in boxes[i + 1:]:
-                if a[0] < b[0] + b[2] and b[0] < a[0] + a[2] and a[1] < b[1] + b[3] and b[1] < a[1] + a[3]:
-                    errors.append('overlap in %s: %s / %s' % (rel(folder), a[4], b[4]))
-    # item and entity names
-    if registry or entities:
-        reg = set(open(registry).read().split()) if registry else None
-        ents = set(open(entities).read().split()) if entities else None
-        for qid, (path, d) in quests.items():
-            blob = json.dumps(d)
-            if reg is not None:
-                for name in set(re.findall(r'"id:8": "([a-zA-Z0-9_]+:[^"]+)"', blob)):
-                    if name.startswith('gregguns:') and name not in reg:
-                        errors.append('%s: unknown item %s' % (rel(path), name))
-            if ents is not None:
-                for t in d.get('tasks:9', {}).values():
-                    if t.get('taskID:8') == 'bq_standard:hunt' and t['target:8'] not in ents:
-                        errors.append('%s: unknown entity %s' % (rel(path), t['target:8']))
-    if only:
-        errors = [e for e in errors if only in e]
-    print('quests %d, lines %d, errors %d' % (len(quests), len(lines), len(errors)))
-    for e in errors[:50]:
-        print('ERROR', e)
-    return 1 if errors else 0
-
-
-if __name__ == '__main__':
-    args = sys.argv[1:]
-    reg = ents = None
-    if '--registry' in args:
-        reg = args[args.index('--registry') + 1]
-    if '--entities' in args:
-        ents = args[args.index('--entities') + 1]
-    only = args[args.index('--only') + 1] if '--only' in args else None
-    sys.exit(main(args[0], reg, ents, only))
-```
-
-## Import and test
-
-1. **Copy** the new folders and the two edited files into a dev pack's `config/betterquesting/DefaultQuests/`.
-2. **New world:** start it. A world with no saved quest database loads the defaults ([SaveLoadHandler#L236-L246](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/handlers/SaveLoadHandler.java#L236-L246)).
-3. **Existing world:** run `/bq_admin default load`. It reloads the defaults and restores each player's progress from a snapshot taken first ([QuestCommandDefaults#L353-L365](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L353-L365), [#L464](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L464)). The log line `Loaded N quests` after a world load should rise by 118.
-4. **Look.** Open the questbook. Check the tab order, that the GregGuns tab is last, the layout and every icon. Nudge positions in edit mode (`/bq_admin edit`).
-5. **Gate test.** With `/bq_admin complete` (admin subcommands include `complete` and `reset`; run `/bq_admin` in game for the usage), complete the pack quests in the [Unlock design](index.md#unlock-design) table in turn and confirm each chapter intro appears only then.
-6. **Task test.** Obtain each item with `/give`, and confirm the retrieval completes. Kill each hunt target from its spawn egg and confirm the count rises.
-7. **Reward test.** Claim a bag and an item reward in survival. Confirm the bag opens and the item matches the tier.
-8. **Warning.** `/bq_admin default save` **deletes the whole `DefaultQuests` folder before rewriting it** ([QuestCommandDefaults#L166-L196](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L166-L196)). Only run it in a world that was loaded from the full default set, and commit first.
+1. **Edit** `tools/questbook/quests.json`. Keep a key stable once released: a retired quest is removed and its key never reused (GGS-12-02).
+2. **Rebuild** with the two commands above, and update the tables in [quest-line.md](quest-line.md) and the quest count where it is stated.
+3. **Unit test.** `QuestbookResourcesTest` loads the resources from the classpath and checks the index, the ids, the prerequisites (against the [Referenced pack quests](index.md#referenced-pack-quests) table), cycles, registered item, entity and machine names, and overlapping boxes. It fails with "resources are stale" if the data and the resources disagree.
+4. **In game** (batched client pass). Turn the hidden install key on in a dev pack with BetterQuesting, start a new world and check the tab order, the layout and every icon. Nudge positions in edit mode (`/bq_admin edit`). With `/bq_admin complete`, complete the pack quests in the [Unlock design](index.md#unlock-design) table in turn and confirm each chapter intro appears only then. Obtain each item with `/give` and confirm the retrieval completes; kill each hunt target from its spawn egg and confirm the count rises; claim a bag and an item reward in survival.
+5. **Warning.** `/bq_admin default save` **deletes the whole `DefaultQuests` folder before rewriting it** ([QuestCommandDefaults#L166-L196](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/commands/admin/QuestCommandDefaults.java#L166-L196)). Only run it in a world that was loaded from the full default set.
 
 ## Checklist
 
-- [ ] Every quest in [quest-line.md](quest-line.md) has a Quests file and a position file with the same name.
+- [ ] Every quest in `quests.json` has a Quests file and a position file with the same name, and [quest-line.md](quest-line.md) matches the data.
 - [ ] IDs come from the builder; no hand-picked UUIDs.
-- [ ] The line is last in `QuestLinesOrder.txt`; `pack_version:3` is raised.
-- [ ] Every `gregguns:` item and `gregguns.` entity name matches the final registry (no placeholder left).
-- [ ] Validator: 0 findings with `--only GregGuns-`, and with `--registry` and `--entities`.
+- [ ] `index.json` lists every file; the installer adds the line last in the tab order.
+- [ ] Every `gregguns:` item, `gregguns.` entity and machine id is registered (`QuestbookResourcesTest`); no placeholder left.
+- [ ] Validator: 0 findings.
 - [ ] Every bag's tier is at most its quest's tier. Every quest teaches one mechanic.
 - [ ] Only the Steam chapter uses `crafting`. No command rewards.
 - [ ] Only the three boss quests are `SECRET`.
 - [ ] The Repair Bench and Turret tiers match area 09.
 - [ ] Text uses only `[warn]`, `[note]`, `[url]`; hazards and nuclear items carry a `[warn]`.
-- [ ] Tested on a new world and on an old one with `/bq_admin default load`.
-- [ ] Discussed in the pack's `#quest-dev` channel first, as the pack Readme requires for larger changes.
+- [ ] Tested in game with the install key on, on a new world and on an old one.
