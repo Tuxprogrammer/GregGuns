@@ -3,6 +3,7 @@ package com.gregguns.gun.server;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
@@ -56,6 +57,7 @@ public final class GoldenGunScenarios {
 
         BossZombie(World world) {
             super(world);
+            isImmuneToFire = true;
         }
     }
 
@@ -122,6 +124,9 @@ public final class GoldenGunScenarios {
             boss.getEntityAttribute(SharedMonsterAttributes.maxHealth)
                 .setBaseValue(2000.0);
             boss.setHealth(2000.0F);
+            // Daylight burn is 1 damage a second: a bare zombie would end at 999, not half. The pumpkin and fire
+            // immunity stop it.
+            boss.setCurrentItemOrArmor(4, new ItemStack(Blocks.pumpkin));
             boss.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 2000, 10));
             ctx.spawn(boss);
             rig.press();
