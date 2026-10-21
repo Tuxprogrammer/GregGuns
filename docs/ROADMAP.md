@@ -1,6 +1,6 @@
 # Roadmap
 
-How GregGuns gets from an empty mod to a working beta, a handoff package and an archived repository ([0014](design/0014-end-goal-beta-handoff-archive.md)). The work follows the [Techguns behavioral spec](techguns-spec/README.md), rebuilt on GregTech progression.
+How GregGuns gets from an empty mod to a working beta, a polished self-contained release and a handoff ([0014](design/0014-end-goal-beta-handoff-archive.md), [0015](design/0015-m9-self-contained-polish.md)). The work follows the [Techguns behavioral spec](techguns-spec/README.md), rebuilt on GregTech progression.
 
 ## How to read this roadmap
 
@@ -19,7 +19,7 @@ M0 Foundation ──► D1–D4 ──► M1 Combat core ──► M2 Ballistic 
                     │             ├──► M3 Armor & equipment ─┘
                     │             └──► M4 Production chain & machines
                     └──► D5 ──► M7 NPCs ──► M8 Worldgen         M6 Utility & defense (after M4)
-                                                    all ──► Beta gate ──► M9 Handoff & archive
+                                                    all ──► Beta gate ──► M9 Self-contained polish, then handoff
 ```
 
 ---
@@ -290,48 +290,53 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 - **Owner playthrough.** The owner plays the beta on a local multiplayer server. Bugs found there are fixed in `0.3.x-beta` builds.
 
 **Exit gate:**
-- [ ] Every milestone M0–M8 has a completeness audit, with each exit box met or deferred with the owner's sign-off.
+- [x] Every milestone M0–M8 has a completeness audit, with each exit box met or deferred with the owner's sign-off. Owner, 2026-10-21: M0–M8 signed off as the MVP.
 - [x] The recipe-clash review found no unresolved clashes with GTNH 2.9 recipes. Each clash it found was fixed, or recorded in PACK-CHANGES with the owner's sign-off. Evidence: v4 on master `b19ae575` found 0 exact clashes and 0 superset clashes. The one subset hit, the Bacterial Vat culture recipe, is verified in game by `gun.bio_gun.vat_recipe_selected`. All 8 v3 shadows are fixed ([review](testing/recipe-clash-beta.md)).
 - [x] The Reaction Chamber and the Retort are removed (design record 0012, branch `fix/retire-reaction-retort`). Their recipes are remapped to GTNH methods per the design record, and their MTE IDs are retired and reserved. The Retort is archived on `archive/retort-multiblock` and `archive/retort-v1`.
 - [x] The NewGunrizons recon note is written, and the owner has picked a direction: merge, or take its place. Owner, 2026-10-20: take its place, with no merge and no contact; Superseded by [0014](design/0014-end-goal-beta-handoff-archive.md): no submission to GTNH; the mod is handed off to an adopter. See the [recon note](research/newgunrizons-recon.md#owner-decisions-2026-10-20).
-- [ ] The batched client pass is clean, including with shaders on, and has no crash-severity or invisible-render bugs.
+- [x] The batched client pass is clean, including with shaders on, and has no crash-severity or invisible-render bugs. Dev client on Xvfb (parts 1–3), BSL on NVIDIA, and a live run in the real GTNH 2.9.0-RC-2 pack with Complementary on AMD (406 passed, 0 failed, 15 skipped).
 - [ ] `0.3.0-beta` is published.
 - [ ] The owner's beta playthrough on a local server is done, and its blocking bugs are fixed.
 
-## M9 · Handoff and archive
+## M9 · Self-contained polish, then handoff
 
-Replaces "Pack integration and release" ([0014](design/0014-end-goal-beta-handoff-archive.md)). The owner will not submit GregGuns to GTNH, given the pack's AI policy (see the [inclusion assessment](research/gtnh-inclusion-assessment.md)). Instead, the working beta is handed to whoever wants to adopt it, and the repository is archived.
+Amended by [0015](design/0015-m9-self-contained-polish.md). The owner signed off M0–M8 as the MVP on 2026-10-21. M9 polishes the mod and fits it into the pack **from inside our own jar**, then hands it off ([0014](design/0014-end-goal-beta-handoff-archive.md)). GregGuns stays one portable jar: nothing depends on a PR to GTNH or any other repository.
 
-**Entry gate:** the beta review gate is closed and `0.3.0-beta` is published.
+**Entry gate:** `0.3.0-beta` is published.
 
-**Scope:**
-- **Handoff guide** (`docs/HANDOFF.md`), written for a developer who might adopt the mod. It covers:
-  - the state of every area, linking the M0–M8 audits;
-  - how to build, test and run the scenario harness, including the real-pack test with `-Dgregguns.testHooks=true`;
-  - how the mod was made, and what stands between it and GTNH's AI policy (media, commit history, PR text), stated plainly;
-  - an open-ended path to inclusion. The policy is vague, and its application is up to the pack's reviewers, so the guide prescribes no single fix and no heavy rework. It suggests starting with light edits and working out the actual requirements with the dev team;
-  - the pack-side changes it needs ([PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md));
-  - the adopter list below.
-- **Solicitation message.** We draft it and the owner posts it. It announces that the mod is out there, nearly fully integrated with the pack, MIT licensed and free to adopt. It asks for a developer willing to sponsor it: review it, work out with the pack's reviewers what they need, and carry it into the pack. It also invites the pack team to consider an exception. It is open about how the mod was made.
-- **README.** A banner saying the project is complete and archived, and looking for an adopter, with links to the handoff guide and the latest release.
-- **Archive.** Archive the GitHub repository on the owner's go-ahead, after the release, the handoff guide and the README are published.
+**Scope, polish (in the jar):**
+- **Questbook from the jar.** The GregGuns quest line ([12-questbook](gregguns-spec/12-questbook/index.md)) ships as resources in our jar. A hidden config key (not in the config GUI, off by default) installs it into the server's BetterQuesting database. Quest IDs stay stable so an install is repeatable.
+- **PACK-CHANGES in the jar.** Each row of [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md) is done from our jar or written up as an optional server-owner step. No PR to GTNH.
+- **The rest of the polish:**
+  - a balance pass along the GTNH tier progression;
+  - NEI polish and config defaults;
+  - translation readiness;
+  - multiplayer and performance soak tests on the real pack;
+  - GuideNH in-game wiki pages bundled in the jar;
+  - the OpenModularTurrets overlap investigation (the Rampart stays);
+  - aim down sights for iron-sight and red-dot guns.
+- **Fixes from the owner's beta playthrough,** released as `0.3.x-beta`.
 
-**Adopter list** (moved out of scope; it goes into the handoff guide):
-- a balance pass along the GTNH tier progression;
-- NEI polish and config defaults;
-- translation readiness;
-- multiplayer and performance soak tests on the real pack;
-- quest-line content for the pack's questbook;
-- GuideNH in-game wiki pages;
-- the OpenModularTurrets overlap investigation (the Rampart stays);
-- aim down sights for iron-sight and red-dot guns;
-- the GTNH modpack PR, with the PACK-CHANGES rows and the GT5-Unofficial MTE ID and texture-page reservations.
+**Scope, handoff (last):**
+- **Handoff guide** (`docs/HANDOFF.md`) for a developer who might adopt the mod. It covers:
+  - the state of every area;
+  - how to build and test, including the real-pack test with `-Dgregguns.testHooks=true`;
+  - how the mod was made;
+  - an open-ended path to inclusion. The policy is vague and its application is up to the pack's reviewers, so start with light edits and work out the requirements with the dev team.
+- **Solicitation message.** We draft it and the owner posts it. It is open about how the mod was made.
+- **README banner,** then **archive** the repository on the owner's go-ahead.
+
+**Adopter list** (what M9 leaves for whoever adopts the mod):
+- the GTNH modpack PR itself, with the GT5-Unofficial MTE ID and texture-page reservations;
+- anything from the polish list that M9 doesn't finish.
 
 **Exit gate:**
+- [ ] The questbook installs from the jar behind its hidden config key, on a real GTNH 2.9 server.
+- [ ] Every PACK-CHANGES row is done in the jar or documented as an optional server-owner step.
+- [ ] The polish items above are done, or moved to the adopter list with the owner's sign-off.
 - [ ] `docs/HANDOFF.md` is written and the owner has reviewed it.
 - [ ] The solicitation message is drafted and the owner has approved it. The owner posts it.
-- [ ] The README carries the archive banner and points at the handoff guide and the latest release.
-- [ ] The GitHub repository is archived, on the owner's go-ahead.
+- [ ] The README carries the archive banner, and the GitHub repository is archived, on the owner's go-ahead.
 
 ## Later
 

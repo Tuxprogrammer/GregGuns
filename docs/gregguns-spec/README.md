@@ -28,6 +28,6 @@ Every area turned out to have integration points. Numbers 01–11 match the Tech
 | [09-machines-utility](09-machines-utility/index.md) | [09-machines-utility](../techguns-spec/09-machines-utility/index.md) | Turret overlap, repair, explosive charges |
 | [10-entities-npcs](10-entities-npcs/index.md) | [10-entities-npcs](../techguns-spec/10-entities-npcs/index.md) | **Infernal Mobs**, mob-drop display, aspects, spawning rules |
 | [11-worldgen](11-worldgen/index.md) | [11-worldgen](../techguns-spec/11-worldgen/index.md) | RWG and biomes, GT ore and oil generation, structure placement and loot |
-| [12-questbook](12-questbook/index.md) | none (new in GregGuns) | The GregGuns questbook tab: 118 quests guiding players from Steam to ZPM |
+| [12-questbook](12-questbook/index.md) | none (new in GregGuns) | The GregGuns questbook tab: 115 quests guiding players from Steam to ZPM |
 
 Each area index ends with **Open questions**. The ones with a clear recommendation are settled in [0007](../design/0007-pack-loot-and-infernal-mobs.md), [0008](../design/0008-exact-tier-charging.md) and [0009](../design/0009-gtnh-integration-defaults.md); the rest wait on the GTNH team, a running client or a balance pass.

@@ -53,7 +53,7 @@ The facts about GregGuns come from this repo: [ROADMAP](../ROADMAP.md), [CONTRIB
 
 The vision document's section "What is the place of combat in the pack?" is an empty heading. One recorded suggestion asks for "tougher mobs on every tier, to give a use to your ever more powerful offensive capabilities." GregGuns adds tiered weapons, tiered mobs and NPC factions. It is the most concrete answer to that open question that anyone has built for the pack.
 
-Delivery to the pack is also planned in its native formats. There are 118 quests in BetterQuesting format, NEI recipe maps and structure previews, and module toggles that need a restart. A [pack change list](../gregguns-spec/PACK-CHANGES.md) records every config edit the pack would need.
+Delivery to the pack is also planned in its native formats. There are 115 quests in BetterQuesting format, NEI recipe maps and structure previews, and module toggles that need a restart. A [pack change list](../gregguns-spec/PACK-CHANGES.md) records every config edit the pack would need.
 
 ## Where GregGuns misses
 
@@ -67,7 +67,7 @@ Delivery to the pack is also planned in its native formats. There are 118 quests
 | "No AI-authored or AI co-authored commits, including Co-authored-by AI tags" | 831 of 1,113 commits carry a Claude co-author line. |
 | "The human-in-the-loop must fully understand all code" | About 129,600 lines of Java written between 2026-10-17 and 2026-10-20 by one maintainer with agents. |
 | "Commit messages, PR descriptions must read in your own voice" | Most commit messages and the drafted pack PR were written by agents. |
-| "For documentation and especially quests, the tone and the point you're trying to make has to come from you" | The 118 quests were drafted by agents. |
+| "For documentation and especially quests, the tone and the point you're trying to make has to come from you" | The 115 quests were drafted by agents. |
 | "Only contribute fixes for bugs you have personally hit in-game" | Many fixes came from the Techguns bug list and automated scenarios, not from play. The owner's beta playthrough has not happened yet. |
 
 ### Process

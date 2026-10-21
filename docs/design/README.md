@@ -43,4 +43,5 @@ The other options, and why each was not chosen.
 | [0011](0011-machine-policy.md) | Machine policy: single blocks, multiblocks, Ammo Press (amends 0002) | D2 | Accepted (by default) |
 | [0012](0012-retire-reaction-chamber-and-retort.md) | Retire the Reaction Chamber and the Retort (amends 0002, 0011) | D2 | Accepted |
 | [0013](0013-default-key-map.md) | Default key map in the GTNH pack | — | Accepted (by default) |
-| [0014](0014-end-goal-beta-handoff-archive.md) | End goal: a working beta, a handoff, then archive (replaces M9) | — | Accepted |
+| [0014](0014-end-goal-beta-handoff-archive.md) | End goal: a working beta, a handoff, then archive (replaces M9) | — | Accepted; amended by 0015 |
+| [0015](0015-m9-self-contained-polish.md) | M9: polish as a self-contained jar, then hand off (amends 0014) | — | Accepted |
