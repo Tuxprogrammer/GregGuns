@@ -33,7 +33,11 @@ public final class MvGunScenarios {
      */
     public static void register(ScenarioRegistry registry, String gunName) {
         GunDefinition def = GunDefinitions.byName(gunName);
-        registry.register(new Auto(def));
+        if (!def.stats()
+            .hasSpinUp()) {
+            // A spin-up gun holds its first shot until the barrels are at speed: EvBallisticScenarios covers it.
+            registry.register(new Auto(def));
+        }
         registry.register(new Reload(def));
         registry.register(new ForcedReload(def));
         registry.register(
@@ -160,8 +164,16 @@ public final class MvGunScenarios {
             rig.give(stats.ammoType(), 1);
             int reloadTicks = stats.reloadTicks();
             rig.press();
-            rig.release();
-            rig.tick();
+            if (stats.hasSpinUp()) {
+                // A dry spin: the empty gun spins up with the trigger held, then tries to fire and reloads.
+                for (int i = 0; i < stats.spinUpTicks(); i++) {
+                    rig.tick();
+                }
+                rig.release();
+            } else {
+                rig.release();
+                rig.tick();
+            }
             boolean started = rig.reloading();
             int[] loadedAt = new int[reloadTicks + 3];
             return ScenarioResult.pending(name(), reloadTicks + 20, ticks -> {

@@ -43,6 +43,10 @@ public final class EvBallisticScenarios {
             .fireRateTicks() == 1) {
             registry.register(new EveryTick(def));
         }
+        if (def.stats()
+            .hasSpinUp()) {
+            registry.register(new SpinUp(def));
+        }
         registry.register(
             GunRecipeScenarios.tierGate(
                 "gun." + def.name() + ".gate",
@@ -126,16 +130,94 @@ public final class EvBallisticScenarios {
             GunStats stats = def.stats();
             GunRig rig = new GunRig(ctx, GunItems.get(def.name()), stats.magazineSize());
             rig.press();
-            for (int i = 0; i < HELD; i++) {
+            // A spin-up gun fires its first round on the tick the barrels reach full spin.
+            int lead = stats.hasSpinUp() ? stats.spinUpTicks() - 1 : 0;
+            for (int i = 0; i < HELD + lead; i++) {
                 rig.tick();
             }
             rig.release();
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            // The pull fires on the first tick after the press, so HELD ticks fire HELD rounds (one per tick).
+            // Past the spin-up, every tick fires a round: HELD ticks fire HELD rounds (one per tick).
             out.checkEquals("rounds spent in " + HELD + " ticks", HELD, rig.shots());
             out.checkEquals("bullets launched", HELD, rig.bullets());
             out.checkEquals("rounds left", stats.magazineSize() - HELD, rig.loaded());
             return out.build();
+        }
+    }
+
+    /** The spin-up fire delay: from rest, after a short release, and after an item swap. */
+    private static final class SpinUp implements Scenario {
+
+        private static final int RELEASED = 10;
+        private static final int GIVE_UP = 100;
+
+        private final GunDefinition def;
+
+        SpinUp(GunDefinition def) {
+            this.def = def;
+        }
+
+        @Override
+        public String name() {
+            return "gun." + def.name() + ".spinup";
+        }
+
+        @Override
+        public String description() {
+            GunStats stats = def.stats();
+            return "The first shot of the " + def.name()
+                + " leaves "
+                + stats.spinUpTicks()
+                + " ticks after the trigger is pressed from rest; after a "
+                + RELEASED
+                + " tick release the barrels have slowed by "
+                + RELEASED
+                + "/"
+                + stats.spinDownTicks()
+                + " and the delay is that fraction of the full one; an item swap resets it.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            GunStats stats = def.stats();
+            GunRig rig = new GunRig(ctx, GunItems.get(def.name()), stats.magazineSize());
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+
+            rig.press();
+            out.checkEquals("ticks to the first shot from rest", stats.spinUpTicks(), ticksToShot(rig));
+            rig.tick();
+            rig.tick();
+            out.check(rig.shots() >= 3, "the gun should fire every tick once at speed");
+
+            rig.release();
+            for (int i = 0; i < RELEASED; i++) {
+                rig.tick();
+            }
+            rig.press();
+            int expected = (int) Math.round((double) stats.spinUpTicks() * RELEASED / stats.spinDownTicks());
+            out.checkEquals("ticks to fire again after a short release", expected, ticksToShot(rig));
+
+            // A swap to an empty slot and back: the held trigger is dropped and the spin with it.
+            rig.shooter.inventory.currentItem = 1;
+            rig.tick();
+            rig.shooter.inventory.currentItem = 0;
+            rig.tick();
+            rig.press();
+            out.checkEquals("ticks to the first shot after an item swap", stats.spinUpTicks(), ticksToShot(rig));
+            rig.release();
+            return out.build();
+        }
+
+        /** Ticks the held gun until a round leaves; the number of ticks it took (GIVE_UP if none). */
+        private static int ticksToShot(GunRig rig) {
+            int before = rig.shots();
+            for (int n = 1; n <= GIVE_UP; n++) {
+                rig.tick();
+                if (rig.shots() > before) {
+                    return n;
+                }
+            }
+            return GIVE_UP;
         }
     }
 }

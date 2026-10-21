@@ -35,7 +35,9 @@ class EvBallisticLogicTest {
         MapAmmoInventory inv = new MapAmmoInventory();
         c.triggerPressed();
         int shots = 0;
-        for (int i = 0; i < HELD_TICKS; i++) {
+        // A spin-up gun fires nothing until its barrels are at speed: count from that tick.
+        int lead = stats.spinUpTicks() > 0 ? stats.spinUpTicks() - 1 : 0;
+        for (int i = 0; i < lead + HELD_TICKS; i++) {
             if (c.tick(stats, st, inv, true, false)
                 .shot()
                 .wasFired()) {

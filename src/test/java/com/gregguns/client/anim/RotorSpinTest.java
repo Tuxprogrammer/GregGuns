@@ -12,8 +12,11 @@ class RotorSpinTest {
 
     private static final double FULL = MinigunProfile.FULL_TURNS_PER_TICK;
 
+    /** The ramp lengths these tests were written against; the Minigun's real ones follow its fire gate. */
+    private static final RotorSpin.Spec SPEC = new RotorSpin.Spec(FULL, 10, 20, MinigunProfile.SYMMETRY_TURNS);
+
     private static RotorSpin minigun() {
-        return MinigunProfile.SPIN.create();
+        return SPEC.create();
     }
 
     private static void run(RotorSpin s, int ticks, boolean driving) {
@@ -174,7 +177,7 @@ class RotorSpinTest {
     void animStateDrivesSpinAndKeepsItAlive() {
         GunAnimState st = new GunAnimState();
         for (int i = 0; i < 30; i++) {
-            st.spinDriven(MinigunProfile.SPIN, 7);
+            st.spinDriven(SPEC, 7);
             st.spinTick(true);
         }
         // A different gun never sees the spin.
@@ -193,7 +196,7 @@ class RotorSpinTest {
     void animStateStopsDeadWhenTheGunIsPutAway() {
         GunAnimState st = new GunAnimState();
         for (int i = 0; i < 20; i++) {
-            st.spinDriven(MinigunProfile.SPIN, 7);
+            st.spinDriven(SPEC, 7);
             st.spinTick(true);
         }
         st.spinTick(false);
@@ -205,11 +208,36 @@ class RotorSpinTest {
     void switchingSpinGunsStartsFromRest() {
         GunAnimState st = new GunAnimState();
         for (int i = 0; i < 20; i++) {
-            st.spinDriven(MinigunProfile.SPIN, 7);
+            st.spinDriven(SPEC, 7);
             st.spinTick(true);
         }
-        st.spinDriven(MinigunProfile.SPIN, 9);
+        st.spinDriven(SPEC, 9);
         assertEquals(0.0, st.rotorTurns(9, 0.5), 0.0);
         assertEquals(9, st.spinTag());
+    }
+
+    @Test
+    void minigunRotorReachesFullSpeedExactlyWhenTheFireGateOpens() {
+        RotorSpin r = MinigunProfile.SPIN.create();
+        run(r, com.gregguns.gun.def.MinigunDef.SPIN_UP_TICKS - 1, true);
+        assertTrue(r.speed() < FULL);
+        r.tick(true);
+        assertEquals(FULL, r.speed(), 1e-12);
+    }
+
+    @Test
+    void triggerDrivenRotorSpinsWithNoShotAndCoastsAfterRelease() {
+        GunAnimState st = new GunAnimState();
+        for (int i = 0; i < 5; i++) {
+            st.spinTrigger(SPEC, 7, true);
+            st.spinTick(true);
+        }
+        assertTrue(st.rotorTurns(7, 1.0) > 0.0, "turns before any shot");
+        st.spinTrigger(SPEC, 7, false);
+        int ticks = 0;
+        while (ticks++ < 100) {
+            st.spinTick(true);
+        }
+        assertEquals(0.0, st.rotorTurns(7, 1.0), 1e-9);
     }
 }
