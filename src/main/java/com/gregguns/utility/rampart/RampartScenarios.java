@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
@@ -615,14 +616,21 @@ public final class RampartScenarios {
                     ctx.setBlock(px + dx, Wall.CY + 1, -9 + dz, Blocks.stone, 0);
                 }
             }
-            EntityZombie zombie = new EntityZombie(ctx.world());
-            zombie.setLocationAndAngles(
-                ctx.originX() + px + 0.5,
-                ctx.originY() + Wall.CY + 2,
-                ctx.originZ() - 9 + 0.5,
-                0.0F,
-                0.0F);
-            zombie.addPotionEffect(new PotionEffect(Potion.fireResistance.id, 4000));
+            // The target is rebuilt on demand: in the pack a mod can remove or empty a freshly spawned mob before the
+            // Rampart has fired, and the scenario would otherwise judge a shot that never had a target.
+            Supplier<EntityZombie> newZombie = () -> {
+                EntityZombie z = new EntityZombie(ctx.world());
+                z.setLocationAndAngles(
+                    ctx.originX() + px + 0.5,
+                    ctx.originY() + Wall.CY + 2,
+                    ctx.originZ() - 9 + 0.5,
+                    0.0F,
+                    0.0F);
+                z.addPotionEffect(new PotionEffect(Potion.fireResistance.id, 4000));
+                return z;
+            };
+            EntityZombie[] zombie = { newZombie.get() };
+            int[] respawns = { 0 };
             long[] drawSeen = { 0 };
             boolean[] armed = { false };
             return ScenarioResult.pending(name(), 900 + WARMUP_TICKS, ticks -> {
@@ -643,7 +651,7 @@ public final class RampartScenarios {
                     w.mountHatches.get(0)
                         .setInventorySlotContents(MTEGunMountHatch.GUN_SLOT, gun);
                     w.inputBus.setInventorySlotContents(0, new ItemStack(mag, 4));
-                    ctx.spawn(zombie);
+                    ctx.spawn(zombie[0]);
                     armed[0] = true;
                     return null;
                 }
@@ -651,7 +659,20 @@ public final class RampartScenarios {
                 if (w.mte.mountsRunning() && drawSeen[0] == 0) {
                     drawSeen[0] = -w.mte.lEUt;
                 }
-                if (!zombie.isDead && zombie.getHealth() > 0) {
+                if (!zombie[0].isDead && zombie[0].getHealth() > 0) {
+                    return null;
+                }
+                // The target is gone but nothing was fired (all four magazines still on the bus): something else
+                // removed it, so give the Rampart a fresh one instead of judging a shot it never took.
+                if (countOf(w.inputBus, mag) == 4 && respawns[0] < 3) {
+                    respawns[0]++;
+                    GregGuns.LOG.info(
+                        "[GregGuns] rampart_mount_fires: target gone before any shot (dead={}, health={}); respawn {}",
+                        zombie[0].isDead,
+                        zombie[0].getHealth(),
+                        respawns[0]);
+                    zombie[0] = newZombie.get();
+                    ctx.spawn(zombie[0]);
                     return null;
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
