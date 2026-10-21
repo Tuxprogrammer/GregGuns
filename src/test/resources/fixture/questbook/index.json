@@ -1,0 +1,15 @@
+{
+  "format": 1,
+  "line": "QuestLines/Fixture-AAAA/QuestLine.json",
+  "linePositions": [
+    "QuestLines/Fixture-AAAA/Alpha-1.json",
+    "QuestLines/Fixture-AAAA/Beta-2.json",
+    "QuestLines/Fixture-AAAA/Gamma-3.json"
+  ],
+  "quests": [
+    "Quests/Fixture-AAAA/Alpha-1.json",
+    "Quests/Fixture-AAAA/Beta-2.json",
+    "Quests/Fixture-AAAA/Gamma-3.json"
+  ],
+  "orderEntry": "AAAAAAAAAAEAAAAAAAAAAg==: Fixture"
+}

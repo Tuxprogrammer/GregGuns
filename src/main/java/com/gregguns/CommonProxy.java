@@ -90,6 +90,9 @@ public class CommonProxy {
      * Does nothing outside the dev environment unless {@code -Dgregguns.testHooks=true} is set.
      */
     public void serverStarting(FMLServerStartingEvent event) {
+        // Optional quest line install; runs after BetterQuesting has loaded its database (GregGuns declares
+        // after:betterquesting).
+        com.gregguns.compat.BetterQuestingInstall.onServerStarting();
         if (!DevEnvironment.testHooksEnabled()) {
             if (com.gregguns.core.config.DebugConfig.recipeDump) {
                 GregGunsCommand dump = new GregGunsCommand();

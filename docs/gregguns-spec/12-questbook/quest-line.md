@@ -1,6 +1,6 @@
 # The GregGuns quest line
 
-The full quest list for the GregGuns tab: 115 quests in 14 chapters. Nine chapters are the main path (a start chapter, then Steam/ULV up to ZPM). Five are side branches (NPCs, structures, machines, equipment, ammo logistics).
+The full quest list for the GregGuns tab: 121 quests in 14 chapters. Nine chapters are the main path (a start chapter, then Steam/ULV up to ZPM). Five are side branches (NPCs, structures, machines, equipment, ammo logistics).
 
 - **Techguns baseline:** none. Techguns has no questbook. The content comes from [02-guns](../../techguns-spec/02-guns/index.md), [05-armor](../../techguns-spec/05-armor/index.md), [06-items](../../techguns-spec/06-items/index.md), [08-machines-production](../../techguns-spec/08-machines-production/index.md), [09-machines-utility](../../techguns-spec/09-machines-utility/index.md), [10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md) and [11-worldgen](../../techguns-spec/11-worldgen/index.md).
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0005 world presence](../../design/0005-world-presence.md), [0007 pack loot and Infernal Mobs](../../design/0007-pack-loot-and-infernal-mobs.md), [0008 exact-tier charging](../../design/0008-exact-tier-charging.md), [0009 GTNH integration defaults](../../design/0009-gtnh-integration-defaults.md)
@@ -8,7 +8,7 @@ The full quest list for the GregGuns tab: 115 quests in 14 chapters. Nine chapte
   - BetterQuesting (`betterquesting`, `bq_standard`, 3.8.89-GTNH)
   - EnhancedLootBags (`enhancedlootbags`, 1.3.5)
   - Infernal Mobs (`InfernalMobs`, 1.10.7-GTNH)
-- **Roadmap:** [M9](../../ROADMAP.md#m9--pack-integration-and-release) hands this content to the pack maintainers. The exact item and entity names are placeholders until M2 to M7 fix them.
+- **Roadmap:** [M9](../../ROADMAP.md#m9--pack-integration-and-release). The quest line ships in the jar ([0015](../../design/0015-m9-self-contained-polish.md)). Every item and entity name below is a registered name, checked by `QuestbookResourcesTest`.
 
 How to turn these tables into files is in [authoring.md](authoring.md). Gates, tab placement and the list of pack quests we depend on are in [index.md](index.md).
 
@@ -27,7 +27,7 @@ Every row is one quest. The **key** is stable: the quest's UUID is derived from 
 | Prerequisites | `gg.…` is a GregGuns quest. `pack N` is an existing pack quest, listed with its name in [index.md](index.md#referenced-pack-quests). `any of` means the quest unlocks when one of them is done |
 | Layout | `x, y (size)` in pixels on the line's canvas. Size 72 is a chapter intro, 48 a chapter summary, 24 everything else |
 
-Item names are placeholders (`gregguns:<name>`), as everywhere else in this spec. Names with no entry elsewhere in the spec (for example `gregguns:laser_rifle`) follow the same pattern and are fixed in M2 to M5.
+Item names are the registry names (`gregguns:<name>`, as `NeiOrder` lists them). The GT meta tile entities (the Ammo Press, Ammunition Works, Repair Bench, Armory Gantry and Turret) are `gregtech:gt.blockmachines` stacks whose damage is the reserved MTE id from `GregGunsMTEIDs`. The data behind these tables is `tools/questbook/quests.json`; the tables are regenerated from it, so edit the data and rebuild.
 
 ## Design rules
 
@@ -58,7 +58,7 @@ Fixed item rewards are small: 4 to 64 rounds, one magazine, one grenade pack. Th
 
 ## Layout
 
-The line has two regions on one canvas. The main path is on the left, from x = 24, with chapters stacked from the top in tier order. The side branches are on the right, from x = 840. Inside a chapter the quests fill rows of eight, 84 px apart, in the order of the table. The first row of a chapter starts with its 72 px intro. The positions are a first pass: nudge them in edit mode when the first build is looked at. The validator ([authoring.md](authoring.md#validator)) rejects overlapping boxes.
+The line has two regions on one canvas. The main path is on the left, from x = 24, with chapters stacked from the top in tier order. The side branches are on the right, from x = 840. Inside a chapter the quests fill rows of eight, 84 px apart, in the order of the table. The first row of a chapter starts with its 72 px intro. The positions are a first pass: nudge them in edit mode when the first build is looked at. The validator ([authoring.md](authoring.md#builder-and-validator)) rejects overlapping boxes.
 
 The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordinates in multiples of 12.
 
@@ -67,7 +67,7 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 - **Kill All the Things** (`KillAlltheThings-AAAAAAAAAAAAAAAAAAAAJQ==`, 83 quests, last tab in `QuestLinesOrder.txt`) is a list of `bq_standard:hunt` quests. Each hunt has a `target:8` entity name (`Zombie`, `witchery.babayaga`, `etfuturum.fox`), a `required:3` count and no tier gate. Its roots are pack quests 11 (Monster Hunter), 225 (Searching for Answers), 479 (THE NETHER) and 986 (the End). Prerequisites cross lines freely: those four live in other lines.
 - GregGuns follows the same pattern. `gg.start.welcome` unlocks from quests that live elsewhere (11 and 44), and the NPC branch uses the same hunt task with `gregguns.<Name>` targets. GregGuns stays a separate tab for three reasons. Its hunts need tier gating that Kill All the Things does not have. Its rewards are tier bags. And a pack without GregGuns must be able to drop the tab as one folder.
 - The tab is placed right after Kill All the Things ([index.md](index.md#tab-placement)).
-- An optional one-quest cross link puts `gg.npc.intro` into the Kill All the Things line, which the pack Readme allows for transition quests ([index.md](index.md#pack-side-changes)).
+- An optional one-quest cross link puts `gg.npc.intro` into the Kill All the Things line, which the pack Readme allows for transition quests ([index.md](index.md#delivered-from-the-jar)).
 
 ## Chapters
 
@@ -92,11 +92,11 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
 | `gg.steam.intro` | Steam-Age Arms | Steam | Bronze and wrought iron are enough for a first firearm. No electricity needed. | checkbox | - | `gg.start.controls`, pack 44, pack 948 | 24, 144 (72) |
-| `gg.steam.hand_cannon` | Hand Cannon | Steam | A single-shot bronze and wrought-iron cannon. Slow and loud. | crafting `gregguns:hand_cannon` | `gregguns:ammo_stone_bullet` x16 | `gg.steam.intro` | 108, 144 (24) |
+| `gg.steam.hand_cannon` | Hand Cannon | Steam | A single-shot bronze and wrought-iron cannon. Slow and loud. | crafting `gregguns:handcannon` | `gregguns:ammo_stone_bullet` x16 | `gg.steam.intro` | 108, 144 (24) |
 | `gg.steam.stone_bullets` | Stone Bullets | Steam | Cobblestone and gunpowder at a crafting table. Your first lesson in ammo supply. | crafting `gregguns:ammo_stone_bullet` | `gregguns:ammo_stone_bullet` x16 | `gg.steam.hand_cannon` | 192, 144 (24) |
 | `gg.steam.first_blood` | First Blood | Steam | Shoot five zombies with the Hand Cannon. Reload between shots. | hunt `Zombie` x5 | `gregguns:ammo_stone_bullet` x32 | `gg.steam.hand_cannon`, `gg.steam.stone_bullets` | 276, 144 (24) |
-| `gg.steam.scout_armor` | T1 Scout Armor | Steam | Light armor. Each piece adds to your armor value; read the tooltips. | crafting `gregguns:armor_t1_scout_chestplate` | - | `gg.steam.intro` | 360, 144 (24) |
-| `gg.steam.miner_armor` | T1 Miner Armor | Steam | Miner set, crafted from bronze plate and wrought iron. | crafting `gregguns:armor_t1_miner_helmet` | - | `gg.steam.intro` | 444, 144 (24) |
+| `gg.steam.scout_armor` | T1 Scout Armor | Steam | Light armor. Each piece adds to your armor value; read the tooltips. | crafting `gregguns:t1_scout_chestplate` | - | `gg.steam.intro` | 360, 144 (24) |
+| `gg.steam.miner_armor` | T1 Miner Armor | Steam | Miner set, crafted from bronze plate and wrought iron. | crafting `gregguns:t1_miner_helmet` | - | `gg.steam.intro` | 444, 144 (24) |
 | `gg.steam.summary` | Steam Age Done | Steam | Steel is next. Make it in a GT furnace setup, then open the LV chapter. | checkbox | bag `enhancedlootbags:lootbag:2` (Steam) | `gg.steam.first_blood`, `gg.steam.scout_armor`, `gg.steam.miner_armor` | 528, 144 (48) |
 
 ### LV
@@ -107,15 +107,15 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
 | `gg.lv.intro` | Steel-Age Firearms | LV | LV opens steel guns. The last step of each recipe is an LV machine. | checkbox | - | `gg.start.welcome`, pack 88, pack 76 | 24, 264 (72) |
-| `gg.lv.casings` | Pressed Casings | LV | Cartridge casings come from the Forming Press, not the crafting table. | retrieval `gregguns:part_casing` | - | `gg.lv.intro`, pack 100 | 108, 264 (24) |
-| `gg.lv.ammo_9mm` | 9mm Rounds | LV | LV Assembler: lead round, casing and gunpowder dust. | retrieval `gregguns:ammo_9mm_bullet` | `gregguns:ammo_9mm_bullet` x32 | `gg.lv.casings`, pack 97 | 192, 264 (24) |
+| `gg.lv.ammo_press` | Ammo Press | LV | Ammo is made in the GregGuns Ammo Press, not in a GT Assembler. Build the LV press: it has its own recipe list in NEI. | retrieval `gregtech:gt.blockmachines:20101` (Ammo Press LV) | - | `gg.lv.intro` | 108, 264 (24) |
+| `gg.lv.ammo_9mm` | 9mm Rounds | LV | The Ammo Press builds 9mm rounds from a GT round, a foil casing and gunpowder. Check the Ammo Press tab in NEI. | retrieval `gregguns:ammo_9mm_bullet` | `gregguns:ammo_9mm_bullet` x32 | `gg.lv.ammo_press` | 192, 264 (24) |
 | `gg.lv.pistol` | 9mm Pistol | LV | Your first real sidearm. Magazine-fed. | retrieval `gregguns:pistol_9mm` | `gregguns:mag_9mm_pistol` x1 | `gg.lv.ammo_9mm` | 276, 264 (24) |
-| `gg.lv.magazines` | Magazines | LV | Fill a magazine from loose rounds in the crafting grid. Sneak-click to empty it. | retrieval `gregguns:mag_9mm_pistol` | `gregguns:ammo_9mm_bullet` x16 | `gg.lv.pistol` | 360, 264 (24) |
+| `gg.lv.magazines` | Magazines | LV | Empty and filled magazines are Ammo Press recipes too. Sneak-click a magazine to empty it. | retrieval `gregguns:mag_9mm_pistol` | `gregguns:ammo_9mm_bullet` x16 | `gg.lv.pistol` | 360, 264 (24) |
 | `gg.lv.revolver` | Revolver | LV | A heavier sidearm. Compare its damage with the pistol on the tooltip. | retrieval `gregguns:revolver` | - | `gg.lv.ammo_9mm` | 444, 264 (24) |
-| `gg.lv.sawed_off` | Sawed Off | LV | Spread pellets: strong at point-blank range, weak far away. Uses shotgun shells. | retrieval `gregguns:sawed_off` | `gregguns:ammo_shotgun_shell` x8 | `gg.lv.casings` | 528, 264 (24) |
-| `gg.lv.bolt_rifle` | Bolt Action Rifle | LV | Long range and slow to cycle. Right-click to zoom. | retrieval `gregguns:bolt_action_rifle` | `gregguns:ammo_rifle_bullet` x8 | `gg.lv.casings` | 612, 264 (24) |
+| `gg.lv.sawed_off` | Sawed Off | LV | Spread pellets: strong at point-blank range, weak far away. Uses shotgun shells. | retrieval `gregguns:sawed_off` | `gregguns:ammo_shotgun_shell` x8 | `gg.lv.ammo_press` | 528, 264 (24) |
+| `gg.lv.bolt_rifle` | Bolt Action Rifle | LV | Long range and slow to cycle. Right-click to zoom. | retrieval `gregguns:bolt_action_rifle` | `gregguns:ammo_rifle_bullet` x8 | `gg.lv.ammo_press` | 612, 264 (24) |
 | `gg.lv.melee` | Knife or Crowbar | LV | Melee tools never run dry. | retrieval `gregguns:combat_knife` or `gregguns:crowbar` | - | `gg.lv.intro` | 24, 348 (24) |
-| `gg.lv.combat_armor` | T1 Combat Armor | LV | Steel plate pressed in the LV Assembler. | retrieval `gregguns:armor_t1_combat_chestplate` | - | `gg.lv.intro` | 108, 348 (24) |
+| `gg.lv.combat_armor` | T1 Combat Armor | LV | Steel plate pressed in the LV Assembler. | retrieval `gregguns:t1_combat_chestplate` | - | `gg.lv.intro` | 108, 348 (24) |
 | `gg.lv.summary` | Steel Age Done | LV | MV needs aluminum and a bigger power setup. Move on when your GT line gets there. | checkbox | bag `enhancedlootbags:lootbag:4` (LV) | `gg.lv.pistol`, `gg.lv.combat_armor` | 192, 348 (48) |
 
 ### MV
@@ -126,14 +126,14 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
 | `gg.mv.intro` | Aluminum-Age Arms | MV | MV adds automatic weapons, grenades and second-tier armor. Aluminum is the gate. | checkbox | - | `gg.start.welcome`, pack 1148, pack 1598 | 24, 468 (72) |
-| `gg.mv.smg_mags` | SMG Magazines | MV | Assemble an empty magazine in an MV Assembler, then fill it. | retrieval `gregguns:mag_smg` | - | `gg.mv.intro` | 108, 468 (24) |
-| `gg.mv.thompson` | Thompson SMG | MV | Fast, light automatic fire at MV. | retrieval `gregguns:thompson` | `gregguns:mag_smg` x1 | `gg.mv.smg_mags` | 192, 468 (24) |
+| `gg.mv.smg_mags` | SMG Magazines | MV | Press an empty magazine in the Ammo Press, then fill it with rounds. | retrieval `gregguns:mag_smg` | - | `gg.mv.intro` | 108, 468 (24) |
+| `gg.mv.thompson` | Thompson SMG | MV | Fast, light automatic fire at MV. | retrieval `gregguns:thompson_smg` | `gregguns:mag_smg` x1 | `gg.mv.smg_mags` | 192, 468 (24) |
 | `gg.mv.rifle` | M4 or AK47 | MV | Assault rifles use their own magazines, not SMG magazines. | retrieval `gregguns:m4` or `gregguns:ak47` | `gregguns:mag_assault_rifle` x1 | `gg.mv.intro` | 276, 468 (24) |
 | `gg.mv.combat_shotgun` | Combat Shotgun | MV | Magazine-fed shotgun. Uses the same shells as the Sawed Off. | retrieval `gregguns:combat_shotgun` | `gregguns:ammo_shotgun_shell` x16 | `gg.mv.intro` | 360, 468 (24) |
-| `gg.mv.akimbo` | Akimbo | MV | A matching pistol in each hand. Needs the offhand slot. | retrieval `gregguns:pistol_9mm_akimbo` or `gregguns:revolver_akimbo` | - | `gg.mv.intro` | 444, 468 (24) |
-| `gg.mv.grenades` | Frag Grenade | MV | Explosives need TNT dust from the GT line. Throw from a safe distance. | retrieval `gregguns:grenade_frag` | `gregguns:grenade_frag` x4 | `gg.mv.intro`, pack 762 | 528, 468 (24) |
+| `gg.mv.akimbo` | Akimbo | MV | A matching pistol in each hand. Needs the offhand slot. | retrieval `gregguns:akimbo_pistols` or `gregguns:akimbo_revolvers` | - | `gg.mv.intro` | 444, 468 (24) |
+| `gg.mv.grenades` | Frag Grenade | MV | Explosives need TNT dust from the GT line. Throw from a safe distance. | retrieval `gregguns:frag_grenade` | `gregguns:frag_grenade` x4 | `gg.mv.intro`, pack 762 | 528, 468 (24) |
 | `gg.mv.flashbang` | Flashbang | MV | Blinds and stuns instead of killing. Useful for clearing a camp. | retrieval `gregguns:flashbang` | `gregguns:flashbang` x4 | `gg.mv.grenades` | 612, 468 (24) |
-| `gg.mv.t2_armor` | T2 Armor | MV | Combat, Commando or Riot. Pick the set that suits your style. | retrieval `gregguns:armor_t2_combat_chestplate` or `gregguns:armor_t2_commando_chestplate` or `gregguns:armor_t2_riot_chestplate` | - | `gg.mv.intro` | 24, 552 (24) |
+| `gg.mv.t2_armor` | T2 Armor | MV | Combat, Commando or Riot. Pick the set that suits your style. | retrieval `gregguns:t2_combat_chestplate` or `gregguns:t2_commando_chestplate` or `gregguns:t2_riot_chestplate` | - | `gg.mv.intro` | 24, 552 (24) |
 | `gg.mv.summary` | Aluminum Age Done | MV | HV brings heavy weapons and stainless steel. | checkbox | bag `enhancedlootbags:lootbag:5` (MV) | `gg.mv.thompson`, `gg.mv.rifle`, `gg.mv.t2_armor` | 108, 552 (48) |
 
 ### HV
@@ -149,7 +149,7 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | `gg.hv.as50` | AS50 | HV | Anti-materiel rifle with its own magazines. | retrieval `gregguns:as50` | - | `gg.hv.intro` | 276, 672 (24) |
 | `gg.hv.grenade_launcher` | Grenade Launcher | HV | Fires the 40 mm grenades you learned to make at MV. | retrieval `gregguns:grenade_launcher` | `gregguns:ammo_40mm_grenade` x8 | `gg.hv.intro` | 360, 672 (24) |
 | `gg.hv.rocket_launcher` | Rocket Launcher | HV | Rockets need explosive dust and a circuit. Mind your own blast radius. | retrieval `gregguns:rocket_launcher` | `gregguns:ammo_rocket` x2 | `gg.hv.grenade_launcher` | 444, 672 (24) |
-| `gg.hv.flamethrower` | Flamethrower | HV | Burns GT fuel from a fuel tank. Diesel works. | retrieval `gregguns:flamethrower` | `gregguns:fuel_tank` x1 | `gg.hv.intro`, pack 553 | 528, 672 (24) |
+| `gg.hv.flamethrower` | Flamethrower | HV | Burns GT fuel from a fuel tank. Diesel works. | retrieval `gregguns:flamethrower` | `gregguns:tank_fuel` x1 | `gg.hv.intro`, pack 553 | 528, 672 (24) |
 | `gg.hv.tools` | Chainsaw and Power Hammer | HV | Electric tools charge only in a charger or battery buffer of exactly their tier: HV. | retrieval `gregguns:chainsaw` or `gregguns:power_hammer` | - | `gg.hv.intro`, pack 1142 | 612, 672 (24) |
 | `gg.hv.summary` | Heavy Arms Done | HV | EV brings energy weapons. | checkbox | bag `enhancedlootbags:lootbag:6` (HV) | `gg.hv.lmg`, `gg.hv.rocket_launcher`, `gg.hv.tools` | 24, 756 (48) |
 
@@ -161,16 +161,19 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
 | `gg.ev.intro` | Energy Weapons | EV | EV adds lasers, pulse rifles and electric ammo. Titanium is the gate. | checkbox | - | `gg.start.welcome`, pack 176, pack 860 | 24, 876 (72) |
-| `gg.ev.cell` | Energy Cell | EV | A rechargeable cell for energy weapons. | retrieval `gregguns:energy_cell` | - | `gg.ev.intro` | 108, 876 (24) |
-| `gg.ev.laser` | Laser Rifle | EV | Electric, so it charges at an EV battery buffer. An HV buffer will not accept it. | retrieval `gregguns:laser_rifle` | `gregguns:energy_cell` x2 | `gg.ev.cell`, pack 1262 | 192, 876 (24) |
+| `gg.ev.laser_focus` | Laser Focus | EV | The Laser Focus is cut in a GT Laser Engraver at EV. It is the core of every laser weapon. | retrieval `gregguns:part_laser_focus` | - | `gg.ev.intro` | 108, 876 (24) |
+| `gg.ev.laser` | Laser Rifle | EV | Electric, so it charges at an EV battery buffer. An HV buffer will not accept it. | retrieval `gregguns:laser_rifle` | - | `gg.ev.laser_focus`, pack 1262 | 192, 876 (24) |
 | `gg.ev.pulse` | Pulse Rifle or PDW | EV | Advanced magazines are the EV ammo step up. | retrieval `gregguns:pulse_rifle` or `gregguns:pdw` | `gregguns:mag_advanced` x2 | `gg.ev.intro` | 276, 876 (24) |
-| `gg.ev.minigun` | Minigun | EV | Drum-fed, very high fire rate. Heavy on ammo. | retrieval `gregguns:minigun` | `gregguns:minigun_drum` x1 | `gg.ev.pulse` | 360, 876 (24) |
-| `gg.ev.exotics` | Tesla, Sonic or Bio Gun | EV | Specialist weapons. Pick one. The Bio Gun needs a Bio Tank of E. coli culture fluid; see the pack-intermediates note below. | retrieval `gregguns:tesla_rifle` or `gregguns:sonic_rifle` or `gregguns:bio_gun` | - | `gg.ev.intro` | 444, 876 (24) |
-| `gg.ev.t3_armor` | T3 Combat Armor | EV | Titanium plate in the EV Assembler. | retrieval `gregguns:armor_t3_combat_chestplate` | - | `gg.ev.intro` | 528, 876 (24) |
-| `gg.ev.steam_armor` | Steam Armor | EV | Self-contained powered suit. | retrieval `gregguns:armor_steam_chestplate` | - | `gg.ev.intro` | 612, 876 (24) |
+| `gg.ev.minigun` | Minigun | EV | Drum-fed, very high fire rate. Heavy on ammo. | retrieval `gregguns:minigun` | `gregguns:mag_minigun_drum` x1 | `gg.ev.pulse` | 360, 876 (24) |
+| `gg.ev.exotics` | Tesla or Sonic Rifle | EV | Specialist weapons. Pick one. | retrieval `gregguns:tesla_rifle` or `gregguns:sonic_rifle` | - | `gg.ev.intro` | 444, 876 (24) |
+| `gg.ev.t3_armor` | T3 Combat Armor | EV | Titanium plate in the EV Assembler. | retrieval `gregguns:t3_combat_chestplate` | - | `gg.ev.intro` | 528, 876 (24) |
+| `gg.ev.steam_armor` | Steam Armor | EV | Self-contained powered suit. | retrieval `gregguns:steam_chestplate` | - | `gg.ev.intro` | 612, 876 (24) |
 | `gg.ev.summary` | Energy Weapons Done | EV | IV brings blasters and power armor. | checkbox | bag `enhancedlootbags:lootbag:7` (EV) | `gg.ev.laser`, `gg.ev.minigun`, `gg.ev.t3_armor` | 24, 960 (48) |
+| `gg.ev.bio_culture` | E. coli Culture | EV | The Bio Gun runs on culture fluid. Brew Biomass, make the E. coli dish in the Bio Lab, then grow the culture in the BartWorks Bacterial Vat. | checkbox | - | `gg.ev.intro` | 108, 960 (24) |
+| `gg.ev.bio_tank` | Bio Tank | EV | The Bio Tank is built from a GT Large Fluid Cell. A Fluid Canner fills it with E. coli culture fluid. | retrieval `gregguns:tank_bio` | - | `gg.ev.bio_culture` | 192, 960 (24) |
+| `gg.ev.bio_gun` | Bio Gun | EV | Sprays culture fluid that eats flesh. Refill it from the Bio Tank. The Nether Blaster later shares this chain. | retrieval `gregguns:bio_gun` | - | `gg.ev.bio_tank` | 276, 960 (24) |
 
-**Pack intermediates in the EV tier.** Hint text only, no new quests (the 118-quest count and the layout stay as they are). The Fuel, Bio and Compressed Air Tanks are built from the pack's Large Fluid Cells (stainless, titanium and aluminium), so the quests that retrieve a tank or the guns that use one can point the player at the pack's Large Fluid Cell quests (Tier 3 to 4 fluid storage). Cybernetic Parts need a Plasma Membrane from the pack's Bio Lab line: Bio Lab (HV) makes the E. coli dish, the Bacterial Vat makes culture fluid, and an HV Centrifuge turns 1,000 mB of it into a Plasma Membrane (circuit 17). The same culture fluid fills the Bio Tank, so `gg.ev.exotics` and the Nether Blaster line (`gg.luv.nether_charge`) share one bio chain. Quest authors should add a hint, not a prerequisite on a pack quest id, until the ids are confirmed in the pinned quest files. Recipe detail: [recipes.md](../06-items/recipes.md) RC-20, RC-52 to RC-54; pack requirements: [PACK-CHANGES](../PACK-CHANGES.md).
+**Pack intermediates in the EV tier.** The Bio Gun chain has its own three quests (`gg.ev.bio_culture`, `gg.ev.bio_tank`, `gg.ev.bio_gun`). Their pack steps are hint text, not prerequisites. The Fuel, Bio and Compressed Air Tanks are built from the pack's Large Fluid Cells (stainless, titanium and aluminium), so the quests that retrieve a tank or the guns that use one can point the player at the pack's Large Fluid Cell quests (Tier 3 to 4 fluid storage). Cybernetic Parts need a Plasma Membrane from the pack's Bio Lab line: Bio Lab (HV) makes the E. coli dish, the Bacterial Vat makes culture fluid, and an HV Centrifuge turns 1,000 mB of it into a Plasma Membrane (circuit 17). The same culture fluid fills the Bio Tank, so `gg.ev.exotics` and the Nether Blaster line (`gg.luv.nether_charge`) share one bio chain. The quests carry a hint, not a prerequisite on a pack quest id, because the Bacterial Vat and Bio Lab quest ids are not in the referenced table. Recipe detail: [recipes.md](../06-items/recipes.md) RC-20, RC-52 to RC-54; pack requirements: [PACK-CHANGES](../PACK-CHANGES.md).
 
 ### IV
 
@@ -181,11 +184,11 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 |---|---|---|---|---|---|---|---|
 | `gg.iv.intro` | Power Armor Era | IV | IV adds blasters, power armor and the anti-grav device. Tungstensteel is the gate. | checkbox | - | `gg.start.welcome`, pack 213, pack 861 | 24, 1080 (72) |
 | `gg.iv.blaster` | Blaster Rifle | IV | High-damage energy rifle at IV voltage. | retrieval `gregguns:blaster_rifle` | - | `gg.iv.intro` | 108, 1080 (24) |
-| `gg.iv.deatomizer` | De-Atomizer Pistol | IV | One pistol or two; the akimbo pair needs the offhand slot. | retrieval `gregguns:de_atomizer_pistol` or `gregguns:de_atomizer_pistol_akimbo` | - | `gg.iv.intro` | 192, 1080 (24) |
+| `gg.iv.deatomizer` | De-Atomizer Pistol | IV | One pistol or two; the akimbo pair needs the offhand slot. | retrieval `gregguns:deatomizer_pistol` or `gregguns:akimbo_deatomizer_pistols` | - | `gg.iv.intro` | 192, 1080 (24) |
 | `gg.iv.scatter` | Scatter Laser Rifle | IV | A shotgun-style laser. Short range, wide spread. | retrieval `gregguns:scatter_laser_rifle` | - | `gg.iv.blaster` | 276, 1080 (24) |
-| `gg.iv.golden` | Golden Revolver | IV | A showpiece sidearm. Single or akimbo. | retrieval `gregguns:golden_revolver` or `gregguns:golden_revolver_akimbo` | - | `gg.iv.intro` | 360, 1080 (24) |
-| `gg.iv.power_armor` | Power Armor | IV | Full powered suit. Charge it at an IV buffer. | retrieval `gregguns:armor_power_chestplate` | - | `gg.iv.intro` | 444, 1080 (24) |
-| `gg.iv.exo` | Exo Suit | IV | Strength and carry bonuses. | retrieval `gregguns:armor_exo_chestplate` | - | `gg.iv.power_armor` | 528, 1080 (24) |
+| `gg.iv.golden` | Golden Revolver | IV | A showpiece sidearm. Single or akimbo. | retrieval `gregguns:golden_revolver` or `gregguns:akimbo_golden_revolvers` | - | `gg.iv.intro` | 360, 1080 (24) |
+| `gg.iv.power_armor` | Power Armor | IV | Full powered suit. Charge it at an IV buffer. | retrieval `gregguns:t3_power_chestplate` | - | `gg.iv.intro` | 444, 1080 (24) |
+| `gg.iv.exo` | Exo Suit | IV | Strength and carry bonuses. | retrieval `gregguns:t3_exo_chestplate` | - | `gg.iv.power_armor` | 528, 1080 (24) |
 | `gg.iv.antigrav` | Anti-Gravity Device | IV | Back device for flight. Needs the wings slot. | retrieval `gregguns:anti_gravity_device` | - | `gg.iv.power_armor` | 612, 1080 (24) |
 | `gg.iv.summary` | Power Armor Era Done | IV | LuV recipes use the Assembly Line. | checkbox | bag `enhancedlootbags:lootbag:8` (IV) | `gg.iv.blaster`, `gg.iv.power_armor` | 24, 1164 (48) |
 
@@ -197,7 +200,7 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
 | `gg.luv.intro` | Assembly-Line Weapons | LuV | LuV weapons are built in the Assembly Line with a research item, like GT's own LuV parts. | checkbox | - | `gg.start.welcome`, pack 1493, pack 1491, pack 1412 | 24, 1284 (72) |
-| `gg.luv.nether_charge` | Nether Charge | LuV | The explosive behind the Nether Blaster. | retrieval `gregguns:nether_charge` | - | `gg.luv.intro` | 108, 1284 (24) |
+| `gg.luv.nether_charge` | Nether Charge | LuV | The explosive behind the Nether Blaster. | retrieval `gregguns:ammo_nether_charge` | - | `gg.luv.intro` | 108, 1284 (24) |
 | `gg.luv.nether_blaster` | Nether Blaster | LuV | Fires nether charges. Mind the splash. | retrieval `gregguns:nether_blaster` | - | `gg.luv.nether_charge` | 192, 1284 (24) |
 | `gg.luv.alien_blaster` | Alien Blaster | LuV | LuV energy weapon. | retrieval `gregguns:alien_blaster` | - | `gg.luv.intro` | 276, 1284 (24) |
 | `gg.luv.grim_reaper` | Grim Reaper | LuV | Late-game close-range weapon. | retrieval `gregguns:grim_reaper` | - | `gg.luv.intro` | 360, 1284 (24) |
@@ -211,7 +214,7 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
 | `gg.zpm.intro` | Nuclear Arms | ZPM | ZPM weapons use nuclear cells. Naquadah is the gate. | checkbox | - | `gg.start.welcome`, pack 2610, pack 1667 | 24, 1404 (72) |
-| `gg.zpm.cell` | Nuclear Power Cell | ZPM | Uranium-based power cell. Store it carefully. | retrieval `gregguns:nuclear_power_cell` | - | `gg.zpm.intro` | 108, 1404 (24) |
+| `gg.zpm.cell` | Nuclear Power Cell | ZPM | Uranium-based power cell. Store it carefully. | retrieval `gregguns:cell_nuclear` | - | `gg.zpm.intro` | 108, 1404 (24) |
 | `gg.zpm.death_ray` | Nuclear Death Ray | ZPM | The top energy weapon. | retrieval `gregguns:nuclear_death_ray` | - | `gg.zpm.cell` | 192, 1404 (24) |
 | `gg.zpm.nuke_launcher` | Nuke Launcher | ZPM | Fires tactical nuke rockets. Do not use near your base. | retrieval `gregguns:nuke_launcher` | - | `gg.zpm.cell` | 276, 1404 (24) |
 | `gg.zpm.summary` | Top of the Tree | ZPM | You have built everything GregGuns offers. | checkbox | bag `enhancedlootbags:lootbag:42` (ZPM) | `gg.zpm.death_ray`, `gg.zpm.nuke_launcher` | 360, 1404 (48) |
@@ -258,17 +261,18 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 ### Machines
 
 - **Gate:** pack 97 (the LV assembler) and `gg.start.welcome`, then a tier quest per machine.
-- **Teaches:** the two GregGuns-owned machines. The Repair Bench and Turret tiers are not settled ([09 open questions](../09-machines-utility/index.md#open-questions)), so their rows carry a provisional tier that must be revisited.
+- **Teaches:** the GregGuns-owned machines: the Repair Bench, the Armory Gantry and the Turret. The Repair Bench and Turret tiers are not settled ([09 open questions](../09-machines-utility/index.md#open-questions)), so their rows carry a provisional tier that must be revisited.
 - The **Laser Focus** (EV) is made in a plain GT Laser Engraver and the **Anti Gravity Core** (IV) in a plain GT Assembler ([design record 0012](../../design/0012-retire-reaction-chamber-and-retort.md)); the Reaction Chamber quests were removed with the machine.
 
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
 | `gg.mach.intro` | GregGuns Machines | LV | Most machines are plain GT. Only the Repair Bench and the Turret are GregGuns' own. | checkbox | - | `gg.start.welcome`, pack 97 | 840, 348 (72) |
-| `gg.mach.repair_bench` | Repair Bench | MV | Mends guns and armor using the item's gate material. Tier is provisional (MV) until area 09 settles it. | retrieval `gregguns:repair_bench` | - | `gg.mach.intro`, pack 1148 | 924, 348 (24) |
+| `gg.mach.repair_bench` | Repair Bench | MV | Mends guns and armor using the item's gate material. Tier is provisional (MV) until area 09 settles it. | retrieval `gregtech:gt.blockmachines:20110` (Repair Bench MV) | - | `gg.mach.intro`, pack 1148 | 924, 348 (24) |
 | `gg.mach.repair` | Mending a Weapon | MV | Put a damaged gun and its gate material in the bench. | checkbox | - | `gg.mach.repair_bench` | 1008, 348 (24) |
-| `gg.mach.turret` | Turret | HV | Automatic defense. Tier is provisional (HV) until area 09 settles it. | retrieval `gregguns:turret` | - | `gg.mach.intro`, pack 160 | 1092, 348 (24) |
+| `gg.mach.turret` | Turret | HV | Automatic defense. Tier is provisional (HV) until area 09 settles it. | retrieval `gregtech:gt.blockmachines:20117` (Turret HV) | - | `gg.mach.intro`, pack 160 | 1092, 348 (24) |
 | `gg.mach.turret_team` | Friend or Foe | HV | Turrets spare you and your allies on a GTNHLib team, and shoot hostiles. | checkbox | - | `gg.mach.turret` | 1176, 348 (24) |
 | `gg.mach.turret_power` | Powering the Turret | HV | The turret takes EU at its tier. Overvoltage damages it. | checkbox | - | `gg.mach.turret` | 1260, 348 (24) |
+| `gg.mach.gantry` | Armory Gantry | HV | The Gantry is a multiblock repair hall with a row of bays, for armor and guns in bulk. Its controller is HV and it needs an interior lamp. | retrieval `gregtech:gt.blockmachines:20114` (Armory Gantry) | - | `gg.mach.repair`, pack 160 | 1344, 348 (24) |
 
 ### Armor and equipment
 
@@ -283,26 +287,28 @@ The pack's own lines use the same grid: boxes of 24, 48 and 72 px, with coordina
 | `gg.gear.hazards` | Know Your Hazards | MV | Each protective item lists the hazards it blocks. Check the tooltip. | checkbox | - | `gg.gear.gas_mask` | 1092, 552 (24) |
 | `gg.gear.nvg` | Night Vision Goggles | MV | Wear in the head Baubles slot, not the helmet slot. | retrieval `gregguns:night_vision_goggles` | - | `gg.gear.intro`, pack 1148 | 1176, 552 (24) |
 | `gg.gear.pouch` | Ammo Pouch | MV | Wear in the quiver Baubles slot. | retrieval `gregguns:ammo_pouch` | - | `gg.gear.nvg` | 1260, 552 (24) |
-| `gg.gear.oxygen` | Oxygen Mask and Tanks | HV | For space and bad air. Needs compressed air. | retrieval `gregguns:oxygen_mask`; retrieval `gregguns:oxygen_tank` (all) | - | `gg.gear.intro`, pack 160, pack 822, pack 824 | 1344, 552 (24) |
+| `gg.gear.oxygen` | Oxygen Mask and Tanks | HV | For space and bad air. Needs compressed air. | retrieval `gregguns:oxygen_mask`; retrieval `gregguns:oxygen_tanks` (all) | - | `gg.gear.intro`, pack 160, pack 822, pack 824 | 1344, 552 (24) |
 | `gg.gear.jump_pack` | Jump Pack | HV | Back device in the wings slot. | retrieval `gregguns:jump_pack` | - | `gg.gear.intro`, pack 160 | 1428, 552 (24) |
 | `gg.gear.glider` | Glider | HV | Glide down from heights. Also in the wings slot. | retrieval `gregguns:glider` | - | `gg.gear.jump_pack` | 840, 636 (24) |
 
 ### Ammo logistics
 
 - **Gate:** pack 88 and `gg.start.welcome`, then tier quests.
-- **Teaches:** that ammo is a production line, built from GT machines ([ammo.md](../06-items/ammo.md)), and that electric items charge only at their own tier ([energy-electric-items.md](../02-guns/energy-electric-items.md)).
+- **Teaches:** that ammo is a production line, built in the Ammo Press and the Ammunition Works with GT parts ([ammo.md](../06-items/ammo.md)), and that electric items charge only at their own tier ([energy-electric-items.md](../02-guns/energy-electric-items.md)).
 
 | Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
 |---|---|---|---|---|---|---|---|
 | `gg.ammo.intro` | Ammo Logistics | LV | Ammo is the real cost of a gun. Build it as production, not as crafting. | checkbox | - | `gg.start.welcome`, pack 88 | 840, 756 (72) |
-| `gg.ammo.press` | Press Your Parts | LV | The Forming Press makes casings in bulk. Pick a recipe with a programmed circuit. | retrieval `gregguns:part_casing` x16 | - | `gg.ammo.intro`, pack 100 | 924, 756 (24) |
-| `gg.ammo.assembler` | Ammo Assembler | LV | The Assembler makes 9mm rounds from rounds, casings and powder. | checkbox | - | `gg.ammo.press`, pack 97 | 1008, 756 (24) |
-| `gg.ammo.pipes` | Pipe It | LV | Move parts between machines with GT item pipes, so the line runs unattended. | checkbox | - | `gg.ammo.assembler`, pack 114 | 1092, 756 (24) |
+| `gg.ammo.press` | Run the Press | LV | The Ammo Press makes rounds in bulk. Feed it GT parts and powder, and take the shells from its output. | retrieval `gregguns:ammo_shotgun_shell` x16 | - | `gg.ammo.intro` | 924, 756 (24) |
+| `gg.ammo.magazines` | Magazines in the Press | LV | The same press makes empty magazines and fills them, so one machine covers the whole chain. | checkbox | - | `gg.ammo.press` | 1008, 756 (24) |
+| `gg.ammo.pipes` | Pipe It | LV | Move rounds and parts between machines with GT item pipes, so the line runs unattended. | checkbox | - | `gg.ammo.magazines`, pack 114 | 1092, 756 (24) |
 | `gg.ammo.depot` | Ammo Depot | LV | Stock 256 rounds in a chest: your own supply. | retrieval `gregguns:ammo_9mm_bullet` x256 | `gregguns:ammo_9mm_bullet` x64 | `gg.ammo.pipes` | 1176, 756 (24) |
 | `gg.ammo.explosives` | Explosives Handling | MV | Grenades and rockets need explosive dust. Store it away from the line. | checkbox | - | `gg.ammo.depot`, pack 762, pack 1598 | 1260, 756 (24) |
 | `gg.ammo.charging` | Charging at the Right Tier | HV | A GregGuns electric item has one tier. Only a charger or buffer of exactly that tier takes it. | checkbox | - | `gg.ammo.intro`, pack 619, pack 1082, pack 1142 | 1344, 756 (24) |
 | `gg.ammo.fuel` | Fuel Tanks | HV | Fuel tanks hold GT fuel. Diesel from the oil line works. | checkbox | - | `gg.ammo.explosives`, pack 553, pack 160 | 1428, 756 (24) |
 | `gg.ammo.advanced` | Advanced Ammunition | EV | EV ammo: advanced magazines and minigun drums. | retrieval `gregguns:mag_advanced` x8 | - | `gg.ammo.fuel`, pack 176 | 840, 840 (24) |
+| `gg.ammo.works` | Ammunition Works | HV | The Ammunition Works is a multiblock press hall with high parallels. Build it when one press cannot keep up. It needs an interior lamp. | retrieval `gregtech:gt.blockmachines:20105` (Ammunition Works) | - | `gg.ammo.advanced`, pack 160 | 924, 840 (24) |
+| `gg.ammo.filling_bench` | Filling Bench (optional) | HV | An optional annex behind the packing end of the Works, built around six workbench tables. It loads magazines from the Works output. | checkbox | - | `gg.ammo.works` | 1008, 840 (24) |
 
 ## Coverage matrix
 
@@ -312,10 +318,10 @@ Where each mechanic is taught.
 |---|---|
 | Fire, reload, zoom | `gg.start.controls`, `gg.steam.first_blood`, `gg.lv.bolt_rifle` |
 | Magazines (fill, sneak-click to empty) | `gg.start.ammo_types`, `gg.lv.magazines`, `gg.mv.smg_mags` |
-| Ammo made in GT machines | `gg.lv.casings`, `gg.lv.ammo_9mm`, `gg.ammo.press`, `gg.ammo.assembler`, `gg.ammo.pipes`, `gg.ammo.depot` |
+| Ammo made in the Ammo Press and Works | `gg.lv.ammo_press`, `gg.lv.ammo_9mm`, `gg.ammo.press`, `gg.ammo.magazines`, `gg.ammo.pipes`, `gg.ammo.depot`, `gg.ammo.works`, `gg.ammo.filling_bench` |
 | Explosives and fuel | `gg.mv.grenades`, `gg.ammo.explosives`, `gg.hv.rocket_launcher`, `gg.hv.flamethrower`, `gg.ammo.fuel` |
 | Charging at the exact tier | `gg.hv.tools`, `gg.ev.laser`, `gg.ammo.charging`, `gg.iv.power_armor` |
-| Repair | `gg.mach.repair_bench`, `gg.mach.repair` |
+| Repair | `gg.mach.repair_bench`, `gg.mach.repair`, `gg.mach.gantry` |
 | Offhand and akimbo | `gg.mv.akimbo`, `gg.iv.deatomizer` |
 | Armor sets | `gg.steam.scout_armor`, `gg.lv.combat_armor`, `gg.mv.t2_armor`, `gg.ev.t3_armor`, `gg.iv.power_armor` |
 | Baubles slots | `gg.gear.intro`, `gg.gear.nvg`, `gg.gear.pouch`, `gg.gear.jump_pack` |
@@ -334,14 +340,14 @@ Where each mechanic is taught.
 | Steam / ULV | 7 | 2 | 0 | 4 | 1 | 1 |
 | LV | 11 | 2 | 9 | 0 | 0 | 1 |
 | MV | 10 | 2 | 8 | 0 | 0 | 1 |
-| HV | 9 | 2 | 8 | 0 | 0 | 1 |
-| EV | 9 | 2 | 7 | 0 | 0 | 1 |
+| HV | 9 | 2 | 7 | 0 | 0 | 1 |
+| EV | 12 | 3 | 9 | 0 | 0 | 1 |
 | IV | 9 | 2 | 7 | 0 | 0 | 1 |
 | LuV | 6 | 2 | 4 | 0 | 0 | 1 |
 | ZPM | 5 | 2 | 3 | 0 | 0 | 1 |
-| NPCs and bosses | 14 | 4 | 0 | 0 | 14 | 12 |
+| NPCs and bosses | 14 | 4 | 0 | 0 | 10 | 12 |
 | Structures | 6 | 6 | 0 | 0 | 0 | 5 |
-| Machines | 6 | 4 | 2 | 0 | 0 | 0 |
-| Armor and equipment | 9 | 2 | 8 | 0 | 0 | 0 |
-| Ammo logistics | 9 | 6 | 3 | 0 | 0 | 0 |
-| **Total** | **115** | **43** | **59** | **4** | **15** | **25** |
+| Machines | 7 | 4 | 3 | 0 | 0 | 0 |
+| Armor and equipment | 9 | 2 | 7 | 0 | 0 | 0 |
+| Ammo logistics | 11 | 7 | 4 | 0 | 0 | 0 |
+| **Total** | **121** | **45** | **61** | **4** | **11** | **25** |

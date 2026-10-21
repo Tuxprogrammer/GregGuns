@@ -331,7 +331,7 @@ Amended by [0015](design/0015-m9-self-contained-polish.md). The owner signed off
 - anything from the polish list that M9 doesn't finish.
 
 **Exit gate:**
-- [ ] The questbook installs from the jar behind its hidden config key, on a real GTNH 2.9 server.
+- [x] The questbook installs from the jar behind its hidden config key, on a real GTNH 2.9 server. `0.3.1-beta`, 2026-10-21: 121 quests installed on the owner's GTNH 2.9.0-RC-2 server and saved by BetterQuesting.
 - [ ] Every PACK-CHANGES row is done in the jar or documented as an optional server-owner step.
 - [ ] The polish items above are done, or moved to the adopter list with the owner's sign-off.
 - [ ] `docs/HANDOFF.md` is written and the owner has reviewed it.
