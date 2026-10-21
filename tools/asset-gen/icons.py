@@ -1044,8 +1044,12 @@ def _(c, x):
 
 @icon("golden_round")
 def _(c, x):
-    # One fat gold-cased round with a bright gold tip: the Golden Gun's single shot.
-    bullet(c, 6, 2, 13, GOLD, ramp((255, 236, 150)), tip=4, w=4)
+    # One gold cartridge: bright pointed tip, darker gold case, base rim.
+    case = ramp((190, 138, 24))
+    bullet(c, 6, 2, 12, case, ramp((255, 236, 150)), tip=4, w=3)
+    c.rect(5, 13, 9, 14, case)          # wider rim at the base
+    c.hline(5, 9, 13, case[DK])         # extractor groove
+    c.hline(6, 8, 2, ramp((255, 236, 150))[HL])
 
 
 @icon("ammo_shotgun_shell")
