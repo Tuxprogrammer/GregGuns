@@ -108,10 +108,17 @@ public final class BetterQuestingTarget implements QuestbookTarget {
 
     @Override
     public void save() {
-        // Source (saveDatabases writes QuestDatabase.json when dirty, as BetterQuesting's own world save does):
+        // Only mark it dirty: BetterQuesting's own overworld save handler writes QuestDatabase.json at the next world
+        // save. Calling saveDatabases() here, inside our FMLServerStartingEvent, would stamp the file's "build" with
+        // Loader.activeModContainer(), which is GregGuns then, and BetterQuesting would back up the database on the
+        // next start as if it had been updated.
+        // Source:
         // https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/handlers/SaveLoadHandler.java#L121-L149
+        // Source:
+        // https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/handlers/SaveLoadHandler.java#L307-L312
+        // Source:
+        // https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/betterquesting/handlers/EventHandler.java#L395-L400
         SaveLoadHandler.INSTANCE.markDirty();
-        SaveLoadHandler.INSTANCE.saveDatabases();
     }
 
     @Override

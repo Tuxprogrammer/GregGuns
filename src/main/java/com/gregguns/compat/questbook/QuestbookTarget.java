@@ -29,7 +29,7 @@ public interface QuestbookTarget {
     /** Sets the tab order. Called only when the order changed. */
     void setLineOrder(List<UUID> order);
 
-    /** Writes the database to disk. */
+    /** Makes sure the changes reach disk (BetterQuesting: marked dirty for its next world save). */
     void save();
 
     /** Sends the changes to connected clients. */
