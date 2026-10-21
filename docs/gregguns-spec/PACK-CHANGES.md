@@ -47,7 +47,7 @@ Every change GregGuns needs outside this repo, collected from the area indexes. 
 
 ### Questbook ([12-questbook](12-questbook/index.md))
 
-All paths are under `config/betterquesting/DefaultQuests/`. The full design is 118 quests in 14 chapters, gated on existing GTNH tier quests.
+All paths are under `config/betterquesting/DefaultQuests/`. The full design is 115 quests in 14 chapters, gated on existing GTNH tier quests.
 
 | File | Change | Why | Sheet |
 |---|---|---|---|
