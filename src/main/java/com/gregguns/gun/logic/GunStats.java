@@ -18,6 +18,8 @@ public final class GunStats {
     private final String id;
     private final double damage;
     private final double damageMin;
+    /** The stats NPC shooters use (pre-balance-pass damage, design 0016); this instance when none is set. */
+    private GunStats npcStats = this;
     private final double dropStart;
     private final double dropEnd;
     private final double spread;
@@ -161,6 +163,11 @@ public final class GunStats {
     /** Maximum damage per projectile (half hearts). Applied by the combat module. */
     public double damage() {
         return damage;
+    }
+
+    /** The stats NPC shooters fire with: same gun, pre-balance-pass damage (design 0016). */
+    public GunStats forNpc() {
+        return npcStats;
     }
 
     /** Minimum damage beyond {@link #dropEnd()}. Equal to {@link #damage()} when the gun has no drop-off. */
@@ -428,6 +435,8 @@ public final class GunStats {
         private final String id;
         private double damage = 1;
         private double damageMin = -1;
+        private double npcDamage = -1;
+        private double npcDamageMin = -1;
         private double dropStart;
         private double dropEnd;
         private boolean dropSet;
@@ -479,6 +488,22 @@ public final class GunStats {
         /** Maximum damage; minimum damage defaults to the same value. */
         public Builder damage(double damage) {
             this.damage = damage;
+            return this;
+        }
+
+        /**
+         * Damage NPC shooters deal instead of {@link #damage}, with no drop-off (design 0016: NPCs keep the
+         * pre-balance numbers). Defaults to the player damage.
+         */
+        public Builder npcDamage(double damage) {
+            npcDamage = damage;
+            return this;
+        }
+
+        /** Like {@link #npcDamage(double)} with the NPC drop-off minimum. */
+        public Builder npcDamage(double damage, double min) {
+            npcDamage = damage;
+            npcDamageMin = min;
             return this;
         }
 
@@ -666,7 +691,17 @@ public final class GunStats {
 
         /** Validates and builds. Throws {@link IllegalArgumentException} on inconsistent values. */
         public GunStats build() {
-            return new GunStats(this);
+            GunStats built = new GunStats(this);
+            if (npcDamage >= 0) {
+                double keepDamage = damage;
+                double keepMin = damageMin;
+                damage = npcDamage;
+                damageMin = npcDamageMin < 0 ? npcDamage : npcDamageMin;
+                built.npcStats = new GunStats(this);
+                damage = keepDamage;
+                damageMin = keepMin;
+            }
+            return built;
         }
     }
 }

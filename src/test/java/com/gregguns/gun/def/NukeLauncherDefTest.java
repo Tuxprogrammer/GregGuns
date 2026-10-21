@@ -29,7 +29,7 @@ class NukeLauncherDefTest {
     @Test
     void carriesTheSheetNumbers() {
         GunStats s = NukeLauncherDef.STATS;
-        assertEquals(250.0, s.damage());
+        assertEquals(400.0, s.damage());
         assertEquals(10.0, s.blastRadius());
         assertEquals(0.01, s.projectileGravity());
         assertEquals(1.0, s.projectileSpeed());

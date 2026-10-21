@@ -30,8 +30,8 @@ class GoldenRevolversLogicTest {
 
     @Test
     void theGoldenRevolverKeepsItsSheet() {
-        assertEquals(14.0, GOLD.damage());
-        assertEquals(6.0, GOLD.damageMin());
+        assertEquals(28.0, GOLD.damage());
+        assertEquals(12.0, GOLD.damageMin());
         assertEquals(12, GOLD.dropStart());
         assertEquals(30, GOLD.dropEnd());
         assertEquals(25, GOLD.lifetimeTicks());
@@ -61,10 +61,10 @@ class GoldenRevolversLogicTest {
     }
 
     @Test
-    void theAkimboPairDoesSixteenAgainstTheSinglesFourteenOnPurpose() {
-        // Techguns lists 16 for the pair and 14 for the single (catalog row 21); GregGuns keeps the numbers as listed.
-        assertEquals(16.0, PAIR.damage());
-        assertEquals(14.0, GOLD.damage());
+    void theAkimboPairMatchesTheSinglesTwentyEight() {
+        // Design 0016: GregGuns owns its numbers; pair and single both deal 28 (Techguns listed 16 and 14).
+        assertEquals(28.0, PAIR.damage());
+        assertEquals(28.0, GOLD.damage());
         assertEquals(15, PAIR.dropStart());
         assertEquals(30, PAIR.dropEnd());
         assertEquals(0.035, PAIR.spread());

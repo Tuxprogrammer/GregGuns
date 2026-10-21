@@ -46,7 +46,8 @@ public final class ScatterLaserRifleDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder(NAME)
-        .damage(6.0)
+        .damage(12.0)
+        .npcDamage(6.0)
         .spread(0.1)
         .zoom(0.75, 0.75)
         .fire(FireMode.AUTO, 7)

@@ -32,8 +32,9 @@ public final class Ak47Def {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("ak47")
-        .damage(9.0)
-        .damageDrop(20, 30, 5.0)
+        .damage(10.0)
+        .damageDrop(20, 30, 5.5)
+        .npcDamage(9.0, 5.0)
         .spread(0.03)
         .fire(FireMode.AUTO, 3)
         .magazine(30)

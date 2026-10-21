@@ -22,7 +22,7 @@ class GrimReaperDefinitionTest {
     @Test
     void carriesTheSheetNumbers() {
         GunStats s = GrimReaperDef.STATS;
-        assertEquals(50.0, s.damage());
+        assertEquals(90.0, s.damage());
         assertEquals(4, s.magazineSize());
         assertEquals("ammo_rocket", s.ammoType());
         assertEquals(ReloadMode.INCREMENTAL, s.reloadMode());

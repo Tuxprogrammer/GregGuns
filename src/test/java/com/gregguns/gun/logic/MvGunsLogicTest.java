@@ -70,12 +70,12 @@ class MvGunsLogicTest {
         assertEquals(40, Mac10Def.STATS.reloadTicks());
         assertEquals(45, M4Def.STATS.reloadTicks());
         assertEquals(45, Ak47Def.STATS.reloadTicks());
-        assertEquals(5.0, ThompsonDef.STATS.damage());
-        assertEquals(3.0, ThompsonDef.STATS.damageMin());
-        assertEquals(8.0, M4Def.STATS.damage());
-        assertEquals(6.0, M4Def.STATS.damageMin());
-        assertEquals(9.0, Ak47Def.STATS.damage());
-        assertEquals(5.0, Ak47Def.STATS.damageMin());
+        assertEquals(6.0, ThompsonDef.STATS.damage());
+        assertEquals(3.5, ThompsonDef.STATS.damageMin());
+        assertEquals(9.0, M4Def.STATS.damage());
+        assertEquals(7.0, M4Def.STATS.damageMin());
+        assertEquals(10.0, Ak47Def.STATS.damage());
+        assertEquals(5.5, Ak47Def.STATS.damageMin());
         assertEquals(0.0, ThompsonDef.STATS.penetration());
         assertEquals(0.0, Mac10Def.STATS.penetration());
         assertEquals(0.15, M4Def.STATS.penetration());

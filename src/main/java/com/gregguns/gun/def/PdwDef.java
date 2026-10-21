@@ -35,8 +35,9 @@ public final class PdwDef {
     /** The stats. */
     // Deviation: the AI attack time variance (10 ticks) is dropped, as for the other guns.
     public static final GunStats STATS = GunStats.builder("pdw")
-        .damage(6.0)
-        .damageDrop(16, 25, 3.0)
+        .damage(9.0)
+        .damageDrop(16, 25, 4.5)
+        .npcDamage(6.0, 3.0)
         .spread(0.03)
         .fire(FireMode.AUTO, 2)
         .magazine(20)

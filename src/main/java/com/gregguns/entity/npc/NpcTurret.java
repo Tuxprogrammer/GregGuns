@@ -88,7 +88,8 @@ public class NpcTurret extends EntityCreature implements HasNpcFaction, TurretAt
             target = null;
             return;
         }
-        GunStats stats = gun.stats();
+        GunStats stats = gun.stats()
+            .forNpc();
         double range = stats.aiRange();
         if (attackCooldown > 0) {
             attackCooldown--;

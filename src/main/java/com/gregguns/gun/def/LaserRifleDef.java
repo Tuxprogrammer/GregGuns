@@ -43,7 +43,8 @@ public final class LaserRifleDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("laser_rifle")
-        .damage(12.0)
+        .damage(18.0)
+        .npcDamage(12.0)
         .spread(0.0)
         .zoom(0.75, 0.75)
         .fire(FireMode.AUTO, 5)

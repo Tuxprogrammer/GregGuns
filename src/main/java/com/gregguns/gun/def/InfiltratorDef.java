@@ -33,8 +33,9 @@ public final class InfiltratorDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("infiltrator")
-        .damage(8.0)
-        .damageDrop(25, 35, 6.0)
+        .damage(11.0)
+        .damageDrop(25, 35, 8.5)
+        .npcDamage(8.0, 6.0)
         .spread(0.01)
         .zoom(0.5, 0.5)
         .fire(FireMode.AUTO, 3)

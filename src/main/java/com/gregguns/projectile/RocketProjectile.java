@@ -15,6 +15,7 @@ import com.gregguns.explosion.BlastFxSelector;
 import com.gregguns.explosion.ExplosionRules;
 import com.gregguns.explosion.ProjectileExplosion;
 import com.gregguns.fx.FxSender;
+import com.gregguns.gun.def.NukeLauncherDef;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.gun.logic.ShotOffset;
 import com.gregguns.gun.sound.GunSoundEvents;
@@ -104,6 +105,12 @@ public class RocketProjectile extends GenericProjectile {
         if (worldObj.isRemote) {
             return;
         }
+        if (NukeLauncherDef.NAME.equals(weaponName)) {
+            // The nuke annihilates: the target takes the kill-zone rule from the blast, not a separate direct hit.
+            setPosition(hitX, hitY, hitZ);
+            explode(null);
+            return;
+        }
         double beforeX = target.motionX;
         double beforeY = target.motionY;
         double beforeZ = target.motionZ;
@@ -154,7 +161,9 @@ public class RocketProjectile extends GenericProjectile {
             blastRadius,
             damage,
             (float) LauncherMath.innerRadius(blastRadius),
-            (float) LauncherMath.outerRadius(blastRadius)).excluding(directTarget)
+            (float) LauncherMath.outerRadius(blastRadius))
+                .annihilating(NukeLauncherDef.NAME.equals(weaponName) ? blastRadius : 0.0F)
+                .excluding(directTarget)
                 .explode(ExplosionsConfig.blockDamage);
         if (result.happened() && blastRadius >= ExplosionRules.NUKE_FX_MIN_SIZE) {
             // A nuke-size blast also has its own sound, loud enough to carry (volume 8 is audible about 128 blocks

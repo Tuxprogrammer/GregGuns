@@ -34,8 +34,9 @@ public final class LmgDef {
     /** The stats. */
     // Deviation: the AI attack time variance (13 ticks) is dropped, as for the other guns.
     public static final GunStats STATS = GunStats.builder("lmg")
-        .damage(8.0)
-        .damageDrop(30, 40, 6.0)
+        .damage(10.0)
+        .damageDrop(30, 40, 7.5)
+        .npcDamage(8.0, 6.0)
         .spread(0.02)
         .zoom(0.75, 0.75)
         .fire(FireMode.AUTO, 2)

@@ -28,8 +28,8 @@ class EvEnergyGunsTest {
     @Test
     void laserRifleMatchesItsSheet() {
         GunStats s = LaserRifleDef.STATS;
-        assertEquals(12.0, s.damage());
-        assertEquals(12.0, s.damageMin(), "flat: no drop-off");
+        assertEquals(18.0, s.damage());
+        assertEquals(18.0, s.damageMin(), "flat: no drop-off");
         assertEquals(FireMode.AUTO, s.fireMode());
         assertEquals(5, s.fireRateTicks(), "4 shots per second");
         assertEquals(0.75, s.zoomFactor());
@@ -43,8 +43,8 @@ class EvEnergyGunsTest {
     @Test
     void teslaRifleMatchesItsSheet() {
         GunStats s = TeslaRifleDef.STATS;
-        assertEquals(12.0, s.damage());
-        assertEquals(12.0, s.damageMin(), "flat: no drop-off");
+        assertEquals(20.0, s.damage());
+        assertEquals(20.0, s.damageMin(), "flat: no drop-off");
         assertEquals(FireMode.AUTO, s.fireMode());
         assertEquals(8, s.fireRateTicks(), "2.5 shots per second");
         assertEquals(0.75, s.zoomFactor());
@@ -69,8 +69,8 @@ class EvEnergyGunsTest {
     @Test
     void sonicRifleMatchesItsSheet() {
         GunStats s = SonicRifleDef.STATS;
-        assertEquals(25.0, s.damage());
-        assertEquals(5.0, s.damageMin());
+        assertEquals(44.0, s.damage());
+        assertEquals(9.0, s.damageMin());
         assertEquals(5.0, s.dropStart());
         assertEquals(15.0, s.dropEnd());
         assertEquals(FireMode.SEMI, s.fireMode());

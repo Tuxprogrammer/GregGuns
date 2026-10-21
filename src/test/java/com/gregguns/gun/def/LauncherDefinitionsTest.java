@@ -20,7 +20,7 @@ class LauncherDefinitionsTest {
     @Test
     void rocketLauncherCarriesTheSheetNumbers() {
         GunStats s = RocketLauncherDef.STATS;
-        assertEquals(50.0, s.damage());
+        assertEquals(60.0, s.damage());
         assertEquals(1.75, s.blastRadius());
         assertEquals(0.01, s.projectileGravity());
         assertEquals(1.0, s.projectileSpeed());
@@ -38,7 +38,7 @@ class LauncherDefinitionsTest {
     @Test
     void grenadeLauncherCarriesTheSheetNumbers() {
         GunStats s = GrenadeLauncherDef.STATS;
-        assertEquals(30.0, s.damage());
+        assertEquals(36.0, s.damage());
         assertEquals(1.5, s.blastRadius());
         assertEquals(0.01, s.projectileGravity());
         assertEquals(1.0, s.projectileSpeed());

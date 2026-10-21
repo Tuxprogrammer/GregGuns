@@ -34,8 +34,9 @@ public final class VectorDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("vector")
-        .damage(6.0)
-        .damageDrop(17, 25, 4.0)
+        .damage(8.0)
+        .damageDrop(17, 25, 5.5)
+        .npcDamage(6.0, 4.0)
         .spread(0.05)
         .zoom(0.75, 0.35)
         .fire(FireMode.AUTO, 2)

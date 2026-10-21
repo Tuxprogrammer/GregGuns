@@ -32,8 +32,9 @@ public final class AkimboDeatomizerPistolsDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder(NAME)
-        .damage(16.0)
-        .damageDrop(20, 30, 8.0)
+        .damage(32.0)
+        .damageDrop(20, 30, 16.0)
+        .npcDamage(16.0, 8.0)
         .spread(0.04)
         .fire(FireMode.SEMI, 5)
         .energy(DeatomizerPistolDef.EU_PER_SHOT, 2 * DeatomizerPistolDef.CAPACITY_EU)

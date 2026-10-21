@@ -38,8 +38,9 @@ public final class M4Def {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("m4")
-        .damage(8.0)
-        .damageDrop(25, 35, 6.0)
+        .damage(9.0)
+        .damageDrop(25, 35, 7.0)
+        .npcDamage(8.0, 6.0)
         .spread(0.015)
         .zoom(0.75, 0.75)
         .fire(FireMode.AUTO, 3)

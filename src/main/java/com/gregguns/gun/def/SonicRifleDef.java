@@ -45,8 +45,9 @@ public final class SonicRifleDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("sonic_rifle")
-        .damage(25.0)
-        .damageDrop(5, 15, 5.0)
+        .damage(44.0)
+        .damageDrop(5, 15, 9.0)
+        .npcDamage(25.0, 5.0)
         .spread(0.0)
         .fire(FireMode.SEMI, 12)
         .energy(EU_PER_SHOT, CAPACITY_EU)

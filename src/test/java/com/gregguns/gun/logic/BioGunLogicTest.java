@@ -41,8 +41,8 @@ class BioGunLogicTest {
 
     @Test
     void theSheetsFiguresAreKept() {
-        assertEquals(10.0, STATS.damage());
-        assertEquals(8.0, STATS.damageMin());
+        assertEquals(16.0, STATS.damage());
+        assertEquals(13.0, STATS.damageMin());
         assertEquals(8, STATS.dropStart());
         assertEquals(15, STATS.dropEnd());
         assertEquals(35, STATS.lifetimeTicks());

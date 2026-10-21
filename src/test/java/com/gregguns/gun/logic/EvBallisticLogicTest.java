@@ -48,8 +48,8 @@ class EvBallisticLogicTest {
     @Test
     void theSheetsFiguresAreKept() {
         GunStats pdw = PdwDef.STATS;
-        assertEquals(6.0, pdw.damage());
-        assertEquals(3.0, pdw.damageMin());
+        assertEquals(9.0, pdw.damage());
+        assertEquals(4.5, pdw.damageMin());
         assertEquals(16, pdw.dropStart());
         assertEquals(25, pdw.dropEnd());
         assertEquals(25, pdw.lifetimeTicks());
@@ -61,8 +61,8 @@ class EvBallisticLogicTest {
         assertFalse(pdw.hasScope());
 
         GunStats pulse = PulseRifleDef.STATS;
-        assertEquals(10.0, pulse.damage());
-        assertEquals(8.0, pulse.damageMin());
+        assertEquals(15.0, pulse.damage());
+        assertEquals(12.0, pulse.damageMin());
         assertEquals(25, pulse.dropStart());
         assertEquals(35, pulse.dropEnd());
         assertEquals(50, pulse.lifetimeTicks());
@@ -73,8 +73,8 @@ class EvBallisticLogicTest {
         assertEquals(8, pulse.recoilTicks());
 
         GunStats minigun = MinigunDef.STATS;
-        assertEquals(5.0, minigun.damage());
-        assertEquals(3.0, minigun.damageMin());
+        assertEquals(7.0, minigun.damage());
+        assertEquals(4.0, minigun.damageMin());
         assertEquals(20, minigun.dropStart());
         assertEquals(40, minigun.dropEnd());
         assertEquals(0.025, minigun.spread());

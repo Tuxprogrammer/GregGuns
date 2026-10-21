@@ -37,7 +37,8 @@ public final class GrenadeLauncherDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("grenade_launcher")
-        .damage(30.0)
+        .damage(36.0)
+        .npcDamage(30.0)
         .spread(0.05)
         .fire(FireMode.SEMI, 5)
         .magazine(6)

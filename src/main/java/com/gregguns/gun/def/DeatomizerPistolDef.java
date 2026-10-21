@@ -45,8 +45,9 @@ public final class DeatomizerPistolDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder(NAME)
-        .damage(16.0)
-        .damageDrop(20, 30, 8.0)
+        .damage(32.0)
+        .damageDrop(20, 30, 16.0)
+        .npcDamage(16.0, 8.0)
         .spread(0.035)
         .fire(FireMode.SEMI, 8)
         .energy(EU_PER_SHOT, CAPACITY_EU)

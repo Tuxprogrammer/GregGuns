@@ -34,7 +34,8 @@ public final class RocketLauncherDef {
 
     /** The stats. */
     public static final GunStats STATS = GunStats.builder("rocket_launcher")
-        .damage(50.0)
+        .damage(60.0)
+        .npcDamage(50.0)
         .spread(0.05)
         .fire(FireMode.AUTO, 10)
         .magazine(1)

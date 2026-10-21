@@ -35,8 +35,9 @@ public final class PulseRifleDef {
     /** The stats. */
     // Deviation: the AI attack time variance (10 ticks) is dropped, as for the other guns.
     public static final GunStats STATS = GunStats.builder("pulse_rifle")
-        .damage(10.0)
-        .damageDrop(25, 35, 8.0)
+        .damage(15.0)
+        .damageDrop(25, 35, 12.0)
+        .npcDamage(10.0, 8.0)
         .spread(0.024)
         .zoom(0.35, 0.5)
         .fire(FireMode.AUTO, 7)
