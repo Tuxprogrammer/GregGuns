@@ -29,6 +29,8 @@ public final class GunAnimState {
     private RotorSpin spin;
     private int spinTag = -1;
     private boolean shotSinceSpinTick;
+    /** Trigger-held input for the rotor, set only for the local shooter; null means the rotor follows shots. */
+    private Boolean triggerInput;
     private int ticksSinceSpinShot;
 
     /**
@@ -89,6 +91,26 @@ public final class GunAnimState {
     }
 
     /**
+     * Drives the rotor from the trigger instead of from shots, so the barrels spin up before the first shot leaves
+     * and coast down after the last (the local shooter, whose client mirror runs the same spin gate as the server).
+     * Remote shooters have no trigger signal and keep following shots.
+     *
+     * @param spec   the gun's rotor numbers
+     * @param gunTag the registry id of the held gun
+     * @param drive  true while the trigger is held and the gun is not reloading
+     */
+    public void spinTrigger(RotorSpin.Spec spec, int gunTag, boolean drive) {
+        if (spin == null || spinTag != gunTag) {
+            if (!drive) {
+                return;
+            }
+            spin = spec.create();
+            spinTag = gunTag;
+        }
+        triggerInput = drive;
+    }
+
+    /**
      * Advances the rotor one client tick. The rotor is driven while a shot arrived within the last
      * {@link #SPIN_DRIVE_TICKS} ticks (a shot per tick, with one tick of slack for a late packet).
      *
@@ -100,6 +122,11 @@ public final class GunAnimState {
         }
         if (!holdsSpinGun) {
             spinReset();
+            return;
+        }
+        if (triggerInput != null) {
+            shotSinceSpinTick = false;
+            spin.tick(triggerInput);
             return;
         }
         if (shotSinceSpinTick) {
@@ -118,6 +145,7 @@ public final class GunAnimState {
         }
         shotSinceSpinTick = false;
         ticksSinceSpinShot = SPIN_DRIVE_TICKS;
+        triggerInput = null;
     }
 
     /** @return the gun tag whose rotor this record spins, or -1 */

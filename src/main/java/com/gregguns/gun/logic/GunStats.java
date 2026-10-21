@@ -51,6 +51,8 @@ public final class GunStats {
     private final double projectileGravity;
     private final int recoilTicks;
     private final int muzzleFlashTicks;
+    private final int spinUpTicks;
+    private final int spinDownTicks;
     private final double aiRange;
     private final int aiAttackTime;
     private final int aiBurstCount;
@@ -98,6 +100,8 @@ public final class GunStats {
         projectileGravity = b.projectileGravity;
         recoilTicks = b.recoilTicks;
         muzzleFlashTicks = b.muzzleFlashTicks;
+        spinUpTicks = b.spinUpTicks;
+        spinDownTicks = b.spinDownTicks;
         aiRange = b.aiRange;
         aiAttackTime = b.aiAttackTime;
         aiBurstCount = b.aiBurstCount;
@@ -119,6 +123,7 @@ public final class GunStats {
         require(zoomFactor > 0 && zoomFactor <= 1, "zoomFactor must be in (0, 1]");
         require(zoomSpreadMultiplier >= 0, "zoomSpreadMultiplier");
         require(fireRateTicks >= 1, "fireRateTicks");
+        require((spinUpTicks == 0) == (spinDownTicks == 0) && spinUpTicks >= 0 && spinDownTicks >= 0, "spinUp");
         require(fireMode != FireMode.BURST || burstShots >= 2, "BURST needs burstShots >= 2");
         require(burstDelayTicks >= 1, "burstDelayTicks");
         require(ammoPerShot >= 1, "ammoPerShot");
@@ -397,6 +402,21 @@ public final class GunStats {
         return recoilTicks;
     }
 
+    /** @return ticks from rest to full spin with the trigger held, 0 when the gun has no spin-up */
+    public int spinUpTicks() {
+        return spinUpTicks;
+    }
+
+    /** @return ticks from full spin to rest, 0 when the gun has no spin-up */
+    public int spinDownTicks() {
+        return spinDownTicks;
+    }
+
+    /** @return true for a rotary gun that fires only at full spin (see {@link SpinGate}) */
+    public boolean hasSpinUp() {
+        return spinUpTicks > 0;
+    }
+
     /** Client muzzle flash length in ticks. */
     public int muzzleFlashTicks() {
         return muzzleFlashTicks;
@@ -462,6 +482,8 @@ public final class GunStats {
         private double projectileGravity;
         private int recoilTicks = 5;
         private int muzzleFlashTicks = 5;
+        private int spinUpTicks;
+        private int spinDownTicks;
         private double aiRange = 15;
         private int aiAttackTime = 60;
         private int aiBurstCount;
@@ -645,6 +667,16 @@ public final class GunStats {
         public Builder blast(double radius, double gravity) {
             blastRadius = radius;
             projectileGravity = gravity;
+            return this;
+        }
+
+        /**
+         * Gives the gun a rotary spin-up: it fires only at full spin, which takes {@code upTicks} with the trigger
+         * held from rest and falls back over {@code downTicks} once released (see {@link SpinGate}).
+         */
+        public Builder spinUp(int upTicks, int downTicks) {
+            this.spinUpTicks = upTicks;
+            this.spinDownTicks = downTicks;
             return this;
         }
 

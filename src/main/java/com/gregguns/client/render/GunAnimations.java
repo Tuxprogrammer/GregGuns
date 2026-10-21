@@ -177,6 +177,19 @@ public final class GunAnimations {
         return s == null ? 0.0 : s.rotorTurns(gunTag, partial);
     }
 
+    /**
+     * The local shooter's trigger state, for a gun with a rotor: the rotor follows the trigger, not the shots.
+     *
+     * @param shooter the local player
+     * @param drive   true while the trigger is held and the gun is not reloading
+     */
+    public void localSpin(EntityLivingBase shooter, boolean drive) {
+        GunTransforms t = heldTransforms(shooter);
+        if (t != null && t.rotorSpin() != null) {
+            stateFor(shooter).spinTrigger(t.rotorSpin(), heldTag(shooter), drive);
+        }
+    }
+
     /** Advances every spinning rotor one tick; a holder who put the gun away (or left) loses the spin at once. */
     private void tickSpins() {
         World world = Minecraft.getMinecraft().theWorld;

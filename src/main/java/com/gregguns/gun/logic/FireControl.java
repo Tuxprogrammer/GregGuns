@@ -81,6 +81,21 @@ public final class FireControl {
         dryReported = false;
     }
 
+    /** @return how many ticks early a packet-driven shot may arrive */
+    public int latencyGraceTicks() {
+        return latencyGraceTicks;
+    }
+
+    /** @return true while the fire button is down */
+    public boolean isTriggerHeld() {
+        return triggerHeld;
+    }
+
+    /** Forgets a buffered press: a gun that is not yet at full spin must not fire it after the button is released. */
+    public void discardBufferedPress() {
+        pendingPress = 0;
+    }
+
     /** Advances the cooldown by one tick. Call once per tick, before {@link #step}. */
     public void tick() {
         if (cooldown > 0) {

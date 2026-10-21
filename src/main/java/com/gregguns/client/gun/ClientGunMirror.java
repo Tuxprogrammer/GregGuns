@@ -4,6 +4,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import com.gregguns.client.GunsClientModule;
 import com.gregguns.gun.GunClientHooks;
 import com.gregguns.gun.GunClientSync;
 import com.gregguns.gun.logic.AmmoInventory;
@@ -126,6 +127,15 @@ public final class ClientGunMirror implements GunClientSync {
         GunTickResult result = controller
             .tick(stats, state, ammoView(player, stats, held), true, player.capabilities.isCreativeMode);
         quietTicks = state.loaded() != before || isReloading() ? 0 : quietTicks + 1;
+        if (stats.hasSpinUp()) {
+            // The rotor follows the trigger (the same input the spin gate uses), so it is at speed as the first shot
+            // leaves.
+            GunsClientModule.animations()
+                .localSpin(
+                    player,
+                    controller.fire()
+                        .isTriggerHeld() && !isReloading());
+        }
         if (result.shot()
             .wasFired()) {
             GunClientHooks.events()

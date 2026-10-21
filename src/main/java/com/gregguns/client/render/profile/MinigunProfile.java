@@ -54,10 +54,10 @@ public final class MinigunProfile {
     public static final int RECOIL_TICKS = 5;
     /** Full rotor speed: one turn per recoil window, in turns per tick. */
     public static final double FULL_TURNS_PER_TICK = 1.0 / RECOIL_TICKS;
-    /** Ticks from rest to full speed (the notes' suggestion: about 10). */
-    public static final int SPIN_UP_TICKS = 10;
-    /** Ticks to coast from full speed to rest (the notes' suggestion: about 20; the real coast is within 3 ticks). */
-    public static final int SPIN_DOWN_TICKS = 20;
+    /** Ticks from rest to full speed (the fire delay: MinigunDef). */
+    public static final int SPIN_UP_TICKS = com.gregguns.gun.def.MinigunDef.SPIN_UP_TICKS;
+    /** Ticks to coast from full speed to rest (matches the fire gate; the real coast is within 3 ticks). */
+    public static final int SPIN_DOWN_TICKS = com.gregguns.gun.def.MinigunDef.SPIN_DOWN_TICKS;
     /** The rotor looks the same after this many turns: the clamp discs repeat every 180 degrees. */
     public static final double SYMMETRY_TURNS = 0.5;
     /** The rotor's ramp numbers, for {@code GunAnimState}. */

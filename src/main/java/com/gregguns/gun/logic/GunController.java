@@ -38,6 +38,7 @@ public final class GunController {
     private final FireControl fire;
     private final ReloadStateMachine reload = new ReloadStateMachine();
     private final ZoomState zoom = new ZoomState();
+    private SpinGate spinGate;
 
     /** Creates a controller with default buffer and grace windows. */
     public GunController() {
@@ -62,6 +63,20 @@ public final class GunController {
     /** The zoom state. */
     public ZoomState zoom() {
         return zoom;
+    }
+
+    /** @return the spin gate of the last spinning gun ticked (null until one is), for read access to the spin */
+    public SpinGate spinGate() {
+        return spinGate;
+    }
+
+    /**
+     * The spin of a gun with a spin-up, for the animation; 0 for any other gun.
+     *
+     * @param stats the held gun
+     */
+    public double spin(GunStats stats) {
+        return stats.hasSpinUp() && spinGate != null ? spinGate.spin() : 0.0;
     }
 
     /** Validated "trigger down" input. */
@@ -103,6 +118,10 @@ public final class GunController {
      * firing interrupts a top-up; otherwise the shot is refused while reloading.
      */
     public GunTickResult requestShot(GunStats stats, GunState state, AmmoInventory ammo, boolean infiniteAmmo) {
+        if (stats.hasSpinUp() && !gateFor(stats).isReadyWithGrace(fire.latencyGraceTicks())) {
+            // Spin-up gun: a request before the barrel is (nearly) at speed is refused, with the latency forgiven.
+            return new GunTickResult(ShotResult.cooldown(), ReloadStateMachine.Event.NONE, false);
+        }
         if (stats.isEnergy()) {
             ShotResult shot = fire.requestEnergyShot(stats, ammo.charge(), infiniteAmmo);
             return new GunTickResult(shot, ReloadStateMachine.Event.NONE, shot.outcome() == ShotResult.Outcome.EMPTY);
@@ -141,16 +160,32 @@ public final class GunController {
             ReloadStateMachine.Event ev = reload.cancel(ReloadStateMachine.CancelReason.WEAPON_SWITCH);
             zoom.reset();
             fire.clearInput();
+            resetSpin();
             return new GunTickResult(ShotResult.none(), ev, false);
         }
         ReloadStateMachine.Event ev = ReloadStateMachine.Event.NONE;
+        boolean spinReady = true;
+        if (stats.hasSpinUp()) {
+            // The barrel turns while the trigger is held, even on an empty gun; a reload stops it dead.
+            SpinGate gate = gateFor(stats);
+            if (reload.isReloading()) {
+                gate.reset();
+            } else {
+                gate.tick(fire.isTriggerHeld());
+            }
+            spinReady = gate.isReady();
+        }
         if (reload.isReloading()) {
-            if (fire.wantsShot(stats) && state.canFire(stats)) {
+            if (spinReady && fire.wantsShot(stats) && state.canFire(stats)) {
                 ev = reload.cancel(ReloadStateMachine.CancelReason.FIRE);
             } else {
                 ev = reload.tick(stats, state, ammo);
                 return new GunTickResult(ShotResult.none(), ev, false);
             }
+        }
+        if (!spinReady) {
+            fire.discardBufferedPress();
+            return new GunTickResult(ShotResult.none(), ev, false);
         }
         ShotResult shot = fire.step(stats, state, infiniteAmmo);
         boolean dry = false;
@@ -180,12 +215,28 @@ public final class GunController {
         reload.cancel(ReloadStateMachine.CancelReason.OTHER);
         zoom.reset();
         fire.clearInput();
+        resetSpin();
+    }
+
+    private SpinGate gateFor(GunStats stats) {
+        if (spinGate == null || spinGate.upTicks() != stats.spinUpTicks()
+            || spinGate.downTicks() != stats.spinDownTicks()) {
+            spinGate = new SpinGate(stats.spinUpTicks(), stats.spinDownTicks());
+        }
+        return spinGate;
+    }
+
+    private void resetSpin() {
+        if (spinGate != null) {
+            spinGate.reset();
+        }
     }
 
     private ReloadStateMachine.Event startReload(GunStats stats, GunState state, AmmoInventory ammo) {
         ReloadStateMachine.Event ev = reload.start(stats, state, ammo);
         if (ev == ReloadStateMachine.Event.STARTED) {
             zoom.reset();
+            resetSpin();
         }
         return ev;
     }
