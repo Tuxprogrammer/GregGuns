@@ -51,7 +51,7 @@ public final class BlasterRifleProfile {
     public static final float MODEL_SCALE = 1.0f / 16.0f;
     /** The muzzle in the gun frame, blocks: x forward, y down, z: the muzzle plate's front (texel 27) on the axis. */
     public static final float[] MUZZLE = { 27.0f / 16.0f, 0.0f, 0.0f };
-    /** Frames of {@code muzzleflash2.png} that are painted: 0 to 6. Cell 7 is empty. */
+    /** Frames of {@code laserflare02.png} that are painted (checked by MuzzleSheetsTest). */
     public static final int MUZZLE_FLASH_FRAMES = 7;
 
     private static final float[] NO_PIVOT = { 0, 0, 0 };
@@ -169,12 +169,11 @@ public final class BlasterRifleProfile {
             .scale(0.6)
             .translate(-0.125, -0.155, 0)
             .build();
-        // Deviation: the first-person flash is a fixed-frame screen effect, so its offset follows the gun's solved
-        // placement (InHandFit.Placement.flashOffset). Headless work cannot look at the screen, so this is unverified
-        // in game. muzzleFlash2 sheet, additive because the GregGuns sheet is black-backed (docs/assets/MANIFEST.md).
+        // Laser-style flash: laserflare02, additive (black-backed sheet), scale 1.5. The offset follows the solved
+        // placement (InHandFit.Placement.flashOffset).
         double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
-            "gregguns:textures/fx/muzzleflash2.png",
+            "gregguns:textures/fx/laserflare02.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
             fo[0],
             fo[1],

@@ -24,15 +24,16 @@ class MuzzleSheetsTest {
         }
     }
 
-    /** Number of leading 64x64 cells (4 per row) that hold any visible pixel. */
+    /** Number of leading cells (a quarter of the width each) (4 per row) that hold any visible pixel. */
     private static int paintedCells(BufferedImage img) {
         int count = 0;
+        int size = img.getWidth() / 4;
         for (int cell = 0; cell < 16; cell++) {
-            int cx = cell % 4 * 64;
-            int cy = cell / 4 * 64;
+            int cx = cell % 4 * size;
+            int cy = cell / 4 * size;
             boolean any = false;
-            for (int y = cy; y < cy + 64 && !any; y++) {
-                for (int x = cx; x < cx + 64 && !any; x++) {
+            for (int y = cy; y < cy + size && !any; y++) {
+                for (int x = cx; x < cx + size && !any; x++) {
                     int argb = img.getRGB(x, y);
                     int max = Math.max((argb >> 16) & 0xFF, Math.max((argb >> 8) & 0xFF, argb & 0xFF));
                     any = (argb >>> 24) * max / 255 > 16;
@@ -99,5 +100,13 @@ class MuzzleSheetsTest {
             BoltActionRifleProfile.TRANSFORMS.muzzleFlash()
                 .sheet()
                 .frames());
+    }
+
+    @Test
+    void laserRiflesPlayEveryPaintedFrameOfLaserflare02() throws IOException {
+        int painted = paintedCells(load("/assets/gregguns/textures/fx/laserflare02.png"));
+        assertEquals(painted, ScatterLaserRifleProfile.MUZZLE_FLASH_FRAMES);
+        assertEquals(painted, LaserRifleProfile.MUZZLE_FLASH_FRAMES);
+        assertEquals(painted, BlasterRifleProfile.MUZZLE_FLASH_FRAMES);
     }
 }

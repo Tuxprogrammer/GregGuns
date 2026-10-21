@@ -56,7 +56,7 @@ public final class ScatterLaserRifleProfile {
     public static final float MODEL_SCALE = 1.0f / 16.0f;
     /** The muzzle in the gun frame, blocks: x forward, y down, z: the hood tip (texel 63) on the front box axis (3). */
     public static final float[] MUZZLE = { 63.0f / 16.0f, 3.0f / 16.0f, 0.0f };
-    /** Frames of {@code muzzleflash2.png} that are painted: 0 to 6. Cell 7 is empty. */
+    /** Frames of {@code laserflare02.png} that are painted (checked by MuzzleSheetsTest). */
     public static final int MUZZLE_FLASH_FRAMES = 7;
 
     private static final float[] NO_PIVOT = { 0, 0, 0 };
@@ -238,17 +238,16 @@ public final class ScatterLaserRifleProfile {
             .scale(0.45)
             .translate(-1.97, -0.39, 0)
             .build();
-        // Deviation: the notes ask for a laser-style flash; the shared muzzleFlash2 sheet is used, additive (the
-        // sheet is black-backed). The offset follows the solved placement (InHandFit.Placement.flashOffset). Unverified
-        // in game.
-        double[] fo = FIT.flashOffset(MUZZLE, 1.85);
+        // Laser-style flash: laserflare02, additive, scale 1.5 (model-notes/scatter_laser_rifle.md). The offset follows
+        // the solved placement (InHandFit.Placement.flashOffset).
+        double[] fo = FIT.flashOffset(MUZZLE, 1.5);
         MuzzleFlashSpec flash = new MuzzleFlashSpec(
-            "gregguns:textures/fx/muzzleflash2.png",
+            "gregguns:textures/fx/laserflare02.png",
             new SpriteSheet(4, 4, MUZZLE_FLASH_FRAMES),
             fo[0],
             fo[1],
             fo[2],
-            1.85,
+            1.5,
             new double[] { 0, 0, 0 },
             true,
             0.7);
