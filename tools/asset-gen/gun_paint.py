@@ -26,7 +26,7 @@ grain), flat. Painters (each takes "faces": [...] and its own keys): rect, bore,
 checker, slots (cross-slot columns), stripes (a color cycle), diag (45 degree two-color hazard stripes). A wood role may set "calm" (0..1, streak contrast scale); a role may set "bevel": [hi, lo] edge shading.
 A painter "color" written "@name" is looked up in the role's "colors" map, so a variant can recolor painted details.
 A steel role may set "scratches": false and "noise": 0.04 for a satin finish. A box may be tilted about Z ("tilt") or
-about its long axis X ("tiltX", for a diamond bar) or about the vertical axis Y ("tiltY"), all about "pivot"; a size with a 0 is a zero-thickness plane.
+about its long axis X ("tiltX", for a diamond bar) or about the vertical axis Y ("tiltY"), all about "pivot"; an optional "inflate" (texels, default 0, usually -0.01..-0.03) shrinks a box a hair to end z-fighting with a coplanar neighbor; a size with a 0 is a zero-thickness plane.
 A variant (camo or recolor) overrides role colors: {"roles": {role: {"base": ..}}} or "camo" with a palette.
 A texture entry may set "noiseFile" (another sheet's file name) to share that sheet's grain, so two skins differ only where the role map says.
 A variant may also give "boxes": {name: {"role", "painters"}} to replace one box's spec for that sheet.
@@ -142,7 +142,13 @@ def java_rows(layout):
         tilt_y = b.get("tiltY", 0)
         turned = tilt or tilt_x or tilt_y
         piv = "new float[] { %s, %s, %s }" % tuple(fnum(t) for t in b["pivot"]) if turned else "NO_PIVOT"
-        extra = ", " + fnum(tilt_x) + ", " + fnum(tilt_y) if tilt_y else (", " + fnum(tilt_x) if tilt_x else "")
+        infl = b.get("inflate", 0)
+        if infl:
+            extra = ", " + fnum(tilt_x) + ", " + fnum(tilt_y) + ", " + fnum(infl)
+        elif tilt_y:
+            extra = ", " + fnum(tilt_x) + ", " + fnum(tilt_y)
+        else:
+            extra = ", " + fnum(tilt_x) if tilt_x else ""
         rows.append("        new BoxSpec(\"%s\", %d, %d, %d, %d, %d, %d, %s, %s, %s, %s, %s%s)," % (
             b["name"], b.get("part", 0), b["uv"][0], b["uv"][1], w, h, d, fnum(x), fnum(y), fnum(z), piv, fnum(tilt),
             extra))

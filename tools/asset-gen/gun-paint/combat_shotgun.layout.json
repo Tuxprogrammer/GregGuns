@@ -14,7 +14,7 @@
   {"name": "recv_rear", "size": [8, 4, 3], "pos": [13, 2, -1.5], "uv": [88, 0]},
   {"name": "plate_rear", "size": [7, 1, 2], "pos": [14, 1, -1], "uv": [24, 9]},
   {"name": "rear_sight", "size": [2, 1, 1], "pos": [15.5, 0, -0.5], "uv": [120, 6]},
-  {"name": "grip", "size": [3, 7, 2], "pos": [14, 5, -1], "pivot": [14, 5, 0], "tilt": 19, "uv": [32, 0]},
+  {"name": "grip", "size": [3, 7, 2], "pos": [14, 5, -1], "pivot": [14, 5, 0], "tilt": 19, "uv": [32, 0], "inflate": -0.01},
   {"name": "trigger", "size": [2, 1, 1], "pos": [16, 6, -0.5], "uv": [120, 8]},
   {"name": "recv_main", "size": [10, 5, 3], "pos": [21, 1.5, -1.5], "uv": [42, 0]},
   {"name": "plate_main", "size": [10, 1, 2], "pos": [21, 0.5, -1], "uv": [0, 9]},

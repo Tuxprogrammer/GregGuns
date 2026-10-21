@@ -56,8 +56,8 @@ public final class RocketLauncherProfile {
     public static final BoxSpec[] BOXES = {
         // BEGIN GENERATED BOXES (tools/asset-gen/gun_paint.py pack; edit the layout, not this)
         new BoxSpec("tube_core", 0, 0, 12, 36, 5, 5, 3f, -2.5f, -2.5f, NO_PIVOT, 0f),
-        new BoxSpec("tube_vert", 0, 0, 31, 36, 6, 3, 3f, -3f, -1.5f, NO_PIVOT, 0f),
-        new BoxSpec("tube_wide", 0, 0, 22, 36, 3, 6, 3f, -1.5f, -3f, NO_PIVOT, 0f),
+        new BoxSpec("tube_vert", 0, 0, 31, 36, 6, 3, 3f, -3f, -1.5f, NO_PIVOT, 0f, 0f, 0f, -0.01f),
+        new BoxSpec("tube_wide", 0, 0, 22, 36, 3, 6, 3f, -1.5f, -3f, NO_PIVOT, 0f, 0f, 0f, -0.02f),
         new BoxSpec("cap_core", 0, 46, 0, 3, 6, 6, 0f, -3f, -3f, NO_PIVOT, 0f),
         new BoxSpec("cap_top", 0, 98, 6, 3, 1, 4, 0f, -4f, -2f, NO_PIVOT, 0f),
         new BoxSpec("cap_bottom", 0, 84, 6, 3, 1, 4, 0f, 3f, -2f, NO_PIVOT, 0f),
@@ -68,7 +68,7 @@ public final class RocketLauncherProfile {
         new BoxSpec("ring_bottom", 0, 82, 11, 6, 1, 3, 39f, 3f, -1.5f, NO_PIVOT, 0f),
         new BoxSpec("ring_left", 0, 82, 15, 6, 3, 1, 39f, -1.5f, -4f, NO_PIVOT, 0f),
         new BoxSpec("ring_right", 0, 96, 15, 6, 3, 1, 39f, -1.5f, 3f, NO_PIVOT, 0f),
-        new BoxSpec("collar", 0, 24, 0, 6, 7, 5, 25f, -3.5f, -2.5f, NO_PIVOT, 0f),
+        new BoxSpec("collar", 0, 24, 0, 6, 7, 5, 25f, -3.5f, -2.5f, NO_PIVOT, 0f, 0f, 0f, -0.01f),
         new BoxSpec("plate_left", 0, 84, 0, 6, 5, 1, 25f, -2.5f, -3.5f, NO_PIVOT, 0f),
         new BoxSpec("plate_right", 0, 98, 0, 6, 5, 1, 25f, -2.5f, 2.5f, NO_PIVOT, 0f),
         new BoxSpec("bridge", 0, 110, 15, 3, 1, 3, 26f, -4f, -1.5f, NO_PIVOT, 0f),

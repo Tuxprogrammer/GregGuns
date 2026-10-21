@@ -67,7 +67,7 @@ public final class RevolverProfile {
         new BoxSpec("drum_mid", 0, 0, 0, 5, 2, 5, 1.5f, 1.5f, -2.5f, NO_PIVOT, 0f),
         new BoxSpec("drum_bottom", 0, 38, 5, 5, 1, 4, 1.5f, 3.5f, -2f, NO_PIVOT, 0f),
         new BoxSpec("barrel", 0, 18, 10, 14, 2, 2, 9f, 0.5f, -1f, new float[] { 9f, 1.5f, 0f }, 0f, 45f),
-        new BoxSpec("rod", 0, 0, 12, 8, 1, 1, 9f, 3f, -0.5f, new float[] { 9f, 3.5f, 0f }, 0f, 45f),
+        new BoxSpec("rod", 0, 0, 12, 8, 1, 1, 9f, 3f, -0.5f, new float[] { 9f, 3.5f, 0f }, 0f, 45f, 0f, -0.01f),
         new BoxSpec("sight", 0, 24, 7, 2, 1, 1, 20.5f, -0.4f, -0.5f, NO_PIVOT, 0f),
         new BoxSpec("hammer", 0, 18, 7, 2, 2, 1, -2.5f, 1.5f, -0.5f, NO_PIVOT, 0f),
         new BoxSpec("hammer_spur", 0, 60, 14, 1, 1, 1, -3.5f, 1.5f, -0.5f, NO_PIVOT, 0f),
