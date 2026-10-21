@@ -295,7 +295,7 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 - [x] The Reaction Chamber and the Retort are removed (design record 0012, branch `fix/retire-reaction-retort`). Their recipes are remapped to GTNH methods per the design record, and their MTE IDs are retired and reserved. The Retort is archived on `archive/retort-multiblock` and `archive/retort-v1`.
 - [x] The NewGunrizons recon note is written, and the owner has picked a direction: merge, or take its place. Owner, 2026-10-20: take its place, with no merge and no contact; Superseded by [0014](design/0014-end-goal-beta-handoff-archive.md): no submission to GTNH; the mod is handed off to an adopter. See the [recon note](research/newgunrizons-recon.md#owner-decisions-2026-10-20).
 - [x] The batched client pass is clean, including with shaders on, and has no crash-severity or invisible-render bugs. Dev client on Xvfb (parts 1–3), BSL on NVIDIA, and a live run in the real GTNH 2.9.0-RC-2 pack with Complementary on AMD (406 passed, 0 failed, 15 skipped).
-- [ ] `0.3.0-beta` is published.
+- [x] `0.3.0-beta` is published (2026-10-21): [GitHub pre-release](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.0-beta).
 - [ ] The owner's beta playthrough on a local server is done, and its blocking bugs are fixed.
 
 ## M9 · Self-contained polish, then handoff
