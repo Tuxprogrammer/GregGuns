@@ -4,6 +4,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 
 import com.gregguns.GregGuns;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.recipe.GregGunsRecipeMaps;
 
 import cpw.mods.fml.relauncher.Side;
@@ -53,6 +55,12 @@ public final class MTEAmmoPressSteam extends MTEBasicMachineBronze {
      */
     public MTEAmmoPressSteam(int id, String name, String nameRegional, String tooltipKey) {
         super(id, name, nameRegional, tooltipKey, INPUT_SLOTS, OUTPUT_SLOTS, false);
+    }
+
+    /** The steam press does nothing while the guns module is off. */
+    @Override
+    public boolean allowToCheckRecipe() {
+        return ModuleState.isActive(ModuleId.GUNS) && super.allowToCheckRecipe();
     }
 
     private MTEAmmoPressSteam(String name, String[] description, ITexture[][][] textures) {

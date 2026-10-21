@@ -75,7 +75,7 @@ public final class AmmoItems {
 
     /**
      * @param name a loose round's registry name, for example {@code "ammo_9mm_bullet"}
-     * @return the registered round; {@code null} before registration, when the guns module is off, or for another name
+     * @return the registered round; {@code null} before registration, or for another name
      */
     public static ItemAmmoRound round(String name) {
         Item item = ITEMS.get(name);
@@ -100,7 +100,7 @@ public final class AmmoItems {
         return item instanceof ItemMagazineEmpty ? (ItemMagazineEmpty) item : null;
     }
 
-    /** @return the 9mm bullet; {@code null} before registration or when the guns module is off */
+    /** @return the 9mm bullet; {@code null} before registration */
     public static ItemAmmoRound nineMmBullet() {
         return round(AmmoTypes.NINE_MM.roundItemName());
     }
@@ -110,12 +110,12 @@ public final class AmmoItems {
         return round(AmmoTypes.SHOTGUN_SHELL.roundItemName());
     }
 
-    /** @return the Hand Cannon's stone bullet; {@code null} before registration or when the guns module is off */
+    /** @return the Hand Cannon's stone bullet; {@code null} before registration */
     public static ItemAmmoRound stoneBullet() {
         return round(AmmoTypes.STONE.roundItemName());
     }
 
-    /** @return the rifle bullet; {@code null} before registration or when the guns module is off */
+    /** @return the rifle bullet; {@code null} before registration */
     public static ItemAmmoRound rifleBullet() {
         return round(AmmoTypes.RIFLE.roundItemName());
     }

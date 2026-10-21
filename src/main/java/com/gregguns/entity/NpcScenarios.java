@@ -1,8 +1,8 @@
 package com.gregguns.entity;
 
-import com.gregguns.core.config.ModuleFlags;
 import com.gregguns.core.config.NpcConfig;
 import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -57,7 +57,7 @@ public final class NpcScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            out.check(ModuleFlags.isEnabled(ModuleId.NPCS), "npcs module flag should be on");
+            out.check(ModuleState.isActive(ModuleId.NPCS), "npcs module flag should be on");
             out.checkEquals("spawn dimension count", 1, NpcConfig.spawnDimensions.length);
             out.checkEquals("spawn dimension", 0, NpcConfig.spawnDimensions[0]);
             out.checkEquals("per-chunk cap", 4, NpcConfig.perChunkCap);

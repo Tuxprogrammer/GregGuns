@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.gregguns.api.Tier;
-import com.gregguns.core.config.ModuleFlags;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -60,7 +60,7 @@ public final class ComponentScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             int checked = 0;
             for (ComponentTable.Spec spec : ComponentTable.SPECS) {
-                if (spec.requiresModule() != null && !ModuleFlags.isEnabled(spec.requiresModule())) {
+                if (spec.requiresModule() != null && !ModuleState.isActive(spec.requiresModule())) {
                     continue;
                 }
                 ProductionTable.Row row = spec.row();

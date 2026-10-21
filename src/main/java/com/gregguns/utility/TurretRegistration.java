@@ -30,9 +30,13 @@ public final class TurretRegistration {
             true);
     }
 
-    /** Machines (inside GT's MTE window) and recipes. */
-    public static void init() {
+    /** Machines (inside GT's MTE window); always built, see {@code GregGunsModule.initContent}. */
+    public static void initContent() {
         TurretMachines.register();
+    }
+
+    /** Recipes. */
+    public static void init() {
         TurretMachines.registerRecipes();
     }
 

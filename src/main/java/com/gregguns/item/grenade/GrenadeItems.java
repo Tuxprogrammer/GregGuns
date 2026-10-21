@@ -88,17 +88,17 @@ public final class GrenadeItems {
             GrenadeProjectile.SENDS_VELOCITY);
     }
 
-    /** @return the Stielgranate; {@code null} before registration or when the guns module is off */
+    /** @return the Stielgranate; {@code null} before registration */
     public static ItemStielgranate stielgranate() {
         return stielgranate;
     }
 
-    /** @return the Frag Grenade; {@code null} before registration or when the guns module is off */
+    /** @return the Frag Grenade; {@code null} before registration */
     public static ItemFragGrenade fragGrenade() {
         return fragGrenade;
     }
 
-    /** @return the Flashbang; {@code null} before registration or when the guns module is off */
+    /** @return the Flashbang; {@code null} before registration */
     public static ItemFlashbang flashbang() {
         return flashbang;
     }

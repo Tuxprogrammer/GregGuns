@@ -73,7 +73,7 @@ public final class GregGunsCasings extends BlockCasingsAbstract implements Tiere
         "gregguns:casings/bastion_plating_carbon" };
     private static final String CRADLE_TOP = "gregguns:casings/repair_cradle_top";
 
-    /** The block, set by {@link #create}; {@code null} while the guns module is off. */
+    /** The block, set by {@link #create}; {@code null} before {@link #create}. */
     public static GregGunsCasings INSTANCE;
 
     private final IIcon[] icons = new IIcon[META_COUNT];

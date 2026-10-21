@@ -1,8 +1,8 @@
 package com.gregguns.worldgen;
 
-import com.gregguns.core.config.ModuleFlags;
 import com.gregguns.core.config.WorldgenConfig;
 import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -41,7 +41,7 @@ public final class WorldgenScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            out.check(ModuleFlags.isEnabled(ModuleId.WORLDGEN), "worldgen module flag should be on");
+            out.check(ModuleState.isActive(ModuleId.WORLDGEN), "worldgen module flag should be on");
             out.check(WorldgenConfig.spawnStructures, "spawnStructures default true");
             out.check(WorldgenSettings.generatorWanted(), "generator wanted with module and spawnStructures on");
             out.checkEquals("spacing small", 16, WorldgenConfig.spacingSmall);

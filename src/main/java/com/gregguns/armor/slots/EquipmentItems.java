@@ -97,32 +97,32 @@ public final class EquipmentItems {
         }
     }
 
-    /** @return the goggles; null with the armor module off */
+    /** @return the goggles; null before registration */
     public static @Nullable ItemNightVisionGoggles nightVisionGoggles() {
         return goggles;
     }
 
-    /** @return the Ammo Pouch; null with the armor module off */
+    /** @return the Ammo Pouch; null before registration */
     public static @Nullable ItemAmmoPouch ammoPouch() {
         return pouch;
     }
 
-    /** @return the Gas Mask; null with the armor module off */
+    /** @return the Gas Mask; null before registration */
     public static @Nullable ItemGasMask gasMask() {
         return gasMask;
     }
 
-    /** @return the Tactical Mask; null with the armor module off */
+    /** @return the Tactical Mask; null before registration */
     public static @Nullable ItemTacticalMask tacticalMask() {
         return tacticalMask;
     }
 
-    /** @return the Oxygen Mask (a Galacticraft subclass or the fallback); null with the armor module off */
+    /** @return the Oxygen Mask (a Galacticraft subclass or the fallback); null before registration */
     public static @Nullable Item oxygenMask() {
         return oxygenMask;
     }
 
-    /** @return the Oxygen Tanks (a Galacticraft subclass or the fallback); null with the armor module off */
+    /** @return the Oxygen Tanks (a Galacticraft subclass or the fallback); null before registration */
     public static @Nullable Item oxygenTanks() {
         return oxygenTanks;
     }

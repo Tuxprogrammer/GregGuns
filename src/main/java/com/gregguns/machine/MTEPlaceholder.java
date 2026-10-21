@@ -44,7 +44,7 @@ public final class MTEPlaceholder extends MTEHatch {
         super(
             id,
             name,
-            retired ? "GregGuns machine (retired)" : "GregGuns machine (module off)",
+            retired ? "GregGuns machine (retired)" : "GregGuns machine (placeholder)",
             0,
             0,
             new String[] { retired ? RETIRED_LANG_KEY : LANG_KEY });

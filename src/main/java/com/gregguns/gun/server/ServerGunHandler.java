@@ -3,6 +3,7 @@ package com.gregguns.gun.server;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 
+import com.gregguns.core.module.ModuleContent;
 import com.gregguns.gun.GunAccuracy;
 import com.gregguns.gun.logic.AmmoInventory;
 import com.gregguns.gun.logic.ChargeRelease;
@@ -335,7 +336,10 @@ public final class ServerGunHandler {
     }
 
     private static ItemGun gunOf(ItemStack stack) {
-        return stack != null && stack.getItem() instanceof ItemGun ? (ItemGun) stack.getItem() : null;
+        // A gun of a module that is off stays in the inventory but cannot fire (modules.* only switch behavior).
+        return stack != null && stack.getItem() instanceof ItemGun && ModuleContent.isUsable(stack)
+            ? (ItemGun) stack.getItem()
+            : null;
     }
 
     private static boolean isAlive(EntityPlayerMP player) {

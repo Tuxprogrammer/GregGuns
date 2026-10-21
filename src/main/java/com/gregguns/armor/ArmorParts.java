@@ -106,37 +106,37 @@ public final class ArmorParts {
         }
     }
 
-    /** @return Treated Leather; null before registration or with the armor module off */
+    /** @return Treated Leather; null before registration */
     public static ItemPart treatedLeather() {
         return treatedLeather;
     }
 
-    /** @return Steam Armor Plating; null before registration or with the armor module off */
+    /** @return Steam Armor Plating; null before registration */
     public static ItemPart steamArmorPlating() {
         return steamArmorPlating;
     }
 
-    /** @return Heavy Cloth; null before registration or with the armor module off */
+    /** @return Heavy Cloth; null before registration */
     public static ItemPart heavyCloth() {
         return heavyCloth;
     }
 
-    /** @return the Gas Mask Filter; null before registration or with the armor module off */
+    /** @return the Gas Mask Filter; null before registration */
     public static ItemPart gasMaskFilter() {
         return gasMaskFilter;
     }
 
-    /** @return the Glider Backpack; null before registration or with the armor module off */
+    /** @return the Glider Backpack; null before registration */
     public static ItemPart gliderBackpack() {
         return gliderBackpack;
     }
 
-    /** @return the Glider Wing; null before registration or with the armor module off */
+    /** @return the Glider Wing; null before registration */
     public static ItemPart gliderWing() {
         return gliderWing;
     }
 
-    /** @return the Compressed Air Tank; null before registration or with the armor module off */
+    /** @return the Compressed Air Tank; null before registration */
     public static ItemTank tankAir() {
         return tankAir;
     }

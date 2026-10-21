@@ -13,6 +13,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.gregguns.GregGuns;
 import com.gregguns.core.config.UtilityConfig;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.gun.logic.GunNbt;
 import com.gregguns.gun.logic.GunState;
 import com.gregguns.gun.logic.GunStats;
@@ -358,6 +360,9 @@ public final class MTEGunMountHatch extends MTEHatch implements TurretHost {
 
     @Override
     public void onPostTick(IGregTechTileEntity base, long tick) {
+        if (!ModuleState.isActive(ModuleId.UTILITY)) {
+            return; // the module is off: the machine stays registered but inert
+        }
         super.onPostTick(base, tick);
         if (base.isClientSide()) {
             return;

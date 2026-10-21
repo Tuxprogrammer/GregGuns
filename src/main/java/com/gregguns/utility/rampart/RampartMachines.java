@@ -40,11 +40,11 @@ public final class RampartMachines {
     /**
      * Constructs the Rampart and every hatch. Call once, from {@code RampartRegistration.init}.
      *
-     * @return false when the casing block is missing (the guns module is off) and nothing was registered
+     * @return false when the casing block is missing (the guns module did not create it) and nothing was registered
      */
     public static boolean register() {
         if (GregGunsCasings.INSTANCE == null) {
-            GregGuns.LOG.warn("The Rampart needs the guns module's casing block; it is not registered");
+            GregGuns.LOG.warn("The Rampart needs the casing block the guns module creates; it is not registered");
             return false;
         }
         // Source:

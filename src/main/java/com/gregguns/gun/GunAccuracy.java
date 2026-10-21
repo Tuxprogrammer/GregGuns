@@ -4,8 +4,8 @@ import net.minecraft.entity.EntityLivingBase;
 
 import com.gregguns.armor.Armor;
 import com.gregguns.armor.logic.ArmorBonus;
-import com.gregguns.core.config.ModuleFlags;
 import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.gun.logic.ShotContext;
 
 /**
@@ -47,7 +47,7 @@ public final class GunAccuracy {
      * @return the armor accuracy bonus of the shooter's worn armor, 0 when the armor module is off
      */
     public static double armorBonus(EntityLivingBase shooter) {
-        boolean armorEnabled = shooter != null && ModuleFlags.isEnabled(ModuleId.ARMOR);
+        boolean armorEnabled = shooter != null && ModuleState.isActive(ModuleId.ARMOR);
         return effectiveBonus(armorEnabled, armorEnabled ? ArmorRead.accuracy(shooter) : 0.0);
     }
 

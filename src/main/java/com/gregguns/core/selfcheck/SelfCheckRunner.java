@@ -27,7 +27,7 @@ import com.gregguns.api.GregGunsComponent;
 import com.gregguns.api.HiddenFromCreativeTab;
 import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
-import com.gregguns.core.config.ModuleFlags;
+import com.gregguns.core.module.ModuleState;
 import com.gregguns.item.part.PartCatalog;
 import com.gregguns.recipe.ComponentTable;
 
@@ -127,7 +127,7 @@ public final class SelfCheckRunner {
             allowlist.put(NAMESPACE_PREFIX + entry.getKey(), entry.getValue());
         }
         List<String> deferred = new ArrayList<>();
-        for (String output : ComponentTable.outputsDeferredBy(ModuleFlags::isEnabled)) {
+        for (String output : ComponentTable.outputsDeferredBy(ModuleState::isActive)) {
             deferred.add(NAMESPACE_PREFIX + output);
         }
         return new ComponentInput(unification, prefixes, components, allowlist, deferred);

@@ -86,7 +86,7 @@ Root package: `com.gregguns`. Target layout:
 Rules:
 
 - **Side safety (must).** Client-only classes live under `client`, and common code never references them, even through imports in code paths that load on the server. Reach the client through the proxy or `@SideOnly` methods. Each feature is checked with `runServer` (see [Testing](#testing)).
-- **Modules.** Each feature area registers through its own module class, controlled by a config flag (`modules.<name>`). Disabling a module removes its content cleanly: no orphaned recipes, and no crash when it's missing.
+- **Modules.** Each feature area registers through its own module class, controlled by a config flag (`modules.<name>`). A flag never changes what is registered: content always exists, so client/server flag differences and flipped flags cannot break joining or delete items. Disabling a module switches its behavior off (no recipes, spawning or worldgen; machines and items do nothing; hidden in NEI and the creative tab). Ask `ModuleState.isActive(id)`, never `ModuleFlags`, for behavior.
 - **Logic and Minecraft glue are separate.** Formulas, state machines and tables (damage, drop-off, spread, reload timing, spawn weights, tier checks) live in plain Java classes with no Minecraft types in their signatures, so they can be unit-tested. Items, entities and tile entities stay thin and call into them.
 - **No mutable statics** except registries and config. Per-player and per-entity state lives in NBT or extended properties, never in static maps.
 - **Registration order** follows the FML lifecycle:
