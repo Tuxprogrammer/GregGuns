@@ -174,7 +174,7 @@ public final class GrimReaperScenarios {
 
         @Override
         public String description() {
-            return "A loaded Grim Reaper launches exactly one rocket per trigger pull (3 rounds left); held for 14 more ticks it launches two more, six ticks apart, and a zombie in the line loses the 50 explosion damage at least once.";
+            return "A loaded Grim Reaper launches exactly one rocket per trigger pull (3 rounds left); held for 14 more ticks it launches two more, six ticks apart, and a zombie in the line loses the full explosion damage at least once.";
         }
 
         @Override
@@ -220,8 +220,8 @@ public final class GrimReaperScenarios {
                 out.checkEquals("rockets after holding the trigger", 3, rockets.count());
                 out.checkEquals("rounds left in the end", 1, rig.loaded());
                 out.check(
-                    lost(target) >= lossFor(target, 50.0) - EPS,
-                    "the zombie should have taken at least one full 50 hit, lost " + lost(target));
+                    lost(target) >= lossFor(target, GrimReaperDef.STATS.damage()) - EPS,
+                    "the zombie should have taken at least one full-damage hit, lost " + lost(target));
                 return out.build();
             });
         }
@@ -245,7 +245,7 @@ public final class GrimReaperScenarios {
         public String description() {
             return blocks
                 ? "With explosions.blockDamage on, a Grim Reaper rocket into a dirt wall 5 blocks away breaks dirt at the impact."
-                : "A Grim Reaper rocket into a zombie 4 blocks away carries the 1.75 block radius, deals the gun's 50 once, and leaves the floor intact with block damage off.";
+                : "A Grim Reaper rocket into a zombie 4 blocks away carries the 1.75 block radius, deals the gun's full damage once, and leaves the floor intact with block damage off.";
         }
 
         @Override
@@ -292,8 +292,9 @@ public final class GrimReaperScenarios {
                     out.check(air > 0, "block damage on: the rocket should break dirt at the impact");
                 } else {
                     out.check(
-                        Math.abs(lost(front) - lossFor(front, 50.0)) < EPS,
-                        "the zombie hit should lose the full 50 once, " + lossFor(front, 50.0)
+                        Math.abs(lost(front) - lossFor(front, GrimReaperDef.STATS.damage())) < EPS,
+                        "the zombie hit should lose the full gun damage once, "
+                            + lossFor(front, GrimReaperDef.STATS.damage())
                             + " but lost "
                             + lost(front));
                     out.checkEquals(

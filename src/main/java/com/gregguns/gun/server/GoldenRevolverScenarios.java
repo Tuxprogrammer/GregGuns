@@ -71,6 +71,9 @@ public final class GoldenRevolverScenarios {
         public ScenarioResult run(ScenarioContext ctx) {
             GunRig rig = rig(ctx, STATS.magazineSize());
             EntityZombie target = GunRig.zombie(ctx, 6);
+            target.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.maxHealth)
+                .setBaseValue(200.0);
+            target.setHealth(200.0F);
             float[] firstHit = { Float.NaN };
             int[] shotsAt = new int[END_TICK + 1];
             rig.press();
@@ -209,13 +212,16 @@ public final class GoldenRevolverScenarios {
 
         @Override
         public String description() {
-            return "A Golden Revolver bullet hits a zombie 22 blocks away for the drop-off figure (14 falling to 6 between 12 and 30 blocks), less than the 14 it does at 6 blocks.";
+            return "A Golden Revolver bullet hits a zombie 22 blocks away for the drop-off figure (28 falling to 12 between 12 and 30 blocks), less than the 28 it does at 6 blocks.";
         }
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             GunRig rig = new GunRig(ctx, GunItems.get(GoldenRevolverDef.NAME), STATS.magazineSize(), RANGE + 4);
             EntityZombie target = GunRig.zombie(ctx, RANGE);
+            target.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.maxHealth)
+                .setBaseValue(200.0);
+            target.setHealth(200.0F);
             double startX = rig.shooter.posX;
             rig.press();
             rig.release();
