@@ -50,3 +50,6 @@ __pycache__/
 
 # GTNH pack and decompiled/cloned sources for API research (docs/gregguns-spec/INTEGRATION.md) - never commit
 /reference/
+
+# Local debug output
+/debug.log
