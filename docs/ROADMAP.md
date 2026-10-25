@@ -324,7 +324,7 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
 
 ## Beyond M9
 
-- The **ICBM module** is the next build, on its own roadmap, [ROADMAP-ICBM.md](ROADMAP-ICBM.md) (I0–I6, an alpha gate and a beta gate). It runs alongside M9's remaining polish and the beta-playthrough fixes; it doesn't wait for M9.
+- The **ICBM module** is the next build, on its own roadmap, [ROADMAP-ICBM.md](ROADMAP-ICBM.md) (I0–I7, an alpha gate and a beta gate). It runs alongside M9's remaining polish and the beta-playthrough fixes; it doesn't wait for M9.
 - The **handoff** (handoff guide, solicitation, archive) and the adopter list are in [HANDOFF-PLAN.md](HANDOFF-PLAN.md). It starts once M9 is done and the ICBM beta gate has passed.
 
 ## Later

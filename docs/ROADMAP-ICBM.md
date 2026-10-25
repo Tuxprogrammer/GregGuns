@@ -6,15 +6,16 @@ GregGuns' own final polish stays on [ROADMAP.md](ROADMAP.md) (M9). The handoff c
 
 ## How to read this roadmap
 
-- **Milestones I0–I6** are delivered in order, with an entry gate and an exit gate each, as on the main roadmap. The universal [definition of done](../CONTRIBUTING.md#definition-of-done) applies to every change.
+- **Milestones I0–I7** are delivered in order, with an entry gate and an exit gate each, as on the main roadmap. The universal [definition of done](../CONTRIBUTING.md#definition-of-done) applies to every change.
 - **Spec first.** Each milestone's first task writes or finishes its GregGuns-side sheets in [gregguns-icbm-spec](gregguns-icbm-spec/README.md), following the [GregGuns spec conventions](gregguns-spec/CONVENTIONS.md). Builders work from those sheets and the ICBM baseline, never from the ICBM source, except for `MIT-portable` sections (D2).
 - **Two gates involve the owner:** the alpha gate (one review) and the beta gate (playthrough and feedback). Everything between them is autonomous.
 - **The module stays off by default** (`modules.icbm=false`) until the beta gate, so GregGuns `0.3.x-beta` fixes keep shipping from master.
 
 ```
 I0 Foundation ──► I1 Warheads & blast engine ──► I2 Missiles & the GC pad (T1–T2)
-   ──► I3 Silo & heavy warheads (T3, nuclear) ──► I4 Detection & defense ──► I5 Endgame & world
-   ──► Alpha gate (owner review) ──► I6 Hardening ──► Beta gate (owner playthrough) ──► HANDOFF-PLAN
+   ──► I3 Silo & heavy warheads (T3, nuclear) ──► I4 Detection & defense ──► I5 Endgame warheads & systems
+   ──► I6 World: missile silos on every planet ──► Alpha gate (owner review) ──► I7 Hardening
+   ──► Beta gate (owner playthrough) ──► HANDOFF-PLAN
 ```
 
 ## Working rules (autonomous build)
@@ -170,7 +171,7 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 - [ ] The OpenComputers components work as specified (GGI-01-01 to 06). Unit tests plus the batched client session.
 - [ ] The milestone review fix list is closed.
 
-## I5 · Endgame and world
+## I5 · Endgame warheads and systems
 
 **Entry gate:** I4 done.
 
@@ -179,9 +180,6 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
   - Red matter is rebuilt with a bounded lifetime, an idle state, correct save and load, and the shared tick budget (D10).
   - The owner tests red matter in game; our side runs unit tests and headless boots.
 - **The full fallout chain** (D21): irradiated rubble, trinitite and fallout goo, with their GT processing yields.
-- **Abandoned Missile Silos** worldgen (D17): rare, Overworld only, config-gated, on the M8 placement system.
-  - **Activity levels** (D36): abandoned, partly abandoned and operational, each with its own damage pass.
-  - A **silo guard spawner** block with shooting GregGuns NPCs (Army Soldier, Commando, Stormtrooper), so operational silos are dungeons to clear and take over.
 - **The Golden Dome floppy** and its programs (D18).
 - **Warheads for existing GregGuns launchers** (D12).
 - **The antidote,** mapped to GT hazards (D10).
@@ -189,24 +187,43 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 **Exit gate:**
 - [ ] Antimatter and red matter detonate, annihilate and finish within the tick budget, and red matter survives a save and reload. Scenario.
 - [ ] Fallout blocks process into their yields in GT machines. Scenario.
-- [ ] Silos generate without cascading, and match the D17 layout and loot. Scenario.
-- [ ] Each activity level generates with its damage, spawner count and loot. Guards spawn and attack, and a broken spawner stays broken. Scenario.
 - [ ] The Golden Dome programs run (GGI-01-07 to 09) in the batched client session.
+- [ ] The milestone review fix list is closed.
+
+## I6 · World: missile silos on every planet
+
+**Entry gate:** I5 done.
+
+**Scope:**
+- **Abandoned Missile Silos** (D17): huge, mostly underground, with the O, D and Closed surface variants. Rare, config-gated, on the M8 placement system, and never cascading.
+- **Activity levels** (D36): abandoned, partly abandoned and operational, each with its own damage pass built into the layout.
+- **A silo guard spawner block** with shooting GregGuns NPCs (Army Soldier, Commando, Stormtrooper), so operational silos are dungeons to clear and take over.
+- **Loot ceilings and planet silos** (D38):
+  - the Overworld caps at EV;
+  - silos generate on every Galacticraft, GalaxySpace and Amun-Ra planet with solid ground, with the ceiling rising one tier per rocket tier (Moon EV, up to T9 at UMV);
+  - Ross128b and Ross128ba silos roll any tier from EV to UMV, shown by their casings;
+  - salvage and guards scale with the planet;
+  - every dimension has its own flag.
+
+**Exit gate:**
+- [ ] Silos generate without cascading on the Overworld and on at least one planet of every rocket tier, and match the D17 layout. Scenario per dimension.
+- [ ] Each activity level generates with its damage, spawner count and loot. Guards spawn and attack, and a broken spawner stays broken. Scenario.
+- [ ] No loot exceeds the dimension's ceiling (or, on Ross128, the silo's rolled ceiling), checked over many generated chests. Unit test plus scenario.
 - [ ] The milestone review fix list is closed.
 
 ## Alpha gate · 0.4.0-alpha
 
 The one owner review before the beta.
 
-**Entry gate:** I0–I5 done.
+**Entry gate:** I0–I6 done.
 
 **Exit gate:**
-- [ ] A completeness audit of I0–I5: every exit box is met or deferred with a recorded reason.
+- [ ] A completeness audit of I0–I6: every exit box is met or deferred with a recorded reason.
 - [ ] A batched client pass with no crash or invisible-render bugs.
 - [ ] Tag `0.4.0-alpha-pre` as a pre-release, with `modules.icbm` still off by default. The notes give the owner a review guide: what to enable, a test world, and what to look at.
-- [ ] The owner has reviewed it once, and their notes are written up as the I6 fix list.
+- [ ] The owner has reviewed it once, and their notes are written up as the I7 fix list.
 
-## I6 · Hardening
+## I7 · Hardening
 
 **Entry gate:** the alpha gate has passed.
 
@@ -230,7 +247,7 @@ The one owner review before the beta.
 
 ## Beta gate · 0.4.0-beta
 
-**Entry gate:** I6 done.
+**Entry gate:** I7 done.
 
 **Exit gate:**
 - [ ] Tag `0.4.0-beta` as a pre-release.
@@ -243,5 +260,4 @@ After this gate the [handoff plan](HANDOFF-PLAN.md) can start, once the main roa
 Not planned for this roadmap. Each one can be picked up later or left for an adopter:
 - cargo parachute, balloon, cargo hook and supply drops (D10);
 - spikes, glass button and pressure plate (D10);
-- airburst and penetrator fuses (D26);
-- missile silos on Galacticraft planets (D17).
+- airburst and penetrator fuses (D26).

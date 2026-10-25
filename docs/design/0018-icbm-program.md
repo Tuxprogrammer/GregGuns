@@ -15,7 +15,7 @@ Two facts from the pack shaped the decisions:
 
 ### Placement and packaging
 1. **ICBM is a module in the GregGuns jar**, `modules.icbm`, as 0015 requires. It turns itself off without Galacticraft (D9). It shares the GregGuns blast pipeline, damage code and test harness.
-2. **It has its own roadmap**, [ROADMAP-ICBM.md](../ROADMAP-ICBM.md), with milestones I0–I6, an alpha gate and a beta gate. [ROADMAP.md](../ROADMAP.md) keeps the GregGuns final polish (M9).
+2. **It has its own roadmap**, [ROADMAP-ICBM.md](../ROADMAP-ICBM.md), with milestones I0–I7, an alpha gate and a beta gate. [ROADMAP.md](../ROADMAP.md) keeps the GregGuns final polish (M9).
 3. **The handoff moves off the roadmap** to [HANDOFF-PLAN.md](../HANDOFF-PLAN.md). It starts only once the M9 polish is done and the ICBM beta gate has passed. This supersedes the handoff part of 0015's M9.
 4. `modules.icbm` **defaults to off until the ICBM beta gate**, so `0.3.x-beta` fixes can keep shipping from master while ICBM is built.
 
@@ -52,10 +52,11 @@ Two facts from the pack shaped the decisions:
 
 ### Worldgen
 16. **Abandoned Missile Silos have activity levels (D36):** abandoned (fairly damaged, no spawners), partly abandoned (some spawners) and operational (intact, lots of spawners). Guards are shooting GregGuns NPCs from spawner blocks on the M8 spawner system, so the player clears the silo like a dungeon and breaks the spawners to take it over. Loot grows with activity.
+17. **Silo loot ceilings and planet silos (D38).** Overworld silos cap at EV, in line with other Overworld rewards (AE2 meteors). Silos also generate on Galacticraft, GalaxySpace and Amun-Ra planets, with the ceiling rising one voltage tier per GTNH rocket tier: the Moon is EV, the Mars group IV, T3 planets LuV, up to T9 at UMV. Ross128b and Ross128ba, an alternate challenge-start route, roll any tier from EV to UMV per silo. This supersedes D17's HV cap and its deferral of planet silos.
 
 ## Consequences
 - ROADMAP.md's M9 becomes "Self-contained polish"; its handoff boxes and the adopter list move to HANDOFF-PLAN.md.
-- DECISIONS.md D6 is superseded, and D8, D12 and D28 carry amendment notes. New decisions D29–D37 record the items above.
+- DECISIONS.md D6 is superseded, and D2, D8, D12, D17 and D28 carry amendment notes. New decisions D29–D38 record the items above.
 - CONTRIBUTING gains a "Ported code (MIT)" section and a third-party asset exception.
 - The handoff waits for ICBM, which is several milestones of work.
 
