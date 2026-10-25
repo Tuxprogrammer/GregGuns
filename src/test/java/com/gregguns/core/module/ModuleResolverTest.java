@@ -45,9 +45,12 @@ class ModuleResolverTest {
                 ModuleId.NPCS,
                 ModuleId.WORLDGEN),
             result.enabled());
-        assertTrue(
-            result.skipped()
-                .isEmpty());
+        // icbm ships off until its beta gate; nothing else is skipped
+        assertEquals(
+            Arrays.asList(ModuleId.ICBM),
+            new java.util.ArrayList<>(
+                result.skipped()
+                    .keySet()));
     }
 
     @Test

@@ -129,6 +129,7 @@ public class CommonProxy {
         manager.register(new UtilityModule());
         manager.register(new NpcModule());
         manager.register(new WorldgenModule());
+        manager.register(new com.gregguns.icbm.IcbmModule());
     }
 
     /**

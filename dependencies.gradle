@@ -51,6 +51,19 @@ dependencies {
     // Loader.isModLoaded("betterquesting"). Version is the pack's (reference/gtnh/2.9.0-RC-2/MOD-INDEX.md).
     compileOnly("com.github.GTNewHorizons:BetterQuesting:3.8.89-GTNH:dev") { transitive = false }
 
+    // Optional integration (ICBM module, I0): Galacticraft is the ICBM module's hard gate (modules.icbm turns itself off
+    // without it, D9) and OpenComputers is its optional scripting hook (D37). devOnlyNonPublishable, so both compile and
+    // run in runServer/runClient but are not published as dependencies; all references to them are isolated behind
+    // Loader.isModLoaded and @Optional. Versions are the pack's (reference/gtnh/2.9.0-RC-2/MOD-INDEX.md).
+    // To test the absent-Galacticraft case, run: ./gradlew runServer -PnoGalacticraft (see docs/testing/README.md).
+    // The flag only drops the runtime copy; the compile classpath keeps the jars so the source set always builds.
+    compileOnly("com.github.GTNewHorizons:Galacticraft:3.4.34-GTNH:dev") { transitive = false }
+    compileOnly("com.github.GTNewHorizons:OpenComputers:1.12.64-GTNH:dev") { transitive = false }
+    if (!project.hasProperty("noGalacticraft")) {
+        runtimeOnlyNonPublishable("com.github.GTNewHorizons:Galacticraft:3.4.34-GTNH:dev")
+        runtimeOnlyNonPublishable("com.github.GTNewHorizons:OpenComputers:1.12.64-GTNH:dev")
+    }
+
     // Unit tests (CONTRIBUTING.md, Testing): JUnit 5, same BOM as GT5-Unofficial 5.09.54.205.
     testImplementation(platform("org.junit:junit-bom:5.14.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
