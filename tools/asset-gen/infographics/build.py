@@ -4,7 +4,7 @@ Usage (from the repo root):
     GREGGUNS_EXPORT_MODELS=build/infographics/export ./gradlew test --tests com.gregguns.tools.ModelExportTest
     python tools/asset-gen/infographics/build.py [page ...]
 
-Needs Pillow, numpy and Playwright (Edge ships with Windows). With no arguments every page is built.
+Needs Pillow, numpy and Playwright (see README.md). With no arguments every page is built.
 """
 
 import sys

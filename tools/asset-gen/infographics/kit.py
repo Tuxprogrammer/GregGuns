@@ -12,6 +12,7 @@ import html
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -22,7 +23,7 @@ import render3d as R
 
 REPO = R.REPO
 ASSETS = R.ASSETS
-OUT_DIR = REPO / "docs/assets/infographics"
+OUT_DIR = Path(os.environ.get("GREGGUNS_INFOGRAPHICS_OUT") or REPO / "docs/assets/infographics")
 WORK = REPO / "build/infographics"
 RENDERS = WORK / "r"
 TEXCACHE = WORK / "tex"
@@ -245,7 +246,7 @@ CSS = """
   --luv: #ff6fcf; --zpm: #ff5555;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--ink); color: var(--txt); font-family: "Segoe UI", system-ui, sans-serif; font-size: 19px;
+body { background: var(--ink); color: var(--txt); font-family: "Segoe UI", "Fira Sans", "Noto Sans", "DejaVu Sans", system-ui, sans-serif; font-size: 19px;
   line-height: 1.38; -webkit-font-smoothing: antialiased; }
 .sheet { position: relative; width: var(--w); padding: 44px 48px 30px; overflow: hidden;
   background:
@@ -255,20 +256,20 @@ body { background: var(--ink); color: var(--txt); font-family: "Segoe UI", syste
 .sheet::before { content: ""; position: absolute; inset: 0; opacity: .05; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16zM28 64v33' fill='none' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E"); }
 .sheet > * { position: relative; }
-h1, h2, h3, .cond { font-family: Bahnschrift, "Segoe UI", sans-serif; font-stretch: condensed; letter-spacing: .01em; }
+h1, h2, h3, .cond { font-family: Bahnschrift, "Fira Sans Condensed", "Segoe UI", "Fira Sans", sans-serif; font-stretch: condensed; letter-spacing: .01em; }
 .head { display: flex; align-items: center; gap: 22px; margin-bottom: 26px; }
 .head img.logo { width: 84px; height: 84px; image-rendering: pixelated; }
 .head h1 { font-size: 54px; line-height: 1; font-weight: 700; text-transform: uppercase; }
 .head h1 b { color: var(--orange); font-weight: 700; }
 .head .sub { color: var(--muted); font-size: 21px; margin-top: 6px; max-width: 1100px; }
 .card { background: linear-gradient(180deg, var(--card2), var(--card)); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; }
-.label { font-family: Bahnschrift, sans-serif; font-weight: 600; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.label { font-family: Bahnschrift, "Fira Sans Condensed", "Noto Sans", sans-serif; font-weight: 600; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 h2 { font-size: 30px; font-weight: 700; line-height: 1.1; }
 h3 { font-size: 23px; font-weight: 700; line-height: 1.15; }
 .muted { color: var(--muted); }
 .dim { color: var(--dim); }
 .o { color: var(--orange); }
-.chip { display: inline-block; font-family: Bahnschrift, sans-serif; font-weight: 700; font-size: 15px; padding: 3px 10px 2px;
+.chip { display: inline-block; font-family: Bahnschrift, "Fira Sans Condensed", "Noto Sans", sans-serif; font-weight: 700; font-size: 15px; padding: 3px 10px 2px;
   border-radius: 6px; color: #0e1217; line-height: 1.25; vertical-align: middle; }
 .t-Steam { background: var(--steam); } .t-ULV { background: var(--ulv); } .t-LV { background: var(--lv); }
 .t-MV { background: var(--mv); } .t-HV { background: var(--hv); } .t-EV { background: var(--ev); color: #fff; }
@@ -290,9 +291,9 @@ img.px { image-rendering: pixelated; }
 .bubble.left::after { left: -10px; top: var(--tail, 40px); }
 .bubble.right::after { right: -10px; top: var(--tail, 40px); }
 .bubble.down::after { bottom: -10px; left: var(--tail, 60px); }
-.speaker { font-family: Bahnschrift, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: #6a7380; margin-bottom: 4px; }
+.speaker { font-family: Bahnschrift, "Fira Sans Condensed", "Noto Sans", sans-serif; font-weight: 700; font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: #6a7380; margin-bottom: 4px; }
 .num { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;
-  background: var(--orange); color: #111; font-family: Bahnschrift, sans-serif; font-weight: 800; font-size: 26px; flex: none; }
+  background: var(--orange); color: #111; font-family: Bahnschrift, "Fira Sans Condensed", "Noto Sans", sans-serif; font-weight: 800; font-size: 26px; flex: none; }
 .arrow { color: var(--orange); font-size: 34px; font-weight: 700; }
 """
 
@@ -314,6 +315,13 @@ def page(title_html: str, sub: str, body: str, width=1600, extra_css="") -> str:
 </div></body></html>"""
 
 
+def launch_browser(p):
+    """Edge on Windows (ships with the OS); Playwright's bundled Chromium elsewhere."""
+    if sys.platform == "win32":
+        return launch_browser(p)
+    return p.chromium.launch()
+
+
 def rasterize(jobs: list[tuple[str, str, int]]):
     """jobs: (name, html, width). Writes docs/assets/infographics/<name>.png and keeps the HTML in the work dir."""
     from playwright.sync_api import sync_playwright
@@ -321,7 +329,7 @@ def rasterize(jobs: list[tuple[str, str, int]]):
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     WORK.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel="msedge")
+        browser = launch_browser(p)
         pg = browser.new_page(viewport={"width": 1600, "height": 900}, device_scale_factor=1)
         for name, doc, width in jobs:
             src = WORK / f"{name}.html"

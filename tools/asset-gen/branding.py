@@ -15,16 +15,16 @@ Outputs
 The player guide infographics are built by tools/asset-gen/infographics/build.py.
 
 Rasterizer (documented as requested)
-    PRIMARY: Playwright for Python driving the installed Microsoft Edge
-        (chromium.launch(channel="msedge")). The SVG is inlined into a bare HTML page and
+    PRIMARY: Playwright for Python driving the installed Microsoft Edge on Windows
+        (chromium.launch(channel="msedge")) and Playwright's bundled Chromium elsewhere. The SVG is inlined into a bare HTML page and
         screenshotted at the exact target size. PNGs for logos keep a transparent background.
     FALLBACK: cairosvg, if Playwright/Edge is unavailable (needs libcairo on the machine).
-    Install: `python -m pip install playwright` (Edge already ships with Windows 10/11).
+    Install: `python -m pip install playwright` (Edge already ships with Windows 10/11; elsewhere also run `python -m playwright install chromium`).
     Pixel-art PNGs (logo_pixel_*.png) are drawn with Pillow, nearest-neighbor, so they stay crisp.
 
 Fonts: lettering in the logo, banner and social card is drawn as pixel-block paths from a
 5x7 glyph table below, so it does not depend on any installed font. The banner's tagline
-uses the generic family `sans-serif` (with Segoe UI/Arial first choices).
+uses the generic family `sans-serif` (with Segoe UI/Arial first choices; Noto Sans/Liberation Sans on Linux).
 """
 from __future__ import annotations
 
@@ -50,7 +50,7 @@ STEEL = "#aab6c2"
 BLUE = "#2d8cff"       # GT blue accent
 CYAN = "#3fd0ff"
 ORANGE = "#ff8a1f"     # GT orange accent
-FONT = "'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+FONT = "'Segoe UI', 'Helvetica Neue', Arial, 'Liberation Sans', sans-serif"
 MONO = "Consolas, 'Courier New', monospace"
 
 # GT voltage-name colors, readable on a dark card: key, label, EU/t, fill, text on fill
@@ -387,7 +387,8 @@ def _rasterize_playwright(jobs):
     from playwright.sync_api import sync_playwright
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel="msedge")
+        # Edge on Windows (ships with the OS); Playwright's bundled Chromium elsewhere.
+        browser = p.chromium.launch(channel="msedge") if sys.platform == "win32" else p.chromium.launch()
         for svg_text, png_path, w, h, transparent in jobs:
             page = browser.new_page(viewport={"width": w, "height": h}, device_scale_factor=1)
             inline = re.sub(r'(<svg [^>]*?)width="\d+" height="\d+"', r'\1width="%d" height="%d"' % (w, h), svg_text, count=1)
