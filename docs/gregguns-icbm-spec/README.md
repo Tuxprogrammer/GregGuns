@@ -4,9 +4,22 @@ How GregGuns builds ICBM-style content (missiles, tiered explosives, launchers, 
 
 Status: **planned for build** on the [ICBM roadmap](../ROADMAP-ICBM.md) (milestones I0–I7), as a module in the GregGuns jar behind `modules.icbm` ([0018](../design/0018-icbm-program.md)). Each milestone writes its area sheets here before building.
 
+## Areas
+
+| Area | Covers | ICBM baseline | Built in |
+|---|---|---|---|
+| [01-core](01-core/index.md) | Module flag, Galacticraft dependency, OpenComputers and the Golden Dome floppy | [01-core](../icbm-spec/01-core/index.md) | I0, I4, I5 |
+| [02-explosives](02-explosives/index.md) | Shared explosive registry, blast engine, warheads, annihilation, fallout | [02-explosives](../icbm-spec/02-explosives/index.md) | I1, I3, I5 |
+| [03-missiles](03-missiles/index.md) | Missile bodies, stack-on-pad build, fuel, flight | [03-missiles](../icbm-spec/03-missiles/index.md) | I2, I3, I5 |
+| [04-launch-control](04-launch-control/index.md) | Launch-control block, silo multiblock, outputs | [04-launch-control](../icbm-spec/04-launch-control/index.md) | I2, I3, I4 |
+| [05-detection-defense](05-detection-defense/index.md) | Radar, air-defense battery, EMP, handheld tools | [05-detection-defense](../icbm-spec/05-detection-defense/index.md) | I4 |
+| [06-blocks-items](06-blocks-items/index.md) | Kept, dropped and deferred content, registry, recipe remap, antidote | [06-blocks-items](../icbm-spec/06-blocks-items/index.md) | I1-I5 |
+| [07-visuals-audio](07-visuals-audio/index.md) | 3D models, textures, effects, sounds, asset sourcing | [07-visuals-audio](../icbm-spec/07-visuals-audio/index.md) | I1, I2, I5 |
+| [08-worldgen](08-worldgen/index.md) | Abandoned Missile Silos on every planet (GregGuns only) | none | I6 |
+
 ## Decisions and open questions
 
-All of them are in **[DECISIONS.md](DECISIONS.md)**: what has been decided (D1–D38) and any open questions. From I0 on, the orchestrator adds and records decisions itself. Each open question gives its context, the options and a recommendation.
+All of them are in **[DECISIONS.md](DECISIONS.md)**: what has been decided (D1–D44) and any open questions. From I0 on, the orchestrator adds and records decisions itself. Each open question gives its context, the options and a recommendation.
 
 In short:
 - Clean room, with MIT hard-math ports allowed.

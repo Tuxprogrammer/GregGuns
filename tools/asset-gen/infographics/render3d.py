@@ -8,6 +8,7 @@ Sources it reads, all from this repository:
 - gun models exported by the test-side ModelExporter (set GREGGUNS_EXPORT_MODELS and run ModelExportTest);
 - data-driven mob models in assets/gregguns/entity_models/*.json;
 - custom armor models in assets/gregguns/armor_models/*.json and the vanilla two-layer armor layout;
+- Wavefront OBJ meshes with one texture (the ICBM models), read from the same files the game loads;
 - block textures, for voxel scenes such as multiblock structures.
 """
 
@@ -228,6 +229,53 @@ def custom_armor(scene: Scene, mats: dict, set_id: str, texture: Path | None = N
             continue
         scene.quads += box_quads(mats[b["part"]], b["offset"], b["size"], b["uv"], m["textureWidth"],
                                  m["textureHeight"], b.get("mirror", False), b.get("inflate", 0.0), t)
+
+
+def obj_scene(obj_path: Path, texture: Path, scale: float = 1.0, M=None) -> Scene:
+    """A Wavefront OBJ with one texture, in the OBJ's own space (Y up, 1 unit = 1 block, times scale).
+
+    Reads v/vt/vn/f. Triangles, quads and n-gons (fan-triangulated) are accepted, and negative indices count
+    back from the end. usemtl, mtllib, groups and smoothing are ignored. Triangles are stored as quads whose
+    last corner repeats, which the rasterizer skips as degenerate. Faces get flat lighting from their own
+    geometry, like box models, so normals (vn) are read past but not used. OBJ's V runs bottom-up, so it flips."""
+    s = Scene()
+    t = s.texture(texture)
+    V, VT = [], []
+
+    def pick(lst, tok):
+        i = int(tok)
+        return lst[i - 1 if i > 0 else i]
+
+    for line in Path(obj_path).read_text().splitlines():
+        parts = line.split()
+        if not parts or parts[0].startswith("#"):
+            continue
+        k = parts[0]
+        if k == "v":
+            V.append([float(x) for x in parts[1:4]])
+        elif k == "vt":
+            VT.append([float(parts[1]), float(parts[2]) if len(parts) > 2 else 0.0])
+        elif k == "f":
+            corners = []
+            for tok in parts[1:]:
+                f_ = tok.split("/")
+                uv = pick(VT, f_[1]) if len(f_) > 1 and f_[1] else [0.0, 0.0]
+                corners.append((pick(V, f_[0]), uv))
+            if len(corners) < 3:
+                continue
+            if len(corners) <= 4:
+                polys = [corners + corners[-1:] * (4 - len(corners))]  # a triangle repeats its last corner
+            else:  # n-gon: fan from the first corner
+                polys = [[corners[0], corners[i], corners[i + 1], corners[i + 1]] for i in range(1, len(corners) - 1)]
+            for tri in polys:
+                P = np.array([[*c[0], 1.0] for c in tri]) * [scale, scale, scale, 1.0]
+                if M is not None:
+                    P = P @ M.T
+                uv = np.array([[c[1][0], 1.0 - c[1][1]] for c in tri], float)
+                s.quads.append(Quad(P[:, :3], uv, t))
+    if not s.quads:
+        raise ValueError(f"no faces in {obj_path}")
+    return s
 
 
 # ---------------------------------------------------------------- voxels

@@ -25,6 +25,8 @@ From I0 on, the build runs without the owner ([0018](design/0018-icbm-program.md
 - **Decisions.** The orchestrator decides every open question itself. It adds each decision to [DECISIONS.md](gregguns-icbm-spec/DECISIONS.md) as `D<n>`, marked "orchestrator" with the date, and doesn't wait for anyone. The owner can revise any of them at the alpha review. Changes after that are reactive: they answer a found problem.
 - **Agents.**
   - At most **two Sonnet coding agents** at once, each in its own worktree on a branch `icbm/<milestone>-<topic>`.
+  - **A balanced pair** ([D42](gregguns-icbm-spec/DECISIONS.md)): the milestone is split by effort, not by kind, so both agents write code. The cut follows a clean seam, such as an API one side defines and the other uses. Each agent gets the other's ID and messages it directly about anything on the seam or anything that needs both; the orchestrator hears only of a disagreement. The orchestrator records each agent's time and tokens and rebalances the next split.
+  - **One Sonnet guides agent** ([D39](gregguns-icbm-spec/DECISIONS.md)) owns what players see outside the code: guide sheets, preview sheets, quests, GuideNH pages, README and release-note text, and the wording pass over tooltips and lang keys. It works one milestone behind the coders wherever it needs landed code, so its facts match the code, and from the spec sheets otherwise. See [Visuals and player guides](#visuals-and-player-guides).
   - Small, scoped briefs. An agent that passes about 250k tokens of context writes a handoff file and a fresh agent takes over.
   - **One Opus reviewer agent per milestone,** run at the milestone's end. It reads the milestone's diff against this roadmap, the spec sheets and 0018, and returns one fix list. No per-feature reviews and no Opus coding agents.
 - **Branch gate, automated only:**
@@ -34,7 +36,7 @@ From I0 on, the build runs without the owner ([0018](design/0018-icbm-program.md
   - the ported-code gate (I0).
 
   The orchestrator lands only when master is an ancestor of the verified branch, then merges with `--no-ff`.
-- **Client checks.** One batched in-game session per milestone, on the test server. Shader runs only for shader questions.
+- **Client checks.** One batched in-game session per milestone, on the test server. Shader runs only for shader questions. Its screenshots go to the visuals gallery.
 - **Ported MIT code** follows [CONTRIBUTING § Ported code](../CONTRIBUTING.md#ported-code-mit): adapted, commented, tested and bug-fixed before it merges.
 - **Assets.** Human-made, properly licensed assets first ([0018](design/0018-icbm-program.md) §10–11, D28). Generate an asset only when nothing licensed exists, and never run tuning loops. Each milestone sources the assets its content needs.
 - **Releases.** Tags follow the main repo's release steps. Nothing is pushed or released without the owner's go-ahead, apart from what this roadmap names.
@@ -47,6 +49,66 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 - **Conventional center damage, at least:** T1 (HV) 1,200; T2 (EV–IV) 3,000; T3 (LuV) 8,000. Damage falls off to zero at the blast edge.
 - **Nuclear (ZPM), antimatter (UV) and red matter (UHV):** every living entity in the kill zone dies, bosses included. Players are subject only to server damage settings.
 - **Tiers** (D5): T1 HV; T2 EV–IV; T3 LuV–ZPM, with nuclear at ZPM; antimatter at UV; red matter at UHV.
+
+---
+
+## Carried over from the GregGuns roadmap
+
+Comparing this roadmap with [ROADMAP.md](ROADMAP.md) found checks that GregGuns made of every feature but that this plan didn't name ([D44](gregguns-icbm-spec/DECISIONS.md)). They apply to every milestone on top of its own exit gate:
+
+- **Tooltips follow the GregGuns conventions** ([D41](gregguns-icbm-spec/DECISIONS.md)):
+  - tier names in GT colors through `TierText.colored`;
+  - the "Added by: GregGuns" line on every machine (`AddedBy`);
+  - a short tooltip with the essentials, and the details behind Shift;
+  - numbers formatted in a Minecraft-free `*TooltipFormat` class with unit tests, as `GunTooltipFormat` and `AmmoTooltipFormat` do;
+  - every line from a lang key;
+  - compatibility lists where items fit together (which warheads fit which body, which fuels a tier burns), as the ammo and magazine tooltips do;
+  - the annihilation line the Nuke Launcher already uses, for nuclear and higher warheads;
+  - labeled GUI buttons with tooltips, and a locked or disabled control that says why, as on the Turret and charge GUIs.
+
+  A warhead shows its explosive, tier, fill and blast radius, with its center damage or the annihilation line. A missile body shows its tier, range and fuel.
+- **NEI:** every recipe and every non-GT process is visible (M2, M4).
+- **Unification:** no ICBM item duplicates a GT material or part. The dev self-checks (`UnificationChecks`, the recipe tier check) cover ICBM content (M0, M4).
+- **MTE IDs** for ICBM machines are reserved in `GregGunsMTEIDs` and its test before the first ICBM machine lands (M4).
+- **GT recycling data** on missile bodies, warheads and machines (M3).
+- **A scenario for every block and machine** (M6).
+- **Multiplayer sync:** a dedicated server with two clients sees the same launch, flight and blast (M1's `mp_check`), first in I2.
+- **A recipe-clash review** against the full GTNH pack with `tools/recipe-clash` before the beta (the GregGuns beta gate).
+- **PACK-CHANGES:** anything the pack would have to change for ICBM is done from our jar or written up as an optional server-owner step (M9).
+- **GuideNH pages:** if GregGuns has shipped its own by then (M9), they get an ICBM section.
+- **Server-owner docs:** release notes with every tag, and every config key in [config.md](config.md).
+
+## Visuals and player guides
+
+GregGuns explains itself to players through rendered guide sheets and its quest line, and the ICBM module gets the same ([D39](gregguns-icbm-spec/DECISIONS.md)). A dedicated guides agent owns this track (see the working rules).
+
+**What exists** (audit, 2026-10-25):
+- **Player guide sheets:** 13 stand-alone infographics in `docs/assets/infographics/`, built by [tools/asset-gen/infographics](../tools/asset-gen/infographics/README.md) from real renders of our models and GT textures. The tooling was written on Windows: it drives Edge through Playwright, and its docs use `cygpath`. On the Linux host it needs Playwright's own Chromium and plain paths.
+- **The renderer** (`render3d.py`) draws 1.7.10 box models and voxel scenes only. The ICBM models are meshes ([D43](gregguns-icbm-spec/DECISIONS.md)), so it needs a triangle-mesh path that reads the same OBJ files the game loads.
+- **Preview sheets** in `docs/assets/previews/` (models, icons, blocks, GUIs, particles) for reviewing new art before it reaches a guide.
+- **The quest line,** built by [tools/questbook](../tools/questbook/README.md) from `quests.json` with stable keys and installed from the jar.
+- **Screenshots** from the batched client sessions.
+
+**Rules,** on top of the [infographic writing rules](../tools/asset-gen/infographics/README.md#writing-rules) (player language; no IDs, specs or repo links; the mod described as finished; strong contrast on every element; GT textures credited):
+- **Credit travels with the image.** A sheet that shows a CC-BY model carries a one-line credit in its footer. ICBM-Classic's own art is never shown.
+- **Numbers come from the code.** Radii, damage, ranges, costs and loot ceilings on a sheet are read from the code or its exports. When a balance change moves one, the sheet is rebuilt in the same milestone.
+- **Files:** ICBM sheets sit beside the GregGuns ones with an `icbm-` prefix. Previews go in `docs/assets/previews/icbm/`.
+- **Quests live in the GregGuns tab** ([D40](gregguns-icbm-spec/DECISIONS.md)), keyed `gg.icbm.*`, and are added in the milestone that ships their content. There is no separate ICBM tab.
+
+**Planned guide sheets:**
+
+| Sheet | Shows | Milestone |
+|---|---|---|
+| `icbm-warheads` | Every warhead by tier: model, blast type, radius, center damage or kill zone, and the casing that caps its fill | I1 (T1–T2), extended in I3 and I5 |
+| `icbm-first-missile` | Step by step: chip, schematic, body, warhead, stacking on the Galacticraft pad, fuel, launch control, launch | I2 |
+| `icbm-missile-silo` | The silo multiblock build guide, with hatches and block counts, like the GregGuns multiblock guides | I3 |
+| `icbm-detection-and-defense` | Radars and their ranges by tier, the air-defense battery and its SAMs, the EMP tower, and how they link | I4 |
+| `icbm-fallout` | Fallout zones, protection, the processing chain and the antidote | I5 |
+| `icbm-silos` | Abandoned silos as dungeons: activity levels, guards, and the loot to expect on each planet | I6 |
+| `icbm-recipes` | The ICBM crafting chains, read from the recipe export | I7 |
+| `icbm-hero` | The module at a glance, for the README and for posting | I7 |
+
+**Owner check-ins** (not a gate): when new visuals land on master, the orchestrator tells the owner that day what is new and where to look. Every ICBM visual is collected on one private gallery page, newest first, with a local copy at `docs/icbm-visuals.html`. The owner's notes, if any, join the next milestone's fix list, and the build doesn't wait for them. The alpha review covers all visuals formally.
 
 ---
 
@@ -69,11 +131,14 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 - **The third-party asset folder and its rules** (license text beside the files, a CREDITS section), per CONTRIBUTING.
 - The GregGuns-side area index stubs (02–07) in [gregguns-icbm-spec](gregguns-icbm-spec/README.md), each listing which decisions it will carry.
 - A CLAUDE.md map row for the ICBM roadmap and spec pair.
+- **ICBM MTE IDs** reserved in `GregGunsMTEIDs`, with its test.
+- **Visual tooling on Linux** (guides agent): the guide and preview tools run on this host with Playwright's Chromium, and `render3d.py` gains a triangle-mesh path for OBJ models ([D43](gregguns-icbm-spec/DECISIONS.md)).
 
 **Exit gate:**
 - [ ] `runServer` boots with `modules.icbm=true` with Galacticraft present, and with it absent (the module turns itself off).
 - [ ] `PortedCodeGateTest` fails on a planted bad sample and passes on a good one.
 - [ ] The notices file, the third-party asset folder and the CREDITS section exist.
+- [ ] The 13 GregGuns guide sheets rebuild on Linux with no visible change, checked side by side, and a test OBJ model renders on a preview sheet.
 - [ ] The milestone review fix list is closed.
 
 ## I1 · Warheads and the blast engine
@@ -91,6 +156,7 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 - **The T1–T2 blast types kept by D10,** with their effects (gas, incendiary, smoke and so on) and the conventional damage targets.
 - The annihilation rule's shared implementation, with a bosses flag (0018 §7). It is unit tested here; nuclear content arrives in I3.
 - Warhead recipes through GT machines (Chemical Reactor, Implosion Compressor), tier-gated and visible in NEI.
+- **Visuals:** a preview sheet of the warhead models by tier, the first `icbm-warheads` sheet (T1–T2), and quests for the first warheads.
 
 **Exit gate:**
 - [ ] Every I1 blast type detonates through the shared pipeline and respects protection and `explosions.blockDamage`. Scenario per type.
@@ -98,6 +164,8 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 - [ ] Several large blasts at once stay within the tick budget, and a blast survives a save and reload. Scenario.
 - [ ] Warhead blocks fuse and detonate by redstone and by hand. Each shows its 3D model with a matching collision box, and multi-block warheads break as one piece.
 - [ ] Batched client session: placed warheads look like warheads, not cubes.
+- [ ] Warhead tooltips follow the GregGuns conventions, with unit-tested formatting.
+- [ ] The warhead preview sheet, `icbm-warheads` (T1–T2) and the warhead quests have landed, and the owner has been told.
 - [ ] The relevant `ICBM-02-*` bugs are avoided, with tests.
 - [ ] The milestone review fix list is closed.
 
@@ -120,6 +188,8 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
   - tiered guidance scatter (D24);
   - impact fusing only (D26).
 - **The pad is never removed or damaged** (0018 §9).
+- GT recycling data on bodies and warheads.
+- **Visuals:** previews of the missile bodies, the stacked missile and the launch-control GUI; the `icbm-first-missile` sheet; quests from the chip to the first launch; screenshots and a short clip of build, launch, flight and impact from the client session.
 
 **Exit gate:**
 - [ ] A T1 and a T2 missile are built by hand and by Assembly Line, stacked, fueled, launched and detonated on target. Scenario.
@@ -128,6 +198,8 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 - [ ] Recipes and costs match the cost target, and everything is visible in NEI.
 - [ ] The relevant `ICBM-03-*` and `ICBM-04-*` bugs are avoided, with tests.
 - [ ] Batched client session: build, launch and impact look right.
+- [ ] Two clients on a dedicated server see the same launch, flight and impact (`mp_check`).
+- [ ] `icbm-first-missile` and the launch quests have landed, and the owner has been told.
 - [ ] The milestone review fix list is closed.
 
 ## I3 · The silo and heavy warheads (T3, nuclear)
@@ -142,11 +214,13 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 - **Annihilation** in nuclear kill zones: every living entity, bosses included (0018 §7).
 - **Basic fallout:** irradiated surface blocks with GT radioactivity, protection by any hazmat-capable armor, and every hard cap from D21 (surface only, no spreading, no random ticks, a per-blast budget). The full byproduct chain waits for I5.
 - The T3 conventional damage target.
+- **Visuals:** a silo preview, the `icbm-missile-silo` build guide, `icbm-warheads` extended to T3 and nuclear, and quests for the silo and the nuclear warhead.
 
 **Exit gate:**
 - [ ] The silo forms, loads, fuels and launches a T3 missile without the player touching the missile. Scenario.
 - [ ] Nothing living survives inside the nuclear kill zone, a boss included. Players follow server damage settings. Scenario.
 - [ ] Fallout stays within its caps: a scenario counts converted blocks and server tick time for a nuclear strike.
+- [ ] `icbm-missile-silo`, the extended `icbm-warheads` and the silo quests have landed, and the owner has been told.
 - [ ] The milestone review fix list is closed.
 
 ## I4 · Detection and defense
@@ -165,11 +239,13 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
   - EU cost grows continuously with radius.
 - **Outputs on every machine:** redstone, GT covers, data-stick links, and OpenComputers components (D13; the component list in [golden-dome.md](gregguns-icbm-spec/01-core/golden-dome.md)).
 - Handheld tools that are kept (radar gun, remote detonator, defuser), per the 05 sheet.
+- **Visuals:** previews of the radars, the battery, the EMP tower and the handheld tools; the `icbm-detection-and-defense` sheet; quests for defense.
 
 **Exit gate:**
 - [ ] A radar flags an incoming missile and a linked battery intercepts it. Scenario.
 - [ ] An EMP drains EU and causes maintenance issues within its device cap, with no tick spike in a dense base. Scenario.
 - [ ] The OpenComputers components work as specified (GGI-01-01 to 06). Unit tests plus the batched client session.
+- [ ] `icbm-detection-and-defense` and the defense quests have landed, and the owner has been told.
 - [ ] The milestone review fix list is closed.
 
 ## I5 · Endgame warheads and systems
@@ -184,11 +260,13 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 - **The Golden Dome floppy** and its programs (D18).
 - **Warheads for existing GregGuns launchers** (D12).
 - **The antidote,** mapped to GT hazards (D10).
+- **Visuals:** antimatter and red matter previews and effects, the `icbm-fallout` sheet, the complete `icbm-warheads`, and the endgame quests.
 
 **Exit gate:**
 - [ ] Antimatter and red matter detonate, annihilate and finish within the tick budget, and red matter survives a save and reload. Scenario.
 - [ ] Fallout blocks process into their yields in GT machines. Scenario.
 - [ ] The Golden Dome programs run (GGI-01-07 to 09) in the batched client session.
+- [ ] `icbm-fallout`, the complete `icbm-warheads` and the endgame quests have landed, and the owner has been told.
 - [ ] The milestone review fix list is closed.
 
 ## I6 · World: missile silos on every planet
@@ -205,11 +283,13 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
   - Ross128b and Ross128ba silos roll any tier from EV to UMV, shown by their casings;
   - salvage and guards scale with the planet;
   - every dimension has its own flag.
+- **Visuals:** screenshots of each activity level and of silos on several planets, the `icbm-silos` sheet, and a silo quest.
 
 **Exit gate:**
 - [ ] Silos generate without cascading on the Overworld and on at least one planet of every rocket tier, and match the D17 layout. Scenario per dimension.
 - [ ] Each activity level generates with its damage, spawner count and loot. Guards spawn and attack, and a broken spawner stays broken. Scenario.
 - [ ] No loot exceeds the dimension's ceiling (or, on Ross128, the silo's rolled ceiling), checked over many generated chests. Unit test plus scenario.
+- [ ] `icbm-silos` and the silo quest have landed, and the owner has been told.
 - [ ] The milestone review fix list is closed.
 
 ## Alpha gate · 0.4.0-alpha
@@ -221,6 +301,7 @@ The one owner review before the beta.
 **Exit gate:**
 - [ ] A completeness audit of I0–I6: every exit box is met or deferred with a recorded reason.
 - [ ] A batched client pass with no crash or invisible-render bugs.
+- [ ] The visuals gallery holds every ICBM visual so far, and the review guide links it.
 - [ ] Tag `0.4.0-alpha-pre` as a pre-release, with `modules.icbm` still off by default. The notes give the owner a review guide: what to enable, a test world, and what to look at.
 - [ ] The owner has reviewed it once, and their notes are written up as the I7 fix list.
 
@@ -238,11 +319,15 @@ The one owner review before the beta.
   - EMP in a dense base;
   - chunk tickets after hours of play.
 - A multiplayer check, and a shader check with the owner's shader pack.
-- NEI, lang keys, config documentation, and an ICBM tab in the GregGuns questbook.
+- NEI, lang keys and config documentation. The ICBM quests in the GregGuns tab are checked end to end on a real server install.
+- A recipe-clash review of the ICBM recipes against the full GTNH pack, and the PACK-CHANGES pass.
+- **Visuals:** `icbm-recipes` from the recipe export, `icbm-hero`, an ICBM section in the README, and every ICBM sheet rebuilt after the balance pass.
 
 **Exit gate:**
 - [ ] The fix list is closed.
 - [ ] The soak runs show no tick spikes past budget and no leaked chunk tickets.
+- [ ] The recipe-clash review finds no unresolved clash with ICBM content.
+- [ ] Every ICBM guide sheet matches the code after the balance pass.
 - [ ] `modules.icbm` defaults to on.
 - [ ] The milestone review fix list is closed.
 
@@ -251,7 +336,7 @@ The one owner review before the beta.
 **Entry gate:** I7 done.
 
 **Exit gate:**
-- [ ] Tag `0.4.0-beta` as a pre-release.
+- [ ] Tag `0.4.0-beta` as a pre-release, with release notes for server owners.
 - [ ] The owner's beta playthrough is done, and its blocking bugs are fixed and released as `0.4.x-beta`.
 
 After this gate the [handoff plan](HANDOFF-PLAN.md) can start, once the main roadmap's M9 is also done.
