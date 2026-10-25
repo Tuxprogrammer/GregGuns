@@ -13,7 +13,7 @@ Each roadmap content area is a module. **A flag never changes what GregGuns regi
 - its items and blocks are hidden from NEI and the GregGuns creative tab;
 - items that already exist stay intact, with a tooltip line "Disabled by the server's GregGuns config (modules.X)".
 
-**A flag defaults to `true` once its milestone's exit gate is met.** The gates for M2 to M8 are met, so every module flag defaults to `true`, `worldgen` (M8) included. The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
+**A flag defaults to `true` once its milestone's exit gate is met.** The gates for M2 to M8 are met, so every module flag defaults to `true`, `worldgen` (M8) included. The exception is `icbm`, which defaults to `false` until the ICBM beta gate ([ROADMAP-ICBM](ROADMAP-ICBM.md)). The PR that completes a milestone flips that milestone's default, in `ModulesConfig` and in the table below.
 
 A module also needs the modules listed in "Needs". If a flag is on but a needed module is off, the module behaves as off and a warning is logged. This is a behavior rule only; it never gates registration.
 
@@ -26,6 +26,7 @@ A module also needs the modules listed in "Needs". If a flag is on but a needed 
 | `modules.utility` | boolean | `true` | n/a | login packet | `machines` | M6 | Utility and defense machines |
 | `modules.npcs` | boolean | `true` | n/a | login packet | `guns` | M7 | NPCs and spawning |
 | `modules.worldgen` | boolean | `true` | n/a | login packet | `npcs` | M8 | Structures and worldgen loot |
+| `modules.icbm` | boolean | `false` | n/a | login packet | `guns`, `machines`, and the Galacticraft mod | ICBM I0 | ICBM missiles and warheads. Off by default until the ICBM beta gate. With the flag on and Galacticraft not installed, the module turns itself off and logs one warning (D9); the flag then reads as off, also in the login packet. |
 
 All module flags need a game restart. **The server's flags win on a multiplayer client.** At login the server sends which modules are active on it (`PacketModuleSync`, on the `gregguns` channel); the client uses those for behavior and visibility (tooltips, NEI, the creative tab, accuracy and gating) until it disconnects, and its own flags in single player. One exception: recipes are registered at startup from each side's own config, so a client whose module is off shows no recipes for it in its crafting grid and NEI.
 

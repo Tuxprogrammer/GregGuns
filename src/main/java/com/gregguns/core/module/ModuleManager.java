@@ -141,6 +141,11 @@ public final class ModuleManager {
     }
 
     private void logSkipped(ModuleId id, ModuleResolution.SkipReason reason) {
+        if (id == ModuleId.ICBM && com.gregguns.core.config.ModulesConfig.icbm) {
+            // The flag is on but reads as off because Galacticraft is missing (D9); IcbmModule says so, once, so
+            // "off by config" would be wrong and a second line would be noise.
+            return;
+        }
         if (reason == ModuleResolution.SkipReason.DISABLED_BY_CONFIG) {
             GregGuns.LOG.info(
                 "Module {} is off (modules.{}): its content is still registered, but it has no recipes and does nothing",

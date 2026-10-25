@@ -25,7 +25,13 @@ public enum ModuleId {
     /** NPCs and spawning (M7). Entry gate: M2 done. */
     NPCS("npcs", GUNS),
     /** Worldgen and structures (M8). Entry gate: M7 done. */
-    WORLDGEN("worldgen", NPCS);
+    WORLDGEN("worldgen", NPCS),
+    /**
+     * Missiles, warheads and the ICBM program (ICBM roadmap I0 to I7). Off by default until the ICBM beta gate. Also
+     * needs Galacticraft at runtime (D9): without it the module turns itself off, see
+     * {@link com.gregguns.icbm.IcbmGate}.
+     */
+    ICBM("icbm", GUNS, MACHINES);
 
     private final String configKey;
     private final ModuleId[] requires;
