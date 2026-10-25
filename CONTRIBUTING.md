@@ -9,21 +9,22 @@ GregGuns is a from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 
 
 1. [Workflow](#workflow)
 2. [Originality: the Techguns boundary](#originality-the-techguns-boundary)
-3. [Toolchain and build](#toolchain-and-build)
-4. [Architecture](#architecture)
-5. [GTNH integration](#gtnh-integration)
-6. [Code standards](#code-standards)
-7. [Comments and documentation](#comments-and-documentation)
-8. [Testing](#testing)
-9. [Assets and localization](#assets-and-localization)
-10. [Commits and pull requests](#commits-and-pull-requests)
-11. [Definition of done](#definition-of-done)
+3. [Ported code (MIT)](#ported-code-mit)
+4. [Toolchain and build](#toolchain-and-build)
+5. [Architecture](#architecture)
+6. [GTNH integration](#gtnh-integration)
+7. [Code standards](#code-standards)
+8. [Comments and documentation](#comments-and-documentation)
+9. [Testing](#testing)
+10. [Assets and localization](#assets-and-localization)
+11. [Commits and pull requests](#commits-and-pull-requests)
+12. [Definition of done](#definition-of-done)
 
 ---
 
 ## Workflow
 
-1. **Start from the roadmap.** Every change belongs to a milestone or decision gate in [docs/ROADMAP.md](docs/ROADMAP.md).
+1. **Start from the roadmap.** Every change belongs to a milestone or decision gate in [docs/ROADMAP.md](docs/ROADMAP.md), or, for the ICBM module, in [docs/ROADMAP-ICBM.md](docs/ROADMAP-ICBM.md).
    - Don't start a milestone whose entry gate isn't met.
    - Don't build anything a decision gate blocks until its record in [docs/design/](docs/design/README.md) is `Accepted`.
 2. **Read the spec sheet** for the thing you're building in [docs/techguns-spec/](docs/techguns-spec/README.md). Start from the area's `index.md`. [CONVENTIONS.md](docs/techguns-spec/CONVENTIONS.md) explains the sheet layout.
@@ -39,6 +40,19 @@ Techguns is **All Rights Reserved**. This boundary is a **must**:
 - **No Techguns assets.** No textures, models, sounds or structure files, and nothing traced or edited from them. Every asset is original (see [Assets](#assets-and-localization)).
 - **Facts are fine.** Names, numbers, formulas and recipes as gameplay facts are allowed, and the spec records them for this purpose.
 - **Keep the reference clone out of the repo.** If you consult the Techguns source to settle a question the spec doesn't answer, never add the clone to the repo. Write the answer back into the spec in your own words.
+
+## Ported code (MIT)
+
+The ICBM module may port named "hard math" from ICBM-Classic's MIT-licensed 1.12 code (ICBM decision D2, [0018](docs/design/0018-icbm-program.md)). A port is a rewrite that starts from MIT logic, never a copy made for speed. Ported code goes through this gate before it merges (**must**):
+
+- **Only `MIT-portable` sections.** Port only what an [ICBM spec](docs/icbm-spec/README.md) section marks `MIT-portable`, from commit `9c1d985a`. Nothing from ICBM-Classic `prod/1.7`, which has no license, and nothing from any All Rights Reserved source.
+- **A header on every ported file:** `Ported from ICBM-Classic (MIT): <permalink pinned to 9c1d985a>`, then one `Avoids: ICBM-xx-nn` line per [ICBM bug](docs/icbm-spec/BUGS.md) the port fixes.
+- **The notice.** An entry in `THIRD-PARTY-NOTICES.md` that keeps the MIT copyright notice.
+- **Our style, not theirs.** GregGuns package layout, naming, idioms and Java 8 API. Javadoc on every class and public method, and spec-traceability comments, as for native code ([Comments](#comments-and-documentation)).
+- **Tests.** Unit tests that cover the spec's numbers and a regression test for each bug in its `Avoids:` lines.
+- **Every known bug fixed.** No `ICBM-xx-nn` bug in the ported logic survives.
+
+`PortedCodeGateTest` checks the header, the notice, the Javadoc, the test class and the bug IDs automatically; CI fails a port that misses any of them. The milestone reviewer checks the rest.
 
 ## Toolchain and build
 
@@ -218,8 +232,9 @@ Each layer catches different bugs, and features need all the layers that apply t
 
 ## Assets and localization
 
-- **Original assets only (must).** Every texture, model and sound is original work, with its provenance recorded in `docs/assets/CREDITS.md` (source, author, license).
-- **MIT for everything (must).** The whole repository (code, assets, docs and tools) is MIT-licensed; see [README § License](README.md#license). By contributing, you release your contribution under the MIT License. Never add anything that can't be released under MIT, such as All Rights Reserved, CC-BY-NC or share-alike material.
+- **Original assets only (must).** Every texture, model and sound is original work, with its provenance recorded in `docs/assets/CREDITS.md` (source, author, license). **Exception: third-party assets** (below).
+- **MIT for everything (must).** The whole repository (code, assets, docs and tools) is MIT-licensed; see [README § License](README.md#license). By contributing, you release your contribution under the MIT License. Never add anything that can't be released under MIT, such as All Rights Reserved, CC-BY-NC or share-alike material, except third-party assets under the next rule.
+- **Third-party assets (ICBM module, [0018](docs/design/0018-icbm-program.md)).** Human-made assets under CC0, CC-BY, MIT or LGPL may be used, and are preferred over generating our own. Nothing NC, ND, share-alike-only or All Rights Reserved, and never the current ICBM-Classic 1.12 assets. Each file keeps its own license, lives in the third-party asset folder beside its license text, and is credited in `docs/assets/CREDITS.md` with author, source, commit or URL, and license. Check each license at its source before adding the file.
 - **Spec as the brief.** [ASSET-FACTS.md](docs/techguns-spec/ASSET-FACTS.md) and each area's `textures.md` give the *footprint* an asset must fill: size, layout and frame count. Match the function, not the look.
 - **Style.** Follow D6. Item icons are 16×16 unless the spec's footprint needs more, and they should sit naturally next to GT items.
 - **Sounds.** Register every sound in `sounds.json` with a category. Keep loudness in line with D6, and use mono for positional sounds (see GVA-23).
@@ -246,6 +261,7 @@ A change is done when all of these hold:
 - [ ] `runServer` boots cleanly, and the dev self-check passes.
 - [ ] An in-game scenario exists for world-touching features, and multiplayer was checked for synced features.
 - [ ] Recipes are tier-gated per D1 and visible in NEI. No GT material is duplicated.
-- [ ] Every string is a lang key, and assets are original with their provenance recorded.
+- [ ] Every string is a lang key, and assets are original or properly licensed third-party assets, with their provenance recorded.
+- [ ] Ported MIT code passes the [ported-code gate](#ported-code-mit).
 - [ ] Javadoc and spec-traceability comments are in place. There is no commented-out code.
 - [ ] The roadmap box is ticked and docs are updated in the same PR.

@@ -1,12 +1,14 @@
 # GregGuns ICBM: decisions and open questions
 
-Each question here lists its context, the options and a recommendation. Context means how GregGuns already does it (design records) and how GTNH does it (pack precedent). Answered questions keep the option the owner chose. Once the spec settles, decided rows become design records in [docs/design/](../design/README.md). This branch reserves no record numbers.
+Each question here lists its context, the options and a recommendation. Context means how GregGuns already does it (design records) and how GTNH does it (pack precedent). Answered questions keep the option the owner chose. Once the spec settles, decided rows become design records in [docs/design/](../design/README.md). [0018](../design/0018-icbm-program.md) records the program-level decisions (D29–D35).
+
+**From I0 on the orchestrator decides.** During the build ([ROADMAP-ICBM](../ROADMAP-ICBM.md#working-rules-autonomous-build)) the orchestrator answers open questions itself and adds them below, each marked `(orchestrator, <date>)`. The owner may revise any of them at the alpha review.
 
 To decide an open question, reply with its number and an option letter, or write your own answer under it.
 
 ## Decided
 
-The owner decided all of these on 2026-10-20.
+The owner decided D1–D28 on 2026-10-20 and D29–D35 on 2026-10-25.
 
 | # | Question | Decision |
 |---|---|---|
@@ -15,13 +17,13 @@ The owner decided all of these on 2026-10-20.
 | D3 | Spec depth | Full sheets for mechanics; one catalog line per asset; full asset entries only for kept assets |
 | D4 | Baseline | ICBM-Classic `prod/1.12` @ `9c1d985a`, plus an ICBM 2 modular-missile appendix and a 1.7.10 lineage appendix |
 | D5 | Tiers on the GT ladder | Spread over HV to UHV. T1 HV; T2 EV–IV; T3 LuV–ZPM, with nuclear at ZPM beside the Nuke Launcher ([0001](../design/0001-tier-map.md)); T4 antimatter at UV; red matter at UHV (D10) |
-| D6 | Roadmap | Spec now; build after 1.0 as an ICBM track (M10 and later) behind `modules.icbm`. The MVP (M0–M9) is unchanged |
+| D6 | Roadmap | **Superseded by D29.** Was: spec now; build after 1.0 as an ICBM track (M10 and later) behind `modules.icbm` |
 | D7 | Galacticraft | The GTNH Galacticraft fork is an **integration target**: launch pad, fuel loader, per-tier fuels and the NASA Workbench |
-| D8 | How missiles are built and launched | Galacticraft workbench build, with the GC pad and our own silo. See [D8 in detail](#d8-in-detail) |
+| D8 | How missiles are built and launched | Galacticraft workbench build, with the GC pad and our own silo. See [D8 in detail](#d8-in-detail). **Amended by D31 and D32** |
 | D9 | Galacticraft dependency | Required by `modules.icbm` only. Without GC the ICBM module turns itself off with a log line, and the core mod is unaffected. The GC API is compiled against as an optional dependency |
 | D10 | Which ICBM-Classic 1.12 content to keep (was Q2) | See [D10 in detail](#d10-in-detail) |
 | D11 | Griefing defaults (was Q3) | **Terrain damage on by default**, with claimed territory respected through the existing pipeline (`ExplosionEvent.Detonate` and `BlockBreakGuard`). Config: `icbm.maxBlastTier` and per-tier `icbm.terrainDamage`. A missile in flight holds one chunk ticket and releases it on impact or timeout. A config caps how many missiles fly at once |
-| D12 | Overlap with GregGuns weapons (was Q4) | **One shared explosive registry.** ICBM blast types become warheads that existing GregGuns launchers can carry later. The tactical nuke and the ICBM nuclear warhead share one nuclear blast implementation at different scales. ICBM's own handheld launcher and grenades are dropped |
+| D12 | Overlap with GregGuns weapons (was Q4) | **One shared explosive registry.** ICBM blast types become warheads that existing GregGuns launchers can carry later. The tactical nuke and the ICBM nuclear warhead share one nuclear blast implementation at different scales. ICBM's own handheld launcher and grenades are dropped. **Amended by D30** (annihilation) |
 | D13 | Launch control (was Q5) | **OpenComputers first.** The ComputerCraft methods that ICBM 1.6.4 gave its launcher, cruise launcher, radar and EMP tower are ported as OC components. GregGuns ships ready-made programs on **craftable floppies**, so computer launches need no Lua from players. Also available: a ModularUI2 targeting GUI, data-stick target copying, and firing by redstone or the GT machine-controller cover. The floppy and its programs are D18 |
 | D14 | Radar form (was Q7a) | **Short-range single-block radars in HV and EV hulls**, none below HV, because missiles start at HV just as GTNH moon rockets do. **A multiblock radar tower from IV up**, with range scaling by voltage tier. Both scan the missile tracker's list of missiles in flight rather than chunks, and treat a missile as "incoming" only if its predicted impact point falls inside the protected radius. Outputs: redstone, a GT cover, an OC component, and a data-stick link to SAM batteries |
 | D15 | Where SAMs fire from (was Q7b) | **A separate air-defense battery**: a single-block machine that holds SAMs and fires when a linked radar reports a threat. It is independent of the silo |
@@ -37,7 +39,14 @@ The owner decided all of these on 2026-10-20.
 | D25 | Flight model (was Q13) | **A real entity for the whole flight, with a sliding chunk window.** The missile keeps loaded only the chunk it is in and the next chunk on its path, and releases chunks behind it, so it never accumulates loaded chunks. See [D25 in detail](#d25-in-detail) |
 | D26 | Fusing (was Q14) | **Deferred.** Impact fusing only in the first build. Airburst and penetrator fuses can be revisited after missiles ship |
 | D27 | Automating assembly (was Q15) | **The NASA Workbench for hand building, plus GT Assembly Line recipes for automation.** The Assembly Line needs a research data stick, so early players build by hand and automation opens once they have an Assembly Line. The warhead's NBT (D23) carries through to the missile, which needs custom recipe handling. Silos load missiles through a GT input bus |
-| D28 | Art and audio (was Q16) | **Licensed tiers first; generate only the gaps.** For ICBM content this is an exception to [0006](../design/0006-art-direction.md). See [D28 in detail](#d28-in-detail) |
+| D28 | Art and audio (was Q16) | **Licensed tiers first; generate only the gaps.** For ICBM content this is an exception to [0006](../design/0006-art-direction.md). See [D28 in detail](#d28-in-detail). **Amended by D33** |
+| D29 | Placement and packaging | **A module in the GregGuns jar** (`modules.icbm`), built next on its own [ROADMAP-ICBM](../ROADMAP-ICBM.md): I0–I6, an alpha gate (one owner review) and a beta gate (owner playthrough). The module defaults to off until the beta gate. The handoff ([HANDOFF-PLAN](../HANDOFF-PLAN.md)) waits for it. [0018](../design/0018-icbm-program.md) §1–4 |
+| D30 | Nuclear and higher warheads | **Annihilation:** inside the kill zone of a nuclear (ZPM), antimatter (UV) or red matter (UHV) warhead every living entity dies, **bosses included**, through armor and hurt-resistance frames. Players are subject only to server damage settings. The Nuke Launcher keeps its own rule (bosses lose half). One shared implementation with a bosses flag. 0018 §7 |
+| D31 | Building the missile in the world | **Stack on the pad.** The Workbench or Assembly Line makes the body; the player places it on the pad or in the silo and places a warhead block on its nose; arming fuses the stack into a live missile. Silos can mate body and warhead from input buses. A warhead block alone is a demolition charge. 0018 §8 |
+| D32 | The Galacticraft pad | **Never removed or damaged.** Galacticraft's `EntityAutoRocket.onLaunch` deletes the pad on every rocket launch (player rockets get it back on landing; cargo rockets lose it). Our missile implements the docking and fuel interfaces without extending `EntityAutoRocket`, and we deny `EventLandingPadRemoval` for pads holding our missile. Scenario `icbm.pad.survives`. 0018 §9 |
+| D33 | Asset sourcing | **Human-made, properly licensed assets first; generation only as a last resort; no tuning loops.** CC0, CC-BY, MIT and LGPL allowed, in a third-party folder with license text and CREDITS entries ([CONTRIBUTING](../../CONTRIBUTING.md#assets-and-localization)). 0018 §10–11 |
+| D34 | Cost and damage | **An automatable arsenal:** a missile costs about one of its tier's GC rocket launches, Assembly Line-automatable; the warhead is the expensive part. **Conventional center damage, at least:** T1 1,200, T2 3,000, T3 8,000, sized against Infernal Mobs pools (base × modifiers × 1.8; up to about 2,700 for modded mini-bosses). 0018 §5–6 |
+| D35 | How it is built | Autonomous: one or two Sonnet coding agents, one Opus reviewer per milestone, an automated per-branch gate, batched client checks per milestone, and the [ported-code gate](../../CONTRIBUTING.md#ported-code-mit) for MIT ports. The orchestrator records its own decisions here. 0018 §12–15 |
 
 ### D8 in detail
 
@@ -56,7 +65,7 @@ GTNH builds every rocket the same way, and missiles reuse that path:
    | Guidance computer | Assembler, at the circuit tier |
 
    No new crafting machine.
-4. **T1–T2 launch from the GC launch pad**, fueled by the GC fuel loader. The missile entity implements `IDockable`.
+4. **T1–T2 launch from the GC launch pad**, fueled by the GC fuel loader. The missile entity implements `IDockable`. The player stacks the body and warhead on the pad (D31), and the pad is never removed (D32).
 5. **T3 and up need the GregGuns silo**, a GT multiblock built under [0011](../design/0011-machine-policy.md) and powered by EU.
 
 Evidence: the GTNH rocket recon (Galacticraft `3.4.34-GTNH`, NewHorizonsCoreMod `2.9.84`). Fuel: the GC fuel loader checks its tank against a `RocketFuels` whitelist keyed by entity class, so our missiles register their own fuel lists there. See Q6.
@@ -154,7 +163,7 @@ Evidence: the GTNH rocket recon (Galacticraft `3.4.34-GTNH`, NewHorizonsCoreMod 
   1. The 2021 MIT snapshot of ICBM-Classic (`2f807bf8`).
   2. Calclavia's LGPL 1.6.4 set.
   3. HBM (LGPL) and CC0 libraries, plus pack textures referenced at runtime.
-  4. Our own generated assets.
+  4. Our own generated assets, only as a last resort (D33).
 - **Exceptions:**
   - The current ICBM 1.12 assets are never used ([07-visuals-audio](../icbm-spec/07-visuals-audio/index.md)).
   - Sounds of unknown origin must be re-sourced from freesound under their own license, or replaced with CC0 sounds.
@@ -162,7 +171,7 @@ Evidence: the GTNH rocket recon (Galacticraft `3.4.34-GTNH`, NewHorizonsCoreMod 
   - LGPL files live in a carve-out folder with their license text.
   - MIT files keep their notice in the third-party notices file.
 - **Style:** copied assets are restyled to GT conventions only where 0006 needs it (for example, item icons in GT material colors). Keep restyling light, so the licensed-first approach stays fast.
-- **Repo rules to amend when the first ICBM asset lands:** the "assets are original" rule in [CONTRIBUTING](../../CONTRIBUTING.md) and the 0006 record each need a line naming this exception. The licensing research itself stays out of the repo (owner, 2026-10-20).
+- **Repo rules:** [CONTRIBUTING](../../CONTRIBUTING.md#assets-and-localization) records the third-party asset exception, and [0018](../design/0018-icbm-program.md) amends 0006 (2026-10-25). The licensing research itself stays out of the repo (owner, 2026-10-20), so each license is checked at its source before an asset is added.
 
 ### Fuel context (D19, D20, D22)
 

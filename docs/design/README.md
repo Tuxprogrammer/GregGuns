@@ -47,3 +47,4 @@ The other options, and why each was not chosen.
 | [0015](0015-m9-self-contained-polish.md) | M9: polish as a self-contained jar, then hand off (amends 0014) | — | Accepted |
 | [0016](0016-damage-balance-pass.md) | Damage balance pass: GregGuns owns its damage numbers (amends 0004) | D4 | Accepted |
 | [0017](0017-accept-sounds-archive-sound-pipeline.md) | Accept the sounds as they are; archive the sound pipeline (amends 0006) | D6 | Accepted |
+| [0018](0018-icbm-program.md) | The ICBM program: scope, balance and how it is built (amends 0014, 0015) | — | Accepted |
