@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -231,41 +232,100 @@ def custom_armor(scene: Scene, mats: dict, set_id: str, texture: Path | None = N
                                  m["textureHeight"], b.get("mirror", False), b.get("inflate", 0.0), t)
 
 
-def obj_scene(obj_path: Path, texture: Path, scale: float = 1.0, M=None) -> Scene:
+# Source: Forge 1.7.10 WavefrontObject, the loader the game uses for our OBJ files (pinned to the blob that
+# contains the 2015-06 integer fix; the pack's 10.13.4.1614 branch point predates it, so strict mode also
+# demands decimals, which both accept):
+# https://github.com/MinecraftForge/MinecraftForge/blob/e7724c13ccecb7d82d482e8ee5b112d252c9d4d1/src/main/java/net/minecraftforge/client/model/obj/WavefrontObject.java
+# Grammar it enforces (regexes on lines 29-36, parseFace at 386-480, group handling at 78-145):
+#   - lines are whitespace-collapsed and trimmed; "#" lines and unknown keywords (mtllib, usemtl, s) are ignored
+#   - v: 3 decimal numbers (the regex also lets 4 through but the parser then drops the vertex and shifts every index)
+#   - vt: 2 or 3 decimals, and the loader stores V as 1 - V
+#   - f: exactly 3 or 4 corners, every corner the same form (v, v/vt, v//vn or v/vt/vn), plain positive 1-based
+#     indices; negative indices and 5+ corners fail the regex, and out-of-range indices throw
+#   - g/o: one name of [A-Za-z0-9_.]; all faces of one group must be triangles or all quads, never mixed
+_FORGE_NUM = r"-?\d+\.\d+"
+_FORGE_V = re.compile(rf"v( {_FORGE_NUM}){{3}}")
+_FORGE_VT = re.compile(rf"vt( {_FORGE_NUM}){{2,3}}")
+_FORGE_VN = re.compile(rf"vn( {_FORGE_NUM}){{3}}")
+_FORGE_F = {
+    "v": re.compile(r"f( \d+){3,4}"),
+    "v/vt": re.compile(r"f( \d+/\d+){3,4}"),
+    "v//vn": re.compile(r"f( \d+//\d+){3,4}"),
+    "v/vt/vn": re.compile(r"f( \d+/\d+/\d+){3,4}"),
+}
+_FORGE_GROUP = re.compile(r"[go] [\w.]+")
+
+
+def obj_scene(obj_path: Path, texture: Path, scale: float = 1.0, M=None, strict: bool = True) -> Scene:
     """A Wavefront OBJ with one texture, in the OBJ's own space (Y up, 1 unit = 1 block, times scale).
 
-    Reads v/vt/vn/f. Triangles, quads and n-gons (fan-triangulated) are accepted, and negative indices count
-    back from the end. usemtl, mtllib, groups and smoothing are ignored. Triangles are stored as quads whose
-    last corner repeats, which the rasterizer skips as degenerate. Faces get flat lighting from their own
-    geometry, like box models, so normals (vn) are read past but not used. OBJ's V runs bottom-up, so it flips."""
+    Reads v/vt/vn/f/g/o. With strict=True (the default) the file must be one Forge 1.7.10's WavefrontObject
+    would load (grammar in the Source note above), and a ValueError names the first line it would reject, so a
+    preview sheet never shows a model the game cannot draw. strict=False is a lenient reader for scratch files:
+    n-gons are fan-triangulated, negative indices count back from the end, and mixed groups are fine.
+    usemtl, mtllib and smoothing are ignored. Triangles are stored as quads whose last corner repeats, which
+    the rasterizer skips as degenerate. Faces get flat lighting from their own geometry, like box models, so
+    normals (vn) are read past but not used. OBJ's V runs bottom-up, so it flips (as Forge does)."""
     s = Scene()
     t = s.texture(texture)
-    V, VT = [], []
+    V, VT, VN = [], [], []
+    group_size = {}  # group name -> corner count of its faces (strict only)
+    group = "Default"
 
-    def pick(lst, tok):
+    def bad(n, line, why):
+        raise ValueError(f"{obj_path}:{n}: Forge's WavefrontObject would reject this ({why}): {line!r}")
+
+    def pick(lst, tok, n, line):
         i = int(tok)
+        if strict:
+            if not 1 <= i <= len(lst):
+                bad(n, line, f"index {i} out of range 1..{len(lst)}")
+            return lst[i - 1]
         return lst[i - 1 if i > 0 else i]
 
-    for line in Path(obj_path).read_text().splitlines():
-        parts = line.split()
-        if not parts or parts[0].startswith("#"):
+    for n, raw in enumerate(Path(obj_path).read_text().splitlines(), 1):
+        line = " ".join(raw.split())
+        if not line or line.startswith("#"):
             continue
+        parts = line.split(" ")
         k = parts[0]
         if k == "v":
+            if strict and not _FORGE_V.fullmatch(line):
+                bad(n, line, "v needs exactly 3 decimal numbers")
             V.append([float(x) for x in parts[1:4]])
         elif k == "vt":
+            if strict and not _FORGE_VT.fullmatch(line):
+                bad(n, line, "vt needs 2 or 3 decimal numbers")
             VT.append([float(parts[1]), float(parts[2]) if len(parts) > 2 else 0.0])
+        elif k == "vn":
+            if strict and not _FORGE_VN.fullmatch(line):
+                bad(n, line, "vn needs exactly 3 decimal numbers")
+            VN.append(None)
+        elif k in ("g", "o"):
+            if strict and not _FORGE_GROUP.fullmatch(line):
+                bad(n, line, "group names are one word of letters, digits, _ and .")
+            group = parts[1] if len(parts) > 1 else group
         elif k == "f":
+            toks = parts[1:]
+            if strict:
+                if len(toks) not in (3, 4):
+                    bad(n, line, "faces need 3 or 4 corners")
+                if not any(rx.fullmatch(line) for rx in _FORGE_F.values()):
+                    bad(n, line, "corners must all be v, v/vt, v//vn or v/vt/vn with positive indices")
+                if group_size.setdefault(group, len(toks)) != len(toks):
+                    bad(n, line, f"group {group!r} mixes triangles and quads")
             corners = []
-            for tok in parts[1:]:
+            for tok in toks:
                 f_ = tok.split("/")
-                uv = pick(VT, f_[1]) if len(f_) > 1 and f_[1] else [0.0, 0.0]
-                corners.append((pick(V, f_[0]), uv))
+                uv = pick(VT, f_[1], n, line) if len(f_) > 1 and f_[1] else [0.0, 0.0]
+                if strict and len(f_) > 2 and f_[2]:
+                    pick(VN, f_[2], n, line)  # range check only
+                corners.append((pick(V, f_[0], n, line), uv))
             if len(corners) < 3:
                 continue
             if len(corners) <= 4:
                 polys = [corners + corners[-1:] * (4 - len(corners))]  # a triangle repeats its last corner
-            else:  # n-gon: fan from the first corner
+            else:  # lenient only: n-gon, fan from the first corner
                 polys = [[corners[0], corners[i], corners[i + 1], corners[i + 1]] for i in range(1, len(corners) - 1)]
             for tri in polys:
                 P = np.array([[*c[0], 1.0] for c in tri]) * [scale, scale, scale, 1.0]

@@ -19,7 +19,7 @@ Set `GREGGUNS_INFOGRAPHICS_OUT=<dir>` to write the PNGs somewhere other than `do
 
 On Linux, if `./gradlew` is not executable, run `sh ./gradlew`, and point `JAVA_HOME` at a Java 17 to 25 JDK. On Windows, give the export paths to Java as `C:/...` (for example `$(cygpath -m "$PWD")` in Git Bash), because it reads `/c/...` as `C:\c\...`.
 
-Needs Pillow, numpy and Playwright. On Windows it drives the Edge that ships with the OS. Elsewhere it uses Playwright's bundled Chromium: run `python -m playwright install chromium` once. Text falls back from Segoe UI and Bahnschrift to Fira Sans and Fira Sans Condensed, then Noto Sans, so a Linux rebuild wraps a few lines differently from the committed Windows sheets. Windows stays the reference for committed PNGs. Never commit font files. GregTech textures come from the GT jar in the extracted reference pack (`reference/gtnh/`, or the main checkout's copy when you're in a worktree). If it's missing, run `python -I tools/gtnh-reference/gtnh_ref.py fetch`.
+Needs Pillow, numpy and Playwright. On Windows it drives the Edge that ships with the OS. Elsewhere it uses Playwright's bundled Chromium: run `python -m playwright install chromium` once. The sheets use Segoe UI and Bahnschrift, so install them on Linux too (Arch: the AUR package `ttf-ms-win11-auto`); with them a Linux rebuild matches the committed sheets to within a few percent of pixels. Without them the text falls back to Fira Sans and Fira Sans Condensed, then Noto Sans, and a few lines wrap differently. Never commit font files. GregTech textures come from the GT jar in the extracted reference pack (`reference/gtnh/`, or the main checkout's copy when you're in a worktree). If it's missing, run `python -I tools/gtnh-reference/gtnh_ref.py fetch`.
 
 Renders are cached in `build/infographics/r/` by their parameters and a hash of each exported model, so a model change redraws on its own. Delete that folder after you change a texture.
 
@@ -27,8 +27,9 @@ Renders are cached in `build/infographics/r/` by their parameters and a hash of 
 
 | File | What it does |
 |---|---|
-| `render3d.py` | Software renderer for 1.7.10 box models (guns, mobs, armor), Wavefront OBJ meshes with one texture (`obj_scene`, the same files the game loads) and voxel scenes, output as transparent PNGs |
-| `check_obj.py`, `testdata/` | Self-check for the OBJ path: renders a hand-made ogive and asserts the output is plausible. Run `python tools/asset-gen/infographics/check_obj.py [preview.png]` |
+| `render3d.py` | Software renderer for 1.7.10 box models (guns, mobs, armor), Wavefront OBJ meshes with one texture (`obj_scene`, the same files the game loads; strict by default, so it accepts only what Forge's loader accepts) and voxel scenes, output as transparent PNGs |
+| `check_obj.py`, `testdata/` | Self-check for the OBJ path: renders a hand-made ogive, asserts the output is plausible, and asserts that files Forge 1.7.10's `WavefrontObject` would reject (n-gons, negative indices, mixed tri/quad groups, integer vertices) are rejected too. Run `python tools/asset-gen/infographics/check_obj.py [preview.png]` |
+| `obj_preview.py` | Preview sheet for OBJ models (three views, face count, size, texture): the test ogive plus any shipped OBJ with a texture. Writes `build/previews/obj.png`, or `$GREGGUNS_ASSETS_OUT/previews/obj.png`; never committed. `--obj`/`--tex` pairs add models |
 | `blocks.py` | Reads multiblock layouts from the mod's `*Shape.java` strings; composites casing and overlay textures |
 | `gt.py` | GregTech textures from the GT jar: tinted material icons, hulls, hatches, frames, glass |
 | `scenes.py` | Machine blocks, the turret, and the four multiblocks with their hatches and block counts |

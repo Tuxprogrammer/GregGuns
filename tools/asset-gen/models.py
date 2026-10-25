@@ -33,6 +33,7 @@ from modeltex import (DET, Tex, box_uv, hx, material, mul, pack_boxes, paint_box
 ROOT = gui.ROOT
 RES = gui.RES
 PRE = gui.PRE
+CREDITS_DIR = gui.CREDITS_DIR
 MANIFEST = os.path.join(ROOT, "tools", "asset-gen", "manifest.json")
 
 LAYOUT_DOC = {}  # asset id -> list of lines
@@ -1244,7 +1245,8 @@ def write_layout_doc(order):
     out.append("")
     gui.build_all()
     out.append(gui.layout_markdown())
-    with open(os.path.join(ROOT, "tools", "asset-gen", "model_layouts.md"), "w", encoding="utf-8", newline="\n") as f:
+    os.makedirs(os.path.dirname(str(gui.outroot.LAYOUT_MD)), exist_ok=True)
+    with open(str(gui.outroot.LAYOUT_MD), "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(out) + "\n")
 
 
@@ -1294,7 +1296,8 @@ def main():
         counts[m["priority"]] = counts.get(m["priority"], 0) + 1
         rows.append([m["id"], "src/main/resources/assets/gregguns/" + m["path"], "tools/asset-gen/models.py", seed_for(m["id"]),
                      "Procedural numpy/Pillow: packed box atlas or vanilla unwrap, panels, bolts, wear, emissive strips", "MIT", "2026-10-18"])
-    with open(os.path.join(ROOT, "tools", "asset-gen", "credits", "models.csv"), "w", newline="", encoding="utf-8") as f:
+    os.makedirs(CREDITS_DIR, exist_ok=True)
+    with open(os.path.join(CREDITS_DIR, "models.csv"), "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["asset", "path", "generator", "seed", "method", "license", "date"]); w.writerows(rows)
     write_layout_doc(ids)

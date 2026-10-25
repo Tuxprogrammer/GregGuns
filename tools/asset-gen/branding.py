@@ -24,7 +24,7 @@ Rasterizer (documented as requested)
 
 Fonts: lettering in the logo, banner and social card is drawn as pixel-block paths from a
 5x7 glyph table below, so it does not depend on any installed font. The banner's tagline
-uses the generic family `sans-serif` (with Segoe UI/Arial first choices; Noto Sans/Liberation Sans on Linux).
+uses the generic family `sans-serif` (Segoe UI, Helvetica Neue, Arial, then Liberation Sans, the list in `FONT` below).
 """
 from __future__ import annotations
 

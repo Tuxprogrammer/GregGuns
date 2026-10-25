@@ -19,37 +19,68 @@ DATA = Path(__file__).resolve().parent / "testdata"
 OUTLINE = (10, 12, 16, 230, 2)  # the rim guides use on dark models
 
 
+HEADER = """v 0.0 0.0 0.0
+v 1.0 0.0 0.0
+v 1.0 1.0 0.0
+v 0.0 1.0 0.0
+v 0.5 2.0 0.0
+vt 0.0 0.0
+vt 1.0 0.0
+vt 1.0 1.0
+vt 0.0 1.0
+vt 0.5 1.0
+vn 0.0 0.0 1.0
+"""
+
+
+def _load(body: str, tex: Path, **kw):
+    with tempfile.TemporaryDirectory() as d:
+        p = Path(d) / "t.obj"
+        p.write_text(body)
+        return R.obj_scene(p, tex, **kw)
+
+
 def check_parser(tex: Path):
-    """Quads, n-gons, negative indices and ignored directives, on a throwaway OBJ."""
-    obj = """# comment
+    """Files Forge 1.7.10's WavefrontObject loads are read right; files it would reject are rejected."""
+    ok = """# comment
 mtllib x.mtl
 o t
 usemtl m
-v 0 0 0
-v 1 0 0
-v 1 1 0
-v 0 1 0
-v 0.5 2 0
-vt 0 0
-vt 1 0
-vt 1 1
-vt 0 1
-vt 0.5 1
-vn 0 0 1
 s off
+""" + HEADER + """g quads
 f 1/1/1 2/2/1 3/3/1 4/4/1
-f -2/-2 -3/-3 -1/-1
-f 1 2 3 4 5
+f 1/1 2/2 3/3 4/4
+g tris
+f 1//1 2//1 3//1
+f 1 2 3
 """
-    with tempfile.TemporaryDirectory() as d:
-        p = Path(d) / "t.obj"
-        p.write_text(obj)
-        s = R.obj_scene(p, tex)
-    assert len(s.quads) == 1 + 1 + 3, f"expected a quad, a tri and 3 fan tris, got {len(s.quads)}"
+    s = _load(ok, tex)
+    assert len(s.quads) == 4, f"expected 4 faces, got {len(s.quads)}"
     # The first face's V=1 corner (vertex 3, vt 1 1) must land on texture row 0 (OBJ V runs bottom-up).
     assert abs(s.quads[0].uv[2, 1]) < 1e-9 and abs(s.quads[0].uv[0, 1] - 1.0) < 1e-9
-    # Negative indices: the triangle is the last three vertices, 3, 4... counted from the end of each list.
-    assert np.allclose(s.quads[1].v[0], [1, 0, 0]) or np.allclose(s.quads[1].v[0], [0, 1, 0])
+    assert np.allclose(s.quads[2].v[3], s.quads[2].v[2]), "a triangle repeats its last corner"
+
+    rejected = {
+        "5-gon": HEADER + "f 1 2 3 4 5\n",
+        "negative index": HEADER + "f -4 -3 -2 -1\n",
+        "index past the end": HEADER + "f 1 2 9\n",
+        "zero index": HEADER + "f 0 1 2\n",
+        "mixed corner forms": HEADER + "f 1/1 2 3\n",
+        "two-corner face": HEADER + "f 1 2\n",
+        "tri and quad in one group": HEADER + "g a\nf 1 2 3\nf 1 2 3 4\n",
+        "integer vertex": "v 0 0 0\nv 1.0 0.0 0.0\nv 0.0 1.0 0.0\nf 1 2 3\n",
+        "four-part vertex": "v 0.0 0.0 0.0 1.0\nv 1.0 0.0 0.0\nv 0.0 1.0 0.0\nf 1 2 3\n",
+        "exponent number": "v 1e-3 0.0 0.0\nv 1.0 0.0 0.0\nv 0.0 1.0 0.0\nf 1 2 3\n",
+        "group name with a dash": HEADER + "g a-b\nf 1 2 3\n",
+    }
+    for name, body in rejected.items():
+        try:
+            _load(body, tex)
+        except ValueError:
+            continue
+        raise AssertionError(f"strict mode accepted a file Forge rejects: {name}")
+    # The lenient reader still takes what the strict one refuses.
+    assert len(_load(HEADER + "f 1 2 3 4 5\nf -4 -3 -2 -1\n", tex, strict=False).quads) == 3 + 1
 
 
 def main():

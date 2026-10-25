@@ -6,7 +6,7 @@ Warheads and blasts: the shared explosive registry, the blast engine, warhead it
 
 ## Contents
 
-All sheets are planned. Each is written by the milestone in Roadmap before that milestone builds.
+All sheets are planned. Each is written before the milestone that builds it, as laid out in the [ICBM roadmap](../../ROADMAP-ICBM.md).
 
 - explosive-registry.md (planned): the one shared registry (D12), tiers on the GT ladder (D5), which blast types are kept (D10), config keys.
 - blast-engine.md (planned): ray-cast blasts, threaded scheduling, one tick budget for all running blasts, save and load of blasts in progress. MIT-portable parts are named here.

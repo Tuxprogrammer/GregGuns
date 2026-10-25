@@ -17,9 +17,14 @@ import os
 import numpy as np
 from PIL import Image, ImageDraw
 
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import outroot  # noqa: E402  (GREGGUNS_ASSETS_OUT redirects every output below)
+
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-RES = os.path.join(ROOT, "src", "main", "resources", "assets", "gregguns")
-PRE = os.path.join(ROOT, "docs", "assets", "previews")
+RES = str(outroot.RES)
+PRE = str(outroot.PRE)
+CREDITS_DIR = str(outroot.CREDITS_DIR)
 
 PANEL = (198, 198, 198, 255); HI = (255, 255, 255, 255); LO = (85, 85, 85, 255)
 DARK = (40, 40, 44, 255); SLOT = (139, 139, 139, 255)
@@ -596,7 +601,8 @@ def main():
     for name, im in scopes:
         rows.append(["gui.scope_%s" % name, "src/main/resources/assets/gregguns/textures/gui/scopes/%s.png" % name, "tools/asset-gen/gui.py", "none",
                      "Procedural numpy/Pillow 512x512 scope overlay: radial vignette plus drawn reticle", "MIT", "2026-10-18"])
-    with open(os.path.join(ROOT, "tools", "asset-gen", "credits", "gui.csv"), "w", newline="", encoding="utf-8") as f:
+    os.makedirs(CREDITS_DIR, exist_ok=True)
+    with open(os.path.join(CREDITS_DIR, "gui.csv"), "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["asset", "path", "generator", "seed", "method", "license", "date"]); w.writerows(rows)
     sc = 3; W = 1500; x = y = rowh = 0; items = []
