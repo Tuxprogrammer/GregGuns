@@ -259,5 +259,4 @@ After this gate the [handoff plan](HANDOFF-PLAN.md) can start, once the main roa
 
 Not planned for this roadmap. Each one can be picked up later or left for an adopter:
 - cargo parachute, balloon, cargo hook and supply drops (D10);
-- the glass button and pressure plate (D10);
 - airburst and penetrator fuses (D26).

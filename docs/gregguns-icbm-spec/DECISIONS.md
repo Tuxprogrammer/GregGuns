@@ -86,7 +86,7 @@ Evidence: the GTNH rocket recon (Galacticraft `3.4.34-GTNH`, NewHorizonsCoreMod 
 | Antidote | Kept, mapped to GT hazards |
 | Cargo parachute, balloon, cargo hook, held-item missile ("supply drops") | **Deferred.** Not a core feature |
 | Spikes | **Dropped** (owner, 2026-10-25): a 1-damage trap block is meaningless against GTNH health pools |
-| Glass button and pressure plate | Deferred |
+| Glass button and pressure plate | **Dropped** (owner, 2026-10-25): vanilla button and pressure plate with a glass texture, no function of their own |
 
 ### D17 in detail
 
