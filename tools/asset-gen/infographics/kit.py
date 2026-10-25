@@ -318,7 +318,7 @@ def page(title_html: str, sub: str, body: str, width=1600, extra_css="") -> str:
 def launch_browser(p):
     """Edge on Windows (ships with the OS); Playwright's bundled Chromium elsewhere."""
     if sys.platform == "win32":
-        return launch_browser(p)
+        return p.chromium.launch(channel="msedge")
     return p.chromium.launch()
 
 
