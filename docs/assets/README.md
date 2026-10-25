@@ -2,7 +2,7 @@
 
 ## Sounds
 
-- [SOUND-DIFFERENCES.md](SOUND-DIFFERENCES.md): where the generated sounds still differ from the originals they replace, per family and per sound, plus open items for revisiting the generators.
+- [SOUND-DIFFERENCES.md](SOUND-DIFFERENCES.md): where the generated sounds still differ from the originals they replace, per family and per sound, plus the open items left when the sound pipeline was archived ([0017](../design/0017-accept-sounds-archive-sound-pipeline.md)).
 
 ## Branding and infographics
 

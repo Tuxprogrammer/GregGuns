@@ -174,7 +174,7 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 
 **Exit gate (per tier batch):**
 - [x] Every gun in the batch matches its spec sheet, or a deviation is recorded. Evidence: stats pinned by `GunCatalogTest`, `MvGunsLogicTest`, `HvRiflesLogicTest`, `HeavyGunLogicTest` and the launcher, flame and golden revolver tests; deviation sections for every batch in [02-guns](gregguns-spec/02-guns/index.md) ([M2 exit gate](gregguns-spec/02-guns/m2-exit-gate.md#1-every-gun-matches-its-spec-sheet-or-a-deviation-is-recorded)).
-- [ ] Every recipe is gated by tier and visible in NEI. Gating is met (`GunDefinitionsTest` over every row with `GateRule`, a `*.recipe` or `*.combine` scenario per gun); NEI visibility is pending the batched in-game session ([M2 exit gate](gregguns-spec/02-guns/m2-exit-gate.md#2-every-recipe-is-tier-gated-and-visible-in-nei)).
+- [x] Every recipe is gated by tier and visible in NEI. Gating: `GunDefinitionsTest` over every row with `GateRule`, a `*.recipe` or `*.combine` scenario per gun. NEI visibility: confirmed in game by the owner, 2026-10-25 ([M2 exit gate](gregguns-spec/02-guns/m2-exit-gate.md#2-every-recipe-is-tier-gated-and-visible-in-nei)).
 - [x] Unit tests cover each gun's unique behavior, such as shotgun pellets, burst fire and the grenade fuse. Evidence: `ShotgunAndAkimboLogicTest`, `GrenadeMathTest`, `LauncherMathTest`, `FlamethrowerLogicTest` and the per-gun scenarios ([M2 exit gate](gregguns-spec/02-guns/m2-exit-gate.md#3-unit-tests-cover-each-guns-unique-behavior)).
 - [x] Original textures and sounds are in place, following D6. Evidence: every gun has a generated texture, a clean-room profile and `sounds.json` events whose files exist; 20 sound files are still at the `tweak` verdict and the Hand Cannon has no notes file, both listed as gaps ([M2 exit gate](gregguns-spec/02-guns/m2-exit-gate.md#4-original-textures-and-sounds-are-in-place-following-d6)).
 
@@ -221,7 +221,7 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 **Exit gate:**
 - [x] Each weapon is tier-gated with EU or fluid ammo per D3. Evidence: `GunDefinitionsTest` over every row with `GateRule`, a `*.recipe` or `*.tiergate` scenario per gun, and the per-gun fire scenarios asserting EU or fluid spend ([M5 exit gate](gregguns-spec/04-projectiles-fx/m5-exit-gate.md#1-each-weapon-is-tier-gated-with-eu-or-fluid-ammo-per-d3)).
 - [x] Explosions respect config and protection (fixing PFX-14, PFX-25 and CORE-19), with tests. Evidence: `ExplosionGateTest` (`doesNotReproducePFX25_*`, `CORE19_*`, `PFX14_*`), `grenade.protected`, `explosion.nuke.sliced` ([M5 exit gate](gregguns-spec/04-projectiles-fx/m5-exit-gate.md#2-explosions-respect-config-and-protection-pfx-14-pfx-25-core-19-with-tests)).
-- [ ] The particle and FX system carries the spec's FX catalog, and performance is checked with many emitters on screen. The catalog and the 500-emitter budget are proven headless (`FxCatalogTest`, `ParticleBudgetTest`, `fx.stress`, `fx.stress.nuke`); real frame cost, the FX visuals, the NDR pulse and the alpha cut-outs wait for the batched client session ([M5 exit gate](gregguns-spec/04-projectiles-fx/m5-exit-gate.md#3-the-particle-and-fx-system-carries-the-fx-catalog-and-performance-is-checked)).
+- [x] The particle and FX system carries the spec's FX catalog, and performance is checked with many emitters on screen. The catalog and the 500-emitter budget are proven headless (`FxCatalogTest`, `ParticleBudgetTest`, `fx.stress`, `fx.stress.nuke`). Frame cost with many effects on screen: confirmed fine in game by the owner, 2026-10-25. The shader-pack rendering bug is tracked separately in the 0.3.2-beta known issues ([M5 exit gate](gregguns-spec/04-projectiles-fx/m5-exit-gate.md#3-the-particle-and-fx-system-carries-the-fx-catalog-and-performance-is-checked)).
 
 ## M6 · Utility and defense
 
@@ -317,7 +317,7 @@ Amended by [0015](design/0015-m9-self-contained-polish.md). The owner signed off
   - aim down sights for iron-sight and red-dot guns.
 - **Fixes from the owner's beta playthrough,** released as `0.3.x-beta`.
 
-**Scope, handoff (last):**
+**Scope, handoff (last):** the handoff starts only after every other open item above is closed (owner, 2026-10-25).
 - **Handoff guide** (`docs/HANDOFF.md`) for a developer who might adopt the mod. It covers:
   - the state of every area;
   - how to build and test, including the real-pack test with `-Dgregguns.testHooks=true`;
@@ -328,7 +328,8 @@ Amended by [0015](design/0015-m9-self-contained-polish.md). The owner signed off
 
 **Adopter list** (what M9 leaves for whoever adopts the mod):
 - the GTNH modpack PR itself, with the GT5-Unofficial MTE ID and texture-page reservations;
-- anything from the polish list that M9 doesn't finish.
+- anything from the polish list that M9 doesn't finish;
+- commissioned art and sound to replace the generated placeholder assets ([0017](design/0017-accept-sounds-archive-sound-pipeline.md)).
 
 **Exit gate:**
 - [x] The questbook installs from the jar behind its hidden config key, on a real GTNH 2.9 server. `0.3.1-beta`, 2026-10-21: 121 quests installed on the owner's GTNH 2.9.0-RC-2 server and saved by BetterQuesting.
@@ -340,4 +341,4 @@ Amended by [0015](design/0015-m9-self-contained-polish.md). The owner signed off
 
 ## Later
 
-- [ ] Revisit the sound generators against [SOUND-DIFFERENCES](assets/SOUND-DIFFERENCES.md) (the doc is written when the clean-room sound loop ends).
+- [x] ~~Revisit the sound generators against [SOUND-DIFFERENCES](assets/SOUND-DIFFERENCES.md).~~ Closed 2026-10-25: the owner accepts the sounds as they are, and the sound pipeline is archived ([0017](design/0017-accept-sounds-archive-sound-pipeline.md)).
