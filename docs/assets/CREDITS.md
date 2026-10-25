@@ -27,6 +27,14 @@
 | infographics/questbook.png | Claude (Anthropic) via tools/asset-gen/infographics/build.py | HTML laid out in Python, PNG via Playwright + Edge; 3D renders of the mod's own models, textures and block layouts by tools/asset-gen/infographics/render3d.py; includes GregTech 5 Unofficial textures (hulls, hatches, frames, glass, material icons) read from the pack's GT jar | MIT, except the GregTech textures it shows (LGPL-3.0) | 2026-10-19 |
 | infographics/recipes-steam-and-lv.png | Claude (Anthropic) via tools/asset-gen/infographics/build.py | HTML laid out in Python, PNG via Playwright + Edge; 3D renders of the mod's own models, textures and block layouts by tools/asset-gen/infographics/render3d.py; includes GregTech 5 Unofficial textures (hulls, machine overlays, component and tool icons, material icons); vanilla items drawn as our own simple icons by tools/asset-gen/infographics/vanilla.py read from the pack's GT jar | MIT, except the GregTech textures it shows (LGPL-3.0) | 2026-10-19 |
 
+## Third-party assets
+
+Human-made files that are not ours, under CC0, CC-BY, MIT or LGPL (ICBM module; rules in [CONTRIBUTING § Assets and localization](../../CONTRIBUTING.md#assets-and-localization) and the [third-party asset folder](../../src/main/resources/assets/gregguns/thirdparty/README.md)). Each file keeps its own license, with the license text beside it. Third-party code is listed in [THIRD-PARTY-NOTICES.md](../../THIRD-PARTY-NOTICES.md) instead.
+
+| asset | path | author | source (URL or commit) | license | modified? | date |
+|---|---|---|---|---|---|---|
+| _none yet_ | | | | | | |
+
 <!-- generated-credits:start -->
 
 ## Generated assets
