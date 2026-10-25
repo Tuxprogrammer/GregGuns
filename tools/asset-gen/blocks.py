@@ -34,10 +34,12 @@ import fx
 import machines
 from blocktex import Canvas, hx, mcmeta, rng_for, seed_for, strip, upscale
 
-ROOT = Path(__file__).resolve().parents[2]
-RES = ROOT / "src" / "main" / "resources" / "assets" / "gregguns"
-PREV = ROOT / "docs" / "assets" / "previews"
-CREDITS = ROOT / "tools" / "asset-gen" / "credits" / "blocks.csv"
+import outroot
+
+ROOT = outroot.ROOT
+RES = outroot.RES
+PREV = outroot.PRE
+CREDITS = outroot.CREDITS_DIR / "blocks.csv"
 DATE = "2026-10-18"
 PRIO = {"P1": 0, "P2": 1, "P3": 2}
 

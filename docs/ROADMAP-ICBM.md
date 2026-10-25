@@ -33,6 +33,7 @@ From I0 on, the build runs without the owner ([0018](design/0018-icbm-program.md
   - `spotlessCheck`;
   - the build and unit tests;
   - the full headless scenario suite with every module enabled, in a fresh worktree;
+  - the same suite again with `--no-galacticraft` and icbm on ([D46](gregguns-icbm-spec/DECISIONS.md)), because Galacticraft is in every dev run and the GC-conditional fallbacks would otherwise go untested;
   - the ported-code gate (I0).
 
   The orchestrator lands only when master is an ancestor of the verified branch, then merges with `--no-ff`.
@@ -129,7 +130,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
     - a test class exists;
     - every `Avoids: ICBM-xx-nn` ID exists in [BUGS.md](icbm-spec/BUGS.md).
 - **The third-party asset folder and its rules** (license text beside the files, a CREDITS section), per CONTRIBUTING.
-- The GregGuns-side area index stubs (02–07) in [gregguns-icbm-spec](gregguns-icbm-spec/README.md), each listing which decisions it will carry.
+- The GregGuns-side area index stubs (02–08) in [gregguns-icbm-spec](gregguns-icbm-spec/README.md), each listing which decisions it will carry.
 - A CLAUDE.md map row for the ICBM roadmap and spec pair.
 - **ICBM MTE IDs** reserved in `GregGunsMTEIDs`, with its test.
 - **Visual tooling on Linux** (guides agent): the guide and preview tools run on this host with Playwright's Chromium, and `render3d.py` gains a triangle-mesh path for OBJ models ([D43](gregguns-icbm-spec/DECISIONS.md)).

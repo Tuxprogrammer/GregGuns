@@ -18,8 +18,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from pixel import *  # noqa: E402,F403
 import pixel as px  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[2]
-ASSETS = ROOT / "src/main/resources/assets/gregguns"
+import outroot  # noqa: E402  (GREGGUNS_ASSETS_OUT redirects every output)
+
+ROOT = outroot.ROOT
+ASSETS = outroot.RES
 
 # extra shared ramps
 STONE = ramp((142, 142, 146))
@@ -1702,7 +1704,7 @@ def main():
         rows.append([e["id"], "src/main/resources/assets/gregguns/" + e["path"], "tools/asset-gen/icons.py",
                      zlib.crc32(e["id"].encode()), "Procedural 16x16 pixel art (pixel.py parts, bevel shading, outline pass)",
                      "MIT", "2026-10-18"])
-    cdir = ROOT / "tools/asset-gen/credits"
+    cdir = outroot.CREDITS_DIR
     cdir.mkdir(parents=True, exist_ok=True)
     with open(cdir / "icons.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, lineterminator="\n")
@@ -1731,7 +1733,7 @@ def contact_sheet(items, cols=12, scale=8, path=None):
         d.text((cx + 4, cy + 16 * scale + 8), label[:21], fill=(230, 230, 230, 255), font=font)
         if len(name) > 21:
             d.text((cx + 4, cy + 16 * scale + 18), name[20:41], fill=(180, 180, 190, 255), font=font)
-    out = Path(path) if path else ROOT / "docs/assets/previews/icons.png"
+    out = Path(path) if path else outroot.PRE / "icons.png"
     out.parent.mkdir(parents=True, exist_ok=True)
     sheet.convert("RGB").save(out)
 
