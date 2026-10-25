@@ -84,8 +84,11 @@ class MteRegistrationTest {
             }
         }
         for (java.lang.reflect.Field f : GregGunsMTEIDs.class.getFields()) {
+            // BLOCK_ and ICBM_ constants are range markers, not machines.
             if (f.getType() == int.class && !f.getName()
-                .startsWith("BLOCK_")) {
+                .startsWith("BLOCK_")
+                && !f.getName()
+                    .startsWith("ICBM_")) {
                 assertTrue(constructed.contains(f.getName()), f.getName() + " is never registered");
             }
         }

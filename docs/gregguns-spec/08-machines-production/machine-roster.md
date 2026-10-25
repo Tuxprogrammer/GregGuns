@@ -42,10 +42,11 @@ IDs come from the proposed block 20100-20163 ([metatileentity-framework.md](meta
 | **Turret** | Single block, tiers | One gun on a platform with a 30 HP mounted turret entity | Regular | MV, HV, EV, IV (turret tier at least the gun's tier) | 20116 MV, 20117 HV, 20118 EV, 20119 IV | [turret.md](../09-machines-utility/turret.md) |
 | **Rampart** | Multiblock | A crenellated wall of up to ten turret mounts on one ammo feed and one power feed | **Regular** | Controller HV; mount tier is the Gun Mount Hatch tier | 20120 | [multiblocks.md](multiblocks.md#rampart) |
 | **Gun Mount Hatch** | Hatch (part of the Rampart) | Holds one gun for one Rampart mount | Part of Rampart | MV, HV, EV, IV | 20121 MV, 20122 HV, 20123 EV, 20124 IV | [multiblocks.md](multiblocks.md#rampart) |
+| **ICBM machines** (ICBM module, reserved, not built) | Reserved sub-range | Launch control, missile silo, radar HV, radar EV, radar tower, battery, EMP tower; the module's plan is [ICBM roadmap](../../ROADMAP-ICBM.md). Names and exact IDs are fixed when each is built | per the ICBM spec | see ICBM spec | 20140 to 20163 reserved (`ICBM_FIRST` to `ICBM_LAST`); planned: 20140 launch control, 20141 silo, 20142 radar HV, 20143 radar EV, 20144 radar tower, 20145 battery, 20146 EMP tower | [icbm-spec](../../icbm-spec/README.md) |
 | Explosive Charge, Advanced Explosive Charge | Blocks with a tile entity, **not MTEs** | Placed, configured, detonated. See [explosive-charges.md](../09-machines-utility/explosive-charges.md) | Occasional | MV, HV (item tiers) | none | [09 recipes](../09-machines-utility/recipes.md#explosive-charges-2-recipes) |
 | Weapon Chest, Reinforced Chest | Blocks, **not MTEs** | Decorative storage | Cosmetic | none | none | [storage-chests.md](../07-blocks/storage-chests.md) |
 
-Retired and reserved forever: **20106-20108** (Reaction Chamber EV and IV, Retort; each keeps an inert placeholder so old worlds and inventories do not crash). Reserved and free: **20125-20163** (39 IDs). The first call on them is higher tiers (a LuV Ammo Press for the Nether Charge, a ZPM Turret) if a design record wants them.
+Retired and reserved forever: **20106-20108** (Reaction Chamber EV and IV, Retort; each keeps an inert placeholder so old worlds and inventories do not crash). Reserved for the ICBM module: **20140-20163**. Reserved and free: **20125-20139** (15 IDs). The first call on them is higher tiers (a LuV Ammo Press for the Nether Charge, a ZPM Turret) if a design record wants them.
 
 ### Why each class
 

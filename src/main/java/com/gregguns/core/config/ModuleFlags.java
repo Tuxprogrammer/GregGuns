@@ -3,12 +3,13 @@ package com.gregguns.core.config;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import com.gregguns.core.module.ModPresence;
 import com.gregguns.core.module.ModuleId;
-import com.gregguns.icbm.IcbmAvailability;
 
 /**
- * Reads the {@code modules.*} switches. Kept apart from {@link ModulesConfig} so that class stays fields-only. The
- * {@code icbm} switch reads as off when Galacticraft is not loaded, even if the config says on (D9).
+ * Reads the {@code modules.*} switches. Kept apart from {@link ModulesConfig} so that class stays fields-only. This is
+ * the raw
+ * config value; required mods are checked separately (see {@link ModPresence}).
  */
 public final class ModuleFlags {
 
@@ -16,7 +17,7 @@ public final class ModuleFlags {
 
     /**
      * @param id a module
-     * @return whether its flag is on
+     * @return whether its flag is on in the config
      * @throws IllegalStateException if {@link ModulesConfig} has no static boolean field named after the module (the
      *                               unit tests guard against this)
      */
@@ -26,13 +27,7 @@ public final class ModuleFlags {
             if (field.getType() != boolean.class || !Modifier.isStatic(field.getModifiers())) {
                 throw new IllegalStateException("modules." + id.configKey() + " is not a static boolean");
             }
-            boolean flag = field.getBoolean(null);
-            // The ICBM module also needs Galacticraft (D9). Short-circuit: with the flag off nothing is probed, so unit
-            // tests and the default config never touch Forge's Loader.
-            if (flag && id == ModuleId.ICBM) {
-                return IcbmAvailability.galacticraftPresent();
-            }
-            return flag;
+            return field.getBoolean(null);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalStateException("No readable config flag modules." + id.configKey(), e);
         }

@@ -27,6 +27,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 public final class ModuleManager {
 
     private final Predicate<ModuleId> flag;
+    private final Predicate<String> modLoaded;
     private final CreativeTabs tab;
     private final RegistrationLedger ledger = new RegistrationLedger();
     private final Map<ModuleId, GregGunsModule> modules = new EnumMap<>(ModuleId.class);
@@ -34,11 +35,13 @@ public final class ModuleManager {
     private ModuleResolution resolution;
 
     /**
-     * @param flag the config switch for a module (see {@code ModuleFlags::isEnabled})
-     * @param tab  the creative tab given to registered items and blocks
+     * @param flag      the config switch for a module (see {@code ModuleFlags::isEnabled})
+     * @param modLoaded whether an FML mod id is loaded (see {@code ModPresence::isLoaded})
+     * @param tab       the creative tab given to registered items and blocks
      */
-    public ModuleManager(Predicate<ModuleId> flag, CreativeTabs tab) {
+    public ModuleManager(Predicate<ModuleId> flag, Predicate<String> modLoaded, CreativeTabs tab) {
         this.flag = flag;
+        this.modLoaded = modLoaded;
         this.tab = tab;
     }
 
@@ -77,7 +80,7 @@ public final class ModuleManager {
      * @param event the FML event
      */
     public void preInit(FMLPreInitializationEvent event) {
-        resolution = ModuleResolver.resolve(modules.keySet(), flag);
+        resolution = ModuleResolver.resolve(modules.keySet(), flag, modLoaded);
         resolution.skipped()
             .forEach(this::logSkipped);
         // Every module registers its content, whatever its flag says: a flag must never change what exists, or a client
@@ -141,16 +144,18 @@ public final class ModuleManager {
     }
 
     private void logSkipped(ModuleId id, ModuleResolution.SkipReason reason) {
-        if (id == ModuleId.ICBM && com.gregguns.core.config.ModulesConfig.icbm) {
-            // The flag is on but reads as off because Galacticraft is missing (D9); IcbmModule says so, once, so
-            // "off by config" would be wrong and a second line would be noise.
-            return;
-        }
         if (reason == ModuleResolution.SkipReason.DISABLED_BY_CONFIG) {
             GregGuns.LOG.info(
                 "Module {} is off (modules.{}): its content is still registered, but it has no recipes and does nothing",
                 id.configKey(),
                 id.configKey());
+        } else if (reason == ModuleResolution.SkipReason.MISSING_MOD) {
+            // One line, and it says "turns itself off": the headless runner asserts on it (tools/scenarios).
+            GregGuns.LOG.warn(
+                "Module {} is on in the config but required mod(s) {} are not loaded; the module turns itself off "
+                    + "(content stays registered, no recipes or behavior)",
+                id.configKey(),
+                ModPresence.missingMods(id, modLoaded));
         } else {
             GregGuns.LOG.warn(
                 "Module {} is on but a module it requires is off; it behaves as off (content stays registered)",

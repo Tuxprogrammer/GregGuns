@@ -17,7 +17,9 @@ public final class ModuleResolution {
         /** Its {@code modules.<name>} flag is off. The normal way to disable content. */
         DISABLED_BY_CONFIG,
         /** Its flag is on, but a module it requires is off or not present. */
-        MISSING_DEPENDENCY
+        MISSING_DEPENDENCY,
+        /** Its flag is on, but a mod it requires (see {@link ModuleId#requiredMods()}) is not loaded. */
+        MISSING_MOD
     }
 
     private final List<ModuleId> enabled;

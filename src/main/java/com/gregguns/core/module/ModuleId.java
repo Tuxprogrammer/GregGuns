@@ -1,5 +1,7 @@
 package com.gregguns.core.module;
 
+import com.gregguns.compat.ModIds;
+
 /**
  * Every feature module GregGuns can register, in the order the roadmap delivers them.
  *
@@ -29,21 +31,32 @@ public enum ModuleId {
     /**
      * Missiles, warheads and the ICBM program (ICBM roadmap I0 to I7). Off by default until the ICBM beta gate. Also
      * needs Galacticraft at runtime (D9): without it the module turns itself off, see
-     * {@link com.gregguns.icbm.IcbmGate}.
+     * {@link ModuleResolution.SkipReason#MISSING_MOD}.
      */
-    ICBM("icbm", GUNS, MACHINES);
+    ICBM("icbm", new String[] { ModIds.GALACTICRAFT_CORE }, GUNS, MACHINES);
 
     private final String configKey;
+    private final String[] requiredMods;
     private final ModuleId[] requires;
 
     ModuleId(String configKey, ModuleId... requires) {
+        this(configKey, new String[0], requires);
+    }
+
+    ModuleId(String configKey, String[] requiredMods, ModuleId... requires) {
         this.configKey = configKey;
+        this.requiredMods = requiredMods;
         this.requires = requires;
     }
 
     /** @return the name of this module's flag under {@code modules} in the config file */
     public String configKey() {
         return configKey;
+    }
+
+    /** @return the FML mod ids that must be loaded for this module to run; a fresh copy, empty for most modules */
+    public String[] requiredMods() {
+        return requiredMods.clone();
     }
 
     /** @return the modules that must be enabled for this one to run; a fresh copy, safe to modify */

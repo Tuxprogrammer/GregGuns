@@ -42,6 +42,18 @@ class GregGunsMTEIDsTest {
     }
 
     @Test
+    void theIcbmSubRangeIsReservedInsideTheBlockAndUnused() {
+        assertTrue(GregGunsMTEIDs.ICBM_FIRST > GregGunsMTEIDs.BLOCK_FIRST);
+        assertEquals(GregGunsMTEIDs.BLOCK_LAST, GregGunsMTEIDs.ICBM_LAST);
+        for (int id : GregGunsMTEIDs.all()) {
+            assertFalse(id >= GregGunsMTEIDs.ICBM_FIRST && id <= GregGunsMTEIDs.ICBM_LAST, "id " + id + " is ICBM's");
+        }
+        for (int id : GregGunsMTEIDs.retired()) {
+            assertFalse(id >= GregGunsMTEIDs.ICBM_FIRST && id <= GregGunsMTEIDs.ICBM_LAST, "retired id " + id);
+        }
+    }
+
+    @Test
     void theReservedBlockIs64Ids() {
         assertEquals(64, GregGunsMTEIDs.BLOCK_LAST - GregGunsMTEIDs.BLOCK_FIRST + 1);
     }

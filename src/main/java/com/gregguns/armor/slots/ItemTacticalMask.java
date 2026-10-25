@@ -13,6 +13,7 @@ import net.minecraft.util.StatCollector;
 
 import com.gregguns.api.Tier;
 import com.gregguns.armor.slots.logic.OxygenGearRules;
+import com.gregguns.compat.ModIds;
 import com.gregguns.core.config.EquipmentConfig;
 
 import cpw.mods.fml.common.Optional;
@@ -36,7 +37,7 @@ import micdoodle8.mods.galacticraft.api.item.IBreathableArmor;
 // (GGS-05-25, GGS-05-26); docs/gregguns-spec/05-armor/recipes.md (HV, GGS-05-39)
 // Deviation: hazard-protection.md lists the Tactical Mask at MV; recipes.md and 0010 decision 5 put it at HV because it
 // consumes the HV Oxygen Mask. HV is used.
-@Optional.Interface(iface = "micdoodle8.mods.galacticraft.api.item.IBreathableArmor", modid = "GalacticraftCore")
+@Optional.Interface(iface = "micdoodle8.mods.galacticraft.api.item.IBreathableArmor", modid = ModIds.GALACTICRAFT_CORE)
 public final class ItemTacticalMask extends ItemHelmetMask implements IElectricItem, NightVisionGear, IBreathableArmor {
 
     /** Registry name. */
@@ -158,13 +159,13 @@ public final class ItemTacticalMask extends ItemHelmetMask implements IElectricI
     // --- Galacticraft: mask and gear components only -----------------------------------------------------------------
 
     @Override
-    @Optional.Method(modid = "GalacticraftCore")
+    @Optional.Method(modid = ModIds.GALACTICRAFT_CORE)
     public boolean handleGearType(IBreathableArmor.EnumGearType type) {
         return OxygenGearRules.handles(OxygenGearRules.fromName(type.name()));
     }
 
     @Override
-    @Optional.Method(modid = "GalacticraftCore")
+    @Optional.Method(modid = ModIds.GALACTICRAFT_CORE)
     public boolean canBreathe(ItemStack stack, EntityPlayer player, IBreathableArmor.EnumGearType type) {
         return OxygenGearRules.canBreathe(OxygenGearRules.fromName(type.name()), powered(stack));
     }

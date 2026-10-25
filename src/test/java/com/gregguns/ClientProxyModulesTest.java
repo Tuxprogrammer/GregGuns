@@ -11,7 +11,7 @@ class ClientProxyModulesTest {
 
     @Test
     void clientModuleIdsAreUnique() {
-        ModuleManager manager = new ModuleManager(id -> true, null);
+        ModuleManager manager = new ModuleManager(id -> true, mod -> true, null);
         assertDoesNotThrow(() -> new ClientProxy().registerModules(manager));
     }
 }

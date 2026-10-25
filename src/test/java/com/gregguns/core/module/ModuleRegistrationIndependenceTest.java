@@ -55,7 +55,7 @@ class ModuleRegistrationIndependenceTest {
 
     private static List<String> run(int flags, List<String> behavior) {
         List<String> content = new ArrayList<>();
-        ModuleManager manager = new ModuleManager(id -> (flags & (1 << id.ordinal())) != 0, null);
+        ModuleManager manager = new ModuleManager(id -> (flags & (1 << id.ordinal())) != 0, mod -> true, null);
         // Registered in reverse on purpose: dispatch order is the ModuleId declaration order.
         ModuleId[] ids = ModuleId.values();
         for (int i = ids.length - 1; i >= 0; i--) {

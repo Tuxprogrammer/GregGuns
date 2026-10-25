@@ -12,6 +12,8 @@ import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
 import com.gregguns.armor.oxygen.FallbackOxygenMask;
 import com.gregguns.armor.oxygen.FallbackOxygenTanks;
+import com.gregguns.armor.oxygen.gc.OxygenMaskGC;
+import com.gregguns.armor.oxygen.gc.OxygenTanksGC;
 import com.gregguns.armor.slots.AmmoPouch;
 import com.gregguns.armor.slots.BaublesCompat;
 import com.gregguns.armor.slots.ElectricGear;
@@ -281,7 +283,9 @@ final class SlotScenarios {
                 slots.tick(p);
                 out.checkEquals("not told twice", 1, device.removed);
 
-                // Fallback oxygen tanks (dev runs have no Galacticraft).
+                // Oxygen items: the fallback pair without Galacticraft, the Galacticraft pair with it (both branches
+                // are
+                // exercised: runs with and without Galacticraft, see docs/testing/README.md).
                 if (EquipmentItems.oxygenTanks() instanceof FallbackOxygenTanks) {
                     ItemStack tanks = new ItemStack(EquipmentItems.oxygenTanks());
                     BaublesCompat.equip(p, BaubleSlot.WINGS, tanks);
@@ -299,6 +303,17 @@ final class SlotScenarios {
                     BaublesCompat.clear(p, BaubleSlot.WINGS);
                     slots.tick(p);
                     out.checkEquals("tanks off: no more air", 120, p.getAir());
+                } else {
+                    out.check(
+                        EquipmentItems.oxygenTanks() instanceof OxygenTanksGC,
+                        "Galacticraft Oxygen Tanks expected with Galacticraft");
+                    out.check(
+                        EquipmentItems.oxygenMask() instanceof OxygenMaskGC,
+                        "Galacticraft Oxygen Mask expected with Galacticraft");
+                    out.check(
+                        !(EquipmentItems.oxygenTanks() instanceof FallbackOxygenTanks)
+                            && !(EquipmentItems.oxygenMask() instanceof FallbackOxygenMask),
+                        "no fallback oxygen items with Galacticraft");
                 }
             } finally {
                 slots.forget(p);

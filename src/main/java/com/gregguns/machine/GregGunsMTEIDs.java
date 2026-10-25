@@ -5,6 +5,7 @@ package com.gregguns.machine;
  * {@link #BLOCK_LAST}; IDs are saved in the world, so they never change and are never configurable.
  *
  * <p>
+ * The ICBM module owns the sub-range {@link #ICBM_FIRST} to {@link #ICBM_LAST}; nothing else may take an ID in it.
  * Only the machines built so far have a constant (the Ammo Press family, Steam to EV, and the Ammunition Works,
  * 20105). The roster
  * (docs/gregguns-spec/08-machines-production/machine-roster.md) holds the full plan; add a constant here when a machine
@@ -18,6 +19,11 @@ public final class GregGunsMTEIDs {
     public static final int BLOCK_FIRST = 20100;
     /** Last ID of the reserved GregGuns block. */
     public static final int BLOCK_LAST = 20163;
+
+    /** First ID of the sub-range reserved for the ICBM module (launch control, silo, radars, battery, EMP tower). */
+    public static final int ICBM_FIRST = 20140;
+    /** Last ID of the sub-range reserved for the ICBM module; the end of the GregGuns block. */
+    public static final int ICBM_LAST = 20163;
 
     /** Ammo Press, Steam (Bronze). Built in M4. */
     public static final int AMMO_PRESS_STEAM = 20100;
