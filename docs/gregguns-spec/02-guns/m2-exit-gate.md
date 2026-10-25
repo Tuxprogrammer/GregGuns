@@ -39,7 +39,7 @@ Stats are the sheets' figures unchanged for every gun, and a unit test pins them
 | Rocket Launcher, Grenade Launcher, Flamethrower, Golden Revolver | `gun.<name>.recipe` |
 | The four akimbo guns | `gun.<name>.combine` (shapeless crafting recipes, which NEI lists) |
 
-**NEI visibility is pending the batched in-game session.** No headless NEI check exists. The scenarios above assert the GT recipe maps NEI reads from (`assemblerRecipes`, `gregguns.ammoPress`), not NEI's own handler. This box stays unticked.
+**NEI visibility was confirmed in game by the owner on 2026-10-25.** No headless NEI check exists: the scenarios above assert the GT recipe maps NEI reads from (`assemblerRecipes`, `gregguns.ammoPress`), not NEI's own handler. Verdict: met.
 
 ## 3. Unit tests cover each gun's unique behavior
 
@@ -77,9 +77,9 @@ Stats are the sheets' figures unchanged for every gun, and a unit test pins them
 
 | ID | Gap | Kind | Status |
 |---|---|---|---|
-| G1 | NEI visibility of every recipe needs a client | pending client | Pending the batched in-game session |
+| G1 | NEI visibility of every recipe needs a client | pending client | Closed: confirmed in game by the owner, 2026-10-25 |
 | G2 | The Pistol, Revolver, Sawed Off and Hand Cannon had no deviation section | docs | Fixed in this change |
 | G3 | No `model-notes/handcannon.md`: the Hand Cannon model predates the clean-room notes process, and its originality record is in the `HandCannonProfile` Javadoc | docs and assets | Open. A notes agent writes the notes; a fresh builder rebuilds only if the owner wants strict process parity |
-| G4 | 20 sound files are at `tweak` (revolver, handcannon, bolt action, Thompson, AK47, Vector, Mac10 shot c, Combat Shotgun shot b, AS50 shot b, LMG and grenade launcher reloads, the akimbo and golden reloads, grenade pin a and b), and `flashbang_bang.ogg` is not gated | assets | Open, owned by the sound review loop. The files exist and are original |
+| G4 | 20 sound files are at `tweak` (revolver, handcannon, bolt action, Thompson, AK47, Vector, Mac10 shot c, Combat Shotgun shot b, AS50 shot b, LMG and grenade launcher reloads, the akimbo and golden reloads, grenade pin a and b), and `flashbang_bang.ogg` is not gated | assets | Closed: the owner accepts the sounds as they are ([0017](../../design/0017-accept-sounds-archive-sound-pipeline.md)). The files exist and are original |
 | G5 | Code comments still describe the fallback list as pending: the Javadoc on `GunDefinitionsTest.theFlatIconFallbackListsExactlyTheGunsStillWithoutAModel` ("While the four B3 guns await...") and on `ClientGunDefinitions.FLAT_ICON_FALLBACK` | code | Open, comment only; not changed here |
-| G6 | `ModulesConfig.guns` still defaults to false; ROADMAP M0 says it flips at the M2 exit gate | code | Open; flips once the NEI session passes |
+| G6 | `ModulesConfig.guns` still defaults to false; ROADMAP M0 says it flips at the M2 exit gate | code | Fixed: every module defaults to on since `0.3.0-beta` (`ModulesConfig.guns = true`) |

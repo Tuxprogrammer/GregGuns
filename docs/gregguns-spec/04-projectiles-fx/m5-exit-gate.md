@@ -10,7 +10,7 @@ The audit follows [the M2 audit](../02-guns/m2-exit-gate.md). The detail of the 
 |---|---|
 | 1. Each weapon is tier-gated with EU or fluid ammo per D3 | Met headless |
 | 2. Explosions respect config and protection (PFX-14, PFX-25, CORE-19), with tests | Met headless |
-| 3. The particle and FX system carries the FX catalog, and performance is checked with many emitters | Not met: catalog and budget are proven headless, real frame cost needs a client |
+| 3. The particle and FX system carries the FX catalog, and performance is checked with many emitters | Met: catalog and budget proven headless; frame cost confirmed in game by the owner, 2026-10-25 |
 
 ## 1. Each weapon is tier-gated with EU or fluid ammo per D3
 
@@ -55,9 +55,9 @@ Merges: `613f4e26` (I9), `009434a7`. Verdict: met headless.
 | Weapon FX actually fire | `gun.alien_blaster.trail` (PFX-01: a tracked entity), `projectile.laser.hit` and `projectile.tesla.chain` (beam visuals) | headless |
 | What the FX look like, and the frame cost with many emitters on screen | none | client |
 
-Merges: `f5dba9a7` (I7), `685677d9` (I8). The headless checks prove the particle count stays within the ceiling and that the catalog parses. They do not measure frame time. The box asks for performance checked with many emitters on screen, so it stays unticked until the batched client session reads it (see [Pending batched client check](#pending-batched-client-check)).
+Merges: `f5dba9a7` (I7), `685677d9` (I8). The headless checks prove the particle count stays within the ceiling and that the catalog parses. They do not measure frame time. The box asks for performance checked with many emitters on screen, so it waited for a client. The owner confirmed in game on 2026-10-25 that frame cost is fine with many effects on screen. The other rows of [Pending batched client check](#pending-batched-client-check) don't block this box; the shader-pack rendering bug is tracked in the 0.3.2-beta known issues.
 
-Verdict: not met.
+Verdict: met.
 
 ## Per-weapon table
 
@@ -131,7 +131,7 @@ These need a running client and stay open. They are the reason box 3 is unticked
 
 | ID | Gap | Kind | Status |
 |---|---|---|---|
-| G1 | Box 3: frame cost with many emitters on screen | pending client | Pending the batched client session |
+| G1 | Box 3: frame cost with many emitters on screen | pending client | Closed: confirmed fine in game by the owner, 2026-10-25 |
 | G2 | In-hand fit, FX visuals, NDR pulse, alpha cut-outs | pending client | Pending the batched client session |
 | G3 | NEI display of the M5 recipes | pending client | Pending the batched client session |
 | G4 | Minigun spin ramp, Bio Gun charge shift, De-Atomizer flash tint | all three built (client check pending) | Owner (2026-10-20): build all three before the beta |

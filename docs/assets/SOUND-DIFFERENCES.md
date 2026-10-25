@@ -1,6 +1,8 @@
 <!-- Known differences from the original sound pack. Built from tools/asset-gen/sound-status.json and the clean-room blueprint judge; update when sounds change. -->
 # Known differences from the original sound pack
 
+> **Archived (2026-10-25).** The owner accepts the sounds as they are, and the sound review pipeline is no longer maintained ([design record 0017](../design/0017-accept-sounds-archive-sound-pipeline.md)). This page is kept as a record. The open items below are not planned work; an adopter is expected to commission its own assets.
+
 GregGuns sounds are original, procedurally synthesized files, measured against the sounds they replace and never copied from them. This page records, in measurements and words only, where ours still differ and what to try when the generators are revisited. It holds no audio data from the originals and names none of their files.
 
 ## Summary

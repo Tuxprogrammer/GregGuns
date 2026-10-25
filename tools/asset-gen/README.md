@@ -32,6 +32,9 @@ python -I -X utf8 tools/asset-gen/merge_credits.py
 Contact sheets for review are in `docs/assets/previews/`. The sound loudness report is `docs/assets/previews/sounds-report.md`.
 
 ### Sounds: revising after an A/B review
+
+**Archived (2026-10-25, [design record 0017](../../docs/design/0017-accept-sounds-archive-sound-pipeline.md)).** The shipped sounds are final, and the review tooling below is kept as a record only. `gen_sounds.py` still rebuilds the shipped files.
+
 - `sound-status.json` holds each sound's latest review verdict. `gen_sounds.py --non-keep` re-renders only the sounds that are not `keep`; `--only-file PATHS.txt` renders a chosen list. Keep sounds are never re-rendered and stay byte-identical (check with `sha256sum` before and after).
 - Recipes live in the family modules, one function per sound family, registered by lower-case name prefix with `@recipe("name_prefix_*")`. Shared engines are in `sndengines.py` and the conforming stage (band balance, loudness contour, crest, silent end) is in `sndlib.py`. Give each family its own agent.
 - `sound-targets.json` holds the numeric measurements of the sound being replaced: length, decay points, onset times, band energies, centroid, crest, loudness contour. These are numbers only; no Techguns audio is read, decoded, sampled or convolved.
