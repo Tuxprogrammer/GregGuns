@@ -14,6 +14,7 @@ All sheets are planned.
 - effects.md (planned): engine smoke, launch, blast visuals, red matter renderer rebuild.
 - sounds.md (planned): launch, flight, blast and alarm sounds with provenance.
 - lang.md (planned): module keys.
+- Player guides: the guide sheets, preview sheets and gallery are planned in [ROADMAP-ICBM § Visuals and player guides](../../ROADMAP-ICBM.md#visuals-and-player-guides) (D39); tooltip rules in D41; quests in the GregGuns tab (D40).
 
 ## Integration map
 
@@ -28,7 +29,7 @@ All sheets are planned.
 
 ## Decisions carried
 
-D3, D10 (red matter), D28, D31 (models), D33, D37.
+D3, D10 (red matter), D28, D31 (models), D33, D37, D39 (guides), D43 (OBJ models).
 
 ## Roadmap
 
