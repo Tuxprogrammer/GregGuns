@@ -8,12 +8,12 @@ To decide an open question, reply with its number and an option letter, or write
 
 ## Decided
 
-The owner decided D1–D28 on 2026-10-20 and D29–D35 on 2026-10-25.
+The owner decided D1–D28 on 2026-10-20 and D29–D37 on 2026-10-25.
 
 | # | Question | Decision |
 |---|---|---|
 | D1 | How the spec is laid out | Two folders: [icbm-spec](../icbm-spec/README.md) (how ICBM does it) and this one (how we do it) |
-| D2 | Code policy | Clean room by default. Named hard-math algorithms may be ported from ICBM-Classic's MIT 1.12 code with the notice kept. Nothing comes from the unlicensed `prod/1.7`. **Quality gate:** ported code is not committed or pushed until it meets the existing GregGuns bar: comments, tests, CONTRIBUTING patterns, the definition of done, and every known `ICBM-xx-nn` bug in it fixed. Never clone for speed |
+| D2 | Code policy | Clean room by default. Named hard-math algorithms may be ported from ICBM-Classic's MIT 1.12 code with the notice kept. Nothing comes from the unlicensed `prod/1.7`. **Quality gate:** ported code is not committed or pushed until it meets the existing GregGuns bar: comments, tests, CONTRIBUTING patterns, the definition of done, and every known `ICBM-xx-nn` bug in it fixed. Never clone for speed. **Amended by D37** (other licenses) |
 | D3 | Spec depth | Full sheets for mechanics; one catalog line per asset; full asset entries only for kept assets |
 | D4 | Baseline | ICBM-Classic `prod/1.12` @ `9c1d985a`, plus an ICBM 2 modular-missile appendix and a 1.7.10 lineage appendix |
 | D5 | Tiers on the GT ladder | Spread over HV to UHV. T1 HV; T2 EV–IV; T3 LuV–ZPM, with nuclear at ZPM beside the Nuke Launcher ([0001](../design/0001-tier-map.md)); T4 antimatter at UV; red matter at UHV (D10) |
@@ -28,7 +28,7 @@ The owner decided D1–D28 on 2026-10-20 and D29–D35 on 2026-10-25.
 | D14 | Radar form (was Q7a) | **Short-range single-block radars in HV and EV hulls**, none below HV, because missiles start at HV just as GTNH moon rockets do. **A multiblock radar tower from IV up**, with range scaling by voltage tier. Both scan the missile tracker's list of missiles in flight rather than chunks, and treat a missile as "incoming" only if its predicted impact point falls inside the protected radius. Outputs: redstone, a GT cover, an OC component, and a data-stick link to SAM batteries |
 | D15 | Where SAMs fire from (was Q7b) | **A separate air-defense battery**: a single-block machine that holds SAMs and fires when a linked radar reports a threat. It is independent of the silo |
 | D16 | What an EMP does (was Q7c) | It **drains stored EU** in GT machines, cables and batteries, and gives **each multiblock one random maintenance issue**. Missiles use ICBM's kill-chance table. It loops over loaded tile entities, not block positions. **Each pulse affects at most N devices** (config, default 64), nearest first, so a dense base can't stall the server. **EU cost grows continuously with radius.** 1.6.4 and 1.7 divided the radius as integers, so every radius below the maximum cost the minimum ([A2-lineage](../icbm-spec/A2-lineage/index.md)) |
-| D17 | Worldgen (was Q8) | **Abandoned Missile Silos**, on the M8 placement system. They are rare, Overworld-only and config-gated. See [D17 in detail](#d17-in-detail). Silos on Galacticraft planets are **approved but deferred** until after the MVP |
+| D17 | Worldgen (was Q8) | **Abandoned Missile Silos**, on the M8 placement system. They are rare, Overworld-only and config-gated. See [D17 in detail](#d17-in-detail). Silos on Galacticraft planets are **approved but deferred** until after the MVP. **Amended by D36** (activity levels and guards) |
 | D18 | OpenComputers programs (was Q10) | **One floppy, "Golden Dome"**, holding every program and the shared library. It is crafted in the GT Assembler from a blank OC floppy plus an MV circuit. The spec is [01-core/golden-dome.md](01-core/golden-dome.md) |
 | D19 | Which fuel each missile needs (was Q6a) | **Keyed to the missile's GT voltage, matching GTNH rockets:** HV needs RP-1 (or Cetane-Boosted Diesel); EV–IV Dense Hydrazine; LuV Purple (CN3H7O3); ZPM and up Green (H8N4C2O4). Each tier accepts "this fuel or better". Missile classes register these lists in GC's `RocketFuels`, so the GC pad and loader enforce them |
 | D20 | How much fuel (was Q6b) | **A fixed amount per missile tier**, shown in NEI and on the tooltip, times one config factor. **Unburned fuel strengthens the blast:** a missile that hits a closer target arrives with fuel left, and that fuel adds to its blast radius, as leftover propellant does in real life. The bonus is capped (config). See [D20 in detail](#d20-in-detail) |
@@ -47,6 +47,8 @@ The owner decided D1–D28 on 2026-10-20 and D29–D35 on 2026-10-25.
 | D33 | Asset sourcing | **Human-made, properly licensed assets first; generation only as a last resort; no tuning loops.** CC0, CC-BY, MIT and LGPL allowed, in a third-party folder with license text and CREDITS entries ([CONTRIBUTING](../../CONTRIBUTING.md#assets-and-localization)). 0018 §10–11 |
 | D34 | Cost and damage | **An automatable arsenal:** a missile costs about one of its tier's GC rocket launches, Assembly Line-automatable; the warhead is the expensive part. **Conventional center damage, at least:** T1 1,200, T2 3,000, T3 8,000, sized against Infernal Mobs pools (base × modifiers × 1.8; up to about 2,700 for modded mini-bosses). 0018 §5–6 |
 | D35 | How it is built | Autonomous: one or two Sonnet coding agents, one Opus reviewer per milestone, an automated per-branch gate, batched client checks per milestone, and the [ported-code gate](../../CONTRIBUTING.md#ported-code-mit) for MIT ports. The orchestrator records its own decisions here. 0018 §12–15 |
+| D36 | Silo activity levels and guards | Each Abandoned Missile Silo rolls an **activity level**: **abandoned** (heavily damaged, no spawners), **partly abandoned** (moderate damage, spawners in some sections) or **operational** (intact and lit, spawners in every section). Guards are GregGuns NPCs from **spawner blocks**, so the player fights through the silo like a dungeon and breaks the spawners to take it over, or lives with the shooting until they do. Loot grows with activity. See [D36 in detail](#d36-in-detail). Supersedes D17's "no NPC guards". 0018 §16 |
+| D37 | Third-party code licenses | **MIT preferred; CC0, CC-BY, MIT and LGPL code acceptable.** LGPL logic is preferably described in the spec and rebuilt clean-room, which makes the result ours and MIT; the quality gate rewrites ports anyway. LGPL code adapted from its source, rather than rebuilt from a description, stays LGPL and lives in the third-party folder with its license text and a notices entry. Nothing unlicensed, NC or All Rights Reserved. 0018 §11 |
 
 ### D8 in detail
 
@@ -107,7 +109,23 @@ Evidence: the GTNH rocket recon (Galacticraft `3.4.34-GTNH`, NewHorizonsCoreMod 
   - Capped at HV, one notch above the surface cap in [0005](../design/0005-world-presence.md), because silos are rare and dug in.
   - The main find is a salvageable damaged T1 missile body (GT recycling recipes).
   - A rare T1 missile schematic chip is a shortcut, never a requirement.
-- **No NPC guards** in the first build. This was the recommended default; the owner can override it.
+- **Guards and activity levels:** superseded by [D36](#d36-in-detail).
+
+### D36 in detail
+
+Owner, 2026-10-25: silos come in activity levels. An abandoned silo is a ruin to salvage; an operational one is a dungeon to clear and then take over.
+
+| Level | Starting weight (config) | State | Guards | Loot |
+|---|---|---|---|---|
+| **Abandoned** | 50% | Fairly damaged: collapsed sections, holes in walls and floors, rubble, broken casings, no lights | None: nobody is home | The D17 salvage loot (damaged T1 missile body, scrap), sparse |
+| **Partly abandoned** | 35% | Moderate damage, some sections intact, some lights | Spawners in some sections, usually the deeper ones | More and better than abandoned |
+| **Operational** | 15% | Intact, lit, machines in place (inert decorative casings, as D17), signs of use | **Lots of spawners**, in every section including the shaft and the control room | The best, still within the D17 tier cap |
+
+- **Guards are GregGuns NPCs** that shoot: the Army Soldier and Commando, with the Stormtrooper deeper in. They come from a new **silo guard spawner** block built on the M8 spawner system (`BlockHoleSpawner` and its layout marks), with its own kind and mob list.
+- **The player pays to take it over.** Breaking a spawner stops it for good. Until the spawners are gone, the guards keep coming and keep shooting. The spawner rules (range, caps, light) follow M8's, so a cleared silo stays clear.
+- **Damage is applied to the layout,** not carved after generation. Each level has a damage pass in the layout (removed blocks, rubble, broken casings) that runs inside the populate window, so it never cascades (D17).
+- **Activity is independent of the surface variant** (O, D or Closed), though a closed, fully abandoned silo is the classic ruin.
+- The weights, spawner counts per section and the guard list are config, with the starting values above. The orchestrator tunes them in I6.
 
 ### D20 in detail
 

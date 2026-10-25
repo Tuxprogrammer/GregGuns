@@ -180,6 +180,8 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
   - The owner tests red matter in game; our side runs unit tests and headless boots.
 - **The full fallout chain** (D21): irradiated rubble, trinitite and fallout goo, with their GT processing yields.
 - **Abandoned Missile Silos** worldgen (D17): rare, Overworld only, config-gated, on the M8 placement system.
+  - **Activity levels** (D36): abandoned, partly abandoned and operational, each with its own damage pass.
+  - A **silo guard spawner** block with shooting GregGuns NPCs (Army Soldier, Commando, Stormtrooper), so operational silos are dungeons to clear and take over.
 - **The Golden Dome floppy** and its programs (D18).
 - **Warheads for existing GregGuns launchers** (D12).
 - **The antidote,** mapped to GT hazards (D10).
@@ -188,6 +190,7 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 - [ ] Antimatter and red matter detonate, annihilate and finish within the tick budget, and red matter survives a save and reload. Scenario.
 - [ ] Fallout blocks process into their yields in GT machines. Scenario.
 - [ ] Silos generate without cascading, and match the D17 layout and loot. Scenario.
+- [ ] Each activity level generates with its damage, spawner count and loot. Guards spawn and attack, and a broken spawner stays broken. Scenario.
 - [ ] The Golden Dome programs run (GGI-01-07 to 09) in the batched client session.
 - [ ] The milestone review fix list is closed.
 
@@ -241,5 +244,4 @@ Not planned for this roadmap. Each one can be picked up later or left for an ado
 - cargo parachute, balloon, cargo hook and supply drops (D10);
 - spikes, glass button and pressure plate (D10);
 - airburst and penetrator fuses (D26);
-- missile silos on Galacticraft planets (D17);
-- NPC guards in the Abandoned Missile Silos (D17).
+- missile silos on Galacticraft planets (D17).

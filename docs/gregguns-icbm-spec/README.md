@@ -6,7 +6,7 @@ Status: **planned for build** on the [ICBM roadmap](../ROADMAP-ICBM.md) (milesto
 
 ## Decisions and open questions
 
-All of them are in **[DECISIONS.md](DECISIONS.md)**: what has been decided (D1–D35) and any open questions. From I0 on, the orchestrator adds and records decisions itself. Each open question gives its context, the options and a recommendation.
+All of them are in **[DECISIONS.md](DECISIONS.md)**: what has been decided (D1–D37) and any open questions. From I0 on, the orchestrator adds and records decisions itself. Each open question gives its context, the options and a recommendation.
 
 In short:
 - Clean room, with MIT hard-math ports allowed.
@@ -17,6 +17,7 @@ In short:
 - Missiles are an automatable arsenal: about one of their tier's rocket launches in cost, and Assembly Line-automatable.
 - The player stacks the missile body and a warhead block on the pad; the Galacticraft pad is never removed.
 - Assets are human-made and properly licensed first; generation is a last resort.
+- Abandoned Missile Silos come in activity levels, from a guard-free ruin to an operational silo full of spawners to clear and take over.
 - Missile bodies are built in the Galacticraft NASA Workbench from GT-gated schematics, or on the Assembly Line. T1–T2 launch from the GC pad and T3 and up from a GregGuns silo multiblock.
 - Galacticraft is required by the ICBM module only.
 

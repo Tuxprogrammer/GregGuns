@@ -1,7 +1,7 @@
 # 0018 · The ICBM program: scope, balance and how it is built
 
 - Status: Accepted (owner, 2026-10-25)
-- Gate: none (amends [0014](0014-end-goal-beta-handoff-archive.md) and [0015](0015-m9-self-contained-polish.md); supersedes ICBM decision D6 and amends D8, D12 and D28 in [DECISIONS.md](../gregguns-icbm-spec/DECISIONS.md))
+- Gate: none (amends [0014](0014-end-goal-beta-handoff-archive.md) and [0015](0015-m9-self-contained-polish.md); supersedes ICBM decision D6 and amends D2, D8, D12, D17 and D28 in [DECISIONS.md](../gregguns-icbm-spec/DECISIONS.md))
 - Date: 2026-10-25
 
 ## Context
@@ -38,7 +38,8 @@ Two facts from the pack shaped the decisions:
 
 ### Assets
 10. **Human-made, properly licensed assets first; generation is a last resort.** D28's source order stands, except that generating our own assets drops from "fill the gaps" to "only if nothing licensed exists". There are no asset-tuning loops (see [0017](0017-accept-sounds-archive-sound-pipeline.md)). This amends D28.
-11. **Third-party assets are an exception to "MIT for everything".** Assets under CC0, CC-BY, MIT or LGPL may be used, with no NC, ND, share-alike-only or All Rights Reserved terms. Each keeps its own license, lives in a third-party folder with its license text, and is credited in `docs/assets/CREDITS.md`. [CONTRIBUTING](../../CONTRIBUTING.md#assets-and-localization) records this exception. Each license is checked against its source before the asset is added, because the licensing research lives outside the repository.
+11. **Third-party code (D37):** MIT preferred; CC0, CC-BY, MIT and LGPL acceptable (owner, 2026-10-25). LGPL logic is preferably described in the spec and rebuilt clean-room, which makes it ours and MIT. LGPL code adapted from its source stays LGPL and lives in the third-party folder with its license.
+    **Third-party assets are an exception to "MIT for everything".** Assets under CC0, CC-BY, MIT or LGPL may be used, with no NC, ND, share-alike-only or All Rights Reserved terms. Each keeps its own license, lives in a third-party folder with its license text, and is credited in `docs/assets/CREDITS.md`. [CONTRIBUTING](../../CONTRIBUTING.md#assets-and-localization) records this exception. Each license is checked against its source before the asset is added, because the licensing research lives outside the repository.
 
 ### How it is built
 12. **Autonomous build, with owner input only at the gates.** The owner's decision time is this planning pass. From I0 on, the orchestrator decides open questions itself and records each decision in DECISIONS.md, marked as an orchestrator decision. The owner reviews once at the alpha gate, then plays and gives feedback from the beta gate, as for GregGuns. The aim is maximum working functionality before a human plays it.
@@ -47,11 +48,14 @@ Two facts from the pack shaped the decisions:
     - one **Opus** reviewer agent, run **once per milestone**, which checks the milestone's changes against the plan and returns a single fix list;
     - no per-feature review and no Opus coding agents.
 14. **Per-branch gate, automated only:** spotless, build and unit tests, the full headless scenario suite in a fresh worktree, and the ported-code gate. The orchestrator merges on green. Client checks run once per milestone, batched.
-15. **Ported MIT code passes a style gate before it merges.** It is adapted, not copied: GregGuns structure and naming, Javadoc and comments, unit tests, and every known `ICBM-xx-nn` bug in it fixed (D2). An automated test enforces the checkable part (see [CONTRIBUTING § Ported code](../../CONTRIBUTING.md#ported-code-mit)). The milestone reviewer checks the rest.
+15. **Ported code passes a style gate before it merges.** It is adapted, not copied: GregGuns structure and naming, Javadoc and comments, unit tests, and every known `ICBM-xx-nn` bug in it fixed (D2). An automated test enforces the checkable part (see [CONTRIBUTING § Ported code](../../CONTRIBUTING.md#ported-code-mit)). The milestone reviewer checks the rest.
+
+### Worldgen
+16. **Abandoned Missile Silos have activity levels (D36):** abandoned (fairly damaged, no spawners), partly abandoned (some spawners) and operational (intact, lots of spawners). Guards are shooting GregGuns NPCs from spawner blocks on the M8 spawner system, so the player clears the silo like a dungeon and breaks the spawners to take it over. Loot grows with activity.
 
 ## Consequences
 - ROADMAP.md's M9 becomes "Self-contained polish"; its handoff boxes and the adopter list move to HANDOFF-PLAN.md.
-- DECISIONS.md D6 is superseded, and D8, D12 and D28 carry amendment notes. New decisions D29–D35 record the items above.
+- DECISIONS.md D6 is superseded, and D8, D12 and D28 carry amendment notes. New decisions D29–D37 record the items above.
 - CONTRIBUTING gains a "Ported code (MIT)" section and a third-party asset exception.
 - The handoff waits for ICBM, which is several milestones of work.
 

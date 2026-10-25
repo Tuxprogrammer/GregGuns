@@ -52,6 +52,8 @@ The ICBM module may port named "hard math" from ICBM-Classic's MIT-licensed 1.12
 - **Tests.** Unit tests that cover the spec's numbers and a regression test for each bug in its `Avoids:` lines.
 - **Every known bug fixed.** No `ICBM-xx-nn` bug in the ported logic survives.
 
+**Other third-party code (D37):** MIT is preferred; CC0, CC-BY, MIT and LGPL code is acceptable. LGPL logic is preferably described in the spec in our own words and rebuilt clean-room; the result is ours and MIT. LGPL code adapted from its source, rather than rebuilt from a description, stays LGPL: it lives in the third-party folder with its license text and a notices entry, and passes the same gate. Never unlicensed, NC or All Rights Reserved code.
+
 `PortedCodeGateTest` checks the header, the notice, the Javadoc, the test class and the bug IDs automatically; CI fails a port that misses any of them. The milestone reviewer checks the rest.
 
 ## Toolchain and build
