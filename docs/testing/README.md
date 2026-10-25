@@ -43,6 +43,21 @@ The summary line is printed only after every scenario has finished, including th
 
 A failed scenario prints `[GregGuns] FAIL <name>` followed by indented messages. The orchestrator script waits for `Scenarios: N passed, M failed` and treats `M > 0` as failure.
 
+### Headless runner script
+
+`tools/scenarios/run-headless.sh` does the console steps for you and is what the branch gate uses. It writes the module flags (`GG_MODULES`) into `run/server/config/gregguns.cfg`, starts `./gradlew runServer`, answers the dev server's online-mode prompt, waits for the boot, sends `gregguns test all`, waits for the `Scenarios: N passed, M failed` line, prints it with any `FAIL` lines, and stops the server.
+
+```sh
+GG_MODULES=guns,armor,machines,energyWeapons,utility,npcs,worldgen,icbm tools/scenarios/run-headless.sh
+tools/scenarios/run-headless.sh --boot-only --no-galacticraft    # ICBM self-disable check
+```
+
+- **Exit code:** 0 when nothing failed; 1 on a failed scenario, a crash, an early exit or a timeout; 2 on bad usage.
+- **Timeouts** (seconds, all bounded): `GG_BOOT_TIMEOUT` (default 1200, the first run downloads dependencies), `GG_TEST_TIMEOUT` (1800), `GG_STOP_TIMEOUT` (120). `GG_PORT` (25599) and `GG_GRADLE_ARGS` pass through. Set `JAVA_HOME` to the JDK in `.java-version`, and `TMPDIR` to where the server log should go (the script prints the log path).
+- **Modules:** `GG_MODULES` lists the modules to switch on and switches the others off; the default is every module except `icbm`. The server reads the flags from the config file the script writes, so the variable has no effect on a plain `./gradlew runServer`.
+- **Console input:** `runServer` reads its console from stdin, which Gradle forwards, so the script feeds it through a named pipe it holds open for the whole run; the server never sees end-of-file before the script says `stop`.
+- **Without Galacticraft:** `--no-galacticraft` passes `-PnoGalacticraft` to Gradle (read in `dependencies.gradle`). It drops Galacticraft and OpenComputers from the runtime classpath, keeps them for compiling, and uses a separate world (`gg-scenarios-nogc`), because a world that has seen Galacticraft's ids makes FML wait for a confirmation. Use it with `--boot-only` and `icbm` on: the log must show one warning that the ICBM module turns itself off. The same flag works for a manual `./gradlew runServer -PnoGalacticraft`.
+
 ### Opt-in (slow) scenarios
 
 A scenario whose `includedInAll()` returns false is skipped by `gregguns test all` and runs only by name. `npc.soak` is one: it needs about 2 minutes of game time (2640 ticks) and is for the box run before an exit gate, not for every branch.
@@ -517,6 +532,7 @@ Source: Forge 1.7.10-10.13.4.1614 `net.minecraftforge.common.ForgeChunkManager` 
 | `utility.rampart_break_hatch` | Rampart (M6) | In a running two-mount Rampart breaking one Gun Mount Hatch kills only its turret at once; the next structure check, which fails, kills the other (GGS-08-80). |
 | `testing.build_multiblocks` | dev tooling | Places a bare Ammunition Works, Armory Gantry and Rampart controller in turn, runs `DevStructureBuilder.build` (the command `/gregguns build`), and checks each reports a formed structure (`mMachine`) after GT's warm-up; a floor block must not build. Needs `GG_MODULES` with guns, machines and utility. |
 | `testing.interior_shots` | dev tooling | By name only (needs a client, `client_shot.py`): builds an Ammunition Works and an Armory Gantry, moves the first player outside a window and signals screenshots of the lit interiors through the glass. |
+| `icbm.module_gate` | ICBM module (I0) | With `modules.icbm` on and Galacticraft loaded, the ICBM module reports active (`ModuleState`), the gate's verdict is `ACTIVE`, Galacticraft is loaded and its main class is on the classpath. Registered only while the module is enabled, so it needs `GG_MODULES=guns,armor,machines,utility,npcs,worldgen,icbm` (icbm needs `guns` and `machines`) and Galacticraft in the runtime (the default). Unit twin: `IcbmGateTest`. |
 
 ## M1 coverage
 
