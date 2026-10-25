@@ -1,6 +1,6 @@
 # Roadmap
 
-How GregGuns gets from an empty mod to a working beta, a polished self-contained release and a handoff ([0014](design/0014-end-goal-beta-handoff-archive.md), [0015](design/0015-m9-self-contained-polish.md)). The work follows the [Techguns behavioral spec](techguns-spec/README.md), rebuilt on GregTech progression.
+How GregGuns gets from an empty mod to a working beta and a polished self-contained release ([0014](design/0014-end-goal-beta-handoff-archive.md), [0015](design/0015-m9-self-contained-polish.md)). The ICBM module has its own [ICBM roadmap](ROADMAP-ICBM.md), and the handoff that follows both is in the [handoff plan](HANDOFF-PLAN.md) ([0018](design/0018-icbm-program.md)). The work follows the [Techguns behavioral spec](techguns-spec/README.md), rebuilt on GregTech progression.
 
 ## How to read this roadmap
 
@@ -19,7 +19,7 @@ M0 Foundation ──► D1–D4 ──► M1 Combat core ──► M2 Ballistic 
                     │             ├──► M3 Armor & equipment ─┘
                     │             └──► M4 Production chain & machines
                     └──► D5 ──► M7 NPCs ──► M8 Worldgen         M6 Utility & defense (after M4)
-                                                    all ──► Beta gate ──► M9 Self-contained polish, then handoff
+                                                    all ──► Beta gate ──► M9 Self-contained polish ──► (ROADMAP-ICBM) ──► HANDOFF-PLAN
 ```
 
 ---
@@ -298,9 +298,9 @@ Beta-gate audit: [M1 exit gate](gregguns-spec/02-guns/m1-exit-gate.md). It finds
 - [x] `0.3.0-beta` is published (2026-10-21): [GitHub pre-release](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.0-beta).
 - [ ] The owner's beta playthrough on a local server is done, and its blocking bugs are fixed.
 
-## M9 · Self-contained polish, then handoff
+## M9 · Self-contained polish
 
-Amended by [0015](design/0015-m9-self-contained-polish.md). The owner signed off M0–M8 as the MVP on 2026-10-21. M9 polishes the mod and fits it into the pack **from inside our own jar**, then hands it off ([0014](design/0014-end-goal-beta-handoff-archive.md)). GregGuns stays one portable jar: nothing depends on a PR to GTNH or any other repository.
+Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/0018-icbm-program.md). The owner signed off M0–M8 as the MVP on 2026-10-21. M9 polishes the mod and fits it into the pack **from inside our own jar**. The handoff moved to the [handoff plan](HANDOFF-PLAN.md) and waits for both this milestone and the [ICBM roadmap](ROADMAP-ICBM.md). GregGuns stays one portable jar: nothing depends on a PR to GTNH or any other repository.
 
 **Entry gate:** `0.3.0-beta` is published.
 
@@ -314,30 +314,20 @@ Amended by [0015](design/0015-m9-self-contained-polish.md). The owner signed off
   - multiplayer and performance soak tests on the real pack;
   - GuideNH in-game wiki pages bundled in the jar;
   - the OpenModularTurrets overlap investigation (the Rampart stays);
-  - aim down sights for iron-sight and red-dot guns.
+  - aim down sights for iron-sight and red-dot guns;
+  - **structures on Ross128** ([0019](design/0019-structures-on-ross128.md)): the M8 structures also generate on Ross128b and Ross128ba, the alternate challenge-start route, with a loot ceiling rolled per structure.
 - **Fixes from the owner's beta playthrough,** released as `0.3.x-beta`.
-
-**Scope, handoff (last):** the handoff starts only after every other open item above is closed (owner, 2026-10-25).
-- **Handoff guide** (`docs/HANDOFF.md`) for a developer who might adopt the mod. It covers:
-  - the state of every area;
-  - how to build and test, including the real-pack test with `-Dgregguns.testHooks=true`;
-  - how the mod was made;
-  - an open-ended path to inclusion. The policy is vague and its application is up to the pack's reviewers, so start with light edits and work out the requirements with the dev team.
-- **Solicitation message.** We draft it and the owner posts it. It is open about how the mod was made.
-- **README banner,** then **archive** the repository on the owner's go-ahead.
-
-**Adopter list** (what M9 leaves for whoever adopts the mod):
-- the GTNH modpack PR itself, with the GT5-Unofficial MTE ID and texture-page reservations;
-- anything from the polish list that M9 doesn't finish;
-- commissioned art and sound to replace the generated placeholder assets ([0017](design/0017-accept-sounds-archive-sound-pipeline.md)).
 
 **Exit gate:**
 - [x] The questbook installs from the jar behind its hidden config key, on a real GTNH 2.9 server. `0.3.1-beta`, 2026-10-21: 121 quests installed on the owner's GTNH 2.9.0-RC-2 server and saved by BetterQuesting.
 - [ ] Every PACK-CHANGES row is done in the jar or documented as an optional server-owner step.
-- [ ] The polish items above are done, or moved to the adopter list with the owner's sign-off.
-- [ ] `docs/HANDOFF.md` is written and the owner has reviewed it.
-- [ ] The solicitation message is drafted and the owner has approved it. The owner posts it.
-- [ ] The README carries the archive banner, and the GitHub repository is archived, on the owner's go-ahead.
+- [ ] GregGuns structures generate on Ross128b and Ross128ba without cascading, pass their land and water checks, and keep loot within each structure's rolled ceiling. Scenario per dimension ([0019](design/0019-structures-on-ross128.md)).
+- [ ] The polish items above are done, or moved to the [adopter list](HANDOFF-PLAN.md#adopter-list) with the owner's sign-off.
+
+## Beyond M9
+
+- The **ICBM module** is the next build, on its own roadmap, [ROADMAP-ICBM.md](ROADMAP-ICBM.md) (I0–I7, an alpha gate and a beta gate). It runs alongside M9's remaining polish and the beta-playthrough fixes; it doesn't wait for M9.
+- The **handoff** (handoff guide, solicitation, archive) and the adopter list are in [HANDOFF-PLAN.md](HANDOFF-PLAN.md). It starts once M9 is done and the ICBM beta gate has passed.
 
 ## Later
 

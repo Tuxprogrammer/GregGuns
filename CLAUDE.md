@@ -14,7 +14,8 @@ A from-scratch rewrite of Techguns for **GT New Horizons (Minecraft 1.7.10, Forg
 
 | You need… | Read |
 |---|---|
-| What to build next, and its entry and exit gates | [docs/ROADMAP.md](docs/ROADMAP.md) |
+| What to build next, and its entry and exit gates | [docs/ROADMAP.md](docs/ROADMAP.md) (GregGuns polish), [docs/ROADMAP-ICBM.md](docs/ROADMAP-ICBM.md) (ICBM module), then [docs/HANDOFF-PLAN.md](docs/HANDOFF-PLAN.md) |
+| How ICBM behaves, and how our ICBM module differs | [docs/icbm-spec/README.md](docs/icbm-spec/README.md) and [docs/gregguns-icbm-spec/README.md](docs/gregguns-icbm-spec/README.md) with its [DECISIONS.md](docs/gregguns-icbm-spec/DECISIONS.md) |
 | Accepted design decisions (tiers, machines, energy, damage) | [docs/design/](docs/design/README.md) |
 | Coding, testing, GTNH and asset rules | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | How a Techguns feature behaves | [docs/techguns-spec/README.md](docs/techguns-spec/README.md), then the area's `index.md` |

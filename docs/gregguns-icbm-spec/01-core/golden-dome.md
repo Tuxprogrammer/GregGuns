@@ -8,7 +8,7 @@
 - **Pack mods:**
   - OpenComputers (`OpenComputers`, 1.12.64-GTNH)
   - OpenSecurity (`opensecurity`, 1.2.2-GTNH), for precedent only
-- **Roadmap:** the ICBM track (M10 and later), behind `modules.icbm`
+- **Roadmap:** [ROADMAP-ICBM](../../ROADMAP-ICBM.md): the components in I4, the floppy and its programs in I5, behind `modules.icbm`
 
 ## What changes from ICBM
 
