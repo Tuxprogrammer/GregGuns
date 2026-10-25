@@ -88,7 +88,7 @@ Evidence: the GTNH rocket recon (Galacticraft `3.4.34-GTNH`, NewHorizonsCoreMod 
 | Antimatter | Kept, UV |
 | Ender blast | Kept, T3 |
 | Smoke | Kept, T1 |
-| Rot and mutation | Kept. Nuclear blasts leave **radioactive blocks**, not just GT pollution, because many servers switch pollution off. Their debris yields GT radioactive byproducts; details in [Q9](#q9--radioactive-blocks-and-their-byproducts) |
+| Rot and mutation | Kept. Nuclear blasts leave **radioactive blocks**, not just GT pollution, because many servers switch pollution off. Their debris yields GT radioactive byproducts; details in [D21](#d21-in-detail) |
 | Antidote | Kept, mapped to GT hazards |
 | Cargo parachute, balloon, cargo hook, held-item missile ("supply drops") | **Deferred.** Not a core feature |
 | Spikes | **Dropped** (owner, 2026-10-25): a 1-damage trap block is meaningless against GTNH health pools |
