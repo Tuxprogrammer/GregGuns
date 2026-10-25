@@ -48,3 +48,4 @@ The other options, and why each was not chosen.
 | [0016](0016-damage-balance-pass.md) | Damage balance pass: GregGuns owns its damage numbers (amends 0004) | D4 | Accepted |
 | [0017](0017-accept-sounds-archive-sound-pipeline.md) | Accept the sounds as they are; archive the sound pipeline (amends 0006) | D6 | Accepted |
 | [0018](0018-icbm-program.md) | The ICBM program: scope, balance and how it is built (amends 0014, 0015) | — | Accepted |
+| [0019](0019-structures-on-ross128.md) | GregGuns structures on Ross128 (amends 0005) | D5 | Accepted |

@@ -314,12 +314,14 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
   - multiplayer and performance soak tests on the real pack;
   - GuideNH in-game wiki pages bundled in the jar;
   - the OpenModularTurrets overlap investigation (the Rampart stays);
-  - aim down sights for iron-sight and red-dot guns.
+  - aim down sights for iron-sight and red-dot guns;
+  - **structures on Ross128** ([0019](design/0019-structures-on-ross128.md)): the M8 structures also generate on Ross128b and Ross128ba, the alternate challenge-start route, with a loot ceiling rolled per structure.
 - **Fixes from the owner's beta playthrough,** released as `0.3.x-beta`.
 
 **Exit gate:**
 - [x] The questbook installs from the jar behind its hidden config key, on a real GTNH 2.9 server. `0.3.1-beta`, 2026-10-21: 121 quests installed on the owner's GTNH 2.9.0-RC-2 server and saved by BetterQuesting.
 - [ ] Every PACK-CHANGES row is done in the jar or documented as an optional server-owner step.
+- [ ] GregGuns structures generate on Ross128b and Ross128ba without cascading, pass their land and water checks, and keep loot within each structure's rolled ceiling. Scenario per dimension ([0019](design/0019-structures-on-ross128.md)).
 - [ ] The polish items above are done, or moved to the [adopter list](HANDOFF-PLAN.md#adopter-list) with the owner's sign-off.
 
 ## Beyond M9
