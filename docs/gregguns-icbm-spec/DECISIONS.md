@@ -42,7 +42,7 @@ The owner decided D1–D28 on 2026-10-20 and D29–D38 on 2026-10-25.
 | D28 | Art and audio (was Q16) | **Licensed tiers first; generate only the gaps.** For ICBM content this is an exception to [0006](../design/0006-art-direction.md). See [D28 in detail](#d28-in-detail). **Amended by D33** |
 | D29 | Placement and packaging | **A module in the GregGuns jar** (`modules.icbm`), built next on its own [ROADMAP-ICBM](../ROADMAP-ICBM.md): I0–I7, an alpha gate (one owner review) and a beta gate (owner playthrough). The module defaults to off until the beta gate. The handoff ([HANDOFF-PLAN](../HANDOFF-PLAN.md)) waits for it. [0018](../design/0018-icbm-program.md) §1–4 |
 | D30 | Nuclear and higher warheads | **Annihilation:** inside the kill zone of a nuclear (ZPM), antimatter (UV) or red matter (UHV) warhead every living entity dies, **bosses included**, through armor and hurt-resistance frames. Players are subject only to server damage settings. The Nuke Launcher keeps its own rule (bosses lose half). One shared implementation with a bosses flag. 0018 §7 |
-| D31 | Building the missile in the world | **Stack on the pad.** The Workbench or Assembly Line makes the body; the player places it on the pad or in the silo and places a warhead block on its nose; arming fuses the stack into a live missile. Silos can mate body and warhead from input buses. A warhead block alone is a demolition charge. 0018 §8 |
+| D31 | Building the missile in the world | **Stack on the pad.** The Workbench or Assembly Line makes the body; the player places it on the pad or in the silo and places a warhead block on its nose; arming fuses the stack into a live missile. Silos can mate body and warhead from input buses. A warhead block alone is a demolition charge. **Warheads and bodies are real 3D models**, not textured cubes: see [D31 in detail](#d31-in-detail). 0018 §8 |
 | D32 | The Galacticraft pad | **Never removed or damaged.** Galacticraft's `EntityAutoRocket.onLaunch` deletes the pad on every rocket launch (player rockets get it back on landing; cargo rockets lose it). Our missile implements the docking and fuel interfaces without extending `EntityAutoRocket`, and we deny `EventLandingPadRemoval` for pads holding our missile. Scenario `icbm.pad.survives`. 0018 §9 |
 | D33 | Asset sourcing | **Human-made, properly licensed assets first; generation only as a last resort; no tuning loops.** CC0, CC-BY, MIT and LGPL allowed, in a third-party folder with license text and CREDITS entries ([CONTRIBUTING](../../CONTRIBUTING.md#assets-and-localization)). 0018 §10–11 |
 | D34 | Cost and damage | **An automatable arsenal:** a missile costs about one of its tier's GC rocket launches, Assembly Line-automatable; the warhead is the expensive part. **Conventional center damage, at least:** T1 1,200, T2 3,000, T3 8,000, sized against Infernal Mobs pools (base × modifiers × 1.8; up to about 2,700 for modded mini-bosses). 0018 §5–6 |
@@ -112,6 +112,18 @@ Evidence: the GTNH rocket recon (Galacticraft `3.4.34-GTNH`, NewHorizonsCoreMod 
   - The main find is a salvageable damaged T1 missile body (GT recycling recipes).
   - A rare T1 missile schematic chip is a shortcut, never a requirement.
 - **Guards and activity levels:** superseded by [D36](#d36-in-detail).
+
+### D31 in detail
+
+Owner, 2026-10-25: a placed warhead is a warhead-shaped object, not a cube with a texture on it.
+
+- **Shape:** each warhead is a 3D model (a cone or ogive nose, with tier detailing), and its collision box and selection outline follow the model.
+- **Size by tier:** T1–T2 warheads fit in 1×1×1. Bigger warheads take more space; the starting targets are 1×1×2 for T3 and nuclear, and larger again for antimatter and red matter. A warhead bigger than one block fills the extra cells with invisible filler blocks, so the whole model collides, breaks and drops as one piece.
+- **Orientation:** placed alone it stands nose up. Placed on a missile body it seats onto the body's nose.
+- **The body is modeled too:** on the pad or in the silo, the body is a full-height missile model standing on its fins, several blocks tall, with filler blocks for its height. Body plus warhead reads as one continuous missile.
+- **Same model in flight:** arming swaps the placed blocks for the missile entity, which uses the same model, so there's no visual jump at launch.
+- **Rendering cost:** placed warheads and bodies use a static block model, not a per-tick renderer, so a base full of charges stays cheap. Only the flying missile is an animated entity.
+- **Assets:** the models follow D33 (licensed human-made sources first).
 
 ### D36 in detail
 

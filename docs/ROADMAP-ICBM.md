@@ -87,7 +87,7 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
   - one tick budget shared by every running blast;
   - correct save and load of blasts in progress.
 - **Warhead items** with NBT `{explosive, fill}`, capped by casing tier (D23).
-- **Warhead blocks.** A warhead can be placed in the world, and alone it is a demolition charge with a fuse (0018 §8).
+- **Warhead blocks.** A warhead can be placed in the world, and alone it is a demolition charge with a fuse (0018 §8). It is a **real 3D warhead model**, sized by tier (T1–T2 in 1×1×1, larger warheads with filler blocks), with a matching collision box, rendered as a static block model ([D31](gregguns-icbm-spec/DECISIONS.md#d31-in-detail)).
 - **The T1–T2 blast types kept by D10,** with their effects (gas, incendiary, smoke and so on) and the conventional damage targets.
 - The annihilation rule's shared implementation, with a bosses flag (0018 §7). It is unit tested here; nuclear content arrives in I3.
 - Warhead recipes through GT machines (Chemical Reactor, Implosion Compressor), tier-gated and visible in NEI.
@@ -96,7 +96,8 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
 - [ ] Every I1 blast type detonates through the shared pipeline and respects protection and `explosions.blockDamage`. Scenario per type.
 - [ ] Conventional warheads meet the T1 and T2 center-damage targets against Infernal-scale health pools. Unit test plus scenario.
 - [ ] Several large blasts at once stay within the tick budget, and a blast survives a save and reload. Scenario.
-- [ ] Warhead blocks fuse and detonate by redstone and by hand.
+- [ ] Warhead blocks fuse and detonate by redstone and by hand. Each shows its 3D model with a matching collision box, and multi-block warheads break as one piece.
+- [ ] Batched client session: placed warheads look like warheads, not cubes.
 - [ ] The relevant `ICBM-02-*` bugs are avoided, with tests.
 - [ ] The milestone review fix list is closed.
 
@@ -109,7 +110,7 @@ These come from [0018](design/0018-icbm-program.md) §5–7, and every milestone
   - a missile chip in the Circuit Assembler, then a schematic in the Laser Engraver (D8);
   - our NASA Workbench page for building by hand;
   - Assembly Line recipes, behind a research data stick, for automation (D27).
-- **The stack-on-pad build** (0018 §8): place the body on the Galacticraft pad and the warhead on its nose; arming fuses the stack into the missile entity.
+- **The stack-on-pad build** (0018 §8): place the body on the Galacticraft pad and the warhead on its nose; arming fuses the stack into the missile entity. The body is a full-height 3D missile model on its fins, the warhead seats onto it, and the flying entity uses the same model ([D31](gregguns-icbm-spec/DECISIONS.md#d31-in-detail)).
 - **Fuel** keyed to tier through Galacticraft's `RocketFuels` lists and fuel loader (D19). A fixed amount per tier, and unburned fuel adds to the blast (D20).
 - **A launch-control block beside the pad.** Targeting by coordinates, data stick, ModularUI2 GUI, redstone or the GT machine-controller cover (D13).
 - **Flight:**
