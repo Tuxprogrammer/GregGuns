@@ -26,6 +26,7 @@ final class IcbmScenarios {
 
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new ModuleGate());
+        IcbmBlastScenarios.registerAll(registry);
     }
 
     /**

@@ -1,7 +1,8 @@
 package com.gregguns.explosion;
 
 /**
- * The Nuke Launcher's total-annihilation rule, as pure logic: inside the kill zone a non-boss dies outright, a boss
+ * The Nuke Launcher's total-annihilation rule, as pure logic (the shared {@link Annihilation} with its bosses flag
+ * off): inside the kill zone a non-boss dies outright, a boss
  * loses half its maximum health, and outside it the blast ramp applies. No Minecraft types, both sides.
  *
  * <pre>
@@ -15,13 +16,10 @@ package com.gregguns.explosion;
 public final class NukeAnnihilation {
 
     /** The kill zone's share of the blast radius ("about 60%"). */
-    public static final double KILL_ZONE_SHARE = 0.6;
+    public static final double KILL_ZONE_SHARE = Annihilation.KILL_ZONE_SHARE;
 
     /** Share of a boss's maximum health the kill zone takes. */
-    public static final double BOSS_SHARE = 0.5;
-
-    /** Added to health plus absorption so rounding never leaves a sliver alive. */
-    private static final double LETHAL_MARGIN = 1.0;
+    public static final double BOSS_SHARE = Annihilation.SPARED_BOSS_SHARE;
 
     private NukeAnnihilation() {}
 
@@ -30,7 +28,7 @@ public final class NukeAnnihilation {
      * @return the radius inside which the blast annihilates
      */
     public static double killRadius(double blastRadius) {
-        return blastRadius * KILL_ZONE_SHARE;
+        return Annihilation.killRadius(blastRadius);
     }
 
     /**
@@ -39,7 +37,7 @@ public final class NukeAnnihilation {
      * @return true when the distance is inside the kill zone
      */
     public static boolean inKillZone(double distance, double blastRadius) {
-        return distance <= killRadius(blastRadius);
+        return Annihilation.inKillZone(distance, blastRadius);
     }
 
     /**
@@ -71,9 +69,7 @@ public final class NukeAnnihilation {
      * @return the damage to deal: health plus absorption plus a margin, or for a boss half its maximum health
      */
     public static double lethal(boolean boss, double health, double absorption, double maxHealth) {
-        if (boss) {
-            return maxHealth * BOSS_SHARE;
-        }
-        return health + absorption + LETHAL_MARGIN;
+        // The Nuke Launcher spares bosses' lives: the shared rule with its bosses flag off.
+        return Annihilation.lethal(false, boss, health, absorption, maxHealth);
     }
 }

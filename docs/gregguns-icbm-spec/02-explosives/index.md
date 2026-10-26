@@ -6,14 +6,14 @@ Warheads and blasts: the shared explosive registry, the blast engine, warhead it
 
 ## Contents
 
-All sheets are planned. Each is written before the milestone that builds it, as laid out in the [ICBM roadmap](../../ROADMAP-ICBM.md).
+The registry, engine and annihilation sheets are written; the rest are planned. Each is written before the milestone that builds it, as laid out in the [ICBM roadmap](../../ROADMAP-ICBM.md).
 
-- explosive-registry.md (planned): the one shared registry (D12), tiers on the GT ladder (D5), which blast types are kept (D10), config keys.
-- blast-engine.md (planned): ray-cast blasts, threaded scheduling, one tick budget for all running blasts, save and load of blasts in progress. MIT-portable parts are named here.
+- [explosive-registry.md](explosive-registry.md): the one shared registry (D12), tiers on the GT ladder (D5), which blast types are kept (D10), config keys.
+- [blast-engine.md](blast-engine.md): ray-cast blasts, threaded scheduling, one tick budget for all running blasts, save and load of blasts in progress. MIT-portable parts are named here.
 - warheads-and-fill.md (planned): the warhead item with NBT `{explosive, fill}`, the casing-tier cap, the radius curve, the fuel bonus (D20, D23).
 - warhead-blocks.md (planned): the placed warhead as a 3D model with filler blocks, collision box, fuse, demolition-charge use (D31).
 - blast-types.md (planned): the kept T1-T3 blast types, their gas and status effects, and conventional center-damage targets (D34).
-- annihilation.md (planned): the shared kill-zone rule with a bosses flag (D30).
+- [annihilation.md](annihilation.md): the shared kill-zone rule with a bosses flag (D30).
 - fallout.md (planned): irradiated blocks, trinitite, goo, caps and GT yields (D21).
 - red-matter.md (planned): the bounded rebuild of red matter (D10).
 
