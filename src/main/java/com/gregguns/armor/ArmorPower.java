@@ -173,6 +173,8 @@ public final class ArmorPower {
      *         {@code gemCoal} or {@code gemCharcoal}
      */
     static boolean isFuel(ItemStack stack) {
+        // Source: GT registers Coal and Charcoal as gemCoal and gemCharcoal:
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/preload/LoaderGTOreDictionary.java#L71-L72
         if (stack.getItem() == Items.coal && stack.getItemDamage() <= 1) {
             return true;
         }
