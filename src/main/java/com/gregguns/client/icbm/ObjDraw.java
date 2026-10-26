@@ -33,6 +33,8 @@ final class ObjDraw {
         if (model == null || icon == null) {
             return false;
         }
+        float us = icon instanceof WarheadSprite ? ((WarheadSprite) icon).uScale() : 1.0F;
+        float vs = icon instanceof WarheadSprite ? ((WarheadSprite) icon).vScale() : 1.0F;
         Tessellator t = Tessellator.instance;
         for (GroupObject group : model.groupObjects) {
             for (Face face : group.faces) {
@@ -50,8 +52,8 @@ final class ObjDraw {
                         bx + v.x,
                         by + v.y,
                         bz + v.z,
-                        icon.getInterpolatedU(u * 16.0),
-                        icon.getInterpolatedV(w * 16.0));
+                        icon.getInterpolatedU(u * 16.0 * us),
+                        icon.getInterpolatedV(w * 16.0 * vs));
                 }
             }
         }
