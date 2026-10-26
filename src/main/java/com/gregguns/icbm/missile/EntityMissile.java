@@ -111,8 +111,14 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @param newPhase  the flight phase
      * @param newCasing the warhead casing
      * @param newFuel   mB in the tank
+     * @param isNuclear true when the warhead is nuclear (picks the nose model; the client knows no other explosive)
      */
-    void applyState(FlightPhase newPhase, int newCasing, int newFuel) {
+    void applyState(FlightPhase newPhase, int newCasing, int newFuel, boolean isNuclear) {
+        if (isNuclear) {
+            this.explosive = "nuclear";
+        } else if ("nuclear".equals(this.explosive)) {
+            this.explosive = WarheadData.DEFAULT_EXPLOSIVE;
+        }
         this.phase = newPhase;
         this.casing = newCasing;
         this.fuelMb = newFuel;
@@ -175,6 +181,11 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             default:
                 return new EntityMissileT3(world);
         }
+    }
+
+    /** @return the warhead's explosive id (on a client only "nuclear" is known, for the nose model) */
+    public String explosiveId() {
+        return explosive;
     }
 
     /** @return the warhead casing number, 1 to 3; drawn on the nose */

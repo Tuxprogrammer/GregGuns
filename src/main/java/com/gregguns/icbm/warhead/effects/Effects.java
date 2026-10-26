@@ -79,6 +79,8 @@ public final class Effects {
                 return new Sonic();
             case BREACH:
                 return new Breach();
+            case NUCLEAR:
+                return new Nuclear();
             default:
                 return BlastEffect.NONE;
         }
@@ -422,6 +424,21 @@ public final class Effects {
             // Listeners (claims, protection) may veto or trim the list; the survivors break through breakBlock.
             breakVetted(ctx, vetted(ctx, tunnel));
             particles(ctx, "smoke", 20, 1.0);
+        }
+    }
+
+    /**
+     * The nuclear effect: when the crater and the blast end, the shared fallout (D12, D21) starts around ground zero
+     * at this blast's radius, if the blast was allowed to break terrain at all. The kill zone itself is the engine's
+     * annihilation rule, set on the definition.
+     */
+    private static final class Nuclear implements BlastEffect {
+
+        @Override
+        public void onFinish(BlastContext ctx) {
+            if (ctx.completed() && ctx.breaksTerrain() && !ctx.world().isRemote) {
+                com.gregguns.explosion.nuclear.Fallout.start(ctx.world(), ctx.x(), ctx.y(), ctx.z(), ctx.radius());
+            }
         }
     }
 }

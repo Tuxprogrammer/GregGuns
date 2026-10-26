@@ -18,7 +18,7 @@ Inside the kill zone of a nuclear (ZPM), antimatter (UV) or red matter (UHV) war
 
 `DamageSources.annihilateLiving(target, attacker, bosses)` applies it through `annihilate`, so the server's damage settings still gate players. The old two-argument overload and `NukeAnnihilation` (the Nuke Launcher and the Golden Gun) call the shared rule with `bosses = false`; behavior and tests are unchanged.
 
-An `ExplosiveDef` opts in with `annihilating(bosses)`; the blast engine then annihilates living victims inside the kill zone and applies the damage ramp outside it. I1 ships the rule and its tests; no I1 type sets it.
+An `ExplosiveDef` opts in with `annihilating(bosses)`; the blast engine then annihilates living victims inside the kill zone and applies the damage ramp outside it. I1 shipped the rule and its tests; I3 sets it on the nuclear warhead (`bosses = true`, kill zone 60% of the radius). Antimatter and red matter set it in I5. Scenario `icbm.nuclear.kill_zone`: a Wither, a 100,000-health mob with Resistance V and hurt-resistance frames, and a cow all die inside the zone.
 
 ## Requirements
 
@@ -32,4 +32,4 @@ An `ExplosiveDef` opts in with `annihilating(bosses)`; the blast engine then ann
 
 ## Open questions
 
-The kill-zone share for the ICBM warheads is 60% like the launcher's; I3 may tune it per type.
+The kill-zone share for the ICBM warheads is 60% like the launcher's (kept in I3, D83); a per-type share is open.

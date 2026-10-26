@@ -45,11 +45,15 @@ public final class WarheadScenarios {
         registry.register(new LitStateSyncs());
         registry.register(new InfernalHealth("condensed", 5, 1080.0));
         registry.register(new InfernalHealth("thermobaric", 20, 2700.0));
+        // D80: the T3 target is 8,000 at ground zero of a full casing (D34), against a boss-sized pool.
+        registry.register(new InfernalHealth("exothermic", 64, 7200.0));
+        registry.register(new InfernalHealth("endothermic", 64, 7200.0));
         for (WarheadBlast blast : WarheadBlast.values()) {
             registry.register(new BlastType(blast));
         }
         registry.register(new BlockDamageOff());
         registry.register(new WarheadShotsScenario());
+        NuclearScenarios.registerAll(registry);
     }
 
     private static boolean moduleOff() {
@@ -138,7 +142,7 @@ public final class WarheadScenarios {
 
         @Override
         public String description() {
-            return "T1 and T2 warheads place in one block, are not full cubes, and the box is a centered column.";
+            return "T1, T2 and T3 warheads place in one block, are not full cubes, and the box is a centered column.";
         }
 
         @Override
@@ -150,7 +154,14 @@ public final class WarheadScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             for (WarheadCasing c : WarheadCasing.values()) {
                 int dx = c.ordinal() * 2;
-                TileWarhead tile = place(ctx, c, dx, 0, 0, c == WarheadCasing.T1 ? "condensed" : "thermobaric", 99);
+                TileWarhead tile = place(
+                    ctx,
+                    c,
+                    dx,
+                    0,
+                    0,
+                    c == WarheadCasing.T1 ? "condensed" : c == WarheadCasing.T2 ? "thermobaric" : "exothermic",
+                    99);
                 out.check(tile != null, c + " has a warhead tile");
                 if (tile == null) {
                     continue;
@@ -510,13 +521,16 @@ public final class WarheadScenarios {
             }
             boolean old1 = IcbmConfig.terrainDamageT1;
             boolean old2 = IcbmConfig.terrainDamageT2;
+            boolean old3 = IcbmConfig.terrainDamageT3;
             IcbmConfig.terrainDamageT1 = false;
             IcbmConfig.terrainDamageT2 = false;
+            IcbmConfig.terrainDamageT3 = false;
             boolean accepted = IcbmBlasts
                 .detonate(w, ctx.originX() + 0.5, ctx.originY() + 0.5, ctx.originZ() + 0.5, def, fill, null);
             if (!accepted) {
                 IcbmConfig.terrainDamageT1 = old1;
                 IcbmConfig.terrainDamageT2 = old2;
+                IcbmConfig.terrainDamageT3 = old3;
                 return ScenarioResult.fail(name(), "the engine did not accept the blast");
             }
             return ScenarioResult.pending(name(), 400, ticks -> {
@@ -526,6 +540,7 @@ public final class WarheadScenarios {
                 }
                 IcbmConfig.terrainDamageT1 = old1;
                 IcbmConfig.terrainDamageT2 = old2;
+                IcbmConfig.terrainDamageT3 = old3;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(
                     dead,
@@ -583,12 +598,18 @@ public final class WarheadScenarios {
             EntityCow cow = ctx.spawnAt(new EntityCow(w), ox + 4.5, oy, oz + 0.5, 0, 0);
             boolean oldT1 = IcbmConfig.terrainDamageT1;
             boolean oldT2 = IcbmConfig.terrainDamageT2;
+            boolean oldT3 = IcbmConfig.terrainDamageT3;
             IcbmConfig.terrainDamageT1 = true;
             IcbmConfig.terrainDamageT2 = true;
-            boolean accepted = IcbmBlasts.detonate(w, ox + 0.5, oy + 0.5, oz + 0.5, def, def.maxFill(), null);
+            IcbmConfig.terrainDamageT3 = true;
+            // The nuclear crater at full size has its own scenario (icbm.blast.crater_nuclear); here fill 8 (radius 32)
+            // is enough to see the kill zone and the crater without a thousand-tick wait.
+            int fill = blast == WarheadBlast.NUCLEAR ? 8 : def.maxFill();
+            boolean accepted = IcbmBlasts.detonate(w, ox + 0.5, oy + 0.5, oz + 0.5, def, fill, null);
             if (!accepted) {
                 IcbmConfig.terrainDamageT1 = oldT1;
                 IcbmConfig.terrainDamageT2 = oldT2;
+                IcbmConfig.terrainDamageT3 = oldT3;
                 return ScenarioResult.fail(name(), "the engine did not accept the blast");
             }
             final double[] extremes = { cow.posX, cow.posX };
@@ -608,6 +629,7 @@ public final class WarheadScenarios {
                 }
                 IcbmConfig.terrainDamageT1 = oldT1;
                 IcbmConfig.terrainDamageT2 = oldT2;
+                IcbmConfig.terrainDamageT3 = oldT3;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 check(out, ctx, def, cow, extremes, fireSeen[0]);
                 return out.build();
@@ -635,7 +657,7 @@ public final class WarheadScenarios {
                 case SMOKE:
                     return 30;
                 default:
-                    return 200;
+                    return blast == WarheadBlast.NUCLEAR ? 600 : 200;
             }
         }
 

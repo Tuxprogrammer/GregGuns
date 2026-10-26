@@ -37,6 +37,8 @@ public final class WarheadRecipes {
     /** Casing plates of a T1 and a T2 warhead (D34 cost review: the warhead is the expensive part). */
     static final int T1_PLATES = 4;
     static final int T2_PLATES = 8;
+    /** Casing plates of a T3 warhead (tungstensteel). */
+    static final int T3_PLATES = 8;
 
     private WarheadRecipes() {}
 
@@ -109,6 +111,7 @@ public final class WarheadRecipes {
         long plate = OrePrefixes.plate.getMaterialAmount();
         attach(WarheadCasing.T1, new ItemData(Materials.StainlessSteel, T1_PLATES * plate));
         attach(WarheadCasing.T2, new ItemData(Materials.Titanium, T2_PLATES * plate));
+        attach(WarheadCasing.T3, new ItemData(Materials.TungstenSteel, T3_PLATES * plate));
     }
 
     private static void attach(WarheadCasing casing, ItemData data) {

@@ -26,6 +26,9 @@ public final class WarheadBlasts {
             // Their effect owns the motion (Effects.Push); the engine's outward knockback would cancel the pull.
             b.ownsMotion();
         }
+        if (blast.kind() == WarheadBlast.Kind.NUCLEAR) {
+            b.annihilating(true); // D30: bosses included
+        }
         return b.shape(blast.shape())
             .maxFill(cap)
             .baseRadius(WarheadMath.baseRadius(blast.fullRadius(), cap))

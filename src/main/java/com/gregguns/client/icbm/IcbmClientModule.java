@@ -37,5 +37,6 @@ public final class IcbmClientModule implements ClientModule {
     @Override
     public void init() {
         MissileBodyItemRenderer.register();
+        WarheadItemRenderer.register();
     }
 }

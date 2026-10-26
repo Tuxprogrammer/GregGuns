@@ -22,7 +22,7 @@ class IcbmPartTest {
             assertEquals(part, IcbmPart.byRegistryName(part.registryName()));
         }
         assertEquals(IcbmPart.values().length, seen.size());
-        assertEquals(11, seen.size());
+        assertEquals(12, seen.size());
         assertTrue(seen.contains("plastic_explosive"));
         assertTrue(seen.contains("napalm_canister"));
     }

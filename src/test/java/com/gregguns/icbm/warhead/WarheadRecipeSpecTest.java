@@ -46,7 +46,10 @@ class WarheadRecipeSpecTest {
     void everyRecipeRunsAtItsCasingTier() {
         for (WarheadRecipeSpec spec : WarheadRecipeSpec.values()) {
             Tier casing = spec.blast()
-                .tier() == ExplosiveTier.T1 ? Tier.HV : Tier.EV;
+                .tier() == ExplosiveTier.T1 ? Tier.HV
+                    : spec.blast()
+                        .tier() == ExplosiveTier.T2 ? Tier.EV
+                            : spec.blast() == WarheadBlast.NUCLEAR ? Tier.ZPM : Tier.LUV;
             assertEquals(casing, spec.machineTier(), spec + " runs at the casing tier");
         }
     }
@@ -75,8 +78,11 @@ class WarheadRecipeSpecTest {
                 .get(0);
             assertEquals(Ing.Src.GT, casing.src());
             boolean t1 = spec.outputTier() == Tier.HV;
-            assertEquals(t1 ? "plate:StainlessSteel" : "plate:Titanium", casing.id());
-            int expected = spec.isStarter() ? 2 : t1 ? WarheadRecipes.T1_PLATES : WarheadRecipes.T2_PLATES;
+            boolean t3 = spec.blast()
+                .tier() == ExplosiveTier.T3;
+            assertEquals(t3 ? "plate:TungstenSteel" : t1 ? "plate:StainlessSteel" : "plate:Titanium", casing.id());
+            int expected = spec.isStarter() ? 2
+                : t3 ? WarheadRecipes.T3_PLATES : t1 ? WarheadRecipes.T1_PLATES : WarheadRecipes.T2_PLATES;
             assertEquals(expected, casing.count(), spec + " casing plates");
         }
     }
@@ -84,9 +90,14 @@ class WarheadRecipeSpecTest {
     @Test
     void circuitsAreUniqueAndValidProgrammedCircuits() {
         Set<Integer> seen = new HashSet<>();
+        Set<Integer> heavy = new HashSet<>();
         for (WarheadRecipeSpec spec : WarheadRecipeSpec.values()) {
             assertTrue(spec.circuit() >= 1 && spec.circuit() <= 24, spec + " circuit " + spec.circuit());
-            assertTrue(seen.add(spec.circuit()), spec + " reuses circuit " + spec.circuit());
+            // All 24 programmed circuits are taken by T1 and T2 recipes and parts. The T3 recipes take tungstensteel
+            // plates and a Mk III fuze that no other recipe has, so they only need to differ among themselves.
+            boolean t3 = spec.blast()
+                .tier() == ExplosiveTier.T3;
+            assertTrue((t3 ? heavy : seen).add(spec.circuit()), spec + " reuses circuit " + spec.circuit());
         }
         // The warhead parts share the warheads' circuit space (their inputs overlap: plates, circuits, wire). The I2
         // missile parts (engines, guidance computers) take motors, pumps and their own circuits, so no warhead or
@@ -134,7 +145,11 @@ class WarheadRecipeSpecTest {
                 continue;
             }
             double cost = spec.cost();
-            if (spec.outputTier() == Tier.HV) {
+            if (spec.blast()
+                .tier() == ExplosiveTier.T3) {
+                // T3 (D80): the warhead is the expensive part; about two to three T3 launches.
+                assertTrue(cost >= 55.0 && cost <= 150.0, spec + " costs " + cost);
+            } else if (spec.outputTier() == Tier.HV) {
                 assertTrue(cost >= 16.0 && cost <= 26.0, spec + " costs " + cost);
             } else {
                 assertTrue(cost >= 34.0 && cost <= 46.0, spec + " costs " + cost);

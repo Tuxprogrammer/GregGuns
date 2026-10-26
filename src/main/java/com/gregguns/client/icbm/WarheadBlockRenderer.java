@@ -1,6 +1,5 @@
 package com.gregguns.client.icbm;
 
-import java.util.EnumMap;
 import java.util.Map;
 
 import net.minecraft.block.Block;
@@ -16,7 +15,6 @@ import org.lwjgl.opengl.GL11;
 
 import com.gregguns.icbm.missile.MissileSeat;
 import com.gregguns.icbm.warhead.BlockWarhead;
-import com.gregguns.icbm.warhead.WarheadCasing;
 import com.gregguns.icbm.warhead.WarheadRender;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
@@ -35,7 +33,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 public final class WarheadBlockRenderer implements ISimpleBlockRenderingHandler {
 
     private final int renderId;
-    private final Map<WarheadCasing, IIcon> icons = new EnumMap<>(WarheadCasing.class);
+    private final Map<String, IIcon> icons = new java.util.HashMap<>();
+    /** The registered handler, which {@link WarheadItemRenderer} draws through (it owns the atlas icons). */
+    private static WarheadBlockRenderer instance;
 
     private WarheadBlockRenderer(int renderId) {
         this.renderId = renderId;
@@ -47,6 +47,7 @@ public final class WarheadBlockRenderer implements ISimpleBlockRenderingHandler 
         WarheadRender.id = id;
         WarheadBlockRenderer handler = new WarheadBlockRenderer(id);
         RenderingRegistry.registerBlockHandler(handler);
+        instance = handler;
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(handler);
     }
 
@@ -56,7 +57,7 @@ public final class WarheadBlockRenderer implements ISimpleBlockRenderingHandler 
         if (event.map.getTextureType() != 0) {
             return;
         }
-        for (WarheadCasing c : WarheadCasing.values()) {
+        for (String c : WarheadModels.allNames()) {
             event.map.setTextureEntry(
                 WarheadModels.spriteName(c),
                 new WarheadSprite(WarheadModels.spriteName(c), WarheadModels.textureFile(c)));
@@ -70,7 +71,7 @@ public final class WarheadBlockRenderer implements ISimpleBlockRenderingHandler 
             return;
         }
         icons.clear();
-        for (WarheadCasing c : WarheadCasing.values()) {
+        for (String c : WarheadModels.allNames()) {
             icons.put(c, event.map.getAtlasSprite(WarheadModels.spriteName(c)));
         }
         WarheadModels.clear();
@@ -78,14 +79,27 @@ public final class WarheadBlockRenderer implements ISimpleBlockRenderingHandler 
 
     @Override
     public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
-        WarheadCasing casing = ((BlockWarhead) block).casing();
+        // No stack here, so a nuclear item is drawn by WarheadItemRenderer instead; this is the casing's own model.
+        drawItemModel(
+            ((BlockWarhead) block).casing()
+                .blockName());
+    }
+
+    /**
+     * Draws a warhead model as an item (inventory, hand, dropped), centered on the origin, into the block atlas.
+     *
+     * @param name a model name from {@link WarheadModels#allNames()}
+     */
+    static void drawItemModel(String name) {
         Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
         GL11.glPushMatrix();
         GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
         Tessellator t = Tessellator.instance;
         t.startDrawingQuads();
         t.setBrightness(0xF000F0);
-        draw(casing, 0, 0, 0);
+        if (instance != null) {
+            instance.draw(name, 0, 0, 0);
+        }
         t.draw();
         GL11.glPopMatrix();
     }
@@ -95,12 +109,9 @@ public final class WarheadBlockRenderer implements ISimpleBlockRenderingHandler 
         RenderBlocks renderer) {
         Tessellator.instance.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z));
         // A warhead seated on a body that stands on a pad is drawn down with it (see MissileSeat).
-        return ObjDraw.draw(
-            WarheadModels.get(((BlockWarhead) block).casing()),
-            icons.get(((BlockWarhead) block).casing()),
-            x,
-            y - MissileSeat.warheadDrop(world, x, y, z),
-            z);
+        String name = WarheadModels.modelName(((BlockWarhead) block).casing(), explosiveAt(world, x, y, z));
+        return ObjDraw
+            .draw(WarheadModels.get(name), icons.get(name), x, y - MissileSeat.warheadDrop(world, x, y, z), z);
     }
 
     @Override
@@ -113,7 +124,14 @@ public final class WarheadBlockRenderer implements ISimpleBlockRenderingHandler 
         return renderId;
     }
 
-    private boolean draw(WarheadCasing casing, int bx, int by, int bz) {
-        return ObjDraw.draw(WarheadModels.get(casing), icons.get(casing), bx, by, bz);
+    private boolean draw(String name, int bx, int by, int bz) {
+        return ObjDraw.draw(WarheadModels.get(name), icons.get(name), bx, by, bz);
+    }
+
+    /** @return the placed warhead's explosive id, or null when the tile is not loaded on this client yet */
+    private static String explosiveAt(IBlockAccess world, int x, int y, int z) {
+        net.minecraft.tileentity.TileEntity te = world.getTileEntity(x, y, z);
+        return te instanceof com.gregguns.icbm.warhead.TileWarhead ? ((com.gregguns.icbm.warhead.TileWarhead) te).data()
+            .explosive() : null;
     }
 }

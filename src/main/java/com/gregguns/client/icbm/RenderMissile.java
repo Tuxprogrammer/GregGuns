@@ -42,7 +42,8 @@ public final class RenderMissile extends Render {
         GL11.glDisable(GL11.GL_CULL_FACE);
         draw(WarheadModels.body(tier), WarheadModels.bodyTextureFile(tier), 0.0);
         WarheadCasing casing = MissileCasings.byNumber(missile.casingNumber());
-        draw(WarheadModels.get(casing), WarheadModels.textureFile(casing), tier.heightBlocks());
+        String noseModel = WarheadModels.modelName(casing, missile.explosiveId());
+        draw(WarheadModels.get(noseModel), WarheadModels.textureFile(noseModel), tier.heightBlocks());
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glPopMatrix();
     }

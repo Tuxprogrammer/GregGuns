@@ -26,32 +26,64 @@ final class WarheadModels {
     private static final String MODEL_DIR = "models/thirdparty/ntm/";
     private static final String TEXTURE_DIR = "textures/models/thirdparty/ntm/";
 
-    private static final Map<WarheadCasing, WavefrontObject> MODELS = new EnumMap<>(WarheadCasing.class);
+    private static final Map<String, WavefrontObject> MODELS = new java.util.HashMap<>();
+
+    /** The nuclear warhead has its own model, on the T3 casing (1x1x2, scaled 0.8). */
+    static final String NUCLEAR_MODEL = "warhead_nuclear";
     private static final Map<MissileTier, WavefrontObject> BODIES = new EnumMap<>(MissileTier.class);
 
     private WarheadModels() {}
 
-    static ResourceLocation modelLocation(WarheadCasing casing) {
-        return new ResourceLocation("gregguns", MODEL_DIR + casing.blockName() + ".obj");
-    }
-
-    static ResourceLocation textureFile(WarheadCasing casing) {
-        return new ResourceLocation("gregguns", TEXTURE_DIR + casing.blockName() + ".png");
-    }
-
-    /** @return the atlas name of the casing's texture sprite */
-    static String spriteName(WarheadCasing casing) {
-        return "gregguns:" + casing.blockName();
+    /** @return every warhead model name: one per casing plus the nuclear model */
+    static java.util.List<String> allNames() {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        for (WarheadCasing c : WarheadCasing.values()) {
+            out.add(c.blockName());
+        }
+        out.add(NUCLEAR_MODEL);
+        return out;
     }
 
     /**
-     * @param casing the casing
+     * @param casing    the casing
+     * @param explosive the warhead's explosive id, or null for the casing's default look
+     * @return the model name to draw
+     */
+    static String modelName(WarheadCasing casing, String explosive) {
+        return casing == WarheadCasing.T3 && "nuclear".equals(explosive) ? NUCLEAR_MODEL : casing.blockName();
+    }
+
+    /** @return the casing's default model (kept for the missile renderer) */
+    static WavefrontObject get(WarheadCasing casing) {
+        return get(casing.blockName());
+    }
+
+    /** @return the casing's default texture file (kept for the missile renderer) */
+    static ResourceLocation textureFile(WarheadCasing casing) {
+        return textureFile(casing.blockName());
+    }
+
+    static ResourceLocation modelLocation(String name) {
+        return new ResourceLocation("gregguns", MODEL_DIR + name + ".obj");
+    }
+
+    static ResourceLocation textureFile(String name) {
+        return new ResourceLocation("gregguns", TEXTURE_DIR + name + ".png");
+    }
+
+    /** @return the atlas name of the model's texture sprite */
+    static String spriteName(String name) {
+        return "gregguns:" + name;
+    }
+
+    /**
+     * @param name a model name from {@link #allNames()}
      * @return the loaded model, or null when it cannot be read (logged once)
      */
-    static synchronized WavefrontObject get(WarheadCasing casing) {
-        if (!MODELS.containsKey(casing)) {
+    static synchronized WavefrontObject get(String name) {
+        if (!MODELS.containsKey(name)) {
             WavefrontObject model = null;
-            ResourceLocation loc = modelLocation(casing);
+            ResourceLocation loc = modelLocation(name);
             try (InputStream in = Minecraft.getMinecraft()
                 .getResourceManager()
                 .getResource(loc)
@@ -60,9 +92,9 @@ final class WarheadModels {
             } catch (Exception e) {
                 GregGuns.LOG.error("Could not load the warhead model {}", loc, e);
             }
-            MODELS.put(casing, model);
+            MODELS.put(name, model);
         }
-        return MODELS.get(casing);
+        return MODELS.get(name);
     }
 
     /** Forgets loaded models, after a resource reload. */

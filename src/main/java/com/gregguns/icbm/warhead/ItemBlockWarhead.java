@@ -84,7 +84,9 @@ public final class ItemBlockWarhead extends ItemBlock {
         WarheadTooltipFormat.Facts f = new WarheadTooltipFormat.Facts();
         f.explosiveName = StatCollector.translateToLocal("gregguns.icbm.explosive." + data.explosive());
         f.tierText = casing == WarheadCasing.T1 ? TierText.colored(com.gregguns.api.Tier.HV)
-            : TierText.colored(com.gregguns.api.Tier.EV) + "-" + TierText.colored(com.gregguns.api.Tier.IV);
+            : casing == WarheadCasing.T2
+                ? TierText.colored(com.gregguns.api.Tier.EV) + "-" + TierText.colored(com.gregguns.api.Tier.IV)
+                : TierText.colored(com.gregguns.api.Tier.LUV) + "-" + TierText.colored(com.gregguns.api.Tier.ZPM);
         f.fill = data.fill();
         f.cap = cap;
         f.radius = def == null ? 0 : Math.max(WarheadMath.MIN_RADIUS, def.radius(data.fill()));
