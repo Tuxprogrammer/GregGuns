@@ -25,6 +25,10 @@ public final class WarheadRegistration {
             .registerBlock(WarheadCasing.T2.blockName(), new BlockWarhead(WarheadCasing.T2), ItemBlockWarhead.class);
         BlockWarheadFiller filler = registrar
             .registerBlock(BlockWarheadFiller.NAME, new BlockWarheadFiller(), net.minecraft.item.ItemBlock.class);
+        // Placeholder particle icon: the model texture lives in the atlas under another name (see WarheadSprite).
+        t1.setBlockTextureName("gregguns:casings/gantry_casing");
+        t2.setBlockTextureName("gregguns:casings/gantry_casing");
+        filler.setBlockTextureName("gregguns:casings/gantry_casing");
         WarheadBlocks.set(t1, t2, filler);
         registrar.registerTileEntity("warhead", TileWarhead.class);
         registrar.registerTileEntity("warhead_filler", TileWarheadFiller.class);

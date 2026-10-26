@@ -21,7 +21,7 @@ import com.gregguns.api.HiddenFromCreativeTab;
  * clicks, picks and breaks to the main block, and removes itself when the main block is gone. Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warhead-blocks.md (Filler blocks)
-public final class BlockWarheadFiller extends BlockContainer implements HiddenFromCreativeTab {
+public final class BlockWarheadFiller extends BlockContainer implements HiddenFromCreativeTab, com.gregguns.api.Tiered {
 
     /** The bare registry name. */
     public static final String NAME = "warhead_filler";
@@ -34,6 +34,11 @@ public final class BlockWarheadFiller extends BlockContainer implements HiddenFr
         setHardness(1.5F);
         setResistance(6.0F);
         setStepSound(soundTypeMetal);
+    }
+
+    @Override
+    public com.gregguns.api.Tier getTier() {
+        return com.gregguns.api.Tier.HV;
     }
 
     @Override
