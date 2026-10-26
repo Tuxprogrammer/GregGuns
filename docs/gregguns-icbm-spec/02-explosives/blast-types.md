@@ -37,6 +37,26 @@
 | breaching | T2 | none | 12 | none | a 3x3 tunnel 24 deep, straight down, through anything of hardness 50 or less |
 | thermobaric | T2 | sphere crater | 20 | 3,000 | none beyond the ramp (the widest conventional crater) |
 
+- **Payloads (D56, D57).** What each type is made of, besides its casing, a Fuze and Plastic Explosive. Full recipes are in [warheads-and-fill](warheads-and-fill.md#recipes).
+
+  | Type | Payload |
+  |---|---|
+  | condensed | TNT, dynamite |
+  | shrapnel | TNT, a Steel Fragmentation Sleeve |
+  | anvil | TNT, 12 lead plates (a dense mass) |
+  | incendiary | 2 Napalm Canisters (Dispersal Canister plus gasoline) |
+  | debilitation | 2 Dispersal Canisters, nitrous oxide |
+  | chemical | 2 Dispersal Canisters, sulfuric gas, a few mustard seeds when HarvestCraft is present |
+  | smoke | 2 Dispersal Canisters, creosote, coal dust |
+  | repulsive | a Field Generator (HV) |
+  | attractive | a Field Generator (HV), magnetic steel rods |
+  | fragmentation | Industrial TNT, a Titanium Fragmentation Sleeve |
+  | thermobaric | Industrial TNT, 2 Dispersal Canisters, kerosene |
+  | sonic | Industrial TNT, 2 Emitters (EV) |
+  | breaching | Industrial TNT, 2 Shaped-Charge Liner Cones, titanium rods |
+  | contagious | Industrial TNT, 4 Bio Lab culture dishes, biomass |
+
+  The gas, smoke and fuel-air fills are general industrial fluids in canisters, chosen by theme; no chemical-warfare agent is used or named (D56 as amended).
 - **Damage targets (D34):** the damaging T1 types deal at least 1,200 at ground zero at full fill, and T2 at least 3,000, before armor. The unit test `WarheadBlastTest` pins the numbers, and scenario `icbm.blast.condensed` (and the T2 ones) kills a target in the zone. Partial fills deal `D * sqrt(fill / cap)`.
 - **Special types** (gas, fire, push, sonic, breaching, smoke) are balanced on their own effect, not on the damage table (0018 §6).
 - **Thermobaric** is a plain crater here; ICBM's threaded thermobaric energy model is a later refinement if play shows the need.

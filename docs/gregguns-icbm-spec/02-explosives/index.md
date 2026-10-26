@@ -31,7 +31,7 @@ The registry, engine, annihilation, warhead and blast-type sheets are written; t
 | Antimatter, red matter | Kept at UV and UHV; red matter rebuilt with a bounded lifetime | GregGuns blast budget | [D10](../DECISIONS.md#d10-in-detail) |
 | Dropped blast content (colors gas, Christmas, Nightmare) | Dropped | none | [D10](../DECISIONS.md#d10-in-detail) |
 | Protective-armor rating | GT `Hazard` and `IHazardProtector` | GT5-Unofficial | [D21](../DECISIONS.md#d21-in-detail) |
-| Warhead crafting | GT machines (Chemical Reactor, Implosion Compressor), visible in NEI | GT5-Unofficial, NEI | [ROADMAP-ICBM I1](../../ROADMAP-ICBM.md#i1--warheads-and-the-blast-engine) |
+| Warhead crafting | The GT Assembler, one recipe per warhead plus eight parts (D57), visible in NEI | GT5-Unofficial, NEI | [ROADMAP-ICBM I1](../../ROADMAP-ICBM.md#i1--warheads-and-the-blast-engine) |
 
 ## Decisions carried
 

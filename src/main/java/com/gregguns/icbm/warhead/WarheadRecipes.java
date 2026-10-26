@@ -1,13 +1,17 @@
 package com.gregguns.icbm.warhead;
 
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.gregguns.GregGuns;
 import com.gregguns.icbm.explosive.ExplosiveDef;
 import com.gregguns.icbm.explosive.Explosives;
+import com.gregguns.icbm.recipe.IcbmIngredients;
+import com.gregguns.icbm.recipe.Ing;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.GTValues;
@@ -17,26 +21,22 @@ import gregtech.api.objects.ItemData;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipeBuilder;
-import gregtech.api.util.GTRecipeConstants;
 
 /**
- * GT recipes and recycling data of the T1 and T2 warheads. T1 and the starter charge come from the Assembler, the gas
- * and fire payloads from the Chemical Reactor, and the T2 brisance warheads from the Implosion Compressor. Each recipe
- * makes a full-casing warhead; the machine's voltage never exceeds the warhead's tier. Queued for GT's before-postload
- * hook. Common side.
+ * GT recipes and recycling data of the T1 and T2 warheads (D57): every warhead is one Assembler recipe at its casing
+ * tier's voltage, built from {@link WarheadRecipeSpec}. Each makes a full-casing warhead; the parts it uses come from
+ * {@link com.gregguns.icbm.recipe.PartRecipes}. Queued for GT's before-postload hook. Common side.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warheads-and-fill.md (Recipes)
 // Source:
-// https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/system/material/processingLoaders/AdditionalRecipes.java#L292-L301
-// (the Implosion Compressor recipe shape: one item in, ADDITIVE_AMOUNT metadata for the explosive).
+// https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L1266-L1269
+// (assemblerRecipes: nine item slots and one fluid input, so no warhead recipe may exceed that).
 public final class WarheadRecipes {
 
     private static final int DURATION_TICKS = 400;
     /** Casing plates of a T1 and a T2 warhead (D34 cost review: the warhead is the expensive part). */
     static final int T1_PLATES = 4;
     static final int T2_PLATES = 8;
-    private static final int TNT_FULL = 8;
-    private static final int TNT_STARTER = 2;
 
     private WarheadRecipes() {}
 
@@ -53,7 +53,6 @@ public final class WarheadRecipes {
                 GregGuns.LOG.error("Warhead recipe {} failed", spec, e);
             }
         }
-        addStarter();
         addRecycling();
     }
 
@@ -64,101 +63,45 @@ public final class WarheadRecipes {
         return WarheadStacks.make(item, casing, blast.id(), Math.min(fill, WarheadStacks.cap(casing, def)));
     }
 
-    private static ItemStack plates(String material, int count) {
-        return GTOreDictUnificator.get(OrePrefixes.plate, Materials.get(material), count);
-    }
-
     private static void add(WarheadRecipeSpec spec) {
         WarheadBlast blast = spec.blast();
-        boolean t2 = blast.tier() == com.gregguns.icbm.explosive.ExplosiveTier.T2;
-        // The casing metal: stainless steel at HV, titanium at EV (the tiers of ChargeRecipeSpec's gate plates).
-        ItemStack casing = plates(t2 ? "Titanium" : "StainlessSteel", t2 ? T2_PLATES : T1_PLATES);
-        ItemStack tnt = new ItemStack(Blocks.tnt, TNT_FULL);
-        ItemStack payload = payload(blast);
-        if (casing == null || payload == null) {
-            GregGuns.LOG.warn("Skipping the {} warhead recipe: a GT input is missing", blast.id());
-            return;
+        List<ItemStack> items = new ArrayList<>();
+        List<FluidStack> fluids = new ArrayList<>();
+        for (Ing in : spec.inputs()) {
+            if (in.isFluid()) {
+                FluidStack fluid = IcbmIngredients.fluid(in);
+                if (fluid == null) {
+                    GregGuns.LOG
+                        .error("Skipping the {} warhead recipe: {} is missing", spec, IcbmIngredients.describe(in));
+                    return;
+                }
+                fluids.add(fluid);
+                continue;
+            }
+            ItemStack stack = IcbmIngredients.stack(in);
+            if (stack == null) {
+                if (in.isOptional()) {
+                    GregGuns.LOG.info("{} warhead recipe: {} is not in this pack, leaving it out", spec, in.id());
+                    continue;
+                }
+                GregGuns.LOG.error("Skipping the {} warhead recipe: {} is missing", spec, IcbmIngredients.describe(in));
+                return;
+            }
+            items.add(stack);
         }
-        ItemStack out = warhead(blast, blast.fillCap());
-        long eut = GTValues.VP[spec.machineTier()
-            .voltageIndex()];
+        ItemStack out = warhead(blast, spec.isStarter() ? 1 : blast.fillCap());
         GTRecipeBuilder b = GTValues.RA.stdBuilder()
+            .circuit(spec.circuit())
+            .itemInputs(items.toArray(new ItemStack[0]))
             .itemOutputs(out)
             .duration(DURATION_TICKS)
-            .eut(eut);
-        switch (spec.machine()) {
-            case ASSEMBLER:
-                b.itemInputs(casing, tnt, payload)
-                    .fluidInputs(Materials.Glyceryl.getFluid(1000))
-                    .addTo(RecipeMaps.assemblerRecipes);
-                break;
-            case CHEMICAL_REACTOR:
-                b.itemInputs(casing, payload)
-                    .fluidInputs(reagent(blast))
-                    .addTo(RecipeMaps.chemicalReactorRecipes);
-                break;
-            default:
-                b.itemInputs(casing, payload)
-                    .metadata(GTRecipeConstants.ADDITIVE_AMOUNT, 16)
-                    .addTo(RecipeMaps.implosionRecipes);
-                break;
+            .eut(
+                GTValues.VP[spec.machineTier()
+                    .voltageIndex()]);
+        if (!fluids.isEmpty()) {
+            b.fluidInputs(fluids.toArray(new FluidStack[0]));
         }
-    }
-
-    /** The one input that makes a blast type itself: steel bolts for fragments, a blaze payload for fire and so on. */
-    private static ItemStack payload(WarheadBlast blast) {
-        switch (blast.kind()) {
-            case SHRAPNEL:
-                return GTOreDictUnificator
-                    .get(OrePrefixes.bolt, Materials.Steel, blast == WarheadBlast.SHRAPNEL ? 16 : 32);
-            case ANVIL:
-                return new ItemStack(Blocks.anvil);
-            case FIRE:
-                return new ItemStack(Items.blaze_powder, 8);
-            case GAS_DEBILITATION:
-                return new ItemStack(Items.spider_eye, 4);
-            case GAS_CHEMICAL:
-                return new ItemStack(Items.fermented_spider_eye, 4);
-            case GAS_CONTAGIOUS:
-                return new ItemStack(Items.poisonous_potato, 8);
-            case SMOKE:
-                return new ItemStack(Items.coal, 8, 1);
-            case REPEL:
-                return new ItemStack(Items.slime_ball, 8);
-            case ATTRACT:
-                return new ItemStack(Items.ender_pearl, 4);
-            case SONIC:
-                return GTOreDictUnificator.get(OrePrefixes.plate, Materials.Brass, 4);
-            case BREACH:
-                return GTOreDictUnificator.get(OrePrefixes.stick, Materials.TungstenSteel, 4);
-            default:
-                return GTOreDictUnificator.get(OrePrefixes.dust, Materials.Gunpowder, 8);
-        }
-    }
-
-    private static net.minecraftforge.fluids.FluidStack reagent(WarheadBlast blast) {
-        switch (blast.kind()) {
-            case FIRE:
-                return Materials.Oil.getFluid(1000);
-            case GAS_CONTAGIOUS:
-                return Materials.SulfuricAcid.getFluid(1000);
-            default:
-                return Materials.SulfuricAcid.getFluid(500);
-        }
-    }
-
-    /** The cheap way in: one condensed charge in a T1 casing. */
-    private static void addStarter() {
-        ItemStack casing = plates("StainlessSteel", 2);
-        if (casing == null) {
-            return;
-        }
-        GTValues.RA.stdBuilder()
-            .itemInputs(casing, new ItemStack(Blocks.tnt, TNT_STARTER))
-            .itemOutputs(warhead(WarheadBlast.CONDENSED, 1))
-            .duration(DURATION_TICKS)
-            .eut(GTValues.VP[com.gregguns.api.Tier.HV.voltageIndex()])
-            .addTo(RecipeMaps.assemblerRecipes);
+        b.addTo(RecipeMaps.assemblerRecipes);
     }
 
     /** GT recycling data: the casing metal comes back, the contents burn away (D44). */

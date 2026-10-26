@@ -317,7 +317,7 @@ The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 
 |---|---|---|---|---|---|---|---|
 | `gg.icbm.warhead` | Your First Warhead | HV | A warhead is a GregTech-built charge: a stainless steel casing around TNT and a payload. The starter recipe in the Assembler makes a Condensed warhead with a fill of 1 from 2 stainless steel plates and 2 TNT. | retrieval `gregguns:warhead_t1` | - | `gg.ammo.explosives` (hover), pack 160, pack 753 | 742, 420 (28) |
 | `gg.icbm.demolition` | Demolition Charge | HV | Place a warhead and light it with Flint and Steel, a Fire Charge or a redstone pulse. The fuse is 3 seconds plus 1 second per 3 blocks of blast radius. Another explosion sets it off in half a second. | checkbox | - | `gg.icbm.warhead` | 780, 420 (24) |
-| `gg.icbm.t2_casing` | Titanium Casing | EV | The Tier 2 casing is titanium and holds up to 20 charges. Its blast types are made in the Implosion Compressor or the Chemical Reactor at EV. | retrieval `gregguns:warhead_t2` | - | `gg.icbm.demolition`, pack 176, pack 860 | 816, 420 (24) |
+| `gg.icbm.t2_casing` | Titanium Casing | EV | The Tier 2 casing is titanium and holds up to 20 charges. Its blast types are made in the Assembler at EV, from eight titanium plates, Industrial TNT, Plastic Explosive and a Fuze Assembly Mk II. | retrieval `gregguns:warhead_t2` | - | `gg.icbm.demolition`, pack 176, pack 860 | 816, 420 (24) |
 
 ## Coverage matrix
 
