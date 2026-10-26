@@ -341,12 +341,16 @@ final class NuclearScenarios {
                         int[] first = null;
                         for (int dx = -span; dx <= span; dx++) {
                             for (int dz = -span; dz <= span; dz++) {
+                                int inColumn = 0;
                                 for (int dy = 6; dy >= -8; dy--) {
                                     Block b = w.getBlock(ox + dx, oy + dy, oz + dz);
                                     if (b != FalloutBlocks.irradiated()) {
                                         continue;
                                     }
                                     total++;
+                                    if (++inColumn == 4) {
+                                        deep++;
+                                    }
                                     if (first == null) {
                                         first = new int[] { ox + dx, oy + dy, oz + dz };
                                     }
@@ -355,10 +359,7 @@ final class NuclearScenarios {
                                     }
                                     // Surface only: the layer below a converted block is converted or the column's
                                     // third block; never the stone.
-                                    if (w.getBlock(ox + dx, oy + dy - 1, oz + dz) == Blocks.stone
-                                        && w.getBlock(ox + dx, oy + dy + 1, oz + dz) == FalloutBlocks.irradiated()) {
-                                        deep++;
-                                    }
+                                    // (counted per column below: no column holds more than three)
                                 }
                             }
                         }

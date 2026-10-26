@@ -142,7 +142,7 @@ public final class WarheadScenarios {
 
         @Override
         public String description() {
-            return "T1 and T2 warheads place in one block, are not full cubes, and the box is a centered column.";
+            return "T1, T2 and T3 warheads place in one block, are not full cubes, and the box is a centered column.";
         }
 
         @Override
@@ -154,7 +154,14 @@ public final class WarheadScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             for (WarheadCasing c : WarheadCasing.values()) {
                 int dx = c.ordinal() * 2;
-                TileWarhead tile = place(ctx, c, dx, 0, 0, c == WarheadCasing.T1 ? "condensed" : "thermobaric", 99);
+                TileWarhead tile = place(
+                    ctx,
+                    c,
+                    dx,
+                    0,
+                    0,
+                    c == WarheadCasing.T1 ? "condensed" : c == WarheadCasing.T2 ? "thermobaric" : "exothermic",
+                    99);
                 out.check(tile != null, c + " has a warhead tile");
                 if (tile == null) {
                     continue;

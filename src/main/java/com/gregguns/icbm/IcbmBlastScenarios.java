@@ -488,7 +488,9 @@ final class IcbmBlastScenarios {
             restoreTerrain(new boolean[] { true, true, true, true });
             final List<ExplosiveDef> defs = new ArrayList<>();
             for (ExplosiveDef d : Explosives.allIncludingHidden()) {
+                // Radius 64 and up has its own scenario (icbm.blast.crater_nuclear); this one's slab is 48 across.
                 if (!d.hidden() && d.shape() != BlastShape.NONE
+                    && d.radius(d.maxFill()) <= 40.0
                     && d.tier()
                         .number() <= IcbmConfig.maxBlastTier) {
                     defs.add(d);
