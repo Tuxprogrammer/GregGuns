@@ -147,6 +147,10 @@ BLASTS = [
 KIND_COLOR = {"Crater": "#ff8a1f", "Fire": "#ff5555", "Gas": "#6fd36b", "Push": "#3d8bff", "Sound": "#ff6fcf", "Tunnel": "#ffd23f"}
 
 CSS = """
+.ribbon { position: absolute; top: 40px; right: 56px; transform: rotate(-3deg); text-align: center;
+  background: #ffd23f; color: #1a1200; font-family: Bahnschrift, "Fira Sans Condensed", "Noto Sans", sans-serif; font-stretch: condensed;
+  font-weight: 800; font-size: 38px; letter-spacing: .06em; text-transform: uppercase; padding: 12px 28px 10px; border-radius: 10px;
+  border: 4px solid #1a1200; outline: 3px solid #ffd23f; box-shadow: 0 8px 22px rgba(0,0,0,.6); z-index: 5; }
 .tier-card { display: grid; grid-template-columns: 250px 1fr; gap: 22px; align-items: center; }
 .tier-card .spot { height: 360px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 14px; }
 .stat { display: flex; justify-content: space-between; gap: 14px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 19px; }
@@ -289,9 +293,20 @@ def warheads() -> str:
 
     ladder = "".join(
         f'<span class="{"" if on else "off"}">{chip(t) if t in K.TIERS else f"<span class=chip style=background:#8a8f98>{t}</span>"}</span>'
-        for t, on in [("HV", True), ("EV", True), ("IV", True), ("LuV", False), ("ZPM", False), ("UV", False), ("UHV", False)])
-    later = f"""<div class="card"><div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap"><h2>Bigger warheads sit higher on the ladder</h2><div class="ladder">{ladder}</div></div>
-<div class="muted" style="font-size:18px;margin-top:8px">Tiers 1 and 2 are the conventional starter casings. Tier 3 (LuV to ZPM) is a two-block-tall warhead that holds up to 64 charges. Nuclear, antimatter and red matter warheads sit at the top of the ladder, and everything in their blast zone dies.</div></div>"""
+        for t, on in [("HV", True), ("EV", True), ("IV", True), ("LuV", True), ("ZPM", True), ("UV", False), ("UHV", False)])
+    # DRAFT numbers from the spec (warheads-and-fill, D34, D30, D49); replaced by the code's dump once the I3 content lands.
+    t3 = _tier_card(3, "LuV", "LuV to ZPM", "Tungstensteel", "Tungsten steel", "warhead_t3", 64,
+                    "A two-block-tall casing for the silo. It holds up to 64 charges and needs a Tier 3 missile.",
+                    [("Full-fill center damage", "8,000 or more (pending)"), ("Blast radius, full", "pending"), ("Size", "1 &times; 1 &times; 2 blocks")])
+    nuke = _tier_card("", "ZPM", "ZPM", "Tungstensteel", "Tungsten steel", "warhead_nuclear", 64,
+                      "The nuclear warhead. Nothing living inside its kill zone survives, bosses included.",
+                      [("Kill zone", "pending"), ("Fallout", "Irradiated ground, surface only (numbers pending)"), ("Size", "1 &times; 1 &times; 2 blocks")])
+    nuke = nuke.replace("<h2>Tier </h2>", "<h2>Nuclear</h2>")
+    heavy = f"""<div class="label" style="margin:26px 0 10px">Tier 3 and nuclear &middot; silo only</div>
+<div class="grid" style="grid-template-columns:1fr 1fr">{t3}{nuke}</div>
+<div class="muted" style="font-size:17px;margin-top:10px">Tier 3 and nuclear warheads fly only on a Tier 3 missile launched from the missile silo. Inside a nuclear kill zone every living thing dies, through armor, bosses included; players follow the server's damage settings. The ground that survives is irradiated: wear hazmat armor to cross it.</div>"""
+    later = f"""<div class="card"><div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap"><h2>Where each tier sits on the ladder</h2><div class="ladder">{ladder}</div></div>
+<div class="muted" style="font-size:18px;margin-top:8px">Tiers 1 and 2 are the conventional starter casings. Tier 3 (LuV to ZPM) and the nuclear warhead are the heavy two-block casings. Antimatter and red matter warheads sit at the very top, and everything in their blast zone dies.</div></div>"""
 
     body = f"""<div class="grid" style="grid-template-columns:1fr 1fr">{t1}{t2}</div>
 <div class="label" style="margin:26px 0 10px">Tier 1 blast types &middot; HV casing</div>
@@ -299,11 +314,12 @@ def warheads() -> str:
 <div class="label" style="margin:22px 0 10px">Tier 2 blast types &middot; EV to IV casing</div>
 <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:14px">{t2_cards}</div>
 <div class="muted" style="font-size:16px;margin-top:10px">Radius is in blocks at a full casing. Center damage is before armor.</div>
+{heavy}
 <div class="grid" style="grid-template-columns:1.2fr 1fr;margin-top:26px">{fill}{falloff}</div>
 <div class="grid" style="grid-template-columns:1fr 1.15fr;margin-top:18px">{demo}{make}</div>
 <div style="margin-top:18px">{later}</div>"""
-    return page_doc("Warheads", "Tier 1 and Tier 2: what each one does, how big the bang is, and how to make and set one off.", body,
-                    extra=CSS,
+    return page_doc("Warheads", "Tiers 1 to 3 and nuclear: what each does, how big the bang is, and how to make one.", body,
+                    extra=CSS, overlay='<div class="ribbon">Draft: numbers pending</div>',
                     credit=["Warhead models and textures \u00a9 HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.", MOJANG_CREDIT])
 
 
