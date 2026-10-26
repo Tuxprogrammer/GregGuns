@@ -9,6 +9,7 @@ import com.gregguns.core.command.GregGunsCommand;
 import com.gregguns.core.command.TestSubCommand;
 import com.gregguns.core.config.GregGunsConfig;
 import com.gregguns.core.config.ModuleFlags;
+import com.gregguns.core.module.ModPresence;
 import com.gregguns.core.module.ModuleGate;
 import com.gregguns.core.module.ModuleManager;
 import com.gregguns.core.module.ModuleSyncLogic;
@@ -19,6 +20,7 @@ import com.gregguns.core.testing.ScenarioChunks;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.entity.NpcModule;
 import com.gregguns.gun.GunsModule;
+import com.gregguns.icbm.IcbmModule;
 import com.gregguns.machine.MachinesModule;
 import com.gregguns.machine.MtePlaceholders;
 import com.gregguns.network.GregGunsNetwork;
@@ -43,7 +45,7 @@ public class CommonProxy {
         // Order per CONTRIBUTING.md: config first, then the modules register items, blocks and entities.
         GregGunsConfig.register();
         GregGunsNetwork.init();
-        modules = new ModuleManager(ModuleFlags::isEnabled, new GregGunsTab());
+        modules = new ModuleManager(ModuleFlags::isEnabled, ModPresence::isLoaded, new GregGunsTab());
         registerModules(modules);
         modules.preInit(event);
     }
@@ -129,7 +131,7 @@ public class CommonProxy {
         manager.register(new UtilityModule());
         manager.register(new NpcModule());
         manager.register(new WorldgenModule());
-        manager.register(new com.gregguns.icbm.IcbmModule());
+        manager.register(new IcbmModule());
     }
 
     /**

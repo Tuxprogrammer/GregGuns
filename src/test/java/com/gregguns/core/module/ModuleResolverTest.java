@@ -14,6 +14,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.gregguns.core.config.ModuleFlags;
+
 class ModuleResolverTest {
 
     private static Set<ModuleId> on(ModuleId... ids) {
@@ -33,8 +35,7 @@ class ModuleResolverTest {
 
     @Test
     void shippedDefaultsResolveCleanly() {
-        ModuleResolution result = ModuleResolver
-            .resolve(Arrays.asList(ModuleId.values()), com.gregguns.core.config.ModuleFlags::isEnabled);
+        ModuleResolution result = ModuleResolver.resolve(Arrays.asList(ModuleId.values()), ModuleFlags::isEnabled);
         assertEquals(
             Arrays.asList(
                 ModuleId.GUNS,
@@ -109,6 +110,54 @@ class ModuleResolverTest {
             ModuleResolution.SkipReason.MISSING_DEPENDENCY,
             result.skipped()
                 .get(ModuleId.WORLDGEN));
+    }
+
+    @Test
+    void moduleWithAnUnloadedModIsSkippedWithMissingMod() {
+        List<ModuleId> all = Arrays.asList(ModuleId.values());
+        ModuleResolution result = ModuleResolver.resolve(all, id -> true, mod -> false);
+        assertEquals(
+            ModuleResolution.SkipReason.MISSING_MOD,
+            result.skipped()
+                .get(ModuleId.ICBM));
+        assertFalse(result.isEnabled(ModuleId.ICBM));
+        assertTrue(result.isEnabled(ModuleId.GUNS), "modules without required mods are unaffected");
+    }
+
+    @Test
+    void missingModIsReportedEvenWhenAModuleDependencyIsAlsoOff() {
+        // The swallowed-warning case from the I0 review: icbm on, machines off, Galacticraft present.
+        Set<ModuleId> flags = on(ModuleId.GUNS, ModuleId.ICBM);
+        List<ModuleId> all = Arrays.asList(ModuleId.values());
+        assertEquals(
+            ModuleResolution.SkipReason.MISSING_DEPENDENCY,
+            ModuleResolver.resolve(all, flags::contains, mod -> true)
+                .skipped()
+                .get(ModuleId.ICBM));
+        assertEquals(
+            ModuleResolution.SkipReason.MISSING_MOD,
+            ModuleResolver.resolve(all, flags::contains, mod -> false)
+                .skipped()
+                .get(ModuleId.ICBM));
+    }
+
+    @Test
+    void aFlagOffModuleIsDisabledByConfigWhateverTheMods() {
+        ModuleResolution result = ModuleResolver.resolve(
+            Arrays.asList(ModuleId.GUNS, ModuleId.MACHINES, ModuleId.ICBM),
+            id -> id != ModuleId.ICBM,
+            mod -> false);
+        assertEquals(
+            ModuleResolution.SkipReason.DISABLED_BY_CONFIG,
+            result.skipped()
+                .get(ModuleId.ICBM));
+    }
+
+    @Test
+    void modulesWithTheirModsLoadedRun() {
+        ModuleResolution result = ModuleResolver
+            .resolve(Arrays.asList(ModuleId.values()), id -> true, "GalacticraftCore"::equals);
+        assertTrue(result.isEnabled(ModuleId.ICBM));
     }
 
     @Test

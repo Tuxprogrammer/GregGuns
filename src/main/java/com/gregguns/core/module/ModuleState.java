@@ -37,20 +37,32 @@ public final class ModuleState {
         if (server >= 0) {
             return (server & (1 << id.ordinal())) != 0;
         }
-        return isActiveLocally(id, ModuleFlags::isEnabled);
+        return isActiveLocally(id, ModuleFlags::isEnabled, ModPresence::isLoaded);
     }
 
     /**
      * @param id   a module
      * @param flag the config switch of a module
-     * @return whether the module's flag is on and every module it requires is active
+     * @return whether the module's flag is on and every module it requires is active; its required mods are assumed
+     *         loaded
      */
     public static boolean isActiveLocally(ModuleId id, Predicate<ModuleId> flag) {
-        if (!flag.test(id)) {
+        return isActiveLocally(id, flag, mod -> true);
+    }
+
+    /**
+     * @param id        a module
+     * @param flag      the config switch of a module
+     * @param modLoaded whether an FML mod id is loaded
+     * @return whether the module's flag is on, every mod it needs is loaded and every module it requires is active
+     */
+    public static boolean isActiveLocally(ModuleId id, Predicate<ModuleId> flag, Predicate<String> modLoaded) {
+        if (!flag.test(id) || !ModPresence.missingMods(id, modLoaded)
+            .isEmpty()) {
             return false;
         }
         for (ModuleId required : id.requires()) {
-            if (!isActiveLocally(required, flag)) {
+            if (!isActiveLocally(required, flag, modLoaded)) {
                 return false;
             }
         }
@@ -59,7 +71,7 @@ public final class ModuleState {
 
     /** @return the bit mask of the modules active on this side's own config (ignores the server's values) */
     public static int localMask() {
-        return maskOf(ModuleFlags::isEnabled);
+        return maskOf(ModuleFlags::isEnabled, ModPresence::isLoaded);
     }
 
     /**
@@ -67,9 +79,19 @@ public final class ModuleState {
      * @return the bit mask of the modules active under {@code flag}, bit {@code i} for {@code ModuleId.values()[i]}
      */
     public static int maskOf(Predicate<ModuleId> flag) {
+        return maskOf(flag, mod -> true);
+    }
+
+    /**
+     * @param flag      the config switch of a module
+     * @param modLoaded whether an FML mod id is loaded
+     * @return the bit mask of the modules active under {@code flag} with those mods, bit {@code i} for
+     *         {@code ModuleId.values()[i]}
+     */
+    public static int maskOf(Predicate<ModuleId> flag, Predicate<String> modLoaded) {
         int mask = 0;
         for (ModuleId id : ModuleId.values()) {
-            if (isActiveLocally(id, flag)) {
+            if (isActiveLocally(id, flag, modLoaded)) {
                 mask |= 1 << id.ordinal();
             }
         }

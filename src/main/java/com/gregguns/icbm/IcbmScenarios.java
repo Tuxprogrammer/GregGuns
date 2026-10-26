@@ -1,5 +1,9 @@
 package com.gregguns.icbm;
 
+import java.util.Arrays;
+
+import com.gregguns.compat.ModIds;
+import com.gregguns.core.config.ModulesConfig;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.testing.Scenario;
@@ -9,8 +13,8 @@ import com.gregguns.core.testing.ScenarioResult;
 
 /**
  * In-game scenarios of the ICBM module. Dev environment only (registered behind {@code testHooksEnabled}), server side.
- * Registered only while the module is enabled, so they need {@code modules.icbm} on and Galacticraft present
- * ({@code GG_MODULES=guns,armor,machines,utility,npcs,worldgen,icbm}).
+ * Registered whatever the module's flag says, and they check the branch the run is on, so they pass with Galacticraft
+ * present (module active when its flag and requirements are on) and with it absent (module off).
  */
 // Spec: docs/ROADMAP-ICBM.md (I0 exit gate)
 final class IcbmScenarios {
@@ -24,7 +28,10 @@ final class IcbmScenarios {
         registry.register(new ModuleGate());
     }
 
-    /** With the module on and Galacticraft present, the module reports active and Galacticraft is on the classpath. */
+    /**
+     * The module is active exactly when its flag is on, Galacticraft is loaded and the modules it needs are on; and
+     * Galacticraft's main class is on the classpath exactly when the mod is loaded.
+     */
     private static final class ModuleGate implements Scenario {
 
         @Override
@@ -34,16 +41,22 @@ final class IcbmScenarios {
 
         @Override
         public String description() {
-            return "With modules.icbm on and Galacticraft loaded, the ICBM module is active, the gate's verdict is"
-                + " ACTIVE and Galacticraft's main class is present.";
+            return "The ICBM module is active exactly when modules.icbm is on, Galacticraft is loaded and guns and"
+                + " machines are on; Galacticraft's main class is present exactly when the mod is loaded.";
         }
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
-            out.check(IcbmAvailability.galacticraftPresent(), "Galacticraft should be loaded");
-            out.checkEquals("gate verdict", IcbmGate.Verdict.ACTIVE, IcbmAvailability.verdict());
-            out.check(ModuleState.isActive(ModuleId.ICBM), "the ICBM module should report active");
+            boolean gc = IcbmAvailability.galacticraftPresent();
+            boolean expected = ModulesConfig.icbm && gc
+                && ModuleState.isActive(ModuleId.GUNS)
+                && ModuleState.isActive(ModuleId.MACHINES);
+            out.checkEquals("module active", expected, ModuleState.isActive(ModuleId.ICBM));
+            out.checkEquals(
+                "requiredMods",
+                Arrays.asList(ModIds.GALACTICRAFT_CORE),
+                Arrays.asList(ModuleId.ICBM.requiredMods()));
             boolean classPresent;
             try {
                 Class.forName(GC_CORE_CLASS, false, IcbmScenarios.class.getClassLoader());
@@ -51,7 +64,7 @@ final class IcbmScenarios {
             } catch (ClassNotFoundException e) {
                 classPresent = false;
             }
-            out.check(classPresent, "Galacticraft's main class should be on the classpath");
+            out.checkEquals("Galacticraft main class present", gc, classPresent);
             return out.build();
         }
     }

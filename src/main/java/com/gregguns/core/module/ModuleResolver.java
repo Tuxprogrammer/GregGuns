@@ -31,6 +31,24 @@ public final class ModuleResolver {
      * @throws IllegalArgumentException if {@code registered} lists an id twice
      */
     public static ModuleResolution resolve(Collection<ModuleId> registered, Predicate<ModuleId> flag) {
+        return resolve(registered, flag, mod -> true);
+    }
+
+    /**
+     * Resolves the set of modules to run, also requiring each module's {@linkplain ModuleId#requiredMods() mods}.
+     *
+     * <p>
+     * A module runs when it is registered, its flag is on, every mod it needs is loaded, and every module it requires
+     * also runs. A missing mod is reported before a missing module dependency.
+     *
+     * @param registered the modules that have a module class
+     * @param flag       the config switch for a module id
+     * @param modLoaded  whether an FML mod id is loaded
+     * @return the resolution; never {@code null}
+     * @throws IllegalArgumentException if {@code registered} lists an id twice
+     */
+    public static ModuleResolution resolve(Collection<ModuleId> registered, Predicate<ModuleId> flag,
+        Predicate<String> modLoaded) {
         EnumSet<ModuleId> present = EnumSet.noneOf(ModuleId.class);
         for (ModuleId id : registered) {
             if (!present.add(id)) {
@@ -44,12 +62,15 @@ public final class ModuleResolver {
         for (ModuleId id : present) {
             if (!flag.test(id)) {
                 skipped.put(id, ModuleResolution.SkipReason.DISABLED_BY_CONFIG);
-            } else if (!running.containsAll(Arrays.asList(id.requires()))) {
-                skipped.put(id, ModuleResolution.SkipReason.MISSING_DEPENDENCY);
-            } else {
-                running.add(id);
-                enabled.add(id);
-            }
+            } else if (!ModPresence.missingMods(id, modLoaded)
+                .isEmpty()) {
+                    skipped.put(id, ModuleResolution.SkipReason.MISSING_MOD);
+                } else if (!running.containsAll(Arrays.asList(id.requires()))) {
+                    skipped.put(id, ModuleResolution.SkipReason.MISSING_DEPENDENCY);
+                } else {
+                    running.add(id);
+                    enabled.add(id);
+                }
         }
         return new ModuleResolution(enabled, skipped);
     }

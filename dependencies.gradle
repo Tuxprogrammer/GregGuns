@@ -52,8 +52,8 @@ dependencies {
     compileOnly("com.github.GTNewHorizons:BetterQuesting:3.8.89-GTNH:dev") { transitive = false }
 
     // Optional integration (ICBM module, I0): Galacticraft is the ICBM module's hard gate (modules.icbm turns itself off
-    // without it, D9) and OpenComputers is its optional scripting hook (D37). devOnlyNonPublishable, so both compile and
-    // run in runServer/runClient but are not published as dependencies; all references to them are isolated behind
+    // without it, D9) and OpenComputers is its optional scripting hook (D13). compileOnly plus runtimeOnlyNonPublishable, so both
+    // compile and run in runServer/runClient but are not published as dependencies; all references to them are isolated behind
     // Loader.isModLoaded and @Optional. Versions are the pack's (reference/gtnh/2.9.0-RC-2/MOD-INDEX.md).
     // To test the absent-Galacticraft case, run: ./gradlew runServer -PnoGalacticraft (see docs/testing/README.md).
     // The flag only drops the runtime copy; the compile classpath keeps the jars so the source set always builds.

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.gregguns.armor.oxygen.FallbackOxygenMask;
 import com.gregguns.armor.oxygen.FallbackOxygenTanks;
 import com.gregguns.armor.oxygen.gc.GcOxygen;
+import com.gregguns.compat.ModIds;
 import com.gregguns.core.registry.ModuleRegistrar;
 
 import cpw.mods.fml.common.Loader;
@@ -27,8 +28,6 @@ public final class EquipmentItems {
     public static final String OXYGEN_MASK = "oxygen_mask";
     /** Registry name of the Oxygen Tanks. */
     public static final String OXYGEN_TANKS = "oxygen_tanks";
-    /** Galacticraft's mod id. */
-    public static final String GC_MODID = "GalacticraftCore";
 
     // Set once in register(): registries of this module's items.
     private static ItemNightVisionGoggles goggles;
@@ -70,7 +69,7 @@ public final class EquipmentItems {
      * @param name      one of the equipment registry names
      */
     public static void registerOne(ModuleRegistrar registrar, String name) {
-        boolean gc = Loader.isModLoaded(GC_MODID);
+        boolean gc = Loader.isModLoaded(ModIds.GALACTICRAFT_CORE);
         switch (name) {
             case ItemNightVisionGoggles.NAME:
                 goggles = registrar.registerItem(name, new ItemNightVisionGoggles());
