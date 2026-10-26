@@ -117,6 +117,8 @@ final class WarheadShotsScenario implements Scenario {
         p.capabilities.isFlying = true;
         p.sendPlayerAbilities();
         p.inventory.clearInventory(null, -1);
+        p.clearActivePotions();
+        p.setHealth(p.getMaxHealth());
         // Fixed noon for repeatable light.
         w.setWorldTime(6000L);
         w.getGameRules()
@@ -282,7 +284,7 @@ final class WarheadShotsScenario implements Scenario {
             signal(p, "hud", "on");
             signal(p, "view", "0");
             clearBox(w, craterX, oy, craterZ, fillHalf[0] + 2, oy, oy + 5);
-            p.setGameType(WorldSettings.GameType.SURVIVAL);
+            // Stay in creative: the gas cloud may still hang about and a survival player would be poisoned.
             return ScenarioResult.builder(NAME)
                 .note(
                     times.size() + " steps sent to "
