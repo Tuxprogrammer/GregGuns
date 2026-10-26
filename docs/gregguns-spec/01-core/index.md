@@ -47,6 +47,7 @@ No integration point (see the Techguns sheet and the [design records](../../desi
 | Block tooltips | Waila providers; HoloInventory unchanged | waila 1.19.34, HoloInventory 2.5.17-GTNH | [hud-overlays.md](hud-overlays.md) |
 | Sound categories | Names work with the muffler; categories are a 03 decision | Extreme Sound Muffler 1.1.1 | [hud-overlays.md](hud-overlays.md) |
 | Quest-line progression | A pack-side change only | BetterQuesting 3.8.89-GTNH | Pack-side changes below |
+| In-game guide (no Techguns equivalent) | Markdown pages in the jar at `assets/gregguns/guidenh/_en_us/`; GuideNH finds them by resource convention, so there is no code, no dependency entry and no registration call. Pages use `navigation` frontmatter, `item_ids` for hold-G lookup, and `ItemImage` / `ItemLink` tags. `GuidePagesTest` checks parents, links, item ids, machine ids and each gun's tier against the code. Not verified in a client: structure previews (`ImportStructureLib`) are not used, because the Ammunition Works and Rampart change size with their bay count | GuideNH 1.3.41 | [Source](https://github.com/GTNewHorizons/GuideNH/blob/1.3.41/wiki/Getting-Started.md#guide-discovery), [Navigation](https://github.com/GTNewHorizons/GuideNH/blob/1.3.41/wiki/Navigation.md) |
 
 ## Pack-side changes
 

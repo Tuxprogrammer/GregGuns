@@ -77,6 +77,8 @@ Gate material: **Steel**. Power: 32 EU/t.
 - <ItemImage id="gregguns:combat_knife" label="right" />: Fast steel melee; needs no ammo.
 - <ItemImage id="gregguns:crowbar" label="right" />: Melee that mines like iron; needs no ammo.
 - <ItemImage id="gregguns:stielgranate" label="right" />: Thrown stick grenade; thrown by hand.
+- <ItemImage id="gregguns:akimbo_pistols" label="right" />: Two pistols, alternating; uses <ItemLink id="gregguns:mag_9mm_pistol" />.
+- <ItemImage id="gregguns:akimbo_revolvers" label="right" />: Two revolvers, alternating; uses <ItemLink id="gregguns:ammo_9mm_bullet" />.
 
 ## MV (Medium Voltage)
 
@@ -87,8 +89,6 @@ Gate material: **Aluminum**. Power: 128 EU/t.
 - <ItemImage id="gregguns:combat_shotgun" label="right" />: Eight-shell pump action; uses <ItemLink id="gregguns:ammo_shotgun_shell" />.
 - <ItemImage id="gregguns:m4" label="right" />: Accurate, scoped, 30 rounds; uses <ItemLink id="gregguns:mag_assault_rifle" />.
 - <ItemImage id="gregguns:ak47" label="right" />: Hits harder, 30 rounds; uses <ItemLink id="gregguns:mag_assault_rifle" />.
-- <ItemImage id="gregguns:akimbo_pistols" label="right" />: Two pistols, alternating; uses <ItemLink id="gregguns:mag_9mm_pistol" />.
-- <ItemImage id="gregguns:akimbo_revolvers" label="right" />: Two revolvers, alternating; uses <ItemLink id="gregguns:ammo_9mm_bullet" />.
 - <ItemImage id="gregguns:akimbo_mac10s" label="right" />: Both fire every pull; uses <ItemLink id="gregguns:mag_smg" />.
 - <ItemImage id="gregguns:frag_grenade" label="right" />: Hold to throw harder; thrown by hand.
 - <ItemImage id="gregguns:flashbang" label="right" />: Blinds anyone looking; thrown by hand.

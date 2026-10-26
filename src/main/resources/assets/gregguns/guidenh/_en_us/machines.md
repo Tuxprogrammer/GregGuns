@@ -60,7 +60,7 @@ LV. Swaps camo patterns on your gun and armor, one click per piece, so it never 
 
 MV and HV. Stick one on a wall, set depth and fuse, arm it and step back. It bores a clean tunnel and drops the blocks as items. The Advanced charge cuts obsidian.
 
-<ItemImage id="gregguns:explosive_charge" label="right" /> <ItemImage id="gregguns:advanced_explosive_charge" label="right" />
+<ItemImage id="gregguns:explosive_charge" label="right" />
 
 ## Storage and camp gear
 
