@@ -112,7 +112,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 | `icbm-recipes` | The ICBM crafting chains, read from the recipe export | I7 |
 | `icbm-hero` | The module at a glance, for the README and for posting | I7 |
 
-**Owner check-ins** (not a gate): when new visuals land on master, the orchestrator tells the owner that day what is new and where to look. Every ICBM visual is collected on one private gallery page, newest first, with a local copy at `docs/icbm-visuals.html`. The owner's notes, if any, join the next milestone's fix list, and the build doesn't wait for them. The alpha review covers all visuals formally.
+**Owner check-ins** (not a gate): when new visuals land on master, the orchestrator tells the owner that day what is new and where to look. Every ICBM visual is collected, newest first, in the local gallery page [docs/icbm-visuals.html](icbm-visuals.html), which links the committed images. It stays local: no hosted pages unless the owner asks. The owner's notes, if any, join the next milestone's fix list, and the build doesn't wait for them. The alpha review covers all visuals formally.
 
 ---
 
