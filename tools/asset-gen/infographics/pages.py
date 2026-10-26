@@ -145,6 +145,10 @@ def arsenal(part: int):
     return page_doc(title, sub, body)
 
 
+MOJANG_CREDIT = ("Minecraft textures \u00a9 Mojang AB, shown unmodified under Mojang's usage guidelines; "
+                 "GregGuns is not affiliated with Mojang or Microsoft.")
+
+
 def page_doc(title, sub, body, width=1600, extra="", **kw):
     return K.page(title, sub, body, width=width, extra_css=PAGE_CSS + extra, **kw)
 

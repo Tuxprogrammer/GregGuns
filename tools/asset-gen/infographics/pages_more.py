@@ -6,7 +6,7 @@ import data as D
 import kit as K
 import scenes as S
 from kit import chip, esc, url
-from pages import PAGE_CSS, POINT, arsenal, bubble, getting_started, gti, ico, img, page_doc, slot, tier_var
+from pages import MOJANG_CREDIT, PAGE_CSS, POINT, arsenal, bubble, getting_started, gti, ico, img, page_doc, slot, tier_var
 
 ARMOR = K.ASSETS / "textures/models/armor"
 
@@ -328,7 +328,7 @@ def multiblock(key):
 <div class="card"><h2 style="margin-bottom:6px">Hatches</h2>{hatches}</div>
 <div class="card"><h2 style="margin-bottom:10px">Make it bigger</h2>{grow}</div></div>
 {guide_row(m["tip"], pose=POINT, flip=True, yaw=-20)}"""
-    return page_doc(m["title"], m["sub"], body)
+    return page_doc(m["title"], m["sub"], body, credit=MOJANG_CREDIT if m.get("lamp_text") else "")
 
 
 # ---------------------------------------------------------------- enemies
@@ -495,7 +495,7 @@ def enemies():
     return page_doc("Enemies and <b>loot</b>",
                     "Who shoots back, where you'll meet them, and what they carry and drop. Every faction can be "
                     "switched off in the config.",
-                    body)
+                    body, credit=MOJANG_CREDIT)
 
 
 # ---------------------------------------------------------------- questbook

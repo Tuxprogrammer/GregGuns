@@ -21,6 +21,8 @@ On Linux, if `./gradlew` is not executable, run `sh ./gradlew`, and point `JAVA_
 
 Needs Pillow, numpy and Playwright. On Windows it drives the Edge that ships with the OS. Elsewhere it uses Playwright's bundled Chromium: run `python -m playwright install chromium` once. The sheets use Segoe UI and Bahnschrift, so install them on Linux too (Arch: the AUR package `ttf-ms-win11-auto`); with them a Linux rebuild matches the committed sheets to within a few percent of pixels. Without them the text falls back to Fira Sans and Fira Sans Condensed, then Noto Sans, and a few lines wrap differently. Never commit font files. GregTech textures come from the GT jar in the extracted reference pack (`reference/gtnh/`, or the main checkout's copy when you're in a worktree). If it's missing, run `python -I tools/gtnh-reference/gtnh_ref.py fetch`.
 
+The vanilla 1.7.10 client jar is found from `$GREGGUNS_MC_JAR`, the reference pack, a Prism Launcher install, or the Gradle cache (`./gradlew setupDecompWorkspace` fills it).
+
 Renders are cached in `build/infographics/r/` by their parameters and a hash of each exported model, so a model change redraws on its own. Delete that folder after you change a texture.
 
 ## Files
@@ -37,7 +39,7 @@ Renders are cached in `build/infographics/r/` by their parameters and a hash of 
 | `data.py` | Player-facing facts: weapons per tier, ammo, magazines |
 | `pages.py`, `pages_more.py` | One function per infographic; `pages_more.PAGES` lists them all |
 | `pages_recipes.py` | The recipes sheet: crafting grids for the hand recipes, machine rows from the exported recipe tables |
-| `vanilla.py` | Our own simple icons for the vanilla items recipes use; Mojang's textures are never shown |
+| `vanilla.py` | Mojang's vanilla textures (recipe ingredient icons, the skeleton and pigman skins, glowstone for the interior lamp), read unmodified from the vanilla 1.7.10 client jar at build time |
 
 ## Writing rules
 
@@ -46,5 +48,5 @@ Renders are cached in `build/infographics/r/` by their parameters and a hash of 
 - Use in-game display names and American spelling.
 - Give every dark model a spotlight (`.spot`, `.wcard .pic`). Every render (`img.r`) gets a light rim so it stands off the dark cards.
 - Guns in a figure's hands use the mod's own third-person lengths, read from `InHandTargets.java`, with the muzzle forward. Turn a gunman side-on so the gun shows; a left-facing one is rendered facing right and mirrored.
-- Render only our own textures and GregTech's. The Skeleton Soldier wears the vanilla skeleton texture in game, so it is drawn with a plain bone skin (`kit.bone_skin()`).
+- Render our own textures, GregTech's and, for Minecraft content, Mojang's real ones, unmodified, from the vanilla jar (`vanilla.texture()`). A sheet that shows them carries the `pages.MOJANG_CREDIT` footer line. Never commit the jar or its textures.
 - License: our art is MIT. The GregTech textures shown are GT5 Unofficial's (LGPL-3.0), credited in `docs/assets/CREDITS.md`.
