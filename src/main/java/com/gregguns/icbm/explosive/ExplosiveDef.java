@@ -37,6 +37,7 @@ public final class ExplosiveDef {
     private final double rayEnergyValue;
     private final BlastEffect effect;
     private final boolean hidden;
+    private final boolean ownsMotion;
 
     private ExplosiveDef(Builder b) {
         this.id = b.id;
@@ -51,6 +52,7 @@ public final class ExplosiveDef {
         this.rayEnergyValue = b.rayEnergyValue;
         this.effect = b.effect;
         this.hidden = b.hidden;
+        this.ownsMotion = b.ownsMotion;
     }
 
     /**
@@ -107,6 +109,11 @@ public final class ExplosiveDef {
         return effect;
     }
 
+    /** @return true when the type's effect moves entities itself, so the engine adds no outward knockback */
+    public boolean ownsMotion() {
+        return ownsMotion;
+    }
+
     /** @return true for a test-only explosive: registered and detonable, but left out of {@link Explosives#all()} */
     public boolean hidden() {
         return hidden;
@@ -148,6 +155,7 @@ public final class ExplosiveDef {
         private double rayEnergyValue;
         private BlastEffect effect = BlastEffect.NONE;
         private boolean hidden;
+        private boolean ownsMotion;
 
         private Builder(String id, ExplosiveTier tier) {
             if (id == null || id.isEmpty()
@@ -216,6 +224,12 @@ public final class ExplosiveDef {
         /** @param v the per-type effect @return this */
         public Builder effect(BlastEffect v) {
             this.effect = java.util.Objects.requireNonNull(v);
+            return this;
+        }
+
+        /** @return this, marked as moving entities in its own effect; the engine then skips its knockback */
+        public Builder ownsMotion() {
+            this.ownsMotion = true;
             return this;
         }
 

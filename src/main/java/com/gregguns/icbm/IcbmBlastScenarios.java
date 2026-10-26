@@ -29,7 +29,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * Scenarios of the blast engine (I1): every registered explosive detonates through the shared pipeline and respects
- * protection and {@code explosions.blockDamage}; several large blasts at once stay within the tick budget; a blast
+ * protection and the per-tier terrain switch (D52); several large blasts at once stay within the tick budget; a blast
  * survives a save and a reload. Dev environment only, server side. They register hidden test explosives that the
  * registry's {@code all()} does not list.
  */
@@ -146,6 +146,24 @@ final class IcbmBlastScenarios {
         }
     }
 
+    private static boolean[] saveTerrain() {
+        return new boolean[] { IcbmConfig.terrainDamageT1, IcbmConfig.terrainDamageT2, IcbmConfig.terrainDamageT3,
+            IcbmConfig.terrainDamageT4 };
+    }
+
+    private static void restoreTerrain(boolean[] saved) {
+        IcbmConfig.terrainDamageT1 = saved[0];
+        IcbmConfig.terrainDamageT2 = saved[1];
+        IcbmConfig.terrainDamageT3 = saved[2];
+        IcbmConfig.terrainDamageT4 = saved[3];
+    }
+
+    private static void setTerrain(int tier, boolean on) {
+        boolean[] all = saveTerrain();
+        all[Math.max(1, Math.min(4, tier)) - 1] = on;
+        restoreTerrain(all);
+    }
+
     /** Vetoes every block of every blast, as a claim mod does. */
     public static final class Veto {
 
@@ -171,8 +189,8 @@ final class IcbmBlastScenarios {
         @Override
         public String description() {
             return "Every registered explosive detonates through the shared pipeline: it breaks blocks when"
-                + " explosions.blockDamage and its tier allow, breaks none when blockDamage is off or a claim listener"
-                + " vetoes ExplosionEvent.Detonate, and a NONE-shape type runs its effect hooks without terrain damage.";
+                + " its tier's terrain switch allows (explosions.blockDamage is ignored, D52), breaks none when the switch is"
+                + " off or a claim listener vetoes ExplosionEvent.Detonate, and a NONE-shape type runs its effect hooks without terrain damage.";
         }
 
         @Override
@@ -189,11 +207,13 @@ final class IcbmBlastScenarios {
             final int cy = ctx.originY() + CENTER_DY;
             final int cz = ctx.originZ();
             final boolean savedBlockDamage = ExplosionsConfig.blockDamage;
+            final boolean[] savedTerrain = saveTerrain();
             final EntityZombie src = source(ctx);
             final Veto veto = new Veto();
             BlastEngine.instance()
                 .clear();
-            // mode 0: allowed; mode 1: blockDamage off; mode 2: a listener vetoes
+            // mode 0: allowed (blockDamage off, to prove it is ignored); mode 1: the tier switch off; mode 2: a
+            // listener vetoes
             final int[] cursor = { 0, 0 };
             final int[] before = { 0 };
             final boolean[] started = { false };
@@ -201,6 +221,7 @@ final class IcbmBlastScenarios {
             return ScenarioResult.pending(name(), 3 * 900 * Math.max(1, defs.size()), ticks -> {
                 try {
                     if (cursor[0] >= defs.size()) {
+                        restoreTerrain(savedTerrain);
                         return finish(ctx, out, savedBlockDamage, veto, cx, cy, cz);
                     }
                     ExplosiveDef def = defs.get(cursor[0]);
@@ -208,7 +229,11 @@ final class IcbmBlastScenarios {
                     if (!started[0]) {
                         fillStone(w, cx, cy, cz, HALF, HALF);
                         before[0] = countStone(w, cx, cy, cz, HALF, HALF);
-                        ExplosionsConfig.blockDamage = mode != 1;
+                        ExplosionsConfig.blockDamage = false;
+                        setTerrain(
+                            def.tier()
+                                .number(),
+                            mode != 1);
                         if (mode == 2) {
                             MinecraftForge.EVENT_BUS.register(veto);
                         }
@@ -223,7 +248,7 @@ final class IcbmBlastScenarios {
                     int age = ticks - detonatedAt[0];
                     // A type with a long effect (a 30 s gas cloud) keeps ticking after its crater is done; once the
                     // terrain has had 100 ticks and nothing is left to break, the scenario ends the blast itself.
-                    boolean terrainSettled = age >= 100 && engine.pendingBlocks() == 0;
+                    boolean terrainSettled = age >= 100 && engine.pendingBlocks() == 0 && engine.undecidedBlasts() == 0;
                     if (engine.activeBlasts() > 0 && !terrainSettled && age < 800) {
                         return null;
                     }
@@ -254,6 +279,7 @@ final class IcbmBlastScenarios {
                     return null;
                 } catch (RuntimeException e) {
                     ExplosionsConfig.blockDamage = savedBlockDamage;
+                    restoreTerrain(savedTerrain);
                     MinecraftForge.EVENT_BUS.unregister(veto);
                     return ScenarioResult.fail(name(), "threw " + e);
                 }
@@ -306,7 +332,7 @@ final class IcbmBlastScenarios {
                 .clear();
             BlastEngine.instance()
                 .resetStats();
-            ExplosionsConfig.blockDamage = true;
+            ExplosionsConfig.blockDamage = false; // D52: ignored by ICBM blasts
             IcbmConfig.blastBudgetMs = 4;
             fillStone(w, cx, cy, cz, half, hy);
             final int before = countStone(w, cx, cy, cz, half, hy);
@@ -380,7 +406,7 @@ final class IcbmBlastScenarios {
             final int savedBudget = IcbmConfig.blastBudgetMs;
             BlastEngine.instance()
                 .clear();
-            ExplosionsConfig.blockDamage = true;
+            ExplosionsConfig.blockDamage = false; // D52: ignored by ICBM blasts
             IcbmConfig.blastBudgetMs = 1;
             fillStone(w, cx, cy, cz, half, hy);
             final int initial = countStone(w, cx, cy, cz, half, hy);
