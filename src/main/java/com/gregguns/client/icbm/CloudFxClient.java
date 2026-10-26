@@ -97,7 +97,7 @@ public final class CloudFxClient {
         double y = c.y + offset[1];
         double z = c.z + offset[2];
         boolean plume = c.kind == CloudKind.PLUME;
-        float size = plume ? 3.0F : 2.2F;
+        float size = plume ? 9.0F : 6.0F;
         double rise = plume ? 0.08 + RND.nextDouble() * 0.06 : 0.0;
         EntityFX fx = new EntitySmokeFX(
             world,
