@@ -53,3 +53,7 @@ __pycache__/
 
 # Local debug output
 /debug.log
+
+# ICBM preview sheets and the visuals gallery stay local, never committed (D50). Guide sheets (infographics) are committed.
+/docs/assets/previews/icbm/
+/docs/icbm-visuals.html

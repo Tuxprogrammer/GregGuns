@@ -2,7 +2,7 @@
 
 - **Baseline:** [icbm-spec 07-visuals-audio](../../icbm-spec/07-visuals-audio/index.md)
 - **Design records:** [D31 (3D warheads and bodies)](../DECISIONS.md#d31-in-detail), [D43 (OBJ format)](../DECISIONS.md), [D47](../DECISIONS.md), [asset-sourcing.md](asset-sourcing.md)
-- **Preview sheet:** [docs/assets/previews/icbm/warheads.png](../../assets/previews/icbm/warheads.png) (built by `tools/asset-gen/icbm/warheads_sheet.py`)
+- **Preview sheet:** `docs/assets/previews/icbm/warheads.png`, built locally and git-ignored (D50) (built by `tools/asset-gen/icbm/warheads_sheet.py`)
 
 ## Conventions for every model
 
