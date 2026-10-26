@@ -129,14 +129,16 @@ public final class ControlLaunchScenario implements Scenario {
                     // Every wrong shot is refused and charges nothing.
                     out.checkEquals("no target", ControlStatus.NO_TARGET, c.fire(null));
                     c.setXText(Integer.toString(cx));
+                    c.setZText(Integer.toString(cz + DISTANCE));
+                    out.checkEquals("tank not full", ControlStatus.NOT_FUELED, c.fire(null));
+                    missile[0].fill(missile[0].capacityMb(), true);
+                    // The gate looks at the fuel before the range, so the range refusals come once the tank is full.
                     c.setZText(Integer.toString(cz + 5));
                     out.checkEquals("too close", ControlStatus.TOO_CLOSE, c.fire(null));
                     c.setZText(Integer.toString(cz + 100_000));
                     out.checkEquals("out of range", ControlStatus.OUT_OF_RANGE, c.fire(null));
                     c.setZText(Integer.toString(cz + DISTANCE));
-                    out.checkEquals("tank not full", ControlStatus.NOT_FUELED, c.fire(null));
                     out.checkEquals("refusals were free", euBefore[0], base.getStoredEU());
-                    missile[0].fill(missile[0].capacityMb(), true);
                     out.checkEquals("ready", ControlStatus.READY, c.currentStatus());
                     // Fire from the button as a player standing beside the block.
                     ControlStatus st = c.fire(player);
