@@ -20,10 +20,9 @@ import com.gregguns.GregGuns;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
 import com.gregguns.core.text.AddedBy;
-import com.gregguns.icbm.control.gc.LaunchPads;
 import com.gregguns.icbm.missile.LaunchResult;
+import com.gregguns.icbm.missile.LaunchSite;
 import com.gregguns.icbm.missile.MissileStatus;
-import com.gregguns.icbm.missile.PadMissiles;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import gregtech.api.enums.GTValues;
@@ -40,7 +39,8 @@ import gregtech.api.render.TextureFactory;
 /**
  * The Launch Control: an HV GT single block that stands within reach of a Galacticraft launch pad and fires the missile
  * on it (D13). It stores a target (typed coordinates, the player's position, or a GT data stick), checks the pad,
- * the arming, the fuel and the range, and asks coder-side {@link PadMissiles} to launch. Three things can fire it:
+ * the arming, the fuel and the range, and asks the launch site ({@link LaunchSite}: a pad or a silo) to launch. Three
+ * things can fire it:
  * the Launch button, a rising redstone edge, and a rising edge of GT's work-allowed flag (what a machine controller
  * cover drives). Every shot costs {@link #EU_PER_SHOT} EU, paid only when the pad accepted the launch.
  *
@@ -396,10 +396,10 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
         LaunchTarget t = target();
         boolean energy = base.getStoredEU() >= EU_PER_SHOT;
         World w = base.getWorld();
-        int[] pad = ModuleState.isActive(ModuleId.ICBM)
-            ? LaunchPads.nearestPadCenter(w, base.getXCoord(), base.getYCoord(), base.getZCoord())
+        LaunchSite site = ModuleState.isActive(ModuleId.ICBM)
+            ? LaunchSites.find(w, base.getXCoord(), base.getYCoord(), base.getZCoord())
             : null;
-        if (pad == null) {
+        if (site == null) {
             return new Snapshot(
                 LaunchGate.check(t, false, energy, shots.coolingDown(), false, false, false, 0, 0, 0),
                 false,
@@ -409,16 +409,19 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
                 0,
                 0);
         }
-        MissileStatus ms = PadMissiles.status(w, pad[0], pad[1], pad[2]);
+        MissileStatus ms = site.status();
         int min = ms.present() ? ms.tier()
             .minRange() : 0;
-        int max = ms.present() ? PadMissiles.maxRange(w, pad[0], pad[1], pad[2]) : 0;
-        double dist = t.distanceFrom(pad[0] + 0.5, pad[2] + 0.5);
+        int max = ms.present() ? site.maxRange() : 0;
+        double dist = t.distanceFrom(site.centerX(), site.centerZ());
         ControlStatus st = LaunchGate
             .check(t, true, energy, shots.coolingDown(), ms.present(), ms.armed(), ms.fueled(), dist, min, max);
-        int radius = t.isSet() && ms.present()
-            ? (int) Math.round(PadMissiles.expectedRadius(w, pad[0], pad[1], pad[2], t.aimX(), t.aimZ()) * 10.0)
-            : 0;
+        if (st == ControlStatus.READY && site.hold() != com.gregguns.icbm.missile.LaunchResult.OK) {
+            st = LaunchGate.fromResult(
+                site.hold()
+                    .name());
+        }
+        int radius = t.isSet() && ms.present() ? (int) Math.round(site.expectedRadius(t.aimX(), t.aimZ()) * 10.0) : 0;
         return new Snapshot(
             st,
             true,
@@ -450,12 +453,12 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
             return s.status;
         }
         LaunchTarget t = target();
-        int[] pad = LaunchPads.nearestPadCenter(base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord());
-        if (pad == null) {
+        LaunchSite site = LaunchSites.find(base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord());
+        if (site == null) {
             lastShot = ControlStatus.NO_PAD;
             return lastShot;
         }
-        LaunchResult r = PadMissiles.launch(base.getWorld(), pad[0], pad[1], pad[2], t.aimX(), t.aimZ(), source);
+        LaunchResult r = site.launch(t.aimX(), t.aimZ(), source);
         ControlStatus st = LaunchGate.fromResult(r.name());
         if (st == ControlStatus.FIRED) {
             base.decreaseStoredEnergyUnits(EU_PER_SHOT, true);

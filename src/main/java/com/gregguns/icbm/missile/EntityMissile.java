@@ -66,6 +66,10 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     private String explosive = WarheadData.DEFAULT_EXPLOSIVE;
     private int fill = 1;
     private int casing = 1;
+    /** The launch site's accuracy factor (1 on a pad, the silo's config value in a silo); set at launch (D70). */
+    private double siteScatter = 1.0;
+    /** The launch site's range factor (1 on a pad, the silo's config value in a silo); set at launch (D70). */
+    private double siteRange = 1.0;
     private UUID ownerId;
     private String ownerName = "";
     private double launchX;
@@ -122,7 +126,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @param guidanceTiers guidance tiers above the body's own
      * @param explosiveId   the warhead's explosive
      * @param warheadFill   the warhead's fill
-     * @param casingNumber  the warhead casing (1 or 2)
+     * @param casingNumber  the warhead casing (1 to 3)
      * @param owner         who armed it, may be null
      */
     public void configure(int guidanceTiers, String explosiveId, int warheadFill, int casingNumber,
@@ -157,7 +161,23 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         return phase() == FlightPhase.PAD;
     }
 
-    /** @return the warhead casing number, 1 or 2; drawn on the nose */
+    /**
+     * @param tier  a body tier
+     * @param world the world
+     * @return a new, unconfigured missile entity of that tier
+     */
+    public static EntityMissile create(MissileTier tier, World world) {
+        switch (tier) {
+            case T1:
+                return new EntityMissileT1(world);
+            case T2:
+                return new EntityMissileT2(world);
+            default:
+                return new EntityMissileT3(world);
+        }
+    }
+
+    /** @return the warhead casing number, 1 to 3; drawn on the nose */
     public int casingNumber() {
         return casing;
     }
@@ -174,8 +194,18 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     /** @return the range in blocks with the config factor */
     public int maxRange() {
-        return (int) Math
-            .max(tier().minRange() + 1L, Math.round(tier().baseMaxRange() * IcbmConfig.missileRangeFactor));
+        return maxRange(siteRange);
+    }
+
+    /**
+     * @param siteRangeFactor the launch site's range factor (1 for a pad)
+     * @return the range in blocks with the config factor and the site's factor; the launch-control GUI shows this for
+     *         the site it is linked to (D70)
+     */
+    public int maxRange(double siteRangeFactor) {
+        return (int) Math.max(
+            tier().minRange() + 1L,
+            Math.round(tier().baseMaxRange() * IcbmConfig.missileRangeFactor * Math.max(0.0, siteRangeFactor)));
     }
 
     /**
@@ -208,13 +238,23 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @return the blast radius at that target with the fuel bonus, blocks (the GUI shows it, D20)
      */
     public double expectedRadius(double tx, double tz) {
+        return expectedRadius(tx, tz, siteRange);
+    }
+
+    /**
+     * @param tx              target X
+     * @param tz              target Z
+     * @param siteRangeFactor the launch site's range factor
+     * @return the blast radius at that target with the fuel bonus for that site's range
+     */
+    public double expectedRadius(double tx, double tz, double siteRangeFactor) {
         ExplosiveDef def = Explosives.get(explosive);
         if (def == null) {
             return 0.0;
         }
         double radius = def.radius(fill);
         double dist = Math.sqrt((tx - posX) * (tx - posX) + (tz - posZ) * (tz - posZ));
-        return radius + FuelMath.bonusRadius(radius, dist, maxRange(), IcbmConfig.fuelBonusMax);
+        return radius + FuelMath.bonusRadius(radius, dist, maxRange(siteRangeFactor), IcbmConfig.fuelBonusMax);
     }
 
     /** @return how many missiles are in the air in every loaded world; the D11 cap counts these */
@@ -258,6 +298,35 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @return the outcome
      */
     public LaunchResult launch(double tx, double tz, EntityPlayer source) {
+        return launch(tx, tz, source, 1.0, 1.0);
+    }
+
+    /**
+     * Launches from a site that changes the numbers (D70): the silo tightens the aim and stretches the range, a pad
+     * passes 1 and 1. The factors stay with the missile for the whole flight. Server side.
+     *
+     * @param tx           the target X
+     * @param tz           the target Z
+     * @param source       who fired it, may be null
+     * @param scatterScale the site's scatter factor
+     * @param rangeScale   the site's range factor
+     * @return the outcome
+     */
+    public LaunchResult launch(double tx, double tz, EntityPlayer source, double scatterScale, double rangeScale) {
+        double oldScatter = siteScatter;
+        double oldRange = siteRange;
+        siteScatter = scatterScale;
+        siteRange = rangeScale;
+        LaunchResult r = launchChecked(tx, tz, source);
+        if (r != LaunchResult.OK) {
+            // A refused launch leaves the missile as it was.
+            siteScatter = oldScatter;
+            siteRange = oldRange;
+        }
+        return r;
+    }
+
+    private LaunchResult launchChecked(double tx, double tz, EntityPlayer source) {
         if (worldObj.isRemote || isDead) {
             return LaunchResult.BAD_TARGET;
         }
@@ -278,7 +347,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         if (!climbColumnClear()) {
             return LaunchResult.BLOCKED;
         }
-        double half = Scatter.halfWidth(tier().baseScatter(), guidance, dist, maxRange());
+        double half = Scatter.halfWidth(tier().baseScatter(), guidance, dist, maxRange(), siteScatter);
         double aimX = tx + Scatter.offset(rand, half);
         double aimZ = tz + Scatter.offset(rand, half);
         int bx = net.minecraft.util.MathHelper.floor_double(aimX);
@@ -561,7 +630,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             return;
         }
         ItemStack body = MissileBodies.body(tier(), guidance);
-        WarheadCasing c = casing == 2 ? WarheadCasing.T2 : WarheadCasing.T1;
+        WarheadCasing c = MissileCasings.byNumber(casing);
         ItemStack warhead = WarheadStacks
             .make(net.minecraft.item.Item.getItemFromBlock(WarheadBlocks.of(c)), c, explosive, fill);
         for (ItemStack s : new ItemStack[] { body, warhead }) {
@@ -653,6 +722,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         tag.setString("explosive", explosive);
         tag.setInteger("fill", fill);
         tag.setInteger("casing", casing);
+        tag.setDouble("siteScatter", siteScatter);
+        tag.setDouble("siteRange", siteRange);
         if (ownerId != null) {
             tag.setString("ownerId", ownerId.toString());
             tag.setString("ownerName", ownerName);
@@ -686,7 +757,10 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             explosive = WarheadData.DEFAULT_EXPLOSIVE;
         }
         fill = Math.max(1, tag.getInteger("fill"));
-        casing = tag.getInteger("casing") == 2 ? 2 : 1;
+        casing = MissileCasings.byNumber(tag.getInteger("casing"))
+            .number();
+        siteScatter = tag.hasKey("siteScatter") ? tag.getDouble("siteScatter") : 1.0;
+        siteRange = tag.hasKey("siteRange") ? tag.getDouble("siteRange") : 1.0;
         ownerId = null;
         ownerName = tag.getString("ownerName");
         if (tag.hasKey("ownerId")) {

@@ -28,9 +28,27 @@ public final class Scatter {
      * @return the per-axis half-width in blocks, at least 0
      */
     public static double halfWidth(double baseScatter, int guidance, double distance, double maxRange) {
-        double share = Math.max(MIN_SHARE, 1.0 - SHRINK_PER_TIER * Math.max(0, guidance));
+        return halfWidth(baseScatter, guidance, distance, maxRange, 1.0);
+    }
+
+    /**
+     * Same as {@link #halfWidth(double, int, double, double)} for a missile launched from a site that tightens the
+     * aim (the silo, D70). The factor multiplies the guided share, and the 10% floor of the base still applies to that
+     * product; the distance term shrinks by the same factor.
+     *
+     * @param baseScatter the tier's base scatter, blocks
+     * @param guidance    guidance tiers above the body's tier, 0 or more
+     * @param distance    flat distance to the target
+     * @param maxRange    the missile's range at this site
+     * @param siteFactor  the site's scatter factor, 1 for a pad
+     * @return the per-axis half-width in blocks, at least 0
+     */
+    public static double halfWidth(double baseScatter, int guidance, double distance, double maxRange,
+        double siteFactor) {
+        double factor = Math.max(0.0, siteFactor);
+        double share = Math.max(MIN_SHARE, (1.0 - SHRINK_PER_TIER * Math.max(0, guidance)) * factor);
         double ratio = maxRange > 0.0 ? Math.max(0.0, Math.min(1.0, distance / maxRange)) : 0.0;
-        return Math.max(0.0, baseScatter) * share + DISTANCE_TERM * ratio * ratio;
+        return Math.max(0.0, baseScatter) * share + DISTANCE_TERM * ratio * ratio * factor;
     }
 
     /**

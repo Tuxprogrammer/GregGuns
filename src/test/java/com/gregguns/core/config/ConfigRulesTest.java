@@ -53,6 +53,8 @@ class ConfigRulesTest {
             "IcbmConfig.maxMissilesInFlight",
             "IcbmConfig.missileFuelFactor",
             "IcbmConfig.missileRangeFactor",
+            "IcbmConfig.siloScatterFactor",
+            "IcbmConfig.siloRangeFactor",
             "IcbmConfig.fuelBonusMax",
             "IcbmConfig.missileTimeoutTicks",
             "EquipmentConfig.nightVisionCapacityEu",

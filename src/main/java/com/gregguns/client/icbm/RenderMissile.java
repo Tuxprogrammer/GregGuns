@@ -9,6 +9,7 @@ import net.minecraftforge.client.model.obj.WavefrontObject;
 import org.lwjgl.opengl.GL11;
 
 import com.gregguns.icbm.missile.EntityMissile;
+import com.gregguns.icbm.missile.MissileCasings;
 import com.gregguns.icbm.missile.MissileTier;
 import com.gregguns.icbm.warhead.WarheadCasing;
 
@@ -40,7 +41,7 @@ public final class RenderMissile extends Render {
         GL11.glTranslated(-0.5, 0.0, -0.5);
         GL11.glDisable(GL11.GL_CULL_FACE);
         draw(WarheadModels.body(tier), WarheadModels.bodyTextureFile(tier), 0.0);
-        WarheadCasing casing = missile.casingNumber() == 2 ? WarheadCasing.T2 : WarheadCasing.T1;
+        WarheadCasing casing = MissileCasings.byNumber(missile.casingNumber());
         draw(WarheadModels.get(casing), WarheadModels.textureFile(casing), tier.heightBlocks());
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glPopMatrix();

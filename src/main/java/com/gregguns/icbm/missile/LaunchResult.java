@@ -27,5 +27,7 @@ public enum LaunchResult {
     /** Something solid stands in the climb column above the pad (ICBM-04-26). */
     BLOCKED,
     /** Forge refused the chunk ticket the flight needs (ticket limit reached). */
-    NO_TICKET
+    NO_TICKET,
+    /** The silo's energy hatch is below the missile body's tier (D70). */
+    SILO_TIER
 }

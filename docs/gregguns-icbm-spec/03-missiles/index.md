@@ -9,6 +9,7 @@ Missile bodies, the stack-on-pad build, fuel, flight and tracking. Missiles ride
 - [build-and-recipes.md](build-and-recipes.md): chip, schematic, NASA Workbench page, Assembly Line recipes with research, guidance carry-through, cost (D8, D27).
 - [missile-bodies.md](missile-bodies.md): the T1 and T2 bodies, their numbers, model, tooltip and recycling (D8, D24, D31).
 - [stack-and-pad.md](stack-and-pad.md): placing the body, seating the warhead, arming into the entity, the pad API for launch control (D31).
+- [missile-silo.md](missile-silo.md): the Missile Silo multiblock, mating, fuel, the tier rule, the silo bonus and the T3 missile (D70 to D75).
 - [galacticraft-pad.md](galacticraft-pad.md): `IDockable` without `EntityAutoRocket`, the removal guard, `icbm.pad.survives` (D32).
 - [fuel.md](fuel.md): the tank, the `RocketFuels` lists, the unburned-fuel bonus (D19, D20).
 - [missile-entity.md](missile-entity.md): the entity, its state, sync, rendering and damage.
@@ -37,7 +38,7 @@ Planned for later milestones:
 
 ## Decisions carried
 
-D8, D11, D19, D20, D22, D24, D25, D26, D27, D31, D32, D34 (cost).
+D8, D11, D19, D20, D22, D24, D25, D26, D27, D31, D32, D34 (cost), D70 to D75.
 
 ## Roadmap
 
