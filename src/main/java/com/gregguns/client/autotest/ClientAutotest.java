@@ -74,7 +74,7 @@ public final class ClientAutotest {
     private static final String LOG_PREFIX = "AUTOTEST ";
 
     private final GunInputHandler input;
-    private final TooltipProbe tooltips = new TooltipProbe();
+    final TooltipProbe tooltips = new TooltipProbe();
     private final List<Task> tasks = new ArrayList<>();
     private final Map<String, Armed> armed = new HashMap<>();
     private final java.util.ArrayDeque<String[]> queue = new java.util.ArrayDeque<>();

@@ -24,16 +24,16 @@ import cpw.mods.fml.relauncher.SideOnly;
  * is drawn (the tooltips of the item classes read {@code GuiScreen.isShiftKeyDown}). Client only.
  */
 @SideOnly(Side.CLIENT)
-final class TooltipProbe {
+public final class TooltipProbe {
 
     private int slot = -1;
     private boolean shift;
 
-    void setSlot(String arg) {
+    public void setSlot(String arg) {
         slot = "off".equals(arg) ? -1 : Integer.parseInt(arg);
     }
 
-    void setShift(boolean on) {
+    public void setShift(boolean on) {
         shift = on;
         if (!on) {
             press(false);
