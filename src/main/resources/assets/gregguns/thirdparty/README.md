@@ -15,7 +15,7 @@ models/thirdparty/<source>/<name>.obj
 sounds/thirdparty/<source>/<name>.ogg
 ```
 
-`<source>` is a short lower-case name for where the files came from (an author or pack), for example `kenney` or `opengameart-jdoe`.
+`<source>` is a short lower-case name for where the files came from (an author, pack or mod), for example `kenney`, `opengameart-jdoe` or a mod's id. For files taken from a mod jar, the mod's license must cover its assets, and the CREDITS row names the mod, its version and the jar's download URL (D47).
 
 ## Rules for each file
 
