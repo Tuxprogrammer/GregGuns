@@ -33,7 +33,7 @@ public enum WarheadBlast {
     FRAGMENTATION("fragmentation", ExplosiveTier.T2, BlastShape.RAY_SPHERE, 14.0, 3000.0, Kind.SHRAPNEL),
     /** Gas with a stronger poison. */
     CONTAGIOUS("contagious", ExplosiveTier.T2, BlastShape.NONE, 14.0, 0.0, Kind.GAS_CONTAGIOUS),
-    /** Shatters glass and stuns everything in the zone; a weak crater is left to the engine. */
+    /** Shatters glass and stuns everything in the zone; no crater (the shape is NONE). */
     SONIC("sonic", ExplosiveTier.T2, BlastShape.NONE, 14.0, 0.0, Kind.SONIC),
     /** Bores a narrow tunnel straight down. */
     BREACHING("breaching", ExplosiveTier.T2, BlastShape.NONE, 12.0, 0.0, Kind.BREACH),

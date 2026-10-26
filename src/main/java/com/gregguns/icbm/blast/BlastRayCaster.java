@@ -41,14 +41,35 @@ public final class BlastRayCaster {
 
     private BlastRayCaster() {}
 
+    /** Resistance of vanilla stone, the reference every default energy is calibrated to (D59). */
+    public static final double REF_RESISTANCE = 6.0;
+    /** Energy per block of travel through air for the small caster: 0.75 per 0.3-block step, i.e. 0.75 per block. */
+    private static final double GRID_AIR_COST = 0.75;
+
     /**
-     * The starting energy that lets even the weakest ray (half energy) cross open air to the edge of the radius.
+     * The starting energy of a full-strength ray, calibrated to the crater radius in vanilla stone (D59): an average
+     * ray (three quarters of the energy) clears {@code radius} blocks of stone, and even the weakest ray crosses open
+     * air to the edge.
      *
      * @param radius the blast radius, blocks
-     * @return the energy (fixes ICBM-02-05: the configured radius is reachable)
+     * @return the energy (fixes ICBM-02-05: the configured radius is reachable, in stone as well as in air)
      */
     public static double defaultEnergy(double radius) {
-        return radius / STEP * STEP_COST / 0.5;
+        double air = radius / STEP * STEP_COST / 0.5;
+        // Per block of stone: two half-steps (2.25) plus the block's resistance, charged once.
+        double stone = radius * (STEP_COST / STEP + REF_RESISTANCE) / 0.75;
+        return Math.max(air, stone);
+    }
+
+    /**
+     * The small caster's starting energy, calibrated to stone the same way: an average ray clears {@code radius}
+     * blocks of stone (D59). The original used {@code radius} itself, which cannot cross even two blocks of stone.
+     *
+     * @param radius the blast radius, blocks
+     * @return the energy of a full-strength ray, before its 0.7 to 1.3 spread
+     */
+    public static double gridEnergy(double radius) {
+        return radius * (REF_RESISTANCE + GRID_AIR_COST);
     }
 
     /**
@@ -169,14 +190,16 @@ public final class BlastRayCaster {
      * @param fx        the center's position inside its cell, 0 to 1
      * @param fy        as {@code fx}, Y
      * @param fz        as {@code fx}, Z
-     * @param random    the source of the per-ray strength
+     * @param energy    the starting energy of an average ray, see {@link #gridEnergy}
+     * @param random    the source of the per-ray strength (0.7 to 1.3 of the energy)
      * @param cancelled polled once per cube slice
      * @return packed offsets of the cells reached, each once, nearest first
      */
-    public static int[] castGrid(BlastGrid grid, int radius, double fx, double fy, double fz, Random random,
-        BooleanSupplier cancelled) {
+    public static int[] castGrid(BlastGrid grid, int radius, double fx, double fy, double fz, double energy,
+        Random random, BooleanSupplier cancelled) {
         int r = Math.min(radius, grid.radius());
-        int samples = Math.max(2, r);
+        // Dense enough that neighboring rays at the rim are under one block apart (D59).
+        int samples = Math.max(16, 2 * r);
         BitSet reached = new BitSet(grid.volume());
         int count = 0;
         double r2 = (double) r * r;
@@ -197,7 +220,7 @@ public final class BlastRayCaster {
                     dx = dx / len * GRID_STEP;
                     dy = dy / len * GRID_STEP;
                     dz = dz / len * GRID_STEP;
-                    double power = r * (0.7 + random.nextDouble() * 0.6);
+                    double power = energy * (0.7 + random.nextDouble() * 0.6);
                     double px = fx;
                     double py = fy;
                     double pz = fz;
@@ -226,7 +249,7 @@ public final class BlastRayCaster {
                                 count++;
                             }
                         }
-                        power -= GRID_STEP * 0.75;
+                        power -= GRID_STEP * GRID_AIR_COST;
                         px += dx;
                         py += dy;
                         pz += dz;

@@ -14,6 +14,7 @@ import net.minecraft.world.WorldServer;
 
 import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.explosion.BlockBreakGuard;
+import com.gregguns.explosion.ExplosionRules;
 import com.gregguns.explosion.ProjectileExplosion;
 import com.gregguns.icbm.explosive.BlastContext;
 import com.gregguns.icbm.explosive.BlastEffect;
@@ -102,6 +103,15 @@ public final class Effects {
                 .number())) {
             return false;
         }
+        EntityPlayer p0 = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
+        if (!ExplosionRules.mayBreakBlocks(
+            true,
+            p0 != null,
+            ctx.world()
+                .getGameRules()
+                .getGameRuleBooleanValue("mobGriefing"))) {
+            return false;
+        }
         Block block = ctx.world()
             .getBlock(x, y, z);
         EntityPlayer p = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
@@ -114,6 +124,64 @@ public final class Effects {
             ctx.world()
                 .getBlockMetadata(x, y, z),
             p);
+    }
+
+    /**
+     * Posts {@code ExplosionEvent.Detonate} for blocks an effect wants to change, so claims and protection mods can
+     * veto them (D52), and returns the survivors.
+     *
+     * @param ctx       the blast
+     * @param positions the {@code {x, y, z}} cells the effect would change
+     * @return the cells no listener removed
+     */
+    @SuppressWarnings("unchecked")
+    static List<int[]> vetted(BlastContext ctx, List<int[]> positions) {
+        List<int[]> kept = new java.util.ArrayList<>();
+        if (positions.isEmpty()) {
+            return kept;
+        }
+        net.minecraft.world.Explosion vanilla = new net.minecraft.world.Explosion(
+            ctx.world(),
+            null,
+            ctx.x(),
+            ctx.y(),
+            ctx.z(),
+            (float) Math.max(ctx.radius(), 3.0));
+        for (int[] p : positions) {
+            vanilla.affectedBlockPositions.add(new net.minecraft.world.ChunkPosition(p[0], p[1], p[2]));
+        }
+        net.minecraftforge.event.ForgeEventFactory
+            .onExplosionDetonate(ctx.world(), vanilla, new java.util.ArrayList<Entity>(), 0.0);
+        java.util.Set<net.minecraft.world.ChunkPosition> left = new java.util.HashSet<>(vanilla.affectedBlockPositions);
+        for (int[] p : positions) {
+            if (left.contains(new net.minecraft.world.ChunkPosition(p[0], p[1], p[2]))) {
+                kept.add(p);
+            }
+        }
+        return kept;
+    }
+
+    /** Breaks vetted cells through the mod's one break path (protection, machine rule). */
+    static void breakVetted(BlastContext ctx, List<int[]> cells) {
+        net.minecraft.world.Explosion vanilla = new net.minecraft.world.Explosion(
+            ctx.world(),
+            null,
+            ctx.x(),
+            ctx.y(),
+            ctx.z(),
+            (float) Math.max(ctx.radius(), 3.0));
+        EntityPlayer breaker = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
+        for (int[] p : cells) {
+            ProjectileExplosion.breakBlock(
+                ctx.world(),
+                vanilla,
+                breaker,
+                (float) vanilla.explosionSize,
+                p[0],
+                p[1],
+                p[2],
+                IcbmConfig.blastDrops);
+        }
     }
 
     static void particles(BlastContext ctx, String name, int count, double spread) {
@@ -197,6 +265,7 @@ public final class Effects {
                 }
             }
             int placed = 0;
+            List<int[]> sites = new java.util.ArrayList<>();
             for (int dx = -r; dx <= r && placed < FIRE_MAX_BLOCKS; dx++) {
                 for (int dz = -r; dz <= r && placed < FIRE_MAX_BLOCKS; dz++) {
                     if (dx * dx + dz * dz > r * r) {
@@ -213,12 +282,16 @@ public final class Effects {
                             continue;
                         }
                         if (world.rand.nextInt(3) == 0 && mayChange(ctx, x, y, z)) {
-                            world.setBlock(x, y, z, net.minecraft.init.Blocks.fire);
+                            sites.add(new int[] { x, y, z });
                             placed++;
                         }
                         break;
                     }
                 }
+            }
+            // Claims may veto fire sites through Detonate, like any other block change (D52).
+            for (int[] p : vetted(ctx, sites)) {
+                world.setBlock(p[0], p[1], p[2], net.minecraft.init.Blocks.fire);
             }
             particles(ctx, "flame", 40, ctx.radius() / 2.0);
         }
@@ -267,6 +340,7 @@ public final class Effects {
             int cx = (int) Math.floor(ctx.x());
             int cy = (int) Math.floor(ctx.y());
             int cz = (int) Math.floor(ctx.z());
+            List<int[]> glass = new java.util.ArrayList<>();
             for (int dx = -r; dx <= r; dx++) {
                 for (int dy = -r; dy <= r; dy++) {
                     for (int dz = -r; dz <= r; dz++) {
@@ -276,11 +350,12 @@ public final class Effects {
                         Block b = world.getBlock(cx + dx, cy + dy, cz + dz);
                         if (b.getMaterial() == net.minecraft.block.material.Material.glass
                             && mayChange(ctx, cx + dx, cy + dy, cz + dz)) {
-                            world.setBlockToAir(cx + dx, cy + dy, cz + dz);
+                            glass.add(new int[] { cx + dx, cy + dy, cz + dz });
                         }
                     }
                 }
             }
+            breakVetted(ctx, vetted(ctx, glass));
             particles(ctx, "explode", 20, ctx.radius() / 3.0);
         }
     }
@@ -295,13 +370,7 @@ public final class Effects {
             int cy = (int) Math.floor(ctx.y());
             int cz = (int) Math.floor(ctx.z());
             // Collect the tunnel first, so it goes through the same Detonate event and break path as every blast.
-            net.minecraft.world.Explosion vanilla = new net.minecraft.world.Explosion(
-                world,
-                null,
-                ctx.x(),
-                ctx.y(),
-                ctx.z(),
-                (float) Math.max(ctx.radius(), 3.0));
+            List<int[]> tunnel = new java.util.ArrayList<>();
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     for (int step = 0; step < BREACH_DEPTH; step++) {
@@ -316,29 +385,16 @@ public final class Effects {
                             continue;
                         }
                         float h = b.getBlockHardness(world, x, y, z);
+                        // mayChange also checks mobGriefing for an NPC source, like every other block change.
                         if (h < 0 || h > BREACH_MAX_HARDNESS || !mayChange(ctx, x, y, z)) {
                             break;
                         }
-                        vanilla.affectedBlockPositions.add(new net.minecraft.world.ChunkPosition(x, y, z));
+                        tunnel.add(new int[] { x, y, z });
                     }
                 }
             }
             // Listeners (claims, protection) may veto or trim the list; the survivors break through breakBlock.
-            net.minecraftforge.event.ForgeEventFactory
-                .onExplosionDetonate(world, vanilla, new java.util.ArrayList<net.minecraft.entity.Entity>(), 0.0);
-            EntityPlayer breaker = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
-            for (Object o : vanilla.affectedBlockPositions) {
-                net.minecraft.world.ChunkPosition pos = (net.minecraft.world.ChunkPosition) o;
-                ProjectileExplosion.breakBlock(
-                    world,
-                    vanilla,
-                    breaker,
-                    (float) vanilla.explosionSize,
-                    pos.chunkPosX,
-                    pos.chunkPosY,
-                    pos.chunkPosZ,
-                    IcbmConfig.blastDrops);
-            }
+            breakVetted(ctx, vetted(ctx, tunnel));
             particles(ctx, "smoke", 20, 1.0);
         }
     }

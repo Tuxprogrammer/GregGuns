@@ -80,6 +80,8 @@ final class IcbmBlastScenarios {
         registry.register(PackExplosionProbe.skipIfProtected(new Pipeline()));
         registry.register(PackExplosionProbe.skipIfProtected(new Budget()));
         registry.register(PackExplosionProbe.skipIfProtected(new SaveReload()));
+        registry.register(PackExplosionProbe.skipIfProtected(new CraterSize()));
+        registry.register(PackExplosionProbe.skipIfProtected(new EffectVeto()));
     }
 
     /** Counts the hook calls, so a scenario can see the effect ran on the shared pipeline. */
@@ -264,7 +266,18 @@ final class IcbmBlastScenarios {
                             def.tier()
                                 .number());
                     if (mode == 0 && terrain) {
-                        out.check(broken > 3, def.id() + " should break blocks with block damage on, broke " + broken);
+                        // D59: the radius is the crater radius in stone, so the floor grows with it (a fifth of the
+                        // sphere, capped by the test cube).
+                        double rr = Math.min(def.radius(1), HALF);
+                        long floor = Math.max(4L, Math.round(0.2 * 4.0 / 3.0 * Math.PI * rr * rr * rr));
+                        out.check(
+                            broken >= floor,
+                            def.id() + " should break at least "
+                                + floor
+                                + " blocks at radius "
+                                + def.radius(1)
+                                + ", broke "
+                                + broken);
                         out.check(w.getBlock(cx, cy, cz) == Blocks.air, def.id() + " should crater the center block");
                     } else if (mode != 0 || def.shape() != BlastShape.NONE) {
                         // A NONE-shape type may change blocks in its own effect (the Breaching tunnel) in mode 0;
@@ -439,6 +452,315 @@ final class IcbmBlastScenarios {
                 clearCube(ctx, cx, cy, cz, half, hy);
                 return out.build();
             });
+        }
+    }
+
+    // ---- 4. crater size in stone (D59) ----
+
+    private static final class CraterSize implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.blast.crater_size";
+        }
+
+        @Override
+        public String description() {
+            return "Every crater type at full fill on a stone slab digs its radius (D59): at least half the stone"
+                + " hemisphere, as deep as the radius less two at the center and along the surface, and nothing past"
+                + " the radius plus one.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 48;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            final World w = ctx.world();
+            final int cx = ctx.originX();
+            final int cy = ctx.originY() + 26;
+            final int cz = ctx.originZ();
+            final boolean savedBlockDamage = ExplosionsConfig.blockDamage;
+            final boolean[] savedTerrain = saveTerrain();
+            restoreTerrain(new boolean[] { true, true, true, true });
+            final List<ExplosiveDef> defs = new ArrayList<>();
+            for (ExplosiveDef d : Explosives.allIncludingHidden()) {
+                if (d.shape() != BlastShape.NONE && d.tier()
+                    .number() <= IcbmConfig.maxBlastTier) {
+                    defs.add(d);
+                }
+            }
+            BlastEngine.instance()
+                .clear();
+            final int[] cursor = { 0 };
+            final int[] detonatedAt = { -1 };
+            final int[] before = { 0 };
+            return ScenarioResult.pending(name(), 1500 * Math.max(1, defs.size()), ticks -> {
+                try {
+                    BlastEngine engine = BlastEngine.instance();
+                    if (cursor[0] >= defs.size()) {
+                        restoreTerrain(savedTerrain);
+                        ExplosionsConfig.blockDamage = savedBlockDamage;
+                        clearSlab(w, cx, cy, cz, 24);
+                        return out.build();
+                    }
+                    ExplosiveDef def = defs.get(cursor[0]);
+                    int r = (int) Math.ceil(Math.min(IcbmConfig.maxBlastRadius, def.radius(def.maxFill())));
+                    int half = r + 3;
+                    if (detonatedAt[0] < 0) {
+                        // Stone below the center cell, air from the center up.
+                        for (int x = cx - half; x <= cx + half; x++) {
+                            for (int z = cz - half; z <= cz + half; z++) {
+                                for (int y = cy - half; y < cy + half; y++) {
+                                    w.setBlock(x, y, z, y < cy ? Blocks.stone : Blocks.air, 0, 2);
+                                }
+                            }
+                        }
+                        before[0] = countSlab(w, cx, cy, cz, half);
+                        ExplosionsConfig.blockDamage = false;
+                        out.check(
+                            IcbmBlasts.detonate(w, cx + 0.5, cy + 0.5, cz + 0.5, def, def.maxFill(), null),
+                            def.id() + " should be accepted");
+                        detonatedAt[0] = ticks;
+                        return null;
+                    }
+                    int age = ticks - detonatedAt[0];
+                    if (engine.activeBlasts() > 0 && age < 1400
+                        && !(age >= 40 && engine.pendingBlocks() == 0 && engine.undecidedBlasts() == 0)) {
+                        return null;
+                    }
+                    engine.clear();
+                    int broken = before[0] - countSlab(w, cx, cy, cz, half);
+                    double hemisphere = 2.0 / 3.0 * Math.PI * r * r * r;
+                    int centerDepth = 0;
+                    while (centerDepth < half && w.getBlock(cx, cy - 1 - centerDepth, cz) == Blocks.air) {
+                        centerDepth++;
+                    }
+                    out.check(
+                        broken >= 0.5 * hemisphere,
+                        def.id() + " r"
+                            + r
+                            + " should break at least half the hemisphere ("
+                            + (int) (0.5 * hemisphere)
+                            + "), broke "
+                            + broken);
+                    out.check(
+                        centerDepth >= r - 2,
+                        def.id() + " r" + r + " should dig " + (r - 2) + " deep, dug " + centerDepth);
+                    int reach = r - 2;
+                    out.check(
+                        w.getBlock(cx + reach, cy - 1, cz) == Blocks.air
+                            && w.getBlock(cx - reach, cy - 1, cz) == Blocks.air
+                            && w.getBlock(cx, cy - 1, cz + reach) == Blocks.air
+                            && w.getBlock(cx, cy - 1, cz - reach) == Blocks.air,
+                        def.id() + " r" + r + " should reach " + reach + " blocks along the surface on all four sides");
+                    out.check(
+                        outsideBroken(w, cx, cy, cz, half, r + 1) == 0,
+                        def.id() + " r" + r + " should break nothing past the radius plus one");
+                    out.note(def.id() + " r" + r + ": blocks broken " + broken + " / depth " + centerDepth);
+                    detonatedAt[0] = -1;
+                    cursor[0]++;
+                    return null;
+                } catch (RuntimeException e) {
+                    restoreTerrain(savedTerrain);
+                    ExplosionsConfig.blockDamage = savedBlockDamage;
+                    return ScenarioResult.fail(name(), "threw " + e);
+                }
+            });
+        }
+
+        private static void clearSlab(World w, int cx, int cy, int cz, int half) {
+            for (int x = cx - half; x <= cx + half; x++) {
+                for (int z = cz - half; z <= cz + half; z++) {
+                    for (int y = cy - half; y < cy + half; y++) {
+                        w.setBlock(x, y, z, Blocks.air, 0, 2);
+                    }
+                }
+            }
+        }
+
+        private static int countSlab(World w, int cx, int cy, int cz, int half) {
+            int n = 0;
+            for (int x = cx - half; x <= cx + half; x++) {
+                for (int z = cz - half; z <= cz + half; z++) {
+                    for (int y = cy - half; y < cy; y++) {
+                        if (w.getBlock(x, y, z) == Blocks.stone) {
+                            n++;
+                        }
+                    }
+                }
+            }
+            return n;
+        }
+
+        /** Stone cells of the slab that are gone although they lie farther than {@code limit} from the blast center. */
+        private static int outsideBroken(World w, int cx, int cy, int cz, int half, int limit) {
+            int n = 0;
+            double l2 = (double) limit * limit;
+            for (int x = cx - half; x <= cx + half; x++) {
+                for (int z = cz - half; z <= cz + half; z++) {
+                    for (int y = cy - half; y < cy; y++) {
+                        double dx = x - cx;
+                        double dy = y - cy;
+                        double dz = z - cz;
+                        if (dx * dx + dy * dy + dz * dz > l2 && w.getBlock(x, y, z) != Blocks.stone) {
+                            n++;
+                        }
+                    }
+                }
+            }
+            return n;
+        }
+    }
+
+    // ---- 5. fire and glass obey claims and mobGriefing (D52) ----
+
+    private static final class EffectVeto implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.blast.effect_veto";
+        }
+
+        @Override
+        public String description() {
+            return "The Incendiary (fire) and Sonic (glass) effects change blocks through ExplosionEvent.Detonate:"
+                + " unvetoed they place fire and shatter glass; a listener veto, the tier switch off, or mobGriefing"
+                + " off for a mob-caused blast leaves every block alone.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 24;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            final ExplosiveDef fire = Explosives.get("incendiary");
+            final ExplosiveDef sonic = Explosives.get("sonic");
+            if (fire == null || sonic == null) {
+                return ScenarioResult.skip(name(), "the warhead types are not registered");
+            }
+            final World w = ctx.world();
+            final int cx = ctx.originX();
+            final int cy = ctx.originY() + 26;
+            final int cz = ctx.originZ();
+            final int half = 11;
+            final boolean[] savedTerrain = saveTerrain();
+            final boolean savedGriefing = w.getGameRules()
+                .getGameRuleBooleanValue("mobGriefing");
+            final EntityZombie src = source(ctx);
+            final Veto veto = new Veto();
+            BlastEngine.instance()
+                .clear();
+            // mode 0: free; 1: listener veto; 2: tier switch off; 3: mobGriefing off (a zombie caused it)
+            final int[] cursor = { 0, 0 };
+            final boolean[] started = { false };
+            final int[] at = { 0 };
+            return ScenarioResult.pending(name(), 4 * 2 * 200, ticks -> {
+                try {
+                    if (cursor[0] >= 2) {
+                        restoreTerrain(savedTerrain);
+                        setGriefing(w, savedGriefing);
+                        clear(w, cx, cy, cz, half);
+                        return out.build();
+                    }
+                    ExplosiveDef def = cursor[0] == 0 ? fire : sonic;
+                    int mode = cursor[1];
+                    if (!started[0]) {
+                        // A stone floor at cy-1 with a glass wall ring one block above it.
+                        clear(w, cx, cy, cz, half);
+                        for (int x = cx - half; x <= cx + half; x++) {
+                            for (int z = cz - half; z <= cz + half; z++) {
+                                w.setBlock(x, cy - 1, z, Blocks.stone, 0, 2);
+                            }
+                        }
+                        for (int x = cx - 5; x <= cx + 5; x++) {
+                            w.setBlock(x, cy + 1, cz + 5, Blocks.glass, 0, 2);
+                        }
+                        restoreTerrain(new boolean[] { true, true, true, true });
+                        setGriefing(w, mode != 3);
+                        if (mode == 2) {
+                            setTerrain(
+                                def.tier()
+                                    .number(),
+                                false);
+                        }
+                        if (mode == 1) {
+                            MinecraftForge.EVENT_BUS.register(veto);
+                        }
+                        out.check(
+                            IcbmBlasts.detonate(w, cx + 0.5, cy + 0.5, cz + 0.5, def, def.maxFill(), src),
+                            def.id() + " mode " + mode + " should be accepted");
+                        started[0] = true;
+                        at[0] = ticks;
+                        return null;
+                    }
+                    if (ticks - at[0] < 5) {
+                        return null;
+                    }
+                    BlastEngine.instance()
+                        .clear();
+                    if (mode == 1) {
+                        MinecraftForge.EVENT_BUS.unregister(veto);
+                    }
+                    int changed = cursor[0] == 0 ? count(w, cx, cy, cz, half, Blocks.fire)
+                        : 11 - count(w, cx, cy, cz, half, Blocks.glass);
+                    String what = cursor[0] == 0 ? "fire blocks placed" : "glass blocks shattered";
+                    if (mode == 0) {
+                        out.check(changed > 0, def.id() + " should change blocks when free, " + what + ": " + changed);
+                    } else {
+                        out.check(
+                            changed == 0,
+                            def.id() + " mode " + mode + " should leave blocks alone, " + what + ": " + changed);
+                    }
+                    started[0] = false;
+                    cursor[1]++;
+                    if (cursor[1] > 3) {
+                        cursor[1] = 0;
+                        cursor[0]++;
+                    }
+                    return null;
+                } catch (RuntimeException e) {
+                    restoreTerrain(savedTerrain);
+                    setGriefing(w, savedGriefing);
+                    MinecraftForge.EVENT_BUS.unregister(veto);
+                    return ScenarioResult.fail(name(), "threw " + e);
+                }
+            });
+        }
+
+        private static void setGriefing(World w, boolean on) {
+            w.getGameRules()
+                .setOrCreateGameRule("mobGriefing", Boolean.toString(on));
+        }
+
+        private static void clear(World w, int cx, int cy, int cz, int half) {
+            for (int x = cx - half; x <= cx + half; x++) {
+                for (int z = cz - half; z <= cz + half; z++) {
+                    for (int y = cy - 1; y <= cy + 2; y++) {
+                        w.setBlock(x, y, z, Blocks.air, 0, 2);
+                    }
+                }
+            }
+        }
+
+        private static int count(World w, int cx, int cy, int cz, int half, net.minecraft.block.Block block) {
+            int n = 0;
+            for (int x = cx - half; x <= cx + half; x++) {
+                for (int z = cz - half; z <= cz + half; z++) {
+                    for (int y = cy; y <= cy + 2; y++) {
+                        if (w.getBlock(x, y, z) == block) {
+                            n++;
+                        }
+                    }
+                }
+            }
+            return n;
         }
     }
 }
