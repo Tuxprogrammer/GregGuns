@@ -28,14 +28,14 @@
 |---|---|---|
 | Chip recipe | Circuit Assembler, HV (480 EU/t), 20 s: Advanced Plastic Circuit Board, 2 Advanced circuits, 4 fine gold wire | Circuit Assembler, EV (1,920 EU/t), 30 s: Advanced Epoxy Circuit Board, 2 Data circuits, 4 fine electrum wire |
 | Schematic recipe | Laser Engraver, HV, 30 s: chip + non-consumed red lens (`craftingLensRed`) | Laser Engraver, EV, 30 s: chip + non-consumed blue lens (`craftingLensBlue`) |
-| Body plates | 4 stainless steel plates | 6 titanium plates |
-| Fins (4 slots, one plate each) | steel | stainless steel |
-| Engine | Missile Engine Mk I | Missile Engine Mk II |
+| Body plates (one column, D69) | 3 compressed steel plates (Galacticraft's, GT prefix `compressed`) | 4 compressed titanium plates |
+| Fins (4 slots, one each, D69) | Galacticraft Tier 1 rocket fins (`GalacticraftCore:item.rocketFins`) | Galacticraft Tier 2 rocket fins (`GalacticraftMars:item.itemBasicAsteroids` damage 2) |
+| Engine (D69) | Galacticraft Tier 1 engine (`GalacticraftCore:item.engine` damage 0) | Galacticraft Tier 2 engine (`GalacticraftMars:item.itemBasicAsteroids` damage 1) |
 | Guidance computers accepted | Mk I (0 steps), Mk II (1), Mk III (2) | Mk II (0), Mk III (1) |
 | Research (Assembly Line) | scan 60 s at HV | scan 120 s at EV |
 | Assembly Line recipe (guidance-0 body) | HV, 30 s, 250 L lubricant, plates + fins + engine + 2 Advanced circuits | EV, 45 s, 250 L lubricant, plates + fins + engine + 2 Data circuits |
 | Guidance fit (Assembler) | HV, 15 s, circuit 1: body + Mk II (1 step) or Mk III (2 steps) | EV, 15 s, circuit 2: body + Mk III (1 step) |
-| Body cost, cheapest computer (D34 plate equivalents) | 18.5 (test band 14 to 22) | 26 (band 22 to 30) |
+| Body cost, cheapest computer (D34 plate equivalents, D69) | 161 (test band 150 to 175) | 490 (band 460 to 520) |
 
 **Tier rule (D1).** The dev self-check refuses a recipe whose GregGuns input is of a higher tier than its output. A better guidance computer than its body is the point of D24, so the three computers implement the marker `TierUpgrade` and the check skips them as inputs. Chips and schematics are one item per tier (`missile_chip_t1`, `missile_chip_t2`, and the same for schematics), each Tiered at its own voltage, so the Laser Engraver and Circuit Assembler rows pass the machine-voltage rule.
 
@@ -43,31 +43,29 @@
 
 ### New GregGuns parts (Assembler, same house style as the warhead parts, D57)
 
-Five more `IcbmPart`s, each with its own Assembler recipe at its tier, unique programmed circuit (19 to 23), GT recycling data and a D41 tooltip. They show in NEI like the warhead parts.
+Three more `IcbmPart`s (the two engines were retired in D69: bodies take Galacticraft's), each with its own Assembler recipe at its tier, unique programmed circuit (19 to 23), GT recycling data and a D41 tooltip. They show in NEI like the warhead parts.
 
 | Part | Tier | Circuit | Inputs | Cost |
 |---|---|---|---|---|
-| Missile Engine Mk I | HV | 19 | MV electric motor, MV electric pump, steel plate | 5.5 |
-| Missile Engine Mk II | EV | 20 | HV electric motor, HV electric pump, stainless steel plate | 8 |
 | Guidance Computer Mk I | HV | 21 | Advanced circuit, steel plate, 4 fine copper wire | 5 |
 | Guidance Computer Mk II | EV | 22 | Data circuit, titanium plate, 4 fine electrum wire | 8 |
 | Guidance Computer Mk III | IV | 23 | Elite circuit, tungstensteel plate, 4 fine platinum wire | 11 |
 
 ### The NASA Workbench page
 
-- **Slots:** result, the plate slots (4 or 6), four fin slots, one engine slot, one guidance slot. Each slot takes only its own item (`MissileBenchRules`, matched on a key string so the rule is unit tested without Minecraft): plates and fins by GT prefix and material, engine and computer by registry name.
+- **Slots:** result, the plate slots (3 or 4, in one vertical column, D69), four fin slots, one engine slot, one guidance slot. Each slot takes only its own item (`MissileBenchRules`, matched on a key string so the rule is unit tested without Minecraft): plates by GT prefix and material (`compressed:Steel`), fins and engine by Galacticraft registry name and damage (`GalacticraftParts`), the computer by registry name.
 - **Result:** the body of that tier with the computer's guidance. Taking it uses one item from every slot. Closing the page returns what is left to the player.
 - **Unlock:** the schematic's page ID and GUI ID are fixed (`MissileSchematicPage`: pages 4310 and 4311, GUIs 7310 and 7311). A T2 schematic never opens the T1 page.
 - **Screen:** a flat panel with Galacticraft's Back and Next buttons, drawn with plain rectangles (no GC texture is reused).
 - Galacticraft types sit in `production/gc` only; the items implement `ISchematicItem` through `@Optional.Interface`.
 
-## Cost (D34)
+## Cost (D34, D63, D69)
 
-The cost target is "about one Galacticraft rocket launch of the tier in plates, circuits and fuel". The I1 warhead recipes already spend that whole budget on the warhead alone (T1 about 20, T2 about 38 plate equivalents). The body adds 18.5 (T1) and 26 (T2) on top, so a **missile with its fuel is about 1.9 launches at T1 and 2.4 at T2**. That is a deliberate overshoot, put to the orchestrator for DECISIONS; trim the body counts in `MissileBuildSpec` (the plates, fins and part recipes) if the full-pack review finds it too dear. The Assembly Line pays the same body parts and adds 250 L of lubricant, so automation gives no discount and the hand build stays worthwhile early.
+The target is "about one Galacticraft rocket launch of the tier in plates, circuits and fuel". D69 builds the body from Galacticraft's own rocket parts, so the body is priced from the GTNH recipes for those parts (plate equivalents, an estimate): a compressed plate is 2 (plate plus implosion charge); a Tier 1 fin is 28 (2 compressed steel and 4 heavy-duty plates); the Tier 1 engine 38 (2 SDHD120 plates, 4 heavy-duty plates, a canister, a firebox casing, a detector); a Tier 2 fin 68; the Tier 2 engine 200 (2 Tier 1 engines, 2 boosters, 5 asteroid plates). **T1 body: 6 + 112 + 38 + 5 (Mk I computer) = 161. T2 body: 10 + 272 + 200 + 8 = 490.** A Galacticraft launch of the same tier needs the same engine, four of the same fins and a nose cone, so body plus fuel is about one launch (fuel adds a little, the cone is not in our body). The warhead stays the expensive part (D34). The Assembly Line pays the same parts and adds 250 L of lubricant, so automation gives no discount. If the full-pack review finds it dear, trim the fins first (D63).
 
 ## Recycling (D44)
 
-Each body returns its plates and fins as metal (`MissileRecipes.recycle`); each part returns its metal through `PartRecipes`; the launch control returns its casing. Circuits, motors and pumps are not returned. Chips and schematics return nothing.
+Each body returns its compressed plates as metal (`MissileRecipes.recycle`; the Galacticraft fins and engine carry no GT data); each part returns its metal through `PartRecipes`; the launch control returns its casing. Circuits, motors and pumps are not returned. Chips and schematics return nothing.
 
 ## NEI
 
@@ -79,6 +77,7 @@ Each body returns its plates and fins as metal (`MissileRecipes.recycle`); each 
 - **GGS-I2-02** The Assembly Line (guidance-0 body, needs the research) and the Assembler guidance fit are the only automatic route to a body; each Assembly Line recipe has its own research item that GT's scanner resolves.
 - **GGS-I2-03** A bench slot refuses an item of the wrong kind; the result is the body of that tier with the computer's guidance and nothing from an incomplete set.
 - **GGS-I2-04** Each recipe runs at its tier's voltage and every input is at or below that tier.
+- **GGS-I2-05** (D69) No ICBM recipe runs below HV: `MissileBuildSpecTest.noIcbmRecipeRunsBelowHv` fails for any part, body or warhead recipe under HV.
 
 ## Tests
 
