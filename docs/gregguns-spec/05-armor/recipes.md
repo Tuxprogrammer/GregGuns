@@ -285,7 +285,7 @@ GregGuns components that these recipes consume. All except where noted are defin
 | Power Plating (`PP`, `part_power_plating`) | Power Armor | "Cybernetic Parts, Power Plating, Anti Gravity Core ... Keep" |
 | Gas Mask Filter (`part_gas_mask_filter`) | Gas Mask, refilter | "Gas Mask Filter ... Keep" |
 | Compressed Air Tank (`CAT`, `tank_air`) | Oxygen Tanks, Jump Pack | [fluids.md](../06-items/fluids.md) (a 1 000 mB `IFluidContainerItem`) |
-| Steam Armor Plating (`SAP`, `part_steam_armor_plating`) | Steam armor | [06 recipes](../06-items/recipes.md#part-steam-armor-plating) (RC-23): Assembler, EV, `plate.Titanium` ×2, `plate.Bronze` ×1, `plate.Steel` ×1 gives 1 SAP, `circuit(1)`, 6 s, `RECIPE_EV`. Techguns shared item 67. EV matches the steam armor row in [0001](../../design/0001-tier-map.md) |
+| Steam Armor Plating (`SAP`, `part_steam_armor_plating`) | Steam armor | [06 recipes](../06-items/recipes.md#part-steam-armor-plating) (RC-23): Assembler, EV, `plate.Titanium` ×1 (×2 before [0021](../../design/0021-tier-balance-pass.md)), `plate.Bronze` ×1, `plate.Steel` ×1 gives 1 SAP, `circuit(1)`, 6 s, `RECIPE_EV`. Techguns shared item 67. EV matches the steam armor row in [0001](../../design/0001-tier-map.md) |
 | Anti Gravity Core (`part_anti_gravity_core`) | Anti Gravity Device | Made on the GT Assembler at IV, [RC-65](../06-items/recipes.md#part-anti-gravity-core) |
 
 Defined in this sheet and consumed by it: Glider Backpack, Glider Wing, Oxygen Mask. Area 06 should link here rather than repeat them ("Glider parts, Oxygen Mask ... Other areas" in components-and-materials.md).

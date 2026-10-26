@@ -42,11 +42,11 @@ class AlienBlasterDefinitionTest {
     }
 
     @Test
-    void isAnEnergyGunWithTenShotsInAFullCharge() {
+    void isAnEnergyGunWithTwentyFiveShotsInAFullCharge() {
         GunStats s = AlienBlasterDef.STATS;
         assertTrue(s.isEnergy());
-        assertEquals(10, s.magazineSize(), "the sheet's 10 round clip is 10 shots of charge");
-        assertEquals(AlienBlasterDef.CAPACITY_EU, s.euPerShot() * 10);
+        assertEquals(25, s.magazineSize(), "design record 0021: 25 shots of charge, up from the sheet's 10");
+        assertEquals(AlienBlasterDef.CAPACITY_EU, s.euPerShot() * AlienBlasterDef.SHOTS);
         assertEquals(1_000_000_000L, AlienBlasterDef.CAPACITY_EU, "the LuV Lapotronic Orb II baseline");
     }
 

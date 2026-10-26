@@ -50,3 +50,4 @@ The other options, and why each was not chosen.
 | [0018](0018-icbm-program.md) | The ICBM program: scope, balance and how it is built (amends 0014, 0015) | — | Accepted |
 | [0019](0019-structures-on-ross128.md) | GregGuns structures on Ross128 (amends 0005) | D5 | Accepted |
 | [0020](0020-omt-overlap.md) | OpenModularTurrets overlap: the Rampart stays, nothing is merged (M9 polish) | — | Accepted |
+| [0021](0021-tier-balance-pass.md) | Tier balance pass: recipe cost, armor, NPCs, energy and ammo along the GT tiers (M9 polish) | D1, D3 | Accepted |
