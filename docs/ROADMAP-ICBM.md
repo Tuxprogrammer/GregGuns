@@ -40,7 +40,7 @@ From I0 on, the build runs without the owner ([0018](design/0018-icbm-program.md
 - **Client checks.** One batched in-game session per milestone, on the test server. Shader runs only for shader questions. Its screenshots go to the visuals gallery.
 - **Ported MIT code** follows [CONTRIBUTING § Ported code](../CONTRIBUTING.md#ported-code-mit): adapted, commented, tested and bug-fixed before it merges.
 - **Assets** ([D47](gregguns-icbm-spec/DECISIONS.md), [0018](design/0018-icbm-program.md) §10–11). Each milestone sources the assets its content needs, in this order:
-  1. **Human-made, properly licensed assets:** asset libraries, and assets inside mod jars whose license covers their assets (CC0, CC-BY, MIT, LGPL). Look first in the GTNH pack's own mods, then on Modrinth, CurseForge and similar.
+  1. **Human-made, properly licensed assets:** asset libraries, and assets extracted from mod jars under CC0, CC-BY, MIT or LGPL. A mod's declared license covers its whole jar, assets included, unless the mod licenses its assets separately. Look first in the GTNH pack's own mods, then on Modrinth, CurseForge and similar.
   2. **Our own procedural generation,** only when nothing licensed exists, and never with tuning loops.
   3. **Before generating anything,** the orchestrator names the asset and the planned fallback in that milestone's owner update. The build doesn't wait.
 - **Releases.** Tags follow the main repo's release steps. Nothing is pushed or released without the owner's go-ahead, apart from what this roadmap names.
