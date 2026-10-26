@@ -32,6 +32,20 @@ public final class MissileStacks {
         WARHEAD_LIT
     }
 
+    /** The outcome of {@link #armIntoEntity}: the result and, on {@code OK}, the new entity. */
+    public static final class Armed {
+
+        /** The outcome. */
+        public final ArmResult result;
+        /** The missile entity; null unless {@code result} is {@code OK}. */
+        public final EntityMissile missile;
+
+        Armed(ArmResult result, EntityMissile missile) {
+            this.result = result;
+            this.missile = missile;
+        }
+    }
+
     private MissileStacks() {}
 
     /**
@@ -68,36 +82,50 @@ public final class MissileStacks {
      * @return the outcome
      */
     public static ArmResult arm(World world, int x, int y, int z, EntityPlayer player) {
+        return armIntoEntity(world, x, y, z, player).result;
+    }
+
+    /**
+     * Same as {@link #arm}, and hands back the entity it made.
+     *
+     * @param world  the server world
+     * @param x      X of any cell of the body
+     * @param y      Y
+     * @param z      Z
+     * @param player who armed it, may be null
+     * @return the outcome and the entity
+     */
+    public static Armed armIntoEntity(World world, int x, int y, int z, EntityPlayer player) {
         int[] base = baseOf(world, x, y, z);
         if (base == null) {
-            return ArmResult.NOT_BODY;
+            return new Armed(ArmResult.NOT_BODY, null);
         }
         BlockMissileBody block = (BlockMissileBody) world.getBlock(base[0], base[1], base[2]);
         MissileTier tier = block.missileTier();
         TileEntity bodyTile = world.getTileEntity(base[0], base[1], base[2]);
         if (!(bodyTile instanceof TileMissileBody)) {
-            return ArmResult.INCOMPLETE;
+            return new Armed(ArmResult.INCOMPLETE, null);
         }
         for (int i = 1; i < tier.heightBlocks(); i++) {
             if (!(world.getBlock(base[0], base[1] + i, base[2]) instanceof BlockMissileFiller)) {
-                return ArmResult.INCOMPLETE;
+                return new Armed(ArmResult.INCOMPLETE, null);
             }
         }
         int topY = base[1] + tier.heightBlocks();
         Block above = world.getBlock(base[0], topY, base[2]);
         TileEntity wt = world.getTileEntity(base[0], topY, base[2]);
         if (!(above instanceof BlockWarhead) || !(wt instanceof TileWarhead)) {
-            return ArmResult.NO_WARHEAD;
+            return new Armed(ArmResult.NO_WARHEAD, null);
         }
         BlockWarhead warheadBlock = (BlockWarhead) above;
         TileWarhead warhead = (TileWarhead) wt;
         if (!tier.carries(
             warheadBlock.casing()
                 .tier())) {
-            return ArmResult.WRONG_WARHEAD;
+            return new Armed(ArmResult.WRONG_WARHEAD, null);
         }
         if (warhead.armed()) {
-            return ArmResult.WARHEAD_LIT;
+            return new Armed(ArmResult.WARHEAD_LIT, null);
         }
         TileMissileBody body = (TileMissileBody) bodyTile;
         EntityMissile missile = tier == MissileTier.T1 ? new EntityMissileT1(world) : new EntityMissileT2(world);
@@ -120,6 +148,6 @@ public final class MissileStacks {
         world.setBlockToAir(base[0], topY, base[2]);
         world.setBlockToAir(base[0], base[1], base[2]);
         world.spawnEntityInWorld(missile);
-        return ArmResult.OK;
+        return new Armed(ArmResult.OK, missile);
     }
 }

@@ -42,7 +42,7 @@ public final class MissileGcScenarios {
         out.check(MissileGc.accepts(t1, "rocketfuelmixd"), "T1 takes Dense Hydrazine (better fuel)");
         out.check(!MissileGc.accepts(t1, "water"), "T1 does not take water");
         out.check(!MissileGc.accepts(t1, "fuel"), "T1 does not take plain Galacticraft fuel");
-        EntityMissile t2 = MissileScenarios.armed(ctx, MissileTier.T2, 0);
+        EntityMissile t2 = MissileScenarios.armedAt(ctx, MissileTier.T2, 0, 4);
         if (t2 != null) {
             out.check(!MissileGc.accepts(t2, "nitrofuel"), "T2 does not take Cetane-Boosted Diesel");
             out.check(!MissileGc.accepts(t2, "rocketfuelmixb"), "T2 does not take RP-1");

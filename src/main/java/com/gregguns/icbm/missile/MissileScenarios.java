@@ -89,23 +89,31 @@ public final class MissileScenarios {
         }
     }
 
-    /** Arms a fresh stack and returns the missile entity, or null. */
+    /** Kills every missile entity near the origin: arming spawns entities the context does not track. */
+    static void sweep(ScenarioContext ctx) {
+        World w = ctx.world();
+        net.minecraft.util.AxisAlignedBB box = net.minecraft.util.AxisAlignedBB
+            .getBoundingBox(ctx.originX() - 100, 0, ctx.originZ() - 100, ctx.originX() + 100, 255, ctx.originZ() + 300);
+        for (Object o : new ArrayList<Object>(w.getEntitiesWithinAABB(EntityMissile.class, box))) {
+            EntityMissile m = (EntityMissile) o;
+            m.tickets()
+                .release();
+            m.setDead();
+        }
+    }
+
+    /** Arms a fresh stack at the origin and returns the missile entity, or null. */
     static EntityMissile armed(ScenarioContext ctx, MissileTier tier, int guidance) {
-        floor(ctx, 3);
+        return armedAt(ctx, tier, guidance, 0);
+    }
+
+    /** Arms a fresh stack {@code dx} blocks east of the origin and returns the missile entity, or null. */
+    static EntityMissile armedAt(ScenarioContext ctx, MissileTier tier, int guidance, int dx) {
+        floor(ctx, 5);
         WarheadCasing c = tier == MissileTier.T1 ? WarheadCasing.T1 : WarheadCasing.T2;
         String ex = tier == MissileTier.T1 ? "condensed" : "thermobaric";
-        int[] base = buildStack(ctx, tier, c, ex, 3, 0, 0, 0, false, guidance);
-        MissileStacks.ArmResult r = MissileStacks.arm(ctx.world(), base[0], base[1], base[2], null);
-        if (r != MissileStacks.ArmResult.OK) {
-            return null;
-        }
-        for (Object o : ctx.world().loadedEntityList) {
-            if (o instanceof EntityMissile && Math.abs(((EntityMissile) o).posX - (base[0] + 0.5)) < 0.1
-                && Math.abs(((EntityMissile) o).posZ - (base[2] + 0.5)) < 0.1) {
-                return (EntityMissile) o;
-            }
-        }
-        return null;
+        int[] base = buildStack(ctx, tier, c, ex, 3, dx, 0, 0, false, guidance);
+        return MissileStacks.armIntoEntity(ctx.world(), base[0], base[1], base[2], null).missile;
     }
 
     private abstract static class Base implements Scenario {
@@ -133,6 +141,7 @@ public final class MissileScenarios {
             if (needsModule() != null) {
                 return needsModule();
             }
+            sweep(ctx);
             ctx.clearArea(8, 10);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             World w = ctx.world();
@@ -150,16 +159,21 @@ public final class MissileScenarios {
                 MissileStacks.ArmResult.WRONG_WARHEAD,
                 MissileStacks.arm(w, b[0], b[1], b[2], null));
             // 3. A broken filler cell.
+            // A body missing a filler cell cannot come from play (breaking any cell breaks the whole body), only from a
+            // damaged save or a command: build it that way.
             int[] c = buildStack(ctx, MissileTier.T2, WarheadCasing.T2, "thermobaric", 5, -4, 0, 0, false, 0);
-            ctx.setBlock(-4, 1, 0, Blocks.air, 0);
+            w.setBlock(c[0], c[1] + 1, c[2], Blocks.air, 0, 2);
+            // The filler's own break rule took the body down with it; that is the designed behavior, so check it.
+            out.checkEquals("breaking a filler breaks the whole body", Blocks.air, w.getBlock(c[0], c[1], c[2]));
             out.checkEquals(
-                "a missing filler cell",
-                MissileStacks.ArmResult.INCOMPLETE,
+                "nothing left to arm",
+                MissileStacks.ArmResult.NOT_BODY,
                 MissileStacks.arm(w, c[0], c[1], c[2], null));
             // 4. Good stacks: T1 with a T1 warhead, T2 body with a T1 warhead (lighter fits).
             int[] d = buildStack(ctx, MissileTier.T1, WarheadCasing.T1, "condensed", 3, 0, 0, 4, false, 2);
-            out.checkEquals("T1 arms", MissileStacks.ArmResult.OK, MissileStacks.arm(w, d[0], d[1], d[2], null));
-            EntityMissile m = nearest(w, d[0] + 0.5, d[2] + 4.5 - 4);
+            MissileStacks.Armed armed = MissileStacks.armIntoEntity(w, d[0], d[1], d[2], null);
+            out.checkEquals("T1 arms", MissileStacks.ArmResult.OK, armed.result);
+            EntityMissile m = armed.missile;
             out.check(m instanceof EntityMissileT1, "a T1 missile entity stands where the stack was");
             if (m != null) {
                 out.checkEquals(
@@ -200,18 +214,6 @@ public final class MissileScenarios {
             }
             return out.build();
         }
-
-        private static EntityMissile nearest(World w, double x, double z) {
-            EntityMissile best = null;
-            for (Object o : w.loadedEntityList) {
-                if (o instanceof EntityMissile && !((EntityMissile) o).isDead
-                    && Math.abs(((EntityMissile) o).posX - x) < 1.0
-                    && Math.abs(((EntityMissile) o).posZ - z) < 1.0) {
-                    best = (EntityMissile) o;
-                }
-            }
-            return best;
-        }
     }
 
     /** The tank, fixed per tier; and (with Galacticraft) the fuel lists that gate the loader. */
@@ -232,6 +234,7 @@ public final class MissileScenarios {
             if (needsModule() != null) {
                 return needsModule();
             }
+            sweep(ctx);
             ctx.clearArea(6, 10);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             EntityMissile m1 = armed(ctx, MissileTier.T1, 0);
@@ -279,6 +282,7 @@ public final class MissileScenarios {
             if (needsModule() != null) {
                 return needsModule();
             }
+            sweep(ctx);
             ctx.clearArea(6, 10);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             World w = ctx.world();
@@ -386,6 +390,7 @@ public final class MissileScenarios {
             if (needsModule() != null) {
                 return needsModule();
             }
+            sweep(ctx);
             ctx.clearArea(8, 12);
             boolean terrain = IcbmConfig.terrainDamage(tier.number());
             setTerrain(true);
@@ -412,6 +417,22 @@ public final class MissileScenarios {
                 if (!m.isDead) {
                     flew[0] |= m.phase() == FlightPhase.ARC;
                     maxY[0] = Math.max(maxY[0], m.posY);
+                    if (ticks >= 880) {
+                        setTerrain(terrain);
+                        return ScenarioResult.fail(
+                            name(),
+                            "still flying after " + ticks
+                                + " ticks: phase "
+                                + m.phase()
+                                + " at "
+                                + (int) m.posX
+                                + ", "
+                                + (int) m.posY
+                                + ", "
+                                + (int) m.posZ
+                                + " aimed at "
+                                + java.util.Arrays.toString(m.aimPoint()));
+                    }
                     return null;
                 }
                 // The missile is gone: the blast now runs over a few ticks; wait for terrain to break.
@@ -419,6 +440,13 @@ public final class MissileScenarios {
                     return null;
                 }
                 setTerrain(terrain);
+                if (target.removed(w) == 0) {
+                    return ScenarioResult.fail(
+                        name(),
+                        "the missile ended but broke nothing; last aim " + java.util.Arrays.toString(m.aimPoint())
+                            + " y "
+                            + maxY[0]);
+                }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(flew[0], "it reached the arc phase");
                 out.check(maxY[0] > py + 20, "it climbed well above the pad (" + maxY[0] + ")");
@@ -467,6 +495,7 @@ public final class MissileScenarios {
             if (needsModule() != null) {
                 return needsModule();
             }
+            sweep(ctx);
             ctx.clearArea(8, 12);
             EntityMissile m = armed(ctx, MissileTier.T1, MissileBodies.MAX_GUIDANCE);
             if (m == null) {
@@ -527,6 +556,20 @@ public final class MissileScenarios {
                         // Timeout: the safety net detonates where it is and must drop its tickets with it.
                         m.detonateAt(m.posX, m.posY, m.posZ);
                     }
+                    if (ticks >= 1150) {
+                        IcbmConfig.terrainDamageT1 = terrain;
+                        return ScenarioResult.fail(
+                            name(),
+                            "still flying after " + ticks
+                                + " ticks: phase "
+                                + m.phase()
+                                + " at "
+                                + (int) m.posX
+                                + ", "
+                                + (int) m.posY
+                                + ", "
+                                + (int) m.posZ);
+                    }
                     return null;
                 }
                 IcbmConfig.terrainDamageT1 = terrain;
@@ -571,6 +614,7 @@ public final class MissileScenarios {
             if (needsModule() != null) {
                 return needsModule();
             }
+            sweep(ctx);
             ctx.clearArea(6, 10);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             EntityMissile m = armed(ctx, MissileTier.T2, 2);
@@ -631,6 +675,7 @@ public final class MissileScenarios {
             if (needsModule() != null) {
                 return needsModule();
             }
+            sweep(ctx);
             ctx.clearArea(8, 12);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             boolean terrain = IcbmConfig.terrainDamageT1;
