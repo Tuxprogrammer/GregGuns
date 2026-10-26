@@ -8,6 +8,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -417,7 +418,7 @@ public final class WarheadScenarios {
 
         @Override
         public String description() {
-            return "A lit warhead's description packet makes a fresh client tile read as armed with the same explosive; an unlit one does not.";
+            return "A lit warhead's synced NBT makes a fresh client tile read as armed with the same explosive; an unlit one does not.";
         }
 
         @Override
@@ -431,16 +432,19 @@ public final class WarheadScenarios {
             if (server == null) {
                 return ScenarioResult.fail(name(), "no tile");
             }
+            // The description packet carries writeToNBT and the client reads it with readFromNBT; the packet's own
+            // reader (func_148857_g) is client-only, so the scenario runs the same NBT round trip on the server.
+            out.check(server.getDescriptionPacket() != null, "the tile sends a description packet");
+            NBTTagCompound unlit = new NBTTagCompound();
+            server.writeToNBT(unlit);
             TileWarhead before = new TileWarhead();
-            before.onDataPacket(
-                null,
-                (net.minecraft.network.play.server.S35PacketUpdateTileEntity) server.getDescriptionPacket());
+            before.readFromNBT(unlit);
             out.check(!before.armed(), "an unlit warhead reads as unlit on the client");
             server.arm(server.litFuseTicks(), null);
+            NBTTagCompound lit = new NBTTagCompound();
+            server.writeToNBT(lit);
             TileWarhead client = new TileWarhead();
-            client.onDataPacket(
-                null,
-                (net.minecraft.network.play.server.S35PacketUpdateTileEntity) server.getDescriptionPacket());
+            client.readFromNBT(lit);
             out.check(client.armed(), "the client tile reads as armed once lit");
             out.checkEquals(
                 "the client knows the explosive",
