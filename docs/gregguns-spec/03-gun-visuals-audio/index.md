@@ -14,6 +14,7 @@ Two things in the pack change how that behavior must be built:
 | File | What it covers |
 |---|---|
 | [angelica-item-rendering.md](angelica-item-rendering.md) | GL calls, entity batching eligibility, HUD caching and the zoom key, as they affect gun renderers, muzzle flashes and scope overlays. |
+| [ads.md](ads.md) | Aim down sights for iron-sight and red-dot guns (M9 polish): the eligible guns, the model move, FOV, crosshair, sprint and config. |
 | [gun-sound-pipeline.md](gun-sound-pipeline.md) | Stereo handling, channel cap, mute-ability and event naming for gun sounds. |
 | [../04-projectiles-fx/dynamic-lights.md](../04-projectiles-fx/dynamic-lights.md) | Angelica dynamic lights for held guns (muzzle glow). It lives in area 04 because it also covers projectiles. |
 

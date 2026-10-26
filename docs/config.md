@@ -182,6 +182,25 @@ Display options for the local player only. Not synced.
 | `client.ammoPressAnimation` | boolean | `true` | n/a | no | Draws the Ammo Press's front animation, with the frame chosen from recipe progress. Off shows the still front. Cosmetic only. |
 | `client.particleCeiling` | int | `2000` | 100 to 8000 | no | Most GregGuns effect particles alive at once. Bursts shrink as the count nears it and never pass it, leaving room under the pack's 8000-particle cap. |
 
+Aim down sights (see [gregguns-spec/03-gun-visuals-audio/ads.md](gregguns-spec/03-gun-visuals-audio/ads.md)):
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `client.adsEnabled` | boolean | `true` | n/a | no | Right-click on an iron-sight or red-dot gun moves the gun to the screen center. Off: no move, and the right-click is not sent for those guns. |
+| `client.adsFov` | float | `0.9` | 0.3 to 1.0 | no | Field of view multiplier while aiming a gun with no scope zoom of its own. 1.0 leaves the view alone. |
+| `client.adsTransitionTicks` | int | `5` | 1 to 20 | no | Client ticks the gun takes to move in and out. |
+| `client.adsHideCrosshair` | boolean | `true` | n/a | no | Hides the crosshair while the sights are lined up. |
+| `client.adsStopsSprint` | boolean | `true` | n/a | no | Stops sprinting while aiming; the sprint key is ignored until you stop. |
+
+## Aim (`aim`)
+
+Server side of aim down sights. Read on the server; none is synced.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `aim.adsEnabled` | boolean | `true` | n/a | no | Lets sights-only guns aim on a right-click. Off: the server ignores the request and drops a running aim. Scope zoom is unaffected. |
+| `aim.adsSpreadMultiplier` | float | `0.75` | 0.0 to 1.0 | no | Multiplier on spread while aiming a gun with no scope zoom of its own (0.75 is 25 percent tighter). A scoped gun keeps its own zoom multiplier. |
+
 ## Hidden keys
 
 These keys are in `config/gregguns.cfg` but not in the in-game config GUI (their class carries GTNHLib's `@Config.ExcludeFromAutoGui`). They are for server owners and are edited in the file. The `debug` category is hidden the same way.
