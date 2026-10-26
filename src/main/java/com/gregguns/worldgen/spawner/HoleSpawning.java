@@ -16,6 +16,7 @@ import com.gregguns.entity.npc.NpcEntity;
 import com.gregguns.entity.npc.NpcMob;
 import com.gregguns.entity.npc.NpcRegistry;
 import com.gregguns.entity.npc.spawn.NpcSpawnHandler;
+import com.gregguns.worldgen.RolledCeiling;
 
 /**
  * One spawn attempt of a hole spawner: the player-range gate, the nearby count, the caps and the placement of each NPC.
@@ -88,6 +89,18 @@ public final class HoleSpawning {
      */
     public static List<EntityLiving> attempt(World world, int x, int y, int z, HoleKind kind, Marker marker,
         Placer placer) {
+        return attempt(world, x, y, z, kind, 0, marker, placer);
+    }
+
+    /**
+     * As {@link #attempt(World, int, int, int, HoleKind, Marker, Placer)}, for a hole whose structure rolled a loot
+     * ceiling (Ross128b and Ross128ba, design record 0019): each NPC starts at no less than
+     * {@link RolledCeiling#danger} of that ceiling, so its equipment scales with the loot.
+     *
+     * @param ceiling the rolled ceiling (GT voltage index), or 0 for none
+     */
+    public static List<EntityLiving> attempt(World world, int x, int y, int z, HoleKind kind, int ceiling,
+        Marker marker, Placer placer) {
         List<EntityLiving> placed = new ArrayList<>();
         if (world.isRemote || !chunkLoaded(world, x, z)) {
             return placed;
@@ -113,7 +126,7 @@ public final class HoleSpawning {
             // The contract (PLAN-M8 addendum): mark first, so Infernal Mobs never sees an unmarked spawner NPC.
             marker.mark(npc);
             if (npc instanceof NpcEntity) {
-                ((NpcEntity) npc).setDanger(NpcSpawnHandler.dangerAt(world, npc.posX, npc.posZ));
+                ((NpcEntity) npc).setDanger(danger(NpcSpawnHandler.dangerAt(world, npc.posX, npc.posZ), ceiling));
             }
             npc.onSpawnWithEgg(null);
             if (placer.place(npc)) {
@@ -121,6 +134,15 @@ public final class HoleSpawning {
             }
         }
         return placed;
+    }
+
+    /**
+     * @param placeDanger the danger the spawn position gives (distance and biome)
+     * @param ceiling     the structure's rolled ceiling, or 0
+     * @return the larger of the two, 0 to 5
+     */
+    static int danger(int placeDanger, int ceiling) {
+        return Math.max(placeDanger, RolledCeiling.danger(ceiling));
     }
 
     private static boolean chunkLoaded(World world, int x, int z) {

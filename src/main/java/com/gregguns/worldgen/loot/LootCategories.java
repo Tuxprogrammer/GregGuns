@@ -24,7 +24,7 @@ import gregtech.api.enums.OrePrefixes;
 import gregtech.api.util.GTOreDictUnificator;
 
 /**
- * Registers the seven {@code gregguns:*} structure categories with Forge's {@link ChestGenHooks} and fills
+ * Registers the fifteen {@code gregguns:*} structure categories with Forge's {@link ChestGenHooks} and fills
  * inventories from them. Common side, server thread, after every mod's items exist (postInit).
  *
  * <p>

@@ -19,6 +19,8 @@ public class TileHoleSpawner extends TileEntity {
 
     private HoleKind kind = HoleKind.ZOMBIE;
     private int countdown = 40;
+    /** The rolled loot ceiling of the structure this hole belongs to (Ross128, 0019), or 0. Saved. */
+    private int ceiling;
 
     /** For the NBT loader; the kind is read from the save. */
     public TileHoleSpawner() {}
@@ -26,6 +28,20 @@ public class TileHoleSpawner extends TileEntity {
     /** @param kind which NPCs this hole places */
     public TileHoleSpawner(HoleKind kind) {
         this.kind = kind;
+    }
+
+    /**
+     * @param kind    which NPCs this hole places
+     * @param ceiling the structure's rolled loot ceiling (GT voltage index, MV 2 to UHV 9), or 0 when it did not roll
+     */
+    public TileHoleSpawner(HoleKind kind, int ceiling) {
+        this.kind = kind;
+        this.ceiling = ceiling;
+    }
+
+    /** @return the rolled ceiling the hole's NPCs scale with, or 0 */
+    public int ceiling() {
+        return ceiling;
     }
 
     /** @return which NPCs this hole places */
@@ -57,13 +73,16 @@ public class TileHoleSpawner extends TileEntity {
      * @return the NPCs placed
      */
     public List<EntityLiving> attempt(HoleSpawning.Marker marker, HoleSpawning.Placer placer) {
-        return HoleSpawning.attempt(worldObj, xCoord, yCoord, zCoord, kind, marker, placer);
+        return HoleSpawning.attempt(worldObj, xCoord, yCoord, zCoord, kind, ceiling, marker, placer);
     }
 
     @Override
     public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         tag.setString("kind", kind.name());
+        if (ceiling > 0) {
+            tag.setInteger("ceiling", ceiling);
+        }
     }
 
     @Override
@@ -71,5 +90,6 @@ public class TileHoleSpawner extends TileEntity {
         super.readFromNBT(tag);
         HoleKind read = HoleKind.byName(tag.getString("kind"));
         kind = read != null ? read : HoleKind.ZOMBIE;
+        ceiling = tag.getInteger("ceiling");
     }
 }

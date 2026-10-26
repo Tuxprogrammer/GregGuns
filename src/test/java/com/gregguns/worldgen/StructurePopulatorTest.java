@@ -109,6 +109,11 @@ class StructurePopulatorTest {
     }
 
     private Run run(StructureState state, ColumnReader reader, StructurePopulator.BiomeSource biomes) {
+        return run(populator, state, reader, biomes);
+    }
+
+    private Run run(StructurePopulator populator, StructureState state, ColumnReader reader,
+        StructurePopulator.BiomeSource biomes) {
         Run r = new Run();
         StructureState st = state != null ? state : r.state;
         for (int cx = BASE; cx < BASE + SIDE; cx++) {
@@ -232,5 +237,83 @@ class StructurePopulatorTest {
 
     private List<StructurePlan> populatorPlans(int cx, int cz) {
         return new StructureGrid(2, 2, 2, pools()).plansForWindow(SEED, 0, cx, cz);
+    }
+
+    /** Settings that roll a fixed ceiling, as the Ross128 dimensions do (design record 0019). */
+    private static StructurePopulator.Rules rolling(int ceiling) {
+        return new StructurePopulator.Rules() {
+
+            @Override
+            public boolean enabled(StructureId s) {
+                return true;
+            }
+
+            @Override
+            public Set<Type> biomeBlacklist(StructureId s) {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public int lootCeiling(StructureId s) {
+                return 1;
+            }
+
+            @Override
+            public int richness(StructureId s) {
+                return 1;
+            }
+
+            @Override
+            public int rolledCeiling(StructurePlan plan) {
+                return ceiling;
+            }
+        };
+    }
+
+    private StructurePopulator populatorWith(StructurePopulator.Rules rules) {
+        return new StructurePopulator(
+            new StructureGrid(2, 2, 2, pools()),
+            layouts,
+            new Stamper(keys),
+            FILL,
+            AIR,
+            rules);
+    }
+
+    @Test
+    void aRolledCeilingPicksTheChestTablesOfThatTier() {
+        Run r = run(populatorWith(rolling(5)), null, GridColumns.flat(64), PLAINS);
+        assertTrue(r.stamped > 0);
+        assertTrue(!r.marks.orders.isEmpty());
+        for (LootPending o : r.marks.orders) {
+            assertEquals("gregguns:weaponchest_t5", o.category(), "a rolled IV ceiling uses the IV table");
+        }
+    }
+
+    @Test
+    void aRolledCeilingAboveZpmUsesTheZpmTables() {
+        Run r = run(populatorWith(rolling(9)), null, GridColumns.flat(64), PLAINS);
+        assertTrue(!r.marks.orders.isEmpty());
+        for (LootPending o : r.marks.orders) {
+            assertEquals("gregguns:weaponchest_t7", o.category());
+        }
+    }
+
+    @Test
+    void noRollKeepsTheSurfaceCeiling() {
+        Run r = run(populatorWith(rolling(0)), null, GridColumns.flat(64), PLAINS);
+        assertTrue(!r.marks.orders.isEmpty());
+        for (LootPending o : r.marks.orders) {
+            assertEquals("gregguns:weaponchest_t1", o.category(), "an unrolled hut stays at its LV ceiling");
+        }
+    }
+
+    @Test
+    void theRolledCeilingNeverFallsBelowTheConfiguredOne() {
+        // lootCeiling is 1 in rolling(); a roll of MV (2) must give the MV table, not less.
+        Run r = run(populatorWith(rolling(2)), null, GridColumns.flat(64), PLAINS);
+        for (LootPending o : r.marks.orders) {
+            assertEquals("gregguns:weaponchest_t2", o.category());
+        }
     }
 }

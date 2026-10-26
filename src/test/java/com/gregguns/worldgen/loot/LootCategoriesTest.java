@@ -19,9 +19,9 @@ import com.gregguns.api.Tier;
 class LootCategoriesTest {
 
     @Test
-    void sevenCategoriesWithTheSpecCeilings() {
+    void fifteenCategoriesWithTheSpecCeilings() {
         assertEquals(
-            7,
+            15,
             LootCategoryDefs.all()
                 .size());
         assertEquals(
@@ -52,6 +52,18 @@ class LootCategoriesTest {
             Tier.MV,
             LootCategoryDefs.get(LootCategoryDefs.BARRACKS)
                 .ceiling());
+        // The Ross128 tables (design record 0019): EV, IV, LuV, ZPM.
+        Tier[] high = { Tier.EV, Tier.IV, Tier.LUV, Tier.ZPM };
+        for (int i = 0; i < high.length; i++) {
+            assertEquals(
+                high[i],
+                LootCategoryDefs.get("gregguns:weaponchest_t" + (4 + i))
+                    .ceiling());
+            assertEquals(
+                high[i],
+                LootCategoryDefs.get("gregguns:reinforcedchest_t" + (4 + i))
+                    .ceiling());
+        }
     }
 
     @Test
@@ -73,10 +85,11 @@ class LootCategoriesTest {
 
     @Test
     void surfaceDefaultsHoldNothingAboveMv() {
-        // GGS-11-22: the categories a default structure uses are every one but the two tier 3 tables.
+        // GGS-11-22: the categories a default structure uses are every one but the tier 3 to 7 tables (3 is the
+        // admin's, 4 to 7 are Ross128's).
         for (LootCategory c : LootCategoryDefs.all()) {
             if (c.name()
-                .endsWith("_t3")) {
+                .matches(".*_t[3-7]")) {
                 continue;
             }
             assertTrue(
@@ -102,14 +115,23 @@ class LootCategoriesTest {
     }
 
     @Test
-    void flamethrowerAndRocketsOnlyInTierThree() {
+    void flamethrowerAndRocketsOnlyFromTierThreeUp() {
         for (LootCategory c : LootCategoryDefs.all()) {
             boolean hv = c.name()
                 .equals(LootCategoryDefs.WEAPONCHEST_T3);
             Set<String> refs = refs(c);
-            assertEquals(hv, refs.contains("gregguns:flamethrower"), c.name());
-            assertEquals(hv, refs.contains("gregguns:rocket_launcher"), c.name());
-            assertEquals(hv, refs.contains("gregguns:ammo_rocket"), c.name());
+            boolean allowed = c.ceiling()
+                .ordinal() >= Tier.HV.ordinal();
+            if (!allowed) {
+                assertFalse(refs.contains("gregguns:flamethrower"), c.name());
+                assertFalse(refs.contains("gregguns:rocket_launcher"), c.name());
+                assertFalse(refs.contains("gregguns:ammo_rocket"), c.name());
+            }
+            if (hv) {
+                assertTrue(refs.contains("gregguns:flamethrower"), c.name());
+                assertTrue(refs.contains("gregguns:rocket_launcher"), c.name());
+                assertTrue(refs.contains("gregguns:ammo_rocket"), c.name());
+            }
         }
     }
 

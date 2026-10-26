@@ -32,6 +32,23 @@ class ChestTagsTest {
         assertNull(ChestTags.category("mystery", false, 1));
     }
 
+    @Test
+    void rolledTiersReachTheRoss128Tables() {
+        assertEquals("gregguns:weaponchest_t4", ChestTags.category("weapon", false, 4, true));
+        assertEquals("gregguns:reinforcedchest_t6", ChestTags.category("reinforced", false, 6, true));
+        assertEquals("gregguns:weaponchest_t7", ChestTags.category("vanilla", false, 7, true));
+        // UV and UHV have no tables of their own
+        assertEquals("gregguns:weaponchest_t7", ChestTags.category("weapon", false, 9, true));
+        assertEquals("gregguns:reinforcedchest_t7", ChestTags.category("reinforced", false, 8, true));
+        // a rolled camp follows the roll (an Overworld camp's crates stay at MV); barracks and its factory chests
+        // do not
+        assertEquals("gregguns:weaponchest_t5", ChestTags.category("weapon", true, 5, true));
+        assertEquals(LootCategoryDefs.BARRACKS, ChestTags.category("barracks", true, 9, true));
+        assertEquals(LootCategoryDefs.WEAPONCHEST_T1, ChestTags.category("vanilla", true, 9, true));
+        // unrolled: still clamped to 3
+        assertEquals(LootCategoryDefs.WEAPONCHEST_T3, ChestTags.category("weapon", false, 9));
+    }
+
     /** Every {@code chest.<kind>} in any shipped layout file must map to a known loot category. */
     @Test
     void everyLayoutChestTagMapsToAKnownCategory() throws IOException {

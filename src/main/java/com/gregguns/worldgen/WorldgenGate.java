@@ -35,6 +35,18 @@ public final class WorldgenGate {
     }
 
     /**
+     * @param dimensions     the configured allow-list
+     * @param ross128        the Ross128b and Ross128ba IDs read from BartWorks' config (empty when unavailable)
+     * @param includeRoss128 {@code worldgen.structureRoss128}
+     * @param dimension      the dimension id of the world
+     * @return true if the list allows it, or Ross128 is included and this is one of its dimensions (design record
+     *         0019). The Ross128 IDs come from the caller, never from a literal here.
+     */
+    public static boolean dimensionAllowed(int[] dimensions, int[] ross128, boolean includeRoss128, int dimension) {
+        return dimensionAllowed(dimensions, dimension) || (includeRoss128 && dimensionAllowed(ross128, dimension));
+    }
+
+    /**
      * @param worldTypes the configured allow-list of {@code WorldType.getWorldTypeName()} values
      * @param worldType  the type name of the world; null means unknown
      * @return true if the name is listed (ignoring case and surrounding blanks); unknown and unlisted types are out
@@ -67,6 +79,16 @@ public final class WorldgenGate {
      */
     public static boolean placementAllowed(int[] dimensions, String[] worldTypes, int dimension, String worldType) {
         return dimensionAllowed(dimensions, dimension) && worldTypeAllowed(worldTypes, worldType);
+    }
+
+    /**
+     * As {@link #placementAllowed(int[], String[], int, String)}, with the Ross128 dimensions allowed on top of the
+     * list when {@code includeRoss128} is set (design record 0019).
+     */
+    public static boolean placementAllowed(int[] dimensions, int[] ross128, boolean includeRoss128, String[] worldTypes,
+        int dimension, String worldType) {
+        return dimensionAllowed(dimensions, ross128, includeRoss128, dimension)
+            && worldTypeAllowed(worldTypes, worldType);
     }
 
     /**

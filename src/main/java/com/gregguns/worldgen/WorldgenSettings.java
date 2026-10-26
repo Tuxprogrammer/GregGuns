@@ -148,9 +148,30 @@ public final class WorldgenSettings {
     public static boolean placementAllowed(int dimension, String worldType) {
         return WorldgenGate.placementAllowed(
             WorldgenConfig.structureDimensions,
+            WorldgenConfig.structureRoss128 ? Ross128Dimensions.ids() : new int[0],
+            WorldgenConfig.structureRoss128,
             WorldgenConfig.structureWorldTypes,
             dimension,
             worldType);
+    }
+
+    /**
+     * @param dimension a dimension id
+     * @return whether it is Ross128b or Ross128ba and Ross128 structures are on
+     */
+    public static boolean isRoss128(int dimension) {
+        return WorldgenConfig.structureRoss128 && WorldgenGate.dimensionAllowed(Ross128Dimensions.ids(), dimension);
+    }
+
+    /**
+     * @param plan a structure plan
+     * @return its rolled loot ceiling (a GT voltage index, MV 2 to UHV 9) when it lies on Ross128b or Ross128ba, else 0
+     */
+    public static int rolledCeiling(StructurePlan plan) {
+        if (!isRoss128(plan.dimension())) {
+            return 0;
+        }
+        return RolledCeiling.roll(plan.chestSeedBase(), WorldgenConfig.ross128CeilingWeights);
     }
 
     /**

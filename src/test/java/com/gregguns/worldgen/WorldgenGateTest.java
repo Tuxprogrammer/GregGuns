@@ -141,4 +141,36 @@ class WorldgenGateTest {
             WorldgenGate.normalizeNames(null)
                 .isEmpty());
     }
+
+    @Test
+    void ross128DimensionsAreAllowedOnTopOfTheListWhenIncluded() {
+        int[] ross = { 64, 63 };
+        assertTrue(WorldgenGate.dimensionAllowed(DEFAULT_DIMS, ross, true, 0));
+        assertTrue(WorldgenGate.dimensionAllowed(DEFAULT_DIMS, ross, true, 64));
+        assertTrue(WorldgenGate.dimensionAllowed(DEFAULT_DIMS, ross, true, 63));
+        assertFalse(WorldgenGate.dimensionAllowed(DEFAULT_DIMS, ross, false, 64), "flag off");
+        // everything else stays out: Nether, End, Twilight Forest, Personal Space, the Moon
+        for (int dim : new int[] { -1, 1, 7, 180, 28 }) {
+            assertFalse(WorldgenGate.dimensionAllowed(DEFAULT_DIMS, ross, true, dim), "dim " + dim);
+        }
+    }
+
+    @Test
+    void ross128IdsComeFromTheCallerNotFromALiteral() {
+        // BartWorks lets a pack move the IDs; the gate follows whatever it is given (GGS-11-12).
+        int[] moved = { 120, 121 };
+        assertTrue(WorldgenGate.dimensionAllowed(DEFAULT_DIMS, moved, true, 120));
+        assertFalse(WorldgenGate.dimensionAllowed(DEFAULT_DIMS, moved, true, 64));
+        assertFalse(WorldgenGate.dimensionAllowed(DEFAULT_DIMS, new int[0], true, 64), "Ross128 switched off");
+        assertFalse(WorldgenGate.dimensionAllowed(DEFAULT_DIMS, null, true, 64));
+    }
+
+    @Test
+    void placementOnRoss128StillNeedsTheWorldType() {
+        int[] ross = { 64, 63 };
+        String[] types = { "default", "RWG" };
+        assertTrue(WorldgenGate.placementAllowed(DEFAULT_DIMS, ross, true, types, 64, "default"));
+        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, ross, true, types, 64, "flat"));
+        assertFalse(WorldgenGate.placementAllowed(DEFAULT_DIMS, ross, false, types, 64, "default"));
+    }
 }
