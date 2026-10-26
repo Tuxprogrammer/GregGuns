@@ -31,6 +31,14 @@ The default ceiling is **LV to MV for surface structures** (0005). Ships are sur
 | [Submarine](../../techguns-spec/11-worldgen/structure-catalog.md#a8-submarine-submarine) | 3 vanilla, 2 `tgchest`, 4 `tgchest_weapon` | 2 | MV | As the carrier |
 | [Alien Bug Nest](../../techguns-spec/11-worldgen/structure-catalog.md#a5-alien-bug-nest-alienbugneststructure--alienbugnest) | none | none | none | Spawners and eggs only |
 
+### Ross128b and Ross128ba: a rolled ceiling (design record 0019)
+
+On the two Ross128 dimensions every structure rolls its own ceiling from MV (2) to UHV (9), as a GT voltage index, from its plan's seed (`RolledCeiling`, GGS-11-10 holds). The weights are the config `worldgen.ross128CeilingWeights` for MV, HV, EV, IV, LuV, ZPM, UV and UHV; the default is 40, 28, 14, 8, 4, 3, 2, 1, so about 40 % of structures stay at MV and 1 % reach UHV. The structure's own `lootTierCeiling` is a floor. The ICBM silos (D38) have no code on master yet; when they land they should call `RolledCeiling`.
+
+- **Tables:** the rolled ceiling picks `weaponchest_t<n>` and `reinforcedchest_t<n>`. M9 adds tiers 4 to 7 (EV, IV, LuV, ZPM), built from the GregGuns guns of those tiers in [0001](../../design/0001-tier-map.md) and the tier's GT alloys. GregGuns has no loot above ZPM, so UV and UHV draw from the ZPM tables. A Military Base's weapon and reinforced crates follow the roll there; its barracks and factory chests stay fixed.
+- **Defenders and spawners:** a hole spawner stamped by a rolled structure remembers the ceiling (NBT `ceiling`). Its NPCs start at no less than danger 1 (MV), 2 (HV), 3 (EV, IV), 4 (LuV, ZPM) or 5 (UV, UHV), which raises their equipment tier (M7). Counts and caps are unchanged.
+- **Deviation:** the spec said spawners "scale with the tier"; only equipment danger scales, not the number of spawners.
+
 An admin can raise a ceiling with the config `lootTierCeiling.<structure>`. The default stays as above. Raising it above the tier that the location implies is the admin's call, not the mod's.
 
 ## Integration points
@@ -50,6 +58,7 @@ An admin can raise a ceiling with the config `lootTierCeiling.<structure>`. The 
 - **GGS-11-19** No GregGuns structure fills a chest from a vanilla `ChestGenHooks` category.
 - **GGS-11-20** Every chest a structure places is filled from a GregGuns category, using the structure's seeded `Random`.
 - **GGS-11-21** Each GregGuns loot category declares a maximum tier. Every item in it is at or below that tier by the [0001](../../design/0001-tier-map.md) table.
+- **GGS-11-25** A structure on Ross128b or Ross128ba rolls a ceiling from MV to UHV, seeded by its plan; every chest of it draws from the table of that ceiling (UV and UHV from the ZPM table), and no chest holds an item above it.
 - **GGS-11-22** The default ceiling of every structure in the table above is the tier shown. No default category used by a surface structure holds an item above MV.
 - **GGS-11-23** `lootTier` (0 to 2) changes only the count and weights of a draw. It never adds items above the ceiling.
 - **GGS-11-24** The Alien Bug Nest places no chest.
@@ -59,6 +68,8 @@ An admin can raise a ceiling with the config `lootTierCeiling.<structure>`. The 
 - GGS-11-19, 20: unit test with a stub world that records which category each placed chest was filled from.
 - GGS-11-21, 22, 23: the tier self-check from 0001, run over every category: it fails if an item's declared tier is above the category ceiling. One test per structure draws 1000 chests and asserts the same.
 - GGS-11-24: unit test of the nest placement.
+
+- GGS-11-25: `RolledCeilingTest`, `ChestTagsTest`, `StructurePopulatorTest` (rolled categories), `LootCategoriesTest` (tier 4 to 7 tables); scenarios `worldgen.ross128b_structures` and `worldgen.ross128ba_structures` (chest category equals the table of the plan's rolled ceiling), `worldgen.loot_tier_ceiling` (1000 chests per table, including 4 to 7).
 
 ## Open questions
 

@@ -89,6 +89,10 @@ public final class Ross128Scenarios {
             } finally {
                 WorldgenConfig.structureRoss128 = flag;
             }
+            out.check(
+                ((net.minecraft.world.gen.ChunkProviderServer) world
+                    .getChunkProvider()).currentChunkProvider instanceof Ross128ProviderHook.Wrapped,
+                "the chunk provider carries the structure hook (Galacticraft skips Forge generators here)");
             testLayout(world, out);
             shipped(world, out);
             return out.build();

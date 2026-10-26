@@ -64,7 +64,20 @@
   - `reference/gtnh/2.9.0-RC-2/.minecraft/config/personalspace.cfg`: `firstDimensionId` = `180`.
   - `reference/gtnh/2.9.0-RC-2/.minecraft/config/Galacticraft/core.conf`: `idDimensionMoon` = `28`, `idDimensionOverworldOrbit` = `27`, `idDimensionOverworldOrbitStatic` = `26`. GalaxySpace adds more bodies.
 - **Source:** dreamcraft's oil generator keeps an allow-list, `OilDimensionWhitelist` = `0` ([OilGeneratorFix#L379](https://github.com/GTNewHorizons/NewHorizonsCoreMod/blob/2.9.84/src/main/java/com/dreammaster/modfixes/oilgen/OilGeneratorFix.java#L379)). GT asks a per-dimension definition before it generates ore ([GTWorldgenerator#L170](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/common/GTWorldgenerator.java#L170)). Both are allow-lists, not block-lists.
-- **GregGuns does:** allows only dimension IDs in the config list `structureDimensions`, default `[0]`. The Nether, End, Twilight Forest, every Personal Space dimension and every Galacticraft or GalaxySpace body are out without being named, and a future dimension is out until added. 0005 says support beyond the Overworld needs a new record.
+- **GregGuns does:** allows only dimension IDs in the config list `structureDimensions`, default `[0]`, plus Ross128b and Ross128ba while `structureRoss128` is on (below). The Nether, End, Twilight Forest, every Personal Space dimension and every Galacticraft or GalaxySpace body are out without being named, and a future dimension is out until added. 0005 says support beyond the Overworld needs a new record.
+- **Pack-side change:** none.
+
+### Ross128b and Ross128ba (design record 0019, M9)
+
+- **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/bartworks.cfg`: `ross128BID` = `64`, `ross128BAID` = `63`, `Ross128Enabled` = `true`, `ross128bRuinChance` = `512`.
+- **Source:**
+  - The IDs and the on/off switch: [`Configuration.CrossModInteractions`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/common/configs/Configuration.java#L22-L45).
+  - Ross128b is `ChunkProviderRoss128b extends ChunkProviderGenerate` ([source](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bwcrossmod/galacticraft/planets/ross128b/ChunkProviderRoss128b.java)) with the vanilla `WorldChunkManager` ([`WorldProviderRoss128b#L81-L87`](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bwcrossmod/galacticraft/planets/ross128b/WorldProviderRoss128b.java#L81-L87)), so it has the Overworld's biomes, oceans included. It overrides `populate` and drops its own ruins in it.
+  - Ross128ba is `ChunkProviderRoss128ba extends ChunkProviderMoon` ([source](https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bwcrossmod/galacticraft/planets/ross128ba/ChunkProviderRoss128ba.java)) with `WorldChunkManagerMoon`: one flat biome, no ocean.
+- **Populate path:** both providers are the world's chunk provider, so `ChunkProviderServer.populate` calls their `populate` and then `GameRegistry.generateWorld`, which runs `StructureGenerator` (the same path as RWG, above). **No extra hook is needed.** Checked by reading source; the scenarios below confirm it on a server.
+- **GregGuns does:** adds the two IDs, read from `Configuration.crossModInteractions` (`Ross128Dimensions`), to the dimension gate while `worldgen.structureRoss128` is true (default). If BartWorks has `Ross128Enabled` off, or its config cannot be read, nothing is added. The world type is checked as before (a derived world reports the Overworld's type).
+- **Placement:** the same grid (the seed mixes in the dimension ID), populate window, land checks and village scan. The Aircraft Carrier and Submarine need ocean biomes and deep water: Ross128b has them, so they generate there where its oceans allow; Ross128ba has none, so its ship plans are always rejected.
+- **Biomes:** placement uses per-structure *blacklists* of biome types (GGS-11-05), so the vanilla biomes of Ross128b and the moon's one biome pass every land structure without a list change. The Alien Bug Nest whitelist (sandy or wasteland) already matches Ross128b's deserts and badlands; Galacticraft does not register types for the moon biome, so the nest does not generate on Ross128ba unless an admin adds a type for it. Ross128b's mushroom and Thaumcraft biomes are re-skinned only in its chunk data, so the biome manager still reports them; mushroom islands are ocean-adjacent and rejected for land by the terrain check as they are in the Overworld.
 - **Pack-side change:** none.
 
 ### Roguelike-Dungeons and vanilla villages: no coordination possible
@@ -84,6 +97,7 @@
 - **GGS-11-12** The dimension gate is the allow-list `structureDimensions`, default `[0]`. No code compares a dimension ID with a literal.
 - **GGS-11-13** The terrain check runs on the rotated footprint. A ship needs water at its sampled columns, at least as deep as its hull.
 - **GGS-11-14** A footprint that contains village-style blocks not placed by GregGuns is skipped.
+- **GGS-11-12a** On Ross128b and Ross128ba the dimension gate is the BartWorks IDs plus `structureRoss128`; no code compares them with a literal.
 - **GGS-11-15** Each structure has its own `enabled` flag, default `true`, except the Alien Bug Nest, which defaults to `false` (0005: gated content).
 
 ### Generator wiring (M8 G9)
@@ -97,6 +111,7 @@
 
 ## Tests
 
+- GGS-11-12a: `WorldgenGateTest`; scenarios `worldgen.ross128b_structures` and `worldgen.ross128ba_structures` (gate, generation through the real populate path, no cascading, land and water checks).
 - GGS-11-07, 12, 15: unit tests of the config and the registration call.
 - GGS-11-08, 09: a unit test that places each structure into a recording world stub and asserts that every write is inside the window and that no foreign chunk is requested.
 - GGS-11-10, 11: unit tests (same seed twice; first 1000 grid cells).

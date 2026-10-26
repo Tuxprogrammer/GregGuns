@@ -57,6 +57,7 @@ Tiers are the D1 tiers: Steam/ULV, LV, MV, HV, EV and up. D5 says surface struct
 | `strongholdCorridor`, `strongholdCrossing` | MV, rare HV | Deep structures |
 | `strongholdLibrary`, `naturalistChest`, `railcraft:workshop`, `pyramidJungleDispenser` | None | Wrong theme, or not a chest |
 | `gregguns:weaponchest_t1` / `_t2` / `_t3` | LV / MV / HV | T3 only where a structure's config allows it |
+| `gregguns:weaponchest_t4` to `_t7`, `gregguns:reinforcedchest_t4` to `_t7` | EV / IV / LuV / ZPM | Ross128b and Ross128ba only, by a structure's rolled ceiling (design record 0019) |
 | Roguelike dungeon levels 0 to 4 | Level 0-1 LV, 2-3 MV, 4 rare HV | Dungeon level rises with depth |
 | Elite / ultra / infernal drops | LV-MV / MV / MV, rare HV | See [Infernal Mobs](#infernal-mobs) |
 | EnhancedLootBags `tier_N_*` | The bag's own tier | The bag name is the tier |
@@ -380,7 +381,7 @@ The pack has its own per-entity drop file.
 | ID | Verified by |
 |---|---|
 | GGS-06-01 | Unit test: after init, every vanilla category's item count is unchanged from the baseline table |
-| GGS-06-02 | Unit test: the seven category names exist in `ChestGenHooks` after init |
+| GGS-06-02 | Unit test: the fifteen category names exist in `ChestGenHooks` after init |
 | GGS-06-03 | Unit test with GT absent from the lookup: no `null` stack is added |
 | GGS-06-04 | Dev self-check: each loot entry's D1 tier is at or below its surface's band |
 | GGS-06-05 | Unit test on the draft files (kept under `src/test/resources`) |
