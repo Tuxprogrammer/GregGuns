@@ -8,6 +8,9 @@
 # for the server to finish booting, sends `gregguns test all` (or --command) to the console, waits for the
 # `Scenarios: N passed, M failed` summary line, prints it, sends `stop`, and exits.
 #
+# A prefix runs only the scenarios whose name starts with it (a trailing "." or "*"), e.g. just the ICBM ones:
+#   GG_MODULES=all tools/scenarios/run-headless.sh --command "gregguns test icbm."
+#
 # After the server has stopped, the log is checked against the assertions (fixed-string match): --expect-log needs the
 # text at least once, --expect-log-once exactly once, --forbid-log never. With icbm on, the runner adds its own: without
 # Galacticraft the self-disable line exactly once and no "ICBM module active", with Galacticraft "ICBM module active".

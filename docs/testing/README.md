@@ -19,6 +19,7 @@ Scenarios are reproducible in-world situations with a checked outcome ([CONTRIBU
 /gregguns test list          # every scenario and its description
 /gregguns test <scenario>    # one scenario, in its own arena offset from your column
 /gregguns test all           # every scenario
+/gregguns test icbm.         # every scenario whose name starts with "icbm." (a trailing "." or "*"; icbm.blast* also works)
 ```
 
 Tab completion offers `all`, `list` and the scenario names. The player must be op (permission level 2).
