@@ -29,7 +29,7 @@ python -I -X utf8 tools/asset-gen/branding.py
 python -I -X utf8 tools/asset-gen/merge_credits.py
 ```
 
-Contact sheets for review are in `docs/assets/previews/`. Set `GREGGUNS_ASSETS_OUT=<dir>` to make `icons.py`, `blocks.py`, `gui.py` and `models.py` build into `<dir>` (`assets/gregguns/`, `previews/`, `credits/`, `model_layouts.md`) instead of overwriting `src/` and `docs/` in place, for example to compare a rebuild with the committed output. The committed contact sheets are older than the generators' current skip lists (gun icons, armor and accessory sheets painted by other scripts), so a fresh `models.png` or `icons.png` comes out shorter than the committed one. The sound loudness report is `docs/assets/previews/sounds-report.md`.
+Contact sheets for review are written to `docs/assets/previews/`, which is git-ignored: they stay local. Set `GREGGUNS_ASSETS_OUT=<dir>` to make `icons.py`, `blocks.py`, `gui.py` and `models.py` build into `<dir>` (`assets/gregguns/`, `previews/`, `credits/`, `model_layouts.md`) instead of overwriting `src/` and `docs/` in place, for example to compare a rebuild with the committed output. The committed contact sheets are older than the generators' current skip lists (gun icons, armor and accessory sheets painted by other scripts), so a fresh `models.png` or `icons.png` comes out shorter than the committed one. The sound loudness report is `docs/assets/previews/sounds-report.md`.
 
 ### Sounds: revising after an A/B review
 

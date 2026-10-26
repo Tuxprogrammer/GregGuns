@@ -39,6 +39,8 @@ set -u
 trap "" PIPE  # a write to the console pipe after the server died must not kill this script
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# shellcheck source=headless-lib.sh
+. "$(dirname "${BASH_SOURCE[0]}")/headless-lib.sh"
 boot_only=0
 gc_args=()
 expect_any=()
@@ -59,8 +61,7 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-modules="${GG_MODULES:-guns,armor,machines,energyWeapons,utility,npcs,worldgen}"
-[ "$modules" = "all" ] && modules="guns,armor,machines,energyWeapons,utility,npcs,worldgen,icbm"
+modules="$(gg_modules_expand "${GG_MODULES:-guns,armor,machines,energyWeapons,utility,npcs,worldgen}")"
 boot_timeout="${GG_BOOT_TIMEOUT:-1200}"
 test_timeout="${GG_TEST_TIMEOUT:-1800}"
 stop_timeout="${GG_STOP_TIMEOUT:-120}"
@@ -70,45 +71,8 @@ port="${GG_PORT:-25599}"
 extra_args=(${GG_GRADLE_ARGS:-})
 
 run_dir="$root/run/server"  # the dev server's working directory
-mkdir -p "$run_dir/config"
-
-# --- server setup -------------------------------------------------------------------------------------------------
-# Dev-only: the EULA is accepted for the throwaway dev server, and online mode is off because nobody connects.
-echo "eula=true" > "$run_dir/eula.txt"
-props="$run_dir/server.properties"
-touch "$props"
-set_prop() { # key value: replace the line or append it
-  if grep -q "^$1=" "$props"; then sed -i "s|^$1=.*|$1=$2|" "$props"; else echo "$1=$2" >> "$props"; fi
-}
-set_prop online-mode false
-set_prop server-port "$port"
-# A world remembers its block and item ids, and FML refuses to open one that lost a mod's ids (it waits for
-# /fml confirm). So the world without Galacticraft is a different world.
-if [ "${#gc_args[@]}" -gt 0 ]; then set_prop level-name gg-scenarios-nogc; else set_prop level-name gg-scenarios; fi
-set_prop level-seed 1337
-set_prop spawn-monsters true
-set_prop spawn-npcs true
-set_prop spawn-animals true
-
-# --- module flags -------------------------------------------------------------------------------------------------
-# Rewrite only the `modules` category of config/gregguns.cfg; other categories are kept.
-cfg="$run_dir/config/gregguns.cfg"
-all_modules="guns armor machines energyWeapons utility npcs worldgen icbm"
-for m in ${modules//,/ }; do
-  case " $all_modules " in *" $m "*) ;; *) echo "unknown module in GG_MODULES: $m" >&2; exit 2 ;; esac
-done
-{
-  if [ -f "$cfg" ]; then
-    # Drop any existing `modules { ... }` block (it has no nested braces).
-    awk 'BEGIN{skip=0} /^[[:space:]]*modules[[:space:]]*\{/{skip=1} skip==0{print} skip==1 && /\}/{skip=0}' "$cfg"
-  fi
-  echo "modules {"
-  for m in $all_modules; do
-    case ",$modules," in *",$m,"*) v=true ;; *) v=false ;; esac
-    echo "    B:$m=$v"
-  done
-  echo "}"
-} > "$cfg.new" && mv "$cfg.new" "$cfg"
+# Server setup: eula, server.properties, module flags (headless-lib.sh).
+gg_prepare_server || exit 2
 
 # --- start the server ---------------------------------------------------------------------------------------------
 if [ -n "${GG_WORK_DIR:-}" ]; then
@@ -132,28 +96,8 @@ fd3_open=0
 forced=0  # set when the server had to be killed because it did not stop in time
 alive() { [ -n "$server_pid" ] && kill -0 "$server_pid" 2>/dev/null; }
 
-# The dev server is a child of the Gradle daemon, not of the Gradle client we started, so killing the client leaves it
-# running with the port and the world lock. Find it by its working directory instead.
-server_jvms() {
-  local d pid
-  for d in /proc/[0-9]*; do
-    pid="${d#/proc/}"
-    [ "$(readlink "$d/cwd" 2>/dev/null)" = "$run_dir" ] || continue
-    tr '\0' ' ' < "$d/cmdline" 2>/dev/null | grep -q 'java' && echo "$pid"
-  done
-}
-# kill_server_jvms: TERM, a bounded wait, then KILL.
-kill_server_jvms() {
-  local pids waited=0
-  pids="$(server_jvms)"
-  [ -n "$pids" ] || return 0
-  # shellcheck disable=SC2086
-  kill $pids 2>/dev/null
-  while [ -n "$(server_jvms)" ] && [ "$waited" -lt 20 ]; do sleep 1; waited=$((waited + 1)); done
-  pids="$(server_jvms)"
-  # shellcheck disable=SC2086
-  [ -z "$pids" ] || kill -9 $pids 2>/dev/null
-}
+# The dev server is a child of the Gradle daemon, not of the Gradle client we started: server_jvms and
+# kill_server_jvms (headless-lib.sh) find it by its working directory.
 # shutdown_server <seconds>: ask the server to stop, give it that long, then kill whatever is left.
 shutdown_server() {
   local waited=0
