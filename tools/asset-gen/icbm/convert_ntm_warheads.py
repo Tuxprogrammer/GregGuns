@@ -6,7 +6,8 @@ Reads the upstream files (Blender 2.76 OBJ exports, already Forge-strict), then 
   - scales the vertices uniformly, moves the footprint center to its block-local spot (0.5, 0.5 for a 1x1
     footprint, 1.0, 1.0 for 2x2) with the base at y = 0, and rewrites every line in Forge's grammar
     (6-decimal vertices, one group named "warhead", triangles only, v/vt/vn corners);
-  - optionally rotates the texture's hue (antimatter, red matter), nothing else about the pixels changes.
+  - optionally rotates the texture's hue (antimatter, red matter) and paints out the red matter's NTM lettering;
+    nothing else about the pixels changes.
 Every change is listed in docs/assets/CREDITS.md as a modification of the upstream files.
 """
 
@@ -47,8 +48,16 @@ def convert_obj(src: Path, scale: float, cells: int) -> str:
     return "\n".join(out + vt + vn + faces) + "\n"
 
 
-def shift_hue(src: Path, dst: Path, deg: float) -> None:
+def paint_out_label(im: np.ndarray) -> None:
+    """Hand edit: the red matter (balefire) texture's lore lettering is NTM's, so rows 65-71, which carry only
+    that lettering below the last stripe, are overwritten with row 58 of the dark casing beside them."""
+    im[65:72] = im[58]
+
+
+def shift_hue(src: Path, dst: Path, deg: float, label_out: bool = False) -> None:
     im = np.array(Image.open(src).convert("RGBA"))
+    if label_out:
+        paint_out_label(im)
     rgb = im[..., :3] / 255.0
     flat = rgb.reshape(-1, 3)
     res = np.empty_like(flat)
@@ -70,7 +79,7 @@ def main():
         if hue is None:
             (to / f"{name}.png").write_bytes((src / f"{up}.png").read_bytes())
         else:
-            shift_hue(src / f"{up}.png", to / f"{name}.png", hue)
+            shift_hue(src / f"{up}.png", to / f"{name}.png", hue, label_out=(up == "mp_w_15_balefire"))
         print("wrote", name)
 
 

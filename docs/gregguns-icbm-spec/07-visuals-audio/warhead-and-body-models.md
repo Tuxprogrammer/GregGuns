@@ -20,7 +20,7 @@
 | `warhead_t3` | T3 conventional | `mp_w_10_he` | none | 1 x 1 x 2 | 1.00, 2.00, 1.00 | 46 | 64 px (shared look with T1) |
 | `warhead_nuclear` | Nuclear | `mp_w_10_nuclear_large` (trefoil, checker base) | scale 0.8 | 1 x 1 x 2 | 0.80, 2.00, 0.80 | 116 | 64 px |
 | `warhead_antimatter` | Antimatter (UV) | `mp_w_15_nuclear` | texture hue +140 degrees (yellow to cyan) | 2 x 2 x 4 | 1.50, 3.50, 1.50 | 140 | 96 px |
-| `warhead_redmatter` | Red matter (UHV) | `mp_w_15_balefire` (engine pods) | scale 1.2; texture hue -120 degrees (green to red) | 2 x 2 x 4 | 1.80, 3.30, 1.80 | 350 | 72 px |
+| `warhead_redmatter` | Red matter (UHV) | `mp_w_15_balefire` (engine pods) | scale 1.2; texture hue -120 degrees (green to red), "PIP 31" label painted out | 2 x 2 x 4 | 1.80, 3.30, 1.80 | 350 | 72 px |
 
 Polygon budget: at most 350 faces per warhead (static block model, not a per-tick renderer). T1 and T2 sit inside 0..1 on every axis with a margin, so they fit a 1 x 1 x 1 cell and a missile body's nose.
 
@@ -28,6 +28,6 @@ Decisions this sheet settles: antimatter and red matter are **2 x 2 x 4**. Textu
 
 ## Known limits
 
-- The "PIP 31" lettering on the red matter model and the "TNT" lettering on T1 and T3 come from the source textures.
+- The "TNT" lettering on T1 and T3 and the radiation trefoils are plain hazard markings from the source textures. NTM lore text ("PIP 31") was removed.
 - T3 conventional reuses the T1 model at full size. A different licensed model for it is welcome later.
 - **Missile bodies are not sourced yet** (I2). NTM's `missile_parts` fuselage, stability and thruster OBJs under the same license are the planned source.

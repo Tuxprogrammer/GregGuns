@@ -5,7 +5,7 @@ Warhead models and textures in this folder: copied and modified from HBM's Nucle
 version 3"; it names no separate asset license). Modifications: uniform scale, recentered, rewritten
 as Forge-strict OBJ, and hue-shifted textures for the antimatter and red matter warheads; see
 docs/assets/CREDITS.md. The full license text follows (LICENSE.LESSER from that repository; it
-supplements the GPL v3 in LICENSE there).
+supplements the GPL v3, which sits beside this file as GPL-3.0.txt, from LICENSE there).
 
 --------------------------------------------------------------------------------
 

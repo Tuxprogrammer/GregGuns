@@ -97,7 +97,7 @@ def main():
     sheet = Image.new("RGBA", (pad + cols * (cw + pad), head + sum(heights) + rows * pad + foot_h), BG)
     d = ImageDraw.Draw(sheet)
     d.text((pad, 18), "ICBM warheads by tier", font=font(32, True), fill=FG)
-    d.text((pad, 60), "Same scale in every view. Ruler: one tick per block of height. Models and textures from HBM's Nuclear Tech Mod, LGPL-3.0, scaled and recolored.", font=font(15), fill=DIM)
+    d.text((pad, 60), "Same scale in every view. Ruler: one tick per block of height. Models and textures from HBM's Nuclear Tech Mod, LGPL-3.0, scaled and recolored; labels removed.", font=font(15), fill=DIM)
     for i, c in enumerate(cards):
         sheet.alpha_composite(c, (pad + (i % cols) * (cw + pad), head + sum(heights[: i // cols]) + (i // cols) * pad))
     d.text((pad, sheet.height - 36), "Attribution: warhead models and textures (c) HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.", font=font(14), fill=DIM)

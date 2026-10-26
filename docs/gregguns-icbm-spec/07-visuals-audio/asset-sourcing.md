@@ -31,7 +31,8 @@ Never Techguns, never the current ICBM-Classic 1.12 assets. Jars and archives ar
 
 ## Obligations
 
-- Third-party folder `models/thirdparty/ntm/` and `textures/models/thirdparty/ntm/`, each with `LICENSE.txt` (a notice header plus the LGPL v3 text).
+- Third-party folder `models/thirdparty/ntm/` and `textures/models/thirdparty/ntm/`, each with `LICENSE.txt` (a notice header plus the LGPL v3 text) and `GPL-3.0.txt` (the GPL v3 text the LGPL supplements; NTM ships the same pair, `LICENSE` and `LICENSE.LESSER`).
+- NTM-specific in-world lore text is removed from our textures (the "PIP 31" lettering on red matter was painted out by hand; the other five carry only plain hazard markings). CREDITS says "label removed".
 - CREDITS rows (modified: yes). Our conversion script is `tools/asset-gen/icbm/convert_ntm_warheads.py`.
 - **Attribution line for guide sheets and tooltips, kept on every preview or guide that shows these models:** "Warhead models and textures: HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified."
 - LGPL asks that the files stay replaceable: they are loose resources in the jar, so a resource pack can swap them.
