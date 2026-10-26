@@ -10,7 +10,7 @@ public enum LaunchResult {
     OK,
     /** No missile entity stands on that pad. */
     NO_MISSILE,
-    /** The body and warhead are stacked but not armed. */
+    /** The body is stacked on the pad but not armed (no missile entity yet). */
     NOT_ARMED,
     /** The tank is not full. */
     NOT_FUELED,
@@ -23,5 +23,9 @@ public enum LaunchResult {
     /** The target is not a finite coordinate, or the world is not a server world. */
     BAD_TARGET,
     /** The target chunk is outside the world border, or the missile is already flying. */
-    BUSY
+    BUSY,
+    /** Something solid stands in the climb column above the pad (ICBM-04-26). */
+    BLOCKED,
+    /** Forge refused the chunk ticket the flight needs (ticket limit reached). */
+    NO_TICKET
 }

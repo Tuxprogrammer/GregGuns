@@ -6,6 +6,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
 
 import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.core.testing.Scenario;
@@ -18,7 +19,9 @@ import micdoodle8.mods.galacticraft.api.entity.IFuelable;
 import micdoodle8.mods.galacticraft.api.tile.IFuelDock;
 import micdoodle8.mods.galacticraft.core.blocks.GCBlocks;
 import micdoodle8.mods.galacticraft.core.event.EventLandingPadRemoval;
+import micdoodle8.mods.galacticraft.core.tile.TileEntityFuelLoader;
 import micdoodle8.mods.galacticraft.core.tile.TileEntityLandingPad;
+import micdoodle8.mods.galacticraft.core.util.ConfigManagerCore;
 
 /**
  * The Galacticraft half of the missile scenarios: the fuel lists, the pad survival check (D32, exit box 2) and the
@@ -102,8 +105,10 @@ public final class MissileGcScenarios {
             final EntityMissile[] missile = { null };
             final int[] phase = { 0 };
             final int[] launchedAt = { 0 };
+            final int[] phaseSince = { 0 };
+            final int[] fuelFactor = { 1 };
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
-            return ScenarioResult.pending(name(), 1200, ticks -> {
+            return ScenarioResult.pending(name(), 2400, ticks -> {
                 if (phase[0] == 0) {
                     if (w.getBlock(cx, cy, cz) != GCBlocks.landingPadFull) {
                         return ticks > 100 ? fail("the 3x3 pad never formed") : null;
@@ -136,14 +141,44 @@ public final class MissileGcScenarios {
                     EventLandingPadRemoval removal = new EventLandingPadRemoval(w, cx, cy, cz);
                     MinecraftForge.EVENT_BUS.post(removal);
                     out.check(!removal.allow, "pad removal is denied while a missile stands on it");
-                    // Fuel through the pad, as the fuel loader does: the pad forwards to the docked entity.
-                    Fluid generic = FluidRegistry.getFluid("fuel");
-                    if (generic != null) {
-                        int filled = ((TileEntityLandingPad) pad).addFuel(new FluidStack(generic, 99999), true);
-                        out.checkEquals("the pad forwards fuel to the missile", m.capacityMb(), filled);
-                    } else {
-                        m.fill(m.capacityMb(), true);
+                    // Fuel through the loader itself: it checks the fluid against RocketFuels, then pours into the
+                    // dock.
+                    // First a fluid that is not this tier's fuel: the loader must leave the tank empty.
+                    fuelFactor[0] = ConfigManagerCore.rocketFuelFactor;
+                    // The loader pours 2 mB x the factor per tick; speed it up so the test stays short.
+                    ConfigManagerCore.rocketFuelFactor = 100;
+                    fillLoader(w, cx + 2, cy, cz, "rocketfuelmixd");
+                    phase[0] = 5;
+                    phaseSince[0] = ticks;
+                    return null;
+                }
+                if (phase[0] == 5 || phase[0] == 6) {
+                    TileEntity lt = w.getTileEntity(cx + 2, cy, cz);
+                    powerLoader(lt);
+                    if (phase[0] == 5) {
+                        if (ticks - phaseSince[0] < 130) {
+                            return null;
+                        }
+                        out.checkEquals("the loader refuses another tier's fuel", 0, m.fuelMb());
+                        fillLoader(w, cx + 2, cy, cz, "nitrofuel");
+                        phase[0] = 6;
+                        phaseSince[0] = ticks;
+                        return null;
                     }
+                    if (m.fuelMb() < m.capacityMb()) {
+                        if (ticks - phaseSince[0] > 300) {
+                            ConfigManagerCore.rocketFuelFactor = fuelFactor[0];
+                            out.check(false, "the loader never filled the missile (" + m.fuelMb() + ")");
+                            return finish(out, terrain);
+                        }
+                        return null;
+                    }
+                    ConfigManagerCore.rocketFuelFactor = fuelFactor[0];
+                    out.check(true, "the fuel loader filled the tank with its own fuel");
+                    phase[0] = 3;
+                    return null;
+                }
+                if (phase[0] == 3) {
                     out.check(
                         w.getBlock(cx + 2, cy, cz) == GCBlocks.fuelLoader,
                         "the fuel loader stands beside the pad");
@@ -188,6 +223,32 @@ public final class MissileGcScenarios {
 
         private ScenarioResult fail(String message) {
             return ScenarioResult.fail(name(), message);
+        }
+
+        /** Tops up the loader's energy store; by reflection, because its class chain names Mekanism types. */
+        private static void powerLoader(TileEntity loader) {
+            try {
+                Object storage = loader.getClass()
+                    .getField("storage")
+                    .get(loader);
+                float cap = (Float) storage.getClass()
+                    .getMethod("getCapacityGC")
+                    .invoke(storage);
+                storage.getClass()
+                    .getMethod("setEnergyStored", float.class)
+                    .invoke(storage, cap);
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException("cannot power the fuel loader", e);
+            }
+        }
+
+        private static void fillLoader(World w, int x, int y, int z, String fluidName) {
+            TileEntity t = w.getTileEntity(x, y, z);
+            Fluid f = FluidRegistry.getFluid(fluidName);
+            if (t instanceof TileEntityFuelLoader && f != null) {
+                FluidTank tank = ((TileEntityFuelLoader) t).fuelTank;
+                tank.setFluid(new FluidStack(f, tank.getCapacity()));
+            }
         }
 
         private ScenarioResult finish(ScenarioResult.Builder out, boolean terrain) {

@@ -49,9 +49,9 @@ Sneak with an empty hand and right-click the entity, or hit it while sneaking, o
 | `status(world, padX, padY, padZ)` | `MissileStatus`: `present()`, `armed()`, `fueled()`, `tier()`, `fuelMb()`, `capacityMb()`, `guidance()`, `explosive()`, `fill()`; `MissileStatus.NONE` when nothing stands there |
 | `maxRange(world, x, y, z)` | the range in blocks, 0 when empty |
 | `expectedRadius(world, x, y, z, tx, tz)` | the blast radius at that target with the fuel bonus (D20), for the GUI |
-| `launch(world, x, y, z, tx, tz, player)` | `LaunchResult`: `OK`, `NO_MISSILE`, `NOT_ARMED`, `NOT_FUELED`, `TOO_CLOSE`, `OUT_OF_RANGE`, `OVER_CAP`, `BAD_TARGET`, `BUSY` |
+| `launch(world, x, y, z, tx, tz, player)` | `LaunchResult`: `OK`, `NO_MISSILE`, `NOT_ARMED`, `NOT_FUELED`, `TOO_CLOSE`, `OUT_OF_RANGE`, `OVER_CAP`, `BAD_TARGET`, `BUSY`, `BLOCKED`, `NO_TICKET` |
 
-Every rule lives in the launch call; the launch-control block only passes the target and shows the result with the lang key `gregguns.icbm.launch.<name lowercased>`. A body that is stacked but not armed has no entity, so the caller sees `NO_MISSILE`.
+Every rule lives in the launch call; the launch-control block only passes the target and shows the result with the lang key `gregguns.icbm.launch.<name lowercased>`. A body block that is stacked on the pad (the 3x3 area, two layers above it) but not armed has no entity: `launch` returns `NOT_ARMED`, and `status` reports a present, unarmed body, so the control block says the same. With no body block either it is `NO_MISSILE`.
 
 ## Requirements
 

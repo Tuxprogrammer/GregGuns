@@ -33,6 +33,8 @@ final class ObjDraw {
         if (model == null || icon == null) {
             return false;
         }
+        float us = icon instanceof WarheadSprite ? ((WarheadSprite) icon).uScale() : 1.0F;
+        float vs = icon instanceof WarheadSprite ? ((WarheadSprite) icon).vScale() : 1.0F;
         Tessellator t = Tessellator.instance;
         for (GroupObject group : model.groupObjects) {
             for (Face face : group.faces) {
@@ -50,8 +52,38 @@ final class ObjDraw {
                         bx + v.x,
                         by + v.y,
                         bz + v.z,
-                        icon.getInterpolatedU(u * 16.0),
-                        icon.getInterpolatedV(w * 16.0));
+                        icon.getInterpolatedU(u * 16.0 * us),
+                        icon.getInterpolatedV(w * 16.0 * vs));
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Adds an OBJ model with its texture coordinates as they are, for a texture file bound on its own (not an atlas
+     * sprite): the item renderer path.
+     *
+     * @param model the model
+     * @return true when something was added
+     */
+    static boolean drawRaw(WavefrontObject model) {
+        if (model == null) {
+            return false;
+        }
+        Tessellator t = Tessellator.instance;
+        for (GroupObject group : model.groupObjects) {
+            for (Face face : group.faces) {
+                Vertex n = face.faceNormal != null ? face.faceNormal : face.calculateFaceNormal();
+                float shade = 0.8F + 0.2F * n.y;
+                t.setColorOpaque_F(shade, shade, shade);
+                int count = face.vertices.length;
+                for (int i = 0; i < 4; i++) {
+                    int k = Math.min(i, count - 1);
+                    Vertex v = face.vertices[k];
+                    double u = face.textureCoordinates != null ? face.textureCoordinates[k].u : 0;
+                    double w = face.textureCoordinates != null ? face.textureCoordinates[k].v : 0;
+                    t.addVertexWithUV(v.x, v.y, v.z, u, w);
                 }
             }
         }

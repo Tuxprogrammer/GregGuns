@@ -14,8 +14,9 @@ import com.gregguns.GregGuns;
 
 /**
  * The chunk ticket of one flying missile (D25): a single entity ticket that forces at most two chunks, the one the
- * missile is in and the next on its heading, and drops the one behind it. Released on impact, on timeout and when the
- * world loads a ticket from disk (a missile re-requests its own as it ticks). Chunks are compared by value
+ * missile is in and the next on its heading, and drops the one behind it. Released on impact and on timeout; a ticket
+ * the
+ * world loads from disk is adopted by its live in-flight missile and released otherwise. Chunks are compared by value
  * (ICBM-03-32). Server side.
  *
  * <p>
@@ -27,6 +28,7 @@ import com.gregguns.GregGuns;
 public final class MissileTickets {
 
     private Ticket ticket;
+    private boolean warned;
 
     /**
      * Brings the held chunks to the wanted ones: forces new, unforces stale, and loads the new ones now.
@@ -40,7 +42,10 @@ public final class MissileTickets {
         if (ticket == null) {
             ticket = ForgeChunkManager.requestTicket(GregGuns.instance, world, ForgeChunkManager.Type.ENTITY);
             if (ticket == null) {
-                GregGuns.LOG.warn("No chunk ticket left for a missile at {}, {}", owner.posX, owner.posZ);
+                if (!warned) {
+                    warned = true;
+                    GregGuns.LOG.warn("No chunk ticket left for a missile at {}, {}", owner.posX, owner.posZ);
+                }
                 return false;
             }
             ticket.bindEntity(owner);
@@ -82,6 +87,18 @@ public final class MissileTickets {
         return ticket == null ? 0 : 1;
     }
 
+    /**
+     * Takes over a ticket Forge re-bound to this missile when the world loaded (D25: a live flight survives a restart).
+     *
+     * @param loaded the ticket from the loading callback
+     */
+    void adopt(Ticket loaded) {
+        if (ticket != null && ticket != loaded) {
+            ForgeChunkManager.releaseTicket(ticket);
+        }
+        ticket = loaded;
+    }
+
     /** Unforces every chunk and returns the ticket. Idempotent. */
     public void release() {
         if (ticket != null) {
@@ -96,15 +113,22 @@ public final class MissileTickets {
     }
 
     /**
-     * The world loaded these tickets from disk: release every one. A missile whose chunk loads again asks for a new
-     * ticket on its next tick, so none outlives the entity that wanted it (D25: released on unload).
+     * The world loaded these tickets from disk. Forge has already re-bound each entity ticket and loaded its chunk, so
+     * a live missile in flight adopts its ticket (its next tick trims it to the wanted window); every other ticket,
+     * including one whose entity is gone, is released, so none outlives the entity that wanted it (D25).
      *
      * @param tickets the loaded tickets
      * @param world   the world
      */
     static void onTicketsLoaded(List<Ticket> tickets, World world) {
         for (Ticket t : tickets) {
-            ForgeChunkManager.releaseTicket(t);
+            Entity e = t.getEntity();
+            if (e instanceof EntityMissile && !e.isDead && ((EntityMissile) e).phase() != FlightPhase.PAD) {
+                ((EntityMissile) e).tickets()
+                    .adopt(t);
+            } else {
+                ForgeChunkManager.releaseTicket(t);
+            }
         }
     }
 

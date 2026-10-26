@@ -28,9 +28,9 @@
 
 ## Launch checks (`launch`, in order)
 
-1. Already flying: `BUSY`. 2. Tank not full: `NOT_FUELED`. 3. Flat distance under 20: `TOO_CLOSE`; over the range: `OUT_OF_RANGE`; not finite: `BAD_TARGET`. 4. Missiles in flight at or over `icbm.maxMissilesInFlight` (default 20; counted over the loaded entities of every world): `OVER_CAP`.
+1. Already flying: `BUSY`. 2. Tank not full: `NOT_FUELED`. 3. Flat distance under 20: `TOO_CLOSE`; over the range: `OUT_OF_RANGE`; not finite: `BAD_TARGET`. 4. Missiles in flight at or over `icbm.maxMissilesInFlight` (default 20; counted over the loaded entities of every world): `OVER_CAP`. 5. Any block with a collision box in the **climb column** (the missile's footprint, from the block above the pad to the top of the body at the end of the 12-block climb): `BLOCKED` (ICBM-04-26). The arc itself still ray casts, so terrain ahead of the missile ends it as before.
 
-Then the target is **scattered** ([guidance.md](guidance.md)), its ground height is read when its chunk is loaded (else the pad's height), and the launch point is recorded.
+Then the target is **scattered** ([guidance.md](guidance.md)) and the missile takes its chunk ticket (`NO_TICKET` if Forge refuses, see [chunk-loading.md](chunk-loading.md)). The target chunk is **loaded once at launch**, with no ticket, and the ground height read there; the arc then aims at the real surface, whether or not a player was ever near it. The launch point is recorded.
 
 ## The arc
 
@@ -58,12 +58,14 @@ Two safety nets: past `T + icbm.missileTimeoutTicks` (default 600), or below y =
 - **GGS-ICBM-03-51** A launch that passes all checks leaves the pad exactly as the phases say; every refusal leaves the missile untouched on the pad.
 - **GGS-ICBM-03-52** Impact is the only fuse: a missile does not detonate on the pad, in the climb, or by proximity.
 - **GGS-ICBM-03-53** At most `icbm.maxMissilesInFlight` missiles fly at once.
+- **GGS-ICBM-03-55** A solid block in the climb column refuses the launch with `BLOCKED` and leaves the missile on the pad.
+- **GGS-ICBM-03-56** The target height is read from the target chunk even when it was not loaded at launch.
 - **GGS-ICBM-03-54** A launched T1 and T2 detonates on its aimed target and breaks terrain where the tier's terrain switch allows.
 
 ## Tests
 
-`ArcPathTest`, `MissileLimitsTest`; scenarios `icbm.missile.launch_rules`, `icbm.missile.launch_detonate_t1`, `icbm.missile.launch_detonate_t2`, `icbm.missile.shot_down`.
+`ArcPathTest`, `MissileLimitsTest`; scenarios `icbm.missile.launch_rules` (includes the `BLOCKED` roof, the `NOT_ARMED` stack and the `NO_TICKET` refusal), `icbm.missile.target_height`, `icbm.missile.launch_detonate_t1`, `icbm.missile.launch_detonate_t2`, `icbm.missile.shot_down`.
 
 ## Open questions
 
-- Whether a missile should refine its height as the target chunk loads in flight (terminal guidance). Not needed: the arc keeps descending until it hits something.
+- Terminal guidance (refining the height in flight) is not needed: the height is read at launch, and the arc keeps descending until it hits something.
