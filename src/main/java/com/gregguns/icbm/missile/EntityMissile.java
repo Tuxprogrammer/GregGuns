@@ -275,15 +275,27 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         if (!MissileLimits.underCap(flying(), IcbmConfig.maxMissilesInFlight)) {
             return LaunchResult.OVER_CAP;
         }
+        if (!climbColumnClear()) {
+            return LaunchResult.BLOCKED;
+        }
         double half = Scatter.halfWidth(tier().baseScatter(), guidance, dist, maxRange());
-        this.targetX = tx + Scatter.offset(rand, half);
-        this.targetZ = tz + Scatter.offset(rand, half);
+        double aimX = tx + Scatter.offset(rand, half);
+        double aimZ = tz + Scatter.offset(rand, half);
+        int bx = net.minecraft.util.MathHelper.floor_double(aimX);
+        int bz = net.minecraft.util.MathHelper.floor_double(aimZ);
+        // The flight needs a ticket from the first tick (warmup included); Forge may be out of them.
+        if (!tickets.update(this, ChunkWindow.wanted(posX, posZ, 0.0, 0.0))) {
+            return LaunchResult.NO_TICKET;
+        }
+        // The target height: load the target chunk once, with no ticket, to read the surface there. An unloaded
+        // chunk would aim the arc at the pad's height and miss by about half a block per block of height difference.
+        if (worldObj instanceof WorldServer) {
+            ((WorldServer) worldObj).theChunkProviderServer.loadChunk(bx >> 4, bz >> 4);
+        }
+        this.targetX = aimX;
+        this.targetZ = aimZ;
         this.plannedDistance = dist;
-        int bx = net.minecraft.util.MathHelper.floor_double(targetX);
-        int bz = net.minecraft.util.MathHelper.floor_double(targetZ);
-        // The target height: the surface if its chunk is loaded, else the pad's height (the arc keeps falling past it).
-        this.targetY = worldObj.getChunkProvider()
-            .chunkExists(bx >> 4, bz >> 4) ? worldObj.getHeightValue(bx, bz) : posY;
+        this.targetY = worldObj.getHeightValue(bx, bz);
         this.launchX = posX;
         this.launchY = posY;
         this.launchZ = posZ;
@@ -294,6 +306,30 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         setPhase(FlightPhase.WARMUP);
         worldObj.playSoundEffect(posX, posY, posZ, "fireworks.launch", 4.0F, 0.6F);
         return LaunchResult.OK;
+    }
+
+    /**
+     * @return true when nothing solid stands in the column the missile climbs through: from the pad to the top of the
+     *         body at the end of the climb (ICBM-04-26)
+     */
+    private boolean climbColumnClear() {
+        int x0 = net.minecraft.util.MathHelper.floor_double(posX - width / 2.0);
+        int x1 = net.minecraft.util.MathHelper.floor_double(posX + width / 2.0);
+        int z0 = net.minecraft.util.MathHelper.floor_double(posZ - width / 2.0);
+        int z1 = net.minecraft.util.MathHelper.floor_double(posZ + width / 2.0);
+        int y0 = net.minecraft.util.MathHelper.floor_double(posY) + 1;
+        int y1 = net.minecraft.util.MathHelper.floor_double(posY + CLIMB_HEIGHT + tier().heightBlocks());
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                for (int y = y0; y <= y1; y++) {
+                    if (worldObj.getBlock(x, y, z)
+                        .getCollisionBoundingBoxFromPool(worldObj, x, y, z) != null) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     // ------------------------------------------------------------------ tick

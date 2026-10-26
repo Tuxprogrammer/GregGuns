@@ -35,6 +35,11 @@ public final class BlockMissileBody extends BlockContainer implements Tiered {
     private final MissileTier tier;
     private final double columnWidth;
 
+    /** @return this body's tier */
+    public MissileTier tier() {
+        return tier;
+    }
+
     /** @param tier the tier */
     public BlockMissileBody(MissileTier tier) {
         super(Material.iron);

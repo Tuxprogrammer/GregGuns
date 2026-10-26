@@ -41,6 +41,9 @@ public final class MissileScenarios {
         registry.register(new LaunchAndDetonate(MissileTier.T2));
         registry.register(new ChunkTickets());
         registry.register(new SaveRoundTrip());
+        registry.register(new Timeout());
+        registry.register(new RestartAdopt());
+        registry.register(new TargetHeight());
         registry.register(new ShotDown());
         registry.register(new PadSurvives());
     }
@@ -305,7 +308,7 @@ public final class MissileScenarios {
 
         @Override
         public String description() {
-            return "Launch is refused with no missile, no fuel, too close, too far, a bad target and past the in-flight cap.";
+            return "Launch is refused with no missile, no fuel, too close, too far, a bad target, past the in-flight cap, under a roof and without a chunk ticket; a stack that is not armed.";
         }
 
         @Override
@@ -324,13 +327,21 @@ public final class MissileScenarios {
                 "nothing on the pad",
                 LaunchResult.NO_MISSILE,
                 PadMissiles.launch(w, px, py, pz, px + 100, pz, null));
+            floor(ctx, 5);
+            buildStack(ctx, MissileTier.T1, WarheadCasing.T1, "condensed", 3, 0, 0, 0, false, 0);
+            out.checkEquals(
+                "stacked, not armed",
+                LaunchResult.NOT_ARMED,
+                PadMissiles.launch(w, px, py, pz, px + 100, pz, null));
+            MissileStatus unarmed = PadMissiles.status(w, px, py, pz);
+            out.check(unarmed.present() && !unarmed.armed(), "status sees a body that is not armed");
             EntityMissile m = armed(ctx, MissileTier.T1, 0);
             if (m == null) {
                 return ScenarioResult.fail(name(), "could not arm a T1");
             }
             out.check(
                 PadMissiles.status(w, px, py, pz)
-                    .present(),
+                    .armed(),
                 "status sees the missile");
             out.checkEquals(
                 "not fueled",
@@ -356,6 +367,41 @@ public final class MissileScenarios {
             } finally {
                 IcbmConfig.maxMissilesInFlight = cap;
             }
+            // A roof inside the climb column refuses the launch (ICBM-04-26).
+            ctx.setBlock(0, 8, 0, Blocks.stone, 0);
+            out.checkEquals(
+                "a roof over the pad",
+                LaunchResult.BLOCKED,
+                PadMissiles.launch(w, px, py, pz, px + 100, pz, null));
+            ctx.setBlock(0, 8, 0, Blocks.air, 0);
+            // Forge out of tickets: the launch is refused and the missile keeps nothing.
+            List<net.minecraftforge.common.ForgeChunkManager.Ticket> hoard = new ArrayList<>();
+            for (int i = 0; i < 2000; i++) {
+                net.minecraftforge.common.ForgeChunkManager.Ticket t = net.minecraftforge.common.ForgeChunkManager
+                    .requestTicket(
+                        com.gregguns.GregGuns.instance,
+                        w,
+                        net.minecraftforge.common.ForgeChunkManager.Type.NORMAL);
+                if (t == null) {
+                    break;
+                }
+                hoard.add(t);
+            }
+            try {
+                out.checkEquals(
+                    "no chunk ticket left",
+                    LaunchResult.NO_TICKET,
+                    PadMissiles.launch(w, px, py, pz, px + 100, pz, null));
+            } finally {
+                for (net.minecraftforge.common.ForgeChunkManager.Ticket t : hoard) {
+                    net.minecraftforge.common.ForgeChunkManager.releaseTicket(t);
+                }
+            }
+            out.checkEquals(
+                "a refused launch holds no ticket",
+                0,
+                m.tickets()
+                    .tickets());
             out.check(m.onPad(), "every refusal leaves the missile on the pad");
             out.check(
                 PadMissiles.expectedRadius(w, px, py, pz, px + 25, pz)
@@ -626,6 +672,266 @@ public final class MissileScenarios {
                 out.check(seen.size() >= 3, "the window slid across several chunks (" + seen.size() + ")");
                 return out.build();
             });
+        }
+    }
+
+    /** Common flight set-up of the tickets scenarios: a fueled, launched T1 on a long flight over a flat floor. */
+    private abstract static class LongFlight extends Base {
+
+        EntityMissile launched(ScenarioContext ctx, ScenarioResult.Builder out) {
+            sweep(ctx);
+            ctx.clearArea(8, 12);
+            EntityMissile m = armed(ctx, MissileTier.T1, MissileBodies.MAX_GUIDANCE);
+            if (m == null) {
+                return null;
+            }
+            m.fill(m.capacityMb(), true);
+            LaunchResult r = PadMissiles.launch(
+                ctx.world(),
+                ctx.originX(),
+                ctx.originY(),
+                ctx.originZ(),
+                ctx.originX() + 0.5,
+                ctx.originZ() + 200.5,
+                null);
+            out.checkEquals("launch", LaunchResult.OK, r);
+            return r == LaunchResult.OK ? m : null;
+        }
+    }
+
+    /**
+     * The timeout branch really fires: a short timeout ends the flight in the air and drops the ticket (ICBM-03-62).
+     */
+    private static final class Timeout extends LongFlight {
+
+        @Override
+        public String name() {
+            return "icbm.missile.timeout";
+        }
+
+        @Override
+        public String description() {
+            return "With a short missileTimeoutTicks the missile detonates in the air before its target and releases its ticket.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (needsModule() != null) {
+                return needsModule();
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            boolean terrain = IcbmConfig.terrainDamageT1;
+            int timeout = IcbmConfig.missileTimeoutTicks;
+            IcbmConfig.terrainDamageT1 = false;
+            // Negative: the safety net fires this many ticks before the planned arrival.
+            IcbmConfig.missileTimeoutTicks = -40;
+            EntityMissile m = launched(ctx, out);
+            if (m == null) {
+                IcbmConfig.terrainDamageT1 = terrain;
+                IcbmConfig.missileTimeoutTicks = timeout;
+                return ScenarioResult.fail(name(), "could not launch");
+            }
+            final double[] lastY = { 0 };
+            final int[] maxTickets = { 0 };
+            return ScenarioResult.pending(name(), 1200, ticks -> {
+                if (!m.isDead) {
+                    lastY[0] = m.posY;
+                    maxTickets[0] = Math.max(
+                        maxTickets[0],
+                        m.tickets()
+                            .tickets());
+                    return ticks >= 1150 ? finish(out, terrain, timeout, "never ended") : null;
+                }
+                out.check(lastY[0] > ctx.originY() + 3, "it ended in the air, before the ground (" + lastY[0] + ")");
+                out.checkEquals("one ticket while flying", 1, maxTickets[0]);
+                out.checkEquals(
+                    "ticket released by the timeout",
+                    0,
+                    m.tickets()
+                        .tickets());
+                return finish(out, terrain, timeout, null);
+            });
+        }
+
+        private ScenarioResult finish(ScenarioResult.Builder out, boolean terrain, int timeout, String failure) {
+            IcbmConfig.terrainDamageT1 = terrain;
+            IcbmConfig.missileTimeoutTicks = timeout;
+            return failure == null ? out.build() : ScenarioResult.fail(name(), failure);
+        }
+    }
+
+    /**
+     * Restart and unload: Forge re-binds the ticket to the missile and calls our callback; a live flight keeps it, and
+     * a saved and reloaded entity flies on to its target holding one ticket again (D25).
+     */
+    private static final class RestartAdopt extends LongFlight {
+
+        @Override
+        public String name() {
+            return "icbm.missile.restart_adopt";
+        }
+
+        @Override
+        public String description() {
+            return "The load callback hands a live in-flight missile its ticket back, releases a stray one, and a reloaded missile finishes its flight.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (needsModule() != null) {
+                return needsModule();
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            World w = ctx.world();
+            boolean terrain = IcbmConfig.terrainDamageT1;
+            IcbmConfig.terrainDamageT1 = false;
+            Target target = new Target(ctx, 0, 200, 9);
+            EntityMissile m = launched(ctx, out);
+            if (m == null) {
+                IcbmConfig.terrainDamageT1 = terrain;
+                return ScenarioResult.fail(name(), "could not launch");
+            }
+            final EntityMissile[] live = { m };
+            final int[] step = { 0 };
+            final int[] maxTickets = { 0 };
+            return ScenarioResult.pending(name(), 1500, ticks -> {
+                EntityMissile cur = live[0];
+                if (ticks >= 1450) {
+                    IcbmConfig.terrainDamageT1 = terrain;
+                    return ScenarioResult.fail(name(), "still running at step " + step[0]);
+                }
+                if (step[0] == 0) {
+                    if (cur.phase() != FlightPhase.ARC || cur.posZ < ctx.originZ() + 60) {
+                        return null;
+                    }
+                    // 1. The world loaded: Forge hands our callback the missile's own ticket, and a stray one.
+                    net.minecraftforge.common.ForgeChunkManager.Ticket own = cur.tickets()
+                        .ticket();
+                    net.minecraftforge.common.ForgeChunkManager.Ticket stray = net.minecraftforge.common.ForgeChunkManager
+                        .requestTicket(
+                            com.gregguns.GregGuns.instance,
+                            w,
+                            net.minecraftforge.common.ForgeChunkManager.Type.NORMAL);
+                    List<net.minecraftforge.common.ForgeChunkManager.Ticket> loaded = new ArrayList<>();
+                    loaded.add(own);
+                    if (stray != null) {
+                        loaded.add(stray);
+                        net.minecraftforge.common.ForgeChunkManager.forceChunk(
+                            stray,
+                            new net.minecraft.world.ChunkCoordIntPair(ctx.originX() >> 4, ctx.originZ() >> 4));
+                    }
+                    MissileTickets.onTicketsLoaded(loaded, w);
+                    out.check(
+                        cur.tickets()
+                            .ticket() == own
+                            && own.getChunkList()
+                                .size() >= 1,
+                        "a live in-flight missile keeps its ticket and chunks");
+                    out.check(
+                        stray == null || stray.getChunkList()
+                            .isEmpty(),
+                        "a ticket that is not a flying missile's is released");
+                    // 2. Save, drop the entity, and read it back into a new one, as a restart does.
+                    NBTTagCompound tag = new NBTTagCompound();
+                    cur.writeToNBT(tag);
+                    cur.tickets()
+                        .release();
+                    cur.setDead();
+                    EntityMissileT1 copy = new EntityMissileT1(w);
+                    copy.readFromNBT(tag);
+                    w.spawnEntityInWorld(copy);
+                    // Forge re-binds the saved ticket to the reloaded entity before the callback runs.
+                    net.minecraftforge.common.ForgeChunkManager.Ticket rebound = net.minecraftforge.common.ForgeChunkManager
+                        .requestTicket(
+                            com.gregguns.GregGuns.instance,
+                            w,
+                            net.minecraftforge.common.ForgeChunkManager.Type.ENTITY);
+                    if (rebound == null) {
+                        IcbmConfig.terrainDamageT1 = terrain;
+                        return ScenarioResult.fail(name(), "no ticket for the re-bind");
+                    }
+                    rebound.bindEntity(copy);
+                    List<net.minecraftforge.common.ForgeChunkManager.Ticket> again = new ArrayList<>();
+                    again.add(rebound);
+                    MissileTickets.onTicketsLoaded(again, w);
+                    out.check(
+                        copy.tickets()
+                            .ticket() == rebound,
+                        "the reloaded missile adopted the re-bound ticket");
+                    out.checkEquals("reloaded phase", FlightPhase.ARC, copy.phase());
+                    live[0] = copy;
+                    step[0] = 1;
+                    return null;
+                }
+                maxTickets[0] = Math.max(
+                    maxTickets[0],
+                    cur.tickets()
+                        .tickets());
+                if (!cur.isDead || target.removed(w) == 0 && ticks < 1400) {
+                    return null;
+                }
+                IcbmConfig.terrainDamageT1 = terrain;
+                out.checkEquals("one ticket after the reload", 1, maxTickets[0]);
+                out.check(target.removed(w) > 0, "the reloaded missile still hit its target");
+                out.checkEquals(
+                    "no tickets after impact",
+                    0,
+                    cur.tickets()
+                        .tickets());
+                return out.build();
+            });
+        }
+    }
+
+    /** The target chunk is loaded once at launch, and the arc aims at the real surface there. */
+    private static final class TargetHeight extends Base {
+
+        @Override
+        public String name() {
+            return "icbm.missile.target_height";
+        }
+
+        @Override
+        public String description() {
+            return "Launching at a far, unloaded chunk loads it once and aims at its surface height.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (needsModule() != null) {
+                return needsModule();
+            }
+            sweep(ctx);
+            ctx.clearArea(6, 10);
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            EntityMissile m = armed(ctx, MissileTier.T1, 0);
+            if (m == null) {
+                return ScenarioResult.fail(name(), "could not arm");
+            }
+            m.fill(m.capacityMb(), true);
+            World w = ctx.world();
+            double tz = ctx.originZ() + m.maxRange() - 20;
+            int cx = ctx.originX() >> 4;
+            int cz = (int) tz >> 4;
+            boolean loadedBefore = w.getChunkProvider()
+                .chunkExists(cx, cz);
+            LaunchResult r = PadMissiles
+                .launch(w, ctx.originX(), ctx.originY(), ctx.originZ(), ctx.originX() + 0.5, tz, null);
+            out.checkEquals("launch", LaunchResult.OK, r);
+            if (r == LaunchResult.OK) {
+                double[] aim = m.aimPoint();
+                int ax = net.minecraft.util.MathHelper.floor_double(aim[0]);
+                int az = net.minecraft.util.MathHelper.floor_double(aim[2]);
+                out.check(
+                    w.getChunkProvider()
+                        .chunkExists(ax >> 4, az >> 4),
+                    "the target chunk is loaded after the launch (it was " + (loadedBefore ? "" : "not ") + "before)");
+                out.checkEquals("the aim height is the surface there", (double) w.getHeightValue(ax, az), aim[1]);
+            }
+            m.tickets()
+                .release();
+            m.setDead();
+            return out.build();
         }
     }
 

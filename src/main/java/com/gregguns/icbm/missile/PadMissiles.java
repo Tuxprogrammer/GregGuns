@@ -22,7 +22,12 @@ public final class PadMissiles {
      */
     public static MissileStatus status(World world, int padX, int padY, int padZ) {
         EntityMissile m = find(world, padX, padY, padZ);
-        return m == null ? MissileStatus.NONE : m.status();
+        if (m != null) {
+            return m.status();
+        }
+        MissileTier stacked = stackedBody(world, padX, padY, padZ);
+        // A body block with no entity yet: present but not armed, so the control block says NOT_ARMED.
+        return stacked == null ? MissileStatus.NONE : new MissileStatus(false, stacked, 0, 0, 0, null, 0);
     }
 
     /**
@@ -50,7 +55,8 @@ public final class PadMissiles {
     }
 
     /**
-     * Launches the missile on the pad at x, z. Checks every rule (armed, fueled, range, in-flight cap) and returns why
+     * Launches the missile on the pad at x, z. Checks every rule (armed, fueled, range, in-flight cap, clearance, chunk
+     * ticket) and returns why
      * it refused.
      *
      * @param world   the server world
@@ -69,9 +75,31 @@ public final class PadMissiles {
         }
         EntityMissile m = find(world, padX, padY, padZ);
         if (m == null) {
-            return LaunchResult.NO_MISSILE;
+            return stackedBody(world, padX, padY, padZ) == null ? LaunchResult.NO_MISSILE : LaunchResult.NOT_ARMED;
         }
         return m.launch(targetX, targetZ, source);
+    }
+
+    /**
+     * @return the tier of a missile body block stacked on the pad (the 3x3 area, from the pad's own layer up two more)
+     *         that has
+     *         not been armed into an entity, or null
+     */
+    static MissileTier stackedBody(World world, int padX, int padY, int padZ) {
+        if (world == null || !MissileBlocks.registered()) {
+            return null;
+        }
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                for (int dy = 0; dy <= 2; dy++) {
+                    net.minecraft.block.Block b = world.getBlock(padX + dx, padY + dy, padZ + dz);
+                    if (b instanceof BlockMissileBody) {
+                        return ((BlockMissileBody) b).tier();
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private static boolean finite(double v) {

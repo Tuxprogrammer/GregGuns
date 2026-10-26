@@ -11,7 +11,7 @@ From "fire" to the missile leaving the pad. Flight, fuel and the entity are in [
 | ICBM behavior | GregGuns behavior | Bug avoided |
 |---|---|---|
 | Missile consumed, spawned and launched before power is re-checked | All checks first; the EU is taken only after the pad accepted | ICBM-04-07 |
-| No clearance check; pad launches into a blocked shaft | The pad API owns the clearance of the flight column | ICBM-04-26 |
+| No clearance check; pad launches into a blocked shaft | The pad API owns the clearance of the flight column: a solid block in the 12-block climb column returns `BLOCKED` (lang `gregguns.icbm.launch.blocked`) before any EU is taken | ICBM-04-26 |
 | Delayed shots lose their result and the cluster penalty | No firing delay in I2: a shot is immediate, so there is no discarded result | ICBM-04-02, 04-08, 04-31 |
 | Success means "some launcher did not block" | The status names exactly what happened, one lang key per outcome | ICBM-04-09 |
 | Result keys missing from the lang file | Every status and launch result has a key; a test pins it | ICBM-04-16, 04-17 |
