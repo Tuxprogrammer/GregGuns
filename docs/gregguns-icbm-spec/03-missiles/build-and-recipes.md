@@ -71,7 +71,7 @@ Each body returns its plates and fins as metal (`MissileRecipes.recycle`); each 
 
 ## NEI
 
-- Chip: Circuit Assembler tab. Schematic: Laser Engraver tab. Body: Assembly Line tab (research shown by GT) and **NASA Workbench (Missile)** tab, a display-only GregGuns recipe map (`IcbmRecipeMaps`) with one row per body and computer (the by-hand build, guidance 0 included). Parts: Assembler tab. Launch Control: Assembler tab.
+- Chip: Circuit Assembler tab. Schematic: Laser Engraver tab. Body: Assembly Line tab (research shown by GT) and **NASA Workbench (Missile)** tab: one page per body and computer (the by-hand build, guidance 0 included), drawn like Galacticraft's own rocket workbench pages. The slots sit in the shape of the missile on a rocket silhouette (warhead seat at the nose, plates down the middle, fins either side at the bottom, engine at the base, the guidance computer beside the nose). The rows come from a display-only GregGuns recipe map (`IcbmRecipeMaps`, no GT tab of its own) and the page is the client's `MissileWorkbenchHandler`. The in-game page uses the same layout (`MissileBenchLayout`, unit tested for overlap and symmetry) and the same plain-rectangle art (`MissileBenchArt`), so nothing is copied from Galacticraft's jar. Parts: Assembler tab. Launch Control: Assembler tab.
 
 ## Requirements
 

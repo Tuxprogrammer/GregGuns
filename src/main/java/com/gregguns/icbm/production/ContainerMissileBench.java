@@ -23,6 +23,11 @@ import com.gregguns.icbm.missile.MissileTier;
 // Spec: docs/gregguns-icbm-spec/03-missiles/build-and-recipes.md (NASA Workbench page)
 public class ContainerMissileBench extends Container {
 
+    /** The schematic panel sits this far in from the window's left edge (the window is 176 wide). */
+    public static final int X0 = 4;
+    /** Top row of the player's inventory. */
+    public static final int PLAYER_Y = MissileBenchLayout.HEIGHT + 12;
+
     /** Slot index of the result. */
     public static final int RESULT = 0;
 
@@ -52,35 +57,53 @@ public class ContainerMissileBench extends Container {
                 onCraftMatrixChanged(this);
             }
         };
-        addSlotToContainer(new ResultSlot(craftResult, 0, 142, 96));
+        addSlotToContainer(
+            new ResultSlot(craftResult, 0, X0 + MissileBenchLayout.resultX(), MissileBenchLayout.resultY(spec)));
         plateFirst = inventorySlots.size();
         for (int i = 0; i < plates; i++) {
             addSlotToContainer(
-                new KeySlot(matrix, i, 30 + (i % 3) * 18, 20 + (i / 3) * 18, MissileBenchRules.keyOf(spec.plates())));
+                new KeySlot(
+                    matrix,
+                    i,
+                    X0 + MissileBenchLayout.plateX(i),
+                    MissileBenchLayout.plateY(i),
+                    MissileBenchRules.keyOf(spec.plates())));
         }
         finFirst = inventorySlots.size();
         for (int i = 0; i < MissileBenchRules.FIN_SLOTS; i++) {
-            addSlotToContainer(new KeySlot(matrix, plates + i, 30 + i * 18, 62, MissileBenchRules.keyOf(spec.fins())));
+            addSlotToContainer(
+                new KeySlot(
+                    matrix,
+                    plates + i,
+                    X0 + MissileBenchLayout.finX(i),
+                    MissileBenchLayout.finY(spec),
+                    MissileBenchRules.keyOf(spec.fins())));
         }
         engineSlot = inventorySlots.size();
         addSlotToContainer(
             new KeySlot(
                 matrix,
                 plates + MissileBenchRules.FIN_SLOTS,
-                100,
-                20,
+                X0 + MissileBenchLayout.engineX(),
+                MissileBenchLayout.engineY(spec),
                 spec.engine()
                     .registryName()));
         guidanceSlot = inventorySlots.size();
-        addSlotToContainer(new KeySlot(matrix, plates + MissileBenchRules.FIN_SLOTS + 1, 100, 44, null));
+        addSlotToContainer(
+            new KeySlot(
+                matrix,
+                plates + MissileBenchRules.FIN_SLOTS + 1,
+                X0 + MissileBenchLayout.guidanceX(),
+                MissileBenchLayout.guidanceY(),
+                null));
         playerFirst = inventorySlots.size();
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                addSlotToContainer(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 118 + row * 18));
+                addSlotToContainer(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, PLAYER_Y + row * 18));
             }
         }
         for (int col = 0; col < 9; col++) {
-            addSlotToContainer(new Slot(inventory, col, 8 + col * 18, 176));
+            addSlotToContainer(new Slot(inventory, col, 8 + col * 18, PLAYER_Y + 58));
         }
         onCraftMatrixChanged(matrix);
     }

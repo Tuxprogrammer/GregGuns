@@ -788,6 +788,7 @@ gregguns.icbm.part.used.guidance_computer_mk3=T1 and T2 missile bodies
 gregguns.missileWorkbench=NASA Workbench (Missile)
 gregguns.icbm.bench.title=Missile T%d
 gregguns.icbm.bench.plates=Body plates
+gregguns.icbm.bench.warhead=Warhead (pad)
 gregguns.icbm.bench.fins=Fins
 gregguns.icbm.bench.engine=Engine
 gregguns.icbm.bench.guidance=Guidance

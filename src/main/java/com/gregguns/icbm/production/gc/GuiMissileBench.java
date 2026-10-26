@@ -16,7 +16,8 @@ import micdoodle8.mods.galacticraft.api.recipe.ISchematicResultPage;
 import micdoodle8.mods.galacticraft.api.recipe.SchematicRegistry;
 
 /**
- * The client screen of a missile page: a flat panel with a framed outline for every slot, a label for each group, and
+ * The client screen of a missile page: a panel with a rocket silhouette and a framed outline for every slot, laid out
+ * in the shape of the missile (see MissileBenchLayout), and
  * Galacticraft's Back and Next buttons to flip between the unlocked pages. Draws with vanilla rectangles, so it needs
  * no texture. Client only.
  */
@@ -34,7 +35,7 @@ public final class GuiMissileBench extends GuiContainer implements ISchematicRes
         super(new ContainerMissileBench(inventory, spec));
         this.spec = spec;
         this.xSize = 176;
-        this.ySize = 200;
+        this.ySize = ContainerMissileBench.PLAYER_Y + 82;
     }
 
     @Override
@@ -75,12 +76,15 @@ public final class GuiMissileBench extends GuiContainer implements ISchematicRes
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         Gui.drawRect(guiLeft, guiTop, guiLeft + xSize, guiTop + ySize, EDGE);
         Gui.drawRect(guiLeft + 1, guiTop + 1, guiLeft + xSize - 1, guiTop + ySize - 1, BG);
+        MissileBenchArt.draw(spec, guiLeft + ContainerMissileBench.X0, guiTop, true);
         for (Object o : inventorySlots.inventorySlots) {
             Slot s = (Slot) o;
-            int x = guiLeft + s.xDisplayPosition;
-            int y = guiTop + s.yDisplayPosition;
-            Gui.drawRect(x - 1, y - 1, x + 17, y + 17, EDGE);
-            Gui.drawRect(x, y, x + 16, y + 16, SLOT);
+            if (s.yDisplayPosition >= ContainerMissileBench.PLAYER_Y) {
+                int x = guiLeft + s.xDisplayPosition;
+                int y = guiTop + s.yDisplayPosition;
+                Gui.drawRect(x - 1, y - 1, x + 17, y + 17, EDGE);
+                Gui.drawRect(x, y, x + 16, y + 16, SLOT);
+            }
         }
     }
 
@@ -91,12 +95,12 @@ public final class GuiMissileBench extends GuiContainer implements ISchematicRes
             8,
             6,
             0x404040);
-        fontRendererObj.drawString(StatCollector.translateToLocal("gregguns.icbm.bench.plates"), 30, 10, 0x404040);
-        fontRendererObj.drawString(StatCollector.translateToLocal("gregguns.icbm.bench.fins"), 30, 52, 0x404040);
-        fontRendererObj.drawString(StatCollector.translateToLocal("gregguns.icbm.bench.engine"), 100, 10, 0x404040);
-        fontRendererObj.drawString(StatCollector.translateToLocal("gregguns.icbm.bench.guidance"), 100, 34, 0x404040);
-        fontRendererObj.drawString(StatCollector.translateToLocal("gregguns.icbm.bench.result"), 128, 86, 0x404040);
-        fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, 106, 0x404040);
+        MissileBenchArt.drawLabels(fontRendererObj, spec, ContainerMissileBench.X0, 0);
+        fontRendererObj.drawString(
+            StatCollector.translateToLocal("container.inventory"),
+            8,
+            ContainerMissileBench.PLAYER_Y - 10,
+            0x404040);
     }
 
     @Override
