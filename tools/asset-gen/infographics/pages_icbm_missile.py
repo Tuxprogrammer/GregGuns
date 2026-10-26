@@ -1,8 +1,8 @@
 """The icbm-first-missile guide sheet: from a missile chip to the first launch from the Galacticraft pad (T1 and T2).
 
 The missile models are the shipped OBJ files (body plus warhead, the warhead seated on the body's nose exactly as the
-game seats it), drawn with render3d.obj_scene, the strict Forge reader. The sheet is a DRAFT (D50): its numbers come
-from the milestone's design notes, not yet from the code, and it carries the stamp until they are read from the code.
+game seats it), drawn with render3d.obj_scene, the strict Forge reader. The numbers are read from the I2 code
+(MissileTier, MissileBuildSpec, EntityMissile, MTELaunchControl, IcbmConfig); the draft stamp is gone (D50).
 Vanilla textures are the real Minecraft ones read from the jar at build time (D55). No Galacticraft texture is used
 (its license is "explicit permission", so it can't be redistributed in a committed sheet): the pad is drawn with
 vanilla iron blocks and named in the text.
@@ -29,7 +29,7 @@ from pages import MOJANG_CREDIT, gti, img, page_doc, slot  # noqa: E402
 NTM = K.ASSETS / "models/thirdparty/ntm"
 NTM_TEX = K.ASSETS / "textures/models/thirdparty/ntm"
 
-# Draft numbers (design notes of the I2 coders). Final: read from the code, then remove the stamp.
+# Numbers from the I2 code: MissileTier (fuel, range, speed, scatter), MissileBuildSpec (plates, fins, engine, caps).
 TIERS = {
     1: dict(body="missile_body_t1", warhead="warhead_t1", volt="HV", fuel="RP-1 or Cetane-Boosted Diesel", fuel_mb=2000, rng=1000, speed="0.8",
             flight="about a minute", scatter=12, plates="4 stainless steel", fins="4 steel", engine="Missile Engine Mk I", cap=5),
@@ -39,10 +39,7 @@ TIERS = {
 MIN_RANGE = 20
 
 CSS = """
-.ribbon { position: absolute; top: 40px; right: 56px; transform: rotate(-3deg); text-align: center;
-  background: #ffd23f; color: #1a1200; font-family: Bahnschrift, "Fira Sans Condensed", "Noto Sans", sans-serif; font-stretch: condensed;
-  font-weight: 800; font-size: 38px; letter-spacing: .06em; text-transform: uppercase; padding: 12px 28px 10px; border-radius: 10px;
-  border: 4px solid #1a1200; outline: 3px solid #ffd23f; box-shadow: 0 8px 22px rgba(0,0,0,.6); z-index: 5; }
+.stat .chip.t-HV, .stat .chip.t-MV { color: #1a1200; }
 .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .hero .spot { height: 560px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 14px; }
 .stat { display: flex; justify-content: space-between; gap: 14px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 19px; }
@@ -124,9 +121,10 @@ def first_missile() -> str:
                "On the NASA Workbench page: <b>body plates</b> (T1 four stainless steel, T2 six titanium), <b>four fins</b>, a <b>Missile Engine</b> and a "
                "<b>Guidance Computer</b>. A better computer than the body asks for makes the missile land closer. There is no warhead slot: a warhead goes on at the pad.")
     s3b = _step(4, "Or automate it",
-                f"<span class='pill'>Scan the hand-built body</span>{arrow}<span class='pill'>Data Stick</span>{arrow}<span class='pill'>Assembly Line</span>",
+                f"<span class='pill'>Scan a body</span>{arrow}<span class='pill'>Data Stick</span>{arrow}<span class='pill'>Assembly Line</span>{arrow}<span class='pill'>Body</span>{plus}<span class='pill'>Computer</span>{arrow}<span class='pill'>Assembler</span>",
                 "Scan one hand-built body into a <b>Data Stick</b> in the Scanner (T1 takes a minute at HV, T2 two minutes at EV). The <b>Assembly Line</b> then builds that body "
-                "from the same parts plus 250 L of lubricant, in 30 seconds (T1) or 45 seconds (T2).")
+                "from plates, fins, an engine and 250 L of lubricant, in 30 seconds (T1) or 45 seconds (T2). It makes the basic body; "
+                "a better <b>Guidance Computer</b> goes in afterwards in the <b>Assembler</b> (15 seconds, at the body's voltage).")
     s4 = _step(5, "Stack it on the launch pad",
                f"{img(missile_on_pad(1, 100), h=150)}{img(missile_on_pad(2, 100), h=150)}",
                "Place the <b>Missile Body</b> on the middle of a Galacticraft <b>Launch Pad</b>, then set a <b>warhead</b> on its nose. It seats flush. "
@@ -151,7 +149,6 @@ def first_missile() -> str:
 <div class="steps">{s1}{s2}{s3}{s3b}{s4}{s5}{s6}<div class="card sc" style="justify-content:center"><div class="muted" style="font-size:20px;line-height:1.4"><b style="color:var(--txt)">Order of play.</b> Chip, schematic, body, pad, warhead, fuel, target, launch. The warhead is the expensive part: see the warhead sheet for what each one does.</div></div></div>
 {flight}"""
     return page_doc("Your First Missile", "Tier 1 and Tier 2 missiles: from a chip to a launch from the Galacticraft launch pad.", body, extra=CSS,
-                    overlay='<div class="ribbon">Draft: numbers pending</div>',
                     credit=["Missile and warhead models and textures © HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.",
                             "GregTech textures from GregTech 5 Unofficial, LGPL-3.0.", MOJANG_CREDIT])
 
