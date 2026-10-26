@@ -162,6 +162,11 @@ public final class StructurePopulator {
         return this;
     }
 
+    /** @return the seeded plans, for scenarios that need to know where this populator will build */
+    StructureGrid grid() {
+        return grid;
+    }
+
     /**
      * Builds the part of every overlapping structure that lies in the window.
      *

@@ -105,14 +105,14 @@ public final class GeneratorScenarios {
      * A SIDE x SIDE chunk square of the scenario's own lane (see {@link ScenarioRegions}) that was never loaded and
      * has no recorded structure decision for any plan reaching into it; returns its minimum chunk or null.
      */
-    private static int[] freshSquare(World world, String owner) {
+    static int[] freshSquare(World world, String owner) {
         StructureState state = StructureState.forWorld(world);
         Layout l = testRegistry(PaletteKeys.resolveForPack(s -> {})).get(TEST_HUT_ID);
         StructureGrid grid = new StructureGrid(2, 2, 2, TestLayout.poolsOf(l));
         return ScenarioRegions.allocate(world, owner, SIDE, 1, (bx, bz) -> {
             for (int cx = bx - 2; cx < bx + SIDE + 2; cx++) {
                 for (int cz = bz - 2; cz < bz + SIDE + 2; cz++) {
-                    for (StructurePlan p : grid.plansForWindow(world.getSeed(), 0, cx, cz)) {
+                    for (StructurePlan p : grid.plansForWindow(world.getSeed(), world.provider.dimensionId, cx, cz)) {
                         if (state.get(PlanKey.of(p)) != null) return false;
                     }
                 }
@@ -122,7 +122,7 @@ public final class GeneratorScenarios {
     }
 
     /** Loads fresh squares until one stamps a structure (a square may be all ocean); null when none does. */
-    private static int[] loadUntilStamped(World world, String owner) {
+    static int[] loadUntilStamped(World world, String owner) {
         for (int i = 0; i < 6; i++) {
             int[] sq = freshSquare(world, owner);
             if (sq == null) return null;
@@ -133,7 +133,7 @@ public final class GeneratorScenarios {
         return null;
     }
 
-    private static void loadSquare(World world, int bx, int bz) {
+    static void loadSquare(World world, int bx, int bz) {
         ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
         for (int dx = 0; dx < SIDE; dx++) {
             for (int dz = 0; dz < SIDE; dz++) {
@@ -146,9 +146,18 @@ public final class GeneratorScenarios {
         return world.getChunkFromChunkCoords(cx, cz).isTerrainPopulated;
     }
 
-    private static long[] counters() {
+    static long[] counters() {
         return new long[] { StructureGenerator.populateCount(), StructureGenerator.stampedCount(),
             StructureGenerator.acceptedWrites(), StructureGenerator.rejectedWrites(), PopulateGuard.violationCount() };
+    }
+
+    /** The forced SMALL pool holding only the test hut. */
+    static Map<SizeClass, List<PoolEntry>> testPools(Layout l) {
+        Map<SizeClass, List<PoolEntry>> pools = new EnumMap<>(SizeClass.class);
+        List<PoolEntry> small = new ArrayList<>();
+        small.add(new PoolEntry(TEST_HUT_ID, 1, 4, new Footprint(l.sizeX(), l.sizeY(), l.sizeZ())));
+        pools.put(SizeClass.SMALL, small);
+        return pools;
     }
 
     private static final class TestLayout implements Scenario {
@@ -328,11 +337,7 @@ public final class GeneratorScenarios {
         }
 
         private static Map<SizeClass, List<PoolEntry>> poolsOf(Layout l) {
-            Map<SizeClass, List<PoolEntry>> pools = new EnumMap<>(SizeClass.class);
-            List<PoolEntry> small = new ArrayList<>();
-            small.add(new PoolEntry(TEST_HUT_ID, 1, 4, new Footprint(l.sizeX(), l.sizeY(), l.sizeZ())));
-            pools.put(SizeClass.SMALL, small);
-            return pools;
+            return testPools(l);
         }
 
         private static boolean wholeBoxPopulated(World world, StructurePlan p) {
