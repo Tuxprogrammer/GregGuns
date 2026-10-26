@@ -108,7 +108,7 @@ public final class IcbmIngredients {
                 if (m == null) {
                     return null;
                 }
-                // Some GT fluids exist only as a gas or only as a liquid (Sulfuric Gas has a cell and a gas but no
+                // Some GT fluids exist only as a gas or only as a liquid (some have a cell and a gas but no
                 // liquid form), so each kind falls back to the other.
                 FluidStack first = in.src() == Ing.Src.GAS ? m.getGas(in.count()) : m.getFluid(in.count());
                 return first != null ? first : in.src() == Ing.Src.GAS ? m.getFluid(in.count()) : m.getGas(in.count());

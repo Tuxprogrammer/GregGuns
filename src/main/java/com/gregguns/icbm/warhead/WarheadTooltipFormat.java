@@ -65,6 +65,18 @@ public final class WarheadTooltipFormat {
     }
 
     /**
+     * The dynamic display name (D58), such as {@code Condensed T1 Warhead}. One template keeps the order translatable.
+     *
+     * @param template      the localized format, two slots: the explosive name, then the casing number
+     * @param explosiveName the localized explosive name
+     * @param casingNumber  1 for T1, 2 for T2
+     * @return the name
+     */
+    public static String displayName(String template, String explosiveName, int casingNumber) {
+        return String.format(template, explosiveName, Integer.toString(casingNumber));
+    }
+
+    /**
      * @param value a number
      * @return the number with a thousands comma and no decimals, such as {@code 1,200}
      */

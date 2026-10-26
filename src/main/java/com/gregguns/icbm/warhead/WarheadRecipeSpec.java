@@ -34,9 +34,9 @@ public enum WarheadRecipeSpec {
     /** A dizzying gas: nitrous oxide in two canisters. */
     DEBILITATION(WarheadBlast.DEBILITATION, false, 6, plates(Tier.HV, 4), Ing.part(IcbmPart.DISPERSAL_CANISTER, 2),
         pe(3), fuze1(), Ing.gas("NitrousOxide", 2000, Tier.LV)),
-    /** A sour refinery gas in two canisters; a few mustard seeds for a pun when HarvestCraft is there. */
+    /** Pungent ammonia gas in two canisters; a few mustard seeds for a pun when HarvestCraft is there. */
     CHEMICAL(WarheadBlast.CHEMICAL, false, 7, plates(Tier.HV, 4), Ing.part(IcbmPart.DISPERSAL_CANISTER, 2), pe(3),
-        fuze1(), Ing.optionalMod("harvestcraft:mustardseedsItem", 4), Ing.fluid("SulfuricGas", 2000, Tier.HV)),
+        fuze1(), Ing.optionalMod("harvestcraft:mustardseedsItem", 4), Ing.gas("Ammonia", 2000, Tier.HV)),
     /** A smoky fluid and coal dust. */
     SMOKE(WarheadBlast.SMOKE, false, 8, plates(Tier.HV, 4), Ing.part(IcbmPart.DISPERSAL_CANISTER, 2), pe(1), fuze1(),
         Ing.gt("dust", "Coal", 8, Tier.LV, 0.2), Ing.fluid("Creosote", 2000, Tier.LV)),

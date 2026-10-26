@@ -46,7 +46,7 @@
   | anvil | TNT, 12 lead plates (a dense mass) |
   | incendiary | 2 Napalm Canisters (Dispersal Canister plus gasoline) |
   | debilitation | 2 Dispersal Canisters, nitrous oxide |
-  | chemical | 2 Dispersal Canisters, sulfuric gas, a few mustard seeds when HarvestCraft is present |
+  | chemical | 2 Dispersal Canisters, ammonia gas, a few mustard seeds when HarvestCraft is present |
   | smoke | 2 Dispersal Canisters, creosote, coal dust |
   | repulsive | a Field Generator (HV) |
   | attractive | a Field Generator (HV), magnetic steel rods |

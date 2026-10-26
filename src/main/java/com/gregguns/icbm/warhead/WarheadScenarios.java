@@ -40,6 +40,10 @@ public final class WarheadScenarios {
         registry.register(new FuseRedstone());
         registry.register(new FuseByHand());
         registry.register(new BreakAsOne());
+        registry.register(new FuseFullFillBesideRedstone());
+        registry.register(new LitStateSyncs());
+        registry.register(new InfernalHealth("condensed", 5, 1080.0));
+        registry.register(new InfernalHealth("thermobaric", 20, 2700.0));
         for (WarheadBlast blast : WarheadBlast.values()) {
             registry.register(new BlastType(blast));
         }
@@ -347,6 +351,186 @@ public final class WarheadScenarios {
         }
     }
 
+    /** A full-fill warhead placed beside a powered block gets the full-fill fuse, not the default fill-1 one. */
+    private static final class FuseFullFillBesideRedstone extends Base {
+
+        @Override
+        public String name() {
+            return "icbm.warhead.fuse_full_fill";
+        }
+
+        @Override
+        public String description() {
+            return "A full-fill warhead placed from its item beside a redstone block is lit with the full-fill fuse (D51).";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (needsModule() != null) {
+                return needsModule();
+            }
+            ctx.clearArea(4, 4);
+            World w = ctx.world();
+            int x = ctx.originX();
+            int y = ctx.originY();
+            int z = ctx.originZ();
+            ctx.setBlock(1, 0, 0, Blocks.redstone_block, 0);
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            Item item = Item.getItemFromBlock(block(WarheadCasing.T1));
+            ItemStack stack = WarheadStacks.make(item, WarheadCasing.T1, "condensed", 5);
+            // The item places the block (lighting it in onBlockAdded, before the NBT is read) and then inits it.
+            boolean placed = ((ItemBlockWarhead) item).placeBlockAt(stack, null, w, x, y, z, 1, 0.5F, 0.5F, 0.5F, 0);
+            out.check(placed, "the item placed the warhead");
+            TileEntity t = w.getTileEntity(x, y, z);
+            if (!(t instanceof TileWarhead)) {
+                return ScenarioResult.fail(name(), "no warhead tile after placing");
+            }
+            TileWarhead tile = (TileWarhead) t;
+            int fillOneFuse = WarheadFuse.litTicks(
+                Math.max(
+                    WarheadMath.MIN_RADIUS,
+                    Explosives.get("condensed")
+                        .radius(1)),
+                IcbmConfig.fuseMultiplier);
+            out.checkEquals(
+                "the stack carried the full fill",
+                5,
+                tile.data()
+                    .fill());
+            out.check(tile.armed(), "the powered neighbor lit it");
+            out.checkEquals("the fuse follows the full fill", tile.litFuseTicks(), tile.fuse());
+            out.check(tile.fuse() > fillOneFuse, "longer than the fill-1 fuse (" + fillOneFuse + ")");
+            // Defuse before it burns: the scenario only checks the length.
+            w.setBlockToAir(x, y, z);
+            killItems(w, x, y, z);
+            return out.build();
+        }
+    }
+
+    /** The lit flag reaches a client tile through the description packet, and the name follows D58. */
+    private static final class LitStateSyncs extends Base {
+
+        @Override
+        public String name() {
+            return "icbm.warhead.lit_sync";
+        }
+
+        @Override
+        public String description() {
+            return "A lit warhead's description packet makes a fresh client tile read as armed with the same explosive; an unlit one does not.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (needsModule() != null) {
+                return needsModule();
+            }
+            ctx.clearArea(4, 4);
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            TileWarhead server = place(ctx, WarheadCasing.T1, 0, 0, 0, "smoke", 1);
+            if (server == null) {
+                return ScenarioResult.fail(name(), "no tile");
+            }
+            TileWarhead before = new TileWarhead();
+            before.onDataPacket(
+                null,
+                (net.minecraft.network.play.server.S35PacketUpdateTileEntity) server.getDescriptionPacket());
+            out.check(!before.armed(), "an unlit warhead reads as unlit on the client");
+            server.arm(server.litFuseTicks(), null);
+            TileWarhead client = new TileWarhead();
+            client.onDataPacket(
+                null,
+                (net.minecraft.network.play.server.S35PacketUpdateTileEntity) server.getDescriptionPacket());
+            out.check(client.armed(), "the client tile reads as armed once lit");
+            out.checkEquals(
+                "the client knows the explosive",
+                "smoke",
+                client.data()
+                    .explosive());
+            ctx.world()
+                .setBlockToAir(ctx.originX(), ctx.originY(), ctx.originZ());
+            killItems(ctx.world(), ctx.originX(), ctx.originY(), ctx.originZ());
+            return out.build();
+        }
+    }
+
+    /**
+     * A mob with Infernal-scale health (a full Condensed or Thermobaric warhead against 1,080 or 2,700) dies at ground
+     * zero.
+     */
+    private static final class InfernalHealth extends Base {
+
+        private final String id;
+        private final int fill;
+        private final double health;
+
+        InfernalHealth(String id, int fill, double health) {
+            this.id = id;
+            this.fill = fill;
+            this.health = health;
+        }
+
+        @Override
+        public String name() {
+            return "icbm.blast.infernal_" + id;
+        }
+
+        @Override
+        public String description() {
+            return "A mob with " + (int) health + " max health at ground zero of a full " + id + " warhead dies.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (needsModule() != null) {
+                return needsModule();
+            }
+            ExplosiveDef def = Explosives.get(id);
+            if (def == null) {
+                return ScenarioResult.fail(name(), "not registered");
+            }
+            ctx.clearArea(30, 40);
+            for (int dx = -4; dx <= 4; dx++) {
+                for (int dz = -4; dz <= 4; dz++) {
+                    ctx.setBlock(dx, -1, dz, Blocks.stone, 0);
+                }
+            }
+            World w = ctx.world();
+            EntityCow mob = ctx
+                .spawnAt(new EntityCow(w), ctx.originX() + 0.5, ctx.originY(), ctx.originZ() + 0.5, 0, 0);
+            mob.getEntityAttribute(net.minecraft.entity.SharedMonsterAttributes.maxHealth)
+                .setBaseValue(health);
+            mob.setHealth((float) health);
+            if (mob.getHealth() < health - 1.0) {
+                return ScenarioResult.fail(name(), "could not raise the mob's health, got " + mob.getHealth());
+            }
+            boolean old1 = IcbmConfig.terrainDamageT1;
+            boolean old2 = IcbmConfig.terrainDamageT2;
+            IcbmConfig.terrainDamageT1 = false;
+            IcbmConfig.terrainDamageT2 = false;
+            boolean accepted = IcbmBlasts
+                .detonate(w, ctx.originX() + 0.5, ctx.originY() + 0.5, ctx.originZ() + 0.5, def, fill, null);
+            if (!accepted) {
+                IcbmConfig.terrainDamageT1 = old1;
+                IcbmConfig.terrainDamageT2 = old2;
+                return ScenarioResult.fail(name(), "the engine did not accept the blast");
+            }
+            return ScenarioResult.pending(name(), 400, ticks -> {
+                boolean dead = mob.isDead || mob.getHealth() <= 0.0F;
+                if (!dead && ticks < 300) {
+                    return null;
+                }
+                IcbmConfig.terrainDamageT1 = old1;
+                IcbmConfig.terrainDamageT2 = old2;
+                ScenarioResult.Builder out = ScenarioResult.builder(name());
+                out.check(
+                    dead,
+                    "the " + (int) health + "-health mob died at ground zero (health " + mob.getHealth() + ")");
+                return out.build();
+            });
+        }
+    }
+
     /** One scenario per blast type: it detonates through the registry and shows its effect. */
     private static final class BlastType extends Base {
 
@@ -404,11 +588,16 @@ public final class WarheadScenarios {
                 return ScenarioResult.fail(name(), "the engine did not accept the blast");
             }
             final double[] extremes = { cow.posX, cow.posX };
+            final int[] fireSeen = { 0 };
             return ScenarioResult.pending(name(), 900, ticks -> {
                 // A cow wanders for 200 ticks, so push and pull are judged on the farthest it ever got, not where it
                 // stands at the end (the cause of the intermittent icbm.blast.attractive failure).
                 extremes[0] = Math.min(extremes[0], cow.posX);
                 extremes[1] = Math.max(extremes[1], cow.posX);
+                if (blast.kind() == WarheadBlast.Kind.FIRE) {
+                    fireSeen[0] = Math
+                        .max(fireSeen[0], countFire(w, ox, oy, oz, (int) Math.ceil(def.radius(def.maxFill()))));
+                }
                 boolean done = ticks >= settleTicks();
                 if (!done) {
                     return null;
@@ -416,9 +605,22 @@ public final class WarheadScenarios {
                 IcbmConfig.terrainDamageT1 = oldT1;
                 IcbmConfig.terrainDamageT2 = oldT2;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
-                check(out, ctx, def, cow, extremes);
+                check(out, ctx, def, cow, extremes, fireSeen[0]);
                 return out.build();
             });
+        }
+
+        /** Fire blocks standing on the floor layer within the radius; fire on stone burns out, so this is sampled. */
+        private static int countFire(World w, int ox, int oy, int oz, int r) {
+            int n = 0;
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    if (w.getBlock(ox + dx, oy, oz + dz) == Blocks.fire) {
+                        n++;
+                    }
+                }
+            }
+            return n;
         }
 
         private int settleTicks() {
@@ -434,7 +636,7 @@ public final class WarheadScenarios {
         }
 
         private void check(ScenarioResult.Builder out, ScenarioContext ctx, ExplosiveDef def, EntityCow cow,
-            double[] extremes) {
+            double[] extremes, int fireSeen) {
             World w = ctx.world();
             int ox = ctx.originX();
             int oy = ctx.originY();
@@ -457,7 +659,7 @@ public final class WarheadScenarios {
                     break;
                 case FIRE:
                     out.check(cow.isBurning() || cow.isDead, "the cow is alight");
-                    out.check(w.getBlock(ox + 2, oy, oz) != Blocks.stone || true, "fire placement ran");
+                    out.check(fireSeen > 0, "the blast placed fire blocks (most seen at once: " + fireSeen + ")");
                     break;
                 case GAS_DEBILITATION:
                     out.check(cow.isPotionActive(Potion.moveSlowdown), "debilitation slows");

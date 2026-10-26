@@ -159,22 +159,41 @@ public final class BlockWarhead extends BlockContainer implements Tiered {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
+    public void randomDisplayTick(World world, int x, int y, int z, java.util.Random rand) {
+        // Only a lit warhead (the tile was synced as armed) smokes and sparks, from the top of the casing.
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (!(tile instanceof TileWarhead) || !((TileWarhead) tile).armed()) {
+            return;
+        }
+        double px = x + 0.5 + (rand.nextDouble() - 0.5) * 0.2;
+        double pz = z + 0.5 + (rand.nextDouble() - 0.5) * 0.2;
+        double top = y + 0.95;
+        world.spawnParticle("smoke", px, top, pz, 0.0, 0.05, 0.0);
+        if (rand.nextInt(2) == 0) {
+            world.spawnParticle("lava", px, top, pz, 0.0, 0.0, 0.0);
+        }
+        world.spawnParticle("reddust", px, top, pz, 0.0, 0.0, 0.0);
+    }
+
+    @Override
     public void onBlockAdded(World world, int x, int y, int z) {
         super.onBlockAdded(world, x, y, z);
-        lightIfPowered(world, x, y, z);
+        lightIfPowered(world, x, y, z, true);
     }
 
     @Override
     public void onNeighborBlockChange(World world, int x, int y, int z, Block neighbor) {
-        lightIfPowered(world, x, y, z);
+        lightIfPowered(world, x, y, z, false);
     }
 
-    private static void lightIfPowered(World world, int x, int y, int z) {
+    private static void lightIfPowered(World world, int x, int y, int z, boolean needInit) {
         if (world.isRemote || !world.isBlockIndirectlyGettingPowered(x, y, z)) {
             return;
         }
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile instanceof TileWarhead) {
+        // On placement the tile still holds the default fill; init lights it again with the real one.
+        if (tile instanceof TileWarhead && (!needInit || ((TileWarhead) tile).initialized())) {
             ((TileWarhead) tile).arm(((TileWarhead) tile).litFuseTicks(), null);
         }
     }
