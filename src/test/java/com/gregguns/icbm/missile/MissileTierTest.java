@@ -22,10 +22,11 @@ class MissileTierTest {
     void fuelListsFollowD19() {
         // HV: RP-1 or Cetane-Boosted Diesel or better; EV-IV: Dense Hydrazine or better. "Better" includes the rest.
         assertArrayEquals(
-            new String[] { "nitrofuel", "rocketfuelmixb", "rocketfuelmixd", "rocketfuelmixc", "rocketfuelmixa" },
+            new String[] { "nitrofuel", "fluid.rocketfuelmixb", "fluid.rocketfuelmixd", "fluid.rocketfuelmixc",
+                "fluid.rocketfuelmixa" },
             MissileTier.T1.fuels());
         assertArrayEquals(
-            new String[] { "rocketfuelmixd", "rocketfuelmixc", "rocketfuelmixa" },
+            new String[] { "fluid.rocketfuelmixd", "fluid.rocketfuelmixc", "fluid.rocketfuelmixa" },
             MissileTier.T2.fuels());
     }
 
@@ -33,7 +34,7 @@ class MissileTierTest {
     void theFuelArrayIsACopy() {
         String[] a = MissileTier.T2.fuels();
         a[0] = "water";
-        assertEquals("rocketfuelmixd", MissileTier.T2.fuels()[0]);
+        assertEquals("fluid.rocketfuelmixd", MissileTier.T2.fuels()[0]);
     }
 
     @Test
@@ -84,10 +85,10 @@ class MissileTierTest {
 
     @Test
     void theFuelHatchAndTheLoaderShareOneList() {
-        assertTrue(MissileTier.T3.acceptsFuel("rocketfuelmixc"));
-        assertTrue(MissileTier.T3.acceptsFuel("rocketfuelmixa"));
-        assertFalse(MissileTier.T3.acceptsFuel("rocketfuelmixd"));
+        assertTrue(MissileTier.T3.acceptsFuel("fluid.rocketfuelmixc"));
+        assertTrue(MissileTier.T3.acceptsFuel("fluid.rocketfuelmixa"));
+        assertFalse(MissileTier.T3.acceptsFuel("fluid.rocketfuelmixd"));
         assertFalse(MissileTier.T3.acceptsFuel("water"));
-        assertTrue(MissileTier.T2.acceptsFuel("rocketfuelmixd"));
+        assertTrue(MissileTier.T2.acceptsFuel("fluid.rocketfuelmixd"));
     }
 }

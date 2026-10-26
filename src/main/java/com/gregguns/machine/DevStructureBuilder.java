@@ -189,6 +189,13 @@ public final class DevStructureBuilder {
         controller.setFrontFacing(ForgeDirection.NORTH);
         controller.setOwnerName(OWNER);
         controller.setOwnerUuid(UUID.nameUUIDFromBytes(OWNER.getBytes(StandardCharsets.UTF_8)));
+        // A rebuild over a formed pad: Galacticraft's dummy blocks tear the whole pad down when one is replaced, which
+        // eats cells construct() has just placed. Clear the nine cells first (front is north, so the shaft is behind).
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = 1; dz <= 3; dz++) {
+                world.setBlockToAir(x + dx, y - 2, z + dz);
+            }
+        }
         ((com.gregguns.icbm.silo.MTEMissileSilo) controller.getMetaTileEntity())
             .construct(new ItemStack(Items.stick, 1), false);
         hatch(world, x - 1, y, z, ItemList.Hatch_Input_Bus_HV, ForgeDirection.NORTH);

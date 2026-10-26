@@ -524,7 +524,7 @@ public final class SiloScenarios {
                 MTELaunchControl c = (MTELaunchControl) cbase.getMetaTileEntity();
                 power(ctx);
                 if (stage[0] < 3) {
-                    fuel(ctx, "rocketfuelmixc");
+                    fuel(ctx, "fluid.rocketfuelmixc");
                 }
                 switch (stage[0]) {
                     case 0:

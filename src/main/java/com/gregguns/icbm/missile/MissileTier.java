@@ -12,13 +12,14 @@ import com.gregguns.icbm.explosive.ExplosiveTier;
 public enum MissileTier {
 
     /** HV body: RP-1 or better, 2,000 mB, up to 1,000 blocks. */
-    T1("missile_body_t1", ExplosiveTier.T1, 2000, 20, 1000, 0.8, 12.0, 3, 20.0F, "nitrofuel", "rocketfuelmixb",
-        "rocketfuelmixd", "rocketfuelmixc", "rocketfuelmixa"),
+    T1("missile_body_t1", ExplosiveTier.T1, 2000, 20, 1000, 0.8, 12.0, 3, 20.0F, "nitrofuel", "fluid.rocketfuelmixb",
+        "fluid.rocketfuelmixd", "fluid.rocketfuelmixc", "fluid.rocketfuelmixa"),
     /** EV to IV body: Dense Hydrazine or better, 4,000 mB, up to 3,000 blocks. */
-    T2("missile_body_t2", ExplosiveTier.T2, 4000, 20, 3000, 1.2, 8.0, 4, 40.0F, "rocketfuelmixd", "rocketfuelmixc",
-        "rocketfuelmixa"),
+    T2("missile_body_t2", ExplosiveTier.T2, 4000, 20, 3000, 1.2, 8.0, 4, 40.0F, "fluid.rocketfuelmixd",
+        "fluid.rocketfuelmixc", "fluid.rocketfuelmixa"),
     /** LuV to ZPM body: Purple fuel or better, 8,000 mB, up to 8,000 blocks; launches from the silo only (D8, D70). */
-    T3("missile_body_t3", ExplosiveTier.T3, 8000, 20, 8000, 1.6, 6.0, 6, 60.0F, "rocketfuelmixc", "rocketfuelmixa");
+    T3("missile_body_t3", ExplosiveTier.T3, 8000, 20, 8000, 1.6, 6.0, 6, 60.0F, "fluid.rocketfuelmixc",
+        "fluid.rocketfuelmixa");
 
     private final String blockName;
     private final ExplosiveTier warheadTier;
