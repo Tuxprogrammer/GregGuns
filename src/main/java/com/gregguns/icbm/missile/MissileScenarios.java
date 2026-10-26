@@ -43,6 +43,7 @@ public final class MissileScenarios {
         registry.register(new SaveRoundTrip());
         registry.register(new ShotDown());
         registry.register(new PadSurvives());
+        registry.register(new MissileShotsScenario());
     }
 
     static boolean moduleOff() {
