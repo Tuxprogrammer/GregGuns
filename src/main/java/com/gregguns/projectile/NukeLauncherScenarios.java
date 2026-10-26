@@ -236,6 +236,9 @@ public final class NukeLauncherScenarios {
             boss.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 2000, 10));
             ctx.world()
                 .spawnEntityInWorld(boss);
+            // A pack can rescale a mob's maximum health after the spawn (GTNH 2.9 does it by difficulty), so the
+            // expectation uses the maximum read at the impact, not the 2000 the scenario asked for.
+            final float startHealth = boss.getHealth();
             LauncherScenarios.Tracker<RocketProjectile> rocket = new LauncherScenarios.Tracker<>(
                 ctx,
                 RocketProjectile.class);
@@ -260,9 +263,16 @@ public final class NukeLauncherScenarios {
                     dBoss < NukeAnnihilation.killRadius(10.0),
                     "the boss stand-in should be inside the kill zone, distance " + dBoss);
                 out.check(!boss.isDead, "a boss must survive the kill zone");
+                float expected = startHealth - (float) (NukeAnnihilation.BOSS_SHARE * boss.getMaxHealth());
                 out.check(
-                    Math.abs(boss.getHealth() - 1000.0F) < EPS,
-                    "the boss should lose exactly half its 2000 health, but has " + boss.getHealth());
+                    Math.abs(boss.getHealth() - expected) < EPS,
+                    "the boss should lose exactly half its maximum health " + boss.getMaxHealth()
+                        + " (from "
+                        + startHealth
+                        + ", leaving "
+                        + expected
+                        + "), but has "
+                        + boss.getHealth());
                 return out.build();
             });
         }
