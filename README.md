@@ -7,7 +7,7 @@ Guns, armor and military tech for [GT New Horizons](https://github.com/GTNewHori
 GregGuns is a from-scratch rewrite inspired by [Techguns](https://github.com/pWn3d1337/Techguns). It is not a port. GTNH has changed 1.7.10 so much that the original code would not carry over cleanly. GregGuns is written against GTNH's own APIs instead, and its weapons, components and recipes are gated by GregTech tiers rather than vanilla-style crafting.
 
 > [!IMPORTANT]
-> **Beta.** [**GregGuns 0.3.2-beta**](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.2-beta) is out for **GTNH 2.9.0-RC-2**. Everything planned for the first full version is in: weapons Steam to ZPM, ammo lines, armor, turrets, NPCs and ruins, and now an optional questbook tab. It has been tested inside the real pack. Expect some rough edges, and back up your world before you add it. The [release notes](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.2-beta) list the known issues (one is with shader packs), and [docs/ROADMAP.md](docs/ROADMAP.md) shows what comes next.
+> **Beta.** [**GregGuns 0.3.3-beta**](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta) is out for **GTNH 2.9.0-RC-2**. Everything planned for the first full version is in: weapons Steam to ZPM, ammo lines, armor, turrets, NPCs and ruins, an optional questbook tab, and now aim down sights, an in-game guide and structures on Ross128. It has been tested inside the real pack. Expect some rough edges, and back up your world before you add it. The [release notes](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta) list the known issues (one is with shader packs), and [docs/ROADMAP.md](docs/ROADMAP.md) shows what comes next.
 
 ## For players
 
@@ -15,7 +15,7 @@ GregGuns adds guns, ammo, armor, turrets, enemy soldiers and ruins to GTNH. It a
 
 ### Install
 
-1. Download `gregguns-0.3.2-beta.jar` from the [release page](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.2-beta).
+1. Download `gregguns-0.3.3-beta.jar` from the [release page](https://github.com/Tuxprogrammer/GregGuns/releases/tag/0.3.3-beta).
 2. Put it in the `mods` folder of your **GTNH 2.9.0-RC-2** instance. For multiplayer, the server **and** every player need the same jar.
 3. Start the game. Every module is on by default. You can switch modules off in `config/gregguns.cfg`, and that never stops anyone joining: the server's settings apply to everyone connected.
 4. **Coming from 0.2.0-alpha?** Read "Upgrading" in the release notes first. Your old config may still have modules switched off.
