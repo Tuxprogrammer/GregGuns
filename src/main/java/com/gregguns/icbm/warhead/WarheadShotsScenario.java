@@ -157,6 +157,7 @@ final class WarheadShotsScenario implements Scenario {
         final int gasZ = oz + 14;
         final int[] fillHalf = { 15 };
         final int[] airAfter = { -1 };
+        final boolean[] gasAccepted = { false };
 
         List<int[]> times = new ArrayList<>();
         List<Runnable> acts = new ArrayList<>();
@@ -269,7 +270,7 @@ final class WarheadShotsScenario implements Scenario {
         at.accept(GAP + 40, () -> signal(p, "shot", "icbm-gas-before"));
         at.accept(GAP / 2, () -> {
             ExplosiveDef d = Explosives.get("chemical");
-            IcbmBlasts.detonate(w, gasX + 0.5, oy + 1.0, gasZ + 0.5, d, 5, null);
+            gasAccepted[0] = IcbmBlasts.detonate(w, gasX + 0.5, oy + 1.0, gasZ + 0.5, d, 5, null);
         });
         at.accept(GAP, () -> signal(p, "shot", "icbm-gas-after-a"));
         at.accept(GAP, () -> signal(p, "shot", "icbm-gas-after-b"));
@@ -296,6 +297,8 @@ final class WarheadShotsScenario implements Scenario {
                         + p.getCommandSenderName()
                         + "; air blocks in the crater box: "
                         + airAfter[0]
+                        + "; gas blast accepted: "
+                        + gasAccepted[0]
                         + "; read the icbm-*.png shots")
                 .build();
         });
