@@ -145,8 +145,8 @@ def arsenal(part: int):
     return page_doc(title, sub, body)
 
 
-def page_doc(title, sub, body, width=1600, extra=""):
-    return K.page(title, sub, body, width=width, extra_css=PAGE_CSS + extra)
+def page_doc(title, sub, body, width=1600, extra="", **kw):
+    return K.page(title, sub, body, width=width, extra_css=PAGE_CSS + extra, **kw)
 
 
 # ---------------------------------------------------------------- getting started

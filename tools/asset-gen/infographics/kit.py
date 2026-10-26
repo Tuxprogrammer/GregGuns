@@ -281,6 +281,7 @@ img.px { image-rendering: pixelated; }
   background: #8b8b8b; box-shadow: inset 2px 2px 0 #373737, inset -2px -2px 0 #ffffff; }
 .spot { background: radial-gradient(ellipse 58% 60% at 50% 55%, rgba(190,210,235,.38), rgba(190,210,235,.10) 60%, transparent 76%); border-radius: 12px; }
 .foot { display: flex; align-items: center; gap: 12px; margin-top: 26px; color: var(--muted); font-size: 15px; }
+.credit { margin-top: 8px; color: var(--dim); font-size: 14px; }
 .foot img { width: 26px; height: 26px; image-rendering: pixelated; }
 .foot .hex { display: flex; gap: 4px; margin-left: auto; }
 .foot .hex i { width: 14px; height: 16px; clip-path: polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%); }
@@ -304,7 +305,8 @@ def chip(tier: str, text: str | None = None) -> str:
     return f'<span class="chip t-{tier}">{esc(text or tier)}</span>'
 
 
-def page(title_html: str, sub: str, body: str, width=1600, extra_css="") -> str:
+def page(title_html: str, sub: str, body: str, width=1600, extra_css="", credit="", overlay="") -> str:
+    """credit: one extra footer line for third-party art shown on the sheet. overlay: markup laid over the sheet (a stamp)."""
     logo = url(REPO / "docs/assets/branding/logo_pixel_128.png")
     hexes = "".join(f'<i style="background:var(--{t.lower()})"></i>' for t in TIERS)
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{extra_css}</style></head>
@@ -312,6 +314,7 @@ def page(title_html: str, sub: str, body: str, width=1600, extra_css="") -> str:
 <div class="head"><img class="logo" src="{logo}"><div><h1>{title_html}</h1><div class="sub">{esc(sub)}</div></div></div>
 {body}
 <div class="foot"><img src="{logo}"><span><b style="color:#cfd6de">GregGuns</b> &middot; guns, armor and military tech for GT New Horizons (Minecraft 1.7.10)</span><span class="hex">{hexes}</span></div>
+{f'<div class="credit">{esc(credit)}</div>' if credit else ''}{overlay}
 </div></body></html>"""
 
 
