@@ -1,6 +1,9 @@
 package com.gregguns.icbm.warhead;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 /**
@@ -26,6 +29,10 @@ public final class TileWarheadFiller extends TileEntity {
         this.dy = dy;
         this.dz = dz;
         markDirty();
+        if (worldObj != null) {
+            // The client needs the offset: the renderer reads it to draw a warhead down onto a body on a pad.
+            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        }
     }
 
     /** @return the main block's X */
@@ -57,5 +64,21 @@ public final class TileWarheadFiller extends TileEntity {
         dx = tag.getInteger("dx");
         dy = tag.getInteger("dy");
         dz = tag.getInteger("dz");
+    }
+
+    @Override
+    public Packet getDescriptionPacket() {
+        NBTTagCompound tag = new NBTTagCompound();
+        writeToNBT(tag);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, tag);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+        readFromNBT(pkt.func_148857_g());
+        if (worldObj != null) {
+            // The warhead drawn above this cell took its drop from the old offset: redraw it too.
+            worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord + 1, zCoord);
+        }
     }
 }

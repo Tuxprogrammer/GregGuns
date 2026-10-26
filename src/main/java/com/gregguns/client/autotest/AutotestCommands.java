@@ -113,6 +113,11 @@ final class AutotestCommands {
                 boolean opened = GuiCraftingRecipe.openRecipeGui("item", new ItemStack(item, 1, meta));
                 ClientAutotest.logLine("gui nei " + args[1] + " opened=" + opened);
             }
+            case "neirecipes" -> {
+                // A handler's whole recipe list by its outputId (for example a Galacticraft NASA Workbench rocket page).
+                boolean opened = GuiCraftingRecipe.openRecipeGui(args[1]);
+                ClientAutotest.logLine("gui neirecipes " + args[1] + " opened=" + opened);
+            }
             case "neisearch" -> {
                 // Types into NEI's item-panel search field, like a player would; the inventory GUI must be open.
                 codechicken.nei.LayoutManager.searchField.setText(args[1]);
