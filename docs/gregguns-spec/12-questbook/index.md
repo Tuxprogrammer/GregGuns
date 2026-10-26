@@ -4,7 +4,7 @@
 
 This area has **no Techguns counterpart**. Techguns has no questbook, so there is no baseline to compare against and no matching folder in the [Techguns spec](../../techguns-spec/README.md). The area exists because the GTNH pack hands progression to players through BetterQuesting, and the owner wants a GregGuns tab that steers a player into the mod.
 
-The quest line **ships inside the GregGuns jar** ([design record 0015](../../design/0015-m9-self-contained-polish.md)), not in the pack repository ([GT-New-Horizons-Modpack](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack)). The jar carries 121 quests in 14 chapters, plus 7 hidden tier-skip triggers (see [quest-line.md](quest-line.md#hidden-tier-skip-triggers)) as resource files in BetterQuesting's own format, and a hidden config key installs them into the server's BetterQuesting database. This area specifies the quest data, how the quests unlock, and how the resources are built and checked.
+The quest line **ships inside the GregGuns jar** ([design record 0015](../../design/0015-m9-self-contained-polish.md)), not in the pack repository ([GT-New-Horizons-Modpack](https://github.com/GTNewHorizons/GT-New-Horizons-Modpack)). The jar carries 124 quests in 15 chapters, plus 7 hidden tier-skip triggers (see [quest-line.md](quest-line.md#hidden-tier-skip-triggers)) as resource files in BetterQuesting's own format, and a hidden config key installs them into the server's BetterQuesting database. This area specifies the quest data, how the quests unlock, and how the resources are built and checked.
 
 Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquesting/`) and BetterQuesting 3.8.89-GTNH source:
 
@@ -21,7 +21,7 @@ Findings from the pack (`reference/gtnh/2.9.0-RC-2/.minecraft/config/betterquest
 
 | File | Covers |
 |---|---|
-| [quest-line.md](quest-line.md) | All 121 quests: key, title, tier, hint, tasks, rewards, prerequisites, layout, per chapter. Design rules, reward budget, coverage matrix |
+| [quest-line.md](quest-line.md) | All 124 quests: key, title, tier, hint, tasks, rewards, prerequisites, layout, per chapter. Design rules, reward budget, coverage matrix |
 | [authoring.md](authoring.md) | The pack's file format, ID derivation, one fully worked quest, the builder and validator in `tools/questbook/`, how to rebuild and test, checklist |
 
 The code for this area is the quest data and tools in `tools/questbook/` (`quests.json`, `build_quests.py`, `validate_quests.py`), the generated resources in `src/main/resources/assets/gregguns/questbook/`, and `QuestbookResourcesTest`. The installer is a separate piece, built behind the hidden config key.
@@ -50,7 +50,7 @@ The tab gates on GTNH progression. Each chapter intro lists the pack's tier ques
 | LuV | 1493, 1491, 1412 | HSS-G (1491 asks for 8 plates); Assembly Line (1412) | yes |
 | ZPM | 2610, 1667 | Naquadah alloy (1667) | yes |
 
-Branch chapters unlock from one early quest and then gate each quest by its own tier quest: NPCs and Structures from 11 (Monster Hunter), Machines from 97 (LV assembler), Equipment and Ammo from 88. All chapters also require `gg.start.welcome`.
+Branch chapters unlock from one early quest and then gate each quest by its own tier quest: NPCs and Structures from 11 (Monster Hunter), Machines from 97 (LV assembler), Equipment and Ammo from 88, and ICBM warheads from `gg.ammo.explosives`. All chapters also require `gg.start.welcome`.
 
 Rules that keep the gates honest:
 
@@ -70,16 +70,16 @@ Twenty-nine existing quests are prerequisites. All have `questIDHigh:4` = 0 in t
 | 88 | Welcome to Tier 1, LV | Tier 1 - LV | LV | lv, npc, site, gear, ammo |
 | 97 | Avengers, Assemble! | Tier 1 - LV | LV | mach |
 | 114 | Basic Transport: Items | Tier 1 - LV | LV | ammo |
-| 160 | Tier 3 (HV) | Tier 3 - HV | HV | hv, npc, mach, gear, ammo |
-| 176 | Tier 4 (EV) | Tier 4 - EV | EV | ev, npc, mach, ammo |
+| 160 | Tier 3 (HV) | Tier 3 - HV | HV | hv, npc, mach, gear, ammo, icbm |
+| 176 | Tier 4 (EV) | Tier 4 - EV | EV | ev, npc, mach, ammo, icbm |
 | 213 | Tier 5 (IV) | Tier 5 - IV | IV | iv, npc |
 | 553 | Diesel Fuel | Tier 2 - MV | MV | hv, ammo |
 | 619 | Battery Buffer | Storing and Transforming EU | LV | ammo |
-| 753 | Stainless Steel EBF processing | Tier 2 - MV | HV | hv |
+| 753 | Stainless Steel EBF processing | Tier 2 - MV | HV | hv, icbm |
 | 762 | TNT | Multiblock Goals | LV | mv, ammo |
 | 822 | Oxygen Gear | Space Race | HV | gear |
 | 824 | Oxygen Tanks | Space Race | HV | gear |
-| 860 | Titanium, Finally | Tier 3 - HV | HV | ev |
+| 860 | Titanium, Finally | Tier 3 - HV | HV | ev, icbm |
 | 861 | Tungstensteel | Tier 4 - EV | EV | iv |
 | 948 | Better Than Iron | Tier 0.5 - Steam | Steam | steam |
 | 1082 | MV Battery Buffers | Storing and Transforming EU | MV | ammo |
@@ -98,7 +98,7 @@ Twenty-nine existing quests are prerequisites. All have `questIDHigh:4` = 0 in t
 
 | Techguns feature | GregGuns approach | Pack mod or system | Evidence |
 |---|---|---|---|
-| (none: Techguns has no quests) | One BetterQuesting line of 121 quests | BetterQuesting 3.8.89-GTNH | [authoring.md](authoring.md) |
+| (none: Techguns has no quests) | One BetterQuesting line of 124 quests | BetterQuesting 3.8.89-GTNH | [authoring.md](authoring.md) |
 | Hostile NPC factions, bosses ([10](../10-entities-npcs/index.md)) | `bq_standard:hunt` on `gregguns.<Name>` | BetterQuesting | [quest-line.md](quest-line.md#npcs-and-bosses) |
 | Infernal variants ([infernal-mobs.md](../10-entities-npcs/infernal-mobs.md)) | Checkbox quests; a hunt cannot match "any infernal" | Infernal Mobs 1.10.7-GTNH | [quest-line.md](quest-line.md#npcs-and-bosses) |
 | Structures and their chests ([11](../11-worldgen/index.md)) | Checkbox quests, one per structure group | TooMuchLoot, EnhancedLootBags | [quest-line.md](quest-line.md#structures) |
@@ -114,10 +114,10 @@ Per [0015](../../design/0015-m9-self-contained-polish.md) nothing here is a chan
 
 | Resource | Content | Sheet |
 |---|---|---|
-| `index.json` | `format`, the `line` path, `linePositions` (121 paths), `quests` (128 paths: 121 plus the 7 triggers) and `orderEntry` (`D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns`, the entry the installer adds to the tab order) | [authoring.md](authoring.md#file-layout) |
+| `index.json` | `format`, the `line` path, `linePositions` (124 paths), `quests` (131 paths: 124 plus the 7 triggers) and `orderEntry` (`D4B4PFfzWT2Q4DUgPjN9oQ==: GregGuns`, the entry the installer adds to the tab order) | [authoring.md](authoring.md#file-layout) |
 | `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/QuestLine.json` | Line properties: name `GregGuns`, icon, `visibility` `UNLOCKED` | [authoring.md](authoring.md#line-files) |
-| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (121) | One position file per quest: `x`, `y`, `sizeX`, `sizeY` | [quest-line.md](quest-line.md) |
-| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (121) and `Quests/NoQuestLine/<Name>-<id>.json` (7 triggers) | One file per quest: properties, prerequisites, tasks, rewards | [authoring.md](authoring.md#quest-files) |
+| `QuestLines/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (124) | One position file per quest: `x`, `y`, `sizeX`, `sizeY` | [quest-line.md](quest-line.md) |
+| `Quests/GregGuns-D4B4PFfzWT2Q4DUgPjN9oQ==/<Name>-<id>.json` (124) and `Quests/NoQuestLine/<Name>-<id>.json` (7 triggers) | One file per quest: properties, prerequisites, tasks, rewards | [authoring.md](authoring.md#quest-files) |
 
 How the install behaves:
 

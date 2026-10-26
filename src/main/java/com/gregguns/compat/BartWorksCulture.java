@@ -81,4 +81,24 @@ public final class BartWorksCulture {
             return null;
         }
     }
+
+    /**
+     * @return one petri dish of the rotten-flesh culture (Escherichia cadaver; the Bio Lab makes it from an empty dish,
+     *         rotten flesh and water), or {@code null} when BartWorks is missing or the culture is unset
+     */
+    public static ItemStack rottenFleshPetriDish() {
+        if (!Loader.isModLoaded(MODID)) {
+            return null;
+        }
+        try {
+            // Source: BioCultureLoader.rottenFleshBacteria is BioCultureEnum.EscherichiaCadaver's culture.
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/common/loaders/BioCultureLoader.java#L24
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/bartworks/common/loaders/BioCultureLoader.java#L33
+            BioCulture culture = BioCultureLoader.rottenFleshBacteria;
+            return culture == null ? null : BioCultureEnum.getPetriDish(culture);
+        } catch (Throwable t) {
+            GregGuns.LOG.warn("BartWorks rotten-flesh petri dish is unavailable: {}", t.toString());
+            return null;
+        }
+    }
 }

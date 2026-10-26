@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 
 import com.gregguns.core.config.DamageFactorsConfig;
+import com.gregguns.explosion.Annihilation;
 import com.gregguns.explosion.NukeAnnihilation;
 
 /**
@@ -170,10 +171,24 @@ public final class DamageSources {
      * @return what {@link #annihilate} returned
      */
     public static boolean annihilateLiving(EntityLivingBase target, Entity attacker) {
+        return annihilateLiving(target, attacker, false);
+    }
+
+    /**
+     * The shared annihilation decision ({@link Annihilation#lethal}) with the bosses flag: ICBM warheads pass true and
+     * a boss dies; the Nuke Launcher and the Golden Gun pass false and a boss loses half its maximum health. Dealt
+     * through {@link #annihilate}, so the damage factors still gate it.
+     *
+     * @param target   the living entity hit
+     * @param attacker the attacker, may be {@code null}
+     * @param bosses   true when bosses die too
+     * @return what {@link #annihilate} returned
+     */
+    public static boolean annihilateLiving(EntityLivingBase target, Entity attacker, boolean bosses) {
         boolean boss = target instanceof IBossDisplayData || target instanceof EntityWither
             || target instanceof EntityDragon;
-        double amount = NukeAnnihilation
-            .lethal(boss, target.getHealth(), target.getAbsorptionAmount(), target.getMaxHealth());
+        double amount = Annihilation
+            .lethal(bosses, boss, target.getHealth(), target.getAbsorptionAmount(), target.getMaxHealth());
         return annihilate(target, attacker, (float) amount);
     }
 

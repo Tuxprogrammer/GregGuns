@@ -890,6 +890,16 @@ def _(c, x):
     c.pix(3, 11, x.m[DK]); c.pix(12, 12, x.m[DK])
 
 
+@icon("shaped_charge_liner_cone")
+def _(c, x):
+    # A hollow copper cone seen from the side, point down; the open rim is a bright ellipse on top.
+    c.poly([(2, 4), (13, 4), (9, 14), (6, 14)], COPPER)
+    c.ellipse(7.5, 4, 5.5, 2, ramp((120, 64, 30)))
+    c.ellipse(7.5, 4, 3.5, 1, ramp((70, 36, 18)))
+    c.vline(5, 6, 11, COPPER[LT])
+    c.pix(4, 5, COPPER[HL])
+
+
 @icon("part_uv_emitter")
 def _(c, x):
     c.rect(1, 3, 14, 12, x.m)

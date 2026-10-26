@@ -317,6 +317,13 @@ public final class SelfCheckRunner {
         // Source:
         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMap.java#L48
         for (RecipeMap<?> map : RecipeMap.ALL_RECIPE_MAPS.values()) {
+            // GT copies every Implosion Compressor recipe into the Electric Implosion Compressor map at UEV with a
+            // one-tick duration (RecipeMaps#addElectricImplosionRecipe), so the copy always breaks the tier map.
+            // Source:
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/recipe/RecipeMaps.java#L2231-L2241
+            if ("gt.recipe.electricimplosioncompressor".equals(map.unlocalizedName)) {
+                continue;
+            }
             for (GTRecipe recipe : map.getAllRecipes()) {
                 if (!involvesGregGuns(recipe.mOutputs) && !involvesGregGuns(recipe.mInputs)) {
                     continue;

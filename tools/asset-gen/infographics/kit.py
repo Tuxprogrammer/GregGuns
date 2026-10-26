@@ -280,7 +280,9 @@ def chip(tier: str, text: str | None = None) -> str:
 
 
 def page(title_html: str, sub: str, body: str, width=1600, extra_css="", credit="", overlay="") -> str:
-    """credit: one extra footer line for third-party art shown on the sheet. overlay: markup laid over the sheet (a stamp)."""
+    """credit: extra footer line(s), a string or a list of strings, for third-party art shown on the sheet. overlay:
+    markup laid over the sheet (a stamp)."""
+    credits = [credit] if isinstance(credit, str) else list(credit)
     logo = url(REPO / "docs/assets/branding/logo_pixel_128.png")
     hexes = "".join(f'<i style="background:var(--{t.lower()})"></i>' for t in TIERS)
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{extra_css}</style></head>
@@ -288,7 +290,7 @@ def page(title_html: str, sub: str, body: str, width=1600, extra_css="", credit=
 <div class="head"><img class="logo" src="{logo}"><div><h1>{title_html}</h1><div class="sub">{esc(sub)}</div></div></div>
 {body}
 <div class="foot"><img src="{logo}"><span><b style="color:#cfd6de">GregGuns</b> &middot; guns, armor and military tech for GT New Horizons (Minecraft 1.7.10)</span><span class="hex">{hexes}</span></div>
-{f'<div class="credit">{esc(credit)}</div>' if credit else ''}{overlay}
+{"".join(f'<div class="credit">{esc(c)}</div>' for c in credits if c)}{overlay}
 </div></body></html>"""
 
 

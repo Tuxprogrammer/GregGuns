@@ -137,6 +137,21 @@ Both keys are synced from server to client (GGS-01-03). Block removal always pas
 | `explosions.selfDamage` | boolean | `true` | n/a | yes | Whether the player who set off an explosion can be hurt by it (fixes PFX-25). |
 | `explosions.machineExplosions` | boolean | `true` | n/a | yes | Whether GregTech machines in a GregGuns blast react to it (can chain). False leaves them standing (Q4). |
 
+## ICBM blasts (`icbm`)
+
+All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-icbm-spec/02-explosives/blast-engine.md)). A blast removes terrain according to its tier's `terrainDamageT<n>` key alone (D52); `explosions.blockDamage` governs hand-held weapons and is not consulted. Claims and spawn protection still apply through the explosion events and, for a player's blast, `BlockEvent.BreakEvent`.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `icbm.maxBlastTier` | int | `4` | 1 to 4 | yes | The highest explosive tier that may detonate. |
+| `icbm.terrainDamageT1` to `icbm.terrainDamageT4` | boolean | `true` | n/a | yes | Whether blasts of that tier may remove terrain (on by default; `explosions.blockDamage` does not apply). |
+| `icbm.blastBudgetMs` | int | `12` | 1 to 40 | yes | Milliseconds per server tick that all running blasts share for breaking blocks. |
+| `icbm.maxActiveBlasts` | int | `16` | 1 to 256 | yes | Most blasts running at once; more are refused. |
+| `icbm.maxBlastRadius` | int | `96` | 8 to 200 | yes | Largest blast radius; the ray cast copies a cube this wide. |
+| `icbm.maxGridMemoryMb` | int | `256` | 16 to 4096 | yes | Caps the memory of all running blasts' grids together; a blast that would go past it waits in the queue until another finishes its cast. A lone blast always runs. |
+| `icbm.fuseMultiplier` | double | `1.0` | 0.1 to 10 | yes | Multiplier on a redstone- or hand-lit warhead's fuse. The base is `20 * (3 + ceil(radius / 3))` ticks from the warhead's blast radius at its fill (D51); a warhead set off by another explosion keeps a fixed 10 tick fuse. |
+| `icbm.blastDrops` | boolean | `false` | n/a | yes | Whether destroyed blocks drop items. |
+
 ## Equipment (`equipment`)
 
 All keys are synced. Used by the special-slot equipment of the armor module ([baubles-slots.md](gregguns-spec/05-armor/baubles-slots.md), [oxygen-gear.md](gregguns-spec/05-armor/oxygen-gear.md)).

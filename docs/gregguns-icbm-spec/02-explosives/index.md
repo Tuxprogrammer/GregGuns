@@ -6,14 +6,14 @@ Warheads and blasts: the shared explosive registry, the blast engine, warhead it
 
 ## Contents
 
-All sheets are planned. Each is written before the milestone that builds it, as laid out in the [ICBM roadmap](../../ROADMAP-ICBM.md).
+The registry, engine, annihilation, warhead and blast-type sheets are written; the rest are planned. Each is written before the milestone that builds it, as laid out in the [ICBM roadmap](../../ROADMAP-ICBM.md).
 
-- explosive-registry.md (planned): the one shared registry (D12), tiers on the GT ladder (D5), which blast types are kept (D10), config keys.
-- blast-engine.md (planned): ray-cast blasts, threaded scheduling, one tick budget for all running blasts, save and load of blasts in progress. MIT-portable parts are named here.
-- warheads-and-fill.md (planned): the warhead item with NBT `{explosive, fill}`, the casing-tier cap, the radius curve, the fuel bonus (D20, D23).
-- warhead-blocks.md (planned): the placed warhead as a 3D model with filler blocks, collision box, fuse, demolition-charge use (D31).
-- blast-types.md (planned): the kept T1-T3 blast types, their gas and status effects, and conventional center-damage targets (D34).
-- annihilation.md (planned): the shared kill-zone rule with a bosses flag (D30).
+- [explosive-registry.md](explosive-registry.md): the one shared registry (D12), tiers on the GT ladder (D5), which blast types are kept (D10), config keys.
+- [blast-engine.md](blast-engine.md): ray-cast blasts, threaded scheduling, one tick budget for all running blasts, save and load of blasts in progress. MIT-portable parts are named here.
+- [warheads-and-fill.md](warheads-and-fill.md): the warhead item with NBT `{explosive, fill}`, the casing-tier cap, the radius curve, the fuel bonus (D20, D23).
+- [warhead-blocks.md](warhead-blocks.md): the placed warhead as a 3D model with filler blocks, collision box, fuse, demolition-charge use (D31).
+- [blast-types.md](blast-types.md): the kept T1-T2 blast types (T3 follow in I3), their gas and status effects, and conventional center-damage targets (D34).
+- [annihilation.md](annihilation.md): the shared kill-zone rule with a bosses flag (D30).
 - fallout.md (planned): irradiated blocks, trinitite, goo, caps and GT yields (D21).
 - red-matter.md (planned): the bounded rebuild of red matter (D10).
 
@@ -31,7 +31,7 @@ All sheets are planned. Each is written before the milestone that builds it, as 
 | Antimatter, red matter | Kept at UV and UHV; red matter rebuilt with a bounded lifetime | GregGuns blast budget | [D10](../DECISIONS.md#d10-in-detail) |
 | Dropped blast content (colors gas, Christmas, Nightmare) | Dropped | none | [D10](../DECISIONS.md#d10-in-detail) |
 | Protective-armor rating | GT `Hazard` and `IHazardProtector` | GT5-Unofficial | [D21](../DECISIONS.md#d21-in-detail) |
-| Warhead crafting | GT machines (Chemical Reactor, Implosion Compressor), visible in NEI | GT5-Unofficial, NEI | [ROADMAP-ICBM I1](../../ROADMAP-ICBM.md#i1--warheads-and-the-blast-engine) |
+| Warhead crafting | The GT Assembler, one recipe per warhead plus eight parts (D57), visible in NEI | GT5-Unofficial, NEI | [ROADMAP-ICBM I1](../../ROADMAP-ICBM.md#i1--warheads-and-the-blast-engine) |
 
 ## Decisions carried
 
@@ -51,5 +51,4 @@ None yet.
 
 ## Open questions
 
-- The radius curve over fill (D23 allows sub-linear): to settle in the I1 warheads-and-fill sheet.
 - Exact fallout numbers (budgets, decay rate): to settle in the I3 fallout sheet.

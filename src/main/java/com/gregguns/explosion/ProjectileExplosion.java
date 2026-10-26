@@ -359,7 +359,7 @@ public final class ProjectileExplosion {
      * @param push the velocity to add to the player
      * @return a vanilla explosion packet with an empty block list
      */
-    static S27PacketExplosion pushPacket(double x, double y, double z, float size, Vec3 push) {
+    public static S27PacketExplosion pushPacket(double x, double y, double z, float size, Vec3 push) {
         return new S27PacketExplosion(x, y, z, size, new ArrayList<ChunkPosition>(), push);
     }
 
@@ -399,6 +399,25 @@ public final class ProjectileExplosion {
      * @return true when the block was removed
      */
     static boolean breakOne(World world, Explosion vanilla, EntityPlayer player, float size, int bx, int by, int bz) {
+        return breakBlock(world, vanilla, player, size, bx, by, bz, true);
+    }
+
+    /**
+     * The single place a blast removes a block, for GregGuns blasts and ICBM blasts alike: the protection check for a
+     * player-owned blast, the machine rule, then {@code onBlockExploded} so GregTech machines react.
+     *
+     * @param world   the world
+     * @param vanilla the explosion, for {@code onBlockExploded}
+     * @param player  who the break is on behalf of, or {@code null} for an NPC
+     * @param size    the vanilla power, drives drop chance
+     * @param bx      block X
+     * @param by      block Y
+     * @param bz      block Z
+     * @param drops   whether the block drops its items
+     * @return true when the block was removed
+     */
+    public static boolean breakBlock(World world, Explosion vanilla, EntityPlayer player, float size, int bx, int by,
+        int bz, boolean drops) {
         Block block = world.getBlock(bx, by, bz);
         if (block.getMaterial() == net.minecraft.block.material.Material.air) {
             return false;
@@ -411,7 +430,7 @@ public final class ProjectileExplosion {
             && world.getTileEntity(bx, by, bz) instanceof gregtech.api.interfaces.tileentity.IGregTechTileEntity) {
             return false;
         }
-        if (block.canDropFromExplosion(vanilla)) {
+        if (drops && block.canDropFromExplosion(vanilla)) {
             block.dropBlockAsItemWithChance(world, bx, by, bz, meta, 1.0F / size, 0);
         }
         block.onBlockExploded(world, bx, by, bz, vanilla);
@@ -419,18 +438,41 @@ public final class ProjectileExplosion {
     }
 
     private void playEffects() {
+        blastEffects(world, x, y, z, size);
+    }
+
+    /**
+     * The sound, the huge-explosion particle and, for a nuke-size blast, the long-range FX packet.
+     *
+     * @param world the world
+     * @param x     center X
+     * @param y     center Y
+     * @param z     center Z
+     * @param size  the vanilla power (the blast radius for an ICBM blast)
+     */
+    public static void blastEffects(World world, double x, double y, double z, float size) {
+        blastEffects(world, x, y, z, size, size >= ExplosionRules.NUKE_FX_MIN_SIZE);
+    }
+
+    /**
+     * As {@link #blastEffects(World, double, double, double, float)}, with the long-range FX decided by the caller
+     * (ICBM sends it only for annihilating explosives, whatever their radius).
+     *
+     * @param longRange true to also send the 150-block nuke FX packet
+     */
+    public static void blastEffects(World world, double x, double y, double z, float size, boolean longRange) {
         float pitch = (1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F) * 0.7F;
         world.playSoundEffect(x, y, z, GunSoundEvents.qualified(GunSoundEvents.EXPLOSION), 4.0F, pitch);
         if (world instanceof WorldServer) {
             ((WorldServer) world).func_147487_a("hugeexplosion", x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
         }
-        if (size >= ExplosionRules.NUKE_FX_MIN_SIZE) {
-            sendNukeFx();
+        if (longRange) {
+            sendNukeFx(world, x, y, z, size);
         }
     }
 
     /** A nuke-size blast tells every player within 150 blocks, past vanilla's particle range. */
-    private void sendNukeFx() {
+    private static void sendNukeFx(World world, double x, double y, double z, float size) {
         for (Object o : world.playerEntities) {
             if (o instanceof EntityPlayerMP) {
                 EntityPlayerMP p = (EntityPlayerMP) o;
