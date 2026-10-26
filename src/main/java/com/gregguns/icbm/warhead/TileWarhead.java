@@ -82,7 +82,8 @@ public final class TileWarhead extends TileEntity {
         return noDrop;
     }
 
-    void setNoDrop() {
+    /** Marks the block as removed without a drop (armed into a missile, detonated, or broken in creative). */
+    public void setNoDrop() {
         noDrop = true;
     }
 

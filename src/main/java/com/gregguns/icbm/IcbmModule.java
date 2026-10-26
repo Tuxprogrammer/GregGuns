@@ -29,6 +29,7 @@ public final class IcbmModule implements GregGunsModule {
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
         WarheadRegistration.preInit(registrar);
+        com.gregguns.icbm.missile.MissileRegistration.preInit(registrar);
     }
 
     /**
@@ -42,9 +43,11 @@ public final class IcbmModule implements GregGunsModule {
         // Content always registers (it is inert until something detonates), so the engine is wired whatever the flag
         // says; the scenarios then also run when the module turned itself off.
         com.gregguns.icbm.blast.BlastEngine.register();
+        com.gregguns.icbm.missile.MissileRegistration.initContent();
         if (DevEnvironment.testHooksEnabled()) {
             IcbmScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             WarheadRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
+            com.gregguns.icbm.missile.MissileRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
         }
     }
 
@@ -53,5 +56,6 @@ public final class IcbmModule implements GregGunsModule {
         // Only reached when the module is enabled, which already implies Galacticraft is present.
         GregGuns.LOG.info("ICBM module active (Galacticraft present)");
         WarheadRegistration.init();
+        com.gregguns.icbm.missile.MissileRegistration.init();
     }
 }
