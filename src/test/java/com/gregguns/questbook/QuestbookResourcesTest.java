@@ -173,7 +173,7 @@ class QuestbookResourcesTest {
     @Test
     void questCountMatchesTheSpec() {
         assertEquals(
-            124 + SKIP_TRIGGERS,
+            133 + SKIP_TRIGGERS,
             QUESTS.size(),
             "update docs/gregguns-spec/12-questbook when the count changes");
     }
