@@ -97,7 +97,7 @@ public final class CloudFxClient {
         double y = c.y + offset[1];
         double z = c.z + offset[2];
         boolean plume = c.kind == CloudKind.PLUME;
-        float size = plume ? 3.0F : 2.2F;
+        float size = plume ? 9.0F : 6.0F;
         double rise = plume ? 0.08 + RND.nextDouble() * 0.06 : 0.0;
         EntityFX fx = new EntitySmokeFX(
             world,
@@ -112,6 +112,12 @@ public final class CloudFxClient {
             {
                 // A shorter, fixed life keeps the live particle count bounded (vanilla caps one layer at 4,000).
                 particleMaxAge = PARTICLE_AGE_MIN + RND.nextInt(PARTICLE_AGE_SPAN) + (plume ? 30 : 0);
+            }
+
+            /** Full bright: the tint is the cloud's color, not the (often dark) light at the particle. */
+            @Override
+            public int getBrightnessForRender(float partialTicks) {
+                return 0xF000F0;
             }
         };
         float shade = 0.85F + RND.nextFloat() * 0.3F;
