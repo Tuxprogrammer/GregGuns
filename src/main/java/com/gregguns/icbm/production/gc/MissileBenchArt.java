@@ -73,28 +73,18 @@ public final class MissileBenchArt {
         }
     }
 
-    /** Draws the small captions beside the slot groups. */
+    /** Draws the small captions in their boxes (see {@link MissileBenchLayout#captions}), clear of every slot. */
     public static void drawLabels(FontRenderer font, MissileBuildSpec spec, int ox, int oy) {
-        font.drawString(
-            StatCollector.translateToLocal("gregguns.icbm.bench.warhead"),
-            ox + MissileBenchLayout.seatX() + 22,
-            oy + MissileBenchLayout.seatY() + 4,
-            0x404040);
-        font.drawString(
-            StatCollector.translateToLocal("gregguns.icbm.bench.guidance"),
-            ox + MissileBenchLayout.guidanceX() - 2,
-            oy + MissileBenchLayout.guidanceY() - 10,
-            0x404040);
-        font.drawString(
-            StatCollector.translateToLocal("gregguns.icbm.bench.fins"),
-            ox + MissileBenchLayout.finX(0),
-            oy + MissileBenchLayout.finY(spec) + 22,
-            0x404040);
-        font.drawString(
-            StatCollector.translateToLocal("gregguns.icbm.bench.engine"),
-            ox + MissileBenchLayout.engineX() + 20,
-            oy + MissileBenchLayout.engineY(spec) + 4,
-            0x404040);
+        String[] keys = { "warhead", "guidance", "fins", "engine" };
+        int[][] boxes = MissileBenchLayout.captions(spec);
+        for (int i = 0; i < keys.length; i++) {
+            String text = StatCollector.translateToLocal("gregguns.icbm.bench." + keys[i]);
+            int x = ox + boxes[i][0];
+            if (MissileBenchLayout.captionRightAligned(i)) {
+                x += boxes[i][2] - font.getStringWidth(text);
+            }
+            font.drawString(text, x, oy + boxes[i][1], 0x404040);
+        }
     }
 
     private static void hull(int x0, int y0, int x1, int y1) {

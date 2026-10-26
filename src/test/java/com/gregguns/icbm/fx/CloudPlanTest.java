@@ -163,4 +163,56 @@ class CloudPlanTest {
         assertEquals(14, q.radius());
         assertEquals(450, q.left());
     }
+
+    @Test
+    void puffsAreSmallTranslucentAndVaried() {
+        Random rnd = new Random(7);
+        float minSize = Float.MAX_VALUE;
+        float maxSize = 0;
+        float minAlpha = Float.MAX_VALUE;
+        float maxAlpha = 0;
+        for (int i = 0; i < 2000; i++) {
+            for (CloudKind k : CloudKind.values()) {
+                float a = CloudPlan.puffAlpha(k, rnd);
+                float sh = CloudPlan.puffShade(rnd);
+                assertTrue(a > 0.1F && a < 0.75F, k + " alpha " + a);
+                assertTrue(sh >= 0.7F && sh <= 1.0F, "shade " + sh);
+                if (k.isGas()) {
+                    float s = CloudPlan.puffSize(k, 32, rnd);
+                    assertTrue(a <= 0.45F, "gas stays thin");
+                    assertTrue(s >= CloudPlan.GAS_SIZE_MIN && s <= CloudPlan.GAS_SIZE_MAX * 1.5F, "gas size " + s);
+                    minSize = Math.min(minSize, s);
+                    maxSize = Math.max(maxSize, s);
+                    minAlpha = Math.min(minAlpha, a);
+                    maxAlpha = Math.max(maxAlpha, a);
+                } else {
+                    float s = CloudPlan.puffSize(k, 10, rnd);
+                    assertTrue(s >= CloudPlan.PLUME_SIZE_MIN && s <= CloudPlan.PLUME_SIZE_MAX);
+                }
+            }
+        }
+        assertTrue(maxSize - minSize > 1.0F, "sizes vary");
+        assertTrue(maxAlpha - minAlpha > 0.1F, "opacity varies");
+        // formerly 6.0 for every gas puff: now well under that at small radii
+        assertTrue(CloudPlan.puffSize(CloudKind.CHEMICAL, 4, new Random(1)) < 4.5F);
+    }
+
+    @Test
+    void biggerCloudsGetSlightlyBiggerPuffsAndCapped() {
+        float small = CloudPlan.puffSize(CloudKind.CHEMICAL, 2, new Random(3));
+        float big = CloudPlan.puffSize(CloudKind.CHEMICAL, 32, new Random(3));
+        float huge = CloudPlan.puffSize(CloudKind.CHEMICAL, 200, new Random(3));
+        assertTrue(big > small);
+        assertEquals(big, huge, 1e-6F);
+    }
+
+    @Test
+    void puffsFadeInAndOut() {
+        assertEquals(0.0F, CloudPlan.fade(0, 40), 1e-6F);
+        assertEquals(1.0F, CloudPlan.fade(20, 40), 1e-6F);
+        assertTrue(CloudPlan.fade(4, 40) > 0.0F && CloudPlan.fade(4, 40) < 1.0F);
+        assertTrue(CloudPlan.fade(35, 40) < CloudPlan.fade(30, 40));
+        assertEquals(0.0F, CloudPlan.fade(40, 40), 1e-6F);
+        assertEquals(0.0F, CloudPlan.fade(5, 0), 1e-6F);
+    }
 }

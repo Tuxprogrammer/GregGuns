@@ -65,4 +65,30 @@ class MissileBenchLayoutTest {
             assertTrue(MissileBenchLayout.engineY(s) >= MissileBenchLayout.finY(s) + 16);
         }
     }
+
+    private static boolean apart(int[] a, int aw, int ah, int[] b, int bw, int bh) {
+        return a[0] + aw <= b[0] || b[0] + bw <= a[0] || a[1] + ah <= b[1] || b[1] + bh <= a[1];
+    }
+
+    @Test
+    void captionsNeverTouchASlotOrEachOtherAndStayOnThePage() {
+        for (MissileBuildSpec s : MissileBuildSpec.values()) {
+            int[][] caps = MissileBenchLayout.captions(s);
+            List<int[]> all = slots(s);
+            for (int i = 0; i < caps.length; i++) {
+                int[] c = caps[i];
+                assertTrue(c[0] >= 0 && c[2] > 0, s + " caption " + i + " x");
+                assertTrue(c[1] >= 0 && c[1] + c[3] <= MissileBenchLayout.HEIGHT + 24, s + " caption " + i + " y");
+                for (int[] slot : all) {
+                    // one pixel of frame around a slot counts as the slot
+                    assertTrue(
+                        apart(c, c[2], c[3], new int[] { slot[0] - 1, slot[1] - 1 }, 18, 18),
+                        s + " caption " + i + " overlaps a slot");
+                }
+                for (int j = i + 1; j < caps.length; j++) {
+                    assertTrue(apart(c, c[2], c[3], caps[j], caps[j][2], caps[j][3]), s + " captions " + i + "/" + j);
+                }
+            }
+        }
+    }
 }

@@ -147,8 +147,30 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
         for (int i = 1; i < mDescriptionArray.length; i++) {
             details.add(local(i));
         }
-        return LaunchControlTooltipFormat.secondary(local(0), details, AddedBy.line())
-            .toArray(new String[0]);
+        List<String> lines = LaunchControlTooltipFormat.secondary(local(0), details, AddedBy.line());
+        // The Shift details are full sentences; wrap them at 200 px like the warhead tooltip, or they clip at the
+        // screen's left edge in a small window. Only the client asks, so the font is safe to touch.
+        if (FMLCommonHandler.instance()
+            .getSide()
+            .isClient()) {
+            lines = LaunchControlTooltipFormat.wrapAll(lines, ClientWrap.INSTANCE);
+        }
+        return lines.toArray(new String[0]);
+    }
+
+    /** Font-backed wrapper, in its own class so the dedicated server never loads the client font types. */
+    private static final class ClientWrap implements LaunchControlTooltipFormat.Wrapper {
+
+        static final ClientWrap INSTANCE = new ClientWrap();
+
+        /** Pixels a tooltip line may take before it wraps (same as the warhead tooltip). */
+        private static final int WIDTH = 200;
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public List<String> wrap(String line) {
+            return net.minecraft.client.Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(line, WIDTH);
+        }
     }
 
     /** Only the client ever asks; the dedicated server has no keyboard. */
