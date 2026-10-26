@@ -93,7 +93,7 @@ class WarheadExportTest {
             ExplosiveDef def = WarheadBlasts.define(b);
             WarheadRecipeSpec spec = null;
             for (WarheadRecipeSpec s : WarheadRecipeSpec.values()) {
-                if (s.blast() == b) {
+                if (s.blast() == b && !s.isStarter()) {
                     spec = s;
                 }
             }
@@ -108,7 +108,7 @@ class WarheadExportTest {
                 .append("\", \"cap\": ")
                 .append(b.fillCap())
                 .append(", \"machine\": \"")
-                .append(spec == null ? "" : spec.machine())
+                .append(spec == null ? "" : "ASSEMBLER")
                 .append("\", \"machineTier\": \"")
                 .append(spec == null ? "" : spec.machineTier())
                 .append("\", \"curve\": {");

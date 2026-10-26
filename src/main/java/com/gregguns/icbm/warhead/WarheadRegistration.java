@@ -19,6 +19,7 @@ public final class WarheadRegistration {
      */
     public static void preInit(ModuleRegistrar registrar) {
         WarheadBlasts.registerAll();
+        com.gregguns.icbm.recipe.IcbmParts.register(registrar);
         BlockWarhead t1 = registrar
             .registerBlock(WarheadCasing.T1.blockName(), new BlockWarhead(WarheadCasing.T1), ItemBlockWarhead.class);
         BlockWarhead t2 = registrar
@@ -36,6 +37,7 @@ public final class WarheadRegistration {
 
     /** Recipes and recycling data, queued for GT's before-postload hook. Runs only for an enabled module. */
     public static void init() {
+        com.gregguns.icbm.recipe.PartRecipes.init();
         WarheadRecipes.init();
     }
 
@@ -46,5 +48,6 @@ public final class WarheadRegistration {
      */
     public static void registerScenarios(ScenarioRegistry registry) {
         WarheadScenarios.registerAll(registry);
+        com.gregguns.icbm.recipe.RecipeScenarios.registerAll(registry);
     }
 }

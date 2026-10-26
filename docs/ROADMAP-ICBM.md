@@ -161,7 +161,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Warhead blocks.** A warhead can be placed in the world, and alone it is a demolition charge with a fuse (0018 §8). It is a **real 3D warhead model**, sized by tier (T1–T2 in 1×1×1, larger warheads with filler blocks), with a matching collision box, rendered as a static block model ([D31](gregguns-icbm-spec/DECISIONS.md#d31-in-detail)).
 - **The T1–T2 blast types kept by D10,** with their effects (gas, incendiary, smoke and so on) and the conventional damage targets.
 - The annihilation rule's shared implementation, with a bosses flag (0018 §7). It is unit tested here; nuclear content arrives in I3.
-- Warhead recipes through GT machines (Chemical Reactor, Implosion Compressor), tier-gated and visible in NEI.
+- Warhead recipes in the GT Assembler at the casing tier (D57), tier-gated and visible in NEI.
 - **Visuals:** a preview sheet of the warhead models by tier, the first `icbm-warheads` sheet (T1–T2), and quests for the first warheads.
 
 **Exit gate:**
