@@ -95,13 +95,13 @@ class ArmorTiersTest {
     }
 
     @Test
-    void steamMaterialIsTheSpecRowCalledT1Steam() {
+    void steamMaterialIsTheSteamAgeRowOfRecord0022() {
         assertMaterial(
             ArmorCatalog.STEAM,
-            2750,
-            new double[] { 20, 20, 18, 16, 18, 16, 16, 10, 6 },
-            0.10,
-            new int[] { 5, 6, 5, 4 });
+            908,
+            new double[] { 14, 14, 10.5, 10.5, 12, 10.5, 10.5, 0, 0 },
+            0.05,
+            new int[] { 4, 4, 4, 3 });
     }
 
     @Test
@@ -133,7 +133,7 @@ class ArmorTiersTest {
         assertEquals(Tier.MV, ArmorCatalog.T2_RIOT.tier());
         assertEquals(Tier.MV, ArmorCatalog.T2_BERET.tier());
         assertEquals(Tier.EV, ArmorCatalog.T3_COMBAT.tier());
-        assertEquals(Tier.EV, ArmorCatalog.STEAM.tier());
+        assertEquals(Tier.STEAM, ArmorCatalog.STEAM.tier()); // record 0022 (was EV)
         assertEquals(Tier.EV, ArmorCatalog.T3_HEV.tier());
     }
 
@@ -196,8 +196,10 @@ class ArmorTiersTest {
     void steamTotalsAreTheSpecTableWhilePowered() {
         BonusMap b = SetEvaluator.evaluate(worn(ArmorCatalog.STEAM, true))
             .bonuses();
-        assertTotals(b, 0.20, 0.24, 0.80, 0.20, 0);
-        assertEquals(5.0, b.get(ArmorBonus.EXTRA_HEALTH), EPS);
+        // Record 0022 (old EV values in brackets): speed 0.16 (0.20), jump 0.16 (0.24), knockback 0.35 (0.80),
+        // mining 0.12 (0.20), health 2.5 (5.0).
+        assertTotals(b, 0.16, 0.16, 0.35, 0.12, 0);
+        assertEquals(2.5, b.get(ArmorBonus.EXTRA_HEALTH), EPS);
         assertEquals(1.0, b.get(ArmorBonus.STEP_ASSIST), EPS);
         assertEquals(0.2, b.get(ArmorBonus.FALL_REDUCTION), EPS);
         assertEquals(1.0, b.get(ArmorBonus.FREE_FALL_HEIGHT), EPS);
@@ -323,13 +325,14 @@ class ArmorTiersTest {
                 .get(ArmorSlot.BOOTS)
                 .repair()
                 .clothItem());
-        // Steam armor is repaired with its own plating only (metal ratio 1.0 of plating in Techguns).
+        // Steam armor is repaired with Bronze plate and Heavy Cloth like the other bronze-age sets (record 0022).
         RepairSpec steam = ArmorCatalog.STEAM.pieces()
             .get(ArmorSlot.CHESTPLATE)
             .repair();
         assertEquals(4, steam.totalMats());
-        assertNull(steam.metalPrefix());
-        assertEquals("part_steam_armor_plating", steam.clothItem());
+        assertEquals("plate", steam.metalPrefix());
+        assertEquals("Bronze", steam.metalMaterial());
+        assertEquals("part_heavy_cloth", steam.clothItem());
     }
 
     @Test
@@ -451,5 +454,51 @@ class ArmorTiersTest {
             seconds++;
         }
         assertEquals(900, seconds);
+    }
+
+    @Test
+    void steamProtectionSitsBetweenTheScoutAndT1Combat() {
+        double steam = ArmorCatalog.STEAM.material()
+            .total(DamageType.PHYSICAL);
+        assertTrue(
+            steam > ArmorCatalog.T1_SCOUT.material()
+                .total(DamageType.PHYSICAL));
+        assertTrue(
+            steam < ArmorCatalog.T1_COMBAT.material()
+                .total(DamageType.PHYSICAL));
+        assertTrue(
+            ArmorCatalog.STEAM.material()
+                .penetrationResistance() <= 0.05);
+        // Powered knockback resistance stays under what the LV Combat set gives passively (0.40).
+        assertTrue(
+            SetEvaluator.evaluate(worn(ArmorCatalog.STEAM, true))
+                .bonuses()
+                .get(ArmorBonus.KNOCKBACK_RESISTANCE) < 0.40);
+    }
+
+    @Test
+    void aFuelItemRefuelsAQuarterOfAFullChestplate() {
+        int capacity = ArmorCatalog.STEAM.power()
+            .capacityUnits();
+        assertEquals(capacity / 4, PowerRules.FUEL_REFUEL_UNITS);
+        assertEquals(900, PowerRules.afterFuel(0, capacity));
+        assertEquals(capacity, PowerRules.afterFuel(2700, capacity));
+        assertEquals(capacity, PowerRules.afterFuel(3500, capacity), "never above capacity");
+    }
+
+    @Test
+    void fuelIsNotWastedNearFull() {
+        assertTrue(PowerRules.canTakeFuel(0, 3600));
+        assertTrue(PowerRules.canTakeFuel(2700, 3600));
+        assertFalse(PowerRules.canTakeFuel(2701, 3600));
+        assertFalse(PowerRules.canTakeFuel(3600, 3600));
+    }
+
+    @Test
+    void coalAndCharcoalAreTheGtGemOreNames() {
+        assertTrue(PowerRules.isFuelOre("gemCoal"));
+        assertTrue(PowerRules.isFuelOre("gemCharcoal"));
+        assertFalse(PowerRules.isFuelOre("dustCoal"));
+        assertFalse(PowerRules.isFuelOre("fuelCoke"));
     }
 }

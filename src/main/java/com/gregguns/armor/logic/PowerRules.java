@@ -19,6 +19,13 @@ public final class PowerRules {
     public static final double FALL_MIN_DISTANCE = 3.0;
     /** Units one canceled fire or lava hit costs. */
     public static final int COOLING_COST = 1;
+    /**
+     * Units one Coal or Charcoal puts into a steam chestplate: a quarter of the 3600-unit full charge, about four
+     * minutes of walking in a full set. Design record 0022.
+     */
+    public static final int FUEL_REFUEL_UNITS = 900;
+    /** Ore names of the Steam-age fuels (GT registers Coal and Charcoal as {@code gem<Material>}). */
+    public static final String[] FUEL_ORE_NAMES = { "gemCoal", "gemCharcoal" };
     /** Squared horizontal distance per tick above which the wearer counts as moving (0.001 squared). */
     private static final double MOVE_EPSILON_SQ = 1.0e-6;
 
@@ -82,5 +89,39 @@ public final class PowerRules {
      */
     public static int unitsFromEu(double eu, double euPerUnit) {
         return euPerUnit <= 0.0 ? 0 : (int) Math.floor(eu / euPerUnit + 1e-9);
+    }
+
+    /**
+     * @param oreName an ore dictionary name
+     * @return whether it names a Steam-age fuel ({@link #FUEL_ORE_NAMES})
+     */
+    public static boolean isFuelOre(String oreName) {
+        for (String fuel : FUEL_ORE_NAMES) {
+            if (fuel.equals(oreName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Whether one fuel item can be burned without wasting any of it: the chestplate must have room for the whole
+     * {@link #FUEL_REFUEL_UNITS}.
+     *
+     * @param units    the chestplate's units now
+     * @param capacity what a full chestplate holds
+     * @return true when {@code units + FUEL_REFUEL_UNITS <= capacity}
+     */
+    public static boolean canTakeFuel(int units, int capacity) {
+        return units >= 0 && units + FUEL_REFUEL_UNITS <= capacity;
+    }
+
+    /**
+     * @param units    the chestplate's units now
+     * @param capacity what a full chestplate holds
+     * @return the units after burning one fuel item, clamped to {@code capacity}
+     */
+    public static int afterFuel(int units, int capacity) {
+        return Math.min(capacity, Math.max(0, units) + FUEL_REFUEL_UNITS);
     }
 }

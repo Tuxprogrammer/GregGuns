@@ -43,7 +43,7 @@ The numbers are the row numbers of the Techguns sheets. "Drop" means GT already 
 | 1, 12 (Obsidian Steel, carbon plate) | Drop. GT steel and GT carbon materials |
 | 8-10 (Mechanical Parts) | Assembler. If GT already has a matching small-gear or motor part, use that instead of a new item |
 | 13, 17 (advanced bullets x16, 40 mm grenade x16) | Assembler, same pattern as the Ammo Press |
-| 15 (Steam Armor Plating) | Assembler or Forming Press, gated at the EV steam-armor tier of [0001](../../design/0001-tier-map.md) |
+| 15 (Steam Armor Plating) | Drop. The plating is retired ([0022](../../design/0022-steam-armor-steam-age.md)); the Steam armor is hand-crafted from bronze plates |
 
 ### Chem Lab (17 recipes)
 

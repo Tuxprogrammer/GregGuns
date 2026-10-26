@@ -54,13 +54,24 @@ Techguns builds every piece in the crafting table from Techguns plates, cloth an
 - **EU/t.** `TierEU.RECIPE_<tier>` of the set. No recipe in this sheet uses a lower voltage.
 - **Time.** 2 seconds per input item, at least 10 seconds. The programmed circuit is not counted.
 - **Programmed circuit** (`.circuit(n)`): helmet 1, chestplate 2, leggings 3, boots 4 in every set, except the Hazardous Environment boots, which use 5 (the Combat boots on circuit 4 are a subset of their inputs). Single items say their own number. The number keeps the four pieces of one set apart when a player loads a bus.
-- **Notation.** `HC` is Heavy Cloth, `TL` is Treated Leather, `PP` is Power Plating, `MP3` is Mechanical Parts T3, `CAT` is Compressed Air Tank, `SAP` is Steam Armor Plating. All are [assumed components](#assumed-components). `glass pane` is vanilla `Blocks.glass_pane`; `leather` is vanilla leather.
+- **Notation.** `HC` is Heavy Cloth, `TL` is Treated Leather, `PP` is Power Plating, `MP3` is Mechanical Parts T3, `CAT` is Compressed Air Tank. All are [assumed components](#assumed-components). `glass pane` is vanilla `Blocks.glass_pane`; `leather` is vanilla leather.
 - **Fresh output.** Every output of this sheet has camo index 0 and no stored charge, as Techguns' `onCreated` does for crafted multi-camo and powered armor.
 - **Gate.** The input that cannot be had below the tier, plus the machine voltage.
 
 ## Steam / ULV (hand-crafted)
 
-Tier ([0001](../../design/0001-tier-map.md)): Steam / ULV. Gate material: Bronze, wrought iron. Method: Hand. The Techguns recipe is [§ 1](../../techguns-spec/05-armor/recipes.md#1-armor), "T1 Scout" and "T1 Miner". Notation in the grids: `c` Heavy Cloth, `B` `plate.Bronze`, `i` `plate.WroughtIron`, `y` yellow dye (`Dyes.dyeYellow`), `n` `nugget.WroughtIron`. Techguns' empty center cells of the Scout grids now hold the gate plate.
+Tier ([0001](../../design/0001-tier-map.md)): Steam / ULV. Gate material: Bronze, wrought iron. Method: Hand. The Techguns recipe is [§ 1](../../techguns-spec/05-armor/recipes.md#1-armor), "T1 Scout" and "T1 Miner". The Steam armor joined this tier in [0022](../../design/0022-steam-armor-steam-age.md). Notation in the grids: `c` Heavy Cloth, `B` `plate.Bronze`, `i` `plate.WroughtIron`, `y` yellow dye (`Dyes.dyeYellow`), `n` `nugget.WroughtIron`. Techguns' empty center cells of the Scout grids now hold the gate plate.
+
+### Steam armor (4 recipes, gate: `plate.Bronze`)
+
+Design record [0022](../../design/0022-steam-armor-steam-age.md) (owner request 2026-10-25): the Steam set is a Steam-age hand-crafted set. Bronze plates in the hard places, Heavy Cloth in the rest, no other metal. Row ids AR-34 to AR-37 (once the EV Assembler rows). Steam Armor Plating (RC-23) is retired.
+
+| Output | Grid | Bronze plates |
+|---|---|---|
+| Steam Helmet | `BBB` / `c_c` | 3 |
+| Steam Chestplate | `B_B` / `BcB` / `cBc` | 5 |
+| Steam Legplates | `BcB` / `BcB` / `c_c` | 4 |
+| Steam Boots | `c_c` / `B_B` | 2 |
 
 ### T1 Scout (4 recipes, gate: `plate.Bronze`)
 
@@ -164,7 +175,7 @@ Tier: HV. Method: Assembler, `TierEU.RECIPE_HV`. Gate material: `plate.Stainless
 
 Gate for the Glider parts: `plate.StainlessSteel` (Backpack) and `stick.StainlessSteel` (Wing). The Glider itself is gated by its parts.
 
-## EV: T3 Combat, HEV and Steam armor
+## EV: T3 Combat and HEV
 
 Tier: EV. Method: Assembler, `TierEU.RECIPE_EV`. Gate material: `plate.Titanium`.
 
@@ -189,17 +200,6 @@ Techguns: "T3 Hazardous Environment" (`p` `plateCarbon`, `l` `plateTitanium`, `c
 | Hazardous Environment Chestplate | `plate.EpoxidFiberReinforced` ×3, `plate.Titanium` ×4, `circuit.EV` ×1 | 2 | 16 s |
 | Hazardous Environment Leggings | `plate.EpoxidFiberReinforced` ×3, `plate.Titanium` ×2, `circuit.EV` ×2 | 3 | 14 s |
 | Hazardous Environment Boots | `plate.EpoxidFiberReinforced` ×2, `plate.Titanium` ×2, `circuit.EV` ×1 (so they differ from the Combat boots) | 5 | 10 s |
-
-### Steam armor (4 recipes)
-
-Techguns: "Steam Armor" (every cell is Steam Armor Plating). Tier EV per [0001](../../design/0001-tier-map.md). Fuel-burning, so no electric item ([powered-flight.md](powered-flight.md)). Gate: Steam Armor Plating, which is a Titanium part ([Assumed components](#assumed-components)).
-
-| Output | Inputs | Circuit | Time |
-|---|---|---|---|
-| Steam Helmet | SAP ×5 | 1 | 10 s |
-| Steam Chestplate | SAP ×8 | 2 | 16 s |
-| Steam Legplates | SAP ×7 | 3 | 14 s |
-| Steam Boots | SAP ×4 | 4 | 10 s |
 
 ## IV: Power armor, Exo suit and Anti Gravity Device
 
@@ -285,7 +285,6 @@ GregGuns components that these recipes consume. All except where noted are defin
 | Power Plating (`PP`, `part_power_plating`) | Power Armor | "Cybernetic Parts, Power Plating, Anti Gravity Core ... Keep" |
 | Gas Mask Filter (`part_gas_mask_filter`) | Gas Mask, refilter | "Gas Mask Filter ... Keep" |
 | Compressed Air Tank (`CAT`, `tank_air`) | Oxygen Tanks, Jump Pack | [fluids.md](../06-items/fluids.md) (a 1 000 mB `IFluidContainerItem`) |
-| Steam Armor Plating (`SAP`, `part_steam_armor_plating`) | Steam armor | [06 recipes](../06-items/recipes.md#part-steam-armor-plating) (RC-23): Assembler, EV, `plate.Titanium` ×1 (×2 before [0021](../../design/0021-tier-balance-pass.md)), `plate.Bronze` ×1, `plate.Steel` ×1 gives 1 SAP, `circuit(1)`, 6 s, `RECIPE_EV`. Techguns shared item 67. EV matches the steam armor row in [0001](../../design/0001-tier-map.md) |
 | Anti Gravity Core (`part_anti_gravity_core`) | Anti Gravity Device | Made on the GT Assembler at IV, [RC-65](../06-items/recipes.md#part-anti-gravity-core) |
 
 Defined in this sheet and consumed by it: Glider Backpack, Glider Wing, Oxygen Mask. Area 06 should link here rather than repeat them ("Glider parts, Oxygen Mask ... Other areas" in components-and-materials.md).

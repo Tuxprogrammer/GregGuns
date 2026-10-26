@@ -2,7 +2,9 @@ package com.gregguns.armor;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +17,8 @@ import gregtech.api.enums.ItemList;
 
 /**
  * Runtime side of powered armor: finds a wearer's chestplate, asks whether the set is powered, takes the walking and
- * action costs, and refuels a steam chestplate from a Compressed Air Tank. The numbers are in {@link PowerRules}.
+ * action costs, and refuels a steam chestplate from Coal or Charcoal, or a Compressed Air Tank. The numbers are in
+ * {@link PowerRules}.
  *
  * <p>
  * The chestplate holds the energy. Each server tick {@link #tick} drains it, refuels it, and writes a {@code powered}
@@ -92,8 +95,8 @@ public final class ArmorPower {
         boolean powered = false;
         if (set != null && !chest.isBroken(chestStack)) {
             int units = chest.powerUnits(chestStack);
-            if (!PowerRules.isPowered(units) && set.power()
-                .kind() == PowerSpec.PowerKind.STEAM && refuelFromTank(player, chest, chestStack)) {
+            if (set.power()
+                .kind() == PowerSpec.PowerKind.STEAM && refuel(player, chest, chestStack, units, worldTime)) {
                 units = chest.powerUnits(chestStack);
             }
             if (PowerRules.isPowered(units)) {
@@ -125,6 +128,62 @@ public final class ArmorPower {
             }
         }
         return n;
+    }
+
+    /**
+     * Refuels a steam chestplate: a Coal or Charcoal from the inventory when the chestplate has room for a full
+     * {@link PowerRules#FUEL_REFUEL_UNITS} (checked once a second, so a full inventory scan is not a per-tick cost,
+     * and at once when the chestplate is empty), else a Compressed Air Tank when it is empty.
+     *
+     * @return whether anything was burned
+     */
+    private static boolean refuel(EntityPlayer player, ItemGregGunsArmor chest, ItemStack chestStack, int units,
+        long worldTime) {
+        int capacity = chest.set()
+            .power()
+            .capacityUnits();
+        boolean empty = !PowerRules.isPowered(units);
+        if ((empty || worldTime % 20L == 0L) && PowerRules.canTakeFuel(units, capacity)
+            && burnFuel(player, chest, chestStack, units, capacity)) {
+            return true;
+        }
+        return empty && refuelFromTank(player, chest, chestStack);
+    }
+
+    /** Burns one Coal or Charcoal from the main inventory into the chestplate. */
+    private static boolean burnFuel(EntityPlayer player, ItemGregGunsArmor chest, ItemStack chestStack, int units,
+        int capacity) {
+        for (int i = 0; i < player.inventory.mainInventory.length; i++) {
+            ItemStack stack = player.inventory.mainInventory[i];
+            if (stack != null && isFuel(stack)) {
+                if (--stack.stackSize <= 0) {
+                    player.inventory.mainInventory[i] = null;
+                }
+                chest.setPowerUnits(chestStack, PowerRules.afterFuel(units, capacity));
+                player.inventoryContainer.detectAndSendChanges();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param stack an item stack
+     * @return whether it is Coal or Charcoal: the vanilla item, or anything GT or another mod files under
+     *         {@code gemCoal} or {@code gemCharcoal}
+     */
+    static boolean isFuel(ItemStack stack) {
+        // Source: GT registers Coal and Charcoal as gemCoal and gemCharcoal:
+        // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/loaders/preload/LoaderGTOreDictionary.java#L71-L72
+        if (stack.getItem() == Items.coal && stack.getItemDamage() <= 1) {
+            return true;
+        }
+        for (int id : OreDictionary.getOreIDs(stack)) {
+            if (PowerRules.isFuelOre(OreDictionary.getOreName(id))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

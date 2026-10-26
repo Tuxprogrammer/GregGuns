@@ -538,7 +538,7 @@ final class ArmorScenarios {
 
         @Override
         public String description() {
-            return "The 8 steam-age hand recipes and 4 LV Combat Assembler recipes exist; Heavy Cloth has its recipe.";
+            return "The 12 steam-age hand recipes and 4 LV Combat Assembler recipes exist; Heavy Cloth has its recipe.";
         }
 
         @Override

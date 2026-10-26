@@ -59,7 +59,7 @@ The two systems are separate and both apply. A Techguns-style `RADIATION` damage
 | T2 Commando | MV | none | `ELECTRICAL` (rubber) |
 | T2 Riot (lead plate) | MV | none | `RADIOLOGICAL` |
 | T3 Combat | EV | none | none |
-| Steam armor | EV | none | `HEAT` |
+| Steam armor | Steam ([0022](../../design/0022-steam-armor-steam-age.md)) | none | `HEAT` |
 | T3 HEV (powered) | EV | none | `BIOLOGICAL`, `GAS`, `RADIOLOGICAL`; and `HEAT`, `FROST`, `ELECTRICAL` while the chestplate is charged |
 | T3 Power armor, Exo suit (powered) | IV | none | `HEAT`, `FROST`, `ELECTRICAL` while charged |
 

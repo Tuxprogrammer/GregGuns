@@ -51,3 +51,4 @@ The other options, and why each was not chosen.
 | [0019](0019-structures-on-ross128.md) | GregGuns structures on Ross128 (amends 0005) | D5 | Accepted |
 | [0020](0020-omt-overlap.md) | OpenModularTurrets overlap: the Rampart stays, nothing is merged (M9 polish) | — | Accepted |
 | [0021](0021-tier-balance-pass.md) | Tier balance pass: recipe cost, armor, NPCs, energy and ammo along the GT tiers (M9 polish) | D1, D3 | Accepted |
+| [0022](0022-steam-armor-steam-age.md) | Steam armor moves to the Steam age: bronze, hand-crafted, coal-fired; Steam Armor Plating retired (amends 0001, 0021) | D1 | Accepted |

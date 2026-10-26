@@ -101,13 +101,13 @@ def ammo():
 ARMOR_SETS = [
     ("Steam", "Bandit set", "Faster, jumps higher; light protection", dict(armor=vset("t1_scout"))),
     ("Steam", "Miner set", "Faster, and digs faster", dict(armor=vset("t1_miner"))),
+    ("Steam", "Steam armor", "Burn coal for extra hearts, speed and a firm stance", dict(armor=("custom", "steam"))),
     ("LV", "Soldier set", "Solid bullet protection, resists knockback", dict(armor=vset("t1_combat"))),
     ("MV", "Combat set", "Faster and tougher, in many camo patterns", dict(armor=vset("t2_combat"))),
     ("MV", "Commando set", "Better aim, digs fast underwater", dict(armor=vset("t2_commando"))),
     ("MV", "Ranger Veteran", "Best at MV; shrugs off poison and radiation", dict(armor=("custom", "t2_riot"))),
     ("EV", "Advanced Combat", "High protection, resists armor piercing", dict(armor=vset("t3_combat"))),
     ("EV", "HEV suit", "Powered: fireproof, hazard-proof, big jumps", dict(armor=vset("t3_hev"))),
-    ("EV", "Steam armor", "Burns compressed air for extra hearts", dict(armor=("custom", "steam"))),
     ("IV", "Power Armor", "Powered: the toughest set, extra hearts", dict(armor=("custom", "t3_power"))),
     ("IV", "Exo Suit", "Powered: fast, light, soft landings", dict(armor=("custom", "t3_exo"))),
     ("MV", "Beret", "A hat with style, and 10% more speed", dict(armor=("custom", "t2_beret"))),
@@ -502,11 +502,11 @@ def enemies():
 
 CHAPTERS = [
     ("Start here", None, None, "Controls, ammo words and how tiers work. No rewards, just the briefing."),
-    ("Steam age", "Steam", "handcannon", "Hand Cannon, Stone Bullets, first kills, Bandit and Miner armor."),
+    ("Steam age", "Steam", "handcannon", "Hand Cannon, Stone Bullets, first kills, Bandit, Miner and Steam armor."),
     ("Low Voltage", "LV", "pistol_9mm", "Pressed cases and 9mm rounds, your first pistol and magazines, Soldier armor."),
     ("Medium Voltage", "MV", "m4", "SMGs, the M4 and AK47, akimbo pairs, grenades, T2 armor."),
     ("High Voltage", "HV", "as50", "AUG, SCAR, LMG, AS50, launchers, flamethrower, chainsaw, Power Hammer."),
-    ("Extreme Voltage", "EV", "laser_rifle", "Charging at the right tier, lasers, Pulse Rifle, Minigun, T3 and Steam armor."),
+    ("Extreme Voltage", "EV", "laser_rifle", "Charging at the right tier, lasers, Pulse Rifle, Minigun, T3 armor."),
     ("Insane Voltage", "IV", "blaster_rifle", "Blasters, the De-Atomizer, Power Armor, the Exo Suit, anti-gravity flight."),
     ("Ludicrous Voltage", "LuV", "nether_blaster", "Nether Charges, the Nether and Alien Blasters, the Grim Reaper."),
     ("Zero Point Module", "ZPM", "nuclear_death_ray", "Tactical Nuke Rockets, the Nuclear Death Ray and the Nuke Launcher."),

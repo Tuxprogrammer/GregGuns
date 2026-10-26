@@ -1,6 +1,6 @@
 # 0021: Tier balance pass
 
-- **Status:** Accepted
+- **Status:** Accepted (change 1 superseded by [0022](0022-steam-armor-steam-age.md): the plating is retired)
 - **Extends:** [0001](0001-tier-map.md), [0003](0003-energy-model.md), [0008](0008-exact-tier-charging.md), [0010](0010-material-remap-and-tier-additions.md)
 - **Builds on:** [0016](0016-damage-balance-pass.md) (damage per shot; not redone here)
 - **Date:** 2026-10-25
