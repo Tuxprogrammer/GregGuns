@@ -8,7 +8,7 @@ To decide an open question, reply with its number and an option letter, or write
 
 ## Decided
 
-The owner decided D1–D28 on 2026-10-20 and D29–D42, D47 and D50 on 2026-10-25, and D51 on 2026-10-26. D43–D46, D48, D49 and D52–D54 are the orchestrator's.
+The owner decided D1–D28 on 2026-10-20 and D29–D42, D47 and D50 on 2026-10-25, and D51 and D55 on 2026-10-26. D43–D46, D48, D49 and D52–D54 are the orchestrator's.
 
 | # | Question | Decision |
 |---|---|---|
@@ -66,6 +66,7 @@ The owner decided D1–D28 on 2026-10-20 and D29–D42, D47 and D50 on 2026-10-2
 | D52 | ICBM terrain damage switch (orchestrator, 2026-10-26) | ICBM blasts break terrain according to their own per-tier `icbm.terrainDamageT<n>` settings, **on by default as D11 decided**, and are **not** gated by GregGuns' `explosions.blockDamage`, which keeps governing hand-held weapons only. Claims and protection are always respected through `ExplosionEvent.Detonate` and `BlockBreakGuard`. I1 as first built required both switches; corrected in the I1 fix round. The I1 exit box wording follows this |
 | D53 | Blast engine details (orchestrator, 2026-10-26, from coder 1) | Center damage is `centerDamage × √(fill / maxFill)`, flat over the inner 10% of the radius and falling to zero at the radius. Blasts drop no items by default (`icbm.blastDrops` off). Radius is capped at 96 blocks. A saved blast resumes at its cursor once its crater is decided, and before that restarts from its snapshot. Terrain breaks only through the shared `ProjectileExplosion.breakBlock` path. Only the ray caster is ported (MIT); the scheduler, snapshot and budget are our own |
 | D54 | Warhead content details (orchestrator, 2026-10-26, from coder 2) | A warhead's explosive tier equals its casing tier. Radius is `R × (fill / cap)^(1/3)`; fill caps are 5 (T1), 20 (T2) and 64 (T3). Each explosive has one GT recipe that makes a full-casing warhead, plus a cheap fill-1 condensed starter, since NBT cannot flow through a GT recipe. Placed-warhead textures are stitched into the block atlas through a custom sprite (`WarheadSprite`) so the static model draws in the chunk mesh. The dev self-check skips GT's auto-copied UEV electric implosion map, which always breaks the tier rule |
+| D55 | Vanilla textures on guide sheets | Owner, 2026-10-26. ICBM guide sheets may show **real vanilla Minecraft textures** (item icons, mob skins), as wikis and guides across the community do under Mojang's usage guidelines for fan content, instead of our own stand-in icons. They are read at build time from the Minecraft jar in the reference pack and never committed as loose texture files, and every sheet that shows them carries the line "Minecraft textures © Mojang / Microsoft; not an official Minecraft product." Mojang assets never ship in the mod jar. The older GregGuns sheets may switch over when they are next rebuilt |
 
 ### D8 in detail
 
