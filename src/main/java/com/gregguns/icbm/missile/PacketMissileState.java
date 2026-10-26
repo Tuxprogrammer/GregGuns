@@ -12,12 +12,14 @@ import com.gregguns.network.WorldTargets;
 import com.gregguns.network.validation.ClientRules;
 
 /**
- * Server to every client tracking a {@link EntityMissile}: its flight phase, warhead casing and fuel, which drive the
+ * Server to every client tracking a {@link EntityMissile}: its flight phase, warhead casing, nuclear flag and fuel,
+ * which drive the
  * engine flames and the nose model. Sent on change and repeated about once a second, so a client that starts tracking
  * late catches up. It replaces DataWatcher slots, which GregGuns never claims (GGS-01-11).
  *
  * <p>
- * Wire: entity id (int), phase (byte), casing (byte), fuel (int). Append-only list position: see
+ * Wire: entity id (int), phase (byte), casing (byte), fuel (int), nuclear flag (byte, picks the nuclear model).
+ * Append-only list position: see
  * {@code GregGunsNetwork}. A bad value or a target that is not a missile is dropped (CORE-40). Side: sent by the
  * server, handled by the client.
  */
@@ -29,6 +31,7 @@ public final class PacketMissileState extends ClientboundPacket {
     private int phase;
     private int casing;
     private int fuel;
+    private int nuclear;
 
     /** Required by the channel. */
     public PacketMissileState() {}
@@ -42,6 +45,7 @@ public final class PacketMissileState extends ClientboundPacket {
             .ordinal();
         this.casing = missile.casingNumber();
         this.fuel = missile.fuelMb();
+        this.nuclear = "nuclear".equals(missile.explosiveId()) ? 1 : 0;
     }
 
     @Override
@@ -50,6 +54,7 @@ public final class PacketMissileState extends ClientboundPacket {
         buf.writeByte(phase);
         buf.writeByte(casing);
         buf.writeInt(fuel);
+        buf.writeByte(nuclear);
     }
 
     @Override
@@ -58,12 +63,14 @@ public final class PacketMissileState extends ClientboundPacket {
         phase = buf.readByte();
         casing = buf.readByte();
         fuel = buf.readInt();
+        nuclear = buf.readByte();
     }
 
     @Override
     protected void validate(ClientRules rules, World world) {
         rules.inRange("phase", phase, 0, FlightPhase.values().length - 1)
-            .inRange("casing", casing, 1, 2)
+            .inRange("casing", casing, 1, 3)
+            .inRange("nuclear", nuclear, 0, 1)
             .inRange("fuel", fuel, 0, 10_000_000)
             .targetOfType("missile", () -> {
                 Entity e = WorldTargets.entity(world, entityId);
@@ -73,6 +80,7 @@ public final class PacketMissileState extends ClientboundPacket {
 
     @Override
     protected void handle(World world, EntityPlayer localPlayer) {
-        ((EntityMissile) world.getEntityByID(entityId)).applyState(FlightPhase.values()[phase], casing, fuel);
+        ((EntityMissile) world.getEntityByID(entityId))
+            .applyState(FlightPhase.values()[phase], casing, fuel, nuclear == 1);
     }
 }
