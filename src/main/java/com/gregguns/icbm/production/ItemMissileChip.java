@@ -71,7 +71,8 @@ public final class ItemMissileChip extends Item implements Tiered {
     public void registerIcons(IIconRegister reg) {
         icons = new IIcon[MissileBuildSpec.values().length];
         for (MissileBuildSpec s : MissileBuildSpec.values()) {
-            icons[s.number() - 1] = reg.registerIcon(PLACEHOLDER_ICON_DIR + (s.number() == 1 ? "fuze_assembly_mk1" : "fuze_assembly_mk2"));
+            icons[s.number() - 1] = reg
+                .registerIcon(PLACEHOLDER_ICON_DIR + (s.number() == 1 ? "fuze_assembly_mk1" : "fuze_assembly_mk2"));
         }
     }
 

@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.obj.WavefrontObject;
 
 import com.gregguns.GregGuns;
+import com.gregguns.icbm.missile.MissileTier;
 import com.gregguns.icbm.warhead.WarheadCasing;
 
 import cpw.mods.fml.relauncher.Side;
@@ -26,6 +27,7 @@ final class WarheadModels {
     private static final String TEXTURE_DIR = "textures/models/thirdparty/ntm/";
 
     private static final Map<WarheadCasing, WavefrontObject> MODELS = new EnumMap<>(WarheadCasing.class);
+    private static final Map<MissileTier, WavefrontObject> BODIES = new EnumMap<>(MissileTier.class);
 
     private WarheadModels() {}
 
@@ -66,5 +68,42 @@ final class WarheadModels {
     /** Forgets loaded models, after a resource reload. */
     static synchronized void clear() {
         MODELS.clear();
+        BODIES.clear();
+    }
+
+    /** @return the model file of a missile body */
+    static ResourceLocation bodyModelLocation(MissileTier tier) {
+        return new ResourceLocation("gregguns", MODEL_DIR + tier.blockName() + ".obj");
+    }
+
+    /** @return the texture file of a missile body */
+    static ResourceLocation bodyTextureFile(MissileTier tier) {
+        return new ResourceLocation("gregguns", TEXTURE_DIR + tier.blockName() + ".png");
+    }
+
+    /** @return the atlas name of the body's texture sprite */
+    static String bodySpriteName(MissileTier tier) {
+        return "gregguns:" + tier.blockName();
+    }
+
+    /**
+     * @param tier the tier
+     * @return the loaded body model, or null when it cannot be read (logged once)
+     */
+    static synchronized WavefrontObject body(MissileTier tier) {
+        if (!BODIES.containsKey(tier)) {
+            WavefrontObject model = null;
+            ResourceLocation loc = bodyModelLocation(tier);
+            try (InputStream in = Minecraft.getMinecraft()
+                .getResourceManager()
+                .getResource(loc)
+                .getInputStream()) {
+                model = new WavefrontObject(loc.toString(), in);
+            } catch (Exception e) {
+                GregGuns.LOG.error("Could not load the missile body model {}", loc, e);
+            }
+            BODIES.put(tier, model);
+        }
+        return BODIES.get(tier);
     }
 }

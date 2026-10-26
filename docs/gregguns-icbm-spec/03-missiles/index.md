@@ -6,16 +6,19 @@ Missile bodies, the stack-on-pad build, fuel, flight and tracking. Missiles ride
 
 ## Contents
 
-Sheets without a link are planned.
-
-- missile-bodies.md (planned): tiers, plates, engine, fins, guidance slots; chips and schematics (D8, D24).
 - [build-and-recipes.md](build-and-recipes.md): chip, schematic, NASA Workbench page, Assembly Line recipes with research, guidance carry-through, cost (D8, D27).
-- stack-on-pad.md (planned): placing body and warhead, arming into the missile entity, silo mating (D31).
-- galacticraft-pad.md (planned): `IDockable`, fuel interfaces, `EventLandingPadRemoval` denial, `icbm.pad.survives` (D32).
-- fuel.md (planned): per-tier fuel lists in `RocketFuels`, fixed amounts, the unburned-fuel bonus (D19, D20, D22).
-- flight-and-tracking.md (planned): the real entity, arc flight (MIT-portable), the two-chunk sliding window, in-flight cap, impact fusing (D11, D25, D26).
-- guidance.md (planned): circuit-tier scatter and the distance term (D24).
-- cluster-and-deferred.md (planned): what is deferred (cargo, held-item missile) and whether clusters ship (D10).
+- [missile-bodies.md](missile-bodies.md): the T1 and T2 bodies, their numbers, model, tooltip and recycling (D8, D24, D31).
+- [stack-and-pad.md](stack-and-pad.md): placing the body, seating the warhead, arming into the entity, the pad API for launch control (D31).
+- [galacticraft-pad.md](galacticraft-pad.md): `IDockable` without `EntityAutoRocket`, the removal guard, `icbm.pad.survives` (D32).
+- [fuel.md](fuel.md): the tank, the `RocketFuels` lists, the unburned-fuel bonus (D19, D20).
+- [missile-entity.md](missile-entity.md): the entity, its state, sync, rendering and damage.
+- [flight.md](flight.md): phases, launch checks, the closed-form arc, impact fusing, the in-flight cap (D11, D26).
+- [chunk-loading.md](chunk-loading.md): the two-chunk sliding window and when tickets are released (D25).
+- [guidance.md](guidance.md): tiered scatter (D24).
+
+Planned for later milestones:
+
+- cluster-and-deferred.md: what is deferred (cargo, held-item missile) and whether clusters ship (D10).
 
 ## Integration map
 
@@ -52,4 +55,4 @@ None yet. Fuel lists and the schematic page register through code; a pack change
 
 - How charges are added to a warhead (one per craft or a GT machine step): to settle in the I2 build-and-recipes sheet (D23).
 - Whether cluster missiles ship: to settle in the I2 sheet.
-- Per-tier fuel amounts: to settle in the I2 fuel sheet.
+- ~~Per-tier fuel amounts~~: settled in [fuel.md](fuel.md) (T1 2,000 mB, T2 4,000 mB).
