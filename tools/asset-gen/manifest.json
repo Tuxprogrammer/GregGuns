@@ -1399,9 +1399,7 @@
   "priority": "P2"
  },
  {
-  "id": "icon.part_steam_armor_plating",
   "kind": "icon",
-  "path": "textures/items/part_steam_armor_plating.png",
   "width": 16,
   "height": 16,
   "frames": 1,
