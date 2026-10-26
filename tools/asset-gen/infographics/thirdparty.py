@@ -1,8 +1,8 @@
 """Third-party art for the ICBM guide sheets: Galacticraft's launch pad and rocket parts (MIT, D85), the core mod's
 Tier 3 rocket parts (GPL-3.0, D86), a thin-slab pad, and the tinted vanilla grass, leaves and logs the worldgen views need.
 
-The Galacticraft and core-mod files are read from the repo's thirdparty folders, never from a jar. The grass and
-leaf textures are Mojang's, tinted green the way the game tints them (a derived render, noted in the sheet's credit).
+The Galacticraft and core-mod files are read from inputs/thirdparty/ beside this script, never from a jar and never
+from src/main/resources, so the mod jar carries none of them. The grass and leaf textures are Mojang's, tinted green the way the game tints them (a derived render, noted in the sheet's credit).
 """
 
 from __future__ import annotations
@@ -20,9 +20,10 @@ import render3d as R  # noqa: E402
 import vanilla  # noqa: E402
 from pages import slot  # noqa: E402
 
-GC_ITEMS = K.ASSETS / "textures/items/thirdparty/galacticraft"
-GC_PAD = K.ASSETS / "textures/blocks/thirdparty/galacticraft/launch_pad.png"
-NHCORE = K.ASSETS / "textures/items/thirdparty/nhcore"
+INPUTS = Path(__file__).resolve().parent / "inputs/thirdparty"
+GC_ITEMS = INPUTS / "galacticraft"
+GC_PAD = INPUTS / "galacticraft/launch_pad.png"
+NHCORE = INPUTS / "nhcore"
 
 PAD_HEIGHT = 3 / 16   # Galacticraft's launch pad is a slab about 3/16 of a block tall
 

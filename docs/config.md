@@ -136,6 +136,14 @@ Both keys are synced from server to client (GGS-01-03). Block removal always pas
 | `explosions.blockDamage` | boolean | `false` | n/a | yes | Whether GregGuns explosions remove blocks. Off: they still hurt entities. An NPC-caused blast also needs the `mobGriefing` gamerule. Also gates Bio Gun blobs and block fire from the Flamethrower, Nether Blaster and Alien Blaster: with it off the Bio Gun places no blob and its tooltip says "Blobs disabled: explosions.blockDamage is off". |
 | `explosions.selfDamage` | boolean | `true` | n/a | yes | Whether the player who set off an explosion can be hurt by it (fixes PFX-25). |
 | `explosions.machineExplosions` | boolean | `true` | n/a | yes | Whether GregTech machines in a GregGuns blast react to it (can chain). False leaves them standing (Q4). |
+| `explosions.fallout` | boolean | `true` | n/a | yes | Whether a nuclear blast (the Nuke Launcher, the ICBM nuclear warhead) leaves fallout: irradiated surface blocks. Only blasts that broke terrain leave any. |
+| `explosions.falloutMaxBlocks` | int | `6000` | 0 to 100000 | yes | The most blocks one nuclear blast may turn into irradiated earth. The conversion chance is scaled so the expected total stays under this, and the count is a hard stop. |
+| `explosions.falloutMaxRadius` | int | `96` | 8 to 256 | yes | The largest fallout radius in blocks, whatever the blast radius. |
+| `explosions.falloutColumnsPerTick` | int | `400` | 1 to 5000 | yes | The most columns fallout scans in one server tick, across all blasts. |
+| `explosions.falloutBudgetMs` | int | `3` | 1 to 20 | yes | The most milliseconds fallout may spend in one server tick. |
+| `explosions.falloutDecayMinutes` | int | `60` | 1 to 10080 | yes | Minutes of game time before irradiated earth reverts to the block it was. |
+| `explosions.falloutRevertPerTick` | int | `32` | 1 to 1000 | yes | The most irradiated blocks that revert per tick in one world. |
+| `explosions.falloutRadiationLevel` | int | `2` | 0 to 10 | yes | GregTech radioactivity level applied about once a second to an unprotected player standing on or beside irradiated earth. 0 turns exposure off. |
 
 ## ICBM blasts (`icbm`)
 
