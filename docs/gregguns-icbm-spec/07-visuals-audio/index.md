@@ -6,10 +6,10 @@ The art and sound for the module: warhead and missile 3D models, textures, effec
 
 ## Contents
 
-All sheets are planned.
+Sheets without a link are planned.
 
-- asset-sourcing.md (planned): the source order (licensed libraries and assets extracted from licensed mod jars, then generation, announced first), license rules, third-party folder and CREDITS entries (D28, D33, D37, D47).
-- warhead-and-body-models.md (planned): 3D models by tier, collision boxes, filler blocks, the shared model for the flying missile (D31).
+- [asset-sourcing.md](asset-sourcing.md): the source order (licensed libraries and assets extracted from licensed mod jars, then generation, announced first), license rules, third-party folder and CREDITS entries (D28, D33, D37, D47).
+- [warhead-and-body-models.md](warhead-and-body-models.md) (warheads done; bodies planned for I2): 3D models by tier, collision boxes, filler blocks, the shared model for the flying missile (D31).
 - textures.md (planned): kept-asset entries only, one catalog line per other asset (D3).
 - effects.md (planned): engine smoke, launch, blast visuals, red matter renderer rebuild.
 - sounds.md (planned): launch, flight, blast and alarm sounds with provenance.
@@ -45,5 +45,5 @@ None yet.
 
 ## Open questions
 
-- Which licensed sources supply the models: to settle in the I1 asset-sourcing sheet.
-- Sizes of the antimatter and red matter warheads (D31 says larger than 1x1x2): to settle in the I1 model sheet.
+- Missile body models (I2): planned from the same NTM source.
+- T3 conventional reuses the T1 model at full size: a distinct licensed model is welcome.
