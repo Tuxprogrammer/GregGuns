@@ -21,6 +21,8 @@ public final class BlastJobState {
         SNAPSHOT,
         /** The worker thread is ray-casting. */
         CAST,
+        /** The cast crater is posted to listeners and filtered in batches under the budget (I3). */
+        DECIDE,
         /** Terrain breaks in slices under the shared budget. */
         APPLY,
         /** Terrain done; the type's effect may still tick. */
@@ -61,6 +63,10 @@ public final class BlastJobState {
     public int[] edits = new int[0];
     /** Index of the next edit to apply. */
     public int cursor;
+    /**
+     * While {@link Stage#DECIDE}: how many of {@link #edits} (the front of the array) survived the listeners so far.
+     */
+    public int kept;
     /** The effect's own state. */
     public NBTTagCompound effectState = new NBTTagCompound();
 
@@ -83,15 +89,18 @@ public final class BlastJobState {
         tag.setString("sourceUuid", sourceUuid);
         tag.setString("sourceName", sourceName);
         tag.setInteger("age", age);
-        // Before the crater is decided nothing changed in the world, so the safe thing to save is "start over".
+        // Before the crater is decided nothing changed in the world, so the safe thing to save is "start over". A blast
+        // saved mid-decide keeps its cast result and cursors instead: re-casting a nuclear crater costs real time.
         Stage saved = stage == Stage.CAST ? Stage.SNAPSHOT : stage;
         tag.setInteger("stage", saved.ordinal());
         tag.setBoolean("damaged", damaged);
         tag.setBoolean("effectStarted", effectStarted);
         tag.setBoolean("effectActive", effectActive);
         tag.setBoolean("breaksTerrain", breaksTerrain);
-        tag.setIntArray("edits", saved == Stage.APPLY ? edits : new int[0]);
-        tag.setInteger("cursor", saved == Stage.APPLY ? cursor : 0);
+        boolean keepEdits = saved == Stage.APPLY || saved == Stage.DECIDE;
+        tag.setIntArray("edits", keepEdits ? edits : new int[0]);
+        tag.setInteger("cursor", keepEdits ? cursor : 0);
+        tag.setInteger("kept", saved == Stage.DECIDE ? kept : 0);
         tag.setTag("effectState", effectState.copy());
         return tag;
     }
@@ -119,6 +128,7 @@ public final class BlastJobState {
         s.breaksTerrain = tag.getBoolean("breaksTerrain");
         s.edits = tag.getIntArray("edits");
         s.cursor = Math.max(0, Math.min(tag.getInteger("cursor"), s.edits.length));
+        s.kept = Math.max(0, Math.min(tag.getInteger("kept"), s.cursor));
         s.effectState = tag.hasKey("effectState", 10) ? tag.getCompoundTag("effectState") : new NBTTagCompound();
         return s;
     }

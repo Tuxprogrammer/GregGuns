@@ -21,6 +21,8 @@ public final class BlastContext {
     private final EntityLivingBase source;
     private final NBTTagCompound state;
     private final TickBudget budget;
+    private final boolean terrain;
+    private boolean cancelled;
 
     /**
      * Engine use only.
@@ -28,7 +30,7 @@ public final class BlastContext {
      * @param budget the shared budget, see {@link #budget()}
      */
     public BlastContext(World world, double x, double y, double z, ExplosiveDef explosive, int fill, double radius,
-        EntityLivingBase source, NBTTagCompound state, TickBudget budget) {
+        EntityLivingBase source, NBTTagCompound state, TickBudget budget, boolean terrain) {
         this.world = world;
         this.x = x;
         this.y = y;
@@ -39,6 +41,7 @@ public final class BlastContext {
         this.source = source;
         this.state = state;
         this.budget = budget;
+        this.terrain = terrain;
     }
 
     /** @return the world (server) */
@@ -84,6 +87,21 @@ public final class BlastContext {
     /** @return the effect's own persistent state; saved with the blast, never null */
     public NBTTagCompound state() {
         return state;
+    }
+
+    /** @return true when this blast may break terrain (its tier switch and the grief rules allowed it) */
+    public boolean breaksTerrain() {
+        return terrain;
+    }
+
+    /** Engine use only: the blast ends because it was cancelled (a world unload), not because it completed. */
+    public void markCancelled() {
+        cancelled = true;
+    }
+
+    /** @return true when the blast ran to its end; false when it was cancelled, so effects start no aftermath */
+    public boolean completed() {
+        return !cancelled;
     }
 
     /** @return the tick budget every running blast shares; effects with heavy work check it */

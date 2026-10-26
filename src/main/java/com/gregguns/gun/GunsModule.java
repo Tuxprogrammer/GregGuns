@@ -59,6 +59,7 @@ public final class GunsModule implements GregGunsModule {
         GregGunsRecipeMaps.init();
         AmmoPressMachines.registerBlocks(registrar);
         ProjectileModule.preInit(registrar);
+        com.gregguns.explosion.nuclear.FalloutRegistration.preInit(registrar);
         GunKeybinds.register();
     }
 

@@ -1,6 +1,5 @@
 package com.gregguns.icbm.blast;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -56,6 +55,8 @@ final class BlastJob implements BlastTask {
     private static final Logger AUDIT = LogManager.getLogger(ExplosionRules.LOGGER_NAME);
     /** Blocks one slice breaks. */
     static final int BREAKS_PER_SLICE = 48;
+    /** Cast cells one decide slice posts to listeners and filters (I3: a nuclear crater is about a million). */
+    static final int DECIDE_PER_SLICE = 4096;
 
     private final World world;
     private final BlastJobState st;
@@ -92,7 +93,8 @@ final class BlastJob implements BlastTask {
             st.radius,
             resolveSource(),
             st.effectState,
-            budget);
+            budget,
+            st.breaksTerrain);
     }
 
     World world() {
@@ -114,7 +116,8 @@ final class BlastJob implements BlastTask {
 
     /** @return true while the crater is not yet decided (snapshot or cast stage) */
     boolean craterUndecided() {
-        return st.stage == BlastJobState.Stage.SNAPSHOT || st.stage == BlastJobState.Stage.CAST;
+        return st.stage == BlastJobState.Stage.SNAPSHOT || st.stage == BlastJobState.Stage.CAST
+            || st.stage == BlastJobState.Stage.DECIDE;
     }
 
     /** @return blocks broken so far (this run) */
@@ -128,6 +131,7 @@ final class BlastJob implements BlastTask {
 
     void cancel() {
         cancelled = true;
+        ctx.markCancelled();
         finish();
     }
 
@@ -163,6 +167,8 @@ final class BlastJob implements BlastTask {
                 return true;
             case CAST:
                 return castDone;
+            case DECIDE:
+                return ensureDecideMemory();
             default:
                 return false;
         }
@@ -177,6 +183,9 @@ final class BlastJob implements BlastTask {
                     break;
                 case CAST:
                     afterCast();
+                    break;
+                case DECIDE:
+                    decideSlice();
                     break;
                 case APPLY:
                     applySlice();
@@ -194,7 +203,7 @@ final class BlastJob implements BlastTask {
     private void snapshotSlice() {
         boolean cast = st.breaksTerrain && def.shape() != BlastShape.NONE;
         if (!cast) {
-            decide(new int[0]);
+            beginDecide(new int[0]);
             return;
         }
         if (!ensureGrid()) {
@@ -305,64 +314,110 @@ final class BlastJob implements BlastTask {
     }
 
     private void afterCast() {
+        // The cube is dead weight now; the cast result takes its place under the same memory cap (ensureDecideMemory).
         releaseGrid();
         if (castFailure != null) {
             GregGuns.LOG.error("ICBM blast {} ray cast failed", def.id(), castFailure);
             finish();
             return;
         }
-        decide(castResult == null ? new int[0] : castResult);
+        beginDecide(castResult == null ? new int[0] : castResult);
         castResult = null;
     }
 
-    /** Posts Detonate with the real lists, hurts entities, and sets up the crater. Server thread, once. */
+    /**
+     * Holds the cast result (4 bytes a cell, at most the 2.1 bytes a cube cell cost, so within what the cube had
+     * reserved) in {@link GridMemory} while the crater is decided. Returns false while the cap keeps it queued; a lone
+     * blast always passes, as for the cube.
+     */
+    private boolean ensureDecideMemory() {
+        if (reserved > 0 || st.edits.length == 0) {
+            return true;
+        }
+        long bytes = 4L * st.edits.length;
+        if (!GridMemory.shared()
+            .tryReserve(bytes, IcbmConfig.maxGridMemoryMb * 1024L * 1024L)) {
+            return false;
+        }
+        reserved = bytes;
+        return true;
+    }
+
+    /** Hands the cast result to the decide stage; nothing is posted yet. */
+    private void beginDecide(int[] offsets) {
+        st.edits = offsets;
+        st.cursor = 0;
+        st.kept = 0;
+        st.stage = BlastJobState.Stage.DECIDE;
+    }
+
+    /**
+     * One slice of the decide stage (server thread): posts {@code ExplosionEvent.Detonate} for the next
+     * {@link #DECIDE_PER_SLICE} cast cells, so claim listeners may veto cells, and compacts the survivors to the front
+     * of {@code edits} in place. The first slice also carries the victim list and hurts them, once ({@code damaged}).
+     * Later slices carry an empty victim list. Both cursors are saved, so a reload resumes where it stopped.
+     */
     @SuppressWarnings("unchecked")
-    private void decide(int[] offsets) {
+    private void decideSlice() {
         EntityLivingBase source = ctx.source();
-        vanilla = new Explosion(world, null, st.x, st.y, st.z, (float) st.radius);
-        vanilla.isSmoking = st.breaksTerrain;
+        int[] offsets = st.edits;
         int cx = (int) Math.floor(st.x);
         int cy = (int) Math.floor(st.y);
         int cz = (int) Math.floor(st.z);
-        for (int p : offsets) {
+        int end = Math.min(offsets.length, st.cursor + DECIDE_PER_SLICE);
+        Explosion vanilla = new Explosion(world, null, st.x, st.y, st.z, (float) st.radius);
+        vanilla.isSmoking = st.breaksTerrain;
+        for (int i = st.cursor; i < end; i++) {
+            int p = offsets[i];
             vanilla.affectedBlockPositions
                 .add(new ChunkPosition(cx + BlastPacking.x(p), cy + BlastPacking.y(p), cz + BlastPacking.z(p)));
         }
-        double reach = st.radius + 1.0;
-        List<Entity> victims = ExplosionRules.victims(
-            world.getEntitiesWithinAABBExcludingEntity(
-                null,
-                AxisAlignedBB.getBoundingBox(
-                    st.x - reach,
-                    st.y - reach,
-                    st.z - reach,
-                    st.x + reach,
-                    st.y + reach,
-                    st.z + reach)),
-            (Entity) source,
-            ExplosionsConfig.selfDamage);
+        List<Entity> victims = java.util.Collections.emptyList();
+        if (!st.damaged) {
+            double reach = st.radius + 1.0;
+            victims = ExplosionRules.victims(
+                world.getEntitiesWithinAABBExcludingEntity(
+                    null,
+                    AxisAlignedBB.getBoundingBox(
+                        st.x - reach,
+                        st.y - reach,
+                        st.z - reach,
+                        st.x + reach,
+                        st.y + reach,
+                        st.z + reach)),
+                (Entity) source,
+                ExplosionsConfig.selfDamage);
+        }
         ForgeEventFactory.onExplosionDetonate(world, vanilla, victims, st.radius * 2.0);
         if (!st.damaged) {
             st.damaged = true;
             hurt(victims, source);
         }
-        // Keep the listeners' survivors, in the original nearest-first order.
-        Set<ChunkPosition> kept = new HashSet<>(vanilla.affectedBlockPositions);
-        List<Integer> remain = new ArrayList<>(offsets.length);
-        for (int p : offsets) {
-            if (kept
+        // Keep the listeners' survivors, in the original nearest-first order, packed at the front.
+        Set<ChunkPosition> keptCells = new HashSet<>(vanilla.affectedBlockPositions);
+        int write = st.kept;
+        for (int i = st.cursor; i < end; i++) {
+            int p = offsets[i];
+            if (keptCells
                 .contains(new ChunkPosition(cx + BlastPacking.x(p), cy + BlastPacking.y(p), cz + BlastPacking.z(p)))) {
-                remain.add(p);
+                offsets[write++] = p;
             }
         }
-        int[] edits = new int[remain.size()];
-        for (int i = 0; i < edits.length; i++) {
-            edits[i] = remain.get(i);
+        st.kept = write;
+        st.cursor = end;
+        if (st.cursor < offsets.length) {
+            return;
         }
-        st.edits = edits;
+        st.edits = java.util.Arrays.copyOf(offsets, st.kept);
         st.cursor = 0;
-        st.stage = edits.length > 0 ? BlastJobState.Stage.APPLY : BlastJobState.Stage.EFFECT;
-        if (edits.length == 0) {
+        st.kept = 0;
+        if (reserved > 0L) {
+            GridMemory.shared()
+                .release(reserved);
+            reserved = 0L;
+        }
+        st.stage = st.edits.length > 0 ? BlastJobState.Stage.APPLY : BlastJobState.Stage.EFFECT;
+        if (st.edits.length == 0) {
             effectOnlyDone();
         }
     }

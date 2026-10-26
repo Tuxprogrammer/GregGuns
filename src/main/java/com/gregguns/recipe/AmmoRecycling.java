@@ -104,6 +104,7 @@ public final class AmmoRecycling {
         ItemData uranium = new ItemData(Materials.Uranium235, OrePrefixes.dust.getMaterialAmount());
         ProductionRecipes.attach(NukeRocketAmmo.TYPE.roundItemName(), uranium);
         ProductionRecipes.attach(ComponentItems.CELL_NUCLEAR_DEPLETED, uranium);
+        com.gregguns.explosion.nuclear.FalloutRegistration.attachItemData();
     }
 
     /**

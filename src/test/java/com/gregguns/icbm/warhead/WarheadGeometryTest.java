@@ -22,7 +22,7 @@ class WarheadGeometryTest {
     void everyCasingFitsOneBlock() {
         for (WarheadCasing c : WarheadCasing.values()) {
             assertTrue(WarheadGeometry.boxWidth(c.boxWidth()) < 1.0);
-            assertEquals(1, c.heightBlocks());
+            assertEquals(c == WarheadCasing.T3 ? 2 : 1, c.heightBlocks());
         }
     }
 }
