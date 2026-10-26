@@ -68,7 +68,7 @@ public final class BlockWarhead extends BlockContainer implements Tiered {
             case T2:
                 return Tier.EV;
             default:
-                return Tier.LUV;
+                return Tier.ZPM;
         }
     }
 

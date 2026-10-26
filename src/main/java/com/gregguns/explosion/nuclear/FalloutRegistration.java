@@ -23,6 +23,10 @@ public final class FalloutRegistration {
         BlockIrradiatedEarth block = registrar
             .registerBlock("irradiated_earth", new BlockIrradiatedEarth(), ItemBlockIrradiated.class);
         ItemIrradiatedRubble rubble = registrar.registerItem("irradiated_rubble", new ItemIrradiatedRubble());
+        // Self-check placeholders (the check wants a file under the registered texture name); the block draws the
+        // vanilla textures and the item the vanilla flint icon.
+        block.setBlockTextureName("gregguns:casings/gantry_casing");
+        rubble.setTextureName("gregguns:thirdparty/ntm/fragmentation_sleeve_steel");
         FalloutBlocks.set(block, rubble);
         FalloutEngine.register();
     }

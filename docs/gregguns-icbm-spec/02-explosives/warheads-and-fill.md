@@ -28,7 +28,7 @@ One item per casing tier. I1 ships T1 and T2. The item holds an NBT tag:
 |---|---|---|---|
 | T1 | HV | 5 | 1x1x1 |
 | T2 | EV to IV | 20 | 1x1x1 |
-| T3 (I3) | LuV to ZPM | 64 | 1x1x2 |
+| T3 (I3) | LuV to ZPM | 64 | 1x1x2, with a filler block |
 | T4 (I5) | UV | 128 | larger (I5) |
 | T5 (I5) | UHV | 128 | larger (I5) |
 
@@ -117,6 +117,18 @@ Eight GregGuns items (module `icbm`, package `com.gregguns.icbm.recipe`, data in
 - **Tier ladder.** T1 uses TNT (MV chain), dynamite (nitration, LV) and Plastic Explosive (Industrial TNT, so the HV nitration chain); T2 climbs to Industrial TNT in bulk. Higher tiers (I3 and later): the same part shapes upgrade to tungstensteel sleeves and penetrators, a Mk III Fuze, and GT++ rocket fuels.
 - GT recycling data (D44): each warhead recycles into its casing plates (stainless steel for T1, titanium for T2); each part recycles into its metal and plastic. Explosives and fluids are lost.
 - NEI: every recipe is an Assembler recipe, so NEI shows it, its programmed circuit and its fluid; each part appears in the creative tab and in NEI with its tooltip.
+
+### T3 recipes (I3, D80)
+
+Assembler, 400 ticks, casing of 8 tungstensteel plates, one Fuze Assembly Mk III (LuV: Master circuit, tungstensteel plate, four fine platinum wires; circuit 20) in every recipe. Circuits 1 to 3 (unique among T3).
+
+| Warhead | Tier | Inputs after the casing and the Fuze |
+|---|---|---|
+| Exothermic | LuV | 16 Industrial TNT, 6 Plastic Explosive, 4 Napalm Canisters, 8,000 L kerosene |
+| Endothermic | LuV | 16 Industrial TNT, 6 Plastic Explosive, 4 Dispersal Canisters, 8,000 L helium |
+| Nuclear | ZPM | 12 Industrial TNT, 4 Plastic Explosive, 8 uranium-235 ingots, 4 plutonium ingots |
+
+Each recycles into its tungstensteel plates (D44). The T3 cost band is 55 to 150 plate equivalents.
 
 ## Requirements
 

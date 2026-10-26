@@ -1139,6 +1139,7 @@ betterquesting.quest.tUMCQKVHVRarlhC600tDTQ.desc=Fires tactical nuke rockets. Do
 betterquesting.quest._WK5gkzGU72JerH0PueN0g.name=Top of the Tree
 betterquesting.quest._WK5gkzGU72JerH0PueN0g.desc=You have built everything GregGuns offers.
 # END questbook
+tile.gregguns.irradiated_earth.name=Irradiated Earth
 tile.gregguns.irradiated_earth.0.name=Irradiated Dirt
 tile.gregguns.irradiated_earth.1.name=Irradiated Stone
 tile.gregguns.irradiated_earth.2.name=Irradiated Sand

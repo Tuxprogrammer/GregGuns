@@ -20,10 +20,15 @@ import cpw.mods.fml.relauncher.SideOnly;
  * vanilla flint icon, tinted green.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/nuclear-and-fallout.md
-public final class ItemIrradiatedRubble extends Item {
+public final class ItemIrradiatedRubble extends Item implements com.gregguns.api.Tiered {
 
     @SideOnly(Side.CLIENT)
     private IIcon icon;
+
+    @Override
+    public com.gregguns.api.Tier getTier() {
+        return com.gregguns.api.Tier.ZPM;
+    }
 
     @Override
     @SideOnly(Side.CLIENT)

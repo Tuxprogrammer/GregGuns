@@ -24,7 +24,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * drops irradiated rubble.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/nuclear-and-fallout.md
-public final class BlockIrradiatedEarth extends Block {
+public final class BlockIrradiatedEarth extends Block implements com.gregguns.api.Tiered {
 
     /** The tint applied on the client. */
     public static final int TINT = 0x9CE070;
@@ -36,6 +36,11 @@ public final class BlockIrradiatedEarth extends Block {
         setResistance(3.0F);
         setStepSound(soundTypeGravel);
         setHarvestLevel("shovel", 0);
+    }
+
+    @Override
+    public com.gregguns.api.Tier getTier() {
+        return com.gregguns.api.Tier.ZPM;
     }
 
     @Override
