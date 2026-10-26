@@ -399,7 +399,12 @@ public final class WarheadScenarios {
                 IcbmConfig.terrainDamageT2 = oldT2;
                 return ScenarioResult.fail(name(), "the engine did not accept the blast");
             }
+            final double[] extremes = { cow.posX, cow.posX };
             return ScenarioResult.pending(name(), 900, ticks -> {
+                // A cow wanders for 200 ticks, so push and pull are judged on the farthest it ever got, not where it
+                // stands at the end (the cause of the intermittent icbm.blast.attractive failure).
+                extremes[0] = Math.min(extremes[0], cow.posX);
+                extremes[1] = Math.max(extremes[1], cow.posX);
                 boolean done = ticks >= settleTicks();
                 if (!done) {
                     return null;
@@ -407,7 +412,7 @@ public final class WarheadScenarios {
                 IcbmConfig.terrainDamageT1 = oldT1;
                 IcbmConfig.terrainDamageT2 = oldT2;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
-                check(out, ctx, def, cow);
+                check(out, ctx, def, cow, extremes);
                 return out.build();
             });
         }
@@ -424,7 +429,8 @@ public final class WarheadScenarios {
             }
         }
 
-        private void check(ScenarioResult.Builder out, ScenarioContext ctx, ExplosiveDef def, EntityCow cow) {
+        private void check(ScenarioResult.Builder out, ScenarioContext ctx, ExplosiveDef def, EntityCow cow,
+            double[] extremes) {
             World w = ctx.world();
             int ox = ctx.originX();
             int oy = ctx.originY();
@@ -465,10 +471,10 @@ public final class WarheadScenarios {
                     out.check(w.getBlock(ox, oy - 1, oz) == Blocks.stone, "smoke removes no terrain");
                     break;
                 case REPEL:
-                    out.check(cow.posX > ox + 4.5 || cow.motionX > 0.0, "the cow was thrown outward");
+                    out.check(extremes[1] > ox + 5.5, "the cow was thrown outward, max X " + extremes[1]);
                     break;
                 case ATTRACT:
-                    out.check(cow.posX < ox + 4.5 || cow.motionX < 0.0, "the cow was pulled inward");
+                    out.check(extremes[0] < ox + 3.5, "the cow was pulled inward, min X " + extremes[0]);
                     break;
                 case SONIC:
                     out.check(cow.isPotionActive(Potion.confusion), "sonic stuns");

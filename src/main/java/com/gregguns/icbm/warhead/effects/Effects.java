@@ -14,6 +14,7 @@ import net.minecraft.world.WorldServer;
 
 import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.explosion.BlockBreakGuard;
+import com.gregguns.explosion.ProjectileExplosion;
 import com.gregguns.icbm.explosive.BlastContext;
 import com.gregguns.icbm.explosive.BlastEffect;
 import com.gregguns.icbm.warhead.WarheadBlast;
@@ -293,6 +294,14 @@ public final class Effects {
             int cx = (int) Math.floor(ctx.x());
             int cy = (int) Math.floor(ctx.y());
             int cz = (int) Math.floor(ctx.z());
+            // Collect the tunnel first, so it goes through the same Detonate event and break path as every blast.
+            net.minecraft.world.Explosion vanilla = new net.minecraft.world.Explosion(
+                world,
+                null,
+                ctx.x(),
+                ctx.y(),
+                ctx.z(),
+                (float) Math.max(ctx.radius(), 3.0));
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     for (int step = 0; step < BREACH_DEPTH; step++) {
@@ -310,9 +319,25 @@ public final class Effects {
                         if (h < 0 || h > BREACH_MAX_HARDNESS || !mayChange(ctx, x, y, z)) {
                             break;
                         }
-                        world.setBlockToAir(x, y, z);
+                        vanilla.affectedBlockPositions.add(new net.minecraft.world.ChunkPosition(x, y, z));
                     }
                 }
+            }
+            // Listeners (claims, protection) may veto or trim the list; the survivors break through breakBlock.
+            net.minecraftforge.event.ForgeEventFactory
+                .onExplosionDetonate(world, vanilla, new java.util.ArrayList<net.minecraft.entity.Entity>(), 0.0);
+            EntityPlayer breaker = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
+            for (Object o : vanilla.affectedBlockPositions) {
+                net.minecraft.world.ChunkPosition pos = (net.minecraft.world.ChunkPosition) o;
+                ProjectileExplosion.breakBlock(
+                    world,
+                    vanilla,
+                    breaker,
+                    (float) vanilla.explosionSize,
+                    pos.chunkPosX,
+                    pos.chunkPosY,
+                    pos.chunkPosZ,
+                    IcbmConfig.blastDrops);
             }
             particles(ctx, "smoke", 20, 1.0);
         }
