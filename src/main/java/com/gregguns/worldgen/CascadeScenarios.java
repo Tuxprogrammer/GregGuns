@@ -104,7 +104,8 @@ public final class CascadeScenarios {
     private static int foreignLoads;
 
     /**
-     * Keeps the chunks that lie in the square or within {@link #MARGIN} chunks of it. A chunk loaded thousands of chunks
+     * Keeps the chunks that lie in the square or within {@link #MARGIN} chunks of it. A chunk loaded thousands of
+     * chunks
      * away during the run was not caused by populating this square (the guard and the window rules keep a populate
      * local), but by another mod in a real pack, so it must not decide the comparison.
      *

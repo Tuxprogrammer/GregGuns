@@ -27,12 +27,15 @@ class CascadeNearSquareTest {
 
     @Test
     void dropsChunksFartherAwayThanTheMargin() {
-        Set<String> kept = CascadeScenarios.nearSquare(keys("0,0", "-4,0", "43,0", "0,-4", "0,43", "-9514,-6660"), 40, 3);
+        Set<String> kept = CascadeScenarios
+            .nearSquare(keys("0,0", "-4,0", "43,0", "0,-4", "0,43", "-9514,-6660"), 40, 3);
         assertEquals(keys("0,0"), kept);
     }
 
     @Test
     void emptyStaysEmpty() {
-        assertTrue(CascadeScenarios.nearSquare(keys(), 40, 3).isEmpty());
+        assertTrue(
+            CascadeScenarios.nearSquare(keys(), 40, 3)
+                .isEmpty());
     }
 }
