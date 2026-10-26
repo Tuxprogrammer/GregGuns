@@ -236,12 +236,12 @@ final class WarheadShotsScenario implements Scenario {
         // 5a. crater
         at.accept(10, () -> {
             fillStone(w, craterX, oy, craterZ, fillHalf[0], oy - 6, oy + 3);
-            cam(p, craterX - 6, oy + 8, craterZ + 6, craterX + 0.5, oy + 2, craterZ + 0.5);
+            cam(p, craterX - 5, oy + 7, craterZ + 5, craterX + 0.5, oy + 3, craterZ + 0.5);
         });
         at.accept(GAP + 40, () -> signal(p, "shot", "icbm-crater-before"));
         at.accept(GAP / 2, () -> {
             ExplosiveDef d = Explosives.get("condensed");
-            IcbmBlasts.detonate(w, craterX + 0.5, oy + 1.5, craterZ + 0.5, d, 5, null);
+            IcbmBlasts.detonate(w, craterX + 0.5, oy + 3.5, craterZ + 0.5, d, 5, null);
         });
         at.accept(GAP * 3, () -> {
             int air = 0;
@@ -257,7 +257,7 @@ final class WarheadShotsScenario implements Scenario {
             airAfter[0] = air;
             signal(p, "shot", "icbm-crater-after");
         });
-        at.accept(GAP, () -> { cam(p, craterX + 0.5, oy + 11, craterZ + 1.5, craterX + 0.5, oy, craterZ + 0.5); });
+        at.accept(GAP, () -> { cam(p, craterX + 0.5, oy + 10, craterZ + 1.5, craterX + 0.5, oy + 3, craterZ + 0.5); });
         at.accept(GAP, () -> signal(p, "shot", "icbm-crater-after-top"));
         // 5b. gas
         at.accept(10, () -> cam(p, gasX + 6, oy + 3, gasZ + 6, gasX + 0.5, oy + 2, gasZ + 0.5));
