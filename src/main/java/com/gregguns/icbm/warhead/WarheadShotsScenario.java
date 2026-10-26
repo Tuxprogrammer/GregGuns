@@ -63,6 +63,9 @@ final class WarheadShotsScenario implements Scenario {
 
     /** Puts the eye at (ex, ey, ez) looking at the target point. */
     private static void cam(EntityPlayerMP p, double ex, double ey, double ez, double tx, double ty, double tz) {
+        p.capabilities.allowFlying = true;
+        p.capabilities.isFlying = true;
+        p.sendPlayerAbilities();
         ey = Math.max(ey, p.worldObj.getHeightValue((int) Math.floor(ex), (int) Math.floor(ez)) + EYE + 0.3);
         double dx = tx - ex;
         double dz = tz - ez;
@@ -166,10 +169,14 @@ final class WarheadShotsScenario implements Scenario {
         at.accept(GAP, () -> cam(p, cx + 3.5, cy + 1.5, cz - 5, cx, cy, cz));
         at.accept(GAP, () -> signal(p, "shot", "icbm-row-back34"));
         // 2. selection outline on the T2 (dx 0): crosshair on its centre
-        at.accept(GAP, () -> cam(p, ox - 1.2, cy + 0.9, oz + 2.6, ox + 0.5, cy, cz));
+        at.accept(GAP, () -> {
+            signal(p, "hud", "on");
+            cam(p, ox - 1.2, cy + 0.9, oz + 2.6, ox + 0.5, cy, cz);
+        });
         at.accept(GAP, () -> signal(p, "shot", "icbm-outline-34"));
         at.accept(GAP, () -> cam(p, ox + 0.5, cy + 0.2, oz + 2.6, ox + 0.5, cy, cz));
         at.accept(GAP, () -> signal(p, "shot", "icbm-outline-side"));
+        at.accept(5, () -> signal(p, "hud", "off"));
         // player for scale: third person from behind, player beside the T2
         at.accept(GAP, () -> {
             signal(p, "view", "1");
@@ -228,7 +235,7 @@ final class WarheadShotsScenario implements Scenario {
         at.accept(GAP + 40, () -> signal(p, "shot", "icbm-crater-before"));
         at.accept(GAP / 2, () -> {
             ExplosiveDef d = Explosives.get("condensed");
-            IcbmBlasts.detonate(w, craterX + 0.5, oy + 3.5, craterZ + 0.5, d, 5, null);
+            IcbmBlasts.detonate(w, craterX + 0.5, oy + 1.5, craterZ + 0.5, d, 5, null);
         });
         at.accept(GAP * 3, () -> {
             int air = 0;
