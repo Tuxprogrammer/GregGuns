@@ -236,9 +236,6 @@ public final class NukeLauncherScenarios {
             boss.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id, 2000, 10));
             ctx.world()
                 .spawnEntityInWorld(boss);
-            // A pack can rescale a mob's maximum health after the spawn (GTNH 2.9 does it by difficulty), so the
-            // expectation uses the maximum read at the impact, not the 2000 the scenario asked for.
-            final float startHealth = boss.getHealth();
             LauncherScenarios.Tracker<RocketProjectile> rocket = new LauncherScenarios.Tracker<>(
                 ctx,
                 RocketProjectile.class);
@@ -263,16 +260,14 @@ public final class NukeLauncherScenarios {
                     dBoss < NukeAnnihilation.killRadius(10.0),
                     "the boss stand-in should be inside the kill zone, distance " + dBoss);
                 out.check(!boss.isDead, "a boss must survive the kill zone");
-                float expected = startHealth - (float) (NukeAnnihilation.BOSS_SHARE * boss.getMaxHealth());
+                // A pack can rescale a spawned mob's maximum health and refill it (the GTNH 2.9.0-RC-2 pack does, by
+                // difficulty: 1.1 times on Hard, 0.9 on Easy), so a full-health boss ends at half of the maximum read
+                // here, which is 1000 only when nothing rescales it.
+                float expected = (float) (NukeAnnihilation.BOSS_SHARE * boss.getMaxHealth());
                 out.check(
                     Math.abs(boss.getHealth() - expected) < EPS,
-                    "the boss should lose exactly half its maximum health " + boss.getMaxHealth()
-                        + " (from "
-                        + startHealth
-                        + ", leaving "
-                        + expected
-                        + "), but has "
-                        + boss.getHealth());
+                    "the boss should be left with half its maximum health " + boss
+                        .getMaxHealth() + " (" + expected + "), but has " + boss.getHealth());
                 return out.build();
             });
         }
