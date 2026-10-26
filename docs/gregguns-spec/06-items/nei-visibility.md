@@ -21,6 +21,15 @@ Techguns lists every shared-item meta in the creative tab and registers four deb
 | Guns | One entry per gun, in the default state, not one per damage value | `API.setItemListEntries` |
 | Items with 3D-only models | Normal entries; fix icons ([ITEM-08](../../techguns-spec/06-items/index.md#suspected-bugs)) in the item code | n/a |
 
+## As built (M9 NEI polish)
+
+`NEIGregGunsConfig` (client only, in `client/nei`) is the plugin. Deviations from the plan below:
+
+- **Technical items are hidden by a filter, not by `hideItem`.** Any item or block that implements `HiddenFromCreativeTab` is filtered out of NEI (GGS-06-26), together with content of a module that is off.
+- **Subsets instead of collapsible groups.** NEI has no API for collapsible groups, so the jar adds item subsets `GregGuns.Guns`, `GregGuns.Ammo` (rounds, full and empty magazines) and `GregGuns.Armor`. The `collapsibleitems.cfg` lines below stay an optional pack step (see [PACK-CHANGES](../PACK-CHANGES.md)).
+- **Order:** the plugin already sorts GregGuns items in table order ([nei-order.md](nei-order.md)).
+- **Guns** list once each because each gun item lists one stack from `getSubItems`; no `setItemListEntries` call was needed.
+
 ## Integration points
 
 ### NEI: runtime hiding and item lists
@@ -42,8 +51,8 @@ Techguns lists every shared-item meta in the creative tab and registers four deb
 - **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/NEI/collapsibleitems.cfg` (958 lines). One line is one group; an item goes in the first group that matches. The first group is spawn eggs:
   `minecraft:spawn_egg | EnderZoo:SpawnEggEnderZoo | … | TwilightForest:item.tfspawnegg | miscutils:item.BasicMetaSpawnEgg | tconstruct:titleicon`. GT parts are grouped with regexes such as `$r/^bolt/`.
 - **Source:** [`CollapsibleItems.load`](https://github.com/GTNewHorizons/NotEnoughItems/blob/2.8.155-GTNH/src/main/java/codechicken/nei/CollapsibleItems.java#L62-L80) reads `collapsibleitems.cfg` (when collapsible items are enabled in the client config) and builds groups from it. The API listing above has no call to add a collapsible group, so groups come from the file.
-- **GregGuns does:** nothing at run time.
-- **Pack-side change:** add to `collapsibleitems.cfg` (names are placeholders, final in M2):
+- **GregGuns does:** nothing at run time (subsets stand in, see above).
+- **Pack-side change (optional):** add to `collapsibleitems.cfg` (names are placeholders, final in M2):
 
 ```
 # spawn egg: append to the existing first group

@@ -92,4 +92,21 @@ public final class InfernalHooks {
             .setString(nbtKey, InfernalOptOut.MARKER);
         return true;
     }
+
+    /**
+     * Marks an entity that must never roll as infernal, whatever the config: the Attack Helicopter, which has its own
+     * boss bar (the in-jar replacement for the pack row {@code permittedentities.AttackHelicopter=false}). Same marker
+     * and key as {@link #markSpawnerNpc}; call from the entity's constructor on the server.
+     *
+     * @param entity the entity to exclude
+     * @return true when the marker was written (Infernal Mobs is loaded)
+     */
+    public static boolean markNeverInfernal(EntityLivingBase entity) {
+        if (!available()) {
+            return false;
+        }
+        entity.getEntityData()
+            .setString(nbtKey, InfernalOptOut.MARKER);
+        return true;
+    }
 }

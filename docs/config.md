@@ -36,11 +36,23 @@ The module flags (login packet) and every key marked `Synced: yes` in the tables
 
 The "Needs" column is the module order in `ModuleId`, taken from the roadmap's entry gates.
 
-## Debug (`debug`)
+## Compat (`compat`)
+
+In-memory pack-fit hooks ([PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md)). Each adjusts another mod's already-loaded settings at startup, never its config file, and does nothing when that mod is absent. Not synced: each side applies its own copy.
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Registers the numpad debug keybinds. Nothing reads it until the M1 keybinds exist. Kept from Techguns' `enableDebugKeybinds`. |
+| `compat.backhandGuns` | boolean | `true` | n/a | no | Adds every GregGuns gun to Backhand's `offhandBlacklist` and `mainhandUseStopsOffhandFallback`. |
+| `compat.thaumcraftMobAspects` | boolean | `true` | n/a | no | Registers Thaumcraft scan aspects for the GregGuns NPCs. |
+| `compat.listHooks` | boolean | `true` | n/a | no | Adds `gregguns.` to AngerMod's `butcherItems` and `gregguns.SimpleTurret` to Mobs Info's `MobBlacklist`. |
+
+## Debug (`debug`)
+
+Hidden from the in-game config GUI (developer aids; edit the file).
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Reserved for developers: nothing reads it yet, so changing it has no effect. Kept from Techguns' `enableDebugKeybinds`. |
 | `debug.recipeDump` | boolean | `false` | n/a | no | Enables the op-only `/gregguns dumprecipes <file>` command (recipe-clash review). Leave off in play. |
 
 ## Bio Gun (`bioGun`)
@@ -172,7 +184,7 @@ Display options for the local player only. Not synced.
 
 ## Hidden keys
 
-These keys are in `config/gregguns.cfg` but not in the in-game config GUI (their class carries GTNHLib's `@Config.ExcludeFromAutoGui`). They are for server owners and are edited in the file.
+These keys are in `config/gregguns.cfg` but not in the in-game config GUI (their class carries GTNHLib's `@Config.ExcludeFromAutoGui`). They are for server owners and are edited in the file. The `debug` category is hidden the same way.
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|

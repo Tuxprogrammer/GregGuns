@@ -45,7 +45,7 @@ What GregGuns needs to write for NEI, which is almost nothing: GT turns every re
 
 ## Requirements
 
-- **GGS-08-31** GregGuns contains no NEI API code: no `IConfigureNEI`, no `TemplateRecipeHandler`, no NEI imports outside tests.
+- **GGS-08-31** GregGuns contains no NEI *recipe handler*: no `TemplateRecipeHandler`. Deviation (M9): one client-only `IConfigureNEI` plugin, `NEIGregGunsConfig`, exists for item order, hiding of technical items and item subsets ([nei-visibility.md](../06-items/nei-visibility.md#as-built-m9-nei-polish)); it registers no recipe tab.
 - **GGS-08-32** `ammoPressRecipes` is created from a class that GregGuns' own `preInit` initializes, so its `RecipeCategory.ownerMod` is GregGuns.
 - **GGS-08-33** The map name `gregguns.ammoPress` has an `en_US.lang` entry.
 - **GGS-08-34** Every recipe a GregGuns item is made by is visible in an NEI tab that GT or GregGuns registers, and every GregGuns MTE with a recipe map appears as a catalyst.
@@ -61,4 +61,4 @@ What GregGuns needs to write for NEI, which is almost nothing: GT turns every re
 
 ## Open questions
 
-- **Ordering row.** Whether the optional `handlerordering.csv` row is worth a modpack PR. Probably not alone; bundle it with the other pack-side changes.
+- **Ordering row.** Whether the optional `handlerordering.csv` row is worth a modpack PR. Closed: NEI has no ordering API and missing rows default to 0, so this is an optional owner line in [PACK-CHANGES](../PACK-CHANGES.md).

@@ -42,7 +42,7 @@ Techguns has no offhand. Akimbo guns are one item that fires with alternating ha
   - For zoom toggles and other right-clicks that cannot, the item is added to the pack's `mainhandUseStopsOffhandFallback` list (pack-side change below).
   - Guns are added to `offhandBlacklist`. A gun in the offhand cannot fire, so the slot only hides a loaded weapon. Grenades are **not** blacklisted: right-click throw works from the offhand.
   - GregGuns does **not** register offhand-priority items. It would be ignored while a stop-listed gun is in hand, and gains nothing otherwise.
-- **Pack-side change:** two keys in `config/backhand.cfg`.
+- **Pack-side change: none since M9.** The jar appends every gun to both lists in memory (`BackhandCompat`, key `compat.backhandGuns`). Backhand's lists are public static `String[]` fields of a GTNHLib config class, read on every check ([BackhandConfig.java](https://github.com/GTNewHorizons/Backhand/blob/1.8.16/src/main/java/xonin/backhand/utils/BackhandConfig.java#L28-L48)); `backhand.cfg` is never written. Deviation: the "no API to register a blacklist entry" note above still holds, so this is a reflection hook, unverified in the real pack. For reference, the manual form is two keys in `config/backhand.cfg`.
   - `general` / `mainhandUseStopsOffhandFallback`: add `gregguns:<registry name>` for each gun item with right-click zoom, charge or reload, and each hold-to-charge tool gun. Grenades are added only if their throw does not set an item in use (confirm in M2).
   - `general` / `offhandBlacklist`: add `gregguns:<registry name>` for each gun item.
   - The registry names are fixed when the items are registered (M1 and M2) and listed in [PACK-CHANGES.md](../PACK-CHANGES.md).

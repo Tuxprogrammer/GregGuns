@@ -104,6 +104,10 @@ public class AttackHelicopter extends EntityFlying implements IMob, IBossDisplay
         setSize(HelicopterRules.WIDTH, HelicopterRules.HEIGHT);
         experienceValue = HelicopterRules.XP;
         ignoreFrustumCheck = true;
+        if (world != null && !world.isRemote) {
+            // It has its own boss bar; a second, infernal one would draw over it (PACK-CHANGES.md, Infernal Mobs).
+            InfernalHooks.markNeverInfernal(this);
+        }
     }
 
     @Override

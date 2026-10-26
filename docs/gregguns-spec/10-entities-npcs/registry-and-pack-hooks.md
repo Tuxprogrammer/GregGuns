@@ -43,8 +43,8 @@ Five pack mods identify a GregGuns mob in five different ways. This sheet lists 
   - calls `ThaumcraftApi.registerEntityTag` only for entries with at least one aspect.
 
   So without a `gregguns.cfg`, the first run writes one full of empty entries, and nothing is scannable.
-- **GregGuns does:** nothing at runtime. GregGuns never writes into another mod's config folder.
-- **Pack-side change:** ship `config/ThaumcraftMobAspects/gregguns.cfg`. The format is the one the other files use:
+- **GregGuns does (M9):** registers the table below itself with `ThaumcraftApi.registerEntityTag` in postInit (`compat.MobAspects`, key `compat.thaumcraftMobAspects`). It never writes into another mod's config folder.
+- **Pack-side change:** none required. The manual form is: ship `config/ThaumcraftMobAspects/gregguns.cfg`. The format is the one the other files use:
 
 ```json
 [
