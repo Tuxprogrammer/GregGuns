@@ -96,7 +96,7 @@ public final class MissileMpScenario implements Scenario {
         final int[] frames = { 0 };
         final int[] tracked = { 0 };
         // Where the missile was on its last tick: the guidance scatters the hit, so the crater is not at the aim point.
-        final double[] last = { cx, oz + DISTANCE + 0.5 };
+        final double[] last = { ox + 0.5, oz + DISTANCE + 0.5 };
         final MissileShotsScenario.Plan plan = new MissileShotsScenario.Plan();
         final double cx = ox + 0.5;
         final double cz = oz + 0.5;
