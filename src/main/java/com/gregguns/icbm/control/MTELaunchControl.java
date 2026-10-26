@@ -310,6 +310,12 @@ public final class MTELaunchControl extends MTETieredMachineBlock {
         lastStick = TargetStick.Outcome.LOADED;
     }
 
+    /** @return the pre-check status right now, recomputed (tests and the GUI line); server side */
+    public ControlStatus currentStatus() {
+        snapshotTick = Long.MIN_VALUE;
+        return snapshot().status;
+    }
+
     /** @return how many times a shot was attempted since the block loaded (tests and the GUI) */
     public int attempts() {
         return attempts;

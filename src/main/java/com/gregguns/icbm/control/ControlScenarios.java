@@ -45,6 +45,7 @@ public final class ControlScenarios {
         registry.register(new PadAndGate());
         registry.register(new Stick());
         registry.register(new Redstone());
+        registry.register(new com.gregguns.icbm.missile.ControlLaunchScenario());
     }
 
     // --- helpers ----------------------------------------------------------------------------------------------------
