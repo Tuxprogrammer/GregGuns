@@ -74,12 +74,12 @@ public final class MissileShotsScenario implements Scenario {
         return false;
     }
 
-    private static void signal(EntityPlayerMP p, String command, String... args) {
+    static void signal(EntityPlayerMP p, String command, String... args) {
         p.addChatMessage(new ChatComponentText(AutotestSignal.format(command, args)));
     }
 
     /** Puts the eye at (ex, ey, ez) looking at the target point; no ground clamp, the player flies. */
-    private static void cam(EntityPlayerMP p, double ex, double ey, double ez, double tx, double ty, double tz) {
+    static void cam(EntityPlayerMP p, double ex, double ey, double ez, double tx, double ty, double tz) {
         p.capabilities.allowFlying = true;
         p.capabilities.isFlying = true;
         p.sendPlayerAbilities();
@@ -91,14 +91,14 @@ public final class MissileShotsScenario implements Scenario {
     }
 
     /** A queue of timed actions; an action may add more. */
-    private static final class Plan {
+    static final class Plan {
 
         private final List<long[]> due = new ArrayList<>();
         private final List<Runnable> acts = new ArrayList<>();
         /** Where the next {@link #after} lands: each call adds to it, so a chain of calls is cumulative. */
         private long cursor;
         /** The real tick of the action being run. */
-        private long now;
+        long now;
 
         void after(int dt, Runnable r) {
             cursor += dt;

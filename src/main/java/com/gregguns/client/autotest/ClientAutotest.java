@@ -229,6 +229,39 @@ public final class ClientAutotest {
         pendingShot = null;
         shotFrames = 0;
         Screenshots.take(localName(), label);
+        logMissiles(label);
+    }
+
+    /** Logs every missile entity this client sees (type, id, position), so two clients' views can be compared. */
+    @SuppressWarnings("unchecked")
+    private void logMissiles(String label) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.theWorld == null) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        int n = 0;
+        // Matched by class name so a pack without Galacticraft never loads the missile classes.
+        for (Object o : mc.theWorld.loadedEntityList) {
+            if (o.getClass()
+                .getName()
+                .startsWith("com.gregguns.icbm.missile.EntityMissile")) {
+                net.minecraft.entity.Entity e = (net.minecraft.entity.Entity) o;
+                n++;
+                sb.append(
+                    String.format(
+                        " [%s #%d %.1f,%.1f,%.1f]",
+                        e.getClass()
+                            .getSimpleName(),
+                        e.getEntityId(),
+                        e.posX,
+                        e.posY,
+                        e.posZ));
+            }
+        }
+        if (n > 0) {
+            log("missiles at " + label + " (client " + localName() + "): " + n + sb);
+        }
     }
 
     @SubscribeEvent
