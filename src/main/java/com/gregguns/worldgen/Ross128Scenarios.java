@@ -106,6 +106,14 @@ public final class Ross128Scenarios {
                 long[] before = GeneratorScenarios.counters();
                 int[] sq = GeneratorScenarios.loadUntilStamped(world, name);
                 if (sq == null) {
+                    out.note(
+                        "hook populates " + Ross128ProviderHook.populateCount()
+                            + ", generator populates "
+                            + StructureGenerator.populateCount()
+                            + ", provider "
+                            + world.getChunkProvider()
+                                .getClass()
+                                .getName());
                     out.check(false, "no square of 6 stamped the test structure");
                     return;
                 }

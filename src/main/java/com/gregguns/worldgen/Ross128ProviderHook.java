@@ -41,7 +41,14 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 // Spec: docs/design/0019-structures-on-ross128.md; docs/gregguns-spec/11-worldgen/structure-placement.md
 public final class Ross128ProviderHook {
 
+    private static final java.util.concurrent.atomic.AtomicLong POPULATES = new java.util.concurrent.atomic.AtomicLong();
+
     private final StructureGenerator generator = new StructureGenerator();
+
+    /** @return populate calls that went through a wrapped provider, since boot */
+    public static long populateCount() {
+        return POPULATES.get();
+    }
 
     /** Wraps the chunk provider of a Ross128 world as it loads. */
     @SubscribeEvent
@@ -87,6 +94,7 @@ public final class Ross128ProviderHook {
 
         @Override
         public void populate(IChunkProvider provider, int cx, int cz) {
+            POPULATES.incrementAndGet();
             inner.populate(provider, cx, cz);
             StructureGenerator.markRanViaProvider(world.provider.dimensionId, cx, cz);
             generator.generate(new Random(), cx, cz, world, inner, provider);
