@@ -41,7 +41,7 @@ A warhead placed alone is a charge, as ICBM's explosive blocks are:
 - **Redstone:** a rising edge of power on the block (or its fillers) starts the fuse.
 - **By hand:** right-click with flint and steel or a fire charge starts it; a bare-hand click does nothing (so the player does not trip it by accident).
 - **Fuse:** 100 ticks for every warhead (ICBM uses 100 to 120). While fused the tile beeps once per second (no flash: the model is a static chunk mesh). Breaching's instant fuse is dropped.
-- **Detonation:** the block is removed, then the blast starts at its center through the shared registry and pipeline (`ExplosionRules`, `BlockBreakGuard`, `ExplosionEvent.Detonate`) with the placer as the actor, so claims and `explosions.blockDamage` are respected.
+- **Detonation:** the block is removed, then the blast starts at its center through the shared registry and pipeline (`ExplosionRules`, `BlockBreakGuard`, `ExplosionEvent.Detonate`) with the placer as the actor, so claims and the tier's `icbm.terrainDamageT<n>` switch are respected (D52).
 - Breaking a fused block defuses and drops it. The warhead is not chain-reaction-prone: another explosion primes it with a short fuse (10 ticks).
 - The tile saves its explosive, fill, fuse and owner. The fuse is an int, not ICBM's byte, so a fuse above 127 survives a reload (`ICBM-02-*`).
 

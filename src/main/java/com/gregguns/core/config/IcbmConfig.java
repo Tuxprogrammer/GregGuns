@@ -4,8 +4,9 @@ import com.gtnewhorizon.gtnhlib.config.Config;
 
 /**
  * ICBM blast switches, the {@code icbm} category of {@code config/gregguns.cfg}. Fields only; no Minecraft types.
- * Synced: the server's values decide what a blast does. Terrain breaks only when both the per-tier key here and
- * {@code explosions.blockDamage} are on (D11).
+ * Synced: the server's values decide what a blast does. Terrain breaks by the per-tier key here only;
+ * {@code explosions.blockDamage}
+ * governs hand-held weapons, not ICBM blasts (D11, D52). Claims and protection always apply.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/explosive-registry.md (config); DECISIONS.md D11
 @Config(modid = "gregguns", category = "icbm")
@@ -17,20 +18,16 @@ public class IcbmConfig {
     @Config.RangeInt(min = 1, max = 4)
     public static int maxBlastTier = 4;
 
-    @Config.Comment({ "Whether tier 1 (HV) blasts may remove terrain. Also needs explosions.blockDamage.",
-        "Default: true." })
+    @Config.Comment({ "Whether tier 1 (HV) blasts may remove terrain.", "Default: true." })
     public static boolean terrainDamageT1 = true;
 
-    @Config.Comment({ "Whether tier 2 (EV to IV) blasts may remove terrain. Also needs explosions.blockDamage.",
-        "Default: true." })
+    @Config.Comment({ "Whether tier 2 (EV to IV) blasts may remove terrain.", "Default: true." })
     public static boolean terrainDamageT2 = true;
 
-    @Config.Comment({ "Whether tier 3 (LuV to ZPM) blasts may remove terrain. Also needs explosions.blockDamage.",
-        "Default: true." })
+    @Config.Comment({ "Whether tier 3 (LuV to ZPM) blasts may remove terrain.", "Default: true." })
     public static boolean terrainDamageT3 = true;
 
-    @Config.Comment({ "Whether tier 4 (UV and UHV) blasts may remove terrain. Also needs explosions.blockDamage.",
-        "Default: true." })
+    @Config.Comment({ "Whether tier 4 (UV and UHV) blasts may remove terrain.", "Default: true." })
     public static boolean terrainDamageT4 = true;
 
     @Config.Comment({ "Milliseconds per server tick that all running blasts share for breaking blocks.",
