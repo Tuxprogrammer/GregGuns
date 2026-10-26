@@ -26,6 +26,9 @@ class PortedCodeGateTest {
     private static final Path TEST = Paths.get("src/test/java");
     private static final Path FIXTURES = Paths.get("src/test/resources/portedgate");
 
+    /** The real tree holds about a thousand files; far below that means the scan is looking at the wrong place. */
+    private static final int MIN_MAIN_FILES = 500;
+
     private static String text(String path) throws IOException {
         return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
     }
@@ -39,6 +42,9 @@ class PortedCodeGateTest {
         String notices = text("THIRD-PARTY-NOTICES.md");
         Set<String> bugs = realBugs();
         List<String> violations = new ArrayList<>();
+        // The scan must have looked at the real tree, and no file may name the upstream project without the header.
+        violations.addAll(PortedCodeGate.checkRoot(MAIN, MIN_MAIN_FILES));
+        violations.addAll(PortedCodeGate.unmarkedMentions(MAIN));
         for (Path file : PortedCodeGate.portedFiles(MAIN)) {
             for (String v : PortedCodeGate.check(file, MAIN, TEST, notices, bugs)) {
                 violations.add(file + ": " + v);
@@ -89,7 +95,7 @@ class PortedCodeGateTest {
             "the invented bug ID is named");
         assertFalse(
             violations.stream()
-                .anyMatch(v -> v.contains("ICBM-01-41")),
+                .anyMatch(v -> v.startsWith(PortedCodeGate.BUG_ID) && v.contains("ICBM-01-41")),
             "the real bug ID passes");
     }
 
@@ -106,5 +112,56 @@ class PortedCodeGateTest {
     @Test
     void textMentioningTheHeaderMidSentenceIsNotAPort() {
         assertFalse(PortedCodeGate.isPorted("// We never say 'Ported from ICBM-Classic (MIT):' here\nclass X {}\n"));
+    }
+
+    private static List<String> checkFixture(String name) throws IOException {
+        Path main = FIXTURES.resolve(name + "/main");
+        List<Path> ported = PortedCodeGate.portedFiles(main);
+        assertEquals(1, ported.size());
+        return PortedCodeGate
+            .check(ported.get(0), main, FIXTURES.resolve(name + "/test"), text("THIRD-PARTY-NOTICES.md"), realBugs());
+    }
+
+    private static void assertRule(List<String> violations, String rule) {
+        assertTrue(
+            violations.stream()
+                .anyMatch(v -> v.startsWith(rule + ":")),
+            "rule " + rule + " should fire, got " + violations);
+    }
+
+    @Test
+    void aMissingSourceRootFailsInsteadOfPassing() throws IOException {
+        assertRule(PortedCodeGate.checkRoot(FIXTURES.resolve("does-not-exist"), 1), PortedCodeGate.ROOT);
+    }
+
+    @Test
+    void aTooSmallSourceRootFails() throws IOException {
+        assertRule(PortedCodeGate.checkRoot(FIXTURES.resolve("good/main"), 2), PortedCodeGate.ROOT);
+        assertTrue(
+            PortedCodeGate.checkRoot(FIXTURES.resolve("good/main"), 1)
+                .isEmpty());
+    }
+
+    @Test
+    void aFileNamingUpstreamWithoutTheHeaderFails() throws IOException {
+        assertRule(PortedCodeGate.unmarkedMentions(FIXTURES.resolve("adapted/main")), PortedCodeGate.UNMARKED);
+        assertTrue(
+            PortedCodeGate.unmarkedMentions(FIXTURES.resolve("good/main"))
+                .isEmpty());
+    }
+
+    @Test
+    void anEmptyAvoidsLineFails() throws IOException {
+        assertRule(checkFixture("emptyavoids"), PortedCodeGate.AVOIDS_EMPTY);
+    }
+
+    @Test
+    void anAvoidsIdTheTestNeverNamesFails() throws IOException {
+        assertRule(checkFixture("untested"), PortedCodeGate.AVOIDS_UNTESTED);
+    }
+
+    @Test
+    void aTestClassWithoutATestFails() throws IOException {
+        assertRule(checkFixture("notest"), PortedCodeGate.AVOIDS_UNTESTED);
     }
 }
