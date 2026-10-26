@@ -20,7 +20,10 @@ public final class IcbmParts {
      */
     public static void register(ModuleRegistrar registrar) {
         for (IcbmPart part : IcbmPart.values()) {
-            ItemIcbmPart item = registrar.registerItem(part.registryName(), new ItemIcbmPart(part));
+            ItemIcbmPart item = registrar.registerItem(
+                part.registryName(),
+                part.registryName()
+                    .startsWith("guidance_") ? new ItemGuidanceComputer(part) : new ItemIcbmPart(part));
             item.setTextureName("gregguns:" + part.iconName());
             ITEMS.put(part, item);
         }

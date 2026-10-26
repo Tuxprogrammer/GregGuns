@@ -35,6 +35,8 @@
 | Assembly Line recipe | HV, 30 s, 250 L lubricant, plates + fins + engine + computer | EV, 45 s, 250 L lubricant, plates + fins + engine + computer |
 | Body cost, cheapest computer (D34 plate equivalents) | 18.5 (test band 14 to 22) | 26 (band 22 to 30) |
 
+**Tier rule (D1).** The dev self-check refuses a recipe whose GregGuns input is of a higher tier than its output. A better guidance computer than its body is the point of D24, so the three computers implement the marker `TierUpgrade` and the check skips them as inputs. Chips and schematics are one item per tier (`missile_chip_t1`, `missile_chip_t2`, and the same for schematics), each Tiered at its own voltage, so the Laser Engraver and Circuit Assembler rows pass the machine-voltage rule.
+
 **Guidance steps** = the computer's voltage tier minus the body's tier, capped at 3. The body item carries them as the integer tag `guidance` (`MissileBodies.K_GUIDANCE`), which the flight code reads for the scatter (D24).
 
 ### New GregGuns parts (Assembler, same house style as the warhead parts, D57)

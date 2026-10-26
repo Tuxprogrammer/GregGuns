@@ -82,25 +82,18 @@ public final class ProductionScenarios {
         ScenarioResult go(ScenarioContext ctx) {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             for (MissileBuildSpec spec : MissileBuildSpec.values()) {
-                long volts = gregtech.api.enums.TierEU.RECIPE_HV;
-                volts = com.gregguns.recipe.ProductionRecipes.eutFor(spec.tier());
-                GTRecipe chip = findByOutput(
-                    RecipeMaps.circuitAssemblerRecipes,
-                    ProductionItems.chipItem(),
-                    spec.number() - 1);
+                long volts = com.gregguns.recipe.ProductionRecipes.eutFor(spec.tier());
+                GTRecipe chip = findByOutput(RecipeMaps.circuitAssemblerRecipes, ProductionItems.chipItem(spec), 0);
                 out.check(chip != null, spec + " chip recipe in the Circuit Assembler");
                 if (chip != null) {
                     out.checkEquals(spec + " chip voltage", volts, (long) chip.mEUt);
                 }
-                GTRecipe sch = findByOutput(
-                    RecipeMaps.laserEngraverRecipes,
-                    ProductionItems.schematicItem(),
-                    spec.number() - 1);
+                GTRecipe sch = findByOutput(RecipeMaps.laserEngraverRecipes, ProductionItems.schematicItem(spec), 0);
                 out.check(sch != null, spec + " schematic recipe in the Laser Engraver");
                 if (sch != null) {
                     out.checkEquals(spec + " engraver voltage", volts, (long) sch.mEUt);
                     out.check(
-                        sch.mInputs.length == 2 && sch.mInputs[0].getItem() == ProductionItems.chipItem(),
+                        sch.mInputs.length == 2 && sch.mInputs[0].getItem() == ProductionItems.chipItem(spec),
                         spec + " schematic takes the chip first");
                 }
                 MissileTier tier = MissileTier.byNumber(spec.number());

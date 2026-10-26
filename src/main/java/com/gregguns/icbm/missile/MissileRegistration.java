@@ -54,7 +54,6 @@ public final class MissileRegistration {
         if (IcbmAvailability.galacticraftPresent()) {
             MissileGc.init();
         }
-        MissileRecipes.init();
     }
 
     /**

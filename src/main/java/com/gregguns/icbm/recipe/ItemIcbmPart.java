@@ -21,7 +21,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * the ICBM module is off, and the recipes only exist for an enabled module. Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warheads-and-fill.md (Parts)
-public final class ItemIcbmPart extends Item implements Tiered {
+public class ItemIcbmPart extends Item implements Tiered {
 
     private final IcbmPart part;
 
