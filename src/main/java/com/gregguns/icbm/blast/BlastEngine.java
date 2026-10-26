@@ -48,6 +48,7 @@ public final class BlastEngine {
     private final TickBudget budget = new TickBudget(System::nanoTime);
     private final Map<World, BlastSavedData> data = new WeakHashMap<>();
     private int lastSlices;
+    private long maxTickNanos;
 
     private BlastEngine() {}
 
@@ -127,6 +128,16 @@ public final class BlastEngine {
         return lastSlices;
     }
 
+    /** @return the longest time one tick spent on the scheduler since {@link #resetStats()}, nanoseconds */
+    public long maxTickNanos() {
+        return maxTickNanos;
+    }
+
+    /** Test hook: zeroes {@link #maxTickNanos()}. */
+    public void resetStats() {
+        maxTickNanos = 0L;
+    }
+
     /** Test hook: cancels and forgets every blast. */
     public void clear() {
         for (BlastJob j : new ArrayList<>(jobs)) {
@@ -160,8 +171,10 @@ public final class BlastEngine {
                 job.cancel();
             }
         }
+        long began = System.nanoTime();
         budget.open(IcbmConfig.blastBudgetMs * 1_000_000L);
         lastSlices = scheduler.runTick(jobs, budget);
+        maxTickNanos = Math.max(maxTickNanos, System.nanoTime() - began);
         List<World> touched = new ArrayList<>();
         for (BlastJob j : jobs) {
             if (!touched.contains(j.world())) {
