@@ -126,6 +126,11 @@ class WarheadExportTest {
             sb.append(i + 1 < blasts.length ? "}},\n" : "}}\n");
         }
         sb.append("  ]\n}\n");
+        Path parent = file.toAbsolutePath()
+            .getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
         Files.write(
             file,
             sb.toString()

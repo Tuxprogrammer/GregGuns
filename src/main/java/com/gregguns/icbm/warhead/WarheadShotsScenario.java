@@ -154,9 +154,10 @@ final class WarheadShotsScenario implements Scenario {
         final int craterX = ox;
         final int craterZ = oz - 30;
         final int gasX = ox;
-        final int gasZ = oz + 30;
-        final int[] fillHalf = { 12 };
+        final int gasZ = oz + 14;
+        final int[] fillHalf = { 15 };
         final int[] airAfter = { -1 };
+        final boolean[] gasAccepted = { false };
 
         List<int[]> times = new ArrayList<>();
         List<Runnable> acts = new ArrayList<>();
@@ -205,7 +206,12 @@ final class WarheadShotsScenario implements Scenario {
         at.accept(GAP, () -> signal(p, "shot", "icbm-tooltip-plain"));
         at.accept(10, () -> signal(p, "shift", "on"));
         at.accept(GAP, () -> signal(p, "shot", "icbm-tooltip-shift"));
-        at.accept(10, () -> signal(p, "tip", "37"));
+        at.accept(10, () -> {
+            signal(p, "shift", "off");
+            signal(p, "tip", "37");
+        });
+        at.accept(GAP, () -> signal(p, "shot", "icbm-tooltip-plain-t2"));
+        at.accept(10, () -> signal(p, "shift", "on"));
         at.accept(GAP, () -> signal(p, "shot", "icbm-tooltip-shift-t2"));
         at.accept(10, () -> {
             signal(p, "tip", "off");
@@ -235,8 +241,8 @@ final class WarheadShotsScenario implements Scenario {
         });
         // 5a. crater
         at.accept(10, () -> {
-            fillStone(w, craterX, oy, craterZ, fillHalf[0], oy - 6, oy + 3);
-            cam(p, craterX - 5, oy + 7, craterZ + 5, craterX + 0.5, oy + 3, craterZ + 0.5);
+            fillStone(w, craterX, oy, craterZ, fillHalf[0], Math.max(1, oy - 14), oy + 3);
+            cam(p, craterX - 15, oy + 14, craterZ + 15, craterX + 0.5, oy + 1, craterZ + 0.5);
         });
         at.accept(GAP + 40, () -> signal(p, "shot", "icbm-crater-before"));
         at.accept(GAP / 2, () -> {
@@ -245,9 +251,9 @@ final class WarheadShotsScenario implements Scenario {
         });
         at.accept(GAP * 3, () -> {
             int air = 0;
-            for (int x = craterX - 10; x <= craterX + 10; x++) {
-                for (int z = craterZ - 10; z <= craterZ + 10; z++) {
-                    for (int y = oy - 6; y <= oy + 3; y++) {
+            for (int x = craterX - 12; x <= craterX + 12; x++) {
+                for (int z = craterZ - 12; z <= craterZ + 12; z++) {
+                    for (int y = Math.max(1, oy - 14); y <= oy + 3; y++) {
                         if (w.isAirBlock(x, y, z)) {
                             air++;
                         }
@@ -257,17 +263,17 @@ final class WarheadShotsScenario implements Scenario {
             airAfter[0] = air;
             signal(p, "shot", "icbm-crater-after");
         });
-        at.accept(GAP, () -> { cam(p, craterX + 0.5, oy + 10, craterZ + 1.5, craterX + 0.5, oy + 3, craterZ + 0.5); });
+        at.accept(GAP, () -> { cam(p, craterX + 0.5, oy + 24, craterZ + 1.5, craterX + 0.5, oy + 3, craterZ + 0.5); });
         at.accept(GAP, () -> signal(p, "shot", "icbm-crater-after-top"));
         // 5b. gas
-        at.accept(10, () -> cam(p, gasX + 6, oy + 3, gasZ + 6, gasX + 0.5, oy + 2, gasZ + 0.5));
+        at.accept(10, () -> cam(p, gasX + 3, oy + 2.5, gasZ + 3, gasX + 0.5, oy + 1.5, gasZ + 0.5));
         at.accept(GAP + 40, () -> signal(p, "shot", "icbm-gas-before"));
         at.accept(GAP / 2, () -> {
             ExplosiveDef d = Explosives.get("chemical");
-            IcbmBlasts.detonate(w, gasX + 0.5, oy + 1.0, gasZ + 0.5, d, 5, null);
+            gasAccepted[0] = IcbmBlasts.detonate(w, gasX + 0.5, oy + 1.0, gasZ + 0.5, d, 5, null);
         });
-        at.accept(GAP, () -> signal(p, "shot", "icbm-gas-after-a"));
-        at.accept(GAP, () -> signal(p, "shot", "icbm-gas-after-b"));
+        at.accept(GAP / 4, () -> signal(p, "shot", "icbm-gas-after-a"));
+        at.accept(GAP / 2, () -> signal(p, "shot", "icbm-gas-after-b"));
         final int end = clock[0] + 40;
 
         int[] next = { 0 };
@@ -283,7 +289,7 @@ final class WarheadShotsScenario implements Scenario {
                 .setOrCreateGameRule("doDaylightCycle", "true");
             signal(p, "hud", "on");
             signal(p, "view", "0");
-            clearBox(w, craterX, oy, craterZ, fillHalf[0] + 2, oy, oy + 5);
+            clearBox(w, craterX, oy, craterZ, fillHalf[0] + 2, Math.max(1, oy - 14), oy + 5);
             // Stay in creative: the gas cloud may still hang about and a survival player would be poisoned.
             return ScenarioResult.builder(NAME)
                 .note(
@@ -291,6 +297,8 @@ final class WarheadShotsScenario implements Scenario {
                         + p.getCommandSenderName()
                         + "; air blocks in the crater box: "
                         + airAfter[0]
+                        + "; gas blast accepted: "
+                        + gasAccepted[0]
                         + "; read the icbm-*.png shots")
                 .build();
         });
