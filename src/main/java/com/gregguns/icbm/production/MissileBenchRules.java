@@ -7,7 +7,8 @@ import com.gregguns.icbm.recipe.Ing;
 
 /**
  * The matching rule of the NASA Workbench page, on plain keys (D8): which slot holds what is reduced to a key string
- * ({@code plate:Steel} for a GT plate, the registry name for a GregGuns part) by the container, and this class decides
+ * ({@code compressed:Steel} for a GT compressed plate, {@code modid:name@damage} for a Galacticraft fin or engine, the
+ * registry name for a GregGuns part) by the container, and this class decides
  * whether the slots make a body and with how much guidance. No Minecraft types, both sides.
  */
 // Spec: docs/gregguns-icbm-spec/03-missiles/build-and-recipes.md (NASA Workbench page)
@@ -18,7 +19,7 @@ public final class MissileBenchRules {
 
     private MissileBenchRules() {}
 
-    /** @return the key of a GT ingredient, such as {@code plate:Steel} */
+    /** @return the key of a plate, fin or engine ingredient, such as {@code compressed:Steel} */
     public static String keyOf(Ing gt) {
         return gt.id();
     }
@@ -36,7 +37,7 @@ public final class MissileBenchRules {
      * @param spec     the page's body
      * @param plates   the key in each plate slot, null for empty; length {@link #plateSlots}
      * @param fins     the key in each fin slot, null for empty; length {@link #FIN_SLOTS}
-     * @param engine   the key in the engine slot (a part's registry name), null for empty
+     * @param engine   the key in the engine slot (a Galacticraft part id), null for empty
      * @param guidance the key in the guidance slot (a part's registry name), null for empty
      * @return the guidance steps of the body this makes (0 to 3), or -1 when the slots do not make a body
      */

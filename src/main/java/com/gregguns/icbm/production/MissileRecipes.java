@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.gregguns.GregGuns;
+import com.gregguns.api.Tier;
 import com.gregguns.icbm.missile.MissileBodies;
 import com.gregguns.icbm.missile.MissileTier;
 import com.gregguns.icbm.recipe.IcbmIngredients;
@@ -115,7 +116,7 @@ public final class MissileRecipes {
         ItemStack fins = IcbmIngredients.stack(spec.fins());
         Item engineItem = IcbmParts.get(spec.engine());
         ItemStack circuits = IcbmIngredients.stack(spec.lineCircuits());
-        FluidStack lube = IcbmIngredients.fluid(Ing.fluid("Lubricant", MissileBuildSpec.LUBRICANT_LITERS, MV_TIER));
+        FluidStack lube = IcbmIngredients.fluid(Ing.fluid("Lubricant", MissileBuildSpec.LUBRICANT_LITERS, Tier.MV));
         if (plates == null || fins == null || engineItem == null || circuits == null || lube == null) {
             GregGuns.LOG.error("Skipping the {} Assembly Line recipe: an input is missing", spec);
             return;
@@ -167,15 +168,15 @@ public final class MissileRecipes {
             .addTo(IcbmRecipeMaps.MISSILE_WORKBENCH);
     }
 
-    private static final com.gregguns.api.Tier MV_TIER = com.gregguns.api.Tier.MV;
-
-    /** The metal of the plates and fins comes back from a body; the engine and computer have their own data. */
+    /**
+     * The metal of the compressed plates comes back from a body (GT's own amount for the item); the Galacticraft fins
+     * and engine and the computer have no GT metal data.
+     */
     private static void recycle(MissileBuildSpec spec) {
         Item body = MissileBodies.item(MissileTier.byNumber(spec.number()));
         if (body == null) {
             return;
         }
-        long plate = OrePrefixes.plate.getMaterialAmount();
         Materials main = Materials.get(
             spec.plates()
                 .id()
@@ -183,23 +184,12 @@ public final class MissileRecipes {
                     spec.plates()
                         .id()
                         .indexOf(':') + 1));
-        Materials fin = Materials.get(
-            spec.fins()
-                .id()
-                .substring(
-                    spec.fins()
-                        .id()
-                        .indexOf(':') + 1));
         GTOreDictUnificator.addItemData(
             new ItemStack(body),
             new ItemData(
                 new MaterialStack(
                     main,
-                    plate * spec.plates()
-                        .count()),
-                new MaterialStack(
-                    fin,
-                    plate * spec.fins()
+                    OrePrefixes.compressed.getMaterialAmount() * spec.plates()
                         .count())));
     }
 }

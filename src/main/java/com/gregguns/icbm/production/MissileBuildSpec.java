@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.gregguns.api.Tier;
+import com.gregguns.icbm.compat.GalacticraftParts;
 import com.gregguns.icbm.recipe.IcbmPart;
 import com.gregguns.icbm.recipe.Ing;
 
@@ -19,19 +20,29 @@ import com.gregguns.icbm.recipe.Ing;
 // Spec: docs/gregguns-icbm-spec/03-missiles/build-and-recipes.md
 public enum MissileBuildSpec {
 
-    /** T1 body: HV chip, stainless plates, steel fins, a Mk I engine. */
-    T1(1, Tier.HV, 400, 600, "craftingLensRed", Ing.gt("plate", "StainlessSteel", 4, Tier.HV, 1.0),
-        Ing.gt("plate", "Steel", 4, Tier.LV, 1.0), IcbmPart.MISSILE_ENGINE_MK1,
+    /**
+     * T1 body: HV chip, three compressed steel plates, four Galacticraft Tier 1 fins, a Galacticraft Tier 1 engine
+     * (D69). Costs: a compressed plate is a plate plus an implosion; a fin is 2 compressed steel and 4 heavy-duty
+     * plates;
+     * an engine is 2 SDHD120 plates, 4 heavy-duty plates, a canister, a firebox casing and a detector (the GTNH
+     * recipes).
+     */
+    T1(1, Tier.HV, 400, 600, "craftingLensRed", Ing.gt("compressed", "Steel", 3, Tier.MV, 2.0),
+        Ing.modItem(GalacticraftParts.FINS_T1, 4, Tier.HV, 28.0), IcbmPart.MISSILE_ENGINE_MK1,
         Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK1, IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3),
-        60, Tier.HV, 600, 14, 22,
+        60, Tier.HV, 600, 120, 140,
         Arrays.asList(
             Ing.gtItem("Circuit_Board_Plastic_Advanced", 1, Tier.HV, 2.0),
             Ing.gt("circuit", "Advanced", 2, Tier.HV, 3.0),
             Ing.gt("wireFine", "Gold", 4, Tier.MV, 0.5))),
-    /** T2 body: EV chip, titanium plates, stainless fins, a Mk II engine. */
-    T2(2, Tier.EV, 600, 600, "craftingLensBlue", Ing.gt("plate", "Titanium", 6, Tier.EV, 1.0),
-        Ing.gt("plate", "StainlessSteel", 4, Tier.HV, 1.0), IcbmPart.MISSILE_ENGINE_MK2,
-        Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3), 120, Tier.EV, 900, 22, 30,
+    /**
+     * T2 body: EV chip, four compressed titanium plates, four Galacticraft Tier 2 fins, a Galacticraft Tier 2 engine
+     * (D69). Costs: a Tier 2 fin is 2 Mars and 4 asteroid reinforced plates; the Tier 2 engine is 2 Tier 1 engines, 2
+     * boosters and 5 asteroid plates (the GTNH recipes).
+     */
+    T2(2, Tier.EV, 600, 600, "craftingLensBlue", Ing.gt("compressed", "Titanium", 4, Tier.EV, 2.5),
+        Ing.modItem(GalacticraftParts.FINS_T2, 4, Tier.EV, 68.0), IcbmPart.MISSILE_ENGINE_MK2,
+        Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3), 120, Tier.EV, 900, 280, 320,
         Arrays.asList(
             Ing.gtItem("Circuit_Board_Epoxy_Advanced", 1, Tier.EV, 3.0),
             Ing.gt("circuit", "Data", 2, Tier.EV, 5.0),
@@ -117,12 +128,12 @@ public enum MissileBuildSpec {
         return plates;
     }
 
-    /** @return the four fins, one plate each */
+    /** @return the four Galacticraft rocket fins, one per fin slot */
     public Ing fins() {
         return fins;
     }
 
-    /** @return the engine part */
+    /** @return the Galacticraft rocket engine */
     public IcbmPart engine() {
         return engine;
     }

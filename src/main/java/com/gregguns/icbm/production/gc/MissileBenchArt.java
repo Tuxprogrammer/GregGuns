@@ -46,12 +46,12 @@ public final class MissileBenchArt {
         hull(cx - 10, oy + 8, cx + 10, oy + 16);
         hull(cx - 15, oy + 16, cx + 15, bodyTop);
         // body
-        hull(cx - 20, bodyTop, cx + 20, base + 2);
+        hull(cx - 14, bodyTop, cx + 14, base + 2);
         // fins: a swept wing either side, reaching from the body to the outer fin slots
-        hull(cx - 66, base - 2, cx - 20, base + 20);
-        hull(cx - 34, base - 18, cx - 20, base - 2);
-        hull(cx + 20, base - 2, cx + 66, base + 20);
-        hull(cx + 20, base - 18, cx + 34, base - 2);
+        hull(cx - 66, base - 2, cx - 14, base + 20);
+        hull(cx - 34, base - 18, cx - 14, base - 2);
+        hull(cx + 14, base - 2, cx + 66, base + 20);
+        hull(cx + 14, base - 18, cx + 34, base - 2);
         // engine bell
         hull(cx - 14, base + 2, cx + 14, engine + 18);
         hull(cx - 18, engine + 18, cx + 18, engine + 22);
