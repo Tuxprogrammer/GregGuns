@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
@@ -60,8 +61,11 @@ public final class MissileTickets {
                 .contains(pair)) {
                 ForgeChunkManager.forceChunk(ticket, pair);
             }
-            // forceChunk only pins; this loads (or generates) the chunk now so the missile can see it.
-            world.getChunkFromChunkCoords(w[0], w[1]);
+            // forceChunk only pins. loadChunk loads (or generates) the chunk now so the missile can see it;
+            // getChunkFromChunkCoords is not enough, because it can hand back an empty chunk without loading.
+            if (world instanceof WorldServer) {
+                ((WorldServer) world).theChunkProviderServer.loadChunk(w[0], w[1]);
+            }
         }
         return true;
     }

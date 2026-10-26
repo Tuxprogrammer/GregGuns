@@ -116,7 +116,7 @@ public final class MissileScenarios {
         return MissileStacks.armIntoEntity(ctx.world(), base[0], base[1], base[2], null).missile;
     }
 
-    /** Logs where a missile is and what holds its chunks, every 20 ticks (an aid for failing flights). */
+    /** Logs where a missile is and what holds its chunks, every 20 ticks, but only while it is in a bad state. */
     static void trace(World w, EntityMissile m, int ticks) {
         if (ticks % 20 != 0 || m.isDead) {
             return;
@@ -125,6 +125,9 @@ public final class MissileScenarios {
         int cz = net.minecraft.util.MathHelper.floor_double(m.posZ) >> 4;
         boolean forced = net.minecraftforge.common.ForgeChunkManager.getPersistentChunksFor(w)
             .containsKey(new net.minecraft.world.ChunkCoordIntPair(cx, cz));
+        if (w.getChunkProvider().chunkExists(cx, cz) && m.addedToChunk) {
+            return;
+        }
         com.gregguns.GregGuns.LOG.info(
             "[missile trace] t={} phase={} pos={},{},{} chunk={},{} loaded={} forced={} added={} held={} dead={}",
             ticks,
