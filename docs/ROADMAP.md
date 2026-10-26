@@ -322,6 +322,7 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
     - the abstract interior-lamp markers on the Ammunition Works and Armory Gantry build guides (glowstone, redstone lamp).
 
     Rebuild those sheets and check contrast.
+    - Done on `feat/m9-guide-vanilla-textures` (0.3.3-beta): the recipes, enemies, Ammunition Works and Armory Gantry sheets use the real textures, each with a Mojang credit in its footer. The draft `icbm-warheads` sheet picks the same icons up on its next rebuild.
 - **Fixes from the owner's beta playthrough,** released as `0.3.x-beta`.
 
 **Exit gate:**

@@ -20,6 +20,7 @@ from PIL import Image
 
 import blocks as B
 import render3d as R
+import vanilla
 
 REPO = R.REPO
 ASSETS = R.ASSETS
@@ -148,40 +149,13 @@ def mob(model: str, skin: str, pose=None, gun_name=None, yaw=-30, pitch=10, h=42
 
 
 def bone_skin() -> Path:
-    """A plain bone skin for the Skeleton Soldier, which wears the vanilla skeleton texture in game. We don't render
-    Mojang's art, so this is a flat bone color with simple eye sockets on the 64x32 biped layout."""
-    p = TEXCACHE / "skeleton_bone.png"
-    if not p.exists():
-        TEXCACHE.mkdir(parents=True, exist_ok=True)
-        rng = np.random.default_rng(7)
-        a = np.empty((32, 64, 4), np.uint8)
-        a[..., :3] = np.array([214, 208, 192]) + rng.integers(-10, 10, (32, 64, 1))
-        a[..., 3] = 255
-        a[12:14, 9:11, :3] = a[12:14, 13:15, :3] = (40, 36, 34)  # eye sockets on the face (u 8..16, v 8..16)
-        a[14:15, 11:13, :3] = (90, 84, 76)
-        Image.fromarray(a, "RGBA").save(p)
-    return p
+    """The Skeleton Soldier's skin: the vanilla skeleton texture it wears in game, read from the vanilla jar."""
+    return vanilla.texture("entity/skeleton/skeleton")
 
 
 def pigman_skin() -> Path:
-    """A rotting pig-faced skin for the Zombie Pigman Soldier, which wears the vanilla pigman texture in game. Our own
-    flat drawing on the 64x64 biped layout: pink flesh with green rot, a snout and eyes on the face (u 8..16,
-    v 8..16)."""
-    p = TEXCACHE / "pigman_soldier.png"
-    if not p.exists():
-        TEXCACHE.mkdir(parents=True, exist_ok=True)
-        rng = np.random.default_rng(11)
-        a = np.empty((64, 64, 4), np.uint8)
-        a[..., :3] = np.array([226, 148, 150]) + rng.integers(-12, 12, (64, 64, 1))
-        rot = rng.random((64, 64)) < 0.18
-        a[rot, :3] = (122, 152, 96)
-        a[..., 3] = 255
-        a[8:16, 8:16, :3] = (230, 160, 160)
-        a[11:13, 9:11, :3] = a[11:13, 13:15, :3] = (40, 30, 30)  # eyes
-        a[13:16, 10:14, :3] = (205, 120, 125)  # snout
-        a[14, 11, :3] = a[14, 12, :3] = (90, 50, 55)
-        Image.fromarray(a, "RGBA").save(p)
-    return p
+    """The Zombie Pigman Soldier's skin: the vanilla zombie pigman texture it wears in game, read from the vanilla jar."""
+    return vanilla.texture("entity/zombie_pigman")
 
 
 def accessory(scene, mats, name: str):
