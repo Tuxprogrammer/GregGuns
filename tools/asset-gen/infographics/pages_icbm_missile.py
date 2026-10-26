@@ -123,7 +123,7 @@ def first_missile() -> str:
     s3b = _step(4, "Or automate it",
                 f"<span class='pill'>Scan a body</span>{arrow}<span class='pill'>Data Stick</span>{arrow}<span class='pill'>Assembly Line</span>{arrow}<span class='pill'>Body</span>{plus}<span class='pill'>Computer</span>{arrow}<span class='pill'>Assembler</span>",
                 "Scan one hand-built body into a <b>Data Stick</b> in the Scanner (T1 takes a minute at HV, T2 two minutes at EV). The <b>Assembly Line</b> then builds that body "
-                "from plates, fins, an engine and 250 L of lubricant, in 30 seconds (T1) or 45 seconds (T2). It makes the basic body; "
+                "from plates, fins, an engine, 2 circuits (Advanced for T1, Data for T2) and 250 L of lubricant, in 30 seconds (T1) or 45 seconds (T2). It makes the basic body; "
                 "a better <b>Guidance Computer</b> goes in afterwards in the <b>Assembler</b> (15 seconds, at the body's voltage).")
     s4 = _step(5, "Stack it on the launch pad",
                f"{img(missile_on_pad(1, 100), h=150)}{img(missile_on_pad(2, 100), h=150)}",
