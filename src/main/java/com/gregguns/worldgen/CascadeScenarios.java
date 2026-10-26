@@ -100,6 +100,32 @@ public final class CascadeScenarios {
         return ScenarioRegions.allocate(world, "worldgen.no_cascade", SIDE, MARGIN, null);
     }
 
+    /** Chunks loaded far from the last square by something else during the run (other mods), for a note. */
+    private static int foreignLoads;
+
+    /**
+     * Keeps the chunks that lie in the square or within {@link #MARGIN} chunks of it. A chunk loaded thousands of chunks
+     * away during the run was not caused by populating this square (the guard and the window rules keep a populate
+     * local), but by another mod in a real pack, so it must not decide the comparison.
+     *
+     * @param relative chunk keys {@code "x,z"} relative to the square's minimum chunk
+     * @param side     chunks per side of the square
+     * @param margin   chunks of tolerance around it
+     * @return the keys inside the square widened by the margin
+     */
+    static Set<String> nearSquare(Set<String> relative, int side, int margin) {
+        Set<String> near = new HashSet<>();
+        for (String k : relative) {
+            String[] p = k.split(",");
+            int x = Integer.parseInt(p[0]);
+            int z = Integer.parseInt(p[1]);
+            if (x >= -margin && x < side + margin && z >= -margin && z < side + margin) {
+                near.add(k);
+            }
+        }
+        return near;
+    }
+
     /** Chunks loaded by a run, relative to the square's minimum chunk. */
     private static Set<String> runSquare(World world, int bx, int bz) {
         ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
@@ -118,7 +144,9 @@ public final class CascadeScenarios {
             String[] p = k.split(",");
             rel.add((Integer.parseInt(p[0]) - bx) + "," + (Integer.parseInt(p[1]) - bz));
         }
-        return rel;
+        Set<String> near = nearSquare(rel, SIDE, MARGIN);
+        foreignLoads += rel.size() - near.size();
+        return near;
     }
 
     @SuppressWarnings("unchecked")
@@ -157,6 +185,7 @@ public final class CascadeScenarios {
             StructurePopulator dense = denseShippedPopulator(keys, errors);
             out.check(errors.isEmpty(), "shipped layouts load clean: " + errors);
             Random rnd = new Random(System.nanoTime());
+            foreignLoads = 0;
             try {
                 PopulateGuard.register();
                 // Structures on. A square can be all ocean for a land-only pool; retry on a new square until one
@@ -237,7 +266,13 @@ public final class CascadeScenarios {
                     "nest phase loaded-chunk set equals the structures-off run: "
                         + (withNests == null ? -1 : withNests.size())
                         + " vs "
-                        + control.size());
+                        + control.size()
+                        + (withNests == null ? "" : diff(withNests, control)));
+                if (foreignLoads > 0) {
+                    out.note(
+                        foreignLoads + " chunks far from the squares were loaded by something else during the runs"
+                            + " (other mods in the pack); ignored");
+                }
             } finally {
                 StructureGenerator.setBiomeOverride(null);
                 StructureGenerator.setOverride(null);
