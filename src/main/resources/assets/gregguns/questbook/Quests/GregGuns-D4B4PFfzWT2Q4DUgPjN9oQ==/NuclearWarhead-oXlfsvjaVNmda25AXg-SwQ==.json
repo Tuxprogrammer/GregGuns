@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "The nuclear warhead is a Tier 3 casing, two blocks tall, and it flies only on a Tier 3 missile from the silo. Nothing living inside its kill zone survives, bosses included, and the ground it leaves is irradiated: cross it in hazmat armor. Launch one from your silo, and stand well back.",
+      "desc:8": "The nuclear warhead is a Tier 3 casing at ZPM, two blocks tall, made in the Assembler from tungstensteel plates, Industrial TNT, Plastic Explosive, uranium-235, plutonium and a Fuze Assembly Mk III. It flies only on a Tier 3 missile from the silo. A full warhead blasts 64 blocks, and nothing living inside the inner 38 survives, bosses included. The top layer of ground is left irradiated for about an hour: cross it in full hazmat armor. Launch one from your silo, and stand well back.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

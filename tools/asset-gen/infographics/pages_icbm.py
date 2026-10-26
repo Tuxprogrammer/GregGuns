@@ -294,17 +294,32 @@ def warheads() -> str:
     ladder = "".join(
         f'<span class="{"" if on else "off"}">{chip(t) if t in K.TIERS else f"<span class=chip style=background:#8a8f98>{t}</span>"}</span>'
         for t, on in [("HV", True), ("EV", True), ("IV", True), ("LuV", True), ("ZPM", True), ("UV", False), ("UHV", False)])
-    # DRAFT numbers from the spec (warheads-and-fill, D34, D30, D49); replaced by the code's dump once the I3 content lands.
+    # DRAFT numbers from the nuclear coder (icbm/i3-nuclear, ecb7b9ee); they may still move after its scenario run. Replace
+    # with the code's dump once the I3 content lands and drop the stamp.
     t3 = _tier_card(3, "LuV", "LuV to ZPM", "Tungstensteel", "Tungsten steel", "warhead_t3", 64,
-                    "A two-block-tall casing for the silo. It holds up to 64 charges and needs a Tier 3 missile.",
-                    [("Full-fill center damage", "8,000 or more (pending)"), ("Blast radius, full", "pending"), ("Size", "1 &times; 1 &times; 2 blocks")])
+                    "A two-block-tall casing for the silo. Fill and radius work as on the smaller casings.",
+                    [("Full-fill center damage", "8,000"), ("Blast radius, full", "28 blocks"), ("Size", "1 &times; 1 &times; 2 blocks")])
     nuke = _tier_card("", "ZPM", "ZPM", "Tungstensteel", "Tungsten steel", "warhead_nuclear", 64,
-                      "The nuclear warhead. Nothing living inside its kill zone survives, bosses included.",
-                      [("Kill zone", "pending"), ("Fallout", "Irradiated ground, surface only (numbers pending)"), ("Size", "1 &times; 1 &times; 2 blocks")])
+                      "The nuclear warhead: a Tier 3 casing with the nuclear fill. Nothing living in the kill zone survives, bosses included.",
+                      [("Blast radius, full", "64 blocks (32 at 8 charges, 16 at 1)"), ("Kill zone, full", "38 blocks, every living thing"),
+                       ("Outside the zone", "8,000 damage, fading to the edge"), ("Size", "1 &times; 1 &times; 2 blocks")])
     nuke = nuke.replace("<h2>Tier </h2>", "<h2>Nuclear</h2>")
+
+    def t3_card(name, kind, what, pay):
+        return (f'<div class="bt" style="--kc:{KIND_COLOR[kind]}"><div class="top"><h3>{esc(name)} T3 Warhead</h3><span class="kind">{esc(kind)}</span></div>'
+                f'<div class="nums"><span>Radius <b>28</b></span><span>Center <b>8,000</b></span></div><div class="what">{esc(what)}</div>'
+                f'<div class="pay"><span>Payload</span> {esc(pay)}</div></div>')
+    t3_cards = (t3_card("Exothermic", "Crater", "A huge crater where everything in the radius burns for 5 seconds.",
+                        "16 Industrial TNT, 6 Plastic Explosive, 4 Napalm Canisters, a Fuze Assembly Mk III, 8,000 L kerosene")
+                + t3_card("Endothermic", "Crater", "A huge crater that leaves everything in it slowed for 10 seconds.",
+                          "16 Industrial TNT, 6 Plastic Explosive, 4 Dispersal Canisters, a Fuze Assembly Mk III, 8,000 L helium"))
+    fallout = """<div class="card" style="margin-top:18px"><h2>What a nuclear strike leaves behind</h2>
+<div class="muted" style="font-size:18px;margin:6px 0 4px">The top layer of ground around the blast turns into <b>Irradiated Earth</b>: dirt, stone, sand, gravel and cobblestone in a sickly green. It covers a disc up to 1.5 times the blast radius, but never more than 6,000 blocks per strike, and it does not spread. It fades back to normal after an hour. Mining it gives Irradiated Rubble, which hurts to carry. Standing on or next to it irradiates you about once a second; <b>full hazmat armor</b> (GregTech hazmat, GregGuns armor with the radiation flag, or the Hazmat enchantment) protects you.</div></div>"""
+    nuke_cost = """<div class="muted" style="font-size:17px;margin-top:8px"><b>Made in the Assembler:</b> Exothermic and Endothermic at LuV, Nuclear at ZPM from 8 tungstensteel plates, 12 Industrial TNT, 4 Plastic Explosive, 8 uranium-235 ingots, 4 plutonium ingots and a Fuze Assembly Mk III (LuV: Master circuit, a tungstensteel plate and 4 fine platinum wire).</div>"""
     heavy = f"""<div class="label" style="margin:26px 0 10px">Tier 3 and nuclear &middot; silo only</div>
 <div class="grid" style="grid-template-columns:1fr 1fr">{t3}{nuke}</div>
-<div class="muted" style="font-size:17px;margin-top:10px">Tier 3 and nuclear warheads fly only on a Tier 3 missile launched from the missile silo. Inside a nuclear kill zone every living thing dies, through armor, bosses included; players follow the server's damage settings. The ground that survives is irradiated: wear hazmat armor to cross it.</div>"""
+<div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px">{t3_cards}</div>
+<div class="muted" style="font-size:17px;margin-top:10px">Tier 3 and nuclear warheads fly only on a Tier 3 missile launched from the missile silo. Inside a nuclear kill zone every living thing dies, through armor, bosses included; players follow the server's damage settings.</div>{nuke_cost}{fallout}"""
     later = f"""<div class="card"><div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap"><h2>Where each tier sits on the ladder</h2><div class="ladder">{ladder}</div></div>
 <div class="muted" style="font-size:18px;margin-top:8px">Tiers 1 and 2 are the conventional starter casings. Tier 3 (LuV to ZPM) and the nuclear warhead are the heavy two-block casings. Antimatter and red matter warheads sit at the very top, and everything in their blast zone dies.</div></div>"""
 
