@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.gregguns.core.registry.ModuleRegistrar;
 
-/** Registers the eight ICBM parts and holds them for the recipes. Common side, preInit. */
+/** Registers the ICBM parts and holds them for the recipes. Common side, preInit. */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warheads-and-fill.md (Parts)
 public final class IcbmParts {
 

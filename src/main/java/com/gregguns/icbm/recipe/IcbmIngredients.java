@@ -77,6 +77,8 @@ public final class IcbmIngredients {
                 }
                 return dish;
             }
+            case MOD_ITEM:
+                return com.gregguns.icbm.compat.GalacticraftParts.find(in.id(), n);
             case OPTIONAL_MOD_ITEM: {
                 int colon = in.id()
                     .indexOf(':');

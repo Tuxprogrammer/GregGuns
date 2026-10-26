@@ -30,16 +30,16 @@ public enum IcbmPart {
             Ing.gt("plate", "Titanium", 1, Tier.EV, 1.0),
             Ing.gt("wireFine", "Electrum", 4, Tier.HV, 0.5))),
     /** The copper cone of a breaching warhead. */
-    SHAPED_CHARGE_LINER_CONE("shaped_charge_liner_cone", Tier.MV, 1.0, 2, 14,
+    SHAPED_CHARGE_LINER_CONE("shaped_charge_liner_cone", Tier.HV, 1.0, 2, 14,
         Arrays.asList(Ing.gt("plate", "Copper", 2, Tier.LV, 1.0))),
     /** Steel fragments around a T1 warhead. */
-    FRAGMENTATION_SLEEVE_STEEL("fragmentation_sleeve_steel", Tier.MV, 4.0, 1, 15,
+    FRAGMENTATION_SLEEVE_STEEL("fragmentation_sleeve_steel", Tier.HV, 4.0, 1, 15,
         Arrays.asList(Ing.gt("round", "Steel", 16, Tier.LV, 0.15), Ing.gt("plate", "Steel", 1, Tier.LV, 1.0))),
     /** Titanium fragments around a T2 warhead. */
     FRAGMENTATION_SLEEVE_TITANIUM("fragmentation_sleeve_titanium", Tier.EV, 7.0, 1, 16,
         Arrays.asList(Ing.gt("round", "Titanium", 16, Tier.EV, 0.375), Ing.gt("plate", "Titanium", 1, Tier.EV, 1.0))),
     /** Holds the fluid fill of the gas, smoke and fuel-air warheads. */
-    DISPERSAL_CANISTER("dispersal_canister", Tier.MV, 2.5, 2, 17,
+    DISPERSAL_CANISTER("dispersal_canister", Tier.HV, 2.5, 2, 17,
         Arrays.asList(
             Ing.gt("plate", "Aluminium", 2, Tier.MV, 1.0),
             Ing.gt("plate", "Rubber", 1, Tier.LV, 1.0),
@@ -47,18 +47,6 @@ public enum IcbmPart {
     /** A Dispersal Canister filled with gasoline; the name carries the theme. */
     NAPALM_CANISTER("napalm_canister", Tier.HV, 3.5, 1, 18,
         Arrays.asList(Ing.part(DISPERSAL_CANISTER, 1), Ing.fluid("Gasoline", 1000, Tier.HV))),
-    /** Engine of a T1 missile body (I2): a motor, a pump and a plate. */
-    MISSILE_ENGINE_MK1("missile_engine_mk1", Tier.HV, 5.5, 1, 19,
-        Arrays.asList(
-            Ing.gtItem("Electric_Motor_MV", 1, Tier.MV, 2.5),
-            Ing.gtItem("Electric_Pump_MV", 1, Tier.MV, 2.0),
-            Ing.gt("plate", "Steel", 1, Tier.LV, 1.0))),
-    /** Engine of a T2 missile body (I2). */
-    MISSILE_ENGINE_MK2("missile_engine_mk2", Tier.EV, 8.0, 1, 20,
-        Arrays.asList(
-            Ing.gtItem("Electric_Motor_HV", 1, Tier.HV, 4.0),
-            Ing.gtItem("Electric_Pump_HV", 1, Tier.HV, 3.0),
-            Ing.gt("plate", "StainlessSteel", 1, Tier.HV, 1.0))),
     /** Guidance computer, HV: the base for a T1 body (I2). */
     GUIDANCE_COMPUTER_MK1("guidance_computer_mk1", Tier.HV, 5.0, 1, 21,
         Arrays.asList(

@@ -13,14 +13,14 @@ public final class MissileBenchLayout {
     public static final int WIDTH = 168;
     /** Panel x of the missile's center line. */
     public static final int CENTER = 84;
-    /** Plate columns across the body. */
-    public static final int PLATE_COLUMNS = 2;
+    /** Plate columns across the body: one vertical column, since the compressed plates are dear (D69). */
+    public static final int PLATE_COLUMNS = 1;
     /** Top of the plate block. */
     public static final int PLATES_TOP = 30;
     /** Slot pitch. */
     public static final int STEP = 18;
-    /** Height of the schematic part of the panel (enough for the tallest, the T2 body). */
-    public static final int HEIGHT = 124;
+    /** Height of the schematic part of the panel (enough for the tallest, the T2 body of four plates). */
+    public static final int HEIGHT = 142;
 
     private MissileBenchLayout() {}
 
@@ -31,7 +31,7 @@ public final class MissileBenchLayout {
 
     /** @return x of plate slot {@code i} */
     public static int plateX(int i) {
-        return CENTER - STEP + (i % PLATE_COLUMNS) * STEP;
+        return CENTER - 8 + (i % PLATE_COLUMNS) * STEP;
     }
 
     /** @return y of plate slot {@code i} */

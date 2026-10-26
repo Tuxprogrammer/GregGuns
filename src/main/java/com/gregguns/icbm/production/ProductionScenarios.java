@@ -203,7 +203,7 @@ public final class ProductionScenarios {
             }
             int engine = 1 + plates + MissileBenchRules.FIN_SLOTS;
             c.getSlot(engine)
-                .putStack(new ItemStack(IcbmParts.get(spec.engine())));
+                .putStack(one(IcbmIngredients.stack(spec.engine())));
             c.getSlot(engine + 1)
                 .putStack(new ItemStack(IcbmParts.get(computer)));
             c.onCraftMatrixChanged(null);
@@ -226,7 +226,7 @@ public final class ProductionScenarios {
             // A slot only takes its own item.
             out.check(
                 !c.getSlot(1)
-                    .isItemValid(new ItemStack(IcbmParts.get(spec.engine()))),
+                    .isItemValid(IcbmIngredients.stack(spec.engine())),
                 label + ": plate slot takes an engine");
             out.check(
                 !c.getSlot(engine)

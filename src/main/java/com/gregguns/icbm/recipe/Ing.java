@@ -26,6 +26,8 @@ public final class Ing {
         PART,
         /** The BartWorks Escherichia petri dish (the rotten-flesh culture). */
         BIO_DISH,
+        /** A required item of another mod, {@code modid:name@damage}: a Galacticraft rocket part (D69). */
+        MOD_ITEM,
         /** An item of another mod, {@code modid:name}; left out of the recipe when the mod is absent. */
         OPTIONAL_MOD_ITEM,
         /** A GT fluid that is a liquid: {@code id} is the material name. */
@@ -112,6 +114,20 @@ public final class Ing {
      */
     public static Ing bioDish(int count) {
         return new Ing(Src.BIO_DISH, "escherichia", count, Tier.HV, 3.0 * count);
+    }
+
+    /**
+     * A Galacticraft rocket part the recipe always takes (D69); it fails to resolve when the mod is absent, which
+     * skips the recipe.
+     *
+     * @param id       {@code modid:name@damage}, see {@code GalacticraftParts}
+     * @param count    how many
+     * @param tier     the earliest tier a player makes it
+     * @param unitCost cost of one, plate equivalents
+     * @return the ingredient
+     */
+    public static Ing modItem(String id, int count, Tier tier, double unitCost) {
+        return new Ing(Src.MOD_ITEM, id, count, tier, unitCost * count);
     }
 
     /**

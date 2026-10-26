@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.gregguns.api.Tier;
+import com.gregguns.icbm.compat.GalacticraftParts;
 import com.gregguns.icbm.recipe.IcbmPart;
 import com.gregguns.icbm.recipe.Ing;
 
@@ -19,19 +20,31 @@ import com.gregguns.icbm.recipe.Ing;
 // Spec: docs/gregguns-icbm-spec/03-missiles/build-and-recipes.md
 public enum MissileBuildSpec {
 
-    /** T1 body: HV chip, stainless plates, steel fins, a Mk I engine. */
-    T1(1, Tier.HV, 400, 600, "craftingLensRed", Ing.gt("plate", "StainlessSteel", 4, Tier.HV, 1.0),
-        Ing.gt("plate", "Steel", 4, Tier.LV, 1.0), IcbmPart.MISSILE_ENGINE_MK1,
+    /**
+     * T1 body: HV chip, three compressed steel plates, four Galacticraft Tier 1 fins, a Galacticraft Tier 1 engine
+     * (D69). Costs: a compressed plate is a plate plus an implosion; a fin is 2 compressed steel and 4 heavy-duty
+     * plates;
+     * an engine is 2 SDHD120 plates, 4 heavy-duty plates, a canister, a firebox casing and a detector (the GTNH
+     * recipes).
+     */
+    T1(1, Tier.HV, 400, 600, "craftingLensRed", Ing.gt("compressed", "Steel", 3, Tier.MV, 2.0),
+        Ing.modItem(GalacticraftParts.FINS_T1, 4, Tier.HV, 28.0),
+        Ing.modItem(GalacticraftParts.ENGINE_T1, 1, Tier.HV, 38.0),
         Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK1, IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3),
-        60, Tier.HV, 600, 14, 22,
+        60, Tier.HV, 600, 150, 175,
         Arrays.asList(
             Ing.gtItem("Circuit_Board_Plastic_Advanced", 1, Tier.HV, 2.0),
             Ing.gt("circuit", "Advanced", 2, Tier.HV, 3.0),
             Ing.gt("wireFine", "Gold", 4, Tier.MV, 0.5))),
-    /** T2 body: EV chip, titanium plates, stainless fins, a Mk II engine. */
-    T2(2, Tier.EV, 600, 600, "craftingLensBlue", Ing.gt("plate", "Titanium", 6, Tier.EV, 1.0),
-        Ing.gt("plate", "StainlessSteel", 4, Tier.HV, 1.0), IcbmPart.MISSILE_ENGINE_MK2,
-        Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3), 120, Tier.EV, 900, 22, 30,
+    /**
+     * T2 body: EV chip, four compressed titanium plates, four Galacticraft Tier 2 fins, a Galacticraft Tier 2 engine
+     * (D69). Costs: a Tier 2 fin is 2 Mars and 4 asteroid reinforced plates; the Tier 2 engine is 2 Tier 1 engines, 2
+     * boosters and 5 asteroid plates (the GTNH recipes).
+     */
+    T2(2, Tier.EV, 600, 600, "craftingLensBlue", Ing.gt("compressed", "Titanium", 4, Tier.EV, 2.5),
+        Ing.modItem(GalacticraftParts.FINS_T2, 4, Tier.EV, 68.0),
+        Ing.modItem(GalacticraftParts.ENGINE_T2, 1, Tier.EV, 200.0),
+        Arrays.asList(IcbmPart.GUIDANCE_COMPUTER_MK2, IcbmPart.GUIDANCE_COMPUTER_MK3), 120, Tier.EV, 900, 460, 520,
         Arrays.asList(
             Ing.gtItem("Circuit_Board_Epoxy_Advanced", 1, Tier.EV, 3.0),
             Ing.gt("circuit", "Data", 2, Tier.EV, 5.0),
@@ -53,7 +66,7 @@ public enum MissileBuildSpec {
     private final String lens;
     private final Ing plates;
     private final Ing fins;
-    private final IcbmPart engine;
+    private final Ing engine;
     private final List<IcbmPart> computers;
     private final int scanSeconds;
     private final Tier scanTier;
@@ -63,8 +76,8 @@ public enum MissileBuildSpec {
     private final List<Ing> chipInputs;
 
     MissileBuildSpec(int number, Tier tier, int chipTicks, int engraveTicks, String lens, Ing plates, Ing fins,
-        IcbmPart engine, List<IcbmPart> computers, int scanSeconds, Tier scanTier, int lineTicks, int costMin,
-        int costMax, List<Ing> chipInputs) {
+        Ing engine, List<IcbmPart> computers, int scanSeconds, Tier scanTier, int lineTicks, int costMin, int costMax,
+        List<Ing> chipInputs) {
         this.number = number;
         this.tier = tier;
         this.chipTicks = chipTicks;
@@ -117,13 +130,13 @@ public enum MissileBuildSpec {
         return plates;
     }
 
-    /** @return the four fins, one plate each */
+    /** @return the four Galacticraft rocket fins, one per fin slot */
     public Ing fins() {
         return fins;
     }
 
-    /** @return the engine part */
-    public IcbmPart engine() {
+    /** @return the Galacticraft rocket engine */
+    public Ing engine() {
         return engine;
     }
 
@@ -191,7 +204,7 @@ public enum MissileBuildSpec {
 
     /** @return the D34 cost of the body without its guidance computer, plate equivalents */
     public double baseCost() {
-        return plates.cost() + fins.cost() + engine.unitCost();
+        return plates.cost() + fins.cost() + engine.cost();
     }
 
     /**
