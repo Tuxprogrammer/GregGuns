@@ -20,6 +20,7 @@ import com.gregguns.icbm.recipe.IcbmPart;
 import com.gregguns.icbm.recipe.IcbmParts;
 import com.mojang.authlib.GameProfile;
 
+import gregtech.api.enums.ItemList;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GTRecipe;
 import micdoodle8.mods.galacticraft.api.recipe.ISchematicPage;
@@ -75,7 +76,7 @@ public final class ProductionScenarios {
 
         @Override
         public String description() {
-            return "Each missile chip is in the Circuit Assembler, each schematic in the Laser Engraver (lens not consumed), and each body (every guidance computer it takes) in the Assembly Line's and the workbench's NEI maps, with its guidance on the output, at its tier's voltage.";
+            return "Each missile chip is in the Circuit Assembler, each schematic in the Laser Engraver (lens not consumed), and each tier's one Assembly Line recipe (guidance-0 body, reachable by GT's scanner from its own research item), each guidance fit in the Assembler, and every body and computer in the workbench's NEI map, at its tier's voltage.";
         }
 
         @Override
@@ -97,21 +98,39 @@ public final class ProductionScenarios {
                         spec + " schematic takes the chip first");
                 }
                 MissileTier tier = MissileTier.byNumber(spec.number());
+                // One Assembly Line recipe per tier, for the guidance-0 body, and GT's scanner reaches exactly it.
+                int lines = 0;
+                for (GTRecipe r : RecipeMaps.assemblylineVisualRecipes.getAllRecipes()) {
+                    ItemStack o = r.mOutputs == null || r.mOutputs.length == 0 ? null : r.mOutputs[0];
+                    if (o != null && MissileBodies.tierOf(o) == tier) {
+                        lines++;
+                        out.checkEquals(spec + " line body guidance", 0, MissileBodies.guidanceOf(o));
+                    }
+                }
+                out.checkEquals(spec + " Assembly Line recipes", 1, lines);
+                ItemStack research = MissileBodies.body(tier, 0);
+                gregtech.api.util.GTScannerResult scan = gregtech.loaders.postload.ScannerHandlerLoader
+                    .doAssemblyLineResearch(null, research, ItemList.Tool_DataStick.get(1), null);
+                boolean reaches = scan instanceof gregtech.api.util.GTScannerResult.ALScannerResult
+                    && ((gregtech.api.util.GTScannerResult.ALScannerResult) scan).alRecipe != null
+                    && MissileBodies.tierOf(((gregtech.api.util.GTScannerResult.ALScannerResult) scan).alRecipe.mOutput)
+                        == tier;
+                out.check(reaches, spec + " research item reaches its own recipe in GT's scanner");
                 for (IcbmPart computer : spec.computers()) {
-                    boolean found = false;
-                    for (GTRecipe r : RecipeMaps.assemblylineVisualRecipes.getAllRecipes()) {
+                    int g = spec.guidanceOf(computer);
+                    boolean fit = false;
+                    for (GTRecipe r : RecipeMaps.assemblerRecipes.getAllRecipes()) {
                         ItemStack o = r.mOutputs == null || r.mOutputs.length == 0 ? null : r.mOutputs[0];
-                        if (o != null && MissileBodies.tierOf(o) == tier
-                            && MissileBodies.guidanceOf(o) == spec.guidanceOf(computer)) {
-                            found = true;
+                        if (o != null && MissileBodies.tierOf(o) == tier && MissileBodies.guidanceOf(o) == g && g > 0) {
+                            fit = true;
+                            out.checkEquals(spec + " fit voltage", volts, (long) r.mEUt);
                         }
                     }
-                    out.check(found, spec + " body with " + computer + " in the Assembly Line map");
+                    out.check(g == 0 || fit, spec + " Assembler fit of " + computer + " (guidance " + g + ")");
                     boolean bench = false;
                     for (GTRecipe r : IcbmRecipeMaps.MISSILE_WORKBENCH.getAllRecipes()) {
                         ItemStack o = r.mOutputs == null || r.mOutputs.length == 0 ? null : r.mOutputs[0];
-                        if (o != null && MissileBodies.tierOf(o) == tier
-                            && MissileBodies.guidanceOf(o) == spec.guidanceOf(computer)) {
+                        if (o != null && MissileBodies.tierOf(o) == tier && MissileBodies.guidanceOf(o) == g) {
                             bench = true;
                         }
                     }

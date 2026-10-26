@@ -111,7 +111,8 @@ public final class BlastEngine {
         // A large conventional blast gets a smoke plume of its own, sized by its radius (the flash above is for
         // annihilating explosives only). The gas warheads announce their own clouds (Effects.Gas).
         int whole = (int) Math.ceil(radius);
-        if (CloudPlan.wantsPlume(whole, def.annihilates())) {
+        if (CloudPlan
+            .wantsPlume(whole, def.annihilates(), def.shape() != com.gregguns.icbm.explosive.BlastShape.NONE)) {
             int life = CloudPlan.duration(CloudKind.PLUME, whole, 0);
             CloudBroadcast.send(world, CloudKind.PLUME, x, y, z, whole, life, life);
         }

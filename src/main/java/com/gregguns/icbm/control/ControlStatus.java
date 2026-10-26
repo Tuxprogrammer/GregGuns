@@ -32,6 +32,10 @@ public enum ControlStatus {
     BAD_TARGET(false),
     /** The missile is already flying, or the chunk is outside the border. */
     BUSY(false),
+    /** A roof or solid block stands in the climb column above the pad. */
+    BLOCKED(false),
+    /** Forge refused the missile a chunk ticket. */
+    NO_TICKET(false),
     /** The block is cooling down from the last shot. */
     COOLDOWN(false),
     /** The missile was launched. */

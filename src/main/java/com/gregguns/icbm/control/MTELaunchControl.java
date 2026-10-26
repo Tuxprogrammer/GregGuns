@@ -1,11 +1,16 @@
 package com.gregguns.icbm.control;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.lwjgl.input.Keyboard;
 
 import com.cleanroommc.modularui.factory.PosGuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
@@ -20,10 +25,12 @@ import com.gregguns.icbm.missile.LaunchResult;
 import com.gregguns.icbm.missile.MissileStatus;
 import com.gregguns.icbm.missile.PadMissiles;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.IIconContainer;
+import gregtech.api.interfaces.ISecondaryDescribable;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
@@ -44,7 +51,7 @@ import gregtech.api.render.TextureFactory;
  */
 // Spec: docs/gregguns-icbm-spec/04-launch-control/launch-control-block.md,
 // docs/gregguns-icbm-spec/04-launch-control/launch-sequence.md
-public final class MTELaunchControl extends MTETieredMachineBlock {
+public final class MTELaunchControl extends MTETieredMachineBlock implements ISecondaryDescribable {
 
     /** EU one shot costs (1,200 FE in ICBM's units; 4 FE to the EU). */
     public static final int EU_PER_SHOT = 300;
@@ -124,11 +131,36 @@ public final class MTELaunchControl extends MTETieredMachineBlock {
 
     @Override
     public String[] getDescription() {
-        String[] lines = new String[mDescriptionArray.length];
-        for (int i = 0; i < lines.length; i++) {
-            lines[i] = StatCollector.translateToLocal(mDescriptionArray[i]);
+        return getCurrentDescription();
+    }
+
+    @Override
+    public String[] getPrimaryDescription() {
+        return LaunchControlTooltipFormat
+            .primary(local(0), StatCollector.translateToLocal("gregguns.icbm.control.tooltip.shift"), AddedBy.line())
+            .toArray(new String[0]);
+    }
+
+    @Override
+    public String[] getSecondaryDescription() {
+        List<String> details = new ArrayList<>();
+        for (int i = 1; i < mDescriptionArray.length; i++) {
+            details.add(local(i));
         }
-        return AddedBy.append(lines);
+        return LaunchControlTooltipFormat.secondary(local(0), details, AddedBy.line())
+            .toArray(new String[0]);
+    }
+
+    /** Only the client ever asks; the dedicated server has no keyboard. */
+    @Override
+    public boolean isDisplaySecondaryDescription() {
+        return FMLCommonHandler.instance()
+            .getSide()
+            .isClient() && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+    }
+
+    private String local(int i) {
+        return StatCollector.translateToLocal(mDescriptionArray[i]);
     }
 
     // --- energy and inventory -------------------------------------------------------------------------------------

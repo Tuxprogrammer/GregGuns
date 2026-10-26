@@ -177,4 +177,16 @@ class RecipeChecksTest {
             RecipeChecks.check(r)
                 .size());
     }
+
+    @Test
+    void aTierUpgradeInputMayOutrankTheOutputButAPlainOneMayNot() {
+        List<StackDescriptor> out = Arrays.asList(gg("body", Tier.HV));
+        // The marker (TierUpgrade, D24): an IV computer in an HV body is the point of the item.
+        assertTrue(
+            RecipeChecks.check(recipe(480, false, Arrays.asList(gg("computer", Tier.IV).asUpgrade()), out))
+                .isEmpty());
+        // Without the marker the same higher-tier input still fails.
+        List<String> violations = RecipeChecks.check(recipe(480, false, Arrays.asList(gg("computer", Tier.IV)), out));
+        assertEquals(1, violations.size());
+    }
 }
