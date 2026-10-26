@@ -8,7 +8,7 @@ The art and sound for the module: warhead and missile 3D models, textures, effec
 
 All sheets are planned.
 
-- asset-sourcing.md (planned): the source order, license rules, third-party folder and CREDITS entries (D28, D33, D37).
+- asset-sourcing.md (planned): the source order (licensed libraries and assets extracted from licensed mod jars, then generation, announced first), license rules, third-party folder and CREDITS entries (D28, D33, D37, D47).
 - warhead-and-body-models.md (planned): 3D models by tier, collision boxes, filler blocks, the shared model for the flying missile (D31).
 - textures.md (planned): kept-asset entries only, one catalog line per other asset (D3).
 - effects.md (planned): engine smoke, launch, blast visuals, red matter renderer rebuild.
