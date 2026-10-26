@@ -1,6 +1,6 @@
 """The warhead preview sheet: every tier's model in three views at one shared scale, with its texture.
 
-    python tools/asset-gen/icbm/warheads_sheet.py [out.png]        # default docs/assets/previews/icbm/warheads.png
+    python tools/asset-gen/icbm/warheads_sheet.py [out.png]        # default docs/assets/previews/icbm/warheads.png (git-ignored: previews stay local, D50)
 
 Reads the shipped OBJ files under assets/gregguns/models/thirdparty/ntm through the strict Forge reader
 (render3d.obj_scene), so the sheet shows what the game draws. All views use the same pixels-per-block, and the

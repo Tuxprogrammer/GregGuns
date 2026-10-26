@@ -26,7 +26,7 @@ From I0 on, the build runs without the owner ([0018](design/0018-icbm-program.md
 - **Agents.**
   - At most **two Sonnet coding agents** at once, each in its own worktree on a branch `icbm/<milestone>-<topic>`.
   - **A balanced pair** ([D42](gregguns-icbm-spec/DECISIONS.md)): the milestone is split by effort, not by kind, so both agents write code. The cut follows a clean seam, such as an API one side defines and the other uses. Each agent gets the other's ID and messages it directly about anything on the seam or anything that needs both; the orchestrator hears only of a disagreement. The orchestrator records each agent's time and tokens and rebalances the next split.
-  - **One Sonnet guides agent** ([D39](gregguns-icbm-spec/DECISIONS.md)) owns what players see outside the code: guide sheets, preview sheets, quests, GuideNH pages, README and release-note text, and the wording pass over tooltips and lang keys. It works one milestone behind the coders wherever it needs landed code, so its facts match the code, and from the spec sheets otherwise. See [Visuals and player guides](#visuals-and-player-guides).
+  - **One Sonnet guides agent** ([D39](gregguns-icbm-spec/DECISIONS.md)) owns what players see outside the code: guide sheets, preview sheets, quests, GuideNH pages, README and release-note text, and the wording pass over tooltips and lang keys. It drafts sheets with placeholder numbers alongside the coders (D50) and finalizes them from the code once the content lands, so the finished facts match the code. See [Visuals and player guides](#visuals-and-player-guides).
   - Small, scoped briefs. An agent that passes about 250k tokens of context writes a handoff file and a fresh agent takes over.
   - **One Opus reviewer agent per milestone,** run at the milestone's end. It reads the milestone's diff against this roadmap, the spec sheets and 0018, and returns one fix list. No per-feature reviews and no Opus coding agents.
 - **Branch gate, automated only:**
@@ -95,8 +95,9 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 
 **Rules,** on top of the [infographic writing rules](../tools/asset-gen/infographics/README.md#writing-rules) (player language; no IDs, specs or repo links; the mod described as finished; strong contrast on every element; GT textures credited):
 - **Credit travels with the image.** A sheet that shows a CC-BY model carries a one-line credit in its footer. ICBM-Classic's own art is never shown.
-- **Numbers come from the code.** Radii, damage, ranges, costs and loot ceilings on a sheet are read from the code or its exports. When a balance change moves one, the sheet is rebuilt in the same milestone.
-- **Files:** ICBM sheets sit beside the GregGuns ones with an `icbm-` prefix. Previews go in `docs/assets/previews/icbm/`.
+- **Final numbers come from the code.** On a finished (unstamped) sheet, radii, damage, ranges, costs and loot ceilings are read from the code or its exports. When a balance change moves one, the sheet is rebuilt in the same milestone.
+- **Files:** ICBM guide sheets sit beside the GregGuns ones with an `icbm-` prefix and are committed. **Preview sheets and the gallery page stay local** ([D50](gregguns-icbm-spec/DECISIONS.md)): previews are built into `docs/assets/previews/icbm/`, which is git-ignored, and never enter the repository's history.
+- **Placeholder sheets are allowed** (D50), so the guides agent works alongside the coders instead of waiting. A guide sheet may be drafted from the spec's planned numbers with a visible "Draft: numbers pending" stamp, and committed. Once the content lands, the sheet is rebuilt with numbers from the code and the stamp removed.
 - **Quests live in the GregGuns tab** ([D40](gregguns-icbm-spec/DECISIONS.md)), keyed `gg.icbm.*`, and are added in the milestone that ships their content. There is no separate ICBM tab.
 
 **Planned guide sheets:**
@@ -112,7 +113,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 | `icbm-recipes` | The ICBM crafting chains, read from the recipe export | I7 |
 | `icbm-hero` | The module at a glance, for the README and for posting | I7 |
 
-**Owner check-ins** (not a gate): when new visuals land on master, the orchestrator tells the owner that day what is new and where to look. Every ICBM visual is collected, newest first, in the local gallery page [docs/icbm-visuals.html](icbm-visuals.html), which links the committed images. It stays local: no hosted pages unless the owner asks. The owner's notes, if any, join the next milestone's fix list, and the build doesn't wait for them. The alpha review covers all visuals formally.
+**Owner check-ins** (not a gate): when new visuals land on master, the orchestrator tells the owner that day what is new and where to look. Every ICBM visual is collected, newest first, in the local gallery page `docs/icbm-visuals.html`, which links the local previews and the committed guide sheets. The page and the previews are git-ignored (D50), and nothing is hosted unless the owner asks. The owner's notes, if any, join the next milestone's fix list, and the build doesn't wait for them. The alpha review covers all visuals formally.
 
 ---
 
@@ -169,7 +170,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - [ ] Warhead blocks fuse and detonate by redstone and by hand. Each shows its 3D model with a matching collision box, and multi-block warheads break as one piece.
 - [ ] Batched client session: placed warheads look like warheads, not cubes.
 - [ ] Warhead tooltips follow the GregGuns conventions, with unit-tested formatting.
-- [ ] The warhead preview sheet, `icbm-warheads` (T1–T2) and the warhead quests have landed, and the owner has been told.
+- [ ] The warhead preview sheet is built locally, `icbm-warheads` (T1–T2, final numbers) and the warhead quests have landed, and the owner has been told.
 - [ ] The relevant `ICBM-02-*` bugs are avoided, with tests.
 - [ ] The milestone review fix list is closed.
 
