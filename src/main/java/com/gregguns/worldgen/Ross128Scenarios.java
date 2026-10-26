@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import com.gregguns.compat.ModIds;
 import com.gregguns.core.config.WorldgenConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
@@ -18,6 +19,8 @@ import com.gregguns.utility.storage.TileGregChest;
 import com.gregguns.worldgen.layout.Layout;
 import com.gregguns.worldgen.layout.PaletteKeys;
 import com.gregguns.worldgen.layout.Rotations;
+
+import cpw.mods.fml.common.Loader;
 
 /**
  * Scenarios of structures on Ross128b and Ross128ba (design record 0019), one per dimension. Each loads the dimension
@@ -70,6 +73,11 @@ public final class Ross128Scenarios {
 
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
+            // BartWorks only registers its Ross128 dimensions through Galacticraft, so the no-Galacticraft run has
+            // none.
+            if (!Loader.isModLoaded(ModIds.GALACTICRAFT_CORE)) {
+                return ScenarioResult.skip(name, "Ross128 needs Galacticraft, which is not loaded");
+            }
             ScenarioResult.Builder out = ScenarioResult.builder(name);
             int[] ids = Ross128Dimensions.ids();
             if (ids.length <= index) {
