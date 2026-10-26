@@ -31,4 +31,9 @@ public final class IcbmClientModule implements ClientModule {
         RenderingRegistry.registerEntityRenderingHandler(EntityMissileT1.class, new RenderMissile());
         RenderingRegistry.registerEntityRenderingHandler(EntityMissileT2.class, new RenderMissile());
     }
+
+    @Override
+    public void init() {
+        MissileBodyItemRenderer.register();
+    }
 }

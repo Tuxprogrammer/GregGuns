@@ -45,7 +45,7 @@ ICBM simulates a missile with a tracker while its chunk is unloaded, with one sh
 
 ## Tests
 
-`ChunkWindowTest`; scenario `icbm.missile.chunk_tickets` (a 200-block flight; checks the maximum chunks and tickets at every tick and that the window moved across several chunks), `icbm.missile.timeout` (a short `missileTimeoutTicks` fires the timeout branch mid-air), `icbm.missile.restart_adopt` (the load callback on a live and a stray ticket, a save and reload of the entity),  checks the maximum chunks and tickets at every tick, that the window moved across several chunks, the load callback and the timeout path both release it) and `icbm.missile.launch_detonate_t1` (released on impact).
+`ChunkWindowTest`; scenario `icbm.missile.chunk_tickets` (a 200-block flight; checks the maximum chunks and tickets at every tick and that the window moved across several chunks), `icbm.missile.timeout` (a short `missileTimeoutTicks` fires the timeout branch mid-air), `icbm.missile.restart_adopt` (the load callback on a live and a stray ticket, a save and reload of the entity), and `icbm.missile.launch_detonate_t1` (released on impact).
 
 ## Open questions
 
