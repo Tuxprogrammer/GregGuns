@@ -116,6 +116,31 @@ public final class MissileScenarios {
         return MissileStacks.armIntoEntity(ctx.world(), base[0], base[1], base[2], null).missile;
     }
 
+    /** Logs where a missile is and what holds its chunks, every 20 ticks (an aid for failing flights). */
+    static void trace(World w, EntityMissile m, int ticks) {
+        if (ticks % 20 != 0 || m.isDead) {
+            return;
+        }
+        int cx = net.minecraft.util.MathHelper.floor_double(m.posX) >> 4;
+        int cz = net.minecraft.util.MathHelper.floor_double(m.posZ) >> 4;
+        boolean forced = net.minecraftforge.common.ForgeChunkManager.getPersistentChunksFor(w)
+            .containsKey(new net.minecraft.world.ChunkCoordIntPair(cx, cz));
+        com.gregguns.GregGuns.LOG.info(
+            "[missile trace] t={} phase={} pos={},{},{} chunk={},{} loaded={} forced={} added={} held={} dead={}",
+            ticks,
+            m.phase(),
+            (int) m.posX,
+            (int) m.posY,
+            (int) m.posZ,
+            cx,
+            cz,
+            w.getChunkProvider().chunkExists(cx, cz),
+            forced,
+            m.addedToChunk,
+            m.tickets().heldChunks(),
+            m.isDead);
+    }
+
     private abstract static class Base implements Scenario {
 
         ScenarioResult needsModule() {
@@ -414,6 +439,7 @@ public final class MissileScenarios {
             final boolean[] flew = { false };
             final double[] maxY = { 0 };
             return ScenarioResult.pending(name(), 900, ticks -> {
+                trace(w, m, ticks);
                 if (!m.isDead) {
                     flew[0] |= m.phase() == FlightPhase.ARC;
                     maxY[0] = Math.max(maxY[0], m.posY);
@@ -523,6 +549,7 @@ public final class MissileScenarios {
             final java.util.Set<String> seen = new java.util.HashSet<>();
             final boolean[] midFlightDone = { false };
             return ScenarioResult.pending(name(), 1200, ticks -> {
+                trace(w, m, ticks);
                 if (!m.isDead) {
                     maxChunks[0] = Math.max(
                         maxChunks[0],
