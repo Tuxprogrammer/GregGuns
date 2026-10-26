@@ -23,7 +23,8 @@ BG, CARD, FG, DIM = (24, 27, 32, 255), (34, 38, 45, 255), (238, 240, 243, 255), 
 ACCENT = (255, 196, 64, 255)
 PPU = 90
 # (body, warhead, label)
-TIERS = (("missile_body_t1", "warhead_t1", "Tier 1"), ("missile_body_t2", "warhead_t2", "Tier 2"))
+TIERS = (("missile_body_t1", "warhead_t1", "Tier 1"), ("missile_body_t2", "warhead_t2", "Tier 2"),
+         ("missile_body_t3", "warhead_t3", "Tier 3"))
 
 
 def font(size, bold=False):
