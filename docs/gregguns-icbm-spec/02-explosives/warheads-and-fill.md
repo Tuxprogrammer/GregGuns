@@ -82,10 +82,10 @@ Eight GregGuns items (module `icbm`, package `com.gregguns.icbm.recipe`, data in
 | **Plastic Explosive** (x4) | HV | 2 PTFE plates, 2 Industrial TNT (11) | every T1 and T2 warhead with a payload, in different counts |
 | Fuze Assembly Mk I | HV | 1 Advanced circuit, 1 steel plate, 4 fine copper wires (12) | every T1 warhead |
 | Fuze Assembly Mk II | EV | 1 Data circuit, 1 titanium plate, 4 fine electrum wires (13) | every T2 warhead |
-| Shaped-Charge Liner Cone (x2) | MV | 2 copper plates (14) | Breaching |
-| Fragmentation Sleeve (Steel) | MV | 16 steel rounds, 1 steel plate (15) | Shrapnel |
+| Shaped-Charge Liner Cone (x2) | HV | 2 copper plates (14) | Breaching |
+| Fragmentation Sleeve (Steel) | HV | 16 steel rounds, 1 steel plate (15) | Shrapnel |
 | Fragmentation Sleeve (Titanium) | EV | 16 titanium rounds, 1 titanium plate (16) | Fragmentation |
-| Dispersal Canister (x2) | MV | 2 aluminium plates, 1 rubber plate, 2 empty cells (17) | Debilitation, Chemical, Smoke, Thermobaric, Napalm Canister |
+| Dispersal Canister (x2) | HV | 2 aluminium plates, 1 rubber plate, 2 empty cells (17) | Debilitation, Chemical, Smoke, Thermobaric, Napalm Canister |
 | **Napalm Canister** | HV | 1 Dispersal Canister, 1,000 L gasoline (18) | Incendiary |
 
 - **Plastic Explosive** is one generic part for both tiers (owner, D57). PTFE is Polytetrafluoroethylene: its monomer (tetrafluoroethylene) comes from a Chemical Reactor recipe at MV, and the polymerization recipes (`addDefaultPolymerizationRecipes`) and a plate come after, so a PTFE plate is an MV-to-HV product. Industrial TNT is a High Voltage chemical recipe, so the part is HV.
