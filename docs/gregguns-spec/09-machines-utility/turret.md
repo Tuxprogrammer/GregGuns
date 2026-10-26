@@ -29,11 +29,13 @@ Both are EU-powered, owner-aware defense blocks. They must not read as duplicate
 - **Source (OMT ownership and camo):** [TurretBase.java#L55-L59](https://github.com/GTNewHorizons/OpenModularTurrets/blob/2.4.8/src/main/java/openmodularturrets/tileentity/turretbase/TurretBase.java#L55-L59), [L72-L74](https://github.com/GTNewHorizons/OpenModularTurrets/blob/2.4.8/src/main/java/openmodularturrets/tileentity/turretbase/TurretBase.java#L72-L74).
 - **Pack config:** `reference/gtnh/2.9.0-RC-2/.minecraft/config/openmodularturrets.cfg`. `globaltargetingparameters` has mobs, neutrals and players all `true`. `miscellaneous` has "Should turret bases be camouflage-able with normal blocks?" = `true`. `modcompatability` has "Can turrets be powered with EU?" = `true`.
 
+The full comparison, the runtime-conflict audit (including stray OMT bullets and the camp turret gap) and the follow-ups are in [design record 0020](../../design/0020-omt-overlap.md).
+
 ## Integration points
 
 ### OpenModularTurrets: target filter coexistence
 - **Source:** [TurretHeadUtil.java#L108-L145](https://github.com/GTNewHorizons/OpenModularTurrets/blob/2.4.8/src/main/java/openmodularturrets/util/TurretHeadUtil.java#L108-L145). A candidate is a target if it is an `EntityAnimal` or `EntityAmbientCreature` (neutrals), `isCreatureType(monster)` (mobs), or an `EntityPlayerMP` that is neither the owner, trusted, nor in creative. Trust is checked at [L340-L348](https://github.com/GTNewHorizons/OpenModularTurrets/blob/2.4.8/src/main/java/openmodularturrets/util/TurretHeadUtil.java#L340-L348).
-- **GregGuns does:** nothing in code. `NPCTurret` is none of those types, so an OMT turret never shoots it. GregGuns hostile NPCs extend `EntityMob`, so OMT turrets do shoot them. That is intended. A test asserts the class relationships so a refactor cannot change this.
+- **GregGuns does:** nothing in code. `NPCTurret` is none of those types, so an OMT turret never shoots it. GregGuns hostile NPCs extend `EntityMob`, so OMT turrets do shoot them. That is intended. `TurretHierarchyTest` and `OmtCoexistenceTest` assert the class relationships so a refactor cannot change this. The hostile camp turret (`NpcTurret`) is not an `IMob`, so OMT turrets ignore it; that gap is accepted ([0020](../../design/0020-omt-overlap.md)).
 - **Pack-side change:** none.
 
 ### ServerUtilities: who counts as a friend
