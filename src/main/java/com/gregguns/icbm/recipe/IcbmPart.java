@@ -127,14 +127,9 @@ public enum IcbmPart {
     /**
      * @return the icon's name under {@code textures/items}: the licensed NTM item textures sit in
      *         {@code thirdparty/ntm}
-     *         (D47), and only the liner cone's icon is our own, and the I2 parts borrow the fuze icons as placeholders
+     *         (D47), and only the liner cone's icon is our own
      */
     public String iconName() {
-        if (ordinal() >= MISSILE_ENGINE_MK1.ordinal()) {
-            // PLACEHOLDER art for the I2 parts, until the guides track delivers licensed icons: the fuze icons stand
-            // in.
-            return "thirdparty/ntm/" + (tier == Tier.HV ? "fuze_assembly_mk1" : "fuze_assembly_mk2");
-        }
         return this == SHAPED_CHARGE_LINER_CONE ? registryName : "thirdparty/ntm/" + registryName;
     }
 
