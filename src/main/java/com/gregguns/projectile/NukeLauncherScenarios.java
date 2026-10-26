@@ -260,9 +260,14 @@ public final class NukeLauncherScenarios {
                     dBoss < NukeAnnihilation.killRadius(10.0),
                     "the boss stand-in should be inside the kill zone, distance " + dBoss);
                 out.check(!boss.isDead, "a boss must survive the kill zone");
+                // A pack can rescale a spawned mob's maximum health and refill it (the GTNH 2.9.0-RC-2 pack does, by
+                // difficulty: 1.1 times on Hard, 0.9 on Easy), so a full-health boss ends at half of the maximum read
+                // here, which is 1000 only when nothing rescales it.
+                float expected = (float) (NukeAnnihilation.BOSS_SHARE * boss.getMaxHealth());
                 out.check(
-                    Math.abs(boss.getHealth() - 1000.0F) < EPS,
-                    "the boss should lose exactly half its 2000 health, but has " + boss.getHealth());
+                    Math.abs(boss.getHealth() - expected) < EPS,
+                    "the boss should be left with half its maximum health " + boss
+                        .getMaxHealth() + " (" + expected + "), but has " + boss.getHealth());
                 return out.build();
             });
         }

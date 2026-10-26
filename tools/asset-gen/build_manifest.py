@@ -218,7 +218,6 @@ PARTS = [
     ("part_cybernetic", "Cybernetic Parts", "EV", ["Electrum", "Titanium"], "cyberneticParts", "P3", "wires and plates, warm gray"),
     ("part_heavy_cloth", "Heavy Cloth", "ULV", ["Wood"], "heavyCloth", "P2", "folded brown heavy cloth"),
     ("part_treated_leather", "Treated Leather", "LV", ["Steel"], "treatedLeather", "P2", "dark green-black treated leather"),
-    ("part_steam_armor_plating", "Steam Armor Plating", "EV", ["Titanium", "Bronze"], "steamArmorPlate", "P2", "riveted bronze-titanium plate"),
     ("part_power_plating", "Power Plating", "IV", ["TungstenSteel", "EpoxidFiberReinforced"], "powerPlating", "P2", "slate plate with fiber layer"),
     ("part_gas_mask_filter", "Gas Mask Filter", "MV", ["Aluminium"], "gasMaskFilter", "P2", "round filter canister"),
     ("part_nuclear_warhead", "Small Nuclear Warhead", "ZPM", ["NaquadahAlloy", "Lead"], "tacticalNuclearWarhead", "P3", "olive warhead with hazard band"),

@@ -125,8 +125,6 @@ public final class ArmorCatalog {
 
     /** Registry name of the Treated Leather the Ranger Veteran set is repaired with (RC-22). */
     public static final String TREATED_LEATHER = "part_treated_leather";
-    /** Registry name of the Steam Armor Plating the steam set is built and repaired with (RC-23). */
-    public static final String STEAM_ARMOR_PLATING = "part_steam_armor_plating";
 
     private static final double[] REPAIR_RATIO = { 0.5, 0.5, 1.0 / 3.0, 0.5 };
     private static final int[] REPAIR_MATS = { 2, 4, 3, 2 };
@@ -178,26 +176,23 @@ public final class ArmorCatalog {
         .with(DamageType.POISON, 21.0)
         .with(DamageType.RADIATION, 21.0)
         .withPenetrationResistance(0.15);
-    private static final ArmorMaterialDef STEAM_MATERIAL = ArmorMaterialDef.uniform("steam", 200, 20.0)
-        .with(DamageType.EXPLOSION, 18.0)
-        .with(DamageType.ENERGY, 16.0)
-        .with(DamageType.FIRE, 18.0)
-        .with(DamageType.ICE, 16.0)
-        .with(DamageType.LIGHTNING, 16.0)
-        .with(DamageType.POISON, 10.0)
-        .with(DamageType.RADIATION, 6.0)
-        .withPenetrationResistance(0.10);
+    // Design record 0022: Steam age, between Scout/Miner (13) and T1 Combat (15). Old (EV): 200 durability, physical
+    // 20,
+    // fire/explosion 18, energy/ice/lightning 16, poison 10, radiation 6, penetration 0.10.
+    private static final ArmorMaterialDef STEAM_MATERIAL = ArmorMaterialDef.uniform("steam", 66, 14.0)
+        .with(DamageType.FIRE, 12.0)
+        .withPenetrationResistance(0.05);
 
     private static final double[] T2_COMBAT_KB = { 0.10, 0.25, 0.15, 0.10 };
     private static final double[] T2_COMMANDO_KB = { 0.05, 0.20, 0.10, 0.05 };
     private static final double[] T2_RIOT_KB = { 0.125, 0.275, 0.175, 0.125 };
     private static final double[] T2_RIOT_SPEED = { 0.12, 0.12, 0.13, 0.13 };
     private static final double[] T3_COMBAT_KB = { 0.15, 0.30, 0.20, 0.15 };
-    private static final double[] STEAM_KB = { 0.15, 0.30, 0.20, 0.15 };
+    private static final double[] STEAM_KB = { 0.05, 0.15, 0.10, 0.05 };
     private static final double[] HEV_KB = { 0.10, 0.25, 0.15, 0.10 };
     private static final double[] HEV_JUMP = { 0.30, 0.03, 0.03, 0.15 };
-    private static final double[] STEAM_HEALTH = { 1.0, 2.0, 1.0, 1.0 };
-    private static final double[] STEAM_JUMP = { 0.03, 0.03, 0.03, 0.15 };
+    private static final double[] STEAM_HEALTH = { 0.5, 1.0, 0.5, 0.5 };
+    private static final double[] STEAM_JUMP = { 0.02, 0.02, 0.02, 0.10 };
 
     /** T2 Combat, "Combat ...": MV, six camos, speed and knockback resistance. */
     public static final SetDef T2_COMBAT = new SetDef(
@@ -338,12 +333,12 @@ public final class ArmorCatalog {
     }
 
     /**
-     * Steam armor: EV, four camos on single sheets, powered by compressed air in the chestplate. Every bonus is
-     * powered; heat insulation (partial HEAT) is not.
+     * Steam armor: Steam age (design record 0022), four camos on single sheets, powered by burning Coal, Charcoal or
+     * compressed air in the chestplate. Every bonus is powered; heat insulation (partial HEAT) is not.
      */
     public static final SetDef STEAM = new SetDef(
         "steam",
-        Tier.EV,
+        Tier.STEAM,
         STEAM_MATERIAL,
         Arrays.asList("steam", "steam_rusty", "steam_iron", "steam_hazard"),
         SetDef.TextureLayout.SINGLE,
@@ -364,18 +359,18 @@ public final class ArmorCatalog {
                 BonusMap
                     .of(
                         ArmorBonus.SPEED,
-                        0.05,
+                        0.04,
                         ArmorBonus.JUMP,
                         STEAM_JUMP[slot.ordinal()],
                         ArmorBonus.BREAK_SPEED,
-                        0.05,
+                        0.03,
                         ArmorBonus.EXTRA_HEALTH,
                         STEAM_HEALTH[slot.ordinal()],
                         ArmorBonus.KNOCKBACK_RESISTANCE,
                         STEAM_KB[slot.ordinal()])
                     .plus(extra))
             .partialHazards(HazardFlag.HEAT)
-            .repair(repairFor(slot, null, null, STEAM_ARMOR_PLATING))
+            .repair(repairFor(slot, "plate", "Bronze", HEAVY_CLOTH))
             .build();
     }
 
@@ -466,7 +461,7 @@ public final class ArmorCatalog {
         T3_POWER_MATERIAL,
         Arrays.asList("t3_power", "t3_power_dark", "t3_power_dark2"),
         SetDef.TextureLayout.SINGLE,
-        PowerSpec.electric(3600, IV_EU_PER_UNIT),
+        PowerSpec.electric(10000, IV_EU_PER_UNIT),
         BonusMap.EMPTY,
         powerPiece(ArmorSlot.HELMET, "Power Armor Helmet", BonusMap.EMPTY),
         powerPiece(ArmorSlot.CHESTPLATE, "Power Armor Chestplate", BonusMap.EMPTY),
@@ -508,7 +503,7 @@ public final class ArmorCatalog {
         T3_EXO_MATERIAL,
         Arrays.asList("t3_exo", "t3_exo_silver", "t3_exo_green"),
         SetDef.TextureLayout.SINGLE,
-        PowerSpec.electric(7200, IV_EU_PER_UNIT),
+        PowerSpec.electric(20000, IV_EU_PER_UNIT),
         BonusMap.EMPTY,
         exoPiece(ArmorSlot.HELMET, "Exo Suit Helmet", BonusMap.EMPTY),
         exoPiece(ArmorSlot.CHESTPLATE, "Exo Suit Chestplate", BonusMap.EMPTY),

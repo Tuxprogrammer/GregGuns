@@ -16,7 +16,7 @@
 ## Consequences
 - M9 gains a polish item and an exit box for this ([ROADMAP](../ROADMAP.md#m9--self-contained-polish)).
 - Scenarios cover generation, the land and water checks and the loot ceiling on both Ross128 dimensions.
-- Whether BartWorks' Ross128 chunk providers call the standard populate path that M8 hooks must be checked first. If one doesn't, that dimension needs its own hook, recorded as a deviation.
+- **Checked (M9):** the standard path is not enough. Galacticraft drops Forge world generators on its worlds, so both Ross128 dimensions have their own chunk-provider hook ([structure-placement](../gregguns-spec/11-worldgen/structure-placement.md#ross128b-and-ross128ba-design-record-0019-m9)). Original question: whether BartWorks' Ross128 chunk providers call the standard populate path that M8 hooks must be checked first. If one doesn't, that dimension needs its own hook, recorded as a deviation.
 
 ## Alternatives considered
 - **Leave structures Overworld-only and rely on server owners editing `structureDimensions`.** Rejected: the challenge start is a pack route, and its players should get the content by default.

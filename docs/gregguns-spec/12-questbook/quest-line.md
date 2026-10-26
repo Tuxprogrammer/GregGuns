@@ -95,6 +95,7 @@ The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 
 | `gg.steam.first_blood` | First Blood | Steam | Shoot five zombies with the Hand Cannon. Reload between shots. | hunt `Zombie` x5 | `gregguns:ammo_stone_bullet` x32 | `gg.steam.stone_bullets` | 24, 204 (24) |
 | `gg.steam.scout_armor` | T1 Scout Armor | Steam | Light armor. Each piece adds to your armor value; read the tooltips. | crafting `gregguns:t1_scout_chestplate` | - | `gg.steam.intro` | 60, 132 (24) |
 | `gg.steam.miner_armor` | T1 Miner Armor | Steam | Miner set, crafted from bronze plate and wrought iron. | crafting `gregguns:t1_miner_helmet` | - | `gg.steam.intro` | 96, 132 (24) |
+| `gg.ev.steam_armor` | Steam Armor | Steam | Bronze plate and cloth around a coal-fired chestplate. Burn Coal or Charcoal for speed and strength. | crafting `gregguns:steam_chestplate` | - | `gg.steam.intro` | 132, 132 (24) |
 | `gg.steam.summary` | Steam Age Done | Steam | Steel is next. Make it in a GT furnace setup, then open the LV chapter. | checkbox | bag `enhancedlootbags:lootbag:2` (Steam) | `gg.steam.miner_armor`, `gg.steam.first_blood` (hover) | 96, 168 (24) |
 
 ### LV
@@ -165,7 +166,6 @@ The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 
 | `gg.ev.minigun` | Minigun | EV | Drum-fed, very high fire rate. Heavy on ammo. | retrieval `gregguns:minigun` | `gregguns:mag_minigun_drum` x1 | `gg.ev.pulse` | 888, 168 (24) |
 | `gg.ev.exotics` | Tesla or Sonic Rifle | EV | Specialist weapons. Pick one. | retrieval `gregguns:tesla_rifle` or `gregguns:sonic_rifle` | - | `gg.ev.intro` | 924, 132 (24) |
 | `gg.ev.t3_armor` | T3 Combat Armor | EV | Titanium plate in the EV Assembler. | retrieval `gregguns:t3_combat_chestplate` | - | `gg.ev.intro` | 960, 132 (24) |
-| `gg.ev.steam_armor` | Steam Armor | EV | Self-contained powered suit. | retrieval `gregguns:steam_chestplate` | - | `gg.ev.intro` | 996, 132 (24) |
 | `gg.ev.summary` | Energy Weapons Done | EV | IV brings blasters and power armor. | checkbox | bag `enhancedlootbags:lootbag:7` (EV) | `gg.ev.t3_armor`, `gg.ev.laser` (hover) | 960, 168 (24) |
 | `gg.ev.bio_culture` | E. coli Culture | EV | The Bio Gun runs on culture fluid. Brew Biomass, make the E. coli dish in the Bio Lab, then grow the culture in the BartWorks Bacterial Vat. | checkbox | - | `gg.ev.intro` | 1032, 132 (24) |
 | `gg.ev.bio_tank` | Bio Tank | EV | The Bio Tank is built from a GT Large Fluid Cell. A Fluid Canner fills it with E. coli culture fluid. | retrieval `gregguns:tank_bio` | - | `gg.ev.bio_culture` | 1032, 168 (24) |

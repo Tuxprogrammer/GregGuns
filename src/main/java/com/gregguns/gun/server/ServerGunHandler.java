@@ -3,8 +3,10 @@ package com.gregguns.gun.server;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 
+import com.gregguns.core.config.AimConfig;
 import com.gregguns.core.module.ModuleContent;
 import com.gregguns.gun.GunAccuracy;
+import com.gregguns.gun.logic.AdsSupport;
 import com.gregguns.gun.logic.AmmoInventory;
 import com.gregguns.gun.logic.ChargeRelease;
 import com.gregguns.gun.logic.ChargeSource;
@@ -208,8 +210,9 @@ public final class ServerGunHandler {
             return;
         }
         GunPlayerData data = GunPlayerData.get(player);
+        // A scoped gun zooms; a sights-only gun aims (ADS). The server decides and tells the client (GUN-12).
         data.controller()
-            .toggleZoom(gun.stats());
+            .toggleAim(gun.stats(), AimConfig.adsEnabled && AdsSupport.supports(gun.contentName()));
         syncZoom(player, data, gun.stats());
     }
 
@@ -250,7 +253,11 @@ public final class ServerGunHandler {
             player,
             data.controller()
                 .zoom()
-                .isZoomed(stats));
+                .isZoomed(stats),
+            data.controller()
+                .zoom()
+                .isAdsOnly(stats) && AimConfig.adsEnabled ? AdsSupport.spreadMultiplier(AimConfig.adsSpreadMultiplier)
+                    : 1.0);
         ShotOffset[] offsets = SpreadModel.roll(player.getRNG(), stats, context, shot.attackType());
         Projectiles.launcher()
             .launchVolley(player.worldObj, player, stats, offsets, 1.0f);
@@ -318,9 +325,13 @@ public final class ServerGunHandler {
     }
 
     private static void syncZoom(EntityPlayerMP player, GunPlayerData data, GunStats stats) {
+        // One flag covers both the scope zoom and ADS; an ADS aim is dropped if the server turns ADS off mid-aim.
         boolean zoomed = data.controller()
             .zoom()
-            .isZoomed(stats);
+            .isZoomed(stats)
+            || AimConfig.adsEnabled && data.controller()
+                .zoom()
+                .isAdsOnly(stats);
         if (zoomed != data.zoomSent()) {
             data.setZoomSent(zoomed);
             sendTo(player, new PacketGunEvent(player, GunEventKind.ZOOM, zoomed ? 1 : 0));

@@ -60,6 +60,16 @@ public final class GunAccuracy {
         return ShotContext.player(zoomed, armorBonus(shooter));
     }
 
+    /**
+     * @param shooter       a player
+     * @param zoomed        the server's zoom state of the shooter
+     * @param adsMultiplier the spread multiplier of ADS on a gun without a scope, 1 when not aiming that way
+     * @return the shot context of a player's shot, with the armor accuracy bonus and the ADS spread
+     */
+    public static ShotContext shotContext(EntityLivingBase shooter, boolean zoomed, double adsMultiplier) {
+        return shotContext(shooter, zoomed).withAdsSpread(adsMultiplier);
+    }
+
     /** Isolates the armor classes so they load only when the armor module is on. */
     private static final class ArmorRead {
 

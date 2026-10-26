@@ -85,11 +85,11 @@ class PowerArmorTest {
             ArmorCatalog.T3_EXO.power()
                 .kind());
         assertEquals(
-            3600,
+            10000,
             ArmorCatalog.T3_POWER.power()
                 .capacityUnits());
         assertEquals(
-            7200,
+            20000,
             ArmorCatalog.T3_EXO.power()
                 .capacityUnits());
     }
@@ -107,12 +107,12 @@ class PowerArmorTest {
             assertTrue(seconds < 60.0, set.id() + " charges in " + seconds + " s");
         }
         assertEquals(
-            720000.0,
+            2000000.0,
             ArmorCatalog.T3_POWER.power()
                 .capacityEu(),
             EPS);
         assertEquals(
-            1440000.0,
+            4000000.0,
             ArmorCatalog.T3_EXO.power()
                 .capacityEu(),
             EPS);

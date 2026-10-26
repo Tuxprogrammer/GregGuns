@@ -54,6 +54,7 @@ public final class WorldgenModule implements GregGunsModule {
             ChestScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             GeneratorScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             CascadeScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            Ross128Scenarios.registerAll(ScenarioRegistry.SCENARIOS);
             PlacementScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             SpawnerScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             NestScenarios.registerAll(ScenarioRegistry.SCENARIOS);
@@ -101,5 +102,7 @@ public final class WorldgenModule implements GregGunsModule {
             GregGuns.LOG::debug);
         StructureGenerator.configure(layouts, keys);
         GameRegistry.registerWorldGenerator(new StructureGenerator(), StructureGenerator.WEIGHT);
+        // Galacticraft drops Forge world generators on Ross128b and Ross128ba; hook their chunk providers (0019).
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new Ross128ProviderHook());
     }
 }

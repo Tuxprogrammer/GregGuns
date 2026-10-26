@@ -309,11 +309,11 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
 - **PACK-CHANGES in the jar.** Each row of [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md) is done from our jar or written up as an optional server-owner step. No PR to GTNH.
 - **The rest of the polish:**
   - a balance pass along the GTNH tier progression;
-  - NEI polish and config defaults;
-  - translation readiness;
-  - multiplayer and performance soak tests on the real pack;
-  - GuideNH in-game wiki pages bundled in the jar;
-  - the OpenModularTurrets overlap investigation (the Rampart stays);
+  - NEI polish and config defaults (done: item subsets, hidden items, config review; see [nei-visibility.md](gregguns-spec/06-items/nei-visibility.md));
+  - translation readiness (done on `feat/m9-translation`, see [translating.md](translating.md));
+  - multiplayer and performance soak tests on the real pack (done headless: 55 min, 3 bots, TPS 20.0, no GregGuns errors; see [m9-soak.md](testing/m9-soak.md); client-side checks stay with the playthrough);
+  - GuideNH in-game wiki pages bundled in the jar (built: eleven pages under `assets/gregguns/guidenh/`; the owner checks them in game);
+  - the OpenModularTurrets overlap investigation (the Rampart stays; done in [0020](design/0020-omt-overlap.md));
   - aim down sights for iron-sight and red-dot guns;
   - **structures on Ross128** ([0019](design/0019-structures-on-ross128.md)): the M8 structures also generate on Ross128b and Ross128ba, the alternate challenge-start route, with a loot ceiling rolled per structure.
   - **real vanilla textures on the guide sheets.** The rule for Minecraft content is to follow Mojang's usage guidelines, not to avoid Mojang content ([CONTRIBUTING](../CONTRIBUTING.md), ICBM decision D55). Replace our stand-ins with the real textures, read from the reference pack's Minecraft jar at build time and credited on each sheet:
@@ -322,12 +322,13 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
     - the abstract interior-lamp markers on the Ammunition Works and Armory Gantry build guides (glowstone, redstone lamp).
 
     Rebuild those sheets and check contrast.
+    - Done on `feat/m9-guide-vanilla-textures` (0.3.3-beta): the recipes, enemies, Ammunition Works and Armory Gantry sheets use the real textures, each with a Mojang credit in its footer. The draft `icbm-warheads` sheet picks the same icons up on its next rebuild.
 - **Fixes from the owner's beta playthrough,** released as `0.3.x-beta`.
 
 **Exit gate:**
 - [x] The questbook installs from the jar behind its hidden config key, on a real GTNH 2.9 server. `0.3.1-beta`, 2026-10-21: 121 quests installed on the owner's GTNH 2.9.0-RC-2 server and saved by BetterQuesting.
-- [ ] Every PACK-CHANGES row is done in the jar or documented as an optional server-owner step.
-- [ ] GregGuns structures generate on Ross128b and Ross128ba without cascading, pass their land and water checks, and keep loot within each structure's rolled ceiling. Scenario per dimension ([0019](design/0019-structures-on-ross128.md)).
+- [x] Every PACK-CHANGES row is done in the jar or documented as an optional server-owner step. Evidence: the Status column in [PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md) and `PackFitTest`; the in-pack effect of the Backhand, AngerMod, Mobs Info and Thaumcraft hooks is a playthrough check.
+- [x] GregGuns structures generate on Ross128b and Ross128ba without cascading, pass their land and water checks, and keep loot within each structure's rolled ceiling. Scenario per dimension ([0019](design/0019-structures-on-ross128.md)). Done on `feat/m9-ross128`: `worldgen.ross128b_structures` and `worldgen.ross128ba_structures` pass headless, evidence in [m8-exit-gate](gregguns-spec/11-worldgen/m8-exit-gate.md#m9-structures-on-ross128b-and-ross128ba-design-record-0019). Galacticraft skips Forge world generators on both dimensions, so they carry their own chunk-provider hook.
 - [ ] The polish items above are done, or moved to the [adopter list](HANDOFF-PLAN.md#adopter-list) with the owner's sign-off.
 
 ## Beyond M9

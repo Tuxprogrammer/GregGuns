@@ -19,7 +19,7 @@ On 2026-10-21 the owner signed off M0–M8 as the MVP and asked for `0.3.0-beta`
    - quests (as above);
    - GuideNH pages bundled in the jar;
    - the OpenModularTurrets investigation;
-   - aim down sights.
+   - aim down sights (built on `feat/m9-ads`: [ads.md](../gregguns-spec/03-gun-visuals-audio/ads.md); the owner verifies it in game with [ads-client-check.md](../testing/ads-client-check.md)).
 5. **The 0014 handoff stays as the last step of M9:** `docs/HANDOFF.md`, the solicitation the owner posts, the README banner, then the archive on the owner's go-ahead. Still no submission to GTNH, and still open about how the mod was made.
 
 ## Consequences

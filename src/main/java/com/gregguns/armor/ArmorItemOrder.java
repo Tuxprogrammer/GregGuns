@@ -126,8 +126,7 @@ public final class ArmorItemOrder {
             new Extra(ArmorParts.GAS_MASK_FILTER, Tier.MV, Kind.PART),
             new Extra(ArmorParts.TANK_AIR, Tier.HV, Kind.PART),
             new Extra(ArmorParts.GLIDER_BACKPACK, Tier.HV, Kind.PART),
-            new Extra(ArmorParts.GLIDER_WING, Tier.HV, Kind.PART),
-            new Extra(ArmorCatalog.STEAM_ARMOR_PLATING, Tier.EV, Kind.PART)));
+            new Extra(ArmorParts.GLIDER_WING, Tier.HV, Kind.PART)));
 
     private ArmorItemOrder() {}
 

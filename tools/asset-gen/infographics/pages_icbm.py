@@ -22,7 +22,7 @@ import render3d as R
 import scenes as S
 import vanilla
 from kit import chip, esc
-from pages import gti, img, page_doc, slot
+from pages import MOJANG_CREDIT, gti, img, page_doc, slot
 
 NTM = K.ASSETS / "models/thirdparty/ntm"
 NTM_TEX = K.ASSETS / "textures/models/thirdparty/ntm"
@@ -179,7 +179,7 @@ CSS = """
 
 def _tnt_icon() -> K.Path:
     """TNT as the game draws it in an inventory: a small cube of the real vanilla textures (D55)."""
-    top, side = vanilla.real("blocks/tnt_top"), vanilla.real("blocks/tnt_side")
+    top, side = vanilla.texture("blocks/tnt_top"), vanilla.texture("blocks/tnt_side")
     cube = K.voxels("tnt-cube", {(0, 0, 0): ("m", S.FRONT)}, {"m": (top, side, side)}, yaw=-38, pitch=28, ppu=60,
                     key="tnt-cube-v1" + hashlib.sha1(top.read_bytes() + side.read_bytes()).hexdigest()[:8])
     return cube
@@ -260,8 +260,8 @@ def warheads() -> str:
 <text x="60" y="184" fill="#b4bfcb" font-size="16" font-family="Segoe UI, Fira Sans, sans-serif">Ground zero</text>
 <text x="520" y="184" fill="#b4bfcb" font-size="16" text-anchor="end" font-family="Segoe UI, Fira Sans, sans-serif">Blast radius</text></svg></div>"""
 
-    flint = slot(vanilla.real("items/flint_and_steel"), 30, "Flint and Steel")
-    charge = slot(vanilla.real("items/fireball", "fire_charge"), 30, "Fire Charge")
+    flint = slot(vanilla.texture("items/flint_and_steel"), 30, "Flint and Steel")
+    charge = slot(vanilla.texture("items/fireball"), 30, "Fire Charge")
     tnt = slot(_tnt_icon(), 30, "TNT")
     demo = f"""<div class="card"><h2>Use one as a demolition charge</h2>
 <div class="muted" style="font-size:18px;margin:6px 0 14px">A warhead on its own is a charge. Set it down where you want the hole.</div>
@@ -304,7 +304,7 @@ def warheads() -> str:
 <div style="margin-top:18px">{later}</div>"""
     return page_doc("Warheads", "Tier 1 and Tier 2: what each one does, how big the bang is, and how to make and set one off.", body,
                     extra=CSS,
-                    credit=["Warhead models and textures \u00a9 HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.", vanilla.MC_CREDIT])
+                    credit=["Warhead models and textures \u00a9 HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.", MOJANG_CREDIT])
 
 
 PAGES = {"icbm-warheads": warheads}

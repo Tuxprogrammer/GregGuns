@@ -20,6 +20,8 @@ WEAPONS = {
         ("item:combat_knife", "Combat Knife", "Fast steel melee", None, "no ammo"),
         ("item:crowbar", "Crowbar", "Melee that mines like iron", None, "no ammo"),
         ("item:stielgranate", "Stielgranate", "Thrown stick grenade", None, "thrown"),
+        ("akimbo:pistol_9mm", "Akimbo Pistols", "Two pistols, alternating", "mag_9mm_pistol", "2 Pistol Magazines"),
+        ("akimbo:revolver", "Akimbo Revolvers", "Two revolvers, alternating", "ammo_9mm_bullet", "9mm Bullets"),
     ],
     "MV": [
         ("thompson_smg", "Thompson SMG", "Full auto, 20 rounds", "mag_smg", "SMG Magazine"),
@@ -27,8 +29,6 @@ WEAPONS = {
         ("combat_shotgun", "Combat Shotgun", "Eight-shell pump action", "ammo_shotgun_shell", "Shotgun Shells"),
         ("m4", "M4", "Accurate, scoped, 30 rounds", "mag_assault_rifle", "Assault Rifle Magazine"),
         ("ak47", "AK47", "Hits harder, 30 rounds", "mag_assault_rifle", "Assault Rifle Magazine"),
-        ("akimbo:pistol_9mm", "Akimbo Pistols", "Two pistols, alternating", "mag_9mm_pistol", "2 Pistol Magazines"),
-        ("akimbo:revolver", "Akimbo Revolvers", "Two revolvers, alternating", "ammo_9mm_bullet", "9mm Bullets"),
         ("akimbo:mac10", "Akimbo Mac10s", "Both fire every pull", "mag_smg", "2 SMG Magazines"),
         ("item:frag_grenade", "Frag Grenade", "Hold to throw harder", None, "thrown"),
         ("item:flashbang", "Flashbang", "Blinds anyone looking", None, "thrown"),

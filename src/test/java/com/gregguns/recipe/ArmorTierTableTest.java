@@ -137,27 +137,6 @@ class ArmorTierTableTest {
     }
 
     @Test
-    void steamRowsAndPlatingMatchTheSheet() {
-        assertSheetRows(ArmorTable.STEAM, ArmorCatalog.STEAM, Tier.EV, new int[] { 10, 16, 14, 10 });
-        int[] sap = { 5, 8, 7, 4 };
-        for (int i = 0; i < 4; i++) {
-            ProductionTable.Row row = ArmorTable.STEAM.get(i);
-            assertEquals(
-                1,
-                row.inputs()
-                    .size());
-            assertEquals(sap[i], countMod(row, "part_steam_armor_plating"));
-        }
-        ProductionTable.Row plating = ArmorTable.STEAM_PLATING;
-        assertEquals("RC-23", plating.id());
-        assertEquals(Tier.EV, plating.tier());
-        assertEquals(6, plating.seconds());
-        assertEquals(2, count(plating, "plate", "Titanium"));
-        assertEquals(1, count(plating, "plate", "Bronze"));
-        assertEquals(1, count(plating, "plate", "Steel"));
-    }
-
-    @Test
     void everyMachineRowMeetsTheGateRuleAndRunsAtItsTier() {
         Map<String, ProductionTable.Row> byOutput = new HashMap<>();
         for (ProductionTable.Row row : ArmorTable.MACHINE) {

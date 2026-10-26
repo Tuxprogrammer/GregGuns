@@ -71,6 +71,15 @@ public final class StructurePopulator {
         int lootCeiling(StructureId s);
 
         int richness(StructureId s);
+
+        /**
+         * @param plan a plan
+         * @return the loot ceiling the plan rolled (a GT voltage index, MV 2 to UHV 9), or 0 when its dimension does
+         *         not roll (everywhere but Ross128b and Ross128ba, design record 0019)
+         */
+        default int rolledCeiling(StructurePlan plan) {
+            return 0;
+        }
     }
 
     /** The settings from {@link WorldgenSettings}. */
@@ -94,6 +103,11 @@ public final class StructurePopulator {
         @Override
         public int richness(StructureId s) {
             return WorldgenSettings.lootTier(s);
+        }
+
+        @Override
+        public int rolledCeiling(StructurePlan plan) {
+            return WorldgenSettings.rolledCeiling(plan);
         }
     };
 
@@ -146,6 +160,11 @@ public final class StructurePopulator {
     public StructurePopulator withNests(NestPlacer placer) {
         this.nests = placer;
         return this;
+    }
+
+    /** @return the seeded plans, for scenarios that need to know where this populator will build */
+    StructureGrid grid() {
+        return grid;
     }
 
     /**
@@ -356,8 +375,11 @@ public final class StructurePopulator {
         int chestIndex, Marks marks) {
         if (tag.startsWith("chest.")) {
             String kind = tag.substring("chest.".length());
-            int tier = Math.max(1, Math.min(3, id == null ? 1 : rules.lootCeiling(id)));
-            String category = ChestTags.category(kind, id == StructureId.MILITARY_BASE, tier);
+            int rolled = rules.rolledCeiling(plan);
+            int base = Math.max(1, id == null ? 1 : rules.lootCeiling(id));
+            // Ross128: the structure's own rolled ceiling, never below the configured one (design record 0019).
+            int tier = rolled > 0 ? Math.max(base, rolled) : Math.min(3, base);
+            String category = ChestTags.category(kind, id == StructureId.MILITARY_BASE, tier, rolled > 0);
             if (category == null) return;
             int richness = id == null ? 1 : rules.richness(id);
             long seed = plan.chestSeed(chestIndex);

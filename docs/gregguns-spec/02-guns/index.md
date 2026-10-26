@@ -186,7 +186,7 @@ Bio Gun (`bio_gun`, GR-65, EV). Ammo is the Bio Tank (`tank_bio`, a Forge fluid 
 
 Alien Blaster (`alien_blaster`, GR-95), LuV. An IC2 tier 6 electric item (`ItemEnergyGun`) charged by a GT charger or battery buffer of exactly that tier.
 
-- **Shots of charge.** The LuV baseline is a 1,000,000,000 EU Lapotronic Orb II. The sheet's 10 round clip is 10 shots at 100,000,000 EU. There is no reload (plan Q5); the `reload` sound event exists because the sound table requires one per gun.
+- **Shots of charge.** The LuV baseline is a 1,000,000,000 EU Lapotronic Orb II. The sheet's 10 round clip is 25 shots at 40,000,000 EU (10 shots at 100,000,000 EU until design record [0021](../../design/0021-tier-balance-pass.md)). There is no reload (plan Q5); the `reload` sound event exists because the sound table requires one per gun.
 - **Recipe.** Techguns gives the gun no recipe. The sheet's Assembly Line chain (research: the De-Atomizer Pistol; solder and lubricant) is not built for guns, so it is a plain LuV Assembler row with the sheet's item inputs, gated by the HSS-G plate.
 - **Trail (PFX-01).** `AlienBlasterProjectile` is a registered, tracked entity (id 27; Techguns never registered it, so its trail packet found no entity). The trail is sent on the bolt's second tick, after the tracker lists watchers; the client also waits for an entity that arrives late.
 - **Blast.** Power 0.5, full damage within 0.25 blocks, none beyond 0.75, never breaks blocks, server side only (PFX-15 ran it on both sides). The entity the bolt hit is left out of the blast so a hit is not counted twice.
@@ -195,6 +195,10 @@ Alien Blaster (`alien_blaster`, GR-95), LuV. An IC2 tier 6 electric item (`ItemE
 ## Damage balance pass: deviations
 
 GregGuns owns its damage numbers; Techguns parity is no longer a goal (design record [0016](../../design/0016-damage-balance-pass.md), amending 0004). Every per-shot damage and drop-off minimum in this file and in the Techguns sheets is superseded by the table in 0016, except tools, which are unchanged. NPC-fired guns keep the old values (`GunStats.npcDamage`, `forNpc()`); the player-owned Rampart turret uses the new ones. The Nuke Launcher annihilates inside 60% of its blast radius (bosses take half their maximum health), and the Nuclear Death Ray does 30 per tick and ignores armor. The Sonic Rifle is 44 so that one pull out-damages the Combat Shotgun's full hit (35) by 1.25x.
+
+## Aim down sights (M9 polish): deviations
+
+Techguns zooms only guns with a scope. GregGuns also lets the guns with iron sights or a red dot and no scope overlay (16 of them, listed in [03-gun-visuals-audio/ads.md](../03-gun-visuals-audio/ads.md)) aim down their sights on the same right-click toggle. The server owns the state (`ZoomState.ads`, `GunController.toggleAim`) and answers with the existing `ZOOM` event, so no packet is new and the client never sends a flag (GUN-12). A sights-only gun's spread is multiplied by `aim.adsSpreadMultiplier` (default 0.75); a gun with a scope keeps its spec zoom multiplier and ADS never stacks on it. A reload, a weapon switch, death or `aim.adsEnabled = false` ends the aim. The right-click is sent for these guns only when `client.adsEnabled` is on.
 
 ## Pack-side changes
 

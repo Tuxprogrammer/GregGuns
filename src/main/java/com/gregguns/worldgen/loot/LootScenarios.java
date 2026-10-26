@@ -54,7 +54,7 @@ public final class LootScenarios {
 
         @Override
         public String description() {
-            return "After postInit the seven gregguns:* categories exist, hold items and fill a chest; none of their"
+            return "After postInit the fifteen gregguns:* categories exist, hold items and fill a chest; none of their"
                 + " content is in DUNGEON_CHEST (GGS-06-02, GGS-11-19).";
         }
 
@@ -63,7 +63,7 @@ public final class LootScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             out.checkEquals(
                 "category count",
-                7,
+                15,
                 LootCategoryDefs.all()
                     .size());
             for (LootCategory cat : LootCategoryDefs.all()) {

@@ -978,17 +978,6 @@ def _(c, x):
         c.pix(4, yy, lt[HL]); c.pix(11, yy, lt[HL]) if yy < 11 else None
 
 
-@icon("part_steam_armor_plating")
-def _(c, x):
-    c.rect(1, 3, 14, 12, x.m)
-    c.rect(1, 3, 7, 12, x.m2 if len(x.pal) > 1 else x.m)
-    c.vline(8, 3, 12, x.m[DK])
-    for yy in (4, 11):
-        for xx in (2, 5, 10, 13):
-            c.pix(xx, yy, ramp(tint(x.pal[0], 1))[HL])
-    c.hline(2, 13, 7, x.m[SH]); c.hline(2, 13, 8, x.m[LT])
-
-
 @icon("part_power_plating")
 def _(c, x):
     c.rect(1, 2, 14, 13, x.m)

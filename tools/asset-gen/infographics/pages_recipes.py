@@ -17,7 +17,7 @@ import kit as K
 import scenes as S
 import vanilla as V
 from kit import chip, esc, url
-from pages import POINT, img, page_doc
+from pages import MOJANG_CREDIT, POINT, img, page_doc
 
 RECIPE_CSS = """
 .slot { position: relative; }
@@ -295,7 +295,7 @@ def recipes():
 {_guide()}"""
     return page_doc("Recipes &middot; <b>Steam and LV</b>",
                     "The crafting chains behind your first guns, ammo and armor. Past LV, NEI shows the way.",
-                    body, extra=RECIPE_CSS)
+                    body, extra=RECIPE_CSS, credit=MOJANG_CREDIT)
 
 
 def _guide():

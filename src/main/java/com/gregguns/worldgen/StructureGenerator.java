@@ -126,10 +126,26 @@ public final class StructureGenerator implements IWorldGenerator {
         return POPULATES.get();
     }
 
+    /** The chunk {@link Ross128ProviderHook} just generated, so Forge's own call for it is skipped once. */
+    private static long ranViaProvider = Long.MIN_VALUE;
+    private static int ranViaProviderDim;
+
+    /** Records that the provider hook generated this chunk; the next Forge call for the same chunk does nothing. */
+    static void markRanViaProvider(int dimension, int chunkX, int chunkZ) {
+        ranViaProviderDim = dimension;
+        ranViaProvider = ((long) chunkX << 32) ^ (chunkZ & 0xFFFFFFFFL);
+    }
+
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator,
         IChunkProvider chunkProvider) {
         if (world.isRemote) return;
+        long key = ((long) chunkX << 32) ^ (chunkZ & 0xFFFFFFFFL);
+        if (ranViaProvider == key && ranViaProviderDim == world.provider.dimensionId) {
+            // The call that follows the hook's own (Galacticraft allows other mods' generators): already done.
+            ranViaProvider = Long.MIN_VALUE;
+            return;
+        }
         StructurePopulator populator = override != null ? override : real;
         if (populator == null) return;
         if (!allowed(world)) return;

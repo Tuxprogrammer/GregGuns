@@ -69,9 +69,12 @@ final class GunItemRenderer implements IItemRenderer {
     private final ResourceLocation[] textures;
     private final ModelState state = new ModelState();
     private final boolean akimbo;
+    /** Item-frame shift that puts the sights on the screen center at full aim, or null if the gun cannot aim. */
+    private final double[] adsShift;
 
-    GunItemRenderer(GunModel model, GunTransforms transforms, boolean akimbo) {
+    GunItemRenderer(GunModel model, GunTransforms transforms, boolean akimbo, double[] adsShift) {
         this.akimbo = akimbo;
+        this.adsShift = adsShift == null ? null : adsShift.clone();
         this.model = model;
         this.transforms = transforms;
         this.textures = model.textures();
@@ -124,6 +127,9 @@ final class GunItemRenderer implements IItemRenderer {
             && ((ItemGun) stack.getItem()).stats()
                 .ammoPerShot() >= 2;
         int hands = AkimboLayout.handsDrawn(akimbo, firstPerson);
+        // Aim down sights: slide the gun toward the screen center by the eased blend (0 in the normal hold).
+        double aim = firstPerson && adsShift != null ? anims.ads()
+            .blendFor(stack.getItem(), anims.partial()) : 0.0;
         for (int hand = 0; hand < hands; hand++) {
             boolean fired = AkimboLayout.animates(akimbo, firstPerson, hand, attackType, doubleShot);
             double recoil = fired ? shotRecoil : AnimWindow.NONE;
@@ -131,6 +137,9 @@ final class GunItemRenderer implements IItemRenderer {
             boolean mirrored = hands > 1 && hand > 0;
             GL11.glPushMatrix();
             try {
+                if (aim > 0.0) {
+                    GL11.glTranslated(adsShift[0] * aim, adsShift[1] * aim, adsShift[2] * aim);
+                }
                 if (mirrored) {
                     // The second gun: a mirror image about the screen centre. Mirroring flips the winding.
                     double[] shift = AkimboLayout.mirrorTranslate(hand);

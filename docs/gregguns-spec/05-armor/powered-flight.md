@@ -10,7 +10,7 @@
 | Techguns behavior | GregGuns behavior | Why |
 |---|---|---|
 | Chestplate holds RF (3600, 7200, 10000), refills the other pieces; empty chest eats a battery item | Every powered piece is an IC2 electric item at its [0001](../../design/0001-tier-map.md) tier. The chestplate holds the charge. Charging is by GT charger or battery buffer, never by consuming a battery item | [0003](../../design/0003-energy-model.md): EU only, no RF |
-| Jetpack, Jump Pack, Anti Gravity Device use durability as fuel and reload from items | They are electric items in a `wings` bauble ([baubles-slots.md](baubles-slots.md)). Fuel-burning versions (Steam armor, flamethrower) keep GT fluids | [0003](../../design/0003-energy-model.md) |
+| Jetpack, Jump Pack, Anti Gravity Device use durability as fuel and reload from items | They are electric items in a `wings` bauble ([baubles-slots.md](baubles-slots.md)). Fuel-burning versions keep GT fluids or items (the Steam armor burns Coal or Charcoal, with the Compressed Air Tank as a full refill: [0022](../../design/0022-steam-armor-steam-age.md); the flamethrower uses fluids) | [0003](../../design/0003-energy-model.md) |
 | Flight and fall cancel are the item's own logic, with no thought for other mods | Flight is motion-based and never touches player abilities. Fall cancel is limited to what the item's own energy pays for | See "Flight stacking" |
 | Protection works with no power, bonuses need power | Unchanged | Keeps the Techguns feel |
 

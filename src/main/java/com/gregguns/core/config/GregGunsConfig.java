@@ -22,6 +22,7 @@ public final class GregGunsConfig {
         Arrays.<Class<?>>asList(
             ModulesConfig.class,
             DebugConfig.class,
+            AimConfig.class,
             BioGunConfig.class,
             ClientConfig.class,
             DamageFactorsConfig.class,
@@ -33,7 +34,8 @@ public final class GregGunsConfig {
             UtilityConfig.class,
             NpcConfig.class,
             WorldgenConfig.class,
-            QuestbookConfig.class));
+            QuestbookConfig.class,
+            CompatConfig.class));
 
     private GregGunsConfig() {}
 

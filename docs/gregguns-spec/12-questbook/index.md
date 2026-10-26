@@ -179,5 +179,5 @@ How the install behaves:
 4. **Reward balance.** 26 bags may be too many or too few. The M9 balance pass decides.
 5. **Bag content.** Bags draw random items from the whole tier group. Whether to add a GregGuns-only bag group is a server-owner step; it needs a new `LootBags.xml` group.
 6. **Hunting with GregGuns damage.** `damageType` can require a damage source name. Whether GregGuns kills should be required (for example "kill with a bullet") depends on the names fixed in [0004](../../design/0004-damage-model.md).
-7. **Translation.** The pack ships English inline. Whether GregGuns lang files should carry `betterquesting.quest.<id>.name` keys is a translation-readiness question for M9.
+7. **Translation.** The pack ships English inline. Resolved in M9: `en_US.lang` carries a generated `betterquesting.*` block (`build_quests.py --lang`), checked by `LangFilesTest`; see [translating.md](../../translating.md).
 8. **Aluminum gate.** No pack quest is solely about aluminum. The MV gate relies on 1148 depending on 103. A direct prerequisite on 103 is optional.

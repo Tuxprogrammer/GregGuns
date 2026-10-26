@@ -16,6 +16,8 @@ package com.gregguns.gun.logic;
 public final class ZoomState {
 
     private boolean zoomed;
+    /** Aiming down the sights of a gun that has no scope (see {@link AdsSupport}); never set with {@link #zoomed}. */
+    private boolean ads;
 
     /**
      * Toggles zoom for the held gun. Does nothing and returns false for a gun without a scope (GUN-47: an unscoped
@@ -32,9 +34,41 @@ public final class ZoomState {
         return true;
     }
 
-    /** Clears zoom: on reload start, weapon switch, dropping the gun, death. */
+    /**
+     * Toggles the held gun's aim: the scope zoom if it has a scope, else ADS if it can aim down its sights.
+     *
+     * @param stats      the held gun
+     * @param adsCapable true if the gun is on the ADS list ({@link AdsSupport#supports}) and ADS is enabled
+     * @return true if the aim state changed
+     */
+    public boolean toggle(GunStats stats, boolean adsCapable) {
+        if (stats.hasScope()) {
+            ads = false;
+            return toggle(stats);
+        }
+        zoomed = false;
+        if (!adsCapable) {
+            ads = false;
+            return false;
+        }
+        ads = !ads;
+        return true;
+    }
+
+    /** Clears zoom and ADS: on reload start, weapon switch, dropping the gun, death. */
     public void reset() {
         zoomed = false;
+        ads = false;
+    }
+
+    /** True if aiming down the sights of a gun without a scope: its spread bonus is the ADS one. */
+    public boolean isAdsOnly(GunStats stats) {
+        return ads && !stats.hasScope();
+    }
+
+    /** True if the player is aiming in any way: scoped zoom or ADS. This is the state the client is told. */
+    public boolean isAiming(GunStats stats) {
+        return isZoomed(stats) || isAdsOnly(stats);
     }
 
     /** True if zoomed with a gun that has a scope. */

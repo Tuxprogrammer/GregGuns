@@ -121,3 +121,16 @@ Status: done. Default off (Q2, GGS-11-15): enabled only by `worldgen.enabledAlie
 | Textures are original (`bugnestblock`, `bugnesteggs`, `bugnestslimy`, generated in `tools/asset-gen`) | `tools/asset-gen/credits/blocks.csv` | PASS |
 
 The default flip: `modules.worldgen` is now `true` (Q10). The default-config boot is recorded at the top of this page.
+
+## M9: structures on Ross128b and Ross128ba (design record 0019)
+
+Headless run on the ai-server, branch `feat/m9-ross128`, `GG_MODULES=guns,armor,machines,utility,npcs,worldgen`: scenarios `worldgen.ross128b_structures`, `worldgen.ross128ba_structures`, `worldgen.dimension_gate`, `worldgen.generator_test_layout`, `worldgen.no_cascade`, `worldgen.loot_categories`, `worldgen.loot_tier_ceiling` and `worldgen.config_defaults` all PASS. Unit suite 2638 tests (3 skipped), 0 failures.
+
+| Rule | Evidence | Status |
+|---|---|---|
+| The gate lets the BartWorks IDs in, follows them if moved, and keeps every other dimension out | `WorldgenGateTest.ross128*`; both scenarios check `allowed` and that `structureRoss128=false` denies | PASS |
+| Generation reaches the dimensions (Galacticraft drops Forge generators there, so through `Ross128ProviderHook`) | both scenarios: the provider carries the hook and a fresh square stamps the test structure | PASS |
+| No cascading, no dropped write | both scenarios: zero `PopulateGuard` violations and zero rejected writes, for the test layout and for a dense run of every shipped structure | PASS |
+| Land and water checks | the dense run: Ross128b placed ships only where its ocean passed the water check and rejected land structures there on biome; Ross128ba placed 0 ships (all rejected on biome) and checked land structures on its flat terrain | PASS |
+| Loot within the rolled ceiling | both scenarios: each placed structure's weapon chest holds the table of its plan's rolled ceiling (observed rolls 2 to 9); `worldgen.loot_tier_ceiling` draws 1000 chests per table, tiers 4 to 7 included | PASS |
+| Defenders scale with the roll | `HoleSpawningDangerTest`, `RolledCeilingTest` (unit only; no scenario watches a rolled hole spawn) | PASS (unit) |

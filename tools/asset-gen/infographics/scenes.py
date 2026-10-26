@@ -15,6 +15,7 @@ import blocks as B
 import gt
 import kit as K
 import render3d as R
+import vanilla
 
 T = B.TEX
 UP, FRONT, BACK, LEFT, RIGHT = (0, 1, 0), (0, 0, -1), (0, 0, 1), (-1, 0, 0), (1, 0, 0)
@@ -109,20 +110,9 @@ HATCH_LABEL = {
 
 
 def lamp_tex():
-    """Our own interior lamp icon (the build accepts glowstone, a redstone lamp or any light level 12+ block, so the
-    picture is a plain lit lamp block, not any game's art)."""
-    from PIL import Image, ImageDraw
-    p = K.TEXCACHE / "interior_lamp.png"
-    if not p.exists():
-        K.TEXCACHE.mkdir(parents=True, exist_ok=True)
-        im = Image.new("RGBA", (16, 16), (214, 150, 40, 255))
-        d = ImageDraw.Draw(im)
-        for cy in range(4):
-            for cx in range(4):
-                c = (255, 236, 150, 255) if (cx + cy) % 2 == 0 else (255, 212, 96, 255)
-                d.rectangle([cx * 4 + 1, cy * 4 + 1, cx * 4 + 3, cy * 4 + 3], fill=c)
-        im.save(p)
-    return p
+    """The interior lamp: vanilla glowstone, read from the vanilla jar (the build also accepts a redstone lamp or any
+    light level 12+ block)."""
+    return vanilla.texture("blocks/glowstone")
 
 
 def natura_tex():

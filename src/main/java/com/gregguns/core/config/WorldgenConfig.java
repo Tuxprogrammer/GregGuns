@@ -33,6 +33,19 @@ public class WorldgenConfig {
         "Default: 0 (the Overworld)." })
     public static int[] structureDimensions = { 0 };
 
+    @Config.Comment({
+        "Also place structures on Ross128b and its moon Ross128ba, the alternate challenge-start route (design record",
+        "0019). Their dimension IDs are read from BartWorks' config (ross128BID, ross128BAID), never set here, and are",
+        "ignored when BartWorks has the Ross128 system turned off. Default: true." })
+    public static boolean structureRoss128 = true;
+
+    @Config.Comment({
+        "On Ross128b and Ross128ba every structure rolls its own loot ceiling, and its defenders scale with it. These are",
+        "the weights for MV, HV, EV, IV, LuV, ZPM, UV and UHV, in that order (8 numbers); a higher weight makes that",
+        "ceiling likelier. Tiers above ZPM draw from the ZPM loot tables. A structure's own lootTierCeiling is a floor",
+        "there. Default: 40, 28, 14, 8, 4, 3, 2, 1 (weighted to the low end)." })
+    public static int[] ross128CeilingWeights = { 40, 28, 14, 8, 4, 3, 2, 1 };
+
     @Config.Comment({ "World type names that allow structures (WorldType.getWorldTypeName, compared ignoring case).",
         "Flat and unknown world types are out unless listed. Default: default, RWG, largeBiomes, amplified." })
     public static String[] structureWorldTypes = { "default", "RWG", "largeBiomes", "amplified" };

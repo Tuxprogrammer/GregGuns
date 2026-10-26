@@ -94,6 +94,16 @@ class ArmorTableTest {
                 row.id());
             assertEquals(Tier.STEAM, row.tier());
         }
+        // Record 0022: the Steam set is bronze plates and cloth, at the Steam tier, with no other metal.
+        for (ArmorTable.HandRow row : ArmorTable.STEAM) {
+            assertEquals(Tier.STEAM, row.tier());
+            assertEquals(
+                new HashSet<>(java.util.Arrays.asList(ArmorTable.PLATE_BRONZE, ArmorTable.CLOTH)),
+                new HashSet<>(
+                    row.keys()
+                        .values()),
+                row.id());
+        }
         assertEquals("Bronze", GateRule.gateMaterial(Tier.STEAM));
     }
 
@@ -131,6 +141,39 @@ class ArmorTableTest {
             java.util.Arrays.asList("c c", "n n"),
             ArmorTable.MINER.get(3)
                 .pattern());
+    }
+
+    @Test
+    void steamGridsAreBronzePlates3_5_4_2AndDifferFromEveryOtherHandGrid() {
+        int[] plates = { 3, 5, 4, 2 };
+        for (int i = 0; i < 4; i++) {
+            ArmorTable.HandRow row = ArmorTable.STEAM.get(i);
+            int n = 0;
+            for (String line : row.pattern()) {
+                for (char c : line.toCharArray()) {
+                    n += c == 'B' ? 1 : 0;
+                }
+            }
+            assertEquals(plates[i], n, row.id());
+        }
+        // Two shaped recipes clash when their grids are the same and the ingredients overlap; compare the grids with
+        // the
+        // ingredients named, so the Steam set can never be crafted from, or shadow, the Scout or Miner grids.
+        Set<String> seen = new HashSet<>();
+        for (ArmorTable.HandRow row : ArmorTable.HAND) {
+            StringBuilder grid = new StringBuilder();
+            for (String line : row.pattern()) {
+                for (char c : line.toCharArray()) {
+                    grid.append(
+                        c == ' ' ? "_"
+                            : row.keys()
+                                .get(c));
+                    grid.append(',');
+                }
+                grid.append('/');
+            }
+            assertTrue(seen.add(grid.toString()), row.id() + " repeats another hand grid");
+        }
     }
 
     @Test
@@ -194,10 +237,10 @@ class ArmorTableTest {
                 pieces++;
             }
         }
-        // 12 T1 pieces + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 = 45 pieces, and the one extra output is Steam Armor
-        // Plating.
+        // 12 T1 pieces + 4 + 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 = 45 pieces; Steam Armor Plating is retired (record 0022),
+        // so every output is a piece.
         assertEquals(45, pieces);
-        assertEquals(pieces + 1, made.size());
+        assertEquals(pieces, made.size());
     }
 
     @Test

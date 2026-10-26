@@ -9,6 +9,7 @@ import com.gregguns.client.GunsClientModule;
 import com.gregguns.client.render.GunAnimations;
 import com.gregguns.client.render.GunRenderers;
 import com.gregguns.gun.GunClientEvents;
+import com.gregguns.gun.logic.AdsSupport;
 import com.gregguns.gun.logic.GunStats;
 import com.gregguns.item.gun.ItemGun;
 
@@ -93,6 +94,15 @@ public final class ClientGunEvents implements GunClientEvents {
         if (!isLocal(entity)) {
             return;
         }
+        // Aim down sights: the model move for every gun on the ADS list, whether or not it also has a scope FOV.
+        ItemGun aimGun = heldGun(entity);
+        boolean sights = aimGun != null && AdsSupport.supports(aimGun.contentName());
+        animations.ads()
+            .setAiming(
+                sights ? aimGun : null,
+                zoomed && sights,
+                sights && !aimGun.stats()
+                    .hasScope());
         if (zoomed && fovMultiplier < 1.0) {
             // The FOV factor is the gun's GunStats zoom; the overlay is drawn only if its render profile has a
             // ScopeSpec (texture and kick), so both are per-gun data.

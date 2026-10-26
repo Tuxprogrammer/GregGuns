@@ -187,26 +187,18 @@ class ArmorCompositionTest {
     }
 
     @Test
-    void steamArmorReturnsThePlatingInsideIt() {
-        // RC-23 plating: 2 titanium, 1 bronze, 1 steel plate. The helmet takes 5 platings.
-        Map<String, Long> plating = of(ArmorCatalog.STEAM_ARMOR_PLATING);
-        assertEquals(
-            200L,
-            plating.get("Titanium")
-                .longValue());
-        Map<String, Long> helmet = of(ArmorCatalog.STEAM.pieceName(ArmorSlot.HELMET));
-        assertEquals(
-            1000L,
-            helmet.get("Titanium")
-                .longValue());
-        assertEquals(
-            500L,
-            helmet.get("Bronze")
-                .longValue());
-        assertEquals(
-            500L,
-            helmet.get("Steel")
-                .longValue());
+    void steamArmorReturnsItsBronzePlates() {
+        // Record 0022: hand-crafted from 3, 5, 4 and 2 bronze plates (100 each); the cloth returns nothing.
+        long[] plates = { 3, 5, 4, 2 };
+        for (ArmorSlot slot : ArmorSlot.values()) {
+            Map<String, Long> piece = of(ArmorCatalog.STEAM.pieceName(slot));
+            assertEquals(
+                plates[slot.ordinal()] * 100L,
+                piece.get("Bronze")
+                    .longValue(),
+                slot.toString());
+            assertEquals(1, piece.size(), slot.toString());
+        }
     }
 
     @Test

@@ -182,8 +182,6 @@ public final class PartCatalog {
         // Registered by ArmorParts on the m3 branches (armor-t2-t3, flight-gear), with their own recipes.
         list.add(new Entry("part_treated_leather", Tier.LV, Kind.PART, Owner.ARMOR_PARTS, "RC-22 armor (m3)", null));
         list.add(
-            new Entry("part_steam_armor_plating", Tier.EV, Kind.PART, Owner.ARMOR_PARTS, "RC-23 armor (m3)", null));
-        list.add(
             new Entry(
                 "part_glider_backpack",
                 Tier.HV,

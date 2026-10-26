@@ -99,6 +99,16 @@ public final class GunController {
     }
 
     /**
+     * Validated right-click on a gun that may also aim down its sights. Refused while reloading.
+     *
+     * @param adsCapable true if the gun is on the {@link AdsSupport} list and ADS is enabled
+     * @return true if the aim state changed and the client should be told
+     */
+    public boolean toggleAim(GunStats stats, boolean adsCapable) {
+        return !reload.isReloading() && zoom.toggle(stats, adsCapable);
+    }
+
+    /**
      * Validated force-reload key. Does something only if the cooldown has elapsed and the gun is not full.
      *
      * @return the reload event ({@code STARTED} or a {@code REJECTED_*})

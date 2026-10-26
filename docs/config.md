@@ -36,11 +36,23 @@ The module flags (login packet) and every key marked `Synced: yes` in the tables
 
 The "Needs" column is the module order in `ModuleId`, taken from the roadmap's entry gates.
 
-## Debug (`debug`)
+## Compat (`compat`)
+
+In-memory pack-fit hooks ([PACK-CHANGES.md](gregguns-spec/PACK-CHANGES.md)). Each adjusts another mod's already-loaded settings at startup, never its config file, and does nothing when that mod is absent. Not synced: each side applies its own copy.
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Registers the numpad debug keybinds. Nothing reads it until the M1 keybinds exist. Kept from Techguns' `enableDebugKeybinds`. |
+| `compat.backhandGuns` | boolean | `true` | n/a | no | Adds every GregGuns gun to Backhand's `offhandBlacklist` and `mainhandUseStopsOffhandFallback`. |
+| `compat.thaumcraftMobAspects` | boolean | `true` | n/a | no | Registers Thaumcraft scan aspects for the GregGuns NPCs. |
+| `compat.listHooks` | boolean | `true` | n/a | no | Adds `gregguns.` to AngerMod's `butcherItems` and `gregguns.SimpleTurret` to Mobs Info's `MobBlacklist`. |
+
+## Debug (`debug`)
+
+Hidden from the in-game config GUI (developer aids; edit the file).
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `debug.enableDebugKeybinds` | boolean | `false` | n/a | no | Reserved for developers: nothing reads it yet, so changing it has no effect. Kept from Techguns' `enableDebugKeybinds`. |
 | `debug.recipeDump` | boolean | `false` | n/a | no | Enables the op-only `/gregguns dumprecipes <file>` command (recipe-clash review). Leave off in play. |
 
 ## Bio Gun (`bioGun`)
@@ -185,9 +197,28 @@ Display options for the local player only. Not synced.
 | `client.ammoPressAnimation` | boolean | `true` | n/a | no | Draws the Ammo Press's front animation, with the frame chosen from recipe progress. Off shows the still front. Cosmetic only. |
 | `client.particleCeiling` | int | `2000` | 100 to 8000 | no | Most GregGuns effect particles alive at once. Bursts shrink as the count nears it and never pass it, leaving room under the pack's 8000-particle cap. |
 
+Aim down sights (see [gregguns-spec/03-gun-visuals-audio/ads.md](gregguns-spec/03-gun-visuals-audio/ads.md)):
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `client.adsEnabled` | boolean | `true` | n/a | no | Right-click on an iron-sight or red-dot gun moves the gun to the screen center. Off: no move, and the right-click is not sent for those guns. |
+| `client.adsFov` | float | `0.9` | 0.3 to 1.0 | no | Field of view multiplier while aiming a gun with no scope zoom of its own. 1.0 leaves the view alone. |
+| `client.adsTransitionTicks` | int | `5` | 1 to 20 | no | Client ticks the gun takes to move in and out. |
+| `client.adsHideCrosshair` | boolean | `true` | n/a | no | Hides the crosshair while the sights are lined up. |
+| `client.adsStopsSprint` | boolean | `true` | n/a | no | Stops sprinting while aiming; the sprint key is ignored until you stop. |
+
+## Aim (`aim`)
+
+Server side of aim down sights. Read on the server; none is synced.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `aim.adsEnabled` | boolean | `true` | n/a | no | Lets sights-only guns aim on a right-click. Off: the server ignores the request and drops a running aim. Scope zoom is unaffected. |
+| `aim.adsSpreadMultiplier` | float | `0.75` | 0.0 to 1.0 | no | Multiplier on spread while aiming a gun with no scope zoom of its own (0.75 is 25 percent tighter). A scoped gun keeps its own zoom multiplier. |
+
 ## Hidden keys
 
-These keys are in `config/gregguns.cfg` but not in the in-game config GUI (their class carries GTNHLib's `@Config.ExcludeFromAutoGui`). They are for server owners and are edited in the file.
+These keys are in `config/gregguns.cfg` but not in the in-game config GUI (their class carries GTNHLib's `@Config.ExcludeFromAutoGui`). They are for server owners and are edited in the file. The `debug` category is hidden the same way.
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|

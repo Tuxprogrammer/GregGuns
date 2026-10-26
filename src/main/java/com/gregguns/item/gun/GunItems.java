@@ -97,6 +97,20 @@ public final class GunItems {
         return ITEMS.get(name);
     }
 
+    /**
+     * @return the qualified registry names ({@code gregguns:revolver}) of every registered gun, the dev scenario probe
+     *         excluded; what Backhand's item lists need
+     */
+    public static java.util.List<String> qualifiedNames() {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        for (Map.Entry<String, ItemGun> e : ITEMS.entrySet()) {
+            if (!(e.getValue() instanceof ProbeToolGun)) {
+                out.add(Naming.qualifiedName(e.getKey()));
+            }
+        }
+        return out;
+    }
+
     /** @return the 9mm Pistol; {@code null} before registration */
     public static ItemGun pistol() {
         return get(PistolDef.NAME);

@@ -14,13 +14,15 @@ package com.gregguns.gun.logic;
 public final class ShotContext {
 
     /** No modifiers: an unarmored, unzoomed shooter. */
-    public static final ShotContext DEFAULT = new ShotContext(false, 0.0, 1.0);
+    public static final ShotContext DEFAULT = new ShotContext(false, 0.0, 1.0, 1.0);
 
     private final boolean zoomed;
     private final double armorAccuracyBonus;
     private final double accuracyScale;
+    private final double adsSpreadMultiplier;
 
-    private ShotContext(boolean zoomed, double armorAccuracyBonus, double accuracyScale) {
+    private ShotContext(boolean zoomed, double armorAccuracyBonus, double accuracyScale, double adsSpreadMultiplier) {
+        this.adsSpreadMultiplier = adsSpreadMultiplier;
         this.zoomed = zoomed;
         this.armorAccuracyBonus = armorAccuracyBonus;
         this.accuracyScale = accuracyScale;
@@ -34,7 +36,7 @@ public final class ShotContext {
      *                           clamped to {@code [0, 1]}
      */
     public static ShotContext player(boolean zoomed, double armorAccuracyBonus) {
-        return new ShotContext(zoomed, Math.max(0.0, Math.min(1.0, armorAccuracyBonus)), 1.0);
+        return new ShotContext(zoomed, Math.max(0.0, Math.min(1.0, armorAccuracyBonus)), 1.0, 1.0);
     }
 
     /**
@@ -42,7 +44,21 @@ public final class ShotContext {
      * (GUN-06) and no zoom bonus is granted (GUN-07).
      */
     public static ShotContext npc(double accuracyScale) {
-        return new ShotContext(false, 0.0, Math.max(0.0, accuracyScale));
+        return new ShotContext(false, 0.0, Math.max(0.0, accuracyScale), 1.0);
+    }
+
+    /**
+     * @param multiplier the spread multiplier of aiming down the sights of a gun without a scope, see
+     *                   {@link AdsSupport#spreadMultiplier}; 1 for no bonus
+     * @return a copy of this context carrying it
+     */
+    public ShotContext withAdsSpread(double multiplier) {
+        return new ShotContext(zoomed, armorAccuracyBonus, accuracyScale, AdsSupport.spreadMultiplier(multiplier));
+    }
+
+    /** Spread multiplier of ADS on a gun without a scope; 1 when not aiming that way. */
+    public double adsSpreadMultiplier() {
+        return adsSpreadMultiplier;
     }
 
     /** True if the shooter is zoomed. */
