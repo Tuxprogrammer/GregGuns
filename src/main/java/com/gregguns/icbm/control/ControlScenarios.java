@@ -178,59 +178,48 @@ public final class ControlScenarios {
         ScenarioResult go(ScenarioContext ctx) {
             ctx.clearArea(10, 4);
             place(ctx, 0, 0, 0);
-            return afterWarmup(name(), () -> {
-                ScenarioResult.Builder out = ScenarioResult.builder(name());
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            final int[] stage = { 0 };
+            return ScenarioResult.pending(name(), WARMUP_TICKS + 60, ticks -> {
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
                 IGregTechTileEntity base = live(ctx, 0, 0, 0);
                 MTELaunchControl c = mte(base);
                 if (c == null) {
                     return ScenarioResult.fail(name(), "the Launch Control is gone after the warm-up");
                 }
-                base.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 3L, true);
-                out.checkEquals("unset target", ControlStatus.NO_TARGET, c.snapshot().status);
-                out.check(
-                    !c.target()
-                        .isSet(),
-                    "a fresh block has no target, not (0, 0)");
-                c.setXText("500");
-                out.check(
-                    !c.target()
-                        .isSet(),
-                    "one coordinate is not a target");
-                c.setZText("-700");
-                out.checkEquals("target", LaunchTarget.of(500, -700), c.target());
-                out.checkEquals("no pad", ControlStatus.NO_PAD, c.snapshot().status);
-                // A pad eight blocks off is out of reach; one whose center is three blocks off is found.
-                pad(ctx, 8, 0, 0);
-                ControlStatus far = c.snapshot().status;
-                out.checkEquals("far pad ignored", ControlStatus.NO_PAD, far);
-                return ScenarioResult.pending(name(), 40, t -> {
-                    if (t < 1) {
-                        return null;
-                    }
+                if (stage[0] == 0) {
+                    base.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 3L, true);
+                    out.checkEquals("unset target", ControlStatus.NO_TARGET, c.currentStatus());
+                    out.check(
+                        !c.target()
+                            .isSet(),
+                        "a fresh block has no target, not (0, 0)");
+                    c.setXText("500");
+                    out.check(
+                        !c.target()
+                            .isSet(),
+                        "one coordinate is not a target");
+                    c.setZText("-700");
+                    out.checkEquals("target", LaunchTarget.of(500, -700), c.target());
+                    out.checkEquals("no pad", ControlStatus.NO_PAD, c.currentStatus());
+                    // A pad eight blocks off is out of reach; one whose center is three blocks off is found.
+                    pad(ctx, 8, 0, 0);
+                    out.checkEquals("far pad ignored", ControlStatus.NO_PAD, c.currentStatus());
                     pad(ctx, 3, 0, 0);
-                    return finish(ctx, out, c);
-                });
+                    stage[0] = 1;
+                    return null;
+                }
+                ControlStatus st = c.fire(null);
+                out.checkEquals("pad found, no missile", ControlStatus.NO_MISSILE, st);
+                out.checkEquals("nothing was charged", MTELaunchControl.EU_PER_SHOT * 3L, base.getStoredEU());
+                // Without power the block says so before it looks at the missile.
+                base.decreaseStoredEnergyUnits(base.getStoredEU(), true);
+                out.checkEquals("no power", ControlStatus.NO_POWER, c.fire(null));
+                empty(base);
+                return out.build();
             });
-        }
-
-        private ScenarioResult finish(ScenarioContext ctx, ScenarioResult.Builder out, MTELaunchControl c) {
-            // The snapshot caches for a few ticks; fire() recomputes, so ask through it.
-            ControlStatus st = c.fire(null);
-            out.checkEquals("pad found, no missile", ControlStatus.NO_MISSILE, st);
-            out.checkEquals(
-                "nothing was charged",
-                MTELaunchControl.EU_PER_SHOT * 3L,
-                c.getBaseMetaTileEntity()
-                    .getStoredEU());
-            // Without power the block says so before it looks at the missile.
-            c.getBaseMetaTileEntity()
-                .decreaseStoredEnergyUnits(
-                    c.getBaseMetaTileEntity()
-                        .getStoredEU(),
-                    true);
-            out.checkEquals("no power", ControlStatus.NO_POWER, c.fire(null));
-            empty(c.getBaseMetaTileEntity());
-            return out.build();
         }
     }
 
@@ -330,54 +319,73 @@ public final class ControlScenarios {
         ScenarioResult go(ScenarioContext ctx) {
             ctx.clearArea(10, 4);
             place(ctx, 0, 0, 0);
-            return afterWarmup(name(), () -> {
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            final int[] stage = { 0 };
+            final int[] mark = { 0 };
+            final int[] before = { 0 };
+            return ScenarioResult.pending(name(), WARMUP_TICKS + 160, ticks -> {
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
                 IGregTechTileEntity base = live(ctx, 0, 0, 0);
                 MTELaunchControl c = mte(base);
                 if (c == null) {
                     return ScenarioResult.fail(name(), "the Launch Control is gone after the warm-up");
                 }
-                c.setXText("200");
-                c.setZText("200");
-                final int before = c.attempts();
-                ctx.setBlock(1, 0, 0, Blocks.redstone_block, 0);
-                // Let it tick with the signal held, then drop and raise it again.
-                return ScenarioResult.pending(name(), 160, new com.gregguns.core.testing.ScenarioPoller() {
-
-                    private int stage;
-                    private int mark;
-                    private final ScenarioResult.Builder out = ScenarioResult.builder(name());
-
-                    @Override
-                    public ScenarioResult poll(int ticks) {
-                        if (stage == 0 && ticks >= 30) {
-                            out.checkEquals("one attempt for a held signal", before + 1, c.attempts());
-                            out.checkEquals("it was refused for want of a pad", ControlStatus.NO_PAD, c.lastShot());
-                            ctx.setBlock(1, 0, 0, Blocks.air, 0);
-                            mark = ticks;
-                            stage = 1;
-                        } else if (stage == 1 && ticks >= mark + 10) {
-                            ctx.setBlock(1, 0, 0, Blocks.redstone_block, 0);
-                            mark = ticks;
-                            stage = 2;
-                        } else if (stage == 2 && ticks >= mark + 30) {
-                            out.checkEquals("a second pulse is a second attempt", before + 2, c.attempts());
-                            ctx.setBlock(1, 0, 0, Blocks.air, 0);
-                            // What a machine controller cover does: work disabled, then enabled again.
-                            base.disableWorking();
-                            mark = ticks;
-                            stage = 3;
-                        } else if (stage == 3 && ticks >= mark + 10) {
-                            out.checkEquals("disabling does not fire", before + 2, c.attempts());
-                            base.enableWorking();
-                            mark = ticks;
-                            stage = 4;
-                        } else if (stage == 4 && ticks >= mark + 10) {
-                            out.checkEquals("enabling again is a third attempt", before + 3, c.attempts());
-                            return out.build();
-                        }
+                switch (stage[0]) {
+                    case 0:
+                        c.setXText("200");
+                        c.setZText("200");
+                        before[0] = c.attempts();
+                        ctx.setBlock(1, 0, 0, Blocks.redstone_block, 0);
+                        mark[0] = ticks;
+                        stage[0] = 1;
                         return null;
-                    }
-                });
+                    case 1:
+                        if (ticks < mark[0] + 30) {
+                            return null;
+                        }
+                        out.checkEquals("one attempt for a held signal", before[0] + 1, c.attempts());
+                        out.checkEquals("it was refused for want of a pad", ControlStatus.NO_PAD, c.lastShot());
+                        ctx.setBlock(1, 0, 0, Blocks.air, 0);
+                        mark[0] = ticks;
+                        stage[0] = 2;
+                        return null;
+                    case 2:
+                        if (ticks < mark[0] + 10) {
+                            return null;
+                        }
+                        ctx.setBlock(1, 0, 0, Blocks.redstone_block, 0);
+                        mark[0] = ticks;
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        if (ticks < mark[0] + 30) {
+                            return null;
+                        }
+                        out.checkEquals("a second pulse is a second attempt", before[0] + 2, c.attempts());
+                        ctx.setBlock(1, 0, 0, Blocks.air, 0);
+                        // What a machine controller cover does: work disabled, then enabled again.
+                        base.disableWorking();
+                        mark[0] = ticks;
+                        stage[0] = 4;
+                        return null;
+                    case 4:
+                        if (ticks < mark[0] + 10) {
+                            return null;
+                        }
+                        out.checkEquals("disabling does not fire", before[0] + 2, c.attempts());
+                        base.enableWorking();
+                        mark[0] = ticks;
+                        stage[0] = 5;
+                        return null;
+                    default:
+                        if (ticks < mark[0] + 10) {
+                            return null;
+                        }
+                        out.checkEquals("enabling again is a third attempt", before[0] + 3, c.attempts());
+                        return out.build();
+                }
             });
         }
     }
