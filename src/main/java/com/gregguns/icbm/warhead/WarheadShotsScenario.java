@@ -236,7 +236,7 @@ final class WarheadShotsScenario implements Scenario {
         // 5a. crater
         at.accept(10, () -> {
             fillStone(w, craterX, oy, craterZ, fillHalf[0], oy - 6, oy + 3);
-            cam(p, craterX - 15, oy + 12, craterZ + 15, craterX + 0.5, oy + 2, craterZ + 0.5);
+            cam(p, craterX - 6, oy + 8, craterZ + 6, craterX + 0.5, oy + 2, craterZ + 0.5);
         });
         at.accept(GAP + 40, () -> signal(p, "shot", "icbm-crater-before"));
         at.accept(GAP / 2, () -> {
@@ -257,10 +257,10 @@ final class WarheadShotsScenario implements Scenario {
             airAfter[0] = air;
             signal(p, "shot", "icbm-crater-after");
         });
-        at.accept(GAP, () -> { cam(p, craterX + 0.5, oy + 24, craterZ + 1.5, craterX + 0.5, oy, craterZ + 0.5); });
+        at.accept(GAP, () -> { cam(p, craterX + 0.5, oy + 11, craterZ + 1.5, craterX + 0.5, oy, craterZ + 0.5); });
         at.accept(GAP, () -> signal(p, "shot", "icbm-crater-after-top"));
         // 5b. gas
-        at.accept(10, () -> cam(p, gasX + 9, oy + 4, gasZ + 9, gasX + 0.5, oy + 1.5, gasZ + 0.5));
+        at.accept(10, () -> cam(p, gasX + 6, oy + 3, gasZ + 6, gasX + 0.5, oy + 2, gasZ + 0.5));
         at.accept(GAP + 40, () -> signal(p, "shot", "icbm-gas-before"));
         at.accept(GAP / 2, () -> {
             ExplosiveDef d = Explosives.get("chemical");
