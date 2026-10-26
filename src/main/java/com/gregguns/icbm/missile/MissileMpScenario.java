@@ -76,16 +76,7 @@ public final class MissileMpScenario implements Scenario {
                 w.setBlock(ox + x, oy - 1, oz + z, Blocks.stone, 0, 2);
             }
         }
-        for (int x = -14; x <= 14; x++) {
-            for (int z = DISTANCE - 14; z <= DISTANCE + 14; z++) {
-                for (int y = -10; y <= -1; y++) {
-                    w.setBlock(ox + x, oy + y, oz + z, Blocks.stone, 0, 2);
-                }
-                for (int y = 0; y <= 14; y++) {
-                    w.setBlock(ox + x, oy + y, oz + z, Blocks.air, 0, 2);
-                }
-            }
-        }
+        final int gy = w.getHeightValue(ox, oz + DISTANCE);
         for (int a = -1; a <= 1; a++) {
             for (int b = -1; b <= 1; b++) {
                 ctx.setBlock(a, 0, b, GCBlocks.landingPad, 0);
@@ -191,7 +182,7 @@ public final class MissileMpScenario implements Scenario {
                 plan.after(15, () -> {
                     for (int i = 0; i < players.size(); i++) {
                         double[] v = views[i % views.length];
-                        MissileShotsScenario.cam(players.get(i), tx + v[0] * 2.5, oy + 14, tz + v[2] * 2, tx, oy, tz);
+                        MissileShotsScenario.cam(players.get(i), tx + v[0] * 2.5, gy + 14, tz + v[2] * 2, tx, gy, tz);
                     }
                 });
                 plan.after(150, () -> {

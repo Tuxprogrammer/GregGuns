@@ -194,18 +194,10 @@ public final class MissileShotsScenario implements Scenario {
         base.setFrontFacing(ForgeDirection.NORTH);
         base.setOwnerName("gregguns-test");
         base.setOwnerUuid(UUID.nameUUIDFromBytes("gregguns-test".getBytes(StandardCharsets.UTF_8)));
-        // Target: a thick stone block so a crater shows; far end of the arc.
+        // The target is the natural ground (the missile aims at the surface height the world reports there, not at
+        // the elevated test platform), so a crater shows in the ground far below the pad.
         final int tz = DISTANCE;
-        for (int x = -14; x <= 14; x++) {
-            for (int z = tz - 14; z <= tz + 14; z++) {
-                for (int y = -10; y <= -1; y++) {
-                    w.setBlock(ox + x, oy + y, oz + z, Blocks.stone, 0, 2);
-                }
-                for (int y = 0; y <= 14; y++) {
-                    w.setBlock(ox + x, oy + y, oz + z, Blocks.air, 0, 2);
-                }
-            }
-        }
+        final int gy = w.getHeightValue(ox, oz + tz);
         final boolean terrain = IcbmConfig.terrainDamageT1;
         IcbmConfig.terrainDamageT1 = true;
 
@@ -305,6 +297,9 @@ public final class MissileShotsScenario implements Scenario {
         // NEI recipe for the body
         plan.after(20, () -> { signal(p, "gui", "nei", "missile_body_t1"); });
         plan.after(GAP + 60, () -> signal(p, "shot", "icbm2-nei-body-t1"));
+        // For comparison: Galacticraft's own NEI page (Tier 1 Rocket on the NASA Workbench).
+        plan.after(10, () -> signal(p, "gui", "nei", "GalacticraftCore:item.spaceship:0"));
+        plan.after(GAP + 60, () -> signal(p, "shot", "icbm2-nei-gc-rocket-t1"));
         plan.after(10, () -> {
             signal(p, "close");
             signal(p, "hud", "off");
@@ -355,9 +350,9 @@ public final class MissileShotsScenario implements Scenario {
                 out.check(m != null && m.isDead, "the missile detonated");
                 final double tcx = ox + 0.5;
                 final double tcz = oz + tz + 0.5;
-                plan.after(15, () -> cam(p, tcx - 22, oy + 14, tcz - 22, tcx, oy, tcz));
+                plan.after(15, () -> cam(p, tcx - 22, gy + 14, tcz - 22, tcx, gy, tcz));
                 plan.after(GAP + 200, () -> signal(p, "shot", "icbm2-impact-crater-34"));
-                plan.after(10, () -> cam(p, tcx, oy + 30, tcz - 2, tcx, oy - 2, tcz));
+                plan.after(10, () -> cam(p, tcx, gy + 30, tcz - 2, tcx, gy - 2, tcz));
                 plan.after(GAP + 100, () -> signal(p, "shot", "icbm2-impact-crater-top"));
                 scheduleGas(p, w, ox, oy, oz, plan, out);
             }
