@@ -96,8 +96,10 @@ public final class Ross128ProviderHook {
         public void populate(IChunkProvider provider, int cx, int cz) {
             POPULATES.incrementAndGet();
             inner.populate(provider, cx, cz);
-            StructureGenerator.markRanViaProvider(world.provider.dimensionId, cx, cz);
             generator.generate(new Random(), cx, cz, world, inner, provider);
+            // After, not before: the mark makes Forge's own call for this chunk (if Galacticraft lets it through) a
+            // no-op.
+            StructureGenerator.markRanViaProvider(world.provider.dimensionId, cx, cz);
         }
 
         @Override
