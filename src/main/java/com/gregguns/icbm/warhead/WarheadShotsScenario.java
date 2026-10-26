@@ -117,6 +117,10 @@ final class WarheadShotsScenario implements Scenario {
         p.capabilities.isFlying = true;
         p.sendPlayerAbilities();
         p.inventory.clearInventory(null, -1);
+        // Fixed noon for repeatable light.
+        w.setWorldTime(6000L);
+        w.getGameRules()
+            .setOrCreateGameRule("doDaylightCycle", "false");
 
         List<TileWarhead> tiles = new ArrayList<>();
         for (Object[] r : ROW) {
@@ -273,6 +277,8 @@ final class WarheadShotsScenario implements Scenario {
             if (t < end) {
                 return null;
             }
+            w.getGameRules()
+                .setOrCreateGameRule("doDaylightCycle", "true");
             signal(p, "hud", "on");
             signal(p, "view", "0");
             clearBox(w, craterX, oy, craterZ, fillHalf[0] + 2, oy, oy + 5);
