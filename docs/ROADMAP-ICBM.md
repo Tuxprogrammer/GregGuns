@@ -139,11 +139,11 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visual tooling on Linux** (guides agent): the guide and preview tools run on this host with Playwright's Chromium, and `render3d.py` gains a triangle-mesh path for OBJ models ([D43](gregguns-icbm-spec/DECISIONS.md)).
 
 **Exit gate:**
-- [ ] `runServer` boots with `modules.icbm=true` with Galacticraft present, and with it absent (the module turns itself off).
-- [ ] `PortedCodeGateTest` fails on a planted bad sample and passes on a good one.
-- [ ] The notices file, the third-party asset folder and the CREDITS section exist.
-- [ ] The 13 GregGuns guide sheets rebuild on Linux with no visible change, checked side by side, and a test OBJ model renders on a preview sheet.
-- [ ] The milestone review fix list is closed.
+- [x] `runServer` boots with `modules.icbm=true` with Galacticraft present, and with it absent (the module turns itself off). Evidence: `icbm.module_gate` on both branches; the runner asserts the single self-disable warning without Galacticraft (`--expect-log-once`). Full suite at `4c0ff661` on the test server: 427 passed, 0 failed with Galacticraft and 427 passed, 0 failed without it, 2026-10-25.
+- [x] `PortedCodeGateTest` fails on a planted bad sample and passes on a good one. It also fails on a missing or near-empty source root, an unmarked ICBM-Classic mention, an empty `Avoids:` line and an untested bug ID (I0 review R6), each with a fixture.
+- [x] The notices file, the third-party asset folder and the CREDITS section exist. The notices file also ships in the jar, with a test that keeps both copies identical (R8).
+- [x] The 13 GregGuns guide sheets rebuild on Linux with no visible change, checked side by side, and a test OBJ model renders on a preview sheet. With Segoe UI and Bahnschrift installed, 12 of 13 sheets rebuild at the same size with 0.5–3% of pixels differing (glyph rasterization), and the Ammunition Works sheet is 24 px shorter because one paragraph wraps differently. The test ogive renders through `obj_preview.py`, with the reader held to Forge's OBJ grammar (R9).
+- [x] The milestone review fix list is closed: R1–R12 from the review plus O1 (gradlew mode) and O2 (preview tooling output redirect; the committed previews predate the current model set), 2026-10-25.
 
 ## I1 · Warheads and the blast engine
 
