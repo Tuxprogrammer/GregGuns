@@ -3,9 +3,8 @@
 The missile models are the shipped OBJ files (body plus warhead, the warhead seated on the body's nose exactly as the
 game seats it), drawn with render3d.obj_scene, the strict Forge reader. The numbers are read from the I2 code
 (MissileTier, MissileBuildSpec, EntityMissile, MTELaunchControl, IcbmConfig); the draft stamp is gone (D50).
-Vanilla textures are the real Minecraft ones read from the jar at build time (D55). No Galacticraft texture is used
-(its license is "explicit permission", so it can't be redistributed in a committed sheet): the pad is drawn with
-vanilla iron blocks and named in the text.
+The launch pad is Galacticraft's own thin slab and the plates, fins and engines are its real icons, from Galacticraft
+Legacy under the MIT License (D85; the files sit in the thirdparty folders). Vanilla textures are not needed any more.
 
 Run on its own (needs no warhead dump):  python tools/asset-gen/infographics/pages_icbm_missile.py
 """
@@ -22,9 +21,9 @@ import gt  # noqa: E402
 import kit as K  # noqa: E402
 import render3d as R  # noqa: E402
 import scenes as S  # noqa: E402
-import vanilla  # noqa: E402
+import thirdparty as TP  # noqa: E402
 from kit import chip, esc  # noqa: E402
-from pages import MOJANG_CREDIT, gti, img, page_doc, slot  # noqa: E402
+from pages import gti, img, page_doc, slot  # noqa: E402
 
 NTM = K.ASSETS / "models/thirdparty/ntm"
 NTM_TEX = K.ASSETS / "textures/models/thirdparty/ntm"
@@ -37,6 +36,15 @@ TIERS = {
             flight="about two minutes", scatter=8, plates="4 compressed titanium", fins="4 Galacticraft Tier 2", engine="Galacticraft Tier 2 engine", cap=20),
 }
 MIN_RANGE = 20
+PARTS = {1: dict(plate="compressed_steel", plate_n=3, plate_l="Compressed Steel Plate", fins="rocket_fins_t1", engine="rocket_engine_t1", ft="Tier 1"),
+         2: dict(plate="compressed_titanium", plate_n=4, plate_l="Compressed Titanium Plate", fins="rocket_fins_t2", engine="rocket_engine_t2", ft="Tier 2")}
+
+
+def body_parts(n: int, px: int = 52) -> str:
+    """The body recipe's parts as Galacticraft's own icons."""
+    q = PARTS[n]
+    return (TP.part(TP.gc_icon(q["plate"]), q["plate_n"], q["plate_l"], px) + TP.part(TP.gc_icon(q["fins"]), 4, f"{q['ft']} Rocket Fins", px)
+            + TP.part(TP.gc_icon(q["engine"]), 1, f"{q['ft']} Rocket Engine", px))
 
 CSS = """
 .stat .chip.t-HV, .stat .chip.t-MV { color: #1a1200; }
@@ -65,19 +73,18 @@ def _sig(*paths: Path) -> str:
 
 
 def missile_on_pad(tier: int, ppu=170) -> K.Path:
-    """The stacked missile (body plus warhead) standing on a 3 x 3 launch pad, drawn with vanilla iron blocks."""
+    """The stacked missile (body plus warhead) standing on Galacticraft's 3 x 3 launch pad, a slab 3/16 of a block tall."""
     t = TIERS[tier]
     files = [NTM / f"{t['body']}.obj", NTM_TEX / f"{t['body']}.png", NTM / f"{t['warhead']}.obj", NTM_TEX / f"{t['warhead']}.png"]
-    iron = vanilla.texture("blocks/iron_block")
 
     def make():
         body = R.obj_scene(*files[:2])
         seat = body.bounds()[1][1]
-        sc = R.voxel_scene({(x, 0, z): "pad" for x in range(3) for z in range(3)}, {"pad": iron})
-        sc.extend(body, R.tr(1, 1, 1))
-        sc.extend(R.obj_scene(*files[2:]), R.tr(1, 1 + seat, 1))
+        sc = TP.pad_slab(0, 0)
+        sc.extend(body, R.tr(1, TP.PAD_HEIGHT, 1))
+        sc.extend(R.obj_scene(*files[2:]), R.tr(1, TP.PAD_HEIGHT + seat, 1))
         return R.trim(R.render(sc, yaw=-30, pitch=14, ppu=ppu, ss=2, outline=K.RIM), 2)
-    return K._cached(f"missile-pad-{tier}", dict(sig=_sig(*files, iron), u=ppu, v=1), make)
+    return K._cached(f"missile-pad-{tier}", dict(sig=_sig(*files, TP.GC_PAD), u=ppu, v=2), make)
 
 
 def block_icon(tag: str, tier: str, overlay: str | None) -> K.Path:
@@ -89,12 +96,12 @@ def block_icon(tag: str, tier: str, overlay: str | None) -> K.Path:
 
 def _tier_card(n: int) -> str:
     t = TIERS[n]
-    stats = [("Chip", f"{chip(t['volt'])} Circuit Assembler"), ("Body", f"{t['plates']} plates, {t['fins']} fins, {t['engine']}"),
+    stats = [("Chip", f"{chip(t['volt'])} Circuit Assembler"),
              ("Fuel", f"{esc(t['fuel'])} or better"), ("Tank", f"{t['fuel_mb']:,} mB"), ("Range", f"{MIN_RANGE} to {t['rng']:,} blocks"),
              ("Flight", f"{t['flight']} at the longest range"), ("Warhead", f"up to {t['cap']} charges")]
     rows = "".join(f'<div class="stat"><span>{k}</span><b>{v}</b></div>' for k, v in stats)
     return f"""<div class="card"><div style="display:flex;align-items:center;gap:12px"><h2>Tier {n} missile</h2>{chip(t['volt'], t['volt'] if n == 1 else 'EV to IV')}</div>
-<div class="spot">{img(missile_on_pad(n), h=520)}</div>{rows}</div>"""
+<div class="spot">{img(missile_on_pad(n), h=520)}</div><div class="stat" style="align-items:center"><span>Body parts</span><div class="parts" style="justify-content:flex-end;flex-wrap:nowrap;gap:2px">{body_parts(n)}</div></div>{rows}</div>"""
 
 
 def _step(n: int, title: str, vis: str, text: str) -> str:
@@ -116,7 +123,7 @@ def first_missile() -> str:
                "Put the chip and a lens in the <b>Laser Engraver</b>: a Red lens for T1, a Blue lens for T2. The lens is not used up. "
                "Slot the schematic into the Galacticraft <b>NASA Workbench</b> and the page for that missile opens.")
     s3 = _step(3, "Build the body by hand",
-               f"<span class='pill'>3 / 4 compressed plates</span>{plus}<span class='pill'>4 rocket fins</span>{plus}<span class='pill'>Rocket engine</span>{plus}<span class='pill'>Guidance Computer</span>{arrow}<span class='pill'>Missile Body</span>",
+               f"<div class='parts' style='gap:2px'>{body_parts(1, 44)}</div><span class='plus'>or</span><div class='parts' style='gap:2px'>{body_parts(2, 44)}</div>{plus}<span class='pill'>Guidance Computer</span>{arrow}<span class='pill'>Missile Body</span>",
                "On the NASA Workbench page: <b>compressed plates</b> in one column (T1 three steel, T2 four titanium), <b>four Galacticraft rocket fins</b> and a <b>Galacticraft rocket engine</b> of the same tier, and a "
                "<b>Guidance Computer</b>. Make compressed plates from a plate in the Implosion Compressor. A better computer than the body asks for makes the missile land closer. There is no warhead slot: a warhead goes on at the pad.")
     s3b = _step(4, "Or automate it",
@@ -147,9 +154,9 @@ def first_missile() -> str:
     body = f"""<div class="hero">{_tier_card(1)}{_tier_card(2)}</div>
 <div class="steps">{s1}{s2}{s3}{s3b}{s4}{s5}{s6}<div class="card sc" style="justify-content:center"><div class="muted" style="font-size:20px;line-height:1.4"><b style="color:var(--txt)">Order of play.</b> Chip, schematic, body, pad, warhead, fuel, target, launch. The warhead is the expensive part: see the warhead sheet for what each one does.</div></div></div>
 {flight}"""
-    return page_doc("Your First Missile", "Tier 1 and Tier 2 missiles: from a chip to a launch from the Galacticraft launch pad.", body, extra=CSS,
+    return page_doc("Your First Missile", "Tier 1 and Tier 2 missiles: from a chip to a launch from the Galacticraft launch pad.", body, extra=CSS + TP.PART_CSS,
                     credit=["Missile and warhead models and textures © HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.",
-                            "GregTech textures from GregTech 5 Unofficial, LGPL-3.0.", MOJANG_CREDIT])
+                            "GregTech textures from GregTech 5 Unofficial, LGPL-3.0.", TP.GC_CREDIT])
 
 
 PAGES = {"icbm-first-missile": first_missile}
