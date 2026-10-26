@@ -19,7 +19,8 @@
 1. **Missile Chip Tn**, in the GT **Circuit Assembler**, at the tier's voltage.
 2. **Missile Schematic Tn**, in the GT **Laser Engraver**, from the chip and a non-consumed lens, at the tier's voltage.
 3. The schematic goes into a Galacticraft **NASA Workbench**'s schematic slot and unlocks a page (`SchematicRegistry`, one `ISchematicPage` per tier). The page builds the body by hand.
-4. Or, for automation, **Assembly Line** recipes (one per guidance computer a body accepts) behind a research data stick. The research item is the hand-built T-n body: a player scans one into a GT Data Stick in the Scanner, so hand building comes first and the line opens once the player owns an Assembly Line (D27).
+4. Or, for automation, **one Assembly Line recipe per tier** behind a research data stick. It makes the guidance-0 body (plates, fins, engine, lubricant; no computer). The research item is the hand-built T-n body: a player scans one into a GT Data Stick in the Scanner, so hand building comes first and the line opens once the player owns an Assembly Line (D27). Each tier has its own research item because GT's scanner keeps only the first recipe that matches a research item.
+5. A guidance computer is fitted by an **Assembler** recipe: body + computer -> the body with that guidance (one recipe per computer that gives at least one step; 15 s at the body's voltage, programmed circuit 1 for T1 and 2 for T2).
 
 ### Numbers (`MissileBuildSpec`, unit tested)
 
@@ -32,7 +33,8 @@
 | Engine | Missile Engine Mk I | Missile Engine Mk II |
 | Guidance computers accepted | Mk I (0 steps), Mk II (1), Mk III (2) | Mk II (0), Mk III (1) |
 | Research (Assembly Line) | scan 60 s at HV | scan 120 s at EV |
-| Assembly Line recipe | HV, 30 s, 250 L lubricant, plates + fins + engine + computer | EV, 45 s, 250 L lubricant, plates + fins + engine + computer |
+| Assembly Line recipe (guidance-0 body) | HV, 30 s, 250 L lubricant, plates + fins + engine | EV, 45 s, 250 L lubricant, plates + fins + engine |
+| Guidance fit (Assembler) | HV, 15 s, circuit 1: body + Mk II (1 step) or Mk III (2 steps) | EV, 15 s, circuit 2: body + Mk III (1 step) |
 | Body cost, cheapest computer (D34 plate equivalents) | 18.5 (test band 14 to 22) | 26 (band 22 to 30) |
 
 **Tier rule (D1).** The dev self-check refuses a recipe whose GregGuns input is of a higher tier than its output. A better guidance computer than its body is the point of D24, so the three computers implement the marker `TierUpgrade` and the check skips them as inputs. Chips and schematics are one item per tier (`missile_chip_t1`, `missile_chip_t2`, and the same for schematics), each Tiered at its own voltage, so the Laser Engraver and Circuit Assembler rows pass the machine-voltage rule.
@@ -61,7 +63,7 @@ Five more `IcbmPart`s, each with its own Assembler recipe at its tier, unique pr
 
 ## Cost (D34)
 
-The cost target is "about one Galacticraft rocket launch of the tier in plates, circuits and fuel". The I1 warhead recipes already spend that whole budget on the warhead alone (T1 about 20, T2 about 38 plate equivalents). The body adds 18.5 (T1) and 26 (T2) on top, so a **missile with its fuel is about 1.9 launches at T1 and 2.4 at T2**. That is a deliberate overshoot, put to the orchestrator for DECISIONS; trim the body counts in `MissileBuildSpec` (the plates, fins and part recipes) if the full-pack review finds it too dear. The Assembly Line pays the same parts and adds 250 L of lubricant, so automation gives no discount and the hand build stays worthwhile early.
+The cost target is "about one Galacticraft rocket launch of the tier in plates, circuits and fuel". The I1 warhead recipes already spend that whole budget on the warhead alone (T1 about 20, T2 about 38 plate equivalents). The body adds 18.5 (T1) and 26 (T2) on top, so a **missile with its fuel is about 1.9 launches at T1 and 2.4 at T2**. That is a deliberate overshoot, put to the orchestrator for DECISIONS; trim the body counts in `MissileBuildSpec` (the plates, fins and part recipes) if the full-pack review finds it too dear. The Assembly Line pays the same body parts and adds 250 L of lubricant, so automation gives no discount and the hand build stays worthwhile early.
 
 ## Recycling (D44)
 
@@ -69,18 +71,18 @@ Each body returns its plates and fins as metal (`MissileRecipes.recycle`); each 
 
 ## NEI
 
-- Chip: Circuit Assembler tab. Schematic: Laser Engraver tab. Body: Assembly Line tab (research shown by GT) and **NASA Workbench (Missile)** tab, a display-only GregGuns recipe map (`IcbmRecipeMaps`) with one row per body and computer. Parts: Assembler tab. Launch Control: Assembler tab.
+- Chip: Circuit Assembler tab. Schematic: Laser Engraver tab. Body: Assembly Line tab (research shown by GT) and **NASA Workbench (Missile)** tab, a display-only GregGuns recipe map (`IcbmRecipeMaps`) with one row per body and computer (the by-hand build, guidance 0 included). Parts: Assembler tab. Launch Control: Assembler tab.
 
 ## Requirements
 
 - **GGS-I2-01** Every chip, schematic, part and body has a recipe in a map NEI shows.
-- **GGS-I2-02** The Assembly Line rows are the only automatic route to a body and need the research.
+- **GGS-I2-02** The Assembly Line (guidance-0 body, needs the research) and the Assembler guidance fit are the only automatic route to a body; each Assembly Line recipe has its own research item that GT's scanner resolves.
 - **GGS-I2-03** A bench slot refuses an item of the wrong kind; the result is the body of that tier with the computer's guidance and nothing from an incomplete set.
 - **GGS-I2-04** Each recipe runs at its tier's voltage and every input is at or below that tier.
 
 ## Tests
 
-`MissileBuildSpecTest` (tiers, machine fit, cost bands, guidance mapping, the bench rule). Scenarios `icbm.production.recipes` (all the recipes in the live GT maps at the right voltage) and `icbm.production.bench` (the registered pages, the unlock, the container).
+`MissileBuildSpecTest` (tiers, machine fit, cost bands, guidance mapping, the bench rule). Scenarios `icbm.production.recipes` (all the recipes in the live GT maps at the right voltage; one Assembly Line recipe per tier that GT's scanner reaches from its research item; the Assembler fits) and `icbm.production.bench` (the registered pages, the unlock, the container).
 
 ## Open questions
 

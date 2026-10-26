@@ -31,8 +31,10 @@ import gregtech.api.util.recipe.Scanning;
 
 /**
  * The GT recipes behind a missile body (D8, D27): the chip in the Circuit Assembler, the schematic in the Laser
- * Engraver, and the Assembly Line recipes (one per guidance computer a body accepts) behind a research data stick whose
- * research item is the hand-built body. Also the GT recycling data of the bodies. Queued for GT's before-postload
+ * Engraver, one Assembly Line recipe per tier (the guidance-0 body, behind a research data stick whose research item is
+ * that tier's hand-built body, unique per recipe because GT's scanner keeps only the first recipe of a research item),
+ * and an Assembler recipe per computer that fits it into a body for its guidance (D8 amended). Also the GT recycling
+ * data of the bodies. Queued for GT's before-postload
  * hook. Common side.
  */
 // Spec: docs/gregguns-icbm-spec/03-missiles/build-and-recipes.md
@@ -57,8 +59,12 @@ public final class MissileRecipes {
             try {
                 addChip(spec);
                 addSchematic(spec);
+                addLine(spec);
                 for (IcbmPart computer : spec.computers()) {
-                    addLine(spec, computer);
+                    addWorkbenchRow(spec, computer);
+                    if (spec.guidanceOf(computer) > 0) {
+                        addFit(spec, computer);
+                    }
                 }
                 recycle(spec);
             } catch (RuntimeException e) {
@@ -104,29 +110,53 @@ public final class MissileRecipes {
         return MissileBodies.body(MissileTier.byNumber(spec.number()), spec.guidanceOf(computer));
     }
 
-    private static void addLine(MissileBuildSpec spec, IcbmPart computer) {
+    private static void addLine(MissileBuildSpec spec) {
+        ItemStack plates = IcbmIngredients.stack(spec.plates());
+        ItemStack fins = IcbmIngredients.stack(spec.fins());
+        Item engineItem = IcbmParts.get(spec.engine());
+        FluidStack lube = IcbmIngredients.fluid(Ing.fluid("Lubricant", MissileBuildSpec.LUBRICANT_LITERS, MV_TIER));
+        if (plates == null || fins == null || engineItem == null || lube == null) {
+            GregGuns.LOG.error("Skipping the {} Assembly Line recipe: an input is missing", spec);
+            return;
+        }
+        GTValues.RA.stdBuilder()
+            .metadata(GTRecipeConstants.RESEARCH_ITEM, MissileBodies.body(MissileTier.byNumber(spec.number()), 0))
+            .metadata(
+                GTRecipeConstants.SCANNING,
+                new Scanning(spec.scanSeconds() * GTRecipeBuilder.SECONDS, ProductionRecipes.eutFor(spec.scanTier())))
+            .itemInputs(plates, fins, new ItemStack(engineItem))
+            .fluidInputs(lube)
+            .itemOutputs(MissileBodies.body(MissileTier.byNumber(spec.number()), 0))
+            .duration(spec.lineTicks())
+            .eut(ProductionRecipes.eutFor(spec.tier()))
+            .addTo(GTRecipeConstants.AssemblyLine);
+    }
+
+    /** Body + guidance computer -> body with that guidance, in the Assembler at the body's tier. */
+    private static void addFit(MissileBuildSpec spec, IcbmPart computer) {
+        Item computerItem = IcbmParts.get(computer);
+        if (computerItem == null) {
+            GregGuns.LOG.error("Skipping the {} guidance fit for {}: the computer is missing", spec, computer);
+            return;
+        }
+        GTValues.RA.stdBuilder()
+            .circuit(spec.fitCircuit())
+            .itemInputs(MissileBodies.body(MissileTier.byNumber(spec.number()), 0), new ItemStack(computerItem))
+            .itemOutputs(body(spec, computer))
+            .duration(MissileBuildSpec.FIT_TICKS)
+            .eut(ProductionRecipes.eutFor(spec.tier()))
+            .addTo(RecipeMaps.assemblerRecipes);
+    }
+
+    /** The NASA Workbench build, shown in NEI as a display-only row (no machine runs it). */
+    private static void addWorkbenchRow(MissileBuildSpec spec, IcbmPart computer) {
         ItemStack plates = IcbmIngredients.stack(spec.plates());
         ItemStack fins = IcbmIngredients.stack(spec.fins());
         Item engineItem = IcbmParts.get(spec.engine());
         Item computerItem = IcbmParts.get(computer);
-        FluidStack lube = IcbmIngredients.fluid(Ing.fluid("Lubricant", MissileBuildSpec.LUBRICANT_LITERS, MV_TIER));
-        if (plates == null || fins == null || engineItem == null || computerItem == null || lube == null) {
-            GregGuns.LOG.error("Skipping the {} Assembly Line recipe for {}: an input is missing", spec, computer);
+        if (plates == null || fins == null || engineItem == null || computerItem == null) {
             return;
         }
-        ItemStack research = MissileBodies.body(MissileTier.byNumber(spec.number()), 0);
-        GTRecipeBuilder b = GTValues.RA.stdBuilder()
-            .metadata(GTRecipeConstants.RESEARCH_ITEM, research)
-            .metadata(
-                GTRecipeConstants.SCANNING,
-                new Scanning(spec.scanSeconds() * GTRecipeBuilder.SECONDS, ProductionRecipes.eutFor(spec.scanTier())))
-            .itemInputs(plates, fins, new ItemStack(engineItem), new ItemStack(computerItem))
-            .fluidInputs(lube)
-            .itemOutputs(body(spec, computer))
-            .duration(spec.lineTicks())
-            .eut(ProductionRecipes.eutFor(spec.tier()));
-        b.addTo(GTRecipeConstants.AssemblyLine);
-        // The NASA Workbench build, shown in NEI as a display-only row (no machine runs it).
         GTValues.RA.stdBuilder()
             .itemInputs(plates, fins, new ItemStack(engineItem), new ItemStack(computerItem))
             .itemOutputs(body(spec, computer))

@@ -32,6 +32,8 @@ public final class CloudBroadcast {
             return 0;
         }
         int r = Math.max(1, Math.min(255, radius));
+        int life16 = Math.min(life, Short.MAX_VALUE);
+        int left16 = Math.min(left, life16);
         int sent = 0;
         double limit = CloudPlan.BROADCAST_RANGE * CloudPlan.BROADCAST_RANGE;
         for (Object o : world.playerEntities) {
@@ -44,9 +46,7 @@ public final class CloudBroadcast {
             double dz = p.posZ - z;
             if (p.playerNetServerHandler != null && dx * dx + dy * dy + dz * dz <= limit) {
                 GregGunsNetwork.channel()
-                    .sendTo(
-                        new PacketBlastCloud(kind, x, y, z, r, Math.min(life, Short.MAX_VALUE), Math.min(left, life)),
-                        p);
+                    .sendTo(new PacketBlastCloud(kind, x, y, z, r, life16, left16), p);
                 sent++;
             }
         }

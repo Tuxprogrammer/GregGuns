@@ -39,6 +39,8 @@ public enum MissileBuildSpec {
 
     /** Lubricant in an Assembly Line recipe, liters. */
     public static final int LUBRICANT_LITERS = 250;
+    /** The Assembler fits a guidance computer into a body this long, ticks. */
+    public static final int FIT_TICKS = 300;
     /** The Laser Engraver runs this long, ticks. */
     public static final int ENGRAVE_TICKS = 600;
     /** The most guidance steps a body can carry (D24); mirrors {@code MissileBodies.MAX_GUIDANCE}. */
@@ -168,6 +170,14 @@ public enum MissileBuildSpec {
             MAX_GUIDANCE,
             computer.tier()
                 .voltageIndex() - tier.voltageIndex());
+    }
+
+    /**
+     * @return the programmed circuit of this tier's guidance-fit Assembler recipes (the inputs, a body, already keep
+     *         them apart from every other recipe)
+     */
+    public int fitCircuit() {
+        return number;
     }
 
     /** @return the D34 cost of the body without its guidance computer, plate equivalents */

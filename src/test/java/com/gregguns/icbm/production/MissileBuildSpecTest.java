@@ -168,4 +168,16 @@ class MissileBuildSpecTest {
         assertFalse(MissileBenchRules.accepts(s, null));
         assertFalse(MissileBenchRules.accepts(MissileBuildSpec.T2, "guidance_computer_mk1"));
     }
+
+    @Test
+    void eachTierHasItsOwnResearchBodyAndFitCircuit() {
+        // GT's scanner keeps the first Assembly Line recipe of a research item, so one recipe per tier needs its own.
+        Set<Integer> numbers = new HashSet<>();
+        Set<Integer> circuits = new HashSet<>();
+        for (MissileBuildSpec s : MissileBuildSpec.values()) {
+            assertTrue(numbers.add(s.number()), s + " shares a body (research item)");
+            assertTrue(circuits.add(s.fitCircuit()), s + " shares a fit circuit");
+            assertTrue(s.fitCircuit() >= 1 && s.fitCircuit() <= 24);
+        }
+    }
 }
