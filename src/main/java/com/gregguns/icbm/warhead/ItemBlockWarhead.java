@@ -71,8 +71,7 @@ public final class ItemBlockWarhead extends ItemBlock {
         f.fill = data.fill();
         f.cap = cap;
         f.radius = def == null ? 0 : Math.max(WarheadMath.MIN_RADIUS, def.radius(data.fill()));
-        f.centerDamage = def == null ? 0
-            : def.centerDamage() * Math.pow(WarheadMath.fraction(data.fill(), cap), WarheadMath.DAMAGE_EXPONENT);
+        f.centerDamage = def == null ? 0 : def.damage(data.fill());
         f.annihilates = def != null && def.annihilates();
         WarheadTooltipFormat.Labels l = labels(data.explosive(), blast);
         boolean shift = net.minecraft.client.gui.GuiScreen.isShiftKeyDown();
