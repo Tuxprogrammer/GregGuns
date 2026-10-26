@@ -154,7 +154,7 @@ final class WarheadShotsScenario implements Scenario {
         final int craterX = ox;
         final int craterZ = oz - 30;
         final int gasX = ox;
-        final int gasZ = oz + 30;
+        final int gasZ = oz + 14;
         final int[] fillHalf = { 15 };
         final int[] airAfter = { -1 };
 
