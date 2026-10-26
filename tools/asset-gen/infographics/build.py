@@ -13,15 +13,18 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import kit  # noqa: E402
-import pages_more as pages  # noqa: E402
+import pages_icbm  # noqa: E402
+import pages_more as _more  # noqa: E402
+
+PAGES = {**_more.PAGES, **pages_icbm.PAGES}
 
 
 def main(names):
-    names = names or list(pages.PAGES)
-    unknown = [n for n in names if n not in pages.PAGES]
+    names = names or list(PAGES)
+    unknown = [n for n in names if n not in PAGES]
     if unknown:
-        raise SystemExit(f"unknown page(s): {unknown}; known: {list(pages.PAGES)}")
-    kit.rasterize([(n, pages.PAGES[n](), 1600) for n in names])
+        raise SystemExit(f"unknown page(s): {unknown}; known: {list(PAGES)}")
+    kit.rasterize([(n, PAGES[n](), 1600) for n in names])
 
 
 if __name__ == "__main__":

@@ -111,12 +111,21 @@ def _crafting_table():
     return a
 
 
-ICONS = {"stone": _stone, "cobblestone": _cobblestone, "log": _log, "wool": _wool, "leather": _leather,
+def _tnt():
+    a = _noise(9, (200, 52, 44), 10)
+    a[6:10, :, :3] = (226, 222, 214)  # the white label band
+    _put(a, slice(7, 9), slice(3, 5), (40, 40, 44))  # a few letters
+    _put(a, slice(7, 9), slice(7, 9), (40, 40, 44))
+    _put(a, slice(7, 9), slice(11, 13), (40, 40, 44))
+    return a
+
+
+ICONS = {"tnt": _tnt, "stone": _stone, "cobblestone": _cobblestone, "log": _log, "wool": _wool, "leather": _leather,
          "string": _string, "slimeball": _slimeball, "flint_and_steel": _flint_and_steel, "piston": _piston,
          "crafting_table": _crafting_table}
 
 
-BLOCKS = {"stone", "cobblestone", "log", "wool", "piston", "crafting_table"}
+BLOCKS = {"tnt", "stone", "cobblestone", "log", "wool", "piston", "crafting_table"}
 
 
 def icon(name: str) -> Path:

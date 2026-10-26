@@ -817,6 +817,7 @@ INFO = [
     ("enemies", "enemies", "Player guide: mobs by danger, rendered, plus structures and loot.", "P2"),
     ("questbook", "questbook", "Player guide: the GregGuns questbook chapters, side branches and rewards.", "P2"),
     ("recipes_steam_and_lv", "recipes-steam-and-lv", "Player guide: the Steam and LV crafting chains, crafting-table grids and Assembler and Ammo Press rows, read from the mod's recipe tables.", "P2"),
+    ("icbm_warheads", "icbm-warheads", "Player guide (DRAFT, stamped; numbers pending): the Tier 1 and Tier 2 warheads rendered from the shipped models, every T1-T2 blast type, fill and radius, damage falloff, demolition-charge use, and the GT machines that make them. Shows HBM's Nuclear Tech Mod warhead models (LGPL-3.0).", "P2"),
 ]
 for iid, fn, brief, pri in INFO:
     path = os.path.join(ROOT, I + fn + ".png")
