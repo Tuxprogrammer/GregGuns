@@ -600,6 +600,7 @@ public final class MissileScenarios {
             final int[] maxTickets = { 0 };
             final java.util.Set<String> seen = new java.util.HashSet<>();
             final boolean[] midFlightDone = { false };
+            final boolean[] keptByCallback = { false };
             return ScenarioResult.pending(name(), 1200, ticks -> {
                 trace(w, m, ticks);
                 if (!m.isDead) {
@@ -620,20 +621,17 @@ public final class MissileScenarios {
                                 .toString());
                     }
                     if (!midFlightDone[0] && m.phase() == FlightPhase.ARC && m.posZ > ctx.originZ() + 100) {
-                        // Unload: the world hands the ticket back on load; the callback releases it.
+                        // Unload: the world hands the ticket back on load; a live flight keeps it (adopt).
                         midFlightDone[0] = true;
                         List<net.minecraftforge.common.ForgeChunkManager.Ticket> loaded = new ArrayList<>();
                         loaded.add(
                             m.tickets()
                                 .ticket());
                         MissileTickets.onTicketsLoaded(loaded, w);
-                        seen.add(
-                            "released-by-callback:" + m.tickets()
-                                .ticket()
-                                .getChunkList()
-                                .size());
-                        // Timeout: the safety net detonates where it is and must drop its tickets with it.
-                        m.detonateAt(m.posX, m.posY, m.posZ);
+                        keptByCallback[0] = m.tickets()
+                            .ticket() != null
+                            && m.tickets()
+                                .heldChunks() >= 1;
                     }
                     if (ticks >= 1150) {
                         IcbmConfig.terrainDamageT1 = terrain;
@@ -657,7 +655,7 @@ public final class MissileScenarios {
                     maxChunks[0] >= 1 && maxChunks[0] <= 2,
                     "never more than two chunks held (" + maxChunks[0] + ")");
                 out.check(maxTickets[0] == 1, "exactly one ticket while flying (" + maxTickets[0] + ")");
-                out.check(seen.contains("released-by-callback:0"), "the load callback released the ticket's chunks");
+                out.check(keptByCallback[0], "the load callback handed a live missile its ticket back");
                 out.check(midFlightDone[0], "the flight reached the test point");
                 out.checkEquals(
                     "tickets after the end",
@@ -851,6 +849,12 @@ public final class MissileScenarios {
                         return ScenarioResult.fail(name(), "no ticket for the re-bind");
                     }
                     rebound.bindEntity(copy);
+                    // Forge saved the ticket with the missile's chunk forced; the re-bound one carries it.
+                    net.minecraftforge.common.ForgeChunkManager.forceChunk(
+                        rebound,
+                        new net.minecraft.world.ChunkCoordIntPair(
+                            net.minecraft.util.MathHelper.floor_double(copy.posX) >> 4,
+                            net.minecraft.util.MathHelper.floor_double(copy.posZ) >> 4));
                     List<net.minecraftforge.common.ForgeChunkManager.Ticket> again = new ArrayList<>();
                     again.add(rebound);
                     MissileTickets.onTicketsLoaded(again, w);
