@@ -22,8 +22,9 @@ import com.gregguns.recipe.ProductionTable.Row;
  * flash 10 ticks, AI range 24 / attack time 40, no scope. Sounds {@code guns.alien_blaster.fire} and {@code .reload}.
  *
  * <p>
- * Deviations (docs/gregguns-spec/02-guns/index.md, batch M5 B5): the 10 round clip is 10 shots of charge at
- * 100,000,000 EU each of the 1,000,000,000 EU LuV baseline (a Lapotronic Orb II), and there is no reload (plan Q5), so
+ * Deviations (docs/gregguns-spec/02-guns/index.md, batch M5 B5): the sheet's 10 round clip became 25 shots of
+ * charge (design record 0021; it was 10) at 40,000,000 EU each of the 1,000,000,000 EU LuV baseline (a Lapotronic Orb
+ * II), and there is no reload (plan Q5), so
  * the {@code reload} sound is registered but never played. Techguns gives this gun no recipe; the sheet makes it LuV.
  * The sheet's Assembly Line chain (research: the De-Atomizer Pistol; solder and lubricant) is not built for guns yet,
  * so the recipe is a plain LuV Assembler row with the same item inputs. The trail shows because the bolt is a
@@ -39,8 +40,13 @@ public final class AlienBlasterDef {
     /** The registry name, sound prefix and texture name. */
     public static final String NAME = "alien_blaster";
 
-    /** EU per shot: 1,000,000,000 EU over the sheet's 10 rounds. */
-    public static final long EU_PER_SHOT = 100_000_000L;
+    /**
+     * Shots a full charge holds (design record 0021: 25, up from the sheet's 10, so a LuV charge outlasts an IV one).
+     */
+    public static final int SHOTS = 25;
+
+    /** EU per shot: 1,000,000,000 EU over {@link #SHOTS}. */
+    public static final long EU_PER_SHOT = 40_000_000L;
 
     /** The LuV baseline capacity, EU (a Lapotronic Orb II). */
     public static final long CAPACITY_EU = 1_000_000_000L;

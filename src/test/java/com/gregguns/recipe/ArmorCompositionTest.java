@@ -188,15 +188,16 @@ class ArmorCompositionTest {
 
     @Test
     void steamArmorReturnsThePlatingInsideIt() {
-        // RC-23 plating: 2 titanium, 1 bronze, 1 steel plate. The helmet takes 5 platings.
+        // RC-23 plating: 1 titanium, 1 bronze, 1 steel plate (design record 0021: it was 2 titanium). The helmet takes
+        // 5 platings.
         Map<String, Long> plating = of(ArmorCatalog.STEAM_ARMOR_PLATING);
         assertEquals(
-            200L,
+            100L,
             plating.get("Titanium")
                 .longValue());
         Map<String, Long> helmet = of(ArmorCatalog.STEAM.pieceName(ArmorSlot.HELMET));
         assertEquals(
-            1000L,
+            500L,
             helmet.get("Titanium")
                 .longValue());
         assertEquals(

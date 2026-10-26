@@ -334,7 +334,7 @@ public final class ArmorTable {
         ProductionTable.Target.ASSEMBLER,
         6,
         1,
-        ti(2),
+        ti(1),
         Input.gt("plate", "Bronze", 1),
         Input.gt("plate", "Steel", 1));
 

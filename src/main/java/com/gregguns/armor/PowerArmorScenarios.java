@@ -128,7 +128,7 @@ final class PowerArmorScenarios {
                 ArmorTierScenarios.checkHit(out, p, DamageType.RADIATION, 10.0, 0.0, 0.25);
 
                 fill(p, set);
-                out.checkEquals("full charge in units", 3600.0, ArmorTierScenarios.units(p));
+                out.checkEquals("full charge in units", 10000.0, ArmorTierScenarios.units(p));
                 events.update(p);
                 out.check(near(1.2, ArmorTierScenarios.speedFactor(p)), "charged: speed x1.2");
                 out.check(near(1.0, ArmorTierScenarios.knockback(p)), "charged: knockback resistance 1.0");
@@ -232,7 +232,7 @@ final class PowerArmorScenarios {
                 ArmorTierScenarios.checkHit(out, p, DamageType.RADIATION, 6.0, 0.0, 0.15);
 
                 fill(p, set);
-                out.checkEquals("full charge in units", 7200.0, ArmorTierScenarios.units(p));
+                out.checkEquals("full charge in units", 20000.0, ArmorTierScenarios.units(p));
                 events.update(p);
                 out.check(near(1.8, ArmorTierScenarios.speedFactor(p)), "charged: speed x1.8");
                 out.check(near(0.80, ArmorTierScenarios.knockback(p)), "charged: knockback 0.80");

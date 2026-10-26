@@ -152,7 +152,7 @@ class ArmorTierTableTest {
         assertEquals("RC-23", plating.id());
         assertEquals(Tier.EV, plating.tier());
         assertEquals(6, plating.seconds());
-        assertEquals(2, count(plating, "plate", "Titanium"));
+        assertEquals(1, count(plating, "plate", "Titanium"));
         assertEquals(1, count(plating, "plate", "Bronze"));
         assertEquals(1, count(plating, "plate", "Steel"));
     }
