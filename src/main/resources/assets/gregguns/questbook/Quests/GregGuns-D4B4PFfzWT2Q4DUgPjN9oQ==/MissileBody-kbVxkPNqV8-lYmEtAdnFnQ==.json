@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "On the NASA Workbench page, build a Missile Body T1: four stainless steel body plates, four steel plate fins, a Missile Engine Mk I and a Guidance Computer Mk I. There is no warhead slot; the warhead goes on at the pad. A better Guidance Computer makes the missile land closer.",
+      "desc:8": "On the NASA Workbench page, build a Missile Body T1: three compressed steel plates in one column, four Galacticraft Tier 1 rocket fins, a Galacticraft Tier 1 engine and a Guidance Computer Mk I. Compressed plates come from the Implosion Compressor. There is no warhead slot; the warhead goes on at the pad. A better Guidance Computer makes the missile land closer.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

@@ -32,9 +32,9 @@ NTM_TEX = K.ASSETS / "textures/models/thirdparty/ntm"
 # Numbers from the I2 code: MissileTier (fuel, range, speed, scatter), MissileBuildSpec (plates, fins, engine, caps).
 TIERS = {
     1: dict(body="missile_body_t1", warhead="warhead_t1", volt="HV", fuel="RP-1 or Cetane-Boosted Diesel", fuel_mb=2000, rng=1000, speed="0.8",
-            flight="about a minute", scatter=12, plates="4 stainless steel", fins="4 steel", engine="Missile Engine Mk I", cap=5),
+            flight="about a minute", scatter=12, plates="3 compressed steel", fins="4 Galacticraft Tier 1", engine="Galacticraft Tier 1 engine", cap=5),
     2: dict(body="missile_body_t2", warhead="warhead_t2", volt="EV", fuel="Dense Hydrazine", fuel_mb=4000, rng=3000, speed="1.2",
-            flight="about two minutes", scatter=8, plates="6 titanium", fins="4 stainless steel", engine="Missile Engine Mk II", cap=20),
+            flight="about two minutes", scatter=8, plates="4 compressed titanium", fins="4 Galacticraft Tier 2", engine="Galacticraft Tier 2 engine", cap=20),
 }
 MIN_RANGE = 20
 
@@ -89,7 +89,7 @@ def block_icon(tag: str, tier: str, overlay: str | None) -> K.Path:
 
 def _tier_card(n: int) -> str:
     t = TIERS[n]
-    stats = [("Chip", f"{chip(t['volt'])} Circuit Assembler"), ("Body", f"{t['plates']} plates, {t['fins']} plate fins"),
+    stats = [("Chip", f"{chip(t['volt'])} Circuit Assembler"), ("Body", f"{t['plates']} plates, {t['fins']} fins, {t['engine']}"),
              ("Fuel", f"{esc(t['fuel'])} or better"), ("Tank", f"{t['fuel_mb']:,} mB"), ("Range", f"{MIN_RANGE} to {t['rng']:,} blocks"),
              ("Flight", f"{t['flight']} at the longest range"), ("Warhead", f"up to {t['cap']} charges")]
     rows = "".join(f'<div class="stat"><span>{k}</span><b>{v}</b></div>' for k, v in stats)
@@ -107,7 +107,6 @@ def first_missile() -> str:
     ca = img(block_icon("ca", "HV", "circuitassembler"), h=92)
     le = img(block_icon("le", "HV", "laser_engraver"), h=92)
     lc = img(block_icon("lc", "HV", None), h=92)
-    plate = lambda m: gti("plate", m, 34)  # noqa: E731
     s1 = _step(1, "Make a missile chip",
                f"{ca}{arrow}<span class='pill'>Missile Chip T1 &middot; HV</span><span class='pill'>Missile Chip T2 &middot; EV</span>",
                "The chip comes from the GregTech <b>Circuit Assembler</b>, at the voltage of its tier: a circuit board, 2 circuits and fine wire. "
@@ -117,9 +116,9 @@ def first_missile() -> str:
                "Put the chip and a lens in the <b>Laser Engraver</b>: a Red lens for T1, a Blue lens for T2. The lens is not used up. "
                "Slot the schematic into the Galacticraft <b>NASA Workbench</b> and the page for that missile opens.")
     s3 = _step(3, "Build the body by hand",
-               f"{plate('StainlessSteel')}{plate('Titanium')}{plus}<span class='pill'>4 fins</span>{plus}<span class='pill'>Engine</span>{plus}<span class='pill'>Guidance Computer</span>{arrow}<span class='pill'>Missile Body</span>",
-               "On the NASA Workbench page: <b>body plates</b> (T1 four stainless steel, T2 six titanium), <b>four fins</b>, a <b>Missile Engine</b> and a "
-               "<b>Guidance Computer</b>. A better computer than the body asks for makes the missile land closer. There is no warhead slot: a warhead goes on at the pad.")
+               f"<span class='pill'>3 / 4 compressed plates</span>{plus}<span class='pill'>4 rocket fins</span>{plus}<span class='pill'>Rocket engine</span>{plus}<span class='pill'>Guidance Computer</span>{arrow}<span class='pill'>Missile Body</span>",
+               "On the NASA Workbench page: <b>compressed plates</b> in one column (T1 three steel, T2 four titanium), <b>four Galacticraft rocket fins</b> and a <b>Galacticraft rocket engine</b> of the same tier, and a "
+               "<b>Guidance Computer</b>. Make compressed plates from a plate in the Implosion Compressor. A better computer than the body asks for makes the missile land closer. There is no warhead slot: a warhead goes on at the pad.")
     s3b = _step(4, "Or automate it",
                 f"<span class='pill'>Scan a body</span>{arrow}<span class='pill'>Data Stick</span>{arrow}<span class='pill'>Assembly Line</span>{arrow}<span class='pill'>Body</span>{plus}<span class='pill'>Computer</span>{arrow}<span class='pill'>Assembler</span>",
                 "Scan one hand-built body into a <b>Data Stick</b> in the Scanner (T1 takes a minute at HV, T2 two minutes at EV). The <b>Assembly Line</b> then builds that body "
