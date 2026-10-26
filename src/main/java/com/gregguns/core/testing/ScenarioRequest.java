@@ -1,6 +1,7 @@
 package com.gregguns.core.testing;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -24,18 +25,26 @@ public final class ScenarioRequest {
         ALL,
         /** Run the named scenario. */
         NAMED,
-        /** The named scenario does not exist. */
+        /** Run every scenario whose name starts with the prefix ({@code icbm.} or {@code icbm.blast*}). */
+        PREFIX,
+        /** The named scenario does not exist, or the prefix matches nothing. */
         UNKNOWN
     }
 
     private final Kind kind;
     private final String argument;
     private final Scenario scenario;
+    private final List<Scenario> matches;
 
     private ScenarioRequest(Kind kind, String argument, Scenario scenario) {
+        this(kind, argument, scenario, Collections.<Scenario>emptyList());
+    }
+
+    private ScenarioRequest(Kind kind, String argument, Scenario scenario, List<Scenario> matches) {
         this.kind = kind;
         this.argument = argument;
         this.scenario = scenario;
+        this.matches = matches;
     }
 
     /**
@@ -57,8 +66,24 @@ public final class ScenarioRequest {
             return new ScenarioRequest(Kind.ALL, arg, null);
         }
         Scenario found = registry.get(arg);
-        return found == null ? new ScenarioRequest(Kind.UNKNOWN, args[0], null)
-            : new ScenarioRequest(Kind.NAMED, arg, found);
+        if (found != null) {
+            return new ScenarioRequest(Kind.NAMED, arg, found);
+        }
+        if (arg.endsWith(".") || arg.endsWith("*")) {
+            String prefix = arg.endsWith("*") ? arg.substring(0, arg.length() - 1) : arg;
+            // Like "all", a prefix skips scenarios that are not includedInAll (they run by exact name only).
+            List<Scenario> matched = new ArrayList<>();
+            for (Scenario s : registry.forAll()) {
+                if (s.name()
+                    .startsWith(prefix)) {
+                    matched.add(s);
+                }
+            }
+            if (!matched.isEmpty()) {
+                return new ScenarioRequest(Kind.PREFIX, arg, null, matched);
+            }
+        }
+        return new ScenarioRequest(Kind.UNKNOWN, args[0], null);
     }
 
     /**
@@ -101,5 +126,10 @@ public final class ScenarioRequest {
     /** @return the scenario for {@link Kind#NAMED}, otherwise {@code null} */
     public Scenario scenario() {
         return scenario;
+    }
+
+    /** @return the scenarios a {@link Kind#PREFIX} request runs, in name order; empty for other kinds */
+    public List<Scenario> matches() {
+        return matches;
     }
 }

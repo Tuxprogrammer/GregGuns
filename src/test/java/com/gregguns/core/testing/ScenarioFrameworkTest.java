@@ -230,6 +230,51 @@ class ScenarioFrameworkTest {
     }
 
     @Test
+    void requestParsesPrefixes() {
+        ScenarioRegistry reg = new ScenarioRegistry();
+        reg.register(passing("icbm.blast.a"));
+        reg.register(passing("icbm.blast.b"));
+        reg.register(passing("icbm.warhead"));
+        reg.register(passing("gun.fire"));
+        ScenarioRequest dot = ScenarioRequest.parse(new String[] { "ICBM." }, reg);
+        assertEquals(ScenarioRequest.Kind.PREFIX, dot.kind());
+        assertEquals(
+            3,
+            dot.matches()
+                .size());
+        ScenarioRequest star = ScenarioRequest.parse(new String[] { "icbm.blast*" }, reg);
+        assertEquals(ScenarioRequest.Kind.PREFIX, star.kind());
+        assertEquals(
+            2,
+            star.matches()
+                .size());
+        // "icbm.blast." keeps the dot in the prefix and still matches both blast scenarios.
+        assertEquals(
+            2,
+            ScenarioRequest.parse(new String[] { "icbm.blast." }, reg)
+                .matches()
+                .size());
+        // "*" alone, or a "*" prefix that is shorter than the dot, is a plain prefix.
+        assertEquals(
+            4,
+            ScenarioRequest.parse(new String[] { "*" }, reg)
+                .matches()
+                .size());
+        assertEquals(
+            ScenarioRequest.Kind.UNKNOWN,
+            ScenarioRequest.parse(new String[] { "nope." }, reg)
+                .kind());
+        assertEquals(
+            ScenarioRequest.Kind.UNKNOWN,
+            ScenarioRequest.parse(new String[] { "icbm" }, reg)
+                .kind());
+        assertEquals(
+            ScenarioRequest.Kind.NAMED,
+            ScenarioRequest.parse(new String[] { "icbm.warhead" }, reg)
+                .kind());
+    }
+
+    @Test
     void completionOffersKeywordsAndNamesByPrefix() {
         ScenarioRegistry reg = new ScenarioRegistry();
         reg.register(passing("armor.set"));
