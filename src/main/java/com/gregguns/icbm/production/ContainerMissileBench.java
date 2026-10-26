@@ -86,8 +86,7 @@ public class ContainerMissileBench extends Container {
                 plates + MissileBenchRules.FIN_SLOTS,
                 X0 + MissileBenchLayout.engineX(),
                 MissileBenchLayout.engineY(spec),
-                spec.engine()
-                    .registryName()));
+                MissileBenchRules.keyOf(spec.engine())));
         guidanceSlot = inventorySlots.size();
         addSlotToContainer(
             new KeySlot(

@@ -58,9 +58,7 @@ public final class MissileBenchRules {
                 return -1;
             }
         }
-        if (engine == null || !engine.equals(
-            spec.engine()
-                .registryName())) {
+        if (engine == null || !engine.equals(keyOf(spec.engine()))) {
             return -1;
         }
         if (guidance == null) {
@@ -79,10 +77,7 @@ public final class MissileBenchRules {
         if (key == null) {
             return false;
         }
-        if (key.equals(keyOf(spec.plates())) || key.equals(keyOf(spec.fins()))
-            || key.equals(
-                spec.engine()
-                    .registryName())) {
+        if (key.equals(keyOf(spec.plates())) || key.equals(keyOf(spec.fins())) || key.equals(keyOf(spec.engine()))) {
             return true;
         }
         IcbmPart computer = IcbmPart.byRegistryName(key);

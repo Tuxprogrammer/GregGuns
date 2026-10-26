@@ -114,10 +114,10 @@ public final class MissileRecipes {
     private static void addLine(MissileBuildSpec spec) {
         ItemStack plates = IcbmIngredients.stack(spec.plates());
         ItemStack fins = IcbmIngredients.stack(spec.fins());
-        Item engineItem = IcbmParts.get(spec.engine());
+        ItemStack engine = IcbmIngredients.stack(spec.engine());
         ItemStack circuits = IcbmIngredients.stack(spec.lineCircuits());
         FluidStack lube = IcbmIngredients.fluid(Ing.fluid("Lubricant", MissileBuildSpec.LUBRICANT_LITERS, Tier.MV));
-        if (plates == null || fins == null || engineItem == null || circuits == null || lube == null) {
+        if (plates == null || fins == null || engine == null || circuits == null || lube == null) {
             GregGuns.LOG.error("Skipping the {} Assembly Line recipe: an input is missing", spec);
             return;
         }
@@ -126,7 +126,7 @@ public final class MissileRecipes {
             .metadata(
                 GTRecipeConstants.SCANNING,
                 new Scanning(spec.scanSeconds() * GTRecipeBuilder.SECONDS, ProductionRecipes.eutFor(spec.scanTier())))
-            .itemInputs(plates, fins, new ItemStack(engineItem), circuits)
+            .itemInputs(plates, fins, engine, circuits)
             .fluidInputs(lube)
             .itemOutputs(MissileBodies.body(MissileTier.byNumber(spec.number()), 0))
             .duration(spec.lineTicks())
@@ -154,13 +154,13 @@ public final class MissileRecipes {
     private static void addWorkbenchRow(MissileBuildSpec spec, IcbmPart computer) {
         ItemStack plates = IcbmIngredients.stack(spec.plates());
         ItemStack fins = IcbmIngredients.stack(spec.fins());
-        Item engineItem = IcbmParts.get(spec.engine());
+        ItemStack engine = IcbmIngredients.stack(spec.engine());
         Item computerItem = IcbmParts.get(computer);
-        if (plates == null || fins == null || engineItem == null || computerItem == null) {
+        if (plates == null || fins == null || engine == null || computerItem == null) {
             return;
         }
         GTValues.RA.stdBuilder()
-            .itemInputs(plates, fins, new ItemStack(engineItem), new ItemStack(computerItem))
+            .itemInputs(plates, fins, engine, new ItemStack(computerItem))
             .itemOutputs(body(spec, computer))
             .duration(0)
             .eut(0)

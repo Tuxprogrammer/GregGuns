@@ -13,8 +13,6 @@ from pathlib import Path
 from PIL import Image
 
 ITEMS = {
-    "missile_engine_mk1": "mp_thruster",
-    "missile_engine_mk2": "thruster_medium",
     "guidance_computer_mk1": "mp_c_2",
     "guidance_computer_mk2": "mp_c_3",
     "guidance_computer_mk3": "mp_c_4",

@@ -47,18 +47,6 @@ public enum IcbmPart {
     /** A Dispersal Canister filled with gasoline; the name carries the theme. */
     NAPALM_CANISTER("napalm_canister", Tier.HV, 3.5, 1, 18,
         Arrays.asList(Ing.part(DISPERSAL_CANISTER, 1), Ing.fluid("Gasoline", 1000, Tier.HV))),
-    /** Engine of a T1 missile body (I2): a motor, a pump and a plate. */
-    MISSILE_ENGINE_MK1("missile_engine_mk1", Tier.HV, 5.5, 1, 19,
-        Arrays.asList(
-            Ing.gtItem("Electric_Motor_MV", 1, Tier.MV, 2.5),
-            Ing.gtItem("Electric_Pump_MV", 1, Tier.MV, 2.0),
-            Ing.gt("plate", "Steel", 1, Tier.LV, 1.0))),
-    /** Engine of a T2 missile body (I2). */
-    MISSILE_ENGINE_MK2("missile_engine_mk2", Tier.EV, 8.0, 1, 20,
-        Arrays.asList(
-            Ing.gtItem("Electric_Motor_HV", 1, Tier.HV, 4.0),
-            Ing.gtItem("Electric_Pump_HV", 1, Tier.HV, 3.0),
-            Ing.gt("plate", "StainlessSteel", 1, Tier.HV, 1.0))),
     /** Guidance computer, HV: the base for a T1 body (I2). */
     GUIDANCE_COMPUTER_MK1("guidance_computer_mk1", Tier.HV, 5.0, 1, 21,
         Arrays.asList(
