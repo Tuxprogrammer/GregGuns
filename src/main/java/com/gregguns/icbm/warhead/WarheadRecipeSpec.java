@@ -50,7 +50,7 @@ public enum WarheadRecipeSpec {
     FRAGMENTATION(WarheadBlast.FRAGMENTATION, false, 19, plates(Tier.EV, 8), Ing.industrialTnt(10), pe(4),
         Ing.part(IcbmPart.FRAGMENTATION_SLEEVE_TITANIUM, 1), fuze2()),
     /** A big fuel-air blast: kerosene in two canisters. */
-    THERMOBARIC(WarheadBlast.THERMOBARIC, false, 20, plates(Tier.EV, 8), Ing.industrialTnt(10), pe(4),
+    THERMOBARIC(WarheadBlast.THERMOBARIC, false, 24, plates(Tier.EV, 8), Ing.industrialTnt(10), pe(4),
         Ing.part(IcbmPart.DISPERSAL_CANISTER, 2), fuze2(), Ing.kerosene(4000)),
     /** Two emitters shatter glass and stun. */
     SONIC(WarheadBlast.SONIC, false, 21, plates(Tier.EV, 8), Ing.industrialTnt(6), pe(2),
@@ -62,7 +62,7 @@ public enum WarheadRecipeSpec {
     CONTAGIOUS(WarheadBlast.CONTAGIOUS, false, 23, plates(Tier.EV, 8), Ing.industrialTnt(6), pe(2), Ing.bioDish(4),
         fuze2(), Ing.fluid("Biomass", 2000, Tier.HV));
 
-    // Programmed-circuit numbers are 1 to 24 in GT: the warheads use 1 to 10 and 19 to 23, the parts 11 to 18.
+    // Programmed-circuit numbers are 1 to 24 in GT: the warheads use 1 to 10 and 19 to 24, the parts 11 to 18.
     private final WarheadBlast blast;
     private final boolean starter;
     private final int circuit;

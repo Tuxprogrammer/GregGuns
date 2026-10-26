@@ -106,7 +106,7 @@ Eight GregGuns items (module `icbm`, package `com.gregguns.icbm.recipe`, data in
 | Repulsive | HV | 9 | 4 plates, 2 Plastic Explosive, 1 Field Generator (HV), Fuze Mk I | 19.2 |
 | Attractive | HV | 10 | as Repulsive plus 4 magnetic steel rods | 21.2 |
 | Fragmentation | EV | 19 | 8 titanium plates, 10 Industrial TNT, 4 Plastic Explosive, 1 Fragmentation Sleeve (Titanium), Fuze Mk II | 39.4 |
-| Thermobaric | EV | 20 | 8 plates, 10 Industrial TNT, 4 Plastic Explosive, 2 Dispersal Canisters, Fuze Mk II, 4,000 L GT++ kerosene | 39.4 |
+| Thermobaric | EV | 24 | 8 plates, 10 Industrial TNT, 4 Plastic Explosive, 2 Dispersal Canisters, Fuze Mk II, 4,000 L GT++ kerosene | 39.4 |
 | Sonic | EV | 21 | 8 plates, 6 Industrial TNT, 2 Plastic Explosive, 2 Emitters (EV), Fuze Mk II | 37.4 |
 | Breaching | EV | 22 | 8 plates, 10 Industrial TNT, 3 Plastic Explosive, 2 Liner Cones, 6 titanium rods, Fuze Mk II | 39.3 |
 | Contagious | EV | 23 | 8 plates, 6 Industrial TNT, 2 Plastic Explosive, 4 Escherichia (rotten-flesh) petri dishes from the Bio Lab, Fuze Mk II, 2,000 L biomass | 38.4 |
