@@ -95,7 +95,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock {
     private final FireTrigger redstoneEdge = new FireTrigger();
     private final FireTrigger coverEdge = new FireTrigger();
     private Snapshot snapshot;
-    private long snapshotTick = Long.MIN_VALUE;
+    private long snapshotTick;
     private ControlStatus lastShot;
     private TargetStick.Outcome lastStick;
     private int attempts;
@@ -243,7 +243,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock {
         if (base != null) {
             base.markDirty();
         }
-        snapshotTick = Long.MIN_VALUE;
+        snapshot = null;
     }
 
     /** @param player the pressing player; the target becomes the block under their feet */
@@ -312,7 +312,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock {
 
     /** @return the pre-check status right now, recomputed (tests and the GUI line); server side */
     public ControlStatus currentStatus() {
-        snapshotTick = Long.MIN_VALUE;
+        snapshot = null;
         return snapshot().status;
     }
 
@@ -411,7 +411,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock {
             return ControlStatus.NO_PAD;
         }
         attempts++;
-        snapshotTick = Long.MIN_VALUE;
+        snapshot = null;
         Snapshot s = snapshot();
         if (s.status != ControlStatus.READY) {
             lastShot = s.status;
@@ -430,7 +430,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock {
             shots.startCooldown(COOLDOWN_TICKS);
         }
         lastShot = st;
-        snapshotTick = Long.MIN_VALUE;
+        snapshot = null;
         return st;
     }
 
