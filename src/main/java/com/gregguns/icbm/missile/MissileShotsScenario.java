@@ -297,9 +297,6 @@ public final class MissileShotsScenario implements Scenario {
         // NEI recipe for the body
         plan.after(20, () -> { signal(p, "gui", "nei", "missile_body_t1"); });
         plan.after(GAP + 60, () -> signal(p, "shot", "icbm2-nei-body-t1"));
-        // For comparison: Galacticraft's own NEI page (Tier 1 Rocket on the NASA Workbench).
-        plan.after(10, () -> signal(p, "gui", "nei", "GalacticraftCore:item.spaceship:0"));
-        plan.after(GAP + 60, () -> signal(p, "shot", "icbm2-nei-gc-rocket-t1"));
         plan.after(10, () -> {
             signal(p, "close");
             signal(p, "hud", "off");
