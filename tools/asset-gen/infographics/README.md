@@ -11,6 +11,9 @@ GREGGUNS_EXPORT_MODELS="$PWD/build/infographics/export" ./gradlew test --rerun \
 # 2. Export the recipe tables (once, and again after recipe changes); the recipes sheet reads them
 GREGGUNS_EXPORT_RECIPES="$PWD/build/infographics/recipes.json" ./gradlew test --rerun \
     --tests com.gregguns.tools.RecipeExportTest
+# 2b. Export the warhead tables (once, and again after warhead changes); the icbm-warheads sheet reads them
+GREGGUNS_EXPORT_WARHEADS="$PWD/build/infographics/warheads.json" ./gradlew test --rerun \
+    --tests com.gregguns.tools.WarheadExportTest
 # 3. Build every page, or name some
 python tools/asset-gen/infographics/build.py [getting-started arsenal-steam-to-hv ...]
 ```
@@ -37,7 +40,8 @@ Renders are cached in `build/infographics/r/` by their parameters and a hash of 
 | `data.py` | Player-facing facts: weapons per tier, ammo, magazines |
 | `pages.py`, `pages_more.py` | One function per infographic; `pages_more.PAGES` lists them all |
 | `pages_recipes.py` | The recipes sheet: crafting grids for the hand recipes, machine rows from the exported recipe tables |
-| `vanilla.py` | Our own simple stand-in icons for vanilla items, from before D55; real vanilla textures may replace them |
+| `pages_icbm.py` | The ICBM sheets. Numbers come from the warhead dump (step 2b) and are checked against `WarheadRecipes.java` and `Effects.java`, so a changed recipe stops the build |
+| `vanilla.py` | Real vanilla textures read from the Minecraft 1.7.10 client jar at build time (`real`, `mc_texture`; D55), found through `$GREGGUNS_MC_JAR`, the reference pack or the Prism Launcher libraries. Also our own stand-in icons (`icon`) for the older sheets that predate D55 |
 
 ## Writing rules
 

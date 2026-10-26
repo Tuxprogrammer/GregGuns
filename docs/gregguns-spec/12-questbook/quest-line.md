@@ -1,6 +1,6 @@
 # The GregGuns quest line
 
-The full quest list for the GregGuns tab: 121 quests in 14 chapters. Nine chapters are the main path (a start chapter, then Steam/ULV up to ZPM). Five are side branches (NPCs, structures, machines, equipment, ammo logistics).
+The full quest list for the GregGuns tab: 124 quests in 15 chapters. Nine chapters are the main path (a start chapter, then Steam/ULV up to ZPM). Six are side branches (NPCs, structures, machines, equipment, ammo logistics, ICBM warheads).
 
 - **Techguns baseline:** none. Techguns has no questbook. The content comes from [02-guns](../../techguns-spec/02-guns/index.md), [05-armor](../../techguns-spec/05-armor/index.md), [06-items](../../techguns-spec/06-items/index.md), [08-machines-production](../../techguns-spec/08-machines-production/index.md), [09-machines-utility](../../techguns-spec/09-machines-utility/index.md), [10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md) and [11-worldgen](../../techguns-spec/11-worldgen/index.md).
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0005 world presence](../../design/0005-world-presence.md), [0007 pack loot and Infernal Mobs](../../design/0007-pack-loot-and-infernal-mobs.md), [0008 exact-tier charging](../../design/0008-exact-tier-charging.md), [0009 GTNH integration defaults](../../design/0009-gtnh-integration-defaults.md)
@@ -36,7 +36,7 @@ Item names are the registry names (`gregguns:<name>`, as `NeiOrder` lists them).
 3. **Machine-made items use retrieval.** `crafting` tasks listen for the crafting table, the furnace and the anvil only ([`TaskCrafting`](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/tasks/TaskCrafting.java#L189-L200)). The pack's own Readme also limits crafting quests to the early game. Only the four Steam-chapter quests use `crafting`; everything made in a GT machine uses `retrieval`, so a loot-bag find counts too.
 4. **Rewards are tier-legal.** A quest never pays above its Tier column, and its Tier never exceeds the highest pack tier among its prerequisites ([GGS-12-07](index.md#requirements)). This is the rule [0007](../../design/0007-pack-loot-and-infernal-mobs.md) uses for loot, applied to quest rewards.
 5. **Bags are random, so they are never the only help.** A tier bag draws one or two items from the whole tier group ([pack-loot.md](../06-items/pack-loot.md#enhancedlootbags)), and most of that group is not GregGuns. Quests that teach a weapon pay in ammunition or a magazine for it. Bags mark the end of a chapter or a hunt.
-6. **Honor-system quests are rare and labeled.** Infernal variants cannot be matched by a hunt task (see [Infernal variants](#npcs-and-bosses)), and structure visits have no location task. Both use a checkbox. There are 45 checkbox quests in all, 22 of them chapter intros and summaries; the rest are one-line "do this once" lessons.
+6. **Honor-system quests are rare and labeled.** Infernal variants cannot be matched by a hunt task (see [Infernal variants](#npcs-and-bosses)), and structure visits have no location task. Both use a checkbox. There are 46 checkbox quests in all, 22 of them chapter intros and summaries; the rest are one-line "do this once" lessons.
 7. **No command rewards.** A command reward runs with the quest's authority and skips the tier rule. None is used.
 
 ### Reward budget
@@ -58,7 +58,7 @@ Fixed item rewards are small: 4 to 64 rounds, one magazine, one grenade pack. Th
 
 ## Layout
 
-The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 of air, close to the Applied Energistics tab). Each tier chapter is a vertical tree hanging from its head (28 units); the heads sit in one row, left to right in tier order, and each head chains from the previous tier's head (Steam from `gg.start.controls`), so there is no fan-out from `gg.start.welcome`. The five side chapters (NPCs, sites, machines, ammo, gear) are horizontal trees in a band underneath. A quest's first prerequisite is its parent in the tree and is drawn; a second one (summaries, cross-branch needs) is an implicit prerequisite, so it gates without drawing a braid. Each side chapter's head unlocks from the gun quest it depends on, as an implicit prerequisite. No quest is `main`, so every line is the thin 4 unit kind ([README](../../../tools/questbook/README.md#how-betterquesting-draws-a-line)). The validator ([authoring.md](authoring.md#builder-and-validator)) rejects overlapping boxes. `python tools/questbook/render_preview.py out.png` draws the line the way BetterQuesting does.
+The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 of air, close to the Applied Energistics tab). Each tier chapter is a vertical tree hanging from its head (28 units); the heads sit in one row, left to right in tier order, and each head chains from the previous tier's head (Steam from `gg.start.controls`), so there is no fan-out from `gg.start.welcome`. The six side chapters (NPCs, sites, machines, ammo, gear, ICBM) are horizontal trees in a band underneath. A quest's first prerequisite is its parent in the tree and is drawn; a second one (summaries, cross-branch needs) is an implicit prerequisite, so it gates without drawing a braid. Each side chapter's head unlocks from the gun quest it depends on, as an implicit prerequisite. No quest is `main`, so every line is the thin 4 unit kind ([README](../../../tools/questbook/README.md#how-betterquesting-draws-a-line)). The validator ([authoring.md](authoring.md#builder-and-validator)) rejects overlapping boxes. `python tools/questbook/render_preview.py out.png` draws the line the way BetterQuesting does.
 
 ## Relation to the pack's lines
 
@@ -308,6 +308,17 @@ The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 
 | `gg.ammo.works` | Ammunition Works | HV | The Ammunition Works is a multiblock press hall with high parallels. Build it when one press cannot keep up. It needs an interior lamp. | retrieval `gregtech:gt.blockmachines:20105` (Ammunition Works) | - | `gg.ammo.advanced`, pack 160 | 1032, 312 (24) |
 | `gg.ammo.filling_bench` | Filling Bench (optional) | HV | An optional annex behind the packing end of the Works, built around six workbench tables. It loads magazines from the Works output. | checkbox | - | `gg.ammo.works` | 1068, 312 (24) |
 
+### ICBM warheads
+
+- **Gate:** `gg.ammo.explosives` (hover) and the HV pack quests 160 and 753. The ICBM module's quests live in this tab, not in a tab of their own ([D40](../../gregguns-icbm-spec/DECISIONS.md)); keys are `gg.icbm.*`, added with the content they teach.
+- **Teaches:** that a warhead is a GregTech-built charge, how to set one off as a demolition charge (the fuse scales with the blast radius, D51), and that the Tier 2 casing is titanium. Later ICBM milestones add their own quests here.
+
+| Key | Title | Tier | Hint | Task | Reward | Prerequisites | Layout |
+|---|---|---|---|---|---|---|---|
+| `gg.icbm.warhead` | Your First Warhead | HV | A warhead is a GregTech-built charge: a stainless steel casing around TNT and a payload. The starter recipe in the Assembler makes a Condensed warhead with a fill of 1 from 2 stainless steel plates and 2 TNT. | retrieval `gregguns:warhead_t1` | - | `gg.ammo.explosives` (hover), pack 160, pack 753 | 742, 420 (28) |
+| `gg.icbm.demolition` | Demolition Charge | HV | Place a warhead and light it with Flint and Steel, a Fire Charge or a redstone pulse. The fuse is 3 seconds plus 1 second per 3 blocks of blast radius. Another explosion sets it off in half a second. | checkbox | - | `gg.icbm.warhead` | 780, 420 (24) |
+| `gg.icbm.t2_casing` | Titanium Casing | EV | The Tier 2 casing is titanium and holds up to 20 charges. Its blast types are made in the Implosion Compressor or the Chemical Reactor at EV. | retrieval `gregguns:warhead_t2` | - | `gg.icbm.demolition`, pack 176, pack 860 | 816, 420 (24) |
+
 ## Coverage matrix
 
 Where each mechanic is taught.
@@ -318,6 +329,7 @@ Where each mechanic is taught.
 | Magazines (fill, sneak-click to empty) | `gg.start.ammo_types`, `gg.lv.magazines`, `gg.mv.smg_mags` |
 | Ammo made in the Ammo Press and Works | `gg.lv.ammo_press`, `gg.lv.ammo_9mm`, `gg.ammo.press`, `gg.ammo.magazines`, `gg.ammo.pipes`, `gg.ammo.depot`, `gg.ammo.works`, `gg.ammo.filling_bench` |
 | Explosives and fuel | `gg.mv.grenades`, `gg.ammo.explosives`, `gg.hv.rocket_launcher`, `gg.hv.flamethrower`, `gg.ammo.fuel` |
+| Warheads and demolition charges | `gg.icbm.warhead`, `gg.icbm.demolition`, `gg.icbm.t2_casing` |
 | Charging at the exact tier | `gg.hv.tools`, `gg.ev.laser`, `gg.ammo.charging`, `gg.iv.power_armor` |
 | Repair | `gg.mach.repair_bench`, `gg.mach.repair`, `gg.mach.gantry` |
 | Offhand and akimbo | `gg.mv.akimbo`, `gg.iv.deatomizer` |
@@ -348,7 +360,8 @@ Where each mechanic is taught.
 | Machines | 7 | 4 | 3 | 0 | 0 | 0 |
 | Armor and equipment | 9 | 2 | 7 | 0 | 0 | 0 |
 | Ammo logistics | 11 | 7 | 4 | 0 | 0 | 0 |
-| **Total** | **121** | **45** | **61** | **4** | **11** | **25** |
+| ICBM warheads | 3 | 1 | 2 | 0 | 0 | 0 |
+| **Total** | **124** | **46** | **63** | **4** | **11** | **25** |
 
 ## Hidden tier-skip triggers
 
