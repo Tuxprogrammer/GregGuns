@@ -63,6 +63,7 @@ final class WarheadShotsScenario implements Scenario {
 
     /** Puts the eye at (ex, ey, ez) looking at the target point. */
     private static void cam(EntityPlayerMP p, double ex, double ey, double ez, double tx, double ty, double tz) {
+        ey = Math.max(ey, p.worldObj.getHeightValue((int) Math.floor(ex), (int) Math.floor(ez)) + EYE + 0.3);
         double dx = tx - ex;
         double dz = tz - ez;
         float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
@@ -146,6 +147,7 @@ final class WarheadShotsScenario implements Scenario {
         final int gasX = ox;
         final int gasZ = oz + 30;
         final int[] fillHalf = { 12 };
+        final int[] airAfter = { -1 };
 
         List<int[]> times = new ArrayList<>();
         List<Runnable> acts = new ArrayList<>();
@@ -157,11 +159,11 @@ final class WarheadShotsScenario implements Scenario {
         };
         at.accept(0, () -> signal(p, "hud", "off"));
         // 1. row, 3/4 and side
-        at.accept(10, () -> cam(p, cx - 5, cy + 2.2, cz + 6, cx, cy, cz));
+        at.accept(10, () -> cam(p, cx - 3.5, cy + 2.2, cz + 5, cx, cy, cz));
         at.accept(GAP, () -> signal(p, "shot", "icbm-row-34"));
-        at.accept(GAP, () -> cam(p, cx, cy + 0.4, cz + 9, cx, cy, cz));
+        at.accept(GAP, () -> cam(p, cx, cy + 0.4, cz + 7.5, cx, cy, cz));
         at.accept(GAP, () -> signal(p, "shot", "icbm-row-side"));
-        at.accept(GAP, () -> cam(p, cx + 5, cy + 1.5, cz - 6, cx, cy, cz));
+        at.accept(GAP, () -> cam(p, cx + 3.5, cy + 1.5, cz - 5, cx, cy, cz));
         at.accept(GAP, () -> signal(p, "shot", "icbm-row-back34"));
         // 2. selection outline on the T2 (dx 0): crosshair on its centre
         at.accept(GAP, () -> cam(p, ox - 1.2, cy + 0.9, oz + 2.6, ox + 0.5, cy, cz));
@@ -181,7 +183,10 @@ final class WarheadShotsScenario implements Scenario {
             cam(p, ox + 0.5, cy + 1.0, oz + 6, ox + 0.5, cy + 0.5, cz);
         });
         at.accept(GAP, () -> signal(p, "shot", "icbm-hotbar-hand"));
-        at.accept(GAP / 2, () -> signal(p, "gui", "inventory"));
+        at.accept(GAP / 2, () -> {
+            p.setGameType(WorldSettings.GameType.SURVIVAL);
+            signal(p, "gui", "inventory");
+        });
         at.accept(GAP, () -> signal(p, "shot", "icbm-inventory"));
         at.accept(10, () -> signal(p, "tip", "36"));
         at.accept(GAP, () -> signal(p, "shot", "icbm-tooltip-plain"));
@@ -194,6 +199,10 @@ final class WarheadShotsScenario implements Scenario {
             signal(p, "shift", "off");
             signal(p, "close");
             signal(p, "hud", "off");
+            p.setGameType(WorldSettings.GameType.CREATIVE);
+            p.capabilities.allowFlying = true;
+            p.capabilities.isFlying = true;
+            p.sendPlayerAbilities();
         });
         // 4. lit fuse on the last T2 (dx 4) and the T1 (dx -2)
         at.accept(10, () -> {
@@ -213,23 +222,36 @@ final class WarheadShotsScenario implements Scenario {
         });
         // 5a. crater
         at.accept(10, () -> {
-            fillStone(w, craterX, oy, craterZ, fillHalf[0], oy - 4, oy + 1);
-            cam(p, craterX - 13, oy + 11, craterZ + 16, craterX, oy, craterZ);
+            fillStone(w, craterX, oy, craterZ, fillHalf[0], oy - 6, oy + 3);
+            cam(p, craterX - 15, oy + 12, craterZ + 15, craterX + 0.5, oy + 2, craterZ + 0.5);
         });
         at.accept(GAP + 40, () -> signal(p, "shot", "icbm-crater-before"));
         at.accept(GAP / 2, () -> {
             ExplosiveDef d = Explosives.get("condensed");
-            IcbmBlasts.detonate(w, craterX + 0.5, oy + 2.0, craterZ + 0.5, d, 3, null);
+            IcbmBlasts.detonate(w, craterX + 0.5, oy + 3.5, craterZ + 0.5, d, 5, null);
         });
-        at.accept(GAP * 2, () -> signal(p, "shot", "icbm-crater-after"));
-        at.accept(GAP, () -> { cam(p, craterX + 0.5, oy + 22, craterZ + 0.5 + 1, craterX + 0.5, oy, craterZ + 0.5); });
+        at.accept(GAP * 3, () -> {
+            int air = 0;
+            for (int x = craterX - 10; x <= craterX + 10; x++) {
+                for (int z = craterZ - 10; z <= craterZ + 10; z++) {
+                    for (int y = oy - 6; y <= oy + 3; y++) {
+                        if (w.isAirBlock(x, y, z)) {
+                            air++;
+                        }
+                    }
+                }
+            }
+            airAfter[0] = air;
+            signal(p, "shot", "icbm-crater-after");
+        });
+        at.accept(GAP, () -> { cam(p, craterX + 0.5, oy + 24, craterZ + 1.5, craterX + 0.5, oy, craterZ + 0.5); });
         at.accept(GAP, () -> signal(p, "shot", "icbm-crater-after-top"));
         // 5b. gas
-        at.accept(10, () -> cam(p, gasX + 14, oy + 7, gasZ + 14, gasX + 0.5, oy + 1, gasZ + 0.5));
+        at.accept(10, () -> cam(p, gasX + 9, oy + 4, gasZ + 9, gasX + 0.5, oy + 1.5, gasZ + 0.5));
         at.accept(GAP + 40, () -> signal(p, "shot", "icbm-gas-before"));
         at.accept(GAP / 2, () -> {
             ExplosiveDef d = Explosives.get("chemical");
-            IcbmBlasts.detonate(w, gasX + 0.5, oy + 0.5, gasZ + 0.5, d, 3, null);
+            IcbmBlasts.detonate(w, gasX + 0.5, oy + 1.0, gasZ + 0.5, d, 5, null);
         });
         at.accept(GAP, () -> signal(p, "shot", "icbm-gas-after-a"));
         at.accept(GAP, () -> signal(p, "shot", "icbm-gas-after-b"));
@@ -246,10 +268,15 @@ final class WarheadShotsScenario implements Scenario {
             }
             signal(p, "hud", "on");
             signal(p, "view", "0");
-            clearBox(w, craterX, oy, craterZ, fillHalf[0] + 2, oy - 4, oy + 3);
+            clearBox(w, craterX, oy, craterZ, fillHalf[0] + 2, oy, oy + 5);
             p.setGameType(WorldSettings.GameType.SURVIVAL);
             return ScenarioResult.builder(NAME)
-                .note(times.size() + " steps sent to " + p.getCommandSenderName() + "; read the icbm-*.png shots")
+                .note(
+                    times.size() + " steps sent to "
+                        + p.getCommandSenderName()
+                        + "; air blocks in the crater box: "
+                        + airAfter[0]
+                        + "; read the icbm-*.png shots")
                 .build();
         });
     }

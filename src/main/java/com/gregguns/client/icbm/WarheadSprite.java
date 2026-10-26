@@ -38,7 +38,11 @@ final class WarheadSprite extends TextureAtlasSprite {
 
     @Override
     public boolean load(IResourceManager manager, ResourceLocation location) {
-        // Source: Forge 1.7.10 TextureMap skips stitching when load returns false, so true means "stitch me".
+        // Source: Forge 1.7.10 TextureMap.loadTextureAtlas: for a custom-loader sprite it calls
+        // "if (!sprite.load(...)) stitcher.addSprite(sprite);" and moves on, so false means "stitch me" and true means
+        // "already handled, leave it out of the atlas". Returning true here left the sprite unstitched (missing
+        // texture).
+        // Decompiled: confirmed by the black and magenta models of the I1 client shots.
         try (InputStream in = manager.getResource(file)
             .getInputStream()) {
             BufferedImage image = ImageIO.read(in);
@@ -46,10 +50,10 @@ final class WarheadSprite extends TextureAtlasSprite {
             BufferedImage[] levels = new BufferedImage[1 + mip];
             levels[0] = image;
             loadSprite(levels, null, Minecraft.getMinecraft().gameSettings.anisotropicFiltering > 1);
-            return true;
+            return false;
         } catch (Exception e) {
             GregGuns.LOG.error("Could not load the warhead texture {}", file, e);
-            return false;
+            return true;
         }
     }
 }
