@@ -218,7 +218,7 @@ def _blast_card(name, blast_id, kind, what) -> str:
         size = f"<span>Radius <b>{_n(rad)}</b></span>"
     dmg_html = f'<span>Center <b>{dmg:,.0f}</b></span>' if dmg else '<span>No direct damage</span>'
     fuse = f"<span>Fuse <b>{fuse_seconds(rad)} s</b></span>"
-    return f"""<div class="bt" style="--kc:{KIND_COLOR[kind]}"><div class="top"><h3>{esc(name)}</h3><span class="kind">{esc(kind)}</span></div>
+    return f"""<div class="bt" style="--kc:{KIND_COLOR[kind]}"><div class="top"><h3>{esc(name)} T{BLAST[blast_id]["tier"][1:]} Warhead</h3><span class="kind">{esc(kind)}</span></div>
 <div class="nums">{size}{dmg_html}{fuse}</div><div class="what">{esc(what)}</div><div class="pay"><span>Payload</span> {esc(PAYLOAD[blast_id])}</div></div>"""
 
 
@@ -242,9 +242,9 @@ def warheads() -> str:
 
     fill = f"""<div class="card"><h2>Fill sets the size</h2>
 <div class="muted" style="font-size:18px;margin:6px 0 12px">A warhead is filled up to its casing's cap. A part-filled casing is a smaller bang: the radius grows slower than the fill, so even a few charges make a useful blast.</div>
-{_fill_table("Tier 1 casing, Condensed", "condensed", "var(--hv)")}
+{_fill_table("Condensed T1 Warhead", "condensed", "var(--hv)")}
 <div style="height:12px"></div>
-{_fill_table("Tier 2 casing, Thermobaric", "thermobaric", "var(--ev)")}
+{_fill_table("Thermobaric T2 Warhead", "thermobaric", "var(--ev)")}
 <div class="muted" style="font-size:16px;margin-top:10px">Bars show the radius against a full casing. The fuse is for a hand-lit warhead (see the demolition steps).</div></div>"""
 
     falloff = """<div class="card"><h2>Damage fades to the edge</h2>
@@ -274,11 +274,18 @@ def warheads() -> str:
 
     asm_ico = img(S.machine_block("assembler", "HV", greg=True), h=104)
     ss, ti = gti("plate", "StainlessSteel", 28), gti("plate", "Titanium", 28)
+    tp = K.ASSETS / "textures/items/thirdparty/ntm"
+    parts_icons = "".join(slot(K.icon(f, 64), 36, t) for f, t in [
+        (tp / "plastic_explosive.png", "Plastic Explosive"), (tp / "fuze_assembly_mk1.png", "Fuze Assembly Mk I"),
+        (tp / "fuze_assembly_mk2.png", "Fuze Assembly Mk II"), (tp / "dispersal_canister.png", "Dispersal Canister"),
+        (tp / "napalm_canister.png", "Napalm Canister"), (tp / "fragmentation_sleeve_steel.png", "Fragmentation Sleeve (steel)"),
+        (tp / "fragmentation_sleeve_titanium.png", "Fragmentation Sleeve (titanium)"),
+        (K.ASSETS / "textures/items/shaped_charge_liner_cone.png", "Shaped-Charge Liner Cone")])
     make = f"""<div class="card"><h2>How warheads are made</h2>
 <div class="muted" style="font-size:18px;margin:6px 0 12px">Every warhead is one Assembler recipe at its casing's voltage. A recipe makes a full-casing warhead; one cheap starter recipe makes a fill of 1.</div>
 <div style="display:flex;flex-direction:column;gap:12px">
 <div class="mrow"><div class="spot" style="display:flex;justify-content:center">{asm_ico}</div><div><h3>Assembler {chip("HV")} {chip("EV")}</h3><div class="muted" style="font-size:17px">HV (Tier 1): {ss} 4 stainless steel plates, a Fuze Assembly Mk I, and the blast type's own parts (see each card). EV (Tier 2): {ti} 8 titanium plates, a Fuze Assembly Mk II and the type's parts. The starter charge (fill 1) is just 2 plates, {tnt} 2 TNT and a Fuze Mk I.</div></div></div>
-<div class="mrow"><div class="spot" style="display:flex;justify-content:center;font-size:44px">&#9881;</div><div><h3>The parts, each an Assembler recipe too</h3><div class="muted" style="font-size:17px"><b>Plastic Explosive</b>: PTFE plates and Industrial TNT, in every warhead. <b>Fuze Assembly</b> Mk I (HV, Advanced circuit) and Mk II (EV, Data circuit). <b>Dispersal Canister</b> holds a fluid fill; the <b>Napalm Canister</b> is one filled with gasoline. <b>Fragmentation Sleeve</b> (steel or titanium) and <b>Shaped-Charge Liner Cone</b> (copper).</div></div></div></div></div>"""
+<div class="mrow"><div class="spot" style="display:flex;justify-content:center;flex-wrap:wrap;gap:6px;max-width:240px">{parts_icons}</div><div><h3>The parts, each an Assembler recipe too</h3><div class="muted" style="font-size:17px"><b>Plastic Explosive</b>: PTFE plates and Industrial TNT, in every warhead. <b>Fuze Assembly</b> Mk I (HV, Advanced circuit) and Mk II (EV, Data circuit). <b>Dispersal Canister</b> holds a fluid fill; the <b>Napalm Canister</b> is one filled with gasoline. <b>Fragmentation Sleeve</b> (steel or titanium) and <b>Shaped-Charge Liner Cone</b> (copper).</div></div></div></div></div>"""
 
     ladder = "".join(
         f'<span class="{"" if on else "off"}">{chip(t) if t in K.TIERS else f"<span class=chip style=background:#8a8f98>{t}</span>"}</span>'
