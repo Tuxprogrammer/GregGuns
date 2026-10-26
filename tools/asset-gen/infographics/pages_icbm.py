@@ -294,14 +294,14 @@ def warheads() -> str:
     ladder = "".join(
         f'<span class="{"" if on else "off"}">{chip(t) if t in K.TIERS else f"<span class=chip style=background:#8a8f98>{t}</span>"}</span>'
         for t, on in [("HV", True), ("EV", True), ("IV", True), ("LuV", True), ("ZPM", True), ("UV", False), ("UHV", False)])
-    # DRAFT numbers from the nuclear coder (icbm/i3-nuclear, ecb7b9ee); they may still move after its scenario run. Replace
-    # with the code's dump once the I3 content lands and drop the stamp.
+    # T3 and nuclear numbers are final (D80 to D84): WarheadBlast EXOTHERMIC/ENDOTHERMIC r28 and 8,000, NUCLEAR r64 with the
+    # 60% kill zone, WarheadRecipeSpec and Fuze Assembly Mk III. The dump on this branch predates them, so they are written here.
     t3 = _tier_card(3, "LuV", "LuV to ZPM", "Tungstensteel", "Tungsten steel", "warhead_t3", 64,
                     "A two-block-tall casing for the silo. Fill and radius work as on the smaller casings.",
                     [("Full-fill center damage", "8,000"), ("Blast radius, full", "28 blocks"), ("Size", "1 &times; 1 &times; 2 blocks")])
     nuke = _tier_card("", "ZPM", "ZPM", "Tungstensteel", "Tungsten steel", "warhead_nuclear", 64,
-                      "The nuclear warhead: a Tier 3 casing with the nuclear fill. Nothing living in the kill zone survives, bosses included.",
-                      [("Blast radius, full", "64 blocks (32 at 8 charges, 16 at 1)"), ("Kill zone, full", "38 blocks, every living thing"),
+                      "The nuclear warhead: a Tier 3 casing with the nuclear fill. Nothing living in the kill zone survives, bosses included, and the ground stays poisoned.",
+                      [("Blast radius, full", "64 blocks (32 at 8 charges, 16 at 1)"), ("Kill zone, full", "60% of the radius: 38 blocks"),
                        ("Outside the zone", "8,000 damage, fading to the edge"), ("Size", "1 &times; 1 &times; 2 blocks")])
     nuke = nuke.replace("<h2>Tier </h2>", "<h2>Nuclear</h2>")
 
@@ -319,7 +319,7 @@ def warheads() -> str:
     heavy = f"""<div class="label" style="margin:26px 0 10px">Tier 3 and nuclear &middot; silo only</div>
 <div class="grid" style="grid-template-columns:1fr 1fr">{t3}{nuke}</div>
 <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px">{t3_cards}</div>
-<div class="muted" style="font-size:17px;margin-top:10px">Tier 3 and nuclear warheads fly only on a Tier 3 missile launched from the missile silo. Inside a nuclear kill zone every living thing dies, through armor, bosses included; players follow the server's damage settings.</div>{nuke_cost}{fallout}"""
+<div class="muted" style="font-size:17px;margin-top:10px">Tier 3 and nuclear warheads fly only on a Tier 3 missile launched from the missile silo. Inside a nuclear kill zone (60% of the blast radius) every living thing dies, through armor, bosses included; players follow the server's damage settings. Outside it the 8,000 center damage fades to the edge.</div>{nuke_cost}{fallout}"""
     later = f"""<div class="card"><div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap"><h2>Where each tier sits on the ladder</h2><div class="ladder">{ladder}</div></div>
 <div class="muted" style="font-size:18px;margin-top:8px">Tiers 1 and 2 are the conventional starter casings. Tier 3 (LuV to ZPM) and the nuclear warhead are the heavy two-block casings. Antimatter and red matter warheads sit at the very top, and everything in their blast zone dies.</div></div>"""
 
@@ -334,7 +334,7 @@ def warheads() -> str:
 <div class="grid" style="grid-template-columns:1fr 1.15fr;margin-top:18px">{demo}{make}</div>
 <div style="margin-top:18px">{later}</div>"""
     return page_doc("Warheads", "Tiers 1 to 3 and nuclear: what each does, how big the bang is, and how to make one.", body,
-                    extra=CSS, overlay='<div class="ribbon">Draft: numbers pending</div>',
+                    extra=CSS,
                     credit=["Warhead models and textures \u00a9 HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.", MOJANG_CREDIT])
 
 
