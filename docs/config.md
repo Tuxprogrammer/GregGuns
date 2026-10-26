@@ -151,6 +151,11 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 | `icbm.maxGridMemoryMb` | int | `256` | 16 to 4096 | yes | Caps the memory of all running blasts' grids together; a blast that would go past it waits in the queue until another finishes its cast. A lone blast always runs. |
 | `icbm.fuseMultiplier` | double | `1.0` | 0.1 to 10 | yes | Multiplier on a redstone- or hand-lit warhead's fuse. The base is `20 * (3 + ceil(radius / 3))` ticks from the warhead's blast radius at its fill (D51); a warhead set off by another explosion keeps a fixed 10 tick fuse. |
 | `icbm.blastDrops` | boolean | `false` | n/a | yes | Whether destroyed blocks drop items. |
+| `icbm.maxMissilesInFlight` | int | `20` | 1 to 100 | yes | Most missiles in flight at once, server wide (D11). Each holds at most two chunks. |
+| `icbm.missileFuelFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's fuel tank (D20, D60). |
+| `icbm.missileRangeFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's range (D60). |
+| `icbm.fuelBonusMax` | double | `0.25` | 0 to 1 | yes | The most unburned fuel adds to a blast radius, as a fraction: 0.25 is up to 25% at point-blank range, nothing at full range. 0 turns it off. |
+| `icbm.missileTimeoutTicks` | int | `600` | 20 to 6000 | yes | Ticks a missile may fly past its planned arrival before it detonates where it is. |
 
 ## Equipment (`equipment`)
 
