@@ -59,10 +59,22 @@ public final class GunClientForgeEvents {
         }
         event.newfov *= (float) animations.zoom()
             .fovMultiplier(animations.partial());
+        // Aim down sights: a modest extra narrowing for guns with no scope zoom (1 for every other gun).
+        event.newfov *= (float) animations.ads()
+            .fovMultiplier(animations.partial());
     }
 
     @SubscribeEvent
     public void onOverlay(RenderGameOverlayEvent.Pre event) {
+        if (event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
+            // Sights lined up: the gun's own sights are the aim point, so the crosshair goes (cancel only if it is
+            // ours to cancel: first person, a gun aiming, option on).
+            if (animations.ads()
+                .hidesCrosshair() && Minecraft.getMinecraft().gameSettings.thirdPersonView == 0) {
+                event.setCanceled(true);
+            }
+            return;
+        }
         if (event.type != RenderGameOverlayEvent.ElementType.HELMET) {
             return;
         }

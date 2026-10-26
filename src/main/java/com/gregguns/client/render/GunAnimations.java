@@ -47,6 +47,7 @@ public final class GunAnimations {
 
     private final Map<Integer, GunAnimState> states = new HashMap<>();
     private final ZoomController zoom = new ZoomController();
+    private final AdsController ads = new AdsController();
     private final ChargeShift chargeShift = new ChargeShift();
     private long tick;
     private float partial;
@@ -64,6 +65,11 @@ public final class GunAnimations {
     /** @return the first-person charge shift of the local player's charge gun */
     public ChargeShift chargeShift() {
         return chargeShift;
+    }
+
+    /** @return the aim-down-sights controller (blend, FOV, crosshair and sprint rules) */
+    public AdsController ads() {
+        return ads;
     }
 
     /** @return the zoom controller (FOV and scope overlay state) */
@@ -110,6 +116,7 @@ public final class GunAnimations {
         s.spinReset(); // the rotor does not move in a reload
         if (isLocal(shooter)) {
             zoom.reset();
+            ads.reset();
         }
     }
 
@@ -157,6 +164,7 @@ public final class GunAnimations {
     void clientTick() {
         tick++;
         zoom.tick(Minecraft.getMinecraft().thePlayer);
+        ads.tick(Minecraft.getMinecraft());
         tickSpins();
         if (tick % PRUNE_PERIOD_TICKS == 0) {
             double now = now();
@@ -213,6 +221,7 @@ public final class GunAnimations {
     void clear() {
         states.clear();
         zoom.reset();
+        ads.reset();
         chargeShift.reset();
     }
 

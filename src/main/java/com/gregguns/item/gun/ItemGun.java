@@ -295,12 +295,13 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
     }
 
     /**
-     * Right-click. On a scoped gun the client sends the zoom intent; the server decides. An unscoped gun does
-     * nothing (GUN-47: no flag is sent either).
+     * Right-click. On a scoped gun, or a gun with iron sights or a red dot ({@code AdsSupport}), the client sends the
+     * zoom intent; the server decides. Any other gun does nothing (GUN-47: no flag is sent either).
      */
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-        if (world.isRemote && stats.hasScope()) {
+        if (world.isRemote && (stats.hasScope() || com.gregguns.core.config.ClientConfig.adsEnabled
+            && com.gregguns.gun.logic.AdsSupport.supports(contentName))) {
             GregGunsNetwork.channel()
                 .sendToServer(new PacketGunZoom(world.provider.dimensionId, player.inventory.currentItem));
         }
