@@ -338,4 +338,4 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
 
 ## Later
 
-- [x] ~~Revisit the sound generators against [SOUND-DIFFERENCES](assets/SOUND-DIFFERENCES.md).~~ Closed 2026-10-25: the owner accepts the sounds as they are, and the sound pipeline is archived ([0017](design/0017-accept-sounds-archive-sound-pipeline.md)).
+- [x] ~~Revisit the sound generators against SOUND-DIFFERENCES (now kept locally).~~ Closed 2026-10-25: the owner accepts the sounds as they are, and the sound pipeline is archived ([0017](design/0017-accept-sounds-archive-sound-pipeline.md)).
