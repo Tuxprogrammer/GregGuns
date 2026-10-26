@@ -11,13 +11,10 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.model.obj.Face;
-import net.minecraftforge.client.model.obj.GroupObject;
-import net.minecraftforge.client.model.obj.Vertex;
-import net.minecraftforge.client.model.obj.WavefrontObject;
 
 import org.lwjgl.opengl.GL11;
 
+import com.gregguns.icbm.missile.MissileSeat;
 import com.gregguns.icbm.warhead.BlockWarhead;
 import com.gregguns.icbm.warhead.WarheadCasing;
 import com.gregguns.icbm.warhead.WarheadRender;
@@ -97,7 +94,13 @@ public final class WarheadBlockRenderer implements ISimpleBlockRenderingHandler 
     public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId,
         RenderBlocks renderer) {
         Tessellator.instance.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z));
-        return draw(((BlockWarhead) block).casing(), x, y, z);
+        // A warhead seated on a body that stands on a pad is drawn down with it (see MissileSeat).
+        return ObjDraw.draw(
+            WarheadModels.get(((BlockWarhead) block).casing()),
+            icons.get(((BlockWarhead) block).casing()),
+            x,
+            y - MissileSeat.warheadDrop(world, x, y, z),
+            z);
     }
 
     @Override
@@ -111,33 +114,6 @@ public final class WarheadBlockRenderer implements ISimpleBlockRenderingHandler 
     }
 
     private boolean draw(WarheadCasing casing, int bx, int by, int bz) {
-        WavefrontObject model = WarheadModels.get(casing);
-        IIcon icon = icons.get(casing);
-        if (model == null || icon == null) {
-            return false;
-        }
-        Tessellator t = Tessellator.instance;
-        for (GroupObject group : model.groupObjects) {
-            for (Face face : group.faces) {
-                Vertex n = face.faceNormal != null ? face.faceNormal : face.calculateFaceNormal();
-                // Simple directional shading: top bright, bottom dark, sides in between.
-                float shade = 0.8F + 0.2F * n.y;
-                t.setColorOpaque_F(shade, shade, shade);
-                int count = face.vertices.length;
-                for (int i = 0; i < 4; i++) {
-                    int k = Math.min(i, count - 1);
-                    Vertex v = face.vertices[k];
-                    double u = face.textureCoordinates != null ? face.textureCoordinates[k].u : 0;
-                    double w = face.textureCoordinates != null ? face.textureCoordinates[k].v : 0;
-                    t.addVertexWithUV(
-                        bx + v.x,
-                        by + v.y,
-                        bz + v.z,
-                        icon.getInterpolatedU(u * 16.0),
-                        icon.getInterpolatedV(w * 16.0));
-                }
-            }
-        }
-        return true;
+        return ObjDraw.draw(WarheadModels.get(casing), icons.get(casing), bx, by, bz);
     }
 }

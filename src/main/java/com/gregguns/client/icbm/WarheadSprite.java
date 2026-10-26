@@ -25,6 +25,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 final class WarheadSprite extends TextureAtlasSprite {
 
     private final ResourceLocation file;
+    private float uScale = 1.0F;
+    private float vScale = 1.0F;
 
     WarheadSprite(String name, ResourceLocation file) {
         super(name);
@@ -46,6 +48,20 @@ final class WarheadSprite extends TextureAtlasSprite {
         try (InputStream in = manager.getResource(file)
             .getInputStream()) {
             BufferedImage image = ImageIO.read(in);
+            // Source: Forge 1.7.10 TextureAtlasSprite.loadSprite throws "broken aspect ratio and not an animation" for
+            // a
+            // sprite that is not square, which left the 256x128 body textures out of the atlas (magenta in the world
+            // and in the inventory). Pad to a square canvas and tell the drawer how much of it the texture covers.
+            // Decompiled: confirmed by the I2 client shots (magenta body block).
+            int size = Math.max(image.getWidth(), image.getHeight());
+            if (image.getWidth() != image.getHeight()) {
+                BufferedImage square = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+                square.getGraphics()
+                    .drawImage(image, 0, 0, null);
+                uScale = image.getWidth() / (float) size;
+                vScale = image.getHeight() / (float) size;
+                image = square;
+            }
             int mip = Minecraft.getMinecraft().gameSettings.mipmapLevels;
             BufferedImage[] levels = new BufferedImage[1 + mip];
             levels[0] = image;
@@ -55,5 +71,15 @@ final class WarheadSprite extends TextureAtlasSprite {
             GregGuns.LOG.error("Could not load the warhead texture {}", file, e);
             return true;
         }
+    }
+
+    /** @return the share of the sprite's width the texture covers, 1 for a square one */
+    float uScale() {
+        return uScale;
+    }
+
+    /** @return the share of the sprite's height the texture covers, 1 for a square one */
+    float vScale() {
+        return vScale;
     }
 }

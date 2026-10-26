@@ -7,7 +7,7 @@ import java.util.List;
 import com.gregguns.api.Tier;
 
 /**
- * The eight ICBM hardware parts the warhead recipes share, as plain data: registry name, tier, what the part is for,
+ * The ICBM hardware parts the warhead recipes share, as plain data: registry name, tier, what the part is for,
  * and its own Assembler recipe. Each is one GregGuns item ({@code IcbmParts}); {@code PartRecipes} registers the
  * recipe. Every part runs at its own tier's voltage with a unique programmed circuit. Both sides, no Minecraft types.
  */
@@ -46,7 +46,37 @@ public enum IcbmPart {
             Ing.gtItem("Cell_Empty", 2, Tier.LV, 0.25))),
     /** A Dispersal Canister filled with gasoline; the name carries the theme. */
     NAPALM_CANISTER("napalm_canister", Tier.HV, 3.5, 1, 18,
-        Arrays.asList(Ing.part(DISPERSAL_CANISTER, 1), Ing.fluid("Gasoline", 1000, Tier.HV)));
+        Arrays.asList(Ing.part(DISPERSAL_CANISTER, 1), Ing.fluid("Gasoline", 1000, Tier.HV))),
+    /** Engine of a T1 missile body (I2): a motor, a pump and a plate. */
+    MISSILE_ENGINE_MK1("missile_engine_mk1", Tier.HV, 5.5, 1, 19,
+        Arrays.asList(
+            Ing.gtItem("Electric_Motor_MV", 1, Tier.MV, 2.5),
+            Ing.gtItem("Electric_Pump_MV", 1, Tier.MV, 2.0),
+            Ing.gt("plate", "Steel", 1, Tier.LV, 1.0))),
+    /** Engine of a T2 missile body (I2). */
+    MISSILE_ENGINE_MK2("missile_engine_mk2", Tier.EV, 8.0, 1, 20,
+        Arrays.asList(
+            Ing.gtItem("Electric_Motor_HV", 1, Tier.HV, 4.0),
+            Ing.gtItem("Electric_Pump_HV", 1, Tier.HV, 3.0),
+            Ing.gt("plate", "StainlessSteel", 1, Tier.HV, 1.0))),
+    /** Guidance computer, HV: the base for a T1 body (I2). */
+    GUIDANCE_COMPUTER_MK1("guidance_computer_mk1", Tier.HV, 5.0, 1, 21,
+        Arrays.asList(
+            Ing.gt("circuit", "Advanced", 1, Tier.HV, 3.0),
+            Ing.gt("plate", "Steel", 1, Tier.LV, 1.0),
+            Ing.gt("wireFine", "Copper", 4, Tier.LV, 0.25))),
+    /** Guidance computer, EV: the base for a T2 body, one step of guidance on a T1 body (I2). */
+    GUIDANCE_COMPUTER_MK2("guidance_computer_mk2", Tier.EV, 8.0, 1, 22,
+        Arrays.asList(
+            Ing.gt("circuit", "Data", 1, Tier.EV, 5.0),
+            Ing.gt("plate", "Titanium", 1, Tier.EV, 1.0),
+            Ing.gt("wireFine", "Electrum", 4, Tier.HV, 0.5))),
+    /** Guidance computer, IV: the best a T1 or T2 body takes (I2). */
+    GUIDANCE_COMPUTER_MK3("guidance_computer_mk3", Tier.IV, 11.0, 1, 23,
+        Arrays.asList(
+            Ing.gt("circuit", "Elite", 1, Tier.IV, 8.0),
+            Ing.gt("plate", "TungstenSteel", 1, Tier.IV, 1.0),
+            Ing.gt("wireFine", "Platinum", 4, Tier.EV, 0.5)));
 
     private final String registryName;
     private final Tier tier;

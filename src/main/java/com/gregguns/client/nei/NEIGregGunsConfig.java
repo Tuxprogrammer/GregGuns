@@ -55,6 +55,14 @@ public class NEIGregGunsConfig implements IConfigureNEI {
 
     @Override
     public void loadConfig() {
+        // The NASA Workbench's missile builds, drawn in the shape of the missile (display only). Only when the ICBM
+        // module's recipes exist; its GT recipe map has no NEI tab of its own.
+        if (!com.gregguns.icbm.production.IcbmRecipeMaps.MISSILE_WORKBENCH.getAllRecipes()
+            .isEmpty()) {
+            MissileWorkbenchHandler handler = new MissileWorkbenchHandler();
+            API.registerRecipeHandler(handler);
+            API.registerUsageHandler(handler);
+        }
         // Content of a module that is off stays registered but is hidden from NEI. A filter provider (not a one-shot
         // API.hideItem list) because the flags in force change when the server's flags arrive at login.
         API.addItemFilter(() -> {

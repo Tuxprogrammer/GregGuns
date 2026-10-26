@@ -6,12 +6,12 @@ How a base fires: the launch-control block, targeting, the silo multiblock, and 
 
 ## Contents
 
-All sheets are planned.
+Sheets without a link are planned.
 
-- launch-control-block.md (planned): the block beside the pad, targeting by coordinates, data stick, ModularUI2 GUI (D13).
+- [launch-control-block.md](launch-control-block.md): the block beside the pad, targeting by coordinates, data stick, ModularUI2 GUI, redstone and cover triggers (D13).
 - silo-multiblock.md (planned): shape, hatches (fluid input, item input buses), EU use, mating body and warhead (D8, D22, D27).
-- launch-sequence.md (planned): checks, minimum range, scatter, firing by redstone or GT machine-controller cover, in-flight cap (D11, D24).
-- outputs-and-components.md (planned): redstone, covers, data sticks, OC components; links to [golden-dome.md](../01-core/golden-dome.md) (D13, D18).
+- [launch-sequence.md](launch-sequence.md): the pre-check, minimum range, the pad API and what each result means (D11, D24).
+- [outputs-and-components.md](outputs-and-components.md) (I2 inputs; outputs and OC planned for I4): redstone, covers, data sticks, OC components; links to [golden-dome.md](../01-core/golden-dome.md) (D13, D18).
 
 ## Integration map
 
@@ -24,7 +24,7 @@ All sheets are planned.
 | Energy (1,200 FE per shot) | EU | GT5-Unofficial | [0003](../../design/0003-energy-model.md) |
 | Silo fuel and missile feed | GT fluid input hatch; GT input bus | GT5-Unofficial | [D22, D27](../DECISIONS.md) |
 | Inaccuracy | Guidance tier sets scatter plus ICBM's distance term | GT circuits | [D24](../DECISIONS.md) |
-| Cruise launcher | Not mentioned in the decisions: to settle in the I2 sheet | to settle | [D10](../DECISIONS.md#d10-in-detail) |
+| Cruise launcher | Not shipped in I2; left for the owner's alpha review | none | [D10](../DECISIONS.md#d10-in-detail) |
 | Missile count limit | Config cap | none | [D11](../DECISIONS.md) |
 
 ## Decisions carried
@@ -45,5 +45,5 @@ None yet.
 
 ## Open questions
 
-- Whether a cruise launcher exists in GregGuns: to settle in the I2 sheet.
+- Whether a cruise launcher exists in GregGuns: not in I2 (see launch-control-block); owner's alpha review.
 - Silo footprint and hatch positions: to settle in the I3 silo sheet.

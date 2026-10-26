@@ -101,13 +101,23 @@ final class AutotestCommands {
                     Vec3.createVectorHelper(x, y + 0.5, z + 0.5));
             }
             case "nei" -> {
-                Item item = GameRegistry.findItem(GregGuns.MODID, args[1]);
+                // "name" is a GregGuns item; "modid:name[:meta]" any other mod's (a Galacticraft rocket, say).
+                String[] ref = args[1].split(":");
+                boolean other = ref.length >= 2;
+                Item item = GameRegistry.findItem(other ? ref[0] : GregGuns.MODID, other ? ref[1] : args[1]);
                 if (item == null) {
                     ClientAutotest.logLine("gui nei: no item " + args[1]);
                     return;
                 }
-                boolean opened = GuiCraftingRecipe.openRecipeGui("item", new ItemStack(item));
+                int meta = ref.length >= 3 ? Integer.parseInt(ref[2]) : 0;
+                boolean opened = GuiCraftingRecipe.openRecipeGui("item", new ItemStack(item, 1, meta));
                 ClientAutotest.logLine("gui nei " + args[1] + " opened=" + opened);
+            }
+            case "neirecipes" -> {
+                // A handler's whole recipe list by its outputId (for example a Galacticraft NASA Workbench rocket
+                // page).
+                boolean opened = GuiCraftingRecipe.openRecipeGui(args[1]);
+                ClientAutotest.logLine("gui neirecipes " + args[1] + " opened=" + opened);
             }
             case "neisearch" -> {
                 // Types into NEI's item-panel search field, like a player would; the inventory GUI must be open.

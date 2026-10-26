@@ -28,13 +28,15 @@ public final class StackDescriptor {
     private final boolean present;
     private final boolean gregGuns;
     private final Tier tier;
+    private final boolean upgrade;
 
-    private StackDescriptor(String label, Kind kind, boolean present, boolean gregGuns, Tier tier) {
+    private StackDescriptor(String label, Kind kind, boolean present, boolean gregGuns, Tier tier, boolean upgrade) {
         this.label = label;
         this.kind = kind;
         this.present = present;
         this.gregGuns = gregGuns;
         this.tier = tier;
+        this.upgrade = upgrade;
     }
 
     /**
@@ -47,7 +49,7 @@ public final class StackDescriptor {
      * @return the descriptor
      */
     public static StackDescriptor item(String label, boolean present, boolean gregGuns, Tier tier) {
-        return new StackDescriptor(label, Kind.ITEM, present, gregGuns, tier);
+        return new StackDescriptor(label, Kind.ITEM, present, gregGuns, tier, false);
     }
 
     /**
@@ -58,7 +60,7 @@ public final class StackDescriptor {
      * @return the descriptor
      */
     public static StackDescriptor oreDict(String label, boolean present) {
-        return new StackDescriptor(label, Kind.ORE_DICT, present, false, null);
+        return new StackDescriptor(label, Kind.ORE_DICT, present, false, null, false);
     }
 
     /**
@@ -69,14 +71,14 @@ public final class StackDescriptor {
      * @return the descriptor
      */
     public static StackDescriptor fluid(String label, boolean present) {
-        return new StackDescriptor(label, Kind.FLUID, present, false, null);
+        return new StackDescriptor(label, Kind.FLUID, present, false, null, false);
     }
 
     /**
      * @return a descriptor for a {@code null} entry in a shaped crafting grid
      */
     public static StackDescriptor emptySlot() {
-        return new StackDescriptor("empty slot", Kind.EMPTY_SLOT, false, false, null);
+        return new StackDescriptor("empty slot", Kind.EMPTY_SLOT, false, false, null, false);
     }
 
     /**
@@ -105,6 +107,21 @@ public final class StackDescriptor {
      */
     public boolean isGregGuns() {
         return gregGuns;
+    }
+
+    /**
+     * @return a copy of this descriptor marked as a tier upgrade: as a recipe input it may be of a higher tier than the
+     *         output (a guidance computer better than its body, D24)
+     */
+    public StackDescriptor asUpgrade() {
+        return new StackDescriptor(label, kind, present, gregGuns, tier, true);
+    }
+
+    /**
+     * @return whether this input is allowed to be of a higher tier than the recipe's output
+     */
+    public boolean isUpgrade() {
+        return upgrade;
     }
 
     /**

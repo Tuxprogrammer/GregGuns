@@ -628,7 +628,7 @@ M1's exit gate ("a dedicated server with two clients shows correct sync") and th
 | Client hooks | `com.gregguns.client.autotest` (`ClientAutotest`, `AutotestCommands`, `Screenshots`) | Active only when `DevEnvironment.isActive()` **and** the JVM property `-Dgregguns.autotest=<label>` is set; otherwise `ClientAutotest.init` returns before registering anything, so a released pack never runs any of it. Logs gun events and gregguns sounds, takes screenshots, obeys the server's signals. |
 | Signal protocol | `com.gregguns.core.testing.AutotestSignal` (unit-tested) | The server tells a client what to do with a chat line `[gregguns-autotest] <command> <args>`. The client hides the line. A console `say [gregguns-autotest] quit` works too. |
 | Server scenarios | `com.gregguns.gun.server.MpScenarios` (`mp.sync`, `mp.visual`) | Drive the clients with signals and check server state. Registered in the dev environment only. |
-| Orchestrator | `build/mp_check.py` (not committed; the orchestrator keeps a copy) | Boots the server and both clients, runs the scenarios, collects logs and screenshots, shuts everything down. |
+| Orchestrator | `tools/scenarios/mp_check.py` | Boots the server and one to four clients, runs console steps (scenarios, `say [gregguns-autotest] ...` signals, `wait`, `sh`), collects logs and screenshots, shuts everything down. The header comment has the full usage. |
 
 Client log lines all contain `[gregguns] AUTOTEST` and are greppable:
 
@@ -641,7 +641,7 @@ AUTOTEST sound gregguns:pistol_9mm.fire (client Bob)      # every gregguns sound
 AUTOTEST screenshot b-sees-a-shot <path>
 ```
 
-Signals run strictly in order on the client, and a `shot` waits for four rendered frames before the next command, so a GUI that stalls the client is still drawn and photographed before `close`. Signal commands: `view <0|1|2>` (first, third back, third front), `shot <label>` (screenshot at the end of the next frame), `arm <shot|reload> <label> <delayTicks>` (screenshot that many ticks after the next shot or reload event the client sees), `fire <n>` (hold the fire button for two ticks, n times, six ticks apart, through `GunInputHandler`, which also works without window focus), `gui inventory | creative <tab> | press <x> <y> <z> | nei <item>`, `hold <item>` (log the held stack and build its tooltip), `hud <on|off>` (off hides the GUI layer for clean worn-model shots), `creativegive <modid:name[:meta]>` (client-side creative slot packet), `close`, `quit`. Screenshots use vanilla `ScreenShotHelper` into `run/client/screenshots/<player>-<label>.png`.
+Signals run strictly in order on the client, and a `shot` waits for four rendered frames before the next command, so a GUI that stalls the client is still drawn and photographed before `close`. Signal commands: `view <0|1|2>` (first, third back, third front), `shot <label>` (screenshot at the end of the next frame), `arm <shot|reload> <label> <delayTicks>` (screenshot that many ticks after the next shot or reload event the client sees), `fire <n>` (hold the fire button for two ticks, n times, six ticks apart, through `GunInputHandler`, which also works without window focus), `gui inventory | creative <tab> | press <x> <y> <z> | nei <item or modid:name[:meta]> | neirecipes <NEI outputId>`, `hold <item>` (log the held stack and build its tooltip), `hud <on|off>` (off hides the GUI layer for clean worn-model shots), `creativegive <modid:name[:meta]>` (client-side creative slot packet), `close`, `quit`. Screenshots use vanilla `ScreenShotHelper` into `run/client/screenshots/<player>-<label>.png`.
 
 ### Look, use and build signals
 
@@ -691,7 +691,7 @@ The GTNH buildscript's `runClient` task (RetroFuturaGradle) takes everything on 
 ### Running the whole check
 
 ```sh
-python -I build/mp_check.py <server-worktree> <client-a-worktree> <client-b-worktree> [port] [out-dir]
+python -I tools/scenarios/mp_check.py <server-worktree> <client-a-worktree> <client-b-worktree> [--port N] [--out DIR] [--step "<console command>"]...
 ```
 
 It boots the server (flat, peaceful world; both users op), boots the two clients (users `Alice` and `Bob`), waits for `AUTOTEST joined` in both logs, runs `gregguns test mp.sync` and `gregguns test mp.visual` on the server console, checks the logs for the evidence lines, then shuts down (the clients quit on a `quit` signal, the server on `stop`; leftovers started from those checkouts are killed by command line). The orchestrator runs `mp.sync`, `mp.visual` and `mp.give` (every registered GregGuns item and the Ammo Press by direct server-side insert, then through the creative slot packet, each held for a few ticks so tooltip, HUD and renderer run). It aborts at once, with the exact line, on any failure signature in a log (`Connection Lost`, `Mod rejections`, `fatal error`, `lost connection`, `Crash Report`, `Exception`, `Caused by:`, `at com.gregguns`). Known noise it ignores: GT's NEI handler cache race in worker threads (`NEI-worker-thread`, not mentioning gregguns). Output in `<out-dir>`: `server.log`, `client-a.log`, `client-b.log`, `*-autotest.txt` (only the AUTOTEST lines), `summary.txt` and `shots/*.png`. Exit code 0 means both scenarios passed and every expected log line was present. Allow 10 to 15 minutes, most of it booting.

@@ -26,6 +26,7 @@ import com.gregguns.GregGuns;
 import com.gregguns.api.GregGunsComponent;
 import com.gregguns.api.HiddenFromCreativeTab;
 import com.gregguns.api.Tier;
+import com.gregguns.api.TierUpgrade;
 import com.gregguns.api.Tiered;
 import com.gregguns.core.module.ModuleState;
 import com.gregguns.item.part.PartCatalog;
@@ -296,8 +297,9 @@ public final class SelfCheckRunner {
         // Source (size 0 = not consumed):
         // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTRecipe.java#L1299-L1316
         // (parallel maths skips an input whose consumption is 0; GT's builder gives a programmed circuit size 0).
-        return StackDescriptor
+        StackDescriptor d = StackDescriptor
             .item(String.valueOf(name), StackPresence.isPresent(true, stack.stackSize, gtInput), gregGuns, tier);
+        return gregGuns && stack.getItem() instanceof TierUpgrade ? d.asUpgrade() : d;
     }
 
     private static boolean isGregGuns(ItemStack stack) {

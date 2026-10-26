@@ -34,7 +34,7 @@ public final class RecipeChecks {
 
         List<Tier> inputTiers = new ArrayList<>();
         for (StackDescriptor input : recipe.inputs()) {
-            inputTiers.add(input.isGregGuns() ? input.tier() : null);
+            inputTiers.add(input.isGregGuns() && !input.isUpgrade() ? input.tier() : null);
         }
         for (StackDescriptor output : recipe.outputs()) {
             if (!output.isGregGuns() || !output.isPresent()) {
