@@ -11,6 +11,8 @@ The rules for porting are in [CONTRIBUTING § Ported code (MIT)](CONTRIBUTING.md
 - **Branch and commit:** `prod/1.12` at `9c1d985a375adc2868ff47707b3a636452d0b63a` (every ported file's header links to this commit)
 - **License:** MIT, which applies to code only. ICBM-Classic's assets have their own license and are not used here.
 - **Used for:** the algorithms that the ICBM spec marks `MIT-portable`, rewritten in GregGuns style. Nothing is taken from ICBM-Classic's `prod/1.7` branch, which has no license.
+- **Ported files:**
+  - `src/main/java/com/gregguns/icbm/blast/BlastRayCaster.java`: the spherical ray sweep, from [`BlastNuclear.java` lines 34-124](https://github.com/BuiltBrokenModding/ICBM-Classic/blob/9c1d985a375adc2868ff47707b3a636452d0b63a/src/main/java/icbm/classic/content/blast/threaded/BlastNuclear.java#L34-L124) and [`ThreadSmallExplosion.java` lines 24-91](https://github.com/BuiltBrokenModding/ICBM-Classic/blob/9c1d985a375adc2868ff47707b3a636452d0b63a/src/main/java/icbm/classic/content/blast/thread/ThreadSmallExplosion.java#L24-L91). Tested by `BlastRayCasterTest`.
 
 ```
 MIT License

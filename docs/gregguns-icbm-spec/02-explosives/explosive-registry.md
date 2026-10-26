@@ -42,7 +42,7 @@ Center damage is `centerDamage * sqrt(fill / maxFill)`: a full casing meets the 
 
 ## Config
 
-See [config.md](../../config.md#icbm-blasts-icbm). `icbm.maxBlastTier` refuses a detonation of a higher tier. A blast removes terrain only when its `icbm.terrainDamageT<n>` key **and** `explosions.blockDamage` are on (D11 and the roadmap's "respects `explosions.blockDamage`"). `explosions.blockDamage` defaults to `false` in the pack, so a server that wants warhead craters sets it to `true`; see [PACK-CHANGES](../../gregguns-spec/PACK-CHANGES.md).
+See [config.md](../../config.md#icbm-blasts-icbm). `icbm.maxBlastTier` refuses a detonation of a higher tier. A blast removes terrain according to its `icbm.terrainDamageT<n>` key alone, on by default (D11, D52). `explosions.blockDamage` governs hand-held weapons and is not consulted, so warhead craters need no pack change. Claims and protection always apply.
 
 ## Requirements
 

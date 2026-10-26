@@ -19,10 +19,10 @@
 
 ## Stages of a blast
 
-1. **Accept** (`BlastEngine.start`): post `ExplosionEvent.Start` (a cancel refuses the blast), decide whether terrain may break, play the sound and particles, queue the job.
+1. **Accept** (`BlastEngine.start`): post `ExplosionEvent.Start` (a cancel refuses the blast), decide whether terrain may break (`TerrainRule`: the tier's `icbm.terrainDamageT<n>` only, never `explosions.blockDamage`, D52), play the sound and particles, queue the job.
 2. **Snapshot** (server thread, one slab per slice): copy the resistance of every block in the radius into `BlastGrid`. Unloaded chunks become a wall; the blast never loads a chunk (ICBM-02-95).
 3. **Cast** (worker thread): `BlastRayCaster` returns the reached cells, each once, nearest first.
-4. **Detonate** (server thread): post `ExplosionEvent.Detonate` with the cell list and the victim list; listeners may remove from either. Hurt the remaining victims on the damage ramp (or annihilate, see [annihilation](annihilation.md)). Keep the surviving cells in order.
+4. **Detonate** (server thread): post `ExplosionEvent.Detonate` with the cell list and the victim list; listeners may remove from either. Hurt the remaining victims on the damage ramp (or annihilate, see [annihilation](annihilation.md)). Every victim in the radius is also pushed away from the center on the same ramp (`Knockback`: 2.0 blocks per tick in the core, zero at the radius, reduced by knockback resistance; players get the vanilla push packet with no blocks). Knockback is part of the shared engine, so no blast type adds its own. Keep the surviving cells in order.
 5. **Apply** (server thread, slices under the shared budget): break 48 blocks per slice through `ProjectileExplosion.breakBlock`, skipping unloaded cells. No drops unless `icbm.blastDrops`.
 6. **Effect:** the type's `BlastEffect` ticks every server tick from acceptance; the blast ends when both the crater and the effect are done, and `onFinish` runs then (ICBM-02-11).
 
@@ -50,13 +50,13 @@ Fixed in the port:
 
 1. **GGI-02-10.** The world is read and changed on the server thread only; the worker sees a snapshot.
 2. **GGI-02-11.** All running blasts share one `TickBudget`, opened once per server tick at the end phase; the first blast in the rotation always gets one slice, and the rotation start moves each tick.
-3. **GGI-02-12.** A blast with terrain damage off breaks nothing, posts `Detonate` and still hurts entities.
+3. **GGI-02-12.** A blast with terrain damage off breaks nothing, posts `Detonate` and still hurts and pushes entities.
 4. **GGI-02-13.** A blast saved while breaking resumes with exactly the blocks left.
 5. **GGI-02-14.** A world unload cancels its blasts without touching the list being iterated.
 
 ## Tests
 
-Units: `BlastRayCasterTest`, `BlastSchedulerTest`, `BlastJobStateTest`, `DamageRampTest`. Scenarios: `icbm.blast.pipeline` (every explosive, three modes: allowed, `blockDamage` off, listener veto), `icbm.blast.budget` (three radius-18 blasts at once, worst tick against the budget), `icbm.blast.save_reload` (saved and reloaded mid-crater; blocks broken equal blocks pending at the save).
+Units: `BlastRayCasterTest`, `BlastSchedulerTest`, `BlastJobStateTest`, `DamageRampTest`, `KnockbackTest`, `TerrainRuleTest`. Scenarios: `icbm.blast.pipeline` (every explosive, three modes: allowed, the tier switch off, listener veto; `explosions.blockDamage` is set off in the allowed mode to prove it is ignored), `icbm.blast.budget` (three radius-18 blasts at once, worst tick against the budget), `icbm.blast.save_reload` (saved and reloaded mid-crater; blocks broken equal blocks pending at the save).
 
 ## Bugs avoided
 

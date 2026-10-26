@@ -35,6 +35,8 @@ public final class WarheadTooltipFormat {
         public String detailCap;
         /** Detail: the curve, no slots. */
         public String detailCurve;
+        /** Detail: the hand-lit fuse, one slot: seconds. */
+        public String detailFuse;
         /** Detail: the demolition use, no slots. */
         public String detailCharge;
         /** Detail: the explosive's special effect text, already localized; may be null. */
@@ -58,6 +60,8 @@ public final class WarheadTooltipFormat {
         public double centerDamage;
         /** True for nuclear and higher: shows the annihilation line instead of damage. */
         public boolean annihilates;
+        /** The hand-lit fuse, ticks (D51). */
+        public int fuseTicks;
     }
 
     /**
@@ -74,6 +78,14 @@ public final class WarheadTooltipFormat {
      */
     public static String radius(double radius) {
         return String.format(Locale.ROOT, "%.1f", radius);
+    }
+
+    /**
+     * @param ticks a fuse in ticks
+     * @return seconds, with one decimal only when not whole, such as {@code 6} or {@code 0.5}
+     */
+    public static String fuseSeconds(int ticks) {
+        return ticks % 20 == 0 ? Integer.toString(ticks / 20) : String.format(Locale.ROOT, "%.1f", ticks / 20.0);
     }
 
     /**
@@ -101,6 +113,9 @@ public final class WarheadTooltipFormat {
         out.add(l.detailCurve);
         if (l.detailEffect != null && !l.detailEffect.isEmpty()) {
             out.add(l.detailEffect);
+        }
+        if (l.detailFuse != null && f.fuseTicks > 0) {
+            out.add(String.format(l.detailFuse, fuseSeconds(f.fuseTicks)));
         }
         out.add(l.detailCharge);
         return out;

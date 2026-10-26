@@ -18,9 +18,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.world.WorldEvent;
 
 import com.gregguns.GregGuns;
-import com.gregguns.core.config.ExplosionsConfig;
 import com.gregguns.core.config.IcbmConfig;
-import com.gregguns.explosion.ExplosionRules;
 import com.gregguns.explosion.ProjectileExplosion;
 import com.gregguns.icbm.explosive.ExplosiveDef;
 import com.gregguns.icbm.explosive.Explosives;
@@ -96,10 +94,11 @@ public final class BlastEngine {
                 .toString();
             st.sourceName = source instanceof EntityPlayer ? "player:" + source.getCommandSenderName() : "";
         }
-        st.breaksTerrain = def.shape() != com.gregguns.icbm.explosive.BlastShape.NONE && ExplosionRules.mayBreakBlocks(
-            ExplosionsConfig.blockDamage && IcbmConfig.terrainDamage(
-                def.tier()
-                    .number()),
+        // D52: only the per-tier icbm.terrainDamageT<n> switch, never explosions.blockDamage (hand-held weapons).
+        st.breaksTerrain = TerrainRule.breaks(
+            def.shape(),
+            def.tier()
+                .number(),
             source instanceof EntityPlayer,
             world.getGameRules()
                 .getGameRuleBooleanValue("mobGriefing"));
@@ -119,6 +118,17 @@ public final class BlastEngine {
         int n = 0;
         for (BlastJob j : jobs) {
             n += j.pendingBlocks();
+        }
+        return n;
+    }
+
+    /** @return blasts whose crater is not decided yet (still copying or ray casting), so none of it is pending */
+    public int undecidedBlasts() {
+        int n = 0;
+        for (BlastJob j : jobs) {
+            if (j.craterUndecided()) {
+                n++;
+            }
         }
         return n;
     }

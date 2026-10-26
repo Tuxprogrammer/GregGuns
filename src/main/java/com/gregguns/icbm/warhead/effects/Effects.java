@@ -12,8 +12,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import com.gregguns.core.config.ExplosionsConfig;
+import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.explosion.BlockBreakGuard;
+import com.gregguns.explosion.ProjectileExplosion;
 import com.gregguns.icbm.explosive.BlastContext;
 import com.gregguns.icbm.explosive.BlastEffect;
 import com.gregguns.icbm.warhead.WarheadBlast;
@@ -21,7 +22,7 @@ import com.gregguns.icbm.warhead.WarheadBlast;
 /**
  * The effects of the T1 and T2 blast types (gas, fire, push, sonic, breaching and the small status effects), as
  * {@link BlastEffect}s for the shared registry. The engine already did terrain and the damage ramp; these add the rest.
- * Every block change asks {@link BlockBreakGuard} and obeys {@code explosions.blockDamage}. Server side.
+ * Every block change asks {@link BlockBreakGuard} and obeys {@code icbm.terrainDamageT<n>}. Server side.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/blast-types.md
 public final class Effects {
@@ -95,7 +96,10 @@ public final class Effects {
 
     /** @return true when blocks may be changed by this blast: the config allows it and the guard does not object */
     static boolean mayChange(BlastContext ctx, int x, int y, int z) {
-        if (!ExplosionsConfig.blockDamage) {
+        if (!IcbmConfig.terrainDamage(
+            ctx.explosive()
+                .tier()
+                .number())) {
             return false;
         }
         Block block = ctx.world()
@@ -290,6 +294,14 @@ public final class Effects {
             int cx = (int) Math.floor(ctx.x());
             int cy = (int) Math.floor(ctx.y());
             int cz = (int) Math.floor(ctx.z());
+            // Collect the tunnel first, so it goes through the same Detonate event and break path as every blast.
+            net.minecraft.world.Explosion vanilla = new net.minecraft.world.Explosion(
+                world,
+                null,
+                ctx.x(),
+                ctx.y(),
+                ctx.z(),
+                (float) Math.max(ctx.radius(), 3.0));
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     for (int step = 0; step < BREACH_DEPTH; step++) {
@@ -307,9 +319,25 @@ public final class Effects {
                         if (h < 0 || h > BREACH_MAX_HARDNESS || !mayChange(ctx, x, y, z)) {
                             break;
                         }
-                        world.setBlockToAir(x, y, z);
+                        vanilla.affectedBlockPositions.add(new net.minecraft.world.ChunkPosition(x, y, z));
                     }
                 }
+            }
+            // Listeners (claims, protection) may veto or trim the list; the survivors break through breakBlock.
+            net.minecraftforge.event.ForgeEventFactory
+                .onExplosionDetonate(world, vanilla, new java.util.ArrayList<net.minecraft.entity.Entity>(), 0.0);
+            EntityPlayer breaker = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
+            for (Object o : vanilla.affectedBlockPositions) {
+                net.minecraft.world.ChunkPosition pos = (net.minecraft.world.ChunkPosition) o;
+                ProjectileExplosion.breakBlock(
+                    world,
+                    vanilla,
+                    breaker,
+                    (float) vanilla.explosionSize,
+                    pos.chunkPosX,
+                    pos.chunkPosY,
+                    pos.chunkPosZ,
+                    IcbmConfig.blastDrops);
             }
             particles(ctx, "smoke", 20, 1.0);
         }

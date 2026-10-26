@@ -13,7 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.FakePlayer;
 
-import com.gregguns.core.config.ExplosionsConfig;
+import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
@@ -248,12 +248,22 @@ public final class WarheadScenarios {
             p.setCurrentItemOrArmor(0, new ItemStack(Items.flint_and_steel));
             boolean lit = block(WarheadCasing.T1).onBlockActivated(ctx.world(), x, y, z, p, 1, 0.5F, 0.5F, 0.5F);
             out.check(lit && tile.armed(), "flint and steel lights it");
-            out.checkEquals("fuse length", WarheadFuse.FUSE_TICKS, tile.fuse());
-            tile.arm(WarheadFuse.FUSE_TICKS + 50, null);
-            out.check(tile.fuse() <= WarheadFuse.FUSE_TICKS, "a lit fuse is never made longer");
+            int lit120 = tile.litFuseTicks();
+            out.checkEquals("fuse length follows the radius (D51)", lit120, tile.fuse());
+            out.check(lit120 > 60, "the fuse is longer than the 3 s reaction time");
+            tile.arm(lit120 + 50, null);
+            out.check(tile.fuse() <= lit120, "a lit fuse is never made longer");
             tile.arm(WarheadFuse.CHAIN_TICKS, null);
             out.checkEquals("a chain reaction shortens it", WarheadFuse.CHAIN_TICKS, tile.fuse());
             return out.build();
+        }
+    }
+
+    private static void killItems(World w, int x, int y, int z) {
+        for (Object o : w.getEntitiesWithinAABB(
+            net.minecraft.entity.item.EntityItem.class,
+            net.minecraft.util.AxisAlignedBB.getBoundingBox(x - 6, y - 2, z - 6, x + 6, y + 6, z + 6))) {
+            ((net.minecraft.entity.Entity) o).setDead();
         }
     }
 
@@ -267,7 +277,7 @@ public final class WarheadScenarios {
 
         @Override
         public String description() {
-            return "A 3-block warhead built with fillers breaks as one from its top cell and drops one item with the fill intact.";
+            return "A 3-block warhead breaks as one from its core, middle or top cell: one item with the fill, no orphan filler.";
         }
 
         @Override
@@ -294,30 +304,44 @@ public final class WarheadScenarios {
             ctx.setBlock(3, 0, 0, Blocks.stone, 0);
             ctx.setBlock(3, 2, 0, Blocks.stone, 0);
             out.check(!WarheadFillers.canPlace(w, x + 3, y, z, 3), "a blocked cell refuses placement");
-            // Break the top filler.
-            for (Object o : w.getEntitiesWithinAABB(
-                net.minecraft.entity.item.EntityItem.class,
-                net.minecraft.util.AxisAlignedBB.getBoundingBox(x - 6, y - 2, z - 6, x + 6, y + 6, z + 6))) {
-                ((net.minecraft.entity.Entity) o).setDead();
-            }
-            w.setBlockToAir(x, y + 2, z);
-            out.check(w.isAirBlock(x, y, z), "the main block is gone");
-            out.check(w.isAirBlock(x, y + 1, z), "the other filler is gone");
-            int items = 0;
-            int fill = -1;
-            for (Object o : w.getEntitiesWithinAABB(
-                net.minecraft.entity.item.EntityItem.class,
-                net.minecraft.util.AxisAlignedBB.getBoundingBox(x - 6, y - 2, z - 6, x + 6, y + 6, z + 6))) {
-                ItemStack s = ((net.minecraft.entity.item.EntityItem) o).getEntityItem();
-                if (s.getItem() == Item.getItemFromBlock(block(WarheadCasing.T1))) {
-                    items++;
-                    fill = WarheadStacks.read(WarheadCasing.T1, s)
-                        .fill();
-                    ((net.minecraft.entity.Entity) o).setDead();
+            // A solid block in the way stops placement; clear it again for the break runs.
+            ctx.setBlock(3, 0, 0, Blocks.air, 0);
+            ctx.setBlock(3, 2, 0, Blocks.air, 0);
+            // Break each cell in turn (core, middle filler, top filler): the whole warhead goes, one item drops, and
+            // no orphan filler is left. The warhead is rebuilt before every run.
+            for (int cell = 0; cell < 3; cell++) {
+                if (cell > 0) {
+                    TileWarhead again = place(ctx, WarheadCasing.T1, 0, 0, 0, "shrapnel", 4);
+                    if (again == null) {
+                        return ScenarioResult.fail(name(), "no tile for run " + cell);
+                    }
+                    again.setHeight(3);
+                    WarheadFillers.place(w, x, y, z, 3);
                 }
+                killItems(w, x, y, z);
+                String at = "cell " + cell + ": ";
+                w.setBlockToAir(x, y + cell, z);
+                for (int dy = 0; dy < 3; dy++) {
+                    out.check(w.isAirBlock(x, y + dy, z), at + "cell " + dy + " is air (no orphan filler)");
+                }
+                int items = 0;
+                int fill = -1;
+                for (Object o : w.getEntitiesWithinAABB(
+                    net.minecraft.entity.item.EntityItem.class,
+                    net.minecraft.util.AxisAlignedBB.getBoundingBox(x - 6, y - 2, z - 6, x + 6, y + 6, z + 6))) {
+                    ItemStack s = ((net.minecraft.entity.item.EntityItem) o).getEntityItem();
+                    // Items killed by the previous run stay in the chunk list until the next world tick.
+                    if (!((net.minecraft.entity.Entity) o).isDead
+                        && s.getItem() == Item.getItemFromBlock(block(WarheadCasing.T1))) {
+                        items++;
+                        fill = WarheadStacks.read(WarheadCasing.T1, s)
+                            .fill();
+                    }
+                }
+                out.checkEquals(at + "exactly one warhead item dropped", 1, items);
+                out.checkEquals(at + "the drop keeps its fill", 4, fill);
             }
-            out.checkEquals("exactly one warhead item dropped", 1, items);
-            out.checkEquals("the drop keeps its fill", 4, fill);
+            killItems(w, x, y, z);
             return out.build();
         }
     }
@@ -365,23 +389,33 @@ public final class WarheadScenarios {
                     }
                 }
             }
-            ctx.setBlock(3, 1, 0, Blocks.glass, 0);
+            // Off the cow's line (+X), or the pane stops a pulled cow short and the pull check becomes a coin flip.
+            ctx.setBlock(0, 1, 3, Blocks.glass, 0);
             EntityCow cow = ctx.spawnAt(new EntityCow(w), ox + 4.5, oy, oz + 0.5, 0, 0);
-            boolean oldDamage = ExplosionsConfig.blockDamage;
-            ExplosionsConfig.blockDamage = true;
+            boolean oldT1 = IcbmConfig.terrainDamageT1;
+            boolean oldT2 = IcbmConfig.terrainDamageT2;
+            IcbmConfig.terrainDamageT1 = true;
+            IcbmConfig.terrainDamageT2 = true;
             boolean accepted = IcbmBlasts.detonate(w, ox + 0.5, oy + 0.5, oz + 0.5, def, def.maxFill(), null);
             if (!accepted) {
-                ExplosionsConfig.blockDamage = oldDamage;
+                IcbmConfig.terrainDamageT1 = oldT1;
+                IcbmConfig.terrainDamageT2 = oldT2;
                 return ScenarioResult.fail(name(), "the engine did not accept the blast");
             }
+            final double[] extremes = { cow.posX, cow.posX };
             return ScenarioResult.pending(name(), 900, ticks -> {
+                // A cow wanders for 200 ticks, so push and pull are judged on the farthest it ever got, not where it
+                // stands at the end (the cause of the intermittent icbm.blast.attractive failure).
+                extremes[0] = Math.min(extremes[0], cow.posX);
+                extremes[1] = Math.max(extremes[1], cow.posX);
                 boolean done = ticks >= settleTicks();
                 if (!done) {
                     return null;
                 }
-                ExplosionsConfig.blockDamage = oldDamage;
+                IcbmConfig.terrainDamageT1 = oldT1;
+                IcbmConfig.terrainDamageT2 = oldT2;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
-                check(out, ctx, def, cow);
+                check(out, ctx, def, cow, extremes);
                 return out.build();
             });
         }
@@ -398,7 +432,8 @@ public final class WarheadScenarios {
             }
         }
 
-        private void check(ScenarioResult.Builder out, ScenarioContext ctx, ExplosiveDef def, EntityCow cow) {
+        private void check(ScenarioResult.Builder out, ScenarioContext ctx, ExplosiveDef def, EntityCow cow,
+            double[] extremes) {
             World w = ctx.world();
             int ox = ctx.originX();
             int oy = ctx.originY();
@@ -439,14 +474,14 @@ public final class WarheadScenarios {
                     out.check(w.getBlock(ox, oy - 1, oz) == Blocks.stone, "smoke removes no terrain");
                     break;
                 case REPEL:
-                    out.check(cow.posX > ox + 4.5 || cow.motionX > 0.0, "the cow was thrown outward");
+                    out.check(extremes[1] > ox + 5.5, "the cow was thrown outward, max X " + extremes[1]);
                     break;
                 case ATTRACT:
-                    out.check(cow.posX < ox + 4.5 || cow.motionX < 0.0, "the cow was pulled inward");
+                    out.check(extremes[0] < ox + 3.5, "the cow was pulled inward, min X " + extremes[0]);
                     break;
                 case SONIC:
                     out.check(cow.isPotionActive(Potion.confusion), "sonic stuns");
-                    out.check(w.isAirBlock(ox + 3, oy + 1, oz), "sonic shatters glass");
+                    out.check(w.isAirBlock(ox, oy + 1, oz + 3), "sonic shatters glass");
                     break;
                 case BREACH:
                     out.check(w.isAirBlock(ox, oy - 5, oz), "the breaching tunnel runs down");
@@ -459,7 +494,7 @@ public final class WarheadScenarios {
         }
     }
 
-    /** With explosions.blockDamage off, a crater blast leaves the terrain alone (D11). */
+    /** With icbm.terrainDamageT1 off, a crater blast leaves the terrain alone (D11). */
     private static final class BlockDamageOff extends Base {
 
         @Override
@@ -469,7 +504,7 @@ public final class WarheadScenarios {
 
         @Override
         public String description() {
-            return "With explosions.blockDamage false a condensed warhead removes no blocks.";
+            return "With icbm.terrainDamageT1 false a condensed warhead removes no blocks.";
         }
 
         @Override
@@ -483,8 +518,8 @@ public final class WarheadScenarios {
                     ctx.setBlock(dx, -1, dz, Blocks.stone, 0);
                 }
             }
-            boolean old = ExplosionsConfig.blockDamage;
-            ExplosionsConfig.blockDamage = false;
+            boolean old = IcbmConfig.terrainDamageT1;
+            IcbmConfig.terrainDamageT1 = false;
             ExplosiveDef def = Explosives.get("condensed");
             World w = ctx.world();
             boolean accepted = IcbmBlasts
@@ -493,7 +528,7 @@ public final class WarheadScenarios {
                 if (ticks < 100) {
                     return null;
                 }
-                ExplosionsConfig.blockDamage = old;
+                IcbmConfig.terrainDamageT1 = old;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(accepted, "the blast ran");
                 out.check(

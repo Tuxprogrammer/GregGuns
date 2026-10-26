@@ -359,7 +359,7 @@ public final class ProjectileExplosion {
      * @param push the velocity to add to the player
      * @return a vanilla explosion packet with an empty block list
      */
-    static S27PacketExplosion pushPacket(double x, double y, double z, float size, Vec3 push) {
+    public static S27PacketExplosion pushPacket(double x, double y, double z, float size, Vec3 push) {
         return new S27PacketExplosion(x, y, z, size, new ArrayList<ChunkPosition>(), push);
     }
 

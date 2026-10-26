@@ -21,8 +21,12 @@ public final class WarheadBlasts {
      */
     public static ExplosiveDef define(WarheadBlast blast) {
         int cap = blast.fillCap();
-        return ExplosiveDef.builder(blast.id(), blast.tier())
-            .shape(blast.shape())
+        ExplosiveDef.Builder b = ExplosiveDef.builder(blast.id(), blast.tier());
+        if (blast.kind() == WarheadBlast.Kind.REPEL || blast.kind() == WarheadBlast.Kind.ATTRACT) {
+            // Their effect owns the motion (Effects.Push); the engine's outward knockback would cancel the pull.
+            b.ownsMotion();
+        }
+        return b.shape(blast.shape())
             .maxFill(cap)
             .baseRadius(WarheadMath.baseRadius(blast.fullRadius(), cap))
             .radiusExponent(WarheadMath.RADIUS_EXPONENT)

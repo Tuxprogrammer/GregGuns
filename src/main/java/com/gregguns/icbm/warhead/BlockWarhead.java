@@ -175,7 +175,7 @@ public final class BlockWarhead extends BlockContainer implements Tiered {
         }
         TileEntity tile = world.getTileEntity(x, y, z);
         if (tile instanceof TileWarhead) {
-            ((TileWarhead) tile).arm(WarheadFuse.FUSE_TICKS, null);
+            ((TileWarhead) tile).arm(((TileWarhead) tile).litFuseTicks(), null);
         }
     }
 
@@ -187,7 +187,8 @@ public final class BlockWarhead extends BlockContainer implements Tiered {
             return false;
         }
         if (!world.isRemote && world.getTileEntity(x, y, z) instanceof TileWarhead) {
-            ((TileWarhead) world.getTileEntity(x, y, z)).arm(WarheadFuse.FUSE_TICKS, player);
+            TileWarhead lit = (TileWarhead) world.getTileEntity(x, y, z);
+            lit.arm(lit.litFuseTicks(), player);
             if (held.getItem() == Items.flint_and_steel) {
                 held.damageItem(1, player);
             } else if (!player.capabilities.isCreativeMode) {

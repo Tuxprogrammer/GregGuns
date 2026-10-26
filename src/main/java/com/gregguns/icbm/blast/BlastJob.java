@@ -10,8 +10,11 @@ import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
@@ -105,6 +108,11 @@ final class BlastJob implements BlastTask {
     /** @return blocks still to break */
     int pendingBlocks() {
         return st.stage == BlastJobState.Stage.APPLY ? st.remainingEdits() : 0;
+    }
+
+    /** @return true while the crater is not yet decided (snapshot or cast stage) */
+    boolean craterUndecided() {
+        return st.stage == BlastJobState.Stage.SNAPSHOT || st.stage == BlastJobState.Stage.CAST;
     }
 
     /** @return blocks broken so far (this run) */
@@ -348,6 +356,41 @@ final class BlastJob implements BlastTask {
             if (amount > 0.0) {
                 DamageSources.strike(victim, DamageType.EXPLOSION, source, (float) amount, 0.0);
             }
+            if (!def.ownsMotion()) {
+                push(victim, dx, victim.posY + victim.height / 2.0 - st.y, dz);
+            }
+        }
+    }
+
+    /** Shared knockback for every conventional blast: away from the center, scaled by {@link Knockback}. */
+    private void push(Entity victim, double dx, double dy, double dz) {
+        if (victim.isDead) {
+            return;
+        }
+        double[] v = Knockback.velocity(st.radius, dx, dy, dz);
+        if (v[0] == 0.0 && v[1] == 0.0 && v[2] == 0.0) {
+            return;
+        }
+        double keep = 1.0;
+        if (victim instanceof EntityLivingBase) {
+            keep -= ((EntityLivingBase) victim).getEntityAttribute(SharedMonsterAttributes.knockbackResistance)
+                .getAttributeValue();
+        }
+        if (keep <= 0.0) {
+            return;
+        }
+        victim.motionX += v[0] * keep;
+        victim.motionY += v[1] * keep;
+        victim.motionZ += v[2] * keep;
+        victim.velocityChanged = true;
+        if (victim instanceof EntityPlayerMP) {
+            ((EntityPlayerMP) victim).playerNetServerHandler.sendPacket(
+                ProjectileExplosion.pushPacket(
+                    st.x,
+                    st.y,
+                    st.z,
+                    (float) st.radius,
+                    Vec3.createVectorHelper(v[0] * keep, v[1] * keep, v[2] * keep)));
         }
     }
 
