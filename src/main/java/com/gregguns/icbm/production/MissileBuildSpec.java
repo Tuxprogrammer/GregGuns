@@ -173,6 +173,15 @@ public enum MissileBuildSpec {
     }
 
     /**
+     * @return the control circuits the Assembly Line wires into the body, in place of the guidance computer (GT's line
+     *         needs at least four item inputs); the same circuit family as the tier's chip
+     */
+    public Ing lineCircuits() {
+        return number == 1 ? Ing.gt("circuit", "Advanced", 2, Tier.HV, 3.0)
+            : Ing.gt("circuit", "Data", 2, Tier.EV, 5.0);
+    }
+
+    /**
      * @return the programmed circuit of this tier's guidance-fit Assembler recipes (the inputs, a body, already keep
      *         them apart from every other recipe)
      */

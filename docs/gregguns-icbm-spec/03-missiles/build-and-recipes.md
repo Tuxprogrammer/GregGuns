@@ -19,7 +19,7 @@
 1. **Missile Chip Tn**, in the GT **Circuit Assembler**, at the tier's voltage.
 2. **Missile Schematic Tn**, in the GT **Laser Engraver**, from the chip and a non-consumed lens, at the tier's voltage.
 3. The schematic goes into a Galacticraft **NASA Workbench**'s schematic slot and unlocks a page (`SchematicRegistry`, one `ISchematicPage` per tier). The page builds the body by hand.
-4. Or, for automation, **one Assembly Line recipe per tier** behind a research data stick. It makes the guidance-0 body (plates, fins, engine, lubricant; no computer). The research item is the hand-built T-n body: a player scans one into a GT Data Stick in the Scanner, so hand building comes first and the line opens once the player owns an Assembly Line (D27). Each tier has its own research item because GT's scanner keeps only the first recipe that matches a research item.
+4. Or, for automation, **one Assembly Line recipe per tier** behind a research data stick. It makes the guidance-0 body (plates, fins, engine, two circuits and lubricant; no computer, and GT's line needs four item inputs). The research item is the hand-built T-n body: a player scans one into a GT Data Stick in the Scanner, so hand building comes first and the line opens once the player owns an Assembly Line (D27). Each tier has its own research item because GT's scanner keeps only the first recipe that matches a research item.
 5. A guidance computer is fitted by an **Assembler** recipe: body + computer -> the body with that guidance (one recipe per computer that gives at least one step; 15 s at the body's voltage, programmed circuit 1 for T1 and 2 for T2).
 
 ### Numbers (`MissileBuildSpec`, unit tested)
@@ -33,7 +33,7 @@
 | Engine | Missile Engine Mk I | Missile Engine Mk II |
 | Guidance computers accepted | Mk I (0 steps), Mk II (1), Mk III (2) | Mk II (0), Mk III (1) |
 | Research (Assembly Line) | scan 60 s at HV | scan 120 s at EV |
-| Assembly Line recipe (guidance-0 body) | HV, 30 s, 250 L lubricant, plates + fins + engine | EV, 45 s, 250 L lubricant, plates + fins + engine |
+| Assembly Line recipe (guidance-0 body) | HV, 30 s, 250 L lubricant, plates + fins + engine + 2 Advanced circuits | EV, 45 s, 250 L lubricant, plates + fins + engine + 2 Data circuits |
 | Guidance fit (Assembler) | HV, 15 s, circuit 1: body + Mk II (1 step) or Mk III (2 steps) | EV, 15 s, circuit 2: body + Mk III (1 step) |
 | Body cost, cheapest computer (D34 plate equivalents) | 18.5 (test band 14 to 22) | 26 (band 22 to 30) |
 

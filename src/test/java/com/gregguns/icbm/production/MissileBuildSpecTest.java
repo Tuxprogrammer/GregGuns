@@ -52,8 +52,14 @@ class MissileBuildSpecTest {
     @Test
     void bodyInputsFitTheAssemblyLineAndTheEngineIsAtOrBelowTheTier() {
         for (MissileBuildSpec s : MissileBuildSpec.values()) {
-            // plates, fins, engine and guidance computer each take one slot
-            assertTrue(4 <= LINE_ITEMS);
+            // plates, fins, engine and circuits: GT's line needs 4 to 16 item inputs
+            assertTrue(4 >= 4 && 4 <= LINE_ITEMS);
+            assertTrue(
+                s.lineCircuits()
+                    .tier()
+                    .voltageIndex()
+                    <= s.tier()
+                        .voltageIndex());
             assertTrue(
                 s.engine()
                     .tier()
