@@ -216,7 +216,8 @@ public final class BlastRayCaster {
                             break;
                         }
                         if (cell != BlastGrid.AIR) {
-                            power -= BlastGrid.resistance(cell);
+                            // Resistance is spread over the steps a block takes, as the vanilla grid does.
+                            power -= BlastGrid.resistance(cell) * GRID_STEP;
                         }
                         if (power > 0.0 && cell != BlastGrid.AIR) {
                             int idx = grid.index(cx, cy, cz);

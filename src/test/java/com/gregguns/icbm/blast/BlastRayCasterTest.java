@@ -147,6 +147,14 @@ class BlastRayCasterTest {
     }
 
     @Test
+    void theSmallCasterCratersStoneToAFewBlocks() {
+        // Stone is resistance 2: a radius-8 grid blast must clear a real crater, not one block.
+        BlastGrid g = solid(BlastGrid.encode(2.0F));
+        int[] cells = BlastRayCaster.castGrid(g, 8, 0.5, 0.5, 0.5, new Random(3), () -> false);
+        assertTrue(cells.length > 40, "cells " + cells.length);
+    }
+
+    @Test
     void packingRoundTripsOffsets() {
         for (int v : new int[] { -255, -1, 0, 1, 255 }) {
             int p = BlastPacking.pack(v, -v, v);
