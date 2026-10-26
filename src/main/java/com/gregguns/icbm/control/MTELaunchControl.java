@@ -63,7 +63,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
     static final double USE_DISTANCE = 8.0;
     private static final int HV = 3;
     private static final int SNAPSHOT_TICKS = 5;
-    private static final String OVERLAY_DIR = "machines/launch_control/";
+    private static final String OVERLAY_DIR = "machines/thirdparty/ntm/launch_control/";
     private static final String K_X = "tx";
     private static final String K_Z = "tz";
     private static final String K_HAS_X = "hasX";

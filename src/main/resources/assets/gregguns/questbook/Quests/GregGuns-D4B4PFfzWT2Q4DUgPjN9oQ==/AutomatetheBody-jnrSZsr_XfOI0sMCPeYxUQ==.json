@@ -17,13 +17,13 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Scan one hand-built body into a Data Stick in the Scanner, then the Assembly Line builds that body from the same parts plus 250 L of lubricant: 30 seconds for Tier 1, 45 for Tier 2.",
+      "desc:8": "Scan one hand-built body into a Data Stick in the Scanner, then the Assembly Line builds the basic body from plates, fins, an engine, 2 circuits (Advanced for Tier 1, Data for Tier 2) and 250 L of lubricant: 30 seconds for Tier 1, 45 for Tier 2. A better Guidance Computer is fitted afterwards in the Assembler: put the body and the computer in, and the same body comes out with that guidance.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
         "Damage:2": 0,
         "OreDict:8": "",
-        "id:8": "gregguns:warhead_t1"
+        "id:8": "gregguns:missile_body_t1"
       },
       "isGlobal:1": 0,
       "isMain:1": 0,
