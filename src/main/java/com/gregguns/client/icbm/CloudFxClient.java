@@ -113,6 +113,12 @@ public final class CloudFxClient {
                 // A shorter, fixed life keeps the live particle count bounded (vanilla caps one layer at 4,000).
                 particleMaxAge = PARTICLE_AGE_MIN + RND.nextInt(PARTICLE_AGE_SPAN) + (plume ? 30 : 0);
             }
+
+            /** Full bright: the tint is the cloud's color, not the (often dark) light at the particle. */
+            @Override
+            public int getBrightnessForRender(float partialTicks) {
+                return 0xF000F0;
+            }
         };
         float shade = 0.85F + RND.nextFloat() * 0.3F;
         fx.setRBGColorF(

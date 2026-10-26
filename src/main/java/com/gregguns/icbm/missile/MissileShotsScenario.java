@@ -53,14 +53,26 @@ public final class MissileShotsScenario implements Scenario {
     /** Ticks between camera moves and shots; the software-rendered client is slow. */
     private static final int GAP = 90;
     private static final int DISTANCE = 70;
-    private static final int FLIGHT_STEP = 22;
+    private static final int FLIGHT_STEP = 10;
     private static final int FLIGHT_FRAMES = 40;
     private static final String[][] GASES = { { "chemical", "chem" }, { "debilitation", "debil" }, { "smoke", "smoke" },
         { "contagious", "contag" } };
 
+    private final boolean cloudsOnly;
+
+    /** The full walkthrough. */
+    public MissileShotsScenario() {
+        this(false);
+    }
+
+    /** @param cloudsOnly true for the short variant that photographs only the gas clouds and the plume */
+    public MissileShotsScenario(boolean cloudsOnly) {
+        this.cloudsOnly = cloudsOnly;
+    }
+
     @Override
     public String name() {
-        return NAME;
+        return cloudsOnly ? "testing.icbm_cloud_shots" : NAME;
     }
 
     @Override
@@ -216,6 +228,14 @@ public final class MissileShotsScenario implements Scenario {
         final double c2x = ox + t2x + 0.5;
 
         plan.after(5, () -> signal(p, "hud", "off"));
+        if (cloudsOnly) {
+            plan.after(60, () -> scheduleGas(p, w, ox, oy, oz, plan, out));
+            return ScenarioResult.pending(name(), 6000, t -> {
+                plan.run(t);
+                return plan.idle() ? out.note("read the icbm2-gas-*.png and icbm2-plume-*.png shots")
+                    .build() : null;
+            });
+        }
         plan.after(120, () -> {
             if (w.getBlock(ox, oy, oz) != GCBlocks.landingPadFull
                 || w.getBlock(ox + t2x, oy, oz) != GCBlocks.landingPadFull) {
@@ -318,8 +338,8 @@ public final class MissileShotsScenario implements Scenario {
                 ez = Math.max(ez, mz - 16);
                 cam(p, ex, ey, ez, mx, my, mz);
                 final int n = flight[0];
-                plan.after(12, () -> signal(p, "shot", String.format("icbm2-flight-%02d", n)));
-                plan.after(FLIGHT_STEP + 6, this);
+                plan.after(5, () -> signal(p, "shot", String.format("icbm2-flight-%02d", n)));
+                plan.after(FLIGHT_STEP + 2, this);
             }
         });
         // 4. impact: wait for the missile to be dead, then the crater
@@ -336,9 +356,9 @@ public final class MissileShotsScenario implements Scenario {
                 final double tcx = ox + 0.5;
                 final double tcz = oz + tz + 0.5;
                 plan.after(15, () -> cam(p, tcx - 22, oy + 14, tcz - 22, tcx, oy, tcz));
-                plan.after(GAP + 40, () -> signal(p, "shot", "icbm2-impact-crater-34"));
+                plan.after(GAP + 200, () -> signal(p, "shot", "icbm2-impact-crater-34"));
                 plan.after(10, () -> cam(p, tcx, oy + 30, tcz - 2, tcx, oy - 2, tcz));
-                plan.after(GAP, () -> signal(p, "shot", "icbm2-impact-crater-top"));
+                plan.after(GAP + 100, () -> signal(p, "shot", "icbm2-impact-crater-top"));
                 scheduleGas(p, w, ox, oy, oz, plan, out);
             }
         });
@@ -383,7 +403,7 @@ public final class MissileShotsScenario implements Scenario {
                 }
                 cam(p, gx - 28, oy + 12, gz - 28, gx, oy + 3, gz);
             });
-            plan.after(GAP, () -> {
+            plan.after(GAP + 200, () -> {
                 boolean ok = IcbmBlasts.detonate(w, gx, gy, gz, Explosives.get(ex), 3, null);
                 out.check(ok, ex + " blast accepted");
             });
@@ -408,7 +428,7 @@ public final class MissileShotsScenario implements Scenario {
             }
             cam(p, px - 45, oy + 16, pz - 45, px, oy + 10, pz);
         });
-        plan.after(GAP, () -> {
+        plan.after(GAP + 200, () -> {
             boolean prev = IcbmConfig.terrainDamageT2;
             IcbmConfig.terrainDamageT2 = true;
             out.check(IcbmBlasts.detonate(w, px, oy + 1.0, pz, Explosives.get("thermobaric"), 3, null), "plume blast");

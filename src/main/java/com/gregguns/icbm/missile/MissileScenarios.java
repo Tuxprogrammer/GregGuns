@@ -44,6 +44,7 @@ public final class MissileScenarios {
         registry.register(new ShotDown());
         registry.register(new PadSurvives());
         registry.register(new MissileShotsScenario());
+        registry.register(new MissileShotsScenario(true));
         registry.register(new MissileMpScenario());
     }
 
