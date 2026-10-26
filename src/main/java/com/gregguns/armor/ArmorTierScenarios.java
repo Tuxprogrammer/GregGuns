@@ -6,6 +6,7 @@ import java.util.UUID;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
@@ -86,18 +87,6 @@ final class ArmorTierScenarios {
                 return all;
             }
         });
-        registry.register(
-            new Recipes(
-                "armor.steam.recipes",
-                "Steam Armor Plating and the four steam armor pieces on the EV Assembler.") {
-
-                @Override
-                List<ProductionTable.Row> rows() {
-                    List<ProductionTable.Row> all = new java.util.ArrayList<>(ArmorTable.STEAM);
-                    all.add(ArmorTable.STEAM_PLATING);
-                    return all;
-                }
-            });
     }
 
     /** A fake player whose {@code damageEntity} can be called directly (a fresh server player is invulnerable). */
@@ -578,7 +567,9 @@ final class ArmorTierScenarios {
         return n;
     }
 
-    /** Steam armor: bonuses need compressed air; the chestplate burns it and a tank refuels it. */
+    /**
+     * Steam armor: bonuses need fuel; the chestplate burns Coal or Charcoal (900 units each) or a Compressed Air Tank.
+     */
     private static final class SteamPower implements Scenario {
 
         @Override
@@ -588,7 +579,7 @@ final class ArmorTierScenarios {
 
         @Override
         public String description() {
-            return "Steam armor: empty gives only protection (physical 20, 8 projectile loses 6.4) and HEAT cover; charged gives speed x1.2, +5 health, knockback 0.80; walking, jump and fall cost units; a Compressed Air Tank refuels.";
+            return "Steam armor: empty gives only protection (physical 14, 8 projectile loses 4.48) and HEAT cover; charged gives speed x1.16, +2.5 health, knockback 0.35; walking, jump and fall cost units; Coal refuels 900 units while there is room, a Compressed Air Tank refuels an empty chestplate.";
         }
 
         @Override
@@ -604,8 +595,8 @@ final class ArmorTierScenarios {
                 out.check(near(0.0, knockback(p)), "no air: no knockback resistance");
                 out.check(near(20.0, p.getMaxHealth()), "no air: no extra health, got " + p.getMaxHealth());
                 out.check(units(p) == 0, "a crafted chestplate starts empty");
-                out.checkEquals("vanilla armor bar 5+6+5+4", 20, p.getTotalArmorValue());
-                checkHit(out, p, DamageType.PROJECTILE, 20.0, 0.0, 0.10);
+                out.checkEquals("vanilla armor bar 4+4+4+3", 15, p.getTotalArmorValue());
+                checkHit(out, p, DamageType.PROJECTILE, 14.0, 0.0, 0.05);
                 out.check(
                     HazardProtection.isWearingFullHazmatAgainst(p, Hazard.HEAT),
                     "heat insulation does not need air");
@@ -615,16 +606,16 @@ final class ArmorTierScenarios {
                 ItemStack chest = p.worn(ArmorSlot.CHESTPLATE);
                 chestItem.setPowerUnits(chest, 3600);
                 events.update(p);
-                out.check(near(1.2, speedFactor(p)), "charged: speed x1.2, got " + speedFactor(p));
-                out.check(near(0.80, knockback(p)), "charged: knockback 0.80, got " + knockback(p));
-                out.check(near(25.0, p.getMaxHealth()), "charged: +5 health, got " + p.getMaxHealth());
-                out.check(near(0.24, Armor.bonus(p, ArmorBonus.JUMP)), "charged: jump 0.03 x3 + 0.15");
-                out.check(near(0.20, Armor.bonus(p, ArmorBonus.BREAK_SPEED)), "charged: mining +0.20");
+                out.check(near(1.16, speedFactor(p)), "charged: speed x1.16, got " + speedFactor(p));
+                out.check(near(0.35, knockback(p)), "charged: knockback 0.35, got " + knockback(p));
+                out.check(near(22.5, p.getMaxHealth()), "charged: +2.5 health, got " + p.getMaxHealth());
+                out.check(near(0.16, Armor.bonus(p, ArmorBonus.JUMP)), "charged: jump 0.02 x3 + 0.10");
+                out.check(near(0.12, Armor.bonus(p, ArmorBonus.BREAK_SPEED)), "charged: mining +0.12");
                 out.check(Armor.bonus(p, ArmorBonus.STEP_ASSIST) > 0.0, "charged: step assist from the boots");
                 BreakSpeed dig = new BreakSpeed(p, Blocks.stone, 0, 4.0F, 0, 0, 0);
                 MinecraftForge.EVENT_BUS.post(dig);
-                out.check(near(4.0 * 1.2, dig.newSpeed), "charged: mining x1.2, got " + dig.newSpeed);
-                checkHit(out, p, DamageType.ENERGY, 16.0, 0.0, 0.10);
+                out.check(near(4.0 * 1.12, dig.newSpeed), "charged: mining x1.12, got " + dig.newSpeed);
+                checkHit(out, p, DamageType.ENERGY, 10.5, 0.0, 0.05);
 
                 // Costs.
                 ArmorPower.tick(p, true, 40L);
@@ -649,7 +640,22 @@ final class ArmorTierScenarios {
                 Item cell = ItemList.Cell_Empty.get(1)
                     .getItem();
                 out.check(count(p, cell) >= 1, "an empty cell comes back");
-                out.check(near(1.2, speedFactor(p)), "refueled: speed x1.2, got " + speedFactor(p));
+                out.check(near(1.16, speedFactor(p)), "refueled: speed x1.16, got " + speedFactor(p));
+
+                // Coal: 900 units while there is room for all of them, nothing wasted near full.
+                chestItem.setPowerUnits(chest, 0);
+                p.inventory.mainInventory[6] = new ItemStack(Items.coal, 2, 0);
+                events.update(p);
+                out.check(units(p) == 900, "coal refuels 900 units, got " + units(p));
+                out.checkEquals("one coal burned", 1, count(p, Items.coal));
+                chestItem.setPowerUnits(chest, 2701);
+                ArmorPower.tick(p, false, 40L);
+                out.check(units(p) == 2701, "no room for 900: the coal stays, got " + units(p));
+                chestItem.setPowerUnits(chest, 2700);
+                ArmorPower.tick(p, false, 40L);
+                out.check(units(p) == 3600, "room for exactly 900: charcoal-sized refill, got " + units(p));
+                out.checkEquals("both coals burned", 0, count(p, Items.coal));
+                chestItem.setPowerUnits(chest, 3600);
 
                 // Broken chestplate: no power.
                 chest.setItemDamage(chest.getMaxDamage() - 1);

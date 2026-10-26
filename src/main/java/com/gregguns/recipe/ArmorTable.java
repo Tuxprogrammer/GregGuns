@@ -13,7 +13,8 @@ import com.gregguns.armor.logic.SetDef;
 import com.gregguns.recipe.ProductionTable.Input;
 
 /**
- * The T1 armor recipes as plain data: the four hand-crafted pieces of each steam-age set, and the four Assembler
+ * The T1 armor recipes as plain data: the four hand-crafted pieces of each steam-age set (Scout, Miner and Steam), and
+ * the four Assembler
  * recipes of the LV Combat set. {@link ArmorRecipes} turns them into game recipes; unit tests check them against the
  * spec sheet and the gate rule. No Minecraft types, both sides. Later waves append rows for the higher sets.
  */
@@ -149,8 +150,40 @@ public final class ArmorTable {
                 Arrays.asList("c c", "n n"),
                 keys('c', CLOTH, 'n', NUGGET_CAST_IRON))));
 
+    /**
+     * Steam armor (gate: bronze plate; design record 0022). Bronze plates in the hard places, Heavy Cloth in the
+     * rest: 3, 5, 4 and 2 plates. No GregGuns part but the cloth, so the set also builds when the guns module is
+     * absent. The row ids AR-34 to AR-37 once named the EV Assembler rows; those are retired.
+     */
+    public static final List<HandRow> STEAM = Collections.unmodifiableList(
+        Arrays.asList(
+            new HandRow(
+                "AR-34",
+                name(ArmorCatalog.STEAM, ArmorSlot.HELMET),
+                Tier.STEAM,
+                Arrays.asList("BBB", "c c"),
+                keys('c', CLOTH, 'B', PLATE_BRONZE)),
+            new HandRow(
+                "AR-35",
+                name(ArmorCatalog.STEAM, ArmorSlot.CHESTPLATE),
+                Tier.STEAM,
+                Arrays.asList("B B", "BcB", "cBc"),
+                keys('c', CLOTH, 'B', PLATE_BRONZE)),
+            new HandRow(
+                "AR-36",
+                name(ArmorCatalog.STEAM, ArmorSlot.LEGGINGS),
+                Tier.STEAM,
+                Arrays.asList("BcB", "BcB", "c c"),
+                keys('c', CLOTH, 'B', PLATE_BRONZE)),
+            new HandRow(
+                "AR-37",
+                name(ArmorCatalog.STEAM, ArmorSlot.BOOTS),
+                Tier.STEAM,
+                Arrays.asList("c c", "B B"),
+                keys('c', CLOTH, 'B', PLATE_BRONZE))));
+
     /** All hand rows, in sheet order. */
-    public static final List<HandRow> HAND = Collections.unmodifiableList(concat(SCOUT, MINER));
+    public static final List<HandRow> HAND = Collections.unmodifiableList(concat(concat(SCOUT, MINER), STEAM));
 
     /** Seconds, programmed circuit and amounts of the four LV Combat pieces, helmet to boots. */
     private static final int[] COMBAT_STEEL = { 3, 3, 3, 2 };
@@ -178,7 +211,7 @@ public final class ArmorTable {
         return Arrays.asList(rows);
     }
 
-    // ---- M3 wave B: MV, EV and steam armor on the Assembler ------------------------------------------------------
+    // ---- M3 wave B: MV, and EV armor on the Assembler ------------------------------------------------------
 
     private static final int[] SECONDS_STANDARD = { 10, 16, 14, 10 };
 
@@ -325,33 +358,6 @@ public final class ArmorTable {
         0,
         Input.vanilla("leather", 2));
 
-    /** Steam Armor Plating (RC-23): EV, the gate part of the steam armor. */
-    public static final ProductionTable.Row STEAM_PLATING = new ProductionTable.Row(
-        "RC-23",
-        ArmorCatalog.STEAM_ARMOR_PLATING,
-        1,
-        Tier.EV,
-        ProductionTable.Target.ASSEMBLER,
-        6,
-        1,
-        ti(1),
-        Input.gt("plate", "Bronze", 1),
-        Input.gt("plate", "Steel", 1));
-
-    private static Input sap(int n) {
-        return Input.mod(ArmorCatalog.STEAM_ARMOR_PLATING, n);
-    }
-
-    /** Steam armor: EV, built from Steam Armor Plating alone. */
-    public static final List<ProductionTable.Row> STEAM = fourPiece(
-        34,
-        ArmorCatalog.STEAM,
-        SECONDS_STANDARD,
-        in(sap(5)),
-        in(sap(8)),
-        in(sap(7)),
-        in(sap(4)));
-
     // ---- M3 wave C: power armor and the Exo Suit (IV) -------------------------------------------------------------
 
     /** Registry name of Power Plating (RC-24), an M4 component. */
@@ -427,8 +433,6 @@ public final class ArmorTable {
         all.add(BERET);
         all.addAll(T3_COMBAT);
         all.addAll(T3_HEV);
-        all.add(STEAM_PLATING);
-        all.addAll(STEAM);
         return all;
     }
 

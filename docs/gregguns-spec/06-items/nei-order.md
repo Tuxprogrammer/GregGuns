@@ -17,7 +17,7 @@ Ten blocks, always in this sequence. Inside every block that has tiers, items ru
 | 3 | `MACHINE_BLOCKS` | The Ammunition Works casing block. The Ammo Presses, Ammunition Works and benches are GT machines, see below | `casings` | `casings` |
 | 4 | `ARMOR` | Every armor set in catalog order, helmet, chestplate, leggings, boots, tier by tier | `t1_scout_helmet` | `t3_exo_boots` |
 | 5 | `ACCESSORIES` | Special-slot gear (goggles, pouch, masks, oxygen) then flight devices, tier by tier | `night_vision_goggles` | `anti_gravity_device` |
-| 6 | `ARMOR_PARTS` | Crafting parts of armor, tier by tier | `part_heavy_cloth` | `part_steam_armor_plating` |
+| 6 | `ARMOR_PARTS` | Crafting parts of armor, tier by tier | `part_heavy_cloth` | `part_glider_wing` |
 | 7 | `UTILITY` | Turret plates cheapest first, the Explosive Charge, Reinforced Chest, Weapon Chest, Camp Flag, Bio Blob | `turret_armor_iron` | `bio_blob` |
 | 8 | `NPC_EGG` | The spawn egg; its subtypes follow [`NpcEggOrder`](../10-entities-npcs/index.md) (undead, bug, factions weakest first, mutants, bosses, machines) | `npc_egg` | `npc_egg` |
 | 9 | `WORLD_BLOCKS` | Zombie Hole, Bug Hole, Bug Nest, Bug Nest Slime | `zombie_hole` | `bug_nest_slime` |

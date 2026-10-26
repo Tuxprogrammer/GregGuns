@@ -37,13 +37,13 @@ Twelve armor sets from the Steam age to IV, plus masks, goggles and back gear fo
 
 - <ItemImage id="gregguns:t1_scout_chestplate" label="right" /> (Steam): **Bandit set.** Faster, jumps higher; light protection.
 - <ItemImage id="gregguns:t1_miner_chestplate" label="right" /> (Steam): **Miner set.** Faster, and digs faster.
+- <ItemImage id="gregguns:steam_chestplate" label="right" /> (Steam): **Steam armor.** Bronze plates and cloth. Burn Coal or Charcoal in the chestplate for extra hearts, speed and a firmer stance; a Compressed Air Tank refills it too.
 - <ItemImage id="gregguns:t1_combat_chestplate" label="right" /> (LV): **Soldier set.** Solid bullet protection, resists knockback.
 - <ItemImage id="gregguns:t2_combat_chestplate" label="right" /> (MV): **Combat set.** Faster and tougher, in many camo patterns.
 - <ItemImage id="gregguns:t2_commando_chestplate" label="right" /> (MV): **Commando set.** Better aim, digs fast underwater.
 - <ItemImage id="gregguns:t2_riot_chestplate" label="right" /> (MV): **Ranger Veteran set.** Best at MV; shrugs off poison and radiation.
 - <ItemImage id="gregguns:t3_combat_chestplate" label="right" /> (EV): **Advanced Combat set.** High protection, resists armor piercing.
 - <ItemImage id="gregguns:t3_hev_chestplate" label="right" /> (EV): **Hazardous Environment suit.** Powered: fireproof, hazard-proof, big jumps.
-- <ItemImage id="gregguns:steam_chestplate" label="right" /> (EV): **Steam armor.** Burns compressed air for extra hearts.
 - <ItemImage id="gregguns:t3_power_chestplate" label="right" /> (IV): **Power Armor.** Powered: the toughest set, extra hearts.
 - <ItemImage id="gregguns:t3_exo_chestplate" label="right" /> (IV): **Exo Suit.** Powered: fast, light, soft landings.
 - <ItemImage id="gregguns:t2_beret" label="right" /> (MV): **Beret.** A hat with style, and 10% more speed.

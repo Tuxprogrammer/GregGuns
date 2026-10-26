@@ -32,7 +32,6 @@ class RecipeClashGuardTest {
         all.addAll(ArmorTable.COMBAT);
         all.addAll(ArmorTable.T3_COMBAT);
         all.addAll(ArmorTable.T3_HEV);
-        all.addAll(ArmorTable.STEAM);
         all.addAll(GunLineTable.rows());
         return all;
     }

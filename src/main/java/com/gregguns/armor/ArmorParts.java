@@ -44,8 +44,7 @@ public final class ArmorParts {
             GAS_MASK_FILTER,
             TANK_AIR,
             GLIDER_BACKPACK,
-            GLIDER_WING,
-            ArmorCatalog.STEAM_ARMOR_PLATING));
+            GLIDER_WING));
 
     private static ItemPart heavyCloth;
     private static ItemPart gliderBackpack;
@@ -53,7 +52,6 @@ public final class ArmorParts {
     private static ItemPart gasMaskFilter;
     private static ItemTank tankAir;
     private static ItemPart treatedLeather;
-    private static ItemPart steamArmorPlating;
 
     private ArmorParts() {}
 
@@ -73,7 +71,7 @@ public final class ArmorParts {
      * Registers one part by registry name. Area 06 owns these items; they stay registered here because the armor
      * module can run without the guns module's ComponentItems. The filter is a plain part (RC-25); the Compressed Air
      * Tank is the 1,000 mB IFluidContainerItem of GGS-06-40; the glider parts come from the armor recipes sheet
-     * (recipes.md, HV); Treated Leather and Steam Armor Plating are RC-22 and RC-23.
+     * (recipes.md, HV); Treated Leather is RC-22 (RC-23, Steam Armor Plating, is retired: design record 0022).
      *
      * @param registrar the armor module's registrar
      * @param name      one of {@link #NAMES}
@@ -98,9 +96,6 @@ public final class ArmorParts {
             case GLIDER_WING:
                 gliderWing = registrar.registerItem(name, new ItemPart(Tier.HV));
                 break;
-            case ArmorCatalog.STEAM_ARMOR_PLATING:
-                steamArmorPlating = registrar.registerItem(name, new ItemPart(Tier.EV));
-                break;
             default:
                 throw new IllegalArgumentException("not an armor part: " + name);
         }
@@ -109,11 +104,6 @@ public final class ArmorParts {
     /** @return Treated Leather; null before registration */
     public static ItemPart treatedLeather() {
         return treatedLeather;
-    }
-
-    /** @return Steam Armor Plating; null before registration */
-    public static ItemPart steamArmorPlating() {
-        return steamArmorPlating;
     }
 
     /** @return Heavy Cloth; null before registration */
