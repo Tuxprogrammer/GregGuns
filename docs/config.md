@@ -125,6 +125,19 @@ Both keys are synced from server to client (GGS-01-03). Block removal always pas
 | `explosions.selfDamage` | boolean | `true` | n/a | yes | Whether the player who set off an explosion can be hurt by it (fixes PFX-25). |
 | `explosions.machineExplosions` | boolean | `true` | n/a | yes | Whether GregTech machines in a GregGuns blast react to it (can chain). False leaves them standing (Q4). |
 
+## ICBM blasts (`icbm`)
+
+All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-icbm-spec/02-explosives/blast-engine.md)). A blast removes terrain only when its tier's `terrainDamageT<n>` key **and** `explosions.blockDamage` are on; claims and spawn protection still apply through the explosion events and, for a player's blast, `BlockEvent.BreakEvent`.
+
+| Key | Type | Default | Range | Synced | What it does |
+|---|---|---|---|---|---|
+| `icbm.maxBlastTier` | int | `4` | 1 to 4 | yes | The highest explosive tier that may detonate. |
+| `icbm.terrainDamageT1` to `icbm.terrainDamageT4` | boolean | `true` | n/a | yes | Whether blasts of that tier may remove terrain (also needs `explosions.blockDamage`). |
+| `icbm.blastBudgetMs` | int | `12` | 1 to 40 | yes | Milliseconds per server tick that all running blasts share for breaking blocks. |
+| `icbm.maxActiveBlasts` | int | `16` | 1 to 256 | yes | Most blasts running at once; more are refused. |
+| `icbm.maxBlastRadius` | int | `96` | 8 to 200 | yes | Largest blast radius; the ray cast copies a cube this wide. |
+| `icbm.blastDrops` | boolean | `false` | n/a | yes | Whether destroyed blocks drop items. |
+
 ## Equipment (`equipment`)
 
 All keys are synced. Used by the special-slot equipment of the armor module ([baubles-slots.md](gregguns-spec/05-armor/baubles-slots.md), [oxygen-gear.md](gregguns-spec/05-armor/oxygen-gear.md)).

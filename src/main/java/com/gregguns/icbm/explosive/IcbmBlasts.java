@@ -5,7 +5,7 @@ import net.minecraft.world.World;
 
 /**
  * The detonate entry point: every ICBM blast, from a warhead block, a missile or a command, starts here. Server
- * side. The engine behind it is filled in by the blast-engine commits; this commit fixes the signature.
+ * side.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/blast-engine.md
 public final class IcbmBlasts {
@@ -28,7 +28,8 @@ public final class IcbmBlasts {
      */
     public static boolean detonate(World world, double x, double y, double z, ExplosiveDef explosive, int fill,
         double bonusRadius, EntityLivingBase source) {
-        return false; // engine arrives in the next commits
+        return com.gregguns.icbm.blast.BlastEngine.instance()
+            .start(world, x, y, z, explosive, fill, bonusRadius, source);
     }
 
     /**

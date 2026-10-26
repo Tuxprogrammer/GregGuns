@@ -36,6 +36,7 @@ public final class ExplosiveDef {
     private final boolean annihilatesBosses;
     private final double rayEnergyValue;
     private final BlastEffect effect;
+    private final boolean hidden;
 
     private ExplosiveDef(Builder b) {
         this.id = b.id;
@@ -49,6 +50,7 @@ public final class ExplosiveDef {
         this.annihilatesBosses = b.annihilatesBosses;
         this.rayEnergyValue = b.rayEnergyValue;
         this.effect = b.effect;
+        this.hidden = b.hidden;
     }
 
     /**
@@ -105,6 +107,23 @@ public final class ExplosiveDef {
         return effect;
     }
 
+    /** @return true for a test-only explosive: registered and detonable, but left out of {@link Explosives#all()} */
+    public boolean hidden() {
+        return hidden;
+    }
+
+    /**
+     * The damage at the blast center for a fill: {@code centerDamage * sqrt(fill / maxFill)}, so a full casing meets
+     * the D34 target and a partial fill deals less. The ramp falls to zero at the radius.
+     *
+     * @param fill the warhead fill, clamped to 1..{@link #maxFill()}
+     * @return damage at the center, half hearts
+     */
+    public double damage(int fill) {
+        int f = Math.max(1, Math.min(fill, maxFill));
+        return centerDamage * Math.sqrt((double) f / maxFill);
+    }
+
     /**
      * @param fill the warhead fill, clamped to 1..{@link #maxFill()}
      * @return the blast radius in blocks, before any fuel bonus
@@ -128,6 +147,7 @@ public final class ExplosiveDef {
         private boolean annihilatesBosses;
         private double rayEnergyValue;
         private BlastEffect effect = BlastEffect.NONE;
+        private boolean hidden;
 
         private Builder(String id, ExplosiveTier tier) {
             if (id == null || id.isEmpty()
@@ -196,6 +216,12 @@ public final class ExplosiveDef {
         /** @param v the per-type effect @return this */
         public Builder effect(BlastEffect v) {
             this.effect = java.util.Objects.requireNonNull(v);
+            return this;
+        }
+
+        /** @return this, marked test-only (scenarios); the registry's {@code all()} skips it */
+        public Builder hidden() {
+            this.hidden = true;
             return this;
         }
 

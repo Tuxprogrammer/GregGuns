@@ -46,8 +46,19 @@ public final class Explosives {
         return BY_ID.get(id);
     }
 
-    /** @return every registered explosive in registration order, a copy */
+    /** @return every registered, visible explosive in registration order, a copy (test-only defs are left out) */
     public static synchronized List<ExplosiveDef> all() {
+        List<ExplosiveDef> out = new ArrayList<>();
+        for (ExplosiveDef d : BY_ID.values()) {
+            if (!d.hidden()) {
+                out.add(d);
+            }
+        }
+        return out;
+    }
+
+    /** @return every registered explosive including test-only ones, a copy */
+    public static synchronized List<ExplosiveDef> allIncludingHidden() {
         return new ArrayList<>(BY_ID.values());
     }
 

@@ -30,6 +30,9 @@ public final class IcbmModule implements GregGunsModule {
      */
     @Override
     public void initContent(FMLInitializationEvent event) {
+        // Content always registers (it is inert until something detonates), so the engine is wired whatever the flag
+        // says; the scenarios then also run when the module turned itself off.
+        com.gregguns.icbm.blast.BlastEngine.register();
         if (DevEnvironment.testHooksEnabled()) {
             IcbmScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
