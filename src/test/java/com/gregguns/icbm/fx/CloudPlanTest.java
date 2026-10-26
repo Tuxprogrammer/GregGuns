@@ -102,10 +102,15 @@ class CloudPlanTest {
     }
 
     @Test
+    void aGasBlastWithNoCraterGetsNoPlume() {
+        assertFalse(CloudPlan.wantsPlume(80, false, false), "a shape-NONE blast has its own cloud");
+    }
+
+    @Test
     void onlyLargeConventionalBlastsGetAPlume() {
-        assertFalse(CloudPlan.wantsPlume(CloudPlan.PLUME_MIN_RADIUS - 1, false));
-        assertTrue(CloudPlan.wantsPlume(CloudPlan.PLUME_MIN_RADIUS, false));
-        assertFalse(CloudPlan.wantsPlume(80, true), "an annihilating blast keeps the long-range flash instead");
+        assertFalse(CloudPlan.wantsPlume(CloudPlan.PLUME_MIN_RADIUS - 1, false, true));
+        assertTrue(CloudPlan.wantsPlume(CloudPlan.PLUME_MIN_RADIUS, false, true));
+        assertFalse(CloudPlan.wantsPlume(80, true, true), "an annihilating blast keeps the long-range flash instead");
     }
 
     @Test

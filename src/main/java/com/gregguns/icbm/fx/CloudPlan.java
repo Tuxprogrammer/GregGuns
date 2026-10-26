@@ -58,10 +58,12 @@ public final class CloudPlan {
     /**
      * @param radius      a conventional blast's radius
      * @param annihilates whether the explosive annihilates (it gets the long-range flash instead)
+     * @param craters     whether the blast digs a crater (a ray shape); the gas and smoke types (shape NONE) announce
+     *                    their own clouds and get no plume on top
      * @return true when the blast gets a plume
      */
-    public static boolean wantsPlume(int radius, boolean annihilates) {
-        return !annihilates && radius >= PLUME_MIN_RADIUS;
+    public static boolean wantsPlume(int radius, boolean annihilates, boolean craters) {
+        return craters && !annihilates && radius >= PLUME_MIN_RADIUS;
     }
 
     /**
