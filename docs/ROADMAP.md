@@ -328,7 +328,7 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
 **Exit gate:**
 - [x] The questbook installs from the jar behind its hidden config key, on a real GTNH 2.9 server. `0.3.1-beta`, 2026-10-21: 121 quests installed on the owner's GTNH 2.9.0-RC-2 server and saved by BetterQuesting.
 - [ ] Every PACK-CHANGES row is done in the jar or documented as an optional server-owner step.
-- [ ] GregGuns structures generate on Ross128b and Ross128ba without cascading, pass their land and water checks, and keep loot within each structure's rolled ceiling. Scenario per dimension ([0019](design/0019-structures-on-ross128.md)).
+- [x] GregGuns structures generate on Ross128b and Ross128ba without cascading, pass their land and water checks, and keep loot within each structure's rolled ceiling. Scenario per dimension ([0019](design/0019-structures-on-ross128.md)). Done on `feat/m9-ross128`: `worldgen.ross128b_structures` and `worldgen.ross128ba_structures` pass headless, evidence in [m8-exit-gate](gregguns-spec/11-worldgen/m8-exit-gate.md#m9-structures-on-ross128b-and-ross128ba-design-record-0019). Galacticraft skips Forge world generators on both dimensions, so they carry their own chunk-provider hook.
 - [ ] The polish items above are done, or moved to the [adopter list](HANDOFF-PLAN.md#adopter-list) with the owner's sign-off.
 
 ## Beyond M9
