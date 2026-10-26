@@ -1,6 +1,6 @@
 # The GregGuns quest line
 
-The full quest list for the GregGuns tab: 124 quests in 15 chapters. Nine chapters are the main path (a start chapter, then Steam/ULV up to ZPM). Six are side branches (NPCs, structures, machines, equipment, ammo logistics, ICBM warheads).
+The full quest list for the GregGuns tab: 133 quests in 15 chapters. Nine chapters are the main path (a start chapter, then Steam/ULV up to ZPM). Six are side branches (NPCs, structures, machines, equipment, ammo logistics, ICBM warheads and missiles).
 
 - **Techguns baseline:** none. Techguns has no questbook. The content comes from [02-guns](../../techguns-spec/02-guns/index.md), [05-armor](../../techguns-spec/05-armor/index.md), [06-items](../../techguns-spec/06-items/index.md), [08-machines-production](../../techguns-spec/08-machines-production/index.md), [09-machines-utility](../../techguns-spec/09-machines-utility/index.md), [10-entities-npcs](../../techguns-spec/10-entities-npcs/index.md) and [11-worldgen](../../techguns-spec/11-worldgen/index.md).
 - **Design records:** [0001 tier map](../../design/0001-tier-map.md), [0005 world presence](../../design/0005-world-presence.md), [0007 pack loot and Infernal Mobs](../../design/0007-pack-loot-and-infernal-mobs.md), [0008 exact-tier charging](../../design/0008-exact-tier-charging.md), [0009 GTNH integration defaults](../../design/0009-gtnh-integration-defaults.md)
@@ -308,7 +308,7 @@ The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 
 | `gg.ammo.works` | Ammunition Works | HV | The Ammunition Works is a multiblock press hall with high parallels. Build it when one press cannot keep up. It needs an interior lamp. | retrieval `gregtech:gt.blockmachines:20105` (Ammunition Works) | - | `gg.ammo.advanced`, pack 160 | 1032, 312 (24) |
 | `gg.ammo.filling_bench` | Filling Bench (optional) | HV | An optional annex behind the packing end of the Works, built around six workbench tables. It loads magazines from the Works output. | checkbox | - | `gg.ammo.works` | 1068, 312 (24) |
 
-### ICBM warheads
+### ICBM warheads and missiles
 
 - **Gate:** `gg.ammo.explosives` (hover) and the HV pack quests 160 and 753. The ICBM module's quests live in this tab, not in a tab of their own ([D40](../../gregguns-icbm-spec/DECISIONS.md)); keys are `gg.icbm.*`, added with the content they teach.
 - **Teaches:** that a warhead is a GregTech-built charge, how to set one off as a demolition charge (the fuse scales with the blast radius, D51), and that the Tier 2 casing is titanium. Later ICBM milestones add their own quests here.
@@ -318,6 +318,15 @@ The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 
 | `gg.icbm.warhead` | Your First Warhead | HV | A warhead is a GregTech-built charge: a stainless steel casing around TNT and a payload. The starter recipe in the Assembler makes a Condensed warhead with a fill of 1 from 2 stainless steel plates and 2 TNT. | retrieval `gregguns:warhead_t1` | - | `gg.ammo.explosives` (hover), pack 160, pack 753 | 742, 420 (28) |
 | `gg.icbm.demolition` | Demolition Charge | HV | Place a warhead and light it with Flint and Steel, a Fire Charge or a redstone pulse. The fuse is 3 seconds plus 1 second per 3 blocks of blast radius. Another explosion sets it off in half a second. | checkbox | - | `gg.icbm.warhead` | 780, 420 (24) |
 | `gg.icbm.t2_casing` | Titanium Casing | EV | The Tier 2 casing is titanium and holds up to 20 charges. Its blast types are made in the Assembler at EV, from eight titanium plates, Industrial TNT, Plastic Explosive and a Fuze Assembly Mk II. | retrieval `gregguns:warhead_t2` | - | `gg.icbm.demolition`, pack 176, pack 860 | 816, 420 (24) |
+| `gg.icbm.chip` | Missile Chip | HV | Every missile starts as a chip. The GregTech Circuit Assembler makes a Missile Chip T1 at HV from an Advanced Plastic Circuit Board, 2 Advanced circuits and 4 fine gold wire. The Tier 2 chip is made at EV from an Advanced Epoxy Circuit Board, 2 Data circuits and 4 fine electrum wire. Make a Tier 1 chip. | checkbox | - | `gg.icbm.demolition` | 852, 420 (24) |
+| `gg.icbm.schematic` | Engrave the Schematic | HV | Put the chip and a Ruby lens (Tier 2: Sapphire) in the Laser Engraver. The lens is not used up. Slot the finished Missile Schematic into the Galacticraft NASA Workbench to open the missile's page. | checkbox | - | `gg.icbm.chip` | 888, 420 (24) |
+| `gg.icbm.body` | Missile Body | HV | On the NASA Workbench page, build a Missile Body T1: four stainless steel body plates, four steel plate fins, a Missile Engine Mk I and a Guidance Computer Mk I. There is no warhead slot; the warhead goes on at the pad. A better Guidance Computer makes the missile land closer. | checkbox | - | `gg.icbm.schematic` | 924, 420 (24) |
+| `gg.icbm.pad` | Stack It on the Pad | HV | Place the Missile Body on the middle of a Galacticraft Launch Pad, then set a warhead on its nose; it seats flush. Sneak and right-click the body with an empty hand to arm it, which turns the stack into a missile. | checkbox | - | `gg.icbm.body` | 960, 420 (24) |
+| `gg.icbm.fuel` | Fuel the Missile | HV | Attach a Galacticraft Fuel Loader to the pad. A Tier 1 missile takes 2,000 mB of RP-1 or Cetane-Boosted Diesel, or better. Fuel left unburned at impact makes the blast up to 25 percent bigger, so a closer target hits harder. | checkbox | - | `gg.icbm.pad` | 996, 420 (24) |
+| `gg.icbm.control` | Launch Control | HV | Place a Launch Control block within 3 blocks of the pad and power it at HV. Type the target X and Z, or load them from a Data Stick. The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect. | checkbox | - | `gg.icbm.fuel` | 1032, 420 (24) |
+| `gg.icbm.launch` | First Launch | HV | Press Launch, or send the block a redstone pulse. After two seconds of warm-up the missile climbs, flies its arc and detonates on impact; a Tier 1 flight at full range takes about a minute. The pad, the fuel loader and the Launch Control come through unharmed. Make sure nobody stands at the target. | checkbox | - | `gg.icbm.control` | 1068, 420 (24) |
+| `gg.icbm.t2_missile` | Tier 2 Missile | EV | Tier 2 flies up to 3,000 blocks and carries a titanium-cased warhead. Its chip is made at EV, its body takes six titanium plates, and it burns 4,000 mB of Dense Hydrazine or better. Build it, fuel it and launch it. | checkbox | - | `gg.icbm.launch`, `gg.icbm.t2_casing` | 1104, 420 (24) |
+| `gg.icbm.assembly_line` | Automate the Body | EV | Scan one hand-built body into a Data Stick in the Scanner, then the Assembly Line builds that body from the same parts plus 250 L of lubricant: 30 seconds for Tier 1, 45 for Tier 2. | checkbox | - | `gg.icbm.body` | 924, 456 (24) |
 
 ## Coverage matrix
 
@@ -330,6 +339,7 @@ Where each mechanic is taught.
 | Ammo made in the Ammo Press and Works | `gg.lv.ammo_press`, `gg.lv.ammo_9mm`, `gg.ammo.press`, `gg.ammo.magazines`, `gg.ammo.pipes`, `gg.ammo.depot`, `gg.ammo.works`, `gg.ammo.filling_bench` |
 | Explosives and fuel | `gg.mv.grenades`, `gg.ammo.explosives`, `gg.hv.rocket_launcher`, `gg.hv.flamethrower`, `gg.ammo.fuel` |
 | Warheads and demolition charges | `gg.icbm.warhead`, `gg.icbm.demolition`, `gg.icbm.t2_casing` |
+| Missiles: chip, schematic, body, pad, fuel, launch control, launch | `gg.icbm.chip`, `gg.icbm.schematic`, `gg.icbm.body`, `gg.icbm.pad`, `gg.icbm.fuel`, `gg.icbm.control`, `gg.icbm.launch`, `gg.icbm.t2_missile`, `gg.icbm.assembly_line` |
 | Charging at the exact tier | `gg.hv.tools`, `gg.ev.laser`, `gg.ammo.charging`, `gg.iv.power_armor` |
 | Repair | `gg.mach.repair_bench`, `gg.mach.repair`, `gg.mach.gantry` |
 | Offhand and akimbo | `gg.mv.akimbo`, `gg.iv.deatomizer` |
@@ -360,8 +370,8 @@ Where each mechanic is taught.
 | Machines | 7 | 4 | 3 | 0 | 0 | 0 |
 | Armor and equipment | 9 | 2 | 7 | 0 | 0 | 0 |
 | Ammo logistics | 11 | 7 | 4 | 0 | 0 | 0 |
-| ICBM warheads | 3 | 1 | 2 | 0 | 0 | 0 |
-| **Total** | **124** | **46** | **63** | **4** | **11** | **25** |
+| ICBM warheads and missiles | 12 | 10 | 2 | 0 | 0 | 0 |
+| **Total** | **133** | **55** | **63** | **4** | **11** | **25** |
 
 ## Hidden tier-skip triggers
 
