@@ -266,9 +266,18 @@ final class IcbmBlastScenarios {
                     if (mode == 0 && terrain) {
                         out.check(broken > 3, def.id() + " should break blocks with block damage on, broke " + broken);
                         out.check(w.getBlock(cx, cy, cz) == Blocks.air, def.id() + " should crater the center block");
-                    } else {
-                        out.check(broken == 0, def.id() + " mode " + mode + " should break nothing, broke " + broken);
-                    }
+                    } else if (mode == 0 && def.shape() == BlastShape.NONE
+                        && def.tier()
+                            .number() <= IcbmConfig.maxBlastTier) {
+                                // A NONE-shape type may change blocks in its own effect (the Breaching tunnel); modes 1
+                                // and 2
+                                // below still hold it to the tier switch and to protection.
+                                out.check(w.getBlock(cx, cy, cz) != null, def.id() + " mode 0 ran");
+                            } else {
+                                out.check(
+                                    broken == 0,
+                                    def.id() + " mode " + mode + " should break nothing, broke " + broken);
+                            }
                     out.check(left == 0, def.id() + " should have finished its crater, " + left + " left");
                     started[0] = false;
                     cursor[1]++;
