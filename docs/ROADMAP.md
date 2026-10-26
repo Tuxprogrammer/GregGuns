@@ -311,7 +311,7 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
   - a balance pass along the GTNH tier progression;
   - NEI polish and config defaults (done: item subsets, hidden items, config review; see [nei-visibility.md](gregguns-spec/06-items/nei-visibility.md));
   - translation readiness (done on `feat/m9-translation`, see [translating.md](translating.md));
-  - multiplayer and performance soak tests on the real pack;
+  - multiplayer and performance soak tests on the real pack (done headless: 55 min, 3 bots, TPS 20.0, no GregGuns errors; see [m9-soak.md](testing/m9-soak.md); client-side checks stay with the playthrough);
   - GuideNH in-game wiki pages bundled in the jar (built: eleven pages under `assets/gregguns/guidenh/`; the owner checks them in game);
   - the OpenModularTurrets overlap investigation (the Rampart stays; done in [0020](design/0020-omt-overlap.md));
   - aim down sights for iron-sight and red-dot guns;
