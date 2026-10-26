@@ -148,8 +148,10 @@ def mob(model: str, skin: str, pose=None, gun_name=None, yaw=-30, pitch=10, h=42
 
 
 def bone_skin() -> Path:
-    """A plain bone skin for the Skeleton Soldier, which wears the vanilla skeleton texture in game. We don't render
-    Mojang's art, so this is a flat bone color with simple eye sockets on the 64x32 biped layout."""
+    """A stand-in bone skin for the Skeleton Soldier, which wears the vanilla skeleton texture in game: a flat bone color
+    with simple eye sockets on the 64x32 biped layout. D55 lets a sheet show the real skin instead, read at build time
+    from the Minecraft jar (vanilla.mc_texture, entity/skeleton/skeleton.png) and never committed; sheets that predate
+    D55 keep this stand-in until they are rebuilt."""
     p = TEXCACHE / "skeleton_bone.png"
     if not p.exists():
         TEXCACHE.mkdir(parents=True, exist_ok=True)
@@ -164,9 +166,10 @@ def bone_skin() -> Path:
 
 
 def pigman_skin() -> Path:
-    """A rotting pig-faced skin for the Zombie Pigman Soldier, which wears the vanilla pigman texture in game. Our own
-    flat drawing on the 64x64 biped layout: pink flesh with green rot, a snout and eyes on the face (u 8..16,
-    v 8..16)."""
+    """A stand-in skin for the Zombie Pigman Soldier, which wears the vanilla pigman texture in game: our own flat
+    drawing on the 64x64 biped layout (pink flesh with green rot, a snout and eyes on the face, u 8..16, v 8..16). D55
+    lets a sheet show the real skin instead, read at build time from the Minecraft jar (vanilla.mc_texture,
+    entity/zombie_pigman.png) and never committed; sheets that predate D55 keep this stand-in until they are rebuilt."""
     p = TEXCACHE / "pigman_soldier.png"
     if not p.exists():
         TEXCACHE.mkdir(parents=True, exist_ok=True)
@@ -306,7 +309,9 @@ def chip(tier: str, text: str | None = None) -> str:
 
 
 def page(title_html: str, sub: str, body: str, width=1600, extra_css="", credit="", overlay="") -> str:
-    """credit: one extra footer line for third-party art shown on the sheet. overlay: markup laid over the sheet (a stamp)."""
+    """credit: extra footer line(s), a string or a list of strings, for third-party art shown on the sheet. overlay:
+    markup laid over the sheet (a stamp)."""
+    credits = [credit] if isinstance(credit, str) else list(credit)
     logo = url(REPO / "docs/assets/branding/logo_pixel_128.png")
     hexes = "".join(f'<i style="background:var(--{t.lower()})"></i>' for t in TIERS)
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>{CSS}{extra_css}</style></head>
@@ -314,7 +319,7 @@ def page(title_html: str, sub: str, body: str, width=1600, extra_css="", credit=
 <div class="head"><img class="logo" src="{logo}"><div><h1>{title_html}</h1><div class="sub">{esc(sub)}</div></div></div>
 {body}
 <div class="foot"><img src="{logo}"><span><b style="color:#cfd6de">GregGuns</b> &middot; guns, armor and military tech for GT New Horizons (Minecraft 1.7.10)</span><span class="hex">{hexes}</span></div>
-{f'<div class="credit">{esc(credit)}</div>' if credit else ''}{overlay}
+{"".join(f'<div class="credit">{esc(c)}</div>' for c in credits if c)}{overlay}
 </div></body></html>"""
 
 

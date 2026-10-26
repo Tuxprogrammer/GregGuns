@@ -1,11 +1,17 @@
-"""Simple 16x16 icons for the vanilla items recipes use (stone, logs, wool, a piston...).
+"""Vanilla item icons for the infographics.
 
-Minecraft's own textures are Mojang's, so the infographics never show them. These are our own flat drawings: enough
-to tell the items apart in a crafting grid, each one labeled on the sheet.
+D55: Minecraft content is fine to show as long as Mojang's usage guidelines are followed. A sheet may show the real
+vanilla textures, read at build time from the Minecraft jar (`mc_texture`, `real`) and never committed as loose files or
+shipped in the mod jar, and it carries the footer line `MC_CREDIT`. The simple 16x16 drawings below (`icon`) are our own
+stand-ins, from before D55, for the sheets that have not been rebuilt with the real textures yet; they stay until then.
 """
 
 from __future__ import annotations
 
+import io
+import os
+import zipfile
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -14,6 +20,58 @@ from PIL import Image
 from render3d import REPO
 
 OUT = REPO / "build/infographics/vanilla"
+MC_OUT = REPO / "build/infographics/vanilla-mc"
+MC_CREDIT = "Minecraft textures \u00a9 Mojang / Microsoft; not an official Minecraft product."
+
+
+def _reference_dirs():
+    """reference/gtnh in this checkout, then in the main checkout when this is a git worktree."""
+    yield REPO / "reference/gtnh"
+    main = next((Path(line[9:]) for line in _worktree_list() if line.startswith("worktree ")), None)
+    if main:
+        yield main / "reference/gtnh"
+
+
+def _worktree_list():
+    import subprocess
+    try:
+        return subprocess.run(["git", "worktree", "list", "--porcelain"], cwd=REPO, capture_output=True, text=True,
+                              check=True).stdout.splitlines()
+    except (OSError, subprocess.CalledProcessError):
+        return []
+
+
+@lru_cache(maxsize=1)
+def _mc_jar() -> zipfile.ZipFile:
+    """The Minecraft 1.7.10 client jar the pack runs on. Looked up in $GREGGUNS_MC_JAR, then in the reference pack
+    (reference/gtnh/), then in the Prism Launcher libraries that the pack's instance uses. Never copied into the repo."""
+    cands = [Path(os.environ["GREGGUNS_MC_JAR"])] if os.environ.get("GREGGUNS_MC_JAR") else []
+    for d in _reference_dirs():
+        cands += sorted(d.glob("**/minecraft*1.7.10*.jar"))
+    home = Path.home()
+    for base in (home / ".local/share/PrismLauncher", home / ".var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher",
+                 home / "AppData/Roaming/PrismLauncher"):
+        cands += sorted(base.glob("libraries/com/mojang/minecraft/1.7.10/minecraft-1.7.10-client.jar"))
+    for c in cands:
+        if c.exists():
+            return zipfile.ZipFile(c)
+    raise SystemExit("Minecraft 1.7.10 client jar not found. Set GREGGUNS_MC_JAR to it (the pack's Prism instance "
+                     "downloads it under libraries/com/mojang/minecraft/1.7.10/).")
+
+
+def mc_texture(path: str) -> Image.Image:
+    """A vanilla texture from the Minecraft jar, e.g. "items/flint_and_steel" or "blocks/tnt_side" (first frame)."""
+    with _mc_jar().open(f"assets/minecraft/textures/{path}.png") as f:
+        im = Image.open(io.BytesIO(f.read())).convert("RGBA")
+    return im.crop((0, 0, im.width, im.width)) if im.height > im.width else im
+
+
+def real(path: str, name: str | None = None) -> Path:
+    """A vanilla texture written under build/ (git-ignored) so the page and the voxel renderer can load it."""
+    MC_OUT.mkdir(parents=True, exist_ok=True)
+    p = MC_OUT / f"{name or path.replace('/', '_')}.png"
+    mc_texture(path).save(p)
+    return p
 
 
 def _noise(seed, base, spread, shape=(16, 16)):

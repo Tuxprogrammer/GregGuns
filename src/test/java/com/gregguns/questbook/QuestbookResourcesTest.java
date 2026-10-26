@@ -34,6 +34,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.gregguns.entity.npc.NpcMob;
+import com.gregguns.icbm.warhead.WarheadCasing;
 import com.gregguns.item.NeiOrder;
 import com.gregguns.machine.GregGunsMTEIDs;
 
@@ -172,7 +173,7 @@ class QuestbookResourcesTest {
     @Test
     void questCountMatchesTheSpec() {
         assertEquals(
-            121 + SKIP_TRIGGERS,
+            124 + SKIP_TRIGGERS,
             QUESTS.size(),
             "update docs/gregguns-spec/12-questbook when the count changes");
     }
@@ -337,6 +338,10 @@ class QuestbookResourcesTest {
     @Test
     void everyGregGunsItemEntityAndMachineIsRegistered() throws Exception {
         Set<String> names = new HashSet<>(NeiOrder.names());
+        // The ICBM warheads are registered by their module, not part of the NEI order list.
+        for (WarheadCasing casing : WarheadCasing.values()) {
+            names.add(casing.blockName());
+        }
         Set<Integer> machines = registeredMachineIds();
         Set<String> entities = new HashSet<>();
         for (NpcMob mob : NpcMob.values()) {
