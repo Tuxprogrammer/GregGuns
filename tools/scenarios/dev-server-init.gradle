@@ -1,0 +1,26 @@
+// Gradle init script for dev-server.sh (passed with -I; the build files are not edited).
+//
+// runServer normally puts the dev jar (build/libs/<mod>-<version>-dev.jar) on the server's classpath. A jar cannot be
+// refreshed under a running JVM: classes the server has not loaded yet would still come from the old jar, or fail to
+// load if the jar was rewritten. This replaces the jar with one directory, build/dev-server/main, that holds what the
+// jar would: the compiled classes and the resources, side by side (FML finds the mod's language files in the same
+// place as its classes). The devServerSync task keeps it current, so `./gradlew devServerSync` is all the server needs
+// to see new and not-yet-loaded classes; classes it has already loaded are then redefined over JDWP (HotReload.java).
+allprojects {
+    afterEvaluate { p ->
+        if (p != p.rootProject) return
+        def devDir = p.layout.buildDirectory.dir('dev-server/main')
+        def sync = p.tasks.register('devServerSync', Sync) { t ->
+            t.duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            t.from(p.sourceSets.main.output)
+            def tags = p.sourceSets.findByName('injectedTags')
+            if (tags != null) t.from(tags.output)
+            t.into(devDir)
+        }
+        p.tasks.matching { it.name == 'runServer' }.configureEach { t ->
+            def libs = p.layout.buildDirectory.dir('libs').get().asFile.toString()
+            t.dependsOn(sync)
+            t.classpath = t.classpath.filter { f -> !(f.toString().startsWith(libs) && f.name.endsWith('-dev.jar')) } + p.files(devDir)
+        }
+    }
+}
