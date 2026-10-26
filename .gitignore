@@ -54,6 +54,9 @@ __pycache__/
 # Local debug output
 /debug.log
 
-# ICBM preview sheets and the visuals gallery stay local, never committed (D50). Guide sheets (infographics) are committed.
-/docs/assets/previews/icbm/
+# Preview and contact sheets, review reports and the visuals gallery stay local, never committed (D50; owner,
+# 2026-10-26). Guide sheets (infographics) are committed.
+/docs/assets/previews/
+/docs/assets/SOUND-DIFFERENCES.md
+/tools/asset-gen/sound-ab-review.jsonl
 /docs/icbm-visuals.html

@@ -2,7 +2,7 @@
 
 ## Sounds
 
-- [SOUND-DIFFERENCES.md](SOUND-DIFFERENCES.md): where the generated sounds still differ from the originals they replace, per family and per sound, plus the open items left when the sound pipeline was archived ([0017](../design/0017-accept-sounds-archive-sound-pipeline.md)).
+The sounds are accepted as they are, and the sound review pipeline is archived ([0017](../design/0017-accept-sounds-archive-sound-pipeline.md)). Its review records (`SOUND-DIFFERENCES.md`, the gate and A/B reports) are kept locally, not in the repository.
 
 ## Branding and infographics
 
