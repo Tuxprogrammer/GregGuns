@@ -1,0 +1,12 @@
+Item textures in this folder: copied unmodified from Galacticraft Legacy 1.7.10 by Team Galacticraft
+(CurseForge project 564236, file 4501439, Galacticraft-1.7-3.0.12.504.jar), licensed under the MIT License
+(text beside this file as LICENSE.txt). Source repository: https://github.com/TeamGalacticraft/Galacticraft-Legacy
+(relicensed MIT on 2022-08-18). The jar itself still bundles the old custom Galacticraft license text; the
+project owner accepted the MIT declaration at face value (design decision D85).
+
+  assets/galacticraftcore/textures/items/rocketFins.png             -> rocket_fins_t1.png
+  assets/galacticraftcore/textures/items/engine.tier1engine.png     -> rocket_engine_t1.png
+  assets/galacticraftcore/textures/items/basicItem.compressedSteel.png -> compressed_steel.png
+  assets/galacticraftasteroids/textures/items/rocketFinsT2.png      -> rocket_fins_t2.png
+  assets/galacticraftasteroids/textures/items/engineT2.png          -> rocket_engine_t2.png
+  assets/galacticraftasteroids/textures/items/compressedTitanium.png -> compressed_titanium.png

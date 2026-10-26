@@ -1,0 +1,14 @@
+Item textures in this folder: copied unmodified from NewHorizonsCoreMod (GT New Horizons),
+https://github.com/GTNewHorizons/NewHorizonsCoreMod, tag 2.9.84 (the version in GT New Horizons 2.9.0-RC-2):
+  src/main/resources/assets/dreamcraft/textures/items/itemHeavyDutyRocketEngineTier3.png -> heavy_duty_rocket_engine_t3.png
+  src/main/resources/assets/dreamcraft/textures/items/itemHeavyDutyRocketFinsTier3.png   -> heavy_duty_rocket_fins_t3.png
+https://github.com/GTNewHorizons/NewHorizonsCoreMod/tree/2.9.84/src/main/resources/assets/dreamcraft/textures/items
+
+(c) the NewHorizonsCoreMod contributors (the textures' commit authors are Dream-Master and UltraProdigy),
+licensed under the GNU General Public License v3.0. The repository carries that license as LICENSE since its
+first commit and its README says the mod is released under the GPL. The full text is beside this file as
+GPL-3.0.txt (LICENSE at tag 2.9.84).
+
+These two icons are used only in the Missile Silo guide sheet (a documentation image), which paints them in and
+is therefore a combined work: that sheet is marked GPL-3.0 in docs/assets/CREDITS.md. The icons are not loaded by
+the game and ship in the mod jar only as files beside this notice.
