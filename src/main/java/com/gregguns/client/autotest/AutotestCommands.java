@@ -114,7 +114,8 @@ final class AutotestCommands {
                 ClientAutotest.logLine("gui nei " + args[1] + " opened=" + opened);
             }
             case "neirecipes" -> {
-                // A handler's whole recipe list by its outputId (for example a Galacticraft NASA Workbench rocket page).
+                // A handler's whole recipe list by its outputId (for example a Galacticraft NASA Workbench rocket
+                // page).
                 boolean opened = GuiCraftingRecipe.openRecipeGui(args[1]);
                 ClientAutotest.logLine("gui neirecipes " + args[1] + " opened=" + opened);
             }
