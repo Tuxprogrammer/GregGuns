@@ -2,7 +2,10 @@ package com.gregguns.client.icbm;
 
 import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
+import com.gregguns.icbm.missile.EntityMissileT1;
+import com.gregguns.icbm.missile.EntityMissileT2;
 
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -22,5 +25,8 @@ public final class IcbmClientModule implements ClientModule {
     @Override
     public void preInit() {
         WarheadBlockRenderer.register();
+        MissileBodyRenderer.register();
+        RenderingRegistry.registerEntityRenderingHandler(EntityMissileT1.class, new RenderMissile());
+        RenderingRegistry.registerEntityRenderingHandler(EntityMissileT2.class, new RenderMissile());
     }
 }

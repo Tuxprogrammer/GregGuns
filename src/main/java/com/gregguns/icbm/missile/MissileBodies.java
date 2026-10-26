@@ -75,6 +75,11 @@ public final class MissileBodies {
         if (stack == null || !stack.hasTagCompound()) {
             return 0;
         }
-        return Math.max(0, Math.min(MAX_GUIDANCE, stack.getTagCompound().getInteger(K_GUIDANCE)));
+        return Math.max(
+            0,
+            Math.min(
+                MAX_GUIDANCE,
+                stack.getTagCompound()
+                    .getInteger(K_GUIDANCE)));
     }
 }

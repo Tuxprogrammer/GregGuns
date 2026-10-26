@@ -3,8 +3,8 @@ package com.gregguns.icbm.missile;
 import java.util.UUID;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
@@ -51,9 +51,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     /** Height of the pad surface above the pad block's Y. */
     public static final double PAD_SURFACE = 0.2;
 
-    private static final int DW_PHASE = 16;
-    private static final int DW_WARHEAD = 17;
-    private static final int DW_FUEL = 18;
+    /** Ticks between repeats of the state packet, for clients that start tracking late. */
+    private static final int RESEND_TICKS = 20;
 
     private final MissileTickets tickets = new MissileTickets();
     private ArcPath path;
@@ -80,6 +79,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     private double targetZ;
     private double plannedDistance;
     private boolean detonated;
+    private boolean stateDirty = true;
 
     /**
      * @param world the world
@@ -98,9 +98,20 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     @Override
     protected void entityInit() {
-        dataWatcher.addObject(DW_PHASE, (byte) 0);
-        dataWatcher.addObject(DW_WARHEAD, (byte) 1);
-        dataWatcher.addObject(DW_FUEL, 0);
+        // No DataWatcher slot (GGS-01-11): phase, casing and fuel reach clients through PacketMissileState.
+    }
+
+    /**
+     * Client side: takes the state the server sent.
+     *
+     * @param newPhase  the flight phase
+     * @param newCasing the warhead casing
+     * @param newFuel   mB in the tank
+     */
+    void applyState(FlightPhase newPhase, int newCasing, int newFuel) {
+        this.phase = newPhase;
+        this.casing = newCasing;
+        this.fuelMb = newFuel;
     }
 
     // ------------------------------------------------------------------ state and API
@@ -114,12 +125,13 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @param casingNumber  the warhead casing (1 or 2)
      * @param owner         who armed it, may be null
      */
-    public void configure(int guidanceTiers, String explosiveId, int warheadFill, int casingNumber, EntityPlayer owner) {
+    public void configure(int guidanceTiers, String explosiveId, int warheadFill, int casingNumber,
+        EntityPlayer owner) {
         this.guidance = Math.max(0, Math.min(MissileBodies.MAX_GUIDANCE, guidanceTiers));
         this.explosive = explosiveId;
         this.fill = warheadFill;
         this.casing = casingNumber;
-        dataWatcher.updateObject(DW_WARHEAD, (byte) casingNumber);
+        stateDirty = true;
         if (owner != null) {
             this.ownerId = owner.getUniqueID();
             this.ownerName = owner.getCommandSenderName();
@@ -137,7 +149,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     /** @return the flight phase */
     public FlightPhase phase() {
-        return worldObj.isRemote ? FlightPhase.values()[dataWatcher.getWatchableObjectByte(DW_PHASE)] : phase;
+        return phase;
     }
 
     /** @return true while it stands on the pad (or in its silo) and can be fueled and launched */
@@ -147,12 +159,12 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     /** @return the warhead casing number, 1 or 2; drawn on the nose */
     public int casingNumber() {
-        return worldObj.isRemote ? dataWatcher.getWatchableObjectByte(DW_WARHEAD) : casing;
+        return casing;
     }
 
     /** @return mB in the tank */
     public int fuelMb() {
-        return worldObj.isRemote ? dataWatcher.getWatchableObjectInt(DW_FUEL) : fuelMb;
+        return fuelMb;
     }
 
     /** @return the tank size, mB, with the config factor (D20) */
@@ -162,14 +174,15 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     /** @return the range in blocks with the config factor */
     public int maxRange() {
-        return (int) Math.max(tier().minRange() + 1L, Math.round(tier().baseMaxRange() * IcbmConfig.missileRangeFactor));
+        return (int) Math
+            .max(tier().minRange() + 1L, Math.round(tier().baseMaxRange() * IcbmConfig.missileRangeFactor));
     }
 
     /**
      * Pours fuel into the tank directly (the scenarios, and the Galacticraft path below).
      *
-     * @param mb      the amount offered
-     * @param doFill  false to only report
+     * @param mb     the amount offered
+     * @param doFill false to only report
      * @return mB that fit; 0 unless the missile is on the pad
      */
     public int fill(int mb, boolean doFill) {
@@ -179,7 +192,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         int fit = Math.min(mb, capacityMb() - fuelMb);
         if (fit > 0 && doFill) {
             fuelMb += fit;
-            dataWatcher.updateObject(DW_FUEL, fuelMb);
+            stateDirty = true;
         }
         return Math.max(0, fit);
     }
@@ -292,6 +305,11 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             clientTick();
             return;
         }
+        if (stateDirty || ticksExisted % RESEND_TICKS == 0) {
+            stateDirty = false;
+            com.gregguns.network.GregGunsNetwork.channel()
+                .sendToAllTracking(new PacketMissileState(this), this);
+        }
         motionX = 0;
         motionY = 0;
         motionZ = 0;
@@ -302,7 +320,6 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             case WARMUP:
                 if (++phaseTick >= WARMUP_TICKS) {
                     phaseTick = 0;
-                    phase = FlightPhase.CLIMB;
                     setPhase(FlightPhase.CLIMB);
                 }
                 break;
@@ -317,10 +334,11 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     private void padTick() {
         // A missile whose support was removed from under it does not hang in the air: it comes apart into items.
-        if (ticksExisted % 20 == 0 && worldObj.getBlock(
-            net.minecraft.util.MathHelper.floor_double(posX),
-            net.minecraft.util.MathHelper.floor_double(posY - 0.5),
-            net.minecraft.util.MathHelper.floor_double(posZ))
+        if (ticksExisted % 20 == 0 && worldObj
+            .getBlock(
+                net.minecraft.util.MathHelper.floor_double(posX),
+                net.minecraft.util.MathHelper.floor_double(posY - 0.5),
+                net.minecraft.util.MathHelper.floor_double(posZ))
             .isAir(
                 worldObj,
                 net.minecraft.util.MathHelper.floor_double(posX),
@@ -419,7 +437,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     private void setPhase(FlightPhase next) {
         this.phase = next;
-        dataWatcher.updateObject(DW_PHASE, (byte) next.ordinal());
+        stateDirty = true;
     }
 
     // ------------------------------------------------------------------ impact, damage, disarm
@@ -459,7 +477,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             return false;
         }
         if (phase == FlightPhase.PAD) {
-            // On the pad only a player's hit takes it apart (a creative punch or a sneaking hit); nothing else harms it.
+            // On the pad only a player's hit takes it apart (a creative punch or a sneaking hit); nothing else harms
+            // it.
             if (source.getEntity() instanceof EntityPlayer && ((EntityPlayer) source.getEntity()).isSneaking()) {
                 disarm();
                 return true;
@@ -507,7 +526,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         }
         ItemStack body = MissileBodies.body(tier(), guidance);
         WarheadCasing c = casing == 2 ? WarheadCasing.T2 : WarheadCasing.T1;
-        ItemStack warhead = WarheadStacks.make(net.minecraft.item.Item.getItemFromBlock(WarheadBlocks.of(c)), c, explosive, fill);
+        ItemStack warhead = WarheadStacks
+            .make(net.minecraft.item.Item.getItemFromBlock(WarheadBlocks.of(c)), c, explosive, fill);
         for (ItemStack s : new ItemStack[] { body, warhead }) {
             EntityItem item = new EntityItem(worldObj, posX, posY + 0.5, posZ, s);
             item.delayBeforeCanPickup = 10;
@@ -650,9 +670,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         targetY = tag.getDouble("targetY");
         targetZ = tag.getDouble("targetZ");
         plannedDistance = tag.getDouble("distance");
-        dataWatcher.updateObject(DW_PHASE, (byte) phase.ordinal());
-        dataWatcher.updateObject(DW_WARHEAD, (byte) casing);
-        dataWatcher.updateObject(DW_FUEL, fuelMb);
+        stateDirty = true;
     }
 
     /** @return the owner's name for display; empty if none */

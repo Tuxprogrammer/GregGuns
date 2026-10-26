@@ -15,11 +15,11 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import com.gregguns.api.HiddenFromCreativeTab;
 import com.gregguns.api.Tier;
 import com.gregguns.api.Tiered;
 import com.gregguns.icbm.warhead.TileWarheadFiller;
 import com.gregguns.icbm.warhead.WarheadGeometry;
-import com.gregguns.api.HiddenFromCreativeTab;
 
 /**
  * An invisible cell of a missile body taller than one block (D31). It collides like its slice of the model, passes

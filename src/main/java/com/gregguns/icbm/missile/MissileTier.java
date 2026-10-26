@@ -62,7 +62,9 @@ public enum MissileTier {
         return fuelMb;
     }
 
-    /** @return the shortest launch range, blocks; a closer target is refused so the fuel bonus cannot be farmed (D20) */
+    /**
+     * @return the shortest launch range, blocks; a closer target is refused so the fuel bonus cannot be farmed (D20)
+     */
     public int minRange() {
         return minRange;
     }

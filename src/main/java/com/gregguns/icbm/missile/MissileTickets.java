@@ -88,10 +88,24 @@ public final class MissileTickets {
 
     /** Registers the loading callback: tickets loaded from disk are released, a missile asks for its own again. */
     public static void registerCallback() {
-        ForgeChunkManager.setForcedChunkLoadingCallback(GregGuns.instance, (tickets, world) -> {
-            for (Ticket t : tickets) {
-                ForgeChunkManager.releaseTicket(t);
-            }
-        });
+        ForgeChunkManager.setForcedChunkLoadingCallback(GregGuns.instance, MissileTickets::onTicketsLoaded);
+    }
+
+    /**
+     * The world loaded these tickets from disk: release every one. A missile whose chunk loads again asks for a new
+     * ticket on its next tick, so none outlives the entity that wanted it (D25: released on unload).
+     *
+     * @param tickets the loaded tickets
+     * @param world   the world
+     */
+    static void onTicketsLoaded(List<Ticket> tickets, World world) {
+        for (Ticket t : tickets) {
+            ForgeChunkManager.releaseTicket(t);
+        }
+    }
+
+    /** @return the Forge ticket, or null; for the scenarios */
+    Ticket ticket() {
+        return ticket;
     }
 }

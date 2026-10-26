@@ -35,7 +35,10 @@ public final class MissileRecipes {
             attach(MissileTier.T1, new ItemData(Materials.StainlessSteel, T1_PLATES * plate));
             attach(
                 MissileTier.T2,
-                new ItemData(Materials.Titanium, T2_PLATES * plate, new MaterialStack(Materials.StainlessSteel, 4 * plate)));
+                new ItemData(
+                    Materials.Titanium,
+                    T2_PLATES * plate,
+                    new MaterialStack(Materials.StainlessSteel, 4 * plate)));
         } catch (RuntimeException e) {
             GregGuns.LOG.error("Missile recycling data failed", e);
         }

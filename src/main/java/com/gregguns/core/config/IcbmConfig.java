@@ -75,7 +75,8 @@ public class IcbmConfig {
     @Config.RangeDouble(min = 0.1, max = 10.0)
     public static double missileRangeFactor = 1.0;
 
-    @Config.Comment({ "The most the unburned fuel adds to a blast radius, as a fraction (D20): 0.25 is up to 25% bigger",
+    @Config.Comment({
+        "The most the unburned fuel adds to a blast radius, as a fraction (D20): 0.25 is up to 25% bigger",
         "at point-blank range, and nothing at full range. 0 turns the bonus off. Range 0 to 1. Default: 0.25." })
     @Config.RangeDouble(min = 0.0, max = 1.0)
     public static double fuelBonusMax = 0.25;

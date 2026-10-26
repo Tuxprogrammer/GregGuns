@@ -149,7 +149,9 @@ public final class BlockMissileBody extends BlockContainer implements Tiered {
         if (player.isSneaking() && player.getHeldItem() == null) {
             MissileStacks.ArmResult result = MissileStacks.arm(world, x, y, z, player);
             player.addChatMessage(
-                new ChatComponentTranslation("gregguns.icbm.arm." + result.name().toLowerCase(java.util.Locale.ROOT)));
+                new ChatComponentTranslation(
+                    "gregguns.icbm.arm." + result.name()
+                        .toLowerCase(java.util.Locale.ROOT)));
         } else {
             player.addChatMessage(new ChatComponentTranslation("gregguns.icbm.body.hint", tier.number()));
         }

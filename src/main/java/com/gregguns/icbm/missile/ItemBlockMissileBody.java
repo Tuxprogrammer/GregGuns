@@ -9,10 +9,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import com.gregguns.core.text.AddedBy;
 import com.gregguns.core.text.TierText;
 import com.gregguns.icbm.IcbmAvailability;
 import com.gregguns.icbm.warhead.TileWarheadFiller;
-import com.gregguns.core.text.AddedBy;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

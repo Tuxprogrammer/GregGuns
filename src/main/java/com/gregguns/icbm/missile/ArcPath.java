@@ -3,7 +3,8 @@ package com.gregguns.icbm.missile;
 /**
  * The ballistic path of a missile, as a closed-form function of the flight tick. It is built from the baseline's
  * description (constant horizontal speed over a parabola whose apex is well above the chord), not ported, and it fixes
- * three of its bugs on purpose: the target height is used (ICBM-03-18), a flat distance under one block cannot divide by
+ * three of its bugs on purpose: the target height is used (ICBM-03-18), a flat distance under one block cannot divide
+ * by
  * zero or dive (ICBM-03-17), and a missing target is not the world origin (ICBM-03-19: the caller must pass one).
  * Because the position is a pure function of the tick, a reloaded missile resumes exactly where it was and the client
  * can extrapolate the same line. Past the arrival tick the curve keeps descending, so a missile that missed its target

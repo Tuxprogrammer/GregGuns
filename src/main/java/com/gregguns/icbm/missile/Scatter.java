@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * Guidance scatter (D24). Each axis is the difference of two uniform rolls (triangular, after ICBM 2) times a
  * half-width. The half-width is the tier's base scatter, shrunk for each guidance tier above the missile's own, plus
- * ICBM-Classic's distance term {@code 10 * (d / range)^2}. There is no failure roll and no dud. No Minecraft types,
+ * the baseline's distance term {@code 10 * (d / range)^2}. There is no failure roll and no dud. No Minecraft types,
  * both sides.
  */
 // Spec: docs/gregguns-icbm-spec/03-missiles/guidance.md

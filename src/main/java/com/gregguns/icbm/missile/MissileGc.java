@@ -19,8 +19,10 @@ import micdoodle8.mods.galacticraft.core.tile.TileEntityMulti;
  * check (see {@code MissileRegistration.init} and {@code ItemBlockMissileBody}). Server and client.
  */
 // Spec: docs/gregguns-icbm-spec/03-missiles/galacticraft-pad.md, fuel.md
-// Source: https://github.com/GTNewHorizons/Galacticraft/blob/3.4.34-GTNH/src/main/java/micdoodle8/mods/galacticraft/api/recipe/RocketFuels.java
-// Source: https://github.com/GTNewHorizons/Galacticraft/blob/3.4.34-GTNH/src/main/java/micdoodle8/mods/galacticraft/core/tile/TileEntityLandingPad.java
+// Source:
+// https://github.com/GTNewHorizons/Galacticraft/blob/3.4.34-GTNH/src/main/java/micdoodle8/mods/galacticraft/api/recipe/RocketFuels.java
+// Source:
+// https://github.com/GTNewHorizons/Galacticraft/blob/3.4.34-GTNH/src/main/java/micdoodle8/mods/galacticraft/core/tile/TileEntityLandingPad.java
 public final class MissileGc {
 
     private MissileGc() {}

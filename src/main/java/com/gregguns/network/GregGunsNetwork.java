@@ -117,7 +117,8 @@ public final class GregGunsNetwork {
                 new com.gregguns.fx.PacketSpawnParticle(),
                 new com.gregguns.fx.PacketSpawnParticleOnEntity(),
                 new com.gregguns.entity.npc.PacketNpcAim(),
-                new com.gregguns.core.module.PacketModuleSync()));
+                new com.gregguns.core.module.PacketModuleSync(),
+                new com.gregguns.icbm.missile.PacketMissileState()));
     }
 
     /** Returns one instance of each client-to-server packet, in wire order. Append only. */

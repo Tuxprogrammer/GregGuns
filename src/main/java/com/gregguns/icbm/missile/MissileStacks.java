@@ -91,7 +91,9 @@ public final class MissileStacks {
         }
         BlockWarhead warheadBlock = (BlockWarhead) above;
         TileWarhead warhead = (TileWarhead) wt;
-        if (!tier.carries(warheadBlock.casing().tier())) {
+        if (!tier.carries(
+            warheadBlock.casing()
+                .tier())) {
             return ArmResult.WRONG_WARHEAD;
         }
         if (warhead.armed()) {

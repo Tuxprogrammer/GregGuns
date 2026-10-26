@@ -3,7 +3,8 @@ package com.gregguns.icbm.missile;
 import net.minecraft.world.World;
 
 /**
- * The T2 (EV to IV) missile. A class of its own, because Galacticraft's {@code RocketFuels} keys its fuel lists by entity
+ * The T2 (EV to IV) missile. A class of its own, because Galacticraft's {@code RocketFuels} keys its fuel lists by
+ * entity
  * class (D19). Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/03-missiles/missile-entity.md
