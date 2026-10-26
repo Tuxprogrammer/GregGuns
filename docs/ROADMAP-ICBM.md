@@ -164,7 +164,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** a preview sheet of the warhead models by tier, the first `icbm-warheads` sheet (T1–T2), and quests for the first warheads.
 
 **Exit gate:**
-- [ ] Every I1 blast type detonates through the shared pipeline and respects protection and `explosions.blockDamage`. Scenario per type.
+- [ ] Every I1 blast type detonates through the shared pipeline and respects protection and the per-tier `icbm.terrainDamageT<n>` settings (D52). Scenario per type.
 - [ ] Conventional warheads meet the T1 and T2 center-damage targets against Infernal-scale health pools. Unit test plus scenario.
 - [ ] Several large blasts at once stay within the tick budget, and a blast survives a save and reload. Scenario.
 - [ ] Warhead blocks fuse and detonate by redstone and by hand. Each shows its 3D model with a matching collision box, and multi-block warheads break as one piece.

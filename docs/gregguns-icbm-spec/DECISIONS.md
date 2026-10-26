@@ -8,7 +8,7 @@ To decide an open question, reply with its number and an option letter, or write
 
 ## Decided
 
-The owner decided D1–D28 on 2026-10-20 and D29–D42, D47 and D50 on 2026-10-25, and D51 on 2026-10-26. D43–D46, D48 and D49 are the orchestrator's.
+The owner decided D1–D28 on 2026-10-20 and D29–D42, D47 and D50 on 2026-10-25, and D51 on 2026-10-26. D43–D46, D48, D49 and D52–D54 are the orchestrator's.
 
 | # | Question | Decision |
 |---|---|---|
@@ -63,6 +63,9 @@ The owner decided D1–D28 on 2026-10-20 and D29–D42, D47 and D50 on 2026-10-2
 | D49 | Endgame warhead size (orchestrator, 2026-10-25) | Antimatter and red matter warheads occupy **2×2×4** blocks (D31 said "larger than 1×1×2"). Model files live in `models/thirdparty/<source>/` and their textures in `textures/models/thirdparty/<source>/`, bound directly by the renderer since they sit outside the block atlas |
 | D50 | Local previews, committed guide sheets, placeholder drafts | Owner, 2026-10-25. **Preview sheets and the visuals gallery page stay local,** git-ignored (`docs/assets/previews/icbm/`, `docs/icbm-visuals.html`), and never enter the repository's history; the owner opens them from the checkout. No hosted pages unless the owner asks. **Player guide sheets (infographics) are committed.** **Placeholder guide sheets are allowed,** drafted from the spec's planned numbers with a visible "Draft: numbers pending" stamp, so the guides agent works alongside the coders; the final sheet takes its numbers from the code and drops the stamp. Amends D39 |
 | D51 | Demolition fuse length | Owner, 2026-10-26: a 5-second hand-lit fuse is too short to outrun a 14–20 block blast. **The fuse scales with the warhead's actual blast radius at its fill: 3 seconds to react plus 1 second per 3 blocks of radius, rounded up** (T1 condensed, radius 9: 6 s; T2 thermobaric, radius 20: 10 s), times a config multiplier. A warhead set off by another explosion keeps the short chain-reaction fuse (10 ticks). Applied in the I1 fix round, with the guide sheet's final pass |
+| D52 | ICBM terrain damage switch (orchestrator, 2026-10-26) | ICBM blasts break terrain according to their own per-tier `icbm.terrainDamageT<n>` settings, **on by default as D11 decided**, and are **not** gated by GregGuns' `explosions.blockDamage`, which keeps governing hand-held weapons only. Claims and protection are always respected through `ExplosionEvent.Detonate` and `BlockBreakGuard`. I1 as first built required both switches; corrected in the I1 fix round. The I1 exit box wording follows this |
+| D53 | Blast engine details (orchestrator, 2026-10-26, from coder 1) | Center damage is `centerDamage × √(fill / maxFill)`, flat over the inner 10% of the radius and falling to zero at the radius. Blasts drop no items by default (`icbm.blastDrops` off). Radius is capped at 96 blocks. A saved blast resumes at its cursor once its crater is decided, and before that restarts from its snapshot. Terrain breaks only through the shared `ProjectileExplosion.breakBlock` path. Only the ray caster is ported (MIT); the scheduler, snapshot and budget are our own |
+| D54 | Warhead content details (orchestrator, 2026-10-26, from coder 2) | A warhead's explosive tier equals its casing tier. Radius is `R × (fill / cap)^(1/3)`; fill caps are 5 (T1), 20 (T2) and 64 (T3). Each explosive has one GT recipe that makes a full-casing warhead, plus a cheap fill-1 condensed starter, since NBT cannot flow through a GT recipe. Placed-warhead textures are stitched into the block atlas through a custom sprite (`WarheadSprite`) so the static model draws in the chunk mesh. The dev self-check skips GT's auto-copied UEV electric implosion map, which always breaks the tier rule |
 
 ### D8 in detail
 
