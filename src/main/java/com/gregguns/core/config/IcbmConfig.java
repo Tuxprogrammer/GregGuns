@@ -62,6 +62,30 @@ public class IcbmConfig {
     @Config.RangeDouble(min = 0.1, max = 10.0)
     public static double fuseMultiplier = 1.0;
 
+    @Config.Comment({ "Most missiles that may be in flight at once, server wide (D11). Each holds at most two chunks,",
+        "so the default of 20 stays far inside Forge's per-mod ticket budget. Range 1 to 100. Default: 20." })
+    @Config.RangeInt(min = 1, max = 100)
+    public static int maxMissilesInFlight = 20;
+
+    @Config.Comment({ "Multiplier on every missile tier's fuel tank (D20). Range 0.1 to 10. Default: 1.0." })
+    @Config.RangeDouble(min = 0.1, max = 10.0)
+    public static double missileFuelFactor = 1.0;
+
+    @Config.Comment({ "Multiplier on every missile tier's range. Range 0.1 to 10. Default: 1.0." })
+    @Config.RangeDouble(min = 0.1, max = 10.0)
+    public static double missileRangeFactor = 1.0;
+
+    @Config.Comment({
+        "The most the unburned fuel adds to a blast radius, as a fraction (D20): 0.25 is up to 25% bigger",
+        "at point-blank range, and nothing at full range. 0 turns the bonus off. Range 0 to 1. Default: 0.25." })
+    @Config.RangeDouble(min = 0.0, max = 1.0)
+    public static double fuelBonusMax = 0.25;
+
+    @Config.Comment({ "Ticks a missile may fly past its planned arrival before it detonates where it is (a safety net",
+        "for a target that was never reached). Range 20 to 6000. Default: 600." })
+    @Config.RangeInt(min = 20, max = 6000)
+    public static int missileTimeoutTicks = 600;
+
     /**
      * @param tier the explosive tier number, 1 to 4
      * @return the terrain switch for that tier

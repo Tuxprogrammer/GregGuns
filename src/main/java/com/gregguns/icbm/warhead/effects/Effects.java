@@ -18,6 +18,9 @@ import com.gregguns.explosion.ExplosionRules;
 import com.gregguns.explosion.ProjectileExplosion;
 import com.gregguns.icbm.explosive.BlastContext;
 import com.gregguns.icbm.explosive.BlastEffect;
+import com.gregguns.icbm.fx.CloudBroadcast;
+import com.gregguns.icbm.fx.CloudKind;
+import com.gregguns.icbm.fx.CloudPlan;
 import com.gregguns.icbm.warhead.WarheadBlast;
 
 /**
@@ -55,19 +58,19 @@ public final class Effects {
                 return new Fire();
             case GAS_DEBILITATION:
                 return new Gas(
-                    "spell",
+                    CloudKind.DEBILITATION,
                     new PotionEffect(Potion.moveSlowdown.id, 60, 1),
                     new PotionEffect(Potion.weakness.id, 60, 1),
                     new PotionEffect(Potion.confusion.id, 80, 0));
             case GAS_CHEMICAL:
-                return new Gas("spell", new PotionEffect(Potion.poison.id, 100, 1));
+                return new Gas(CloudKind.CHEMICAL, new PotionEffect(Potion.poison.id, 100, 1));
             case GAS_CONTAGIOUS:
                 return new Gas(
-                    "spell",
+                    CloudKind.CONTAGIOUS,
                     new PotionEffect(Potion.poison.id, 120, 3),
                     new PotionEffect(Potion.hunger.id, 120, 1));
             case SMOKE:
-                return new Gas("largesmoke");
+                return new Gas(CloudKind.SMOKE);
             case REPEL:
                 return new Push(true);
             case ATTRACT:
@@ -221,21 +224,44 @@ public final class Effects {
         }
     }
 
-    /** A cloud that applies potion effects to everything in it every {@link #GAS_PERIOD} ticks. */
+    /**
+     * A cloud that applies potion effects to everything in it every {@link #GAS_PERIOD} ticks. The server sends one
+     * {@code PacketBlastCloud} when it forms and one every {@link CloudPlan#RESEND_PERIOD} ticks after, to the players
+     * near it; each client animates the dense colored cloud with cheap particles for the cloud's life.
+     */
     static final class Gas implements BlastEffect {
 
-        private final String particle;
+        private final CloudKind kind;
         private final PotionEffect[] effects;
 
-        Gas(String particle, PotionEffect... effects) {
-            this.particle = particle;
+        Gas(CloudKind kind, PotionEffect... effects) {
+            this.kind = kind;
             this.effects = effects;
+        }
+
+        private void announce(BlastContext ctx, int age) {
+            CloudBroadcast.send(
+                ctx.world(),
+                kind,
+                ctx.x(),
+                ctx.y(),
+                ctx.z(),
+                (int) Math.ceil(ctx.radius()),
+                GAS_TICKS,
+                GAS_TICKS - age);
+        }
+
+        @Override
+        public void onDetonate(BlastContext ctx) {
+            announce(ctx, 0);
         }
 
         @Override
         public boolean onTick(BlastContext ctx, int age) {
+            if (age > 0 && age % CloudPlan.RESEND_PERIOD == 0 && age < GAS_TICKS) {
+                announce(ctx, age);
+            }
             if (age % GAS_PERIOD == 0) {
-                particles(ctx, particle, 24, ctx.radius() / 2.0);
                 for (EntityLivingBase e : living(ctx.world(), ctx.x(), ctx.y(), ctx.z(), ctx.radius())) {
                     if (distance(e, ctx.x(), ctx.y(), ctx.z()) > ctx.radius()) {
                         continue;

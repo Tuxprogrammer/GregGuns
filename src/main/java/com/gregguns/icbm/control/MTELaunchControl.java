@@ -1,0 +1,552 @@
+package com.gregguns.icbm.control;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+
+import com.cleanroommc.modularui.factory.PosGuiData;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.gregguns.GregGuns;
+import com.gregguns.core.module.ModuleId;
+import com.gregguns.core.module.ModuleState;
+import com.gregguns.core.text.AddedBy;
+import com.gregguns.icbm.control.gc.LaunchPads;
+import com.gregguns.icbm.missile.LaunchResult;
+import com.gregguns.icbm.missile.MissileStatus;
+import com.gregguns.icbm.missile.PadMissiles;
+
+import gregtech.api.enums.GTValues;
+import gregtech.api.enums.ItemList;
+import gregtech.api.enums.Textures;
+import gregtech.api.interfaces.IIconContainer;
+import gregtech.api.interfaces.ITexture;
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.metatileentity.implementations.MTETieredMachineBlock;
+import gregtech.api.render.TextureFactory;
+
+/**
+ * The Launch Control: an HV GT single block that stands within reach of a Galacticraft launch pad and fires the missile
+ * on it (D13). It stores a target (typed coordinates, the player's position, or a GT data stick), checks the pad,
+ * the arming, the fuel and the range, and asks coder-side {@link PadMissiles} to launch. Three things can fire it:
+ * the Launch button, a rising redstone edge, and a rising edge of GT's work-allowed flag (what a machine controller
+ * cover drives). Every shot costs {@link #EU_PER_SHOT} EU, paid only when the pad accepted the launch.
+ *
+ * <p>
+ * Server-side rules: a button press is re-checked against the pressing player (alive, near), the typed coordinates are
+ * clamped by {@link LaunchTarget#of}, and nothing the client sends can set energy or fire past the pre-check
+ * (ICBM-04-12, 04-13). Construct only inside GT's MTE window ({@link ControlMachines#register()}). Both sides.
+ */
+// Spec: docs/gregguns-icbm-spec/04-launch-control/launch-control-block.md,
+// docs/gregguns-icbm-spec/04-launch-control/launch-sequence.md
+public final class MTELaunchControl extends MTETieredMachineBlock {
+
+    /** EU one shot costs (1,200 FE in ICBM's units; 4 FE to the EU). */
+    public static final int EU_PER_SHOT = 300;
+    /** Ticks the block refuses another shot after one fired. */
+    public static final int COOLDOWN_TICKS = 40;
+    /** The data stick slot. */
+    public static final int SLOT_STICK = 0;
+    /** How far a pressing player may stand from the block, blocks. */
+    static final double USE_DISTANCE = 8.0;
+    private static final int HV = 3;
+    private static final int SNAPSHOT_TICKS = 5;
+    private static final String OVERLAY_DIR = "machines/launch_control/";
+    private static final String K_X = "tx";
+    private static final String K_Z = "tz";
+    private static final String K_HAS_X = "hasX";
+    private static final String K_HAS_Z = "hasZ";
+    private static final String K_COOL = "cool";
+
+    /** What the block knows about the pad and the missile right now; recomputed every few ticks on the server. */
+    static final class Snapshot {
+
+        final ControlStatus status;
+        final boolean padFound;
+        final int minRange;
+        final int maxRange;
+        final int distance;
+        /** Expected blast radius at the target, tenths of a block; 0 when unknown. */
+        final int radiusTenths;
+        final int tier;
+
+        Snapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance, int radiusTenths,
+            int tier) {
+            this.status = status;
+            this.padFound = padFound;
+            this.minRange = minRange;
+            this.maxRange = maxRange;
+            this.distance = distance;
+            this.radiusTenths = radiusTenths;
+            this.tier = tier;
+        }
+    }
+
+    private boolean hasX;
+    private boolean hasZ;
+    private int tx;
+    private int tz;
+    private final FireTrigger shots = new FireTrigger();
+    private final FireTrigger redstoneEdge = new FireTrigger();
+    private final FireTrigger coverEdge = new FireTrigger();
+    private Snapshot snapshot;
+    private long snapshotTick;
+    private ControlStatus lastShot;
+    private TargetStick.Outcome lastStick;
+    private int attempts;
+
+    /**
+     * The prototype that registers the machine under {@code id}.
+     *
+     * @param id              the MTE id
+     * @param name            GT's internal name
+     * @param nameRegional    the English display name
+     * @param descriptionKeys lang keys of the tooltip lines
+     */
+    public MTELaunchControl(int id, String name, String nameRegional, String[] descriptionKeys) {
+        super(id, name, nameRegional, HV, 1, descriptionKeys);
+        Overlays.load();
+    }
+
+    private MTELaunchControl(String name, String[] descriptionKeys) {
+        super(name, HV, 1, descriptionKeys, null);
+    }
+
+    @Override
+    public IMetaTileEntity newMetaEntity(IGregTechTileEntity baseMetaTileEntity) {
+        return new MTELaunchControl(mName, mDescriptionArray);
+    }
+
+    @Override
+    public String[] getDescription() {
+        String[] lines = new String[mDescriptionArray.length];
+        for (int i = 0; i < lines.length; i++) {
+            lines[i] = StatCollector.translateToLocal(mDescriptionArray[i]);
+        }
+        return AddedBy.append(lines);
+    }
+
+    // --- energy and inventory -------------------------------------------------------------------------------------
+
+    @Override
+    public boolean isEnetInput() {
+        return true;
+    }
+
+    @Override
+    public boolean isInputFacing(ForgeDirection side) {
+        return true;
+    }
+
+    @Override
+    public long maxEUInput() {
+        return GTValues.V[mTier];
+    }
+
+    @Override
+    public long maxAmperesIn() {
+        return 1;
+    }
+
+    @Override
+    public long maxEUStore() {
+        return GTValues.V[mTier] * 16L;
+    }
+
+    @Override
+    public boolean isFacingValid(ForgeDirection facing) {
+        return facing != ForgeDirection.UP && facing != ForgeDirection.DOWN && facing != ForgeDirection.UNKNOWN;
+    }
+
+    @Override
+    public boolean isItemValidForSlot(int index, ItemStack stack) {
+        return index == SLOT_STICK && isStick(stack);
+    }
+
+    @Override
+    public boolean allowPutStack(IGregTechTileEntity base, int index, ForgeDirection side, ItemStack stack) {
+        return index == SLOT_STICK && isStick(stack);
+    }
+
+    @Override
+    public boolean allowPullStack(IGregTechTileEntity base, int index, ForgeDirection side, ItemStack stack) {
+        return false;
+    }
+
+    /** @return true for a GT data stick */
+    static boolean isStick(ItemStack stack) {
+        return stack != null && ItemList.Tool_DataStick.isStackEqual(stack, false, true);
+    }
+
+    // --- target ---------------------------------------------------------------------------------------------------
+
+    /** @return the stored target, or {@link LaunchTarget#NONE} while either coordinate is missing */
+    public LaunchTarget target() {
+        return hasX && hasZ ? LaunchTarget.of(tx, tz) : LaunchTarget.NONE;
+    }
+
+    /** @return the X field text; empty while unset */
+    public String xText() {
+        return hasX ? Integer.toString(tx) : "";
+    }
+
+    /** @return the Z field text; empty while unset */
+    public String zText() {
+        return hasZ ? Integer.toString(tz) : "";
+    }
+
+    /** @param text the X field; empty clears it, anything that is not a legal coordinate is ignored */
+    public void setXText(String text) {
+        int v = LaunchTarget.parseCoordinate(text);
+        if (v == LaunchTarget.INVALID) {
+            if (text == null || text.trim()
+                .isEmpty()) {
+                hasX = false;
+            }
+            return;
+        }
+        tx = v;
+        hasX = true;
+        changed();
+    }
+
+    /** @param text the Z field; empty clears it, anything that is not a legal coordinate is ignored */
+    public void setZText(String text) {
+        int v = LaunchTarget.parseCoordinate(text);
+        if (v == LaunchTarget.INVALID) {
+            if (text == null || text.trim()
+                .isEmpty()) {
+                hasZ = false;
+            }
+            return;
+        }
+        tz = v;
+        hasZ = true;
+        changed();
+    }
+
+    private void setTarget(LaunchTarget t) {
+        tx = t.x();
+        tz = t.z();
+        hasX = t.isSet();
+        hasZ = t.isSet();
+        changed();
+    }
+
+    private void changed() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        if (base != null) {
+            base.markDirty();
+        }
+        snapshot = null;
+    }
+
+    /** @param player the pressing player; the target becomes the block under their feet */
+    public void useMyPosition(EntityPlayer player) {
+        if (!mayUse(player)) {
+            return;
+        }
+        setTarget(LaunchTarget.of((long) Math.floor(player.posX), (long) Math.floor(player.posZ)));
+    }
+
+    /**
+     * Copies the stored target to the stick in the slot.
+     *
+     * @param player the pressing player
+     */
+    public void saveToStick(EntityPlayer player) {
+        if (!mayUse(player)) {
+            return;
+        }
+        ItemStack stick = getStackInSlot(SLOT_STICK);
+        if (!isStick(stick)) {
+            lastStick = TargetStick.Outcome.NO_STICK;
+            return;
+        }
+        LaunchTarget t = target();
+        if (!t.isSet()) {
+            lastStick = TargetStick.Outcome.NO_TARGET;
+            return;
+        }
+        if (!stick.hasTagCompound()) {
+            stick.setTagCompound(new NBTTagCompound());
+        }
+        TargetStick.write(stick.getTagCompound(), t, getBaseMetaTileEntity().getWorld().provider.dimensionId);
+        lastStick = TargetStick.Outcome.SAVED;
+        changed();
+    }
+
+    /**
+     * Copies the target on the stick in the slot to this block.
+     *
+     * @param player the pressing player
+     */
+    public void loadFromStick(EntityPlayer player) {
+        if (!mayUse(player)) {
+            return;
+        }
+        ItemStack stick = getStackInSlot(SLOT_STICK);
+        if (!isStick(stick)) {
+            lastStick = TargetStick.Outcome.NO_STICK;
+            return;
+        }
+        NBTTagCompound tag = stick.getTagCompound();
+        LaunchTarget t = TargetStick.read(tag);
+        if (!t.isSet()) {
+            lastStick = TargetStick.Outcome.EMPTY_STICK;
+            return;
+        }
+        int dim = getBaseMetaTileEntity().getWorld().provider.dimensionId;
+        if (TargetStick.dimension(tag, dim) != dim) {
+            lastStick = TargetStick.Outcome.WRONG_DIMENSION;
+            return;
+        }
+        setTarget(t);
+        lastStick = TargetStick.Outcome.LOADED;
+    }
+
+    /** @return the pre-check status right now, recomputed (tests and the GUI line); server side */
+    public ControlStatus currentStatus() {
+        snapshot = null;
+        return snapshot().status;
+    }
+
+    /** @return how many times a shot was attempted since the block loaded (tests and the GUI) */
+    public int attempts() {
+        return attempts;
+    }
+
+    /** @return the last data stick outcome, for the GUI line; null before any */
+    public TargetStick.Outcome lastStick() {
+        return lastStick;
+    }
+
+    /** @return the status of the last shot attempt, for the GUI line; null before any */
+    public ControlStatus lastShot() {
+        return lastShot;
+    }
+
+    /**
+     * @param player a player
+     * @return true when the player may press this block's buttons: alive and within {@link #USE_DISTANCE}
+     */
+    boolean mayUse(EntityPlayer player) {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        if (player == null || base == null || base.isClientSide() || player.isDead) {
+            return false;
+        }
+        double dx = player.posX - (base.getXCoord() + 0.5);
+        double dy = player.posY - (base.getYCoord() + 0.5);
+        double dz = player.posZ - (base.getZCoord() + 0.5);
+        return player.worldObj == base.getWorld() && dx * dx + dy * dy + dz * dz <= USE_DISTANCE * USE_DISTANCE;
+    }
+
+    // --- the shot -------------------------------------------------------------------------------------------------
+
+    /** @return the current pre-check and pad facts, recomputed at most every few ticks; server side only */
+    Snapshot snapshot() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        long now = base.getTimer();
+        if (snapshot != null && now - snapshotTick < SNAPSHOT_TICKS && now >= snapshotTick) {
+            return snapshot;
+        }
+        snapshot = compute(base);
+        snapshotTick = now;
+        return snapshot;
+    }
+
+    private Snapshot compute(IGregTechTileEntity base) {
+        LaunchTarget t = target();
+        boolean energy = base.getStoredEU() >= EU_PER_SHOT;
+        World w = base.getWorld();
+        int[] pad = ModuleState.isActive(ModuleId.ICBM)
+            ? LaunchPads.nearestPadCenter(w, base.getXCoord(), base.getYCoord(), base.getZCoord())
+            : null;
+        if (pad == null) {
+            return new Snapshot(
+                LaunchGate.check(t, false, energy, shots.coolingDown(), false, false, false, 0, 0, 0),
+                false,
+                0,
+                0,
+                0,
+                0,
+                0);
+        }
+        MissileStatus ms = PadMissiles.status(w, pad[0], pad[1], pad[2]);
+        int min = ms.present() ? ms.tier()
+            .minRange() : 0;
+        int max = ms.present() ? PadMissiles.maxRange(w, pad[0], pad[1], pad[2]) : 0;
+        double dist = t.distanceFrom(pad[0] + 0.5, pad[2] + 0.5);
+        ControlStatus st = LaunchGate
+            .check(t, true, energy, shots.coolingDown(), ms.present(), ms.armed(), ms.fueled(), dist, min, max);
+        int radius = t.isSet() && ms.present()
+            ? (int) Math.round(PadMissiles.expectedRadius(w, pad[0], pad[1], pad[2], t.aimX(), t.aimZ()) * 10.0)
+            : 0;
+        return new Snapshot(
+            st,
+            true,
+            min,
+            max,
+            (int) Math.round(dist),
+            radius,
+            ms.present() ? ms.tier()
+                .number() : 0);
+    }
+
+    /**
+     * Fires the missile on the pad at the stored target, when every check passes. The EU is taken only after the pad
+     * accepted the launch (ICBM-04-07). Server side.
+     *
+     * @param source who fired it, null for redstone or a cover
+     * @return what came of it
+     */
+    public ControlStatus fire(EntityPlayer source) {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        if (base == null || base.isClientSide() || !ModuleState.isActive(ModuleId.ICBM)) {
+            return ControlStatus.NO_PAD;
+        }
+        attempts++;
+        snapshot = null;
+        Snapshot s = snapshot();
+        if (s.status != ControlStatus.READY) {
+            lastShot = s.status;
+            return s.status;
+        }
+        LaunchTarget t = target();
+        int[] pad = LaunchPads.nearestPadCenter(base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord());
+        if (pad == null) {
+            lastShot = ControlStatus.NO_PAD;
+            return lastShot;
+        }
+        LaunchResult r = PadMissiles.launch(base.getWorld(), pad[0], pad[1], pad[2], t.aimX(), t.aimZ(), source);
+        ControlStatus st = LaunchGate.fromResult(r.name());
+        if (st == ControlStatus.FIRED) {
+            base.decreaseStoredEnergyUnits(EU_PER_SHOT, true);
+            shots.startCooldown(COOLDOWN_TICKS);
+        }
+        lastShot = st;
+        snapshot = null;
+        return st;
+    }
+
+    /**
+     * Fired by the Launch button; the button re-checks the player first.
+     *
+     * @param player the pressing player
+     */
+    public void fireFromButton(EntityPlayer player) {
+        if (mayUse(player)) {
+            fire(player);
+        }
+    }
+
+    @Override
+    public void onPostTick(IGregTechTileEntity base, long tick) {
+        super.onPostTick(base, tick);
+        if (base.isClientSide() || !ModuleState.isActive(ModuleId.ICBM)) {
+            return;
+        }
+        shots.tick();
+        // Both edges are sampled every tick; neither fires on its first sample, so a load with the signal high is
+        // quiet.
+        boolean rs = redstoneEdge.rising(base.getStrongestRedstone() > 0);
+        boolean cover = coverEdge.rising(base.isAllowedToWork());
+        if (rs || cover) {
+            fire(null);
+        }
+    }
+
+    @Override
+    public void onFirstTick(IGregTechTileEntity base) {
+        super.onFirstTick(base);
+        redstoneEdge.reset();
+        coverEdge.reset();
+    }
+
+    // --- GUI ------------------------------------------------------------------------------------------------------
+
+    @Override
+    public boolean onRightclick(IGregTechTileEntity base, EntityPlayer player, ForgeDirection side, float x, float y,
+        float z) {
+        if (base.isClientSide()) {
+            return true;
+        }
+        openGui(player);
+        return true;
+    }
+
+    @Override
+    public ModularPanel buildUI(PosGuiData guiData, PanelSyncManager syncManager, UISettings uiSettings) {
+        return new LaunchControlGui(this).build(guiData, syncManager, uiSettings);
+    }
+
+    // --- NBT ------------------------------------------------------------------------------------------------------
+
+    @Override
+    public void saveNBTData(NBTTagCompound nbt) {
+        nbt.setBoolean(K_HAS_X, hasX);
+        nbt.setBoolean(K_HAS_Z, hasZ);
+        nbt.setInteger(K_X, tx);
+        nbt.setInteger(K_Z, tz);
+        nbt.setInteger(K_COOL, shots.cooldownLeft());
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound nbt) {
+        hasX = nbt.getBoolean(K_HAS_X);
+        hasZ = nbt.getBoolean(K_HAS_Z);
+        tx = nbt.getInteger(K_X);
+        tz = nbt.getInteger(K_Z);
+        shots.restoreCooldown(nbt.getInteger(K_COOL));
+    }
+
+    // --- textures -------------------------------------------------------------------------------------------------
+
+    @Override
+    public ITexture[][][] getTextureSet(ITexture[] textures) {
+        return null;
+    }
+
+    @Override
+    public ITexture[] getTexture(IGregTechTileEntity base, ForgeDirection side, ForgeDirection facing, int colorIndex,
+        boolean active, boolean redstoneLevel) {
+        ITexture casing = Textures.BlockIcons.MACHINE_CASINGS[mTier][colorIndex + 1];
+        IIconContainer overlay;
+        if (side == facing) {
+            overlay = active ? Overlays.FRONT_ACTIVE : Overlays.FRONT;
+        } else if (side == ForgeDirection.UP) {
+            overlay = active ? Overlays.TOP_ACTIVE : Overlays.TOP;
+        } else if (side == ForgeDirection.DOWN) {
+            overlay = Overlays.BOTTOM;
+        } else {
+            overlay = Overlays.SIDE;
+        }
+        return new ITexture[] { casing, TextureFactory.of(overlay) };
+    }
+
+    /** The overlay icons, requested when the first block is constructed (before GT stitches textures). */
+    private static final class Overlays {
+
+        static final IIconContainer FRONT = icon("OVERLAY_FRONT");
+        static final IIconContainer FRONT_ACTIVE = icon("OVERLAY_FRONT_ACTIVE");
+        static final IIconContainer SIDE = icon("OVERLAY_SIDE");
+        static final IIconContainer TOP = icon("OVERLAY_TOP");
+        static final IIconContainer TOP_ACTIVE = icon("OVERLAY_TOP_ACTIVE");
+        static final IIconContainer BOTTOM = icon("OVERLAY_BOTTOM");
+
+        private Overlays() {}
+
+        static void load() {
+            // Loading the class runs the initializers above.
+        }
+
+        private static IIconContainer icon(String file) {
+            return Textures.BlockIcons.customOptional(GregGuns.MODID, OVERLAY_DIR + file);
+        }
+    }
+}

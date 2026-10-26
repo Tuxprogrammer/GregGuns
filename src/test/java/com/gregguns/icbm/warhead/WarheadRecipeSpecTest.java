@@ -88,8 +88,17 @@ class WarheadRecipeSpecTest {
             assertTrue(spec.circuit() >= 1 && spec.circuit() <= 24, spec + " circuit " + spec.circuit());
             assertTrue(seen.add(spec.circuit()), spec + " reuses circuit " + spec.circuit());
         }
+        // The warhead parts share the warheads' circuit space (their inputs overlap: plates, circuits, wire). The I2
+        // missile parts (engines, guidance computers) take motors, pumps and their own circuits, so no warhead or
+        // warhead part recipe can match their inputs; they only need to be unique among themselves.
+        Set<Integer> missile = new HashSet<>();
         for (com.gregguns.icbm.recipe.IcbmPart part : com.gregguns.icbm.recipe.IcbmPart.values()) {
-            assertTrue(seen.add(part.circuit()), part + " reuses circuit " + part.circuit());
+            assertTrue(part.circuit() >= 1 && part.circuit() <= 24, part + " circuit " + part.circuit());
+            boolean missilePart = part.registryName()
+                .startsWith("missile_")
+                || part.registryName()
+                    .startsWith("guidance_");
+            assertTrue((missilePart ? missile : seen).add(part.circuit()), part + " reuses circuit " + part.circuit());
         }
     }
 
