@@ -19,7 +19,7 @@ Status: **planned for build** on the [ICBM roadmap](../ROADMAP-ICBM.md) (milesto
 
 ## Decisions and open questions
 
-All of them are in **[DECISIONS.md](DECISIONS.md)**: what has been decided (D1–D47) and any open questions. From I0 on, the orchestrator adds and records decisions itself. Each open question gives its context, the options and a recommendation.
+All of them are in **[DECISIONS.md](DECISIONS.md)**: what has been decided (D1–D49) and any open questions. From I0 on, the orchestrator adds and records decisions itself. Each open question gives its context, the options and a recommendation.
 
 In short:
 - Clean room, with MIT hard-math ports allowed.
