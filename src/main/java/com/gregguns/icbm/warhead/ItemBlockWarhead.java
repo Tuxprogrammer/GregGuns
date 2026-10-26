@@ -56,6 +56,9 @@ public final class ItemBlockWarhead extends ItemBlock {
         return true;
     }
 
+    /** Pixels a tooltip line may take before it wraps. */
+    private static final int TOOLTIP_WRAP_WIDTH = 200;
+
     @Override
     @SideOnly(Side.CLIENT)
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -76,8 +79,10 @@ public final class ItemBlockWarhead extends ItemBlock {
         f.annihilates = def != null && def.annihilates();
         WarheadTooltipFormat.Labels l = labels(data.explosive(), blast);
         boolean shift = net.minecraft.client.gui.GuiScreen.isShiftKeyDown();
+        // The Shift details are full sentences; wrap them so the tooltip stays inside the screen.
+        net.minecraft.client.gui.FontRenderer font = net.minecraft.client.Minecraft.getMinecraft().fontRenderer;
         for (String line : WarheadTooltipFormat.lines(l, f, shift)) {
-            tooltip.add(line);
+            tooltip.addAll(font.listFormattedStringToWidth(line, TOOLTIP_WRAP_WIDTH));
         }
         if (shift) {
             tooltip.add(AddedBy.line());

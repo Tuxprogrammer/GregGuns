@@ -44,6 +44,7 @@ public final class WarheadScenarios {
             registry.register(new BlastType(blast));
         }
         registry.register(new BlockDamageOff());
+        registry.register(new WarheadShotsScenario());
     }
 
     private static boolean moduleOff() {
