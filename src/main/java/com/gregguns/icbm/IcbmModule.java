@@ -29,6 +29,7 @@ public final class IcbmModule implements GregGunsModule {
     @Override
     public void preInit(FMLPreInitializationEvent event, ModuleRegistrar registrar) {
         WarheadRegistration.preInit(registrar);
+        com.gregguns.icbm.production.ProductionItems.register(registrar);
     }
 
     /**
@@ -42,9 +43,13 @@ public final class IcbmModule implements GregGunsModule {
         // Content always registers (it is inert until something detonates), so the engine is wired whatever the flag
         // says; the scenarios then also run when the module turned itself off.
         com.gregguns.icbm.blast.BlastEngine.register();
+        // The Launch Control's MTE id must exist on every client and server, so it is built here, in GT's MTE window.
+        com.gregguns.icbm.control.ControlMachines.register();
         if (DevEnvironment.testHooksEnabled()) {
             IcbmScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             WarheadRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
+            com.gregguns.icbm.control.ControlScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            com.gregguns.icbm.production.ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }
 
@@ -53,5 +58,8 @@ public final class IcbmModule implements GregGunsModule {
         // Only reached when the module is enabled, which already implies Galacticraft is present.
         GregGuns.LOG.info("ICBM module active (Galacticraft present)");
         WarheadRegistration.init();
+        com.gregguns.icbm.production.MissileRecipes.init();
+        com.gregguns.icbm.control.ControlMachines.registerRecipes();
+        com.gregguns.icbm.production.gc.MissileSchematicPage.registerAll();
     }
 }

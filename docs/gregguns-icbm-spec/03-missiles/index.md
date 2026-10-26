@@ -6,10 +6,10 @@ Missile bodies, the stack-on-pad build, fuel, flight and tracking. Missiles ride
 
 ## Contents
 
-All sheets are planned.
+Sheets without a link are planned.
 
 - missile-bodies.md (planned): tiers, plates, engine, fins, guidance slots; chips and schematics (D8, D24).
-- build-and-recipes.md (planned): NASA Workbench page, Assembly Line recipes with research, NBT carry-through (D8, D27).
+- [build-and-recipes.md](build-and-recipes.md): chip, schematic, NASA Workbench page, Assembly Line recipes with research, guidance carry-through, cost (D8, D27).
 - stack-on-pad.md (planned): placing body and warhead, arming into the missile entity, silo mating (D31).
 - galacticraft-pad.md (planned): `IDockable`, fuel interfaces, `EventLandingPadRemoval` denial, `icbm.pad.survives` (D32).
 - fuel.md (planned): per-tier fuel lists in `RocketFuels`, fixed amounts, the unburned-fuel bonus (D19, D20, D22).

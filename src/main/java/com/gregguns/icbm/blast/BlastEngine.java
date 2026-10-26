@@ -23,6 +23,9 @@ import com.gregguns.explosion.ProjectileExplosion;
 import com.gregguns.icbm.explosive.ExplosiveDef;
 import com.gregguns.icbm.explosive.Explosives;
 import com.gregguns.icbm.explosive.TickBudget;
+import com.gregguns.icbm.fx.CloudBroadcast;
+import com.gregguns.icbm.fx.CloudKind;
+import com.gregguns.icbm.fx.CloudPlan;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -105,6 +108,13 @@ public final class BlastEngine {
         jobs.add(new BlastJob(world, st, def, budget));
         // Only annihilating explosives get the long-range flash; every other blast uses the normal effects.
         ProjectileExplosion.blastEffects(world, x, y, z, (float) radius, def.annihilates());
+        // A large conventional blast gets a smoke plume of its own, sized by its radius (the flash above is for
+        // annihilating explosives only). The gas warheads announce their own clouds (Effects.Gas).
+        int whole = (int) Math.ceil(radius);
+        if (CloudPlan.wantsPlume(whole, def.annihilates())) {
+            int life = CloudPlan.duration(CloudKind.PLUME, whole, 0);
+            CloudBroadcast.send(world, CloudKind.PLUME, x, y, z, whole, life, life);
+        }
         touch(world);
         return true;
     }

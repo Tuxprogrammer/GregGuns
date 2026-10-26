@@ -42,12 +42,20 @@ class GregGunsMTEIDsTest {
     }
 
     @Test
-    void theIcbmSubRangeIsReservedInsideTheBlockAndUnused() {
+    void theIcbmSubRangeIsReservedInsideTheBlockAndListsOnlyIcbmMachines() {
         assertTrue(GregGunsMTEIDs.ICBM_FIRST > GregGunsMTEIDs.BLOCK_FIRST);
         assertEquals(GregGunsMTEIDs.BLOCK_LAST, GregGunsMTEIDs.ICBM_LAST);
-        for (int id : GregGunsMTEIDs.all()) {
-            assertFalse(id >= GregGunsMTEIDs.ICBM_FIRST && id <= GregGunsMTEIDs.ICBM_LAST, "id " + id + " is ICBM's");
+        Set<Integer> icbm = new HashSet<>();
+        for (int id : GregGunsMTEIDs.icbm()) {
+            assertTrue(id >= GregGunsMTEIDs.ICBM_FIRST && id <= GregGunsMTEIDs.ICBM_LAST, "icbm id " + id);
+            icbm.add(id);
         }
+        for (int id : GregGunsMTEIDs.all()) {
+            boolean inside = id >= GregGunsMTEIDs.ICBM_FIRST && id <= GregGunsMTEIDs.ICBM_LAST;
+            assertTrue(inside == icbm.contains(id), "id " + id + " is inside the ICBM range only if icbm() lists it");
+        }
+        // The roster: 20140 is the Launch Control.
+        assertEquals(20140, GregGunsMTEIDs.LAUNCH_CONTROL);
         for (int id : GregGunsMTEIDs.retired()) {
             assertFalse(id >= GregGunsMTEIDs.ICBM_FIRST && id <= GregGunsMTEIDs.ICBM_LAST, "retired id " + id);
         }
@@ -122,6 +130,10 @@ class GregGunsMTEIDsTest {
         int[] ids = GregGunsMTEIDs.all()
             .clone();
         java.util.Arrays.sort(ids);
+        // The GregGuns machines below the ICBM sub-range (20140 and up, covered by icbm()) are the contiguous run.
+        ids = java.util.Arrays.stream(ids)
+            .filter(id -> id < GregGunsMTEIDs.ICBM_FIRST)
+            .toArray();
         assertEquals(22, ids.length);
         int next = GregGunsMTEIDs.BLOCK_FIRST;
         for (int id : ids) {

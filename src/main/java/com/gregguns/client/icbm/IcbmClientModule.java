@@ -7,7 +7,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 /**
- * Client half of {@code modules.icbm}: the warhead block renderer. Its content is always registered, so this runs
+ * Client half of {@code modules.icbm}: the warhead block renderer and the blast cloud animation. Its content is always
+ * registered, so this runs
  * whatever the module flag says. Client only.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warhead-blocks.md
@@ -22,5 +23,6 @@ public final class IcbmClientModule implements ClientModule {
     @Override
     public void preInit() {
         WarheadBlockRenderer.register();
+        CloudFxClient.install();
     }
 }

@@ -25,6 +25,9 @@ public final class MteModules {
         if (mteId >= GregGunsMTEIDs.TURRET_MV && mteId <= GregGunsMTEIDs.GUN_MOUNT_HATCH_IV) {
             return ModuleId.UTILITY;
         }
+        if (mteId >= GregGunsMTEIDs.ICBM_FIRST && mteId <= GregGunsMTEIDs.ICBM_LAST) {
+            return ModuleId.ICBM;
+        }
         return null;
     }
 
