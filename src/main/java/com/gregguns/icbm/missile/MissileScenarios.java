@@ -125,7 +125,8 @@ public final class MissileScenarios {
         int cz = net.minecraft.util.MathHelper.floor_double(m.posZ) >> 4;
         boolean forced = net.minecraftforge.common.ForgeChunkManager.getPersistentChunksFor(w)
             .containsKey(new net.minecraft.world.ChunkCoordIntPair(cx, cz));
-        if (w.getChunkProvider().chunkExists(cx, cz) && m.addedToChunk) {
+        if (w.getChunkProvider()
+            .chunkExists(cx, cz) && m.addedToChunk) {
             return;
         }
         com.gregguns.GregGuns.LOG.info(
@@ -137,10 +138,12 @@ public final class MissileScenarios {
             (int) m.posZ,
             cx,
             cz,
-            w.getChunkProvider().chunkExists(cx, cz),
+            w.getChunkProvider()
+                .chunkExists(cx, cz),
             forced,
             m.addedToChunk,
-            m.tickets().heldChunks(),
+            m.tickets()
+                .heldChunks(),
             m.isDead);
     }
 
