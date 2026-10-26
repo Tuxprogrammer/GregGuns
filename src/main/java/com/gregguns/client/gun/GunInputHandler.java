@@ -65,7 +65,17 @@ public final class GunInputHandler {
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Minecraft mc = Minecraft.getMinecraft();
-        if (event.side != Side.CLIENT || event.phase != TickEvent.Phase.END || event.player != mc.thePlayer) {
+        if (event.side != Side.CLIENT || event.player != mc.thePlayer) {
+            return;
+        }
+        if (event.phase == TickEvent.Phase.START) {
+            // Before the player's own update reads the sprint key: aiming down the sights keeps you walking.
+            GunsClientModule.animations()
+                .ads()
+                .onPlayerTickStart(mc, event.player);
+            return;
+        }
+        if (event.phase != TickEvent.Phase.END) {
             return;
         }
         EntityPlayer player = event.player;

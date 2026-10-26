@@ -22,6 +22,7 @@ public final class GregGunsConfig {
         Arrays.<Class<?>>asList(
             ModulesConfig.class,
             DebugConfig.class,
+            AimConfig.class,
             BioGunConfig.class,
             ClientConfig.class,
             DamageFactorsConfig.class,

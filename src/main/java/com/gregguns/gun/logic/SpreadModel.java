@@ -28,6 +28,8 @@ public final class SpreadModel {
         if (ctx.zoomed() && stats.hasScope()) {
             m *= stats.zoomSpreadMultiplier();
         }
+        // ADS on a gun without a scope (a scoped gun keeps the spec zoom bonus above, so the two never stack).
+        m *= ctx.adsSpreadMultiplier();
         return m;
     }
 
