@@ -82,11 +82,12 @@ public final class BlastRayCaster {
 
     /**
      * @param radius the blast radius, blocks
-     * @return how many rays {@link #cast} sends: {@code 2 x steps x steps}, each direction once (ICBM-02-03)
+     * @return how many rays {@link #cast} sends: {@code 2 x steps x steps} plus {@code 2 x steps} rays straight down,
+     *         each other direction once (ICBM-02-03)
      */
     public static long rayCount(int radius) {
         long s = steps(radius);
-        return 2L * s * s;
+        return 2L * s * s + 2L * s;
     }
 
     /**
@@ -128,7 +129,10 @@ public final class BlastRayCaster {
                 break;
             }
             double yaw = Math.PI / steps * yawSlice;
-            for (int pitchSlice = 0; pitchSlice < steps; pitchSlice++) {
+            // Pitch runs 0 to just under pi, so straight down is never cast; one extra ray at pitch pi (yaw slice 0
+            // only)
+            // keeps a spire of stone from standing at the bottom of the crater (D59).
+            for (int pitchSlice = 0; pitchSlice <= steps; pitchSlice++) {
                 double pitch = Math.PI / steps * pitchSlice;
                 double power = energy - energy * random.nextDouble() / 2.0;
                 double sx = STEP * Math.sin(pitch) * Math.cos(yaw);

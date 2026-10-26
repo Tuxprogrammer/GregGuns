@@ -488,8 +488,9 @@ final class IcbmBlastScenarios {
             restoreTerrain(new boolean[] { true, true, true, true });
             final List<ExplosiveDef> defs = new ArrayList<>();
             for (ExplosiveDef d : Explosives.allIncludingHidden()) {
-                if (d.shape() != BlastShape.NONE && d.tier()
-                    .number() <= IcbmConfig.maxBlastTier) {
+                if (!d.hidden() && d.shape() != BlastShape.NONE
+                    && d.tier()
+                        .number() <= IcbmConfig.maxBlastTier) {
                     defs.add(d);
                 }
             }

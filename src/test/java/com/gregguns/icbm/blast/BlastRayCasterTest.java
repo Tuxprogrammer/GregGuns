@@ -81,7 +81,7 @@ class BlastRayCasterTest {
     @Test
     void icbm0203EachDirectionIsCastOnce() {
         int steps = BlastRayCaster.steps(R);
-        assertEquals(2L * steps * steps, BlastRayCaster.rayCount(R));
+        assertEquals(2L * steps * steps + 2L * steps, BlastRayCaster.rayCount(R));
         // The original swept yaw to 4 pi and cast 4 x steps x steps rays.
         assertTrue(BlastRayCaster.rayCount(R) < 4L * steps * steps);
     }
@@ -216,6 +216,16 @@ class BlastRayCasterTest {
                 new Random(1),
                 () -> false);
             assertTrue(depth(cells) >= radius - 2, "r" + radius + " depth " + depth(cells));
+            // No spire of stone under the center: the column straight down is dug too.
+            java.util.Set<Integer> set = new HashSet<>();
+            for (int p : cells) {
+                set.add(p);
+            }
+            int column = 0;
+            while (set.contains(BlastPacking.pack(0, -1 - column, 0))) {
+                column++;
+            }
+            assertTrue(column >= radius - 2, "r" + radius + " column " + column);
             assertTrue(cells.length >= 0.5 * hemisphere(radius), "r" + radius + " cells " + cells.length);
             assertTrue(farthest(cells) <= radius + 1.0);
         }
