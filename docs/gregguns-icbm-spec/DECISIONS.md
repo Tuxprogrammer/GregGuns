@@ -8,7 +8,7 @@ To decide an open question, reply with its number and an option letter, or write
 
 ## Decided
 
-The owner decided D1–D28 on 2026-10-20 and D29–D42, D47 and D50 on 2026-10-25. D43–D46, D48 and D49 are the orchestrator's.
+The owner decided D1–D28 on 2026-10-20 and D29–D42, D47 and D50 on 2026-10-25, and D51 on 2026-10-26. D43–D46, D48 and D49 are the orchestrator's.
 
 | # | Question | Decision |
 |---|---|---|
@@ -62,6 +62,7 @@ The owner decided D1–D28 on 2026-10-20 and D29–D42, D47 and D50 on 2026-10-2
 | D48 | Warhead model source (orchestrator, 2026-10-25) | The warhead models and textures for every tier come from **HBM's Nuclear Tech Mod** (Modrinth; the README declares LGPL-3.0 for the whole project, no separate asset license), at tag `1.0.27_X5846`, its standard `mp_w_*` warheads only. They are modified (scaled, recentered, recolored, converted to strict OBJ, one label painted out) and stay LGPL in `thirdparty/ntm/` with the LGPL and GPL texts. The GTNH pack's own rocket models (Galacticraft, GalaxySpace) are "Explicit Permission" and not usable. Risk recorded in [asset-sourcing](07-visuals-audio/asset-sourcing.md): a community project's license is only as good as its contributors' rights. T3 conventional reuses the T1 model at full size until a distinct licensed model turns up. NTM's fuselage, fin and thruster models are the planned source for I2's missile bodies |
 | D49 | Endgame warhead size (orchestrator, 2026-10-25) | Antimatter and red matter warheads occupy **2×2×4** blocks (D31 said "larger than 1×1×2"). Model files live in `models/thirdparty/<source>/` and their textures in `textures/models/thirdparty/<source>/`, bound directly by the renderer since they sit outside the block atlas |
 | D50 | Local previews, committed guide sheets, placeholder drafts | Owner, 2026-10-25. **Preview sheets and the visuals gallery page stay local,** git-ignored (`docs/assets/previews/icbm/`, `docs/icbm-visuals.html`), and never enter the repository's history; the owner opens them from the checkout. No hosted pages unless the owner asks. **Player guide sheets (infographics) are committed.** **Placeholder guide sheets are allowed,** drafted from the spec's planned numbers with a visible "Draft: numbers pending" stamp, so the guides agent works alongside the coders; the final sheet takes its numbers from the code and drops the stamp. Amends D39 |
+| D51 | Demolition fuse length | Owner, 2026-10-26: a 5-second hand-lit fuse is too short to outrun a 14–20 block blast. **The fuse scales with the warhead's actual blast radius at its fill: 3 seconds to react plus 1 second per 3 blocks of radius, rounded up** (T1 condensed, radius 9: 6 s; T2 thermobaric, radius 20: 10 s), times a config multiplier. A warhead set off by another explosion keeps the short chain-reaction fuse (10 ticks). Applied in the I1 fix round, with the guide sheet's final pass |
 
 ### D8 in detail
 
