@@ -23,11 +23,11 @@ import java.util.function.BooleanSupplier;
  * </pre>
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/blast-engine.md (section: ray caster)
-// Ported from ICBM-Classic (MIT):
-// https://github.com/BuiltBrokenModding/ICBM-Classic/blob/9c1d985a375adc2868ff47707b3a636452d0b63a/src/main/java/icbm/classic/content/blast/threaded/BlastNuclear.java#L34-L124
-// Ported from ICBM-Classic (MIT):
-// https://github.com/BuiltBrokenModding/ICBM-Classic/blob/9c1d985a375adc2868ff47707b3a636452d0b63a/src/main/java/icbm/classic/content/blast/thread/ThreadSmallExplosion.java#L24-L91
+// spotless:off
+// Ported from ICBM-Classic (MIT): https://github.com/BuiltBrokenModding/ICBM-Classic/blob/9c1d985a375adc2868ff47707b3a636452d0b63a/src/main/java/icbm/classic/content/blast/threaded/BlastNuclear.java#L34-L124
+// Ported from ICBM-Classic (MIT): https://github.com/BuiltBrokenModding/ICBM-Classic/blob/9c1d985a375adc2868ff47707b3a636452d0b63a/src/main/java/icbm/classic/content/blast/thread/ThreadSmallExplosion.java#L24-L91
 // Avoids: ICBM-02-02, ICBM-02-03, ICBM-02-04, ICBM-02-05, ICBM-02-60
+// spotless:on
 public final class BlastRayCaster {
 
     /** Energy every half-block step costs, air included (0.3 x 0.75 x 5 in the original). */
