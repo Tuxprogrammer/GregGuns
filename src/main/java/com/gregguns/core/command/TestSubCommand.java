@@ -22,7 +22,8 @@ import com.gregguns.core.testing.ScenarioTicker;
 import com.gregguns.core.testing.WorldScenarioContext;
 
 /**
- * {@code /gregguns test <scenario|all|list>}: runs scenarios from the {@link ScenarioRegistry}. Works from a player
+ * {@code /gregguns test <scenario|prefix.|all|list>}: runs scenarios from the {@link ScenarioRegistry}. Works from a
+ * player
  * (origin at the player) and from the dedicated-server console (origin at the overworld spawn). Server side.
  */
 public final class TestSubCommand implements GregGunsSubCommand {
@@ -51,6 +52,9 @@ public final class TestSubCommand implements GregGunsSubCommand {
                 break;
             case ALL:
                 run(sender, registry.forAll());
+                break;
+            case PREFIX:
+                run(sender, request.matches());
                 break;
             case NAMED:
                 run(sender, Collections.singletonList(request.scenario()));
