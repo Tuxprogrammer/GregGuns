@@ -330,7 +330,9 @@ public final class WarheadScenarios {
                     net.minecraft.entity.item.EntityItem.class,
                     net.minecraft.util.AxisAlignedBB.getBoundingBox(x - 6, y - 2, z - 6, x + 6, y + 6, z + 6))) {
                     ItemStack s = ((net.minecraft.entity.item.EntityItem) o).getEntityItem();
-                    if (s.getItem() == Item.getItemFromBlock(block(WarheadCasing.T1))) {
+                    // Items killed by the previous run stay in the chunk list until the next world tick.
+                    if (!((net.minecraft.entity.Entity) o).isDead
+                        && s.getItem() == Item.getItemFromBlock(block(WarheadCasing.T1))) {
                         items++;
                         fill = WarheadStacks.read(WarheadCasing.T1, s)
                             .fill();
@@ -387,7 +389,8 @@ public final class WarheadScenarios {
                     }
                 }
             }
-            ctx.setBlock(3, 1, 0, Blocks.glass, 0);
+            // Off the cow's line (+X), or the pane stops a pulled cow short and the pull check becomes a coin flip.
+            ctx.setBlock(0, 1, 3, Blocks.glass, 0);
             EntityCow cow = ctx.spawnAt(new EntityCow(w), ox + 4.5, oy, oz + 0.5, 0, 0);
             boolean oldT1 = IcbmConfig.terrainDamageT1;
             boolean oldT2 = IcbmConfig.terrainDamageT2;
@@ -478,7 +481,7 @@ public final class WarheadScenarios {
                     break;
                 case SONIC:
                     out.check(cow.isPotionActive(Potion.confusion), "sonic stuns");
-                    out.check(w.isAirBlock(ox + 3, oy + 1, oz), "sonic shatters glass");
+                    out.check(w.isAirBlock(ox, oy + 1, oz + 3), "sonic shatters glass");
                     break;
                 case BREACH:
                     out.check(w.isAirBlock(ox, oy - 5, oz), "the breaching tunnel runs down");
