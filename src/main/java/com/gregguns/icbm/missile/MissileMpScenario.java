@@ -95,6 +95,8 @@ public final class MissileMpScenario implements Scenario {
         final EntityMissile[] m = { null };
         final int[] frames = { 0 };
         final int[] tracked = { 0 };
+        // Where the missile was on its last tick: the guidance scatters the hit, so the crater is not at the aim point.
+        final double[] last = { cx, oz + DISTANCE + 0.5 };
         final MissileShotsScenario.Plan plan = new MissileShotsScenario.Plan();
         final double cx = ox + 0.5;
         final double cz = oz + 0.5;
@@ -177,8 +179,8 @@ public final class MissileMpScenario implements Scenario {
                     return;
                 }
                 out.check(e != null && e.isDead, "the missile detonated");
-                final double tx = cx;
-                final double tz = oz + DISTANCE + 0.5;
+                final double tx = last[0];
+                final double tz = last[1];
                 plan.after(15, () -> {
                     for (int i = 0; i < players.size(); i++) {
                         double[] v = views[i % views.length];
@@ -193,6 +195,10 @@ public final class MissileMpScenario implements Scenario {
             }
         });
         return ScenarioResult.pending(NAME, 6000, t -> {
+            if (m[0] != null && !m[0].isDead) {
+                last[0] = m[0].posX;
+                last[1] = m[0].posZ;
+            }
             plan.run(t);
             if (!plan.idle()) {
                 return null;
