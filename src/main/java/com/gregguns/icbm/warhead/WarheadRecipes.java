@@ -32,6 +32,9 @@ import gregtech.api.util.GTRecipeConstants;
 public final class WarheadRecipes {
 
     private static final int DURATION_TICKS = 400;
+    /** Casing plates of a T1 and a T2 warhead (D34 cost review: the warhead is the expensive part). */
+    static final int T1_PLATES = 4;
+    static final int T2_PLATES = 8;
     private static final int TNT_FULL = 8;
     private static final int TNT_STARTER = 2;
 
@@ -69,7 +72,7 @@ public final class WarheadRecipes {
         WarheadBlast blast = spec.blast();
         boolean t2 = blast.tier() == com.gregguns.icbm.explosive.ExplosiveTier.T2;
         // The casing metal: stainless steel at HV, titanium at EV (the tiers of ChargeRecipeSpec's gate plates).
-        ItemStack casing = plates(t2 ? "Titanium" : "StainlessSteel", t2 ? 4 : 2);
+        ItemStack casing = plates(t2 ? "Titanium" : "StainlessSteel", t2 ? T2_PLATES : T1_PLATES);
         ItemStack tnt = new ItemStack(Blocks.tnt, TNT_FULL);
         ItemStack payload = payload(blast);
         if (casing == null || payload == null) {
@@ -161,8 +164,8 @@ public final class WarheadRecipes {
     /** GT recycling data: the casing metal comes back, the contents burn away (D44). */
     private static void addRecycling() {
         long plate = OrePrefixes.plate.getMaterialAmount();
-        attach(WarheadCasing.T1, new ItemData(Materials.StainlessSteel, 2 * plate));
-        attach(WarheadCasing.T2, new ItemData(Materials.Titanium, 4 * plate));
+        attach(WarheadCasing.T1, new ItemData(Materials.StainlessSteel, T1_PLATES * plate));
+        attach(WarheadCasing.T2, new ItemData(Materials.Titanium, T2_PLATES * plate));
     }
 
     private static void attach(WarheadCasing casing, ItemData data) {

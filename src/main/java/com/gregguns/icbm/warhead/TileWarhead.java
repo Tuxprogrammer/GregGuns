@@ -116,6 +116,18 @@ public final class TileWarhead extends TileEntity {
     }
 
     /**
+     * The fuse for a warhead lit by redstone or by hand (D51), from its blast radius at its fill.
+     *
+     * @return ticks
+     */
+    public int litFuseTicks() {
+        com.gregguns.icbm.explosive.ExplosiveDef def = com.gregguns.icbm.explosive.Explosives.get(data.explosive());
+        double radius = def == null ? WarheadMath.MIN_RADIUS
+            : Math.max(WarheadMath.MIN_RADIUS, def.radius(data.fill()));
+        return WarheadFuse.litTicks(radius, com.gregguns.core.config.IcbmConfig.fuseMultiplier);
+    }
+
+    /**
      * Lights the fuse. A lit warhead only ever gets a shorter fuse.
      *
      * @param ticks the fuse to set

@@ -71,14 +71,24 @@ NBT cannot flow through a GT recipe, so a warhead is not loaded one charge at a 
 
 | Machine | Warheads | Voltage | Inputs (summary) |
 |---|---|---|---|
-| Assembler | T1 condensed, shrapnel, anvil, repulsive, attractive | HV | 2 stainless steel plates, 8 TNT, the type's payload, 1,000 L glyceryl trinitrate |
+| Assembler | T1 condensed, shrapnel, anvil, repulsive, attractive | HV | 4 stainless steel plates, 8 TNT, the type's payload, 1 L glyceryl trinitrate |
 | Assembler | T1 condensed starter (fill 1) | HV | 2 stainless steel plates, 2 TNT |
-| Chemical Reactor | T1 incendiary, debilitation, chemical, smoke | HV | 2 stainless steel plates, the payload, a reagent fluid |
-| Chemical Reactor | T2 contagious | EV | 4 titanium plates, the payload, sulfuric acid |
-| Implosion Compressor | T2 fragmentation, sonic, breaching, thermobaric | EV | 4 titanium plates, the payload, 16 units of explosive additive |
+| Chemical Reactor | T1 incendiary, debilitation, chemical, smoke | HV | 4 stainless steel plates, the payload, a reagent fluid |
+| Chemical Reactor | T2 contagious | EV | 8 titanium plates, the payload, sulfuric acid |
+| Implosion Compressor | T2 fragmentation, sonic, breaching, thermobaric | EV | 8 titanium plates, the payload, 16 units of explosive additive |
 
 - Every recipe runs at 400 ticks and at exactly its warhead's tier voltage, so it is tier-gated by the machine. The dev recipe-tier self-check and the unification check pass (no GT part is duplicated; the output is a GregGuns block item).
-- Cost (D34): the warhead is the expensive part. A full T1 warhead costs two stainless plates, eight TNT, a payload and a liter of glyceryl per craft; a T2 doubles the plates and adds the Implosion Compressor's additive. The missile body (I2) is balanced against a Galacticraft launch separately.
+- Cost (D34): the warhead is the expensive part, and cost rises by tier. A full T1 warhead costs four stainless plates, eight TNT, a payload and 1 L of glyceryl per craft; a T2 doubles the plates (eight titanium) and adds the Implosion Compressor's additive or a reagent. The starter (fill 1) stays at two plates and two TNT as the cheap way in. The missile body (I2) is balanced against a Galacticraft launch separately.
+- **Cost review against a Galacticraft launch (D34, I1 fix round).** The comparison is an estimate: the pack's rocket recipes live in the GTNH scripts, which this repository does not carry, so the rocket side is the shape of GTNH's tier 1 and tier 2 rockets (nose cone, engine, fins, a stack of tier heavy-duty plates, a chip, and fuel worth several buckets), about 15 to 25 plate-equivalents at HV-class materials for a T1 rocket and roughly 1.5 to 2 times that at EV for T2.
+
+  | | Casing plates | Explosive | Payload | Rough plate-equivalents | Against its tier's launch |
+  |---|---|---|---|---|---|
+  | T1 warhead (was) | 2 | 8 TNT | 4 to 32 items | 12 to 16 | well under one launch: too cheap for "the expensive part" |
+  | T1 warhead (now) | 4 | 8 TNT, 1 L glyceryl | 4 to 32 items | 16 to 22 | about one T1 launch, so missile plus warhead is about two |
+  | T2 warhead (was) | 4 | additive or reagent | 4 to 8 items | 14 to 20 | under one T2 launch |
+  | T2 warhead (now) | 8 | additive or reagent | 4 to 8 items | 22 to 30 | about 1 to 1.5 T2 launches; steeper than T1 |
+
+  Plate counts are the one lever changed: they double, which keeps each recipe inside its tier's voltage and machine. The starter recipe is deliberately cheap. If the pack's real rocket costs turn out higher, raise `T1_PLATES` and `T2_PLATES` in `WarheadRecipes` (the recycling data follows the same constants).
 - GT recycling data (D44): each warhead recycles into its casing plates (stainless steel for T1, titanium for T2); the contents are lost.
 
 ## Requirements

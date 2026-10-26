@@ -21,6 +21,7 @@ class WarheadTooltipFormatTest {
         l.shiftHint = "Shift";
         l.detailCap = "Cap %s";
         l.detailCurve = "Curve";
+        l.detailFuse = "Fuse %s s";
         l.detailCharge = "Charge";
         l.detailEffect = "Effect";
         return l;
@@ -47,6 +48,16 @@ class WarheadTooltipFormatTest {
         assertEquals("Damage: 930", lines.get(4));
         assertEquals("Shift", lines.get(5));
         assertEquals(6, lines.size());
+    }
+
+    @Test
+    void shiftShowsTheFuseTime() {
+        WarheadTooltipFormat.Facts f = facts();
+        f.fuseTicks = 120;
+        assertTrue(
+            WarheadTooltipFormat.lines(labels(), f, true)
+                .contains("Fuse 6 s"));
+        assertEquals("0.5", WarheadTooltipFormat.fuseSeconds(10));
     }
 
     @Test

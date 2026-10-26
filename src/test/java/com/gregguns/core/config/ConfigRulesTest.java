@@ -47,6 +47,7 @@ class ConfigRulesTest {
             "IcbmConfig.blastBudgetMs",
             "IcbmConfig.maxActiveBlasts",
             "IcbmConfig.maxBlastRadius",
+            "IcbmConfig.fuseMultiplier",
             "IcbmConfig.blastDrops",
             "EquipmentConfig.nightVisionCapacityEu",
             "EquipmentConfig.nightVisionDrainEuPerTick",

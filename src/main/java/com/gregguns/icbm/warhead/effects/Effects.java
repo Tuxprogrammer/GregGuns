@@ -12,7 +12,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import com.gregguns.core.config.ExplosionsConfig;
+import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.explosion.BlockBreakGuard;
 import com.gregguns.icbm.explosive.BlastContext;
 import com.gregguns.icbm.explosive.BlastEffect;
@@ -21,7 +21,7 @@ import com.gregguns.icbm.warhead.WarheadBlast;
 /**
  * The effects of the T1 and T2 blast types (gas, fire, push, sonic, breaching and the small status effects), as
  * {@link BlastEffect}s for the shared registry. The engine already did terrain and the damage ramp; these add the rest.
- * Every block change asks {@link BlockBreakGuard} and obeys {@code explosions.blockDamage}. Server side.
+ * Every block change asks {@link BlockBreakGuard} and obeys {@code icbm.terrainDamageT<n>}. Server side.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/blast-types.md
 public final class Effects {
@@ -95,7 +95,10 @@ public final class Effects {
 
     /** @return true when blocks may be changed by this blast: the config allows it and the guard does not object */
     static boolean mayChange(BlastContext ctx, int x, int y, int z) {
-        if (!ExplosionsConfig.blockDamage) {
+        if (!IcbmConfig.terrainDamage(
+            ctx.explosive()
+                .tier()
+                .number())) {
             return false;
         }
         Block block = ctx.world()

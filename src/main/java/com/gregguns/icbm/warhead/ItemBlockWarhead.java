@@ -71,6 +71,7 @@ public final class ItemBlockWarhead extends ItemBlock {
         f.fill = data.fill();
         f.cap = cap;
         f.radius = def == null ? 0 : Math.max(WarheadMath.MIN_RADIUS, def.radius(data.fill()));
+        f.fuseTicks = WarheadFuse.litTicks(f.radius, com.gregguns.core.config.IcbmConfig.fuseMultiplier);
         f.centerDamage = def == null ? 0 : def.damage(data.fill());
         f.annihilates = def != null && def.annihilates();
         WarheadTooltipFormat.Labels l = labels(data.explosive(), blast);
@@ -95,6 +96,7 @@ public final class ItemBlockWarhead extends ItemBlock {
         l.shiftHint = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.shift");
         l.detailCap = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.cap");
         l.detailCurve = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.curve");
+        l.detailFuse = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.fuse");
         l.detailCharge = StatCollector.translateToLocal("gregguns.icbm.warhead.tooltip.charge");
         l.detailEffect = blast == null ? null : StatCollector.translateToLocal("gregguns.icbm.effect." + id);
         return l;

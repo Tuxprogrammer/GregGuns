@@ -653,6 +653,7 @@ gregguns.icbm.warhead.tooltip.annihilation=Annihilates every living thing in the
 gregguns.icbm.warhead.tooltip.shift=Hold Shift for details
 gregguns.icbm.warhead.tooltip.cap=The casing holds up to %s charges.
 gregguns.icbm.warhead.tooltip.curve=Radius grows with the cube root of the fill; damage with its square root.
+gregguns.icbm.warhead.tooltip.fuse=Lit by hand or redstone it burns %s s before it goes off; other explosions set it off in half a second.
 gregguns.icbm.warhead.tooltip.charge=Placed alone it is a demolition charge: power it with redstone or light it with flint and steel.
 gregguns.icbm.explosive.condensed=Condensed
 gregguns.icbm.explosive.shrapnel=Shrapnel

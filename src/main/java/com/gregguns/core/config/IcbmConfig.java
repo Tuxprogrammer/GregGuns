@@ -52,6 +52,13 @@ public class IcbmConfig {
         "Default: false." })
     public static boolean blastDrops = false;
 
+    @Config.Comment({
+        "Multiplier on a hand-lit or redstone-lit warhead's fuse. The base fuse is 3 seconds plus 1 second",
+        "per 3 blocks of the warhead's blast radius, rounded up (a radius 9 warhead: 6 s). A warhead set off by",
+        "another explosion keeps a fixed 10 tick fuse. Range 0.1 to 10. Default: 1.0." })
+    @Config.RangeDouble(min = 0.1, max = 10.0)
+    public static double fuseMultiplier = 1.0;
+
     /**
      * @param tier the explosive tier number, 1 to 4
      * @return the terrain switch for that tier

@@ -40,9 +40,9 @@ A warhead placed alone is a charge, as ICBM's explosive blocks are:
 
 - **Redstone:** a rising edge of power on the block (or its fillers) starts the fuse.
 - **By hand:** right-click with flint and steel or a fire charge starts it; a bare-hand click does nothing (so the player does not trip it by accident).
-- **Fuse:** 100 ticks for every warhead (ICBM uses 100 to 120). While fused the tile beeps once per second (no flash: the model is a static chunk mesh). Breaching's instant fuse is dropped.
-- **Detonation:** the block is removed, then the blast starts at its center through the shared registry and pipeline (`ExplosionRules`, `BlockBreakGuard`, `ExplosionEvent.Detonate`) with the placer as the actor, so claims and `explosions.blockDamage` are respected.
-- Breaking a fused block defuses and drops it. The warhead is not chain-reaction-prone: another explosion primes it with a short fuse (10 ticks).
+- **Fuse (D51):** `20 * (3 + ceil(radius / 3))` ticks, times `icbm.fuseMultiplier`, where `radius` is the warhead's actual blast radius at its fill (3 s to react plus 1 s per 3 blocks): condensed at radius 9 is 6 s, thermobaric at radius 20 is 10 s, a fill-1 starter at the 3-block floor is 4 s. Redstone and hand lighting use it. The tooltip shows it under Shift (`WarheadFuse.litTicks`). While fused the tile beeps once per second (no flash: the model is a static chunk mesh). Breaching's instant fuse is dropped.
+- **Detonation:** the block is removed, then the blast starts at its center through the shared registry and pipeline (`ExplosionRules`, `BlockBreakGuard`, `ExplosionEvent.Detonate`) with the placer as the actor, so claims and `icbm.terrainDamageT<n>` are respected (D52).
+- Breaking a fused block defuses and drops it. The warhead is not chain-reaction-prone: another explosion primes it with a fixed short chain-reaction fuse (10 ticks), whatever the radius.
 - The tile saves its explosive, fill, fuse and owner. The fuse is an int, not ICBM's byte, so a fuse above 127 survives a reload (`ICBM-02-*`).
 
 ## Requirements
@@ -52,6 +52,8 @@ A warhead placed alone is a charge, as ICBM's explosive blocks are:
 - GGS-ICBM-02-12: a multi-block warhead breaks as one piece and drops exactly one item with the fill and explosive intact.
 - GGS-ICBM-02-13: redstone and a lighter both start the fuse; a bare click does not.
 - GGS-ICBM-02-14: a fuse longer than 127 ticks saves and loads.
+- GGS-ICBM-02-16: the lit fuse follows the radius and the multiplier, and the chain fuse stays 10 ticks (`WarheadFuseTest`, scenario `icbm.warhead.fuse_hand`).
+- GGS-ICBM-02-17: breaking the core or any filler cell removes the whole warhead, drops one item and leaves no orphan filler (scenario `icbm.warhead.break_as_one`, all three cells of a 1x1x3 test placement).
 - GGS-ICBM-02-15: every shipped OBJ loads through `WavefrontObject`.
 
 ## Tests

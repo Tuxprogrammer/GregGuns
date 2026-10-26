@@ -44,15 +44,15 @@
 
 ## Pipeline and protection
 
-- The engine does the crater and the damage ramp for the types that have terrain; every block change goes through `ExplosionRules`, `BlockBreakGuard` and `ExplosionEvent.Detonate`, and obeys `explosions.blockDamage` and `icbm.terrainDamage`.
-- The effects add only what the engine does not: status effects, fire, push, sonic glass and the breaching tunnel. Every block an effect changes needs `explosions.blockDamage` on and a `BlockBreakGuard.mayBreak` pass for the shooter; with the config off, only status effects, fire on entities, pushes and particles remain.
+- The engine does the crater and the damage ramp for the types that have terrain; every block change goes through `ExplosionRules`, `BlockBreakGuard` and `ExplosionEvent.Detonate`, and obeys `icbm.terrainDamageT<n>` (D52).
+- The effects add only what the engine does not: status effects, fire, push, sonic glass and the breaching tunnel. Every block an effect changes needs `icbm.terrainDamageT<n>` on and a `BlockBreakGuard.mayBreak` pass for the shooter; with the config off, only status effects, fire on entities, pushes and particles remain.
 - An effect keeps no state of its own. Gas ticks off the blast's age, which the engine saves, so a gas cloud survives a save and reload.
 - Gas particles are sent as vanilla particle packets, at most 24 per pulse every 10 ticks per cloud.
 
 ## Requirements
 
 - GGS-ICBM-02-20: every type in the table is a registry entry with the table's radius and damage at full fill.
-- GGS-ICBM-02-21: a blast type's block changes respect `explosions.blockDamage` and the break guard.
+- GGS-ICBM-02-21: a blast type's block changes respect `icbm.terrainDamageT<n>` and the break guard.
 - GGS-ICBM-02-22: gas effects end after 30 s and are bounded by the radius.
 - GGS-ICBM-02-23: a conventional type meets its tier's D34 damage at full fill.
 

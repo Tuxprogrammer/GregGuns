@@ -148,7 +148,7 @@ public final class BlockWarheadFiller extends BlockContainer implements HiddenFr
             // The main block is gone: a filler is never left behind.
             world.setBlockToAir(x, y, z);
         } else if (world.isBlockIndirectlyGettingPowered(x, y, z)) {
-            main.arm(WarheadFuse.FUSE_TICKS, null);
+            main.arm(main.litFuseTicks(), null);
         }
     }
 
