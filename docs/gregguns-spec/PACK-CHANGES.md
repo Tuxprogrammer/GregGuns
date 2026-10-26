@@ -84,4 +84,3 @@ No pack change. The 121 quests ship inside the GregGuns jar and a hidden config 
 | File | Change | Why | Sheet |
 |---|---|---|---|
 | `server.properties` | `allow-flight=true` on any server where players use flight gear | Vanilla 1.7.10 kicks a survival player who hovers or flies for about 80 ticks ("Flying is not enabled on this server"). The Anti Gravity Device and the Glider are motion-based by design, like GT's Jetpack, and need this setting like any other pack flight | [implementation-notes.md](05-armor/implementation-notes.md) (FLT-DEV-01) |
-| `config/gregguns.cfg` | `explosions.blockDamage=true` on any server where ICBM warheads should leave craters | ICBM blasts remove terrain only when this key and the tier's `icbm.terrainDamageT<n>` (default on) are both on; `explosions.blockDamage` ships `false`. Claims and spawn protection still apply through the explosion events | [blast-engine.md](../gregguns-icbm-spec/02-explosives/blast-engine.md) |
