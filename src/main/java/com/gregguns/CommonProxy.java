@@ -85,6 +85,30 @@ public class CommonProxy {
 
     public void postInit(FMLPostInitializationEvent event) {
         modules.postInit(event);
+        applyPackFit();
+    }
+
+    /**
+     * In-memory pack fit (PACK-CHANGES.md): hooks into other mods' public settings, never their config files. Each is
+     * behind a {@code compat.*} key and an {@code isModLoaded} guard.
+     */
+    private void applyPackFit() {
+        if (com.gregguns.core.config.CompatConfig.backhandGuns
+            && cpw.mods.fml.common.Loader.isModLoaded(com.gregguns.compat.BackhandCompat.MOD_ID)) {
+            com.gregguns.compat.BackhandCompat.apply(com.gregguns.item.gun.GunItems.qualifiedNames());
+        }
+        if (com.gregguns.core.config.CompatConfig.listHooks) {
+            if (cpw.mods.fml.common.Loader.isModLoaded(com.gregguns.compat.PackListHooks.ANGERMOD)) {
+                com.gregguns.compat.PackListHooks.angerModButcherItems();
+            }
+            if (cpw.mods.fml.common.Loader.isModLoaded(com.gregguns.compat.PackListHooks.MOBSINFO)) {
+                com.gregguns.compat.PackListHooks.mobsInfoBlacklist();
+            }
+        }
+        if (com.gregguns.core.config.CompatConfig.thaumcraftMobAspects
+            && cpw.mods.fml.common.Loader.isModLoaded(com.gregguns.compat.MobAspects.MOD_ID)) {
+            com.gregguns.compat.MobAspects.apply();
+        }
     }
 
     /**

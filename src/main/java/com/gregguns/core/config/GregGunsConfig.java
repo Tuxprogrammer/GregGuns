@@ -32,7 +32,8 @@ public final class GregGunsConfig {
             UtilityConfig.class,
             NpcConfig.class,
             WorldgenConfig.class,
-            QuestbookConfig.class));
+            QuestbookConfig.class,
+            CompatConfig.class));
 
     private GregGunsConfig() {}
 
