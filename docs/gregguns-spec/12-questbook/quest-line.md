@@ -327,6 +327,8 @@ The layout is a forest of short trees on a 36 unit pitch (a 24 unit box plus 12 
 | `gg.icbm.launch` | First Launch | HV | Press Launch, or send the block a redstone pulse. After two seconds of warm-up the missile climbs, flies its arc and detonates on impact; a Tier 1 flight at full range takes about a minute. The pad, the fuel loader and the Launch Control come through unharmed. Make sure nobody stands at the target. | checkbox | - | `gg.icbm.control` | 1068, 420 (24) |
 | `gg.icbm.t2_missile` | Tier 2 Missile | EV | Tier 2 flies up to 3,000 blocks and carries a titanium-cased warhead. Its chip is made at EV, its body takes six titanium plates, and it burns 4,000 mB of Dense Hydrazine or better. Build it, fuel it and launch it. | checkbox | - | `gg.icbm.launch`, `gg.icbm.t2_casing` | 1104, 420 (24) |
 | `gg.icbm.assembly_line` | Automate the Body | EV | Scan one hand-built body into a Data Stick in the Scanner, then the Assembly Line builds that body from the same parts plus 250 L of lubricant: 30 seconds for Tier 1, 45 for Tier 2. | checkbox | - | `gg.icbm.body` | 924, 456 (24) |
+| `gg.icbm.silo` | Missile Silo | LuV | Tier 3 missiles launch from the Missile Silo: a 5 by 5 tower of Gantry Casing around an open 3 by 3 shaft, with an Input Bus, Input Hatch, Energy Hatch and Maintenance Hatch just above the floor, and a Launch Control within 6 blocks. Draft: the icon is a stand-in until the silo and Tier 3 body land. |
+| `gg.icbm.nuclear` | Nuclear Warhead | ZPM | The nuclear warhead is a Tier 3 casing that flies only on a Tier 3 missile from the silo. Nothing living in its kill zone survives, bosses included, and the ground it leaves is irradiated. Draft: numbers and icon pending. |
 
 ## Coverage matrix
 
