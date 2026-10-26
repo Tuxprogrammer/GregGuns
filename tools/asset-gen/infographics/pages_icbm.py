@@ -59,6 +59,8 @@ CHAIN_SECONDS = DUMP["fuse"]["chainTicks"] / 20
 
 _JAVA = K.REPO / "src/main/java/com/gregguns/icbm/warhead"
 _RECIPES = (_JAVA / "WarheadRecipes.java").read_text(encoding="utf-8")
+_SPEC = (_JAVA / "WarheadRecipeSpec.java").read_text(encoding="utf-8")
+_PARTS = (K.REPO / "src/main/java/com/gregguns/icbm/recipe/IcbmPart.java").read_text(encoding="utf-8")
 _EFFECTS = (_JAVA / "effects/Effects.java").read_text(encoding="utf-8")
 
 
@@ -66,17 +68,16 @@ def _verify_sources() -> None:
     """The recipe inputs and effect durations the sheet prints are not in the dump; each is checked against the Java source
     here, so a change to the recipe or the effect fails the build and the sheet is fixed with it."""
     need = [
-        (_RECIPES, "TNT_FULL = 8"), (_RECIPES, "TNT_STARTER = 2"), (_RECIPES, "t2 ? \"Titanium\" : \"StainlessSteel\", t2 ? 4 : 2"),
-        (_RECIPES, "Materials.Glyceryl.getFluid(1000)"), (_RECIPES, "ADDITIVE_AMOUNT, 16"), (_RECIPES, "plates(\"StainlessSteel\", 2)"),
-        (_RECIPES, "RecipeMaps.assemblerRecipes"), (_RECIPES, "RecipeMaps.chemicalReactorRecipes"),
-        (_RECIPES, "RecipeMaps.implosionRecipes"),
-        (_RECIPES, "OrePrefixes.bolt, Materials.Steel, blast == WarheadBlast.SHRAPNEL ? 16 : 32"),
-        (_RECIPES, "new ItemStack(Blocks.anvil)"), (_RECIPES, "Items.blaze_powder, 8"), (_RECIPES, "Items.spider_eye, 4"),
-        (_RECIPES, "Items.fermented_spider_eye, 4"), (_RECIPES, "Items.poisonous_potato, 8"), (_RECIPES, "Items.coal, 8, 1"),
-        (_RECIPES, "Items.slime_ball, 8"), (_RECIPES, "Items.ender_pearl, 4"), (_RECIPES, "OrePrefixes.plate, Materials.Brass, 4"),
-        (_RECIPES, "OrePrefixes.stick, Materials.TungstenSteel, 4"), (_RECIPES, "OrePrefixes.dust, Materials.Gunpowder, 8"),
-        (_RECIPES, "Materials.Oil.getFluid(1000)"), (_RECIPES, "Materials.SulfuricAcid.getFluid(1000)"),
-        (_RECIPES, "Materials.SulfuricAcid.getFluid(500)"),
+        (_RECIPES, "RecipeMaps.assemblerRecipes"), (_RECIPES, "T1_PLATES = 4"), (_RECIPES, "T2_PLATES = 8"),
+        (_SPEC, "plates(Tier.HV, 4), Ing.tnt(8), Ing.dynamite(2), pe(3)"), (_SPEC, "plates(Tier.HV, 2), Ing.tnt(2), fuze1()"),
+        (_SPEC, "Ing.tnt(6), pe(2)"), (_SPEC, 'Ing.gt("plate", "Lead", 12'), (_SPEC, "Ing.part(IcbmPart.NAPALM_CANISTER, 2), pe(3)"),
+        (_SPEC, 'Ing.gas("NitrousOxide", 2000'), (_SPEC, 'Ing.fluid("SulfuricGas", 2000'), (_SPEC, 'Ing.optionalMod("harvestcraft:mustardseedsItem", 4)'),
+        (_SPEC, 'Ing.gt("dust", "Coal", 8'), (_SPEC, 'Ing.fluid("Creosote", 2000'), (_SPEC, 'Ing.gtItem("Field_Generator_HV", 1'),
+        (_SPEC, 'Ing.gt("stick", "SteelMagnetic", 4'), (_SPEC, "Ing.industrialTnt(10), pe(4)"), (_SPEC, "Ing.kerosene(4000)"),
+        (_SPEC, "Ing.industrialTnt(6), pe(2)"), (_SPEC, 'Ing.gtItem("Emitter_EV", 2'), (_SPEC, "Ing.industrialTnt(10), pe(3)"),
+        (_SPEC, 'Ing.gt("stick", "Titanium", 6'), (_SPEC, "Ing.bioDish(4)"), (_SPEC, 'Ing.fluid("Biomass", 2000'),
+        (_PARTS, "Ing.gt(\"plate\", \"Polytetrafluoroethylene\", 2"), (_PARTS, "Ing.industrialTnt(2)"), (_PARTS, "PLASTIC_EXPLOSIVE(\"plastic_explosive\", Tier.HV, 1.1, 4"),
+        (_PARTS, 'Ing.fluid("Gasoline", 1000'),
         (_EFFECTS, "new Burn(5, 0, 0)"), (_EFFECTS, "new Burn(0, 200, 2)"), (_EFFECTS, "e.setFire(10)"),
         (_EFFECTS, "Potion.moveSlowdown.id, 60, 1"), (_EFFECTS, "Potion.weakness.id, 60, 1"), (_EFFECTS, "Potion.confusion.id, 80, 0"),
         (_EFFECTS, "Potion.poison.id, 100, 1"), (_EFFECTS, "Potion.poison.id, 120, 3"), (_EFFECTS, "Potion.hunger.id, 120, 1"),
@@ -84,7 +85,7 @@ def _verify_sources() -> None:
     ]
     missing = [snippet for src, snippet in need if snippet not in src]
     if missing:
-        raise SystemExit(f"WarheadRecipes/Effects changed; update icbm-warheads and _verify_sources: {missing}")
+        raise SystemExit(f"WarheadRecipes/WarheadRecipeSpec/IcbmPart/Effects changed; update icbm-warheads and _verify_sources: {missing}")
 
 
 _verify_sources()
@@ -109,14 +110,19 @@ def _n(v: float) -> str:
     return f"{v:.0f}" if abs(v - round(v)) < 1e-6 else f"{v:.1f}"
 
 
-# The payload, the one input that makes each type itself (WarheadRecipes.payload), and the reagent when the type is made in
-# the Chemical Reactor. In player words.
+# What each type is made of besides its casing, a Fuze and (where shown) Plastic Explosive (WarheadRecipeSpec). In player words.
 PAYLOAD = {
-    "condensed": "8 gunpowder", "shrapnel": "16 steel bolts", "anvil": "1 anvil", "repulsive": "8 slimeballs",
-    "attractive": "4 ender pearls", "incendiary": "8 blaze powder, 1,000 L oil", "debilitation": "4 spider eyes, 500 L sulfuric acid",
-    "chemical": "4 fermented spider eyes, 500 L sulfuric acid", "smoke": "8 charcoal, 500 L sulfuric acid",
-    "fragmentation": "32 steel bolts", "sonic": "4 brass plates", "breaching": "4 tungsten steel rods",
-    "thermobaric": "8 gunpowder", "contagious": "8 poisonous potatoes, 1,000 L sulfuric acid",
+    "condensed": "8 TNT, 2 dynamite, 3 Plastic Explosive", "shrapnel": "6 TNT, 2 Plastic Explosive, a steel Fragmentation Sleeve",
+    "anvil": "6 TNT, 2 Plastic Explosive, 12 lead plates", "repulsive": "2 Plastic Explosive, an HV Field Generator",
+    "attractive": "2 Plastic Explosive, an HV Field Generator, 4 magnetic steel rods", "incendiary": "2 Napalm Canisters, 3 Plastic Explosive",
+    "debilitation": "2 Dispersal Canisters, 3 Plastic Explosive, 2,000 L nitrous oxide",
+    "chemical": "2 Dispersal Canisters, 3 Plastic Explosive, 2,000 L sulfuric gas, and a few mustard seeds if HarvestCraft is installed",
+    "smoke": "2 Dispersal Canisters, 1 Plastic Explosive, 8 coal dust, 2,000 L creosote",
+    "fragmentation": "10 Industrial TNT, 4 Plastic Explosive, a titanium Fragmentation Sleeve",
+    "sonic": "6 Industrial TNT, 2 Plastic Explosive, 2 EV Emitters",
+    "breaching": "10 Industrial TNT, 3 Plastic Explosive, 2 Shaped-Charge Liner Cones, 6 titanium rods",
+    "thermobaric": "10 Industrial TNT, 4 Plastic Explosive, 2 Dispersal Canisters, 4,000 L kerosene",
+    "contagious": "6 Industrial TNT, 2 Plastic Explosive, 4 Bio Lab culture dishes, 2,000 L biomass",
 }
 
 # (name, id, kind, what it does in player words), in the order the sheet lists them. Durations come from the effects
@@ -169,18 +175,6 @@ CSS = """
 .ladder { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .ladder .off { opacity: .5; }
 """
-
-
-def _implosion_compressor() -> K.Path:
-    """The Implosion Compressor controller: GregTech's solid steel casing with its front overlay (a multiblock)."""
-    casing = gt.iconset("MACHINE_CASING_SOLID_STEEL")
-    front = B.composite(casing, gt.iconset("OVERLAY_FRONT_IMPLOSION_COMPRESSOR"), gt.iconset("OVERLAY_FRONT_IMPLOSION_COMPRESSOR_GLOW"),
-                        cache=K.TEXCACHE, name="implosion_compressor_ctrl")
-    top = B.composite(casing, cache=K.TEXCACHE, name="implosion_compressor_top")
-    # Keyed by the texture pixels, so a render made before the overlay was composited can never be served again.
-    sig = hashlib.sha1(b"".join(K.Path(t).read_bytes() for t in (top, casing, front))).hexdigest()[:10]
-    return K.voxels("implosion-compressor", {(0, 0, 0): ("m", S.FRONT)}, {"m": (top, casing, front)}, yaw=-38, pitch=28, ppu=150,
-                    key=f"implosion-compressor-v2-{sig}")
 
 
 def _tnt_icon() -> K.Path:
@@ -279,15 +273,12 @@ def warheads() -> str:
 <div class="muted" style="font-size:16px;margin-top:12px">On a missile body the same warhead flies instead; the blast is the same.</div></div>"""
 
     asm_ico = img(S.machine_block("assembler", "HV", greg=True), h=104)
-    chem_ico = img(S.machine_block("chemical_reactor", "HV", greg=True), h=104)
-    imp_ico = img(_implosion_compressor(), h=104)
     ss, ti = gti("plate", "StainlessSteel", 28), gti("plate", "Titanium", 28)
     make = f"""<div class="card"><h2>How warheads are made</h2>
-<div class="muted" style="font-size:18px;margin:6px 0 12px">All on GregTech machines, each recipe gated by its machine's voltage. A recipe makes a full-casing warhead; one cheap starter recipe makes a fill of 1.</div>
+<div class="muted" style="font-size:18px;margin:6px 0 12px">Every warhead is one Assembler recipe at its casing's voltage. A recipe makes a full-casing warhead; one cheap starter recipe makes a fill of 1.</div>
 <div style="display:flex;flex-direction:column;gap:12px">
-<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{asm_ico}</div><div><h3>Assembler {chip("HV")}</h3><div class="muted" style="font-size:17px">Condensed, Shrapnel, Anvil, Repulsive and Attractive: {ss} 2 stainless steel plates, {tnt} 8 TNT, the payload and 1,000 L of glyceryl trinitrate. The starter charge (fill 1) is just 2 plates and 2 TNT.</div></div></div>
-<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{chem_ico}</div><div><h3>Chemical Reactor {chip("HV")} {chip("EV")}</h3><div class="muted" style="font-size:17px">HV: Incendiary, Debilitation, Chemical and Smoke, from {ss} 2 stainless steel plates, the payload and a fluid (oil for Incendiary, sulfuric acid for the rest). EV: Contagious, from {ti} 4 titanium plates, 8 poisonous potatoes and 1,000 L of sulfuric acid.</div></div></div>
-<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{imp_ico}</div><div><h3>Implosion Compressor {chip("EV")} <span class="label" style="color:var(--orange)">multiblock</span></h3><div class="muted" style="font-size:17px">Fragmentation, Sonic, Breaching and Thermobaric: {ti} 4 titanium plates, the payload and 16 units of explosive additive.</div></div></div></div></div>"""
+<div class="mrow"><div class="spot" style="display:flex;justify-content:center">{asm_ico}</div><div><h3>Assembler {chip("HV")} {chip("EV")}</h3><div class="muted" style="font-size:17px">HV (Tier 1): {ss} 4 stainless steel plates, a Fuze Assembly Mk I, and the blast type's own parts (see each card). EV (Tier 2): {ti} 8 titanium plates, a Fuze Assembly Mk II and the type's parts. The starter charge (fill 1) is just 2 plates, {tnt} 2 TNT and a Fuze Mk I.</div></div></div>
+<div class="mrow"><div class="spot" style="display:flex;justify-content:center;font-size:44px">&#9881;</div><div><h3>The parts, each an Assembler recipe too</h3><div class="muted" style="font-size:17px"><b>Plastic Explosive</b>: PTFE plates and Industrial TNT, in every warhead. <b>Fuze Assembly</b> Mk I (HV, Advanced circuit) and Mk II (EV, Data circuit). <b>Dispersal Canister</b> holds a fluid fill; the <b>Napalm Canister</b> is one filled with gasoline. <b>Fragmentation Sleeve</b> (steel or titanium) and <b>Shaped-Charge Liner Cone</b> (copper).</div></div></div></div></div>"""
 
     ladder = "".join(
         f'<span class="{"" if on else "off"}">{chip(t) if t in K.TIERS else f"<span class=chip style=background:#8a8f98>{t}</span>"}</span>'

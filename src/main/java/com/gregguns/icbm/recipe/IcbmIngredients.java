@@ -102,13 +102,16 @@ public final class IcbmIngredients {
      */
     public static FluidStack fluid(Ing in) {
         switch (in.src()) {
-            case FLUID: {
-                Materials m = Materials.get(in.id());
-                return m == null ? null : m.getFluid(in.count());
-            }
+            case FLUID:
             case GAS: {
                 Materials m = Materials.get(in.id());
-                return m == null ? null : m.getGas(in.count());
+                if (m == null) {
+                    return null;
+                }
+                // Some GT fluids exist only as a gas or only as a liquid (Sulfuric Gas has a cell and a gas but no
+                // liquid form), so each kind falls back to the other.
+                FluidStack first = in.src() == Ing.Src.GAS ? m.getGas(in.count()) : m.getFluid(in.count());
+                return first != null ? first : in.src() == Ing.Src.GAS ? m.getFluid(in.count()) : m.getGas(in.count());
             }
             case KEROSENE:
                 return GTPPFluids.Kerosene == null ? null : new FluidStack(GTPPFluids.Kerosene, in.count());
