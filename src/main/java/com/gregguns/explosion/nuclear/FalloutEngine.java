@@ -256,6 +256,17 @@ public final class FalloutEngine {
         }
     }
 
+    /** Test hook: every decay record of the world is due now, so its blocks start reverting. */
+    public static void expireAll(World world) {
+        FalloutSavedData d = data(world, false);
+        if (d != null) {
+            for (FalloutSavedData.Decay decay : d.decays) {
+                decay.due = 0L;
+            }
+            d.touch();
+        }
+    }
+
     /** Test hook: forget a world's record. */
     public static void clear(World world) {
         FalloutSavedData d = data(world, false);

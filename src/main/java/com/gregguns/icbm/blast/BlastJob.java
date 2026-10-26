@@ -120,6 +120,11 @@ final class BlastJob implements BlastTask {
             || st.stage == BlastJobState.Stage.DECIDE;
     }
 
+    /** @return true while the crater is being posted to listeners and filtered in slices (the decide stage) */
+    boolean deciding() {
+        return st.stage == BlastJobState.Stage.DECIDE;
+    }
+
     /** @return blocks broken so far (this run) */
     int brokenBlocks() {
         return broken;

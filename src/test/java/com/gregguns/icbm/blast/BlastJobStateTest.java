@@ -84,4 +84,34 @@ class BlastJobStateTest {
         assertTrue(b.cursor <= b.edits.length);
         assertEquals(1, b.fill);
     }
+
+    @Test
+    void aBlastSavedMidDecideKeepsItsCastResultAndBothCursors() {
+        // I3: a nuclear crater is about a million cells; re-casting it after a reload would cost real time.
+        BlastJobState s = sample();
+        s.stage = BlastJobState.Stage.DECIDE;
+        s.damaged = true;
+        s.edits = new int[] { BlastPacking.pack(1, 2, 3), BlastPacking.pack(-4, 0, 5), BlastPacking.pack(0, 0, 9),
+            BlastPacking.pack(2, 2, 2) };
+        s.cursor = 3;
+        s.kept = 2;
+        BlastJobState back = BlastJobState.read(s.write(new net.minecraft.nbt.NBTTagCompound()));
+        assertEquals(BlastJobState.Stage.DECIDE, back.stage);
+        assertEquals(4, back.edits.length);
+        assertEquals(3, back.cursor);
+        assertEquals(2, back.kept);
+        assertTrue(back.damaged);
+    }
+
+    @Test
+    void theKeptCountNeverPassesTheCursorOnLoad() {
+        net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
+        BlastJobState s = sample();
+        s.stage = BlastJobState.Stage.DECIDE;
+        s.cursor = 1;
+        s.kept = 1;
+        s.write(tag);
+        tag.setInteger("kept", 99);
+        assertEquals(1, BlastJobState.read(tag).kept);
+    }
 }

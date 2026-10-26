@@ -67,4 +67,20 @@ class WarheadBlastTest {
         }
         assertEquals(17, WarheadBlast.values().length);
     }
+
+    @Test
+    void theT3ConventionalTypesMeetTheEightThousandTarget() {
+        // D34: T3 deals at least 8,000 at ground zero of a full casing; the nuclear warhead annihilates instead.
+        for (WarheadBlast b : new WarheadBlast[] { WarheadBlast.EXOTHERMIC, WarheadBlast.ENDOTHERMIC }) {
+            com.gregguns.icbm.explosive.ExplosiveDef def = WarheadBlasts.define(b);
+            org.junit.jupiter.api.Assertions.assertTrue(def.damage(def.maxFill()) >= 8000.0, b.id());
+            org.junit.jupiter.api.Assertions.assertFalse(def.annihilates());
+            org.junit.jupiter.api.Assertions.assertEquals(28.0, def.radius(def.maxFill()), 1e-9);
+        }
+        com.gregguns.icbm.explosive.ExplosiveDef nuke = WarheadBlasts.define(WarheadBlast.NUCLEAR);
+        org.junit.jupiter.api.Assertions.assertTrue(nuke.annihilates());
+        org.junit.jupiter.api.Assertions.assertTrue(nuke.annihilatesBosses());
+        org.junit.jupiter.api.Assertions.assertEquals(64.0, nuke.radius(64), 1e-9);
+        org.junit.jupiter.api.Assertions.assertEquals(32.0, nuke.radius(8), 1e-9);
+    }
 }

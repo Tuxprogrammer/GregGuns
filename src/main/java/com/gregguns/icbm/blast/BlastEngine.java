@@ -145,6 +145,17 @@ public final class BlastEngine {
         return n;
     }
 
+    /** @return blasts in the decide stage now: their cast crater is being posted to listeners in slices */
+    public int decidingBlasts() {
+        int n = 0;
+        for (BlastJob j : jobs) {
+            if (j.deciding()) {
+                n++;
+            }
+        }
+        return n;
+    }
+
     /** @return slices the shared scheduler ran in the last tick (tests and scenarios) */
     public int lastSlices() {
         return lastSlices;
