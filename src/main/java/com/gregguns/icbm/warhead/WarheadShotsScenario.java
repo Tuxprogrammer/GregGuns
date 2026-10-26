@@ -266,14 +266,14 @@ final class WarheadShotsScenario implements Scenario {
         at.accept(GAP, () -> { cam(p, craterX + 0.5, oy + 24, craterZ + 1.5, craterX + 0.5, oy + 3, craterZ + 0.5); });
         at.accept(GAP, () -> signal(p, "shot", "icbm-crater-after-top"));
         // 5b. gas
-        at.accept(10, () -> cam(p, gasX + 6, oy + 3, gasZ + 6, gasX + 0.5, oy + 2, gasZ + 0.5));
+        at.accept(10, () -> cam(p, gasX + 3, oy + 2.5, gasZ + 3, gasX + 0.5, oy + 1.5, gasZ + 0.5));
         at.accept(GAP + 40, () -> signal(p, "shot", "icbm-gas-before"));
         at.accept(GAP / 2, () -> {
             ExplosiveDef d = Explosives.get("chemical");
             gasAccepted[0] = IcbmBlasts.detonate(w, gasX + 0.5, oy + 1.0, gasZ + 0.5, d, 5, null);
         });
-        at.accept(GAP, () -> signal(p, "shot", "icbm-gas-after-a"));
-        at.accept(GAP, () -> signal(p, "shot", "icbm-gas-after-b"));
+        at.accept(GAP / 4, () -> signal(p, "shot", "icbm-gas-after-a"));
+        at.accept(GAP / 2, () -> signal(p, "shot", "icbm-gas-after-b"));
         final int end = clock[0] + 40;
 
         int[] next = { 0 };
