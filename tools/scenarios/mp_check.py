@@ -15,7 +15,8 @@ Usage (from any directory; needs a display, e.g. Xvfb, for the clients):
   guns,armor,machines), or "all" for every module including icbm.
 * Steps run in order on the server console. A step starting with "gregguns test " waits for the
   "Scenarios: N passed, M failed" summary line (up to 15 minutes by default); "wait <seconds>" sleeps; anything
-  else is sent and followed by a short pause. A "say [gregguns-autotest] <signal>" step steers every client.
+  else is sent and followed by a short pause. "sh <command>" runs a local shell command (for example
+  "sh xdotool mousemove 940 530" to park the pointer outside the GUI). A "say [gregguns-autotest] <signal>" step steers every client.
   With no --step the steps are "gregguns test mp.sync" and "gregguns test mp.visual".
 * Exit code 0 when every client logged "AUTOTEST joined", every test step ended with 0 failed and nothing crashed.
   The result line is "RESULT ok=<bool> steps=[...]". Logs and screenshots land under --out (server.log,
@@ -163,6 +164,10 @@ def main():
             assert c.wait_for(r"AUTOTEST joined", opts["join"]), user + " did not join"
         time.sleep(15)
         for step in steps:
+            if step.startswith("sh "):
+                subprocess.call(step[3:], shell=True)  # e.g. xdotool mousemove, on the same DISPLAY
+                results.append((step, None))
+                continue
             if step.startswith("wait "):
                 time.sleep(float(step.split()[1]))
                 results.append((step, None))
@@ -177,7 +182,7 @@ def main():
                 time.sleep(3)
                 results.append((step, None))
         tests = [r for _, r in results if r is not None]
-        crashed = any("Minecraft Crash Report" in l for p in [server] + clients for l in p.lines)
+        crashed = any(l.startswith("---- Minecraft Crash Report") for p in [server] + clients for l in p.lines)
         wanted = [s for s, _ in results if s.startswith("gregguns test ")]
         ok = (not crashed and len(tests) == len(wanted)
               and all(r[1] == 0 and r[0] > 0 for r in tests))
