@@ -310,10 +310,10 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
 - **The rest of the polish:**
   - a balance pass along the GTNH tier progression;
   - NEI polish and config defaults;
-  - translation readiness;
+  - translation readiness (done on `feat/m9-translation`, see [translating.md](translating.md));
   - multiplayer and performance soak tests on the real pack;
   - GuideNH in-game wiki pages bundled in the jar;
-  - the OpenModularTurrets overlap investigation (the Rampart stays);
+  - the OpenModularTurrets overlap investigation (the Rampart stays; done in [0020](design/0020-omt-overlap.md));
   - aim down sights for iron-sight and red-dot guns;
   - **structures on Ross128** ([0019](design/0019-structures-on-ross128.md)): the M8 structures also generate on Ross128b and Ross128ba, the alternate challenge-start route, with a loot ceiling rolled per structure.
   - **real vanilla textures on the guide sheets.** The rule for Minecraft content is to follow Mojang's usage guidelines, not to avoid Mojang content ([CONTRIBUTING](../CONTRIBUTING.md), ICBM decision D55). Replace our stand-ins with the real textures, read from the reference pack's Minecraft jar at build time and credited on each sheet:

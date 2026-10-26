@@ -80,9 +80,7 @@ class ModuleStateTest {
     }
 
     @Test
-    void disabledLineNamesTheFlag() {
-        assertEquals(
-            "Disabled by the server's GregGuns config (modules.npcs)",
-            ModuleState.disabledLine(ModuleId.NPCS));
+    void disabledFlagNamesTheConfigKey() {
+        assertEquals("modules.npcs", ModuleState.disabledFlag(ModuleId.NPCS));
     }
 }

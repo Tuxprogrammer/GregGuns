@@ -146,11 +146,15 @@ public final class ModuleState {
         return out;
     }
 
+    /** Lang key of the "module is off" line; its one {@code %s} is {@link #disabledFlag}. */
+    public static final String DISABLED_KEY = "gregguns.module.disabled";
+
     /**
      * @param id a module
-     * @return the tooltip line for an item of a module that is off
+     * @return the config flag to show in the "module is off" line, such as {@code modules.npcs}. It is a config key,
+     *         so it is never translated
      */
-    public static String disabledLine(ModuleId id) {
-        return "Disabled by the server's GregGuns config (modules." + id.configKey() + ")";
+    public static String disabledFlag(ModuleId id) {
+        return "modules." + id.configKey();
     }
 }
