@@ -316,6 +316,12 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
   - the OpenModularTurrets overlap investigation (the Rampart stays);
   - aim down sights for iron-sight and red-dot guns;
   - **structures on Ross128** ([0019](design/0019-structures-on-ross128.md)): the M8 structures also generate on Ross128b and Ross128ba, the alternate challenge-start route, with a loot ceiling rolled per structure.
+  - **real vanilla textures on the guide sheets.** The rule for Minecraft content is to follow Mojang's usage guidelines, not to avoid Mojang content ([CONTRIBUTING](../CONTRIBUTING.md), ICBM decision D55). Replace our stand-ins with the real textures, read from the reference pack's Minecraft jar at build time and credited on each sheet:
+    - the vanilla ingredient icons in the Steam and LV recipe grids (`vanilla.py`);
+    - the Skeleton Soldier's and Zombie Pigman Soldier's made-up skins on the enemies sheet (`kit.bone_skin()`, `kit.pigman_skin()`);
+    - the abstract interior-lamp markers on the Ammunition Works and Armory Gantry build guides (glowstone, redstone lamp).
+
+    Rebuild those sheets and check contrast.
 - **Fixes from the owner's beta playthrough,** released as `0.3.x-beta`.
 
 **Exit gate:**
