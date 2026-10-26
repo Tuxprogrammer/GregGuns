@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Place a Launch Control block within 3 blocks of the pad and power it at HV. Type the target X and Z, or load them from a Data Stick. The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect.",
+      "desc:8": "Place a Launch Control block within 4 blocks of the pad and power it at HV. Type the target X and Z, or load them from a Data Stick. The screen shows the range (at least 20 blocks, at most 1,000 for Tier 1) and the blast radius to expect.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,
