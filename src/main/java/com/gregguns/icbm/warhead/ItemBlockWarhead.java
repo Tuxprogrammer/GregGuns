@@ -56,6 +56,20 @@ public final class ItemBlockWarhead extends ItemBlock {
         return true;
     }
 
+    @Override
+    public String getItemStackDisplayName(ItemStack stack) {
+        // D58: "<Explosive> T<casing> Warhead". The stack read clamps an unknown explosive to condensed. Without NBT
+        // this is still a valid name (the default explosive), so only a null stack falls back to the block name.
+        if (stack == null) {
+            return super.getItemStackDisplayName(stack);
+        }
+        WarheadData data = WarheadStacks.read(casing, stack);
+        return WarheadTooltipFormat.displayName(
+            StatCollector.translateToLocal("gregguns.icbm.warhead.name"),
+            StatCollector.translateToLocal("gregguns.icbm.explosive." + data.explosive()),
+            casing.number());
+    }
+
     /** Pixels a tooltip line may take before it wraps. */
     private static final int TOOLTIP_WRAP_WIDTH = 200;
 

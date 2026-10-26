@@ -30,6 +30,11 @@ public enum WarheadCasing {
         this.boxWidth = boxWidth;
     }
 
+    /** @return the casing number, 1 for T1 and 2 for T2, as the display name spells it (D58) */
+    public int number() {
+        return ordinal() + 1;
+    }
+
     /** @return the bare registry name of the block and item */
     public String blockName() {
         return blockName;

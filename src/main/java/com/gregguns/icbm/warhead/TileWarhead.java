@@ -4,6 +4,9 @@ import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.WorldServer;
 
@@ -15,7 +18,9 @@ import com.mojang.authlib.GameProfile;
 
 /**
  * The tile of a placed warhead: explosive, fill, owner, how tall it is and its fuse. The server ticks the fuse and, at
- * zero, removes the block and starts the blast through {@link IcbmBlasts}. The client holds nothing the model needs.
+ * zero, removes the block and starts the blast through {@link IcbmBlasts}. The client gets the tile through the
+ * description packet (sent when the tile loads and once when the fuse is lit), so it knows the fuse is lit and can draw
+ * the smoke and sparks; it never counts the fuse down.
  * Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warhead-blocks.md (Use as a demolition charge)
@@ -33,6 +38,7 @@ public final class TileWarhead extends TileEntity {
     private String ownerName = "";
     private boolean noDrop;
     private boolean removing;
+    private boolean initialized;
 
     /** Required by the tile entity registry. */
     public TileWarhead() {}
@@ -94,7 +100,21 @@ public final class TileWarhead extends TileEntity {
             this.ownerId = owner.getUniqueID();
             this.ownerName = owner.getCommandSenderName();
         }
+        initialized = true;
         markDirty();
+        // A redstone source beside the block lit it in onBlockAdded, before this ran, with the default fill. Light it
+        // again now that the real fill is known; a shorter fuse only ever replaces a longer one.
+        if (worldObj != null && !worldObj.isRemote
+            && worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)) {
+            arm(litFuseTicks(), null);
+        }
+    }
+
+    /**
+     * @return true once {@link #init} ran (or the tile was loaded from NBT); false for a tile just created by a place
+     */
+    public boolean initialized() {
+        return initialized;
     }
 
     /**
@@ -149,6 +169,8 @@ public final class TileWarhead extends TileEntity {
                 setOwner(actor.getUniqueID(), actor.getCommandSenderName());
             }
             worldObj.playSoundEffect(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, "game.tnt.primed", 1.0F, 1.0F);
+            // Tell the clients once that it is lit, so they draw the smoke and sparks (the fuse itself is not synced).
+            worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
         }
         markDirty();
         return true;
@@ -196,6 +218,18 @@ public final class TileWarhead extends TileEntity {
     }
 
     @Override
+    public Packet getDescriptionPacket() {
+        NBTTagCompound tag = new NBTTagCompound();
+        writeToNBT(tag);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, tag);
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
+        readFromNBT(pkt.func_148857_g());
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         WarheadStacks.write(tag, data);
@@ -213,6 +247,7 @@ public final class TileWarhead extends TileEntity {
         String id = tag.getString(WarheadStacks.K_EXPLOSIVE);
         ExplosiveDef def = Explosives.get(id);
         // Keep the stored values as they are on load: the casing is not known here, and the block clamps on place.
+        initialized = tag.hasKey(WarheadStacks.K_EXPLOSIVE);
         data = WarheadData.of(id, tag.getInteger(WarheadStacks.K_FILL), def == null ? 1 : def.maxFill(), def != null);
         fuse = tag.getInteger(K_FUSE);
         height = Math.max(1, tag.getInteger(K_HEIGHT));

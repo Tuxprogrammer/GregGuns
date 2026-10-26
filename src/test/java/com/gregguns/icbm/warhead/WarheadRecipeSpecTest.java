@@ -135,8 +135,7 @@ class WarheadRecipeSpecTest {
 
     @Test
     void theGasEffectsUseGeneralIndustrialFluids() {
-        Set<String> allowed = new HashSet<>(
-            java.util.Arrays.asList("NitrousOxide", "SulfuricGas", "Creosote", "Biomass"));
+        Set<String> allowed = new HashSet<>(java.util.Arrays.asList("NitrousOxide", "Ammonia", "Creosote", "Biomass"));
         for (WarheadRecipeSpec spec : WarheadRecipeSpec.values()) {
             for (Ing in : spec.inputs()) {
                 if ((in.src() == Ing.Src.GAS || in.src() == Ing.Src.FLUID) && (spec.blast()

@@ -92,4 +92,18 @@ class WarheadTooltipFormatTest {
         assertEquals("12", WarheadTooltipFormat.number(11.6));
         assertEquals("9.0", WarheadTooltipFormat.radius(9.0));
     }
+
+    @Test
+    void theDisplayNameIsExplosiveThenCasingThroughOneTemplate() {
+        assertEquals("Condensed T1 Warhead", WarheadTooltipFormat.displayName("%s T%s Warhead", "Condensed", 1));
+        assertEquals("Thermobaric T2 Warhead", WarheadTooltipFormat.displayName("%s T%s Warhead", "Thermobaric", 2));
+        // A translator may reorder the two slots only if they are positional; the template owns the order.
+        assertEquals("Warhead T2 Sonic", WarheadTooltipFormat.displayName("Warhead T%2$s %1$s", "Sonic", 2));
+    }
+
+    @Test
+    void theCasingNumbersMatchTheNames() {
+        assertEquals(1, WarheadCasing.T1.number());
+        assertEquals(2, WarheadCasing.T2.number());
+    }
 }

@@ -63,6 +63,8 @@ Sample (condensed, T1: `R` 9, `D` 1,200):
 - **Short:** explosive name; tier (`TierText.colored`) of the casing; `Fill: n / cap`; `Blast radius: r blocks`; center damage, or the annihilation line for nuclear and up; "Hold Shift for details".
 - **Shift:** the casing cap, the radius and damage curve in one line, the fuse behavior for the demolition use, the blast's special effect, and "Added by: GregGuns".
 - The radius shown is the final blast radius at that fill and the damage is the center damage at that fill.
+- **Name (D58):** `<Explosive> T<casing> Warhead` from the stack (`gregguns.icbm.warhead.name`, built by `WarheadTooltipFormat.displayName`), such as "Condensed T1 Warhead". The block names with no NBT are "T1 Warhead" and "T2 Warhead". The tier line reads `Tier: ` plus the colored tier text: HV for T1, EV-IV for T2.
+- **Lit warhead (client):** while the fuse burns, the placed block shows smoke and sparks (`randomDisplayTick`); the tile's description packet tells the client once when it is lit.
 - All numbers are formatted by `WarheadTooltipFormat` (no Minecraft types) with unit tests. Every line is a lang key.
 
 ## Recipes
@@ -77,9 +79,9 @@ Eight GregGuns items (module `icbm`, package `com.gregguns.icbm.recipe`, data in
 
 | Part | Tier | Recipe (circuit) | Used by |
 |---|---|---|---|
-| **Plastic Explosive** (x4) | HV | 2 PTFE plates, 2 Industrial TNT (11) | every HV and EV warhead with a payload, in different counts |
-| Fuze Assembly Mk I | HV | 1 Advanced circuit, 1 steel plate, 4 fine copper wires (12) | every HV warhead |
-| Fuze Assembly Mk II | EV | 1 Data circuit, 1 titanium plate, 4 fine electrum wires (13) | every EV warhead |
+| **Plastic Explosive** (x4) | HV | 2 PTFE plates, 2 Industrial TNT (11) | every T1 and T2 warhead with a payload, in different counts |
+| Fuze Assembly Mk I | HV | 1 Advanced circuit, 1 steel plate, 4 fine copper wires (12) | every T1 warhead |
+| Fuze Assembly Mk II | EV | 1 Data circuit, 1 titanium plate, 4 fine electrum wires (13) | every T2 warhead |
 | Shaped-Charge Liner Cone (x2) | MV | 2 copper plates (14) | Breaching |
 | Fragmentation Sleeve (Steel) | MV | 16 steel rounds, 1 steel plate (15) | Shrapnel |
 | Fragmentation Sleeve (Titanium) | EV | 16 titanium rounds, 1 titanium plate (16) | Fragmentation |
@@ -99,17 +101,17 @@ Eight GregGuns items (module `icbm`, package `com.gregguns.icbm.recipe`, data in
 | Anvil | HV | 4 | 4 plates, 6 TNT, 2 Plastic Explosive, 12 lead plates, Fuze Mk I | 22.0 |
 | Incendiary | HV | 5 | 4 plates, 2 Napalm Canisters, 3 Plastic Explosive, Fuze Mk I | 19.3 |
 | Debilitation | HV | 6 | 4 plates, 2 Dispersal Canisters, 3 Plastic Explosive, Fuze Mk I, 2,000 L nitrous oxide | 18.3 |
-| Chemical | HV | 7 | 4 plates, 2 Dispersal Canisters, 3 Plastic Explosive, Fuze Mk I, 2,000 L sulfuric gas, 4 HarvestCraft mustard seeds (only when HarvestCraft is loaded) | 18.3 |
+| Chemical | HV | 7 | 4 plates, 2 Dispersal Canisters, 3 Plastic Explosive, Fuze Mk I, 2,000 L ammonia gas, 4 HarvestCraft mustard seeds (only when HarvestCraft is loaded) | 18.3 |
 | Smoke | HV | 8 | 4 plates, 2 Dispersal Canisters, 1 Plastic Explosive, Fuze Mk I, 8 coal dust, 2,000 L creosote | 17.7 |
 | Repulsive | HV | 9 | 4 plates, 2 Plastic Explosive, 1 Field Generator (HV), Fuze Mk I | 19.2 |
 | Attractive | HV | 10 | as Repulsive plus 4 magnetic steel rods | 21.2 |
 | Fragmentation | EV | 19 | 8 titanium plates, 10 Industrial TNT, 4 Plastic Explosive, 1 Fragmentation Sleeve (Titanium), Fuze Mk II | 39.4 |
-| Thermobaric | EV | 20 | 8 plates, 10 Industrial TNT, 4 Plastic Explosive, 2 Dispersal Canisters, Fuze Mk II, 4,000 L GT++ kerosene | 39.4 |
+| Thermobaric | EV | 24 | 8 plates, 10 Industrial TNT, 4 Plastic Explosive, 2 Dispersal Canisters, Fuze Mk II, 4,000 L GT++ kerosene | 39.4 |
 | Sonic | EV | 21 | 8 plates, 6 Industrial TNT, 2 Plastic Explosive, 2 Emitters (EV), Fuze Mk II | 37.4 |
 | Breaching | EV | 22 | 8 plates, 10 Industrial TNT, 3 Plastic Explosive, 2 Liner Cones, 6 titanium rods, Fuze Mk II | 39.3 |
 | Contagious | EV | 23 | 8 plates, 6 Industrial TNT, 2 Plastic Explosive, 4 Escherichia (rotten-flesh) petri dishes from the Bio Lab, Fuze Mk II, 2,000 L biomass | 38.4 |
 
-- **Gas-effect fills are general industrial pack fluids, chosen by in-game theme** (D56 amended): nitrous oxide, sulfuric gas, creosote, biomass and kerosene, held in Dispersal Canisters. No chemical-warfare agent is used or named anywhere. The mustard seeds are a pun and nothing more: the item is HarvestCraft's `harvestcraft:mustardseedsItem` ("Mustard Seeds"); the recipe omits them when the mod is not loaded.
+- **Gas-effect fills are general industrial pack fluids, chosen by in-game theme** (D56 amended): nitrous oxide, ammonia, creosote, biomass and kerosene, held in Dispersal Canisters. No chemical-warfare agent is used or named anywhere. The mustard seeds are a pun and nothing more: the item is HarvestCraft's `harvestcraft:mustardseedsItem` ("Mustard Seeds"); the recipe omits them when the mod is not loaded.
 - **Item names** checked in the pack source: `ItemList.Field_Generator_HV` and `Emitter_EV` (GT5-Unofficial 5.09.54.205 `ItemList`, used by the machine recipes in `MTERecipeLoader`; the parts' own recipes live in the pack's scripts), the `circuit` prefix with the material `Data` (the repo's tables use it already), and `BioCultureLoader.rottenFleshBacteria` with `BioCultureEnum.getPetriDish`.
 - **Cost (D34).** The comparison is an estimate: the pack's rocket recipes live in the GTNH scripts, which this repository does not carry. The shape of GTNH's tier 1 and tier 2 rockets (nose cone, engine, fins, a stack of tier heavy-duty plates, a chip, fuel worth several buckets) is about 15 to 25 plate-equivalents at HV-class materials for a T1 rocket (call it 20) and about 1.5 to 2 times that at EV for T2 (call it 27). Weights, in plate equivalents: plate 1, TNT 0.8, Industrial TNT 1.2, dynamite 1, Plastic Explosive 1.1, Fuze Mk I 5 and Mk II 8, Steel and Titanium Sleeves 4 and 7, Dispersal Canister 2.5, Napalm Canister 3.5, Field Generator 8, Emitter 6, a petri dish 3, a fluid 1 per 2,000 L. T1 warheads come to 18 to 22 (about one T1 launch); T2 warheads to 37 to 39 (about 1.5 T2 launches), with the casing plates counted (T1 4 stainless, T2 8 titanium, doubled in the I1 fix round). `WarheadRecipeSpecTest` holds T1 to 16 to 26 and T2 to 34 to 46. If the pack's real rocket costs turn out higher, scale the counts in `WarheadRecipeSpec` and the casing constants `T1_PLATES` and `T2_PLATES` in `WarheadRecipes` (the recycling data follows the same constants).
 - **Tier ladder.** T1 uses TNT (MV chain), dynamite (nitration, LV) and Plastic Explosive (Industrial TNT, so the HV nitration chain); T2 climbs to Industrial TNT in bulk. Higher tiers (I3 and later): the same part shapes upgrade to tungstensteel sleeves and penetrators, a Mk III Fuze, and GT++ rocket fuels.
