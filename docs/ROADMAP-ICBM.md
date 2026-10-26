@@ -165,15 +165,15 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** a preview sheet of the warhead models by tier, the first `icbm-warheads` sheet (T1–T2), and quests for the first warheads.
 
 **Exit gate:**
-- [ ] Every I1 blast type detonates through the shared pipeline and respects protection and the per-tier `icbm.terrainDamageT<n>` settings (D52). Scenario per type.
-- [ ] Conventional warheads meet the T1 and T2 center-damage targets against Infernal-scale health pools. Unit test plus scenario.
-- [ ] Several large blasts at once stay within the tick budget, and a blast survives a save and reload. Scenario.
-- [ ] Warhead blocks fuse and detonate by redstone and by hand. Each shows its 3D model with a matching collision box, and multi-block warheads break as one piece.
-- [ ] Batched client session: placed warheads look like warheads, not cubes.
-- [ ] Warhead tooltips follow the GregGuns conventions, with unit-tested formatting.
-- [ ] The warhead preview sheet is built locally, `icbm-warheads` (T1–T2, final numbers) and the warhead quests have landed, and the owner has been told.
-- [ ] The relevant `ICBM-02-*` bugs are avoided, with tests.
-- [ ] The milestone review fix list is closed.
+- [x] Every I1 blast type detonates through the shared pipeline and respects protection and the per-tier `icbm.terrainDamageT<n>` settings (D52). Scenario per type.
+- [x] Conventional warheads meet the T1 and T2 center-damage targets against Infernal-scale health pools. Unit test plus scenario.
+- [x] Several large blasts at once stay within the tick budget, and a blast survives a save and reload. Scenario.
+- [x] Warhead blocks fuse and detonate by redstone and by hand. Each shows its 3D model with a matching collision box, and multi-block warheads break as one piece.
+- [x] Batched client session: placed warheads look like warheads, not cubes.
+- [x] Warhead tooltips follow the GregGuns conventions, with unit-tested formatting.
+- [x] The warhead preview sheet is built locally, `icbm-warheads` (T1–T2, final numbers) and the warhead quests have landed, and the owner has been told.
+- [x] The relevant `ICBM-02-*` bugs are avoided, with tests.
+- [x] The milestone review fix list is closed.
 
 ## I2 · Missiles and the Galacticraft pad (T1–T2)
 
@@ -195,6 +195,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
   - impact fusing only (D26).
 - **The pad is never removed or damaged** (0018 §9).
 - GT recycling data on bodies and warheads.
+- **Carried over from I1: blast visuals.** Gas warheads (Chemical, Debilitation, Smoke, Contagious) show only a few vanilla swirl particles, which don't read as a cloud. Give each gas type a dense, colored cloud that fills its radius for its duration, and give large conventional blasts a scaled smoke plume of their own (the long-range nuke flash now belongs to annihilating explosives only). Client-side, cheap, and checked in the batched client session.
 - **Visuals:** previews of the missile bodies, the stacked missile and the launch-control GUI; the `icbm-first-missile` sheet; quests from the chip to the first launch; screenshots and a short clip of build, launch, flight and impact from the client session.
 
 **Exit gate:**
@@ -203,7 +204,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - [ ] A missile never holds more than two chunk tickets, and every ticket is released on impact, on timeout and on unload. Scenario.
 - [ ] Recipes and costs match the cost target, and everything is visible in NEI.
 - [ ] The relevant `ICBM-03-*` and `ICBM-04-*` bugs are avoided, with tests.
-- [ ] Batched client session: build, launch and impact look right.
+- [ ] Batched client session: build, launch and impact look right, and gas clouds and large blasts read clearly.
 - [ ] Two clients on a dedicated server see the same launch, flight and impact (`mp_check`).
 - [ ] `icbm-first-missile` and the launch quests have landed, and the owner has been told.
 - [ ] The milestone review fix list is closed.
@@ -220,11 +221,13 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Annihilation** in nuclear kill zones: every living entity, bosses included (0018 §7).
 - **Basic fallout:** irradiated surface blocks with GT radioactivity, protection by any hazmat-capable armor, and every hard cap from D21 (surface only, no spreading, no random ticks, a per-blast budget). The full byproduct chain waits for I5.
 - The T3 conventional damage target.
+- **Carried over from I1:** the blast engine works out a crater's blocks in one pass on the server thread (`BlastJob.decide()`). That is fine up to radius 20, about 13,000 blocks, but a radius-96 blast would mean about 1.2 million. Make it incremental under the tick budget before nuclear scale, and give `icbm.blast.crater_size` a nuclear-radius case.
 - **Visuals:** a silo preview, the `icbm-missile-silo` build guide, `icbm-warheads` extended to T3 and nuclear, and quests for the silo and the nuclear warhead.
 
 **Exit gate:**
 - [ ] The silo forms, loads, fuels and launches a T3 missile without the player touching the missile. Scenario.
 - [ ] Nothing living survives inside the nuclear kill zone, a boss included. Players follow server damage settings. Scenario.
+- [ ] A nuclear-radius crater is worked out incrementally, within the tick budget. Scenario.
 - [ ] Fallout stays within its caps: a scenario counts converted blocks and server tick time for a nuclear strike.
 - [ ] `icbm-missile-silo`, the extended `icbm-warheads` and the silo quests have landed, and the owner has been told.
 - [ ] The milestone review fix list is closed.
