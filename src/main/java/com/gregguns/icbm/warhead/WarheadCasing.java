@@ -4,7 +4,8 @@ import com.gregguns.icbm.explosive.ExplosiveTier;
 
 /**
  * The warhead casings, one per casing tier. A casing fixes the tier, the fill cap (D23), the size of the placed
- * warhead in blocks and the width of its model, which the collision box follows (D31). I1 ships T1 and T2; the heavier casings arrive with
+ * warhead in blocks and the width of its model, which the collision box follows (D31). I1 ships T1 and T2; the heavier
+ * casings arrive with
  * their milestones. No Minecraft types, both sides.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/warheads-and-fill.md (The warhead item)

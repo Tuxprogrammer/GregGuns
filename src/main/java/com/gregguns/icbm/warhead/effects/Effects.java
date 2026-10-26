@@ -101,16 +101,15 @@ public final class Effects {
         Block block = ctx.world()
             .getBlock(x, y, z);
         EntityPlayer p = ctx.source() instanceof EntityPlayer ? (EntityPlayer) ctx.source() : null;
-        return p == null
-            || BlockBreakGuard.mayBreak(
-                ctx.world(),
-                x,
-                y,
-                z,
-                block,
-                ctx.world()
-                    .getBlockMetadata(x, y, z),
-                p);
+        return p == null || BlockBreakGuard.mayBreak(
+            ctx.world(),
+            x,
+            y,
+            z,
+            block,
+            ctx.world()
+                .getBlockMetadata(x, y, z),
+            p);
     }
 
     static void particles(BlastContext ctx, String name, int count, double spread) {
@@ -203,7 +202,8 @@ public final class Effects {
                         int x = cx + dx;
                         int y = cy + dy;
                         int z = cz + dz;
-                        if (y < 1 || y > 255 || !world.isAirBlock(x, y, z)
+                        if (y < 1 || y > 255
+                            || !world.isAirBlock(x, y, z)
                             || !world.getBlock(x, y - 1, z)
                                 .isSideSolid(world, x, y - 1, z, net.minecraftforge.common.util.ForgeDirection.UP)) {
                             continue;

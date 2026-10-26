@@ -80,10 +80,10 @@ public final class WarheadStacks {
     }
 
     /**
-     * @param item    the warhead item
-     * @param casing  its casing
-     * @param id      the explosive id
-     * @param fill    the charges (clamped)
+     * @param item   the warhead item
+     * @param casing its casing
+     * @param id     the explosive id
+     * @param fill   the charges (clamped)
      * @return a new stack holding that warhead
      */
     public static ItemStack make(net.minecraft.item.Item item, WarheadCasing casing, String id, int fill) {

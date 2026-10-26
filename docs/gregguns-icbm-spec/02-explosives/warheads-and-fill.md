@@ -32,9 +32,9 @@ One item per casing tier. I1 ships T1 and T2. The item holds an NBT tag:
 | T4 (I5) | UV | 128 | larger (I5) |
 | T5 (I5) | UHV | 128 | larger (I5) |
 
-The explosive must be allowed in the casing: an explosive's tier is the **lowest** casing that can carry it, and any higher casing carries it too. A T2 casing can hold a T1 explosive; a T1 casing cannot hold a T2 explosive.
+A warhead's explosive tier equals its casing tier: a T1 casing carries T1 explosives and a T2 casing T2 explosives. The fill cap is the casing's cap. A stack that carries an explosive of another tier reads as condensed.
 
-**Starter tier.** The T1 casing is the entry point and keeps the smallest cap so the first warhead is cheap and bounded. Its cap of 5 is ICBM 2's second size. A fill of 1 is a legal "starter charge" and is craftable; it is the cheapest way to a working demolition charge. The ICBM 2 size of 1 is not a separate tier.
+**Starter tier.** The T1 casing is the entry point and keeps the smallest cap so the first warhead is cheap and bounded. Its cap of 5 is ICBM 2's second size. A fill of 1 is a legal "starter charge" and has its own cheap recipe; it is the cheapest way to a working demolition charge. The ICBM 2 size of 1 is not a separate tier.
 
 ## The radius curve (settles the open question)
 
@@ -62,15 +62,24 @@ Sample (condensed, T1: `R` 9, `D` 1,200):
 
 - **Short:** explosive name; tier (`TierText.colored`) of the casing; `Fill: n / cap`; `Blast radius: r blocks`; center damage, or the annihilation line for nuclear and up; "Hold Shift for details".
 - **Shift:** the casing cap, the radius and damage curve in one line, the fuse behavior for the demolition use, the blast's special effect, and "Added by: GregGuns".
+- The radius shown is the final blast radius at that fill and the damage is the center damage at that fill.
 - All numbers are formatted by `WarheadTooltipFormat` (no Minecraft types) with unit tests. Every line is a lang key.
 
 ## Recipes
 
-- A **casing** is built per tier in a GT machine at the tier's voltage: T1 in the Assembler from HV-grade plates and a circuit; T2 uses titanium or tungstensteel plates.
-- **Loading** one charge is a **Chemical Reactor** recipe (explosive fluid or compound in, warhead with `fill + 1` out) up to the cap, in the GT recipe map. NEI shows one example (an empty casing becoming `fill 1`), not one per fill level (D23).
-- Warheads with a brisance charge (condensed, thermobaric) also use the **Implosion Compressor** for the shaped charge, tier-gated.
-- The exact inputs, EU/t and times are in the code and exported by the recipe export; the cost target is D34: the warhead is the expensive part of the missile, rising steeply by tier. A full T1 warhead costs about a quarter of one HV-tier Galacticraft launch in plates and circuits plus its explosives; a full T2 warhead about a launch.
-- GT recycling data (D44): each warhead recycles into its casing material and plates, and the contents are lost.
+NBT cannot flow through a GT recipe, so a warhead is not loaded one charge at a time. Instead each explosive has **one recipe that makes a full-casing warhead**, and NEI shows one entry per explosive (D23: one example, not one per fill level). The partial fills a player may want are covered by one cheap **starter** recipe (condensed, fill 1) and by creative and command stacks.
+
+| Machine | Warheads | Voltage | Inputs (summary) |
+|---|---|---|---|
+| Assembler | T1 condensed, shrapnel, anvil, repulsive, attractive | HV | 2 stainless steel plates, 8 TNT, the type's payload, 1,000 L glyceryl trinitrate |
+| Assembler | T1 condensed starter (fill 1) | HV | 2 stainless steel plates, 2 TNT |
+| Chemical Reactor | T1 incendiary, debilitation, chemical, smoke | HV | 2 stainless steel plates, the payload, a reagent fluid |
+| Chemical Reactor | T2 contagious | EV | 4 titanium plates, the payload, sulfuric acid |
+| Implosion Compressor | T2 fragmentation, sonic, breaching, thermobaric | EV | 4 titanium plates, the payload, 16 units of explosive additive |
+
+- Every recipe runs at 400 ticks and at exactly its warhead's tier voltage, so it is tier-gated by the machine. The dev recipe-tier self-check and the unification check pass (no GT part is duplicated; the output is a GregGuns block item).
+- Cost (D34): the warhead is the expensive part. A full T1 warhead costs two stainless plates, eight TNT, a payload and a liter of glyceryl per craft; a T2 doubles the plates and adds the Implosion Compressor's additive. The missile body (I2) is balanced against a Galacticraft launch separately.
+- GT recycling data (D44): each warhead recycles into its casing plates (stainless steel for T1, titanium for T2); the contents are lost.
 
 ## Requirements
 

@@ -16,13 +16,14 @@
 
 ## Model and rendering
 
-- Models are Wavefront OBJ in Forge's strict grammar (D43), under `assets/gregguns/models/warhead/`, loaded with `AdvancedModelLoader`. Nose up (+Y), block-local coordinates 0..1, one texture per model.
+- Models are Wavefront OBJ in Forge's strict grammar (D43), from HBM's Nuclear Tech Mod (LGPL-3.0, modified, see CREDITS), under `assets/gregguns/models/thirdparty/ntm/`. Nose up (+Y), block-local coordinates 0..1, one texture per model. They load through `WavefrontObject`.
+- **Textures and the atlas.** A static block model is drawn into the chunk mesh, which has the block atlas bound, so a texture cannot be bound directly as it can in an entity renderer. The textures stay where the guides track put them (`textures/models/thirdparty/ntm/`) and a small custom atlas sprite loads each one into the block atlas at stitch time. The renderer maps the OBJ's UVs into that sprite.
 - The block uses a **custom ISBRH** (`getRenderType` returns our id). On a chunk rebuild it tessellates the model's faces into the chunk mesh, so there is no per-tick renderer. The item in the hand and inventory uses the same model through an item renderer.
 - A **unit test** loads every shipped warhead OBJ through `WavefrontObject(String, InputStream)`, so a grammar error fails the build (D43).
 
 ## Shape and collision
 
-- T1 and T2 fit in 1x1x1. The **selection and collision box** match the model's extent: a centered column, 0.625 wide (T1) and 0.75 wide (T2), full height 1.0. They are fixed per tier in `WarheadGeometry` and tested against the OBJ's measured bounds (the box must contain the model and be at most 1/16 larger on a side).
+- T1 and T2 fit in 1x1x1. The **selection and collision box** is a centered column the model's width plus 1/16: 0.5625 wide for T1 (model 0.5) and 0.4625 for T2 (model 0.4), full height 1.0. `WarheadModelsTest` measures the shipped OBJs and checks the box contains the model and is at most 1/16 larger.
 - The block is not a full cube (`isOpaqueCube` and `renderAsNormalBlock` false), so neighbors still draw their faces.
 
 ## Filler blocks (multi-block warheads)
@@ -38,8 +39,8 @@
 A warhead placed alone is a charge, as ICBM's explosive blocks are:
 
 - **Redstone:** a rising edge of power on the block (or its fillers) starts the fuse.
-- **By hand:** right-click with flint and steel or a fire charge, or the GT lighter, starts it; a bare-hand click does nothing (so the player does not trip it by accident).
-- **Fuse:** 100 ticks for every warhead (ICBM uses 100 to 120). While fused the tile shows a flash and beeps once per second. Breaching's instant fuse is dropped.
+- **By hand:** right-click with flint and steel or a fire charge starts it; a bare-hand click does nothing (so the player does not trip it by accident).
+- **Fuse:** 100 ticks for every warhead (ICBM uses 100 to 120). While fused the tile beeps once per second (no flash: the model is a static chunk mesh). Breaching's instant fuse is dropped.
 - **Detonation:** the block is removed, then the blast starts at its center through the shared registry and pipeline (`ExplosionRules`, `BlockBreakGuard`, `ExplosionEvent.Detonate`) with the placer as the actor, so claims and `explosions.blockDamage` are respected.
 - Breaking a fused block defuses and drops it. The warhead is not chain-reaction-prone: another explosion primes it with a short fuse (10 ticks).
 - The tile saves its explosive, fill, fuse and owner. The fuse is an int, not ICBM's byte, so a fuse above 127 survives a reload (`ICBM-02-*`).

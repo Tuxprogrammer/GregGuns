@@ -30,5 +30,6 @@ public class ClientProxy extends CommonProxy {
         manager.registerClient(new ArmorClientModule());
         manager.registerClient(new UtilityClientModule());
         manager.registerClient(new com.gregguns.client.npc.NpcClientModule());
+        manager.registerClient(new com.gregguns.client.icbm.IcbmClientModule());
     }
 }

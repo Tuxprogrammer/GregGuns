@@ -1,0 +1,89 @@
+package com.gregguns.icbm.warhead;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+
+import net.minecraftforge.client.model.obj.Face;
+import net.minecraftforge.client.model.obj.GroupObject;
+import net.minecraftforge.client.model.obj.Vertex;
+import net.minecraftforge.client.model.obj.WavefrontObject;
+
+import org.junit.jupiter.api.Test;
+
+/**
+ * Loads every shipped warhead OBJ through Forge's own loader (D43), so a grammar error fails the build, and checks
+ * that the T1 and T2 models sit inside one block with a collision box that matches them.
+ */
+class WarheadModelsTest {
+
+    private static final String DIR = "src/main/resources/assets/gregguns/models/thirdparty/ntm";
+    private static final String[] NAMES = { "warhead_t1", "warhead_t2", "warhead_t3", "warhead_nuclear",
+        "warhead_antimatter", "warhead_redmatter" };
+
+    private static WavefrontObject load(String name) throws Exception {
+        try (InputStream in = new FileInputStream(new File(DIR, name + ".obj"))) {
+            return new WavefrontObject(name + ".obj", in);
+        }
+    }
+
+    private static double[] bounds(WavefrontObject m) {
+        double[] b = { 1e9, 1e9, 1e9, -1e9, -1e9, -1e9 };
+        for (GroupObject g : m.groupObjects) {
+            for (Face f : g.faces) {
+                for (Vertex v : f.vertices) {
+                    b[0] = Math.min(b[0], v.x);
+                    b[1] = Math.min(b[1], v.y);
+                    b[2] = Math.min(b[2], v.z);
+                    b[3] = Math.max(b[3], v.x);
+                    b[4] = Math.max(b[4], v.y);
+                    b[5] = Math.max(b[5], v.z);
+                }
+            }
+        }
+        return b;
+    }
+
+    @Test
+    void everyShippedWarheadModelLoadsThroughForge() throws Exception {
+        for (String name : NAMES) {
+            WavefrontObject m = load(name);
+            assertNotNull(m);
+            assertFalse(m.groupObjects.isEmpty(), name + " has a group");
+            int faces = 0;
+            for (GroupObject g : m.groupObjects) {
+                faces += g.faces.size();
+                for (Face f : g.faces) {
+                    assertTrue(f.vertices.length == 3 || f.vertices.length == 4, name + " face corners");
+                }
+            }
+            assertTrue(faces > 0 && faces <= 350, name + " face count " + faces);
+        }
+    }
+
+    @Test
+    void theT1AndT2ModelsFitOneBlockNoseUp() throws Exception {
+        for (WarheadCasing c : WarheadCasing.values()) {
+            double[] b = bounds(load(c.blockName()));
+            assertTrue(b[0] >= 0 && b[2] >= 0 && b[3] <= 1 && b[5] <= 1, c + " inside the block horizontally");
+            assertTrue(b[1] >= 0 && b[4] <= 1.0001, c + " inside the block vertically");
+            assertTrue(b[4] > 0.9, c + " nose reaches the top");
+        }
+    }
+
+    @Test
+    void theCollisionBoxContainsTheModelAndIsAtMostASixteenthBigger() throws Exception {
+        for (WarheadCasing c : WarheadCasing.values()) {
+            double[] b = bounds(load(c.blockName()));
+            double[] box = WarheadGeometry.bounds(WarheadGeometry.boxWidth(c.boxWidth()));
+            double eps = 1e-6;
+            assertTrue(box[0] <= b[0] + eps && box[3] >= b[3] - eps, c + " box contains the model in X");
+            assertTrue(box[2] <= b[2] + eps && box[5] >= b[5] - eps, c + " box contains the model in Z");
+            assertTrue((box[3] - box[0]) - (b[3] - b[0]) <= 1.0 / 16.0 + eps, c + " box hugs the model");
+        }
+    }
+}
