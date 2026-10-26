@@ -1,6 +1,7 @@
 package com.gregguns.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 
 import com.gregguns.GregGuns;
@@ -27,7 +28,9 @@ public final class ModuleClientHooks {
     public void onTooltip(ItemTooltipEvent event) {
         ModuleId off = ModuleContent.disabledModuleOf(event.itemStack);
         if (off != null) {
-            event.toolTip.add("\u00a7c" + ModuleState.disabledLine(off));
+            event.toolTip.add(
+                "\u00a7c"
+                    + StatCollector.translateToLocalFormatted(ModuleState.DISABLED_KEY, ModuleState.disabledFlag(off)));
         }
     }
 

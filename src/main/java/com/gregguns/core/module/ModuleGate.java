@@ -3,6 +3,7 @@ package com.gregguns.core.module;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
@@ -53,7 +54,10 @@ public final class ModuleGate {
 
     private static void tell(EntityPlayer player, ModuleId off) {
         if (!player.worldObj.isRemote) {
-            player.addChatMessage(new ChatComponentText("[GregGuns] " + ModuleState.disabledLine(off)));
+            // The client resolves the key in its own language.
+            player.addChatMessage(
+                new ChatComponentText("[GregGuns] ").appendSibling(
+                    new ChatComponentTranslation(ModuleState.DISABLED_KEY, ModuleState.disabledFlag(off))));
         }
     }
 }

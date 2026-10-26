@@ -310,7 +310,7 @@ Amended by [0015](design/0015-m9-self-contained-polish.md) and [0018](design/001
 - **The rest of the polish:**
   - a balance pass along the GTNH tier progression;
   - NEI polish and config defaults;
-  - translation readiness;
+  - translation readiness (done on `feat/m9-translation`, see [translating.md](translating.md));
   - multiplayer and performance soak tests on the real pack;
   - GuideNH in-game wiki pages bundled in the jar;
   - the OpenModularTurrets overlap investigation (the Rampart stays);
