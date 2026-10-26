@@ -32,9 +32,12 @@ From I0 on, the build runs without the owner ([0018](design/0018-icbm-program.md
 - **Branch gate, automated only:**
   - `spotlessCheck`;
   - the build and unit tests;
-  - the full headless scenario suite with every module enabled, in a fresh worktree;
-  - the same suite again with `--no-galacticraft` and icbm on ([D46](gregguns-icbm-spec/DECISIONS.md)), because Galacticraft is in every dev run and the GC-conditional fallbacks would otherwise go untested;
+  - the ICBM scenarios in a fresh worktree, `gregguns test icbm.` with every module enabled ([D68](gregguns-icbm-spec/DECISIONS.md));
+  - a `--no-galacticraft` boot with icbm on, which must log the module turning itself off ([D46](gregguns-icbm-spec/DECISIONS.md));
+  - when a branch touches base GregGuns code, one targeted prefix run of the touched areas at the agent's final wrap-up (D68);
   - the ported-code gate (I0).
+
+  The full suite, with and without Galacticraft, runs only at the alpha and beta checkpoints (D68).
 
   The orchestrator lands only when master is an ancestor of the verified branch, then merges with `--no-ff`.
 - **Client checks.** One batched in-game session per milestone, on the test server. Shader runs only for shader questions. Its screenshots go to the visuals gallery.
@@ -199,15 +202,15 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** previews of the missile bodies, the stacked missile and the launch-control GUI; the `icbm-first-missile` sheet; quests from the chip to the first launch; screenshots and a short clip of build, launch, flight and impact from the client session.
 
 **Exit gate:**
-- [ ] A T1 and a T2 missile are built by hand and by Assembly Line, stacked, fueled, launched and detonated on target. Scenario.
-- [ ] The Galacticraft pad, fuel loader and anything attached are intact after a launch. Scenario `icbm.pad.survives`.
-- [ ] A missile never holds more than two chunk tickets, and every ticket is released on impact, on timeout and on unload. Scenario.
-- [ ] Recipes and costs match the cost target, and everything is visible in NEI.
-- [ ] The relevant `ICBM-03-*` and `ICBM-04-*` bugs are avoided, with tests.
-- [ ] Batched client session: build, launch and impact look right, and gas clouds and large blasts read clearly.
-- [ ] Two clients on a dedicated server see the same launch, flight and impact (`mp_check`).
-- [ ] `icbm-first-missile` and the launch quests have landed, and the owner has been told.
-- [ ] The milestone review fix list is closed.
+- [x] A T1 and a T2 missile are built by hand and by Assembly Line, stacked, fueled, launched and detonated on target. Scenario.
+- [x] The Galacticraft pad, fuel loader and anything attached are intact after a launch. Scenario `icbm.pad.survives`.
+- [x] A missile never holds more than two chunk tickets, and every ticket is released on impact, on timeout and on unload. Scenario.
+- [x] Recipes and costs match the cost target, and everything is visible in NEI.
+- [x] The relevant `ICBM-03-*` and `ICBM-04-*` bugs are avoided, with tests.
+- [x] Batched client session: build, launch and impact look right, and gas clouds and large blasts read clearly.
+- [x] Two clients on a dedicated server see the same launch, flight and impact (`mp_check`).
+- [x] `icbm-first-missile` and the launch quests have landed, and the owner has been told.
+- [x] The milestone review fix list is closed.
 
 ## I3 · The silo and heavy warheads (T3, nuclear)
 
@@ -221,6 +224,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Annihilation** in nuclear kill zones: every living entity, bosses included (0018 §7).
 - **Basic fallout:** irradiated surface blocks with GT radioactivity, protection by any hazmat-capable armor, and every hard cap from D21 (surface only, no spreading, no random ticks, a per-blast budget). The full byproduct chain waits for I5.
 - The T3 conventional damage target.
+- **Carried over from I2:** the Launch Control's Shift tooltip is wider than a small window and clips at the left edge; wrap its lines the way the warhead tooltip does. Take one NEI shot of a real Galacticraft rocket page beside our missile workbench page (the harness couldn't open GC's page by item or output id).
 - **Carried over from I1:** the blast engine works out a crater's blocks in one pass on the server thread (`BlastJob.decide()`). That is fine up to radius 20, about 13,000 blocks, but a radius-96 blast would mean about 1.2 million. Make it incremental under the tick budget before nuclear scale, and give `icbm.blast.crater_size` a nuclear-radius case.
 - **Visuals:** a silo preview, the `icbm-missile-silo` build guide, `icbm-warheads` extended to T3 and nuclear, and quests for the silo and the nuclear warhead.
 
