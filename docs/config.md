@@ -154,6 +154,8 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 | `icbm.maxMissilesInFlight` | int | `20` | 1 to 100 | yes | Most missiles in flight at once, server wide (D11). Each holds at most two chunks. |
 | `icbm.missileFuelFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's fuel tank (D20, D60). |
 | `icbm.missileRangeFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's range (D60). |
+| `icbm.siloScatterFactor` | double | `0.5` | 0.1 to 2 | yes | Multiplier on the scatter of a missile launched from a Missile Silo, on top of the guidance rule; the 10% floor still applies (D70). |
+| `icbm.siloRangeFactor` | double | `1.25` | 0.5 to 5 | yes | Multiplier on the range of a missile launched from a Missile Silo, on top of `missileRangeFactor`; the open pad keeps the plain range (D70). |
 | `icbm.fuelBonusMax` | double | `0.25` | 0 to 1 | yes | The most unburned fuel adds to a blast radius, as a fraction: 0.25 is up to 25% at point-blank range, nothing at full range. 0 turns it off. |
 | `icbm.missileTimeoutTicks` | int | `600` | 20 to 6000 | yes | Ticks a missile may fly past its planned arrival before it detonates where it is. |
 

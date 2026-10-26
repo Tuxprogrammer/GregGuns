@@ -63,7 +63,31 @@ class MissileTierTest {
     @Test
     void lookupByNumber() {
         assertEquals(MissileTier.T2, MissileTier.byNumber(2));
-        assertNull(MissileTier.byNumber(3));
+        assertEquals(MissileTier.T3, MissileTier.byNumber(3));
+        assertNull(MissileTier.byNumber(4));
         assertEquals("missile_body_t1", MissileTier.T1.blockName());
+    }
+
+    @Test
+    void theT3BodyIsTheSiloOnlyHeavyweight() {
+        assertEquals(8000, MissileTier.T3.baseFuelMb());
+        assertEquals(6, MissileTier.T3.heightBlocks());
+        assertTrue(MissileTier.T3.siloOnly());
+        assertFalse(MissileTier.T2.siloOnly());
+        assertTrue(MissileTier.T3.carries(ExplosiveTier.T3));
+        assertFalse(MissileTier.T3.carries(ExplosiveTier.T4));
+        assertTrue(MissileTier.T3.baseMaxRange() > MissileTier.T2.baseMaxRange());
+        assertTrue(MissileTier.T3.speed() > MissileTier.T2.speed());
+        assertTrue(MissileTier.T3.baseScatter() < MissileTier.T2.baseScatter());
+        assertTrue(MissileTier.T3.health() > MissileTier.T2.health());
+    }
+
+    @Test
+    void theFuelHatchAndTheLoaderShareOneList() {
+        assertTrue(MissileTier.T3.acceptsFuel("rocketfuelmixc"));
+        assertTrue(MissileTier.T3.acceptsFuel("rocketfuelmixa"));
+        assertFalse(MissileTier.T3.acceptsFuel("rocketfuelmixd"));
+        assertFalse(MissileTier.T3.acceptsFuel("water"));
+        assertTrue(MissileTier.T2.acceptsFuel("rocketfuelmixd"));
     }
 }

@@ -24,7 +24,9 @@
 - One inventory slot for a GT **data stick**. Automation can put a stick in; nothing can pull it out.
 - Tooltip lines come from lang keys; GT machine tooltips do not support Shift, so the details (reach, range, EU, triggers) are always shown. This deviates from D41's Shift rule for machines because GT's block tooltip has no Shift hook (the Turret and benches do the same). It carries "Added by: GregGuns".
 
-## Finding the pad
+## Finding the pad or the silo
+
+From I3 the block fires a `LaunchSite`: a formed Missile Silo within 6 blocks horizontally and 4 vertically of the silo's controller (tried first, because its shaft floor is a pad too), else the Galacticraft pad as before. The range line and the expected radius are those of the linked site (a silo adds its bonus, [missile-silo](../03-missiles/missile-silo.md)), and a silo whose Energy Hatch is below the missile's tier shows `silo_tier` and locks the button.
 
 The block scans a box of plus or minus 4 horizontally and plus or minus 2 vertically for the **center block of a Galacticraft rocket pad** (`GCBlocks.landingPadFull` with metadata 0) and takes the nearest (`PadSearch`, unit tested). A buggy pad is not a rocket pad. `LaunchPads` is the only class that names a Galacticraft block, and it is reached only after the module gate. The pad's center is passed to the pad API.
 

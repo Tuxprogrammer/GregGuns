@@ -36,6 +36,7 @@ public enum ControlStatus {
     BLOCKED(false),
     /** Forge refused the missile a chunk ticket. */
     NO_TICKET(false),
+    SILO_TIER(false),
     /** The block is cooling down from the last shot. */
     COOLDOWN(false),
     /** The missile was launched. */

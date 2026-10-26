@@ -102,6 +102,48 @@ public final class PadMissiles {
         return null;
     }
 
+    /**
+     * @param world a world
+     * @param padX  X of any block of the pad
+     * @param padY  Y of the pad block
+     * @param padZ  Z of any block of the pad
+     * @return the pad as a {@link LaunchSite}; its calls are the static methods above
+     */
+    public static LaunchSite site(World world, int padX, int padY, int padZ) {
+        return new LaunchSite() {
+
+            @Override
+            public double centerX() {
+                return padX + 0.5;
+            }
+
+            @Override
+            public double centerZ() {
+                return padZ + 0.5;
+            }
+
+            @Override
+            public MissileStatus status() {
+                return PadMissiles.status(world, padX, padY, padZ);
+            }
+
+            @Override
+            public int maxRange() {
+                return PadMissiles.maxRange(world, padX, padY, padZ);
+            }
+
+            @Override
+            public double expectedRadius(double targetX, double targetZ) {
+                return PadMissiles.expectedRadius(world, padX, padY, padZ, targetX, targetZ);
+            }
+
+            @Override
+            public LaunchResult launch(double targetX, double targetZ, EntityPlayer source) {
+                return PadMissiles.launch(world, padX, padY, padZ, targetX, targetZ, source);
+            }
+        };
+    }
+
     private static boolean finite(double v) {
         return !Double.isNaN(v) && !Double.isInfinite(v);
     }

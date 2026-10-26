@@ -44,7 +44,7 @@ public final class BlockMissileBody extends BlockContainer implements Tiered {
     public BlockMissileBody(MissileTier tier) {
         super(Material.iron);
         this.tier = tier;
-        this.columnWidth = WarheadGeometry.boxWidth(tier == MissileTier.T1 ? 0.5 : 0.4);
+        this.columnWidth = WarheadGeometry.boxWidth(tier == MissileTier.T1 ? 0.5 : tier == MissileTier.T2 ? 0.4 : 0.6);
         setHardness(2.0F);
         setResistance(10.0F);
         setStepSound(soundTypeMetal);
@@ -64,7 +64,7 @@ public final class BlockMissileBody extends BlockContainer implements Tiered {
 
     @Override
     public Tier getTier() {
-        return tier == MissileTier.T1 ? Tier.HV : Tier.EV;
+        return tier == MissileTier.T1 ? Tier.HV : tier == MissileTier.T2 ? Tier.EV : Tier.LUV;
     }
 
     @Override

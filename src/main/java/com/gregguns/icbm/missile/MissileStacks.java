@@ -128,7 +128,7 @@ public final class MissileStacks {
             return new Armed(ArmResult.WARHEAD_LIT, null);
         }
         TileMissileBody body = (TileMissileBody) bodyTile;
-        EntityMissile missile = tier == MissileTier.T1 ? new EntityMissileT1(world) : new EntityMissileT2(world);
+        EntityMissile missile = EntityMissile.create(tier, world);
         double y0 = body.onPad() ? base[1] - MissileSeat.PAD_DROP : base[1];
         missile.setLocationAndAngles(base[0] + 0.5, y0, base[2] + 0.5, 0.0F, 0.0F);
         missile.configure(

@@ -17,6 +17,8 @@ public final class MissileRegistration {
     /** Entity ids 120 and 121: GregGuns' other entities stop at 80. */
     private static final int ENTITY_ID_T1 = 120;
     private static final int ENTITY_ID_T2 = 121;
+    /** Entity id 122: the T3 missile (D70). */
+    private static final int ENTITY_ID_T3 = 122;
 
     private MissileRegistration() {}
 
@@ -42,6 +44,7 @@ public final class MissileRegistration {
         registrar.registerTileEntity("missile_body", TileMissileBody.class);
         registrar.registerEntity("missile_t1", EntityMissileT1.class, ENTITY_ID_T1, 160, 1, true);
         registrar.registerEntity("missile_t2", EntityMissileT2.class, ENTITY_ID_T2, 160, 1, true);
+        registrar.registerEntity("missile_t3", EntityMissileT3.class, ENTITY_ID_T3, 160, 1, true);
     }
 
     /** Wires the chunk-ticket callback. Runs whatever the module flag says: a missile can exist in an old save. */

@@ -142,6 +142,9 @@ public final class DevStructureBuilder {
                 ForgeDirection.SOUTH);
             return finish(world, x, y, z, "Armory Gantry, " + bays + " bays");
         }
+        if (mte instanceof com.gregguns.icbm.silo.MTEMissileSilo) {
+            return buildSilo(world, x, y, z, ItemList.Hatch_Energy_LuV);
+        }
         if (mte instanceof MTERampart) {
             int mounts = count == 0 ? RampartShape.DEFAULT_MOUNTS : RampartShape.clampMounts(count);
             ((MTERampart) mte).construct(new ItemStack(Items.stick, mounts), false);
@@ -163,6 +166,36 @@ public final class DevStructureBuilder {
             return finish(world, x, y, z, "Rampart, " + mounts + " mounts");
         }
         return new Outcome(false, "build: the machine at " + x + " " + y + " " + z + " is not a GregGuns multiblock");
+    }
+
+    /**
+     * Builds the Missile Silo around the controller at the position, with the hatches in the glass rings (the bus and
+     * the maintenance hatch beside the controller, the energy and fuel hatches below them).
+     *
+     * @param world  the world
+     * @param x      controller x
+     * @param y      controller y
+     * @param z      controller z
+     * @param energy the Energy Hatch to place, which sets the heaviest missile the silo handles
+     * @return the outcome
+     */
+    public static Outcome buildSilo(World world, int x, int y, int z, ItemList energy) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (!(tile instanceof IGregTechTileEntity)
+            || !(((IGregTechTileEntity) tile).getMetaTileEntity() instanceof com.gregguns.icbm.silo.MTEMissileSilo)) {
+            return new Outcome(false, "build: no Missile Silo controller at " + x + " " + y + " " + z);
+        }
+        IGregTechTileEntity controller = (IGregTechTileEntity) tile;
+        controller.setFrontFacing(ForgeDirection.NORTH);
+        controller.setOwnerName(OWNER);
+        controller.setOwnerUuid(UUID.nameUUIDFromBytes(OWNER.getBytes(StandardCharsets.UTF_8)));
+        ((com.gregguns.icbm.silo.MTEMissileSilo) controller.getMetaTileEntity())
+            .construct(new ItemStack(Items.stick, 1), false);
+        hatch(world, x - 1, y, z, ItemList.Hatch_Input_Bus_HV, ForgeDirection.NORTH);
+        hatch(world, x + 1, y, z, ItemList.Hatch_Maintenance, ForgeDirection.NORTH);
+        hatch(world, x, y - 1, z, energy, ForgeDirection.NORTH);
+        hatch(world, x + 1, y - 1, z, ItemList.Hatch_Input_HV, ForgeDirection.NORTH);
+        return finish(world, x, y, z, "Missile Silo");
     }
 
     /**

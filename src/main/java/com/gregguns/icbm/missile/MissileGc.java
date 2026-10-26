@@ -41,6 +41,9 @@ public final class MissileGc {
         for (String fluid : MissileTier.T2.fuels()) {
             RocketFuels.addFuel(EntityMissileT2.class, fluid);
         }
+        for (String fluid : MissileTier.T3.fuels()) {
+            RocketFuels.addFuel(EntityMissileT3.class, fluid);
+        }
         GregGuns.LOG.info("ICBM missile fuels registered with Galacticraft");
     }
 

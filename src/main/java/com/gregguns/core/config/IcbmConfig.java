@@ -76,6 +76,17 @@ public class IcbmConfig {
     public static double missileRangeFactor = 1.0;
 
     @Config.Comment({
+        "Multiplier on the scatter of a missile launched from a Missile Silo (D70), on top of the guidance",
+        "rule; the 10% floor of the base scatter still applies. Below 1 is more accurate. Range 0.1 to 2. Default: 0.5." })
+    @Config.RangeDouble(min = 0.1, max = 2.0)
+    public static double siloScatterFactor = 0.5;
+
+    @Config.Comment({ "Multiplier on the range of a missile launched from a Missile Silo (D70), on top of",
+        "icbm.missileRangeFactor. The open Galacticraft pad keeps the plain range. Range 0.5 to 5. Default: 1.25." })
+    @Config.RangeDouble(min = 0.5, max = 5.0)
+    public static double siloRangeFactor = 1.25;
+
+    @Config.Comment({
         "The most the unburned fuel adds to a blast radius, as a fraction (D20): 0.25 is up to 25% bigger",
         "at point-blank range, and nothing at full range. 0 turns the bonus off. Range 0 to 1. Default: 0.25." })
     @Config.RangeDouble(min = 0.0, max = 1.0)

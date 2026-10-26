@@ -116,8 +116,9 @@ class MissileBuildSpecTest {
                 assertTrue(
                     c.registryName()
                         .startsWith("guidance_computer"));
+                // T3 takes Mk III (IV), below its LuV tier: no guidance steps, but it fits (D70).
                 assertTrue(
-                    c.tier()
+                    s == MissileBuildSpec.T3 || c.tier()
                         .voltageIndex()
                         >= s.tier()
                             .voltageIndex());

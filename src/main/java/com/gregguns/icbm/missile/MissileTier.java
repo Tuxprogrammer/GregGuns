@@ -3,7 +3,8 @@ package com.gregguns.icbm.missile;
 import com.gregguns.icbm.explosive.ExplosiveTier;
 
 /**
- * The missile body tiers that launch from the Galacticraft pad (T1 and T2). A tier fixes the fuel the tank holds (D20),
+ * The missile body tiers: T1 and T2 launch from the Galacticraft pad or the silo, T3 from the silo only (D70). A tier
+ * fixes the fuel the tank holds (D20),
  * the range band, the flight speed, the base guidance scatter (D24), the model height in blocks (D31) and which fuels
  * the pad and loader accept (D19). No Minecraft types, both sides.
  */
@@ -15,7 +16,9 @@ public enum MissileTier {
         "rocketfuelmixd", "rocketfuelmixc", "rocketfuelmixa"),
     /** EV to IV body: Dense Hydrazine or better, 4,000 mB, up to 3,000 blocks. */
     T2("missile_body_t2", ExplosiveTier.T2, 4000, 20, 3000, 1.2, 8.0, 4, 40.0F, "rocketfuelmixd", "rocketfuelmixc",
-        "rocketfuelmixa");
+        "rocketfuelmixa"),
+    /** LuV to ZPM body: Purple fuel or better, 8,000 mB, up to 8,000 blocks; launches from the silo only (D8, D70). */
+    T3("missile_body_t3", ExplosiveTier.T3, 8000, 20, 8000, 1.6, 6.0, 6, 60.0F, "rocketfuelmixc", "rocketfuelmixa");
 
     private final String blockName;
     private final ExplosiveTier warheadTier;
@@ -42,7 +45,7 @@ public enum MissileTier {
         this.fuels = fuels;
     }
 
-    /** @return 1 or 2 */
+    /** @return 1 to 3 */
     public int number() {
         return ordinal() + 1;
     }
@@ -94,6 +97,25 @@ public enum MissileTier {
         return health;
     }
 
+    /**
+     * @param fluidName a fluid's registry name
+     * @return true when this tier's tank accepts it; the silo's fuel hatch and Galacticraft's {@code RocketFuels}
+     *         (registered from {@link #fuels()}) therefore agree by construction (D22)
+     */
+    public boolean acceptsFuel(String fluidName) {
+        for (String f : fuels) {
+            if (f.equals(fluidName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** @return true when this body launches only from the silo (D8 step 5): it does not fit the 3x3 pad plate */
+    public boolean siloOnly() {
+        return this == T3;
+    }
+
     /** @return the names of the fluids this tier's tank accepts (D19, "this fuel or better") */
     public String[] fuels() {
         return fuels.clone();
@@ -108,7 +130,7 @@ public enum MissileTier {
     }
 
     /**
-     * @param number 1 or 2
+     * @param number 1 to 3
      * @return the tier, or null
      */
     public static MissileTier byNumber(int number) {
