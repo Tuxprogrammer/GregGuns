@@ -74,6 +74,7 @@ public final class ClientAutotest {
     private static final String LOG_PREFIX = "AUTOTEST ";
 
     private final GunInputHandler input;
+    private final TooltipProbe tooltips = new TooltipProbe();
     private final List<Task> tasks = new ArrayList<>();
     private final Map<String, Armed> armed = new HashMap<>();
     private final java.util.ArrayDeque<String[]> queue = new java.util.ArrayDeque<>();
@@ -111,6 +112,7 @@ public final class ClientAutotest {
             .bus()
             .register(autotest);
         MinecraftForge.EVENT_BUS.register(autotest);
+        MinecraftForge.EVENT_BUS.register(autotest.tooltips);
         GunClientHooks.install(autotest.new Logging(GunClientHooks.events()));
         GregGuns.LOG.info("[gregguns] AUTOTEST hooks active, label {}", System.getProperty(PROPERTY));
     }
@@ -293,6 +295,8 @@ public final class ClientAutotest {
             case "hold" -> holdWait = new AutotestCommands.HoldWait(args[0]);
             case "scope" -> com.gregguns.client.render.GunRenderers
                 .setDebugScope("off".equals(args[0]) ? null : args[0]);
+            case "tip" -> tooltips.setSlot(args[0]);
+            case "shift" -> tooltips.setShift("on".equals(args[0]));
             case "creativegive" -> AutotestCommands.creativeGive(args[0]);
             case "slots" -> AutotestCommands.reportSlots(args[0]);
             case "quit" -> {
