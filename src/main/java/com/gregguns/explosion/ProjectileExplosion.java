@@ -451,12 +451,22 @@ public final class ProjectileExplosion {
      * @param size  the vanilla power (the blast radius for an ICBM blast)
      */
     public static void blastEffects(World world, double x, double y, double z, float size) {
+        blastEffects(world, x, y, z, size, size >= ExplosionRules.NUKE_FX_MIN_SIZE);
+    }
+
+    /**
+     * As {@link #blastEffects(World, double, double, double, float)}, with the long-range FX decided by the caller
+     * (ICBM sends it only for annihilating explosives, whatever their radius).
+     *
+     * @param longRange true to also send the 150-block nuke FX packet
+     */
+    public static void blastEffects(World world, double x, double y, double z, float size, boolean longRange) {
         float pitch = (1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F) * 0.7F;
         world.playSoundEffect(x, y, z, GunSoundEvents.qualified(GunSoundEvents.EXPLOSION), 4.0F, pitch);
         if (world instanceof WorldServer) {
             ((WorldServer) world).func_147487_a("hugeexplosion", x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
         }
-        if (size >= ExplosionRules.NUKE_FX_MIN_SIZE) {
+        if (longRange) {
             sendNukeFx(world, x, y, z, size);
         }
     }

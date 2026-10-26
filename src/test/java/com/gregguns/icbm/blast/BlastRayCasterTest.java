@@ -81,7 +81,7 @@ class BlastRayCasterTest {
     @Test
     void icbm0203EachDirectionIsCastOnce() {
         int steps = BlastRayCaster.steps(R);
-        assertEquals(2L * steps * steps, BlastRayCaster.rayCount(R));
+        assertEquals(2L * steps * steps + 2L * steps, BlastRayCaster.rayCount(R));
         // The original swept yaw to 4 pi and cast 4 x steps x steps rays.
         assertTrue(BlastRayCaster.rayCount(R) < 4L * steps * steps);
     }
@@ -138,20 +138,106 @@ class BlastRayCasterTest {
     @Test
     void theSmallCasterCratersAndStopsAtUnbreakableBlocks() {
         BlastGrid g = solid(BlastGrid.encode(0.5F));
-        int[] cells = BlastRayCaster.castGrid(g, R, 0.5, 0.5, 0.5, new Random(3), () -> false);
+        int[] cells = BlastRayCaster
+            .castGrid(g, R, 0.5, 0.5, 0.5, BlastRayCaster.gridEnergy(R), new Random(3), () -> false);
         assertTrue(cells.length > 100);
         assertTrue(farthest(cells) <= R + 1.0);
         assertEquals(
             0,
-            BlastRayCaster.castGrid(solid(BlastGrid.UNBREAKABLE), R, 0.5, 0.5, 0.5, new Random(3), () -> false).length);
+            BlastRayCaster.castGrid(
+                solid(BlastGrid.UNBREAKABLE),
+                R,
+                0.5,
+                0.5,
+                0.5,
+                BlastRayCaster.gridEnergy(R),
+                new Random(3),
+                () -> false).length);
+    }
+
+    /** Vanilla stone: setResistance(10) stores 30, and the engine reads it divided by 5. */
+    private static final float STONE = 6.0F;
+
+    /** Stone below the center cell's floor, air above: the center sits on the surface. */
+    private static BlastGrid halfSpace(int radius) {
+        BlastGrid g = new BlastGrid(radius);
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= -1; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    g.set(x, y, z, BlastGrid.encode(STONE));
+                }
+            }
+        }
+        return g;
+    }
+
+    private static int depth(int[] cells) {
+        int d = 0;
+        for (int p : cells) {
+            d = Math.max(d, -BlastPacking.y(p));
+        }
+        return d;
+    }
+
+    private static double hemisphere(int radius) {
+        return 2.0 / 3.0 * Math.PI * radius * radius * radius;
     }
 
     @Test
-    void theSmallCasterCratersStoneToAFewBlocks() {
-        // Stone is resistance 2: a radius-8 grid blast must clear a real crater, not one block.
-        BlastGrid g = solid(BlastGrid.encode(2.0F));
-        int[] cells = BlastRayCaster.castGrid(g, 8, 0.5, 0.5, 0.5, new Random(3), () -> false);
-        assertTrue(cells.length > 40, "cells " + cells.length);
+    void d59TheSmallCasterDigsTheRadiusIntoStone() {
+        // Vanilla stone (resistance 6): a radius-9 grid blast digs about 9 deep and fills over half a hemisphere.
+        int radius = 9;
+        for (long seed = 1; seed <= 3; seed++) {
+            int[] cells = BlastRayCaster.castGrid(
+                halfSpace(radius),
+                radius,
+                0.5,
+                0.5,
+                0.5,
+                BlastRayCaster.gridEnergy(radius),
+                new Random(seed),
+                () -> false);
+            assertTrue(depth(cells) >= radius - 2, "depth " + depth(cells));
+            assertTrue(cells.length >= 0.5 * hemisphere(radius), "cells " + cells.length);
+            assertTrue(farthest(cells) <= radius + 1.0);
+        }
+    }
+
+    @Test
+    void d59TheSphereCasterDigsTheRadiusIntoStone() {
+        for (int radius : new int[] { 9, 20 }) {
+            int[] cells = BlastRayCaster.cast(
+                halfSpace(radius),
+                radius,
+                0.5,
+                0.5,
+                0.5,
+                BlastRayCaster.defaultEnergy(radius),
+                new Random(1),
+                () -> false);
+            assertTrue(depth(cells) >= radius - 2, "r" + radius + " depth " + depth(cells));
+            // No spire of stone under the center: the column straight down is dug too.
+            java.util.Set<Integer> set = new HashSet<>();
+            for (int p : cells) {
+                set.add(p);
+            }
+            int column = 0;
+            while (set.contains(BlastPacking.pack(0, -1 - column, 0))) {
+                column++;
+            }
+            assertTrue(column >= radius - 2, "r" + radius + " column " + column);
+            assertTrue(cells.length >= 0.5 * hemisphere(radius), "r" + radius + " cells " + cells.length);
+            assertTrue(farthest(cells) <= radius + 1.0);
+        }
+    }
+
+    @Test
+    void d59TheOldEnergyBarelyScratchedStone() {
+        // The radius itself as the energy (the original) breaks a few dozen blocks, a few deep: the bug D59 fixes.
+        int radius = 9;
+        int[] cells = BlastRayCaster
+            .castGrid(halfSpace(radius), radius, 0.5, 0.5, 0.5, radius, new Random(1), () -> false);
+        assertTrue(cells.length < 0.1 * hemisphere(radius), "cells " + cells.length);
     }
 
     @Test

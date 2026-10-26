@@ -103,7 +103,8 @@ public final class BlastEngine {
             world.getGameRules()
                 .getGameRuleBooleanValue("mobGriefing"));
         jobs.add(new BlastJob(world, st, def, budget));
-        ProjectileExplosion.blastEffects(world, x, y, z, (float) radius);
+        // Only annihilating explosives get the long-range flash; every other blast uses the normal effects.
+        ProjectileExplosion.blastEffects(world, x, y, z, (float) radius, def.annihilates());
         touch(world);
         return true;
     }

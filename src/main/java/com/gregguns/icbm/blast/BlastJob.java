@@ -64,6 +64,8 @@ final class BlastJob implements BlastTask {
     private final BlastContext ctx;
 
     private BlastGrid grid;
+    /** Bytes held in {@link GridMemory}; zero while queued for memory or after the cast. */
+    private long reserved;
     private int nextSlab;
     private volatile boolean castDone;
     private volatile boolean cancelled;
@@ -156,6 +158,7 @@ final class BlastJob implements BlastTask {
     public boolean wantsWork() {
         switch (st.stage) {
             case SNAPSHOT:
+                return ensureGrid();
             case APPLY:
                 return true;
             case CAST:
@@ -194,16 +197,46 @@ final class BlastJob implements BlastTask {
             decide(new int[0]);
             return;
         }
-        int r = (int) Math.ceil(st.radius);
-        if (grid == null) {
-            grid = new BlastGrid(Math.max(1, Math.min(r, 255)));
-            nextSlab = -grid.radius();
+        if (!ensureGrid()) {
+            return;
         }
         fillSlab(nextSlab);
         nextSlab++;
         if (nextSlab > grid.radius()) {
             st.stage = BlastJobState.Stage.CAST;
             submitCast();
+        }
+    }
+
+    /**
+     * Reserves and allocates the cube. Returns false while the shared memory cap keeps the blast queued, so the
+     * scheduler skips it until other blasts finish their casts.
+     */
+    private boolean ensureGrid() {
+        if (grid != null) {
+            return true;
+        }
+        if (!st.breaksTerrain || def.shape() == BlastShape.NONE) {
+            return true;
+        }
+        int radius = Math.max(1, Math.min((int) Math.ceil(st.radius), 255));
+        long bytes = GridMemory.bytesFor(radius);
+        if (!GridMemory.shared()
+            .tryReserve(bytes, IcbmConfig.maxGridMemoryMb * 1024L * 1024L)) {
+            return false;
+        }
+        reserved = bytes;
+        grid = new BlastGrid(radius);
+        nextSlab = -radius;
+        return true;
+    }
+
+    private void releaseGrid() {
+        grid = null;
+        if (reserved > 0) {
+            GridMemory.shared()
+                .release(reserved);
+            reserved = 0L;
         }
     }
 
@@ -250,14 +283,17 @@ final class BlastJob implements BlastTask {
         final double fx = st.x - Math.floor(st.x);
         final double fy = st.y - Math.floor(st.y);
         final double fz = st.z - Math.floor(st.z);
-        final double energy = def.rayEnergy() > 0.0 ? def.rayEnergy() : BlastRayCaster.defaultEnergy(st.radius);
-        final long seed = world.rand.nextLong();
         final BlastShape shape = def.shape();
+        // D59: the default energy is calibrated to stone for both casters, so the radius is the crater radius in stone.
+        final double energy = def.rayEnergy() > 0.0 ? def.rayEnergy()
+            : shape == BlastShape.RAY_GRID ? BlastRayCaster.gridEnergy(st.radius)
+                : BlastRayCaster.defaultEnergy(st.radius);
+        final long seed = world.rand.nextLong();
         BlastWorkers.submit(() -> {
             try {
                 Random rng = new Random(seed);
                 int[] out = shape == BlastShape.RAY_GRID
-                    ? BlastRayCaster.castGrid(g, radius, fx, fy, fz, rng, () -> cancelled)
+                    ? BlastRayCaster.castGrid(g, radius, fx, fy, fz, energy, rng, () -> cancelled)
                     : BlastRayCaster.cast(g, radius, fx, fy, fz, energy, rng, () -> cancelled);
                 castResult = out;
             } catch (Throwable t) {
@@ -269,7 +305,7 @@ final class BlastJob implements BlastTask {
     }
 
     private void afterCast() {
-        grid = null;
+        releaseGrid();
         if (castFailure != null) {
             GregGuns.LOG.error("ICBM blast {} ray cast failed", def.id(), castFailure);
             finish();
@@ -438,7 +474,7 @@ final class BlastJob implements BlastTask {
         finished = true;
         cancelled = true;
         st.stage = BlastJobState.Stage.DONE;
-        grid = null;
+        releaseGrid();
         try {
             def.effect()
                 .onFinish(ctx);

@@ -41,9 +41,15 @@ public class IcbmConfig {
     public static int maxActiveBlasts = 16;
 
     @Config.Comment({ "Largest blast radius in blocks; bigger ones are clamped. The ray cast copies a cube of",
-        "blocks this wide, so memory grows with the cube (96 is about 14 MB). Range 8 to 200. Default: 96." })
+        "blocks this wide, so memory grows with the cube (96 is about 21 MB; see maxGridMemoryMb). Range 8 to 200. Default: 96." })
     @Config.RangeInt(min = 8, max = 200)
     public static int maxBlastRadius = 96;
+
+    @Config.Comment({ "Total megabytes the ray-cast cubes of all running blasts may hold. A blast that would go past",
+        "this waits in the queue until others finish casting (a lone blast always runs). Range 16 to 4096.",
+        "Default: 256." })
+    @Config.RangeInt(min = 16, max = 4096)
+    public static int maxGridMemoryMb = 256;
 
     @Config.Comment({ "Whether blocks destroyed by a blast drop items. Off avoids thousands of item entities.",
         "Default: false." })
