@@ -140,7 +140,9 @@ public final class MTEEmpTower extends MTETieredMachineBlock
     }
 
     private String local(int i) {
-        return StatCollector.translateToLocal(mDescriptionArray[i]);
+        String text = StatCollector.translateToLocal(mDescriptionArray[i]);
+        // The pulse line carries the configured device cap (%s), as the lang file cannot know it.
+        return text.contains("%s") ? String.format(text, IcbmConfig.empMaxDevices) : text;
     }
 
     // --- energy ---------------------------------------------------------------------------------------------------
@@ -289,18 +291,22 @@ public final class MTEEmpTower extends MTETieredMachineBlock
             return gate;
         }
         long cost = cost();
-        lastResult = EmpPulse.fire(
-            base.getWorld(),
-            base.getXCoord() + 0.5,
-            base.getYCoord() + 0.5,
-            base.getZCoord() + 0.5,
-            radius(),
-            mode,
-            (net.minecraft.tileentity.TileEntity) base);
-        base.decreaseStoredEnergyUnits(cost, true);
-        cooldown.startCooldown(EmpRules.COOLDOWN_TICKS);
-        pulses++;
-        changed();
+        try {
+            lastResult = EmpPulse.fire(
+                base.getWorld(),
+                base.getXCoord() + 0.5,
+                base.getYCoord() + 0.5,
+                base.getZCoord() + 0.5,
+                radius(),
+                mode,
+                (net.minecraft.tileentity.TileEntity) base);
+        } finally {
+            // A pulse that failed midway still went out: the cost and the cooldown stand, or the next edge is free.
+            base.decreaseStoredEnergyUnits(cost, true);
+            cooldown.startCooldown(EmpRules.COOLDOWN_TICKS);
+            pulses++;
+            changed();
+        }
         return gate;
     }
 

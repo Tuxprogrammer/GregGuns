@@ -30,6 +30,18 @@ class ContactTest {
     }
 
     @Test
+    void aFriedMissileLandsWhereItsDriftCarriesIt() {
+        // 100 blocks up, drifting 1 block per tick in +X, gravity 0.04, terminal 3: lands far short of an old aim.
+        double[] p = ContactMath.friedImpact(0, 100, 0, 1, 0, 0, 0.04, 3.0, 0);
+        assertTrue(p[0] > 60 && p[0] < 80, "x=" + p[0]);
+        assertEquals(0, p[1], 1e-9);
+        // Already on the ground: it lands where it is.
+        assertEquals(5, ContactMath.friedImpact(5, 0, 2, 1, 1, 0, 0.04, 3.0, 0)[0], 1e-9);
+        // Straight down: no drift, same column.
+        assertEquals(7, ContactMath.friedImpact(7, 300, 0, 0, 0, 0, 0.04, 3.0, 0)[0], 1e-9);
+    }
+
+    @Test
     void aNegativeRadiusProtectsNothing() {
         assertFalse(ContactMath.incoming(0, 0, 0, 0, -1));
     }
