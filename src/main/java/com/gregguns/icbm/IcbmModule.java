@@ -62,6 +62,10 @@ public final class IcbmModule implements GregGunsModule {
             com.gregguns.icbm.production.ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.emp.EmpScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.tools.ToolRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
+            // The OpenComputers scenario exists only with the mod; its class names OC types.
+            if (cpw.mods.fml.common.Loader.isModLoaded("OpenComputers")) {
+                com.gregguns.icbm.compat.oc.OcScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            }
         }
     }
 
