@@ -730,7 +730,10 @@ final class NuclearScenarios {
             int n = 0;
             for (int dx = -span; dx <= span; dx++) {
                 for (int dz = -span; dz <= span; dz++) {
-                    for (int dy = 6; dy >= -8; dy--) {
+                    // The test plot floats high over the natural ground, and fallout lands on whatever surface the
+                    // column
+                    // has, so the scan reaches far below the origin.
+                    for (int dy = 6; dy >= -64; dy--) {
                         if (w.getBlock(ox + dx, oy + dy, oz + dz) == FalloutBlocks.goo()) {
                             w.setBlock(ox + dx, oy + dy, oz + dz, Blocks.air, 0, 2);
                             n++;

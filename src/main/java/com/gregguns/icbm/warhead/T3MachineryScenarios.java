@@ -125,6 +125,8 @@ final class T3MachineryScenarios {
     private static final class AntiGravFlight implements Scenario {
 
         private static final int REGION = 48;
+        /** Flying blocks from an earlier scenario still in the air: not this blast's, so never counted. */
+        private static final java.util.Set<Integer> SEEN = new java.util.HashSet<>();
 
         @Override
         public String name() {
@@ -175,7 +177,7 @@ final class T3MachineryScenarios {
         private static int flying(World w) {
             int n = 0;
             for (Object o : w.loadedEntityList) {
-                if (o instanceof EntityFlyingBlock) {
+                if (o instanceof EntityFlyingBlock && !SEEN.contains(((Entity) o).getEntityId())) {
                     n++;
                 }
             }
@@ -209,7 +211,8 @@ final class T3MachineryScenarios {
             final int quartzBefore = count(w, ox, oy, oz);
             // Items already lying about (an earlier run's leftovers) are not ours: only items new since the blast
             // count.
-            final java.util.Set<Integer> seen = new java.util.HashSet<>();
+            final java.util.Set<Integer> seen = SEEN;
+            seen.clear();
             for (Object o : w.loadedEntityList) {
                 seen.add(((Entity) o).getEntityId());
             }
@@ -272,6 +275,17 @@ final class T3MachineryScenarios {
                     "no block is duplicated: " + (quartzAfter + itemsAfter)
                         + " against "
                         + (quartzBefore + itemsBefore));
+                // The landed blocks are not tracked by the scenario context: take them away so later scenarios on this
+                // plot find the ground as it was.
+                for (int dx = -REGION; dx <= REGION; dx++) {
+                    for (int dz = -REGION; dz <= REGION; dz++) {
+                        for (int dy = -64; dy <= 100; dy++) {
+                            if (w.getBlock(ox + dx, oy + dy, oz + dz) == Blocks.quartz_block) {
+                                w.setBlock(ox + dx, oy + dy, oz + dz, Blocks.air, 0, 2);
+                            }
+                        }
+                    }
+                }
                 early.note("peak flying blocks " + peak[0] + " origin " + ox + "," + oy + "," + oz);
                 return early.build();
             });
