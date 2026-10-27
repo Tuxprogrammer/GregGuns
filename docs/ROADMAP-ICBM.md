@@ -294,7 +294,8 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 **Entry gate:** I5 done.
 
 **Scope:**
-- **Abandoned Missile Silos** (D17): huge, mostly underground, with the O, D and Closed surface variants. Rare, config-gated, on the M8 placement system, and never cascading.
+- **Abandoned Missile Silos** (D17, D128): a flat underground complex of about 240 x 240 blocks, with a central hall, wings and randomly picked rooms around one to four real silos. The silo shafts take the O, D and Closed surface variants. Rare, config-gated, on the M8 placement system, and never cascading.
+- **Real machines in the rooms** (D129), within the D38 ceiling; reviewed at the beta playthrough.
 - **Activity levels** (D36): abandoned, partly abandoned and operational, each with its own damage pass built into the layout.
 - **A silo guard spawner block** with shooting GregGuns NPCs (Army Soldier, Commando, Stormtrooper), so operational silos are dungeons to clear and take over.
 - **Loot ceilings and planet silos** (D38):
@@ -306,7 +307,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** screenshots of each activity level and of silos on several planets, the `icbm-silos` sheet, and a silo quest.
 
 **Exit gate:**
-- [ ] Silos generate without cascading on the Overworld and on at least one planet of every rocket tier, and match the D17 layout. Scenario per dimension.
+- [ ] Silos generate without cascading on the Overworld and on at least one planet of every rocket tier, and match the D128 layout. Scenario per dimension.
 - [ ] Each activity level generates with its damage, spawner count and loot. Guards spawn and attack, and a broken spawner stays broken. Scenario.
 - [ ] No loot exceeds the dimension's ceiling (or, on Ross128, the silo's rolled ceiling), checked over many generated chests. Unit test plus scenario.
 - [ ] `icbm-silos` and the silo quest have landed, and the owner has been told.
