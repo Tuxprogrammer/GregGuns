@@ -81,7 +81,7 @@
 - **GGI-01-01** With OpenComputers absent, every ICBM machine loads and works, and no OC class is touched.
 - **GGI-01-02** Each machine in the components table shows up as the named component when connected to an OC computer.
 - **GGI-01-03** No callback that changes the world runs off the server thread.
-- **GGI-01-04** `launch()` and `fire()` enforce the same checks as the GUI and redstone paths (power, fuel, range, missile present, cooldown), and return `false, "<reason>"` on refusal. A computer can never bypass a check a player can't.
+- **GGI-01-04** `launch()` and `fire()` enforce the same checks as the GUI and redstone paths (power, fuel, range, missile present, cooldown), and return `false, "<reason>"` on refusal. A call to a Launch Control or the tower passes every check the machine makes (power, cooldown included). A call to a Missile Silo passes the silo's own checks (formed, missile, fuel, range, target, countdown), but a silo has no EU shot or cooldown of its own (those belong to the Launch Control), so it launches without them (D127).
 - **GGI-01-05** Signals are sent on state transitions only. An unchanged state sends nothing.
 - **GGI-01-06** `getContacts()` returns record tables with the fields listed, with `incoming` decided by the predicted impact point (D14).
 - **GGI-01-07** The Golden Dome floppy exists only when OpenComputers is loaded, is crafted in the GT Assembler as specified, and is read-only.

@@ -240,14 +240,14 @@ public final class MTEAirDefense extends DefenseBlock implements AirDefenseView 
         }
     }
 
-    /** Takes a SAM and the shot's EU and sends it at the missile; false when either is missing. */
+    /** Takes the shot's EU, then a SAM, and sends it at the missile; false when either is missing. */
     private boolean launch(IGregTechTileEntity base, World w, int missileId) {
-        if (!takeSam()) {
+        if (samCount() <= 0 || !base.decreaseStoredEnergyUnits(SamRules.EU_PER_SHOT, false)) {
             return false;
         }
-        if (!base.decreaseStoredEnergyUnits(SamRules.EU_PER_SHOT, false)) {
-            // Put the SAM back: the shot was refused for want of EU.
-            restoreSam();
+        if (!takeSam()) {
+            // Cannot happen after the count above; give the shot's EU back rather than lose it.
+            base.increaseStoredEnergyUnits(SamRules.EU_PER_SHOT, true);
             return false;
         }
         double bx = base.getXCoord() + 0.5;
@@ -260,20 +260,6 @@ public final class MTEAirDefense extends DefenseBlock implements AirDefenseView 
         cooldown = SamRules.FIRE_INTERVAL;
         this.fired++;
         return true;
-    }
-
-    private void restoreSam() {
-        for (int i = SLOT_SAM; i < SLOT_STICK; i++) {
-            ItemStack s = getStackInSlot(i);
-            if (s == null) {
-                setInventorySlotContents(i, new ItemStack(DefenseMachines.samItem()));
-                return;
-            }
-            if (isSam(s) && s.stackSize < s.getMaxStackSize()) {
-                s.stackSize++;
-                return;
-            }
-        }
     }
 
     // --- AirDefenseView (OpenComputers) -------------------------------------------------------------------------
@@ -361,11 +347,15 @@ public final class MTEAirDefense extends DefenseBlock implements AirDefenseView 
         hits++;
     }
 
-    /** @return how many SAMs are in the air at that missile */
+    /**
+     * @return how many SAMs are in the air at that missile and still closing on it (D126); a SAM whose chunk unloaded
+     *         fizzles itself, so it is not counted or flown on
+     */
     static int samsAt(World w, int missileId) {
         int n = 0;
         for (Object o : w.loadedEntityList) {
-            if (o instanceof EntitySam && !((EntitySam) o).isDead && ((EntitySam) o).targetId() == missileId) {
+            EntitySam sam = o instanceof EntitySam ? (EntitySam) o : null;
+            if (sam != null && !sam.isDead && sam.targetId() == missileId && sam.closing()) {
                 n++;
             }
         }

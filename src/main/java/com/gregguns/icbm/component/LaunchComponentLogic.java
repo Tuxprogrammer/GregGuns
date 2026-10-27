@@ -11,8 +11,9 @@ import com.gregguns.icbm.missile.MissileStatus;
 /**
  * The calls of the {@code gg_silo} and {@code gg_launch_control} components (golden-dome.md), as plain Java over a
  * {@link LaunchView}. The OpenComputers class only unpacks arguments. {@link #launch()} goes through the machine's own
- * fire path, the same gate as the button and redstone, so a computer can never bypass a check a player cannot
- * (GGI-01-04): the reply is {@code true} only when the missile went, otherwise {@code false} and the status word the
+ * fire path, the same gate as the button and redstone, so a computer passes every check the machine makes
+ * (GGI-01-04; a silo has no EU shot or cooldown of its own, D127): the reply is {@code true} only when the missile
+ * went, otherwise {@code false} and the status word the
  * GUI shows (the lowercase {@link ControlStatus} name). Server thread only (GGI-01-03).
  */
 // Spec: docs/gregguns-icbm-spec/01-core/golden-dome.md (gg_silo, GGI-01-02 to 05)

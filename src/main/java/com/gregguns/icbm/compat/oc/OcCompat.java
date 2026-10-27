@@ -33,8 +33,11 @@ public final class OcCompat {
         Driver.add(
             new ViewDriver<>(
                 MTELaunchControl.class,
-                v -> new LaunchEnvironment(v, LaunchComponentLogic.LAUNCH_CONTROL)));
-        Driver.add(new ViewDriver<>(MTEMissileSilo.class, v -> new LaunchEnvironment(v, LaunchComponentLogic.SILO)));
+                lookup -> new LaunchEnvironment(lookup::get, LaunchComponentLogic.LAUNCH_CONTROL)));
+        Driver.add(
+            new ViewDriver<>(
+                MTEMissileSilo.class,
+                lookup -> new LaunchEnvironment(lookup::get, LaunchComponentLogic.SILO)));
         // The radars and the battery implement these views at integration (A's MTERadar, MTERadarTower, MTEAirDefense).
         Driver.add(new ViewDriver<>(RadarView.class, RadarEnvironment::new));
         Driver.add(new ViewDriver<>(AirDefenseView.class, AirDefenseEnvironment::new));

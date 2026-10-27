@@ -51,6 +51,22 @@ public final class ArcPath {
         this.apex = Math.min(APEX_MAX, APEX_BASE + APEX_PER_BLOCK * flat);
     }
 
+    /**
+     * The speed a missile has at the end of its arc when the target is level with where the arc began: the horizontal
+     * speed and the vertical speed {@code 4 * apex / ticks} of the parabola's last step, as a magnitude. It is the
+     * steepest dive a flight of that length makes (a target below the arc's start dives faster still; a missile never
+     * flies a level target faster than this), and what the SAM's speed must beat (D126).
+     *
+     * @param speed horizontal blocks per tick, above 0
+     * @param flat  flat distance to the target, blocks
+     * @return the magnitude of the velocity of the last step, blocks per tick
+     */
+    public static double terminalSpeed(double speed, double flat) {
+        ArcPath p = new ArcPath(0.0, 0.0, 0.0, flat, 0.0, 0.0, speed);
+        double[] v = p.velocity(p.ticks() - 1);
+        return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    }
+
     /** @return the tick at which the path reaches the target's height and column */
     public int ticks() {
         return ticks;

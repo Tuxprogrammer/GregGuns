@@ -27,6 +27,66 @@ class SamRulesTest {
         assertTrue(SamRules.SPEED > 1.6);
     }
 
+    /** D126: the SAM beats the steepest dive any tier makes on its shortest flight, from the arc itself. */
+    @Test
+    void aSamOutrunsTheSteepestDiveOfEveryTierAtItsShortestRange() {
+        for (com.gregguns.icbm.missile.MissileTier t : com.gregguns.icbm.missile.MissileTier.values()) {
+            double worst = 0.0;
+            for (int flat = t.minRange(); flat <= Math.min(t.baseMaxRange(), 3000); flat++) {
+                worst = Math.max(worst, com.gregguns.icbm.missile.ArcPath.terminalSpeed(t.speed(), flat));
+            }
+            assertTrue(SamRules.SPEED > worst, t + " dives at " + worst + ", SAM flies " + SamRules.SPEED);
+        }
+    }
+
+    /** A 4-blocks-per-tick dive (the review's case) is caught: the lead aims below, and the sweep never skips it. */
+    @Test
+    void aSamCatchesAMissileDivingAtFourBlocksPerTick() {
+        double sx = 0;
+        double sy = 0;
+        double sz = 0;
+        double mx = 60;
+        double my = 300;
+        double mz = 0;
+        double[] v = { -1.5, -3.7, 0 };
+        boolean hit = false;
+        for (int tick = 0; tick < SamRules.LIFETIME && !hit; tick++) {
+            double[] aim = SamRules.intercept(sx, sy, sz, mx, my, mz, v[0], v[1], v[2]);
+            double[] p = SamRules.step(sx, sy, sz, aim[0], aim[1], aim[2]);
+            double nx = mx + v[0];
+            double ny = my + v[1];
+            double nz = mz + v[2];
+            hit = SamRules.bursts(SamRules.closestApproach(sx - mx, sy - my, sz - mz, p[0] - nx, p[1] - ny, p[2] - nz));
+            sx = p[0];
+            sy = p[1];
+            sz = p[2];
+            mx = nx;
+            my = ny;
+            mz = nz;
+        }
+        assertTrue(hit, "caught");
+    }
+
+    @Test
+    void theInterceptLeadsAMovingTargetAndAimsAtAStationaryOne() {
+        double[] still = SamRules.intercept(0, 0, 0, 30, 10, 0, 0, 0, 0);
+        assertEquals(30.0, still[0], 1e-9);
+        double[] lead = SamRules.intercept(0, 0, 0, 90, 0, 0, 0, 0, 3.0);
+        // 3 sideways per tick, SAM at 9: the meeting is where |(90, 3t)| = 9t, so t = 90 / sqrt(72) ~ 10.6.
+        assertEquals(3.0 * 90.0 / Math.sqrt(72.0), lead[2], 1e-6);
+        // A target faster than the SAM has no solution: aim at it.
+        double[] fast = SamRules.intercept(0, 0, 0, 10, 0, 0, 20, 0, 0);
+        assertEquals(10.0, fast[0], 1e-9);
+    }
+
+    @Test
+    void theSweepSeesAPassThatSkipsTheSphereBetweenSamples() {
+        // Head-on at a closing speed of 14 per tick: 7 blocks before, 7 beyond. Neither end is inside 3.5.
+        assertFalse(SamRules.bursts(7.0));
+        assertTrue(SamRules.bursts(SamRules.closestApproach(7, 0, 0, -7, 0, 0)));
+        assertFalse(SamRules.bursts(SamRules.closestApproach(7, 5, 0, -7, 5, 0)));
+    }
+
     @Test
     void theStepMovesOneSpeedTowardTheTargetAndNeverPastIt() {
         double[] p = SamRules.step(0, 0, 0, 30, 0, 0);

@@ -19,14 +19,14 @@
 | A held redstone signal re-fires at every cooldown end | Fires once per **rising** edge of redstone or of GT's work-allowed flag (a machine controller cover) | Same rule as the Launch Control (ICBM-04-20) |
 | A missile that is "triggered" can survive the pulse (ICBM-05-14) | It detonates and is removed in one step | ICBM-05-14 |
 | EMP smoke particles spawned on the server never show (ICBM-05-13) | Particles and the sound are sent to the clients | ICBM-05-13 |
-| Radio frequency and radio messages | None. Redstone, a cover, a computer, or the remote detonator ([handheld-tools.md](handheld-tools.md)) | D13 |
+| Radio frequency and radio messages | None. Redstone, a cover or a computer. The remote detonator only lights warheads, never the tower (D118, [handheld-tools.md](handheld-tools.md)) | D13 |
 
 ## The block
 
 - GT single block, **EV**, MTE ID **20146** (`GregGunsMTEIDs.EMP_TOWER`), English name **EMP Tower**. No item slots.
 - Energy: one input, two amps, from any side. It stores the cost of a pulse at the **largest** allowed radius (25 x 100^2 = 250,000 EU at the default), so any radius fits.
 - Recipe: Assembler, EV, 60 s, circuit 24: EV hull, EV field generator, 2 EV emitters, 4 HV lithium batteries, 2 Data circuits. Recycling returns the hull's titanium. Tier-gated at EV; nothing below HV is ICBM (D69).
-- Cost reading (D63 style): the pulse at the default radius 60 costs 90,000 EU, about 44 seconds of one EV input, and the tower waits 10 seconds between pulses.
+- Cost reading (D63 style): the pulse at the default radius 60 costs 90,000 EU, about 44 ticks (about 2.2 seconds) of one EV input at 2048 EU/t, and the tower waits 10 seconds between pulses.
 
 ## The pulse
 
@@ -41,7 +41,7 @@
 
 ## Triggers and the screen
 
-- Fire button, redstone rising edge, rising edge of the work-allowed flag, the OpenComputers `gg_emp_tower` component, and the remote detonator.
+- Fire button, redstone rising edge, rising edge of the work-allowed flag, and the OpenComputers `gg_emp_tower` component.
 - ModularUI2 panel: a dark status screen (state, EU against cost, reach, last pulse), the radius field with the maximum, a mode button that cycles `all`, `missiles`, `machines`, and the Fire button, gray with the reason as its tooltip until the gate passes. Every action re-checks the pressing player (alive, within 8 blocks); the radius is parsed and clamped on the server.
 - Tooltip per D41 (summary, shift details, "Added by").
 

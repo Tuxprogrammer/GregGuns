@@ -42,7 +42,7 @@ Queries: `Contacts.all(world)`, `Contacts.within(world, x, z, range)` (nearest f
 | Range, flat circle | 128 | 256 | IV 512, LuV 768, ZPM 1024, UV 1280, UHV and up 1536 |
 | Power | quarter amp while scanning (HV 128 EU/t, EV 512 EU/t) | | quarter amp of the weakest hatch |
 | Scan | every 5 ticks | | every 5 ticks, while the cycle runs |
-| Protected radius | default 64, min 8, max the range; typed in the GUI | | default 64 (not yet settable: no screen; D94) |
+| Protected radius | default 64, min 8, max the range; typed in the GUI | | default 64; the tower's R panel sets it (D99, "Tower screen" below) |
 
 Nothing below HV (D69). The tower needs an IV or better hatch; a lower one fails with a message and the tower stays off.
 

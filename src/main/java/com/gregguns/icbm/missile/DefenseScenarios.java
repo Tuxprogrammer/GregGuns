@@ -369,6 +369,10 @@ public final class DefenseScenarios {
                 out.check(seen.batterySignal == 15, "the battery raised redstone 15 while engaging");
                 out.check(seen.sam, "a SAM flew");
                 out.check(m.isDead, "the missile is gone");
+                // Only the shot-down path ends a flying missile with no hit points left; a fizzled SAM and a missile
+                // that ended on terrain or a timeout would leave them.
+                out.check(m.health() <= 0.0F, "the SAM made the kill (missile health " + m.health() + ")");
+                out.check(b.hits() >= 1, "the battery counted the hit (" + b.hits() + ")");
                 out.check(
                     seen.lastZ < target - 20,
                     "the missile was shot down short of its target (last z " + seen.lastZ + ")" + seen.timeline());
@@ -1000,7 +1004,7 @@ public final class DefenseScenarios {
         }
     }
 
-    /** The radar gun stores what it aims at and a Launch Control takes it. */
+    /** The radar gun stores what it aims at and clears on sneak. */
     private static final class Gun extends Base {
 
         @Override
@@ -1010,7 +1014,7 @@ public final class DefenseScenarios {
 
         @Override
         public String description() {
-            return "The radar gun stores the block it aims at from the server's trace, clears on sneak, and copies its target to a Launch Control.";
+            return "The radar gun stores the block it aims at from the server's trace and clears on sneak.";
         }
 
         @Override
@@ -1052,7 +1056,7 @@ public final class DefenseScenarios {
         }
     }
 
-    /** The radius and the battery cooldown survive a save and reload; a damaged link reads as none. */
+    /** The radius survives a save and reload; a new battery has no link. */
     private static final class SaveReload extends Base {
 
         @Override
@@ -1062,7 +1066,7 @@ public final class DefenseScenarios {
 
         @Override
         public String description() {
-            return "A radar's protected radius and a battery's cooldown survive a save and reload of the machine.";
+            return "A radar's protected radius survives a save and reload of the machine, and a new battery starts without a link.";
         }
 
         @Override

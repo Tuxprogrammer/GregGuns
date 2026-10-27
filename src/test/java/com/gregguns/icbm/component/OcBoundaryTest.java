@@ -32,7 +32,7 @@ class OcBoundaryTest {
 
     @Test
     void theMachinesNameNoOpenComputersType() throws IOException {
-        for (String dir : new String[] { "emp", "control", "silo", "missile", "warhead" }) {
+        for (String dir : new String[] { "emp", "control", "silo", "missile", "warhead", "defense", "tools" }) {
             try (DirectoryStream<Path> files = Files.newDirectoryStream(ICBM.resolve(dir), "*.java")) {
                 for (Path f : files) {
                     String src = new String(Files.readAllBytes(f), StandardCharsets.UTF_8);
@@ -43,18 +43,49 @@ class OcBoundaryTest {
     }
 
     @Test
-    void everyOpenComputersClassIsInTheCompatPackageAndGuardedByTheModGate() throws IOException {
+    void theModGateIsInTheModuleNotInAJavadoc() throws IOException {
+        String module = new String(Files.readAllBytes(ICBM.resolve("IcbmModule.java")), StandardCharsets.UTF_8);
+        assertTrue(module.contains("Loader.isModLoaded(\"OpenComputers\")"), "the module checks the mod first");
+    }
+
+    /**
+     * GGI-01-02: every GT tile is also an energy container that GTNH's OpenComputers names {@code gt_energyContainer}
+     * at priority -1, so each environment must be a {@code NamedBlock} with a higher priority or the Adapter would
+     * never show {@code gg_*}. Every environment extends the one base that implements it.
+     */
+    @Test
+    void everyEnvironmentIsANamedBlockThatOutranksTheGtEnergyDriver() throws IOException {
+        Path dir = ICBM.resolve("compat/oc");
+        String base = new String(Files.readAllBytes(dir.resolve("ViewEnvironment.java")), StandardCharsets.UTF_8);
+        assertTrue(base.contains("implements NamedBlock"), "the base is the NamedBlock");
+        assertTrue(base.contains("PRIORITY = 10"), "above gt_energyContainer's -1");
+        try (DirectoryStream<Path> files = Files.newDirectoryStream(dir, "*Environment.java")) {
+            int n = 0;
+            for (Path f : files) {
+                if (f.getFileName()
+                    .toString()
+                    .equals("ViewEnvironment.java")) {
+                    continue;
+                }
+                n++;
+                String src = new String(Files.readAllBytes(f), StandardCharsets.UTF_8);
+                assertTrue(src.contains("extends ViewEnvironment<"), f + " must extend the named base");
+            }
+            assertTrue(n == 4, "emp, launch, radar and air defense");
+        }
+    }
+
+    /**
+     * GGI-01-05: OpenComputers prepends the sender's address to a {@code computer.signal}, so a signal that adds its
+     * own would carry it twice and push the contact id out of the third slot.
+     */
+    @Test
+    void noSignalAddsItsOwnAddress() throws IOException {
         try (DirectoryStream<Path> files = Files.newDirectoryStream(ICBM.resolve("compat/oc"), "*.java")) {
             for (Path f : files) {
                 String src = new String(Files.readAllBytes(f), StandardCharsets.UTF_8);
-                if (f.getFileName()
-                    .toString()
-                    .equals("OcCompat.java")) {
-                    assertTrue(src.contains("Loader.isModLoaded"), "OcCompat is the one gate");
-                }
+                assertFalse(src.contains("node().address()"), f + " must not pass an address in a signal");
             }
         }
-        String module = new String(Files.readAllBytes(ICBM.resolve("IcbmModule.java")), StandardCharsets.UTF_8);
-        assertTrue(module.contains("Loader.isModLoaded(\"OpenComputers\")"), "the module checks the mod first");
     }
 }

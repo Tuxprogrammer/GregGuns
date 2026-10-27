@@ -124,6 +124,7 @@ public final class DefenseMachines {
     private static void addRecipes() {
         try {
             machine(
+                Materials.StainlessSteel,
                 GregGunsMTEIDs.RADAR_HV,
                 25,
                 600,
@@ -133,6 +134,7 @@ public final class DefenseMachines {
                 ItemList.Emitter_HV.get(1),
                 circuits("Advanced", 2, Tier.HV));
             machine(
+                Materials.Titanium,
                 GregGunsMTEIDs.RADAR_EV,
                 26,
                 600,
@@ -142,6 +144,7 @@ public final class DefenseMachines {
                 ItemList.Emitter_EV.get(1),
                 circuits("Data", 2, Tier.EV));
             machine(
+                Materials.TungstenSteel,
                 GregGunsMTEIDs.RADAR_TOWER,
                 27,
                 1200,
@@ -151,6 +154,7 @@ public final class DefenseMachines {
                 ItemList.Emitter_IV.get(2),
                 circuits("Elite", 2, Tier.IV));
             machine(
+                Materials.StainlessSteel,
                 GregGunsMTEIDs.AIR_DEFENSE,
                 28,
                 900,
@@ -237,7 +241,7 @@ public final class DefenseMachines {
             new ItemData(Materials.StainlessSteel, OrePrefixes.plate.getMaterialAmount() * 2));
     }
 
-    private static void machine(int id, int circuit, int duration, long eut, ItemStack... inputs) {
+    private static void machine(Materials hull, int id, int circuit, int duration, long eut, ItemStack... inputs) {
         for (ItemStack s : inputs) {
             if (s == null) {
                 GregGuns.LOG.error("Skipping the recipe of MTE {}: a GT input did not resolve", id);
@@ -251,9 +255,8 @@ public final class DefenseMachines {
             .duration(duration)
             .eut(eut)
             .addTo(RecipeMaps.assemblerRecipes);
-        // The hull's casing comes back; electronics do not (D44).
-        GTOreDictUnificator.addItemData(
-            stack(id, 1),
-            new ItemData(Materials.StainlessSteel, OrePrefixes.plate.getMaterialAmount() * 8));
+        // The hull's own casing plates come back (HV stainless steel, EV titanium, IV tungstensteel); electronics do
+        // not (D44).
+        GTOreDictUnificator.addItemData(stack(id, 1), new ItemData(hull, OrePrefixes.plate.getMaterialAmount() * 8));
     }
 }
