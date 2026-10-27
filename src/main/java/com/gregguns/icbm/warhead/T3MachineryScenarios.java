@@ -50,7 +50,7 @@ final class T3MachineryScenarios {
 
         @Override
         public String description() {
-            return "A full ender warhead sends a cow near the center to the forced landing spot 60 blocks away, in the"
+            return "A full ender warhead sends a cow near the center to the forced landing spot 28 blocks away, in the"
                 + " same dimension, with no fall damage and no crater; a cow outside the radius stays.";
         }
 
@@ -74,20 +74,12 @@ final class T3MachineryScenarios {
                     ctx.setBlock(dx, -1, dz, Blocks.stone, 0);
                 }
             }
-            // The landing spot is outside the cleared area; load its chunk and give it a floor.
-            final int tx = ox + 60;
-            final int tz = oz;
-            w.getChunkFromBlockCoords(tx, tz);
-            for (int dx = -3; dx <= 3; dx++) {
-                for (int dz = -3; dz <= 3; dz++) {
-                    w.setBlock(tx + dx, oy - 1, tz + dz, Blocks.stone, 0, 2);
-                    for (int dy = 0; dy < 4; dy++) {
-                        w.setBlock(tx + dx, oy + dy, tz + dz, Blocks.air, 0, 2);
-                    }
-                }
-            }
+            // The landing spot is inside the loaded plot, outside the pull (28 blocks from the center): a chunk
+            // nothing keeps loaded would unload under the blast, which then stops, by design.
+            final int tx = ox - 20;
+            final int tz = oz - 20;
             EntityCow near = ctx.spawnAt(new EntityCow(w), ox + 4.5, oy, oz + 0.5, 0, 0);
-            EntityCow far = ctx.spawnAt(new EntityCow(w), ox - 24.5, oy, oz - 24.5, 0, 0);
+            EntityCow far = ctx.spawnAt(new EntityCow(w), ox + 24.5, oy, oz - 24.5, 0, 0);
             final double farX = far.posX;
             ExplosiveDef def = Explosives.get("ender");
             Effects.forceEnderTarget(tx, oy, tz);
@@ -97,8 +89,6 @@ final class T3MachineryScenarios {
                 return ScenarioResult.fail(name(), "the engine did not accept the blast");
             }
             return ScenarioResult.pending(name(), 400, ticks -> {
-                // Nothing else keeps the landing chunk: a chunk without a player or ticket unloads on its own.
-                w.getChunkFromBlockCoords(tx, tz);
                 if (ticks < 200) {
                     return null;
                 }
