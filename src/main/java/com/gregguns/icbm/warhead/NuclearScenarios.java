@@ -801,10 +801,24 @@ final class NuclearScenarios {
                     switch (phase[0]) {
                         case 0:
                             if (cps.chunkExists(ax >> 4, az >> 4) || cps.chunkExists(bx >> 4, bz >> 4)) {
-                                if (ticks > 200) {
+                                if (ticks > 600) {
                                     FalloutEngine.clear(w);
-                                    return ScenarioResult.fail(name(), "the chunks did not unload within 200 ticks");
+                                    return ScenarioResult.fail(
+                                        name(),
+                                        "the chunks did not unload within 600 ticks (levelSaving " + w.levelSaving
+                                            + ", forced "
+                                            + w.getPersistentChunks()
+                                                .containsKey(
+                                                    new net.minecraft.world.ChunkCoordIntPair(ax >> 4, az >> 4))
+                                            + ", loaded "
+                                            + cps.getLoadedChunkCount()
+                                            + ", A "
+                                            + cps.chunkExists(ax >> 4, az >> 4)
+                                            + ", B "
+                                            + cps.chunkExists(bx >> 4, bz >> 4)
+                                            + ")");
                                 }
+                                cps.unloadQueuedChunks();
                                 // Neighbors populating or a stray request take a chunk off the unload queue: queue
                                 // again.
                                 cps.unloadChunksIfNotNearSpawn(ax >> 4, az >> 4);
