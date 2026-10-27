@@ -96,7 +96,7 @@ public final class MissileGcScenarios {
             }
             ctx.setBlock(2, 0, 0, GCBlocks.fuelLoader, 0);
             boolean terrain = IcbmConfig.terrainDamageT1;
-            IcbmConfig.terrainDamageT1 = false;
+            IcbmConfig.terrainDamageT1 = true; // the hit is read off the platform, so the blast must break terrain
             World w = ctx.world();
             int cx = ctx.originX();
             int cy = ctx.originY();
