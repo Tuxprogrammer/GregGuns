@@ -26,10 +26,25 @@ final class AntidoteScenarios {
         registry.register(new Dose());
     }
 
+    /** A fake player has no network handler, which vanilla's potion callbacks reach for. */
+    private static final class Patient extends FakePlayer {
+
+        Patient(WorldServer world, GameProfile profile) {
+            super(world, profile);
+        }
+
+        @Override
+        protected void onNewPotionEffect(PotionEffect effect) {}
+
+        @Override
+        protected void onChangedPotionEffect(PotionEffect effect, boolean added) {}
+
+        @Override
+        protected void onFinishedPotionEffect(PotionEffect effect) {}
+    }
+
     private static FakePlayer player(ScenarioContext ctx, String name) {
-        return new FakePlayer(
-            (WorldServer) ctx.world(),
-            new GameProfile(UUID.nameUUIDFromBytes(name.getBytes()), name));
+        return new Patient((WorldServer) ctx.world(), new GameProfile(UUID.nameUUIDFromBytes(name.getBytes()), name));
     }
 
     private static void sicken(FakePlayer p) {
