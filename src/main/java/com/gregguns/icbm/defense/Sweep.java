@@ -9,7 +9,7 @@ import com.gregguns.icbm.detect.Contacts;
 
 /**
  * One radar sweep: every missile in range, and the ones among them aimed inside the protected radius. Immutable; the
- * lists are nearest first. The sweep is clean-room (D14 replaces ICBM-Classic's chunk query and its distance-trend
+ * lists are nearest first. The sweep is clean-room (D14 replaces ICBM's chunk query and its distance-trend
  * test), so nothing here is ported. No Minecraft types, both sides.
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/radar.md (Sweep)

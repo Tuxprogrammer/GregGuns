@@ -25,7 +25,7 @@ public final class ContactMath {
 
     /**
      * The incoming test (D14): the predicted impact point lies inside the protected circle. The edge counts as inside.
-     * Unlike ICBM-Classic's distance-trend test (ICBM-05-04), a missile that passes by does not count.
+     * Unlike ICBM's distance-trend test (ICBM-05-04), a missile that passes by does not count.
      *
      * @param impactX the predicted impact X
      * @param impactZ the predicted impact Z
@@ -39,7 +39,7 @@ public final class ContactMath {
     }
 
     /**
-     * A true circle in the flat plane, with no height limit. ICBM-Classic's chunk-aligned square reached 16 to 32
+     * A true circle in the flat plane, with no height limit. ICBM's chunk-aligned square reached 16 to 32
      * blocks past the stated range (ICBM-05-01); this does not.
      *
      * @param x       the contact X

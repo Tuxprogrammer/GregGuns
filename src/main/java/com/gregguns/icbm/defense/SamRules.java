@@ -3,7 +3,7 @@ package com.gregguns.icbm.defense;
 /**
  * The surface-to-air missile and the battery that holds it as plain data (D15, D92): flight numbers, damage, the
  * battery's capacity, and the rule that decides how many more SAMs a threat needs. The SAM steers straight at its
- * target each tick (pure pursuit, as ICBM-Classic's does) and is clean-room: no ported code. No Minecraft types, both
+ * target each tick (pure pursuit, as ICBM's does) and is clean-room: no ported code. No Minecraft types, both
  * sides.
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/air-defense-battery.md (Numbers)

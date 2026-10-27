@@ -76,7 +76,7 @@ public final class Contacts {
     }
 
     /**
-     * Sorts by flat distance to a point, nearest first. (ICBM-Classic's sort compared the wrong thing, ICBM-05-05.)
+     * Sorts by flat distance to a point, nearest first. (ICBM's sort compared the wrong thing, ICBM-05-05.)
      *
      * @param contacts the list, sorted in place
      * @param x        the point X
