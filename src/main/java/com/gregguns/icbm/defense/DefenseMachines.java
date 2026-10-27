@@ -30,11 +30,8 @@ public final class DefenseMachines {
 
     /** Entity id 124: the SAM (after the silo doors at 123). */
     private static final int ENTITY_ID_SAM = 124;
-    /**
-     * Overlay folder of the radars and the battery. Placeholder: the Launch Control's overlays, until the I4 art
-     * lands; the art replaces these by path.
-     */
-    private static final String PLACEHOLDER_ICONS = "machines/thirdparty/ntm/launch_control/";
+    /** Overlay folders (NTM-derived, LGPL, D47) under {@code textures/blocks/}. */
+    private static final String ICONS = "machines/thirdparty/ntm/";
 
     private static Item sam;
     private static Item radarGun;
@@ -48,9 +45,9 @@ public final class DefenseMachines {
      */
     public static void registerItems(ModuleRegistrar registrar) {
         sam = registrar.registerItem(ItemSam.NAME, new ItemSam());
-        sam.setTextureName("gregguns:thirdparty/ntm/missile_chip_t1");
+        sam.setTextureName("gregguns:thirdparty/ntm/sam_missile");
         radarGun = registrar.registerItem(ItemRadarGun.NAME, new ItemRadarGun());
-        radarGun.setTextureName("gregguns:thirdparty/ntm/missile_schematic_t1");
+        radarGun.setTextureName("gregguns:thirdparty/ntm/radar_gun");
         registrar.registerEntity("sam", EntitySam.class, ENTITY_ID_SAM, 160, 1, true);
     }
 
@@ -65,21 +62,21 @@ public final class DefenseMachines {
             "Radar (HV)",
             3,
             tooltip("radar", "radar"),
-            PLACEHOLDER_ICONS);
+            ICONS + "radar_hv/");
         new MTERadar(
             GregGunsMTEIDs.RADAR_EV,
             "gregguns.icbm.radar.ev",
             "Radar (EV)",
             4,
             tooltip("radar", "radar"),
-            PLACEHOLDER_ICONS);
+            ICONS + "radar_ev/");
         new MTERadarTower(GregGunsMTEIDs.RADAR_TOWER, "gregguns.icbm.radartower", "Radar Tower");
         new MTEAirDefense(
             GregGunsMTEIDs.AIR_DEFENSE,
             "gregguns.icbm.airdefense",
             "Air-Defense Battery",
             tooltip("battery", "battery"),
-            PLACEHOLDER_ICONS);
+            ICONS + "air_defense_battery/");
     }
 
     private static String[] tooltip(String ignoredName, String prefix) {

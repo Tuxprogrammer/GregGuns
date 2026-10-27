@@ -37,6 +37,7 @@ abstract class DefenseBlock extends MTETieredMachineBlock implements ISecondaryD
         final IIconContainer frontActive;
         final IIconContainer side;
         final IIconContainer top;
+        final IIconContainer topActive;
         final IIconContainer bottom;
 
         private Icons(String dir) {
@@ -44,6 +45,7 @@ abstract class DefenseBlock extends MTETieredMachineBlock implements ISecondaryD
             frontActive = icon(dir, "OVERLAY_FRONT_ACTIVE");
             side = icon(dir, "OVERLAY_SIDE");
             top = icon(dir, "OVERLAY_TOP");
+            topActive = icon(dir, "OVERLAY_TOP_ACTIVE");
             bottom = icon(dir, "OVERLAY_BOTTOM");
         }
 
@@ -179,7 +181,7 @@ abstract class DefenseBlock extends MTETieredMachineBlock implements ISecondaryD
         if (side == facing) {
             overlay = active ? icons.frontActive : icons.front;
         } else if (side == ForgeDirection.UP) {
-            overlay = icons.top;
+            overlay = active ? icons.topActive : icons.top;
         } else if (side == ForgeDirection.DOWN) {
             overlay = icons.bottom;
         } else {

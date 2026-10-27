@@ -56,6 +56,7 @@ public final class IcbmModule implements GregGunsModule {
             com.gregguns.icbm.missile.MissileRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.control.ControlScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.silo.SiloScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            com.gregguns.icbm.missile.DefenseScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.production.ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
         }
     }

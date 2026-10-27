@@ -206,6 +206,34 @@ public final class DevStructureBuilder {
     }
 
     /**
+     * Builds the Radar Tower around the controller at the position, with the Energy Hatch and the maintenance hatch in
+     * the bottom ring under the controller.
+     *
+     * @param world  the world
+     * @param x      controller x
+     * @param y      controller y
+     * @param z      controller z
+     * @param energy the Energy Hatch to place, which sets the tower's range
+     * @return the outcome
+     */
+    public static Outcome buildRadarTower(World world, int x, int y, int z, ItemList energy) {
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (!(tile instanceof IGregTechTileEntity)
+            || !(((IGregTechTileEntity) tile).getMetaTileEntity() instanceof com.gregguns.icbm.defense.MTERadarTower)) {
+            return new Outcome(false, "build: no Radar Tower controller at " + x + " " + y + " " + z);
+        }
+        IGregTechTileEntity controller = (IGregTechTileEntity) tile;
+        controller.setFrontFacing(ForgeDirection.NORTH);
+        controller.setOwnerName(OWNER);
+        controller.setOwnerUuid(UUID.nameUUIDFromBytes(OWNER.getBytes(StandardCharsets.UTF_8)));
+        ((com.gregguns.icbm.defense.MTERadarTower) controller.getMetaTileEntity())
+            .construct(new ItemStack(Items.stick, 1), false);
+        hatch(world, x, y - 1, z, energy, ForgeDirection.NORTH);
+        hatch(world, x + 1, y - 1, z, ItemList.Hatch_Maintenance, ForgeDirection.NORTH);
+        return finish(world, x, y, z, "Radar Tower");
+    }
+
+    /**
      * Checks the structure of the controller at the position and reports its formed flag, from a fresh tile lookup (GT
      * may replace a tile entity during its first ticks).
      *

@@ -61,7 +61,7 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
     implements ISurvivalConstructable, ICasingTextureProvider, RadarSource {
 
     private static final String PIECE = "tower";
-    private static final String OVERLAY_DIR = "machines/thirdparty/ntm/launch_control/";
+    private static final String OVERLAY_DIR = "machines/thirdparty/ntm/radar_tower/";
     private static final int CYCLE_TICKS = 20;
 
     private final RadarUnit unit = new RadarUnit();

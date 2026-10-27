@@ -162,6 +162,15 @@ public final class MTERadar extends DefenseBlock implements RadarSource {
         return mayUse(player) && RadarUnit.writeLink(getBaseMetaTileEntity(), getStackInSlot(SLOT_STICK), player);
     }
 
+    /**
+     * Sets the protected radius, clamped to the range; for scenarios and the GUI field.
+     *
+     * @param radius blocks
+     */
+    public void setRadius(int radius) {
+        unit.setRadius(radius, rangeIfOn());
+    }
+
     /** @return the protected radius text for the GUI field */
     String radiusText() {
         return Integer.toString(unit.radius());
