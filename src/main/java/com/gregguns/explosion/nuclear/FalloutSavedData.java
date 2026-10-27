@@ -95,12 +95,20 @@ public final class FalloutSavedData extends WorldSavedData {
         public int[] blocks = new int[0];
         /** Index (in triples) of the next block to revert. */
         public int cursor;
+        /** Entries (triples) put back at the front of {@link #blocks} because their chunk was unloaded. */
+        public int kept;
+        /** World time after which unloaded entries are given up on (the age cap). */
+        public long deadline;
+        /** Age cap after the first due time: seven in-game days. */
+        public static final long MAX_AGE_TICKS = 7L * 24000L;
 
         NBTTagCompound write() {
             NBTTagCompound t = new NBTTagCompound();
             t.setLong("due", due);
             t.setIntArray("blocks", blocks);
             t.setInteger("cursor", cursor);
+            t.setInteger("kept", kept);
+            t.setLong("deadline", deadline);
             return t;
         }
 
@@ -109,6 +117,8 @@ public final class FalloutSavedData extends WorldSavedData {
             d.due = t.getLong("due");
             d.blocks = t.getIntArray("blocks");
             d.cursor = Math.max(0, Math.min(t.getInteger("cursor"), d.blocks.length / 3));
+            d.kept = Math.max(0, Math.min(t.getInteger("kept"), d.cursor));
+            d.deadline = t.hasKey("deadline") ? t.getLong("deadline") : d.due + MAX_AGE_TICKS;
             return d;
         }
     }

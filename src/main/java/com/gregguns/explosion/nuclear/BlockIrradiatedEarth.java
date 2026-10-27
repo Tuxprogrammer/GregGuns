@@ -7,6 +7,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -66,6 +67,15 @@ public final class BlockIrradiatedEarth extends Block implements com.gregguns.ap
     @SideOnly(Side.CLIENT)
     public int colorMultiplier(IBlockAccess world, int x, int y, int z) {
         return TINT;
+    }
+
+    /**
+     * Never silk-harvestable: the block would otherwise be placeable anywhere, outside every decay record, and never
+     * revert. Mining always gives the rubble.
+     */
+    @Override
+    public boolean canSilkHarvest(World world, EntityPlayer player, int x, int y, int z, int metadata) {
+        return false;
     }
 
     @Override

@@ -100,7 +100,7 @@ public final class FalloutEngine {
                 n += j.blocks();
             }
             for (FalloutSavedData.Decay dec : d.decays) {
-                n += dec.blocks.length / 3 - dec.cursor;
+                n += dec.blocks.length / 3 - dec.cursor + dec.kept;
             }
         }
         return n;
@@ -167,7 +167,7 @@ public final class FalloutEngine {
                 }
                 columns--;
                 convertColumn(world, job, job.x + dx, job.z + dz, Math.sqrt((double) dx * dx + (double) dz * dz));
-                if ((columns & 31) == 0 && System.nanoTime() > limit) {
+                if ((columns & 7) == 0 && System.nanoTime() > limit) {
                     columns = 0;
                 }
             }
@@ -202,6 +202,7 @@ public final class FalloutEngine {
                 return; // water, or something solid that is not surface earth: leave this column alone
             }
         }
+        int surfaceVariant = -1;
         for (int depth = 0; depth < 3 && y > 0 && job.blocks() < job.budget; depth++, y--) {
             if (depth > 0 && FalloutMath.roll(job.seed, x, z, depth) >= 0.5) {
                 break;
@@ -211,6 +212,11 @@ public final class FalloutEngine {
             int variant = FalloutBlocks.variantFor(block, meta);
             if (variant < 0) {
                 break; // caves and other material end the column: surface only
+            }
+            if (depth == 0) {
+                surfaceVariant = variant;
+            } else if (variant != surfaceVariant) {
+                break; // at most two of the same material below the surface block (D84): grass over dirt, not stone
             }
             if (!BlockBreakGuard.mayBreak(world, x, y, z, block, meta, FakePlayerFactory.getMinecraft(world))) {
                 return;
@@ -228,6 +234,7 @@ public final class FalloutEngine {
         }
         FalloutSavedData.Decay decay = new FalloutSavedData.Decay();
         decay.due = world.getTotalWorldTime() + ExplosionsConfig.falloutDecayMinutes * 1200L;
+        decay.deadline = decay.due + FalloutSavedData.Decay.MAX_AGE_TICKS;
         decay.blocks = java.util.Arrays.copyOf(job.converted, job.count);
         d.decays.add(decay);
         d.touch();
@@ -237,24 +244,49 @@ public final class FalloutEngine {
         if (d.decays.isEmpty()) {
             return;
         }
-        FalloutSavedData.Decay decay = d.decays.get(0);
-        if (world.getTotalWorldTime() < decay.due) {
+        long now = world.getTotalWorldTime();
+        FalloutSavedData.Decay decay = null;
+        for (FalloutSavedData.Decay candidate : d.decays) {
+            if (now >= candidate.due) {
+                decay = candidate;
+                break;
+            }
+        }
+        if (decay == null) {
             return;
         }
-        int end = Math.min(decay.blocks.length / 3, decay.cursor + ExplosionsConfig.falloutRevertPerTick);
+        int total = decay.blocks.length / 3;
+        int end = Math.min(total, decay.cursor + ExplosionsConfig.falloutRevertPerTick);
         for (; decay.cursor < end; decay.cursor++) {
             int x = decay.blocks[decay.cursor * 3];
             int y = decay.blocks[decay.cursor * 3 + 1];
             int z = decay.blocks[decay.cursor * 3 + 2];
-            if (world.blockExists(x, y, z) && world.getBlock(x, y, z) == FalloutBlocks.irradiated()) {
+            if (!world.blockExists(x, y, z)) {
+                // Its chunk is unloaded: keep the entry for the next pass (compacted in place; kept <= cursor).
+                int at = decay.kept++ * 3;
+                decay.blocks[at] = x;
+                decay.blocks[at + 1] = y;
+                decay.blocks[at + 2] = z;
+            } else if (world.getBlock(x, y, z) == FalloutBlocks.irradiated()) {
                 world.setBlock(x, y, z, FalloutBlocks.original(world.getBlockMetadata(x, y, z)), 0, 2);
             }
         }
         d.touch();
-        if (decay.cursor >= decay.blocks.length / 3) {
-            d.decays.remove(0);
+        if (decay.cursor >= total) {
+            if (decay.kept > 0 && now < decay.deadline) {
+                // Retry the unloaded entries later; the age cap (deadline) drops what never loads.
+                decay.blocks = java.util.Arrays.copyOf(decay.blocks, decay.kept * 3);
+                decay.cursor = 0;
+                decay.kept = 0;
+                decay.due = now + RETRY_TICKS;
+            } else {
+                d.decays.remove(decay);
+            }
         }
     }
+
+    /** World ticks before a decay pass retries the blocks whose chunks were unloaded (10 seconds). */
+    static final long RETRY_TICKS = 200L;
 
     /** Test hook: every decay record of the world is due now, so its blocks start reverting. */
     public static void expireAll(World world) {
@@ -265,6 +297,25 @@ public final class FalloutEngine {
             }
             d.touch();
         }
+    }
+
+    /**
+     * Test hook: records one irradiated block as a finished blast's decay entry that is not due yet.
+     *
+     * @param world       a server world
+     * @param x           block X
+     * @param y           block Y
+     * @param z           block Z
+     * @param ageCapTicks how long unloaded entries are retried before they are given up on
+     */
+    public static void trackForTest(World world, int x, int y, int z, long ageCapTicks) {
+        FalloutSavedData d = data(world, true);
+        FalloutSavedData.Decay decay = new FalloutSavedData.Decay();
+        decay.due = world.getTotalWorldTime() + 10_000_000L;
+        decay.deadline = world.getTotalWorldTime() + ageCapTicks;
+        decay.blocks = new int[] { x, y, z };
+        d.decays.add(decay);
+        d.touch();
     }
 
     /** Test hook: forget a world's record. */
