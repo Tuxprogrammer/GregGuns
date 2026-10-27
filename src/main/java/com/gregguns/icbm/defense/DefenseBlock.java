@@ -30,6 +30,19 @@ import gregtech.api.render.TextureFactory;
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/radar.md, air-defense-battery.md
 abstract class DefenseBlock extends MTETieredMachineBlock implements ISecondaryDescribable {
 
+    /**
+     * GT only exposes a machine's per-side redstone strength to the world when the machine says so (default false), so
+     * without this the strength set by the scan never reaches a neighboring lamp.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/BaseMetaTileEntity.java#L1726-L1729
+    // (CoverableTileEntity#L486-L490 routes getOutputRedstoneSignal to getGeneralRS, which returns 0 unless
+    // allowGeneralRedstoneOutput(); default false in CommonMetaTileEntity#L610)
+    @Override
+    public boolean allowGeneralRedstoneOutput() {
+        return true;
+    }
+
     /** The overlay icons of one machine: front (idle and active), side, top and bottom. */
     static final class Icons {
 

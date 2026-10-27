@@ -27,6 +27,7 @@ import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.slot.ItemSlot;
 import com.cleanroommc.modularui.widgets.slot.ModularSlot;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
+import com.gregguns.icbm.IcbmSync;
 
 import gregtech.common.gui.modularui.singleblock.base.MTETieredMachineBlockBaseGui;
 
@@ -122,8 +123,8 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
     protected void registerSyncValues(PanelSyncManager sync) {
         super.registerSyncValues(sync);
         // Fields: the client writes, the server parses and clamps.
-        sync.syncValue("field_x", 0, new StringSyncValue(machine::xText, machine::setXText));
-        sync.syncValue("field_z", 0, new StringSyncValue(machine::zText, machine::setZText));
+        sync.syncValue("field_x", 0, IcbmSync.editableText(machine::xText, machine::setXText));
+        sync.syncValue("field_z", 0, IcbmSync.editableText(machine::zText, machine::setZText));
         // Status: the getters run on the server, the setters fill the state the screen reads.
         sync.syncValue("st_status", 0, new IntSyncValue(() -> snap().status.ordinal(), v -> state.status = v));
         sync.syncValue("st_min", 0, new IntSyncValue(() -> snap().minRange, v -> state.min = v));

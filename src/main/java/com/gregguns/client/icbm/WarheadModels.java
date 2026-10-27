@@ -30,6 +30,8 @@ final class WarheadModels {
 
     /** The nuclear warhead has its own model, on the T3 casing (1x1x2, scaled 0.8). */
     static final String NUCLEAR_MODEL = "warhead_nuclear";
+    /** The EMP warhead has its own model and texture too, so it never reads as the TNT-lettered conventional one. */
+    static final String EMP_MODEL = "warhead_emp";
     private static final Map<MissileTier, WavefrontObject> BODIES = new EnumMap<>(MissileTier.class);
 
     private WarheadModels() {}
@@ -41,6 +43,7 @@ final class WarheadModels {
             out.add(c.blockName());
         }
         out.add(NUCLEAR_MODEL);
+        out.add(EMP_MODEL);
         return out;
     }
 
@@ -50,7 +53,13 @@ final class WarheadModels {
      * @return the model name to draw
      */
     static String modelName(WarheadCasing casing, String explosive) {
-        return casing == WarheadCasing.T3 && "nuclear".equals(explosive) ? NUCLEAR_MODEL : casing.blockName();
+        if (casing == WarheadCasing.T3 && "nuclear".equals(explosive)) {
+            return NUCLEAR_MODEL;
+        }
+        if (casing == WarheadCasing.T3 && "emp".equals(explosive)) {
+            return EMP_MODEL;
+        }
+        return casing.blockName();
     }
 
     /** @return the casing's default model (kept for the missile renderer) */

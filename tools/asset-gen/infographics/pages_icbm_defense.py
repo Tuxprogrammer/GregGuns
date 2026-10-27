@@ -269,7 +269,7 @@ def sheet() -> str:
     n_b = sum(r.count("B") for a in aisles for r in a)
     min_casing = int(_const("icbm/defense/RadarTowerShape.java", "CASING_MINIMUM"))
     sam_img = render_obj("sam_missile", "sam_missile", "sam", yaw=40, pitch=18, ppu=64)
-    war_img = render_obj("warhead_t3", "warhead_t3", "emp-warhead", yaw=35, pitch=14, ppu=100)
+    war_img = render_obj("warhead_emp", "warhead_emp", "emp-warhead", yaw=35, pitch=14, ppu=100)
 
     # ---- the three radars
     tower_extra = ""

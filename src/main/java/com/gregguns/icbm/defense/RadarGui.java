@@ -22,6 +22,7 @@ import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.slot.ItemSlot;
 import com.cleanroommc.modularui.widgets.slot.ModularSlot;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
+import com.gregguns.icbm.IcbmSync;
 import com.gregguns.icbm.detect.Contact;
 
 import gregtech.api.enums.GTValues;
@@ -92,7 +93,7 @@ final class RadarGui extends MTETieredMachineBlockBaseGui<MTERadar> {
     @Override
     protected void registerSyncValues(PanelSyncManager sync) {
         super.registerSyncValues(sync);
-        sync.syncValue("field_radius", 0, new StringSyncValue(machine::radiusText, machine::setRadiusText));
+        sync.syncValue("field_radius", 0, IcbmSync.editableText(machine::radiusText, machine::setRadiusText));
         sync.syncValue(
             "st_state",
             0,

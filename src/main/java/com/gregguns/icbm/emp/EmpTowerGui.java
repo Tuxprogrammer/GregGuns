@@ -19,12 +19,12 @@ import com.cleanroommc.modularui.value.sync.IntSyncValue;
 import com.cleanroommc.modularui.value.sync.InteractionSyncHandler;
 import com.cleanroommc.modularui.value.sync.LongSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
-import com.cleanroommc.modularui.value.sync.StringSyncValue;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import com.gregguns.core.config.IcbmConfig;
+import com.gregguns.icbm.IcbmSync;
 
 import gregtech.common.gui.modularui.singleblock.base.MTETieredMachineBlockBaseGui;
 
@@ -108,7 +108,7 @@ final class EmpTowerGui extends MTETieredMachineBlockBaseGui<MTEEmpTower> {
         sync.syncValue(
             "field_radius",
             0,
-            new StringSyncValue(
+            IcbmSync.editableText(
                 () -> Integer.toString(machine.radius()),
                 v -> machine.setRadiusFromGui(sync.getPlayer(), parse(v))));
         sync.syncValue(
@@ -189,17 +189,9 @@ final class EmpTowerGui extends MTETieredMachineBlockBaseGui<MTEEmpTower> {
                 CONTENT - 8,
                 9,
                 () -> state.eu >= state.cost ? AMBER : ALARM));
-        screen.child(
-            text(
-                () -> trf(
-                    "gregguns.icbm.emp.gui.mode",
-                    tr("gregguns.icbm.emp.mode." + EmpMode.values()[state.mode].id())),
-                4,
-                23,
-                CONTENT - 8,
-                9,
-                () -> AMBER));
-        screen.child(text(this::lastText, 4, 31, CONTENT - 8, 9, () -> AMBER));
+        // Four rows of at most 26 characters each (EmpLangTest): the mode shows on its own button, so no row for it.
+        screen.child(text(this::lastText, 4, 22, CONTENT - 8, 9, () -> AMBER));
+        screen.child(text(this::lastTotalsText, 4, 31, CONTENT - 8, 9, () -> AMBER));
         content.child(screen);
 
         content.child(
@@ -254,7 +246,11 @@ final class EmpTowerGui extends MTETieredMachineBlockBaseGui<MTEEmpTower> {
         if (state.devices < 0) {
             return tr("gregguns.icbm.emp.gui.last_none");
         }
-        return trf("gregguns.icbm.emp.gui.last", state.devices, state.issues, state.missiles);
+        return trf("gregguns.icbm.emp.gui.last", state.devices);
+    }
+
+    private String lastTotalsText() {
+        return state.devices < 0 ? "" : trf("gregguns.icbm.emp.gui.last_totals", state.issues, state.missiles);
     }
 
     private static String tr(String key) {

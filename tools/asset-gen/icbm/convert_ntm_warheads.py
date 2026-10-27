@@ -1,6 +1,6 @@
 """One-shot conversion of the warhead models we take from HBM's Nuclear Tech Mod (LGPL-3.0) into ours.
 
-    python -I tools/asset-gen/icbm/convert_ntm_warheads.py <folder with the downloaded .obj/.png> [<out root>]
+    python -I tools/asset-gen/icbm/convert_ntm_warheads.py <folder with the downloaded .obj/.png> [<out root> [<entry names>]]
 
 Reads the upstream files (Blender 2.76 OBJ exports, already Forge-strict), then for each entry in TABLE:
   - scales the vertices uniformly, moves the footprint center to its block-local spot (0.5, 0.5 for a 1x1
@@ -26,7 +26,12 @@ TABLE = {
     "warhead_nuclear": ("mp_w_10_nuclear_large", 0.8, 1, None),
     "warhead_antimatter": ("mp_w_15_nuclear", 1.0, 2, 140),
     "warhead_redmatter": ("mp_w_15_balefire", 1.2, 2, -120),
+    # The T3 EMP warhead: NTM's cloud warhead (magenta bands, no lettering) on its taint-warhead model.
+    "warhead_emp": ("mp_w_10_taint", 0.8, 1, None),
 }
+
+# Where a texture comes from when it is not the model's own name (NTM draws its cloud warhead on the taint model).
+TEXTURE_FROM = {"warhead_emp": "mp_w_10_cloud"}
 
 
 def convert_obj(src: Path, scale: float, cells: int) -> str:
@@ -74,12 +79,16 @@ def main():
     mo, to = root / "models/thirdparty/ntm", root / "textures/models/thirdparty/ntm"
     mo.mkdir(parents=True, exist_ok=True)
     to.mkdir(parents=True, exist_ok=True)
+    only = sys.argv[3:]  # optional: convert just these entries
     for name, (up, scale, cells, hue) in TABLE.items():
+        if only and name not in only:
+            continue
+        tex = TEXTURE_FROM.get(name, up)
         (mo / f"{name}.obj").write_text(convert_obj(src / f"{up}.obj", scale, cells))
         if hue is None:
-            (to / f"{name}.png").write_bytes((src / f"{up}.png").read_bytes())
+            (to / f"{name}.png").write_bytes((src / f"{tex}.png").read_bytes())
         else:
-            shift_hue(src / f"{up}.png", to / f"{name}.png", hue, label_out=(up == "mp_w_15_balefire"))
+            shift_hue(src / f"{tex}.png", to / f"{name}.png", hue, label_out=(up == "mp_w_15_balefire"))
         print("wrote", name)
 
 
