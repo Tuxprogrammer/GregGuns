@@ -65,7 +65,11 @@ public final class EntitySam extends Entity {
             return;
         }
         EntityMissile target = Contacts.missile(worldObj, targetId);
+        if (age % 10 == 0) {
+            com.gregguns.GregGuns.LOG.info("[sam dbg] age={} pos={},{},{} target={}", age, posX, posY, posZ, target);
+        }
         if (target == null || ++age > SamRules.LIFETIME) {
+            com.gregguns.GregGuns.LOG.info("[sam dbg] fizzle age={} target={}", age, target);
             fizzle();
             return;
         }
