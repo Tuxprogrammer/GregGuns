@@ -193,9 +193,21 @@ final class FalloutChainScenarios {
             return 40;
         }
 
-        private static int[] tally(World w, int ox, int oy, int oz, int span, int[] gooChunkOf) {
+        private static int[] tally(World w, int ox, int oy, int oz, int span, boolean byGooChunk) {
             // {irradiated, hot, trinitite, goo, hotGoo, irradiated in goo chunks, outside inner}
             int[] t = new int[7];
+            java.util.Set<Long> gooChunks = new java.util.HashSet<>();
+            if (byGooChunk) {
+                for (int dx = -span; dx <= span; dx++) {
+                    for (int dz = -span; dz <= span; dz++) {
+                        for (int dy = 6; dy >= -Y_BELOW; dy--) {
+                            if (w.getBlock(ox + dx, oy + dy, oz + dz) == FalloutBlocks.goo()) {
+                                gooChunks.add((((long) ((ox + dx) >> 4)) << 32) | (((oz + dz) >> 4) & 0xFFFFFFFFL));
+                            }
+                        }
+                    }
+                }
+            }
             for (int dx = -span; dx <= span; dx++) {
                 for (int dz = -span; dz <= span; dz++) {
                     for (int dy = 6; dy >= -Y_BELOW; dy--) {
@@ -205,8 +217,8 @@ final class FalloutChainScenarios {
                             if (FalloutBlocks.isHot(w.getBlockMetadata(ox + dx, oy + dy, oz + dz))) {
                                 t[1]++;
                             }
-                            if (gooChunkOf != null && ((ox + dx) >> 4) == gooChunkOf[0]
-                                && ((oz + dz) >> 4) == gooChunkOf[1]) {
+                            if (gooChunks
+                                .contains((((long) ((ox + dx) >> 4)) << 32) | (((oz + dz) >> 4) & 0xFFFFFFFFL))) {
                                 t[5]++;
                             }
                         } else if (b == FalloutBlocks.trinitite()) {
@@ -254,7 +266,6 @@ final class FalloutChainScenarios {
                 return ScenarioResult.fail(name(), "fallout did not start");
             }
             final int[] phase = { 0, 0 };
-            final int[] gooChunk = { 0, 0 };
             final int[] held = { 0 };
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             return ScenarioResult.pending(name(), 20 * 60 * 5, ticks -> {
@@ -263,7 +274,7 @@ final class FalloutChainScenarios {
                     if (fe.busy(w) || ticks < 120) {
                         return null;
                     }
-                    int[] t = tally(w, ox, oy, oz, span, null);
+                    int[] t = tally(w, ox, oy, oz, span, false);
                     out.check(t[0] > 0, "fallout left irradiated earth, found " + t[0]);
                     out.check(t[1] > 0, "the inner fireball of a ZPM-grade blast has hot earth, found " + t[1]);
                     out.check(t[2] > 0, "sand in the inner fireball became trinitite, found " + t[2]);
@@ -297,10 +308,6 @@ final class FalloutChainScenarios {
                                     && dy == -1) {
                                     sandBad++; // a top sand block in the inner fireball must be trinitite
                                 }
-                                if (b == FalloutBlocks.goo() && gooChunk[0] == 0 && gooChunk[1] == 0) {
-                                    gooChunk[0] = x >> 4;
-                                    gooChunk[1] = z >> 4;
-                                }
                             }
                         }
                     }
@@ -320,7 +327,7 @@ final class FalloutChainScenarios {
                             }
                         }
                     }
-                    held[0] = tally(w, ox, oy, oz, span, gooChunk)[5];
+                    held[0] = tally(w, ox, oy, oz, span, true)[5];
                     out.check(held[0] > 0, "irradiated earth stands in the goo's chunk");
                     FalloutEngine.expireAll(w);
                     phase[0] = 1;
@@ -332,8 +339,8 @@ final class FalloutChainScenarios {
                     if (ticks - phase[1] < 700) {
                         return null;
                     }
-                    int[] t = tally(w, ox, oy, oz, span, gooChunk);
-                    out.check(t[5] == held[0], "goo holds its chunk's irradiated earth: " + t[5] + " of " + held[0]);
+                    int[] t = tally(w, ox, oy, oz, span, true);
+                    out.check(t[5] == held[0], "goo holds its chunks' irradiated earth: " + t[5] + " of " + held[0]);
                     out.check(t[3] == fe.gooBlocks(w), "the goo is untouched by decay");
                     out.check(
                         t[0] - t[5] == 0,
@@ -345,7 +352,7 @@ final class FalloutChainScenarios {
                     phase[1] = ticks;
                     return null;
                 }
-                int[] t = tally(w, ox, oy, oz, span, null);
+                int[] t = tally(w, ox, oy, oz, span, false);
                 if ((t[0] > 0 || t[2] > 0) && ticks - phase[1] < 900) {
                     FalloutEngine.expireAll(w);
                     return null;
