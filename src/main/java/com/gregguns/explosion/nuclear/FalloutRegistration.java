@@ -32,6 +32,9 @@ public final class FalloutRegistration {
             .registerItem("trinitite_shard", new ItemFalloutProduct(false, "gregguns:thirdparty/ntm/trinitite_shard"));
         ItemFalloutProduct gooItem = registrar
             .registerItem("fallout_goo_item", new ItemFalloutProduct(true, "gregguns:thirdparty/ntm/fallout_goo"));
+        // Self-check placeholders: the products draw their own icon (see ItemFalloutProduct.registerIcons).
+        shard.setTextureName("gregguns:thirdparty/ntm/trinitite_shard");
+        gooItem.setTextureName("gregguns:thirdparty/ntm/fallout_goo");
         FalloutBlocks.setProducts(trinitite, goo, shard, gooItem);
         FalloutEngine.register();
     }
