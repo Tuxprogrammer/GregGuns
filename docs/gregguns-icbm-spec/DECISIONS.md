@@ -305,3 +305,12 @@ Context: how GTNH fuels rockets. The evidence is the SpaceRace quest line, Galac
 ## Open
 
 None right now. New questions are added here as the GregGuns-side sheets raise them.
+| D91 | Contacts API (I4, orchestrator, 2026-10-27) | A contact is a missile in CLIMB or ARC; range is a flat circle; incoming is the predicted impact inside the circle; lists sort by flat distance. `Contact`, `ContactSource`, `Contacts` |
+| D92 | SAM numbers (I4) | Speed 3.0, burst 3.5, damage 40, lifetime 300, battery 4 SAM slots, 20-tick interval, 400 EU per shot, engage range 256; pure-pursuit, clean-room |
+| D93 | Radar gun (I4) | Kept; server-side trace, 200 blocks, stores a target in the data stick format, copies to a Launch Control |
+| D94 | Radar numbers (I4) | HV 128, EV 256, tower IV 512 up to 1536 at UHV; quarter amp; scan 5 ticks; default protected radius 64 |
+| D95 | Tower form (I4) | IV controller, 3x3x7 Gantry tower, weakest Energy Hatch sets the range, same pattern as the silo |
+| D96 | Outputs (I4) | Redstone = incoming count (max 15) on transitions; active flag on single blocks; link by data stick |
+| D97 | Battery drives its SAMs (I4) | The world skips entities with unloaded surroundings, so the battery calls `EntitySam.advance` itself; SAMs are not saved |
+| D98 | launch_to_impact flake (I4) | Cause candidates: a blast refused while the engine's job slots were full, and far platform chunks not loaded; the scenario now waits for a quiet engine, loads the chunks and reports engine state on failure |
+| D99 | Recipes (I4) | Assembler circuit 25 to 30; nothing below HV |

@@ -6,7 +6,6 @@
 - **Pack mods:** GT5-Unofficial (`gregtech`, 5.09.54.205), StructureLib, ModularUI2
 - **Roadmap:** [I4](../../ROADMAP-ICBM.md#i4--detection-and-defense)
 
-Status: the contacts section below is final (the API other code builds on). The rest is written in the radar commit.
 
 ## Contacts (the tracker API)
 
@@ -34,3 +33,38 @@ Queries: `Contacts.all(world)`, `Contacts.within(world, x, z, range)` (nearest f
 ### Tests
 
 `ContactTest` (unit): GGI-05-02 to 05-04. GGI-05-01 is checked by the radar scenarios.
+
+## Numbers
+
+| Item | HV radar | EV radar | Radar Tower (hatch tier) |
+|---|---|---|---|
+| MTE ID | 20142 | 20143 | 20144 (IV hull) |
+| Range, flat circle | 128 | 256 | IV 512, LuV 768, ZPM 1024, UV 1280, UHV and up 1536 |
+| Power | quarter amp while scanning (HV 128 EU/t, EV 512 EU/t) | | quarter amp of the weakest hatch |
+| Scan | every 5 ticks | | every 5 ticks, while the cycle runs |
+| Protected radius | default 64, min 8, max the range; typed in the GUI | | default 64 (not yet settable: no screen; D94) |
+
+Nothing below HV (D69). The tower needs an IV or better hatch; a lower one fails with a message and the tower stays off.
+
+## Behavior
+
+- Sweep (clean-room; D14 replaces ICBM-Classic's chunk query and distance-trend test, so nothing is ported): `Contacts.within(world, x, z, range)`, then `Sweep.of(...)` splits "detected" from "incoming" (impact inside the protected radius), nearest first.
+- Outputs: redstone strength = incoming count (max 15) on all six sides, set only when it changes; single blocks set the GT active flag while a threat exists (a machine-state cover reads it); the tower's active flag is its own running state, so it drives redstone only.
+- Link: right-click a radar or the tower controller with a data stick, or press Save link in a single block's GUI. The stick keeps `{dim, x, y, z}` (`RadarLink`).
+- Single blocks work without any structure; the tower is a 3x3x7 Gantry Casing tower (`RadarTowerShape`) with a Gantry Beam mast, hatches (Energy, Maintenance) in the bottom ring.
+
+## Requirements (continued)
+
+- **GGI-05-05.** Range by tier follows the table; a radar below HV does not exist.
+- **GGI-05-06.** A radar with no power reports OFF and clears its sweep.
+- **GGI-05-07.** The protected radius is clamped to 8 to the range.
+- **GGI-05-08.** Outputs change only on a transition.
+- **GGI-05-09.** The tower's range comes from its weakest hatch.
+
+## Tests
+
+`RadarRulesTest`, `SamRulesTest` (unit); scenarios `icbm.defense.registered`, `.intercept`, `.not_incoming`, `.range_by_tier`, `.tower`, `.save_reload`.
+
+## Open
+
+- A GUI for the tower's protected radius; the radar casing art (meta 11) is not wired, so the tower uses Gantry Casing.
