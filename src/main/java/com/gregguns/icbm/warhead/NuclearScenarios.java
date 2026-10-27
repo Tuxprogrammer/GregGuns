@@ -293,7 +293,20 @@ final class NuclearScenarios {
                             + stage[2]
                             + ", worst tick "
                             + max / 1_000_000L
-                            + " ms");
+                            + " ms ("
+                            + engine.maxTickStage()
+                            + "), "
+                            + perTick.length
+                            + " blast ticks, p50 "
+                            + p50 / 1_000_000L
+                            + " ms, p99 "
+                            + p99 / 1_000_000L
+                            + " ms, "
+                            + over
+                            + " over "
+                            + limit / 1_000_000L
+                            + " ms, slowest slice "
+                            + slowest);
                     verdict[0] = out.build();
                     return null;
                 } catch (RuntimeException e) {
