@@ -211,9 +211,46 @@ public final class DefenseScenarios {
         int batterySignal;
         double lastZ;
         int deadAt = -1;
+        /** Ticks of the first sighting of each stage, -1 before; for failure messages. */
+        int tThreat = -1;
+        int tEngage = -1;
+        int tSam = -1;
+        double samZ;
+        double samDist = -1;
+
+        String timeline() {
+            return " [threat@" + tThreat
+                + " engage@"
+                + tEngage
+                + " sam@"
+                + tSam
+                + " dead@"
+                + deadAt
+                + " samZ "
+                + samZ
+                + " samDist "
+                + samDist
+                + "]";
+        }
     }
 
     private static void observe(Seen s, MTERadar r, MTEAirDefense b, World w, EntityMissile m, int ticks, int oz) {
+        if (s.tThreat < 0 && r != null && r.state() == RadarRules.State.THREAT) {
+            s.tThreat = ticks;
+        }
+        if (s.tEngage < 0 && b != null && b.state() == SamRules.State.ENGAGING) {
+            s.tEngage = ticks;
+        }
+        for (Object o : w.loadedEntityList) {
+            if (o instanceof EntitySam && !((EntitySam) o).isDead) {
+                EntitySam sam = (EntitySam) o;
+                if (s.tSam < 0) {
+                    s.tSam = ticks;
+                }
+                s.samZ = sam.posZ - oz;
+                s.samDist = sam.getDistanceToEntity(m);
+            }
+        }
         if (r != null) {
             s.threat |= r.state() == RadarRules.State.THREAT;
             s.tracking |= r.state() == RadarRules.State.TRACKING;
@@ -301,7 +338,7 @@ public final class DefenseScenarios {
                 out.check(m.isDead, "the missile is gone");
                 out.check(
                     seen.lastZ < target - 20,
-                    "the missile was shot down short of its target (last z " + seen.lastZ + ")");
+                    "the missile was shot down short of its target (last z " + seen.lastZ + ")" + seen.timeline());
                 ItemStack left = bb.getStackInSlot(MTEAirDefense.SLOT_SAM);
                 out.checkEquals("one SAM spent", 1, left == null ? 0 : left.stackSize);
                 return finish(terrain, out.build());
