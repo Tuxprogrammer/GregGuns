@@ -152,6 +152,7 @@ public final class EntitySam extends Entity {
     }
 
     private void burst(EntityMissile target) {
+        com.gregguns.GregGuns.LOG.info("SAM-DIAG burst age={} pos={},{},{} target={},{},{} hp={}", age, posX, posY, posZ, target.posX, target.posY, target.posZ, target.health());
         spent = true;
         target.attackEntityFrom(new DamageSource("gregguns.sam"), SamRules.DAMAGE);
         if (owner != null && (target.isDead || target.health() <= 0.0F)) {
@@ -164,6 +165,7 @@ public final class EntitySam extends Entity {
     }
 
     private void fizzle() {
+        com.gregguns.GregGuns.LOG.info("SAM-DIAG fizzle age={} best={} stalled={} pos={},{},{}", age, bestRange, stalled, posX, posY, posZ);
         spent = true;
         worldObj.playSoundEffect(posX, posY, posZ, "random.fizz", 1.0F, 1.0F);
         setDead();
