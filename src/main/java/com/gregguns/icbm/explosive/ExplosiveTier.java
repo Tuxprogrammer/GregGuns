@@ -13,8 +13,10 @@ public enum ExplosiveTier {
     T2(2, 4, "EV-IV", 3000.0),
     /** LuV to ZPM; nuclear sits at ZPM. */
     T3(3, 6, "LuV-ZPM", 8000.0),
-    /** UV (antimatter) and UHV (red matter). Annihilation tiers: no damage number, everything in the zone dies. */
-    T4(4, 8, "UV-UHV", Double.POSITIVE_INFINITY);
+    /** UV (antimatter). Annihilation tier: the kill zone dies; outside it the damage ramp starts at 16,000 (D130). */
+    T4(4, 8, "UV", 16000.0),
+    /** UHV (red matter). Annihilation tier: no damage number; the red matter body annihilates what it reaches. */
+    T5(5, 9, "UHV", Double.POSITIVE_INFINITY);
 
     private final int number;
     private final int minVoltageTier;
@@ -28,12 +30,14 @@ public enum ExplosiveTier {
         this.minCenterDamage = minCenterDamage;
     }
 
-    /** @return 1 to 4 */
+    /** @return 1 to 5 */
     public int number() {
         return number;
     }
 
-    /** @return the lowest GregTech voltage tier index (ULV 0, LV 1, MV 2, HV 3, EV 4, IV 5, LuV 6, ZPM 7, UV 8) */
+    /**
+     * @return the lowest GregTech voltage tier index (ULV 0, LV 1, MV 2, HV 3, EV 4, IV 5, LuV 6, ZPM 7, UV 8, UHV 9)
+     */
     public int minVoltageTier() {
         return minVoltageTier;
     }

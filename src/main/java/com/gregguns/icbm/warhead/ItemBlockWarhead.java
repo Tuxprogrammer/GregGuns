@@ -86,13 +86,17 @@ public final class ItemBlockWarhead extends ItemBlock {
         f.tierText = casing == WarheadCasing.T1 ? TierText.colored(com.gregguns.api.Tier.HV)
             : casing == WarheadCasing.T2
                 ? TierText.colored(com.gregguns.api.Tier.EV) + "-" + TierText.colored(com.gregguns.api.Tier.IV)
-                : TierText.colored(com.gregguns.api.Tier.LUV) + "-" + TierText.colored(com.gregguns.api.Tier.ZPM);
+                : casing == WarheadCasing.T3
+                    ? TierText.colored(com.gregguns.api.Tier.LUV) + "-" + TierText.colored(com.gregguns.api.Tier.ZPM)
+                    : TierText.coloredIndex(
+                        casing.tier()
+                            .minVoltageTier());
         f.fill = data.fill();
         f.cap = cap;
         f.radius = def == null ? 0 : Math.max(WarheadMath.MIN_RADIUS, def.radius(data.fill()));
         f.fuseTicks = WarheadFuse.litTicks(f.radius, com.gregguns.core.config.IcbmConfig.fuseMultiplier);
         f.centerDamage = def == null ? 0 : def.damage(data.fill());
-        f.annihilates = def != null && def.annihilates();
+        f.annihilates = def != null && def.showsAnnihilation();
         WarheadTooltipFormat.Labels l = labels(data.explosive(), blast);
         boolean shift = net.minecraft.client.gui.GuiScreen.isShiftKeyDown();
         // The Shift details are full sentences; wrap them so the tooltip stays inside the screen.

@@ -26,6 +26,9 @@ TABLE = {
     "warhead_nuclear": ("mp_w_10_nuclear_large", 0.8, 1, None),
     "warhead_antimatter": ("mp_w_15_nuclear", 1.0, 2, 140),
     "warhead_redmatter": ("mp_w_15_balefire", 1.2, 2, -120),
+    # The T4 and T5 casings carry antimatter and red matter in a 1x1x2 column, so they get the same models, smaller.
+    "warhead_t4": ("mp_w_15_nuclear", 0.55, 1, 140),
+    "warhead_t5": ("mp_w_15_balefire", 0.6, 1, -120),
     # The T3 EMP warhead: NTM's cloud warhead (magenta bands, no lettering) on its taint-warhead model.
     "warhead_emp": ("mp_w_10_taint", 0.8, 1, None),
 }

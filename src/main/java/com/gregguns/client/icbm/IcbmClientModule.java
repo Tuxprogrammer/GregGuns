@@ -28,6 +28,7 @@ public final class IcbmClientModule implements ClientModule {
     public void preInit() {
         WarheadBlockRenderer.register();
         CloudFxClient.install();
+        OrbFxClient.install();
         MissileBodyRenderer.register();
         RenderingRegistry.registerEntityRenderingHandler(EntityMissileT1.class, new RenderMissile());
         RenderingRegistry.registerEntityRenderingHandler(EntityMissileT2.class, new RenderMissile());

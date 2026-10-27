@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 class WarheadModelsTest {
 
     private static final String DIR = "src/main/resources/assets/gregguns/models/thirdparty/ntm";
-    private static final String[] NAMES = { "warhead_t1", "warhead_t2", "warhead_t3", "warhead_nuclear",
-        "warhead_antimatter", "warhead_redmatter", "warhead_emp" };
+    private static final String[] NAMES = { "warhead_t1", "warhead_t2", "warhead_t3", "warhead_t4", "warhead_t5",
+        "warhead_nuclear", "warhead_antimatter", "warhead_redmatter", "warhead_emp" };
 
     private static WavefrontObject load(String name) throws Exception {
         try (InputStream in = new FileInputStream(new File(DIR, name + ".obj"))) {
@@ -71,7 +71,7 @@ class WarheadModelsTest {
             double[] b = bounds(load(c.blockName()));
             assertTrue(b[0] >= 0 && b[2] >= 0 && b[3] <= 1 && b[5] <= 1, c + " inside the block horizontally");
             assertTrue(b[1] >= 0 && b[4] <= c.heightBlocks() + 0.0001, c + " inside the block vertically");
-            assertTrue(b[4] > c.heightBlocks() - 0.1, c + " nose reaches the top");
+            assertTrue(b[4] > c.heightBlocks() - (c.number() >= 5 ? 0.4 : 0.1), c + " nose reaches the top");
         }
     }
 

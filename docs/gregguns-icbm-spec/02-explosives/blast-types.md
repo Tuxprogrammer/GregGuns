@@ -67,12 +67,19 @@ Casing T3 (LuV to ZPM, fill cap 64). Radius and damage are at a full casing; the
 | endothermic | T3 (LuV) | sphere crater | 28 | 8,000 | slowness III for 10 s on what is in the radius |
 | nuclear | T3 (ZPM) | sphere crater | 64 | 8,000 outside the kill zone | annihilation in the kill zone (60% of the radius), bosses included; fallout, see [nuclear-and-fallout](nuclear-and-fallout.md) |
 
-Payloads: exothermic is Industrial TNT, Plastic Explosive, four Napalm Canisters and kerosene; endothermic is Industrial TNT, Plastic Explosive, four Dispersal Canisters and helium; nuclear is Industrial TNT, Plastic Explosive, a core of eight uranium-235 and four plutonium ingots. **Deferred (D80):** ender, anti-gravitational and EMP.
+Payloads: exothermic is Industrial TNT, Plastic Explosive, four Napalm Canisters and kerosene; endothermic is Industrial TNT, Plastic Explosive, four Dispersal Canisters and helium; nuclear is Industrial TNT, Plastic Explosive, a core of eight uranium-235 and four plutonium ingots. **Deferred (D80):** ender and anti-gravitational (I5, coder B); EMP shipped in I4.
 
 - **Damage targets (D34):** the damaging T1 types deal at least 1,200 at ground zero at full fill, and T2 at least 3,000, before armor. The unit test `WarheadBlastTest` pins the numbers, and scenario `icbm.blast.condensed` (and the T2 ones) kills a target in the zone. Partial fills deal `D * sqrt(fill / cap)`.
 - **Special types** (gas, fire, push, sonic, breaching, smoke) are balanced on their own effect, not on the damage table (0018 §6).
 - **Thermobaric** is a plain crater here; ICBM's threaded thermobaric energy model is a later refinement if play shows the need.
 - **Dropped:** colors gas, and ender, anti-gravitational and EMP (D80) arrive with I4-I5.
+
+## The T4 and T5 set (I5)
+
+| Type | Tier | Terrain | Radius (full, fill 128) | Damage | Effect |
+|---|---|---|---|---|---|
+| [antimatter](antimatter.md) | T4 (UV) | sphere crater | 80 | annihilation in the kill zone (60%, bosses included); ramp from 16,000 outside it | ends red matter within 200 blocks; no fallout |
+| [redmatter](red-matter.md) | T5 (UHV) | none from the engine; the body eats a growing ball | 32 | annihilates everything inside the ball each tick | grows, eats, pulls, idles, ends within `icbm.redMatterLifetimeSeconds`; no fallout |
 
 ## Pipeline and protection
 

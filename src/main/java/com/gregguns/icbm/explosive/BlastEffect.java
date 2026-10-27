@@ -26,6 +26,27 @@ public interface BlastEffect {
         return false;
     }
 
+    /**
+     * Whether the effect has scheduled work for the shared budget now. Asked by the scheduler each turn while the blast
+     * is in its effect stage; an effect that scans or edits terrain over many ticks (red matter) offers its work here
+     * so it is bounded by the same {@link TickBudget} as every crater, instead of running unbudgeted in
+     * {@link #onTick}. Keep it cheap; an idle effect returns false and costs nothing.
+     *
+     * @param ctx the blast
+     * @return true when {@link #work} should run
+     */
+    default boolean wantsWork(BlastContext ctx) {
+        return false;
+    }
+
+    /**
+     * One slice of scheduled work (a few thousand cell checks and a few dozen block edits at most), on the server
+     * thread, only after {@link #wantsWork} said yes. Progress lives in {@link BlastContext#state()}.
+     *
+     * @param ctx the blast
+     */
+    default void work(BlastContext ctx) {}
+
     /** Called once when the blast ends, also when it is cancelled by a world unload or {@code /gregguns} clear. */
     default void onFinish(BlastContext ctx) {}
 }

@@ -207,7 +207,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @param guidanceTiers guidance tiers above the body's own
      * @param explosiveId   the warhead's explosive
      * @param warheadFill   the warhead's fill
-     * @param casingNumber  the warhead casing (1 to 3)
+     * @param casingNumber  the warhead casing (1 to 5)
      * @param owner         who armed it, may be null
      */
     public void configure(int guidanceTiers, String explosiveId, int warheadFill, int casingNumber,
@@ -263,7 +263,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         return explosive;
     }
 
-    /** @return the warhead casing number, 1 to 3; drawn on the nose */
+    /** @return the warhead casing number, 1 to 5; drawn on the nose */
     public int casingNumber() {
         return casing;
     }

@@ -67,6 +67,20 @@ public enum WarheadRecipeSpec {
     /** A fission core of uranium-235 and plutonium around an implosion charge (ZPM). */
     NUCLEAR(WarheadBlast.NUCLEAR, false, 3, plates(Tier.LUV, 8), Ing.industrialTnt(12), pe(4),
         Ing.gt("ingot", "Uranium235", 8, Tier.HV, 6.0), Ing.gt("ingot", "Plutonium", 4, Tier.EV, 8.0), fuze3()),
+    /**
+     * The antimatter warhead (UV, D134): naquadria casing, two UV field generators to contain it, a Quantum Eye, a
+     * plutonium-241 seed and an implosion charge.
+     */
+    ANTIMATTER(WarheadBlast.ANTIMATTER, false, 1, naquadria(8), Ing.industrialTnt(8), pe(4),
+        Ing.gtItem("Field_Generator_UV", 2, Tier.ZPM, 20.0), Ing.gtItem("QuantumEye", 1, Tier.ZPM, 15.0),
+        Ing.gt("ingot", "Plutonium241", 4, Tier.EV, 8.0), fuze3()),
+    /**
+     * The red matter warhead (UHV, D134): neutronium casing, two UHV field generators, two Quantum Eyes and two UHV
+     * emitters around an implosion charge.
+     */
+    REDMATTER(WarheadBlast.REDMATTER, false, 2, neutronium(8), Ing.industrialTnt(8), pe(4),
+        Ing.gtItem("Field_Generator_UHV", 2, Tier.ZPM, 30.0), Ing.gtItem("QuantumEye", 2, Tier.ZPM, 15.0),
+        Ing.gtItem("Emitter_UHV", 2, Tier.ZPM, 24.0), fuze3()),
     /** Two field generators and emitters around a flux-compression charge (LuV). */
     EMP(WarheadBlast.EMP, false, 4, plates(Tier.LUV, 8), Ing.industrialTnt(4), pe(2),
         Ing.gtItem("Field_Generator_LuV", 2, Tier.LUV, 12.0), Ing.gtItem("Emitter_LuV", 2, Tier.LUV, 10.0), fuze3()),
@@ -94,6 +108,16 @@ public enum WarheadRecipeSpec {
         }
         return tier == Tier.HV ? Ing.gt("plate", "StainlessSteel", count, Tier.HV, 1.0)
             : Ing.gt("plate", "Titanium", count, Tier.EV, 1.0);
+    }
+
+    /** The T4 casing plates. {@link Tier} stops at ZPM, which stands in for UV when inputs are checked. */
+    private static Ing naquadria(int count) {
+        return Ing.gt("plate", "Naquadria", count, Tier.ZPM, 2.0);
+    }
+
+    /** The T5 casing plates. {@link Tier} stops at ZPM, which stands in for UHV when inputs are checked. */
+    private static Ing neutronium(int count) {
+        return Ing.gt("plate", "Neutronium", count, Tier.ZPM, 3.0);
     }
 
     private static Ing pe(int count) {
@@ -132,13 +156,32 @@ public enum WarheadRecipeSpec {
         return inputs;
     }
 
-    /** @return the voltage tier the recipe runs at: the casing tier, HV for T1 and EV for T2 */
+    /**
+     * @return the voltage tier the recipe runs at: the casing tier, HV for T1 and EV for T2. For T4 and T5 this is ZPM,
+     *         the highest {@link Tier}; use {@link #machineVoltageIndex()} for the real machine
+     */
     public Tier machineTier() {
         return outputTier();
     }
 
+    /**
+     * @return GT's voltage index of the machine: the tier's, except UV (8) for antimatter and UHV (9) for red matter
+     */
+    public int machineVoltageIndex() {
+        if (blast.tier() == ExplosiveTier.T4) {
+            return 8;
+        }
+        if (blast.tier() == ExplosiveTier.T5) {
+            return 9;
+        }
+        return machineTier().voltageIndex();
+    }
+
     /** @return the tier of the output: HV for T1 warheads, EV for T2 (the tier-map rule, D1) */
     public Tier outputTier() {
+        if (blast.tier() == ExplosiveTier.T4 || blast.tier() == ExplosiveTier.T5) {
+            return Tier.ZPM;
+        }
         if (blast.tier() == ExplosiveTier.T3) {
             return blast == WarheadBlast.NUCLEAR ? Tier.ZPM : Tier.LUV;
         }

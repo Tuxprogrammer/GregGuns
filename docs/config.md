@@ -151,8 +151,9 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 
 | Key | Type | Default | Range | Synced | What it does |
 |---|---|---|---|---|---|
-| `icbm.maxBlastTier` | int | `4` | 1 to 4 | yes | The highest explosive tier that may detonate. |
-| `icbm.terrainDamageT1` to `icbm.terrainDamageT4` | boolean | `true` | n/a | yes | Whether blasts of that tier may remove terrain (on by default; `explosions.blockDamage` does not apply). |
+| `icbm.maxBlastTier` | int | `5` | 1 to 5 | yes | The highest explosive tier that may detonate. |
+| `icbm.terrainDamageT1` to `icbm.terrainDamageT4` | boolean | `true` | n/a | yes | Whether blasts of that tier may remove terrain (on by default; `explosions.blockDamage` does not apply). Tier 4 covers antimatter (UV) and red matter (UHV). |
+| `icbm.redMatterLifetimeSeconds` | int | `60` | 5 to 600 | yes | The longest a red matter body lives; it also ends sooner when it is idle for 10 s (D132). |
 | `icbm.blastBudgetMs` | int | `12` | 1 to 40 | yes | Milliseconds per server tick that all running blasts share for breaking blocks. |
 | `icbm.maxActiveBlasts` | int | `16` | 1 to 256 | yes | Most blasts running at once; more are refused. |
 | `icbm.maxBlastRadius` | int | `96` | 8 to 200 | yes | Largest blast radius; the ray cast copies a cube this wide. |
