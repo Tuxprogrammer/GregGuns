@@ -264,6 +264,8 @@ final class FalloutChainScenarios {
             }
             final boolean savedFallout = ExplosionsConfig.fallout;
             ExplosionsConfig.fallout = true;
+            FalloutEngine.instance()
+                .clearGoo(w); // an earlier scenario's goo is not this one's
             FalloutEngine.clear(w);
             if (!Fallout.start(w, ox + 0.5, oy, oz + 0.5, blast, Fallout.GRADE_ZPM)) {
                 ExplosionsConfig.fallout = savedFallout;

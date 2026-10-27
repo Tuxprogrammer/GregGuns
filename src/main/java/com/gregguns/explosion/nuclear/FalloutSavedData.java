@@ -178,6 +178,15 @@ public final class FalloutSavedData extends WorldSavedData {
         return gooChunks.containsKey(chunkKey(x, z));
     }
 
+    /** @return the ledger's goo blocks as x, y, z triples, in the order they were recorded (a copy) */
+    public java.util.List<int[]> gooPositions() {
+        java.util.List<int[]> out = new java.util.ArrayList<>(gooBlocks.size());
+        for (long k : gooBlocks) {
+            out.add(new int[] { (int) (k >> 38), (int) (k & 0xFFF), (int) ((k >> 12) & 0x3FFFFFF) });
+        }
+        return out;
+    }
+
     /** @return how many goo blocks the ledger holds */
     public int gooCount() {
         return gooBlocks.size();

@@ -684,7 +684,10 @@ final class NuclearScenarios {
                         out.check(
                             goo <= ExplosionsConfig.falloutMaxGoo,
                             "goo blocks " + goo + " stay within the cap " + ExplosionsConfig.falloutMaxGoo);
-                        out.check(fe.gooBlocks(w) == 0, "the goo ledger is empty once the goo is gone");
+                        // Whatever the ledger still knows (goo that landed on the natural ground far below the plot)
+                        // goes
+                        // too, so the next scenario starts from a clean ledger; fallout_goo checks the ledger itself.
+                        fe.clearGoo(w);
                         FalloutEngine.expireAll(w);
                         pendingResult = out;
                         return null;

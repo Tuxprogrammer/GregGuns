@@ -264,6 +264,29 @@ public final class FalloutEngine {
         }
     }
 
+    /**
+     * Digs up every goo block the ledger knows in a world, as a player with a shovel would (the blocks vanish without
+     * drops), and forgets any entry whose block is already gone. Used by tests to leave a world clean.
+     *
+     * @param world a world
+     * @return how many goo blocks were removed
+     */
+    public int clearGoo(World world) {
+        FalloutSavedData d = data(world, false);
+        if (d == null || world.isRemote) {
+            return 0;
+        }
+        int n = 0;
+        for (int[] p : d.gooPositions()) {
+            if (world.getBlock(p[0], p[1], p[2]) == FalloutBlocks.goo()) {
+                world.setBlock(p[0], p[1], p[2], net.minecraft.init.Blocks.air, 0, 2);
+                n++;
+            }
+            d.removeGoo(p[0], p[1], p[2]);
+        }
+        return n;
+    }
+
     /** @param world a world @return goo blocks the ledger holds in it */
     public int gooBlocks(World world) {
         FalloutSavedData d = data(world, false);
