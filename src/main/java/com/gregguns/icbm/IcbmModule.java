@@ -70,6 +70,10 @@ public final class IcbmModule implements GregGunsModule {
         com.gregguns.icbm.control.ControlMachines.registerRecipes();
         com.gregguns.icbm.silo.SiloMachines.registerRecipes();
         com.gregguns.icbm.emp.EmpMachines.registerRecipes();
+        // Nothing of OpenComputers is touched unless the pack has it (GGI-01-01).
+        if (cpw.mods.fml.common.Loader.isModLoaded("OpenComputers")) {
+            com.gregguns.icbm.compat.oc.OcCompat.register();
+        }
         com.gregguns.icbm.production.gc.MissileSchematicPage.registerAll();
     }
 }

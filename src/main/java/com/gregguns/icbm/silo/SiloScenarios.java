@@ -716,21 +716,24 @@ public final class SiloScenarios {
             DevStructureBuilder.Outcome built = build(ctx, ItemList.Hatch_Energy_LuV);
             out.note("build: " + built);
             IGregTechTileEntity cb = launchControl(ctx, 5, -2);
-            for (int a = -9; a <= 9; a += 8) {
-                for (int b = -9; b <= 9; b += 8) {
-                    ctx.world()
-                        .getChunkProvider()
-                        .provideChunk((ctx.originX() + a) >> 4, (ctx.originZ() + DISTANCE + b) >> 4);
+            final net.minecraft.world.World w = ctx.world();
+            final int tx = ctx.originX();
+            final int ty = ctx.originY();
+            final int tz = ctx.originZ() + DISTANCE;
+            // The context's setBlock does not reach 300 blocks out, so the platform and the buffers go in directly.
+            final java.util.List<int[]> stones = new java.util.ArrayList<>();
+            for (int a = -9; a <= 9; a++) {
+                for (int b = -9; b <= 9; b++) {
+                    w.getChunkProvider()
+                        .provideChunk((tx + a) >> 4, (tz + b) >> 4);
+                    w.setBlock(tx + a, ty - 1, tz + b, Blocks.stone, 0, 3);
+                    stones.add(new int[] { tx + a, ty - 1, tz + b });
                 }
-            }
-            final Target target = new Target(ctx, 0, DISTANCE, 9);
-            if (target.removed(ctx.world()) != 0) {
-                return ScenarioResult.fail(name(), "the target platform was not placed (its chunk is not loaded)");
             }
             final int buffer = ItemList.Battery_Buffer_1by1_MV.get(1)
                 .getItemDamage();
             for (int i = 0; i < BUFFERS; i++) {
-                com.gregguns.icbm.emp.EmpScenarios.place(ctx, i - 3, 0, DISTANCE + 2, buffer);
+                com.gregguns.icbm.emp.EmpScenarios.placeAbs(w, tx + i - 3, ty, tz + 2, buffer);
             }
             final boolean terrainT3 = IcbmConfig.terrainDamageT3;
             IcbmConfig.terrainDamageT3 = true;
@@ -753,8 +756,8 @@ public final class SiloScenarios {
                         out.check(formed(ctx), "the silo forms");
                         blocksBefore[0] = countBlocks(ctx);
                         for (int i = 0; i < BUFFERS; i++) {
-                            IGregTechTileEntity b = com.gregguns.icbm.emp.EmpScenarios
-                                .live(ctx, i - 3, 0, DISTANCE + 2);
+                            net.minecraft.tileentity.TileEntity t = w.getTileEntity(tx + i - 3, ty, tz + 2);
+                            IGregTechTileEntity b = t instanceof IGregTechTileEntity ? (IGregTechTileEntity) t : null;
                             if (b == null) {
                                 return fail(terrainT3, "a battery buffer at the target is missing");
                             }
@@ -790,14 +793,19 @@ public final class SiloScenarios {
                         out.check(m[0].isDead, "the missile detonated");
                         int empty = 0;
                         for (int i = 0; i < BUFFERS; i++) {
-                            IGregTechTileEntity b = com.gregguns.icbm.emp.EmpScenarios
-                                .live(ctx, i - 3, 0, DISTANCE + 2);
-                            if (b != null && b.getStoredEU() == 0L) {
+                            net.minecraft.tileentity.TileEntity t = w.getTileEntity(tx + i - 3, ty, tz + 2);
+                            if (t instanceof IGregTechTileEntity && ((IGregTechTileEntity) t).getStoredEU() == 0L) {
                                 empty++;
                             }
                         }
                         out.checkEquals("every buffer at the target was drained", BUFFERS, empty);
-                        out.checkEquals("the EMP broke no block at the target", 0, target.removed(ctx.world()));
+                        int broken = 0;
+                        for (int[] st : stones) {
+                            if (w.getBlock(st[0], st[1], st[2]) != Blocks.stone) {
+                                broken++;
+                            }
+                        }
+                        out.checkEquals("the EMP broke no block at the target", 0, broken);
                         out.check(formed(ctx), "the silo is still formed after its own launch");
                         out.checkEquals("no block of the silo was damaged", blocksBefore[0], countBlocks(ctx));
                         IcbmConfig.terrainDamageT3 = terrainT3;

@@ -47,7 +47,8 @@ import gregtech.api.render.TextureFactory;
  * are clamped (ICBM-05-11). Construct only inside GT's MTE window ({@link EmpMachines#register()}). Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/emp-tower.md
-public final class MTEEmpTower extends MTETieredMachineBlock implements ISecondaryDescribable {
+public final class MTEEmpTower extends MTETieredMachineBlock
+    implements ISecondaryDescribable, com.gregguns.icbm.component.EmpTowerView {
 
     /** How far a pressing player may stand from the block, blocks. */
     static final double USE_DISTANCE = 8.0;
@@ -188,6 +189,7 @@ public final class MTEEmpTower extends MTETieredMachineBlock implements ISeconda
     // --- state ----------------------------------------------------------------------------------------------------
 
     /** @return the pulse radius, blocks, from {@link EmpRules#MIN_RADIUS} to the configured maximum */
+    @Override
     public int radius() {
         return EmpRules.clampRadius(radius, IcbmConfig.empMaxRadius);
     }
@@ -197,17 +199,20 @@ public final class MTEEmpTower extends MTETieredMachineBlock implements ISeconda
      *
      * @param value the requested radius, blocks
      */
+    @Override
     public void setRadius(int value) {
         radius = EmpRules.clampRadius(value, IcbmConfig.empMaxRadius);
         changed();
     }
 
     /** @return what a pulse reaches */
+    @Override
     public EmpMode mode() {
         return mode;
     }
 
     /** @param next what a pulse reaches; null is ignored */
+    @Override
     public void setMode(EmpMode next) {
         if (next != null) {
             mode = next;
@@ -215,17 +220,26 @@ public final class MTEEmpTower extends MTETieredMachineBlock implements ISeconda
         }
     }
 
+    @Override
+    public long stored() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        return base == null ? 0L : base.getStoredEU();
+    }
+
     /** @return the EU one pulse costs at the current radius */
+    @Override
     public long cost() {
         return EmpRules.euCost(radius());
     }
 
     /** @return ticks until the tower may fire again; 0 when ready by the clock */
+    @Override
     public int cooldownLeft() {
         return cooldown.cooldownLeft();
     }
 
     /** @return the first failing check right now, or READY; the same answer for every way of firing */
+    @Override
     public EmpRules.Gate gate() {
         IGregTechTileEntity base = getBaseMetaTileEntity();
         long stored = base == null ? 0L : base.getStoredEU();
@@ -243,6 +257,7 @@ public final class MTEEmpTower extends MTETieredMachineBlock implements ISeconda
     }
 
     /** @return how many pulses this tower has fired since it loaded (tests and the GUI) */
+    @Override
     public int pulses() {
         return pulses;
     }
@@ -262,6 +277,7 @@ public final class MTEEmpTower extends MTETieredMachineBlock implements ISeconda
      *
      * @return the gate that decided: {@link EmpRules.Gate#READY} means the pulse went
      */
+    @Override
     public EmpRules.Gate fire() {
         IGregTechTileEntity base = getBaseMetaTileEntity();
         if (base == null || base.isClientSide()) {

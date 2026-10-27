@@ -68,6 +68,32 @@ public final class EmpScenarios {
         return base;
     }
 
+    /**
+     * Puts a GT machine at absolute coordinates, for targets farther from the scenario origin than the scenario area
+     * (the context's {@code setBlock} does not reach there).
+     *
+     * @param world the world
+     * @param x     block X
+     * @param y     block Y
+     * @param z     block Z
+     * @param id    the MTE id
+     * @return its tile entity
+     */
+    public static IGregTechTileEntity placeAbs(net.minecraft.world.World world, int x, int y, int z, int id) {
+        world.getChunkProvider()
+            .provideChunk(x >> 4, z >> 4);
+        IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[id];
+        world.setBlock(x, y, z, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType(), 3);
+        TileEntity tile = world.getTileEntity(x, y, z);
+        if (!(tile instanceof IGregTechTileEntity)) {
+            throw new IllegalStateException("no GT tile entity at " + x + "," + y + "," + z);
+        }
+        IGregTechTileEntity base = (IGregTechTileEntity) tile;
+        base.setInitialValuesAsNBT(null, (short) id);
+        base.setFrontFacing(ForgeDirection.NORTH);
+        return base;
+    }
+
     /** The machine as the world holds it now; GT may replace the tile entity in its first ticks. */
     public static IGregTechTileEntity live(ScenarioContext ctx, int dx, int dy, int dz) {
         TileEntity tile = ctx.world()
