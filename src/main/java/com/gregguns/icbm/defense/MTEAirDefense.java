@@ -198,7 +198,16 @@ public final class MTEAirDefense extends DefenseBlock {
             }
             if (SamRules.stillNeeded(m.health(), samsAt(w, c.id())) > 0 && takeSam()
                 && base.decreaseStoredEnergyUnits(SamRules.EU_PER_SHOT, false)) {
-                w.spawnEntityInWorld(EntitySam.launch(w, bx, base.getYCoord() + 1.2, bz, c.id()));
+                EntitySam sam = EntitySam.launch(w, bx, base.getYCoord() + 1.2, bz, c.id());
+                boolean added = w.spawnEntityInWorld(sam);
+                com.gregguns.GregGuns.LOG.info(
+                    "[sam dbg] spawned={} added={} chunk={} dead={} id={}",
+                    added,
+                    sam.addedToChunk,
+                    w.getChunkProvider()
+                        .chunkExists((int) bx >> 4, (int) bz >> 4),
+                    sam.isDead,
+                    sam.getEntityId());
                 w.playSoundEffect(bx, by, bz, "fireworks.launch", 3.0F, 1.2F);
                 cooldown = SamRules.FIRE_INTERVAL;
                 fired = true;
