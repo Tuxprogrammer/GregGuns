@@ -29,8 +29,8 @@ One item per casing tier. I1 ships T1 and T2. The item holds an NBT tag:
 | T1 | HV | 5 | 1x1x1 |
 | T2 | EV to IV | 20 | 1x1x1 |
 | T3 (I3) | LuV to ZPM | 64 | 1x1x2, with a filler block |
-| T4 (I5) | UV | 128 | larger (I5) |
-| T5 (I5) | UHV | 128 | larger (I5) |
+| T4 (I5) | UV | 128 | 1x1x2, with a filler block (D131) |
+| T5 (I5) | UHV | 128 | 1x1x2, with a filler block (D131) |
 
 A warhead's explosive tier equals its casing tier: a T1 casing carries T1 explosives and a T2 casing T2 explosives. The fill cap is the casing's cap. A stack that carries an explosive of another tier reads as condensed.
 
@@ -129,6 +129,17 @@ Assembler, 400 ticks, casing of 8 tungstensteel plates, one Fuze Assembly Mk III
 | Nuclear | ZPM | 12 Industrial TNT, 4 Plastic Explosive, 8 uranium-235 ingots, 4 plutonium ingots |
 
 Each recycles into its tungstensteel plates (D44). The T3 cost band is 55 to 150 plate equivalents.
+
+### T4 and T5 recipes (I5, D134)
+
+Assembler at UV and UHV, 400 ticks, casing of 8 naquadria (T4) or neutronium (T5) plates, one Fuze Assembly Mk III in each (no Mk IV or V: the fuze is a timer). Circuits 1 and 2 (unique among T4 and T5). Machine voltage index 8 and 9 (`WarheadRecipeSpec.machineVoltageIndex`, since `Tier` stops at ZPM). Cost band 100 to 400 plate equivalents.
+
+| Warhead | Tier | Inputs after the casing and the Fuze |
+|---|---|---|
+| [Antimatter](antimatter.md) | UV | 8 Industrial TNT, 4 Plastic Explosive, 2 Field Generators (UV), 1 Quantum Eye, 4 plutonium-241 ingots |
+| [Red matter](red-matter.md) | UHV | 8 Industrial TNT, 4 Plastic Explosive, 2 Field Generators (UHV), 2 Quantum Eyes, 2 Emitters (UHV) |
+
+Each recycles into its casing plates (D44). The T3 missile body carries these casings (D131).
 
 ## Requirements
 

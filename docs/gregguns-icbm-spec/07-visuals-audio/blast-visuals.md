@@ -19,3 +19,7 @@ I1's gas warheads showed a few vanilla "spell" puffs every half second, which di
 ## Tests
 
 `CloudPlanTest`; the look is checked in the batched client session (gas clouds and large blasts read clearly).
+
+## Orbs
+
+The annihilation warheads (I5, D135) are drawn as one translucent sphere each, not as particles. `PacketBlastOrb` (kind byte, x, y, z floats, radius short, ticks-left short: 17 bytes) tells players within 256 blocks. The **antimatter flash** is a white-cyan ball that swells with an ease-out curve to the blast radius over 60 ticks while fading out. The **red matter body** is a dark core with a red translucent rim at the carved radius, steady until its last second, re-announced every 20 ticks so late arrivals see it. The client (`OrbFxClient`) keeps at most 4 orbs, draws each with one reused GLU quadric (24 segments) in the world-last render pass with depth writes off, and does no block scan and no per-frame allocation. The numbers live in `OrbPlan` with unit tests.

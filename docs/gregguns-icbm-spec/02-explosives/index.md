@@ -16,7 +16,8 @@ The registry, engine, annihilation, warhead and blast-type sheets are written; t
 - [annihilation.md](annihilation.md): the shared kill-zone rule with a bosses flag (D30).
 - [nuclear-and-fallout.md](nuclear-and-fallout.md): the nuclear blast shared with the Nuke Launcher, and basic fallout (D83, D84).
 - fallout.md (planned): irradiated blocks, trinitite, goo, caps and GT yields (D21).
-- red-matter.md (planned): the bounded rebuild of red matter (D10).
+- [antimatter.md](antimatter.md): the T4 (UV) annihilation warhead (D130, D133).
+- [red-matter.md](red-matter.md): the bounded rebuild of red matter, T5 (UHV) (D10, D132).
 
 ## Integration map
 

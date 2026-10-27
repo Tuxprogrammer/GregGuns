@@ -20,7 +20,7 @@
 
 Package `com.gregguns.icbm.explosive`, Java 8 final classes, no Minecraft types except in `BlastContext` and `IcbmBlasts`.
 
-- `ExplosiveTier` (T1 to T4): number, minimum GT voltage tier (HV 3, EV 4, LuV 6, UV 8), label, minimum center damage (1,200 / 3,000 / 8,000 / none for annihilation).
+- `ExplosiveTier` (T1 to T5): number, minimum GT voltage tier (HV 3, EV 4, LuV 6, UV 8, UHV 9), label, minimum center damage (1,200 / 3,000 / 8,000 / 16,000 for T4 antimatter / none for T5 red matter, which kills through its body).
 - `BlastShape`: `RAY_SPHERE` (the ported large caster), `RAY_GRID` (the small caster), `NONE` (effect and damage only).
 - `ExplosiveDef` (immutable, built with `builder(id, tier)`): shape, base radius, radius exponent, max fill, center damage, annihilation flags, ray energy, `BlastEffect`. `radius(fill)` and `damage(fill)` are the pure math the tooltip and the engine share. `hidden()` marks test-only defs.
 - `Explosives`: `register`, `get(id)`, `all()` (hidden ones left out), `allIncludingHidden()`.
