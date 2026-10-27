@@ -18,6 +18,19 @@ public final class BlastScheduler {
 
     private int rotation;
 
+    /** Receives the label and duration of every slice; diagnostics only. */
+    interface SliceObserver {
+
+        void slice(String label, long nanos);
+    }
+
+    private SliceObserver observer;
+
+    /** @param observer sees every slice, or null for none (the default) */
+    void observe(SliceObserver observer) {
+        this.observer = observer;
+    }
+
     /**
      * Runs one tick's slices.
      *
@@ -50,7 +63,16 @@ public final class BlastScheduler {
                 first = false;
                 slices++;
                 progressed = true;
-                if (t.step()) {
+                boolean done;
+                if (observer == null) {
+                    done = t.step();
+                } else {
+                    String label = t.label();
+                    long began = System.nanoTime();
+                    done = t.step();
+                    observer.slice(label, System.nanoTime() - began);
+                }
+                if (done) {
                     finished.put(t, Boolean.TRUE);
                 }
             }

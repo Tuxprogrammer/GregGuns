@@ -13,7 +13,8 @@ class GregGunsCasingsTest {
     private static final int[] METAS = { GregGunsCasings.WORKS_CASING, GregGunsCasings.RAM_HOUSING,
         GregGunsCasings.REACTION_CASING, GregGunsCasings.GANTRY_CASING, GregGunsCasings.GANTRY_BEAM,
         GregGunsCasings.GANTRY_HOIST, GregGunsCasings.REPAIR_CRADLE, GregGunsCasings.BASTION_IRON,
-        GregGunsCasings.BASTION_STEEL, GregGunsCasings.BASTION_ALUMINUM, GregGunsCasings.BASTION_CARBON };
+        GregGunsCasings.BASTION_STEEL, GregGunsCasings.BASTION_ALUMINUM, GregGunsCasings.BASTION_CARBON,
+        GregGunsCasings.RADAR_CASING };
 
     @Test
     void metaConstantsAreUniqueAndCountedByMetaCount() {

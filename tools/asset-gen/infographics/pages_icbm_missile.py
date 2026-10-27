@@ -3,7 +3,7 @@
 The missile models are the shipped OBJ files (body plus warhead, the warhead seated on the body's nose exactly as the
 game seats it), drawn with render3d.obj_scene, the strict Forge reader. The numbers are read from the I2 code
 (MissileTier, MissileBuildSpec, EntityMissile, MTELaunchControl, IcbmConfig); the draft stamp is gone (D50).
-The launch pad is Galacticraft's own thin slab and the plates, fins and engines are its real icons, from Galacticraft
+The launch pad is Galacticraft's own stepped plate and the plates, fins and engines are its real icons, from Galacticraft
 Legacy under the MIT License (D85; the files sit in the thirdparty folders). Vanilla textures are not needed any more.
 
 Run on its own (needs no warhead dump):  python tools/asset-gen/infographics/pages_icbm_missile.py
@@ -73,18 +73,18 @@ def _sig(*paths: Path) -> str:
 
 
 def missile_on_pad(tier: int, ppu=170) -> K.Path:
-    """The stacked missile (body plus warhead) standing on Galacticraft's 3 x 3 launch pad, a slab 3/16 of a block tall."""
+    """The stacked missile (body plus warhead) standing on Galacticraft's 3 x 3 launch pad, three steps 0.4 of a block tall."""
     t = TIERS[tier]
     files = [NTM / f"{t['body']}.obj", NTM_TEX / f"{t['body']}.png", NTM / f"{t['warhead']}.obj", NTM_TEX / f"{t['warhead']}.png"]
 
     def make():
         body = R.obj_scene(*files[:2])
         seat = body.bounds()[1][1]
-        sc = TP.pad_slab(0, 0)
+        sc = TP.pad_formed(0, 0)
         sc.extend(body, R.tr(1, TP.PAD_HEIGHT, 1))
         sc.extend(R.obj_scene(*files[2:]), R.tr(1, TP.PAD_HEIGHT + seat, 1))
         return R.trim(R.render(sc, yaw=-30, pitch=14, ppu=ppu, ss=2, outline=K.RIM), 2)
-    return K._cached(f"missile-pad-{tier}", dict(sig=_sig(*files, TP.GC_PAD), u=ppu, v=2), make)
+    return K._cached(f"missile-pad-{tier}", dict(sig=_sig(*files, TP.GC_PAD), u=ppu, v=3), make)
 
 
 def block_icon(tag: str, tier: str, overlay: str | None) -> K.Path:

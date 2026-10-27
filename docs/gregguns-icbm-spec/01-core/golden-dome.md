@@ -55,6 +55,15 @@
 | `gg_air_defense` | Air-defense battery (D15) | `getInfo()`, `getSamCount()`, `fireAt(contactId)` → bool, reason, `setAuto(bool)` | `sam_fired`, `sam_hit` |
 | `gg_emp_tower` | EMP tower (D16) | `getInfo()`, `isReady()`, `getCooldown()`, `getMode()` / `setMode(m)` (`all`, `missiles`, `machines`), `getRadius()` / `setRadius(r)`, `fire()` → bool, reason | `emp_ready`, `emp_fired` |
 
+**Deviation (D106, D108).** A GT machine's tile entity cannot be an OpenComputers environment, so each machine is a block driver and a computer reaches it through an **Adapter** next to it. Details of the calls as built:
+
+- `setTarget(x, z)` also accepts `(x, y, z)`; the height is ignored (a missile aims at a column). It answers `false, "bad_target"` past the world border.
+- A refusal's reason is the lowercase status name the GUI shows (`no_target`, `no_pad`, `no_power`, `cooldown`, `no_missile`, `not_armed`, `not_fueled`, `too_close`, `out_of_range`, `silo_tier`, ...). `canLaunch()` answers `true` only for `ready`; `launch()` answers `true` only when the missile went.
+- A silo has no data-stick slot, so `gg_silo.setTargetFromStick()` answers `false, "no_stick"`; set its target with `setTarget`. The computer's target lives in the silo's NBT.
+- `gg_radar` also has `getInfo()` fields `online`, `range`, `protectedRadius` and `contacts`; `setProtectedRadius(r)` returns the radius in effect after the GUI's clamp.
+- `gg_air_defense.fireAt(contactId)` answers `false` with `no_link`, `no_contact`, `no_sams`, `out_of_range`, `cooling`, `no_power` or `module_off`; `setAuto(on)` returns the flag now in effect; the signals are sent once per new shot or hit.
+- Signals carry the component address first, then (for radar signals) the contact id.
+
 `getInfo()` returns config-derived constants: range, EU cost per action and per tick, cooldown, maximum radius, and the device cap per pulse.
 
 ## Golden Dome programs
@@ -72,7 +81,7 @@
 - **GGI-01-01** With OpenComputers absent, every ICBM machine loads and works, and no OC class is touched.
 - **GGI-01-02** Each machine in the components table shows up as the named component when connected to an OC computer.
 - **GGI-01-03** No callback that changes the world runs off the server thread.
-- **GGI-01-04** `launch()` and `fire()` enforce the same checks as the GUI and redstone paths (power, fuel, range, missile present, cooldown), and return `false, "<reason>"` on refusal. A computer can never bypass a check a player can't.
+- **GGI-01-04** `launch()` and `fire()` enforce the same checks as the GUI and redstone paths (power, fuel, range, missile present, cooldown), and return `false, "<reason>"` on refusal. A call to a Launch Control or the tower passes every check the machine makes (power, cooldown included). A call to a Missile Silo passes the silo's own checks (formed, missile, fuel, range, target, countdown), but a silo has no EU shot or cooldown of its own (those belong to the Launch Control), so it launches without them (D127).
 - **GGI-01-05** Signals are sent on state transitions only. An unchanged state sends nothing.
 - **GGI-01-06** `getContacts()` returns record tables with the fields listed, with `incoming` decided by the predicted impact point (D14).
 - **GGI-01-07** The Golden Dome floppy exists only when OpenComputers is loaded, is crafted in the GT Assembler as specified, and is read-only.

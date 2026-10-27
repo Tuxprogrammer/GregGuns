@@ -13,4 +13,9 @@ public interface BlastTask {
      * @return true when the task is finished and can be dropped
      */
     boolean step();
+
+    /** @return a short name of what the next slice does, for diagnostics */
+    default String label() {
+        return "";
+    }
 }

@@ -51,7 +51,8 @@ import gregtech.api.render.TextureFactory;
  */
 // Spec: docs/gregguns-icbm-spec/04-launch-control/launch-control-block.md,
 // docs/gregguns-icbm-spec/04-launch-control/launch-sequence.md
-public final class MTELaunchControl extends MTETieredMachineBlock implements ISecondaryDescribable {
+public final class MTELaunchControl extends MTETieredMachineBlock
+    implements ISecondaryDescribable, com.gregguns.icbm.component.LaunchView {
 
     /** EU one shot costs (1,200 FE in ICBM's units; 4 FE to the EU). */
     public static final int EU_PER_SHOT = 300;
@@ -114,6 +115,7 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
     private ControlStatus lastShot;
     private TargetStick.Outcome lastStick;
     private int attempts;
+    private int launches;
 
     /**
      * The prototype that registers the machine under {@code id}.
@@ -352,24 +354,30 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
         if (!mayUse(player)) {
             return;
         }
+        loadStick();
+    }
+
+    /** Copies the target on the stick in the slot to this block; the outcome is also kept for the GUI line. */
+    private TargetStick.Outcome loadStick() {
         ItemStack stick = getStackInSlot(SLOT_STICK);
         if (!isStick(stick)) {
             lastStick = TargetStick.Outcome.NO_STICK;
-            return;
+            return lastStick;
         }
         NBTTagCompound tag = stick.getTagCompound();
         LaunchTarget t = TargetStick.read(tag);
         if (!t.isSet()) {
             lastStick = TargetStick.Outcome.EMPTY_STICK;
-            return;
+            return lastStick;
         }
         int dim = getBaseMetaTileEntity().getWorld().provider.dimensionId;
         if (TargetStick.dimension(tag, dim) != dim) {
             lastStick = TargetStick.Outcome.WRONG_DIMENSION;
-            return;
+            return lastStick;
         }
         setTarget(t);
         lastStick = TargetStick.Outcome.LOADED;
+        return lastStick;
     }
 
     /** @return the pre-check status right now, recomputed (tests and the GUI line); server side */
@@ -499,10 +507,82 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
         if (st == ControlStatus.FIRED) {
             base.decreaseStoredEnergyUnits(EU_PER_SHOT, true);
             shots.startCooldown(COOLDOWN_TICKS);
+            launches++;
         }
         lastShot = st;
         snapshot = null;
         return st;
+    }
+
+    // --- OpenComputers view (gg_launch_control) -------------------------------------------------------------------
+
+    @Override
+    public LaunchTarget launchTarget() {
+        return target();
+    }
+
+    @Override
+    public void aimAt(int x, int z) {
+        if (!isServerLive()) {
+            return;
+        }
+        setTarget(LaunchTarget.of(x, z));
+    }
+
+    @Override
+    public TargetStick.Outcome loadTargetFromStick() {
+        return isServerLive() ? loadStick() : TargetStick.Outcome.NO_STICK;
+    }
+
+    @Override
+    public MissileStatus missileStatus() {
+        LaunchSite site = siteOrNull();
+        return site == null ? MissileStatus.NONE : site.status();
+    }
+
+    @Override
+    public String fuelFluid() {
+        MissileStatus ms = missileStatus();
+        return ms.present() && ms.tier()
+            .fuels().length > 0 ? ms.tier()
+                .fuels()[0] : "";
+    }
+
+    @Override
+    public ControlStatus launchStatus() {
+        return isServerLive() ? currentStatus() : ControlStatus.NO_PAD;
+    }
+
+    @Override
+    public ControlStatus launchNow() {
+        return fire(null);
+    }
+
+    @Override
+    public int launches() {
+        return launches;
+    }
+
+    @Override
+    public java.util.Map<String, Object> launchInfo() {
+        java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
+        m.put("euPerShot", EU_PER_SHOT);
+        m.put("cooldownTicks", COOLDOWN_TICKS);
+        m.put("padFound", siteOrNull() != null);
+        return m;
+    }
+
+    private boolean isServerLive() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        return base != null && !base.isClientSide() && ModuleState.isActive(ModuleId.ICBM);
+    }
+
+    private LaunchSite siteOrNull() {
+        if (!isServerLive()) {
+            return null;
+        }
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        return LaunchSites.find(base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord());
     }
 
     /**
@@ -563,7 +643,34 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
         if (base.isClientSide()) {
             return true;
         }
+        if (loadFromRadarGun(player)) {
+            return true;
+        }
         openGui(player);
+        return true;
+    }
+
+    /**
+     * A radar gun in hand with a target copies it here instead of opening the screen (D93).
+     *
+     * @param player the player
+     * @return true when the gun held a target in this dimension and it was copied
+     */
+    private boolean loadFromRadarGun(EntityPlayer player) {
+        ItemStack held = player.getHeldItem();
+        LaunchTarget t = com.gregguns.icbm.defense.ItemRadarGun.target(held);
+        if (!t.isSet() || !mayUse(player)) {
+            return false;
+        }
+        int dim = getBaseMetaTileEntity().getWorld().provider.dimensionId;
+        if (com.gregguns.icbm.defense.ItemRadarGun.dimension(held, dim) != dim) {
+            player.addChatMessage(
+                new net.minecraft.util.ChatComponentTranslation("gregguns.icbm.radargun.wrong_dimension"));
+            return true;
+        }
+        setTarget(t);
+        player.addChatMessage(
+            new net.minecraft.util.ChatComponentTranslation("gregguns.icbm.radargun.loaded", t.x(), t.z()));
         return true;
     }
 

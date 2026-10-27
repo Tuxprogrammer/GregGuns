@@ -8,7 +8,7 @@ GregGuns-only area (the ICBM baseline has no worldgen): Abandoned Missile Silos 
 
 All sheets are planned.
 
-- silo-layout.md (planned): shaft, hall, side rooms, the O, D and Closed surface variants, never cascading (D17).
+- silo-layout.md (planned): the D128 complex: about 240 x 240 blocks on one flat level, a central hall with wings, one to four real silos with their shafts and the O, D and Closed variants, the room set, the escape shaft, never cascading (D17, D128).
 - activity-levels.md (planned): abandoned, partly abandoned, operational; the per-level damage pass in the layout (D36).
 - silo-guard-spawner.md (planned): the spawner block on the M8 spawner system, mob lists (D36).
 - loot-and-ceilings.md (planned): loot by tier, salvage, the planet table (D38).
@@ -24,11 +24,12 @@ All sheets are planned.
 | Ross128b, Ross128ba | Ceiling rolled per silo, EV to UMV | Amun-Ra / pack planets | [D38](../DECISIONS.md#d38-in-detail), [0019](../../design/0019-structures-on-ross128.md) |
 | Planet tiers | GT's own dimension table | GT5-Unofficial `DimensionHelper` | [D38](../DECISIONS.md#d38-in-detail) |
 | Salvage | Damaged T1 missile body (GT recycling), rare schematic chip | GT recycling | [D17](../DECISIONS.md#d17-in-detail) |
-| Contents | Inert decorative GT casings, no live warheads | GT casings | [D17](../DECISIONS.md#d17-in-detail) |
+| Layout | A flat complex: central hall, wings, rooms, one to four real silos | GregGuns Missile Silo (20141) | [D128](../DECISIONS.md) |
+| Contents | Real machines (NASA Workbench, GT generators) within the D38 ceiling, no live warheads | Galacticraft, GT | [D129](../DECISIONS.md) |
 
 ## Decisions carried
 
-D17, D36, D38; 0019 for Ross128.
+D17, D36, D38, D128, D129; 0019 for Ross128.
 
 ## Roadmap
 
@@ -44,5 +45,5 @@ None yet.
 
 ## Open questions
 
-- Silo dimensions (shaft about 21 across, hall about 64 x 64 x 24 are starting targets): to settle in the I6 layout sheet.
+- The level's depth below the surface, the hall's size and the room sizes (D128 sets the complex at about 240 x 240): to settle in the I6 layout sheet.
 - Planets whose terrain cannot host the layout are skipped and logged; the list is built in I6.

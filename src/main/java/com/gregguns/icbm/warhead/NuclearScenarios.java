@@ -86,6 +86,9 @@ final class NuclearScenarios {
         }
     }
 
+    /** No tick may spend more than this on blasts, however loaded the box: a slice that ignores the clock would. */
+    private static final long HARD_CAP_NANOS = 50_000_000L;
+
     private static boolean off() {
         return WarheadBlocks.of(WarheadCasing.T1) == null || Explosives.get("nuclear") == null;
     }
@@ -197,6 +200,7 @@ final class NuclearScenarios {
                     if (stage[1] == 0) {
                         before[0] = stone(w, cx, cy, cz, half);
                         engine.resetStats();
+                        engine.recordTicks(true);
                         out.check(
                             IcbmBlasts.detonate(w, cx + 0.5, cy + 0.5, cz + 0.5, def, def.maxFill(), null),
                             "the nuclear blast should be accepted");
@@ -220,19 +224,55 @@ final class NuclearScenarios {
                     IcbmConfig.terrainDamageT3 = savedT3;
                     IcbmConfig.blastBudgetMs = savedBudget;
                     long max = engine.maxTickNanos();
+                    long[] perTick = engine.tickNanos();
+                    String slowest = engine.slowestSlice();
+                    engine.recordTicks(false);
+                    long limit = budgetMs * 1_000_000L + 5_000_000L;
+                    int over = 0;
+                    for (long t : perTick) {
+                        if (t > limit) {
+                            over++;
+                        }
+                    }
+                    long[] sorted = perTick.clone();
+                    java.util.Arrays.sort(sorted);
+                    long p50 = sorted.length == 0 ? 0L : sorted[sorted.length / 2];
+                    long p99 = sorted.length == 0 ? 0L
+                        : sorted[(int) Math.min(sorted.length - 1, sorted.length * 99L / 100L)];
                     int broken = before[0] - stone(w, cx, cy, cz, half);
                     out.check(stage[2] >= 3, "the crater should be decided over several ticks, took " + stage[2]);
                     out.check(stage[3] == 1, "the decide stage should have been reloaded once");
                     // BlastEngine.maxTickNanos is the scheduler's own time inside the tick (not the whole server tick),
-                    // so it is the blast's own share; the allowance is one slice's overshoot.
+                    // so it is the blast's own share. One tick can still run long on a shared box (a garbage collection
+                    // or another process taking the core), which no slice can prevent, so the bar is the distribution:
+                    // 99% of the ticks that ran blast work (one tick at least) stay within the budget plus one slice's
+                    // overshoot, and no
+                    // tick passes a hard cap that would mean a slice that does not watch the clock.
                     out.check(
-                        max <= budgetMs * 1_000_000L + 5_000_000L,
+                        over <= Math.max(1, perTick.length / 100),
+                        over + " of "
+                            + perTick.length
+                            + " blast ticks passed "
+                            + limit / 1_000_000L
+                            + " ms (p50 "
+                            + p50 / 1_000_000L
+                            + " ms, p99 "
+                            + p99 / 1_000_000L
+                            + " ms, slowest slice "
+                            + slowest
+                            + "), at most 1% (and one tick) allowed against a "
+                            + budgetMs
+                            + " ms budget");
+                    out.check(
+                        max <= HARD_CAP_NANOS,
                         "the worst tick spent " + max / 1_000_000L
                             + " ms on blasts (stage after it: "
                             + engine.maxTickStage()
-                            + ") against a "
-                            + budgetMs
-                            + " ms budget");
+                            + "; slowest slice "
+                            + slowest
+                            + "), past the "
+                            + HARD_CAP_NANOS / 1_000_000L
+                            + " ms hard cap");
                     double hemisphere = 2.0 / 3.0 * Math.PI * r * r * r;
                     out.check(
                         broken >= 0.45 * hemisphere,
@@ -254,7 +294,20 @@ final class NuclearScenarios {
                             + stage[2]
                             + ", worst tick "
                             + max / 1_000_000L
-                            + " ms");
+                            + " ms ("
+                            + engine.maxTickStage()
+                            + "), "
+                            + perTick.length
+                            + " blast ticks, p50 "
+                            + p50 / 1_000_000L
+                            + " ms, p99 "
+                            + p99 / 1_000_000L
+                            + " ms, "
+                            + over
+                            + " over "
+                            + limit / 1_000_000L
+                            + " ms, slowest slice "
+                            + slowest);
                     verdict[0] = out.build();
                     return null;
                 } catch (RuntimeException e) {

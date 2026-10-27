@@ -52,6 +52,10 @@ public final class BlastEngine {
     private long maxTickNanos;
     private BlastJob lastStarted;
     private String maxTickStage = "none";
+    private boolean recording;
+    private final List<Long> tickLog = new ArrayList<>();
+    private long slowestSliceNanos;
+    private String slowestSliceLabel = "none";
 
     private BlastEngine() {}
 
@@ -188,6 +192,37 @@ public final class BlastEngine {
         return maxTickStage;
     }
 
+    /**
+     * Test hook: while on, records the scheduler time of every tick and the slowest single slice, to tell a slice that
+     * overruns (an engine problem) from a pause the slices cannot control.
+     */
+    public void recordTicks(boolean on) {
+        tickLog.clear();
+        slowestSliceNanos = 0L;
+        slowestSliceLabel = "none";
+        scheduler.observe(on ? (label, nanos) -> {
+            if (nanos > slowestSliceNanos) {
+                slowestSliceNanos = nanos;
+                slowestSliceLabel = label;
+            }
+        } : null);
+        recording = on;
+    }
+
+    /** @return the scheduler time of each tick since {@link #recordTicks}, nanoseconds, in tick order */
+    public long[] tickNanos() {
+        long[] a = new long[tickLog.size()];
+        for (int i = 0; i < a.length; i++) {
+            a[i] = tickLog.get(i);
+        }
+        return a;
+    }
+
+    /** @return the slowest single slice since {@link #recordTicks}: its stage and time */
+    public String slowestSlice() {
+        return slowestSliceLabel + " " + slowestSliceNanos / 1_000_000.0 + " ms";
+    }
+
     /** Test hook: zeroes {@link #maxTickNanos()}. */
     public void resetStats() {
         maxTickNanos = 0L;
@@ -231,6 +266,9 @@ public final class BlastEngine {
         budget.open(IcbmConfig.blastBudgetMs * 1_000_000L);
         lastSlices = scheduler.runTick(jobs, budget);
         long spent = System.nanoTime() - began;
+        if (recording && lastSlices > 0) {
+            tickLog.add(spent);
+        }
         if (spent > maxTickNanos) {
             maxTickNanos = spent;
             maxTickStage = jobs.isEmpty() ? "none"

@@ -130,6 +130,11 @@ final class BlastJob implements BlastTask {
         return broken;
     }
 
+    @Override
+    public String label() {
+        return stageName();
+    }
+
     String stageName() {
         return st.stage.name() + (st.stage == BlastJobState.Stage.APPLY ? " (" + st.remainingEdits() + " left)" : "");
     }

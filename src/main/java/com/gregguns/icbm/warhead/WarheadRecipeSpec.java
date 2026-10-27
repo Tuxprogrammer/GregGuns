@@ -67,6 +67,9 @@ public enum WarheadRecipeSpec {
     /** A fission core of uranium-235 and plutonium around an implosion charge (ZPM). */
     NUCLEAR(WarheadBlast.NUCLEAR, false, 3, plates(Tier.LUV, 8), Ing.industrialTnt(12), pe(4),
         Ing.gt("ingot", "Uranium235", 8, Tier.HV, 6.0), Ing.gt("ingot", "Plutonium", 4, Tier.EV, 8.0), fuze3()),
+    /** Two field generators and emitters around a flux-compression charge (LuV). */
+    EMP(WarheadBlast.EMP, false, 4, plates(Tier.LUV, 8), Ing.industrialTnt(4), pe(2),
+        Ing.gtItem("Field_Generator_LuV", 2, Tier.LUV, 12.0), Ing.gtItem("Emitter_LuV", 2, Tier.LUV, 10.0), fuze3()),
     /** A Bio Lab culture in biomass. */
     CONTAGIOUS(WarheadBlast.CONTAGIOUS, false, 23, plates(Tier.EV, 8), Ing.industrialTnt(6), pe(2), Ing.bioDish(4),
         fuze2(), Ing.fluid("Biomass", 2000, Tier.HV));

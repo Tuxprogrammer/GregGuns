@@ -177,6 +177,23 @@ public final class TileWarhead extends TileEntity {
         return true;
     }
 
+    /**
+     * Puts the fuse out (the defuser, D120). The warhead stays in place, unlit, with its explosive and fill intact.
+     *
+     * @return true when a lit fuse was put out
+     */
+    public boolean defuse() {
+        if (worldObj == null || worldObj.isRemote || fuse <= 0) {
+            return false;
+        }
+        fuse = 0;
+        worldObj.playSoundEffect(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, "random.fizz", 0.8F, 1.2F);
+        // Tell the clients it is out, so they stop drawing the smoke and sparks.
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        markDirty();
+        return true;
+    }
+
     @Override
     public void updateEntity() {
         if (worldObj == null || worldObj.isRemote || fuse <= 0) {

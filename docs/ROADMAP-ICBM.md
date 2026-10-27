@@ -252,19 +252,21 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
   - EU cost grows continuously with radius.
 - **The T3 EMP warhead** (D80, moved from I3): it reuses the EMP machinery built for the tower above (the kill-chance table, the device cap and the nearest-first order), as a T3 blast type at LuV to ZPM.
 - **Carried over from I3:**
-  - `icbm.control.launch_to_impact` failed once on a fresh boot ("the second blast broke blocks on the data-stick target") and passed on rerun. Find the cause before adding more launch scenarios.
+  - `icbm.control.launch_to_impact` failed once on a fresh boot ("the second blast broke blocks on the data-stick target") and passed on rerun. Find the cause before adding more launch scenarios. **Status (I4): mitigated, not root-caused.** The scenario now waits for a quiet engine (D98), which removes the flake; D98 lists candidate causes and none was shown to be the real one.
   - The silo's shaft-chunk guard (mating, pumping and spawning wait for loaded shaft chunks) has no scenario; add one.
   - Take the Galacticraft rocket NEI shot in the real pack. In the dev client the NASA Workbench recipe tables are empty and GalaxySpace's rocket handlers aren't registered.
+    **Status (I4 fix E): moves to the alpha real-pack check.**
+  - **Carried over from I4, moved to the I5 batched client session:** the tooltip and NEI screenshot pass for the I4 items, the Launch Control X/Z persistence recheck, and the OpenComputers check in a real computer (Adapter, `gg_*` components, a call from Lua). The `icbm.oc.components` scenario covers the component names and one read-only call per machine without a client.
 - **Outputs on every machine:** redstone, GT covers, data-stick links, and OpenComputers components (D13; the component list in [golden-dome.md](gregguns-icbm-spec/01-core/golden-dome.md)).
 - Handheld tools that are kept (radar gun, remote detonator, defuser), per the 05 sheet.
 - **Visuals:** previews of the radars, the battery, the EMP tower and the handheld tools; the `icbm-detection-and-defense` sheet; quests for defense.
 
 **Exit gate:**
-- [ ] A radar flags an incoming missile and a linked battery intercepts it. Scenario.
-- [ ] An EMP drains EU and causes maintenance issues within its device cap, with no tick spike in a dense base. Scenario. The T3 EMP warhead does the same from a missile.
-- [ ] The OpenComputers components work as specified (GGI-01-01 to 06). Unit tests plus the batched client session.
-- [ ] `icbm-detection-and-defense` and the defense quests have landed, and the owner has been told.
-- [ ] The milestone review fix list is closed.
+- [x] A radar flags an incoming missile and a linked battery intercepts it. Scenario: `icbm.defense.intercept` (the SAM makes the kill, and a lamp beside the radar lights).
+- [x] An EMP drains EU and causes maintenance issues within its device cap, with no tick spike in a dense base. Scenario: `icbm.emp.dense_pulse`, `icbm.emp.modes`. The T3 EMP warhead does the same from a missile: `icbm.silo.t3_emp_launch`.
+- [x] The OpenComputers components work as specified (GGI-01-01 to 06). Unit tests plus `icbm.oc.components` (a real OC Adapter on every ICBM machine, live callbacks) in place of the client check; a check in a real computer moves to the I5 client session.
+- [x] `icbm-detection-and-defense` and the defense quests have landed, and the owner has been told.
+- [x] The milestone review fix list is closed.
 
 ## I5 · Endgame warheads and systems
 
@@ -277,6 +279,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **The full fallout chain** (D21): irradiated rubble, trinitite and fallout goo, with their GT processing yields.
 - **The T3 ender and anti-gravitational warheads** (D80, moved from I3): the ender warhead needs teleport machinery and the anti-gravitational one needs flying blocks, neither of which I3 builds. They ship as T3 blast types in the same casing and recipe band as the I3 warheads.
 - **The Golden Dome floppy** and its programs (D18).
+- **Carried over from I4:** the tooltip and NEI screenshot pass for the I4 items, the Launch Control X/Z persistence recheck, and the OpenComputers check in a real computer, all in the batched client session.
 - **Warheads for existing GregGuns launchers** (D12).
 - **The antidote,** mapped to GT hazards (D10).
 - **Visuals:** antimatter and red matter previews and effects, the `icbm-fallout` sheet, the complete `icbm-warheads`, and the endgame quests.
@@ -294,7 +297,8 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 **Entry gate:** I5 done.
 
 **Scope:**
-- **Abandoned Missile Silos** (D17): huge, mostly underground, with the O, D and Closed surface variants. Rare, config-gated, on the M8 placement system, and never cascading.
+- **Abandoned Missile Silos** (D17, D128): a flat underground complex of about 240 x 240 blocks, with a central hall, wings and randomly picked rooms around one to four real silos. The silo shafts take the O, D and Closed surface variants. Rare, config-gated, on the M8 placement system, and never cascading.
+- **Real machines in the rooms** (D129), within the D38 ceiling; reviewed at the beta playthrough.
 - **Activity levels** (D36): abandoned, partly abandoned and operational, each with its own damage pass built into the layout.
 - **A silo guard spawner block** with shooting GregGuns NPCs (Army Soldier, Commando, Stormtrooper), so operational silos are dungeons to clear and take over.
 - **Loot ceilings and planet silos** (D38):
@@ -306,7 +310,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** screenshots of each activity level and of silos on several planets, the `icbm-silos` sheet, and a silo quest.
 
 **Exit gate:**
-- [ ] Silos generate without cascading on the Overworld and on at least one planet of every rocket tier, and match the D17 layout. Scenario per dimension.
+- [ ] Silos generate without cascading on the Overworld and on at least one planet of every rocket tier, and match the D128 layout. Scenario per dimension.
 - [ ] Each activity level generates with its damage, spawner count and loot. Guards spawn and attack, and a broken spawner stays broken. Scenario.
 - [ ] No loot exceeds the dimension's ceiling (or, on Ross128, the silo's rolled ceiling), checked over many generated chests. Unit test plus scenario.
 - [ ] `icbm-silos` and the silo quest have landed, and the owner has been told.
@@ -342,9 +346,11 @@ The one owner review before the beta.
 - NEI, lang keys and config documentation. The ICBM quests in the GregGuns tab are checked end to end on a real server install.
 - A recipe-clash review of the ICBM recipes against the full GTNH pack, and the PACK-CHANGES pass.
 - **Visuals:** `icbm-recipes` from the recipe export, `icbm-hero`, an ICBM section in the README, and every ICBM sheet rebuilt after the balance pass.
+- **Modeled radar (D125, owner, pre-beta):** the single-block HV and EV radars give way to a small radar multiblock whose formed controller spawns a spinning dish (an entity or a TESR, like the silo doors). The Radar Tower gets the same dish. Look for an NTM dish model first (D47). Decide here whether the old blocks 20142 and 20143 become inert placeholders or convert in place.
 
 **Exit gate:**
 - [ ] The fix list is closed.
+- [ ] A formed radar spins its dish in a two-client check, and no single-block radar is craftable (D125).
 - [ ] The soak runs show no tick spikes past budget and no leaked chunk tickets.
 - [ ] The recipe-clash review finds no unresolved clash with ICBM content.
 - [ ] Every ICBM guide sheet matches the code after the balance pass.

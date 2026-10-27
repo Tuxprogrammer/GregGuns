@@ -18,6 +18,7 @@ import com.gregguns.core.testing.Scenario;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.icbm.IcbmAvailability;
+import com.gregguns.icbm.blast.BlastEngine;
 import com.gregguns.icbm.control.ControlStatus;
 import com.gregguns.icbm.control.MTELaunchControl;
 import com.gregguns.icbm.control.TargetStick;
@@ -114,6 +115,13 @@ public final class ControlLaunchScenario implements Scenario {
                     if (w.getBlock(cx, cy, cz) != GCBlocks.landingPadFull) {
                         return ticks > 140 ? fail(terrain, "the 3x3 pad never formed") : null;
                     }
+                    // A blast still running from an earlier scenario fills the engine's job slots, and a blast started
+                    // while they are full is refused (BlastEngine.start): that dropped the second blast of this
+                    // scenario once on a fresh boot. Wait for a quiet engine before launching anything.
+                    if (BlastEngine.instance()
+                        .activeBlasts() > 0 && ticks < 400) {
+                        return null;
+                    }
                     int[] b = MissileScenarios
                         .buildStack(ctx, MissileTier.T1, WarheadCasing.T1, "condensed", 3, 0, 1, 0, true, 0);
                     out.checkEquals(
@@ -152,10 +160,15 @@ public final class ControlLaunchScenario implements Scenario {
                 }
                 case 1: {
                     EntityMissile m = missile[0];
-                    if (!m.isDead || (first.removed(w) == 0 && ticks < 1500)) {
-                        return ticks > 1500 ? fail(terrain, "the first missile never hit") : null;
+                    if (!m.isDead || (first.removed(w) == 0 && ticks < 1800)) {
+                        return ticks > 1800 ? fail(terrain, "the first missile never hit") : null;
                     }
-                    out.check(first.removed(w) > 0, "the first blast broke blocks on its platform");
+                    // The second launch also needs a free job slot, so the first blast must be done.
+                    if (BlastEngine.instance()
+                        .activeBlasts() > 0 && ticks < 2000) {
+                        return null;
+                    }
+                    out.check(first.removed(w) > 0, "the first blast broke blocks on its platform" + engineState());
                     out.checkEquals(
                         "no tickets after the first impact",
                         0,
@@ -215,7 +228,9 @@ public final class ControlLaunchScenario implements Scenario {
                     if (!m.isDead || (second.removed(w) == 0 && ticks < 2900)) {
                         return ticks > 2900 ? fail(terrain, "the second missile never hit") : null;
                     }
-                    out.check(second.removed(w) > 0, "the second blast broke blocks on the data-stick target");
+                    out.check(
+                        second.removed(w) > 0,
+                        "the second blast broke blocks on the data-stick target" + engineState());
                     out.checkEquals(
                         "no tickets after the second impact",
                         0,
@@ -241,6 +256,13 @@ public final class ControlLaunchScenario implements Scenario {
         TileEntity tile = ctx.world()
             .getTileEntity(ctx.originX() + 3, ctx.originY(), ctx.originZ());
         return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : null;
+    }
+
+    /** What the blast engine was doing, for a failure message: a refused blast leaves no other trace. */
+    private static String engineState() {
+        BlastEngine e = BlastEngine.instance();
+        return " (blast engine: " + e
+            .activeBlasts() + " active, last " + e.lastBlastStage() + ", max " + IcbmConfig.maxActiveBlasts + ")";
     }
 
     private ScenarioResult fail(boolean terrain, String message) {

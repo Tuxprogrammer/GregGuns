@@ -716,6 +716,11 @@ public final class WarheadScenarios {
                     out.check(w.isAirBlock(ox, oy - 5, oz), "the breaching tunnel runs down");
                     out.check(w.getBlock(ox + 5, oy - 5, oz) == Blocks.stone, "the tunnel is narrow");
                     break;
+                case EMP:
+                    // The pulse itself is judged in icbm.silo.t3_emp_launch; here it only has to leave the world alone.
+                    out.check(!cow.isDead && cow.getHealth() > 0.0F, "an EMP does not hurt a cow");
+                    out.check(w.getBlock(ox, oy - 1, oz) == Blocks.stone, "an EMP removes no terrain");
+                    break;
                 default:
                     break;
             }

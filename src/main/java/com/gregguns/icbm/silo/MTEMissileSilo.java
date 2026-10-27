@@ -9,7 +9,6 @@ import static gregtech.api.enums.HatchElement.InputHatch;
 import static gregtech.api.enums.HatchElement.Maintenance;
 import static gregtech.api.enums.HatchElement.MultiAmpEnergy;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gregtech.api.util.GTStructureUtility.chainAllGlasses;
 import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.List;
@@ -95,10 +94,10 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 // Deviation: the controller has the static and active front overlays only; the gantry crane and the door animation
 // are not built.
 public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMissileSilo>
-    implements ISurvivalConstructable, ICasingTextureProvider {
+    implements ISurvivalConstructable, ICasingTextureProvider, com.gregguns.icbm.component.LaunchView {
 
     private static final String PIECE = "silo";
-    private static final String OVERLAY_DIR = "machines/missile_silo/";
+    private static final String OVERLAY_DIR = "machines/thirdparty/ntm/missile_silo/";
     private static final String K_PENDING = "pendingTier";
     private static final String K_P_GUIDANCE = "pendingGuidance";
     private static final String K_P_EXPLOSIVE = "pendingExplosive";
@@ -117,13 +116,14 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     static final int UNFORMED_GRACE_TICKS = 200;
 
     private final SiloDoors doors = new SiloDoors();
+    private final SiloAim aim = new SiloAim();
+    private int launches;
     private int unformedTicks;
     private EntitySiloDoors doorEntity;
     private SiloDoors.State pushedState;
     private long pushedStart;
 
     private int casingCount;
-    private int glassTier = -1;
     /** The mating in progress, saved so a reload mid-cycle does not eat the items; 0 for none, else the tier number. */
     private int pendingTier;
     private int pendingGuidance;
@@ -132,6 +132,8 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private int pendingCasing = 1;
     /** The mating cycle finished but the missile could not be placed yet (the shaft chunks were unloaded). */
     private boolean pendingReady;
+    /** The last recipe check refused because the shaft's chunks were not loaded; retry when they are. */
+    private boolean waitingForChunks;
 
     /**
      * The prototype that registers the machine under {@code id}.
@@ -169,29 +171,34 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             int casingIndex = GregGunsCasings.textureIndex(GregGunsCasings.GANTRY_CASING);
             return StructureDefinition.<MTEMissileSilo>builder()
                 .addShape(PIECE, SiloShape.piece())
-                // Plain silo casing: the walls above the glass, and the floor under the shaft.
-                .addElement('C', onElementPass(MTEMissileSilo::onCasingAdded, casing(GregGunsCasings.GANTRY_CASING)))
-                // The floor's outer ring: the same casing, where the hatches may go.
+                // The walls (layers 5 to 11): GT's Light or Dark Concrete, any finish, mixed (D116). Any hatch may
+                // replace
+                // one (D117). The hatch's casing texture stays the Gantry Casing's: GT's concrete has no casing index.
+                .addElement(
+                    'C',
+                    buildHatchAdder(MTEMissileSilo.class)
+                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
+                        .casingIndex(casingIndex)
+                        .hint(1)
+                        .buildAndChain(onElementPass(MTEMissileSilo::onCasingAdded, SiloConcrete.element())))
+                // The floor's outer ring: the same concrete, where hatches may also go.
                 .addElement(
                     'F',
                     buildHatchAdder(MTEMissileSilo.class)
                         .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
                         .casingIndex(casingIndex)
                         .hint(1)
-                        .buildAndChain(
-                            onElementPass(MTEMissileSilo::onCasingAdded, casing(GregGunsCasings.GANTRY_CASING))))
-                // The three rings above the floor are glass so the missile shows (owner, 2026-10-26): any glass tier,
-                // mixed is fine (the getter answers "not set", as the Armory Gantry does), and a hatch may replace
-                // a pane.
-                // Source:
-                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L891-L925
+                        .buildAndChain(onElementPass(MTEMissileSilo::onCasingAdded, SiloConcrete.element())))
+                // The three rings above the floor are clear glass so the missile shows (owner, 2026-10-26; D115):
+                // Tinkers' Clear Glass or EnderIO's Quite Clear Glass, mixed is fine, and a hatch may replace a pane.
+                // The glass is cosmetic and never gates anything.
                 .addElement(
                     'G',
                     buildHatchAdder(MTEMissileSilo.class)
                         .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
                         .casingIndex(casingIndex)
                         .hint(2)
-                        .buildAndChain(chainAllGlasses(-1, (t, tier) -> t.glassTier = tier, t -> -1)))
+                        .buildAndChain(SiloGlass.element()))
                 .addElement('P', com.gregguns.icbm.compat.GalacticraftPads.element())
                 .addElement('B', casing(GregGunsCasings.GANTRY_BEAM))
                 .build();
@@ -210,7 +217,6 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     @Override
     public void checkMachine(IGregTechTileEntity baseMetaTileEntity, ItemStack stack, List<StructureError> errors) {
         casingCount = 0;
-        glassTier = -1;
         if (!checkPiece(PIECE, SiloShape.CONTROLLER_COLUMN, SiloShape.CONTROLLER_ROW, 0, errors)) {
             return;
         }
@@ -381,6 +387,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
         if (tick % 20 == 0) {
             ensureDoorEntity(w);
+            retryWhenChunksLoaded();
         }
     }
 
@@ -556,6 +563,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                     IcbmConfig.siloRangeFactor,
                     probe.ticksUntilOpen(now));
                 if (r == LaunchResult.OK) {
+                    launches++;
                     doors.open(now, IcbmConfig.doorOpenTicks);
                     pushDoors();
                 }
@@ -586,6 +594,72 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         };
     }
 
+    // --- OpenComputers view (gg_silo) ------------------------------------------------------------------------------
+
+    private boolean serverLive() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        return base != null && !base.isClientSide() && ModuleState.isActive(ModuleId.ICBM);
+    }
+
+    @Override
+    public com.gregguns.icbm.control.LaunchTarget launchTarget() {
+        return aim.target();
+    }
+
+    @Override
+    public void aimAt(int x, int z) {
+        if (serverLive()) {
+            aim.set(com.gregguns.icbm.control.LaunchTarget.of(x, z));
+            getBaseMetaTileEntity().markDirty();
+        }
+    }
+
+    /** A silo has no data stick slot; a computer sets its target with {@code setTarget}. */
+    @Override
+    public com.gregguns.icbm.control.TargetStick.Outcome loadTargetFromStick() {
+        return com.gregguns.icbm.control.TargetStick.Outcome.NO_STICK;
+    }
+
+    @Override
+    public MissileStatus missileStatus() {
+        return serverLive() && mMachine ? site().status() : MissileStatus.NONE;
+    }
+
+    @Override
+    public String fuelFluid() {
+        MissileStatus ms = missileStatus();
+        return ms.present() && ms.tier()
+            .fuels().length > 0 ? ms.tier()
+                .fuels()[0] : "";
+    }
+
+    @Override
+    public com.gregguns.icbm.control.ControlStatus launchStatus() {
+        return serverLive() ? aim.status(mMachine, site()) : com.gregguns.icbm.control.ControlStatus.NO_PAD;
+    }
+
+    @Override
+    public com.gregguns.icbm.control.ControlStatus launchNow() {
+        return serverLive() ? aim.fire(mMachine, site()) : com.gregguns.icbm.control.ControlStatus.NO_PAD;
+    }
+
+    @Override
+    public int launches() {
+        return launches;
+    }
+
+    @Override
+    public java.util.Map<String, Object> launchInfo() {
+        java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
+        m.put("formed", mMachine);
+        m.put(
+            "doors",
+            doors.state()
+                .name()
+                .toLowerCase(java.util.Locale.ROOT));
+        return m;
+    }
+
     // --- the cycle -------------------------------------------------------------------------------------------------
 
     /** @return the voltage index of the weakest Energy Hatch, or -1 when there is none */
@@ -598,6 +672,19 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             lowest = Math.min(lowest, hatch.mTier);
         }
         return lowest == Integer.MAX_VALUE ? -1 : lowest;
+    }
+
+    /** The shaft is not loaded: refuse now, and ask GT for a new check once it is (GT's checks are event-driven). */
+    private CheckRecipeResult waitForChunks() {
+        waitingForChunks = true;
+        return failure("gregguns_silo_chunks");
+    }
+
+    private void retryWhenChunksLoaded() {
+        if (waitingForChunks && shaftLoaded()) {
+            waitingForChunks = false;
+            scheduleRecipeCheck(gregtech.common.tileentities.machines.RecipeCheckReason.IMMEDIATE);
+        }
     }
 
     private static CheckRecipeResult failure(String key) {
@@ -614,7 +701,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             return CheckRecipeResultRegistry.NO_RECIPE;
         }
         if (!shaftLoaded()) {
-            return failure("gregguns_silo_chunks");
+            return waitForChunks();
         }
         if (pendingTier != 0) {
             CheckRecipeResult resumed = resumePending(volts);
@@ -650,7 +737,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             return failure("gregguns_silo_hand_stacked");
         }
         if (pendingReady) {
-            return spawnPending(tier, w) ? null : failure("gregguns_silo_chunks");
+            return spawnPending(tier, w) ? null : waitForChunks();
         }
         if (volts < SiloRules.requiredVoltageIndex(tier)) {
             return CheckRecipeResultRegistry.insufficientMachineTier(SiloRules.requiredVoltageIndex(tier));
@@ -881,6 +968,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                 .name());
         tag.setLong(K_DOOR_START, doors.start());
         tag.setInteger(K_DOOR_DUR, doors.duration());
+        aim.save(tag);
     }
 
     @Override
@@ -899,6 +987,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             st = SiloDoors.State.CLOSED;
         }
         doors.restore(st, tag.getLong(K_DOOR_START), tag.hasKey(K_DOOR_DUR) ? tag.getInteger(K_DOOR_DUR) : 40);
+        aim.load(tag);
     }
 
     @Override
@@ -930,7 +1019,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             .beginStructureBlock(SiloShape.WIDTH, SiloShape.HEIGHT, SiloShape.DEPTH, false)
             .addController(lang("structure.controller"))
             .addCasingInfoRange(
-                StatCollector.translateToLocal("gregguns.casings.3.name"),
+                lang("structure.concrete"),
                 SiloShape.CASING_MINIMUM,
                 SiloShape.casingPositions(),
                 false)
@@ -942,7 +1031,6 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             .addCasing(Integer.toString(SiloShape.count("B")), lang("structure.rim"), false)
             .addAir(lang("structure.shaft"))
             .addStructureInfo(lang("structure.footer"))
-            .addSubChannel(gregtech.common.misc.GTStructureChannels.BOROGLASS)
             .toolTipFinisher(com.gregguns.core.text.AddedBy.NAME);
         return tt;
     }
@@ -957,9 +1045,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private static final class Overlays {
 
         static final IIconContainer FRONT = icon("OVERLAY_FRONT");
-        static final IIconContainer FRONT_GLOW = icon("OVERLAY_FRONT_GLOW");
         static final IIconContainer FRONT_ACTIVE = icon("OVERLAY_FRONT_ACTIVE");
-        static final IIconContainer FRONT_ACTIVE_GLOW = icon("OVERLAY_FRONT_ACTIVE_GLOW");
 
         private Overlays() {}
 
@@ -982,12 +1068,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         return new ITexture[] { casing, TextureFactory.builder()
             .addIcon(active ? Overlays.FRONT_ACTIVE : Overlays.FRONT)
             .extFacing()
-            .build(),
-            TextureFactory.builder()
-                .addIcon(active ? Overlays.FRONT_ACTIVE_GLOW : Overlays.FRONT_GLOW)
-                .extFacing()
-                .glow()
-                .build() };
+            .build() };
     }
 
     @Override

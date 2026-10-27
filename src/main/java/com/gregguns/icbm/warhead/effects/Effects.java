@@ -81,6 +81,8 @@ public final class Effects {
                 return new Breach();
             case NUCLEAR:
                 return new Nuclear();
+            case EMP:
+                return new Emp();
             default:
                 return BlastEffect.NONE;
         }
@@ -439,6 +441,23 @@ public final class Effects {
             if (ctx.completed() && ctx.breaksTerrain() && !ctx.world().isRemote) {
                 com.gregguns.explosion.nuclear.Fallout.start(ctx.world(), ctx.x(), ctx.y(), ctx.z(), ctx.radius());
             }
+        }
+    }
+
+    /**
+     * The EMP warhead's effect: one pulse of the blast radius at the center, with the same machinery as the EMP Tower
+     * (the device cap, nearest first, the missile kill-chance table; D16, D80). The warhead has no crater and no
+     * damage.
+     */
+    static final class Emp implements BlastEffect {
+
+        @Override
+        public void onDetonate(BlastContext ctx) {
+            if (ctx.world().isRemote) {
+                return;
+            }
+            com.gregguns.icbm.emp.EmpPulse
+                .fire(ctx.world(), ctx.x(), ctx.y(), ctx.z(), ctx.radius(), com.gregguns.icbm.emp.EmpMode.ALL);
         }
     }
 }

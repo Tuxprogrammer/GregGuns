@@ -69,13 +69,16 @@ public final class SiloScenarios {
         registry.register(new Tiers());
         registry.register(new Refusals());
         registry.register(new T3Launch());
+        registry.register(new T3EmpLaunch());
         registry.register(new Fuels());
         registry.register(new PowerLoss());
         registry.register(new UnformedPad());
         registry.register(new HandStack());
+        registry.register(new ShaftChunkScenario());
         LaunchSequenceScenarios.registerAll(registry);
         registry.register(new LaunchSequenceMpScenario());
         registry.register(new LaunchControlGuiShots());
+        registry.register(new I4SiloSetup());
     }
 
     static String gate() {
@@ -186,31 +189,6 @@ public final class SiloScenarios {
         return s == null ? null : m;
     }
 
-    /** A stone platform around a target; counts what a blast removes. */
-    private static final class Target {
-
-        private final java.util.List<int[]> stones = new java.util.ArrayList<>();
-
-        Target(ScenarioContext ctx, int dx, int dz, int radius) {
-            for (int a = -radius; a <= radius; a++) {
-                for (int b = -radius; b <= radius; b++) {
-                    ctx.setBlock(dx + a, -1, dz + b, Blocks.stone, 0);
-                    stones.add(new int[] { ctx.originX() + dx + a, ctx.originY() - 1, ctx.originZ() + dz + b });
-                }
-            }
-        }
-
-        int removed(World w) {
-            int n = 0;
-            for (int[] st : stones) {
-                if (w.getBlock(st[0], st[1], st[2]) != Blocks.stone) {
-                    n++;
-                }
-            }
-            return n;
-        }
-    }
-
     // ------------------------------------------------------------------------------------------------------------
 
     /** The silo forms with glass rings and the pad; hatches go in the glass; a hatch above the glass does not form. */
@@ -223,7 +201,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "The Missile Silo forms from a bare controller with glass rings, a Galacticraft pad floor and hatches in the glass; vanilla glass is accepted; a hatch in a casing ring above the glass, or a missing pad, does not form it.";
+            return "The Missile Silo forms from a bare controller with glass rings, a Galacticraft pad floor and hatches in the glass; other glass is refused; the walls take Light and Dark Concrete (mixed, not cobblestone or other blocks); a hatch in a wall layer forms it and a hatch in the rim, or a missing pad, does not.";
         }
 
         @Override
@@ -256,10 +234,42 @@ public final class SiloScenarios {
                         out.check(
                             formed(ctx),
                             "the silo forms with glass rings, the pad floor and hatches in the glass");
-                        // Vanilla glass in a pane of the middle ring.
+                        // The glass the builder placed (D115) sits in a pane of the middle ring; other glass is
+                        // refused.
+                        Block placed = w.getBlock(x - 2, y, z + 1);
+                        int placedMeta = w.getBlockMetadata(x - 2, y, z + 1);
+                        out.check(
+                            SiloGlass.accepts(placed, placedMeta),
+                            "the builder placed an accepted glass: " + Block.blockRegistry.getNameForObject(placed));
+                        w.setBlock(x - 2, y, z + 1, Blocks.stained_glass, 3, 2);
+                        out.check(!formed(ctx), "stained glass in a glass ring does not form the silo");
+                        // Vanilla glass is accepted only when neither Tinkers' Construct nor EnderIO is loaded.
                         w.setBlock(x - 2, y, z + 1, Blocks.glass, 0, 2);
-                        out.check(formed(ctx), "vanilla glass is accepted in a glass ring");
-                        // A bus in a casing ring above the glass (layer 5) is refused.
+                        out.check(
+                            formed(ctx) == SiloGlass.fallbackActive(),
+                            "vanilla glass in a glass ring is accepted only when neither Tinkers' nor EnderIO is loaded");
+                        w.setBlock(x - 2, y, z + 1, placed, placedMeta, 2);
+                        out.check(formed(ctx), "the silo forms again with the accepted glass back");
+                        // The walls are GT concrete (D116): the builder's Light Concrete, dark, mixed, and a finish.
+                        Block conc = GregTechAPI.sBlockConcretes;
+                        out.check(
+                            w.getBlock(x + 1, y + 3, z) == conc && w.getBlockMetadata(x + 1, y + 3, z) == 8,
+                            "the builder placed Light Concrete in the walls");
+                        w.setBlock(x + 1, y + 3, z, conc, 0, 2);
+                        w.setBlock(x - 1, y + 4, z, conc, 7, 2);
+                        w.setBlock(x, y + 5, z + 4, conc, 14, 2);
+                        out.check(
+                            formed(ctx),
+                            "Dark Concrete, Smooth Dark Concrete and Chiseled Light Concrete mix in the walls");
+                        w.setBlock(x + 1, y + 3, z, conc, 1, 2);
+                        out.check(!formed(ctx), "a cobblestone concrete wall cell does not form the silo");
+                        w.setBlock(x + 1, y + 3, z, GregGunsCasings.INSTANCE, GregGunsCasings.GANTRY_CASING, 2);
+                        out.check(!formed(ctx), "a Gantry Casing wall cell does not form the silo");
+                        w.setBlock(x + 1, y + 3, z, Blocks.stone, 0, 2);
+                        out.check(!formed(ctx), "a stone wall cell does not form the silo");
+                        w.setBlock(x + 1, y + 3, z, conc, 8, 2);
+                        out.check(formed(ctx), "the silo forms again with Light Concrete back");
+                        // D117: a bus in a wall layer (layer 8) forms; a bus in the rim does not.
                         int hatchId = ItemList.Hatch_Input_Bus_HV.get(1)
                             .getItemDamage();
                         w.setBlock(x - 1, y + 2, z, GregTechAPI.sBlockMachines, hatchId, 3);
@@ -268,9 +278,19 @@ public final class SiloScenarios {
                         stage[0] = 1;
                         return null;
                     case 1:
-                        out.check(!formed(ctx), "a hatch in a casing ring above the glass does not form the silo");
-                        w.setBlock(x - 1, y + 2, z, GregGunsCasings.INSTANCE, GregGunsCasings.GANTRY_CASING, 2);
-                        out.check(formed(ctx), "the silo forms again once the casing is back");
+                        out.check(formed(ctx), "a hatch in a wall layer forms the silo (D117)");
+                        w.setBlock(x - 1, y + 2, z, GregTechAPI.sBlockConcretes, 8, 2);
+                        int rimId = ItemList.Hatch_Input_Bus_HV.get(1)
+                            .getItemDamage();
+                        w.setBlock(x - 1, y + 9, z, GregTechAPI.sBlockMachines, rimId, 3);
+                        ((IGregTechTileEntity) w.getTileEntity(x - 1, y + 9, z))
+                            .setInitialValuesAsNBT(null, (short) rimId);
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        out.check(!formed(ctx), "a hatch in the rim does not form the silo (D117)");
+                        w.setBlock(x - 1, y + 9, z, GregGunsCasings.INSTANCE, GregGunsCasings.GANTRY_BEAM, 2);
+                        out.check(formed(ctx), "the silo forms again once the beam is back");
                         // No pad in the shaft floor.
                         Block pad = GalacticraftParts.findBlock(GalacticraftParts.PAD);
                         Block full = GalacticraftParts.findBlock(GalacticraftParts.PAD_FULL);
@@ -580,13 +600,18 @@ public final class SiloScenarios {
             final WarheadCasing used = casing;
             final String explosive = casing == WarheadCasing.T1 ? "condensed"
                 : casing == WarheadCasing.T2 ? "thermobaric" : "exothermic";
-            final Target target = new Target(ctx, 0, DISTANCE, 9);
+            final com.gregguns.icbm.missile.MissileScenarios.Target target = new com.gregguns.icbm.missile.MissileScenarios.Target(
+                ctx,
+                0,
+                DISTANCE,
+                9);
             final boolean terrain = IcbmConfig.terrainDamageT1;
             final boolean terrainT3 = IcbmConfig.terrainDamageT3;
             IcbmConfig.terrainDamageT1 = true;
             IcbmConfig.terrainDamageT3 = true;
             int[] stage = { 0 };
             int[] mark = { 0 };
+            int[] died = { 0 };
             int[] blocksBefore = { 0 };
             EntityMissile[] m = new EntityMissile[1];
             return ScenarioResult.pending(name(), 6000, ticks -> {
@@ -640,8 +665,28 @@ public final class SiloScenarios {
                         if (!m[0].isDead && ticks < mark[0] + 3000) {
                             return null;
                         }
+                        if (m[0].isDead && died[0] == 0) {
+                            died[0] = ticks;
+                        }
+                        // The crater is dug over several ticks (D87), so wait for the first broken block.
+                        if (m[0].isDead && target.removed(ctx.world()) == 0 && ticks < died[0] + 400) {
+                            return null;
+                        }
                         out.check(m[0].isDead, "the missile detonated");
-                        out.check(target.removed(ctx.world()) > 0, "the blast broke blocks on the target");
+                        out.check(
+                            target.removed(ctx.world()) > 0,
+                            "the blast broke blocks on the target (the missile ended at " + (int) m[0].posX
+                                + ", "
+                                + (int) m[0].posY
+                                + ", "
+                                + (int) m[0].posZ
+                                + ", aimed at "
+                                + java.util.Arrays.toString(m[0].aimPoint())
+                                + "; platform "
+                                + target.standing(ctx.world())
+                                + " of "
+                                + 19 * 19
+                                + " stone)");
                         out.checkEquals(
                             "no chunk tickets are left",
                             0,
@@ -663,6 +708,182 @@ public final class SiloScenarios {
             IcbmConfig.terrainDamageT1 = terrain;
             IcbmConfig.terrainDamageT3 = true;
             return ScenarioResult.fail("icbm.silo.t3_launch", why);
+        }
+
+        private static int countBlocks(ScenarioContext ctx) {
+            int n = 0;
+            for (int dx = -3; dx <= 3; dx++) {
+                for (int dz = -1; dz <= 6; dz++) {
+                    for (int dy = -3; dy <= 12; dy++) {
+                        if (ctx.world()
+                            .getBlock(ctx.originX() + dx, ctx.originY() + CY + dy, ctx.originZ() + dz) != Blocks.air) {
+                            n++;
+                        }
+                    }
+                }
+            }
+            return n;
+        }
+    }
+
+    /**
+     * Exit box (D80): the same silo launch as {@link T3Launch}, carrying the EMP warhead over a field of charged
+     * battery
+     * buffers at the target: the warhead drains the nearest devices within the cap, touches no terrain, and the
+     * silo is intact afterwards.
+     */
+    private static final class T3EmpLaunch implements Scenario {
+
+        /** Buffers sit on a 5 x 5 grid, 8 blocks apart, so every chunk the scattered impact can land in holds some. */
+        private static final int GRID = 2;
+
+        @Override
+        public String name() {
+            return "icbm.silo.t3_emp_launch";
+        }
+
+        @Override
+        public String description() {
+            return "A silo-launched T3 missile carrying the full-fill EMP warhead drains every charged battery buffer in the chunk it lands in (a pulse never loads a chunk), and leaves those buffers standing.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            DevStructureBuilder.Outcome built = build(ctx, ItemList.Hatch_Energy_LuV);
+            out.note("build: " + built);
+            IGregTechTileEntity cb = launchControl(ctx, 5, -2);
+            final net.minecraft.world.World w = ctx.world();
+            final int tx = ctx.originX();
+            final int ty = ctx.originY();
+            final int tz = ctx.originZ() + DISTANCE;
+            // The context only holds its own area, so the far chunks are held by hand and the floor and the buffers go
+            // in directly. The
+            // impact scatters, and a pulse never loads a chunk, so the buffers cover every chunk around the target.
+            // The chunks are held for the whole run: an unheld far chunk unloads and takes the machines with it.
+            com.gregguns.icbm.missile.MissileScenarios.holdFar(ctx, tx, tz, GRID * 8 + 8);
+            final java.util.List<int[]> spots = new java.util.ArrayList<>();
+            for (int a = -GRID; a <= GRID; a++) {
+                for (int b = -GRID; b <= GRID; b++) {
+                    int x = tx + a * 8;
+                    int z = tz + b * 8;
+                    w.setBlock(x, ty - 1, z, Blocks.stone, 0, 3);
+                    spots.add(new int[] { x, ty, z });
+                }
+            }
+            final int buffer = ItemList.Battery_Buffer_1by1_MV.get(1)
+                .getItemDamage();
+            for (int[] p : spots) {
+                com.gregguns.icbm.emp.EmpScenarios.placeAbs(w, p[0], p[1], p[2], buffer);
+            }
+            final boolean terrainT3 = IcbmConfig.terrainDamageT3;
+            IcbmConfig.terrainDamageT3 = true;
+            int[] stage = { 0 };
+            int[] mark = { 0 };
+            int[] blocksBefore = { 0 };
+            EntityMissile[] m = new EntityMissile[1];
+            return ScenarioResult.pending(name(), 6000, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                IGregTechTileEntity cbase = tile(ctx, 5, 0, -2);
+                MTELaunchControl c = (MTELaunchControl) cbase.getMetaTileEntity();
+                power(ctx);
+                if (stage[0] < 3) {
+                    fuel(ctx, out, "fluid.rocketfuelmixc");
+                }
+                switch (stage[0]) {
+                    case 0:
+                        out.check(formed(ctx), "the silo forms");
+                        blocksBefore[0] = countBlocks(ctx);
+                        for (int[] p : spots) {
+                            net.minecraft.tileentity.TileEntity t = w.getTileEntity(p[0], p[1], p[2]);
+                            if (!(t instanceof gregtech.api.metatileentity.BaseMetaTileEntity)) {
+                                return fail(terrainT3, "a battery buffer at the target is missing");
+                            }
+                            ((gregtech.api.metatileentity.BaseMetaTileEntity) t).setStoredEU(10_000L);
+                        }
+                        putBus(ctx, MissileBodies.body(MissileTier.T3), empWarhead());
+                        cbase.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        c.setXText(Integer.toString(ctx.originX()));
+                        c.setZText(Integer.toString(ctx.originZ() + DISTANCE));
+                        stage[0] = 1;
+                        return null;
+                    case 1:
+                        m[0] = silo(ctx).missile();
+                        if (m[0] == null) {
+                            return ticks > 1500 ? fail(terrainT3, "the silo never mated the missile") : null;
+                        }
+                        out.checkEquals("it carries the EMP warhead", "emp", m[0].explosiveId());
+                        mark[0] = ticks;
+                        stage[0] = 2;
+                        return null;
+                    case 2:
+                        if (m[0].fuelMb() < m[0].capacityMb()) {
+                            return ticks > mark[0] + 1500 ? fail(terrainT3, "the silo never fueled the missile") : null;
+                        }
+                        out.checkEquals("the Launch Control fires the silo", ControlStatus.FIRED, c.fire(null));
+                        mark[0] = ticks;
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        if (!m[0].isDead && ticks < mark[0] + 3000) {
+                            return null;
+                        }
+                        out.check(m[0].isDead, "the missile detonated");
+                        // Where it went off: the chunk of the missile's last position holds every buffer a pulse could
+                        // reach.
+                        int cx = net.minecraft.util.MathHelper.floor_double(m[0].posX) >> 4;
+                        int cz = net.minecraft.util.MathHelper.floor_double(m[0].posZ) >> 4;
+                        int inChunk = 0;
+                        int empty = 0;
+                        int standing = 0;
+                        for (int[] p : spots) {
+                            if ((p[0] >> 4) != cx || (p[2] >> 4) != cz) {
+                                continue;
+                            }
+                            inChunk++;
+                            net.minecraft.tileentity.TileEntity t = w.getTileEntity(p[0], p[1], p[2]);
+                            if (t instanceof IGregTechTileEntity) {
+                                standing++;
+                                if (((IGregTechTileEntity) t).getStoredEU() == 0L) {
+                                    empty++;
+                                }
+                            }
+                        }
+                        out.check(inChunk > 0, "the grid covers the chunk the missile landed in");
+                        out.checkEquals("every buffer in that chunk was drained", inChunk, empty);
+                        out.checkEquals("the EMP left those buffers standing", inChunk, standing);
+                        out.check(formed(ctx), "the silo is still formed after its own launch");
+                        out.checkEquals("no block of the silo was damaged", blocksBefore[0], countBlocks(ctx));
+                        IcbmConfig.terrainDamageT3 = terrainT3;
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    default:
+                        return null;
+                }
+            });
+        }
+
+        private static ItemStack empWarhead() {
+            return WarheadStacks.make(
+                net.minecraft.item.Item.getItemFromBlock(WarheadBlocks.of(WarheadCasing.T3)),
+                WarheadCasing.T3,
+                "emp",
+                64);
+        }
+
+        private ScenarioResult fail(boolean terrainT3, String why) {
+            IcbmConfig.terrainDamageT3 = terrainT3;
+            return ScenarioResult.fail(name(), why);
         }
 
         private static int countBlocks(ScenarioContext ctx) {
@@ -869,8 +1090,8 @@ public final class SiloScenarios {
                         m[0].fill(m[0].capacityMb(), true);
                         int hatchId = ItemList.Hatch_Input_Bus_HV.get(1)
                             .getItemDamage();
-                        w.setBlock(x - 1, y + 2, z, GregTechAPI.sBlockMachines, hatchId, 3);
-                        ((IGregTechTileEntity) w.getTileEntity(x - 1, y + 2, z))
+                        w.setBlock(x - 1, y + 9, z, GregTechAPI.sBlockMachines, hatchId, 3);
+                        ((IGregTechTileEntity) w.getTileEntity(x - 1, y + 9, z))
                             .setInitialValuesAsNBT(null, (short) hatchId);
                         stage[0] = 1;
                         return null;
