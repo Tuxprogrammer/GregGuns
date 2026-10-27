@@ -3,7 +3,7 @@ Warhead models and textures in this folder: copied and modified from HBM's Nucle
 (c) the HBM's Nuclear Tech Mod contributors, licensed under the GNU Lesser General Public License v3.0
 (the repository README states: "This software is licensed under the GNU Lesser General Public License
 version 3"; it names no separate asset license). Modifications: uniform scale, recentered, rewritten
-as Forge-strict OBJ, and hue-shifted textures for the antimatter and red matter warheads; see
+as Forge-strict OBJ, and hue-shifted textures for the antimatter and red matter warheads; the ender and anti-grav skins are the HE warhead skin with its lettering painted out and hue-shifted; see
 docs/assets/CREDITS.md. The full license text follows (LICENSE.LESSER from that repository; it
 supplements the GPL v3, which sits beside this file as GPL-3.0.txt, from LICENSE there).
 
