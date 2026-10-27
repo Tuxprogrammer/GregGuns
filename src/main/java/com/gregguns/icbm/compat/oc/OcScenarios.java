@@ -1,11 +1,15 @@
 package com.gregguns.icbm.compat.oc;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
 import com.gregguns.core.module.ModuleId;
@@ -18,10 +22,13 @@ import com.gregguns.icbm.emp.EmpScenarios;
 import com.gregguns.machine.GregGunsMTEIDs;
 
 import li.cil.oc.api.Items;
+import li.cil.oc.api.fs.Handle;
+import li.cil.oc.api.fs.Mode;
 import li.cil.oc.api.network.Component;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.Visibility;
+import li.cil.repack.org.luaj.vm2.compiler.LuaC;
 
 /**
  * The live OpenComputers scenario (I4 exit box, GGI-01-02): a real Adapter block beside each ICBM machine, read through
@@ -47,6 +54,7 @@ public final class OcScenarios {
     /** @param registry where to add the scenario */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Components());
+        registry.register(new GoldenDomeDisk());
     }
 
     /** One machine, the component it must show as, and the read-only call to check. */
@@ -207,6 +215,74 @@ public final class OcScenarios {
                 } catch (Exception | LinkageError e) {
                     out.check(false, "EMP Tower: status calls threw " + e);
                 }
+            }
+        }
+    }
+
+    /** The Golden Dome floppy (GGI-01-07, 08): it registers, its file system holds the programs, the Lua parses. */
+    private static final class GoldenDomeDisk implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.oc.golden_dome";
+        }
+
+        @Override
+        public String description() {
+            return "The Golden Dome floppy is registered by OpenComputers, its read-only file system lists the four"
+                + " programs, the library and the autorun, every file reads back and compiles as Lua, and launch and"
+                + " emp ask before they act.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (!ModuleState.isActive(ModuleId.ICBM)) {
+                return ScenarioResult.skip(name(), "the ICBM module is off");
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            ItemStack disk = GoldenDomeFloppy.stack();
+            out.check(disk != null, "OpenComputers should have registered the Golden Dome floppy");
+            li.cil.oc.api.fs.FileSystem fs = GoldenDomeFloppy.newFileSystem();
+            try {
+                out.check(fs.isReadOnly(), "the disk must be read-only");
+                for (String file : GoldenDomeFloppy.FILES) {
+                    out.check(fs.exists(file) && !fs.isDirectory(file), "the disk should hold " + file);
+                    String text = read(fs, file);
+                    out.check(text != null && !text.isEmpty(), file + " should read back");
+                    if (text == null) {
+                        continue;
+                    }
+                    try {
+                        // Source: the luaj OpenComputers ships (the Lua VM of a computer without the native library).
+                        LuaC.instance.compile(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)), file);
+                    } catch (Exception e) {
+                        out.check(false, file + " does not compile: " + e);
+                    }
+                    if (file.endsWith("launch.lua") || file.endsWith("emp.lua")) {
+                        out.check(text.contains("gd.confirm("), file + " must ask before it acts (GGI-01-09)");
+                    }
+                }
+                out.checkEquals("bin lists four programs", 4, fs.list("bin").length);
+            } finally {
+                fs.close();
+            }
+            return out.build();
+        }
+
+        private static String read(li.cil.oc.api.fs.FileSystem fs, String path) {
+            try {
+                int handle = fs.open(path, Mode.Read);
+                Handle h = fs.getHandle(handle);
+                ByteArrayOutputStream all = new ByteArrayOutputStream();
+                byte[] buf = new byte[4096];
+                int n;
+                while ((n = h.read(buf)) > 0) {
+                    all.write(buf, 0, n);
+                }
+                h.close();
+                return new String(all.toByteArray(), StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                return null;
             }
         }
     }

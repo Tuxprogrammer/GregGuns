@@ -11,7 +11,7 @@ All sheets are planned.
 - kept-dropped-deferred.md (planned): the D10 table applied to every ICBM item and block.
 - registry-catalog.md (planned): GregGuns items, blocks, tile entities and entities for the module, with the area that documents each.
 - recipe-remap.md (planned): each ICBM recipe mapped to a GT machine recipe or dropped; the ICBM crafting items replaced by GT parts.
-- antidote.md (planned): the antidote mapped to GT hazards.
+- [antidote.md](antidote.md): the antidote mapped to GT hazards (D151).
 - silo-guard-spawner.md (planned): the spawner block, defined with the world sheets in [08-worldgen](../08-worldgen/index.md).
 
 ## Integration map
@@ -44,4 +44,4 @@ None yet.
 
 ## Open questions
 
-- Antidote recipe and cure scope under GT hazards: to settle in the I5 antidote sheet.
+- Antidote recipe and cure scope: settled in [antidote.md](antidote.md) (D151).

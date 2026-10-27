@@ -64,6 +64,8 @@ public class RocketProjectile extends GenericProjectile {
     private float blastRadius = 1.75F;
     private String weaponName = "rocket_launcher";
     private boolean exploded;
+    /** The ICBM warhead the launcher spent a charge on for this rocket (D150), or null. */
+    private String icbmWarhead;
 
     /**
      * @param world the world
@@ -79,6 +81,7 @@ public class RocketProjectile extends GenericProjectile {
         gravity = (float) stats.projectileGravity();
         blastRadius = (float) stats.blastRadius();
         weaponName = stats.id();
+        icbmWarhead = com.gregguns.icbm.launcher.LauncherWarheads.consume(firedBy, weaponName);
     }
 
     @Override
@@ -146,6 +149,10 @@ public class RocketProjectile extends GenericProjectile {
             return;
         }
         exploded = true;
+        if (com.gregguns.icbm.launcher.LauncherWarheads.detonate(worldObj, posX, posY, posZ, icbmWarhead, shooter)) {
+            // D150: an ICBM warhead replaces the rocket's own blast (the blast engine does its own FX and damage).
+            return;
+        }
         if (blastRadius < ExplosionRules.NUKE_FX_MIN_SIZE) {
             // Below power 8 the explosion sends no effect of its own, so the rocket asks for its blast FX here.
             FxSender.at(worldObj, BlastFxSelector.ROCKET, posX, posY, posZ, FxSender.RANGE_NEAR);
@@ -190,6 +197,9 @@ public class RocketProjectile extends GenericProjectile {
         super.writeEntityToNBT(tag);
         tag.setFloat("blastRadius", blastRadius);
         tag.setString("weapon", weaponName);
+        if (icbmWarhead != null) {
+            tag.setString("icbmWarhead", icbmWarhead);
+        }
     }
 
     @Override
@@ -197,5 +207,6 @@ public class RocketProjectile extends GenericProjectile {
         super.readEntityFromNBT(tag);
         blastRadius = tag.getFloat("blastRadius");
         weaponName = tag.getString("weapon");
+        icbmWarhead = tag.hasKey("icbmWarhead") ? tag.getString("icbmWarhead") : null;
     }
 }
