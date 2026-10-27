@@ -1,7 +1,6 @@
 package com.gregguns.icbm.compat.oc;
 
 import com.gregguns.icbm.component.EmpComponentLogic;
-import com.gregguns.icbm.component.Reply;
 import com.gregguns.icbm.component.SignalTracker;
 import com.gregguns.icbm.emp.MTEEmpTower;
 
@@ -73,7 +72,7 @@ final class EmpTowerEnvironment extends ManagedEnvironment {
 
     @Callback(doc = "function(mode:string):boolean[, string] -- Sets the mode; false and a reason for a bad name.")
     public Object[] setMode(Context context, Arguments args) {
-        return reply(logic.setMode(args.checkString(0)));
+        return OcReplies.of(logic.setMode(args.checkString(0)));
     }
 
     @Callback(doc = "function():number -- The pulse radius in blocks.")
@@ -90,11 +89,6 @@ final class EmpTowerEnvironment extends ManagedEnvironment {
     @Callback(
         doc = "function():boolean[, string] -- Fires a pulse through the same checks as the button; false and a reason when refused.")
     public Object[] fire(Context context, Arguments args) {
-        return reply(logic.fire());
+        return OcReplies.of(logic.fire());
     }
-
-    private static Object[] reply(Reply r) {
-        return r.isOk() ? new Object[] { true } : new Object[] { false, r.reason() };
-    }
-
 }

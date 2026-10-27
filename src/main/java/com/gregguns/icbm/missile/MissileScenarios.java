@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 
 import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.core.testing.Scenario;
+import com.gregguns.core.testing.ScenarioChunks;
 import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
@@ -417,30 +418,86 @@ public final class MissileScenarios {
         }
     }
 
-    /** Lays a stone platform around a target and counts what a blast removes. */
-    static final class Target {
+    /** The chunk holds of the scenario that built the latest target; replaced when another scenario builds one. */
+    private static final List<ScenarioChunks.Hold> HOLDS = new ArrayList<>();
+    private static Object holdOwner;
+
+    /**
+     * Loads and pins the chunks around a far spot for the scenario that owns {@code ctx}, with a margin so the chunks
+     * around it are populated too. The scenario context only holds its own area; a target a few hundred blocks out
+     * would otherwise sit in a chunk that unloads (and loses what was placed in it) while the missile is still flying.
+     * The previous scenario's holds are released the first time another scenario asks, so a run never accumulates
+     * them. Dev environment only.
+     *
+     * @param ctx    the scenario's context
+     * @param x      block X
+     * @param z      block Z
+     * @param radius half-size in blocks to keep loaded (the margin is added)
+     */
+    public static void holdFar(ScenarioContext ctx, int x, int z, int radius) {
+        if (holdOwner != ctx) {
+            for (ScenarioChunks.Hold h : HOLDS) {
+                h.release();
+            }
+            HOLDS.clear();
+            holdOwner = ctx;
+        }
+        HOLDS.add(ScenarioChunks.hold(ctx.world(), x, z, radius + 24));
+    }
+
+    /**
+     * Lays a stone platform around a target and counts what a blast removes. The chunks under it are loaded and held
+     * first, and the constructor throws when the platform is not really standing afterwards, so "the blast broke
+     * blocks" can never be satisfied by a platform that was never there (air in an unloaded chunk reads as broken).
+     */
+    public static final class Target {
 
         final int dx;
         final int dz;
         final int radius;
         final List<int[]> stones = new ArrayList<>();
 
-        Target(ScenarioContext ctx, int dx, int dz, int radius) {
+        /**
+         * @param ctx    the scenario's context
+         * @param dx     platform center, blocks east of the origin
+         * @param dz     platform center, blocks south of the origin
+         * @param radius half-size of the platform
+         */
+        public Target(ScenarioContext ctx, int dx, int dz, int radius) {
             this.dx = dx;
             this.dz = dz;
             this.radius = radius;
+            holdFar(ctx, ctx.originX() + dx, ctx.originZ() + dz, radius);
             for (int a = -radius; a <= radius; a++) {
                 for (int b = -radius; b <= radius; b++) {
                     ctx.setBlock(dx + a, -1, dz + b, Blocks.stone, 0);
                     stones.add(new int[] { ctx.originX() + dx + a, ctx.originY() - 1, ctx.originZ() + dz + b });
                 }
             }
+            int up = standing(ctx.world());
+            if (up != stones.size()) {
+                throw new IllegalStateException(
+                    "the target platform at " + dx + "," + dz + " is not standing: " + up + " of " + stones.size());
+            }
         }
 
-        int removed(World w) {
+        /** @return how many platform blocks are still stone */
+        public int standing(World w) {
             int n = 0;
             for (int[] s : stones) {
-                if (w.getBlock(s[0], s[1], s[2]) != Blocks.stone) {
+                if (w.getBlock(s[0], s[1], s[2]) == Blocks.stone) {
+                    n++;
+                }
+            }
+            return n;
+        }
+
+        /** @return how many platform blocks a blast took out; blocks in a chunk that is not loaded do not count */
+        public int removed(World w) {
+            int n = 0;
+            for (int[] s : stones) {
+                if (w.getChunkProvider()
+                    .chunkExists(s[0] >> 4, s[2] >> 4) && w.getBlock(s[0], s[1], s[2]) != Blocks.stone) {
                     n++;
                 }
             }

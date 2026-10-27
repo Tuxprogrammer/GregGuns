@@ -187,31 +187,6 @@ public final class SiloScenarios {
         return s == null ? null : m;
     }
 
-    /** A stone platform around a target; counts what a blast removes. */
-    private static final class Target {
-
-        private final java.util.List<int[]> stones = new java.util.ArrayList<>();
-
-        Target(ScenarioContext ctx, int dx, int dz, int radius) {
-            for (int a = -radius; a <= radius; a++) {
-                for (int b = -radius; b <= radius; b++) {
-                    ctx.setBlock(dx + a, -1, dz + b, Blocks.stone, 0);
-                    stones.add(new int[] { ctx.originX() + dx + a, ctx.originY() - 1, ctx.originZ() + dz + b });
-                }
-            }
-        }
-
-        int removed(World w) {
-            int n = 0;
-            for (int[] st : stones) {
-                if (w.getBlock(st[0], st[1], st[2]) != Blocks.stone) {
-                    n++;
-                }
-            }
-            return n;
-        }
-    }
-
     // ------------------------------------------------------------------------------------------------------------
 
     /** The silo forms with glass rings and the pad; hatches go in the glass; a hatch above the glass does not form. */
@@ -581,7 +556,11 @@ public final class SiloScenarios {
             final WarheadCasing used = casing;
             final String explosive = casing == WarheadCasing.T1 ? "condensed"
                 : casing == WarheadCasing.T2 ? "thermobaric" : "exothermic";
-            final Target target = new Target(ctx, 0, DISTANCE, 9);
+            final com.gregguns.icbm.missile.MissileScenarios.Target target = new com.gregguns.icbm.missile.MissileScenarios.Target(
+                ctx,
+                0,
+                DISTANCE,
+                9);
             final boolean terrain = IcbmConfig.terrainDamageT1;
             final boolean terrainT3 = IcbmConfig.terrainDamageT3;
             IcbmConfig.terrainDamageT1 = true;
@@ -721,15 +700,16 @@ public final class SiloScenarios {
             final int tx = ctx.originX();
             final int ty = ctx.originY();
             final int tz = ctx.originZ() + DISTANCE;
-            // The context's setBlock does not reach 300 blocks out, so the floor and the buffers go in directly. The
+            // The context only holds its own area, so the far chunks are held by hand and the floor and the buffers go
+            // in directly. The
             // impact scatters, and a pulse never loads a chunk, so the buffers cover every chunk around the target.
+            // The chunks are held for the whole run: an unheld far chunk unloads and takes the machines with it.
+            com.gregguns.icbm.missile.MissileScenarios.holdFar(ctx, tx, tz, GRID * 8 + 8);
             final java.util.List<int[]> spots = new java.util.ArrayList<>();
             for (int a = -GRID; a <= GRID; a++) {
                 for (int b = -GRID; b <= GRID; b++) {
                     int x = tx + a * 8;
                     int z = tz + b * 8;
-                    w.getChunkProvider()
-                        .provideChunk(x >> 4, z >> 4);
                     w.setBlock(x, ty - 1, z, Blocks.stone, 0, 3);
                     spots.add(new int[] { x, ty, z });
                 }

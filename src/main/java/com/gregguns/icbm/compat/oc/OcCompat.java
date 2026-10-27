@@ -1,6 +1,12 @@
 package com.gregguns.icbm.compat.oc;
 
 import com.gregguns.GregGuns;
+import com.gregguns.icbm.component.AirDefenseView;
+import com.gregguns.icbm.component.LaunchComponentLogic;
+import com.gregguns.icbm.component.RadarView;
+import com.gregguns.icbm.control.MTELaunchControl;
+import com.gregguns.icbm.emp.MTEEmpTower;
+import com.gregguns.icbm.silo.MTEMissileSilo;
 
 import li.cil.oc.api.Driver;
 
@@ -23,7 +29,16 @@ public final class OcCompat {
     public static void register() {
         // Source:
         // https://github.com/GTNewHorizons/OpenComputers/blob/1e4559ff5f2443695cb28c7cdc9fba87219a862b/src/main/java/li/cil/oc/api/Driver.java#L66
-        Driver.add(new EmpTowerDriver());
-        GregGuns.LOG.info("ICBM: registered OpenComputers drivers (gg_emp_tower)");
+        Driver.add(new ViewDriver<>(MTEEmpTower.class, EmpTowerEnvironment::new));
+        Driver.add(
+            new ViewDriver<>(
+                MTELaunchControl.class,
+                v -> new LaunchEnvironment(v, LaunchComponentLogic.LAUNCH_CONTROL)));
+        Driver.add(new ViewDriver<>(MTEMissileSilo.class, v -> new LaunchEnvironment(v, LaunchComponentLogic.SILO)));
+        // The radars and the battery implement these views at integration (A's MTERadar, MTERadarTower, MTEAirDefense).
+        Driver.add(new ViewDriver<>(RadarView.class, RadarEnvironment::new));
+        Driver.add(new ViewDriver<>(AirDefenseView.class, AirDefenseEnvironment::new));
+        GregGuns.LOG.info(
+            "ICBM: registered OpenComputers drivers (gg_emp_tower, gg_launch_control, gg_silo, gg_radar, gg_air_defense)");
     }
 }

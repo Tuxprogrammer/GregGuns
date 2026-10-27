@@ -95,7 +95,7 @@ import gregtech.api.util.MultiblockTooltipBuilder;
 // Deviation: the controller has the static and active front overlays only; the gantry crane and the door animation
 // are not built.
 public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMissileSilo>
-    implements ISurvivalConstructable, ICasingTextureProvider {
+    implements ISurvivalConstructable, ICasingTextureProvider, com.gregguns.icbm.component.LaunchView {
 
     private static final String PIECE = "silo";
     private static final String OVERLAY_DIR = "machines/missile_silo/";
@@ -117,6 +117,8 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     static final int UNFORMED_GRACE_TICKS = 200;
 
     private final SiloDoors doors = new SiloDoors();
+    private final SiloAim aim = new SiloAim();
+    private int launches;
     private int unformedTicks;
     private EntitySiloDoors doorEntity;
     private SiloDoors.State pushedState;
@@ -556,6 +558,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                     IcbmConfig.siloRangeFactor,
                     probe.ticksUntilOpen(now));
                 if (r == LaunchResult.OK) {
+                    launches++;
                     doors.open(now, IcbmConfig.doorOpenTicks);
                     pushDoors();
                 }
@@ -584,6 +587,72 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                 return true;
             }
         };
+    }
+
+    // --- OpenComputers view (gg_silo) ------------------------------------------------------------------------------
+
+    private boolean serverLive() {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        return base != null && !base.isClientSide() && ModuleState.isActive(ModuleId.ICBM);
+    }
+
+    @Override
+    public com.gregguns.icbm.control.LaunchTarget launchTarget() {
+        return aim.target();
+    }
+
+    @Override
+    public void aimAt(int x, int z) {
+        if (serverLive()) {
+            aim.set(com.gregguns.icbm.control.LaunchTarget.of(x, z));
+            getBaseMetaTileEntity().markDirty();
+        }
+    }
+
+    /** A silo has no data stick slot; a computer sets its target with {@code setTarget}. */
+    @Override
+    public com.gregguns.icbm.control.TargetStick.Outcome loadTargetFromStick() {
+        return com.gregguns.icbm.control.TargetStick.Outcome.NO_STICK;
+    }
+
+    @Override
+    public MissileStatus missileStatus() {
+        return serverLive() && mMachine ? site().status() : MissileStatus.NONE;
+    }
+
+    @Override
+    public String fuelFluid() {
+        MissileStatus ms = missileStatus();
+        return ms.present() && ms.tier()
+            .fuels().length > 0 ? ms.tier()
+                .fuels()[0] : "";
+    }
+
+    @Override
+    public com.gregguns.icbm.control.ControlStatus launchStatus() {
+        return serverLive() ? aim.status(mMachine, site()) : com.gregguns.icbm.control.ControlStatus.NO_PAD;
+    }
+
+    @Override
+    public com.gregguns.icbm.control.ControlStatus launchNow() {
+        return serverLive() ? aim.fire(mMachine, site()) : com.gregguns.icbm.control.ControlStatus.NO_PAD;
+    }
+
+    @Override
+    public int launches() {
+        return launches;
+    }
+
+    @Override
+    public java.util.Map<String, Object> launchInfo() {
+        java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
+        m.put("formed", mMachine);
+        m.put(
+            "doors",
+            doors.state()
+                .name()
+                .toLowerCase(java.util.Locale.ROOT));
+        return m;
     }
 
     // --- the cycle -------------------------------------------------------------------------------------------------
@@ -881,6 +950,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                 .name());
         tag.setLong(K_DOOR_START, doors.start());
         tag.setInteger(K_DOOR_DUR, doors.duration());
+        aim.save(tag);
     }
 
     @Override
@@ -899,6 +969,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             st = SiloDoors.State.CLOSED;
         }
         doors.restore(st, tag.getLong(K_DOOR_START), tag.hasKey(K_DOOR_DUR) ? tag.getInteger(K_DOOR_DUR) : 40);
+        aim.load(tag);
     }
 
     @Override
