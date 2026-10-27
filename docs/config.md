@@ -166,6 +166,9 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 | `icbm.siloRangeFactor` | double | `1.25` | 0.5 to 5 | yes | Multiplier on the range of a missile launched from a Missile Silo, on top of `missileRangeFactor`; the open pad keeps the plain range (D70). |
 | `icbm.fuelBonusMax` | double | `0.25` | 0 to 1 | yes | The most unburned fuel adds to a blast radius, as a fraction: 0.25 is up to 25% at point-blank range, nothing at full range. 0 turns it off. |
 | `icbm.missileTimeoutTicks` | int | `600` | 20 to 6000 | yes | Ticks a missile may fly past its planned arrival before it detonates where it is. |
+| `icbm.doorOpenTicks` | int | `40` | 10 to 200 | yes | Ticks the Missile Silo doors take to swing open or shut (D89). |
+| `icbm.countdownTicks` | int | `200` | 20 to 1200 | yes | Ticks of countdown between the doors being open (or the launch, on a pad) and ignition; the launch can be aborted until it ends (D88). |
+| `icbm.doorCloseHeight` | int | `4` | 1 to 32 | yes | Blocks the missile's bottom must climb above the silo rim before the doors swing shut (D89). |
 
 ## Equipment (`equipment`)
 

@@ -42,6 +42,8 @@ import gregtech.common.gui.modularui.singleblock.base.MTETieredMachineBlockBaseG
 final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchControl> {
 
     private static final String F_FIRE = "fire";
+    private static final String F_ABORT = "abort";
+    private static final int ABORT_W = 50;
     private static final String F_POS = "mypos";
     private static final String F_LOAD = "load";
     private static final String F_SAVE = "save";
@@ -68,6 +70,7 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
         int distance;
         int radiusTenths;
         int lastShot = -1;
+        int countdown = -1;
         int lastStick = -1;
         long eu;
         String target = "";
@@ -155,6 +158,11 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             F_FIRE,
             0,
             new InteractionSyncHandler().setOnMousePressed(m -> machine.fireFromButton(sync.getPlayer())));
+        sync.syncValue(
+            F_ABORT,
+            0,
+            new InteractionSyncHandler().setOnMousePressed(m -> machine.abortFromButton(sync.getPlayer())));
+        sync.syncValue("st_countdown", 0, new IntSyncValue(() -> snap().countdown, v -> state.countdown = v));
         sync.syncValue(
             F_POS,
             0,
@@ -279,18 +287,34 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                 () -> hasStick() ? null : "gregguns.icbm.control.gui.stick_missing"));
         content.child(text(this::stickText, 22, 105, CONTENT - 22, 9, Alignment.CenterLeft, () -> TEXT_DARK));
 
-        // Launch.
+        // Launch, with Abort beside it while a countdown runs or after ignition.
+        content.child(
+            control(
+                F_ABORT,
+                CONTENT - ABORT_W,
+                118,
+                ABORT_W,
+                () -> tr("gregguns.icbm.control.gui.abort"),
+                this::canAbort,
+                () -> "gregguns.icbm.control.gui.abort.tip",
+                () -> ControlStatus.values()[state.status] == ControlStatus.IGNITED
+                    ? "gregguns.icbm.control.gui.abort.ignited"
+                    : "gregguns.icbm.control.gui.abort.idle"));
         content.child(
             control(
                 F_FIRE,
                 0,
                 118,
-                CONTENT,
+                CONTENT - ABORT_W - 4,
                 () -> tr("gregguns.icbm.control.gui.fire"),
                 this::canFire,
                 () -> "gregguns.icbm.control.gui.fire.tip",
                 () -> canFire() ? null : ControlStatus.values()[state.status].langKey()));
         return content;
+    }
+
+    private boolean canAbort() {
+        return ControlStatus.values()[state.status] == ControlStatus.COUNTDOWN;
     }
 
     private boolean canFire() {
@@ -305,6 +329,11 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
     // --- text -------------------------------------------------------------------------------------------------
 
     private String statusText() {
+        if (ControlStatus.values()[state.status] == ControlStatus.COUNTDOWN) {
+            return trf(
+                "gregguns.icbm.control.status.countdown_s",
+                com.gregguns.icbm.missile.LaunchTimer.seconds(state.countdown));
+        }
         if (state.lastShot >= 0 && state.lastShot < ControlStatus.values().length
             && ControlStatus.values()[state.lastShot] == ControlStatus.FIRED
             && ControlStatus.values()[state.status] != ControlStatus.READY) {

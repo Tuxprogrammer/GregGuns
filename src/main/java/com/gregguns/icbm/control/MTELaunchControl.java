@@ -81,9 +81,17 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
         /** Expected blast radius at the target, tenths of a block; 0 when unknown. */
         final int radiusTenths;
         final int tier;
+        /** Ticks left on a running countdown (D88), -1 when none. */
+        final int countdown;
 
         Snapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance, int radiusTenths,
             int tier) {
+            this(status, padFound, minRange, maxRange, distance, radiusTenths, tier, -1);
+        }
+
+        Snapshot(ControlStatus status, boolean padFound, int minRange, int maxRange, int distance, int radiusTenths,
+            int tier, int countdown) {
+            this.countdown = countdown;
             this.status = status;
             this.padFound = padFound;
             this.minRange = minRange;
@@ -431,6 +439,12 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
                 0,
                 0);
         }
+        int cd = site.countdownTicks();
+        if (cd >= 0 || site.ignited()) {
+            // A launch is in progress: the missile has left the pad's "armed" state, so the gate has nothing to say
+            // (D88).
+            return new Snapshot(cd >= 0 ? ControlStatus.COUNTDOWN : ControlStatus.IGNITED, true, 0, 0, 0, 0, 0, cd);
+        }
         MissileStatus ms = site.status();
         int min = ms.present() ? ms.tier()
             .minRange() : 0;
@@ -500,6 +514,22 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
         if (mayUse(player)) {
             fire(player);
         }
+    }
+
+    /**
+     * Stops the countdown in progress (D88), when the pressing player may use the block. Refused after ignition.
+     *
+     * @param player the pressing player
+     * @return true when a launch was aborted
+     */
+    public boolean abortFromButton(EntityPlayer player) {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        if (base == null || base.isClientSide() || !ModuleState.isActive(ModuleId.ICBM) || !mayUse(player)) {
+            return false;
+        }
+        LaunchSite site = LaunchSites.find(base.getWorld(), base.getXCoord(), base.getYCoord(), base.getZCoord());
+        snapshot = null;
+        return site != null && site.abort();
     }
 
     @Override

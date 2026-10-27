@@ -29,6 +29,15 @@ One fixed piece, 5 wide, 5 deep and 12 layers tall, with the four corner columns
 - **Counts:** 96 Gantry Casing positions (84 needed, the rest may be hatches), 35 glass panes plus the controller, 12 beams, 9 pad blocks.
 - **The shaft:** 3x3, open to the sky, left as "anything" so a body stacked by hand does not unform the silo. The missile climbs straight out; keep the opening above the rim free of blocks.
 
+## The doors (D89, D90)
+
+Two hinged panels lie across the 3x3 opening at the rim, each 1.5 x 3 blocks and 2/16 thick, in Gantry Casing texture. A launch opens them (40 ticks, eased, 115 degrees: they rest leaning out about 65 degrees above horizontal), the countdown runs with them open, and they swing shut once the missile's bottom is 4 blocks above the rim top. They are cosmetic apart from one rule: a missile cannot ignite through closed doors.
+
+- **State:** `SiloDoors` (CLOSED, OPENING, OPEN, CLOSING, start time, duration), saved in the controller's NBT. The controller derives the wanted state every 5 ticks from the missiles in the shaft column, so a reload resumes the sequence.
+- **Carrier:** `EntitySiloDoors`, never saved, made by the controller, synced by `PacketSiloDoors` to the players tracking it (late joiners catch up within a second); drawn by `RenderSiloDoors`. It is not a block, so it never blocks the climb or the arc.
+- **Abort:** doors turn around from the angle they are at and take only the way back.
+- **Unformed mid-sequence:** a gap of 200 ticks aborts a launch still in its warm-up, resets the doors and removes the carrier; after ignition the missile flies on. A T3 also stands down by itself when no formed silo stands under it for 300 ticks.
+
 ## Mating (0018 §8)
 
 Each cycle the controller does the next job (`checkProcessing`):
@@ -81,7 +90,7 @@ Cost (estimates, D34): fins 150 and engine 700 plate equivalents each, about 1,3
 
 ## Tests
 
-`SiloShapeTest`, `SiloRulesTest`, `SiloSearchTest`, `MissileTierTest`, `ScatterTest`; scenarios above.
+`SiloDoorsTest`, `SiloShapeTest`, `SiloRulesTest`, `SiloSearchTest`, `MissileTierTest`, `ScatterTest`; scenarios above.
 
 ## Open questions
 
