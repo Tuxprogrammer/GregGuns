@@ -12,6 +12,7 @@ from collections import Counter
 import numpy as np
 
 import blocks as B
+import ctmsel
 import gt
 import kit as K
 import render3d as R
@@ -94,6 +95,11 @@ def _casing(name):
     return T / "casings" / f"{name}.png"
 
 
+def _wall(name):
+    """A casing whose faces join their neighbors, as in game (ctmsel.py); the legend shows its isolated tile."""
+    return ctmsel.CtmTexture(name)
+
+
 def _ctrl(casing, machine):
     return B.composite(_casing(casing), _ov(machine, "FRONT"), cache=K.TEXCACHE, name=f"{machine}_ctrl")
 
@@ -162,8 +168,9 @@ class Build:
 
     def legend(self):
         c = Counter(b[0] if isinstance(b, tuple) else b for b in self.blocks.values())
-        return [(k, self.labels[k], self.tex[k][-1] if isinstance(self.tex[k], tuple) else self.tex[k], c[k],
-                 self.notes.get(k, "")) for k in self.tex if c[k]]
+        def icon(t):
+            return t.base if isinstance(t, ctmsel.CtmTexture) else t[-1] if isinstance(t, tuple) else t
+        return [(k, self.labels[k], icon(self.tex[k]), c[k], self.notes.get(k, "")) for k in self.tex if c[k]]
 
     def render(self, yaw=-35, pitch=30, ppu=36, tag="", marks=False, cut=None):
         """marks: ring the hatches (orange), the controller (blue) and the lamps (yellow) so a builder can find them.
@@ -177,7 +184,7 @@ class Build:
 def ammo_works(bays=4, only=None, bench=False) -> Build:
     b = Build(f"ammo_works{bays}{only or ''}{'-bench' if bench else ''}")
     wc = _casing("works_casing")
-    b.define("works", "Works Casing", wc)
+    b.define("works", "Works Casing", _wall("works_casing"))
     b.define("ram", "Ram Housing", B.first_frame(_casing("ram_housing"), K.TEXCACHE, "ram_housing"),
              "one on top of every press bay")
     b.define("belt", "Item Pipe Casing", gt.iconset("MACHINE_CASING_ITEM_PIPE_TIN"), "the belt: one tier along the whole floor line")
@@ -233,7 +240,7 @@ def ammo_works(bays=4, only=None, bench=False) -> Build:
 def gantry(bays=4, only=None) -> Build:
     b = Build(f"gantry{bays}{only or ''}")
     gc = _casing("gantry_casing")
-    b.define("casing", "Gantry Casing", gc)
+    b.define("casing", "Gantry Casing", _wall("gantry_casing"))
     b.define("beam", "Gantry Beam", _casing("gantry_beam"))
     b.define("hoist", "Gantry Hoist", _casing("gantry_hoist"), "one on top of every bay")
     b.define("cradle", "Repair Cradle", (_casing("repair_cradle_top"), _casing("repair_cradle_side")),
@@ -268,7 +275,8 @@ def rampart(mounts=6, plating="iron", only=None) -> Build:
     """The Rampart's strings run along its length, so x comes from the string and z from the aisle."""
     b = Build(f"rampart{mounts}{plating}{only or ''}")
     pl = _casing(f"bastion_plating_{plating}")
-    b.define("plating", f"Bastion Plating ({plating.capitalize()})", pl, "any of Iron, Steel, Aluminum or Carbon")
+    b.define("plating", f"Bastion Plating ({plating.capitalize()})", _wall(f"bastion_plating_{plating}"),
+             "any of Iron, Steel, Aluminum or Carbon")
     b.define("glass", "Borosilicate Glass", gt.bartworks("BoronSilicateGlassBlock"))
     gm = B.composite(pl, _ov("gun_mount_hatch", "FRONT"), cache=K.TEXCACHE, name="gun_mount")
     b.define("mount", "Gun Mount Hatch", (pl, pl, gm), "exactly one per bay, MV to IV")
