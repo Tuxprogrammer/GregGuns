@@ -96,6 +96,8 @@ final class ShaftChunkScenario implements Scenario {
         int[] stage = { 0 };
         int[] mark = { 0 };
         int[] level = { 0 };
+        int[] full = { 0 };
+        boolean[] stocked = { false };
         return ScenarioResult.pending(name(), 9000, ticks -> {
             if (ticks < SiloScenarios.WARMUP) {
                 return null;
@@ -115,28 +117,40 @@ final class ShaftChunkScenario implements Scenario {
                     out.check(
                         DevStructureBuilder.check(ctx.world(), wx, wy, wz),
                         "the silo forms across the chunk border");
-                    IGregTechTileEntity bus = tile(ctx, ox - 1, 0, oz);
-                    bus.setInventorySlotContents(0, MissileBodies.body(MissileTier.T3));
-                    bus.setInventorySlotContents(
-                        1,
-                        WarheadStacks.make(
-                            net.minecraft.item.Item.getItemFromBlock(WarheadBlocks.of(casing)),
-                            casing,
-                            "exothermic",
-                            1));
-                    fill(ctx, ox, oz);
+                    // Nothing is loaded into the silo yet: while the chunk is still protected from unloading
+                    // (see UNLOAD_WAIT) an idle silo has nothing to mate, so the guard is what gets tested.
                     stage[0] = 1;
                     mark[0] = ticks;
                     return null;
                 }
                 case 1: {
-                    // Unload (retrying: the provider may take a tick) and only then ask the controller to work.
+                    // Unload (retrying: the provider may take many ticks) and only then give the silo its work.
                     unload(world, shaftCx, shaftCz);
                     if (loaded(world, shaftCx, shaftCz)) {
                         return ticks > mark[0] + UNLOAD_WAIT ? stuck(world, shaftCx, shaftCz) : null;
                     }
+                    if (!stocked[0]) {
+                        IGregTechTileEntity bus = tile(ctx, ox - 1, 0, oz);
+                        bus.setInventorySlotContents(0, MissileBodies.body(MissileTier.T3));
+                        bus.setInventorySlotContents(
+                            1,
+                            WarheadStacks.make(
+                                net.minecraft.item.Item.getItemFromBlock(WarheadBlocks.of(casing)),
+                                casing,
+                                "exothermic",
+                                1));
+                        fill(ctx, ox, oz);
+                        full[0] = hatchMb(ctx, ox, oz);
+                        out.check(full[0] > 0, "the fuel hatch holds fuel before the check");
+                        stocked[0] = true;
+                        mark[0] = ticks;
+                        return null;
+                    }
+                    if (ticks < mark[0] + 40) {
+                        return null; // let the silo try, by itself, for two seconds with the chunk out
+                    }
                     out.check(loaded(world, wx >> 4, ctrlCz), "the controller chunk stays loaded");
-                    out.check(busItems(ctx, ox, oz) == 2, "the parts are in the bus before the check");
+                    out.check(busItems(ctx, ox, oz) == 2, "the parts stay in the bus while the chunk is out");
                     // Ask the controller to work right now, while the chunk is out: it must refuse and touch nothing.
                     for (int i = 0; i < 3; i++) {
                         out.check(
@@ -146,7 +160,7 @@ final class ShaftChunkScenario implements Scenario {
                     }
                     out.check(busItems(ctx, ox, oz) == 2, "the parts stay in the bus");
                     out.check(missiles(world) == 0, "no missile spawned");
-                    out.checkEquals("no fuel pumped", 16000, hatchMb(ctx, ox, oz));
+                    out.checkEquals("no fuel pumped", full[0], hatchMb(ctx, ox, oz));
                     out.checkEquals("no parts taken out of the bus into a pending cycle", 0, silo.pendingTier());
                     reload(world, shaftCx, shaftCz);
                     mark[0] = ticks;
@@ -169,11 +183,11 @@ final class ShaftChunkScenario implements Scenario {
                 }
                 case 3: {
                     // Wait for the pump to start, then pull the chunk away mid-fill.
-                    if (hatchMb(ctx, ox, oz) >= 16000 && ticks < mark[0] + 1500) {
+                    if (hatchMb(ctx, ox, oz) >= full[0] && ticks < mark[0] + 1500) {
                         return null;
                     }
                     level[0] = hatchMb(ctx, ox, oz);
-                    out.check(level[0] < 16000, "the silo started pumping fuel");
+                    out.check(level[0] < full[0], "the silo started pumping fuel");
                     stage[0] = 4;
                     mark[0] = ticks;
                     return null;
