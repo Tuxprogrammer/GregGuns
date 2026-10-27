@@ -25,7 +25,9 @@ import com.gregguns.icbm.defense.MTEAirDefense;
 import com.gregguns.icbm.defense.MTERadar;
 import com.gregguns.icbm.defense.MTERadarTower;
 import com.gregguns.icbm.defense.RadarLink;
+import com.gregguns.icbm.defense.RadarLinks;
 import com.gregguns.icbm.defense.RadarRules;
+import com.gregguns.icbm.defense.RadarUnit;
 import com.gregguns.icbm.defense.SamRules;
 import com.gregguns.machine.DevStructureBuilder;
 import com.gregguns.machine.GregGunsMTEIDs;
@@ -57,6 +59,8 @@ public final class DefenseScenarios {
         registry.register(new NotIncoming());
         registry.register(new RangeByTier());
         registry.register(new Tower());
+        registry.register(new TowerDetects());
+        registry.register(new TowerSaveReload());
         registry.register(new Gun());
         registry.register(new SaveReload());
     }
@@ -575,6 +579,236 @@ public final class DefenseScenarios {
                 out.checkEquals("LuV range", 768, t.rangeIfOn());
                 return out.build();
             });
+        }
+    }
+
+    /** Energy for the tower's hatch, which sits under the controller. */
+    private static void powerHatch(ScenarioContext ctx, int dx, int cy, int dz) {
+        IGregTechTileEntity hatch = live(ctx, dx, cy - 1, dz);
+        if (hatch != null) {
+            hatch.increaseStoredEnergyUnits(1_000_000L, true);
+        }
+    }
+
+    private static MTERadarTower tower(IGregTechTileEntity b) {
+        return b != null && b.getMetaTileEntity() instanceof MTERadarTower ? (MTERadarTower) b.getMetaTileEntity()
+            : null;
+    }
+
+    /** A formed tower, paid for, flags a T1 aimed inside its protected radius. */
+    private static final class TowerDetects extends Base {
+
+        private static final int DX = -14;
+        private static final int DZ = 6;
+        private static final int CY = 5;
+
+        @Override
+        public String name() {
+            return "icbm.defense.tower_detects";
+        }
+
+        @Override
+        public String description() {
+            return "A formed Radar Tower with an IV hatch runs, then flags a T1 aimed inside its protected radius as a threat with redstone, and tracks it without a threat once the radius is small.";
+        }
+
+        @Override
+        ScenarioResult go(ScenarioContext ctx) {
+            ctx.clearArea(8, 24);
+            final boolean terrain = IcbmConfig.terrainDamageT1;
+            IcbmConfig.terrainDamageT1 = false;
+            final World w = ctx.world();
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            place(ctx, GregGunsMTEIDs.RADAR_TOWER, DX, CY, DZ);
+            final int target = 80;
+            final EntityMissile[] missile = { null };
+            final int[] stage = { 0 };
+            final int[] mark = { 0 };
+            final boolean[] threat = { false };
+            final boolean[] tracking = { false };
+            final int[] signal = { 0 };
+            return ScenarioResult.pending(name(), 1800, ticks -> {
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
+                MTERadarTower t = tower(live(ctx, DX, CY, DZ));
+                if (t == null) {
+                    return finish(terrain, ScenarioResult.fail(name(), "the tower controller is gone"));
+                }
+                if (stage[0] == 0) {
+                    out.check(
+                        DevStructureBuilder.buildRadarTower(
+                            w,
+                            ctx.originX() + DX,
+                            ctx.originY() + CY,
+                            ctx.originZ() + DZ,
+                            ItemList.Hatch_Energy_IV).formed,
+                        "the tower forms");
+                    stage[0] = 1;
+                    mark[0] = ticks;
+                    return null;
+                }
+                powerHatch(ctx, DX, CY, DZ);
+                if (stage[0] == 1) {
+                    if (!t.online() && ticks < mark[0] + 300) {
+                        return null;
+                    }
+                    out.check(t.online(), "the tower runs before the launch");
+                    t.setRadius(100);
+                    out.checkEquals("radius set", 100, t.protectedRadius());
+                    EntityMissile m = arm(ctx);
+                    if (m == null) {
+                        return finish(terrain, ScenarioResult.fail(name(), "could not arm"));
+                    }
+                    missile[0] = m;
+                    out.checkEquals(
+                        "launch",
+                        LaunchResult.OK,
+                        m.launch(ctx.originX() + 0.5, ctx.originZ() + target + 0.5, null));
+                    stage[0] = 2;
+                    mark[0] = ticks;
+                    return null;
+                }
+                threat[0] |= t.state() == RadarRules.State.THREAT;
+                tracking[0] |= t.state() == RadarRules.State.TRACKING;
+                signal[0] = Math.max(signal[0], t.signal());
+                if (stage[0] == 2) {
+                    if (!threat[0] && !missile[0].isDead && ticks < mark[0] + 900) {
+                        return null;
+                    }
+                    out.check(threat[0], "the tower flagged the missile as a threat");
+                    out.check(signal[0] >= 1, "the tower's redstone rose with the threat");
+                    // Let this missile land or die, then repeat with a radius that excludes its impact point.
+                    stage[0] = 3;
+                    mark[0] = ticks;
+                    return null;
+                }
+                if (stage[0] == 3) {
+                    if (!missile[0].isDead && ticks < mark[0] + 900) {
+                        return null;
+                    }
+                    MissileScenarios.sweep(ctx);
+                    t.setRadius(RadarRules.MIN_RADIUS);
+                    EntityMissile m = arm(ctx);
+                    if (m == null) {
+                        return finish(terrain, ScenarioResult.fail(name(), "could not re-arm"));
+                    }
+                    missile[0] = m;
+                    threat[0] = false;
+                    tracking[0] = false;
+                    out.checkEquals(
+                        "second launch",
+                        LaunchResult.OK,
+                        m.launch(ctx.originX() + 0.5, ctx.originZ() + target + 0.5, null));
+                    stage[0] = 4;
+                    mark[0] = ticks;
+                    return null;
+                }
+                if (!missile[0].isDead && ticks < mark[0] + 900) {
+                    return null;
+                }
+                MissileScenarios.sweep(ctx);
+                out.check(tracking[0], "with a small radius the tower still tracked the missile");
+                out.check(!threat[0], "and did not flag it: the impact is outside the radius");
+                return finish(terrain, out.build());
+            });
+        }
+    }
+
+    /** A formed tower keeps its radius and its place in a battery's link across a tile reload. */
+    private static final class TowerSaveReload extends Base {
+
+        private static final int DX = -14;
+        private static final int DZ = -6;
+        private static final int CY = 5;
+
+        @Override
+        public String name() {
+            return "icbm.defense.tower_save_reload";
+        }
+
+        @Override
+        public String description() {
+            return "A formed Radar Tower and a linked battery are written to NBT and their tiles replaced by freshly loaded ones: the tower re-forms with its radius, and the battery's link still finds it.";
+        }
+
+        @Override
+        ScenarioResult go(ScenarioContext ctx) {
+            ctx.clearArea(8, 24);
+            final World w = ctx.world();
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            place(ctx, GregGunsMTEIDs.RADAR_TOWER, DX, CY, DZ);
+            place(ctx, GregGunsMTEIDs.AIR_DEFENSE, DX + 6, CY, DZ);
+            final int[] stage = { 0 };
+            final int[] mark = { 0 };
+            return ScenarioResult.pending(name(), 900, ticks -> {
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
+                MTERadarTower t = tower(live(ctx, DX, CY, DZ));
+                MTEAirDefense b = battery(live(ctx, DX + 6, CY, DZ));
+                if (t == null || b == null) {
+                    return ScenarioResult.fail(name(), "a machine is gone");
+                }
+                if (stage[0] == 0) {
+                    out.check(
+                        DevStructureBuilder.buildRadarTower(
+                            w,
+                            ctx.originX() + DX,
+                            ctx.originY() + CY,
+                            ctx.originZ() + DZ,
+                            ItemList.Hatch_Energy_IV).formed,
+                        "the tower forms");
+                    stage[0] = 1;
+                    mark[0] = ticks;
+                    return null;
+                }
+                if (stage[0] == 1) {
+                    t.setRadius(111);
+                    out.checkEquals("radius set", 111, t.protectedRadius());
+                    IGregTechTileEntity bb = live(ctx, DX + 6, CY, DZ);
+                    ItemStack stick = ItemList.Tool_DataStick.get(1);
+                    RadarUnit.writeLink(live(ctx, DX, CY, DZ), stick, null);
+                    bb.setInventorySlotContents(MTEAirDefense.SLOT_STICK, stick);
+                    out.check(RadarLinks.find(w, b.link()) == t, "before the reload the link finds the tower");
+                    reload(ctx, DX, CY, DZ);
+                    reload(ctx, DX + 6, CY, DZ);
+                    stage[0] = 2;
+                    mark[0] = ticks;
+                    return null;
+                }
+                MTERadarTower fresh = tower(live(ctx, DX, CY, DZ));
+                MTEAirDefense freshBattery = battery(live(ctx, DX + 6, CY, DZ));
+                if (fresh == null || freshBattery == null) {
+                    return ScenarioResult.fail(name(), "a machine is gone after the reload");
+                }
+                if (!fresh.isFormed() && ticks < mark[0] + 400) {
+                    return null;
+                }
+                out.check(fresh != t, "the tile really was replaced");
+                out.check(fresh.isFormed(), "the tower re-formed after the reload");
+                out.checkEquals("radius after the reload", 111, fresh.protectedRadius());
+                out.check(
+                    RadarLinks.find(w, freshBattery.link()) == fresh,
+                    "after the reload the battery's link finds the new tower");
+                return out.build();
+            });
+        }
+
+        /** Replaces the tile with one loaded from the old one's NBT, as a chunk load would. */
+        private static void reload(ScenarioContext ctx, int dx, int cy, int dz) {
+            int x = ctx.originX() + dx;
+            int y = ctx.originY() + cy;
+            int z = ctx.originZ() + dz;
+            TileEntity old = ctx.world()
+                .getTileEntity(x, y, z);
+            net.minecraft.nbt.NBTTagCompound tag = new net.minecraft.nbt.NBTTagCompound();
+            old.writeToNBT(tag);
+            old.invalidate();
+            TileEntity fresh = TileEntity.createAndLoadEntity(tag);
+            ctx.world()
+                .getChunkFromBlockCoords(x, z)
+                .addTileEntity(fresh);
         }
     }
 

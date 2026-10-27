@@ -61,8 +61,10 @@ public final class GregGunsCasings extends BlockCasingsAbstract implements Tiere
     public static final int BASTION_ALUMINUM = 9;
     /** Meta of the Carbon Bastion Plating (armor value 20). */
     public static final int BASTION_CARBON = 10;
+    /** Meta of the Radar Casing (the radar tower's walls; hatches go here). */
+    public static final int RADAR_CASING = 11;
     /** Number of metas; every meta has one page-50 texture index equal to the meta. */
-    public static final int META_COUNT = 11;
+    public static final int META_COUNT = 12;
     /** The bare content name; the registry id is {@code gregguns:casings}. */
     public static final String NAME = "casings";
 
@@ -70,7 +72,7 @@ public final class GregGunsCasings extends BlockCasingsAbstract implements Tiere
         "gregguns:casings/reaction_casing", "gregguns:casings/gantry_casing", "gregguns:casings/gantry_beam",
         "gregguns:casings/gantry_hoist", "gregguns:casings/repair_cradle_side", "gregguns:casings/bastion_plating_iron",
         "gregguns:casings/bastion_plating_steel", "gregguns:casings/bastion_plating_aluminum",
-        "gregguns:casings/bastion_plating_carbon" };
+        "gregguns:casings/bastion_plating_carbon", "gregguns:casings/thirdparty/ntm/radar_casing" };
     private static final String CRADLE_TOP = "gregguns:casings/repair_cradle_top";
 
     /** The block, set by {@link #create}; {@code null} before {@link #create}. */

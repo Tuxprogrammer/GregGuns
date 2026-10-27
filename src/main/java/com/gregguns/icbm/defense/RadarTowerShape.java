@@ -3,7 +3,7 @@ package com.gregguns.icbm.defense;
 /**
  * The radar tower as plain data: its one StructureLib piece and the counts the machine and its tooltip use. No
  * Minecraft or GT types. Layout is StructureLib's: {@code piece[aisle][row][column]}, aisles front to back, rows top to
- * bottom, columns left to right as seen from the front. {@code C} is Gantry Casing, {@code H} the same casing where a
+ * bottom, columns left to right as seen from the front. {@code C} is Radar Casing, {@code H} the same casing where a
  * hatch may go (the bottom ring), {@code B} Gantry Beam (the mast), {@code ~} the controller, a space means anything.
  * Both sides.
  */

@@ -51,7 +51,7 @@ Nothing below HV (D69). The tower needs an IV or better hatch; a lower one fails
 - Sweep (clean-room; D14 replaces ICBM-Classic's chunk query and distance-trend test, so nothing is ported): `Contacts.within(world, x, z, range)`, then `Sweep.of(...)` splits "detected" from "incoming" (impact inside the protected radius), nearest first.
 - Outputs: redstone strength = incoming count (max 15) on all six sides, set only when it changes; single blocks set the GT active flag while a threat exists (a machine-state cover reads it); the tower's active flag is its own running state, so it drives redstone only.
 - Link: right-click a radar or the tower controller with a data stick, or press Save link in a single block's GUI. The stick keeps `{dim, x, y, z}` (`RadarLink`).
-- Single blocks work without any structure; the tower is a 3x3x7 Gantry Casing tower (`RadarTowerShape`) with a Gantry Beam mast, hatches (Energy, Maintenance) in the bottom ring.
+- Single blocks work without any structure; the tower is a 3x3x7 Radar Casing tower (`RadarTowerShape`, casing meta 11 of `gregguns:casings`) with a Gantry Beam mast, hatches (Energy, Maintenance) in the bottom ring.
 
 ## Requirements (continued)
 
@@ -63,8 +63,14 @@ Nothing below HV (D69). The tower needs an IV or better hatch; a lower one fails
 
 ## Tests
 
-`RadarRulesTest`, `SamRulesTest` (unit); scenarios `icbm.defense.registered`, `.intercept`, `.not_incoming`, `.range_by_tier`, `.tower`, `.save_reload`.
+`RadarRulesTest`, `SamRulesTest` (unit); `RadarTowerShapeTest`; scenarios `icbm.defense.registered`, `.intercept`, `.not_incoming`, `.range_by_tier`, `.tower`, `.tower_detects`, `.tower_save_reload`, `.save_reload`.
 
 ## Open
 
-- A GUI for the tower's protected radius; the radar casing art (meta 11) is not wired, so the tower uses Gantry Casing.
+- Nothing blocking. The data stick only carries a radar's address (`RadarLink`), so it does not also carry a radius (D99): the radius is set in the tower's screen, as for the single blocks.
+
+## Tower screen and casing (D99)
+
+- GT's multiblock screen gains one "R" button (left of the power panel button) that opens a small radar panel: the protected radius field (digits only, clamped on the server to 8 up to the hatch range, or the IV range while no hatch is fitted), the range, and the detected and incoming counts. It is saved in the controller's NBT with the rest of the radar state.
+- Radar Casing (meta 11, NTM-derived art) replaces Gantry Casing in the tower; the Gantry Beam mast stays. Recipe: 6 Tungsten Steel plate, programmed circuit 31, Assembler at IV (`TierEU.RECIPE_IV`), 10 s, makes 4. It recycles to 1.5 plates of Tungsten Steel each.
+- Recycling for the rest: the SAM returns 2 Stainless Steel plates, the radar gun 2, each machine its hull's 8 (D44).

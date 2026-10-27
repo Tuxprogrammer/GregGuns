@@ -46,6 +46,7 @@ import gregtech.api.render.TextureFactory;
 import gregtech.api.structure.error.StructureError;
 import gregtech.api.structure.error.StructureErrorRegistry;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
 /**
  * The radar tower (D14): an IV-or-better multiblock whose weakest Energy Hatch sets the range ({@link RadarRules#range}
@@ -100,17 +101,17 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
         }
 
         private static IStructureDefinition<MTERadarTower> build() {
-            int casingIndex = GregGunsCasings.textureIndex(GregGunsCasings.GANTRY_CASING);
+            int casingIndex = GregGunsCasings.textureIndex(GregGunsCasings.RADAR_CASING);
             return StructureDefinition.<MTERadarTower>builder()
                 .addShape(PIECE, RadarTowerShape.PIECES[0])
-                .addElement('C', onElementPass(MTERadarTower::onCasingAdded, casing(GregGunsCasings.GANTRY_CASING)))
+                .addElement('C', onElementPass(MTERadarTower::onCasingAdded, casing(GregGunsCasings.RADAR_CASING)))
                 .addElement(
                     'H',
                     buildHatchAdder(MTERadarTower.class).atLeast(Energy, MultiAmpEnergy, Maintenance)
                         .casingIndex(casingIndex)
                         .hint(1)
                         .buildAndChain(
-                            onElementPass(MTERadarTower::onCasingAdded, casing(GregGunsCasings.GANTRY_CASING))))
+                            onElementPass(MTERadarTower::onCasingAdded, casing(GregGunsCasings.RADAR_CASING))))
                 .addElement('B', casing(GregGunsCasings.GANTRY_BEAM))
                 .build();
         }
@@ -182,6 +183,55 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
     public int rangeIfOn() {
         int t = hatchTier();
         return t < RadarRules.TOWER_MIN_TIER ? 0 : RadarRules.range(t);
+    }
+
+    /**
+     * Sets the protected radius, clamped to the hatch range (or to the IV range
+     * when there is no hatch yet); for scenarios and the GUI field.
+     *
+     * @param radius blocks
+     */
+    public void setRadius(int radius) {
+        unit.setRadius(radius, radiusCeiling());
+        getBaseMetaTileEntity().markDirty();
+    }
+
+    private int radiusCeiling() {
+        int range = rangeIfOn();
+        return range > 0 ? range : RadarRules.range(RadarRules.TOWER_MIN_TIER);
+    }
+
+    /** @return the protected radius text for the GUI field */
+    String radiusText() {
+        return Integer.toString(unit.radius());
+    }
+
+    /** @param text what the player typed; anything that is not a number is ignored, the rest is clamped */
+    void setRadiusText(String text) {
+        try {
+            setRadius(Integer.parseInt(text.trim()));
+        } catch (NumberFormatException e) {
+            // Ignored: the field keeps its value.
+        }
+    }
+
+    /** @return how many missiles the last scan detected */
+    int detectedCount() {
+        return unit.sweep()
+            .detected()
+            .size();
+    }
+
+    /** @return how many of them are aimed inside the protected radius */
+    int incomingCount() {
+        return unit.sweep()
+            .incoming()
+            .size();
+    }
+
+    @Override
+    protected MTEMultiBlockBaseGui<?> getGui() {
+        return new RadarTowerGui(this);
     }
 
     /** @return what the tower reports now */
@@ -301,7 +351,7 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
             .beginStructureBlock(RadarTowerShape.WIDTH, RadarTowerShape.HEIGHT, RadarTowerShape.DEPTH, false)
             .addController(lang("structure.controller"))
             .addCasingInfoRange(
-                StatCollector.translateToLocal("gregguns.casings.3.name"),
+                StatCollector.translateToLocal("gregguns.casings.11.name"),
                 RadarTowerShape.CASING_MINIMUM,
                 RadarTowerShape.casingPositions(),
                 false)
@@ -350,7 +400,7 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
 
     @Override
     public ITexture getCasingTexture() {
-        return Textures.BlockIcons.getCasingTextureForId(GregGunsCasings.textureIndex(GregGunsCasings.GANTRY_CASING));
+        return Textures.BlockIcons.getCasingTextureForId(GregGunsCasings.textureIndex(GregGunsCasings.RADAR_CASING));
     }
 
     // --- construction -----------------------------------------------------------------------------------------

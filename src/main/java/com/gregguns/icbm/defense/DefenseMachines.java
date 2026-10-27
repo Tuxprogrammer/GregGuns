@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 
 import com.gregguns.GregGuns;
 import com.gregguns.api.Tier;
+import com.gregguns.block.GregGunsCasings;
 import com.gregguns.core.registry.ModuleRegistrar;
 import com.gregguns.icbm.recipe.IcbmIngredients;
 import com.gregguns.icbm.recipe.Ing;
@@ -158,6 +159,7 @@ public final class DefenseMachines {
                 ItemList.Robot_Arm_HV.get(2),
                 ItemList.Sensor_HV.get(1),
                 circuits("Advanced", 2, Tier.HV));
+            radarCasing();
             ItemStack samStack = new ItemStack(sam, 2);
             sam(samStack);
             ItemStack gunStack = new ItemStack(radarGun, 1);
@@ -175,10 +177,42 @@ public final class DefenseMachines {
                     .duration(300)
                     .eut(TierEU.RECIPE_HV)
                     .addTo(RecipeMaps.assemblerRecipes);
+                GTOreDictUnificator.addItemData(
+                    new ItemStack(radarGun, 1),
+                    new ItemData(Materials.StainlessSteel, OrePrefixes.plate.getMaterialAmount() * 2));
             }
         } catch (RuntimeException e) {
             GregGuns.LOG.error("Defense recipes failed", e);
         }
+    }
+
+    /** Plates one Assembler run of the Radar Casing takes. */
+    static final int CASING_PLATES = 6;
+    /** Casings one run makes. */
+    static final int CASING_YIELD = 4;
+
+    /**
+     * The tower's wall: Tungsten Steel plate in the Assembler at IV, four blocks a run; it recycles to its plate share.
+     */
+    private static void radarCasing() {
+        ItemStack plate = IcbmIngredients.stack(Ing.gt("plate", "TungstenSteel", CASING_PLATES, Tier.IV, 1.0));
+        if (plate == null) {
+            GregGuns.LOG.error("Skipping the Radar Casing recipe: Tungsten Steel plate did not resolve");
+            return;
+        }
+        ItemStack out = new ItemStack(GregGunsCasings.INSTANCE, CASING_YIELD, GregGunsCasings.RADAR_CASING);
+        GTValues.RA.stdBuilder()
+            .circuit(31)
+            .itemInputs(plate)
+            .itemOutputs(out)
+            .duration(200)
+            .eut(TierEU.RECIPE_IV)
+            .addTo(RecipeMaps.assemblerRecipes);
+        GTOreDictUnificator.addItemData(
+            new ItemStack(GregGunsCasings.INSTANCE, 1, GregGunsCasings.RADAR_CASING),
+            new ItemData(
+                Materials.TungstenSteel,
+                OrePrefixes.plate.getMaterialAmount() * CASING_PLATES / CASING_YIELD));
     }
 
     private static void sam(ItemStack out) {
@@ -197,6 +231,10 @@ public final class DefenseMachines {
             .duration(300)
             .eut(TierEU.RECIPE_HV)
             .addTo(RecipeMaps.assemblerRecipes);
+        // The plates come back (two per missile); the motor, sensor and circuit do not (D44).
+        GTOreDictUnificator.addItemData(
+            new ItemStack(sam, 1),
+            new ItemData(Materials.StainlessSteel, OrePrefixes.plate.getMaterialAmount() * 2));
     }
 
     private static void machine(int id, int circuit, int duration, long eut, ItemStack... inputs) {
