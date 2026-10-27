@@ -567,6 +567,7 @@ public final class SiloScenarios {
             IcbmConfig.terrainDamageT3 = true;
             int[] stage = { 0 };
             int[] mark = { 0 };
+            int[] died = { 0 };
             int[] blocksBefore = { 0 };
             EntityMissile[] m = new EntityMissile[1];
             return ScenarioResult.pending(name(), 6000, ticks -> {
@@ -618,6 +619,13 @@ public final class SiloScenarios {
                         return null;
                     case 3:
                         if (!m[0].isDead && ticks < mark[0] + 3000) {
+                            return null;
+                        }
+                        if (m[0].isDead && died[0] == 0) {
+                            died[0] = ticks;
+                        }
+                        // The crater is dug over several ticks (D87), so wait for the first broken block.
+                        if (m[0].isDead && target.removed(ctx.world()) == 0 && ticks < died[0] + 400) {
                             return null;
                         }
                         out.check(m[0].isDead, "the missile detonated");
