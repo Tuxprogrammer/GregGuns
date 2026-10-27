@@ -156,7 +156,7 @@ public final class OcScenarios {
             Object[] reply;
             try {
                 reply = found.invoke(c.method, null);
-            } catch (Exception e) {
+            } catch (Exception | LinkageError e) {
                 out.check(false, c.label + ": " + c.method + "() threw " + e);
                 return;
             }
@@ -181,7 +181,7 @@ public final class OcScenarios {
                     out.checkEquals("EMP Tower: isReady() is false with no EU", Boolean.FALSE, ready[0]);
                     Object[] mode = found.invoke("getMode", null);
                     out.checkEquals("EMP Tower: getMode() is a string", String.class, mode[0].getClass());
-                } catch (Exception e) {
+                } catch (Exception | LinkageError e) {
                     out.check(false, "EMP Tower: status calls threw " + e);
                 }
             }

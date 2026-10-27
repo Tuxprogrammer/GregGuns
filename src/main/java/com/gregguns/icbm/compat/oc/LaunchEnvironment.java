@@ -18,7 +18,7 @@ import li.cil.oc.api.machine.Context;
  * ticks. Server side.
  */
 // Spec: docs/gregguns-icbm-spec/01-core/golden-dome.md (gg_silo, gg_launch_control)
-final class LaunchEnvironment extends ViewEnvironment<LaunchView, LaunchComponentLogic> {
+public final class LaunchEnvironment extends ViewEnvironment<LaunchView, LaunchComponentLogic> {
 
     private static final int SAMPLE_TICKS = 10;
 

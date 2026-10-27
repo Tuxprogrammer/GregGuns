@@ -16,7 +16,7 @@ import li.cil.oc.api.machine.Context;
  * component address (OpenComputers adds the address) and go out on changes only (GGI-01-05). Server side.
  */
 // Spec: docs/gregguns-icbm-spec/01-core/golden-dome.md (gg_radar)
-final class RadarEnvironment extends ViewEnvironment<RadarView, RadarComponentLogic> {
+public final class RadarEnvironment extends ViewEnvironment<RadarView, RadarComponentLogic> {
 
     private final ContactTracker tracker = new ContactTracker();
 

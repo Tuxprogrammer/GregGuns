@@ -16,7 +16,7 @@ import li.cil.oc.api.machine.Context;
  * {@code sam_hit} go out once per new event (GGI-01-05). Server side.
  */
 // Spec: docs/gregguns-icbm-spec/01-core/golden-dome.md (gg_air_defense)
-final class AirDefenseEnvironment extends ViewEnvironment<AirDefenseView, AirDefenseComponentLogic> {
+public final class AirDefenseEnvironment extends ViewEnvironment<AirDefenseView, AirDefenseComponentLogic> {
 
     private final AirDefenseSignals signals = new AirDefenseSignals();
 
