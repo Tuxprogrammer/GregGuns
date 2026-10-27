@@ -21,6 +21,7 @@ import li.cil.oc.api.Items;
 import li.cil.oc.api.network.Component;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.Node;
+import li.cil.oc.api.network.Visibility;
 
 /**
  * The live OpenComputers scenario (I4 exit box, GGI-01-02): a real Adapter block beside each ICBM machine, read through
@@ -137,7 +138,9 @@ public final class OcScenarios {
             // Source (a computer sees the components reachable from the Adapter's node):
             // https://github.com/GTNewHorizons/OpenComputers/blob/1e4559ff5f2443695cb28c7cdc9fba87219a862b/src/main/java/li/cil/oc/api/network/Node.java
             for (Node n : adapterNode.reachableNodes()) {
-                if (n instanceof Component) {
+                // A computer lists the network-visible components; the drivers wrapped inside the compound (including
+                // GTNH's gt_energyContainer) are neighbor-only and reachable from the compound alone.
+                if (n instanceof Component && ((Component) n).visibility() == Visibility.Network) {
                     names.add(((Component) n).name());
                     if (c.component.equals(((Component) n).name())) {
                         found = (Component) n;
@@ -145,7 +148,9 @@ public final class OcScenarios {
                 }
             }
             out.check(found != null, c.label + ": the Adapter shows " + c.component + ", components seen: " + names);
-            out.check(!names.contains("gt_energyContainer"), c.label + ": not named gt_energyContainer: " + names);
+            out.check(
+                names.size() >= 1 && !names.contains("gt_energyContainer"),
+                c.label + ": not named gt_energyContainer: " + names);
             if (found == null) {
                 return;
             }
@@ -166,10 +171,11 @@ public final class OcScenarios {
             }
             Object value = reply[0];
             if (c.shapeKey == null) {
-                // getContacts: an empty list, there is no missile in the air.
+                // getContacts: an empty list (a Lua table), there is no missile in the air.
                 out.check(
-                    value instanceof List && ((List<?>) value).isEmpty(),
-                    c.label + ": getContacts() is an empty list, got " + value);
+                    (value instanceof List && ((List<?>) value).isEmpty())
+                        || (value instanceof Object[] && ((Object[]) value).length == 0),
+                    c.label + ": getContacts() is an empty list, got " + java.util.Objects.toString(value));
             } else {
                 out.check(
                     value instanceof Map && ((Map<?, ?>) value).containsKey(c.shapeKey),
