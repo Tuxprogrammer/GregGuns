@@ -241,7 +241,7 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
 
     /** @return the redstone strength last published */
     public int signal() {
-        return unit.signal();
+        return Math.max(lastSignal, 0);
     }
 
     // --- running ----------------------------------------------------------------------------------------------

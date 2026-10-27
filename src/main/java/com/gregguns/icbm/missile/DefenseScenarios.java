@@ -669,9 +669,12 @@ public final class DefenseScenarios {
                     mark[0] = ticks;
                     return null;
                 }
-                threat[0] |= t.state() == RadarRules.State.THREAT;
-                tracking[0] |= t.state() == RadarRules.State.TRACKING;
-                signal[0] = Math.max(signal[0], t.signal());
+                // The sweep refreshes every few ticks, so what it held before a launch is stale for a moment.
+                if (ticks > mark[0] + 2 * RadarRules.SCAN_TICKS) {
+                    threat[0] |= t.state() == RadarRules.State.THREAT;
+                    tracking[0] |= t.state() == RadarRules.State.TRACKING;
+                    signal[0] = Math.max(signal[0], t.signal());
+                }
                 if (stage[0] == 2) {
                     if (!threat[0] && !missile[0].isDead && ticks < mark[0] + 900) {
                         return null;
@@ -741,6 +744,7 @@ public final class DefenseScenarios {
             place(ctx, GregGunsMTEIDs.AIR_DEFENSE, DX + 6, CY, DZ);
             final int[] stage = { 0 };
             final int[] mark = { 0 };
+            final MTERadarTower[] before = { null };
             return ScenarioResult.pending(name(), 900, ticks -> {
                 if (ticks < WARMUP_TICKS) {
                     return null;
@@ -771,6 +775,7 @@ public final class DefenseScenarios {
                     RadarUnit.writeLink(live(ctx, DX, CY, DZ), stick, null);
                     bb.setInventorySlotContents(MTEAirDefense.SLOT_STICK, stick);
                     out.check(RadarLinks.find(w, b.link()) == t, "before the reload the link finds the tower");
+                    before[0] = t;
                     reload(ctx, DX, CY, DZ);
                     reload(ctx, DX + 6, CY, DZ);
                     stage[0] = 2;
@@ -785,7 +790,7 @@ public final class DefenseScenarios {
                 if (!fresh.isFormed() && ticks < mark[0] + 400) {
                     return null;
                 }
-                out.check(fresh != t, "the tile really was replaced");
+                out.check(fresh != before[0], "the tile really was replaced");
                 out.check(fresh.isFormed(), "the tower re-formed after the reload");
                 out.checkEquals("radius after the reload", 111, fresh.protectedRadius());
                 out.check(
