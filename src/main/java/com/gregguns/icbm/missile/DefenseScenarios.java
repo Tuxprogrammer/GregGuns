@@ -384,15 +384,15 @@ public final class DefenseScenarios {
                 return finish(terrain, ScenarioResult.fail(name(), "could not arm"));
             }
             final int target = 80;
-            // Beside the flight path, 42 blocks off the impact point, protecting only 20 blocks.
-            place(ctx, GregGunsMTEIDs.RADAR_HV, 12, 0, 40);
-            place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 14, 0, 40);
+            // Beside the impact point, 28 blocks off the impact point, protecting only 20 blocks.
+            place(ctx, GregGunsMTEIDs.RADAR_HV, -28, 0, 80);
+            place(ctx, GregGunsMTEIDs.AIR_DEFENSE, -26, 0, 80);
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final Seen seen = new Seen();
             final int[] stage = { 0 };
             return ScenarioResult.pending(name(), 1500, ticks -> {
-                IGregTechTileEntity rb = live(ctx, 12, 0, 40);
-                IGregTechTileEntity bb = live(ctx, 14, 0, 40);
+                IGregTechTileEntity rb = live(ctx, -28, 0, 80);
+                IGregTechTileEntity bb = live(ctx, -26, 0, 80);
                 MTERadar r = radar(rb);
                 MTEAirDefense b = battery(bb);
                 if (ticks < WARMUP_TICKS) {
