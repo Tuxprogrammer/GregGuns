@@ -860,19 +860,20 @@ public final class DefenseScenarios {
             }
             final int rz = 30;
             place(ctx, GregGunsMTEIDs.RADAR_HV, 6, 0, rz);
-            place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 9, 0, rz);
+            place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 40, 0, rz);
             for (net.minecraft.entity.player.EntityPlayerMP p : players) {
                 p.setGameType(net.minecraft.world.WorldSettings.GameType.CREATIVE);
             }
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final int[] stage = { 0 };
             final int[] mark = { 0 };
+            final boolean[] loaded = { false };
             final double ox = ctx.originX();
             final double oy = ctx.originY();
             final double oz = ctx.originZ();
             return ScenarioResult.pending(name(), 2400, ticks -> {
                 IGregTechTileEntity rb = live(ctx, 6, 0, rz);
-                IGregTechTileEntity bb = live(ctx, 9, 0, rz);
+                IGregTechTileEntity bb = live(ctx, 40, 0, rz);
                 MTERadar r = radar(rb);
                 MTEAirDefense b = battery(bb);
                 if (ticks < WARMUP_TICKS) {
@@ -886,7 +887,7 @@ public final class DefenseScenarios {
                 if (stage[0] == 0) {
                     r.setRadius(100);
                     bb.setInventorySlotContents(MTEAirDefense.SLOT_STICK, linkStick(rb, w));
-                    bb.setInventorySlotContents(MTEAirDefense.SLOT_SAM, new ItemStack(DefenseMachines.samItem(), 2));
+                    // The battery stays empty until the radar has been photographed, so the SAM flies afterwards.
                     for (net.minecraft.entity.player.EntityPlayerMP p : players) {
                         MissileShotsScenario.signal(p, "hud", "off");
                     }
@@ -928,6 +929,13 @@ public final class DefenseScenarios {
                     return null;
                 }
                 if (stage[0] == 3) {
+                    if (bb.getStackInSlot(MTEAirDefense.SLOT_SAM) == null && samsInAir(w) == 0 && !loaded[0]) {
+                        loaded[0] = true;
+                        bb.setInventorySlotContents(
+                            MTEAirDefense.SLOT_SAM,
+                            new ItemStack(DefenseMachines.samItem(), 2));
+                        return null;
+                    }
                     boolean flying = samsInAir(w) > 0;
                     if (!flying) {
                         return ticks < 1500 ? null : finish(terrain, ScenarioResult.fail(name(), "no SAM flew"));
