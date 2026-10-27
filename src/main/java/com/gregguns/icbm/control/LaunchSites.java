@@ -13,7 +13,9 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 
 /**
  * Finds what a Launch Control fires: the nearest Galacticraft pad in reach, else the nearest formed missile silo
- * (D70). The pad is tried first so a build that has both keeps its I2 behavior. Called only after the ICBM module gate.
+ * (D70). The silo is tried first, and a pad is the fallback when no formed silo is in reach (an unformed silo's floor
+ * is a pad,
+ * which refuses silo-only bodies). Called only after the ICBM module gate.
  * Server side.
  */
 // Spec: docs/gregguns-icbm-spec/04-launch-control/launch-control-block.md (Finding the pad or the silo)

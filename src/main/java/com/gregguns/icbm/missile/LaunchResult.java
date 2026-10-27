@@ -29,5 +29,7 @@ public enum LaunchResult {
     /** Forge refused the chunk ticket the flight needs (ticket limit reached). */
     NO_TICKET,
     /** The silo's energy hatch is below the missile body's tier (D70). */
-    SILO_TIER
+    SILO_TIER,
+    /** The body fits only a formed silo, and none is formed here (D8 step 5, D70). */
+    SILO_ONLY
 }

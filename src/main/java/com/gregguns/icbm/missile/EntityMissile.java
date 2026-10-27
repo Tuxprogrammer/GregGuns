@@ -300,6 +300,16 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         return new double[] { targetX, targetY, targetZ };
     }
 
+    /** @return the launch site's scatter factor this missile carries (1 for a pad, saved with the missile) */
+    public double siteScatter() {
+        return siteScatter;
+    }
+
+    /** @return the launch site's range factor this missile carries (1 for a pad, saved with the missile) */
+    public double siteRange() {
+        return siteRange;
+    }
+
     /**
      * Launches. Server side; every rule is checked here.
      *
@@ -309,6 +319,9 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @return the outcome
      */
     public LaunchResult launch(double tx, double tz, EntityPlayer source) {
+        if (tier().siloOnly()) {
+            return LaunchResult.SILO_ONLY; // the pad path: a silo-only body leaves only through a formed silo (D8, D70)
+        }
         return launch(tx, tz, source, 1.0, 1.0);
     }
 

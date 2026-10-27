@@ -102,6 +102,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private static final String K_P_EXPLOSIVE = "pendingExplosive";
     private static final String K_P_FILL = "pendingFill";
     private static final String K_P_CASING = "pendingCasing";
+    private static final String K_P_READY = "pendingReady";
 
     private int casingCount;
     private int glassTier = -1;
@@ -111,6 +112,8 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private String pendingExplosive = WarheadData.DEFAULT_EXPLOSIVE;
     private int pendingFill = 1;
     private int pendingCasing = 1;
+    /** The mating cycle finished but the missile could not be placed yet (the shaft chunks were unloaded). */
+    private boolean pendingReady;
 
     /**
      * The prototype that registers the machine under {@code id}.
@@ -203,6 +206,13 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
     }
 
+    /**
+     * @return the tier number of the body and warhead taken out of the buses and not yet standing in the shaft, or 0
+     */
+    int pendingTier() {
+        return pendingTier;
+    }
+
     /** @return whether the last structure check found a complete silo */
     public boolean isFormed() {
         return mMachine;
@@ -240,6 +250,52 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private AxisAlignedBB shaftBox() {
         return AxisAlignedBB
             .getBoundingBox(shaftX() - 1.5, padY(), shaftZ() - 1.5, shaftX() + 1.5, floorY() + 12.0, shaftZ() + 1.5);
+    }
+
+    /**
+     * @return whether every chunk the shaft stands in is loaded (a missing chunk hides the missile and drops spawns)
+     */
+    private boolean shaftLoaded() {
+        World w = getBaseMetaTileEntity().getWorld();
+        if (w == null) {
+            return false;
+        }
+        AxisAlignedBB b = shaftBox();
+        return w.checkChunksExist(
+            (int) Math.floor(b.minX),
+            (int) b.minY,
+            (int) Math.floor(b.minZ),
+            (int) Math.floor(b.maxX),
+            (int) b.maxY,
+            (int) Math.floor(b.maxZ));
+    }
+
+    /**
+     * @param w    a world
+     * @param padX X of a Galacticraft pad's centre block
+     * @param padY Y of that block
+     * @param padZ Z of that block
+     * @return whether that pad is the floor of a formed silo's shaft (D87: a silo-only body may be stacked on it)
+     */
+    public static boolean isFloorOf(World w, int padX, int padY, int padZ) {
+        for (ForgeDirection d : new ForgeDirection[] { ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.EAST,
+            ForgeDirection.WEST }) {
+            int cx = padX - d.offsetX * SiloShape.SHAFT_CENTER_DEPTH;
+            int cy = padY + SiloShape.FLOOR_SURFACE_BELOW_CONTROLLER + 1;
+            int cz = padZ - d.offsetZ * SiloShape.SHAFT_CENTER_DEPTH;
+            if (cy > 255 || !w.blockExists(cx, cy, cz)) {
+                continue;
+            }
+            net.minecraft.tileentity.TileEntity t = w.getTileEntity(cx, cy, cz);
+            if (t instanceof IGregTechTileEntity
+                && ((IGregTechTileEntity) t).getMetaTileEntity() instanceof MTEMissileSilo) {
+                MTEMissileSilo silo = (MTEMissileSilo) ((IGregTechTileEntity) t).getMetaTileEntity();
+                if (silo.isFormed() && silo.back() == d) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /** @return the unlaunched missile standing in the shaft, or null */
@@ -364,6 +420,15 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         if (volts < 0) {
             return CheckRecipeResultRegistry.NO_RECIPE;
         }
+        if (!shaftLoaded()) {
+            return failure("gregguns_silo_chunks");
+        }
+        if (pendingTier != 0) {
+            CheckRecipeResult resumed = resumePending(volts);
+            if (resumed != null) {
+                return resumed;
+            }
+        }
         EntityMissile m = missile();
         if (m != null) {
             return pump(m, volts);
@@ -372,6 +437,33 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             return failure("gregguns_silo_hand_stacked");
         }
         return startMating(volts);
+    }
+
+    /**
+     * A mating cycle was cut short (power loss, a broken structure, no repair) or its missile could not be placed: the
+     * parts are already out of the bus, so finish with them instead of taking new ones.
+     *
+     * @return the cycle result, or null when the shaft now holds the missile and the normal flow continues
+     */
+    private CheckRecipeResult resumePending(int volts) {
+        MissileTier tier = MissileTier.byNumber(pendingTier);
+        World w = getBaseMetaTileEntity().getWorld();
+        if (tier == null || w == null) {
+            pendingTier = 0;
+            return null;
+        }
+        if (missile() != null || stackedBody() != null) {
+            dropParts(tier, w); // the shaft was taken meanwhile; keeps the parts when the drop fails
+            return failure("gregguns_silo_hand_stacked");
+        }
+        if (pendingReady) {
+            return spawnPending(tier, w) ? null : failure("gregguns_silo_chunks");
+        }
+        if (volts < SiloRules.requiredVoltageIndex(tier)) {
+            return CheckRecipeResultRegistry.insufficientMachineTier(SiloRules.requiredVoltageIndex(tier));
+        }
+        begin(SiloRules.MATE_TICKS, volts, tier);
+        return CheckRecipeResultRegistry.SUCCESSFUL;
     }
 
     /** Pumps one portion of fuel into the missile in the shaft. */
@@ -415,6 +507,8 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         ItemStack warheadStack = null;
         MissileTier tier = null;
         boolean anyWarhead = false;
+        boolean lowVoltageBody = false;
+        int lowVoltageIndex = 0;
         for (MTEHatchInputBus bus : validMTEList(mInputBusses)) {
             for (int i = 0; i < bus.getSizeInventory(); i++) {
                 ItemStack s = bus.getStackInSlot(i);
@@ -422,16 +516,21 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                     continue;
                 }
                 MissileTier t = MissileBodies.tierOf(s);
-                if (t != null && bodyStack == null) {
+                if (t != null && bodyStack == null && volts >= SiloRules.requiredVoltageIndex(t)) {
                     bodyStack = s;
                     tier = t;
+                } else if (t != null && bodyStack == null) {
+                    // A body this hatch cannot handle: keep looking, but remember it for the message.
+                    lowVoltageBody = true;
+                    lowVoltageIndex = Math.max(lowVoltageIndex, SiloRules.requiredVoltageIndex(t));
                 } else if (isWarhead(s)) {
                     anyWarhead = true;
                 }
             }
         }
         if (bodyStack == null) {
-            return failure("gregguns_silo_no_body");
+            return lowVoltageBody ? CheckRecipeResultRegistry.insufficientMachineTier(lowVoltageIndex)
+                : failure("gregguns_silo_no_body");
         }
         for (MTEHatchInputBus bus : validMTEList(mInputBusses)) {
             for (int i = 0; i < bus.getSizeInventory(); i++) {
@@ -466,6 +565,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         pendingExplosive = data.explosive();
         pendingFill = data.fill();
         pendingCasing = casing.number();
+        pendingReady = false;
         bodyStack.stackSize--;
         if (bodyStack.stackSize <= 0) {
             removeFromBuses(bodyStack);
@@ -513,14 +613,27 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
         MissileTier tier = MissileTier.byNumber(pendingTier);
         World w = getBaseMetaTileEntity().getWorld();
-        pendingTier = 0;
-        if (tier == null || w == null || w.isRemote) {
+        if (tier == null || w == null) {
+            pendingTier = 0;
             return;
         }
-        if (missile() != null || stackedBody() != null) {
+        if (w.isRemote) {
+            return;
+        }
+        pendingReady = true;
+        if (shaftLoaded() && (missile() != null || stackedBody() != null)) {
             // The shaft was taken while the cycle ran: give the parts back rather than lose them.
             dropParts(tier, w);
             return;
+        }
+        // On failure (shaft chunks unloaded) pendingTier stays and checkProcessing retries.
+        spawnPending(tier, w);
+    }
+
+    /** @return whether the missile stands in the shaft now; false keeps the pending parts for a retry */
+    private boolean spawnPending(MissileTier tier, World w) {
+        if (!shaftLoaded()) {
+            return false;
         }
         EntityMissile missile = EntityMissile.create(tier, w);
         // The missile stands on the pad's top face, as on an open pad.
@@ -530,10 +643,19 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         if (owner != null) {
             missile.setOwner(owner, getBaseMetaTileEntity().getOwnerName());
         }
-        w.spawnEntityInWorld(missile);
+        if (!w.spawnEntityInWorld(missile)) {
+            return false;
+        }
+        pendingTier = 0;
+        pendingReady = false;
+        return true;
     }
 
+    /** Puts the pending body and warhead into the world; keeps them pending when the shaft's chunks are not loaded. */
     private void dropParts(MissileTier tier, World w) {
+        if (!shaftLoaded()) {
+            return;
+        }
         ItemStack body = MissileBodies.body(tier, pendingGuidance);
         WarheadCasing c = com.gregguns.icbm.missile.MissileCasings.byNumber(pendingCasing);
         ItemStack warhead = WarheadStacks.make(
@@ -541,8 +663,13 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             c,
             pendingExplosive,
             pendingFill);
+        boolean dropped = true;
         for (ItemStack s : new ItemStack[] { body, warhead }) {
-            w.spawnEntityInWorld(new EntityItem(w, shaftX(), floorY() + 1.0, shaftZ(), s));
+            dropped &= w.spawnEntityInWorld(new EntityItem(w, shaftX(), floorY() + 1.0, shaftZ(), s));
+        }
+        if (dropped) {
+            pendingTier = 0;
+            pendingReady = false;
         }
     }
 
@@ -554,6 +681,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         tag.setString(K_P_EXPLOSIVE, pendingExplosive);
         tag.setInteger(K_P_FILL, pendingFill);
         tag.setInteger(K_P_CASING, pendingCasing);
+        tag.setBoolean(K_P_READY, pendingReady);
     }
 
     @Override
@@ -564,6 +692,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         pendingExplosive = tag.hasKey(K_P_EXPLOSIVE) ? tag.getString(K_P_EXPLOSIVE) : WarheadData.DEFAULT_EXPLOSIVE;
         pendingFill = Math.max(1, tag.getInteger(K_P_FILL));
         pendingCasing = Math.max(1, tag.getInteger(K_P_CASING));
+        pendingReady = tag.getBoolean(K_P_READY);
     }
 
     @Override
