@@ -123,6 +123,21 @@ public final class ControlLaunchScenario implements Scenario {
             int cz = ctx.originZ();
             switch (stage[0]) {
                 case 0: {
+                    if (ticks == WARMUP_TICKS) {
+                        java.util.List<String> names = new java.util.ArrayList<>();
+                        for (Scenario sc : com.gregguns.core.testing.ScenarioRegistry.SCENARIOS.all()) {
+                            names.add(sc.name());
+                        }
+                        int slot = names.indexOf(name());
+                        com.gregguns.GregGuns.LOG.info(
+                            "launch_to_impact slot {} of {}; z neighbors {} / {}; {}; {}",
+                            slot,
+                            names.size(),
+                            slot >= 6 ? names.get(slot - 6) : "-",
+                            slot + 6 < names.size() ? names.get(slot + 6) : "-",
+                            approach(ctx, DISTANCE),
+                            approach(ctx, -DISTANCE));
+                    }
                     if (w.getBlock(cx, cy, cz) != GCBlocks.landingPadFull) {
                         return ticks > 140 ? fail(terrain, "the 3x3 pad never formed") : null;
                     }
@@ -272,6 +287,36 @@ public final class ControlLaunchScenario implements Scenario {
         TileEntity tile = ctx.world()
             .getTileEntity(ctx.originX() + 3, ctx.originY(), ctx.originZ());
         return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : null;
+    }
+
+    /**
+     * Counts the solid blocks over the approach to a target, outside the column the target cleared, and names the
+     * first. The scenario grid is 80 blocks apart and the targets are 70 out, so they sit inside the neighbors'
+     * arenas: whatever an earlier neighbor left standing there can stop the descending missile short.
+     */
+    private static String approach(ScenarioContext ctx, int dz) {
+        World w = ctx.world();
+        int n = 0;
+        String first = "";
+        int lo = dz > 0 ? 20 : dz - 40;
+        int hi = dz > 0 ? dz + 40 : -20;
+        for (int z = lo; z <= hi; z++) {
+            for (int x = -30; x <= 30; x++) {
+                boolean cleared = Math.abs(x) <= 15 + 9 && Math.abs(z - dz) <= 15 + 9;
+                if (cleared) {
+                    continue;
+                }
+                for (int y = 0; y < 60; y++) {
+                    net.minecraft.block.Block b = w.getBlock(ctx.originX() + x, ctx.originY() + y, ctx.originZ() + z);
+                    if (b != Blocks.air) {
+                        if (n++ == 0) {
+                            first = b.getUnlocalizedName() + " at " + x + "," + y + "," + z;
+                        }
+                    }
+                }
+            }
+        }
+        return n + " solid blocks over the approach to z" + dz + (n > 0 ? ", first " + first : "");
     }
 
     /** What the blast engine was doing, for a failure message: a refused blast leaves no other trace. */
