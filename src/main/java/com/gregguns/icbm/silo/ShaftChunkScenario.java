@@ -36,6 +36,12 @@ final class ShaftChunkScenario implements Scenario {
 
     /** The harness ticket that pinned the shaft chunk, to pin it again afterwards. */
     private static final net.minecraftforge.common.ForgeChunkManager.Ticket[] PINNED = { null };
+    /**
+     * How long to keep asking the provider to unload the shaft chunk, ticks. Hodgepodge's chunk scheduler protects a
+     * freshly generated chunk (and its neighbors) from unloading for 600 ticks (PROTECTION_TIMEOUT_TICKS), and the
+     * scenario area was generated just before this runs; the dev server's chunk was old, so it unloaded at once.
+     */
+    private static final int UNLOAD_WAIT = 900;
     private static final String FUEL = "fluid.rocketfuelmixc";
 
     @Override
@@ -90,7 +96,7 @@ final class ShaftChunkScenario implements Scenario {
         int[] stage = { 0 };
         int[] mark = { 0 };
         int[] level = { 0 };
-        return ScenarioResult.pending(name(), 7000, ticks -> {
+        return ScenarioResult.pending(name(), 9000, ticks -> {
             if (ticks < SiloScenarios.WARMUP) {
                 return null;
             }
@@ -127,7 +133,7 @@ final class ShaftChunkScenario implements Scenario {
                     // Unload (retrying: the provider may take a tick) and only then ask the controller to work.
                     unload(world, shaftCx, shaftCz);
                     if (loaded(world, shaftCx, shaftCz)) {
-                        return ticks > mark[0] + 100 ? skipped(world, shaftCx, shaftCz) : null;
+                        return ticks > mark[0] + UNLOAD_WAIT ? stuck(world, shaftCx, shaftCz) : null;
                     }
                     out.check(loaded(world, wx >> 4, ctrlCz), "the controller chunk stays loaded");
                     out.check(busItems(ctx, ox, oz) == 2, "the parts are in the bus before the check");
@@ -175,7 +181,7 @@ final class ShaftChunkScenario implements Scenario {
                 case 4: {
                     unload(world, shaftCx, shaftCz);
                     if (loaded(world, shaftCx, shaftCz)) {
-                        return ticks > mark[0] + 100 ? skipped(world, shaftCx, shaftCz) : null;
+                        return ticks > mark[0] + UNLOAD_WAIT ? stuck(world, shaftCx, shaftCz) : null;
                     }
                     level[0] = hatchMb(ctx, ox, oz);
                     for (int i = 0; i < 3; i++) {
@@ -206,15 +212,15 @@ final class ShaftChunkScenario implements Scenario {
     }
 
     /**
-     * The headless run-headless.sh world keeps the chunk loaded by something that is neither a Forge ticket nor the
-     * unload queue (cause not found; the dev server unloads it), so there the scenario cannot test the guard and says
-     * so instead of failing.
+     * The chunk would not unload within {@link #UNLOAD_WAIT} ticks. That is a failure, not a skip: the guard cannot be
+     * tested, so something other than the generation protection holds the chunk (a ticket the scenario does not know,
+     * or a loader), and the scenario says so.
      */
-    private static ScenarioResult skipped(WorldServer w, int cx, int cz) {
+    private static ScenarioResult stuck(WorldServer w, int cx, int cz) {
         reload(w, cx, cz);
-        return ScenarioResult.skip(
+        return ScenarioResult.fail(
             "icbm.silo.shaft_chunk_guard",
-            "this world will not unload the shaft chunk (run it on the dev server: tools/scenarios/dev-server.sh)");
+            "the shaft chunk would not unload in " + UNLOAD_WAIT + " ticks: something holds it");
     }
 
     private static String state(ScenarioContext ctx, WorldServer w, MTEMissileSilo silo, int wx, int wy, int wz, int ox,
@@ -256,9 +262,7 @@ final class ShaftChunkScenario implements Scenario {
     }
 
     /** Queues the chunk for unloading and runs the unload at once; entities in it are saved with it. */
-    @SuppressWarnings("unchecked")
     private static void unload(WorldServer w, int cx, int cz) {
-        long key = net.minecraft.world.ChunkCoordIntPair.chunkXZ2Int(cx, cz);
         if (!w.theChunkProviderServer.chunkExists(cx, cz)) {
             return;
         }
@@ -270,17 +274,8 @@ final class ShaftChunkScenario implements Scenario {
             PINNED[0] = ticket;
             net.minecraftforge.common.ForgeChunkManager.unforceChunk(ticket, pair);
         }
-        try {
-            // Dev-only test hook: the provider keeps its queue in a private Set (no spawn-distance rule applies).
-            for (java.lang.reflect.Field f : net.minecraft.world.gen.ChunkProviderServer.class.getDeclaredFields()) {
-                if (java.util.Set.class.isAssignableFrom(f.getType())) {
-                    f.setAccessible(true);
-                    ((java.util.Set<Object>) f.get(w.theChunkProviderServer)).add(key);
-                }
-            }
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(e);
-        }
+        // The provider's own queueing: it keeps the spawn area loaded and queues everything else.
+        w.theChunkProviderServer.unloadChunksIfNotNearSpawn(cx, cz);
         w.theChunkProviderServer.unloadQueuedChunks();
     }
 
