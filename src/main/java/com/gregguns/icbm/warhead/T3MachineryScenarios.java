@@ -104,7 +104,19 @@ final class T3MachineryScenarios {
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 double d = Math.sqrt(Math.pow(near.posX - (tx + 0.5), 2) + Math.pow(near.posZ - (tz + 0.5), 2));
                 out.check(!near.isDead && near.getHealth() > 0.0F, "the teleported cow is alive");
-                out.check(d < 4.0, "the cow stands at the landing spot, " + d + " blocks off");
+                out.check(
+                    d < 4.0,
+                    "the cow stands at the landing spot, " + d
+                        + " blocks off (at "
+                        + near.posX
+                        + ","
+                        + near.posY
+                        + ","
+                        + near.posZ
+                        + "; landing chunk loaded: "
+                        + w.getChunkProvider()
+                            .chunkExists(tx >> 4, tz >> 4)
+                        + ")");
                 out.check(near.dimension == w.provider.dimensionId, "the cow stayed in its dimension");
                 out.check(w.getBlock(ox, oy - 1, oz) == Blocks.stone, "an ender warhead digs no crater");
                 out.check(!far.isDead && Math.abs(far.posX - farX) < 12.0, "a cow outside the radius stays put");
