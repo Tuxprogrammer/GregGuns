@@ -325,6 +325,16 @@ public class ItemGun extends Item implements Tiered, CamoChangeable {
                 StatCollector
                     .translateToLocalFormatted("gregguns.gun.tooltip.loaded", state.loaded(), stats.magazineSize()));
         }
+        com.gregguns.icbm.launcher.LauncherWarhead loadedWarhead = com.gregguns.icbm.launcher.LauncherWarheads
+            .loaded(stack);
+        if (loadedWarhead != null) {
+            // D150: an ICBM warhead loaded on a launcher.
+            tooltip.add(
+                StatCollector.translateToLocalFormatted(
+                    "gregguns.icbm.launcher.tooltip.loaded",
+                    StatCollector.translateToLocal("item.gregguns." + loadedWarhead.itemName() + ".name"),
+                    com.gregguns.icbm.launcher.LauncherWarheads.charges(stack)));
+        }
         if (stats.annihilates()) {
             tooltip.add(StatCollector.translateToLocal("gregguns.gun.tooltip.annihilates"));
         } else {

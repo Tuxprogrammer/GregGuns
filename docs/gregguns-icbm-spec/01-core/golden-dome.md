@@ -66,11 +66,13 @@
 
 `getInfo()` returns config-derived constants: range, EU cost per action and per tick, cooldown, maximum radius, and the device cap per pulse.
 
+**Deviation (D152, D153).** As built in I5: the disk is registered with label `Golden Dome`, yellow, recipe cycling off, and its file system is the read-only `assets/gregguns/lua/golden_dome/` folder (`.autorun.lua`, `bin/`, `lib/`). The Assembler recipe runs at **HV**, not MV (D69's floor), with the MV circuit as an input and programmed circuit 1. Scenario `icbm.oc.golden_dome` checks that the disk registers, that it is read-only, that all six files read back and compile with OC's own luaj, and that `launch` and `emp` ask before acting; `GoldenDomeProgramsTest` checks the sources. Running the programs in a real computer waits for the I5 client session.
+
 ## Golden Dome programs
 
 | Program | What it does |
 |---|---|
-| `launch` | `launch <x> <z>` or `launch --stick`: picks a linked silo or launch control, shows missile, fuel and range, asks for **confirmation**, then fires and reports |
+| `launch` | `launch <x> <z>`, `launch --stick` or `launch --list`: picks a linked silo or launch control, shows missile, fuel and range, asks for **confirmation**, then fires and reports |
 | `radarwatch` | A live table of contacts from every reachable radar, with a beep or alarm on `radar_incoming` |
 | `autodefense` | A daemon: on `radar_incoming` it calls `fireAt` on reachable air-defense batteries, and optionally fires an EMP tower in `missiles` mode. It logs every action |
 | `emp` | `emp status`, `emp mode <m>`, `emp radius <r>`, `emp fire` (asks for confirmation) |
