@@ -856,7 +856,7 @@ public final class MissileScenarios {
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             World w = ctx.world();
             boolean terrain = IcbmConfig.terrainDamageT1;
-            IcbmConfig.terrainDamageT1 = false;
+            IcbmConfig.terrainDamageT1 = true; // the hit is read off the platform, so the blast must break terrain
             Target target = new Target(ctx, 0, 200, 9);
             EntityMissile m = launched(ctx, out);
             if (m == null) {
