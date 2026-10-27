@@ -24,6 +24,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public final class MissileBodyItemRenderer implements IItemRenderer {
 
+    /** How far a body leans across its inventory slot, degrees. */
+    private static final float INVENTORY_LEAN = 40.0F;
+    /** How much wider than true a body is drawn in a slot, so a thin pillar still reads. */
+    private static final float INVENTORY_WIDEN = 1.8F;
+
     private final MissileTier tier;
 
     private MissileBodyItemRenderer(MissileTier tier) {
@@ -38,6 +43,11 @@ public final class MissileBodyItemRenderer implements IItemRenderer {
                 MinecraftForgeClient.registerItemRenderer(item, new MissileBodyItemRenderer(t));
             }
         }
+    }
+
+    /** @return the model's footprint across, in blocks (measured from the OBJ bounds: T1 0.88, T2 0.8, T3 1.49) */
+    private static float bodyWidth(MissileTier tier) {
+        return tier == MissileTier.T3 ? 1.5F : 0.9F;
     }
 
     @Override
@@ -59,9 +69,16 @@ public final class MissileBodyItemRenderer implements IItemRenderer {
         GL11.glPushMatrix();
         switch (type) {
             case INVENTORY:
-                // Origin at the center of a block-sized cell: fit the whole height into the slot, centered.
-                float fit = 1.8F / h;
-                GL11.glScalef(fit, fit, fit);
+                // The slot is square and a body is a thin pillar (a T3 is six blocks tall and one and a half wide),
+                // so stood straight up it shrinks to a dark bar. Lean it across the slot and widen it, then fit the
+                // leaning shape and center it, so the nose, the bands and the fins read at 16 px.
+                float width = bodyWidth(tier) * INVENTORY_WIDEN;
+                double lean = Math.toRadians(INVENTORY_LEAN);
+                float fit = (float) (1.9 / (h * Math.cos(lean) + width * Math.sin(lean)));
+                // Lean about the axis that points at the viewer, in the frame the slot transform leaves us in
+                // (the inventory block view: pitched 30 degrees, turned 45).
+                GL11.glRotatef(INVENTORY_LEAN, 0.612F, 0.5F, 0.612F);
+                GL11.glScalef(fit * INVENTORY_WIDEN, fit, fit * INVENTORY_WIDEN);
                 GL11.glTranslatef(-0.5F, -h / 2.0F, -0.5F);
                 break;
             case ENTITY:

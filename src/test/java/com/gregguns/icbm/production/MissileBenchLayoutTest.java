@@ -78,6 +78,10 @@ class MissileBenchLayoutTest {
             for (int i = 0; i < caps.length; i++) {
                 int[] c = caps[i];
                 assertTrue(c[0] >= 0 && c[2] > 0, s + " caption " + i + " x");
+                assertTrue(
+                    c[0] >= MissileBenchLayout.CAPTION_MARGIN
+                        && c[0] + c[2] <= MissileBenchLayout.WIDTH - MissileBenchLayout.CAPTION_MARGIN,
+                    s + " caption " + i + " keeps a margin to the panel edges");
                 assertTrue(c[1] >= 0 && c[1] + c[3] <= MissileBenchLayout.HEIGHT + 24, s + " caption " + i + " y");
                 for (int[] slot : all) {
                     // one pixel of frame around a slot counts as the slot

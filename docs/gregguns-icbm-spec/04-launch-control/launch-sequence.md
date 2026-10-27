@@ -39,7 +39,7 @@ OK no longer means the missile leaves at once. The missile enters `WARMUP` and t
 
 Pads run steps 2 to 5 with no lead and no doors. `ControlStatus` gains `COUNTDOWN` and `IGNITED` (lang keys `gregguns.icbm.control.status.countdown`, `countdown_s` and `ignited`).
 
-Requirements: **GGS-ICBM-04-20** the doors open before the countdown, ignition follows after the lead plus the countdown, and the doors close once the missile clears (`icbm.launch.silo_sequence`); **GGS-ICBM-04-21** abort during the doors or the countdown stands the launch down, armed and fueled, and the missile can fire again (`icbm.launch.silo_abort`, `icbm.launch.pad_sequence`); **GGS-ICBM-04-22** abort after ignition is refused (`icbm.launch.no_abort_after_ignition`); **GGS-ICBM-04-23** the door state and the countdown survive a save (`icbm.launch.reload`) and a silo that comes apart stands down (`icbm.launch.unform`, D90).
+Requirements: **GGS-ICBM-04-20** the doors open before the countdown, ignition follows after the lead plus the countdown, and the doors close once the missile clears (`icbm.launch.silo_sequence`); **GGS-ICBM-04-21** abort during the doors or the countdown stands the launch down, armed and fueled, and the missile can fire again (`icbm.launch.silo_abort`, `icbm.launch.pad_sequence`); **GGS-ICBM-04-22** abort after ignition is refused (`icbm.launch.no_abort_after_ignition`); **GGS-ICBM-04-23** the door state and the countdown survive a save (`icbm.launch.reload`) and a silo that comes apart stands down (`icbm.launch.unform`, D90); **GGS-ICBM-04-24** a silo-only body whose silo is intact counts down for as long as the config says, longer than the 300-tick stray-body grace, and ignites (`icbm.launch.silo_long_countdown`).
 
 ## Tests
 

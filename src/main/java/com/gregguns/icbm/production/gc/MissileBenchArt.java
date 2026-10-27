@@ -1,5 +1,8 @@
 package com.gregguns.icbm.production.gc;
 
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.StatCollector;
@@ -79,11 +82,19 @@ public final class MissileBenchArt {
         int[][] boxes = MissileBenchLayout.captions(spec);
         for (int i = 0; i < keys.length; i++) {
             String text = StatCollector.translateToLocal("gregguns.icbm.bench." + keys[i]);
-            int x = ox + boxes[i][0];
-            if (MissileBenchLayout.captionRightAligned(i)) {
-                x += boxes[i][2] - font.getStringWidth(text);
+            // A box taller than one line wraps its caption to the box width; the other captions fit on one line.
+            @SuppressWarnings("unchecked")
+            List<String> lines = boxes[i][3] > MissileBenchLayout.CAPTION_HEIGHT
+                ? font.listFormattedStringToWidth(text, boxes[i][2])
+                : Collections.singletonList(text);
+            for (int l = 0; l < lines.size(); l++) {
+                String line = lines.get(l);
+                int x = ox + boxes[i][0];
+                if (MissileBenchLayout.captionRightAligned(i)) {
+                    x += boxes[i][2] - font.getStringWidth(line);
+                }
+                font.drawString(line, x, oy + boxes[i][1] + l * MissileBenchLayout.CAPTION_HEIGHT, 0x404040);
             }
-            font.drawString(text, x, oy + boxes[i][1], 0x404040);
         }
     }
 

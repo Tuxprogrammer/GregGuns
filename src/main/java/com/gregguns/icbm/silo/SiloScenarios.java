@@ -75,6 +75,7 @@ public final class SiloScenarios {
         registry.register(new HandStack());
         LaunchSequenceScenarios.registerAll(registry);
         registry.register(new LaunchSequenceMpScenario());
+        registry.register(new LaunchControlGuiShots());
     }
 
     static String gate() {

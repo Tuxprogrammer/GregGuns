@@ -179,6 +179,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             return false;
         }
         tickets.release();
+        strayChecks = 0;
         phaseTick = 0;
         warmupLead = 0;
         warmupTotal = 0;
@@ -546,12 +547,14 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     /** One warm-up tick: count, and ignite when the countdown ends; from then on there is no abort (D88). */
     private void warmupStep() {
         // A silo-only body whose silo is gone does not go on alone (D90). A reload leaves the silo unformed for a
-        // while, so only a lasting gap counts.
+        // while, so only a lasting gap counts. The pad is a slab PAD_SURFACE high, so the body's feet are the pad
+        // block's own cell; one half a block down (as padTick looks for support) is the cell below the floor, where
+        // there is never a silo to find.
         if (tier().siloOnly() && ticksExisted % 10 == 0) {
             boolean floor = com.gregguns.icbm.silo.MTEMissileSilo.isFloorOf(
                 worldObj,
                 net.minecraft.util.MathHelper.floor_double(posX),
-                net.minecraft.util.MathHelper.floor_double(posY - 0.5),
+                net.minecraft.util.MathHelper.floor_double(posY - PAD_SURFACE / 2.0),
                 net.minecraft.util.MathHelper.floor_double(posZ));
             strayChecks = floor ? 0 : strayChecks + 1;
             if (strayChecks >= STRAY_CHECKS) {
