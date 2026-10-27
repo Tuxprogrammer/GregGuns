@@ -621,7 +621,20 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.check(m[0].isDead, "the missile detonated");
-                        out.check(target.removed(ctx.world()) > 0, "the blast broke blocks on the target");
+                        out.check(
+                            target.removed(ctx.world()) > 0,
+                            "the blast broke blocks on the target (the missile ended at " + (int) m[0].posX
+                                + ", "
+                                + (int) m[0].posY
+                                + ", "
+                                + (int) m[0].posZ
+                                + ", aimed at "
+                                + java.util.Arrays.toString(m[0].aimPoint())
+                                + "; platform "
+                                + target.standing(ctx.world())
+                                + " of "
+                                + 19 * 19
+                                + " stone)");
                         out.checkEquals(
                             "no chunk tickets are left",
                             0,
