@@ -181,8 +181,18 @@ public final class DefenseScenarios {
     }
 
     static int neighborPower(ScenarioContext ctx, int dx, int dy, int dz) {
-        return ctx.world()
-            .getBlockPowerInput(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
+        int x = ctx.originX() + dx;
+        int y = ctx.originY() + dy;
+        int z = ctx.originZ() + dz;
+        // The same weak-power query a lamp or a comparator makes (World#getBlockPowerInput reads strong power only).
+        int best = 0;
+        for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS) {
+            best = Math.max(
+                best,
+                ctx.world()
+                    .getIndirectPowerLevelTo(x + d.offsetX, y + d.offsetY, z + d.offsetZ, d.ordinal()));
+        }
+        return best;
     }
 
     private static EntityMissile arm(ScenarioContext ctx) {
