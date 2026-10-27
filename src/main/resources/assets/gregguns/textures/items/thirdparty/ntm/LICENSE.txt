@@ -3,7 +3,7 @@ Item textures in this folder: copied from HBM's Nuclear Tech Mod
 (c) the HBM's Nuclear Tech Mod contributors, licensed under the GNU Lesser General Public License v3.0
 (the repository README states: "This software is licensed under the GNU Lesser General Public License
 version 3"; it names no separate asset license). Modifications: renamed (the missile engine, guidance computer, chip and schematic icons are plain copies); the titanium sleeve is the
-steel sleeve brightened. See docs/assets/CREDITS.md. The full license text follows (LICENSE.LESSER from
+steel sleeve brightened; the Golden Dome floppy is the empty disk tinted gold (tools/asset-gen/icbm/convert_ntm_i5.py). See docs/assets/CREDITS.md. The full license text follows (LICENSE.LESSER from
 that repository; it supplements the GPL v3, which sits beside this file as GPL-3.0.txt, from LICENSE there).
 
 --------------------------------------------------------------------------------
