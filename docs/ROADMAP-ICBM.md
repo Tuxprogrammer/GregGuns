@@ -255,6 +255,8 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
   - `icbm.control.launch_to_impact` failed once on a fresh boot ("the second blast broke blocks on the data-stick target") and passed on rerun. Find the cause before adding more launch scenarios. **Status (I4): mitigated, not root-caused.** The scenario now waits for a quiet engine (D98), which removes the flake; D98 lists candidate causes and none was shown to be the real one.
   - The silo's shaft-chunk guard (mating, pumping and spawning wait for loaded shaft chunks) has no scenario; add one.
   - Take the Galacticraft rocket NEI shot in the real pack. In the dev client the NASA Workbench recipe tables are empty and GalaxySpace's rocket handlers aren't registered.
+    **Status (I4 fix E): moves to the alpha real-pack check.**
+  - **Carried over from I4, moved to the I5 batched client session:** the tooltip and NEI screenshot pass for the I4 items, the Launch Control X/Z persistence recheck, and the OpenComputers check in a real computer (Adapter, `gg_*` components, a call from Lua). The `icbm.oc.components` scenario covers the component names and one read-only call per machine without a client.
 - **Outputs on every machine:** redstone, GT covers, data-stick links, and OpenComputers components (D13; the component list in [golden-dome.md](gregguns-icbm-spec/01-core/golden-dome.md)).
 - Handheld tools that are kept (radar gun, remote detonator, defuser), per the 05 sheet.
 - **Visuals:** previews of the radars, the battery, the EMP tower and the handheld tools; the `icbm-detection-and-defense` sheet; quests for defense.
@@ -277,6 +279,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **The full fallout chain** (D21): irradiated rubble, trinitite and fallout goo, with their GT processing yields.
 - **The T3 ender and anti-gravitational warheads** (D80, moved from I3): the ender warhead needs teleport machinery and the anti-gravitational one needs flying blocks, neither of which I3 builds. They ship as T3 blast types in the same casing and recipe band as the I3 warheads.
 - **The Golden Dome floppy** and its programs (D18).
+- **Carried over from I4:** the tooltip and NEI screenshot pass for the I4 items, the Launch Control X/Z persistence recheck, and the OpenComputers check in a real computer, all in the batched client session.
 - **Warheads for existing GregGuns launchers** (D12).
 - **The antidote,** mapped to GT hazards (D10).
 - **Visuals:** antimatter and red matter previews and effects, the `icbm-fallout` sheet, the complete `icbm-warheads`, and the endgame quests.

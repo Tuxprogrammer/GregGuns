@@ -70,6 +70,7 @@ class OcBoundaryTest {
                 n++;
                 String src = new String(Files.readAllBytes(f), StandardCharsets.UTF_8);
                 assertTrue(src.contains("extends ViewEnvironment<"), f + " must extend the named base");
+                assertTrue(src.contains("public final class "), f + " must be public: OC's generated wrappers call it");
             }
             assertTrue(n == 4, "emp, launch, radar and air defense");
         }

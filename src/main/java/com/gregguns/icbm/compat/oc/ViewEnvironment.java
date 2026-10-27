@@ -29,6 +29,11 @@ import li.cil.oc.api.prefab.ManagedEnvironment;
  * neighbor of the compound node, so the address must be the compound's (the one the computer lists), and the signal
  * is sent from there.
  *
+ * <p>
+ * Visibility: the concrete environments are public. OpenComputers generates a call wrapper per callback in its own
+ * package ({@code generated.li.cil.oc}), which fails with an IllegalAccessError on a package-private class (found by
+ * the {@code icbm.oc.components} scenario).
+ *
  * @param <V> the view interface of the machine
  * @param <L> the component logic over that view
  */

@@ -17,7 +17,7 @@ import li.cil.oc.api.machine.Context;
  * with the component address first (OpenComputers adds it). Server side.
  */
 // Spec: docs/gregguns-icbm-spec/01-core/golden-dome.md (gg_emp_tower)
-final class EmpTowerEnvironment extends ViewEnvironment<MTEEmpTower, EmpComponentLogic> {
+public final class EmpTowerEnvironment extends ViewEnvironment<MTEEmpTower, EmpComponentLogic> {
 
     private final SignalTracker signals = new SignalTracker();
 
