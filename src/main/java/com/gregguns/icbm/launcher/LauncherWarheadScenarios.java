@@ -25,6 +25,11 @@ import com.gregguns.item.gun.GunItems;
 import com.gregguns.projectile.Projectiles;
 import com.gregguns.projectile.RocketProjectile;
 
+import gregtech.api.enums.GTValues;
+import gregtech.api.recipe.RecipeMaps;
+import gregtech.api.util.GTOreDictUnificator;
+import gregtech.api.util.GTRecipe;
+
 /** Dev-only scenario of the launcher warheads (D150). */
 // Spec: docs/gregguns-icbm-spec/02-explosives/launcher-warheads.md
 final class LauncherWarheadScenarios {
@@ -33,6 +38,7 @@ final class LauncherWarheadScenarios {
 
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new LoadAndFire());
+        registry.register(new Recipes());
     }
 
     private static InventoryCrafting grid(ItemStack... stacks) {
@@ -130,6 +136,62 @@ final class LauncherWarheadScenarios {
                 shooter.setDead();
                 return out.build();
             });
+        }
+    }
+
+    /** One Assembler recipe per item at its tier, and no recycling data (the I3 rubble lesson). */
+    private static final class Recipes implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.launcher.recipes";
+        }
+
+        @Override
+        public String description() {
+            return "Every launcher warhead and the antidote has exactly one Assembler recipe at its tier, and no GT item data that could recycle into free materials.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (!ModuleState.isActive(ModuleId.ICBM)) {
+                return ScenarioResult.skip(name(), "the ICBM module is off (Galacticraft missing)");
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            for (LauncherWarhead w : LauncherWarhead.values()) {
+                ItemStack item = LauncherWarheadRegistration.stack(w);
+                int found = 0;
+                for (GTRecipe r : RecipeMaps.assemblerRecipes.getAllRecipes()) {
+                    if (r.mOutputs != null && r.mOutputs.length > 0
+                        && r.mOutputs[0] != null
+                        && r.mOutputs[0].getItem() == item.getItem()) {
+                        found++;
+                        out.checkEquals(
+                            w + " voltage",
+                            (int) GTValues.VP[w.tier()
+                                .voltageIndex()],
+                            r.mEUt);
+                    }
+                }
+                out.checkEquals(w + " recipe count", 1, found);
+                out.check(GTOreDictUnificator.getAssociation(item) == null, w + " must carry no GT item data");
+            }
+            ItemStack antidote = new ItemStack(com.gregguns.icbm.antidote.AntidoteRegistration.item());
+            int found = 0;
+            for (GTRecipe r : RecipeMaps.assemblerRecipes.getAllRecipes()) {
+                if (r.mOutputs != null && r.mOutputs.length > 0
+                    && r.mOutputs[0] != null
+                    && r.mOutputs[0].getItem() == antidote.getItem()) {
+                    found++;
+                    out.checkEquals(
+                        "antidote yield",
+                        com.gregguns.icbm.antidote.AntidoteRules.PER_RUN,
+                        r.mOutputs[0].stackSize);
+                }
+            }
+            out.checkEquals("antidote recipe count", 1, found);
+            out.check(GTOreDictUnificator.getAssociation(antidote) == null, "the antidote must carry no GT item data");
+            return out.build();
         }
     }
 }
