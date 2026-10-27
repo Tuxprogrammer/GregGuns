@@ -62,6 +62,7 @@ public final class DefenseScenarios {
         registry.register(new TowerDetects());
         registry.register(new TowerSaveReload());
         registry.register(new MpDefense());
+        I4ClientSetups.registerAll(registry);
         registry.register(new Gun());
         registry.register(new SaveReload());
     }
@@ -936,6 +937,8 @@ public final class DefenseScenarios {
             final int[] stage = { 0 };
             final int[] mark = { 0 };
             final boolean[] loaded = { false };
+            final double[] last = { 0, 0, 0 };
+            final double[] sl = { 0, 0, 0 };
             final double ox = ctx.originX();
             final double oy = ctx.originY();
             final double oz = ctx.originZ();
@@ -1019,29 +1022,56 @@ public final class DefenseScenarios {
                             sam = (EntitySam) o;
                         }
                     }
+                    if (!m.isDead) {
+                        last[0] = m.posX;
+                        last[1] = m.posY;
+                        last[2] = m.posZ;
+                    }
+                    int dt = ticks - mark[0];
                     if (sam != null) {
+                        sl[0] = sam.posX;
+                        sl[1] = sam.posY;
+                        sl[2] = sam.posZ;
+                    }
+                    if (sam != null || dt < 40) {
                         for (int i = 0; i < players.size(); i++) {
-                            double side = i % 2 == 0 ? 22.0 : -22.0;
-                            MissileShotsScenario.cam(
-                                players.get(i),
-                                sam.posX + side,
-                                sam.posY + 2.0,
-                                sam.posZ - 6.0,
-                                sam.posX,
-                                sam.posY,
-                                sam.posZ);
+                            double side = i % 2 == 0 ? 9.0 : -9.0;
+                            MissileShotsScenario
+                                .cam(players.get(i), sl[0] + side, sl[1] + 1.0, sl[2] - 7.0, sl[0], sl[1], sl[2]);
                         }
-                        if (ticks == mark[0] + 3) {
+                        if (dt % 4 == 2 && dt < 60) {
                             for (net.minecraft.entity.player.EntityPlayerMP p : players) {
-                                MissileShotsScenario.signal(p, "shot", "icbm-i4-2-sam-flight");
+                                MissileShotsScenario.signal(p, "shot", "sam-t" + (dt / 4));
                             }
-                            stage[0] = 5;
-                            mark[0] = ticks;
                         }
-                    } else if (ticks > mark[0] + 3) {
-                        out.check(false, "the SAM was gone before the shot");
+                    }
+                    if (sam == null && dt > 6) {
                         stage[0] = 5;
                         mark[0] = ticks;
+                    }
+                    return null;
+                }
+                if (stage[0] == 5) {
+                    int dt = ticks - mark[0];
+                    for (int i = 0; i < players.size(); i++) {
+                        double side = i % 2 == 0 ? 9.0 : -9.0;
+                        MissileShotsScenario.cam(
+                            players.get(i),
+                            last[0] + side,
+                            last[1] + 1.0,
+                            last[2] - 7.0,
+                            last[0],
+                            last[1],
+                            last[2]);
+                    }
+                    if (dt == 4 || dt == 30 || dt == 70) {
+                        for (net.minecraft.entity.player.EntityPlayerMP p : players) {
+                            MissileShotsScenario.signal(p, "shot", "after-" + dt);
+                        }
+                    }
+                    if (dt > 80) {
+                        stage[0] = 6;
+                        mark[0] = ticks - 100;
                     }
                     return null;
                 }
