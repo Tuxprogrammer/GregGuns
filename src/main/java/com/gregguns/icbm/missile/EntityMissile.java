@@ -51,6 +51,11 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     /** Height of the pad surface above the pad block's Y. */
     public static final double PAD_SURFACE = 0.2;
 
+    /** Blocks per tick squared a fried missile gains in fall speed. */
+    private static final double FRIED_GRAVITY = 0.04;
+    /** Fastest a fried missile falls, blocks per tick. */
+    private static final double FRIED_TERMINAL = 3.0;
+
     /** Ticks between repeats of the state packet, for clients that start tracking late. */
     private static final int RESEND_TICKS = 20;
 
@@ -90,6 +95,11 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     private double plannedDistance;
     private boolean detonated;
     private boolean stateDirty = true;
+    /** True once an EMP fried the guidance (D16): the missile falls where it is and detonates on landing. */
+    private boolean fried;
+    private double fallSpeed;
+    private double driftX;
+    private double driftZ;
 
     /**
      * @param world the world
@@ -528,6 +538,10 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         motionX = 0;
         motionY = 0;
         motionZ = 0;
+        if (fried && inFlight()) {
+            friedTick();
+            return;
+        }
         switch (phase) {
             case PAD:
                 padTick();
@@ -619,6 +633,64 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         moveTo(p[0], p[1], p[2]);
         if (phaseTick > path.ticks() + IcbmConfig.missileTimeoutTicks || posY < 0.0) {
             detonateAt(posX, Math.max(posY, 1.0), posZ);
+        }
+    }
+
+    /** @return true while the missile is climbing or in its arc, the phases an EMP can reach */
+    public boolean inFlight() {
+        return phase == FlightPhase.CLIMB || phase == FlightPhase.ARC;
+    }
+
+    /** @return true when an EMP has fried the guidance and the missile is falling */
+    public boolean guidanceFried() {
+        return fried;
+    }
+
+    /**
+     * An EMP fries the guidance (D16): no more thrust, so the missile keeps its sideways drift, falls under gravity
+     * and detonates where it hits. Idempotent, server side, in flight only.
+     *
+     * @return true when this call changed the missile
+     */
+    public boolean fryGuidance() {
+        if (worldObj.isRemote || fried || isDead || !inFlight()) {
+            return false;
+        }
+        fried = true;
+        fallSpeed = 0.0;
+        // The last tick's step is the missile's velocity (moveTo stored it in the motion fields).
+        driftX = motionX;
+        driftZ = motionZ;
+        return true;
+    }
+
+    /**
+     * An EMP destroys the missile outright (D16): it is removed and its fuel goes off as a flash and a bang that break
+     * nothing; the warhead does not detonate. Server side.
+     */
+    public void destroyByEmp() {
+        if (worldObj.isRemote || isDead) {
+            return;
+        }
+        detonated = true;
+        ((WorldServer) worldObj).func_147487_a("hugeexplosion", posX, posY, posZ, 1, 0.0, 0.0, 0.0, 0.0);
+        worldObj.playSoundEffect(posX, posY, posZ, "random.explode", 4.0F, 0.9F);
+        setDead();
+    }
+
+    /** One tick of a missile whose guidance an EMP fried: gravity, the old drift, and a landing detonation. */
+    private void friedTick() {
+        fallSpeed = Math.min(FRIED_TERMINAL, fallSpeed + FRIED_GRAVITY);
+        Vec3 from = Vec3.createVectorHelper(posX, posY, posZ);
+        Vec3 to = Vec3.createVectorHelper(posX + driftX, posY - fallSpeed, posZ + driftZ);
+        MovingObjectPosition hit = worldObj.func_147447_a(from, to, false, true, false);
+        if (hit != null && hit.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            detonateAt(hit.hitVec.xCoord, hit.hitVec.yCoord, hit.hitVec.zCoord);
+            return;
+        }
+        moveTo(to.xCoord, to.yCoord, to.zCoord);
+        if (posY < 0.0) {
+            detonateAt(posX, 1.0, posZ);
         }
     }
 
@@ -885,6 +957,10 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         tag.setDouble("targetY", targetY);
         tag.setDouble("targetZ", targetZ);
         tag.setDouble("distance", plannedDistance);
+        tag.setBoolean("fried", fried);
+        tag.setDouble("fallSpeed", fallSpeed);
+        tag.setDouble("driftX", driftX);
+        tag.setDouble("driftZ", driftZ);
     }
 
     @Override
@@ -930,6 +1006,10 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         targetY = tag.getDouble("targetY");
         targetZ = tag.getDouble("targetZ");
         plannedDistance = tag.getDouble("distance");
+        fried = tag.getBoolean("fried");
+        fallSpeed = tag.getDouble("fallSpeed");
+        driftX = tag.getDouble("driftX");
+        driftZ = tag.getDouble("driftZ");
         stateDirty = true;
     }
 

@@ -111,6 +111,32 @@ public class IcbmConfig {
     @Config.RangeInt(min = 1, max = 32)
     public static int doorCloseHeight = 4;
 
+    @Config.Comment({
+        "Most devices (GT machines, battery buffers, hatches, IC2 storage) one EMP pulse may drain, nearest",
+        "first (D16); a dense base cannot stall the server. Missiles are not counted. Range 1 to 1024. Default: 64." })
+    @Config.RangeInt(min = 1, max = 1024)
+    public static int empMaxDevices = 64;
+
+    @Config.Comment({ "Largest radius an EMP Tower may be set to, blocks; the pulse costs 25 EU per square block of",
+        "radius (D16). Range 8 to 256. Default: 100." })
+    @Config.RangeInt(min = 8, max = 256)
+    public static int empMaxRadius = 100;
+
+    @Config.Comment({ "Chance an EMP pulse destroys a missile in flight outright (ICBM's 0.5). Range 0 to 1.",
+        "Default: 0.5." })
+    @Config.RangeDouble(min = 0.0, max = 1.0)
+    public static double empMissileKillChance = 0.5;
+
+    @Config.Comment({ "Chance, among the survivors, that an EMP pulse fries a missile's guidance so it falls",
+        "(ICBM's 0.8). Range 0 to 1. Default: 0.8." })
+    @Config.RangeDouble(min = 0.0, max = 1.0)
+    public static double empMissileGuidanceChance = 0.8;
+
+    @Config.Comment({ "Chance, among the rest, that an EMP pulse sets a missile's warhead off where it is",
+        "(ICBM's 0.1). Range 0 to 1. Default: 0.1." })
+    @Config.RangeDouble(min = 0.0, max = 1.0)
+    public static double empMissileTriggerChance = 0.1;
+
     /**
      * @param tier the explosive tier number, 1 to 4
      * @return the terrain switch for that tier
