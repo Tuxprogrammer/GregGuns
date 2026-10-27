@@ -36,12 +36,12 @@ public class GrenadeLauncherProjectile extends GrenadeProjectile {
     /** Mod-local entity ID; the same number Techguns uses for its launcher grenade. */
     public static final int ENTITY_ID = 19;
 
-    /**
-     * @param world the world
-     */
     /** The ICBM warhead the launcher spent a charge on for this grenade (D150), or null. */
     private String icbmWarhead;
 
+    /**
+     * @param world the world
+     */
     public GrenadeLauncherProjectile(World world) {
         super(world);
         gravity = 0.01F;

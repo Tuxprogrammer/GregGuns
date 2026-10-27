@@ -49,12 +49,21 @@ public final class ItemLauncherWarhead extends Item implements Tiered {
         String tierLine = String
             .format(StatCollector.translateToLocal("gregguns.icbm.part.tooltip.tier"), TierText.colored(getTier()));
         List<String> details = new ArrayList<>();
+        List<String> gunNames = new ArrayList<>();
+        for (String gun : warhead.kind()
+            .guns()) {
+            gunNames.add(StatCollector.translateToLocal("item.gregguns." + gun + ".name"));
+        }
         details.add(
             String.format(
                 StatCollector.translateToLocal("gregguns.icbm.launcher.tooltip.fits"),
-                LauncherTooltipFormat.gunList(
-                    warhead.kind()
-                        .guns())));
+                LauncherTooltipFormat.gunList(gunNames)));
+        // D41: the blast's radius and center damage at fill 1, capped for the launcher (D154).
+        details.add(
+            String.format(
+                StatCollector.translateToLocal("gregguns.icbm.launcher.tooltip.blast"),
+                String.format("%.1f", LauncherWarheads.blastRadius(warhead)),
+                String.format("%.0f", LauncherWarheads.centerDamage(warhead))));
         details.add(
             String.format(
                 StatCollector.translateToLocal("gregguns.icbm.launcher.tooltip.charges"),

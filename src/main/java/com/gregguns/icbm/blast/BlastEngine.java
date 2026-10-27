@@ -51,6 +51,7 @@ public final class BlastEngine {
     private int lastSlices;
     private long maxTickNanos;
     private BlastJob lastStarted;
+    private long accepted;
     private String maxTickStage = "none";
     private boolean recording;
     private final List<Long> tickLog = new ArrayList<>();
@@ -79,6 +80,18 @@ public final class BlastEngine {
      */
     public boolean start(World world, double x, double y, double z, ExplosiveDef def, int fill, double bonusRadius,
         EntityLivingBase source) {
+        return start(world, x, y, z, def, fill, bonusRadius, source, 0.0, false);
+    }
+
+    /**
+     * Starts a blast with the launcher-warhead limits (D154).
+     *
+     * @param damageCap the most center damage the blast deals, 0 for no cap
+     * @param handheld  true for a launcher warhead: {@code explosions.blockDamage} must also allow terrain damage
+     * @return true when accepted
+     */
+    public boolean start(World world, double x, double y, double z, ExplosiveDef def, int fill, double bonusRadius,
+        EntityLivingBase source, double damageCap, boolean handheld) {
         if (world.isRemote || def == null
             || def.tier()
                 .number() > IcbmConfig.maxBlastTier
@@ -103,16 +116,21 @@ public final class BlastEngine {
                 .toString();
             st.sourceName = source instanceof EntityPlayer ? "player:" + source.getCommandSenderName() : "";
         }
-        // D52: only the per-tier icbm.terrainDamageT<n> switch, never explosions.blockDamage (hand-held weapons).
+        st.damageCap = Math.max(0.0, damageCap);
+        // D52: the per-tier icbm.terrainDamageT<n> switch; explosions.blockDamage (hand-held weapons) joins it only
+        // for a launcher warhead (D154).
         st.breaksTerrain = TerrainRule.breaks(
             def.shape(),
             def.tier()
                 .number(),
             source instanceof EntityPlayer,
             world.getGameRules()
-                .getGameRuleBooleanValue("mobGriefing"));
+                .getGameRuleBooleanValue("mobGriefing"),
+            handheld,
+            com.gregguns.core.config.ExplosionsConfig.blockDamage);
         lastStarted = new BlastJob(world, st, def, budget);
         jobs.add(lastStarted);
+        accepted++;
         // Only annihilating explosives get the long-range flash; every other blast uses the normal effects.
         ProjectileExplosion.blastEffects(world, x, y, z, (float) radius, def.annihilates());
         // A large conventional blast gets a smoke plume of its own, sized by its radius (the flash above is for
@@ -164,6 +182,26 @@ public final class BlastEngine {
     /** @return a copy of the effect state of the blast most recently accepted (scenarios), empty before the first */
     public NBTTagCompound lastEffectState() {
         return lastStarted == null ? new NBTTagCompound() : (NBTTagCompound) lastStarted.state().effectState.copy();
+    }
+
+    /** @return how many blasts this engine has accepted since the server started (scenarios compare before/after) */
+    public long acceptedStarts() {
+        return accepted;
+    }
+
+    /** @return the explosive id of the blast most recently accepted, or empty before the first */
+    public String lastExplosiveId() {
+        return lastStarted == null ? "" : lastStarted.state().explosiveId;
+    }
+
+    /** @return whether the blast most recently accepted may break terrain */
+    public boolean lastBreaksTerrain() {
+        return lastStarted != null && lastStarted.state().breaksTerrain;
+    }
+
+    /** @return the center-damage cap of the blast most recently accepted (D154), 0 for none */
+    public double lastDamageCap() {
+        return lastStarted == null ? 0.0 : lastStarted.state().damageCap;
     }
 
     /** @return blasts running now */

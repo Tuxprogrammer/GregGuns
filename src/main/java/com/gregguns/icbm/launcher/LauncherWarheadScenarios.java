@@ -37,7 +37,7 @@ final class LauncherWarheadScenarios {
     private LauncherWarheadScenarios() {}
 
     static void registerAll(ScenarioRegistry registry) {
-        registry.register(new LoadAndFire());
+        registry.register(com.gregguns.explosion.GrenadeScenarios.blockDamageOff(new LoadAndFire()));
         registry.register(new Recipes());
     }
 
@@ -112,8 +112,13 @@ final class LauncherWarheadScenarios {
                 90.0F);
             shooter.setCurrentItemOrArmor(0, loaded);
             ShotOffset offset = SpreadModel.roll(new Random(5L), RocketLauncherDef.STATS, ShotContext.DEFAULT, 0)[0];
-            BlastEngine.instance()
-                .clear();
+            BlastEngine engine = BlastEngine.instance();
+            engine.clear();
+            long startsBefore = engine.acceptedStarts();
+            // A rocket's own explosion posts ExplosionEvent.Start too; the ICBM blast posts exactly one, so a count of
+            // one means the rocket's own blast did not also run (GGI-02-62).
+            StartCounter counter = new StartCounter();
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(counter);
             Projectiles.launcher()
                 .launch(ctx.world(), shooter, RocketLauncherDef.STATS, offset, 1.0F);
             out.checkEquals(
@@ -125,13 +130,17 @@ final class LauncherWarheadScenarios {
                 for (Object o : ctx.world().loadedEntityList) {
                     rocket |= o instanceof RocketProjectile && !((RocketProjectile) o).isDead;
                 }
-                BlastEngine engine = BlastEngine.instance();
                 if (rocket && ticks < 75) {
                     return null;
                 }
+                net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(counter);
+                out.checkEquals("blasts started by the one shot", 1L, engine.acceptedStarts() - startsBefore);
+                out.checkEquals("the blast type", "condensed", engine.lastExplosiveId());
+                out.checkEquals("explosion starts (the rocket's own did not run)", 1, counter.count);
+                out.checkEquals("the center damage cap (D154)", 75.0, engine.lastDamageCap());
                 out.check(
-                    engine.activeBlasts() > 0 || engine.lastBlastDone(),
-                    "the rocket should have started the HE blast");
+                    !engine.lastBreaksTerrain(),
+                    "explosions.blockDamage is off, so a hand-held launcher blast must not break terrain (D52)");
                 engine.clear();
                 shooter.setDead();
                 return out.build();
@@ -192,6 +201,18 @@ final class LauncherWarheadScenarios {
             out.checkEquals("antidote recipe count", 1, found);
             out.check(GTOreDictUnificator.getAssociation(antidote) == null, "the antidote must carry no GT item data");
             return out.build();
+        }
+    }
+
+    /** Counts {@code ExplosionEvent.Start}. Public for FML. */
+    public static final class StartCounter {
+
+        int count;
+
+        /** Counts one start. */
+        @cpw.mods.fml.common.eventhandler.SubscribeEvent
+        public void onStart(net.minecraftforge.event.world.ExplosionEvent.Start event) {
+            count++;
         }
     }
 }

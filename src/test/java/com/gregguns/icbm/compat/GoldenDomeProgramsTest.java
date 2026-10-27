@@ -17,8 +17,13 @@ import org.junit.jupiter.api.Test;
 class GoldenDomeProgramsTest {
 
     private static final Path ROOT = Paths.get("src/main/resources/assets/gregguns/lua/golden_dome");
-    private static final String[] COMPONENTS = { "gg_silo", "gg_launch_control", "gg_radar", "gg_air_defense",
-        "gg_emp_tower" };
+    /** The component names, read from the logic classes the drivers register (not copied here). */
+    private static final String[] COMPONENTS = { com.gregguns.icbm.component.LaunchComponentLogic.SILO,
+        com.gregguns.icbm.component.LaunchComponentLogic.LAUNCH_CONTROL,
+        com.gregguns.icbm.component.RadarComponentLogic.COMPONENT,
+        com.gregguns.icbm.component.AirDefenseComponentLogic.COMPONENT,
+        com.gregguns.icbm.component.EmpComponentLogic.COMPONENT };
+    private static final Path OC = Paths.get("src/main/java/com/gregguns/icbm/compat/oc");
 
     private static String read(String file) throws IOException {
         return new String(Files.readAllBytes(ROOT.resolve(file)), StandardCharsets.UTF_8);
@@ -60,6 +65,46 @@ class GoldenDomeProgramsTest {
                 }
                 assertTrue(known, f + " names " + m.group(1));
             }
+        }
+    }
+
+    @Test
+    void everyMethodTheProgramsCallIsACallbackOfTheEnvironments() throws IOException {
+        java.util.Set<String> callbacks = new java.util.HashSet<>();
+        java.util.regex.Pattern cb = java.util.regex.Pattern
+            .compile("@Callback[\\s\\S]*?public Object\\[\\] (\\w+)\\(");
+        try (java.util.stream.Stream<Path> files = Files.list(OC)) {
+            for (Path f : (Iterable<Path>) files.filter(
+                x -> x.toString()
+                    .endsWith("Environment.java"))::iterator) {
+                java.util.regex.Matcher m = cb.matcher(new String(Files.readAllBytes(f), StandardCharsets.UTF_8));
+                while (m.find()) {
+                    callbacks.add(m.group(1));
+                }
+            }
+        }
+        assertTrue(callbacks.contains("fireAt") && callbacks.contains("setAuto"), "callbacks found: " + callbacks);
+        java.util.regex.Pattern call = java.util.regex.Pattern.compile("\\b(?:l|battery|tower|radar)\\.([a-zA-Z]+)\\(");
+        for (String f : new String[] { "bin/launch.lua", "bin/radarwatch.lua", "bin/autodefense.lua", "bin/emp.lua",
+            "lib/goldendome.lua" }) {
+            java.util.regex.Matcher m = call.matcher(read(f));
+            while (m.find()) {
+                assertTrue(callbacks.contains(m.group(1)), f + " calls " + m.group(1) + ", which is no @Callback");
+            }
+        }
+    }
+
+    @Test
+    void autodefenseNeverTurnsABatterysAutoEngageOff() throws IOException {
+        // I5 review item 22: it only adds targets; a stopped or unpowered computer must leave the batteries as they
+        // were.
+        assertTrue(!read("bin/autodefense.lua").contains("setAuto("));
+    }
+
+    @Test
+    void noProgramPrintsBritishSpellings() throws IOException {
+        for (String f : new String[] { "bin/launch.lua", "bin/emp.lua", "bin/autodefense.lua" }) {
+            assertTrue(!read(f).contains("Cancelled"), f);
         }
     }
 }

@@ -10,7 +10,8 @@ import com.gregguns.item.gun.ItemGun;
 /**
  * Shapeless crafting: one launcher plus one launcher warhead of its family gives the launcher with the warhead loaded
  * (D150). The launcher keeps every other tag (ammo, camo, charge). The same type adds charges up to
- * {@link LauncherRules#MAX_CHARGES}; a different type replaces the old one. Common side.
+ * {@link LauncherRules#MAX_CHARGES}; a different type, or a load that would pass the cap, makes no recipe (nothing is
+ * ever lost). Common side.
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/launcher-warheads.md
 // Source: Forge 1.7.10 net.minecraft.item.crafting.IRecipe (matches, getCraftingResult, getRecipeSize, getRecipeOutput)

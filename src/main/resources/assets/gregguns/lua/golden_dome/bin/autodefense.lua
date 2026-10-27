@@ -1,5 +1,8 @@
 -- autodefense start [--emp] | stop | status : fire every reachable air-defense battery at each incoming missile.
--- With --emp the EMP tower is set to missiles-only and fired too. Every action is logged to /tmp/autodefense.log.
+-- It only ADDS targets: the batteries keep their own auto-engage setting (never turned off here), so a stopped,
+-- rebooted or unpowered computer leaves the dome exactly as the batteries were. Each battery's own cooldown decides
+-- whether a fireAt is accepted. With --emp the EMP tower is set to missiles-only and fired only while it stays in
+-- that mode. Every action is logged to /tmp/autodefense.log.
 local gd = require("goldendome")
 local event = require("event")
 local shell = require("shell")
@@ -24,7 +27,10 @@ local function onIncoming(_, _, contactId)
   end
   if _G.goldendome_autodefense and _G.goldendome_autodefense.emp then
     local tower = gd.first("gg_emp_tower")
-    if tower and tower.isReady() then
+    -- A full machine-draining pulse on every incoming missile is not what --emp asked for: only in missiles mode.
+    if tower and tower.getMode() ~= "missiles" then
+      log("emp tower skipped: mode is " .. tostring(tower.getMode()) .. ", not missiles")
+    elseif tower and tower.isReady() then
       local ok, reason = tower.fire()
       log("emp tower " .. (ok and "fired" or ("refused: " .. tostring(reason))))
     end
@@ -47,9 +53,6 @@ if command == "start" then
       tower.setMode("missiles")
     end
   end
-  for _, battery in ipairs(gd.list("gg_air_defense")) do
-    battery.setAuto(false) -- this program decides, not the battery
-  end
   _G.goldendome_autodefense = { id = event.listen("radar_incoming", onIncoming), emp = emp }
   log("autodefense started" .. (emp and " with the EMP tower" or ""))
 elseif command == "stop" then
@@ -59,7 +62,7 @@ elseif command == "stop" then
   end
   event.cancel(state.id)
   _G.goldendome_autodefense = nil
-  log("autodefense stopped")
+  log("autodefense stopped (the batteries' own auto-engage was never changed)")
 elseif command == "status" then
   print(state and "autodefense is running" or "autodefense is not running")
   print("batteries: " .. #gd.list("gg_air_defense") .. ", radars: " .. #gd.list("gg_radar"))

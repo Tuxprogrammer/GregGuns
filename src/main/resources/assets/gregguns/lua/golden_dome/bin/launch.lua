@@ -22,6 +22,20 @@ if #launchers == 0 then
   return 1
 end
 local l = launchers[1]
+if options.stick then
+  -- Only a Launch Control reads a data stick; a silo answers no_stick.
+  l = nil
+  for _, candidate in ipairs(launchers) do
+    if candidate.type == "gg_launch_control" then
+      l = candidate
+      break
+    end
+  end
+  if not l then
+    io.stderr:write("No launch control connected; a data stick needs one.\n")
+    return 1
+  end
+end
 
 if options.stick then
   local ok, reason = l.setTargetFromStick()
@@ -63,7 +77,7 @@ if not can then
   return 1
 end
 if not gd.confirm("Launch now? This cannot be undone.") then
-  print("Cancelled.")
+  print("Canceled.")
   return 0
 end
 local ok, reason = l.launch()

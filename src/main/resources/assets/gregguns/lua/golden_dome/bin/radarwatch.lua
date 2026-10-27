@@ -17,7 +17,7 @@ local function draw()
     print("No contacts.")
     return
   end
-  table.sort(contacts, function(a, b) return (a.eta or 1e9) < (b.eta or 1e9) end)
+  table.sort(contacts, function(a, b) return ((a.eta and a.eta >= 0) and a.eta or 1e9) < ((b.eta and b.eta >= 0) and b.eta or 1e9) end)
   for _, c in ipairs(contacts) do
     print(gd.formatContact(c))
   end

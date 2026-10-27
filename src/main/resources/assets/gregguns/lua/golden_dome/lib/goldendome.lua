@@ -47,9 +47,12 @@ end
 -- One line for a radar contact record.
 function gd.formatContact(c)
   local flag = c.incoming and "INCOMING" or "passing "
-  local eta = c.eta and string.format("%4ds", math.floor(c.eta)) or "   ? "
+  -- eta is in ticks (-1: not moving sideways); show seconds. Lua 5.3 refuses %d for a non-integral float, so every
+  -- coordinate goes through math.floor.
+  local eta = (c.eta and c.eta >= 0) and string.format("%4ds", math.floor(c.eta / 20)) or "   ? "
   return string.format("%s  T%s  at %6d %4d %6d  impact %6d %6d  eta %s",
-    flag, tostring(c.tier), c.x, c.y, c.z, c.impactX or 0, c.impactZ or 0, eta)
+    flag, tostring(c.tier), math.floor(c.x), math.floor(c.y), math.floor(c.z), math.floor(c.impactX or 0),
+    math.floor(c.impactZ or 0), eta)
 end
 
 -- Every contact of every reachable radar, with the radar's short address.

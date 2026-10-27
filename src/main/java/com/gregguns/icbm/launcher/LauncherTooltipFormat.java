@@ -34,17 +34,10 @@ public final class LauncherTooltipFormat {
     }
 
     /**
-     * @param guns registry names of the guns, such as {@code rocket_launcher}
-     * @return them joined for a tooltip, with underscores shown as spaces
+     * @param gunNames the localized display names of the guns (from {@code item.gregguns.<gun>.name})
+     * @return them joined for a tooltip
      */
-    public static String gunList(List<String> guns) {
-        StringBuilder sb = new StringBuilder();
-        for (String g : guns) {
-            if (sb.length() > 0) {
-                sb.append(", ");
-            }
-            sb.append(g.replace('_', ' '));
-        }
-        return sb.toString();
+    public static String gunList(List<String> gunNames) {
+        return String.join(", ", gunNames);
     }
 }

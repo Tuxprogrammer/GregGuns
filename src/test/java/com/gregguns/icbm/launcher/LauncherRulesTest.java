@@ -17,13 +17,15 @@ class LauncherRulesTest {
     @Test
     void sameTypeAddsAndCaps() {
         assertEquals(8, LauncherRules.combine("he", 4, "he"));
-        assertEquals(16, LauncherRules.combine("he", 13, "he"));
+        assertEquals(16, LauncherRules.combine("he", 12, "he"));
+        assertEquals(-1, LauncherRules.combine("he", 13, "he"));
         assertEquals(-1, LauncherRules.combine("he", 16, "he"));
     }
 
     @Test
-    void anotherTypeReplaces() {
-        assertEquals(4, LauncherRules.combine("he", 12, "emp"));
+    void anotherTypeIsRefusedWhileChargesAreLoaded() {
+        assertEquals(-1, LauncherRules.combine("he", 12, "emp"));
+        assertEquals(4, LauncherRules.combine("he", 0, "emp"));
     }
 
     @Test
@@ -40,6 +42,8 @@ class LauncherRulesTest {
         assertEquals(
             Arrays.asList("t", "s", "d1", "d2"),
             LauncherTooltipFormat.lines("t", "s", Arrays.asList("d1", "d2"), "hint", true));
-        assertEquals("rocket launcher, grim reaper", LauncherTooltipFormat.gunList(LauncherKind.ROCKET.guns()));
+        assertEquals(
+            "Rocket Launcher, Grim Reaper",
+            LauncherTooltipFormat.gunList(Arrays.asList("Rocket Launcher", "Grim Reaper")));
     }
 }

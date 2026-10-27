@@ -452,6 +452,9 @@ final class BlastJob implements BlastTask {
 
     private void hurt(List<Entity> victims, EntityLivingBase source) {
         double center = def.damage(st.fill);
+        if (st.damageCap > 0.0) {
+            center = Math.min(center, st.damageCap);
+        }
         for (Entity victim : victims) {
             if (victim.isDead) {
                 continue;
