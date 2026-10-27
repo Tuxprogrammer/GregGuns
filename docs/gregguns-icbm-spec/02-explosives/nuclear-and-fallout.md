@@ -48,10 +48,10 @@ The warhead's definition sets `annihilating(true)`; the kill zone, the damage ra
 
 ### The byproduct chain (I5, D140 to D143)
 
-A ZPM or better nuclear warhead (`Fallout.GRADE_ZPM`) has a hot **inner fireball**: out to `FalloutMath.INNER_SHARE` (40%) of the fallout radius, converted earth is **hot** (metadata bit 8, shown yellow-tinted), and the top block can become **trinitite** or **fallout goo**. Launcher-scale blasts (`GRADE_LAUNCHER`) leave only plain irradiated earth, and the Nuke Launcher's rubble stays plain.
+A ZPM or better nuclear warhead (`Fallout.GRADE_ZPM`) has a hot **inner fireball**: out to `FalloutMath.INNER_SHARE` (40%) of the fallout radius, converted earth is **hot** (metadata bit 8, shown yellow-tinted), and a top block can become **trinitite** (sand, at any of the three depths) or **fallout goo** (top block only). Hot earth and trinitite thin out smoothly: the chance is `1 - (distance / inner radius)^2` (`FalloutMath.hotChance`, D155), one at ground zero and zero at the rim. Launcher-scale blasts (`GRADE_LAUNCHER`) leave only plain irradiated earth, and the Nuke Launcher's rubble stays plain.
 
 - **Hot earth** drops **Hot Irradiated Rubble** (rubble item, damage 1), radioactive one level above plain rubble.
-- **Trinitite** (block, hardness 2, glassy): a share of the inner top blocks. Mined it drops a **Trinitite Shard**. It cannot be silk harvested.
+- **Trinitite** (block, hardness 2, glassy): a share of the inner sand blocks, thinning toward the rim. Mined it drops a **Trinitite Shard**. It cannot be silk harvested.
 - **Fallout goo** (block, hardness 0.8, shovel; metadata 1 is hot goo): rare, chance `GOO_PEAK` (3%) at ground zero falling to zero at the inner rim, about one percent on average, at most `explosions.falloutMaxGoo` (24) per blast. Mined it drops **Fallout Goo** (or **Hot Fallout Goo**). **While any goo stands in a chunk, that chunk's irradiated earth does not decay**: the decay record keeps its entries and retries, with no age cap for such a chunk, until the goo is dug up. The world's goo ledger (`FalloutSavedData`) learns of goo when fallout places it and when it is broken, and is saved.
 - **Items** carry no GT item data (the I3 rubble lesson) and irradiate a holder through GT's own check while carried. Shard and crushed trinitite are one item (damage 0, 1); goo, hot goo and their dissolved forms are another (damage 0 to 3).
 

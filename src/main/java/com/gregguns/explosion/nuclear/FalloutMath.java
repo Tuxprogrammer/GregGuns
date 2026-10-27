@@ -39,6 +39,25 @@ public final class FalloutMath {
     }
 
     /**
+     * The chance a converted block is hot earth (or trinitite, on sand): it falls smoothly with distance from ground
+     * zero (D21, D155), one at the center and zero at the rim of the inner fireball. The tier factor is 1 for a ZPM
+     * or better blast and 0 for a launcher-scale one. The expected hot share of the inner disc is one half, below
+     * {@code FalloutYield.HOT_SHARE}, so the fissile bound there still holds.
+     *
+     * @param distance horizontal distance from ground zero
+     * @param inner    the inner fireball radius
+     * @param grade    {@code Fallout.GRADE_LAUNCHER} or {@code Fallout.GRADE_ZPM}
+     * @return 0 to 1
+     */
+    public static double hotChance(double distance, double inner, int grade) {
+        if (grade < Fallout.GRADE_ZPM || !(inner > 0.0) || !(distance >= 0.0) || distance >= inner) {
+            return 0.0;
+        }
+        double u = distance / inner;
+        return 1.0 - u * u;
+    }
+
+    /**
      * @param radius the fallout radius, blocks
      * @param budget the most blocks this blast may convert
      * @return the chance at ground zero, 0 to {@link #MAX_CHANCE}
@@ -73,7 +92,8 @@ public final class FalloutMath {
      * @param seed the job's seed
      * @param x    column X
      * @param z    column Z
-     * @param salt which question is asked (0 conversion, 1 and 2 the blocks below)
+     * @param salt which question is asked (0 conversion, 1 and 2 the blocks below, 3 goo, 4 to 6 hot earth, 7 to 9
+     *             trinitite)
      * @return a value in [0, 1)
      */
     public static double roll(long seed, int x, int z, int salt) {

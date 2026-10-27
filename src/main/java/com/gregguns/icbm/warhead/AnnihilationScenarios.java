@@ -17,6 +17,7 @@ import com.gregguns.core.testing.ScenarioContext;
 import com.gregguns.core.testing.ScenarioRegistry;
 import com.gregguns.core.testing.ScenarioResult;
 import com.gregguns.explosion.nuclear.FalloutBlocks;
+import com.gregguns.explosion.nuclear.FalloutEngine;
 import com.gregguns.icbm.blast.BlastEngine;
 import com.gregguns.icbm.explosive.ExplosiveDef;
 import com.gregguns.icbm.explosive.Explosives;
@@ -139,6 +140,9 @@ final class AnnihilationScenarios {
             IcbmConfig.maxBlastTier = 5;
             BlastEngine.instance()
                 .clear();
+            // Fallout jobs wait 100 ticks before converting anything, so the irradiated-block count below cannot see
+            // one: the queue itself is checked instead.
+            FalloutEngine.clear(w);
             if (!IcbmBlasts.detonate(w, ox + 0.5, oy + 0.5, oz + 0.5, def, 1, null)) {
                 IcbmConfig.terrainDamageT4 = savedT4;
                 return ScenarioResult.fail(name(), "the engine did not accept the blast");
@@ -178,6 +182,10 @@ final class AnnihilationScenarios {
                 }
                 out.check(dug > 100, "the crater was dug under the center, blocks removed: " + dug);
                 out.check(irradiated == 0, "antimatter leaves no fallout, irradiated blocks: " + irradiated);
+                out.check(
+                    !FalloutEngine.instance()
+                        .busy(w),
+                    "antimatter queued no fallout job (a job waits 100 ticks before it converts anything)");
                 return out.build();
             });
         }
@@ -212,32 +220,49 @@ final class AnnihilationScenarios {
             final int oy = ctx.originY();
             final int oz = ctx.originZ();
             final boolean savedT4 = IcbmConfig.terrainDamageT4;
-            IcbmConfig.terrainDamageT4 = false; // the body idles from the start; only its life is under test
+            final int savedLife = IcbmConfig.redMatterLifetimeSeconds;
+            // The body idles from the start (nothing to scan), but a long life and a 200-tick idle linger mean it
+            // would still be running at tick 15: only the antimatter can have ended it by then.
+            IcbmConfig.terrainDamageT4 = false;
+            IcbmConfig.redMatterLifetimeSeconds = 600;
             BlastEngine engine = BlastEngine.instance();
             engine.clear();
             if (!IcbmBlasts.detonate(w, ox + 0.5, oy + 5.5, oz + 0.5, Explosives.get("redmatter"), RED_FILL, null)) {
                 IcbmConfig.terrainDamageT4 = savedT4;
+                IcbmConfig.redMatterLifetimeSeconds = savedLife;
                 return ScenarioResult.fail(name(), "the engine did not accept the red matter");
             }
             final boolean[] fired = { false };
+            final int[] firedAt = { 0 };
+            final int[] redLeft = { -1 };
             return ScenarioResult.pending(name(), 600, ticks -> {
                 if (ticks == 10 && !fired[0]) {
                     fired[0] = true;
-                    if (engine.activeBlasts() != 1) {
+                    firedAt[0] = ticks;
+                    if (engine.activeBlasts("redmatter") != 1) {
                         IcbmConfig.terrainDamageT4 = savedT4;
-                        return ScenarioResult
-                            .fail(name(), "expected the red matter to be running, blasts: " + engine.activeBlasts());
+                        IcbmConfig.redMatterLifetimeSeconds = savedLife;
+                        return ScenarioResult.fail(
+                            name(),
+                            "expected the red matter to be running, found " + engine.activeBlasts("redmatter"));
                     }
                     IcbmBlasts.detonate(w, ox + 60.5, oy + 5.5, oz + 0.5, Explosives.get("antimatter"), 1, null);
                     return null;
+                }
+                if (fired[0] && ticks == firedAt[0] + 5) {
+                    redLeft[0] = engine.activeBlasts("redmatter");
                 }
                 if (!fired[0] || (engine.activeBlasts() > 0 && ticks < 500)) {
                     return null;
                 }
                 IcbmConfig.terrainDamageT4 = savedT4;
+                IcbmConfig.redMatterLifetimeSeconds = savedLife;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
+                out.check(
+                    redLeft[0] == 0,
+                    "the red matter body was gone 5 ticks after the antimatter, red matter bodies left: " + redLeft[0]);
                 out.check(engine.activeBlasts() == 0, "both blasts are over, running: " + engine.activeBlasts());
-                out.check(ticks < 400, "ended well before the 1,200-tick lifetime, at tick " + ticks);
+                out.check(ticks < 100, "all over within 100 ticks, at tick " + ticks);
                 return out.build();
             });
         }
@@ -332,8 +357,10 @@ final class AnnihilationScenarios {
                     "the item outside was pulled in, closest " + closest[0]);
                 long budgetNanos = 6L * 1_000_000L;
                 out.check(
-                    worstNanos[0] <= budgetNanos + 25_000_000L,
-                    "no tick spent more than the budget plus slack on blasts: " + worstNanos[0] / 1_000_000.0 + " ms");
+                    worstNanos[0] <= budgetNanos + 5_000_000L,
+                    "no tick spent more than the budget plus 5 ms on the scheduler (the effect tick is not timed): "
+                        + worstNanos[0] / 1_000_000.0
+                        + " ms");
                 return out.build();
             });
         }

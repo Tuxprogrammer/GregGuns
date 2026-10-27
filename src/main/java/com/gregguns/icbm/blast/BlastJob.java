@@ -95,6 +95,7 @@ final class BlastJob implements BlastTask {
             st.effectState,
             budget,
             st.breaksTerrain);
+        this.ctx.setBreakerSource(this::resolveBreaker);
     }
 
     World world() {

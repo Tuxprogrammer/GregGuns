@@ -11,7 +11,7 @@
 | ICBM red matter | GregGuns red matter | Bug avoided |
 |---|---|---|
 | An entity that never ends (starvation works only at size 1 or less) | A blast effect with a **hard lifetime** (`icbm.redMatterLifetimeSeconds`, default 60) and an **idle state** that ends after 10 s | ICBM-02-81 |
-| 501 ray traces a tick forever, queue rebuilt each cycle | A **cursor walk** over each new shell once, in scheduler slices under the **shared tick budget**; at most 384 edits a tick; nothing allocated per pass; idle means no scan at all | 02-90, 02-91, 02-88 |
+| 501 ray traces a tick forever, queue rebuilt each cycle | A **cursor walk** over each new shell once, in scheduler slices under the **shared tick budget**; at most 384 edits a tick (a GT machine counts as 8, since breaking a charged one can chain explosions); nothing allocated per visited cell; idle means no scan at all | 02-90, 02-91, 02-88 |
 | Reloads at full size (the max is read back as the size) | The whole state (radius, shell, cursor, mode, age) is in the blast's saved effect state; it resumes where it was | 02-80 |
 | Size overwritten by a growth rule, unbounded by merging | An integer radius that grows one block per pass up to the blast radius (32 at fill 128); no merging | 02-82, 02-84 |
 | No protection, break event or cause | Claims and the break guard see every batch (`ExplosionEvent.Detonate`), the source is the blast's | 02-96 |
@@ -28,7 +28,7 @@
 2. **Eat.** One pass per radius from 2 to the maximum. A pass visits the cube cells of its shell (distance beyond the last radius, up to this one) with a cursor, 4,096 cells and 32 edits a slice, and removes breakable, non-liquid blocks that claims and the break guard allow. Unloaded chunks are skipped, never loaded. Work is offered through `BlastEffect.wantsWork/work`, so the scheduler shares the budget with every crater.
 3. **Idle.** When the full-size pass ends, the body stops scanning. It lingers 200 ticks (pull and kill continue), then ends. With `icbm.terrainDamageT4` off it idles from the start.
 4. **Pull and kill.** Per tick, at most 128 entities: living ones inside the ball (radius, at least 1.5) are annihilated, bosses included, through the damage settings; other entities inside it are removed (players are never removed, creative players are skipped); entities within `max(2 x radius, ball + 8)` are pulled toward the center.
-5. **End.** After the lifetime, after idling, or when antimatter goes off within 200 blocks ([antimatter](antimatter.md)): one sound, no aftermath. It leaves no fallout.
+5. **End.** After the lifetime, after idling, or when antimatter goes off within 200 blocks ([antimatter](antimatter.md)): no aftermath. A body that ends by itself plays one sound; one that antimatter cancels ends under the antimatter flash and plays none. It leaves no fallout.
 
 ## Recipe and cost
 

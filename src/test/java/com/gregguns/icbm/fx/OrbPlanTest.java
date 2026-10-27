@@ -38,6 +38,15 @@ class OrbPlanTest {
     }
 
     @Test
+    void aBodyIsAnnouncedOnAShortLease() {
+        assertEquals(40, OrbPlan.lease(12_000, 20));
+        assertEquals(15, OrbPlan.lease(15, 20));
+        assertEquals(1, OrbPlan.lease(0, 20));
+        // Refreshed every 20 ticks, the client's time left never drops below 20, so the alpha stays steady.
+        assertEquals(0.9F, OrbPlan.alpha(OrbKind.RED_MATTER, 20, OrbPlan.lease(12_000, 20)), 0.0F);
+    }
+
+    @Test
     void theCostBoundsAreSmall() {
         assertTrue(OrbPlan.MAX_ACTIVE <= 4);
         assertTrue(OrbPlan.SEGMENTS <= 32);

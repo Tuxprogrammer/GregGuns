@@ -55,7 +55,9 @@ public final class ItemIrradiatedRubble extends Item implements com.gregguns.api
         if (holder instanceof EntityPlayer && ((EntityPlayer) holder).capabilities.isCreativeMode) {
             return false;
         }
-        return GTUtility.applyRadioactivity(holder, level(), stack.stackSize);
+        // Hot rubble (damage 1) is one level above plain rubble, as hot goo is above goo.
+        return GTUtility
+            .applyRadioactivity(holder, stack.getItemDamage() == 1 ? level() + 1 : level(), stack.stackSize);
     }
 
     @Override

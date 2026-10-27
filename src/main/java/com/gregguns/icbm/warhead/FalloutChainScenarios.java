@@ -57,7 +57,7 @@ final class FalloutChainScenarios {
         public String description() {
             return "Rubble, hot rubble, crushed trinitite and dissolved goo each have a Centrifuge recipe at their tier;"
                 + " shards have a Macerator recipe; goo has a Chemical Reactor recipe at LuV with nitric acid; the"
-                + " outputs name the D21 elements; none of the items carries GT item data.";
+                + " outputs name the D21 elements; none of the items carries GT item data. These are recipe-map lookups: exit box 3's \"process in GT machines\" means the recipes exist at their tier, not that a machine was run.";
         }
 
         private static GTRecipe centrifuge(ItemStack in, long voltage) {
@@ -123,9 +123,15 @@ final class FalloutChainScenarios {
 
             GTRecipe mac = RecipeMaps.maceratorRecipes.findRecipeQuery()
                 .items(shard)
-                .voltage(TierEU.RECIPE_LV)
+                .voltage(TierEU.RECIPE_HV)
                 .find();
-            out.check(mac != null && mac.mOutputs.length > 0, "a trinitite shard is macerated");
+            out.check(mac != null && mac.mOutputs.length > 0, "a trinitite shard is macerated at HV");
+            out.check(
+                RecipeMaps.maceratorRecipes.findRecipeQuery()
+                    .items(shard)
+                    .voltage(TierEU.RECIPE_MV)
+                    .find() == null,
+                "a trinitite shard is not macerated one tier below (D69: HV floor)");
             out.check(
                 mac != null && GTUtility.areStacksEqual(mac.mOutputs[0], crushed),
                 "macerated trinitite is crushed trinitite");

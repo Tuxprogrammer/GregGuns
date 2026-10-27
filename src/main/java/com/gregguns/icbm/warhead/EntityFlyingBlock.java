@@ -183,7 +183,7 @@ public final class EntityFlyingBlock extends Entity implements IEntityAdditional
                 if (there.isAir(worldObj, x, y + up, z) || there.isReplaceable(worldObj, x, y + up, z)
                     || there.getMaterial() == Material.lava
                     || there.getMaterial() == Material.water) {
-                    placed = worldObj.setBlock(x, y + up, z, block, meta, 3);
+                    placed = claimAllows(x, y + up, z) && worldObj.setBlock(x, y + up, z, block, meta, 3);
                 }
             }
         }
@@ -194,6 +194,26 @@ public final class EntityFlyingBlock extends Entity implements IEntityAdditional
             }
         }
         setDead();
+    }
+
+    /**
+     * Lifting is vetted, so landing must be too (D52): posts a one-cell {@code ExplosionEvent.Detonate} and reports
+     * whether the cell survived the listeners. A block that may not land is dropped as an item instead.
+     */
+    @SuppressWarnings("unchecked")
+    private boolean claimAllows(int x, int y, int z) {
+        net.minecraft.world.Explosion vanilla = new net.minecraft.world.Explosion(
+            worldObj,
+            null,
+            posX,
+            posY,
+            posZ,
+            3.0F);
+        net.minecraft.world.ChunkPosition cell = new net.minecraft.world.ChunkPosition(x, y, z);
+        vanilla.affectedBlockPositions.add(cell);
+        net.minecraftforge.event.ForgeEventFactory
+            .onExplosionDetonate(worldObj, vanilla, new java.util.ArrayList<Entity>(), 0.0);
+        return vanilla.affectedBlockPositions.contains(cell);
     }
 
     @Override

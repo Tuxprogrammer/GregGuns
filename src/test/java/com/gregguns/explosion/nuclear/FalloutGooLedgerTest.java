@@ -38,6 +38,14 @@ class FalloutGooLedgerTest {
         back.readFromNBT(tag);
         assertEquals(2, back.gooCount());
         assertTrue(back.gooInChunkOf(-30000000, 29999999));
+        java.util.List<int[]> listed = back.gooPositions();
+        assertEquals(2, listed.size());
+        for (int[] p : listed) {
+            // The accessor must agree with what writeToNBT stores, signs included (review item 10).
+            assertTrue(
+                (p[0] == -30000000 && p[1] == 200 && p[2] == 29999999) || (p[0] == 12 && p[1] == 5 && p[2] == -7),
+                "listed " + java.util.Arrays.toString(p));
+        }
         assertTrue(back.removeGoo(-30000000, 200, 29999999));
         assertTrue(back.removeGoo(12, 5, -7));
     }

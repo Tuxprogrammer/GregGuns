@@ -84,7 +84,7 @@ final class EnderEffect implements BlastEffect {
             .chunkExists(x >> 4, z >> 4)) {
             return -1;
         }
-        int top = Math.min(250, world.getHeightValue(x, z));
+        int top = EnderRules.scanTop(world.provider.hasNoSky, world.getHeightValue(x, z));
         for (int y = top; y > 1; y--) {
             Block floor = world.getBlock(x, y - 1, z);
             Material m = floor.getMaterial();

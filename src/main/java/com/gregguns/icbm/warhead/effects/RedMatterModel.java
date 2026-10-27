@@ -11,7 +11,7 @@ package com.gregguns.icbm.warhead.effects;
  * body that has nothing left to eat idles and ends), ICBM-02-82 and 02-84 (the radius is an integer capped by the
  * blast radius, never overwritten by a growth rule), ICBM-02-86 and 02-87 (no normalizing a zero vector, no division by
  * a zero distance), ICBM-02-88 and 02-90 (every edit is counted against a cap), ICBM-02-91 (no ray queue: a shell is
- * walked by a cursor, nothing is allocated per pass), ICBM-02-93 (sounds only on ignition and collapse).
+ * walked by a cursor, nothing is allocated per visited cell), ICBM-02-93 (sounds only on ignition and collapse).
  */
 // Spec: docs/gregguns-icbm-spec/02-explosives/red-matter.md
 public final class RedMatterModel {
@@ -22,6 +22,8 @@ public final class RedMatterModel {
     public static final int CELLS_PER_SLICE = 4096;
     /** Blocks one slice may remove. */
     public static final int EDITS_PER_SLICE = 32;
+    /** How many edits a charged-machine cell counts for: eating one can set off a chain of GT machine explosions. */
+    public static final int MACHINE_EDIT_WEIGHT = 8;
     /** Blocks one body may remove in one server tick, over all its slices. */
     public static final int EDITS_PER_TICK = 384;
     /** Ticks an idle body lingers before it ends (10 s). */
@@ -102,8 +104,23 @@ public final class RedMatterModel {
      * @return {dx, dy, dz}
      */
     public static int[] decode(int index, int radius) {
+        int[] out = new int[3];
+        decodeInto(index, radius, out);
+        return out;
+    }
+
+    /**
+     * Decodes a cube index into a caller-owned array, so a pass visits millions of cells without allocating.
+     *
+     * @param index  0 to {@code cubeCells(radius) - 1}
+     * @param radius the cube's radius
+     * @param out    receives dx, dy, dz
+     */
+    public static void decodeInto(int index, int radius, int[] out) {
         int e = edge(radius);
-        return new int[] { index % e - radius, index / e % e - radius, index / (e * e) - radius };
+        out[0] = index % e - radius;
+        out[1] = index / e % e - radius;
+        out[2] = index / (e * e) - radius;
     }
 
     /**

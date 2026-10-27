@@ -8,6 +8,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -22,9 +23,10 @@ import com.gregguns.icbm.warhead.EntityFlyingBlock;
  * top layer first. The bounds:
  * <ul>
  * <li>At most {@code icbm.antigravMaxBlocks} blocks per blast (default 512) and {@link #PER_TICK} per tick; the layer
- * scan stops when the shared tick budget is spent.</li>
+ * scan is {@link #MAX_LAYERS_PER_TICK} layers a tick (the effect runs before the engine opens its budget, so it
+ * cannot read it).</li>
  * <li>Never a block with a tile entity (no machine or inventory is lifted, copied or lost), never fluid, bedrock or
- * anything harder than {@link #MAX_HARDNESS}.</li>
+ * anything harder than {@link #MAX_HARDNESS}; only full opaque cubes that have an item of their own (D148).</li>
  * <li>Each layer's candidates go through the claim and protection veto ({@code Detonate}, D52) once, and the survivors
  * wait in a saved queue; the layer cursor, the queue and the count are in the blast's state, so a reload resumes
  * exactly.</li>
@@ -40,6 +42,8 @@ final class AntiGravEffect implements BlastEffect {
     static final int PER_TICK = 8;
     /** Hardest block that is lifted; obsidian-hard blocks stay. */
     static final float MAX_HARDNESS = 30.0F;
+    /** Most layers gathered (scanned and vetted) in one tick; empty layers are skipped quickly. */
+    static final int MAX_LAYERS_PER_TICK = 3;
     /** Most living entities lifted in one pass. */
     static final int MAX_LIFTED = 128;
     /** Entities are lifted only below this many blocks above the center. */
@@ -87,13 +91,17 @@ final class AntiGravEffect implements BlastEffect {
         int next = state.getInteger("next");
         int layer = state.getInteger("layer");
         double radius = ctx.radius();
+        int gathered = 0;
         while (spawned < PER_TICK && lifted < cap) {
             if (next * 3 >= queue.length) {
                 // The queue is spent: gather the next layer, once, through the veto.
-                if (layer < -(int) Math.floor(radius) || ctx.budget()
-                    .exhausted()) {
+                // Not the shared tick budget: onTick runs before the engine opens this tick's budget, so it would
+                // read as spent on a server that keeps up. A layer is at most pi * 20^2 cells, so the cap is the
+                // bound.
+                if (layer < -(int) Math.floor(radius) || gathered >= MAX_LAYERS_PER_TICK) {
                     break;
                 }
+                gathered++;
                 queue = gatherLayer(ctx, layer);
                 layer--;
                 next = 0;
@@ -175,6 +183,12 @@ final class AntiGravEffect implements BlastEffect {
         }
         Material m = b.getMaterial();
         if (m.isLiquid() || b == Blocks.bedrock) {
+            return false;
+        }
+        // Plain terrain only (D148): the block must be a full cube with an item of its own, so a flying block that
+        // cannot
+        // land comes back as the same item. Doors, plants, torches, wire and the like stay where they are.
+        if (!b.isOpaqueCube() || Item.getItemFromBlock(b) == null) {
             return false;
         }
         int meta = world.getBlockMetadata(x, y, z);

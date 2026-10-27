@@ -1,6 +1,9 @@
 package com.gregguns.icbm.explosive;
 
+import java.util.function.Supplier;
+
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -23,6 +26,9 @@ public final class BlastContext {
     private final TickBudget budget;
     private final boolean terrain;
     private boolean cancelled;
+    private Supplier<EntityPlayer> breakerSource;
+    private EntityPlayer breakerCache;
+    private long breakerTick = Long.MIN_VALUE;
 
     /**
      * Engine use only.
@@ -82,6 +88,28 @@ public final class BlastContext {
     /** @return who set it off, or {@code null}; a player makes block breaks ask the protection mods */
     public EntityLivingBase source() {
         return source;
+    }
+
+    /** Engine use only: how the player block breaks are checked against is found (see {@link #breaker()}). */
+    public void setBreakerSource(Supplier<EntityPlayer> source) {
+        this.breakerSource = source;
+    }
+
+    /**
+     * @return the player block changes are checked against: the live source, else a fake player of an owner who is
+     *         offline (so a blast resumed after a reload is still guarded, D52), else {@code null} for an NPC or
+     *         a dispenser; looked up at most once a tick
+     */
+    public EntityPlayer breaker() {
+        if (breakerSource == null) {
+            return source instanceof EntityPlayer ? (EntityPlayer) source : null;
+        }
+        long now = world.getTotalWorldTime();
+        if (now != breakerTick) {
+            breakerCache = breakerSource.get();
+            breakerTick = now;
+        }
+        return breakerCache;
     }
 
     /** @return the effect's own persistent state; saved with the blast, never null */
