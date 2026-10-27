@@ -183,6 +183,10 @@ final class BlastJob implements BlastTask {
                 return castDone;
             case DECIDE:
                 return ensureDecideMemory();
+            case EFFECT:
+                return st.effectActive && !finished
+                    && def.effect()
+                        .wantsWork(ctx);
             default:
                 return false;
         }
@@ -203,6 +207,10 @@ final class BlastJob implements BlastTask {
                     break;
                 case APPLY:
                     applySlice();
+                    break;
+                case EFFECT:
+                    def.effect()
+                        .work(ctx);
                     break;
                 default:
                     break;

@@ -127,6 +127,45 @@ public final class BlastEngine {
         return true;
     }
 
+    /**
+     * Ends the running blasts of one explosive near a point, as a cancelled blast (no aftermath). Antimatter uses it to
+     * annihilate red matter (D133). Safe to call from an effect while the engine iterates: a cancelled job only turns
+     * done and is dropped at the end of the tick.
+     *
+     * @param world       the world
+     * @param explosiveId the explosive to end
+     * @param x           center X
+     * @param y           center Y
+     * @param z           center Z
+     * @param reach       blocks
+     * @return how many blasts were ended
+     */
+    public int cancelNear(World world, String explosiveId, double x, double y, double z, double reach) {
+        int n = 0;
+        for (BlastJob j : new ArrayList<>(jobs)) {
+            if (j.world() != world || j.isDone()
+                || !j.def()
+                    .id()
+                    .equals(explosiveId)) {
+                continue;
+            }
+            BlastJobState s = j.state();
+            double dx = s.x - x;
+            double dy = s.y - y;
+            double dz = s.z - z;
+            if (dx * dx + dy * dy + dz * dz <= reach * reach) {
+                j.cancel();
+                n++;
+            }
+        }
+        return n;
+    }
+
+    /** @return a copy of the effect state of the blast most recently accepted (scenarios), empty before the first */
+    public NBTTagCompound lastEffectState() {
+        return lastStarted == null ? new NBTTagCompound() : (NBTTagCompound) lastStarted.state().effectState.copy();
+    }
+
     /** @return blasts running now */
     public int activeBlasts() {
         return jobs.size();

@@ -82,7 +82,7 @@ public final class PacketMissileState extends ClientboundPacket {
     @Override
     protected void validate(ClientRules rules, World world) {
         rules.inRange("phase", phase, 0, FlightPhase.values().length - 1)
-            .inRange("casing", casing, 1, 3)
+            .inRange("casing", casing, 1, 5)
             .inRange("nuclear", nuclear, 0, 1)
             .inRange("fuel", fuel, 0, 10_000_000)
             .inRange("tick", tick, 0, 100_000)

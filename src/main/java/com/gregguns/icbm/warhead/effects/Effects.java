@@ -81,6 +81,10 @@ public final class Effects {
                 return new Breach();
             case NUCLEAR:
                 return new Nuclear();
+            case ANTIMATTER:
+                return new AntimatterEffect();
+            case REDMATTER:
+                return new RedMatterEffect();
             case EMP:
                 return new Emp();
             default:

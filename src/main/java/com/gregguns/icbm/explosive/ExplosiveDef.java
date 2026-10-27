@@ -38,6 +38,7 @@ public final class ExplosiveDef {
     private final BlastEffect effect;
     private final boolean hidden;
     private final boolean ownsMotion;
+    private final boolean annihilatingBody;
 
     private ExplosiveDef(Builder b) {
         this.id = b.id;
@@ -53,6 +54,7 @@ public final class ExplosiveDef {
         this.effect = b.effect;
         this.hidden = b.hidden;
         this.ownsMotion = b.ownsMotion;
+        this.annihilatingBody = b.annihilatingBody;
     }
 
     /**
@@ -114,6 +116,19 @@ public final class ExplosiveDef {
         return ownsMotion;
     }
 
+    /**
+     * @return true when the type annihilates through a body that lives on after ignition (red matter, D132), not
+     *         through the engine's one-shot kill zone; tooltips show the annihilation line for it too
+     */
+    public boolean annihilatingBody() {
+        return annihilatingBody;
+    }
+
+    /** @return true when the tooltip shows the annihilation line: a kill zone or an annihilating body */
+    public boolean showsAnnihilation() {
+        return annihilates || annihilatingBody;
+    }
+
     /** @return true for a test-only explosive: registered and detonable, but left out of {@link Explosives#all()} */
     public boolean hidden() {
         return hidden;
@@ -156,6 +171,7 @@ public final class ExplosiveDef {
         private BlastEffect effect = BlastEffect.NONE;
         private boolean hidden;
         private boolean ownsMotion;
+        private boolean annihilatingBody;
 
         private Builder(String id, ExplosiveTier tier) {
             if (id == null || id.isEmpty()
@@ -230,6 +246,12 @@ public final class ExplosiveDef {
         /** @return this, marked as moving entities in its own effect; the engine then skips its knockback */
         public Builder ownsMotion() {
             this.ownsMotion = true;
+            return this;
+        }
+
+        /** @return this, marked as annihilating through a lingering body whose effect does the killing (D132) */
+        public Builder annihilatingBody() {
+            this.annihilatingBody = true;
             return this;
         }
 

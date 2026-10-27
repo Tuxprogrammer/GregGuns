@@ -39,6 +39,9 @@ public final class WarheadRecipes {
     static final int T2_PLATES = 8;
     /** Casing plates of a T3 warhead (tungstensteel). */
     static final int T3_PLATES = 8;
+    /** Casing plates of a T4 (naquadria) and a T5 (neutronium) warhead. */
+    static final int T4_PLATES = 8;
+    static final int T5_PLATES = 8;
 
     private WarheadRecipes() {}
 
@@ -97,9 +100,7 @@ public final class WarheadRecipes {
             .itemInputs(items.toArray(new ItemStack[0]))
             .itemOutputs(out)
             .duration(DURATION_TICKS)
-            .eut(
-                GTValues.VP[spec.machineTier()
-                    .voltageIndex()]);
+            .eut(GTValues.VP[spec.machineVoltageIndex()]);
         if (!fluids.isEmpty()) {
             b.fluidInputs(fluids.toArray(new FluidStack[0]));
         }
@@ -112,6 +113,8 @@ public final class WarheadRecipes {
         attach(WarheadCasing.T1, new ItemData(Materials.StainlessSteel, T1_PLATES * plate));
         attach(WarheadCasing.T2, new ItemData(Materials.Titanium, T2_PLATES * plate));
         attach(WarheadCasing.T3, new ItemData(Materials.TungstenSteel, T3_PLATES * plate));
+        attach(WarheadCasing.T4, new ItemData(Materials.Naquadria, T4_PLATES * plate));
+        attach(WarheadCasing.T5, new ItemData(Materials.Neutronium, T5_PLATES * plate));
     }
 
     private static void attach(WarheadCasing casing, ItemData data) {

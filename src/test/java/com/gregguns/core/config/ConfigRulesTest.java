@@ -52,6 +52,7 @@ class ConfigRulesTest {
             "IcbmConfig.terrainDamageT2",
             "IcbmConfig.terrainDamageT3",
             "IcbmConfig.terrainDamageT4",
+            "IcbmConfig.redMatterLifetimeSeconds",
             "IcbmConfig.blastBudgetMs",
             "IcbmConfig.maxActiveBlasts",
             "IcbmConfig.maxBlastRadius",
