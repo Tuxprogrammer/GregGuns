@@ -1,6 +1,7 @@
 package com.gregguns.icbm.antidote;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
@@ -11,7 +12,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
  * GT's hazard check reads armor only, so the antidote cannot answer it as a hazard protector. It does the next best
  * thing: a dose clears those effects at once, and for {@link AntidoteRules#PROTECTION_TICKS} ticks the guard clears
  * them again every {@link AntidoteRules#SWEEP_PERIOD} ticks, a player at a time, with no world scan. The end time is
- * kept on the player's own data. Server side.
+ * kept under the player's persisted data ({@link EntityPlayer#PERSISTED_NBT_TAG}), which Forge copies on death and on
+ * leaving the End, so dying does not end the protection. Server side.
  */
 // Spec: docs/gregguns-icbm-spec/06-blocks-items/antidote.md
 public final class AntidoteGuard {
@@ -22,10 +24,42 @@ public final class AntidoteGuard {
     /** Creates the guard; registered once on the Forge bus. */
     public AntidoteGuard() {}
 
-    /** @return the potions the antidote clears: poison, hunger, weakness, slowness, nausea and mining fatigue */
+    /**
+     * @return the potions the antidote clears, every one of them harmful: poison, hunger, weakness, slowness, nausea,
+     *         mining fatigue and, when IC2 is loaded, IC2 radiation, the effect that actually damages (D151). Never a
+     *         beneficial effect.
+     */
     static int[] cured() {
-        return new int[] { Potion.poison.id, Potion.hunger.id, Potion.weakness.id, Potion.moveSlowdown.id,
+        int radiation = radiationId();
+        int[] base = { Potion.poison.id, Potion.hunger.id, Potion.weakness.id, Potion.moveSlowdown.id,
             Potion.confusion.id, Potion.digSlowdown.id };
+        if (radiation < 0) {
+            return base;
+        }
+        int[] all = java.util.Arrays.copyOf(base, base.length + 1);
+        all[base.length] = radiation;
+        return all;
+    }
+
+    /** @return IC2's radiation potion id, or -1 when IC2 or its potion is not there */
+    private static int radiationId() {
+        try {
+            // Source:
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTUtility.java#L2063-L2070
+            // (applyRadioactivity adds IC2Potion.radiation, a static set by IC2 at init, with the other five effects)
+            ic2.core.IC2Potion potion = ic2.core.IC2Potion.radiation;
+            return potion == null ? -1 : potion.id;
+        } catch (LinkageError e) {
+            return -1;
+        }
+    }
+
+    private static NBTTagCompound persisted(EntityPlayer player) {
+        NBTTagCompound data = player.getEntityData();
+        if (!data.hasKey(EntityPlayer.PERSISTED_NBT_TAG, 10)) {
+            data.setTag(EntityPlayer.PERSISTED_NBT_TAG, new NBTTagCompound());
+        }
+        return data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
     }
 
     /**
@@ -35,8 +69,7 @@ public final class AntidoteGuard {
      * @param now    the world time
      */
     public static void dose(EntityPlayer player, long now) {
-        player.getEntityData()
-            .setLong(KEY, AntidoteRules.protectedUntil(now));
+        persisted(player).setLong(KEY, AntidoteRules.protectedUntil(now));
         clear(player);
     }
 
@@ -46,10 +79,7 @@ public final class AntidoteGuard {
      * @return whether the player is protected now
      */
     public static boolean isProtected(EntityPlayer player, long now) {
-        return AntidoteRules.isProtected(
-            player.getEntityData()
-                .getLong(KEY),
-            now);
+        return AntidoteRules.isProtected(persisted(player).getLong(KEY), now);
     }
 
     /**

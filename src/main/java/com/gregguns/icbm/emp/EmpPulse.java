@@ -1,6 +1,7 @@
 package com.gregguns.icbm.emp;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -172,6 +173,8 @@ public final class EmpPulse {
         int minCz = ((int) Math.floor(z - radius)) >> 4;
         int maxCz = ((int) Math.floor(z + radius)) >> 4;
         NearestPicker<TileEntity> picker = new NearestPicker<>(cap);
+        List<TileEntity> candidates = new ArrayList<>();
+        List<double[]> distances = new ArrayList<>();
         for (int cx = minCx; cx <= maxCx; cx++) {
             for (int cz = minCz; cz <= maxCz; cz++) {
                 // Never load a chunk for a pulse: a chunk that is not loaded has no running machines to hit.
@@ -188,9 +191,21 @@ public final class EmpPulse {
                     double dz = tile.zCoord + 0.5 - z;
                     double d2 = dx * dx + dy * dy + dz * dz;
                     if (d2 <= r2 && tile != self && !tile.isInvalid() && isDevice(tile)) {
-                        picker.offer(tile, d2);
+                        candidates.add(tile);
+                        distances.add(new double[] { d2 });
                     }
                 }
+            }
+        }
+        // Claims and protection (D52): a device in a protected area is vetoed through ExplosionEvent.Detonate, like a
+        // block a blast would break, and a vetoed device neither drains nor takes a place under the device cap.
+        List<TileEntity> allowed = vetted(world, x, y, z, radius, candidates);
+        java.util.Set<TileEntity> allowedSet = java.util.Collections
+            .newSetFromMap(new java.util.IdentityHashMap<TileEntity, Boolean>());
+        allowedSet.addAll(allowed);
+        for (int i = 0; i < candidates.size(); i++) {
+            if (allowedSet.contains(candidates.get(i))) {
+                picker.offer(candidates.get(i), distances.get(i)[0]);
             }
         }
         out.skippedByCap = (int) Math.max(0, picker.offered() - cap);
@@ -214,6 +229,44 @@ public final class EmpPulse {
                     e);
             }
         }
+    }
+
+    /**
+     * Posts {@code ExplosionEvent.Detonate} with the candidates' positions so the claim mod and protection listeners
+     * can remove the ones they protect (ServerUtilities handles only that event, not {@code Start}), and returns the
+     * survivors.
+     *
+     * @return the candidates no listener removed
+     */
+    @SuppressWarnings("unchecked")
+    static List<TileEntity> vetted(World world, double x, double y, double z, double radius,
+        List<TileEntity> candidates) {
+        if (candidates.isEmpty()) {
+            return candidates;
+        }
+        net.minecraft.world.Explosion vanilla = new net.minecraft.world.Explosion(
+            world,
+            null,
+            x,
+            y,
+            z,
+            (float) Math.max(radius, 3.0));
+        for (TileEntity t : candidates) {
+            vanilla.affectedBlockPositions.add(new net.minecraft.world.ChunkPosition(t.xCoord, t.yCoord, t.zCoord));
+        }
+        // Source: Forge 1.7.10 ForgeEventFactory.onExplosionDetonate posts ExplosionEvent.Detonate; listeners edit
+        // Explosion.affectedBlockPositions. ServerUtilities 2.4.14 ServerUtilitiesWorldEventHandler.onExplosionDetonate
+        // (:106-139) removes the claimed positions there.
+        net.minecraftforge.event.ForgeEventFactory
+            .onExplosionDetonate(world, vanilla, new ArrayList<net.minecraft.entity.Entity>(), 0.0);
+        java.util.Set<net.minecraft.world.ChunkPosition> left = new java.util.HashSet<>(vanilla.affectedBlockPositions);
+        List<TileEntity> kept = new ArrayList<>(candidates.size());
+        for (TileEntity t : candidates) {
+            if (left.contains(new net.minecraft.world.ChunkPosition(t.xCoord, t.yCoord, t.zCoord))) {
+                kept.add(t);
+            }
+        }
+        return kept;
     }
 
     /**

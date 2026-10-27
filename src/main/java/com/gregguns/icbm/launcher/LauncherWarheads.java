@@ -7,6 +7,9 @@ import net.minecraft.world.World;
 
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
+import com.gregguns.gun.def.GrenadeLauncherDef;
+import com.gregguns.gun.def.NukeLauncherDef;
+import com.gregguns.gun.def.RocketLauncherDef;
 import com.gregguns.icbm.explosive.ExplosiveDef;
 import com.gregguns.icbm.explosive.Explosives;
 import com.gregguns.icbm.explosive.IcbmBlasts;
@@ -117,11 +120,53 @@ public final class LauncherWarheads {
      */
     public static boolean detonate(World world, double x, double y, double z, String key, EntityLivingBase shooter) {
         LauncherWarhead w = key == null ? null : LauncherWarhead.byKey(key);
-        if (w == null || world.isRemote) {
+        // A projectile saved with a charge outlives a module switch-off: with ICBM off the blast engine is not ticking,
+        // so the shot explodes as a plain one.
+        if (w == null || world.isRemote || !ModuleState.isActive(ModuleId.ICBM)) {
             return false;
         }
         WarheadBlasts.registerAll();
         ExplosiveDef def = Explosives.get(w.blastId());
-        return def != null && IcbmBlasts.detonate(world, x, y, z, def, LauncherRules.FILL, shooter);
+        return def != null
+            && IcbmBlasts.detonateHandheld(world, x, y, z, def, LauncherRules.FILL, shooter, damageCap(w.kind()));
+    }
+
+    /**
+     * @param w a launcher warhead
+     * @return the blast radius at fill 1, blocks (0 when the blast is unknown)
+     */
+    public static double blastRadius(LauncherWarhead w) {
+        WarheadBlasts.registerAll();
+        ExplosiveDef def = Explosives.get(w.blastId());
+        return def == null ? 0.0 : def.radius(LauncherRules.FILL);
+    }
+
+    /**
+     * @param w a launcher warhead
+     * @return the center damage its blast deals: the type's own at fill 1, capped by {@link #damageCap}
+     */
+    public static double centerDamage(LauncherWarhead w) {
+        WarheadBlasts.registerAll();
+        ExplosiveDef def = Explosives.get(w.blastId());
+        return def == null ? 0.0 : Math.min(def.damage(LauncherRules.FILL), damageCap(w.kind()));
+    }
+
+    /**
+     * The D154 cap on a launcher blast's center damage: {@link LauncherRules#DAMAGE_CAP_FACTOR} times the projectile
+     * damage of the family's base launcher.
+     *
+     * @param kind the launcher family
+     * @return the most center damage, half hearts
+     */
+    public static double damageCap(LauncherKind kind) {
+        switch (kind) {
+            case GRENADE:
+                return LauncherRules.damageCap(GrenadeLauncherDef.STATS.damage());
+            case NUKE:
+                return LauncherRules.damageCap(NukeLauncherDef.STATS.damage());
+            case ROCKET:
+            default:
+                return LauncherRules.damageCap(RocketLauncherDef.STATS.damage());
+        }
     }
 }

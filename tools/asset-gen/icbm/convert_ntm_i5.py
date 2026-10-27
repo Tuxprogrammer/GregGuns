@@ -1,10 +1,11 @@
-"""I5 art from HBM's Nuclear Tech Mod (LGPL-3.0): fallout, ender and anti-grav warhead skins, floppy, antidote, launcher icons.
+"""I5 art from HBM's Nuclear Tech Mod (LGPL-3.0): fallout, ender and anti-grav warhead skins, antidote, launcher icons.
 
     python -I tools/asset-gen/icbm/convert_ntm_i5.py <dir holding assets/hbm> <repo root>
 
 The dir holds assets/hbm/textures, taken from NTM at tag 1.0.27_X5846 (the repo's src/main/resources works).
 Plain copies are renamed only. The ender and anti-grav skins are hue shifts of NTM's HE warhead skin (the
-same one the T3 HE warhead uses), so they fit warhead_t3.obj's UVs. The floppy is NTM's empty disk tinted gold.
+same one the T3 HE warhead uses), so they fit warhead_t3.obj's UVs. There is no floppy icon and no nuclear
+launcher-warhead icon: OpenComputers' registerFloppy gives no way to use ours, and no such warhead exists (I5 review 24).
 """
 import colorsys
 import shutil
@@ -23,7 +24,6 @@ ITEMS = {
     "launcher_warhead_incendiary": "ammo_standard.rocket_inc",
     "launcher_warhead_demolition": "ammo_standard.rocket_demo",
     "launcher_warhead_phosphorus": "ammo_standard.rocket_phosphorus",
-    "launcher_warhead_nuclear": "ammo_standard.nuke_standard",
     "launcher_warhead_emp": "grenade_filling.emp",
     "launcher_warhead_grenade_he": "grenade_filling.he",
     "launcher_warhead_grenade_cluster": "ammo_grenade_kampf",
@@ -57,16 +57,6 @@ def main(src, repo):
         shutil.copyfile(tex / f"items/{theirs}.png", items / f"{ours}.png")
     for ours, theirs in BLOCKS.items():
         shutil.copyfile(tex / f"blocks/{theirs}.png", blocks / f"{ours}.png")
-    # the disk is grey (no saturation), so tint it gold by luminance rather than by hue
-    g = Image.open(tex / "items/drive.disk_empty.png").convert("RGBA")
-    px = g.load()
-    for x in range(g.width):
-        for y in range(g.height):
-            r, gg, b, a = px[x, y]
-            if a:
-                lum = (r + gg + b) / 3 / 255
-                px[x, y] = (int(min(255, 255 * lum * 1.15)), int(min(255, 205 * lum * 1.15)), int(70 * lum), a)
-    g.save(items / "golden_dome_floppy.png")
     he = Image.open(tex / "models/missile_parts/warheads/mp_w_10_he.png").convert("RGBA")
     # Paint out the "TNT" lettering (x 20..36, y 52..63) with the body color beside it.
     body = he.getpixel((8, 58))
@@ -75,9 +65,15 @@ def main(src, repo):
             he.putpixel((x, y), body)
     hsv(he, hue=0.77, sat=0.9, val=1.0).save(models / "warhead_ender.png")  # violet
     hsv(he, hue=0.52, sat=0.55, val=1.15).save(models / "warhead_antigrav.png")  # pale cyan
-    for d in (blocks,):
-        shutil.copyfile(items / "LICENSE.txt", d / "LICENSE.txt")
-        shutil.copyfile(items / "GPL-3.0.txt", d / "GPL-3.0.txt")
+    # The blocks folder has its own notice (block textures, renamed only): written here so a re-run keeps it.
+    lines = (items / "LICENSE.txt").read_text(encoding="utf-8").split("\n")
+    tail = next(i for i, ln in enumerate(lines) if ln.startswith("that repository; it supplements"))
+    head = lines[:4]
+    head[0] = head[0].replace("Item textures", "Block textures", 1)
+    head.append("version 3\"; it names no separate asset license). Modifications: renamed only. See docs/assets/CREDITS.md."
+                " The full license text follows (LICENSE.LESSER from")
+    (blocks / "LICENSE.txt").write_text("\n".join(head + lines[tail:]), encoding="utf-8")
+    shutil.copyfile(items / "GPL-3.0.txt", blocks / "GPL-3.0.txt")
 
 
 if __name__ == "__main__":

@@ -66,17 +66,23 @@
 
 `getInfo()` returns config-derived constants: range, EU cost per action and per tick, cooldown, maximum radius, and the device cap per pulse.
 
-**Deviation (D152, D153).** As built in I5: the disk is registered with label `Golden Dome`, yellow, recipe cycling off, and its file system is the read-only `assets/gregguns/lua/golden_dome/` folder (`.autorun.lua`, `bin/`, `lib/`). The Assembler recipe runs at **HV**, not MV (D69's floor), with the MV circuit as an input and programmed circuit 1. Scenario `icbm.oc.golden_dome` checks that the disk registers, that it is read-only, that all six files read back and compile with OC's own luaj, and that `launch` and `emp` ask before acting; `GoldenDomeProgramsTest` checks the sources. Running the programs in a real computer waits for the I5 client session.
+**Deviation (D152, D153).** As built in I5: the disk is registered with label `Golden Dome`, yellow, recipe cycling off, and its file system is the read-only `assets/gregguns/lua/golden_dome/` folder (`.autorun.lua`, `bin/`, `lib/`). The Assembler recipe runs at **HV**, not MV (D69's floor), with the MV circuit as an input and programmed circuit 1. Scenario `icbm.oc.golden_dome` checks that the disk registers, that it is read-only, that all six files read back and compile with OC's own luaj, and that `launch` and `emp` ask before acting; `GoldenDomeProgramsTest` checks the sources: component names are read from the logic classes, and every method the Lua calls must be a `@Callback` of the environments. Running the programs in a real computer waits for the I5 client session.
 
 ## Golden Dome programs
 
 | Program | What it does |
 |---|---|
-| `launch` | `launch <x> <z>`, `launch --stick` or `launch --list`: picks a linked silo or launch control, shows missile, fuel and range, asks for **confirmation**, then fires and reports |
+| `launch` | `launch <x> <z>`, `launch --stick` or `launch --list`: picks a linked silo or launch control, shows target, missile and fuel, asks for **confirmation**, then fires and reports |
 | `radarwatch` | A live table of contacts from every reachable radar, with a beep or alarm on `radar_incoming` |
-| `autodefense` | A daemon: on `radar_incoming` it calls `fireAt` on reachable air-defense batteries, and optionally fires an EMP tower in `missiles` mode. It logs every action |
+| `autodefense` | A daemon: on `radar_incoming` it calls `fireAt` on reachable air-defense batteries, and optionally fires an EMP tower, only while the tower is in `missiles` mode. It logs every action. It **never changes a battery's auto-engage** (see below) |
 | `emp` | `emp status`, `emp mode <m>`, `emp radius <r>`, `emp fire` (asks for confirmation) |
 | `lib/goldendome.lua` | Shared helpers: find components by type, wait for signals, format contacts. Players may reuse it |
+
+**Safe design for `autodefense` (D154).** The program only *adds* targets: it never calls `setAuto`, so the batteries keep their own engagement setting and there is nothing to restore on `stop`, Ctrl-C, an error, a reboot, a power loss or a broken Adapter. A battery's own cooldown arbitrates between its automatic shot and a `fireAt`. With `--emp` the tower is set to `missiles` mode once at start and fired only while `getMode()` still answers `missiles` (a later `emp mode all` makes the program skip the tower and log it), so an incoming missile never costs a full machine-draining pulse. `GoldenDomeProgramsTest` checks the source never calls `setAuto`.
+
+**Program fixes (D154).** `eta` is in ticks and is shown in seconds (`-1`, not moving sideways, shows `?` and sorts last); all coordinates go through `math.floor`, because Lua 5.3 (enabled in the pack) refuses `%d` for a non-integral float; `launch --stick` picks the first `gg_launch_control`, since a silo has no data-stick slot; `launch` does not show a range (the launcher `getInfo()` has none), and says "Canceled." (American English).
+
+**Floppy icon (D154).** The floppy keeps OpenComputers' own icon (yellow, which reads as gold): `Items.registerFloppy` gives no way to use ours short of a custom item. The unused gold floppy PNG and the unused `launcher_warhead_nuclear.png` (there is no nuclear launcher warhead) are removed from the jar with their CREDITS rows. `convert_ntm_i5.py` no longer makes them and writes the blocks folder's own notice, so a re-run keeps it.
 
 ## Requirements
 

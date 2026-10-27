@@ -124,7 +124,7 @@ public final class GrenadeScenarios {
      * @param inner the scenario to guard
      * @return the same scenario with the switch off while it runs
      */
-    static Scenario blockDamageOff(Scenario inner) {
+    public static Scenario blockDamageOff(Scenario inner) {
         return new Scenario() {
 
             @Override

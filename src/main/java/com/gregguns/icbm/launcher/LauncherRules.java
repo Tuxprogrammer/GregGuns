@@ -14,7 +14,22 @@ public final class LauncherRules {
     /** Every launcher blast is a fill-1 blast of its type. */
     public static final int FILL = 1;
 
+    /**
+     * A launcher blast's center damage never exceeds this multiple of the firing launcher's own projectile damage
+     * (D154): the warhead changes what the shot does, it does not hit many times harder. The radius stays the fill-1
+     * radius.
+     */
+    public static final double DAMAGE_CAP_FACTOR = 1.25;
+
     private LauncherRules() {}
+
+    /**
+     * @param gunDamage the launcher's own projectile damage, half hearts
+     * @return the most center damage a launcher warhead blast deals for that launcher (D154)
+     */
+    public static double damageCap(double gunDamage) {
+        return gunDamage * DAMAGE_CAP_FACTOR;
+    }
 
     /**
      * Adds one warhead item to a launcher.
@@ -22,18 +37,18 @@ public final class LauncherRules {
      * @param loadedKey     the key loaded now, or null/empty for none
      * @param loadedCharges the charges loaded now
      * @param addedKey      the key being added
-     * @return the charges after: the old and new added up (capped) when the type matches, otherwise just the new
-     *         item's charges, so a different type replaces the old one; or -1 when the same type is already full
+     * @return the charges after: the old and new added up when the type matches and they fit, the new item's charges
+     *         on an empty launcher; or -1 when another type is loaded, or the item would pass
+     *         {@value #MAX_CHARGES} (nothing is ever lost on a load: fire the charges off first)
      */
     public static int combine(String loadedKey, int loadedCharges, String addedKey) {
-        boolean same = addedKey.equals(loadedKey) && loadedCharges > 0;
-        if (!same) {
+        if (loadedCharges <= 0) {
             return CHARGES_PER_ITEM;
         }
-        if (loadedCharges >= MAX_CHARGES) {
+        if (!addedKey.equals(loadedKey) || loadedCharges + CHARGES_PER_ITEM > MAX_CHARGES) {
             return -1;
         }
-        return Math.min(MAX_CHARGES, loadedCharges + CHARGES_PER_ITEM);
+        return loadedCharges + CHARGES_PER_ITEM;
     }
 
     /**

@@ -37,7 +37,7 @@ elseif command == "fire" then
     return 1
   end
   if not gd.confirm("Fire the EMP pulse? Machines in range may be damaged.") then
-    print("Cancelled.")
+    print("Canceled.")
     return 0
   end
   local ok, reason = tower.fire()
