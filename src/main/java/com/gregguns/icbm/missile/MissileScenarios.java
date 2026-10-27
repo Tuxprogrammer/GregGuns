@@ -468,6 +468,21 @@ public final class MissileScenarios {
             this.dz = dz;
             this.radius = radius;
             holdFar(ctx, ctx.originX() + dx, ctx.originZ() + dz, radius);
+            // Far from the arena the world has its own terrain, which can stand well above the pad's level. A missile
+            // aims at the ground it finds, so it would explode above a platform buried under the hill. Clear the
+            // column over the platform (and a margin) so the platform is the ground, as it is in the arena.
+            World cw = ctx.world();
+            for (int a = -radius - 6; a <= radius + 6; a++) {
+                for (int b = -radius - 6; b <= radius + 6; b++) {
+                    int bx = ctx.originX() + dx + a;
+                    int bz = ctx.originZ() + dz + b;
+                    for (int by = ctx.originY(); by < ctx.originY() + 80; by++) {
+                        if (cw.getBlock(bx, by, bz) != Blocks.air) {
+                            cw.setBlock(bx, by, bz, Blocks.air, 0, 2);
+                        }
+                    }
+                }
+            }
             for (int a = -radius; a <= radius; a++) {
                 for (int b = -radius; b <= radius; b++) {
                     ctx.setBlock(dx + a, -1, dz + b, Blocks.stone, 0);
