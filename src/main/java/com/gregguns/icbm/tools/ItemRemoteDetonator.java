@@ -2,6 +2,7 @@ package com.gregguns.icbm.tools;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -35,7 +36,15 @@ public final class ItemRemoteDetonator extends Item implements Tiered {
     static final String K_Z = "linkZ";
     static final String K_DIM = "linkDim";
 
+    /** Tells the block-use packet of a click from the air-use packet the client sends after it (see ClickGate). */
+    private static final ClickGate CLICKS = new ClickGate();
+
     private final Tier tier;
+
+    /** Forgets a player's last click; scenarios call it to separate two simulated clicks within one tick. */
+    static void forgetClicks(UUID player) {
+        CLICKS.forget(player);
+    }
 
     /** @param tier HV, EV or IV */
     public ItemRemoteDetonator(Tier tier) {
@@ -160,6 +169,16 @@ public final class ItemRemoteDetonator extends Item implements Tiered {
             // Never consume the click here: it would stop the packet that makes the server link (I4 review item 1).
             return HandheldRules.clientConsumesUse();
         }
+        // Every sneaking block click is recorded, warhead or not: the air packet that follows it must not clear the
+        // link, and a repeat of the same click must not print a second line.
+        long now = world.getTotalWorldTime();
+        int dim = world.provider.dimensionId;
+        UUID id = player.getUniqueID();
+        boolean repeat = CLICKS.isRepeatBlockUse(id, now, dim, x, y, z);
+        CLICKS.recordBlockUse(id, now, dim, x, y, z);
+        if (repeat) {
+            return Warheads.main(world, x, y, z) != null;
+        }
         return linkTo(player, stack, world, x, y, z);
     }
 
@@ -169,6 +188,10 @@ public final class ItemRemoteDetonator extends Item implements Tiered {
             return stack;
         }
         if (player.isSneaking()) {
+            if (CLICKS.isAirUseOfBlockClick(player.getUniqueID(), world.getTotalWorldTime())) {
+                // The second packet of a click on a block, not a click in the air: keep the link.
+                return stack;
+            }
             if (linked(stack)) {
                 unlink(stack);
                 player.addChatMessage(new ChatComponentTranslation("gregguns.icbm.remote.cleared"));

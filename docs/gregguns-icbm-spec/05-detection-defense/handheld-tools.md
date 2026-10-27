@@ -112,3 +112,7 @@ All Assembler recipes (`RecipeMaps.assemblerRecipes`, D69: nothing ICBM below HV
 ## Scenarios
 
 `icbm.tools.remote_detonator` (link, every refusal, the range per tier, the fuse), `icbm.tools.defuser` (fuse out, missile disarm, refusals after ignition, durability). Unit tests: `HandheldRulesTest`.
+
+## One click, one action (I4 fix C)
+
+In 1.7.10 a click on a block that the item does not consume client side sends two packets: the block use, then a use-item-in-air packet (`PlayerControllerMP.onPlayerRightClick` returns false, so `Minecraft.func_147121_ag` calls `sendUseItem`); a held click repeats every four ticks. Both tools therefore return false client side (the server must see the block packet) and the server collapses the duplicates with `ClickGate`: a sneaking air use within 6 ticks of the same player's block use is ignored (the link survives), and a repeat defuse of the same block within 6 ticks is silent and free. Scenario `icbm.tools.click_route` replays the sequence.
