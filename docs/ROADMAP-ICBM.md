@@ -262,11 +262,11 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** previews of the radars, the battery, the EMP tower and the handheld tools; the `icbm-detection-and-defense` sheet; quests for defense.
 
 **Exit gate:**
-- [ ] A radar flags an incoming missile and a linked battery intercepts it. Scenario.
-- [ ] An EMP drains EU and causes maintenance issues within its device cap, with no tick spike in a dense base. Scenario. The T3 EMP warhead does the same from a missile.
-- [ ] The OpenComputers components work as specified (GGI-01-01 to 06). Unit tests plus the batched client session.
-- [ ] `icbm-detection-and-defense` and the defense quests have landed, and the owner has been told.
-- [ ] The milestone review fix list is closed.
+- [x] A radar flags an incoming missile and a linked battery intercepts it. Scenario: `icbm.defense.intercept` (the SAM makes the kill, and a lamp beside the radar lights).
+- [x] An EMP drains EU and causes maintenance issues within its device cap, with no tick spike in a dense base. Scenario: `icbm.emp.dense_pulse`, `icbm.emp.modes`. The T3 EMP warhead does the same from a missile: `icbm.silo.t3_emp_launch`.
+- [x] The OpenComputers components work as specified (GGI-01-01 to 06). Unit tests plus `icbm.oc.components` (a real OC Adapter on every ICBM machine, live callbacks) in place of the client check; a check in a real computer moves to the I5 client session.
+- [x] `icbm-detection-and-defense` and the defense quests have landed, and the owner has been told.
+- [x] The milestone review fix list is closed.
 
 ## I5 · Endgame warheads and systems
 
