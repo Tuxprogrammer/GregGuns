@@ -48,7 +48,13 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
     private static final String F_LOAD = "load";
     private static final String F_SAVE = "save";
     private static final int WIDTH = 176;
-    private static final int HEIGHT = 200;
+    /**
+     * Panel height. GT's base panel gives the content section this much minus 88 (its border and the player
+     * inventory), and the Launch and Abort row ends 128 down, so the panel must leave that much or the row hides
+     * behind the inventory slots (it did at 200). A 480 px window at GUI scale 2 is 240 tall, and the title tab needs
+     * about 12 above the panel, so 216 is as tall as it can go.
+     */
+    private static final int HEIGHT = 216;
     private static final int CONTENT = WIDTH - 14;
     private static final int BTN_H = 14;
     private static final int TEXT_DARK = 0xFF404040;
@@ -240,18 +246,18 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
 
         // Coordinates.
         content.child(
-            label("gregguns.icbm.control.gui.x", "gregguns.icbm.control.gui.x.tip", 0, 56, 10, Alignment.CenterLeft));
-        content.child(coordField("field_x", 11, 53));
+            label("gregguns.icbm.control.gui.x", "gregguns.icbm.control.gui.x.tip", 0, 54, 10, Alignment.CenterLeft));
+        content.child(coordField("field_x", 11, 51));
         content.child(
-            label("gregguns.icbm.control.gui.z", "gregguns.icbm.control.gui.z.tip", 84, 56, 10, Alignment.CenterLeft));
-        content.child(coordField("field_z", 95, 53));
+            label("gregguns.icbm.control.gui.z", "gregguns.icbm.control.gui.z.tip", 84, 54, 10, Alignment.CenterLeft));
+        content.child(coordField("field_z", 95, 51));
 
         // Use my position.
         content.child(
             control(
                 F_POS,
                 0,
-                70,
+                67,
                 CONTENT,
                 () -> tr("gregguns.icbm.control.gui.mypos"),
                 () -> true,
@@ -264,12 +270,12 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
                 .slot(
                     new ModularSlot(machine.inventoryHandler, MTELaunchControl.SLOT_STICK)
                         .filter(MTELaunchControl::isStick))
-                .pos(0, 88));
+                .pos(0, 84));
         content.child(
             control(
                 F_LOAD,
                 22,
-                88,
+                84,
                 70,
                 () -> tr("gregguns.icbm.control.gui.load"),
                 this::hasStick,
@@ -279,20 +285,20 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             control(
                 F_SAVE,
                 96,
-                88,
+                84,
                 CONTENT - 96,
                 () -> tr("gregguns.icbm.control.gui.save"),
                 this::hasStick,
                 () -> "gregguns.icbm.control.gui.save.tip",
                 () -> hasStick() ? null : "gregguns.icbm.control.gui.stick_missing"));
-        content.child(text(this::stickText, 22, 105, CONTENT - 22, 9, Alignment.CenterLeft, () -> TEXT_DARK));
+        content.child(text(this::stickText, 22, 101, CONTENT - 22, 9, Alignment.CenterLeft, () -> TEXT_DARK));
 
         // Launch, with Abort beside it while a countdown runs or after ignition.
         content.child(
             control(
                 F_ABORT,
                 CONTENT - ABORT_W,
-                118,
+                114,
                 ABORT_W,
                 () -> tr("gregguns.icbm.control.gui.abort"),
                 this::canAbort,
@@ -304,7 +310,7 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             control(
                 F_FIRE,
                 0,
-                118,
+                114,
                 CONTENT - ABORT_W - 4,
                 () -> tr("gregguns.icbm.control.gui.fire"),
                 this::canFire,

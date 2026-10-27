@@ -46,6 +46,7 @@ public final class LaunchSequenceScenarios {
     /** @param registry where to add the scenarios */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Sequence());
+        registry.register(new LongCountdown());
         registry.register(new Abort());
         registry.register(new NoAbortAfterIgnition());
         registry.register(new PadSequence());
@@ -162,6 +163,78 @@ public final class LaunchSequenceScenarios {
     }
 
     // ------------------------------------------------------------------------------------------------------------
+
+    /**
+     * A silo-only body counts down for longer than the stray-body grace (300 ticks) and still ignites: the stray check
+     * once read the cell under the slab-high pad as the block below the floor, saw "no silo" on every check, and stood
+     * the missile down after 300 ticks of any countdown (several aborted countdowns added up, too).
+     */
+    private static final class LongCountdown implements Scenario {
+
+        private static final int LONG = 420;
+
+        @Override
+        public String name() {
+            return "icbm.launch.silo_long_countdown";
+        }
+
+        @Override
+        public String description() {
+            return "A T3 body in a silo counts down for 420 ticks, longer than the 300 ticks the stray-body check waits, and ignites: the check finds the silo under the missile the whole time.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            Rig r = new Rig(ctx, name());
+            IcbmConfig.countdownTicks = LONG;
+            int[] stage = { 0 };
+            int[] mark = { 0 };
+            return ScenarioResult.pending(name(), 1200, ticks -> {
+                if (ticks < SiloScenarios.WARMUP) {
+                    return null;
+                }
+                switch (stage[0]) {
+                    case 0:
+                        r.out.check(SiloScenarios.formed(ctx), "the silo forms");
+                        r.arm();
+                        // arm() stands a T1; swap in the silo-only body, which is the one the stray check watches.
+                        r.m.tickets()
+                            .release();
+                        r.m.setDead();
+                        r.m = SiloScenarios.stand(ctx, MissileTier.T3);
+                        r.m.fill(r.m.capacityMb(), true);
+                        mark[0] = ticks;
+                        stage[0] = 1;
+                        return null;
+                    case 1:
+                        if (ticks < mark[0] + 60) {
+                            return null;
+                        }
+                        r.out.checkEquals("fired", ControlStatus.FIRED, r.c.fire(null));
+                        mark[0] = ticks;
+                        stage[0] = 2;
+                        return null;
+                    case 2:
+                        if (r.m.phase() == FlightPhase.WARMUP) {
+                            return ticks > mark[0] + DOORS + LONG + 60 ? r.fail("never ignited (stood down?)") : null;
+                        }
+                        r.out.checkEquals("liftoff", FlightPhase.CLIMB, r.m.phase());
+                        r.restore();
+                        return r.out.build();
+                    default:
+                        return null;
+                }
+            });
+        }
+    }
 
     /** Doors open, countdown, liftoff, doors close once the missile is clear. */
     private static final class Sequence implements Scenario {

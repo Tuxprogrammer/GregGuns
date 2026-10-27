@@ -49,6 +49,7 @@ public final class MissileScenarios {
         registry.register(new MissileShotsScenario());
         registry.register(new MissileShotsScenario(true));
         registry.register(new MissileMpScenario());
+        I3ItemShotsScenarios.registerAll(registry);
     }
 
     static boolean moduleOff() {

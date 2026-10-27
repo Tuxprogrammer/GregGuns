@@ -112,9 +112,15 @@ public final class MissileBenchLayout {
     /** Height of a caption box (one line of the default font). */
     public static final int CAPTION_HEIGHT = 8;
 
-    /** @return the warhead caption box, left of the seat */
+    /** Gap kept between a caption and the page's left edge (the other captions sit at least this far in). */
+    public static final int CAPTION_MARGIN = 6;
+
+    /**
+     * @return the warhead caption box, left of the seat: two lines tall, because "Warhead (pad)" does not fit the
+     *         room beside the seat in one line and used to run into the panel edge
+     */
     public static int[] warheadCaption() {
-        return new int[] { 2, seatY() + 4, seatX() - 6, CAPTION_HEIGHT };
+        return new int[] { CAPTION_MARGIN, seatY(), seatX() - 4 - CAPTION_MARGIN, 2 * CAPTION_HEIGHT };
     }
 
     /** @return the guidance caption box, above the guidance slot */
