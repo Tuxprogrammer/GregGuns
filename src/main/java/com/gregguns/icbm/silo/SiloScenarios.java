@@ -51,6 +51,13 @@ import gregtech.api.metatileentity.implementations.MTEHatchInput;
 public final class SiloScenarios {
 
     private static final int CY = 2;
+    /**
+     * Layers the scenarios clear above the origin. A launch needs the whole climb column clear: 12 blocks of climb
+     * plus the body (6 for a T3) above the pad, which stands about 0.2 above the origin, so the top checked cell
+     * is origin + 18. Clearing 18 layers left that cell to the terrain of the slot (dirt at y 118 failed
+     * icbm.silo.tiers once the slots shifted); this leaves headroom.
+     */
+    private static final int CLEAR_HEIGHT = 24;
     private static final int WARMUP = 50;
     private static final int DISTANCE = 300;
 
@@ -77,7 +84,7 @@ public final class SiloScenarios {
 
     /** Clears the area, lays a stone floor, puts the controller down and builds the silo around it. */
     private static DevStructureBuilder.Outcome build(ScenarioContext ctx, gregtech.api.enums.ItemList energy) {
-        ctx.clearArea(14, 18);
+        ctx.clearArea(14, CLEAR_HEIGHT);
         for (int a = -12; a <= 12; a++) {
             for (int b = -12; b <= 12; b++) {
                 ctx.setBlock(a, CY - 3, b, Blocks.stone, 0);
@@ -272,7 +279,7 @@ public final class SiloScenarios {
                         return null;
                     default:
                         out.check(!formed(ctx), "the silo does not form without the pad");
-                        ctx.clearArea(14, 18);
+                        ctx.clearArea(14, CLEAR_HEIGHT);
                         return out.build();
                 }
             });
@@ -402,7 +409,7 @@ public final class SiloScenarios {
                             site.launch(x + 0.5, z + DISTANCE, null));
                         out.check(!m[0].onPad() || m[0].isDead, "the T3 left the shaft");
                         m[0].setDead();
-                        ctx.clearArea(14, 18);
+                        ctx.clearArea(14, CLEAR_HEIGHT);
                         return out.build();
                     }
                     default:
@@ -509,7 +516,7 @@ public final class SiloScenarios {
                             silo(ctx).site()
                                 .launch(ctx.originX() + 0.5, ctx.originZ() + DISTANCE, null));
                         m[0].setDead();
-                        ctx.clearArea(14, 18);
+                        ctx.clearArea(14, CLEAR_HEIGHT);
                         return out.build();
                     default:
                         return null;
@@ -641,7 +648,7 @@ public final class SiloScenarios {
                         out.checkEquals("no block of the silo was damaged", blocksBefore[0], countBlocks(ctx));
                         IcbmConfig.terrainDamageT1 = terrain;
                         IcbmConfig.terrainDamageT3 = terrainT3;
-                        ctx.clearArea(14, 18);
+                        ctx.clearArea(14, CLEAR_HEIGHT);
                         return out.build();
                     default:
                         return null;
@@ -805,7 +812,7 @@ public final class SiloScenarios {
                         out.checkEquals("the resume took no new parts from the bus", 2, busItems(ctx));
                         s.missile()
                             .setDead();
-                        ctx.clearArea(14, 18);
+                        ctx.clearArea(14, CLEAR_HEIGHT);
                         return out.build();
                     default:
                         return null;
@@ -884,7 +891,7 @@ public final class SiloScenarios {
                             c.fire(null));
                         out.check(m[0].onPad() && !m[0].isDead, "the T3 still stands on the floor");
                         m[0].setDead();
-                        ctx.clearArea(14, 18);
+                        ctx.clearArea(14, CLEAR_HEIGHT);
                         return out.build();
                     }
                     default:
@@ -957,7 +964,7 @@ public final class SiloScenarios {
                     "and it cannot be fired yet",
                     LaunchResult.NOT_ARMED,
                     site.launch(x + 0.5, z + DISTANCE, null));
-                ctx.clearArea(14, 18);
+                ctx.clearArea(14, CLEAR_HEIGHT);
                 return out.build();
             });
         }
