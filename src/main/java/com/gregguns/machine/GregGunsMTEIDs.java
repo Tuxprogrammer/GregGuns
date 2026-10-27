@@ -100,6 +100,9 @@ public final class GregGunsMTEIDs {
     /** Air-Defense Battery (HV), the SAM-holding single block. Built in ICBM I4. */
     public static final int AIR_DEFENSE = 20145;
 
+    /** EMP Tower (EV), the pulse that drains machines and rolls missiles in range. Built in ICBM I4. */
+    public static final int EMP_TOWER = 20146;
+
     /**
      * MTE IDs that were registered by a shipped alpha and are retired. Worlds may still hold tile entities saved under
      * them, so no registration may ever take one of these numbers again. Not a constant per ID on purpose: nothing may
@@ -125,7 +128,7 @@ public final class GregGunsMTEIDs {
             REPAIR_BENCH_LV, REPAIR_BENCH_MV, REPAIR_BENCH_HV, REPAIR_BENCH_EV, REPAIR_BENCH_IV, ARMORY_GANTRY,
             CAMO_BENCH, TURRET_MV, TURRET_HV, TURRET_EV, TURRET_IV, RAMPART, GUN_MOUNT_HATCH_MV, GUN_MOUNT_HATCH_HV,
             GUN_MOUNT_HATCH_EV, GUN_MOUNT_HATCH_IV, LAUNCH_CONTROL, MISSILE_SILO, RADAR_HV, RADAR_EV, RADAR_TOWER,
-            AIR_DEFENSE };
+            AIR_DEFENSE, EMP_TOWER };
     }
 
     /**
@@ -133,6 +136,6 @@ public final class GregGunsMTEIDs {
      *         {@link #ICBM_FIRST} to {@link #ICBM_LAST} is listed here
      */
     public static int[] icbm() {
-        return new int[] { LAUNCH_CONTROL, MISSILE_SILO, RADAR_HV, RADAR_EV, RADAR_TOWER, AIR_DEFENSE };
+        return new int[] { LAUNCH_CONTROL, MISSILE_SILO, RADAR_HV, RADAR_EV, RADAR_TOWER, AIR_DEFENSE, EMP_TOWER };
     }
 }

@@ -44,7 +44,11 @@ public enum WarheadBlast {
     /** The cold T3 blast: a wide crater, everything in it is slowed to a crawl. */
     ENDOTHERMIC("endothermic", ExplosiveTier.T3, BlastShape.RAY_SPHERE, 28.0, 8000.0, Kind.ANVIL),
     /** The nuclear warhead (ZPM): the widest crater, annihilation in the kill zone, fallout. */
-    NUCLEAR("nuclear", ExplosiveTier.T3, BlastShape.RAY_SPHERE, 64.0, 8000.0, Kind.NUCLEAR);
+    NUCLEAR("nuclear", ExplosiveTier.T3, BlastShape.RAY_SPHERE, 64.0, 8000.0, Kind.NUCLEAR),
+    /**
+     * The EMP warhead (LuV): no crater and no damage; one EMP pulse (D16) of the blast radius, centered on the blast.
+     */
+    EMP("emp", ExplosiveTier.T3, BlastShape.NONE, 48.0, 0.0, Kind.EMP);
 
     /** Which effect class runs after the engine's terrain and damage work. */
     public enum Kind {
@@ -73,7 +77,9 @@ public enum WarheadBlast {
         /** A vertical tunnel. */
         BREACH,
         /** Annihilation in the kill zone (set on the definition) and fallout when it ends. */
-        NUCLEAR
+        NUCLEAR,
+        /** One EMP pulse: drains machines and rolls missiles in the radius (D16). */
+        EMP
     }
 
     private final String id;
