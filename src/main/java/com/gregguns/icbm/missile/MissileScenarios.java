@@ -428,21 +428,10 @@ public final class MissileScenarios {
             this.dx = dx;
             this.dz = dz;
             this.radius = radius;
-            // A far platform's chunk may not be loaded: setBlock into it is lost and the blast has nothing to break.
-            loadChunks(ctx, dx, dz, radius);
             for (int a = -radius; a <= radius; a++) {
                 for (int b = -radius; b <= radius; b++) {
                     ctx.setBlock(dx + a, -1, dz + b, Blocks.stone, 0);
                     stones.add(new int[] { ctx.originX() + dx + a, ctx.originY() - 1, ctx.originZ() + dz + b });
-                }
-            }
-        }
-
-        static void loadChunks(ScenarioContext ctx, int dx, int dz, int radius) {
-            net.minecraft.world.WorldServer ws = (net.minecraft.world.WorldServer) ctx.world();
-            for (int cx = (ctx.originX() + dx - radius) >> 4; cx <= (ctx.originX() + dx + radius) >> 4; cx++) {
-                for (int cz = (ctx.originZ() + dz - radius) >> 4; cz <= (ctx.originZ() + dz + radius) >> 4; cz++) {
-                    ws.theChunkProviderServer.loadChunk(cx, cz);
                 }
             }
         }

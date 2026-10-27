@@ -85,7 +85,7 @@ public final class DefenseScenarios {
         IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[id];
         // The machine may stand beyond the chunks the origin keeps loaded: load its chunk first, or the block and
         // its tile are silently not placed.
-        MissileScenarios.Target.loadChunks(ctx, dx, dz, 1);
+        loadChunks(ctx, dx, dz, 1);
         ctx.setBlock(dx, dy - 1, dz, Blocks.stone, 0);
         ctx.setBlock(dx, dy, dz, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType());
         TileEntity tile = ctx.world()
@@ -115,6 +115,16 @@ public final class DefenseScenarios {
         base.setOwnerName(OWNER);
         base.setOwnerUuid(UUID.nameUUIDFromBytes(OWNER.getBytes(StandardCharsets.UTF_8)));
         return base;
+    }
+
+    /** Loads the chunks around a machine's block, or the block and its tile are silently not placed. */
+    private static void loadChunks(ScenarioContext ctx, int dx, int dz, int radius) {
+        net.minecraft.world.WorldServer ws = (net.minecraft.world.WorldServer) ctx.world();
+        for (int cx = (ctx.originX() + dx - radius) >> 4; cx <= (ctx.originX() + dx + radius) >> 4; cx++) {
+            for (int cz = (ctx.originZ() + dz - radius) >> 4; cz <= (ctx.originZ() + dz + radius) >> 4; cz++) {
+                ws.theChunkProviderServer.loadChunk(cx, cz);
+            }
+        }
     }
 
     /** The tile as the world holds it now; GT may replace the tile entity in its first ticks. */
