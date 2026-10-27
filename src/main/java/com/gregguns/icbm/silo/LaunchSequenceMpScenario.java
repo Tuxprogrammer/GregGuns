@@ -176,7 +176,7 @@ public final class LaunchSequenceMpScenario implements Scenario {
             for (EntityPlayerMP p : players) {
                 MissileShotsScenario.signal(p, "hud", "on");
             }
-            ctx.clearArea(14, 18);
+            ctx.clearArea(14, SiloScenarios.CLEAR_HEIGHT);
             return out.build();
         });
     }

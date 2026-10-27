@@ -62,7 +62,7 @@ public final class ControlLaunchScenario implements Scenario {
         if (!IcbmAvailability.galacticraftPresent()) {
             return ScenarioResult.skip(name(), "Galacticraft is not loaded (D46)");
         }
-        ctx.clearArea(8, 12);
+        ctx.clearArea(8, 20);
         MissileScenarios.floor(ctx, 6);
         for (int a = -1; a <= 1; a++) {
             for (int b = -1; b <= 1; b++) {

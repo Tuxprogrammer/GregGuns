@@ -140,7 +140,7 @@ public final class LaunchSequenceScenarios {
                     .release();
                 m.setDead();
             }
-            ctx.clearArea(14, 18);
+            ctx.clearArea(14, SiloScenarios.CLEAR_HEIGHT);
         }
 
         ScenarioResult fail(String why) {
@@ -484,7 +484,7 @@ public final class LaunchSequenceScenarios {
             if (gate() != null) {
                 return ScenarioResult.skip(name(), gate());
             }
-            ctx.clearArea(8, 12);
+            ctx.clearArea(8, 20);
             for (int a = -8; a <= 8; a++) {
                 for (int b = -8; b <= 8; b++) {
                     ctx.setBlock(a, -1, b, Blocks.stone, 0);
@@ -569,7 +569,7 @@ public final class LaunchSequenceScenarios {
                         m.tickets()
                             .release();
                         m.setDead();
-                        ctx.clearArea(8, 12);
+                        ctx.clearArea(8, 20);
                         return out.build();
                     default:
                         return null;

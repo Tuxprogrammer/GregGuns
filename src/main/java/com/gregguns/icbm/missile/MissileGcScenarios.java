@@ -86,7 +86,7 @@ public final class MissileGcScenarios {
             if (!IcbmAvailability.galacticraftPresent()) {
                 return ScenarioResult.skip(name(), "Galacticraft is not loaded (D46)");
             }
-            ctx.clearArea(8, 12);
+            ctx.clearArea(8, 20);
             MissileScenarios.floor(ctx, 6);
             // Nine single pads; the center one turns the 3x3 into a full pad on its next tick.
             for (int a = -1; a <= 1; a++) {
