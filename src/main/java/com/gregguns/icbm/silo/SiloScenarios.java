@@ -720,7 +720,7 @@ public final class SiloScenarios {
                 for (int b = -9; b <= 9; b += 8) {
                     ctx.world()
                         .getChunkProvider()
-                        .loadChunk((ctx.originX() + a) >> 4, (ctx.originZ() + DISTANCE + b) >> 4);
+                        .provideChunk((ctx.originX() + a) >> 4, (ctx.originZ() + DISTANCE + b) >> 4);
                 }
             }
             final Target target = new Target(ctx, 0, DISTANCE, 9);

@@ -38,7 +38,7 @@ final class EmpMissileScenarios {
         for (int a = -radius; a <= radius; a += 8) {
             for (int b = -radius; b <= radius; b += 8) {
                 w.getChunkProvider()
-                    .loadChunk((ctx.originX() + dx + a) >> 4, (ctx.originZ() + dz + b) >> 4);
+                    .provideChunk((ctx.originX() + dx + a) >> 4, (ctx.originZ() + dz + b) >> 4);
             }
         }
         return new MissileScenarios.Target(ctx, dx, dz, radius);
