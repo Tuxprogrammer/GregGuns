@@ -2,6 +2,7 @@ package com.gregguns.icbm.tools;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,6 +33,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/handheld-tools.md (Defuser)
 public final class ItemDefuser extends Item implements Tiered {
 
+    /** Collapses the repeat of one click on a block into one defuse (see ClickGate). */
+    private static final ClickGate CLICKS = new ClickGate();
+
     /** The registry name. */
     public static final String NAME = "defuser";
 
@@ -40,6 +44,11 @@ public final class ItemDefuser extends Item implements Tiered {
         setMaxStackSize(1);
         setMaxDamage(HandheldRules.DEFUSER_USES - 1);
         setNoRepair();
+    }
+
+    /** Forgets a player's last click; scenarios call it to separate two simulated clicks within one tick. */
+    static void forgetClicks(UUID player) {
+        CLICKS.forget(player);
     }
 
     @Override
@@ -104,9 +113,18 @@ public final class ItemDefuser extends Item implements Tiered {
             // true, and the server would never defuse (I4 review item 1).
             return HandheldRules.clientConsumesUse();
         }
+        long now = world.getTotalWorldTime();
+        int dim = world.provider.dimensionId;
+        if (CLICKS.isRepeatBlockUse(player.getUniqueID(), now, dim, x, y, z)) {
+            // The same click arriving twice: the first one already put the fuse out; stay silent, charge nothing.
+            return true;
+        }
         DefuseResult r = defuseBlock(world, x, y, z);
         if (r == DefuseResult.NOT_A_TARGET) {
             return false;
+        }
+        if (r.success()) {
+            CLICKS.recordBlockUse(player.getUniqueID(), now, dim, x, y, z);
         }
         finish(player, stack, r);
         return true;

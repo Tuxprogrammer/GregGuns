@@ -35,6 +35,7 @@ final class ToolScenarios {
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new Remote());
         registry.register(new Defuser());
+        registry.register(new ClickRoute());
     }
 
     private static String gate() {
@@ -189,9 +190,75 @@ final class ToolScenarios {
             out.check(w.fuse() > 60, "the fuse leaves time to react");
             w.defuse();
             owner.setSneaking(true);
+            ItemRemoteDetonator.forgetClicks(owner.getUniqueID());
             hv.getItem()
                 .onItemRightClick(hv, ctx.world(), owner);
             out.check(!ItemRemoteDetonator.linked(hv), "a sneak-click in the air clears the link");
+            ctx.clearArea(6, 4);
+            return out.build();
+        }
+    }
+
+    /**
+     * The two packets one physical click sends on a warhead (block use, then use-item-in-air, same tick): the link
+     * survives and the defuse runs once (the I4 client finding).
+     */
+    private static final class ClickRoute implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.tools.click_route";
+        }
+
+        @Override
+        public String description() {
+            return "A block-use packet followed by an air-use packet in the same tick: the detonator keeps its link and the defuser puts the fuse out once, with no second message and one use.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            ctx.clearArea(6, 4);
+            FakePlayer p = player(ctx, "gregguns-click-route");
+            TileWarhead w = place(ctx, p, 2, 0);
+            if (w == null) {
+                return ScenarioResult.fail(name(), "the warhead did not place");
+            }
+            int x = ctx.originX() + 2;
+            int y = ctx.originY();
+            int z = ctx.originZ();
+            p.setPosition(ctx.originX() + 0.5, y, z + 0.5);
+            ItemRemoteDetonator.forgetClicks(p.getUniqueID());
+            ItemDefuser.forgetClicks(p.getUniqueID());
+
+            // Detonator: block use then air use while sneaking.
+            p.setSneaking(true);
+            ItemStack hv = ToolRegistration.detonatorStack(Tier.HV);
+            hv.getItem()
+                .onItemUseFirst(hv, p, ctx.world(), x, y, z, 1, 0.5F, 0.5F, 0.5F);
+            out.check(ItemRemoteDetonator.linked(hv), "the block use links");
+            hv.getItem()
+                .onItemRightClick(hv, ctx.world(), p);
+            out.check(ItemRemoteDetonator.linked(hv), "the air packet of the same click does not clear the link");
+            hv.getItem()
+                .onItemUseFirst(hv, p, ctx.world(), x, y, z, 1, 0.5F, 0.5F, 0.5F);
+            out.check(ItemRemoteDetonator.linked(hv), "a repeat of the block use keeps the link");
+
+            // Defuser: block use twice (repeat or second route) costs one use.
+            p.setSneaking(false);
+            ItemStack kit = ToolRegistration.defuserStack();
+            w.arm(w.litFuseTicks(), p);
+            kit.getItem()
+                .onItemUseFirst(kit, p, ctx.world(), x, y, z, 1, 0.5F, 0.5F, 0.5F);
+            kit.getItem()
+                .onItemUseFirst(kit, p, ctx.world(), x, y, z, 1, 0.5F, 0.5F, 0.5F);
+            kit.getItem()
+                .onItemRightClick(kit, ctx.world(), p);
+            out.check(!w.armed(), "the fuse is out");
+            out.checkEquals("the defuse ran once and cost one use", 1, kit.getItemDamage());
             ctx.clearArea(6, 4);
             return out.build();
         }
@@ -253,6 +320,7 @@ final class ToolScenarios {
             ItemStack worn = ToolRegistration.defuserStack();
             worn.setItemDamage(worn.getMaxDamage());
             w.arm(w.litFuseTicks(), p);
+            ItemDefuser.forgetClicks(p.getUniqueID());
             worn.getItem()
                 .onItemUseFirst(worn, p, ctx.world(), x, y, z, 1, 0.5F, 0.5F, 0.5F);
             out.check(!w.armed() && worn.stackSize <= 0, "the last use works and wears the kit out");
