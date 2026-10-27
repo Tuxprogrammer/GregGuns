@@ -83,10 +83,24 @@ public final class EmpScenarios {
         world.getChunkProvider()
             .provideChunk(x >> 4, z >> 4);
         IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[id];
-        world.setBlock(x, y, z, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType(), 3);
+        // A machine left from an earlier run stays put when the same block is set again; start from air.
+        world.setBlockToAir(x, y, z);
+        boolean set = world.setBlock(x, y, z, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType(), 3);
         TileEntity tile = world.getTileEntity(x, y, z);
         if (!(tile instanceof IGregTechTileEntity)) {
-            throw new IllegalStateException("no GT tile entity at " + x + "," + y + "," + z);
+            throw new IllegalStateException(
+                "no GT tile entity at " + x
+                    + ","
+                    + y
+                    + ","
+                    + z
+                    + " (setBlock "
+                    + set
+                    + ", found "
+                    + tile
+                    + ", block "
+                    + world.getBlock(x, y, z)
+                    + ")");
         }
         IGregTechTileEntity base = (IGregTechTileEntity) tile;
         base.setInitialValuesAsNBT(null, (short) id);
