@@ -35,11 +35,13 @@ import com.gregguns.core.module.ModuleState;
 import com.gregguns.icbm.explosive.ExplosiveTier;
 import com.gregguns.icbm.missile.BlockMissileBody;
 import com.gregguns.icbm.missile.EntityMissile;
+import com.gregguns.icbm.missile.FlightPhase;
 import com.gregguns.icbm.missile.LaunchResult;
 import com.gregguns.icbm.missile.LaunchSite;
 import com.gregguns.icbm.missile.MissileBodies;
 import com.gregguns.icbm.missile.MissileStatus;
 import com.gregguns.icbm.missile.MissileTier;
+import com.gregguns.icbm.missile.PadMissiles;
 import com.gregguns.icbm.warhead.BlockWarhead;
 import com.gregguns.icbm.warhead.WarheadCasing;
 import com.gregguns.icbm.warhead.WarheadData;
@@ -103,6 +105,22 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private static final String K_P_FILL = "pendingFill";
     private static final String K_P_CASING = "pendingCasing";
     private static final String K_P_READY = "pendingReady";
+
+    private static final String K_DOOR_STATE = "doorState";
+    private static final String K_DOOR_START = "doorStart";
+    private static final String K_DOOR_DUR = "doorDuration";
+
+    /** Ticks between looks for a missile around the shaft while the doors rest. */
+    private static final int DOOR_SCAN_TICKS = 5;
+
+    /** Ticks the silo may stay unformed before a launch in progress stands down; a reload is unformed for a while. */
+    static final int UNFORMED_GRACE_TICKS = 200;
+
+    private final SiloDoors doors = new SiloDoors();
+    private int unformedTicks;
+    private EntitySiloDoors doorEntity;
+    private SiloDoors.State pushedState;
+    private long pushedStart;
 
     private int casingCount;
     private int glassTier = -1;
@@ -313,6 +331,139 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         return null;
     }
 
+    /** @return Y of the top of the rim layer, where the door panels lie */
+    private int rimTop() {
+        return padY() + SiloShape.HEIGHT;
+    }
+
+    /** @return the column above the shaft in which a missile counts as leaving: the shaft and the climb */
+    private AxisAlignedBB launchBox() {
+        return AxisAlignedBB.getBoundingBox(
+            shaftX() - 2.0,
+            padY(),
+            shaftZ() - 2.0,
+            shaftX() + 2.0,
+            padY() + PadMissiles.LAUNCH_COLUMN,
+            shaftZ() + 2.0);
+    }
+
+    /** @return the missile in this silo that is counting down or climbing out, or null */
+    private EntityMissile launching() {
+        World w = getBaseMetaTileEntity().getWorld();
+        return w == null ? null : PadMissiles.launchingIn(w, launchBox());
+    }
+
+    /** @return the door machine, for the scenarios */
+    SiloDoors doors() {
+        return doors;
+    }
+
+    // --- the doors (D89) ---------------------------------------------------------------------------------------------
+
+    @Override
+    public void onPostTick(IGregTechTileEntity base, long tick) {
+        super.onPostTick(base, tick);
+        if (base.isClientSide() || !ModuleState.isActive(ModuleId.ICBM)) {
+            return;
+        }
+        World w = base.getWorld();
+        if (!mMachine) {
+            // A freshly loaded silo is unformed until its first structure check; only a lasting gap counts (D90).
+            if (++unformedTicks >= UNFORMED_GRACE_TICKS) {
+                comeApart(w);
+            }
+            return;
+        }
+        unformedTicks = 0;
+        if (tick % DOOR_SCAN_TICKS == 0 || doors.state() == SiloDoors.State.OPENING
+            || doors.state() == SiloDoors.State.CLOSING) {
+            updateDoors(w);
+        }
+        if (tick % 20 == 0) {
+            ensureDoorEntity(w);
+        }
+    }
+
+    /** The silo is not formed: no doors, and a countdown still running stands down (D90). */
+    private void comeApart(World w) {
+        if (doors.state() != SiloDoors.State.CLOSED) {
+            doors.reset();
+        }
+        if (doorEntity != null) {
+            doorEntity.setDead();
+            doorEntity = null;
+        }
+        if (w == null || !shaftLoaded()) {
+            return;
+        }
+        EntityMissile m = launching();
+        if (m != null && m.abortable()) {
+            m.abort();
+        }
+    }
+
+    /**
+     * Opens the doors while a missile counts down or climbs out below the close height, closes them otherwise, and
+     * finishes a swing that has run its time.
+     */
+    private void updateDoors(World w) {
+        if (w == null || !shaftLoaded()) {
+            return;
+        }
+        long now = w.getTotalWorldTime();
+        EntityMissile m = PadMissiles.flyingIn(w, launchBox());
+        boolean want = m != null && (m.phase() == FlightPhase.WARMUP || m.posY < rimTop() + IcbmConfig.doorCloseHeight);
+        if (want) {
+            doors.open(now, IcbmConfig.doorOpenTicks);
+        } else {
+            doors.close(now, IcbmConfig.doorOpenTicks);
+        }
+        doors.update(now);
+        pushDoors();
+    }
+
+    private void pushDoors() {
+        if (doorEntity != null && !doorEntity.isDead
+            && (pushedState != doors.state() || pushedStart != doors.start())) {
+            doorEntity.push(doors);
+            pushedState = doors.state();
+            pushedStart = doors.start();
+        }
+    }
+
+    /** Makes sure one door entity stands at the rim; it is never saved, so every load makes a new one. */
+    private void ensureDoorEntity(World w) {
+        if (doorEntity != null && !doorEntity.isDead && doorEntity.worldObj == w) {
+            return;
+        }
+        IGregTechTileEntity b = getBaseMetaTileEntity();
+        double x = shaftX();
+        double z = shaftZ();
+        if (!w.blockExists((int) Math.floor(x), rimTop() - 1, (int) Math.floor(z))) {
+            return;
+        }
+        AxisAlignedBB near = AxisAlignedBB
+            .getBoundingBox(x - 1.0, rimTop() - 1.0, z - 1.0, x + 1.0, rimTop() + 1.0, z + 1.0);
+        for (Object o : w.getEntitiesWithinAABB(EntitySiloDoors.class, near)) {
+            EntitySiloDoors e = (EntitySiloDoors) o;
+            if (!e.isDead && e.servesController(b.getXCoord(), b.getYCoord(), b.getZCoord())) {
+                doorEntity = e;
+                pushedState = null;
+                pushDoors();
+                return;
+            }
+        }
+        EntitySiloDoors e = new EntitySiloDoors(w);
+        e.setPosition(x, rimTop(), z);
+        e.bind(b.getXCoord(), b.getYCoord(), b.getZCoord());
+        e.push(doors);
+        if (w.spawnEntityInWorld(e)) {
+            doorEntity = e;
+            pushedState = doors.state();
+            pushedStart = doors.start();
+        }
+    }
+
     /** @return the tier of a body block a player stacked in the shaft and has not armed yet, or null */
     private MissileTier stackedBody() {
         World w = getBaseMetaTileEntity().getWorld();
@@ -387,8 +538,50 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
                     return stackedBody() == null ? LaunchResult.NO_MISSILE : LaunchResult.NOT_ARMED;
                 }
                 LaunchResult held = hold();
-                return held != LaunchResult.OK ? held
-                    : m.launch(targetX, targetZ, source, IcbmConfig.siloScatterFactor, IcbmConfig.siloRangeFactor);
+                if (held != LaunchResult.OK) {
+                    return held;
+                }
+                // The doors open first; the missile's warm-up waits for them, so it never climbs into closed doors
+                // (D89).
+                World w = getBaseMetaTileEntity().getWorld();
+                long now = w.getTotalWorldTime();
+                SiloDoors probe = new SiloDoors();
+                probe.restore(doors.state(), doors.start(), doors.duration());
+                probe.open(now, IcbmConfig.doorOpenTicks);
+                LaunchResult r = m.launch(
+                    targetX,
+                    targetZ,
+                    source,
+                    IcbmConfig.siloScatterFactor,
+                    IcbmConfig.siloRangeFactor,
+                    probe.ticksUntilOpen(now));
+                if (r == LaunchResult.OK) {
+                    doors.open(now, IcbmConfig.doorOpenTicks);
+                    pushDoors();
+                }
+                return r;
+            }
+
+            @Override
+            public int countdownTicks() {
+                EntityMissile m = launching();
+                return m == null ? -1 : m.countdownLeft();
+            }
+
+            @Override
+            public boolean ignited() {
+                EntityMissile m = launching();
+                return m != null && m.phase() == FlightPhase.CLIMB;
+            }
+
+            @Override
+            public boolean abort() {
+                EntityMissile m = launching();
+                if (m == null || !m.abort()) {
+                    return false;
+                }
+                updateDoors(getBaseMetaTileEntity().getWorld());
+                return true;
             }
         };
     }
@@ -682,6 +875,12 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         tag.setInteger(K_P_FILL, pendingFill);
         tag.setInteger(K_P_CASING, pendingCasing);
         tag.setBoolean(K_P_READY, pendingReady);
+        tag.setString(
+            K_DOOR_STATE,
+            doors.state()
+                .name());
+        tag.setLong(K_DOOR_START, doors.start());
+        tag.setInteger(K_DOOR_DUR, doors.duration());
     }
 
     @Override
@@ -693,6 +892,13 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         pendingFill = Math.max(1, tag.getInteger(K_P_FILL));
         pendingCasing = Math.max(1, tag.getInteger(K_P_CASING));
         pendingReady = tag.getBoolean(K_P_READY);
+        SiloDoors.State st;
+        try {
+            st = SiloDoors.State.valueOf(tag.getString(K_DOOR_STATE));
+        } catch (IllegalArgumentException e) {
+            st = SiloDoors.State.CLOSED;
+        }
+        doors.restore(st, tag.getLong(K_DOOR_START), tag.hasKey(K_DOOR_DUR) ? tag.getInteger(K_DOOR_DUR) : 40);
     }
 
     @Override

@@ -86,12 +86,12 @@ public final class MissileShotsScenario implements Scenario {
         return false;
     }
 
-    static void signal(EntityPlayerMP p, String command, String... args) {
+    public static void signal(EntityPlayerMP p, String command, String... args) {
         p.addChatMessage(new ChatComponentText(AutotestSignal.format(command, args)));
     }
 
     /** Puts the eye at (ex, ey, ez) looking at the target point; no ground clamp, the player flies. */
-    static void cam(EntityPlayerMP p, double ex, double ey, double ez, double tx, double ty, double tz) {
+    public static void cam(EntityPlayerMP p, double ex, double ey, double ez, double tx, double ty, double tz) {
         p.capabilities.allowFlying = true;
         p.capabilities.isFlying = true;
         p.sendPlayerAbilities();
@@ -103,23 +103,23 @@ public final class MissileShotsScenario implements Scenario {
     }
 
     /** A queue of timed actions; an action may add more. */
-    static final class Plan {
+    public static final class Plan {
 
         private final List<long[]> due = new ArrayList<>();
         private final List<Runnable> acts = new ArrayList<>();
         /** Where the next {@link #after} lands: each call adds to it, so a chain of calls is cumulative. */
         private long cursor;
         /** The real tick of the action being run. */
-        long now;
+        public long now;
 
-        void after(int dt, Runnable r) {
+        public void after(int dt, Runnable r) {
             cursor += dt;
             due.add(new long[] { cursor });
             acts.add(r);
         }
 
         /** Runs everything due at {@code tick}, earliest first; an action's own calls chain from its due time. */
-        void run(long tick) {
+        public void run(long tick) {
             now = tick;
             while (true) {
                 int best = -1;
@@ -139,7 +139,7 @@ public final class MissileShotsScenario implements Scenario {
             }
         }
 
-        boolean idle() {
+        public boolean idle() {
             return acts.isEmpty();
         }
     }

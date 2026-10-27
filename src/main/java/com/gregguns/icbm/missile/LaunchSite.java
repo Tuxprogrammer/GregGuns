@@ -48,4 +48,27 @@ public interface LaunchSite {
      * @return the outcome
      */
     LaunchResult launch(double targetX, double targetZ, EntityPlayer source);
+
+    /**
+     * @return ticks left on the visible countdown of a launch in progress (the warm-up, D88), or -1 when none is
+     *         running
+     */
+    default int countdownTicks() {
+        return -1;
+    }
+
+    /** @return true from ignition until the missile has climbed away: the launch can no longer be aborted */
+    default boolean ignited() {
+        return false;
+    }
+
+    /**
+     * Stops a countdown in progress (D88): the missile stays armed and fueled on its pad, and a silo closes its doors.
+     * Refused once the engines have ignited. Server side.
+     *
+     * @return true when a launch was aborted
+     */
+    default boolean abort() {
+        return false;
+    }
 }

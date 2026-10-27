@@ -43,13 +43,14 @@ The block scans a box of plus or minus 4 horizontally and plus or minus 2 vertic
 
 ## The GUI (ModularUI2)
 
-A dark status screen (state, target, distance and range, expected blast radius, EU), the X and Z fields, **Use my position**, the data stick slot with **Load target** and **Save target**, and **Launch**. Every control is labeled with a tooltip. **Launch** is gray until the pre-check is READY, and its tooltip then names the first reason (no target, no pad, power, cooling down, no missile, not armed, not fueled, too close, out of range). Load and Save are gray without a stick and say so. Status numbers reach the client as read-only sync values; no client code reads the world.
+A dark status screen (state, target, distance and range, expected blast radius, EU), the X and Z fields, **Use my position**, the data stick slot with **Load target** and **Save target**, **Launch** and **Abort** (D88). Every control is labeled with a tooltip. **Launch** is gray until the pre-check is READY, and its tooltip then names the first reason (no target, no pad, power, cooling down, no missile, not armed, not fueled, too close, out of range). Load and Save are gray without a stick and say so. **Abort** sits beside Launch: it is live while a countdown runs (the screen reads "Countdown: N s"), gray when none runs, and gray with "Ignition: no abort" once the engines have lit. Status numbers reach the client as read-only sync values; no client code reads the world.
 
 ## Triggers
 
 | Trigger | Behavior |
 |---|---|
 | Launch button | Server re-checks the player, then fires |
+| Abort button | Server re-checks the player, then stops a countdown in progress (refused after ignition) |
 | Redstone | A rising edge of the strongest input fires once. A held signal does not refire; the first sample after a load only seeds the state |
 | GT machine controller cover | The cover enables and disables the block's work; a rising edge of "allowed to work" fires once. A soft mallet toggle does the same |
 | OpenComputers | Not in I2; the outputs sheet places it with the other components in I4 |

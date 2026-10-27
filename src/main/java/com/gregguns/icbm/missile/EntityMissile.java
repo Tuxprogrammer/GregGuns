@@ -42,8 +42,8 @@ import cpw.mods.fml.relauncher.SideOnly;
     @Optional.Interface(iface = "micdoodle8.mods.galacticraft.api.entity.IDockable", modid = "GalacticraftCore") })
 public abstract class EntityMissile extends Entity implements micdoodle8.mods.galacticraft.api.entity.IDockable {
 
-    /** Ticks on the pad with the engines lit before liftoff. */
-    public static final int WARMUP_TICKS = 40;
+    /** Checks (10 ticks apart) without a formed silo before a silo-only body stands down: 300 ticks, past a reload. */
+    private static final int STRAY_CHECKS = 30;
     /** Blocks the missile climbs straight up before it turns onto the arc. */
     public static final double CLIMB_HEIGHT = 12.0;
     /** Climb acceleration, blocks per tick per tick. */
@@ -60,6 +60,12 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
 
     private FlightPhase phase = FlightPhase.PAD;
     private int phaseTick;
+    /** Ticks of the warm-up spent waiting for the silo doors (0 on a pad); set at launch (D88). */
+    private int warmupLead;
+    /** Lead plus countdown, ticks; set at launch (D88). */
+    private int warmupTotal;
+    /** Consecutive checks a silo-only body found no formed silo under it; not saved. */
+    private int strayChecks;
     private int fuelMb;
     private int guidance;
     private float health;
@@ -122,6 +128,63 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         this.phase = newPhase;
         this.casing = newCasing;
         this.fuelMb = newFuel;
+    }
+
+    /**
+     * Client side: takes the warm-up clock the server sent.
+     *
+     * @param tick  ticks into the warm-up
+     * @param lead  ticks waiting for the doors
+     * @param total lead plus countdown
+     */
+    void applyCountdown(int tick, int lead, int total) {
+        this.phaseTick = tick;
+        this.warmupLead = lead;
+        this.warmupTotal = total;
+    }
+
+    /** @return ticks into the warm-up (client: counted locally between packets) */
+    public int warmupTick() {
+        return phaseTick;
+    }
+
+    /** @return ticks of the warm-up spent waiting for the doors */
+    public int warmupLead() {
+        return warmupLead;
+    }
+
+    /** @return lead plus countdown, ticks */
+    public int warmupTotal() {
+        return warmupTotal;
+    }
+
+    /** @return ticks left on the visible countdown, or -1 when the missile is not in its warm-up */
+    public int countdownLeft() {
+        return phase == FlightPhase.WARMUP ? LaunchTimer.countdownLeft(phaseTick, warmupLead, warmupTotal) : -1;
+    }
+
+    /** @return true while the missile is in its warm-up and the launch can still be aborted (D88) */
+    public boolean abortable() {
+        return phase == FlightPhase.WARMUP && LaunchTimer.abortable(phaseTick, warmupTotal);
+    }
+
+    /**
+     * Stops the countdown and stands the missile down on its pad, armed and fueled as before (D88). Refused once the
+     * engines have ignited. Server side.
+     *
+     * @return true when the launch was aborted
+     */
+    public boolean abort() {
+        if (worldObj.isRemote || isDead || !abortable()) {
+            return false;
+        }
+        tickets.release();
+        phaseTick = 0;
+        warmupLead = 0;
+        warmupTotal = 0;
+        setPhase(FlightPhase.PAD);
+        worldObj.playSoundEffect(posX, posY, posZ, "random.click", 1.0F, 0.6F);
+        return true;
     }
 
     // ------------------------------------------------------------------ state and API
@@ -337,12 +400,34 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
      * @return the outcome
      */
     public LaunchResult launch(double tx, double tz, EntityPlayer source, double scatterScale, double rangeScale) {
+        return launch(tx, tz, source, scatterScale, rangeScale, 0);
+    }
+
+    /**
+     * Launches with a lead: the warm-up first waits {@code leadTicks} for the silo doors to open, then runs the
+     * configured countdown (D88). The lead is part of the launch, so a missile never climbs into closed doors. Server
+     * side.
+     *
+     * @param tx           the target X
+     * @param tz           the target Z
+     * @param source       who fired it, may be null
+     * @param scatterScale the site's scatter factor
+     * @param rangeScale   the site's range factor
+     * @param leadTicks    ticks until the doors are open, 0 on a pad
+     * @return the outcome
+     */
+    public LaunchResult launch(double tx, double tz, EntityPlayer source, double scatterScale, double rangeScale,
+        int leadTicks) {
         double oldScatter = siteScatter;
         double oldRange = siteRange;
         siteScatter = scatterScale;
         siteRange = rangeScale;
         LaunchResult r = launchChecked(tx, tz, source);
-        if (r != LaunchResult.OK) {
+        if (r == LaunchResult.OK) {
+            warmupLead = Math.max(0, leadTicks);
+            warmupTotal = warmupLead + Math.max(1, IcbmConfig.countdownTicks);
+            phaseTick = 0;
+        } else {
             // A refused launch leaves the missile as it was.
             siteScatter = oldScatter;
             siteRange = oldRange;
@@ -397,7 +482,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             this.ownerName = source.getCommandSenderName();
         }
         setPhase(FlightPhase.WARMUP);
-        worldObj.playSoundEffect(posX, posY, posZ, "fireworks.launch", 4.0F, 0.6F);
+        worldObj.playSoundEffect(posX, posY, posZ, "random.click", 1.0F, 1.0F);
         return LaunchResult.OK;
     }
 
@@ -447,10 +532,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
                 padTick();
                 break;
             case WARMUP:
-                if (++phaseTick >= WARMUP_TICKS) {
-                    phaseTick = 0;
-                    setPhase(FlightPhase.CLIMB);
-                }
+                warmupStep();
                 break;
             case CLIMB:
                 climbTick();
@@ -458,6 +540,30 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             default:
                 arcTick();
                 break;
+        }
+    }
+
+    /** One warm-up tick: count, and ignite when the countdown ends; from then on there is no abort (D88). */
+    private void warmupStep() {
+        // A silo-only body whose silo is gone does not go on alone (D90). A reload leaves the silo unformed for a
+        // while, so only a lasting gap counts.
+        if (tier().siloOnly() && ticksExisted % 10 == 0) {
+            boolean floor = com.gregguns.icbm.silo.MTEMissileSilo.isFloorOf(
+                worldObj,
+                net.minecraft.util.MathHelper.floor_double(posX),
+                net.minecraft.util.MathHelper.floor_double(posY - 0.5),
+                net.minecraft.util.MathHelper.floor_double(posZ));
+            strayChecks = floor ? 0 : strayChecks + 1;
+            if (strayChecks >= STRAY_CHECKS) {
+                strayChecks = 0;
+                abort();
+                return;
+            }
+        }
+        if (++phaseTick >= warmupTotal) {
+            phaseTick = 0;
+            setPhase(FlightPhase.CLIMB);
+            worldObj.playSoundEffect(posX, posY, posZ, "fireworks.launch", 4.0F, 0.6F);
         }
     }
 
@@ -532,21 +638,33 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         if (ph == FlightPhase.PAD) {
             return;
         }
+        if (ph == FlightPhase.WARMUP) {
+            com.gregguns.client.icbm.LaunchSmokeFX.emit(
+                worldObj,
+                posX,
+                posY,
+                posZ,
+                LaunchTimer.smokeIntensity(phaseTick, warmupLead, warmupTotal),
+                LaunchTimer.untilIgnition(phaseTick, warmupTotal) <= LaunchTimer.FLAME_TICKS);
+            return;
+        }
         double len = Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
         double ux = len > 1e-6 ? motionX / len : 0;
         double uy = len > 1e-6 ? motionY / len : 1;
         double uz = len > 1e-6 ? motionZ / len : 0;
         // The tail is one body-height back along the heading.
-        double tail = ph == FlightPhase.WARMUP ? 0.0 : 0.5;
-        double bx = posX - ux * tail;
-        double by = posY - uy * tail + (ph == FlightPhase.WARMUP ? 0.2 : 0.0);
-        double bz = posZ - uz * tail;
+        double bx = posX - ux * 0.5;
+        double by = posY - uy * 0.5;
+        double bz = posZ - uz * 0.5;
         worldObj.spawnParticle("flame", bx, by, bz, -ux * 0.1, -uy * 0.1, -uz * 0.1);
         worldObj.spawnParticle("largesmoke", bx, by, bz, -ux * 0.05, -uy * 0.05, -uz * 0.05);
     }
 
     private void clientTick() {
-        if (phase() != FlightPhase.PAD) {
+        if (phase() == FlightPhase.WARMUP) {
+            phaseTick++;
+            clientTickParticles();
+        } else if (phase() != FlightPhase.PAD) {
             // Between server updates the client carries the last velocity forward.
             setPosition(posX + motionX, posY + motionY, posZ + motionZ);
             clientTickParticles();
@@ -740,6 +858,8 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     protected void writeEntityToNBT(NBTTagCompound tag) {
         tag.setString("phase", phase.name());
         tag.setInteger("phaseTick", phaseTick);
+        tag.setInteger("warmupLead", warmupLead);
+        tag.setInteger("warmupTotal", warmupTotal);
         tag.setInteger("fuel", fuelMb);
         tag.setInteger("guidance", guidance);
         tag.setFloat("health", health);
@@ -772,6 +892,9 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             phase = FlightPhase.PAD;
         }
         phaseTick = Math.max(0, tag.getInteger("phaseTick"));
+        warmupLead = Math.max(0, tag.getInteger("warmupLead"));
+        // A save from before the countdown (D88) has no total: finish its warm-up quickly rather than hang.
+        warmupTotal = tag.hasKey("warmupTotal") ? Math.max(0, tag.getInteger("warmupTotal")) : 40;
         fuelMb = Math.max(0, Math.min(capacityMb(), tag.getInteger("fuel")));
         guidance = Math.max(0, Math.min(MissileBodies.MAX_GUIDANCE, tag.getInteger("guidance")));
         // The tier is fixed by the class, so the clamp is right whatever order the keys load in (ICBM-03-04).

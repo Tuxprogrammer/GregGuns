@@ -50,9 +50,9 @@ import gregtech.api.metatileentity.implementations.MTEHatchInput;
 // Spec: docs/gregguns-icbm-spec/03-missiles/missile-silo.md (Tests)
 public final class SiloScenarios {
 
-    private static final int CY = 2;
-    private static final int WARMUP = 50;
-    private static final int DISTANCE = 300;
+    static final int CY = 2;
+    static final int WARMUP = 50;
+    static final int DISTANCE = 300;
 
     private SiloScenarios() {}
 
@@ -66,9 +66,11 @@ public final class SiloScenarios {
         registry.register(new PowerLoss());
         registry.register(new UnformedPad());
         registry.register(new HandStack());
+        LaunchSequenceScenarios.registerAll(registry);
+        registry.register(new LaunchSequenceMpScenario());
     }
 
-    private static String gate() {
+    static String gate() {
         if (!ModuleState.isActive(ModuleId.ICBM) || !IcbmAvailability.galacticraftPresent()) {
             return "the ICBM module is off (Galacticraft missing)";
         }
@@ -76,7 +78,7 @@ public final class SiloScenarios {
     }
 
     /** Clears the area, lays a stone floor, puts the controller down and builds the silo around it. */
-    private static DevStructureBuilder.Outcome build(ScenarioContext ctx, gregtech.api.enums.ItemList energy) {
+    static DevStructureBuilder.Outcome build(ScenarioContext ctx, gregtech.api.enums.ItemList energy) {
         ctx.clearArea(14, 18);
         for (int a = -12; a <= 12; a++) {
             for (int b = -12; b <= 12; b++) {
@@ -91,23 +93,23 @@ public final class SiloScenarios {
         return DevStructureBuilder.buildSilo(ctx.world(), ctx.originX(), ctx.originY() + CY, ctx.originZ(), energy);
     }
 
-    private static IGregTechTileEntity tile(ScenarioContext ctx, int dx, int dy, int dz) {
+    static IGregTechTileEntity tile(ScenarioContext ctx, int dx, int dy, int dz) {
         TileEntity t = ctx.world()
             .getTileEntity(ctx.originX() + dx, ctx.originY() + CY + dy, ctx.originZ() + dz);
         return t instanceof IGregTechTileEntity ? (IGregTechTileEntity) t : null;
     }
 
-    private static MTEMissileSilo silo(ScenarioContext ctx) {
+    static MTEMissileSilo silo(ScenarioContext ctx) {
         IGregTechTileEntity b = tile(ctx, 0, 0, 0);
         return b != null && b.getMetaTileEntity() instanceof MTEMissileSilo ? (MTEMissileSilo) b.getMetaTileEntity()
             : null;
     }
 
-    private static boolean formed(ScenarioContext ctx) {
+    static boolean formed(ScenarioContext ctx) {
         return DevStructureBuilder.check(ctx.world(), ctx.originX(), ctx.originY() + CY, ctx.originZ());
     }
 
-    private static void power(ScenarioContext ctx) {
+    static void power(ScenarioContext ctx) {
         IGregTechTileEntity energy = tile(ctx, 0, -1, 0);
         if (energy != null) {
             energy.increaseStoredEnergyUnits(50_000_000L, true);
@@ -115,7 +117,7 @@ public final class SiloScenarios {
     }
 
     /** Puts 16,000 mB of a fluid in the fuel hatch; fails the scenario when the fluid is not registered. */
-    private static void fuel(ScenarioContext ctx, ScenarioResult.Builder out, String fluid) {
+    static void fuel(ScenarioContext ctx, ScenarioResult.Builder out, String fluid) {
         IGregTechTileEntity hatch = tile(ctx, 1, -1, 0);
         Fluid f = FluidRegistry.getFluid(fluid);
         out.check(f != null, "the test fluid " + fluid + " is a registered fluid");
@@ -161,7 +163,7 @@ public final class SiloScenarios {
     }
 
     /** A missile standing on the silo pad the way the mating cycle makes it. */
-    private static EntityMissile stand(ScenarioContext ctx, MissileTier tier) {
+    static EntityMissile stand(ScenarioContext ctx, MissileTier tier) {
         MTEMissileSilo s = silo(ctx);
         EntityMissile m = EntityMissile.create(tier, ctx.world());
         m.setLocationAndAngles(
@@ -673,7 +675,7 @@ public final class SiloScenarios {
 
     // ------------------------------------------------------------------------------------------------------------
 
-    private static IGregTechTileEntity launchControl(ScenarioContext ctx, int dx, int dz) {
+    static IGregTechTileEntity launchControl(ScenarioContext ctx, int dx, int dz) {
         int id = GregGunsMTEIDs.LAUNCH_CONTROL;
         ctx.setBlock(dx, CY, dz, GregTechAPI.sBlockMachines, GregTechAPI.METATILEENTITIES[id].getTileEntityBaseType());
         IGregTechTileEntity cb = (IGregTechTileEntity) ctx.world()

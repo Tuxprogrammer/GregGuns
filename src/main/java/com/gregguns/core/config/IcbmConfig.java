@@ -97,6 +97,20 @@ public class IcbmConfig {
     @Config.RangeInt(min = 20, max = 6000)
     public static int missileTimeoutTicks = 600;
 
+    @Config.Comment({ "Ticks the Missile Silo doors take to swing open or shut (D89). Range 10 to 200. Default: 40." })
+    @Config.RangeInt(min = 10, max = 200)
+    public static int doorOpenTicks = 40;
+
+    @Config.Comment({ "Ticks of countdown between the doors being open (or the launch on a pad) and ignition (D88).",
+        "The launch can be aborted until it ends. Range 20 to 1200. Default: 200." })
+    @Config.RangeInt(min = 20, max = 1200)
+    public static int countdownTicks = 200;
+
+    @Config.Comment({ "Blocks the missile's bottom must climb above the silo rim before the doors swing shut (D89).",
+        "Range 1 to 32. Default: 4." })
+    @Config.RangeInt(min = 1, max = 32)
+    public static int doorCloseHeight = 4;
+
     /**
      * @param tier the explosive tier number, 1 to 4
      * @return the terrain switch for that tier

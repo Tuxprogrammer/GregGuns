@@ -1046,7 +1046,7 @@ public final class MissileScenarios {
             out.check(!m.isDead, "still there");
             m.fill(m.capacityMb(), true);
             m.launch(ctx.originX() + 0.5, ctx.originZ() + 100.5, null);
-            for (int i = 0; i < EntityMissile.WARMUP_TICKS + 5; i++) {
+            for (int i = 0; i < IcbmConfig.countdownTicks + 5; i++) {
                 m.onUpdate();
             }
             out.check(m.phase() == FlightPhase.CLIMB, "flying (" + m.phase() + ")");

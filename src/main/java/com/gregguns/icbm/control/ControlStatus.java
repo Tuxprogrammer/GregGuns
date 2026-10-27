@@ -41,6 +41,10 @@ public enum ControlStatus {
     SILO_ONLY(false),
     /** The block is cooling down from the last shot. */
     COOLDOWN(false),
+    /** A countdown is running; it can be aborted. */
+    COUNTDOWN(true),
+    /** The engines have ignited; there is no abort. */
+    IGNITED(true),
     /** The missile was launched. */
     FIRED(true);
 
