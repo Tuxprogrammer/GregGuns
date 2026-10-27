@@ -78,6 +78,10 @@ public final class DefenseScenarios {
 
     static IGregTechTileEntity place(ScenarioContext ctx, int id, int dx, int dy, int dz) {
         IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[id];
+        // The machine may stand beyond the chunks the origin keeps loaded: load its chunk first, or the block and
+        // its tile are silently not placed.
+        ctx.world()
+            .getChunkFromBlockCoords(ctx.originX() + dx, ctx.originZ() + dz);
         ctx.setBlock(dx, dy - 1, dz, Blocks.stone, 0);
         ctx.setBlock(dx, dy, dz, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType());
         TileEntity tile = ctx.world()
