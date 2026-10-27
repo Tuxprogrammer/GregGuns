@@ -3,7 +3,6 @@ package com.gregguns.icbm.defense;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import com.gregguns.icbm.detect.Contacts;
@@ -104,10 +103,11 @@ public final class EntitySam extends Entity {
         if (spent) {
             return;
         }
-        // A chunk that has unloaded under it takes its entities off the world's list but leaves them alive; a SAM
-        // nobody can see must not go on to hit the missile.
-        if (!worldObj.getChunkProvider()
-            .chunkExists(MathHelper.floor_double(posX) >> 4, MathHelper.floor_double(posZ) >> 4)) {
+        // A chunk that unloads under an entity moves it to unloadedEntityList and leaves it alive until the world's
+        // next
+        // entity pass; a SAM nobody can see must not go on to hit the missile. (A SAM flying past the loaded area is
+        // not in that list: it keeps flying, as the world keeps any entity it has not unloaded.)
+        if (worldObj.unloadedEntityList.contains(this)) {
             fizzle();
             return;
         }
@@ -152,7 +152,6 @@ public final class EntitySam extends Entity {
     }
 
     private void burst(EntityMissile target) {
-        com.gregguns.GregGuns.LOG.info("SAM-DIAG burst age={} pos={},{},{} target={},{},{} hp={}", age, posX, posY, posZ, target.posX, target.posY, target.posZ, target.health());
         spent = true;
         target.attackEntityFrom(new DamageSource("gregguns.sam"), SamRules.DAMAGE);
         if (owner != null && (target.isDead || target.health() <= 0.0F)) {
@@ -165,7 +164,6 @@ public final class EntitySam extends Entity {
     }
 
     private void fizzle() {
-        com.gregguns.GregGuns.LOG.info("SAM-DIAG fizzle age={} best={} stalled={} pos={},{},{}", age, bestRange, stalled, posX, posY, posZ);
         spent = true;
         worldObj.playSoundEffect(posX, posY, posZ, "random.fizz", 1.0F, 1.0F);
         setDead();
