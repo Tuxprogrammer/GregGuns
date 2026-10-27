@@ -120,9 +120,8 @@ public final class GregGunsCasings extends BlockCasingsAbstract implements Tiere
 
     @Override
     public Tier getTier() {
-        // The block reports its highest meta (Carbon Bastion Plating, an EV recipe); the self-check reads one tier per
-        // block.
-        return Tier.EV;
+        // The block reports its highest meta (Radar Casing, an IV recipe); the self-check reads one tier per block.
+        return Tier.IV;
     }
 
     @Override
