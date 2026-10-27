@@ -342,9 +342,11 @@ The one owner review before the beta.
 - NEI, lang keys and config documentation. The ICBM quests in the GregGuns tab are checked end to end on a real server install.
 - A recipe-clash review of the ICBM recipes against the full GTNH pack, and the PACK-CHANGES pass.
 - **Visuals:** `icbm-recipes` from the recipe export, `icbm-hero`, an ICBM section in the README, and every ICBM sheet rebuilt after the balance pass.
+- **Modeled radar (D125, owner, pre-beta):** the single-block HV and EV radars give way to a small radar multiblock whose formed controller spawns a spinning dish (an entity or a TESR, like the silo doors). The Radar Tower gets the same dish. Look for an NTM dish model first (D47). Decide here whether the old blocks 20142 and 20143 become inert placeholders or convert in place.
 
 **Exit gate:**
 - [ ] The fix list is closed.
+- [ ] A formed radar spins its dish in a two-client check, and no single-block radar is craftable (D125).
 - [ ] The soak runs show no tick spikes past budget and no leaked chunk tickets.
 - [ ] The recipe-clash review finds no unresolved clash with ICBM content.
 - [ ] Every ICBM guide sheet matches the code after the balance pass.
