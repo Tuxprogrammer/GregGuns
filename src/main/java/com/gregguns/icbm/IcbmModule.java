@@ -31,6 +31,7 @@ public final class IcbmModule implements GregGunsModule {
         WarheadRegistration.preInit(registrar);
         com.gregguns.icbm.production.ProductionItems.register(registrar);
         com.gregguns.icbm.missile.MissileRegistration.preInit(registrar);
+        com.gregguns.icbm.tools.ToolRegistration.preInit(registrar);
     }
 
     /**
@@ -55,6 +56,7 @@ public final class IcbmModule implements GregGunsModule {
             com.gregguns.icbm.control.ControlScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.silo.SiloScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             com.gregguns.icbm.production.ProductionScenarios.registerAll(ScenarioRegistry.SCENARIOS);
+            com.gregguns.icbm.tools.ToolRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
         }
     }
 
@@ -68,5 +70,6 @@ public final class IcbmModule implements GregGunsModule {
         com.gregguns.icbm.control.ControlMachines.registerRecipes();
         com.gregguns.icbm.silo.SiloMachines.registerRecipes();
         com.gregguns.icbm.production.gc.MissileSchematicPage.registerAll();
+        com.gregguns.icbm.tools.ToolRegistration.init();
     }
 }
