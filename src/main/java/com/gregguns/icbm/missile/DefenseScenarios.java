@@ -61,6 +61,7 @@ public final class DefenseScenarios {
         registry.register(new Tower());
         registry.register(new TowerDetects());
         registry.register(new TowerSaveReload());
+        registry.register(new MpDefense());
         registry.register(new Gun());
         registry.register(new SaveReload());
     }
@@ -814,6 +815,170 @@ public final class DefenseScenarios {
             ctx.world()
                 .getChunkFromBlockCoords(x, z)
                 .addTileEntity(fresh);
+        }
+    }
+
+    /**
+     * {@code testing.icbm_mp_defense}: the multiplayer check for I4. Two clients watch an HV radar go active (its front
+     * overlay changes) and a SAM fly at a missile, and take matching labeled shots; labels are {@code icbm-i4-*}. Not
+     * part of {@code test all}: it needs connected clients. Server side.
+     */
+    private static final class MpDefense extends Base {
+
+        @Override
+        public String name() {
+            return "testing.icbm_mp_defense";
+        }
+
+        @Override
+        public String description() {
+            return "Two clients see an HV radar's active front and a SAM in flight at a missile, and take matching shots. Needs 2 clients and Galacticraft; not part of test all.";
+        }
+
+        @Override
+        public boolean includedInAll() {
+            return false;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        ScenarioResult go(ScenarioContext ctx) {
+            final java.util.List<net.minecraft.entity.player.EntityPlayerMP> players = new java.util.ArrayList<>(
+                net.minecraft.server.MinecraftServer.getServer()
+                    .getConfigurationManager().playerEntityList);
+            if (players.size() < 2) {
+                return ScenarioResult.fail(name(), "needs two connected players, have " + players.size());
+            }
+            ctx.clearArea(8, 24);
+            final boolean terrain = IcbmConfig.terrainDamageT1;
+            IcbmConfig.terrainDamageT1 = false;
+            final World w = ctx.world();
+            w.setWorldTime(6000L);
+            final EntityMissile m = arm(ctx);
+            if (m == null) {
+                return finish(terrain, ScenarioResult.fail(name(), "could not arm"));
+            }
+            final int rz = 30;
+            place(ctx, GregGunsMTEIDs.RADAR_HV, 6, 0, rz);
+            place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 9, 0, rz);
+            for (net.minecraft.entity.player.EntityPlayerMP p : players) {
+                p.setGameType(net.minecraft.world.WorldSettings.GameType.CREATIVE);
+            }
+            final ScenarioResult.Builder out = ScenarioResult.builder(name());
+            final int[] stage = { 0 };
+            final int[] mark = { 0 };
+            final double ox = ctx.originX();
+            final double oy = ctx.originY();
+            final double oz = ctx.originZ();
+            return ScenarioResult.pending(name(), 2400, ticks -> {
+                IGregTechTileEntity rb = live(ctx, 6, 0, rz);
+                IGregTechTileEntity bb = live(ctx, 9, 0, rz);
+                MTERadar r = radar(rb);
+                MTEAirDefense b = battery(bb);
+                if (ticks < WARMUP_TICKS) {
+                    return null;
+                }
+                if (r == null || b == null) {
+                    return finish(terrain, ScenarioResult.fail(name(), "a machine is gone after the warm-up"));
+                }
+                power(rb);
+                power(bb);
+                if (stage[0] == 0) {
+                    r.setRadius(100);
+                    bb.setInventorySlotContents(MTEAirDefense.SLOT_STICK, linkStick(rb, w));
+                    bb.setInventorySlotContents(MTEAirDefense.SLOT_SAM, new ItemStack(DefenseMachines.samItem(), 2));
+                    for (net.minecraft.entity.player.EntityPlayerMP p : players) {
+                        MissileShotsScenario.signal(p, "hud", "off");
+                    }
+                    out.checkEquals(
+                        "launch",
+                        LaunchResult.OK,
+                        m.launch(ctx.originX() + 0.5, ctx.originZ() + 80 + 0.5, null));
+                    stage[0] = 1;
+                    return null;
+                }
+                if (stage[0] == 1) {
+                    // The radar's front faces north; stand in front of it, one client either side.
+                    if (r.state() != RadarRules.State.THREAT) {
+                        return ticks < 900 ? null : finish(terrain, ScenarioResult.fail(name(), "no threat seen"));
+                    }
+                    for (int i = 0; i < players.size(); i++) {
+                        double side = i % 2 == 0 ? 3.0 : -1.0;
+                        MissileShotsScenario.cam(
+                            players.get(i),
+                            ox + 6.5 + side,
+                            oy + 2.0,
+                            oz + rz - 4.0,
+                            ox + 6.5,
+                            oy + 0.8,
+                            oz + rz + 0.5);
+                    }
+                    mark[0] = ticks;
+                    stage[0] = 2;
+                    return null;
+                }
+                if (stage[0] == 2) {
+                    if (ticks < mark[0] + 12) {
+                        return null;
+                    }
+                    for (net.minecraft.entity.player.EntityPlayerMP p : players) {
+                        MissileShotsScenario.signal(p, "shot", "icbm-i4-1-radar-active");
+                    }
+                    stage[0] = 3;
+                    return null;
+                }
+                if (stage[0] == 3) {
+                    boolean flying = samsInAir(w) > 0;
+                    if (!flying) {
+                        return ticks < 1500 ? null : finish(terrain, ScenarioResult.fail(name(), "no SAM flew"));
+                    }
+                    stage[0] = 4;
+                    mark[0] = ticks;
+                    return null;
+                }
+                if (stage[0] == 4) {
+                    EntitySam sam = null;
+                    for (Object o : w.loadedEntityList) {
+                        if (o instanceof EntitySam && !((EntitySam) o).isDead) {
+                            sam = (EntitySam) o;
+                        }
+                    }
+                    if (sam != null) {
+                        for (int i = 0; i < players.size(); i++) {
+                            double side = i % 2 == 0 ? 22.0 : -22.0;
+                            MissileShotsScenario.cam(
+                                players.get(i),
+                                sam.posX + side,
+                                sam.posY + 2.0,
+                                sam.posZ - 6.0,
+                                sam.posX,
+                                sam.posY,
+                                sam.posZ);
+                        }
+                        if (ticks == mark[0] + 3) {
+                            for (net.minecraft.entity.player.EntityPlayerMP p : players) {
+                                MissileShotsScenario.signal(p, "shot", "icbm-i4-2-sam-flight");
+                            }
+                            stage[0] = 5;
+                            mark[0] = ticks;
+                        }
+                    } else if (ticks > mark[0] + 3) {
+                        out.check(false, "the SAM was gone before the shot");
+                        stage[0] = 5;
+                        mark[0] = ticks;
+                    }
+                    return null;
+                }
+                if (ticks < mark[0] + 60 || (!m.isDead && ticks < 2000)) {
+                    return null;
+                }
+                MissileScenarios.sweep(ctx);
+                out.check(m.isDead, "the missile is gone");
+                for (net.minecraft.entity.player.EntityPlayerMP p : players) {
+                    MissileShotsScenario.signal(p, "hud", "on");
+                }
+                return finish(terrain, out.build());
+            });
         }
     }
 
