@@ -6,12 +6,12 @@ Radar, the air-defense battery, the EMP tower and the kept handheld tools. Radar
 
 ## Contents
 
-All sheets are planned.
+Radar, air-defense battery and the radar-gun part of handheld-tools are written (I4 coder A); the rest are planned.
 
-- radar.md (planned): single-block radars at HV and EV, a multiblock radar tower from IV, range by tier, impact-point threat test; the sweep is MIT-portable (D14).
-- air-defense-battery.md (planned): the SAM-holding single block, radar link, intercept (MIT-portable) (D15).
+- [radar.md](radar.md): single-block radars at HV and EV, a multiblock radar tower from IV, range by tier, impact-point threat test; the sweep is MIT-portable (D14).
+- [air-defense-battery.md](air-defense-battery.md): the SAM-holding single block, radar link, intercept (MIT-portable) (D15).
 - emp-tower.md (planned): EU drain, one maintenance issue per multiblock, kill-chance table for missiles, device cap, continuous EU cost (D16).
-- handheld-tools.md (planned): the kept tools (radar gun, remote detonator, defuser) per the baseline sheet.
+- [handheld-tools.md](handheld-tools.md): the kept tools (radar gun, remote detonator, defuser) per the baseline sheet.
 - outputs.md (planned): redstone, GT covers, OC components, data-stick link to batteries (D13, D14).
 
 ## Integration map
