@@ -38,7 +38,13 @@ public enum WarheadBlast {
     /** Bores a narrow tunnel straight down. */
     BREACHING("breaching", ExplosiveTier.T2, BlastShape.NONE, 12.0, 0.0, Kind.BREACH),
     /** The big conventional blast: the widest crater of the tier. */
-    THERMOBARIC("thermobaric", ExplosiveTier.T2, BlastShape.RAY_SPHERE, 20.0, 3000.0, Kind.NONE);
+    THERMOBARIC("thermobaric", ExplosiveTier.T2, BlastShape.RAY_SPHERE, 20.0, 3000.0, Kind.NONE),
+    /** The hot T3 blast: a wide crater, everything in it burns. */
+    EXOTHERMIC("exothermic", ExplosiveTier.T3, BlastShape.RAY_SPHERE, 28.0, 8000.0, Kind.SHRAPNEL),
+    /** The cold T3 blast: a wide crater, everything in it is slowed to a crawl. */
+    ENDOTHERMIC("endothermic", ExplosiveTier.T3, BlastShape.RAY_SPHERE, 28.0, 8000.0, Kind.ANVIL),
+    /** The nuclear warhead (ZPM): the widest crater, annihilation in the kill zone, fallout. */
+    NUCLEAR("nuclear", ExplosiveTier.T3, BlastShape.RAY_SPHERE, 64.0, 8000.0, Kind.NUCLEAR);
 
     /** Which effect class runs after the engine's terrain and damage work. */
     public enum Kind {
@@ -65,7 +71,9 @@ public enum WarheadBlast {
         /** Shatters glass, stuns. */
         SONIC,
         /** A vertical tunnel. */
-        BREACH
+        BREACH,
+        /** Annihilation in the kill zone (set on the definition) and fallout when it ends. */
+        NUCLEAR
     }
 
     private final String id;

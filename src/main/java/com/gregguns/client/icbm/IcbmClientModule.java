@@ -4,6 +4,7 @@ import com.gregguns.core.module.ClientModule;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.icbm.missile.EntityMissileT1;
 import com.gregguns.icbm.missile.EntityMissileT2;
+import com.gregguns.icbm.missile.EntityMissileT3;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -30,10 +31,14 @@ public final class IcbmClientModule implements ClientModule {
         MissileBodyRenderer.register();
         RenderingRegistry.registerEntityRenderingHandler(EntityMissileT1.class, new RenderMissile());
         RenderingRegistry.registerEntityRenderingHandler(EntityMissileT2.class, new RenderMissile());
+        RenderingRegistry.registerEntityRenderingHandler(EntityMissileT3.class, new RenderMissile());
+        RenderingRegistry
+            .registerEntityRenderingHandler(com.gregguns.icbm.silo.EntitySiloDoors.class, new RenderSiloDoors());
     }
 
     @Override
     public void init() {
         MissileBodyItemRenderer.register();
+        WarheadItemRenderer.register();
     }
 }

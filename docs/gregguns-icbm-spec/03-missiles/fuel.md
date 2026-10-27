@@ -18,8 +18,12 @@ The Galacticraft fuel loader asks `RocketFuels.isCorrectFuel(fuelable, fluid)`, 
 
 | Tier | Accepted fluids ("this fuel or better") |
 |---|---|
-| T1 (HV) | `nitrofuel` (Cetane-Boosted Diesel), `rocketfuelmixb` (RP-1), `rocketfuelmixd`, `rocketfuelmixc`, `rocketfuelmixa` |
-| T2 (EV-IV) | `rocketfuelmixd` (Dense Hydrazine), `rocketfuelmixc` (Purple), `rocketfuelmixa` (Green) |
+| T1 (HV) | `nitrofuel` (Cetane-Boosted Diesel), `fluid.rocketfuelmixb` (RP-1), `fluid.rocketfuelmixd`, `fluid.rocketfuelmixc`, `fluid.rocketfuelmixa` |
+| T2 (EV-IV) | `fluid.rocketfuelmixd` (Dense Hydrazine), `fluid.rocketfuelmixc` (Purple), `fluid.rocketfuelmixa` (Green) |
+
+| T3 (LuV-ZPM, silo only) | `fluid.rocketfuelmixc` (Purple), `fluid.rocketfuelmixa` (Green) |
+
+The mix fluids are registered by the pack (GT5-Unofficial) under the `fluid.` prefix (`FluidRegistry.getFluidStack("fluid.rocketfuelmixc", ...)`); `nitrofuel` has none. The lists must use the registry names, since the silo and the loader compare `Fluid.getName()`.
 
 Plain Galacticraft `fuel` is not in either list (it is for GC's own rockets). The fluid the loader then pours into the entity is generic, so `addFuel` accepts what the loader offers; the list is the only gate, as for a GC rocket. A pad forwarding fuel directly (a pipe into the pad) goes through `addFuel` with no list check, exactly as it does for a GC rocket; the GC fuel loader is the supported way.
 

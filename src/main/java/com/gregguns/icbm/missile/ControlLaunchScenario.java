@@ -62,7 +62,7 @@ public final class ControlLaunchScenario implements Scenario {
         if (!IcbmAvailability.galacticraftPresent()) {
             return ScenarioResult.skip(name(), "Galacticraft is not loaded (D46)");
         }
-        ctx.clearArea(8, 12);
+        ctx.clearArea(8, 20);
         MissileScenarios.floor(ctx, 6);
         for (int a = -1; a <= 1; a++) {
             for (int b = -1; b <= 1; b++) {
@@ -144,7 +144,9 @@ public final class ControlLaunchScenario implements Scenario {
                     ControlStatus st = c.fire(player);
                     out.checkEquals("button shot", ControlStatus.FIRED, st);
                     out.checkEquals("one shot's EU", euBefore[0] - MTELaunchControl.EU_PER_SHOT, base.getStoredEU());
-                    out.checkEquals("cooldown right after", ControlStatus.COOLDOWN, c.fire(null));
+                    // The countdown (D88) is running, so a second shot is refused as such; the cooldown (40 ticks) ends
+                    // before ignition.
+                    out.checkEquals("no second shot during the countdown", ControlStatus.COUNTDOWN, c.fire(null));
                     stage[0] = 1;
                     return null;
                 }

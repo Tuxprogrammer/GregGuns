@@ -46,8 +46,10 @@ public final class ItemBlockMissileBody extends ItemBlock {
         int by;
         int bz;
         if (pad != null) {
-            // On a pad only a click on its top places, and always on the centre cell.
-            if (side != 1) {
+            // On a pad only a click on its top places, and always on the centre cell. A T3 body is too big for a
+            // free-standing pad, but fits the floor of a formed silo (D87).
+            if (side != 1
+                || tier.siloOnly() && !com.gregguns.icbm.silo.MTEMissileSilo.isFloorOf(world, pad[0], pad[1], pad[2])) {
                 return false;
             }
             bx = pad[0];
@@ -122,7 +124,9 @@ public final class ItemBlockMissileBody extends ItemBlock {
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
         MissileTooltipFormat.Facts f = new MissileTooltipFormat.Facts();
         f.tierText = tier == MissileTier.T1 ? TierText.colored(com.gregguns.api.Tier.HV)
-            : TierText.colored(com.gregguns.api.Tier.EV) + "-" + TierText.colored(com.gregguns.api.Tier.IV);
+            : tier == MissileTier.T2
+                ? TierText.colored(com.gregguns.api.Tier.EV) + "-" + TierText.colored(com.gregguns.api.Tier.IV)
+                : TierText.colored(com.gregguns.api.Tier.LUV) + "-" + TierText.colored(com.gregguns.api.Tier.ZPM);
         f.fuelMb = FuelMath.tank(tier.baseFuelMb(), com.gregguns.core.config.IcbmConfig.missileFuelFactor);
         f.minRange = tier.minRange();
         f.maxRange = (int) Math.round(tier.baseMaxRange() * com.gregguns.core.config.IcbmConfig.missileRangeFactor);

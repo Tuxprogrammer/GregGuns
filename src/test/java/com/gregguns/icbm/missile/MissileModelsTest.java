@@ -80,7 +80,8 @@ class MissileModelsTest {
             double[] b = bounds(load(t));
             assertEquals(0.5, (b[0] + b[3]) / 2.0, 0.01, t + " centered in x");
             assertEquals(0.5, (b[2] + b[5]) / 2.0, 0.01, t + " centered in z");
-            assertTrue(b[3] - b[0] < 1.0, t + " narrower than a block");
+            // The T3 fins span 1.5 blocks and overhang its block by a quarter each side; the silo shaft is 3 wide.
+            assertTrue(b[3] - b[0] < 1.6, t + " narrower than a block and a half");
         }
     }
 

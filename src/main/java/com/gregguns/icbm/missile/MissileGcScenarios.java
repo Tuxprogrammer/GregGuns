@@ -41,16 +41,16 @@ public final class MissileGcScenarios {
     /** Checks the fuel lists against the real loader test (D19: "this fuel or better"). */
     static void fuelLists(ScenarioResult.Builder out, ScenarioContext ctx, EntityMissile t1) {
         out.check(MissileGc.accepts(t1, "nitrofuel"), "T1 takes Cetane-Boosted Diesel");
-        out.check(MissileGc.accepts(t1, "rocketfuelmixb"), "T1 takes RP-1");
-        out.check(MissileGc.accepts(t1, "rocketfuelmixd"), "T1 takes Dense Hydrazine (better fuel)");
+        out.check(MissileGc.accepts(t1, "fluid.rocketfuelmixb"), "T1 takes RP-1");
+        out.check(MissileGc.accepts(t1, "fluid.rocketfuelmixd"), "T1 takes Dense Hydrazine (better fuel)");
         out.check(!MissileGc.accepts(t1, "water"), "T1 does not take water");
         out.check(!MissileGc.accepts(t1, "fuel"), "T1 does not take plain Galacticraft fuel");
         EntityMissile t2 = MissileScenarios.armedAt(ctx, MissileTier.T2, 0, 4);
         if (t2 != null) {
             out.check(!MissileGc.accepts(t2, "nitrofuel"), "T2 does not take Cetane-Boosted Diesel");
-            out.check(!MissileGc.accepts(t2, "rocketfuelmixb"), "T2 does not take RP-1");
-            out.check(MissileGc.accepts(t2, "rocketfuelmixd"), "T2 takes Dense Hydrazine");
-            out.check(MissileGc.accepts(t2, "rocketfuelmixa"), "T2 takes Green (better fuel)");
+            out.check(!MissileGc.accepts(t2, "fluid.rocketfuelmixb"), "T2 does not take RP-1");
+            out.check(MissileGc.accepts(t2, "fluid.rocketfuelmixd"), "T2 takes Dense Hydrazine");
+            out.check(MissileGc.accepts(t2, "fluid.rocketfuelmixa"), "T2 takes Green (better fuel)");
             // The loader offers generic fuel: the entity's own addFuel is the path it uses.
             Fluid generic = FluidRegistry.getFluid("fuel");
             if (generic != null) {
@@ -86,7 +86,7 @@ public final class MissileGcScenarios {
             if (!IcbmAvailability.galacticraftPresent()) {
                 return ScenarioResult.skip(name(), "Galacticraft is not loaded (D46)");
             }
-            ctx.clearArea(8, 12);
+            ctx.clearArea(8, 20);
             MissileScenarios.floor(ctx, 6);
             // Nine single pads; the center one turns the 3x3 into a full pad on its next tick.
             for (int a = -1; a <= 1; a++) {
@@ -143,11 +143,12 @@ public final class MissileGcScenarios {
                     out.check(!removal.allow, "pad removal is denied while a missile stands on it");
                     // Fuel through the loader itself: it checks the fluid against RocketFuels, then pours into the
                     // dock.
-                    // First a fluid that is not this tier's fuel: the loader must leave the tank empty.
+                    // First a fluid that is not in any missile's list (Galacticraft's own rocket fuel): the loader must
+                    // leave the tank empty. (A T1 takes the mixes as "better fuel", so one of them is no refusal.)
                     fuelFactor[0] = ConfigManagerCore.rocketFuelFactor;
                     // The loader pours 2 mB x the factor per tick; speed it up so the test stays short.
                     ConfigManagerCore.rocketFuelFactor = 100;
-                    fillLoader(w, cx + 2, cy, cz, "rocketfuelmixd");
+                    fillLoader(out, w, cx + 2, cy, cz, "fuel");
                     phase[0] = 5;
                     phaseSince[0] = ticks;
                     return null;
@@ -160,7 +161,9 @@ public final class MissileGcScenarios {
                             return null;
                         }
                         out.checkEquals("the loader refuses another tier's fuel", 0, m.fuelMb());
-                        fillLoader(w, cx + 2, cy, cz, "nitrofuel");
+                        out.check(loaderMb(lt) > 0, "the refused fuel is still in the loader (it took nothing)");
+                        // A positive fill with a mix (RP-1, the T1 tank's own mix).
+                        fillLoader(out, w, cx + 2, cy, cz, "fluid.rocketfuelmixb");
                         phase[0] = 6;
                         phaseSince[0] = ticks;
                         return null;
@@ -174,7 +177,7 @@ public final class MissileGcScenarios {
                         return null;
                     }
                     ConfigManagerCore.rocketFuelFactor = fuelFactor[0];
-                    out.check(true, "the fuel loader filled the tank with its own fuel");
+                    out.check(true, "the fuel loader filled the tank with a mix");
                     phase[0] = 3;
                     return null;
                 }
@@ -242,13 +245,20 @@ public final class MissileGcScenarios {
             }
         }
 
-        private static void fillLoader(World w, int x, int y, int z, String fluidName) {
+        /** Fills the loader's tank; fails the scenario when the fluid is not registered or the loader is missing. */
+        private static void fillLoader(ScenarioResult.Builder out, World w, int x, int y, int z, String fluidName) {
             TileEntity t = w.getTileEntity(x, y, z);
             Fluid f = FluidRegistry.getFluid(fluidName);
+            out.check(f != null, "the test fluid " + fluidName + " is a registered fluid");
+            out.check(t instanceof TileEntityFuelLoader, "a fuel loader stands where the test fills it");
             if (t instanceof TileEntityFuelLoader && f != null) {
                 FluidTank tank = ((TileEntityFuelLoader) t).fuelTank;
                 tank.setFluid(new FluidStack(f, tank.getCapacity()));
             }
+        }
+
+        private static int loaderMb(TileEntity t) {
+            return t instanceof TileEntityFuelLoader ? ((TileEntityFuelLoader) t).fuelTank.getFluidAmount() : 0;
         }
 
         private ScenarioResult finish(ScenarioResult.Builder out, boolean terrain) {

@@ -488,7 +488,9 @@ final class IcbmBlastScenarios {
             restoreTerrain(new boolean[] { true, true, true, true });
             final List<ExplosiveDef> defs = new ArrayList<>();
             for (ExplosiveDef d : Explosives.allIncludingHidden()) {
+                // Radius 64 and up has its own scenario (icbm.blast.crater_nuclear); this one's slab is 48 across.
                 if (!d.hidden() && d.shape() != BlastShape.NONE
+                    && d.radius(d.maxFill()) <= 40.0
                     && d.tier()
                         .number() <= IcbmConfig.maxBlastTier) {
                     defs.add(d);
@@ -499,7 +501,11 @@ final class IcbmBlastScenarios {
             final int[] cursor = { 0 };
             final int[] detonatedAt = { -1 };
             final int[] before = { 0 };
-            return ScenarioResult.pending(name(), 1500 * Math.max(1, defs.size()), ticks -> {
+            long allowance = 0;
+            for (ExplosiveDef d : defs) {
+                allowance += tickCap(d) + 100;
+            }
+            return ScenarioResult.pending(name(), (int) Math.min(Integer.MAX_VALUE, allowance + 600), ticks -> {
                 try {
                     BlastEngine engine = BlastEngine.instance();
                     if (cursor[0] >= defs.size()) {
@@ -528,11 +534,21 @@ final class IcbmBlastScenarios {
                         detonatedAt[0] = ticks;
                         return null;
                     }
+                    // Wait on this blast's own job, not on engine-wide counters, with a cap that grows with its volume.
                     int age = ticks - detonatedAt[0];
-                    if (engine.activeBlasts() > 0 && age < 1400
-                        && !(age >= 40 && engine.pendingBlocks() == 0 && engine.undecidedBlasts() == 0)) {
+                    int cap = tickCap(def);
+                    if (!engine.lastBlastDone() && age < cap) {
                         return null;
                     }
+                    out.check(
+                        engine.lastBlastDone(),
+                        def.id() + " r"
+                            + r
+                            + " did not finish within "
+                            + cap
+                            + " ticks (stage "
+                            + engine.lastBlastStage()
+                            + ")");
                     engine.clear();
                     int broken = before[0] - countSlab(w, cx, cy, cz, half);
                     double hemisphere = 2.0 / 3.0 * Math.PI * r * r * r;
@@ -571,6 +587,12 @@ final class IcbmBlastScenarios {
                     return ScenarioResult.fail(name(), "threw " + e);
                 }
             });
+        }
+
+        /** Ticks one def's blast may take: a base plus its hemisphere volume at 8 blocks a tick (slow, loaded box). */
+        private static int tickCap(ExplosiveDef def) {
+            double r = Math.min(IcbmConfig.maxBlastRadius, def.radius(def.maxFill()));
+            return 600 + (int) (2.0 / 3.0 * Math.PI * r * r * r / 8.0);
         }
 
         private static void clearSlab(World w, int cx, int cy, int cz, int half) {

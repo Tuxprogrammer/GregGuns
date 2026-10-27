@@ -49,6 +49,7 @@ public final class MissileScenarios {
         registry.register(new MissileShotsScenario());
         registry.register(new MissileShotsScenario(true));
         registry.register(new MissileMpScenario());
+        I3ItemShotsScenarios.registerAll(registry);
     }
 
     static boolean moduleOff() {
@@ -179,7 +180,7 @@ public final class MissileScenarios {
                 return needsModule();
             }
             sweep(ctx);
-            ctx.clearArea(8, 10);
+            ctx.clearArea(8, 20);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             World w = ctx.world();
             floor(ctx, 8);
@@ -272,7 +273,7 @@ public final class MissileScenarios {
                 return needsModule();
             }
             sweep(ctx);
-            ctx.clearArea(6, 10);
+            ctx.clearArea(6, 20);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             EntityMissile m1 = armed(ctx, MissileTier.T1, 0);
             if (m1 == null) {
@@ -320,7 +321,7 @@ public final class MissileScenarios {
                 return needsModule();
             }
             sweep(ctx);
-            ctx.clearArea(6, 10);
+            ctx.clearArea(6, 20);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             World w = ctx.world();
             int px = ctx.originX();
@@ -471,7 +472,7 @@ public final class MissileScenarios {
                 return needsModule();
             }
             sweep(ctx);
-            ctx.clearArea(8, 12);
+            ctx.clearArea(8, 20);
             boolean terrain = IcbmConfig.terrainDamage(tier.number());
             setTerrain(true);
             EntityMissile m = armed(ctx, tier, MissileBodies.MAX_GUIDANCE);
@@ -577,7 +578,7 @@ public final class MissileScenarios {
                 return needsModule();
             }
             sweep(ctx);
-            ctx.clearArea(8, 12);
+            ctx.clearArea(8, 20);
             EntityMissile m = armed(ctx, MissileTier.T1, MissileBodies.MAX_GUIDANCE);
             if (m == null) {
                 return ScenarioResult.fail(name(), "could not arm");
@@ -681,7 +682,7 @@ public final class MissileScenarios {
 
         EntityMissile launched(ScenarioContext ctx, ScenarioResult.Builder out) {
             sweep(ctx);
-            ctx.clearArea(8, 12);
+            ctx.clearArea(8, 20);
             EntityMissile m = armed(ctx, MissileTier.T1, MissileBodies.MAX_GUIDANCE);
             if (m == null) {
                 return null;
@@ -909,7 +910,7 @@ public final class MissileScenarios {
                 return needsModule();
             }
             sweep(ctx);
-            ctx.clearArea(6, 10);
+            ctx.clearArea(6, 20);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             EntityMissile m = armed(ctx, MissileTier.T1, 0);
             if (m == null) {
@@ -961,7 +962,7 @@ public final class MissileScenarios {
                 return needsModule();
             }
             sweep(ctx);
-            ctx.clearArea(6, 10);
+            ctx.clearArea(6, 20);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             EntityMissile m = armed(ctx, MissileTier.T2, 2);
             if (m == null) {
@@ -1022,7 +1023,7 @@ public final class MissileScenarios {
                 return needsModule();
             }
             sweep(ctx);
-            ctx.clearArea(8, 12);
+            ctx.clearArea(8, 20);
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             boolean terrain = IcbmConfig.terrainDamageT1;
             IcbmConfig.terrainDamageT1 = false;
@@ -1046,7 +1047,7 @@ public final class MissileScenarios {
             out.check(!m.isDead, "still there");
             m.fill(m.capacityMb(), true);
             m.launch(ctx.originX() + 0.5, ctx.originZ() + 100.5, null);
-            for (int i = 0; i < EntityMissile.WARMUP_TICKS + 5; i++) {
+            for (int i = 0; i < IcbmConfig.countdownTicks + 5; i++) {
                 m.onUpdate();
             }
             out.check(m.phase() == FlightPhase.CLIMB, "flying (" + m.phase() + ")");

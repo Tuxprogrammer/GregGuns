@@ -24,7 +24,11 @@ from PIL import Image
 TABLE = {
     "missile_body_t1": ("missile_body_t1", 0.5, "mp_t_10_kerosene", "mp_f_10_kerosene", "mp_s_10_flat", 3.0),
     "missile_body_t2": ("missile_body_t2", 0.4, "mp_t_10_kerosene", "mp_f_10_long_kerosene", "mp_s_10_cruise", 4.0),
+    # T3: unscaled (matches the unscaled warhead_t3 ring, radius 0.5). The flat fins are 0.88 either side of the
+    # axis raw, so their x and z are squeezed by FIN_FIT so the tips reach 0.75 from the axis (1.5 wide at the base; the fuselage stays 1x1). Six blocks tall.
+    "missile_body_t3": ("missile_body_t3", 1.0, "mp_t_10_kerosene", "mp_f_10_kerosene", "mp_s_10_flat", 6.0),
 }
+FIN_FIT = {"missile_body_t3": 0.75 / 0.88}
 TEX_DIR = {"mp_t": "thrusters", "mp_f": "fuselages", "mp_s": "stability"}
 ATLAS = (256, 128)
 THRUSTER_H = 1.0  # raw units; the fuselage stands on the thruster
@@ -34,7 +38,7 @@ def part_png(src: Path, name: str) -> Path:
     return src / f"{name}.png"
 
 
-def convert(src: Path, scale: float, parts, height: float) -> tuple[str, Image.Image, float]:
+def convert(src: Path, scale: float, parts, height: float, fin_xz: float = 1.0) -> tuple[str, Image.Image, float]:
     atlas = Image.new("RGBA", ATLAS, (0, 0, 0, 0))
     x0 = 0
     vs, vts, vns, faces = [], [], [], []
@@ -58,7 +62,8 @@ def convert(src: Path, scale: float, parts, height: float) -> tuple[str, Image.I
             if p[0] == "v":
                 x, y, z = float(p[1]), float(p[2]) + dy, float(p[3])
                 yy = (y - dy) * sy + dy * scale if idx == 1 else y * scale
-                vs.append((x * scale + 0.5, yy, z * scale + 0.5))
+                k = fin_xz if idx == 2 else 1.0
+                vs.append((x * scale * k + 0.5, yy, z * scale * k + 0.5))
                 if idx == 1:
                     top = max(top, yy)
             elif p[0] == "vt":
@@ -87,7 +92,7 @@ def main():
     root = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("src/main/resources/assets/gregguns")
     mo, to = root / "models/thirdparty/ntm", root / "textures/models/thirdparty/ntm"
     for name, (out, scale, th, fu, st, height) in TABLE.items():
-        obj, atlas, top = convert(src, scale, (th, fu, st), height)
+        obj, atlas, top = convert(src, scale, (th, fu, st), height, FIN_FIT.get(name, 1.0))
         (mo / f"{out}.obj").write_text(obj)
         atlas.save(to / f"{out}.png")
         print("wrote", out, "nose seat y = %.4f" % top)

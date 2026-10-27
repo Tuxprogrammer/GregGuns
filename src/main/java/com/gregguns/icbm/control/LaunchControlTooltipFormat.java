@@ -40,4 +40,32 @@ public final class LaunchControlTooltipFormat {
         out.add(addedBy);
         return out;
     }
+
+    /** Splits one line into pieces that fit a pixel width; the client backs it with the font renderer. */
+    public interface Wrapper {
+
+        /**
+         * @param line one line of text
+         * @return the line cut into rows that fit
+         */
+        List<String> wrap(String line);
+    }
+
+    /**
+     * @param lines   the tooltip lines
+     * @param wrapper how to wrap one line
+     * @return every line wrapped, in order; a line that wraps to nothing (an empty line) is kept as it is
+     */
+    public static List<String> wrapAll(List<String> lines, Wrapper wrapper) {
+        List<String> out = new ArrayList<>();
+        for (String line : lines) {
+            List<String> rows = wrapper.wrap(line);
+            if (rows == null || rows.isEmpty()) {
+                out.add(line);
+            } else {
+                out.addAll(rows);
+            }
+        }
+        return out;
+    }
 }

@@ -24,7 +24,9 @@
 - One inventory slot for a GT **data stick**. Automation can put a stick in; nothing can pull it out.
 - Tooltip lines come from lang keys; GT machine tooltips do not support Shift, so the details (reach, range, EU, triggers) are always shown. This deviates from D41's Shift rule for machines because GT's block tooltip has no Shift hook (the Turret and benches do the same). It carries "Added by: GregGuns".
 
-## Finding the pad
+## Finding the pad or the silo
+
+From I3 the block fires a `LaunchSite`: a formed Missile Silo within 6 blocks horizontally and 4 vertically of the silo's controller (tried first, because its shaft floor is a pad too), else the Galacticraft pad as before. The range line and the expected radius are those of the linked site (a silo adds its bonus, [missile-silo](../03-missiles/missile-silo.md)), and a silo whose Energy Hatch is below the missile's tier shows `silo_tier` and locks the button.
 
 The block scans a box of plus or minus 4 horizontally and plus or minus 2 vertically for the **center block of a Galacticraft rocket pad** (`GCBlocks.landingPadFull` with metadata 0) and takes the nearest (`PadSearch`, unit tested). A buggy pad is not a rocket pad. `LaunchPads` is the only class that names a Galacticraft block, and it is reached only after the module gate. The pad's center is passed to the pad API.
 
@@ -41,13 +43,14 @@ The block scans a box of plus or minus 4 horizontally and plus or minus 2 vertic
 
 ## The GUI (ModularUI2)
 
-A dark status screen (state, target, distance and range, expected blast radius, EU), the X and Z fields, **Use my position**, the data stick slot with **Load target** and **Save target**, and **Launch**. Every control is labeled with a tooltip. **Launch** is gray until the pre-check is READY, and its tooltip then names the first reason (no target, no pad, power, cooling down, no missile, not armed, not fueled, too close, out of range). Load and Save are gray without a stick and say so. Status numbers reach the client as read-only sync values; no client code reads the world.
+A dark status screen (state, target, distance and range, expected blast radius, EU), the X and Z fields, **Use my position**, the data stick slot with **Load target** and **Save target**, **Launch** and **Abort** (D88). Every control is labeled with a tooltip. **Launch** is gray until the pre-check is READY, and its tooltip then names the first reason (no target, no pad, power, cooling down, no missile, not armed, not fueled, too close, out of range). Load and Save are gray without a stick and say so. **Abort** sits beside Launch: it is live while a countdown runs (the screen reads "Countdown: N s"), gray when none runs, and gray with "Ignition: no abort" once the engines have lit. Status numbers reach the client as read-only sync values; no client code reads the world.
 
 ## Triggers
 
 | Trigger | Behavior |
 |---|---|
 | Launch button | Server re-checks the player, then fires |
+| Abort button | Server re-checks the player, then stops a countdown in progress (refused after ignition) |
 | Redstone | A rising edge of the strongest input fires once. A held signal does not refire; the first sample after a load only seeds the state |
 | GT machine controller cover | The cover enables and disables the block's work; a rising edge of "allowed to work" fires once. A soft mallet toggle does the same |
 | OpenComputers | Not in I2; the outputs sheet places it with the other components in I4 |

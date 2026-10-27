@@ -21,7 +21,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Animates the blast clouds the server announces ({@code PacketBlastCloud}): each client tick, every running cloud
- * spawns a bounded handful of vanilla smoke particles, tinted per gas kind, scattered through the cloud's sphere (or
+ * spawns a bounded handful of vanilla smoke particles, small, translucent and varied in size and brightness, tinted per
+ * gas kind, scattered through the cloud's sphere (or
  * up a rising column for the plume). The particles are added to the effect renderer directly, because the world's own
  * {@code spawnParticle} drops anything farther than 16 blocks from the camera, which would hide a large cloud seen from
  * outside. Counts come from {@link CloudPlan}, are scaled down by the player's particle setting, and a cloud far from
@@ -97,7 +98,8 @@ public final class CloudFxClient {
         double y = c.y + offset[1];
         double z = c.z + offset[2];
         boolean plume = c.kind == CloudKind.PLUME;
-        float size = plume ? 9.0F : 6.0F;
+        float size = CloudPlan.puffSize(c.kind, c.radius, RND);
+        final float alpha = CloudPlan.puffAlpha(c.kind, RND);
         double rise = plume ? 0.08 + RND.nextDouble() * 0.06 : 0.0;
         EntityFX fx = new EntitySmokeFX(
             world,
@@ -114,17 +116,25 @@ public final class CloudFxClient {
                 particleMaxAge = PARTICLE_AGE_MIN + RND.nextInt(PARTICLE_AGE_SPAN) + (plume ? 30 : 0);
             }
 
+            @Override
+            public void onUpdate() {
+                super.onUpdate();
+                // Soft edges in time: thin, and fading in and out, so puffs blend instead of popping.
+                setAlphaF(alpha * CloudPlan.fade(particleAge, particleMaxAge));
+            }
+
             /** Full bright: the tint is the cloud's color, not the (often dark) light at the particle. */
             @Override
             public int getBrightnessForRender(float partialTicks) {
                 return 0xF000F0;
             }
         };
-        float shade = 0.85F + RND.nextFloat() * 0.3F;
+        float shade = CloudPlan.puffShade(RND);
         fx.setRBGColorF(
             Math.min(1.0F, c.kind.red() * shade),
             Math.min(1.0F, c.kind.green() * shade),
             Math.min(1.0F, c.kind.blue() * shade));
+        fx.setAlphaF(0.0F);
         mc.effectRenderer.addEffect(fx);
     }
 }

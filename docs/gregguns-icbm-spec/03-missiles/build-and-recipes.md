@@ -59,6 +59,10 @@ Three more `IcbmPart`s (the two engines were retired in D69: bodies take Galacti
 - **Screen:** a flat panel with Galacticraft's Back and Next buttons, drawn with plain rectangles (no GC texture is reused).
 - Galacticraft types sit in `production/gc` only; the items implement `ISchematicItem` through `@Optional.Interface`.
 
+### The T3 row (I3, D74)
+
+LuV chip (Multifiberglass board, 2 Master circuits, 8 platinum fine wire), a yellow-lens schematic, four compressed titanium plates, four Heavy Duty Rocket Fins Tier 3 and a Heavy Duty Rocket Engine Tier 3 (NewHorizonsCoreMod). The only guidance computer is Mk III, below the body's tier, so a T3 body has no guidance steps. See [missile-silo](missile-silo.md).
+
 ## Cost (D34, D63, D69)
 
 The target is "about one Galacticraft rocket launch of the tier in plates, circuits and fuel". D69 builds the body from Galacticraft's own rocket parts, so the body is priced from the GTNH recipes for those parts (plate equivalents, an estimate): a compressed plate is 2 (plate plus implosion charge); a Tier 1 fin is 28 (2 compressed steel and 4 heavy-duty plates); the Tier 1 engine 38 (2 SDHD120 plates, 4 heavy-duty plates, a canister, a firebox casing, a detector); a Tier 2 fin 68; the Tier 2 engine 200 (2 Tier 1 engines, 2 boosters, 5 asteroid plates). **T1 body: 6 + 112 + 38 + 5 (Mk I computer) = 161. T2 body: 10 + 272 + 200 + 8 = 490.** A Galacticraft launch of the same tier needs the same engine, four of the same fins and a nose cone, so body plus fuel is about one launch (fuel adds a little, the cone is not in our body). The warhead stays the expensive part (D34). The Assembly Line pays the same parts and adds 250 L of lubricant, so automation gives no discount. If the full-pack review finds it dear, trim the fins first (D63).

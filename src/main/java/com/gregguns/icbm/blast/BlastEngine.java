@@ -50,6 +50,8 @@ public final class BlastEngine {
     private final Map<World, BlastSavedData> data = new WeakHashMap<>();
     private int lastSlices;
     private long maxTickNanos;
+    private BlastJob lastStarted;
+    private String maxTickStage = "none";
 
     private BlastEngine() {}
 
@@ -105,7 +107,8 @@ public final class BlastEngine {
             source instanceof EntityPlayer,
             world.getGameRules()
                 .getGameRuleBooleanValue("mobGriefing"));
-        jobs.add(new BlastJob(world, st, def, budget));
+        lastStarted = new BlastJob(world, st, def, budget);
+        jobs.add(lastStarted);
         // Only annihilating explosives get the long-range flash; every other blast uses the normal effects.
         ProjectileExplosion.blastEffects(world, x, y, z, (float) radius, def.annihilates());
         // A large conventional blast gets a smoke plume of its own, sized by its radius (the flash above is for
@@ -123,6 +126,20 @@ public final class BlastEngine {
     /** @return blasts running now */
     public int activeBlasts() {
         return jobs.size();
+    }
+
+    /**
+     * @return true when the blast most recently accepted by {@link #start} has finished (or was cancelled), whatever
+     *         other blasts are running; true when none was ever started. Scenarios wait on this, not on the
+     *         engine-wide counters.
+     */
+    public boolean lastBlastDone() {
+        return lastStarted == null || lastStarted.isDone();
+    }
+
+    /** @return the stage name of the blast most recently accepted, for failure messages ("none" before the first) */
+    public String lastBlastStage() {
+        return lastStarted == null ? "none" : lastStarted.stageName();
     }
 
     /** @return blocks still waiting to break across every blast */
@@ -145,6 +162,17 @@ public final class BlastEngine {
         return n;
     }
 
+    /** @return blasts in the decide stage now: their cast crater is being posted to listeners in slices */
+    public int decidingBlasts() {
+        int n = 0;
+        for (BlastJob j : jobs) {
+            if (j.deciding()) {
+                n++;
+            }
+        }
+        return n;
+    }
+
     /** @return slices the shared scheduler ran in the last tick (tests and scenarios) */
     public int lastSlices() {
         return lastSlices;
@@ -155,9 +183,15 @@ public final class BlastEngine {
         return maxTickNanos;
     }
 
+    /** @return the stage the first running blast was in after the tick behind {@link #maxTickNanos()} (diagnostics) */
+    public String maxTickStage() {
+        return maxTickStage;
+    }
+
     /** Test hook: zeroes {@link #maxTickNanos()}. */
     public void resetStats() {
         maxTickNanos = 0L;
+        maxTickStage = "none";
     }
 
     /** Test hook: cancels and forgets every blast. */
@@ -196,7 +230,13 @@ public final class BlastEngine {
         long began = System.nanoTime();
         budget.open(IcbmConfig.blastBudgetMs * 1_000_000L);
         lastSlices = scheduler.runTick(jobs, budget);
-        maxTickNanos = Math.max(maxTickNanos, System.nanoTime() - began);
+        long spent = System.nanoTime() - began;
+        if (spent > maxTickNanos) {
+            maxTickNanos = spent;
+            maxTickStage = jobs.isEmpty() ? "none"
+                : jobs.get(0)
+                    .stageName();
+        }
         List<World> touched = new ArrayList<>();
         for (BlastJob j : jobs) {
             if (!touched.contains(j.world())) {
@@ -291,7 +331,8 @@ public final class BlastEngine {
                 GregGuns.LOG.warn("Dropping a saved ICBM blast of unknown explosive '{}'", st.explosiveId);
                 continue;
             }
-            jobs.add(new BlastJob(world, st, def, budget));
+            lastStarted = new BlastJob(world, st, def, budget);
+            jobs.add(lastStarted);
             n++;
         }
         if (n > 0) {

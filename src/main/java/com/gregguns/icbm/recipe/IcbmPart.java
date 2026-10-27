@@ -29,6 +29,12 @@ public enum IcbmPart {
             Ing.gt("circuit", "Data", 1, Tier.EV, 5.0),
             Ing.gt("plate", "Titanium", 1, Tier.EV, 1.0),
             Ing.gt("wireFine", "Electrum", 4, Tier.HV, 0.5))),
+    /** Trigger set of every T3 warhead (LuV). */
+    FUZE_ASSEMBLY_MK3("fuze_assembly_mk3", Tier.LUV, 12.0, 1, 20,
+        Arrays.asList(
+            Ing.gt("circuit", "Master", 1, Tier.LUV, 8.0),
+            Ing.gt("plate", "TungstenSteel", 1, Tier.IV, 1.0),
+            Ing.gt("wireFine", "Platinum", 4, Tier.EV, 0.5))),
     /** The copper cone of a breaching warhead. */
     SHAPED_CHARGE_LINER_CONE("shaped_charge_liner_cone", Tier.HV, 1.0, 2, 14,
         Arrays.asList(Ing.gt("plate", "Copper", 2, Tier.LV, 1.0))),

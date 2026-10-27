@@ -136,6 +136,14 @@ Both keys are synced from server to client (GGS-01-03). Block removal always pas
 | `explosions.blockDamage` | boolean | `false` | n/a | yes | Whether GregGuns explosions remove blocks. Off: they still hurt entities. An NPC-caused blast also needs the `mobGriefing` gamerule. Also gates Bio Gun blobs and block fire from the Flamethrower, Nether Blaster and Alien Blaster: with it off the Bio Gun places no blob and its tooltip says "Blobs disabled: explosions.blockDamage is off". |
 | `explosions.selfDamage` | boolean | `true` | n/a | yes | Whether the player who set off an explosion can be hurt by it (fixes PFX-25). |
 | `explosions.machineExplosions` | boolean | `true` | n/a | yes | Whether GregTech machines in a GregGuns blast react to it (can chain). False leaves them standing (Q4). |
+| `explosions.fallout` | boolean | `true` | n/a | yes | Whether a nuclear blast (the Nuke Launcher, the ICBM nuclear warhead) leaves fallout: irradiated surface blocks. Only blasts that broke terrain leave any. |
+| `explosions.falloutMaxBlocks` | int | `6000` | 0 to 100000 | yes | The most blocks one nuclear blast may turn into irradiated earth. The conversion chance is scaled so the expected total stays under this, and the count is a hard stop. |
+| `explosions.falloutMaxRadius` | int | `96` | 8 to 256 | yes | The largest fallout radius in blocks, whatever the blast radius. |
+| `explosions.falloutColumnsPerTick` | int | `400` | 1 to 5000 | yes | The most columns fallout scans in one server tick, across all blasts. |
+| `explosions.falloutBudgetMs` | int | `3` | 1 to 20 | yes | The most milliseconds fallout may spend in one server tick. |
+| `explosions.falloutDecayMinutes` | int | `60` | 1 to 10080 | yes | Minutes of game time before irradiated earth reverts to the block it was. |
+| `explosions.falloutRevertPerTick` | int | `32` | 1 to 1000 | yes | The most irradiated blocks that revert per tick in one world. |
+| `explosions.falloutRadiationLevel` | int | `2` | 0 to 10 | yes | GregTech radioactivity level applied about once a second to an unprotected player standing on or beside irradiated earth. 0 turns exposure off. |
 
 ## ICBM blasts (`icbm`)
 
@@ -154,8 +162,13 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 | `icbm.maxMissilesInFlight` | int | `20` | 1 to 100 | yes | Most missiles in flight at once, server wide (D11). Each holds at most two chunks. |
 | `icbm.missileFuelFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's fuel tank (D20, D60). |
 | `icbm.missileRangeFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's range (D60). |
+| `icbm.siloScatterFactor` | double | `0.5` | 0.1 to 2 | yes | Multiplier on the scatter of a missile launched from a Missile Silo, on top of the guidance rule; the 10% floor still applies (D70). |
+| `icbm.siloRangeFactor` | double | `1.25` | 0.5 to 5 | yes | Multiplier on the range of a missile launched from a Missile Silo, on top of `missileRangeFactor`; the open pad keeps the plain range (D70). |
 | `icbm.fuelBonusMax` | double | `0.25` | 0 to 1 | yes | The most unburned fuel adds to a blast radius, as a fraction: 0.25 is up to 25% at point-blank range, nothing at full range. 0 turns it off. |
 | `icbm.missileTimeoutTicks` | int | `600` | 20 to 6000 | yes | Ticks a missile may fly past its planned arrival before it detonates where it is. |
+| `icbm.doorOpenTicks` | int | `40` | 10 to 200 | yes | Ticks the Missile Silo doors take to swing open or shut (D89). |
+| `icbm.countdownTicks` | int | `200` | 20 to 1200 | yes | Ticks of countdown between the doors being open (or the launch, on a pad) and ignition; the launch can be aborted until it ends (D88). |
+| `icbm.doorCloseHeight` | int | `4` | 1 to 32 | yes | Blocks the missile's bottom must climb above the silo rim before the doors swing shut (D89). |
 
 ## Equipment (`equipment`)
 

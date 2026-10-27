@@ -102,6 +102,73 @@ public final class PadMissiles {
         return null;
     }
 
+    /**
+     * @param world a world
+     * @param padX  X of any block of the pad
+     * @param padY  Y of the pad block
+     * @param padZ  Z of any block of the pad
+     * @return the pad as a {@link LaunchSite}; its calls are the static methods above
+     */
+    public static LaunchSite site(World world, int padX, int padY, int padZ) {
+        return new LaunchSite() {
+
+            @Override
+            public double centerX() {
+                return padX + 0.5;
+            }
+
+            @Override
+            public double centerZ() {
+                return padZ + 0.5;
+            }
+
+            @Override
+            public MissileStatus status() {
+                return PadMissiles.status(world, padX, padY, padZ);
+            }
+
+            @Override
+            public LaunchResult hold() {
+                EntityMissile m = find(world, padX, padY, padZ);
+                return m != null && m.tier()
+                    .siloOnly() ? LaunchResult.SILO_ONLY : LaunchResult.OK;
+            }
+
+            @Override
+            public int maxRange() {
+                return PadMissiles.maxRange(world, padX, padY, padZ);
+            }
+
+            @Override
+            public double expectedRadius(double targetX, double targetZ) {
+                return PadMissiles.expectedRadius(world, padX, padY, padZ, targetX, targetZ);
+            }
+
+            @Override
+            public LaunchResult launch(double targetX, double targetZ, EntityPlayer source) {
+                return PadMissiles.launch(world, padX, padY, padZ, targetX, targetZ, source);
+            }
+
+            @Override
+            public int countdownTicks() {
+                EntityMissile m = findLaunching(world, padX, padY, padZ);
+                return m == null ? -1 : m.countdownLeft();
+            }
+
+            @Override
+            public boolean ignited() {
+                EntityMissile m = findLaunching(world, padX, padY, padZ);
+                return m != null && m.phase() == FlightPhase.CLIMB;
+            }
+
+            @Override
+            public boolean abort() {
+                EntityMissile m = findLaunching(world, padX, padY, padZ);
+                return m != null && m.abort();
+            }
+        };
+    }
+
     private static boolean finite(double v) {
         return !Double.isNaN(v) && !Double.isInfinite(v);
     }
@@ -118,6 +185,53 @@ public final class PadMissiles {
         for (Object o : world.getEntitiesWithinAABB(EntityMissile.class, box)) {
             EntityMissile m = (EntityMissile) o;
             if (!m.isDead && m.onPad()) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return the missile on that pad that is counting down or climbing out (D88), or null; the search column runs
+     *         from the pad up past the climb
+     */
+    static EntityMissile findLaunching(World world, int padX, int padY, int padZ) {
+        if (world == null) {
+            return null;
+        }
+        net.minecraft.util.AxisAlignedBB box = net.minecraft.util.AxisAlignedBB
+            .getBoundingBox(padX - 1.0, padY, padZ - 1.0, padX + 2.0, padY + LAUNCH_COLUMN, padZ + 2.0);
+        return launchingIn(world, box);
+    }
+
+    /** Blocks above the pad in which a missile is still "launching": the climb and the longest body. */
+    public static final double LAUNCH_COLUMN = 24.0;
+
+    /**
+     * @param world a world
+     * @param box   a search box
+     * @return the first live missile in it that is in the air, in any phase but {@link FlightPhase#PAD}, or null; the
+     *         silo doors use it, because the arc begins at the rim
+     */
+    public static EntityMissile flyingIn(World world, net.minecraft.util.AxisAlignedBB box) {
+        for (Object o : world.getEntitiesWithinAABB(EntityMissile.class, box)) {
+            EntityMissile m = (EntityMissile) o;
+            if (!m.isDead && m.phase() != FlightPhase.PAD) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param world a world
+     * @param box   a search box
+     * @return the first live missile in it that is in its warm-up or climb, or null
+     */
+    public static EntityMissile launchingIn(World world, net.minecraft.util.AxisAlignedBB box) {
+        for (Object o : world.getEntitiesWithinAABB(EntityMissile.class, box)) {
+            EntityMissile m = (EntityMissile) o;
+            if (!m.isDead && (m.phase() == FlightPhase.WARMUP || m.phase() == FlightPhase.CLIMB)) {
                 return m;
             }
         }

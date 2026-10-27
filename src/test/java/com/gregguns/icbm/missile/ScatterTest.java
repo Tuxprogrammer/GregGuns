@@ -68,4 +68,15 @@ class ScatterTest {
             assertTrue(Math.abs(Scatter.offset(fixed, 5)) < 1e-9);
         }
     }
+
+    @Test
+    void aSiloTightensTheAimOnTopOfGuidanceAndKeepsTheFloor() {
+        double pad = Scatter.halfWidth(12.0, 0, 0.0, 1000.0);
+        assertEquals(pad * 0.5, Scatter.halfWidth(12.0, 0, 0.0, 1000.0, 0.5), 1e-9);
+        // Three guidance tiers leave 25%; halving that would be 12.5%, still above the 10% floor.
+        assertEquals(12.0 * 0.125, Scatter.halfWidth(12.0, 3, 0.0, 1000.0, 0.5), 1e-9);
+        // A strong factor on top of strong guidance meets the 10% floor.
+        assertEquals(12.0 * Scatter.MIN_SHARE, Scatter.halfWidth(12.0, 3, 0.0, 1000.0, 0.2), 1e-9);
+        assertEquals(pad, Scatter.halfWidth(12.0, 0, 0.0, 1000.0, 1.0), 1e-9);
+    }
 }

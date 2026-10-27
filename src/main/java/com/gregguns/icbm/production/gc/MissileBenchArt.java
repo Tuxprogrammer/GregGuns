@@ -1,5 +1,8 @@
 package com.gregguns.icbm.production.gc;
 
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.StatCollector;
@@ -73,28 +76,26 @@ public final class MissileBenchArt {
         }
     }
 
-    /** Draws the small captions beside the slot groups. */
+    /** Draws the small captions in their boxes (see {@link MissileBenchLayout#captions}), clear of every slot. */
     public static void drawLabels(FontRenderer font, MissileBuildSpec spec, int ox, int oy) {
-        font.drawString(
-            StatCollector.translateToLocal("gregguns.icbm.bench.warhead"),
-            ox + MissileBenchLayout.seatX() + 22,
-            oy + MissileBenchLayout.seatY() + 4,
-            0x404040);
-        font.drawString(
-            StatCollector.translateToLocal("gregguns.icbm.bench.guidance"),
-            ox + MissileBenchLayout.guidanceX() - 2,
-            oy + MissileBenchLayout.guidanceY() - 10,
-            0x404040);
-        font.drawString(
-            StatCollector.translateToLocal("gregguns.icbm.bench.fins"),
-            ox + MissileBenchLayout.finX(0),
-            oy + MissileBenchLayout.finY(spec) + 22,
-            0x404040);
-        font.drawString(
-            StatCollector.translateToLocal("gregguns.icbm.bench.engine"),
-            ox + MissileBenchLayout.engineX() + 20,
-            oy + MissileBenchLayout.engineY(spec) + 4,
-            0x404040);
+        String[] keys = { "warhead", "guidance", "fins", "engine" };
+        int[][] boxes = MissileBenchLayout.captions(spec);
+        for (int i = 0; i < keys.length; i++) {
+            String text = StatCollector.translateToLocal("gregguns.icbm.bench." + keys[i]);
+            // A box taller than one line wraps its caption to the box width; the other captions fit on one line.
+            @SuppressWarnings("unchecked")
+            List<String> lines = boxes[i][3] > MissileBenchLayout.CAPTION_HEIGHT
+                ? font.listFormattedStringToWidth(text, boxes[i][2])
+                : Collections.singletonList(text);
+            for (int l = 0; l < lines.size(); l++) {
+                String line = lines.get(l);
+                int x = ox + boxes[i][0];
+                if (MissileBenchLayout.captionRightAligned(i)) {
+                    x += boxes[i][2] - font.getStringWidth(line);
+                }
+                font.drawString(line, x, oy + boxes[i][1] + l * MissileBenchLayout.CAPTION_HEIGHT, 0x404040);
+            }
+        }
     }
 
     private static void hull(int x0, int y0, int x1, int y1) {

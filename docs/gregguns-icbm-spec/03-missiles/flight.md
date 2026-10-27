@@ -22,7 +22,7 @@
 | Phase | What happens | Ends |
 |---|---|---|
 | `PAD` | Standing armed on the pad or ground; can be fueled | `launch` succeeds |
-| `WARMUP` | Engines lit, 40 ticks, the missile stays put | after 40 ticks |
+| `WARMUP` | The launch sequence on the pad (D88): a lead of the silo's door ticks (0 on a pad), then the countdown (`icbm.countdownTicks`, 200), with launch smoke; abortable back to `PAD` until it ends. The missile stays put | at ignition, when lead plus countdown has run |
 | `CLIMB` | Straight up with acceleration 0.08 blocks per tick per tick | 12 blocks climbed |
 | `ARC` | Along the arc to the target, then down | impact, shot down, or timeout |
 

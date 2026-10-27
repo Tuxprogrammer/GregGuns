@@ -58,6 +58,15 @@ public enum WarheadRecipeSpec {
     /** Copper liner cones and a titanium penetrator; tungstensteel waits for T3. */
     BREACHING(WarheadBlast.BREACHING, false, 22, plates(Tier.EV, 8), Ing.industrialTnt(10), pe(3),
         Ing.part(IcbmPart.SHAPED_CHARGE_LINER_CONE, 2), Ing.gt("stick", "Titanium", 6, Tier.EV, 1.0), fuze2()),
+    /** The hot T3 blast: Industrial TNT, napalm and kerosene (LuV). */
+    EXOTHERMIC(WarheadBlast.EXOTHERMIC, false, 1, plates(Tier.LUV, 8), Ing.industrialTnt(16), pe(6),
+        Ing.part(IcbmPart.NAPALM_CANISTER, 4), fuze3(), Ing.kerosene(8000)),
+    /** The cold T3 blast: Industrial TNT and helium in dispersal canisters (LuV). */
+    ENDOTHERMIC(WarheadBlast.ENDOTHERMIC, false, 2, plates(Tier.LUV, 8), Ing.industrialTnt(16), pe(6),
+        Ing.part(IcbmPart.DISPERSAL_CANISTER, 4), fuze3(), Ing.gas("Helium", 8000, Tier.IV)),
+    /** A fission core of uranium-235 and plutonium around an implosion charge (ZPM). */
+    NUCLEAR(WarheadBlast.NUCLEAR, false, 3, plates(Tier.LUV, 8), Ing.industrialTnt(12), pe(4),
+        Ing.gt("ingot", "Uranium235", 8, Tier.HV, 6.0), Ing.gt("ingot", "Plutonium", 4, Tier.EV, 8.0), fuze3()),
     /** A Bio Lab culture in biomass. */
     CONTAGIOUS(WarheadBlast.CONTAGIOUS, false, 23, plates(Tier.EV, 8), Ing.industrialTnt(6), pe(2), Ing.bioDish(4),
         fuze2(), Ing.fluid("Biomass", 2000, Tier.HV));
@@ -77,6 +86,9 @@ public enum WarheadRecipeSpec {
 
     /** The casing plates: stainless steel for T1, titanium for T2. */
     private static Ing plates(Tier tier, int count) {
+        if (tier == Tier.LUV) {
+            return Ing.gt("plate", "TungstenSteel", count, Tier.IV, 1.0);
+        }
         return tier == Tier.HV ? Ing.gt("plate", "StainlessSteel", count, Tier.HV, 1.0)
             : Ing.gt("plate", "Titanium", count, Tier.EV, 1.0);
     }
@@ -87,6 +99,10 @@ public enum WarheadRecipeSpec {
 
     private static Ing fuze1() {
         return Ing.part(IcbmPart.FUZE_ASSEMBLY_MK1, 1);
+    }
+
+    private static Ing fuze3() {
+        return Ing.part(IcbmPart.FUZE_ASSEMBLY_MK3, 1);
     }
 
     private static Ing fuze2() {
@@ -120,6 +136,9 @@ public enum WarheadRecipeSpec {
 
     /** @return the tier of the output: HV for T1 warheads, EV for T2 (the tier-map rule, D1) */
     public Tier outputTier() {
+        if (blast.tier() == ExplosiveTier.T3) {
+            return blast == WarheadBlast.NUCLEAR ? Tier.ZPM : Tier.LUV;
+        }
         return blast.tier() == ExplosiveTier.T1 ? Tier.HV : Tier.EV;
     }
 

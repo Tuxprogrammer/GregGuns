@@ -36,8 +36,15 @@ public enum ControlStatus {
     BLOCKED(false),
     /** Forge refused the missile a chunk ticket. */
     NO_TICKET(false),
+    SILO_TIER(false),
+    /** A silo-only body stands on a pad that is not a formed silo (D8 step 5, D70). */
+    SILO_ONLY(false),
     /** The block is cooling down from the last shot. */
     COOLDOWN(false),
+    /** A countdown is running; it can be aborted. */
+    COUNTDOWN(true),
+    /** The engines have ignited; there is no abort. */
+    IGNITED(true),
     /** The missile was launched. */
     FIRED(true);
 

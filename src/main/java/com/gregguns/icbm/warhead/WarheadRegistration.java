@@ -20,17 +20,17 @@ public final class WarheadRegistration {
     public static void preInit(ModuleRegistrar registrar) {
         WarheadBlasts.registerAll();
         com.gregguns.icbm.recipe.IcbmParts.register(registrar);
-        BlockWarhead t1 = registrar
-            .registerBlock(WarheadCasing.T1.blockName(), new BlockWarhead(WarheadCasing.T1), ItemBlockWarhead.class);
-        BlockWarhead t2 = registrar
-            .registerBlock(WarheadCasing.T2.blockName(), new BlockWarhead(WarheadCasing.T2), ItemBlockWarhead.class);
+        for (WarheadCasing casing : WarheadCasing.values()) {
+            BlockWarhead block = registrar
+                .registerBlock(casing.blockName(), new BlockWarhead(casing), ItemBlockWarhead.class);
+            // Placeholder particle icon: the model texture lives in the atlas under another name (see WarheadSprite).
+            block.setBlockTextureName("gregguns:casings/gantry_casing");
+            WarheadBlocks.set(casing, block);
+        }
         BlockWarheadFiller filler = registrar
             .registerBlock(BlockWarheadFiller.NAME, new BlockWarheadFiller(), net.minecraft.item.ItemBlock.class);
-        // Placeholder particle icon: the model texture lives in the atlas under another name (see WarheadSprite).
-        t1.setBlockTextureName("gregguns:casings/gantry_casing");
-        t2.setBlockTextureName("gregguns:casings/gantry_casing");
         filler.setBlockTextureName("gregguns:casings/gantry_casing");
-        WarheadBlocks.set(t1, t2, filler);
+        WarheadBlocks.setFiller(filler);
         registrar.registerTileEntity("warhead", TileWarhead.class);
         registrar.registerTileEntity("warhead_filler", TileWarheadFiller.class);
     }

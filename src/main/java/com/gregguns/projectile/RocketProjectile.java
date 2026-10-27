@@ -177,6 +177,12 @@ public class RocketProjectile extends GenericProjectile {
                 NUKE_SOUND_VOLUME,
                 1.0F);
         }
+        if (NukeLauncherDef.NAME.equals(weaponName) && result.happened()
+            && ExplosionsConfig.blockDamage
+            && result.blocksBroken() > 0) {
+            // D12: the same nuclear fallout as the ICBM warhead, at the launcher's own (small) scale.
+            com.gregguns.explosion.nuclear.Fallout.start(worldObj, posX, posY, posZ, blastRadius);
+        }
     }
 
     @Override

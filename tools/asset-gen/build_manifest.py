@@ -816,7 +816,8 @@ INFO = [
     ("enemies", "enemies", "Player guide: mobs by danger, rendered, plus structures and loot.", "P2"),
     ("questbook", "questbook", "Player guide: the GregGuns questbook chapters, side branches and rewards.", "P2"),
     ("recipes_steam_and_lv", "recipes-steam-and-lv", "Player guide: the Steam and LV crafting chains, crafting-table grids and Assembler and Ammo Press rows, read from the mod's recipe tables.", "P2"),
-    ("icbm_warheads", "icbm-warheads", "Player guide (DRAFT, stamped; numbers pending): the Tier 1 and Tier 2 warheads rendered from the shipped models, every T1-T2 blast type, fill and radius, damage falloff, demolition-charge use, and the GT machines that make them. Shows HBM's Nuclear Tech Mod warhead models (LGPL-3.0).", "P2"),
+    ("icbm_warheads", "icbm-warheads", "Player guide (DRAFT, stamped; numbers pending): the Tier 1, Tier 2, Tier 3 and nuclear warheads rendered from the shipped models, every T1-T2 blast type, fill and radius, damage falloff, demolition-charge use, and the GT machines that make them. Shows HBM's Nuclear Tech Mod warhead models (LGPL-3.0).", "P2"),
+    ("icbm_missile_silo", "icbm-missile-silo", "Build guide (DRAFT, stamped; numbers pending): the Missile Silo multiblock, layer by layer, with block counts, hatches and a Tier 3 missile standing in the shaft. Shows HBM's Nuclear Tech Mod missile models (LGPL-3.0). Built by tools/asset-gen/infographics/build.py; no vector source.", "P2"),
     ("icbm_first_missile", "icbm-first-missile", "Player guide (DRAFT, stamped; numbers pending): the Tier 1 and Tier 2 missiles on the Galacticraft pad, and the steps from chip and schematic to body, stacking, fuel, launch control and impact. Shows HBM's Nuclear Tech Mod missile and warhead models (LGPL-3.0).", "P2"),
 ]
 for iid, fn, brief, pri in INFO:

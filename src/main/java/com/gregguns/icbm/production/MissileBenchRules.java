@@ -21,7 +21,7 @@ public final class MissileBenchRules {
 
     /** @return the key of a plate, fin or engine ingredient, such as {@code compressed:Steel} */
     public static String keyOf(Ing gt) {
-        return gt.id();
+        return com.gregguns.icbm.compat.GalacticraftParts.resolve(gt.id());
     }
 
     /**

@@ -118,7 +118,14 @@ public final class MissileRecipes {
         ItemStack circuits = IcbmIngredients.stack(spec.lineCircuits());
         FluidStack lube = IcbmIngredients.fluid(Ing.fluid("Lubricant", MissileBuildSpec.LUBRICANT_LITERS, Tier.MV));
         if (plates == null || fins == null || engine == null || circuits == null || lube == null) {
-            GregGuns.LOG.error("Skipping the {} Assembly Line recipe: an input is missing", spec);
+            GregGuns.LOG.error(
+                "Skipping the {} Assembly Line recipe: an input is missing (plates {}, fins {}, engine {}, circuits {}, lubricant {})",
+                spec,
+                plates != null,
+                fins != null,
+                engine != null,
+                circuits != null,
+                lube != null);
             return;
         }
         GTValues.RA.stdBuilder()

@@ -75,7 +75,7 @@ public final class MissileBenchLayout {
 
     /** @return x of the guidance slot, beside the nose */
     public static int guidanceX() {
-        return CENTER + 28;
+        return CENTER + 32;
     }
 
     /** @return y of the guidance slot */
@@ -101,5 +101,50 @@ public final class MissileBenchLayout {
     /** @return y of the result slot */
     public static int resultY(MissileBuildSpec spec) {
         return engineY(spec);
+    }
+
+    // --- caption boxes -------------------------------------------------------------------------------------------
+    // Each caption sits in a free margin, never over a slot or the seat: the warhead's to the left of the seat, the
+    // guidance one above its slot, the fins one above the outer left fin, the engine's left of the engine slot. A box
+    // is {x, y, width, height}; width is the most a caption may take, and {@link #captionRightAligned} says which edge
+    // the text hugs.
+
+    /** Height of a caption box (one line of the default font). */
+    public static final int CAPTION_HEIGHT = 8;
+
+    /** Gap kept between a caption and the page's left edge (the other captions sit at least this far in). */
+    public static final int CAPTION_MARGIN = 6;
+
+    /**
+     * @return the warhead caption box, left of the seat: two lines tall, because "Warhead (pad)" does not fit the
+     *         room beside the seat in one line and used to run into the panel edge
+     */
+    public static int[] warheadCaption() {
+        return new int[] { CAPTION_MARGIN, seatY(), seatX() - 4 - CAPTION_MARGIN, 2 * CAPTION_HEIGHT };
+    }
+
+    /** @return the guidance caption box, above the guidance slot */
+    public static int[] guidanceCaption() {
+        return new int[] { guidanceX() - 2, guidanceY() - 10, 44, CAPTION_HEIGHT };
+    }
+
+    /** @return the fins caption box, above the outer left fin */
+    public static int[] finsCaption(MissileBuildSpec spec) {
+        return new int[] { finX(0), finY(spec) - 10, 30, CAPTION_HEIGHT };
+    }
+
+    /** @return the engine caption box, left of the engine slot and below the fin row */
+    public static int[] engineCaption(MissileBuildSpec spec) {
+        return new int[] { engineX() - 4 - 40, engineY(spec) + 4, 40, CAPTION_HEIGHT };
+    }
+
+    /** @return whether caption {@code i} (0 warhead, 1 guidance, 2 fins, 3 engine) is right-aligned in its box */
+    public static boolean captionRightAligned(int i) {
+        return i == 0 || i == 3;
+    }
+
+    /** @return the four caption boxes in the order warhead, guidance, fins, engine */
+    public static int[][] captions(MissileBuildSpec spec) {
+        return new int[][] { warheadCaption(), guidanceCaption(), finsCaption(spec), engineCaption(spec) };
     }
 }

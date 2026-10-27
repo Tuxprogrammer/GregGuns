@@ -229,12 +229,12 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - **Visuals:** a silo preview, the `icbm-missile-silo` build guide, `icbm-warheads` extended to T3 and nuclear, and quests for the silo and the nuclear warhead.
 
 **Exit gate:**
-- [ ] The silo forms, loads, fuels and launches a T3 missile without the player touching the missile. Scenario.
-- [ ] Nothing living survives inside the nuclear kill zone, a boss included. Players follow server damage settings. Scenario.
-- [ ] A nuclear-radius crater is worked out incrementally, within the tick budget. Scenario.
-- [ ] Fallout stays within its caps: a scenario counts converted blocks and server tick time for a nuclear strike.
-- [ ] `icbm-missile-silo`, the extended `icbm-warheads` and the silo quests have landed, and the owner has been told.
-- [ ] The milestone review fix list is closed.
+- [x] The silo forms, loads, fuels and launches a T3 missile without the player touching the missile. Scenario `icbm.silo.t3_launch`.
+- [x] Nothing living survives inside the nuclear kill zone, a boss included. Players follow server damage settings. Scenario `icbm.nuclear.kill_zone`.
+- [x] A nuclear-radius crater is worked out incrementally, within the tick budget. Scenario `icbm.blast.crater_nuclear`.
+- [x] Fallout stays within its caps: a scenario counts converted blocks and server tick time for a nuclear strike (`icbm.nuclear.fallout_caps`).
+- [x] `icbm-missile-silo`, the extended `icbm-warheads` and the silo quests have landed, and the owner has been told.
+- [x] The milestone review fix list is closed.
 
 ## I4 · Detection and defense
 
@@ -250,13 +250,18 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
   - missiles use the kill-chance table;
   - each pulse affects at most N devices, nearest first;
   - EU cost grows continuously with radius.
+- **The T3 EMP warhead** (D80, moved from I3): it reuses the EMP machinery built for the tower above (the kill-chance table, the device cap and the nearest-first order), as a T3 blast type at LuV to ZPM.
+- **Carried over from I3:**
+  - `icbm.control.launch_to_impact` failed once on a fresh boot ("the second blast broke blocks on the data-stick target") and passed on rerun. Find the cause before adding more launch scenarios.
+  - The silo's shaft-chunk guard (mating, pumping and spawning wait for loaded shaft chunks) has no scenario; add one.
+  - Take the Galacticraft rocket NEI shot in the real pack. In the dev client the NASA Workbench recipe tables are empty and GalaxySpace's rocket handlers aren't registered.
 - **Outputs on every machine:** redstone, GT covers, data-stick links, and OpenComputers components (D13; the component list in [golden-dome.md](gregguns-icbm-spec/01-core/golden-dome.md)).
 - Handheld tools that are kept (radar gun, remote detonator, defuser), per the 05 sheet.
 - **Visuals:** previews of the radars, the battery, the EMP tower and the handheld tools; the `icbm-detection-and-defense` sheet; quests for defense.
 
 **Exit gate:**
 - [ ] A radar flags an incoming missile and a linked battery intercepts it. Scenario.
-- [ ] An EMP drains EU and causes maintenance issues within its device cap, with no tick spike in a dense base. Scenario.
+- [ ] An EMP drains EU and causes maintenance issues within its device cap, with no tick spike in a dense base. Scenario. The T3 EMP warhead does the same from a missile.
 - [ ] The OpenComputers components work as specified (GGI-01-01 to 06). Unit tests plus the batched client session.
 - [ ] `icbm-detection-and-defense` and the defense quests have landed, and the owner has been told.
 - [ ] The milestone review fix list is closed.
@@ -270,12 +275,14 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
   - Red matter is rebuilt with a bounded lifetime, an idle state, correct save and load, and the shared tick budget (D10).
   - The owner tests red matter in game; our side runs unit tests and headless boots.
 - **The full fallout chain** (D21): irradiated rubble, trinitite and fallout goo, with their GT processing yields.
+- **The T3 ender and anti-gravitational warheads** (D80, moved from I3): the ender warhead needs teleport machinery and the anti-gravitational one needs flying blocks, neither of which I3 builds. They ship as T3 blast types in the same casing and recipe band as the I3 warheads.
 - **The Golden Dome floppy** and its programs (D18).
 - **Warheads for existing GregGuns launchers** (D12).
 - **The antidote,** mapped to GT hazards (D10).
 - **Visuals:** antimatter and red matter previews and effects, the `icbm-fallout` sheet, the complete `icbm-warheads`, and the endgame quests.
 
 **Exit gate:**
+- [ ] The ender and anti-gravitational T3 warheads detonate within the tick budget. Scenario.
 - [ ] Antimatter and red matter detonate, annihilate and finish within the tick budget, and red matter survives a save and reload. Scenario.
 - [ ] Fallout blocks process into their yields in GT machines. Scenario.
 - [ ] The Golden Dome programs run (GGI-01-07 to 09) in the batched client session.

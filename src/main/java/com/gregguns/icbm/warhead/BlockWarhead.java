@@ -62,7 +62,14 @@ public final class BlockWarhead extends BlockContainer implements Tiered {
 
     @Override
     public Tier getTier() {
-        return casing == WarheadCasing.T1 ? Tier.HV : Tier.EV;
+        switch (casing) {
+            case T1:
+                return Tier.HV;
+            case T2:
+                return Tier.EV;
+            default:
+                return Tier.ZPM;
+        }
     }
 
     @Override

@@ -22,10 +22,11 @@ class MissileTierTest {
     void fuelListsFollowD19() {
         // HV: RP-1 or Cetane-Boosted Diesel or better; EV-IV: Dense Hydrazine or better. "Better" includes the rest.
         assertArrayEquals(
-            new String[] { "nitrofuel", "rocketfuelmixb", "rocketfuelmixd", "rocketfuelmixc", "rocketfuelmixa" },
+            new String[] { "nitrofuel", "fluid.rocketfuelmixb", "fluid.rocketfuelmixd", "fluid.rocketfuelmixc",
+                "fluid.rocketfuelmixa" },
             MissileTier.T1.fuels());
         assertArrayEquals(
-            new String[] { "rocketfuelmixd", "rocketfuelmixc", "rocketfuelmixa" },
+            new String[] { "fluid.rocketfuelmixd", "fluid.rocketfuelmixc", "fluid.rocketfuelmixa" },
             MissileTier.T2.fuels());
     }
 
@@ -33,7 +34,7 @@ class MissileTierTest {
     void theFuelArrayIsACopy() {
         String[] a = MissileTier.T2.fuels();
         a[0] = "water";
-        assertEquals("rocketfuelmixd", MissileTier.T2.fuels()[0]);
+        assertEquals("fluid.rocketfuelmixd", MissileTier.T2.fuels()[0]);
     }
 
     @Test
@@ -63,7 +64,31 @@ class MissileTierTest {
     @Test
     void lookupByNumber() {
         assertEquals(MissileTier.T2, MissileTier.byNumber(2));
-        assertNull(MissileTier.byNumber(3));
+        assertEquals(MissileTier.T3, MissileTier.byNumber(3));
+        assertNull(MissileTier.byNumber(4));
         assertEquals("missile_body_t1", MissileTier.T1.blockName());
+    }
+
+    @Test
+    void theT3BodyIsTheSiloOnlyHeavyweight() {
+        assertEquals(8000, MissileTier.T3.baseFuelMb());
+        assertEquals(6, MissileTier.T3.heightBlocks());
+        assertTrue(MissileTier.T3.siloOnly());
+        assertFalse(MissileTier.T2.siloOnly());
+        assertTrue(MissileTier.T3.carries(ExplosiveTier.T3));
+        assertFalse(MissileTier.T3.carries(ExplosiveTier.T4));
+        assertTrue(MissileTier.T3.baseMaxRange() > MissileTier.T2.baseMaxRange());
+        assertTrue(MissileTier.T3.speed() > MissileTier.T2.speed());
+        assertTrue(MissileTier.T3.baseScatter() < MissileTier.T2.baseScatter());
+        assertTrue(MissileTier.T3.health() > MissileTier.T2.health());
+    }
+
+    @Test
+    void theFuelHatchAndTheLoaderShareOneList() {
+        assertTrue(MissileTier.T3.acceptsFuel("fluid.rocketfuelmixc"));
+        assertTrue(MissileTier.T3.acceptsFuel("fluid.rocketfuelmixa"));
+        assertFalse(MissileTier.T3.acceptsFuel("fluid.rocketfuelmixd"));
+        assertFalse(MissileTier.T3.acceptsFuel("water"));
+        assertTrue(MissileTier.T2.acceptsFuel("fluid.rocketfuelmixd"));
     }
 }
