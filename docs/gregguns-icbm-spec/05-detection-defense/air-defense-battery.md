@@ -26,7 +26,7 @@ ICBM fires SAMs from launchers on a radio message and picks targets by scanning 
 ## Behavior
 
 - Every 5 ticks the battery reads the linked radar's incoming list. For the nearest threat in range that the SAMs already in the air will not kill (`SamRules.stillNeeded`), it launches one SAM.
-- The SAM flies at the predicted intercept point of the missile (its position plus its last step times the time the SAM needs to reach it, at most 40 ticks of lead), bursts inside 3.5 blocks and calls `attackEntityFrom`, the existing shot-down path (the warhead goes off where the missile is, ICBM-03-03). It passes through blocks and is not saved. A SAM whose chunk has unloaded (the world has moved it to its unloaded list) fizzles at once: a SAM nobody can see never hits.
+- The SAM flies at the predicted intercept point of the missile (its position plus its last step times the time the SAM needs to reach it, at most 40 ticks of lead), bursts inside 3.5 blocks and calls `attackEntityFrom`, the existing shot-down path (the warhead goes off where the missile is, ICBM-03-03). It passes through blocks and is not saved. A SAM whose chunk has unloaded (the world has taken it off its loaded-entity list) fizzles at once: a SAM nobody can see never hits.
 - The world skips an entity whose 32-block surroundings are unloaded, so the battery drives its own SAMs each tick (`EntitySam.advance`, once per tick).
 - Link: a data stick in the slot with a radar link. The radar must be in the same dimension, loaded and online; a link never loads a chunk.
 - States: no power, no link, link lost, out of SAMs, standby, engaging. Redstone 15 and the active flag while a threat is in range.
