@@ -171,6 +171,15 @@ public final class DefenseScenarios {
      * What the world says is powering the block at a scenario offset (the redstone input a lamp or a comparator
      * there would get), not the machine's own internal value.
      */
+    static String lampInfo(ScenarioContext ctx, int dx, int dy, int dz, IGregTechTileEntity m, ForgeDirection side) {
+        return " [block " + ctx.world()
+            .getBlock(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz)
+            .getUnlocalizedName()
+            + ", machine side "
+            + (m == null ? "gone" : "" + m.getOutputRedstoneSignal(side))
+            + "]";
+    }
+
     static int neighborPower(ScenarioContext ctx, int dx, int dy, int dz) {
         return ctx.world()
             .getBlockPowerInput(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
@@ -384,7 +393,9 @@ public final class DefenseScenarios {
                 out.check(seen.batterySignal == 15, "the battery raised redstone 15 while engaging");
                 out.check(
                     lampPower[0] >= 1,
-                    "the world powers the block beside the radar during the threat (" + lampPower[0] + ")");
+                    "the world powers the block beside the radar during the threat (" + lampPower[0]
+                        + ")"
+                        + lampInfo(ctx, 12, 0, target + 1, live(ctx, 12, 0, target), ForgeDirection.SOUTH));
                 out.check(
                     lampPower[1] == 15,
                     "the world powers the block beside the battery with 15 while engaging (" + lampPower[1] + ")");
