@@ -148,7 +148,7 @@ public final class MissileGcScenarios {
                     fuelFactor[0] = ConfigManagerCore.rocketFuelFactor;
                     // The loader pours 2 mB x the factor per tick; speed it up so the test stays short.
                     ConfigManagerCore.rocketFuelFactor = 100;
-                    fillLoader(w, cx + 2, cy, cz, "fuel");
+                    fillLoader(out, w, cx + 2, cy, cz, "fuel");
                     phase[0] = 5;
                     phaseSince[0] = ticks;
                     return null;
@@ -161,7 +161,9 @@ public final class MissileGcScenarios {
                             return null;
                         }
                         out.checkEquals("the loader refuses another tier's fuel", 0, m.fuelMb());
-                        fillLoader(w, cx + 2, cy, cz, "nitrofuel");
+                        out.check(loaderMb(lt) > 0, "the refused fuel is still in the loader (it took nothing)");
+                        // A positive fill with a mix (RP-1, the T1 tank's own mix).
+                        fillLoader(out, w, cx + 2, cy, cz, "fluid.rocketfuelmixb");
                         phase[0] = 6;
                         phaseSince[0] = ticks;
                         return null;
@@ -175,7 +177,7 @@ public final class MissileGcScenarios {
                         return null;
                     }
                     ConfigManagerCore.rocketFuelFactor = fuelFactor[0];
-                    out.check(true, "the fuel loader filled the tank with its own fuel");
+                    out.check(true, "the fuel loader filled the tank with a mix");
                     phase[0] = 3;
                     return null;
                 }
@@ -243,13 +245,20 @@ public final class MissileGcScenarios {
             }
         }
 
-        private static void fillLoader(World w, int x, int y, int z, String fluidName) {
+        /** Fills the loader's tank; fails the scenario when the fluid is not registered or the loader is missing. */
+        private static void fillLoader(ScenarioResult.Builder out, World w, int x, int y, int z, String fluidName) {
             TileEntity t = w.getTileEntity(x, y, z);
             Fluid f = FluidRegistry.getFluid(fluidName);
+            out.check(f != null, "the test fluid " + fluidName + " is a registered fluid");
+            out.check(t instanceof TileEntityFuelLoader, "a fuel loader stands where the test fills it");
             if (t instanceof TileEntityFuelLoader && f != null) {
                 FluidTank tank = ((TileEntityFuelLoader) t).fuelTank;
                 tank.setFluid(new FluidStack(f, tank.getCapacity()));
             }
+        }
+
+        private static int loaderMb(TileEntity t) {
+            return t instanceof TileEntityFuelLoader ? ((TileEntityFuelLoader) t).fuelTank.getFluidAmount() : 0;
         }
 
         private ScenarioResult finish(ScenarioResult.Builder out, boolean terrain) {

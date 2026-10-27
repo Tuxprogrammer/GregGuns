@@ -46,8 +46,10 @@ public final class ItemBlockMissileBody extends ItemBlock {
         int by;
         int bz;
         if (pad != null) {
-            // On a pad only a click on its top places, and always on the centre cell. A T3 body is too big for the pad.
-            if (side != 1 || tier.siloOnly()) {
+            // On a pad only a click on its top places, and always on the centre cell. A T3 body is too big for a
+            // free-standing pad, but fits the floor of a formed silo (D87).
+            if (side != 1
+                || tier.siloOnly() && !com.gregguns.icbm.silo.MTEMissileSilo.isFloorOf(world, pad[0], pad[1], pad[2])) {
                 return false;
             }
             bx = pad[0];

@@ -128,6 +128,13 @@ public final class PadMissiles {
             }
 
             @Override
+            public LaunchResult hold() {
+                EntityMissile m = find(world, padX, padY, padZ);
+                return m != null && m.tier()
+                    .siloOnly() ? LaunchResult.SILO_ONLY : LaunchResult.OK;
+            }
+
+            @Override
             public int maxRange() {
                 return PadMissiles.maxRange(world, padX, padY, padZ);
             }

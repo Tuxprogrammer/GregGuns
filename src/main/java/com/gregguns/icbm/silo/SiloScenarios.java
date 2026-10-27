@@ -62,6 +62,10 @@ public final class SiloScenarios {
         registry.register(new Tiers());
         registry.register(new Refusals());
         registry.register(new T3Launch());
+        registry.register(new Fuels());
+        registry.register(new PowerLoss());
+        registry.register(new UnformedPad());
+        registry.register(new HandStack());
     }
 
     private static String gate() {
@@ -110,12 +114,27 @@ public final class SiloScenarios {
         }
     }
 
-    private static void fuel(ScenarioContext ctx, String fluid) {
+    /** Puts 16,000 mB of a fluid in the fuel hatch; fails the scenario when the fluid is not registered. */
+    private static void fuel(ScenarioContext ctx, ScenarioResult.Builder out, String fluid) {
         IGregTechTileEntity hatch = tile(ctx, 1, -1, 0);
         Fluid f = FluidRegistry.getFluid(fluid);
+        out.check(f != null, "the test fluid " + fluid + " is a registered fluid");
+        out.check(
+            hatch != null && hatch.getMetaTileEntity() instanceof MTEHatchInput,
+            "the silo has a fuel hatch where the test fills it");
         if (hatch != null && f != null && hatch.getMetaTileEntity() instanceof MTEHatchInput) {
             ((MTEHatchInput) hatch.getMetaTileEntity()).setFillableStack(new FluidStack(f, 16000));
         }
+    }
+
+    /** @return how much the fuel hatch still holds, mB */
+    private static int hatchMb(ScenarioContext ctx) {
+        IGregTechTileEntity hatch = tile(ctx, 1, -1, 0);
+        if (hatch == null || !(hatch.getMetaTileEntity() instanceof MTEHatchInput)) {
+            return 0;
+        }
+        FluidStack fs = ((MTEHatchInput) hatch.getMetaTileEntity()).getFillableStack();
+        return fs == null ? 0 : fs.amount;
     }
 
     private static void putBus(ScenarioContext ctx, ItemStack... stacks) {
@@ -123,6 +142,18 @@ public final class SiloScenarios {
         for (int i = 0; i < stacks.length; i++) {
             bus.setInventorySlotContents(i, stacks[i]);
         }
+    }
+
+    /** @return how many stacks the input bus holds, wherever the bus keeps them */
+    private static int busItems(ScenarioContext ctx) {
+        IGregTechTileEntity bus = tile(ctx, -1, 0, 0);
+        int n = 0;
+        for (int i = 0; i < bus.getSizeInventory(); i++) {
+            if (bus.getStackInSlot(i) != null) {
+                n++;
+            }
+        }
+        return n;
     }
 
     private static ItemStack warhead(WarheadCasing c, String explosive) {
@@ -322,6 +353,34 @@ public final class SiloScenarios {
                             "an HV hatch launches a T1",
                             LaunchResult.OK,
                             site.launch(x + 0.5, z + 100, null));
+                        out.checkEquals(
+                            "the launched missile carries the silo's scatter factor",
+                            IcbmConfig.siloScatterFactor,
+                            m[0].siteScatter());
+                        out.checkEquals(
+                            "the launched missile carries the silo's range factor",
+                            IcbmConfig.siloRangeFactor,
+                            m[0].siteRange());
+                        net.minecraft.nbt.NBTTagCompound saved = new net.minecraft.nbt.NBTTagCompound();
+                        m[0].writeToNBT(saved);
+                        out.checkEquals(
+                            "the scatter factor is saved with the missile",
+                            IcbmConfig.siloScatterFactor,
+                            saved.getDouble("siteScatter"));
+                        out.checkEquals(
+                            "the range factor is saved with the missile",
+                            IcbmConfig.siloRangeFactor,
+                            saved.getDouble("siteRange"));
+                        EntityMissile loaded = EntityMissile.create(MissileTier.T1, ctx.world());
+                        loaded.readFromNBT(saved);
+                        out.checkEquals(
+                            "a reloaded missile carries the scatter factor",
+                            IcbmConfig.siloScatterFactor,
+                            loaded.siteScatter());
+                        out.checkEquals(
+                            "a reloaded missile carries the range factor",
+                            IcbmConfig.siloRangeFactor,
+                            loaded.siteRange());
                         m[0].setDead();
                         // Now a LuV hatch.
                         DevStructureBuilder.buildSilo(ctx.world(), x, ctx.originY() + CY, z, ItemList.Hatch_Energy_LuV);
@@ -420,7 +479,7 @@ public final class SiloScenarios {
                         putBus(ctx, (ItemStack) null, (ItemStack) null);
                         // Wrong fuel into a T3 standing in the shaft.
                         m[0] = stand(ctx, MissileTier.T3);
-                        fuel(ctx, "water");
+                        fuel(ctx, out, "water");
                         mark[0] = ticks;
                         stage[0] = 3;
                         return null;
@@ -430,7 +489,8 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.checkEquals("water is not pumped", 0, m[0].fuelMb());
-                        fuel(ctx, "nitrofuel");
+                        out.checkEquals("the hatch kept its water", 16000, hatchMb(ctx));
+                        fuel(ctx, out, "nitrofuel");
                         mark[0] = ticks;
                         stage[0] = 4;
                         return null;
@@ -440,6 +500,7 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.checkEquals("a T1 fuel is not pumped into a T3", 0, m[0].fuelMb());
+                        out.checkEquals("the hatch kept its T1 fuel", 16000, hatchMb(ctx));
                         IGregTechTileEntity none = tile(ctx, 1, -1, 0);
                         ((MTEHatchInput) none.getMetaTileEntity()).setFillableStack(null);
                         out.checkEquals(
@@ -511,7 +572,9 @@ public final class SiloScenarios {
                 : casing == WarheadCasing.T2 ? "thermobaric" : "exothermic";
             final Target target = new Target(ctx, 0, DISTANCE, 9);
             final boolean terrain = IcbmConfig.terrainDamageT1;
+            final boolean terrainT3 = IcbmConfig.terrainDamageT3;
             IcbmConfig.terrainDamageT1 = true;
+            IcbmConfig.terrainDamageT3 = true;
             int[] stage = { 0 };
             int[] mark = { 0 };
             int[] blocksBefore = { 0 };
@@ -524,7 +587,7 @@ public final class SiloScenarios {
                 MTELaunchControl c = (MTELaunchControl) cbase.getMetaTileEntity();
                 power(ctx);
                 if (stage[0] < 3) {
-                    fuel(ctx, "fluid.rocketfuelmixc");
+                    fuel(ctx, out, "fluid.rocketfuelmixc");
                 }
                 switch (stage[0]) {
                     case 0:
@@ -577,6 +640,7 @@ public final class SiloScenarios {
                         out.check(formed(ctx), "the silo is still formed after its own launch");
                         out.checkEquals("no block of the silo was damaged", blocksBefore[0], countBlocks(ctx));
                         IcbmConfig.terrainDamageT1 = terrain;
+                        IcbmConfig.terrainDamageT3 = terrainT3;
                         ctx.clearArea(14, 18);
                         return out.build();
                     default:
@@ -587,6 +651,7 @@ public final class SiloScenarios {
 
         private static ScenarioResult fail(boolean terrain, ScenarioResult.Builder out, String why) {
             IcbmConfig.terrainDamageT1 = terrain;
+            IcbmConfig.terrainDamageT3 = true;
             return ScenarioResult.fail("icbm.silo.t3_launch", why);
         }
 
@@ -603,6 +668,298 @@ public final class SiloScenarios {
                 }
             }
             return n;
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------------------------
+
+    private static IGregTechTileEntity launchControl(ScenarioContext ctx, int dx, int dz) {
+        int id = GregGunsMTEIDs.LAUNCH_CONTROL;
+        ctx.setBlock(dx, CY, dz, GregTechAPI.sBlockMachines, GregTechAPI.METATILEENTITIES[id].getTileEntityBaseType());
+        IGregTechTileEntity cb = (IGregTechTileEntity) ctx.world()
+            .getTileEntity(ctx.originX() + dx, ctx.originY() + CY, ctx.originZ() + dz);
+        cb.setInitialValuesAsNBT(null, (short) id);
+        cb.setFrontFacing(ForgeDirection.NORTH);
+        cb.setOwnerName("gregguns-test");
+        cb.setOwnerUuid(UUID.nameUUIDFromBytes("gregguns-test".getBytes(StandardCharsets.UTF_8)));
+        return cb;
+    }
+
+    /** Every fuel a tier lists is a registered fluid, so no fluid check in the suite can pass for the wrong reason. */
+    private static final class Fuels implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.fuels";
+        }
+
+        @Override
+        public String description() {
+            return "Every fluid in every missile tier's fuel list is a registered fluid in this installation, and so are the fluids the refusal checks use.";
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (!ModuleState.isActive(ModuleId.ICBM)) {
+                return ScenarioResult.skip(name(), "the ICBM module is off");
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            for (MissileTier t : MissileTier.values()) {
+                for (String fuel : t.fuels()) {
+                    out.check(FluidRegistry.isFluidRegistered(fuel), t + " fuel " + fuel + " is a registered fluid");
+                }
+            }
+            for (String test : new String[] { "water", "fuel", "nitrofuel", "fluid.rocketfuelmixb",
+                "fluid.rocketfuelmixc" }) {
+                out.check(FluidRegistry.isFluidRegistered(test), "test fluid " + test + " is registered");
+            }
+            return out.build();
+        }
+    }
+
+    /** A mating cycle cut short by a power loss resumes with the parts it already took. */
+    private static final class PowerLoss implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.power_loss";
+        }
+
+        @Override
+        public String description() {
+            return "Cutting the power during a mating cycle keeps the body and warhead pending; when the power and the machine are back the same parts finish as a missile and the next parts in the bus are untouched.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            int[] stage = { 0 };
+            int[] mark = { 0 };
+            return ScenarioResult.pending(name(), 3000, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                MTEMissileSilo s = silo(ctx);
+                IGregTechTileEntity energy = tile(ctx, 0, -1, 0);
+                switch (stage[0]) {
+                    case 0:
+                        out.check(formed(ctx), "the silo forms");
+                        power(ctx);
+                        putBus(ctx, MissileBodies.body(MissileTier.T1), warhead(WarheadCasing.T1, "condensed"));
+                        stage[0] = 1;
+                        return null;
+                    case 1:
+                        power(ctx);
+                        if (s.pendingTier() == 0) {
+                            return ticks > 400 ? ScenarioResult.fail(name(), "the cycle never started") : null;
+                        }
+                        out.checkEquals("the cycle took the body", null, tile(ctx, -1, 0, 0).getStackInSlot(0));
+                        out.checkEquals("the cycle took the warhead", null, tile(ctx, -1, 0, 0).getStackInSlot(1));
+                        // The next parts wait in the bus; they must still be there at the end.
+                        putBus(
+                            ctx,
+                            (ItemStack) null,
+                            (ItemStack) null,
+                            MissileBodies.body(MissileTier.T1),
+                            warhead(WarheadCasing.T1, "condensed"));
+                        mark[0] = ticks;
+                        stage[0] = 2;
+                        return null;
+                    case 2:
+                        energy.decreaseStoredEnergyUnits(Long.MAX_VALUE / 4, true);
+                        if (ticks < mark[0] + 60) {
+                            return null;
+                        }
+                        out.check(s.missile() == null, "no missile while the power is out");
+                        out.checkEquals("the parts stay pending", MissileTier.T1.number(), s.pendingTier());
+                        out.check(
+                            !s.getBaseMetaTileEntity()
+                                .isActive(),
+                            "the machine stopped");
+                        s.getBaseMetaTileEntity()
+                            .enableWorking();
+                        mark[0] = ticks;
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        power(ctx);
+                        if (s.missile() == null) {
+                            return ticks > mark[0] + 1500 ? ScenarioResult.fail(name(), "the cycle never resumed")
+                                : null;
+                        }
+                        out.checkEquals(
+                            "the resumed cycle made a T1",
+                            MissileTier.T1,
+                            s.missile()
+                                .tier());
+                        out.checkEquals("nothing is pending any more", 0, s.pendingTier());
+                        out.checkEquals("the resume took no new parts from the bus", 2, busItems(ctx));
+                        s.missile()
+                            .setDead();
+                        ctx.clearArea(14, 18);
+                        return out.build();
+                    default:
+                        return null;
+                }
+            });
+        }
+    }
+
+    /** An unformed silo's floor is a plain pad: it must not fire a silo-only missile (D8 step 5, D70). */
+    private static final class UnformedPad implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.unformed_pad";
+        }
+
+        @Override
+        public String description() {
+            return "With a T3 standing in a silo whose structure is broken, the Launch Control and the pad API both refuse with the silo-only status and the missile stays; a T1 on the same floor still fires from the pad.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            // Beside the shaft floor pad (pad reach 4), outside the silo.
+            IGregTechTileEntity cb = launchControl(ctx, 3, 0);
+            int[] stage = { 0 };
+            EntityMissile[] m = new EntityMissile[1];
+            return ScenarioResult.pending(name(), 800, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                World w = ctx.world();
+                int x = ctx.originX();
+                int y = ctx.originY() + CY;
+                int z = ctx.originZ();
+                MTELaunchControl c = (MTELaunchControl) cb.getMetaTileEntity();
+                switch (stage[0]) {
+                    case 0: {
+                        out.check(formed(ctx), "the silo forms");
+                        m[0] = stand(ctx, MissileTier.T3);
+                        m[0].fill(m[0].capacityMb(), true);
+                        int hatchId = ItemList.Hatch_Input_Bus_HV.get(1)
+                            .getItemDamage();
+                        w.setBlock(x - 1, y + 2, z, GregTechAPI.sBlockMachines, hatchId, 3);
+                        ((IGregTechTileEntity) w.getTileEntity(x - 1, y + 2, z))
+                            .setInitialValuesAsNBT(null, (short) hatchId);
+                        stage[0] = 1;
+                        return null;
+                    }
+                    case 1: {
+                        if (ticks < WARMUP + 60) {
+                            return null;
+                        }
+                        out.check(!formed(ctx), "the silo no longer forms");
+                        cb.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        c.setXText(Integer.toString(x));
+                        c.setZText(Integer.toString(z + DISTANCE));
+                        out.checkEquals(
+                            "the pad API refuses a silo-only missile",
+                            LaunchResult.SILO_ONLY,
+                            com.gregguns.icbm.missile.PadMissiles
+                                .launch(w, x, y - 2, z + 2, x + 0.5, z + DISTANCE, null));
+                        out.checkEquals(
+                            "the Launch Control refuses it with the silo-only status",
+                            ControlStatus.SILO_ONLY,
+                            c.fire(null));
+                        out.check(m[0].onPad() && !m[0].isDead, "the T3 still stands on the floor");
+                        m[0].setDead();
+                        ctx.clearArea(14, 18);
+                        return out.build();
+                    }
+                    default:
+                        return null;
+                }
+            });
+        }
+    }
+
+    /** A body clicked onto the pad with the item, not spawned as an entity (D87). */
+    private static final class HandStack implements Scenario {
+
+        @Override
+        public String name() {
+            return "icbm.silo.hand_stack";
+        }
+
+        @Override
+        public String description() {
+            return "A T3 body item placed on a formed silo's floor goes up as a body block, and the silo reports it as not armed; on a free-standing Galacticraft pad the same item is refused.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            build(ctx, ItemList.Hatch_Energy_LuV);
+            // A free-standing pad, nine single pads that turn into a full one.
+            for (int a = 8; a <= 10; a++) {
+                for (int b = -9; b <= -7; b++) {
+                    ctx.setBlock(a, CY - 2, b, micdoodle8.mods.galacticraft.core.blocks.GCBlocks.landingPad, 0);
+                }
+            }
+            return ScenarioResult.pending(name(), 400, ticks -> {
+                if (ticks < WARMUP + 40) {
+                    return null;
+                }
+                World w = ctx.world();
+                int x = ctx.originX();
+                int y = ctx.originY() + CY;
+                int z = ctx.originZ();
+                net.minecraft.entity.player.EntityPlayer p = net.minecraftforge.common.util.FakePlayerFactory
+                    .getMinecraft((net.minecraft.world.WorldServer) w);
+                out.check(formed(ctx), "the silo forms");
+                ItemStack free = MissileBodies.body(MissileTier.T3);
+                boolean freeStanding = free.getItem()
+                    .onItemUse(free, p, w, x + 9, y - 2, z - 8, 1, 0.5F, 1.0F, 0.5F);
+                out.check(!freeStanding, "a T3 body is refused on a free-standing pad");
+                ItemStack in = MissileBodies.body(MissileTier.T3);
+                boolean placed = in.getItem()
+                    .onItemUse(in, p, w, x, y - 2, z + 2, 1, 0.5F, 1.0F, 0.5F);
+                out.check(placed, "a T3 body is placed on the silo's floor");
+                out.check(
+                    w.getBlock(x, y - 1, z + 2) instanceof com.gregguns.icbm.missile.BlockMissileBody,
+                    "a body block stands in the shaft");
+                LaunchSite site = silo(ctx).site();
+                out.checkEquals(
+                    "the silo reports the stacked T3 as not armed",
+                    MissileTier.T3,
+                    site.status()
+                        .tier());
+                out.checkEquals(
+                    "and it cannot be fired yet",
+                    LaunchResult.NOT_ARMED,
+                    site.launch(x + 0.5, z + DISTANCE, null));
+                ctx.clearArea(14, 18);
+                return out.build();
+            });
         }
     }
 }

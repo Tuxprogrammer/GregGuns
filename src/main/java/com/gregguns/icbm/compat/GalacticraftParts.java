@@ -43,6 +43,8 @@ public final class GalacticraftParts {
 
     private GalacticraftParts() {}
 
+    private static boolean warned;
+
     /**
      * The Tier 3 parts belong to NewHorizonsCoreMod, which every GTNH pack has but the GregGuns dev environment does
      * not load. Without it the Tier 3 body is built from the Tier 2 parts, so the recipes, the bench and the scenarios
@@ -61,7 +63,16 @@ public final class GalacticraftParts {
         } catch (RuntimeException | LinkageError e) {
             present = true; // outside a running game (unit tests): keep the pack ids
         }
-        return present ? id : id.equals(ENGINE_T3) ? ENGINE_T2 : id.equals(FINS_T3) ? FINS_T2 : id;
+        if (present) {
+            return id;
+        }
+        String fallback = id.equals(ENGINE_T3) ? ENGINE_T2 : id.equals(FINS_T3) ? FINS_T2 : id;
+        if (!fallback.equals(id) && !warned) {
+            warned = true;
+            com.gregguns.GregGuns.LOG
+                .warn("NewHorizonsCoreMod (dreamcraft) is not loaded: building the Tier 3 body from Tier 2 parts");
+        }
+        return fallback;
     }
 
     /**
