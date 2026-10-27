@@ -73,7 +73,7 @@ def silo_build() -> S.Build:
 
 
 def missile_scene():
-    """The T3 body standing on the pad slab with the T3 warhead seated on its nose (y = 6), centered in the shaft."""
+    """The T3 body standing on the formed pad with the T3 warhead seated on its nose (y = 6), centered in the shaft."""
     body = R.obj_scene(NTM / "missile_body_t3.obj", NTM_TEX / "missile_body_t3.png")
     head = R.obj_scene(NTM / "warhead_t3.obj", NTM_TEX / "warhead_t3.png")
     sc = R.Scene()
@@ -123,13 +123,13 @@ def render(b: S.Build, yaw=-35, pitch=28, ppu=34, cut=None, missile=True, marks=
     def make():
         tags = {k: (2 if k == "ctrl" else 1) for k in tex if k.startswith("h_") or k == "ctrl"} if marks else None
         scene = R.voxel_scene(bl, tex, tags)
-        scene.extend(TP.pad_slab(1, 1))
+        scene.extend(TP.pad_formed(1, 1))
         if missile:
             scene.extend(missile_scene())
         return R.trim(R.render(scene, yaw=yaw, pitch=pitch, ppu=ppu, ss=2, outline=K.RIM,
                                marks={1: K.MARK_HATCH, 2: K.MARK_CONTROLLER} if marks else None), 3)
     params = dict(k=sorted(map(str, bl.items())), t=sorted(map(str, tex.items())), y=yaw, p=pitch, u=ppu, m=missile,
-                  g=marks, s=tex_sig, v=6)
+                  g=marks, s=tex_sig, v=7)
     return K._cached("silo", params, make)
 
 
@@ -219,10 +219,10 @@ def silo() -> str:
 <div style="display:flex;gap:28px;align-items:baseline;flex-wrap:wrap"><span class="label">Size</span><span style="font-size:18px">5 &times; 5 &times; 12 blocks, corners cut off</span><span>Controller {chip("HV")}</span>
 <span style="font-size:16px;margin-left:auto"><b style="color:#38c6d9">&#9632;</b> controller &nbsp; <b style="color:var(--orange)">&#9632;</b> hatches</span></div>
 <div class="spot" style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px 0;margin-top:8px">{img(hero, h=620, style="max-width:100%")}</div>
-<div class="muted" style="font-size:16px;margin-top:8px">The silo as you find it in the world, with a trench dug in front of it so the three glass rings show. The rim is level with the grass, the shaft is open to the sky, and the missile stands on the Galacticraft launch pad, a thin slab at the bottom of the shaft.</div></div>
+<div class="muted" style="font-size:16px;margin-top:8px">The silo as you find it in the world, with a trench dug in front of it so the three glass rings show. The rim is level with the grass, the shaft is open to the sky, and the missile stands on the Galacticraft launch pad, a stepped plate at the bottom of the shaft.</div></div>
 <div class="card"><div class="label" style="margin-bottom:6px">Blocks</div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>{n_casing} Light or Dark Concrete</b> &middot; the seven wall rings and the floor's outer ring, any finish except cobblestone, mixed freely. You need at least 84; hatches may replace the rest</div></div>
-<div class="req"><div class="t" style="grid-column:1/3"><b>9 Galacticraft Launch Pad</b> &middot; the 3 &times; 3 floor of the shaft, a thin slab. Place the nine pad blocks and Galacticraft joins them into the full pad</div></div>
+<div class="req"><div class="t" style="grid-column:1/3"><b>9 Galacticraft Launch Pad</b> &middot; the 3 &times; 3 floor of the shaft, a stepped plate. Place the nine pad blocks and Galacticraft joins them into the full pad</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>{n_glass + 1} Clear Glass</b> &middot; the three rings above the floor, so the missile shows. Use Tinkers&#39; Construct Clear Glass or EnderIO Quite Clear Glass, mixed freely; no other glass fits. Hatches and the controller replace glass panes</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>{n_beam} Gantry Beam</b> &middot; the rim on top</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>1 Missile Silo controller</b> (HV) &middot; middle of the front wall, in the middle glass ring; it faces away from the shaft</div></div>
