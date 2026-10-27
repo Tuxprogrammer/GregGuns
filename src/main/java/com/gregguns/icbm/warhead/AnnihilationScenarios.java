@@ -31,9 +31,8 @@ import com.gregguns.icbm.explosive.IcbmBlasts;
 // Spec: docs/gregguns-icbm-spec/02-explosives/antimatter.md, red-matter.md
 final class AnnihilationScenarios {
 
-    /** The red matter test body: fill 8 of 128 is a 8-block ball (32 x (8/128)^(1/3)). */
-    private static final int RED_FILL = 8;
-    private static final int RED_RADIUS = 8;
+    /** The red matter test body: fill 2 of 128 is a ball of about 8 blocks (32 x (2/128)^(1/3) = 8.0). */
+    private static final int RED_FILL = 2;
     /** The stone cube around the body, half-edge. */
     private static final int CUBE = 10;
 
@@ -44,6 +43,13 @@ final class AnnihilationScenarios {
         registry.register(new AntimatterEndsRedMatter());
         registry.register(new RedMatterLifecycle());
         registry.register(new RedMatterSaveReload());
+    }
+
+    /** @return the ball's largest radius at the test fill, as the effect computes it */
+    private static int redRadius() {
+        return com.gregguns.icbm.warhead.effects.RedMatterModel.maxRadius(
+            Explosives.get("redmatter")
+                .radius(RED_FILL));
     }
 
     private static boolean off() {
@@ -248,7 +254,7 @@ final class AnnihilationScenarios {
 
         @Override
         public String description() {
-            return "A red matter body (fill 8, radius 8) inside a stone cube: it eats the stone out to its radius, kills"
+            return "A red matter body (fill 2, radius 8) inside a stone cube: it eats the stone out to its radius, kills"
                 + " an item and a cow in its ball, pulls an item from outside toward it, goes idle at full size and"
                 + " ends on its own before its lifetime, with no tick over the blast budget plus slack.";
         }
@@ -312,12 +318,12 @@ final class AnnihilationScenarios {
                 IcbmConfig.blastBudgetMs = savedBudget;
                 IcbmConfig.redMatterLifetimeSeconds = savedLife;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
-                int ball = stoneLeft(ctx, RED_RADIUS - 1);
+                int ball = stoneLeft(ctx, redRadius() - 1);
                 out.check(engine.lastBlastDone(), "the body ended on its own");
                 out.check(ticks < 20 * 30, "ended before its 600-tick lifetime ran out, tick " + ticks);
                 out.check(idleAt[0] > 0, "the body went idle at full size");
-                out.check(maxRadius[0] == RED_RADIUS, "grew to its radius " + RED_RADIUS + ", was " + maxRadius[0]);
-                out.check(ball == 0, "no stone left inside radius " + (RED_RADIUS - 1) + ", left: " + ball);
+                out.check(maxRadius[0] == redRadius(), "grew to its radius " + redRadius() + ", was " + maxRadius[0]);
+                out.check(ball == 0, "no stone left inside radius " + (redRadius() - 1) + ", left: " + ball);
                 out.check(stoneLeft(ctx, CUBE) > 1000, "stone outside the ball is untouched");
                 out.check(cow.isDead || cow.getHealth() <= 0.0F, "the cow in the ball was annihilated");
                 out.check(inside.isDead, "the item in the ball was removed");
@@ -409,10 +415,10 @@ final class AnnihilationScenarios {
                         && after[0].getInteger("rmInner") == saved[0].getInteger("rmInner"),
                     "radius, shell and cursor came back as saved: " + saved[0] + " vs " + after[0]);
                 out.check(
-                    after[0].getInteger("rmRadius") < RED_RADIUS || after[0].getInteger("rmMode") == 0,
+                    after[0].getInteger("rmRadius") < redRadius() || after[0].getInteger("rmMode") == 0,
                     "it did not come back at full size");
                 out.check(engine.lastBlastDone(), "the reloaded body finished and ended");
-                out.check(stoneLeft(ctx, RED_RADIUS - 1) == 0, "the reloaded body finished eating its ball");
+                out.check(stoneLeft(ctx, redRadius() - 1) == 0, "the reloaded body finished eating its ball");
                 return out.build();
             });
         }
