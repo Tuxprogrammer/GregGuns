@@ -63,7 +63,7 @@ Nothing below HV (D69). The tower needs an IV or better hatch; a lower one fails
 
 ## Tests
 
-`RadarRulesTest`, `SamRulesTest` (unit); `RadarTowerShapeTest`; scenarios `icbm.defense.registered`, `.intercept`, `.not_incoming`, `.range_by_tier`, `.tower`, `.tower_detects`, `.tower_save_reload`, `.save_reload`.
+`RadarRulesTest`, `SamRulesTest` (unit); `RadarTowerShapeTest`; scenarios `icbm.defense.registered`, `.intercept`, `.not_incoming`, `.range_by_tier`, `.tower`, `.tower_detects`, `.tower_save_reload`, `.save_reload`; the two-client check `testing.icbm_mp_defense` (radar active front and a SAM in flight, via `mp_check.py`).
 
 ## Open
 
