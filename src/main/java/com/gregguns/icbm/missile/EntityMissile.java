@@ -95,6 +95,7 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     private double targetZ;
     private double plannedDistance;
     private boolean detonated;
+    private String impactReport = "";
     private boolean stateDirty = true;
     /** True once an EMP fried the guidance (D16): the missile falls where it is and detonates on landing. */
     private boolean fried;
@@ -813,7 +814,23 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
             ownerId == null ? null : new GameProfile(ownerId, ownerName.isEmpty() ? "[GregGuns]" : ownerName));
         double radius = def.radius(fill);
         double bonus = FuelMath.bonusRadius(radius, plannedDistance, maxRange(), IcbmConfig.fuelBonusMax);
-        IcbmBlasts.detonate(world, x, y, z, def, fill, bonus, actor);
+        boolean accepted = IcbmBlasts.detonate(world, x, y, z, def, fill, bonus, actor);
+        impactReport = String.format(
+            "detonated at %.1f,%.1f,%.1f from phase %s tick %d, blast %s",
+            x,
+            y,
+            z,
+            phase,
+            phaseTick,
+            accepted ? "accepted" : "REFUSED");
+        if (!accepted) {
+            com.gregguns.GregGuns.LOG.warn("Missile {} refused: {}", explosive, impactReport);
+        }
+    }
+
+    /** @return where and how this missile detonated and whether the engine took the blast; empty before it did */
+    public String impactReport() {
+        return impactReport;
     }
 
     @Override

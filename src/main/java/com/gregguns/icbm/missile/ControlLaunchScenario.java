@@ -96,7 +96,18 @@ public final class ControlLaunchScenario implements Scenario {
         final int[] stage = { 0 };
         final int[] mark = { 0 };
         final long[] euBefore = { 0 };
+        final int[] logged = { -1 };
         return ScenarioResult.pending(name(), 3000, ticks -> {
+            if (logged[0] != stage[0]) {
+                logged[0] = stage[0];
+                com.gregguns.GregGuns.LOG.info(
+                    "launch_to_impact stage {} at tick {} (blasts {}, missile {})",
+                    stage[0],
+                    ticks,
+                    BlastEngine.instance()
+                        .activeBlasts(),
+                    missile[0] == null ? "none" : missile[0].phase() + " " + missile[0].impactReport());
+            }
             IGregTechTileEntity base = control(ctx);
             MTELaunchControl c = base != null && base.getMetaTileEntity() instanceof MTELaunchControl
                 ? (MTELaunchControl) base.getMetaTileEntity()
@@ -168,7 +179,9 @@ public final class ControlLaunchScenario implements Scenario {
                         .activeBlasts() > 0 && ticks < 2000) {
                         return null;
                     }
-                    out.check(first.removed(w) > 0, "the first blast broke blocks on its platform" + engineState());
+                    out.check(
+                        first.removed(w) > 0,
+                        "the first blast broke blocks on its platform" + engineState() + " [" + m.impactReport() + "]");
                     out.checkEquals(
                         "no tickets after the first impact",
                         0,
@@ -230,7 +243,10 @@ public final class ControlLaunchScenario implements Scenario {
                     }
                     out.check(
                         second.removed(w) > 0,
-                        "the second blast broke blocks on the data-stick target" + engineState());
+                        "the second blast broke blocks on the data-stick target" + engineState()
+                            + " ["
+                            + m.impactReport()
+                            + "]");
                     out.checkEquals(
                         "no tickets after the second impact",
                         0,
