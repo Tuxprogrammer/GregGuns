@@ -74,6 +74,7 @@ public final class SiloScenarios {
         registry.register(new PowerLoss());
         registry.register(new UnformedPad());
         registry.register(new HandStack());
+        registry.register(new ShaftChunkScenario());
         LaunchSequenceScenarios.registerAll(registry);
         registry.register(new LaunchSequenceMpScenario());
         registry.register(new LaunchControlGuiShots());

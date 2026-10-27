@@ -95,3 +95,7 @@ Cost (estimates, D34): fins 150 and engine 700 plate equivalents each, about 1,3
 ## Open questions
 
 None.
+
+## Unloaded shaft chunks (I4 carry-over)
+
+Mating, pumping and spawning wait for every chunk of the shaft to be loaded, and the parts stay in the bus. The refusal is remembered; once the shaft loads, the controller asks GT for an immediate recheck (GT's multiblock checks are event-driven, so without it the silo would stay idle). Scenario: `icbm.silo.shaft_chunk_guard` ([D123](../DECISIONS.md)).

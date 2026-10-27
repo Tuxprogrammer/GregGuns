@@ -6,13 +6,13 @@ Radar, the air-defense battery, the EMP tower and the kept handheld tools. Radar
 
 ## Contents
 
-Radar, air-defense battery and the radar-gun part of handheld-tools are written (I4 coder A); the rest are planned.
+The sheets linked below are written; the others are planned.
 
 - [radar.md](radar.md): single-block radars at HV and EV, a multiblock radar tower from IV, range by tier, impact-point threat test; the sweep is MIT-portable (D14).
 - [air-defense-battery.md](air-defense-battery.md): the SAM-holding single block, radar link, intercept (MIT-portable) (D15).
-- emp-tower.md (planned): EU drain, one maintenance issue per multiblock, kill-chance table for missiles, device cap, continuous EU cost (D16).
+- [emp-tower.md](emp-tower.md): EU drain, one maintenance issue per multiblock, kill-chance table for missiles, device cap, continuous EU cost (D16).
 - [handheld-tools.md](handheld-tools.md): the kept tools (radar gun, remote detonator, defuser) per the baseline sheet.
-- outputs.md (planned): redstone, GT covers, OC components, data-stick link to batteries (D13, D14).
+- [outputs.md](outputs.md): redstone, GT covers, data sticks and OC across the ICBM machines (D13, D14).
 
 ## Integration map
 
@@ -26,7 +26,7 @@ Radar, air-defense battery and the radar-gun part of handheld-tools are written 
 | EMP cost by radius | Grows continuously (no integer division) | EU | [D16](../DECISIONS.md), [A2-lineage](../../icbm-spec/A2-lineage/index.md) |
 | Radio bus | Data sticks and the GT machine-controller cover | GT5-Unofficial | [D13](../DECISIONS.md) |
 | Computer control | OC components | OpenComputers | [golden-dome.md](../01-core/golden-dome.md) |
-| Laser detonator, other tools | To settle in the I4 handheld-tools sheet | to settle | [ROADMAP-ICBM I4](../../ROADMAP-ICBM.md#i4--detection-and-defense) |
+| Remote detonator, defuser | Link-and-fuse detonator in three tiers; a defuser with durability. The laser detonator is dropped | GT5-Unofficial (Assembler) | [D118 to D123](../DECISIONS.md) |
 
 ## Decisions carried
 
@@ -46,5 +46,4 @@ None yet.
 
 ## Open questions
 
-- Which handheld tools beyond the radar gun, remote detonator and defuser are kept: to settle in the I4 sheet.
 - SAM item stats and the battery's capacity: to settle in the I4 sheet.

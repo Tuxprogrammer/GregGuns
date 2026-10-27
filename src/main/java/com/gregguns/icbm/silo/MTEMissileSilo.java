@@ -134,6 +134,8 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private int pendingCasing = 1;
     /** The mating cycle finished but the missile could not be placed yet (the shaft chunks were unloaded). */
     private boolean pendingReady;
+    /** The last recipe check refused because the shaft's chunks were not loaded; retry when they are. */
+    private boolean waitingForChunks;
 
     /**
      * The prototype that registers the machine under {@code id}.
@@ -383,6 +385,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         }
         if (tick % 20 == 0) {
             ensureDoorEntity(w);
+            retryWhenChunksLoaded();
         }
     }
 
@@ -669,6 +672,19 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         return lowest == Integer.MAX_VALUE ? -1 : lowest;
     }
 
+    /** The shaft is not loaded: refuse now, and ask GT for a new check once it is (GT's checks are event-driven). */
+    private CheckRecipeResult waitForChunks() {
+        waitingForChunks = true;
+        return failure("gregguns_silo_chunks");
+    }
+
+    private void retryWhenChunksLoaded() {
+        if (waitingForChunks && shaftLoaded()) {
+            waitingForChunks = false;
+            scheduleRecipeCheck(gregtech.common.tileentities.machines.RecipeCheckReason.IMMEDIATE);
+        }
+    }
+
     private static CheckRecipeResult failure(String key) {
         return SimpleCheckRecipeResult.ofFailure(key);
     }
@@ -683,7 +699,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             return CheckRecipeResultRegistry.NO_RECIPE;
         }
         if (!shaftLoaded()) {
-            return failure("gregguns_silo_chunks");
+            return waitForChunks();
         }
         if (pendingTier != 0) {
             CheckRecipeResult resumed = resumePending(volts);
@@ -719,7 +735,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             return failure("gregguns_silo_hand_stacked");
         }
         if (pendingReady) {
-            return spawnPending(tier, w) ? null : failure("gregguns_silo_chunks");
+            return spawnPending(tier, w) ? null : waitForChunks();
         }
         if (volts < SiloRules.requiredVoltageIndex(tier)) {
             return CheckRecipeResultRegistry.insufficientMachineTier(SiloRules.requiredVoltageIndex(tier));
