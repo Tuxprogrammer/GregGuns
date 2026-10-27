@@ -1,0 +1,14 @@
+Block texture in this folder: copied unmodified from Tinkers' Construct (GT New Horizons fork), tag 1.14.118-GTNH (the
+version in GT New Horizons 2.9.0-RC-2), https://github.com/GTNewHorizons/TinkersConstruct, licensed under the GNU Lesser
+General Public License v3.0 (the repository's LICENSE at that tag, beside this file as LICENSE.txt; the pack's mod index
+lists the same license).
+
+  src/main/resources/assets/tinker/textures/blocks/glass/clear/glass.png -> clear_glass.png
+  https://github.com/GTNewHorizons/TinkersConstruct/blob/1.14.118-GTNH/src/main/resources/assets/tinker/textures/blocks/glass/clear/glass.png
+
+This is the base face of Tinkers' Construct's Clear Glass block (registry name TConstruct:GlassBlock). (c) the Tinkers'
+Construct authors (the Tinkers' Construct team, Mantle and the GT New Horizons contributors; the file's commit authors
+in the GT New Horizons fork are UltraProdigy and Johann Bernhardt).
+
+The file is used only in the Missile Silo guide sheet (a documentation image), which paints it onto the glass rings. It
+is not in the mod jar. The LGPL-3.0 applies to this file; it is replaceable by any other image of the same name.

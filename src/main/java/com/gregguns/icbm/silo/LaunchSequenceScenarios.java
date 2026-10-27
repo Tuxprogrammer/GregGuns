@@ -822,8 +822,8 @@ public final class LaunchSequenceScenarios {
                             r.x() - 1,
                             r.y() + 2,
                             r.z(),
-                            com.gregguns.block.GregGunsCasings.INSTANCE,
-                            com.gregguns.block.GregGunsCasings.GANTRY_CASING,
+                            gregtech.api.GregTechAPI.sBlockConcretes,
+                            SiloConcrete.LIGHT,
                             2);
                         r.out.check(SiloScenarios.formed(ctx), "the silo forms again");
                         IcbmConfig.countdownTicks = 40;

@@ -24,12 +24,14 @@ INPUTS = Path(__file__).resolve().parent / "inputs/thirdparty"
 GC_ITEMS = INPUTS / "galacticraft"
 GC_PAD = INPUTS / "galacticraft/launch_pad.png"
 NHCORE = INPUTS / "nhcore"
+TCONSTRUCT_GLASS = INPUTS / "tconstruct/clear_glass.png"
 
 PAD_HEIGHT = 3 / 16   # Galacticraft's launch pad is a slab about 3/16 of a block tall
 
 GC_CREDIT = ("Launch pad and rocket part textures © Team Galacticraft (Galacticraft Legacy), MIT License.")
 CORE_CREDIT = ("Heavy Duty Rocket Engine and Fins Tier 3 icons © NewHorizonsCoreMod contributors (GT New Horizons), "
                "GNU GPL v3. This sheet is a combined work and is released under the GPL-3.0.")
+TC_CREDIT = ("Clear Glass texture © the Tinkers' Construct authors (GT New Horizons fork), GNU LGPL v3.")
 TINT_CREDIT = "Exception to the above: grass and leaves are Mojang's textures tinted green, as the game does."
 
 

@@ -223,7 +223,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "The Missile Silo forms from a bare controller with glass rings, a Galacticraft pad floor and hatches in the glass; vanilla glass is accepted; a hatch in a casing ring above the glass, or a missing pad, does not form it.";
+            return "The Missile Silo forms from a bare controller with glass rings, a Galacticraft pad floor and hatches in the glass; other glass is refused; the walls take Light and Dark Concrete (mixed, not cobblestone or other blocks); a hatch in a wall layer forms it and a hatch in the rim, or a missing pad, does not.";
         }
 
         @Override
@@ -256,10 +256,42 @@ public final class SiloScenarios {
                         out.check(
                             formed(ctx),
                             "the silo forms with glass rings, the pad floor and hatches in the glass");
-                        // Vanilla glass in a pane of the middle ring.
+                        // The glass the builder placed (D115) sits in a pane of the middle ring; other glass is
+                        // refused.
+                        Block placed = w.getBlock(x - 2, y, z + 1);
+                        int placedMeta = w.getBlockMetadata(x - 2, y, z + 1);
+                        out.check(
+                            SiloGlass.accepts(placed, placedMeta),
+                            "the builder placed an accepted glass: " + Block.blockRegistry.getNameForObject(placed));
+                        w.setBlock(x - 2, y, z + 1, Blocks.stained_glass, 3, 2);
+                        out.check(!formed(ctx), "stained glass in a glass ring does not form the silo");
+                        // Vanilla glass is accepted only when neither Tinkers' Construct nor EnderIO is loaded.
                         w.setBlock(x - 2, y, z + 1, Blocks.glass, 0, 2);
-                        out.check(formed(ctx), "vanilla glass is accepted in a glass ring");
-                        // A bus in a casing ring above the glass (layer 5) is refused.
+                        out.check(
+                            formed(ctx) == SiloGlass.fallbackActive(),
+                            "vanilla glass in a glass ring is accepted only when neither Tinkers' nor EnderIO is loaded");
+                        w.setBlock(x - 2, y, z + 1, placed, placedMeta, 2);
+                        out.check(formed(ctx), "the silo forms again with the accepted glass back");
+                        // The walls are GT concrete (D116): the builder's Light Concrete, dark, mixed, and a finish.
+                        Block conc = GregTechAPI.sBlockConcretes;
+                        out.check(
+                            w.getBlock(x + 1, y + 3, z) == conc && w.getBlockMetadata(x + 1, y + 3, z) == 8,
+                            "the builder placed Light Concrete in the walls");
+                        w.setBlock(x + 1, y + 3, z, conc, 0, 2);
+                        w.setBlock(x - 1, y + 4, z, conc, 7, 2);
+                        w.setBlock(x, y + 5, z + 4, conc, 14, 2);
+                        out.check(
+                            formed(ctx),
+                            "Dark Concrete, Smooth Dark Concrete and Chiseled Light Concrete mix in the walls");
+                        w.setBlock(x + 1, y + 3, z, conc, 1, 2);
+                        out.check(!formed(ctx), "a cobblestone concrete wall cell does not form the silo");
+                        w.setBlock(x + 1, y + 3, z, GregGunsCasings.INSTANCE, GregGunsCasings.GANTRY_CASING, 2);
+                        out.check(!formed(ctx), "a Gantry Casing wall cell does not form the silo");
+                        w.setBlock(x + 1, y + 3, z, Blocks.stone, 0, 2);
+                        out.check(!formed(ctx), "a stone wall cell does not form the silo");
+                        w.setBlock(x + 1, y + 3, z, conc, 8, 2);
+                        out.check(formed(ctx), "the silo forms again with Light Concrete back");
+                        // D117: a bus in a wall layer (layer 8) forms; a bus in the rim does not.
                         int hatchId = ItemList.Hatch_Input_Bus_HV.get(1)
                             .getItemDamage();
                         w.setBlock(x - 1, y + 2, z, GregTechAPI.sBlockMachines, hatchId, 3);
@@ -268,9 +300,19 @@ public final class SiloScenarios {
                         stage[0] = 1;
                         return null;
                     case 1:
-                        out.check(!formed(ctx), "a hatch in a casing ring above the glass does not form the silo");
-                        w.setBlock(x - 1, y + 2, z, GregGunsCasings.INSTANCE, GregGunsCasings.GANTRY_CASING, 2);
-                        out.check(formed(ctx), "the silo forms again once the casing is back");
+                        out.check(formed(ctx), "a hatch in a wall layer forms the silo (D117)");
+                        w.setBlock(x - 1, y + 2, z, GregTechAPI.sBlockConcretes, 8, 2);
+                        int rimId = ItemList.Hatch_Input_Bus_HV.get(1)
+                            .getItemDamage();
+                        w.setBlock(x - 1, y + 9, z, GregTechAPI.sBlockMachines, rimId, 3);
+                        ((IGregTechTileEntity) w.getTileEntity(x - 1, y + 9, z))
+                            .setInitialValuesAsNBT(null, (short) rimId);
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        out.check(!formed(ctx), "a hatch in the rim does not form the silo (D117)");
+                        w.setBlock(x - 1, y + 9, z, GregGunsCasings.INSTANCE, GregGunsCasings.GANTRY_BEAM, 2);
+                        out.check(formed(ctx), "the silo forms again once the beam is back");
                         // No pad in the shaft floor.
                         Block pad = GalacticraftParts.findBlock(GalacticraftParts.PAD);
                         Block full = GalacticraftParts.findBlock(GalacticraftParts.PAD_FULL);

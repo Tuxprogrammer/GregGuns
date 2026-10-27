@@ -17,7 +17,7 @@
         "id:8": "minecraft:stick"
       },
       "countAsQuest:1": 1,
-      "desc:8": "Missiles launch from the Missile Silo, a 5 by 5 tower you build from Gantry Casing and glass around an open 3 by 3 shaft, with a Galacticraft Launch Pad for its floor and a ring of Gantry Beams on top. The controller is an HV machine, and the Energy Hatch sets what it launches: HV for Tier 1, EV for Tier 2, LuV for Tier 3. A silo shot flies 25% farther and scatters half as much. Fit an Input Bus for bodies and warheads, an Input Hatch for fuel, an Energy Hatch and a Maintenance Hatch in place of glass panes in the three rings above the floor, or in the floor\u0027s outer ring. Feed it a body and a warhead and it stands the missile in the shaft for you. Build the silo and put a Launch Control within 6 blocks of it.",
+      "desc:8": "Missiles launch from the Missile Silo, a 5 by 5 tower you build from Light or Dark Concrete (any finish but cobblestone) and clear glass (Tinkers\u0027 Construct or EnderIO) around an open 3 by 3 shaft, with a Galacticraft Launch Pad for its floor and a ring of Gantry Beams on top. The controller is an HV machine, and the Energy Hatch sets what it launches: HV for Tier 1, EV for Tier 2, LuV for Tier 3. A silo shot flies 25% farther and scatters half as much. Fit an Input Bus for bodies and warheads, an Input Hatch for fuel, an Energy Hatch and a Maintenance Hatch in place of any wall, glass or floor-ring block, but not the rim or the pad. Feed it a body and a warhead and it stands the missile in the shaft for you. Build the silo and put a Launch Control within 6 blocks of it.",
       "globalShare:1": 1,
       "icon:10": {
         "Count:3": 1,

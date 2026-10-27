@@ -18,15 +18,16 @@ One fixed piece, 5 wide, 5 deep and 12 layers tall, with the four corner columns
 | Layer (1 = floor) | Cells |
 |---|---|
 | 12, the rim | ring of 12 Gantry Beam |
-| 5 to 11 | ring of 12 Gantry Casing per layer (84), no hatches |
+| 5 to 11 | ring of 12 **Light or Dark Concrete** per layer (84); hatches allowed (D117) |
 | 2, 3, 4 | ring of 12 **glass** per layer, so the missile shows (36 cells with the controller) |
-| 1, the floor | outer ring of 12 Gantry Casing (hatches allowed), inner 3x3 **Galacticraft launch pad** |
+| 1, the floor | outer ring of 12 **Light or Dark Concrete** (hatches allowed), inner 3x3 **Galacticraft launch pad** |
 
-- **Glass:** GT's `chainAllGlasses`, the conventional helper: every borosilicate tier, GT's other glasses and even vanilla glass are accepted, mixed. It shares the `BOROGLASS` structure channel.
-- **Hatches:** the Input Bus, the Input Hatch, the Energy Hatch and the Maintenance Hatch may replace any glass pane of layers 2 to 4 or any outer-ring cell of the floor. A hatch in a casing ring above layer 4 does not form the silo.
+- **Glass (D115):** purely visual, so the missile can be seen: it never gates a launch, and there is no glass tier or effect on range, tiers or anything else; the Energy Hatch alone sets the silo's tier. The glass rings accept **Tinkers' Construct Clear Glass** (`TConstruct:GlassBlock`) and **EnderIO Quite Clear Glass** (`EnderIO:blockFusedQuartz` meta 1) or its **Enlightened Clear Glass** (meta 3, the same glass giving off light), mixed freely, and nothing else: GT's borosilicate frames made a Tier 3 missile hard to see. Dark Clear Glass and the Fused Quartz metas are refused. Blocks are found by registry name (`SiloGlass`), so no Tinkers' or EnderIO class loads. The hologram and auto-build place Tinkers' Clear Glass, or EnderIO's when Tinkers' is absent. When neither mod is loaded (the dev environment) the rings accept vanilla glass instead, with one logged warning. The ring no longer shares the `BOROGLASS` structure channel.
+- **Walls and floor ring (D116):** GT's concrete block `gregtech:gt.blockconcretes` (`GregTechAPI.sBlockConcretes`), metas 0 to 7 Dark and 8 to 15 Light, mixed freely. Accepted: stone (0, 8), bricks (3, 11), cracked bricks (4, 12), mossy bricks (5, 13), chiseled (6, 14), smooth (7, 15). Cobblestone and mossy cobblestone (1, 2, 9, 10) are refused: they are the rubble form the plain stone drops as. The hologram and auto-build place Light Concrete (meta 8). GT gives concrete no casing texture index, so a hatch in the silo still wears the Gantry Casing texture.
+- **Hatches (D117, amends D71):** the Input Bus, Input Hatch, Energy Hatch and Maintenance Hatch may replace any wall block (layers 5 to 11), any glass pane (layers 2 to 4) or any outer-ring cell of the floor. Never the rim (layer 12, Gantry Beam), and never the inner 3x3 pad floor, which a hatch would break. At least 84 of the 96 concrete positions must stay concrete.
 - **Controller:** the middle of the front wall, in the middle glass ring (layer 3).
 - **Pad:** the nine blocks accept either the unformed Galacticraft pad blocks (`tile.landingPad`) or the formed pad (`tile.landingPadFull` at the center and `tile.dummyblock` meta 2 on the other eight), found by registry name through `GalacticraftPads` so no Galacticraft class loads. Without Galacticraft the module is off and the silo inert. The launch never removes or damages the pad (D32): a missile does not extend `EntityAutoRocket`.
-- **Counts:** 96 Gantry Casing positions (84 needed, the rest may be hatches), 35 glass panes plus the controller, 12 beams, 9 pad blocks.
+- **Counts:** 96 concrete positions (84 needed, the rest may be hatches), 35 glass panes plus the controller, 12 beams, 9 pad blocks.
 - **The shaft:** 3x3, open to the sky, left as "anything" so a body stacked by hand does not unform the silo. The missile climbs straight out; keep the opening above the rim free of blocks.
 
 ## The doors (D89, D90)
@@ -83,7 +84,7 @@ Cost (estimates, D34): fins 150 and engine 700 plate equivalents each, about 1,3
 
 ## Requirements
 
-- **GGS-ICBM-03-30** The silo forms from glass rings, the pad floor and hatches in the glass or the floor ring, and not with a hatch above the glass or without the pad. Scenario `icbm.silo.structure`.
+- **GGS-ICBM-03-30** The silo forms from clear glass rings (other glass is refused), the pad floor and hatches in the glass or the floor ring, and not with a hatch above the glass or without the pad. Scenario `icbm.silo.structure`.
 - **GGS-ICBM-03-31** From a body and a fitting warhead in a bus and Purple fuel in the hatch, the silo mates, fuels and, fired by the Launch Control, launches a T3 that detonates on target, leaving the silo intact and no chunk ticket. Scenario `icbm.silo.t3_launch`.
 - **GGS-ICBM-03-32** The silo refuses a body with no warhead, a warhead too heavy and an unaccepted fluid, and loses nothing. Scenario `icbm.silo.refusals`.
 - **GGS-ICBM-03-33** An HV hatch launches a T1 and refuses a T3; a LuV hatch launches a T3; the silo's range and scatter factors apply. Scenario `icbm.silo.tiers`.
