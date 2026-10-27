@@ -57,7 +57,7 @@ The sphere caster also casts the straight-down pole too (an extra pitch slice): 
 
 I1 decided the whole crater in one server-thread pass (`BlastJob.decide`): fine at radius 20 (about 13,000 cells), but a radius-64 nuclear crater is about a million cells, each a `ChunkPosition` object in a vanilla `Explosion` list. The decide step is now its own **DECIDE** stage that runs in slices under the shared budget:
 
-- A slice takes the next `DECIDE_PER_SLICE` (4,096) cells of the cast result, posts one `ExplosionEvent.Detonate` for them and keeps the cells the listeners left, writing them back **in place at the front of the same array** (`kept` is the write cursor, `cursor` the read cursor). Claim and protection listeners therefore see every cell, just in batches.
+- A slice takes the next `DECIDE_PER_SLICE` (1,024; it was 4,096 until the I3 fix round, when a cold 4,096-cell slice overshot a 6 ms budget by 18 ms) cells of the cast result, posts one `ExplosionEvent.Detonate` for them and keeps the cells the listeners left, writing them back **in place at the front of the same array** (`kept` is the write cursor, `cursor` the read cursor). Claim and protection listeners therefore see every cell, just in batches.
 - The first slice also gathers the victims, posts them with its batch and hurts them (once: `damaged` is saved). Later slices post an empty victim list.
 - When the cursor reaches the end the array is trimmed to `kept` and the blast moves to APPLY, or to EFFECT when nothing is left.
 - **Save and load:** `BlastJobState` keeps the cast result, `cursor` and `kept` for a blast saved in DECIDE, so a reload resumes inside the stage (the cast is not repeated). A blast saved before the cast finished still restarts at the snapshot.

@@ -56,7 +56,7 @@ final class BlastJob implements BlastTask {
     /** Blocks one slice breaks. */
     static final int BREAKS_PER_SLICE = 48;
     /** Cast cells one decide slice posts to listeners and filters (I3: a nuclear crater is about a million). */
-    static final int DECIDE_PER_SLICE = 4096;
+    static final int DECIDE_PER_SLICE = 1024;
 
     private final World world;
     private final BlastJobState st;
@@ -128,6 +128,10 @@ final class BlastJob implements BlastTask {
     /** @return blocks broken so far (this run) */
     int brokenBlocks() {
         return broken;
+    }
+
+    String stageName() {
+        return st.stage.name() + (st.stage == BlastJobState.Stage.APPLY ? " (" + st.remainingEdits() + " left)" : "");
     }
 
     boolean isDone() {
