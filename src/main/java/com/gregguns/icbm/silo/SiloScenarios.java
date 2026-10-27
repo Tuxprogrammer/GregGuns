@@ -690,7 +690,8 @@ public final class SiloScenarios {
      */
     private static final class T3EmpLaunch implements Scenario {
 
-        private static final int BUFFERS = 6;
+        /** Buffers sit on a 5 x 5 grid, 8 blocks apart, so every chunk the scattered impact can land in holds some. */
+        private static final int GRID = 2;
 
         @Override
         public String name() {
@@ -699,7 +700,7 @@ public final class SiloScenarios {
 
         @Override
         public String description() {
-            return "A silo-launched T3 missile carrying the EMP warhead drains the charged battery buffers around its target (within the device cap) and breaks no block there.";
+            return "A silo-launched T3 missile carrying the full-fill EMP warhead drains every charged battery buffer in the chunk it lands in (a pulse never loads a chunk), and leaves those buffers standing.";
         }
 
         @Override
@@ -720,20 +721,23 @@ public final class SiloScenarios {
             final int tx = ctx.originX();
             final int ty = ctx.originY();
             final int tz = ctx.originZ() + DISTANCE;
-            // The context's setBlock does not reach 300 blocks out, so the platform and the buffers go in directly.
-            final java.util.List<int[]> stones = new java.util.ArrayList<>();
-            for (int a = -9; a <= 9; a++) {
-                for (int b = -9; b <= 9; b++) {
+            // The context's setBlock does not reach 300 blocks out, so the floor and the buffers go in directly. The
+            // impact scatters, and a pulse never loads a chunk, so the buffers cover every chunk around the target.
+            final java.util.List<int[]> spots = new java.util.ArrayList<>();
+            for (int a = -GRID; a <= GRID; a++) {
+                for (int b = -GRID; b <= GRID; b++) {
+                    int x = tx + a * 8;
+                    int z = tz + b * 8;
                     w.getChunkProvider()
-                        .provideChunk((tx + a) >> 4, (tz + b) >> 4);
-                    w.setBlock(tx + a, ty - 1, tz + b, Blocks.stone, 0, 3);
-                    stones.add(new int[] { tx + a, ty - 1, tz + b });
+                        .provideChunk(x >> 4, z >> 4);
+                    w.setBlock(x, ty - 1, z, Blocks.stone, 0, 3);
+                    spots.add(new int[] { x, ty, z });
                 }
             }
             final int buffer = ItemList.Battery_Buffer_1by1_MV.get(1)
                 .getItemDamage();
-            for (int i = 0; i < BUFFERS; i++) {
-                com.gregguns.icbm.emp.EmpScenarios.placeAbs(w, tx + i - 3, ty, tz + 2, buffer);
+            for (int[] p : spots) {
+                com.gregguns.icbm.emp.EmpScenarios.placeAbs(w, p[0], p[1], p[2], buffer);
             }
             final boolean terrainT3 = IcbmConfig.terrainDamageT3;
             IcbmConfig.terrainDamageT3 = true;
@@ -755,15 +759,14 @@ public final class SiloScenarios {
                     case 0:
                         out.check(formed(ctx), "the silo forms");
                         blocksBefore[0] = countBlocks(ctx);
-                        for (int i = 0; i < BUFFERS; i++) {
-                            net.minecraft.tileentity.TileEntity t = w.getTileEntity(tx + i - 3, ty, tz + 2);
-                            IGregTechTileEntity b = t instanceof IGregTechTileEntity ? (IGregTechTileEntity) t : null;
-                            if (b == null) {
+                        for (int[] p : spots) {
+                            net.minecraft.tileentity.TileEntity t = w.getTileEntity(p[0], p[1], p[2]);
+                            if (!(t instanceof gregtech.api.metatileentity.BaseMetaTileEntity)) {
                                 return fail(terrainT3, "a battery buffer at the target is missing");
                             }
-                            ((gregtech.api.metatileentity.BaseMetaTileEntity) b).setStoredEU(10_000L);
+                            ((gregtech.api.metatileentity.BaseMetaTileEntity) t).setStoredEU(10_000L);
                         }
-                        putBus(ctx, MissileBodies.body(MissileTier.T3), warhead(WarheadCasing.T3, "emp"));
+                        putBus(ctx, MissileBodies.body(MissileTier.T3), empWarhead());
                         cbase.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
                         c.setXText(Integer.toString(ctx.originX()));
                         c.setZText(Integer.toString(ctx.originZ() + DISTANCE));
@@ -791,21 +794,29 @@ public final class SiloScenarios {
                             return null;
                         }
                         out.check(m[0].isDead, "the missile detonated");
+                        // Where it went off: the chunk of the missile's last position holds every buffer a pulse could
+                        // reach.
+                        int cx = net.minecraft.util.MathHelper.floor_double(m[0].posX) >> 4;
+                        int cz = net.minecraft.util.MathHelper.floor_double(m[0].posZ) >> 4;
+                        int inChunk = 0;
                         int empty = 0;
-                        for (int i = 0; i < BUFFERS; i++) {
-                            net.minecraft.tileentity.TileEntity t = w.getTileEntity(tx + i - 3, ty, tz + 2);
-                            if (t instanceof IGregTechTileEntity && ((IGregTechTileEntity) t).getStoredEU() == 0L) {
-                                empty++;
+                        int standing = 0;
+                        for (int[] p : spots) {
+                            if ((p[0] >> 4) != cx || (p[2] >> 4) != cz) {
+                                continue;
+                            }
+                            inChunk++;
+                            net.minecraft.tileentity.TileEntity t = w.getTileEntity(p[0], p[1], p[2]);
+                            if (t instanceof IGregTechTileEntity) {
+                                standing++;
+                                if (((IGregTechTileEntity) t).getStoredEU() == 0L) {
+                                    empty++;
+                                }
                             }
                         }
-                        out.checkEquals("every buffer at the target was drained", BUFFERS, empty);
-                        int broken = 0;
-                        for (int[] st : stones) {
-                            if (w.getBlock(st[0], st[1], st[2]) != Blocks.stone) {
-                                broken++;
-                            }
-                        }
-                        out.checkEquals("the EMP broke no block at the target", 0, broken);
+                        out.check(inChunk > 0, "the grid covers the chunk the missile landed in");
+                        out.checkEquals("every buffer in that chunk was drained", inChunk, empty);
+                        out.checkEquals("the EMP left those buffers standing", inChunk, standing);
                         out.check(formed(ctx), "the silo is still formed after its own launch");
                         out.checkEquals("no block of the silo was damaged", blocksBefore[0], countBlocks(ctx));
                         IcbmConfig.terrainDamageT3 = terrainT3;
@@ -815,6 +826,14 @@ public final class SiloScenarios {
                         return null;
                 }
             });
+        }
+
+        private static ItemStack empWarhead() {
+            return WarheadStacks.make(
+                net.minecraft.item.Item.getItemFromBlock(WarheadBlocks.of(WarheadCasing.T3)),
+                WarheadCasing.T3,
+                "emp",
+                64);
         }
 
         private ScenarioResult fail(boolean terrainT3, String why) {
