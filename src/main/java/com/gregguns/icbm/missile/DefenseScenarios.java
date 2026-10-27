@@ -86,6 +86,20 @@ public final class DefenseScenarios {
         ctx.setBlock(dx, dy, dz, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType());
         TileEntity tile = ctx.world()
             .getTileEntity(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
+        if (!(tile instanceof IGregTechTileEntity)) {
+            throw new IllegalStateException(
+                "no GT tile at " + dx + "," + dy + "," + dz + ": block "
+                    + ctx.world()
+                        .getBlock(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz)
+                    + " tile "
+                    + tile
+                    + " origin "
+                    + ctx.originX()
+                    + ","
+                    + ctx.originY()
+                    + ","
+                    + ctx.originZ());
+        }
         IGregTechTileEntity base = (IGregTechTileEntity) tile;
         base.setInitialValuesAsNBT(null, (short) id);
         base.setFrontFacing(ForgeDirection.NORTH);
