@@ -258,9 +258,11 @@ final class AnnihilationScenarios {
                 IcbmConfig.terrainDamageT4 = savedT4;
                 IcbmConfig.redMatterLifetimeSeconds = savedLife;
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
+                // Everything over before the +5 check means the body was gone by then.
+                int gone = redLeft[0] < 0 ? 0 : redLeft[0];
                 out.check(
-                    redLeft[0] == 0,
-                    "the red matter body was gone 5 ticks after the antimatter, red matter bodies left: " + redLeft[0]);
+                    gone == 0,
+                    "the red matter body was gone 5 ticks after the antimatter, red matter bodies left: " + gone);
                 out.check(engine.activeBlasts() == 0, "both blasts are over, running: " + engine.activeBlasts());
                 out.check(ticks < 100, "all over within 100 ticks, at tick " + ticks);
                 return out.build();

@@ -301,6 +301,7 @@ final class FalloutChainScenarios {
                         "all fallout blocks within the per-blast cap");
                     int bad = 0;
                     int sandBad = 0;
+                    int trinNear = 0;
                     for (int dx = -span; dx <= span; dx++) {
                         for (int dz = -span; dz <= span; dz++) {
                             double dist = Math.sqrt(dx * dx + dz * dz);
@@ -315,16 +316,25 @@ final class FalloutChainScenarios {
                                     && dist > inner + 1.0) {
                                     bad++;
                                 }
-                                if (b == FalloutBlocks.irradiated() && dist <= inner
-                                    && FalloutBlocks.variantOf(w.getBlockMetadata(x, y, z)) == FalloutBlocks.SAND
-                                    && dy == -1) {
-                                    sandBad++; // a top sand block in the inner fireball must be trinitite
+                                // D155: trinitite thins out smoothly (chance 1 - (d/inner)^2), so only the inner half,
+                                // where the chance is at least 75%, is expected to be mostly trinitite.
+                                if (dy == -1 && dist <= inner / 2.0) {
+                                    if (b == FalloutBlocks.trinitite()) {
+                                        trinNear++;
+                                    } else if (b == FalloutBlocks.irradiated()
+                                        && FalloutBlocks.variantOf(w.getBlockMetadata(x, y, z)) == FalloutBlocks.SAND) {
+                                            sandBad++;
+                                        }
                                 }
                             }
                         }
                     }
                     out.check(bad == 0, bad + " hot, trinitite or goo blocks lie outside the inner fireball");
-                    out.check(sandBad == 0, sandBad + " inner top sand blocks stayed irradiated sand");
+                    out.check(
+                        trinNear > sandBad,
+                        "most top sand within half the inner fireball became trinitite (D155), trinitite " + trinNear
+                            + ", plain sand "
+                            + sandBad);
                     // A hot earth block mines into hot rubble.
                     for (int dx = -span; dx <= span && phase[1] == 0; dx++) {
                         for (int dz = -span; dz <= span && phase[1] == 0; dz++) {
