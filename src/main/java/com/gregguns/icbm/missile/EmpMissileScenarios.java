@@ -29,6 +29,21 @@ final class EmpMissileScenarios {
 
     private EmpMissileScenarios() {}
 
+    /**
+     * Loads the chunks under a target platform before the platform is built: a block set in an unloaded chunk is lost,
+     * and "the platform is untouched" would then read as a wall of air.
+     */
+    static MissileScenarios.Target platform(ScenarioContext ctx, int dx, int dz, int radius) {
+        World w = ctx.world();
+        for (int a = -radius; a <= radius; a += 8) {
+            for (int b = -radius; b <= radius; b += 8) {
+                w.getChunkProvider()
+                    .loadChunk((ctx.originX() + dx + a) >> 4, (ctx.originZ() + dz + b) >> 4);
+            }
+        }
+        return new MissileScenarios.Target(ctx, dx, dz, radius);
+    }
+
     static void registerAll(ScenarioRegistry registry) {
         registry.register(new Forced(Outcome.DESTROYED, new MissileTable(1, 0, 0)));
         registry.register(new Forced(Outcome.FRIED, new MissileTable(0, 1, 0)));
@@ -84,7 +99,10 @@ final class EmpMissileScenarios {
             }
             m.fill(m.capacityMb(), true);
             World w = ctx.world();
-            MissileScenarios.Target target = new MissileScenarios.Target(ctx, 0, 70, 9);
+            MissileScenarios.Target target = platform(ctx, 0, 70, 9);
+            if (target.removed(ctx.world()) != 0) {
+                return ScenarioResult.fail(name(), "the target platform was not placed (its chunk is not loaded)");
+            }
             EntityPlayer player = ctx.player();
             LaunchResult r = PadMissiles.launch(
                 w,
@@ -187,7 +205,10 @@ final class EmpMissileScenarios {
             }
             m.fill(m.capacityMb(), true);
             World w = ctx.world();
-            MissileScenarios.Target target = new MissileScenarios.Target(ctx, 0, 70, 9);
+            MissileScenarios.Target target = platform(ctx, 0, 70, 9);
+            if (target.removed(ctx.world()) != 0) {
+                return ScenarioResult.fail(name(), "the target platform was not placed (its chunk is not loaded)");
+            }
             EmpScenarios.place(ctx, 4, 0, 4, GregGunsMTEIDs.EMP_TOWER);
             LaunchResult r = PadMissiles.launch(
                 w,

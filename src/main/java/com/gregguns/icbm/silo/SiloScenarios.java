@@ -716,7 +716,17 @@ public final class SiloScenarios {
             DevStructureBuilder.Outcome built = build(ctx, ItemList.Hatch_Energy_LuV);
             out.note("build: " + built);
             IGregTechTileEntity cb = launchControl(ctx, 5, -2);
+            for (int a = -9; a <= 9; a += 8) {
+                for (int b = -9; b <= 9; b += 8) {
+                    ctx.world()
+                        .getChunkProvider()
+                        .loadChunk((ctx.originX() + a) >> 4, (ctx.originZ() + DISTANCE + b) >> 4);
+                }
+            }
             final Target target = new Target(ctx, 0, DISTANCE, 9);
+            if (target.removed(ctx.world()) != 0) {
+                return ScenarioResult.fail(name(), "the target platform was not placed (its chunk is not loaded)");
+            }
             final int buffer = ItemList.Battery_Buffer_1by1_MV.get(1)
                 .getItemDamage();
             for (int i = 0; i < BUFFERS; i++) {
