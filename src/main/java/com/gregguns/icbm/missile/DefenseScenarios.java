@@ -80,15 +80,19 @@ public final class DefenseScenarios {
         IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[id];
         // The machine may stand beyond the chunks the origin keeps loaded: load its chunk first, or the block and
         // its tile are silently not placed.
-        ctx.world()
-            .getChunkFromBlockCoords(ctx.originX() + dx, ctx.originZ() + dz);
+        MissileScenarios.Target.loadChunks(ctx, dx, dz, 1);
         ctx.setBlock(dx, dy - 1, dz, Blocks.stone, 0);
         ctx.setBlock(dx, dy, dz, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType());
         TileEntity tile = ctx.world()
             .getTileEntity(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
         if (!(tile instanceof IGregTechTileEntity)) {
             throw new IllegalStateException(
-                "no GT tile at " + dx + "," + dy + "," + dz + ": block "
+                "no GT tile at " + dx
+                    + ","
+                    + dy
+                    + ","
+                    + dz
+                    + ": block "
                     + ctx.world()
                         .getBlock(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz)
                     + " tile "

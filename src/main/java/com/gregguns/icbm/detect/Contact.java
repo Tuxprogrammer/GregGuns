@@ -6,7 +6,7 @@ package com.gregguns.icbm.detect;
  * across threads. The snapshot does not follow the missile; ask {@link Contacts} again for a fresh one.
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/radar.md (Contacts), 01-core/golden-dome.md (getContacts)
-public final class Contact {
+public final class Contact implements ContactSource {
 
     private final int id;
     private final int dimension;
@@ -49,61 +49,73 @@ public final class Contact {
     }
 
     /** @return the missile's entity id; stable for the whole flight */
+    @Override
     public int id() {
         return id;
     }
 
     /** @return the dimension id */
+    @Override
     public int dimension() {
         return dimension;
     }
 
     /** @return position X */
+    @Override
     public double x() {
         return x;
     }
 
     /** @return position Y */
+    @Override
     public double y() {
         return y;
     }
 
     /** @return position Z */
+    @Override
     public double z() {
         return z;
     }
 
     /** @return velocity X, blocks per tick */
+    @Override
     public double vx() {
         return vx;
     }
 
     /** @return velocity Y, blocks per tick */
+    @Override
     public double vy() {
         return vy;
     }
 
     /** @return velocity Z, blocks per tick */
+    @Override
     public double vz() {
         return vz;
     }
 
     /** @return the missile tier, 1 to 3 */
+    @Override
     public int tier() {
         return tier;
     }
 
     /** @return the predicted impact X */
+    @Override
     public double impactX() {
         return impactX;
     }
 
     /** @return the predicted impact Z */
+    @Override
     public double impactZ() {
         return impactZ;
     }
 
     /** @return the speed, blocks per tick */
+    @Override
     public double speed() {
         return Math.sqrt(vx * vx + vy * vy + vz * vz);
     }
@@ -114,6 +126,7 @@ public final class Contact {
      * @param radius  the protected radius, blocks
      * @return true when the predicted impact point is inside that circle (D14)
      */
+    @Override
     public boolean incoming(double centerX, double centerZ, double radius) {
         return ContactMath.incoming(impactX, impactZ, centerX, centerZ, radius);
     }
