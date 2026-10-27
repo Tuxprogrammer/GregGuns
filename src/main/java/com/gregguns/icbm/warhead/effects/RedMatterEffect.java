@@ -72,7 +72,10 @@ final class RedMatterEffect implements BlastEffect {
         s.setInteger(CURSOR, 0);
         s.setInteger(
             MODE,
-            ctx.breaksTerrain() ? RedMatterModel.Mode.SCAN.ordinal() : RedMatterModel.Mode.IDLE.ordinal());
+            IcbmConfig.terrainDamage(
+                ctx.explosive()
+                    .tier()
+                    .number()) ? RedMatterModel.Mode.SCAN.ordinal() : RedMatterModel.Mode.IDLE.ordinal());
         s.setInteger(IDLE_SINCE, 0);
         s.setInteger(AGE, 0);
         s.setInteger(EDITS, 0);
