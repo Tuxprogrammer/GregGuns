@@ -911,8 +911,8 @@ public final class SiloScenarios {
                         m[0].fill(m[0].capacityMb(), true);
                         int hatchId = ItemList.Hatch_Input_Bus_HV.get(1)
                             .getItemDamage();
-                        w.setBlock(x - 1, y + 2, z, GregTechAPI.sBlockMachines, hatchId, 3);
-                        ((IGregTechTileEntity) w.getTileEntity(x - 1, y + 2, z))
+                        w.setBlock(x - 1, y + 9, z, GregTechAPI.sBlockMachines, hatchId, 3);
+                        ((IGregTechTileEntity) w.getTileEntity(x - 1, y + 9, z))
                             .setInitialValuesAsNBT(null, (short) hatchId);
                         stage[0] = 1;
                         return null;
