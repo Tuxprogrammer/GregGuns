@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import cpw.mods.fml.relauncher.Side;
@@ -124,7 +123,9 @@ public final class ItemFalloutProduct extends Item implements com.gregguns.api.T
     @SideOnly(Side.CLIENT)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
-        tooltip.add(StatCollector.translateToLocal("gregguns.fallout.rubble.tooltip"));
+        String[] names = goo ? new String[] { "goo", "hot_goo", "dissolved", "dissolved_hot" }
+            : new String[] { "shard", "crushed" };
+        FalloutTooltips.add(tooltip, names[Math.min(names.length - 1, Math.max(0, stack.getItemDamage()))]);
     }
 
     @Override

@@ -124,7 +124,7 @@ final class T3MachineryScenarios {
     /** The flying blocks: bounded lift, tile entities stay, blocks are conserved, and an entity survives NBT. */
     private static final class AntiGravFlight implements Scenario {
 
-        private static final int REGION = 30;
+        private static final int REGION = 48;
 
         @Override
         public String name() {
@@ -147,8 +147,8 @@ final class T3MachineryScenarios {
             int n = 0;
             for (int dx = -REGION; dx <= REGION; dx++) {
                 for (int dz = -REGION; dz <= REGION; dz++) {
-                    for (int dy = -3; dy <= 60; dy++) {
-                        if (w.getBlock(ox + dx, oy + dy, oz + dz) == Blocks.stone) {
+                    for (int dy = -64; dy <= 100; dy++) {
+                        if (w.getBlock(ox + dx, oy + dy, oz + dz) == Blocks.quartz_block) {
                             n++;
                         }
                     }
@@ -158,12 +158,12 @@ final class T3MachineryScenarios {
         }
 
         @SuppressWarnings("unchecked")
-        private static int stoneItems(World w) {
+        private static int quartzItems(World w, java.util.Set<Integer> seen) {
             int n = 0;
             for (Object o : w.loadedEntityList) {
-                if (o instanceof EntityItem) {
+                if (o instanceof EntityItem && !seen.contains(((Entity) o).getEntityId())) {
                     ItemStack s = ((EntityItem) o).getEntityItem();
-                    if (s != null && s.getItem() == net.minecraft.item.Item.getItemFromBlock(Blocks.stone)) {
+                    if (s != null && s.getItem() == net.minecraft.item.Item.getItemFromBlock(Blocks.quartz_block)) {
                         n += s.stackSize;
                     }
                 }
@@ -194,7 +194,7 @@ final class T3MachineryScenarios {
             final int oz = ctx.originZ();
             for (int dx = -26; dx <= 26; dx++) {
                 for (int dz = -26; dz <= 26; dz++) {
-                    ctx.setBlock(dx, -1, dz, Blocks.stone, 0);
+                    ctx.setBlock(dx, -1, dz, Blocks.quartz_block, 0);
                 }
             }
             ctx.setBlock(3, 0, 3, Blocks.chest, 0);
@@ -202,12 +202,18 @@ final class T3MachineryScenarios {
             if (chest == null) {
                 return ScenarioResult.fail(name(), "no chest tile entity");
             }
-            chest.setInventorySlotContents(0, new ItemStack(Blocks.stone, 5));
+            chest.setInventorySlotContents(0, new ItemStack(Blocks.quartz_block, 5));
             for (int dy = 0; dy < 4; dy++) {
-                ctx.setBlock(0, dy, 0, Blocks.stone, 0);
+                ctx.setBlock(0, dy, 0, Blocks.quartz_block, 0);
             }
-            final int stoneBefore = count(w, ox, oy, oz);
-            final int itemsBefore = stoneItems(w);
+            final int quartzBefore = count(w, ox, oy, oz);
+            // Items already lying about (an earlier run's leftovers) are not ours: only items new since the blast
+            // count.
+            final java.util.Set<Integer> seen = new java.util.HashSet<>();
+            for (Object o : w.loadedEntityList) {
+                seen.add(((Entity) o).getEntityId());
+            }
+            final int itemsBefore = 0;
             // The save and load of one flying block, before the blast: NBT round trip keeps block, meta and phase.
             ScenarioResult.Builder early = ScenarioResult.builder(name());
             EntityFlyingBlock probe = EntityFlyingBlock
@@ -238,7 +244,7 @@ final class T3MachineryScenarios {
                     early.check(
                         peak[0] <= IcbmConfig.antigravMaxBlocks,
                         "at most " + IcbmConfig.antigravMaxBlocks + " flying blocks at once, saw " + peak[0]);
-                    early.check(w.getBlock(ox, oy, oz) != Blocks.stone, "the stone column was lifted first");
+                    early.check(w.getBlock(ox, oy, oz) != Blocks.quartz_block, "the quartz column was lifted first");
                     early.check(
                         w.getBlock(ox + 3, oy, oz + 3) == Blocks.chest && chest == w.getTileEntity(ox + 3, oy, oz + 3)
                             && ((IInventory) chest).getStackInSlot(0) != null
@@ -251,20 +257,22 @@ final class T3MachineryScenarios {
                 IcbmConfig.terrainDamageT3 = oldT3;
                 IcbmConfig.antigravMaxBlocks = oldCap;
                 early.check(flying(w) == 0, "every flying block has landed, " + flying(w) + " left");
-                int stoneAfter = count(w, ox, oy, oz);
-                int itemsAfter = stoneItems(w);
+                int quartzAfter = count(w, ox, oy, oz);
+                int itemsAfter = quartzItems(w, seen);
                 early.check(
-                    stoneAfter + itemsAfter >= stoneBefore + itemsBefore,
-                    "no block is lost: " + stoneBefore
-                        + " stone before, "
-                        + stoneAfter
+                    quartzAfter + itemsAfter >= quartzBefore + itemsBefore,
+                    "no block is lost: " + quartzBefore
+                        + " quartz before, "
+                        + quartzAfter
                         + " placed and "
                         + (itemsAfter - itemsBefore)
                         + " dropped after");
                 early.check(
-                    stoneAfter + itemsAfter <= stoneBefore + itemsBefore,
-                    "no block is duplicated: " + (stoneAfter + itemsAfter) + " against " + (stoneBefore + itemsBefore));
-                early.note("peak flying blocks " + peak[0]);
+                    quartzAfter + itemsAfter <= quartzBefore + itemsBefore,
+                    "no block is duplicated: " + (quartzAfter + itemsAfter)
+                        + " against "
+                        + (quartzBefore + itemsBefore));
+                early.note("peak flying blocks " + peak[0] + " origin " + ox + "," + oy + "," + oz);
                 return early.build();
             });
         }

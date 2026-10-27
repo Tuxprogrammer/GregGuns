@@ -38,6 +38,10 @@ final class EnderEffect implements BlastEffect {
 
     /** Test hook: the next blasts land here instead of at a random spot; null for normal play. */
     static volatile int[] forced;
+    /** Entity data key: the world time until which a sent entity is left alone. */
+    private static final String SENT_KEY = "ggEnderSentUntil";
+    /** Ticks a sent entity is immune to the pull (a blast lasts 160). */
+    private static final int SENT_IMMUNITY = 200;
 
     @Override
     public void onDetonate(BlastContext ctx) {
@@ -126,8 +130,10 @@ final class EnderEffect implements BlastEffect {
                 .getBoundingBox(ctx.x() - r, ctx.y() - r, ctx.z() - r, ctx.x() + r, ctx.y() + r, ctx.z() + r));
         int handled = 0;
         for (EntityLivingBase e : near) {
-            if (e.isDead || e.getHealth() <= 0.0F) {
-                continue;
+            if (e.isDead || e.getHealth() <= 0.0F
+                || e.getEntityData()
+                    .getLong(SENT_KEY) > world.getTotalWorldTime()) {
+                continue; // just sent by a blast: never pulled back in by the same or a neighboring one
             }
             if (++handled > EnderRules.MAX_PULLED) {
                 break;
@@ -167,6 +173,8 @@ final class EnderEffect implements BlastEffect {
         } else {
             e.setPositionAndUpdate(event.targetX, event.targetY, event.targetZ);
         }
+        e.getEntityData()
+            .setLong(SENT_KEY, e.worldObj.getTotalWorldTime() + SENT_IMMUNITY);
         e.fallDistance = 0.0F;
         e.motionX = 0.0;
         e.motionY = 0.0;

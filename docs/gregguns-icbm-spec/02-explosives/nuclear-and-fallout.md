@@ -44,9 +44,32 @@ The warhead's definition sets `annihilating(true)`; the kill zone, the damage ra
 - **Blocks:** `gregguns:irradiated_earth`, five variants by metadata, vanilla textures tinted green on the client; hardness 1, no random ticks. Mined it drops `irradiated_rubble`, a radioactive item. It carries **no GT item data** (data naming uranium-235 makes GT generate recycling recipes, so free rubble would become U-235). Instead its `onUpdate` calls `GTUtility.applyRadioactivity` every 120 ticks with the stack size, as GT's carried-item check does, and GT's hazmat check protects. The block cannot be silk harvested (it would never decay).
 - **Exposure:** every 20 ticks, a non-creative player with an irradiated block in the 3x3 around their feet or the layer below gets `GTUtility.applyRadioactivity(player, falloutRadiationLevel, 1)`. GT's own check skips anyone in full radiological hazmat (GT hazmat, GregGuns armor that declares it, the Hazmat enchantment, any hazard protector), undead and arthropods.
 - **Decay:** when a job finishes, its blocks form a decay record due `falloutDecayMinutes` later (default 60). The record reverts at most `falloutRevertPerTick` blocks (32) a tick per world to the original block (grass returns as dirt) and skips blocks that are no longer irradiated. A block whose chunk is unloaded is never loaded for it: the entry is kept and retried every 10 seconds, so it reverts once the chunk loads, until a seven-day age cap gives up on it.
-- **Not in I3:** trinitite, fallout goo and the byproduct chain (I5). Antimatter and red matter leave no fallout.
+- **Antimatter and red matter** leave no fallout.
 
-Config (`explosions` category): `fallout`, `falloutMaxBlocks` 6000, `falloutMaxRadius` 96, `falloutColumnsPerTick` 400, `falloutBudgetMs` 3, `falloutDecayMinutes` 60, `falloutRevertPerTick` 32, `falloutRadiationLevel` 2.
+### The byproduct chain (I5, D140 to D143)
+
+A ZPM or better nuclear warhead (`Fallout.GRADE_ZPM`) has a hot **inner fireball**: out to `FalloutMath.INNER_SHARE` (40%) of the fallout radius, converted earth is **hot** (metadata bit 8, shown yellow-tinted), and the top block can become **trinitite** or **fallout goo**. Launcher-scale blasts (`GRADE_LAUNCHER`) leave only plain irradiated earth, and the Nuke Launcher's rubble stays plain.
+
+- **Hot earth** drops **Hot Irradiated Rubble** (rubble item, damage 1), radioactive one level above plain rubble.
+- **Trinitite** (block, hardness 2, glassy): a share of the inner top blocks. Mined it drops a **Trinitite Shard**. It cannot be silk harvested.
+- **Fallout goo** (block, hardness 0.8, shovel; metadata 1 is hot goo): rare, chance `GOO_PEAK` (3%) at ground zero falling to zero at the inner rim, about one percent on average, at most `explosions.falloutMaxGoo` (24) per blast. Mined it drops **Fallout Goo** (or **Hot Fallout Goo**). **While any goo stands in a chunk, that chunk's irradiated earth does not decay**: the decay record keeps its entries and retries, with no age cap for such a chunk, until the goo is dug up. The world's goo ledger (`FalloutSavedData`) learns of goo when fallout places it and when it is broken, and is saved.
+- **Items** carry no GT item data (the I3 rubble lesson) and irradiate a holder through GT's own check while carried. Shard and crushed trinitite are one item (damage 0, 1); goo, hot goo and their dissolved forms are another (damage 0 to 3).
+
+Processing, all GT recipe maps, so the chain reads in NEI:
+
+| Step | Machine | In | Out |
+|---|---|---|---|
+| 1 | Centrifuge, HV | Irradiated Rubble | lead (small, 50%), thorium (tiny, 30%), uranium (tiny, 20%) |
+| 1 | Centrifuge, HV | Hot Irradiated Rubble | lead, thorium 40%, uranium 40%, uranium-235 (tiny, 0.8%), plutonium (tiny, 0.5%) |
+| 2 | Macerator, LV | Trinitite Shard | Crushed Trinitite |
+| 3 | Centrifuge, HV | Crushed Trinitite | uranium 30%, thorium 20%, plutonium 0.4%, uranium-235 0.2% (all tiny) |
+| 4 | Chemical Reactor, LuV | Goo or Hot Goo and nitric acid | Dissolved Fallout Goo (or Dissolved Hot) |
+| 5 | Centrifuge, EV | Dissolved Goo | technetium, promethium (40% each), neptunium, plutonium-241 (30%), americium 20%, curium 10% (tiny), plus krypton 200 L and xenon 100 L |
+| 5 | Centrifuge, EV | Dissolved Hot Goo | neptunium, plutonium-241 40%, americium 30%, curium 20%, californium 5%, fermium 1% (tiny), plus the same gases |
+
+**The conservation rule (D142):** one warhead's whole fallout returns at most **a quarter** of the fissile material in its core (8 uranium-235 and 4 plutonium ingots), at the default `falloutMaxBlocks`. `FalloutYield.maxFissileShare` computes the bound from the data tables and `FalloutYieldTest` pins it, so editing a yield cannot make a warhead a net fuel source. The bulk of the value is in the heavier actinides and the fission products, which GT has recipes for elsewhere but no free source.
+
+Config (`explosions` category): `falloutMaxGoo` 24 (I5), `fallout`, `falloutMaxBlocks` 6000, `falloutMaxRadius` 96, `falloutColumnsPerTick` 400, `falloutBudgetMs` 3, `falloutDecayMinutes` 60, `falloutRevertPerTick` 32, `falloutRadiationLevel` 2.
 
 ## Requirements
 
@@ -58,7 +81,7 @@ Config (`explosions` category): `fallout`, `falloutMaxBlocks` 6000, `falloutMaxR
 
 ## Tests
 
-Units: `FalloutMathTest` (expected total under the budget, chance falls, deterministic rolls, radii), `BlastJobStateTest` (DECIDE round trip), `WarheadBlastTest` (T3 damage target and the nuclear definition). Scenarios: `icbm.blast.crater_nuclear`, `icbm.nuclear.kill_zone` (a Wither, a 100,000-health mob with resistance and hurt frames, a cow, a survival and a creative fake player), `icbm.nuclear.fallout_caps` (converted count, disc, surface depth, worst fallout tick, exposure bare and in hazmat, decay), `icbm.nuclear.rubble` (no GT data, no macerator, arc or recycler recipe, carried irradiation, no silk touch), `icbm.nuclear.decay_unloaded` (an unloaded chunk reverts when it loads again, the age cap drops what never does), `icbm.blast.infernal_exothermic` and `_endothermic` (a 7,200-health mob dies at ground zero of a full T3 warhead), and the per-type `icbm.blast.<type>` scenarios for the three new types. The Nuke Launcher keeps `projectile.nuke.*`.
+Units: `FalloutYieldTest` (the quarter-of-the-core bound, no fissile in plain rubble or goo), `FalloutGooLedgerTest`, `FalloutGooMathTest`, `FalloutTooltipFormatTest`, `FalloutMathTest` (expected total under the budget, chance falls, deterministic rolls, radii), `BlastJobStateTest` (DECIDE round trip), `WarheadBlastTest` (T3 damage target and the nuclear definition). Scenarios: `icbm.blast.crater_nuclear`, `icbm.nuclear.kill_zone` (a Wither, a 100,000-health mob with resistance and hurt frames, a cow, a survival and a creative fake player), `icbm.nuclear.fallout_caps` (converted count, disc, surface depth, worst fallout tick, exposure bare and in hazmat, decay), `icbm.nuclear.rubble` (no GT data, no macerator, arc or recycler recipe, carried irradiation, no silk touch), `icbm.nuclear.fallout_products` (the chain: recipes exist at the stated tiers and not below, no item data, no arc or macerator route), `icbm.nuclear.fallout_goo` (zones, caps, ledger, goo holds decay, release), `icbm.nuclear.decay_unloaded` (an unloaded chunk reverts when it loads again, the age cap drops what never does), `icbm.blast.infernal_exothermic` and `_endothermic` (a 7,200-health mob dies at ground zero of a full T3 warhead), and the per-type `icbm.blast.<type>` scenarios for the three new types. The Nuke Launcher keeps `projectile.nuke.*`.
 
 ## Open questions
 

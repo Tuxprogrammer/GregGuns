@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import cpw.mods.fml.relauncher.Side;
@@ -109,7 +108,7 @@ public final class ItemIrradiatedRubble extends Item implements com.gregguns.api
     @SideOnly(Side.CLIENT)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addInformation(ItemStack stack, EntityPlayer player, List tooltip, boolean advanced) {
-        tooltip.add(StatCollector.translateToLocal("gregguns.fallout.rubble.tooltip"));
+        FalloutTooltips.add(tooltip, stack.getItemDamage() == 1 ? "hot_rubble" : "rubble");
     }
 
     @Override

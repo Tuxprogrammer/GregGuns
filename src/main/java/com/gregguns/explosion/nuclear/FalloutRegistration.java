@@ -1,7 +1,5 @@
 package com.gregguns.explosion.nuclear;
 
-import net.minecraft.item.ItemBlock;
-
 import com.gregguns.core.registry.ModuleRegistrar;
 
 /**
@@ -24,7 +22,7 @@ public final class FalloutRegistration {
         block.setBlockTextureName("gregguns:casings/gantry_casing");
         rubble.setTextureName("gregguns:thirdparty/ntm/irradiated_rubble");
         FalloutBlocks.set(block, rubble);
-        BlockTrinitite trinitite = registrar.registerBlock("trinitite", new BlockTrinitite(), ItemBlock.class);
+        BlockTrinitite trinitite = registrar.registerBlock("trinitite", new BlockTrinitite(), ItemBlockFallout.class);
         trinitite.setBlockTextureName("gregguns:thirdparty/ntm/trinitite");
         BlockFalloutGoo goo = registrar.registerBlock("fallout_goo", new BlockFalloutGoo(), ItemBlockIrradiated.class);
         goo.setBlockTextureName("gregguns:thirdparty/ntm/fallout_goo");

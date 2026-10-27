@@ -152,7 +152,11 @@ final class FalloutChainScenarios {
                     "the acid bath needs LuV");
             }
             // The I3 lesson: no GT item data on any of it, so no unification, macerator or arc route into fuel.
-            for (ItemStack s : new ItemStack[] { rubble, hot, shard, crushed, goo, hotGoo, dissolved, dissolvedHot }) {
+            ItemStack[] checked = { rubble, hot, shard, crushed, goo, hotGoo, dissolved, dissolvedHot,
+                new ItemStack(FalloutBlocks.trinitite()), new ItemStack(FalloutBlocks.goo(), 1, 0),
+                new ItemStack(FalloutBlocks.goo(), 1, 1), new ItemStack(FalloutBlocks.irradiated(), 1, 0),
+                new ItemStack(FalloutBlocks.irradiated(), 1, FalloutBlocks.HOT_BIT) };
+            for (ItemStack s : checked) {
                 out.check(GTOreDictUnificator.getItemData(s) == null, s.getDisplayName() + " carries no GT item data");
                 out.check(
                     RecipeMaps.arcFurnaceRecipes.findRecipeQuery()
