@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.gregguns.icbm.detect.ContactSource;
+
 /** The {@code gg_radar} and {@code gg_air_defense} calls over fake tiles (GGI-01-02, 04, 05, 06). */
 class RadarAndBatteryLogicTest {
 
@@ -28,6 +30,16 @@ class RadarAndBatteryLogicTest {
         @Override
         public int id() {
             return id;
+        }
+
+        @Override
+        public int dimension() {
+            return 0;
+        }
+
+        @Override
+        public double speed() {
+            return 2;
         }
 
         @Override

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.gregguns.icbm.detect.ContactSource;
+
 /**
  * Diffs what a radar sees from one sample to the next into signals (GGI-01-05): {@code radar_contact} for a new
  * missile, {@code radar_incoming} when a missile first counts as incoming, {@code radar_lost} when one is gone. Each

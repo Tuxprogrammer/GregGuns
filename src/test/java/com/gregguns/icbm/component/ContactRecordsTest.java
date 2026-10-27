@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.gregguns.icbm.detect.ContactSource;
+
 /** The {@code getContacts()} records and the radar signals (GGI-01-05, 06). */
 class ContactRecordsTest {
 

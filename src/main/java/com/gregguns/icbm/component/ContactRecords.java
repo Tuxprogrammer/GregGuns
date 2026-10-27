@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.gregguns.icbm.detect.ContactSource;
+
 /**
  * Builds the record tables {@code getContacts()} and {@code getIncoming()} return (GGI-01-06):
  * {@code {id, x, y, z, tier, incoming, impactX, impactZ, eta}}, with {@code incoming} decided by the predicted impact
