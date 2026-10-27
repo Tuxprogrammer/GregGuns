@@ -4,8 +4,9 @@
 
 The dir holds assets/hbm/textures, taken from NTM at tag 1.0.27_X5846 (the repo's src/main/resources works).
 Plain copies are renamed only. The ender and anti-grav skins are hue shifts of NTM's HE warhead skin (the
-same one the T3 HE warhead uses), so they fit warhead_t3.obj's UVs. There is no floppy icon and no nuclear
-launcher-warhead icon: OpenComputers' registerFloppy gives no way to use ours, and no such warhead exists (I5 review 24).
+same one the T3 default casing uses, which is also saved here with the lettering painted out), so they fit warhead_t3.obj's UVs.
+There is no floppy icon and no nuclear launcher-warhead icon: OpenComputers' registerFloppy gives no way to use ours, and
+no such warhead exists (I5 review 24).
 """
 import colorsys
 import shutil
@@ -63,6 +64,7 @@ def main(src, repo):
     for x in range(20, 37):
         for y in range(52, 63):
             he.putpixel((x, y), body)
+    he.save(models / "warhead_t3.png")  # the T3 default skin (no explosive, fallback): same painted-out HE skin
     hsv(he, hue=0.77, sat=0.9, val=1.0).save(models / "warhead_ender.png")  # violet
     hsv(he, hue=0.52, sat=0.55, val=1.15).save(models / "warhead_antigrav.png")  # pale cyan
     # The blocks folder has its own notice (block textures, renamed only): written here so a re-run keeps it.
