@@ -1,23 +1,31 @@
 package com.gregguns.icbm.emp;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 
+import com.gregguns.GregGuns;
 import com.gregguns.core.config.IcbmConfig;
 import com.gregguns.icbm.missile.EntityMissile;
 
+import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.BaseMetaTileEntity;
+import gregtech.api.metatileentity.implementations.MTEBasicBatteryBuffer;
 import gregtech.api.metatileentity.implementations.MTEMultiBlockBase;
+import ic2.api.item.ElectricItem;
+import ic2.api.item.IElectricItem;
 import ic2.api.tile.IEnergyStorage;
+import kekztech.common.tileentities.MTELapotronicSuperCapacitor;
 
 /**
  * One EMP pulse (D16): the machinery the EMP Tower and the T3 EMP warhead share.
@@ -28,7 +36,8 @@ import ic2.api.tile.IEnergyStorage;
  * skewed cube). A tile counts as a device when it is a GT tile entity that stores EU or runs a multiblock, or an IC2
  * energy store. The nearest {@link IcbmConfig#empMaxDevices} devices inside the radius are hit, each drained to zero,
  * and a multiblock controller among them also gets one maintenance issue it did not have. GT cables hold no EU of
- * their own, so there is nothing in them to drain.
+ * their own, so there is nothing in them to drain. A battery buffer's charged batteries and a Lapotronic
+ * Supercapacitor's stored EU go too (D102 amendment); each such machine is one device toward the cap.
  *
  * <p>
  * Missiles: every missile in flight inside the radius rolls {@link MissileTable}. Server thread only.
@@ -188,9 +197,21 @@ public final class EmpPulse {
         List<TileEntity> hit = picker.nearestFirst();
         for (TileEntity tile : hit) {
             out.devices++;
-            out.euDrained += drain(tile);
-            if (maintenance(tile, world.rand)) {
-                out.issues++;
+            // One foreign tile that throws must not leave the pulse half applied.
+            try {
+                out.euDrained = saturatingAdd(out.euDrained, drain(tile));
+                if (maintenance(tile, world.rand)) {
+                    out.issues++;
+                }
+            } catch (RuntimeException e) {
+                GregGuns.LOG.warn(
+                    "EMP pulse failed on {} at {}, {}, {}",
+                    tile.getClass()
+                        .getName(),
+                    tile.xCoord,
+                    tile.yCoord,
+                    tile.zCoord,
+                    e);
             }
         }
     }
@@ -224,7 +245,7 @@ public final class EmpPulse {
             if (had > 0) {
                 base.setStoredEU(0L);
             }
-            return Math.max(0L, had);
+            return Math.max(0L, had) + drainStores(base);
         }
         if (tile instanceof IEnergyStorage) {
             IEnergyStorage store = (IEnergyStorage) tile;
@@ -235,6 +256,49 @@ public final class EmpPulse {
             return Math.max(0, had);
         }
         return 0L;
+    }
+
+    /**
+     * Drains the storage a GT machine keeps outside its own EU buffer (D102 amendment, D16): the charged items in a
+     * battery buffer's slots, and the stored energy of a Lapotronic Supercapacitor. Items in player inventories are
+     * not reached.
+     *
+     * @return EU that was in them
+     */
+    private static long drainStores(BaseMetaTileEntity base) {
+        IMetaTileEntity meta = base.getMetaTileEntity();
+        long had = 0L;
+        if (meta instanceof MTEBasicBatteryBuffer) {
+            // Source:
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEBasicBatteryBuffer.java#L234-L262
+            // (the buffer's batteries are the electric items in mInventory; getStoredEnergy reads them through
+            // IC2's ElectricItem.manager, so the pulse empties them through the same manager)
+            for (ItemStack stack : ((MTEBasicBatteryBuffer) meta).mInventory) {
+                if (stack != null && stack.getItem() instanceof IElectricItem) {
+                    double got = ElectricItem.manager
+                        .discharge(stack, Double.POSITIVE_INFINITY, Integer.MAX_VALUE, true, false, false);
+                    had = saturatingAdd(had, (long) Math.max(0.0, got));
+                }
+            }
+            base.markDirty();
+        } else if (meta instanceof MTELapotronicSuperCapacitor) {
+            // Source:
+            // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/kekztech/common/tileentities/MTELapotronicSuperCapacitor.java#L235
+            // (the supercapacitor keeps its charge in a BigInteger behind the public getStored/setStored)
+            MTELapotronicSuperCapacitor lsc = (MTELapotronicSuperCapacitor) meta;
+            BigInteger stored = lsc.getStored();
+            if (stored != null && stored.signum() > 0) {
+                had = stored.bitLength() >= 63 ? Long.MAX_VALUE : stored.longValue();
+                lsc.setStored(BigInteger.ZERO);
+                base.markDirty();
+            }
+        }
+        return had;
+    }
+
+    private static long saturatingAdd(long a, long b) {
+        long r = a + b;
+        return r < 0 ? Long.MAX_VALUE : r;
     }
 
     /**

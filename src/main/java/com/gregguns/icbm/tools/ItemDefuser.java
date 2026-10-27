@@ -79,14 +79,30 @@ public final class ItemDefuser extends Item implements Tiered {
         player.addChatMessage(new ChatComponentTranslation(r.langKey()));
         if (r.success() && !player.capabilities.isCreativeMode) {
             stack.damageItem(1, player);
+            if (stack.stackSize <= 0) {
+                // damageItem empties the stack but leaves it in the hand on the left-click path.
+                player.destroyCurrentEquippedItem();
+            }
         }
+    }
+
+    @Override
+    public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+        return false;
+    }
+
+    @Override
+    public int getItemEnchantability() {
+        return 0;
     }
 
     @Override
     public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side,
         float hitX, float hitY, float hitZ) {
         if (world.isRemote) {
-            return Warheads.main(world, x, y, z) != null;
+            // Never consume the click here: PlayerControllerMP skips the block-placement packet when this returns
+            // true, and the server would never defuse (I4 review item 1).
+            return HandheldRules.clientConsumesUse();
         }
         DefuseResult r = defuseBlock(world, x, y, z);
         if (r == DefuseResult.NOT_A_TARGET) {

@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
@@ -82,7 +83,18 @@ public final class ItemRadarGun extends Item implements Tiered {
         }
         Vec3 eye = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3 look = player.getLookVec();
-        Vec3 end = eye.addVector(look.xCoord * RANGE, look.yCoord * RANGE, look.zCoord * RANGE);
+        // Stop the trace at the first unloaded chunk: rayTraceBlocks would load or generate chunks on demand.
+        double reach = 0;
+        for (double d = 1; d <= RANGE; d += 1) {
+            int cx = MathHelper.floor_double(eye.xCoord + look.xCoord * d) >> 4;
+            int cz = MathHelper.floor_double(eye.zCoord + look.zCoord * d) >> 4;
+            if (!world.getChunkProvider()
+                .chunkExists(cx, cz)) {
+                break;
+            }
+            reach = d;
+        }
+        Vec3 end = eye.addVector(look.xCoord * reach, look.yCoord * reach, look.zCoord * reach);
         MovingObjectPosition hit = world.rayTraceBlocks(eye, end);
         if (hit == null || hit.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
             player.addChatMessage(new ChatComponentTranslation("gregguns.icbm.radargun.miss", (int) RANGE));

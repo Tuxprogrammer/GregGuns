@@ -88,6 +88,12 @@ class HandheldRulesTest {
         assertEquals(32, HandheldRules.DEFUSER_USES);
     }
 
+    /** Regression guard for I4 review item 1: a true here swallows the click before the server sees it. */
+    @Test
+    void clientNeverConsumesTheUseClick() {
+        assertEquals(false, HandheldRules.clientConsumesUse());
+    }
+
     @Test
     void programmedCircuitsDiffer() {
         java.util.Set<Integer> seen = new java.util.HashSet<>();

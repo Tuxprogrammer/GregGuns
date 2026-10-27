@@ -105,7 +105,7 @@ public final class Contacts {
         if (p != FlightPhase.CLIMB && p != FlightPhase.ARC) {
             return null;
         }
-        double[] aim = m.aimPoint();
+        double[] aim = m.predictedImpact();
         return new Contact(
             m.getEntityId(),
             m.worldObj.provider.dimensionId,
@@ -118,7 +118,7 @@ public final class Contacts {
             m.tier()
                 .number(),
             aim[0],
-            aim[2]);
+            aim[1]);
     }
 
     /**

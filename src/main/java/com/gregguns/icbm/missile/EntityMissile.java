@@ -16,6 +16,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.gregguns.core.config.IcbmConfig;
+import com.gregguns.icbm.detect.ContactMath;
 import com.gregguns.icbm.explosive.ExplosiveDef;
 import com.gregguns.icbm.explosive.Explosives;
 import com.gregguns.icbm.explosive.IcbmBlasts;
@@ -377,6 +378,23 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
     /** @return the aimed (scattered) target, x y z; meaningful after launch */
     public double[] aimPoint() {
         return new double[] { targetX, targetY, targetZ };
+    }
+
+    /**
+     * @return where the missile will come down, x z: the aimed target in flight, and for a missile with fried guidance
+     *         the drift line carried to the ground (D14)
+     */
+    public double[] predictedImpact() {
+        if (!fried) {
+            return new double[] { targetX, targetZ };
+        }
+        double ground = 0.0;
+        if (worldObj.getChunkProvider()
+            .chunkExists(((int) Math.floor(posX)) >> 4, ((int) Math.floor(posZ)) >> 4)) {
+            ground = worldObj.getTopSolidOrLiquidBlock((int) Math.floor(posX), (int) Math.floor(posZ));
+        }
+        return ContactMath
+            .friedImpact(posX, posY, posZ, driftX, driftZ, fallSpeed, FRIED_GRAVITY, FRIED_TERMINAL, ground);
     }
 
     /** @return the launch site's scatter factor this missile carries (1 for a pad, saved with the missile) */

@@ -169,6 +169,11 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 | `icbm.doorOpenTicks` | int | `40` | 10 to 200 | yes | Ticks the Missile Silo doors take to swing open or shut (D89). |
 | `icbm.countdownTicks` | int | `200` | 20 to 1200 | yes | Ticks of countdown between the doors being open (or the launch, on a pad) and ignition; the launch can be aborted until it ends (D88). |
 | `icbm.doorCloseHeight` | int | `4` | 1 to 32 | yes | Blocks the missile's bottom must climb above the silo rim before the doors swing shut (D89). |
+| `icbm.empMaxDevices` | int | `64` | 1 to 1024 | yes | Most devices one EMP pulse may drain, nearest first (D16). A device is a GT machine that stores EU, a battery buffer, a multiblock (a Lapotronic Supercapacitor included), or an IC2 energy store; a buffer's batteries and a supercapacitor's stored EU are drained with it (D102 amendment). Missiles are not counted. |
+| `icbm.empMaxRadius` | int | `100` | 8 to 256 | yes | Largest radius an EMP Tower may be set to, blocks. A pulse costs 25 EU per square block of radius. |
+| `icbm.empMissileKillChance` | double | `0.5` | 0 to 1 | yes | Chance an EMP pulse destroys a missile in flight outright. |
+| `icbm.empMissileGuidanceChance` | double | `0.8` | 0 to 1 | yes | Chance, among the survivors, that a pulse fries a missile's guidance so it falls where its drift carries it. |
+| `icbm.empMissileTriggerChance` | double | `0.1` | 0 to 1 | yes | Chance, among the rest, that a pulse sets a missile's warhead off where it is. |
 
 ## Equipment (`equipment`)
 

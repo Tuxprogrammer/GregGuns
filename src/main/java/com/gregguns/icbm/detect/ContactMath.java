@@ -52,4 +52,33 @@ public final class ContactMath {
     public static boolean inRange(double x, double z, double centerX, double centerZ, double range) {
         return flat(x, z, centerX, centerZ) <= range;
     }
+
+    /**
+     * Where a missile with fried guidance will come down: it keeps its sideways step each tick and falls under
+     * gravity up to a terminal speed (D14, D16). Mirrors the missile's fried tick; terrain between is ignored.
+     *
+     * @param x        current X
+     * @param y        current Y
+     * @param z        current Z
+     * @param driftX   X step per tick
+     * @param driftZ   Z step per tick
+     * @param fall     current fall speed, blocks per tick
+     * @param gravity  fall speed gained per tick
+     * @param terminal fastest fall, blocks per tick
+     * @param groundY  the Y it lands at
+     * @return the landing X and Z
+     */
+    public static double[] friedImpact(double x, double y, double z, double driftX, double driftZ, double fall,
+        double gravity, double terminal, double groundY) {
+        double f = fall;
+        double h = y;
+        int guard = 0;
+        while (h > groundY && guard++ < 4000) {
+            f = Math.min(terminal, f + gravity);
+            h -= f;
+            x += driftX;
+            z += driftZ;
+        }
+        return new double[] { x, z };
+    }
 }

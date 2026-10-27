@@ -35,8 +35,10 @@ public final class EmpScenarios {
 
     /** Ticks GT needs before a placed machine is a settled tile entity. */
     private static final int WARMUP = 45;
-    /** A pulse that scans a dense base must finish well inside one tick (50 ms); the bar leaves room for a slow box. */
-    private static final long SPIKE_NANOS = 40_000_000L;
+    /** Extra milliseconds a pulse may take beyond the ICBM blast tick budget (I4 review item 18). */
+    private static final long SPIKE_ALLOWANCE_MS = 5L;
+    /** Non-device tile entities (chests, standing in for cables and pipes) the dense base holds around its devices. */
+    private static final int FILLER_HALF = 28;
 
     private EmpScenarios() {}
 
@@ -319,7 +321,7 @@ public final class EmpScenarios {
 
         @Override
         public String description() {
-            return "Among 169 charged battery buffers and a multiblock, one pulse hits exactly the nearest 64 devices (the cap), draining their EU, none outside the radius and not the tower itself, gives the multiblock exactly one maintenance issue, spends exactly its cost, and takes well under a tick.";
+            return "Among 169 charged battery buffers, a multiblock and over 3,000 other tile entities, one pulse hits exactly the nearest 64 devices (the cap), draining their EU, none outside the radius and not the tower itself, gives the multiblock exactly one maintenance issue, spends exactly its cost, and finishes inside the blast tick budget plus 5 ms.";
         }
 
         @Override
@@ -342,6 +344,13 @@ public final class EmpScenarios {
             }
             place(ctx, 25, 0, 0, buffer);
             place(ctx, -3, 0, 0, multiblockId());
+            // A GTNH base is mostly cables and pipes, which are tile entities the pulse must walk past: one layer of
+            // chests over the whole area, thousands of tiles that are not devices.
+            for (int x = -FILLER_HALF; x <= FILLER_HALF; x++) {
+                for (int z = -FILLER_HALF; z <= FILLER_HALF; z++) {
+                    ctx.setBlock(x, 2, z, Blocks.chest, 0);
+                }
+            }
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             return ScenarioResult.pending(name(), WARMUP + 60, ticks -> {
                 if (ticks < WARMUP) {
@@ -398,10 +407,18 @@ public final class EmpScenarios {
                 }
                 out.checkEquals("63 buffers are empty", 63, drained);
                 out.check(maxDrained <= minKept, "the devices that were drained are the nearest ones");
-                out.check(r.tilesScanned >= 170, "it looked at tile entities, not blocks (" + r.tilesScanned + ")");
                 out.check(
-                    r.nanos < SPIKE_NANOS,
-                    "no tick spike: " + (r.nanos / 1_000_000.0) + " ms for " + r.tilesScanned + " tiles");
+                    r.tilesScanned >= 3000,
+                    "it walked thousands of tile entities, not blocks (" + r.tilesScanned + ")");
+                long budgetNanos = (IcbmConfig.blastBudgetMs + SPIKE_ALLOWANCE_MS) * 1_000_000L;
+                out.check(
+                    r.nanos < budgetNanos,
+                    "no tick spike: " + (r.nanos / 1_000_000.0)
+                        + " ms for "
+                        + r.tilesScanned
+                        + " tiles, bar "
+                        + (budgetNanos / 1_000_000L)
+                        + " ms");
                 IcbmConfig.empMaxDevices = oldCap;
                 return out.build();
             });
@@ -418,7 +435,7 @@ public final class EmpScenarios {
 
         @Override
         public String description() {
-            return "Missiles-only mode leaves a charged buffer alone; machines-only drains it; a buffer in the sender's own tile is spared; a cap of 0 hits nothing.";
+            return "Missiles-only mode leaves a charged buffer alone; machines-only drains it; a buffer in the sender's own tile is spared; a cap of 0 hits nothing; the batteries in a buffer's slots drain.";
         }
 
         @Override
@@ -454,6 +471,20 @@ public final class EmpScenarios {
                 r = EmpPulse.fire(ctx.world(), cx, cy, cz, 10, EmpMode.ALL, 0, MissileTable.DEFAULT, null);
                 out.checkEquals("a cap of 0 hits nothing", 0, r.devices);
                 out.checkEquals("the buffer keeps its EU", 5000L, buf.getStoredEU());
+                // The batteries in the buffer's slots drain too (D102 amendment, D16).
+                net.minecraft.item.ItemStack battery = ItemList.Battery_RE_MV_Lithium.get(1);
+                ic2.api.item.ElectricItem.manager.charge(battery, Double.MAX_VALUE, Integer.MAX_VALUE, true, false);
+                double before = ic2.api.item.ElectricItem.manager.getCharge(battery);
+                out.check(before > 0, "the test battery took a charge (" + before + ")");
+                ((gregtech.api.metatileentity.implementations.MTEBasicBatteryBuffer) buf
+                    .getMetaTileEntity()).mInventory[0] = battery;
+                r = EmpPulse
+                    .fire(ctx.world(), cx, cy, cz, 10, EmpMode.MACHINES, 64, MissileTable.DEFAULT, (TileEntity) base);
+                out.checkEquals(
+                    "the battery in the buffer is empty",
+                    0.0,
+                    ic2.api.item.ElectricItem.manager.getCharge(battery));
+                out.check(r.euDrained >= (long) before, "the pulse counted the battery's EU (" + r.euDrained + ")");
                 return out.build();
             });
         }

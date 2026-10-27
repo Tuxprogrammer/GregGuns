@@ -157,8 +157,8 @@ public final class ItemRemoteDetonator extends Item implements Tiered {
             return false;
         }
         if (world.isRemote) {
-            // The client cannot tell whether the click links (the tile may not be synced); the server answers.
-            return Warheads.main(world, x, y, z) != null;
+            // Never consume the click here: it would stop the packet that makes the server link (I4 review item 1).
+            return HandheldRules.clientConsumesUse();
         }
         return linkTo(player, stack, world, x, y, z);
     }

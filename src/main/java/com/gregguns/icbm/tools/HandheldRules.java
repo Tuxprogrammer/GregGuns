@@ -24,6 +24,17 @@ public final class HandheldRules {
     private HandheldRules() {}
 
     /**
+     * Whether a handheld tool's client-side {@code onItemUseFirst} may report the click as used. It must not:
+     * {@code PlayerControllerMP} returns before sending the block-placement packet when it does, so the server would
+     * never run the tool. Guarded by a unit test; the client path cannot be driven from a scenario.
+     *
+     * @return always false
+     */
+    public static boolean clientConsumesUse() {
+        return false;
+    }
+
+    /**
      * @param tier a detonator tier (HV, EV or IV)
      * @return the range in blocks, measured from the holder to the center of the warhead; 0 for any other tier
      */
