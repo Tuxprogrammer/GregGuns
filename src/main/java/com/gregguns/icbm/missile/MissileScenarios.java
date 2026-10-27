@@ -585,7 +585,19 @@ public final class MissileScenarios {
                         name(),
                         "the missile ended but broke nothing; last aim " + java.util.Arrays.toString(m.aimPoint())
                             + " y "
-                            + maxY[0]);
+                            + maxY[0]
+                            + ", ended at "
+                            + (int) m.posX
+                            + ", "
+                            + (int) m.posY
+                            + ", "
+                            + (int) m.posZ
+                            + ", platform "
+                            + target.standing(w)
+                            + " of "
+                            + target.stones.size()
+                            + " stone at y "
+                            + (py - 1));
                 }
                 ScenarioResult.Builder out = ScenarioResult.builder(name());
                 out.check(flew[0], "it reached the arc phase");

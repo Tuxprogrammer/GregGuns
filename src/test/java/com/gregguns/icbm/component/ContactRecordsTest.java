@@ -40,6 +40,16 @@ class ContactRecordsTest {
         }
 
         @Override
+        public int dimension() {
+            return 0;
+        }
+
+        @Override
+        public double speed() {
+            return Math.sqrt(vx * vx + vz * vz);
+        }
+
+        @Override
         public double x() {
             return x;
         }
