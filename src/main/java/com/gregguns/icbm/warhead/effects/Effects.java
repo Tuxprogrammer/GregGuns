@@ -87,9 +87,29 @@ public final class Effects {
                 return new RedMatterEffect();
             case EMP:
                 return new Emp();
+            case ENDER:
+                return new EnderEffect();
+            case ANTIGRAV:
+                return new AntiGravEffect();
             default:
                 return BlastEffect.NONE;
         }
+    }
+
+    /**
+     * Test hook: ender warheads land at this spot (the cell the entity stands in) until {@link #clearEnderTarget}.
+     *
+     * @param x X
+     * @param y Y
+     * @param z Z
+     */
+    public static void forceEnderTarget(int x, int y, int z) {
+        EnderEffect.forced = new int[] { x, y, z };
+    }
+
+    /** Test hook: ender warheads pick their own landing spot again. */
+    public static void clearEnderTarget() {
+        EnderEffect.forced = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -443,7 +463,13 @@ public final class Effects {
         @Override
         public void onFinish(BlastContext ctx) {
             if (ctx.completed() && ctx.breaksTerrain() && !ctx.world().isRemote) {
-                com.gregguns.explosion.nuclear.Fallout.start(ctx.world(), ctx.x(), ctx.y(), ctx.z(), ctx.radius());
+                com.gregguns.explosion.nuclear.Fallout.start(
+                    ctx.world(),
+                    ctx.x(),
+                    ctx.y(),
+                    ctx.z(),
+                    ctx.radius(),
+                    com.gregguns.explosion.nuclear.Fallout.GRADE_ZPM);
             }
         }
     }

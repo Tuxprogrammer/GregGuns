@@ -16,7 +16,27 @@ public final class FalloutMath {
     /** Blocks converted per converted column: the top block, then each of up to two below with chance one half. */
     public static final double AVERAGE_DEPTH = 1.75;
 
+    /** The inner fireball: trinitite, hot rubble and goo lie within this share of the fallout radius. */
+    public static final double INNER_SHARE = 0.4;
+    /** Goo can lie out to this share of the inner radius. */
+    public static final double GOO_REACH = 1.0;
+    /** The chance of goo on a converted top block at ground zero (about 1 percent on average, D21). */
+    public static final double GOO_PEAK = 0.03;
+
     private FalloutMath() {}
+
+    /**
+     * @param distance horizontal distance from ground zero
+     * @param inner    the inner fireball radius
+     * @return the chance a converted top block is goo: {@link #GOO_PEAK} at ground zero, falling to zero at the rim of
+     *         the inner fireball
+     */
+    public static double gooChance(double distance, double inner) {
+        if (!(inner > 0.0) || !(distance >= 0.0) || distance >= inner) {
+            return 0.0;
+        }
+        return GOO_PEAK * (1.0 - distance / inner);
+    }
 
     /**
      * @param radius the fallout radius, blocks

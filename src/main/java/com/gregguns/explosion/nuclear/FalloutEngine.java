@@ -221,11 +221,76 @@ public final class FalloutEngine {
             if (!BlockBreakGuard.mayBreak(world, x, y, z, block, meta, FakePlayerFactory.getMinecraft(world))) {
                 return;
             }
-            if (world.setBlock(x, y, z, FalloutBlocks.irradiated(), variant, 2)) {
+            if (placeFallout(world, job, x, y, z, depth, variant, distance)) {
                 job.add(x, y, z);
                 convertedTotal++;
             }
         }
+    }
+
+    /**
+     * Turns one block of the surface into fallout: goo (rare, top block, near ground zero, capped per blast and per
+     * config), trinitite (sand in the inner fireball), or irradiated earth, hot in the inner fireball of a ZPM or
+     * better blast. All rolls are deterministic from the job's seed.
+     *
+     * @return true when a block was placed
+     */
+    private boolean placeFallout(WorldServer world, FalloutSavedData.Job job, int x, int y, int z, int depth,
+        int variant, double distance) {
+        double inner = FalloutMath.INNER_SHARE * job.radius;
+        boolean hot = job.grade >= 1 && distance <= inner;
+        if (depth == 0 && distance <= inner * FalloutMath.GOO_REACH
+            && job.goo < ExplosionsConfig.falloutMaxGoo
+            && FalloutMath.roll(job.seed, x, z, 3) < FalloutMath.gooChance(distance, inner)) {
+            if (world.setBlock(x, y, z, FalloutBlocks.goo(), job.grade >= 1 ? 1 : 0, 2)) {
+                job.goo++;
+                FalloutSavedData data = data(world, true);
+                data.addGoo(x, y, z);
+                return true;
+            }
+            return false;
+        }
+        if (variant == FalloutBlocks.SAND && distance <= inner) {
+            return world.setBlock(x, y, z, FalloutBlocks.trinitite(), 0, 2);
+        }
+        return world.setBlock(x, y, z, FalloutBlocks.irradiated(), variant | (hot ? FalloutBlocks.HOT_BIT : 0), 2);
+    }
+
+    /** Called when a goo block is broken or replaced: the ledger that holds back decay forgets it. */
+    static void gooRemoved(World world, int x, int y, int z) {
+        FalloutSavedData d = data(world, false);
+        if (d != null) {
+            d.removeGoo(x, y, z);
+        }
+    }
+
+    /**
+     * Digs up every goo block the ledger knows in a world, as a player with a shovel would (the blocks vanish without
+     * drops), and forgets any entry whose block is already gone. Used by tests to leave a world clean.
+     *
+     * @param world a world
+     * @return how many goo blocks were removed
+     */
+    public int clearGoo(World world) {
+        FalloutSavedData d = data(world, false);
+        if (d == null || world.isRemote) {
+            return 0;
+        }
+        int n = 0;
+        for (int[] p : d.gooPositions()) {
+            if (world.getBlock(p[0], p[1], p[2]) == FalloutBlocks.goo()) {
+                world.setBlock(p[0], p[1], p[2], net.minecraft.init.Blocks.air, 0, 2);
+                n++;
+            }
+            d.removeGoo(p[0], p[1], p[2]);
+        }
+        return n;
+    }
+
+    /** @param world a world @return goo blocks the ledger holds in it */
+    public int gooBlocks(World world) {
+        FalloutSavedData d = data(world, false);
+        return d == null ? 0 : d.gooCount();
     }
 
     private void finishJob(World world, FalloutSavedData d, FalloutSavedData.Job job) {
@@ -257,6 +322,7 @@ public final class FalloutEngine {
         }
         int total = decay.blocks.length / 3;
         int end = Math.min(total, decay.cursor + ExplosionsConfig.falloutRevertPerTick);
+        boolean heldByGoo = false;
         for (; decay.cursor < end; decay.cursor++) {
             int x = decay.blocks[decay.cursor * 3];
             int y = decay.blocks[decay.cursor * 3 + 1];
@@ -267,8 +333,26 @@ public final class FalloutEngine {
                 decay.blocks[at] = x;
                 decay.blocks[at + 1] = y;
                 decay.blocks[at + 2] = z;
-            } else if (world.getBlock(x, y, z) == FalloutBlocks.irradiated()) {
-                world.setBlock(x, y, z, FalloutBlocks.original(world.getBlockMetadata(x, y, z)), 0, 2);
+            } else if (d.gooInChunkOf(x, z)) {
+                // Goo still stands in this chunk: the land does not recover until it is cleaned up (D21).
+                int at = decay.kept++ * 3;
+                decay.blocks[at] = x;
+                decay.blocks[at + 1] = y;
+                decay.blocks[at + 2] = z;
+                heldByGoo = true;
+            } else {
+                Block there = world.getBlock(x, y, z);
+                if (there == FalloutBlocks.irradiated()) {
+                    world.setBlock(
+                        x,
+                        y,
+                        z,
+                        FalloutBlocks.original(FalloutBlocks.variantOf(world.getBlockMetadata(x, y, z))),
+                        0,
+                        2);
+                } else if (there == FalloutBlocks.trinitite()) {
+                    world.setBlock(x, y, z, FalloutBlocks.original(FalloutBlocks.SAND), 0, 2);
+                }
             }
         }
         d.touch();
@@ -279,6 +363,10 @@ public final class FalloutEngine {
                 decay.cursor = 0;
                 decay.kept = 0;
                 decay.due = now + RETRY_TICKS;
+                if (heldByGoo) {
+                    // Goo has no age cap: the record waits as long as the goo stands.
+                    decay.deadline = now + FalloutSavedData.Decay.MAX_AGE_TICKS;
+                }
             } else {
                 d.decays.remove(decay);
             }

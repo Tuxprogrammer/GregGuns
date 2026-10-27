@@ -47,7 +47,7 @@ public final class BlockIrradiatedEarth extends Block implements com.gregguns.ap
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta) {
-        return FalloutBlocks.original(meta % FalloutBlocks.VARIANTS)
+        return FalloutBlocks.original(FalloutBlocks.variantOf(meta))
             .getIcon(side, 0);
     }
 
@@ -80,7 +80,7 @@ public final class BlockIrradiatedEarth extends Block implements com.gregguns.ap
 
     @Override
     public int damageDropped(int meta) {
-        return meta;
+        return FalloutBlocks.isHot(meta) ? 1 : 0;
     }
 
     @Override
@@ -91,7 +91,7 @@ public final class BlockIrradiatedEarth extends Block implements com.gregguns.ap
     @Override
     public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int meta, int fortune) {
         ArrayList<ItemStack> drops = new ArrayList<>();
-        drops.add(new ItemStack(FalloutBlocks.rubble(), 1, 0));
+        drops.add(new ItemStack(FalloutBlocks.rubble(), 1, FalloutBlocks.isHot(meta) ? 1 : 0));
         return drops;
     }
 

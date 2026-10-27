@@ -66,13 +66,33 @@ Casing T3 (LuV to ZPM, fill cap 64). Radius and damage are at a full casing; the
 | exothermic | T3 (LuV) | sphere crater | 28 | 8,000 | everything in the radius burns 5 s |
 | endothermic | T3 (LuV) | sphere crater | 28 | 8,000 | slowness III for 10 s on what is in the radius |
 | nuclear | T3 (ZPM) | sphere crater | 64 | 8,000 outside the kill zone | annihilation in the kill zone (60% of the radius), bosses included; fallout, see [nuclear-and-fallout](nuclear-and-fallout.md) |
+| ender | T3 (LuV) | none | 24 | none | pulls living things for 8 s; those that reach the middle are sent to one landing spot, see below |
+| anti-gravitational | T3 (LuV) | none (blocks are lifted, not destroyed) | 20 | none | lifts up to 512 plain blocks as flying blocks and floats living things, see below |
 
-Payloads: exothermic is Industrial TNT, Plastic Explosive, four Napalm Canisters and kerosene; endothermic is Industrial TNT, Plastic Explosive, four Dispersal Canisters and helium; nuclear is Industrial TNT, Plastic Explosive, a core of eight uranium-235 and four plutonium ingots. **Deferred (D80):** ender and anti-gravitational (I5, coder B); EMP shipped in I4.
+Payloads: exothermic is Industrial TNT, Plastic Explosive, four Napalm Canisters and kerosene; endothermic is Industrial TNT, Plastic Explosive, four Dispersal Canisters and helium; nuclear is Industrial TNT, Plastic Explosive, a core of eight uranium-235 and four plutonium ingots. Ender is Industrial TNT, Plastic Explosive, a LuV Emitter and sixteen Eyes of Ender; anti-gravitational is Industrial TNT, Plastic Explosive, two LuV Field Generators and four Nether Stars. EMP shipped in I4.
 
 - **Damage targets (D34):** the damaging T1 types deal at least 1,200 at ground zero at full fill, and T2 at least 3,000, before armor. The unit test `WarheadBlastTest` pins the numbers, and scenario `icbm.blast.condensed` (and the T2 ones) kills a target in the zone. Partial fills deal `D * sqrt(fill / cap)`.
 - **Special types** (gas, fire, push, sonic, breaching, smoke) are balanced on their own effect, not on the damage table (0018 §6).
 - **Thermobaric** is a plain crater here; ICBM's threaded thermobaric energy model is a later refinement if play shows the need.
-- **Dropped:** colors gas, and ender, anti-gravitational and EMP (D80) arrive with I4-I5.
+- **Dropped:** colors gas.
+
+### Ender (I5, D144 and D145)
+
+- **Pull and send.** For 160 ticks (8 s) the blast pulls every living thing in the box around the center toward it (ICBM's curve, peak 0.06 blocks per tick, vertical pull 1.8x). A living thing within **4 blocks** of the center is sent to **one landing spot chosen at detonation**. At most `icbm.enderMaxTeleports` (64) are sent per blast; the rest are only pulled.
+- **Landing spot.** 40 to 128 blocks from the center on each horizontal axis, so it is outside the pull. It must be on a **chunk that is already loaded** (no chunk is ever loaded for it), with solid, dry, non-cactus, non-fire ground under two free blocks. After 16 failed attempts the blast only pulls. If the landing chunk unloads while the blast runs, the blast stops. The landing spot is saved in the blast's state, so a reload keeps it.
+- **Same dimension only.** Players and ordinary mobs are sent; **bosses** (anything with a boss bar) are pulled but never sent; riders are dismounted first. Fall distance and motion are reset on landing.
+- **The event is a veto, not the move.** `EnderTeleportEvent` is posted for each send (vanilla's way: a listener may cancel, or move the target); the code then moves the entity itself, with `setPositionAndUpdate` (or the player's network handler for a player). A pack mod that cancels the event stops that one entity from being sent, and it is pulled instead.
+- **Sent means safe.** A sent entity is immune to the pull for 200 ticks (`ggEnderSentUntil` in its entity data), so a landing inside another blast's box (or a short test distance) never drags it back. The scenario once failed for exactly this reason: the landing lay inside the pull box, and the cow was sent and then pulled back; the event was never canceled by anyone.
+- **No endermen.** ICBM's eight endermen at the end are dropped.
+- Ignores the terrain switch (no block changes).
+
+### Anti-gravitational (I5, D146 to D148)
+
+- **Lift.** For 600 ticks (30 s) the blast turns solid blocks of its sphere into flying-block entities, **top layer first**, at most 8 a tick and at most `icbm.antigravMaxBlocks` (512) per blast. It lifts only plain blocks: **no tile entities** (no chest, machine or inventory is ever lifted, copied or lost), no fluids, no bedrock, nothing harder than 30. Each layer goes through the claim and protection veto (`ExplosionEvent.Detonate`, the break guard) once; the survivors wait in a saved queue so a reload resumes exactly. It reads the `icbm.terrainDamageT3` switch itself; with it off only living things are lifted.
+- **Living things** within the radius and 20 blocks above the center float up (+0.3 a tick every other tick, below 0.4 of speed, no fall damage), at most 128 per pass; flying players are left alone.
+- **Flying block.** Rises at 0.5 blocks per tick to 12 to 40 blocks above where it was (or the 250 height limit), drifts a little, hovers 400 to 600 ticks, then falls and **lands**: it puts the block back where it stops or at the first free cell within three above; when the spot is taken or its chunk is not loaded it **drops as an item**. A hard age cap of 3,600 ticks makes it land wherever it is. It is saved with its chunk, so a reload keeps it flying.
+- **Conservation (D148).** Every lifted block is placed or dropped: never lost, never duplicated. The scenario `icbm.blast.antigrav_flight` proves it by lifting a plate of a rare block (quartz), then counting that block in the world, over a wide column that includes the ground the blocks fall onto, plus the new item entities, before and after. An earlier version counted only 3 blocks below the origin and reported about 430 "lost"; the blocks had fallen far below that window, so nothing was lost.
+- **Sync.** The block and metadata ride in the spawn data; the motion is server side and the client interpolates (two-client check is in the I5 client session).
 
 ## The T4 and T5 set (I5)
 
@@ -97,7 +117,7 @@ Payloads: exothermic is Industrial TNT, Plastic Explosive, four Napalm Canisters
 
 ## Tests
 
-`WarheadBlastTest` (catalog, targets), `WarheadMathTest` (curve against the registry definition), scenarios `icbm.blast.<type>` (one per type) and `icbm.blast.block_damage_off`.
+`WarheadBlastTest` (catalog, targets), `EnderRulesTest` (pull curve, targets, range), `WarheadMathTest` (curve against the registry definition), scenarios `icbm.blast.<type>` (one per type), `icbm.blast.ender_teleport` (the send, the landing spot, a far cow stays) and `icbm.blast.antigrav_flight` (the cap, a chest stays, conservation, NBT round trip) and `icbm.blast.block_damage_off`.
 
 ## Open questions
 
