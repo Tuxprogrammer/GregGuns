@@ -63,7 +63,12 @@ final class AntiGravEffect implements BlastEffect {
         if (world.isRemote || age >= LIFT_TICKS) {
             return false;
         }
-        if (ctx.breaksTerrain()) {
+        // The engine's own terrain flag is for blasts with a crater (shape NONE has none), so the tier switch is read
+        // here.
+        if (IcbmConfig.terrainDamage(
+            ctx.explosive()
+                .tier()
+                .number())) {
             liftBlocks(ctx);
         }
         if (age % 2 == 0) {

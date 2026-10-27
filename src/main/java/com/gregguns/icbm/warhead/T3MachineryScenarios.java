@@ -97,6 +97,8 @@ final class T3MachineryScenarios {
                 return ScenarioResult.fail(name(), "the engine did not accept the blast");
             }
             return ScenarioResult.pending(name(), 400, ticks -> {
+                // Nothing else keeps the landing chunk: a chunk without a player or ticket unloads on its own.
+                w.getChunkFromBlockCoords(tx, tz);
                 if (ticks < 200) {
                     return null;
                 }
