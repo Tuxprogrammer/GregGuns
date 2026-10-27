@@ -97,7 +97,7 @@ Properties that matter (the exporter writes about forty; the builder writes all 
 | `taskID:8` | JSON | Used for |
 |---|---|---|
 | `bq_standard:checkbox` | `{"index:3": 0, "taskID:8": "bq_standard:checkbox"}` | Intros, summaries, honor-system lessons |
-| `bq_standard:retrieval` | `requiredItems:9` (stacks), `requireOnlyOneItem:1` (1 = any one of the stacks), `consume:1` (0), `ignoreNBT:1` (1), `partialMatch:1` (1), `autoConsume:1`, `groupDetect:1` | Anything made in a machine or found |
+| `bq_standard:retrieval` | `requiredItems:9` (stacks), `requireOnlyOneItem:1` (1 = any one of the stacks), `consume:1` (0), `ignoreNBT:1` (1, or 0 to match a stack's NBT: the Nuclear Warhead quest uses `matchNBT` and a stack `tag` in `quests.json`), `partialMatch:1` (1), `autoConsume:1`, `groupDetect:1` | Anything made in a machine or found |
 | `bq_standard:crafting` | `requiredItems:9`, `allowCraft:1`, `allowSmelt:1`, `allowAnvil:1`, `ignoreNBT:1`, `partialMatch:1`. Listens for the crafting table, furnace and anvil only ([TaskCrafting#L189-L200](https://github.com/GTNewHorizons/BetterQuesting/blob/3.8.89-GTNH/src/main/java/bq_standard/tasks/TaskCrafting.java#L189-L200)) | Steam-chapter quests |
 | `bq_standard:hunt` | `target:8` (an `EntityList` name), `required:3`, `subtypes:1` (0 = exact class), `ignoreNBT:1` (1), `targetNBT:10`, `damageType:8` (empty = any) | NPC branch |
 | `bq_standard:location` | `dimension:3`, `posX/Y/Z:3`, `range:3`, `structure:8`, `biome:3`, `name:8`, `invert:1`, `taxiCabDist:1`, `hideInfo:1`, `visible:1` | Not used. Present in the pack (34 times) |

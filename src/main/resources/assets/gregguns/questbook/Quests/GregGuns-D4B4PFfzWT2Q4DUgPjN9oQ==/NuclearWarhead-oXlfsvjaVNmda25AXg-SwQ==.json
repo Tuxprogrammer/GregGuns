@@ -64,7 +64,7 @@
       "autoConsume:1": 0,
       "consume:1": 0,
       "groupDetect:1": 0,
-      "ignoreNBT:1": 1,
+      "ignoreNBT:1": 0,
       "index:3": 0,
       "partialMatch:1": 1,
       "requireOnlyOneItem:1": 0,
@@ -73,7 +73,10 @@
           "Count:3": 1,
           "Damage:2": 0,
           "OreDict:8": "",
-          "id:8": "gregguns:warhead_t3"
+          "id:8": "gregguns:warhead_t3",
+          "tag:10": {
+            "explosive:8": "nuclear"
+          }
         }
       },
       "taskID:8": "bq_standard:retrieval"

@@ -40,7 +40,11 @@ def file_name(title, b64):
 
 
 def stack(s):
-    return {'Count:3': s.get('count', 1), 'Damage:2': s.get('damage', 0), 'OreDict:8': s.get('ore', ''), 'id:8': s['id']}
+    out = {'Count:3': s.get('count', 1), 'Damage:2': s.get('damage', 0), 'OreDict:8': s.get('ore', ''), 'id:8': s['id']}
+    if s.get('tag'):
+        # Item NBT in BetterQuesting's typed-key JSON: a string value is "<key>:8".
+        out['tag:10'] = {k + ':8': v for k, v in s['tag'].items()}
+    return out
 
 
 def stacks(items):
@@ -52,7 +56,8 @@ def task(t):
     if kind == 'checkbox':
         return {'taskID:8': 'bq_standard:checkbox'}
     if kind == 'retrieval':
-        return {'autoConsume:1': 0, 'consume:1': 0, 'groupDetect:1': 0, 'ignoreNBT:1': 1, 'partialMatch:1': 1,
+        return {'autoConsume:1': 0, 'consume:1': 0, 'groupDetect:1': 0,
+                'ignoreNBT:1': 0 if t.get('matchNBT') else 1, 'partialMatch:1': 1,
                 'requireOnlyOneItem:1': int(bool(t.get('any'))), 'requiredItems:9': stacks(t['items']),
                 'taskID:8': 'bq_standard:retrieval'}
     if kind == 'crafting':

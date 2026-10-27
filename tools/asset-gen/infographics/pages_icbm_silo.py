@@ -213,7 +213,6 @@ def silo() -> str:
         TP.part(TP.gc_icon("compressed_titanium"), 4, "Compressed Titanium Plate", 72),
         TP.part(TP.NHCORE / "heavy_duty_rocket_fins_t3.png", 4, "Heavy Duty Rocket Fins Tier 3", 72),
         TP.part(TP.NHCORE / "heavy_duty_rocket_engine_t3.png", 1, "Heavy Duty Rocket Engine Tier 3", 72),
-        TP.part(K.ASSETS / "textures/items/thirdparty/ntm/guidance_computer_mk3.png", 1, "Guidance Computer Mk III", 72),
         f'<span class="part" style="width:260px"><span class="pl"><b style="display:block">Also needed</b>a LuV missile chip (Multifiberglass board, 2 Master circuits and platinum fine wire in the Circuit Assembler), engraved with a Yellow lens.</span></span>'])
     body = f"""<div style="display:grid;grid-template-columns:1fr 470px;gap:20px">
 <div class="card" style="display:flex;flex-direction:column;min-height:680px">
@@ -245,7 +244,7 @@ def silo() -> str:
 <div class="card" style="margin-top:18px"><h2 style="margin-bottom:8px">Why launch from a silo</h2>
 <div class="muted" style="font-size:18px;margin-bottom:10px">A missile fired from the silo flies farther and lands closer to where you aimed than one on an open pad. Tiers 1 and 2 can launch from it too, if the Energy Hatch is high enough.</div>
 <div class="grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:14px">
-<div class="wcard"><div class="label">Range</div><div class="cond o" style="font-size:30px;font-weight:700">&times; 1.25</div><div class="muted" style="font-size:16px">A Tier 3 missile flies 20 to 8,000 blocks from a pad, up to 10,000 from the silo.</div></div>
+<div class="wcard"><div class="label">Range</div><div class="cond o" style="font-size:30px;font-weight:700">&times; 1.25</div><div class="muted" style="font-size:16px">A Tier 3 missile has a base range of 8,000 blocks; from the silo, 10,000.</div></div>
 <div class="wcard"><div class="label">Scatter</div><div class="cond o" style="font-size:30px;font-weight:700">&times; 0.5</div><div class="muted" style="font-size:16px">Half the usual miss distance. A Tier 3 body scatters 6 blocks before guidance.</div></div>
 <div class="wcard"><div class="label">Fuel</div><div class="cond o" style="font-size:30px;font-weight:700">8,000 mB</div><div class="muted" style="font-size:16px">Purple or Green. Flies at 1.6 blocks per tick.</div></div>
 <div class="wcard"><div class="label">Energy Hatch</div><div class="cond o" style="font-size:30px;font-weight:700">HV / EV / LuV</div><div class="muted" style="font-size:16px">Tier 1, Tier 2 and Tier 3 missiles. Lower than the missile, and the silo refuses the launch.</div></div></div></div>"""

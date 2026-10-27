@@ -10,5 +10,5 @@ first commit and its README says the mod is released under the GPL. The full tex
 GPL-3.0.txt (LICENSE at tag 2.9.84).
 
 These two icons are used only in the Missile Silo guide sheet (a documentation image), which paints them in and
-is therefore a combined work: that sheet is marked GPL-3.0 in docs/assets/CREDITS.md. The icons are not loaded by
-the game and ship in the mod jar only as files beside this notice.
+is therefore a combined work: that sheet is marked GPL-3.0 in docs/assets/CREDITS.md. The icons live with the
+infographic tool inputs, not in src/main/resources, so the mod jar does not contain them.
