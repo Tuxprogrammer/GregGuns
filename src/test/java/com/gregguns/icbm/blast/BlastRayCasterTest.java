@@ -87,6 +87,15 @@ class BlastRayCasterTest {
     }
 
     @Test
+    void stepCountIsEvenSoOneRayRunsAlongTheSurface() {
+        // With an odd count no pitch slice is horizontal, and the edge of a level crater fell short of its radius
+        // (thermobaric r20 on stone missed 18 blocks along the surface about one blast in twenty).
+        for (int radius = 3; radius <= 64; radius++) {
+            assertEquals(0, BlastRayCaster.steps(radius) % 2, "steps for radius " + radius);
+        }
+    }
+
+    @Test
     void icbm0204AndIcbm0260EveryEditAppearsOnceAndNearestFirst() {
         BlastGrid g = solid(BlastGrid.encode(0.3F));
         int[] cells = cast(g, BlastRayCaster.defaultEnergy(R));

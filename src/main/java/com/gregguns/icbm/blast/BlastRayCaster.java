@@ -74,10 +74,13 @@ public final class BlastRayCaster {
 
     /**
      * @param radius the blast radius, blocks (at least 3)
-     * @return the number of slices per half turn: {@code ceil(pi * radius)}
+     * @return the number of slices per half turn: {@code ceil(pi * radius)}, rounded up to an even number so that one
+     *         pitch slice is exactly horizontal (pitch pi / 2). With an odd count no ray ran along the surface and the
+     *         edge of a crater on level ground fell a block or two short of its radius about one blast in twenty.
      */
     public static int steps(int radius) {
-        return (int) Math.ceil(Math.PI * Math.max(3, radius));
+        int s = (int) Math.ceil(Math.PI * Math.max(3, radius));
+        return s + (s & 1);
     }
 
     /**
