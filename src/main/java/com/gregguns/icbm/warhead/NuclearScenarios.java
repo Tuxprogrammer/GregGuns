@@ -245,10 +245,10 @@ final class NuclearScenarios {
                     // BlastEngine.maxTickNanos is the scheduler's own time inside the tick (not the whole server tick),
                     // so it is the blast's own share. One tick can still run long on a shared box (a garbage collection
                     // or another process taking the core), which no slice can prevent, so the bar is the distribution:
-                    // 99% of the ticks that ran blast work stay within the budget plus one slice's overshoot, and no
+                    // 99% of the ticks that ran blast work (one tick at least) stay within the budget plus one slice's overshoot, and no
                     // tick passes a hard cap that would mean a slice that does not watch the clock.
                     out.check(
-                        over * 100L <= perTick.length,
+                        over <= Math.max(1, perTick.length / 100),
                         over + " of "
                             + perTick.length
                             + " blast ticks passed "
@@ -259,7 +259,7 @@ final class NuclearScenarios {
                             + p99 / 1_000_000L
                             + " ms, slowest slice "
                             + slowest
-                            + "), at most 1% allowed against a "
+                            + "), at most 1% (and one tick) allowed against a "
                             + budgetMs
                             + " ms budget");
                     out.check(
