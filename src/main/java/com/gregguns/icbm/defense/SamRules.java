@@ -74,6 +74,42 @@ public final class SamRules {
         return distance <= KILL_RADIUS;
     }
 
+    /**
+     * The checks a computer-ordered shot passes, in order, the same ones the battery's own engagement applies.
+     *
+     * @param moduleOn    the ICBM module is on
+     * @param linked      a stick with a radar link is in the slot
+     * @param radarOnline the linked radar is loaded and online
+     * @param sams        SAMs loaded
+     * @param enoughEu    the battery holds {@link #EU_PER_SHOT}
+     * @param cooldown    ticks until the next launch
+     * @param threat      the contact is in the linked radar's incoming list
+     * @param inRange     the contact is within {@link #ENGAGE_RANGE}
+     * @return the refusal word, or null when the shot may go
+     */
+    public static String fireRefusal(boolean moduleOn, boolean linked, boolean radarOnline, int sams, boolean enoughEu,
+        int cooldown, boolean threat, boolean inRange) {
+        if (!moduleOn) {
+            return "module_off";
+        }
+        if (!linked || !radarOnline) {
+            return "no_link";
+        }
+        if (sams <= 0) {
+            return "no_sams";
+        }
+        if (!threat) {
+            return "no_contact";
+        }
+        if (!inRange) {
+            return "out_of_range";
+        }
+        if (!enoughEu) {
+            return "no_power";
+        }
+        return cooldown > 0 ? "cooling" : null;
+    }
+
     /** What the battery reports; one lang key per value, {@code gregguns.icbm.battery.state.<name lowercased>}. */
     public enum State {
 

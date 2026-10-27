@@ -12,6 +12,8 @@ import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
+import com.gregguns.icbm.component.AirDefenseView;
+import com.gregguns.icbm.component.Reply;
 import com.gregguns.icbm.detect.Contact;
 import com.gregguns.icbm.detect.Contacts;
 import com.gregguns.icbm.missile.EntityMissile;
@@ -28,13 +30,16 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
  * inside GT's MTE window. Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/air-defense-battery.md
-public final class MTEAirDefense extends DefenseBlock {
+public final class MTEAirDefense extends DefenseBlock implements AirDefenseView {
 
     /** First SAM slot; the SAMs take slots 0 to {@link SamRules#CAPACITY} - 1. */
     public static final int SLOT_SAM = 0;
     /** The data stick slot, after the SAMs. */
     public static final int SLOT_STICK = SamRules.CAPACITY;
     private static final String K_COOL = "cool";
+    private static final String K_AUTO = "auto";
+    private static final String K_FIRED = "fired";
+    private static final String K_HITS = "hits";
     private static final int HV = 3;
 
     private int cooldown;
@@ -43,6 +48,9 @@ public final class MTEAirDefense extends DefenseBlock {
     private int threats;
     private int signal = -1;
     private boolean lastActive;
+    private boolean auto = true;
+    private int fired;
+    private int hits;
 
     /**
      * The prototype that registers the machine under {@code id}.
@@ -87,7 +95,7 @@ public final class MTEAirDefense extends DefenseBlock {
         return false;
     }
 
-    /** @return how many SAMs the battery holds */
+    @Override
     public int samCount() {
         int n = 0;
         for (int i = SLOT_SAM; i < SLOT_STICK; i++) {
@@ -189,16 +197,16 @@ public final class MTEAirDefense extends DefenseBlock {
             }
         }
         if (radar != null && radar.online()) {
-            engage(base, w, radar);
+            engage(base, w, radar, auto);
         }
         publish(base);
     }
 
-    private void engage(IGregTechTileEntity base, World w, RadarSource radar) {
+    private void engage(IGregTechTileEntity base, World w, RadarSource radar, boolean mayFire) {
         double bx = base.getXCoord() + 0.5;
         double by = base.getYCoord() + 0.5;
         double bz = base.getZCoord() + 0.5;
-        boolean fired = false;
+        boolean fired = false; // this pass
         for (Contact c : radar.sweep()
             .incoming()) {
             double dx = c.x() - bx;
@@ -212,16 +220,13 @@ public final class MTEAirDefense extends DefenseBlock {
                 continue;
             }
             threats++;
-            if (fired || cooldown > 0 || state == SamRules.State.NO_SAMS || state == SamRules.State.NO_POWER) {
+            if (!mayFire || fired
+                || cooldown > 0
+                || state == SamRules.State.NO_SAMS
+                || state == SamRules.State.NO_POWER) {
                 continue;
             }
-            if (SamRules.stillNeeded(m.health(), samsAt(w, c.id())) > 0 && takeSam()
-                && base.decreaseStoredEnergyUnits(SamRules.EU_PER_SHOT, false)) {
-                EntitySam sam = EntitySam.launch(w, bx, base.getYCoord() + 1.2, bz, c.id());
-                w.spawnEntityInWorld(sam);
-                flying.add(sam);
-                w.playSoundEffect(bx, by, bz, "fireworks.launch", 3.0F, 1.2F);
-                cooldown = SamRules.FIRE_INTERVAL;
+            if (SamRules.stillNeeded(m.health(), samsAt(w, c.id())) > 0 && launch(base, w, c.id())) {
                 fired = true;
             }
         }
@@ -233,6 +238,127 @@ public final class MTEAirDefense extends DefenseBlock {
         if (samCount() == 0 && state == SamRules.State.ENGAGING) {
             state = SamRules.State.NO_SAMS;
         }
+    }
+
+    /** Takes a SAM and the shot's EU and sends it at the missile; false when either is missing. */
+    private boolean launch(IGregTechTileEntity base, World w, int missileId) {
+        if (!takeSam()) {
+            return false;
+        }
+        if (!base.decreaseStoredEnergyUnits(SamRules.EU_PER_SHOT, false)) {
+            // Put the SAM back: the shot was refused for want of EU.
+            restoreSam();
+            return false;
+        }
+        double bx = base.getXCoord() + 0.5;
+        double bz = base.getZCoord() + 0.5;
+        EntitySam sam = EntitySam.launch(w, bx, base.getYCoord() + 1.2, bz, missileId);
+        sam.setOwner(this);
+        w.spawnEntityInWorld(sam);
+        flying.add(sam);
+        w.playSoundEffect(bx, base.getYCoord() + 0.5, bz, "fireworks.launch", 3.0F, 1.2F);
+        cooldown = SamRules.FIRE_INTERVAL;
+        this.fired++;
+        return true;
+    }
+
+    private void restoreSam() {
+        for (int i = SLOT_SAM; i < SLOT_STICK; i++) {
+            ItemStack s = getStackInSlot(i);
+            if (s == null) {
+                setInventorySlotContents(i, new ItemStack(DefenseMachines.samItem()));
+                return;
+            }
+            if (isSam(s) && s.stackSize < s.getMaxStackSize()) {
+                s.stackSize++;
+                return;
+            }
+        }
+    }
+
+    // --- AirDefenseView (OpenComputers) -------------------------------------------------------------------------
+
+    @Override
+    public boolean linked() {
+        RadarLink link = link();
+        if (link == null) {
+            return false;
+        }
+        RadarSource radar = RadarLinks.find(getBaseMetaTileEntity().getWorld(), link);
+        return radar != null && radar.online();
+    }
+
+    @Override
+    public int capacity() {
+        return SamRules.CAPACITY * ItemSam.MAX_STACK;
+    }
+
+    @Override
+    public boolean auto() {
+        return auto;
+    }
+
+    @Override
+    public void setAuto(boolean on) {
+        auto = on;
+        getBaseMetaTileEntity().markDirty();
+    }
+
+    @Override
+    public Reply fireAt(int contactId) {
+        IGregTechTileEntity base = getBaseMetaTileEntity();
+        if (base == null || base.isClientSide()) {
+            return Reply.refused("module_off");
+        }
+        World w = base.getWorld();
+        RadarLink link = link();
+        RadarSource radar = link == null ? null : RadarLinks.find(w, link);
+        Contact threat = null;
+        if (radar != null && radar.online()) {
+            for (Contact c : radar.sweep()
+                .incoming()) {
+                if (c.id() == contactId) {
+                    threat = c;
+                    break;
+                }
+            }
+        }
+        EntityMissile m = threat == null ? null : Contacts.missile(w, contactId);
+        boolean inRange = false;
+        if (threat != null) {
+            double dx = threat.x() - (base.getXCoord() + 0.5);
+            double dy = threat.y() - (base.getYCoord() + 0.5);
+            double dz = threat.z() - (base.getZCoord() + 0.5);
+            inRange = Math.sqrt(dx * dx + dy * dy + dz * dz) <= SamRules.ENGAGE_RANGE;
+        }
+        String why = SamRules.fireRefusal(
+            ModuleState.isActive(ModuleId.ICBM),
+            link != null,
+            radar != null && radar.online(),
+            samCount(),
+            base.getStoredEU() >= SamRules.EU_PER_SHOT,
+            cooldown,
+            m != null,
+            inRange);
+        if (why != null) {
+            return Reply.refused(why);
+        }
+        return launch(base, w, contactId) ? Reply.ok() : Reply.refused("no_power");
+    }
+
+    @Override
+    public int fired() {
+        return fired;
+    }
+
+    @Override
+    public int hits() {
+        return hits;
+    }
+
+    /** A SAM of this battery destroyed its missile. */
+    void recordHit() {
+        hits++;
     }
 
     /** @return how many SAMs are in the air at that missile */
@@ -280,10 +406,16 @@ public final class MTEAirDefense extends DefenseBlock {
     @Override
     public void saveNBTData(NBTTagCompound nbt) {
         nbt.setInteger(K_COOL, cooldown);
+        nbt.setBoolean(K_AUTO, auto);
+        nbt.setInteger(K_FIRED, fired);
+        nbt.setInteger(K_HITS, hits);
     }
 
     @Override
     public void loadNBTData(NBTTagCompound nbt) {
         cooldown = Math.max(0, nbt.getInteger(K_COOL));
+        auto = !nbt.hasKey(K_AUTO) || nbt.getBoolean(K_AUTO);
+        fired = Math.max(0, nbt.getInteger(K_FIRED));
+        hits = Math.max(0, nbt.getInteger(K_HITS));
     }
 }

@@ -68,4 +68,17 @@ class SamRulesTest {
             .removeTag("y");
         assertNull(RadarLink.read(tag));
     }
+
+    @Test
+    void fireRefusalNamesTheFirstFailedCheck() {
+        assertNull(SamRules.fireRefusal(true, true, true, 2, true, 0, true, true));
+        assertEquals("module_off", SamRules.fireRefusal(false, true, true, 2, true, 0, true, true));
+        assertEquals("no_link", SamRules.fireRefusal(true, false, true, 2, true, 0, true, true));
+        assertEquals("no_link", SamRules.fireRefusal(true, true, false, 2, true, 0, true, true));
+        assertEquals("no_sams", SamRules.fireRefusal(true, true, true, 0, true, 0, true, true));
+        assertEquals("no_contact", SamRules.fireRefusal(true, true, true, 2, true, 0, false, true));
+        assertEquals("out_of_range", SamRules.fireRefusal(true, true, true, 2, true, 0, true, false));
+        assertEquals("no_power", SamRules.fireRefusal(true, true, true, 2, false, 0, true, true));
+        assertEquals("cooling", SamRules.fireRefusal(true, true, true, 2, true, 5, true, true));
+    }
 }

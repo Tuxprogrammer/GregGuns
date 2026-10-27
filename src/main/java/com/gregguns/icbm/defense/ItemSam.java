@@ -25,10 +25,12 @@ public final class ItemSam extends Item implements Tiered {
 
     /** The bare registry name. */
     public static final String NAME = "sam";
+    /** SAMs per stack, so a battery holds {@link SamRules#CAPACITY} stacks. */
+    public static final int MAX_STACK = 16;
 
     /** Creates the item; stacks to 16. */
     public ItemSam() {
-        setMaxStackSize(16);
+        setMaxStackSize(MAX_STACK);
     }
 
     @Override

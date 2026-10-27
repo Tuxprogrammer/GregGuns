@@ -22,6 +22,8 @@ public final class EntitySam extends Entity {
     private int age;
     private boolean spent;
     private long lastAdvance = -1;
+    /** The battery that launched it, told when this SAM destroys its missile. Not saved. */
+    private MTEAirDefense owner;
 
     /** @param world the world */
     public EntitySam(World world) {
@@ -44,6 +46,11 @@ public final class EntitySam extends Entity {
         sam.setPosition(x, y, z);
         sam.targetId = target;
         return sam;
+    }
+
+    /** @param battery the battery that launched this SAM and counts its hit */
+    void setOwner(MTEAirDefense battery) {
+        this.owner = battery;
     }
 
     /** @return the entity id of the missile this SAM chases */
@@ -91,6 +98,9 @@ public final class EntitySam extends Entity {
         if (SamRules.bursts(dist)) {
             spent = true;
             target.attackEntityFrom(new DamageSource("gregguns.sam"), SamRules.DAMAGE);
+            if (owner != null && (target.isDead || target.health() <= 0.0F)) {
+                owner.recordHit();
+            }
             worldObj.playSoundEffect(posX, posY, posZ, "random.explode", 2.0F, 1.4F);
             // Strength 0, no fire, no block damage: the burst's look and sound only.
             worldObj.newExplosion(this, posX, posY, posZ, 0.0F, false, false);

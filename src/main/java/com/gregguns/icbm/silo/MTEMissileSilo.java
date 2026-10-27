@@ -97,7 +97,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     implements ISurvivalConstructable, ICasingTextureProvider, com.gregguns.icbm.component.LaunchView {
 
     private static final String PIECE = "silo";
-    private static final String OVERLAY_DIR = "machines/missile_silo/";
+    private static final String OVERLAY_DIR = "machines/thirdparty/ntm/missile_silo/";
     private static final String K_PENDING = "pendingTier";
     private static final String K_P_GUIDANCE = "pendingGuidance";
     private static final String K_P_EXPLOSIVE = "pendingExplosive";
@@ -1045,9 +1045,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private static final class Overlays {
 
         static final IIconContainer FRONT = icon("OVERLAY_FRONT");
-        static final IIconContainer FRONT_GLOW = icon("OVERLAY_FRONT_GLOW");
         static final IIconContainer FRONT_ACTIVE = icon("OVERLAY_FRONT_ACTIVE");
-        static final IIconContainer FRONT_ACTIVE_GLOW = icon("OVERLAY_FRONT_ACTIVE_GLOW");
 
         private Overlays() {}
 
@@ -1070,12 +1068,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         return new ITexture[] { casing, TextureFactory.builder()
             .addIcon(active ? Overlays.FRONT_ACTIVE : Overlays.FRONT)
             .extFacing()
-            .build(),
-            TextureFactory.builder()
-                .addIcon(active ? Overlays.FRONT_ACTIVE_GLOW : Overlays.FRONT_GLOW)
-                .extFacing()
-                .glow()
-                .build() };
+            .build() };
     }
 
     @Override

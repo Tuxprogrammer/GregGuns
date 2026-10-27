@@ -23,6 +23,8 @@ import com.gregguns.GregGuns;
 import com.gregguns.block.GregGunsCasings;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
+import com.gregguns.icbm.component.RadarView;
+import com.gregguns.icbm.detect.ContactSource;
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
@@ -59,7 +61,7 @@ import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 // Source (the pattern: a non-recipe multiblock whose checkProcessing sets power and time):
 // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/implementations/MTEMultiBlockBase.java#L877
 public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadarTower>
-    implements ISurvivalConstructable, ICasingTextureProvider, RadarSource {
+    implements ISurvivalConstructable, ICasingTextureProvider, RadarSource, RadarView {
 
     private static final String PIECE = "tower";
     private static final String OVERLAY_DIR = "machines/thirdparty/ntm/radar_tower/";
@@ -213,6 +215,29 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
         } catch (NumberFormatException e) {
             // Ignored: the field keeps its value.
         }
+    }
+
+    // --- RadarView (OpenComputers) -------------------------------------------------------------------------------
+
+    @Override
+    public int setProtectedRadius(int blocks) {
+        setRadius(blocks);
+        return unit.radius();
+    }
+
+    @Override
+    public double centerX() {
+        return getBaseMetaTileEntity().getXCoord() + 0.5;
+    }
+
+    @Override
+    public double centerZ() {
+        return getBaseMetaTileEntity().getZCoord() + 0.5;
+    }
+
+    @Override
+    public List<? extends ContactSource> contacts() {
+        return sweep().detected();
     }
 
     /** @return how many missiles the last scan detected */

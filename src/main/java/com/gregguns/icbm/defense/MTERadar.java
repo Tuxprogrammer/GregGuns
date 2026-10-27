@@ -11,6 +11,8 @@ import com.cleanroommc.modularui.screen.UISettings;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.gregguns.core.module.ModuleId;
 import com.gregguns.core.module.ModuleState;
+import com.gregguns.icbm.component.RadarView;
+import com.gregguns.icbm.detect.ContactSource;
 
 import gregtech.api.enums.GTValues;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -23,7 +25,7 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
  * ({@link RadarRules#range}); it draws a quarter amp while scanning. Construct only inside GT's MTE window. Both sides.
  */
 // Spec: docs/gregguns-icbm-spec/05-detection-defense/radar.md
-public final class MTERadar extends DefenseBlock implements RadarSource {
+public final class MTERadar extends DefenseBlock implements RadarSource, RadarView {
 
     /** The data stick slot. */
     public static final int SLOT_STICK = 0;
@@ -76,6 +78,30 @@ public final class MTERadar extends DefenseBlock implements RadarSource {
     @Override
     public int protectedRadius() {
         return unit.radius();
+    }
+
+    // --- RadarView (OpenComputers) -------------------------------------------------------------------------------
+
+    @Override
+    public int setProtectedRadius(int blocks) {
+        setRadius(blocks);
+        getBaseMetaTileEntity().markDirty();
+        return unit.radius();
+    }
+
+    @Override
+    public double centerX() {
+        return getBaseMetaTileEntity().getXCoord() + 0.5;
+    }
+
+    @Override
+    public double centerZ() {
+        return getBaseMetaTileEntity().getZCoord() + 0.5;
+    }
+
+    @Override
+    public java.util.List<? extends ContactSource> contacts() {
+        return sweep().detected();
     }
 
     /** @return the shared radar state (the GUI and the scenarios read it) */
