@@ -35,6 +35,8 @@ public final class IcbmClientModule implements ClientModule {
         RenderingRegistry
             .registerEntityRenderingHandler(com.gregguns.icbm.silo.EntitySiloDoors.class, new RenderSiloDoors());
         RenderingRegistry.registerEntityRenderingHandler(com.gregguns.icbm.defense.EntitySam.class, new RenderSam());
+        RenderingRegistry
+            .registerEntityRenderingHandler(com.gregguns.icbm.warhead.EntityFlyingBlock.class, new RenderFlyingBlock());
     }
 
     @Override

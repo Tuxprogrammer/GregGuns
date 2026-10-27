@@ -15,6 +15,6 @@ public final class ItemBlockIrradiated extends ItemBlockWithMetadata {
 
     @Override
     public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName() + "." + (stack.getItemDamage() % FalloutBlocks.VARIANTS);
+        return super.getUnlocalizedName() + "." + FalloutBlocks.variantOf(stack.getItemDamage());
     }
 }

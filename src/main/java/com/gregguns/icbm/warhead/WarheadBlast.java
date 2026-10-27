@@ -48,7 +48,17 @@ public enum WarheadBlast {
     /**
      * The EMP warhead (LuV): no crater and no damage; one EMP pulse (D16) of the blast radius, centered on the blast.
      */
-    EMP("emp", ExplosiveTier.T3, BlastShape.NONE, Radii.EMP, 0.0, Kind.EMP);
+    EMP("emp", ExplosiveTier.T3, BlastShape.NONE, Radii.EMP, 0.0, Kind.EMP),
+    /**
+     * The ender warhead (LuV): no crater and no damage; pulls living things in and sends what reaches the center to
+     * one landing spot 40 to 128 blocks away, in the same dimension (D80).
+     */
+    ENDER("ender", ExplosiveTier.T3, BlastShape.NONE, 24.0, 0.0, Kind.ENDER),
+    /**
+     * The anti-gravitational warhead (LuV): no crater; lifts up to 512 plain blocks off the ground as flying blocks
+     * that hover and fall back, and floats living things nearby (D80).
+     */
+    ANTIGRAV("antigrav", ExplosiveTier.T3, BlastShape.NONE, 20.0, 0.0, Kind.ANTIGRAV);
 
     /** Which effect class runs after the engine's terrain and damage work. */
     public enum Kind {
@@ -79,7 +89,11 @@ public enum WarheadBlast {
         /** Annihilation in the kill zone (set on the definition) and fallout when it ends. */
         NUCLEAR,
         /** One EMP pulse: drains machines and rolls missiles in the radius (D16). */
-        EMP
+        EMP,
+        /** Pulls entities in and teleports them to one landing spot. */
+        ENDER,
+        /** Lifts blocks into flying blocks and floats entities. */
+        ANTIGRAV
     }
 
     private final String id;

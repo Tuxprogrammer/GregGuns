@@ -58,4 +58,10 @@ public class ExplosionsConfig {
         "or beside irradiated earth; 0 turns exposure off. Default: 2." })
     @Config.RangeInt(min = 0, max = 10)
     public static int falloutRadiationLevel = 2;
+
+    @Config.Comment({
+        "The most fallout goo blocks one blast makes (D21); goo is rare and near ground zero, and while it",
+        "stands in a chunk, that chunk's irradiated earth does not decay. Default: 24." })
+    @Config.RangeInt(min = 0, max = 500)
+    public static int falloutMaxGoo = 24;
 }

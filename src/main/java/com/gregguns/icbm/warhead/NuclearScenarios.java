@@ -60,6 +60,7 @@ final class NuclearScenarios {
         registry.register(new FalloutCaps());
         registry.register(new RubbleInert());
         registry.register(new DecayUnloaded());
+        FalloutChainScenarios.registerAll(registry);
     }
 
     /**
@@ -88,6 +89,11 @@ final class NuclearScenarios {
 
     /** No tick may spend more than this on blasts, however loaded the box: a slice that ignores the clock would. */
     private static final long HARD_CAP_NANOS = 50_000_000L;
+
+    /** Breaks every fallout goo block in the square (see FalloutCaps) and returns how many there were. */
+    static int clearGooIn(World w, int ox, int oy, int oz, int span) {
+        return FalloutCaps.clearGoo(w, ox, oy, oz, span);
+    }
 
     private static boolean off() {
         return WarheadBlocks.of(WarheadCasing.T1) == null || Explosives.get("nuclear") == null;
@@ -673,6 +679,12 @@ final class NuclearScenarios {
                                 + ", worst fallout tick "
                                 + max / 1_000_000L
                                 + " ms");
+                        // Goo holds its chunk's irradiated earth back from decay (D21): clean it up, as a player would.
+                        int goo = clearGoo(w, ox, oy, oz, span);
+                        out.check(
+                            goo <= ExplosionsConfig.falloutMaxGoo,
+                            "goo blocks " + goo + " stay within the cap " + ExplosionsConfig.falloutMaxGoo);
+                        out.check(fe.gooBlocks(w) == 0, "the goo ledger is empty once the goo is gone");
                         FalloutEngine.expireAll(w);
                         pendingResult = out;
                         return null;
@@ -711,6 +723,22 @@ final class NuclearScenarios {
                     return ScenarioResult.fail(name(), "threw " + e);
                 }
             });
+        }
+
+        /** Breaks every fallout goo block in the square and returns how many there were. */
+        static int clearGoo(World w, int ox, int oy, int oz, int span) {
+            int n = 0;
+            for (int dx = -span; dx <= span; dx++) {
+                for (int dz = -span; dz <= span; dz++) {
+                    for (int dy = 6; dy >= -8; dy--) {
+                        if (w.getBlock(ox + dx, oy + dy, oz + dz) == FalloutBlocks.goo()) {
+                            w.setBlock(ox + dx, oy + dy, oz + dz, Blocks.air, 0, 2);
+                            n++;
+                        }
+                    }
+                }
+            }
+            return n;
         }
 
         private ScenarioResult.Builder pendingResult;

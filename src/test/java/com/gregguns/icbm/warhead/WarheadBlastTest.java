@@ -65,7 +65,7 @@ class WarheadBlastTest {
         for (WarheadBlast b : WarheadBlast.values()) {
             assertNotNull(b.kind());
         }
-        assertEquals(18, WarheadBlast.values().length);
+        assertEquals(20, WarheadBlast.values().length);
     }
 
     @Test
@@ -82,5 +82,19 @@ class WarheadBlastTest {
         org.junit.jupiter.api.Assertions.assertTrue(nuke.annihilatesBosses());
         org.junit.jupiter.api.Assertions.assertEquals(64.0, nuke.radius(64), 1e-9);
         org.junit.jupiter.api.Assertions.assertEquals(32.0, nuke.radius(8), 1e-9);
+    }
+
+    @Test
+    void theEnderAndAntiGravWarheadsAreCraterlessT3TypesWithoutDamage() {
+        for (WarheadBlast b : new WarheadBlast[] { WarheadBlast.ENDER, WarheadBlast.ANTIGRAV }) {
+            assertEquals(ExplosiveTier.T3, b.tier());
+            assertEquals(com.gregguns.icbm.explosive.BlastShape.NONE, b.shape());
+            assertTrue(!b.damaging());
+            com.gregguns.icbm.explosive.ExplosiveDef def = WarheadBlasts.define(b);
+            assertTrue(!def.annihilates());
+            assertEquals(b.fullRadius(), def.radius(def.maxFill()), 1e-9);
+        }
+        assertEquals(24.0, WarheadBlast.ENDER.fullRadius(), 0.0);
+        assertEquals(20.0, WarheadBlast.ANTIGRAV.fullRadius(), 0.0);
     }
 }

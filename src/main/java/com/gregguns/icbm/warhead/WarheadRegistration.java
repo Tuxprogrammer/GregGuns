@@ -10,6 +10,8 @@ import com.gregguns.core.testing.ScenarioRegistry;
 // Spec: docs/gregguns-icbm-spec/02-explosives/warhead-blocks.md, warheads-and-fill.md
 public final class WarheadRegistration {
 
+    private static final int ENTITY_ID_FLYING_BLOCK = 125;
+
     private WarheadRegistration() {}
 
     /**
@@ -31,6 +33,7 @@ public final class WarheadRegistration {
             .registerBlock(BlockWarheadFiller.NAME, new BlockWarheadFiller(), net.minecraft.item.ItemBlock.class);
         filler.setBlockTextureName("gregguns:casings/gantry_casing");
         WarheadBlocks.setFiller(filler);
+        registrar.registerEntity("flying_block", EntityFlyingBlock.class, ENTITY_ID_FLYING_BLOCK, 128, 2, true);
         registrar.registerTileEntity("warhead", TileWarhead.class);
         registrar.registerTileEntity("warhead_filler", TileWarheadFiller.class);
     }

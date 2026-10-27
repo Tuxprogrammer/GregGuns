@@ -54,6 +54,7 @@ public final class WarheadScenarios {
         registry.register(new BlockDamageOff());
         registry.register(new WarheadShotsScenario());
         NuclearScenarios.registerAll(registry);
+        T3MachineryScenarios.registerAll(registry);
     }
 
     private static boolean moduleOff() {

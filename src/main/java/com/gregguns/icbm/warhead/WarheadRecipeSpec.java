@@ -70,6 +70,12 @@ public enum WarheadRecipeSpec {
     /** Two field generators and emitters around a flux-compression charge (LuV). */
     EMP(WarheadBlast.EMP, false, 4, plates(Tier.LUV, 8), Ing.industrialTnt(4), pe(2),
         Ing.gtItem("Field_Generator_LuV", 2, Tier.LUV, 12.0), Ing.gtItem("Emitter_LuV", 2, Tier.LUV, 10.0), fuze3()),
+    /** An emitter and sixteen Eyes of Ender around a charge that pulls the pearls open (LuV, D80). */
+    ENDER(WarheadBlast.ENDER, false, 5, plates(Tier.LUV, 8), Ing.industrialTnt(8), pe(3),
+        Ing.gtItem("Emitter_LuV", 1, Tier.LUV, 10.0), Ing.gt("gem", "EnderEye", 16, Tier.HV, 2.0), fuze3()),
+    /** Two field generators and Nether Stars hold the blocks off the ground (LuV, D80). */
+    ANTIGRAV(WarheadBlast.ANTIGRAV, false, 6, plates(Tier.LUV, 8), Ing.industrialTnt(6), pe(2),
+        Ing.gtItem("Field_Generator_LuV", 2, Tier.LUV, 12.0), Ing.gt("gem", "NetherStar", 4, Tier.EV, 6.0), fuze3()),
     /** A Bio Lab culture in biomass. */
     CONTAGIOUS(WarheadBlast.CONTAGIOUS, false, 23, plates(Tier.EV, 8), Ing.industrialTnt(6), pe(2), Ing.bioDish(4),
         fuze2(), Ing.fluid("Biomass", 2000, Tier.HV));

@@ -1,5 +1,7 @@
 package com.gregguns.explosion.nuclear;
 
+import net.minecraft.item.ItemBlock;
+
 import com.gregguns.core.registry.ModuleRegistrar;
 
 /**
@@ -20,8 +22,22 @@ public final class FalloutRegistration {
         // Self-check placeholders (the check wants a file under the registered texture name); the block draws the
         // vanilla textures and the item the vanilla flint icon.
         block.setBlockTextureName("gregguns:casings/gantry_casing");
-        rubble.setTextureName("gregguns:thirdparty/ntm/fragmentation_sleeve_steel");
+        rubble.setTextureName("gregguns:thirdparty/ntm/irradiated_rubble");
         FalloutBlocks.set(block, rubble);
+        BlockTrinitite trinitite = registrar.registerBlock("trinitite", new BlockTrinitite(), ItemBlock.class);
+        trinitite.setBlockTextureName("gregguns:thirdparty/ntm/trinitite");
+        BlockFalloutGoo goo = registrar.registerBlock("fallout_goo", new BlockFalloutGoo(), ItemBlockIrradiated.class);
+        goo.setBlockTextureName("gregguns:thirdparty/ntm/fallout_goo");
+        ItemFalloutProduct shard = registrar
+            .registerItem("trinitite_shard", new ItemFalloutProduct(false, "gregguns:thirdparty/ntm/trinitite_shard"));
+        ItemFalloutProduct gooItem = registrar
+            .registerItem("fallout_goo_item", new ItemFalloutProduct(true, "gregguns:thirdparty/ntm/fallout_goo"));
+        FalloutBlocks.setProducts(trinitite, goo, shard, gooItem);
         FalloutEngine.register();
+    }
+
+    /** Queues the GT recipes of the byproduct chain for GT's before-postload hook. */
+    public static void init() {
+        FalloutRecipes.init();
     }
 }

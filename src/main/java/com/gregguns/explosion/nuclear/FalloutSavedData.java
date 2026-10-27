@@ -33,6 +33,10 @@ public final class FalloutSavedData extends WorldSavedData {
         public long seed;
         /** Ticks to wait before starting (the crater finishes first). */
         public int wait;
+        /** 0 for a launcher-scale blast, 1 for a ZPM or better warhead (hot rubble, hot goo). */
+        public int grade;
+        /** Goo blocks placed so far; capped by the config. */
+        public int goo;
         /** Index of the next column of the (2r+1)^2 square. */
         public int cursor;
         /** Converted block positions so far, x y z triples. */
@@ -65,6 +69,8 @@ public final class FalloutSavedData extends WorldSavedData {
             t.setLong("seed", seed);
             t.setInteger("wait", wait);
             t.setInteger("cursor", cursor);
+            t.setInteger("grade", grade);
+            t.setInteger("goo", goo);
             t.setIntArray("converted", java.util.Arrays.copyOf(converted, count));
             return t;
         }
@@ -80,6 +86,8 @@ public final class FalloutSavedData extends WorldSavedData {
             j.seed = t.getLong("seed");
             j.wait = t.getInteger("wait");
             j.cursor = Math.max(0, t.getInteger("cursor"));
+            j.grade = t.getInteger("grade");
+            j.goo = t.getInteger("goo");
             j.converted = t.getIntArray("converted");
             j.count = j.converted.length - j.converted.length % 3;
             return j;
@@ -128,6 +136,53 @@ public final class FalloutSavedData extends WorldSavedData {
     /** Decay records, oldest first. */
     public final List<Decay> decays = new ArrayList<>();
 
+    /** Positions of fallout goo, packed (x, z, y); the ledger that holds back decay. */
+    private final java.util.Set<Long> gooBlocks = new java.util.LinkedHashSet<>();
+    /** Goo blocks per chunk, packed (chunkX, chunkZ); derived from {@link #gooBlocks}. */
+    private final java.util.Map<Long, Integer> gooChunks = new java.util.HashMap<>();
+
+    static long pack(int x, int y, int z) {
+        return ((long) (x & 0x3FFFFFF) << 38) | ((long) (z & 0x3FFFFFF) << 12) | (y & 0xFFF);
+    }
+
+    static long chunkKey(int x, int z) {
+        return ((long) (x >> 4) << 32) | ((z >> 4) & 0xFFFFFFFFL);
+    }
+
+    /** Records a goo block. */
+    public void addGoo(int x, int y, int z) {
+        if (gooBlocks.add(pack(x, y, z))) {
+            gooChunks.merge(chunkKey(x, z), 1, Integer::sum);
+            touch();
+        }
+    }
+
+    /** Forgets a goo block; true when it was in the ledger. */
+    public boolean removeGoo(int x, int y, int z) {
+        if (!gooBlocks.remove(pack(x, y, z))) {
+            return false;
+        }
+        long key = chunkKey(x, z);
+        int left = gooChunks.getOrDefault(key, 1) - 1;
+        if (left <= 0) {
+            gooChunks.remove(key);
+        } else {
+            gooChunks.put(key, left);
+        }
+        touch();
+        return true;
+    }
+
+    /** @return true when goo still stands in the chunk that holds the block column */
+    public boolean gooInChunkOf(int x, int z) {
+        return gooChunks.containsKey(chunkKey(x, z));
+    }
+
+    /** @return how many goo blocks the ledger holds */
+    public int gooCount() {
+        return gooBlocks.size();
+    }
+
     /** @param name the storage name; Forge's map storage calls this by reflection */
     public FalloutSavedData(String name) {
         super(name);
@@ -137,6 +192,12 @@ public final class FalloutSavedData extends WorldSavedData {
     public void readFromNBT(NBTTagCompound tag) {
         jobs.clear();
         decays.clear();
+        gooBlocks.clear();
+        gooChunks.clear();
+        int[] goo = tag.getIntArray("goo");
+        for (int i = 0; i + 2 < goo.length; i += 3) {
+            addGoo(goo[i], goo[i + 1], goo[i + 2]);
+        }
         NBTTagList j = tag.getTagList("jobs", 10);
         for (int i = 0; i < j.tagCount(); i++) {
             jobs.add(Job.read(j.getCompoundTagAt(i)));
@@ -159,6 +220,14 @@ public final class FalloutSavedData extends WorldSavedData {
             d.appendTag(decay.write());
         }
         tag.setTag("decays", d);
+        int[] goo = new int[gooBlocks.size() * 3];
+        int i = 0;
+        for (long k : gooBlocks) {
+            goo[i++] = (int) (k >> 38) << 6 >> 6; // sign-extend the 26-bit x
+            goo[i++] = (int) (k & 0xFFF);
+            goo[i++] = (int) (k >> 12) << 6 >> 6;
+        }
+        tag.setIntArray("goo", goo);
     }
 
     /** Marks the record changed so the next world save writes it. */

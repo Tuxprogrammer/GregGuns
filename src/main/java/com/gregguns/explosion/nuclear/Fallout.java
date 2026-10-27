@@ -27,6 +27,21 @@ public final class Fallout {
      * @return false when fallout is off in the config or the world is a client world
      */
     public static boolean start(World world, double x, double y, double z, double blastRadius) {
+        return start(world, x, y, z, blastRadius, GRADE_LAUNCHER);
+    }
+
+    /** The grade of a launcher-scale blast: plain rubble and plain goo. */
+    public static final int GRADE_LAUNCHER = 0;
+    /** The grade of a ZPM or better warhead: hot rubble in the inner fireball, hot goo (trace fermium). */
+    public static final int GRADE_ZPM = 1;
+
+    /**
+     * As {@link #start(World, double, double, double, double)}, with the grade of the blast, which sets the yields.
+     *
+     * @param grade {@link #GRADE_LAUNCHER} or {@link #GRADE_ZPM}
+     * @return false when fallout is off in the config or the world is a client world
+     */
+    public static boolean start(World world, double x, double y, double z, double blastRadius, int grade) {
         if (world.isRemote || !ExplosionsConfig.fallout
             || ExplosionsConfig.falloutMaxBlocks < 1
             || FalloutBlocks.irradiated() == null) {
@@ -41,6 +56,7 @@ public final class Fallout {
         job.peak = FalloutMath.peakChance(job.radius, job.budget);
         job.seed = world.rand.nextLong();
         job.wait = START_DELAY_TICKS;
+        job.grade = grade;
         FalloutSavedData data = FalloutEngine.data(world, true);
         data.jobs.add(job);
         data.touch();

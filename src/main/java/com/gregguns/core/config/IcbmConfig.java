@@ -137,6 +137,16 @@ public class IcbmConfig {
     @Config.RangeDouble(min = 0.0, max = 1.0)
     public static double empMissileTriggerChance = 0.1;
 
+    @Config.Comment({ "Most entities one ender warhead teleports (D80); the rest are only pulled.",
+        "Range 1 to 1024. Default: 64." })
+    @Config.RangeInt(min = 1, max = 1024)
+    public static int enderMaxTeleports = 64;
+
+    @Config.Comment({ "Most blocks one anti-gravitational warhead lifts into flying blocks (D80), top layer first.",
+        "Range 0 to 4096. Default: 512." })
+    @Config.RangeInt(min = 0, max = 4096)
+    public static int antigravMaxBlocks = 512;
+
     /**
      * @param tier the explosive tier number, 1 to 4
      * @return the terrain switch for that tier
