@@ -125,6 +125,23 @@ public final class OcScenarios {
             });
         }
 
+        /**
+         * OpenComputers hands a returned Java map on as a Scala map (the shape a Lua table is built from), so this
+         * accepts either and reads a Scala one through its string form, {@code Map(key -> value, ...)}.
+         */
+        private static boolean hasKey(Object value, String key) {
+            if (value instanceof Map) {
+                return ((Map<?, ?>) value).containsKey(key);
+            }
+            return value != null && value.getClass()
+                .getName()
+                .startsWith("scala.collection.")
+                && (value.toString()
+                    .contains("(" + key + " ->")
+                    || value.toString()
+                        .contains(", " + key + " ->"));
+        }
+
         private void check(ScenarioContext ctx, ScenarioResult.Builder out, Case c, int adapterDx) {
             TileEntity tile = ctx.world()
                 .getTileEntity(ctx.originX() + adapterDx, ctx.originY(), ctx.originZ());
@@ -178,7 +195,7 @@ public final class OcScenarios {
                     c.label + ": getContacts() is an empty list, got " + java.util.Objects.toString(value));
             } else {
                 out.check(
-                    value instanceof Map && ((Map<?, ?>) value).containsKey(c.shapeKey),
+                    hasKey(value, c.shapeKey),
                     c.label + ": " + c.method + "() is a table with '" + c.shapeKey + "', got " + value);
             }
             if ("gg_emp_tower".equals(c.component)) {
