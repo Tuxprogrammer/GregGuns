@@ -563,7 +563,34 @@ public final class MTELaunchControl extends MTETieredMachineBlock implements ISe
         if (base.isClientSide()) {
             return true;
         }
+        if (loadFromRadarGun(player)) {
+            return true;
+        }
         openGui(player);
+        return true;
+    }
+
+    /**
+     * A radar gun in hand with a target copies it here instead of opening the screen (D93).
+     *
+     * @param player the player
+     * @return true when the gun held a target in this dimension and it was copied
+     */
+    private boolean loadFromRadarGun(EntityPlayer player) {
+        ItemStack held = player.getHeldItem();
+        LaunchTarget t = com.gregguns.icbm.defense.ItemRadarGun.target(held);
+        if (!t.isSet() || !mayUse(player)) {
+            return false;
+        }
+        int dim = getBaseMetaTileEntity().getWorld().provider.dimensionId;
+        if (com.gregguns.icbm.defense.ItemRadarGun.dimension(held, dim) != dim) {
+            player.addChatMessage(
+                new net.minecraft.util.ChatComponentTranslation("gregguns.icbm.radargun.wrong_dimension"));
+            return true;
+        }
+        setTarget(t);
+        player.addChatMessage(
+            new net.minecraft.util.ChatComponentTranslation("gregguns.icbm.radargun.loaded", t.x(), t.z()));
         return true;
     }
 

@@ -354,6 +354,11 @@ public abstract class EntityMissile extends Entity implements micdoodle8.mods.ga
         return tickets;
     }
 
+    /** @return the hit points left; a shot-down missile detonates where it is when this reaches 0 (ICBM-03-03) */
+    public float health() {
+        return health;
+    }
+
     /** @return the planned flat distance of the launch, blocks; 0 before launch */
     public double plannedDistance() {
         return plannedDistance;

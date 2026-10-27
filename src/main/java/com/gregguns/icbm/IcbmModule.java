@@ -31,6 +31,7 @@ public final class IcbmModule implements GregGunsModule {
         WarheadRegistration.preInit(registrar);
         com.gregguns.icbm.production.ProductionItems.register(registrar);
         com.gregguns.icbm.missile.MissileRegistration.preInit(registrar);
+        com.gregguns.icbm.defense.DefenseMachines.registerItems(registrar);
     }
 
     /**
@@ -48,6 +49,7 @@ public final class IcbmModule implements GregGunsModule {
         // The Launch Control's MTE id must exist on every client and server, so it is built here, in GT's MTE window.
         com.gregguns.icbm.control.ControlMachines.register();
         com.gregguns.icbm.silo.SiloMachines.register();
+        com.gregguns.icbm.defense.DefenseMachines.register();
         if (DevEnvironment.testHooksEnabled()) {
             IcbmScenarios.registerAll(ScenarioRegistry.SCENARIOS);
             WarheadRegistration.registerScenarios(ScenarioRegistry.SCENARIOS);
@@ -67,6 +69,7 @@ public final class IcbmModule implements GregGunsModule {
         com.gregguns.icbm.production.MissileRecipes.init();
         com.gregguns.icbm.control.ControlMachines.registerRecipes();
         com.gregguns.icbm.silo.SiloMachines.registerRecipes();
+        com.gregguns.icbm.defense.DefenseMachines.registerRecipes();
         com.gregguns.icbm.production.gc.MissileSchematicPage.registerAll();
     }
 }
