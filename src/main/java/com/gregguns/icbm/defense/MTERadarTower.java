@@ -326,6 +326,18 @@ public final class MTERadarTower extends MTEExtendedPowerMultiBlockBase<MTERadar
 
     private int lastSignal = -1;
 
+    /**
+     * GT only exposes a machine's per-side redstone strength to the world when the machine says so (default false), so
+     * without this the strength set by the scan never reaches a neighboring lamp.
+     */
+    // Source:
+    // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/metatileentity/BaseMetaTileEntity.java#L1726-L1729
+    // (getGeneralRS returns 0 unless allowGeneralRedstoneOutput(); default false in CommonMetaTileEntity#L610)
+    @Override
+    public boolean allowGeneralRedstoneOutput() {
+        return true;
+    }
+
     @Override
     public boolean onRightclick(IGregTechTileEntity base, EntityPlayer player, ForgeDirection side, float x, float y,
         float z) {

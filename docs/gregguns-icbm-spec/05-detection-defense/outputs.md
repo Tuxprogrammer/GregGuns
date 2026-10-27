@@ -16,6 +16,8 @@ How each ICBM machine talks to the rest of the base: redstone, GT covers, data s
 | Air-Defense Battery (20145) | None | 15 on every side while a linked-radar threat is within 256 blocks, else 0 (also while auto-engage is off); the active flag follows it |
 | EMP Tower (20146) | A rising edge fires one pulse through the same gate as the Fire button; a rising edge of GT's work-allowed flag (a machine controller cover) does the same | None; the active flag is on while the tower holds the pulse cost and is not cooling down, so a machine-state cover can read "ready" |
 
+GT hands a machine's per-side strength to the world only when the machine overrides `allowGeneralRedstoneOutput()` to true (default false). The radars, the Radar Tower and the battery do, so a lamp or comparator beside any side sees the strength above; the scenarios `icbm.defense.intercept` and `icbm.defense.tower_detects` read the world's power at a block beside the machine, not the machine's internal value. The Launch Control, the silo and the EMP tower output no strength, so they leave it off.
+
 ## GT covers
 
 | Machine | Covers |

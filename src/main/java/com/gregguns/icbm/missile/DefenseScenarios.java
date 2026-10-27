@@ -167,6 +167,15 @@ public final class DefenseScenarios {
         return n;
     }
 
+    /**
+     * What the world says is powering the block at a scenario offset (the redstone input a lamp or a comparator
+     * there would get), not the machine's own internal value.
+     */
+    static int neighborPower(ScenarioContext ctx, int dx, int dy, int dz) {
+        return ctx.world()
+            .getBlockPowerInput(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
+    }
+
     private static EntityMissile arm(ScenarioContext ctx) {
         MissileScenarios.sweep(ctx);
         EntityMissile m = MissileScenarios.armedAt(ctx, MissileTier.T1, 3, 0);
@@ -327,6 +336,10 @@ public final class DefenseScenarios {
             final int target = 80;
             place(ctx, GregGunsMTEIDs.RADAR_HV, 12, 0, target);
             place(ctx, GregGunsMTEIDs.AIR_DEFENSE, 14, 0, target);
+            // A lamp south of each machine: the world, not the machine, says whether the strength left the block.
+            ctx.setBlock(12, 0, target + 1, Blocks.redstone_lamp, 0);
+            ctx.setBlock(14, 0, target + 1, Blocks.redstone_lamp, 0);
+            final int[] lampPower = { 0, 0 };
             final ScenarioResult.Builder out = ScenarioResult.builder(name());
             final Seen seen = new Seen();
             final int[] stage = { 0 };
@@ -356,6 +369,8 @@ public final class DefenseScenarios {
                     return null;
                 }
                 observe(seen, r, b, w, m, ticks, ctx.originZ());
+                lampPower[0] = Math.max(lampPower[0], neighborPower(ctx, 12, 0, target + 1));
+                lampPower[1] = Math.max(lampPower[1], neighborPower(ctx, 14, 0, target + 1));
                 if (seen.deadAt < 0 && ticks < 1200) {
                     return null;
                 }
@@ -367,6 +382,12 @@ public final class DefenseScenarios {
                 out.check(seen.radarSignal >= 1, "the radar's redstone rose with the threat");
                 out.check(seen.engaging, "the battery engaged");
                 out.check(seen.batterySignal == 15, "the battery raised redstone 15 while engaging");
+                out.check(
+                    lampPower[0] >= 1,
+                    "the world powers the block beside the radar during the threat (" + lampPower[0] + ")");
+                out.check(
+                    lampPower[1] == 15,
+                    "the world powers the block beside the battery with 15 while engaging (" + lampPower[1] + ")");
                 out.check(seen.sam, "a SAM flew");
                 out.check(m.isDead, "the missile is gone");
                 // Only the shot-down path ends a flying missile with no hit points left; a fizzled SAM and a missile
@@ -642,6 +663,7 @@ public final class DefenseScenarios {
             final boolean[] threat = { false };
             final boolean[] tracking = { false };
             final int[] signal = { 0 };
+            final int[] lamp = { 0, 0, 0, 0 }; // dx, dy, dz of the lamp, then the most power it saw
             return ScenarioResult.pending(name(), 1800, ticks -> {
                 if (ticks < WARMUP_TICKS) {
                     return null;
@@ -659,6 +681,13 @@ public final class DefenseScenarios {
                             ctx.originZ() + DZ,
                             ItemList.Hatch_Energy_IV).formed,
                         "the tower forms");
+                    // A lamp in front of the controller, where the structure leaves the side open.
+                    ForgeDirection front = t.getBaseMetaTileEntity()
+                        .getFrontFacing();
+                    lamp[0] = DX + front.offsetX;
+                    lamp[1] = CY + front.offsetY;
+                    lamp[2] = DZ + front.offsetZ;
+                    ctx.setBlock(lamp[0], lamp[1], lamp[2], Blocks.redstone_lamp, 0);
                     stage[0] = 1;
                     mark[0] = ticks;
                     return null;
@@ -689,6 +718,7 @@ public final class DefenseScenarios {
                     threat[0] |= t.state() == RadarRules.State.THREAT;
                     tracking[0] |= t.state() == RadarRules.State.TRACKING;
                     signal[0] = Math.max(signal[0], t.signal());
+                    lamp[3] = Math.max(lamp[3], neighborPower(ctx, lamp[0], lamp[1], lamp[2]));
                 }
                 if (stage[0] == 2) {
                     if (!threat[0] && !missile[0].isDead && ticks < mark[0] + 900) {
@@ -696,6 +726,9 @@ public final class DefenseScenarios {
                     }
                     out.check(threat[0], "the tower flagged the missile as a threat");
                     out.check(signal[0] >= 1, "the tower's redstone rose with the threat");
+                    out.check(
+                        lamp[3] >= 1,
+                        "the world powers the block in front of the tower during the threat (" + lamp[3] + ")");
                     // Let this missile land or die, then repeat with a radius that excludes its impact point.
                     stage[0] = 3;
                     mark[0] = ticks;

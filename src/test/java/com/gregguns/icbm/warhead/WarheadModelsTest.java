@@ -23,7 +23,7 @@ class WarheadModelsTest {
 
     private static final String DIR = "src/main/resources/assets/gregguns/models/thirdparty/ntm";
     private static final String[] NAMES = { "warhead_t1", "warhead_t2", "warhead_t3", "warhead_nuclear",
-        "warhead_antimatter", "warhead_redmatter" };
+        "warhead_antimatter", "warhead_redmatter", "warhead_emp" };
 
     private static WavefrontObject load(String name) throws Exception {
         try (InputStream in = new FileInputStream(new File(DIR, name + ".obj"))) {
@@ -89,5 +89,17 @@ class WarheadModelsTest {
                 (box[3] - box[0]) - (b[3] - b[0]) <= (c == WarheadCasing.T3 ? 0.2 : 1.0 / 16.0) + eps,
                 c + " box hugs the model");
         }
+    }
+
+    /** The EMP warhead has its own texture: the shared T3 one carries "TNT" lettering and reads as high explosive. */
+    @Test
+    void theEmpWarheadHasItsOwnTexture() throws Exception {
+        java.nio.file.Path dir = java.nio.file.Paths
+            .get("src/main/resources/assets/gregguns/textures/models/thirdparty/ntm");
+        byte[] emp = java.nio.file.Files.readAllBytes(dir.resolve("warhead_emp.png"));
+        byte[] t3 = java.nio.file.Files.readAllBytes(dir.resolve("warhead_t3.png"));
+        assertFalse(java.util.Arrays.equals(emp, t3), "warhead_emp.png must not be the T3 texture");
+        double[] b = bounds(load("warhead_emp"));
+        assertTrue(b[0] >= 0 && b[2] >= 0 && b[3] <= 1 && b[5] <= 1 && b[4] <= 2.0001, "inside the 1x2 column");
     }
 }

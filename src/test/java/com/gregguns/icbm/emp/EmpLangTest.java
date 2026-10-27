@@ -48,4 +48,26 @@ class EmpLangTest {
         Properties lang = lang();
         assertTrue(lang.containsKey("gregguns.icbm.explosive.emp"), "the EMP explosive has a name");
     }
+
+    /**
+     * The status screen is about 154 px wide, a text row never wraps, so each row stays short even with big numbers.
+     */
+    @Test
+    void everyStatusRowFitsTheScreen() throws IOException {
+        Properties lang = lang();
+        java.util.List<String> rows = new java.util.ArrayList<>();
+        for (EmpRules.Gate g : EmpRules.Gate.values()) {
+            if (g != EmpRules.Gate.COOLING) {
+                rows.add(lang.getProperty(g.langKey()));
+            }
+        }
+        rows.add(String.format(lang.getProperty("gregguns.icbm.emp.status.cooling_s"), 9999));
+        rows.add(String.format(lang.getProperty("gregguns.icbm.emp.gui.power"), 99_999_999L, 99_999_999L));
+        rows.add(String.format(lang.getProperty("gregguns.icbm.emp.gui.last"), 9999));
+        rows.add(String.format(lang.getProperty("gregguns.icbm.emp.gui.last_totals"), 9999, 9999));
+        rows.add(lang.getProperty("gregguns.icbm.emp.gui.last_none"));
+        for (String row : rows) {
+            assertTrue(row.length() <= 27, "too long for the EMP screen: " + row);
+        }
+    }
 }

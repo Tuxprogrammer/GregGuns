@@ -40,7 +40,9 @@ final class WarheadItemRenderer implements IItemRenderer {
 
     private static boolean hasSpecificModel(WarheadCasing c) {
         return !WarheadModels.modelName(c, "nuclear")
-            .equals(c.blockName());
+            .equals(c.blockName())
+            || !WarheadModels.modelName(c, "emp")
+                .equals(c.blockName());
     }
 
     /** @return the model name for this stack: the nuclear model for a nuclear stack, else the casing's own */

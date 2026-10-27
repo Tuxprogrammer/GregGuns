@@ -11,11 +11,11 @@ import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.value.sync.IntSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
-import com.cleanroommc.modularui.value.sync.StringSyncValue;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
+import com.gregguns.icbm.IcbmSync;
 
 import gregtech.common.gui.modularui.multiblock.base.MTEMultiBlockBaseGui;
 
@@ -62,7 +62,7 @@ final class RadarTowerGui extends MTEMultiBlockBaseGui<MTERadarTower> {
 
     private ModularPanel buildRadarPanel(PanelSyncManager psm, ModularPanel parent) {
         Shown shown = new Shown();
-        psm.syncValue("field_radius", 0, new StringSyncValue(multiblock::radiusText, multiblock::setRadiusText));
+        psm.syncValue("field_radius", 0, IcbmSync.editableText(multiblock::radiusText, multiblock::setRadiusText));
         psm.syncValue("st_range", 0, new IntSyncValue(multiblock::rangeIfOn, v -> shown.range = v));
         psm.syncValue("st_det", 0, new IntSyncValue(multiblock::detectedCount, v -> shown.detected = v));
         psm.syncValue("st_inc", 0, new IntSyncValue(multiblock::incomingCount, v -> shown.incoming = v));
