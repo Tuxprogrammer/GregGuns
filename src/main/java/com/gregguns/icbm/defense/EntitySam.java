@@ -21,6 +21,7 @@ public final class EntitySam extends Entity {
     private int targetId = -1;
     private int age;
     private boolean spent;
+    private long lastAdvance = -1;
 
     /** @param world the world */
     public EntitySam(World world) {
@@ -61,15 +62,25 @@ public final class EntitySam extends Entity {
             worldObj.spawnParticle("smoke", posX, posY, posZ, 0.0, 0.0, 0.0);
             return;
         }
+        advance();
+    }
+
+    /**
+     * One tick of flight, at most once per world tick. The world skips an entity whose surroundings (32 blocks) are not
+     * all loaded, which is where a battery with no player near stands, so the battery that launched the SAM calls this
+     * as well; whichever comes first in a tick does the work. Server side.
+     */
+    public void advance() {
+        long now = worldObj.getTotalWorldTime();
+        if (now == lastAdvance) {
+            return;
+        }
+        lastAdvance = now;
         if (spent) {
             return;
         }
         EntityMissile target = Contacts.missile(worldObj, targetId);
-        if (age % 10 == 0) {
-            com.gregguns.GregGuns.LOG.info("[sam dbg] age={} pos={},{},{} target={}", age, posX, posY, posZ, target);
-        }
         if (target == null || ++age > SamRules.LIFETIME) {
-            com.gregguns.GregGuns.LOG.info("[sam dbg] fizzle age={} target={}", age, target);
             fizzle();
             return;
         }
@@ -97,6 +108,12 @@ public final class EntitySam extends Entity {
         spent = true;
         worldObj.playSoundEffect(posX, posY, posZ, "random.fizz", 1.0F, 1.0F);
         setDead();
+    }
+
+    /** A SAM is not saved: its target's entity id means nothing after a reload. */
+    @Override
+    public boolean writeToNBTOptional(NBTTagCompound tag) {
+        return false;
     }
 
     @Override

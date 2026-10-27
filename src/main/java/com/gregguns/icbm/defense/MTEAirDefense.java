@@ -38,6 +38,7 @@ public final class MTEAirDefense extends DefenseBlock {
     private static final int HV = 3;
 
     private int cooldown;
+    private final java.util.List<EntitySam> flying = new java.util.ArrayList<EntitySam>();
     private SamRules.State state = SamRules.State.NO_LINK;
     private int threats;
     private int signal = -1;
@@ -144,8 +145,26 @@ public final class MTEAirDefense extends DefenseBlock {
         if (cooldown > 0) {
             cooldown--;
         }
+        driveSams();
         if (tick % SamRules.THINK_TICKS == 0) {
             think();
+        }
+    }
+
+    /**
+     * Flies the SAMs this battery launched. The world does not tick an entity unless the chunks around it are loaded,
+     * and a battery tends to stand where none are (no player near), so it drives its own SAMs
+     * ({@link EntitySam#advance} runs once per tick whoever calls first). A SAM that survives a reload has no
+     * driver here and fizzles on its own.
+     */
+    private void driveSams() {
+        for (java.util.Iterator<EntitySam> it = flying.iterator(); it.hasNext();) {
+            EntitySam sam = it.next();
+            if (sam.isDead) {
+                it.remove();
+            } else {
+                sam.advance();
+            }
         }
     }
 
@@ -199,15 +218,8 @@ public final class MTEAirDefense extends DefenseBlock {
             if (SamRules.stillNeeded(m.health(), samsAt(w, c.id())) > 0 && takeSam()
                 && base.decreaseStoredEnergyUnits(SamRules.EU_PER_SHOT, false)) {
                 EntitySam sam = EntitySam.launch(w, bx, base.getYCoord() + 1.2, bz, c.id());
-                boolean added = w.spawnEntityInWorld(sam);
-                com.gregguns.GregGuns.LOG.info(
-                    "[sam dbg] spawned={} added={} chunk={} dead={} id={}",
-                    added,
-                    sam.addedToChunk,
-                    w.getChunkProvider()
-                        .chunkExists((int) bx >> 4, (int) bz >> 4),
-                    sam.isDead,
-                    sam.getEntityId());
+                w.spawnEntityInWorld(sam);
+                flying.add(sam);
                 w.playSoundEffect(bx, by, bz, "fireworks.launch", 3.0F, 1.2F);
                 cooldown = SamRules.FIRE_INTERVAL;
                 fired = true;
