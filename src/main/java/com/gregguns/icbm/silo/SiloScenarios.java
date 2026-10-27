@@ -69,6 +69,7 @@ public final class SiloScenarios {
         registry.register(new Tiers());
         registry.register(new Refusals());
         registry.register(new T3Launch());
+        registry.register(new T3EmpLaunch());
         registry.register(new Fuels());
         registry.register(new PowerLoss());
         registry.register(new UnformedPad());
@@ -663,6 +664,144 @@ public final class SiloScenarios {
             IcbmConfig.terrainDamageT1 = terrain;
             IcbmConfig.terrainDamageT3 = true;
             return ScenarioResult.fail("icbm.silo.t3_launch", why);
+        }
+
+        private static int countBlocks(ScenarioContext ctx) {
+            int n = 0;
+            for (int dx = -3; dx <= 3; dx++) {
+                for (int dz = -1; dz <= 6; dz++) {
+                    for (int dy = -3; dy <= 12; dy++) {
+                        if (ctx.world()
+                            .getBlock(ctx.originX() + dx, ctx.originY() + CY + dy, ctx.originZ() + dz) != Blocks.air) {
+                            n++;
+                        }
+                    }
+                }
+            }
+            return n;
+        }
+    }
+
+    /**
+     * Exit box (D80): the same silo launch as {@link T3Launch}, carrying the EMP warhead over a field of charged
+     * battery
+     * buffers at the target: the warhead drains the nearest devices within the cap, touches no terrain, and the
+     * silo is intact afterwards.
+     */
+    private static final class T3EmpLaunch implements Scenario {
+
+        private static final int BUFFERS = 6;
+
+        @Override
+        public String name() {
+            return "icbm.silo.t3_emp_launch";
+        }
+
+        @Override
+        public String description() {
+            return "A silo-launched T3 missile carrying the EMP warhead drains the charged battery buffers around its target (within the device cap) and breaks no block there.";
+        }
+
+        @Override
+        public int areaRadius() {
+            return 14;
+        }
+
+        @Override
+        public ScenarioResult run(ScenarioContext ctx) {
+            if (gate() != null) {
+                return ScenarioResult.skip(name(), gate());
+            }
+            ScenarioResult.Builder out = ScenarioResult.builder(name());
+            DevStructureBuilder.Outcome built = build(ctx, ItemList.Hatch_Energy_LuV);
+            out.note("build: " + built);
+            IGregTechTileEntity cb = launchControl(ctx, 5, -2);
+            final Target target = new Target(ctx, 0, DISTANCE, 9);
+            final int buffer = ItemList.Battery_Buffer_1by1_MV.get(1)
+                .getItemDamage();
+            for (int i = 0; i < BUFFERS; i++) {
+                com.gregguns.icbm.emp.EmpScenarios.place(ctx, i - 3, 0, DISTANCE + 2, buffer);
+            }
+            final boolean terrainT3 = IcbmConfig.terrainDamageT3;
+            IcbmConfig.terrainDamageT3 = true;
+            int[] stage = { 0 };
+            int[] mark = { 0 };
+            int[] blocksBefore = { 0 };
+            EntityMissile[] m = new EntityMissile[1];
+            return ScenarioResult.pending(name(), 6000, ticks -> {
+                if (ticks < WARMUP) {
+                    return null;
+                }
+                IGregTechTileEntity cbase = tile(ctx, 5, 0, -2);
+                MTELaunchControl c = (MTELaunchControl) cbase.getMetaTileEntity();
+                power(ctx);
+                if (stage[0] < 3) {
+                    fuel(ctx, out, "fluid.rocketfuelmixc");
+                }
+                switch (stage[0]) {
+                    case 0:
+                        out.check(formed(ctx), "the silo forms");
+                        blocksBefore[0] = countBlocks(ctx);
+                        for (int i = 0; i < BUFFERS; i++) {
+                            IGregTechTileEntity b = com.gregguns.icbm.emp.EmpScenarios
+                                .live(ctx, i - 3, 0, DISTANCE + 2);
+                            if (b == null) {
+                                return fail(terrainT3, "a battery buffer at the target is missing");
+                            }
+                            ((gregtech.api.metatileentity.BaseMetaTileEntity) b).setStoredEU(10_000L);
+                        }
+                        putBus(ctx, MissileBodies.body(MissileTier.T3), warhead(WarheadCasing.T3, "emp"));
+                        cbase.increaseStoredEnergyUnits(MTELaunchControl.EU_PER_SHOT * 5L, true);
+                        c.setXText(Integer.toString(ctx.originX()));
+                        c.setZText(Integer.toString(ctx.originZ() + DISTANCE));
+                        stage[0] = 1;
+                        return null;
+                    case 1:
+                        m[0] = silo(ctx).missile();
+                        if (m[0] == null) {
+                            return ticks > 1500 ? fail(terrainT3, "the silo never mated the missile") : null;
+                        }
+                        out.checkEquals("it carries the EMP warhead", "emp", m[0].explosiveId());
+                        mark[0] = ticks;
+                        stage[0] = 2;
+                        return null;
+                    case 2:
+                        if (m[0].fuelMb() < m[0].capacityMb()) {
+                            return ticks > mark[0] + 1500 ? fail(terrainT3, "the silo never fueled the missile") : null;
+                        }
+                        out.checkEquals("the Launch Control fires the silo", ControlStatus.FIRED, c.fire(null));
+                        mark[0] = ticks;
+                        stage[0] = 3;
+                        return null;
+                    case 3:
+                        if (!m[0].isDead && ticks < mark[0] + 3000) {
+                            return null;
+                        }
+                        out.check(m[0].isDead, "the missile detonated");
+                        int empty = 0;
+                        for (int i = 0; i < BUFFERS; i++) {
+                            IGregTechTileEntity b = com.gregguns.icbm.emp.EmpScenarios
+                                .live(ctx, i - 3, 0, DISTANCE + 2);
+                            if (b != null && b.getStoredEU() == 0L) {
+                                empty++;
+                            }
+                        }
+                        out.checkEquals("every buffer at the target was drained", BUFFERS, empty);
+                        out.checkEquals("the EMP broke no block at the target", 0, target.removed(ctx.world()));
+                        out.check(formed(ctx), "the silo is still formed after its own launch");
+                        out.checkEquals("no block of the silo was damaged", blocksBefore[0], countBlocks(ctx));
+                        IcbmConfig.terrainDamageT3 = terrainT3;
+                        ctx.clearArea(14, CLEAR_HEIGHT);
+                        return out.build();
+                    default:
+                        return null;
+                }
+            });
+        }
+
+        private ScenarioResult fail(boolean terrainT3, String why) {
+            IcbmConfig.terrainDamageT3 = terrainT3;
+            return ScenarioResult.fail(name(), why);
         }
 
         private static int countBlocks(ScenarioContext ctx) {

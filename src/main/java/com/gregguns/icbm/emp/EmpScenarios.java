@@ -52,7 +52,7 @@ public final class EmpScenarios {
     // --- helpers --------------------------------------------------------------------------------------------------
 
     /** Puts a GT machine with the given MTE id at an offset and returns its tile entity. */
-    static IGregTechTileEntity place(ScenarioContext ctx, int dx, int dy, int dz, int id) {
+    public static IGregTechTileEntity place(ScenarioContext ctx, int dx, int dy, int dz, int id) {
         IMetaTileEntity prototype = GregTechAPI.METATILEENTITIES[id];
         ctx.setBlock(dx, dy, dz, GregTechAPI.sBlockMachines, prototype.getTileEntityBaseType());
         TileEntity tile = ctx.world()
@@ -69,13 +69,13 @@ public final class EmpScenarios {
     }
 
     /** The machine as the world holds it now; GT may replace the tile entity in its first ticks. */
-    static IGregTechTileEntity live(ScenarioContext ctx, int dx, int dy, int dz) {
+    public static IGregTechTileEntity live(ScenarioContext ctx, int dx, int dy, int dz) {
         TileEntity tile = ctx.world()
             .getTileEntity(ctx.originX() + dx, ctx.originY() + dy, ctx.originZ() + dz);
         return tile instanceof IGregTechTileEntity ? (IGregTechTileEntity) tile : null;
     }
 
-    static MTEEmpTower tower(IGregTechTileEntity base) {
+    public static MTEEmpTower tower(IGregTechTileEntity base) {
         return base != null && base.getMetaTileEntity() instanceof MTEEmpTower ? (MTEEmpTower) base.getMetaTileEntity()
             : null;
     }
