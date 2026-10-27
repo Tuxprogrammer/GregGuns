@@ -36,6 +36,10 @@ final class WarheadModels {
     static final String ENDER_MODEL = "warhead_ender";
     /** The anti-gravitational warhead: the T3 model with its own texture (cyan and white). */
     static final String ANTIGRAV_MODEL = "warhead_antigrav";
+    /** The exothermic warhead: NTM's incendiary warhead model and skin (orange and black bands). */
+    static final String EXOTHERMIC_MODEL = "warhead_exothermic";
+    /** The endothermic warhead: NTM's nitrogen warhead model and skin (the "N2" tank). */
+    static final String ENDOTHERMIC_MODEL = "warhead_endothermic";
     private static final Map<MissileTier, WavefrontObject> BODIES = new EnumMap<>(MissileTier.class);
 
     private WarheadModels() {}
@@ -50,6 +54,8 @@ final class WarheadModels {
         out.add(EMP_MODEL);
         out.add(ENDER_MODEL);
         out.add(ANTIGRAV_MODEL);
+        out.add(EXOTHERMIC_MODEL);
+        out.add(ENDOTHERMIC_MODEL);
         return out;
     }
 
@@ -70,6 +76,12 @@ final class WarheadModels {
         }
         if (casing == WarheadCasing.T3 && "antigrav".equals(explosive)) {
             return ANTIGRAV_MODEL;
+        }
+        if (casing == WarheadCasing.T3 && "exothermic".equals(explosive)) {
+            return EXOTHERMIC_MODEL;
+        }
+        if (casing == WarheadCasing.T3 && "endothermic".equals(explosive)) {
+            return ENDOTHERMIC_MODEL;
         }
         return casing.blockName();
     }

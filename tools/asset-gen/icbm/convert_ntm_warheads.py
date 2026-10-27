@@ -31,6 +31,11 @@ TABLE = {
     "warhead_t5": ("mp_w_15_balefire", 0.6, 1, -120),
     # The T3 EMP warhead: NTM's cloud warhead (magenta bands, no lettering) on its taint-warhead model.
     "warhead_emp": ("mp_w_10_taint", 0.8, 1, None),
+    # The T3 exothermic and endothermic warheads: NTM's incendiary (orange and black bands) and nitrogen (the "N2" tank)
+    # 15-series warheads, each with its own model and skin and no "TNT" lettering. Scale 0.64 keeps their 1.5-wide
+    # barrels inside the casing's 0.96-wide box.
+    "warhead_exothermic": ("mp_w_15_incendiary", 0.64, 1, None),
+    "warhead_endothermic": ("mp_w_15_n2", 0.64, 1, None),
 }
 
 # Where a texture comes from when it is not the model's own name (NTM draws its cloud warhead on the taint model).

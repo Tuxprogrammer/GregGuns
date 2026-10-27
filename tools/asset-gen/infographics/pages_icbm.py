@@ -205,7 +205,7 @@ def _fill_table(label, blast_id, color) -> str:
 def _tier_card(tier, chip_tier, chip_text, plate, plate_name, model, cap, blurb, extra) -> str:
     stats = "".join(f'<div class="stat"><span>{esc(k)}</span><b>{v}</b></div>' for k, v in extra)
     return f"""<div class="card tier-card">
-<div class="spot">{img(warhead(model), h=300)}</div>
+<div class="spot" style="display:flex;gap:2px;align-items:flex-end">{"".join(img(warhead(m), h=(300 if isinstance(model, str) else 190)) for m in ([model] if isinstance(model, str) else model))}</div>
 <div><div style="display:flex;align-items:center;gap:12px;margin-bottom:6px"><h2>Tier {tier}</h2>{chip(chip_tier, chip_text)}</div>
 <div class="muted" style="font-size:18px;margin-bottom:8px">{blurb}</div>
 <div class="stat"><span>Casing</span><b>{gti("plate", plate, 28)} {esc(plate_name)} plates</b></div>
@@ -296,8 +296,8 @@ def warheads() -> str:
         for t, on in [("HV", True), ("EV", True), ("IV", True), ("LuV", True), ("ZPM", True), ("UV", False), ("UHV", False)])
     # T3 and nuclear numbers are final (D80 to D84): WarheadBlast EXOTHERMIC/ENDOTHERMIC r28 and 8,000, NUCLEAR r64 with the
     # 60% kill zone, WarheadRecipeSpec and Fuze Assembly Mk III. The dump on this branch predates them, so they are written here.
-    t3 = _tier_card(3, "LuV", "LuV to ZPM", "Tungstensteel", "Tungsten steel", "warhead_t3", 64,
-                    "A two-block-tall casing for the silo. Fill and radius work as on the smaller casings.",
+    t3 = _tier_card(3, "LuV", "LuV to ZPM", "Tungstensteel", "Tungsten steel", ["warhead_exothermic", "warhead_endothermic"], 64,
+                    "A two-block-tall casing for the silo. Exothermic (left) and endothermic (right) each have their own skin. Fill and radius work as on the smaller casings.",
                     [("Full-fill center damage", "8,000"), ("Blast radius, full", "28 blocks"), ("Size", "1 &times; 1 &times; 2 blocks")])
     nuke = _tier_card("", "ZPM", "ZPM", "Tungstensteel", "Tungsten steel", "warhead_nuclear", 64,
                       "The nuclear warhead: a Tier 3 casing with the nuclear fill. Nothing living in the kill zone survives, bosses included, and the ground stays poisoned.",
