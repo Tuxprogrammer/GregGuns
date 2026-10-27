@@ -7,12 +7,16 @@ package com.gregguns.icbm.silo;
  *
  * <p>
  * Shape layout is StructureLib's: {@code piece[aisle][row][column]}, aisles running front to back (the controller's
- * wall first), rows top to bottom, columns left to right as seen from the front. Characters: {@code C} silo casing
- * (a Gantry Casing), {@code F} the same casing where a hatch may go (the floor's outer ring), {@code P} a Galacticraft
+ * wall first), rows top to bottom, columns left to right as seen from the front. Characters: {@code C} wall (GT Light
+ * or Dark
+ * Concrete, see {@link SiloConcrete}), {@code F} the same concrete in the floor's outer ring (D117: hatches may replace
+ * C, F
+ * and G cells, never B or P), {@code P} a Galacticraft
  * launch pad block (the shaft floor,
- * either the nine unformed blocks or the formed pad), {@code G} glass of any
- * tier (BartWorks borosilicate, GT's other glasses, even vanilla) where a hatch or the controller may replace it (the
- * three rings just above the floor), {@code B} Gantry Beam (the rim), {@code ~} controller, a space means anything. The
+ * either the nine unformed blocks or the formed pad), {@code G} clear glass
+ * (Tinkers' Clear Glass or EnderIO's Quite Clear Glass, see {@link SiloGlass}) where a hatch or the controller may
+ * replace it (the three rings just above the floor), {@code B} Gantry Beam (the rim), {@code ~} controller, a space
+ * means anything. The
  * 3x3 shaft is also spaces, not "air", so a body
  * stacked by hand in it does not unform the silo; the missile's own climb check keeps the way up clear.
  *
@@ -145,9 +149,9 @@ public final class SiloShape {
         return count("CF");
     }
 
-    /** @return the number of positions where a hatch may go */
+    /** @return the number of positions where a hatch may go (D117): walls, glass, the floor ring and the controller */
     public static int hatchPositions() {
-        return count("G") + count("F") + count("~");
+        return count("C") + count("G") + count("F") + count("~");
     }
 
     /**

@@ -1,6 +1,6 @@
 """The icbm-missile-silo guide sheet: the Missile Silo multiblock, layer by layer, with a T3 missile standing in it.
 
-The silo is built from GregGuns' own Gantry Casing and Gantry Beam art (no new textures), the hatches from GregTech's
+The silo is built from GregTech's Light Concrete art (walls), GregGuns' Gantry Beam art (rim) and Tinkers' Clear Glass, the hatches from GregTech's
 overlays, and the missile from the shipped NTM OBJ models seated as the game seats them. The cells come from the
 `SiloShape` strings when the silo coder's class is present; until then (and for the DRAFT stamp) they are generated
 from the layout in the silo sheet: a 5 x 5 plan with the four corners cut off, a 3 x 3 open shaft, a 21-cell floor,
@@ -62,9 +62,9 @@ HATCHES = [((0, 1, 2), "input_bus", LEFT), ((4, 1, 2), "input_hatch", RIGHT), ((
 def silo_build() -> S.Build:
     b = S.Build("silo")
     gc = S._casing("gantry_casing")
-    b.define("casing", "Gantry Casing", gc, "walls and the floor ring")
+    b.define("casing", "Light Concrete", gt.iconset("CONCRETE_LIGHT_STONE"), "walls and the floor ring; Light or Dark Concrete, any finish")
     b.define("beam", "Gantry Beam", S._casing("gantry_beam"), "the rim")
-    b.define("glass", "Borosilicate Glass", gt.bartworks("BoronSilicateGlassBlock"), "any glass tier works")
+    b.define("glass", "Clear Glass", TP.TCONSTRUCT_GLASS, "Tinkers' Clear Glass or EnderIO Quite Clear Glass")
     b.define("ctrl", "Missile Silo", (gc, gc, gc), "controller, middle of the front wall")
     b.put(silo_cells(), {"C": "casing", "G": "glass", "B": "beam", "~": ("ctrl", FRONT)})
     for pos, kind, facing in HATCHES:
@@ -195,11 +195,11 @@ def silo() -> str:
     n_casing = sum(1 for v in cells.values() if v == "C")
     n_glass = sum(1 for v in cells.values() if v == "G")
     n_beam = sum(1 for v in cells.values() if v == "B")
-    layers = (layer_grid(0, cells, hp, "<b>Floor</b>layer 1 &middot; 12 casing, 9 pad")
+    layers = (layer_grid(0, cells, hp, "<b>Floor</b>layer 1 &middot; 12 concrete, 9 pad")
               + layer_grid(1, cells, hp, "<b>Glass ring</b>layer 2 &middot; 12 glass")
               + layer_grid(2, cells, hp, "<b>Glass ring</b>layer 3 &middot; controller in front")
               + layer_grid(3, cells, hp, "<b>Glass ring</b>layer 4 &middot; 12 glass")
-              + layer_grid(4, cells, hp, "<b>Wall</b>layers 5 to 11 &middot; 12 casing each")
+              + layer_grid(4, cells, hp, "<b>Wall</b>layers 5 to 11 &middot; 12 concrete each")
               + layer_grid(11, cells, {}, "<b>Rim</b>layer 12 &middot; 12 beams"))
     hatch_rows = "".join(
         f'<div class="req"><div class="t" style="grid-column:1/3"><b>{esc(name)}</b> &middot; {esc(why)}</div></div>'
@@ -221,12 +221,12 @@ def silo() -> str:
 <div class="spot" style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px 0;margin-top:8px">{img(hero, h=620, style="max-width:100%")}</div>
 <div class="muted" style="font-size:16px;margin-top:8px">The silo as you find it in the world, with a trench dug in front of it so the three glass rings show. The rim is level with the grass, the shaft is open to the sky, and the missile stands on the Galacticraft launch pad, a thin slab at the bottom of the shaft.</div></div>
 <div class="card"><div class="label" style="margin-bottom:6px">Blocks</div>
-<div class="req"><div class="t" style="grid-column:1/3"><b>{n_casing} Gantry Casing</b> &middot; the seven wall rings and the floor's outer ring. You need at least 84; hatches may replace the rest</div></div>
+<div class="req"><div class="t" style="grid-column:1/3"><b>{n_casing} Light or Dark Concrete</b> &middot; the seven wall rings and the floor's outer ring, any finish except cobblestone, mixed freely. You need at least 84; hatches may replace the rest</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>9 Galacticraft Launch Pad</b> &middot; the 3 &times; 3 floor of the shaft, a thin slab. Place the nine pad blocks and Galacticraft joins them into the full pad</div></div>
-<div class="req"><div class="t" style="grid-column:1/3"><b>{n_glass + 1} Glass</b> &middot; the three rings above the floor, any GregTech or vanilla glass, so the missile shows. Hatches and the controller replace glass panes</div></div>
+<div class="req"><div class="t" style="grid-column:1/3"><b>{n_glass + 1} Clear Glass</b> &middot; the three rings above the floor, so the missile shows. Use Tinkers&#39; Construct Clear Glass or EnderIO Quite Clear Glass, mixed freely; no other glass fits. Hatches and the controller replace glass panes</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>{n_beam} Gantry Beam</b> &middot; the rim on top</div></div>
 <div class="req"><div class="t" style="grid-column:1/3"><b>1 Missile Silo controller</b> (HV) &middot; middle of the front wall, in the middle glass ring; it faces away from the shaft</div></div>
-<div class="label" style="margin:14px 0 4px">Hatches &middot; replace any glass pane in the three rings, or sit in the floor&#39;s outer ring</div>{hatch_rows}</div></div>
+<div class="label" style="margin:14px 0 4px">Hatches &middot; go anywhere except the top rim and the pad: in the walls, the glass rings or the floor&#39;s outer ring</div>{hatch_rows}</div></div>
 <h2 style="margin:24px 0 12px">Layer by layer</h2>
 <div class="card" style="display:flex;justify-content:space-around;gap:10px;padding:22px 14px">{layers}</div>
 <div class="muted" style="font-size:16px;margin-top:8px">Dark squares are the open shaft; light blue is glass; silver is the launch pad. The front wall is the top row. Looking down from above.</div>
@@ -248,10 +248,10 @@ def silo() -> str:
 <div class="wcard"><div class="label">Scatter</div><div class="cond o" style="font-size:30px;font-weight:700">&times; 0.5</div><div class="muted" style="font-size:16px">Half the usual miss distance. A Tier 3 body scatters 6 blocks before guidance.</div></div>
 <div class="wcard"><div class="label">Fuel</div><div class="cond o" style="font-size:30px;font-weight:700">8,000 mB</div><div class="muted" style="font-size:16px">Purple or Green. Flies at 1.6 blocks per tick.</div></div>
 <div class="wcard"><div class="label">Energy Hatch</div><div class="cond o" style="font-size:30px;font-weight:700">HV / EV / LuV</div><div class="muted" style="font-size:16px">Tier 1, Tier 2 and Tier 3 missiles. Lower than the missile, and the silo refuses the launch.</div></div></div></div>"""
-    return page_doc("Missile Silo", "The Tier 3 launch tower: a 5 by 5 multiblock of Gantry Casing and glass.", body,
+    return page_doc("Missile Silo", "The Tier 3 launch tower: a 5 by 5 multiblock of concrete and clear glass.", body,
                     extra=CSS + TP.PART_CSS,
                     credit=["Missile and warhead models and textures © HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified.",
-                            "Hatch overlays: GregTech 5 Unofficial textures, LGPL-3.0.", TP.GC_CREDIT, TP.CORE_CREDIT,
+                            "Hatch overlays: GregTech 5 Unofficial textures, LGPL-3.0.", TP.GC_CREDIT, TP.CORE_CREDIT, TP.TC_CREDIT,
                             MOJANG_CREDIT, TP.TINT_CREDIT])
 
 

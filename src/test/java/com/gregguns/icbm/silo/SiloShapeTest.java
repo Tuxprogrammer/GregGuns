@@ -41,6 +41,8 @@ class SiloShapeTest {
         assertEquals(12, SiloShape.count("B"));
         assertEquals(96, SiloShape.casingPositions());
         assertTrue(SiloShape.CASING_MINIMUM < SiloShape.casingPositions());
+        // D117: a hatch may replace a wall, glass or floor-ring block or the controller, never the rim or the pad.
+        assertEquals(84 + 35 + 12 + 1, SiloShape.hatchPositions());
     }
 
     @Test

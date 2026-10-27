@@ -9,7 +9,6 @@ import static gregtech.api.enums.HatchElement.InputHatch;
 import static gregtech.api.enums.HatchElement.Maintenance;
 import static gregtech.api.enums.HatchElement.MultiAmpEnergy;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gregtech.api.util.GTStructureUtility.chainAllGlasses;
 import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.List;
@@ -125,7 +124,6 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private long pushedStart;
 
     private int casingCount;
-    private int glassTier = -1;
     /** The mating in progress, saved so a reload mid-cycle does not eat the items; 0 for none, else the tier number. */
     private int pendingTier;
     private int pendingGuidance;
@@ -173,29 +171,34 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             int casingIndex = GregGunsCasings.textureIndex(GregGunsCasings.GANTRY_CASING);
             return StructureDefinition.<MTEMissileSilo>builder()
                 .addShape(PIECE, SiloShape.piece())
-                // Plain silo casing: the walls above the glass, and the floor under the shaft.
-                .addElement('C', onElementPass(MTEMissileSilo::onCasingAdded, casing(GregGunsCasings.GANTRY_CASING)))
-                // The floor's outer ring: the same casing, where the hatches may go.
+                // The walls (layers 5 to 11): GT's Light or Dark Concrete, any finish, mixed (D116). Any hatch may
+                // replace
+                // one (D117). The hatch's casing texture stays the Gantry Casing's: GT's concrete has no casing index.
+                .addElement(
+                    'C',
+                    buildHatchAdder(MTEMissileSilo.class)
+                        .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
+                        .casingIndex(casingIndex)
+                        .hint(1)
+                        .buildAndChain(onElementPass(MTEMissileSilo::onCasingAdded, SiloConcrete.element())))
+                // The floor's outer ring: the same concrete, where hatches may also go.
                 .addElement(
                     'F',
                     buildHatchAdder(MTEMissileSilo.class)
                         .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
                         .casingIndex(casingIndex)
                         .hint(1)
-                        .buildAndChain(
-                            onElementPass(MTEMissileSilo::onCasingAdded, casing(GregGunsCasings.GANTRY_CASING))))
-                // The three rings above the floor are glass so the missile shows (owner, 2026-10-26): any glass tier,
-                // mixed is fine (the getter answers "not set", as the Armory Gantry does), and a hatch may replace
-                // a pane.
-                // Source:
-                // https://github.com/GTNewHorizons/GT5-Unofficial/blob/5.09.54.205/src/main/java/gregtech/api/util/GTStructureUtility.java#L891-L925
+                        .buildAndChain(onElementPass(MTEMissileSilo::onCasingAdded, SiloConcrete.element())))
+                // The three rings above the floor are clear glass so the missile shows (owner, 2026-10-26; D115):
+                // Tinkers' Clear Glass or EnderIO's Quite Clear Glass, mixed is fine, and a hatch may replace a pane.
+                // The glass is cosmetic and never gates anything.
                 .addElement(
                     'G',
                     buildHatchAdder(MTEMissileSilo.class)
                         .atLeast(InputBus, InputHatch, Energy, MultiAmpEnergy, Maintenance)
                         .casingIndex(casingIndex)
                         .hint(2)
-                        .buildAndChain(chainAllGlasses(-1, (t, tier) -> t.glassTier = tier, t -> -1)))
+                        .buildAndChain(SiloGlass.element()))
                 .addElement('P', com.gregguns.icbm.compat.GalacticraftPads.element())
                 .addElement('B', casing(GregGunsCasings.GANTRY_BEAM))
                 .build();
@@ -214,7 +217,6 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     @Override
     public void checkMachine(IGregTechTileEntity baseMetaTileEntity, ItemStack stack, List<StructureError> errors) {
         casingCount = 0;
-        glassTier = -1;
         if (!checkPiece(PIECE, SiloShape.CONTROLLER_COLUMN, SiloShape.CONTROLLER_ROW, 0, errors)) {
             return;
         }
@@ -1017,7 +1019,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             .beginStructureBlock(SiloShape.WIDTH, SiloShape.HEIGHT, SiloShape.DEPTH, false)
             .addController(lang("structure.controller"))
             .addCasingInfoRange(
-                StatCollector.translateToLocal("gregguns.casings.3.name"),
+                lang("structure.concrete"),
                 SiloShape.CASING_MINIMUM,
                 SiloShape.casingPositions(),
                 false)
@@ -1029,7 +1031,6 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             .addCasing(Integer.toString(SiloShape.count("B")), lang("structure.rim"), false)
             .addAir(lang("structure.shaft"))
             .addStructureInfo(lang("structure.footer"))
-            .addSubChannel(gregtech.common.misc.GTStructureChannels.BOROGLASS)
             .toolTipFinisher(com.gregguns.core.text.AddedBy.NAME);
         return tt;
     }
