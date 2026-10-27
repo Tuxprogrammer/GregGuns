@@ -98,7 +98,7 @@ Twenty-nine existing quests are prerequisites. All have `questIDHigh:4` = 0 in t
 
 | Techguns feature | GregGuns approach | Pack mod or system | Evidence |
 |---|---|---|---|
-| (none: Techguns has no quests) | One BetterQuesting line of 135 quests | BetterQuesting 3.8.89-GTNH | [authoring.md](authoring.md) |
+| (none: Techguns has no quests) | One BetterQuesting line of 140 quests | BetterQuesting 3.8.89-GTNH | [authoring.md](authoring.md) |
 | Hostile NPC factions, bosses ([10](../10-entities-npcs/index.md)) | `bq_standard:hunt` on `gregguns.<Name>` | BetterQuesting | [quest-line.md](quest-line.md#npcs-and-bosses) |
 | Infernal variants ([infernal-mobs.md](../10-entities-npcs/infernal-mobs.md)) | Checkbox quests; a hunt cannot match "any infernal" | Infernal Mobs 1.10.7-GTNH | [quest-line.md](quest-line.md#npcs-and-bosses) |
 | Structures and their chests ([11](../11-worldgen/index.md)) | Checkbox quests, one per structure group | TooMuchLoot, EnhancedLootBags | [quest-line.md](quest-line.md#structures) |

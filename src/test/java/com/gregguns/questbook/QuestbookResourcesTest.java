@@ -173,7 +173,7 @@ class QuestbookResourcesTest {
     @Test
     void questCountMatchesTheSpec() {
         assertEquals(
-            135 + SKIP_TRIGGERS,
+            140 + SKIP_TRIGGERS,
             QUESTS.size(),
             "update docs/gregguns-spec/12-questbook when the count changes");
     }
@@ -350,6 +350,14 @@ class QuestbookResourcesTest {
         }
         for (com.gregguns.icbm.missile.MissileTier tier : com.gregguns.icbm.missile.MissileTier.values()) {
             names.add(tier.blockName());
+        }
+        // The I4 defense items: the SAM, the radar gun, the defuser and the three remote detonators.
+        names.add(com.gregguns.icbm.defense.ItemSam.NAME);
+        names.add(com.gregguns.icbm.defense.ItemRadarGun.NAME);
+        names.add(com.gregguns.icbm.tools.ItemDefuser.NAME);
+        for (com.gregguns.api.Tier t : new com.gregguns.api.Tier[] { com.gregguns.api.Tier.HV, com.gregguns.api.Tier.EV,
+            com.gregguns.api.Tier.IV }) {
+            names.add(com.gregguns.icbm.tools.ItemRemoteDetonator.name(t));
         }
         Set<Integer> machines = registeredMachineIds();
         Set<String> entities = new HashSet<>();

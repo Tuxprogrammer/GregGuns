@@ -43,6 +43,7 @@ Renders are cached in `build/infographics/r/` by their parameters and a hash of 
 | `pages.py`, `pages_more.py` | One function per infographic; `pages_more.PAGES` lists them all |
 | `pages_recipes.py` | The recipes sheet: crafting grids for the hand recipes, machine rows from the exported recipe tables |
 | `pages_icbm.py` | The ICBM sheets. Numbers come from the warhead dump (step 2b) and are checked against `WarheadRecipes.java` and `Effects.java`, so a changed recipe stops the build |
+| `pages_icbm_defense.py` | The detection-and-defense sheet. Every number is read from the Java constants (`RadarRules`, `SamRules`, `EmpRules`, `HandheldRules`, `MissileTier`, `IcbmConfig`) and the tower from `RadarTowerShape`, so a changed constant changes the sheet on rebuild |
 | `vanilla.py` | Mojang's vanilla textures (recipe ingredient icons, the skeleton and pigman skins, glowstone for the interior lamp), read unmodified from the vanilla 1.7.10 client jar at build time |
 
 ## Writing rules
