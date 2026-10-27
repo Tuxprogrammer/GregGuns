@@ -65,7 +65,7 @@ class WarheadBlastTest {
         for (WarheadBlast b : WarheadBlast.values()) {
             assertNotNull(b.kind());
         }
-        assertEquals(20, WarheadBlast.values().length);
+        assertEquals(22, WarheadBlast.values().length);
     }
 
     @Test
