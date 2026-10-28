@@ -20,7 +20,7 @@ import com.gregguns.worldgen.layout.ResolvedBlock;
  * halls from the major or minor hall group, and a room from its kind. Floor and ceiling patterns take room-local
  * coordinates from the section's own corner. A wall is one block for the whole section. Server side.
  */
-// Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Palette)
+// Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Raster)
 public final class PaletteStyles implements Styles {
 
     /** The production factory. */

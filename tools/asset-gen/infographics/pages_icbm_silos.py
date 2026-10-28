@@ -4,7 +4,7 @@ What a complex is, a map of its layout, the rooms and what each holds, the three
 ceiling of every planet, the real machines, how to take a silo over, the radar station and the data stick.
 
 Every number is read from the Java sources at build time (`_const`-style regexes on `ActivityProfile`, `IcbmConfig`,
-`PlanetTable`, `SiloCeiling`, `SiloLootTables`, `RoomKind` and the room switch in `ComplexLayout`), and each formula the
+`PlanetTable`, `SiloCeiling`, `SiloLootTables`, `RoomKind` and the room switch in `ComplexFurnisher`), and each formula the
 sheet restates is checked against the source text, so a changed constant moves the sheet and a changed rule stops the
 build instead of leaving it stale (D50). The map is drawn from the `ComplexExportTest` dump (complex_map.py):
 

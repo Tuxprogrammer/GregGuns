@@ -108,7 +108,7 @@ public final class ComplexApplier {
                 sink.setBlock(x, y - 1, z, Blocks.water, 0);
                 break;
             case LIGHT: {
-                // The lit lamp of the section's style (D230); glowstone without one.
+                // The lit lamp of the section's style (D231); glowstone without one.
                 com.gregguns.worldgen.layout.ResolvedBlock lamp = lamps == null ? null : lamps.lit(p.x(), p.y(), p.z());
                 if (lamp != null) sink.setBlock(x, y, z, lamp.block, lamp.meta);
                 else sink.setBlock(x, y, z, Blocks.glowstone, 0);

@@ -178,7 +178,7 @@ public class IcbmConfig {
 
     @Config.Comment({ "Dimensions that get silo complexes (D38), by key: \"Overworld\", or a Galacticraft planet's own",
         "unlocalized name such as moon, iojupiter, ganymed or barnarda2. Remove a name to keep new complexes out of",
-        "that planet. Default: the Overworld and every planet of the D38 table." })
+        "that planet. Default: the Overworld and every planet of the D38 table except T Ceti E, an ocean world (D239)." })
     @Config.Sync(false)
     public static String[] siloComplexDimensions = { "Overworld", "moon", "mars", "phobos", "deimos", "ceres",
         "callisto", "europa", "ganymed", "iojupiter", "mercury", "venus", "enceladus", "titan", "miranda", "oberon",

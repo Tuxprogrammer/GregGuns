@@ -322,7 +322,7 @@ final class ComplexGrower {
                 at = next;
             }
         }
-        // Up to two side branches: a major hall leaving the middle of a long segment, so the halls form a graph.
+        // Up to three side branches: a major hall leaving the middle of a long segment, so the halls form a graph.
         int branches = 0;
         for (Node seg : new ArrayList<Node>(out)) {
             if (branches >= 3 || seg.length() < 50 || out.indexOf(seg) == 0 || rnd.nextInt(100) >= 70) continue;

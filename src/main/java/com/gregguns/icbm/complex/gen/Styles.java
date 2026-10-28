@@ -9,7 +9,7 @@ import com.gregguns.worldgen.layout.ResolvedBlock;
  * furniture) at a complex-local cell to a block. The production source is {@link PaletteStyles} (the palette, D240);
  * unit tests pass {@link #NONE}, which leaves every role to the {@link BlockResolver}.
  */
-// Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Palette); palette.md
+// Spec: docs/gregguns-icbm-spec/08-worldgen/silo-layout.md (Raster); palette.md
 public interface Styles {
 
     /** No styles: every role falls through to the block resolver. */

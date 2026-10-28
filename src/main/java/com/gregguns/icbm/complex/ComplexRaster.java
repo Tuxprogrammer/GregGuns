@@ -113,7 +113,7 @@ public final class ComplexRaster {
         }
     }
 
-    /** Cuts a door through both wall layers (panes for a window). */
+    /** Cuts a door through both wall layers (clear glass for a window). */
     private void open(Door d) {
         byte c = d.kind == Door.Kind.WINDOW ? Cell.WINDOW : Cell.AIR;
         for (int x = d.x0; x <= d.x1; x++) {

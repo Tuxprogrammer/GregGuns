@@ -15,7 +15,7 @@ public final class Door {
         PORTAL,
         /** The niche in a gallery wall in front of a silo's controller. */
         WALKWAY,
-        /** A row of panes (Launch Control over the gallery); no way through. */
+        /** A row of clear glass blocks (Launch Control over the gallery); no way through. */
         WINDOW
     }
 
