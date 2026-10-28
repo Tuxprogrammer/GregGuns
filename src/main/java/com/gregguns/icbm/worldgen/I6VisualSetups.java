@@ -607,6 +607,16 @@ public final class I6VisualSetups {
                         String k = e.getClass()
                             .getSimpleName();
                         n.merge(k, 1, Integer::sum);
+                        if (e instanceof net.minecraft.entity.item.EntityItemFrame) {
+                            ItemStack shown = ((net.minecraft.entity.item.EntityItemFrame) e).getDisplayedItem();
+                            GregGuns.LOG.info(
+                                "I6C frame at {},{},{} shows {}",
+                                (int) Math.floor(e.posX),
+                                (int) Math.floor(e.posY),
+                                (int) Math.floor(e.posZ),
+                                shown == null ? "NOTHING" : shown.getDisplayName());
+                            continue;
+                        }
                         if (!(e instanceof net.minecraft.entity.item.EntityItem)) {
                             GregGuns.LOG.info(
                                 "I6C ent {} at {},{},{} hp={}",
@@ -836,6 +846,7 @@ public final class I6VisualSetups {
                 return ScenarioResult.skip(name(), "dimension '" + dimName + "' is not present");
             }
             final ChunkProviderServer cps = (ChunkProviderServer) world.getChunkProvider();
+            PopulateGuard.register();
             final StructureState state = StructureState.forWorld(world);
             StructurePlan found = null;
             for (int ring = 4; ring < 40 && found == null; ring++) {
