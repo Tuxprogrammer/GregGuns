@@ -4,8 +4,7 @@ quarter-of-the-core bound and decay.
 
 Every number is read from the Java sources at build time (`_const`, `_cfg`, the `FalloutYield` tables, the `FalloutRecipes`
 machine tiers and times), so a changed constant moves the sheet instead of leaving it stale (D50). Warhead radii come
-from the warhead dump (`GREGGUNS_EXPORT_WARHEADS`). Blocks are drawn from Mojang's real dirt, stone, sand, gravel and
-cobblestone textures tinted the way the game tints irradiated earth (D55), and our own NTM-derived trinitite and goo art.
+from the warhead dump (`GREGGUNS_EXPORT_WARHEADS`). Blocks are drawn from the shipped NTM-derived tiles (irradiated earth, cool and hot, trinitite and goo).
 """
 
 from __future__ import annotations
@@ -22,9 +21,8 @@ import kit as K  # noqa: E402
 import pages_icbm as P  # noqa: E402
 import scenes as S  # noqa: E402
 import thirdparty as TP  # noqa: E402
-import vanilla  # noqa: E402
 from kit import chip, esc  # noqa: E402
-from pages import MOJANG_CREDIT, img, page_doc, slot  # noqa: E402
+from pages import img, page_doc, slot  # noqa: E402
 
 JAVA = K.REPO / "src/main/java/com/gregguns"
 NUC = "explosion/nuclear/"
@@ -171,7 +169,8 @@ def _cube(tag: str, tex: K.Path, rgb=None) -> K.Path:
 
 
 def _earth(name: str, hot=False) -> K.Path:
-    return _cube(f"{name}{'-hot' if hot else ''}", vanilla.texture(f"blocks/{name}"), HOT_TINT if hot else TINT)
+    """One irradiated earth block, drawn from its shipped tile (the game's own texture, cool or hot)."""
+    return _cube(f"{name}{'-hot' if hot else ''}", NTM_BLOCKS / f"irradiated_{name}{'_hot' if hot else ''}.png")
 
 
 def _item(name: str, rgb=None, px=64) -> K.Path:
@@ -181,10 +180,11 @@ def _item(name: str, rgb=None, px=64) -> K.Path:
 
 def block_row() -> str:
     cells = [(_earth("dirt"), "Irradiated Dirt"), (_earth("stone"), "Stone"), (_earth("sand"), "Sand"), (_earth("gravel"), "Gravel"),
-             (_earth("cobblestone"), "Cobblestone")]
+             (_earth("cobble"), "Cobblestone")]
     plain = "".join(f'<div class="bk">{img(p, h=64)}<small>{esc(t)}</small></div>' for p, t in cells)
     hot = "".join(f'<div class="bk">{img(p, h=64)}<small>{esc(t)}</small></div>' for p, t in [
-        (_earth("dirt", True), "Hot Irradiated Dirt, Stone, Sand..."),
+        (_earth("dirt", True), "Hot Dirt"), (_earth("stone", True), "Hot Stone"), (_earth("sand", True), "Hot Sand"),
+        (_earth("gravel", True), "Hot Gravel"), (_earth("cobble", True), "Hot Cobblestone"),
         (_cube("trinitite", NTM_BLOCKS / "trinitite.png"), "Trinitite"),
         (_cube("goo", NTM_BLOCKS / "fallout_goo.png"), "Fallout Goo"),
         (_cube("goo-hot", NTM_BLOCKS / "fallout_goo.png", HOT_TINT), "Hot Fallout Goo")])
@@ -291,7 +291,7 @@ def fallout() -> str:
 <div style="display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:center">
 <div style="display:flex;flex-direction:column;align-items:center">{disc(R_FULL, INNER)}<div class="muted" style="font-size:15px;margin-top:4px;text-align:center">The hot zone is the inner {round(INNER * 100)}% of the radius</div></div>
 <div><div class="label" style="margin-bottom:6px">Irradiated earth &middot; the whole disc</div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">{plain}</div>
-<div class="label" style="margin-bottom:6px">The hot zone only &middot; yellow</div><div style="display:flex;gap:12px;flex-wrap:wrap">{hot}</div></div></div>
+<div class="label" style="margin-bottom:6px">The hot zone only &middot; glowing lime veins</div><div style="display:flex;gap:12px;flex-wrap:wrap">{hot}</div></div></div>
 <div class="pt" style="margin-top:12px"><b>Hot earth</b> and <b>trinitite</b> (fused sand) appear only near ground zero of a ZPM or better blast. <b>Fallout goo</b> is rare: at most {GOO_PEAK * 100:g}% of the top blocks at ground zero, fewer further out, and never more than {MAX_GOO} per strike. Mine them and they drop <b>Irradiated Rubble</b>, <b>Trinitite Shards</b> and <b>Fallout Goo</b> for the processing chain below. Antimatter and red matter leave no fallout at all.</div>
 <div class="label" style="margin:16px 0 4px">A nuclear warhead by fill</div>
 <table class="tbl"><tr><th>Fill</th><th>Blast radius</th><th>Fallout radius</th><th>Hot zone radius</th></tr>{sizes}</table></div>"""
@@ -357,9 +357,8 @@ def fallout() -> str:
 <div style="margin-top:18px">{chain}</div>
 <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:18px">{bound}{decay}</div>"""
     return page_doc("Fallout", "What a nuclear blast leaves behind, how to survive it, and how to turn it into something useful.", body, extra=CSS,
-                    credit=["Item and block art © HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified. Warhead sheet models likewise.",
-                            "Machine hulls and overlays: GregTech 5 Unofficial textures, LGPL-3.0.", MOJANG_CREDIT,
-                            TP.TINT_CREDIT.replace("grass and leaves are", "the irradiated earth blocks are") + " (green for irradiated, yellow for hot.)"])
+                    credit=["Item and block art (including the irradiated earth tiles) © HBM's Nuclear Tech Mod contributors, GNU LGPL v3; modified. Warhead sheet models likewise.",
+                            "Machine hulls and overlays: GregTech 5 Unofficial textures, LGPL-3.0."])
 
 
 PAGES = {"icbm-fallout": fallout}

@@ -64,6 +64,7 @@ public final class DefenseScenarios {
         registry.register(new MpDefense());
         I4ClientSetups.registerAll(registry);
         I5ClientSetups.registerAll(registry);
+        I5VisualSetups.registerAll(registry);
         registry.register(new Gun());
         registry.register(new SaveReload());
     }

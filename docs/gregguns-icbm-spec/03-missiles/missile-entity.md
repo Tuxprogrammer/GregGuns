@@ -39,7 +39,7 @@ Chunk tickets are not saved; see [chunk-loading.md](chunk-loading.md).
 
 ## Client sync
 
-No DataWatcher slot (GGS-01-11). `PacketMissileState` (wire id appended to the clientbound list: entity id, phase, casing, fuel) is sent to the clients tracking the entity on every change and about once a second, so late trackers catch up. The client uses the phase for the engine flames and the casing for the warhead model. The position and velocity come from the entity tracker; between updates the client carries the last velocity forward and derives the heading from it.
+No DataWatcher slot (GGS-01-11). `PacketMissileState` (wire id appended to the clientbound list: entity id, phase, casing, fuel, warhead blast, warm-up clock) is sent to the clients tracking the entity on every change and about once a second, so late trackers catch up. The client uses the phase for the engine flames and the casing and the warhead blast (one byte: 0 for none, else the `WarheadBlast` ordinal plus one) for the warhead model and skin, so every T3 type draws its own skin on a missile. The position and velocity come from the entity tracker; between updates the client carries the last velocity forward and derives the heading from it.
 
 ## Rendering
 
