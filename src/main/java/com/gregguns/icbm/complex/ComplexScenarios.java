@@ -131,7 +131,8 @@ public final class ComplexScenarios {
                     public java.util.Set<Type> overworldBiomes() {
                         return Collections.emptySet();
                     }
-                });
+                }).withContents(false); // order identity is the shell's; the contents pass has falling rubble and
+                                        // flooding
             try {
                 load(world, plan);
                 long first = 0;
