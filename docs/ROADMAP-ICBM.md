@@ -313,7 +313,7 @@ GregGuns explains itself to players through rendered guide sheets and its quest 
 - [ ] Silos generate without cascading on the Overworld and on at least one planet of every rocket tier, and match the D128 layout. Scenario per dimension.
 - [ ] Each activity level generates with its damage, spawner count and loot. Guards spawn and attack, and a broken spawner stays broken. Scenario.
 - [ ] No loot exceeds the dimension's ceiling (or, on Ross128, the silo's rolled ceiling), checked over many generated chests. Unit test plus scenario.
-- [ ] `icbm-silos` and the silo quest have landed, and the owner has been told.
+- [x] `icbm-silos` and the silo quests (`gg.icbm.silo_complex`, `silo_repair`, `silo_radar`) have landed on the guides branch; the orchestrator tells the owner when it lands on master.
 - [ ] The milestone review fix list is closed.
 
 ## Alpha gate · 0.4.0-alpha
