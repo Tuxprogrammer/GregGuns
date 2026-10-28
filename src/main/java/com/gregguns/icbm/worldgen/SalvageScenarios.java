@@ -60,6 +60,22 @@ public final class SalvageScenarios {
             ItemStack damaged = SiloBonusItems.stack(Placement.Bonus.DAMAGED_BODY, null);
             ItemStack intact = MissileBodies.body(MissileTier.T1);
             out.check(damaged != null && ItemBlockMissileBody.isSalvage(damaged), "the damaged body carries its flag");
+            out.check(damaged != null && MissileBodies.tierOf(damaged) == null, "a damaged body is no body of any tier");
+            out.check(MissileBodies.tierOf(MissileBodies.body(MissileTier.T1)) == MissileTier.T1, "an intact body keeps its tier");
+            for (int n = 1; n <= 3; n++) {
+                Placement chest = Placement.at(Placement.Kind.CHEST, 0, 0, 0)
+                    .build();
+                chest.setCeiling(SiloCeiling.EV + n - 1);
+                ItemStack d = SiloBonusItems.stack(Placement.Bonus.DAMAGED_BODY, chest);
+                out.check(
+                    d != null && d.getItem() == MissileBodies.item(MissileTier.byNumber(n))
+                        && ItemBlockMissileBody.isSalvage(d)
+                        && MissileBodies.tierOf(d) == null,
+                    "a tier " + n + " salvaged body is that tier's item, damaged, and no body");
+                out.check(
+                    d != null && GTOreDictUnificator.getItemData(d) != null,
+                    "the tier " + n + " salvaged body has recycling data");
+            }
             out.check(!ItemBlockMissileBody.isSalvage(intact), "an intact body is not salvage");
             if (damaged == null) {
                 return out.build();

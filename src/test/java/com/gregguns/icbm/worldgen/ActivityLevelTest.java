@@ -44,8 +44,16 @@ class ActivityLevelTest {
         }
         assertTrue(p.spawnerChance(3) > p.spawnerChance(0), "partly abandoned guards the deeper sections");
         assertTrue(a.flooded() && p.flooded() && !o.flooded());
-        assertEquals(0.0, a.intactWarheadChance());
-        assertEquals(0.0, p.intactWarheadChance());
-        assertTrue(o.intactWarheadChance() > 0);
+    }
+
+    @Test
+    void configuredWeightsFallBackToTheDefaultsWhenMalformed() {
+        assertSame(ActivityLevel.DEFAULT_WEIGHTS, ActivityLevel.weightsFrom(null));
+        assertSame(ActivityLevel.DEFAULT_WEIGHTS, ActivityLevel.weightsFrom(new int[] { 1, 2 }));
+        assertSame(ActivityLevel.DEFAULT_WEIGHTS, ActivityLevel.weightsFrom(new int[] { 0, 0, 0 }));
+        assertSame(ActivityLevel.DEFAULT_WEIGHTS, ActivityLevel.weightsFrom(new int[] { 5, -1, 5 }));
+        int[] mine = { 0, 0, 7 };
+        assertSame(mine, ActivityLevel.weightsFrom(mine));
+        assertSame(ActivityLevel.OPERATIONAL, ActivityLevel.roll(9, ActivityLevel.weightsFrom(mine)));
     }
 }

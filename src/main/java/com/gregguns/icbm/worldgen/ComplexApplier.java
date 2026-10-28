@@ -3,7 +3,6 @@ package com.gregguns.icbm.worldgen;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 
 import com.gregguns.GregGuns;
 import com.gregguns.icbm.complex.Box;
@@ -15,7 +14,10 @@ import com.gregguns.worldgen.spawner.HoleSpawnerRegistration;
 import com.gregguns.worldgen.spawner.TileHoleSpawner;
 
 import gregtech.api.GregTechAPI;
+import gregtech.api.enums.Materials;
+import gregtech.api.enums.OrePrefixes;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
+import gregtech.api.util.GTOreDictUnificator;
 
 /**
  * Applies {@link Placement}s to the world through a {@link WindowedSink}, so every write is clipped to the populate
@@ -83,7 +85,9 @@ public final class ComplexApplier {
                 sink.setBlock(x, y, z, rubble(p.x(), p.y(), p.z()), 0);
                 break;
             case WATER:
-                sink.setBlock(x, y, z, Blocks.water, 0);
+                // A pool sunk into the floor under the mark: its sides are floor blocks, so the sources can never flow
+                // out into the room or the corridor.
+                sink.setBlock(x, y - 1, z, Blocks.water, 0);
                 break;
             case LIGHT:
                 sink.setBlock(x, y, z, Blocks.glowstone, 0);
@@ -184,8 +188,12 @@ public final class ComplexApplier {
     private void machine(Placement p, int x, int y, int z) {
         MachineRole role = p.role();
         if (role == MachineRole.NASA_WORKBENCH && !p.dead()) {
-            placeNasaWorkbench(x, y, z);
+            SiloGc.placeNasaWorkbench(sink, x, y, z); // its footprint spans neighboring columns: each window writes its own
             return;
+        }
+        if (!sink.window()
+            .contains(x, z)) {
+            return; // another window's machine: resolve nothing here
         }
         int mteId;
         if (role == MachineRole.LAUNCH_CONTROL && !p.dead()) {
@@ -220,24 +228,24 @@ public final class ComplexApplier {
         }
     }
 
+    /**
+     * A magazine mark becomes an inert Stainless Steel frame box, the casing stock of a warhead magazine. It is never a
+     * warhead block: a warhead block lights from flint and steel or redstone and drops a live warhead (D17).
+     */
     private void placeCasing(int x, int y, int z) {
-        Block b = com.gregguns.icbm.warhead.WarheadBlocks.of(com.gregguns.icbm.warhead.WarheadCasing.T1);
-        if (b != null && sink.setBlock(x, y, z, b, 0)) {
-            sink.setTile(x, y, z, b.createTileEntity(null, 0));
+        ItemStack frame = casingFrame();
+        if (frame == null) {
+            return;
+        }
+        Block b = Block.getBlockFromItem(frame.getItem());
+        if (b != null && b != Blocks.air) {
+            sink.setBlock(x, y, z, b, frame.getItemDamage());
         }
     }
 
-    private void placeNasaWorkbench(int x, int y, int z) {
-        Block b = SiloGc.nasaWorkbench();
-        if (b == null) {
-            return;
-        }
-        if (sink.setBlock(x, y, z, b, 0)) {
-            TileEntity t = b.createTileEntity(null, 0);
-            if (t != null) {
-                sink.setTile(x, y, z, t);
-            }
-        }
+    /** @return the Stainless Steel frame box stack that stands for a magazine casing, or null when GT lacks it */
+    public static ItemStack casingFrame() {
+        return GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.StainlessSteel, 1);
     }
 
     /** @return one machine item for a placement, for scenarios that check what would be placed */

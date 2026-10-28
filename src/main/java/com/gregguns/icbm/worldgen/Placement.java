@@ -9,7 +9,9 @@ import com.gregguns.icbm.complex.MachineRole;
 
 /**
  * One decision of the filler for one cell (or one box) of a complex, in complex-local coordinates. The activity pass
- * turns the layout's marks into these; the world side turns each into blocks inside the populate window. Immutable.
+ * turns the layout's marks into these; the world side turns each into blocks inside the populate window. Its position, kind and machine data are fixed at
+ * build time; only a chest's bonuses, its data stick payload and its complex's ceiling are set afterwards, by the
+ * contents pass, before the list is handed out.
  *
  * <p>
  * A mark with no placement is simply left as the shell built it (air for a light, an intact wall for a damage cell).
@@ -41,8 +43,10 @@ public final class Placement {
 
     /** Extra things a chest may hold beyond its table (D17, D36, D128). */
     public enum Bonus {
-        /** A damaged Tier 1 missile body, for GT recycling. */
+        /** A damaged missile body of the planet's rocket tier (at most 3), for GT recycling. */
         DAMAGED_BODY,
+        /** Cells of rocket fuel, the best rung the ceiling allows (the fuel depot's stock). */
+        FUEL_CELLS,
         /** The rare Tier 1 missile schematic chip. */
         SCHEMATIC_CHIP,
         /** The Missile Silo controller the silo is missing. */
@@ -51,10 +55,8 @@ public final class Placement {
         SILO_ENERGY_HATCH,
         /** A data stick holding another complex's coordinates; see {@link #extra()}. */
         DATA_STICK,
-        /** One intact Tier 1 warhead (an item, never lit). */
-        INTACT_WARHEAD,
-        /** A few empty warhead casings. */
-        EMPTY_CASINGS
+        /** Stainless Steel plates, the stock of a Tier 1 warhead casing (inert; never a warhead, D17). */
+        CASING_PLATES
     }
 
     private final Kind kind;
@@ -70,6 +72,7 @@ public final class Placement {
     private final int richness;
     private final Set<Bonus> bonuses = EnumSet.noneOf(Bonus.class);
     private String extra;
+    private int ceiling = SiloCeiling.EV;
     private final String key;
     private final Box box;
     private final int facing;
@@ -165,6 +168,15 @@ public final class Placement {
 
     void setExtra(String v) {
         extra = v;
+    }
+
+    /** @return the ceiling of the chest's complex, which its bonus items scale with; EV until the contents pass says */
+    public int ceiling() {
+        return ceiling;
+    }
+
+    void setCeiling(int v) {
+        ceiling = v;
     }
 
     /** @return the layout's loot key of a chest or frame wall ({@code safe}, {@code armory} and so on), else null */

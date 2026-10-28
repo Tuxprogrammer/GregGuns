@@ -136,7 +136,7 @@ class ComplexContentsTest {
     }
 
     @Test
-    void salvageChestsHoldADamagedBodyAndAbandonedMagazinesHoldNoWarhead() {
+    void salvageChestsHoldADamagedBody() {
         boolean body = false;
         for (long s = 0; s < 40; s++) {
             ComplexPlan plan = ComplexLayout.generate(s, 0, 1);
@@ -148,9 +148,6 @@ class ComplexContentsTest {
                                 .contains(Bonus.DAMAGED_BODY));
                         body = true;
                     }
-                    assertFalse(
-                        p.bonuses()
-                            .contains(Bonus.INTACT_WARHEAD));
                 }
             }
         }
@@ -158,16 +155,13 @@ class ComplexContentsTest {
     }
 
     @Test
-    void operationalMagazinesSometimesHoldAnIntactWarheadAndBonusesAreRare() {
-        int warheads = 0;
+    void bonusesAreRare() {
         int chips = 0;
         int sticks = 0;
         int parts = 0;
         for (long s = 0; s < 400; s++) {
             ComplexPlan plan = ComplexLayout.generate(s, 2, 2);
             for (Placement p : ComplexContents.build(plan, ActivityLevel.OPERATIONAL, 4, new int[] { 9, 9 })) {
-                warheads += p.bonuses()
-                    .contains(Bonus.INTACT_WARHEAD) ? 1 : 0;
                 chips += p.bonuses()
                     .contains(Bonus.SCHEMATIC_CHIP) ? 1 : 0;
                 if (p.bonuses()
@@ -181,10 +175,28 @@ class ComplexContentsTest {
                         .contains(Bonus.SILO_ENERGY_HATCH) ? 1 : 0;
             }
         }
-        assertTrue(warheads > 0 && warheads < 400, "warheads " + warheads);
         assertTrue(chips > 0 && chips <= 400, "chips " + chips);
         assertTrue(sticks > 0 && sticks < chips + 400, "sticks " + sticks);
         assertTrue(parts > 0, "parts " + parts);
+    }
+
+    @Test
+    void magazineChestsHoldCasingPlatesAtEveryLevel() {
+        for (ActivityLevel level : ActivityLevel.values()) {
+            boolean magazine = false;
+            for (long s = 0; s < 40; s++) {
+                for (Placement p : ComplexContents.build(ComplexLayout.generate(s, 1, 1), level, 4, null)) {
+                    if (p.kind() == Kind.CHEST && "magazine".equals(p.key())) {
+                        magazine = true;
+                        assertTrue(
+                            p.bonuses()
+                                .contains(Bonus.CASING_PLATES),
+                            level + " magazine chest holds plates");
+                    }
+                }
+            }
+            assertTrue(magazine, level + ": no magazine chest in 40 plans");
+        }
     }
 
     @Test
@@ -235,5 +247,65 @@ class ComplexContentsTest {
             }
         }
         assertTrue(frames > 50, "armories exist: " + frames);
+    }
+
+    @Test
+    void guardChancesGrowByAtMostHalfFromEvToUmv() {
+        assertEquals(1.0, ComplexContents.guardScale(SiloCeiling.EV));
+        assertEquals(1.5, ComplexContents.guardScale(SiloCeiling.UMV), 1e-9);
+        assertEquals(1.0, ComplexContents.guardScale(0));
+        assertEquals(1.5, ComplexContents.guardScale(99), 1e-9);
+        for (int c = SiloCeiling.EV; c < SiloCeiling.UMV; c++) {
+            assertTrue(ComplexContents.guardScale(c) < ComplexContents.guardScale(c + 1));
+        }
+    }
+
+    @Test
+    void partlyAbandonedComplexesHaveMoreGuardsAtTheTop() {
+        int low = 0;
+        int high = 0;
+        for (long s = 0; s < 60; s++) {
+            ComplexPlan plan = ComplexLayout.generate(s, 2, 2);
+            low += spawners(ComplexContents.build(plan, ActivityLevel.PARTLY_ABANDONED, SiloCeiling.EV, null));
+            high += spawners(ComplexContents.build(plan, ActivityLevel.PARTLY_ABANDONED, SiloCeiling.UMV, null));
+        }
+        assertTrue(high > low, "guards " + low + " at EV, " + high + " at UMV");
+        assertTrue(high <= low * 1.5 + 1, "no more than half again: " + low + " vs " + high);
+    }
+
+    private static int spawners(java.util.List<Placement> placements) {
+        int n = 0;
+        for (Placement p : placements) {
+            n += p.kind() == Kind.SPAWNER ? 1 : 0;
+        }
+        return n;
+    }
+
+    @Test
+    void salvagedBodyFollowsTheRocketTierCappedAtThree() {
+        assertEquals(1, ComplexContents.bodyTier(SiloCeiling.EV));
+        assertEquals(2, ComplexContents.bodyTier(SiloCeiling.EV + 1));
+        assertEquals(3, ComplexContents.bodyTier(SiloCeiling.EV + 2));
+        assertEquals(3, ComplexContents.bodyTier(SiloCeiling.UMV));
+    }
+
+    @Test
+    void everyChestKnowsItsCeilingAndFuelDepotsGetCells() {
+        boolean fuel = false;
+        for (long s = 0; s < 40; s++) {
+            for (Placement p : ComplexContents
+                .build(ComplexLayout.generate(s, 3, 3), ActivityLevel.OPERATIONAL, SiloCeiling.EV + 2, null)) {
+                if (p.kind() == Kind.CHEST) {
+                    assertEquals(SiloCeiling.EV + 2, p.ceiling());
+                    if ("fuel".equals(p.key())) {
+                        fuel = true;
+                        assertTrue(
+                            p.bonuses()
+                                .contains(Bonus.FUEL_CELLS));
+                    }
+                }
+            }
+        }
+        assertTrue(fuel, "no fuel depot in 40 plans");
     }
 }

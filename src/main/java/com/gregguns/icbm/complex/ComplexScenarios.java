@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.ChunkProviderServer;
@@ -223,6 +224,19 @@ public final class ComplexScenarios {
                     "controller present exactly when it is not the missing part (" + s.missing() + ")");
                 boolean complete = com.gregguns.machine.DevStructureBuilder.check(world, ox + 2, floor + 2, oz);
                 out.check(!complete, "a silo missing a part must not be formed");
+                // Add the part the way a player would, with the item the chests hold: the silo then forms.
+                boolean noController = s.missing() == MissingPart.CONTROLLER;
+                ItemStack part = com.gregguns.icbm.worldgen.SiloBonusItems.stack(
+                    noController ? com.gregguns.icbm.worldgen.Placement.Bonus.SILO_CONTROLLER
+                        : com.gregguns.icbm.worldgen.Placement.Bonus.SILO_ENERGY_HATCH,
+                    null);
+                out.check(part != null, "the chest item for " + s.missing() + " resolves");
+                if (part != null) {
+                    GtMachineHook.placeMte(world, part.getItemDamage(), ox + 2, floor + (noController ? 2 : 1), oz);
+                    out.check(
+                        com.gregguns.machine.DevStructureBuilder.check(world, ox + 2, floor + 2, oz),
+                        "a silo forms once its missing " + s.missing() + " is added");
+                }
             }
             int ex = plan.anchorX() + cp.escapeX(), ez = plan.anchorZ() + cp.escapeZ();
             out.check(world.getBlock(ex, GROUND, ez) == Blocks.trapdoor, "the escape ladder ends in a trapdoor");

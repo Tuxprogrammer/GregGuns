@@ -194,4 +194,10 @@ public class IcbmConfig {
     @Config.Sync(false)
     public static String[] siloComplexOverworldBiomes = { "PLAINS", "FOREST", "HILLS", "MOUNTAIN", "SANDY", "SAVANNA",
         "CONIFEROUS", "SNOWY", "MESA", "DRY" };
+
+    @Config.Comment({ "Relative weights of the activity levels a complex rolls from its seed (D36), in the order",
+        "abandoned, partly abandoned, operational. Three whole numbers, 0 or more; other lists keep the default.",
+        "Default: 50, 35, 15." })
+    @Config.Sync(false)
+    public static int[] siloComplexActivityWeights = { 50, 35, 15 };
 }

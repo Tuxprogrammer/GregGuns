@@ -46,6 +46,12 @@ public final class MachinePicker {
      * @return the stack and the voltage index it really is at, or null when nothing resolves
      */
     public static Pick pick(MachineRole role, int tier, boolean dead) {
+        String key = role.name() + '/' + tier + '/' + dead;
+        Resolved cached = PICKS.get(key);
+        if (cached != null) {
+            ItemStack s = cached.item.get(1);
+            return s == null ? null : new Pick(s, cached.tier, cached.hull);
+        }
         String[] patterns = dead ? new String[] { "Hull_{T}" } : patterns(role);
         // Real machines first, at the highest tier that has one (never above the ask); the hull only when no
         // machine of the role exists at or below the tier.
@@ -62,6 +68,7 @@ public final class MachinePicker {
                     if (item != null && item.hasBeenSet()) {
                         ItemStack s = item.get(1);
                         if (s != null) {
+                            PICKS.put(key, new Resolved(item, t, hullPass));
                             return new Pick(s, t, hullPass);
                         }
                     }
@@ -71,13 +78,35 @@ public final class MachinePicker {
         return null;
     }
 
-    private static ItemList lookup(String name) {
-        try {
-            // GT names the UHV hull Hull_MAX (the old top tier).
-            return ItemList.valueOf("Hull_UHV".equals(name) ? "Hull_MAX" : name);
-        } catch (IllegalArgumentException e) {
-            return null;
+    /** Answers by role, tier and deadness; a pick is resolved once, since the GT item list is fixed after load. */
+    private static final java.util.Map<String, Resolved> PICKS = new java.util.concurrent.ConcurrentHashMap<>();
+    /** ItemList entries by name, built once; a name GT lacks is simply absent. */
+    private static volatile java.util.Map<String, ItemList> byName;
+
+    private static final class Resolved {
+
+        final ItemList item;
+        final int tier;
+        final boolean hull;
+
+        Resolved(ItemList item, int tier, boolean hull) {
+            this.item = item;
+            this.tier = tier;
+            this.hull = hull;
         }
+    }
+
+    private static ItemList lookup(String name) {
+        java.util.Map<String, ItemList> map = byName;
+        if (map == null) {
+            map = new java.util.HashMap<>();
+            for (ItemList l : ItemList.values()) {
+                map.put(l.name(), l);
+            }
+            byName = map;
+        }
+        // GT names the UHV hull Hull_MAX (the old top tier).
+        return map.get("Hull_UHV".equals(name) ? "Hull_MAX" : name);
     }
 
     /** A resolved machine item. */

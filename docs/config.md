@@ -165,6 +165,7 @@ All keys are synced. They govern every ICBM blast ([blast-engine.md](gregguns-ic
 | `icbm.siloComplexDimensions` | string list | Overworld and every D38 planet | n/a | no | Dimensions that get complexes, by the world provider's dimension name (case-insensitive). Remove a name to keep complexes out of that planet. |
 | `icbm.siloComplexChancePercent` | int | `25` | 0 to 100 | no | Share of the sparse grid's cells (one per 64 x 64 chunks) that attempt a complex. |
 | `icbm.siloComplexOverworldBiomes` | string list | dry and temperate land types | n/a | no | Overworld biome types (BiomeDictionary names) that may host a complex; blank allows all. |
+| `icbm.siloComplexActivityWeights` | int list | `50, 35, 15` | three weights, 0 or more | no | Relative weights of the activity levels (abandoned, partly abandoned, operational) a complex rolls from its seed. Other lists keep the default. |
 | `icbm.maxMissilesInFlight` | int | `20` | 1 to 100 | yes | Most missiles in flight at once, server wide (D11). Each holds at most two chunks. |
 | `icbm.missileFuelFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's fuel tank (D20, D60). |
 | `icbm.missileRangeFactor` | double | `1.0` | 0.1 to 10 | yes | Multiplier on every missile tier's range (D60). |

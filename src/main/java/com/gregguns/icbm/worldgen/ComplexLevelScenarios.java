@@ -53,9 +53,7 @@ import com.gregguns.icbm.complex.gen.GtMachineHook;
 import com.gregguns.icbm.complex.gen.MarkFiller;
 import com.gregguns.icbm.complex.gen.WorldBlocks;
 import com.gregguns.icbm.control.ControlMachines;
-import com.gregguns.icbm.warhead.TileWarhead;
-import com.gregguns.icbm.warhead.WarheadBlocks;
-import com.gregguns.icbm.warhead.WarheadCasing;
+import com.gregguns.icbm.warhead.BlockWarhead;
 import com.gregguns.icbm.worldgen.Placement.Kind;
 import com.gregguns.worldgen.ClippingSink;
 import com.gregguns.worldgen.ComplexWriter;
@@ -213,6 +211,9 @@ public final class ComplexLevelScenarios {
         int machinesSkipped;
         int casings;
         int liveWarheadBlocks;
+        int warheadItems;
+        int nasaBad;
+        int floodSpill;
         int physics; // damage cells that no longer read as placed (a falling block moved)
     }
 
@@ -379,6 +380,7 @@ public final class ComplexLevelScenarios {
                             break;
                         }
                         t.overCeiling += outsideTable((IInventory) ct, p, ceiling);
+                        t.warheadItems += warheadItems((IInventory) ct);
                         if (empty((IInventory) ct)) t.chestsEmpty++;
                         break;
                     case MACHINE:
@@ -397,12 +399,16 @@ public final class ComplexLevelScenarios {
                 if (rubbleIn(world, ax, az, floor, c.box())) t.collapseRubble++;
             }
             marks(t, world, cp, ax, az, floor);
+            t.liveWarheadBlocks += warheadBlocksIn(world, ax, az, floor);
             out.checkEquals(tag + ": spawner blocks with the wrong tile, kind or ceiling", 0, t.badTiles);
             out.checkEquals(tag + ": chests missing or empty", 0, t.chestsEmpty);
             out.checkEquals(tag + ": chest stacks outside their table", 0, t.overCeiling);
             out.checkEquals(tag + ": machines placed wrong", t.machinesWanted - t.machinesSkipped, t.machinesRight);
             out.checkEquals(tag + ": live warhead blocks", 0, t.liveWarheadBlocks);
-            out.check(t.casings > 0, tag + ": the magazine holds empty casings");
+            out.checkEquals(tag + ": warhead items in chests (D17)", 0, t.warheadItems);
+            out.checkEquals(tag + ": flood water standing above the floor pools", 0, t.floodSpill);
+            out.checkEquals(tag + ": NASA Workbench footprint cells that are not Galacticraft dummy blocks", 0, t.nasaBad);
+            out.check(t.casings > 0, tag + ": the magazine is built of casing frames");
             out.checkEquals(tag + ": collapsed rooms with no rubble", t.collapses, t.collapseRubble);
             out.check(
                 t.physics * 50 <= t.holes + t.rubble + t.lightsPlaced,
@@ -411,6 +417,33 @@ public final class ComplexLevelScenarios {
                 spawners.totalIn(world, ax, az, floor) == t.spawners,
                 tag + ": spawner blocks in the world equal the placements: " + spawners.last + " vs " + t.spawners);
             return t;
+        }
+
+        /** @return how many warhead block items an inventory holds (D17 allows none in a complex) */
+        private static int warheadItems(IInventory inv) {
+            int n = 0;
+            for (int i = 0; i < inv.getSizeInventory(); i++) {
+                ItemStack s = inv.getStackInSlot(i);
+                if (s != null && Block.getBlockFromItem(s.getItem()) instanceof BlockWarhead) {
+                    n++;
+                }
+            }
+            return n;
+        }
+
+        /** @return how many warhead blocks (or fillers) stand anywhere in the complex's box */
+        private static int warheadBlocksIn(World world, int ax, int az, int floor) {
+            int n = 0;
+            for (int x = ax; x < ax + 240; x++) {
+                for (int z = az; z < az + 240; z++) {
+                    for (int y = floor; y < floor + ComplexRaster.LEVELS; y++) {
+                        if (world.getBlock(x, y, z) instanceof BlockWarhead) {
+                            n++;
+                        }
+                    }
+                }
+            }
+            return n;
         }
 
         /** Counts every silo-post block in the complex, to catch strays the placements do not list. */
@@ -491,8 +524,11 @@ public final class ComplexLevelScenarios {
                     if (world.getBlock(x, y, z) == Blocks.glowstone) t.lightsLit++;
                 } else if (m.kind() == MarkKind.FLOOD_CELL) {
                     t.floodMarks++;
-                    Block b = world.getBlock(x, y, z);
+                    Block b = world.getBlock(x, y - 1, z); // the pool is sunk into the floor under the mark
                     if (b == Blocks.water || b == Blocks.flowing_water) t.floodWet++;
+                    if (world.getBlock(x, y, z) == Blocks.water || world.getBlock(x, y, z) == Blocks.flowing_water) {
+                        t.floodSpill++;
+                    }
                 }
             }
         }
@@ -503,15 +539,13 @@ public final class ComplexLevelScenarios {
             Block b = world.getBlock(x, y, z);
             TileEntity te = world.getTileEntity(x, y, z);
             if (role == MachineRole.MAGAZINE_CASING) {
-                Block casing = WarheadBlocks.of(WarheadCasing.T1);
-                boolean ok = b == casing && te instanceof TileWarhead
-                    && !((TileWarhead) te).armed()
-                    && !((TileWarhead) te).initialized();
-                if (ok) {
+                ItemStack frame = ComplexApplier.casingFrame();
+                if (frame == null) {
+                    t.machinesSkipped++; // GT lacks the frame box: the applier skips it
+                } else if (b == Block.getBlockFromItem(frame.getItem())
+                    && world.getBlockMetadata(x, y, z) == frame.getItemDamage() && !(b instanceof BlockWarhead)) {
                     t.machinesRight++;
                     t.casings++;
-                } else if (b == casing) {
-                    t.liveWarheadBlocks++;
                 }
                 return;
             }
@@ -520,6 +554,16 @@ public final class ComplexLevelScenarios {
                     t.machinesSkipped++; // Galacticraft absent: the applier skips it
                 } else if (b == SiloGc.nasaWorkbench()) {
                     t.machinesRight++;
+                    for (int[] c : SiloGc.footprint()) {
+                        if (c[1] == 0) {
+                            continue;
+                        }
+                        Block part = world.getBlock(x + c[0], y + c[1], z + c[2]);
+                        TileEntity pt = world.getTileEntity(x + c[0], y + c[1], z + c[2]);
+                        if (part != SiloGc.fakeBlock() || pt == null) {
+                            t.nasaBad++;
+                        }
+                    }
                 }
                 return;
             }

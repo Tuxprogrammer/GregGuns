@@ -20,7 +20,10 @@ All coordinates are complex-local: x and z in [0, 240), y 0 at the level floor (
 
 - **Level:** the floor is 24 blocks under the recorded ground; rooms are floor + 5 air cells + ceiling (7 layers). Walls, rooms and tunnels are GregGuns Bastion Plating (steel), which joins into one plated mass through the connected-texture system (design record 0023). The silo and its shaft stay GT Light and Dark Concrete, the silo's own accepted finish; no connected-texture rule is ever shipped for a `gregtech:*` block.
 - **Doors:** every room opens onto its wing corridor (2 wide, 3 high); each wing opens into the hall; the stub opens into the hall's east wall.
-- **Tunnels:** a vanilla rail along each wing's center line. Lamps, signs and blast doors are marks.
+- **Tunnels:** a vanilla rail along each wing's center line. Lamps and signs are real; blast doors are marks that write nothing yet, and so are cable trays and pipes (I7, D213).
+- **Signs:** a SIGN mark becomes a wall sign on the wall beside its cell, its lines from the `icbm.complex.sign.<room kind>` lang key (up to four lines divided by `|`); the central hall's sign reads `icbm.complex.sign.hall` with the rolled tier name (D212).
+- **NASA Workbench:** written with Galacticraft's dummy blocks in its full footprint, each tied to the main block (D214).
+- **Flooded pump room:** the water of a flood mark sits one cell down, in the floor, so it cannot flow out (D214).
 - **Silo:** the `SiloShape` piece cell by cell: concrete `C`/`F`, clear glass `G`, Gantry Beam `B`, Galacticraft pad `P` in the bore floor, the 3 x 3 bore open. The controller and hatches (input bus and maintenance beside it, energy and input HV below) are real GT machines. Exactly one part is missing: the controller (a concrete block in its place) or the Energy Hatch (a glass pane). A walkway cell in front of the controller opens onto the row corridor.
 - **Shaft:** above the silo, a 5 x 5 concrete ring around the bore up to the ground height read in the shaft's window. Mouth variants: open, half open (west half of the bore capped), closed (all capped, two of the eight outer cells stay air to build height).
 - **Escape:** a 1 x 1 ladder from the end of a wing to a closed trapdoor at ground level. The ladder's metadata (`ComplexPlan.escapeMeta`) makes it cling to the wing's end wall behind it (N 3, S 2, E 4, W 5).

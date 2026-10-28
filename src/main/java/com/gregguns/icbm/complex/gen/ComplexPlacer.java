@@ -182,7 +182,9 @@ public final class ComplexPlacer implements ComplexWriter {
         if (forcedLevel != null) {
             return forcedLevel;
         }
-        return ActivityLevel.roll(cp.seed(), ActivityLevel.DEFAULT_WEIGHTS);
+        return ActivityLevel.roll(
+            cp.seed(),
+            ActivityLevel.weightsFrom(com.gregguns.core.config.IcbmConfig.siloComplexActivityWeights));
     }
 
     private java.util.List<Placement> contentsOf(StructurePlan plan, ComplexPlan cp) {
@@ -249,6 +251,7 @@ public final class ComplexPlacer implements ComplexWriter {
                 plan.cellZ(),
                 ceilingOf(plan));
             for (Placement p : contentsOf(plan, cp)) applier.apply(p);
+            ComplexSigns.write(cp, raster, ax, floorY, az, ceilingOf(plan), new QuietSink(sink));
         }
         return n;
     }

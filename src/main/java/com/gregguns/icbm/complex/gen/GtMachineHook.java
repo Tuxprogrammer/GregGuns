@@ -21,10 +21,27 @@ import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 // Source: DevStructureBuilder.place (this repo) for the GT calls; GT5-Unofficial 5.09.54.205 BaseMetaTileEntity API.
 public final class GtMachineHook implements MachineHook {
 
+    /** The Energy Hatch of a stamped silo; the chests' missing-part hatch is this item too, so the part always fits. */
+    public static final ItemList ENERGY_HATCH = ItemList.Hatch_Energy_EV;
+
     @Override
     public void place(World world, byte cell, int x, int y, int z) {
         int id = idOf(cell);
         if (id < 0) return;
+        placeMte(world, id, x, y, z);
+    }
+
+    /**
+     * Sets a GT machine block with the meta tile entity {@code id} at the position, facing north (a silo's front).
+     *
+     * @param world the world
+     * @param id    the meta tile entity id
+     * @param x     X
+     * @param y     Y
+     * @param z     Z
+     */
+    public static void placeMte(World world, int id, int x, int y, int z) {
+        String cell = x + "," + y + "," + z;
         IMetaTileEntity proto = GregTechAPI.METATILEENTITIES[id];
         if (proto == null) {
             GregGuns.LOG.warn("Silo complex: no meta tile entity {} for cell {}", id, cell);
@@ -52,7 +69,7 @@ public final class GtMachineHook implements MachineHook {
                 return ItemList.Hatch_Maintenance.get(1)
                     .getItemDamage();
             case Cell.HATCH_ENERGY:
-                return ItemList.Hatch_Energy_EV.get(1)
+                return ENERGY_HATCH.get(1)
                     .getItemDamage();
             case Cell.HATCH_POWER:
                 return ItemList.Hatch_Input_HV.get(1)
