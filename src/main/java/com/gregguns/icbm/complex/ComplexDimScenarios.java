@@ -142,7 +142,15 @@ public final class ComplexDimScenarios {
                     int cx = k % 2 == 0 ? ring : -ring, cz = k < 2 ? ring : -ring;
                     java.util.Optional<StructurePlan> op = StructurePopulator
                         .complexPlanAt(world.getSeed(), world.provider.dimensionId, cx, cz, 100);
-                    if (!op.isPresent() || !fresh(cps, op.get())) continue;
+                    if (!op.isPresent() || state.get(PlanKey.of(op.get())) != null || !fresh(cps, op.get())) continue; // a
+                                                                                                                       // decided
+                                                                                                                       // plan
+                                                                                                                       // was
+                                                                                                                       // generated
+                                                                                                                       // by
+                                                                                                                       // an
+                                                                                                                       // earlier
+                                                                                                                       // run
                     tried++;
                     StructurePlan plan = op.get();
                     long[] before = counters();
