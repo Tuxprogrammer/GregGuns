@@ -82,14 +82,7 @@ public final class BlockIrradiatedEarth extends Block implements com.gregguns.ap
             && !world.getBlock(x, y + 1, z)
                 .isOpaqueCube()) {
             // "reddust" takes its color (r, g, b) in the motion arguments: a lime spark rising off the earth.
-            world.spawnParticle(
-                "reddust",
-                x + random.nextDouble(),
-                y + 1.05,
-                z + random.nextDouble(),
-                0.55,
-                1.0,
-                0.1);
+            world.spawnParticle("reddust", x + random.nextDouble(), y + 1.05, z + random.nextDouble(), 0.55, 1.0, 0.1);
         }
     }
 

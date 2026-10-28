@@ -14,7 +14,8 @@ import com.gregguns.icbm.warhead.WarheadBlast;
 import io.netty.buffer.Unpooled;
 
 /**
- * The client state packet carries the T3 casing, the warhead blast and the warm-up clock (D88). The site factors' NBT is
+ * The client state packet carries the T3 casing, the warhead blast and the warm-up clock (D88). The site factors' NBT
+ * is
  * in icbm.silo.tiers.
  */
 class MissileSiteStateTest {

@@ -7,19 +7,21 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 
+import com.gregguns.icbm.warhead.WarheadBlast;
 import com.gregguns.network.ClientboundPacket;
 import com.gregguns.network.WorldTargets;
-import com.gregguns.icbm.warhead.WarheadBlast;
 import com.gregguns.network.validation.ClientRules;
 
 /**
  * Server to every client tracking a {@link EntityMissile}: its flight phase, warhead casing, warhead blast and fuel,
  * which drive the
- * engine flames and the nose model and skin. Sent on change and repeated about once a second, so a client that starts tracking
+ * engine flames and the nose model and skin. Sent on change and repeated about once a second, so a client that starts
+ * tracking
  * late catches up. It replaces DataWatcher slots, which GregGuns never claims (GGS-01-11).
  *
  * <p>
- * Wire: entity id (int), phase (byte), casing (byte), fuel (int), blast (byte: 0 for none, else the {@link WarheadBlast} ordinal plus one; picks the nose skin), warm-up
+ * Wire: entity id (int), phase (byte), casing (byte), fuel (int), blast (byte: 0 for none, else the
+ * {@link WarheadBlast} ordinal plus one; picks the nose skin), warm-up
  * tick, lead and total (ints, D88).
  * Append-only list position: see
  * {@code GregGunsNetwork}. A bad value or a target that is not a missile is dropped (CORE-40). Side: sent by the
@@ -99,7 +101,11 @@ public final class PacketMissileState extends ClientboundPacket {
     @Override
     protected void handle(World world, EntityPlayer localPlayer) {
         EntityMissile m = (EntityMissile) world.getEntityByID(entityId);
-        m.applyState(FlightPhase.values()[phase], casing, fuel, blast == 0 ? null : WarheadBlast.values()[blast - 1].id());
+        m.applyState(
+            FlightPhase.values()[phase],
+            casing,
+            fuel,
+            blast == 0 ? null : WarheadBlast.values()[blast - 1].id());
         m.applyCountdown(tick, lead, total);
     }
 }
