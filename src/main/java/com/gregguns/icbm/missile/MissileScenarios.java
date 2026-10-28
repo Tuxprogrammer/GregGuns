@@ -574,7 +574,7 @@ public final class MissileScenarios {
             }
             m.fill(m.capacityMb(), true);
             World w = ctx.world();
-            Target target = new Target(ctx, 0, 70, 9);
+            Target target = new Target(ctx, 0, 70, 13); // radius 13 covers unguided T1 scatter (D98)
             int px = ctx.originX();
             int py = ctx.originY();
             int pz = ctx.originZ();
