@@ -573,6 +573,55 @@ public final class I6VisualSetups {
                 case "dim":
                     dim(player(t[1]), Integer.parseInt(t[2]));
                     break;
+                case "probe": {
+                    int x = Integer.parseInt(t[1]), y = Integer.parseInt(t[2]), z = Integer.parseInt(t[3]);
+                    int r = t.length > 4 ? Integer.parseInt(t[4]) : 0;
+                    for (int dx = -r; dx <= r; dx++) {
+                        for (int dy = -r; dy <= r; dy++) {
+                            for (int dz = -r; dz <= r; dz++) {
+                                Block b = lastWorld.getBlock(x + dx, y + dy, z + dz);
+                                if (b == Blocks.air && r > 0) continue;
+                                TileEntity te = lastWorld.getTileEntity(x + dx, y + dy, z + dz);
+                                GregGuns.LOG.info(
+                                    "I6C probe {},{},{} {} meta={} tile={}",
+                                    x + dx,
+                                    y + dy,
+                                    z + dz,
+                                    Block.blockRegistry.getNameForObject(b),
+                                    lastWorld.getBlockMetadata(x + dx, y + dy, z + dz),
+                                    te == null ? "-"
+                                        : te.getClass()
+                                            .getSimpleName());
+                            }
+                        }
+                    }
+                    break;
+                }
+                case "ents": {
+                    EntityPlayerMP p = player(t[1]);
+                    double r = Double.parseDouble(t[2]);
+                    java.util.Map<String, Integer> n = new java.util.TreeMap<String, Integer>();
+                    for (Object o : new ArrayList<Object>(p.worldObj.loadedEntityList)) {
+                        Entity e = (Entity) o;
+                        if (e instanceof EntityPlayerMP || e.getDistanceToEntity(p) > r) continue;
+                        String k = e.getClass()
+                            .getSimpleName();
+                        n.merge(k, 1, Integer::sum);
+                        if (!(e instanceof net.minecraft.entity.item.EntityItem)) {
+                            GregGuns.LOG.info(
+                                "I6C ent {} at {},{},{} hp={}",
+                                k,
+                                (int) e.posX,
+                                (int) e.posY,
+                                (int) e.posZ,
+                                e instanceof net.minecraft.entity.EntityLivingBase
+                                    ? ((net.minecraft.entity.EntityLivingBase) e).getHealth()
+                                    : -1);
+                        }
+                    }
+                    GregGuns.LOG.info("I6C ents within {} of {}: {}", r, t[1], n);
+                    break;
+                }
                 case "kill":
                     killEntities(lastWorld, lastPlan);
                     break;
