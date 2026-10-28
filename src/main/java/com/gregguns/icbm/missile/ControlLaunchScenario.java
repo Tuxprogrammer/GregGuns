@@ -44,6 +44,15 @@ public final class ControlLaunchScenario implements Scenario {
 
     private static final int WARMUP_TICKS = 45;
     private static final int DISTANCE = 70;
+    /**
+     * Every wait below runs on its own clock, not on the scenario's. A blast left running by an earlier scenario shares
+     * the engine's tick budget and starves this scenario's blasts, so a wait measured from the scenario's start ran
+     * out under load (the old flake); the total only has to cover the sum of the waits.
+     */
+    private static final int QUIET_LIMIT = 2400;
+    private static final int FLIGHT_LIMIT = 1200;
+    private static final int BLAST_LIMIT = 2400;
+    private static final int TOTAL_TICKS = 10_000;
 
     @Override
     public String name() {
@@ -95,9 +104,11 @@ public final class ControlLaunchScenario implements Scenario {
         final EntityMissile[] missile = new EntityMissile[1];
         final int[] stage = { 0 };
         final int[] mark = { 0 };
+        final int[] since = { 0 };
+        final int[] diedAt = { -1 };
         final long[] euBefore = { 0 };
         final int[] logged = { -1 };
-        return ScenarioResult.pending(name(), 3000, ticks -> {
+        return ScenarioResult.pending(name(), TOTAL_TICKS, ticks -> {
             if (logged[0] != stage[0]) {
                 logged[0] = stage[0];
                 com.gregguns.GregGuns.LOG.info(
@@ -145,8 +156,9 @@ public final class ControlLaunchScenario implements Scenario {
                     // while they are full is refused (BlastEngine.start): that dropped the second blast of this
                     // scenario once on a fresh boot. Wait for a quiet engine before launching anything.
                     if (BlastEngine.instance()
-                        .activeBlasts() > 0 && ticks < 400) {
-                        return null;
+                        .activeBlasts() > 0) {
+                        return ticks > QUIET_LIMIT ? fail(terrain, "the blast engine never went quiet" + engineState())
+                            : null;
                     }
                     int[] b = MissileScenarios
                         .buildStack(ctx, MissileTier.T1, WarheadCasing.T1, "condensed", 3, 0, 1, 0, true, 0);
@@ -182,16 +194,22 @@ public final class ControlLaunchScenario implements Scenario {
                     // before ignition.
                     out.checkEquals("no second shot during the countdown", ControlStatus.COUNTDOWN, c.fire(null));
                     stage[0] = 1;
+                    since[0] = ticks;
                     return null;
                 }
                 case 1: {
                     EntityMissile m = missile[0];
-                    if (!m.isDead || (first.removed(w) == 0 && ticks < 1800)) {
-                        return ticks > 1800 ? fail(terrain, "the first missile never hit") : null;
+                    if (!m.isDead) {
+                        return ticks - since[0] > FLIGHT_LIMIT
+                            ? fail(terrain, "the first missile never hit, phase " + m.phase() + engineState())
+                            : null;
                     }
-                    // The second launch also needs a free job slot, so the first blast must be done.
-                    if (BlastEngine.instance()
-                        .activeBlasts() > 0 && ticks < 2000) {
+                    if (diedAt[0] < 0) {
+                        diedAt[0] = ticks;
+                    }
+                    // The blast breaks blocks over the following ticks, and the second launch needs a free job slot.
+                    if ((first.removed(w) == 0 || BlastEngine.instance()
+                        .activeBlasts() > 0) && ticks - diedAt[0] < BLAST_LIMIT) {
                         return null;
                     }
                     out.check(
@@ -249,12 +267,22 @@ public final class ControlLaunchScenario implements Scenario {
                         euBefore[0] - MTELaunchControl.EU_PER_SHOT,
                         base.getStoredEU());
                     stage[0] = 4;
+                    since[0] = ticks;
+                    diedAt[0] = -1;
                     return null;
                 }
                 case 4: {
                     EntityMissile m = missile[0];
-                    if (!m.isDead || (second.removed(w) == 0 && ticks < 2900)) {
-                        return ticks > 2900 ? fail(terrain, "the second missile never hit") : null;
+                    if (!m.isDead) {
+                        return ticks - since[0] > FLIGHT_LIMIT
+                            ? fail(terrain, "the second missile never hit, phase " + m.phase() + engineState())
+                            : null;
+                    }
+                    if (diedAt[0] < 0) {
+                        diedAt[0] = ticks;
+                    }
+                    if (second.removed(w) == 0 && ticks - diedAt[0] < BLAST_LIMIT) {
+                        return null;
                     }
                     out.check(
                         second.removed(w) > 0,
