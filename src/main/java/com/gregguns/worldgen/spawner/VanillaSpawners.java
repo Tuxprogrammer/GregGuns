@@ -60,7 +60,12 @@ public final class VanillaSpawners implements StructureHooks.SpawnerHook {
      */
     public static boolean placeInWorld(World world, SpawnerKind kind, int x, int y, int z, int ceiling) {
         NBTTagCompound tag = nbt(kind, x, y, z, ceiling);
-        if (tag == null || !world.setBlock(x, y, z, Blocks.mob_spawner, 0, 2)) {
+        if (tag == null) {
+            return false;
+        }
+        // setBlock reports false when the spawner is already there, so judge by the block, not the return value.
+        world.setBlock(x, y, z, Blocks.mob_spawner, 0, 2);
+        if (world.getBlock(x, y, z) != Blocks.mob_spawner) {
             return false;
         }
         world.setTileEntity(x, y, z, tile(tag));
