@@ -332,7 +332,7 @@ public class GenericProjectile extends Entity implements IEntityAdditionalSpawnD
         if (e == shooter || shooter != null && e == shooter.ridingEntity) {
             return HitRules.mayHitShooter(ticksExisted);
         }
-        return true;
+        return !com.gregguns.entity.npc.FactionRules.sparesFriend(shooter, e);
     }
 
     /**

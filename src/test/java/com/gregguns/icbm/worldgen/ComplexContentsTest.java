@@ -235,8 +235,8 @@ class ComplexContentsTest {
                 boolean alongZ = f.facing() == 1 || f.facing() == 3;
                 int[] dx = { 0, -1, 0, 1 }, dz = { 1, 0, -1, 0 };
                 for (int i = 0; i < f.extent(); i++) {
-                    int wx = f.x() + (alongZ ? 0 : 2 * i) - dx[f.facing()];
-                    int wz = f.z() + (alongZ ? 2 * i : 0) - dz[f.facing()];
+                    int wx = f.x() + (alongZ ? 0 : ComplexLayout.FRAME_STRIDE * i) - dx[f.facing()];
+                    int wz = f.z() + (alongZ ? ComplexLayout.FRAME_STRIDE * i : 0) - dz[f.facing()];
                     for (Placement d : ps) {
                         boolean damage = d.kind() == Kind.AIR || d.kind() == Kind.RUBBLE;
                         assertFalse(

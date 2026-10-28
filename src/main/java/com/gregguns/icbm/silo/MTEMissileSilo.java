@@ -119,6 +119,10 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
     private final SiloAim aim = new SiloAim();
     private int launches;
     private int unformedTicks;
+
+    /** Set when the machine stopped itself (power loss, a broken structure, repairs); cleared once it restarts. */
+    private boolean resumeWhenFormed;
+    private static final String K_RESUME = "resumeWhenFormed";
     private EntitySiloDoors doorEntity;
     private SiloDoors.State pushedState;
     private long pushedStart;
@@ -381,6 +385,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             return;
         }
         unformedTicks = 0;
+        resumeIfFormed(base);
         if (tick % DOOR_SCAN_TICKS == 0 || doors.state() == SiloDoors.State.OPENING
             || doors.state() == SiloDoors.State.CLOSING) {
             updateDoors(w);
@@ -389,6 +394,39 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
             ensureDoorEntity(w);
             retryWhenChunksLoaded();
         }
+    }
+
+    /**
+     * GT turns a multiblock off for good when it stops itself, and shows "Shut down due to incomplete structure" until
+     * someone finds the soft mallet. A silo that is missing a part (every generated one) forms the moment the part is
+     * added, so it switches itself back on then, as the radar does (D195, D216). A player's own stop (soft mallet or
+     * a cover) is never undone.
+     */
+    @Override
+    public void stopMachine(@Nonnull gregtech.api.util.shutdown.ShutDownReason reason) {
+        super.stopMachine(reason);
+        if (reason == gregtech.api.util.shutdown.ShutDownReasonRegistry.POWER_LOSS
+            || reason == gregtech.api.util.shutdown.ShutDownReasonRegistry.STRUCTURE_INCOMPLETE
+            || reason == gregtech.api.util.shutdown.ShutDownReasonRegistry.NO_REPAIR) {
+            resumeWhenFormed = true;
+        }
+    }
+
+    /** Switches a formed, repaired silo that stopped itself back on, which also clears the shutdown message. */
+    private void resumeIfFormed(IGregTechTileEntity base) {
+        if (!resumeWhenFormed || getRepairStatus() <= 0) {
+            return;
+        }
+        resumeWhenFormed = false;
+        if (!base.isAllowedToWork()) {
+            base.enableWorking();
+            scheduleRecipeCheckImmediate();
+        }
+    }
+
+    /** @return whether the silo is waiting to switch itself back on (for the scenarios) */
+    boolean resumeScheduled() {
+        return resumeWhenFormed;
     }
 
     /** The silo is not formed: no doors, and a countdown still running stands down (D90). */
@@ -969,6 +1007,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         tag.setLong(K_DOOR_START, doors.start());
         tag.setInteger(K_DOOR_DUR, doors.duration());
         aim.save(tag);
+        tag.setBoolean(K_RESUME, resumeWhenFormed);
     }
 
     @Override
@@ -980,6 +1019,7 @@ public final class MTEMissileSilo extends MTEExtendedPowerMultiBlockBase<MTEMiss
         pendingFill = Math.max(1, tag.getInteger(K_P_FILL));
         pendingCasing = Math.max(1, tag.getInteger(K_P_CASING));
         pendingReady = tag.getBoolean(K_P_READY);
+        resumeWhenFormed = tag.getBoolean(K_RESUME);
         SiloDoors.State st;
         try {
             st = SiloDoors.State.valueOf(tag.getString(K_DOOR_STATE));

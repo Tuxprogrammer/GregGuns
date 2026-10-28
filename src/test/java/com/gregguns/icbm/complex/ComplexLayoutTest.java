@@ -182,7 +182,8 @@ class ComplexLayoutTest {
                             break;
                     }
                     for (int i = 0; i < m.extent(); i++) {
-                        int x = m.x() + (alongZ ? 0 : 2 * i), z = m.z() + (alongZ ? 2 * i : 0);
+                        int x = m.x() + (alongZ ? 0 : ComplexLayout.FRAME_STRIDE * i),
+                            z = m.z() + (alongZ ? ComplexLayout.FRAME_STRIDE * i : 0);
                         assertEquals(Cell.AIR, raster.at(x, m.y(), z), "frame cell is air inside the room");
                         assertEquals(Cell.WALL, raster.at(x + back[0], m.y(), z + back[1]), "a solid wall behind it");
                         assertTrue(
@@ -335,5 +336,49 @@ class ComplexLayoutTest {
 
     private static long key(int x, int z) {
         return ((long) x << 32) ^ (z & 0xffffffffL);
+    }
+
+    /** Every interior floor cell of a box lies within lamp reach of one of the box's own lamps. */
+    private static void assertLit(Box b, java.util.List<Mark> marks, String what) {
+        for (int x = b.minX + 1; x <= b.maxX - 2; x++) {
+            for (int z = b.minZ + 1; z <= b.maxZ - 2; z++) {
+                boolean near = false;
+                for (Mark m : marks) {
+                    if (m.kind() == MarkKind.LIGHT && m.y() == ComplexLayout.HEIGHT - 2
+                        && Math.abs(m.x() - x) + Math.abs(m.z() - z) <= ComplexLayout.LAMP_REACH) {
+                        near = true;
+                        break;
+                    }
+                }
+                assertTrue(near, what + ": no lamp within reach of floor cell " + x + "," + z);
+            }
+        }
+    }
+
+    @Test
+    void everyHallRoomAndTunnelIsLitToLevelEightOnTheFloorWhenItsLampsBurn() {
+        // A lamp hangs in the top air row (y 5), four cells over the floor at y 1; block light falls one level per
+        // cell from 15, so a floor cell h cells away sideways reads 11 - h: 8 or more within LAMP_REACH (3).
+        assertEquals(8, 15 - 4 - ComplexLayout.LAMP_REACH);
+        for (long seed = 0; seed < 60; seed++) {
+            ComplexPlan p = ComplexLayout.generate(seed, (int) seed, 2);
+            assertLit(
+                p.hall()
+                    .bounds(),
+                p.hall()
+                    .marks(),
+                "hall of seed " + seed);
+            for (Room r : p.rooms()) assertLit(r.bounds(), r.marks(), r.kind() + " of seed " + seed);
+            for (Tunnel t : p.tunnels()) assertLit(t.bounds(), t.marks(), "tunnel of seed " + seed);
+        }
+    }
+
+    @Test
+    void lampsStayFewEnoughToLookLikeLights() {
+        ComplexPlan p = ComplexLayout.generate(7, 7, 2);
+        int hall = 0;
+        for (Mark m : p.hall()
+            .marks()) if (m.kind() == MarkKind.LIGHT) hall++;
+        assertTrue(hall >= 30 && hall <= 80, "the 36 x 28 hall holds " + hall + " lamps");
     }
 }

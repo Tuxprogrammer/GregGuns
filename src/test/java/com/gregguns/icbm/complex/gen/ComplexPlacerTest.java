@@ -1,6 +1,7 @@
 package com.gregguns.icbm.complex.gen;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -275,7 +276,7 @@ class ComplexPlacerTest {
     }
 
     @Test
-    void theEscapeLadderHasStoneBehindItFromTheLevelToTheSurface() {
+    void theEscapeLadderHasStoneBehindItFromTheLevelToJustUnderTheSurfaceBlock() {
         StructurePlan p = plan();
         Result r = run(p, false);
         ComplexPlan cp = new ComplexPlacer(resolver, MachineHook.NONE, MarkFiller.NONE, settings).rasterOf(p)
@@ -284,14 +285,14 @@ class ComplexPlacerTest {
         int bx = x + (meta == 4 ? 1 : meta == 5 ? -1 : 0), bz = z + (meta == 2 ? 1 : meta == 3 ? -1 : 0);
         int floor = GROUND - ComplexPlacer.DEPTH;
         String backing = Integer.toString(System.identityHashCode(named.get("backing")));
-        for (int y = floor + ComplexLayout.HEIGHT; y <= GROUND; y++) {
+        for (int y = floor + ComplexLayout.HEIGHT; y < GROUND; y++) {
             String ladder = r.cells.get(x + "," + y + "," + z);
             String behind = r.cells.get(bx + "," + y + "," + bz);
             assertTrue(behind != null && behind.startsWith(backing + ":"), "backing at y " + y + ", windows or not");
-            if (y < GROUND) {
-                assertTrue(ladder != null, "ladder at y " + y);
-            }
+            assertTrue(ladder != null, "ladder at y " + y);
         }
+        // The surface block beside the trapdoor is the terrain's own, so the trapdoor stays camouflaged.
+        assertNull(r.cells.get(bx + "," + GROUND + "," + bz), "no backing at the surface cell");
         assertEquals(0, r.duplicates);
     }
 

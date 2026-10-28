@@ -64,4 +64,20 @@ class FactionRulesTest {
         assertFalse(NpcTargetRules.canMelee(true, true, true));
         assertTrue(NpcTargetRules.canMelee(true, false, false));
     }
+
+    private static HasNpcFaction of(NpcFaction f) {
+        return () -> f;
+    }
+
+    @Test
+    void aShotPassesThroughACrewmateOfTheSameFactionOnly() {
+        HasNpcFaction guard = of(NpcFaction.HOSTILE);
+        assertTrue(FactionRules.sparesFriend(guard, of(NpcFaction.HOSTILE)), "same faction is spared");
+        assertFalse(FactionRules.sparesFriend(guard, of(NpcFaction.TURRET)), "another faction is hit");
+        assertFalse(FactionRules.sparesFriend(guard, new Object()), "a player or any non-NPC is hit");
+        assertFalse(FactionRules.sparesFriend(new Object(), guard), "a player's shot hits guards");
+        assertFalse(FactionRules.sparesFriend(null, guard));
+        assertFalse(FactionRules.sparesFriend(guard, guard), "the shooter itself is the grace rule's business");
+        assertFalse(FactionRules.sparesFriend(of(null), of(null)), "no faction, no friend");
+    }
 }

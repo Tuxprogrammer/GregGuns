@@ -16,7 +16,8 @@ public final class Mark {
     /**
      * @param facing for an {@link MarkKind#ITEM_FRAME_WALL}: the way the frames face, as Minecraft's hanging
      *               direction (0 south +Z, 1 west -X, 2 north -Z, 3 east +X); 0 for the rest
-     * @param extent for an item-frame wall: how many frames, one every second cell along the wall; 1 for the rest
+     * @param extent for an item-frame wall: how many frames, one every {@code FRAME_STRIDE} cells along the wall; 1 for
+     *               the rest
      */
     public Mark(MarkKind kind, int x, int y, int z, String key, int facing, int extent) {
         this.kind = kind;

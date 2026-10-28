@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 
 import com.gregguns.GregGuns;
 import com.gregguns.icbm.complex.Box;
+import com.gregguns.icbm.complex.ComplexLayout;
 import com.gregguns.icbm.complex.MachineRole;
 import com.gregguns.icbm.control.ControlMachines;
 import com.gregguns.worldgen.WindowedSink;
@@ -115,7 +116,8 @@ public final class ComplexApplier {
     }
 
     /**
-     * Hangs the frames of an armory wall: one every second cell from the mark's cell, along +X or +Z (the wall's
+     * Hangs the frames of an armory wall: one every {@link ComplexLayout#FRAME_STRIDE} cells from the mark's cell,
+     * along +X or +Z (the wall's
      * axis), each holding a gun from {@link SiloFrames}. A frame whose gun does not resolve this run stays empty
      * rather than showing a guess.
      */
@@ -125,8 +127,8 @@ public final class ComplexApplier {
         }
         boolean alongZ = p.facing() == 1 || p.facing() == 3;
         for (int i = 0; i < p.extent(); i++) {
-            int lx = p.x() + (alongZ ? 0 : 2 * i);
-            int lz = p.z() + (alongZ ? 2 * i : 0);
+            int lx = p.x() + (alongZ ? 0 : ComplexLayout.FRAME_STRIDE * i);
+            int lz = p.z() + (alongZ ? ComplexLayout.FRAME_STRIDE * i : 0);
             int x = ox + lx;
             int z = oz + lz;
             if (!sink.window()
