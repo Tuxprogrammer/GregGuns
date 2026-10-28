@@ -294,7 +294,8 @@ public final class ControlLaunchScenario implements Scenario {
                         "the second blast broke blocks on the data-stick target" + engineState()
                             + " ["
                             + m.impactReport()
-                            + "]");
+                            + "] "
+                            + second.report(w));
                     out.checkEquals(
                         "no tickets after the second impact",
                         0,
