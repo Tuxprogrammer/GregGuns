@@ -42,6 +42,12 @@ public final class ControlScenarios {
     /** @param registry where to add the scenarios */
     public static void registerAll(ScenarioRegistry registry) {
         registry.register(new Registered());
+        registry.register(
+            com.gregguns.icbm.GuiVanishProbe.scenario(
+                "icbm.control.gui_vanish",
+                "Reading every sync value of the Launch Control screen after its block is removed does not throw.",
+                com.gregguns.machine.GregGunsMTEIDs.LAUNCH_CONTROL,
+                (m, sync) -> new LaunchControlGui((MTELaunchControl) m).registerSyncValues(sync)));
         registry.register(new PadAndGate());
         registry.register(new Stick());
         registry.register(new Redstone());

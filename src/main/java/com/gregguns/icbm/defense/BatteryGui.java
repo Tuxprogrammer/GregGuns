@@ -19,6 +19,8 @@ import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.slot.ItemSlot;
 import com.cleanroommc.modularui.widgets.slot.ModularSlot;
 
+import com.gregguns.icbm.IcbmSync;
+
 import gregtech.common.gui.modularui.singleblock.base.MTETieredMachineBlockBaseGui;
 
 /**
@@ -85,22 +87,28 @@ final class BatteryGui extends MTETieredMachineBlockBaseGui<MTEAirDefense> {
             "st_state",
             0,
             new IntSyncValue(
-                () -> machine.state()
-                    .ordinal(),
+                IcbmSync.guard(
+                    machine,
+                    () -> machine.state()
+                        .ordinal(),
+                    0),
                 v -> state.state = v));
-        sync.syncValue("st_threats", 0, new IntSyncValue(machine::threats, v -> state.threats = v));
-        sync.syncValue("st_sams", 0, new IntSyncValue(machine::samCount, v -> state.sams = v));
+        sync.syncValue("st_threats", 0, new IntSyncValue(IcbmSync.guard(machine, machine::threats, 0), v -> state.threats = v));
+        sync.syncValue("st_sams", 0, new IntSyncValue(IcbmSync.guard(machine, machine::samCount, 0), v -> state.sams = v));
         sync.syncValue(
             "st_eu",
             0,
             new LongSyncValue(
-                () -> machine.getBaseMetaTileEntity()
-                    .getStoredEU(),
+                IcbmSync.guard(
+                    machine,
+                    () -> machine.getBaseMetaTileEntity()
+                        .getStoredEU(),
+                    0L),
                 v -> state.eu = v));
-        sync.syncValue("st_link", 0, new StringSyncValue(() -> {
+        sync.syncValue("st_link", 0, new StringSyncValue(IcbmSync.guard(machine, () -> {
             RadarLink l = machine.link();
             return l == null ? "" : l.toString();
-        }, v -> state.link = v));
+        }, ""), v -> state.link = v));
     }
 
     @Override

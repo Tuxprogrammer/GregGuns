@@ -151,8 +151,11 @@ final class LaunchControlGui extends MTETieredMachineBlockBaseGui<MTELaunchContr
             "st_eu",
             0,
             new LongSyncValue(
-                () -> machine.getBaseMetaTileEntity()
-                    .getStoredEU(),
+                IcbmSync.guard(
+                    machine,
+                    () -> machine.getBaseMetaTileEntity()
+                        .getStoredEU(),
+                    0L),
                 v -> state.eu = v));
         sync.syncValue(
             "st_target",

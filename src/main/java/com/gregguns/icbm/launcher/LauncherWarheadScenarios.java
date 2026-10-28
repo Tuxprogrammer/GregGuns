@@ -71,7 +71,7 @@ final class LauncherWarheadScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             if (!ModuleState.isActive(ModuleId.ICBM)) {
-                return ScenarioResult.skip(name(), "the ICBM module is off (Galacticraft missing)");
+                return ScenarioResult.skip(name(), com.gregguns.icbm.IcbmAvailability.offReason());
             }
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             LauncherWarheadRecipe recipe = new LauncherWarheadRecipe();
@@ -164,7 +164,7 @@ final class LauncherWarheadScenarios {
         @Override
         public ScenarioResult run(ScenarioContext ctx) {
             if (!ModuleState.isActive(ModuleId.ICBM)) {
-                return ScenarioResult.skip(name(), "the ICBM module is off (Galacticraft missing)");
+                return ScenarioResult.skip(name(), com.gregguns.icbm.IcbmAvailability.offReason());
             }
             ScenarioResult.Builder out = ScenarioResult.builder(name());
             for (LauncherWarhead w : LauncherWarhead.values()) {
