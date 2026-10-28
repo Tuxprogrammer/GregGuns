@@ -1,6 +1,6 @@
 # Silo complex layout (D128)
 
-Status: layout, stamp and surface features built (I6 coder A). Placement and planets: [planets-and-placement](planets-and-placement.md).
+Status: layout, stamp, surface features, armory frames, deep guard posts and radar stations built (I6 coder A and finisher). Placement and planets: [planets-and-placement](planets-and-placement.md).
 
 ## Shape
 
@@ -18,10 +18,13 @@ All coordinates are complex-local: x and z in [0, 240), y 0 at the level floor (
 
 ## Depth, stamp and surface
 
-- **Level:** the floor is 24 blocks under the recorded ground; rooms are floor + 5 air cells + ceiling (7 layers). Walls are GT Light and Dark Concrete bricks.
+- **Level:** the floor is 24 blocks under the recorded ground; rooms are floor + 5 air cells + ceiling (7 layers). Walls, rooms and tunnels are GregGuns Bastion Plating (steel), which joins into one plated mass through the connected-texture system (design record 0023). The silo and its shaft stay GT Light and Dark Concrete, the silo's own accepted finish; no connected-texture rule is ever shipped for a `gregtech:*` block.
 - **Doors:** every room opens onto its wing corridor (2 wide, 3 high); each wing opens into the hall; the stub opens into the hall's east wall.
 - **Tunnels:** a vanilla rail along each wing's center line. Lamps, signs and blast doors are marks.
 - **Silo:** the `SiloShape` piece cell by cell: concrete `C`/`F`, clear glass `G`, Gantry Beam `B`, Galacticraft pad `P` in the bore floor, the 3 x 3 bore open. The controller and hatches (input bus and maintenance beside it, energy and input HV below) are real GT machines. Exactly one part is missing: the controller (a concrete block in its place) or the Energy Hatch (a glass pane). A walkway cell in front of the controller opens onto the row corridor.
 - **Shaft:** above the silo, a 5 x 5 concrete ring around the bore up to the ground height read in the shaft's window. Mouth variants: open, half open (west half of the bore capped), closed (all capped, two of the eight outer cells stay air to build height).
-- **Escape:** a 1 x 1 ladder from the end of a wing to a closed trapdoor at ground level.
-- **Not built yet:** radar stations on the surface (the plan carries their positions); item-frame walls need a facing; the silo guard "deep" spawner marks.
+- **Escape:** a 1 x 1 ladder from the end of a wing to a closed trapdoor at ground level. The ladder's metadata (`ComplexPlan.escapeMeta`) makes it cling to the wing's end wall behind it (N 3, S 2, E 4, W 5).
+- **`landY`:** `HeightProbe.landY` is the **top solid block** (foliage, wood and ice skipped), not the air above it. So the trapdoor replaces that block and is a closed top-half trapdoor (metadata 8): its top face is at landY + 1, level with the terrain around it. A shaft ring is written up to and including landY, so its top face meets the terrain, and an open bore is air from the silo up through landY. `icbm.complex.dim.*` check both on real terrain.
+- **Radar stations:** 0 to 2, in the south-west quadrant, each a 5 x 5 hut of Works Casing walls three high (a two-high doorway on the south side, a Gantry Casing roof) with an iron-bar mast of seven on the roof. The hut is built off the recorded ground height, so it stays level when it spans windows (the foundation fills below, a bump above is cleared; a water column is left alone). The dish is a `RadarDishHook`; the shipped one, `PLACEHOLDER_RADAR_DISH`, is a redstone block on the mast top. **Placeholder:** the radar multiblock rework (D125, D190) is not on this base; the orchestrator replaces the hook with the real dish or station controller when it lands.
+- **Armory frames:** the `ITEM_FRAME_WALL` mark is the first frame cell (the room cell in front of the wall) and carries `facing` (Minecraft's hanging direction: 0 south, 1 west, 2 north, 3 east) and `extent` (frame count, one every second cell along +X or +Z). The armory marks two rows (y 2 and 3) on the wall opposite the doorway. The world side creates each frame at its wall block (that is what `EntityItemFrame`'s constructor takes), puts a gun from the weapon tables up to the ceiling in it (`SiloFrames`), and the damage pass never breaks the wall behind a frame.
+- **Deep guard posts:** each silo's walkway in the row corridor and the trunk's far end carry a `deep` spawner mark (D36); the contents pass makes them elite posts.

@@ -20,7 +20,7 @@ The plan and its raster are pure functions of the plan seed, so every window wri
 
 ## Dimensions (D38)
 
-The flag list is `siloComplexDimensions`, by `WorldProvider.getDimensionName()`, which is what GalacticGreg's `DimNames` use. Default: Overworld and every planet of the table. A dimension absent from the list gets no complex. The generator runs in a dimension when either the ordinary structures are allowed there or the complex is, and then only places what is allowed.
+The flag list is `siloComplexDimensions`, by `WorldProvider.getDimensionName()`, compared **case-insensitively**: Galacticraft's providers say "Moon", "Mars" and "Ross128b" where the table writes "moon" and "ross128b" (found in the first live run: with a case-sensitive match no planet ever hosted a complex). Default: Overworld and every planet of the table. A dimension absent from the list gets no complex. **Galacticraft drops Forge's world generators on every planet** (except a short whitelist of other mods), so the generator would never run there. `Ross128ProviderHook` therefore wraps the chunk provider of Ross128b and Ross128ba and of every non-Overworld world where the complex is enabled (`StructureGenerator.complexWanted`), and runs the generator right after the provider's own populate, in the same window; the call that comes second is skipped. The generator runs in a dimension when either the ordinary structures are allowed there or the complex is, and then only places what is allowed.
 
 | Rocket tier | Dimension names | Ceiling (GT voltage index) |
 |---|---|---|
@@ -37,6 +37,14 @@ The flag list is `siloComplexDimensions`, by `WorldProvider.getDimensionName()`,
 | any | ross128b, ross128ba | rolled per complex, EV to UMV |
 
 Asteroid and belt dimensions are absent: no ground for a shaft. `PlanetTable` holds this table.
+
+## Data stick (nearest other complex)
+
+The comms data stick holds the real block coordinates (x, z of the assembly bay) of the nearest other complex. `NeighborComplex.nearest` asks the placement grid (`StructurePopulator.complexPlanAt`) which of the cells within 3 of this one roll a complex at the configured chance, takes the anchor of each, and picks the nearest. It reads only the seed, the dimension and the grid: no world, no chunk, so it can never load or generate one. It cannot know that terrain will later reject that neighbor (skip-and-log), so a stick may name a place with no complex. No complex in range: no stick.
+
+## Per-dimension checks
+
+`icbm.complex.dim.<overworld|moon|mars|ross128b|ross128ba>` force the chance to 100 percent, pick cells that were never loaded, load the 17 x 17 chunk region through the dimension's own provider and check: the plan was decided; no dropped write, no PopulateGuard violation; no chunk loaded beyond the request plus the populate margin; trapdoor flush and ladder facing; shaft rings meet the terrain and an open bore sees the sky; radar huts, doorway and dish; the stick's coordinates; the planned deep posts; the armory frames each hold a gun and a valid wall. A cell the terrain rejects is noted and the next is tried. `icbm.complex.skips` runs water, too-low ground, a ridge repeated in every window and an off-whitelist biome through the harness and checks one logged reason each, nothing written, and flat ground placed. Run in the dev environment: Overworld, Moon, Mars, Ross128b and Ross128ba (Galacticraft, BartWorks). GalaxySpace and Amun-Ra are not in the dev environment, so their planets are untested; the table and the hook are by name and apply unchanged. Known limit: the terrain check samples only the first window that reaches the complex, so relief that appears only elsewhere in the 240 x 240 box is not seen.
 
 ## Config
 
